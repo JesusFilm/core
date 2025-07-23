@@ -164,7 +164,11 @@ export function Card({
         name={t('Filter')}
         value={filterValue}
       >
-        <BackgroundColor key={selectedStep?.id} isContained={isContained} />
+        <BackgroundColor
+          key={selectedStep?.id}
+          isContained={isContained}
+          disableExpanded={disableExpanded}
+        />
       </Accordion>
     </Box>
   )

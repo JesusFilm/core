@@ -350,6 +350,22 @@ describe('BackgroundColor', () => {
       expect(screen.queryByTestId('BackdropBlurSlider')).not.toBeInTheDocument()
     })
 
+    it('does not show backdrop blur controls when card is fullscreen, but expanded mode is disabled (expanded mode is disabled when there is a video block)', () => {
+      render(
+        <MockedProvider>
+          <ThemeProvider>
+            <JourneyProvider value={{ journey, variant: 'admin' }}>
+              <EditorProvider initialState={{ selectedBlock: fullscreenCard }}>
+                <BackgroundColor disableExpanded={true} />
+              </EditorProvider>
+            </JourneyProvider>
+          </ThemeProvider>
+        </MockedProvider>
+      )
+
+      expect(screen.queryByTestId('BackdropBlurSlider')).not.toBeInTheDocument()
+    })
+
     it('shows backdrop blur controls when card is fullscreen', () => {
       render(
         <MockedProvider>

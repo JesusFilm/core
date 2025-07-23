@@ -88,10 +88,12 @@ const UPDATE_BACKDROP_BLUR_FRAGMENT = gql`
 
 interface BackgroundColorProps {
   isContained?: boolean
+  disableExpanded?: boolean
 }
 
 export function BackgroundColor({
-  isContained = false
+  isContained = false,
+  disableExpanded = false
 }: BackgroundColorProps): ReactElement {
   const {
     state: { selectedBlock, selectedStep },
@@ -344,7 +346,7 @@ export function BackgroundColor({
         />
       </Stack>
       {palettePicker}
-      {cardBlock?.fullscreen && (
+      {cardBlock?.fullscreen && !disableExpanded && (
         <>
           <Divider />
           <Stack sx={{ p: 4, pt: 2 }} data-testid="BackdropBlurSlider">
