@@ -15,7 +15,7 @@ const jiti = createJiti(fileURLToPath(import.meta.url))
 const { env } = await jiti.import('./src/env')
 
 const withBundleAnalyzerPlugin = withBundleAnalyzer({
-  enabled: env.ANALYZE === 'true'
+  enabled: env.ANALYZE
 })
 
 /**
@@ -59,11 +59,11 @@ const nextConfig = {
   productionBrowserSourceMaps: true,
   typescript: {
     // handled by github actions
-    ignoreBuildErrors: env.CI === 'true'
+    ignoreBuildErrors: env.CI
   },
   eslint: {
     // handled by github actions
-    ignoreDuringBuilds: env.CI === 'true'
+    ignoreDuringBuilds: env.CI
   },
   async redirects() {
     return [
