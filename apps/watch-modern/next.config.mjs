@@ -1,11 +1,21 @@
 //@ts-check
 
+import { fileURLToPath } from 'node:url'
+
 import withBundleAnalyzer from '@next/bundle-analyzer'
 import { composePlugins, withNx } from '@nx/next'
+import { createJiti } from 'jiti'
 import createNextIntlPlugin from 'next-intl/plugin'
 
+const jiti = createJiti(fileURLToPath(import.meta.url))
+
+/**
+ * @type {import('@/env')}
+ */
+const { env } = await jiti.import('./src/env')
+
 const withBundleAnalyzerPlugin = withBundleAnalyzer({
-  enabled: process.env['ANALYZE'] === 'true'
+  enabled: env.ANALYZE === 'true'
 })
 
 /**
@@ -31,9 +41,7 @@ const nextConfig = {
       { protocol: 'https', hostname: 'imagedelivery.net' },
       {
         protocol: 'https',
-        hostname: `customer-${
-          process.env['NEXT_PUBLIC_CLOUDFLARE_STREAM_CUSTOMER_CODE'] ?? ''
-        }.cloudflarestream.com`
+        hostname: `customer-${env.NEXT_PUBLIC_CLOUDFLARE_STREAM_CUSTOMER_CODE}.cloudflarestream.com`
       }
     ],
     minimumCacheTTL: 31536000
@@ -51,11 +59,11 @@ const nextConfig = {
   productionBrowserSourceMaps: true,
   typescript: {
     // handled by github actions
-    ignoreBuildErrors: process.env['CI'] === 'true'
+    ignoreBuildErrors: env.CI === 'true'
   },
   eslint: {
     // handled by github actions
-    ignoreDuringBuilds: process.env['CI'] === 'true'
+    ignoreDuringBuilds: env.CI === 'true'
   },
   async redirects() {
     return [
