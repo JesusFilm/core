@@ -142,6 +142,7 @@ export class BlockService {
     )
     await this.saveAll(
       blockAndChildrenData.map((block) => ({
+        // if updating the omit, also do the same in journey.resolver.ts journeyDuplicate uses this saveAll function.
         ...omit(block, [
           'parentBlockId',
           'posterBlockId',
