@@ -1,3 +1,4 @@
+import { vercel } from '@t3-oss/env-core/presets-zod'
 import { createEnv } from '@t3-oss/env-nextjs'
 import { z } from 'zod'
 
@@ -7,8 +8,14 @@ export const env = createEnv({
    * isn't built with invalid env vars.
    */
   server: {
-    ANALYZE: z.enum(['true']).optional(),
-    CI: z.enum(['true']).optional()
+    ANALYZE: z
+      .string()
+      .optional()
+      .transform((val) => val === 'true'),
+    CI: z
+      .string()
+      .optional()
+      .transform((val) => val === 'true')
   },
 
   /**
@@ -62,5 +69,6 @@ export const env = createEnv({
    * Makes it so that empty strings are treated as undefined. `SOME_VAR: z.string()` and
    * `SOME_VAR=''` will throw an error.
    */
-  emptyStringAsUndefined: true
+  emptyStringAsUndefined: true,
+  extends: [vercel()]
 })
