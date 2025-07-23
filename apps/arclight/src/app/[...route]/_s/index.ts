@@ -28,7 +28,7 @@ s.openapi(sRoute, async (c) => {
   setCorsHeaders(c)
   const { mediaComponentId, languageId } = c.req.param()
   return c.redirect(
-    `http://jesusfilm.org/bin/jf/watch.html/${mediaComponentId}/${languageId}`,
+    `https://jesusfilm.org/bin/jf/watch.html/${mediaComponentId}/${languageId}`,
     302
   )
 })
