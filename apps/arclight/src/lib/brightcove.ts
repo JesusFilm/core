@@ -43,16 +43,19 @@ function findClosestBitrate(
   sources: BrightcoveSource[],
   targetBitrate: number
 ): BrightcoveSource {
-  if (sources.length === 0) {
-    throw new Error('No sources available')
+  // Filter sources with valid bitrates
+  const validSources = sources.filter((s) => s.avg_bitrate && s.avg_bitrate > 0)
+
+  if (validSources.length === 0) {
+    throw new Error('No sources with valid bitrates available')
   }
 
   // Find the source with the closest bitrate to target
-  let closest = sources[0]
-  let minDifference = Math.abs((closest.avg_bitrate || 0) - targetBitrate)
+  let closest = validSources[0]
+  let minDifference = Math.abs(closest.avg_bitrate! - targetBitrate)
 
-  for (const source of sources) {
-    const difference = Math.abs((source.avg_bitrate || 0) - targetBitrate)
+  for (const source of validSources) {
+    const difference = Math.abs(source.avg_bitrate! - targetBitrate)
     if (difference < minDifference) {
       minDifference = difference
       closest = source
