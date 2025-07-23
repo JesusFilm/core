@@ -1,9 +1,7 @@
-import { vercel } from '@t3-oss/env-core/presets-zod'
 import { createEnv } from '@t3-oss/env-nextjs'
 import { z } from 'zod'
 
 export const env = createEnv({
-  extends: [vercel()],
   /**
    * Specify your server-side environment variables schema here. This way you can ensure the app
    * isn't built with invalid env vars.
@@ -17,9 +15,28 @@ export const env = createEnv({
       .string()
       .optional()
       .transform((val) => val === 'true'),
+    VERCEL: z.string().optional(),
     VERCEL_ENV: z
       .enum(['development', 'preview', 'production', 'stage', 'prod'])
-      .optional()
+      .optional(),
+    VERCEL_URL: z.string().optional(),
+    VERCEL_PROJECT_PRODUCTION_URL: z.string().optional(),
+    VERCEL_BRANCH_URL: z.string().optional(),
+    VERCEL_REGION: z.string().optional(),
+    VERCEL_DEPLOYMENT_ID: z.string().optional(),
+    VERCEL_SKEW_PROTECTION_ENABLED: z.string().optional(),
+    VERCEL_AUTOMATION_BYPASS_SECRET: z.string().optional(),
+    VERCEL_GIT_PROVIDER: z.string().optional(),
+    VERCEL_GIT_REPO_SLUG: z.string().optional(),
+    VERCEL_GIT_REPO_OWNER: z.string().optional(),
+    VERCEL_GIT_REPO_ID: z.string().optional(),
+    VERCEL_GIT_COMMIT_REF: z.string().optional(),
+    VERCEL_GIT_COMMIT_SHA: z.string().optional(),
+    VERCEL_GIT_COMMIT_MESSAGE: z.string().optional(),
+    VERCEL_GIT_COMMIT_AUTHOR_LOGIN: z.string().optional(),
+    VERCEL_GIT_COMMIT_AUTHOR_NAME: z.string().optional(),
+    VERCEL_GIT_PREVIOUS_SHA: z.string().optional(),
+    VERCEL_GIT_PULL_REQUEST_ID: z.string().optional()
   },
 
   /**
@@ -62,7 +79,29 @@ export const env = createEnv({
     NEXT_PUBLIC_DATADOG_ENV: process.env['VERCEL_ENV'],
     NEXT_PUBLIC_DATADOG_SITE: process.env['NEXT_PUBLIC_DATADOG_SITE'],
     NEXT_PUBLIC_DATADOG_VERSION: process.env['VERCEL_GIT_COMMIT_SHA'],
-    VERCEL_ENV: process.env['VERCEL_ENV']
+    VERCEL: process.env['VERCEL'],
+    VERCEL_ENV: process.env['VERCEL_ENV'],
+    VERCEL_URL: process.env['VERCEL_URL'],
+    VERCEL_PROJECT_PRODUCTION_URL: process.env['VERCEL_PROJECT_PRODUCTION_URL'],
+    VERCEL_BRANCH_URL: process.env['VERCEL_BRANCH_URL'],
+    VERCEL_REGION: process.env['VERCEL_REGION'],
+    VERCEL_DEPLOYMENT_ID: process.env['VERCEL_DEPLOYMENT_ID'],
+    VERCEL_SKEW_PROTECTION_ENABLED:
+      process.env['VERCEL_SKEW_PROTECTION_ENABLED'],
+    VERCEL_AUTOMATION_BYPASS_SECRET:
+      process.env['VERCEL_AUTOMATION_BYPASS_SECRET'],
+    VERCEL_GIT_PROVIDER: process.env['VERCEL_GIT_PROVIDER'],
+    VERCEL_GIT_REPO_SLUG: process.env['VERCEL_GIT_REPO_SLUG'],
+    VERCEL_GIT_REPO_OWNER: process.env['VERCEL_GIT_REPO_OWNER'],
+    VERCEL_GIT_REPO_ID: process.env['VERCEL_GIT_REPO_ID'],
+    VERCEL_GIT_COMMIT_REF: process.env['VERCEL_GIT_COMMIT_REF'],
+    VERCEL_GIT_COMMIT_SHA: process.env['VERCEL_GIT_COMMIT_SHA'],
+    VERCEL_GIT_COMMIT_MESSAGE: process.env['VERCEL_GIT_COMMIT_MESSAGE'],
+    VERCEL_GIT_COMMIT_AUTHOR_LOGIN:
+      process.env['VERCEL_GIT_COMMIT_AUTHOR_LOGIN'],
+    VERCEL_GIT_COMMIT_AUTHOR_NAME: process.env['VERCEL_GIT_COMMIT_AUTHOR_NAME'],
+    VERCEL_GIT_PREVIOUS_SHA: process.env['VERCEL_GIT_PREVIOUS_SHA'],
+    VERCEL_GIT_PULL_REQUEST_ID: process.env['VERCEL_GIT_PULL_REQUEST_ID']
   },
   /**
    * Run `build` or `dev` with `SKIP_ENV_VALIDATION` to skip env validation. This is especially
