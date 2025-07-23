@@ -342,7 +342,7 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   videoCollapseEventCreate(input: VideoCollapseEventCreateInput!) : VideoCollapseEvent @join__field(graph: API_JOURNEYS_MODERN) 
   videoProgressEventCreate(input: VideoProgressEventCreateInput!) : VideoProgressEvent @join__field(graph: API_JOURNEYS_MODERN) 
   updateJourneysEmailPreference(input: JourneysEmailPreferenceUpdateInput!) : JourneysEmailPreference @join__field(graph: API_JOURNEYS_MODERN) 
-  journeyNotificationUpdate(input: JourneyNotificationUpdateInput!) : JourneyNotification! @join__field(graph: API_JOURNEYS_MODERN) 
+  journeyNotificationUpdate(input: JourneyNotificationUpdateInput!) : JourneyNotification @join__field(graph: API_JOURNEYS_MODERN) 
   journeyLanguageAiDetect(input: MutationJourneyLanguageAiDetectInput!) : Boolean! @join__field(graph: API_JOURNEYS_MODERN) 
   customDomainCreate(input: CustomDomainCreateInput!) : CustomDomain @join__field(graph: API_JOURNEYS_MODERN) 
   customDomainUpdate(id: ID!, input: CustomDomainUpdateInput!) : CustomDomain @join__field(graph: API_JOURNEYS_MODERN) 
@@ -372,6 +372,9 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   userJourneyRemove(id: ID!) : UserJourney @join__field(graph: API_JOURNEYS_MODERN) 
   userJourneyRemoveAll(id: ID!) : [UserJourney!] @join__field(graph: API_JOURNEYS_MODERN) 
   userJourneyOpen(id: ID!) : UserJourney @join__field(graph: API_JOURNEYS_MODERN) 
+  userInviteCreate(journeyId: ID!, input: UserInviteCreateInput!) : UserInvite @join__field(graph: API_JOURNEYS_MODERN) 
+  userInviteRemove(id: ID!, journeyId: ID!) : UserInvite @join__field(graph: API_JOURNEYS_MODERN) 
+  userInviteAcceptAll: [UserInvite!] @join__field(graph: API_JOURNEYS_MODERN) 
   audioPreviewCreate(input: MutationAudioPreviewCreateInput!) : AudioPreview! @join__field(graph: API_LANGUAGES) 
   audioPreviewUpdate(input: MutationAudioPreviewUpdateInput!) : AudioPreview! @join__field(graph: API_LANGUAGES) 
   audioPreviewDelete(languageId: ID!) : AudioPreview! @join__field(graph: API_LANGUAGES) 
@@ -903,6 +906,36 @@ type PageInfo @join__type(graph: API_JOURNEYS_MODERN)  @join__type(graph: API_ME
   endCursor: String
 }
 
+type PlausibleStatsAggregateResponse @join__type(graph: API_JOURNEYS_MODERN)  {
+  visitors: PlausibleStatsAggregateValue
+  visits: PlausibleStatsAggregateValue
+  pageviews: PlausibleStatsAggregateValue
+  viewsPerVisit: PlausibleStatsAggregateValue
+  bounceRate: PlausibleStatsAggregateValue
+  visitDuration: PlausibleStatsAggregateValue
+  events: PlausibleStatsAggregateValue
+  conversionRate: PlausibleStatsAggregateValue
+  timeOnPage: PlausibleStatsAggregateValue
+}
+
+type PlausibleStatsAggregateValue @join__type(graph: API_JOURNEYS_MODERN)  {
+  value: Float
+  change: Int
+}
+
+type PlausibleStatsResponse @join__type(graph: API_JOURNEYS_MODERN)  {
+  property: String
+  visitors: Int
+  visits: Int
+  pageviews: Int
+  viewsPerVisit: Float
+  bounceRate: Int
+  visitDuration: Int
+  events: Int
+  conversionRate: Int
+  timeOnPage: Float
+}
+
 type QrCode @join__type(graph: API_JOURNEYS_MODERN)  {
   id: ID
   teamId: ID
@@ -967,6 +1000,12 @@ type Query @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS_MO
   userTeams(teamId: ID!, where: UserTeamFilterInput) : [UserTeam!] @join__field(graph: API_JOURNEYS_MODERN) 
   userTeam(id: ID!) : UserTeam @join__field(graph: API_JOURNEYS_MODERN) 
   userTeamInvites(teamId: ID!) : [UserTeamInvite!] @join__field(graph: API_JOURNEYS_MODERN) 
+  userInvites(journeyId: ID!) : [UserInvite!] @join__field(graph: API_JOURNEYS_MODERN) 
+  getUserRole: UserRole @join__field(graph: API_JOURNEYS_MODERN) 
+  journeysPlausibleStatsRealtimeVisitors(id: ID!, idType: IdType) : Int @join__field(graph: API_JOURNEYS_MODERN) 
+  journeysPlausibleStatsAggregate(id: ID!, idType: IdType, where: PlausibleStatsAggregateFilter!) : PlausibleStatsAggregateResponse @join__field(graph: API_JOURNEYS_MODERN) 
+  journeysPlausibleStatsBreakdown(id: ID!, idType: IdType, where: PlausibleStatsBreakdownFilter!) : [PlausibleStatsResponse!] @join__field(graph: API_JOURNEYS_MODERN) 
+  journeysPlausibleStatsTimeseries(id: ID!, idType: IdType, where: PlausibleStatsTimeseriesFilter!) : [PlausibleStatsResponse!] @join__field(graph: API_JOURNEYS_MODERN) 
   language(id: ID!, idType: LanguageIdType = databaseId) : Language @join__field(graph: API_LANGUAGES) 
   languages(offset: Int, limit: Int, where: LanguagesFilter, term: String) : [Language!]! @join__field(graph: API_LANGUAGES) 
   languagesCount(where: LanguagesFilter, term: String) : Int! @join__field(graph: API_LANGUAGES) 
@@ -1251,6 +1290,7 @@ type Team @join__type(graph: API_JOURNEYS_MODERN)  {
   createdAt: DateTime
   updatedAt: DateTime
   userTeams: [UserTeam!]
+  customDomains: [CustomDomain!]
 }
 
 type TextResponseBlock implements Block @join__type(graph: API_JOURNEYS_MODERN, key: "id")  @join__implements(graph: API_JOURNEYS_MODERN, interface: "Block")  {
@@ -1296,10 +1336,33 @@ type TypographyBlockSettings @join__type(graph: API_JOURNEYS_MODERN)  {
   color: String
 }
 
+type User @join__type(graph: API_JOURNEYS_MODERN, key: "id", extension: true)  @join__type(graph: API_LANGUAGES, key: "id", extension: true)  @join__type(graph: API_MEDIA, key: "id", extension: true)  @join__type(graph: API_USERS, key: "id")  {
+  id: ID!
+  languageUserRoles: [LanguageRole!]! @join__field(graph: API_LANGUAGES) 
+  mediaUserRoles: [MediaRole!]! @join__field(graph: API_MEDIA) 
+  firstName: String! @join__field(graph: API_USERS) 
+  lastName: String @join__field(graph: API_USERS) 
+  email: String! @join__field(graph: API_USERS) 
+  imageUrl: String @join__field(graph: API_USERS) 
+  superAdmin: Boolean @join__field(graph: API_USERS) 
+  emailVerified: Boolean! @join__field(graph: API_USERS) 
+}
+
 type UserAgent @join__type(graph: API_JOURNEYS_MODERN)  {
   browser: Browser
   device: Device
   os: OperatingSystem
+}
+
+type UserInvite @join__type(graph: API_JOURNEYS_MODERN, key: "id")  {
+  id: ID
+  journeyId: ID
+  senderId: ID
+  email: String
+  acceptedAt: DateTime
+  removedAt: DateTime
+  updatedAt: DateTime
+  journey: Journey
 }
 
 type UserJourney @join__type(graph: API_JOURNEYS_MODERN)  {
@@ -1309,6 +1372,14 @@ type UserJourney @join__type(graph: API_JOURNEYS_MODERN)  {
   role: UserJourneyRole
   openedAt: DateTime
   journey: Journey
+  user: User
+  journeyNotification: JourneyNotification
+}
+
+type UserRole @join__type(graph: API_JOURNEYS_MODERN, key: "id")  {
+  id: ID
+  userId: ID
+  roles: [Role!]
 }
 
 type UserTeam @join__type(graph: API_JOURNEYS_MODERN)  {
@@ -1319,6 +1390,8 @@ type UserTeam @join__type(graph: API_JOURNEYS_MODERN)  {
   createdAt: DateTime
   updatedAt: DateTime
   team: Team
+  user: User
+  journeyNotification(journeyId: ID!) : JourneyNotification
 }
 
 type UserTeamInvite @join__type(graph: API_JOURNEYS_MODERN)  {
@@ -1575,18 +1648,6 @@ type LanguageName @join__type(graph: API_LANGUAGES)  {
   value: String!
   primary: Boolean!
   language: Language!
-}
-
-type User @join__type(graph: API_LANGUAGES, key: "id", extension: true)  @join__type(graph: API_MEDIA, key: "id", extension: true)  @join__type(graph: API_USERS, key: "id")  {
-  id: ID!
-  languageUserRoles: [LanguageRole!]! @join__field(graph: API_LANGUAGES) 
-  mediaUserRoles: [MediaRole!]! @join__field(graph: API_MEDIA) 
-  firstName: String! @join__field(graph: API_USERS) 
-  lastName: String @join__field(graph: API_USERS) 
-  email: String! @join__field(graph: API_USERS) 
-  imageUrl: String @join__field(graph: API_USERS) 
-  superAdmin: Boolean @join__field(graph: API_USERS) 
-  emailVerified: Boolean! @join__field(graph: API_USERS) 
 }
 
 type ArclightApiKey @join__type(graph: API_MEDIA, key: "key")  {
@@ -2332,6 +2393,10 @@ enum VideoBlockSource @join__type(graph: API_JOURNEYS_MODERN)  @join__type(graph
   mux @join__enumValue(graph: API_JOURNEYS_MODERN)  @join__enumValue(graph: API_MEDIA) 
 }
 
+enum Role @join__type(graph: API_JOURNEYS_MODERN)  {
+  publisher @join__enumValue(graph: API_JOURNEYS_MODERN) 
+}
+
 enum TextResponseType @join__type(graph: API_JOURNEYS_MODERN)  {
   freeForm @join__enumValue(graph: API_JOURNEYS_MODERN) 
   name @join__enumValue(graph: API_JOURNEYS_MODERN) 
@@ -2940,6 +3005,29 @@ input NavigateToBlockActionInput @join__type(graph: API_JOURNEYS_MODERN)  {
   blockId: String!
 }
 
+input PlausibleStatsAggregateFilter @join__type(graph: API_JOURNEYS_MODERN)  {
+  period: String
+  date: String
+  filters: String
+  interval: String
+}
+
+input PlausibleStatsBreakdownFilter @join__type(graph: API_JOURNEYS_MODERN)  {
+  property: String!
+  period: String
+  date: String
+  limit: Int
+  page: Int
+  filters: String
+}
+
+input PlausibleStatsTimeseriesFilter @join__type(graph: API_JOURNEYS_MODERN)  {
+  period: String
+  date: String
+  filters: String
+  interval: String
+}
+
 input QrCodeCreateInput @join__type(graph: API_JOURNEYS_MODERN)  {
   teamId: ID!
   journeyId: ID!
@@ -3141,6 +3229,10 @@ input TypographyBlockUpdateInput @join__type(graph: API_JOURNEYS_MODERN)  {
   color: TypographyColor
   align: TypographyAlign
   settings: TypographyBlockSettingsInput
+}
+
+input UserInviteCreateInput @join__type(graph: API_JOURNEYS_MODERN)  {
+  email: String!
 }
 
 input UserTeamFilterInput @join__type(graph: API_JOURNEYS_MODERN)  {

@@ -27,7 +27,7 @@ export const JourneyCollectionRef = builder.prismaObject('JourneyCollection', {
     id: t.exposeID('id'),
     title: t.exposeString('title', { nullable: true }),
     team: t.relation('team'),
-    // TODO: Add customDomains relation when CustomDomain type is implemented
+    customDomains: t.relation('customDomains'),
     journeys: t.field({
       type: [JourneyRef],
       resolve: async (journeyCollection) => {

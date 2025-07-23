@@ -28,6 +28,7 @@ export type Scalars = {
 
 export type Action = {
   gtmEventName?: Maybe<Scalars['String']['output']>;
+  parentBlock?: Maybe<Block>;
   parentBlockId?: Maybe<Scalars['ID']['output']>;
 };
 
@@ -115,6 +116,12 @@ export type BlocksFilter = {
   typenames?: InputMaybe<Array<Scalars['String']['input']>>;
 };
 
+export type Browser = {
+  __typename?: 'Browser';
+  name?: Maybe<Scalars['String']['output']>;
+  version?: Maybe<Scalars['String']['output']>;
+};
+
 export enum ButtonAction {
   EmailAction = 'EmailAction',
   LinkAction = 'LinkAction',
@@ -130,6 +137,7 @@ export enum ButtonAlignment {
 
 export type ButtonBlock = Block & {
   __typename?: 'ButtonBlock';
+  action?: Maybe<Action>;
   color?: Maybe<ButtonColor>;
   endIconId?: Maybe<Scalars['ID']['output']>;
   id: Scalars['ID']['output'];
@@ -449,10 +457,27 @@ export enum DefaultPlatform {
   Web = 'web'
 }
 
+export type Device = {
+  __typename?: 'Device';
+  model?: Maybe<Scalars['String']['output']>;
+  type?: Maybe<DeviceType>;
+  vendor?: Maybe<Scalars['String']['output']>;
+};
+
+export enum DeviceType {
+  Console = 'console',
+  Embedded = 'embedded',
+  Mobile = 'mobile',
+  Smarttv = 'smarttv',
+  Tablet = 'tablet',
+  Wearable = 'wearable'
+}
+
 export type EmailAction = Action & {
   __typename?: 'EmailAction';
-  email?: Maybe<Scalars['String']['output']>;
+  email: Scalars['String']['output'];
   gtmEventName?: Maybe<Scalars['String']['output']>;
+  parentBlock?: Maybe<Block>;
   parentBlockId?: Maybe<Scalars['ID']['output']>;
 };
 
@@ -1038,11 +1063,22 @@ export type JourneyViewEventCreateInput = {
 export type JourneyVisitor = {
   __typename?: 'JourneyVisitor';
   activityCount?: Maybe<Scalars['Int']['output']>;
+  countryCode?: Maybe<Scalars['String']['output']>;
   createdAt?: Maybe<Scalars['DateTime']['output']>;
   duration?: Maybe<Scalars['Int']['output']>;
+  events?: Maybe<Array<Event>>;
   id?: Maybe<Scalars['ID']['output']>;
   journey?: Maybe<Journey>;
   journeyId?: Maybe<Scalars['String']['output']>;
+  lastChatPlatform?: Maybe<MessagePlatform>;
+  lastChatStartedAt?: Maybe<Scalars['DateTime']['output']>;
+  lastLinkAction?: Maybe<Scalars['String']['output']>;
+  lastRadioOptionSubmission?: Maybe<Scalars['String']['output']>;
+  lastRadioQuestion?: Maybe<Scalars['String']['output']>;
+  lastStepViewedAt?: Maybe<Scalars['DateTime']['output']>;
+  lastTextResponse?: Maybe<Scalars['String']['output']>;
+  messagePlatform?: Maybe<MessagePlatform>;
+  notes?: Maybe<Scalars['String']['output']>;
   updatedAt?: Maybe<Scalars['DateTime']['output']>;
   visitor?: Maybe<Visitor>;
   visitorId?: Maybe<Scalars['String']['output']>;
@@ -1052,6 +1088,7 @@ export type JourneyVisitorFilter = {
   countryCode?: InputMaybe<Scalars['String']['input']>;
   hasChatStarted?: InputMaybe<Scalars['Boolean']['input']>;
   hasIcon?: InputMaybe<Scalars['Boolean']['input']>;
+  hasPollAnswers?: InputMaybe<Scalars['Boolean']['input']>;
   hasTextResponse?: InputMaybe<Scalars['Boolean']['input']>;
   hideInactive?: InputMaybe<Scalars['Boolean']['input']>;
   journeyId: Scalars['ID']['input'];
@@ -1165,9 +1202,10 @@ export type LanguagesFilter = {
 export type LinkAction = Action & {
   __typename?: 'LinkAction';
   gtmEventName?: Maybe<Scalars['String']['output']>;
+  parentBlock?: Maybe<Block>;
   parentBlockId?: Maybe<Scalars['ID']['output']>;
   target?: Maybe<Scalars['String']['output']>;
-  url?: Maybe<Scalars['String']['output']>;
+  url: Scalars['String']['output'];
 };
 
 export type LinkActionInput = {
@@ -1239,16 +1277,16 @@ export type Mutation = {
   bibleCitationUpdate?: Maybe<BibleCitation>;
   /** blockDelete returns the updated sibling blocks on successful delete */
   blockDelete: Array<Block>;
-  blockDeleteAction: Block;
+  blockDeleteAction?: Maybe<Block>;
   /** blockDuplicate returns the updated block, its children and sibling blocks on successful duplicate */
   blockDuplicate: Array<Block>;
   blockOrderUpdate: Array<Block>;
   /** blockRestore is used for redo/undo */
   blockRestore: Array<Block>;
-  blockUpdateAction: Action;
-  blockUpdateEmailAction: EmailAction;
-  blockUpdateLinkAction: LinkAction;
-  blockUpdateNavigateToBlockAction: NavigateToBlockAction;
+  blockUpdateAction?: Maybe<Action>;
+  blockUpdateEmailAction?: Maybe<EmailAction>;
+  blockUpdateLinkAction?: Maybe<LinkAction>;
+  blockUpdateNavigateToBlockAction?: Maybe<NavigateToBlockAction>;
   buttonBlockCreate: ButtonBlock;
   buttonBlockUpdate: ButtonBlock;
   buttonClickEventCreate?: Maybe<ButtonClickEvent>;
@@ -1301,7 +1339,7 @@ export type Mutation = {
   journeyDuplicate: Journey;
   journeyFeature: Journey;
   journeyLanguageAiDetect: Scalars['Boolean']['output'];
-  journeyNotificationUpdate: JourneyNotification;
+  journeyNotificationUpdate?: Maybe<JourneyNotification>;
   journeyProfileCreate: JourneyProfile;
   journeyProfileUpdate: JourneyProfile;
   journeyPublish: Journey;
@@ -1360,6 +1398,9 @@ export type Mutation = {
   typographyBlockUpdate: TypographyBlock;
   updateJourneysEmailPreference?: Maybe<JourneysEmailPreference>;
   userImpersonate?: Maybe<Scalars['String']['output']>;
+  userInviteAcceptAll?: Maybe<Array<UserInvite>>;
+  userInviteCreate?: Maybe<UserInvite>;
+  userInviteRemove?: Maybe<UserInvite>;
   userJourneyApprove?: Maybe<UserJourney>;
   userJourneyOpen?: Maybe<UserJourney>;
   userJourneyPromote?: Maybe<UserJourney>;
@@ -2075,6 +2116,18 @@ export type MutationUserImpersonateArgs = {
 };
 
 
+export type MutationUserInviteCreateArgs = {
+  input: UserInviteCreateInput;
+  journeyId: Scalars['ID']['input'];
+};
+
+
+export type MutationUserInviteRemoveArgs = {
+  id: Scalars['ID']['input'];
+  journeyId: Scalars['ID']['input'];
+};
+
+
 export type MutationUserJourneyApproveArgs = {
   id: Scalars['ID']['input'];
 };
@@ -2536,8 +2589,9 @@ export type MuxVideo = {
 
 export type NavigateToBlockAction = Action & {
   __typename?: 'NavigateToBlockAction';
-  blockId?: Maybe<Scalars['String']['output']>;
+  blockId: Scalars['String']['output'];
   gtmEventName?: Maybe<Scalars['String']['output']>;
+  parentBlock?: Maybe<Block>;
   parentBlockId?: Maybe<Scalars['ID']['output']>;
 };
 
@@ -2576,6 +2630,12 @@ export type NotUniqueErrorLocation = {
   value?: Maybe<Scalars['String']['output']>;
 };
 
+export type OperatingSystem = {
+  __typename?: 'OperatingSystem';
+  name?: Maybe<Scalars['String']['output']>;
+  version?: Maybe<Scalars['String']['output']>;
+};
+
 export type PageInfo = {
   __typename?: 'PageInfo';
   endCursor?: Maybe<Scalars['String']['output']>;
@@ -2589,6 +2649,62 @@ export enum Platform {
   Journeys = 'journeys',
   Watch = 'watch'
 }
+
+export type PlausibleStatsAggregateFilter = {
+  date?: InputMaybe<Scalars['String']['input']>;
+  filters?: InputMaybe<Scalars['String']['input']>;
+  interval?: InputMaybe<Scalars['String']['input']>;
+  period?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type PlausibleStatsAggregateResponse = {
+  __typename?: 'PlausibleStatsAggregateResponse';
+  bounceRate?: Maybe<PlausibleStatsAggregateValue>;
+  conversionRate?: Maybe<PlausibleStatsAggregateValue>;
+  events?: Maybe<PlausibleStatsAggregateValue>;
+  pageviews?: Maybe<PlausibleStatsAggregateValue>;
+  timeOnPage?: Maybe<PlausibleStatsAggregateValue>;
+  viewsPerVisit?: Maybe<PlausibleStatsAggregateValue>;
+  visitDuration?: Maybe<PlausibleStatsAggregateValue>;
+  visitors?: Maybe<PlausibleStatsAggregateValue>;
+  visits?: Maybe<PlausibleStatsAggregateValue>;
+};
+
+export type PlausibleStatsAggregateValue = {
+  __typename?: 'PlausibleStatsAggregateValue';
+  change?: Maybe<Scalars['Int']['output']>;
+  value?: Maybe<Scalars['Float']['output']>;
+};
+
+export type PlausibleStatsBreakdownFilter = {
+  date?: InputMaybe<Scalars['String']['input']>;
+  filters?: InputMaybe<Scalars['String']['input']>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  page?: InputMaybe<Scalars['Int']['input']>;
+  period?: InputMaybe<Scalars['String']['input']>;
+  property: Scalars['String']['input'];
+};
+
+export type PlausibleStatsResponse = {
+  __typename?: 'PlausibleStatsResponse';
+  bounceRate?: Maybe<Scalars['Int']['output']>;
+  conversionRate?: Maybe<Scalars['Int']['output']>;
+  events?: Maybe<Scalars['Int']['output']>;
+  pageviews?: Maybe<Scalars['Int']['output']>;
+  property?: Maybe<Scalars['String']['output']>;
+  timeOnPage?: Maybe<Scalars['Float']['output']>;
+  viewsPerVisit?: Maybe<Scalars['Float']['output']>;
+  visitDuration?: Maybe<Scalars['Int']['output']>;
+  visitors?: Maybe<Scalars['Int']['output']>;
+  visits?: Maybe<Scalars['Int']['output']>;
+};
+
+export type PlausibleStatsTimeseriesFilter = {
+  date?: InputMaybe<Scalars['String']['input']>;
+  filters?: InputMaybe<Scalars['String']['input']>;
+  interval?: InputMaybe<Scalars['String']['input']>;
+  period?: InputMaybe<Scalars['String']['input']>;
+};
 
 export type QrCode = {
   __typename?: 'QrCode';
@@ -2648,6 +2764,7 @@ export type Query = {
   getMyMuxVideo: MuxVideo;
   getMyMuxVideos: Array<MuxVideo>;
   getTranscodeAssetProgress?: Maybe<Scalars['Int']['output']>;
+  getUserRole?: Maybe<UserRole>;
   hosts?: Maybe<Array<Host>>;
   integrations?: Maybe<Array<Integration>>;
   journey?: Maybe<Journey>;
@@ -2661,6 +2778,10 @@ export type Query = {
   journeyVisitorsConnection?: Maybe<QueryJourneyVisitorsConnection>;
   journeys: Array<Journey>;
   journeysEmailPreference?: Maybe<JourneysEmailPreference>;
+  journeysPlausibleStatsAggregate?: Maybe<PlausibleStatsAggregateResponse>;
+  journeysPlausibleStatsBreakdown?: Maybe<Array<PlausibleStatsResponse>>;
+  journeysPlausibleStatsRealtimeVisitors?: Maybe<Scalars['Int']['output']>;
+  journeysPlausibleStatsTimeseries?: Maybe<Array<PlausibleStatsResponse>>;
   keywords: Array<Keyword>;
   language?: Maybe<Language>;
   languages: Array<Language>;
@@ -2686,6 +2807,7 @@ export type Query = {
   teams?: Maybe<Array<Team>>;
   user?: Maybe<User>;
   userByEmail?: Maybe<User>;
+  userInvites?: Maybe<Array<UserInvite>>;
   userTeam?: Maybe<UserTeam>;
   userTeamInvites?: Maybe<Array<UserTeamInvite>>;
   userTeams?: Maybe<Array<UserTeam>>;
@@ -2697,6 +2819,7 @@ export type Query = {
   videoVariants: Array<VideoVariant>;
   videos: Array<Video>;
   videosCount: Scalars['Int']['output'];
+  visitor?: Maybe<Visitor>;
   visitorsConnection?: Maybe<QueryVisitorsConnection>;
 };
 
@@ -2897,6 +3020,33 @@ export type QueryJourneysEmailPreferenceArgs = {
 };
 
 
+export type QueryJourneysPlausibleStatsAggregateArgs = {
+  id: Scalars['ID']['input'];
+  idType?: InputMaybe<IdType>;
+  where: PlausibleStatsAggregateFilter;
+};
+
+
+export type QueryJourneysPlausibleStatsBreakdownArgs = {
+  id: Scalars['ID']['input'];
+  idType?: InputMaybe<IdType>;
+  where: PlausibleStatsBreakdownFilter;
+};
+
+
+export type QueryJourneysPlausibleStatsRealtimeVisitorsArgs = {
+  id: Scalars['ID']['input'];
+  idType?: InputMaybe<IdType>;
+};
+
+
+export type QueryJourneysPlausibleStatsTimeseriesArgs = {
+  id: Scalars['ID']['input'];
+  idType?: InputMaybe<IdType>;
+  where: PlausibleStatsTimeseriesFilter;
+};
+
+
 export type QueryLanguageArgs = {
   id: Scalars['ID']['input'];
   idType?: InputMaybe<LanguageIdType>;
@@ -3007,6 +3157,11 @@ export type QueryUserByEmailArgs = {
 };
 
 
+export type QueryUserInvitesArgs = {
+  journeyId: Scalars['ID']['input'];
+};
+
+
 export type QueryUserTeamArgs = {
   id: Scalars['ID']['input'];
 };
@@ -3053,6 +3208,11 @@ export type QueryVideosArgs = {
 
 export type QueryVideosCountArgs = {
   where?: InputMaybe<VideosFilter>;
+};
+
+
+export type QueryVisitorArgs = {
+  id: Scalars['ID']['input'];
 };
 
 
@@ -3149,6 +3309,7 @@ export type QueryVisitorsConnectionEdge = {
 
 export type RadioOptionBlock = Block & {
   __typename?: 'RadioOptionBlock';
+  action?: Maybe<Action>;
   id: Scalars['ID']['output'];
   journeyId: Scalars['ID']['output'];
   label: Scalars['String']['output'];
@@ -3209,6 +3370,10 @@ export enum RedirectType {
   Dl = 'dl',
   Hls = 'hls',
   S = 's'
+}
+
+export enum Role {
+  Publisher = 'publisher'
 }
 
 export enum SegmindModel {
@@ -3282,6 +3447,7 @@ export type ShortLinkDomainVerfication = {
 
 export type SignUpBlock = Block & {
   __typename?: 'SignUpBlock';
+  action?: Maybe<Action>;
   id: Scalars['ID']['output'];
   journeyId: Scalars['ID']['output'];
   parentBlockId?: Maybe<Scalars['ID']['output']>;
@@ -3544,6 +3710,7 @@ export type TaxonomyName = {
 export type Team = {
   __typename?: 'Team';
   createdAt?: Maybe<Scalars['DateTime']['output']>;
+  customDomains?: Maybe<Array<CustomDomain>>;
   id?: Maybe<Scalars['ID']['output']>;
   publicTitle?: Maybe<Scalars['String']['output']>;
   title?: Maybe<Scalars['String']['output']>;
@@ -3832,13 +3999,38 @@ export type User = {
   superAdmin?: Maybe<Scalars['Boolean']['output']>;
 };
 
+export type UserAgent = {
+  __typename?: 'UserAgent';
+  browser?: Maybe<Browser>;
+  device?: Maybe<Device>;
+  os?: Maybe<OperatingSystem>;
+};
+
+export type UserInvite = {
+  __typename?: 'UserInvite';
+  acceptedAt?: Maybe<Scalars['DateTime']['output']>;
+  email?: Maybe<Scalars['String']['output']>;
+  id?: Maybe<Scalars['ID']['output']>;
+  journey?: Maybe<Journey>;
+  journeyId?: Maybe<Scalars['ID']['output']>;
+  removedAt?: Maybe<Scalars['DateTime']['output']>;
+  senderId?: Maybe<Scalars['ID']['output']>;
+  updatedAt?: Maybe<Scalars['DateTime']['output']>;
+};
+
+export type UserInviteCreateInput = {
+  email: Scalars['String']['input'];
+};
+
 export type UserJourney = {
   __typename?: 'UserJourney';
   id?: Maybe<Scalars['ID']['output']>;
   journey?: Maybe<Journey>;
   journeyId?: Maybe<Scalars['ID']['output']>;
+  journeyNotification?: Maybe<JourneyNotification>;
   openedAt?: Maybe<Scalars['DateTime']['output']>;
   role?: Maybe<UserJourneyRole>;
+  user?: Maybe<User>;
   userId?: Maybe<Scalars['ID']['output']>;
 };
 
@@ -3848,15 +4040,29 @@ export enum UserJourneyRole {
   Owner = 'owner'
 }
 
+export type UserRole = {
+  __typename?: 'UserRole';
+  id?: Maybe<Scalars['ID']['output']>;
+  roles?: Maybe<Array<Role>>;
+  userId?: Maybe<Scalars['ID']['output']>;
+};
+
 export type UserTeam = {
   __typename?: 'UserTeam';
   createdAt?: Maybe<Scalars['DateTime']['output']>;
   id?: Maybe<Scalars['ID']['output']>;
+  journeyNotification?: Maybe<JourneyNotification>;
   role?: Maybe<UserTeamRole>;
   team?: Maybe<Team>;
   teamId?: Maybe<Scalars['ID']['output']>;
   updatedAt?: Maybe<Scalars['DateTime']['output']>;
+  user?: Maybe<User>;
   userId?: Maybe<Scalars['ID']['output']>;
+};
+
+
+export type UserTeamJourneyNotificationArgs = {
+  journeyId: Scalars['ID']['input'];
 };
 
 export type UserTeamFilterInput = {
@@ -3997,66 +4203,26 @@ export type VideoVariantsArgs = {
 
 export type VideoBlock = Block & {
   __typename?: 'VideoBlock';
-  autoplay?: Maybe<Scalars['Boolean']['output']>;
-  /**
-   * internal source videos: this field is not populated and instead only present
-   * in the video field
-   * For other sources this is automatically populated.
-   */
-  description?: Maybe<Scalars['String']['output']>;
-  /**
-   * internal source videos: this field is not populated and instead only present
-   * in the video field
-   * For other sources this is automatically populated.
-   */
+  action?: Maybe<Action>;
+  autoplay: Scalars['Boolean']['output'];
+  description: Scalars['String']['output'];
   duration?: Maybe<Scalars['Int']['output']>;
-  /** endAt dictates at which point of time the video should end */
   endAt?: Maybe<Scalars['Int']['output']>;
-  fullsize?: Maybe<Scalars['Boolean']['output']>;
+  fullsize: Scalars['Boolean']['output'];
   id: Scalars['ID']['output'];
-  /**
-   * internal source videos: this field is not populated and instead only present
-   * in the video field
-   * For other sources this is automatically populated.
-   */
   image?: Maybe<Scalars['String']['output']>;
   journeyId: Scalars['ID']['output'];
   mediaVideo?: Maybe<MediaVideo>;
-  muted?: Maybe<Scalars['Boolean']['output']>;
+  muted: Scalars['Boolean']['output'];
   objectFit?: Maybe<VideoBlockObjectFit>;
   parentBlockId?: Maybe<Scalars['ID']['output']>;
   parentOrder?: Maybe<Scalars['Int']['output']>;
-  /**
-   * posterBlockId is present if a child block should be used as a poster.
-   * This child block should not be rendered normally, instead it should be used
-   * as the video poster. PosterBlock should be of type ImageBlock.
-   */
   posterBlockId?: Maybe<Scalars['ID']['output']>;
-  /**
-   * internal source: videoId, videoVariantLanguageId, and video present
-   * youTube source: videoId, title, description, and duration present
-   */
-  source: VideoBlockSource;
-  /** startAt dictates at which point of time the video should start playing */
+  source?: Maybe<VideoBlockSource>;
   startAt?: Maybe<Scalars['Int']['output']>;
-  /**
-   * internal source videos: this field is not populated and instead only present
-   * in the video field.
-   * For other sources this is automatically populated.
-   */
-  title?: Maybe<Scalars['String']['output']>;
-  /**
-   * internal source videos: videoId and videoVariantLanguageId both need to be set
-   * to select a video.
-   * For other sources only videoId needs to be set.
-   */
-  videoId?: Maybe<Scalars['ID']['output']>;
-  /**
-   * internal source videos: videoId and videoVariantLanguageId both need to be set
-   * to select a video.
-   * For other sources only videoId needs to be set.
-   */
-  videoVariantLanguageId?: Maybe<Scalars['ID']['output']>;
+  title: Scalars['String']['output'];
+  videoId?: Maybe<Scalars['String']['output']>;
+  videoVariantLanguageId?: Maybe<Scalars['String']['output']>;
 };
 
 export type VideoBlockCreateInput = {
@@ -4432,6 +4598,7 @@ export type VideoTranslationUpdateInput = {
 
 export type VideoTriggerBlock = Block & {
   __typename?: 'VideoTriggerBlock';
+  action?: Maybe<Action>;
   id: Scalars['ID']['output'];
   journeyId: Scalars['ID']['output'];
   parentBlockId?: Maybe<Scalars['ID']['output']>;
@@ -4612,30 +4779,61 @@ export type Visitor = {
   createdAt?: Maybe<Scalars['DateTime']['output']>;
   duration?: Maybe<Scalars['Int']['output']>;
   email?: Maybe<Scalars['String']['output']>;
+  events?: Maybe<Array<Event>>;
   id?: Maybe<Scalars['ID']['output']>;
   journeyVisitors?: Maybe<Array<JourneyVisitor>>;
+  lastChatPlatform?: Maybe<MessagePlatform>;
+  lastChatStartedAt?: Maybe<Scalars['DateTime']['output']>;
+  lastLinkAction?: Maybe<Scalars['String']['output']>;
+  lastRadioOptionSubmission?: Maybe<Scalars['String']['output']>;
+  lastRadioQuestion?: Maybe<Scalars['String']['output']>;
+  lastStepViewedAt?: Maybe<Scalars['DateTime']['output']>;
+  lastTextResponse?: Maybe<Scalars['String']['output']>;
+  messagePlatform?: Maybe<MessagePlatform>;
+  messagePlatformId?: Maybe<Scalars['String']['output']>;
   name?: Maybe<Scalars['String']['output']>;
+  notes?: Maybe<Scalars['String']['output']>;
   phone?: Maybe<Scalars['String']['output']>;
+  referrer?: Maybe<Scalars['String']['output']>;
+  status?: Maybe<VisitorStatus>;
   team?: Maybe<Team>;
   teamId?: Maybe<Scalars['String']['output']>;
   updatedAt?: Maybe<Scalars['DateTime']['output']>;
+  userAgent?: Maybe<UserAgent>;
   userId?: Maybe<Scalars['String']['output']>;
 };
 
+export enum VisitorStatus {
+  CheckMarkSymbol = 'checkMarkSymbol',
+  PartyPopper = 'partyPopper',
+  Prohibited = 'prohibited',
+  RedExclamationMark = 'redExclamationMark',
+  RedQuestionMark = 'redQuestionMark',
+  RobotFace = 'robotFace',
+  Star = 'star',
+  ThumbsDown = 'thumbsDown',
+  ThumbsUp = 'thumbsUp',
+  Warning = 'warning'
+}
+
 export type VisitorUpdateForCurrentUserInput = {
-  countryCode?: InputMaybe<Scalars['String']['input']>;
   email?: InputMaybe<Scalars['String']['input']>;
+  messagePlatform?: InputMaybe<MessagePlatform>;
+  messagePlatformId?: InputMaybe<Scalars['String']['input']>;
   name?: InputMaybe<Scalars['String']['input']>;
-  referrer?: InputMaybe<Scalars['String']['input']>;
+  phone?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type VisitorUpdateInput = {
   countryCode?: InputMaybe<Scalars['String']['input']>;
   email?: InputMaybe<Scalars['String']['input']>;
+  messagePlatform?: InputMaybe<MessagePlatform>;
+  messagePlatformId?: InputMaybe<Scalars['String']['input']>;
   name?: InputMaybe<Scalars['String']['input']>;
   notes?: InputMaybe<Scalars['String']['input']>;
   phone?: InputMaybe<Scalars['String']['input']>;
   referrer?: InputMaybe<Scalars['String']['input']>;
+  status?: InputMaybe<VisitorStatus>;
 };
 
 export type YouTube = {

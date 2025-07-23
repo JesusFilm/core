@@ -3,16 +3,100 @@ import isNil from 'lodash/isNil'
 import omit from 'lodash/omit'
 import omitBy from 'lodash/omitBy'
 
-import { Prisma } from '.prisma/api-journeys-modern-client'
+import { ButtonAction, Prisma } from '.prisma/api-journeys-modern-client'
 
 import { Action } from '../../lib/auth/ability'
 import { prisma } from '../../lib/prisma'
 import { builder } from '../builder'
-import { EventInterface } from '../event/event' // Import the Event interface
+import { MessagePlatform, VideoBlockSource } from '../enums'
+import { EventInterface } from '../event/event'
+import { Language } from '../language/language'
 
 import { canAccessJourneyEvents } from './journeyEvent.acl'
 
-// Define JourneyEventsFilter input type - matches legacy API
+// Define the JourneyEvent type that implements Event interface using prismaObject
+const JourneyEventRef = builder.prismaObject('Event', {
+  variant: 'JourneyEvent',
+  interfaces: [EventInterface],
+  fields: (t) => ({
+    action: t.expose('action', { type: ButtonAction, nullable: true }),
+    actionValue: t.exposeString('actionValue', { nullable: true }),
+    messagePlatform: t.expose('messagePlatform', {
+      type: MessagePlatform,
+      nullable: true
+    }),
+    language: t.field({
+      type: Language,
+      nullable: true,
+      resolve: async (event) => {
+        if (!event.languageId) return null
+        // Return a reference to the federated Language entity
+        return { id: event.languageId }
+      }
+    }),
+    email: t.exposeString('email', { nullable: true }),
+    blockId: t.exposeString('blockId', { nullable: true }),
+    position: t.exposeFloat('position', { nullable: true }),
+    source: t.expose('source', { type: VideoBlockSource, nullable: true }),
+    progress: t.exposeInt('progress', { nullable: true }),
+
+    // Database fields from the events table
+    typename: t.exposeString('typename', { nullable: true }),
+    visitorId: t.exposeString('visitorId', { nullable: true }),
+
+    // Related fields queried from relevant ids in the events table
+    journeySlug: t.field({
+      type: 'String',
+      nullable: true,
+      resolve: async (event) => {
+        if (!event.journeyId) return null
+        const journey = await prisma.journey.findUnique({
+          where: { id: event.journeyId },
+          select: { slug: true }
+        })
+        return journey?.slug ?? null
+      }
+    }),
+    visitorName: t.field({
+      type: 'String',
+      nullable: true,
+      resolve: async (event) => {
+        if (!event.visitorId) return null
+        const visitor = await prisma.visitor.findUnique({
+          where: { id: event.visitorId },
+          select: { name: true }
+        })
+        return visitor?.name ?? null
+      }
+    }),
+    visitorEmail: t.field({
+      type: 'String',
+      nullable: true,
+      resolve: async (event) => {
+        if (!event.visitorId) return null
+        const visitor = await prisma.visitor.findUnique({
+          where: { id: event.visitorId },
+          select: { email: true }
+        })
+        return visitor?.email ?? null
+      }
+    }),
+    visitorPhone: t.field({
+      type: 'String',
+      nullable: true,
+      resolve: async (event) => {
+        if (!event.visitorId) return null
+        const visitor = await prisma.visitor.findUnique({
+          where: { id: event.visitorId },
+          select: { phone: true }
+        })
+        return visitor?.phone ?? null
+      }
+    })
+  })
+})
+
+// Define input types for filtering
 const JourneyEventsFilter = builder.inputType('JourneyEventsFilter', {
   fields: (t) => ({
     typenames: t.stringList({ required: false }),
@@ -21,154 +105,90 @@ const JourneyEventsFilter = builder.inputType('JourneyEventsFilter', {
   })
 })
 
-// Helper function to generate WHERE clause for filtering - matches legacy API
-function generateWhere(
-  journeyId: string,
-  filter?: {
-    typenames?: string[] | null
-    periodRangeStart?: Date | null
-    periodRangeEnd?: Date | null
-  }
-): Prisma.EventWhereInput {
-  return omitBy(
-    {
-      journeyId,
-      createdAt: {
-        gte: filter?.periodRangeStart,
-        lte: filter?.periodRangeEnd
-      },
-      typename: filter?.typenames ? { in: filter.typenames } : undefined
-    },
-    isNil
-  )
+// JourneyEvent Edge for connection
+interface JourneyEventEdgeType {
+  cursor: string
+  node: any
 }
 
-// Service function to get journey events with pagination
-async function getJourneyEvents({
-  journeyId,
-  first,
-  after,
-  filter
-}: {
-  journeyId: string
-  first: number
-  after?: string | null
-  filter?: {
-    typenames?: string[] | null
-    periodRangeStart?: Date | null
-    periodRangeEnd?: Date | null
-  }
-}): Promise<{
-  edges: Array<{
-    node: {
-      id: string
-      journeyId: string | null
-      createdAt: Date
-      label: string | null
-      value: string | null
-      action: string | null
-      actionValue: string | null
-      messagePlatform: string | null
-      email: string | null
-      blockId: string | null
-      position: number | null
-      source: string | null
-      progress: number | null
-      typename: string | null
-      visitorId: string | null
-      journeySlug: string | null
-      visitorName: string | null
-      visitorEmail: string | null
-      visitorPhone: string | null
-    }
-    cursor: string
-  }>
+interface JourneyEventsConnectionType {
+  edges: JourneyEventEdgeType[]
   pageInfo: {
     hasNextPage: boolean
     hasPreviousPage: boolean
     startCursor: string | null
     endCursor: string | null
   }
-}> {
-  const where = generateWhere(journeyId, filter)
+}
 
-  // Get one extra to check if there's a next page
-  const result = await prisma.event.findMany({
-    where,
-    orderBy: { createdAt: 'desc' },
-    take: first + 1,
-    skip: after ? 1 : 0,
-    cursor: after ? { id: after } : undefined,
-    include: {
-      journey: true,
-      visitor: true
-    }
+const JourneyEventEdge =
+  builder.objectRef<JourneyEventEdgeType>('JourneyEventEdge')
+
+JourneyEventEdge.implement({
+  fields: (t) => ({
+    cursor: t.exposeString('cursor'),
+    node: t.expose('node', { type: JourneyEventRef })
   })
+})
 
-  const hasNextPage = result.length > first
-  const sendResult = hasNextPage ? result.slice(0, first) : result
+// JourneyEvents Connection
+const JourneyEventsConnection = builder.objectRef<JourneyEventsConnectionType>(
+  'JourneyEventsConnection'
+)
 
-  return {
-    edges: sendResult.map((event) => ({
-      node: {
-        id: event.id,
-        journeyId: event.journeyId,
-        createdAt: event.createdAt,
-        label: event.label,
-        value: event.value,
-        action: event.action as string | null,
-        actionValue: event.actionValue,
-        messagePlatform: event.messagePlatform as string | null,
-        email: event.email,
-        blockId: event.blockId,
-        position: event.position,
-        source: event.source as string | null,
-        progress: event.progress,
-        typename: event.typename,
-        visitorId: event.visitorId,
-        journeySlug: event.journey?.slug ?? null,
-        visitorName: event.visitor?.name ?? null,
-        visitorEmail: event.visitor?.email ?? null,
-        visitorPhone: event.visitor?.phone ?? null
-      },
-      cursor: event.id
-    })),
-    pageInfo: {
-      hasNextPage: result.length > first,
-      hasPreviousPage: false, // Mocked to match legacy API
-      startCursor: result.length > 0 ? result[0].id : null,
-      endCursor: result.length > 0 ? sendResult[sendResult.length - 1].id : null
+JourneyEventsConnection.implement({
+  fields: (t) => ({
+    edges: t.expose('edges', { type: [JourneyEventEdge] }),
+    pageInfo: t.expose('pageInfo', { type: 'Json' }) // Simplified for now
+  })
+})
+
+// Helper function to generate where clause
+function generateWhere(
+  journeyId: string,
+  filter:
+    | {
+        typenames?: string[] | null
+        periodRangeStart?: Date | null
+        periodRangeEnd?: Date | null
+      }
+    | null
+    | undefined,
+  accessibleEvent: Prisma.EventWhereInput
+): Prisma.EventWhereInput {
+  const where: Prisma.EventWhereInput = {
+    AND: [accessibleEvent, { journeyId }]
+  }
+
+  if (filter?.typenames) {
+    where.typename = { in: filter.typenames }
+  }
+
+  if (filter?.periodRangeStart || filter?.periodRangeEnd) {
+    where.createdAt = {}
+    if (filter.periodRangeStart) {
+      where.createdAt.gte = filter.periodRangeStart
+    }
+    if (filter.periodRangeEnd) {
+      where.createdAt.lte = filter.periodRangeEnd
     }
   }
+
+  return where
 }
 
-// Service function to get journey events count - matches legacy API logic
-async function getJourneyEventsCount({
-  journeyId,
-  filter
-}: {
-  journeyId: string
-  filter?: {
-    typenames?: string[] | null
-    periodRangeStart?: Date | null
-    periodRangeEnd?: Date | null
-  }
-}): Promise<number> {
-  const where = generateWhere(journeyId, filter)
-  return await prisma.event.count({ where })
-}
-
-// journeyEventsConnection query - using prismaConnection with Event interface
+// Query: journeyEventsConnection
 builder.queryField('journeyEventsConnection', (t) =>
-  t.withAuth({ isAuthenticated: true }).prismaConnection({
-    type: EventInterface, // Use the Event interface from event.ts
-    cursor: 'id',
+  t.withAuth({ isAuthenticated: true }).field({
+    type: JourneyEventsConnection,
     args: {
-      journeyId: t.arg.id({ required: true }),
-      filter: t.arg({ type: JourneyEventsFilter, required: false })
+      journeyId: t.arg({ type: 'ID', required: true }),
+      filter: t.arg({ type: JourneyEventsFilter, required: false }),
+      first: t.arg({ type: 'Int', required: false }),
+      after: t.arg({ type: 'String', required: false })
     },
-    resolve: async (query, _parent, args, context) => {
-      const { journeyId, filter } = args
+    resolve: async (_parent, args, context) => {
+      const { journeyId, filter, first = 50, after } = args
       const user = context.user
 
       // Check if journey exists and get authorization info
@@ -180,37 +200,56 @@ builder.queryField('journeyEventsConnection', (t) =>
         }
       })
 
-      if (journey == null) {
+      if (!journey) {
         throw new GraphQLError('journey not found', {
           extensions: { code: 'NOT_FOUND' }
         })
       }
 
-      // Check authorization
-      if (!canAccessJourneyEvents(Action.Read, journey, user)) {
-        throw new GraphQLError('user is not allowed to read journey events', {
+      // Check access using ACL
+      const canAccess = canAccessJourneyEvents(Action.Read, journey, user)
+      if (!canAccess) {
+        throw new GraphQLError('user is not allowed to access journey events', {
           extensions: { code: 'FORBIDDEN' }
         })
       }
 
-      // Use prisma connection with proper filtering
-      const where = generateWhere(journeyId, filter ?? undefined)
-      return await prisma.event.findMany({
-        ...query,
+      const accessibleEvent: Prisma.EventWhereInput = {} // ACL would set this
+      const where = generateWhere(journeyId, filter, accessibleEvent)
+
+      const events = await prisma.event.findMany({
         where,
-        orderBy: { createdAt: 'desc' }
+        orderBy: { createdAt: 'desc' },
+        take: (first ?? 50) + 1, // Get one extra to check if there's more
+        skip: after ? 1 : 0,
+        cursor: after ? { id: after } : undefined
       })
+
+      const hasNextPage = events.length > (first ?? 50)
+      const nodes = hasNextPage ? events.slice(0, first ?? 50) : events
+
+      return {
+        edges: nodes.map((event) => ({
+          cursor: event.id,
+          node: event
+        })),
+        pageInfo: {
+          hasNextPage,
+          hasPreviousPage: false, // Simple implementation
+          startCursor: nodes.length > 0 ? nodes[0].id : null,
+          endCursor: nodes.length > 0 ? nodes[nodes.length - 1].id : null
+        }
+      }
     }
   })
 )
 
-// journeyEventsCount query - matches legacy API
+// Query: journeyEventsCount
 builder.queryField('journeyEventsCount', (t) =>
   t.withAuth({ isAuthenticated: true }).field({
     type: 'Int',
-    nullable: false,
     args: {
-      journeyId: t.arg.id({ required: true }),
+      journeyId: t.arg({ type: 'ID', required: true }),
       filter: t.arg({ type: JourneyEventsFilter, required: false })
     },
     resolve: async (_parent, args, context) => {
@@ -226,23 +265,26 @@ builder.queryField('journeyEventsCount', (t) =>
         }
       })
 
-      if (journey == null) {
+      if (!journey) {
         throw new GraphQLError('journey not found', {
           extensions: { code: 'NOT_FOUND' }
         })
       }
 
-      // Check authorization
-      if (!canAccessJourneyEvents(Action.Read, journey, user)) {
-        throw new GraphQLError('user is not allowed to read journey events', {
+      // Check access using ACL
+      const canAccess = canAccessJourneyEvents(Action.Read, journey, user)
+      if (!canAccess) {
+        throw new GraphQLError('user is not allowed to access journey events', {
           extensions: { code: 'FORBIDDEN' }
         })
       }
 
-      return await getJourneyEventsCount({
-        journeyId,
-        filter: filter ?? undefined
-      })
+      const accessibleEvent: Prisma.EventWhereInput = {} // ACL would set this
+      const where = generateWhere(journeyId, filter, accessibleEvent)
+
+      return await prisma.event.count({ where })
     }
   })
 )
+
+export { JourneyEventRef }

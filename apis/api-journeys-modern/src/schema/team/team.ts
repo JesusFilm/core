@@ -31,7 +31,8 @@ const TeamRef = builder.prismaObject('Team', {
     publicTitle: t.exposeString('publicTitle', { nullable: true }),
     createdAt: t.expose('createdAt', { type: 'DateTime' }),
     updatedAt: t.expose('updatedAt', { type: 'DateTime' }),
-    userTeams: t.relation('userTeams')
+    userTeams: t.relation('userTeams'),
+    customDomains: t.relation('customDomains')
   })
 })
 

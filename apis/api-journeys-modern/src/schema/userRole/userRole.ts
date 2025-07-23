@@ -1,6 +1,6 @@
 import { GraphQLError } from 'graphql'
 
-import { Role } from '.prisma/api-journeys-modern-client'
+import { Role, UserRole } from '.prisma/api-journeys-modern-client'
 
 import { prisma } from '../../lib/prisma'
 import { builder } from '../builder'
@@ -22,7 +22,31 @@ const UserRoleRef = builder.prismaObject('UserRole', {
   })
 })
 
-// getUserRole query - matches legacy API functionality
+// Register as a federated entity
+builder.asEntity(UserRoleRef, {
+  key: builder.selection<{ id: string }>('id'),
+  resolveReference: async ({ id }) =>
+    await prisma.userRole.findUnique({ where: { id } })
+})
+
+// Helper function to get or create user role
+async function getUserRoleById(userId: string): Promise<UserRole> {
+  try {
+    return await prisma.userRole.upsert({
+      where: { userId },
+      create: { userId },
+      update: {}
+    })
+  } catch (err: any) {
+    // Handle unique constraint violations by retrying
+    if (err.code === 'P2002') {
+      return await getUserRoleById(userId)
+    }
+    throw err
+  }
+}
+
+// getUserRole query
 builder.queryField('getUserRole', (t) =>
   t.withAuth({ isAuthenticated: true }).field({
     type: UserRoleRef,
@@ -30,22 +54,15 @@ builder.queryField('getUserRole', (t) =>
     resolve: async (_parent, _args, context) => {
       const user = context.user
 
-      try {
-        return await prisma.userRole.upsert({
-          where: { userId: user.id },
-          create: { userId: user.id },
-          update: {}
+      if (!user.id) {
+        throw new GraphQLError('User not authenticated', {
+          extensions: { code: 'UNAUTHENTICATED' }
         })
-      } catch (err) {
-        // Handle unique constraint violations gracefully like the legacy API
-        if (err instanceof Error && 'code' in err && err.code === 'P2002') {
-          // Retry the operation if there was a constraint violation
-          return await prisma.userRole.findUnique({
-            where: { userId: user.id }
-          })
-        }
-        throw err
       }
+
+      return await getUserRoleById(user.id)
     }
   })
 )
+
+export { UserRoleRef }

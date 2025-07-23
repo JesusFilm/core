@@ -1,11 +1,10 @@
 import { GraphQLError } from 'graphql'
+import omit from 'lodash/omit'
 
 import { UserInvite, UserJourneyRole } from '.prisma/api-journeys-modern-client'
 
 import { prisma } from '../../lib/prisma'
 import { builder } from '../builder'
-
-import { UserInviteService } from './userInvite.service'
 
 // Define input types
 const UserInviteCreateInput = builder.inputType('UserInviteCreateInput', {
@@ -28,58 +27,57 @@ const UserInviteRef = builder.prismaObject('UserInvite', {
   })
 })
 
-// Query to list journey invites
+// Register as a federated entity
+builder.asEntity(UserInviteRef, {
+  key: builder.selection<{ id: string }>('id'),
+  resolveReference: async ({ id }) =>
+    await prisma.userInvite.findUnique({ where: { id } })
+})
+
+// UserInvite queries
 builder.queryField('userInvites', (t) =>
-  t.prismaField({
+  t.withAuth({ isAuthenticated: true }).field({
     type: [UserInviteRef],
     args: {
       journeyId: t.arg.id({ required: true })
     },
-    authScopes: { isAuthenticated: true },
-    resolve: async (query, _root, { journeyId }, context) => {
-      const { user } = context as { user: { id: string; email?: string } }
-      if (!user?.id) {
-        throw new GraphQLError('User not authenticated', {
-          extensions: { code: 'UNAUTHENTICATED' }
-        })
-      }
+    resolve: async (_parent, args, context) => {
+      const { journeyId } = args
+      const user = context.user
 
-      // Basic authorization - user must be team member or journey editor
+      // Check if user has access to this journey
       const journey = await prisma.journey.findUnique({
         where: { id: journeyId },
         include: {
-          team: {
-            include: { userTeams: true }
-          },
+          team: { include: { userTeams: true } },
           userJourneys: true
         }
       })
 
       if (!journey) {
-        throw new GraphQLError('Journey not found', {
+        throw new GraphQLError('journey not found', {
           extensions: { code: 'NOT_FOUND' }
         })
       }
 
-      // Check if user is team member or journey editor
+      // Check if user is a team member or has journey access
       const isTeamMember = journey.team?.userTeams.some(
         (ut) => ut.userId === user.id
       )
-      const isJourneyEditor = journey.userJourneys.some(
+      const hasJourneyAccess = journey.userJourneys.some(
         (uj) =>
           uj.userId === user.id &&
-          (uj.role === UserJourneyRole.editor ||
-            uj.role === UserJourneyRole.owner)
+          (uj.role === UserJourneyRole.owner ||
+            uj.role === UserJourneyRole.editor)
       )
 
-      if (!isTeamMember && !isJourneyEditor) {
-        throw new GraphQLError('User not authorized to view journey invites', {
+      if (!isTeamMember && !hasJourneyAccess) {
+        throw new GraphQLError('user is not allowed to view user invites', {
           extensions: { code: 'FORBIDDEN' }
         })
       }
 
       return await prisma.userInvite.findMany({
-        ...query,
         where: {
           journeyId,
           removedAt: null,
@@ -90,96 +88,70 @@ builder.queryField('userInvites', (t) =>
   })
 )
 
-// Mutation to create journey invite
+// UserInvite mutations
 builder.mutationField('userInviteCreate', (t) =>
-  t.prismaField({
+  t.withAuth({ isAuthenticated: true }).field({
     type: UserInviteRef,
     nullable: true,
     args: {
       journeyId: t.arg.id({ required: true }),
       input: t.arg({ type: UserInviteCreateInput, required: true })
     },
-    authScopes: { isAuthenticated: true },
-    resolve: async (query, _root, { journeyId, input }, context) => {
-      const { user } = context as { user: { id: string; email?: string } }
-      if (!user?.id) {
-        throw new GraphQLError('User not authenticated', {
-          extensions: { code: 'UNAUTHENTICATED' }
-        })
-      }
+    resolve: async (_parent, args, context) => {
+      const { journeyId, input } = args
+      const user = context.user
 
       return await prisma.$transaction(async (tx) => {
-        // Check if user can create invites for this journey
+        // Check permissions first
         const journey = await tx.journey.findUnique({
           where: { id: journeyId },
           include: {
-            team: {
-              include: { userTeams: true }
-            },
+            team: { include: { userTeams: true } },
             userJourneys: true,
             primaryImageBlock: true
           }
         })
 
         if (!journey) {
-          throw new GraphQLError('Journey not found', {
+          throw new GraphQLError('journey not found', {
             extensions: { code: 'NOT_FOUND' }
           })
         }
 
-        // Check if user is team member or journey editor
+        // Check if user can create invites
         const isTeamMember = journey.team?.userTeams.some(
           (ut) => ut.userId === user.id
         )
-        const isJourneyEditor = journey.userJourneys.some(
+        const hasJourneyAccess = journey.userJourneys.some(
           (uj) =>
             uj.userId === user.id &&
-            (uj.role === UserJourneyRole.editor ||
-              uj.role === UserJourneyRole.owner)
+            (uj.role === UserJourneyRole.owner ||
+              uj.role === UserJourneyRole.editor)
         )
 
-        if (!isTeamMember && !isJourneyEditor) {
-          throw new GraphQLError(
-            'User not authorized to create journey invites',
-            {
-              extensions: { code: 'FORBIDDEN' }
-            }
-          )
+        if (!isTeamMember && !hasJourneyAccess) {
+          throw new GraphQLError('user is not allowed to create user invite', {
+            extensions: { code: 'FORBIDDEN' }
+          })
         }
 
+        // Create or update the invite
         const userInvite = await tx.userInvite.upsert({
-          ...query,
-          where: {
-            journeyId_email: {
-              journeyId,
-              email: input.email
-            }
-          },
+          where: { journeyId_email: { journeyId, email: input.email } },
           create: {
-            email: input.email,
+            journey: { connect: { id: journeyId } },
             senderId: user.id,
-            journey: { connect: { id: journeyId } }
+            email: input.email
           },
           update: {
             senderId: user.id,
             acceptedAt: null,
             removedAt: null
-          },
-          include: {
-            journey: {
-              include: {
-                team: {
-                  include: { userTeams: true }
-                },
-                userJourneys: true,
-                primaryImageBlock: true
-              }
-            }
           }
         })
 
-        // Send invite email (placeholder)
-        await UserInviteService.sendEmail(userInvite.journey, input.email, user)
+        // TODO: Send email invitation
+        // await this.userInviteService.sendEmail(journey, input.email, omit(user, ['id']))
 
         return userInvite
       })
@@ -187,95 +159,76 @@ builder.mutationField('userInviteCreate', (t) =>
   })
 )
 
-// Mutation to remove journey invite
 builder.mutationField('userInviteRemove', (t) =>
-  t.prismaField({
+  t.withAuth({ isAuthenticated: true }).field({
     type: UserInviteRef,
     args: {
       id: t.arg.id({ required: true }),
       journeyId: t.arg.id({ required: true })
     },
-    authScopes: { isAuthenticated: true },
-    resolve: async (query, _root, { id, journeyId }, context) => {
-      const { user } = context as { user: { id: string; email?: string } }
-      if (!user?.id) {
-        throw new GraphQLError('User not authenticated', {
-          extensions: { code: 'UNAUTHENTICATED' }
-        })
-      }
+    resolve: async (_parent, args, context) => {
+      const { id, journeyId } = args
+      const user = context.user
 
+      // Check permissions
       const userInvite = await prisma.userInvite.findUnique({
         where: { id },
         include: {
           journey: {
             include: {
-              team: {
-                include: { userTeams: true }
-              },
+              team: { include: { userTeams: true } },
               userJourneys: true
             }
           }
         }
       })
 
-      if (!userInvite) {
-        throw new GraphQLError('UserInvite not found', {
+      if (!userInvite || userInvite.journeyId !== journeyId) {
+        throw new GraphQLError('user invite not found', {
           extensions: { code: 'NOT_FOUND' }
         })
       }
 
-      if (userInvite.journeyId !== journeyId) {
-        throw new GraphQLError('Invalid journey ID for this invite', {
-          extensions: { code: 'BAD_REQUEST' }
-        })
-      }
-
-      // Check if user can remove invites for this journey
+      // Check if user can remove invites
       const isTeamMember = userInvite.journey.team?.userTeams.some(
         (ut) => ut.userId === user.id
       )
-      const isJourneyEditor = userInvite.journey.userJourneys.some(
+      const hasJourneyAccess = userInvite.journey.userJourneys.some(
         (uj) =>
           uj.userId === user.id &&
-          (uj.role === UserJourneyRole.editor ||
-            uj.role === UserJourneyRole.owner)
+          (uj.role === UserJourneyRole.owner ||
+            uj.role === UserJourneyRole.editor)
       )
 
-      if (!isTeamMember && !isJourneyEditor) {
-        throw new GraphQLError(
-          'User not authorized to remove journey invites',
-          {
-            extensions: { code: 'FORBIDDEN' }
-          }
-        )
+      if (!isTeamMember && !hasJourneyAccess) {
+        throw new GraphQLError('user is not allowed to remove user invite', {
+          extensions: { code: 'FORBIDDEN' }
+        })
       }
 
+      // Mark as removed
       return await prisma.userInvite.update({
-        ...query,
         where: { id },
-        data: {
-          acceptedAt: null, // Reset acceptedAt as per legacy behavior
-          removedAt: new Date()
-        }
+        data: { removedAt: new Date() }
       })
     }
   })
 )
 
-// Mutation to accept all pending journey invites for current user
 builder.mutationField('userInviteAcceptAll', (t) =>
-  t.prismaField({
+  t.withAuth({ isAuthenticated: true }).field({
     type: [UserInviteRef],
-    authScopes: { isAuthenticated: true },
-    resolve: async (query, _root, _args, context) => {
-      const { user } = context as { user: { id: string; email?: string } }
-      if (!user?.id || !user?.email) {
-        throw new GraphQLError('User must have email to accept invites', {
+    resolve: async (_parent, _args, context) => {
+      const user = context.user
+
+      if (!user.email) {
+        throw new GraphQLError('user email is required to accept invites', {
           extensions: { code: 'BAD_REQUEST' }
         })
       }
 
-      const userInvites = await prisma.userInvite.findMany({
+      // Find all pending invites for this user's email
+      const pendingInvites = await prisma.userInvite.findMany({
         where: {
           email: user.email,
           acceptedAt: null,
@@ -283,39 +236,42 @@ builder.mutationField('userInviteAcceptAll', (t) =>
         }
       })
 
-      const redeemedUserInvites = await Promise.all(
-        userInvites.map(async (userInvite) => {
-          const [, redeemedInvite] = await prisma.$transaction([
-            prisma.userJourney.upsert({
-              where: {
-                journeyId_userId: {
-                  journeyId: userInvite.journeyId,
-                  userId: user.id
-                }
-              },
-              create: {
-                journey: { connect: { id: userInvite.journeyId } },
-                userId: user.id,
-                role: UserJourneyRole.editor
-              },
-              update: {
-                role: UserJourneyRole.editor
-              }
-            }),
-            prisma.userInvite.update({
-              ...query,
-              where: { id: userInvite.id },
-              data: {
-                acceptedAt: new Date()
-              }
-            })
-          ])
+      if (pendingInvites.length === 0) {
+        return []
+      }
 
-          return redeemedInvite
-        })
-      )
+      // Accept all invites and create user journeys
+      return await prisma.$transaction(async (tx) => {
+        const acceptedInvites: UserInvite[] = []
 
-      return redeemedUserInvites
+        for (const invite of pendingInvites) {
+          // Create or update user journey
+          await tx.userJourney.upsert({
+            where: {
+              journeyId_userId: {
+                journeyId: invite.journeyId,
+                userId: user.id
+              }
+            },
+            create: {
+              userId: user.id,
+              journeyId: invite.journeyId,
+              role: UserJourneyRole.editor
+            },
+            update: {} // Don't change existing access
+          })
+
+          // Mark invite as accepted
+          const acceptedInvite = await tx.userInvite.update({
+            where: { id: invite.id },
+            data: { acceptedAt: new Date() }
+          })
+
+          acceptedInvites.push(acceptedInvite)
+        }
+
+        return acceptedInvites
+      })
     }
   })
 )

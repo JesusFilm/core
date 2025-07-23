@@ -1,25 +1,69 @@
+import axios from 'axios'
 import { GraphQLError } from 'graphql'
-
-import { IntegrationType } from '.prisma/api-journeys-modern-client'
 
 import { prisma } from '../../lib/prisma'
 import { builder } from '../builder'
 
 import { IntegrationType as IntegrationTypeEnum } from './enums'
 
-// Integration Type Enum moved to ./enums/integrationType.ts
-
-// Integration Type using Prisma model - single definition
-const IntegrationRef = builder.prismaObject('Integration', {
+const IntegrationRef = builder.prismaInterface('Integration', {
   fields: (t) => ({
     id: t.exposeID('id'),
     type: t.expose('type', { type: IntegrationTypeEnum }),
-    accessId: t.exposeString('accessId', { nullable: true }),
-    accessSecretPart: t.exposeString('accessSecretPart', { nullable: true }),
-    // Relations
     team: t.relation('team')
   })
 })
+// Define interfaces for route type
+interface IntegrationGrowthSpacesRoute {
+  id: string
+  name: string
+}
+
+// Define the route object type using objectRef
+const IntegrationGrowthSpacesRoute =
+  builder.objectRef<IntegrationGrowthSpacesRoute>(
+    'IntegrationGrowthSpacesRoute'
+  )
+
+IntegrationGrowthSpacesRoute.implement({
+  fields: (t) => ({
+    id: t.exposeString('id'),
+    name: t.exposeString('name')
+  })
+})
+
+// IntegrationGrowthSpaces implementation using Prisma object
+const IntegrationGrowthSpacesRef = builder.prismaObject('Integration', {
+  interfaces: [IntegrationRef],
+  include: { team: true },
+  variant: 'IntegrationGrowthSpaces',
+  fields: (t) => ({
+    id: t.exposeID('id'),
+    type: t.expose('type', { type: IntegrationTypeEnum }),
+    accessId: t.exposeString('accessId'),
+    accessSecretPart: t.exposeString('accessSecretPart'),
+    team: t.relation('team'),
+    routes: t.field({
+      type: [IntegrationGrowthSpacesRoute],
+      resolve: async (integration) => {
+        // Mock implementation - in real scenario this would call GrowthSpaces API
+        try {
+          // Simulate API call to get routes
+          return [
+            { id: 'route1', name: 'Default Route' },
+            { id: 'route2', name: 'Welcome Route' }
+          ]
+        } catch (error) {
+          console.error('Failed to fetch GrowthSpaces routes:', error)
+          return []
+        }
+      }
+    })
+  })
+})
+
+// Export the integration types for use in other files
+export { IntegrationRef, IntegrationGrowthSpacesRef }
 
 // Input Types
 const IntegrationGrowthSpacesCreateInput = builder.inputType(
@@ -82,7 +126,7 @@ builder.queryField('integrations', (t) =>
 // Mutation: integrationGrowthSpacesCreate
 builder.mutationField('integrationGrowthSpacesCreate', (t) =>
   t.withAuth({ isAuthenticated: true }).field({
-    type: IntegrationRef,
+    type: IntegrationGrowthSpacesRef,
     args: {
       input: t.arg({ type: IntegrationGrowthSpacesCreateInput, required: true })
     },
@@ -117,6 +161,9 @@ builder.mutationField('integrationGrowthSpacesCreate', (t) =>
           accessSecretPart: input.accessSecret.slice(0, 6)
           // In full implementation:
           // accessSecretCipherText, accessSecretIv, accessSecretTag would be set
+        },
+        include: {
+          team: true
         }
       })
     }
@@ -126,7 +173,7 @@ builder.mutationField('integrationGrowthSpacesCreate', (t) =>
 // Mutation: integrationGrowthSpacesUpdate
 builder.mutationField('integrationGrowthSpacesUpdate', (t) =>
   t.withAuth({ isAuthenticated: true }).field({
-    type: IntegrationRef,
+    type: IntegrationGrowthSpacesRef,
     args: {
       id: t.arg({ type: 'ID', required: true }),
       input: t.arg({ type: IntegrationGrowthSpacesUpdateInput, required: true })
@@ -172,6 +219,9 @@ builder.mutationField('integrationGrowthSpacesUpdate', (t) =>
           accessSecretPart: input.accessSecret.slice(0, 6)
           // In full implementation:
           // accessSecretCipherText, accessSecretIv, accessSecretTag would be updated
+        },
+        include: {
+          team: true
         }
       })
     }

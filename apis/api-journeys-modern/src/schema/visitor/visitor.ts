@@ -349,36 +349,62 @@ builder.queryField('visitorsConnection', (t) =>
     type: VisitorRef,
     cursor: 'id',
     args: {
-      teamId: t.arg.id({ required: true })
+      teamId: t.arg.id({ required: false })
     },
     resolve: async (query, _parent, args, context) => {
       const { teamId } = args
       const user = context.user
 
-      // Get team with user teams for authorization
-      const team = await prisma.team.findUnique({
-        where: { id: teamId },
-        include: { userTeams: true }
+      // If teamId is provided, check access to that specific team
+      if (teamId) {
+        const team = await prisma.team.findUnique({
+          where: { id: teamId },
+          include: { userTeams: true }
+        })
+
+        if (!team) {
+          throw new GraphQLError('team not found', {
+            extensions: { code: 'NOT_FOUND' }
+          })
+        }
+
+        // Check authorization - user must be team member
+        const isTeamMember = team.userTeams.some((ut) => ut.userId === user.id)
+        if (!isTeamMember) {
+          throw new GraphQLError('user is not allowed to read team visitors', {
+            extensions: { code: 'FORBIDDEN' }
+          })
+        }
+
+        // Query visitors for the specific team
+        return await prisma.visitor.findMany({
+          ...query,
+          where: { teamId },
+          orderBy: { createdAt: 'desc' }
+        })
+      }
+
+      // If no teamId provided, return visitors from teams the user is a member of
+      const userTeams = await prisma.userTeam.findMany({
+        where: { userId: user.id },
+        select: { teamId: true }
       })
 
-      if (!team) {
-        throw new GraphQLError('team not found', {
-          extensions: { code: 'NOT_FOUND' }
+      const teamIds = userTeams.map((ut) => ut.teamId)
+
+      if (teamIds.length === 0) {
+        // User is not a member of any team
+        return await prisma.visitor.findMany({
+          ...query,
+          where: { teamId: { in: [] } }, // Return empty result
+          orderBy: { createdAt: 'desc' }
         })
       }
 
-      // Check authorization - user must be team member
-      const isTeamMember = team.userTeams.some((ut) => ut.userId === user.id)
-      if (!isTeamMember) {
-        throw new GraphQLError('user is not allowed to read team visitors', {
-          extensions: { code: 'FORBIDDEN' }
-        })
-      }
-
-      // Query visitors for the team
+      // Query visitors from all teams the user is a member of
       return await prisma.visitor.findMany({
         ...query,
-        where: { teamId },
+        where: { teamId: { in: teamIds } },
         orderBy: { createdAt: 'desc' }
       })
     }
@@ -436,7 +462,7 @@ builder.mutationField('visitorUpdateForCurrentUser', (t) =>
     type: VisitorRef,
     args: {
       input: t.arg({
-        type: VisitorUpdateForCurrentUserInput,
+        type: VisitorUpdateInput, // Changed from VisitorUpdateForCurrentUserInput
         required: true
       })
     },
@@ -456,10 +482,16 @@ builder.mutationField('visitorUpdateForCurrentUser', (t) =>
         })
       }
 
-      // Update visitor with limited fields for current user
+      // Update visitor with limited fields for current user (matching legacy API behavior)
+      // Only allow countryCode and referrer fields for current user updates
+      const allowedFields = ['countryCode', 'referrer']
+      const filteredInput = Object.fromEntries(
+        Object.entries(input).filter(([key]) => allowedFields.includes(key))
+      )
+
       return await prisma.visitor.update({
         where: { id: visitor.id },
-        data: omitBy(input, isNil)
+        data: omitBy(filteredInput, isNil)
       })
     }
   })

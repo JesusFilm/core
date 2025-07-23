@@ -1247,7 +1247,7 @@ type Mutation {
   videoCollapseEventCreate(input: VideoCollapseEventCreateInput!): VideoCollapseEvent
   videoProgressEventCreate(input: VideoProgressEventCreateInput!): VideoProgressEvent
   updateJourneysEmailPreference(input: JourneysEmailPreferenceUpdateInput!): JourneysEmailPreference
-  journeyNotificationUpdate(input: JourneyNotificationUpdateInput!): JourneyNotification!
+  journeyNotificationUpdate(input: JourneyNotificationUpdateInput!): JourneyNotification
   journeyLanguageAiDetect(input: MutationJourneyLanguageAiDetectInput!): Boolean!
   customDomainCreate(input: CustomDomainCreateInput!): CustomDomain
   customDomainUpdate(id: ID!, input: CustomDomainUpdateInput!): CustomDomain
@@ -1277,6 +1277,9 @@ type Mutation {
   userJourneyRemove(id: ID!): UserJourney
   userJourneyRemoveAll(id: ID!): [UserJourney!]
   userJourneyOpen(id: ID!): UserJourney
+  userInviteCreate(journeyId: ID!, input: UserInviteCreateInput!): UserInvite
+  userInviteRemove(id: ID!, journeyId: ID!): UserInvite
+  userInviteAcceptAll: [UserInvite!]
 }
 
 input MutationJourneyLanguageAiDetectInput {
@@ -1320,6 +1323,59 @@ type PageInfo
   hasPreviousPage: Boolean!
   startCursor: String
   endCursor: String
+}
+
+input PlausibleStatsAggregateFilter {
+  period: String
+  date: String
+  filters: String
+  interval: String
+}
+
+type PlausibleStatsAggregateResponse {
+  visitors: PlausibleStatsAggregateValue
+  visits: PlausibleStatsAggregateValue
+  pageviews: PlausibleStatsAggregateValue
+  viewsPerVisit: PlausibleStatsAggregateValue
+  bounceRate: PlausibleStatsAggregateValue
+  visitDuration: PlausibleStatsAggregateValue
+  events: PlausibleStatsAggregateValue
+  conversionRate: PlausibleStatsAggregateValue
+  timeOnPage: PlausibleStatsAggregateValue
+}
+
+type PlausibleStatsAggregateValue {
+  value: Float
+  change: Int
+}
+
+input PlausibleStatsBreakdownFilter {
+  property: String!
+  period: String
+  date: String
+  limit: Int
+  page: Int
+  filters: String
+}
+
+type PlausibleStatsResponse {
+  property: String
+  visitors: Int
+  visits: Int
+  pageviews: Int
+  viewsPerVisit: Float
+  bounceRate: Int
+  visitDuration: Int
+  events: Int
+  conversionRate: Int
+  timeOnPage: Float
+}
+
+input PlausibleStatsTimeseriesFilter {
+  period: String
+  date: String
+  filters: String
+  interval: String
 }
 
 type QrCode {
@@ -1386,6 +1442,12 @@ type Query {
   userTeams(teamId: ID!, where: UserTeamFilterInput): [UserTeam!]
   userTeam(id: ID!): UserTeam
   userTeamInvites(teamId: ID!): [UserTeamInvite!]
+  userInvites(journeyId: ID!): [UserInvite!]
+  getUserRole: UserRole
+  journeysPlausibleStatsRealtimeVisitors(id: ID!, idType: IdType): Int
+  journeysPlausibleStatsAggregate(id: ID!, idType: IdType, where: PlausibleStatsAggregateFilter!): PlausibleStatsAggregateResponse
+  journeysPlausibleStatsBreakdown(id: ID!, idType: IdType, where: PlausibleStatsBreakdownFilter!): [PlausibleStatsResponse!]
+  journeysPlausibleStatsTimeseries(id: ID!, idType: IdType, where: PlausibleStatsTimeseriesFilter!): [PlausibleStatsResponse!]
 }
 
 type QueryJourneyEventsConnection {
@@ -1475,6 +1537,10 @@ input RadioQuestionSubmissionEventCreateInput {
   stepId: String
   label: String
   value: String
+}
+
+enum Role {
+  publisher
 }
 
 type ShortLink
@@ -1696,6 +1762,7 @@ type Team {
   createdAt: DateTime
   updatedAt: DateTime
   userTeams: [UserTeam!]
+  customDomains: [CustomDomain!]
 }
 
 input TeamCreateInput {
@@ -1847,10 +1914,34 @@ enum TypographyVariant {
   overline
 }
 
+type User
+  @key(fields: "id")
+  @extends
+{
+  id: ID! @external
+}
+
 type UserAgent {
   browser: Browser
   device: Device
   os: OperatingSystem
+}
+
+type UserInvite
+  @key(fields: "id")
+{
+  id: ID
+  journeyId: ID
+  senderId: ID
+  email: String
+  acceptedAt: DateTime
+  removedAt: DateTime
+  updatedAt: DateTime
+  journey: Journey
+}
+
+input UserInviteCreateInput {
+  email: String!
 }
 
 type UserJourney {
@@ -1860,12 +1951,22 @@ type UserJourney {
   role: UserJourneyRole
   openedAt: DateTime
   journey: Journey
+  user: User
+  journeyNotification: JourneyNotification
 }
 
 enum UserJourneyRole {
   inviteRequested
   editor
   owner
+}
+
+type UserRole
+  @key(fields: "id")
+{
+  id: ID
+  userId: ID
+  roles: [Role!]
 }
 
 type UserTeam {
@@ -1876,6 +1977,8 @@ type UserTeam {
   createdAt: DateTime
   updatedAt: DateTime
   team: Team
+  user: User
+  journeyNotification(journeyId: ID!): JourneyNotification
 }
 
 input UserTeamFilterInput {

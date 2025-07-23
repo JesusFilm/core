@@ -2,13 +2,27 @@ import { GraphQLError } from 'graphql'
 
 import { JourneyNotification } from '.prisma/api-journeys-modern-client'
 
-import { Action } from '../../lib/auth/ability'
+import { Action, ability, subject } from '../../lib/auth/ability'
 import { prisma } from '../../lib/prisma'
 import { builder } from '../builder'
+import { UserRef } from '../user/user'
 
-import { canAccessJourneyNotification } from './journeyNotification.acl'
+// Define JourneyNotification object type
+const JourneyNotificationRef = builder.prismaObject('JourneyNotification', {
+  fields: (t) => ({
+    id: t.exposeID('id'),
+    userId: t.exposeID('userId'),
+    journeyId: t.exposeID('journeyId'),
+    userTeamId: t.exposeID('userTeamId', { nullable: true }),
+    userJourneyId: t.exposeID('userJourneyId', { nullable: true }),
+    visitorInteractionEmail: t.exposeBoolean('visitorInteractionEmail'),
+    journey: t.relation('journey'),
+    userTeam: t.relation('userTeam', { nullable: true }),
+    userJourney: t.relation('userJourney', { nullable: true })
+  })
+})
 
-// Input types
+// Input type for updating journey notifications
 const JourneyNotificationUpdateInput = builder.inputType(
   'JourneyNotificationUpdateInput',
   {
@@ -19,95 +33,102 @@ const JourneyNotificationUpdateInput = builder.inputType(
   }
 )
 
-// JourneyNotification object type
-const JourneyNotificationRef = builder.prismaObject('JourneyNotification', {
-  fields: (t) => ({
-    id: t.exposeID('id'),
-    userId: t.exposeID('userId'),
-    journeyId: t.exposeID('journeyId'),
-    userTeamId: t.exposeID('userTeamId', { nullable: true }),
-    userJourneyId: t.exposeID('userJourneyId', { nullable: true }),
-    visitorInteractionEmail: t.exposeBoolean('visitorInteractionEmail'),
-    journey: t.relation('journey'),
-    userTeam: t.relation('userTeam'),
-    userJourney: t.relation('userJourney')
-  })
-})
+// Helper function to check if user can manage journey notification
+function canManageJourneyNotification(
+  journeyNotification: any,
+  user: any
+): boolean {
+  return journeyNotification.userId === user.id
+}
 
-// Mutation: journeyNotificationUpdate - Update or create journey notification preferences
+// Mutation for updating journey notifications
 builder.mutationField('journeyNotificationUpdate', (t) =>
   t.withAuth({ isAuthenticated: true }).field({
     type: JourneyNotificationRef,
-    nullable: false,
     args: {
       input: t.arg({ type: JourneyNotificationUpdateInput, required: true })
     },
     resolve: async (_parent, args, context) => {
       const { input } = args
-      const { journeyId } = input
-      const userId = context.user.id
+      const { journeyId, visitorInteractionEmail } = input
+      const user = context.user
 
-      return await prisma.$transaction(async (tx) => {
-        // Fetch journey with team and userJourney data to get relationship IDs
-        const journey = await tx.journey.findUnique({
-          where: { id: journeyId },
-          include: {
-            team: { include: { userTeams: true } },
-            userJourneys: true
-          }
-        })
-
-        if (!journey) {
-          throw new GraphQLError('journey not found', {
-            extensions: { code: 'NOT_FOUND' }
-          })
+      // Get the journey with related user data for authorization
+      const journey = await prisma.journey.findUnique({
+        where: { id: journeyId },
+        include: {
+          team: { include: { userTeams: true } },
+          userJourneys: true
         }
-
-        // Find user's relationship to this journey
-        const userJourneyId = journey.userJourneys?.find(
-          (userJourney) => userJourney.userId === userId
-        )?.id
-
-        const userTeamId = journey.team?.userTeams?.find(
-          (userTeam) => userTeam.userId === userId
-        )?.id
-
-        // Create upsert input with relationship IDs
-        const upsertInput = {
-          ...input,
-          userJourneyId,
-          userTeamId
-        }
-
-        // Upsert the journey notification
-        const journeyNotification = await tx.journeyNotification.upsert({
-          where: { userId_journeyId: { userId, journeyId } },
-          update: upsertInput,
-          create: { userId, ...upsertInput },
-          include: {
-            userJourney: true,
-            userTeam: true
-          }
-        })
-
-        // Check permissions after creation/update
-        if (
-          !canAccessJourneyNotification(
-            Action.Manage,
-            journeyNotification,
-            context.user
-          )
-        ) {
-          throw new GraphQLError(
-            'user is not allowed to update journey notification',
-            {
-              extensions: { code: 'FORBIDDEN' }
-            }
-          )
-        }
-
-        return journeyNotification
       })
+
+      if (!journey) {
+        throw new GraphQLError('journey not found', {
+          extensions: { code: 'NOT_FOUND' }
+        })
+      }
+
+      // Find the user's team and journey relationships
+      const userJourney = journey.userJourneys.find(
+        (uj) => uj.userId === user.id
+      )
+      const userTeam = journey.team?.userTeams.find(
+        (ut) => ut.userId === user.id
+      )
+
+      // Check if user has access to this journey
+      if (!userJourney && !userTeam) {
+        throw new GraphQLError(
+          'user is not allowed to manage journey notifications',
+          {
+            extensions: { code: 'FORBIDDEN' }
+          }
+        )
+      }
+
+      // Prepare upsert data
+      const upsertInput = {
+        userId: user.id,
+        journeyId,
+        visitorInteractionEmail,
+        userJourneyId: userJourney?.id || null,
+        userTeamId: userTeam?.id || null
+      }
+
+      // Upsert the journey notification
+      const journeyNotification = await prisma.journeyNotification.upsert({
+        where: {
+          userId_journeyId: {
+            userId: user.id,
+            journeyId
+          }
+        },
+        create: upsertInput,
+        update: {
+          visitorInteractionEmail,
+          userJourneyId: userJourney?.id || null,
+          userTeamId: userTeam?.id || null
+        },
+        include: {
+          journey: true,
+          userTeam: true,
+          userJourney: true
+        }
+      })
+
+      // Final authorization check
+      if (!canManageJourneyNotification(journeyNotification, user)) {
+        throw new GraphQLError(
+          'user is not allowed to manage journey notification',
+          {
+            extensions: { code: 'FORBIDDEN' }
+          }
+        )
+      }
+
+      return journeyNotification
     }
   })
 )
+
+export { JourneyNotificationRef }
