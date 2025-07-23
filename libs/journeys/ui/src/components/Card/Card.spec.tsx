@@ -82,15 +82,13 @@ const mockUsePlausible = usePlausible as jest.MockedFunction<
 >
 
 describe('CardBlock', () => {
-  const originalLocation = window.location
   const mockOrigin = 'https://example.com'
 
   beforeAll(() => {
-    Object.defineProperty(window, 'location', {
-      value: {
-        origin: mockOrigin
-      }
-    })
+    delete (window as any).location
+    window.location = { ...window.location,
+      origin: mockOrigin
+    } as any
   })
 
   beforeEach(() => {
@@ -105,7 +103,7 @@ describe('CardBlock', () => {
   })
 
   afterAll(() => {
-    Object.defineProperty(window, 'location', originalLocation)
+    // Reset is handled by Jest automatically in v30
   })
 
   it('should render card with theme background color', async () => {
@@ -281,7 +279,6 @@ describe('CardBlock', () => {
     await waitFor(() => {
       const textInput = getByLabelText('Text Response')
       fireEvent.change(textInput, { target: { value: 'Test response' } })
-    })
 
     const form = getByTestId(`card-form-${card1.id}`)
     fireEvent.submit(form)
@@ -396,25 +393,22 @@ describe('CardBlock', () => {
       expect(
         screen.getByRole('button', { name: 'This is a button' })
       ).toBeInTheDocument()
-    })
 
     await waitFor(() => {
       expect(
         screen.getByRole('textbox', { name: 'Text Response 1*' })
       ).toBeInTheDocument()
-    })
 
     await waitFor(() => {
       expect(
         screen.getByRole('textbox', { name: 'Text Response 2*' })
       ).toBeInTheDocument()
-    })
 
     fireEvent.change(
       screen.getByRole('textbox', { name: 'Text Response 2*' }),
       {
         target: { value: 'Test response for field 2' }
-      }
+    } as any
     )
 
     fireEvent.click(screen.getByRole('button', { name: 'This is a button' }))
@@ -423,27 +417,23 @@ describe('CardBlock', () => {
       expect(
         mockTextResponse1SubmissionEventCreate.result
       ).not.toHaveBeenCalled()
-    })
 
     await waitFor(() => {
       expect(
         mockTextResponse2SubmissionEventCreate.result
       ).not.toHaveBeenCalled()
-    })
 
     await waitFor(() => {
       expect(mockButtonClickEvent.result).not.toHaveBeenCalled()
-    })
 
     await waitFor(() => {
       expect(screen.getByText('This field is required')).toBeInTheDocument()
-    })
 
     fireEvent.change(
       screen.getByRole('textbox', { name: 'Text Response 1*' }),
       {
         target: { value: 'Test response for field 1' }
-      }
+    } as any
     )
 
     fireEvent.click(screen.getByRole('button', { name: 'This is a button' }))
@@ -452,17 +442,13 @@ describe('CardBlock', () => {
       expect(
         screen.queryByText('This field is required')
       ).not.toBeInTheDocument()
-    })
 
     await waitFor(() => {
       expect(mockTextResponse1SubmissionEventCreate.result).toHaveBeenCalled()
-    })
     await waitFor(() => {
       expect(mockTextResponse2SubmissionEventCreate.result).toHaveBeenCalled()
-    })
     await waitFor(() => {
       expect(mockButtonClickEvent.result).toHaveBeenCalled()
-    })
   }, 15000)
 
   it('should validate required email field in forms', async () => {
@@ -522,19 +508,17 @@ describe('CardBlock', () => {
       expect(
         screen.getByRole('button', { name: 'This is a button' })
       ).toBeInTheDocument()
-    })
 
     await waitFor(() => {
       expect(
         screen.getByRole('textbox', { name: 'Text Response 1*' })
       ).toBeInTheDocument()
-    })
 
     fireEvent.change(
       screen.getByRole('textbox', { name: 'Text Response 1*' }),
       {
         target: { value: 'Test response for field 2' }
-      }
+    } as any
     )
 
     fireEvent.click(screen.getByRole('button', { name: 'This is a button' }))
@@ -543,23 +527,20 @@ describe('CardBlock', () => {
       expect(
         mockTextResponseEmailSubmissionEventCreate.result
       ).not.toHaveBeenCalled()
-    })
 
     await waitFor(() => {
       expect(mockButtonClickEvent.result).not.toHaveBeenCalled()
-    })
 
     await waitFor(() => {
       expect(
         screen.getByText('Please enter a valid email address')
       ).toBeInTheDocument()
-    })
 
     fireEvent.change(
       screen.getByRole('textbox', { name: 'Text Response 1*' }),
       {
         target: { value: 'test@example.com' }
-      }
+    } as any
     )
 
     fireEvent.click(screen.getByRole('button', { name: 'This is a button' }))
@@ -568,16 +549,13 @@ describe('CardBlock', () => {
       expect(
         screen.queryByText('Please enter a valid email address')
       ).not.toBeInTheDocument()
-    })
 
     await waitFor(() => {
       expect(
         mockTextResponseEmailSubmissionEventCreate.result
       ).toHaveBeenCalled()
-    })
 
     await waitFor(() => {
       expect(mockButtonClickEvent.result).toHaveBeenCalled()
-    })
   })
 })

@@ -31,17 +31,14 @@ describe('BibleQuotesCarouselHeader', () => {
     Object.defineProperty(global.navigator, 'share', {
       value: mockShare,
       configurable: true
-    })
     Object.defineProperty(global.navigator, 'clipboard', {
       value: mockClipboard,
       configurable: true
-    })
-    Object.defineProperty(window, 'location', {
-      value: {
+    delete (window as any).location
+    window.location = { ...window.location,
         href: 'https://watch.jesusfilm.org/easter'
       },
       writable: true
-    })
   })
 
   afterEach(() => {
@@ -49,7 +46,6 @@ describe('BibleQuotesCarouselHeader', () => {
       value: originalNavigator,
       configurable: true,
       writable: true
-    })
   })
 
   it('renders the title correctly', () => {
@@ -71,14 +67,12 @@ describe('BibleQuotesCarouselHeader', () => {
       ),
       title: expect.any(String),
       text: expect.any(String)
-    })
   })
 
   it('falls back to clipboard.writeText when navigator.share is not available', async () => {
     Object.defineProperty(global.navigator, 'share', {
       value: undefined,
       configurable: true
-    })
 
     render(<BibleQuotesCarouselHeader {...defaultProps} />)
 

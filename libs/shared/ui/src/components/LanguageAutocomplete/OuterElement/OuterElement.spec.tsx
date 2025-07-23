@@ -14,6 +14,6 @@ describe('OuterElement', () => {
 
     const element = screen.getByTestId('outer-element')
     expect(element).toHaveClass('test-class')
-    expect(element).toHaveStyle({ color: 'red' })
+    expect(element).toHaveStyle({ color: 'rgb(255, 0, 0)' })
   })
 })

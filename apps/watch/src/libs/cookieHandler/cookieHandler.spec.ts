@@ -37,12 +37,9 @@ const mockCookieSetter = () => {
 
 describe('cookieHandler', () => {
   beforeAll(() => {
-    // Mock document globally for the entire test suite
-    Object.defineProperty(global, 'document', {
-      value: mockDocument,
-      writable: true,
-      configurable: true
-    })
+    // Mock document globally for the entire test suite - Jest v30 compatible
+    delete (global as any).document
+    global.document = mockDocument as any
   })
 
   beforeEach(() => {
@@ -355,7 +352,11 @@ describe('cookieHandler', () => {
     })
 
     it('should handle document.cookie setter errors gracefully', () => {
-      // Mock document.cookie setter to throw an error
+      // Mock document.cookie setter to throw an error - Jest v30 compatible
+      const originalCookieDescriptor = Object.getOwnPropertyDescriptor(
+        document,
+        'cookie'
+      )
       Object.defineProperty(document, 'cookie', {
         set: () => {
           throw new Error('Cookie setter error')
@@ -372,11 +373,11 @@ describe('cookieHandler', () => {
       )
 
       // Reset document.cookie property for subsequent tests
-      Object.defineProperty(document, 'cookie', {
-        value: '',
-        writable: true,
-        configurable: true
-      })
+      if (originalCookieDescriptor) {
+        Object.defineProperty(document, 'cookie', originalCookieDescriptor)
+      } else {
+        delete (document as any).cookie
+      }
     })
 
     it('should handle empty string value', () => {

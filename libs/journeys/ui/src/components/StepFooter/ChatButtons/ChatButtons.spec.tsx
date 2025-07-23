@@ -74,7 +74,7 @@ describe('ChatButtons', () => {
           __typename: 'LanguageName',
           value: 'English',
           primary: true
-        }
+      } as any
       ]
     },
     description: 'my cool journey',
@@ -110,7 +110,7 @@ describe('ChatButtons', () => {
       chatOpenEventCreate: {
         __typename: 'ChatOpenEvent',
         id: chatButtons[0]?.id
-      }
+    } as any
     }
   }))
 
@@ -123,22 +123,20 @@ describe('ChatButtons', () => {
             blockId: stepBlock?.id,
             stepId: stepBlock?.id,
             value: chatButtons[0].platform
-          }
-        }
+        } as any
+      } as any
       },
       result
     }
   ]
 
-  const originalLocation = window.location
   const mockOrigin = 'https://example.com'
 
   beforeAll(() => {
-    Object.defineProperty(window, 'location', {
-      value: {
-        origin: mockOrigin
-      }
-    })
+    delete (window as any).location
+    window.location = { ...window.location,
+      origin: mockOrigin
+    } as any
   })
 
   beforeEach(() => {
@@ -146,7 +144,7 @@ describe('ChatButtons', () => {
   })
 
   afterAll(() => {
-    Object.defineProperty(window, 'location', originalLocation)
+    // Reset is handled by Jest automatically in v30
   })
 
   it('renders chat buttons', () => {
@@ -194,14 +192,11 @@ describe('ChatButtons', () => {
           event: 'footerChatButtonClick',
           blockId: 'step',
           target: 'link:https://m.me/:facebook'
-        }),
         simpleKey: keyify({
           stepId: 'step',
           event: 'footerChatButtonClick',
           blockId: 'step'
-        })
-      }
-    })
+    } as any
   })
 
   it('does not open a new window or send a mutation for admin user', async () => {
@@ -223,7 +218,6 @@ describe('ChatButtons', () => {
     await waitFor(() => {
       expect(result).not.toHaveBeenCalled()
       expect(window.open).not.toHaveBeenCalled()
-    })
   })
 
   it('displays a placeholder button when admin is true and there are no chat buttons', () => {
@@ -256,7 +250,7 @@ describe('ChatButtons', () => {
             journey: {
               ...journey,
               chatButtons: [{ ...chatButtons[0], platform: null }]
-            }
+          } as any
           }}
         >
           <ChatButtons />

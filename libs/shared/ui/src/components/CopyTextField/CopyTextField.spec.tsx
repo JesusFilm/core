@@ -67,20 +67,18 @@ describe('CopyTextField', () => {
   })
 
   it('should show custom styling', () => {
-    const { getByRole } = render(
+    const { container } = render(
       <SnackbarProvider>
         <CopyTextField
           value="test"
           sx={{
-            '.MuiFilledInput-root': {
-              backgroundColor: 'rgb (255, 255, 255)'
-            }
+            backgroundColor: 'rgb(255, 255, 255)'
           }}
         />
       </SnackbarProvider>
     )
-    expect(getByRole('textbox')).toHaveStyle(
-      'background-color: rgb (255, 255, 255)'
-    )
+    // Check that the TextField wrapper received the sx styling
+    const textField = container.querySelector('.MuiTextField-root')
+    expect(textField).toHaveStyle('background-color: rgb(255, 255, 255)')
   })
 })

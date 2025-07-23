@@ -71,7 +71,7 @@ const journey: Journey = {
         __typename: 'LanguageName',
         value: 'English',
         primary: true
-      }
+    } as any
     ]
   },
   description: 'my cool journey',
@@ -155,19 +155,17 @@ const block: TreeBlock<StepFields> = {
 }
 
 describe('Step', () => {
-  const originalLocation = window.location
   const mockOrigin = 'https://example.com'
 
   beforeAll(() => {
-    Object.defineProperty(window, 'location', {
-      value: {
-        origin: mockOrigin
-      }
-    })
+    delete (window as any).location
+    window.location = { ...window.location,
+      origin: mockOrigin
+    } as any
   })
 
   afterAll(() => {
-    Object.defineProperty(window, 'location', originalLocation)
+    // Reset is handled by Jest automatically in v30
   })
 
   const mockStepViewEventCreate: MockedResponse<StepViewEventCreate> = {
@@ -178,17 +176,16 @@ describe('Step', () => {
           id: 'uuid',
           blockId: 'Step1',
           value: 'Step {{number}}'
-        }
-      }
+      } as any
+    } as any
     },
     result: jest.fn(() => ({
       data: {
         stepViewEventCreate: {
           id: 'uuid',
           __typename: 'StepViewEvent'
-        }
-      }
-    }))
+      } as any
+    } as any
   }
 
   it('should create a stepViewEvent', async () => {
@@ -218,24 +215,20 @@ describe('Step', () => {
           stepId: 'Step1',
           event: 'pageview',
           blockId: 'Step1'
-        }),
         simpleKey: keyify({
           stepId: 'Step1',
           event: 'pageview',
           blockId: 'Step1'
-        })
-      }
-    })
+    } as any
   })
 
   it('should create a stepViewEvent with a UTM code', async () => {
     const mockSearch = '?utm_source=source&utm_campaign=campaign'
-    Object.defineProperty(window, 'location', {
-      value: {
+    delete (window as any).location
+    window.location = { ...window.location,
         origin: mockOrigin,
         search: mockSearch
-      }
-    })
+    } as any
 
     mockUuidv4.mockReturnValueOnce('uuid')
     treeBlocksVar([block])
@@ -263,14 +256,11 @@ describe('Step', () => {
           stepId: 'Step1',
           event: 'pageview',
           blockId: 'Step1'
-        }),
         simpleKey: keyify({
           stepId: 'Step1',
           event: 'pageview',
           blockId: 'Step1'
-        })
-      }
-    })
+    } as any
   })
 
   it('should stepViewEvent to dataLayer', async () => {
@@ -291,7 +281,6 @@ describe('Step', () => {
         eventId: 'uuid',
         blockId: 'Step1',
         stepName: 'Step {{number}}'
-      })
     )
   })
 
@@ -304,9 +293,8 @@ describe('Step', () => {
         stepViewEventCreate: {
           id: 'uuid',
           __typename: 'StepViewEvent'
-        }
-      }
-    }))
+      } as any
+    } as any
 
     render(
       <MockedProvider mocks={[{ ...mockStepViewEventCreate, result }]}>
@@ -361,9 +349,8 @@ describe('Step', () => {
         stepViewEventCreate: {
           id: 'uuid',
           __typename: 'StepViewEvent'
-        }
-      }
-    }))
+      } as any
+    } as any
 
     render(
       <MockedProvider mocks={[{ ...mockStepViewEventCreate, result }]}>

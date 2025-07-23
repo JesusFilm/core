@@ -141,8 +141,8 @@ const activeBlock: TreeBlock<StepBlock> = {
           settings: {
             __typename: 'TypographyBlockSettings',
             color: null
-          }
-        }
+        } as any
+      } as any
       ]
     }
   ]
@@ -153,25 +153,22 @@ const journey = {
 } as unknown as Journey
 
 describe('Button', () => {
-  const originalLocation = window.location
   const mockOrigin = 'https://example.com'
 
   beforeAll(() => {
-    Object.defineProperty(window, 'location', {
-      value: {
-        origin: mockOrigin
-      }
-    })
+    delete (window as any).location
+    window.location = { ...window.location,
+      origin: mockOrigin
+    } as any
   })
 
   afterAll(() => {
-    Object.defineProperty(window, 'location', originalLocation)
+    // Reset is handled by Jest automatically in v30
   })
 
   describe('form validation handling', () => {
     beforeEach(() => {
       jest.clearAllMocks()
-    })
 
     const submitButtonMock = {
       ...block,
@@ -191,8 +188,8 @@ describe('Button', () => {
             value: 'Submit Form',
             action: undefined,
             actionValue: undefined
-          }
-        }
+        } as any
+      } as any
       },
       result: jest.fn(() => ({
         data: {
@@ -201,9 +198,8 @@ describe('Button', () => {
             __typename: 'ButtonClickEvent',
             action: undefined,
             actionValue: undefined
-          }
-        }
-      }))
+        } as any
+      } as any
     }
 
     it('should not submit form on empty form', async () => {
@@ -218,7 +214,7 @@ describe('Button', () => {
         values: { field1: '', field2: '' },
         validateForm: validateFormMock,
         handleSubmit: handleSubmitMock
-      }
+    } as any
 
       const useFormikContextMock = useFormikContext as jest.Mock
       useFormikContextMock.mockReturnValue(formikContextMock)
@@ -237,14 +233,11 @@ describe('Button', () => {
         expect(validateFormMock).toHaveBeenCalled()
         expect(mockButtonClickEvent.result).toHaveBeenCalled()
         expect(handleSubmitMock).not.toHaveBeenCalled()
-      })
-    })
 
     it('should prevent handleAction when validaton fails', async () => {
       mockUuidv4.mockReturnValueOnce('uuid')
       const validateFormMock = jest.fn().mockResolvedValue({
         field1: 'Error'
-      })
       const handleSubmitMock = jest.fn()
 
       blockHistoryVar([activeBlock])
@@ -254,7 +247,7 @@ describe('Button', () => {
         values: { field1: 'asd', field2: '' },
         validateForm: validateFormMock,
         handleSubmit: handleSubmitMock
-      }
+    } as any
 
       const useFormikContextMock = useFormikContext as jest.Mock
       useFormikContextMock.mockReturnValue(formikContextMock)
@@ -273,8 +266,6 @@ describe('Button', () => {
         expect(validateFormMock).toHaveBeenCalled()
         expect(mockButtonClickEvent.result).not.toHaveBeenCalled()
         expect(handleAction).not.toHaveBeenCalled()
-      })
-    })
 
     it('should create button click event if form is valid and not empty', async () => {
       mockUuidv4.mockReturnValueOnce('uuid')
@@ -288,7 +279,7 @@ describe('Button', () => {
         values: { field1: 'asd', field2: '' },
         validateForm: validateFormMock,
         handleSubmit: handleSubmitMock
-      }
+    } as any
 
       const useFormikContextMock = useFormikContext as jest.Mock
       useFormikContextMock.mockReturnValue(formikContextMock)
@@ -308,8 +299,6 @@ describe('Button', () => {
         expect(validateFormMock).toHaveBeenCalled()
         expect(mockButtonClickEvent.result).toHaveBeenCalled()
         expect(handleAction).toHaveBeenCalled()
-      })
-    })
   })
 
   it('should create a buttonClickEvent onClick', async () => {
@@ -338,9 +327,8 @@ describe('Button', () => {
           id: 'uuid',
           action: action.__typename,
           actionValue: action.url
-        }
-      }
-    }))
+      } as any
+    } as any
 
     render(
       <MockedProvider
@@ -357,11 +345,11 @@ describe('Button', () => {
                   value: buttonWithAction.label,
                   action: action.__typename,
                   actionValue: action.url
-                }
-              }
+              } as any
+            } as any
             },
             result
-          }
+        } as any
         ]}
       >
         <JourneyProvider value={{ journey }}>
@@ -386,14 +374,11 @@ describe('Button', () => {
           event: 'buttonClick',
           blockId: 'button',
           target: action
-        }),
         simpleKey: keyify({
           stepId: 'step.id',
           event: 'buttonClick',
           blockId: 'button'
-        })
-      }
-    })
+    } as any
   })
 
   it('should add button_click event to dataLayer', async () => {
@@ -419,7 +404,7 @@ describe('Button', () => {
           fullscreen: false,
           backdropBlur: null,
           children: []
-        }
+      } as any
       ]
     }
     blockHistoryVar([activeBlock])
@@ -440,8 +425,8 @@ describe('Button', () => {
                   value: block.label,
                   action: undefined,
                   actionValue: undefined
-                }
-              }
+              } as any
+            } as any
             },
             result: {
               data: {
@@ -450,10 +435,10 @@ describe('Button', () => {
                   id: 'uuid',
                   action: undefined,
                   actionValue: undefined
-                }
-              }
-            }
-          }
+              } as any
+            } as any
+          } as any
+        } as any
         ]}
       >
         <JourneyProvider>
@@ -468,7 +453,6 @@ describe('Button', () => {
         eventId: 'uuid',
         blockId: 'button',
         stepName: 'Step {{number}}'
-      })
     )
   })
 
@@ -505,8 +489,8 @@ describe('Button', () => {
                   value: buttonBlock.label,
                   action: action.__typename,
                   actionValue: action.url
-                }
-              }
+              } as any
+            } as any
             },
             result: {
               data: {
@@ -515,10 +499,10 @@ describe('Button', () => {
                   id: 'uuid',
                   action: action.__typename,
                   actionValue: action.url
-                }
-              }
-            }
-          }
+              } as any
+            } as any
+          } as any
+        } as any
         ]}
       >
         <JourneyProvider>
@@ -537,7 +521,6 @@ describe('Button', () => {
         buttonLabel: 'This is a button',
         outboundActionType: GoalType.Bible,
         outboundActionValue: 'https://bible.com'
-      })
     )
   })
 
@@ -565,9 +548,8 @@ describe('Button', () => {
         chatOpenEventCreate: {
           __typename: 'ChatOpenEvent',
           id: 'uuid'
-        }
-      }
-    }))
+      } as any
+    } as any
 
     render(
       <MockedProvider
@@ -581,11 +563,11 @@ describe('Button', () => {
                   blockId: 'button',
                   stepId: 'step.id',
                   value: MessagePlatform.facebook
-                }
-              }
+              } as any
+            } as any
             },
             result
-          }
+        } as any
         ]}
       >
         <JourneyProvider value={{ journey }}>
@@ -607,14 +589,11 @@ describe('Button', () => {
           event: 'chatButtonClick',
           blockId: 'button',
           target: action
-        }),
         simpleKey: keyify({
           stepId: 'step.id',
           event: 'chatButtonClick',
           blockId: 'button'
-        })
-      }
-    })
+    } as any
   })
 
   it('should render the button successfully', () => {
@@ -674,7 +653,7 @@ describe('Button', () => {
           iconColor: null,
           iconSize: IconSize.md,
           children: []
-        }
+      } as any
       ]
     }
     render(
@@ -704,7 +683,7 @@ describe('Button', () => {
           iconColor: IconColor.primary,
           iconSize: IconSize.md,
           children: []
-        }
+      } as any
       ]
     }
     render(
@@ -738,7 +717,6 @@ describe('Button', () => {
     expect(handleAction).toHaveBeenCalledWith(
       expect.objectContaining({
         push: expect.any(Function)
-      }),
       {
         __typename: 'NavigateToBlockAction',
         parentBlockId: block.id,
@@ -771,7 +749,6 @@ describe('Button', () => {
       outlineColor: '#C52D3A',
       outlineOffset: '5px',
       zIndex: '1'
-    })
   })
 
   it('should not show red outline when editableLabel is not provided', () => {
@@ -787,7 +764,6 @@ describe('Button', () => {
       outlineColor: 'transparent',
       outlineOffset: '5px',
       zIndex: '0'
-    })
   })
 
   it('should apply left alignment styles correctly', () => {
@@ -796,7 +772,7 @@ describe('Button', () => {
       settings: {
         __typename: 'ButtonBlockSettings' as const,
         alignment: ButtonAlignment.left
-      }
+    } as any
     }
 
     render(
@@ -809,13 +785,11 @@ describe('Button', () => {
     expect(buttonContainer).toHaveStyle({
       display: 'flex',
       justifyContent: 'flex-start'
-    })
 
     const button = screen.getByRole('button')
     expect(button).toHaveStyle({
       width: 'fit-content',
       maxWidth: '75%'
-    })
   })
 
   it('should default to justify alignment when no alignment is specified', () => {
@@ -834,13 +808,11 @@ describe('Button', () => {
     expect(buttonContainer).toHaveStyle({
       display: 'flex',
       justifyContent: 'space-evenly'
-    })
 
     const button = screen.getByRole('button')
     expect(button).toHaveStyle({
       width: '100%',
       maxWidth: '100%'
-    })
   })
 
   describe('button label rendering', () => {
@@ -851,49 +823,45 @@ describe('Button', () => {
         </MockedProvider>
       )
       expect(screen.getByRole('button')).toHaveTextContent('Custom Label')
-    })
 
     it('should display "Submit" when submitEnabled is true and no label is provided', () => {
       const submitButton = {
         ...block,
         label: '',
         submitEnabled: true
-      }
+    } as any
       render(
         <MockedProvider>
           <Button {...submitButton} />
         </MockedProvider>
       )
       expect(screen.getByRole('button')).toHaveTextContent('Submit')
-    })
 
     it('should display "Button" when submitEnabled is false and no label is provided', () => {
       const regularButton = {
         ...block,
         label: '',
         submitEnabled: false
-      }
+    } as any
       render(
         <MockedProvider>
           <Button {...regularButton} />
         </MockedProvider>
       )
       expect(screen.getByRole('button')).toHaveTextContent('Button')
-    })
 
     it('should prioritize custom label over submitEnabled status', () => {
       const buttonWithLabelAndSubmitEnabled = {
         ...block,
         label: 'Custom Label',
         submitEnabled: true
-      }
+    } as any
       render(
         <MockedProvider>
           <Button {...buttonWithLabelAndSubmitEnabled} />
         </MockedProvider>
       )
       expect(screen.getByRole('button')).toHaveTextContent('Custom Label')
-    })
 
     it('should display editable label component when provided', () => {
       const EditableLabelComponent = () => (
@@ -904,7 +872,7 @@ describe('Button', () => {
         ...block,
         label: 'Regular Label',
         editableLabel: <EditableLabelComponent />
-      }
+    } as any
 
       render(
         <MockedProvider>
@@ -917,7 +885,6 @@ describe('Button', () => {
         'Editable Label'
       )
       expect(screen.queryByText('Regular Label')).not.toBeInTheDocument()
-    })
   })
 
   it('should submit form when submitEnabled is true', () => {

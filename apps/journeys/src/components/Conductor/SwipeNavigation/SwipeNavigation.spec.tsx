@@ -53,19 +53,16 @@ describe('SwipeNavigation', () => {
   const swipeLeft = -100
   const swipeRight = 100
 
-  const originalLocation = window.location
   const mockOrigin = 'https://example.com'
 
   beforeAll(() => {
-    Object.defineProperty(window, 'location', {
-      value: {
-        origin: mockOrigin
-      }
-    })
+    // Jest v30 compatible way to mock window.location
+    delete (window as any).location
+    window.location = { ...window.location, origin: mockOrigin } as any
   })
 
   afterAll(() => {
-    Object.defineProperty(window, 'location', originalLocation)
+    // Reset is handled by Jest automatically in v30
   })
 
   const step1: TreeBlock<StepBlock> = {

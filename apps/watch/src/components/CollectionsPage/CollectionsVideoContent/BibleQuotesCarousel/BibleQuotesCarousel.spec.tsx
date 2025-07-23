@@ -57,13 +57,12 @@ describe('BibleQuotesCarousel', () => {
       configurable: true
     })
 
-    // Mock window.location
-    Object.defineProperty(window, 'location', {
-      value: {
-        href: 'https://watch.jesusfilm.org/easter'
-      },
-      writable: true
-    })
+    // Mock window.location - Jest v30 compatible
+    delete (window as any).location
+    window.location = {
+      ...window.location,
+      href: 'https://watch.jesusfilm.org/easter'
+    } as any
   })
 
   afterEach(() => {

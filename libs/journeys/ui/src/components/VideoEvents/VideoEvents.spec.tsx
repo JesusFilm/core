@@ -54,15 +54,13 @@ const mockUsePlausible = usePlausible as jest.MockedFunction<
 
 describe('VideoEvents', () => {
   let props: VideoEventsProps
-  const originalLocation = window.location
   const mockOrigin = 'https://example.com'
 
   beforeAll(() => {
-    Object.defineProperty(window, 'location', {
-      value: {
-        origin: mockOrigin
-      }
-    })
+    delete (window as any).location
+    window.location = { ...window.location,
+      origin: mockOrigin
+    } as any
   })
 
   beforeEach(() => {
@@ -81,8 +79,7 @@ describe('VideoEvents', () => {
             seekBar: true
           },
           fullscreenToggle: true
-        }
-      }),
+      } as any
       blockId: 'video0.id',
       startAt: 0,
       endAt: 100,
@@ -98,7 +95,7 @@ describe('VideoEvents', () => {
   })
 
   afterAll(() => {
-    Object.defineProperty(window, 'location', originalLocation)
+    // Reset is handled by Jest automatically in v30
   })
 
   const activeBlock: TreeBlock<StepBlock> = {
@@ -134,9 +131,8 @@ describe('VideoEvents', () => {
         videoStartEventCreate: {
           id: 'uuid',
           __typename: 'VideoStartEvent'
-        }
-      }
-    }))
+      } as any
+    } as any
 
     render(
       <MockedProvider
@@ -148,11 +144,11 @@ describe('VideoEvents', () => {
                 input: {
                   ...input,
                   position: 0
-                }
-              }
+              } as any
+            } as any
             },
             result
-          }
+        } as any
         ]}
       >
         <JourneyProvider value={{ journey }}>
@@ -163,7 +159,6 @@ describe('VideoEvents', () => {
     act(() => {
       props.player.currentTime(0)
       props.player.trigger('timeupdate')
-    })
 
     await waitFor(() => expect(result).toHaveBeenCalled())
     expect(mockPlausible).toHaveBeenCalledWith('videoStart', {
@@ -179,14 +174,11 @@ describe('VideoEvents', () => {
           stepId: activeBlock.id,
           event: 'videoStart',
           blockId: props.blockId
-        }),
         simpleKey: keyify({
           stepId: activeBlock.id,
           event: 'videoStart',
           blockId: props.blockId
-        })
-      }
-    })
+    } as any
   })
 
   it('should add start event to dataLayer', async () => {
@@ -201,18 +193,18 @@ describe('VideoEvents', () => {
                 input: {
                   ...input,
                   position: 0
-                }
-              }
+              } as any
+            } as any
             },
             result: {
               data: {
                 videoStartEventCreate: {
                   id: 'uuid',
                   __typename: 'VideoStartEvent'
-                }
-              }
-            }
-          }
+              } as any
+            } as any
+          } as any
+        } as any
         ]}
       >
         <VideoEvents {...props} />
@@ -221,7 +213,6 @@ describe('VideoEvents', () => {
     act(() => {
       props.player.currentTime(0)
       props.player.trigger('timeupdate')
-    })
 
     await waitFor(() =>
       expect(mockedSendGTMEvent).toHaveBeenCalledWith({
@@ -231,7 +222,6 @@ describe('VideoEvents', () => {
         videoPosition: 0,
         videoTitle: 'video.title',
         videoId: 'video.id'
-      })
     )
   })
 
@@ -244,9 +234,8 @@ describe('VideoEvents', () => {
         videoPlayEventCreate: {
           id: 'uuid',
           __typename: 'VideoPlayEvent'
-        }
-      }
-    }))
+      } as any
+    } as any
 
     render(
       <MockedProvider
@@ -258,11 +247,11 @@ describe('VideoEvents', () => {
                 input: {
                   ...input,
                   position: 0.12
-                }
-              }
+              } as any
+            } as any
             },
             result
-          }
+        } as any
         ]}
       >
         <JourneyProvider value={{ journey }}>
@@ -273,7 +262,6 @@ describe('VideoEvents', () => {
     act(() => {
       props.player.currentTime(0.12)
       props.player.trigger('play')
-    })
     await waitFor(() => expect(result).toHaveBeenCalled())
     expect(mockPlausible).toHaveBeenCalledWith('videoPlay', {
       u: `${mockOrigin}/journey.id/step.id`,
@@ -288,14 +276,11 @@ describe('VideoEvents', () => {
           stepId: activeBlock.id,
           event: 'videoPlay',
           blockId: props.blockId
-        }),
         simpleKey: keyify({
           stepId: activeBlock.id,
           event: 'videoPlay',
           blockId: props.blockId
-        })
-      }
-    })
+    } as any
   })
 
   it('should add play event to dataLayer', async () => {
@@ -310,18 +295,18 @@ describe('VideoEvents', () => {
                 input: {
                   ...input,
                   position: 0.12
-                }
-              }
+              } as any
+            } as any
             },
             result: {
               data: {
                 videoPlayEventCreate: {
                   id: 'uuid',
                   __typename: 'VideoPlayEvent'
-                }
-              }
-            }
-          }
+              } as any
+            } as any
+          } as any
+        } as any
         ]}
       >
         <VideoEvents {...props} />
@@ -330,7 +315,6 @@ describe('VideoEvents', () => {
     act(() => {
       props.player.currentTime(0.12)
       props.player.trigger('play')
-    })
     await waitFor(() =>
       expect(mockedSendGTMEvent).toHaveBeenCalledWith({
         event: 'video_play',
@@ -339,7 +323,6 @@ describe('VideoEvents', () => {
         videoPosition: 0.12,
         videoTitle: 'video.title',
         videoId: 'video.id'
-      })
     )
   })
 
@@ -352,9 +335,8 @@ describe('VideoEvents', () => {
         videoPauseEventCreate: {
           id: 'uuid',
           __typename: 'VideoPauseEvent'
-        }
-      }
-    }))
+      } as any
+    } as any
 
     render(
       <MockedProvider
@@ -366,11 +348,11 @@ describe('VideoEvents', () => {
                 input: {
                   ...input,
                   position: 0.34
-                }
-              }
+              } as any
+            } as any
             },
             result
-          }
+        } as any
         ]}
       >
         <JourneyProvider value={{ journey }}>
@@ -381,7 +363,6 @@ describe('VideoEvents', () => {
     act(() => {
       props.player.currentTime(0.34)
       props.player.trigger('pause')
-    })
     await waitFor(() => expect(result).toHaveBeenCalled())
     expect(mockPlausible).toHaveBeenCalledWith('videoPause', {
       u: `${mockOrigin}/journey.id/step.id`,
@@ -396,14 +377,11 @@ describe('VideoEvents', () => {
           stepId: activeBlock.id,
           event: 'videoPause',
           blockId: props.blockId
-        }),
         simpleKey: keyify({
           stepId: activeBlock.id,
           event: 'videoPause',
           blockId: props.blockId
-        })
-      }
-    })
+    } as any
   })
 
   it('should add pause event to dataLayer', async () => {
@@ -418,18 +396,18 @@ describe('VideoEvents', () => {
                 input: {
                   ...input,
                   position: 0.34
-                }
-              }
+              } as any
+            } as any
             },
             result: {
               data: {
                 videoPauseEventCreate: {
                   id: 'uuid',
                   __typename: 'VideoPauseEvent'
-                }
-              }
-            }
-          }
+              } as any
+            } as any
+          } as any
+        } as any
         ]}
       >
         <VideoEvents {...props} />
@@ -438,7 +416,6 @@ describe('VideoEvents', () => {
     act(() => {
       props.player.currentTime(0.34)
       props.player.trigger('pause')
-    })
     await waitFor(() =>
       expect(mockedSendGTMEvent).toHaveBeenCalledWith({
         event: 'video_pause',
@@ -447,7 +424,6 @@ describe('VideoEvents', () => {
         videoPosition: 0.34,
         videoTitle: 'video.title',
         videoId: 'video.id'
-      })
     )
   })
 
@@ -460,9 +436,8 @@ describe('VideoEvents', () => {
         videoExpandEventCreate: {
           id: 'uuid',
           __typename: 'VideoExpandEvent'
-        }
-      }
-    }))
+      } as any
+    } as any
 
     render(
       <MockedProvider
@@ -474,11 +449,11 @@ describe('VideoEvents', () => {
                 input: {
                   ...input,
                   position: 0.56
-                }
-              }
+              } as any
+            } as any
             },
             result
-          }
+        } as any
         ]}
       >
         <JourneyProvider value={{ journey }}>
@@ -489,7 +464,6 @@ describe('VideoEvents', () => {
     act(() => {
       props.player.currentTime(0.56)
       props.player.enterFullWindow()
-    })
     await waitFor(() => expect(result).toHaveBeenCalled())
     expect(mockPlausible).toHaveBeenCalledWith('videoExpand', {
       u: `${mockOrigin}/journey.id/step.id`,
@@ -504,14 +478,11 @@ describe('VideoEvents', () => {
           stepId: activeBlock.id,
           event: 'videoExpand',
           blockId: props.blockId
-        }),
         simpleKey: keyify({
           stepId: activeBlock.id,
           event: 'videoExpand',
           blockId: props.blockId
-        })
-      }
-    })
+    } as any
   })
 
   it('should add expand event to dataLayer', async () => {
@@ -526,18 +497,18 @@ describe('VideoEvents', () => {
                 input: {
                   ...input,
                   position: 0.56
-                }
-              }
+              } as any
+            } as any
             },
             result: {
               data: {
                 videoExpandEventCreate: {
                   id: 'uuid',
                   __typename: 'VideoExpandEvent'
-                }
-              }
-            }
-          }
+              } as any
+            } as any
+          } as any
+        } as any
         ]}
       >
         <VideoEvents {...props} />
@@ -546,7 +517,6 @@ describe('VideoEvents', () => {
     act(() => {
       props.player.currentTime(0.56)
       props.player.enterFullWindow()
-    })
     await waitFor(() =>
       expect(mockedSendGTMEvent).toHaveBeenCalledWith({
         event: 'video_expand',
@@ -555,7 +525,6 @@ describe('VideoEvents', () => {
         videoPosition: 0.56,
         videoTitle: 'video.title',
         videoId: 'video.id'
-      })
     )
   })
 
@@ -568,9 +537,8 @@ describe('VideoEvents', () => {
         videoCollapseEventCreate: {
           id: 'uuid',
           __typename: 'VideoCollapseEvent'
-        }
-      }
-    }))
+      } as any
+    } as any
 
     render(
       <MockedProvider
@@ -582,17 +550,17 @@ describe('VideoEvents', () => {
                 input: {
                   ...input,
                   position: 0.78
-                }
-              }
+              } as any
+            } as any
             },
             result: {
               data: {
                 videoExpandEventCreate: {
                   id: 'uuid',
                   __typename: 'VideoExpandEvent'
-                }
-              }
-            }
+              } as any
+            } as any
+          } as any
           },
           {
             request: {
@@ -601,11 +569,11 @@ describe('VideoEvents', () => {
                 input: {
                   ...input,
                   position: 0.78
-                }
-              }
+              } as any
+            } as any
             },
             result
-          }
+        } as any
         ]}
       >
         <JourneyProvider value={{ journey }}>
@@ -617,7 +585,6 @@ describe('VideoEvents', () => {
       props.player.currentTime(0.78)
       props.player.enterFullWindow()
       void props.player.exitFullscreen()
-    })
     await waitFor(() => expect(result).toHaveBeenCalled())
     expect(mockPlausible).toHaveBeenCalledWith('videoCollapse', {
       u: `${mockOrigin}/journey.id/step.id`,
@@ -632,14 +599,11 @@ describe('VideoEvents', () => {
           stepId: activeBlock.id,
           event: 'videoCollapse',
           blockId: props.blockId
-        }),
         simpleKey: keyify({
           stepId: activeBlock.id,
           event: 'videoCollapse',
           blockId: props.blockId
-        })
-      }
-    })
+    } as any
   })
 
   it('should add collapse event to dataLayer', async () => {
@@ -654,17 +618,17 @@ describe('VideoEvents', () => {
                 input: {
                   ...input,
                   position: 0.78
-                }
-              }
+              } as any
+            } as any
             },
             result: {
               data: {
                 videoExpandEventCreate: {
                   id: 'uuid',
                   __typename: 'VideoExpandEvent'
-                }
-              }
-            }
+              } as any
+            } as any
+          } as any
           },
           {
             request: {
@@ -673,18 +637,18 @@ describe('VideoEvents', () => {
                 input: {
                   ...input,
                   position: 0.78
-                }
-              }
+              } as any
+            } as any
             },
             result: {
               data: {
                 videoCollapseEventCreate: {
                   id: 'uuid',
                   __typename: 'VideoCollapseEvent'
-                }
-              }
-            }
-          }
+              } as any
+            } as any
+          } as any
+        } as any
         ]}
       >
         <VideoEvents {...props} />
@@ -694,7 +658,6 @@ describe('VideoEvents', () => {
       props.player.currentTime(0.78)
       props.player.enterFullWindow()
       void props.player.exitFullscreen()
-    })
     await waitFor(() =>
       expect(mockedSendGTMEvent).toHaveBeenCalledWith({
         event: 'video_collapse',
@@ -703,7 +666,6 @@ describe('VideoEvents', () => {
         videoPosition: 0.78,
         videoTitle: 'video.title',
         videoId: 'video.id'
-      })
     )
   })
 
@@ -716,45 +678,40 @@ describe('VideoEvents', () => {
         videoStartEventCreate: {
           id: 'uuid',
           __typename: 'VideoStartEvent'
-        }
-      }
-    }))
+      } as any
+    } as any
 
     const resultOne = jest.fn(() => ({
       data: {
         videoProgressEventCreate: {
           id: 'uuid',
           __typename: 'VideoProgressEvent'
-        }
-      }
-    }))
+      } as any
+    } as any
 
     const resultTwo = jest.fn(() => ({
       data: {
         videoProgressEventCreate: {
           id: 'uuid',
           __typename: 'VideoProgressEvent'
-        }
-      }
-    }))
+      } as any
+    } as any
 
     const resultThree = jest.fn(() => ({
       data: {
         videoProgressEventCreate: {
           id: 'uuid',
           __typename: 'VideoProgressEvent'
-        }
-      }
-    }))
+      } as any
+    } as any
 
     const resultComplete = jest.fn(() => ({
       data: {
         videoCompleteEventCreate: {
           id: 'uuid',
           __typename: 'VideoCompleteEvent'
-        }
-      }
-    }))
+      } as any
+    } as any
 
     const action = {
       __typename: 'NavigateToBlockAction',
@@ -773,8 +730,8 @@ describe('VideoEvents', () => {
                 input: {
                   ...input,
                   position: 0
-                }
-              }
+              } as any
+            } as any
             },
             result: resultStart
           },
@@ -786,8 +743,8 @@ describe('VideoEvents', () => {
                   ...input,
                   position: 25,
                   progress: 25
-                }
-              }
+              } as any
+            } as any
             },
             result: resultOne
           },
@@ -799,8 +756,8 @@ describe('VideoEvents', () => {
                   ...input,
                   position: 50,
                   progress: 50
-                }
-              }
+              } as any
+            } as any
             },
             result: resultTwo
           },
@@ -812,8 +769,8 @@ describe('VideoEvents', () => {
                   ...input,
                   position: 75,
                   progress: 75
-                }
-              }
+              } as any
+            } as any
             },
             result: resultThree
           },
@@ -824,11 +781,11 @@ describe('VideoEvents', () => {
                 input: {
                   ...input,
                   position: 102
-                }
-              }
+              } as any
+            } as any
             },
             result: resultComplete
-          }
+        } as any
         ]}
       >
         <JourneyProvider value={{ journey }}>
@@ -840,7 +797,6 @@ describe('VideoEvents', () => {
     act(() => {
       props.player.currentTime(0)
       props.player.trigger('timeupdate')
-    })
     await waitFor(() => expect(resultStart).toHaveBeenCalled())
     expect(mockPlausible).toHaveBeenCalledWith('videoStart', {
       u: `${mockOrigin}/journey.id/step.id`,
@@ -855,19 +811,15 @@ describe('VideoEvents', () => {
           stepId: activeBlock.id,
           event: 'videoStart',
           blockId: props.blockId
-        }),
         simpleKey: keyify({
           stepId: activeBlock.id,
           event: 'videoStart',
           blockId: props.blockId
-        })
-      }
-    })
+    } as any
 
     act(() => {
       props.player.currentTime(25.1)
       props.player.trigger('timeupdate')
-    })
     await waitFor(() => expect(resultOne).toHaveBeenCalled())
     expect(mockPlausible).toHaveBeenCalledWith('videoProgress25', {
       u: `${mockOrigin}/journey.id/step.id`,
@@ -883,19 +835,15 @@ describe('VideoEvents', () => {
           stepId: activeBlock.id,
           event: 'videoProgress25',
           blockId: props.blockId
-        }),
         simpleKey: keyify({
           stepId: activeBlock.id,
           event: 'videoProgress25',
           blockId: props.blockId
-        })
-      }
-    })
+    } as any
 
     act(() => {
       props.player.currentTime(50.2)
       props.player.trigger('timeupdate')
-    })
     await waitFor(() => expect(resultTwo).toHaveBeenCalled())
     expect(mockPlausible).toHaveBeenCalledWith('videoProgress50', {
       u: `${mockOrigin}/journey.id/step.id`,
@@ -911,19 +859,15 @@ describe('VideoEvents', () => {
           stepId: activeBlock.id,
           event: 'videoProgress50',
           blockId: props.blockId
-        }),
         simpleKey: keyify({
           stepId: activeBlock.id,
           event: 'videoProgress50',
           blockId: props.blockId
-        })
-      }
-    })
+    } as any
 
     act(() => {
       props.player.currentTime(75.3)
       props.player.trigger('timeupdate')
-    })
     await waitFor(() => expect(resultThree).toHaveBeenCalled())
     expect(mockPlausible).toHaveBeenCalledWith('videoProgress75', {
       u: `${mockOrigin}/journey.id/step.id`,
@@ -939,19 +883,15 @@ describe('VideoEvents', () => {
           stepId: activeBlock.id,
           event: 'videoProgress75',
           blockId: props.blockId
-        }),
         simpleKey: keyify({
           stepId: activeBlock.id,
           event: 'videoProgress75',
           blockId: props.blockId
-        })
-      }
-    })
+    } as any
 
     act(() => {
       props.player.currentTime(100)
       props.player.trigger('timeupdate')
-    })
   })
 
   it('should add progress event and complete event to dataLayer', async () => {
@@ -966,17 +906,17 @@ describe('VideoEvents', () => {
                 input: {
                   ...input,
                   position: 0
-                }
-              }
+              } as any
+            } as any
             },
             result: {
               data: {
                 videoStartEventCreate: {
                   id: 'uuid',
                   __typename: 'VideoStartEvent'
-                }
-              }
-            }
+              } as any
+            } as any
+          } as any
           },
           {
             request: {
@@ -986,17 +926,17 @@ describe('VideoEvents', () => {
                   ...input,
                   position: 25,
                   progress: 25
-                }
-              }
+              } as any
+            } as any
             },
             result: {
               data: {
                 videoProgressEventCreate: {
                   id: 'uuid',
                   __typename: 'VideoProgressEvent'
-                }
-              }
-            }
+              } as any
+            } as any
+          } as any
           },
           {
             request: {
@@ -1006,17 +946,17 @@ describe('VideoEvents', () => {
                   ...input,
                   position: 50,
                   progress: 50
-                }
-              }
+              } as any
+            } as any
             },
             result: {
               data: {
                 videoProgressEventCreate: {
                   id: 'uuid',
                   __typename: 'VideoProgressEvent'
-                }
-              }
-            }
+              } as any
+            } as any
+          } as any
           },
           {
             request: {
@@ -1026,17 +966,17 @@ describe('VideoEvents', () => {
                   ...input,
                   position: 75,
                   progress: 75
-                }
-              }
+              } as any
+            } as any
             },
             result: {
               data: {
                 videoProgressEventCreate: {
                   id: 'uuid',
                   __typename: 'VideoProgressEvent'
-                }
-              }
-            }
+              } as any
+            } as any
+          } as any
           },
           {
             request: {
@@ -1045,18 +985,18 @@ describe('VideoEvents', () => {
                 input: {
                   ...input,
                   position: 102
-                }
-              }
+              } as any
+            } as any
             },
             result: {
               data: {
                 videoCompleteEventCreate: {
                   id: 'uuid',
                   __typename: 'VideoCompleteEvent'
-                }
-              }
-            }
-          }
+              } as any
+            } as any
+          } as any
+        } as any
         ]}
       >
         <VideoEvents {...props} />
@@ -1066,7 +1006,6 @@ describe('VideoEvents', () => {
     act(() => {
       props.player.currentTime(0)
       props.player.trigger('timeupdate')
-    })
     await waitFor(() =>
       expect(mockedSendGTMEvent).toHaveBeenCalledWith({
         event: 'video_start',
@@ -1075,13 +1014,11 @@ describe('VideoEvents', () => {
         videoPosition: 0,
         videoTitle: 'video.title',
         videoId: 'video.id'
-      })
     )
 
     act(() => {
       props.player.currentTime(25.1)
       props.player.trigger('timeupdate')
-    })
     await waitFor(() =>
       expect(mockedSendGTMEvent).toHaveBeenCalledWith({
         event: 'video_progress',
@@ -1091,13 +1028,11 @@ describe('VideoEvents', () => {
         videoProgress: 25,
         videoTitle: 'video.title',
         videoId: 'video.id'
-      })
     )
 
     act(() => {
       props.player.currentTime(50.2)
       props.player.trigger('timeupdate')
-    })
     await waitFor(() =>
       expect(mockedSendGTMEvent).toHaveBeenCalledWith({
         event: 'video_progress',
@@ -1107,13 +1042,11 @@ describe('VideoEvents', () => {
         videoProgress: 50,
         videoTitle: 'video.title',
         videoId: 'video.id'
-      })
     )
 
     act(() => {
       props.player.currentTime(75.3)
       props.player.trigger('timeupdate')
-    })
     await waitFor(() =>
       expect(mockedSendGTMEvent).toHaveBeenCalledWith({
         event: 'video_progress',
@@ -1123,13 +1056,11 @@ describe('VideoEvents', () => {
         videoProgress: 75,
         videoTitle: 'video.title',
         videoId: 'video.id'
-      })
     )
 
     act(() => {
       props.player.currentTime(100)
       props.player.trigger('timeupdate')
-    })
     await waitFor(() =>
       expect(mockedSendGTMEvent).toHaveBeenCalledWith({
         event: 'video_complete',
@@ -1138,7 +1069,6 @@ describe('VideoEvents', () => {
         videoPosition: 102,
         videoTitle: 'video.title',
         videoId: 'video.id'
-      })
     )
   })
 })
