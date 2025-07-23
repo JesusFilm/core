@@ -1,0 +1,17 @@
+{
+  "Metadata": {
+    "pageTitle": "{title} | Jesus Film Project"
+  },
+  "RootIndexPage": {
+    "pageTitle": "Regarder",
+    "title": "Bibliothèque de <underline>vidéos</underline> de la Bible.",
+    "description": "Regardez, apprenez et partagez la Bible dans plus de 2000 langues"
+  },
+  "DatadogErrorBoundary": {
+    "somethingWentWrong": "Quelque chose s'est mal passé",
+    "anErrorOccurred": "Une erreur est survenue lors du chargement de cette page. Veuillez réessayer.",
+    "errorDetails": "Détails de l'erreur",
+    "tryAgain": "Réessayer",
+    "unknownError": "Erreur inconnue"
+  }
+}
