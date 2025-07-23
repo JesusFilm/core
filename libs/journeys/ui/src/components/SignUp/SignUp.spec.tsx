@@ -97,13 +97,7 @@ describe('SignUp', () => {
 
   beforeAll(() => {
     delete (window as any).location
-    window.location = { ...window.location,
-      origin: mockOrigin
-    } as any
-  })
-
-  afterAll(() => {
-    // Reset is handled by Jest automatically in v30
+    window.location = { ...window.location, origin: mockOrigin } as any
   })
 
   it('should validate when fields are empty', async () => {
@@ -121,6 +115,7 @@ describe('SignUp', () => {
       const inlineErrors = getAllByText('Required')
       expect(inlineErrors[0]).toHaveProperty('id', 'name-helper-text')
       expect(inlineErrors[1]).toHaveProperty('id', 'email-helper-text')
+    })
   })
 
   it('should validate when name is too short', async () => {
@@ -139,6 +134,7 @@ describe('SignUp', () => {
     await waitFor(() => {
       const inlineError = getByText('Name must be 2 characters or more')
       expect(inlineError).toHaveProperty('id', 'name-helper-text')
+    })
   })
 
   it('should validate when name is too long', async () => {
@@ -153,11 +149,13 @@ describe('SignUp', () => {
 
     fireEvent.change(name, {
       target: { value: '123456789012345678901234567890123456789012345678901' }
+    })
     fireEvent.click(submit)
 
     await waitFor(() => {
       const inlineError = getByText('Name must be 50 characters or less')
       expect(inlineError).toHaveProperty('id', 'name-helper-text')
+    })
   })
 
   it('should validate when email is invalid', async () => {
@@ -176,6 +174,7 @@ describe('SignUp', () => {
     await waitFor(() => {
       const inlineError = getByText('Please enter a valid email address')
       expect(inlineError).toHaveProperty('id', 'email-helper-text')
+    })
   })
 
   it('should redirect when form submit succeeds', async () => {
@@ -189,17 +188,17 @@ describe('SignUp', () => {
               blockId: 'signUp0.id',
               name: 'Anon',
               email: '123abc@gmail.com'
-          } as any
-        } as any
+            }
+          }
         },
         result: {
           data: {
             signUpSubmissionEventCreate: {
               id: 'uuid'
-          } as any
-        } as any
-      } as any
-    } as any
+            }
+          }
+        }
+      }
     ]
 
     const { getByLabelText, getByRole } = render(
@@ -231,6 +230,7 @@ describe('SignUp', () => {
         },
         undefined
       )
+    })
   })
 
   it('should be in a loading state when waiting for response', async () => {
@@ -262,8 +262,9 @@ describe('SignUp', () => {
       data: {
         signUpSubmissionEventCreate: {
           id: 'uuid'
-      } as any
-    } as any
+        }
+      }
+    }))
 
     const mocks = [
       {
@@ -276,11 +277,11 @@ describe('SignUp', () => {
               stepId: 'step.id',
               name: 'Anon',
               email: '123abc@gmail.com'
-          } as any
-        } as any
+            }
+          }
         },
         result
-    } as any
+      }
     ]
 
     const { getByLabelText, getByRole } = render(
@@ -303,6 +304,7 @@ describe('SignUp', () => {
 
     await waitFor(() => {
       expect(result).toHaveBeenCalled()
+    })
   })
 
   it('should add submission event to dataLayer', async () => {
@@ -320,17 +322,17 @@ describe('SignUp', () => {
               stepId: 'step.id',
               name: 'Anon',
               email: '123abc@gmail.com'
-          } as any
-        } as any
+            }
+          }
         },
         result: {
           data: {
             signUpSubmissionEventCreate: {
               id: 'uuid'
-          } as any
-        } as any
-      } as any
-    } as any
+            }
+          }
+        }
+      }
     ]
 
     const { getByLabelText, getByRole } = render(
@@ -357,6 +359,8 @@ describe('SignUp', () => {
         eventId: 'uuid',
         blockId: 'signUp0.id',
         stepName: 'Step {{number}}'
+      })
+    })
   })
 
   it('should add submission event to plausible', async () => {
@@ -376,17 +380,17 @@ describe('SignUp', () => {
               stepId: 'step.id',
               name: 'Anon',
               email: '123abc@gmail.com'
-          } as any
-        } as any
+            }
+          }
         },
         result: {
           data: {
             signUpSubmissionEventCreate: {
               id: 'uuid'
-          } as any
-        } as any
-      } as any
-    } as any
+            }
+          }
+        }
+      }
     ]
 
     const { getByLabelText, getByRole } = render(
@@ -421,11 +425,15 @@ describe('SignUp', () => {
             event: 'signupSubmit',
             blockId: 'signUp0.id',
             target: block.action
+          }),
           simpleKey: keyify({
             stepId: 'step.id',
             event: 'signupSubmit',
             blockId: 'signUp0.id'
-      } as any
+          })
+        }
+      })
+    })
   })
 
   it('should show error when submit fails', async () => {
@@ -442,11 +450,11 @@ describe('SignUp', () => {
               stepId: 'step.id',
               name: 'Anon',
               email: '123abc@gmail.com'
-          } as any
-        } as any
+            }
+          }
         },
         error: new Error('Error')
-    } as any
+      }
     ]
 
     const { getByRole, getByLabelText, getByText } = render(

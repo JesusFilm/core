@@ -92,10 +92,6 @@ describe('RadioQuestion', () => {
     } as any
   })
 
-  afterAll(() => {
-    // Reset is handled by Jest automatically in v30
-  })
-
   it('should display the correct options', () => {
     const { getByText } = render(
       <MockedProvider mocks={[]} addTypename={false}>
@@ -114,8 +110,9 @@ describe('RadioQuestion', () => {
       data: {
         radioQuestionSubmissionEventCreate: {
           id: 'uuid'
-      } as any
-    } as any
+        }
+      }
+    }))
 
     const { getByTestId, getAllByRole } = render(
       <MockedProvider
@@ -131,11 +128,11 @@ describe('RadioQuestion', () => {
                   stepId: 'step.id',
                   label: 'Untitled',
                   value: 'Option 1'
-              } as any
-            } as any
+                }
+              }
             },
             result
-        } as any
+          }
         ]}
       >
         <JourneyProvider>
@@ -169,17 +166,17 @@ describe('RadioQuestion', () => {
                   stepId: 'step.id',
                   label: 'Untitled',
                   value: 'Option 1'
-              } as any
-            } as any
+                }
+              }
             },
             result: {
               data: {
                 radioQuestionSubmissionEventCreate: {
                   id: 'uuid'
-              } as any
-            } as any
-          } as any
-        } as any
+                }
+              }
+            }
+          }
         ]}
         addTypename={false}
       >
@@ -241,17 +238,17 @@ describe('RadioQuestion', () => {
                   stepId: 'step.id',
                   label: 'Step {{number}}',
                   value: 'Option 1'
-              } as any
-            } as any
+                }
+              }
             },
             result: {
               data: {
                 radioQuestionSubmissionEventCreate: {
                   id: 'uuid'
-              } as any
-            } as any
-          } as any
-        } as any
+                }
+              }
+            }
+          }
         ]}
       >
         <JourneyProvider>
@@ -269,6 +266,7 @@ describe('RadioQuestion', () => {
         radioOptionSelectedId: 'RadioOption1',
         radioOptionSelectedLabel: 'Option 1',
         stepName: 'Step {{number}}'
+      })
     )
   })
 
@@ -292,17 +290,17 @@ describe('RadioQuestion', () => {
                   stepId: 'step.id',
                   label: 'Step {{number}}',
                   value: 'Option 1'
-              } as any
-            } as any
+                }
+              }
             },
             result: {
               data: {
                 radioQuestionSubmissionEventCreate: {
                   id: 'uuid'
-              } as any
-            } as any
-          } as any
-        } as any
+                }
+              }
+            }
+          }
         ]}
       >
         <JourneyProvider value={{ journey }}>
@@ -327,11 +325,14 @@ describe('RadioQuestion', () => {
             event: 'radioQuestionSubmit',
             blockId: 'RadioOption1',
             target: null
+          }),
           simpleKey: keyify({
             stepId: 'step.id',
             event: 'radioQuestionSubmit',
             blockId: 'RadioOption1'
-      } as any
+          })
+        }
+      })
     )
   })
 
@@ -352,10 +353,10 @@ describe('RadioQuestion', () => {
                   stepId: 'step.id',
                   label: 'Untitled',
                   value: 'Option 1'
-              } as any
-            } as any
-          } as any
-        } as any
+                }
+              }
+            }
+          }
         ]}
       >
         <JourneyProvider>
@@ -373,5 +374,6 @@ describe('RadioQuestion', () => {
       )
       expect(icon).toBeInTheDocument()
       expect(button).toContainElement(icon)
+    })
   })
 })

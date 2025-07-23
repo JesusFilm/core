@@ -56,7 +56,7 @@ const journey: Journey = {
         __typename: 'LanguageName',
         value: 'English',
         primary: false
-    } as any
+      }
     ]
   },
   status: JourneyStatus.published,
@@ -109,11 +109,11 @@ const teamResult = jest.fn(() => ({
               lastName: 'User',
               imageUrl: null,
               email: 'test@example.com'
-          } as any
-        } as any
+            }
+          }
         ],
         customDomains: []
-    } as any
+      }
     ],
     getJourneyProfile: {
       id: 'profileId',
@@ -130,7 +130,7 @@ const getLanguagesMock = {
       languageId: '529',
       where: {
         ids: [...SUPPORTED_LANGUAGE_IDS]
-    } as any
+      }
     }
   },
   result: {
@@ -152,9 +152,9 @@ const getLanguagesMock = {
               value: 'French',
               primary: false,
               __typename: 'LanguageName'
-          } as any
+            }
           ]
-      } as any
+        }
       ]
     }
   }
@@ -166,7 +166,7 @@ const updateLastActiveTeamIdMock = {
     variables: {
       input: {
         lastActiveTeamId: 'teamId'
-    } as any
+      }
     }
   },
   result: {
@@ -174,7 +174,7 @@ const updateLastActiveTeamIdMock = {
       journeyProfileUpdate: {
         id: 'profileId',
         __typename: 'JourneyProfile'
-    } as any
+      }
     }
   }
 }
@@ -192,41 +192,9 @@ const journeyDuplicateMock = {
       journeyDuplicate: {
         id: 'duplicatedJourneyId',
         __typename: 'Journey'
-    } as any
+      }
     }
   }))
-}
-
-const journeyTranslationSubscriptionMock = {
-  request: {
-    query: JOURNEY_AI_TRANSLATE_CREATE_SUBSCRIPTION,
-    variables: {
-      journeyId: 'duplicatedJourneyId',
-      name: 'Template',
-      journeyLanguageName: 'English',
-      textLanguageId: '496',
-      textLanguageName: 'Français'
-    }
-  },
-  result: {
-    data: {
-      journeyAiTranslateCreateSubscription: {
-        progress: 100,
-        message: 'Translation complete',
-        journey: {
-          id: 'duplicatedJourneyId',
-          title: 'Template Traduit',
-          description: 'Description traduite',
-          languageId: '496',
-          createdAt: '2023-04-25T12:34:56Z',
-          updatedAt: '2023-04-25T12:34:56Z',
-          blocks: [],
-          __typename: 'Journey'
-        },
-        __typename: 'JourneyAiTranslateProgress'
-    } as any
-    }
-  }
 }
 
 const createJourneyButton = (
@@ -251,11 +219,7 @@ const createJourneyButton = (
 
 function defineWindowWithPath(path: string): void {
   delete (window as any).location
-    configurable: true,
-    enumerable: true,
-    value: { origin: path },
-    writable: true
-  })
+  window.location = { ...window.location, origin: path } as any
 }
 
 describe('CreateJourneyButton', () => {
@@ -372,6 +336,7 @@ describe('CreateJourneyButton', () => {
 
     await waitFor(() => {
       expect(journeyDuplicateMock.result).toHaveBeenCalled()
+    })
 
     await waitFor(() => {
       expect(push).toHaveBeenCalledWith(
@@ -379,6 +344,7 @@ describe('CreateJourneyButton', () => {
         undefined,
         { shallow: true }
       )
+    })
   })
 
   it('should show translation option when enabled', async () => {
@@ -423,6 +389,7 @@ describe('CreateJourneyButton', () => {
     // Language selection should appear
     await waitFor(() => {
       expect(screen.getByPlaceholderText('Search Language')).toBeInTheDocument()
+    })
   })
 
   describe('if not signed in', () => {
@@ -434,15 +401,19 @@ describe('CreateJourneyButton', () => {
       } as unknown as NextRouter)
 
       defineWindowWithPath('http://localhost:4200')
+    })
 
     afterEach(() => {
       jest.resetAllMocks()
+    })
 
     it('should pre-render sign in page', async () => {
       render(createJourneyButton)
 
       await waitFor(() => {
         expect(prefetch).toHaveBeenCalledWith('/users/sign-in')
+      })
+    })
 
     it('should open account check dialog and redirect to sign in page when login is clicked', async () => {
       const { getByRole } = render(createJourneyButton)
@@ -458,11 +429,13 @@ describe('CreateJourneyButton', () => {
               redirect:
                 'http://localhost:4200/templates/journeyId?createNew=true',
               login: true
-          } as any
+            }
           },
           undefined,
           { shallow: true }
         )
+      })
+    })
 
     it('should open account check dialog and redirect to sign in page when create account is clicked', async () => {
       const { getByRole } = render(createJourneyButton)
@@ -478,11 +451,13 @@ describe('CreateJourneyButton', () => {
               redirect:
                 'http://localhost:4200/templates/journeyId?createNew=true',
               login: false
-          } as any
+            }
           },
           undefined,
           { shallow: true }
         )
+      })
+    })
   })
 
   describe('if not signed in and viewing from journeys admin', () => {
@@ -498,10 +473,12 @@ describe('CreateJourneyButton', () => {
       process.env = {
         ...originalEnv,
         NEXT_PUBLIC_JOURNEYS_ADMIN_URL: 'http://localhost:4200'
-    } as any
+      }
+    })
 
     afterAll(() => {
       process.env = originalEnv
+    })
 
     it('should open account check dialog and still redirect to sign in page when login is clicked', async () => {
       const { getByRole } = render(createJourneyButton)
@@ -517,11 +494,13 @@ describe('CreateJourneyButton', () => {
               redirect:
                 'http://localhost:4200/templates/journeyId?createNew=true',
               login: true
-          } as any
+            }
           },
           undefined,
           { shallow: true }
         )
+      })
+    })
 
     it('should open account check dialog and still redirect to sign in page when create account is clicked', async () => {
       const { getByRole } = render(createJourneyButton)
@@ -537,11 +516,13 @@ describe('CreateJourneyButton', () => {
               redirect:
                 'http://localhost:4200/templates/journeyId?createNew=true',
               login: false
-          } as any
+            }
           },
           undefined,
           { shallow: true }
         )
+      })
+    })
   })
 
   describe('if not signed in and viewing from another project', () => {
@@ -557,10 +538,12 @@ describe('CreateJourneyButton', () => {
       process.env = {
         ...originalEnv,
         NEXT_PUBLIC_JOURNEYS_ADMIN_URL: 'http://localhost:4200'
-    } as any
+      }
+    })
 
     afterAll(() => {
       process.env = originalEnv
+    })
 
     it('should open account check dialog and still redirect to sign in page when login is clicked', async () => {
       const { getByRole } = render(createJourneyButton)
@@ -576,11 +559,13 @@ describe('CreateJourneyButton', () => {
               redirect:
                 'http://localhost:4200/templates/journeyId?createNew=true',
               login: true
-          } as any
+            }
           },
           undefined,
           { shallow: true }
         )
+      })
+    })
 
     it('should open account check dialog and still redirect to sign in page when create account is clicked', async () => {
       const { getByRole } = render(createJourneyButton)
@@ -596,11 +581,13 @@ describe('CreateJourneyButton', () => {
               redirect:
                 'http://localhost:4200/templates/journeyId?createNew=true',
               login: false
-          } as any
+            }
           },
           undefined,
           { shallow: true }
         )
+      })
+    })
   })
 
   it('should disable button while loading', async () => {

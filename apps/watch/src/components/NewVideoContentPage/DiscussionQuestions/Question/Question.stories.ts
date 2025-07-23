@@ -1,5 +1,4 @@
 import { Meta, StoryObj } from '@storybook/nextjs'
-import noop from 'lodash/noop'
 import { ComponentPropsWithoutRef } from 'react'
 
 import { sharedUiConfig } from '@core/shared/ui/sharedUiConfig'

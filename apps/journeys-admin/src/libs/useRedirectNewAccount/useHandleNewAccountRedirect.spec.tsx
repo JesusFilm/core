@@ -13,10 +13,6 @@ const mockUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
 describe('HandleNewAccountRedirect', () => {
   const push = jest.fn()
   delete (window as any).location
-    configurable: true,
-    enumerable: true,
-    value: { origin: 'http://localhost:4200' }
-  })
 
   afterEach(() => {
     jest.clearAllMocks()
@@ -37,7 +33,8 @@ describe('HandleNewAccountRedirect', () => {
       pathname: '/users/sign-in',
       query: {
         redirect: 'http://localhost:4200/customparam?newAccount=true'
-    } as any
+      }
+    })
   })
 
   it('should append newAccount to url', () => {
@@ -55,7 +52,8 @@ describe('HandleNewAccountRedirect', () => {
       pathname: '/users/sign-in',
       query: {
         redirect: '?newAccount=true'
-    } as any
+      }
+    })
   })
 
   it('should append newAccount at the end of redirect if createNew exists', () => {
@@ -73,6 +71,7 @@ describe('HandleNewAccountRedirect', () => {
       pathname: '/users/sign-in',
       query: {
         redirect: 'http://localhost:4200?createNew=true&newAccount=true'
-    } as any
+      }
+    })
   })
 })

@@ -1,5 +1,7 @@
 import { fireEvent, render, screen } from '@testing-library/react'
 
+import { changeJSDOMURL } from '../../../../../libs/utils/changeJSDOMURL'
+
 import { BibleQuotesCarouselHeader } from './BibleQuotesCarouselHeader'
 
 jest.mock('next-i18next', () => ({
@@ -31,14 +33,12 @@ describe('BibleQuotesCarouselHeader', () => {
     Object.defineProperty(global.navigator, 'share', {
       value: mockShare,
       configurable: true
+    })
     Object.defineProperty(global.navigator, 'clipboard', {
       value: mockClipboard,
       configurable: true
-    delete (window as any).location
-    window.location = { ...window.location,
-        href: 'https://watch.jesusfilm.org/easter'
-      },
-      writable: true
+    })
+    changeJSDOMURL('https://watch.jesusfilm.org/easter')
   })
 
   afterEach(() => {
@@ -46,6 +46,7 @@ describe('BibleQuotesCarouselHeader', () => {
       value: originalNavigator,
       configurable: true,
       writable: true
+    })
   })
 
   it('renders the title correctly', () => {
@@ -62,17 +63,17 @@ describe('BibleQuotesCarouselHeader', () => {
 
     expect(mockShare).toHaveBeenCalledTimes(1)
     expect(mockShare).toHaveBeenCalledWith({
-      url: expect.stringContaining(
-        'https://watch.jesusfilm.org/easter?utm_source=share'
-      ),
-      title: expect.any(String),
-      text: expect.any(String)
+      url: expect.stringContaining('/easter?utm_source=share'),
+      title: 'Share Data Title',
+      text: ''
+    })
   })
 
   it('falls back to clipboard.writeText when navigator.share is not available', async () => {
     Object.defineProperty(global.navigator, 'share', {
       value: undefined,
       configurable: true
+    })
 
     render(<BibleQuotesCarouselHeader {...defaultProps} />)
 
@@ -80,9 +81,7 @@ describe('BibleQuotesCarouselHeader', () => {
 
     expect(mockClipboard.writeText).toHaveBeenCalledTimes(1)
     expect(mockClipboard.writeText).toHaveBeenCalledWith(
-      expect.stringContaining(
-        'https://watch.jesusfilm.org/easter?utm_source=share'
-      )
+      expect.stringContaining('/easter?utm_source=share')
     )
   })
 

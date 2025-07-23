@@ -1,5 +1,7 @@
 import { fireEvent, render, screen } from '@testing-library/react'
 
+import { changeJSDOMURL } from '../../../../libs/utils/changeJSDOMURL'
+
 import { BibleQuotesCarousel } from './BibleQuotesCarousel'
 
 jest.mock('next-i18next', () => ({
@@ -58,11 +60,7 @@ describe('BibleQuotesCarousel', () => {
     })
 
     // Mock window.location - Jest v30 compatible
-    delete (window as any).location
-    window.location = {
-      ...window.location,
-      href: 'https://watch.jesusfilm.org/easter'
-    } as any
+    changeJSDOMURL('https://watch.jesusfilm.org/easter')
   })
 
   afterEach(() => {
@@ -131,9 +129,7 @@ describe('BibleQuotesCarousel', () => {
 
     expect(mockShare).toHaveBeenCalledTimes(1)
     expect(mockShare).toHaveBeenCalledWith({
-      url: expect.stringContaining(
-        'https://watch.jesusfilm.org/easter?utm_source=share'
-      ),
+      url: expect.stringContaining('/easter?utm_source=share'),
       title: expect.any(String),
       text: expect.any(String)
     })

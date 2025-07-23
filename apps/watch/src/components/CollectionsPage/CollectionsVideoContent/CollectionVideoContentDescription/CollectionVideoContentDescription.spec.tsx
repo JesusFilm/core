@@ -33,7 +33,7 @@ describe('CollectionVideoContentDescription', () => {
 
     expect(descriptionElement).toHaveStyle({
       fontWeight: 'bold',
-      color: 'white'
+      color: 'rgb(255, 255, 255)'
     })
   })
 

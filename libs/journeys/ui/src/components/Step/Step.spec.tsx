@@ -71,7 +71,7 @@ const journey: Journey = {
         __typename: 'LanguageName',
         value: 'English',
         primary: true
-    } as any
+      }
     ]
   },
   description: 'my cool journey',
@@ -159,13 +159,7 @@ describe('Step', () => {
 
   beforeAll(() => {
     delete (window as any).location
-    window.location = { ...window.location,
-      origin: mockOrigin
-    } as any
-  })
-
-  afterAll(() => {
-    // Reset is handled by Jest automatically in v30
+    window.location = { ...window.location, origin: mockOrigin } as any
   })
 
   const mockStepViewEventCreate: MockedResponse<StepViewEventCreate> = {
@@ -176,16 +170,17 @@ describe('Step', () => {
           id: 'uuid',
           blockId: 'Step1',
           value: 'Step {{number}}'
-      } as any
-    } as any
+        }
+      }
     },
     result: jest.fn(() => ({
       data: {
         stepViewEventCreate: {
           id: 'uuid',
           __typename: 'StepViewEvent'
-      } as any
-    } as any
+        }
+      }
+    }))
   }
 
   it('should create a stepViewEvent', async () => {
@@ -215,19 +210,23 @@ describe('Step', () => {
           stepId: 'Step1',
           event: 'pageview',
           blockId: 'Step1'
+        }),
         simpleKey: keyify({
           stepId: 'Step1',
           event: 'pageview',
           blockId: 'Step1'
-    } as any
+        })
+      }
+    })
   })
 
   it('should create a stepViewEvent with a UTM code', async () => {
     const mockSearch = '?utm_source=source&utm_campaign=campaign'
     delete (window as any).location
-    window.location = { ...window.location,
-        origin: mockOrigin,
-        search: mockSearch
+    window.location = {
+      ...window.location,
+      origin: mockOrigin,
+      search: mockSearch
     } as any
 
     mockUuidv4.mockReturnValueOnce('uuid')
@@ -256,11 +255,14 @@ describe('Step', () => {
           stepId: 'Step1',
           event: 'pageview',
           blockId: 'Step1'
+        }),
         simpleKey: keyify({
           stepId: 'Step1',
           event: 'pageview',
           blockId: 'Step1'
-    } as any
+        })
+      }
+    })
   })
 
   it('should stepViewEvent to dataLayer', async () => {
@@ -281,6 +283,7 @@ describe('Step', () => {
         eventId: 'uuid',
         blockId: 'Step1',
         stepName: 'Step {{number}}'
+      })
     )
   })
 
@@ -293,8 +296,9 @@ describe('Step', () => {
         stepViewEventCreate: {
           id: 'uuid',
           __typename: 'StepViewEvent'
-      } as any
-    } as any
+        }
+      }
+    }))
 
     render(
       <MockedProvider mocks={[{ ...mockStepViewEventCreate, result }]}>
@@ -349,8 +353,9 @@ describe('Step', () => {
         stepViewEventCreate: {
           id: 'uuid',
           __typename: 'StepViewEvent'
-      } as any
-    } as any
+        }
+      }
+    }))
 
     render(
       <MockedProvider mocks={[{ ...mockStepViewEventCreate, result }]}>
