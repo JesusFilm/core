@@ -148,7 +148,8 @@ export class BlockService {
           'coverBlockId',
           'nextBlockId',
           'action',
-          'slug'
+          'slug',
+          'pollOptionImageId'
         ]),
         settings: block.settings ?? {},
         journey: {
