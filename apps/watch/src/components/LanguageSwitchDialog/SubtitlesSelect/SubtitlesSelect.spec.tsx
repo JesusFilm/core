@@ -6,6 +6,7 @@ import { useTranslation } from 'next-i18next'
 
 import { GetSubtitles } from '../../../../__generated__/GetSubtitles'
 import { WatchProvider } from '../../../libs/watchContext'
+import { TestWatchState } from '../../../libs/watchContext/TestWatchState'
 import { GET_SUBTITLES } from '../../SubtitleDialog/SubtitleDialog'
 
 import { SubtitlesSelect } from './SubtitlesSelect'
@@ -385,10 +386,50 @@ describe('SubtitlesSelect', () => {
   it('should call updateSubtitlesOn when checkbox is toggled', async () => {
     const user = userEvent.setup()
 
+    // Set up so audioLanguage matches videoAudioLanguages, so autoSubtitle is undefined
     const stateWithSubtitlesOn = {
       ...defaultInitialState,
       subtitleOn: true,
-      autoSubtitle: true
+      autoSubtitle: null,
+      audioLanguage: '529',
+      subtitleLanguage: '529',
+      videoAudioLanguages: [
+        {
+          language: {
+            id: '529',
+            bcp47: 'en',
+            __typename: 'Language' as const,
+            slug: 'english',
+            name: [
+              {
+                primary: true,
+                value: 'English',
+                __typename: 'LanguageName' as const
+              }
+            ]
+          },
+          slug: 'english',
+          __typename: 'LanguageWithSlug' as const
+        }
+      ],
+      videoSubtitleLanguages: [
+        {
+          language: {
+            id: '529',
+            bcp47: 'en',
+            __typename: 'Language' as const,
+            name: [
+              {
+                primary: true,
+                value: 'English',
+                __typename: 'LanguageName' as const
+              }
+            ]
+          },
+          value: 'English subtitles',
+          __typename: 'VideoSubtitle' as const
+        }
+      ]
     }
 
     render(
@@ -400,11 +441,11 @@ describe('SubtitlesSelect', () => {
     )
 
     const checkbox = screen.getByRole('checkbox')
-    expect(checkbox).toBeChecked()
-
+    await waitFor(() => {
+      expect(checkbox).toBeChecked()
+    })
     // Test that the checkbox can be clicked (interaction works)
     await user.click(checkbox)
-
     // Since this is an integration test, the action is executed successfully
     // if no errors are thrown during the click event
     expect(checkbox).toBeInTheDocument()
@@ -414,7 +455,40 @@ describe('SubtitlesSelect', () => {
     const stateWithAutoSubtitleDifferent = {
       ...defaultInitialState,
       subtitleOn: false,
-      autoSubtitle: true // This should take precedence
+      autoSubtitle: true, // This should take precedence
+      allLanguages: [
+        {
+          __typename: 'Language' as const,
+          id: '529',
+          slug: 'english',
+          bcp47: 'en',
+          name: [
+            {
+              __typename: 'LanguageName' as const,
+              value: 'English',
+              primary: true
+            }
+          ]
+        }
+      ],
+      videoSubtitleLanguages: [
+        {
+          language: {
+            id: '529',
+            bcp47: 'en',
+            __typename: 'Language' as const,
+            name: [
+              {
+                primary: true,
+                value: 'English',
+                __typename: 'LanguageName' as const
+              }
+            ]
+          },
+          value: 'English subtitles',
+          __typename: 'VideoSubtitle' as const
+        }
+      ]
     }
 
     render(
@@ -562,14 +636,20 @@ describe('SubtitlesSelect', () => {
       videoId: 'video123',
       videoSubtitleLanguages: [
         {
-          __typename: 'VideoSubtitle' as const,
           language: {
-            __typename: 'Language' as const,
             id: '529',
             bcp47: 'en',
-            name: []
+            __typename: 'Language' as const,
+            name: [
+              {
+                primary: true,
+                value: 'English',
+                __typename: 'LanguageName' as const
+              }
+            ]
           },
-          value: 'https://example.com/subtitles.vtt'
+          value: 'English subtitles',
+          __typename: 'VideoSubtitle' as const
         }
       ]
     }
@@ -585,5 +665,64 @@ describe('SubtitlesSelect', () => {
     // Should render without triggering GraphQL query
     expect(screen.getByRole('combobox')).toBeInTheDocument()
     expect(screen.getByRole('checkbox')).toBeInTheDocument()
+  })
+
+  it('should update autoSubtitle in state when checkbox is toggled and autoSubtitle is not null', async () => {
+    const user = userEvent.setup()
+    const initialState = {
+      ...defaultInitialState,
+      subtitleOn: true,
+      autoSubtitle: true,
+      allLanguages: [
+        {
+          __typename: 'Language' as const,
+          id: '529',
+          slug: 'english',
+          bcp47: 'en',
+          name: [
+            {
+              __typename: 'LanguageName' as const,
+              value: 'English',
+              primary: true
+            }
+          ]
+        }
+      ],
+      videoSubtitleLanguages: [
+        {
+          language: {
+            id: '529',
+            bcp47: 'en',
+            __typename: 'Language' as const,
+            name: [
+              {
+                primary: true,
+                value: 'English',
+                __typename: 'LanguageName' as const
+              }
+            ]
+          },
+          value: 'English subtitles',
+          __typename: 'VideoSubtitle' as const
+        }
+      ]
+    }
+
+    render(
+      <MockedProvider mocks={[defaultGetSubtitlesMock]} addTypename={false}>
+        <WatchProvider initialState={initialState}>
+          <SubtitlesSelect />
+          <TestWatchState />
+        </WatchProvider>
+      </MockedProvider>
+    )
+
+    expect(screen.getByText('autoSubtitle: true')).toBeInTheDocument()
+    const checkbox = screen.getByRole('checkbox')
+    expect(checkbox).toBeChecked()
+
+    await user.click(checkbox)
+
+    expect(screen.getByText('autoSubtitle: false')).toBeInTheDocument()
   })
 })

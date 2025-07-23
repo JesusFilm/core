@@ -1,10 +1,18 @@
 import { NextRouter } from 'next/router'
-import { Dispatch, createContext, useContext, useReducer } from 'react'
+import {
+  Dispatch,
+  createContext,
+  useContext,
+  useEffect,
+  useReducer
+} from 'react'
 
 import { GetAllLanguages_languages as Language } from '../../../__generated__/GetAllLanguages'
 import { GetLanguagesSlug_video_variantLanguagesWithSlug as AudioLanguage } from '../../../__generated__/GetLanguagesSlug'
 import { GetSubtitles_video_variant_subtitle as SubtitleLanguage } from '../../../__generated__/GetSubtitles'
 import { LANGUAGE_MAPPINGS } from '../localeMapping'
+
+import { initializeVideoLanguages } from './initializeVideoLanguages'
 
 /**
  * State interface for watch context containing language preferences and video-specific data
@@ -32,9 +40,9 @@ export interface WatchState {
   videoAudioLanguages?: AudioLanguage[]
   /** Available subtitle languages for the current video */
   videoSubtitleLanguages?: SubtitleLanguage[]
-  /** Currently selected audio language object (based on availability and preferences) */
+  /** Currently selected audio track for the video object (based on availability and preferences) */
   currentAudioLanguage?: AudioLanguage
-  /** Whether subtitles should be enabled (based on availability) */
+  /** Whether subtitles should be enabled (calculation based on if the user's subtitle preference is met but the audio track is not met) */
   autoSubtitle?: boolean
 }
 
@@ -143,6 +151,14 @@ interface UpdateSubtitlesOnAction {
 }
 
 /**
+ * Action to update auto subtitles on/off setting (no page reload)
+ */
+interface UpdateAutoSubtitlesOnAction {
+  type: 'UpdateAutoSubtitlesOn'
+  autoSubtitle: boolean
+}
+
+/**
  * Union type of all possible actions for the watch context
  */
 export type WatchAction =
@@ -157,6 +173,7 @@ export type WatchAction =
   | UpdateAudioLanguageAction
   | UpdateSubtitleLanguageAction
   | UpdateSubtitlesOnAction
+  | UpdateAutoSubtitlesOnAction
 
 /**
  * Initial state type for WatchProvider - contains the core fields required for initialization
@@ -169,6 +186,8 @@ export type WatchInitialState = Pick<
   | 'subtitleOn'
   | 'videoId'
   | 'videoVariantSlug'
+  | 'videoSubtitleLanguages'
+  | 'videoAudioLanguages'
 >
 
 const WatchContext = createContext<{
@@ -259,7 +278,7 @@ export const reducer = (state: WatchState, action: WatchAction): WatchState => {
       return {
         ...state,
         videoSubtitleLanguages,
-        autoSubtitle: subtitleAvailable
+        autoSubtitle: subtitleAvailable === false ? undefined : true
       }
     }
     case 'SetCurrentVideo':
@@ -323,6 +342,12 @@ export const reducer = (state: WatchState, action: WatchAction): WatchState => {
         subtitleOn: newSubtitlesOn
       }
     }
+    case 'UpdateAutoSubtitlesOn': {
+      return {
+        ...state,
+        autoSubtitle: action.autoSubtitle
+      }
+    }
   }
 }
 
@@ -352,6 +377,16 @@ export function WatchProvider({ children, initialState }: WatchProviderProps) {
     ...initialState,
     loading: false
   })
+
+  useEffect(() => {
+    // Initialize video language preferences based on available languages
+    initializeVideoLanguages(
+      dispatch,
+      initialState?.videoAudioLanguages ?? [],
+      initialState?.videoSubtitleLanguages ?? []
+    )
+  }, [initialState.videoSubtitleLanguages, initialState.videoAudioLanguages])
+
   return (
     <WatchContext.Provider value={{ state, dispatch }}>
       {children}

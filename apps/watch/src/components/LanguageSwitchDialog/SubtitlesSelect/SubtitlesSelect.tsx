@@ -134,7 +134,17 @@ export const SubtitlesSelect = memo(function SubtitlesSelect(): ReactElement {
           id="no-subtitles"
           type="checkbox"
           checked={preferredSubtitleOn}
-          onChange={() => updateSubtitlesOn(!preferredSubtitleOn)}
+          onChange={() => {
+            // if autoSubtitle is not null, then do not update the user's preferences, instead update the autoSubtitle state
+            if (autoSubtitle != null) {
+              dispatch({
+                type: 'UpdateAutoSubtitlesOn',
+                autoSubtitle: !autoSubtitle
+              })
+              return
+            }
+            updateSubtitlesOn(!preferredSubtitleOn)
+          }}
           disabled={loading || subtitlesLoading}
           className="accent-[#CB333B] h-4 w-4 rounded border-gray-300 focus:ring-0 disabled:opacity-50 disabled:cursor-not-allowed"
         />
