@@ -636,6 +636,7 @@ export class JourneyResolver {
         // save base blocks
         await this.blockService.saveAll(
           duplicateBlocks.map((block) => ({
+            // if updating the omit, also do the same in block.service.ts saveAll
             ...omit(block, [
               'journeyId',
               'parentBlockId',
