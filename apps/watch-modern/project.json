@@ -15,9 +15,8 @@
       "configurations": {
         "production": {
           "commands": [
-            "rm apps/watch-modern/i18n/locales",
-            "mkdir -p apps/watch-modern/i18n/locales",
-            "cp -r libs/locales apps/watch-modern/i18n/locales",
+            "rm -rf apps/watch-modern/src/i18n/locales",
+            "cp -r libs/locales apps/watch-modern/src/i18n",
             "CI=true nx _build watch-modern --prod"
           ]
         }
