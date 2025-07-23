@@ -334,7 +334,7 @@ describe('CardLayout', () => {
       >
         <JourneyProvider value={{ journey, variant: 'admin' }}>
           <EditorProvider initialState={{ selectedBlock: card }}>
-            <CardLayout />
+            <CardLayout disableExpanded />
           </EditorProvider>
         </JourneyProvider>
       </MockedProvider>

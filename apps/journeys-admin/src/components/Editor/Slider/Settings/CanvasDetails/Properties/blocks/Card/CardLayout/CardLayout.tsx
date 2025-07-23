@@ -28,7 +28,13 @@ export const CARD_BLOCK_LAYOUT_UPDATE = gql`
   }
 `
 
-export function CardLayout(): ReactElement {
+interface CardLayoutProps {
+  disableExpanded?: boolean
+}
+
+export function CardLayout({
+  disableExpanded = false
+}: CardLayoutProps): ReactElement {
   const { t } = useTranslation()
   const {
     state: { selectedBlock, selectedStep },
@@ -47,10 +53,6 @@ export function CardLayout(): ReactElement {
           (child) => child.__typename === 'CardBlock'
         )
   ) as TreeBlock<CardBlock> | undefined
-
-  const disableExpanded = cardBlock?.children.some(
-    (child) => child.__typename === 'VideoBlock'
-  )
 
   function handleLayoutChange(fullscreen: boolean): void {
     if (cardBlock == null) return
@@ -89,12 +91,19 @@ export function CardLayout(): ReactElement {
     })
   }
 
+  const selectedLayoutId = disableExpanded
+    ? 'false'
+    : cardBlock?.fullscreen.toString()
+
+  console.log('testid', cardBlock?.fullscreen === true ? 'selected' : 'true')
+  console.log('disableExpanded', disableExpanded)
+
   return (
     <>
       <Box>
         <HorizontalSelect
           onChange={(val) => handleLayoutChange(val === 'true')}
-          id={cardBlock?.fullscreen.toString()}
+          id={selectedLayoutId}
           sx={{ px: 4, pb: 4, pt: 1 }}
         >
           <Box

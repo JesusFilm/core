@@ -110,15 +110,24 @@ export function Card({
     ? `${stripAlphaFromHex(selectedCardColor).toUpperCase()})`
     : `${stripAlphaFromHex(selectedCardColor).toUpperCase()} (${getOpacityFromHex(selectedCardColor)}%)`
 
+  const disableExpanded = children.some(
+    (child) => child.__typename === 'VideoBlock'
+  )
+  const layoutValue = disableExpanded
+    ? t('Contained')
+    : fullscreen
+      ? t('Expanded')
+      : t('Contained')
+
   return (
     <Box data-testid="CardProperties">
       <Accordion
         icon={<FlexAlignBottom1Icon />}
         id={`${id}-layout`}
         name={t('Layout')}
-        value={fullscreen ? t('Expanded') : t('Contained')}
+        value={layoutValue}
       >
-        <CardLayout />
+        <CardLayout disableExpanded={disableExpanded} />
       </Accordion>
       <Accordion
         icon={<SunIcon2 />}

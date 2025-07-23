@@ -183,6 +183,17 @@ describe('Card', () => {
       ).toBeInTheDocument()
     })
 
+    it('always shows Contained when card contains a video block', () => {
+      const card = createCard({
+        children: [{ __typename: 'VideoBlock', id: 'video1.id' }]
+      })
+      renderWithProviders(<Card {...card} />)
+
+      expect(
+        screen.getByRole('button', { name: 'Layout Contained' })
+      ).toBeInTheDocument()
+    })
+
     it('opens card layout accordion when clicked', () => {
       const card = createCard()
       renderWithProviders(
