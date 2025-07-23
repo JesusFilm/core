@@ -11,11 +11,11 @@ import { StepViewEventCreateInput } from "./../../../../__generated__/globalType
 
 export interface StepViewEventCreate_stepViewEventCreate {
   __typename: "StepViewEvent";
-  id: string;
+  id: string | null;
 }
 
 export interface StepViewEventCreate {
-  stepViewEventCreate: StepViewEventCreate_stepViewEventCreate;
+  stepViewEventCreate: StepViewEventCreate_stepViewEventCreate | null;
 }
 
 export interface StepViewEventCreateVariables {

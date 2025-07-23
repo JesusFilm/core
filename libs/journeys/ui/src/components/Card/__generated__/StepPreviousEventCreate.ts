@@ -11,11 +11,11 @@ import { StepPreviousEventCreateInput } from "./../../../../__generated__/global
 
 export interface StepPreviousEventCreate_stepPreviousEventCreate {
   __typename: "StepPreviousEvent";
-  id: string;
+  id: string | null;
 }
 
 export interface StepPreviousEventCreate {
-  stepPreviousEventCreate: StepPreviousEventCreate_stepPreviousEventCreate;
+  stepPreviousEventCreate: StepPreviousEventCreate_stepPreviousEventCreate | null;
 }
 
 export interface StepPreviousEventCreateVariables {

@@ -770,10 +770,17 @@ export type ImageInput = {
 };
 
 export type Integration = {
-  __typename?: 'Integration';
+  id?: Maybe<Scalars['ID']['output']>;
+  team?: Maybe<Team>;
+  type?: Maybe<IntegrationType>;
+};
+
+export type IntegrationGrowthSpaces = Integration & {
+  __typename?: 'IntegrationGrowthSpaces';
   accessId?: Maybe<Scalars['String']['output']>;
   accessSecretPart?: Maybe<Scalars['String']['output']>;
   id?: Maybe<Scalars['ID']['output']>;
+  routes?: Maybe<Array<IntegrationGrowthSpacesRoute>>;
   team?: Maybe<Team>;
   type?: Maybe<IntegrationType>;
 };
@@ -782,6 +789,12 @@ export type IntegrationGrowthSpacesCreateInput = {
   accessId: Scalars['String']['input'];
   accessSecret: Scalars['String']['input'];
   teamId: Scalars['String']['input'];
+};
+
+export type IntegrationGrowthSpacesRoute = {
+  __typename?: 'IntegrationGrowthSpacesRoute';
+  id?: Maybe<Scalars['String']['output']>;
+  name?: Maybe<Scalars['String']['output']>;
 };
 
 export type IntegrationGrowthSpacesUpdateInput = {
@@ -818,7 +831,7 @@ export type Journey = {
   menuStepBlock?: Maybe<Block>;
   /** used in a plausible share link to embed report */
   plausibleToken?: Maybe<Scalars['String']['output']>;
-  primaryImageBlock?: Maybe<Block>;
+  primaryImageBlock?: Maybe<ImageBlock>;
   publishedAt?: Maybe<Scalars['DateTime']['output']>;
   seoDescription?: Maybe<Scalars['String']['output']>;
   /** title for seo and sharing */
@@ -871,6 +884,7 @@ export type JourneyAiTranslateProgress = {
 /** A collection of journeys associated with a team */
 export type JourneyCollection = {
   __typename?: 'JourneyCollection';
+  customDomains?: Maybe<Array<CustomDomain>>;
   id?: Maybe<Scalars['ID']['output']>;
   journeys?: Maybe<Array<Journey>>;
   team?: Maybe<Team>;
@@ -899,6 +913,30 @@ export type JourneyCreateInput = {
   themeMode?: InputMaybe<ThemeMode>;
   themeName?: InputMaybe<ThemeName>;
   title: Scalars['String']['input'];
+};
+
+export type JourneyEvent = Event & Node & {
+  __typename?: 'JourneyEvent';
+  action?: Maybe<ButtonAction>;
+  actionValue?: Maybe<Scalars['String']['output']>;
+  blockId?: Maybe<Scalars['String']['output']>;
+  createdAt?: Maybe<Scalars['DateTime']['output']>;
+  email?: Maybe<Scalars['String']['output']>;
+  id: Scalars['ID']['output'];
+  journeyId?: Maybe<Scalars['String']['output']>;
+  journeySlug?: Maybe<Scalars['String']['output']>;
+  label?: Maybe<Scalars['String']['output']>;
+  language?: Maybe<Language>;
+  messagePlatform?: Maybe<MessagePlatform>;
+  position?: Maybe<Scalars['Float']['output']>;
+  progress?: Maybe<Scalars['Int']['output']>;
+  source?: Maybe<VideoBlockSource>;
+  typename?: Maybe<Scalars['String']['output']>;
+  value?: Maybe<Scalars['String']['output']>;
+  visitorEmail?: Maybe<Scalars['String']['output']>;
+  visitorId?: Maybe<Scalars['String']['output']>;
+  visitorName?: Maybe<Scalars['String']['output']>;
+  visitorPhone?: Maybe<Scalars['String']['output']>;
 };
 
 export type JourneyEventsExportLog = {
@@ -1329,8 +1367,8 @@ export type Mutation = {
   imageBlockCreate: ImageBlock;
   imageBlockUpdate: ImageBlock;
   integrationDelete?: Maybe<Integration>;
-  integrationGrowthSpacesCreate?: Maybe<Integration>;
-  integrationGrowthSpacesUpdate?: Maybe<Integration>;
+  integrationGrowthSpacesCreate?: Maybe<IntegrationGrowthSpaces>;
+  integrationGrowthSpacesUpdate?: Maybe<IntegrationGrowthSpaces>;
   journeyAiTranslateCreate: Journey;
   journeyCollectionCreate: JourneyCollection;
   journeyCollectionDelete: JourneyCollection;
@@ -2417,7 +2455,7 @@ export type MutationVisitorUpdateArgs = {
 
 
 export type MutationVisitorUpdateForCurrentUserArgs = {
-  input: VisitorUpdateForCurrentUserInput;
+  input: VisitorUpdateInput;
 };
 
 export type MutationAudioPreviewCreateInput = {
@@ -2600,6 +2638,10 @@ export type NavigateToBlockActionInput = {
   gtmEventName?: InputMaybe<Scalars['String']['input']>;
 };
 
+export type Node = {
+  id: Scalars['ID']['output'];
+};
+
 export type NotFoundError = BaseError & {
   __typename?: 'NotFoundError';
   /** The arguments that caused the not found error */
@@ -2771,7 +2813,7 @@ export type Query = {
   journeyCollection: JourneyCollection;
   journeyCollections: Array<JourneyCollection>;
   journeyEventsConnection?: Maybe<QueryJourneyEventsConnection>;
-  journeyEventsCount: Scalars['Int']['output'];
+  journeyEventsCount?: Maybe<Scalars['Int']['output']>;
   journeySimpleGet?: Maybe<Scalars['Json']['output']>;
   journeyTheme?: Maybe<JourneyTheme>;
   journeyVisitorCount?: Maybe<Scalars['Int']['output']>;
@@ -2788,6 +2830,8 @@ export type Query = {
   languagesCount: Scalars['Int']['output'];
   listUnsplashCollectionPhotos: Array<UnsplashPhoto>;
   me?: Maybe<User>;
+  node?: Maybe<Node>;
+  nodes: Array<Maybe<Node>>;
   qrCode: QrCode;
   qrCodes: Array<QrCode>;
   searchUnsplashPhotos: UnsplashQueryResponse;
@@ -3080,6 +3124,16 @@ export type QueryMeArgs = {
 };
 
 
+export type QueryNodeArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type QueryNodesArgs = {
+  ids: Array<Scalars['ID']['input']>;
+};
+
+
 export type QueryQrCodeArgs = {
   id: Scalars['ID']['input'];
 };
@@ -3221,7 +3275,7 @@ export type QueryVisitorsConnectionArgs = {
   before?: InputMaybe<Scalars['String']['input']>;
   first?: InputMaybe<Scalars['Int']['input']>;
   last?: InputMaybe<Scalars['Int']['input']>;
-  teamId: Scalars['ID']['input'];
+  teamId?: InputMaybe<Scalars['ID']['input']>;
 };
 
 export type QueryJourneyEventsConnection = {
@@ -3233,7 +3287,7 @@ export type QueryJourneyEventsConnection = {
 export type QueryJourneyEventsConnectionEdge = {
   __typename?: 'QueryJourneyEventsConnectionEdge';
   cursor: Scalars['String']['output'];
-  node?: Maybe<Event>;
+  node?: Maybe<JourneyEvent>;
 };
 
 export type QueryJourneyVisitorsConnection = {

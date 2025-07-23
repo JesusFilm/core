@@ -1,0 +1,438 @@
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+import { BlockUpdateActionInput, ButtonVariant, ButtonColor, ButtonSize, ButtonAlignment, ThemeMode, ThemeName, IconName, IconSize, IconColor, TextResponseType, TypographyAlign, TypographyColor, TypographyVariant, VideoBlockSource, VideoBlockObjectFit } from "./globalTypes";
+
+// ====================================================
+// GraphQL mutation operation: StepBlockRestoreFromAction
+// ====================================================
+
+export interface StepBlockRestoreFromAction_blockRestore_GridContainerBlock {
+  __typename: "GridContainerBlock" | "GridItemBlock";
+  id: string;
+  parentBlockId: string | null;
+  parentOrder: number | null;
+}
+
+export interface StepBlockRestoreFromAction_blockRestore_ButtonBlock_action_NavigateToBlockAction {
+  __typename: "NavigateToBlockAction";
+  parentBlockId: string | null;
+  gtmEventName: string | null;
+  blockId: string;
+}
+
+export interface StepBlockRestoreFromAction_blockRestore_ButtonBlock_action_LinkAction {
+  __typename: "LinkAction";
+  parentBlockId: string | null;
+  gtmEventName: string | null;
+  url: string;
+}
+
+export interface StepBlockRestoreFromAction_blockRestore_ButtonBlock_action_EmailAction {
+  __typename: "EmailAction";
+  parentBlockId: string | null;
+  gtmEventName: string | null;
+  email: string;
+}
+
+export type StepBlockRestoreFromAction_blockRestore_ButtonBlock_action = StepBlockRestoreFromAction_blockRestore_ButtonBlock_action_NavigateToBlockAction | StepBlockRestoreFromAction_blockRestore_ButtonBlock_action_LinkAction | StepBlockRestoreFromAction_blockRestore_ButtonBlock_action_EmailAction;
+
+export interface StepBlockRestoreFromAction_blockRestore_ButtonBlock_settings {
+  __typename: "ButtonBlockSettings";
+  alignment: ButtonAlignment | null;
+}
+
+export interface StepBlockRestoreFromAction_blockRestore_ButtonBlock {
+  __typename: "ButtonBlock";
+  id: string;
+  parentBlockId: string | null;
+  parentOrder: number | null;
+  label: string;
+  buttonVariant: ButtonVariant | null;
+  buttonColor: ButtonColor | null;
+  size: ButtonSize | null;
+  startIconId: string | null;
+  endIconId: string | null;
+  submitEnabled: boolean | null;
+  action: StepBlockRestoreFromAction_blockRestore_ButtonBlock_action | null;
+  settings: StepBlockRestoreFromAction_blockRestore_ButtonBlock_settings | null;
+}
+
+export interface StepBlockRestoreFromAction_blockRestore_CardBlock {
+  __typename: "CardBlock";
+  id: string;
+  parentBlockId: string | null;
+  parentOrder: number | null;
+  /**
+   * backgroundColor should be a HEX color value e.g #FFFFFF for white.
+   */
+  backgroundColor: string | null;
+  /**
+   * backdropBlur should be a number representing blur amount in pixels e.g 20.
+   */
+  backdropBlur: number | null;
+  /**
+   * coverBlockId is present if a child block should be used as a cover.
+   * This child block should not be rendered normally, instead it should be used
+   * as a background. Blocks are often of type ImageBlock or VideoBlock.
+   */
+  coverBlockId: string | null;
+  /**
+   * themeMode can override journey themeMode. If nothing is set then use
+   * themeMode from journey
+   */
+  themeMode: ThemeMode | null;
+  /**
+   * themeName can override journey themeName. If nothing is set then use
+   * themeName from journey
+   */
+  themeName: ThemeName | null;
+  /**
+   * fullscreen should control how the coverBlock is displayed. When fullscreen
+   * is set to true the coverBlock Image should be displayed as a blur in the
+   * background.
+   */
+  fullscreen: boolean;
+}
+
+export interface StepBlockRestoreFromAction_blockRestore_IconBlock {
+  __typename: "IconBlock";
+  id: string;
+  parentBlockId: string | null;
+  parentOrder: number | null;
+  iconName: IconName | null;
+  iconSize: IconSize | null;
+  iconColor: IconColor | null;
+}
+
+export interface StepBlockRestoreFromAction_blockRestore_ImageBlock {
+  __typename: "ImageBlock";
+  id: string;
+  parentBlockId: string | null;
+  parentOrder: number | null;
+  src: string | null;
+  alt: string;
+  width: number;
+  height: number;
+  /**
+   * blurhash is a compact representation of a placeholder for an image.
+   * Find a frontend implementation at https: // github.com/woltapp/blurhash
+   */
+  blurhash: string;
+  scale: number | null;
+  focalTop: number | null;
+  focalLeft: number | null;
+}
+
+export interface StepBlockRestoreFromAction_blockRestore_RadioOptionBlock_action_NavigateToBlockAction {
+  __typename: "NavigateToBlockAction";
+  parentBlockId: string | null;
+  gtmEventName: string | null;
+  blockId: string;
+}
+
+export interface StepBlockRestoreFromAction_blockRestore_RadioOptionBlock_action_LinkAction {
+  __typename: "LinkAction";
+  parentBlockId: string | null;
+  gtmEventName: string | null;
+  url: string;
+}
+
+export interface StepBlockRestoreFromAction_blockRestore_RadioOptionBlock_action_EmailAction {
+  __typename: "EmailAction";
+  parentBlockId: string | null;
+  gtmEventName: string | null;
+  email: string;
+}
+
+export type StepBlockRestoreFromAction_blockRestore_RadioOptionBlock_action = StepBlockRestoreFromAction_blockRestore_RadioOptionBlock_action_NavigateToBlockAction | StepBlockRestoreFromAction_blockRestore_RadioOptionBlock_action_LinkAction | StepBlockRestoreFromAction_blockRestore_RadioOptionBlock_action_EmailAction;
+
+export interface StepBlockRestoreFromAction_blockRestore_RadioOptionBlock {
+  __typename: "RadioOptionBlock";
+  id: string;
+  parentBlockId: string | null;
+  parentOrder: number | null;
+  label: string;
+  action: StepBlockRestoreFromAction_blockRestore_RadioOptionBlock_action | null;
+}
+
+export interface StepBlockRestoreFromAction_blockRestore_RadioQuestionBlock {
+  __typename: "RadioQuestionBlock";
+  id: string;
+  parentBlockId: string | null;
+  parentOrder: number | null;
+}
+
+export interface StepBlockRestoreFromAction_blockRestore_SignUpBlock_action_NavigateToBlockAction {
+  __typename: "NavigateToBlockAction";
+  parentBlockId: string | null;
+  gtmEventName: string | null;
+  blockId: string;
+}
+
+export interface StepBlockRestoreFromAction_blockRestore_SignUpBlock_action_LinkAction {
+  __typename: "LinkAction";
+  parentBlockId: string | null;
+  gtmEventName: string | null;
+  url: string;
+}
+
+export interface StepBlockRestoreFromAction_blockRestore_SignUpBlock_action_EmailAction {
+  __typename: "EmailAction";
+  parentBlockId: string | null;
+  gtmEventName: string | null;
+  email: string;
+}
+
+export type StepBlockRestoreFromAction_blockRestore_SignUpBlock_action = StepBlockRestoreFromAction_blockRestore_SignUpBlock_action_NavigateToBlockAction | StepBlockRestoreFromAction_blockRestore_SignUpBlock_action_LinkAction | StepBlockRestoreFromAction_blockRestore_SignUpBlock_action_EmailAction;
+
+export interface StepBlockRestoreFromAction_blockRestore_SignUpBlock {
+  __typename: "SignUpBlock";
+  id: string;
+  parentBlockId: string | null;
+  parentOrder: number | null;
+  submitLabel: string | null;
+  submitIconId: string | null;
+  action: StepBlockRestoreFromAction_blockRestore_SignUpBlock_action | null;
+}
+
+export interface StepBlockRestoreFromAction_blockRestore_SpacerBlock {
+  __typename: "SpacerBlock";
+  id: string;
+  parentBlockId: string | null;
+  parentOrder: number | null;
+  spacing: number | null;
+}
+
+export interface StepBlockRestoreFromAction_blockRestore_StepBlock {
+  __typename: "StepBlock";
+  id: string;
+  parentBlockId: string | null;
+  parentOrder: number | null;
+  /**
+   * locked will be set to true if the user should not be able to manually
+   * advance to the next step.
+   */
+  locked: boolean;
+  /**
+   * nextBlockId contains the preferred block to navigate to, users will have to
+   * manually set the next block they want to card to navigate to
+   */
+  nextBlockId: string | null;
+  /**
+   * Slug should be unique amongst all blocks
+   * (server will throw BAD_USER_INPUT error if not)
+   * If not required will use the current block id
+   * If the generated slug is not unique the uuid will be placed
+   * at the end of the slug guaranteeing uniqueness
+   */
+  slug: string | null;
+  /**
+   * x is used to position the block horizontally in the journey flow diagram on
+   * the editor.
+   */
+  x: number | null;
+  /**
+   * y is used to position the block vertically in the journey flow diagram on
+   * the editor.
+   */
+  y: number | null;
+}
+
+export interface StepBlockRestoreFromAction_blockRestore_TextResponseBlock {
+  __typename: "TextResponseBlock";
+  id: string;
+  parentBlockId: string | null;
+  parentOrder: number | null;
+  required: boolean | null;
+  label: string;
+  placeholder: string | null;
+  hint: string | null;
+  minRows: number | null;
+  type: TextResponseType | null;
+  routeId: string | null;
+  integrationId: string | null;
+}
+
+export interface StepBlockRestoreFromAction_blockRestore_TypographyBlock_settings {
+  __typename: "TypographyBlockSettings";
+  /**
+   * Color of the typography
+   */
+  color: string | null;
+}
+
+export interface StepBlockRestoreFromAction_blockRestore_TypographyBlock {
+  __typename: "TypographyBlock";
+  id: string;
+  parentBlockId: string | null;
+  parentOrder: number | null;
+  align: TypographyAlign | null;
+  color: TypographyColor | null;
+  content: string;
+  variant: TypographyVariant | null;
+  settings: StepBlockRestoreFromAction_blockRestore_TypographyBlock_settings | null;
+}
+
+export interface StepBlockRestoreFromAction_blockRestore_VideoBlock_mediaVideo_Video_title {
+  __typename: "VideoTitle";
+  value: string;
+}
+
+export interface StepBlockRestoreFromAction_blockRestore_VideoBlock_mediaVideo_Video_images {
+  __typename: "CloudflareImage";
+  mobileCinematicHigh: string | null;
+}
+
+export interface StepBlockRestoreFromAction_blockRestore_VideoBlock_mediaVideo_Video_variant {
+  __typename: "VideoVariant";
+  id: string;
+  hls: string | null;
+}
+
+export interface StepBlockRestoreFromAction_blockRestore_VideoBlock_mediaVideo_Video_variantLanguages_name {
+  __typename: "LanguageName";
+  value: string;
+  primary: boolean;
+}
+
+export interface StepBlockRestoreFromAction_blockRestore_VideoBlock_mediaVideo_Video_variantLanguages {
+  __typename: "Language";
+  id: string;
+  name: StepBlockRestoreFromAction_blockRestore_VideoBlock_mediaVideo_Video_variantLanguages_name[];
+}
+
+export interface StepBlockRestoreFromAction_blockRestore_VideoBlock_mediaVideo_Video {
+  __typename: "Video";
+  id: string;
+  title: StepBlockRestoreFromAction_blockRestore_VideoBlock_mediaVideo_Video_title[];
+  images: StepBlockRestoreFromAction_blockRestore_VideoBlock_mediaVideo_Video_images[];
+  variant: StepBlockRestoreFromAction_blockRestore_VideoBlock_mediaVideo_Video_variant | null;
+  variantLanguages: StepBlockRestoreFromAction_blockRestore_VideoBlock_mediaVideo_Video_variantLanguages[];
+}
+
+export interface StepBlockRestoreFromAction_blockRestore_VideoBlock_mediaVideo_MuxVideo {
+  __typename: "MuxVideo";
+  id: string;
+  assetId: string | null;
+  playbackId: string | null;
+}
+
+export interface StepBlockRestoreFromAction_blockRestore_VideoBlock_mediaVideo_YouTube {
+  __typename: "YouTube";
+  id: string;
+}
+
+export type StepBlockRestoreFromAction_blockRestore_VideoBlock_mediaVideo = StepBlockRestoreFromAction_blockRestore_VideoBlock_mediaVideo_Video | StepBlockRestoreFromAction_blockRestore_VideoBlock_mediaVideo_MuxVideo | StepBlockRestoreFromAction_blockRestore_VideoBlock_mediaVideo_YouTube;
+
+export interface StepBlockRestoreFromAction_blockRestore_VideoBlock_action_NavigateToBlockAction {
+  __typename: "NavigateToBlockAction";
+  parentBlockId: string | null;
+  gtmEventName: string | null;
+  blockId: string;
+}
+
+export interface StepBlockRestoreFromAction_blockRestore_VideoBlock_action_LinkAction {
+  __typename: "LinkAction";
+  parentBlockId: string | null;
+  gtmEventName: string | null;
+  url: string;
+}
+
+export interface StepBlockRestoreFromAction_blockRestore_VideoBlock_action_EmailAction {
+  __typename: "EmailAction";
+  parentBlockId: string | null;
+  gtmEventName: string | null;
+  email: string;
+}
+
+export type StepBlockRestoreFromAction_blockRestore_VideoBlock_action = StepBlockRestoreFromAction_blockRestore_VideoBlock_action_NavigateToBlockAction | StepBlockRestoreFromAction_blockRestore_VideoBlock_action_LinkAction | StepBlockRestoreFromAction_blockRestore_VideoBlock_action_EmailAction;
+
+export interface StepBlockRestoreFromAction_blockRestore_VideoBlock {
+  __typename: "VideoBlock";
+  id: string;
+  parentBlockId: string | null;
+  parentOrder: number | null;
+  muted: boolean;
+  autoplay: boolean;
+  startAt: number | null;
+  endAt: number | null;
+  posterBlockId: string | null;
+  fullsize: boolean;
+  videoId: string | null;
+  videoVariantLanguageId: string | null;
+  source: VideoBlockSource | null;
+  title: string;
+  description: string;
+  image: string | null;
+  duration: number | null;
+  objectFit: VideoBlockObjectFit | null;
+  mediaVideo: StepBlockRestoreFromAction_blockRestore_VideoBlock_mediaVideo | null;
+  action: StepBlockRestoreFromAction_blockRestore_VideoBlock_action | null;
+}
+
+export interface StepBlockRestoreFromAction_blockRestore_VideoTriggerBlock_triggerAction_NavigateToBlockAction {
+  __typename: "NavigateToBlockAction";
+  parentBlockId: string | null;
+  gtmEventName: string | null;
+  blockId: string;
+}
+
+export interface StepBlockRestoreFromAction_blockRestore_VideoTriggerBlock_triggerAction_LinkAction {
+  __typename: "LinkAction";
+  parentBlockId: string | null;
+  gtmEventName: string | null;
+  url: string;
+}
+
+export interface StepBlockRestoreFromAction_blockRestore_VideoTriggerBlock_triggerAction_EmailAction {
+  __typename: "EmailAction";
+  parentBlockId: string | null;
+  gtmEventName: string | null;
+  email: string;
+}
+
+export type StepBlockRestoreFromAction_blockRestore_VideoTriggerBlock_triggerAction = StepBlockRestoreFromAction_blockRestore_VideoTriggerBlock_triggerAction_NavigateToBlockAction | StepBlockRestoreFromAction_blockRestore_VideoTriggerBlock_triggerAction_LinkAction | StepBlockRestoreFromAction_blockRestore_VideoTriggerBlock_triggerAction_EmailAction;
+
+export interface StepBlockRestoreFromAction_blockRestore_VideoTriggerBlock {
+  __typename: "VideoTriggerBlock";
+  id: string;
+  parentBlockId: string | null;
+  parentOrder: number | null;
+  /**
+   * triggerStart sets the time as to when a video navigates to the next block,
+   * this is the number of seconds since the start of the video
+   */
+  triggerStart: number;
+  triggerAction: StepBlockRestoreFromAction_blockRestore_VideoTriggerBlock_triggerAction | null;
+}
+
+export type StepBlockRestoreFromAction_blockRestore = StepBlockRestoreFromAction_blockRestore_GridContainerBlock | StepBlockRestoreFromAction_blockRestore_ButtonBlock | StepBlockRestoreFromAction_blockRestore_CardBlock | StepBlockRestoreFromAction_blockRestore_IconBlock | StepBlockRestoreFromAction_blockRestore_ImageBlock | StepBlockRestoreFromAction_blockRestore_RadioOptionBlock | StepBlockRestoreFromAction_blockRestore_RadioQuestionBlock | StepBlockRestoreFromAction_blockRestore_SignUpBlock | StepBlockRestoreFromAction_blockRestore_SpacerBlock | StepBlockRestoreFromAction_blockRestore_StepBlock | StepBlockRestoreFromAction_blockRestore_TextResponseBlock | StepBlockRestoreFromAction_blockRestore_TypographyBlock | StepBlockRestoreFromAction_blockRestore_VideoBlock | StepBlockRestoreFromAction_blockRestore_VideoTriggerBlock;
+
+export interface StepBlockRestoreFromAction_blockUpdateAction_parentBlock {
+  __typename: "ImageBlock" | "ButtonBlock" | "CardBlock" | "GridContainerBlock" | "GridItemBlock" | "IconBlock" | "RadioQuestionBlock" | "RadioOptionBlock" | "SignUpBlock" | "SpacerBlock" | "StepBlock" | "TextResponseBlock" | "VideoTriggerBlock" | "VideoBlock" | "TypographyBlock";
+  id: string;
+}
+
+export interface StepBlockRestoreFromAction_blockUpdateAction {
+  __typename: "NavigateToBlockAction" | "LinkAction" | "EmailAction";
+  parentBlockId: string | null;
+  parentBlock: StepBlockRestoreFromAction_blockUpdateAction_parentBlock | null;
+  gtmEventName: string | null;
+}
+
+export interface StepBlockRestoreFromAction {
+  /**
+   * blockRestore is used for redo/undo
+   */
+  blockRestore: StepBlockRestoreFromAction_blockRestore[];
+  blockUpdateAction: StepBlockRestoreFromAction_blockUpdateAction | null;
+}
+
+export interface StepBlockRestoreFromActionVariables {
+  id: string;
+  blockUpdateActionId: string;
+  input: BlockUpdateActionInput;
+}

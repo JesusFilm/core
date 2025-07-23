@@ -584,18 +584,30 @@ input ImageBlockUpdateInput {
   focalLeft: Int
 }
 
-type Integration {
+interface Integration {
   id: ID
   type: IntegrationType
+  team: Team
+}
+
+type IntegrationGrowthSpaces implements Integration {
+  id: ID
+  type: IntegrationType
+  team: Team
   accessId: String
   accessSecretPart: String
-  team: Team
+  routes: [IntegrationGrowthSpacesRoute!]
 }
 
 input IntegrationGrowthSpacesCreateInput {
   accessId: String!
   accessSecret: String!
   teamId: String!
+}
+
+type IntegrationGrowthSpacesRoute {
+  id: String
+  name: String
 }
 
 input IntegrationGrowthSpacesUpdateInput {
@@ -635,7 +647,7 @@ type Journey
   seoTitle: String
   seoDescription: String
   template: Boolean
-  primaryImageBlock: Block
+  primaryImageBlock: ImageBlock
   creatorImageBlock: Block
   logoImageBlock: Block
   menuStepBlock: Block
@@ -693,6 +705,7 @@ type JourneyCollection {
   id: ID
   title: String
   team: Team
+  customDomains: [CustomDomain!]
   journeys: [Journey!]
 }
 
@@ -723,6 +736,29 @@ input JourneyCreateInput {
   Slug should be unique amongst all journeys (server will throw BAD_USER_INPUT error if not). If not required will use title formatted with kebab-case. If the generated slug is not unique the uuid will be placed at the end of the slug guaranteeing uniqueness
   """
   slug: String
+}
+
+type JourneyEvent implements Event & Node {
+  id: ID!
+  journeyId: String
+  createdAt: DateTime
+  label: String
+  value: String
+  action: ButtonAction
+  actionValue: String
+  messagePlatform: MessagePlatform
+  language: Language
+  email: String
+  blockId: String
+  position: Float
+  source: VideoBlockSource
+  progress: Int
+  typename: String
+  visitorId: String
+  journeySlug: String
+  visitorName: String
+  visitorEmail: String
+  visitorPhone: String
 }
 
 type JourneyEventsExportLog {
@@ -1256,11 +1292,11 @@ type Mutation {
   hostCreate(teamId: ID!, input: HostCreateInput!): Host
   hostUpdate(id: ID!, teamId: ID!, input: HostUpdateInput): Host
   hostDelete(id: ID!, teamId: ID!): Host
-  integrationGrowthSpacesCreate(input: IntegrationGrowthSpacesCreateInput!): Integration
-  integrationGrowthSpacesUpdate(id: ID!, input: IntegrationGrowthSpacesUpdateInput!): Integration
+  integrationGrowthSpacesCreate(input: IntegrationGrowthSpacesCreateInput!): IntegrationGrowthSpaces
+  integrationGrowthSpacesUpdate(id: ID!, input: IntegrationGrowthSpacesUpdateInput!): IntegrationGrowthSpaces
   integrationDelete(id: ID!): Integration
   visitorUpdate(id: ID!, input: VisitorUpdateInput!): Visitor
-  visitorUpdateForCurrentUser(input: VisitorUpdateForCurrentUserInput!): Visitor
+  visitorUpdateForCurrentUser(input: VisitorUpdateInput!): Visitor
   qrCodeCreate(input: QrCodeCreateInput!): QrCode!
   qrCodeUpdate(id: ID!, input: QrCodeUpdateInput!): QrCode!
   qrCodeDelete(id: ID!): QrCode!
@@ -1309,6 +1345,10 @@ type NavigateToBlockAction implements Action {
 input NavigateToBlockActionInput {
   gtmEventName: String
   blockId: String!
+}
+
+interface Node {
+  id: ID!
 }
 
 type OperatingSystem {
@@ -1424,8 +1464,10 @@ type Query {
   journeyCollections(teamId: ID!): [JourneyCollection!]!
   getJourneyProfile: JourneyProfile
   journeyTheme(journeyId: ID!): JourneyTheme
+  node(id: ID!): Node
+  nodes(ids: [ID!]!): [Node]!
   journeyEventsConnection(journeyId: ID!, filter: JourneyEventsFilter, before: String, after: String, first: Int, last: Int): QueryJourneyEventsConnection
-  journeyEventsCount(journeyId: ID!, filter: JourneyEventsFilter): Int!
+  journeyEventsCount(journeyId: ID!, filter: JourneyEventsFilter): Int
   journeysEmailPreference(email: String!): JourneysEmailPreference
   customDomain(id: ID!): CustomDomain
   customDomains(teamId: ID!): [CustomDomain!]
@@ -1434,7 +1476,7 @@ type Query {
   journeyVisitorsConnection(filter: JourneyVisitorFilter!, sort: JourneyVisitorSort, before: String, after: String, first: Int, last: Int): QueryJourneyVisitorsConnection
   journeyVisitorCount(filter: JourneyVisitorFilter!): Int
   visitor(id: ID!): Visitor
-  visitorsConnection(teamId: ID!, before: String, after: String, first: Int, last: Int): QueryVisitorsConnection
+  visitorsConnection(teamId: ID, before: String, after: String, first: Int, last: Int): QueryVisitorsConnection
   qrCode(id: ID!): QrCode!
   qrCodes(where: QrCodesFilter!): [QrCode!]!
   teams: [Team!]
@@ -1456,7 +1498,7 @@ type QueryJourneyEventsConnection {
 }
 
 type QueryJourneyEventsConnectionEdge {
-  node: Event
+  node: JourneyEvent
   cursor: String!
 }
 

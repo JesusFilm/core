@@ -1,1 +1,1 @@
-export { ButtonClickEventRef } from './buttonClickEvent'
+export { ButtonClickEventRef, ButtonActionEnum } from './buttonClickEvent'

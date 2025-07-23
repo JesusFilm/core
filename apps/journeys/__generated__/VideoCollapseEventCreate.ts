@@ -1,0 +1,23 @@
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+import { VideoCollapseEventCreateInput } from "./globalTypes";
+
+// ====================================================
+// GraphQL mutation operation: VideoCollapseEventCreate
+// ====================================================
+
+export interface VideoCollapseEventCreate_videoCollapseEventCreate {
+  __typename: "VideoCollapseEvent";
+  id: string | null;
+}
+
+export interface VideoCollapseEventCreate {
+  videoCollapseEventCreate: VideoCollapseEventCreate_videoCollapseEventCreate | null;
+}
+
+export interface VideoCollapseEventCreateVariables {
+  input: VideoCollapseEventCreateInput;
+}

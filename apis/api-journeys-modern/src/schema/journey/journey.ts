@@ -23,6 +23,7 @@ import {
 import { prisma } from '../../lib/prisma'
 import { ThemeMode } from '../block/card/enums/themeMode'
 import { ThemeName } from '../block/card/enums/themeName'
+import { ImageBlock } from '../block/image'
 import { builder } from '../builder'
 import { Language } from '../language'
 
@@ -161,7 +162,8 @@ export const JourneyRef = builder.prismaObject('Journey', {
 
     // Image and Block References
     primaryImageBlock: t.relation('primaryImageBlock', {
-      nullable: true
+      nullable: true,
+      type: ImageBlock
     }),
     creatorImageBlock: t.relation('creatorImageBlock', {
       nullable: true

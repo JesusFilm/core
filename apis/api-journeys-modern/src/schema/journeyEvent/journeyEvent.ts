@@ -1,25 +1,26 @@
 import { GraphQLError } from 'graphql'
-import isNil from 'lodash/isNil'
-import omit from 'lodash/omit'
-import omitBy from 'lodash/omitBy'
 
-import { ButtonAction, Prisma } from '.prisma/api-journeys-modern-client'
+import { Prisma } from '.prisma/api-journeys-modern-client'
 
 import { Action } from '../../lib/auth/ability'
 import { prisma } from '../../lib/prisma'
 import { builder } from '../builder'
 import { MessagePlatform, VideoBlockSource } from '../enums'
+import { ButtonActionEnum } from '../event/button'
 import { EventInterface } from '../event/event'
 import { Language } from '../language/language'
 
+import { JourneyEventsFilter } from './inputs'
 import { canAccessJourneyEvents } from './journeyEvent.acl'
 
 // Define the JourneyEvent type that implements Event interface using prismaObject
-const JourneyEventRef = builder.prismaObject('Event', {
+const JourneyEventRef = builder.prismaNode('Event', {
   variant: 'JourneyEvent',
   interfaces: [EventInterface],
+  id: { field: 'id' },
+  nullable: true,
   fields: (t) => ({
-    action: t.expose('action', { type: ButtonAction, nullable: true }),
+    action: t.expose('action', { type: ButtonActionEnum, nullable: true }),
     actionValue: t.exposeString('actionValue', { nullable: true }),
     messagePlatform: t.expose('messagePlatform', {
       type: MessagePlatform,
@@ -96,52 +97,49 @@ const JourneyEventRef = builder.prismaObject('Event', {
   })
 })
 
-// Define input types for filtering
-const JourneyEventsFilter = builder.inputType('JourneyEventsFilter', {
-  fields: (t) => ({
-    typenames: t.stringList({ required: false }),
-    periodRangeStart: t.field({ type: 'DateTime', required: false }),
-    periodRangeEnd: t.field({ type: 'DateTime', required: false })
-  })
-})
-
 // JourneyEvent Edge for connection
-interface JourneyEventEdgeType {
-  cursor: string
-  node: any
-}
+// interface JourneyEventEdgeType {
+//   cursor: string
+//   node: any
+// }
 
-interface JourneyEventsConnectionType {
-  edges: JourneyEventEdgeType[]
-  pageInfo: {
-    hasNextPage: boolean
-    hasPreviousPage: boolean
-    startCursor: string | null
-    endCursor: string | null
-  }
-}
+// interface JourneyEventsConnectionType {
+//   edges: JourneyEventEdgeType[]
+//   pageInfo: {
+//     hasNextPage: boolean
+//     hasPreviousPage: boolean
+//     startCursor: string | null
+//     endCursor: string | null
+//   }
+// }
 
-const JourneyEventEdge =
-  builder.objectRef<JourneyEventEdgeType>('JourneyEventEdge')
+// const JourneyEventEdge =
+//   builder.objectRef<JourneyEventEdgeType>('JourneyEventEdge')
 
-JourneyEventEdge.implement({
-  fields: (t) => ({
-    cursor: t.exposeString('cursor'),
-    node: t.expose('node', { type: JourneyEventRef })
-  })
-})
+// JourneyEventEdge.implement({
+//   fields: (t) => ({
+//     cursor: t.exposeString('cursor'),
+//     node: t.expose('node', { type: JourneyEventRef })
+//   })
+// })
+
+// const JourneyEventsConnection = builder.prismaNode('JourneyEvent', {
+//   id: { field: 'id' },
+//   fields: (t) => ({
+//     cursor:
+// })
 
 // JourneyEvents Connection
-const JourneyEventsConnection = builder.objectRef<JourneyEventsConnectionType>(
-  'JourneyEventsConnection'
-)
+// const JourneyEventsConnection = builder.objectRef<JourneyEventsConnectionType>(
+//   'JourneyEventsConnection'
+// )
 
-JourneyEventsConnection.implement({
-  fields: (t) => ({
-    edges: t.expose('edges', { type: [JourneyEventEdge] }),
-    pageInfo: t.expose('pageInfo', { type: 'Json' }) // Simplified for now
-  })
-})
+// JourneyEventsConnection.implement({
+//   fields: (t) => ({
+//     edges: t.expose('edges', { type: [JourneyEventEdge] }),
+//     pageInfo: t.expose('pageInfo', { type: 'Json' }) // Simplified for now
+//   })
+// })
 
 // Helper function to generate where clause
 function generateWhere(
@@ -179,16 +177,15 @@ function generateWhere(
 
 // Query: journeyEventsConnection
 builder.queryField('journeyEventsConnection', (t) =>
-  t.withAuth({ isAuthenticated: true }).field({
-    type: JourneyEventsConnection,
+  t.withAuth({ isAuthenticated: true }).prismaConnection({
+    type: JourneyEventRef,
+    cursor: 'id',
     args: {
       journeyId: t.arg({ type: 'ID', required: true }),
-      filter: t.arg({ type: JourneyEventsFilter, required: false }),
-      first: t.arg({ type: 'Int', required: false }),
-      after: t.arg({ type: 'String', required: false })
+      filter: t.arg({ type: JourneyEventsFilter, required: false })
     },
-    resolve: async (_parent, args, context) => {
-      const { journeyId, filter, first = 50, after } = args
+    resolve: async (query, _parent, args, context) => {
+      const { journeyId, filter } = args
       const user = context.user
 
       // Check if journey exists and get authorization info
@@ -217,29 +214,11 @@ builder.queryField('journeyEventsConnection', (t) =>
       const accessibleEvent: Prisma.EventWhereInput = {} // ACL would set this
       const where = generateWhere(journeyId, filter, accessibleEvent)
 
-      const events = await prisma.event.findMany({
+      return await prisma.event.findMany({
+        ...query,
         where,
-        orderBy: { createdAt: 'desc' },
-        take: (first ?? 50) + 1, // Get one extra to check if there's more
-        skip: after ? 1 : 0,
-        cursor: after ? { id: after } : undefined
+        orderBy: { createdAt: 'desc' }
       })
-
-      const hasNextPage = events.length > (first ?? 50)
-      const nodes = hasNextPage ? events.slice(0, first ?? 50) : events
-
-      return {
-        edges: nodes.map((event) => ({
-          cursor: event.id,
-          node: event
-        })),
-        pageInfo: {
-          hasNextPage,
-          hasPreviousPage: false, // Simple implementation
-          startCursor: nodes.length > 0 ? nodes[0].id : null,
-          endCursor: nodes.length > 0 ? nodes[nodes.length - 1].id : null
-        }
-      }
     }
   })
 )

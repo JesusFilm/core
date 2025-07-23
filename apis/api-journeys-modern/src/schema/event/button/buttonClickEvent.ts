@@ -8,7 +8,7 @@ import { EventInterface } from '../event'
 import { getEventContext, getOrCreateVisitor } from '../utils'
 
 // Define ButtonAction enum
-const ButtonActionEnum = builder.enumType('ButtonAction', {
+export const ButtonActionEnum = builder.enumType('ButtonAction', {
   values: Object.values(ButtonAction)
 })
 
