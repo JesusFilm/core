@@ -1,6 +1,15 @@
 import { getTranslations } from 'next-intl/server'
 import type { ReactElement } from 'react'
 
+export const generateMetadata = async () => {
+  const t = await getTranslations('RootIndexPage')
+  const m = await getTranslations('Metadata')
+  return {
+    title: m('pageTitle', { title: t('pageTitle') }),
+    description: t('description')
+  }
+}
+
 export default async function RootIndexPage(): Promise<ReactElement> {
   const t = await getTranslations('RootIndexPage')
 

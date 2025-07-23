@@ -65,11 +65,18 @@ const nextConfig = {
     // handled by github actions
     ignoreDuringBuilds: env.CI
   },
+  basePath: '/watch',
   async redirects() {
     return [
       {
         source: '/bin/jf/watch.html/:videoId/:languageId',
         destination: '/api/jf/watch.html/:videoId/:languageId',
+        permanent: false
+      },
+      {
+        source: '/',
+        destination: '/watch',
+        basePath: false,
         permanent: false
       }
     ]
