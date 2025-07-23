@@ -12,17 +12,13 @@ input RadioQuestionBlockCreateInput {
   parentBlockId: ID!
 }
 
-input RadioQuestionBlockUpdateInput {
-  parentBlockId: ID!
-  gridView: Boolean
-}
-
 extend type Mutation {
   radioQuestionBlockCreate(
     input: RadioQuestionBlockCreateInput!
   ): RadioQuestionBlock!
   radioQuestionBlockUpdate(
     id: ID!
-    input: RadioQuestionBlockUpdateInput!
+    parentBlockId: ID!
+    gridView: Boolean
   ): RadioQuestionBlock!
 }

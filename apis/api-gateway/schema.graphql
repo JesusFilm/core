@@ -238,14 +238,7 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
     journeyId: ID
   ): RadioOptionBlock! @join__field(graph: API_JOURNEYS) 
   radioQuestionBlockCreate(input: RadioQuestionBlockCreateInput!) : RadioQuestionBlock! @join__field(graph: API_JOURNEYS) 
-  radioQuestionBlockUpdate(
-    id: ID!
-    input: RadioQuestionBlockUpdateInput!
-    """
-    drop this parameter after merging teams
-    """
-    journeyId: ID
-  ): RadioQuestionBlock! @join__field(graph: API_JOURNEYS) 
+  radioQuestionBlockUpdate(id: ID!, parentBlockId: ID!, gridView: Boolean) : RadioQuestionBlock! @join__field(graph: API_JOURNEYS) 
   signUpBlockCreate(input: SignUpBlockCreateInput!) : SignUpBlock! @join__field(graph: API_JOURNEYS) 
   signUpBlockUpdate(
     id: ID!
@@ -956,7 +949,12 @@ type RadioOptionBlock implements Block @join__type(graph: API_JOURNEYS, key: "id
   parentOrder: Int
   label: String!
   action: Action @join__field(graph: API_JOURNEYS) 
-  pollOptionImageId: ID @join__field(graph: API_JOURNEYS) 
+  """
+  pollOptionImageId is present if a child block should be used as a poll option image.
+  This child block should not be rendered normally, instead it should be used
+  as a poll option image. Blocks are often of type ImageBlock
+  """
+  pollOptionImageId: ID
 }
 
 type RadioQuestionBlock implements Block @join__type(graph: API_JOURNEYS, key: "id")  @join__type(graph: API_JOURNEYS_MODERN, key: "id")  @join__implements(graph: API_JOURNEYS, interface: "Block")  @join__implements(graph: API_JOURNEYS_MODERN, interface: "Block")  {
@@ -964,7 +962,7 @@ type RadioQuestionBlock implements Block @join__type(graph: API_JOURNEYS, key: "
   journeyId: ID!
   parentBlockId: ID
   parentOrder: Int
-  gridView: Boolean @join__field(graph: API_JOURNEYS) 
+  gridView: Boolean
 }
 
 type SignUpBlock implements Block @join__type(graph: API_JOURNEYS, key: "id")  @join__type(graph: API_JOURNEYS_MODERN, key: "id")  @join__implements(graph: API_JOURNEYS, interface: "Block")  @join__implements(graph: API_JOURNEYS_MODERN, interface: "Block")  {
@@ -3538,11 +3536,6 @@ input RadioQuestionBlockCreateInput @join__type(graph: API_JOURNEYS)  {
   id: ID
   journeyId: ID!
   parentBlockId: ID!
-}
-
-input RadioQuestionBlockUpdateInput @join__type(graph: API_JOURNEYS)  {
-  parentBlockId: ID!
-  gridView: Boolean
 }
 
 input SignUpBlockCreateInput @join__type(graph: API_JOURNEYS)  {

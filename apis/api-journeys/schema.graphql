@@ -224,13 +224,7 @@ type Mutation {
     journeyId: ID
   ): RadioOptionBlock!
   radioQuestionBlockCreate(input: RadioQuestionBlockCreateInput!): RadioQuestionBlock!
-  radioQuestionBlockUpdate(
-    id: ID!
-    input: RadioQuestionBlockUpdateInput!
-
-    """drop this parameter after merging teams"""
-    journeyId: ID
-  ): RadioQuestionBlock!
+  radioQuestionBlockUpdate(id: ID!, parentBlockId: ID!, gridView: Boolean): RadioQuestionBlock!
   signUpBlockCreate(input: SignUpBlockCreateInput!): SignUpBlock!
   signUpBlockUpdate(
     id: ID!
@@ -931,11 +925,6 @@ input RadioQuestionBlockCreateInput {
   id: ID
   journeyId: ID!
   parentBlockId: ID!
-}
-
-input RadioQuestionBlockUpdateInput {
-  parentBlockId: ID!
-  gridView: Boolean
 }
 
 type SignUpBlock implements Block
