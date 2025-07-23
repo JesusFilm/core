@@ -3,6 +3,7 @@ import { createEnv } from '@t3-oss/env-nextjs'
 import { z } from 'zod'
 
 export const env = createEnv({
+  extends: [vercel()],
   /**
    * Specify your server-side environment variables schema here. This way you can ensure the app
    * isn't built with invalid env vars.
@@ -15,7 +16,10 @@ export const env = createEnv({
     CI: z
       .string()
       .optional()
-      .transform((val) => val === 'true')
+      .transform((val) => val === 'true'),
+    VERCEL_ENV: z
+      .enum(['development', 'preview', 'production', 'stage', 'prod'])
+      .optional()
   },
 
   /**
@@ -55,10 +59,10 @@ export const env = createEnv({
       process.env['NEXT_PUBLIC_DATADOG_APPLICATION_ID'],
     NEXT_PUBLIC_DATADOG_CLIENT_TOKEN:
       process.env['NEXT_PUBLIC_DATADOG_CLIENT_TOKEN'],
-    NEXT_PUBLIC_DATADOG_ENV: process.env['NEXT_PUBLIC_VERCEL_ENV'],
+    NEXT_PUBLIC_DATADOG_ENV: process.env['VERCEL_ENV'],
     NEXT_PUBLIC_DATADOG_SITE: process.env['NEXT_PUBLIC_DATADOG_SITE'],
-    NEXT_PUBLIC_DATADOG_VERSION:
-      process.env['NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA']
+    NEXT_PUBLIC_DATADOG_VERSION: process.env['VERCEL_GIT_COMMIT_SHA'],
+    VERCEL_ENV: process.env['VERCEL_ENV']
   },
   /**
    * Run `build` or `dev` with `SKIP_ENV_VALIDATION` to skip env validation. This is especially
@@ -69,6 +73,5 @@ export const env = createEnv({
    * Makes it so that empty strings are treated as undefined. `SOME_VAR: z.string()` and
    * `SOME_VAR=''` will throw an error.
    */
-  emptyStringAsUndefined: true,
-  extends: [vercel()]
+  emptyStringAsUndefined: true
 })

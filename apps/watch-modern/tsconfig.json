@@ -5,7 +5,6 @@
     "allowJs": true,
     "allowSyntheticDefaultImports": true,
     "types": ["node", "jest"],
-
     // Strict type checking
     "strict": true,
     "noImplicitAny": true,
@@ -20,7 +19,6 @@
     "strictBindCallApply": true,
     "strictPropertyInitialization": true,
     "alwaysStrict": true,
-
     // Additional safety checks
     "noPropertyAccessFromIndexSignature": true,
     "noImplicitOverride": true,
@@ -28,7 +26,6 @@
     "allowUnreachableCode": false,
     "noFallthroughCasesInSwitch": true,
     "useDefineForClassFields": true,
-
     // Module and target settings
     "target": "ES2022",
     "lib": ["ES2022", "DOM", "DOM.Iterable"],
@@ -36,7 +33,6 @@
     "moduleResolution": "bundler",
     "allowImportingTsExtensions": false,
     "verbatimModuleSyntax": true,
-
     // Build and output settings
     "forceConsistentCasingInFileNames": true,
     "noEmit": true,
@@ -44,14 +40,12 @@
     "isolatedModules": true,
     "incremental": true,
     "tsBuildInfoFile": "../../.cache/watch-modern/tsc/.tsbuildinfo",
-
     // Next.js plugin
     "plugins": [
       {
         "name": "next"
       }
     ],
-
     // Path mapping
     "baseUrl": "./src",
     "paths": {
@@ -65,7 +59,8 @@
     "**/*.jsx",
     "**/*.mjs",
     "next-env.d.ts",
-    ".next/types/**/*.ts"
+    ".next/types/**/*.ts",
+    "../../dist/apps/watch-modern/.next/types/**/*.ts"
   ],
   "exclude": ["node_modules", "jest.config.ts"]
 }
