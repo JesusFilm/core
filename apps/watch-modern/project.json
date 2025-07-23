@@ -69,7 +69,7 @@
       "executor": "nx:run-commands",
       "options": {
         "commands": [
-          "npx vercel alias set $(cat apps/watch-modern/.vercel-url) watch-$PR_NUMBER-jesusfilm.vercel.app --token=$VERCEL_TOKEN --scope=jesusfilm",
+          "npx vercel alias set $(cat apps/watch-modern/.vercel-url) watch-modern-$PR_NUMBER-jesusfilm.vercel.app --token=$VERCEL_TOKEN --scope=jesusfilm",
           "echo \"https://watch-modern-$PR_NUMBER-jesusfilm.vercel.app\" > apps/watch-modern/.vercel-url"
         ],
         "parallel": false
