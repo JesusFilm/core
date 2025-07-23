@@ -2092,8 +2092,8 @@ export type MutationRadioQuestionBlockCreateArgs = {
 
 
 export type MutationRadioQuestionBlockUpdateArgs = {
+  gridView?: InputMaybe<Scalars['Boolean']['input']>;
   id: Scalars['ID']['input'];
-  journeyId?: InputMaybe<Scalars['ID']['input']>;
   parentBlockId: Scalars['ID']['input'];
 };
 
@@ -3576,6 +3576,12 @@ export type RadioOptionBlock = Block & {
   label: Scalars['String']['output'];
   parentBlockId?: Maybe<Scalars['ID']['output']>;
   parentOrder?: Maybe<Scalars['Int']['output']>;
+  /**
+   * pollOptionImageId is present if a child block should be used as a poll option image.
+   * This child block should not be rendered normally, instead it should be used
+   * as a poll option image. Blocks are often of type ImageBlock
+   */
+  pollOptionImageId?: Maybe<Scalars['ID']['output']>;
 };
 
 export type RadioOptionBlockCreateInput = {
@@ -3588,10 +3594,12 @@ export type RadioOptionBlockCreateInput = {
 export type RadioOptionBlockUpdateInput = {
   label?: InputMaybe<Scalars['String']['input']>;
   parentBlockId?: InputMaybe<Scalars['ID']['input']>;
+  pollOptionImageId?: InputMaybe<Scalars['ID']['input']>;
 };
 
 export type RadioQuestionBlock = Block & {
   __typename?: 'RadioQuestionBlock';
+  gridView?: Maybe<Scalars['Boolean']['output']>;
   id: Scalars['ID']['output'];
   journeyId: Scalars['ID']['output'];
   parentBlockId?: Maybe<Scalars['ID']['output']>;
