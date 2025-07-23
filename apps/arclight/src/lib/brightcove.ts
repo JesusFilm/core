@@ -37,6 +37,32 @@ function findQualityRenditions(sources: BrightcoveSource[]): {
 }
 
 /**
+ * Finds the closest bitrate match from available sources
+ */
+function findClosestBitrate(
+  sources: BrightcoveSource[],
+  targetBitrate: number
+): BrightcoveSource {
+  if (sources.length === 0) {
+    throw new Error('No sources available')
+  }
+
+  // Find the source with the closest bitrate to target
+  let closest = sources[0]
+  let minDifference = Math.abs((closest.avg_bitrate || 0) - targetBitrate)
+
+  for (const source of sources) {
+    const difference = Math.abs((source.avg_bitrate || 0) - targetBitrate)
+    if (difference < minDifference) {
+      minDifference = difference
+      closest = source
+    }
+  }
+
+  return closest
+}
+
+/**
  * Gets a Brightcove video URL.
  *
  * @param brightcoveId - The video reference ID
@@ -99,10 +125,8 @@ export async function getBrightcoveUrl(
       throw new Error('No MP4 sources found')
     }
 
-    // Find first source with bitrate >= target, or highest if none found
-    const match =
-      mp4Sources.find((s) => (s.avg_bitrate || 0) >= bitrate) ||
-      mp4Sources[mp4Sources.length - 1]
+    // Find the closest bitrate match
+    const match = findClosestBitrate(mp4Sources, bitrate)
 
     return match.src
   }
