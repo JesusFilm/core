@@ -1,10 +1,35 @@
 import { Hono } from 'hono'
 
-const app = new Hono<{ Bindings: { PROXY_DEST?: string } }>()
+const app = new Hono<{
+  Bindings: {
+    WATCH_PROXY_DEST?: string
+    WATCH_MODERN_PROXY_DEST?: string
+    WATCH_MODERN_PROXY_PATHS?: string[]
+  }
+}>()
 
 app.get('*', async (c) => {
   const url = new URL(c.req.url)
-  url.hostname = c.env.PROXY_DEST ?? url.hostname
+  const pathname = url.pathname
+
+  // Check if path should route to modern proxy
+  const modernProxyPaths = c.env.WATCH_MODERN_PROXY_PATHS || []
+  const shouldUseModernProxy = modernProxyPaths.some((pattern) => {
+    try {
+      const regex = new RegExp(pattern)
+      return regex.test(pathname)
+    } catch (error) {
+      console.error('Invalid regex pattern:', pattern, error)
+      return false
+    }
+  })
+
+  // Set destination based on path matching
+  const proxyDest = shouldUseModernProxy
+    ? (c.env.WATCH_MODERN_PROXY_DEST ?? url.hostname)
+    : (c.env.WATCH_PROXY_DEST ?? url.hostname)
+
+  url.hostname = proxyDest
   let response: Response
 
   try {
