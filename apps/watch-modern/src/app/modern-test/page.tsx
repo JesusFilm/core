@@ -4,9 +4,10 @@ import type { ReactElement } from 'react'
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations('ModernTestPage')
+  const m = await getTranslations('Metadata')
 
   return {
-    title: t('pageTitle')
+    title: m('pageTitle', { title: t('pageTitle') })
   }
 }
 
