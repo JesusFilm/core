@@ -30,6 +30,12 @@ app.get('*', async (c) => {
     : (c.env.WATCH_PROXY_DEST ?? url.hostname)
 
   url.hostname = proxyDest
+
+  // Modify path for /watch/modern/* routes by removing 'modern/' part
+  if (shouldUseModernProxy && pathname.startsWith('/watch/modern/')) {
+    url.pathname = pathname.replace('/watch/modern/', '/watch/')
+  }
+
   let response: Response
 
   try {
