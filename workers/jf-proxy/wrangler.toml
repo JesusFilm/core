@@ -3,6 +3,9 @@ compatibility_date = "2024-01-01"
 compatibility_flags = ["nodejs_compat"]
 main = "src/index.ts"
 
+[observability]
+enabled = true
+
 [vars]
 WATCH_PROXY_DEST = "localhost:4300"
 WATCH_MODERN_PROXY_DEST = "localhost:4800"
@@ -25,6 +28,9 @@ WATCH_PROXY_DEST = "c89a34d4-4b06-4219-ad8b-c7289106424d.jesusfilm.org"
 WATCH_MODERN_PROXY_DEST = "59e40060-a429-4e4d-a11f-59b9d8b5d57e.jesusfilm.org"
 WATCH_MODERN_PROXY_PATHS = ["^/watch/modern$", "^/watch/modern/", "^/watch/modern-test$"]
 
+[env.stage.observability]
+enabled = true
+
 [env.prod]
 name = "jf-proxy-prod"
 routes = [
@@ -41,3 +47,6 @@ routes = [
 WATCH_PROXY_DEST = "1ee8fdb1-3cb5-40fd-9258-35d589917b4a.jesusfilm.org"
 WATCH_MODERN_PROXY_DEST = "add676d7-6625-40c5-b9af-ffce74da8884.jesusfilm.org"
 WATCH_MODERN_PROXY_PATHS = ["^/watch/modern$", "^/watch/modern/", "^/watch/modern-test$"]
+
+[env.prod.observability]
+enabled = true
