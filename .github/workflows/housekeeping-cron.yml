@@ -14,7 +14,7 @@ jobs:
         with:
           fetch-depth: 0
       - name: Remove stale branches
-        uses: fpicalausa/remove-stale-branches@LATEST
+        uses: fpicalausa/remove-stale-branches@2.4.0
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           exempt-branches-regex: '^(main|master|feature/.*)$'
