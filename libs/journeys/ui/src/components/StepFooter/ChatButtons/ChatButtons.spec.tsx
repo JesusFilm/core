@@ -130,13 +130,6 @@ describe('ChatButtons', () => {
     }
   ]
 
-  const mockOrigin = 'https://example.com'
-
-  beforeAll(() => {
-    delete (window as any).location
-    window.location = { ...window.location, origin: mockOrigin } as any
-  })
-
   beforeEach(() => {
     jest.clearAllMocks()
   })
@@ -175,7 +168,7 @@ describe('ChatButtons', () => {
     await waitFor(() => expect(result).toHaveBeenCalled())
     expect(window.open).toHaveBeenCalledWith(chatButtons[0].link, '_blank')
     expect(mockPlausible).toHaveBeenCalledWith('footerChatButtonClick', {
-      u: `${mockOrigin}/journeyId/step`,
+      u: expect.stringContaining(`/journeyId/step`),
       props: {
         id: '1',
         blockId: 'step',

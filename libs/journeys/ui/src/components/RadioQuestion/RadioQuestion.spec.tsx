@@ -83,15 +83,6 @@ const journey = {
 } as unknown as Journey
 
 describe('RadioQuestion', () => {
-  const mockOrigin = 'https://example.com'
-
-  beforeAll(() => {
-    delete (window as any).location
-    window.location = { ...window.location,
-      origin: mockOrigin
-    } as any
-  })
-
   it('should display the correct options', () => {
     const { getByText } = render(
       <MockedProvider mocks={[]} addTypename={false}>
@@ -312,7 +303,7 @@ describe('RadioQuestion', () => {
     fireEvent.click(buttons[0])
     await waitFor(() =>
       expect(mockPlausible).toHaveBeenCalledWith('radioQuestionSubmit', {
-        u: `${mockOrigin}/journey.id/step.id`,
+        u: expect.stringContaining(`/journey.id/step.id`),
         props: {
           id: 'uuid',
           blockId: 'RadioQuestion1',

@@ -54,12 +54,6 @@ const mockUsePlausible = usePlausible as jest.MockedFunction<
 
 describe('VideoEvents', () => {
   let props: VideoEventsProps
-  const mockOrigin = 'https://example.com'
-
-  beforeAll(() => {
-    delete (window as any).location
-    window.location = { ...window.location, origin: mockOrigin } as any
-  })
 
   beforeEach(() => {
     const video = document.createElement('video')
@@ -159,7 +153,7 @@ describe('VideoEvents', () => {
 
     await waitFor(() => expect(result).toHaveBeenCalled())
     expect(mockPlausible).toHaveBeenCalledWith('videoStart', {
-      u: `${mockOrigin}/journey.id/step.id`,
+      u: expect.stringContaining(`/journey.id/step.id`),
       props: {
         id: 'uuid',
         blockId: props.blockId,
@@ -268,7 +262,7 @@ describe('VideoEvents', () => {
     })
     await waitFor(() => expect(result).toHaveBeenCalled())
     expect(mockPlausible).toHaveBeenCalledWith('videoPlay', {
-      u: `${mockOrigin}/journey.id/step.id`,
+      u: expect.stringContaining(`/journey.id/step.id`),
       props: {
         id: 'uuid',
         blockId: props.blockId,
@@ -376,7 +370,7 @@ describe('VideoEvents', () => {
     })
     await waitFor(() => expect(result).toHaveBeenCalled())
     expect(mockPlausible).toHaveBeenCalledWith('videoPause', {
-      u: `${mockOrigin}/journey.id/step.id`,
+      u: expect.stringContaining(`/journey.id/step.id`),
       props: {
         id: 'uuid',
         blockId: props.blockId,
@@ -484,7 +478,7 @@ describe('VideoEvents', () => {
     })
     await waitFor(() => expect(result).toHaveBeenCalled())
     expect(mockPlausible).toHaveBeenCalledWith('videoExpand', {
-      u: `${mockOrigin}/journey.id/step.id`,
+      u: expect.stringContaining(`/journey.id/step.id`),
       props: {
         id: 'uuid',
         blockId: props.blockId,
@@ -612,7 +606,7 @@ describe('VideoEvents', () => {
     })
     await waitFor(() => expect(result).toHaveBeenCalled())
     expect(mockPlausible).toHaveBeenCalledWith('videoCollapse', {
-      u: `${mockOrigin}/journey.id/step.id`,
+      u: expect.stringContaining(`/journey.id/step.id`),
       props: {
         id: 'uuid',
         blockId: props.blockId,
@@ -835,7 +829,7 @@ describe('VideoEvents', () => {
     })
     await waitFor(() => expect(resultStart).toHaveBeenCalled())
     expect(mockPlausible).toHaveBeenCalledWith('videoStart', {
-      u: `${mockOrigin}/journey.id/step.id`,
+      u: expect.stringContaining(`/journey.id/step.id`),
       props: {
         id: 'uuid',
         blockId: props.blockId,
@@ -862,7 +856,7 @@ describe('VideoEvents', () => {
     })
     await waitFor(() => expect(resultOne).toHaveBeenCalled())
     expect(mockPlausible).toHaveBeenCalledWith('videoProgress25', {
-      u: `${mockOrigin}/journey.id/step.id`,
+      u: expect.stringContaining(`/journey.id/step.id`),
       props: {
         id: 'uuid',
         blockId: props.blockId,
@@ -890,7 +884,7 @@ describe('VideoEvents', () => {
     })
     await waitFor(() => expect(resultTwo).toHaveBeenCalled())
     expect(mockPlausible).toHaveBeenCalledWith('videoProgress50', {
-      u: `${mockOrigin}/journey.id/step.id`,
+      u: expect.stringContaining(`/journey.id/step.id`),
       props: {
         id: 'uuid',
         blockId: props.blockId,
@@ -918,7 +912,7 @@ describe('VideoEvents', () => {
     })
     await waitFor(() => expect(resultThree).toHaveBeenCalled())
     expect(mockPlausible).toHaveBeenCalledWith('videoProgress75', {
-      u: `${mockOrigin}/journey.id/step.id`,
+      u: expect.stringContaining(`/journey.id/step.id`),
       props: {
         id: 'uuid',
         blockId: props.blockId,

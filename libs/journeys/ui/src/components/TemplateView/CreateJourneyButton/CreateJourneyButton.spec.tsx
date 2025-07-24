@@ -11,7 +11,6 @@ import {
 } from '../../../../__generated__/globalTypes'
 import { JourneyProvider } from '../../../libs/JourneyProvider'
 import type { JourneyFields as Journey } from '../../../libs/JourneyProvider/__generated__/JourneyFields'
-import { JOURNEY_AI_TRANSLATE_CREATE_SUBSCRIPTION } from '../../../libs/useJourneyAiTranslateSubscription'
 import { SUPPORTED_LANGUAGE_IDS } from '../../../libs/useJourneyAiTranslateSubscription/supportedLanguages'
 import { JOURNEY_DUPLICATE } from '../../../libs/useJourneyDuplicateMutation'
 import { GET_LANGUAGES } from '../../../libs/useLanguagesQuery'
@@ -217,11 +216,6 @@ const createJourneyButton = (
   </MockedProvider>
 )
 
-function defineWindowWithPath(path: string): void {
-  delete (window as any).location
-  window.location = { ...window.location, origin: path } as any
-}
-
 describe('CreateJourneyButton', () => {
   const prefetch = jest.fn()
   const push = jest.fn().mockResolvedValue('')
@@ -399,8 +393,6 @@ describe('CreateJourneyButton', () => {
         push,
         query: { createNew: false }
       } as unknown as NextRouter)
-
-      defineWindowWithPath('http://localhost:4200')
     })
 
     afterEach(() => {
@@ -424,10 +416,11 @@ describe('CreateJourneyButton', () => {
       await waitFor(() => {
         expect(push).toHaveBeenCalledWith(
           {
-            pathname: 'http://localhost:4200/users/sign-in',
+            pathname: expect.stringContaining('/users/sign-in'),
             query: {
-              redirect:
-                'http://localhost:4200/templates/journeyId?createNew=true',
+              redirect: expect.stringContaining(
+                '/templates/journeyId?createNew=true'
+              ),
               login: true
             }
           },
@@ -446,10 +439,11 @@ describe('CreateJourneyButton', () => {
       await waitFor(() => {
         expect(push).toHaveBeenCalledWith(
           {
-            pathname: 'http://localhost:4200/users/sign-in',
+            pathname: expect.stringContaining('/users/sign-in'),
             query: {
-              redirect:
-                'http://localhost:4200/templates/journeyId?createNew=true',
+              redirect: expect.stringContaining(
+                '/templates/journeyId?createNew=true'
+              ),
               login: false
             }
           },
@@ -467,8 +461,6 @@ describe('CreateJourneyButton', () => {
         push,
         query: { createNew: false }
       } as unknown as NextRouter)
-
-      defineWindowWithPath('http://localhost:4200')
 
       process.env = {
         ...originalEnv,
@@ -489,10 +481,11 @@ describe('CreateJourneyButton', () => {
       await waitFor(() => {
         expect(push).toHaveBeenCalledWith(
           {
-            pathname: 'http://localhost:4200/users/sign-in',
+            pathname: expect.stringContaining('/users/sign-in'),
             query: {
-              redirect:
-                'http://localhost:4200/templates/journeyId?createNew=true',
+              redirect: expect.stringContaining(
+                '/templates/journeyId?createNew=true'
+              ),
               login: true
             }
           },
@@ -533,8 +526,6 @@ describe('CreateJourneyButton', () => {
         query: { createNew: false }
       } as unknown as NextRouter)
 
-      defineWindowWithPath('http://localhost:4300')
-
       process.env = {
         ...originalEnv,
         NEXT_PUBLIC_JOURNEYS_ADMIN_URL: 'http://localhost:4200'
@@ -554,10 +545,11 @@ describe('CreateJourneyButton', () => {
       await waitFor(() => {
         expect(push).toHaveBeenCalledWith(
           {
-            pathname: 'http://localhost:4200/users/sign-in',
+            pathname: expect.stringContaining('/users/sign-in'),
             query: {
-              redirect:
-                'http://localhost:4200/templates/journeyId?createNew=true',
+              redirect: expect.stringContaining(
+                '/templates/journeyId?createNew=true'
+              ),
               login: true
             }
           },

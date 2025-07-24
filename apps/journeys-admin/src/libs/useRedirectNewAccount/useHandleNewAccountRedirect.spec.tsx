@@ -1,6 +1,8 @@
 import { renderHook } from '@testing-library/react'
 import { NextRouter, useRouter } from 'next/router'
 
+import { changeJSDOMURL } from '../changeJSDOMURL'
+
 import { useHandleNewAccountRedirect } from './useHandleNewAccountRedirect'
 
 jest.mock('next/router', () => ({
@@ -12,7 +14,7 @@ const mockUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
 
 describe('HandleNewAccountRedirect', () => {
   const push = jest.fn()
-  delete (window as any).location
+  changeJSDOMURL('http://localhost:4200')
 
   afterEach(() => {
     jest.clearAllMocks()

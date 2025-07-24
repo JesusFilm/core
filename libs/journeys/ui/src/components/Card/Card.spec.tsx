@@ -1,5 +1,4 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { sendGTMEvent } from '@next/third-parties/google'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { usePlausible } from 'next-plausible'
 import { SnackbarProvider } from 'notistack'
@@ -61,6 +60,7 @@ jest.mock('next/legacy/image', () => ({
   __esModule: true,
   default: jest.fn(
     ({ priority, blurDataURL, objectFit, objectPosition, ...props }) => {
+      // eslint-disable-next-line @next/next/no-img-element
       return <img {...props} />
     }
   )
@@ -82,13 +82,6 @@ const mockUsePlausible = usePlausible as jest.MockedFunction<
 >
 
 describe('CardBlock', () => {
-  const mockOrigin = 'https://example.com'
-
-  beforeAll(() => {
-    delete (window as any).location
-    window.location = { ...window.location, origin: mockOrigin } as any
-  })
-
   beforeEach(() => {
     jest.clearAllMocks()
     treeBlocksVar([])

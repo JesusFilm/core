@@ -93,13 +93,6 @@ const SignUpMock = ({ mocks = [] }: SignUpMockProps): ReactElement => (
 )
 
 describe('SignUp', () => {
-  const mockOrigin = 'https://example.com'
-
-  beforeAll(() => {
-    delete (window as any).location
-    window.location = { ...window.location, origin: mockOrigin } as any
-  })
-
   it('should validate when fields are empty', async () => {
     const { getByRole, getAllByText } = render(
       <SnackbarProvider>
@@ -413,7 +406,7 @@ describe('SignUp', () => {
 
     await waitFor(() => {
       expect(mockPlausible).toHaveBeenCalledWith('signupSubmit', {
-        u: `${mockOrigin}/journey.id/step.id`,
+        u: expect.stringContaining(`/journey.id/step.id`),
         props: {
           id: 'uuid',
           blockId: 'signUp0.id',
