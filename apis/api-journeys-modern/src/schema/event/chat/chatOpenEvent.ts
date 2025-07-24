@@ -4,7 +4,7 @@ import { prisma } from '../../../lib/prisma'
 import { builder } from '../../builder'
 import { MessagePlatform as MessagePlatformEnum } from '../../enums'
 import { EventInterface } from '../event'
-import { getEventContext, getOrCreateVisitor } from '../utils'
+import { validateBlockEvent } from '../utils'
 
 // ChatOpenEvent type
 export const ChatOpenEventRef = builder.prismaObject('Event', {
@@ -31,19 +31,26 @@ const ChatOpenEventCreateInput = builder.inputType('ChatOpenEventCreateInput', {
   })
 })
 
-// Helper functions are imported from shared/utils
-
 // Mutation: Chat Open Event
 builder.mutationField('chatOpenEventCreate', (t) =>
-  t.field({
+  t.withAuth({ isAuthenticated: true }).field({
     type: ChatOpenEventRef,
     args: {
       input: t.arg({ type: ChatOpenEventCreateInput, required: true })
     },
     resolve: async (_parent, args, context) => {
       const { input } = args
-      const { journeyId } = await getEventContext(input.blockId)
-      const visitorId = await getOrCreateVisitor(context)
+      const userId = context.user?.id
+
+      if (!userId) {
+        throw new Error('User not authenticated')
+      }
+
+      const { visitor, journeyId } = await validateBlockEvent(
+        userId,
+        input.blockId,
+        input.stepId
+      )
 
       return await prisma.event.create({
         data: {
@@ -55,7 +62,7 @@ builder.mutationField('chatOpenEventCreate', (t) =>
           label: input.label,
           value: input.value,
           messagePlatform: input.messagePlatform,
-          visitorId
+          visitorId: visitor.id
         }
       })
     }

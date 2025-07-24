@@ -4,7 +4,7 @@ import { prisma } from '../../../lib/prisma'
 import { builder } from '../../builder'
 import { VideoBlockSource as VideoBlockSourceEnum } from '../../enums'
 import { EventInterface } from '../event'
-import { eventService } from '../utils'
+import { validateBlockEvent } from '../utils'
 
 // Video Event Types
 export const VideoStartEventRef = builder.prismaObject('Event', {
@@ -180,15 +180,24 @@ const VideoProgressEventCreateInput = builder.inputType(
 
 // Mutations
 builder.mutationField('videoStartEventCreate', (t) =>
-  t.field({
+  t.withAuth({ isAuthenticated: true }).field({
     type: VideoStartEventRef,
     args: {
       input: t.arg({ type: VideoStartEventCreateInput, required: true })
     },
     resolve: async (_parent, args, context) => {
       const { input } = args
-      const { journeyId } = await getEventContext(input.blockId)
-      const visitorId = await getOrCreateVisitor(context)
+      const userId = context.user?.id
+
+      if (!userId) {
+        throw new Error('User not authenticated')
+      }
+
+      const { visitor, journeyId } = await validateBlockEvent(
+        userId,
+        input.blockId,
+        input.stepId
+      )
 
       return await prisma.event.create({
         data: {
@@ -200,7 +209,7 @@ builder.mutationField('videoStartEventCreate', (t) =>
           position: input.position,
           label: input.label,
           source: input.value,
-          visitorId
+          visitorId: visitor.id
         }
       })
     }
@@ -208,15 +217,24 @@ builder.mutationField('videoStartEventCreate', (t) =>
 )
 
 builder.mutationField('videoPlayEventCreate', (t) =>
-  t.field({
+  t.withAuth({ isAuthenticated: true }).field({
     type: VideoPlayEventRef,
     args: {
       input: t.arg({ type: VideoPlayEventCreateInput, required: true })
     },
     resolve: async (_parent, args, context) => {
       const { input } = args
-      const { journeyId } = await getEventContext(input.blockId)
-      const visitorId = await getOrCreateVisitor(context)
+      const userId = context.user?.id
+
+      if (!userId) {
+        throw new Error('User not authenticated')
+      }
+
+      const { visitor, journeyId } = await validateBlockEvent(
+        userId,
+        input.blockId,
+        input.stepId
+      )
 
       return await prisma.event.create({
         data: {
@@ -228,7 +246,7 @@ builder.mutationField('videoPlayEventCreate', (t) =>
           position: input.position,
           label: input.label,
           source: input.value,
-          visitorId
+          visitorId: visitor.id
         }
       })
     }
@@ -236,15 +254,24 @@ builder.mutationField('videoPlayEventCreate', (t) =>
 )
 
 builder.mutationField('videoPauseEventCreate', (t) =>
-  t.field({
+  t.withAuth({ isAuthenticated: true }).field({
     type: VideoPauseEventRef,
     args: {
       input: t.arg({ type: VideoPauseEventCreateInput, required: true })
     },
     resolve: async (_parent, args, context) => {
       const { input } = args
-      const { journeyId } = await getEventContext(input.blockId)
-      const visitorId = await getOrCreateVisitor(context)
+      const userId = context.user?.id
+
+      if (!userId) {
+        throw new Error('User not authenticated')
+      }
+
+      const { visitor, journeyId } = await validateBlockEvent(
+        userId,
+        input.blockId,
+        input.stepId
+      )
 
       return await prisma.event.create({
         data: {
@@ -256,7 +283,7 @@ builder.mutationField('videoPauseEventCreate', (t) =>
           position: input.position,
           label: input.label,
           source: input.value,
-          visitorId
+          visitorId: visitor.id
         }
       })
     }
@@ -264,15 +291,24 @@ builder.mutationField('videoPauseEventCreate', (t) =>
 )
 
 builder.mutationField('videoCompleteEventCreate', (t) =>
-  t.field({
+  t.withAuth({ isAuthenticated: true }).field({
     type: VideoCompleteEventRef,
     args: {
       input: t.arg({ type: VideoCompleteEventCreateInput, required: true })
     },
     resolve: async (_parent, args, context) => {
       const { input } = args
-      const { journeyId } = await getEventContext(input.blockId)
-      const visitorId = await getOrCreateVisitor(context)
+      const userId = context.user?.id
+
+      if (!userId) {
+        throw new Error('User not authenticated')
+      }
+
+      const { visitor, journeyId } = await validateBlockEvent(
+        userId,
+        input.blockId,
+        input.stepId
+      )
 
       return await prisma.event.create({
         data: {
@@ -284,7 +320,7 @@ builder.mutationField('videoCompleteEventCreate', (t) =>
           position: input.position,
           label: input.label,
           source: input.value,
-          visitorId
+          visitorId: visitor.id
         }
       })
     }
@@ -292,15 +328,24 @@ builder.mutationField('videoCompleteEventCreate', (t) =>
 )
 
 builder.mutationField('videoExpandEventCreate', (t) =>
-  t.field({
+  t.withAuth({ isAuthenticated: true }).field({
     type: VideoExpandEventRef,
     args: {
       input: t.arg({ type: VideoExpandEventCreateInput, required: true })
     },
     resolve: async (_parent, args, context) => {
       const { input } = args
-      const { journeyId } = await getEventContext(input.blockId)
-      const visitorId = await getOrCreateVisitor(context)
+      const userId = context.user?.id
+
+      if (!userId) {
+        throw new Error('User not authenticated')
+      }
+
+      const { visitor, journeyId } = await validateBlockEvent(
+        userId,
+        input.blockId,
+        input.stepId
+      )
 
       return await prisma.event.create({
         data: {
@@ -312,7 +357,7 @@ builder.mutationField('videoExpandEventCreate', (t) =>
           position: input.position,
           label: input.label,
           source: input.value,
-          visitorId
+          visitorId: visitor.id
         }
       })
     }
@@ -320,15 +365,24 @@ builder.mutationField('videoExpandEventCreate', (t) =>
 )
 
 builder.mutationField('videoCollapseEventCreate', (t) =>
-  t.field({
+  t.withAuth({ isAuthenticated: true }).field({
     type: VideoCollapseEventRef,
     args: {
       input: t.arg({ type: VideoCollapseEventCreateInput, required: true })
     },
     resolve: async (_parent, args, context) => {
       const { input } = args
-      const { journeyId } = await getEventContext(input.blockId)
-      const visitorId = await getOrCreateVisitor(context)
+      const userId = context.user?.id
+
+      if (!userId) {
+        throw new Error('User not authenticated')
+      }
+
+      const { visitor, journeyId } = await validateBlockEvent(
+        userId,
+        input.blockId,
+        input.stepId
+      )
 
       return await prisma.event.create({
         data: {
@@ -340,7 +394,7 @@ builder.mutationField('videoCollapseEventCreate', (t) =>
           position: input.position,
           label: input.label,
           source: input.value,
-          visitorId
+          visitorId: visitor.id
         }
       })
     }
@@ -348,15 +402,24 @@ builder.mutationField('videoCollapseEventCreate', (t) =>
 )
 
 builder.mutationField('videoProgressEventCreate', (t) =>
-  t.field({
+  t.withAuth({ isAuthenticated: true }).field({
     type: VideoProgressEventRef,
     args: {
       input: t.arg({ type: VideoProgressEventCreateInput, required: true })
     },
     resolve: async (_parent, args, context) => {
       const { input } = args
-      const { journeyId } = await getEventContext(input.blockId)
-      const visitorId = await getOrCreateVisitor(context)
+      const userId = context.user?.id
+
+      if (!userId) {
+        throw new Error('User not authenticated')
+      }
+
+      const { visitor, journeyId } = await validateBlockEvent(
+        userId,
+        input.blockId,
+        input.stepId
+      )
 
       return await prisma.event.create({
         data: {
@@ -369,7 +432,7 @@ builder.mutationField('videoProgressEventCreate', (t) =>
           label: input.label,
           source: input.value,
           progress: input.progress,
-          visitorId
+          visitorId: visitor.id
         }
       })
     }

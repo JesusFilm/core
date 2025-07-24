@@ -3,7 +3,7 @@ import { v4 as uuidv4 } from 'uuid'
 import { prisma } from '../../../lib/prisma'
 import { builder } from '../../builder'
 import { EventInterface } from '../event'
-import { getEventContext, getOrCreateVisitor } from '../utils'
+import { validateBlockEvent } from '../utils'
 
 // SignUpSubmissionEvent type
 export const SignUpSubmissionEventRef = builder.prismaObject('Event', {
@@ -31,15 +31,24 @@ const SignUpSubmissionEventCreateInput = builder.inputType(
 
 // Mutation: Sign Up Submission Event
 builder.mutationField('signUpSubmissionEventCreate', (t) =>
-  t.field({
+  t.withAuth({ isAuthenticated: true }).field({
     type: SignUpSubmissionEventRef,
     args: {
       input: t.arg({ type: SignUpSubmissionEventCreateInput, required: true })
     },
     resolve: async (_parent, args, context) => {
       const { input } = args
-      const { journeyId } = await getEventContext(input.blockId)
-      const visitorId = await getOrCreateVisitor(context)
+      const userId = context.user?.id
+
+      if (!userId) {
+        throw new Error('User not authenticated')
+      }
+
+      const { visitor, journeyId } = await validateBlockEvent(
+        userId,
+        input.blockId,
+        input.stepId
+      )
 
       return await prisma.event.create({
         data: {
@@ -50,7 +59,7 @@ builder.mutationField('signUpSubmissionEventCreate', (t) =>
           stepId: input.stepId,
           value: input.name,
           email: input.email,
-          visitorId
+          visitorId: visitor.id
         }
       })
     }
