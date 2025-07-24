@@ -19,6 +19,9 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           exempt-branches-regex: '^(main|master|feature/.*)$'
           ignore-branches-with-open-prs: true
+          operations-per-run: 250
+          days-before-branch-stale: 90
+          days-before-branch-delete: 7
   remove-stale-prs:
     runs-on: blacksmith-4vcpu-ubuntu-2204
     permissions:
