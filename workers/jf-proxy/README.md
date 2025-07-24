@@ -32,7 +32,7 @@ The worker supports intelligent path-based routing:
 - **Modern Paths**: Routes matching patterns in `WATCH_MODERN_PROXY_PATHS` go to `WATCH_MODERN_PROXY_DEST`
 - **Default Paths**: All other paths go to `WATCH_PROXY_DEST`
 - **Pattern Matching**: Uses regex patterns for flexible path matching
-- **Subpath Support**: Uses two patterns: `^/watch/modern$` for exact match and `^/watch/modern/` for subpaths
+- **Path Modification**: For `/watch/modern/*` routes, the `modern/` part is stripped from the path before forwarding
 
 ## Configuration
 
@@ -44,25 +44,37 @@ WATCH_PROXY_DEST="www.example.com"  # The default destination hostname to proxy 
 
 # Optional - for modern path routing
 WATCH_MODERN_PROXY_DEST="modern.example.com"  # Destination for modern paths
-WATCH_MODERN_PROXY_PATHS=["^/watch/modern$", "^/watch/modern/"]  # Regex patterns for modern paths
+WATCH_MODERN_PROXY_PATHS=["^/watch/modern$", "^/watch/modern/", "^/watch/modern-test$"]  # Regex patterns for modern paths
 ```
 
 ### Path Matching Examples
 
-The patterns `^/watch/modern$` and `^/watch/modern/` will match:
+The patterns will match:
 
-- ✅ `/watch/modern` (exact match)
-- ✅ `/watch/modern/` (subpath)
-- ✅ `/watch/modern/video/123` (subpath)
-- ✅ `/watch/modern/episode/season-1` (subpath)
+- ✅ `/watch/modern` (exact match, no path modification)
+- ✅ `/watch/modern/` (subpath, path modified to `/watch/`)
+- ✅ `/watch/modern/video/123` (subpath, path modified to `/watch/video/123`)
+- ✅ `/watch/modern/_next/test.css` (subpath, path modified to `/watch/_next/test.css`)
+- ✅ `/watch/modern-test` (exact match, no path modification)
 
 But will NOT match:
 
-- ❌ `/watch/modern-test`
+- ❌ `/watch/modern-test-other`
 - ❌ `/watch/modern_legacy`
-- ❌ `/watch/modern.old`
 - ❌ `/watch/legacy`
 - ❌ `/api/modern`
+
+### Path Modification Examples
+
+For `/watch/modern/*` routes, the `modern/` part is removed:
+
+| Original Path                    | Modified Path             | Destination                                 |
+| -------------------------------- | ------------------------- | ------------------------------------------- |
+| `/watch/modern/video/123`        | `/watch/video/123`        | `WATCH_MODERN_PROXY_DEST`                   |
+| `/watch/modern/_next/test.css`   | `/watch/_next/test.css`   | `WATCH_MODERN_PROXY_DEST`                   |
+| `/watch/modern/episode/season-1` | `/watch/episode/season-1` | `WATCH_MODERN_PROXY_DEST`                   |
+| `/watch/modern`                  | `/watch/modern`           | `WATCH_MODERN_PROXY_DEST` (no modification) |
+| `/watch/modern-test`             | `/watch/modern-test`      | `WATCH_MODERN_PROXY_DEST` (no modification) |
 
 ### Environment-Specific Configuration
 

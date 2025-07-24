@@ -37,17 +37,21 @@ describe('test the worker', () => {
       {
         WATCH_PROXY_DEST: 'test.example.com',
         WATCH_MODERN_PROXY_DEST: 'modern.example.com',
-        WATCH_MODERN_PROXY_PATHS: ['^/watch/modern$', '^/watch/modern/']
+        WATCH_MODERN_PROXY_PATHS: [
+          '^/watch/modern$',
+          '^/watch/modern/',
+          '^/watch/modern-test$'
+        ]
       }
     )
     expect(res.status).toBe(200)
     expect(await res.text()).toBe('modern content')
   })
 
-  it('should route /watch/modern/subpath to WATCH_MODERN_PROXY_DEST', async () => {
+  it('should route /watch/modern/subpath to WATCH_MODERN_PROXY_DEST with path modification', async () => {
     fetchMock
       .get('http://modern.example.com')
-      .intercept({ path: '/watch/modern/video/123' })
+      .intercept({ path: '/watch/video/123' })
       .reply(200, 'modern subpath content')
 
     const res = await app.request(
@@ -56,18 +60,45 @@ describe('test the worker', () => {
       {
         WATCH_PROXY_DEST: 'test.example.com',
         WATCH_MODERN_PROXY_DEST: 'modern.example.com',
-        WATCH_MODERN_PROXY_PATHS: ['^/watch/modern$', '^/watch/modern/']
+        WATCH_MODERN_PROXY_PATHS: [
+          '^/watch/modern$',
+          '^/watch/modern/',
+          '^/watch/modern-test$'
+        ]
       }
     )
     expect(res.status).toBe(200)
     expect(await res.text()).toBe('modern subpath content')
   })
 
-  it('should NOT route /watch/modern-test to WATCH_MODERN_PROXY_DEST', async () => {
+  it('should route /watch/modern/_next/test.css to WATCH_MODERN_PROXY_DEST with path modification', async () => {
     fetchMock
-      .get('http://test.example.com')
+      .get('http://modern.example.com')
+      .intercept({ path: '/watch/_next/test.css' })
+      .reply(200, 'css content')
+
+    const res = await app.request(
+      'http://localhost/watch/modern/_next/test.css',
+      {},
+      {
+        WATCH_PROXY_DEST: 'test.example.com',
+        WATCH_MODERN_PROXY_DEST: 'modern.example.com',
+        WATCH_MODERN_PROXY_PATHS: [
+          '^/watch/modern$',
+          '^/watch/modern/',
+          '^/watch/modern-test$'
+        ]
+      }
+    )
+    expect(res.status).toBe(200)
+    expect(await res.text()).toBe('css content')
+  })
+
+  it('should route /watch/modern-test to WATCH_MODERN_PROXY_DEST (no path modification)', async () => {
+    fetchMock
+      .get('http://modern.example.com')
       .intercept({ path: '/watch/modern-test' })
-      .reply(200, 'legacy content')
+      .reply(200, 'modern test content')
 
     const res = await app.request(
       'http://localhost/watch/modern-test',
@@ -75,7 +106,34 @@ describe('test the worker', () => {
       {
         WATCH_PROXY_DEST: 'test.example.com',
         WATCH_MODERN_PROXY_DEST: 'modern.example.com',
-        WATCH_MODERN_PROXY_PATHS: ['^/watch/modern$', '^/watch/modern/']
+        WATCH_MODERN_PROXY_PATHS: [
+          '^/watch/modern$',
+          '^/watch/modern/',
+          '^/watch/modern-test$'
+        ]
+      }
+    )
+    expect(res.status).toBe(200)
+    expect(await res.text()).toBe('modern test content')
+  })
+
+  it('should NOT route /watch/modern-test-other to WATCH_MODERN_PROXY_DEST', async () => {
+    fetchMock
+      .get('http://test.example.com')
+      .intercept({ path: '/watch/modern-test-other' })
+      .reply(200, 'legacy content')
+
+    const res = await app.request(
+      'http://localhost/watch/modern-test-other',
+      {},
+      {
+        WATCH_PROXY_DEST: 'test.example.com',
+        WATCH_MODERN_PROXY_DEST: 'modern.example.com',
+        WATCH_MODERN_PROXY_PATHS: [
+          '^/watch/modern$',
+          '^/watch/modern/',
+          '^/watch/modern-test$'
+        ]
       }
     )
     expect(res.status).toBe(200)
@@ -94,7 +152,11 @@ describe('test the worker', () => {
       {
         WATCH_PROXY_DEST: 'test.example.com',
         WATCH_MODERN_PROXY_DEST: 'modern.example.com',
-        WATCH_MODERN_PROXY_PATHS: ['^/watch/modern$', '^/watch/modern/']
+        WATCH_MODERN_PROXY_PATHS: [
+          '^/watch/modern$',
+          '^/watch/modern/',
+          '^/watch/modern-test$'
+        ]
       }
     )
     expect(res.status).toBe(200)
@@ -113,7 +175,11 @@ describe('test the worker', () => {
       {
         WATCH_PROXY_DEST: 'test.example.com',
         WATCH_MODERN_PROXY_DEST: 'modern.example.com',
-        WATCH_MODERN_PROXY_PATHS: ['^/watch/modern$', '^/watch/modern/']
+        WATCH_MODERN_PROXY_PATHS: [
+          '^/watch/modern$',
+          '^/watch/modern/',
+          '^/watch/modern-test$'
+        ]
       }
     )
     expect(res.status).toBe(200)
@@ -135,7 +201,8 @@ describe('test the worker', () => {
         WATCH_MODERN_PROXY_PATHS: [
           'invalid[regex',
           '^/watch/modern$',
-          '^/watch/modern/'
+          '^/watch/modern/',
+          '^/watch/modern-test$'
         ]
       }
     )
@@ -154,7 +221,11 @@ describe('test the worker', () => {
       {},
       {
         WATCH_PROXY_DEST: 'test.example.com',
-        WATCH_MODERN_PROXY_PATHS: ['^/watch/modern$', '^/watch/modern/']
+        WATCH_MODERN_PROXY_PATHS: [
+          '^/watch/modern$',
+          '^/watch/modern/',
+          '^/watch/modern-test$'
+        ]
         // Missing WATCH_MODERN_PROXY_DEST
       }
     )
