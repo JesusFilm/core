@@ -1,0 +1,36 @@
+name: Housekeeping - Cron Jobs
+on:
+  schedule:
+    - cron: '0 0 * * *'
+jobs:
+  remove-stale-branches:
+    runs-on: blacksmith-4vcpu-ubuntu-2204
+    permissions:
+      contents: write
+      pull-requests: read
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Remove stale branches
+        uses: fpicalausa/remove-stale-branches@LATEST
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          exempt-branches-regex: '^(main|master|feature/.*)$'
+          ignore-branches-with-open-prs: true
+  remove-stale-prs:
+    runs-on: blacksmith-4vcpu-ubuntu-2204
+    permissions:
+      pull-requests: write
+    steps:
+      - uses: actions/stale@v9
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          days-before-pr-stale: 28
+          days-before-pr-close: 14
+          stale-pr-label: stale
+          stale-pr-message: |
+            This pull request has been marked stale due to {daysBeforePrStale} days without activity. It will be closed in {daysBeforePrClose} days unless updated.
+          close-pr-message: |
+            This pull request was automatically closed after remaining stale for {daysBeforePrClose} days.
+          exempt-pr-labels: feature-branch
