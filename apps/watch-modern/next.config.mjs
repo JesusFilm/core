@@ -22,6 +22,9 @@ const withBundleAnalyzerPlugin = withBundleAnalyzer({
  * @type {import('@nx/next/plugins/with-nx').WithNxOptions}
  **/
 const nextConfig = {
+  assetPrefix: ['production', 'prod', 'stage'].includes(env.VERCEL_ENV ?? '')
+    ? '/watch/modern'
+    : '',
   swcMinify: true,
   images: {
     remotePatterns: [
