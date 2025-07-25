@@ -1,4 +1,4 @@
-import { builder } from '../../builder'
+import { builder } from '../../../builder'
 
 export const NavigateToBlockActionInput = builder.inputType(
   'NavigateToBlockActionInput',
