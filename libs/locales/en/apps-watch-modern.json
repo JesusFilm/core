@@ -1,0 +1,17 @@
+{
+  "Metadata": {
+    "pageTitle": "{title} | Jesus Film Project"
+  },
+  "RootIndexPage": {
+    "pageTitle": "Watch",
+    "title": "Free Gospel Video <underline>Streaming</underline> Library.",
+    "description": "Watch, learn and share the gospel in over 2000 languages"
+  },
+  "DatadogErrorBoundary": {
+    "somethingWentWrong": "Something went wrong",
+    "anErrorOccurred": "An error occurred while loading this page. Please try refreshing.",
+    "errorDetails": "Error details",
+    "tryAgain": "Try again",
+    "unknownError": "Unknown error"
+  }
+}

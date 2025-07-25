@@ -413,6 +413,8 @@ model Block {
   slug                    String?
   backdropBlur            Int?
   settings                Json                 @default("{}")
+  gridView                Boolean?
+  pollOptionImageId       String?              @unique
   targetActions           Action[]             @relation("Block")
   action                  Action?
   coverBlock              Block?               @relation("CoverBlock", fields: [coverBlockId], references: [id])
@@ -422,6 +424,8 @@ model Block {
   nextBlockParents        Block[]              @relation("NextBlock")
   parentBlock             Block?               @relation("ParentBlock", fields: [parentBlockId], references: [id], onDelete: Cascade)
   childBlocks             Block[]              @relation("ParentBlock")
+  pollOptionImage         Block?               @relation("PollOptionImage", fields: [pollOptionImageId], references: [id])
+  pollOptionImageParent   Block?               @relation("PollOptionImage")
   posterBlock             Block?               @relation("PosterBlock", fields: [posterBlockId], references: [id])
   posterBlockParent       Block?               @relation("PosterBlock")
   creatorImageBlockParent Journey?             @relation("CreatorImageBlock")
