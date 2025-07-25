@@ -7,7 +7,10 @@ import { useTranslation } from 'next-i18next'
 import { ReactElement, useEffect, useState } from 'react'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
-import { applyDefaultAlpha } from '@core/journeys/ui/Card/utils/colorOpacityUtils'
+import {
+  applyDefaultAlpha,
+  stripAlphaFromHex
+} from '@core/journeys/ui/Card/utils/colorOpacityUtils'
 import { useCommand } from '@core/journeys/ui/CommandProvider'
 import {
   ActiveContent,
@@ -125,16 +128,25 @@ export function BackgroundColor({
     rtl,
     locale
   })
+
+  // Helper function to process color based on isContained
+  const processColor = (color: string): string => {
+    const colorWithDefaultAlpha = applyDefaultAlpha(color)
+    return isContained
+      ? stripAlphaFromHex(colorWithDefaultAlpha)
+      : colorWithDefaultAlpha
+  }
+
   const [selectedColor, setSelectedColor] = useState(
     cardBlock?.backgroundColor
-      ? applyDefaultAlpha(cardBlock.backgroundColor)
-      : `${cardTheme.palette.background.paper}4D`
+      ? processColor(cardBlock.backgroundColor)
+      : processColor(`${cardTheme.palette.background.paper}4D`)
   )
   useEffect(() => {
     if (cardBlock?.backgroundColor != null) {
-      setSelectedColor(cardBlock.backgroundColor)
+      setSelectedColor(processColor(cardBlock.backgroundColor))
     }
-  }, [cardBlock?.backgroundColor])
+  }, [cardBlock?.backgroundColor, isContained])
 
   // Store blur as percentage (0-100%), convert to pixels when needed
   const [blurPercentage, setBlurPercentage] = useState(
@@ -184,11 +196,12 @@ export function BackgroundColor({
 
   async function handleColorChange(color: string): Promise<void> {
     if (cardBlock != null) {
-      setSelectedColor(color)
+      const newColor = processColor(color)
+      setSelectedColor(newColor)
       await add({
         parameters: {
           execute: {
-            color: color.toUpperCase()
+            color: newColor.toUpperCase()
           },
           undo: {
             color: selectedColor
@@ -324,7 +337,7 @@ export function BackgroundColor({
         color={selectedColor}
         onChange={handleColorChange}
         style={{ width: '100%', height: 125 }}
-        enableAlpha={!isContained}
+        enableAlpha={!isContained && !disableExpanded}
       />
     </Stack>
   )

@@ -134,7 +134,7 @@ describe('Card', () => {
       })
       renderWithProviders(<Card {...card} />)
 
-      screen.getByRole('button', { name: 'Filter #30313D)' })
+      screen.getByRole('button', { name: 'Filter #30313D' })
     })
 
     it('should show color value for contained cards with video background', () => {
@@ -150,7 +150,7 @@ describe('Card', () => {
       })
       renderWithProviders(<Card {...card} />)
 
-      screen.getByRole('button', { name: 'Filter #30313D)' })
+      screen.getByRole('button', { name: 'Filter #30313D' })
     })
 
     it('shows correct icons for each section', () => {

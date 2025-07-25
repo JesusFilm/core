@@ -107,7 +107,7 @@ export function Card({
   }
 
   const filterValue = isContained
-    ? `${stripAlphaFromHex(selectedCardColor).toUpperCase()})`
+    ? `${stripAlphaFromHex(selectedCardColor).toUpperCase()}`
     : `${stripAlphaFromHex(selectedCardColor).toUpperCase()} (${getOpacityFromHex(selectedCardColor)}%)`
 
   const disableExpanded = children.some(

@@ -165,6 +165,31 @@ describe('BackgroundColor', () => {
       expect(screen.queryByTestId('bgOpacityTextField')).not.toBeInTheDocument()
     })
 
+    it('strips opacity from selected color when isContained is true', () => {
+      const cardWithColor: TreeBlock<CardBlock> = {
+        ...card,
+        backgroundColor: '#FF00004D' // Red with 30% opacity
+      }
+
+      render(
+        <MockedProvider>
+          <ThemeProvider>
+            <JourneyProvider value={{ journey, variant: 'admin' }}>
+              <EditorProvider initialState={{ selectedBlock: cardWithColor }}>
+                <BackgroundColor isContained />
+              </EditorProvider>
+            </JourneyProvider>
+          </ThemeProvider>
+        </MockedProvider>
+      )
+
+      // When isContained is true, the color should be stripped of opacity
+      // The default alpha is applied first (#FF00004D), then stripped to #FF0000
+      expect(screen.getByTestId('Swatch-bg-color-#FF0000')).toHaveStyle({
+        backgroundColor: '#FF0000'
+      })
+    })
+
     it('changes color via color input field', async () => {
       const cache = new InMemoryCache()
       cache.restore({
