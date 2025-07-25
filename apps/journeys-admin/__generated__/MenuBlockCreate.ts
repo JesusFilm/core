@@ -121,6 +121,12 @@ export interface MenuBlockCreate_subHeading {
   settings: MenuBlockCreate_subHeading_settings | null;
 }
 
+export interface MenuBlockCreate_button1_action_PhoneAction {
+  __typename: "PhoneAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+}
+
 export interface MenuBlockCreate_button1_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
   parentBlockId: string;
@@ -142,7 +148,7 @@ export interface MenuBlockCreate_button1_action_EmailAction {
   email: string;
 }
 
-export type MenuBlockCreate_button1_action = MenuBlockCreate_button1_action_NavigateToBlockAction | MenuBlockCreate_button1_action_LinkAction | MenuBlockCreate_button1_action_EmailAction;
+export type MenuBlockCreate_button1_action = MenuBlockCreate_button1_action_PhoneAction | MenuBlockCreate_button1_action_NavigateToBlockAction | MenuBlockCreate_button1_action_LinkAction | MenuBlockCreate_button1_action_EmailAction;
 
 export interface MenuBlockCreate_button1_settings {
   __typename: "ButtonBlockSettings";
@@ -168,6 +174,12 @@ export interface MenuBlockCreate_button1 {
   settings: MenuBlockCreate_button1_settings | null;
 }
 
+export interface MenuBlockCreate_button2_action_PhoneAction {
+  __typename: "PhoneAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+}
+
 export interface MenuBlockCreate_button2_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
   parentBlockId: string;
@@ -189,7 +201,7 @@ export interface MenuBlockCreate_button2_action_EmailAction {
   email: string;
 }
 
-export type MenuBlockCreate_button2_action = MenuBlockCreate_button2_action_NavigateToBlockAction | MenuBlockCreate_button2_action_LinkAction | MenuBlockCreate_button2_action_EmailAction;
+export type MenuBlockCreate_button2_action = MenuBlockCreate_button2_action_PhoneAction | MenuBlockCreate_button2_action_NavigateToBlockAction | MenuBlockCreate_button2_action_LinkAction | MenuBlockCreate_button2_action_EmailAction;
 
 export interface MenuBlockCreate_button2_settings {
   __typename: "ButtonBlockSettings";
@@ -215,6 +227,12 @@ export interface MenuBlockCreate_button2 {
   settings: MenuBlockCreate_button2_settings | null;
 }
 
+export interface MenuBlockCreate_button3_action_PhoneAction {
+  __typename: "PhoneAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+}
+
 export interface MenuBlockCreate_button3_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
   parentBlockId: string;
@@ -236,7 +254,7 @@ export interface MenuBlockCreate_button3_action_EmailAction {
   email: string;
 }
 
-export type MenuBlockCreate_button3_action = MenuBlockCreate_button3_action_NavigateToBlockAction | MenuBlockCreate_button3_action_LinkAction | MenuBlockCreate_button3_action_EmailAction;
+export type MenuBlockCreate_button3_action = MenuBlockCreate_button3_action_PhoneAction | MenuBlockCreate_button3_action_NavigateToBlockAction | MenuBlockCreate_button3_action_LinkAction | MenuBlockCreate_button3_action_EmailAction;
 
 export interface MenuBlockCreate_button3_settings {
   __typename: "ButtonBlockSettings";
