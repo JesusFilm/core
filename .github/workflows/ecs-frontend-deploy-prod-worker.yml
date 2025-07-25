@@ -41,6 +41,8 @@ on:
         required: true
       DOPPLER_WATCH_TOKEN:
         required: true
+      DOPPLER_WATCH_MODERN_TOKEN:
+        required: true
       DOPPLER_WATCH_ADMIN_TOKEN:
         required: true
       DOPPLER_GITHUB_SERVICE_TOKEN:
@@ -84,11 +86,7 @@ jobs:
         with:
           key: ${{ github.repository }}-${{ steps.node-version.outputs.version }}-node-modules
           path: ./node_modules
-      - name: Mount next cache
-        uses: useblacksmith/stickydisk@v1
-        with:
-          key: ${{ github.repository }}-${{ inputs.name }}-nextjs-cache
-          path: ./apps/${{ inputs.name }}/.next
+
       - name: NPM Install
         run: npm install --silent
 
@@ -123,6 +121,7 @@ jobs:
           DOPPLER_JOURNEYS_TOKEN: ${{ secrets.DOPPLER_JOURNEYS_TOKEN }}
           DOPPLER_JOURNEYS_ADMIN_TOKEN: ${{ secrets.DOPPLER_JOURNEYS_ADMIN_TOKEN }}
           DOPPLER_WATCH_TOKEN: ${{ secrets.DOPPLER_WATCH_TOKEN }}
+          DOPPLER_WATCH_MODERN_TOKEN: ${{ secrets.DOPPLER_WATCH_MODERN_TOKEN }}
           DOPPLER_WATCH_ADMIN_TOKEN: ${{ secrets.DOPPLER_WATCH_ADMIN_TOKEN }}
           DOPPLER_GITHUB_SERVICE_TOKEN: ${{ secrets.DOPPLER_GITHUB_SERVICE_TOKEN }}
           NEXT_PUBLIC_VERCEL_ENV: prod

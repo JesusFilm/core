@@ -4,11 +4,12 @@ import { useMutation, useSuspenseQuery } from '@apollo/client'
 import Divider from '@mui/material/Divider'
 import Stack from '@mui/material/Stack'
 import { Form, Formik, FormikProps, FormikValues } from 'formik'
-import { graphql } from 'gql.tada'
 import _unescape from 'lodash/unescape'
 import { useSnackbar } from 'notistack'
-import { ReactElement } from 'react'
+import { ReactElement, useEffect, useState } from 'react'
 import { object, string } from 'yup'
+
+import { graphql } from '@core/shared/gql'
 
 import { CancelButton } from '../../../../../components/CancelButton'
 import { ResizableTextField } from '../../../../../components/ResizableTextField'
@@ -52,8 +53,42 @@ export function VideoDescription({
   videoId
 }: VideoDescriptionProps): ReactElement {
   const { enqueueSnackbar } = useSnackbar()
-  const [createVideoDescription] = useMutation(CREATE_VIDEO_DESCRIPTION)
-  const [updateVideoDescription] = useMutation(UPDATE_VIDEO_DESCRIPTION)
+  const [createdDescriptionId, setCreatedDescriptionId] = useState<
+    string | null
+  >(null)
+  const [createVideoDescription] = useMutation(CREATE_VIDEO_DESCRIPTION, {
+    refetchQueries: [
+      {
+        query: GET_VIDEO_DESCRIPTION,
+        variables: { videoId, languageId: DEFAULT_VIDEO_LANGUAGE_ID }
+      }
+    ],
+    update(cache, { data: mutationData }) {
+      if (!mutationData?.videoDescriptionCreate) return
+      const existing = cache.readQuery({
+        query: GET_VIDEO_DESCRIPTION,
+        variables: { videoId, languageId: DEFAULT_VIDEO_LANGUAGE_ID }
+      })
+      cache.writeQuery({
+        query: GET_VIDEO_DESCRIPTION,
+        variables: { videoId, languageId: DEFAULT_VIDEO_LANGUAGE_ID },
+        data: {
+          adminVideo: {
+            ...existing?.adminVideo,
+            description: [mutationData.videoDescriptionCreate]
+          }
+        }
+      })
+    }
+  })
+  const [updateVideoDescription] = useMutation(UPDATE_VIDEO_DESCRIPTION, {
+    refetchQueries: [
+      {
+        query: GET_VIDEO_DESCRIPTION,
+        variables: { videoId, languageId: DEFAULT_VIDEO_LANGUAGE_ID }
+      }
+    ]
+  })
 
   const validationSchema = object().shape({
     description: string().required('Description is required')
@@ -62,14 +97,21 @@ export function VideoDescription({
   const { data } = useSuspenseQuery(GET_VIDEO_DESCRIPTION, {
     variables: { videoId, languageId: DEFAULT_VIDEO_LANGUAGE_ID }
   })
-
   const videoDescriptions = data?.adminVideo.description
+
+  // If the query data is in sync, clear the local createdDescriptionId
+  useEffect(() => {
+    if (createdDescriptionId && videoDescriptions.length > 0) {
+      setCreatedDescriptionId(null)
+    }
+  }, [createdDescriptionId, videoDescriptions])
 
   async function handleUpdateVideoDescription(
     values: FormikValues,
     { resetForm }: FormikProps<FormikValues>
   ): Promise<void> {
-    if (videoDescriptions.length === 0) {
+    // Use local createdDescriptionId if present, otherwise fall back to query
+    if (videoDescriptions.length === 0 && !createdDescriptionId) {
       await createVideoDescription({
         variables: {
           input: {
@@ -79,11 +121,15 @@ export function VideoDescription({
             languageId: DEFAULT_VIDEO_LANGUAGE_ID
           }
         },
-        onCompleted: () => {
+        onCompleted: (mutationData) => {
           enqueueSnackbar('Video description created', {
             variant: 'success'
           })
           resetForm({ values })
+          // Set local state to force update mode until query is in sync
+          setCreatedDescriptionId(
+            mutationData?.videoDescriptionCreate?.id ?? null
+          )
         },
         onError: () => {
           enqueueSnackbar('Failed to create video description', {
@@ -92,10 +138,18 @@ export function VideoDescription({
         }
       })
     } else {
+      // Use the ID from the query if available, otherwise use the one from the most recent create mutation
+      const updateId = videoDescriptions[0]?.id || createdDescriptionId
+      if (!updateId) {
+        enqueueSnackbar('No description ID available for update', {
+          variant: 'error'
+        })
+        return
+      }
       await updateVideoDescription({
         variables: {
           input: {
-            id: videoDescriptions[0].id,
+            id: updateId,
             value: values.description
           }
         },
@@ -103,6 +157,7 @@ export function VideoDescription({
           enqueueSnackbar('Video description updated', {
             variant: 'success'
           })
+          resetForm({ values })
         },
         onError: () => {
           enqueueSnackbar('Failed to update video description', {
@@ -147,11 +202,15 @@ export function VideoDescription({
               maxRows={6}
               spellCheck={true}
               placeholder="Please enter a description, up to 5000 characters."
+              disabled={isSubmitting}
             />
             <Divider sx={{ mx: -4 }} />
             <Stack direction="row" justifyContent="flex-end" gap={1}>
               <CancelButton show={dirty} handleCancel={() => resetForm()} />
-              <SaveButton disabled={!isValid || isSubmitting || !dirty} />
+              <SaveButton
+                disabled={!isValid || isSubmitting || !dirty}
+                loading={isSubmitting}
+              />
             </Stack>
           </Stack>
         </Form>

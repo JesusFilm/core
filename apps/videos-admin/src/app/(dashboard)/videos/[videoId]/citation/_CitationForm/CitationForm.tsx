@@ -9,11 +9,12 @@ import Select from '@mui/material/Select'
 import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
 import { Form, Formik, FormikValues } from 'formik'
-import { graphql } from 'gql.tada'
 import { useRouter } from 'next/navigation'
 import { useSnackbar } from 'notistack'
 import { ReactElement } from 'react'
 import { number, object, string } from 'yup'
+
+import { graphql } from '@core/shared/gql'
 
 import { DEFAULT_VIDEO_LANGUAGE_ID } from '../../../constants'
 
@@ -170,8 +171,10 @@ export function CitationForm({
         'greaterThanVerseStart',
         'End verse must be greater than or equal to start verse',
         function (value) {
-          const { verseStart } = this.parent
-          return !value || !verseStart || value >= verseStart
+          const { verseStart, chapterStart, chapterEnd } = this.parent
+          // Only validate end verse against start verse if chapters are the same
+          const isSameChapter = !chapterEnd || chapterEnd === chapterStart
+          return !value || !verseStart || !isSameChapter || value >= verseStart
         }
       )
   })
