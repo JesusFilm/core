@@ -148,6 +148,7 @@ nx run api-media:update-arcgt-urls
 
 The script will:
 
+
 1. Find all VideoVariantDownloads with qualities: `distroLow`, `distroSd`, `distroHigh`
 2. Filter for downloads with URLs starting with `https://arc.gt`
 3. Update each URL by replacing `https://arc.gt` with `https://api-v1.arclight.org`
@@ -179,3 +180,56 @@ The script includes error handling for:
 - Individual update failures
 
 If any error occurs, the script will exit with a non-zero code and display an appropriate error message.
+
+
+## Mux Videos Script
+
+The mux videos script processes video variants to create and manage Mux video assets, update HLS URLs, and process downloads. This script performs the same functions as the mux-videos worker but can be run on-demand.
+
+### Usage
+
+```bash
+nx run api-media:mux-videos
+```
+
+### Environment Variables
+
+The script requires the following environment variables:
+
+- `MUX_ACCESS_TOKEN_ID`: Your Mux access token ID (required)
+- `MUX_SECRET_KEY`: Your Mux secret key (required)
+
+### Process
+
+The script will:
+1. **Import Mux Videos**: Create Mux assets for video variants that don't have them yet
+
+   - Processes variants with masterHeight > 720p or originId != '1'
+   - Creates Mux assets with appropriate resolution tiers (1080p, 1440p, 2160p)
+   - Links the created assets to video variants
+
+2. **Update HLS URLs**: Update streaming URLs for variants with Mux videos
+
+   - Finds variants with Mux videos but non-Mux HLS URLs
+   - Updates HLS URLs to use Mux streaming endpoints
+   - Updates playback IDs in the database
+
+3. **Process Downloads**: Create or update downloads for variants with Mux videos
+   - Processes variants that either have no downloads or have non-Mux downloads
+   - Excludes distro downloads (distroLow, distroSd, distroHigh) from replacement
+   - Creates new Mux-based downloads when static renditions are ready
+
+### Rate Limiting
+
+The script includes rate limiting with 1.5-second delays between API requests to avoid hitting Mux API limits.
+
+### Error Handling
+
+The script includes comprehensive error handling for:
+
+- Missing environment variables
+- Mux API failures
+- Database operation failures
+- Network connectivity issues
+
+If any error occurs, the script will log the error and continue processing other items when possible.
