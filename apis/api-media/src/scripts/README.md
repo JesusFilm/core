@@ -148,7 +148,6 @@ nx run api-media:update-arcgt-urls
 
 The script will:
 
-
 1. Find all VideoVariantDownloads with qualities: `distroLow`, `distroSd`, `distroHigh`
 2. Filter for downloads with URLs starting with `https://arc.gt`
 3. Update each URL by replacing `https://arc.gt` with `https://api-v1.arclight.org`
@@ -181,7 +180,6 @@ The script includes error handling for:
 
 If any error occurs, the script will exit with a non-zero code and display an appropriate error message.
 
-
 ## Mux Videos Script
 
 The mux videos script processes video variants to create and manage Mux video assets, update HLS URLs, and process downloads. This script performs the same functions as the mux-videos worker but can be run on-demand.
@@ -202,6 +200,7 @@ The script requires the following environment variables:
 ### Process
 
 The script will:
+
 1. **Import Mux Videos**: Create Mux assets for video variants that don't have them yet
 
    - Processes variants with masterHeight > 720p or originId != '1'
