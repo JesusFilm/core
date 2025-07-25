@@ -23,7 +23,7 @@ import TextField from '@mui/material/TextField'
 import { Form, Formik, FormikProps, FormikValues } from 'formik'
 import { useRouter } from 'next/navigation'
 import { useSnackbar } from 'notistack'
-import { ReactElement } from 'react'
+import { ReactElement, useEffect, useState } from 'react'
 import { object, string } from 'yup'
 
 import { graphql } from '@core/shared/gql'
@@ -125,6 +125,21 @@ export function VideoInformation({
   const theme = useTheme()
   const jesusFilmUrl = 'jesusfilm.org/watch/'
   const { enqueueSnackbar } = useSnackbar()
+  const [createdTitleId, setCreatedTitleId] = useState<string | null>(null)
+
+  // State to track validation attempts and errors
+  const [validationAttempt, setValidationAttempt] = useState<{
+    attempted: boolean
+    errors: string[]
+    values: FormikValues | null
+  }>({
+    attempted: false,
+    errors: [],
+    values: null
+  })
+
+  // State to track if current form values would pass validation for publishing
+  const [hasValidationErrors, setHasValidationErrors] = useState(false)
 
   const validationSchema = object().shape({
     title: string().trim().required('Title is required'),
@@ -133,20 +148,33 @@ export function VideoInformation({
     label: string().required('Label is required')
   })
 
-  const { data } = useSuspenseQuery(GET_VIDEO_INFORMATION, {
+  const { data, refetch } = useSuspenseQuery(GET_VIDEO_INFORMATION, {
     variables: {
       id: videoId,
       languageId: DEFAULT_VIDEO_LANGUAGE_ID
     }
   })
 
-  // Function to validate if video has all required data for publishing
-  const validateVideoForPublishing = (currentLabel?: string): string[] => {
-    const missingFields: string[] = []
-    const video = data.adminVideo
+  // If the query data is in sync, clear the local createdTitleId
+  useEffect(() => {
+    if (createdTitleId && data.adminVideo.title?.[0]?.id) {
+      setCreatedTitleId(null)
+    }
+  }, [createdTitleId, data.adminVideo.title])
 
-    // Check if video has a title
-    if (!video.title?.[0]?.value?.trim()) {
+  // Function to validate if video has all required data for publishing
+  const validateVideoForPublishing = async (
+    currentLabel?: string,
+    currentTitle?: string
+  ): Promise<string[]> => {
+    // Re-query to get the most up-to-date data
+    const { data: freshData } = await refetch()
+    const missingFields: string[] = []
+    const video = freshData.adminVideo
+
+    // Check if video has a title - use current form value if provided, otherwise use saved value
+    const titleToCheck = currentTitle?.trim() || video.title?.[0]?.value?.trim()
+    if (!titleToCheck) {
       missingFields.push('Title')
     }
 
@@ -192,19 +220,53 @@ export function VideoInformation({
     return missingFields
   }
 
-  // Component to show validation status when trying to publish
-  const ValidationStatus = ({ values }: { values: FormikValues }) => {
-    if (values.published !== 'published') return null
+  // Function to attempt publishing and handle validation
+  const attemptPublish = async (
+    values: FormikValues,
+    setFieldValue: (field: string, value: any) => void
+  ) => {
+    const missingFields = await validateVideoForPublishing(
+      values.label,
+      values.title
+    )
 
-    const missingFields = validateVideoForPublishing(values.label)
-    const video = data.adminVideo
-    const isContainerVideo =
-      values.label === 'collection' || values.label === 'series'
+    if (missingFields.length > 0) {
+      // Revert to draft and show validation errors
+      setFieldValue('published', 'unpublished')
+      setValidationAttempt({
+        attempted: true,
+        errors: missingFields,
+        values
+      })
+      setHasValidationErrors(true)
+      return false
+    }
 
-    // Only show alert if there are missing fields
-    if (missingFields.length === 0) {
+    // Clear validation attempt state if validation passes
+    setValidationAttempt({
+      attempted: false,
+      errors: [],
+      values: null
+    })
+    setHasValidationErrors(false)
+    return true
+  }
+
+  // Component to show validation status after failed publish attempt
+  const ValidationStatus = ({
+    values,
+    setFieldValue
+  }: {
+    values: FormikValues
+    setFieldValue: (field: string, value: any) => void
+  }) => {
+    // Show validation errors if there was an attempt to publish that failed
+    if (!validationAttempt.attempted || validationAttempt.errors.length === 0) {
       return null
     }
+
+    const isContainerVideo =
+      values.label === 'collection' || values.label === 'series'
 
     // Create field descriptions with explanations
     const fieldDescriptions: Record<string, string> = {
@@ -219,15 +281,32 @@ export function VideoInformation({
         : 'At least one published video variant with streaming content is required'
     }
 
+    const handleTryAgain = async () => {
+      // Clear current validation state first
+      setValidationAttempt({
+        attempted: false,
+        errors: [],
+        values: null
+      })
+
+      // Attempt to publish again with current form values
+      const canPublish = await attemptPublish(values, setFieldValue)
+      if (canPublish) {
+        // If validation passes, set status to published
+        setFieldValue('published', 'published')
+      }
+      // If validation fails, attemptPublish will handle setting the errors and reverting status
+    }
+
     return (
-      <Alert severity="warning" sx={{ mb: 2 }}>
-        <AlertTitle>Missing Required Fields</AlertTitle>
+      <Alert severity="error" sx={{ mb: 2 }}>
+        <AlertTitle>Cannot Publish - Missing Required Fields</AlertTitle>
         The following fields must be completed before publishing:
-        <List dense sx={{ mt: 1 }}>
-          {missingFields.map((field) => (
+        <List dense sx={{ mt: 1, mb: 2 }}>
+          {validationAttempt.errors.map((field) => (
             <ListItem key={field} sx={{ py: 0 }}>
               <ListItemIcon sx={{ minWidth: 24 }}>
-                <WarningIcon color="warning" fontSize="small" />
+                <WarningIcon color="error" fontSize="small" />
               </ListItemIcon>
               <ListItemText
                 primary={field}
@@ -237,6 +316,15 @@ export function VideoInformation({
             </ListItem>
           ))}
         </List>
+        <Button
+          variant="outlined"
+          color="primary"
+          size="small"
+          onClick={handleTryAgain}
+          sx={{ mt: 1 }}
+        >
+          Try Again
+        </Button>
       </Alert>
     )
   }
@@ -247,7 +335,7 @@ export function VideoInformation({
   ): Promise<void> {
     // If trying to publish, validate required fields first
     if (values.published === 'published') {
-      const missingFields = validateVideoForPublishing(values.label)
+      const missingFields = await validateVideoForPublishing(values.label)
       if (missingFields.length > 0) {
         enqueueSnackbar(
           `Cannot publish video. Missing required fields: ${missingFields.join(', ')}. Please complete all required content before publishing.`,
@@ -260,7 +348,7 @@ export function VideoInformation({
       }
     }
 
-    let titleId = data.adminVideo.title[0]?.id ?? null
+    let titleId = data.adminVideo.title[0]?.id ?? createdTitleId
     const params = new URLSearchParams('')
     params.append('update', 'information')
     router.push(`?${params.toString()}`, { scroll: false })
@@ -290,6 +378,12 @@ export function VideoInformation({
       }
 
       titleId = res.data.videoTitleCreate.id
+      setCreatedTitleId(titleId)
+    }
+
+    if (!titleId) {
+      enqueueSnackbar('No title ID available for update', { variant: 'error' })
+      return
     }
 
     await updateVideoInformation({
@@ -321,6 +415,34 @@ export function VideoInformation({
     })
   }
 
+  // Handle status change with validation attempt
+  const handleStatusChange = async (
+    event: any,
+    setFieldValue: (field: string, value: any) => void,
+    values: FormikValues
+  ) => {
+    const newStatus = event.target.value
+
+    if (newStatus === 'published') {
+      // Attempt to validate for publishing
+      const canPublish = await attemptPublish(values, setFieldValue)
+      if (!canPublish) {
+        // attemptPublish already reverted to unpublished and set validation errors
+        return
+      }
+    } else {
+      // Clear validation attempt state when switching to draft
+      setValidationAttempt({
+        attempted: false,
+        errors: [],
+        values: null
+      })
+      setHasValidationErrors(false)
+    }
+
+    setFieldValue('published', newStatus)
+  }
+
   return (
     <Formik
       initialValues={{
@@ -341,7 +463,8 @@ export function VideoInformation({
         isValid,
         isSubmitting,
         dirty,
-        resetForm
+        resetForm,
+        setFieldValue
       }) => (
         <Form>
           <Stack gap={2}>
@@ -362,7 +485,6 @@ export function VideoInformation({
                 onChange={handleChange}
                 helperText={errors.title as string}
                 sx={{ flexGrow: 1 }}
-                spellCheck={true}
                 placeholder="Please enter a title, up to 60 characters."
               />
               <TextField
@@ -424,7 +546,9 @@ export function VideoInformation({
                   name="published"
                   label="Status"
                   value={values.published}
-                  onChange={handleChange}
+                  onChange={(event) =>
+                    handleStatusChange(event, setFieldValue, values)
+                  }
                 >
                   {videoStatuses.map(({ label, value }) => (
                     <MenuItem key={value} value={value}>
@@ -475,10 +599,12 @@ export function VideoInformation({
               primaryLanguageId={data.adminVideo.primaryLanguageId}
               initialKeywords={values.keywords}
               onChange={(keywords) =>
-                handleChange({ target: { name: 'keywords', value: keywords } })
+                handleChange({
+                  target: { name: 'keywords', value: keywords }
+                })
               }
             />
-            <ValidationStatus values={values} />
+            <ValidationStatus values={values} setFieldValue={setFieldValue} />
             <Divider sx={{ mx: -4 }} />
             <Stack direction="row" justifyContent="flex-end" gap={1}>
               <CancelButton show={dirty} handleCancel={() => resetForm()} />
@@ -487,9 +613,9 @@ export function VideoInformation({
                   !isValid ||
                   isSubmitting ||
                   !dirty ||
-                  (values.published === 'published' &&
-                    validateVideoForPublishing(values.label).length > 0)
+                  (values.published === 'published' && hasValidationErrors)
                 }
+                loading={isSubmitting}
               />
             </Stack>
           </Stack>
