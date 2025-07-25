@@ -1372,6 +1372,12 @@ export type LinkActionInput = {
   url: Scalars['String']['input'];
 };
 
+export enum MaxResolutionTier {
+  Fhd = 'fhd',
+  Qhd = 'qhd',
+  Uhd = 'uhd'
+}
+
 export type MeInput = {
   redirect?: InputMaybe<Scalars['String']['input']>;
 };
@@ -1818,6 +1824,7 @@ export type MutationCreateKeywordArgs = {
 
 export type MutationCreateMuxVideoUploadByFileArgs = {
   downloadable?: InputMaybe<Scalars['Boolean']['input']>;
+  maxResolution?: InputMaybe<MaxResolutionTier>;
   name: Scalars['String']['input'];
   userGenerated?: InputMaybe<Scalars['Boolean']['input']>;
 };
@@ -1825,6 +1832,7 @@ export type MutationCreateMuxVideoUploadByFileArgs = {
 
 export type MutationCreateMuxVideoUploadByUrlArgs = {
   downloadable?: InputMaybe<Scalars['Boolean']['input']>;
+  maxResolution?: InputMaybe<MaxResolutionTier>;
   url: Scalars['String']['input'];
   userGenerated?: InputMaybe<Scalars['Boolean']['input']>;
 };
@@ -2084,8 +2092,8 @@ export type MutationRadioQuestionBlockCreateArgs = {
 
 
 export type MutationRadioQuestionBlockUpdateArgs = {
+  gridView?: InputMaybe<Scalars['Boolean']['input']>;
   id: Scalars['ID']['input'];
-  journeyId?: InputMaybe<Scalars['ID']['input']>;
   parentBlockId: Scalars['ID']['input'];
 };
 
@@ -2593,6 +2601,8 @@ export type MutationJourneyLanguageAiDetectInput = {
 };
 
 export type MutationShortLinkCreateInput = {
+  /** bitrate of the video variant download */
+  bitrate?: InputMaybe<Scalars['Int']['input']>;
   /** brightcove video ID for video redirects */
   brightcoveId?: InputMaybe<Scalars['String']['input']>;
   /** the fully qualified domain name (FQDN) to redirect the short link service should redirect the user to */
@@ -2658,6 +2668,8 @@ export type MutationShortLinkDomainUpdateSuccess = {
 };
 
 export type MutationShortLinkUpdateInput = {
+  /** bitrate of the video variant download */
+  bitrate?: InputMaybe<Scalars['Int']['input']>;
   /** brightcove video ID for video redirects */
   brightcoveId?: InputMaybe<Scalars['String']['input']>;
   id: Scalars['String']['input'];
@@ -3564,6 +3576,12 @@ export type RadioOptionBlock = Block & {
   label: Scalars['String']['output'];
   parentBlockId?: Maybe<Scalars['ID']['output']>;
   parentOrder?: Maybe<Scalars['Int']['output']>;
+  /**
+   * pollOptionImageId is present if a child block should be used as a poll option image.
+   * This child block should not be rendered normally, instead it should be used
+   * as a poll option image. Blocks are often of type ImageBlock
+   */
+  pollOptionImageId?: Maybe<Scalars['ID']['output']>;
 };
 
 export type RadioOptionBlockCreateInput = {
@@ -3576,10 +3594,12 @@ export type RadioOptionBlockCreateInput = {
 export type RadioOptionBlockUpdateInput = {
   label?: InputMaybe<Scalars['String']['input']>;
   parentBlockId?: InputMaybe<Scalars['ID']['input']>;
+  pollOptionImageId?: InputMaybe<Scalars['ID']['input']>;
 };
 
 export type RadioQuestionBlock = Block & {
   __typename?: 'RadioQuestionBlock';
+  gridView?: Maybe<Scalars['Boolean']['output']>;
   id: Scalars['ID']['output'];
   journeyId: Scalars['ID']['output'];
   parentBlockId?: Maybe<Scalars['ID']['output']>;
@@ -3652,6 +3672,8 @@ export enum Service {
 /** A short link that redirects to a full URL */
 export type ShortLink = {
   __typename?: 'ShortLink';
+  /** bitrate of the video variant download */
+  bitrate?: Maybe<Scalars['Int']['output']>;
   /** brightcove video ID for video redirects */
   brightcoveId?: Maybe<Scalars['String']['output']>;
   domain: ShortLinkDomain;

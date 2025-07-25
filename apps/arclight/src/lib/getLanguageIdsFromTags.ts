@@ -1,4 +1,4 @@
-import { ResultOf, graphql } from 'gql.tada'
+import { ResultOf, graphql } from '@core/shared/gql'
 
 import { getApolloClient } from './apolloClient'
 import { generateCacheKey, getWithStaleCache } from './cache'

@@ -1,10 +1,10 @@
 'use client'
 
 import { useMutation, useSuspenseQuery } from '@apollo/client'
-import { graphql } from 'gql.tada'
 import { useRouter } from 'next/navigation'
 import { enqueueSnackbar } from 'notistack'
 
+import { graphql } from '@core/shared/gql'
 import { Dialog } from '@core/shared/ui/Dialog'
 
 const REMOVE_VIDEO_CHILD = graphql(`
@@ -95,17 +95,17 @@ export default function DeleteChild({
         })
       }
       dialogTitle={{
-        title: 'Delete Child Video',
+        title: 'Remove Child Video',
         closeButton: true
       }}
       dialogAction={{
         onSubmit: handleRemoveChild,
-        submitLabel: 'Delete',
+        submitLabel: 'Remove',
         closeLabel: 'Cancel'
       }}
       loading={loading}
     >
-      {`Are you sure you want to delete the video child? This action cannot be undone.`}
+      {`Are you sure you want to remove the video child? This will not delete the child, but will remove it from the parent association. This action cannot be undone.`}
     </Dialog>
   )
 }

@@ -16,13 +16,6 @@
     "noEmit": true,
     "strict": true,
     "incremental": true,
-    "tsBuildInfoFile": "../../.cache/api-journeys-modern/tsc/.tsbuildinfo",
-    "plugins": [
-      {
-        "name": "gql.tada/ts-plugin",
-        "schema": "../api-gateway/schema.graphql",
-        "tadaOutputLocation": "./apis/api-journeys-modern/src/__generated__/graphql-env.d.ts"
-      }
-    ]
+    "tsBuildInfoFile": "../../.cache/api-journeys-modern/tsc/.tsbuildinfo"
   }
 }
