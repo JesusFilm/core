@@ -1,1 +1,179 @@
 @import 'tailwindcss';
+
+@theme {
+  --font-sans:
+    'Montserrat', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji',
+    'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+
+  /* Watch Modern Color System - Extracted from watch app */
+  --color-primary: #cb333b;
+  --color-primary-light: #f8485e;
+  --color-primary-dark: #a4343a;
+  --color-secondary: #424a66;
+  --color-secondary-light: #7283be;
+  --color-secondary-dark: #353c55;
+  --color-error: #ef3340;
+
+  /* Light Mode Colors */
+  --color-text-primary: #252424;
+  --color-text-secondary: #4d4d4d;
+  --color-text-disabled: #aaacbb;
+  --color-background: oklch(0.145 0 0);
+  --color-background-paper: #ffffff;
+
+  /* Dark Mode Colors (Primary theme for watch-modern) */
+  --color-dark-primary: #cb333b;
+  --color-dark-secondary: #bbbcbc;
+  --color-dark-secondary-light: #ededed;
+  --color-dark-secondary-dark: #939494;
+  --color-dark-error: #ef3340;
+  --color-dark-text-primary: #ffffff;
+  --color-dark-text-secondary: #4d4d4d;
+  --color-dark-text-disabled: #4d4d4d;
+  --color-dark-background: #131111;
+  --color-dark-background-paper: #303030;
+
+  /* Watch Modern specific colors */
+  --color-bg-primary: #131111;
+  --color-bg-overlay: rgba(0, 0, 0, 0.1);
+  --color-text-muted: #bbbcbc;
+  --color-text-accent: rgba(254, 16, 48, 0.7);
+
+  /* Blur effect custom properties */
+  --blur-backdrop: brightness(0.6) blur(40px);
+}
+
+/* Base layer - Global resets and element defaults */
+@layer base {
+  body {
+    @apply font-sans text-white bg-[#131111];
+  }
+}
+
+/* Components layer - Reusable component patterns */
+@layer components {
+  /* Container Patterns - Extracted from analysis */
+  .container-standard {
+    @apply max-w-[1920px] mx-auto;
+  }
+
+  .full-height {
+    @apply min-h-screen;
+  }
+
+  .hero-height {
+    @apply h-[90vh] md:h-[80vh];
+  }
+
+  /* Responsive Padding System - Matches watch app patterns */
+  .responsive-padding {
+    @apply px-4 sm:px-6 md:px-8 lg:px-10 xl:px-12;
+  }
+
+  .responsive-padding-2xl {
+    @apply px-4 sm:px-6 md:px-8 lg:px-10 xl:px-12 2xl:px-20;
+  }
+
+  /* Content and Section Gaps */
+  .content-gap {
+    @apply gap-20;
+  }
+
+  .section-gap {
+    @apply gap-5;
+  }
+
+  /* Layout Patterns */
+  .space-between {
+    @apply flex justify-between items-center;
+  }
+
+  .flex-end {
+    @apply flex items-end;
+  }
+
+  .content-grid-home {
+    @apply grid grid-cols-1 gap-20;
+  }
+
+  /* Position Patterns */
+  .sticky-top {
+    @apply sticky top-0;
+  }
+
+  .absolute-overlay {
+    @apply absolute inset-0;
+  }
+
+  /* Blur and Backdrop Effects */
+  .blur-overlay {
+    backdrop-filter: var(--blur-backdrop);
+    @apply bg-black/10;
+  }
+
+  .page-blur-filter {
+    @apply bg-[#131111] text-white relative font-sans min-h-screen;
+  }
+
+  .blur-filter-layer {
+    @apply max-w-[1920px] mx-auto sticky h-screen top-0 bg-black/10 z-[1];
+    backdrop-filter: var(--blur-backdrop);
+  }
+
+  .content-container {
+    @apply max-w-[1920px] mx-auto overflow-hidden -mt-[100vh];
+  }
+
+  /* Responsive Hide/Show Patterns */
+  .hide-mobile {
+    @apply hidden xl:block;
+  }
+
+  .show-mobile {
+    @apply block xl:hidden;
+  }
+
+  /* Text Color Patterns */
+  .text-muted {
+    @apply text-[#bbbcbc];
+  }
+
+  .text-accent {
+    color: var(--color-text-accent);
+  }
+
+  /* Gradient Masks */
+  .gradient-mask-bottom {
+    mask-image: linear-gradient(
+      to bottom,
+      rgba(0, 0, 0, 1) 50%,
+      transparent 100%
+    );
+  }
+}
+
+/* Utilities layer - Highest specificity utilities */
+@layer utilities {
+  /* Z-Index System */
+  .z-background {
+    @apply z-0;
+  }
+  .z-blur-layer {
+    @apply z-[1];
+  }
+  .z-content {
+    @apply z-[2];
+  }
+  .z-header {
+    @apply z-[10];
+  }
+  .z-modal {
+    @apply z-[99];
+  }
+
+  /* Scroll behavior */
+  .scroll-snap-start-always {
+    scroll-snap-align: start;
+    scroll-snap-stop: always;
+  }
+}

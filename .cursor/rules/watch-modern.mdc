@@ -1,7 +1,7 @@
 ---
-description: 
+description:
 globs: apps/watch-modern/**
-alwaysApply: false
+alwaysApply: true
 ---
 
 # Watch-Modern Rules
@@ -23,23 +23,138 @@ alwaysApply: false
 
 ### Code Implementation Guidelines
 
+**CRITICAL CONSTRAINT**: Watch-modern must NEVER import or use MUI (@mui/material) components. This is a hard requirement.
+
+**UI Component Hierarchy** (in order of preference):
+
+1. **Shadcn/ui components** - Primary choice for all UI needs
+2. **Custom Tailwind components** - If shadcn/ui doesn't exist, build with Tailwind CSS
+3. **Semantic HTML + Tailwind** - For basic elements when neither above applies
+
+**NEVER use**: MUI components, styled-components, CSS modules, or any non-Tailwind styling approaches.
+
 Follow these rules when you write code:
 
 - Use early returns whenever possible to make the code more readable.
-- Prefer shadcn/ui components over custom implementations or raw HTML elements. If a shadcn/ui component does not exist, use semantic HTML and Tailwind CSS, and document the reason.
+- **ALWAYS prefer shadcn/ui components** over any other UI library or custom implementations. If a shadcn/ui component does not exist, use semantic HTML and Tailwind CSS, and document the reason.
+- **NO MUI imports** - Never import anything from @mui/material, @mui/lab, @mui/icons-material, or related MUI packages.
 - Use descriptive variable and function/const names. Also, event functions should be named with a “handle” prefix, like “handleClick” for onClick and “handleKeyDown” for onKeyDown.
 - Implement accessibility features on elements. For example, a tag should have a tabindex=“0”, aria-label, on:click, and on:keydown, and similar attributes.
 - “All components and functions must be fully typed with TypeScript.”
 
-
 ### Testing Implementation Guidelines
 
-Follow these rules when you write tests in the frontend: 
+**CRITICAL REQUIREMENT**: All development must follow Test-Driven Development (TDD) methodology.
 
-- use '@testing-library/react' npm package
+**TDD Process Requirements**:
 
+- **Red-Green-Refactor Cycle**: Always follow the three-step TDD cycle
+  1. **Red**: Write failing tests first before any implementation
+  2. **Green**: Write minimal code to make tests pass
+  3. **Refactor**: Improve code while maintaining test coverage
+- **Test First**: Never write implementation code before corresponding tests exist
+- **Existing Test Verification**: Before modifying existing code, run and verify all existing tests
+
+**Testing Technology Stack**:
+
+- use '@testing-library/react' npm package for component testing
+- use Jest for test framework and assertions
+- use '@testing-library/user-event' for user interaction testing
+- use '@testing-library/jest-dom' for custom Jest matchers
 
 ## Documentation Guidelines
 
 - All components must have JSDoc comments, including examples and prop documentation.
 - Keep documentation up to date with code changes.
+
+## Layout Component Patterns
+
+**Component Organization**:
+
+- Layout components go in `src/components/Layout/`
+- Export all components through index.ts files
+- Use alphabetical order for imports and exports
+
+**Layout Naming Conventions**:
+
+- Use semantic names: `PageLayout`, `Header`, `Footer`
+- Prefix interface names with component name: `PageLayoutProps`
+- Use descriptive JSDoc with @example blocks
+
+**CSS Class Patterns**:
+
+- Use component classes from globals.css: `.container-standard`, `.responsive-padding`, `.space-between`
+- Follow z-index system: `.z-header`, `.z-content`, `.z-modal`
+- Use responsive patterns: `.hide-mobile`, `.show-mobile`
+
+**Linting Requirements**:
+
+- Extract string literals to constants (avoid inline string literals)
+- Use type-only imports for React types: `import type { ReactElement }`
+- Maintain alphabetical import order
+
+## Component Implementation Patterns
+
+**React Component Structure**:
+
+- Always include comprehensive JSDoc with @param and @example blocks
+- Define interfaces above the component function
+- Use destructured props with default values
+- Extract constants for all text content to avoid literal string errors
+
+**Component Props Patterns**:
+
+- Use optional props with sensible defaults: `hideHeader = false`
+- Include className prop for extensibility: `className?: string`
+- Use ReactNode for children and content slots: `children?: ReactNode`
+- Name interfaces with component name prefix: `ComponentNameProps`
+
+**Layout Integration Patterns**:
+
+- Use semantic HTML elements: `<header>`, `<main>`, `<footer>`
+- Apply z-index classes semantically: `.z-header`, `.z-content`
+- Use container and responsive padding patterns consistently
+- Implement responsive behavior with established hide/show classes
+
+## Test-Driven Development Patterns
+
+**Component Testing Workflow**:
+
+1. **Write test file first**: Create `ComponentName.spec.tsx` before `ComponentName.tsx`
+2. **Test component rendering**: Verify component renders without crashing
+3. **Test props and interactions**: Test all props, user interactions, and state changes
+4. **Test accessibility**: Ensure proper ARIA labels, keyboard navigation, screen reader support
+5. **Test responsive behavior**: Verify hide/show patterns and responsive classes
+
+**Test File Organization**:
+
+- Place test files adjacent to components: `ComponentName.spec.tsx`
+- Use descriptive test names: `should render header with correct brand text`
+- Group related tests with `describe` blocks
+- Use `beforeEach` for common setup, `afterEach` for cleanup
+
+**Testing Layout Components**:
+
+- Test CSS class application: `.container-standard`, `.responsive-padding`
+- Test conditional rendering: `hideHeader`, `hideFooter` props
+- Test responsive behavior: mobile/desktop class visibility
+- Test accessibility: semantic HTML elements, ARIA attributes
+
+**Example TDD Workflow**:
+
+```typescript
+// 1. RED: Write failing test first
+describe('MyComponent', () => {
+  it('should render with correct text', () => {
+    render(<MyComponent text="Hello" />)
+    expect(screen.getByText('Hello')).toBeInTheDocument()
+  })
+})
+
+// 2. GREEN: Write minimal implementation
+export function MyComponent({ text }: { text: string }) {
+  return <div>{text}</div>
+}
+
+// 3. REFACTOR: Improve while maintaining tests
+```
