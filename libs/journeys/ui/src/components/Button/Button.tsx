@@ -25,6 +25,7 @@ import { getStepHeading } from '../../libs/getStepHeading'
 import { useJourney } from '../../libs/JourneyProvider'
 import { JourneyPlausibleEvents } from '../../libs/plausibleHelpers'
 import { keyify } from '../../libs/plausibleHelpers/plausibleHelpers'
+import { bestContrastTextColor } from '../Card/utils/colorOpacityUtils'
 import { Icon } from '../Icon'
 import { IconFields } from '../Icon/__generated__/IconFields'
 
@@ -281,6 +282,16 @@ export function Button({
     handleAction(router, action, nextStepSlug)
   }
 
+  const effectiveColor = settings?.color ?? buttonColor
+
+  const hasSettingsColor = settings?.color != null
+
+  const textColor = useMemo(
+    () =>
+      hasSettingsColor ? bestContrastTextColor(settings?.color ?? '') : null,
+    [hasSettingsColor, settings?.color]
+  )
+
   return (
     // Margin added via Box so it's ignored by admin selection border outline
     <Box
@@ -302,12 +313,12 @@ export function Button({
       <MuiButton
         type={buttonType}
         variant={buttonVariant ?? ButtonVariant.contained}
-        color={buttonColor ?? undefined}
         size={size ?? undefined}
         startIcon={startIcon != null ? <Icon {...startIcon} /> : undefined}
         endIcon={endIcon != null ? <Icon {...endIcon} /> : undefined}
         onClick={handleClick}
         sx={{
+          backgroundColor: effectiveColor,
           outline: '2px solid',
           outlineColor: editableLabel != null ? '#C52D3A' : 'transparent',
           outlineOffset: '5px',
@@ -325,7 +336,7 @@ export function Button({
                         return `${buttonColor ?? 'transparent'}`
                       case ButtonVariant.contained:
                       default:
-                        return `${buttonColor ?? 'primary'}.main`
+                        return effectiveColor
                     }
                   })()
                 }
@@ -338,7 +349,8 @@ export function Button({
           sx={{
             overflowWrap: 'break-word',
             wordBreak: 'break-word',
-            width: 'inherit'
+            width: 'inherit',
+            color: textColor
           }}
         >
           {editableLabel != null

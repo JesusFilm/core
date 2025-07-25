@@ -86,6 +86,11 @@ export const cache = (): InMemoryCache =>
       },
       LinkAction: { keyFields: ['parentBlockId'] },
       EmailAction: { keyFields: ['parentBlockId'] },
-      NavigateToBlockAction: { keyFields: ['parentBlockId'] }
+      NavigateToBlockAction: { keyFields: ['parentBlockId'] },
+      ButtonBlockSettings: {
+        merge(existing, incoming) {
+          return { ...existing, ...incoming }
+        }
+      }
     }
   })

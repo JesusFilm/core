@@ -45,6 +45,10 @@ export interface TextResponseWithButtonRestore_textResponse_ButtonBlock_settings
    * Alignment of the button
    */
   alignment: ButtonAlignment | null;
+  /**
+   * Color of the button
+   */
+  color: string | null;
 }
 
 export interface TextResponseWithButtonRestore_textResponse_ButtonBlock {
@@ -492,6 +496,10 @@ export interface TextResponseWithButtonRestore_button_ButtonBlock_settings {
    * Alignment of the button
    */
   alignment: ButtonAlignment | null;
+  /**
+   * Color of the button
+   */
+  color: string | null;
 }
 
 export interface TextResponseWithButtonRestore_button_ButtonBlock {
@@ -939,6 +947,10 @@ export interface TextResponseWithButtonRestore_startIcon_ButtonBlock_settings {
    * Alignment of the button
    */
   alignment: ButtonAlignment | null;
+  /**
+   * Color of the button
+   */
+  color: string | null;
 }
 
 export interface TextResponseWithButtonRestore_startIcon_ButtonBlock {
@@ -1386,6 +1398,10 @@ export interface TextResponseWithButtonRestore_endIcon_ButtonBlock_settings {
    * Alignment of the button
    */
   alignment: ButtonAlignment | null;
+  /**
+   * Color of the button
+   */
+  color: string | null;
 }
 
 export interface TextResponseWithButtonRestore_endIcon_ButtonBlock {
