@@ -2,6 +2,9 @@ import { encode } from 'blurhash'
 import fetch from 'node-fetch'
 import sharp from 'sharp'
 
+// Safe default blurhash with 24 characters (4x4 components)
+const DEFAULT_BLURHASH = 'L9AJ$Nof00WB~qofM{of00WB~qj['
+
 export async function generateBlurhashAndMetadataFromUrl(
   imageUrl: string
 ): Promise<{
@@ -28,7 +31,7 @@ export async function generateBlurhashAndMetadataFromUrl(
     )
 
     return { blurhash, width, height }
-  } catch (error) {
-    return { blurhash: '', width: 0, height: 0 }
+  } catch {
+    return { blurhash: DEFAULT_BLURHASH, width: 0, height: 0 }
   }
 }
