@@ -200,12 +200,6 @@
         "parallel": false
       }
     },
-    "codegen": {
-      "executor": "nx:run-commands",
-      "options": {
-        "command": "gql.tada generate output --tsconfig apis/api-media/tsconfig.json"
-      }
-    },
     "data-export": {
       "executor": "nx:run-commands",
       "options": {
@@ -228,6 +222,12 @@
       "executor": "nx:run-commands",
       "options": {
         "command": "npm run ts-node apis/api-media/src/scripts/copy-distro-downloads.ts"
+      }
+    },
+    "mux-videos": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npm run ts-node apis/api-media/src/scripts/mux-videos.ts"
       }
     }
   }

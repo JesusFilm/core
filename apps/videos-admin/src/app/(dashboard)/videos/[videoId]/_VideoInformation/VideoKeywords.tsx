@@ -8,9 +8,10 @@ import ListItem from '@mui/material/ListItem'
 import ListItemButton from '@mui/material/ListItemButton'
 import ListItemText from '@mui/material/ListItemText'
 import TextField from '@mui/material/TextField'
-import { graphql } from 'gql.tada'
 import { useSnackbar } from 'notistack'
 import { useEffect, useMemo, useState } from 'react'
+
+import { graphql } from '@core/shared/gql'
 
 interface VideoKeywordsProps {
   primaryLanguageId: string

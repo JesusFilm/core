@@ -1,6 +1,5 @@
-import { graphql } from 'gql.tada'
-
 import { LanguageRole } from '.prisma/api-languages-client'
+import { graphql } from '@core/shared/gql'
 
 import { getClient } from '../../../test/client'
 import { prismaMock } from '../../../test/prismaMock'
