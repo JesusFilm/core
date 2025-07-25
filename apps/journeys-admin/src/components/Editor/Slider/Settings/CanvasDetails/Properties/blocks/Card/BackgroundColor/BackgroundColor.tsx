@@ -146,6 +146,7 @@ export function BackgroundColor({
     if (cardBlock?.backgroundColor != null) {
       setSelectedColor(processColor(cardBlock.backgroundColor))
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [cardBlock?.backgroundColor, isContained])
 
   // Store blur as percentage (0-100%), convert to pixels when needed
@@ -195,8 +196,32 @@ export function BackgroundColor({
   }
 
   async function handleColorChange(color: string): Promise<void> {
+    // Cap opacity at 99% to prevent invalid colors from react-colorful
+    if (color.length === 8) {
+      const alphaHex = color.slice(-2)
+      const alphaDecimal = parseInt(alphaHex, 16)
+      const opacityPercentage = Math.round((alphaDecimal / 255) * 100)
+
+      if (opacityPercentage > 99) {
+        const baseColor = color.slice(0, 7)
+        color = `${baseColor}FD`
+      }
+    }
+
+    // Preserve current alpha when color picker sends 6-digit colors
+    if (color.length === 7 && !isContained && !disableExpanded) {
+      const currentAlpha =
+        selectedColor.length === 8
+          ? selectedColor.slice(-2)
+          : selectedColor.length === 7
+            ? '4D' // 30% default for 6-digit colors
+            : 'FF' // 100% default fallback
+      color = `${color}${currentAlpha}`
+    }
+
     if (cardBlock != null) {
-      const newColor = processColor(color)
+      const newColor =
+        !isContained && !disableExpanded ? color : processColor(color)
       setSelectedColor(newColor)
       await add({
         parameters: {

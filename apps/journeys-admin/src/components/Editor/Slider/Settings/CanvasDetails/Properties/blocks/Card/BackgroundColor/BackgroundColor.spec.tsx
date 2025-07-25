@@ -9,6 +9,10 @@ import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
 import { BlockFields_CardBlock as CardBlock } from '../../../../../../../../../../__generated__/BlockFields'
 import {
+  CardBlockBackdropBlurUpdate,
+  CardBlockBackdropBlurUpdateVariables
+} from '../../../../../../../../../../__generated__/CardBlockBackdropBlurUpdate'
+import {
   CardBlockBackgroundColorUpdate,
   CardBlockBackgroundColorUpdateVariables
 } from '../../../../../../../../../../__generated__/CardBlockBackgroundColorUpdate'
@@ -489,6 +493,68 @@ describe('BackgroundColor', () => {
       fireEvent.mouseUp(slider)
 
       await waitFor(() => expect(result).toHaveBeenCalled())
+    })
+
+    it('caps opacity at 99% when color picker exceeds 99%', async () => {
+      const cache = new InMemoryCache()
+      cache.restore({
+        'Journey:journeyId': {
+          blocks: [{ __ref: 'CardBlock:card1.id' }],
+          id: 'journeyId',
+          __typename: 'Journey'
+        }
+      })
+
+      const mockCardBlockBackgroundColorUpdate: MockedResponse<
+        CardBlockBackdropBlurUpdate,
+        CardBlockBackdropBlurUpdateVariables
+      > = {
+        request: {
+          query: CARD_BLOCK_BACKDROP_BLUR_UPDATE,
+          variables: {
+            id: 'card1.id',
+            input: { backdropBlur: 25 }
+          }
+        },
+        result: jest.fn(() => ({
+          data: {
+            cardBlockUpdate: {
+              __typename: 'CardBlock',
+              id: 'card1.id',
+              backdropBlur: 25
+            }
+          }
+        }))
+      }
+
+      render(
+        <MockedProvider
+          cache={cache}
+          mocks={[mockCardBlockBackgroundColorUpdate]}
+        >
+          <ThemeProvider>
+            <JourneyProvider value={{ journey, variant: 'admin' }}>
+              <EditorProvider initialState={{ selectedBlock: fullscreenCard }}>
+                <BackgroundColor />
+              </EditorProvider>
+            </JourneyProvider>
+          </ThemeProvider>
+        </MockedProvider>
+      )
+
+      const slider = screen.getByLabelText('Backdrop blur slider')
+      const input = screen
+        .getByLabelText('Blur amount as percentage')
+        .querySelector('input')
+
+      fireEvent.change(slider, { target: { value: '110' } })
+      expect(input).toHaveValue('100%')
+
+      fireEvent.mouseUp(slider)
+
+      await waitFor(() =>
+        expect(mockCardBlockBackgroundColorUpdate.result).toHaveBeenCalled()
+      )
     })
 
     it('updates blur via text input', async () => {
