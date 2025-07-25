@@ -9,6 +9,16 @@ import { InstantSearch } from 'react-instantsearch'
 import { useInstantSearchClient } from '@core/journeys/ui/algolia/InstantSearchProvider'
 
 import {
+  GetLanguagesSlug,
+  GetLanguagesSlugVariables,
+  GetLanguagesSlug_video_variantLanguagesWithSlug as VideoAudioLanguage
+} from '../../../../__generated__/GetLanguagesSlug'
+import {
+  GetSubtitles,
+  GetSubtitlesVariables,
+  GetSubtitles_video_variant_subtitle as VideoVariantSubtitle
+} from '../../../../__generated__/GetSubtitles'
+import {
   GetVideoContainerPart2,
   GetVideoContainerPart2Variables
 } from '../../../../__generated__/GetVideoContainerPart2'
@@ -18,16 +28,22 @@ import {
 } from '../../../../__generated__/GetVideoContentPart3'
 import { VideoContentFields } from '../../../../__generated__/VideoContentFields'
 import i18nConfig from '../../../../next-i18next.config'
+import { GET_LANGUAGES_SLUG } from '../../../../src/components/AudioLanguageDialog/AudioLanguageDialog'
 import { NewVideoContentPage } from '../../../../src/components/NewVideoContentPage'
+import { GET_SUBTITLES } from '../../../../src/components/SubtitleDialog/SubtitleDialog'
 import { createApolloClient } from '../../../../src/libs/apolloClient'
 import { getCookie } from '../../../../src/libs/cookieHandler'
 import { getFlags } from '../../../../src/libs/getFlags'
+import { getLanguageIdFromLocale } from '../../../../src/libs/getLanguageIdFromLocale'
 import { LanguageProvider } from '../../../../src/libs/languageContext/LanguageContext'
 import { PlayerProvider } from '../../../../src/libs/playerContext/PlayerContext'
 import { slugMap } from '../../../../src/libs/slugMap'
 import { VIDEO_CONTENT_FIELDS } from '../../../../src/libs/videoContentFields'
 import { VideoProvider } from '../../../../src/libs/videoContext'
-import { WatchProvider } from '../../../../src/libs/watchContext/WatchContext'
+import {
+  WatchInitialState,
+  WatchProvider
+} from '../../../../src/libs/watchContext/WatchContext'
 
 export const GET_VIDEO_CONTAINER_PART_2 = gql`
   ${VIDEO_CONTENT_FIELDS}
@@ -50,23 +66,29 @@ export const GET_VIDEO_CONTENT_PART_3 = gql`
 interface Part3PageProps {
   container: VideoContentFields
   content: VideoContentFields
+  videoSubtitleLanguages: VideoVariantSubtitle[]
+  videoAudioLanguages: VideoAudioLanguage[]
 }
 
 export default function Part3Page({
   container,
-  content
+  content,
+  videoSubtitleLanguages,
+  videoAudioLanguages
 }: Part3PageProps): ReactElement {
   const { i18n } = useTranslation()
   const searchClient = useInstantSearchClient()
   const indexName = process.env.NEXT_PUBLIC_ALGOLIA_INDEX ?? ''
 
-  const initialWatchState = {
+  const initialWatchState: WatchInitialState = {
     siteLanguage: i18n?.language ?? 'en',
     audioLanguage: getCookie('AUDIO_LANGUAGE') ?? '529',
     subtitleLanguage: getCookie('SUBTITLE_LANGUAGE') ?? '529',
     subtitleOn: (getCookie('SUBTITLES_ON') ?? 'false') === 'true',
     videoId: content.id,
-    videoVariantSlug: content.variant?.slug
+    videoVariantSlug: content.variant?.slug,
+    videoSubtitleLanguages,
+    videoAudioLanguages
   }
 
   return (
@@ -129,13 +151,15 @@ export const getStaticProps: GetStaticProps<Part3PageProps> = async (
       client.query<GetVideoContainerPart2, GetVideoContainerPart2Variables>({
         query: GET_VIDEO_CONTAINER_PART_2,
         variables: {
-          containerId: `${containerId}/${languageId}`
+          containerId: `${containerId}/${languageId}`,
+          languageId: getLanguageIdFromLocale(context.locale)
         }
       }),
       client.query<GetVideoContentPart3, GetVideoContentPart3Variables>({
         query: GET_VIDEO_CONTENT_PART_3,
         variables: {
-          contentId: `${contentId}/${languageId}`
+          contentId: `${contentId}/${languageId}`,
+          languageId: getLanguageIdFromLocale(context.locale)
         }
       })
     ])
@@ -145,12 +169,42 @@ export const getStaticProps: GetStaticProps<Part3PageProps> = async (
         notFound: true
       }
     }
+
+    let videoAudioLanguagesData: GetLanguagesSlug | undefined
+    if (contentData.content.variant?.slug != null) {
+      const { data } = await client.query<
+        GetLanguagesSlug,
+        GetLanguagesSlugVariables
+      >({
+        query: GET_LANGUAGES_SLUG,
+        variables: {
+          id: contentData.content.id
+        }
+      })
+      videoAudioLanguagesData = data
+    }
+
+    // required for auto-subtitle
+    let subtitleData: GetSubtitles | undefined
+    if (contentData.content.variant?.slug != null) {
+      const { data } = await client.query<GetSubtitles, GetSubtitlesVariables>({
+        query: GET_SUBTITLES,
+        variables: {
+          id: contentData.content.variant.slug
+        }
+      })
+      subtitleData = data
+    }
+
     return {
       revalidate: 3600,
       props: {
         flags: await getFlags(),
         container: containerData.container,
         content: contentData.content,
+        videoSubtitleLanguages: subtitleData?.video?.variant?.subtitle ?? [],
+        videoAudioLanguages:
+          videoAudioLanguagesData?.video?.variantLanguagesWithSlug ?? [],
         ...(await serverSideTranslations(
           context.locale ?? 'en',
           ['apps-watch'],
@@ -179,11 +233,11 @@ export const getStaticPaths: GetStaticPaths = () => {
   return {
     paths: [
       {
+        locale: 'en',
         params: {
           part1: 'jesus.html',
           part2: 'the-beginning',
-          part3: 'english.html',
-          locale: 'en'
+          part3: 'english.html'
         }
       }
     ],

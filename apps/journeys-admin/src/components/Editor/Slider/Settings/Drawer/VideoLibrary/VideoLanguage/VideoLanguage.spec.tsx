@@ -94,6 +94,7 @@ describe('VideoLanguage', () => {
     fireEvent.keyDown(getByRole('combobox'), { key: 'ArrowDown' })
     fireEvent.click(getByRole('option', { name: 'French Français' }))
     expect(handleChange).toHaveBeenCalledWith({
+      __typename: 'Language',
       id: '496',
       localName: 'French',
       nativeName: 'Français',

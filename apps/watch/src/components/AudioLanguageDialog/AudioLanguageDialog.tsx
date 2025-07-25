@@ -5,6 +5,7 @@ import TextField from '@mui/material/TextField'
 import { Form, Formik, FormikValues } from 'formik'
 import compact from 'lodash/compact'
 import { useRouter } from 'next/router'
+import { useTranslation } from 'next-i18next'
 import { ComponentProps, ReactElement, memo } from 'react'
 
 import { Dialog } from '@core/shared/ui/Dialog'
@@ -38,6 +39,7 @@ export const AudioLanguageDialog = memo(function AudioLanguageDialog({
   open,
   onClose
 }: AudioLanguageDialogProps): ReactElement {
+  const { t } = useTranslation('apps-watch')
   const { id, variant, variantLanguagesCount, container } = useVideo()
   const router = useRouter()
 
@@ -119,7 +121,7 @@ export const AudioLanguageDialog = memo(function AudioLanguageDialog({
               onClose={handleClose(resetForm)}
               dialogTitle={{
                 icon: <LanguageIcon sx={{ mr: 3 }} />,
-                title: 'Language',
+                title: t('Language'),
                 closeButton: true
               }}
               divider
@@ -139,10 +141,10 @@ export const AudioLanguageDialog = memo(function AudioLanguageDialog({
                       {...params}
                       hiddenLabel
                       placeholder="Search Language"
-                      label="Language"
+                      label={t('Language')}
                       helperText={`${String(
                         variantLanguagesCount
-                      )} Languages Available`}
+                      )} ${t('Languages Available')}`}
                       sx={{
                         '> .MuiOutlinedInput-root': {
                           borderRadius: 2
