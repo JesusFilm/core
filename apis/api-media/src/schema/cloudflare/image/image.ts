@@ -141,7 +141,7 @@ builder.mutationFields((t) => ({
           ...query,
           data: {
             id,
-            userId: user?.id ?? '', // TODO: change this to '?? null' when https://github.com/JesusFilm/core/pull/7217 merges to main
+            userId: user?.id ?? 'system-ai',
             uploaded: true,
             aspectRatio: input?.aspectRatio ?? undefined,
             videoId: input?.videoId ?? undefined

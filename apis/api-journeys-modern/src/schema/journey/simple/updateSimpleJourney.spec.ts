@@ -6,6 +6,14 @@ import { prismaMock } from '../../../../test/prismaMock'
 
 import { updateSimpleJourney } from './updateSimpleJourney'
 
+jest.mock('../../../utils/generateBlurhashAndMetadataFromUrl', () => ({
+  generateBlurhashAndMetadataFromUrl: jest.fn().mockResolvedValue({
+    blurhash: 'mocked-blurhash',
+    width: 100,
+    height: 100
+  })
+}))
+
 // Mock environment variables
 const originalEnv = process.env
 
@@ -159,8 +167,8 @@ describe('updateSimpleJourney', () => {
             image: {
               src: 'https://invalid-domain.com/image.jpg', // Invalid URL
               alt: 'test',
-              width: 100,
-              height: 100,
+              width: 150,
+              height: 150,
               blurhash: ''
             },
             backgroundImage: {
@@ -191,6 +199,12 @@ describe('updateSimpleJourney', () => {
       expect(imageBlockCalls[1][0].data.src).toBe(
         `https://imagedelivery.net/test-cloudflare-account-hash/${mockImageId}/public`
       )
+      // Verify mocked width, height, and blurhash values are used (from generateBlurhashAndMetadataFromUrl)
+      for (const call of imageBlockCalls) {
+        expect(call[0].data.width).toBe(100)
+        expect(call[0].data.height).toBe(100)
+        expect(call[0].data.blurhash).toBe('mocked-blurhash')
+      }
     })
 
     it('uses valid image URLs as-is without uploading to Cloudflare', async () => {
