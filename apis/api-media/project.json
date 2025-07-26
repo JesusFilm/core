@@ -230,6 +230,12 @@
         "command": "npm run ts-node apis/api-media/src/scripts/copy-distro-downloads.ts"
       }
     },
+    "update-arcgt-urls": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npm run ts-node apis/api-media/src/scripts/update-arcgt-urls.ts"
+      }
+    },
     "mux-videos": {
       "executor": "nx:run-commands",
       "options": {

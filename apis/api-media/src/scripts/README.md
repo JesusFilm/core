@@ -134,6 +134,52 @@ The script includes error handling for:
 
 If any error occurs, the script will exit with a non-zero code and display an appropriate error message.
 
+## Update Arc.gt URLs Script
+
+The update arc.gt URLs script updates VideoVariantDownload URLs from `https://arc.gt` to `https://api-v1.arclight.org` for specific distribution qualities.
+
+### Usage
+
+```bash
+nx run api-media:update-arcgt-urls
+```
+
+### Process
+
+The script will:
+
+1. Find all VideoVariantDownloads with qualities: `distroLow`, `distroSd`, `distroHigh`
+2. Filter for downloads with URLs starting with `https://arc.gt`
+3. Update each URL by replacing `https://arc.gt` with `https://api-v1.arclight.org`
+4. Process downloads in batches of 1000 for optimal performance
+5. Preserve all URL paths and query parameters after the domain
+
+### Target Qualities
+
+The script only updates URLs for these specific qualities:
+
+- `distroLow` - Distribution center low quality downloads
+- `distroSd` - Distribution center SD quality downloads
+- `distroHigh` - Distribution center high quality downloads
+
+### URL Transformation
+
+| Before                                          | After                                                        |
+| ----------------------------------------------- | ------------------------------------------------------------ |
+| `https://arc.gt/video.mp4`                      | `https://api-v1.arclight.org/video.mp4`                      |
+| `https://arc.gt/path/to/video.mp4?params=value` | `https://api-v1.arclight.org/path/to/video.mp4?params=value` |
+
+### Error Handling
+
+The script includes error handling for:
+
+- Database connection issues
+- Batch processing failures
+- Progress tracking and reporting
+- Individual update failures
+
+If any error occurs, the script will exit with a non-zero code and display an appropriate error message.
+
 ## Mux Videos Script
 
 The mux videos script processes video variants to create and manage Mux video assets, update HLS URLs, and process downloads. This script performs the same functions as the mux-videos worker but can be run on-demand.
