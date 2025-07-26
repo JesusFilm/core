@@ -62,7 +62,6 @@ Follow these rules when you write code:
 
 ## Documentation Guidelines
 
-- All components must have JSDoc comments, including examples and prop documentation.
 - Keep documentation up to date with code changes.
 
 ## Layout Component Patterns
@@ -77,7 +76,6 @@ Follow these rules when you write code:
 
 - Use semantic names: `PageLayout`, `Header`, `Footer`
 - Prefix interface names with component name: `PageLayoutProps`
-- Use descriptive JSDoc with @example blocks
 
 **CSS Class Patterns**:
 
@@ -87,7 +85,6 @@ Follow these rules when you write code:
 
 **Linting Requirements**:
 
-- Extract string literals to constants (avoid inline string literals)
 - Use type-only imports for React types: `import type { ReactElement }`
 - Maintain alphabetical import order
 
@@ -95,10 +92,8 @@ Follow these rules when you write code:
 
 **React Component Structure**:
 
-- Always include comprehensive JSDoc with @param and @example blocks
 - Define interfaces above the component function
 - Use destructured props with default values
-- Extract constants for all text content to avoid literal string errors
 
 **Component Props Patterns**:
 
