@@ -1,0 +1,17 @@
+{
+  "Metadata": {
+    "pageTitle": "{title} | 耶稣电影项目"
+  },
+  "RootIndexPage": {
+    "pageTitle": "观看",
+    "title": "免费福音<underline>视频流</underline>图书馆",
+    "description": "用 2000 多种语言观看、学习和分享福音"
+  },
+  "DatadogErrorBoundary": {
+    "somethingWentWrong": "出了问题",
+    "anErrorOccurred": "加载此页面时发生错误。请尝试刷新。",
+    "errorDetails": "错误详情",
+    "tryAgain": "再试一次",
+    "unknownError": "未知错误"
+  }
+}

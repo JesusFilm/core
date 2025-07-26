@@ -1,0 +1,17 @@
+{
+  "Metadata": {
+    "pageTitle": "{title} | 耶穌電影計畫"
+  },
+  "RootIndexPage": {
+    "pageTitle": "觀賞",
+    "title": "免費福音視訊<underline>串流</underline>圖書館。",
+    "description": "使用超過 2000 種語言觀看、學習和分享福音"
+  },
+  "DatadogErrorBoundary": {
+    "somethingWentWrong": "出了問題",
+    "anErrorOccurred": "載入此頁面時發生錯誤。請嘗試刷新。",
+    "errorDetails": "錯誤詳細資訊",
+    "tryAgain": "再試一次",
+    "unknownError": "未知錯誤"
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "Metadata": {
+    "pageTitle": "{title} | Proyecto Película Jesús"
+  },
+  "RootIndexPage": {
+    "pageTitle": "Mira",
+    "title": "Biblioteca <underline>de</underline> vídeos evangélicos gratuitos.",
+    "description": "Mira, aprende y comparte el Evangelio en más de 2000 idiomas"
+  },
+  "DatadogErrorBoundary": {
+    "somethingWentWrong": "Algo salió mal",
+    "anErrorOccurred": "Se ha producido un error al cargar esta página. Intenta actualizarla.",
+    "errorDetails": "Detalles del error",
+    "tryAgain": "Inténtalo de nuevo",
+    "unknownError": "Error desconocido"
+  }
+}
