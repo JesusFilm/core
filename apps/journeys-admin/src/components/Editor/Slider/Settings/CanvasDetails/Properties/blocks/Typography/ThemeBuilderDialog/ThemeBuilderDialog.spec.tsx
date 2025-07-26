@@ -1,7 +1,7 @@
 import { MockedProvider } from '@apollo/client/testing'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
-import { SnackbarProvider } from 'notistack'
+import { SnackbarProvider, enqueueSnackbar } from 'notistack'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
@@ -22,6 +22,13 @@ import { FontFamily } from './ThemeSettings'
 jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
   default: jest.fn()
+}))
+
+// Mock notistack
+const mockEnqueueSnackbar = jest.fn()
+jest.mock('notistack', () => ({
+  ...jest.requireActual('notistack'),
+  enqueueSnackbar: jest.fn()
 }))
 
 describe('ThemeBuilderDialog', () => {
@@ -237,7 +244,10 @@ describe('ThemeBuilderDialog', () => {
       expect(updateMock.result).toHaveBeenCalled()
     })
     expect(handleClose).toHaveBeenCalled()
-    expect(screen.getByText('Fonts updated')).toBeInTheDocument()
+    expect(enqueueSnackbar).toHaveBeenCalledWith('Fonts updated', {
+      variant: 'success',
+      preventDuplicate: true
+    })
   })
 
   it('should create journey fonts when confirm is clicked and theme does not exist', async () => {
@@ -258,7 +268,10 @@ describe('ThemeBuilderDialog', () => {
       expect(createMock.result).toHaveBeenCalled()
     })
     expect(handleClose).toHaveBeenCalled()
-    expect(screen.getByText('Theme created')).toBeInTheDocument()
+    expect(enqueueSnackbar).toHaveBeenCalledWith('Theme created', {
+      variant: 'success',
+      preventDuplicate: true
+    })
   })
 
   it('should show error snackbar when update fails', async () => {
@@ -288,7 +301,10 @@ describe('ThemeBuilderDialog', () => {
 
     fireEvent.click(screen.getByText('Confirm'))
     await waitFor(() => {
-      expect(screen.queryByText('Failed to update fonts')).toBeInTheDocument()
+      expect(enqueueSnackbar).toHaveBeenCalledWith('Failed to update fonts', {
+        variant: 'error',
+        preventDuplicate: true
+      })
     })
   })
 
@@ -322,7 +338,10 @@ describe('ThemeBuilderDialog', () => {
 
     fireEvent.click(screen.getByText('Confirm'))
     await waitFor(() => {
-      expect(screen.queryByText('Failed to create theme')).toBeInTheDocument()
+      expect(enqueueSnackbar).toHaveBeenCalledWith('Failed to create theme', {
+        variant: 'error',
+        preventDuplicate: true
+      })
     })
   })
 
