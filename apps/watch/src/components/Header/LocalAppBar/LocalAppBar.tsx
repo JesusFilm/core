@@ -30,7 +30,7 @@ export function LocalAppBar({
         display: 'flex',
         flexDirection: 'row',
         alignItems: 'center',
-        background: 'transparent',
+        background: '#fff',
         color: hideSpacer ? 'background.default' : 'inherit',
         boxShadow: 'none',
         py: 10,

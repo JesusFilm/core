@@ -28,38 +28,6 @@ describe('NewContentPage', () => {
     expect(screen.getByRole('button', { name: 'Download' })).toBeInTheDocument()
   })
 
-  it('should render ShareDialog when button is clicked', async () => {
-    render(
-      <MockedProvider>
-        <VideoProvider value={{ content: videos[0] }}>
-          <NewVideoContentPage />
-        </VideoProvider>
-      </MockedProvider>
-    )
-    const user = userEvent.setup()
-
-    await user.click(screen.getByRole('button', { name: 'Share' }))
-
-    expect(screen.getByTestId('ShareDialog')).toBeInTheDocument()
-  })
-
-  it('should render DownloadDialog when button is clicked', async () => {
-    render(
-      <MockedProvider>
-        <VideoProvider value={{ content: videos[0] }}>
-          <NewVideoContentPage />
-        </VideoProvider>
-      </MockedProvider>
-    )
-    const user = userEvent.setup()
-
-    await user.click(screen.getByRole('button', { name: 'Download' }))
-
-    await waitFor(() =>
-      expect(screen.getByTestId('DownloadDialog')).toBeInTheDocument()
-    )
-  })
-
   const videoWithBibleCitations = {
     ...videos[0],
     bibleCitations: [

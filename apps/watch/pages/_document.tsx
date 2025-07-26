@@ -41,7 +41,7 @@ export default class MyDocument extends Document<DocumentHeadTagsProps> {
           {/* Inject MUI styles first to match with the prepend: true configuration. */}
           <DocumentHeadTags {...this.props} />
         </Head>
-        <body style={{ margin: 0 }}>
+        <body style={{ margin: 0, backgroundColor: '#0E0D0D' }}>
           <Main />
           <NextScript />
         </body>
