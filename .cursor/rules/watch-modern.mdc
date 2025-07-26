@@ -1,9 +1,7 @@
 ---
-description:
 globs: apps/watch-modern/**
-alwaysApply: true
+alwaysApply: false
 ---
-
 # Watch-Modern Rules
 
 - @base.mdc

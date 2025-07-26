@@ -19,7 +19,36 @@ This document captures common issues, solutions, and lessons learned during Watc
 - **Correct Command**: `cd /workspaces/core && nx run watch-modern:serve --port 4200`
 - **Background Process**: Use `is_background: true` for long-running dev server
 
+#### **Compilation Waiting**
+- **Issue**: Proceeding with development before server compilation completes
+- **Problem**: Missing compilation errors, broken features, wasted development time
+- **Solution**: Always wait for `✓ Ready in Xs` message before continuing
+- **Prevention**: Follow mandatory waiting procedure in GUIDELINES.md
+
+
+
+### TDD Implementation Issues
+
+#### **Test Environment vs Runtime Environment**
+- **Issue**: Tests pass but runtime compilation fails
+- **Cause**: Tests run in different environment than Next.js server
+- **Solution**: Always verify server compilation after implementing tests
+- **Workflow**: Red → Green → **Verify Server Compilation** → Refactor
+
 ## Workflow Learnings
+
+### Development Server Best Practices
+
+1. **Always wait for compilation**: Never proceed until seeing "Ready in Xs"
+2. **Watch for errors**: Server continues running even with compilation errors
+3. **Fix immediately**: Address compilation errors before any other development
+4. **Test in browser**: Verify functionality works in actual runtime environment
+
+### Client vs Server Components
+
+- **Server Components (default)**: Static content, no interactivity, better performance
+- **Client Components (`'use client'`)**: Interactive features, browser APIs, state management
+- **Decision Rule**: Only use client components when absolutely necessary
 
 ---
 **Applies To**: Watch-Modern Application

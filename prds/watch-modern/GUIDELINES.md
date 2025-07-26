@@ -268,6 +268,54 @@ cd /workspaces/core && npm test watch-modern
 npm run build watch-modern
 ```
 
+### Development Server Compilation Procedures
+
+**⚠️ CRITICAL: Always wait for compilation to complete before continuing**
+
+When starting the development server, follow this **mandatory waiting procedure**:
+
+#### 1. Start Server and Wait
+```bash
+cd /workspaces/core && nx run watch-modern:serve --port 4200
+```
+
+#### 2. Watch for Compilation Status
+**DO NOT PROCEED** until you see one of these outcomes:
+
+✅ **SUCCESS INDICATORS**:
+```bash
+✓ Starting...
+✓ Ready in Xs        # Server compiled successfully
+- Local: http://localhost:4200
+```
+
+❌ **ERROR INDICATORS** (Must fix before continuing):
+```bash
+⨯ ./src/components/ComponentName.tsx
+Error: [Compilation error details]
+```
+
+#### 3. Verify Server Status
+**Only after seeing "Ready in Xs":**
+- ✅ **Continue** with development tasks
+- ✅ **Navigate** to browser for testing
+- ✅ **Run** additional commands
+
+**If errors appear:**
+- ❌ **STOP** all other activities
+- ❌ **Fix** compilation errors first
+- ❌ **Wait** for successful recompilation before proceeding
+
+#### 4. Common Compilation Fixes
+
+### Server-First Architecture Compliance
+
+When fixing compilation errors, maintain these principles:
+
+- **Minimize Client Components**: Only use `'use client'` when absolutely necessary
+- **Interactive State Only**: useState/useEffect only for true interactivity
+- **Prefer Server Rendering**: Keep static content on server when possible
+
 **For troubleshooting and common issues, see [LEARNINGS.md](./LEARNINGS.md)**
 
 ### Git Workflow
