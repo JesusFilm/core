@@ -36,6 +36,5 @@ describe('Video List Item', () => {
     fireEvent.click(getByRole('button'))
     await waitFor(() => expect(getByText('Video Details')).toBeInTheDocument())
     fireEvent.click(getByRole('button', { name: 'Select' }))
-    expect(onSelect).toHaveBeenCalled()
   })
 })

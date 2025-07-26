@@ -1272,7 +1272,7 @@ describe('JourneyResolver', () => {
         .mockResolvedValueOnce({
           ...journeyWithTags,
           template: true
-        } as unknown as Prisma.Prisma__JourneyClient<Journey>)
+        } as any)
         // lookup duplicate journey once created and authorize
         .mockResolvedValueOnce(journeyWithTags)
       prismaService.journey.findMany

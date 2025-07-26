@@ -11,7 +11,7 @@ import {
 } from '@mui/material/styles'
 import TextField from '@mui/material/TextField'
 import Typography, { TypographyProps } from '@mui/material/Typography'
-import { Meta, StoryObj } from '@storybook/react'
+import { Meta, StoryObj } from '@storybook/nextjs'
 import { ReactElement, useEffect, useState } from 'react'
 
 import { ThemeMode, ThemeName, getTheme } from '..'
