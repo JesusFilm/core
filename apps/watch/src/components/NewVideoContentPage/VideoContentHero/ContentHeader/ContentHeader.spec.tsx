@@ -46,11 +46,12 @@ describe('ContentHeader', () => {
     expect(screen.getByTestId('ContentHeader')).toHaveClass('opacity-100')
   })
 
-  it('should be hidden when video is playing and not active', () => {
+  it('should be hidden when video is playing and not active and not muted', () => {
     const initialState: Partial<PlayerState> = {
       play: true,
       active: false,
-      loading: false
+      loading: false,
+      mute: false
     }
     render(
       <VideoProvider value={{ content: videos[0] }}>
@@ -60,6 +61,23 @@ describe('ContentHeader', () => {
       </VideoProvider>
     )
     expect(screen.getByTestId('ContentHeader')).toHaveClass('opacity-0')
+  })
+
+  it('should be visible when video is playing and muted (preview mode)', () => {
+    const initialState: Partial<PlayerState> = {
+      play: true,
+      active: false,
+      loading: false,
+      mute: true
+    }
+    render(
+      <VideoProvider value={{ content: videos[0] }}>
+        <PlayerProvider initialState={initialState}>
+          <ContentHeader />
+        </PlayerProvider>
+      </VideoProvider>
+    )
+    expect(screen.getByTestId('ContentHeader')).toHaveClass('opacity-100')
   })
 
   it('should be visible when video is playing and active', () => {

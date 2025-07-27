@@ -7,9 +7,10 @@ import { AudioLanguageButton } from '../../../VideoContentPage/AudioLanguageButt
 
 export function ContentHeader(): ReactElement {
   const {
-    state: { play, active, loading }
+    state: { play, active, loading, mute }
   } = usePlayer()
-  const visible = !play || active || loading
+  // Modified visibility logic: keep visible when playing muted (preview mode)
+  const visible = !play || active || loading || (play && mute)
   return (
     <div
       data-testid="ContentHeader"
