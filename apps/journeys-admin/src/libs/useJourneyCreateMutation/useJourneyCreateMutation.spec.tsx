@@ -134,17 +134,19 @@ describe('useJourneyCreateMutation', () => {
       )
     })
 
+    let createJourneyResult: any
     await act(async () => {
-      await waitFor(async () => {
-        expect(await result.current.createJourney()).toMatchObject(
-          data.journeyCreate
-        )
-      })
-      await waitFor(async () => {
-        expect(cache.extract()?.ROOT_QUERY?.adminJourneys).toEqual([
-          { __ref: 'Journey:createdJourneyId' }
-        ])
-      })
+      createJourneyResult = await result.current.createJourney()
+    })
+
+    await waitFor(() => {
+      expect(createJourneyResult).toMatchObject(data.journeyCreate)
+    })
+
+    await waitFor(() => {
+      expect(cache.extract()?.ROOT_QUERY?.adminJourneys).toEqual([
+        { __ref: 'Journey:createdJourneyId' }
+      ])
     })
   })
 
@@ -168,10 +170,13 @@ describe('useJourneyCreateMutation', () => {
       )
     })
 
+    let createJourneyResult: any
     await act(async () => {
-      await waitFor(async () => {
-        expect(await result.current.createJourney()).toBeUndefined()
-      })
+      createJourneyResult = await result.current.createJourney()
+    })
+
+    await waitFor(() => {
+      expect(createJourneyResult).toBeUndefined()
     })
   })
 
