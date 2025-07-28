@@ -2,6 +2,8 @@ const nxPreset = require('@nx/jest/preset').default
 
 module.exports = {
   ...nxPreset,
+  // Enable Jest globals for v30+
+  injectGlobals: true,
   /* TODO: Update to latest Jest snapshotFormat
    * By default Nx has kept the older style of Jest Snapshot formats
    * to prevent breaking of any existing tests with snapshots.

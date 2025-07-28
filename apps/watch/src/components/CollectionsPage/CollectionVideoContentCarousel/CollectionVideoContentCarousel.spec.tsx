@@ -191,7 +191,7 @@ describe('CollectionVideoContentCarousel', () => {
     const boldText = screen.getByText('These are the first')
     expect(boldText).toBeInTheDocument()
     expect(boldText).toHaveStyle('fontWeight: bold')
-    expect(boldText).toHaveStyle('color: white')
+    expect(boldText).toHaveStyle('color: rgb(255, 255, 255)')
 
     expect(
       screen.getByText('four words followed by more text.')
