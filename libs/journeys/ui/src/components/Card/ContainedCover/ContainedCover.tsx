@@ -234,7 +234,7 @@ export function ContainedCover({
             <Stack
               data-testid="overlay-blur"
               sx={{
-                width: { xs: videoBlock != null ? '100%' : '0%', sm: 380 },
+                width: { xs: videoBlock != null ? '100%' : '0%', sm: 466 },
                 height: { xs: videoBlock != null ? '85%' : '0%', sm: '100%' },
                 flexDirection: {
                   xs: 'column-reverse',
@@ -275,7 +275,7 @@ export function ContainedCover({
                 position: 'absolute',
                 width: '100%',
                 height: { xs: '100%', sm: '100%' },
-                maxWidth: { xs: '100%', sm: '380px' },
+                maxWidth: { xs: '100%', sm: '466px' },
                 pt: { xs: videoBlock != null ? 40 : 5, sm: 0 },
                 pb: { xs: 10, sm: 0 },
                 pl: { sm: 50 },
@@ -294,7 +294,7 @@ export function ContainedCover({
               hasFullscreenVideo={hasFullscreenVideo}
               sx={{
                 // This should match width of journey card content in admin
-                width: { sm: '312px' },
+                width: { sm: '398px' },
                 maxHeight: { xs: '55vh', sm: '65%', md: '100%' }
               }}
             >
