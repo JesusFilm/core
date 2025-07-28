@@ -172,131 +172,92 @@ export function VideoCreateForm({
 
     setIsSubmitting(true)
 
-    try {
-      await createVideo({
-        variables: {
-          input: {
-            id: values.id,
-            slug: values.slug,
-            label: values.label,
-            originId: values.originId,
-            primaryLanguageId: '529',
-            noIndex: false,
-            published: false,
-            childIds: []
-          }
-        },
-        update: (cache, { data }) => {
-          if (!data?.videoCreate) return
+    await createVideo({
+      variables: {
+        input: {
+          id: values.id,
+          slug: values.slug,
+          label: values.label,
+          originId: values.originId,
+          primaryLanguageId: '529',
+          noIndex: false,
+          published: false,
+          childIds: []
+        }
+      },
+      update: (cache, { data }) => {
+        if (!data?.videoCreate) return
 
-          // Invalidate all adminVideos and adminVideosCount queries in the cache
-          // This ensures that any active queries will refetch and show the new video
-          cache.evict({ fieldName: 'adminVideos' })
-          cache.evict({ fieldName: 'adminVideosCount' })
-          cache.gc()
-        },
-        onCompleted: async (data) => {
-          const videoId = data.videoCreate.id
+        // Invalidate all adminVideos and adminVideosCount queries in the cache
+        // This ensures that any active queries will refetch and show the new video
+        cache.evict({ fieldName: 'adminVideos' })
+        cache.evict({ fieldName: 'adminVideosCount' })
+        cache.gc()
+      },
+      onCompleted: async (data) => {
+        const videoId = data.videoCreate.id
 
-          try {
-            await createEdition({
-              variables: {
-                input: {
-                  videoId,
-                  name: 'base'
-                }
+        try {
+          await createEdition({
+            variables: {
+              input: {
+                videoId,
+                name: 'base'
               }
-            })
+            }
+          })
 
-            // Create null video variant for series and collections with language 529 (English)
-            // Currently required for the video to be visible in the frontend
-            if (values.label === 'series' || values.label === 'collection') {
-              try {
-                const variantId = `529_${videoId}`
-                const slug = `${values.slug}/english`
+          // Create null video variant for series and collections with language 529 (English)
+          // Currently required for the video to be visible in the frontend
+          if (values.label === 'series' || values.label === 'collection') {
+            try {
+              const variantId = `529_${videoId}`
+              const slug = `${values.slug}/english`
 
-                await createVideoVariant({
-                  variables: {
-                    input: {
-                      id: variantId,
-                      videoId,
-                      edition: 'base',
-                      languageId: '529',
-                      slug,
-                      downloadable: false,
-                      published: false
-                    }
+              await createVideoVariant({
+                variables: {
+                  input: {
+                    id: variantId,
+                    videoId,
+                    edition: 'base',
+                    languageId: '529',
+                    slug,
+                    downloadable: false,
+                    published: false
                   }
-                })
-              } catch (variantError) {
-                console.warn(
-                  'Failed to create null video varian for collection or series:',
-                  variantError
-                )
-              }
-            }
-
-            enqueueSnackbar('Successfully created video.', {
-              variant: 'success'
-            })
-
-            if (onCreateSuccess != null) {
-              await onCreateSuccess(videoId)
-            } else {
-              router.push(`/videos/${videoId}`)
-            }
-          } catch (error) {
-            enqueueSnackbar('Failed to create video edition.', {
-              variant: 'error'
-            })
-          } finally {
-            setIsSubmitting(false)
-          }
-        },
-        onError: (error) => {
-          // Handle specific error messages
-          let errorMessage = 'Something went wrong.'
-
-          if (error.graphQLErrors && error.graphQLErrors.length > 0) {
-            const graphQLError = error.graphQLErrors[0]
-
-            // Check for NotUniqueError
-            if (graphQLError.extensions?.code === 'NotUniqueError') {
-              const location = graphQLError.extensions?.location
-              if (Array.isArray(location) && location.length > 0) {
-                const errorLocation = location[0]
-                if (errorLocation.path?.includes('slug')) {
-                  errorMessage =
-                    'This slug is already in use. Please choose a different slug.'
-                } else if (errorLocation.path?.includes('id')) {
-                  errorMessage =
-                    'This ID is already in use. Please choose a different ID.'
-                } else {
-                  errorMessage =
-                    'This video already exists with the same information.'
                 }
-              } else {
-                errorMessage =
-                  graphQLError.message || 'This information is already in use.'
-              }
-            } else {
-              // Use the GraphQL error message if available
-              errorMessage = graphQLError.message || errorMessage
+              })
+            } catch (variantError) {
+              console.warn(
+                'Failed to create null video variant for collection or series:',
+                variantError
+              )
             }
           }
 
-          enqueueSnackbar(errorMessage, { variant: 'error' })
+          enqueueSnackbar('Successfully created video.', {
+            variant: 'success'
+          })
+
+          if (onCreateSuccess != null) {
+            await onCreateSuccess(videoId)
+          } else {
+            router.push(`/videos/${videoId}`)
+          }
+        } catch (error) {
+          enqueueSnackbar('Failed to create video edition.', {
+            variant: 'error'
+          })
+        } finally {
           setIsSubmitting(false)
         }
-      })
-    } catch (error) {
-      // Handle specific error messages
-      let errorMessage = 'Something went wrong.'
+      },
+      onError: (error) => {
+        // Handle specific error messages
+        let errorMessage = 'Something went wrong.'
 
-      if (error && typeof error === 'object' && 'graphQLErrors' in error) {
-        const apolloError = error
-        if (apolloError.graphQLErrors && apolloError.graphQLErrors.length > 0) {
-          const graphQLError = apolloError.graphQLErrors[0]
+        if (error.graphQLErrors && error.graphQLErrors.length > 0) {
+          const graphQLError = error.graphQLErrors[0]
 
           // Check for NotUniqueError
           if (graphQLError.extensions?.code === 'NotUniqueError') {
@@ -322,11 +283,11 @@ export function VideoCreateForm({
             errorMessage = graphQLError.message || errorMessage
           }
         }
-      }
 
-      enqueueSnackbar(errorMessage, { variant: 'error' })
-      setIsSubmitting(false)
-    }
+        enqueueSnackbar(errorMessage, { variant: 'error' })
+        setIsSubmitting(false)
+      }
+    })
   }
 
   const initialValues: InferType<typeof validationSchema> = {
