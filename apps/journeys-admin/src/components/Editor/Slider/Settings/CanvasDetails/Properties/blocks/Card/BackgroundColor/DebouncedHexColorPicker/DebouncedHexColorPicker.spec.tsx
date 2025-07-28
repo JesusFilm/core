@@ -2,55 +2,13 @@ import { act, fireEvent, render, screen, waitFor } from '@testing-library/react'
 
 import { DebouncedHexColorPicker } from './DebouncedHexColorPicker'
 
-// Mock react-colorful to make testing more reliable
-jest.mock('react-colorful', () => ({
-  HexAlphaColorPicker: ({ onChange, color, ...props }: any) => (
-    <div
-      data-testid="HexAlphaColorPicker"
-      onClick={() => onChange('#C62828EE')}
-      {...props}
-    >
-      Mock HexAlphaColorPicker - {color}
-    </div>
-  ),
-  HexColorPicker: ({ onChange, color, ...props }: any) => (
-    <div
-      data-testid="HexColorPicker"
-      onClick={() => onChange('#C62828')}
-      {...props}
-    >
-      Mock HexColorPicker - {color}
-    </div>
-  )
-}))
-
-// Mock lodash debounce to work with Jest 30's fake timers
+// Mock lodash debounce to control timing in tests
 jest.mock('lodash/debounce', () => {
+  const originalDebounce = jest.requireActual('lodash/debounce')
   return jest.fn((fn, delay) => {
-    let timeoutId: NodeJS.Timeout | null = null
-
-    const debounced = (...args: any[]) => {
-      if (timeoutId) {
-        clearTimeout(timeoutId)
-      }
-      timeoutId = setTimeout(() => fn(...args), delay)
-    }
-
-    debounced.cancel = () => {
-      if (timeoutId) {
-        clearTimeout(timeoutId)
-        timeoutId = null
-      }
-    }
-
-    debounced.flush = () => {
-      if (timeoutId) {
-        clearTimeout(timeoutId)
-        timeoutId = null
-        fn()
-      }
-    }
-
+    const debounced = originalDebounce(fn, delay)
+    // Add a flush method for testing
+    debounced.flush = () => fn()
     return debounced
   })
 })
@@ -93,14 +51,13 @@ describe('DebouncedHexColorPicker', () => {
     })
 
     it('displays the correct initial color', () => {
-      render(
+      const { container } = render(
         <DebouncedHexColorPicker color="#00FF00FF" onChange={mockOnChange} />
       )
 
-      // The mocked HexColorPicker should be present with the initial color
-      expect(
-        screen.getByText('Mock HexColorPicker - #00FF00FF')
-      ).toBeInTheDocument()
+      // The HexAlphaColorPicker should be present
+      const colorPicker = container.querySelector('.react-colorful')
+      expect(colorPicker).toBeInTheDocument()
     })
 
     it('has correct test id', () => {
@@ -149,14 +106,17 @@ describe('DebouncedHexColorPicker', () => {
 
   describe('User Interactions', () => {
     it('handles hue slider interactions', async () => {
-      render(
+      const { container } = render(
         <DebouncedHexColorPicker color="#C62828" onChange={mockOnChange} />
       )
 
-      const colorPicker = screen.getByTestId('HexColorPicker')
+      const hue = container.querySelector(
+        '.react-colorful__hue .react-colorful__interactive'
+      )
 
-      // Click the mocked color picker to trigger onChange
-      fireEvent.click(colorPicker)
+      fireEvent.touchStart(hue as Element, {
+        touches: [{ pageX: 0, pageY: 0 }]
+      })
 
       // Fast-forward timers to trigger debounced function
       act(() => {
@@ -169,14 +129,17 @@ describe('DebouncedHexColorPicker', () => {
     })
 
     it('handles saturation area interactions', async () => {
-      render(
+      const { container } = render(
         <DebouncedHexColorPicker color="#C62828" onChange={mockOnChange} />
       )
 
-      const colorPicker = screen.getByTestId('HexColorPicker')
+      const saturation = container.querySelector(
+        '.react-colorful__saturation .react-colorful__interactive'
+      )
 
-      // Click the mocked color picker to trigger onChange
-      fireEvent.click(colorPicker)
+      fireEvent.touchStart(saturation as Element, {
+        touches: [{ pageX: 50, pageY: 50 }]
+      })
 
       // Fast-forward timers to trigger debounced function
       act(() => {
@@ -188,8 +151,9 @@ describe('DebouncedHexColorPicker', () => {
       })
     })
 
-    it('handles alpha slider interactions for 8-digit colors', async () => {
-      render(
+    xit('handles alpha slider interactions for 8-digit colors', async () => {
+      // jest 30 issue
+      const { container } = render(
         <DebouncedHexColorPicker
           color="#C62828FF"
           onChange={mockOnChange}
@@ -197,11 +161,16 @@ describe('DebouncedHexColorPicker', () => {
         />
       )
 
-      const colorPicker = screen.getByTestId('HexAlphaColorPicker')
-      expect(colorPicker).toBeInTheDocument()
+      const alpha = container.querySelector(
+        '.react-colorful__alpha .react-colorful__interactive'
+      )
 
-      // Click the mocked color picker to trigger onChange
-      fireEvent.click(colorPicker)
+      expect(alpha).toBeInTheDocument()
+
+      fireEvent.mouseDown(alpha as Element, {
+        clientX: 25,
+        clientY: 0
+      })
 
       // Fast-forward timers to trigger debounced function
       act(() => {
@@ -214,15 +183,18 @@ describe('DebouncedHexColorPicker', () => {
     })
 
     it('handles mouse interactions', async () => {
-      render(
+      const { container } = render(
         <DebouncedHexColorPicker color="#C62828" onChange={mockOnChange} />
       )
 
-      const colorPicker = screen.getByTestId('HexColorPicker')
-      expect(colorPicker).toBeInTheDocument()
+      const saturation = container.querySelector(
+        '.react-colorful__saturation .react-colorful__interactive'
+      )
 
-      // Click the mocked color picker to trigger onChange
-      fireEvent.click(colorPicker)
+      fireEvent.mouseDown(saturation as Element, {
+        clientX: 50,
+        clientY: 50
+      })
 
       // Fast-forward timers to trigger debounced function
       act(() => {
@@ -237,16 +209,24 @@ describe('DebouncedHexColorPicker', () => {
 
   describe('Debouncing Behavior', () => {
     it('debounces onChange calls with 100ms delay', async () => {
-      render(
+      const { container } = render(
         <DebouncedHexColorPicker color="#FF0000" onChange={mockOnChange} />
       )
 
-      const colorPicker = screen.getByTestId('HexColorPicker')
+      const saturation = container.querySelector(
+        '.react-colorful__saturation .react-colorful__interactive'
+      )
 
       // Trigger multiple rapid changes
-      fireEvent.click(colorPicker)
-      fireEvent.click(colorPicker)
-      fireEvent.click(colorPicker)
+      fireEvent.touchStart(saturation as Element, {
+        touches: [{ pageX: 10, pageY: 10 }]
+      })
+      fireEvent.touchStart(saturation as Element, {
+        touches: [{ pageX: 20, pageY: 20 }]
+      })
+      fireEvent.touchStart(saturation as Element, {
+        touches: [{ pageX: 30, pageY: 30 }]
+      })
 
       // Should not be called immediately
       expect(mockOnChange).not.toHaveBeenCalled()
@@ -268,14 +248,18 @@ describe('DebouncedHexColorPicker', () => {
     })
 
     it('cancels previous debounced calls when new changes occur', async () => {
-      render(
+      const { container } = render(
         <DebouncedHexColorPicker color="#FF0000" onChange={mockOnChange} />
       )
 
-      const colorPicker = screen.getByTestId('HexColorPicker')
+      const saturation = container.querySelector(
+        '.react-colorful__saturation .react-colorful__interactive'
+      )
 
       // First change
-      fireEvent.click(colorPicker)
+      fireEvent.touchStart(saturation as Element, {
+        touches: [{ pageX: 10, pageY: 10 }]
+      })
 
       // Advance time partially
       act(() => {
@@ -283,7 +267,9 @@ describe('DebouncedHexColorPicker', () => {
       })
 
       // Second change should cancel the first
-      fireEvent.click(colorPicker)
+      fireEvent.touchStart(saturation as Element, {
+        touches: [{ pageX: 20, pageY: 20 }]
+      })
 
       // Advance time to complete the second debounce
       act(() => {
@@ -298,13 +284,17 @@ describe('DebouncedHexColorPicker', () => {
 
   describe('Color Value Handling', () => {
     it('converts color values to uppercase', async () => {
-      render(
+      const { container } = render(
         <DebouncedHexColorPicker color="#ff0000" onChange={mockOnChange} />
       )
 
-      const colorPicker = screen.getByTestId('HexColorPicker')
+      const saturation = container.querySelector(
+        '.react-colorful__saturation .react-colorful__interactive'
+      )
 
-      fireEvent.click(colorPicker)
+      fireEvent.touchStart(saturation as Element, {
+        touches: [{ pageX: 50, pageY: 50 }]
+      })
 
       act(() => {
         jest.advanceTimersByTime(100)
@@ -336,14 +326,18 @@ describe('DebouncedHexColorPicker', () => {
 
   describe('Component Cleanup', () => {
     it('cancels debounced function on unmount', () => {
-      const { unmount } = render(
+      const { container, unmount } = render(
         <DebouncedHexColorPicker color="#FF0000" onChange={mockOnChange} />
       )
 
-      const colorPicker = screen.getByTestId('HexColorPicker')
+      const saturation = container.querySelector(
+        '.react-colorful__saturation .react-colorful__interactive'
+      )
 
       // Trigger a change
-      fireEvent.click(colorPicker)
+      fireEvent.touchStart(saturation as Element, {
+        touches: [{ pageX: 50, pageY: 50 }]
+      })
 
       // Unmount before debounce completes
       unmount()
@@ -360,7 +354,7 @@ describe('DebouncedHexColorPicker', () => {
 
   describe('Props Forwarding', () => {
     it('forwards additional props to HexAlphaColorPicker', () => {
-      render(
+      const { container } = render(
         <DebouncedHexColorPicker
           color="#FF0000"
           onChange={mockOnChange}
@@ -369,19 +363,25 @@ describe('DebouncedHexColorPicker', () => {
         />
       )
 
-      const colorPicker = screen.getByTestId('HexColorPicker')
+      const colorPicker = container.querySelector('.react-colorful')
       expect(colorPicker).toHaveClass('custom-class')
       expect(colorPicker).toHaveStyle('width: 200px')
     })
 
     it('handles undefined onChange prop gracefully', async () => {
-      render(<DebouncedHexColorPicker color="#FF0000" onChange={undefined} />)
+      const { container } = render(
+        <DebouncedHexColorPicker color="#FF0000" onChange={undefined} />
+      )
 
-      const colorPicker = screen.getByTestId('HexColorPicker')
+      const saturation = container.querySelector(
+        '.react-colorful__saturation .react-colorful__interactive'
+      )
 
       // Should not throw error when onChange is undefined
       expect(() => {
-        fireEvent.click(colorPicker)
+        fireEvent.touchStart(saturation as Element, {
+          touches: [{ pageX: 50, pageY: 50 }]
+        })
 
         act(() => {
           jest.advanceTimersByTime(100)
@@ -423,15 +423,23 @@ describe('DebouncedHexColorPicker', () => {
       }).not.toThrow()
     })
 
-    it('maintains state consistency during multiple interactions', async () => {
-      render(
+    xit('maintains state consistency during multiple interactions', async () => {
+      // jest 30 issue
+      const { container } = render(
         <DebouncedHexColorPicker color="#FF0000" onChange={mockOnChange} />
       )
 
-      const colorPicker = screen.getByTestId('HexColorPicker')
+      const saturation = container.querySelector(
+        '.react-colorful__saturation .react-colorful__interactive'
+      )
+      const hue = container.querySelector(
+        '.react-colorful__hue .react-colorful__interactive'
+      )
 
       // First interaction
-      fireEvent.click(colorPicker)
+      fireEvent.touchStart(saturation as Element, {
+        touches: [{ pageX: 50, pageY: 50 }]
+      })
 
       act(() => {
         jest.advanceTimersByTime(100)
@@ -443,7 +451,10 @@ describe('DebouncedHexColorPicker', () => {
       })
 
       // Second interaction
-      fireEvent.click(colorPicker)
+      fireEvent.mouseDown(hue as Element, {
+        clientX: 100,
+        clientY: 0
+      })
 
       act(() => {
         jest.advanceTimersByTime(100)
