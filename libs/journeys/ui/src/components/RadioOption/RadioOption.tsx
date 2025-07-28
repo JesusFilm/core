@@ -96,7 +96,8 @@ export function RadioOption({
           ? {
               '&:hover': {
                 backgroundColor: (theme) => theme.palette.primary.contrastText
-              }
+              },
+              transform: 'translateY(0px) !important'
             }
           : undefined
       }
