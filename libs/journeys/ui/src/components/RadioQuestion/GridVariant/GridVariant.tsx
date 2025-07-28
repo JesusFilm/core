@@ -1,4 +1,4 @@
-import Box from '@mui/material/Box'
+import Grid from '@mui/material/Grid'
 import { ReactElement } from 'react'
 
 interface GridVariantProps {
@@ -13,19 +13,18 @@ export function GridVariant({
   blockId
 }: GridVariantProps): ReactElement {
   return (
-    <Box
-      sx={{
-        display: 'grid',
-        gridTemplateColumns: 'repeat(2, 1fr)',
-        gap: 2,
-        marginBottom: 4
-      }}
+    <Grid
+      container
+      spacing={2}
+      sx={{ marginBottom: 4 }}
       data-testid={`JourneysRadioQuestionGrid-${blockId}`}
     >
       {options.map((option, index) => (
-        <Box key={index}>{option}</Box>
+        <Grid key={index} size={6}>
+          {option}
+        </Grid>
       ))}
-      {addOption && <Box>{addOption}</Box>}
-    </Box>
+      {addOption && <Grid size={6}>{addOption}</Grid>}
+    </Grid>
   )
 }
