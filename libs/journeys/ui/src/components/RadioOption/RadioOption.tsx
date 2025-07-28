@@ -17,6 +17,7 @@ interface RadioOptionProps extends TreeBlock<RadioOptionFields> {
   disabled?: boolean
   onClick?: (selectedId: string, selectedLabel: string) => void
   editableLabel?: ReactElement
+  gridView?: boolean | null
 }
 
 export const StyledRadioOption = styled(Button)<ButtonProps>(({ theme }) => ({
@@ -37,7 +38,8 @@ export function RadioOption({
   disabled = false,
   selected = false,
   onClick,
-  editableLabel
+  editableLabel,
+  gridView = false
 }: RadioOptionProps): ReactElement {
   const { journey } = useJourney()
   const router = useRouter()

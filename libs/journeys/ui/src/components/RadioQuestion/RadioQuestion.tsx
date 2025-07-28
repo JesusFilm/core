@@ -1,7 +1,4 @@
 import { gql, useMutation } from '@apollo/client'
-import Box, { BoxProps } from '@mui/material/Box'
-import ButtonGroup from '@mui/material/ButtonGroup'
-import { styled } from '@mui/material/styles'
 import { sendGTMEvent } from '@next/third-parties/google'
 import { useTranslation } from 'next-i18next'
 import { usePlausible } from 'next-plausible'
@@ -24,6 +21,8 @@ import {
   RadioQuestionSubmissionEventCreate,
   RadioQuestionSubmissionEventCreateVariables
 } from './__generated__/RadioQuestionSubmissionEventCreate'
+import { GridVariant } from './GridVariant'
+import { ListVariant } from './ListVariant'
 
 export const RADIO_QUESTION_SUBMISSION_EVENT_CREATE = gql`
   mutation RadioQuestionSubmissionEventCreate(
@@ -41,17 +40,16 @@ interface RadioQuestionProps extends TreeBlock<RadioQuestionFields> {
   addOption?: ReactElement
 }
 
-const StyledRadioQuestion = styled(Box)<BoxProps>(({ theme }) => ({
-  marginBottom: theme.spacing(4)
-}))
-
 export function RadioQuestion({
   id: blockId,
+  // gridView,
   children,
   uuid = uuidv4,
   wrappers,
   addOption
 }: RadioQuestionProps): ReactElement {
+  const gridView = true // TODO: remove this
+
   const [radioQuestionSubmissionEventCreate] = useMutation<
     RadioQuestionSubmissionEventCreate,
     RadioQuestionSubmissionEventCreateVariables
@@ -140,16 +138,14 @@ export function RadioQuestion({
           selected={selectedId === option.id}
           disabled={Boolean(selectedId)}
           onClick={handleClick}
+          gridView={gridView}
         />
       ))
   )
 
-  return (
-    <StyledRadioQuestion data-testid={`JourneysRadioQuestion-${blockId}`}>
-      <ButtonGroup orientation="vertical" variant="contained" fullWidth>
-        {options}
-        {addOption}
-      </ButtonGroup>
-    </StyledRadioQuestion>
+  return gridView === true ? (
+    <GridVariant blockId={blockId} options={options} addOption={addOption} />
+  ) : (
+    <ListVariant blockId={blockId} options={options} addOption={addOption} />
   )
 }
