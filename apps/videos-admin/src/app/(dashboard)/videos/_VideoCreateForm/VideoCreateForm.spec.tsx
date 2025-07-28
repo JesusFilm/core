@@ -292,4 +292,170 @@ describe('VideoCreateForm', () => {
       })
     })
   })
+
+  describe('error handling', () => {
+    const duplicateIdErrorMock = {
+      request: {
+        query: CREATE_VIDEO,
+        variables: {
+          input: {
+            id: 'duplicate-id',
+            slug: 'test-slug',
+            label: 'episode',
+            originId: 'origin-1',
+            primaryLanguageId: '529',
+            noIndex: false,
+            published: false,
+            childIds: []
+          }
+        }
+      },
+      result: {
+        errors: [
+          {
+            message: 'Video ID already exists',
+            extensions: {
+              code: 'NotUniqueError',
+              location: [
+                {
+                  path: ['input', 'id'],
+                  value: 'duplicate-id'
+                }
+              ]
+            }
+          }
+        ]
+      }
+    }
+
+    const duplicateSlugErrorMock = {
+      request: {
+        query: CREATE_VIDEO,
+        variables: {
+          input: {
+            id: 'test-id',
+            slug: 'duplicate-slug',
+            label: 'episode',
+            originId: 'origin-1',
+            primaryLanguageId: '529',
+            noIndex: false,
+            published: false,
+            childIds: []
+          }
+        }
+      },
+      result: {
+        errors: [
+          {
+            message: 'Video slug already exists',
+            extensions: {
+              code: 'NotUniqueError',
+              location: [
+                {
+                  path: ['input', 'slug'],
+                  value: 'duplicate-slug'
+                }
+              ]
+            }
+          }
+        ]
+      }
+    }
+
+    it('displays specific error message for duplicate ID', async () => {
+      const mockEnqueueSnackbar = jest.fn()
+
+      // Mock notistack for this test
+      const { useSnackbar } = require('notistack')
+      useSnackbar.mockReturnValue({
+        enqueueSnackbar: mockEnqueueSnackbar
+      })
+
+      const user = userEvent.setup()
+
+      render(
+        <MockedProvider mocks={[duplicateIdErrorMock, getVideoOriginsMock]}>
+          <VideoCreateForm />
+        </MockedProvider>
+      )
+
+      // Wait for origins to load
+      await waitFor(() => {
+        expect(screen.getByLabelText(/Origin/i)).toBeInTheDocument()
+      })
+
+      // Fill out the form with duplicate ID
+      await user.type(screen.getByLabelText(/ID/i), 'duplicate-id')
+      await user.type(screen.getByLabelText(/Slug/i), 'test-slug')
+
+      // Select a label option
+      const labelSelect = screen.getByLabelText(/Label/i)
+      await user.click(labelSelect)
+      await user.click(screen.getByText('Episode'))
+
+      // Select an origin option
+      const originSelect = screen.getByLabelText(/Origin/i)
+      await user.click(originSelect)
+      await user.click(screen.getByText('origin-1 - Jesus Film Project'))
+
+      // Submit the form
+      await user.click(screen.getByText('Create'))
+
+      // Wait for error message
+      await waitFor(() => {
+        expect(mockEnqueueSnackbar).toHaveBeenCalledWith(
+          'This ID is already in use. Please choose a different ID.',
+          { variant: 'error' }
+        )
+      })
+    })
+
+    it('displays specific error message for duplicate slug', async () => {
+      const mockEnqueueSnackbar = jest.fn()
+
+      // Mock notistack for this test
+      const { useSnackbar } = require('notistack')
+      useSnackbar.mockReturnValue({
+        enqueueSnackbar: mockEnqueueSnackbar
+      })
+
+      const user = userEvent.setup()
+
+      render(
+        <MockedProvider mocks={[duplicateSlugErrorMock, getVideoOriginsMock]}>
+          <VideoCreateForm />
+        </MockedProvider>
+      )
+
+      // Wait for origins to load
+      await waitFor(() => {
+        expect(screen.getByLabelText(/Origin/i)).toBeInTheDocument()
+      })
+
+      // Fill out the form with duplicate slug
+      await user.type(screen.getByLabelText(/ID/i), 'test-id')
+      await user.type(screen.getByLabelText(/Slug/i), 'duplicate-slug')
+
+      // Select a label option
+      const labelSelect = screen.getByLabelText(/Label/i)
+      await user.click(labelSelect)
+      await user.click(screen.getByText('Episode'))
+
+      // Select an origin option
+      const originSelect = screen.getByLabelText(/Origin/i)
+      await user.click(originSelect)
+      await user.click(screen.getByText('origin-1 - Jesus Film Project'))
+
+      // Submit the form
+      await user.click(screen.getByText('Create'))
+
+      // Wait for error message
+      await waitFor(() => {
+        expect(mockEnqueueSnackbar).toHaveBeenCalledWith(
+          'This slug is already in use. Please choose a different slug.',
+          { variant: 'error' }
+        )
+      })
+    })
+  })
 })

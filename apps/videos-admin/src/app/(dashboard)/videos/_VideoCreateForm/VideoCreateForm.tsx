@@ -256,8 +256,21 @@ export function VideoCreateForm({
         // Handle specific error messages
         let errorMessage = 'Something went wrong.'
 
-        if (error.graphQLErrors && error.graphQLErrors.length > 0) {
-          const graphQLError = error.graphQLErrors[0]
+        // Check for GraphQL errors in both direct GraphQL errors and network errors
+        const directErrors = error.graphQLErrors || []
+        const networkErrors =
+          error.networkError &&
+          typeof error.networkError === 'object' &&
+          'graphQLErrors' in error.networkError &&
+          Array.isArray(error.networkError.graphQLErrors)
+            ? error.networkError.graphQLErrors
+            : []
+
+        const graphQLErrors =
+          directErrors.length > 0 ? directErrors : networkErrors
+
+        if (graphQLErrors.length > 0) {
+          const graphQLError = graphQLErrors[0]
 
           // Check for NotUniqueError
           if (graphQLError.extensions?.code === 'NotUniqueError') {
