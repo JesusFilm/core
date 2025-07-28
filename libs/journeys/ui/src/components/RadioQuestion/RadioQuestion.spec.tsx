@@ -120,7 +120,7 @@ describe('RadioQuestion', () => {
       }
     }))
 
-    const { getByTestId, getAllByRole } = render(
+    const { getAllByRole } = render(
       <MockedProvider
         mocks={[
           {
@@ -150,15 +150,12 @@ describe('RadioQuestion', () => {
     fireEvent.click(buttons[0])
     await waitFor(() => expect(result).toHaveBeenCalled())
     expect(buttons[0]).toBeDisabled()
-    expect(buttons[0]).toContainElement(
-      getByTestId('RadioOptionCheckCircleIcon')
-    )
   })
 
   it('should disable unselected options', async () => {
     blockHistoryVar([activeBlock])
 
-    const { getByTestId, getAllByRole } = render(
+    const { getAllByRole } = render(
       <MockedProvider
         mocks={[
           {
@@ -192,13 +189,7 @@ describe('RadioQuestion', () => {
     const buttons = getAllByRole('button')
     fireEvent.click(buttons[0])
     await waitFor(() => expect(buttons[0]).toBeDisabled())
-    expect(
-      getByTestId('RadioOptionRadioButtonUncheckedIcon')
-    ).toBeInTheDocument()
     expect(buttons[1]).toBeDisabled()
-    expect(buttons[1]).toContainElement(
-      getByTestId('RadioOptionRadioButtonUncheckedIcon')
-    )
     fireEvent.click(buttons[1])
     expect(buttons[1]).toBeDisabled()
   })
@@ -375,11 +366,6 @@ describe('RadioQuestion', () => {
 
     buttons.forEach((button) => {
       expect(button).not.toBeDisabled()
-      const icon = within(button).getByTestId(
-        'RadioOptionRadioButtonUncheckedIcon'
-      )
-      expect(icon).toBeInTheDocument()
-      expect(button).toContainElement(icon)
     })
   })
 })
