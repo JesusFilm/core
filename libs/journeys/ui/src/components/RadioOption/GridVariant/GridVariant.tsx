@@ -2,7 +2,7 @@ import Button, { ButtonProps } from '@mui/material/Button'
 import { styled } from '@mui/material/styles'
 import { ReactElement } from 'react'
 
-const StyledRadioOption = styled(Button)<ButtonProps>(({ theme }) => ({
+const StyledGridRadioOption = styled(Button)<ButtonProps>(({ theme }) => ({
   fontFamily: theme.typography.button.fontFamily,
   fontSize: theme.typography.body1.fontSize,
   fontWeight: 400,
@@ -16,34 +16,41 @@ const StyledRadioOption = styled(Button)<ButtonProps>(({ theme }) => ({
 }))
 
 interface GridVariantProps {
-  children: ReactElement | string
+  label: string
   selected?: boolean
   disabled?: boolean
-  onClick?: (e: React.MouseEvent) => void
-  startIcon?: ReactElement
-  sx?: any
+  handleClick: (e: React.MouseEvent) => void
+  editableLabel?: ReactElement
 }
 
 export function GridVariant({
-  children,
+  label,
   selected = false,
   disabled = false,
-  onClick,
-  startIcon,
-  sx
+  handleClick,
+  editableLabel
 }: GridVariantProps): ReactElement {
   return (
-    <StyledRadioOption
+    <StyledGridRadioOption
       variant="contained"
       disabled={disabled}
-      onClick={onClick}
+      onClick={handleClick}
       fullWidth
       disableRipple
-      startIcon={startIcon}
-      sx={sx}
+      className={selected ? 'selected' : ''}
+      sx={
+        editableLabel != null
+          ? {
+              '&:hover': {
+                backgroundColor: (theme) => theme.palette.primary.contrastText
+              },
+              transform: 'translateY(0px) !important'
+            }
+          : undefined
+      }
       data-testid="JourneysRadioOption"
     >
-      {children}
-    </StyledRadioOption>
+      {editableLabel ?? label}
+    </StyledGridRadioOption>
   )
 }

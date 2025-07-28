@@ -1,5 +1,3 @@
-import Button, { ButtonProps } from '@mui/material/Button'
-import { styled } from '@mui/material/styles'
 import { useRouter } from 'next/router'
 import { MouseEvent, ReactElement } from 'react'
 
@@ -9,61 +7,16 @@ import { getNextStepSlug } from '../../libs/getNextStepSlug'
 import { useJourney } from '../../libs/JourneyProvider'
 
 import { RadioOptionFields } from './__generated__/RadioOptionFields'
+import { GridVariant } from './GridVariant/GridVariant'
+import { ListVariant } from './ListVariant/ListVariant'
 
-interface RadioOptionProps extends TreeBlock<RadioOptionFields> {
+export interface RadioOptionProps extends TreeBlock<RadioOptionFields> {
   selected?: boolean
   disabled?: boolean
   onClick?: (selectedId: string, selectedLabel: string) => void
   editableLabel?: ReactElement
   gridView?: boolean | null
 }
-
-export const StyledRadioOption = styled(Button)<ButtonProps>(({ theme }) => ({
-  fontFamily: theme.typography.button.fontFamily,
-  fontSize: theme.typography.body1.fontSize,
-  fontWeight: 400,
-  lineHeight: theme.typography.body2.lineHeight,
-  textAlign: 'start',
-  justifyContent: 'flex-start',
-  borderRadius: 'inherit',
-  padding: '14px 10px 14px 14px',
-  transition: theme.transitions.create(
-    ['background-color', 'border-color', 'transform', 'box-shadow'],
-    {
-      duration: theme.transitions.duration.short
-    }
-  ),
-  backgroundColor: theme.palette.background.paper,
-  border: `1px solid ${theme.palette.grey[200]}`,
-  color: theme.palette.text.primary,
-  opacity: 0.7,
-
-  '&:hover': {
-    backgroundColor: theme.palette.background.default,
-    border: `1px solid ${theme.palette.grey[200]}`,
-    transform: 'translateY(-2px)',
-    boxShadow:
-      theme.palette.mode === 'dark'
-        ? '0 4px 12px rgba(0, 0, 0, 0.4)'
-        : '0 4px 12px rgba(0, 0, 0, 0.15)'
-  },
-
-  '&.selected': {
-    backgroundColor: theme.palette.primary.light,
-    border: `1px solid ${theme.palette.primary.main}`,
-    color: theme.palette.primary.contrastText,
-    boxShadow:
-      theme.palette.mode === 'dark'
-        ? '0 4px 16px rgba(0, 0, 0, 0.4)'
-        : '0 4px 16px rgba(0, 0, 0, 0.2)'
-  },
-  '&.Mui-disabled': {
-    backgroundColor: theme.palette.action.disabledBackground,
-    border: `1px solid ${theme.palette.grey[200]}`,
-    color: theme.palette.action.disabled,
-    opacity: 0.6
-  }
-}))
 
 export function RadioOption({
   label,
@@ -85,27 +38,21 @@ export function RadioOption({
     handleAction(router, action, nextStepSlug)
   }
 
-  return (
-    <StyledRadioOption
-      variant="contained"
+  return gridView === true ? (
+    <GridVariant
+      label={label}
       disabled={disabled}
-      onClick={handleClick}
-      fullWidth
-      disableRipple
-      className={selected ? 'selected' : ''}
-      sx={
-        editableLabel != null
-          ? {
-              '&:hover': {
-                backgroundColor: (theme) => theme.palette.primary.contrastText
-              },
-              transform: 'translateY(0px) !important'
-            }
-          : undefined
-      }
-      data-testid="JourneysRadioOption"
-    >
-      {editableLabel ?? label}
-    </StyledRadioOption>
+      selected={selected}
+      handleClick={handleClick}
+      editableLabel={editableLabel}
+    />
+  ) : (
+    <ListVariant
+      label={label}
+      disabled={disabled}
+      selected={selected}
+      handleClick={handleClick}
+      editableLabel={editableLabel}
+    />
   )
 }

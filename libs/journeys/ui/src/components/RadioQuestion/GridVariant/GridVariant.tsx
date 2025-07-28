@@ -1,9 +1,14 @@
 import Grid from '@mui/material/Grid'
+import { styled } from '@mui/material/styles'
 import { ReactElement } from 'react'
+
+const StyledGridRadioQuestion = styled(Grid)(({ theme }) => ({
+  marginBottom: theme.spacing(4)
+}))
 
 interface GridVariantProps {
   options: (ReactElement | false)[]
-  addOption?: ReactElement
+  addOption?: () => void
   blockId: string
 }
 
@@ -13,10 +18,9 @@ export function GridVariant({
   blockId
 }: GridVariantProps): ReactElement {
   return (
-    <Grid
+    <StyledGridRadioQuestion
       container
       spacing={2}
-      sx={{ marginBottom: 4 }}
       data-testid={`JourneysRadioQuestionGrid-${blockId}`}
     >
       {options.map((option, index) => (
@@ -24,7 +28,6 @@ export function GridVariant({
           {option}
         </Grid>
       ))}
-      {addOption && <Grid size={6}>{addOption}</Grid>}
-    </Grid>
+    </StyledGridRadioQuestion>
   )
 }
