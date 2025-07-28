@@ -10,7 +10,7 @@ import { BLOCK_FIELDS } from '@core/journeys/ui/block/blockFields'
 import { WrappersProps } from '@core/journeys/ui/BlockRenderer'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
-import { StyledRadioOption } from '@core/journeys/ui/RadioOption'
+import { StyledRadioOption } from '@core/journeys/ui/RadioOption/ListVariant'
 import { RadioQuestion } from '@core/journeys/ui/RadioQuestion'
 import AddSquare4Icon from '@core/shared/ui/icons/AddSquare4'
 import { adminTheme } from '@core/shared/ui/themes/journeysAdmin/theme'
@@ -139,7 +139,7 @@ export function RadioQuestionEdit({
     <RadioQuestion
       {...props}
       id={id}
-      addOption={props.children.length < 12 ? addRadioOption : undefined}
+      // addOption={props.children.length < 12 ? addRadioOption : undefined}
       wrappers={wrappers}
     />
   )
