@@ -1,6 +1,7 @@
 import { gql, useMutation } from '@apollo/client'
 import Box from '@mui/material/Box'
 import { SimplePaletteColorOptions } from '@mui/material/styles'
+import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 import { v4 as uuidv4 } from 'uuid'
@@ -128,9 +129,15 @@ export function RadioQuestionEdit({
           <AddSquare4Icon sx={{ color: `${adminPrimaryColor.main}` }} />
         }
         onClick={handleCreateOption}
-        sx={{ borderBottomLeftRadius: 8, borderBottomRightRadius: 8 }}
+        sx={{
+          borderBottomLeftRadius: 8,
+          borderBottomRightRadius: 8,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center'
+        }}
       >
-        {t('Add New Option')}
+        <Typography variant="body1">{t('Add Option')}</Typography>
       </StyledRadioOption>
     </Box>
   )
