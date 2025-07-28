@@ -284,6 +284,7 @@ export const steps: Array<TreeBlock<StepBlock>> = [
             __typename: 'RadioQuestionBlock',
             parentBlockId: 'card2.id',
             parentOrder: 2,
+            gridView: false,
             children: [
               {
                 id: 'radioOption1.id',
@@ -291,6 +292,7 @@ export const steps: Array<TreeBlock<StepBlock>> = [
                 parentBlockId: 'radioQuestion1.id',
                 parentOrder: 0,
                 label: 'One of many ways to God',
+                pollOptionImageId: null,
                 action: {
                   parentBlockId: 'radioOption1.id',
                   __typename: 'NavigateToBlockAction',
@@ -305,6 +307,7 @@ export const steps: Array<TreeBlock<StepBlock>> = [
                 parentBlockId: 'radioQuestion1.id',
                 parentOrder: 1,
                 label: 'One great lie...',
+                pollOptionImageId: null,
                 action: {
                   parentBlockId: 'radioOption3.id',
                   __typename: 'NavigateToBlockAction',
@@ -319,6 +322,7 @@ export const steps: Array<TreeBlock<StepBlock>> = [
                 parentBlockId: 'radioQuestion1.id',
                 parentOrder: 2,
                 label: 'One true way to God',
+                pollOptionImageId: null,
                 action: {
                   parentBlockId: 'radioOption4.id',
                   __typename: 'NavigateToBlockAction',
@@ -425,6 +429,7 @@ export const steps: Array<TreeBlock<StepBlock>> = [
             __typename: 'RadioQuestionBlock',
             parentBlockId: 'card3.id',
             parentOrder: 3,
+            gridView: false,
             children: [
               {
                 id: 'radioOption1.id',
@@ -432,6 +437,7 @@ export const steps: Array<TreeBlock<StepBlock>> = [
                 parentBlockId: 'radioQuestion1.id',
                 parentOrder: 0,
                 label: 'Yes, God likes good people',
+                pollOptionImageId: null,
                 action: {
                   parentBlockId: 'radioOption1.id',
                   __typename: 'NavigateToBlockAction',
@@ -446,6 +452,7 @@ export const steps: Array<TreeBlock<StepBlock>> = [
                 parentBlockId: 'radioQuestion1.id',
                 parentOrder: 1,
                 label: 'No, He will accept me as I am',
+                pollOptionImageId: null,
                 action: {
                   parentBlockId: 'radioOption3.id',
                   __typename: 'NavigateToBlockAction',

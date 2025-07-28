@@ -27,6 +27,7 @@ const block: TreeBlock<RadioOptionBlock> = {
   parentOrder: 0,
   label: 'Radio Option',
   action: null,
+  pollOptionImageId: null,
   children: []
 }
 
