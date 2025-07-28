@@ -283,6 +283,7 @@ describe('BlockRenderer', () => {
       parentOrder: 0,
       label: 'radio option',
       action: null,
+      pollOptionImageId: null,
       children: []
     }
     const { getByText } = render(
