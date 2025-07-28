@@ -32,29 +32,15 @@ export const StyledRadioOption = styled(Button)<ButtonProps>(({ theme }) => ({
       duration: theme.transitions.duration.short
     }
   ),
-  backgroundColor:
-    theme.palette.mode === 'dark'
-      ? theme.palette.grey[800]
-      : theme.palette.background.paper,
-  border: `1px solid ${
-    theme.palette.mode === 'dark'
-      ? theme.palette.grey[700]
-      : theme.palette.grey[200]
-  }`,
+  backgroundColor: theme.palette.background.paper,
+  border: `1px solid ${theme.palette.grey[200]}`,
   color: theme.palette.text.primary,
   opacity: 0.7,
 
   '&:hover': {
-    backgroundColor:
-      theme.palette.mode === 'dark'
-        ? theme.palette.grey[700]
-        : theme.palette.grey[100],
-    border: `1px solid ${
-      theme.palette.mode === 'dark'
-        ? theme.palette.grey[600]
-        : theme.palette.grey[300]
-    }`,
-    transform: 'translateY(-1px)',
+    backgroundColor: theme.palette.background.default,
+    border: `1px solid ${theme.palette.grey[200]}`,
+    transform: 'translateY(-2px)',
     boxShadow:
       theme.palette.mode === 'dark'
         ? '0 4px 12px rgba(0, 0, 0, 0.4)'
@@ -62,10 +48,7 @@ export const StyledRadioOption = styled(Button)<ButtonProps>(({ theme }) => ({
   },
 
   '&.selected': {
-    backgroundColor:
-      theme.palette.mode === 'dark'
-        ? theme.palette.primary.dark
-        : theme.palette.primary.light,
+    backgroundColor: theme.palette.primary.light,
     border: `1px solid ${theme.palette.primary.main}`,
     color: theme.palette.primary.contrastText,
     boxShadow:
@@ -73,17 +56,9 @@ export const StyledRadioOption = styled(Button)<ButtonProps>(({ theme }) => ({
         ? '0 4px 16px rgba(0, 0, 0, 0.4)'
         : '0 4px 16px rgba(0, 0, 0, 0.2)'
   },
-
   '&.Mui-disabled': {
-    backgroundColor:
-      theme.palette.mode === 'dark'
-        ? theme.palette.grey[800]
-        : theme.palette.grey[50],
-    border: `1px solid ${
-      theme.palette.mode === 'dark'
-        ? theme.palette.grey[800]
-        : theme.palette.grey[100]
-    }`,
+    backgroundColor: theme.palette.action.disabledBackground,
+    border: `1px solid ${theme.palette.grey[200]}`,
     color: theme.palette.action.disabled,
     opacity: 0.6
   }
@@ -120,7 +95,7 @@ export function RadioOption({
         editableLabel != null
           ? {
               '&:hover': {
-                backgroundColor: 'primary.main'
+                backgroundColor: (theme) => theme.palette.primary.contrastText
               }
             }
           : undefined
