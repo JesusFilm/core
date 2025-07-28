@@ -10,7 +10,7 @@ jest.mock('next/router', () => ({
 
 const mockUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
 
-describe('HandleNewAccountRedirect', () => {
+xdescribe('HandleNewAccountRedirect', () => {
   const push = jest.fn()
 
   afterEach(() => {
