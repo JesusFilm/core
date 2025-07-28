@@ -27,7 +27,7 @@ export const StyledRadioOption = styled(Button)<ButtonProps>(({ theme }) => ({
   borderRadius: 'inherit',
   padding: '14px 10px 14px 14px',
   transition: theme.transitions.create(
-    ['background-color', 'border-color', 'transform', 'box-shadow'],
+    ['background-color', 'border-color', 'transform', 'box-shadow', 'opacity'],
     {
       duration: theme.transitions.duration.short
     }
@@ -44,7 +44,8 @@ export const StyledRadioOption = styled(Button)<ButtonProps>(({ theme }) => ({
     boxShadow:
       theme.palette.mode === 'dark'
         ? '0 4px 12px rgba(0, 0, 0, 0.4)'
-        : '0 4px 12px rgba(0, 0, 0, 0.15)'
+        : '0 4px 12px rgba(0, 0, 0, 0.15)',
+    opacity: 0.9
   },
 
   '&.selected': {
@@ -57,10 +58,10 @@ export const StyledRadioOption = styled(Button)<ButtonProps>(({ theme }) => ({
         : '0 4px 16px rgba(0, 0, 0, 0.2)'
   },
   '&.Mui-disabled': {
-    backgroundColor: theme.palette.action.disabledBackground,
+    opacity: 0.4,
+    backgroundColor: theme.palette.background.paper,
     border: `1px solid ${theme.palette.grey[200]}`,
-    color: theme.palette.action.disabled,
-    opacity: 0.6
+    color: theme.palette.action.disabled
   }
 }))
 
