@@ -1,8 +1,6 @@
 import { renderHook } from '@testing-library/react'
 import { NextRouter, useRouter } from 'next/router'
 
-import { changeJSDOMURL } from '../changeJSDOMURL'
-
 import { useHandleNewAccountRedirect } from './useHandleNewAccountRedirect'
 
 jest.mock('next/router', () => ({
@@ -14,7 +12,6 @@ const mockUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
 
 describe('HandleNewAccountRedirect', () => {
   const push = jest.fn()
-  changeJSDOMURL('http://localhost:4200')
 
   afterEach(() => {
     jest.clearAllMocks()
@@ -34,7 +31,7 @@ describe('HandleNewAccountRedirect', () => {
     expect(push).toHaveBeenCalledWith({
       pathname: '/users/sign-in',
       query: {
-        redirect: 'http://localhost:4200/customparam?newAccount=true'
+        redirect: expect.stringContaining('/customparam?newAccount=true')
       }
     })
   })

@@ -59,15 +59,13 @@ describe('useUserTeamsAndInvitesLazyQuery', () => {
       }
     )
 
-    await act(async () => {
-      await hookResult.current.query[0]({
-        variables: {
-          teamId: 'teamId',
-          where: {
-            role: [UserTeamRole.manager, UserTeamRole.member]
-          }
+    await hookResult.current.query[0]({
+      variables: {
+        teamId: 'teamId',
+        where: {
+          role: [UserTeamRole.manager, UserTeamRole.member]
         }
-      })
+      }
     })
 
     await act(

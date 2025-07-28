@@ -25,7 +25,6 @@ jest.mock('@mui/material/useMediaQuery', () => ({
 }))
 
 // Mock notistack
-const mockEnqueueSnackbar = jest.fn()
 jest.mock('notistack', () => ({
   ...jest.requireActual('notistack'),
   enqueueSnackbar: jest.fn()

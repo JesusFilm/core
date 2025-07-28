@@ -1,5 +1,5 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { act, renderHook, waitFor } from '@testing-library/react'
+import { renderHook, waitFor } from '@testing-library/react'
 
 import {
   GET_CURRENT_USER,
@@ -32,9 +32,7 @@ describe('useCurrentUserLazyQuery', () => {
       )
     })
 
-    await act(async () => {
-      await result.current.loadUser()
-    })
+    await result.current.loadUser()
 
     await waitFor(() =>
       expect(result.current.data).toEqual({
