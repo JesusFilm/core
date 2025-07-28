@@ -149,7 +149,7 @@ jobs:
         uses: mansagroup/nrwl-nx-action@v3
         with:
           targets: test
-          args: --ci --silent --runInBand --max-workers ${{ steps.cpu-cores.outputs.count }} --shard=${{ matrix.shard }}
+          args: --ci --silent --max-workers ${{ steps.cpu-cores.outputs.count }} --shard=${{ matrix.shard }}
           parallel: 1
       - name: download codecov
         run: |
