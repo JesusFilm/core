@@ -262,6 +262,7 @@ export function CardPoll(): ReactElement {
       id: uuidv4(),
       parentBlockId: cardId,
       parentOrder: 2,
+      gridView: false,
       __typename: 'RadioQuestionBlock'
     } satisfies RadioQuestionBlock
 
@@ -271,6 +272,7 @@ export function CardPoll(): ReactElement {
       parentOrder: 0,
       label: t('Turning the other cheek'),
       action: null,
+      pollOptionImageId: null,
       __typename: 'RadioOptionBlock'
     } satisfies RadioOptionBlock
 
@@ -280,6 +282,7 @@ export function CardPoll(): ReactElement {
       parentOrder: 1,
       label: t('Loving your enemies'),
       action: null,
+      pollOptionImageId: null,
       __typename: 'RadioOptionBlock'
     } satisfies RadioOptionBlock
 
@@ -289,6 +292,7 @@ export function CardPoll(): ReactElement {
       parentOrder: 2,
       label: t('Not worrying about tomorrow'),
       action: null,
+      pollOptionImageId: null,
       __typename: 'RadioOptionBlock'
     } satisfies RadioOptionBlock
 
@@ -298,6 +302,7 @@ export function CardPoll(): ReactElement {
       parentOrder: 3,
       label: t('Seeking first the kingdom of God'),
       action: null,
+      pollOptionImageId: null,
       __typename: 'RadioOptionBlock'
     } satisfies RadioOptionBlock
 

@@ -301,6 +301,7 @@ describe('BlockRenderer', () => {
       parentOrder: 0,
       label: 'radio option',
       action: null,
+      pollOptionImageId: null,
       children: []
     }
     const { getByTestId, getByText } = render(
@@ -334,6 +335,7 @@ describe('BlockRenderer', () => {
       parentOrder: 0,
       label: 'radio option 1',
       action: null,
+      pollOptionImageId: null,
       children: []
     }
 
@@ -342,6 +344,7 @@ describe('BlockRenderer', () => {
       id: 'main',
       parentBlockId: null,
       parentOrder: 0,
+      gridView: false,
       children: [option, { ...option, label: 'radio option 2' }]
     }
     const { getByText } = render(
@@ -359,6 +362,7 @@ describe('BlockRenderer', () => {
       id: 'main',
       parentBlockId: null,
       parentOrder: 0,
+      gridView: false,
       children: []
     }
     const { getByTestId, getByRole } = render(
