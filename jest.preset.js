@@ -4,8 +4,6 @@ module.exports = {
   ...nxPreset,
   // Enable Jest globals for v30+
   injectGlobals: true,
-  // Suppress console warnings during tests, only show test results and actual errors
-  silent: true,
   /* TODO: Update to latest Jest snapshotFormat
    * By default Nx has kept the older style of Jest Snapshot formats
    * to prevent breaking of any existing tests with snapshots.
