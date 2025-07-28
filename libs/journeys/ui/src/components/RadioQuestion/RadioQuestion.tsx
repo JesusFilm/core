@@ -42,7 +42,20 @@ interface RadioQuestionProps extends TreeBlock<RadioQuestionFields> {
 }
 
 const StyledRadioQuestion = styled(Box)<BoxProps>(({ theme }) => ({
-  marginBottom: theme.spacing(4)
+  marginBottom: theme.spacing(4),
+  '& .MuiButtonGroup-root': {
+    boxShadow: 'none',
+    gap: theme.spacing(2),
+    '& .MuiButtonGroup-grouped': {
+      borderRadius: '12px',
+      border: 'none',
+      margin: '0 !important',
+      '&:not(:last-child)': {
+        borderBottom: 'none !important',
+        borderRight: 'none !important'
+      }
+    }
+  }
 }))
 
 export function RadioQuestion({

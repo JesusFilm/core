@@ -1,5 +1,3 @@
-import CheckCircleIcon from '@mui/icons-material/CheckCircle'
-import RadioButtonUncheckedIcon from '@mui/icons-material/RadioButtonUnchecked'
 import Button, { ButtonProps } from '@mui/material/Button'
 import { styled } from '@mui/material/styles'
 import { useRouter } from 'next/router'
@@ -27,7 +25,68 @@ export const StyledRadioOption = styled(Button)<ButtonProps>(({ theme }) => ({
   textAlign: 'start',
   justifyContent: 'flex-start',
   borderRadius: 'inherit',
-  padding: '14px 10px 14px 14px'
+  padding: '14px 10px 14px 14px',
+  transition: theme.transitions.create(
+    ['background-color', 'border-color', 'transform', 'box-shadow'],
+    {
+      duration: theme.transitions.duration.short
+    }
+  ),
+  backgroundColor:
+    theme.palette.mode === 'dark'
+      ? theme.palette.grey[800]
+      : theme.palette.background.paper,
+  border: `1px solid ${
+    theme.palette.mode === 'dark'
+      ? theme.palette.grey[700]
+      : theme.palette.grey[200]
+  }`,
+  color: theme.palette.text.primary,
+  opacity: 0.7,
+
+  '&:hover': {
+    backgroundColor:
+      theme.palette.mode === 'dark'
+        ? theme.palette.grey[700]
+        : theme.palette.grey[100],
+    border: `1px solid ${
+      theme.palette.mode === 'dark'
+        ? theme.palette.grey[600]
+        : theme.palette.grey[300]
+    }`,
+    transform: 'translateY(-1px)',
+    boxShadow:
+      theme.palette.mode === 'dark'
+        ? '0 4px 12px rgba(0, 0, 0, 0.4)'
+        : '0 4px 12px rgba(0, 0, 0, 0.15)'
+  },
+
+  '&.selected': {
+    backgroundColor:
+      theme.palette.mode === 'dark'
+        ? theme.palette.primary.dark
+        : theme.palette.primary.light,
+    border: `1px solid ${theme.palette.primary.main}`,
+    color: theme.palette.primary.contrastText,
+    boxShadow:
+      theme.palette.mode === 'dark'
+        ? '0 4px 16px rgba(0, 0, 0, 0.4)'
+        : '0 4px 16px rgba(0, 0, 0, 0.2)'
+  },
+
+  '&.Mui-disabled': {
+    backgroundColor:
+      theme.palette.mode === 'dark'
+        ? theme.palette.grey[800]
+        : theme.palette.grey[50],
+    border: `1px solid ${
+      theme.palette.mode === 'dark'
+        ? theme.palette.grey[800]
+        : theme.palette.grey[100]
+    }`,
+    color: theme.palette.action.disabled,
+    opacity: 0.6
+  }
 }))
 
 export function RadioOption({
@@ -56,13 +115,7 @@ export function RadioOption({
       onClick={handleClick}
       fullWidth
       disableRipple
-      startIcon={
-        selected ? (
-          <CheckCircleIcon data-testid="RadioOptionCheckCircleIcon" />
-        ) : (
-          <RadioButtonUncheckedIcon data-testid="RadioOptionRadioButtonUncheckedIcon" />
-        )
-      }
+      className={selected ? 'selected' : ''}
       sx={
         editableLabel != null
           ? {
