@@ -33,6 +33,7 @@ describe('PaginationBullets', () => {
             id: 'radioQuestionBlock.id',
             parentBlockId: 'cardBlock.id',
             parentOrder: 0,
+            gridView: false,
             children: [
               {
                 __typename: 'RadioOptionBlock',
@@ -46,6 +47,7 @@ describe('PaginationBullets', () => {
                   gtmEventName: null,
                   blockId: 'step2.id'
                 },
+                pollOptionImageId: null,
                 children: []
               }
             ]
