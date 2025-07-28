@@ -30,6 +30,7 @@ export function TemplateVideoPlayer({
     if (videoRef.current != null) {
       setPlayer(
         videojs(videoRef.current, {
+          errorDisplay: false,
           autoplay: true,
           controls: true,
           bigPlayButton: false,

@@ -1,0 +1,21 @@
+name: Housekeeping - Label feature-branch PRs
+on:
+  pull_request:
+    types: [opened, reopened, synchronize]
+jobs:
+  tag_feature_pr:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const branch = context.payload.pull_request.head.ref;
+            if (/^feature\/.*/.test(branch)) {
+              await github.issues.addLabels({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.payload.number,
+                labels: ['feature-branch']
+              });
+            }

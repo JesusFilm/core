@@ -3,5 +3,6 @@ export {
   getOpacityFromHex,
   stripAlphaFromHex,
   addAlphaToHex,
-  reduceHexOpacity
+  reduceHexOpacity,
+  applyDefaultAlpha
 } from './colorOpacityUtils'

@@ -5,7 +5,7 @@ import { HTTPException } from 'hono/http-exception'
 import { ResultOf, graphql } from '@core/shared/gql'
 
 import { getApolloClient } from '../../../lib/apolloClient'
-import { getBrightcoveRedirectUrl } from '../../../lib/brightcove'
+import { getBrightcoveUrl } from '../../../lib/brightcove'
 import { findDownloadWithFallback } from '../../../lib/downloadHelpers'
 import { setCorsHeaders } from '../../../lib/redirectUtils'
 
@@ -109,9 +109,10 @@ dh.openapi(dhRoute, async (c: Context) => {
   try {
     const variant = await getVideoVariant(mediaComponentId, languageId)
     const brightcoveId = variant.brightcoveId
+
     if (brightcoveId) {
       try {
-        const url = await getBrightcoveRedirectUrl(brightcoveId, 'dh', clientIp)
+        const url = await getBrightcoveUrl(brightcoveId, 'dh', null, clientIp)
         return c.redirect(url)
       } catch (err) {
         console.warn(

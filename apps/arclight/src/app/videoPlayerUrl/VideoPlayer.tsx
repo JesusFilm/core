@@ -50,6 +50,7 @@ export function VideoPlayer({
 
       // Configure videojs options
       const vjsOptions = {
+        errorDisplay: false,
         enableSmoothSeeking: true,
         experimentalSvgIcons: true,
         preload: 'auto',

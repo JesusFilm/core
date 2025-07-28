@@ -142,13 +142,15 @@ export class BlockService {
     )
     await this.saveAll(
       blockAndChildrenData.map((block) => ({
+        // if updating the omit, also do the same in journey.resolver.ts journeyDuplicate uses this saveAll function.
         ...omit(block, [
           'parentBlockId',
           'posterBlockId',
           'coverBlockId',
           'nextBlockId',
           'action',
-          'slug'
+          'slug',
+          'pollOptionImageId'
         ]),
         settings: block.settings ?? {},
         journey: {
@@ -174,7 +176,8 @@ export class BlockService {
             action:
               !isActionEmpty && newBlock.action != null
                 ? { create: newBlock.action }
-                : undefined
+                : undefined,
+            pollOptionImageId: newBlock.pollOptionImageId ?? undefined
           }
           if (newBlock.typename === 'StepBlock') {
             return await this.prismaService.block.update({

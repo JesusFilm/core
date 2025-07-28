@@ -58,7 +58,8 @@ export class RadioQuestionBlockResolver {
   async radioQuestionBlockUpdate(
     @CaslAbility() ability: AppAbility,
     @Args('id') id: string,
-    @Args('parentBlockId') parentBlockId: string
+    @Args('parentBlockId') parentBlockId: string,
+    @Args('gridView') gridView?: boolean
   ): Promise<Block> {
     const block = await this.prismaService.block.findUnique({
       where: { id },
@@ -80,6 +81,6 @@ export class RadioQuestionBlockResolver {
       throw new GraphQLError('user is not allowed to update block', {
         extensions: { code: 'FORBIDDEN' }
       })
-    return await this.blockService.update(id, { parentBlockId })
+    return await this.blockService.update(id, { parentBlockId, gridView })
   }
 }

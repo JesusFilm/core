@@ -41,7 +41,7 @@ describe('ColorOpacityField', () => {
       expect(opacityInput).toHaveValue('100')
     })
 
-    it('handles 6-digit hex colors with default 100% opacity', () => {
+    it('handles 6-digit hex colors with default 30% opacity', () => {
       render(
         <ThemeWrapper>
           <ColorOpacityField
@@ -59,7 +59,7 @@ describe('ColorOpacityField', () => {
         .querySelector('input')
 
       expect(colorInput).toHaveValue('#00FF00')
-      expect(opacityInput).toHaveValue('100')
+      expect(opacityInput).toHaveValue('30')
     })
 
     it('extracts opacity from 8-digit hex colors', () => {
@@ -130,7 +130,7 @@ describe('ColorOpacityField', () => {
       fireEvent.blur(colorInput as HTMLInputElement)
 
       await waitFor(() => {
-        expect(mockOnColorChange).toHaveBeenCalledWith('#ABCDEFFF')
+        expect(mockOnColorChange).toHaveBeenCalledWith('#ABCDEF4D')
       })
     })
 
@@ -228,7 +228,7 @@ describe('ColorOpacityField', () => {
       fireEvent.keyDown(colorInput as HTMLInputElement, { key: 'Enter' })
 
       await waitFor(() => {
-        expect(mockOnColorChange).toHaveBeenCalledWith('#123456FF')
+        expect(mockOnColorChange).toHaveBeenCalledWith('#1234564D')
       })
     })
 
@@ -282,7 +282,7 @@ describe('ColorOpacityField', () => {
 
       await waitFor(() => {
         expect(colorInput).toHaveValue('#FF0000')
-        expect(opacityInput).toHaveValue('100')
+        expect(opacityInput).toHaveValue('30')
         expect(mockOnColorChange).not.toHaveBeenCalled()
       })
     })
@@ -517,7 +517,7 @@ describe('ColorOpacityField', () => {
       fireEvent.blur(colorInput as HTMLInputElement)
 
       await waitFor(() => {
-        expect(mockOnColorChange).toHaveBeenCalledWith('#ABCDEFFF')
+        expect(mockOnColorChange).toHaveBeenCalledWith('#ABCDEF4D')
       })
 
       jest.clearAllMocks()

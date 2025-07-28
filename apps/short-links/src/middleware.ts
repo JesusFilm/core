@@ -18,15 +18,22 @@ export function middleware(request: NextRequest) {
   const hostname = request.nextUrl.hostname
   const pathname = request.nextUrl.pathname
 
-  const baseUrl =
-    hostname === 'arc.gt'
-      ? 'https://api.arclight.org'
-      : 'https://core-stage.arclight.org'
+  let baseUrl = ''
+  if (hostname === 'arc.gt' || hostname === 'core.arc.gt') {
+    baseUrl = 'https://api.arclight.org'
+  } else if (hostname === 'stg.arc.gt') {
+    baseUrl = 'https://core-stage.arclight.org'
+  }
 
   // Redirect all requests for arc.gt and stg.arc.gt
-  if (hostname === 'arc.gt' || hostname === 'stg.arc.gt') {
+  if (baseUrl !== '') {
     const redirectUrl = `${baseUrl}${pathname}${request.nextUrl.search}`
-    return NextResponse.redirect(redirectUrl, 307)
+    const response = NextResponse.redirect(redirectUrl, 302)
+    response.headers.set('Access-Control-Allow-Origin', '*')
+    response.headers.set('Access-Control-Allow-Methods', 'GET, OPTIONS')
+    response.headers.set('Access-Control-Allow-Headers', '*')
+    response.headers.set('Access-Control-Expose-Headers', '*')
+    return response
   }
 
   const url = new URL(`/${hostname}${pathname}`, request.url)

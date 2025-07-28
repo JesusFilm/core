@@ -171,8 +171,10 @@ export function CitationForm({
         'greaterThanVerseStart',
         'End verse must be greater than or equal to start verse',
         function (value) {
-          const { verseStart } = this.parent
-          return !value || !verseStart || value >= verseStart
+          const { verseStart, chapterStart, chapterEnd } = this.parent
+          // Only validate end verse against start verse if chapters are the same
+          const isSameChapter = !chapterEnd || chapterEnd === chapterStart
+          return !value || !verseStart || !isSameChapter || value >= verseStart
         }
       )
   })

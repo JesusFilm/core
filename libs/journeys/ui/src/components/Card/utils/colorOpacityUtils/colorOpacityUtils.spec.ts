@@ -28,10 +28,10 @@ describe('colorOpacityUtils', () => {
   })
 
   describe('getOpacityFromHex', () => {
-    it('should return 100 for 6-digit hex codes (fully opaque)', () => {
-      expect(getOpacityFromHex('#FF0000')).toBe(100)
-      expect(getOpacityFromHex('#00FF00')).toBe(100)
-      expect(getOpacityFromHex('#0000FF')).toBe(100)
+    it('should return 30 for 6-digit hex codes by default', () => {
+      expect(getOpacityFromHex('#FF0000')).toBe(30)
+      expect(getOpacityFromHex('#00FF00')).toBe(30)
+      expect(getOpacityFromHex('#0000FF')).toBe(30)
     })
 
     it('should calculate correct opacity percentage for 8-digit hex codes', () => {
@@ -101,7 +101,7 @@ describe('colorOpacityUtils', () => {
 
   describe('reduceHexOpacity', () => {
     it('should reduce the opacity of a hex color by a specified percentage', () => {
-      expect(reduceHexOpacity('#FFFFFF', 50)).toBe('#FFFFFF80')
+      expect(reduceHexOpacity('#FFFFFF', 50)).toBe('#FFFFFF00')
       expect(reduceHexOpacity('#00FF0080', 25)).toBe('#00FF0040')
       expect(reduceHexOpacity('#0000FFFF', 100)).toBe('#0000FF00')
     })

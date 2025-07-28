@@ -611,6 +611,7 @@ export interface RadioOptionBlockCreateInput {
 export interface RadioOptionBlockUpdateInput {
   parentBlockId?: string | null;
   label?: string | null;
+  pollOptionImageId?: string | null;
 }
 
 export interface RadioQuestionBlockCreateInput {

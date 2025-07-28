@@ -22,7 +22,7 @@ export function PaletteColorPicker({
   colors,
   onChange
 }: PaletteColorPickerProps): ReactElement {
-  const opacity = getOpacityFromHex(selectedColor) ?? 100
+  const opacity = getOpacityFromHex(selectedColor) ?? 30
 
   function isSameColor(color1: string, color2: string): boolean {
     return stripAlphaFromHex(color1) === stripAlphaFromHex(color2)

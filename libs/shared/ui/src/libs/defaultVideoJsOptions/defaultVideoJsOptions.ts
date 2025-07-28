@@ -1,6 +1,7 @@
 // note: all video.js players import these options, so take care with what is added here
 
 export const defaultVideoJsOptions = {
+  errorDisplay: false,
   enableSmoothSeeking: true,
   experimentalSvgIcons: true,
   html5: {
@@ -25,6 +26,7 @@ export const defaultVideoJsOptions = {
 }
 
 export const defaultBackgroundVideoJsOptions = {
+  errorDisplay: false,
   enableSmoothSeeking: true,
   experimentalSvgIcons: true,
   html5: {
