@@ -175,89 +175,94 @@ export default function VideoViewLayout({
     setIsPublishing(true)
     setShowPublishDialog(false)
 
-    try {
-      await Promise.all(
-        unpublishedChildren.map((child) =>
-          updateVideo({
-            variables: {
-              input: {
-                id: child.id,
-                published: true
-              }
+    const mutationResults = await Promise.all(
+      unpublishedChildren.map((child) =>
+        updateVideo({
+          variables: {
+            input: {
+              id: child.id,
+              published: true
             }
-          })
-        )
+          }
+        })
       )
+    )
 
+    const hasErrors = mutationResults.some((result) => result.errors != null)
+
+    if (hasErrors) {
+      enqueueSnackbar('Failed to publish children', {
+        variant: 'error'
+      })
+    } else {
       enqueueSnackbar(
         `Successfully published ${unpublishedChildren.length} children`,
         { variant: 'success' }
       )
       void refetchChildren()
-    } catch {
-      enqueueSnackbar('Failed to publish children', {
-        variant: 'error'
-      })
-    } finally {
-      setIsPublishing(false)
     }
+
+    setIsPublishing(false)
   }, [unpublishedChildren, updateVideo, enqueueSnackbar, refetchChildren])
 
   const handlePublishChildrenAndLanguages = useCallback(async () => {
     setIsPublishing(true)
     setShowPublishDialog(false)
 
-    try {
-      // First publish all children
-      await Promise.all(
-        unpublishedChildren.map((child) =>
-          updateVideo({
+    // First publish all children
+    const childrenResults = await Promise.all(
+      unpublishedChildren.map((child) =>
+        updateVideo({
+          variables: {
+            input: {
+              id: child.id,
+              published: true
+            }
+          }
+        })
+      )
+    )
+
+    const childrenHasErrors = childrenResults.some(
+      (result) => result.errors != null
+    )
+
+    // Then publish all unpublished variants of all children
+    const allUnpublishedVariants =
+      childrenData?.adminVideo?.children?.flatMap(
+        (child) => child.variants?.filter((variant) => !variant.published) ?? []
+      ) ?? []
+
+    let variantsHasErrors = false
+    if (allUnpublishedVariants.length > 0) {
+      const variantResults = await Promise.all(
+        allUnpublishedVariants.map((variant) =>
+          updateVariant({
             variables: {
               input: {
-                id: child.id,
+                id: variant.id,
                 published: true
               }
             }
           })
         )
       )
+      variantsHasErrors = variantResults.some((result) => result.errors != null)
+    }
 
-      // Then publish all unpublished variants of all children
-      const allUnpublishedVariants =
-        childrenData?.adminVideo?.children?.flatMap(
-          (child) =>
-            child.variants?.filter((variant) => !variant.published) ?? []
-        ) ?? []
-
-      if (allUnpublishedVariants.length > 0) {
-        await Promise.all(
-          allUnpublishedVariants.map((variant) =>
-            updateVariant({
-              variables: {
-                input: {
-                  id: variant.id,
-                  published: true
-                }
-              }
-            })
-          )
-        )
-      }
-
-      const totalPublished =
-        unpublishedChildren.length + allUnpublishedVariants.length
+    if (childrenHasErrors || variantsHasErrors) {
+      enqueueSnackbar('Failed to publish children and languages', {
+        variant: 'error'
+      })
+    } else {
       enqueueSnackbar(
         `Successfully published ${unpublishedChildren.length} children and ${allUnpublishedVariants.length} languages`,
         { variant: 'success' }
       )
       void refetchChildren()
-    } catch {
-      enqueueSnackbar('Failed to publish children and languages', {
-        variant: 'error'
-      })
-    } finally {
-      setIsPublishing(false)
     }
+
+    setIsPublishing(false)
   }, [
     unpublishedChildren,
     childrenData?.adminVideo?.children,
