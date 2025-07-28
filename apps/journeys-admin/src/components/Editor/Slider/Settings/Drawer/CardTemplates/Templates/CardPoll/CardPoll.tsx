@@ -377,14 +377,19 @@ export function CardPoll(): ReactElement {
               journeyId: journey.id
             },
             radioQuestionInput: {
-              ...omit(radioQuestionBlock, ['__typename', 'parentOrder']),
+              ...omit(radioQuestionBlock, [
+                '__typename',
+                'parentOrder',
+                'gridView'
+              ]),
               journeyId: journey.id
             },
             radioOptionInput1: {
               ...omit(radioOptionBlock1, [
                 '__typename',
                 'parentOrder',
-                'action'
+                'action',
+                'pollOptionImageId'
               ]),
               journeyId: journey.id
             },
@@ -392,7 +397,8 @@ export function CardPoll(): ReactElement {
               ...omit(radioOptionBlock2, [
                 '__typename',
                 'parentOrder',
-                'action'
+                'action',
+                'pollOptionImageId'
               ]),
               journeyId: journey.id
             },
@@ -400,7 +406,8 @@ export function CardPoll(): ReactElement {
               ...omit(radioOptionBlock3, [
                 '__typename',
                 'parentOrder',
-                'action'
+                'action',
+                'pollOptionImageId'
               ]),
               journeyId: journey.id
             },
@@ -408,7 +415,8 @@ export function CardPoll(): ReactElement {
               ...omit(radioOptionBlock4, [
                 '__typename',
                 'parentOrder',
-                'action'
+                'action',
+                'pollOptionImageId'
               ]),
               journeyId: journey.id
             },
