@@ -14,6 +14,7 @@ describe('RadioQuestion Properties', () => {
     __typename: 'RadioQuestionBlock',
     parentBlockId: 'step1.id',
     parentOrder: 0,
+    gridView: false,
     children: []
   }
 
