@@ -32,13 +32,16 @@ export const StyledRadioOption = styled(Button)<ButtonProps>(({ theme }) => ({
       duration: theme.transitions.duration.short
     }
   ),
-  backgroundColor: theme.palette.background.paper,
+  backgroundColor: 'background.paper',
   border: `1px solid ${theme.palette.grey[200]}`,
-  color: theme.palette.text.primary,
+  color: 'text.primary',
   opacity: 0.7,
 
   '&:hover': {
-    backgroundColor: theme.palette.background.default,
+    backgroundColor:
+      theme.palette.mode === 'dark'
+        ? theme.palette.grey[0 as keyof typeof theme.palette.grey]
+        : theme.palette.grey[900],
     border: `1px solid ${theme.palette.grey[200]}`,
     transform: 'translateY(-2px)',
     boxShadow:
@@ -49,9 +52,15 @@ export const StyledRadioOption = styled(Button)<ButtonProps>(({ theme }) => ({
   },
 
   '&.selected': {
-    backgroundColor: theme.palette.primary.light,
+    backgroundColor:
+      theme.palette.mode === 'dark'
+        ? theme.palette.grey[800]
+        : theme.palette.grey[100],
     border: `1px solid ${theme.palette.primary.main}`,
-    color: theme.palette.primary.contrastText,
+    color:
+      theme.palette.mode === 'dark'
+        ? theme.palette.grey[0 as keyof typeof theme.palette.grey]
+        : theme.palette.grey[900],
     boxShadow:
       theme.palette.mode === 'dark'
         ? '0 4px 16px rgba(0, 0, 0, 0.4)'
@@ -59,9 +68,15 @@ export const StyledRadioOption = styled(Button)<ButtonProps>(({ theme }) => ({
   },
   '&.Mui-disabled': {
     opacity: 0.4,
-    backgroundColor: theme.palette.background.paper,
+    backgroundColor:
+      theme.palette.mode === 'dark'
+        ? theme.palette.grey[100]
+        : theme.palette.grey[800],
     border: `1px solid ${theme.palette.grey[200]}`,
-    color: theme.palette.action.disabled
+    color:
+      theme.palette.mode === 'dark'
+        ? theme.palette.grey[700]
+        : theme.palette.grey[300]
   }
 }))
 
@@ -96,7 +111,10 @@ export function RadioOption({
         editableLabel != null
           ? {
               '&:hover': {
-                backgroundColor: (theme) => theme.palette.primary.contrastText
+                backgroundColor: (theme) =>
+                  theme.palette.mode === 'dark'
+                    ? theme.palette.grey[0 as keyof typeof theme.palette.grey]
+                    : theme.palette.grey[900]
               },
               transform: 'translateY(0px) !important'
             }
