@@ -6,33 +6,6 @@ module "prod" {
   internal_url_name = "service.internal"
 }
 
-
-
-# Route 53 records for arclight.org domain
-resource "aws_route53_record" "arclight_org_root" {
-  name    = "arclight.org"
-  type    = "A"
-  zone_id = data.aws_route53_zone.route53_arclight_org.zone_id
-
-  alias {
-    evaluate_target_health = true
-    name                   = module.prod.public_alb.dns_name
-    zone_id                = module.prod.public_alb.zone_id
-  }
-}
-
-resource "aws_route53_record" "arclight_org_wildcard" {
-  name    = "*.arclight.org"
-  type    = "A"
-  zone_id = data.aws_route53_zone.route53_arclight_org.zone_id
-
-  alias {
-    evaluate_target_health = true
-    name                   = module.prod.public_alb.dns_name
-    zone_id                = module.prod.public_alb.zone_id
-  }
-}
-
 locals {
   public_ecs_config = {
     vpc_id                  = module.prod.vpc.id
@@ -160,7 +133,7 @@ module "bastion" {
   dns_name           = "bastion.central.jesusfilm.org"
   subnet_id          = module.prod.vpc.public_subnets[0]
   zone_id            = data.aws_route53_zone.route53_central_jesusfilm_org.zone_id
-  security_group_ids = [module.prod.public_bastion_security_group_id]
+  security_group_ids = [module.prod.public_bastion_security_group_id, "sg-0134831ac8ca8c963", "sg-0fc432a3d89fc39fc"]
   instance_type      = "t3.medium"
 }
 

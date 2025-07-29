@@ -10,10 +10,6 @@ data "aws_route53_zone" "route53_central_jesusfilm_org" {
   name = "central.jesusfilm.org"
 }
 
-data "aws_route53_zone" "route53_arclight_org" {
-  name = "arclight.org"
-}
-
 data "aws_acm_certificate" "acm_arclight_org" {
   domain = "arclight.org"
 }
