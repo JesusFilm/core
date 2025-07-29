@@ -273,7 +273,7 @@ export function VideoCreateForm({
           const graphQLError = graphQLErrors[0]
 
           // Check for NotUniqueError
-          if (graphQLError.extensions?.code === 'NotUniqueError') {
+          if (graphQLError.extensions?.code === 'NOT_UNIQUE_ERROR') {
             const location = graphQLError.extensions?.location
             if (Array.isArray(location) && location.length > 0) {
               const errorLocation = location[0]
