@@ -13,3 +13,7 @@ data "aws_acm_certificate" "acm_core_stage_arclight_org" {
 data "aws_acm_certificate" "acm_arclight_org" {
   domain = "arclight.org"
 }
+
+data "aws_acm_certificate" "acm_arc_gt" {
+  domain = "arc.gt"
+}

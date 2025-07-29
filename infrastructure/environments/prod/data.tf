@@ -18,6 +18,10 @@ data "aws_acm_certificate" "acm_arclight_org" {
   domain = "arclight.org"
 }
 
+data "aws_acm_certificate" "acm_arc_gt" {
+  domain = "arc.gt"
+}
+
 data "aws_iam_role" "ecs_task_execution_role" {
   name = "jfp-ecs-task-execution-role"
 }
