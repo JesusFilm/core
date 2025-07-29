@@ -7,6 +7,7 @@ import { v4 as uuidv4 } from 'uuid'
 
 import { getAudioMetadata } from './services/audio-metadata.service'
 import { importOrUpdateAudioPreview } from './services/audio-preview.service'
+import { validateEnvironment } from './services/connection-test.service'
 import { getVideoMetadata } from './services/metadata.service'
 import { createAndWaitForMuxVideo } from './services/mux.service'
 import {
@@ -15,7 +16,7 @@ import {
   uploadToR2
 } from './services/r2.service'
 import { importOrUpdateSubtitle } from './services/subtitle.service'
-import { getVideoEditionId } from './services/video-edition.service'
+import { validateVideoAndEdition } from './services/validation.service'
 import { createVideoVariant } from './services/video.service'
 import type { ProcessingSummary } from './types'
 
@@ -78,6 +79,19 @@ async function main() {
   const folderPath = options.folder
     ? path.resolve(options.folder)
     : defaultFolderPath
+
+  // === Connection Tests ===
+  console.log('Checking connections...')
+
+  try {
+    // Test 1: Validate environment variables
+    await validateEnvironment()
+  } catch (error) {
+    console.error('\n❌ Pre-flight checks failed:', error)
+    process.exit(1)
+  }
+
+  // === File Processing ===
   let files: string[]
   try {
     files = await promises.readdir(folderPath)
@@ -224,6 +238,21 @@ async function main() {
       continue
     }
 
+    // Validate video and edition before processing
+    console.log('   🔍 Validating video and edition...')
+    const validationResult = await validateVideoAndEdition(videoId, edition)
+    if (!validationResult.success) {
+      console.error(
+        `   ❌ Validation failed: ${validationResult.errors.join(', ')}`
+      )
+      summary.failed++
+      summary.errors.push({
+        file,
+        error: `Validation failed: ${validationResult.errors.join(', ')}`
+      })
+      continue
+    }
+
     const filePath = path.join(folderPath, file)
 
     try {
@@ -354,6 +383,25 @@ async function main() {
       continue
     }
 
+    // Validate video and edition before processing
+    console.log('   🔍 Validating video and edition...')
+    const validationResult = await validateVideoAndEdition(videoId, editionName)
+    if (!validationResult.success) {
+      console.error(
+        `   ❌ Validation failed: ${validationResult.errors.join(', ')}`
+      )
+      summary.failed++
+      summary.errors.push({
+        file,
+        error: `Validation failed: ${validationResult.errors.join(', ')}`
+      })
+      continue
+    }
+
+    console.log(
+      `   ✅ Video "${videoId}" and edition "${editionName}" are valid`
+    )
+
     const filePath = path.join(folderPath, file)
 
     try {
@@ -363,8 +411,8 @@ async function main() {
 
       console.log('   ☁️  Preparing Cloudflare R2 asset for subtitle...')
 
-      const editionId = await getVideoEditionId(videoId, editionName)
-
+      // Use the validated edition ID instead of calling getVideoEditionId again
+      const editionId = validationResult.editionId!
       console.log('      Edition ID:', editionId)
 
       const subtitleVariantId = `${languageId}_${editionId}_${videoId}`

@@ -48,21 +48,39 @@ export async function createR2Asset({
   videoId: string
   contentLength: number
 }): Promise<R2Asset> {
+  console.log(`[R2 Service] Creating R2 asset for videoId: ${videoId}`)
+  console.log(
+    `[R2 Service] File details: ${fileName} (${contentType}, ${contentLength} bytes)`
+  )
+
   const client = await getGraphQLClient()
   const safeContentLength = contentLength > 2_147_483_647 ? -1 : contentLength
-  const data: { cloudflareR2Create: R2Asset } = await client.request(
-    CREATE_CLOUDFLARE_R2_ASSET,
-    {
-      input: {
-        fileName,
-        contentType,
-        originalFilename,
-        videoId,
-        contentLength: safeContentLength
+
+  try {
+    const data: { cloudflareR2Create: R2Asset } = await client.request(
+      CREATE_CLOUDFLARE_R2_ASSET,
+      {
+        input: {
+          fileName,
+          contentType,
+          originalFilename,
+          videoId,
+          contentLength: safeContentLength
+        }
       }
-    }
-  )
-  return data.cloudflareR2Create
+    )
+
+    console.log(
+      `[R2 Service] Successfully created R2 asset: ${data.cloudflareR2Create.id}`
+    )
+    return data.cloudflareR2Create
+  } catch (error) {
+    console.error(
+      `[R2 Service] Failed to create R2 asset for videoId: ${videoId}`,
+      error
+    )
+    throw error
+  }
 }
 
 /**
@@ -91,26 +109,18 @@ export async function uploadToR2({
   // Extract the key from the uploadUrl for multipart uploads
   const url = new URL(uploadUrl)
   const key = url.pathname.substring(1) // Remove leading slash
+
   if (contentLength < MULTIPART_THRESHOLD) {
     // Single PUT for small files
-    console.log('[R2 Service] Using single PUT upload.')
+    console.log(
+      `[R2 Service] Uploading ${(contentLength / 1024 / 1024).toFixed(1)}MB via single PUT`
+    )
+
     const fileStream = createReadStream(filePath)
-    let bytesSent = 0
-    let lastLoggedPercent = 0
-    fileStream.on('data', (chunk) => {
-      bytesSent += chunk.length
-      const percent = Math.floor((bytesSent / contentLength) * 100)
-      if (percent >= lastLoggedPercent + 25) {
-        console.log(
-          `     [R2 Service] Upload progress: ${percent}% (${bytesSent}/${contentLength} bytes)`
-        )
-        lastLoggedPercent = percent
-      }
-    })
     fileStream.on('error', (err) => {
       throw new Error(`Failed to read file stream: ${err.message}`)
     })
-    console.log('[R2 Service] Sending PUT request to R2...')
+
     const response = await fetch(uploadUrl, {
       method: 'PUT',
       headers: {
@@ -119,31 +129,30 @@ export async function uploadToR2({
       },
       body: fileStream
     })
+
     if (!response.ok) {
       const errorBody = await response.text()
-      console.error('[R2 Service] Upload failed!')
-      console.error(`  Status: ${response.status} ${response.statusText}`)
-      console.error(
-        '  Headers:',
-        JSON.stringify([...response.headers], null, 2)
-      )
-      console.error('  Body:', errorBody)
       throw new Error(
-        `Failed to upload to R2. Status: ${response.status} ${response.statusText}. Body: ${errorBody}`
+        `Upload failed: ${response.status} ${response.statusText} - ${errorBody}`
       )
     }
-    console.log('     [R2 Service] Successfully uploaded.')
+
+    console.log('[R2 Service] Upload completed successfully')
     return
   }
 
   // Multipart upload for large files
-  console.log('[R2 Service] Using multipart upload for large file.')
+  console.log(
+    `[R2 Service] Uploading ${(contentLength / 1024 / 1024).toFixed(1)}MB via multipart upload`
+  )
+
   const multipartStream = createReadStream(filePath)
   multipartStream.on('error', (err) => {
     throw new Error(
       `Failed to read file stream for multipart upload: ${err.message}`
     )
   })
+
   const upload = new Upload({
     client: s3Client,
     params: {
@@ -155,15 +164,22 @@ export async function uploadToR2({
     queueSize: 4,
     partSize: MULTIPART_PART_SIZE
   })
+
+  // Only log significant progress milestones (25%, 50%, 75%, 100%)
+  let lastLoggedPercent = 0
   upload.on('httpUploadProgress', (progress) => {
     if (progress.loaded && progress.total) {
       const percent = Math.floor((progress.loaded / progress.total) * 100)
-      console.log(`[R2 Service] Multipart upload progress: ${percent}%`)
+      if (percent >= lastLoggedPercent + 25) {
+        console.log(`[R2 Service] Upload progress: ${percent}%`)
+        lastLoggedPercent = percent
+      }
     }
   })
+
   try {
     await upload.done()
-    console.log('[R2 Service] Multipart upload complete.')
+    console.log('[R2 Service] Multipart upload completed successfully')
   } catch (err) {
     console.error('[R2 Service] Multipart upload failed:', err)
     throw err
