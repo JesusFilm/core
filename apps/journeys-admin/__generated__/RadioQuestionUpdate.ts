@@ -12,6 +12,7 @@ export interface RadioQuestionUpdate_radioQuestionBlockUpdate {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
+  gridView: boolean | null;
 }
 
 export interface RadioQuestionUpdate {
