@@ -1,13 +1,12 @@
 import { v4 as uuidv4 } from 'uuid'
 
-import { PrismaClient } from '.prisma/api-journeys-client'
-
 import {
   JourneyStatus,
   TextResponseType,
   ThemeMode,
   ThemeName
 } from '../../src/app/__generated__/graphql'
+import { PrismaClient } from '../../src/client'
 
 const prisma = new PrismaClient()
 

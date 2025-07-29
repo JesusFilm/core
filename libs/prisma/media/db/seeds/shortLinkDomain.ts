@@ -1,4 +1,4 @@
-import { PrismaClient, Service } from '.prisma/api-media-client'
+import { PrismaClient, Service } from '@core/prisma/media/client'
 
 import { addVercelDomain } from '../../src/schema/shortLink/shortLinkDomain/shortLinkDomain.service'
 

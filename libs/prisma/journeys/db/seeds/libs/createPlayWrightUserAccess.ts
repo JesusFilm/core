@@ -1,4 +1,4 @@
-import { Prisma, PrismaClient } from '.prisma/api-journeys-client'
+import { Prisma, PrismaClient } from '../../../src/client'
 
 const prisma = new PrismaClient()
 
