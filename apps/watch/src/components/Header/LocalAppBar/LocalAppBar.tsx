@@ -95,7 +95,7 @@ export function LocalAppBar({
                   onClick={() => setOpenLanguagesDialog(true)}
                   sx={{
                     mr: 8,
-                    zIndex: (theme) => theme.zIndex.drawer + 1
+                    zIndex: (theme) => theme.zIndex.drawer
                   }}
                 >
                   <LanguageRoundedIcon
