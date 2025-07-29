@@ -1,0 +1,25 @@
+---
+globs:
+  - "apps/watch-modern/src/shaping/**"
+  - "apps/watch-modern/app/__shaping/**"
+type: "Always"
+alwaysApply: true
+---
+# PURPOSE
+- Fast UI/UX vibecoding with hardcoded data. No backend. No tests.
+- Do NOT modify files outside the shaping globs above.
+
+# REQUIRED OUTPUTS (handoff)
+- Write/update:
+  - prds/watch-modern/<feature>/shaping/notes.md
+  - prds/watch-modern/<feature>/shaping/artifact-map.md
+  - prds/watch-modern/<feature>/shaping/screens/*.png   (user provides)
+- Ask before advancing phases.
+
+# BOUNDS
+- Tailwind/shadcn preferred.
+- Fake data/images allowed. Broken links OK.
+- Never touch apps/watch-modern/** outside src/shaping or app/__shaping.
+
+# PREFLIGHT
+- If prds/watch-modern/<feature>/intake.md is missing → STOP and request INTAKE.
