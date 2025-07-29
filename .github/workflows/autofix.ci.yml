@@ -64,7 +64,6 @@ jobs:
         env:
           # Nx Cloud - PR-specific cache, or ci for main branch
           NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
-          NX_BRANCH: ci
           DISABLE_ERD: true
       - name: NPM apollo and graphql for codegen
         run: npm i -g apollo graphql
@@ -83,7 +82,6 @@ jobs:
         env:
           # Nx Cloud - Environment-specific cache using branch prefix
           NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
-          NX_BRANCH: ci
       - name: type-check, extract-translations, subgraph-check
         uses: mansagroup/nrwl-nx-action@v3
         with:
@@ -91,7 +89,6 @@ jobs:
         env:
           # Nx Cloud - Environment-specific cache using branch prefix
           NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
-          NX_BRANCH: 'ci'
           HIVE_TOKEN: ${{ secrets.HIVE_PROD_READ_ONLY_TOKEN }}
       - name: lint branch name
         if: ${{ github.event_name == 'pull_request' }}
