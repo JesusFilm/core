@@ -41,6 +41,8 @@ on:
         required: true
       DOPPLER_WATCH_TOKEN:
         required: true
+      DOPPLER_WATCH_MODERN_TOKEN:
+        required: true
       DOPPLER_WATCH_ADMIN_TOKEN:
         required: true
       DOPPLER_GITHUB_SERVICE_TOKEN:
@@ -119,6 +121,7 @@ jobs:
           DOPPLER_JOURNEYS_TOKEN: ${{ secrets.DOPPLER_JOURNEYS_TOKEN }}
           DOPPLER_JOURNEYS_ADMIN_TOKEN: ${{ secrets.DOPPLER_JOURNEYS_ADMIN_TOKEN }}
           DOPPLER_WATCH_TOKEN: ${{ secrets.DOPPLER_WATCH_TOKEN }}
+          DOPPLER_WATCH_MODERN_TOKEN: ${{ secrets.DOPPLER_WATCH_MODERN_TOKEN }}
           DOPPLER_WATCH_ADMIN_TOKEN: ${{ secrets.DOPPLER_WATCH_ADMIN_TOKEN }}
           DOPPLER_GITHUB_SERVICE_TOKEN: ${{ secrets.DOPPLER_GITHUB_SERVICE_TOKEN }}
           NEXT_PUBLIC_VERCEL_ENV: stage
