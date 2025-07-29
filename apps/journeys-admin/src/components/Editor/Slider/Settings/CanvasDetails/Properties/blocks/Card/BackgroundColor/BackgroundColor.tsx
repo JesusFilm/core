@@ -7,6 +7,10 @@ import { useTranslation } from 'next-i18next'
 import { ReactElement, useEffect, useState } from 'react'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
+import {
+  applyDefaultAlpha,
+  stripAlphaFromHex
+} from '@core/journeys/ui/Card/utils/colorOpacityUtils'
 import { useCommand } from '@core/journeys/ui/CommandProvider'
 import {
   ActiveContent,
@@ -85,7 +89,15 @@ const UPDATE_BACKDROP_BLUR_FRAGMENT = gql`
   }
 `
 
-export function BackgroundColor(): ReactElement {
+interface BackgroundColorProps {
+  isContained?: boolean
+  disableExpanded?: boolean
+}
+
+export function BackgroundColor({
+  isContained = false,
+  disableExpanded = false
+}: BackgroundColorProps): ReactElement {
   const {
     state: { selectedBlock, selectedStep },
     dispatch
@@ -116,15 +128,26 @@ export function BackgroundColor(): ReactElement {
     rtl,
     locale
   })
-  const [selectedColor, setSelectedColor] = useState(
-    cardBlock?.backgroundColor ?? cardTheme.palette.background.paper
-  )
 
+  // Helper function to process color based on isContained
+  const processColor = (color: string): string => {
+    const colorWithDefaultAlpha = applyDefaultAlpha(color)
+    return isContained
+      ? stripAlphaFromHex(colorWithDefaultAlpha)
+      : colorWithDefaultAlpha
+  }
+
+  const [selectedColor, setSelectedColor] = useState(
+    cardBlock?.backgroundColor
+      ? processColor(cardBlock.backgroundColor)
+      : processColor(`${cardTheme.palette.background.paper}4D`)
+  )
   useEffect(() => {
     if (cardBlock?.backgroundColor != null) {
-      setSelectedColor(cardBlock.backgroundColor)
+      setSelectedColor(processColor(cardBlock.backgroundColor))
     }
-  }, [cardBlock?.backgroundColor])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [cardBlock?.backgroundColor, isContained])
 
   // Store blur as percentage (0-100%), convert to pixels when needed
   const [blurPercentage, setBlurPercentage] = useState(
@@ -173,12 +196,37 @@ export function BackgroundColor(): ReactElement {
   }
 
   async function handleColorChange(color: string): Promise<void> {
+    // Cap opacity at 99% to prevent invalid colors from react-colorful
+    if (color.length === 8) {
+      const alphaHex = color.slice(-2)
+      const alphaDecimal = parseInt(alphaHex, 16)
+      const opacityPercentage = Math.round((alphaDecimal / 255) * 100)
+
+      if (opacityPercentage > 99) {
+        const baseColor = color.slice(0, 7)
+        color = `${baseColor}FD`
+      }
+    }
+
+    // Preserve current alpha when color picker sends 6-digit colors
+    if (color.length === 7 && !isContained && !disableExpanded) {
+      const currentAlpha =
+        selectedColor.length === 8
+          ? selectedColor.slice(-2)
+          : selectedColor.length === 7
+            ? '4D' // 30% default for 6-digit colors
+            : 'FF' // 100% default fallback
+      color = `${color}${currentAlpha}`
+    }
+
     if (cardBlock != null) {
-      setSelectedColor(color)
+      const newColor =
+        !isContained && !disableExpanded ? color : processColor(color)
+      setSelectedColor(newColor)
       await add({
         parameters: {
           execute: {
-            color: color.toUpperCase()
+            color: newColor.toUpperCase()
           },
           undo: {
             color: selectedColor
@@ -314,7 +362,7 @@ export function BackgroundColor(): ReactElement {
         color={selectedColor}
         onChange={handleColorChange}
         style={{ width: '100%', height: 125 }}
-        enableAlpha={true}
+        enableAlpha={!isContained && !disableExpanded}
       />
     </Stack>
   )
@@ -330,12 +378,13 @@ export function BackgroundColor(): ReactElement {
       >
         <Swatch id={`bg-color-${selectedColor}`} color={selectedColor} />
         <ColorOpacityField
+          isContained={isContained}
           color={selectedColor}
           onColorChange={handleColorChange}
         />
       </Stack>
       {palettePicker}
-      {cardBlock?.fullscreen && (
+      {cardBlock?.fullscreen && !disableExpanded && (
         <>
           <Divider />
           <Stack sx={{ p: 4, pt: 2 }} data-testid="BackdropBlurSlider">

@@ -9,6 +9,10 @@ import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
 import { BlockFields_CardBlock as CardBlock } from '../../../../../../../../../../__generated__/BlockFields'
 import {
+  CardBlockBackdropBlurUpdate,
+  CardBlockBackdropBlurUpdateVariables
+} from '../../../../../../../../../../__generated__/CardBlockBackdropBlurUpdate'
+import {
   CardBlockBackgroundColorUpdate,
   CardBlockBackgroundColorUpdateVariables
 } from '../../../../../../../../../../__generated__/CardBlockBackgroundColorUpdate'
@@ -111,14 +115,14 @@ describe('BackgroundColor', () => {
   > = {
     request: {
       query: CARD_BLOCK_BACKGROUND_COLOR_UPDATE,
-      variables: { id: 'card1.id', input: { backgroundColor: '#B0BEC5FF' } }
+      variables: { id: 'card1.id', input: { backgroundColor: '#B0BEC54D' } }
     },
     result: {
       data: {
         cardBlockUpdate: {
           __typename: 'CardBlock',
           id: 'card1.id',
-          backgroundColor: '#B0BEC5FF'
+          backgroundColor: '#B0BEC54D'
         }
       }
     }
@@ -138,8 +142,8 @@ describe('BackgroundColor', () => {
         </MockedProvider>
       )
 
-      expect(screen.getByTestId('Swatch-bg-color-#FEFEFE')).toHaveStyle({
-        backgroundColor: '#FEFEFE'
+      expect(screen.getByTestId('Swatch-bg-color-#FEFEFE4D')).toHaveStyle({
+        backgroundColor: '#FEFEFE4D'
       })
 
       // Verify the hex color picker is present
@@ -147,6 +151,47 @@ describe('BackgroundColor', () => {
 
       // Verify the color input field is present
       expect(screen.getByTestId('bgColorTextField')).toBeInTheDocument()
+    })
+
+    it('hides card opacity/alpha color when card is contained', () => {
+      render(
+        <MockedProvider>
+          <ThemeProvider>
+            <JourneyProvider value={{ journey, variant: 'admin' }}>
+              <EditorProvider initialState={{ selectedBlock: card }}>
+                <BackgroundColor isContained />
+              </EditorProvider>
+            </JourneyProvider>
+          </ThemeProvider>
+        </MockedProvider>
+      )
+
+      expect(screen.queryByTestId('bgOpacityTextField')).not.toBeInTheDocument()
+    })
+
+    it('strips opacity from selected color when isContained is true', () => {
+      const cardWithColor: TreeBlock<CardBlock> = {
+        ...card,
+        backgroundColor: '#FF00004D' // Red with 30% opacity
+      }
+
+      render(
+        <MockedProvider>
+          <ThemeProvider>
+            <JourneyProvider value={{ journey, variant: 'admin' }}>
+              <EditorProvider initialState={{ selectedBlock: cardWithColor }}>
+                <BackgroundColor isContained />
+              </EditorProvider>
+            </JourneyProvider>
+          </ThemeProvider>
+        </MockedProvider>
+      )
+
+      // When isContained is true, the color should be stripped of opacity
+      // The default alpha is applied first (#FF00004D), then stripped to #FF0000
+      expect(screen.getByTestId('Swatch-bg-color-#FF0000')).toHaveStyle({
+        backgroundColor: '#FF0000'
+      })
     })
 
     it('changes color via color input field', async () => {
@@ -160,7 +205,7 @@ describe('BackgroundColor', () => {
       })
       const result = jest.fn(() => ({
         data: {
-          cardBlockUpdate: { id: 'card1.id', backgroundColor: '#B0BEC5FF' }
+          cardBlockUpdate: { id: 'card1.id', backgroundColor: '#B0BEC54D' }
         }
       }))
 
@@ -173,7 +218,7 @@ describe('BackgroundColor', () => {
                 query: CARD_BLOCK_BACKGROUND_COLOR_UPDATE,
                 variables: {
                   id: 'card1.id',
-                  input: { backgroundColor: '#B0BEC5FF' }
+                  input: { backgroundColor: '#B0BEC54D' }
                 }
               },
               result
@@ -221,14 +266,17 @@ describe('BackgroundColor', () => {
       > = {
         request: {
           query: CARD_BLOCK_BACKGROUND_COLOR_UPDATE,
-          variables: { id: 'card1.id', input: { backgroundColor: '#FEFEFE' } }
+          variables: {
+            id: 'card1.id',
+            input: { backgroundColor: '#FEFEFE4D' }
+          }
         },
         result: {
           data: {
             cardBlockUpdate: {
               __typename: 'CardBlock',
               id: 'card1.id',
-              backgroundColor: '#FEFEFE'
+              backgroundColor: '#FEFEFE4D'
             }
           }
         }
@@ -322,6 +370,22 @@ describe('BackgroundColor', () => {
             <JourneyProvider value={{ journey, variant: 'admin' }}>
               <EditorProvider initialState={{ selectedBlock: card }}>
                 <BackgroundColor />
+              </EditorProvider>
+            </JourneyProvider>
+          </ThemeProvider>
+        </MockedProvider>
+      )
+
+      expect(screen.queryByTestId('BackdropBlurSlider')).not.toBeInTheDocument()
+    })
+
+    it('does not show backdrop blur controls when card is fullscreen, but expanded mode is disabled (expanded mode is disabled when there is a video block)', () => {
+      render(
+        <MockedProvider>
+          <ThemeProvider>
+            <JourneyProvider value={{ journey, variant: 'admin' }}>
+              <EditorProvider initialState={{ selectedBlock: fullscreenCard }}>
+                <BackgroundColor disableExpanded={true} />
               </EditorProvider>
             </JourneyProvider>
           </ThemeProvider>
@@ -429,6 +493,68 @@ describe('BackgroundColor', () => {
       fireEvent.mouseUp(slider)
 
       await waitFor(() => expect(result).toHaveBeenCalled())
+    })
+
+    it('caps opacity at 99% when color picker exceeds 99%', async () => {
+      const cache = new InMemoryCache()
+      cache.restore({
+        'Journey:journeyId': {
+          blocks: [{ __ref: 'CardBlock:card1.id' }],
+          id: 'journeyId',
+          __typename: 'Journey'
+        }
+      })
+
+      const mockCardBlockBackgroundColorUpdate: MockedResponse<
+        CardBlockBackdropBlurUpdate,
+        CardBlockBackdropBlurUpdateVariables
+      > = {
+        request: {
+          query: CARD_BLOCK_BACKDROP_BLUR_UPDATE,
+          variables: {
+            id: 'card1.id',
+            input: { backdropBlur: 25 }
+          }
+        },
+        result: jest.fn(() => ({
+          data: {
+            cardBlockUpdate: {
+              __typename: 'CardBlock',
+              id: 'card1.id',
+              backdropBlur: 25
+            }
+          }
+        }))
+      }
+
+      render(
+        <MockedProvider
+          cache={cache}
+          mocks={[mockCardBlockBackgroundColorUpdate]}
+        >
+          <ThemeProvider>
+            <JourneyProvider value={{ journey, variant: 'admin' }}>
+              <EditorProvider initialState={{ selectedBlock: fullscreenCard }}>
+                <BackgroundColor />
+              </EditorProvider>
+            </JourneyProvider>
+          </ThemeProvider>
+        </MockedProvider>
+      )
+
+      const slider = screen.getByLabelText('Backdrop blur slider')
+      const input = screen
+        .getByLabelText('Blur amount as percentage')
+        .querySelector('input')
+
+      fireEvent.change(slider, { target: { value: '110' } })
+      expect(input).toHaveValue('100%')
+
+      fireEvent.mouseUp(slider)
+
+      await waitFor(() =>
+        expect(mockCardBlockBackgroundColorUpdate.result).toHaveBeenCalled()
+      )
     })
 
     it('updates blur via text input', async () => {
