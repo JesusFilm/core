@@ -2,8 +2,7 @@
 globs:
   - "apps/watch-modern/src/shaping/**"
   - "apps/watch-modern/app/__shaping/**"
-type: "Always"
-alwaysApply: true
+alwaysApply: false
 ---
 # PURPOSE
 - Fast UI/UX vibecoding with hardcoded data. No backend. No tests.

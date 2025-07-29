@@ -1,8 +1,7 @@
 ---
 title: Watch Modern Build Rules
-globs: ["core/apps/watch-modern/**"]
-type: "Always"
-alwaysApply: true
+globs: core/apps/watch-modern/**
+alwaysApply: false
 ---
 # Watch-Modern Rules
 
