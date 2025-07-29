@@ -315,7 +315,7 @@ describe('VideoCreateForm', () => {
           {
             message: 'Video ID already exists',
             extensions: {
-              code: 'NotUniqueError',
+              code: 'NOT_UNIQUE_ERROR',
               location: [
                 {
                   path: ['input', 'id'],
@@ -349,7 +349,7 @@ describe('VideoCreateForm', () => {
           {
             message: 'Video slug already exists',
             extensions: {
-              code: 'NotUniqueError',
+              code: 'NOT_UNIQUE_ERROR',
               location: [
                 {
                   path: ['input', 'slug'],
