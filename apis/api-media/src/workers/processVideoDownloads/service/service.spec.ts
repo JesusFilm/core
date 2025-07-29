@@ -1,4 +1,3 @@
-import Mux from '@mux/mux-node'
 import { AssetOptions } from '@mux/mux-node/resources/video/assets'
 import { Job } from 'bullmq'
 import { Logger } from 'pino'

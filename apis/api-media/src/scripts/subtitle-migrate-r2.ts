@@ -2,7 +2,7 @@ import path from 'path'
 
 import { PutObjectCommand, S3Client } from '@aws-sdk/client-s3'
 
-import { prisma } from '../lib/prisma'
+import { prisma } from '@core/prisma/media/client'
 
 function getClient(): S3Client {
   if (process.env.CLOUDFLARE_R2_ENDPOINT == null)
@@ -102,12 +102,13 @@ async function main(): Promise<void> {
         if (subtitle.srtSrc && !subtitle.srtAssetId) {
           await prisma.$transaction(async (tx) => {
             const fileExtension =
-              path.extname(new URL(subtitle.srtSrc!).pathname) || '.srt'
+              path.extname(new URL(subtitle.srtSrc as string).pathname) ||
+              '.srt'
             const fileName = `${videoId}/editions/${editionId}/subtitles/${videoId}_${editionId}_${subtitle.languageId}${fileExtension}`
             const contentType = 'text/plain'
 
             const { publicUrl, contentLength } = await uploadToR2FromUrl(
-              subtitle.srtSrc!,
+              subtitle.srtSrc as string,
               fileName,
               contentType
             )
@@ -142,12 +143,13 @@ async function main(): Promise<void> {
         if (subtitle.vttSrc && !subtitle.vttAssetId) {
           await prisma.$transaction(async (tx) => {
             const fileExtension =
-              path.extname(new URL(subtitle.vttSrc!).pathname) || '.vtt'
+              path.extname(new URL(subtitle.vttSrc as string).pathname) ||
+              '.vtt'
             const fileName = `${videoId}/editions/${editionId}/subtitles/${videoId}_${editionId}_${subtitle.languageId}${fileExtension}`
             const contentType = 'text/vtt'
 
             const { publicUrl, contentLength } = await uploadToR2FromUrl(
-              subtitle.vttSrc!,
+              subtitle.vttSrc as string,
               fileName,
               contentType
             )
