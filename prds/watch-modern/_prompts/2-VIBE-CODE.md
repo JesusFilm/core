@@ -51,11 +51,15 @@ fi
 
 git add -A && git commit -m "shaping($FEATURE): scaffold __shaping route"
 
+STOP and confirm with user the next step
+
 # 3) Start dev and pause for screenshots
 pnpm dev &
 ECHO >>> Open http://localhost:3000/__shaping/$FEATURE
 ECHO >>> Take 1–3 screenshots and SAVE THEM to prds/watch-modern/$FEATURE/shaping/screens/
 ECHO >>> Reply "screens saved" when done.
+
+STOP and confirm with user the next step
 
 # 4) Freeze artifacts (no puppeteer)
 BRANCH=$(git rev-parse --abbrev-ref HEAD)

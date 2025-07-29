@@ -22,6 +22,9 @@ alwaysApply: false
 - **Apollo Client** - GraphQL state management
 - **Next-intl** - Internationalization (currently implemented)
 
+### CRITICAL WORKFLOW CONSTRAINT:
+Never automatically run git commit commands without explicit user permission. Always ask the user before any git operations including: git add, git commit, git push, git merge, etc. The user wants control over version control operations. Only suggest commit commands and let the user execute them manually, or ask "Should I commit these changes?" before proceeding.
+
 ### **CRITICAL UI CONSTRAINT**
 **Watch-modern must NEVER import or use MUI (@mui/material) components.**
 
@@ -33,6 +36,14 @@ alwaysApply: false
 ### Code Implementation Guidelines
 
 **CRITICAL CONSTRAINT**: Watch-modern must NEVER import or use MUI (@mui/material) components. This is a hard requirement.
+
+### CRITICAL PATH CONSTRAINT
+
+All file operations for this workspace MUST be within /workspaces/core/ directory. Never create files in /workspaces/apps/ or /workspaces/prds/. The correct structure is:
+- /workspaces/core/apps/ (NOT /workspaces/apps/)
+- /workspaces/core/prds/ (NOT /workspaces/prds/)
+
+Always verify current working directory is /workspaces/core before file operations.
 
 **UI Component Hierarchy** (in order of preference):
 
@@ -121,15 +132,10 @@ describe('MyComponent', () => {
 
 - Keep documentation up to date with code changes.
 
-## Layout Component Patterns
+## Component Patterns
 
-**Component Organization**:
-
-- Layout components go in `src/components/Layout/`
 - Export all components through index.ts files
 - Use alphabetical order for imports and exports
-
-**Layout Naming Conventions**:
 
 ### Component Naming Conventions
 

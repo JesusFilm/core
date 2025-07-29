@@ -21,6 +21,7 @@ TASK
 ASK
 Show SUMMARY.md. Ask:
 "Apply proposals (yes/no per item or 'all')?"
+STOP. wait for user confirmation.
 - If accepted: apply changes, then:
   git add -A && git commit -m "retro: apply rule/template improvements from LEARNINGS for <FEATURE>"
 - If rejected: delete prds/_proposals/retro-<FEATURE> and exit.

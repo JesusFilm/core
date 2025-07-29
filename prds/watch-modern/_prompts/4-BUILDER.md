@@ -31,7 +31,8 @@ LOOP (per Slice)
      - Stage proposed edits in a temporary folder prds/_proposals/<FEATURE>-slice-<N>/ with diffs or full files.
      - Present a short summary of each proposal and ask:
        "Apply proposal(s) now? Reply yes/no per item or 'all'."
-     - If accepted, apply changes and commit:
+
+     - STOP AND ASK to apply changes as a commit:
        git add -A && git commit -m "docs/rules: apply improvements from <FEATURE> slice <N>"
      - If rejected, discard prds/_proposals for this slice.
 
