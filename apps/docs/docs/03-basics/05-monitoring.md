@@ -4,6 +4,17 @@
 
 When Checkly detects issues with our automated tests, it's important to respond quickly and systematically. Here's our standard workflow for monitoring and troubleshooting Checkly alerts.
 
+<div style="position: relative; padding-bottom: 64.63%; margin-bottom: 20px; height: 0;">
+  <iframe
+    src="https://www.loom.com/embed/cfc2a29f79ee4d818c302f2d5c31d090"
+    frameborder="0"
+    allowfullscreen="true"
+    style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"
+    title="Checkly Alert Management"
+    aria-label="Video tutorial on Checkly alert management workflow"
+  ></iframe>
+</div>
+
 ## Alert Response Workflow
 
 ### 1. **Initial Alert Notification**
