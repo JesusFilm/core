@@ -26,6 +26,7 @@ const block: TreeBlock<RadioQuestionBlock> = {
   __typename: 'RadioQuestionBlock',
   parentBlockId: 'step1.id',
   parentOrder: 0,
+  gridView: false,
   children: []
 }
 

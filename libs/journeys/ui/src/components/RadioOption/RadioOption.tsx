@@ -27,40 +27,56 @@ export const StyledRadioOption = styled(Button)<ButtonProps>(({ theme }) => ({
   borderRadius: 'inherit',
   padding: '14px 10px 14px 14px',
   transition: theme.transitions.create(
-    ['background-color', 'border-color', 'transform', 'box-shadow'],
+    ['background-color', 'border-color', 'transform', 'box-shadow', 'opacity'],
     {
       duration: theme.transitions.duration.short
     }
   ),
-  backgroundColor: theme.palette.background.paper,
+  backgroundColor: 'background.paper',
   border: `1px solid ${theme.palette.grey[200]}`,
-  color: theme.palette.text.primary,
+  color: 'text.primary',
   opacity: 0.7,
 
   '&:hover': {
-    backgroundColor: theme.palette.background.default,
+    backgroundColor:
+      theme.palette.mode === 'dark'
+        ? theme.palette.grey[0 as keyof typeof theme.palette.grey]
+        : theme.palette.grey[900],
     border: `1px solid ${theme.palette.grey[200]}`,
     transform: 'translateY(-2px)',
     boxShadow:
       theme.palette.mode === 'dark'
         ? '0 4px 12px rgba(0, 0, 0, 0.4)'
-        : '0 4px 12px rgba(0, 0, 0, 0.15)'
+        : '0 4px 12px rgba(0, 0, 0, 0.15)',
+    opacity: 0.9
   },
 
   '&.selected': {
-    backgroundColor: theme.palette.primary.light,
+    backgroundColor:
+      theme.palette.mode === 'dark'
+        ? theme.palette.grey[800]
+        : theme.palette.grey[100],
     border: `1px solid ${theme.palette.primary.main}`,
-    color: theme.palette.primary.contrastText,
+    color:
+      theme.palette.mode === 'dark'
+        ? theme.palette.grey[0 as keyof typeof theme.palette.grey]
+        : theme.palette.grey[900],
     boxShadow:
       theme.palette.mode === 'dark'
         ? '0 4px 16px rgba(0, 0, 0, 0.4)'
         : '0 4px 16px rgba(0, 0, 0, 0.2)'
   },
   '&.Mui-disabled': {
-    backgroundColor: theme.palette.action.disabledBackground,
+    opacity: 0.4,
+    backgroundColor:
+      theme.palette.mode === 'dark'
+        ? theme.palette.grey[100]
+        : theme.palette.grey[800],
     border: `1px solid ${theme.palette.grey[200]}`,
-    color: theme.palette.action.disabled,
-    opacity: 0.6
+    color:
+      theme.palette.mode === 'dark'
+        ? theme.palette.grey[700]
+        : theme.palette.grey[300]
   }
 }))
 
@@ -95,7 +111,10 @@ export function RadioOption({
         editableLabel != null
           ? {
               '&:hover': {
-                backgroundColor: (theme) => theme.palette.primary.contrastText
+                backgroundColor: (theme) =>
+                  theme.palette.mode === 'dark'
+                    ? theme.palette.grey[0 as keyof typeof theme.palette.grey]
+                    : theme.palette.grey[900]
               },
               transform: 'translateY(0px) !important'
             }
