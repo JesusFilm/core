@@ -648,12 +648,12 @@ builder.mutationFields((t) => ({
           const target = e.meta?.target as string[] | undefined
           if (target?.includes('slug')) {
             throw new NotUniqueError('Video slug already exists', [
-              { path: ['input', 'slug'], value: input.slug }
+              { path: ['input', 'slug'], value: input.slug ?? '' }
             ])
           }
           if (target?.includes('id')) {
             throw new NotUniqueError('Video ID already exists', [
-              { path: ['input', 'id'], value: input.id }
+              { path: ['input', 'id'], value: input.id ?? '' }
             ])
           }
           // If it's not a slug or id constraint, throw a generic unique error
