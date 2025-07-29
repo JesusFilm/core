@@ -160,7 +160,7 @@ module "arclight" {
   alb_listener_arn = module.stage.public_alb.alb_listener.arn
   alb_dns_name     = module.stage.public_alb.dns_name
   host_name        = "core-stage.arclight.org"
-  host_names       = ["core-stage.arclight.org", "stg.arc.gt"]
+  host_names       = ["*.arclight.org", "*.arc.gt"] // handle any arclight or arc.gt subdomain passed to stage alb
   env              = "stage"
 }
 
