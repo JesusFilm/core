@@ -159,7 +159,6 @@ export async function getWithStrictCache<T>(
   try {
     const cached = await getFromCache<T>(key)
     if (cached) {
-      console.log('returning cached')
       return cached
     }
     const fresh = await fetchFn()
@@ -172,7 +171,6 @@ export async function getWithStrictCache<T>(
       )
       // Continue since we still have the fresh data to return
     }
-    console.log('returning fresh')
     return fresh
   } catch (error) {
     console.error(
