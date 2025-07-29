@@ -160,6 +160,7 @@ module "arclight" {
   alb_listener_arn = module.stage.public_alb.alb_listener.arn
   alb_dns_name     = module.stage.public_alb.dns_name
   host_name        = "core-stage.arclight.org"
+  host_names       = ["*.arclight.org", "*.arc.gt"] // handle any arclight or arc.gt subdomain passed to stage alb
   env              = "stage"
 }
 
@@ -170,7 +171,7 @@ module "bastion" {
   dns_name           = "bastion.stage.central.jesusfilm.org"
   subnet_id          = module.stage.vpc.public_subnets[0]
   zone_id            = data.aws_route53_zone.route53_stage_central_jesusfilm_org.zone_id
-  security_group_ids = [module.stage.public_bastion_security_group_id]
+  security_group_ids = [module.stage.public_bastion_security_group_id, "sg-0d3fe6651aeda358e"]
 }
 
 
