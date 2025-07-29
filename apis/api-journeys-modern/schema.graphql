@@ -368,6 +368,13 @@ type RadioOptionBlock implements Block
   parentBlockId: ID @shareable
   parentOrder: Int @shareable
   label: String! @shareable
+
+  """
+  pollOptionImageId is present if a child block should be used as a poll option image.
+  This child block should not be rendered normally, instead it should be used
+  as a poll option image. Blocks are often of type ImageBlock
+  """
+  pollOptionImageId: ID @shareable
 }
 
 type RadioQuestionBlock implements Block
@@ -377,6 +384,7 @@ type RadioQuestionBlock implements Block
   journeyId: ID! @shareable
   parentBlockId: ID @shareable
   parentOrder: Int @shareable
+  gridView: Boolean @shareable
 }
 
 type SignUpBlock implements Block

@@ -149,10 +149,34 @@
         "command": "npm run ts-node apis/api-media/src/scripts/data-import.ts"
       }
     },
+    "subtitle-migrate-r2": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npm run ts-node apis/api-media/src/scripts/subtitle-migrate-r2.ts"
+      }
+    },
+    "download-migrate-r2": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npm run ts-node apis/api-media/src/scripts/download-migrate-r2.ts"
+      }
+    },
     "copy-distro-downloads": {
       "executor": "nx:run-commands",
       "options": {
         "command": "npm run ts-node apis/api-media/src/scripts/copy-distro-downloads.ts"
+      }
+    },
+    "update-arcgt-urls": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npm run ts-node apis/api-media/src/scripts/update-arcgt-urls.ts"
+      }
+    },
+    "mux-videos": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npm run ts-node apis/api-media/src/scripts/mux-videos.ts"
       }
     }
   }
