@@ -214,7 +214,7 @@ export default function AddAudioLanguageDialog({
                     data-testid="MaxResolutionSelect"
                     id="maxResolution"
                     name="maxResolution"
-                    label="Max Resolution"
+                    label="Video Resolution"
                     error={
                       touched.maxResolution && errors.maxResolution != null
                     }
@@ -224,7 +224,7 @@ export default function AddAudioLanguageDialog({
                     }}
                     disabled={isUploadInProgress}
                   >
-                    <MenuItem value="fhd">1K - Full HD (1080p)</MenuItem>
+                    <MenuItem value="fhd">Up to 1K - Full HD (1080p)</MenuItem>
                     <MenuItem value="qhd">2K - Quad HD (1440p)</MenuItem>
                     <MenuItem value="uhd">4K - Ultra HD (2160p)</MenuItem>
                   </Select>
