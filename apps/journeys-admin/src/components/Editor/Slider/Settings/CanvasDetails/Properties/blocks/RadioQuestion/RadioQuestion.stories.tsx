@@ -1,3 +1,4 @@
+import { MockedProvider } from '@apollo/client/testing'
 import { Meta, StoryObj } from '@storybook/react'
 import { fn } from '@storybook/test'
 import { ComponentProps } from 'react'
@@ -35,11 +36,13 @@ const Template: StoryObj<
 > = {
   render: (block) => {
     return (
-      <EditorProvider initialState={{ selectedBlock: { ...block } }}>
-        <Drawer title="Poll Block Selected" onClose={onClose}>
-          <RadioQuestion {...block} />
-        </Drawer>
-      </EditorProvider>
+      <MockedProvider>
+        <EditorProvider initialState={{ selectedBlock: { ...block } }}>
+          <Drawer title="Poll Block Selected" onClose={onClose}>
+            <RadioQuestion {...block} />
+          </Drawer>
+        </EditorProvider>
+      </MockedProvider>
     )
   }
 }
