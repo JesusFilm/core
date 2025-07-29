@@ -205,7 +205,9 @@ async function main() {
   for (const file of allVideoFiles) {
     const match = file.match(VIDEO_FILENAME_REGEX)
     if (!match) continue
-    const [, videoId, edition, languageId, ...extraFields] = match
+    const [, videoId, editionName, languageId, ...extraFields] = match
+
+    const edition = editionName.toLowerCase()
 
     console.log(`\n🎬 Processing: ${file}`)
     console.log(
