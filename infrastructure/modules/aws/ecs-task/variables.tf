@@ -78,6 +78,12 @@ variable "host_name" {
   default = null
 }
 
+variable "host_names" {
+  type        = list(string)
+  default     = []
+  description = "List of host names for ALB listener rule. Takes precedence over host_name if provided."
+}
+
 variable "include_aws_env_vars" {
   type    = bool
   default = false

@@ -6,6 +6,36 @@ module "prod" {
   internal_url_name = "service.internal"
 }
 
+# ACM Certificate data source for existing arclight.org certificate
+data "aws_acm_certificate" "acm_arclight_org" {
+  domain = "arclight.org"
+}
+
+# Route 53 records for arclight.org domain
+resource "aws_route53_record" "arclight_org_root" {
+  name    = "arclight.org"
+  type    = "A"
+  zone_id = data.aws_route53_zone.route53_arclight_org.zone_id
+
+  alias {
+    evaluate_target_health = true
+    name                   = module.prod.public_alb.dns_name
+    zone_id                = module.prod.public_alb.zone_id
+  }
+}
+
+resource "aws_route53_record" "arclight_org_wildcard" {
+  name    = "*.arclight.org"
+  type    = "A"
+  zone_id = data.aws_route53_zone.route53_arclight_org.zone_id
+
+  alias {
+    evaluate_target_health = true
+    name                   = module.prod.public_alb.dns_name
+    zone_id                = module.prod.public_alb.zone_id
+  }
+}
+
 locals {
   public_ecs_config = {
     vpc_id                  = module.prod.vpc.id
@@ -123,6 +153,7 @@ module "arclight" {
   alb_listener_arn = module.prod.public_alb.alb_listener.arn
   alb_dns_name     = module.prod.public_alb.dns_name
   host_name        = "core.arclight.org"
+  host_names       = ["arclight.org", "*.arclight.org", "core.arclight.org"]
 }
 
 module "bastion" {

@@ -149,6 +149,11 @@ resource "aws_lb_listener_certificate" "acm_core_stage_arclight_org" {
   certificate_arn = data.aws_acm_certificate.acm_core_stage_arclight_org.arn
 }
 
+resource "aws_lb_listener_certificate" "acm_arclight_org" {
+  listener_arn    = module.public_alb_listener.arn
+  certificate_arn = data.aws_acm_certificate.acm_arclight_org.arn
+}
+
 module "route53_private_zone" {
   source            = "./route53"
   internal_url_name = var.internal_url_name
