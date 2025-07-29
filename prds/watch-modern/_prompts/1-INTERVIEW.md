@@ -4,7 +4,8 @@ Create and fill prds/watch-modern/<FEATURE>/intake.md by interviewing the user.
 For each question, propose 3 plausible answers (A1/A2/A3). User may reply with 1/2/3 or free text.
 
 INPUT
-<FEATURE>=homepage  # change per feature
+<FEATURE>={request from the user}  # change per feature
+<Issue ID>={request from the user}
 
 INIT
 FEATURE=<FEATURE>
