@@ -131,7 +131,11 @@ export function RadioQuestion({
     (option) =>
       option.__typename === 'RadioOptionBlock' &&
       (wrappers != null ? (
-        <BlockRenderer block={option} wrappers={wrappers} key={option.id} />
+        <BlockRenderer
+          block={{ ...option, gridView }}
+          wrappers={wrappers}
+          key={option.id}
+        />
       ) : (
         <RadioOption
           {...option}
