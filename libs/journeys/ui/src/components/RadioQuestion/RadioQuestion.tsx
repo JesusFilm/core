@@ -24,6 +24,7 @@ import {
   RadioQuestionSubmissionEventCreate,
   RadioQuestionSubmissionEventCreateVariables
 } from './__generated__/RadioQuestionSubmissionEventCreate'
+import { getPollOptionBorderStyles } from './utils/getPollOptionBorderStyles'
 
 export const RADIO_QUESTION_SUBMISSION_EVENT_CREATE = gql`
   mutation RadioQuestionSubmissionEventCreate(
@@ -47,12 +48,22 @@ const StyledRadioQuestion = styled(Box)<BoxProps>(({ theme }) => ({
     boxShadow: 'none',
     gap: theme.spacing(2),
     '& .MuiButtonGroup-grouped': {
-      borderRadius: '12px',
       border: 'none',
+      borderBottom: 'none',
+      borderRight: 'none',
+      borderRadius: '12px',
       margin: '0 !important',
-      '&:not(:last-child)': {
-        borderBottom: 'none !important',
-        borderRight: 'none !important'
+      '&:not(:last-of-type)': {
+        borderBottom: 'none'
+      },
+      '& .MuiButtonGroup-firstButton': {
+        ...getPollOptionBorderStyles(theme)
+      },
+      '& .MuiButtonGroup-middleButton': {
+        ...getPollOptionBorderStyles(theme)
+      },
+      '& .MuiButtonGroup-lastButton': {
+        ...getPollOptionBorderStyles(theme)
       }
     }
   }

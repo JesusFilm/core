@@ -7,6 +7,7 @@ import { handleAction } from '../../libs/action'
 import type { TreeBlock } from '../../libs/block'
 import { getNextStepSlug } from '../../libs/getNextStepSlug'
 import { useJourney } from '../../libs/JourneyProvider'
+import { getPollOptionBorderStyles } from '../RadioQuestion/utils/getPollOptionBorderStyles'
 
 import { RadioOptionFields } from './__generated__/RadioOptionFields'
 
@@ -17,68 +18,86 @@ interface RadioOptionProps extends TreeBlock<RadioOptionFields> {
   editableLabel?: ReactElement
 }
 
-export const StyledRadioOption = styled(Button)<ButtonProps>(({ theme }) => ({
-  fontFamily: theme.typography.button.fontFamily,
-  fontSize: theme.typography.body1.fontSize,
-  fontWeight: 400,
-  lineHeight: theme.typography.body2.lineHeight,
-  textAlign: 'start',
-  justifyContent: 'flex-start',
-  borderRadius: 'inherit',
-  padding: '14px 10px 14px 14px',
-  transition: theme.transitions.create(
-    ['background-color', 'border-color', 'transform', 'box-shadow', 'opacity'],
-    {
-      duration: theme.transitions.duration.short
+export const StyledRadioOption = styled(Button)<ButtonProps>(({ theme }) => {
+  const borderStyles = getPollOptionBorderStyles(theme, { important: true })
+
+  return {
+    fontFamily: theme.typography.button.fontFamily,
+    fontSize: theme.typography.body1.fontSize,
+    fontWeight: 400,
+    lineHeight: theme.typography.body2.lineHeight,
+    textAlign: 'start',
+    justifyContent: 'flex-start',
+    borderRadius: '12px',
+    padding: '14px 10px 14px 14px',
+    transition: theme.transitions.create(
+      [
+        'background-color',
+        'border-color',
+        'transform',
+        'box-shadow',
+        'opacity'
+      ],
+      {
+        duration: theme.transitions.duration.short
+      }
+    ),
+    wordBreak: 'break-word',
+    color: 'text.primary',
+    ...borderStyles,
+
+    // Default state
+    opacity: theme.palette.mode === 'dark' ? 1 : 0.7,
+    backgroundColor:
+      theme.palette.mode === 'dark'
+        ? 'rgba(255, 255, 255, 0.6)'
+        : 'rgba(0, 0, 0, 0.6)',
+
+    // Hover state
+    '&:hover': {
+      ...borderStyles['&:hover'],
+      backgroundColor:
+        theme.palette.mode === 'dark'
+          ? 'rgba(255, 255, 255, 0.8)'
+          : 'rgba(0, 0, 0, 0.8)',
+      transform: 'translateY(-2px)',
+      boxShadow:
+        theme.palette.mode === 'dark'
+          ? '0 4px 12px rgba(0, 0, 0, 0.4)'
+          : '0 4px 12px rgba(0, 0, 0, 0.15)'
+    },
+
+    // Selected state
+    '&:active': {
+      ...borderStyles['&:active'],
+      backgroundColor:
+        theme.palette.mode === 'dark'
+          ? 'rgba(255, 255, 255, 0.9)'
+          : 'rgba(0, 0, 0, 0.9)',
+      color:
+        theme.palette.mode === 'dark'
+          ? 'rgba(0, 0, 0, 0.9)'
+          : 'rgba(255, 255, 255, 0.95)',
+      boxShadow:
+        theme.palette.mode === 'dark'
+          ? '0 4px 16px rgba(0, 0, 0, 0.4)'
+          : '0 4px 16px rgba(0, 0, 0, 0.2)'
+    },
+
+    // Disabled state
+    '&.Mui-disabled': {
+      ...borderStyles['&.disabled'],
+      backgroundColor:
+        theme.palette.mode === 'dark'
+          ? 'rgba(255, 255, 255, 0.4)'
+          : 'rgba(0, 0, 0, 0.4)',
+      color:
+        theme.palette.mode === 'dark'
+          ? 'rgba(0, 0, 0, 0.5)'
+          : 'rgba(255, 255, 255, 0.7)'
     }
-  ),
-  backgroundColor: 'background.paper',
-  border: `1px solid ${theme.palette.grey[200]}`,
-  color: 'text.primary',
-  opacity: 0.7,
-
-  '&:hover': {
-    backgroundColor:
-      theme.palette.mode === 'dark'
-        ? theme.palette.grey[0 as keyof typeof theme.palette.grey]
-        : theme.palette.grey[900],
-    border: `1px solid ${theme.palette.grey[200]}`,
-    transform: 'translateY(-2px)',
-    boxShadow:
-      theme.palette.mode === 'dark'
-        ? '0 4px 12px rgba(0, 0, 0, 0.4)'
-        : '0 4px 12px rgba(0, 0, 0, 0.15)',
-    opacity: 0.9
-  },
-
-  '&.selected': {
-    backgroundColor:
-      theme.palette.mode === 'dark'
-        ? theme.palette.grey[800]
-        : theme.palette.grey[100],
-    border: `1px solid ${theme.palette.primary.main}`,
-    color:
-      theme.palette.mode === 'dark'
-        ? theme.palette.grey[0 as keyof typeof theme.palette.grey]
-        : theme.palette.grey[900],
-    boxShadow:
-      theme.palette.mode === 'dark'
-        ? '0 4px 16px rgba(0, 0, 0, 0.4)'
-        : '0 4px 16px rgba(0, 0, 0, 0.2)'
-  },
-  '&.Mui-disabled': {
-    opacity: 0.4,
-    backgroundColor:
-      theme.palette.mode === 'dark'
-        ? theme.palette.grey[100]
-        : theme.palette.grey[800],
-    border: `1px solid ${theme.palette.grey[200]}`,
-    color:
-      theme.palette.mode === 'dark'
-        ? theme.palette.grey[700]
-        : theme.palette.grey[300]
   }
-}))
+})
 
 export function RadioOption({
   label,

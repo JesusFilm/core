@@ -37,21 +37,25 @@ export const videos: VideoContentFields[] = [
     studyQuestions: [
       {
         __typename: 'VideoStudyQuestion',
-        value: "How is the sacrifice of Jesus part of God's plan?"
+        value: "How is the sacrifice of Jesus part of God's plan?",
+        primary: true
       },
       {
         __typename: 'VideoStudyQuestion',
         value:
-          'How do the different groups of people respond to Jesus and His teachings?'
+          'How do the different groups of people respond to Jesus and His teachings?',
+        primary: true
       },
       {
         __typename: 'VideoStudyQuestion',
         value:
-          'What are some of the miracles Jesus performed? How do they affect those people?'
+          'What are some of the miracles Jesus performed? How do they affect those people?',
+        primary: true
       },
       {
         __typename: 'VideoStudyQuestion',
-        value: 'How do you respond to the life of Jesus?'
+        value: 'How do you respond to the life of Jesus?',
+        primary: true
       }
     ],
     bibleCitations: [],
@@ -230,15 +234,18 @@ export const videos: VideoContentFields[] = [
     studyQuestions: [
       {
         __typename: 'VideoStudyQuestion',
-        value: 'How do the disciples react to the storm?'
+        value: 'How do the disciples react to the storm?',
+        primary: true
       },
       {
         __typename: 'VideoStudyQuestion',
-        value: 'What does Jesus do when the disciples ask Him for help?'
+        value: 'What does Jesus do when the disciples ask Him for help?',
+        primary: true
       },
       {
         __typename: 'VideoStudyQuestion',
-        value: 'How would you respond to the storm and to Jesus?'
+        value: 'How would you respond to the storm and to Jesus?',
+        primary: true
       }
     ],
     bibleCitations: [
@@ -329,17 +336,20 @@ export const videos: VideoContentFields[] = [
       {
         __typename: 'VideoStudyQuestion',
         value:
-          "Why do you think the woman so desperately wanted to touch Jesus' garment?"
+          "Why do you think the woman so desperately wanted to touch Jesus' garment?",
+        primary: true
       },
       {
         __typename: 'VideoStudyQuestion',
         value:
-          'In such a large crowd of people, why do you think Jesus wanted to know who touched Him?'
+          'In such a large crowd of people, why do you think Jesus wanted to know who touched Him?',
+        primary: true
       },
       {
         __typename: 'VideoStudyQuestion',
         value:
-          'Of all the things Jesus said to the woman, what meant the most to you?'
+          'Of all the things Jesus said to the woman, what meant the most to you?',
+        primary: true
       }
     ],
     bibleCitations: [
@@ -567,11 +577,13 @@ export const videos: VideoContentFields[] = [
     studyQuestions: [
       {
         __typename: 'VideoStudyQuestion',
-        value: 'How do I feel about Jesus being crucified?'
+        value: 'How do I feel about Jesus being crucified?',
+        primary: true
       },
       {
         __typename: 'VideoStudyQuestion',
-        value: "How do Jesus' words to the thief on the cross give me hope?"
+        value: "How do Jesus' words to the thief on the cross give me hope?",
+        primary: true
       }
     ],
     bibleCitations: [
@@ -667,9 +679,10 @@ export const videos: VideoContentFields[] = [
     studyQuestions: [
       {
         __typename: 'VideoStudyQuestion',
-        value: 'What did you like best or what caught your attention?'
+        value: 'What did you like best or what caught your attention?',
+        primary: true
       },
-      { __typename: 'VideoStudyQuestion', value: 'Why?' }
+      { __typename: 'VideoStudyQuestion', value: 'Why?', primary: true }
     ],
     bibleCitations: [
       {
@@ -753,11 +766,13 @@ export const videos: VideoContentFields[] = [
     studyQuestions: [
       {
         __typename: 'VideoStudyQuestion',
-        value: 'Who was affected by this miracle?'
+        value: 'Who was affected by this miracle?',
+        primary: true
       },
       {
         __typename: 'VideoStudyQuestion',
-        value: 'What does this first miracle tell you about Jesus?'
+        value: 'What does this first miracle tell you about Jesus?',
+        primary: true
       }
     ],
     bibleCitations: [
@@ -884,21 +899,25 @@ export const videos: VideoContentFields[] = [
     studyQuestions: [
       {
         __typename: 'VideoStudyQuestion',
-        value: 'What did you like best or what caught your attention?'
+        value: 'What did you like best or what caught your attention?',
+        primary: true
       },
-      { __typename: 'VideoStudyQuestion', value: 'Why?' },
+      { __typename: 'VideoStudyQuestion', value: 'Why?', primary: true },
       {
         __typename: 'VideoStudyQuestion',
         value:
-          'Herod also imprisoned John the Baptist. What happened to John? [See Matthew 14:1-12.]'
+          'Herod also imprisoned John the Baptist. What happened to John? [See Matthew 14:1-12.]',
+        primary: true
       },
       {
         __typename: 'VideoStudyQuestion',
-        value: 'How secure was Peter in prison? Any chance of escape?'
+        value: 'How secure was Peter in prison? Any chance of escape?',
+        primary: true
       },
       {
         __typename: 'VideoStudyQuestion',
-        value: 'How do you think the non-believers explained Peter’s escape?'
+        value: 'How do you think the non-believers explained Peter’s escape?',
+        primary: true
       }
     ],
     bibleCitations: [
@@ -1042,21 +1061,25 @@ export const videos: VideoContentFields[] = [
       {
         __typename: 'VideoStudyQuestion',
         value:
-          'In what ways do you identify with the main character, Mary Magdalene?'
+          'In what ways do you identify with the main character, Mary Magdalene?',
+        primary: true
       },
       {
         __typename: 'VideoStudyQuestion',
-        value: "Why do you think the elders didn't approve of Jesus?"
+        value: "Why do you think the elders didn't approve of Jesus?",
+        primary: true
       },
       {
         __typename: 'VideoStudyQuestion',
         value:
-          'After his resurrection, why do you think Jesus chose to speak first with Mary?'
+          'After his resurrection, why do you think Jesus chose to speak first with Mary?',
+        primary: true
       },
       {
         __typename: 'VideoStudyQuestion',
         value:
-          'How do you respond to the life of Jesus? What emotions come to mind, and why?'
+          'How do you respond to the life of Jesus? What emotions come to mind, and why?',
+        primary: true
       }
     ],
     bibleCitations: [
@@ -1205,31 +1228,37 @@ export const videos: VideoContentFields[] = [
     studyQuestions: [
       {
         __typename: 'VideoStudyQuestion',
-        value: 'What part of the story did you really like?'
+        value: 'What part of the story did you really like?',
+        primary: true
       },
       {
         __typename: 'VideoStudyQuestion',
         value:
-          'If Jesus asked to come to your house, how would you respond?  How would that make you feel?  What would you do with him while He was there?'
+          'If Jesus asked to come to your house, how would you respond?  How would that make you feel?  What would you do with him while He was there?',
+        primary: true
       },
       {
         __typename: 'VideoStudyQuestion',
         value:
-          'Zacchaeus wanted to get as close as he could to see Jesus.  Why would he do that?  Why would you want to be close to Jesus?'
+          'Zacchaeus wanted to get as close as he could to see Jesus.  Why would he do that?  Why would you want to be close to Jesus?',
+        primary: true
       },
       {
         __typename: 'VideoStudyQuestion',
         value:
-          'How can we get close to Jesus today?  (This would be a good opportunity to give children an opportunity to become Christ followers.)'
+          'How can we get close to Jesus today?  (This would be a good opportunity to give children an opportunity to become Christ followers.)',
+        primary: true
       },
       {
         __typename: 'VideoStudyQuestion',
-        value: 'Something I learned about God is ________.'
+        value: 'Something I learned about God is ________.',
+        primary: true
       },
       {
         __typename: 'VideoStudyQuestion',
         value:
-          'From what you learned today, what do you feel God is asking you to do?'
+          'From what you learned today, what do you feel God is asking you to do?',
+        primary: true
       }
     ],
     bibleCitations: [
@@ -1316,15 +1345,18 @@ export const videos: VideoContentFields[] = [
     studyQuestions: [
       {
         __typename: 'VideoStudyQuestion',
-        value: 'How does Mary respond to the angel?'
+        value: 'How does Mary respond to the angel?',
+        primary: true
       },
       {
         __typename: 'VideoStudyQuestion',
-        value: 'How does Jesus happen to be born in Bethlehem?'
+        value: 'How does Jesus happen to be born in Bethlehem?',
+        primary: true
       },
       {
         __typename: 'VideoStudyQuestion',
-        value: 'Who are the first to know and tell of the birth of Jesus? Why?'
+        value: 'Who are the first to know and tell of the birth of Jesus? Why?',
+        primary: true
       }
     ],
     bibleCitations: [
@@ -1410,21 +1442,25 @@ export const videos: VideoContentFields[] = [
       {
         __typename: 'VideoStudyQuestion',
         value:
-          'Life is portrayed as falling plates. What do you think about that?'
+          'Life is portrayed as falling plates. What do you think about that?',
+        primary: true
       },
       {
         __typename: 'VideoStudyQuestion',
         value:
-          'Everyone is on a spiritual journey. Where do you think you are on that journey?'
+          'Everyone is on a spiritual journey. Where do you think you are on that journey?',
+        primary: true
       },
       {
         __typename: 'VideoStudyQuestion',
         value:
-          'Do you think you are moving toward God, away from God, or staying about the same?'
+          'Do you think you are moving toward God, away from God, or staying about the same?',
+        primary: true
       },
       {
         __typename: 'VideoStudyQuestion',
-        value: 'Would you like to hear how you can know God personally?'
+        value: 'Would you like to hear how you can know God personally?',
+        primary: true
       }
     ],
     bibleCitations: [],
@@ -1497,18 +1533,21 @@ export const videos: VideoContentFields[] = [
     studyQuestions: [
       {
         __typename: 'VideoStudyQuestion',
-        value: 'What did you like best or what caught your attention?'
+        value: 'What did you like best or what caught your attention?',
+        primary: true
       },
-      { __typename: 'VideoStudyQuestion', value: 'Why?' },
+      { __typename: 'VideoStudyQuestion', value: 'Why?', primary: true },
       {
         __typename: 'VideoStudyQuestion',
         value:
-          'Paul cast out a demon. Why did he go to jail? Was this charge correct?'
+          'Paul cast out a demon. Why did he go to jail? Was this charge correct?',
+        primary: true
       },
       {
         __typename: 'VideoStudyQuestion',
         value:
-          'How did God resolve the problem? Do you think this is what Paul prayed for in verse 25?'
+          'How did God resolve the problem? Do you think this is what Paul prayed for in verse 25?',
+        primary: true
       }
     ],
     bibleCitations: [
@@ -1593,16 +1632,19 @@ export const videos: VideoContentFields[] = [
     studyQuestions: [
       {
         __typename: 'VideoStudyQuestion',
-        value: 'What message do you get from this story?'
+        value: 'What message do you get from this story?',
+        primary: true
       },
       {
         __typename: 'VideoStudyQuestion',
-        value: 'How do you deal with things you feel guilty about?'
+        value: 'How do you deal with things you feel guilty about?',
+        primary: true
       },
       {
         __typename: 'VideoStudyQuestion',
         value:
-          'What do you think about the idea of being with Jesus in paradise?'
+          'What do you think about the idea of being with Jesus in paradise?',
+        primary: true
       }
     ],
     bibleCitations: [],
