@@ -259,7 +259,7 @@
     "@nx/web": "21.3.9",
     "@nx/webpack": "21.3.9",
     "@nx/workspace": "21.3.9",
-    "@playwright/test": "^1.51.1",
+    "@playwright/test": "^1.54.1",
     "@storybook/addon-a11y": "^8.4.0",
     "@storybook/addon-essentials": "^8.4.0",
     "@storybook/addon-interactions": "^8.4.0",
