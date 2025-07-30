@@ -30,7 +30,7 @@ export function TestWatchState(): ReactElement {
         currentAudioLanguage:{' '}
         {state.currentAudioLanguage?.language?.id || 'none'}
       </div>
-      <div>currentSubtitleOn: {state.currentSubtitleOn?.toString()}</div>
+      <div>autoSubtitle: {state.autoSubtitle?.toString()}</div>
     </>
   )
 }
