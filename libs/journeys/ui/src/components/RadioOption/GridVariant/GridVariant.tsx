@@ -8,7 +8,7 @@ import { ReactElement } from 'react'
 
 import LogoGrayscale from '@core/shared/ui/icons/LogoGrayscale'
 
-const StyledGridRadioOption = styled(Card)<CardProps>(({ theme }) => ({
+export const StyledGridRadioOption = styled(Card)<CardProps>(({ theme }) => ({
   borderRadius: 16,
   padding: 12,
   height: '100%',
@@ -34,9 +34,11 @@ export function GridVariant({
   handleClick,
   editableLabel
 }: GridVariantProps): ReactElement {
+  const showLabel = editableLabel != null || (label != null && label != '')
+
   return (
     <StyledGridRadioOption
-      variant="outlined"
+      // variant="outlined"
       // disabled={disabled}
       onClick={handleClick}
       // fullWidth
@@ -62,15 +64,17 @@ export function GridVariant({
         >
           <LogoGrayscale sx={{ width: '50px', height: '34px' }} />
         </Box>
-        <Typography
-          variant="body2"
-          sx={{
-            color: (theme) =>
-              theme.palette.mode === 'dark' ? '#1D1D1D' : '#FFFFFF'
-          }}
-        >
-          {editableLabel ?? label}
-        </Typography>
+        {showLabel && (
+          <Typography
+            variant="body2"
+            sx={{
+              color: (theme) =>
+                theme.palette.mode === 'dark' ? '#1D1D1D' : '#FFFFFF'
+            }}
+          >
+            {editableLabel ?? label}
+          </Typography>
+        )}
       </Stack>
     </StyledGridRadioOption>
   )

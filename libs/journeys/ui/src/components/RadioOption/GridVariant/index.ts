@@ -1,1 +1,1 @@
-export { GridVariant } from './GridVariant'
+export { GridVariant, StyledGridRadioOption } from './GridVariant'
