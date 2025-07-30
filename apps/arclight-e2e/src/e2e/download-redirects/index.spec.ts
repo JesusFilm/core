@@ -7,6 +7,7 @@ const REGULAR_API_KEY = 'regular_test_key'
 const mediaComponentId = '2_0-PaperHats'
 const languageId = '529'
 
+// Just to run arclight-e2e
 test.describe('Download Redirects', () => {
   test.describe('/dl/ - Low Quality Downloads', () => {
     test('redirects to low quality download without apiKey', async ({
