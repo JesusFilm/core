@@ -218,15 +218,22 @@ export async function handleParentVariantCreation(
 async function updateAvailableLanguages(
   videoId: string,
   languageId: string,
-  action: 'add' | 'remove' | 'check'
+  action: 'add' | 'check'
 ) {
   if (action === 'add') {
-    // Atomic add using array operations
+    // Atomic add with duplicate prevention
     await prisma.video.update({
-      where: { id: videoId },
+      where: {
+        id: videoId,
+        NOT: {
+          availableLanguages: {
+            has: languageId
+          }
+        }
+      },
       data: {
         availableLanguages: {
-          push: languageId // Only if not already present
+          push: languageId
         }
       }
     })
