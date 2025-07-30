@@ -842,7 +842,7 @@
   "Appears on <0>{{count}}</0> card_one": "<0>{{count}}मा देखा पर्दछ</0> कार्ड",
   "Appears on <0>{{count}}</0> card_other": "<0>{{count}}मा देखा पर्दछ</0> कार्ड",
   "<0>{{count}}</0><1>card</1>_one": "<0><count/></0><1>कार्ड</1>",
-  "<0>{{count}}</0><1>card</1>_other": "<0><count/></0><1>कार्डहरू</1>",
+  "<0>{{count}}</0><1>card</1>_other": "<0>{{count}}</0><1>कार्डहरू</1>",
   "{{count}} visitors_one": "{{count}} आगन्तुकहरू",
   "{{count}} visitors_other": "{{count}} आगन्तुकहरू",
   "{{count}} responses_one": "{{count}} प्रतिक्रिया",
