@@ -26,7 +26,9 @@ export function RadioOption({
   selected = false,
   onClick,
   editableLabel,
-  gridView = false
+  gridView = false,
+  pollOptionImageId,
+  children
 }: RadioOptionProps): ReactElement {
   const { journey } = useJourney()
   const router = useRouter()
@@ -45,6 +47,8 @@ export function RadioOption({
       selected={selected}
       handleClick={handleClick}
       editableLabel={editableLabel}
+      pollOptionImageId={pollOptionImageId}
+      children={children}
     />
   ) : (
     <ListVariant
