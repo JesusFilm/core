@@ -46,7 +46,7 @@ jobs:
           echo "matrix=$(npx ts-node tools/scripts/deploy-apps.ts --projects apps/* --exclude api-*)" >> $GITHUB_OUTPUT
           cat $GITHUB_OUTPUT
   deploy-preview:
-    name: Deploy Preview and Test
+    name: Deploy Preview
     needs: affected
     # if branch is not main or is a pull request
     if: |

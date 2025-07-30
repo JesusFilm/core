@@ -28,6 +28,9 @@
       "inputs": ["production", "^production"],
       "cache": true
     },
+    "deploy": {
+      "cache": true
+    },
     "build-storybook": {
       "inputs": [
         "default",
