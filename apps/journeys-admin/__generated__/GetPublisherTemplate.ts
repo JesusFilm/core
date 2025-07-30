@@ -173,6 +173,12 @@ export interface GetPublisherTemplate_publisherTemplate_blocks_RadioOptionBlock 
   parentOrder: number | null;
   label: string;
   action: GetPublisherTemplate_publisherTemplate_blocks_RadioOptionBlock_action | null;
+  /**
+   * pollOptionImageId is present if a child block should be used as a poll option image.
+   * This child block should not be rendered normally, instead it should be used
+   * as a poll option image. Blocks are often of type ImageBlock
+   */
+  pollOptionImageId: string | null;
 }
 
 export interface GetPublisherTemplate_publisherTemplate_blocks_RadioQuestionBlock {
@@ -180,6 +186,7 @@ export interface GetPublisherTemplate_publisherTemplate_blocks_RadioQuestionBloc
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
+  gridView: boolean | null;
 }
 
 export interface GetPublisherTemplate_publisherTemplate_blocks_SignUpBlock_action_NavigateToBlockAction {

@@ -1,0 +1,17 @@
+{
+  "Metadata": {
+    "pageTitle": "{title} | Projeto de filme sobre Jesus"
+  },
+  "RootIndexPage": {
+    "pageTitle": "Watch",
+    "title": "Biblioteca gratuita de <underline>streaming</underline> de vídeos evangélicos.",
+    "description": "Watch, learn and share the gospel in over 2000 languages"
+  },
+  "DatadogErrorBoundary": {
+    "somethingWentWrong": "Algo deu errado",
+    "anErrorOccurred": "Ocorreu um erro ao carregar esta página. Tente atualizar.",
+    "errorDetails": "Detalhes do erro",
+    "tryAgain": "Tente novamente",
+    "unknownError": "Erro desconhecido"
+  }
+}

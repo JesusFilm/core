@@ -32,6 +32,7 @@ export interface GetVideosForTestData_videos_description {
 export interface GetVideosForTestData_videos_studyQuestions {
   __typename: "VideoStudyQuestion";
   value: string;
+  primary: boolean;
 }
 
 export interface GetVideosForTestData_videos_bibleCitations_bibleBook_name {

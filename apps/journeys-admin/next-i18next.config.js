@@ -29,7 +29,8 @@ const i18nConfig = {
       'tr', // Turkish
       'zh', // Chinese
       'zh-Hans-CN', // Chinese, Simplified
-      'de' // German
+      'de', // German
+      'ne' // Nepali
     ],
     localeDetection: false
   },
@@ -44,7 +45,8 @@ const i18nConfig = {
     ru: ['ru-RU'],
     tr: ['tr-TR'],
     zh: ['zh-Hans-CN'],
-    de: ['de-DE']
+    de: ['de-DE'],
+    ne: ['ne-NP']
   },
   localePath,
   react: { useSuspense: false }

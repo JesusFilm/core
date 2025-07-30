@@ -18,6 +18,7 @@ import ListItemText from '@mui/material/ListItemText'
 import MenuItem from '@mui/material/MenuItem'
 import Select from '@mui/material/Select'
 import Stack from '@mui/material/Stack'
+import { useTheme } from '@mui/material/styles'
 import TextField from '@mui/material/TextField'
 import { Form, Formik, FormikProps, FormikValues } from 'formik'
 import { useRouter } from 'next/navigation'
@@ -44,6 +45,7 @@ export const GET_VIDEO_INFORMATION = graphql(`
       id
       label
       published
+      publishedAt
       slug
       primaryLanguageId
       keywords(languageId: $languageId) {
@@ -120,6 +122,7 @@ export function VideoInformation({
   const router = useRouter()
   const [updateVideoInformation] = useMutation(UPDATE_VIDEO_INFORMATION)
   const [createVideoTitle] = useMutation(CREATE_VIDEO_TITLE)
+  const theme = useTheme()
   const jesusFilmUrl = 'jesusfilm.org/watch/'
   const { enqueueSnackbar } = useSnackbar()
   const [createdTitleId, setCreatedTitleId] = useState<string | null>(null)
@@ -492,13 +495,32 @@ export function VideoInformation({
                 value={values.url}
                 variant="outlined"
                 error={Boolean(errors.url)}
-                disabled
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      {jesusFilmUrl}
-                    </InputAdornment>
-                  )
+                onChange={handleChange}
+                helperText={
+                  data.adminVideo.publishedAt != null
+                    ? 'URL cannot be changed after video is published'
+                    : (errors.url as string)
+                }
+                disabled={data.adminVideo.publishedAt != null}
+                slotProps={{
+                  input: {
+                    startAdornment: (
+                      <InputAdornment
+                        position="start"
+                        disablePointerEvents
+                        sx={{
+                          backgroundColor: theme.palette.background.paper,
+                          px: 2,
+                          py: 3,
+                          borderRight: `1px solid ${theme.palette.divider}`,
+                          borderTopLeftRadius: theme.shape.borderRadius,
+                          borderBottomLeftRadius: theme.shape.borderRadius
+                        }}
+                      >
+                        {jesusFilmUrl}
+                      </InputAdornment>
+                    )
+                  }
                 }}
                 sx={{
                   flexGrow: 1,

@@ -9,7 +9,7 @@ resource "aws_rds_cluster" "default" {
   cluster_identifier              = "${var.name}-${var.env}"
   engine                          = "aurora-postgresql"
   engine_mode                     = "provisioned"
-  engine_version                  = "13.12"
+  engine_version                  = "13.18"
   availability_zones              = data.aws_availability_zones.current.names.*
   db_subnet_group_name            = var.subnet_group_name
   database_name                   = var.env
