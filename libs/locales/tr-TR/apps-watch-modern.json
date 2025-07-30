@@ -1,0 +1,17 @@
+{
+  "Metadata": {
+    "pageTitle": "{title} | İsa Film Projesi"
+  },
+  "RootIndexPage": {
+    "pageTitle": "İzle",
+    "title": "Ücretsiz Gospel Video <underline>Akış</underline> Kütüphanesi.",
+    "description": "2000'den fazla dilde müjdeyi izleyin, öğrenin ve paylaşın"
+  },
+  "DatadogErrorBoundary": {
+    "somethingWentWrong": "Bir şeyler ters gitti",
+    "anErrorOccurred": "Bu sayfa yüklenirken bir hata oluştu. Lütfen yenilemeyi deneyin.",
+    "errorDetails": "Hata ayrıntıları",
+    "tryAgain": "Tekrar deneyin",
+    "unknownError": "Bilinmeyen hata"
+  }
+}
