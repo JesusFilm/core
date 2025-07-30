@@ -1,7 +1,7 @@
 import { gql, useMutation } from '@apollo/client'
 import Box, { BoxProps } from '@mui/material/Box'
 import ButtonGroup from '@mui/material/ButtonGroup'
-import { styled } from '@mui/material/styles'
+import { Theme, styled } from '@mui/material/styles'
 import { sendGTMEvent } from '@next/third-parties/google'
 import { useTranslation } from 'next-i18next'
 import { usePlausible } from 'next-plausible'
@@ -24,6 +24,7 @@ import {
   RadioQuestionSubmissionEventCreate,
   RadioQuestionSubmissionEventCreateVariables
 } from './__generated__/RadioQuestionSubmissionEventCreate'
+import { getPollOptionBorderStyles } from './utils/getPollOptionBorderStyles'
 
 export const RADIO_QUESTION_SUBMISSION_EVENT_CREATE = gql`
   mutation RadioQuestionSubmissionEventCreate(
@@ -42,17 +43,23 @@ interface RadioQuestionProps extends TreeBlock<RadioQuestionFields> {
 }
 
 const StyledRadioQuestion = styled(Box)<BoxProps>(({ theme }) => ({
-  marginBottom: theme.spacing(4),
   '& .MuiButtonGroup-root': {
     boxShadow: 'none',
     gap: theme.spacing(2),
     '& .MuiButtonGroup-grouped': {
-      borderRadius: '12px',
       border: 'none',
+      borderBottom: 'none',
+      borderRight: 'none',
+      borderRadius: '12px',
       margin: '0 !important',
-      '&:not(:last-child)': {
-        borderBottom: 'none !important',
-        borderRight: 'none !important'
+      '& .MuiButtonGroup-firstButton': {
+        ...getPollOptionBorderStyles(theme)
+      },
+      '& .MuiButtonGroup-middleButton': {
+        ...getPollOptionBorderStyles(theme)
+      },
+      '& .MuiButtonGroup-lastButton': {
+        ...getPollOptionBorderStyles(theme)
       }
     }
   }

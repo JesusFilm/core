@@ -24,7 +24,7 @@ export const StyledRadioOption = styled(Button)<ButtonProps>(({ theme }) => ({
   lineHeight: theme.typography.body2.lineHeight,
   textAlign: 'start',
   justifyContent: 'flex-start',
-  borderRadius: 'inherit',
+  borderRadius: '12px',
   padding: '14px 10px 14px 14px',
   transition: theme.transitions.create(
     ['background-color', 'border-color', 'transform', 'box-shadow', 'opacity'],
@@ -32,51 +32,54 @@ export const StyledRadioOption = styled(Button)<ButtonProps>(({ theme }) => ({
       duration: theme.transitions.duration.short
     }
   ),
-  backgroundColor: 'background.paper',
-  border: `1px solid ${theme.palette.grey[200]}`,
   color: 'text.primary',
-  opacity: 0.7,
 
+  // Default state
+  opacity: theme.palette.mode === 'dark' ? 1 : 0.7,
+  backgroundColor:
+    theme.palette.mode === 'dark'
+      ? 'rgba(255, 255, 255, 0.6)'
+      : 'rgba(0, 0, 0, 0.6)',
+
+  // Hover state
   '&:hover': {
     backgroundColor:
       theme.palette.mode === 'dark'
-        ? theme.palette.grey[0 as keyof typeof theme.palette.grey]
-        : theme.palette.grey[900],
-    border: `1px solid ${theme.palette.grey[200]}`,
+        ? 'rgba(255, 255, 255, 0.8)'
+        : 'rgba(0, 0, 0, 0.8)',
     transform: 'translateY(-2px)',
     boxShadow:
       theme.palette.mode === 'dark'
         ? '0 4px 12px rgba(0, 0, 0, 0.4)'
-        : '0 4px 12px rgba(0, 0, 0, 0.15)',
-    opacity: 0.9
+        : '0 4px 12px rgba(0, 0, 0, 0.15)'
   },
 
+  // Selected state
   '&.selected': {
     backgroundColor:
       theme.palette.mode === 'dark'
-        ? theme.palette.grey[800]
-        : theme.palette.grey[100],
-    border: `1px solid ${theme.palette.primary.main}`,
+        ? 'rgba(255, 255, 255, 0.9)'
+        : 'rgba(0, 0, 0, 0.9)',
     color:
       theme.palette.mode === 'dark'
-        ? theme.palette.grey[0 as keyof typeof theme.palette.grey]
-        : theme.palette.grey[900],
+        ? 'rgba(0, 0, 0, 0.9)'
+        : 'rgba(255, 255, 255, 0.95)',
     boxShadow:
       theme.palette.mode === 'dark'
         ? '0 4px 16px rgba(0, 0, 0, 0.4)'
         : '0 4px 16px rgba(0, 0, 0, 0.2)'
   },
+
+  // Disabled state
   '&.Mui-disabled': {
-    opacity: 0.4,
     backgroundColor:
       theme.palette.mode === 'dark'
-        ? theme.palette.grey[100]
-        : theme.palette.grey[800],
-    border: `1px solid ${theme.palette.grey[200]}`,
+        ? 'rgba(255, 255, 255, 0.4)'
+        : 'rgba(0, 0, 0, 0.4)',
     color:
       theme.palette.mode === 'dark'
-        ? theme.palette.grey[700]
-        : theme.palette.grey[300]
+        ? 'rgba(0, 0, 0, 0.5)'
+        : 'rgba(255, 255, 255, 0.7)'
   }
 }))
 
