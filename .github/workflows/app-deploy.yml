@@ -74,7 +74,7 @@ jobs:
           - app: journeys-admin
             github-ref-name: stage
             github-event-name: push
-    runs-on: blacksmith-4vcpu-ubuntu-2204
+    runs-on: ubuntu-latest
     container: mcr.microsoft.com/playwright:v1.54.0
     outputs:
       url: ${{ steps.deployment-url.outputs.deployment-url }}
@@ -95,27 +95,29 @@ jobs:
         with:
           fetch-depth: 0
       - run: npx nx-cloud start-ci-run --distribute-on="3 linux-medium-js" --stop-agents-after="e2e"
-      - uses: useblacksmith/setup-node@v5
+      - uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
+          cache: 'npm'
       - name: Get Node Version
         id: node-version
         run: echo "version=$(node -v)" >> $GITHUB_OUTPUT
-      - name: Mount NPM Cache
-        uses: useblacksmith/stickydisk@v1
+      - name: Cache Node Modules
+        uses: actions/cache@v4
+        id: cache-node-modules
         with:
-          key: ${{ github.repository }}-${{ steps.node-version.outputs.version }}-npm-cache
-          path: ~/.npm
-      - name: Mount node_modules
-        uses: useblacksmith/stickydisk@v1
-        with:
-          key: ${{ github.repository }}-${{ steps.node-version.outputs.version }}-node-modules
-          path: ./node_modules
+          path: node_modules
+          key: node-modules-${{ matrix.node-version }}-${{ hashFiles('package-lock.json') }}
+      - name: Store Playwright's Version
+        run: |
+          PLAYWRIGHT_VERSION=$(npm run playwright -v)
+          echo "Playwright's Version: $PLAYWRIGHT_VERSION"
+          echo "PLAYWRIGHT_VERSION=$PLAYWRIGHT_VERSION" >> $GITHUB_ENV
       - name: Mount playwright cache
-        uses: useblacksmith/stickydisk@v1
+        uses: actions/cache@v4
         with:
-          key: ${{ github.repository }}-playwright-cache
           path: ~/.cache/ms-playwright
+          key: playwright-browsers-${{ env.PLAYWRIGHT_VERSION }}
       - name: NPM Install
         run: npm install --silent
       - uses: nrwl/nx-set-shas@v4
