@@ -13,9 +13,7 @@ ENDPOINT_ARCLIGHT_WEIGHT = "50"
 
 [env.stage]
 name = "arclight-canary-stage"
-routes = [
-  { pattern = "canary-stage.arclight.org/*", zone_name = "arclight.org" }
-]
+routes = []
 
 [env.stage.vars]
 # endpoint of the core service
@@ -31,10 +29,7 @@ FORCE_API_KEYS_TO_CORE = "1234567890"
 
 [env.prod]
 name = "arclight-canary-prod"
-routes = [
-  { pattern = "api.arclight.org/*", zone_name = "arclight.org" },
-  { pattern = "canary.arclight.org/*", zone_name = "arclight.org" }
-]
+routes = []
 
 [env.prod.vars]
 # endpoint of the core service

@@ -23,6 +23,7 @@ import {
 } from '../../src/libs/apolloClient'
 import { getCookie } from '../../src/libs/cookieHandler'
 import { getFlags } from '../../src/libs/getFlags'
+import { getLanguageIdFromLocale } from '../../src/libs/getLanguageIdFromLocale'
 import { VIDEO_CHILD_FIELDS } from '../../src/libs/videoChildFields'
 import { WatchProvider } from '../../src/libs/watchContext/WatchContext'
 
@@ -38,11 +39,13 @@ export const GET_HOME_VIDEOS = gql`
 interface HomePageProps {
   initialApolloState?: NormalizedCacheObject
   serverState?: InstantSearchServerState
+  localLanguageId?: string
 }
 
 function HomePage({
   initialApolloState,
-  serverState
+  serverState,
+  localLanguageId
 }: HomePageProps): ReactElement {
   const client = useApolloClient({
     initialState: initialApolloState
@@ -72,7 +75,7 @@ function HomePage({
             routing={createInstantSearchRouter()}
           >
             <Configure ruleContexts={['home_page']} />
-            <VideoHomePage />
+            <VideoHomePage languageId={localLanguageId} />
           </InstantSearch>
         </WatchProvider>
       </ApolloProvider>
@@ -88,15 +91,18 @@ export const getStaticProps: GetStaticProps<HomePageProps> = async ({
   })
 
   const apolloClient = createApolloClient()
+  const currentLocale = locale ?? 'en'
+  const localLanguageId = getLanguageIdFromLocale(currentLocale)
 
   return {
     revalidate: 3600,
     props: {
       flags: await getFlags(),
       serverState,
+      localLanguageId,
       initialApolloState: apolloClient.cache.extract(),
       ...(await serverSideTranslations(
-        locale ?? 'en',
+        currentLocale,
         ['apps-watch'],
         i18nConfig
       ))

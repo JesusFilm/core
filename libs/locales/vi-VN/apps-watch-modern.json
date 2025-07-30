@@ -1,0 +1,17 @@
+{
+  "Metadata": {
+    "pageTitle": "{title} | Dự án Phim về Chúa Giê-su"
+  },
+  "RootIndexPage": {
+    "pageTitle": "Watch",
+    "title": "Thư viện <underline>video</underline> Phúc Âm miễn phí.",
+    "description": "Watch, learn and share the gospel in over 2000 languages"
+  },
+  "DatadogErrorBoundary": {
+    "somethingWentWrong": "Có sự cố xảy ra",
+    "anErrorOccurred": "Đã xảy ra lỗi khi tải trang này. Vui lòng thử tải lại.",
+    "errorDetails": "Chi tiết lỗi",
+    "tryAgain": "Thử lại",
+    "unknownError": "Lỗi không xác định"
+  }
+}
