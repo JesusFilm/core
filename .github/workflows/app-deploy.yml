@@ -74,8 +74,7 @@ jobs:
           - app: journeys-admin
             github-ref-name: stage
             github-event-name: push
-    runs-on: ubuntu-latest
-    container: mcr.microsoft.com/playwright:v1.54.0
+    runs-on: blacksmith-4vcpu-ubuntu-2204
     outputs:
       url: ${{ steps.deployment-url.outputs.deployment-url }}
     permissions:
@@ -94,29 +93,23 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - uses: actions/setup-node@v4
+      - run: npx nx-cloud start-ci-run --distribute-on="3 linux-medium-js" --stop-agents-after="upload-sourcemaps"
+      - uses: useblacksmith/setup-node@v5
         with:
           node-version: ${{ matrix.node-version }}
-          cache: 'npm'
       - name: Get Node Version
         id: node-version
         run: echo "version=$(node -v)" >> $GITHUB_OUTPUT
-      - name: Cache Node Modules
-        uses: actions/cache@v4
-        id: cache-node-modules
+      - name: Mount NPM Cache
+        uses: useblacksmith/stickydisk@v1
         with:
-          path: node_modules
-          key: node-modules-${{ matrix.node-version }}-${{ hashFiles('package-lock.json') }}
-      - name: Store Playwright's Version
-        run: |
-          PLAYWRIGHT_VERSION=$(npm run playwright -v)
-          echo "Playwright's Version: $PLAYWRIGHT_VERSION"
-          echo "PLAYWRIGHT_VERSION=$PLAYWRIGHT_VERSION" >> $GITHUB_ENV
-      - name: Mount playwright cache
-        uses: actions/cache@v4
+          key: ${{ github.repository }}-${{ steps.node-version.outputs.version }}-npm-cache
+          path: ~/.npm
+      - name: Mount node_modules
+        uses: useblacksmith/stickydisk@v1
         with:
-          path: ~/.cache/ms-playwright
-          key: playwright-browsers-${{ env.PLAYWRIGHT_VERSION }}
+          key: ${{ github.repository }}-${{ steps.node-version.outputs.version }}-node-modules
+          path: ./node_modules
       - name: NPM Install
         run: npm install --silent
       - uses: nrwl/nx-set-shas@v4
@@ -179,10 +172,63 @@ jobs:
           state: ${{ job.status }}
           environment-url: ${{ steps.deployment-url.outputs.deployment-url }}
           deployment-id: ${{ steps.deployment.outputs.deployment_id }}
+  e2e:
+    name: E2E Tests
+    needs: [affected, deploy-preview]
+    if: |
+      needs.affected.outputs.matrix != '[]' &&
+      needs.affected.outputs.matrix != '' && (
+        github.ref != 'refs/heads/main' || github.event_name == 'pull_request'
+      )
+    strategy:
+      fail-fast: false
+      matrix:
+        app: ${{fromJson(needs.affected.outputs.matrix)}}
+        github-ref-name: ['${{ github.ref_name }}']
+        github-event-name: ['${{ github.event_name }}']
+        node-version: [22]
+        exclude:
+          # handled by production job below
+          - app: journeys
+            github-ref-name: stage
+            github-event-name: push
+          # handled by production job below
+          - app: short-links
+            github-ref-name: stage
+            github-event-name: push
+          # handled by ecs-frontend-deploy-stage
+          - app: journeys-admin
+            github-ref-name: stage
+            github-event-name: push
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+      - name: NPM Install
+        run: npm install --silent
+      - uses: nrwl/nx-set-shas@v4
+      - name: Store Playwright's Version
+        run: |
+          PLAYWRIGHT_VERSION=$(npm run playwright -v)
+          echo "Playwright's Version: $PLAYWRIGHT_VERSION"
+          echo "PLAYWRIGHT_VERSION=$PLAYWRIGHT_VERSION" >> $GITHUB_ENV
+      - name: Cache Playwright Browsers for Playwright's Version
+        id: cache-playwright-browsers
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-browsers-${{ env.PLAYWRIGHT_VERSION }}
+      - name: Install Playwright Browsers
+        run: npx playwright install --with-deps
       - name: Run Playwright tests
         run: npx nx run ${{ matrix.app }}-e2e:e2e
         env:
-          DEPLOYMENT_URL: ${{ steps.deployment-url.outputs.deployment-url }}
+          DEPLOYMENT_URL: ${{ needs.deploy-preview.outputs.url }}
           PLAYWRIGHT_USER: ${{ secrets.PLAYWRIGHT_USER }}
           PLAYWRIGHT_TEAM_NAME: ${{ secrets.PLAYWRIGHT_TEAM_NAME }}
           EXAMPLE_EMAIL_TOKEN: ${{ secrets.EXAMPLE_EMAIL_TOKEN }}
@@ -205,7 +251,7 @@ jobs:
           retention-days: 30
   deploy-status:
     runs-on: blacksmith-2vcpu-ubuntu-2204
-    needs: [affected, deploy-preview]
+    needs: [affected, deploy-preview, e2e]
     if: ${{ always() && github.event_name == 'pull_request' }}
     steps:
       - name: Successful deploy
