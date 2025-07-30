@@ -1,7 +1,7 @@
 import { gql, useMutation } from '@apollo/client'
 import Box, { BoxProps } from '@mui/material/Box'
 import ButtonGroup from '@mui/material/ButtonGroup'
-import { Theme, styled } from '@mui/material/styles'
+import { styled } from '@mui/material/styles'
 import { sendGTMEvent } from '@next/third-parties/google'
 import { useTranslation } from 'next-i18next'
 import { usePlausible } from 'next-plausible'
