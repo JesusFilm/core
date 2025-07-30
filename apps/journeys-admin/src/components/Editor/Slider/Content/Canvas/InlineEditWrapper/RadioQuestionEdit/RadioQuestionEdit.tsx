@@ -13,6 +13,7 @@ import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { StyledRadioOption } from '@core/journeys/ui/RadioOption'
 import { RadioQuestion } from '@core/journeys/ui/RadioQuestion'
+import { getPollOptionBorderStyles } from '@core/journeys/ui/RadioQuestion/utils/getPollOptionBorderStyles'
 import AddSquare4Icon from '@core/shared/ui/icons/AddSquare4'
 import { adminTheme } from '@core/shared/ui/themes/journeysAdmin/theme'
 
@@ -129,13 +130,11 @@ export function RadioQuestionEdit({
           <AddSquare4Icon sx={{ color: `${adminPrimaryColor.main}` }} />
         }
         onClick={handleCreateOption}
-        sx={{
+        sx={(theme) => ({
           borderBottomLeftRadius: 8,
           borderBottomRightRadius: 8,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center'
-        }}
+          ...getPollOptionBorderStyles(theme, { important: true })
+        })}
       >
         <Typography variant="body1">{t('Add Option')}</Typography>
       </StyledRadioOption>

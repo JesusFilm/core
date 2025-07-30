@@ -67,6 +67,18 @@ describe('getPollOptionBorderStyles', () => {
     })
   })
 
+  describe('options', () => {
+    it('should handle important', () => {
+      const styles = getPollOptionBorderStyles(mockLightTheme, {
+        important: true
+      })
+
+      expect(styles.borderColor).toBe('rgba(225, 225, 225, 0.3) !important')
+      expect(styles.borderWidth).toBe('1px !important')
+      expect(styles.borderStyle).toBe('solid !important')
+    })
+  })
+
   describe('return value structure', () => {
     it('should return an object with correct structure for light theme', () => {
       const styles = getPollOptionBorderStyles(mockLightTheme)
