@@ -1,6 +1,6 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { sendGTMEvent } from '@next/third-parties/google'
-import { fireEvent, render, waitFor, within } from '@testing-library/react'
+import { fireEvent, render, waitFor } from '@testing-library/react'
 import { usePlausible } from 'next-plausible'
 
 import type { TreeBlock } from '../../libs/block'
@@ -104,12 +104,12 @@ describe('RadioQuestion', () => {
   it('should display the correct options', () => {
     const { getByText } = render(
       <MockedProvider mocks={[]} addTypename={false}>
-        <RadioQuestion {...block} addOption={<div>Add option</div>} />
+        <RadioQuestion {...block} addOption={jest.fn()} />
       </MockedProvider>
     )
     expect(getByText('Option 1')).toBeInTheDocument()
     expect(getByText('Option 2')).toBeInTheDocument()
-    expect(getByText('Add option')).toBeInTheDocument()
+    expect(getByText('Add Option')).toBeInTheDocument()
   })
 
   it('should select an option onClick', async () => {
