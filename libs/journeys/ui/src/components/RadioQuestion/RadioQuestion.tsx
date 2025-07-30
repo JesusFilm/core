@@ -42,14 +42,12 @@ interface RadioQuestionProps extends TreeBlock<RadioQuestionFields> {
 
 export function RadioQuestion({
   id: blockId,
-  // gridView,
+  gridView,
   children,
   uuid = uuidv4,
   wrappers,
   addOption
 }: RadioQuestionProps): ReactElement {
-  const gridView = true // TODO: remove this
-
   const [radioQuestionSubmissionEventCreate] = useMutation<
     RadioQuestionSubmissionEventCreate,
     RadioQuestionSubmissionEventCreateVariables
@@ -131,7 +129,7 @@ export function RadioQuestion({
       option.__typename === 'RadioOptionBlock' &&
       (wrappers != null ? (
         <BlockRenderer
-          block={{ ...option, gridView }}
+          block={{ ...option, gridView: gridView === true }}
           wrappers={wrappers}
           key={option.id}
         />

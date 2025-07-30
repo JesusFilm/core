@@ -12,6 +12,7 @@ import { StyledListRadioOption } from '../../RadioOption/ListVariant'
 import { getPollOptionBorderStyles } from '../utils/getPollOptionBorderStyles'
 
 const StyledListRadioQuestion = styled(Box)<BoxProps>(({ theme }) => ({
+  marginBottom: theme.spacing(4),
   '& .MuiButtonGroup-root': {
     boxShadow: 'none',
     gap: theme.spacing(2),
