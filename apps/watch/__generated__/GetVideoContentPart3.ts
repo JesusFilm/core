@@ -32,6 +32,7 @@ export interface GetVideoContentPart3_content_description {
 export interface GetVideoContentPart3_content_studyQuestions {
   __typename: "VideoStudyQuestion";
   value: string;
+  primary: boolean;
 }
 
 export interface GetVideoContentPart3_content_bibleCitations_bibleBook_name {
