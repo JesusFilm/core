@@ -30,7 +30,7 @@ When Checkly detects issues with our automated tests, it's important to respond 
 
 ### 1. **Initial Alert Notification**
 
-When there's an alert in Checkly, it automatically fires a message to the DS emergency channel. This provides immediate visibility into any failing tests or monitors.
+When there's an alert in Checkly, it automatically fires a message to the `#ds-emergency` slack channel. This provides immediate visibility into any failing tests or monitors.
 
 ### 2. **Quick Investigation Process**
 
