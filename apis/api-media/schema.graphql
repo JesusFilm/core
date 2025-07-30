@@ -845,7 +845,7 @@ type Video
   variantLanguagesWithSlug(input: VideoVariantFilter): [LanguageWithSlug!]!
   variants(input: VideoVariantFilter): [VideoVariant!]!
   subtitles(languageId: ID, primary: Boolean, edition: String): [VideoSubtitle!]!
-  variant(languageId: ID): VideoVariant
+  variant(languageId: ID, input: VideoVariantFilter): VideoVariant
   images(aspectRatio: ImageAspectRatio): [CloudflareImage!]!
   restrictDownloadPlatforms: [Platform!]!
   restrictViewPlatforms: [Platform!]!
