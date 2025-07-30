@@ -15,18 +15,6 @@ jobs:
     strategy:
       matrix:
         node-version: [22]
-    services:
-      postgres:
-        image: postgres
-        env:
-          POSTGRES_PASSWORD: postgres
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-        ports:
-          - 5432:5432
     steps:
       - uses: actions/checkout@v4
         with:
@@ -71,7 +59,6 @@ jobs:
         env:
           # Nx Cloud - PR-specific cache, production for main branch, staging for others
           NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
-          NX_BRANCH: ${{ github.event_name == 'pull_request' && format('pr-{0}', github.event.number) || (github.ref == 'refs/heads/main' && 'production' || 'staging') }}
           DOPPLER_API_ANALYTICS_TOKEN: ${{ secrets.DOPPLER_API_ANALYTICS_TOKEN }}
           DOPPLER_API_GATEWAY_TOKEN: ${{ secrets.DOPPLER_API_GATEWAY_TOKEN }}
           DOPPLER_API_JOURNEYS_TOKEN: ${{ secrets.DOPPLER_API_JOURNEYS_TOKEN }}
@@ -100,18 +87,6 @@ jobs:
         node-version: [22]
         # https://jestjs.io/docs/cli#--shard
         shard: ['1/3', '2/3', '3/3']
-    services:
-      postgres:
-        image: postgres
-        env:
-          POSTGRES_PASSWORD: postgres
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-        ports:
-          - 5432:5432
     steps:
       - uses: actions/checkout@v4
         with:
