@@ -2,8 +2,14 @@ import Button, { ButtonProps } from '@mui/material/Button'
 import { styled } from '@mui/material/styles'
 import { ReactElement } from 'react'
 
-export const StyledListRadioOption = styled(Button)<ButtonProps>(
-  ({ theme }) => ({
+import { getPollOptionBorderStyles } from '../../RadioQuestion/utils/getPollOptionBorderStyles'
+
+export const StyledListRadioOption = styled(Button)<ButtonProps>(({
+  theme
+}) => {
+  const borderStyles = getPollOptionBorderStyles(theme, { important: true })
+
+  return {
     fontFamily: theme.typography.button.fontFamily,
     fontSize: theme.typography.body1.fontSize,
     fontWeight: 400,
@@ -24,7 +30,9 @@ export const StyledListRadioOption = styled(Button)<ButtonProps>(
         duration: theme.transitions.duration.short
       }
     ),
+    wordBreak: 'break-word',
     color: 'text.primary',
+    ...borderStyles,
 
     // Default state
     opacity: theme.palette.mode === 'dark' ? 1 : 0.7,
@@ -35,6 +43,7 @@ export const StyledListRadioOption = styled(Button)<ButtonProps>(
 
     // Hover state
     '&:hover': {
+      ...borderStyles['&:hover'],
       backgroundColor:
         theme.palette.mode === 'dark'
           ? 'rgba(255, 255, 255, 0.8)'
@@ -48,6 +57,7 @@ export const StyledListRadioOption = styled(Button)<ButtonProps>(
 
     // Selected state
     '&.selected': {
+      ...borderStyles['&.selected'],
       backgroundColor:
         theme.palette.mode === 'dark'
           ? 'rgba(255, 255, 255, 0.9)'
@@ -64,6 +74,7 @@ export const StyledListRadioOption = styled(Button)<ButtonProps>(
 
     // Disabled state
     '&.Mui-disabled': {
+      ...borderStyles['&.disabled'],
       backgroundColor:
         theme.palette.mode === 'dark'
           ? 'rgba(255, 255, 255, 0.4)'
@@ -73,8 +84,8 @@ export const StyledListRadioOption = styled(Button)<ButtonProps>(
           ? 'rgba(0, 0, 0, 0.5)'
           : 'rgba(255, 255, 255, 0.7)'
     }
-  })
-)
+  }
+})
 
 interface ListVariantProps {
   label: string

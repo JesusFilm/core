@@ -24,7 +24,7 @@ describe('getPollOptionBorderStyles', () => {
 
     it('should return correct default border styles for light theme', () => {
       expect(styles.borderColor).toBe('rgba(225, 225, 225, 0.3)')
-      expect(styles.borderWidth).toBe('1px ')
+      expect(styles.borderWidth).toBe('1px')
       expect(styles.borderStyle).toBe('solid')
     })
 
@@ -50,7 +50,7 @@ describe('getPollOptionBorderStyles', () => {
 
     it('should return correct default border styles for dark theme', () => {
       expect(styles.borderColor).toBe('rgba(150, 150, 150, 0.2)')
-      expect(styles.borderWidth).toBe('1px ')
+      expect(styles.borderWidth).toBe('1px')
       expect(styles.borderStyle).toBe('solid')
     })
 
@@ -67,13 +67,25 @@ describe('getPollOptionBorderStyles', () => {
     })
   })
 
+  describe('options', () => {
+    it('should handle important', () => {
+      const styles = getPollOptionBorderStyles(mockLightTheme, {
+        important: true
+      })
+
+      expect(styles.borderColor).toBe('rgba(225, 225, 225, 0.3) !important')
+      expect(styles.borderWidth).toBe('1px !important')
+      expect(styles.borderStyle).toBe('solid !important')
+    })
+  })
+
   describe('return value structure', () => {
     it('should return an object with correct structure for light theme', () => {
       const styles = getPollOptionBorderStyles(mockLightTheme)
 
       expect(styles).toEqual({
         borderColor: 'rgba(225, 225, 225, 0.3)',
-        borderWidth: '1px ',
+        borderWidth: '1px',
         borderStyle: 'solid',
         '&:hover': {
           borderColor: 'rgba(255, 255, 255, 0.5)'
@@ -92,7 +104,7 @@ describe('getPollOptionBorderStyles', () => {
 
       expect(styles).toEqual({
         borderColor: 'rgba(150, 150, 150, 0.2)',
-        borderWidth: '1px ',
+        borderWidth: '1px',
         borderStyle: 'solid',
         '&:hover': {
           borderColor: 'rgba(150, 150, 150, 0.5)'

@@ -21,6 +21,9 @@ const StyledListRadioQuestion = styled(Box)<BoxProps>(({ theme }) => ({
       borderRight: 'none',
       borderRadius: '12px',
       margin: '0 !important',
+      '&:not(:last-of-type)': {
+        borderBottom: 'none'
+      },
       '& .MuiButtonGroup-firstButton': {
         ...getPollOptionBorderStyles(theme)
       },
@@ -64,13 +67,11 @@ export function ListVariant({
                 <AddSquare4Icon sx={{ color: `${adminPrimaryColor.main}` }} />
               }
               onClick={addOption}
-              sx={{
+              sx={(theme) => ({
                 borderBottomLeftRadius: 8,
                 borderBottomRightRadius: 8,
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center'
-              }}
+                ...getPollOptionBorderStyles(theme, { important: true })
+              })}
             >
               <Typography variant="body1">{t('Add Option')}</Typography>
             </StyledListRadioOption>
