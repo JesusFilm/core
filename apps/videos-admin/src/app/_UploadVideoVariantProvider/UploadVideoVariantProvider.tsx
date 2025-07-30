@@ -7,6 +7,8 @@ import { ReactNode, createContext, useContext, useReducer } from 'react'
 import { v4 as uuidv4 } from 'uuid'
 
 import { graphql } from '@core/shared/gql'
+// Remove the invalid import for MaxResolutionTier
+// import { MaxResolutionTier } from '@core/shared/gql/__generated__/graphql'
 
 import { getExtension } from '../(dashboard)/videos/[videoId]/audio/add/_utils/getExtension'
 import { useCreateR2AssetMutation } from '../../libs/useCreateR2Asset/useCreateR2Asset'
@@ -16,11 +18,13 @@ export const CREATE_MUX_VIDEO_UPLOAD_BY_URL = graphql(`
     $url: String!
     $userGenerated: Boolean
     $downloadable: Boolean
+    $maxResolution: MaxResolutionTier
   ) {
     createMuxVideoUploadByUrl(
       url: $url
       userGenerated: $userGenerated
       downloadable: $downloadable
+      maxResolution: $maxResolution
     ) {
       id
       assetId
@@ -88,6 +92,7 @@ interface UploadVideoVariantContextType {
     edition: string,
     published: boolean,
     videoSlug?: string,
+    maxResolution?: 'fhd' | 'qhd' | 'uhd',
     onComplete?: () => void
   ) => Promise<void>
   clearUploadState: () => void
@@ -293,7 +298,8 @@ export function UploadVideoVariantProvider({
     languageSlug: string,
     edition: string,
     published: boolean,
-    videoSlug: string,
+    videoSlug?: string,
+    maxResolution?: 'fhd' | 'qhd' | 'uhd',
     onComplete?: () => void
   ) => {
     try {
@@ -351,7 +357,8 @@ export function UploadVideoVariantProvider({
         variables: {
           url: r2Response.data.cloudflareR2Create.publicUrl,
           userGenerated: false,
-          downloadable: true
+          downloadable: true,
+          maxResolution: maxResolution || undefined
         }
       })
 
