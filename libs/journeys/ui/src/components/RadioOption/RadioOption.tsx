@@ -68,8 +68,8 @@ export const StyledRadioOption = styled(Button)<ButtonProps>(({ theme }) => {
     },
 
     // Selected state
-    '&.selected': {
-      ...borderStyles['&.selected'],
+    '&:active': {
+      ...borderStyles['&:active'],
       backgroundColor:
         theme.palette.mode === 'dark'
           ? 'rgba(255, 255, 255, 0.9)'
