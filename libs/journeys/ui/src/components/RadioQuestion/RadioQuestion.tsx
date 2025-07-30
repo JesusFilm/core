@@ -52,6 +52,9 @@ const StyledRadioQuestion = styled(Box)<BoxProps>(({ theme }) => ({
       borderRight: 'none',
       borderRadius: '12px',
       margin: '0 !important',
+      '&:not(:last-of-type)': {
+        borderBottom: 'none'
+      },
       '& .MuiButtonGroup-firstButton': {
         ...getPollOptionBorderStyles(theme)
       },
