@@ -51,7 +51,6 @@ jobs:
           fetch-depth: 0
       - run: npx nx-cloud start-ci-run --distribute-on="3 linux-medium-js" --stop-agents-after="build"
       - uses: nrwl/nx-set-shas@v4
-      - run: npx nx affected -t build prisma-generate
       - name: Get affected apps
         run: |
           echo "apps=$(npx ts-node tools/scripts/affected-apps.ts --projects apis/api-*)" >> $GITHUB_OUTPUT

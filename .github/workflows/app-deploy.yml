@@ -119,7 +119,6 @@ jobs:
       - name: NPM Install
         run: npm install --silent
       - uses: nrwl/nx-set-shas@v4
-      - run: npx nx affected -t build prisma-generate
       - name: vercel deployment
         env:
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
@@ -278,7 +277,6 @@ jobs:
       - name: NPM Install
         run: npm install --silent
       - uses: nrwl/nx-set-shas@v4
-      - run: npx nx affected -t deploy upload-sourcemaps
       - name: vercel deployment
         env:
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
