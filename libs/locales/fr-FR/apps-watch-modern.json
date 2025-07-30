@@ -1,11 +1,11 @@
 {
   "Metadata": {
-    "pageTitle": "{title} | Jesus Film Project"
+    "pageTitle": "{title} | Projet de film sur Jésus"
   },
   "RootIndexPage": {
-    "pageTitle": "Regarder",
-    "title": "Bibliothèque de <underline>vidéos</underline> de la Bible.",
-    "description": "Regardez, apprenez et partagez la Bible dans plus de 2000 langues"
+    "pageTitle": "Regarde",
+    "title": "Bibliothèque de vidéos évangéliques gratuites <underline>en streaming</underline>.",
+    "description": "Regarde, apprends et partage l'évangile dans plus de 2000 langues."
   },
   "ModernTestPage": {
     "pageTitle": "Test Modern",
@@ -26,10 +26,10 @@
     "footer": "Cette page est servie par l'application moderne de watch via une routage intelligent."
   },
   "DatadogErrorBoundary": {
-    "somethingWentWrong": "Quelque chose s'est mal passé",
-    "anErrorOccurred": "Une erreur est survenue lors du chargement de cette page. Veuillez réessayer.",
+    "somethingWentWrong": "Quelque chose a mal tourné",
+    "anErrorOccurred": "Une erreur s'est produite lors du chargement de cette page. Essaie de la rafraîchir.",
     "errorDetails": "Détails de l'erreur",
-    "tryAgain": "Réessayer",
+    "tryAgain": "Essaie à nouveau",
     "unknownError": "Erreur inconnue"
   }
 }

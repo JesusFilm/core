@@ -45,3 +45,9 @@ variable "alb_dns_name" {
 variable "host_name" {
   type = string
 }
+
+variable "host_names" {
+  type        = list(string)
+  default     = []
+  description = "List of host names for ALB listener rule. Takes precedence over host_name if provided."
+}
