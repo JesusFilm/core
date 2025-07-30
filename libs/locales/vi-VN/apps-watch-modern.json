@@ -1,17 +1,17 @@
 {
   "Metadata": {
-    "pageTitle": "{title} | Jesus Film Project"
+    "pageTitle": "{title} | Dự án Phim về Chúa Giê-su"
   },
   "RootIndexPage": {
     "pageTitle": "Watch",
-    "title": "Free Gospel Video <underline>Streaming</underline> Library.",
+    "title": "Thư viện <underline>video</underline> Phúc Âm miễn phí.",
     "description": "Watch, learn and share the gospel in over 2000 languages"
   },
   "DatadogErrorBoundary": {
-    "somethingWentWrong": "Something went wrong",
-    "anErrorOccurred": "An error occurred while loading this page. Please try refreshing.",
-    "errorDetails": "Error details",
-    "tryAgain": "Try again",
-    "unknownError": "Unknown error"
+    "somethingWentWrong": "Có sự cố xảy ra",
+    "anErrorOccurred": "Đã xảy ra lỗi khi tải trang này. Vui lòng thử tải lại.",
+    "errorDetails": "Chi tiết lỗi",
+    "tryAgain": "Thử lại",
+    "unknownError": "Lỗi không xác định"
   }
 }
