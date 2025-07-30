@@ -32,6 +32,7 @@ export const StyledRadioOption = styled(Button)<ButtonProps>(({ theme }) => ({
       duration: theme.transitions.duration.short
     }
   ),
+  wordBreak: 'break-word',
   color: 'text.primary',
 
   // Default state
