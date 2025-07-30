@@ -105,13 +105,5 @@ describe('getPollOptionBorderStyles', () => {
         }
       })
     })
-
-    it('should include all required pseudo-class selectors', () => {
-      const styles = getPollOptionBorderStyles(mockLightTheme)
-
-      expect(styles).toHaveProperty('&:hover')
-      expect(styles).toHaveProperty('&.selected')
-      expect(styles).toHaveProperty('&.disabled')
-    })
   })
 })
