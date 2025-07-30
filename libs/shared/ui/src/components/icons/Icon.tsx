@@ -129,6 +129,7 @@ import LinkBroken from './LinkBroken'
 import LinkExternal from './LinkExternal'
 import Lock1 from './Lock1'
 import LockOpen1 from './LockOpen1'
+import LogoGrayscale from './LogoGrayscale'
 import Logout2 from './Logout2'
 import Mail1 from './Mail1'
 import Mail2 from './Mail2'
@@ -349,6 +350,7 @@ export type IconName =
   | 'Link'
   | 'Lock1'
   | 'LockOpen1'
+  | 'LogoGrayscale'
   | 'Logout2'
   | 'Mail1'
   | 'Mail2'
@@ -573,6 +575,7 @@ const iconComponents: IconComponents = {
   Link,
   Lock1,
   LockOpen1,
+  LogoGrayscale,
   Logout2,
   Mail1,
   Mail2,

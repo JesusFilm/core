@@ -128,7 +128,7 @@ const DynamicTypography = dynamic<TreeBlock<TypographyBlock>>(
 )
 
 interface BlockRenderProps {
-  block?: TreeBlock
+  block?: TreeBlock & { gridView?: boolean }
   wrappers?: WrappersProps
 }
 
