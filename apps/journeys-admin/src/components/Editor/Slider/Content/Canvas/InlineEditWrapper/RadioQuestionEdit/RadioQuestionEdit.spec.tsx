@@ -112,7 +112,7 @@ describe('RadioQuestionEdit', () => {
 
     const buttons = getAllByRole('button')
     expect(buttons).toHaveLength(12)
-    expect(buttons[11]).toHaveTextContent('Add New Option')
+    expect(buttons[11]).toHaveTextContent('Add Option')
 
     fireEvent.click(buttons[11])
     await waitFor(() => expect(result).toHaveBeenCalled())
@@ -188,7 +188,7 @@ describe('RadioQuestionEdit', () => {
     )
 
     const buttons = getAllByRole('button')
-    expect(buttons[11]).toHaveTextContent('Add New Option')
+    expect(buttons[11]).toHaveTextContent('Add Option')
 
     fireEvent.click(buttons[11])
     await waitFor(() => expect(result).toHaveBeenCalled())
@@ -277,7 +277,7 @@ describe('RadioQuestionEdit', () => {
     )
 
     const buttons = getAllByRole('button')
-    expect(buttons[11]).toHaveTextContent('Add New Option')
+    expect(buttons[11]).toHaveTextContent('Add Option')
 
     fireEvent.click(buttons[11])
     await waitFor(() => expect(result).toHaveBeenCalled())
