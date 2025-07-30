@@ -1,0 +1,17 @@
+{
+  "Metadata": {
+    "pageTitle": "{title} | โครงการภาพยนตร์พระเยซู"
+  },
+  "RootIndexPage": {
+    "pageTitle": "Watch",
+    "title": "ห้องสมุดวิดีโอ<underline>สตรีมมิ่ง</underline>พระกิตติคุณฟรี",
+    "description": "ดู ศึกษา และแบ่งปันพระคริสต์ในภาษากว่า 2000 ภาษา"
+  },
+  "DatadogErrorBoundary": {
+    "somethingWentWrong": "เกิดข้อผิดพลาด",
+    "anErrorOccurred": "เกิดข้อผิดพลาดขณะโหลดหน้านี้ กรุณาลองรีเฟรช",
+    "errorDetails": "รายละเอียดข้อผิดพลาด",
+    "tryAgain": "ลองอีกครั้ง",
+    "unknownError": "เกิดข้อผิดพลาดที่ไม่ทราบสาเหตุ"
+  }
+}
