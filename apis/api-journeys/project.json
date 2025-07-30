@@ -117,8 +117,10 @@
       "executor": "nx:run-commands",
       "options": {
         "commands": [
-          "bash -c 'npx prisma migrate dev --schema apis/api-journeys/db/schema.prisma --name `date +\"%Y%m%d%H%M%S\"`'"
-        ]
+          "bash -c 'npx prisma migrate dev --schema apis/api-journeys/db/schema.prisma --name `date +\"%Y%m%d%H%M%S\"`'",
+          "nx run api-journeys-modern:prisma-introspect"
+        ],
+        "parallel": false
       },
       "configurations": {
         "production": {

@@ -1,6 +1,4 @@
-import ArrowForwardIcon from '@mui/icons-material/ArrowForward'
 import Box from '@mui/material/Box'
-import ButtonBase from '@mui/material/ButtonBase'
 import Stack from '@mui/material/Stack'
 import Tab from '@mui/material/Tab'
 import Tabs from '@mui/material/Tabs'
@@ -30,64 +28,6 @@ export function VideoContent(): ReactElement {
 
   return (
     <Box width="100%" data-testid="VideoContent">
-      <ButtonBase
-        component="a"
-        href="https://www.jesusfilm.org/watch/easter.html/english.html?utm=easter2025"
-        sx={{
-          width: '100%',
-          mb: 3,
-          p: 4,
-          borderRadius: 3,
-          border: '2px solid',
-          borderColor: 'primary.main',
-          bgcolor: 'transparent',
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          cursor: 'pointer',
-          textDecoration: 'none',
-          '&:hover': {
-            bgcolor: 'primary.main',
-            '& .banner-text': {
-              color: 'primary.contrastText'
-            },
-            '& .banner-icon': {
-              color: 'primary.contrastText'
-            }
-          }
-        }}
-      >
-        <Typography
-          variant="h5"
-          sx={{
-            lineHeight: 1.125,
-            fontWeight: 600,
-            fontSize: { md: '18px' },
-            width: '100%'
-          }}
-          className="banner-text"
-          color="primary.main"
-        >
-          {t('Experience and Share the Joy of Easter with Powerful Videos')}
-        </Typography>
-        <ArrowForwardIcon
-          sx={{ color: 'primary.main', ml: 4 }}
-          className="banner-icon"
-        />
-        <Typography
-          variant="h3"
-          sx={{
-            whiteSpace: 'nowrap',
-            ml: 4,
-            mr: 1,
-            fontSize: { md: '27px' }
-          }}
-          className="banner-text"
-          color="primary.main"
-        >
-          {t('Easter 2025')}
-        </Typography>
-      </ButtonBase>
       <Tabs
         value={tabValue}
         onChange={handleTabChange}

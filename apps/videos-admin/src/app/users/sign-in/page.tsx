@@ -1,7 +1,7 @@
 'use client'
 
-import LoadingButton from '@mui/lab/LoadingButton'
 import Box from '@mui/material/Box'
+import Button from '@mui/material/Button'
 import CircularProgress from '@mui/material/CircularProgress'
 import { UserCredential, signInWithEmailAndPassword } from 'firebase/auth'
 import Image from 'next/image'
@@ -73,7 +73,7 @@ export default function SignIn(): ReactElement {
           onSubmit={handleLoginWithEmailAndPassword}
           error={emailPasswordError ?? googleError}
         >
-          <LoadingButton
+          <Button
             variant="outlined"
             loading={isGoogleLoading}
             disabled={isGoogleLoading}
@@ -82,7 +82,7 @@ export default function SignIn(): ReactElement {
             fullWidth
           >
             Sign in with Google
-          </LoadingButton>
+          </Button>
         </PasswordForm>
       )}
     </CenterPage>

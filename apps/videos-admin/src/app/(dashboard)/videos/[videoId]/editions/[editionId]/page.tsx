@@ -7,11 +7,11 @@ import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
 import { Form, Formik } from 'formik'
-import { graphql } from 'gql.tada'
 import { useRouter } from 'next/navigation'
 import { useSnackbar } from 'notistack'
 import { object, string } from 'yup'
 
+import { graphql } from '@core/shared/gql'
 import { Dialog } from '@core/shared/ui/Dialog'
 import Plus2 from '@core/shared/ui/icons/Plus2'
 
@@ -30,8 +30,9 @@ const GET_EDITION = graphql(`
         primary
         language {
           id
-          name(languageId: $languageId, primary: true) {
+          name(languageId: $languageId) {
             value
+            primary
           }
         }
       }
@@ -159,66 +160,106 @@ export default function EditEditionPage({
               minHeight: 200
             }}
           >
-            {data.videoEdition?.videoSubtitles.map((subtitle) => (
-              <Box
-                sx={{
-                  p: 1,
-                  border: '1px solid',
-                  borderColor: 'divider',
-                  borderRadius: 1,
-                  minWidth: 200,
-                  bgcolor: 'background.paper',
-                  '&:hover': {
-                    borderColor: 'action.hover',
-                    cursor: 'pointer'
-                  },
-                  maxHeight: 95
-                }}
-                onClick={() =>
-                  router.push(
-                    `/videos/${videoId}/editions/${editionId}/subtitle/${subtitle.id}`,
-                    {
-                      scroll: false
-                    }
-                  )
+            {data.videoEdition?.videoSubtitles.map((subtitle) => {
+              const primaryName = subtitle.language.name.find(
+                ({ primary }) => primary
+              )?.value
+              const nonPrimaryName = subtitle.language.name.find(
+                ({ primary }) => !primary
+              )?.value
+              const displayName =
+                nonPrimaryName || primaryName || 'Unknown Language'
+              const shouldShowSecondaryName =
+                nonPrimaryName && primaryName && nonPrimaryName !== primaryName
+
+              const handleClick = () => {
+                router.push(
+                  `/videos/${videoId}/editions/${editionId}/subtitle/${subtitle.id}`,
+                  {
+                    scroll: false
+                  }
+                )
+              }
+
+              const handleKeyDown = (event: React.KeyboardEvent) => {
+                if (event.key === 'Enter' || event.key === ' ') {
+                  event.preventDefault()
+                  handleClick()
                 }
-              >
-                <Stack
+              }
+
+              return (
+                <Box
+                  key={subtitle.id}
+                  role="button"
+                  tabIndex={0}
+                  aria-label={`Edit ${displayName} subtitle`}
                   sx={{
                     p: 1,
-                    flexDirection: 'row',
-                    justifyContent: 'space-between'
+                    border: '1px solid',
+                    borderColor: 'divider',
+                    borderRadius: 1,
+                    minWidth: 200,
+                    bgcolor: 'background.paper',
+                    '&:hover': {
+                      borderColor: 'action.hover',
+                      cursor: 'pointer'
+                    },
+                    '&:focus': {
+                      borderColor: 'primary.main',
+                      outline: 'none'
+                    },
+                    maxHeight: 95
                   }}
+                  onClick={handleClick}
+                  onKeyDown={handleKeyDown}
                 >
-                  <Typography variant="h6">
-                    {subtitle.language.name[0].value}
-                  </Typography>
-                  <ActionButton
-                    actions={{
-                      edit: () =>
-                        router.push(
-                          `/videos/${videoId}/editions/${editionId}/subtitles/${subtitle.id}`,
-                          {
-                            scroll: false
-                          }
-                        ),
-                      delete: () =>
-                        router.push(
-                          `/videos/${videoId}/editions/${editionId}/subtitles/${subtitle.id}/delete`,
-                          {
-                            scroll: false
-                          }
-                        )
+                  <Stack
+                    sx={{
+                      p: 1,
+                      flexDirection: 'row',
+                      justifyContent: 'space-between'
                     }}
-                  />
-                </Stack>
-                <Stack direction="row" alignItems="center" gap={1}>
-                  {subtitle.primary && (
-                    <Chip label="Primary" color="success" variant="filled" />
-                  )}
-                </Stack>
-              </Box>
-            ))}
+                  >
+                    <Stack>
+                      <Typography variant="h6">{displayName}</Typography>
+                      {shouldShowSecondaryName && (
+                        <Typography
+                          variant="body2"
+                          color="text.secondary"
+                          sx={{ fontWeight: 300, fontSize: '0.875rem' }}
+                        >
+                          {primaryName}
+                        </Typography>
+                      )}
+                    </Stack>
+                    <ActionButton
+                      actions={{
+                        edit: () =>
+                          router.push(
+                            `/videos/${videoId}/editions/${editionId}/subtitles/${subtitle.id}`,
+                            {
+                              scroll: false
+                            }
+                          ),
+                        delete: () =>
+                          router.push(
+                            `/videos/${videoId}/editions/${editionId}/subtitles/${subtitle.id}/delete`,
+                            {
+                              scroll: false
+                            }
+                          )
+                      }}
+                    />
+                  </Stack>
+                  <Stack direction="row" alignItems="center" gap={1}>
+                    {subtitle.primary && (
+                      <Chip label="Primary" color="success" variant="filled" />
+                    )}
+                  </Stack>
+                </Box>
+              )
+            })}
           </Box>
         ) : (
           <Box sx={{ display: 'grid', placeItems: 'center', height: 200 }}>

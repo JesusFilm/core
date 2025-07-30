@@ -42,7 +42,7 @@ export class JourneyLevelActions {
         hasNotText: 'Untitled Journey'
       })
       .first()
-      .locator('button#journey-actions')
+      .locator('[data-testid="JourneyCardMenuButton"]')
       .first()
       .click({ delay: 500 })
   }
@@ -51,7 +51,7 @@ export class JourneyLevelActions {
     await this.page
       .locator('div[aria-label="journey-card"]', { hasText: journeyName })
       .first()
-      .locator('button#journey-actions')
+      .locator('[data-testid="JourneyCardMenuButton"]')
       .first()
       .click()
     this.existingJourneyName = journeyName

@@ -11,7 +11,7 @@ concurrency:
   cancel-in-progress: true
 jobs:
   build:
-    runs-on: blacksmith-2vcpu-ubuntu-2204
+    runs-on: blacksmith-4vcpu-ubuntu-2204
     strategy:
       matrix:
         node-version: [22]
@@ -81,14 +81,16 @@ jobs:
           DOPPLER_JOURNEYS_ADMIN_TOKEN: ${{ secrets.DOPPLER_JOURNEYS_ADMIN_TOKEN }}
           DOPPLER_SHORT_LINKS_TOKEN: ${{ secrets.DOPPLER_SHORT_LINKS_TOKEN }}
           DOPPLER_WATCH_TOKEN: ${{ secrets.DOPPLER_WATCH_TOKEN }}
+          DOPPLER_WATCH_MODERN_TOKEN: ${{ secrets.DOPPLER_WATCH_MODERN_TOKEN }}
           DOPPLER_WATCH_ADMIN_TOKEN: ${{ secrets.DOPPLER_WATCH_ADMIN_TOKEN }}
           DOPPLER_VIDEOS_ADMIN_TOKEN: ${{ secrets.DOPPLER_VIDEOS_ADMIN_TOKEN }}
+          DOPPLER_VIDEO_IMPORTER_TOKEN: ${{ secrets.DOPPLER_VIDEO_IMPORTER_TOKEN }}
           DOPPLER_GITHUB_SERVICE_TOKEN: ${{ secrets.DOPPLER_GITHUB_SERVICE_TOKEN }}
           DOPPLER_CONFIG: stg
         with:
           targets: fetch-secrets,build
   test:
-    runs-on: blacksmith-2vcpu-ubuntu-2204
+    runs-on: blacksmith-4vcpu-ubuntu-2204
     strategy:
       fail-fast: false
       matrix:

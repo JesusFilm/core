@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { RadioOptionBlockCreateInput, ButtonVariant, ButtonColor, ButtonSize, ThemeMode, ThemeName, IconName, IconSize, IconColor, TextResponseType, TypographyAlign, TypographyColor, TypographyVariant, VideoBlockSource, VideoBlockObjectFit } from "./globalTypes";
+import { RadioOptionBlockCreateInput, ButtonVariant, ButtonColor, ButtonSize, ButtonAlignment, ThemeMode, ThemeName, IconName, IconSize, IconColor, TextResponseType, TypographyAlign, TypographyColor, TypographyVariant, VideoBlockSource, VideoBlockObjectFit } from "./globalTypes";
 
 // ====================================================
 // GraphQL mutation operation: RadioOptionBlockCreate
@@ -39,6 +39,12 @@ export interface RadioOptionBlockCreate_radioOptionBlockCreate {
   parentBlockId: string | null;
   parentOrder: number | null;
   action: RadioOptionBlockCreate_radioOptionBlockCreate_action | null;
+  /**
+   * pollOptionImageId is present if a child block should be used as a poll option image.
+   * This child block should not be rendered normally, instead it should be used
+   * as a poll option image. Blocks are often of type ImageBlock
+   */
+  pollOptionImageId: string | null;
 }
 
 export interface RadioOptionBlockCreate {

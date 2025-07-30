@@ -417,9 +417,13 @@ model Journey {
   menuStepBlockId           String?                     @unique
   menuStepBlock             Block?                      @relation("MenuStepBlock", fields: [menuStepBlockId], references: [id], onDelete: SetNull)
   menuButtonIcon            JourneyMenuButtonIcon?
+  socialNodeX               Int?                        @default(-240)
+  socialNodeY               Int?                        @default(-46)
   qrCode                    QrCode[]
   Event                     Event[]
   journeyEventsExportLogs   JourneyEventsExportLog[]
+  fromTemplateId            String?
+  journeyTheme              JourneyTheme?
 
   @@index(title)
 }
@@ -484,6 +488,7 @@ model Block {
   endIconId               String?
   action                  Action?
   backgroundColor         String?
+  backdropBlur            Int?
   coverBlockId            String?              @unique
   fullscreen              Boolean?
   themeMode               String?
@@ -516,6 +521,7 @@ model Block {
   muted                   Boolean?
   autoplay                Boolean?
   posterBlockId           String?              @unique
+  pollOptionImageId       String?              @unique
   fullsize                Boolean?
   videoId                 String?
   videoVariantLanguageId  String?
@@ -535,11 +541,14 @@ model Block {
   deletedAt               DateTime?
   focalTop                Int?                 @default(50)
   focalLeft               Int?                 @default(50)
+  gridView                Boolean?
   journey                 Journey              @relation(fields: [journeyId], references: [id], onDelete: Cascade)
   posterBlock             Block?               @relation("PosterBlock", fields: [posterBlockId], references: [id])
   posterBlockParent       Block?               @relation("PosterBlock")
   coverBlock              Block?               @relation("CoverBlock", fields: [coverBlockId], references: [id])
   coverBlockParent        Block?               @relation("CoverBlock")
+  pollOptionImage         Block?               @relation("PollOptionImage", fields: [pollOptionImageId], references: [id])
+  pollOptionImageParent   Block?               @relation("PollOptionImage")
   primaryImageBlockParent Journey?             @relation("PrimaryImageBlock")
   creatorImageBlockParent Journey?             @relation("CreatorImageBlock")
   nextBlock               Block?               @relation("NextBlock", fields: [nextBlockId], references: [id])
@@ -551,6 +560,7 @@ model Block {
   menuStepBlockParent     Journey?             @relation("MenuStepBlock")
   logoImageBlockParent    Journey?             @relation("LogoImageBlock")
   slug                    String?
+  settings                Json                 @default("{ }") // block settings
 
   @@unique([slug, journeyId])
   @@index(journeyId)
@@ -656,4 +666,19 @@ model JourneyEventsExportLog {
 
   @@index(journeyId)
   @@index(createdAt)
+}
+
+model JourneyTheme {
+  id         String   @id @default(uuid())
+  journeyId  String   @unique
+  journey    Journey  @relation(fields: [journeyId], references: [id], onDelete: Cascade)
+  userId     String
+  headerFont String?
+  bodyFont   String?
+  labelFont  String?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @default(now()) @updatedAt
+
+  @@index(journeyId)
+  @@index(userId)
 }

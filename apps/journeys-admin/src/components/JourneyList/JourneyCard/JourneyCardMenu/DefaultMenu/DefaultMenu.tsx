@@ -8,10 +8,14 @@ import { useTeam } from '@core/journeys/ui/TeamProvider'
 import { useUserRoleQuery } from '@core/journeys/ui/useUserRoleQuery'
 import Edit2Icon from '@core/shared/ui/icons/Edit2'
 import EyeOpenIcon from '@core/shared/ui/icons/EyeOpen'
+import Globe2Icon from '@core/shared/ui/icons/Globe2'
 import Trash2Icon from '@core/shared/ui/icons/Trash2'
 import UsersProfiles2Icon from '@core/shared/ui/icons/UsersProfiles2'
 
-import { GetAdminJourneys } from '../../../../../../__generated__/GetAdminJourneys'
+import {
+  GetAdminJourneys,
+  GetAdminJourneys_journeys as Journey
+} from '../../../../../../__generated__/GetAdminJourneys'
 import {
   GetJourneyWithPermissions,
   GetJourneyWithPermissionsVariables
@@ -54,11 +58,14 @@ interface DefaultMenuProps {
   slug: string
   status: JourneyStatus
   journeyId: string
+  journey?: Journey
   published: boolean
   setOpenAccessDialog: () => void
   handleCloseMenu: () => void
   setOpenTrashDialog: () => void
   setOpenDetailsDialog: () => void
+  setOpenTranslateDialog: () => void
+  handleKeepMounted?: () => void
   template?: boolean
   refetch?: () => Promise<ApolloQueryResult<GetAdminJourneys>>
 }
@@ -66,32 +73,38 @@ interface DefaultMenuProps {
 /**
  * DefaultMenu component provides a menu interface for journey management actions.
  * It includes options for editing details, managing access, previewing, duplicating,
- * copying to team, archiving, and deleting journeys.
+ * copying to team, archiving, and deleting journeys based on user permissions.
  *
  * @param {Object} props - Component props
  * @param {string} props.id - The unique identifier for the journey
- * @param {string} props.slug - The URL slug for the journey
- * @param {JourneyStatus} props.status - Current status of the journey
+ * @param {string} props.slug - The URL slug for the journey used in preview links
+ * @param {JourneyStatus} props.status - Current status of the journey (e.g., draft, published)
  * @param {string} props.journeyId - Database ID of the journey
+ * @param {Journey} [props.journey] - Optional journey object containing additional journey data
  * @param {boolean} props.published - Whether the journey is published
  * @param {() => void} props.setOpenAccessDialog - Function to open the access management dialog
  * @param {() => void} props.handleCloseMenu - Function to close the menu
  * @param {() => void} props.setOpenTrashDialog - Function to open the trash confirmation dialog
  * @param {() => void} props.setOpenDetailsDialog - Function to open the journey details dialog
- * @param {boolean} [props.template] - Whether the journey is a template
- * @param {() => Promise<ApolloQueryResult<GetAdminJourneys>>} [props.refetch] - Function to refetch journey data
- * @returns {ReactElement} The rendered menu component
+ * @param {() => void} props.setOpenTranslateDialog - Function to open the translate dialog
+ * @param {() => void} [props.handleKeepMounted] - Optional function to handle keeping the component mounted
+ * @param {boolean} [props.template] - Whether the journey is a template, affects available menu options
+ * @param {() => Promise<ApolloQueryResult<GetAdminJourneys>>} [props.refetch] - Optional function to refetch journey data after operations
+ * @returns {ReactElement} The rendered menu component with conditional menu items based on user permissions
  */
 export function DefaultMenu({
   id,
   slug,
   status,
   journeyId,
+  journey,
   published,
   setOpenAccessDialog,
   handleCloseMenu,
   setOpenTrashDialog,
   setOpenDetailsDialog,
+  setOpenTranslateDialog,
+  handleKeepMounted,
   template,
   refetch
 }: DefaultMenuProps): ReactElement {
@@ -197,29 +210,51 @@ export function DefaultMenu({
         variant="menu-item"
         journey={journeyFromLazyQuery?.journey}
         handleCloseMenu={handleCloseMenu}
+        handleKeepMounted={handleKeepMounted}
       />
       <Divider />
-      {template !== true && (
-        <DuplicateJourneyMenuItem id={id} handleCloseMenu={handleCloseMenu} />
+      {template !== true && activeTeam != null && (
+        <>
+          <DuplicateJourneyMenuItem id={id} handleCloseMenu={handleCloseMenu} />
+          <MenuItem
+            label={t('Translate')}
+            icon={<Globe2Icon color="secondary" />}
+            onClick={() => {
+              setOpenTranslateDialog()
+              handleCloseMenu()
+            }}
+          />
+        </>
       )}
-      <CopyToTeamMenuItem id={id} handleCloseMenu={handleCloseMenu} />
-      <ArchiveJourney
-        status={status}
-        id={journeyId}
-        published={published}
-        handleClose={handleCloseMenu}
-        refetch={refetch}
-        disabled={cantManageJourney}
+
+      <Divider />
+      <CopyToTeamMenuItem
+        id={id}
+        handleCloseMenu={handleCloseMenu}
+        handleKeepMounted={handleKeepMounted}
+        journey={journey}
       />
-      <MenuItem
-        label={t('Trash')}
-        icon={<Trash2Icon color="secondary" />}
-        onClick={() => {
-          setOpenTrashDialog()
-          handleCloseMenu()
-        }}
-        disabled={cantManageJourney}
-      />
+      {activeTeam != null && (
+        <>
+          <ArchiveJourney
+            status={status}
+            id={journeyId}
+            published={published}
+            handleClose={handleCloseMenu}
+            refetch={refetch}
+            disabled={cantManageJourney}
+          />
+          <MenuItem
+            label={t('Trash')}
+            icon={<Trash2Icon color="secondary" />}
+            onClick={() => {
+              setOpenTrashDialog()
+              handleCloseMenu()
+            }}
+            disabled={cantManageJourney}
+          />
+        </>
+      )}
     </>
   )
 }

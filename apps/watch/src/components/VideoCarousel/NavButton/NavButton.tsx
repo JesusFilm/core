@@ -36,16 +36,19 @@ export const NavButton = forwardRef<HTMLDivElement, NavButtonProps>(
           width: 42,
           background: (theme) =>
             `linear-gradient(${variant === 'next' ? 90 : 270}deg, ${alpha(
-              theme.palette.background.default,
+              '#131111',
               0
-            )} 0%, ${alpha(theme.palette.background.default, 1)} 100%)`
+            )} 0%, ${alpha('#131111', 1)} 100%)`
         }}
         data-testid="NavButton"
       >
         {variant === 'prev' ? (
-          <NavigateBeforeIcon fontSize="large" />
+          <NavigateBeforeIcon
+            data-testid="NavigateBeforeIcon"
+            fontSize="large"
+          />
         ) : (
-          <NavigateNextIcon fontSize="large" />
+          <NavigateNextIcon data-testid="NavigateNextIcon" fontSize="large" />
         )}
       </Stack>
     )

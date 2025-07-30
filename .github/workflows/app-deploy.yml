@@ -74,7 +74,7 @@ jobs:
           - app: journeys-admin
             github-ref-name: stage
             github-event-name: push
-    runs-on: blacksmith-2vcpu-ubuntu-2204
+    runs-on: blacksmith-4vcpu-ubuntu-2204
     outputs:
       url: ${{ steps.deployment-url.outputs.deployment-url }}
     permissions:
@@ -126,6 +126,7 @@ jobs:
           SHORT_LINKS_VERCEL_PROJECT_ID: ${{ secrets.SHORT_LINKS_STAGE_VERCEL_PROJECT_ID }}
           VIDEOS_ADMIN_VERCEL_PROJECT_ID: ${{ secrets.VIDEOS_ADMIN_VERCEL_PROJECT_ID }}
           WATCH_VERCEL_PROJECT_ID: ${{ secrets.WATCH_VERCEL_PROJECT_ID }}
+          WATCH_MODERN_VERCEL_PROJECT_ID: ${{ secrets.WATCH_MODERN_VERCEL_PROJECT_ID }}
           NEXT_PUBLIC_VERCEL_ENV: ${{ github.event_name == 'push' && github.ref == 'refs/heads/stage' && 'stage' || 'preview' }}
           NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA: ${{ github.sha }}
         # use run-namy to avoid case where deploy command doesn't exist for a project
@@ -266,11 +267,6 @@ jobs:
         with:
           key: ${{ github.repository }}-${{ steps.node-version.outputs.version }}-node-modules
           path: ./node_modules
-      - name: Mount next cache
-        uses: useblacksmith/stickydisk@v1
-        with:
-          key: ${{ github.repository }}-${{ matrix.app }}-next-cache
-          path: ./apps/${{ matrix.app }}/.next
       - name: NPM Install
         run: npm install --silent
       - uses: nrwl/nx-set-shas@v4
@@ -285,6 +281,7 @@ jobs:
           SHORT_LINKS_VERCEL_PROJECT_ID: ${{ github.ref == 'refs/heads/stage' && secrets.SHORT_LINKS_STAGE_VERCEL_PROJECT_ID || secrets.SHORT_LINKS_VERCEL_PROJECT_ID }}
           VIDEOS_ADMIN_VERCEL_PROJECT_ID: ${{ secrets.VIDEOS_ADMIN_VERCEL_PROJECT_ID }}
           WATCH_VERCEL_PROJECT_ID: ${{ secrets.WATCH_VERCEL_PROJECT_ID }}
+          WATCH_MODERN_VERCEL_PROJECT_ID: ${{ secrets.WATCH_MODERN_VERCEL_PROJECT_ID }}
           NEXT_PUBLIC_VERCEL_ENV: prod
           NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA: ${{ github.sha }}
         # use run-namy to avoid case where deploy command doesn't exist for a project

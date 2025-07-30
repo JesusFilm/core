@@ -25,6 +25,7 @@ export const TITLE_DESC_LANGUAGE_UPDATE = gql`
           primary
         }
       }
+      updatedAt
     }
   }
 `

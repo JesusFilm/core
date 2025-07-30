@@ -126,6 +126,8 @@ export class ImageBlockResolver {
       throw new GraphQLError('user is not allowed to update block', {
         extensions: { code: 'FORBIDDEN' }
       })
-    return await this.blockService.update(id, await transformInput(input))
+    return await this.blockService.update(id, {
+      ...(await transformInput(input))
+    })
   }
 }

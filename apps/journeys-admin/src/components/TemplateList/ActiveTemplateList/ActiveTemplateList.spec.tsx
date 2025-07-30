@@ -65,11 +65,11 @@ describe('ActiveTemplateList', () => {
       </MockedProvider>
     )
     await waitFor(() =>
-      expect(getAllByLabelText('template-card')[0].textContent).toContain(
+      expect(getAllByLabelText('journey-card')[0].textContent).toContain(
         '11 months ago'
       )
     )
-    expect(getAllByLabelText('template-card')[1].textContent).toContain(
+    expect(getAllByLabelText('journey-card')[1].textContent).toContain(
       '1 year ago'
     )
   })
@@ -107,11 +107,11 @@ describe('ActiveTemplateList', () => {
       </MockedProvider>
     )
     await waitFor(() =>
-      expect(getAllByLabelText('template-card')[0].textContent).toContain(
+      expect(getAllByLabelText('journey-card')[0].textContent).toContain(
         'a lower case title'
       )
     )
-    expect(getAllByLabelText('template-card')[1].textContent).toContain(
+    expect(getAllByLabelText('journey-card')[1].textContent).toContain(
       'An Old Template'
     )
   })

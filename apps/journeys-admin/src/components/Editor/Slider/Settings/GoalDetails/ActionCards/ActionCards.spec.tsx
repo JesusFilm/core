@@ -43,13 +43,15 @@ describe('ActionCards', () => {
                     coverBlockId: 'image2.id',
                     themeMode: null,
                     themeName: null,
-                    fullscreen: false
+                    fullscreen: false,
+                    backdropBlur: null
                   },
                   {
                     __typename: 'RadioQuestionBlock',
                     id: 'RadioQuestion1',
                     parentBlockId: 'card2.id',
-                    parentOrder: 0
+                    parentOrder: 0,
+                    gridView: false
                   },
                   {
                     __typename: 'RadioOptionBlock',
@@ -62,7 +64,8 @@ describe('ActionCards', () => {
                       parentBlockId: 'RadioOption1',
                       gtmEventName: 'poll',
                       url: 'https://www.google.com/'
-                    }
+                    },
+                    pollOptionImageId: null
                   },
                   {
                     __typename: 'StepBlock',

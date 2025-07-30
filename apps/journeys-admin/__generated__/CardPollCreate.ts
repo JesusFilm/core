@@ -28,6 +28,14 @@ export interface CardPollCreate_image {
   focalLeft: number | null;
 }
 
+export interface CardPollCreate_subtitle_settings {
+  __typename: "TypographyBlockSettings";
+  /**
+   * Color of the typography
+   */
+  color: string | null;
+}
+
 export interface CardPollCreate_subtitle {
   __typename: "TypographyBlock";
   id: string;
@@ -37,6 +45,15 @@ export interface CardPollCreate_subtitle {
   color: TypographyColor | null;
   content: string;
   variant: TypographyVariant | null;
+  settings: CardPollCreate_subtitle_settings | null;
+}
+
+export interface CardPollCreate_title_settings {
+  __typename: "TypographyBlockSettings";
+  /**
+   * Color of the typography
+   */
+  color: string | null;
 }
 
 export interface CardPollCreate_title {
@@ -48,6 +65,7 @@ export interface CardPollCreate_title {
   color: TypographyColor | null;
   content: string;
   variant: TypographyVariant | null;
+  settings: CardPollCreate_title_settings | null;
 }
 
 export interface CardPollCreate_radioQuestion {
@@ -55,6 +73,7 @@ export interface CardPollCreate_radioQuestion {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
+  gridView: boolean | null;
 }
 
 export interface CardPollCreate_radioOption1_action_NavigateToBlockAction {
@@ -87,6 +106,12 @@ export interface CardPollCreate_radioOption1 {
   parentOrder: number | null;
   label: string;
   action: CardPollCreate_radioOption1_action | null;
+  /**
+   * pollOptionImageId is present if a child block should be used as a poll option image.
+   * This child block should not be rendered normally, instead it should be used
+   * as a poll option image. Blocks are often of type ImageBlock
+   */
+  pollOptionImageId: string | null;
 }
 
 export interface CardPollCreate_radioOption2_action_NavigateToBlockAction {
@@ -119,6 +144,12 @@ export interface CardPollCreate_radioOption2 {
   parentOrder: number | null;
   label: string;
   action: CardPollCreate_radioOption2_action | null;
+  /**
+   * pollOptionImageId is present if a child block should be used as a poll option image.
+   * This child block should not be rendered normally, instead it should be used
+   * as a poll option image. Blocks are often of type ImageBlock
+   */
+  pollOptionImageId: string | null;
 }
 
 export interface CardPollCreate_radioOption3_action_NavigateToBlockAction {
@@ -151,6 +182,12 @@ export interface CardPollCreate_radioOption3 {
   parentOrder: number | null;
   label: string;
   action: CardPollCreate_radioOption3_action | null;
+  /**
+   * pollOptionImageId is present if a child block should be used as a poll option image.
+   * This child block should not be rendered normally, instead it should be used
+   * as a poll option image. Blocks are often of type ImageBlock
+   */
+  pollOptionImageId: string | null;
 }
 
 export interface CardPollCreate_radioOption4_action_NavigateToBlockAction {
@@ -183,6 +220,20 @@ export interface CardPollCreate_radioOption4 {
   parentOrder: number | null;
   label: string;
   action: CardPollCreate_radioOption4_action | null;
+  /**
+   * pollOptionImageId is present if a child block should be used as a poll option image.
+   * This child block should not be rendered normally, instead it should be used
+   * as a poll option image. Blocks are often of type ImageBlock
+   */
+  pollOptionImageId: string | null;
+}
+
+export interface CardPollCreate_body_settings {
+  __typename: "TypographyBlockSettings";
+  /**
+   * Color of the typography
+   */
+  color: string | null;
 }
 
 export interface CardPollCreate_body {
@@ -194,6 +245,7 @@ export interface CardPollCreate_body {
   color: TypographyColor | null;
   content: string;
   variant: TypographyVariant | null;
+  settings: CardPollCreate_body_settings | null;
 }
 
 export interface CardPollCreate_cardBlockUpdate {
@@ -205,6 +257,10 @@ export interface CardPollCreate_cardBlockUpdate {
    * backgroundColor should be a HEX color value e.g #FFFFFF for white.
    */
   backgroundColor: string | null;
+  /**
+   * backdropBlur should be a number representing blur amount in pixels e.g 20.
+   */
+  backdropBlur: number | null;
   /**
    * coverBlockId is present if a child block should be used as a cover.
    * This child block should not be rendered normally, instead it should be used

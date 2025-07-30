@@ -1,10 +1,11 @@
-type RadioOptionBlock implements Block {
-  id: ID!
-  journeyId: ID!
-  parentBlockId: ID
-  parentOrder: Int
-  label: String!
+type RadioOptionBlock implements Block @key(fields: "id") {
+  id: ID! @shareable
+  journeyId: ID! @shareable
+  parentBlockId: ID @shareable
+  parentOrder: Int @shareable
+  label: String! @shareable
   action: Action
+  pollOptionImageId: ID @shareable
 }
 
 input RadioOptionBlockCreateInput {
@@ -17,6 +18,7 @@ input RadioOptionBlockCreateInput {
 input RadioOptionBlockUpdateInput {
   parentBlockId: ID
   label: String
+  pollOptionImageId: ID
 }
 
 extend type Mutation {

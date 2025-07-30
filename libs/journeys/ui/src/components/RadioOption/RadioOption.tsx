@@ -20,9 +20,9 @@ interface RadioOptionProps extends TreeBlock<RadioOptionFields> {
 }
 
 export const StyledRadioOption = styled(Button)<ButtonProps>(({ theme }) => ({
-  fontFamily: theme.typography.body2.fontFamily,
-  fontSize: theme.typography.body2.fontSize,
-  fontWeight: 600,
+  fontFamily: theme.typography.button.fontFamily,
+  fontSize: theme.typography.body1.fontSize,
+  fontWeight: 400,
   lineHeight: theme.typography.body2.lineHeight,
   textAlign: 'start',
   justifyContent: 'flex-start',

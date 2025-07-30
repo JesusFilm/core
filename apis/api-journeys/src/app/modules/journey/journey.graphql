@@ -68,6 +68,9 @@ type Journey @key(fields: "id") {
   showMenu: Boolean
   showDisplayTitle: Boolean
   menuButtonIcon: JourneyMenuButtonIcon
+  socialNodeX: Int
+  socialNodeY: Int
+  fromTemplateId: String
 }
 
 enum IdType {
@@ -211,6 +214,8 @@ input JourneyUpdateInput {
   menuButtonIcon: JourneyMenuButtonIcon
   menuStepBlockId: ID
   logoImageBlockId: ID
+  socialNodeX: Int
+  socialNodeY: Int
 }
 
 extend type UserJourney {

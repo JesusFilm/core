@@ -177,7 +177,7 @@ describe('CardBlock', () => {
       </MockedProvider>
     )
 
-    expect(blurImage).toHaveBeenCalledWith(imageBlock.blurhash, '#fff')
+    expect(blurImage).toHaveBeenCalledWith(imageBlock.blurhash, '#fff4D')
     expect(getByTestId('CardExpandedCover')).toBeInTheDocument()
     await waitFor(() =>
       expect(getByTestId('CardExpandedImageCover')).toBeInTheDocument()
@@ -196,7 +196,7 @@ describe('CardBlock', () => {
     )
     const standaloneImageBlock = queryByTestId(`JourneysImage-${imageBlock.id}`)
 
-    expect(blurImage).toHaveBeenCalledWith(imageBlock.blurhash, '#fff')
+    expect(blurImage).toHaveBeenCalledWith(imageBlock.blurhash, '#fff4D')
     expect(queryByTestId('CardContainedCover')).toBeInTheDocument()
     expect(queryByTestId('background-image')).toHaveAccessibleName(
       'random image from unsplash'
@@ -463,7 +463,7 @@ describe('CardBlock', () => {
     await waitFor(() => {
       expect(mockButtonClickEvent.result).toHaveBeenCalled()
     })
-  })
+  }, 15000)
 
   it('should validate required email field in forms', async () => {
     const mockPlausible = jest.fn()

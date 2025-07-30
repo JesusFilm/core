@@ -104,7 +104,10 @@ describe('JourneyResolver', () => {
     showDisplayTitle: null,
     menuButtonIcon: null,
     logoImageBlockId: null,
-    menuStepBlockId: null
+    menuStepBlockId: null,
+    socialNodeX: null,
+    socialNodeY: null,
+    fromTemplateId: null
   }
   const journeyWithUserTeam = {
     ...journey,
@@ -1305,6 +1308,7 @@ describe('JourneyResolver', () => {
         slug: journey.title,
         title: journey.title,
         featuredAt: null,
+        fromTemplateId: 'journeyId',
         template: false,
         team: {
           connect: { id: 'teamId' }
@@ -1377,7 +1381,8 @@ describe('JourneyResolver', () => {
             'nextBlockId',
             'action'
           ]),
-          journey: { connect: { id: 'duplicateJourneyId' } }
+          journey: { connect: { id: 'duplicateJourneyId' } },
+          settings: {}
         },
         {
           ...omit(duplicatedButton, [
@@ -1388,7 +1393,8 @@ describe('JourneyResolver', () => {
             'nextBlockId',
             'action'
           ]),
-          journey: { connect: { id: 'duplicateJourneyId' } }
+          journey: { connect: { id: 'duplicateJourneyId' } },
+          settings: {}
         },
         {
           ...omit(duplicatedNextStep, [
@@ -1399,7 +1405,8 @@ describe('JourneyResolver', () => {
             'nextBlockId',
             'action'
           ]),
-          journey: { connect: { id: 'duplicateJourneyId' } }
+          journey: { connect: { id: 'duplicateJourneyId' } },
+          settings: {}
         }
       ])
     })
@@ -1491,7 +1498,8 @@ describe('JourneyResolver', () => {
             'nextBlockId',
             'action'
           ]),
-          journey: { connect: { id: 'duplicateJourneyId' } }
+          journey: { connect: { id: 'duplicateJourneyId' } },
+          settings: {}
         },
         {
           ...omit(duplicatedButton, [
@@ -1502,7 +1510,8 @@ describe('JourneyResolver', () => {
             'nextBlockId',
             'action'
           ]),
-          journey: { connect: { id: 'duplicateJourneyId' } }
+          journey: { connect: { id: 'duplicateJourneyId' } },
+          settings: {}
         },
         {
           ...omit(duplicatedNextStep, [
@@ -1513,7 +1522,8 @@ describe('JourneyResolver', () => {
             'nextBlockId',
             'action'
           ]),
-          journey: { connect: { id: 'duplicateJourneyId' } }
+          journey: { connect: { id: 'duplicateJourneyId' } },
+          settings: {}
         },
         {
           ...omit(duplicatedPrimaryImage, [
@@ -1524,7 +1534,8 @@ describe('JourneyResolver', () => {
             'nextBlockId',
             'action'
           ]),
-          journey: { connect: { id: 'duplicateJourneyId' } }
+          journey: { connect: { id: 'duplicateJourneyId' } },
+          settings: {}
         }
       ])
     })
@@ -1571,7 +1582,8 @@ describe('JourneyResolver', () => {
             'nextBlockId',
             'action'
           ]),
-          journey: { connect: { id: 'duplicateJourneyId' } }
+          journey: { connect: { id: 'duplicateJourneyId' } },
+          settings: {}
         },
         {
           ...omit(duplicatedButton, [
@@ -1582,7 +1594,8 @@ describe('JourneyResolver', () => {
             'nextBlockId',
             'action'
           ]),
-          journey: { connect: { id: 'duplicateJourneyId' } }
+          journey: { connect: { id: 'duplicateJourneyId' } },
+          settings: {}
         },
         {
           ...omit(duplicatedNextStep, [
@@ -1593,7 +1606,8 @@ describe('JourneyResolver', () => {
             'nextBlockId',
             'action'
           ]),
-          journey: { connect: { id: 'duplicateJourneyId' } }
+          journey: { connect: { id: 'duplicateJourneyId' } },
+          settings: {}
         },
         {
           ...omit(duplicatedLogoImage, [
@@ -1604,7 +1618,8 @@ describe('JourneyResolver', () => {
             'nextBlockId',
             'action'
           ]),
-          journey: { connect: { id: 'duplicateJourneyId' } }
+          journey: { connect: { id: 'duplicateJourneyId' } },
+          settings: {}
         }
       ])
     })
@@ -1657,7 +1672,8 @@ describe('JourneyResolver', () => {
             'nextBlockId',
             'action'
           ]),
-          journey: { connect: { id: 'duplicateJourneyId' } }
+          journey: { connect: { id: 'duplicateJourneyId' } },
+          settings: {}
         },
         {
           ...omit(duplicatedButton, [
@@ -1668,7 +1684,8 @@ describe('JourneyResolver', () => {
             'nextBlockId',
             'action'
           ]),
-          journey: { connect: { id: 'duplicateJourneyId' } }
+          journey: { connect: { id: 'duplicateJourneyId' } },
+          settings: {}
         },
         {
           ...omit(duplicatedNextStep, [
@@ -1679,7 +1696,8 @@ describe('JourneyResolver', () => {
             'nextBlockId',
             'action'
           ]),
-          journey: { connect: { id: 'duplicateJourneyId' } }
+          journey: { connect: { id: 'duplicateJourneyId' } },
+          settings: {}
         },
         {
           ...omit(duplicatedMenuStep, [
@@ -1690,7 +1708,8 @@ describe('JourneyResolver', () => {
             'nextBlockId',
             'action'
           ]),
-          journey: { connect: { id: 'duplicateJourneyId' } }
+          journey: { connect: { id: 'duplicateJourneyId' } },
+          settings: {}
         }
       ])
     })

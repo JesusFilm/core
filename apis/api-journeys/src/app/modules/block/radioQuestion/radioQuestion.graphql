@@ -1,8 +1,9 @@
-type RadioQuestionBlock implements Block {
-  id: ID!
-  journeyId: ID!
-  parentBlockId: ID
-  parentOrder: Int
+type RadioQuestionBlock implements Block @key(fields: "id") {
+  id: ID! @shareable
+  journeyId: ID! @shareable
+  parentBlockId: ID @shareable
+  parentOrder: Int @shareable
+  gridView: Boolean @shareable
 }
 
 input RadioQuestionBlockCreateInput {
@@ -18,9 +19,6 @@ extend type Mutation {
   radioQuestionBlockUpdate(
     id: ID!
     parentBlockId: ID!
-    """
-    drop this parameter after merging teams
-    """
-    journeyId: ID
+    gridView: Boolean
   ): RadioQuestionBlock!
 }

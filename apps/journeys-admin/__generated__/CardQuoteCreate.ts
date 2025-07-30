@@ -28,6 +28,14 @@ export interface CardQuoteCreate_image {
   focalLeft: number | null;
 }
 
+export interface CardQuoteCreate_subtitle_settings {
+  __typename: "TypographyBlockSettings";
+  /**
+   * Color of the typography
+   */
+  color: string | null;
+}
+
 export interface CardQuoteCreate_subtitle {
   __typename: "TypographyBlock";
   id: string;
@@ -37,6 +45,15 @@ export interface CardQuoteCreate_subtitle {
   color: TypographyColor | null;
   content: string;
   variant: TypographyVariant | null;
+  settings: CardQuoteCreate_subtitle_settings | null;
+}
+
+export interface CardQuoteCreate_title_settings {
+  __typename: "TypographyBlockSettings";
+  /**
+   * Color of the typography
+   */
+  color: string | null;
 }
 
 export interface CardQuoteCreate_title {
@@ -48,6 +65,15 @@ export interface CardQuoteCreate_title {
   color: TypographyColor | null;
   content: string;
   variant: TypographyVariant | null;
+  settings: CardQuoteCreate_title_settings | null;
+}
+
+export interface CardQuoteCreate_body_settings {
+  __typename: "TypographyBlockSettings";
+  /**
+   * Color of the typography
+   */
+  color: string | null;
 }
 
 export interface CardQuoteCreate_body {
@@ -59,6 +85,7 @@ export interface CardQuoteCreate_body {
   color: TypographyColor | null;
   content: string;
   variant: TypographyVariant | null;
+  settings: CardQuoteCreate_body_settings | null;
 }
 
 export interface CardQuoteCreate_cardBlockUpdate {
@@ -70,6 +97,10 @@ export interface CardQuoteCreate_cardBlockUpdate {
    * backgroundColor should be a HEX color value e.g #FFFFFF for white.
    */
   backgroundColor: string | null;
+  /**
+   * backdropBlur should be a number representing blur amount in pixels e.g 20.
+   */
+  backdropBlur: number | null;
   /**
    * coverBlockId is present if a child block should be used as a cover.
    * This child block should not be rendered normally, instead it should be used

@@ -29,6 +29,7 @@ describe('getStepHeading', () => {
         themeMode: null,
         themeName: null,
         fullscreen: false,
+        backdropBlur: null,
         children: [
           {
             __typename: 'ButtonBlock',
@@ -43,7 +44,8 @@ describe('getStepHeading', () => {
             endIconId: null,
             submitEnabled: null,
             action: null,
-            children: []
+            children: [],
+            settings: null
           },
           {
             __typename: 'TypographyBlock',
@@ -54,7 +56,11 @@ describe('getStepHeading', () => {
             color: null,
             variant: TypographyVariant.h2,
             content: 'Sub heading',
-            children: []
+            children: [],
+            settings: {
+              __typename: 'TypographyBlockSettings',
+              color: null
+            }
           },
           {
             __typename: 'ButtonBlock',
@@ -69,7 +75,8 @@ describe('getStepHeading', () => {
             endIconId: null,
             submitEnabled: null,
             action: null,
-            children: []
+            children: [],
+            settings: null
           },
           {
             __typename: 'TypographyBlock',
@@ -80,7 +87,11 @@ describe('getStepHeading', () => {
             color: null,
             variant: TypographyVariant.h1,
             content: 'Heading',
-            children: []
+            children: [],
+            settings: {
+              __typename: 'TypographyBlockSettings',
+              color: null
+            }
           },
           {
             __typename: 'TypographyBlock',
@@ -91,7 +102,11 @@ describe('getStepHeading', () => {
             color: null,
             variant: TypographyVariant.h1,
             content: 'Another heading',
-            children: []
+            children: [],
+            settings: {
+              __typename: 'TypographyBlockSettings',
+              color: null
+            }
           },
           {
             __typename: 'TypographyBlock',
@@ -102,7 +117,11 @@ describe('getStepHeading', () => {
             color: null,
             variant: TypographyVariant.body2,
             content: 'Paragraph',
-            children: []
+            children: [],
+            settings: {
+              __typename: 'TypographyBlockSettings',
+              color: null
+            }
           }
         ]
       }

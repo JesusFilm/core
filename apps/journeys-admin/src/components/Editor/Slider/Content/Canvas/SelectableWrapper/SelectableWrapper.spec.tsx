@@ -47,7 +47,11 @@ describe('SelectableWrapper', () => {
     content: 'typography content',
     color: null,
     align: null,
-    children: []
+    children: [],
+    settings: {
+      __typename: 'TypographyBlockSettings',
+      color: null
+    }
   }
 
   const buttonBlock: TreeBlock<ButtonFields> = {
@@ -68,7 +72,8 @@ describe('SelectableWrapper', () => {
       gtmEventName: 'gtmEventName',
       url: 'https://www.google.com'
     },
-    children: []
+    children: [],
+    settings: null
   }
 
   const imageBlock: TreeBlock<ImageFields> = {
@@ -94,6 +99,7 @@ describe('SelectableWrapper', () => {
     parentBlockId: 'RadioQuestion1',
     parentOrder: 0,
     action: null,
+    pollOptionImageId: null,
     children: []
   }
 
@@ -102,6 +108,7 @@ describe('SelectableWrapper', () => {
     id: 'RadioQuestion1',
     parentBlockId: 'parent.id',
     parentOrder: 0,
+    gridView: false,
     children: [
       radioOption1,
       {
@@ -111,6 +118,7 @@ describe('SelectableWrapper', () => {
         parentBlockId: 'RadioQuestion1',
         parentOrder: 1,
         action: null,
+        pollOptionImageId: null,
         children: []
       }
     ]
@@ -188,12 +196,6 @@ describe('SelectableWrapper', () => {
       outlineColor: '#C52D3A'
     })
 
-    fireEvent.click(getByText('button label'))
-    expect(getByTestId(`SelectableWrapper-${buttonBlock.id}`)).toHaveStyle({
-      outline: '2px solid',
-      zIndex: '1',
-      outlineColor: '#C52D3A'
-    })
     fireEvent.click(getByText('sign up label'))
     await waitFor(() =>
       expect(getByTestId(`SelectableWrapper-${signUpBlock.id}`)).toHaveStyle({

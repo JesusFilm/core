@@ -1,0 +1,6 @@
+{
+  "main": "../../dist/apps/video-importer/video-importer-bundled.js",
+  "output": "sea-prep.blob",
+  "useCodeCache": false,
+  "useSnapshot": false
+}

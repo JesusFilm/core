@@ -10,7 +10,7 @@
 'files':
   [
     {
-      'source': '/main/libs/locales/en/*.json',
+      'source': '/libs/locales/en/*.json',
       'translation': '/libs/locales/%locale%/%original_file_name%',
       'type': 'i18next_json',
       'skip_untranslated_files': true

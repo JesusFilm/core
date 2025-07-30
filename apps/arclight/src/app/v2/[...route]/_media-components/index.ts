@@ -1,10 +1,12 @@
 import { OpenAPIHono, createRoute, z } from '@hono/zod-openapi'
-import { ResultOf, graphql } from 'gql.tada'
 import { HTTPException } from 'hono/http-exception'
 import { timeout } from 'hono/timeout'
 
+import { ResultOf, graphql } from '@core/shared/gql'
+
 import { getApolloClient } from '../../../../lib/apolloClient'
 import { generateCacheKey, getWithStaleCache } from '../../../../lib/cache'
+import { getDownloadSize } from '../../../../lib/downloadHelpers'
 import { getLanguageIdsFromTags } from '../../../../lib/getLanguageIdsFromTags'
 
 import { mediaComponent } from './[mediaComponentId]'
@@ -116,7 +118,8 @@ const QuerySchema = z.object({
   limit: z.coerce.number().optional(),
   subTypes: z.string().optional(),
   languageIds: z.string().optional(),
-  ids: z.string().optional()
+  ids: z.string().optional(),
+  apiKey: z.string().optional()
 })
 
 export const MediaComponentSchema = z.object({
@@ -233,6 +236,7 @@ mediaComponents.openapi(route, async (c) => {
   const metadataLanguageTags =
     c.req.query('metadataLanguageTags')?.split(',').filter(Boolean) ?? []
   const apiSessionId = c.req.query('apiSessionId') ?? '6622f10d2260a8.05128925'
+  const apiKey = c.req.query('apiKey')
 
   const languageResult = await getLanguageIdsFromTags(metadataLanguageTags)
   if (languageResult instanceof HTTPException) {
@@ -319,14 +323,10 @@ mediaComponents.openapi(route, async (c) => {
           isDownloadable,
           downloadSizes: {
             approximateSmallDownloadSizeInBytes: isDownloadable
-              ? (video.variant?.downloads?.find(
-                  ({ quality }) => quality === 'low'
-                )?.size ?? 0)
+              ? getDownloadSize(video.variant?.downloads, 'low', apiKey)
               : 0,
             approximateLargeDownloadSizeInBytes: isDownloadable
-              ? (video.variant?.downloads?.find(
-                  ({ quality }) => quality === 'high'
-                )?.size ?? 0)
+              ? getDownloadSize(video.variant?.downloads, 'high', apiKey)
               : 0
           },
           bibleCitations: video.bibleCitations.map((citation) => ({

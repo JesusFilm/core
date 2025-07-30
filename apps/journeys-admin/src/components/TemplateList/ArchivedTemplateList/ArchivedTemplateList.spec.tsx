@@ -65,11 +65,11 @@ describe('ArchivedTemplateList', () => {
       </MockedProvider>
     )
     await waitFor(() =>
-      expect(getAllByLabelText('template-card')[0].textContent).toContain(
+      expect(getAllByLabelText('journey-card')[0].textContent).toContain(
         '11 months ago'
       )
     )
-    expect(getAllByLabelText('template-card')[1].textContent).toContain(
+    expect(getAllByLabelText('journey-card')[1].textContent).toContain(
       '1 year ago'
     )
   })
@@ -106,27 +106,44 @@ describe('ArchivedTemplateList', () => {
       </MockedProvider>
     )
     await waitFor(() =>
-      expect(getAllByLabelText('template-card')[0].textContent).toContain(
+      expect(getAllByLabelText('journey-card')[0].textContent).toContain(
         'a lower case title'
       )
     )
-    expect(getAllByLabelText('template-card')[1].textContent).toContain(
+    expect(getAllByLabelText('journey-card')[1].textContent).toContain(
       'An Old Template'
     )
   })
 
-  it('should render loading skeleton', async () => {
-    const { getAllByLabelText } = render(
-      <MockedProvider mocks={[]}>
+  it('should display no archived templates message', async () => {
+    const { getByText } = render(
+      <MockedProvider
+        mocks={[
+          {
+            request: {
+              query: GET_ADMIN_JOURNEYS,
+              variables: {
+                status: [JourneyStatus.archived],
+                template: true
+              }
+            },
+            result: {
+              data: {
+                journeys: []
+              }
+            }
+          }
+        ]}
+      >
         <ThemeProvider>
           <SnackbarProvider>
-            <ArchivedTemplateList />
+            <ArchivedTemplateList sortOrder={SortOrder.TITLE} />
           </SnackbarProvider>
         </ThemeProvider>
       </MockedProvider>
     )
     await waitFor(() =>
-      expect(getAllByLabelText('template-card')).toHaveLength(3)
+      expect(getByText('No archived templates.')).toBeInTheDocument()
     )
   })
 

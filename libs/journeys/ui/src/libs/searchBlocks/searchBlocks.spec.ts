@@ -15,6 +15,7 @@ describe('searchBlocks', () => {
         themeMode: null,
         themeName: null,
         fullscreen: false,
+        backdropBlur: null,
         children: [
           {
             __typename: 'TypographyBlock',
@@ -25,13 +26,18 @@ describe('searchBlocks', () => {
             variant: null,
             color: null,
             align: null,
-            children: []
+            children: [],
+            settings: {
+              __typename: 'TypographyBlockSettings',
+              color: null
+            }
           },
           {
             __typename: 'RadioQuestionBlock',
             id: 'RadioQuestion1',
             parentBlockId: 'RadioQuestion1',
             parentOrder: 1,
+            gridView: false,
             children: [
               {
                 __typename: 'RadioOptionBlock',
@@ -40,6 +46,7 @@ describe('searchBlocks', () => {
                 parentBlockId: 'RadioQuestion1',
                 parentOrder: 0,
                 action: null,
+                pollOptionImageId: null,
                 children: []
               },
               {
@@ -49,6 +56,7 @@ describe('searchBlocks', () => {
                 parentBlockId: 'RadioQuestion1',
                 parentOrder: 1,
                 action: null,
+                pollOptionImageId: null,
                 children: []
               }
             ]
@@ -65,6 +73,7 @@ describe('searchBlocks', () => {
       parentBlockId: 'RadioQuestion1',
       parentOrder: 0,
       action: null,
+      pollOptionImageId: null,
       children: []
     })
   })
@@ -81,6 +90,7 @@ describe('searchBlocks', () => {
         themeMode: null,
         themeName: null,
         fullscreen: false,
+        backdropBlur: null,
         children: [
           {
             __typename: 'TypographyBlock',
@@ -91,13 +101,18 @@ describe('searchBlocks', () => {
             variant: null,
             color: null,
             align: null,
-            children: []
+            children: [],
+            settings: {
+              __typename: 'TypographyBlockSettings',
+              color: null
+            }
           },
           {
             __typename: 'RadioQuestionBlock',
             id: 'RadioQuestion1',
             parentBlockId: 'RadioQuestion1',
             parentOrder: 1,
+            gridView: false,
             children: [
               {
                 __typename: 'RadioOptionBlock',
@@ -106,6 +121,7 @@ describe('searchBlocks', () => {
                 parentBlockId: 'RadioQuestion1',
                 parentOrder: 0,
                 action: null,
+                pollOptionImageId: null,
                 children: []
               },
               {
@@ -115,6 +131,7 @@ describe('searchBlocks', () => {
                 parentBlockId: 'RadioQuestion1',
                 parentOrder: 1,
                 action: null,
+                pollOptionImageId: null,
                 children: []
               }
             ]

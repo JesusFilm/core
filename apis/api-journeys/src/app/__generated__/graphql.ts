@@ -19,7 +19,8 @@ export enum ThemeName {
 
 export enum ButtonVariant {
     text = "text",
-    contained = "contained"
+    contained = "contained",
+    outlined = "outlined"
 }
 
 export enum ButtonColor {
@@ -33,6 +34,13 @@ export enum ButtonSize {
     small = "small",
     medium = "medium",
     large = "large"
+}
+
+export enum ButtonAlignment {
+    left = "left",
+    center = "center",
+    right = "right",
+    justify = "justify"
 }
 
 export enum GridDirection {
@@ -296,6 +304,11 @@ export class BlockDuplicateIdMap {
     newId: string;
 }
 
+export class ButtonBlockSettingsInput {
+    alignment?: Nullable<ButtonAlignment>;
+    color?: Nullable<string>;
+}
+
 export class ButtonBlockCreateInput {
     id?: Nullable<string>;
     journeyId: string;
@@ -305,6 +318,7 @@ export class ButtonBlockCreateInput {
     color?: Nullable<ButtonColor>;
     size?: Nullable<ButtonSize>;
     submitEnabled?: Nullable<boolean>;
+    settings?: Nullable<ButtonBlockSettingsInput>;
 }
 
 export class ButtonBlockUpdateInput {
@@ -316,6 +330,7 @@ export class ButtonBlockUpdateInput {
     startIconId?: Nullable<string>;
     endIconId?: Nullable<string>;
     submitEnabled?: Nullable<boolean>;
+    settings?: Nullable<ButtonBlockSettingsInput>;
 }
 
 export class CardBlockCreateInput {
@@ -323,6 +338,7 @@ export class CardBlockCreateInput {
     journeyId: string;
     parentBlockId: string;
     backgroundColor?: Nullable<string>;
+    backdropBlur?: Nullable<number>;
     fullscreen?: Nullable<boolean>;
     themeMode?: Nullable<ThemeMode>;
     themeName?: Nullable<ThemeName>;
@@ -332,6 +348,7 @@ export class CardBlockUpdateInput {
     parentBlockId?: Nullable<string>;
     coverBlockId?: Nullable<string>;
     backgroundColor?: Nullable<string>;
+    backdropBlur?: Nullable<number>;
     fullscreen?: Nullable<boolean>;
     themeMode?: Nullable<ThemeMode>;
     themeName?: Nullable<ThemeName>;
@@ -389,6 +406,7 @@ export class RadioOptionBlockCreateInput {
 export class RadioOptionBlockUpdateInput {
     parentBlockId?: Nullable<string>;
     label?: Nullable<string>;
+    pollOptionImageId?: Nullable<string>;
 }
 
 export class RadioQuestionBlockCreateInput {
@@ -464,6 +482,10 @@ export class TextResponseBlockUpdateInput {
     integrationId?: Nullable<string>;
 }
 
+export class TypographyBlockSettingsInput {
+    color?: Nullable<string>;
+}
+
 export class TypographyBlockCreateInput {
     id?: Nullable<string>;
     journeyId: string;
@@ -472,6 +494,7 @@ export class TypographyBlockCreateInput {
     variant?: Nullable<TypographyVariant>;
     color?: Nullable<TypographyColor>;
     align?: Nullable<TypographyAlign>;
+    settings?: Nullable<TypographyBlockSettingsInput>;
 }
 
 export class TypographyBlockUpdateInput {
@@ -480,6 +503,7 @@ export class TypographyBlockUpdateInput {
     variant?: Nullable<TypographyVariant>;
     color?: Nullable<TypographyColor>;
     align?: Nullable<TypographyAlign>;
+    settings?: Nullable<TypographyBlockSettingsInput>;
 }
 
 export class VideoBlockCreateInput {
@@ -753,6 +777,8 @@ export class JourneyUpdateInput {
     menuButtonIcon?: Nullable<JourneyMenuButtonIcon>;
     menuStepBlockId?: Nullable<string>;
     logoImageBlockId?: Nullable<string>;
+    socialNodeX?: Nullable<number>;
+    socialNodeY?: Nullable<number>;
 }
 
 export class JourneyTemplateInput {
@@ -787,6 +813,19 @@ export class JourneyProfileUpdateInput {
     journeyFlowBackButtonClicked?: Nullable<boolean>;
     plausibleJourneyFlowViewed?: Nullable<boolean>;
     plausibleDashboardViewed?: Nullable<boolean>;
+}
+
+export class JourneyThemeCreateInput {
+    journeyId: string;
+    headerFont?: Nullable<string>;
+    bodyFont?: Nullable<string>;
+    labelFont?: Nullable<string>;
+}
+
+export class JourneyThemeUpdateInput {
+    headerFont?: Nullable<string>;
+    bodyFont?: Nullable<string>;
+    labelFont?: Nullable<string>;
 }
 
 export class JourneyVisitorFilter {
@@ -977,7 +1016,7 @@ export abstract class IMutation {
 
     abstract radioQuestionBlockCreate(input: RadioQuestionBlockCreateInput): RadioQuestionBlock | Promise<RadioQuestionBlock>;
 
-    abstract radioQuestionBlockUpdate(id: string, parentBlockId: string, journeyId?: Nullable<string>): RadioQuestionBlock | Promise<RadioQuestionBlock>;
+    abstract radioQuestionBlockUpdate(id: string, parentBlockId: string, gridView?: Nullable<boolean>): RadioQuestionBlock | Promise<RadioQuestionBlock>;
 
     abstract signUpBlockCreate(input: SignUpBlockCreateInput): SignUpBlock | Promise<SignUpBlock>;
 
@@ -1095,6 +1134,12 @@ export abstract class IMutation {
 
     abstract journeyProfileUpdate(input: JourneyProfileUpdateInput): JourneyProfile | Promise<JourneyProfile>;
 
+    abstract journeyThemeCreate(input: JourneyThemeCreateInput): JourneyTheme | Promise<JourneyTheme>;
+
+    abstract journeyThemeUpdate(id: string, input: JourneyThemeUpdateInput): JourneyTheme | Promise<JourneyTheme>;
+
+    abstract journeyThemeDelete(id: string): JourneyTheme | Promise<JourneyTheme>;
+
     abstract updateJourneysEmailPreference(input: JourneysEmailPreferenceUpdateInput): Nullable<JourneysEmailPreference> | Promise<Nullable<JourneysEmailPreference>>;
 
     abstract qrCodeCreate(input: QrCodeCreateInput): QrCode | Promise<QrCode>;
@@ -1186,6 +1231,10 @@ export class Journey {
     showMenu?: Nullable<boolean>;
     showDisplayTitle?: Nullable<boolean>;
     menuButtonIcon?: Nullable<JourneyMenuButtonIcon>;
+    socialNodeX?: Nullable<number>;
+    socialNodeY?: Nullable<number>;
+    fromTemplateId?: Nullable<string>;
+    journeyTheme?: Nullable<JourneyTheme>;
     userJourneys?: Nullable<UserJourney[]>;
 }
 
@@ -1224,6 +1273,8 @@ export abstract class IQuery {
 
     abstract getJourneyProfile(): Nullable<JourneyProfile> | Promise<Nullable<JourneyProfile>>;
 
+    abstract journeyTheme(journeyId: string): Nullable<JourneyTheme> | Promise<Nullable<JourneyTheme>>;
+
     abstract journeyVisitorsConnection(filter: JourneyVisitorFilter, first?: Nullable<number>, after?: Nullable<string>, sort?: Nullable<JourneyVisitorSort>): JourneyVisitorsConnection | Promise<JourneyVisitorsConnection>;
 
     abstract journeyVisitorCount(filter: JourneyVisitorFilter): number | Promise<number>;
@@ -1261,6 +1312,12 @@ export abstract class IQuery {
     abstract visitor(id: string): Visitor | Promise<Visitor>;
 }
 
+export class ButtonBlockSettings {
+    __typename?: 'ButtonBlockSettings';
+    alignment?: Nullable<ButtonAlignment>;
+    color?: Nullable<string>;
+}
+
 export class ButtonBlock implements Block {
     __typename?: 'ButtonBlock';
     id: string;
@@ -1275,6 +1332,7 @@ export class ButtonBlock implements Block {
     endIconId?: Nullable<string>;
     action?: Nullable<Action>;
     submitEnabled?: Nullable<boolean>;
+    settings: ButtonBlockSettings;
 }
 
 export class CardBlock implements Block {
@@ -1284,6 +1342,7 @@ export class CardBlock implements Block {
     parentBlockId?: Nullable<string>;
     parentOrder?: Nullable<number>;
     backgroundColor?: Nullable<string>;
+    backdropBlur?: Nullable<number>;
     coverBlockId?: Nullable<string>;
     fullscreen: boolean;
     themeMode?: Nullable<ThemeMode>;
@@ -1348,6 +1407,7 @@ export class RadioOptionBlock implements Block {
     parentOrder?: Nullable<number>;
     label: string;
     action?: Nullable<Action>;
+    pollOptionImageId?: Nullable<string>;
 }
 
 export class RadioQuestionBlock implements Block {
@@ -1356,6 +1416,7 @@ export class RadioQuestionBlock implements Block {
     journeyId: string;
     parentBlockId?: Nullable<string>;
     parentOrder?: Nullable<number>;
+    gridView?: Nullable<boolean>;
 }
 
 export class SignUpBlock implements Block {
@@ -1407,6 +1468,11 @@ export class TextResponseBlock implements Block {
     integrationId?: Nullable<string>;
 }
 
+export class TypographyBlockSettings {
+    __typename?: 'TypographyBlockSettings';
+    color?: Nullable<string>;
+}
+
 export class TypographyBlock implements Block {
     __typename?: 'TypographyBlock';
     id: string;
@@ -1417,6 +1483,7 @@ export class TypographyBlock implements Block {
     variant?: Nullable<TypographyVariant>;
     color?: Nullable<TypographyColor>;
     align?: Nullable<TypographyAlign>;
+    settings: TypographyBlockSettings;
 }
 
 export class VideoBlock implements Block {
@@ -1778,6 +1845,19 @@ export class JourneyProfile {
     journeyFlowBackButtonClicked?: Nullable<boolean>;
     plausibleJourneyFlowViewed?: Nullable<boolean>;
     plausibleDashboardViewed?: Nullable<boolean>;
+}
+
+export class JourneyTheme {
+    __typename?: 'JourneyTheme';
+    id: string;
+    journeyId: string;
+    journey: Journey;
+    userId: string;
+    headerFont?: Nullable<string>;
+    bodyFont?: Nullable<string>;
+    labelFont?: Nullable<string>;
+    createdAt: DateTime;
+    updatedAt: DateTime;
 }
 
 export class JourneyVisitor {

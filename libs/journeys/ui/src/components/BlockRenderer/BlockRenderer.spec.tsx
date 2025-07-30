@@ -63,7 +63,8 @@ describe('BlockRenderer', () => {
       endIconId: null,
       submitEnabled: null,
       action: null,
-      children: []
+      children: [],
+      settings: null
     }
     const { getByText } = render(
       <MockedProvider>
@@ -89,7 +90,8 @@ describe('BlockRenderer', () => {
       endIconId: null,
       submitEnabled: null,
       action: null,
-      children: []
+      children: [],
+      settings: null
     }
     const { getByTestId, getByText } = render(
       <MockedProvider>
@@ -125,6 +127,7 @@ describe('BlockRenderer', () => {
       themeMode: null,
       themeName: null,
       fullscreen: false,
+      backdropBlur: null,
       children: [
         {
           id: 'typographyBlockId1',
@@ -135,7 +138,11 @@ describe('BlockRenderer', () => {
           color: null,
           content: 'How did we get here?',
           variant: null,
-          children: []
+          children: [],
+          settings: {
+            __typename: 'TypographyBlockSettings',
+            color: null
+          }
         }
       ]
     }
@@ -160,6 +167,7 @@ describe('BlockRenderer', () => {
       themeMode: null,
       themeName: null,
       fullscreen: false,
+      backdropBlur: null,
       children: [
         {
           id: 'typographyBlockId1',
@@ -170,7 +178,11 @@ describe('BlockRenderer', () => {
           color: null,
           content: 'How did we get here?',
           variant: null,
-          children: []
+          children: [],
+          settings: {
+            __typename: 'TypographyBlockSettings',
+            color: null
+          }
         }
       ]
     }
@@ -271,6 +283,7 @@ describe('BlockRenderer', () => {
       parentOrder: 0,
       label: 'radio option',
       action: null,
+      pollOptionImageId: null,
       children: []
     }
     const { getByText } = render(
@@ -289,6 +302,7 @@ describe('BlockRenderer', () => {
       parentOrder: 0,
       label: 'radio option',
       action: null,
+      pollOptionImageId: null,
       children: []
     }
     const { getByTestId, getByText } = render(
@@ -322,6 +336,7 @@ describe('BlockRenderer', () => {
       parentOrder: 0,
       label: 'radio option 1',
       action: null,
+      pollOptionImageId: null,
       children: []
     }
 
@@ -330,6 +345,7 @@ describe('BlockRenderer', () => {
       id: 'main',
       parentBlockId: null,
       parentOrder: 0,
+      gridView: false,
       children: [option, { ...option, label: 'radio option 2' }]
     }
     const { getByText } = render(
@@ -347,6 +363,7 @@ describe('BlockRenderer', () => {
       id: 'main',
       parentBlockId: null,
       parentOrder: 0,
+      gridView: false,
       children: []
     }
     const { getByTestId, getByRole } = render(
@@ -460,7 +477,8 @@ describe('BlockRenderer', () => {
           endIconId: null,
           submitEnabled: null,
           action: null,
-          children: []
+          children: [],
+          settings: null
         }
       ]
     }
@@ -499,7 +517,8 @@ describe('BlockRenderer', () => {
           endIconId: null,
           submitEnabled: null,
           action: null,
-          children: []
+          children: [],
+          settings: null
         }
       ]
     }
@@ -543,7 +562,11 @@ describe('BlockRenderer', () => {
       color: null,
       content: 'How did we get here?',
       variant: null,
-      children: []
+      children: [],
+      settings: {
+        __typename: 'TypographyBlockSettings',
+        color: null
+      }
     }
     const { getByText } = render(<BlockRenderer block={block} />)
     expect(getByText('How did we get here?')).toBeInTheDocument()
@@ -559,7 +582,11 @@ describe('BlockRenderer', () => {
       color: null,
       content: 'How did we get here?',
       variant: null,
-      children: []
+      children: [],
+      settings: {
+        __typename: 'TypographyBlockSettings',
+        color: null
+      }
     }
     const { getByTestId } = render(
       <BlockRenderer
