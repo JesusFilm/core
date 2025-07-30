@@ -15,6 +15,7 @@ import Edit2Icon from '@core/shared/ui/icons/Edit2'
 interface ColorOpacityFieldProps {
   color: string
   onColorChange: (color: string) => Promise<void>
+  isContained?: boolean
 }
 
 interface FormValues {
@@ -29,7 +30,8 @@ type FormikHandlers = Pick<
 
 export function ColorOpacityField({
   color,
-  onColorChange
+  onColorChange,
+  isContained = false
 }: ColorOpacityFieldProps): ReactElement {
   const initialColorValue = stripAlphaFromHex(color)
   const initialOpacityValue = getOpacityFromHex(color)
@@ -178,44 +180,46 @@ export function ColorOpacityField({
                 }
               }}
             />
-            <TextField
-              name="opacity"
-              value={values.opacity}
-              variant="filled"
-              onChange={handleChange}
-              onBlur={(e) =>
-                handleOpacityBlur(e, { setFieldValue, handleSubmit })
-              }
-              onKeyDown={(e) =>
-                handleKeyDown(
-                  e,
-                  { setFieldValue, handleSubmit },
-                  validateOpacity
-                )
-              }
-              hiddenLabel
-              size="small"
-              data-testid="bgOpacityTextField"
-              sx={{
-                width: 72,
-                flexShrink: 0
-              }}
-              slotProps={{
-                input: {
-                  inputProps: {
-                    maxLength: 3
-                  },
-                  endAdornment: (
-                    <InputAdornment position="end">%</InputAdornment>
-                  ),
-                  sx: {
-                    height: '100%',
-                    borderTopLeftRadius: 0,
-                    textAlign: 'right'
-                  }
+            {!isContained && (
+              <TextField
+                name="opacity"
+                value={values.opacity}
+                variant="filled"
+                onChange={handleChange}
+                onBlur={(e) =>
+                  handleOpacityBlur(e, { setFieldValue, handleSubmit })
                 }
-              }}
-            />
+                onKeyDown={(e) =>
+                  handleKeyDown(
+                    e,
+                    { setFieldValue, handleSubmit },
+                    validateOpacity
+                  )
+                }
+                hiddenLabel
+                size="small"
+                data-testid="bgOpacityTextField"
+                sx={{
+                  width: 72,
+                  flexShrink: 0
+                }}
+                slotProps={{
+                  input: {
+                    inputProps: {
+                      maxLength: 3
+                    },
+                    endAdornment: (
+                      <InputAdornment position="end">%</InputAdornment>
+                    ),
+                    sx: {
+                      height: '100%',
+                      borderTopLeftRadius: 0,
+                      textAlign: 'right'
+                    }
+                  }
+                }}
+              />
+            )}
           </Stack>
         </Form>
       )}

@@ -35,6 +35,7 @@ describe('RadioQuestionEdit', () => {
       parentBlockId: 'card.id',
       parentOrder: 0,
       id: 'radioQuestion.id',
+      gridView: false,
       children: children ?? []
     }
   }
@@ -46,6 +47,7 @@ describe('RadioQuestionEdit', () => {
     parentBlockId: 'card',
     parentOrder: 0,
     action: null,
+    pollOptionImageId: null,
     children: []
   }
 

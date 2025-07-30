@@ -1,5 +1,7 @@
 // lib/brightcove.ts
 
+import { generateCacheKey, getWithStrictCache } from './cache'
+
 interface BrightcoveSource {
   src: string
   type: string
@@ -72,82 +74,89 @@ function findClosestBitrate(
  * @param type - 'hls', 'dl' (download low), 'dh' (download high)
  * @param bitrate - Target bitrate to match (optional for dl/dh types)
  * @param ip - Optional client IP
+ * @param ttlSeconds - Optional cache TTL in seconds (default 30)
  * @returns The video URL
  */
 export async function getBrightcoveUrl(
   brightcoveId: string,
   type: 'hls' | 'dl' | 'dh' | string,
   bitrate: number | null,
-  ip?: string
+  ip?: string,
+  ttlSeconds: number = 30
 ): Promise<string> {
   if (!POLICY_KEY || !ACCOUNT_ID) {
     throw new Error('Brightcove environment variables not configured')
   }
 
-  const headers: HeadersInit = {
-    Authorization: `BCOV-Policy ${POLICY_KEY}`
-  }
+  const cacheKey = generateCacheKey([
+    'bc-url',
+    ACCOUNT_ID,
+    brightcoveId,
+    type,
+    bitrate || ''
+  ])
 
-  if (ip) {
-    headers['X-Forwarded-For'] = ip
-  }
-  const response = await fetch(
-    `https://edge.api.brightcove.com/playback/v1/accounts/${ACCOUNT_ID}/videos/ref:${encodeURIComponent(brightcoveId)}`,
-    {
-      headers,
-      next: { revalidate: 3600 }
-    }
+  return getWithStrictCache(
+    cacheKey,
+    async () => {
+      const headers: HeadersInit = {
+        Authorization: `BCOV-Policy ${POLICY_KEY}`
+      }
+      if (ip) {
+        headers['X-Forwarded-For'] = ip
+      }
+      const response = await fetch(
+        `https://edge.api.brightcove.com/playback/v1/accounts/${ACCOUNT_ID}/videos/ref:${encodeURIComponent(brightcoveId)}`,
+        {
+          headers,
+          cache: 'no-store'
+        }
+      )
+      if (!response.ok) {
+        throw new Error(`Brightcove API error: ${response.status}`)
+      }
+      const video: BrightcoveVideo = await response.json()
+      const sources = video.sources
+        .filter((s) => s.src)
+        .map((s) => ({ ...s, src: s.src.replace(/^http:/, 'https:') }))
+      let url: string
+      if (type === 'hls') {
+        const hlsSource = sources.find(
+          (s) => s.type === 'application/x-mpegURL'
+        )
+        if (!hlsSource) {
+          throw new Error('No HLS source found')
+        }
+        url = hlsSource.src
+      } else if (
+        (type === 'dl' || type === 'dh') &&
+        bitrate != null &&
+        bitrate > 0
+      ) {
+        const mp4Sources = sources
+          .filter((s) => s.container === 'MP4' && s.avg_bitrate)
+          .sort((a, b) => (a.avg_bitrate || 0) - (b.avg_bitrate || 0))
+        if (mp4Sources.length === 0) {
+          throw new Error('No MP4 sources found')
+        }
+        const match = findClosestBitrate(mp4Sources, bitrate)
+        url = match.src
+      } else if (type === 'dl' || type === 'dh') {
+        const { low, high } = findQualityRenditions(sources)
+        if (type === 'dl' && low) {
+          url = low.src
+        } else if (type === 'dh' && high) {
+          url = high.src
+        } else {
+          throw new Error(
+            `No ${type === 'dl' ? 'low' : 'high'} quality source found`
+          )
+        }
+      } else {
+        throw new Error(`Unsupported type: ${type}`)
+      }
+      return url
+    },
+    ttlSeconds
   )
-
-  if (!response.ok) {
-    throw new Error(`Brightcove API error: ${response.status}`)
-  }
-
-  const video: BrightcoveVideo = await response.json()
-
-  // Convert HTTP to HTTPS
-  const sources = video.sources
-    .filter((s) => s.src)
-    .map((s) => ({ ...s, src: s.src.replace(/^http:/, 'https:') }))
-
-  if (type === 'hls') {
-    const hlsSource = sources.find((s) => s.type === 'application/x-mpegURL')
-    if (!hlsSource) {
-      throw new Error('No HLS source found')
-    }
-    return hlsSource.src
-  }
-
-  // Handle downloads with specific bitrate
-  if ((type === 'dl' || type === 'dh') && bitrate != null && bitrate > 0) {
-    const mp4Sources = sources
-      .filter((s) => s.container === 'MP4' && s.avg_bitrate)
-      .sort((a, b) => (a.avg_bitrate || 0) - (b.avg_bitrate || 0))
-
-    if (mp4Sources.length === 0) {
-      throw new Error('No MP4 sources found')
-    }
-
-    // Find the closest bitrate match
-    const match = findClosestBitrate(mp4Sources, bitrate)
-
-    return match.src
-  }
-
-  // Handle dl (low) and dh (high) without specific bitrate
-  if (type === 'dl' || type === 'dh') {
-    const { low, high } = findQualityRenditions(sources)
-
-    if (type === 'dl' && low) {
-      return low.src
-    }
-
-    if (type === 'dh' && high) {
-      return high.src
-    }
-
-    throw new Error(`No ${type === 'dl' ? 'low' : 'high'} quality source found`)
-  }
-
-  throw new Error(`Unsupported type: ${type}`)
 }

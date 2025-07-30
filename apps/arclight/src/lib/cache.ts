@@ -147,6 +147,40 @@ export async function getWithStaleCache<T>(
   }
 }
 
+/**
+ * Strict cache: Only returns fresh cache, never stale, and always fetches fresh if expired.
+ * TTL is short (default 30s) and configurable.
+ */
+export async function getWithStrictCache<T>(
+  key: string,
+  fetchFn: () => Promise<T>,
+  ttlSeconds: number = 30
+): Promise<T> {
+  try {
+    const cached = await getFromCache<T>(key)
+    if (cached) {
+      return cached
+    }
+    const fresh = await fetchFn()
+    try {
+      await redis.set(key, JSON.stringify(fresh), 'EX', ttlSeconds)
+    } catch (cacheError) {
+      console.error(
+        `[Redis] Failed to cache fresh data for key ${key}:`,
+        cacheError instanceof Error ? cacheError.message : 'Unknown error'
+      )
+      // Continue since we still have the fresh data to return
+    }
+    return fresh
+  } catch (error) {
+    console.error(
+      `[Redis] Error retrieving from strict cache for key ${key}:`,
+      error instanceof Error ? error.message : 'Unknown error'
+    )
+    return await fetchFn()
+  }
+}
+
 export function generateCacheKey(parts: (string | number)[]): string {
   return parts.join(':')
 }

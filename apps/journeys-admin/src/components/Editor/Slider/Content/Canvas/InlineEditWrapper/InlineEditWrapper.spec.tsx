@@ -119,7 +119,7 @@ describe('InlineEditWrapper', () => {
       settings: null
     }
 
-    const { getByDisplayValue, getByText, getByTestId } = render(
+    const { getByDisplayValue, getByText } = render(
       <MockedProvider>
         <SnackbarProvider>
           <EditorProvider
@@ -193,6 +193,7 @@ describe('InlineEditWrapper', () => {
       id: 'radioOption.id',
       label: 'option',
       action: null,
+      pollOptionImageId: null,
       children: []
     }
 
@@ -201,6 +202,7 @@ describe('InlineEditWrapper', () => {
       parentBlockId: 'card.id',
       parentOrder: 0,
       id: 'radioQuestion.id',
+      gridView: false,
       children: [option]
     }
 

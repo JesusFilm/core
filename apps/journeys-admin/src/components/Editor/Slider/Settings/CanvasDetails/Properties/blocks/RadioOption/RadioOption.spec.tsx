@@ -19,6 +19,7 @@ describe('RadioOption Attribute', () => {
     parentOrder: 0,
     label: 'Radio Option',
     action: null,
+    pollOptionImageId: null,
     children: []
   }
 
