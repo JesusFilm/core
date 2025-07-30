@@ -79,9 +79,7 @@ export async function POST(req: NextRequest) {
   const langfuseTraceId = uuidv4()
 
   const result = streamText({
-    model: google('gemini-2.5-flash', {
-      useSearchGrounding: true
-    }),
+    model: google('gemini-2.5-flash'),
     messages: messages.filter((message) => message.role !== 'system'),
     system: systemPrompt.compile({
       journeyId: journeyId ?? 'none',
