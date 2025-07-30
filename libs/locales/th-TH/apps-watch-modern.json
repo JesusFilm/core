@@ -1,17 +1,17 @@
 {
   "Metadata": {
-    "pageTitle": "{title} | Jesus Film Project"
+    "pageTitle": "{title} | โครงการภาพยนตร์พระเยซู"
   },
   "RootIndexPage": {
     "pageTitle": "Watch",
-    "title": "Free Gospel Video <underline>Streaming</underline> Library.",
+    "title": "ห้องสมุดวิดีโอ<underline>สตรีมมิ่ง</underline>พระกิตติคุณฟรี",
     "description": "ดู ศึกษา และแบ่งปันพระคริสต์ในภาษากว่า 2000 ภาษา"
   },
   "DatadogErrorBoundary": {
-    "somethingWentWrong": "Something went wrong",
-    "anErrorOccurred": "An error occurred while loading this page. Please try refreshing.",
-    "errorDetails": "Error details",
-    "tryAgain": "Try again",
-    "unknownError": "Unknown error"
+    "somethingWentWrong": "เกิดข้อผิดพลาด",
+    "anErrorOccurred": "เกิดข้อผิดพลาดขณะโหลดหน้านี้ กรุณาลองรีเฟรช",
+    "errorDetails": "รายละเอียดข้อผิดพลาด",
+    "tryAgain": "ลองอีกครั้ง",
+    "unknownError": "เกิดข้อผิดพลาดที่ไม่ทราบสาเหตุ"
   }
 }
