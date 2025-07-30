@@ -38,7 +38,6 @@ interface RadioQuestionProps extends TreeBlock<RadioQuestionFields> {
   uuid?: () => string
   wrappers?: WrappersProps
   addOption?: () => void
-  // addOption?: ReactElement
 }
 
 export function RadioQuestion({

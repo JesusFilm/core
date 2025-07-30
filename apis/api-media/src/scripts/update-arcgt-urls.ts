@@ -22,8 +22,8 @@ async function updateArcGtUrls(): Promise<void> {
   console.log(`Target qualities: ${TARGET_QUALITIES.join(', ')}`)
 
   try {
-    // Get count of downloads that need updating
-    const totalCount = await prisma.videoVariantDownload.count({
+    // Get initial count of downloads that need updating
+    let remainingCount = await prisma.videoVariantDownload.count({
       where: {
         quality: {
           in: TARGET_QUALITIES
@@ -34,23 +34,21 @@ async function updateArcGtUrls(): Promise<void> {
       }
     })
 
-    console.log(`Found ${totalCount} downloads to update`)
+    console.log(`Found ${remainingCount} downloads to update`)
 
-    if (totalCount === 0) {
+    if (remainingCount === 0) {
       console.log('No downloads found to update. Exiting.')
       return
     }
 
-    let processed = 0
-    let updated = 0
+    let totalUpdated = 0
+    let batchNumber = 1
 
-    // Process in batches
-    while (processed < totalCount) {
-      console.log(
-        `Processing batch ${Math.floor(processed / BATCH_SIZE) + 1}...`
-      )
+    // Process in batches until no more records need updating
+    while (remainingCount > 0) {
+      console.log(`Processing batch ${batchNumber}...`)
 
-      // Get batch of downloads to update
+      // Get batch of downloads to update (always take from the beginning since we're updating records)
       const downloads = await prisma.videoVariantDownload.findMany({
         where: {
           quality: {
@@ -61,7 +59,6 @@ async function updateArcGtUrls(): Promise<void> {
           }
         },
         take: BATCH_SIZE,
-        skip: processed,
         orderBy: {
           id: 'asc'
         }
@@ -80,20 +77,33 @@ async function updateArcGtUrls(): Promise<void> {
           data: { url: newUrl }
         })
 
-        updated++
+        totalUpdated++
 
-        if (updated % 100 === 0) {
-          console.log(`Updated ${updated} URLs so far...`)
+        if (totalUpdated % 100 === 0) {
+          console.log(`Updated ${totalUpdated} URLs so far...`)
         }
       }
 
-      processed += downloads.length
-      console.log(`Progress: ${processed}/${totalCount} downloads processed`)
+      // Get updated count of remaining downloads
+      remainingCount = await prisma.videoVariantDownload.count({
+        where: {
+          quality: {
+            in: TARGET_QUALITIES
+          },
+          url: {
+            startsWith: OLD_URL_PREFIX
+          }
+        }
+      })
+
+      console.log(
+        `Batch ${batchNumber} complete. ${remainingCount} downloads remaining.`
+      )
+      batchNumber++
     }
 
     console.log('\n=== Update Complete ===')
-    console.log(`Total processed: ${processed}`)
-    console.log(`Total updated: ${updated}`)
+    console.log(`Total updated: ${totalUpdated}`)
     console.log(`URLs changed from: ${OLD_URL_PREFIX}`)
     console.log(`URLs changed to: ${NEW_URL_PREFIX}`)
   } catch (error) {

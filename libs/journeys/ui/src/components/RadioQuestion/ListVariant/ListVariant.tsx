@@ -9,19 +9,26 @@ import AddSquare4Icon from '@core/shared/ui/icons/AddSquare4'
 import { adminTheme } from '@core/shared/ui/themes/journeysAdmin/theme'
 
 import { StyledListRadioOption } from '../../RadioOption/ListVariant'
+import { getPollOptionBorderStyles } from '../utils/getPollOptionBorderStyles'
 
 const StyledListRadioQuestion = styled(Box)<BoxProps>(({ theme }) => ({
-  marginBottom: theme.spacing(4),
   '& .MuiButtonGroup-root': {
     boxShadow: 'none',
     gap: theme.spacing(2),
     '& .MuiButtonGroup-grouped': {
-      borderRadius: '12px',
       border: 'none',
+      borderBottom: 'none',
+      borderRight: 'none',
+      borderRadius: '12px',
       margin: '0 !important',
-      '&:not(:last-child)': {
-        borderBottom: 'none !important',
-        borderRight: 'none !important'
+      '& .MuiButtonGroup-firstButton': {
+        ...getPollOptionBorderStyles(theme)
+      },
+      '& .MuiButtonGroup-middleButton': {
+        ...getPollOptionBorderStyles(theme)
+      },
+      '& .MuiButtonGroup-lastButton': {
+        ...getPollOptionBorderStyles(theme)
       }
     }
   }
