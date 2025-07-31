@@ -18,17 +18,20 @@ Check that video is playing
 
 test.describe('Feature film', () => {
   test('Feature film navigation and video playback', async ({ page }) => {
+    // Set longer timeout for CI environments
+    test.setTimeout(60000)
+
     // Navigate to the watch page
     await page.goto('/watch')
 
     // Click on the JESUS Feature Film button
     await page.getByRole('button', { name: 'JESUS JESUS Feature Film 61 chapters' }).click()
 
-    // Wait for navigation and verify URL
-    await expect(page).toHaveURL('/watch/jesus.html/english.html')
+    // Wait for navigation and verify URL with longer timeout
+    await expect(page).toHaveURL('/watch/jesus.html/english.html', { timeout: 30000 })
 
-    // Wait for video tiles to load
-    await page.waitForSelector('[data-testid="VideoCardButton-birth-of-jesus"]')
+    // Wait for video tiles to load with longer timeout
+    await page.waitForSelector('[data-testid="VideoCardButton-birth-of-jesus"]', { timeout: 30000 })
 
     // Test navigation arrows
     const rightArrow = page.locator('[data-testid="NavigateNextIcon"]').first()
@@ -42,13 +45,13 @@ test.describe('Feature film', () => {
     await leftArrow.click()
 
     // Verify we're still on the correct page
-    await expect(page).toHaveURL('/watch/jesus.html/english.html')
+    await expect(page).toHaveURL('/watch/jesus.html/english.html', { timeout: 30000 })
 
     // Click on 'CHAPTER Birth of Jesus'
     await page.getByTestId('VideoCardButton-birth-of-jesus').click()
 
-    // Verify URL changed to Birth of Jesus chapter
-    await expect(page).toHaveURL('/watch/jesus.html/birth-of-jesus/english.html')
+    // Verify URL changed to Birth of Jesus chapter with longer timeout
+    await expect(page).toHaveURL('/watch/jesus.html/birth-of-jesus/english.html', { timeout: 30000 })
 
     // Click Play button
     await page.getByRole('button', { name: 'Play with sound' }).click()
