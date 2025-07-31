@@ -1,1 +1,2 @@
-export * from './journeyNotification'
+import './journeyNotification'
+import './inputs'

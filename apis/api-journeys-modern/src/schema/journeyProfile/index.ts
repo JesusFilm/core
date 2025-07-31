@@ -1,1 +1,2 @@
-export * from './journeyProfile'
+import './journeyProfile'
+import './inputs'
