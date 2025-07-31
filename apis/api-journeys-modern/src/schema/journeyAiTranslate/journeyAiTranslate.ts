@@ -57,8 +57,6 @@ const JourneyAnalysisSchema = z.object({
   seoDescription: z.string().describe('Translated journey SEO description')
 })
 
-// Input types are now imported from ./inputs/
-
 builder.subscriptionField('journeyAiTranslateCreateSubscription', (t) =>
   t.withAuth({ isAuthenticated: true }).field({
     type: JourneyAiTranslateProgressRef,

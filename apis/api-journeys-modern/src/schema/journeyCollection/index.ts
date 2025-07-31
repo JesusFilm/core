@@ -1,1 +1,2 @@
-export * from './journeyCollection'
+import './journeyCollection'
+import './inputs'

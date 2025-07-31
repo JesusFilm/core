@@ -1,2 +1,2 @@
-import './integration'
 import './growthSpaces'
+import './inputs'
