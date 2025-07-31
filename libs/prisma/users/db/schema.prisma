@@ -1,0 +1,37 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider      = "prisma-client-js"
+  output        = "../src/.prisma/client"
+  binaryTargets = ["native", "linux-musl-openssl-3.0.x"]
+}
+
+generator erd {
+  provider    = "prisma-erd-generator"
+  ignoreEnums = true
+  disabled    = true
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("PG_DATABASE_URL_USERS")
+}
+
+generator pothos {
+  provider     = "prisma-pothos-types"
+  clientOutput = "../.prisma/client"
+  output       = "../src/__generated__/pothos-types.ts"
+}
+
+model User {
+  id            String   @id @default(uuid())
+  userId        String   @unique
+  firstName     String
+  lastName      String?
+  email         String   @unique
+  imageUrl      String?
+  createdAt     DateTime @default(now())
+  superAdmin    Boolean  @default(false)
+  emailVerified Boolean  @default(true)
+}

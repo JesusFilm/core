@@ -1,4 +1,4 @@
-import { Block } from '.prisma/api-journeys-modern-client'
+import { Block } from '@core/prisma/journeys/client'
 
 import { getBlockContent } from './getBlockContent'
 import { getButtonBlockContent } from './getButtonBlockContent'

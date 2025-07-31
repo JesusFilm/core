@@ -1,10 +1,11 @@
 import Mux from '@mux/mux-node'
 
+import { prisma } from '@core/prisma/media/client'
+
 import {
   createDownloadsFromMuxAsset,
   downloadsReadyToStore
 } from '../lib/downloads'
-import { prisma } from '../lib/prisma'
 import { logger as baseLogger } from '../logger'
 import { getVideo } from '../schema/mux/video/service'
 

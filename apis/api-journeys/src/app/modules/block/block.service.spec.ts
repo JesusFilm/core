@@ -3,7 +3,7 @@ import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
 import omit from 'lodash/omit'
 import { v4 as uuidv4 } from 'uuid'
 
-import { Action, Block } from '.prisma/api-journeys-client'
+import { Action, Block } from '@core/prisma/journeys/client'
 
 import {
   JourneyStatus,
