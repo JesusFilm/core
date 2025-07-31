@@ -1,18 +1,72 @@
 import { Hono } from 'hono'
 
-const app = new Hono<{ Bindings: { PROXY_DEST?: string } }>()
+const app = new Hono<{
+  Bindings: {
+    WATCH_PROXY_DEST?: string
+    WATCH_MODERN_PROXY_DEST?: string
+    WATCH_MODERN_PROXY_PATHS?: string[]
+  }
+}>()
 
 app.get('*', async (c) => {
   const url = new URL(c.req.url)
-  url.hostname = c.env.PROXY_DEST ?? url.hostname
+  const pathname = url.pathname
+
+  // Check if path should route to modern proxy
+  const modernProxyPaths = c.env.WATCH_MODERN_PROXY_PATHS || []
+  const shouldUseModernProxy = modernProxyPaths.some((pattern) => {
+    try {
+      const regex = new RegExp(pattern)
+      return regex.test(pathname)
+    } catch (error) {
+      console.error('Invalid regex pattern:', pattern, error)
+      return false
+    }
+  })
+
+  // Set destination based on path matching
+  const proxyDest = shouldUseModernProxy
+    ? (c.env.WATCH_MODERN_PROXY_DEST ?? url.hostname)
+    : (c.env.WATCH_PROXY_DEST ?? url.hostname)
+
+  url.hostname = proxyDest
+
+  // Modify path for /watch/modern/* routes by removing 'modern/' part
+  if (shouldUseModernProxy && pathname.startsWith('/watch/modern/')) {
+    url.pathname = pathname.replace('/watch/modern/', '/watch/')
+  }
+
   let response: Response
+
+  // Extract headers from the original request, including cookies
+  const headers = new Headers()
+
+  // Copy all headers from the original request
+  const originalHeaders = c.req.header()
+  if (originalHeaders) {
+    Object.entries(originalHeaders).forEach(([key, value]) => {
+      if (value) {
+        headers.set(key, value)
+      }
+    })
+  }
+
+  // Ensure cookies are properly passed
+  const cookieHeader = c.req.header('cookie')
+  if (cookieHeader) {
+    headers.set('cookie', cookieHeader)
+  }
 
   try {
     response = await fetch(
       url
         .toString()
         .replace(/(%[0-9A-F][0-9A-F])/g, (match) => match.toLowerCase()),
-      { ...c.req, redirect: 'manual' }
+      {
+        method: c.req.method,
+        headers,
+        redirect: 'manual'
+      }
     )
   } catch (error) {
     console.error('Proxy fetch error:', error)
@@ -24,7 +78,8 @@ app.get('*', async (c) => {
     notFoundUrl.pathname = '/not-found.html'
     try {
       response = await fetch(notFoundUrl.toString(), {
-        ...c.req,
+        method: c.req.method,
+        headers,
         redirect: 'manual'
       })
     } catch (error) {
