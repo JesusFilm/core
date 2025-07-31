@@ -7,6 +7,24 @@
     "title": "नि:शुल्क सुसमाचार भिडियो <underline>स्ट्रिमिङ</underline> पुस्तकालय।",
     "description": "२००० भन्दा बढी भाषाहरूमा सुसमाचार हेर्नुहोस्, सिक्नुहोस् र साझा गर्नुहोस्"
   },
+  "ModernTestPage": {
+    "pageTitle": "Modern Test",
+    "title": "Modern Test Page",
+    "description": "This is a test page for the modern watch application. It demonstrates the new routing and proxy functionality.",
+    "feature1": {
+      "title": "Modern Architecture",
+      "description": "Built with Next.js App Router and modern React patterns for optimal performance and developer experience."
+    },
+    "feature2": {
+      "title": "Intelligent Routing",
+      "description": "Advanced proxy routing that intelligently directs traffic to the appropriate backend services."
+    },
+    "feature3": {
+      "title": "Responsive Design",
+      "description": "Fully responsive design that works seamlessly across all devices and screen sizes."
+    },
+    "footer": "This page is served by the modern watch application through intelligent proxy routing."
+  },
   "DatadogErrorBoundary": {
     "somethingWentWrong": "केही गडबड भयो।",
     "anErrorOccurred": "यो पृष्ठ लोड गर्दा एउटा त्रुटि भयो। कृपया पुन:ताजा गर्ने प्रयास गर्नुहोस्।",
