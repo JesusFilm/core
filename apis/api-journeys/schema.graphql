@@ -909,7 +909,7 @@ input RadioOptionBlockCreateInput {
 input RadioOptionBlockUpdateInput {
   parentBlockId: ID
   label: String
-  pollOptionImageId: ID @deprecated(reason: "use pollOptionImageBlockId instead")
+  pollOptionImageId: ID
   pollOptionImageBlockId: ID
 }
 

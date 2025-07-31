@@ -3530,7 +3530,7 @@ input RadioOptionBlockCreateInput @join__type(graph: API_JOURNEYS)  {
 input RadioOptionBlockUpdateInput @join__type(graph: API_JOURNEYS)  {
   parentBlockId: ID
   label: String
-  pollOptionImageId: ID @deprecated(reason: "use pollOptionImageBlockId instead") 
+  pollOptionImageId: ID
   pollOptionImageBlockId: ID
 }
 
