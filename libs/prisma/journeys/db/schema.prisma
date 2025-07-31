@@ -479,94 +479,94 @@ enum VideoBlockObjectFit {
 }
 
 model Block {
-  id                      String               @id @default(uuid())
-  typename                String
-  journeyId               String
-  parentBlockId           String?
-  parentOrder             Int?
-  label                   String?
-  placeholder             String?
-  required                Boolean?             @default(false)
-  variant                 String?
-  color                   String?
-  size                    String?
-  startIconId             String?
-  endIconId               String?
-  action                  Action?
-  backgroundColor         String?
-  backdropBlur            Int?
-  coverBlockId            String?              @unique
-  fullscreen              Boolean?
-  themeMode               String?
-  themeName               String?
-  spacing                 Int?
-  gap                     Int?
-  direction               String?
-  justifyContent          String?
-  alignItems              String?
-  xl                      Int?
-  lg                      Int?
-  sm                      Int?
-  name                    String?
-  src                     String?
-  width                   Int?
-  height                  Int?
-  alt                     String?
-  blurhash                String?
-  submitIconId            String?
-  submitLabel             String?
-  submitEnabled           Boolean?             @default(true)
-  nextBlockId             String?
-  locked                  Boolean?
-  hint                    String?
-  minRows                 Int?
-  content                 String?
-  align                   String?
-  startAt                 Int?
-  endAt                   Int?
-  muted                   Boolean?
-  autoplay                Boolean?
-  posterBlockId           String?              @unique
-  pollOptionImageId       String?              @unique
-  fullsize                Boolean?
-  videoId                 String?
-  videoVariantLanguageId  String?
-  source                  VideoBlockSource?
-  title                   String?
-  description             String?
-  image                   String?
-  duration                Int?
-  objectFit               VideoBlockObjectFit?
-  triggerStart            Int?
-  x                       Int?
-  y                       Int?
-  routeId                 String?
-  integrationId           String?
-  type                    TextResponseType?
-  updatedAt               DateTime             @default(now()) @updatedAt
-  deletedAt               DateTime?
-  focalTop                Int?                 @default(50)
-  focalLeft               Int?                 @default(50)
-  gridView                Boolean?
-  journey                 Journey              @relation(fields: [journeyId], references: [id], onDelete: Cascade)
-  posterBlock             Block?               @relation("PosterBlock", fields: [posterBlockId], references: [id])
-  posterBlockParent       Block?               @relation("PosterBlock")
-  coverBlock              Block?               @relation("CoverBlock", fields: [coverBlockId], references: [id])
-  coverBlockParent        Block?               @relation("CoverBlock")
-  pollOptionImage         Block?               @relation("PollOptionImage", fields: [pollOptionImageId], references: [id])
-  pollOptionImageParent   Block?               @relation("PollOptionImage")
-  primaryImageBlockParent Journey?             @relation("PrimaryImageBlock")
-  creatorImageBlockParent Journey?             @relation("CreatorImageBlock")
-  nextBlock               Block?               @relation("NextBlock", fields: [nextBlockId], references: [id])
-  nextBlockParents        Block[]              @relation("NextBlock")
-  parentBlock             Block?               @relation("ParentBlock", fields: [parentBlockId], references: [id], onDelete: Cascade)
-  childBlocks             Block[]              @relation("ParentBlock")
-  targetActions           Action[]             @relation("Block")
-  scale                   Int?
-  menuStepBlockParent     Journey?             @relation("MenuStepBlock")
-  logoImageBlockParent    Journey?             @relation("LogoImageBlock")
-  slug                    String?
-  settings                Json                 @default("{ }") // block settings
+  id                         String               @id @default(uuid())
+  typename                   String
+  journeyId                  String
+  parentBlockId              String?
+  parentOrder                Int?
+  label                      String?
+  placeholder                String?
+  required                   Boolean?             @default(false)
+  variant                    String?
+  color                      String?
+  size                       String?
+  startIconId                String?
+  endIconId                  String?
+  action                     Action?
+  backgroundColor            String?
+  backdropBlur               Int?
+  coverBlockId               String?              @unique
+  fullscreen                 Boolean?
+  themeMode                  String?
+  themeName                  String?
+  spacing                    Int?
+  gap                        Int?
+  direction                  String?
+  justifyContent             String?
+  alignItems                 String?
+  xl                         Int?
+  lg                         Int?
+  sm                         Int?
+  name                       String?
+  src                        String?
+  width                      Int?
+  height                     Int?
+  alt                        String?
+  blurhash                   String?
+  submitIconId               String?
+  submitLabel                String?
+  submitEnabled              Boolean?             @default(true)
+  nextBlockId                String?
+  locked                     Boolean?
+  hint                       String?
+  minRows                    Int?
+  content                    String?
+  align                      String?
+  startAt                    Int?
+  endAt                      Int?
+  muted                      Boolean?
+  autoplay                   Boolean?
+  posterBlockId              String?              @unique
+  pollOptionImageBlockId     String?              @unique
+  fullsize                   Boolean?
+  videoId                    String?
+  videoVariantLanguageId     String?
+  source                     VideoBlockSource?
+  title                      String?
+  description                String?
+  image                      String?
+  duration                   Int?
+  objectFit                  VideoBlockObjectFit?
+  triggerStart               Int?
+  x                          Int?
+  y                          Int?
+  routeId                    String?
+  integrationId              String?
+  type                       TextResponseType?
+  updatedAt                  DateTime             @default(now()) @updatedAt
+  deletedAt                  DateTime?
+  focalTop                   Int?                 @default(50)
+  focalLeft                  Int?                 @default(50)
+  gridView                   Boolean?
+  journey                    Journey              @relation(fields: [journeyId], references: [id], onDelete: Cascade)
+  posterBlock                Block?               @relation("PosterBlock", fields: [posterBlockId], references: [id])
+  posterBlockParent          Block?               @relation("PosterBlock")
+  coverBlock                 Block?               @relation("CoverBlock", fields: [coverBlockId], references: [id])
+  coverBlockParent           Block?               @relation("CoverBlock")
+  pollOptionImageBlock       Block?               @relation("PollOptionImageBlock", fields: [pollOptionImageBlockId], references: [id])
+  pollOptionImageBlockParent Block?               @relation("PollOptionImageBlock")
+  primaryImageBlockParent    Journey?             @relation("PrimaryImageBlock")
+  creatorImageBlockParent    Journey?             @relation("CreatorImageBlock")
+  nextBlock                  Block?               @relation("NextBlock", fields: [nextBlockId], references: [id])
+  nextBlockParents           Block[]              @relation("NextBlock")
+  parentBlock                Block?               @relation("ParentBlock", fields: [parentBlockId], references: [id], onDelete: Cascade)
+  childBlocks                Block[]              @relation("ParentBlock")
+  targetActions              Action[]             @relation("Block")
+  scale                      Int?
+  menuStepBlockParent        Journey?             @relation("MenuStepBlock")
+  logoImageBlockParent       Journey?             @relation("LogoImageBlock")
+  slug                       String?
+  settings                   Json                 @default("{ }") // block settings
 
   @@unique([slug, journeyId])
   @@index(journeyId)

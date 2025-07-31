@@ -207,7 +207,8 @@ describe('BlockService', () => {
               'nextBlockId',
               'posterBlockId',
               'action',
-              'pollOptionImageId'
+              'pollOptionImageId',
+              'pollOptionImageBlockId'
             ),
             typename: 'CardBlock',
             journey: { connect: { id: journey.id } },

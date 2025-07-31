@@ -407,6 +407,7 @@ export class RadioOptionBlockUpdateInput {
     parentBlockId?: Nullable<string>;
     label?: Nullable<string>;
     pollOptionImageId?: Nullable<string>;
+    pollOptionImageBlockId?: Nullable<string>;
 }
 
 export class RadioQuestionBlockCreateInput {
@@ -1408,6 +1409,7 @@ export class RadioOptionBlock implements Block {
     label: string;
     action?: Nullable<Action>;
     pollOptionImageId?: Nullable<string>;
+    pollOptionImageBlockId?: Nullable<string>;
 }
 
 export class RadioQuestionBlock implements Block {
