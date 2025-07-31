@@ -26,6 +26,12 @@ on:
         required: false
         default: ''
 
+permissions:
+  contents: read
+  actions: read
+  deployments: write
+  pull-requests: write
+
 jobs:
   deploy-and-test:
     if: inputs.TargetTests == 'all-e2e' || github.event_name == 'schedule'
@@ -108,10 +114,10 @@ jobs:
           # Create consistent alias for daily e2e environment
           DEPLOYMENT_URL=$(cat apps/${{ matrix.app }}/.vercel-url)
           CONSISTENT_ALIAS="${{ matrix.app }}-daily-e2e-jesusfilm.vercel.app"
-          
+
           # Set the alias
           npx vercel alias set "$DEPLOYMENT_URL" "$CONSISTENT_ALIAS" --token=$VERCEL_TOKEN --scope=jesusfilm
-          
+
           # Update the .vercel-url file with the consistent URL
           echo "https://$CONSISTENT_ALIAS" > apps/${{ matrix.app }}/.vercel-url
       - name: Generate deployment URL
