@@ -308,7 +308,7 @@ const steps: Array<TreeBlock<StepBlock>> = [
                 parentBlockId: 'radioQuestion1.id',
                 parentOrder: 0,
                 label: 'One of many ways to God',
-                pollOptionImageId: null,
+                pollOptionImageBlockId: null,
                 action: {
                   __typename: 'NavigateToBlockAction',
                   parentBlockId: 'radioOption1.id',
@@ -323,7 +323,7 @@ const steps: Array<TreeBlock<StepBlock>> = [
                 parentBlockId: 'radioQuestion1.id',
                 parentOrder: 1,
                 label: 'One great lie...',
-                pollOptionImageId: null,
+                pollOptionImageBlockId: null,
                 action: {
                   __typename: 'NavigateToBlockAction',
                   parentBlockId: 'radioOption2.id',
@@ -338,7 +338,7 @@ const steps: Array<TreeBlock<StepBlock>> = [
                 parentBlockId: 'radioQuestion1.id',
                 parentOrder: 2,
                 label: 'One true way to God',
-                pollOptionImageId: null,
+                pollOptionImageBlockId: null,
                 action: {
                   __typename: 'NavigateToBlockAction',
                   parentBlockId: 'radioOption3.id',
@@ -417,7 +417,7 @@ const steps: Array<TreeBlock<StepBlock>> = [
                 parentBlockId: 'radioQuestion1.id',
                 parentOrder: 0,
                 label: 'Yes, God likes good people',
-                pollOptionImageId: null,
+                pollOptionImageBlockId: null,
                 action: {
                   __typename: 'NavigateToBlockAction',
                   parentBlockId: 'radioOption1.id',
@@ -432,7 +432,7 @@ const steps: Array<TreeBlock<StepBlock>> = [
                 parentBlockId: 'radioQuestion1.id',
                 parentOrder: 1,
                 label: 'No, He will accept me as I am',
-                pollOptionImageId: null,
+                pollOptionImageBlockId: null,
                 action: {
                   __typename: 'NavigateToBlockAction',
                   parentBlockId: 'radioOption2.id',

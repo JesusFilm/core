@@ -65,7 +65,7 @@ describe('ActionCards', () => {
                       gtmEventName: 'poll',
                       url: 'https://www.google.com/'
                     },
-                    pollOptionImageId: null
+                    pollOptionImageBlockId: null
                   },
                   {
                     __typename: 'StepBlock',
