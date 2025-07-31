@@ -5,7 +5,7 @@ import { defineConfig, devices } from '@playwright/test'
  * Read environment variables from file.
  * https://github.com/motdotla/dotenv
  */
-// require('dotenv').config();
+require('dotenv').config();
 
 /**
  * See https://playwright.dev/docs/test-configuration.
@@ -27,7 +27,7 @@ export default defineConfig({
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
     /* Use URL that has been set part of app-deploy.yml */
-    baseURL: process.env.DEPLOYMENT_URL ?? 'http://localhost:4300',
+    baseURL: process.env.WATCH_DAILY_E2E ?? process.env.DEPLOYMENT_URL ?? 'http://localhost:4300',
 
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     trace: 'on-first-retry',
@@ -43,10 +43,16 @@ export default defineConfig({
     //   name: 'Microsoft Edge',
     //   use: { ...devices['Desktop Edge'], channel: 'msedge' },
     // },
-    // {
-    //   name: 'chrome-desktop',
-    //   use: { ...devices['Desktop Chrome'], channel: 'chrome' }
-    // },
+    {
+      name: 'chrome-desktop',
+      use: {
+        ...devices['Desktop Chrome'],
+        channel:
+          process.platform === 'linux' && process.arch === 'arm64'
+            ? 'chromium'
+            : 'chrome'
+      }
+    }
 
     // // /* Test against mobile viewports. */
     // // // By default it's using chromium channel, changed it to chrome so it can play the video
@@ -60,10 +66,10 @@ export default defineConfig({
     // },
 
     /* Others. */
-    {
-      name: 'firefox',
-      use: { ...devices['Desktop Firefox'] }
-    }
+    // {
+    //   name: 'firefox',
+    //   use: { ...devices['Desktop Firefox'] }
+    // }
 
     // {
     //   name: 'webkit',

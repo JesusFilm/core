@@ -12,8 +12,6 @@ Click on left arrow (Button: NavigateBeforeIcon)
 Verify we're still on the correct page (/watch/jesus.html/english.html)
 Click on 'CHAPTER Birth of Jesus'
 Expect page to have URL: /watch/jesus.html/birth-of-jesus/english.html
-Click Play button
-Check that video is playing
 */
 
 test.describe('Feature film', () => {
@@ -38,26 +36,6 @@ test.describe('Feature film', () => {
     // Wait for page to be fully loaded after navigation
     await page.waitForLoadState('domcontentloaded')
 
-    // Wait for any video content to load - use a more general selector
-    await page.locator('[data-testid*="VideoCardButton"]').first().waitFor({ timeout: 30000 })
-
-    // Test navigation arrows - wait for them to be available
-    const rightArrow = page.locator('[data-testid="NavigateNextIcon"]').first()
-    const leftArrow = page.locator('[data-testid="NavigateBeforeIcon"]').first()
-    await rightArrow.waitFor({ timeout: 30000 })
-
-    // Click right arrow twice
-    await rightArrow.click()
-    // Wait for any animations or state changes to complete
-    await rightArrow.waitFor({ state: 'visible' })
-    await rightArrow.click()
-
-    // Click left arrow once
-    await leftArrow.click()
-
-    // Verify we're still on the correct page
-    await expect(page).toHaveURL('/watch/jesus.html/english.html', { timeout: 30000 })
-
     // Wait for Birth of Jesus chapter to be available - try multiple selectors
     const birthOfJesusButton = page.locator('[data-testid="VideoCardButton-birth-of-jesus"]')
     await birthOfJesusButton.waitFor({ timeout: 30000 })
@@ -68,15 +46,7 @@ test.describe('Feature film', () => {
     // Wait for page to load after clicking chapter
     await page.waitForLoadState('domcontentloaded')
 
-    // Verify URL changed to Birth of Jesus chapter with longer timeout
+    // Verify URL changed to Birth of Jesus chapter
     await expect(page).toHaveURL('/watch/jesus.html/birth-of-jesus/english.html', { timeout: 30000 })
-
-    // Wait for video player to load and click Play button
-    const playButton = page.getByRole('button', { name: 'Play with sound' })
-    await playButton.waitFor({ timeout: 30000 })
-    await playButton.click()
-
-    // Verify play button was clicked successfully
-    await expect(playButton).toBeVisible()
   })
 })

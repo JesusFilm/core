@@ -5,7 +5,7 @@ import { defineConfig, devices } from '@playwright/test'
  * Read environment variables from file.
  * https://github.com/motdotla/dotenv
  */
-// require('dotenv').config();
+require('dotenv').config();
 
 /**
  * See https://playwright.dev/docs/test-configuration.
@@ -27,6 +27,7 @@ export default defineConfig({
   use: {
     permissions: ['clipboard-read', 'clipboard-write'],
     /* Base URL to use in actions like `await page.goto('/')`. */
+    baseURL: process.env.JOURNEYS_ADMIN_DAILY_E2E ?? process.env.DEPLOYMENT_URL ?? 'http://localhost:4100',
     actionTimeout: 20000,
     navigationTimeout: 60000,
     screenshot: 'only-on-failure',
