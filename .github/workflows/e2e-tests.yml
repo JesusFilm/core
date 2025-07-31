@@ -106,6 +106,12 @@ jobs:
         env:
           APP: ${{ matrix.app }}
         run: ./tools/scripts/generate-deployment-comment.sh
+      - name: Validate deployment URL
+        run: |
+          if [ -z "${{ steps.deployment-url.outputs.deployment-url }}" ]; then
+            echo "Failed to obtain deployment URL"
+            exit 1
+          fi
       - name: update deployment status
         uses: chrnorm/deployment-status@v2
         if: always()
