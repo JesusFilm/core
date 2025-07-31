@@ -5,7 +5,10 @@ type RadioOptionBlock implements Block @key(fields: "id") {
   parentOrder: Int @shareable
   label: String! @shareable
   action: Action
-  pollOptionImageId: ID @shareable
+  pollOptionImageId: ID
+    @shareable
+    @deprecated(reason: "use pollOptionImageBlockId instead")
+  pollOptionImageBlockId: ID @shareable
 }
 
 input RadioOptionBlockCreateInput {
@@ -19,6 +22,7 @@ input RadioOptionBlockUpdateInput {
   parentBlockId: ID
   label: String
   pollOptionImageId: ID
+  pollOptionImageBlockId: ID
 }
 
 extend type Mutation {
