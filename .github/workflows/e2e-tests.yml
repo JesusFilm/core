@@ -98,9 +98,22 @@ jobs:
           VIDEOS_ADMIN_VERCEL_PROJECT_ID: ${{ secrets.VIDEOS_ADMIN_VERCEL_PROJECT_ID }}
           WATCH_VERCEL_PROJECT_ID: ${{ secrets.WATCH_VERCEL_PROJECT_ID }}
           WATCH_MODERN_VERCEL_PROJECT_ID: ${{ secrets.WATCH_MODERN_VERCEL_PROJECT_ID }}
-          NEXT_PUBLIC_VERCEL_ENV: daily-e2e
+          NEXT_PUBLIC_VERCEL_ENV: preview
           NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA: ${{ github.sha }}
         run: npx nx run-many --target=deploy --projects=${{ matrix.app }}
+      - name: Set consistent Vercel alias for daily e2e
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+        run: |
+          # Create consistent alias for daily e2e environment
+          DEPLOYMENT_URL=$(cat apps/${{ matrix.app }}/.vercel-url)
+          CONSISTENT_ALIAS="${{ matrix.app }}-daily-e2e-jesusfilm.vercel.app"
+          
+          # Set the alias
+          npx vercel alias set "$DEPLOYMENT_URL" "$CONSISTENT_ALIAS" --token=$VERCEL_TOKEN --scope=jesusfilm
+          
+          # Update the .vercel-url file with the consistent URL
+          echo "https://$CONSISTENT_ALIAS" > apps/${{ matrix.app }}/.vercel-url
       - name: Generate deployment URL
         id: deployment-url
         env:
