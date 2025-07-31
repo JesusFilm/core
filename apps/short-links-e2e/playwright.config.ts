@@ -14,8 +14,8 @@ export default defineConfig({
   testDir: './src/e2e',
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
-  retries: process.env.CI ? 2 : 0,
-  workers: process.env.CI ? 8 : undefined,
+  retries: process.env.CI ? 3 : 0,
+  workers: process.env.CI ? 8 : 1,
   reporter: 'html',
   use: {
     baseURL:
