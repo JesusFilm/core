@@ -13,21 +13,126 @@ on:
       TargetTests:
         description: 'Pick the tests you want to run'
         type: choice
-        default:
+        default: 'arclight-e2e'
         required: true
         options:
+          - 'arclight-e2e'
           - 'docs-e2e'
           - 'journeys-e2e'
           - 'journeys-admin-e2e'
           - 'watch-e2e'
+          - 'watch-modern-e2e'
+          - 'videos-admin-e2e'
+          - 'short-links-e2e'
+          - 'video-importer-e2e'
+          - 'all-e2e'
       TargetAppUrl:
-        description: 'Test app URL without / at the end'
+        description: 'App URL (required for single test runs, ignored for all-e2e)'
         type: string
-        required: true
+        required: false
+        default: ''
+
 jobs:
+  deploy-and-test:
+    if: inputs.TargetTests == 'all-e2e'
+    runs-on: blacksmith-4vcpu-ubuntu-2204
+    strategy:
+      fail-fast: false
+      matrix:
+        app: ['arclight', 'docs', 'journeys', 'journeys-admin', 'watch', 'watch-modern', 'videos-admin', 'short-links', 'video-importer']
+    permissions:
+      deployments: write
+      contents: write
+    steps:
+      - name: start deployment
+        uses: chrnorm/deployment-action@v2
+        id: deployment
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          environment: E2E Test - ${{ matrix.app }}
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: useblacksmith/setup-node@v5
+        with:
+          node-version: 22
+      - name: Get Node Version
+        id: node-version
+        run: echo "version=$(node -v)" >> $GITHUB_OUTPUT
+      - name: Mount NPM Cache
+        uses: useblacksmith/stickydisk@v1
+        with:
+          key: ${{ github.repository }}-${{ steps.node-version.outputs.version }}-npm-cache
+          path: ~/.npm
+      - name: Mount node_modules
+        uses: useblacksmith/stickydisk@v1
+        with:
+          key: ${{ github.repository }}-${{ steps.node-version.outputs.version }}-node-modules
+          path: ./node_modules
+      - name: Mount playwright cache
+        uses: useblacksmith/stickydisk@v1
+        with:
+          key: ${{ github.repository }}-playwright-cache
+          path: ~/.cache/ms-playwright
+      - name: NPM Install
+        run: npm install --silent
+      - uses: nrwl/nx-set-shas@v4
+      - name: vercel deployment
+        env:
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          ARCLIGHT_VERCEL_PROJECT_ID: ${{ secrets.ARCLIGHT_VERCEL_PROJECT_ID }}
+          DOCS_VERCEL_PROJECT_ID: ${{ secrets.DOCS_VERCEL_PROJECT_ID }}
+          JOURNEYS_VERCEL_PROJECT_ID: ${{ secrets.JOURNEYS_STAGE_VERCEL_PROJECT_ID }}
+          JOURNEYS_ADMIN_VERCEL_PROJECT_ID: ${{ secrets.JOURNEYS_ADMIN_VERCEL_PROJECT_ID }}
+          SHORT_LINKS_VERCEL_PROJECT_ID: ${{ secrets.SHORT_LINKS_STAGE_VERCEL_PROJECT_ID }}
+          VIDEOS_ADMIN_VERCEL_PROJECT_ID: ${{ secrets.VIDEOS_ADMIN_VERCEL_PROJECT_ID }}
+          WATCH_VERCEL_PROJECT_ID: ${{ secrets.WATCH_VERCEL_PROJECT_ID }}
+          WATCH_MODERN_VERCEL_PROJECT_ID: ${{ secrets.WATCH_MODERN_VERCEL_PROJECT_ID }}
+          NEXT_PUBLIC_VERCEL_ENV: preview
+          NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA: ${{ github.sha }}
+        run: npx nx run-many --target=deploy --projects=${{ matrix.app }}
+      - name: Generate deployment URL
+        id: deployment-url
+        env:
+          APP: ${{ matrix.app }}
+        run: ./tools/scripts/generate-deployment-comment.sh
+      - name: update deployment status
+        uses: chrnorm/deployment-status@v2
+        if: always()
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          state: ${{ job.status }}
+          environment-url: ${{ steps.deployment-url.outputs.deployment-url }}
+          deployment-id: ${{ steps.deployment.outputs.deployment_id }}
+      - name: Install Playwright Browsers
+        run: npx playwright install --with-deps
+      - name: Run Playwright tests
+        run: npx nx run ${{ matrix.app }}-e2e:${{ inputs.TargetAction }}
+        env:
+          DEPLOYMENT_URL: ${{ steps.deployment-url.outputs.deployment-url }}
+          PLAYWRIGHT_EMAIL: ${{ secrets.PLAYWRIGHT_EMAIL }}
+          PLAYWRIGHT_PASSWORD: ${{ secrets.PLAYWRIGHT_PASSWORD }}
+          PLAYWRIGHT_USER: ${{ secrets.PLAYWRIGHT_USER }}
+          PLAYWRIGHT_TEAM_NAME: ${{ secrets.PLAYWRIGHT_TEAM_NAME }}
+          EXAMPLE_EMAIL_TOKEN: ${{ secrets.EXAMPLE_EMAIL_TOKEN }}
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: ${{ matrix.app }}-e2e-playwright-report
+          path: |
+            playwright-report/
+            apps/${{ matrix.app }}-e2e/src/e2e/
+            test-results
+          retention-days: 30
+
   E2E_Tests:
+    if: inputs.TargetTests != 'all-e2e'
     timeout-minutes: 60
     runs-on: blacksmith-2vcpu-ubuntu-2204
+    strategy:
+      matrix:
+        test-suite: ${{ fromJSON(format('["{0}"]', inputs.TargetTests)) }}
     steps:
       - uses: actions/checkout@v4
       - uses: useblacksmith/setup-node@v5
@@ -55,10 +160,17 @@ jobs:
         run: npm install --silent
       - name: Install Playwright Browsers
         run: npx playwright install --with-deps
+      - name: Set deployment URL for single test run
+        run: |
+          if [ -z "${{ inputs.TargetAppUrl }}" ]; then
+            echo "Error: TargetAppUrl is required for single test runs"
+            exit 1
+          fi
+          echo "DEPLOYMENT_URL=${{ inputs.TargetAppUrl }}" >> $GITHUB_ENV
       - name: Run Playwright tests
-        run: npx nx run ${{ inputs.TargetTests }}:${{ inputs.TargetAction }}
+        run: npx nx run ${{ matrix.test-suite }}:${{ inputs.TargetAction }}
         env:
-          DEPLOYMENT_URL: ${{ inputs.TargetAppUrl }}
+          DEPLOYMENT_URL: ${{ env.DEPLOYMENT_URL }}
           PLAYWRIGHT_EMAIL: ${{ secrets.PLAYWRIGHT_EMAIL }}
           PLAYWRIGHT_PASSWORD: ${{ secrets.PLAYWRIGHT_PASSWORD }}
           PLAYWRIGHT_USER: ${{ secrets.PLAYWRIGHT_USER }}
@@ -67,9 +179,9 @@ jobs:
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: ${{ inputs.TargetTests }}-playwright-report
+          name: ${{ matrix.test-suite }}-playwright-report
           path: |
             playwright-report/
-            apps/${{ inputs.TargetTests }}/src/e2e/
+            apps/${{ matrix.test-suite }}/src/e2e/
             test-results
           retention-days: 30
