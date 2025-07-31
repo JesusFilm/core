@@ -1,8 +1,8 @@
 name: E2E Tests
 on:
   schedule:
-    # Run every morning at 7am UTC
-    - cron: '0 7 * * *'
+    # Run every morning at 6am New Zealand time (5pm UTC)
+    - cron: '0 17 * * *'
   workflow_dispatch:
     inputs:
       TargetAction:
