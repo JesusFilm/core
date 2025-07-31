@@ -9,8 +9,8 @@ export default defineConfig({
   reporter: 'html',
   use: {
     baseURL: process.env.PR_NUMBER
-    ? `https://watch-modern-${process.env.PR_NUMBER}-jesusfilm.vercel.app/`
-    : (process.env.DEPLOYMENT_URL ?? 'http://localhost:4800'),
+      ? `https://watch-modern-${process.env.PR_NUMBER}-jesusfilm.vercel.app/`
+      : (process.env.DEPLOYMENT_URL ?? 'http://localhost:4800'),
     trace: 'on-first-retry',
     screenshot: 'only-on-failure'
   },
