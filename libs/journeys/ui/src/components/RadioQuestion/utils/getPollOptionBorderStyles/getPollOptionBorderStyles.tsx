@@ -16,7 +16,7 @@ export const getPollOptionBorderStyles = (
         ? `rgba(150, 150, 150, 0.5)${options?.important ? ' !important' : ''}`
         : `rgba(255, 255, 255, 0.5)${options?.important ? ' !important' : ''}`
   },
-  '&.selected': {
+  '&:active': {
     borderColor:
       theme.palette.mode === 'dark'
         ? `rgba(150, 150, 150, 0.7)${options?.important ? '!important' : ''}`

@@ -32,8 +32,8 @@ describe('getPollOptionBorderStyles', () => {
       expect(styles['&:hover'].borderColor).toBe('rgba(255, 255, 255, 0.5)')
     })
 
-    it('should return correct selected border styles for light theme', () => {
-      expect(styles['&.selected'].borderColor).toBe('rgba(255, 255, 255, 0.7)')
+    it('should return correct active border styles for light theme', () => {
+      expect(styles['&:active'].borderColor).toBe('rgba(255, 255, 255, 0.7)')
     })
 
     it('should return correct disabled border styles for light theme', () => {
@@ -59,7 +59,7 @@ describe('getPollOptionBorderStyles', () => {
     })
 
     it('should return correct selected border styles for dark theme', () => {
-      expect(styles['&.selected'].borderColor).toBe('rgba(150, 150, 150, 0.7)')
+      expect(styles['&:active'].borderColor).toBe('rgba(150, 150, 150, 0.7)')
     })
 
     it('should return correct disabled border styles for dark theme', () => {
@@ -90,7 +90,7 @@ describe('getPollOptionBorderStyles', () => {
         '&:hover': {
           borderColor: 'rgba(255, 255, 255, 0.5)'
         },
-        '&.selected': {
+        '&:active': {
           borderColor: 'rgba(255, 255, 255, 0.7)'
         },
         '&.disabled': {
@@ -109,7 +109,7 @@ describe('getPollOptionBorderStyles', () => {
         '&:hover': {
           borderColor: 'rgba(150, 150, 150, 0.5)'
         },
-        '&.selected': {
+        '&:active': {
           borderColor: 'rgba(150, 150, 150, 0.7)'
         },
         '&.disabled': {
