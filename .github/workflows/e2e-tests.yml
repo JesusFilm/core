@@ -64,8 +64,7 @@ jobs:
           fetch-depth: 0
       - uses: useblacksmith/setup-node@v5
         with:
-          # Use active LTS until 22 is GA on runners
-          node-version: 20
+          node-version: 22
       - name: Get Node Version
         id: node-version
         run: echo "version=$(node -v)" >> $GITHUB_OUTPUT
@@ -147,8 +146,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: useblacksmith/setup-node@v5
         with:
-          # Use active LTS until 22 is GA on runners
-          node-version: 20
+          node-version: 22
       - name: Get Node Version
         id: node-version
         run: echo "version=$(node -v)" >> $GITHUB_OUTPUT
