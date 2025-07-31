@@ -7,6 +7,24 @@
     "title": "Free Gospel Video <underline>Streaming</underline> Library.",
     "description": "Watch, learn and share the gospel in over 2000 languages"
   },
+  "ModernTestPage": {
+    "pageTitle": "Modern Test",
+    "title": "Modern Test Page",
+    "description": "This is a test page for the modern watch application. It demonstrates the new routing and proxy functionality.",
+    "feature1": {
+      "title": "Modern Architecture",
+      "description": "Built with Next.js App Router and modern React patterns for optimal performance and developer experience."
+    },
+    "feature2": {
+      "title": "Intelligent Routing",
+      "description": "Advanced proxy routing that intelligently directs traffic to the appropriate backend services."
+    },
+    "feature3": {
+      "title": "Responsive Design",
+      "description": "Fully responsive design that works seamlessly across all devices and screen sizes."
+    },
+    "footer": "This page is served by the modern watch application through intelligent proxy routing."
+  },
   "DatadogErrorBoundary": {
     "somethingWentWrong": "Something went wrong",
     "anErrorOccurred": "An error occurred while loading this page. Please try refreshing.",
