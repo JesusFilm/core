@@ -1,5 +1,4 @@
 const isBrowser = typeof window !== 'undefined'
-
 let localePath
 if (isBrowser) {
   // browser
@@ -22,7 +21,7 @@ const i18nConfig = {
       'en', // English
       'es', // Spanish
       'fr', // French
-      'id', // Indonesian
+      'id', // `Indonesian
       'th', // Thai
       'ja', // Japanese
       'ko', // Korean

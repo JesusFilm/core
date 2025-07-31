@@ -3,15 +3,8 @@ import Stack from '@mui/material/Stack'
 import Tab from '@mui/material/Tab'
 import Tabs from '@mui/material/Tabs'
 import Typography from '@mui/material/Typography'
-import last from 'lodash/last'
 import { useTranslation } from 'next-i18next'
-import {
-  ReactElement,
-  SyntheticEvent,
-  useEffect,
-  useMemo,
-  useState
-} from 'react'
+import { ReactElement, SyntheticEvent, useEffect, useState } from 'react'
 
 import { TabPanel, tabA11yProps } from '@core/shared/ui/TabPanel'
 
@@ -22,25 +15,6 @@ export function VideoContent(): ReactElement {
   const { description, studyQuestions } = useVideo()
   const [tabValue, setTabValue] = useState(0)
   const { t } = useTranslation('apps-watch')
-
-  const filteredStudyQuestions = useMemo(() => {
-    if (!studyQuestions?.length) return []
-
-    const nonPrimaryQuestions = studyQuestions.filter(
-      (q) => q.primary === false
-    )
-    if (nonPrimaryQuestions.length > 0) {
-      return nonPrimaryQuestions
-    }
-
-    const primaryQuestions = studyQuestions.filter((q) => q.primary === true)
-    if (primaryQuestions.length > 0) {
-      return primaryQuestions
-    }
-
-    return []
-  }, [studyQuestions])
-
   const handleTabChange = (
     _event: SyntheticEvent<Element, Event>,
     newValue: number
@@ -92,7 +66,7 @@ export function VideoContent(): ReactElement {
           }
           {...tabA11yProps('description', 0)}
         />
-        {filteredStudyQuestions.length !== 0 && (
+        {studyQuestions?.length !== 0 && (
           <Tab
             data-testid="discussion"
             label={
@@ -125,10 +99,10 @@ export function VideoContent(): ReactElement {
             }
           }}
         >
-          {last(description)?.value}
+          {description[0]?.value}
         </TextFormatter>
       </TabPanel>
-      {filteredStudyQuestions.length !== 0 && (
+      {studyQuestions?.length !== 0 && (
         <TabPanel name="discussion-questions" value={tabValue} index={1}>
           <Stack
             direction="column"
@@ -137,7 +111,7 @@ export function VideoContent(): ReactElement {
               py: 2
             }}
           >
-            {filteredStudyQuestions.map((question, index: number) => (
+            {studyQuestions?.map((question, index: number) => (
               <Stack
                 direction="row"
                 spacing={4}

@@ -32,7 +32,6 @@ export interface GetVideoContainerPart2_container_description {
 export interface GetVideoContainerPart2_container_studyQuestions {
   __typename: "VideoStudyQuestion";
   value: string;
-  primary: boolean;
 }
 
 export interface GetVideoContainerPart2_container_bibleCitations_bibleBook_name {

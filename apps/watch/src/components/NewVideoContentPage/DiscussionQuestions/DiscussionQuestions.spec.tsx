@@ -8,13 +8,11 @@ describe('DiscussionQuestions', () => {
   const mockQuestions: VideoContentFields_studyQuestions[] = [
     {
       value: 'What did you learn from this video?',
-      __typename: 'VideoStudyQuestion',
-      primary: true
+      __typename: 'VideoStudyQuestion'
     },
     {
       value: 'How can you apply this in your life?',
-      __typename: 'VideoStudyQuestion',
-      primary: true
+      __typename: 'VideoStudyQuestion'
     }
   ]
 

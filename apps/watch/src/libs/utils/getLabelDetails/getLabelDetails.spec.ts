@@ -1,14 +1,10 @@
-import { TFunction } from 'next-i18next'
-
 import { VideoLabel } from '../../../../__generated__/globalTypes'
 
 import { getLabelDetails } from './getLabelDetails'
 
 describe('getLabelDetails', () => {
-  const t = ((str: string) => str) as unknown as TFunction
-
   it('should return default label details', () => {
-    expect(getLabelDetails(t)).toEqual({
+    expect(getLabelDetails()).toEqual({
       label: 'Item',
       color: '#FFF',
       childLabel: 'Item',
@@ -17,7 +13,7 @@ describe('getLabelDetails', () => {
   })
 
   it('should return collection label details', () => {
-    expect(getLabelDetails(t, VideoLabel.collection)).toEqual({
+    expect(getLabelDetails(VideoLabel.collection)).toEqual({
       label: 'Collection',
       color: '#FF9E00',
       childLabel: 'Item',
@@ -26,7 +22,7 @@ describe('getLabelDetails', () => {
   })
 
   it('should return episode label details', () => {
-    expect(getLabelDetails(t, VideoLabel.episode)).toEqual({
+    expect(getLabelDetails(VideoLabel.episode)).toEqual({
       label: 'Episode',
       color: '#7283BE',
       childLabel: 'Item',
@@ -35,7 +31,7 @@ describe('getLabelDetails', () => {
   })
 
   it('should return featureFilm label details', () => {
-    expect(getLabelDetails(t, VideoLabel.featureFilm)).toEqual({
+    expect(getLabelDetails(VideoLabel.featureFilm)).toEqual({
       label: 'Feature Film',
       color: '#FF9E00',
       childLabel: 'Chapter',
@@ -44,7 +40,7 @@ describe('getLabelDetails', () => {
   })
 
   it('should return segment label details', () => {
-    expect(getLabelDetails(t, VideoLabel.segment)).toEqual({
+    expect(getLabelDetails(VideoLabel.segment)).toEqual({
       label: 'Chapter',
       color: '#7283BE',
       childLabel: 'Item',
@@ -53,7 +49,7 @@ describe('getLabelDetails', () => {
   })
 
   it('should return series label details', () => {
-    expect(getLabelDetails(t, VideoLabel.series)).toEqual({
+    expect(getLabelDetails(VideoLabel.series)).toEqual({
       label: 'Series',
       color: '#3AA74A',
       childLabel: 'Episode',
@@ -62,7 +58,7 @@ describe('getLabelDetails', () => {
   })
 
   it('should return shortFilm label details', () => {
-    expect(getLabelDetails(t, VideoLabel.shortFilm)).toEqual({
+    expect(getLabelDetails(VideoLabel.shortFilm)).toEqual({
       label: 'Short Film',
       color: '#FF9E00',
       childLabel: 'Item',
@@ -71,7 +67,7 @@ describe('getLabelDetails', () => {
   })
 
   it('should return single count child label', () => {
-    expect(getLabelDetails(t, VideoLabel.featureFilm, 1)).toEqual({
+    expect(getLabelDetails(VideoLabel.featureFilm, 1)).toEqual({
       label: 'Feature Film',
       color: '#FF9E00',
       childLabel: 'Chapter',
@@ -80,7 +76,7 @@ describe('getLabelDetails', () => {
   })
 
   it('should return multiple count child label', () => {
-    expect(getLabelDetails(t, VideoLabel.featureFilm, 2)).toEqual({
+    expect(getLabelDetails(VideoLabel.featureFilm, 2)).toEqual({
       label: 'Feature Film',
       color: '#FF9E00',
       childLabel: 'Chapter',

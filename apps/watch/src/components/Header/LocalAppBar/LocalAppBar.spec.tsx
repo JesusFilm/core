@@ -1,4 +1,3 @@
-import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, screen } from '@testing-library/react'
 
 import { LocalAppBar } from './LocalAppBar'
@@ -11,11 +10,7 @@ describe('LocalAppBar', () => {
   })
 
   it('should render correctly', () => {
-    render(
-      <MockedProvider>
-        <LocalAppBar onMenuClick={mockOnMenuClick} />
-      </MockedProvider>
-    )
+    render(<LocalAppBar onMenuClick={mockOnMenuClick} />)
 
     expect(screen.getByTestId('Header')).toBeInTheDocument()
     expect(screen.getByRole('img', { name: 'Watch Logo' })).toBeInTheDocument()
@@ -26,22 +21,14 @@ describe('LocalAppBar', () => {
   })
 
   it('should call onMenuClick when menu button is clicked', () => {
-    render(
-      <MockedProvider>
-        <LocalAppBar onMenuClick={mockOnMenuClick} />
-      </MockedProvider>
-    )
+    render(<LocalAppBar onMenuClick={mockOnMenuClick} />)
 
     fireEvent.click(screen.getByRole('button', { name: 'open header menu' }))
     expect(mockOnMenuClick).toHaveBeenCalledTimes(1)
   })
 
   it('should have a link to the watch page', () => {
-    render(
-      <MockedProvider>
-        <LocalAppBar onMenuClick={mockOnMenuClick} />
-      </MockedProvider>
-    )
+    render(<LocalAppBar onMenuClick={mockOnMenuClick} />)
 
     expect(screen.getByTestId('WatchLogo')).toHaveAttribute(
       'href',
@@ -50,11 +37,7 @@ describe('LocalAppBar', () => {
   })
 
   it('should add expanded class to menu button when menuOpen is true', () => {
-    render(
-      <MockedProvider>
-        <LocalAppBar onMenuClick={mockOnMenuClick} menuOpen />
-      </MockedProvider>
-    )
+    render(<LocalAppBar onMenuClick={mockOnMenuClick} menuOpen />)
 
     const menuButton = screen.getByRole('button', { name: 'open header menu' })
     expect(menuButton).toHaveClass('expanded')
@@ -62,36 +45,10 @@ describe('LocalAppBar', () => {
   })
 
   it('should not add expanded class to menu button when menuOpen is false', () => {
-    render(
-      <MockedProvider>
-        <LocalAppBar onMenuClick={mockOnMenuClick} menuOpen={false} />
-      </MockedProvider>
-    )
+    render(<LocalAppBar onMenuClick={mockOnMenuClick} menuOpen={false} />)
 
     const menuButton = screen.getByRole('button', { name: 'open header menu' })
     expect(menuButton).not.toHaveClass('expanded')
     expect(menuButton).toHaveAttribute('aria-expanded', 'false')
-  })
-
-  it('should hide language switcher by default', () => {
-    render(
-      <MockedProvider>
-        <LocalAppBar onMenuClick={jest.fn()} />
-      </MockedProvider>
-    )
-
-    expect(screen.queryByTestId('LanguageRoundedIcon')).not.toBeInTheDocument()
-  })
-
-  it('should open the language switcher dialog when language selector is clicked', async () => {
-    render(
-      <MockedProvider>
-        <LocalAppBar onMenuClick={mockOnMenuClick} showLanguageSwitcher />
-      </MockedProvider>
-    )
-
-    fireEvent.click(screen.getByTestId('LanguageSelector'))
-    // Adjust the below line if the dialog has a different test id or text
-    expect(await screen.findByRole('dialog')).toBeInTheDocument()
   })
 })

@@ -14,7 +14,6 @@ import { useTheme } from '@mui/material/styles'
 import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
 import { Form, Formik } from 'formik'
-import last from 'lodash/last'
 import Image from 'next/image'
 import { useTranslation } from 'next-i18next'
 import { ComponentProps, ReactElement, useEffect, useState } from 'react'
@@ -94,7 +93,7 @@ export function DownloadDialog({
         onClose?.()
       }}
       dialogTitle={{
-        title: t('Download Video'),
+        title: 'Download Video',
         closeButton: true
       }}
       testId="DownloadDialog"
@@ -149,7 +148,7 @@ export function DownloadDialog({
           )}
           <Stack>
             <Typography variant="h6" sx={{ mb: 1 }}>
-              {last(title)?.value}
+              {title[0].value}
             </Typography>
             <Stack direction="row" alignItems="center">
               <LanguageIcon fontSize="small" sx={{ mr: 1 }} />
@@ -169,7 +168,7 @@ export function DownloadDialog({
             <Form>
               <TextField
                 name="file"
-                label={t('Select a file size')}
+                label="Select a file size"
                 fullWidth
                 value={values.file}
                 onChange={handleChange}
@@ -188,10 +187,8 @@ export function DownloadDialog({
                   )
                   .map((download) => (
                     <MenuItem key={download.quality} value={download.url}>
-                      {download.quality === VideoVariantDownloadQuality.high
-                        ? t('High')
-                        : t('Low')}{' '}
-                      ({formatBytes(download.size)})
+                      {download.quality.charAt(0).toUpperCase()}
+                      {download.quality.slice(1)} ({formatBytes(download.size)})
                     </MenuItem>
                   ))}
               </TextField>
@@ -212,7 +209,7 @@ export function DownloadDialog({
                         onChange={handleChange}
                       />
                     }
-                    label={t('I agree to the')}
+                    label="I agree to the"
                   />
                   <Link
                     underline="none"

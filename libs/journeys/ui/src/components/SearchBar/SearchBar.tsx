@@ -17,6 +17,7 @@ import {
   useRef,
   useState
 } from 'react'
+import React from 'react'
 import { useRefinementList, useSearchBox } from 'react-instantsearch'
 
 import Search1Icon from '@core/shared/ui/icons/Search1'

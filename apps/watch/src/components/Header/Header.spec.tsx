@@ -1,4 +1,3 @@
-import { MockedProvider } from '@apollo/client/testing'
 import useScrollTrigger from '@mui/material/useScrollTrigger'
 import { fireEvent, render, screen } from '@testing-library/react'
 
@@ -17,21 +16,13 @@ describe('Header', () => {
   })
 
   it('should open navigation panel on menu icon click', async () => {
-    render(
-      <MockedProvider>
-        <Header />
-      </MockedProvider>
-    )
+    render(<Header />)
     fireEvent.click(screen.getByRole('button', { name: 'open header menu' }))
     expect(screen.getByRole('button', { name: 'Give' })).toBeInTheDocument()
   })
 
   it('should set menuOpen prop on LocalAppBar when menu is clicked', () => {
-    render(
-      <MockedProvider>
-        <Header />
-      </MockedProvider>
-    )
+    render(<Header />)
 
     expect(
       screen.queryByRole('button', { name: 'Give' })
@@ -47,29 +38,17 @@ describe('Header', () => {
   })
 
   it('should hide bottom app bar', () => {
-    render(
-      <MockedProvider>
-        <Header hideBottomAppBar />
-      </MockedProvider>
-    )
+    render(<Header hideBottomAppBar />)
     expect(screen.queryByTestId('BottomAppBar')).not.toBeInTheDocument()
   })
 
   it('should hide spacer', () => {
-    render(
-      <MockedProvider>
-        <Header hideSpacer />
-      </MockedProvider>
-    )
+    render(<Header hideSpacer />)
     expect(screen.queryByTestId('HeaderSpacer')).not.toBeInTheDocument()
   })
 
   it('should hide top app bar', () => {
-    render(
-      <MockedProvider>
-        <Header hideTopAppBar />
-      </MockedProvider>
-    )
+    render(<Header hideTopAppBar />)
     expect(screen.queryByTestId('TopAppBar')).not.toBeInTheDocument()
   })
 })

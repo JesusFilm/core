@@ -1,4 +1,3 @@
-import last from 'lodash/last'
 import { ReactElement, useEffect, useRef, useState } from 'react'
 import videojs from 'video.js'
 import Player from 'video.js/dist/types/player'
@@ -9,8 +8,6 @@ import { MuxMetadata } from '@core/shared/ui/muxMetadataType'
 import 'videojs-mux'
 
 import { useVideo } from '../../../../libs/videoContext'
-import { useWatch } from '../../../../libs/watchContext'
-import { subtitleUpdate } from '../../../../libs/watchContext/subtitleUpdate'
 
 import { VideoControls } from './VideoControls'
 
@@ -22,18 +19,8 @@ export function VideoPlayer({
   setControlsVisible
 }: VideoPlayerProps): ReactElement {
   const { variant, title } = useVideo()
-  const {
-    state: {
-      subtitleLanguage,
-      subtitleOn,
-      autoSubtitle,
-      videoSubtitleLanguages
-    }
-  } = useWatch()
   const videoRef = useRef<HTMLVideoElement>(null)
-  const [player, setPlayer] = useState<
-    Player & { textTracks?: () => TextTrackList }
-  >()
+  const [player, setPlayer] = useState<Player>()
 
   useEffect(() => {
     if (videoRef.current != null) {
@@ -41,7 +28,7 @@ export function VideoPlayer({
       const muxMetadata: MuxMetadata = {
         env_key: process.env.NEXT_PUBLIC_MUX_DEFAULT_REPORTING_KEY || '',
         player_name: 'watch',
-        video_title: last(title)?.value ?? '',
+        video_title: title?.[0]?.value ?? '',
         video_id: variant?.id ?? ''
       }
 
@@ -74,24 +61,6 @@ export function VideoPlayer({
       type: 'application/x-mpegURL'
     })
   }, [player, variant?.hls])
-
-  useEffect(() => {
-    if (player == null) return
-
-    subtitleUpdate({
-      player,
-      videoSubtitleLanguages,
-      subtitleLanguage,
-      subtitleOn,
-      autoSubtitle
-    })
-  }, [
-    player,
-    videoSubtitleLanguages,
-    subtitleLanguage,
-    subtitleOn,
-    autoSubtitle
-  ])
 
   return (
     <>

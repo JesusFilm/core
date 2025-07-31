@@ -14,6 +14,7 @@ export function SeeAllVideos(): ReactElement {
           color="secondary"
           variant="outlined"
           sx={{
+            width: '15%',
             whiteSpace: 'nowrap'
           }}
           data-testid="SeeAllVideos"

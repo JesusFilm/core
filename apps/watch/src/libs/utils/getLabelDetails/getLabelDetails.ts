@@ -1,5 +1,3 @@
-import { TFunction } from 'next-i18next'
-
 import { VideoLabel } from '../../../../__generated__/globalTypes'
 
 interface LabelDetails {
@@ -10,47 +8,46 @@ interface LabelDetails {
 }
 
 export function getLabelDetails(
-  t: TFunction,
   videoLabel?: VideoLabel,
   count?: number
 ): LabelDetails {
-  let label = t('Item')
+  let label = 'Item'
   let color = '#FFF'
-  let childLabel = t('Item')
+  let childLabel = 'Item'
 
   switch (videoLabel) {
     case VideoLabel.collection:
-      label = t('Collection')
+      label = 'Collection'
       color = '#FF9E00'
       break
     case VideoLabel.episode:
-      label = t('Episode')
+      label = 'Episode'
       color = '#7283BE'
       break
     case VideoLabel.featureFilm:
-      label = t('Feature Film')
+      label = 'Feature Film'
       color = '#FF9E00'
-      childLabel = t('Chapter')
+      childLabel = 'Chapter'
       break
     case VideoLabel.segment:
-      label = t('Chapter')
+      label = 'Chapter'
       color = '#7283BE'
       break
     case VideoLabel.series:
-      label = t('Series')
+      label = 'Series'
       color = '#3AA74A'
-      childLabel = t('Episode')
+      childLabel = 'Episode'
       break
     case VideoLabel.shortFilm:
-      label = t('Short Film')
+      label = 'Short Film'
       color = '#FF9E00'
       break
     case VideoLabel.behindTheScenes:
-      label = t('Behind The Scenes')
+      label = 'Behind The Scenes'
       color = '#FF9E00'
       break
     case VideoLabel.trailer:
-      label = t('Trailer')
+      label = 'Trailer'
       color = '#FF9E00'
       break
   }

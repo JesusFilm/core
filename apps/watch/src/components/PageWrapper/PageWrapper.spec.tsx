@@ -1,4 +1,3 @@
-import { MockedProvider } from '@apollo/client/testing'
 import Box from '@mui/material/Box'
 import { render, screen } from '@testing-library/react'
 
@@ -6,11 +5,7 @@ import { PageWrapper } from '.'
 
 describe('PageWrapper', () => {
   it('should render header and footer', () => {
-    const { getByRole } = render(
-      <MockedProvider>
-        <PageWrapper />
-      </MockedProvider>
-    )
+    const { getByRole } = render(<PageWrapper />)
     expect(getByRole('banner')).toBeInTheDocument()
     expect(
       getByRole('button', { name: 'open header menu' })
@@ -19,40 +14,28 @@ describe('PageWrapper', () => {
   })
 
   it('should not render header', () => {
-    const { queryByRole } = render(
-      <MockedProvider>
-        <PageWrapper hideHeader />
-      </MockedProvider>
-    )
+    const { queryByRole } = render(<PageWrapper hideHeader />)
     expect(queryByRole('banner')).not.toBeInTheDocument()
   })
 
   it('should render hero', () => {
     const { getByTestId } = render(
-      <MockedProvider>
-        <PageWrapper hero={<Box data-testid="hero" />} />
-      </MockedProvider>
+      <PageWrapper hero={<Box data-testid="hero" />} />
     )
     expect(getByTestId('hero')).toBeInTheDocument()
   })
 
   it('should render children', () => {
     const { getByTestId } = render(
-      <MockedProvider>
-        <PageWrapper>
-          <Box data-testid="content" />
-        </PageWrapper>
-      </MockedProvider>
+      <PageWrapper>
+        <Box data-testid="content" />
+      </PageWrapper>
     )
     expect(getByTestId('content')).toBeInTheDocument()
   })
 
   it('should not render header spacer', () => {
-    render(
-      <MockedProvider>
-        <PageWrapper hideHeaderSpacer />
-      </MockedProvider>
-    )
+    render(<PageWrapper hideHeaderSpacer />)
     expect(screen.queryByTestId('HeaderSpacer')).not.toBeInTheDocument()
   })
 })

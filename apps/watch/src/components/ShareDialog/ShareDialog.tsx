@@ -8,7 +8,6 @@ import Tab from '@mui/material/Tab'
 import Tabs from '@mui/material/Tabs'
 import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
-import last from 'lodash/last'
 import Image from 'next/image'
 import { useRouter } from 'next/router'
 import { useTranslation } from 'next-i18next'
@@ -42,9 +41,9 @@ export function ShareDialog({
 
   const shareDescription =
     description != null && description.length > 0
-      ? last(description)?.value
+      ? description[0].value
       : snippet != null && snippet.length > 0
-        ? last(snippet)?.value
+        ? snippet[0].value
         : ''
 
   const shareLink =
@@ -104,7 +103,7 @@ export function ShareDialog({
     <Dialog
       {...dialogProps}
       dialogTitle={{
-        title: t('Share this video'),
+        title: 'Share this video',
         closeButton: true
       }}
       divider
@@ -135,10 +134,10 @@ export function ShareDialog({
           )}
           <Stack sx={{ maxWidth: { sm: '272px' } }}>
             <Typography variant="subtitle2" sx={{ mb: 1 }}>
-              {last(title)?.value}
+              {title[0].value}
             </Typography>
             <Typography>
-              {`${shareDescription?.split(' ').slice(0, 18).join(' ')}...`}
+              {`${shareDescription.split(' ').slice(0, 18).join(' ')}...`}
             </Typography>
           </Stack>
         </Stack>
@@ -172,8 +171,8 @@ export function ShareDialog({
                   variant="fullWidth"
                   aria-label="share and embed"
                 >
-                  <Tab label={t('Share Link')} {...tabA11yProps('share', 0)} />
-                  <Tab label={t('Embed Code')} {...tabA11yProps('embed', 1)} />
+                  <Tab label="Share Link" {...tabA11yProps('share', 0)} />
+                  <Tab label="Embed Code" {...tabA11yProps('embed', 1)} />
                 </Tabs>
               </Box>
               <TabPanel name="share" value={value} index={0} sx={{ mt: 4 }}>

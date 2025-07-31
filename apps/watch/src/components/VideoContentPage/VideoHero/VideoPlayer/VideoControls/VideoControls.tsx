@@ -19,34 +19,35 @@ import Typography from '@mui/material/Typography'
 import { sendGTMEvent } from '@next/third-parties/google'
 import fscreen from 'fscreen'
 import debounce from 'lodash/debounce'
-import last from 'lodash/last'
 import dynamic from 'next/dynamic'
 import Image from 'next/image'
-import { MouseEventHandler, ReactElement, useEffect, useState } from 'react'
+import {
+  MouseEventHandler,
+  ReactElement,
+  useCallback,
+  useEffect,
+  useState
+} from 'react'
 import Player from 'video.js/dist/types/player'
 
 import { isMobile } from '@core/shared/ui/deviceUtils'
 import { secondsToTimeFormat } from '@core/shared/ui/timeFormat'
 
-import { setCookie } from '../../../../../libs/cookieHandler'
 import { usePlayer } from '../../../../../libs/playerContext'
 import { useVideo } from '../../../../../libs/videoContext'
-import { useWatch } from '../../../../../libs/watchContext'
 import { HeroOverlay } from '../../../../HeroOverlay/HeroOverlay'
+import { SubtitleDialogProps } from '../../../../SubtitleDialog/SubtitleDialog'
 import { AudioLanguageButton } from '../../../AudioLanguageButton'
 import { VideoTitle } from '../VideoTitle'
 
 import { handleVideoTitleClick } from './utils/handleVideoTitleClick'
 
-const DynamicLanguageSwitchDialog = dynamic<{
-  open: boolean
-  handleClose: () => void
-}>(
+const DynamicSubtitleDialog = dynamic<SubtitleDialogProps>(
   async () =>
     await import(
-      /* webpackChunkName: "LanguageSwitchDialog" */
-      '../../../../LanguageSwitchDialog/LanguageSwitchDialog'
-    ).then((mod) => mod.LanguageSwitchDialog)
+      /* webpackChunkName: "SubtitleDialog" */
+      '../../../../SubtitleDialog'
+    ).then((mod) => mod.SubtitleDialog)
 )
 
 interface VideoControlProps {
@@ -91,22 +92,19 @@ export function VideoControls({
       volume,
       mute,
       fullscreen,
+      openSubtitleDialog,
+      loadSubtitleDialog,
       duration,
       durationSeconds,
       progressPercentNotYetEmitted
     },
-    dispatch: dispatchPlayer
+    dispatch
   } = usePlayer()
-  const [loadLanguageSwitchDialog, setLoadLanguageSwitchDialog] =
-    useState(false)
-  const [openLanguageSwitchDialog, setOpenLanguageSwitchDialog] =
-    useState(false)
 
-  const { dispatch: dispatchWatch } = useWatch()
   const { id, title, variant, images, imageAlt } = useVideo()
   const visible = !play || active || loading
 
-  const videoTitle = last(title)?.value ?? ''
+  const videoTitle = title?.[0]?.value ?? ''
 
   useEffect(() => {
     onVisibleChanged?.(!play || active || loading)
@@ -116,11 +114,11 @@ export function VideoControls({
   useEffect(() => {
     if (variant?.duration != null && variant.duration > 0) {
       const roundedDuration = Math.round(variant.duration)
-      dispatchPlayer({
+      dispatch({
         type: 'SetDurationSeconds',
         durationSeconds: roundedDuration
       })
-      dispatchPlayer({
+      dispatch({
         type: 'SetDuration',
         duration: secondsToTimeFormat(roundedDuration, { trimZeroes: true })
       })
@@ -139,11 +137,11 @@ export function VideoControls({
           playerDuration > 0
         ) {
           const roundedDuration = Math.round(playerDuration)
-          dispatchPlayer({
+          dispatch({
             type: 'SetDurationSeconds',
             durationSeconds: roundedDuration
           })
-          dispatchPlayer({
+          dispatch({
             type: 'SetDuration',
             duration: secondsToTimeFormat(roundedDuration, { trimZeroes: true })
           })
@@ -152,11 +150,11 @@ export function VideoControls({
             retryTimeout = undefined
           }
         } else if (playerDuration === Infinity) {
-          dispatchPlayer({
+          dispatch({
             type: 'SetDurationSeconds',
             durationSeconds: 0
           })
-          dispatchPlayer({
+          dispatch({
             type: 'SetDuration',
             duration: 'Live'
           })
@@ -201,7 +199,7 @@ export function VideoControls({
         Math.round((progress / durationSeconds) * 100)
       )
       const [, ...rest] = progressPercentNotYetEmitted
-      dispatchPlayer({
+      dispatch({
         type: 'SetProgressPercentNotYetEmitted',
         progressPercentNotYetEmitted: rest
       })
@@ -217,7 +215,7 @@ export function VideoControls({
   ])
 
   useEffect(() => {
-    dispatchPlayer({
+    dispatch({
       type: 'SetVolume',
       volume: (player.volume() ?? 1) * 100
     })
@@ -249,7 +247,7 @@ export function VideoControls({
           )
         )
       }
-      dispatchPlayer({
+      dispatch({
         type: 'SetPlay',
         play: true
       })
@@ -269,60 +267,60 @@ export function VideoControls({
           )
         )
       }
-      dispatchPlayer({
+      dispatch({
         type: 'SetPlay',
         play: false
       })
     })
     player.on('timeupdate', () => {
-      dispatchPlayer({
+      dispatch({
         type: 'SetCurrentTime',
         currentTime: secondsToTimeFormat(player.currentTime() ?? 0, {
           trimZeroes: true
         })
       })
-      dispatchPlayer({
+      dispatch({
         type: 'SetProgress',
         progress: Math.round(player.currentTime() ?? 0)
       })
     })
     player.on('volumechange', () => {
-      dispatchPlayer({
+      dispatch({
         type: 'SetMute',
         mute: player.muted() ?? false
       })
-      dispatchPlayer({
+      dispatch({
         type: 'SetVolume',
         volume: (player.volume() ?? 1) * 100
       })
     })
     player.on('fullscreenchange', () => {
-      dispatchPlayer({
+      dispatch({
         type: 'SetFullscreen',
         fullscreen: player.isFullscreen() ?? false
       })
     })
     player.on('useractive', () =>
-      dispatchPlayer({
+      dispatch({
         type: 'SetActive',
         active: true
       })
     )
     player.on('userinactive', () =>
-      dispatchPlayer({
+      dispatch({
         type: 'SetActive',
         active: false
       })
     )
     player.on('waiting', () =>
-      dispatchPlayer({
+      dispatch({
         type: 'SetLoading',
         loading: true
       })
     )
     player.on('playing', () => {
       setInitialLoadComplete(true)
-      dispatchPlayer({
+      dispatch({
         type: 'SetLoading',
         loading: false
       })
@@ -342,13 +340,13 @@ export function VideoControls({
       )
     })
     player.on('canplay', () =>
-      dispatchPlayer({
+      dispatch({
         type: 'SetLoading',
         loading: false
       })
     )
     player.on('canplaythrough', () =>
-      dispatchPlayer({
+      dispatch({
         type: 'SetLoading',
         loading: false
       })
@@ -381,12 +379,12 @@ export function VideoControls({
           )
         )
       }
-      dispatchPlayer({
+      dispatch({
         type: 'SetFullscreen',
         fullscreen: fscreen.fullscreenElement != null
       })
     })
-  }, [id, player, dispatchPlayer, loading, title, variant])
+  }, [id, player, dispatch, loading, title, variant])
 
   function handlePlay(): void {
     if (!play) {
@@ -399,20 +397,20 @@ export function VideoControls({
   async function handleFullscreen(): Promise<void> {
     if (fullscreen) {
       fscreen.exitFullscreen()
-      dispatchPlayer({
+      dispatch({
         type: 'SetFullscreen',
         fullscreen: false
       })
     } else {
       if (isMobile()) {
         void player.requestFullscreen()
-        dispatchPlayer({
+        dispatch({
           type: 'SetFullscreen',
           fullscreen: true
         })
       } else {
         await fscreen.requestFullscreen(document.documentElement)
-        dispatchPlayer({
+        dispatch({
           type: 'SetFullscreen',
           fullscreen: true
         })
@@ -422,7 +420,7 @@ export function VideoControls({
 
   function handleSeek(_event: Event, value: number | number[]): void {
     if (!Array.isArray(value)) {
-      dispatchPlayer({
+      dispatch({
         type: 'SetProgress',
         progress: value
       })
@@ -432,7 +430,7 @@ export function VideoControls({
 
   function handleMute(): void {
     player.muted(!mute)
-    dispatchPlayer({
+    dispatch({
       type: 'SetMute',
       mute: !mute
     })
@@ -441,7 +439,7 @@ export function VideoControls({
   function handleVolume(_event: Event, value: number | number[]): void {
     if (!Array.isArray(value)) {
       if (mute === true) handleMute()
-      dispatchPlayer({
+      dispatch({
         type: 'SetVolume',
         volume: value
       })
@@ -470,16 +468,22 @@ export function VideoControls({
   }
 
   function handleClick(): void {
-    // Set subtitles on when opening language dialog
-    dispatchWatch({
-      type: 'UpdateSubtitlesOn',
-      enabled: true
+    dispatch({
+      type: 'SetOpenSubtitleDialog',
+      openSubtitleDialog: true
     })
-    setCookie('SUBTITLES_ON', 'true')
-
-    setOpenLanguageSwitchDialog(true)
-    setLoadLanguageSwitchDialog(true)
+    dispatch({
+      type: 'SetLoadSubtitleDialog',
+      loadSubtitleDialog: true
+    })
   }
+
+  const handleSubtitleDialogClose = useCallback(() => {
+    dispatch({
+      type: 'SetOpenSubtitleDialog',
+      openSubtitleDialog: false
+    })
+  }, [dispatch])
 
   return (
     <Box
@@ -511,7 +515,7 @@ export function VideoControls({
               e.stopPropagation()
               handleVideoTitleClick({
                 player,
-                dispatch: dispatchPlayer,
+                dispatch,
                 mute,
                 volume,
                 play
@@ -552,7 +556,7 @@ export function VideoControls({
                 e.stopPropagation()
                 handleVideoTitleClick({
                   player,
-                  dispatch: dispatchPlayer,
+                  dispatch,
                   mute,
                   volume,
                   play
@@ -774,10 +778,11 @@ export function VideoControls({
                   </IconButton>
                 </Stack>
               </Stack>
-              {loadLanguageSwitchDialog && (
-                <DynamicLanguageSwitchDialog
-                  open={openLanguageSwitchDialog}
-                  handleClose={() => setOpenLanguageSwitchDialog(false)}
+              {loadSubtitleDialog && (
+                <DynamicSubtitleDialog
+                  open={openSubtitleDialog}
+                  player={player}
+                  onClose={handleSubtitleDialogClose}
                 />
               )}
             </Container>

@@ -90,7 +90,7 @@ export function HeaderMenuPanel({
               variant="h6"
               sx={{ fontSize: 15, fontWeight: 'bold', lineHeight: 1 }}
             >
-              {t('Give Now', { lng: 'en' })}
+              {t('Give Now')}
             </Typography>
           </Button>
         </Box>
@@ -108,13 +108,13 @@ export function HeaderMenuPanel({
           {headerLinks.map((link) => (
             <HeaderLinkAccordion
               key={link.label}
-              label={t(link.label, { lng: 'en' })}
+              label={t(link.label)}
               url={link.url}
               expanded={expanded === link.label}
               onAccordionChange={handleAccordionChange}
               subLinks={link.subLinks?.map((subLink) => ({
                 ...subLink,
-                label: t(subLink.label, { lng: 'en' })
+                label: t(subLink.label)
               }))}
               onClose={onClose}
             />

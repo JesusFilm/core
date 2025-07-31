@@ -20,8 +20,7 @@ describe('Question', () => {
         questions={[
           {
             value: 'What did you learn from this video?',
-            __typename: 'VideoStudyQuestion',
-            primary: true
+            __typename: 'VideoStudyQuestion'
           }
         ]}
       />
@@ -48,8 +47,7 @@ describe('Question', () => {
         questions={[
           {
             value: 'What did you learn from this video?',
-            __typename: 'VideoStudyQuestion',
-            primary: true
+            __typename: 'VideoStudyQuestion'
           }
         ]}
       />
@@ -88,8 +86,7 @@ describe('Question', () => {
         questions={[
           {
             value: 'What did you learn from this video?',
-            __typename: 'VideoStudyQuestion',
-            primary: true
+            __typename: 'VideoStudyQuestion'
           }
         ]}
       />
@@ -109,8 +106,7 @@ describe('Question', () => {
         questions={[
           {
             value: 'What did you learn from this video?',
-            __typename: 'VideoStudyQuestion',
-            primary: true
+            __typename: 'VideoStudyQuestion'
           }
         ]}
       />

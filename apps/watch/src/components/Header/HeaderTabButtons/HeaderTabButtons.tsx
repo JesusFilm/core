@@ -25,20 +25,12 @@ export function HeaderTabButtons(): ReactElement {
 
   const headerItems = compact([
     strategies
-      ? {
-          label: t('Resources', { lng: 'en' }),
-          icon: <TerminalIcon />,
-          href: '/resources'
-        }
+      ? { label: t('Resources'), icon: <TerminalIcon />, href: '/resources' }
       : undefined,
     journeys
-      ? {
-          label: t('Journeys', { lng: 'en' }),
-          icon: <JourneysIcon />,
-          href: '/journeys'
-        }
+      ? { label: t('Journeys'), icon: <JourneysIcon />, href: '/journeys' }
       : undefined,
-    { label: t('Videos', { lng: 'en' }), icon: <Play1Icon />, href: '/watch' }
+    { label: t('Videos'), icon: <Play1Icon />, href: '/watch' }
   ])
 
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
@@ -150,7 +142,7 @@ export function HeaderTabButtons(): ReactElement {
               <Stack direction="row" alignItems="center" width="100%" px={2.5}>
                 <ListItemIcon>{icon}</ListItemIcon>
                 <ListItemText
-                  primary={label}
+                  primary={t(label)}
                   primaryTypographyProps={{
                     variant: 'h6',
                     sx: {

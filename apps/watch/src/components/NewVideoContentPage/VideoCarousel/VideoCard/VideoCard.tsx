@@ -1,7 +1,5 @@
-import last from 'lodash/last'
 import Image from 'next/image'
 import NextLink from 'next/link'
-import { useTranslation } from 'next-i18next'
 import { ReactElement, useState } from 'react'
 
 import Play3 from '@core/shared/ui/icons/Play3'
@@ -21,8 +19,7 @@ export function VideoCard({
   containerSlug,
   active
 }: VideoCardProps): ReactElement {
-  const { t } = useTranslation('apps-watch')
-  const { label } = getLabelDetails(t, video.label)
+  const { label } = getLabelDetails(video.label)
   const href = getWatchUrl(containerSlug, video.label, video.variant?.slug)
   const [isHovered, setIsHovered] = useState(false)
 
@@ -38,7 +35,7 @@ export function VideoCard({
       <div className="flex flex-col gap-6">
         <button
           data-testid={`VideoCardButton-${video.slug}`}
-          name={last(video.title)?.value}
+          name={video.title[0].value}
           disabled={video == null}
           className="rounded-lg w-full relative text-left border-none bg-transparent p-0 cursor-pointer disabled:cursor-default"
         >
@@ -105,7 +102,7 @@ export function VideoCard({
                 }}
                 data-testid={`CarouselItemTitle-${video.slug}`}
               >
-                {last(video.title)?.value}
+                {video.title[0].value}
               </h3>
             </div>
           </div>

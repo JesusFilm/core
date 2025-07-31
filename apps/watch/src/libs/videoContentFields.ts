@@ -18,7 +18,6 @@ export const VIDEO_CONTENT_FIELDS = gql`
     }
     studyQuestions(languageId: $languageId, primary: true) {
       value
-      primary
     }
     bibleCitations {
       bibleBook {
@@ -34,7 +33,7 @@ export const VIDEO_CONTENT_FIELDS = gql`
     title(languageId: $languageId, primary: true) {
       value
     }
-    variant {
+    variant(languageId: $languageId) {
       id
       duration
       hls

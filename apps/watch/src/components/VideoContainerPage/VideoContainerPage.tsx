@@ -1,8 +1,6 @@
 import Box from '@mui/material/Box'
 import Container from '@mui/material/Container'
 import Stack from '@mui/material/Stack'
-import last from 'lodash/last'
-import { useRouter } from 'next/router'
 import { ReactElement, useState } from 'react'
 
 import { ThemeMode } from '@core/shared/ui/themes'
@@ -18,9 +16,8 @@ import { ContainerHero } from './ContainerHero'
 
 // Usually Series or Collection Videos
 export function VideoContainerPage(): ReactElement {
-  const router = useRouter()
   const { snippet, slug, variant } = useVideo()
-  const { loading, children } = useVideoChildren(variant?.slug, router.locale)
+  const { loading, children } = useVideoChildren(variant?.slug)
   const [shareDialog, setShareDialog] = useState<boolean>(false)
   const realChildren = children.filter((video) => video.variant !== null)
   function handleOpenDialog(): void {
@@ -36,7 +33,6 @@ export function VideoContainerPage(): ReactElement {
       hero={<ContainerHero openDialog={handleOpenDialog} />}
       headerThemeMode={ThemeMode.dark}
       hideHeaderSpacer
-      showLanguageSwitcher
     >
       <Container maxWidth="xxl" data-testid="VideoContainerPage">
         <Stack
@@ -45,7 +41,7 @@ export function VideoContainerPage(): ReactElement {
           direction="column"
         >
           <ContainerDescription
-            value={last(snippet)?.value ?? ''}
+            value={snippet[0].value}
             openDialog={handleOpenDialog}
           />
           <ShareDialog open={shareDialog} onClose={handleCloseDialog} />

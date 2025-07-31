@@ -12,17 +12,17 @@ export function Footer(): ReactElement {
   const { t } = useTranslation('apps-watch')
 
   const navigationLinks = [
-    { name: t('Share', { lng: 'en' }), href: '/partners/share/' },
-    { name: t('Watch', { lng: 'en' }), href: '/watch/' },
-    { name: t('Giving', { lng: 'en' }), href: '/give/' },
-    { name: t('About', { lng: 'en' }), href: '/about/' },
-    { name: t('Products', { lng: 'en' }), href: '/products/' },
+    { name: t('Share'), href: '/partners/share/' },
+    { name: t('Watch'), href: '/watch/' },
+    { name: t('Giving'), href: '/give/' },
+    { name: t('About'), href: '/about/' },
+    { name: t('Products'), href: '/products/' },
     {
-      name: t('Resources', { lng: 'en' }),
+      name: t('Resources'),
       href: '/partners/resources/'
     },
-    { name: t('Partners', { lng: 'en' }), href: '/partners/' },
-    { name: t('Contact', { lng: 'en' }), href: '/contact/' }
+    { name: t('Partners'), href: '/partners/' },
+    { name: t('Contact'), href: '/contact/' }
   ]
 
   const socialLinks = [
@@ -151,7 +151,7 @@ export function Footer(): ReactElement {
               height: '34px'
             }}
           >
-            {t('Give Now', { lng: 'en' })}
+            {t('Give Now')}
           </Button>
         </Stack>
 
@@ -174,31 +174,31 @@ export function Footer(): ReactElement {
             {/* Address and Contact */}
             <Stack>
               <Typography variant="h6" fontSize={12} lineHeight={1.2}>
-                {t('100 Lake Hart Drive', { lng: 'en' })}
+                {t('100 Lake Hart Drive')}
               </Typography>
               <Typography variant="h6" fontSize={12} lineHeight={1.2}>
-                {t('Orlando, FL, 32832', { lng: 'en' })}
+                {t('Orlando, FL, 32832')}
               </Typography>
             </Stack>
 
             <Stack>
               <Typography variant="h6" fontSize={12} lineHeight={1.2}>
-                {t('Office: (407) 826-2300', { lng: 'en' })}
+                {t('Office: (407) 826-2300')}
               </Typography>
               <Typography variant="h6" fontSize={12} lineHeight={1.2}>
-                {t('Fax: (407) 826-2375', { lng: 'en' })}
+                {t('Fax: (407) 826-2375')}
               </Typography>
             </Stack>
             {/* Legal Links */}
             <Stack>
               <FooterLink
                 url="/privacy/"
-                label={t('Privacy Policy', { lng: 'en' })}
+                label={t('Privacy Policy')}
                 sx={{ fontSize: 12, lineHeight: 1.2 }}
               />
               <FooterLink
                 url="/legal/"
-                label={t('Legal Statement', { lng: 'en' })}
+                label={t('Legal Statement')}
                 sx={{ fontSize: 12, lineHeight: 1.2 }}
               />
             </Stack>
@@ -219,7 +219,7 @@ export function Footer(): ReactElement {
                 height: '34px'
               }}
             >
-              {t('Sign Up For Our Newsletter', { lng: 'en' })}
+              {t('Sign Up For Our Newsletter')}
             </Button>
           </Stack>
         </Stack>

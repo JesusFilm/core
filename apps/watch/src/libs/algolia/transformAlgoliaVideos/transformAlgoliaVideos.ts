@@ -24,48 +24,38 @@ export interface CoreVideo extends Hit<BaseHit> {
   childrenCount: number
 }
 
-export function transformAlgoliaVideos(
-  items: AlgoliaVideo[],
-  languageId?: string
-): CoreVideo[] {
-  return items.map((videoVariant) => {
-    const defaultTitle = videoVariant.titlesWithLanguages[0]?.value ?? ''
-    const localizedTitle = videoVariant.titlesWithLanguages.find(
-      (title) => title.languageId === languageId
-    )?.value
-
-    return {
-      __typename: 'Video',
-      id: videoVariant.videoId,
-      label: videoVariant.label as VideoLabel,
-      title: [
-        {
-          __typename: 'VideoTitle',
-          value: localizedTitle ?? defaultTitle
-        }
-      ],
-      images: [
-        {
-          __typename: 'CloudflareImage',
-          mobileCinematicHigh: videoVariant.image
-        }
-      ],
-      imageAlt: [
-        {
-          __typename: 'VideoImageAlt',
-          value: videoVariant.imageAlt
-        }
-      ],
-      snippet: [],
+export function transformAlgoliaVideos(items: AlgoliaVideo[]): CoreVideo[] {
+  return items.map((videoVariant) => ({
+    __typename: 'Video',
+    id: videoVariant.videoId,
+    label: videoVariant.label as VideoLabel,
+    title: [
+      {
+        __typename: 'VideoTitle',
+        value: videoVariant.titles[0]
+      }
+    ],
+    images: [
+      {
+        __typename: 'CloudflareImage',
+        mobileCinematicHigh: videoVariant.image
+      }
+    ],
+    imageAlt: [
+      {
+        __typename: 'VideoImageAlt',
+        value: videoVariant.imageAlt
+      }
+    ],
+    snippet: [],
+    slug: videoVariant.slug,
+    variant: {
+      id: videoVariant.objectID,
+      duration: videoVariant.duration,
+      hls: null,
       slug: videoVariant.slug,
-      variant: {
-        id: videoVariant.objectID,
-        duration: videoVariant.duration,
-        hls: null,
-        slug: videoVariant.slug,
-        __typename: 'VideoVariant'
-      },
-      childrenCount: videoVariant.childrenCount
-    }
-  }) as unknown as CoreVideo[]
+      __typename: 'VideoVariant'
+    },
+    childrenCount: videoVariant.childrenCount
+  })) as unknown as CoreVideo[]
 }

@@ -20,13 +20,13 @@ export function TermsOfUseDialog({
       open={open}
       onClose={onClose}
       dialogTitle={{
-        title: t('Terms of Use'),
+        title: 'Terms of Use',
         closeButton: true
       }}
       dialogAction={{
         onSubmit,
-        submitLabel: t('Accept'),
-        closeLabel: t('Cancel')
+        submitLabel: 'Accept',
+        closeLabel: 'Cancel'
       }}
       divider
       testId="TermsOfUseDialog"

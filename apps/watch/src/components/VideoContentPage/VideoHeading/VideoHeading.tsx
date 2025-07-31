@@ -6,7 +6,6 @@ import Link from '@mui/material/Link'
 import Skeleton from '@mui/material/Skeleton'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
-import last from 'lodash/last'
 import NextLink from 'next/link'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, useMemo } from 'react'
@@ -51,7 +50,7 @@ export function VideoHeading({
               alignItems="center"
             >
               <Typography variant="h5" color="text.primary">
-                {last(title)?.value}
+                {title[0].value}
               </Typography>
               <Stack
                 direction="row"
@@ -84,7 +83,7 @@ export function VideoHeading({
                     color="primary"
                     sx={{ textDecoration: 'none' }}
                   >
-                    {last(container.title)?.value}
+                    {container.title[0].value}
                   </Link>
                 </NextLink>
                 <Typography
@@ -123,8 +122,8 @@ export function VideoHeading({
                   sx={{ display: { xs: 'none', xl: 'block' } }}
                 >
                   {container.label === VideoLabel.featureFilm
-                    ? t('Watch Full Film')
-                    : t('See All')}
+                    ? 'Watch Full Film'
+                    : 'See All'}
                 </Button>
               </NextLink>
               <Typography

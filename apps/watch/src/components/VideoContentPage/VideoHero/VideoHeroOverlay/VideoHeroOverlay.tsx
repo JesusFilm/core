@@ -5,7 +5,6 @@ import Button from '@mui/material/Button'
 import Container from '@mui/material/Container'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
-import last from 'lodash/last'
 import Image from 'next/image'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, useState } from 'react'
@@ -43,10 +42,10 @@ export function VideoHeroOverlay({
       }}
       data-testid="VideoHeroOverlay"
     >
-      {last(images)?.mobileCinematicHigh != null && (
+      {images[0]?.mobileCinematicHigh != null && (
         <Image
-          src={last(images)?.mobileCinematicHigh ?? ''}
-          alt={last(imageAlt)?.value ?? ''}
+          src={images[0].mobileCinematicHigh}
+          alt={imageAlt[0].value}
           fill
           style={{
             objectFit: 'cover'
@@ -73,7 +72,7 @@ export function VideoHeroOverlay({
             color="text.primary"
             sx={{ width: { xs: '100%', lg: '70%' } }}
           >
-            {last(title)?.value}
+            {title[0]?.value}
           </Typography>
           <Stack
             direction="row"
