@@ -121,7 +121,7 @@ export async function POST(req: NextRequest) {
       })
       return { ...toolCall, args: JSON.stringify(repairedArgs) }
     },
-    maxSteps: 5,
+    maxSteps: 10,
     onFinish: async (result) => {
       await langfuseExporter.forceFlush()
       const trace = langfuse.trace({
