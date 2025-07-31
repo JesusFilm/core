@@ -28,18 +28,25 @@ test.describe('Feature film', () => {
     await page.waitForLoadState('domcontentloaded')
 
     // Click on the JESUS Feature Film button
-    const jesusButton = page.getByRole('button', { name: 'JESUS JESUS Feature Film 61 chapters' })
+    const jesusButton = page.getByRole('button', {
+      name: 'JESUS JESUS Feature Film 61 chapters'
+    })
     await jesusButton.waitFor({ timeout: 30000 })
     await jesusButton.click()
 
     // Wait for navigation and verify URL with longer timeout
-    await expect(page).toHaveURL('/watch/jesus.html/english.html', { timeout: 60000 })
+    await expect(page).toHaveURL('/watch/jesus.html/english.html', {
+      timeout: 60000
+    })
 
     // Wait for page to be fully loaded after navigation
     await page.waitForLoadState('domcontentloaded')
 
     // Wait for any video content to load - use a more general selector
-    await page.locator('[data-testid*="VideoCardButton"]').first().waitFor({ timeout: 30000 })
+    await page
+      .locator('[data-testid*="VideoCardButton"]')
+      .first()
+      .waitFor({ timeout: 30000 })
 
     // Test navigation arrows - wait for them to be available
     const rightArrow = page.locator('[data-testid="NavigateNextIcon"]').first()
@@ -56,10 +63,14 @@ test.describe('Feature film', () => {
     await leftArrow.click()
 
     // Verify we're still on the correct page
-    await expect(page).toHaveURL('/watch/jesus.html/english.html', { timeout: 30000 })
+    await expect(page).toHaveURL('/watch/jesus.html/english.html', {
+      timeout: 30000
+    })
 
     // Wait for Birth of Jesus chapter to be available - try multiple selectors
-    const birthOfJesusButton = page.locator('[data-testid="VideoCardButton-birth-of-jesus"]')
+    const birthOfJesusButton = page.locator(
+      '[data-testid="VideoCardButton-birth-of-jesus"]'
+    )
     await birthOfJesusButton.waitFor({ timeout: 30000 })
 
     // Click on 'CHAPTER Birth of Jesus'
@@ -69,7 +80,10 @@ test.describe('Feature film', () => {
     await page.waitForLoadState('domcontentloaded')
 
     // Verify URL changed to Birth of Jesus chapter with longer timeout
-    await expect(page).toHaveURL('/watch/jesus.html/birth-of-jesus/english.html', { timeout: 30000 })
+    await expect(page).toHaveURL(
+      '/watch/jesus.html/birth-of-jesus/english.html',
+      { timeout: 30000 }
+    )
 
     // Wait for video player to load and click Play button
     const playButton = page.getByRole('button', { name: 'Play with sound' })
