@@ -7,6 +7,24 @@
     "title": "免费福音<underline>视频流</underline>图书馆",
     "description": "用 2000 多种语言观看、学习和分享福音"
   },
+  "ModernTestPage": {
+    "pageTitle": "现代测试",
+    "title": "现代测试页面",
+    "description": "这是现代手表应用程序的测试页面。它演示了新的路由和代理功能。",
+    "feature1": {
+      "title": "现代建筑",
+      "description": "采用 Next.js App Router 和现代 React 模式构建，可实现最佳性能和开发人员体验。"
+    },
+    "feature2": {
+      "title": "智能路由",
+      "description": "先进的代理路由选择功能可智能地将流量导向适当的后端服务。"
+    },
+    "feature3": {
+      "title": "响应式设计",
+      "description": "完全响应式设计，可在所有设备和屏幕尺寸上无缝运行。"
+    },
+    "footer": "该页面由现代手表应用程序通过智能代理路由提供。"
+  },
   "DatadogErrorBoundary": {
     "somethingWentWrong": "出了问题",
     "anErrorOccurred": "加载此页面时发生错误。请尝试刷新。",
