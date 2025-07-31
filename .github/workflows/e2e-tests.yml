@@ -1,5 +1,8 @@
 name: E2E Tests
 on:
+  schedule:
+    # Run every morning at 7am UTC
+    - cron: '0 7 * * *'
   workflow_dispatch:
     inputs:
       TargetAction:
@@ -13,7 +16,7 @@ on:
       TargetTests:
         description: 'Pick the tests you want to run'
         type: choice
-        default: 'arclight-e2e'
+        default: 'all-e2e'
         required: true
         options:
           - 'arclight-e2e'
@@ -33,7 +36,7 @@ on:
 
 jobs:
   deploy-and-test:
-    if: inputs.TargetTests == 'all-e2e'
+    if: inputs.TargetTests == 'all-e2e' || github.event_name == 'schedule'
     runs-on: blacksmith-4vcpu-ubuntu-2204
     strategy:
       fail-fast: false
@@ -53,15 +56,21 @@ jobs:
       deployments: write
       contents: write
     steps:
+      - name: Set target action and tests for scheduled runs
+        if: github.event_name == 'schedule'
+        run: |
+          echo "TARGET_ACTION=e2e" >> $GITHUB_ENV
+          echo "TARGET_TESTS=all-e2e" >> $GITHUB_ENV
       - name: start deployment
         uses: chrnorm/deployment-action@v2
         id: deployment
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          environment: E2E Test - ${{ matrix.app }}
+          environment: Daily E2E - ${{ matrix.app }}
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
+          ref: ${{ github.event_name == 'schedule' && 'main' || github.ref }}
       - uses: useblacksmith/setup-node@v5
         with:
           node-version: 22
@@ -98,7 +107,7 @@ jobs:
           VIDEOS_ADMIN_VERCEL_PROJECT_ID: ${{ secrets.VIDEOS_ADMIN_VERCEL_PROJECT_ID }}
           WATCH_VERCEL_PROJECT_ID: ${{ secrets.WATCH_VERCEL_PROJECT_ID }}
           WATCH_MODERN_VERCEL_PROJECT_ID: ${{ secrets.WATCH_MODERN_VERCEL_PROJECT_ID }}
-          NEXT_PUBLIC_VERCEL_ENV: preview
+          NEXT_PUBLIC_VERCEL_ENV: daily-e2e
           NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA: ${{ github.sha }}
         run: npx nx run-many --target=deploy --projects=${{ matrix.app }}
       - name: Generate deployment URL
@@ -123,7 +132,7 @@ jobs:
       - name: Install Playwright Browsers
         run: npx playwright install --with-deps
       - name: Run Playwright tests
-        run: npx nx run ${{ matrix.app }}-e2e:${{ inputs.TargetAction }}
+        run: npx nx run ${{ matrix.app }}-e2e:${{ github.event_name == 'schedule' && env.TARGET_ACTION || inputs.TargetAction }}
         env:
           DEPLOYMENT_URL: ${{ steps.deployment-url.outputs.deployment-url }}
           PLAYWRIGHT_EMAIL: ${{ secrets.PLAYWRIGHT_EMAIL }}
@@ -142,7 +151,7 @@ jobs:
           retention-days: 30
 
   E2E_Tests:
-    if: inputs.TargetTests != 'all-e2e'
+    if: inputs.TargetTests != 'all-e2e' && github.event_name != 'schedule'
     timeout-minutes: 60
     runs-on: blacksmith-2vcpu-ubuntu-2204
     strategy:
