@@ -1,1 +1,2 @@
-export { ButtonClickEventRef, ButtonActionEnum } from './buttonClickEvent'
+import './inputs'
+import './buttonClickEvent'

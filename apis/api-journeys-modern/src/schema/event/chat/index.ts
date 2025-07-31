@@ -1,1 +1,2 @@
-export { ChatOpenEventRef } from './chatOpenEvent'
+import './inputs'
+import './chatOpenEvent'
