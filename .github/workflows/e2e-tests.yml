@@ -39,7 +39,18 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        app: ['arclight', 'docs', 'journeys', 'journeys-admin', 'watch', 'watch-modern', 'videos-admin', 'short-links', 'video-importer']
+        app:
+          [
+            'arclight',
+            'docs',
+            'journeys',
+            'journeys-admin',
+            'watch',
+            'watch-modern',
+            'videos-admin',
+            'short-links',
+            'video-importer'
+          ]
     permissions:
       deployments: write
       contents: write
