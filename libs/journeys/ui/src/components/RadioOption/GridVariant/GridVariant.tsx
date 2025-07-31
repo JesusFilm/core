@@ -161,7 +161,7 @@ export function GridVariant({
       onClick={handleClick}
       className={classNames}
       sx={{}}
-      data-testid="JourneysRadioOption"
+      data-testid="JourneysRadioOptionGrid"
     >
       <Stack gap={2}>
         <Box
@@ -192,12 +192,12 @@ export function GridVariant({
                 alt={imageBlock.alt}
                 layout="fill"
                 objectFit="cover"
-                onLoadingComplete={() => setIsImageLoading(false)}
                 objectPosition={`${imageBlock.focalLeft}% ${imageBlock.focalTop}%`}
                 sx={{
                   transform: `scale(${(imageBlock.scale ?? 100) / 100})`,
                   transformOrigin: `${imageBlock.focalLeft}% ${imageBlock.focalTop}%`
                 }}
+                onLoad={() => setIsImageLoading(false)}
                 sizes="(max-width: 600px) 100vw, (max-width: 960px) 50vw, 25vw"
               />
               {disabled && (

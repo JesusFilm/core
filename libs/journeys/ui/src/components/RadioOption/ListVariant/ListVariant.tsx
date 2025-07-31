@@ -123,7 +123,7 @@ export function ListVariant({
             }
           : undefined
       }
-      data-testid="JourneysRadioOption"
+      data-testid="JourneysRadioOptionList"
     >
       {editableLabel ?? label}
     </StyledListRadioOption>

@@ -5,7 +5,6 @@ import { handleAction } from '../../libs/action'
 import type { TreeBlock } from '../../libs/block'
 import { getNextStepSlug } from '../../libs/getNextStepSlug'
 import { useJourney } from '../../libs/JourneyProvider'
-import { getPollOptionBorderStyles } from '../RadioQuestion/utils/getPollOptionBorderStyles'
 
 import { RadioOptionFields } from './__generated__/RadioOptionFields'
 import { GridVariant } from './GridVariant/GridVariant'
