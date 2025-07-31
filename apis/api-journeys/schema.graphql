@@ -895,7 +895,8 @@ type RadioOptionBlock implements Block
   parentOrder: Int @shareable
   label: String! @shareable
   action: Action
-  pollOptionImageId: ID @shareable
+  pollOptionImageId: ID @shareable @deprecated(reason: "use pollOptionImageBlockId instead")
+  pollOptionImageBlockId: ID @shareable
 }
 
 input RadioOptionBlockCreateInput {
@@ -908,7 +909,8 @@ input RadioOptionBlockCreateInput {
 input RadioOptionBlockUpdateInput {
   parentBlockId: ID
   label: String
-  pollOptionImageId: ID
+  pollOptionImageId: ID @deprecated(reason: "use pollOptionImageBlockId instead")
+  pollOptionImageBlockId: ID
 }
 
 type RadioQuestionBlock implements Block

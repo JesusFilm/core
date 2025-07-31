@@ -954,7 +954,8 @@ type RadioOptionBlock implements Block @join__type(graph: API_JOURNEYS, key: "id
   This child block should not be rendered normally, instead it should be used
   as a poll option image. Blocks are often of type ImageBlock
   """
-  pollOptionImageId: ID
+  pollOptionImageId: ID @deprecated(reason: "use pollOptionImageBlockId instead") 
+  pollOptionImageBlockId: ID @join__field(graph: API_JOURNEYS) 
 }
 
 type RadioQuestionBlock implements Block @join__type(graph: API_JOURNEYS, key: "id")  @join__type(graph: API_JOURNEYS_MODERN, key: "id")  @join__implements(graph: API_JOURNEYS, interface: "Block")  @join__implements(graph: API_JOURNEYS_MODERN, interface: "Block")  {
@@ -3529,7 +3530,8 @@ input RadioOptionBlockCreateInput @join__type(graph: API_JOURNEYS)  {
 input RadioOptionBlockUpdateInput @join__type(graph: API_JOURNEYS)  {
   parentBlockId: ID
   label: String
-  pollOptionImageId: ID
+  pollOptionImageId: ID @deprecated(reason: "use pollOptionImageBlockId instead") 
+  pollOptionImageBlockId: ID
 }
 
 input RadioQuestionBlockCreateInput @join__type(graph: API_JOURNEYS)  {
