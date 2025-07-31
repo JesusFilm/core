@@ -70,7 +70,9 @@ export async function getTeamName(): Promise<string> {
 }
 
 export async function getBaseUrl(): Promise<string> {
-  const baseUrl = process.env.DEPLOYMENT_URL?.toString()
+  const baseUrl = process.env.PR_NUMBER
+    ? `https://journeys-admin-${process.env.PR_NUMBER}-jesusfilm.vercel.app/`
+    : process.env.DEPLOYMENT_URL?.toString()
   if (baseUrl == null || baseUrl === '') {
     throw new Error('baseUrl was not provided via environment variable')
   }

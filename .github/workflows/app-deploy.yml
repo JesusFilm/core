@@ -234,7 +234,7 @@ jobs:
       - name: Run Playwright tests
         run: npx nx run ${{ matrix.app }}-e2e:e2e
         env:
-          DEPLOYMENT_URL: ${{ needs.deploy-preview.outputs.url }}
+          PR_NUMBER: ${{ github.event.number }}
           PLAYWRIGHT_USER: ${{ secrets.PLAYWRIGHT_USER }}
           PLAYWRIGHT_TEAM_NAME: ${{ secrets.PLAYWRIGHT_TEAM_NAME }}
           EXAMPLE_EMAIL_TOKEN: ${{ secrets.EXAMPLE_EMAIL_TOKEN }}
