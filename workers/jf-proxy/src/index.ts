@@ -38,12 +38,35 @@ app.get('*', async (c) => {
 
   let response: Response
 
+  // Extract headers from the original request, including cookies
+  const headers = new Headers()
+
+  // Copy all headers from the original request
+  const originalHeaders = c.req.header()
+  if (originalHeaders) {
+    Object.entries(originalHeaders).forEach(([key, value]) => {
+      if (value) {
+        headers.set(key, value)
+      }
+    })
+  }
+
+  // Ensure cookies are properly passed
+  const cookieHeader = c.req.header('cookie')
+  if (cookieHeader) {
+    headers.set('cookie', cookieHeader)
+  }
+
   try {
     response = await fetch(
       url
         .toString()
         .replace(/(%[0-9A-F][0-9A-F])/g, (match) => match.toLowerCase()),
-      { ...c.req, redirect: 'manual' }
+      {
+        method: c.req.method,
+        headers,
+        redirect: 'manual'
+      }
     )
   } catch (error) {
     console.error('Proxy fetch error:', error)
@@ -55,7 +78,8 @@ app.get('*', async (c) => {
     notFoundUrl.pathname = '/not-found.html'
     try {
       response = await fetch(notFoundUrl.toString(), {
-        ...c.req,
+        method: c.req.method,
+        headers,
         redirect: 'manual'
       })
     } catch (error) {

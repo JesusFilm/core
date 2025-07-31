@@ -25,6 +25,165 @@ describe('test the worker', () => {
     expect(await res.text()).toBe('body content')
   })
 
+  it('should pass cookies to the underlying fetch', async () => {
+    let capturedHeaders: any = null
+
+    fetchMock
+      .get('http://test.example.com')
+      .intercept({ path: '/test-path' })
+      .reply((req) => {
+        capturedHeaders = req.headers
+        return { statusCode: 200, data: 'body content' }
+      })
+
+    const res = await app.request(
+      'http://localhost/test-path',
+      {
+        headers: {
+          cookie: 'session=abc123; user=john',
+          'user-agent': 'test-agent',
+          accept: 'text/html'
+        }
+      },
+      { WATCH_PROXY_DEST: 'test.example.com' }
+    )
+
+    expect(res.status).toBe(200)
+    expect(await res.text()).toBe('body content')
+
+    // Verify that cookies and other headers were passed
+    expect(capturedHeaders).not.toBeNull()
+    if (capturedHeaders && typeof capturedHeaders.get === 'function') {
+      expect(capturedHeaders.get('cookie')).toBe('session=abc123; user=john')
+      expect(capturedHeaders.get('user-agent')).toBe('test-agent')
+      expect(capturedHeaders.get('accept')).toBe('text/html')
+    } else {
+      expect(capturedHeaders['cookie']).toBe('session=abc123; user=john')
+      expect(capturedHeaders['user-agent']).toBe('test-agent')
+      expect(capturedHeaders['accept']).toBe('text/html')
+    }
+  })
+
+  it('should pass cookies to modern proxy destination', async () => {
+    let capturedHeaders: any = null
+
+    fetchMock
+      .get('http://modern.example.com')
+      .intercept({ path: '/watch/modern' })
+      .reply((req) => {
+        capturedHeaders = req.headers
+        return { statusCode: 200, data: 'modern content' }
+      })
+
+    const res = await app.request(
+      'http://localhost/watch/modern',
+      {
+        headers: {
+          cookie: 'session=abc123; user=john',
+          authorization: 'Bearer token123'
+        }
+      },
+      {
+        WATCH_PROXY_DEST: 'test.example.com',
+        WATCH_MODERN_PROXY_DEST: 'modern.example.com',
+        WATCH_MODERN_PROXY_PATHS: [
+          '^/watch/modern$',
+          '^/watch/modern/',
+          '^/watch/modern-test$'
+        ]
+      }
+    )
+
+    expect(res.status).toBe(200)
+    expect(await res.text()).toBe('modern content')
+
+    // Verify that cookies and auth headers were passed to modern proxy
+    expect(capturedHeaders).not.toBeNull()
+    if (capturedHeaders && typeof capturedHeaders.get === 'function') {
+      expect(capturedHeaders.get('cookie')).toBe('session=abc123; user=john')
+      expect(capturedHeaders.get('authorization')).toBe('Bearer token123')
+    } else {
+      expect(capturedHeaders['cookie']).toBe('session=abc123; user=john')
+      expect(capturedHeaders['authorization']).toBe('Bearer token123')
+    }
+  })
+
+  it('should pass cookies to fallback not-found page', async () => {
+    fetchMock
+      .get('http://test.example.com')
+      .intercept({ path: '/test-path' })
+      .reply(404, 'not found')
+
+    let capturedHeaders: any = null
+
+    fetchMock
+      .get('http://localhost')
+      .intercept({ path: '/not-found.html' })
+      .reply((req) => {
+        capturedHeaders = req.headers
+        return { statusCode: 404, data: 'not found content' }
+      })
+
+    const res = await app.request(
+      'http://localhost/test-path',
+      {
+        headers: {
+          cookie: 'session=abc123; user=john',
+          'user-agent': 'test-agent'
+        }
+      },
+      { WATCH_PROXY_DEST: 'test.example.com' }
+    )
+
+    expect(res.status).toBe(404)
+    expect(await res.text()).toBe('not found content')
+
+    // Verify that cookies were passed to fallback fetch
+    expect(capturedHeaders).not.toBeNull()
+    if (capturedHeaders && typeof capturedHeaders.get === 'function') {
+      expect(capturedHeaders.get('cookie')).toBe('session=abc123; user=john')
+      expect(capturedHeaders.get('user-agent')).toBe('test-agent')
+    } else {
+      expect(capturedHeaders['cookie']).toBe('session=abc123; user=john')
+      expect(capturedHeaders['user-agent']).toBe('test-agent')
+    }
+  })
+
+  it('should handle requests without cookies gracefully', async () => {
+    let capturedHeaders: any = null
+
+    fetchMock
+      .get('http://test.example.com')
+      .intercept({ path: '/test-path' })
+      .reply((req) => {
+        capturedHeaders = req.headers
+        return { statusCode: 200, data: 'body content' }
+      })
+
+    const res = await app.request(
+      'http://localhost/test-path',
+      {
+        headers: {
+          'user-agent': 'test-agent'
+        }
+      },
+      { WATCH_PROXY_DEST: 'test.example.com' }
+    )
+
+    expect(res.status).toBe(200)
+    expect(await res.text()).toBe('body content')
+
+    // Verify that other headers are passed but no cookie header is set
+    expect(capturedHeaders).not.toBeNull()
+    if (capturedHeaders && typeof capturedHeaders.get === 'function') {
+      expect(capturedHeaders.get('user-agent')).toBe('test-agent')
+      expect(capturedHeaders.get('cookie')).toBeNull()
+    } else {
+      expect(capturedHeaders['user-agent']).toBe('test-agent')
+      expect(capturedHeaders['cookie']).toBeUndefined()
+    }
+  })
+
   it('should route /watch/modern to WATCH_MODERN_PROXY_DEST', async () => {
     fetchMock
       .get('http://modern.example.com')
