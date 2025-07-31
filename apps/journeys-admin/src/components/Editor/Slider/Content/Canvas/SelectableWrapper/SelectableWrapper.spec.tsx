@@ -205,7 +205,7 @@ describe('SelectableWrapper', () => {
       })
     )
     fireEvent.click(
-      getByTestId(`JourneysRadioQuestion-${radioQuestionBlock.id}`)
+      getByTestId(`JourneysRadioQuestionList-${radioQuestionBlock.id}`)
     )
     expect(
       getByTestId(`SelectableWrapper-${radioQuestionBlock.id}`)

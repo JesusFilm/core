@@ -53,7 +53,9 @@ export function ListVariant({
 }: ListVariantProps): ReactElement {
   const { t } = useTranslation('apps-journeys-ui')
   return (
-    <StyledListRadioQuestion data-testid={`JourneysRadioQuestion-${blockId}`}>
+    <StyledListRadioQuestion
+      data-testid={`JourneysRadioQuestionList-${blockId}`}
+    >
       <ButtonGroup orientation="vertical" variant="contained" fullWidth>
         {options}
         {addOption && (
