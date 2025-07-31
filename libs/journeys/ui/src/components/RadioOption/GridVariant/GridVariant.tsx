@@ -4,10 +4,10 @@ import Skeleton from '@mui/material/Skeleton'
 import Stack from '@mui/material/Stack'
 import { styled } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
-import Image from 'next/image'
 import { ReactElement, useState } from 'react'
 
 import LogoGrayscale from '@core/shared/ui/icons/LogoGrayscale'
+import { NextImage } from '@core/shared/ui/NextImage'
 
 import { TreeBlock } from '../../../libs/block'
 import { BlockFields } from '../../../libs/block/__generated__/BlockFields'
@@ -160,7 +160,6 @@ export function GridVariant({
     <StyledGridRadioOption
       onClick={handleClick}
       className={classNames}
-      sx={{}}
       data-testid="JourneysRadioOptionGrid"
     >
       <Stack gap={2}>
@@ -187,14 +186,16 @@ export function GridVariant({
                   sx={{ position: 'absolute', top: 0, left: 0 }}
                 />
               )}
-              <Image
+              <NextImage
                 src={imageBlock.src}
                 alt={imageBlock.alt}
-                fill
-                style={{
-                  objectFit: 'cover'
-                }}
+                layout="fill"
+                objectFit="cover"
                 onLoad={() => setIsImageLoading(false)}
+                sx={{
+                  transform: `scale(${(imageBlock.scale ?? 100) / 100})`,
+                  transformOrigin: `${imageBlock.focalLeft}% ${imageBlock.focalTop}%`
+                }}
                 sizes="(max-width: 600px) 100vw, (max-width: 960px) 50vw, 25vw"
               />
               {disabled && (

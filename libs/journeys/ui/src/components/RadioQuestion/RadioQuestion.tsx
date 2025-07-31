@@ -48,8 +48,6 @@ export function RadioQuestion({
   wrappers,
   addOption
 }: RadioQuestionProps): ReactElement {
-  // const gridView = true // TODO: remove this
-
   const [radioQuestionSubmissionEventCreate] = useMutation<
     RadioQuestionSubmissionEventCreate,
     RadioQuestionSubmissionEventCreateVariables
