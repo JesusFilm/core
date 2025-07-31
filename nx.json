@@ -1,12 +1,4 @@
 {
-  "tasksRunnerOptions": {
-    "default": {
-      "options": {
-        "canTrackAnalytics": false,
-        "showUsageWarnings": true
-      }
-    }
-  },
   "generators": {
     "@nx/react": {
       "application": {
@@ -36,6 +28,9 @@
       "inputs": ["production", "^production"],
       "cache": true
     },
+    "deploy": {
+      "cache": true
+    },
     "build-storybook": {
       "inputs": [
         "default",
@@ -43,10 +38,11 @@
         "{workspaceRoot}/.storybook/**/*",
         "{projectRoot}/.storybook/**/*",
         "{projectRoot}/tsconfig.storybook.json"
-      ]
+      ],
+      "cache": true
     },
     "e2e": {
-      "cache": true
+      "cache": false
     },
     "@nx/jest:jest": {
       "inputs": ["default", "^production", "{workspaceRoot}/jest.preset.js"],
@@ -114,5 +110,6 @@
         "targetName": "eslint:lint"
       }
     }
-  ]
+  ],
+  "nxCloudId": "67f5cc993cd3c537c150a59e"
 }

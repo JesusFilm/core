@@ -18,7 +18,9 @@ export default defineConfig({
   workers: process.env.CI ? 8 : undefined,
   reporter: 'html',
   use: {
-    baseURL: process.env.DEPLOYMENT_URL ?? 'http://localhost:4700',
+    baseURL: process.env.PR_NUMBER
+      ? `https://short-links-${process.env.PR_NUMBER}-jesusfilm.vercel.app/`
+      : (process.env.DEPLOYMENT_URL ?? 'http://localhost:4700'),
     trace: 'on-first-retry',
     screenshot: 'only-on-failure'
   },

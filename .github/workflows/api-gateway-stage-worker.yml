@@ -9,6 +9,8 @@ on:
         required: true
       JFP_AWS_SECRET_ACCESS_KEY:
         required: true
+      NX_CLOUD_ACCESS_TOKEN:
+        required: true
 
 jobs:
   build-and-deploy:
@@ -16,37 +18,12 @@ jobs:
     env:
       IMAGE_TAG: ${{ github.sha }}
     runs-on: blacksmith-2vcpu-ubuntu-2204
-    strategy:
-      matrix:
-        node-version: [22]
     steps:
       - name: Checkout current branch
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
       - uses: nrwl/nx-set-shas@v4
-      - uses: useblacksmith/setup-node@v5
-        with:
-          node-version: ${{ matrix.node-version }}
-
-      - name: Get Node Version
-        id: node-version
-        run: echo "version=$(node -v)" >> $GITHUB_OUTPUT
-
-      - name: Mount NPM Cache
-        uses: useblacksmith/stickydisk@v1
-        with:
-          key: ${{ github.repository }}-${{ steps.node-version.outputs.version }}-npm-cache
-          path: ~/.npm
-      - name: Mount node_modules
-        uses: useblacksmith/stickydisk@v1
-        with:
-          key: ${{ github.repository }}-${{ steps.node-version.outputs.version }}-node-modules
-          path: ./node_modules
-
-      - name: nx Install
-        run: npm install -g nx --silent
-
       - name: Get affected apps
         run: |
           echo "apps=$(npx ts-node tools/scripts/affected-apps.ts --projects apis/api-*)" >> $GITHUB_OUTPUT

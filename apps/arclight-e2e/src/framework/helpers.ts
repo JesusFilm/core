@@ -4,7 +4,9 @@ import { testData } from '../utils/testData'
 require('dotenv').config()
 
 export async function getBaseUrl(): Promise<string> {
-  const baseUrl = process.env.DEPLOYMENT_URL?.toString()
+  const baseUrl = process.env.PR_NUMBER
+    ? `https://arclight-${process.env.PR_NUMBER}-jesusfilm.vercel.app/`
+    : process.env.DEPLOYMENT_URL?.toString()
   if (!baseUrl) {
     throw new Error('baseUrl was not provided via environment variable')
   }
