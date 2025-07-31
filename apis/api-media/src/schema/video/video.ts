@@ -355,8 +355,11 @@ const Video = builder.prismaObject('Video', {
     }),
     variant: t.prismaField({
       type: 'VideoVariant',
-      args: { languageId: t.arg.id({ required: false }) },
-      resolve: async (query, parent, { languageId }, _ctx, info) => {
+      args: {
+        languageId: t.arg.id({ required: false }),
+        input: t.arg({ type: VideoVariantFilter, required: false })
+      },
+      resolve: async (query, parent, { languageId, input }, _ctx, info) => {
         const variableValueId =
           (info.variableValues.id as string | undefined) ??
           (info.variableValues.contentId as string | undefined) ??
@@ -382,7 +385,8 @@ const Video = builder.prismaObject('Video', {
           return await prisma.videoVariant.findUnique({
             ...query,
             where: {
-              slug
+              slug,
+              published: input?.onlyPublished === false ? undefined : true
             }
           })
         }
@@ -396,7 +400,8 @@ const Video = builder.prismaObject('Video', {
             languageId_videoId: {
               videoId: parent.id,
               languageId: primaryLanguageId
-            }
+            },
+            published: input?.onlyPublished === false ? undefined : true
           }
         })
       }
