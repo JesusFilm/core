@@ -519,7 +519,7 @@ export class CardLevelActionPage {
       this.page
         .frameLocator(this.journeyCardFrame)
         .locator(
-          'div[data-testid="CardOverlayContent"] div[data-testid*="SelectableWrapper"] button[data-testid="JourneysRadioOption"]'
+          'div[data-testid="CardOverlayContent"] div[data-testid*="SelectableWrapper"] button[data-testid="JourneysRadioOptionList"]'
         )
         .first()
     ).toBeVisible()
@@ -537,7 +537,7 @@ export class CardLevelActionPage {
       await this.page
         .frameLocator(this.journeyCardFrame)
         .locator(
-          'div[data-testid="CardOverlayContent"] div[data-testid*="SelectableWrapper"] button[data-testid="JourneysRadioOption"]'
+          'div[data-testid="CardOverlayContent"] div[data-testid*="SelectableWrapper"] button[data-testid="JourneysRadioOptionList"]'
         )
         .nth(pollOption - 1)
         .click()
@@ -545,7 +545,7 @@ export class CardLevelActionPage {
       await this.page
         .frameLocator(this.journeyCardFrame)
         .locator(
-          'div[data-testid="CardOverlayContent"] div[data-testid*="SelectableWrapper"] button[data-testid="JourneysRadioOption"]'
+          'div[data-testid="CardOverlayContent"] div[data-testid*="SelectableWrapper"] button[data-testid="JourneysRadioOptionList"]'
         )
         .nth(pollOption - 1)
         .click()
@@ -559,7 +559,7 @@ export class CardLevelActionPage {
       await this.page
         .frameLocator(this.journeyCardFrame)
         .locator(
-          'div[data-testid="CardOverlayContent"] div[data-testid*="SelectableWrapper"] button[data-testid="JourneysRadioOption"]'
+          'div[data-testid="CardOverlayContent"] div[data-testid*="SelectableWrapper"] button[data-testid="JourneysRadioOptionList"]'
         )
         .nth(pollOption - 1)
         .click()
@@ -605,7 +605,7 @@ export class CardLevelActionPage {
       await this.page
         .frameLocator(this.journeyCardFrame)
         .locator(
-          'div[data-testid="CardOverlayContent"] div[data-testid*="SelectableWrapper"] button[data-testid="JourneysRadioOption"]'
+          'div[data-testid="CardOverlayContent"] div[data-testid*="SelectableWrapper"] button[data-testid="JourneysRadioOptionList"]'
         )
         .nth(pollOption - 1)
         .dblclick()
@@ -613,7 +613,7 @@ export class CardLevelActionPage {
       await this.page
         .frameLocator(this.journeyCardFrame)
         .locator(
-          'div[data-testid="CardOverlayContent"] div[data-testid*="SelectableWrapper"] button[data-testid="JourneysRadioOption"]'
+          'div[data-testid="CardOverlayContent"] div[data-testid*="SelectableWrapper"] button[data-testid="JourneysRadioOptionList"]'
         )
         .nth(pollOption - 1)
         .click()
@@ -627,7 +627,7 @@ export class CardLevelActionPage {
       await this.page
         .frameLocator(this.journeyCardFrame)
         .locator(
-          'div[data-testid="CardOverlayContent"] div[data-testid*="SelectableWrapper"] button[data-testid="JourneysRadioOption"]'
+          'div[data-testid="CardOverlayContent"] div[data-testid*="SelectableWrapper"] button[data-testid="JourneysRadioOptionList"]'
         )
         .nth(pollOption - 1)
         .dblclick()
@@ -635,7 +635,7 @@ export class CardLevelActionPage {
     await this.page
       .frameLocator(this.journeyCardFrame)
       .locator(
-        'div[data-testid="CardOverlayContent"] div[data-testid*="SelectableWrapper"] button[data-testid="JourneysRadioOption"]'
+        'div[data-testid="CardOverlayContent"] div[data-testid*="SelectableWrapper"] button[data-testid="JourneysRadioOptionList"]'
       )
       .nth(pollOption - 1)
       .locator('textarea[name="radioOptionLabel"]')
@@ -647,7 +647,7 @@ export class CardLevelActionPage {
       this.page
         .frameLocator(this.journeyCardFrame)
         .locator(
-          'div[data-testid="CardOverlayContent"] div[data-testid*="SelectableWrapper"] button[data-testid="JourneysRadioOption"]',
+          'div[data-testid="CardOverlayContent"] div[data-testid*="SelectableWrapper"] button[data-testid="JourneysRadioOptionList"]',
           { hasText: this.pollRename }
         )
     ).toBeVisible()
