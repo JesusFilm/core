@@ -4523,6 +4523,7 @@ export type VideoTitleArgs = {
 
 
 export type VideoVariantArgs = {
+  input?: InputMaybe<VideoVariantFilter>;
   languageId?: InputMaybe<Scalars['ID']['input']>;
 };
 
