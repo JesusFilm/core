@@ -1,1 +1,2 @@
-export { TextResponseSubmissionEventRef } from './textResponseSubmissionEvent'
+import './textResponseSubmissionEvent'
+import './inputs'

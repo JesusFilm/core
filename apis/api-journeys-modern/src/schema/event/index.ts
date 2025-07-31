@@ -1,4 +1,4 @@
-// Import all event types
+import './event'
 import './button'
 import './chat'
 import './journey'
@@ -7,11 +7,3 @@ import './radioQuestion'
 import './signUp'
 import './textResponse'
 import './video'
-
-// Export the main event interface and service functions
-export { EventInterface } from './event'
-export {
-  validateBlockEvent,
-  validateBlock,
-  getByUserIdAndJourneyId
-} from './event.service'

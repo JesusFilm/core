@@ -1,1 +1,2 @@
-export { SignUpSubmissionEventRef } from './signUpSubmissionEvent'
+import './signUpSubmissionEvent'
+import './inputs'

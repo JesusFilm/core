@@ -1,5 +1,4 @@
-export {
-  StepViewEventRef,
-  StepNextEventRef,
-  StepPreviousEventRef
-} from './stepEvents'
+import './stepViewEvent'
+import './stepNextEvent'
+import './stepPreviousEvent'
+import './inputs'
