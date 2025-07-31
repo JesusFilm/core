@@ -7,6 +7,24 @@
     "title": "Bibliothèque de vidéos évangéliques gratuites <underline>en streaming</underline>.",
     "description": "Regarde, apprends et partage l'évangile dans plus de 2000 langues."
   },
+  "ModernTestPage": {
+    "pageTitle": "Test moderne",
+    "title": "Page de test moderne",
+    "description": "Il s'agit d'une page de test pour l'application de veille moderne. Elle démontre les nouvelles fonctionnalités de routage et de proxy.",
+    "feature1": {
+      "title": "Architecture moderne",
+      "description": "Construit avec Next.js App Router et les modèles modernes de React pour des performances optimales et une expérience de développeur."
+    },
+    "feature2": {
+      "title": "Routage intelligent",
+      "description": "Routage proxy avancé qui dirige intelligemment le trafic vers les services dorsaux appropriés."
+    },
+    "feature3": {
+      "title": "Conception adaptée",
+      "description": "Conception entièrement responsive qui fonctionne de manière transparente sur tous les appareils et toutes les tailles d'écran."
+    },
+    "footer": "Cette page est servie par l'application de veille moderne par le biais d'un routage proxy intelligent."
+  },
   "DatadogErrorBoundary": {
     "somethingWentWrong": "Quelque chose a mal tourné",
     "anErrorOccurred": "Une erreur s'est produite lors du chargement de cette page. Essaie de la rafraîchir.",
