@@ -5,7 +5,7 @@ import { defineConfig, devices } from '@playwright/test'
  * Read environment variables from file.
  * https://github.com/motdotla/dotenv
  */
-// require('dotenv').config();
+require('dotenv').config()
 
 /**
  * See https://playwright.dev/docs/test-configuration.
@@ -20,13 +20,17 @@ export default defineConfig({
   /* Retry on CI only */
   retries: process.env.CI ? 3 : 0,
   /* Opt out of parallel tests on CI. */
-  workers: process.env.CI ? 12 : undefined,
+  workers: process.env.CI ? Math.min(15, require('os').cpus().length * 3) : 1,
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
   reporter: 'html',
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
     permissions: ['clipboard-read', 'clipboard-write'],
     /* Base URL to use in actions like `await page.goto('/')`. */
+    baseURL:
+      process.env.JOURNEYS_ADMIN_DAILY_E2E ??
+      process.env.DEPLOYMENT_URL ??
+      'http://localhost:4100',
     actionTimeout: 20000,
     navigationTimeout: 60000,
     screenshot: 'only-on-failure',
