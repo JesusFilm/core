@@ -5,7 +5,7 @@ import { defineConfig, devices } from '@playwright/test'
  * Read environment variables from file.
  * https://github.com/motdotla/dotenv
  */
-require('dotenv').config();
+require('dotenv').config()
 
 /**
  * See https://playwright.dev/docs/test-configuration.
@@ -27,7 +27,10 @@ export default defineConfig({
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
     /* Use URL that has been set part of app-deploy.yml */
-    baseURL: process.env.WATCH_DAILY_E2E ?? process.env.DEPLOYMENT_URL ?? 'http://localhost:4300',
+    baseURL:
+      process.env.WATCH_DAILY_E2E ??
+      process.env.DEPLOYMENT_URL ??
+      'http://localhost:4300',
 
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     trace: 'on-first-retry',

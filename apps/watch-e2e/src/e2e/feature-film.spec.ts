@@ -49,6 +49,9 @@ test.describe('Feature film', () => {
     await page.waitForLoadState('domcontentloaded')
 
     // Verify URL changed to Birth of Jesus chapter
-    await expect(page).toHaveURL('/watch/jesus.html/birth-of-jesus/english.html', { timeout: 30000 })
+    await expect(page).toHaveURL(
+      '/watch/jesus.html/birth-of-jesus/english.html',
+      { timeout: 30000 }
+    )
   })
 })

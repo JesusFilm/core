@@ -50,7 +50,7 @@ test('Filters', async ({ page }) => {
     .getByLabel('Search Languages')
     .fill('eng')
   await page.getByRole('option', { name: 'English' }).click()
-  
+
   await page.press('body', 'Tab')
 
   await page.waitForLoadState('domcontentloaded')

@@ -4,7 +4,7 @@ import { defineConfig, devices } from '@playwright/test'
  * Read environment variables from file.
  * https://github.com/motdotla/dotenv
  */
-require('dotenv').config();
+require('dotenv').config()
 
 export default defineConfig({
   testDir: './src/e2e',
@@ -14,7 +14,10 @@ export default defineConfig({
   workers: process.env.CI ? 8 : undefined,
   reporter: 'html',
   use: {
-    baseURL: process.env.WATCH_MODERN_DAILY_E2E ?? process.env.DEPLOYMENT_URL ?? 'http://localhost:4800',
+    baseURL:
+      process.env.WATCH_MODERN_DAILY_E2E ??
+      process.env.DEPLOYMENT_URL ??
+      'http://localhost:4800',
     trace: 'on-first-retry',
     screenshot: 'only-on-failure'
   },
