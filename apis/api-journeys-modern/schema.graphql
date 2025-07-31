@@ -374,7 +374,8 @@ type RadioOptionBlock implements Block
   This child block should not be rendered normally, instead it should be used
   as a poll option image. Blocks are often of type ImageBlock
   """
-  pollOptionImageId: ID @shareable
+  pollOptionImageId: ID @deprecated(reason: "use pollOptionImageBlockId instead") @shareable
+  pollOptionImageBlockId: ID @shareable
 }
 
 type RadioQuestionBlock implements Block

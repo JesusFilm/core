@@ -22,7 +22,6 @@ input RadioOptionBlockUpdateInput {
   parentBlockId: ID
   label: String
   pollOptionImageId: ID
-    @deprecated(reason: "use pollOptionImageBlockId instead")
   pollOptionImageBlockId: ID
 }
 
