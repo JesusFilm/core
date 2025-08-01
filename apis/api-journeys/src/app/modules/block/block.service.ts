@@ -150,7 +150,6 @@ export class BlockService {
           'nextBlockId',
           'action',
           'slug',
-          'pollOptionImageId',
           'pollOptionImageBlockId'
         ]),
         settings: block.settings ?? {},
@@ -181,8 +180,7 @@ export class BlockService {
             action:
               !isActionEmpty && newBlock.action != null
                 ? { create: newBlock.action }
-                : undefined,
-            pollOptionImageId: newBlock.pollOptionImageId ?? undefined
+                : undefined
           }
           if (newBlock.typename === 'StepBlock') {
             return await this.prismaService.block.update({

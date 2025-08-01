@@ -25,17 +25,12 @@ export const RadioOptionBlock = builder.prismaObject('Block', {
       directives: { shareable: true },
       resolve: (block) => block.label ?? ''
     }),
-    pollOptionImageId: t.exposeID('pollOptionImageId', {
-      nullable: true,
-      directives: { shareable: true },
-      deprecationReason: 'use pollOptionImageBlockId instead',
-      description: `pollOptionImageId is present if a child block should be used as a poll option image.
-This child block should not be rendered normally, instead it should be used
-as a poll option image. Blocks are often of type ImageBlock`
-    }),
     pollOptionImageBlockId: t.exposeID('pollOptionImageBlockId', {
       nullable: true,
-      directives: { shareable: true }
+      directives: { shareable: true },
+      description: `pollOptionImageBlockId is present if a child block should be used as a poll option image.
+      This child block should not be rendered normally, instead it should be used
+      as a poll option image. Blocks are often of type ImageBlock`
     })
   })
 })
