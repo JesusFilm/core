@@ -116,7 +116,7 @@ const radioOption: TreeBlock<RadioOptionBlock> = {
   __typename: 'RadioOptionBlock',
   parentBlockId: 'radioQuestion1.id',
   parentOrder: 0,
-  pollOptionImageId: null,
+  pollOptionImageBlockId: null,
   children: [],
   label: 'radio option 1',
   action: {
@@ -195,7 +195,7 @@ describe('RadioOptionImage', () => {
         },
         radioOptionBlockUpdate: {
           id: radioOption.id,
-          pollOptionImageId: image.id,
+          pollOptionImageBlockId: image.id,
           __typename: 'RadioOptionBlock'
         }
       }
@@ -224,7 +224,7 @@ describe('RadioOptionImage', () => {
         ],
         radioOptionBlockUpdate: {
           id: radioOption.id,
-          pollOptionImageId: null,
+          pollOptionImageBlockId: null,
           __typename: 'RadioOptionBlock'
         }
       }
@@ -247,7 +247,7 @@ describe('RadioOptionImage', () => {
         blockRestore: [image],
         radioOptionBlockUpdate: {
           id: radioOption.id,
-          pollOptionImageId: image.id,
+          pollOptionImageBlockId: image.id,
           __typename: 'RadioOptionBlock'
         }
       }
@@ -308,7 +308,8 @@ describe('RadioOptionImage', () => {
         ])
       )
       expect(
-        cache.extract()[`RadioOptionBlock:${radioOption.id}`]?.pollOptionImageId
+        cache.extract()[`RadioOptionBlock:${radioOption.id}`]
+          ?.pollOptionImageBlockId
       ).toEqual(image.id)
     })
 
@@ -371,7 +372,8 @@ describe('RadioOptionImage', () => {
         ])
       )
       expect(
-        cache.extract()[`RadioOptionBlock:${radioOption.id}`]?.pollOptionImageId
+        cache.extract()[`RadioOptionBlock:${radioOption.id}`]
+          ?.pollOptionImageBlockId
       ).toBeNull()
     })
 
@@ -441,7 +443,8 @@ describe('RadioOptionImage', () => {
         ])
       )
       expect(
-        cache.extract()[`RadioOptionBlock:${radioOption.id}`]?.pollOptionImageId
+        cache.extract()[`RadioOptionBlock:${radioOption.id}`]
+          ?.pollOptionImageBlockId
       ).toEqual(image.id)
     })
   })
@@ -449,7 +452,7 @@ describe('RadioOptionImage', () => {
   describe('Existing image for radio option', () => {
     const existingImageRadioOption: TreeBlock<RadioOptionBlock> = {
       ...radioOption,
-      pollOptionImageId: image.id,
+      pollOptionImageBlockId: image.id,
       children: [
         {
           ...image,

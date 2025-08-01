@@ -35,8 +35,6 @@ import {
   RadioOptionImageUpdate,
   RadioOptionImageUpdateVariables
 } from '../../../../../../../../../../__generated__/RadioOptionImageUpdate'
-// import { blockDeleteUpdate } from '../../../../../../../../../../libs/blockDeleteUpdate/blockDeleteUpdate'
-// import { blockRestoreUpdate } from '../../../../../../../../../../libs/useBlockRestoreMutation'
 import { blockDeleteUpdate } from '../../../../../../../../../libs/blockDeleteUpdate'
 import { blockRestoreUpdate } from '../../../../../../../../../libs/useBlockRestoreMutation'
 import { ImageSource } from '../../../../../Drawer/ImageSource'
@@ -55,10 +53,10 @@ export const RADIO_OPTION_IMAGE_CREATE = gql`
     }
     radioOptionBlockUpdate(
       id: $radioOptionBlockId
-      input: { pollOptionImageId: $id }
+      input: { pollOptionImageBlockId: $id }
     ) {
       id
-      pollOptionImageId
+      pollOptionImageBlockId
     }
   }
 `
@@ -80,10 +78,10 @@ export const RADIO_OPTION_IMAGE_DELETE = gql`
     }
     radioOptionBlockUpdate(
       id: $radioOptionBlockId
-      input: { pollOptionImageId: null }
+      input: { pollOptionImageBlockId: null }
     ) {
       id
-      pollOptionImageId
+      pollOptionImageBlockId
     }
   }
 `
@@ -99,10 +97,10 @@ export const RADIO_OPTION_IMAGE_RESTORE = gql`
     }
     radioOptionBlockUpdate(
       id: $radioOptionBlockId
-      input: { pollOptionImageId: $id }
+      input: { pollOptionImageBlockId: $id }
     ) {
       id
-      pollOptionImageId
+      pollOptionImageBlockId
     }
   }
 `
@@ -113,7 +111,7 @@ export function RadioOptionImage({
   radioOptionBlock: TreeBlock<RadioOptionBlock>
 }): ReactElement {
   const imageBlock = radioOptionBlock.children.find(
-    (child) => child.id === radioOptionBlock.pollOptionImageId
+    (child) => child.id === radioOptionBlock.pollOptionImageBlockId
   ) as TreeBlock<ImageBlock> | undefined
 
   const { add } = useCommand()
@@ -189,7 +187,7 @@ export function RadioOptionImage({
             radioOptionBlockUpdate: {
               __typename: 'RadioOptionBlock',
               id: radioOptionBlock.id,
-              pollOptionImageId: block.id
+              pollOptionImageBlockId: block.id
             }
           },
           update(cache, { data }) {
@@ -232,7 +230,7 @@ export function RadioOptionImage({
             blockDelete: [block],
             radioOptionBlockUpdate: {
               id: radioOptionBlock.id,
-              pollOptionImageId: null,
+              pollOptionImageBlockId: null,
               __typename: 'RadioOptionBlock'
             }
           },
@@ -257,7 +255,7 @@ export function RadioOptionImage({
             blockRestore: [block],
             radioOptionBlockUpdate: {
               id: radioOptionBlock.id,
-              pollOptionImageId: block.id,
+              pollOptionImageBlockId: block.id,
               __typename: 'RadioOptionBlock'
             }
           },
@@ -338,7 +336,7 @@ export function RadioOptionImage({
             blockDelete: [imageBlock],
             radioOptionBlockUpdate: {
               id: radioOptionBlock.id,
-              pollOptionImageId: null,
+              pollOptionImageBlockId: null,
               __typename: 'RadioOptionBlock'
             }
           },
@@ -365,7 +363,7 @@ export function RadioOptionImage({
             blockRestore: [imageBlock],
             radioOptionBlockUpdate: {
               id: radioOptionBlock.id,
-              pollOptionImageId: imageBlock.id,
+              pollOptionImageBlockId: imageBlock.id,
               __typename: 'RadioOptionBlock'
             }
           },
