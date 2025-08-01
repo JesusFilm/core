@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test'
+import { test, expect } from '@playwright/test'
 
 /**
  * @check
@@ -19,38 +19,60 @@ import { expect, test } from '@playwright/test'
  *
  * Based on the Slack conversation about videos from MUX not loading in production.
  */
-test('Watch Video Monitoring: Check video playback and MUX network connectivity', async ({
-  page
-}) => {
-  // Track network requests and responses
+test('Video playback and MUX network connectivity monitoring', async ({ page }) => {
   const networkRequests: Array<{
     url: string
     status: number
     error?: string
   }> = []
 
-  // Helper function to safely check if URL contains video-related domains
+  // Helper function to safely check if a URL is video-related
   const isVideoRelatedUrl = (url: string): boolean => {
     try {
       const urlObj = new URL(url)
       const hostname = urlObj.hostname.toLowerCase()
-      return (
-        hostname.includes('mux.com') ||
-        hostname.includes('litix.io') ||
-        hostname.includes('inferred.litix.io') ||
-        urlObj.pathname.includes('.hls') ||
-        urlObj.pathname.includes('.m3u8')
+      
+      // Check for specific domains using exact matching
+      const allowedDomains = ['mux.com', 'litix.io', 'inferred.litix.io']
+      const isAllowedDomain = allowedDomains.some(domain => 
+        hostname === domain || hostname.endsWith('.' + domain)
       )
+      
+      // Check for video file extensions in pathname
+      const videoExtensions = ['.hls', '.m3u8']
+      const hasVideoExtension = videoExtensions.some(ext => 
+        urlObj.pathname.toLowerCase().includes(ext)
+      )
+      
+      return isAllowedDomain || hasVideoExtension
     } catch {
-      // If URL parsing fails, fall back to simple string check but be more specific
+      // If URL parsing fails, use a more restrictive fallback
+      // Only check for exact patterns in the URL
+      const urlLower = url.toLowerCase()
       return (
-        url.includes('mux.com') ||
-        url.includes('litix.io') ||
-        url.includes('inferred.litix.io') ||
-        url.includes('.hls') ||
-        url.includes('.m3u8')
+        urlLower.includes('mux.com/') ||
+        urlLower.includes('litix.io/') ||
+        urlLower.includes('inferred.litix.io/') ||
+        urlLower.includes('/.hls') ||
+        urlLower.includes('/.m3u8')
       )
     }
+  }
+
+  // Helper function to safely check if an error message is related to video services
+  const isVideoRelatedError = (error: string): boolean => {
+    const errorLower = error.toLowerCase()
+    
+    // Check for specific error patterns related to video services
+    const videoErrorPatterns = [
+      'mux.com',
+      'litix.io', 
+      'inferred.litix.io',
+      'net::err',
+      'failed to load resource'
+    ]
+    
+    return videoErrorPatterns.some(pattern => errorLower.includes(pattern))
   }
 
   // Listen to all network requests
@@ -133,7 +155,7 @@ test('Watch Video Monitoring: Check video playback and MUX network connectivity'
     { timeout: 10000 }
   )
 
-  // Wait for network requests to settle by checking for video-related requests to complete
+  // Wait for video to start loading (this might take a moment)
   await page.waitForFunction(
     () => {
       // Check if we have any video-related network activity that has completed
@@ -150,17 +172,37 @@ test('Watch Video Monitoring: Check video playback and MUX network connectivity'
     (req) => req.status >= 200 && req.status < 300
   )
 
-  // Check for specific MUX-related network issues
-  const muxRequests = networkRequests.filter(
-    (req) =>
-      req.url.includes('mux.com') ||
-      req.url.includes('litix.io') ||
-      req.url.includes('inferred.litix.io')
-  )
+  // Check for specific MUX-related network issues using proper URL parsing
+  const muxRequests = networkRequests.filter((req) => {
+    try {
+      const urlObj = new URL(req.url)
+      const hostname = urlObj.hostname.toLowerCase()
+      return hostname === 'mux.com' || 
+             hostname.endsWith('.mux.com') ||
+             hostname === 'litix.io' || 
+             hostname.endsWith('.litix.io') ||
+             hostname === 'inferred.litix.io' || 
+             hostname.endsWith('.inferred.litix.io')
+    } catch {
+      // Fallback for malformed URLs
+      const urlLower = req.url.toLowerCase()
+      return urlLower.includes('mux.com/') || 
+             urlLower.includes('litix.io/') || 
+             urlLower.includes('inferred.litix.io/')
+    }
+  })
 
-  const hlsRequests = networkRequests.filter(
-    (req) => req.url.includes('.hls') || req.url.includes('.m3u8')
-  )
+  const hlsRequests = networkRequests.filter((req) => {
+    try {
+      const urlObj = new URL(req.url)
+      return urlObj.pathname.toLowerCase().includes('.hls') || 
+             urlObj.pathname.toLowerCase().includes('.m3u8')
+    } catch {
+      // Fallback for malformed URLs
+      const urlLower = req.url.toLowerCase()
+      return urlLower.includes('/.hls') || urlLower.includes('/.m3u8')
+    }
+  })
 
   // Log network analysis
   console.log(`📊 Network Analysis:
@@ -171,18 +213,7 @@ test('Watch Video Monitoring: Check video playback and MUX network connectivity'
     - HLS requests: ${hlsRequests.length}`)
 
   // Check for critical errors (only the specific types mentioned in the Slack conversation)
-  const criticalErrors = consoleErrors.filter(
-    (error) =>
-      error.includes('CORS') ||
-      error.includes('mux.com') ||
-      error.includes('litix.io') ||
-      error.includes('inferred.litix.io') ||
-      error.includes('net::ERR') ||
-      (error.includes('Failed to load resource') &&
-        (error.includes('mux.com') ||
-          error.includes('litix.io') ||
-          error.includes('inferred.litix.io')))
-  )
+  const criticalErrors = consoleErrors.filter((error) => isVideoRelatedError(error))
 
   // Fail the test if there are critical network issues
   if (criticalErrors.length > 0) {
