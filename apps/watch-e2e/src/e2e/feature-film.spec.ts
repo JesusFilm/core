@@ -38,7 +38,7 @@ test.describe('Feature film', () => {
 
     // Wait for page to be fully loaded after navigation
     await page.waitForLoadState('domcontentloaded')
-    
+
     // Wait for the JESUS page content to load (look for elements that indicate we're on the JESUS page)
     await page.waitForSelector('h1:has-text("JESUS")', { timeout: 60000 })
 
