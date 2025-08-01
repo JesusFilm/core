@@ -1,6 +1,6 @@
 'use client'
 
-import { Video } from '../../types/homepage.types';
+import type { Video } from '../../types/homepage.types';
 
 interface VideoCardProps {
   video: Video;
@@ -21,15 +21,19 @@ export default function VideoCard({ video, className = '' }: VideoCardProps) {
   return (
     <div className={`group cursor-pointer transition-transform hover:scale-105 ${className}`}>
       {/* Video Thumbnail */}
-      <div className="relative aspect-video w-full overflow-hidden rounded-lg bg-gray-100">
+      <div className="relative aspect-video w-full overflow-hidden rounded-lg bg-gray-800">
         <img
           src={video.thumbnailUrl}
           alt={video.title}
           className="h-full w-full object-cover transition-opacity group-hover:opacity-90"
           onError={(e) => {
-            // Fallback to placeholder if image fails to load
+            // Fallback to appropriate placeholder based on video category
             const target = e.target as HTMLImageElement;
-            target.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIwIiBoZWlnaHQ9IjE4MCIgdmlld0JveD0iMCAwIDMyMCAxODAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIzMjAiIGhlaWdodD0iMTgwIiBmaWxsPSIjRjNGNEY2Ii8+CjxwYXRoIGQ9Ik0xMzAuNSA5MEwxNjAgNzVWMTA1TDEzMC41IDkwWiIgZmlsbD0iIzk0QTNBRiIvPgo8L3N2Zz4K';
+            if (video.category === 'LUMO - Mark') {
+              target.src = 'https://d1wl257kev7hsz.cloudfront.net/cinematics/GOMarkCollection.mobileCinematicHigh.jpg';
+            } else {
+              target.src = 'https://www.jesusfilm.org/_next/image?url=https%3A%2F%2Fimagedelivery.net%2FtMY86qEHFACTO8_0kAeRFA%2F1_jf-0-0.mobileCinematicHigh.jpg%2Ff%3Djpg%2Cw%3D1280%2Ch%3D600%2Cq%3D95&w=3840&q=75';
+            }
           }}
         />
         
@@ -50,15 +54,15 @@ export default function VideoCard({ video, className = '' }: VideoCardProps) {
       
       {/* Video Info */}
       <div className="mt-3 space-y-1">
-        <h3 className="line-clamp-2 text-sm font-semibold text-gray-900 group-hover:text-blue-600">
+        <h3 className="line-clamp-2 text-sm font-semibold text-white group-hover:text-[#ee3441]">
           {video.title}
         </h3>
-        <p className="line-clamp-2 text-xs text-gray-600">
+        <p className="line-clamp-2 text-xs text-stone-200/80">
           {video.description}
         </p>
-        <div className="flex items-center justify-between text-xs text-gray-500">
+        <div className="flex items-center justify-between text-xs text-stone-200/60">
           <span className="capitalize">{video.category}</span>
-          <span>{new Date(video.publishedAt).getFullYear()}</span>
+          <span>{video.publishedAt.split('-')[0]}</span>
         </div>
       </div>
     </div>

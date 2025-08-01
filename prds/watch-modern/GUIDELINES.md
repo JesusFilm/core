@@ -254,8 +254,21 @@ This semantic grouping helps both human developers and AI assistants quickly und
 
 **⚠️ CRITICAL: Always run commands from `/workspaces/core/` directory (the nx workspace root)**
 
+#### Dev Server Management
+- Always check if dev server is running before starting a new one
+- Use: `lsof -ti:4800` to check if port 4800 is in use
+- If running, provide the URL instead of starting a new server
+
+##### Dev Server Testing Protocol
+- After starting dev server, ALWAYS navigate to the page being worked on
+- Use: `curl -s http://localhost:4800/[page-path]` to trigger compilation
+- For shaping pages: `curl -s http://localhost:4800/watch/shaping/[specific-path]`
+- For other pages: `curl -s http://localhost:4800/watch/[specific-path]`
+- Check dev server output for compilation errors after navigation
+- Wait for compilation to complete before proceeding
+
 ```bash
-# Development server for watch-modern
+# Development server for watch-modern (alsways check existing state before taking actions using Dev Server Management andDev Server Testing Protocol)
 cd /workspaces/core && nx run watch-modern:serve --port 4200
 
 # Testing specific component

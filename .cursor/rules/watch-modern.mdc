@@ -7,6 +7,11 @@ alwaysApply: false
 
 - @base.mdc
 
+# READ FIRST
+- Must read prds/watch-modern/<feature>/spec/{requirements.md,design.md,slices.md,intake.md}
+# HARD RULES
+- Preserve markup/classes from intake/ui (snapshot test).
+
 ## 1. Technology Stack & Constraints
 
 ### Core Technologies
@@ -255,18 +260,18 @@ export function MyComponent({ text }: { text: string }) {
 
 # STOP CONDITIONS
 - If spec is ambiguous/conflicting → stop and ask.
-- If spec files missing → stop and request SHAPER first.
+- If spec files missing → stop; run SHAPING agent first.
 
 - Update apps/watch-modern/LEARNINGS.md after each slice.
 
 # STOP CONDITIONS
 - If spec is ambiguous/conflicting → stop and ask.
-- If spec files missing → stop and request SHAPER first.
+- If spec files missing → stop and request SHAPING agent first.
 
 - Update apps/watch-modern/LEARNINGS.md after each slice.
 
 # STOP CONDITIONS
 - If spec is ambiguous/conflicting → stop and ask.
-- If spec files missing → stop and request SHAPER first.
+- If spec files missing → stop and request SHAPING agent first.
 
 - Update apps/watch-modern/LEARNINGS.md after each slice.

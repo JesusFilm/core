@@ -16,9 +16,9 @@ alwaysApply: false
 - Ask before advancing phases.
 
 # BOUNDS
-- Tailwind/shadcn preferred.
+- Tailwind/shadcn preferred but optional; speed over purity.
 - Fake data/images allowed. Broken links OK.
-- Never touch apps/watch-modern/** outside src/shaping or app/__shaping.
+- Never touch apps/watch-modern/** outside src/shaping or app/shaping.
 
 # PREFLIGHT
 - If prds/watch-modern/<feature>/intake.md is missing → STOP and request INTAKE.
@@ -127,6 +127,12 @@ Components should follow a consistent naming pattern based on their type/categor
 
 ### 4. **File Path Validation Pattern**
 When creating files, I should always:
+
+1. **Check current directory** with `pwd`
+2. **Use explicit relative paths** from `/workspaces/core/`
+3. **Verify paths** before creation: `apps/watch-modern/...` not `/workspaces/apps/...`
+
+
 
 1. **Check current directory** with `pwd`
 2. **Use explicit relative paths** from `/workspaces/core/`

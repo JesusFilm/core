@@ -8,7 +8,7 @@
 - [x] `mockVideos.ts` - Comprehensive mock data with 6 videos across all categories
 
 ### Main Homepage
-- [x] `__shaping/page.tsx` - Complete homepage with all sections implemented
+- [x] `shaping/homepage/page.tsx` - Complete homepage with all sections implemented
 
 ## Implementation Details
 
@@ -90,8 +90,9 @@ apps/watch-modern/src/
 │       ├── collections.ts ✅
 │       └── mockVideos.ts ✅
 └── app/
-    └── __shaping/
-        └── page.tsx ✅
+    └── shaping/
+        └── homepage/
+            └── page.tsx ✅
 ```
 
 ## Technical Stack ✅
@@ -100,6 +101,11 @@ apps/watch-modern/src/
 - **Language**: TypeScript with strict type checking
 - **Data**: Hardcoded collections (no GraphQL needed for shaping)
 - **Assets**: SVG placeholders with graceful fallbacks
+
+## Public Access ✅
+- **URL**: http://localhost:4200/shaping/homepage
+- **Status**: Public route accessible during development
+- **Purpose**: Easy access for vibecoding and screenshot capture
 
 ## Handoff Ready ✅
 The shaping phase deliverables are complete:

@@ -1,0 +1,10 @@
+---
+title: Watch Modern Intake Rules
+globs: "prds/watch-modern/**/intake/**"
+alwaysApply: true
+---
+# PURPOSE
+- Holds designer-exported mockup code (read-only for agents).
+# BOUNDS
+- Agents may READ but must NOT modify anything under intake/.
+MD

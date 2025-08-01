@@ -66,9 +66,22 @@ apps/watch/src/
 
 **⚠️ CRITICAL: Always run commands from `/workspaces/core/` directory**
 
+##### Dev Server Testing Protocol
+- After starting dev server, ALWAYS navigate to the page being worked on
+- Use: `curl -s http://localhost:4800/[page-path]` to trigger compilation
+- For shaping pages: `curl -s http://localhost:4800/watch/shaping/[specific-path]`
+- For other pages: `curl -s http://localhost:4800/watch/[specific-path]`
+- Check dev server output for compilation errors after navigation
+- Wait for compilation to complete before proceeding
+
+#### Dev Server Management
+- Always check if dev server is running before starting a new one
+- Use: `lsof -ti:4800` to check if port 4800 is in use
+- If running, provide the URL instead of starting a new server
+
 ```bash
 # Development server for watch
-cd /workspaces/core && nx run watch:serve
+cd /workspaces/core && nx run watch:serve --port 4200
 
 # Testing
 npm test watch

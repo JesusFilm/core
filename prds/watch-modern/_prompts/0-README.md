@@ -1,69 +1,39 @@
-# ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
-# ┃   WATCH-MODERN · SPEC-FIRST + SHAPE UP · CURSOR AGENTS       ┃
-# ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+# 🛠️  Quick-Start — AI DEV MODE Feature Flow
 
-                    ╭────────────────────────╮
-                    │        INTAKE          │
-                    │   (guided interview)   │
-                    ╰────────────┬───────────╯
-                                 │
-                                 ▼
-                    ╭────────────────────────╮
-                    │         VIBE           │
-                    │   (shaping UI only)    │
-                    ╰────────────┬───────────╯
-                                 │
-                           Freeze artifacts
-                                 │
-                                 ▼
-                    ╭────────────────────────╮
-                    │        SHAPER          │
-                    │ (pitch/spec from vibe) │
-                    ╰────────────┬───────────╯
-                                 │
-                                 ▼
-                    ╭────────────────────────╮
-                    │        BUILDER         │
-                    │   (vertical slices)    │
-                    ╰────────────┬───────────╯
-                                 │
-                             Learnings
-                                 │
-                 ┌───────────────┴───────────────┐
-                 ▼                               ▼
-      ╭──────────────────────╮        ╭──────────────────────╮
-      │   ARCHIVE SHAPING    │        │  RETRO & RULE TUNING │
-      │ (stash shaping code) │        │ (improve docs/rules) │
-      ╰──────────────────────╯        ╰──────────────────────╯
+> **Goal:** ship a new Watch-Modern feature with pixel-perfect design and full backend wiring, guided by Cursor background agents.
 
-## Files / Modes
-- **01-INTAKE.md** — Interview user; writes `prds/watch-modern/<feature>/intake.md`.
-- **02-VIBE-FREEZE.md** — Vibecoding in `__shaping/` + `src/shaping/`; user screenshots; freezes artifacts.
-- **03-SHAPER.md** — Reads intake+shaping; writes `pitch.md`, `requirements.md`, `design.md`, `slices.md`.
-- **04-BUILDER.md** — Slice loop (tests→code→run→update `slices.md` & `LEARNINGS.md`); proposes rule/doc tweaks each slice.
-- **05-ARCHIVE-SHAPING.md** — Archives shaping code; proposes shaping rule/template tweaks.
-- **06-RETRO-RULE-TUNING.md** — Reviews **LEARNINGS.md**; proposes improvements to `.cursor/rules/*` and PRD templates.
+---
 
-## Where stuff lives
-- **Shaping code**: `apps/watch-modern/app/__shaping/<feature>/…`, `apps/watch-modern/src/shaping/<feature>/…`
-- **PRDs**: `prds/watch-modern/<feature>/` (intake, pitch, requirements, design, slices, shaping/*)
-- **Progress**: `prds/watch-modern/<feature>/slices.md` (Status + Progress Log)
-- **Knowledge base**: `apps/watch-modern/LEARNINGS.md` (learnings + troubleshooting)
+## 1. Drop the mockup  
+```bash
+cp -R <exported-mockup> prds/watch-modern/<feature>/intake/ui/
+```
 
-## Required gates (handled in prompts/rules)
-- **INTAKE required** before VIBE/SHAPER/BUILDER.
-- **VIBE scope** limited to shaping paths; no tests required.
-- **BUILDER** must read PRDs first; TDD; **no MUI**; update `slices.md` + `LEARNINGS.md` each slice.
+## 2. Run agents in order
 
-## How to use
-1. Run `01-INTAKE.md` → approve → commit.
-2. Run `02-VIBE-FREEZE.md` → take screenshots → freeze → proceed/iterate.
-3. Run `03-SHAPER.md` → approve spec → commit.
-4. Run `04-BUILDER.md` per slice → accept/reject proposed doc/rule tweaks → commit.
-5. (Optional) Run `05-ARCHIVE-SHAPING.md`.
-6. Run `06-RETRO-RULE-TUNING.md` to fold **LEARNINGS** back into rules/templates.
+| Agent (prompt file) | What it does | Your actions |
+|---------------------|--------------|--------------|
+| **SHAPING** (`prompts/01-SHAPING-agent.md`) | Reads the mockup, interviews you, writes spec (`prds/.../spec/`). | Answer questions → **approve spec**. |
+| **BUILDER** (`prompts/02-BUILDER-agent.md`) | Implements feature **slice-by-slice**: copies markup, adds GraphQL, tests, logs learnings. | Review commits, accept/reject rule/doc tweaks, tell agent to continue/stop. |
+| **CLEANUP** (`prompts/03-CLEANUP-agent.md`) | Archives the intake folder after first prod slice ships; suggests shaping-rule tweaks. | Accept/reject tweaks. |
+| **RETRO** (`prompts/04-RETRO-agent.md`) | Scans `LEARNINGS.md`, proposes global rule/template improvements. | Accept/reject proposals. |
 
-## Models
-- INTAKE, SHAPER: `claude-4-sonnet`
-- VIBE: `gpt-4o`
-- BUILDER: `gpt-4.1` (use `o3` for hard refactors; `cursor-small` for codemods)
+> **Design lock:** Builder must preserve every Tailwind class; snapshot tests fail if UI drifts.
+
+---
+
+## 3. Progress & docs
+
+- **Spec & status:** `prds/watch-modern/<feature>/spec/` (`slices.md` shows progress).  
+- **Knowledge log:** `apps/watch-modern/LEARNINGS.md` (auto‑updated each slice).
+
+---
+
+### TL;DR
+
+1. **Drop mockup → run SHAPING → approve.**  
+2. **Run BUILDER** until must‑haves done.  
+3. **Run CLEANUP** (optional) then **RETRO**.  
+4. Merge.
+
+All prompts live in **`/prompts`** – open the next one and hit **Run**. Happy shipping!

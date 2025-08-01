@@ -13,6 +13,20 @@ This document captures common issues, solutions, and lessons learned during Watc
 - **Solution**: Always use full workspace path `core/apps/watch-modern/` for file operations
 - **Prevention**: Verify file locations with directory listing before creating files
 
+#### Dev Server Management
+- Always check if dev server is running before starting a new one
+- Use: `lsof -ti:4800` to check if port 4800 is in use
+- If running, provide the URL instead of starting a new server
+
+
+##### Dev Server Testing Protocol
+- After starting dev server, ALWAYS navigate to the page being worked on
+- Use: `curl -s http://localhost:4800/[page-path]` to trigger compilation
+- For shaping pages: `curl -s http://localhost:4800/watch/shaping/[specific-path]`
+- For other pages: `curl -s http://localhost:4800/watch/[specific-path]`
+- Check dev server output for compilation errors after navigation
+- Wait for compilation to complete before proceeding
+
 #### **Development Server**
 - **Issue**: `npm run dev` fails when run from incorrect directory
 - **Solution**: Must run from `/workspaces/core/` directory
