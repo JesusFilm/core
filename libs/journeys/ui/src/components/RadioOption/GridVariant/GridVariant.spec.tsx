@@ -55,7 +55,7 @@ describe('GridVariant', () => {
         label="label"
         handleClick={jest.fn()}
         children={[imageBlock]}
-        pollOptionImageId="123"
+        pollOptionImageBlockId="123"
       />
     )
 
