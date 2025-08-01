@@ -1,8 +1,8 @@
 import type { R2Asset, VideoSubtitleInput } from '../types'
 
+import { getGraphQLClient } from './gql/graphqlClient'
 import { CREATE_VIDEO_SUBTITLE, UPDATE_VIDEO_SUBTITLE } from './gql/mutations'
 import { GET_VIDEO_SUBTITLES_BY_EDITION } from './gql/queries'
-import { getGraphQLClient } from './graphqlClient'
 
 export async function importOrUpdateSubtitle({
   videoId,

@@ -1,8 +1,8 @@
 import type { MuxVideoResponse, MuxVideoStatusResponse } from '../types'
 
+import { getGraphQLClient } from './gql/graphqlClient'
 import { CREATE_MUX_VIDEO } from './gql/mutations'
 import { GET_MUX_VIDEO } from './gql/queries'
-import { getGraphQLClient } from './graphqlClient'
 
 // Calculate timeout based on file size
 function calculateMuxTimeout(fileSizeBytes: number): number {

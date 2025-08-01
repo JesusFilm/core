@@ -1,4 +1,4 @@
-import { getGraphQLClient } from './graphqlClient'
+import { getGraphQLClient } from './gql/graphqlClient'
 
 export interface ValidationResult {
   success: boolean

@@ -6,9 +6,9 @@ import type {
   VideoVariantUpdateResponse
 } from '../types'
 
+import { getGraphQLClient } from './gql/graphqlClient'
 import { CREATE_VIDEO_VARIANT, UPDATE_VIDEO_VARIANT } from './gql/mutations'
 import { GET_VIDEO_DETAILS_FOR_VARIANT_UPSERT } from './gql/queries'
-import { getGraphQLClient } from './graphqlClient'
 
 export async function getVideoVariantInput({
   videoId,

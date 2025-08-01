@@ -1,8 +1,8 @@
 import type { AudioPreviewInput } from '../types'
 
+import { getGraphQLClient } from './gql/graphqlClient'
 import { CREATE_AUDIO_PREVIEW, UPDATE_AUDIO_PREVIEW } from './gql/mutations'
 import { GET_AUDIO_PREVIEW } from './gql/queries'
-import { getGraphQLClient } from './graphqlClient'
 
 export async function importOrUpdateAudioPreview({
   languageId,
