@@ -406,6 +406,7 @@ export class RadioOptionBlockCreateInput {
 export class RadioOptionBlockUpdateInput {
     parentBlockId?: Nullable<string>;
     label?: Nullable<string>;
+    pollOptionImageBlockId?: Nullable<string>;
 }
 
 export class RadioQuestionBlockCreateInput {
@@ -1015,7 +1016,7 @@ export abstract class IMutation {
 
     abstract radioQuestionBlockCreate(input: RadioQuestionBlockCreateInput): RadioQuestionBlock | Promise<RadioQuestionBlock>;
 
-    abstract radioQuestionBlockUpdate(id: string, parentBlockId: string, journeyId?: Nullable<string>): RadioQuestionBlock | Promise<RadioQuestionBlock>;
+    abstract radioQuestionBlockUpdate(id: string, parentBlockId: string, gridView?: Nullable<boolean>): RadioQuestionBlock | Promise<RadioQuestionBlock>;
 
     abstract signUpBlockCreate(input: SignUpBlockCreateInput): SignUpBlock | Promise<SignUpBlock>;
 
@@ -1406,6 +1407,7 @@ export class RadioOptionBlock implements Block {
     parentOrder?: Nullable<number>;
     label: string;
     action?: Nullable<Action>;
+    pollOptionImageBlockId?: Nullable<string>;
 }
 
 export class RadioQuestionBlock implements Block {
@@ -1414,6 +1416,7 @@ export class RadioQuestionBlock implements Block {
     journeyId: string;
     parentBlockId?: Nullable<string>;
     parentOrder?: Nullable<number>;
+    gridView?: Nullable<boolean>;
 }
 
 export class SignUpBlock implements Block {

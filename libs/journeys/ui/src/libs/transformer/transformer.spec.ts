@@ -10,7 +10,8 @@ describe('transformer', () => {
           parentBlockId: 'Question2',
           parentOrder: 1,
           label: 'Option 4',
-          action: null
+          action: null,
+          pollOptionImageBlockId: null
         },
         {
           __typename: 'StepBlock',
@@ -37,7 +38,8 @@ describe('transformer', () => {
           __typename: 'RadioQuestionBlock',
           id: 'Question1',
           parentBlockId: 'Root1',
-          parentOrder: 0
+          parentOrder: 0,
+          gridView: false
         },
         {
           __typename: 'RadioOptionBlock',
@@ -45,7 +47,8 @@ describe('transformer', () => {
           parentBlockId: 'Question1',
           parentOrder: 0,
           label: 'Option 1',
-          action: null
+          action: null,
+          pollOptionImageBlockId: null
         },
         {
           __typename: 'RadioOptionBlock',
@@ -53,7 +56,8 @@ describe('transformer', () => {
           parentBlockId: 'Question2',
           parentOrder: 0,
           label: 'Option 3',
-          action: null
+          action: null,
+          pollOptionImageBlockId: null
         },
         {
           __typename: 'StepBlock',
@@ -70,13 +74,15 @@ describe('transformer', () => {
           parentBlockId: 'Question1',
           parentOrder: 1,
           label: 'Option 2',
-          action: null
+          action: null,
+          pollOptionImageBlockId: null
         },
         {
           __typename: 'RadioQuestionBlock',
           id: 'Question2',
           parentBlockId: 'Root2',
-          parentOrder: 1
+          parentOrder: 1,
+          gridView: false
         }
       ])
     ).toEqual([
@@ -91,7 +97,8 @@ describe('transformer', () => {
                 parentBlockId: 'Question1',
                 parentOrder: 0,
                 label: 'Option 1',
-                action: null
+                action: null,
+                pollOptionImageBlockId: null
               },
               {
                 children: [],
@@ -100,13 +107,15 @@ describe('transformer', () => {
                 parentBlockId: 'Question1',
                 parentOrder: 1,
                 label: 'Option 2',
-                action: null
+                action: null,
+                pollOptionImageBlockId: null
               }
             ],
             __typename: 'RadioQuestionBlock',
             id: 'Question1',
             parentBlockId: 'Root1',
-            parentOrder: 0
+            parentOrder: 0,
+            gridView: false
           }
         ],
         id: 'Root1',
@@ -128,7 +137,8 @@ describe('transformer', () => {
                 parentBlockId: 'Question2',
                 parentOrder: 0,
                 label: 'Option 3',
-                action: null
+                action: null,
+                pollOptionImageBlockId: null
               },
               {
                 children: [],
@@ -137,13 +147,15 @@ describe('transformer', () => {
                 parentBlockId: 'Question2',
                 parentOrder: 1,
                 label: 'Option 4',
-                action: null
+                action: null,
+                pollOptionImageBlockId: null
               }
             ],
             __typename: 'RadioQuestionBlock',
             id: 'Question2',
             parentBlockId: 'Root2',
-            parentOrder: 1
+            parentOrder: 1,
+            gridView: false
           }
         ],
         id: 'Root2',

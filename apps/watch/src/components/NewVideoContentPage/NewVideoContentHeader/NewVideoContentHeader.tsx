@@ -1,3 +1,4 @@
+import last from 'lodash/last'
 import NextLink from 'next/link'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, useMemo } from 'react'
@@ -43,7 +44,7 @@ export function NewVideoContentHeader({
                 legacyBehavior
               >
                 <a className="uppercase text-sm tracking-wider text-primary no-underline">
-                  {container.title[0].value}
+                  {last(container.title)?.value}
                 </a>
               </NextLink>
               <p className="uppercase text-sm tracking-wider text-[#bbbcbc]  hidden xl:block font-bold">

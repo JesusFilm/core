@@ -300,6 +300,9 @@ input MutationShortLinkCreateInput {
 
   """type of video redirect (hls, dl, dh, s)"""
   redirectType: RedirectType
+
+  """bitrate of the video variant download"""
+  bitrate: Int
 }
 
 union MutationShortLinkCreateResult = ZodError | NotUniqueError | MutationShortLinkCreateSuccess
@@ -364,6 +367,9 @@ input MutationShortLinkUpdateInput {
 
   """type of video redirect (hls, dl, dh, s)"""
   redirectType: RedirectType
+
+  """bitrate of the video variant download"""
+  bitrate: Int
 }
 
 union MutationShortLinkUpdateResult = ZodError | NotFoundError | MutationShortLinkUpdateSuccess
@@ -602,6 +608,9 @@ type ShortLink
 
   """type of video redirect (hls, dl, dh, s)"""
   redirectType: RedirectType
+
+  """bitrate of the video variant download"""
+  bitrate: Int
 }
 
 """A domain that can be used for short links"""
@@ -836,7 +845,7 @@ type Video
   variantLanguagesWithSlug(input: VideoVariantFilter): [LanguageWithSlug!]!
   variants(input: VideoVariantFilter): [VideoVariant!]!
   subtitles(languageId: ID, primary: Boolean, edition: String): [VideoSubtitle!]!
-  variant(languageId: ID): VideoVariant
+  variant(languageId: ID, input: VideoVariantFilter): VideoVariant
   images(aspectRatio: ImageAspectRatio): [CloudflareImage!]!
   restrictDownloadPlatforms: [Platform!]!
   restrictViewPlatforms: [Platform!]!

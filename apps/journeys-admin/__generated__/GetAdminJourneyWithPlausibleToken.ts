@@ -173,6 +173,12 @@ export interface GetAdminJourneyWithPlausibleToken_journey_blocks_RadioOptionBlo
   parentOrder: number | null;
   label: string;
   action: GetAdminJourneyWithPlausibleToken_journey_blocks_RadioOptionBlock_action | null;
+  /**
+   * pollOptionImageBlockId is present if a child block should be used as a poll option image.
+   *       This child block should not be rendered normally, instead it should be used
+   *       as a poll option image. Blocks are often of type ImageBlock
+   */
+  pollOptionImageBlockId: string | null;
 }
 
 export interface GetAdminJourneyWithPlausibleToken_journey_blocks_RadioQuestionBlock {
@@ -180,6 +186,7 @@ export interface GetAdminJourneyWithPlausibleToken_journey_blocks_RadioQuestionB
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
+  gridView: boolean | null;
 }
 
 export interface GetAdminJourneyWithPlausibleToken_journey_blocks_SignUpBlock_action_NavigateToBlockAction {

@@ -36,6 +36,7 @@ const block: TreeBlock<RadioOptionFields> = {
     gtmEventName: 'gtmEventName',
     blockId: 'def'
   },
+  pollOptionImageBlockId: null,
   children: []
 }
 

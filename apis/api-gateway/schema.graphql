@@ -238,14 +238,7 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
     journeyId: ID
   ): RadioOptionBlock! @join__field(graph: API_JOURNEYS) 
   radioQuestionBlockCreate(input: RadioQuestionBlockCreateInput!) : RadioQuestionBlock! @join__field(graph: API_JOURNEYS) 
-  radioQuestionBlockUpdate(
-    id: ID!
-    parentBlockId: ID!
-    """
-    drop this parameter after merging teams
-    """
-    journeyId: ID
-  ): RadioQuestionBlock! @join__field(graph: API_JOURNEYS) 
+  radioQuestionBlockUpdate(id: ID!, parentBlockId: ID!, gridView: Boolean) : RadioQuestionBlock! @join__field(graph: API_JOURNEYS) 
   signUpBlockCreate(input: SignUpBlockCreateInput!) : SignUpBlock! @join__field(graph: API_JOURNEYS) 
   signUpBlockUpdate(
     id: ID!
@@ -956,6 +949,12 @@ type RadioOptionBlock implements Block @join__type(graph: API_JOURNEYS, key: "id
   parentOrder: Int
   label: String!
   action: Action @join__field(graph: API_JOURNEYS) 
+  """
+  pollOptionImageBlockId is present if a child block should be used as a poll option image.
+        This child block should not be rendered normally, instead it should be used
+        as a poll option image. Blocks are often of type ImageBlock
+  """
+  pollOptionImageBlockId: ID
 }
 
 type RadioQuestionBlock implements Block @join__type(graph: API_JOURNEYS, key: "id")  @join__type(graph: API_JOURNEYS_MODERN, key: "id")  @join__implements(graph: API_JOURNEYS, interface: "Block")  @join__implements(graph: API_JOURNEYS_MODERN, interface: "Block")  {
@@ -963,6 +962,7 @@ type RadioQuestionBlock implements Block @join__type(graph: API_JOURNEYS, key: "
   journeyId: ID!
   parentBlockId: ID
   parentOrder: Int
+  gridView: Boolean
 }
 
 type SignUpBlock implements Block @join__type(graph: API_JOURNEYS, key: "id")  @join__type(graph: API_JOURNEYS_MODERN, key: "id")  @join__implements(graph: API_JOURNEYS, interface: "Block")  @join__implements(graph: API_JOURNEYS_MODERN, interface: "Block")  {
@@ -1086,7 +1086,7 @@ type Video @join__type(graph: API_JOURNEYS, key: "id primaryLanguageId", extensi
   variantLanguagesWithSlug(input: VideoVariantFilter) : [LanguageWithSlug!]! @join__field(graph: API_MEDIA) 
   variants(input: VideoVariantFilter) : [VideoVariant!]! @join__field(graph: API_MEDIA) 
   subtitles(languageId: ID, primary: Boolean, edition: String) : [VideoSubtitle!]! @join__field(graph: API_MEDIA) 
-  variant(languageId: ID) : VideoVariant @join__field(graph: API_MEDIA) 
+  variant(languageId: ID, input: VideoVariantFilter) : VideoVariant @join__field(graph: API_MEDIA) 
   images(aspectRatio: ImageAspectRatio) : [CloudflareImage!]! @join__field(graph: API_MEDIA) 
   restrictDownloadPlatforms: [Platform!]! @join__field(graph: API_MEDIA) 
   restrictViewPlatforms: [Platform!]! @join__field(graph: API_MEDIA) 
@@ -2041,6 +2041,10 @@ type ShortLink @join__type(graph: API_JOURNEYS, key: "id", extension: true)  @jo
   type of video redirect (hls, dl, dh, s)
   """
   redirectType: RedirectType @join__field(graph: API_MEDIA) 
+  """
+  bitrate of the video variant download
+  """
+  bitrate: Int @join__field(graph: API_MEDIA) 
 }
 
 type QrCode @join__type(graph: API_JOURNEYS)  {
@@ -3525,6 +3529,7 @@ input RadioOptionBlockCreateInput @join__type(graph: API_JOURNEYS)  {
 input RadioOptionBlockUpdateInput @join__type(graph: API_JOURNEYS)  {
   parentBlockId: ID
   label: String
+  pollOptionImageBlockId: ID
 }
 
 input RadioQuestionBlockCreateInput @join__type(graph: API_JOURNEYS)  {
@@ -4600,6 +4605,10 @@ input MutationShortLinkCreateInput @join__type(graph: API_MEDIA)  {
   type of video redirect (hls, dl, dh, s)
   """
   redirectType: RedirectType
+  """
+  bitrate of the video variant download
+  """
+  bitrate: Int
 }
 
 input MutationShortLinkDomainCreateInput @join__type(graph: API_MEDIA)  {
@@ -4635,6 +4644,10 @@ input MutationShortLinkUpdateInput @join__type(graph: API_MEDIA)  {
   type of video redirect (hls, dl, dh, s)
   """
   redirectType: RedirectType
+  """
+  bitrate of the video variant download
+  """
+  bitrate: Int
 }
 
 input MutationVideoOriginCreateInput @join__type(graph: API_MEDIA)  {

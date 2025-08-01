@@ -1,6 +1,6 @@
 ---
 description: App Rules
-globs: apps/**/*
+globs: apps/**/*,!apps/watch-modern/**
 alwaysApply: false
 ---
 
