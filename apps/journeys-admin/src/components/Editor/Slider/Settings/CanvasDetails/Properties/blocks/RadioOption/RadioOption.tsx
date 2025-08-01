@@ -65,7 +65,7 @@ export function RadioOption(props: TreeBlock<RadioOptionBlock>): ReactElement {
       <Accordion
         id={`${props.id}-radio-option-image`}
         icon={<Image3Icon />}
-        name={t('Image')}
+        name={t('Image Source')}
         disabled={parentBlock?.gridView === false}
         value={
           (selectedBlock as TreeBlock<RadioOptionBlock>)
