@@ -159,12 +159,7 @@ export interface StepDuplicate_blockDuplicate_RadioOptionBlock {
   parentOrder: number | null;
   label: string;
   action: StepDuplicate_blockDuplicate_RadioOptionBlock_action | null;
-  /**
-   * pollOptionImageId is present if a child block should be used as a poll option image.
-   * This child block should not be rendered normally, instead it should be used
-   * as a poll option image. Blocks are often of type ImageBlock
-   */
-  pollOptionImageId: string | null;
+  pollOptionImageBlockId: string | null;
 }
 
 export interface StepDuplicate_blockDuplicate_RadioQuestionBlock {

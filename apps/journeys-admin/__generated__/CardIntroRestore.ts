@@ -159,12 +159,7 @@ export interface CardIntroRestore_subtitle_RadioOptionBlock {
   parentOrder: number | null;
   label: string;
   action: CardIntroRestore_subtitle_RadioOptionBlock_action | null;
-  /**
-   * pollOptionImageId is present if a child block should be used as a poll option image.
-   * This child block should not be rendered normally, instead it should be used
-   * as a poll option image. Blocks are often of type ImageBlock
-   */
-  pollOptionImageId: string | null;
+  pollOptionImageBlockId: string | null;
 }
 
 export interface CardIntroRestore_subtitle_RadioQuestionBlock {
@@ -613,12 +608,7 @@ export interface CardIntroRestore_title_RadioOptionBlock {
   parentOrder: number | null;
   label: string;
   action: CardIntroRestore_title_RadioOptionBlock_action | null;
-  /**
-   * pollOptionImageId is present if a child block should be used as a poll option image.
-   * This child block should not be rendered normally, instead it should be used
-   * as a poll option image. Blocks are often of type ImageBlock
-   */
-  pollOptionImageId: string | null;
+  pollOptionImageBlockId: string | null;
 }
 
 export interface CardIntroRestore_title_RadioQuestionBlock {
@@ -1067,12 +1057,7 @@ export interface CardIntroRestore_body_RadioOptionBlock {
   parentOrder: number | null;
   label: string;
   action: CardIntroRestore_body_RadioOptionBlock_action | null;
-  /**
-   * pollOptionImageId is present if a child block should be used as a poll option image.
-   * This child block should not be rendered normally, instead it should be used
-   * as a poll option image. Blocks are often of type ImageBlock
-   */
-  pollOptionImageId: string | null;
+  pollOptionImageBlockId: string | null;
 }
 
 export interface CardIntroRestore_body_RadioQuestionBlock {
@@ -1521,12 +1506,7 @@ export interface CardIntroRestore_button_RadioOptionBlock {
   parentOrder: number | null;
   label: string;
   action: CardIntroRestore_button_RadioOptionBlock_action | null;
-  /**
-   * pollOptionImageId is present if a child block should be used as a poll option image.
-   * This child block should not be rendered normally, instead it should be used
-   * as a poll option image. Blocks are often of type ImageBlock
-   */
-  pollOptionImageId: string | null;
+  pollOptionImageBlockId: string | null;
 }
 
 export interface CardIntroRestore_button_RadioQuestionBlock {
@@ -1975,12 +1955,7 @@ export interface CardIntroRestore_startIcon_RadioOptionBlock {
   parentOrder: number | null;
   label: string;
   action: CardIntroRestore_startIcon_RadioOptionBlock_action | null;
-  /**
-   * pollOptionImageId is present if a child block should be used as a poll option image.
-   * This child block should not be rendered normally, instead it should be used
-   * as a poll option image. Blocks are often of type ImageBlock
-   */
-  pollOptionImageId: string | null;
+  pollOptionImageBlockId: string | null;
 }
 
 export interface CardIntroRestore_startIcon_RadioQuestionBlock {
@@ -2429,12 +2404,7 @@ export interface CardIntroRestore_endIcon_RadioOptionBlock {
   parentOrder: number | null;
   label: string;
   action: CardIntroRestore_endIcon_RadioOptionBlock_action | null;
-  /**
-   * pollOptionImageId is present if a child block should be used as a poll option image.
-   * This child block should not be rendered normally, instead it should be used
-   * as a poll option image. Blocks are often of type ImageBlock
-   */
-  pollOptionImageId: string | null;
+  pollOptionImageBlockId: string | null;
 }
 
 export interface CardIntroRestore_endIcon_RadioQuestionBlock {
@@ -2883,12 +2853,7 @@ export interface CardIntroRestore_video_RadioOptionBlock {
   parentOrder: number | null;
   label: string;
   action: CardIntroRestore_video_RadioOptionBlock_action | null;
-  /**
-   * pollOptionImageId is present if a child block should be used as a poll option image.
-   * This child block should not be rendered normally, instead it should be used
-   * as a poll option image. Blocks are often of type ImageBlock
-   */
-  pollOptionImageId: string | null;
+  pollOptionImageBlockId: string | null;
 }
 
 export interface CardIntroRestore_video_RadioQuestionBlock {
