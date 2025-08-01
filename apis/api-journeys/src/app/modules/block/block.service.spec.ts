@@ -207,7 +207,6 @@ describe('BlockService', () => {
               'nextBlockId',
               'posterBlockId',
               'action',
-              'pollOptionImageId',
               'pollOptionImageBlockId'
             ),
             typename: 'CardBlock',
