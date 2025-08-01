@@ -3,152 +3,101 @@ import { CREATE_MUX_VIDEO } from '../gql/mutations'
 import { GET_MUX_VIDEO } from '../gql/queries'
 import type { MuxVideoResponse, MuxVideoStatusResponse } from '../types'
 
-// Calculate timeout based on file size
-function calculateMuxTimeout(fileSizeBytes: number): number {
-  // Base timeout: 30 minutes minimum
-  const baseTimeoutMinutes = 30
+const LARGE_FILE_THRESHOLD = 1024 * 1024 * 1024 // 1GB
 
-  // Additional time per GB: 10 minutes per GB
-  const additionalMinutesPerGB = 10
+const POLLING_PROFILES = {
+  regular: {
+    timeoutMinutes: 45,
+    intervalSeconds: 30
+  },
+  large: {
+    timeoutMinutes: 150,
+    intervalSeconds: 120
+  }
+} as const
 
-  // Calculate file size in GB
-  const fileSizeGB = fileSizeBytes / (1024 * 1024 * 1024)
-
-  // Calculate total timeout in minutes
-  const totalTimeoutMinutes =
-    baseTimeoutMinutes + fileSizeGB * additionalMinutesPerGB
-
-  // Cap at 3 hours maximum
-  const maxTimeoutMinutes = 180
-  const finalTimeoutMinutes = Math.min(totalTimeoutMinutes, maxTimeoutMinutes)
-
-  // Convert to polling attempts (10-second intervals)
-  const pollingIntervalSeconds = 10
+async function pollForMuxCompletion(
+  muxId: string,
+  profile: 'regular' | 'large'
+): Promise<{ id: string; playbackId: string }> {
+  const client = await getGraphQLClient()
+  const config = POLLING_PROFILES[profile]
   const maxAttempts = Math.floor(
-    (finalTimeoutMinutes * 60) / pollingIntervalSeconds
+    (config.timeoutMinutes * 60) / config.intervalSeconds
   )
 
   console.log(
-    `[Mux Service] File size: ${fileSizeGB.toFixed(2)}GB, calculated timeout: ${finalTimeoutMinutes} minutes (${maxAttempts} attempts)`
+    `[Mux Service] Polling for ${muxId} completion (${profile} profile: ${config.timeoutMinutes}min timeout, ${config.intervalSeconds}s intervals)`
   )
-
-  return maxAttempts
-}
-
-// Calculate adaptive polling interval based on elapsed time
-function calculateAdaptiveInterval(elapsedMinutes: number): number {
-  // Start with 10 seconds for the first 5 minutes
-  if (elapsedMinutes <= 5) return 10_000
-
-  // Increase to 30 seconds for 5-15 minutes
-  if (elapsedMinutes <= 15) return 30_000
-
-  // Increase to 1 minute for 15-30 minutes
-  if (elapsedMinutes <= 30) return 60_000
-
-  // Increase to 2 minutes for 30-60 minutes
-  if (elapsedMinutes <= 60) return 120_000
-
-  // Cap at 5 minutes for anything longer
-  return 300_000
-}
-
-async function poll<T>(
-  fn: () => Promise<T>,
-  isComplete: (result: T) => boolean,
-  options: {
-    maxAttempts?: number
-    intervalMs?: number
-    timeoutMs?: number
-  } = {}
-): Promise<T> {
-  const { maxAttempts = 20, intervalMs = 5_000 } = options
-  const startTime = Date.now()
 
   for (let attempt = 1; attempt <= maxAttempts; attempt++) {
     try {
-      const result = await fn()
-      if (isComplete(result)) {
-        return result
+      const response = await client.request<MuxVideoStatusResponse>(
+        GET_MUX_VIDEO,
+        {
+          id: muxId,
+          userGenerated: false
+        }
+      )
+
+      if (response?.getMyMuxVideo?.readyToStream === true) {
+        const { id, playbackId } = response.getMyMuxVideo
+        console.log(
+          `[Mux Service] Video ${id} ready with playback ID: ${playbackId}`
+        )
+        return { id, playbackId }
       }
 
-      // Calculate adaptive interval based on elapsed time
-      const elapsedMinutes = (Date.now() - startTime) / 60000
-      const adaptiveInterval = calculateAdaptiveInterval(elapsedMinutes)
-
-      // Log progress for long-running operations
-      if (attempt % 30 === 0) {
-        // Every 5 minutes (30 * 10s)
+      if (attempt % 10 === 0) {
+        const elapsedMinutes = Math.round(
+          (attempt * config.intervalSeconds) / 60
+        )
         console.log(
-          `[Mux Service] Still processing... (${Math.floor(elapsedMinutes)} minutes elapsed, polling every ${adaptiveInterval / 1000}s)`
+          `[Mux Service] Still processing ${muxId}... (${elapsedMinutes} minutes elapsed)`
         )
       }
 
       if (attempt < maxAttempts) {
-        await new Promise((resolve) => setTimeout(resolve, adaptiveInterval))
+        await new Promise((resolve) =>
+          setTimeout(resolve, config.intervalSeconds * 1000)
+        )
       }
     } catch (error) {
-      console.error(`Polling attempt ${attempt} failed:`, error)
+      console.warn(`[Mux Service] Polling attempt ${attempt} failed:`, error)
 
       if (attempt < maxAttempts) {
-        // Use adaptive interval even on errors
-        const elapsedMinutes = (Date.now() - startTime) / 60000
-        const adaptiveInterval = calculateAdaptiveInterval(elapsedMinutes)
-        await new Promise((resolve) => setTimeout(resolve, adaptiveInterval))
+        await new Promise((resolve) =>
+          setTimeout(resolve, config.intervalSeconds * 1000)
+        )
       }
     }
   }
 
-  throw new Error(`Polling failed after ${maxAttempts} attempts`)
+  throw new Error(
+    `Mux video processing timed out after ${config.timeoutMinutes} minutes`
+  )
 }
 
 export async function createAndWaitForMuxVideo(
   publicUrl: string,
   fileSizeBytes?: number
-): Promise<{
-  id: string
-  playbackId: string
-}> {
+): Promise<{ id: string; playbackId: string }> {
   const client = await getGraphQLClient()
 
-  // Create the Mux video
-  const muxResponse = await client.request<MuxVideoResponse>(CREATE_MUX_VIDEO, {
+  const response = await client.request<MuxVideoResponse>(CREATE_MUX_VIDEO, {
     url: publicUrl,
     userGenerated: false
   })
 
-  if (!muxResponse.createMuxVideoUploadByUrl?.id) {
-    console.error(
-      '[Mux Service] Failed to create Mux video. Response:',
-      muxResponse
-    )
-    throw new Error('Failed to create Mux video')
+  const muxId = response.createMuxVideoUploadByUrl?.id
+  if (!muxId) {
+    throw new Error('Failed to create Mux video - no ID returned')
   }
 
-  const muxId = muxResponse.createMuxVideoUploadByUrl.id
-  console.log(
-    `[Mux Service] Mux Video ID created: ${muxId}. Polling for readyToStream status...`
-  )
+  console.log(`[Mux Service] Created Mux video: ${muxId}`)
 
-  // Calculate dynamic timeout based on file size
-  const maxAttempts = fileSizeBytes ? calculateMuxTimeout(fileSizeBytes) : 540 // Fallback: 90 minutes for unknown file size
+  const profile =
+    fileSizeBytes && fileSizeBytes > LARGE_FILE_THRESHOLD ? 'large' : 'regular'
 
-  const statusResponse = await poll(
-    () =>
-      client.request<MuxVideoStatusResponse>(GET_MUX_VIDEO, {
-        id: muxId,
-        userGenerated: false
-      }),
-    (response) => response?.getMyMuxVideo.readyToStream === true,
-    {
-      maxAttempts,
-      intervalMs: 10_000 // 10 seconds between attempts
-    }
-  )
-
-  console.log(`[Mux Service] Mux Video ID: ${muxId} is now readyToStream`)
-  return {
-    id: statusResponse.getMyMuxVideo.id,
-    playbackId: statusResponse.getMyMuxVideo.playbackId
-  }
+  return await pollForMuxCompletion(muxId, profile)
 }
