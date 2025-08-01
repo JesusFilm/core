@@ -64,7 +64,7 @@ test('Video playback and MUX network connectivity monitoring', async ({
   // Helper function to safely check if an error message is related to video services
   const isVideoRelatedError = (error: string): boolean => {
     const errorLower = error.toLowerCase()
-    
+
     // Check for specific error patterns related to video services only
     const videoErrorPatterns = [
       'mux.com',
@@ -76,10 +76,10 @@ test('Video playback and MUX network connectivity monitoring', async ({
       'net::err_network_changed',
       'net::err_internet_disconnected'
     ]
-    
+
     // Only consider errors that are specifically related to video services
     // Ignore general 422/400 errors that might be from analytics or other services
-    return videoErrorPatterns.some(pattern => errorLower.includes(pattern))
+    return videoErrorPatterns.some((pattern) => errorLower.includes(pattern))
   }
 
   // Listen to all network requests
