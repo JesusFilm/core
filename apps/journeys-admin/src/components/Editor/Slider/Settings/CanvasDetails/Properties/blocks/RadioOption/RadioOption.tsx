@@ -1,13 +1,16 @@
 import Box from '@mui/material/Box'
 import { useTranslation } from 'next-i18next'
-import { ReactElement, useEffect } from 'react'
+import { ReactElement, useCallback, useEffect, useMemo } from 'react'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 import Image3Icon from '@core/shared/ui/icons/Image3'
 import LinkIcon from '@core/shared/ui/icons/Link'
 
-import { BlockFields_RadioOptionBlock as RadioOptionBlock } from '../../../../../../../../../__generated__/BlockFields'
+import {
+  BlockFields_RadioOptionBlock as RadioOptionBlock,
+  BlockFields_RadioQuestionBlock as RadioQuestionBlock
+} from '../../../../../../../../../__generated__/BlockFields'
 import { Accordion } from '../../Accordion'
 import { Action } from '../../controls/Action'
 import { getAction } from '../../controls/Action/utils/actions'
@@ -17,10 +20,30 @@ import { RadioOptionImage } from './RadioOptionImage/RadioOptionImage'
 export function RadioOption(props: TreeBlock<RadioOptionBlock>): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const {
-    state: { selectedBlock },
+    state: { selectedBlock, selectedStep },
     dispatch
   } = useEditor()
   const selectedAction = getAction(t, props.action?.__typename)
+
+  const flatten = useCallback((children: TreeBlock[]): TreeBlock[] => {
+    return children?.reduce<TreeBlock[]>((result, item) => {
+      result.push(item)
+      result.push(...flatten(item.children))
+      return result
+    }, [])
+  }, [])
+
+  const allBlocks = useMemo(() => {
+    return flatten(selectedStep?.children ?? [])
+  }, [selectedStep, flatten])
+
+  const parentBlock: TreeBlock<RadioQuestionBlock> | undefined = useMemo(() => {
+    return allBlocks.find(
+      (block) =>
+        block.id === selectedBlock?.parentBlockId &&
+        block.__typename === 'RadioQuestionBlock'
+    ) as TreeBlock<RadioQuestionBlock>
+  }, [allBlocks, selectedBlock])
 
   useEffect(() => {
     dispatch({
@@ -42,7 +65,8 @@ export function RadioOption(props: TreeBlock<RadioOptionBlock>): ReactElement {
       <Accordion
         id={`${props.id}-radio-option-image`}
         icon={<Image3Icon />}
-        name={t('Background')}
+        name={t('Image')}
+        disabled={parentBlock?.gridView === false}
         value={
           (selectedBlock as TreeBlock<RadioOptionBlock>)
             ?.pollOptionImageBlockId ?? t('No image')
