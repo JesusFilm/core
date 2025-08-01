@@ -1,15 +1,5 @@
 import { getGraphQLClient } from './gql/graphqlClient'
 
-export interface ValidationResult {
-  success: boolean
-  errors: string[]
-  videoExists?: boolean
-  editionExists?: boolean
-  videoId?: string
-  editionName?: string
-  editionId?: string
-}
-
 interface VideoWithEditionsResponse {
   video?: {
     id: string
@@ -24,14 +14,7 @@ interface VideoWithEditionsResponse {
 export async function validateVideoAndEdition(
   videoId: string,
   editionName: string
-): Promise<ValidationResult> {
-  const result: ValidationResult = {
-    success: false,
-    errors: [],
-    videoId,
-    editionName
-  }
-
+): Promise<{ editionId: string }> {
   try {
     console.log(`Validating video and edition: ${videoId} / ${editionName}`)
 
@@ -57,17 +40,14 @@ export async function validateVideoAndEdition(
 
     if (!response.video) {
       console.log(`   Video not found: ${videoId}`)
-      result.videoExists = false
-      result.errors.push(
+      throw new Error(
         `Video with ID "${videoId}" does not exist in the database`
       )
-      return result
     }
 
     console.log(
       `   Video exists: ${response.video.id} (slug: ${response.video.slug})`
     )
-    result.videoExists = true
 
     // Test edition existence
     const editions = response.video.videoEditions || []
@@ -78,23 +58,18 @@ export async function validateVideoAndEdition(
       console.log(
         `   Available editions: ${editions.map((e) => e.name).join(', ')}`
       )
-      result.editionExists = false
-      result.errors.push(
+      throw new Error(
         `Edition "${editionName}" does not exist for video "${videoId}". Available editions: ${editions.map((e) => e.name).join(', ')}`
       )
-      return result
     }
 
     console.log(`   Edition exists: ${edition.name} (id: ${edition.id})`)
-    result.editionExists = true
-    result.editionId = edition.id
+    console.log(`   Video "${videoId}" and edition "${editionName}" are valid`)
 
-    result.success = true
-    return result
+    return { editionId: edition.id }
   } catch (error) {
     const errorMessage = `Validation failed: ${error instanceof Error ? error.message : String(error)}`
     console.error(`   ${errorMessage}`)
-    result.errors.push(errorMessage)
-    return result
+    throw error
   }
 }

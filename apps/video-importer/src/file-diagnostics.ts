@@ -119,57 +119,44 @@ export async function diagnoseFile(filePath: string): Promise<FileDiagnostics> {
   return diagnostics as FileDiagnostics
 }
 
-export async function testFileRead(filePath: string): Promise<{
-  success: boolean
-  error?: string
-  bytesRead: number
-  duration: number
-}> {
+export async function testFileRead(filePath: string): Promise<void> {
   const startTime = Date.now()
   let bytesRead = 0
-  let success = false
-  let error: string | undefined
 
-  try {
-    return new Promise((resolve) => {
-      const stream = createReadStream(filePath, { highWaterMark: 64 * 1024 })
+  return new Promise((resolve, reject) => {
+    const stream = createReadStream(filePath, { highWaterMark: 64 * 1024 })
 
-      stream.on('data', (chunk) => {
-        bytesRead += chunk.length
-      })
-
-      stream.on('end', () => {
-        const duration = Date.now() - startTime
-        success = true
-        resolve({ success, bytesRead, duration })
-      })
-
-      stream.on('error', (err) => {
-        const duration = Date.now() - startTime
-        error = err.message
-        resolve({ success: false, error, bytesRead, duration })
-      })
-
-      // Timeout after 30 seconds
-      setTimeout(() => {
-        const duration = Date.now() - startTime
-        resolve({
-          success: false,
-          error: 'Read test timed out',
-          bytesRead,
-          duration
-        })
-      }, 30000)
+    stream.on('data', (chunk) => {
+      bytesRead += chunk.length
     })
-  } catch (err) {
-    const duration = Date.now() - startTime
-    return {
-      success: false,
-      error: err instanceof Error ? err.message : String(err),
-      bytesRead,
-      duration
-    }
-  }
+
+    stream.on('end', () => {
+      const duration = Date.now() - startTime
+      console.log(
+        `   File read test passed: ${bytesRead} bytes read in ${duration}ms`
+      )
+      resolve()
+    })
+
+    stream.on('error', (err) => {
+      const duration = Date.now() - startTime
+      console.error(`   File read test failed: ${err.message}`)
+      console.error(
+        `   Read test details: ${bytesRead} bytes read in ${duration}ms`
+      )
+      reject(new Error(`File read test failed: ${err.message}`))
+    })
+
+    // Timeout after 30 seconds
+    setTimeout(() => {
+      const duration = Date.now() - startTime
+      console.error(`   File read test failed: Read test timed out`)
+      console.error(
+        `   Read test details: ${bytesRead} bytes read in ${duration}ms`
+      )
+      reject(new Error('Read test timed out'))
+    }, 30000)
+  })
 }
 
 export function printDiagnostics(diagnostics: FileDiagnostics): void {

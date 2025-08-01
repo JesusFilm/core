@@ -175,10 +175,11 @@ async function main() {
     }
 
     console.log('   Validating video and edition...')
-    const validationResult = await validateVideoAndEdition(videoId, edition)
-    if (!validationResult.success) {
+    try {
+      await validateVideoAndEdition(videoId, edition)
+    } catch (error) {
       console.error(
-        `   Validation failed: ${validationResult.errors.join(', ')}`
+        `   Validation failed: ${error instanceof Error ? error.message : String(error)}`
       )
       summary.failed++
       continue
@@ -188,130 +189,114 @@ async function main() {
 
     console.log('   Validating file accessibility...')
     try {
-      const readTest = await testFileRead(filePath)
-      if (!readTest.success) {
-        console.error(`   File read test failed: ${readTest.error}`)
-        console.error(
-          `   Read test details: ${readTest.bytesRead} bytes read in ${readTest.duration}ms`
-        )
-        const diagnostics = await diagnoseFile(filePath)
-        printDiagnostics(diagnostics)
-        summary.failed++
-        continue
-      }
-      console.log(
-        `   File read test passed: ${readTest.bytesRead} bytes read in ${readTest.duration}ms`
-      )
+      await testFileRead(filePath)
     } catch (validationError) {
       console.error('   File validation failed:', validationError)
+      const diagnostics = await diagnoseFile(filePath)
+      printDiagnostics(diagnostics)
       summary.failed++
       continue
     }
 
+    const contentType = 'video/mp4'
+    const originalFilename = file
+    const { size: contentLength } = await promises.stat(filePath)
+
+    console.log('   Reading video metadata...')
+    let metadata
     try {
-      const contentType = 'video/mp4'
-      const originalFilename = file
-      const { size: contentLength } = await promises.stat(filePath)
-
-      console.log('   Reading video metadata...')
-      let metadata
-      try {
-        metadata = await getVideoMetadata(filePath)
-        console.log('      Video metadata:', metadata)
-        if (
-          metadata.durationMs === undefined ||
-          metadata.width === undefined ||
-          metadata.height === undefined
-        ) {
-          throw new Error('Incomplete metadata: missing required properties')
-        }
-      } catch (error) {
-        console.error(`   Failed to extract metadata from ${file}:`, error)
-        summary.failed++
-        continue
+      metadata = await getVideoMetadata(filePath)
+      console.log('      Video metadata:', metadata)
+      if (
+        metadata.durationMs === undefined ||
+        metadata.width === undefined ||
+        metadata.height === undefined
+      ) {
+        throw new Error('Incomplete metadata: missing required properties')
       }
-
-      console.log('   Preparing Cloudflare R2 asset...')
-
-      const videoVariantId = `${languageId}_${videoId}`
-      const fileName = `${videoId}/variants/${languageId}/videos/${uuidv4()}/${videoVariantId}.mp4`
-
-      let r2Asset
-      try {
-        r2Asset = await createR2Asset({
-          fileName,
-          contentType,
-          originalFilename,
-          videoId,
-          contentLength
-        })
-      } catch (error) {
-        console.error(
-          `   Failed to create R2 asset: ${error instanceof Error ? error.message : String(error)}`
-        )
-        summary.failed++
-        continue
-      }
-
-      console.log('   R2 Public URL:', r2Asset.publicUrl)
-      console.log('   Uploading to R2...')
-      try {
-        await uploadToR2({
-          uploadUrl: r2Asset.uploadUrl,
-          bucket: process.env.CLOUDFLARE_R2_BUCKET!,
-          filePath,
-          contentType,
-          contentLength
-        })
-      } catch (error) {
-        console.error(
-          `   Failed to upload to R2: ${error instanceof Error ? error.message : String(error)}`
-        )
-        summary.failed++
-        continue
-      }
-
-      console.log('   Preparing Mux asset...')
-      let muxVideo
-      try {
-        muxVideo = await createAndWaitForMuxVideo(
-          r2Asset.publicUrl,
-          contentLength
-        )
-        console.log(
-          `      Mux Playback URL: https://stream.mux.com/${muxVideo.playbackId}.m3u8`
-        )
-      } catch (error) {
-        console.error(
-          `   Failed to create Mux video: ${error instanceof Error ? error.message : String(error)}`
-        )
-        summary.failed++
-        continue
-      }
-
-      console.log('   Saving video variant details...')
-      try {
-        await createVideoVariant({
-          videoId,
-          languageId,
-          edition,
-          muxId: muxVideo.id,
-          playbackId: muxVideo.playbackId,
-          metadata,
-          version: parseInt(version)
-        })
-        summary.successful++
-        await markFileAsCompleted(filePath)
-      } catch (error) {
-        console.error(
-          `   Failed to save video variant: ${error instanceof Error ? error.message : String(error)}`
-        )
-        summary.failed++
-        continue
-      }
-    } catch (err) {
-      console.error(`   Error processing ${file}:`, err)
+    } catch (error) {
+      console.error(`   Failed to extract metadata from ${file}:`, error)
       summary.failed++
+      continue
+    }
+
+    console.log('   Preparing Cloudflare R2 asset...')
+
+    const videoVariantId = `${languageId}_${videoId}`
+    const fileName = `${videoId}/variants/${languageId}/videos/${uuidv4()}/${videoVariantId}.mp4`
+
+    let r2Asset
+    try {
+      r2Asset = await createR2Asset({
+        fileName,
+        contentType,
+        originalFilename,
+        videoId,
+        contentLength
+      })
+    } catch (error) {
+      console.error(
+        `   Failed to create R2 asset: ${error instanceof Error ? error.message : String(error)}`
+      )
+      summary.failed++
+      continue
+    }
+
+    console.log('   R2 Public URL:', r2Asset.publicUrl)
+    console.log('   Uploading to R2...')
+    try {
+      await uploadToR2({
+        uploadUrl: r2Asset.uploadUrl,
+        bucket: process.env.CLOUDFLARE_R2_BUCKET!,
+        filePath,
+        contentType,
+        contentLength
+      })
+    } catch (error) {
+      console.error(
+        `   Failed to upload to R2: ${error instanceof Error ? error.message : String(error)}`
+      )
+      summary.failed++
+      continue
+    }
+
+    console.log('   Preparing Mux asset...')
+    let muxVideo
+    try {
+      muxVideo = await createAndWaitForMuxVideo(
+        r2Asset.publicUrl,
+        contentLength
+      )
+      console.log(
+        `      Mux Playback URL: https://stream.mux.com/${muxVideo.playbackId}.m3u8`
+      )
+    } catch (error) {
+      console.error(
+        `   Failed to create Mux video: ${error instanceof Error ? error.message : String(error)}`
+      )
+      summary.failed++
+      continue
+    }
+
+    console.log('   Saving video variant details...')
+    try {
+      await createVideoVariant({
+        videoId,
+        languageId,
+        edition,
+        muxId: muxVideo.id,
+        playbackId: muxVideo.playbackId,
+        metadata,
+        version: parseInt(version)
+      })
+      summary.successful++
+      await markFileAsCompleted(filePath)
+    } catch (error) {
+      console.error(
+        `   Failed to save video variant: ${error instanceof Error ? error.message : String(error)}`
+      )
+      summary.failed++
+      continue
     }
   }
 
@@ -319,10 +304,11 @@ async function main() {
     const match = file.match(SUBTITLE_FILENAME_REGEX)
     if (!match) continue
     const [, videoId, editionName, languageId, ...extraFields] = match
+    const edition = editionName.toLowerCase()
 
     console.log(`\nProcessing subtitle: ${file}`)
     console.log(
-      `   - IDs: Video=${videoId}, Edition=${editionName}, Lang=${languageId}`
+      `   - IDs: Video=${videoId}, Edition=${edition}, Lang=${languageId}`
     )
     if (extraFields.length > 0) {
       console.log(
@@ -334,18 +320,7 @@ async function main() {
 
     console.log('   Validating file accessibility...')
     try {
-      const readTest = await testFileRead(filePath)
-      if (!readTest.success) {
-        console.error(`   File read test failed: ${readTest.error}`)
-        console.error(
-          `   Read test details: ${readTest.bytesRead} bytes read in ${readTest.duration}ms`
-        )
-        summary.failed++
-        continue
-      }
-      console.log(
-        `   File read test passed: ${readTest.bytesRead} bytes read in ${readTest.duration}ms`
-      )
+      await testFileRead(filePath)
     } catch (validationError) {
       console.error('   File validation failed:', validationError)
       summary.failed++
@@ -353,94 +328,76 @@ async function main() {
     }
 
     console.log('   Validating video and edition...')
-    const validationResult = await validateVideoAndEdition(videoId, editionName)
-    if (!validationResult.success) {
+    try {
+      await validateVideoAndEdition(videoId, edition)
+    } catch (error) {
       console.error(
-        `   Validation failed: ${validationResult.errors.join(', ')}`
+        `   Validation failed: ${error instanceof Error ? error.message : String(error)}`
       )
       summary.failed++
       continue
     }
 
-    console.log(`   Video "${videoId}" and edition "${editionName}" are valid`)
+    const contentType = file.endsWith('.srt') ? 'text/srt' : 'text/vtt'
+    const originalFilename = file
+    const { size: contentLength } = await promises.stat(filePath)
 
+    console.log('   Preparing Cloudflare R2 asset for subtitle...')
+    const subtitleVariantId = `${languageId}_${edition}_${videoId}`
+    const fileName = `${videoId}/editions/${edition}/subtitles/${subtitleVariantId}.${contentType.split('/')[1]}`
+
+    let r2Asset
     try {
-      const contentType = file.endsWith('.srt') ? 'text/srt' : 'text/vtt'
-      const originalFilename = file
-      const { size: contentLength } = await promises.stat(filePath)
-
-      console.log('   Preparing Cloudflare R2 asset for subtitle...')
-
-      // Use the validated edition ID instead of calling getVideoEditionId again
-      const editionId = validationResult.editionId!
-      console.log('      Edition ID:', editionId)
-
-      const subtitleVariantId = `${languageId}_${editionId}_${videoId}`
-      const fileName = `${videoId}/editions/${editionId}/subtitles/${subtitleVariantId}.${contentType.split('/')[1]}`
-
-      let r2Asset
-      try {
-        r2Asset = await createR2Asset({
-          fileName,
-          contentType,
-          originalFilename,
-          videoId,
-          contentLength
-        })
-      } catch (error) {
-        console.error(
-          `   Failed to create R2 asset for subtitle: ${error instanceof Error ? error.message : String(error)}`
-        )
-        summary.failed++
-        continue
-      }
-
-      console.log('      R2 Public URL for subtitle:', r2Asset.publicUrl)
-      console.log('   Uploading subtitle to R2...')
-      try {
-        await uploadToR2({
-          uploadUrl: r2Asset.uploadUrl,
-          bucket: process.env.CLOUDFLARE_R2_BUCKET!,
-          filePath,
-          contentType,
-          contentLength
-        })
-      } catch (error) {
-        console.error(
-          `   Failed to upload subtitle to R2: ${error instanceof Error ? error.message : String(error)}`
-        )
-        summary.failed++
-        continue
-      }
-
-      // After uploading to R2
-      console.log('   Importing or updating subtitle...')
-      const fileType = file.endsWith('.vtt') ? 'vtt' : 'srt'
-      try {
-        const result = await importOrUpdateSubtitle({
-          videoId,
-          editionName,
-          languageId,
-          fileType,
-          r2Asset
-        })
-        if (result === 'updated') {
-          console.log('      Updated existing video subtitle')
-        } else {
-          console.log('      Created new video subtitle')
-        }
-        summary.successful++
-        await markFileAsCompleted(filePath)
-      } catch (error) {
-        console.error(
-          `   Failed to import/update subtitle: ${error instanceof Error ? error.message : String(error)}`
-        )
-        summary.failed++
-        continue
-      }
-    } catch (err) {
-      console.error(`   Error processing subtitle ${file}:`, err)
+      r2Asset = await createR2Asset({
+        fileName,
+        contentType,
+        originalFilename,
+        videoId,
+        contentLength
+      })
+    } catch (error) {
+      console.error(
+        `   Failed to create R2 asset for subtitle: ${error instanceof Error ? error.message : String(error)}`
+      )
       summary.failed++
+      continue
+    }
+
+    console.log('   R2 Public URL:', r2Asset.publicUrl)
+    console.log('   Uploading subtitle to R2...')
+    try {
+      await uploadToR2({
+        uploadUrl: r2Asset.uploadUrl,
+        bucket: process.env.CLOUDFLARE_R2_BUCKET!,
+        filePath,
+        contentType,
+        contentLength
+      })
+    } catch (error) {
+      console.error(
+        `   Failed to upload subtitle to R2: ${error instanceof Error ? error.message : String(error)}`
+      )
+      summary.failed++
+      continue
+    }
+
+    console.log('   Importing or updating subtitle...')
+    try {
+      await importOrUpdateSubtitle({
+        videoId,
+        editionName,
+        languageId,
+        fileType: contentType,
+        r2Asset
+      })
+      summary.successful++
+      await markFileAsCompleted(filePath)
+    } catch (error) {
+      console.error(
+        `   Failed to import/update subtitle: ${error instanceof Error ? error.message : String(error)}`
+      )
+      summary.failed++
+      continue
     }
   }
 
@@ -457,91 +414,72 @@ async function main() {
 
     console.log('   Validating file accessibility...')
     try {
-      const readTest = await testFileRead(filePath)
-      if (!readTest.success) {
-        console.error(`   File read test failed: ${readTest.error}`)
-        console.error(
-          `   Read test details: ${readTest.bytesRead} bytes read in ${readTest.duration}ms`
-        )
-        summary.failed++
-        continue
-      }
-      console.log(
-        `   File read test passed: ${readTest.bytesRead} bytes read in ${readTest.duration}ms`
-      )
+      await testFileRead(filePath)
     } catch (validationError) {
       console.error('   File validation failed:', validationError)
       summary.failed++
       continue
     }
 
+    const contentType = 'audio/aac'
+    const { size: contentLength } = await promises.stat(filePath)
+
+    // Extract audio metadata
+    let audioMetadata
     try {
-      const contentType = 'audio/aac'
-      const { size: contentLength } = await promises.stat(filePath)
-
-      // Extract audio metadata
-      let audioMetadata
-      try {
-        audioMetadata = await getAudioMetadata(filePath)
-        console.log('      Audio metadata:', audioMetadata)
-      } catch (error) {
-        console.error(
-          `   Failed to extract audio metadata from ${file}:`,
-          error
-        )
-        summary.failed++
-        continue
-      }
-
-      console.log('   Uploading audio preview to R2...')
-
-      const bucket = process.env.CLOUDFLARE_R2_BUCKET!
-      const key = `audiopreview/${languageId}.aac`
-
-      let publicUrl
-      try {
-        publicUrl = await uploadFileToR2Direct({
-          bucket,
-          key,
-          filePath,
-          contentType
-        })
-      } catch (error) {
-        console.error(
-          `   Failed to upload audio preview to R2: ${error instanceof Error ? error.message : String(error)}`
-        )
-        summary.failed++
-        continue
-      }
-
-      console.log('   Importing or updating audio preview record...')
-
-      try {
-        const result = await importOrUpdateAudioPreview({
-          languageId,
-          publicUrl,
-          duration: audioMetadata.duration,
-          size: contentLength,
-          bitrate: audioMetadata.bitrate,
-          codec: audioMetadata.codec
-        })
-
-        if (result === 'failed') {
-          summary.failed++
-        } else {
-          summary.successful++
-          await markFileAsCompleted(filePath)
-        }
-      } catch (error) {
-        console.error(
-          `   Failed to import/update audio preview: ${error instanceof Error ? error.message : String(error)}`
-        )
-        summary.failed++
-        continue
-      }
-    } catch (err) {
-      console.error(`   Error processing audio preview ${file}:`, err)
+      audioMetadata = await getAudioMetadata(filePath)
+      console.log('      Audio metadata:', audioMetadata)
+    } catch (error) {
+      console.error(`   Failed to extract audio metadata from ${file}:`, error)
       summary.failed++
+      continue
+    }
+
+    console.log('   Uploading audio preview to R2...')
+
+    const bucket = process.env.CLOUDFLARE_R2_BUCKET!
+    const key = `audiopreview/${languageId}.aac`
+
+    let publicUrl
+    try {
+      publicUrl = await uploadFileToR2Direct({
+        bucket,
+        key,
+        filePath,
+        contentType
+      })
+    } catch (error) {
+      console.error(
+        `   Failed to upload audio preview to R2: ${error instanceof Error ? error.message : String(error)}`
+      )
+      summary.failed++
+      continue
+    }
+
+    console.log('   Importing or updating audio preview record...')
+
+    try {
+      const result = await importOrUpdateAudioPreview({
+        languageId,
+        publicUrl,
+        duration: audioMetadata.duration,
+        size: contentLength,
+        bitrate: audioMetadata.bitrate,
+        codec: audioMetadata.codec
+      })
+
+      if (result === 'failed') {
+        summary.failed++
+      } else {
+        summary.successful++
+        await markFileAsCompleted(filePath)
+      }
+    } catch (error) {
+      console.error(
+        `   Failed to import/update audio preview: ${error instanceof Error ? error.message : String(error)}`
+      )
+      summary.failed++
+      continue
     }
   }
 

@@ -14,9 +14,9 @@ export async function importOrUpdateSubtitle({
   videoId: string
   editionName: string
   languageId: string
-  fileType: 'vtt' | 'srt'
+  fileType: 'text/vtt' | 'text/srt'
   r2Asset: R2Asset
-}): Promise<'created' | 'updated' | 'failed'> {
+}): Promise<void> {
   const client = await getGraphQLClient()
   let existingSubtitle: VideoSubtitleInput | undefined
   try {
@@ -26,14 +26,13 @@ export async function importOrUpdateSubtitle({
         edition: editionName
       })
 
-    console.log('      Existing subtitles:', existingSubtitles)
     existingSubtitle = existingSubtitles?.video?.subtitles?.find(
       (subtitle) => subtitle.languageId === languageId
     )
     console.log('      Existing subtitle:', existingSubtitle)
   } catch (error) {
     console.error('Error fetching existing subtitle:', error)
-    return 'failed'
+    throw new Error('Failed to fetch existing subtitle')
   }
 
   if (existingSubtitle) {
@@ -55,10 +54,10 @@ export async function importOrUpdateSubtitle({
           : 1
       }
     })
-    return 'updated'
+    console.log('     Updated existing video subtitle')
   } else {
-    const isVtt = fileType === 'vtt'
-    const isSrt = fileType === 'srt'
+    const isVtt = fileType === 'text/vtt'
+    const isSrt = fileType === 'text/srt'
 
     const input: VideoSubtitleInput = {
       videoId,
@@ -73,6 +72,6 @@ export async function importOrUpdateSubtitle({
       srtVersion: 1
     }
     await client.request(CREATE_VIDEO_SUBTITLE, { input })
-    return 'created'
+    console.log('     Created new video subtitle')
   }
 }
