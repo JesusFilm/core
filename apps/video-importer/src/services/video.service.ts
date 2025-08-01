@@ -147,6 +147,7 @@ export async function createVideoVariant({
         version: input.version
       }
     })
+    console.log('   [VideoService] Updated video variant')
     return 'updated'
   } else {
     console.log(
@@ -177,6 +178,8 @@ export async function createVideoVariant({
     if (!response.videoVariantCreate) {
       throw new Error('Failed to create video variant')
     }
+
+    console.log('   [VideoService] Created video variant')
 
     return 'created'
   }

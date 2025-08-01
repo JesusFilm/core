@@ -12,7 +12,6 @@ import {
 } from './file-diagnostics'
 import { getAudioMetadata } from './services/audio-metadata.service'
 import { importOrUpdateAudioPreview } from './services/audio-preview.service'
-import { validateEnvironment } from './services/connection-test.service'
 import { getVideoMetadata } from './services/metadata.service'
 import { createAndWaitForMuxVideo } from './services/mux.service'
 import {
@@ -33,8 +32,6 @@ program
     '-f, --folder <path>',
     "Folder containing video files. Defaults to the executable's directory."
   )
-  .option('--dry-run', 'Print actions without uploading', false)
-  .option('--skip-retry', 'Skip retrying failed files', false)
   .parse(process.argv)
 
 const options = program.opts()
@@ -44,19 +41,6 @@ async function markFileAsCompleted(filePath: string): Promise<void> {
   const completedPath = `${filePath}.completed`
   await promises.rename(filePath, completedPath)
   console.log(`   Marked as completed: ${path.basename(completedPath)}`)
-}
-
-async function markFileAsFailed(filePath: string): Promise<void> {
-  const failedPath = `${filePath}.failed`
-  await promises.rename(filePath, failedPath)
-  console.log(`   Marked as failed: ${path.basename(failedPath)}`)
-}
-
-async function restoreFailedFile(failedFilePath: string): Promise<string> {
-  const originalPath = failedFilePath.replace(/\.failed$/, '')
-  await promises.rename(failedFilePath, originalPath)
-  console.log(`   Restored for retry: ${path.basename(originalPath)}`)
-  return originalPath
 }
 
 export const VIDEO_FILENAME_REGEX =
@@ -86,20 +70,42 @@ async function main() {
     ? path.resolve(options.folder)
     : defaultFolderPath
 
-  // === Connection Tests ===
+  console.log('Validating environment variables...')
+
+  const requiredEnvVars = [
+    'GRAPHQL_ENDPOINT',
+    'FIREBASE_EMAIL',
+    'FIREBASE_PASSWORD',
+    'CLOUDFLARE_R2_ENDPOINT',
+    'CLOUDFLARE_R2_ACCESS_KEY_ID',
+    'CLOUDFLARE_R2_SECRET_ACCESS_KEY',
+    'CLOUDFLARE_R2_BUCKET'
+  ]
+
+  const missingVars: string[] = []
+
+  for (const envVar of requiredEnvVars) {
+    if (!process.env[envVar]) {
+      missingVars.push(envVar)
+      console.log(`   Missing: ${envVar}`)
+    }
+  }
+
+  if (missingVars.length > 0) {
+    throw new Error(
+      `Missing required environment variables: ${missingVars.join(', ')}`
+    )
+  }
+
   console.log('Checking connections...')
 
   try {
-    // Test 1: Validate environment variables
-    await validateEnvironment()
+    await r2ConnectionTest()
   } catch (error) {
-    console.error('\nPre-flight checks failed:', error)
+    console.error('\nR2 connection test failed:', error)
     process.exit(1)
   }
 
-  await r2ConnectionTest()
-
-  // === File Processing ===
   let files: string[]
   try {
     files = await promises.readdir(folderPath)
@@ -108,132 +114,59 @@ async function main() {
     process.exit(1)
   }
 
-  const videoFiles = files.filter((file) => VIDEO_FILENAME_REGEX.test(file))
-  const videoFailedFiles = files.filter((file) =>
-    VIDEO_FAILED_FILENAME_REGEX.test(file)
-  )
+  // Define file type configurations
+  const FILE_TYPES = [
+    {
+      name: 'video',
+      regex: VIDEO_FILENAME_REGEX
+    },
+    {
+      name: 'subtitle',
+      regex: SUBTITLE_FILENAME_REGEX
+    },
+    {
+      name: 'audio preview',
+      regex: AUDIO_PREVIEW_FILENAME_REGEX
+    }
+  ] as const
 
-  const subtitleFiles = files.filter((file) =>
-    SUBTITLE_FILENAME_REGEX.test(file)
-  )
-  const subtitleFailedFiles = files.filter((file) =>
-    SUBTITLE_FAILED_FILENAME_REGEX.test(file)
-  )
+  const filesByType = FILE_TYPES.map(({ name, regex }) => {
+    const validFiles = files.filter((file) => regex.test(file))
 
-  const audioPreviewFiles = files.filter((file) =>
-    AUDIO_PREVIEW_FILENAME_REGEX.test(file)
-  )
-  const audioPreviewFailedFiles = files.filter((file) =>
-    AUDIO_PREVIEW_FAILED_FILENAME_REGEX.test(file)
-  )
+    if (validFiles.length === 0) {
+      console.log(`No valid ${name} files found in the folder.`)
+    } else {
+      console.log(`Found ${validFiles.length} ${name} files.`)
+    }
 
-  if (videoFiles.length === 0 && videoFailedFiles.length === 0) {
-    console.log('No valid video files found in the folder.')
-  } else {
-    console.log(
-      `Found ${videoFiles.length} video files${videoFailedFiles.length > 0 ? ` and ${videoFailedFiles.length} failed video files` : ''}.`
-    )
-  }
-
-  if (subtitleFiles.length === 0 && subtitleFailedFiles.length === 0) {
-    console.log('No valid subtitle files found in the folder.')
-  } else {
-    console.log(
-      `Found ${subtitleFiles.length} subtitle files${subtitleFailedFiles.length > 0 ? ` and ${subtitleFailedFiles.length} failed subtitle files` : ''}.`
-    )
-  }
-
-  if (audioPreviewFiles.length === 0 && audioPreviewFailedFiles.length === 0) {
-    console.log('No valid audio preview files found in the folder.')
-  } else {
-    console.log(
-      `Found ${audioPreviewFiles.length} audio preview files${audioPreviewFailedFiles.length > 0 ? ` and ${audioPreviewFailedFiles.length} failed audio preview files` : ''}.`
-    )
-  }
+    return { name, validFiles, restoredFiles: [] as string[] }
+  })
 
   const summary: ProcessingSummary = {
-    total:
-      videoFiles.length +
-      videoFailedFiles.length +
-      subtitleFiles.length +
-      subtitleFailedFiles.length +
-      audioPreviewFiles.length +
-      audioPreviewFailedFiles.length,
+    total: filesByType.reduce(
+      (sum, { validFiles }) => sum + validFiles.length,
+      0
+    ),
     successful: 0,
-    failed: 0,
-    errors: []
+    failed: 0
   }
 
-  // Restore failed files for retry (unless skipped)
-  const restoredVideoFiles: string[] = []
-  const restoredSubtitleFiles: string[] = []
-  const restoredAudioPreviewFiles: string[] = []
+  const [videoType, subtitleType, audioPreviewType] = filesByType
 
-  if (!options.skipRetry) {
-    console.log('\nRestoring failed files for retry...')
-
-    for (const failedFile of videoFailedFiles) {
-      try {
-        const restoredPath = await restoreFailedFile(
-          path.join(folderPath, failedFile)
-        )
-        restoredVideoFiles.push(path.basename(restoredPath))
-      } catch (err) {
-        console.error(`Failed to restore ${failedFile}:`, err)
-      }
-    }
-
-    for (const failedFile of subtitleFailedFiles) {
-      try {
-        const restoredPath = await restoreFailedFile(
-          path.join(folderPath, failedFile)
-        )
-        restoredSubtitleFiles.push(path.basename(restoredPath))
-      } catch (err) {
-        console.error(`Failed to restore ${failedFile}:`, err)
-      }
-    }
-
-    for (const failedFile of audioPreviewFailedFiles) {
-      try {
-        const restoredPath = await restoreFailedFile(
-          path.join(folderPath, failedFile)
-        )
-        restoredAudioPreviewFiles.push(path.basename(restoredPath))
-      } catch (err) {
-        console.error(`Failed to restore ${failedFile}:`, err)
-      }
-    }
-
-    const totalRestored =
-      restoredVideoFiles.length +
-      restoredSubtitleFiles.length +
-      restoredAudioPreviewFiles.length
-    if (totalRestored > 0) {
-      console.log(`   Restored ${totalRestored} failed files for retry`)
-    }
-  } else {
-    console.log('\nSkipping retry of failed files (--skip-retry enabled)')
-  }
-
-  // Combine original and restored files
-  const allVideoFiles = [...videoFiles, ...restoredVideoFiles]
-  const allSubtitleFiles = [...subtitleFiles, ...restoredSubtitleFiles]
-  const allAudioPreviewFiles = [
-    ...audioPreviewFiles,
-    ...restoredAudioPreviewFiles
-  ]
+  const allVideoFiles = videoType.validFiles
+  const allSubtitleFiles = subtitleType.validFiles
+  const allAudioPreviewFiles = audioPreviewType.validFiles
 
   for (const file of allVideoFiles) {
     const match = file.match(VIDEO_FILENAME_REGEX)
     if (!match) continue
-    const [, videoId, editionName, languageId, version, ...extraFields] = match
 
+    const [, videoId, editionName, languageId, version, ...extraFields] = match
     const edition = editionName.toLowerCase()
 
     console.log(`\nProcessing: ${file}`)
     console.log(
-      `   IDs: Video=${videoId}, Edition=${edition}, Lang=${languageId}, Version=${version}`
+      `   - IDs: Video=${videoId}, Edition=${edition}, Lang=${languageId}, Version=${version}`
     )
     if (extraFields.length > 0) {
       console.log(
@@ -241,12 +174,6 @@ async function main() {
       )
     }
 
-    if (options.dryRun) {
-      console.log(`[DRY RUN] Would process file: ${file}`)
-      continue
-    }
-
-    // Validate video and edition before processing
     console.log('   Validating video and edition...')
     const validationResult = await validateVideoAndEdition(videoId, edition)
     if (!validationResult.success) {
@@ -254,16 +181,11 @@ async function main() {
         `   Validation failed: ${validationResult.errors.join(', ')}`
       )
       summary.failed++
-      summary.errors.push({
-        file,
-        error: `Validation failed: ${validationResult.errors.join(', ')}`
-      })
       continue
     }
 
     const filePath = path.join(folderPath, file)
 
-    // Validate file accessibility before any processing
     console.log('   Validating file accessibility...')
     try {
       const readTest = await testFileRead(filePath)
@@ -275,10 +197,6 @@ async function main() {
         const diagnostics = await diagnoseFile(filePath)
         printDiagnostics(diagnostics)
         summary.failed++
-        summary.errors.push({
-          file,
-          error: `File read test failed: ${readTest.error}`
-        })
         continue
       }
       console.log(
@@ -287,10 +205,6 @@ async function main() {
     } catch (validationError) {
       console.error('   File validation failed:', validationError)
       summary.failed++
-      summary.errors.push({
-        file,
-        error: `File validation failed: ${validationError instanceof Error ? validationError.message : String(validationError)}`
-      })
       continue
     }
 
@@ -304,7 +218,6 @@ async function main() {
       try {
         metadata = await getVideoMetadata(filePath)
         console.log('      Video metadata:', metadata)
-        // Validate metadata properties
         if (
           metadata.durationMs === undefined ||
           metadata.width === undefined ||
@@ -315,22 +228,6 @@ async function main() {
       } catch (error) {
         console.error(`   Failed to extract metadata from ${file}:`, error)
         summary.failed++
-        summary.errors.push({
-          file,
-          error: error instanceof Error ? error.message : String(error)
-        })
-        continue
-      }
-
-      if (metadata.durationMs < 500) {
-        console.warn(
-          `   Skipping file ${file}: duration (${metadata.durationMs}ms) is less than Mux minimum (500ms).`
-        )
-        summary.failed++
-        summary.errors.push({
-          file,
-          error: `Video duration (${metadata.durationMs}ms) is less than Mux minimum (500ms).`
-        })
         continue
       }
 
@@ -339,69 +236,82 @@ async function main() {
       const videoVariantId = `${languageId}_${videoId}`
       const fileName = `${videoId}/variants/${languageId}/videos/${uuidv4()}/${videoVariantId}.mp4`
 
-      const r2Asset = await createR2Asset({
-        fileName,
-        contentType,
-        originalFilename,
-        videoId,
-        contentLength
-      })
+      let r2Asset
+      try {
+        r2Asset = await createR2Asset({
+          fileName,
+          contentType,
+          originalFilename,
+          videoId,
+          contentLength
+        })
+      } catch (error) {
+        console.error(
+          `   Failed to create R2 asset: ${error instanceof Error ? error.message : String(error)}`
+        )
+        summary.failed++
+        continue
+      }
 
-      console.log('      R2 Public URL:', r2Asset.publicUrl)
+      console.log('   R2 Public URL:', r2Asset.publicUrl)
       console.log('   Uploading to R2...')
-      await uploadToR2({
-        uploadUrl: r2Asset.uploadUrl,
-        bucket: process.env.CLOUDFLARE_R2_BUCKET!,
-        filePath,
-        contentType,
-        contentLength
-      })
+      try {
+        await uploadToR2({
+          uploadUrl: r2Asset.uploadUrl,
+          bucket: process.env.CLOUDFLARE_R2_BUCKET!,
+          filePath,
+          contentType,
+          contentLength
+        })
+      } catch (error) {
+        console.error(
+          `   Failed to upload to R2: ${error instanceof Error ? error.message : String(error)}`
+        )
+        summary.failed++
+        continue
+      }
 
       console.log('   Preparing Mux asset...')
-      const muxVideo = await createAndWaitForMuxVideo(
-        r2Asset.publicUrl,
-        contentLength
-      )
-      console.log(
-        '      Mux Playback URL:',
-        `https://stream.mux.com/${muxVideo.playbackId}.m3u8`
-      )
+      let muxVideo
+      try {
+        muxVideo = await createAndWaitForMuxVideo(
+          r2Asset.publicUrl,
+          contentLength
+        )
+        console.log(
+          `      Mux Playback URL: https://stream.mux.com/${muxVideo.playbackId}.m3u8`
+        )
+      } catch (error) {
+        console.error(
+          `   Failed to create Mux video: ${error instanceof Error ? error.message : String(error)}`
+        )
+        summary.failed++
+        continue
+      }
 
       console.log('   Saving video variant details...')
-      const result = await createVideoVariant({
-        videoId,
-        languageId,
-        edition,
-        muxId: muxVideo.id,
-        playbackId: muxVideo.playbackId,
-        metadata,
-        version: parseInt(version)
-      })
-      console.log(
-        result === 'created'
-          ? '      Successfully created video variant'
-          : '      Updated existing video variant'
-      )
-      summary.successful++
-
-      // Mark file as completed
-      await markFileAsCompleted(filePath)
+      try {
+        await createVideoVariant({
+          videoId,
+          languageId,
+          edition,
+          muxId: muxVideo.id,
+          playbackId: muxVideo.playbackId,
+          metadata,
+          version: parseInt(version)
+        })
+        summary.successful++
+        await markFileAsCompleted(filePath)
+      } catch (error) {
+        console.error(
+          `   Failed to save video variant: ${error instanceof Error ? error.message : String(error)}`
+        )
+        summary.failed++
+        continue
+      }
     } catch (err) {
       console.error(`   Error processing ${file}:`, err)
       summary.failed++
-      summary.errors.push({
-        file,
-        error: err instanceof Error ? err.message : String(err)
-      })
-
-      // Mark file as failed
-      try {
-        await markFileAsFailed(filePath)
-      } catch (renameErr) {
-        console.error(
-          `Failed to mark file as failed: ${renameErr instanceof Error ? renameErr.message : String(renameErr)}`
-        )
-      }
     }
   }
 
@@ -412,51 +322,36 @@ async function main() {
 
     console.log(`\nProcessing subtitle: ${file}`)
     console.log(
-      `   IDs: Video=${videoId}, Edition=${editionName}, Lang=${languageId}`
+      `   - IDs: Video=${videoId}, Edition=${editionName}, Lang=${languageId}`
     )
     if (extraFields.length > 0) {
       console.log(
-        `   └── Extra fields: ${extraFields.filter(Boolean).join(', ')}`
+        `     - Extra fields: ${extraFields.filter(Boolean).join(', ')}`
       )
-    }
-
-    if (options.dryRun) {
-      console.log(`[DRY RUN] Would process subtitle file: ${file}`)
-      continue
     }
 
     const filePath = path.join(folderPath, file)
 
-    // Validate file accessibility before any processing
-    console.log('   🔍 Validating file accessibility...')
+    console.log('   Validating file accessibility...')
     try {
       const readTest = await testFileRead(filePath)
       if (!readTest.success) {
-        console.error(`   ❌ File read test failed: ${readTest.error}`)
+        console.error(`   File read test failed: ${readTest.error}`)
         console.error(
-          `   📊 Read test details: ${readTest.bytesRead} bytes read in ${readTest.duration}ms`
+          `   Read test details: ${readTest.bytesRead} bytes read in ${readTest.duration}ms`
         )
         summary.failed++
-        summary.errors.push({
-          file,
-          error: `File read test failed: ${readTest.error}`
-        })
         continue
       }
       console.log(
-        `   ✅ File read test passed: ${readTest.bytesRead} bytes read in ${readTest.duration}ms`
+        `   File read test passed: ${readTest.bytesRead} bytes read in ${readTest.duration}ms`
       )
     } catch (validationError) {
-      console.error('   ❌ File validation failed:', validationError)
+      console.error('   File validation failed:', validationError)
       summary.failed++
-      summary.errors.push({
-        file,
-        error: `File validation failed: ${validationError instanceof Error ? validationError.message : String(validationError)}`
-      })
       continue
     }
 
-    // Validate video and edition before processing
     console.log('   Validating video and edition...')
     const validationResult = await validateVideoAndEdition(videoId, editionName)
     if (!validationResult.success) {
@@ -464,16 +359,10 @@ async function main() {
         `   Validation failed: ${validationResult.errors.join(', ')}`
       )
       summary.failed++
-      summary.errors.push({
-        file,
-        error: `Validation failed: ${validationResult.errors.join(', ')}`
-      })
       continue
     }
 
-    console.log(
-      `   ✅ Video "${videoId}" and edition "${editionName}" are valid`
-    )
+    console.log(`   Video "${videoId}" and edition "${editionName}" are valid`)
 
     try {
       const contentType = file.endsWith('.srt') ? 'text/srt' : 'text/vtt'
@@ -489,59 +378,69 @@ async function main() {
       const subtitleVariantId = `${languageId}_${editionId}_${videoId}`
       const fileName = `${videoId}/editions/${editionId}/subtitles/${subtitleVariantId}.${contentType.split('/')[1]}`
 
-      const r2Asset = await createR2Asset({
-        fileName,
-        contentType,
-        originalFilename,
-        videoId,
-        contentLength
-      })
+      let r2Asset
+      try {
+        r2Asset = await createR2Asset({
+          fileName,
+          contentType,
+          originalFilename,
+          videoId,
+          contentLength
+        })
+      } catch (error) {
+        console.error(
+          `   Failed to create R2 asset for subtitle: ${error instanceof Error ? error.message : String(error)}`
+        )
+        summary.failed++
+        continue
+      }
 
       console.log('      R2 Public URL for subtitle:', r2Asset.publicUrl)
       console.log('   Uploading subtitle to R2...')
-      await uploadToR2({
-        uploadUrl: r2Asset.uploadUrl,
-        bucket: process.env.CLOUDFLARE_R2_BUCKET!,
-        filePath,
-        contentType,
-        contentLength
-      })
+      try {
+        await uploadToR2({
+          uploadUrl: r2Asset.uploadUrl,
+          bucket: process.env.CLOUDFLARE_R2_BUCKET!,
+          filePath,
+          contentType,
+          contentLength
+        })
+      } catch (error) {
+        console.error(
+          `   Failed to upload subtitle to R2: ${error instanceof Error ? error.message : String(error)}`
+        )
+        summary.failed++
+        continue
+      }
 
       // After uploading to R2
       console.log('   Importing or updating subtitle...')
       const fileType = file.endsWith('.vtt') ? 'vtt' : 'srt'
-      const result = await importOrUpdateSubtitle({
-        videoId,
-        editionName,
-        languageId,
-        fileType,
-        r2Asset
-      })
-      if (result === 'updated') {
-        console.log('      Updated existing video subtitle')
-      } else {
-        console.log('      Created new video subtitle')
+      try {
+        const result = await importOrUpdateSubtitle({
+          videoId,
+          editionName,
+          languageId,
+          fileType,
+          r2Asset
+        })
+        if (result === 'updated') {
+          console.log('      Updated existing video subtitle')
+        } else {
+          console.log('      Created new video subtitle')
+        }
+        summary.successful++
+        await markFileAsCompleted(filePath)
+      } catch (error) {
+        console.error(
+          `   Failed to import/update subtitle: ${error instanceof Error ? error.message : String(error)}`
+        )
+        summary.failed++
+        continue
       }
-      summary.successful++
-
-      // Mark file as completed
-      await markFileAsCompleted(filePath)
     } catch (err) {
       console.error(`   Error processing subtitle ${file}:`, err)
       summary.failed++
-      summary.errors.push({
-        file,
-        error: err instanceof Error ? err.message : String(err)
-      })
-
-      // Mark file as failed
-      try {
-        await markFileAsFailed(filePath)
-      } catch (renameErr) {
-        console.error(
-          `Failed to mark subtitle file as failed: ${renameErr instanceof Error ? renameErr.message : String(renameErr)}`
-        )
-      }
     }
   }
 
@@ -554,39 +453,25 @@ async function main() {
     console.log(`\nProcessing audio preview: ${file}`)
     console.log(`   Language ID: ${languageId}`)
 
-    if (options.dryRun) {
-      console.log(`[DRY RUN] Would process audio preview file: ${file}`)
-      continue
-    }
-
     const filePath = path.join(folderPath, file)
 
-    // Validate file accessibility before any processing
-    console.log('   🔍 Validating file accessibility...')
+    console.log('   Validating file accessibility...')
     try {
       const readTest = await testFileRead(filePath)
       if (!readTest.success) {
-        console.error(`   ❌ File read test failed: ${readTest.error}`)
+        console.error(`   File read test failed: ${readTest.error}`)
         console.error(
-          `   📊 Read test details: ${readTest.bytesRead} bytes read in ${readTest.duration}ms`
+          `   Read test details: ${readTest.bytesRead} bytes read in ${readTest.duration}ms`
         )
         summary.failed++
-        summary.errors.push({
-          file,
-          error: `File read test failed: ${readTest.error}`
-        })
         continue
       }
       console.log(
-        `   ✅ File read test passed: ${readTest.bytesRead} bytes read in ${readTest.duration}ms`
+        `   File read test passed: ${readTest.bytesRead} bytes read in ${readTest.duration}ms`
       )
     } catch (validationError) {
-      console.error('   ❌ File validation failed:', validationError)
+      console.error('   File validation failed:', validationError)
       summary.failed++
-      summary.errors.push({
-        file,
-        error: `File validation failed: ${validationError instanceof Error ? validationError.message : String(validationError)}`
-      })
       continue
     }
 
@@ -601,14 +486,10 @@ async function main() {
         console.log('      Audio metadata:', audioMetadata)
       } catch (error) {
         console.error(
-          `   ❌ Failed to extract audio metadata from ${file}:`,
+          `   Failed to extract audio metadata from ${file}:`,
           error
         )
         summary.failed++
-        summary.errors.push({
-          file,
-          error: error instanceof Error ? error.message : String(error)
-        })
         continue
       }
 
@@ -617,82 +498,50 @@ async function main() {
       const bucket = process.env.CLOUDFLARE_R2_BUCKET!
       const key = `audiopreview/${languageId}.aac`
 
-      await uploadFileToR2Direct({
-        bucket,
-        key,
-        filePath,
-        contentType
-      })
-
-      if (!process.env.CLOUDFLARE_R2_ENDPOINT) {
-        throw new Error(
-          'CLOUDFLARE_R2_ENDPOINT is required for audio preview processing'
+      let publicUrl
+      try {
+        publicUrl = await uploadFileToR2Direct({
+          bucket,
+          key,
+          filePath,
+          contentType
+        })
+      } catch (error) {
+        console.error(
+          `   Failed to upload audio preview to R2: ${error instanceof Error ? error.message : String(error)}`
         )
+        summary.failed++
+        continue
       }
-
-      const publicBaseUrl =
-        process.env.CLOUDFLARE_R2_PUBLIC_BASE_URL ||
-        `https://${bucket}.${new URL(process.env.CLOUDFLARE_R2_ENDPOINT).hostname}`
-      const publicUrl = `${publicBaseUrl.replace(/\/$/, '')}/${key}`
-
-      console.log('      Public URL:', publicUrl)
 
       console.log('   Importing or updating audio preview record...')
 
-      const result = await importOrUpdateAudioPreview({
-        languageId,
-        publicUrl,
-        duration: audioMetadata.duration,
-        size: contentLength,
-        bitrate: audioMetadata.bitrate,
-        codec: audioMetadata.codec
-      })
-
-      if (result === 'updated') {
-        console.log('      Updated existing audio preview')
-      } else if (result === 'created') {
-        console.log('      Created new audio preview')
-      } else {
-        console.log('      Failed to import audio preview')
-      }
-
-      if (result === 'failed') {
-        summary.failed++
-        summary.errors.push({
-          file,
-          error: 'Failed to create/update audio preview'
+      try {
+        const result = await importOrUpdateAudioPreview({
+          languageId,
+          publicUrl,
+          duration: audioMetadata.duration,
+          size: contentLength,
+          bitrate: audioMetadata.bitrate,
+          codec: audioMetadata.codec
         })
 
-        // Mark file as failed
-        try {
-          await markFileAsFailed(filePath)
-        } catch (renameErr) {
-          console.error(
-            `Failed to mark audio preview file as failed: ${renameErr instanceof Error ? renameErr.message : String(renameErr)}`
-          )
+        if (result === 'failed') {
+          summary.failed++
+        } else {
+          summary.successful++
+          await markFileAsCompleted(filePath)
         }
-      } else {
-        summary.successful++
-
-        // Mark file as completed
-        await markFileAsCompleted(filePath)
+      } catch (error) {
+        console.error(
+          `   Failed to import/update audio preview: ${error instanceof Error ? error.message : String(error)}`
+        )
+        summary.failed++
+        continue
       }
     } catch (err) {
       console.error(`   Error processing audio preview ${file}:`, err)
       summary.failed++
-      summary.errors.push({
-        file,
-        error: err instanceof Error ? err.message : String(err)
-      })
-
-      // Mark file as failed
-      try {
-        await markFileAsFailed(filePath)
-      } catch (renameErr) {
-        console.error(
-          `Failed to mark audio preview file as failed: ${renameErr instanceof Error ? renameErr.message : String(renameErr)}`
-        )
-      }
     }
   }
 
@@ -701,14 +550,6 @@ async function main() {
   console.log(`Total files: ${summary.total}`)
   console.log(`Successfully processed: ${summary.successful}`)
   console.log(`Failed: ${summary.failed}`)
-
-  if (summary.errors.length > 0) {
-    console.log('\nErrors:')
-    summary.errors.forEach(({ file, error }) => {
-      console.log(`\n${file}:`)
-      console.log(`  ${error}`)
-    })
-  }
 }
 
 main().catch((err) => {

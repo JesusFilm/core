@@ -60,7 +60,6 @@ export interface ProcessingSummary {
   total: number
   successful: number
   failed: number
-  errors: Array<{ file: string; error: string }>
 }
 
 export interface VideoMetadata {

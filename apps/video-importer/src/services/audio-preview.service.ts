@@ -45,6 +45,7 @@ export async function importOrUpdateAudioPreview({
   if (existingPreview != null) {
     try {
       await client.request(UPDATE_AUDIO_PREVIEW, { input })
+      console.log('[AudioPreview] Updated audio preview')
       return 'updated'
     } catch (error) {
       console.error('[AudioPreview] Failed to update audio preview:', error)
@@ -54,6 +55,7 @@ export async function importOrUpdateAudioPreview({
 
   try {
     await client.request(CREATE_AUDIO_PREVIEW, { input })
+    console.log('[AudioPreview] Created audio preview')
     return 'created'
   } catch (error) {
     console.error('[AudioPreview] Failed to create audio preview:', error)

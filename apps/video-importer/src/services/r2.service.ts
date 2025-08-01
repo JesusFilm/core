@@ -234,7 +234,6 @@ export async function uploadToR2({
   })
 }
 
-// Keep your existing functions but simplified
 export async function uploadFileToR2Direct({
   bucket,
   key,
@@ -245,10 +244,9 @@ export async function uploadFileToR2Direct({
   key: string
   filePath: string
   contentType: string
-}): Promise<void> {
+}): Promise<string> {
   return withRetry(async () => {
     const fileStream = createReadStream(filePath)
-
     await s3Client.send(
       new PutObjectCommand({
         Bucket: bucket,
@@ -259,6 +257,18 @@ export async function uploadFileToR2Direct({
     )
 
     console.log('Direct upload completed')
+
+    // Construct and return the public URL
+    if (!process.env.CLOUDFLARE_R2_ENDPOINT) {
+      throw new Error(
+        'CLOUDFLARE_R2_ENDPOINT is required for public URL generation'
+      )
+    }
+
+    const publicBaseUrl = `https://${bucket}.${new URL(process.env.CLOUDFLARE_R2_ENDPOINT).hostname}`
+    const publicUrl = `${publicBaseUrl.replace(/\/$/, '')}/${key}`
+
+    return `${publicBaseUrl.replace(/\/$/, '')}/${key}`
   })
 }
 
