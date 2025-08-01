@@ -112,6 +112,10 @@ export interface CardFormCreate_button_settings {
    * Alignment of the button
    */
   alignment: ButtonAlignment | null;
+  /**
+   * Color of the button
+   */
+  color: string | null;
 }
 
 export interface CardFormCreate_button {
@@ -179,6 +183,10 @@ export interface CardFormCreate_buttonUpdate_settings {
    * Alignment of the button
    */
   alignment: ButtonAlignment | null;
+  /**
+   * Color of the button
+   */
+  color: string | null;
 }
 
 export interface CardFormCreate_buttonUpdate {

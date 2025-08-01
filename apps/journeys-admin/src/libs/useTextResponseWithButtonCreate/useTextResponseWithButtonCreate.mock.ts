@@ -89,7 +89,8 @@ export const textResponseWithButtonCreateMock: MockedResponse<
         submitEnabled: true,
         settings: {
           __typename: 'ButtonBlockSettings',
-          alignment: ButtonAlignment.justify
+          alignment: ButtonAlignment.justify,
+          color: null
         },
         __typename: 'ButtonBlock'
       },
@@ -125,7 +126,8 @@ export const textResponseWithButtonCreateMock: MockedResponse<
         submitEnabled: true,
         settings: {
           __typename: 'ButtonBlockSettings',
-          alignment: ButtonAlignment.justify
+          alignment: ButtonAlignment.justify,
+          color: null
         },
         __typename: 'ButtonBlock'
       }

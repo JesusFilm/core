@@ -1312,12 +1312,6 @@ export class CardLevelActionPage {
       )
       .fill(buttonName)
   }
-  async chooseButtonColor(buttonColor: string) {
-    await this.page
-      .getByTestId('ToggleButtonGroupColor')
-      .getByRole('button', { name: buttonColor })
-      .click()
-  }
 
   async chooseButtonSize(buttonSize: string) {
     await this.page
