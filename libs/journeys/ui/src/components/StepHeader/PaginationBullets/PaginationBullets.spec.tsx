@@ -47,7 +47,7 @@ describe('PaginationBullets', () => {
                   gtmEventName: null,
                   blockId: 'step2.id'
                 },
-                pollOptionImageId: null,
+                pollOptionImageBlockId: null,
                 children: []
               }
             ]

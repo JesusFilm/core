@@ -272,7 +272,7 @@ export function CardPoll(): ReactElement {
       parentOrder: 0,
       label: t('Turning the other cheek'),
       action: null,
-      pollOptionImageId: null,
+      pollOptionImageBlockId: null,
       __typename: 'RadioOptionBlock'
     } satisfies RadioOptionBlock
 
@@ -282,7 +282,7 @@ export function CardPoll(): ReactElement {
       parentOrder: 1,
       label: t('Loving your enemies'),
       action: null,
-      pollOptionImageId: null,
+      pollOptionImageBlockId: null,
       __typename: 'RadioOptionBlock'
     } satisfies RadioOptionBlock
 
@@ -292,7 +292,7 @@ export function CardPoll(): ReactElement {
       parentOrder: 2,
       label: t('Not worrying about tomorrow'),
       action: null,
-      pollOptionImageId: null,
+      pollOptionImageBlockId: null,
       __typename: 'RadioOptionBlock'
     } satisfies RadioOptionBlock
 
@@ -302,7 +302,7 @@ export function CardPoll(): ReactElement {
       parentOrder: 3,
       label: t('Seeking first the kingdom of God'),
       action: null,
-      pollOptionImageId: null,
+      pollOptionImageBlockId: null,
       __typename: 'RadioOptionBlock'
     } satisfies RadioOptionBlock
 
@@ -389,7 +389,7 @@ export function CardPoll(): ReactElement {
                 '__typename',
                 'parentOrder',
                 'action',
-                'pollOptionImageId'
+                'pollOptionImageBlockId'
               ]),
               journeyId: journey.id
             },
@@ -398,7 +398,7 @@ export function CardPoll(): ReactElement {
                 '__typename',
                 'parentOrder',
                 'action',
-                'pollOptionImageId'
+                'pollOptionImageBlockId'
               ]),
               journeyId: journey.id
             },
@@ -407,7 +407,7 @@ export function CardPoll(): ReactElement {
                 '__typename',
                 'parentOrder',
                 'action',
-                'pollOptionImageId'
+                'pollOptionImageBlockId'
               ]),
               journeyId: journey.id
             },
@@ -416,7 +416,7 @@ export function CardPoll(): ReactElement {
                 '__typename',
                 'parentOrder',
                 'action',
-                'pollOptionImageId'
+                'pollOptionImageBlockId'
               ]),
               journeyId: journey.id
             },
