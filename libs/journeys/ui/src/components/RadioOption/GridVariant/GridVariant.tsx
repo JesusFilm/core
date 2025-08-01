@@ -129,7 +129,7 @@ export const StyledGridRadioOption = styled(Card)<CardProps>(({ theme }) => ({
 
 interface GridVariantProps {
   label: string
-  pollOptionImageId?: string | null
+  pollOptionImageBlockId?: string | null
   selected?: boolean
   disabled?: boolean
   handleClick: (e: React.MouseEvent) => void
@@ -139,7 +139,7 @@ interface GridVariantProps {
 
 export function GridVariant({
   label,
-  pollOptionImageId,
+  pollOptionImageBlockId,
   selected = false,
   disabled = false,
   handleClick,
@@ -151,7 +151,7 @@ export function GridVariant({
   const showLabel = editableLabel != null || (label != null && label != '')
 
   const imageBlock = children.find(
-    (child) => child.id === pollOptionImageId
+    (child) => child.id === pollOptionImageBlockId
   ) as TreeBlock<ImageFields>
 
   const classNames = `${selected ? 'selected' : ''} ${disabled ? 'Mui-disabled' : ''}`
