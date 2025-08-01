@@ -137,6 +137,7 @@ const iconNames: IconName[] = [
   'Link',
   'Lock1',
   'LockOpen1',
+  'LogoGrayscale',
   'Logout2',
   'Mail1',
   'Mail2',
