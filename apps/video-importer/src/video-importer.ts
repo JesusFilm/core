@@ -5,25 +5,25 @@ import 'dotenv/config'
 import { Command } from 'commander'
 import { v4 as uuidv4 } from 'uuid'
 
-import {
-  diagnoseFile,
-  printDiagnostics,
-  testFileRead
-} from './file-diagnostics'
-import { getAudioMetadata } from './services/audio-metadata.service'
-import { importOrUpdateAudioPreview } from './services/audio-preview.service'
-import { getVideoMetadata } from './services/metadata.service'
-import { createAndWaitForMuxVideo } from './services/mux.service'
+import { importOrUpdateAudioPreview } from './services/audiopreview'
+import { createAndWaitForMuxVideo } from './services/mux'
 import {
   createR2Asset,
   r2ConnectionTest,
   uploadFileToR2Direct,
   uploadToR2
-} from './services/r2.service'
-import { importOrUpdateSubtitle } from './services/subtitle.service'
-import { validateVideoAndEdition } from './services/validation.service'
-import { importOrUpdateVideoVariant } from './services/video.service'
+} from './services/r2'
+import { importOrUpdateSubtitle } from './services/subtitle'
+import { importOrUpdateVideoVariant } from './services/video'
 import type { ProcessingSummary } from './types'
+import { checkEnvironmentVariables } from './utils/envVarTest'
+import {
+  diagnoseFile,
+  printDiagnostics,
+  testFileRead
+} from './utils/fileDiagnostics'
+import { getAudioMetadata, getVideoMetadata } from './utils/fileMetadataHelpers'
+import { validateVideoAndEdition } from './utils/videoEditionValidator'
 
 const program = new Command()
 
@@ -60,34 +60,12 @@ async function main() {
     ? path.resolve(options.folder)
     : defaultFolderPath
 
-  console.log('Validating environment variables...')
-
-  const requiredEnvVars = [
-    'GRAPHQL_ENDPOINT',
-    'FIREBASE_EMAIL',
-    'FIREBASE_PASSWORD',
-    'CLOUDFLARE_R2_ENDPOINT',
-    'CLOUDFLARE_R2_ACCESS_KEY_ID',
-    'CLOUDFLARE_R2_SECRET_ACCESS_KEY',
-    'CLOUDFLARE_R2_BUCKET'
-  ]
-
-  const missingVars: string[] = []
-
-  for (const envVar of requiredEnvVars) {
-    if (!process.env[envVar]) {
-      missingVars.push(envVar)
-      console.log(`   Missing: ${envVar}`)
-    }
+  try {
+    await checkEnvironmentVariables()
+  } catch (error) {
+    console.error('Environment variables check failed:', error)
+    process.exit(1)
   }
-
-  if (missingVars.length > 0) {
-    throw new Error(
-      `Missing required environment variables: ${missingVars.join(', ')}`
-    )
-  }
-
-  console.log('Checking connections...')
 
   try {
     await r2ConnectionTest()
@@ -163,7 +141,6 @@ async function main() {
       )
     }
 
-    console.log('   Validating video and edition...')
     try {
       await validateVideoAndEdition(videoId, edition)
     } catch (error) {

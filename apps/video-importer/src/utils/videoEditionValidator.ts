@@ -1,4 +1,4 @@
-import { getGraphQLClient } from './gql/graphqlClient'
+import { getGraphQLClient } from '../gql/graphqlClient'
 
 interface VideoWithEditionsResponse {
   video?: {
@@ -49,7 +49,6 @@ export async function validateVideoAndEdition(
       `   Video exists: ${response.video.id} (slug: ${response.video.slug})`
     )
 
-    // Test edition existence
     const editions = response.video.videoEditions || []
     const edition = editions.find((e) => e.name === editionName)
 
@@ -68,8 +67,7 @@ export async function validateVideoAndEdition(
 
     return { editionId: edition.id }
   } catch (error) {
-    const errorMessage = `Validation failed: ${error instanceof Error ? error.message : String(error)}`
-    console.error(`   ${errorMessage}`)
+    console.error(`   Validation failed:`, error)
     throw error
   }
 }

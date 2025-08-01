@@ -9,10 +9,9 @@ import {
 import { Upload } from '@aws-sdk/lib-storage'
 import fetch from 'node-fetch'
 
+import { getGraphQLClient } from '../gql/graphqlClient'
+import { CREATE_CLOUDFLARE_R2_ASSET } from '../gql/mutations'
 import { R2Asset } from '../types'
-
-import { getGraphQLClient } from './gql/graphqlClient'
-import { CREATE_CLOUDFLARE_R2_ASSET } from './gql/mutations'
 
 const MULTIPART_THRESHOLD = 100 * 1024 * 1024 // 100MB
 const MAX_RETRIES = 3
@@ -266,7 +265,6 @@ export async function uploadFileToR2Direct({
     }
 
     const publicBaseUrl = `https://${bucket}.${new URL(process.env.CLOUDFLARE_R2_ENDPOINT).hostname}`
-    const publicUrl = `${publicBaseUrl.replace(/\/$/, '')}/${key}`
 
     return `${publicBaseUrl.replace(/\/$/, '')}/${key}`
   })

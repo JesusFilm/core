@@ -1,4 +1,4 @@
-export async function validateEnvironment(): Promise<void> {
+export async function checkEnvironmentVariables(): Promise<void> {
   console.log('Validating environment variables...')
 
   const requiredEnvVars = [
