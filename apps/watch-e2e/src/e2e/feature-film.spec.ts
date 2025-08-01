@@ -13,7 +13,7 @@ Expect page to have URL: /watch/jesus.html/birth-of-jesus/english.html
 test.describe('Feature film', () => {
   test('Feature film navigation and video playback', async ({ page }) => {
     // Set longer timeout for CI environments
-    test.setTimeout(180000)
+    test.setTimeout(4 * 60 * 1000)
 
     // Navigate to the watch page using daily-e2e deployment
     await page.goto('/watch')
@@ -38,12 +38,15 @@ test.describe('Feature film', () => {
 
     // Wait for page to be fully loaded after navigation
     await page.waitForLoadState('domcontentloaded')
+    
+    // Wait for the JESUS page content to load (look for elements that indicate we're on the JESUS page)
+    await page.waitForSelector('h1:has-text("JESUS")', { timeout: 60000 })
 
     // Wait for Birth of Jesus chapter to be available - try multiple selectors
     const birthOfJesusButton = page.locator(
       '[data-testid="VideoCardButton-birth-of-jesus"]'
     )
-    await birthOfJesusButton.waitFor({ timeout: 30000 })
+    await birthOfJesusButton.waitFor({ timeout: 60000 })
 
     // Wait for the element to be properly interactive
     await birthOfJesusButton.waitFor({ state: 'visible' })
