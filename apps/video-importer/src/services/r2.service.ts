@@ -1,27 +1,22 @@
 import { createReadStream } from 'fs'
 
-import { PutObjectCommand, S3Client } from '@aws-sdk/client-s3'
+import {
+  HeadObjectCommand,
+  ListObjectsCommand,
+  PutObjectCommand,
+  S3Client
+} from '@aws-sdk/client-s3'
 import { Upload } from '@aws-sdk/lib-storage'
 import fetch from 'node-fetch'
 
-import type { R2Asset } from '../types'
+import { R2Asset } from '../types'
 
 import { CREATE_CLOUDFLARE_R2_ASSET } from './gql/mutations'
 import { getGraphQLClient } from './graphqlClient'
 
 const MULTIPART_THRESHOLD = 100 * 1024 * 1024 // 100MB
-const MULTIPART_PART_SIZE = 10 * 1024 * 1024 // 10MB
-
-// Retry configurations
 const MAX_RETRIES = 3
-const RETRY_DELAY = 2000 // 2 seconds
-
-// Large file optimizations
-const LARGE_FILE_THRESHOLD = 1024 * 1024 * 1024 // 1GB
-const LARGE_FILE_PART_SIZE = 50 * 1024 * 1024 // 50MB for very large files
-const LARGE_FILE_QUEUE_SIZE = 8 // More concurrent parts for large files
-
-// Remove timeout calculation - let R2 handle timeouts naturally
+const RETRY_DELAY = 2000
 
 if (!process.env.CLOUDFLARE_R2_ENDPOINT) {
   throw new Error('CLOUDFLARE_R2_ENDPOINT environment variable is required')
@@ -46,11 +41,10 @@ const s3Client = new S3Client({
   }
 })
 
-// Utility function for retry logic with connection resilience
-async function retryWithBackoff<T>(
+// Simple retry wrapper
+async function withRetry<T>(
   operation: () => Promise<T>,
-  maxRetries: number = MAX_RETRIES,
-  delay: number = RETRY_DELAY
+  maxRetries: number = MAX_RETRIES
 ): Promise<T> {
   let lastError: Error
 
@@ -60,28 +54,13 @@ async function retryWithBackoff<T>(
     } catch (error) {
       lastError = error instanceof Error ? error : new Error(String(error))
 
-      // Check if it's a connection-related error that should be retried
-      const isRetryableError =
-        error instanceof Error &&
-        (error.message.includes('ECONNRESET') ||
-          error.message.includes('ETIMEDOUT') ||
-          error.message.includes('ENOTFOUND') ||
-          error.message.includes('ECONNREFUSED') ||
-          error.message.includes('TimeoutError') ||
-          error.message.includes('NetworkError'))
-
-      if (attempt === maxRetries || !isRetryableError) {
-        console.error(`[R2 Service] Final upload attempt failed:`, error)
+      if (attempt === maxRetries) {
         throw lastError
       }
 
-      // Exponential backoff with jitter
-      const backoffDelay =
-        delay * Math.pow(2, attempt - 1) + Math.random() * 1000
-      console.log(
-        `[R2 Service] Upload attempt ${attempt} failed (${error.message}), retrying in ${Math.round(backoffDelay)}ms...`
-      )
-      await new Promise((resolve) => setTimeout(resolve, backoffDelay))
+      const delay = RETRY_DELAY * Math.pow(2, attempt - 1)
+      console.log(`Attempt ${attempt} failed, retrying in ${delay}ms...`)
+      await new Promise((resolve) => setTimeout(resolve, delay))
     }
   }
 
@@ -136,16 +115,32 @@ export async function createR2Asset({
   }
 }
 
-/**
- * Uploads a file to R2 using the best method for the file size.
- * For files <100MB, uses a single PUT to the pre-signed URL.
- * For files >=100MB, uses multipart upload via S3 API.
- * @param uploadUrl Pre-signed PUT URL (for small files and key extraction)
- * @param bucket R2 bucket name (for multipart)
- * @param filePath Local file path
- * @param contentType MIME type
- * @param contentLength File size in bytes
- */
+// Verify upload by checking object exists and has correct size
+async function verifyR2Upload(
+  bucket: string,
+  key: string,
+  expectedSize: number
+): Promise<boolean> {
+  try {
+    const command = new HeadObjectCommand({ Bucket: bucket, Key: key })
+    const response = await s3Client.send(command)
+
+    const actualSize = response.ContentLength || 0
+    if (actualSize === expectedSize) {
+      console.log(`Upload verified: ${actualSize} bytes`)
+      return true
+    } else {
+      console.error(
+        `Size mismatch: expected ${expectedSize}, got ${actualSize}`
+      )
+      return false
+    }
+  } catch (error) {
+    console.error('Upload verification failed:', error)
+    return false
+  }
+}
+
 export async function uploadToR2({
   uploadUrl,
   bucket,
@@ -159,30 +154,26 @@ export async function uploadToR2({
   contentType: string
   contentLength: number
 }) {
-  // Extract the key from the uploadUrl for multipart uploads
+  // Extract key from uploadUrl
   const url = new URL(uploadUrl)
-  const key = url.pathname.substring(1) // Remove leading slash
+  const key = url.pathname.substring(1)
+
+  console.log(
+    `Uploading ${(contentLength / 1024 / 1024).toFixed(1)}MB to R2...`
+  )
 
   if (contentLength < MULTIPART_THRESHOLD) {
     // Single PUT for small files
-    console.log(
-      `[R2 Service] Uploading ${(contentLength / 1024 / 1024).toFixed(1)}MB via single PUT`
-    )
-
-    return retryWithBackoff(async () => {
+    return withRetry(async () => {
       const fileStream = createReadStream(filePath)
-      fileStream.on('error', (err) => {
-        throw new Error(`Failed to read file stream: ${err.message}`)
-      })
 
-      // Let R2 handle timeouts naturally - no manual timeout
       const response = await fetch(uploadUrl, {
         method: 'PUT',
         headers: {
           'Content-Type': contentType,
           'Content-Length': contentLength.toString()
         },
-        body: fileStream
+        body: fileStream as any
       })
 
       if (!response.ok) {
@@ -192,89 +183,58 @@ export async function uploadToR2({
         )
       }
 
-      console.log('[R2 Service] Upload completed successfully')
+      // Verify upload
+      const verified = await verifyR2Upload(bucket, key, contentLength)
+      if (!verified) {
+        throw new Error('Upload verification failed')
+      }
+
+      console.log('Single upload completed and verified')
     })
   }
 
   // Multipart upload for large files
-  console.log(
-    `[R2 Service] Uploading ${(contentLength / 1024 / 1024).toFixed(1)}MB via multipart upload`
-  )
-
-  return retryWithBackoff(async () => {
-    const multipartStream = createReadStream(filePath)
-    multipartStream.on('error', (err) => {
-      throw new Error(
-        `Failed to read file stream for multipart upload: ${err.message}`
-      )
-    })
-
-    // Optimize upload configuration based on file size
-    const isLargeFile = contentLength > LARGE_FILE_THRESHOLD
-    const partSize = isLargeFile ? LARGE_FILE_PART_SIZE : MULTIPART_PART_SIZE
-    const queueSize = isLargeFile ? LARGE_FILE_QUEUE_SIZE : 4
-
-    console.log(
-      `[R2 Service] Large file detected (${(contentLength / 1024 / 1024 / 1024).toFixed(1)}GB), using optimized settings: ${partSize / 1024 / 1024}MB parts, ${queueSize} concurrent uploads`
-    )
+  return withRetry(async () => {
+    const fileStream = createReadStream(filePath)
 
     const upload = new Upload({
       client: s3Client,
       params: {
         Bucket: bucket,
         Key: key,
-        Body: multipartStream,
+        Body: fileStream,
         ContentType: contentType
       },
-      queueSize,
-      partSize,
-      // Don't leave parts on error - clean up failed uploads
+      queueSize: 4,
+      partSize: 10 * 1024 * 1024, // 10MB parts
       leavePartsOnError: false
     })
 
-    // Enhanced progress tracking for large files
-    let lastLoggedPercent = 0
-    let lastLoggedTime = Date.now()
+    // Simple progress logging
+    let lastPercent = 0
     upload.on('httpUploadProgress', (progress) => {
       if (progress.loaded && progress.total) {
         const percent = Math.floor((progress.loaded / progress.total) * 100)
-        const currentTime = Date.now()
-
-        // For large files, log more frequently (every 10% instead of 25%)
-        const logInterval = contentLength > LARGE_FILE_THRESHOLD ? 10 : 25
-
-        if (
-          percent >= lastLoggedPercent + logInterval ||
-          currentTime - lastLoggedTime > 30000
-        ) {
-          // Also log every 30 seconds
-          const uploadedGB = (progress.loaded / 1024 / 1024 / 1024).toFixed(2)
-          const totalGB = (progress.total / 1024 / 1024 / 1024).toFixed(2)
-          console.log(
-            `[R2 Service] Upload progress: ${percent}% (${uploadedGB}GB / ${totalGB}GB)`
-          )
-          lastLoggedPercent = percent
-          lastLoggedTime = currentTime
+        if (percent >= lastPercent + 25) {
+          console.log(`Upload progress: ${percent}%`)
+          lastPercent = percent
         }
       }
     })
 
-    try {
-      await upload.done()
-      console.log('[R2 Service] Multipart upload completed successfully')
-    } catch (err) {
-      console.error('[R2 Service] Multipart upload failed:', err)
-      throw err
+    await upload.done()
+
+    // Verify upload
+    const verified = await verifyR2Upload(bucket, key, contentLength)
+    if (!verified) {
+      throw new Error('Multipart upload verification failed')
     }
+
+    console.log('Multipart upload completed and verified')
   })
 }
 
-/**
- * Directly uploads a file to R2 using the S3 PutObjectCommand (no presigned URL).
- * Suitable for small files such as audio previews. We use this for audio previews
- * because we don't want to create a new R2 asset for each audio preview. Since, they
- * are in api-languages not api-media.
- */
+// Keep your existing functions but simplified
 export async function uploadFileToR2Direct({
   bucket,
   key,
@@ -286,23 +246,40 @@ export async function uploadFileToR2Direct({
   filePath: string
   contentType: string
 }): Promise<void> {
-  return retryWithBackoff(async () => {
+  return withRetry(async () => {
     const fileStream = createReadStream(filePath)
-    try {
-      await s3Client.send(
-        new PutObjectCommand({
-          Bucket: bucket,
-          Key: key,
-          Body: fileStream,
-          ContentType: contentType
-        })
-      )
-      console.log(
-        '[R2 Service] Successfully uploaded audio preview via PutObject.'
-      )
-    } catch (error) {
-      console.error('[R2 Service] Direct upload failed:', error)
-      throw error
-    }
+
+    await s3Client.send(
+      new PutObjectCommand({
+        Bucket: bucket,
+        Key: key,
+        Body: fileStream,
+        ContentType: contentType
+      })
+    )
+
+    console.log('Direct upload completed')
   })
+}
+
+export async function r2ConnectionTest() {
+  console.log('Testing R2 connection...')
+
+  if (!process.env.CLOUDFLARE_R2_BUCKET) {
+    throw new Error('CLOUDFLARE_R2_BUCKET environment variable is required')
+  }
+
+  const command = new ListObjectsCommand({
+    Bucket: process.env.CLOUDFLARE_R2_BUCKET
+  })
+
+  try {
+    const response = await s3Client.send(command)
+    console.log('R2 connection test successful')
+    console.log(`Found ${response.Contents?.length || 0} objects in bucket`)
+    return true
+  } catch (error) {
+    console.error('R2 connection test failed:', error)
+    throw error
+  }
 }

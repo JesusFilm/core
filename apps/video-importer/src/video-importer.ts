@@ -5,6 +5,11 @@ import 'dotenv/config'
 import { Command } from 'commander'
 import { v4 as uuidv4 } from 'uuid'
 
+import {
+  diagnoseFile,
+  printDiagnostics,
+  testFileRead
+} from './file-diagnostics'
 import { getAudioMetadata } from './services/audio-metadata.service'
 import { importOrUpdateAudioPreview } from './services/audio-preview.service'
 import { validateEnvironment } from './services/connection-test.service'
@@ -12,6 +17,7 @@ import { getVideoMetadata } from './services/metadata.service'
 import { createAndWaitForMuxVideo } from './services/mux.service'
 import {
   createR2Asset,
+  r2ConnectionTest,
   uploadFileToR2Direct,
   uploadToR2
 } from './services/r2.service'
@@ -37,24 +43,24 @@ const options = program.opts()
 async function markFileAsCompleted(filePath: string): Promise<void> {
   const completedPath = `${filePath}.completed`
   await promises.rename(filePath, completedPath)
-  console.log(`   ✅ Marked as completed: ${path.basename(completedPath)}`)
+  console.log(`   Marked as completed: ${path.basename(completedPath)}`)
 }
 
 async function markFileAsFailed(filePath: string): Promise<void> {
   const failedPath = `${filePath}.failed`
   await promises.rename(filePath, failedPath)
-  console.log(`   ❌ Marked as failed: ${path.basename(failedPath)}`)
+  console.log(`   Marked as failed: ${path.basename(failedPath)}`)
 }
 
 async function restoreFailedFile(failedFilePath: string): Promise<string> {
   const originalPath = failedFilePath.replace(/\.failed$/, '')
   await promises.rename(failedFilePath, originalPath)
-  console.log(`   🔄 Restored for retry: ${path.basename(originalPath)}`)
+  console.log(`   Restored for retry: ${path.basename(originalPath)}`)
   return originalPath
 }
 
 export const VIDEO_FILENAME_REGEX =
-  /^([^.]+?)---([^.]+?)---([^-]+)(?:---([^-]+))*\.mp4$/
+  /^([^.]+?)---([^.]+?)---([^-]+)---([^-]+)(?:---([^-]+))*\.mp4$/
 
 export const VIDEO_FAILED_FILENAME_REGEX =
   /^([^.]+?)---([^.]+?)---([^-]+)(?:---([^-]+))*\.mp4\.failed$/
@@ -87,9 +93,11 @@ async function main() {
     // Test 1: Validate environment variables
     await validateEnvironment()
   } catch (error) {
-    console.error('\n❌ Pre-flight checks failed:', error)
+    console.error('\nPre-flight checks failed:', error)
     process.exit(1)
   }
+
+  await r2ConnectionTest()
 
   // === File Processing ===
   let files: string[]
@@ -162,7 +170,7 @@ async function main() {
   const restoredAudioPreviewFiles: string[] = []
 
   if (!options.skipRetry) {
-    console.log('\n🔄 Restoring failed files for retry...')
+    console.log('\nRestoring failed files for retry...')
 
     for (const failedFile of videoFailedFiles) {
       try {
@@ -205,7 +213,7 @@ async function main() {
       console.log(`   Restored ${totalRestored} failed files for retry`)
     }
   } else {
-    console.log('\n⏭️  Skipping retry of failed files (--skip-retry enabled)')
+    console.log('\nSkipping retry of failed files (--skip-retry enabled)')
   }
 
   // Combine original and restored files
@@ -219,17 +227,17 @@ async function main() {
   for (const file of allVideoFiles) {
     const match = file.match(VIDEO_FILENAME_REGEX)
     if (!match) continue
-    const [, videoId, editionName, languageId, ...extraFields] = match
+    const [, videoId, editionName, languageId, version, ...extraFields] = match
 
     const edition = editionName.toLowerCase()
 
-    console.log(`\n🎬 Processing: ${file}`)
+    console.log(`\nProcessing: ${file}`)
     console.log(
-      `   └── IDs: Video=${videoId}, Edition=${edition}, Lang=${languageId}`
+      `   IDs: Video=${videoId}, Edition=${edition}, Lang=${languageId}, Version=${version}`
     )
     if (extraFields.length > 0) {
       console.log(
-        `   └── Extra fields: ${extraFields.filter(Boolean).join(', ')}`
+        `   - Extra fields: ${extraFields.filter(Boolean).join(', ')}`
       )
     }
 
@@ -239,11 +247,11 @@ async function main() {
     }
 
     // Validate video and edition before processing
-    console.log('   🔍 Validating video and edition...')
+    console.log('   Validating video and edition...')
     const validationResult = await validateVideoAndEdition(videoId, edition)
     if (!validationResult.success) {
       console.error(
-        `   ❌ Validation failed: ${validationResult.errors.join(', ')}`
+        `   Validation failed: ${validationResult.errors.join(', ')}`
       )
       summary.failed++
       summary.errors.push({
@@ -255,12 +263,43 @@ async function main() {
 
     const filePath = path.join(folderPath, file)
 
+    // Validate file accessibility before any processing
+    console.log('   Validating file accessibility...')
+    try {
+      const readTest = await testFileRead(filePath)
+      if (!readTest.success) {
+        console.error(`   File read test failed: ${readTest.error}`)
+        console.error(
+          `   Read test details: ${readTest.bytesRead} bytes read in ${readTest.duration}ms`
+        )
+        const diagnostics = await diagnoseFile(filePath)
+        printDiagnostics(diagnostics)
+        summary.failed++
+        summary.errors.push({
+          file,
+          error: `File read test failed: ${readTest.error}`
+        })
+        continue
+      }
+      console.log(
+        `   File read test passed: ${readTest.bytesRead} bytes read in ${readTest.duration}ms`
+      )
+    } catch (validationError) {
+      console.error('   File validation failed:', validationError)
+      summary.failed++
+      summary.errors.push({
+        file,
+        error: `File validation failed: ${validationError instanceof Error ? validationError.message : String(validationError)}`
+      })
+      continue
+    }
+
     try {
       const contentType = 'video/mp4'
       const originalFilename = file
       const { size: contentLength } = await promises.stat(filePath)
 
-      console.log('   🔎 Reading video metadata...')
+      console.log('   Reading video metadata...')
       let metadata
       try {
         metadata = await getVideoMetadata(filePath)
@@ -274,7 +313,7 @@ async function main() {
           throw new Error('Incomplete metadata: missing required properties')
         }
       } catch (error) {
-        console.error(`   ❌ Failed to extract metadata from ${file}:`, error)
+        console.error(`   Failed to extract metadata from ${file}:`, error)
         summary.failed++
         summary.errors.push({
           file,
@@ -285,7 +324,7 @@ async function main() {
 
       if (metadata.durationMs < 500) {
         console.warn(
-          `   ⚠️  Skipping file ${file}: duration (${metadata.durationMs}ms) is less than Mux minimum (500ms).`
+          `   Skipping file ${file}: duration (${metadata.durationMs}ms) is less than Mux minimum (500ms).`
         )
         summary.failed++
         summary.errors.push({
@@ -295,7 +334,7 @@ async function main() {
         continue
       }
 
-      console.log('   ☁️  Preparing Cloudflare R2 asset...')
+      console.log('   Preparing Cloudflare R2 asset...')
 
       const videoVariantId = `${languageId}_${videoId}`
       const fileName = `${videoId}/variants/${languageId}/videos/${uuidv4()}/${videoVariantId}.mp4`
@@ -309,7 +348,7 @@ async function main() {
       })
 
       console.log('      R2 Public URL:', r2Asset.publicUrl)
-      console.log('   📤 Uploading to R2...')
+      console.log('   Uploading to R2...')
       await uploadToR2({
         uploadUrl: r2Asset.uploadUrl,
         bucket: process.env.CLOUDFLARE_R2_BUCKET!,
@@ -318,34 +357,37 @@ async function main() {
         contentLength
       })
 
-      console.log('   🎞️  Preparing Mux asset...')
-      const muxVideo = await createAndWaitForMuxVideo(r2Asset.publicUrl)
+      console.log('   Preparing Mux asset...')
+      const muxVideo = await createAndWaitForMuxVideo(
+        r2Asset.publicUrl,
+        contentLength
+      )
       console.log(
         '      Mux Playback URL:',
         `https://stream.mux.com/${muxVideo.playbackId}.m3u8`
       )
 
-      console.log('   ⚙️  Saving video variant details...')
+      console.log('   Saving video variant details...')
       const result = await createVideoVariant({
         videoId,
         languageId,
         edition,
         muxId: muxVideo.id,
         playbackId: muxVideo.playbackId,
-        r2PublicUrl: r2Asset.publicUrl,
-        metadata
+        metadata,
+        version: parseInt(version)
       })
       console.log(
         result === 'created'
-          ? '      ✅ Successfully created video variant'
-          : '      ♻️  Updated existing video variant'
+          ? '      Successfully created video variant'
+          : '      Updated existing video variant'
       )
       summary.successful++
 
       // Mark file as completed
       await markFileAsCompleted(filePath)
     } catch (err) {
-      console.error(`   ❌ Error processing ${file}:`, err)
+      console.error(`   Error processing ${file}:`, err)
       summary.failed++
       summary.errors.push({
         file,
@@ -368,9 +410,9 @@ async function main() {
     if (!match) continue
     const [, videoId, editionName, languageId, ...extraFields] = match
 
-    console.log(`\n📜 Processing subtitle: ${file}`)
+    console.log(`\nProcessing subtitle: ${file}`)
     console.log(
-      `   └── IDs: Video=${videoId}, Edition=${editionName}, Lang=${languageId}`
+      `   IDs: Video=${videoId}, Edition=${editionName}, Lang=${languageId}`
     )
     if (extraFields.length > 0) {
       console.log(
@@ -383,12 +425,43 @@ async function main() {
       continue
     }
 
+    const filePath = path.join(folderPath, file)
+
+    // Validate file accessibility before any processing
+    console.log('   🔍 Validating file accessibility...')
+    try {
+      const readTest = await testFileRead(filePath)
+      if (!readTest.success) {
+        console.error(`   ❌ File read test failed: ${readTest.error}`)
+        console.error(
+          `   📊 Read test details: ${readTest.bytesRead} bytes read in ${readTest.duration}ms`
+        )
+        summary.failed++
+        summary.errors.push({
+          file,
+          error: `File read test failed: ${readTest.error}`
+        })
+        continue
+      }
+      console.log(
+        `   ✅ File read test passed: ${readTest.bytesRead} bytes read in ${readTest.duration}ms`
+      )
+    } catch (validationError) {
+      console.error('   ❌ File validation failed:', validationError)
+      summary.failed++
+      summary.errors.push({
+        file,
+        error: `File validation failed: ${validationError instanceof Error ? validationError.message : String(validationError)}`
+      })
+      continue
+    }
+
     // Validate video and edition before processing
-    console.log('   🔍 Validating video and edition...')
+    console.log('   Validating video and edition...')
     const validationResult = await validateVideoAndEdition(videoId, editionName)
     if (!validationResult.success) {
       console.error(
-        `   ❌ Validation failed: ${validationResult.errors.join(', ')}`
+        `   Validation failed: ${validationResult.errors.join(', ')}`
       )
       summary.failed++
       summary.errors.push({
@@ -402,14 +475,12 @@ async function main() {
       `   ✅ Video "${videoId}" and edition "${editionName}" are valid`
     )
 
-    const filePath = path.join(folderPath, file)
-
     try {
       const contentType = file.endsWith('.srt') ? 'text/srt' : 'text/vtt'
       const originalFilename = file
       const { size: contentLength } = await promises.stat(filePath)
 
-      console.log('   ☁️  Preparing Cloudflare R2 asset for subtitle...')
+      console.log('   Preparing Cloudflare R2 asset for subtitle...')
 
       // Use the validated edition ID instead of calling getVideoEditionId again
       const editionId = validationResult.editionId!
@@ -427,7 +498,7 @@ async function main() {
       })
 
       console.log('      R2 Public URL for subtitle:', r2Asset.publicUrl)
-      console.log('   📤 Uploading subtitle to R2...')
+      console.log('   Uploading subtitle to R2...')
       await uploadToR2({
         uploadUrl: r2Asset.uploadUrl,
         bucket: process.env.CLOUDFLARE_R2_BUCKET!,
@@ -437,7 +508,7 @@ async function main() {
       })
 
       // After uploading to R2
-      console.log('   🎞️  Importing or updating subtitle...')
+      console.log('   Importing or updating subtitle...')
       const fileType = file.endsWith('.vtt') ? 'vtt' : 'srt'
       const result = await importOrUpdateSubtitle({
         videoId,
@@ -447,16 +518,16 @@ async function main() {
         r2Asset
       })
       if (result === 'updated') {
-        console.log('      ♻️  Updated existing video subtitle')
+        console.log('      Updated existing video subtitle')
       } else {
-        console.log('      ✅ Created new video subtitle')
+        console.log('      Created new video subtitle')
       }
       summary.successful++
 
       // Mark file as completed
       await markFileAsCompleted(filePath)
     } catch (err) {
-      console.error(`   ❌ Error processing subtitle ${file}:`, err)
+      console.error(`   Error processing subtitle ${file}:`, err)
       summary.failed++
       summary.errors.push({
         file,
@@ -480,8 +551,8 @@ async function main() {
     if (!match) continue
     const [, languageId] = match
 
-    console.log(`\n🔊 Processing audio preview: ${file}`)
-    console.log(`   └── Language ID: ${languageId}`)
+    console.log(`\nProcessing audio preview: ${file}`)
+    console.log(`   Language ID: ${languageId}`)
 
     if (options.dryRun) {
       console.log(`[DRY RUN] Would process audio preview file: ${file}`)
@@ -489,6 +560,35 @@ async function main() {
     }
 
     const filePath = path.join(folderPath, file)
+
+    // Validate file accessibility before any processing
+    console.log('   🔍 Validating file accessibility...')
+    try {
+      const readTest = await testFileRead(filePath)
+      if (!readTest.success) {
+        console.error(`   ❌ File read test failed: ${readTest.error}`)
+        console.error(
+          `   📊 Read test details: ${readTest.bytesRead} bytes read in ${readTest.duration}ms`
+        )
+        summary.failed++
+        summary.errors.push({
+          file,
+          error: `File read test failed: ${readTest.error}`
+        })
+        continue
+      }
+      console.log(
+        `   ✅ File read test passed: ${readTest.bytesRead} bytes read in ${readTest.duration}ms`
+      )
+    } catch (validationError) {
+      console.error('   ❌ File validation failed:', validationError)
+      summary.failed++
+      summary.errors.push({
+        file,
+        error: `File validation failed: ${validationError instanceof Error ? validationError.message : String(validationError)}`
+      })
+      continue
+    }
 
     try {
       const contentType = 'audio/aac'
@@ -512,7 +612,7 @@ async function main() {
         continue
       }
 
-      console.log('   ☁️  Uploading audio preview to R2...')
+      console.log('   Uploading audio preview to R2...')
 
       const bucket = process.env.CLOUDFLARE_R2_BUCKET!
       const key = `audiopreview/${languageId}.aac`
@@ -537,7 +637,7 @@ async function main() {
 
       console.log('      Public URL:', publicUrl)
 
-      console.log('   🎞️  Importing or updating audio preview record...')
+      console.log('   Importing or updating audio preview record...')
 
       const result = await importOrUpdateAudioPreview({
         languageId,
@@ -549,11 +649,11 @@ async function main() {
       })
 
       if (result === 'updated') {
-        console.log('      ♻️  Updated existing audio preview')
+        console.log('      Updated existing audio preview')
       } else if (result === 'created') {
-        console.log('      ✅ Created new audio preview')
+        console.log('      Created new audio preview')
       } else {
-        console.log('      ❌ Failed to import audio preview')
+        console.log('      Failed to import audio preview')
       }
 
       if (result === 'failed') {
@@ -578,7 +678,7 @@ async function main() {
         await markFileAsCompleted(filePath)
       }
     } catch (err) {
-      console.error(`   ❌ Error processing audio preview ${file}:`, err)
+      console.error(`   Error processing audio preview ${file}:`, err)
       summary.failed++
       summary.errors.push({
         file,

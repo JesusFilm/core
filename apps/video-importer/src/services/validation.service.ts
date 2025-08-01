@@ -33,7 +33,7 @@ export async function validateVideoAndEdition(
   }
 
   try {
-    console.log(`🔍 Validating video and edition: ${videoId} / ${editionName}`)
+    console.log(`Validating video and edition: ${videoId} / ${editionName}`)
 
     const client = await getGraphQLClient()
 
@@ -57,7 +57,7 @@ export async function validateVideoAndEdition(
       )
 
       if (!response.video) {
-        console.log(`   ❌ Video not found: ${videoId}`)
+        console.log(`   Video not found: ${videoId}`)
         result.videoExists = false
         result.errors.push(
           `Video with ID "${videoId}" does not exist in the database`
@@ -66,7 +66,7 @@ export async function validateVideoAndEdition(
       }
 
       console.log(
-        `   ✅ Video exists: ${response.video.id} (slug: ${response.video.slug})`
+        `   Video exists: ${response.video.id} (slug: ${response.video.slug})`
       )
       result.videoExists = true
 
@@ -75,9 +75,9 @@ export async function validateVideoAndEdition(
       const edition = editions.find((e) => e.name === editionName)
 
       if (!edition) {
-        console.log(`   ❌ Edition not found: ${editionName}`)
+        console.log(`   Edition not found: ${editionName}`)
         console.log(
-          `   📋 Available editions: ${editions.map((e) => e.name).join(', ')}`
+          `   Available editions: ${editions.map((e) => e.name).join(', ')}`
         )
         result.editionExists = false
         result.errors.push(
@@ -86,7 +86,7 @@ export async function validateVideoAndEdition(
         return result
       }
 
-      console.log(`   ✅ Edition exists: ${edition.name} (id: ${edition.id})`)
+      console.log(`   Edition exists: ${edition.name} (id: ${edition.id})`)
       result.editionExists = true
       result.editionId = edition.id
 
@@ -94,13 +94,13 @@ export async function validateVideoAndEdition(
       return result
     } catch (error) {
       const errorMessage = `Validation query failed: ${error instanceof Error ? error.message : String(error)}`
-      console.error(`   ❌ ${errorMessage}`)
+      console.error(`   ${errorMessage}`)
       result.errors.push(errorMessage)
       return result
     }
   } catch (error) {
     const errorMessage = `Validation failed: ${error instanceof Error ? error.message : String(error)}`
-    console.error(`   ❌ ${errorMessage}`)
+    console.error(`   ${errorMessage}`)
     result.errors.push(errorMessage)
     return result
   }

@@ -16,16 +16,16 @@ export async function getVideoVariantInput({
   edition,
   muxId,
   playbackId,
-  r2PublicUrl,
-  metadata
+  metadata,
+  version
 }: {
   videoId: string
   languageId: string
   edition: string
   muxId: string
   playbackId: string
-  r2PublicUrl: string
   metadata: VideoMetadata
+  version: number
 }): Promise<VideoVariantInput> {
   // Parse source from videoId (e.g., "0_JesusVisionLumo" -> source="0" videoId="JesusVisionLumo")
   const [source, ...restParts] = videoId.split('_')
@@ -92,7 +92,7 @@ export async function getVideoVariantInput({
     share: `${watchPageBaseUrl}${slug}`,
     lengthInMilliseconds: metadata.durationMs,
     duration: metadata.duration,
-    version: 1
+    version: version
   }
 }
 
@@ -102,16 +102,16 @@ export async function createVideoVariant({
   edition,
   muxId,
   playbackId,
-  r2PublicUrl,
-  metadata
+  metadata,
+  version
 }: {
   videoId: string
   languageId: string
   edition: string
   muxId: string
   playbackId: string
-  r2PublicUrl: string
   metadata: VideoMetadata
+  version: number
 }): Promise<'created' | 'updated'> {
   const client = await getGraphQLClient()
   // Generate all input details first, including the potential client-side composite ID
@@ -121,8 +121,8 @@ export async function createVideoVariant({
     edition,
     muxId,
     playbackId,
-    r2PublicUrl,
-    metadata
+    metadata,
+    version
   })
 
   if (existingVariantId) {
