@@ -207,18 +207,14 @@ const Video = builder.prismaObject('Video', {
           })
         ).map(({ languageId }) => ({ id: languageId }))
     }),
-    variantLanguagesCount: t.int({
+    variantLanguagesCount: t.relationCount('variants', {
       nullable: false,
       args: {
         input: t.arg({ type: VideoVariantFilter, required: false })
       },
-      resolve: async ({ id: videoId }, { input }) =>
-        await prisma.videoVariant.count({
-          where: {
-            videoId,
-            published: input?.onlyPublished === false ? undefined : true
-          }
-        })
+      where: (args) => ({
+        published: args.input?.onlyPublished === false ? undefined : true
+      })
     }),
     slug: t.string({
       nullable: false,
@@ -255,13 +251,11 @@ const Video = builder.prismaObject('Video', {
         )
       }
     }),
-    childrenCount: t.int({
+    childrenCount: t.relationCount('children', {
       nullable: false,
-      resolve: async ({ id }) =>
-        await prisma.video.count({
-          where: { parent: { some: { id } }, published: true }
-        }),
-      description: 'the number value of the amount of children on a video'
+      where: { published: true },
+      description:
+        'The number of published child videos associated with this video'
     }),
     parents: t.prismaField({
       type: ['Video'],

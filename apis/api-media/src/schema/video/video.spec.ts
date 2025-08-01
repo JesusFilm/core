@@ -54,6 +54,10 @@ describe('video', () => {
     videoEditions: VideoEdition[]
     availableLanguages: string[]
     originId: string | null
+    _count: {
+      children: number
+      variants: number
+    }
   }
 
   const children: Video[] = [
@@ -137,6 +141,10 @@ describe('video', () => {
       restrictDownloadPlatforms: [],
       restrictViewPlatforms: [],
       publishedAt: null,
+      _count: {
+        children: 1,
+        variants: 2
+      },
       bibleCitation: [
         {
           id: 'bibleCitationId',
@@ -591,7 +599,7 @@ describe('video', () => {
           }
         ],
         variantLanguages: [{ id: 'languageId' }],
-        variantLanguagesCount: 1,
+        variantLanguagesCount: 2,
         variantLanguagesWithSlug: [
           {
             language: { id: 'languageId' },
@@ -654,8 +662,30 @@ describe('video', () => {
       expect(prismaMock.video.findMany).toHaveBeenCalledWith({
         skip: 0,
         take: 100,
-        where: { published: true },
+        where: {
+          published: true,
+          id: undefined,
+          label: undefined,
+          locked: undefined,
+          subtitles: undefined,
+          title: undefined,
+          variants: undefined
+        },
         include: {
+          _count: {
+            select: {
+              children: {
+                where: {
+                  published: true
+                }
+              },
+              variants: {
+                where: {
+                  published: true
+                }
+              }
+            }
+          },
           videoEditions: true,
           bibleCitation: {
             orderBy: {
@@ -843,15 +873,34 @@ describe('video', () => {
         take: 20,
         where: {
           published: true,
+          id: undefined,
+          label: undefined,
+          locked: undefined,
+          subtitles: undefined,
           title: {
             some: {
               value: {
                 search: 'Jesus'
               }
             }
-          }
+          },
+          variants: undefined
         },
         include: {
+          _count: {
+            select: {
+              children: {
+                where: {
+                  published: true
+                }
+              },
+              variants: {
+                where: {
+                  published: true
+                }
+              }
+            }
+          },
           videoEditions: true,
           bibleCitation: {
             orderBy: {
@@ -1093,7 +1142,15 @@ describe('video', () => {
         }
       })
       expect(prismaMock.video.count).toHaveBeenCalledWith({
-        where: { published: true }
+        where: {
+          published: true,
+          id: undefined,
+          label: undefined,
+          locked: undefined,
+          subtitles: undefined,
+          title: undefined,
+          variants: undefined
+        }
       })
       expect(data).toHaveProperty('data.videosCount', 1)
     })
@@ -1112,7 +1169,9 @@ describe('video', () => {
         where: {
           id: undefined,
           label: undefined,
+          locked: undefined,
           published: true,
+          subtitles: undefined,
           title: { some: { value: { search: 'Jesus' } } },
           variants: undefined
         }
@@ -1344,7 +1403,7 @@ describe('video', () => {
         ],
         variant: { id: 'variantId' },
         variantLanguages: [{ id: 'languageId' }],
-        variantLanguagesCount: 1,
+        variantLanguagesCount: 2,
         variantLanguagesWithSlug: [
           {
             language: { id: 'languageId' },
@@ -1391,8 +1450,30 @@ describe('video', () => {
       expect(prismaMock.video.findMany).toHaveBeenCalledWith({
         skip: 0,
         take: 100,
-        where: {},
+        where: {
+          id: undefined,
+          label: undefined,
+          locked: undefined,
+          published: undefined,
+          subtitles: undefined,
+          title: undefined,
+          variants: undefined
+        },
         include: {
+          _count: {
+            select: {
+              children: {
+                where: {
+                  published: true
+                }
+              },
+              variants: {
+                where: {
+                  published: true
+                }
+              }
+            }
+          },
           bibleCitation: {
             orderBy: {
               order: 'asc'
@@ -1564,15 +1645,35 @@ describe('video', () => {
         skip: 10,
         take: 20,
         where: {
+          id: undefined,
+          label: undefined,
+          locked: undefined,
+          published: undefined,
+          subtitles: undefined,
           title: {
             some: {
               value: {
                 search: 'Jesus'
               }
             }
-          }
+          },
+          variants: undefined
         },
         include: {
+          _count: {
+            select: {
+              children: {
+                where: {
+                  published: true
+                }
+              },
+              variants: {
+                where: {
+                  published: true
+                }
+              }
+            }
+          },
           bibleCitation: {
             orderBy: {
               order: 'asc'
@@ -1807,7 +1908,15 @@ describe('video', () => {
         }
       })
       expect(prismaMock.video.count).toHaveBeenCalledWith({
-        where: {}
+        where: {
+          id: undefined,
+          label: undefined,
+          locked: undefined,
+          published: undefined,
+          subtitles: undefined,
+          title: undefined,
+          variants: undefined
+        }
       })
       expect(data).toHaveProperty('data.adminVideosCount', 1)
     })
@@ -1832,7 +1941,9 @@ describe('video', () => {
         where: {
           id: undefined,
           label: undefined,
+          locked: undefined,
           published: undefined,
+          subtitles: undefined,
           title: { some: { value: { search: 'Jesus' } } },
           variants: undefined
         }

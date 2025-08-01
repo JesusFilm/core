@@ -12,10 +12,12 @@ import { builder } from '../builder'
 import { deleteR2File } from '../cloudflare/r2/asset'
 import { Language } from '../language'
 import { deleteVideo } from '../mux/video/service'
+import { VideoSubtitle } from '../video/videoSubtitle'
 
 import { VideoVariantCreateInput } from './inputs/videoVariantCreate'
 import { VideoVariantFilter } from './inputs/videoVariantFilter'
 import { VideoVariantUpdateInput } from './inputs/videoVariantUpdate'
+import { VideoVariantDownload } from './videoVariantDownload'
 
 // Helper function to validate and extract language slug from a variant slug
 function extractLanguageSlugFromVariantSlug(
@@ -376,31 +378,28 @@ builder.prismaObject('VideoVariant', {
     dash: t.exposeString('dash'),
     share: t.exposeString('share'),
     downloadable: t.exposeBoolean('downloadable', { nullable: false }),
-    downloads: t.prismaField({
-      type: ['VideoVariantDownload'],
+    downloads: t.field({
+      type: [VideoVariantDownload],
       nullable: false,
-      resolve: async (query, parent, _args, context) => {
-        // If clientName matches a platform in restrictDownloadPlatforms, return empty array
-        if (context.clientName && parent.videoId) {
-          const video = await prisma.video.findUnique({
-            where: { id: parent.videoId },
-            select: { restrictDownloadPlatforms: true }
-          })
-
-          if (
-            video?.restrictDownloadPlatforms.includes(
-              context.clientName as Platform
-            )
-          ) {
-            return []
+      // parent is any due to nested types not being passed in relation context
+      select: () => ({
+        video: {
+          select: {
+            restrictDownloadPlatforms: true
           }
+        },
+        downloads: true
+      }),
+      resolve: async (parent, _args, context) => {
+        if (
+          context.clientName != null &&
+          parent.video?.restrictDownloadPlatforms.includes(
+            context.clientName as Platform
+          )
+        ) {
+          return []
         }
-
-        // Otherwise, return the downloads
-        return await prisma.videoVariantDownload.findMany({
-          ...query,
-          where: { videoVariantId: parent.id }
-        })
+        return parent.downloads
       }
     }),
     duration: t.int({
@@ -420,40 +419,47 @@ builder.prismaObject('VideoVariant', {
     brightcoveId: t.exposeString('brightcoveId', { nullable: true }),
     published: t.exposeBoolean('published', { nullable: false }),
     videoEdition: t.relation('videoEdition', { nullable: false }),
-    subtitle: t.prismaField({
-      type: ['VideoSubtitle'],
+    subtitle: t.field({
+      type: [VideoSubtitle],
       nullable: false,
       args: {
         languageId: t.arg.id({ required: false }),
         primary: t.arg.boolean({ required: false })
       },
-      resolve: async (query, parent, { languageId, primary }) => {
-        if (parent.videoId == null) return []
-        return await prisma.videoSubtitle.findMany({
-          ...query,
-          where: {
-            AND: [
-              { videoId: parent.videoId, edition: parent.edition },
-              {
-                OR: compact([
-                  primary != null ? { primary } : undefined,
-                  languageId != null ? { languageId } : undefined
-                ])
-              }
-            ]
-          },
-          orderBy: { primary: 'desc' }
-        })
-      }
+      select: ({ languageId, primary }) => ({
+        videoEdition: {
+          include: {
+            videoSubtitles: {
+              where:
+                primary != null || languageId != null
+                  ? {
+                      OR: compact([
+                        primary != null ? { primary } : undefined,
+                        languageId != null ? { languageId } : undefined
+                      ])
+                    }
+                  : {}
+            }
+          }
+        },
+        orderBy: { primary: 'desc' }
+      }),
+      resolve: (videoVariant) => videoVariant.videoEdition.videoSubtitles
     }),
     subtitleCount: t.int({
       nullable: false,
-      resolve: async (parent) => {
-        if (parent.videoId == null) return 0
-        return await prisma.videoSubtitle.count({
-          where: { videoId: parent.videoId, edition: parent.edition }
-        })
-      }
+      select: () => ({
+        videoEdition: {
+          include: {
+            _count: {
+              select: {
+                videoSubtitles: true
+              }
+            }
+          }
+        }
+      }),
+      resolve: (parent: any) => parent.videoEdition._count.videoSubtitles
     }),
     slug: t.exposeString('slug', {
       nullable: false,
@@ -473,7 +479,7 @@ builder.queryFields((t) => ({
     args: {
       id: t.arg.id({ required: true })
     },
-    resolve: async (query, _parent, { id }) => {
+    resolve: async (query, _parent, { id }, context) => {
       const videoVariant = await prisma.videoVariant.findUnique({
         ...query,
         where: { id }
