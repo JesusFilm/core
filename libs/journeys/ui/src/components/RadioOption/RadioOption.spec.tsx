@@ -1,4 +1,4 @@
-import { fireEvent, render } from '@testing-library/react'
+import { fireEvent, render, screen } from '@testing-library/react'
 
 import { handleAction } from '../../libs/action'
 import type { TreeBlock } from '../../libs/block'
@@ -41,29 +41,61 @@ const block: TreeBlock<RadioOptionFields> = {
 }
 
 describe('RadioOption', () => {
-  it('should handle onClick', () => {
-    const handleClick = jest.fn()
-    const { getByRole } = render(
-      <RadioOption {...block} onClick={handleClick} />
-    )
-    fireEvent.click(getByRole('button'))
-    expect(handleClick).toHaveBeenCalledWith(block.id, block.label)
+  describe('list variant', () => {
+    it('should handle onClick', () => {
+      const handleClick = jest.fn()
+
+      render(<RadioOption {...block} onClick={handleClick} />)
+
+      fireEvent.click(screen.getByTestId('JourneysRadioOptionList'))
+      expect(handleClick).toHaveBeenCalledWith(block.id, block.label)
+    })
+
+    it('should call actionHandler on click', () => {
+      render(<RadioOption {...block} />)
+
+      fireEvent.click(screen.getByTestId('JourneysRadioOptionList'))
+      expect(handleAction).toHaveBeenCalledWith(
+        expect.objectContaining({
+          push: expect.any(Function)
+        }),
+        {
+          __typename: 'NavigateToBlockAction',
+          parentBlockId: 'radioOption1.id',
+          gtmEventName: 'gtmEventName',
+          blockId: 'def'
+        },
+        undefined
+      )
+    })
   })
 
-  it('should call actionHandler on click', () => {
-    const { getByRole } = render(<RadioOption {...block} />)
-    fireEvent.click(getByRole('button'))
-    expect(handleAction).toHaveBeenCalledWith(
-      expect.objectContaining({
-        push: expect.any(Function)
-      }),
-      {
-        __typename: 'NavigateToBlockAction',
-        parentBlockId: 'radioOption1.id',
-        gtmEventName: 'gtmEventName',
-        blockId: 'def'
-      },
-      undefined
-    )
+  describe('grid variant', () => {
+    it('should handle onClick', () => {
+      const handleClick = jest.fn()
+
+      render(<RadioOption {...block} onClick={handleClick} gridView />)
+
+      fireEvent.click(screen.getByTestId('JourneysRadioOptionGrid'))
+      expect(handleClick).toHaveBeenCalledWith(block.id, block.label)
+    })
+
+    it('should call actionHandler on click', () => {
+      render(<RadioOption {...block} gridView />)
+
+      fireEvent.click(screen.getByTestId('JourneysRadioOptionGrid'))
+      expect(handleAction).toHaveBeenCalledWith(
+        expect.objectContaining({
+          push: expect.any(Function)
+        }),
+        {
+          __typename: 'NavigateToBlockAction',
+          parentBlockId: 'radioOption1.id',
+          gtmEventName: 'gtmEventName',
+          blockId: 'def'
+        },
+        undefined
+      )
+    })
   })
 })
