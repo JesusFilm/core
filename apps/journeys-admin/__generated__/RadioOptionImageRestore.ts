@@ -36,6 +36,11 @@ export type RadioOptionImageRestore_blockRestore = RadioOptionImageRestore_block
 export interface RadioOptionImageRestore_radioOptionBlockUpdate {
   __typename: "RadioOptionBlock";
   id: string;
+  /**
+   * pollOptionImageBlockId is present if a child block should be used as a poll option image.
+   *       This child block should not be rendered normally, instead it should be used
+   *       as a poll option image. Blocks are often of type ImageBlock
+   */
   pollOptionImageBlockId: string | null;
 }
 
