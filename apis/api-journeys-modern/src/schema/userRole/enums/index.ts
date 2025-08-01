@@ -1,0 +1,1 @@
+export { RoleEnum } from './roleEnum'

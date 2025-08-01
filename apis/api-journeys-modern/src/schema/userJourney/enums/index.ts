@@ -1,0 +1,1 @@
+export { UserJourneyRoleEnum } from './userJourneyRole'
