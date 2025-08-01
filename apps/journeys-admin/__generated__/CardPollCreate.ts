@@ -106,12 +106,7 @@ export interface CardPollCreate_radioOption1 {
   parentOrder: number | null;
   label: string;
   action: CardPollCreate_radioOption1_action | null;
-  /**
-   * pollOptionImageId is present if a child block should be used as a poll option image.
-   * This child block should not be rendered normally, instead it should be used
-   * as a poll option image. Blocks are often of type ImageBlock
-   */
-  pollOptionImageId: string | null;
+  pollOptionImageBlockId: string | null;
 }
 
 export interface CardPollCreate_radioOption2_action_NavigateToBlockAction {
@@ -144,12 +139,7 @@ export interface CardPollCreate_radioOption2 {
   parentOrder: number | null;
   label: string;
   action: CardPollCreate_radioOption2_action | null;
-  /**
-   * pollOptionImageId is present if a child block should be used as a poll option image.
-   * This child block should not be rendered normally, instead it should be used
-   * as a poll option image. Blocks are often of type ImageBlock
-   */
-  pollOptionImageId: string | null;
+  pollOptionImageBlockId: string | null;
 }
 
 export interface CardPollCreate_radioOption3_action_NavigateToBlockAction {
@@ -182,12 +172,7 @@ export interface CardPollCreate_radioOption3 {
   parentOrder: number | null;
   label: string;
   action: CardPollCreate_radioOption3_action | null;
-  /**
-   * pollOptionImageId is present if a child block should be used as a poll option image.
-   * This child block should not be rendered normally, instead it should be used
-   * as a poll option image. Blocks are often of type ImageBlock
-   */
-  pollOptionImageId: string | null;
+  pollOptionImageBlockId: string | null;
 }
 
 export interface CardPollCreate_radioOption4_action_NavigateToBlockAction {
@@ -220,12 +205,7 @@ export interface CardPollCreate_radioOption4 {
   parentOrder: number | null;
   label: string;
   action: CardPollCreate_radioOption4_action | null;
-  /**
-   * pollOptionImageId is present if a child block should be used as a poll option image.
-   * This child block should not be rendered normally, instead it should be used
-   * as a poll option image. Blocks are often of type ImageBlock
-   */
-  pollOptionImageId: string | null;
+  pollOptionImageBlockId: string | null;
 }
 
 export interface CardPollCreate_body_settings {

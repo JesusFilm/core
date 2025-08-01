@@ -26,7 +26,7 @@ describe('RadioOptionEdit', () => {
     parentBlockId: 'card',
     parentOrder: 0,
     action: null,
-    pollOptionImageId: null,
+    pollOptionImageBlockId: null,
     children: []
   }
 
