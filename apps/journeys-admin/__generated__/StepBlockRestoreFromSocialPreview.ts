@@ -159,6 +159,11 @@ export interface StepBlockRestoreFromSocialPreview_blockRestore_RadioOptionBlock
   parentOrder: number | null;
   label: string;
   action: StepBlockRestoreFromSocialPreview_blockRestore_RadioOptionBlock_action | null;
+  /**
+   * pollOptionImageBlockId is present if a child block should be used as a poll option image.
+   *       This child block should not be rendered normally, instead it should be used
+   *       as a poll option image. Blocks are often of type ImageBlock
+   */
   pollOptionImageBlockId: string | null;
 }
 
