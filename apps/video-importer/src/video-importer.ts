@@ -22,7 +22,7 @@ import {
 } from './services/r2.service'
 import { importOrUpdateSubtitle } from './services/subtitle.service'
 import { validateVideoAndEdition } from './services/validation.service'
-import { createVideoVariant } from './services/video.service'
+import { importOrUpdateVideoVariant } from './services/video.service'
 import type { ProcessingSummary } from './types'
 
 const program = new Command()
@@ -36,7 +36,6 @@ program
 
 const options = program.opts()
 
-// File renaming utilities
 async function markFileAsCompleted(filePath: string): Promise<void> {
   const completedPath = `${filePath}.completed`
   await promises.rename(filePath, completedPath)
@@ -46,21 +45,12 @@ async function markFileAsCompleted(filePath: string): Promise<void> {
 export const VIDEO_FILENAME_REGEX =
   /^([^.]+?)---([^.]+?)---([^-]+)---([^-]+)(?:---([^-]+))*\.mp4$/
 
-export const VIDEO_FAILED_FILENAME_REGEX =
-  /^([^.]+?)---([^.]+?)---([^-]+)(?:---([^-]+))*\.mp4\.failed$/
-
 export const SUBTITLE_FILENAME_REGEX =
   /^([^.]+?)---([^.]+?)---([^-]+)(?:---([^-]+))*\.(srt|vtt)$/
 
-export const SUBTITLE_FAILED_FILENAME_REGEX =
-  /^([^.]+?)---([^.]+?)---([^-]+)(?:---([^-]+))*\.(srt|vtt)\.failed$/
-
 export const AUDIO_PREVIEW_FILENAME_REGEX = /^([^.]+)\.aac$/
 
-export const AUDIO_PREVIEW_FAILED_FILENAME_REGEX = /^([^.]+)\.aac\.failed$/
-
 async function main() {
-  // Check if running in a Single Executable Application
   const runningInSEA = require('node:sea').isSea()
   const defaultFolderPath = runningInSEA
     ? path.dirname(process.execPath)
@@ -114,7 +104,6 @@ async function main() {
     process.exit(1)
   }
 
-  // Define file type configurations
   const FILE_TYPES = [
     {
       name: 'video',
@@ -178,9 +167,7 @@ async function main() {
     try {
       await validateVideoAndEdition(videoId, edition)
     } catch (error) {
-      console.error(
-        `   Validation failed: ${error instanceof Error ? error.message : String(error)}`
-      )
+      console.error(`   Validation failed:`, error)
       summary.failed++
       continue
     }
@@ -235,9 +222,7 @@ async function main() {
         contentLength
       })
     } catch (error) {
-      console.error(
-        `   Failed to create R2 asset: ${error instanceof Error ? error.message : String(error)}`
-      )
+      console.error(`   Failed to create R2 asset:`, error)
       summary.failed++
       continue
     }
@@ -253,9 +238,7 @@ async function main() {
         contentLength
       })
     } catch (error) {
-      console.error(
-        `   Failed to upload to R2: ${error instanceof Error ? error.message : String(error)}`
-      )
+      console.error(`   Failed to upload to R2:`, error)
       summary.failed++
       continue
     }
@@ -271,16 +254,14 @@ async function main() {
         `      Mux Playback URL: https://stream.mux.com/${muxVideo.playbackId}.m3u8`
       )
     } catch (error) {
-      console.error(
-        `   Failed to create Mux video: ${error instanceof Error ? error.message : String(error)}`
-      )
+      console.error(`   Failed to create Mux video:`, error)
       summary.failed++
       continue
     }
 
     console.log('   Saving video variant details...')
     try {
-      await createVideoVariant({
+      await importOrUpdateVideoVariant({
         videoId,
         languageId,
         edition,
@@ -292,9 +273,7 @@ async function main() {
       summary.successful++
       await markFileAsCompleted(filePath)
     } catch (error) {
-      console.error(
-        `   Failed to save video variant: ${error instanceof Error ? error.message : String(error)}`
-      )
+      console.error(`   Failed to save video variant:`, error)
       summary.failed++
       continue
     }
@@ -331,9 +310,7 @@ async function main() {
     try {
       await validateVideoAndEdition(videoId, edition)
     } catch (error) {
-      console.error(
-        `   Validation failed: ${error instanceof Error ? error.message : String(error)}`
-      )
+      console.error(`   Validation failed:`, error)
       summary.failed++
       continue
     }
@@ -356,9 +333,7 @@ async function main() {
         contentLength
       })
     } catch (error) {
-      console.error(
-        `   Failed to create R2 asset for subtitle: ${error instanceof Error ? error.message : String(error)}`
-      )
+      console.error(`   Failed to create R2 asset for subtitle:`, error)
       summary.failed++
       continue
     }
@@ -374,9 +349,7 @@ async function main() {
         contentLength
       })
     } catch (error) {
-      console.error(
-        `   Failed to upload subtitle to R2: ${error instanceof Error ? error.message : String(error)}`
-      )
+      console.error(`   Failed to upload subtitle to R2:`, error)
       summary.failed++
       continue
     }
@@ -393,15 +366,12 @@ async function main() {
       summary.successful++
       await markFileAsCompleted(filePath)
     } catch (error) {
-      console.error(
-        `   Failed to import/update subtitle: ${error instanceof Error ? error.message : String(error)}`
-      )
+      console.error(`   Failed to import/update subtitle:`, error)
       summary.failed++
       continue
     }
   }
 
-  // === Audio Preview Processing ===
   for (const file of allAudioPreviewFiles) {
     const match = file.match(AUDIO_PREVIEW_FILENAME_REGEX)
     if (!match) continue
@@ -449,9 +419,7 @@ async function main() {
         contentType
       })
     } catch (error) {
-      console.error(
-        `   Failed to upload audio preview to R2: ${error instanceof Error ? error.message : String(error)}`
-      )
+      console.error(`   Failed to upload audio preview to R2:`, error)
       summary.failed++
       continue
     }
@@ -475,15 +443,12 @@ async function main() {
         await markFileAsCompleted(filePath)
       }
     } catch (error) {
-      console.error(
-        `   Failed to import/update audio preview: ${error instanceof Error ? error.message : String(error)}`
-      )
+      console.error(`   Failed to import/update audio preview:`, error)
       summary.failed++
       continue
     }
   }
 
-  // Print summary
   console.log('\n=== Processing Summary ===')
   console.log(`Total files: ${summary.total}`)
   console.log(`Successfully processed: ${summary.successful}`)

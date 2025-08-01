@@ -96,7 +96,7 @@ export async function getVideoVariantInput({
   }
 }
 
-export async function createVideoVariant({
+export async function importOrUpdateVideoVariant({
   videoId,
   languageId,
   edition,
@@ -112,9 +112,8 @@ export async function createVideoVariant({
   playbackId: string
   metadata: VideoMetadata
   version: number
-}): Promise<'created' | 'updated'> {
+}): Promise<void> {
   const client = await getGraphQLClient()
-  // Generate all input details first, including the potential client-side composite ID
   const { existingVariantId, ...input } = await getVideoVariantInput({
     videoId,
     languageId,
@@ -148,7 +147,6 @@ export async function createVideoVariant({
       }
     })
     console.log('   [VideoService] Updated video variant')
-    return 'updated'
   } else {
     console.log(
       `[Variant Service] No existing variant found for videoId: ${input.videoId} and languageId: ${input.languageId}. Creating new one with ID: ${input.id}...`
@@ -180,7 +178,5 @@ export async function createVideoVariant({
     }
 
     console.log('   [VideoService] Created video variant')
-
-    return 'created'
   }
 }
