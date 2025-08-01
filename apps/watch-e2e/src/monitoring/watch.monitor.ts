@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test'
+import { expect, test } from '@playwright/test'
 
 /**
  * @check
@@ -19,7 +19,9 @@ import { test, expect } from '@playwright/test'
  *
  * Based on the Slack conversation about videos from MUX not loading in production.
  */
-test('Video playback and MUX network connectivity monitoring', async ({ page }) => {
+test('Video playback and MUX network connectivity monitoring', async ({
+  page
+}) => {
   const networkRequests: Array<{
     url: string
     status: number
@@ -31,19 +33,19 @@ test('Video playback and MUX network connectivity monitoring', async ({ page }) 
     try {
       const urlObj = new URL(url)
       const hostname = urlObj.hostname.toLowerCase()
-      
+
       // Check for specific domains using exact matching
       const allowedDomains = ['mux.com', 'litix.io', 'inferred.litix.io']
-      const isAllowedDomain = allowedDomains.some(domain => 
-        hostname === domain || hostname.endsWith('.' + domain)
+      const isAllowedDomain = allowedDomains.some(
+        (domain) => hostname === domain || hostname.endsWith('.' + domain)
       )
-      
+
       // Check for video file extensions in pathname
       const videoExtensions = ['.hls', '.m3u8']
-      const hasVideoExtension = videoExtensions.some(ext => 
+      const hasVideoExtension = videoExtensions.some((ext) =>
         urlObj.pathname.toLowerCase().includes(ext)
       )
-      
+
       return isAllowedDomain || hasVideoExtension
     } catch {
       // If URL parsing fails, use a more restrictive fallback
@@ -62,17 +64,17 @@ test('Video playback and MUX network connectivity monitoring', async ({ page }) 
   // Helper function to safely check if an error message is related to video services
   const isVideoRelatedError = (error: string): boolean => {
     const errorLower = error.toLowerCase()
-    
+
     // Check for specific error patterns related to video services
     const videoErrorPatterns = [
       'mux.com',
-      'litix.io', 
+      'litix.io',
       'inferred.litix.io',
       'net::err',
       'failed to load resource'
     ]
-    
-    return videoErrorPatterns.some(pattern => errorLower.includes(pattern))
+
+    return videoErrorPatterns.some((pattern) => errorLower.includes(pattern))
   }
 
   // Listen to all network requests
@@ -177,26 +179,32 @@ test('Video playback and MUX network connectivity monitoring', async ({ page }) 
     try {
       const urlObj = new URL(req.url)
       const hostname = urlObj.hostname.toLowerCase()
-      return hostname === 'mux.com' || 
-             hostname.endsWith('.mux.com') ||
-             hostname === 'litix.io' || 
-             hostname.endsWith('.litix.io') ||
-             hostname === 'inferred.litix.io' || 
-             hostname.endsWith('.inferred.litix.io')
+      return (
+        hostname === 'mux.com' ||
+        hostname.endsWith('.mux.com') ||
+        hostname === 'litix.io' ||
+        hostname.endsWith('.litix.io') ||
+        hostname === 'inferred.litix.io' ||
+        hostname.endsWith('.inferred.litix.io')
+      )
     } catch {
       // Fallback for malformed URLs
       const urlLower = req.url.toLowerCase()
-      return urlLower.includes('mux.com/') || 
-             urlLower.includes('litix.io/') || 
-             urlLower.includes('inferred.litix.io/')
+      return (
+        urlLower.includes('mux.com/') ||
+        urlLower.includes('litix.io/') ||
+        urlLower.includes('inferred.litix.io/')
+      )
     }
   })
 
   const hlsRequests = networkRequests.filter((req) => {
     try {
       const urlObj = new URL(req.url)
-      return urlObj.pathname.toLowerCase().includes('.hls') || 
-             urlObj.pathname.toLowerCase().includes('.m3u8')
+      return (
+        urlObj.pathname.toLowerCase().includes('.hls') ||
+        urlObj.pathname.toLowerCase().includes('.m3u8')
+      )
     } catch {
       // Fallback for malformed URLs
       const urlLower = req.url.toLowerCase()
@@ -213,7 +221,9 @@ test('Video playback and MUX network connectivity monitoring', async ({ page }) 
     - HLS requests: ${hlsRequests.length}`)
 
   // Check for critical errors (only the specific types mentioned in the Slack conversation)
-  const criticalErrors = consoleErrors.filter((error) => isVideoRelatedError(error))
+  const criticalErrors = consoleErrors.filter((error) =>
+    isVideoRelatedError(error)
+  )
 
   // Fail the test if there are critical network issues
   if (criticalErrors.length > 0) {
