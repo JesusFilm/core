@@ -414,8 +414,6 @@ model Block {
   backdropBlur               Int?
   settings                   Json                 @default("{}")
   gridView                   Boolean?
-  /// @deprecated use pollOptionImageBlockId instead
-  pollOptionImageId          String?              @unique
   pollOptionImageBlockId     String?              @unique
   targetActions              Action[]             @relation("Block")
   action                     Action?
@@ -428,8 +426,6 @@ model Block {
   childBlocks                Block[]              @relation("ParentBlock")
   pollOptionImageBlock       Block?               @relation("PollOptionImageBlock", fields: [pollOptionImageBlockId], references: [id])
   pollOptionImageBlockParent Block?               @relation("PollOptionImageBlock")
-  pollOptionImage            Block?               @relation("PollOptionImage", fields: [pollOptionImageId], references: [id])
-  pollOptionImageParent      Block?               @relation("PollOptionImage")
   posterBlock                Block?               @relation("PosterBlock", fields: [posterBlockId], references: [id])
   posterBlockParent          Block?               @relation("PosterBlock")
   creatorImageBlockParent    Journey?             @relation("CreatorImageBlock")

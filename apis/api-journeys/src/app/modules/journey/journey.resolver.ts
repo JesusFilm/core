@@ -642,7 +642,6 @@ export class JourneyResolver {
               'parentBlockId',
               'posterBlockId',
               'coverBlockId',
-              'pollOptionImageId',
               'pollOptionImageBlockId',
               'nextBlockId',
               'action'
