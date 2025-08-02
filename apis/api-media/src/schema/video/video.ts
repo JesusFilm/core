@@ -17,7 +17,6 @@ import { deleteVideo } from '../mux/video/service'
 import { VideoSource, VideoSourceShape } from '../videoSource/videoSource'
 import { VideoVariantFilter } from '../videoVariant/inputs/videoVariantFilter'
 import {
-  VideoVariant,
   handleParentVariantCleanup,
   handleParentVariantCreation
 } from '../videoVariant/videoVariant'
@@ -202,26 +201,27 @@ const Video = builder.prismaObject('Video', {
     variantLanguages: t.field({
       type: [Language],
       nullable: false,
-      select: () => ({
-        variants: {
-          select: {
-            languageId: true
-          }
-        }
-      }),
-      resolve: (parent) =>
-        parent.variants.map(({ languageId }) => ({
-          id: languageId
-        }))
+      args: {},
+      resolve: async ({ id: videoId }) =>
+        (
+          await prisma.videoVariant.findMany({
+            where: { videoId },
+            select: { languageId: true }
+          })
+        ).map(({ languageId }) => ({ id: languageId }))
     }),
-    variantLanguagesCount: t.relationCount('variants', {
+    variantLanguagesCount: t.int({
       nullable: false,
       args: {
         input: t.arg({ type: VideoVariantFilter, required: false })
       },
-      where: ({ input }) => ({
-        published: input?.onlyPublished === false ? undefined : true
-      })
+      resolve: async ({ id: videoId }, { input }) =>
+        await prisma.videoVariant.count({
+          where: {
+            videoId,
+            published: input?.onlyPublished === false ? undefined : true
+          }
+        })
     }),
     slug: t.string({
       nullable: false,
@@ -229,11 +229,13 @@ const Video = builder.prismaObject('Video', {
       description: 'slug is a permanent link to the video.'
     }),
     noIndex: t.exposeBoolean('noIndex'),
-    childrenCount: t.relationCount('children', {
+    childrenCount: t.int({
       nullable: false,
-      where: { published: true },
-      description:
-        'The number of published child videos associated with this video'
+      resolve: async ({ id }) =>
+        await prisma.video.count({
+          where: { parent: { some: { id } }, published: true }
+        }),
+      description: 'the number value of the amount of children on a video'
     }),
     variantLanguagesWithSlug: t.field({
       type: [LanguageWithSlug],
@@ -241,39 +243,36 @@ const Video = builder.prismaObject('Video', {
       args: {
         input: t.arg({ type: VideoVariantFilter, required: false })
       },
-      select: ({ input }) => ({
-        variants: {
-          select: {
-            languageId: true,
-            slug: true
-          },
-          where: {
-            published: input?.onlyPublished === false ? undefined : true
-          }
-        }
-      }),
-      resolve: (parent) =>
-        parent.variants.map(({ slug, languageId }) => ({
+      resolve: async ({ id: videoId }, { input }) =>
+        (
+          await prisma.videoVariant.findMany({
+            where: {
+              videoId,
+              published: input?.onlyPublished === false ? undefined : true
+            },
+            select: { languageId: true, slug: true }
+          })
+        ).map(({ slug, languageId: id }) => ({
           slug,
-          language: { id: languageId }
+          language: { id }
         }))
     }),
-    variants: t.field({
-      type: [VideoVariant],
+    variants: t.prismaField({
+      type: ['VideoVariant'],
       nullable: false,
       args: {
         input: t.arg({ type: VideoVariantFilter, required: false })
       },
-      select: ({ input }) => ({
-        variants: {
+      resolve: async (query, parent, { input }) => {
+        const res = await prisma.videoVariant.findMany({
+          ...query,
           where: {
+            videoId: parent.id,
             published: input?.onlyPublished === false ? undefined : true
           }
-        }
-      }),
-      resolve: (parent) => {
+        })
         // languageId is a string, so we need to convert it to a number to sort it correctly
-        return orderBy(parent.variants, (variant) => +variant.languageId, 'asc')
+        return orderBy(res, (variant) => +variant.languageId, 'asc')
       }
     }),
     subtitles: t.relation('subtitles', {
@@ -304,7 +303,7 @@ const Video = builder.prismaObject('Video', {
       })
     }),
     variant: t.prismaField({
-      type: VideoVariant,
+      type: 'VideoVariant',
       args: {
         languageId: t.arg.id({ required: false }),
         input: t.arg({ type: VideoVariantFilter, required: false })

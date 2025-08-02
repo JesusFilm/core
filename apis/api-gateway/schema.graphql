@@ -463,12 +463,6 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   delete an existing short link
   """
   shortLinkDelete(id: String!) : MutationShortLinkDeleteResult! @join__field(graph: API_MEDIA) 
-  videoSubtitleCreate(input: VideoSubtitleCreateInput!) : VideoSubtitle! @join__field(graph: API_MEDIA) 
-  videoSubtitleUpdate(input: VideoSubtitleUpdateInput!) : VideoSubtitle! @join__field(graph: API_MEDIA) 
-  videoSubtitleDelete(id: ID!) : VideoSubtitle! @join__field(graph: API_MEDIA) 
-  videoVariantDownloadCreate(input: VideoVariantDownloadCreateInput!) : VideoVariantDownload! @join__field(graph: API_MEDIA) 
-  videoVariantDownloadUpdate(input: VideoVariantDownloadUpdateInput!) : VideoVariantDownload! @join__field(graph: API_MEDIA) 
-  videoVariantDownloadDelete(id: ID!) : VideoVariantDownload! @join__field(graph: API_MEDIA) 
   videoVariantCreate(input: VideoVariantCreateInput!) : VideoVariant! @join__field(graph: API_MEDIA) 
   videoVariantUpdate(input: VideoVariantUpdateInput!) : VideoVariant! @join__field(graph: API_MEDIA) 
   videoVariantDelete(id: ID!) : VideoVariant! @join__field(graph: API_MEDIA) 
@@ -487,6 +481,9 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   videoStudyQuestionCreate(input: VideoStudyQuestionCreateInput!) : VideoStudyQuestion! @join__field(graph: API_MEDIA) 
   videoStudyQuestionUpdate(input: VideoStudyQuestionUpdateInput!) : VideoStudyQuestion! @join__field(graph: API_MEDIA) 
   videoStudyQuestionDelete(id: ID!) : VideoStudyQuestion! @join__field(graph: API_MEDIA) 
+  videoSubtitleCreate(input: VideoSubtitleCreateInput!) : VideoSubtitle! @join__field(graph: API_MEDIA) 
+  videoSubtitleUpdate(input: VideoSubtitleUpdateInput!) : VideoSubtitle! @join__field(graph: API_MEDIA) 
+  videoSubtitleDelete(id: ID!) : VideoSubtitle! @join__field(graph: API_MEDIA) 
   videoTitleCreate(input: VideoTranslationCreateInput!) : VideoTitle! @join__field(graph: API_MEDIA) 
   videoTitleUpdate(input: VideoTranslationUpdateInput!) : VideoTitle! @join__field(graph: API_MEDIA) 
   videoTitleDelete(id: ID!) : VideoTitle! @join__field(graph: API_MEDIA) 
@@ -496,6 +493,9 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   videoEditionCreate(input: VideoEditionCreateInput!) : VideoEdition! @join__field(graph: API_MEDIA) 
   videoEditionUpdate(input: VideoEditionUpdateInput!) : VideoEdition! @join__field(graph: API_MEDIA) 
   videoEditionDelete(id: ID!) : VideoEdition! @join__field(graph: API_MEDIA) 
+  videoVariantDownloadCreate(input: VideoVariantDownloadCreateInput!) : VideoVariantDownload! @join__field(graph: API_MEDIA) 
+  videoVariantDownloadUpdate(input: VideoVariantDownloadUpdateInput!) : VideoVariantDownload! @join__field(graph: API_MEDIA) 
+  videoVariantDownloadDelete(id: ID!) : VideoVariantDownload! @join__field(graph: API_MEDIA) 
   userImpersonate(email: String!) : String @join__field(graph: API_USERS) 
   createVerificationRequest(input: CreateVerificationRequestInput) : Boolean @join__field(graph: API_USERS) 
   validateEmail(email: String!, token: String!) : User @join__field(graph: API_USERS) 
@@ -1077,10 +1077,12 @@ type Video @join__type(graph: API_JOURNEYS, key: "id primaryLanguageId", extensi
   """
   slug: String! @join__field(graph: API_MEDIA) 
   noIndex: Boolean @join__field(graph: API_MEDIA) 
+  children: [Video!]! @join__field(graph: API_MEDIA) 
   """
-  The number of published child videos associated with this video
+  the number value of the amount of children on a video
   """
   childrenCount: Int! @join__field(graph: API_MEDIA) 
+  parents: [Video!]! @join__field(graph: API_MEDIA) 
   variantLanguagesWithSlug(input: VideoVariantFilter) : [LanguageWithSlug!]! @join__field(graph: API_MEDIA) 
   variants(input: VideoVariantFilter) : [VideoVariant!]! @join__field(graph: API_MEDIA) 
   subtitles(languageId: ID, primary: Boolean, edition: String) : [VideoSubtitle!]! @join__field(graph: API_MEDIA) 
@@ -1089,8 +1091,6 @@ type Video @join__type(graph: API_JOURNEYS, key: "id primaryLanguageId", extensi
   restrictDownloadPlatforms: [Platform!]! @join__field(graph: API_MEDIA) 
   restrictViewPlatforms: [Platform!]! @join__field(graph: API_MEDIA) 
   publishedAt: Date @join__field(graph: API_MEDIA) 
-  children: [Video!]! @join__field(graph: API_MEDIA) 
-  parents: [Video!]! @join__field(graph: API_MEDIA) 
 }
 
 type VideoBlock implements Block @join__type(graph: API_JOURNEYS, key: "id")  @join__type(graph: API_JOURNEYS_MODERN, key: "id")  @join__implements(graph: API_JOURNEYS, interface: "Block")  @join__implements(graph: API_JOURNEYS_MODERN, interface: "Block")  {

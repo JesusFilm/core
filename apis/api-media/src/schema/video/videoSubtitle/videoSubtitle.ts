@@ -5,7 +5,7 @@ import { Language } from '../../language'
 import { VideoSubtitleCreateInput } from './inputs/videoSubtitleCreate'
 import { VideoSubtitleUpdateInput } from './inputs/videoSubtitleUpdate'
 
-export const VideoSubtitle = builder.prismaObject('VideoSubtitle', {
+builder.prismaObject('VideoSubtitle', {
   fields: (t) => ({
     id: t.exposeID('id', { nullable: false }),
     languageId: t.exposeID('languageId', { nullable: false }),
