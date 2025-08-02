@@ -134,7 +134,7 @@
     "date-fns": "^4.0.0",
     "dd-trace": "^5.25.0",
     "express": "4.21.2",
-    "firebase": "^9.16.0",
+    "firebase": "^10.0.0",
     "firebase-admin": "^11.11.1",
     "firebaseui": "^6.1.0",
     "fluent-ffmpeg": "^2.1.3",
