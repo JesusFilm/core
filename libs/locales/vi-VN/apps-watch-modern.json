@@ -7,6 +7,24 @@
     "title": "Thư viện <underline>video</underline> Phúc Âm miễn phí.",
     "description": "Watch, learn and share the gospel in over 2000 languages"
   },
+  "ModernTestPage": {
+    "pageTitle": "Kiểm tra hiện đại",
+    "title": "Trang kiểm tra hiện đại",
+    "description": "Đây là trang thử nghiệm cho ứng dụng đồng hồ thông minh. Trang này minh họa tính năng định tuyến và proxy mới.",
+    "feature1": {
+      "title": "Kiến trúc hiện đại",
+      "description": "Được xây dựng bằng Next.js App Router và các mẫu React hiện đại để đạt hiệu suất tối ưu và trải nghiệm phát triển tốt nhất."
+    },
+    "feature2": {
+      "title": "Định tuyến thông minh",
+      "description": "Tính năng định tuyến proxy nâng cao cho phép định hướng lưu lượng truy cập một cách thông minh đến các dịch vụ backend phù hợp."
+    },
+    "feature3": {
+      "title": "Thiết kế đáp ứng",
+      "description": "Thiết kế đáp ứng đầy đủ, hoạt động mượt mà trên tất cả các thiết bị và kích thước màn hình."
+    },
+    "footer": "Trang này được cung cấp bởi ứng dụng đồng hồ thông minh thông qua cơ chế định tuyến proxy thông minh."
+  },
   "DatadogErrorBoundary": {
     "somethingWentWrong": "Có sự cố xảy ra",
     "anErrorOccurred": "Đã xảy ra lỗi khi tải trang này. Vui lòng thử tải lại.",

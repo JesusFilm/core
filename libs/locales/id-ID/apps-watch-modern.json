@@ -7,6 +7,24 @@
     "title": "Perpustakaan <underline>Streaming</underline> Video Injil Gratis.",
     "description": "Saksikan, pelajari, dan bagikan Injil dalam lebih dari 2000 bahasa"
   },
+  "ModernTestPage": {
+    "pageTitle": "Tes Modern",
+    "title": "Halaman Tes Modern",
+    "description": "Ini adalah halaman uji coba untuk aplikasi jam tangan modern. Halaman ini mendemonstrasikan fungsionalitas perutean dan proxy yang baru.",
+    "feature1": {
+      "title": "Arsitektur Modern",
+      "description": "Dibangun dengan Next.js App Router dan pola React modern untuk performa optimal dan pengalaman pengembang."
+    },
+    "feature2": {
+      "title": "Perutean Cerdas",
+      "description": "Perutean proxy tingkat lanjut yang secara cerdas mengarahkan lalu lintas ke layanan backend yang sesuai."
+    },
+    "feature3": {
+      "title": "Desain Responsif",
+      "description": "Desain yang sepenuhnya responsif yang bekerja dengan mulus di semua perangkat dan ukuran layar."
+    },
+    "footer": "Halaman ini disajikan oleh aplikasi jam tangan modern melalui perutean proxy yang cerdas."
+  },
   "DatadogErrorBoundary": {
     "somethingWentWrong": "Ada yang tidak beres",
     "anErrorOccurred": "Terjadi kesalahan saat memuat halaman ini. Silakan coba refresh.",
