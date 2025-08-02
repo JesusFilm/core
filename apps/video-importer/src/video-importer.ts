@@ -7,6 +7,7 @@ import { v4 as uuidv4 } from 'uuid'
 
 import { getAudioMetadata } from './services/audio-metadata.service'
 import { importOrUpdateAudioPreview } from './services/audio-preview.service'
+import { validateEnvironment } from './services/connection-test.service'
 import { getVideoMetadata } from './services/metadata.service'
 import { createAndWaitForMuxVideo } from './services/mux.service'
 import {
@@ -15,7 +16,7 @@ import {
   uploadToR2
 } from './services/r2.service'
 import { importOrUpdateSubtitle } from './services/subtitle.service'
-import { getVideoEditionId } from './services/video-edition.service'
+import { validateVideoAndEdition } from './services/validation.service'
 import { createVideoVariant } from './services/video.service'
 import type { ProcessingSummary } from './types'
 
@@ -27,17 +28,46 @@ program
     "Folder containing video files. Defaults to the executable's directory."
   )
   .option('--dry-run', 'Print actions without uploading', false)
+  .option('--skip-retry', 'Skip retrying failed files', false)
   .parse(process.argv)
 
 const options = program.opts()
 
+// File renaming utilities
+async function markFileAsCompleted(filePath: string): Promise<void> {
+  const completedPath = `${filePath}.completed`
+  await promises.rename(filePath, completedPath)
+  console.log(`   ✅ Marked as completed: ${path.basename(completedPath)}`)
+}
+
+async function markFileAsFailed(filePath: string): Promise<void> {
+  const failedPath = `${filePath}.failed`
+  await promises.rename(filePath, failedPath)
+  console.log(`   ❌ Marked as failed: ${path.basename(failedPath)}`)
+}
+
+async function restoreFailedFile(failedFilePath: string): Promise<string> {
+  const originalPath = failedFilePath.replace(/\.failed$/, '')
+  await promises.rename(failedFilePath, originalPath)
+  console.log(`   🔄 Restored for retry: ${path.basename(originalPath)}`)
+  return originalPath
+}
+
 export const VIDEO_FILENAME_REGEX =
   /^([^.]+?)---([^.]+?)---([^-]+)(?:---([^-]+))*\.mp4$/
+
+export const VIDEO_FAILED_FILENAME_REGEX =
+  /^([^.]+?)---([^.]+?)---([^-]+)(?:---([^-]+))*\.mp4\.failed$/
 
 export const SUBTITLE_FILENAME_REGEX =
   /^([^.]+?)---([^.]+?)---([^-]+)(?:---([^-]+))*\.(srt|vtt)$/
 
+export const SUBTITLE_FAILED_FILENAME_REGEX =
+  /^([^.]+?)---([^.]+?)---([^-]+)(?:---([^-]+))*\.(srt|vtt)\.failed$/
+
 export const AUDIO_PREVIEW_FILENAME_REGEX = /^([^.]+)\.aac$/
+
+export const AUDIO_PREVIEW_FAILED_FILENAME_REGEX = /^([^.]+)\.aac\.failed$/
 
 async function main() {
   // Check if running in a Single Executable Application
@@ -49,6 +79,19 @@ async function main() {
   const folderPath = options.folder
     ? path.resolve(options.folder)
     : defaultFolderPath
+
+  // === Connection Tests ===
+  console.log('Checking connections...')
+
+  try {
+    // Test 1: Validate environment variables
+    await validateEnvironment()
+  } catch (error) {
+    console.error('\n❌ Pre-flight checks failed:', error)
+    process.exit(1)
+  }
+
+  // === File Processing ===
   let files: string[]
   try {
     files = await promises.readdir(folderPath)
@@ -58,42 +101,127 @@ async function main() {
   }
 
   const videoFiles = files.filter((file) => VIDEO_FILENAME_REGEX.test(file))
+  const videoFailedFiles = files.filter((file) =>
+    VIDEO_FAILED_FILENAME_REGEX.test(file)
+  )
+
   const subtitleFiles = files.filter((file) =>
     SUBTITLE_FILENAME_REGEX.test(file)
   )
+  const subtitleFailedFiles = files.filter((file) =>
+    SUBTITLE_FAILED_FILENAME_REGEX.test(file)
+  )
+
   const audioPreviewFiles = files.filter((file) =>
     AUDIO_PREVIEW_FILENAME_REGEX.test(file)
   )
+  const audioPreviewFailedFiles = files.filter((file) =>
+    AUDIO_PREVIEW_FAILED_FILENAME_REGEX.test(file)
+  )
 
-  if (videoFiles.length === 0) {
+  if (videoFiles.length === 0 && videoFailedFiles.length === 0) {
     console.log('No valid video files found in the folder.')
   } else {
-    console.log(`Found ${videoFiles.length} video files.`)
+    console.log(
+      `Found ${videoFiles.length} video files${videoFailedFiles.length > 0 ? ` and ${videoFailedFiles.length} failed video files` : ''}.`
+    )
   }
 
-  if (subtitleFiles.length === 0) {
+  if (subtitleFiles.length === 0 && subtitleFailedFiles.length === 0) {
     console.log('No valid subtitle files found in the folder.')
   } else {
-    console.log(`Found ${subtitleFiles.length} subtitle files.`)
+    console.log(
+      `Found ${subtitleFiles.length} subtitle files${subtitleFailedFiles.length > 0 ? ` and ${subtitleFailedFiles.length} failed subtitle files` : ''}.`
+    )
   }
 
-  if (audioPreviewFiles.length === 0) {
+  if (audioPreviewFiles.length === 0 && audioPreviewFailedFiles.length === 0) {
     console.log('No valid audio preview files found in the folder.')
   } else {
-    console.log(`Found ${audioPreviewFiles.length} audio preview files.`)
+    console.log(
+      `Found ${audioPreviewFiles.length} audio preview files${audioPreviewFailedFiles.length > 0 ? ` and ${audioPreviewFailedFiles.length} failed audio preview files` : ''}.`
+    )
   }
 
   const summary: ProcessingSummary = {
-    total: videoFiles.length + subtitleFiles.length + audioPreviewFiles.length,
+    total:
+      videoFiles.length +
+      videoFailedFiles.length +
+      subtitleFiles.length +
+      subtitleFailedFiles.length +
+      audioPreviewFiles.length +
+      audioPreviewFailedFiles.length,
     successful: 0,
     failed: 0,
     errors: []
   }
 
-  for (const file of videoFiles) {
+  // Restore failed files for retry (unless skipped)
+  const restoredVideoFiles: string[] = []
+  const restoredSubtitleFiles: string[] = []
+  const restoredAudioPreviewFiles: string[] = []
+
+  if (!options.skipRetry) {
+    console.log('\n🔄 Restoring failed files for retry...')
+
+    for (const failedFile of videoFailedFiles) {
+      try {
+        const restoredPath = await restoreFailedFile(
+          path.join(folderPath, failedFile)
+        )
+        restoredVideoFiles.push(path.basename(restoredPath))
+      } catch (err) {
+        console.error(`Failed to restore ${failedFile}:`, err)
+      }
+    }
+
+    for (const failedFile of subtitleFailedFiles) {
+      try {
+        const restoredPath = await restoreFailedFile(
+          path.join(folderPath, failedFile)
+        )
+        restoredSubtitleFiles.push(path.basename(restoredPath))
+      } catch (err) {
+        console.error(`Failed to restore ${failedFile}:`, err)
+      }
+    }
+
+    for (const failedFile of audioPreviewFailedFiles) {
+      try {
+        const restoredPath = await restoreFailedFile(
+          path.join(folderPath, failedFile)
+        )
+        restoredAudioPreviewFiles.push(path.basename(restoredPath))
+      } catch (err) {
+        console.error(`Failed to restore ${failedFile}:`, err)
+      }
+    }
+
+    const totalRestored =
+      restoredVideoFiles.length +
+      restoredSubtitleFiles.length +
+      restoredAudioPreviewFiles.length
+    if (totalRestored > 0) {
+      console.log(`   Restored ${totalRestored} failed files for retry`)
+    }
+  } else {
+    console.log('\n⏭️  Skipping retry of failed files (--skip-retry enabled)')
+  }
+
+  // Combine original and restored files
+  const allVideoFiles = [...videoFiles, ...restoredVideoFiles]
+  const allSubtitleFiles = [...subtitleFiles, ...restoredSubtitleFiles]
+  const allAudioPreviewFiles = [
+    ...audioPreviewFiles,
+    ...restoredAudioPreviewFiles
+  ]
+
+  for (const file of allVideoFiles) {
     const match = file.match(VIDEO_FILENAME_REGEX)
     if (!match) continue
-    const [, videoId, edition, languageId, ...extraFields] = match
+    const [, videoId, editionName, languageId, ...extraFields] = match
+
+    const edition = editionName.toLowerCase()
 
     console.log(`\n🎬 Processing: ${file}`)
     console.log(
@@ -110,8 +238,24 @@ async function main() {
       continue
     }
 
+    // Validate video and edition before processing
+    console.log('   🔍 Validating video and edition...')
+    const validationResult = await validateVideoAndEdition(videoId, edition)
+    if (!validationResult.success) {
+      console.error(
+        `   ❌ Validation failed: ${validationResult.errors.join(', ')}`
+      )
+      summary.failed++
+      summary.errors.push({
+        file,
+        error: `Validation failed: ${validationResult.errors.join(', ')}`
+      })
+      continue
+    }
+
+    const filePath = path.join(folderPath, file)
+
     try {
-      const filePath = path.join(folderPath, file)
       const contentType = 'video/mp4'
       const originalFilename = file
       const { size: contentLength } = await promises.stat(filePath)
@@ -197,6 +341,9 @@ async function main() {
           : '      ♻️  Updated existing video variant'
       )
       summary.successful++
+
+      // Mark file as completed
+      await markFileAsCompleted(filePath)
     } catch (err) {
       console.error(`   ❌ Error processing ${file}:`, err)
       summary.failed++
@@ -204,10 +351,19 @@ async function main() {
         file,
         error: err instanceof Error ? err.message : String(err)
       })
+
+      // Mark file as failed
+      try {
+        await markFileAsFailed(filePath)
+      } catch (renameErr) {
+        console.error(
+          `Failed to mark file as failed: ${renameErr instanceof Error ? renameErr.message : String(renameErr)}`
+        )
+      }
     }
   }
 
-  for (const file of subtitleFiles) {
+  for (const file of allSubtitleFiles) {
     const match = file.match(SUBTITLE_FILENAME_REGEX)
     if (!match) continue
     const [, videoId, editionName, languageId, ...extraFields] = match
@@ -227,16 +383,36 @@ async function main() {
       continue
     }
 
+    // Validate video and edition before processing
+    console.log('   🔍 Validating video and edition...')
+    const validationResult = await validateVideoAndEdition(videoId, editionName)
+    if (!validationResult.success) {
+      console.error(
+        `   ❌ Validation failed: ${validationResult.errors.join(', ')}`
+      )
+      summary.failed++
+      summary.errors.push({
+        file,
+        error: `Validation failed: ${validationResult.errors.join(', ')}`
+      })
+      continue
+    }
+
+    console.log(
+      `   ✅ Video "${videoId}" and edition "${editionName}" are valid`
+    )
+
+    const filePath = path.join(folderPath, file)
+
     try {
-      const filePath = path.join(folderPath, file)
       const contentType = file.endsWith('.srt') ? 'text/srt' : 'text/vtt'
       const originalFilename = file
       const { size: contentLength } = await promises.stat(filePath)
 
       console.log('   ☁️  Preparing Cloudflare R2 asset for subtitle...')
 
-      const editionId = await getVideoEditionId(videoId, editionName)
-
+      // Use the validated edition ID instead of calling getVideoEditionId again
+      const editionId = validationResult.editionId!
       console.log('      Edition ID:', editionId)
 
       const subtitleVariantId = `${languageId}_${editionId}_${videoId}`
@@ -276,6 +452,9 @@ async function main() {
         console.log('      ✅ Created new video subtitle')
       }
       summary.successful++
+
+      // Mark file as completed
+      await markFileAsCompleted(filePath)
     } catch (err) {
       console.error(`   ❌ Error processing subtitle ${file}:`, err)
       summary.failed++
@@ -283,11 +462,20 @@ async function main() {
         file,
         error: err instanceof Error ? err.message : String(err)
       })
+
+      // Mark file as failed
+      try {
+        await markFileAsFailed(filePath)
+      } catch (renameErr) {
+        console.error(
+          `Failed to mark subtitle file as failed: ${renameErr instanceof Error ? renameErr.message : String(renameErr)}`
+        )
+      }
     }
   }
 
   // === Audio Preview Processing ===
-  for (const file of audioPreviewFiles) {
+  for (const file of allAudioPreviewFiles) {
     const match = file.match(AUDIO_PREVIEW_FILENAME_REGEX)
     if (!match) continue
     const [, languageId] = match
@@ -300,8 +488,9 @@ async function main() {
       continue
     }
 
+    const filePath = path.join(folderPath, file)
+
     try {
-      const filePath = path.join(folderPath, file)
       const contentType = 'audio/aac'
       const { size: contentLength } = await promises.stat(filePath)
 
@@ -373,8 +562,20 @@ async function main() {
           file,
           error: 'Failed to create/update audio preview'
         })
+
+        // Mark file as failed
+        try {
+          await markFileAsFailed(filePath)
+        } catch (renameErr) {
+          console.error(
+            `Failed to mark audio preview file as failed: ${renameErr instanceof Error ? renameErr.message : String(renameErr)}`
+          )
+        }
       } else {
         summary.successful++
+
+        // Mark file as completed
+        await markFileAsCompleted(filePath)
       }
     } catch (err) {
       console.error(`   ❌ Error processing audio preview ${file}:`, err)
@@ -383,6 +584,15 @@ async function main() {
         file,
         error: err instanceof Error ? err.message : String(err)
       })
+
+      // Mark file as failed
+      try {
+        await markFileAsFailed(filePath)
+      } catch (renameErr) {
+        console.error(
+          `Failed to mark audio preview file as failed: ${renameErr instanceof Error ? renameErr.message : String(renameErr)}`
+        )
+      }
     }
   }
 
