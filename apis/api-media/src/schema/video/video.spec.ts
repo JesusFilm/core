@@ -625,9 +625,9 @@ describe('video', () => {
     ]
 
     it('should query videos', async () => {
-      prismaMock.video.findMany.mockResolvedValueOnce(videos)
-      prismaMock.video.findMany.mockResolvedValueOnce(children)
-      prismaMock.video.findMany.mockResolvedValueOnce(parents)
+      prismaMock.video.findMany.mockResolvedValueOnce([
+        { ...videos[0], parent: parents, children } as any
+      ])
       // variantLanguages
       prismaMock.videoVariant.findMany.mockResolvedValueOnce([
         { languageId: 'languageId' } as unknown as VideoVariant
@@ -722,6 +722,12 @@ describe('video', () => {
               languageId: '529'
             }
           },
+          parent: {
+            where: {}
+          },
+          children: {
+            where: {}
+          },
           snippet: {
             orderBy: {
               primary: 'desc'
@@ -777,12 +783,14 @@ describe('video', () => {
 
     it('should query videoVariants without default values', async () => {
       prismaMock.video.findMany.mockResolvedValueOnce([
-        { ...videos[0], slug: 'slug', noIndex: true }
+        {
+          ...videos[0],
+          slug: 'slug',
+          noIndex: true,
+          parent: parents,
+          children
+        } as any
       ])
-      // children
-      prismaMock.video.findMany.mockResolvedValueOnce(children)
-      // parents
-      prismaMock.video.findMany.mockResolvedValueOnce(parents)
       // variantLanguages
       prismaMock.videoVariant.findMany.mockResolvedValueOnce([
         { languageId: 'languageId' } as unknown as VideoVariant
@@ -816,16 +824,19 @@ describe('video', () => {
         }
       })
       expect(data).toHaveProperty('data.videos', [
-        { ...result[0], slug: 'slug', noIndex: true, variant: null }
+        {
+          ...result[0],
+          slug: 'slug',
+          noIndex: true,
+          variant: null
+        }
       ])
     })
 
     it('should query videoVariants with variables', async () => {
-      prismaMock.video.findMany.mockResolvedValueOnce(videos)
-      // children
-      prismaMock.video.findMany.mockResolvedValueOnce(children)
-      // parents
-      prismaMock.video.findMany.mockResolvedValueOnce(parents)
+      prismaMock.video.findMany.mockResolvedValueOnce([
+        { ...videos[0], parent: parents, children } as any
+      ])
       // variantLanguages
       prismaMock.videoVariant.findMany.mockResolvedValueOnce([
         { languageId: 'languageId' } as unknown as VideoVariant
@@ -943,6 +954,12 @@ describe('video', () => {
               languageId: '987'
             }
           },
+          parent: {
+            where: {}
+          },
+          children: {
+            where: {}
+          },
           snippet: {
             orderBy: {
               primary: 'desc'
@@ -1018,11 +1035,9 @@ describe('video', () => {
     })
 
     it('should query videoVariants with different variable precedence', async () => {
-      prismaMock.video.findMany.mockResolvedValueOnce(videos)
-      // children
-      prismaMock.video.findMany.mockResolvedValueOnce(children)
-      // parents
-      prismaMock.video.findMany.mockResolvedValueOnce(parents)
+      prismaMock.video.findMany.mockResolvedValueOnce([
+        { ...videos[0], parent: parents, children } as any
+      ])
       // variantLanguages
       prismaMock.videoVariant.findMany.mockResolvedValueOnce([
         { languageId: 'languageId' } as unknown as VideoVariant
@@ -1420,9 +1435,9 @@ describe('video', () => {
     ]
 
     it('should query videos', async () => {
-      prismaMock.video.findMany.mockResolvedValueOnce(videos)
-      prismaMock.video.findMany.mockResolvedValueOnce(children)
-      prismaMock.video.findMany.mockResolvedValueOnce(parents)
+      prismaMock.video.findMany.mockResolvedValueOnce([
+        { ...videos[0], parent: parents, children } as any
+      ])
       // variantLanguages
       prismaMock.videoVariant.findMany.mockResolvedValueOnce([
         { languageId: 'languageId' } as unknown as VideoVariant
@@ -1508,6 +1523,12 @@ describe('video', () => {
               languageId: '529'
             }
           },
+          parent: {
+            where: {}
+          },
+          children: {
+            where: {}
+          },
           snippet: {
             orderBy: {
               primary: 'desc'
@@ -1563,20 +1584,20 @@ describe('video', () => {
 
     it('should query videoVariants without default values', async () => {
       prismaMock.video.findMany.mockResolvedValueOnce([
-        { ...videos[0], slug: 'slug', noIndex: true }
+        {
+          ...videos[0],
+          slug: 'slug',
+          noIndex: true,
+          parent: parents,
+          children
+        } as any
       ])
-      // children
-      prismaMock.video.findMany.mockResolvedValueOnce(children)
-      // parents
-      prismaMock.video.findMany.mockResolvedValueOnce(parents)
       // variantLanguages
       prismaMock.videoVariant.findMany.mockResolvedValueOnce([
         { languageId: 'languageId' } as unknown as VideoVariant
       ])
       // variantLanguagesCount
       prismaMock.videoVariant.count.mockResolvedValueOnce(1)
-      // childrenCount
-      prismaMock.video.count.mockResolvedValueOnce(1)
       // variantLanguagesWithSlug
       prismaMock.videoVariant.findMany.mockResolvedValueOnce([
         { languageId: 'languageId', slug: 'slug' } as unknown as VideoVariant
@@ -1601,11 +1622,9 @@ describe('video', () => {
     })
 
     it('should query videoVariants with variables', async () => {
-      prismaMock.video.findMany.mockResolvedValueOnce(videos)
-      // children
-      prismaMock.video.findMany.mockResolvedValueOnce(children)
-      // parents
-      prismaMock.video.findMany.mockResolvedValueOnce(parents)
+      prismaMock.video.findMany.mockResolvedValueOnce([
+        { ...videos[0], parent: parents, children } as any
+      ])
       // variantLanguages
       prismaMock.videoVariant.findMany.mockResolvedValueOnce([
         { languageId: 'languageId' } as unknown as VideoVariant
@@ -1678,6 +1697,12 @@ describe('video', () => {
             orderBy: {
               order: 'asc'
             }
+          },
+          children: {
+            where: {}
+          },
+          parent: {
+            where: {}
           },
           description: {
             orderBy: {

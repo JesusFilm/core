@@ -82,6 +82,9 @@ export function getLanguageIdFromInfo(
 
 const Video = builder.prismaObject('Video', {
   shareable: true,
+  include: {
+    childIds: true
+  },
   fields: (t) => ({
     bibleCitations: t.relation('bibleCitation', {
       nullable: false,
@@ -212,8 +215,8 @@ const Video = builder.prismaObject('Video', {
       args: {
         input: t.arg({ type: VideoVariantFilter, required: false })
       },
-      where: (args) => ({
-        published: args.input?.onlyPublished === false ? undefined : true
+      where: ({ input }) => ({
+        published: input?.onlyPublished === false ? undefined : true
       })
     }),
     slug: t.string({
@@ -222,65 +225,11 @@ const Video = builder.prismaObject('Video', {
       description: 'slug is a permanent link to the video.'
     }),
     noIndex: t.exposeBoolean('noIndex'),
-    children: t.prismaField({
-      type: ['Video'],
-      nullable: false,
-      async resolve(query, parent, _args, context) {
-        if (parent.childIds.length === 0) return []
-
-        const whereCondition: Prisma.VideoWhereInput = {
-          id: { in: parent.childIds }
-        }
-
-        // Add platform restriction filter if clientName is provided
-        if (isValidClientName(context.clientName)) {
-          whereCondition.NOT = {
-            restrictViewPlatforms: {
-              has: context.clientName as PrismaPlatform
-            }
-          }
-        }
-
-        return orderBy(
-          await prisma.video.findMany({
-            ...query,
-            where: whereCondition
-          }),
-          ({ id }) => parent.childIds.indexOf(id),
-          'asc'
-        )
-      }
-    }),
     childrenCount: t.relationCount('children', {
       nullable: false,
       where: { published: true },
       description:
         'The number of published child videos associated with this video'
-    }),
-    parents: t.prismaField({
-      type: ['Video'],
-      nullable: false,
-      async resolve(query, child: { id: string }, _args, context) {
-        const whereCondition: Prisma.VideoWhereInput = {
-          childIds: {
-            has: child.id
-          }
-        }
-
-        // Add platform restriction filter if clientName is provided
-        if (isValidClientName(context.clientName)) {
-          whereCondition.NOT = {
-            restrictViewPlatforms: {
-              has: context.clientName as PrismaPlatform
-            }
-          }
-        }
-
-        return await prisma.video.findMany({
-          ...query,
-          where: whereCondition
-        })
-      }
     }),
     variantLanguagesWithSlug: t.field({
       type: [LanguageWithSlug],
@@ -428,6 +377,58 @@ const Video = builder.prismaObject('Video', {
     publishedAt: t.expose('publishedAt', { type: 'Date', nullable: true })
   })
 })
+
+builder.prismaObjectField(Video, 'children', (t) =>
+  t.field({
+    type: [Video],
+    nullable: false,
+    select: (_args, context) => {
+      const whereCondition: Prisma.VideoWhereInput = {}
+      if (isValidClientName(context.clientName)) {
+        whereCondition.NOT = {
+          restrictViewPlatforms: {
+            has: context.clientName as PrismaPlatform
+          }
+        }
+      }
+      return {
+        children: {
+          where: whereCondition
+        }
+      }
+    },
+    resolve: (parent) => {
+      return orderBy(
+        parent.children,
+        ({ id }) => parent.childIds.indexOf(id),
+        'asc'
+      )
+    }
+  })
+)
+
+builder.prismaObjectField(Video, 'parents', (t) =>
+  t.field({
+    type: [Video],
+    nullable: false,
+    select: (_args, context) => {
+      const whereCondition: Prisma.VideoWhereInput = {}
+      if (isValidClientName(context.clientName)) {
+        whereCondition.NOT = {
+          restrictViewPlatforms: {
+            has: context.clientName as PrismaPlatform
+          }
+        }
+      }
+      return {
+        parent: {
+          where: whereCondition
+        }
+      }
+    },
+    resolve: (parent: any) => parent.parent
+  })
+)
 
 builder.asEntity(Video, {
   key: builder.selection<{ id: string; primaryLanguageId: string }>(

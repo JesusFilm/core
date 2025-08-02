@@ -837,11 +837,9 @@ type Video
   """slug is a permanent link to the video."""
   slug: String!
   noIndex: Boolean
-  children: [Video!]!
 
   """The number of published child videos associated with this video"""
   childrenCount: Int!
-  parents: [Video!]!
   variantLanguagesWithSlug(input: VideoVariantFilter): [LanguageWithSlug!]!
   variants(input: VideoVariantFilter): [VideoVariant!]!
   subtitles(languageId: ID, primary: Boolean, edition: String): [VideoSubtitle!]!
@@ -850,6 +848,8 @@ type Video
   restrictDownloadPlatforms: [Platform!]!
   restrictViewPlatforms: [Platform!]!
   publishedAt: Date
+  children: [Video!]!
+  parents: [Video!]!
 }
 
 enum VideoBlockSource {

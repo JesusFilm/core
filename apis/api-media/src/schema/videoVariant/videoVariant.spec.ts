@@ -47,14 +47,6 @@ const { deleteR2File: mockedDeleteR2File } = jest.requireMock(
 const { updateVideoVariantInAlgolia: mockedUpdateVideoVariantInAlgolia } =
   jest.requireMock('../../workers/algolia/service')
 
-const baseInclude = {
-  video: {
-    select: {
-      restrictDownloadPlatforms: true
-    }
-  }
-}
-
 describe('videoVariant', () => {
   const client = getClient()
 
@@ -157,7 +149,10 @@ describe('videoVariant', () => {
                 srtAssetId: null,
                 srtVersion: 1
               }
-            ]
+            ],
+            _count: {
+              videoSubtitles: 123
+            }
           },
           muxVideo: null,
           video: {
@@ -191,19 +186,23 @@ describe('videoVariant', () => {
           videoEdition: {
             include: {
               videoSubtitles: {
-                where: {
-                  OR: []
+                where: {}
+              },
+              _count: {
+                select: {
+                  videoSubtitles: true
                 }
               }
             }
           },
           muxVideo: true,
           downloads: true,
-          ...baseInclude
+          video: {
+            select: {
+              restrictDownloadPlatforms: true
+            }
+          }
         }
-      })
-      expect(prismaMock.videoSubtitle.count).toHaveBeenCalledWith({
-        where: { videoId: 'videoId', edition: 'base' }
       })
       expect(data).toHaveProperty('data.videoVariants', [
         {
@@ -274,7 +273,10 @@ describe('videoVariant', () => {
                 srtAssetId: null,
                 srtVersion: 1
               }
-            ]
+            ],
+            _count: {
+              videoSubtitles: 123
+            }
           },
           muxVideo: null,
           video: {
@@ -307,20 +309,24 @@ describe('videoVariant', () => {
         include: {
           videoEdition: {
             include: {
-              videoSubtitles: {
-                where: {
-                  OR: []
+              _count: {
+                select: {
+                  videoSubtitles: true
                 }
+              },
+              videoSubtitles: {
+                where: {}
               }
             }
           },
           muxVideo: true,
           downloads: true,
-          ...baseInclude
+          video: {
+            select: {
+              restrictDownloadPlatforms: true
+            }
+          }
         }
-      })
-      expect(prismaMock.videoSubtitle.count).toHaveBeenCalledWith({
-        where: { videoId: 'videoId', edition: 'base' }
       })
       expect(data).toHaveProperty('data.videoVariants', [
         {
@@ -391,7 +397,10 @@ describe('videoVariant', () => {
                 srtAssetId: null,
                 srtVersion: 1
               }
-            ]
+            ],
+            _count: {
+              videoSubtitles: 123
+            }
           },
           muxVideo: null,
           video: {
@@ -431,6 +440,11 @@ describe('videoVariant', () => {
         include: {
           videoEdition: {
             include: {
+              _count: {
+                select: {
+                  videoSubtitles: true
+                }
+              },
               videoSubtitles: {
                 where: {
                   OR: [{ primary: false }, { languageId: 'languageId' }]
@@ -440,7 +454,11 @@ describe('videoVariant', () => {
           },
           muxVideo: true,
           downloads: true,
-          ...baseInclude
+          video: {
+            select: {
+              restrictDownloadPlatforms: true
+            }
+          }
         }
       })
       expect(data).toHaveProperty('data.videoVariants', [
@@ -583,8 +601,7 @@ describe('videoVariant', () => {
             share: 'share',
             downloadable: true,
             published: true
-          },
-          include: baseInclude
+          }
         })
         expect(result).toHaveProperty('data.videoVariantCreate', {
           id: 'id'
@@ -792,8 +809,7 @@ describe('videoVariant', () => {
             videoId: 'videoId',
             share: 'share',
             downloadable: false
-          },
-          include: baseInclude
+          }
         })
         expect(result).toHaveProperty('data.videoVariantUpdate', {
           id: 'id'
@@ -962,8 +978,7 @@ describe('videoVariant', () => {
           }
         })
         expect(prismaMock.videoVariant.delete).toHaveBeenCalledWith({
-          where: { id: 'id' },
-          include: baseInclude
+          where: { id: 'id' }
         })
         expect(result).toHaveProperty('data.videoVariantDelete', {
           id: 'id'
@@ -1253,8 +1268,7 @@ describe('videoVariant', () => {
 
         // Verify variant was deleted
         expect(prismaMock.videoVariant.delete).toHaveBeenCalledWith({
-          where: { id: 'id' },
-          include: baseInclude
+          where: { id: 'id' }
         })
 
         expect(result).toHaveProperty('data.videoVariantDelete', {
@@ -1402,8 +1416,7 @@ describe('videoVariant', () => {
 
         // Verify variant was deleted
         expect(prismaMock.videoVariant.delete).toHaveBeenCalledWith({
-          where: { id: 'id' },
-          include: baseInclude
+          where: { id: 'id' }
         })
 
         expect(result).toHaveProperty('data.videoVariantDelete', {
@@ -1514,8 +1527,7 @@ describe('videoVariant', () => {
 
         // Verify variant was deleted
         expect(prismaMock.videoVariant.delete).toHaveBeenCalledWith({
-          where: { id: 'id' },
-          include: baseInclude
+          where: { id: 'id' }
         })
 
         expect(result).toHaveProperty('data.videoVariantDelete', {
