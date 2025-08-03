@@ -98,10 +98,10 @@ describe('country', () => {
                 OR: [{ languageId: '529' }, { primary: true }]
               },
               orderBy: {
-                include: {
-                  language: true
-                },
                 primary: 'desc'
+              },
+              include: {
+                language: true
               }
             }
           }

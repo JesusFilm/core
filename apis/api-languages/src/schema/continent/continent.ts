@@ -19,7 +19,8 @@ builder.prismaObject('Continent', {
         if (primary != null) where.OR?.push({ primary })
         return {
           where,
-          orderBy: { primary: 'desc', include: { language: true } }
+          orderBy: { primary: 'desc' },
+          include: { language: true }
         }
       }
     }),
