@@ -104,10 +104,12 @@ export function RadioQuestion({
   }
 
   return (
-    <Box data-testid="RadioQuestionProperties" sx={{ p: 4 }}>
-      <Typography>
-        {t('To edit poll content, choose each option individually.')}
-      </Typography>
+    <Box data-testid="RadioQuestionProperties">
+      <Box sx={{ p: 4 }}>
+        <Typography>
+          {t('To edit poll content, choose each option individually.')}
+        </Typography>
+      </Box>
       <Accordion
         id={`PollVariants-${selectedBlockId}`}
         icon={<LineNumbers />}
