@@ -345,8 +345,6 @@ describe('videoVariant', () => {
           videoVariantId: 'videoVariantId'
         }
       ])
-      prismaMock.videoSubtitle.count.mockResolvedValueOnce(123)
-
       const data = await client({
         document: VIDEO_VARIANTS_QUERY
       })
