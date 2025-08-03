@@ -46,7 +46,7 @@ describe('video', () => {
     studyQuestions: VideoStudyQuestion[]
     imageAlt: VideoImageAlt[]
     children: Video[]
-    parents: Video[]
+    parent: Video[]
     subtitles: VideoSubtitle[]
     images: CloudflareImage[]
     cloudflareAssets: CloudflareR2[]
@@ -205,7 +205,7 @@ describe('video', () => {
         }
       ],
       children,
-      parents,
+      parent: parents,
       subtitles: [
         {
           id: 'subtitleId',
@@ -618,8 +618,6 @@ describe('video', () => {
 
     it('should query videos', async () => {
       prismaMock.video.findMany.mockResolvedValueOnce(videos)
-      prismaMock.video.findMany.mockResolvedValueOnce(children)
-      prismaMock.video.findMany.mockResolvedValueOnce(parents)
       // variantLanguages
       prismaMock.videoVariant.findMany.mockResolvedValueOnce([
         { languageId: 'languageId' } as unknown as VideoVariant
@@ -692,6 +690,12 @@ describe('video', () => {
               languageId: '529'
             }
           },
+          parent: {
+            where: {}
+          },
+          children: {
+            where: {}
+          },
           snippet: {
             orderBy: {
               primary: 'desc'
@@ -749,10 +753,7 @@ describe('video', () => {
       prismaMock.video.findMany.mockResolvedValueOnce([
         { ...videos[0], slug: 'slug', noIndex: true }
       ])
-      // children
-      prismaMock.video.findMany.mockResolvedValueOnce(children)
-      // parents
-      prismaMock.video.findMany.mockResolvedValueOnce(parents)
+
       // variantLanguages
       prismaMock.videoVariant.findMany.mockResolvedValueOnce([
         { languageId: 'languageId' } as unknown as VideoVariant
@@ -786,16 +787,18 @@ describe('video', () => {
         }
       })
       expect(data).toHaveProperty('data.videos', [
-        { ...result[0], slug: 'slug', noIndex: true, variant: null }
+        {
+          ...result[0],
+          slug: 'slug',
+          noIndex: true,
+          variant: null
+        }
       ])
     })
 
     it('should query videoVariants with variables', async () => {
       prismaMock.video.findMany.mockResolvedValueOnce(videos)
-      // children
-      prismaMock.video.findMany.mockResolvedValueOnce(children)
-      // parents
-      prismaMock.video.findMany.mockResolvedValueOnce(parents)
+
       // variantLanguages
       prismaMock.videoVariant.findMany.mockResolvedValueOnce([
         { languageId: 'languageId' } as unknown as VideoVariant
@@ -894,6 +897,12 @@ describe('video', () => {
               languageId: '987'
             }
           },
+          parent: {
+            where: {}
+          },
+          children: {
+            where: {}
+          },
           snippet: {
             orderBy: {
               primary: 'desc'
@@ -970,10 +979,7 @@ describe('video', () => {
 
     it('should query videoVariants with different variable precedence', async () => {
       prismaMock.video.findMany.mockResolvedValueOnce(videos)
-      // children
-      prismaMock.video.findMany.mockResolvedValueOnce(children)
-      // parents
-      prismaMock.video.findMany.mockResolvedValueOnce(parents)
+
       // variantLanguages
       prismaMock.videoVariant.findMany.mockResolvedValueOnce([
         { languageId: 'languageId' } as unknown as VideoVariant
@@ -1362,8 +1368,7 @@ describe('video', () => {
 
     it('should query videos', async () => {
       prismaMock.video.findMany.mockResolvedValueOnce(videos)
-      prismaMock.video.findMany.mockResolvedValueOnce(children)
-      prismaMock.video.findMany.mockResolvedValueOnce(parents)
+
       // variantLanguages
       prismaMock.videoVariant.findMany.mockResolvedValueOnce([
         { languageId: 'languageId' } as unknown as VideoVariant
@@ -1427,6 +1432,12 @@ describe('video', () => {
               languageId: '529'
             }
           },
+          parent: {
+            where: {}
+          },
+          children: {
+            where: {}
+          },
           snippet: {
             orderBy: {
               primary: 'desc'
@@ -1484,10 +1495,6 @@ describe('video', () => {
       prismaMock.video.findMany.mockResolvedValueOnce([
         { ...videos[0], slug: 'slug', noIndex: true }
       ])
-      // children
-      prismaMock.video.findMany.mockResolvedValueOnce(children)
-      // parents
-      prismaMock.video.findMany.mockResolvedValueOnce(parents)
       // variantLanguages
       prismaMock.videoVariant.findMany.mockResolvedValueOnce([
         { languageId: 'languageId' } as unknown as VideoVariant
@@ -1521,10 +1528,6 @@ describe('video', () => {
 
     it('should query videoVariants with variables', async () => {
       prismaMock.video.findMany.mockResolvedValueOnce(videos)
-      // children
-      prismaMock.video.findMany.mockResolvedValueOnce(children)
-      // parents
-      prismaMock.video.findMany.mockResolvedValueOnce(parents)
       // variantLanguages
       prismaMock.videoVariant.findMany.mockResolvedValueOnce([
         { languageId: 'languageId' } as unknown as VideoVariant
@@ -1577,6 +1580,12 @@ describe('video', () => {
             orderBy: {
               order: 'asc'
             }
+          },
+          children: {
+            where: {}
+          },
+          parent: {
+            where: {}
           },
           description: {
             orderBy: {
