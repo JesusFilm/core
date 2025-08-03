@@ -365,7 +365,7 @@ async function checkAndRemoveEmptyParentVariant(
   }
 }
 
-builder.prismaObject('VideoVariant', {
+export const VideoVariant = builder.prismaObject('VideoVariant', {
   fields: (t) => ({
     id: t.exposeID('id', { nullable: false }),
     asset: t
