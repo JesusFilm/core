@@ -426,7 +426,7 @@ builder.prismaObjectField(Video, 'parents', (t) =>
         }
       }
     },
-    resolve: (parent: any) => parent.parents
+    resolve: (video) => video.parents
   })
 )
 
