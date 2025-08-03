@@ -20,6 +20,7 @@ import { deleteVideo } from '../mux/video/service'
 import { VideoSource, VideoSourceShape } from '../videoSource/videoSource'
 import { VideoVariantFilter } from '../videoVariant/inputs/videoVariantFilter'
 import {
+  VideoVariant,
   handleParentVariantCleanup,
   handleParentVariantCreation
 } from '../videoVariant/videoVariant'
@@ -254,22 +255,22 @@ const Video = builder.prismaObject('Video', {
           language: { id }
         }))
     }),
-    variants: t.prismaField({
-      type: ['VideoVariant'],
+    variants: t.field({
+      type: [VideoVariant],
       nullable: false,
       args: {
         input: t.arg({ type: VideoVariantFilter, required: false })
       },
-      resolve: async (query, parent, { input }) => {
-        const res = await prisma.videoVariant.findMany({
-          ...query,
+      select: ({ input }) => ({
+        variants: {
           where: {
-            videoId: parent.id,
             published: input?.onlyPublished === false ? undefined : true
           }
-        })
+        }
+      }),
+      resolve: (video) => {
         // languageId is a string, so we need to convert it to a number to sort it correctly
-        return orderBy(res, (variant) => +variant.languageId, 'asc')
+        return orderBy(video.variants, (variant) => +variant.languageId, 'asc')
       }
     }),
     subtitles: t.relation('subtitles', {
@@ -300,7 +301,7 @@ const Video = builder.prismaObject('Video', {
       })
     }),
     variant: t.prismaField({
-      type: 'VideoVariant',
+      type: VideoVariant,
       args: {
         languageId: t.arg.id({ required: false }),
         input: t.arg({ type: VideoVariantFilter, required: false })
