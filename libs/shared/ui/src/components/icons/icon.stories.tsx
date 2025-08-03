@@ -134,6 +134,7 @@ const iconNames: IconName[] = [
   'LinkAngled',
   'LinkBroken',
   'LinkExternal',
+  'LineNumbers',
   'Link',
   'Lock1',
   'LockOpen1',
