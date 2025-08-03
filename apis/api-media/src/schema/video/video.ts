@@ -265,9 +265,9 @@ const Video = builder.prismaObject('Video', {
           }
         }
       }),
-      resolve: (parent) => {
+      resolve: (video) => {
         // languageId is a string, so we need to convert it to a number to sort it correctly
-        return orderBy(parent.variants, (variant) => +variant.languageId, 'asc')
+        return orderBy(video.variants, (variant) => +variant.languageId, 'asc')
       }
     }),
     subtitles: t.relation('subtitles', {
