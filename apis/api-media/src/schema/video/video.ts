@@ -202,14 +202,17 @@ const Video = builder.prismaObject('Video', {
     variantLanguages: t.field({
       type: [Language],
       nullable: false,
-      args: {},
-      resolve: async ({ id: videoId }) =>
-        (
-          await prisma.videoVariant.findMany({
-            where: { videoId },
-            select: { languageId: true }
-          })
-        ).map(({ languageId }) => ({ id: languageId }))
+      select: () => ({
+        variants: {
+          select: {
+            languageId: true
+          }
+        }
+      }),
+      resolve: (parent) =>
+        parent.variants.map(({ languageId }) => ({
+          id: languageId
+        }))
     }),
     variantLanguagesCount: t.relationCount('variants', {
       nullable: false,
@@ -238,18 +241,21 @@ const Video = builder.prismaObject('Video', {
       args: {
         input: t.arg({ type: VideoVariantFilter, required: false })
       },
-      resolve: async ({ id: videoId }, { input }) =>
-        (
-          await prisma.videoVariant.findMany({
-            where: {
-              videoId,
-              published: input?.onlyPublished === false ? undefined : true
-            },
-            select: { languageId: true, slug: true }
-          })
-        ).map(({ slug, languageId: id }) => ({
+      select: ({ input }) => ({
+        variants: {
+          select: {
+            languageId: true,
+            slug: true
+          },
+          where: {
+            published: input?.onlyPublished === false ? undefined : true
+          }
+        }
+      }),
+      resolve: (parent) =>
+        parent.variants.map(({ slug, languageId }) => ({
           slug,
-          language: { id }
+          language: { id: languageId }
         }))
     }),
     variants: t.field({
