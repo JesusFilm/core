@@ -123,6 +123,7 @@ import LayoutScale from './LayoutScale'
 import Lightning2 from './Lightning2'
 import LightningCircleContained from './LightningCircleContained'
 import Line from './Line'
+import LineNumbers from './LineNumbers'
 import Link from './Link'
 import LinkAngled from './LinkAngled'
 import LinkBroken from './LinkBroken'
@@ -346,6 +347,7 @@ export type IconName =
   | 'Line'
   | 'LinkAngled'
   | 'LinkBroken'
+  | 'LineNumbers'
   | 'LinkExternal'
   | 'Link'
   | 'Lock1'
@@ -572,6 +574,7 @@ const iconComponents: IconComponents = {
   LinkAngled,
   LinkBroken,
   LinkExternal,
+  LineNumbers,
   Link,
   Lock1,
   LockOpen1,

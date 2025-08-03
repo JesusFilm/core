@@ -1,4 +1,5 @@
 import Box from '@mui/material/Box'
+import flatmap from 'lodash/flatMap'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, useCallback, useEffect, useMemo } from 'react'
 
@@ -26,11 +27,7 @@ export function RadioOption(props: TreeBlock<RadioOptionBlock>): ReactElement {
   const selectedAction = getAction(t, props.action?.__typename)
 
   const flatten = useCallback((children: TreeBlock[]): TreeBlock[] => {
-    return children?.reduce<TreeBlock[]>((result, item) => {
-      result.push(item)
-      result.push(...flatten(item.children))
-      return result
-    }, [])
+    return flatmap(children, (item) => [item, ...flatten(item.children)])
   }, [])
 
   const allBlocks = useMemo(() => {
