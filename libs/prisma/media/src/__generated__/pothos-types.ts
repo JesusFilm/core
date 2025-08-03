@@ -91,8 +91,8 @@ export default interface PrismaTypes {
         Where: Prisma.VideoWhereInput;
         Create: {};
         Update: {};
-        RelationName: "title" | "snippet" | "description" | "studyQuestions" | "imageAlt" | "subtitles" | "children" | "parent" | "variants" | "bibleCitation" | "keywords" | "images" | "cloudflareAssets" | "videoEditions" | "origin";
-        ListRelations: "title" | "snippet" | "description" | "studyQuestions" | "imageAlt" | "subtitles" | "children" | "parent" | "variants" | "bibleCitation" | "keywords" | "images" | "cloudflareAssets" | "videoEditions";
+        RelationName: "title" | "snippet" | "description" | "studyQuestions" | "imageAlt" | "subtitles" | "children" | "parents" | "variants" | "bibleCitation" | "keywords" | "images" | "cloudflareAssets" | "videoEditions" | "origin";
+        ListRelations: "title" | "snippet" | "description" | "studyQuestions" | "imageAlt" | "subtitles" | "children" | "parents" | "variants" | "bibleCitation" | "keywords" | "images" | "cloudflareAssets" | "videoEditions";
         Relations: {
             title: {
                 Shape: VideoTitle[];
@@ -129,7 +129,7 @@ export default interface PrismaTypes {
                 Name: "Video";
                 Nullable: false;
             };
-            parent: {
+            parents: {
                 Shape: Video[];
                 Name: "Video";
                 Nullable: false;
