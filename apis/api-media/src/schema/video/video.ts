@@ -209,8 +209,8 @@ const Video = builder.prismaObject('Video', {
           }
         }
       }),
-      resolve: (parent) =>
-        parent.variants.map(({ languageId }) => ({
+      resolve: (video) =>
+        video.variants.map(({ languageId }) => ({
           id: languageId
         }))
     }),
@@ -252,8 +252,8 @@ const Video = builder.prismaObject('Video', {
           }
         }
       }),
-      resolve: (parent) =>
-        parent.variants.map(({ slug, languageId }) => ({
+      resolve: (video) =>
+        video.variants.map(({ slug, languageId }) => ({
           slug,
           language: { id: languageId }
         }))
@@ -271,9 +271,9 @@ const Video = builder.prismaObject('Video', {
           }
         }
       }),
-      resolve: (parent) => {
+      resolve: (video) => {
         // languageId is a string, so we need to convert it to a number to sort it correctly
-        return orderBy(parent.variants, (variant) => +variant.languageId, 'asc')
+        return orderBy(video.variants, (variant) => +variant.languageId, 'asc')
       }
     }),
     subtitles: t.relation('subtitles', {
@@ -309,7 +309,7 @@ const Video = builder.prismaObject('Video', {
         languageId: t.arg.id({ required: false }),
         input: t.arg({ type: VideoVariantFilter, required: false })
       },
-      resolve: async (query, parent, { languageId, input }, _ctx, info) => {
+      resolve: async (query, video, { languageId, input }, _ctx, info) => {
         const variableValueId =
           (info.variableValues.id as string | undefined) ??
           (info.variableValues.contentId as string | undefined) ??
@@ -321,17 +321,14 @@ const Video = builder.prismaObject('Video', {
           ? variableValueId.substring(variableValueId.lastIndexOf('/') + 1)
           : ''
 
-        const journeysLanguageIdForBlock = getLanguageIdFromInfo(
-          info,
-          parent.id
-        )
+        const journeysLanguageIdForBlock = getLanguageIdFromInfo(info, video.id)
 
         if (
           info.variableValues.idType !== IdTypeShape.databaseId &&
           !isEmpty(variableValueId) &&
           !isEmpty(requestedLanguage)
         ) {
-          const slug = `${parent.slug as string}/${requestedLanguage}`
+          const slug = `${video.slug as string}/${requestedLanguage}`
           return await prisma.videoVariant.findUnique({
             ...query,
             where: {
@@ -348,7 +345,7 @@ const Video = builder.prismaObject('Video', {
           ...query,
           where: {
             languageId_videoId: {
-              videoId: parent.id,
+              videoId: video.id,
               languageId: primaryLanguageId
             },
             published: input?.onlyPublished === false ? undefined : true
@@ -404,10 +401,10 @@ builder.prismaObjectField(Video, 'children', (t) =>
         }
       }
     },
-    resolve: (parent) => {
+    resolve: (video) => {
       return orderBy(
-        parent.children,
-        ({ id }) => parent.childIds.indexOf(id),
+        video.children,
+        ({ id }) => video.childIds.indexOf(id),
         'asc'
       )
     }
@@ -433,7 +430,7 @@ builder.prismaObjectField(Video, 'parents', (t) =>
         }
       }
     },
-    resolve: (parent: any) => parent.parent
+    resolve: (video) => video.parent
   })
 )
 
