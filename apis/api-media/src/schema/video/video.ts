@@ -233,7 +233,7 @@ const Video = builder.prismaObject('Video', {
       nullable: false,
       resolve: async ({ id }) =>
         await prisma.video.count({
-          where: { parent: { some: { id } }, published: true }
+          where: { parents: { some: { id } }, published: true }
         }),
       description: 'the number value of the amount of children on a video'
     }),
@@ -427,12 +427,12 @@ builder.prismaObjectField(Video, 'parents', (t) =>
         }
       }
       return {
-        parent: {
+        parents: {
           where: whereCondition
         }
       }
     },
-    resolve: (parent: any) => parent.parent
+    resolve: (parent: any) => parent.parents
   })
 )
 
