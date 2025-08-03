@@ -54,6 +54,10 @@ describe('video', () => {
     videoEditions: VideoEdition[]
     availableLanguages: string[]
     originId: string | null
+    _count: {
+      children: number
+      variants: number
+    }
   }
 
   const children: Video[] = [
@@ -137,6 +141,10 @@ describe('video', () => {
       restrictDownloadPlatforms: [],
       restrictViewPlatforms: [],
       publishedAt: null,
+      _count: {
+        children: 1,
+        variants: 2
+      },
       bibleCitation: [
         {
           id: 'bibleCitationId',
@@ -591,7 +599,7 @@ describe('video', () => {
           }
         ],
         variantLanguages: [{ id: 'languageId' }],
-        variantLanguagesCount: 1,
+        variantLanguagesCount: 2,
         variantLanguagesWithSlug: [
           {
             language: { id: 'languageId' },
@@ -622,10 +630,6 @@ describe('video', () => {
       prismaMock.videoVariant.findMany.mockResolvedValueOnce([
         { languageId: 'languageId' } as unknown as VideoVariant
       ])
-      // variantLanguagesCount
-      prismaMock.videoVariant.count.mockResolvedValueOnce(1)
-      // childrenCount
-      prismaMock.video.count.mockResolvedValueOnce(1)
       // variantLanguagesWithSlug
       prismaMock.videoVariant.findMany.mockResolvedValueOnce([
         { languageId: 'languageId', slug: 'slug' } as unknown as VideoVariant
@@ -654,6 +658,20 @@ describe('video', () => {
         take: 100,
         where: { published: true },
         include: {
+          _count: {
+            select: {
+              children: {
+                where: {
+                  published: true
+                }
+              },
+              variants: {
+                where: {
+                  published: true
+                }
+              }
+            }
+          },
           videoEditions: true,
           bibleCitation: {
             orderBy: {
@@ -758,10 +776,6 @@ describe('video', () => {
       prismaMock.videoVariant.findMany.mockResolvedValueOnce([
         { languageId: 'languageId' } as unknown as VideoVariant
       ])
-      // variantLanguagesCount
-      prismaMock.videoVariant.count.mockResolvedValueOnce(1)
-      // childrenCount
-      prismaMock.video.count.mockResolvedValueOnce(1)
       // variantLanguagesWithSlug
       prismaMock.videoVariant.findMany.mockResolvedValueOnce([
         { languageId: 'languageId', slug: 'slug' } as unknown as VideoVariant
@@ -803,10 +817,6 @@ describe('video', () => {
       prismaMock.videoVariant.findMany.mockResolvedValueOnce([
         { languageId: 'languageId' } as unknown as VideoVariant
       ])
-      // variantLanguagesCount
-      prismaMock.videoVariant.count.mockResolvedValueOnce(1)
-      // childrenCount
-      prismaMock.video.count.mockResolvedValueOnce(1)
       // variantLanguagesWithSlug
       prismaMock.videoVariant.findMany.mockResolvedValueOnce([
         { languageId: 'languageId', slug: 'slug' } as unknown as VideoVariant
@@ -855,6 +865,20 @@ describe('video', () => {
           }
         },
         include: {
+          _count: {
+            select: {
+              children: {
+                where: {
+                  published: true
+                }
+              },
+              variants: {
+                where: {
+                  published: true
+                }
+              }
+            }
+          },
           videoEditions: true,
           bibleCitation: {
             orderBy: {
@@ -984,10 +1008,6 @@ describe('video', () => {
       prismaMock.videoVariant.findMany.mockResolvedValueOnce([
         { languageId: 'languageId' } as unknown as VideoVariant
       ])
-      // variantLanguagesCount
-      prismaMock.videoVariant.count.mockResolvedValueOnce(1)
-      // childrenCount
-      prismaMock.video.count.mockResolvedValueOnce(1)
       // variantLanguagesWithSlug
       prismaMock.videoVariant.findMany.mockResolvedValueOnce([
         { languageId: 'languageId', slug: 'slug' } as unknown as VideoVariant
@@ -1350,7 +1370,7 @@ describe('video', () => {
         ],
         variant: { id: 'variantId' },
         variantLanguages: [{ id: 'languageId' }],
-        variantLanguagesCount: 1,
+        variantLanguagesCount: 2,
         variantLanguagesWithSlug: [
           {
             language: { id: 'languageId' },
@@ -1373,10 +1393,6 @@ describe('video', () => {
       prismaMock.videoVariant.findMany.mockResolvedValueOnce([
         { languageId: 'languageId' } as unknown as VideoVariant
       ])
-      // variantLanguagesCount
-      prismaMock.videoVariant.count.mockResolvedValueOnce(1)
-      // childrenCount
-      prismaMock.video.count.mockResolvedValueOnce(1)
       // variantLanguagesWithSlug
       prismaMock.videoVariant.findMany.mockResolvedValueOnce([
         { languageId: 'languageId', slug: 'slug' } as unknown as VideoVariant
@@ -1398,6 +1414,20 @@ describe('video', () => {
         take: 100,
         where: {},
         include: {
+          _count: {
+            select: {
+              children: {
+                where: {
+                  published: true
+                }
+              },
+              variants: {
+                where: {
+                  published: true
+                }
+              }
+            }
+          },
           bibleCitation: {
             orderBy: {
               order: 'asc'
@@ -1499,10 +1529,6 @@ describe('video', () => {
       prismaMock.videoVariant.findMany.mockResolvedValueOnce([
         { languageId: 'languageId' } as unknown as VideoVariant
       ])
-      // variantLanguagesCount
-      prismaMock.videoVariant.count.mockResolvedValueOnce(1)
-      // childrenCount
-      prismaMock.video.count.mockResolvedValueOnce(1)
       // variantLanguagesWithSlug
       prismaMock.videoVariant.findMany.mockResolvedValueOnce([
         { languageId: 'languageId', slug: 'slug' } as unknown as VideoVariant
@@ -1532,10 +1558,6 @@ describe('video', () => {
       prismaMock.videoVariant.findMany.mockResolvedValueOnce([
         { languageId: 'languageId' } as unknown as VideoVariant
       ])
-      // variantLanguagesCount
-      prismaMock.videoVariant.count.mockResolvedValueOnce(1)
-      // childrenCount
-      prismaMock.video.count.mockResolvedValueOnce(1)
       // variantLanguagesWithSlug
       prismaMock.videoVariant.findMany.mockResolvedValueOnce([
         { languageId: 'languageId', slug: 'slug' } as unknown as VideoVariant
@@ -1576,6 +1598,20 @@ describe('video', () => {
           }
         },
         include: {
+          _count: {
+            select: {
+              children: {
+                where: {
+                  published: true
+                }
+              },
+              variants: {
+                where: {
+                  published: true
+                }
+              }
+            }
+          },
           bibleCitation: {
             orderBy: {
               order: 'asc'
