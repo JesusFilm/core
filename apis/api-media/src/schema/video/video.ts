@@ -422,12 +422,12 @@ builder.prismaObjectField(Video, 'parents', (t) =>
         }
       }
       return {
-        parent: {
+        parents: {
           where: whereCondition
         }
       }
     },
-    resolve: (parent: any) => parent.parent
+    resolve: (video) => video.parents
   })
 )
 
