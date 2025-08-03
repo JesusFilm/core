@@ -112,7 +112,7 @@ export interface VideoContentFields {
    */
   slug: string;
   /**
-   * the number value of the amount of children on a video
+   * The number of published child videos associated with this video
    */
   childrenCount: number;
 }
