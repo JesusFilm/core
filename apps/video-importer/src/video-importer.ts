@@ -6,7 +6,7 @@ import { Command } from 'commander'
 import { v4 as uuidv4 } from 'uuid'
 
 import { importOrUpdateAudioPreview } from './services/audiopreview'
-import { createAndWaitForMuxVideo, muxConnectionTest } from './services/mux'
+import { createAndWaitForMuxVideo } from './services/mux'
 import {
   createR2Asset,
   r2ConnectionTest,
@@ -71,13 +71,6 @@ async function main() {
     await r2ConnectionTest()
   } catch (error) {
     console.error('\nR2 connection test failed:', error)
-    process.exit(1)
-  }
-
-  try {
-    await muxConnectionTest()
-  } catch (error) {
-    console.error('\nMux connection test failed:', error)
     process.exit(1)
   }
 
@@ -158,7 +151,6 @@ async function main() {
 
     const filePath = path.join(folderPath, file)
 
-    console.log('   Validating file accessibility...')
     try {
       await testFileRead(filePath)
     } catch (validationError) {

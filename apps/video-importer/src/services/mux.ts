@@ -101,16 +101,3 @@ export async function createAndWaitForMuxVideo(
 
   return await pollForMuxCompletion(muxId, profile)
 }
-
-export async function muxConnectionTest() {
-  const client = await getGraphQLClient()
-  const response = await client.request<MuxVideoStatusResponse>(GET_MUX_VIDEO, {
-    id: '02C2l1w7T01M5101Ks7wkI1Zd00aIT4EF7SUpPoeyeFIkaY',
-    userGenerated: false
-  })
-  if (response?.getMyMuxVideo?.readyToStream === true) {
-    console.log('Mux connection test successful')
-  } else {
-    console.log('Mux connection test failed')
-  }
-}

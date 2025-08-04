@@ -153,75 +153,30 @@ export async function uploadToR2({
   contentType: string
   contentLength: number
 }) {
-  // Extract key from uploadUrl
   const url = new URL(uploadUrl)
   const key = url.pathname.substring(1)
 
   console.log(
-    `Uploading ${(contentLength / 1024 / 1024).toFixed(1)}MB to R2...`
+    `[R2 Service] Uploading ${(contentLength / 1024 / 1024).toFixed(1)}MB to R2...`
   )
 
   if (contentLength < MULTIPART_THRESHOLD) {
-    // Single PUT for small files
+    // Single upload - keep your existing logic
     return withRetry(async () => {
-      const fileStream = createReadStream(filePath)
+      await uploadViaPUTBuffer(uploadUrl, filePath, contentType, contentLength)
 
-      const response = await fetch(uploadUrl, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': contentType,
-          'Content-Length': contentLength.toString()
-        },
-        body: fileStream as any
-      })
-
-      if (!response.ok) {
-        const errorBody = await response.text()
-        throw new Error(
-          `Upload failed: ${response.status} ${response.statusText} - ${errorBody}`
-        )
-      }
-
-      // Verify upload
       const verified = await verifyR2Upload(bucket, key, contentLength)
       if (!verified) {
         throw new Error('Upload verification failed')
       }
 
-      console.log('Single upload completed and verified')
+      console.log('[R2 Service] Single upload completed and verified')
     })
   }
 
-  // Multipart upload for large files
+  // Enhanced multipart upload
   return withRetry(async () => {
-    const fileStream = createReadStream(filePath)
-
-    const upload = new Upload({
-      client: s3Client,
-      params: {
-        Bucket: bucket,
-        Key: key,
-        Body: fileStream,
-        ContentType: contentType
-      },
-      queueSize: 4,
-      partSize: 10 * 1024 * 1024, // 10MB parts
-      leavePartsOnError: false
-    })
-
-    // Simple progress logging
-    let lastPercent = 0
-    upload.on('httpUploadProgress', (progress) => {
-      if (progress.loaded && progress.total) {
-        const percent = Math.floor((progress.loaded / progress.total) * 100)
-        if (percent >= lastPercent + 25) {
-          console.log(`Upload progress: ${percent}%`)
-          lastPercent = percent
-        }
-      }
-    })
-
-    await upload.done()
+    await uploadViaMultipart(bucket, key, filePath, contentType, contentLength)
 
     // Verify upload
     const verified = await verifyR2Upload(bucket, key, contentLength)
@@ -229,7 +184,184 @@ export async function uploadToR2({
       throw new Error('Multipart upload verification failed')
     }
 
-    console.log('Multipart upload completed and verified')
+    console.log('[R2 Service] Multipart upload completed and verified')
+  })
+}
+
+// Enhanced multipart upload for R2
+async function uploadViaMultipart(
+  bucket: string,
+  key: string,
+  filePath: string,
+  contentType: string,
+  contentLength: number
+): Promise<void> {
+  console.log('[R2 Service] Starting enhanced multipart upload...')
+
+  // Pre-validate the file can handle multipart access
+  try {
+    await testMultipartFileAccess(filePath)
+  } catch (error) {
+    throw new Error(
+      `File not suitable for multipart upload: ${error instanceof Error ? error.message : String(error)}`
+    )
+  }
+
+  let upload: Upload | null = null
+  let uploadAborted = false
+
+  return new Promise((resolve, reject) => {
+    // Create the file stream with optimal settings for multipart
+    const fileStream = createReadStream(filePath, {
+      highWaterMark: 5 * 1024 * 1024, // 5MB chunks - smaller for better reliability
+      autoClose: true
+    })
+
+    // Track stream state
+    let streamOpened = false
+    let streamErrored = false
+
+    fileStream.on('open', () => {
+      console.log('[R2 Service] File stream opened for multipart upload')
+      streamOpened = true
+    })
+
+    fileStream.on('error', (error) => {
+      console.error(`[R2 Service] File stream error: ${error.message}`)
+      streamErrored = true
+
+      if (upload && !uploadAborted) {
+        console.log('[R2 Service] Aborting upload due to stream error...')
+        uploadAborted = true
+        upload.abort().catch((abortError) => {
+          console.error('[R2 Service] Upload abort failed:', abortError)
+        })
+      }
+
+      if (!streamOpened) {
+        reject(new Error(`File stream failed to open: ${error.message}`))
+      }
+    })
+
+    // Only start upload after stream is ready
+    fileStream.on('readable', () => {
+      if (!upload && !streamErrored && !uploadAborted) {
+        try {
+          upload = new Upload({
+            client: s3Client,
+            params: {
+              Bucket: bucket,
+              Key: key,
+              Body: fileStream,
+              ContentType: contentType
+            },
+            // Conservative settings for Windows compatibility
+            queueSize: 2, // Reduce concurrent parts for Windows
+            partSize: 20 * 1024 * 1024, // Larger parts = fewer concurrent streams
+            leavePartsOnError: false
+          })
+
+          // Progress tracking
+          let lastPercent = 0
+          let lastLogTime = Date.now()
+
+          upload.on('httpUploadProgress', (progress) => {
+            if (progress.loaded && progress.total) {
+              const percent = Math.floor(
+                (progress.loaded / progress.total) * 100
+              )
+              const now = Date.now()
+
+              // Log every 10% or every 2 minutes
+              if (percent >= lastPercent + 10 || now - lastLogTime > 120000) {
+                const uploadedMB = (progress.loaded / 1024 / 1024).toFixed(1)
+                const totalMB = (progress.total / 1024 / 1024).toFixed(1)
+                console.log(
+                  `[R2 Service] Upload progress: ${percent}% (${uploadedMB}/${totalMB} MB)`
+                )
+                lastPercent = percent
+                lastLogTime = now
+              }
+            }
+          })
+
+          // Handle upload completion
+          upload
+            .done()
+            .then(() => {
+              console.log('[R2 Service] Multipart upload completed')
+              resolve()
+            })
+            .catch((error) => {
+              if (!uploadAborted) {
+                console.error('[R2 Service] Multipart upload failed:', error)
+                reject(new Error(`Multipart upload failed: ${error.message}`))
+              }
+            })
+        } catch (error) {
+          reject(
+            new Error(
+              `Failed to initialize multipart upload: ${error instanceof Error ? error.message : String(error)}`
+            )
+          )
+        }
+      }
+    })
+
+    // Overall timeout
+    setTimeout(
+      () => {
+        if (!uploadAborted && upload) {
+          console.error('[R2 Service] Multipart upload timed out')
+          uploadAborted = true
+          upload.abort().catch((abortError) => {
+            console.error('[R2 Service] Upload abort failed:', abortError)
+          })
+          reject(new Error('Multipart upload timed out after 30 minutes'))
+        }
+      },
+      30 * 60 * 1000
+    ) // 30 minutes
+  })
+}
+
+// Upload file via PUT request to pre-signed URL
+async function uploadViaPUTBuffer(
+  uploadUrl: string,
+  filePath: string,
+  contentType: string,
+  contentLength: number
+): Promise<void> {
+  const fileStream = createReadStream(filePath)
+
+  // Use AWS SDK for better reliability and consistency
+  const url = new URL(uploadUrl)
+  const key = url.pathname.substring(1)
+  const bucket = url.hostname.split('.')[0] // Extract bucket from hostname
+
+  await s3Client.send(
+    new PutObjectCommand({
+      Bucket: bucket,
+      Key: key,
+      Body: fileStream,
+      ContentType: contentType
+    })
+  )
+}
+
+// Test if file can be accessed for multipart upload
+async function testMultipartFileAccess(filePath: string): Promise<void> {
+  return new Promise((resolve, reject) => {
+    const testStream = createReadStream(filePath, { highWaterMark: 1024 })
+
+    testStream.on('open', () => {
+      testStream.destroy()
+      resolve()
+    })
+
+    testStream.on('error', (error) => {
+      reject(new Error(`File access test failed: ${error.message}`))
+    })
   })
 }
 

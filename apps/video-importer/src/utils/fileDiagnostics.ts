@@ -58,6 +58,8 @@ const WINDOWS_RESERVED_NAMES = [
 ]
 
 export async function testFileRead(filePath: string): Promise<void> {
+  console.log('Testing file read...', filePath)
+
   const startTime = Date.now()
   let bytesRead = 0
 
@@ -114,7 +116,7 @@ async function getDiskSpace(
       // Windows: Use wmic
       const drive = path.parse(filePath).root
       const { stdout } = await execAsync(
-        `wmic logicaldisk where "DeviceID='${drive.replace('\\', '')}'" get size,freespace /format:csv`
+        `wmic logicaldisk where "DeviceID='${drive.replace(/\\/g, '')}'" get size,freespace /format:csv`
       )
       const lines = stdout.split('\n').filter((line) => line.includes(','))
       if (lines.length > 0) {
@@ -275,5 +277,71 @@ export function printDiagnostics(diagnostics: FileDiagnostics): void {
     console.log('\n--- Disk Space ---')
     console.log(`Available: ${diagnostics.diskSpace.available}`)
     console.log(`Total: ${diagnostics.diskSpace.total}`)
+  }
+}
+
+export async function testMultipartFileAccess(filePath: string): Promise<void> {
+  console.log('   Testing multipart file access capability...')
+
+  const stats = statSync(filePath)
+  const testSize = Math.min(stats.size, 50 * 1024 * 1024) // Test first 50MB or whole file
+
+  // Simulate what AWS SDK does - multiple concurrent partial reads
+  const partSize = 10 * 1024 * 1024 // 10MB parts like your upload
+  const numParts = Math.ceil(testSize / partSize)
+
+  const promises = []
+
+  for (let i = 0; i < Math.min(numParts, 4); i++) {
+    // Test up to 4 concurrent parts
+    const start = i * partSize
+    const end = Math.min(start + partSize - 1, testSize - 1)
+
+    const promise = new Promise<void>((resolve, reject) => {
+      const stream = createReadStream(filePath, {
+        start,
+        end,
+        highWaterMark: 1024 * 1024
+      })
+      let bytesRead = 0
+
+      stream.on('data', (chunk) => {
+        bytesRead += chunk.length
+      })
+
+      stream.on('end', () => {
+        const expectedBytes = end - start + 1
+        if (bytesRead === expectedBytes) {
+          resolve()
+        } else {
+          reject(
+            new Error(
+              `Part ${i}: expected ${expectedBytes} bytes, got ${bytesRead}`
+            )
+          )
+        }
+      })
+
+      stream.on('error', (error) => {
+        reject(new Error(`Part ${i} read failed: ${error.message}`))
+      })
+
+      // Timeout for this part
+      setTimeout(() => {
+        stream.destroy()
+        reject(new Error(`Part ${i} read timed out`))
+      }, 10000)
+    })
+
+    promises.push(promise)
+  }
+
+  try {
+    await Promise.all(promises)
+    console.log(`   ✅ Multipart access test passed (${numParts} parts tested)`)
+  } catch (error) {
+    throw new Error(
+      `Multipart file access test failed: ${error instanceof Error ? error.message : String(error)}`
+    )
   }
 }
