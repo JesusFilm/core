@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test'
+import { expect, test } from '@playwright/test'
 
 /**
  * @check
@@ -19,45 +19,56 @@ import { test, expect } from '@playwright/test'
  *
  * Based on the Slack conversation about videos from MUX not loading in production.
  */
-test('Video playback and MUX network connectivity monitoring', async ({ page }) => {
+test('Video playback and MUX network connectivity monitoring', async ({
+  page
+}) => {
   // Use Map for atomic updates to prevent race conditions
-  const networkRequests = new Map<string, {
-    url: string
-    status: number
-    error?: string
-  }>()
+  const networkRequests = new Map<
+    string,
+    {
+      url: string
+      status: number
+      error?: string
+    }
+  >()
 
   // Helper function to safely check if a URL is video-related
   const isVideoRelatedUrl = (url: string): boolean => {
     try {
       const urlObj = new URL(url)
       const hostname = urlObj.hostname.toLowerCase()
-      
+
       // Check for specific domains using exact matching
       const allowedDomains = ['mux.com', 'litix.io', 'inferred.litix.io']
-      const isAllowedDomain = allowedDomains.some(domain => 
-        hostname === domain || hostname.endsWith('.' + domain)
+      const isAllowedDomain = allowedDomains.some(
+        (domain) => hostname === domain || hostname.endsWith('.' + domain)
       )
-      
+
       // Check for video-related path patterns
       const videoPathPatterns = ['.hls', '.m3u8', '/video', '/stream']
-      const hasVideoPath = videoPathPatterns.some(pattern => 
+      const hasVideoPath = videoPathPatterns.some((pattern) =>
         urlObj.pathname.toLowerCase().includes(pattern)
       )
-      
+
       return isAllowedDomain || hasVideoPath
     } catch {
       // Fallback for malformed URLs - use safer substring matching
       const urlLower = url.toLowerCase()
-      const safePatterns = ['mux.com/', 'litix.io/', 'inferred.litix.io/', '.hls', '.m3u8']
-      return safePatterns.some(pattern => urlLower.includes(pattern))
+      const safePatterns = [
+        'mux.com/',
+        'litix.io/',
+        'inferred.litix.io/',
+        '.hls',
+        '.m3u8'
+      ]
+      return safePatterns.some((pattern) => urlLower.includes(pattern))
     }
   }
 
   // Helper function to safely check if an error message is related to video services
   const isVideoRelatedError = (error: string): boolean => {
     const errorLower = error.toLowerCase()
-    
+
     // Check for specific error patterns related to video services only
     const videoErrorPatterns = [
       'mux.com',
@@ -69,10 +80,10 @@ test('Video playback and MUX network connectivity monitoring', async ({ page }) 
       'net::err_network_changed',
       'net::err_internet_disconnected'
     ]
-    
+
     // Only consider errors that are specifically related to video services
     // Ignore general 422/400 errors that might be from analytics or other services
-    return videoErrorPatterns.some(pattern => errorLower.includes(pattern))
+    return videoErrorPatterns.some((pattern) => errorLower.includes(pattern))
   }
 
   // Listen to all network requests
