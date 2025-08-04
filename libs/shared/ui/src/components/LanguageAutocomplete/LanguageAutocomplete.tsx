@@ -48,6 +48,7 @@ export interface LanguageAutocompleteProps {
   renderOption?: (params: HTMLAttributes<HTMLLIElement>) => ReactNode
   popper?: Omit<PopperProps, 'open'>
   error?: boolean
+  disableSort?: boolean
 }
 
 export function LanguageAutocomplete({
@@ -60,34 +61,46 @@ export function LanguageAutocomplete({
   renderOption,
   helperText,
   popper,
-  error
+  error,
+  disableSort = false
 }: LanguageAutocompleteProps): ReactElement {
   const options = useMemo(() => {
-    return (
-      languages?.map(({ id, name, slug }) => {
-        const localLanguageName = name.find(({ primary }) => !primary)?.value
-        const nativeLanguageName = name.find(({ primary }) => primary)?.value
+    if (!languages) return []
 
-        return {
-          id,
-          localName: localLanguageName,
-          nativeName: nativeLanguageName,
-          slug
-        }
-      }) ?? []
-    )
+    const validOptions: LanguageOption[] = []
+
+    for (const language of languages) {
+      // Skip languages with empty or null name arrays
+      if (!language.name || language.name.length === 0) {
+        continue
+      }
+
+      const { id, name, slug, ...rest } = language
+      const localLanguageName = name.find(({ primary }) => !primary)?.value
+      const nativeLanguageName = name.find(({ primary }) => primary)?.value
+
+      validOptions.push({
+        id,
+        localName: localLanguageName,
+        nativeName: nativeLanguageName,
+        slug,
+        ...rest // Preserve additional properties like __type
+      })
+    }
+
+    return validOptions
   }, [languages])
 
   const sortedOptions = useMemo(() => {
-    if (options.length > 0) {
+    if (options.length > 0 && !disableSort) {
       return options.sort((a, b) => {
         return (a.localName ?? a.nativeName ?? '').localeCompare(
           b.localName ?? b.nativeName ?? ''
         )
       })
     }
-    return []
-  }, [options])
+    return options
+  }, [options, disableSort])
 
   const defaultRenderInput = (
     params: AutocompleteRenderInputParams
