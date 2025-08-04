@@ -46,7 +46,7 @@ describe('video', () => {
     studyQuestions: VideoStudyQuestion[]
     imageAlt: VideoImageAlt[]
     children: Video[]
-    parent: Video[]
+    parents: Video[]
     subtitles: VideoSubtitle[]
     images: CloudflareImage[]
     cloudflareAssets: CloudflareR2[]
@@ -213,7 +213,7 @@ describe('video', () => {
         }
       ],
       children,
-      parent: parents,
+      parents,
       subtitles: [
         {
           id: 'subtitleId',
@@ -700,7 +700,7 @@ describe('video', () => {
               languageId: '529'
             }
           },
-          parent: {
+          parents: {
             where: {}
           },
           children: {
@@ -894,7 +894,7 @@ describe('video', () => {
               languageId: '987'
             }
           },
-          parent: {
+          parents: {
             where: {}
           },
           children: {
@@ -1430,7 +1430,7 @@ describe('video', () => {
               languageId: '529'
             }
           },
-          parent: {
+          parents: {
             where: {}
           },
           children: {
@@ -1574,7 +1574,7 @@ describe('video', () => {
           children: {
             where: {}
           },
-          parent: {
+          parents: {
             where: {}
           },
           description: {
