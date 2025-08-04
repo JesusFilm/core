@@ -42,6 +42,8 @@ export function RadioOption(props: TreeBlock<RadioOptionBlock>): ReactElement {
     ) as TreeBlock<RadioQuestionBlock>
   }, [allBlocks, selectedBlock])
 
+  const disabled = !parentBlock?.gridView === true
+
   useEffect(() => {
     dispatch({
       type: 'SetSelectedAttributeIdAction',
@@ -63,7 +65,7 @@ export function RadioOption(props: TreeBlock<RadioOptionBlock>): ReactElement {
         id={`${props.id}-radio-option-image`}
         icon={<Image3Icon />}
         name={t('Image Source')}
-        disabled={parentBlock?.gridView === false}
+        disabled={disabled}
         value={
           (selectedBlock as TreeBlock<RadioOptionBlock>)
             ?.pollOptionImageBlockId ?? t('No image')
