@@ -390,16 +390,16 @@ export const VideoVariant = builder.prismaObject('VideoVariant', {
         },
         downloads: true
       }),
-      resolve: async (parent, _args, context) => {
+      resolve: async (videoVariant, _args, context) => {
         if (
           context.clientName != null &&
-          parent.video?.restrictDownloadPlatforms.includes(
+          videoVariant.video?.restrictDownloadPlatforms.includes(
             context.clientName as Platform
           )
         ) {
           return []
         }
-        return parent.downloads
+        return videoVariant.downloads
       }
     }),
     duration: t.int({
@@ -459,7 +459,9 @@ export const VideoVariant = builder.prismaObject('VideoVariant', {
           }
         }
       }),
-      resolve: (parent: any) => parent.videoEdition._count.videoSubtitles
+      // any because of nested types not being passed in relation context
+      resolve: (videoVariant: any) =>
+        videoVariant.videoEdition._count.videoSubtitles
     }),
     slug: t.exposeString('slug', {
       nullable: false,

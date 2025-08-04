@@ -213,7 +213,7 @@ describe('video', () => {
         }
       ],
       children,
-      parents: parents,
+      parents,
       subtitles: [
         {
           id: 'subtitleId',
