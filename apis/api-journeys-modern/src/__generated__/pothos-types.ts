@@ -474,7 +474,7 @@ export default interface PrismaTypes {
         Where: Prisma.BlockWhereInput;
         Create: {};
         Update: {};
-        RelationName: "targetActions" | "action" | "coverBlock" | "coverBlockParent" | "journey" | "nextBlock" | "nextBlockParents" | "parentBlock" | "childBlocks" | "pollOptionImage" | "pollOptionImageParent" | "posterBlock" | "posterBlockParent" | "creatorImageBlockParent" | "logoImageBlockParent" | "menuStepBlockParent" | "primaryImageBlockParent";
+        RelationName: "targetActions" | "action" | "coverBlock" | "coverBlockParent" | "journey" | "nextBlock" | "nextBlockParents" | "parentBlock" | "childBlocks" | "pollOptionImageBlock" | "pollOptionImageBlockParent" | "posterBlock" | "posterBlockParent" | "creatorImageBlockParent" | "logoImageBlockParent" | "menuStepBlockParent" | "primaryImageBlockParent";
         ListRelations: "targetActions" | "nextBlockParents" | "childBlocks";
         Relations: {
             targetActions: {
@@ -522,12 +522,12 @@ export default interface PrismaTypes {
                 Name: "Block";
                 Nullable: false;
             };
-            pollOptionImage: {
+            pollOptionImageBlock: {
                 Shape: Block | null;
                 Name: "Block";
                 Nullable: true;
             };
-            pollOptionImageParent: {
+            pollOptionImageBlockParent: {
                 Shape: Block | null;
                 Name: "Block";
                 Nullable: true;

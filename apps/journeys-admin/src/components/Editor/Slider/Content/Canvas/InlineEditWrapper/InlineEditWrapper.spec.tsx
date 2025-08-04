@@ -193,7 +193,7 @@ describe('InlineEditWrapper', () => {
       id: 'radioOption.id',
       label: 'option',
       action: null,
-      pollOptionImageId: null,
+      pollOptionImageBlockId: null,
       children: []
     }
 

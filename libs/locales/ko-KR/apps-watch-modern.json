@@ -1,0 +1,17 @@
+{
+  "Metadata": {
+    "pageTitle": "{title} | 예수 영화 프로젝트"
+  },
+  "RootIndexPage": {
+    "pageTitle": "시계",
+    "title": "무료 복음 동영상 <underline>스트리밍</underline> 라이브러리.",
+    "description": "2000개 이상의 언어로 시청하고, 배우고, 복음을 나누세요."
+  },
+  "DatadogErrorBoundary": {
+    "somethingWentWrong": "문제가 발생했습니다.",
+    "anErrorOccurred": "이 페이지를 로드하는 동안 오류가 발생했습니다. 새로 고침해 주세요.",
+    "errorDetails": "오류 세부 정보",
+    "tryAgain": "다시 시도",
+    "unknownError": "알 수 없는 오류"
+  }
+}

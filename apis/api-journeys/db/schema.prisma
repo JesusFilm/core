@@ -521,7 +521,7 @@ model Block {
   muted                   Boolean?
   autoplay                Boolean?
   posterBlockId           String?              @unique
-  pollOptionImageId       String?              @unique
+  pollOptionImageBlockId  String?              @unique
   fullsize                Boolean?
   videoId                 String?
   videoVariantLanguageId  String?
@@ -547,8 +547,8 @@ model Block {
   posterBlockParent       Block?               @relation("PosterBlock")
   coverBlock              Block?               @relation("CoverBlock", fields: [coverBlockId], references: [id])
   coverBlockParent        Block?               @relation("CoverBlock")
-  pollOptionImage         Block?               @relation("PollOptionImage", fields: [pollOptionImageId], references: [id])
-  pollOptionImageParent   Block?               @relation("PollOptionImage")
+  pollOptionImageBlock    Block?               @relation("PollOptionImageBlock", fields: [pollOptionImageBlockId], references: [id])
+  pollOptionImageBlockParent Block?               @relation("PollOptionImageBlock")
   primaryImageBlockParent Journey?             @relation("PrimaryImageBlock")
   creatorImageBlockParent Journey?             @relation("CreatorImageBlock")
   nextBlock               Block?               @relation("NextBlock", fields: [nextBlockId], references: [id])

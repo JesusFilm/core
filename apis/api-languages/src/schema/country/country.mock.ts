@@ -26,3 +26,14 @@ export const continentName = {
   languageId: '529',
   primary: true
 }
+
+export const countryLanguage = {
+  id: 'countryLanguageId',
+  countryId: country.id,
+  languageId: '529',
+  speakers: 100,
+  displaySpeakers: 100,
+  primary: true,
+  suggested: false,
+  order: 1
+}

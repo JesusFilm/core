@@ -1,0 +1,13 @@
+{
+  "404": "४०४",
+  "500": "५००",
+  "%s | Next Steps": "%s | अर्को चरणहरू",
+  "Next Steps": "अर्को चरणहरू",
+  "This Journey is not available.": "यो यात्रा उपलब्ध छैन।",
+  "Oops! Something went wrong.": "उफ्! केही गडबड भयो।",
+  "<0>This page has been created to test the embed code.<1>If youve found this page in error click the button below.</1></0>": "<0>यो पृष्ठ इम्बेड कोड परीक्षण गर्न सिर्जना गरिएको हो।<1> यदि तपाईंले यो पृष्ठ त्रुटिमा फेला पार्नुभयो भने तलको बटनमा क्लिक गर्नुहोस्।</1></0>",
+  "Get me out of here!": "मलाई यहाँबाट निकाल!",
+  "Terms & Conditions": "नियम तथा सर्तहरू",
+  "Privacy Policy": "गोपनीयता नीति",
+  "NextSteps © {{year}}": "अर्को चरणहरू © {{year}}"
+}

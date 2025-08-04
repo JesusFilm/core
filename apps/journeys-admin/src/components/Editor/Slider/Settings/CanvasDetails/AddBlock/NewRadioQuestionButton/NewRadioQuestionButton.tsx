@@ -79,7 +79,7 @@ export function NewRadioQuestionButton(): ReactElement {
       parentOrder: 0,
       label: t('Option 1'),
       action: null,
-      pollOptionImageId: null,
+      pollOptionImageBlockId: null,
       __typename: 'RadioOptionBlock'
     }
     const radioOptionBlock2: RadioOptionBlock = {
@@ -88,7 +88,7 @@ export function NewRadioQuestionButton(): ReactElement {
       parentOrder: 1,
       label: t('Option 2'),
       action: null,
-      pollOptionImageId: null,
+      pollOptionImageBlockId: null,
       __typename: 'RadioOptionBlock'
     }
 

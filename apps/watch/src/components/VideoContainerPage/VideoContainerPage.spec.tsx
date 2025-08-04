@@ -39,6 +39,19 @@ describe('VideoContainerPage', () => {
     jest.clearAllMocks()
   })
 
+  it('should show language switcher', () => {
+    render(
+      <MockedProvider>
+        <SnackbarProvider>
+          <VideoProvider value={{ content: videos[0] }}>
+            <VideoContainerPage />
+          </VideoProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+    expect(screen.getByTestId('LanguageRoundedIcon')).toBeInTheDocument()
+  })
+
   it('should render ContainerHero', () => {
     const { getByText } = render(
       <MockedProvider>
@@ -86,7 +99,7 @@ describe('VideoContainerPage', () => {
     const { getByRole } = render(
       <MockedProvider mocks={[getVideoChildrenMock]}>
         <SnackbarProvider>
-          <VideoProvider value={{ content: videos[0] }}>
+          <VideoProvider value={{ content: videos[5] }}>
             <VideoContainerPage />
           </VideoProvider>
         </SnackbarProvider>

@@ -99,7 +99,7 @@ describe('SelectableWrapper', () => {
     parentBlockId: 'RadioQuestion1',
     parentOrder: 0,
     action: null,
-    pollOptionImageId: null,
+    pollOptionImageBlockId: null,
     children: []
   }
 
@@ -118,7 +118,7 @@ describe('SelectableWrapper', () => {
         parentBlockId: 'RadioQuestion1',
         parentOrder: 1,
         action: null,
-        pollOptionImageId: null,
+        pollOptionImageBlockId: null,
         children: []
       }
     ]

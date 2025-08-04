@@ -1,6 +1,7 @@
 import { gql, useMutation } from '@apollo/client'
 import Box from '@mui/material/Box'
 import { SimplePaletteColorOptions } from '@mui/material/styles'
+import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 import { v4 as uuidv4 } from 'uuid'
@@ -12,6 +13,7 @@ import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { StyledRadioOption } from '@core/journeys/ui/RadioOption'
 import { RadioQuestion } from '@core/journeys/ui/RadioQuestion'
+import { getPollOptionBorderStyles } from '@core/journeys/ui/RadioQuestion/utils/getPollOptionBorderStyles'
 import AddSquare4Icon from '@core/shared/ui/icons/AddSquare4'
 import { adminTheme } from '@core/shared/ui/themes/journeysAdmin/theme'
 
@@ -66,7 +68,7 @@ export function RadioQuestionEdit({
       parentBlockId: id,
       parentOrder: selectedBlock?.children?.length ?? 0,
       action: null,
-      pollOptionImageId: null,
+      pollOptionImageBlockId: null,
       __typename: 'RadioOptionBlock'
     }
 
@@ -128,9 +130,13 @@ export function RadioQuestionEdit({
           <AddSquare4Icon sx={{ color: `${adminPrimaryColor.main}` }} />
         }
         onClick={handleCreateOption}
-        sx={{ borderBottomLeftRadius: 8, borderBottomRightRadius: 8 }}
+        sx={(theme) => ({
+          borderBottomLeftRadius: 8,
+          borderBottomRightRadius: 8,
+          ...getPollOptionBorderStyles(theme, { important: true })
+        })}
       >
-        {t('Add New Option')}
+        <Typography variant="body1">{t('Add Option')}</Typography>
       </StyledRadioOption>
     </Box>
   )

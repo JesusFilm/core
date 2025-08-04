@@ -11,7 +11,7 @@ describe('transformer', () => {
           parentOrder: 1,
           label: 'Option 4',
           action: null,
-          pollOptionImageId: null
+          pollOptionImageBlockId: null
         },
         {
           __typename: 'StepBlock',
@@ -48,7 +48,7 @@ describe('transformer', () => {
           parentOrder: 0,
           label: 'Option 1',
           action: null,
-          pollOptionImageId: null
+          pollOptionImageBlockId: null
         },
         {
           __typename: 'RadioOptionBlock',
@@ -57,7 +57,7 @@ describe('transformer', () => {
           parentOrder: 0,
           label: 'Option 3',
           action: null,
-          pollOptionImageId: null
+          pollOptionImageBlockId: null
         },
         {
           __typename: 'StepBlock',
@@ -75,7 +75,7 @@ describe('transformer', () => {
           parentOrder: 1,
           label: 'Option 2',
           action: null,
-          pollOptionImageId: null
+          pollOptionImageBlockId: null
         },
         {
           __typename: 'RadioQuestionBlock',
@@ -98,7 +98,7 @@ describe('transformer', () => {
                 parentOrder: 0,
                 label: 'Option 1',
                 action: null,
-                pollOptionImageId: null
+                pollOptionImageBlockId: null
               },
               {
                 children: [],
@@ -108,7 +108,7 @@ describe('transformer', () => {
                 parentOrder: 1,
                 label: 'Option 2',
                 action: null,
-                pollOptionImageId: null
+                pollOptionImageBlockId: null
               }
             ],
             __typename: 'RadioQuestionBlock',
@@ -138,7 +138,7 @@ describe('transformer', () => {
                 parentOrder: 0,
                 label: 'Option 3',
                 action: null,
-                pollOptionImageId: null
+                pollOptionImageBlockId: null
               },
               {
                 children: [],
@@ -148,7 +148,7 @@ describe('transformer', () => {
                 parentOrder: 1,
                 label: 'Option 4',
                 action: null,
-                pollOptionImageId: null
+                pollOptionImageBlockId: null
               }
             ],
             __typename: 'RadioQuestionBlock',

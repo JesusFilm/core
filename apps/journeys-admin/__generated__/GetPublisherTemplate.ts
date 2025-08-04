@@ -174,11 +174,11 @@ export interface GetPublisherTemplate_publisherTemplate_blocks_RadioOptionBlock 
   label: string;
   action: GetPublisherTemplate_publisherTemplate_blocks_RadioOptionBlock_action | null;
   /**
-   * pollOptionImageId is present if a child block should be used as a poll option image.
-   * This child block should not be rendered normally, instead it should be used
-   * as a poll option image. Blocks are often of type ImageBlock
+   * pollOptionImageBlockId is present if a child block should be used as a poll option image.
+   *       This child block should not be rendered normally, instead it should be used
+   *       as a poll option image. Blocks are often of type ImageBlock
    */
-  pollOptionImageId: string | null;
+  pollOptionImageBlockId: string | null;
 }
 
 export interface GetPublisherTemplate_publisherTemplate_blocks_RadioQuestionBlock {

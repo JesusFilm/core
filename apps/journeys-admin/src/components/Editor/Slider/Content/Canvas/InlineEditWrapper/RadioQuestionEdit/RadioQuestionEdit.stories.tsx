@@ -69,7 +69,7 @@ const block: TreeBlock<RadioQuestionFields> = {
       parentBlockId: 'RadioQuestion',
       parentOrder: 0,
       action: null,
-      pollOptionImageId: null,
+      pollOptionImageBlockId: null,
       children: []
     },
     {
@@ -79,7 +79,7 @@ const block: TreeBlock<RadioQuestionFields> = {
       parentBlockId: 'RadioQuestion',
       parentOrder: 1,
       action: null,
-      pollOptionImageId: null,
+      pollOptionImageBlockId: null,
       children: []
     }
   ]
