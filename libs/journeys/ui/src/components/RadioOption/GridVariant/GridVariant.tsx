@@ -88,7 +88,6 @@ export const StyledGridRadioOption = styled(Card)<CardProps>(({ theme }) => ({
   padding: 12,
   height: '100%',
   minHeight: '80px',
-  border: '1px solid',
   wordBreak: 'break-word',
   transition: theme.transitions.create(
     ['background-color', 'border-color', 'transform', 'box-shadow', 'opacity'],
@@ -166,11 +165,9 @@ export function GridVariant({
         <Box
           sx={{
             width: '100%',
-            minWidth: '106px',
-            minHeight: '106px',
+            minWidth: '100px',
+            minHeight: '100px',
             maxHeight: '127px',
-            backgroundColor: (theme) =>
-              theme.palette.mode === 'dark' ? '#26262E' : '#6D6F81',
             borderRadius: 2,
             position: 'relative',
             overflow: 'hidden'
@@ -183,7 +180,13 @@ export function GridVariant({
                   variant="rectangular"
                   width="100%"
                   height="100%"
-                  sx={{ position: 'absolute', top: 0, left: 0 }}
+                  sx={{
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    backgroundColor: (theme) =>
+                      theme.palette.mode === 'dark' ? '#26262E' : '#6D6F81'
+                  }}
                 />
               )}
               <NextImage
@@ -222,7 +225,9 @@ export function GridVariant({
                 height: '100%',
                 position: 'absolute',
                 top: 0,
-                left: 0
+                left: 0,
+                backgroundColor: (theme) =>
+                  theme.palette.mode === 'dark' ? '#26262E' : '#6D6F81'
               }}
             >
               <LogoGrayscale
