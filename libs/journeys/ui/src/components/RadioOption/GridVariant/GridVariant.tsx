@@ -88,7 +88,6 @@ export const StyledGridRadioOption = styled(Card)<CardProps>(({ theme }) => ({
   padding: 12,
   height: '100%',
   minHeight: '80px',
-
   wordBreak: 'break-word',
   transition: theme.transitions.create(
     ['background-color', 'border-color', 'transform', 'box-shadow', 'opacity'],
