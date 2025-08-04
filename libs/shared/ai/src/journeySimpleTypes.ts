@@ -91,12 +91,8 @@ export const journeySimpleCardSchema = z.object({
   id: z
     .string()
     .describe('The id of the card. Something like card-1, card-2, etc.'),
-  x: z
-    .number()
-    .describe('The x coordinate for the card layout position.'),
-  y: z
-    .number()
-    .describe('The y coordinate for the card layout position.'),
+  x: z.number().describe('The x coordinate for the card layout position.'),
+  y: z.number().describe('The y coordinate for the card layout position.'),
   heading: z
     .string()
     .optional()
