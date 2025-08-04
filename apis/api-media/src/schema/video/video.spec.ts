@@ -660,8 +660,8 @@ describe('video', () => {
             }
           },
           variants: {
-            where: {
-              published: true
+            select: {
+              languageId: true
             }
           },
           videoEditions: true,
@@ -848,8 +848,8 @@ describe('video', () => {
             }
           },
           variants: {
-            where: {
-              published: true
+            select: {
+              languageId: true
             }
           },
           videoEditions: true,
