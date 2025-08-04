@@ -322,6 +322,35 @@ export async function updateSimpleJourney(
         }
       }
 
+      if (card.video != null) {
+        const nextStepBlock =
+          card.defaultNextCard != null
+            ? stepBlocks.find((s) => s.simpleCardId === card.defaultNextCard)
+            : undefined
+        await tx.block.create({
+          data: {
+            journeyId,
+            typename: 'VideoBlock',
+            videoId: card.video.videoId,
+            source: card.video.source,
+            videoVariantLanguageId: card.video.videoVariantLanguageId,
+            title: card.video.title,
+            description: card.video.description,
+            parentBlockId: cardBlockId,
+            parentOrder: parentOrder++,
+            duration: card.video.duration,
+            action:
+              nextStepBlock != null
+                ? {
+                    create: {
+                      blockId: nextStepBlock.stepBlockId
+                    }
+                  }
+                : undefined
+          }
+        })
+      }
+
       if (card.defaultNextCard != null) {
         const nextStepBlock =
           card.defaultNextCard != null

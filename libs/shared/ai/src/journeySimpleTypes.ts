@@ -99,7 +99,12 @@ export const journeySimpleVideoSchema = z.object({
     .optional()
     .describe('Language variant ID for internal videos.'),
   title: z.string().optional().describe('The title of the video.'),
-  description: z.string().optional().describe('The description of the video.')
+  description: z.string().optional().describe('The description of the video.'),
+  duration: z
+    .number()
+    .int()
+    .positive()
+    .describe('The duration of the video in seconds.')
 })
 
 // --- Card Schemas ---
