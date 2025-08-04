@@ -181,7 +181,13 @@ export function GridVariant({
                   variant="rectangular"
                   width="100%"
                   height="100%"
-                  sx={{ position: 'absolute', top: 0, left: 0 }}
+                  sx={{
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    backgroundColor: (theme) =>
+                      theme.palette.mode === 'dark' ? '#26262E' : '#6D6F81'
+                  }}
                 />
               )}
               <NextImage
