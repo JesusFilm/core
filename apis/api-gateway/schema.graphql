@@ -1078,7 +1078,7 @@ type Video @join__type(graph: API_JOURNEYS, key: "id primaryLanguageId", extensi
   slug: String! @join__field(graph: API_MEDIA) 
   noIndex: Boolean @join__field(graph: API_MEDIA) 
   """
-  the number value of the amount of children on a video
+  The number of published child videos associated with this video
   """
   childrenCount: Int! @join__field(graph: API_MEDIA) 
   variantLanguagesWithSlug(input: VideoVariantFilter) : [LanguageWithSlug!]! @join__field(graph: API_MEDIA) 
