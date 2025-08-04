@@ -1,4 +1,4 @@
-type CustomDomain {
+type CustomDomain @shareable {
   id: ID!
   team: Team!
   name: String!
@@ -7,7 +7,7 @@ type CustomDomain {
   routeAllTeamJourneys: Boolean!
 }
 
-type CustomDomainCheck {
+type CustomDomainCheck @shareable {
   """
   Is the domain correctly configured in the DNS?
   If false, A Record and CNAME Record should be added by the user.
@@ -41,14 +41,14 @@ input CustomDomainUpdateInput {
   routeAllTeamJourneys: Boolean
 }
 
-type CustomDomainVerification {
+type CustomDomainVerification @shareable {
   type: String!
   domain: String!
   value: String!
   reason: String!
 }
 
-type CustomDomainVerificationResponse {
+type CustomDomainVerificationResponse @shareable {
   code: String!
   message: String!
 }

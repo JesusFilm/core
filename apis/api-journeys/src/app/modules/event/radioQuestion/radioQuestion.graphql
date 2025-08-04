@@ -19,7 +19,7 @@ input RadioQuestionSubmissionEventCreateInput {
   value: String
 }
 
-type RadioQuestionSubmissionEvent implements Event {
+type RadioQuestionSubmissionEvent implements Event @shareable {
   id: ID!
   """
   ID of the journey that the radioQuestionBlock belongs to

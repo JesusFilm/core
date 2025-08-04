@@ -2,7 +2,7 @@
 JourneyEvent aggregates all event types. For detailed event type definitions,
 see the specific event files in the event module
 """
-type JourneyEvent implements Event {
+type JourneyEvent implements Event @shareable {
   """
   Base event fields from Event interface
   """
@@ -37,12 +37,12 @@ type JourneyEvent implements Event {
   visitorPhone: String
 }
 
-type JourneyEventEdge {
+type JourneyEventEdge @shareable {
   cursor: String!
   node: JourneyEvent!
 }
 
-type JourneyEventsConnection {
+type JourneyEventsConnection @shareable {
   edges: [JourneyEventEdge!]!
   pageInfo: PageInfo!
 }
