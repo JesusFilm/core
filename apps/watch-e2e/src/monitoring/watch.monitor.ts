@@ -162,15 +162,6 @@ test('Video playback and MUX network connectivity monitoring', async ({
     { timeout: 10000 }
   )
 
-  // Wait for video to start loading (this might take a moment)
-  await page.waitForFunction(
-    () => {
-      // Check if we have any video-related network activity that has completed
-      return true // We'll let the network analysis handle the actual checking
-    },
-    { timeout: 5000 }
-  )
-
   // Analyze network requests
   const failedRequests = networkRequests.filter(
     (req) => req.status === 0 || req.error
