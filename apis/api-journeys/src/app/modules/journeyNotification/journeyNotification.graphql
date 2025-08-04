@@ -1,4 +1,4 @@
-type JourneyNotification {
+type JourneyNotification @shareable {
   id: ID!
   userId: ID!
   journeyId: ID!

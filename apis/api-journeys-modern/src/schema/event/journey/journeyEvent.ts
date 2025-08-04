@@ -1,11 +1,10 @@
-import { prisma } from '../../../lib/prisma'
 import { builder } from '../../builder'
 import { MessagePlatform, VideoBlockSource } from '../../enums'
 import { Language } from '../../language/language'
 import { ButtonActionEnum } from '../button/enums'
 import { EventInterface } from '../event'
 
-const JourneyEventRef = builder.prismaNode('Event', {
+export const JourneyEventRef = builder.prismaNode('Event', {
   variant: 'JourneyEvent',
   interfaces: [EventInterface],
   id: { field: 'id' },
@@ -20,6 +19,9 @@ const JourneyEventRef = builder.prismaNode('Event', {
     language: t.field({
       type: Language,
       nullable: true,
+      select: {
+        languageId: true
+      },
       resolve: async (event) => {
         if (!event.languageId) return null
         // Return a reference to the federated Language entity
@@ -40,49 +42,45 @@ const JourneyEventRef = builder.prismaNode('Event', {
     journeySlug: t.field({
       type: 'String',
       nullable: true,
+      select: {
+        journey: {
+          select: {
+            slug: true
+          }
+        }
+      },
       resolve: async (event) => {
-        if (!event.journeyId) return null
-        const journey = await prisma.journey.findUnique({
-          where: { id: event.journeyId },
-          select: { slug: true }
-        })
-        return journey?.slug ?? null
+        return event.journey?.slug ?? null
       }
     }),
     visitorName: t.field({
       type: 'String',
       nullable: true,
-      resolve: async (event) => {
-        if (!event.visitorId) return null
-        const visitor = await prisma.visitor.findUnique({
-          where: { id: event.visitorId },
-          select: { name: true }
-        })
-        return visitor?.name ?? null
+      select: {
+        name: true
+      },
+      resolve: async (event: any) => {
+        return event.visitor?.name ?? null
       }
     }),
     visitorEmail: t.field({
       type: 'String',
       nullable: true,
-      resolve: async (event) => {
-        if (!event.visitorId) return null
-        const visitor = await prisma.visitor.findUnique({
-          where: { id: event.visitorId },
-          select: { email: true }
-        })
-        return visitor?.email ?? null
+      select: {
+        email: true
+      },
+      resolve: async (event: any) => {
+        return event.visitor?.email ?? null
       }
     }),
     visitorPhone: t.field({
       type: 'String',
       nullable: true,
-      resolve: async (event) => {
-        if (!event.visitorId) return null
-        const visitor = await prisma.visitor.findUnique({
-          where: { id: event.visitorId },
-          select: { phone: true }
-        })
-        return visitor?.phone ?? null
+      select: {
+        phone: true
+      },
+      resolve: async (event: any) => {
+        return event.visitor?.phone ?? null
       }
     })
   })

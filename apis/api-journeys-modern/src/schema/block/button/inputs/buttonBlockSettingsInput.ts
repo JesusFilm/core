@@ -1,4 +1,5 @@
-import { builder } from '../../../../builder'
+import { builder } from '../../../builder'
+import { ButtonAlignment } from '../enums'
 
 export const ButtonBlockSettingsInput = builder.inputType(
   'ButtonBlockSettingsInput',

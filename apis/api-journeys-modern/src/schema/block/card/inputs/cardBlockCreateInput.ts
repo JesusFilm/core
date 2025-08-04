@@ -1,4 +1,5 @@
-import { builder } from '../../../../builder'
+import { builder } from '../../../builder'
+import { ThemeMode, ThemeName } from '../enums'
 
 export const CardBlockCreateInput = builder.inputType('CardBlockCreateInput', {
   fields: (t) => ({

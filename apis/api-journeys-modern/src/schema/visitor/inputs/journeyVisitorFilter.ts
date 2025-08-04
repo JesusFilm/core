@@ -2,7 +2,7 @@ import { builder } from '../../builder'
 
 export const JourneyVisitorFilter = builder.inputType('JourneyVisitorFilter', {
   fields: (t) => ({
-    journeyId: t.id({ required: true }),
+    journeyId: t.string({ required: true }),
     hasChatStarted: t.boolean({ required: false }),
     hasPollAnswers: t.boolean({ required: false }),
     hasTextResponse: t.boolean({ required: false }),

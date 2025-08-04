@@ -1,4 +1,4 @@
-import { builder } from '../../../../builder'
+import { builder } from '../../../builder'
 
 export const GridItemBlockCreateInput = builder.inputType(
   'GridItemBlockCreateInput',

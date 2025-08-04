@@ -1,4 +1,6 @@
-import { builder } from '../../../../builder'
+import { builder } from '../../../builder'
+import { ButtonColor, ButtonSize, ButtonVariant } from '../enums'
+import { ButtonBlockSettingsInput } from '../inputs/buttonBlockSettingsInput'
 
 export const ButtonBlockUpdateInput = builder.inputType(
   'ButtonBlockUpdateInput',

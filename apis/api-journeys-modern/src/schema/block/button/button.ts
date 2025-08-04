@@ -100,12 +100,10 @@ export const ButtonBlock = builder.prismaObject('Block', {
       type: ActionInterface,
       nullable: true,
       directives: { shareable: true },
-      resolve: async (block) => {
-        const action = await prisma.action.findUnique({
-          where: { parentBlockId: block.id }
-        })
-        return action
-      }
+      select: {
+        action: true
+      },
+      resolve: async (block) => block.action
     })
   })
 })

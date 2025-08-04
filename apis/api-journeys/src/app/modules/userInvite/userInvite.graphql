@@ -1,4 +1,4 @@
-type UserInvite @key(fields: "id") {
+type UserInvite @key(fields: "id") @shareable {
   id: ID!
   journeyId: ID!
   senderId: ID!
