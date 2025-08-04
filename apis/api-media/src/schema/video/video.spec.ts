@@ -213,7 +213,7 @@ describe('video', () => {
         }
       ],
       children,
-      parents: parents,
+      parents,
       subtitles: [
         {
           id: 'subtitleId',
@@ -598,12 +598,16 @@ describe('video', () => {
             }
           }
         ],
-        variantLanguages: [{ id: 'languageId' }],
+        variantLanguages: [{ id: 'languageId2' }, { id: 'languageId1' }],
         variantLanguagesCount: 2,
         variantLanguagesWithSlug: [
           {
-            language: { id: 'languageId' },
-            slug: 'slug'
+            language: { id: 'languageId2' },
+            slug: 'slug2'
+          },
+          {
+            language: { id: 'languageId1' },
+            slug: 'slug1'
           }
         ],
         images: [
@@ -626,14 +630,8 @@ describe('video', () => {
 
     it('should query videos', async () => {
       prismaMock.video.findMany.mockResolvedValueOnce(videos)
-      // variantLanguages
-      prismaMock.videoVariant.findMany.mockResolvedValueOnce([
-        { languageId: 'languageId' } as unknown as VideoVariant
-      ])
-      // variantLanguagesWithSlug
-      prismaMock.videoVariant.findMany.mockResolvedValueOnce([
-        { languageId: 'languageId', slug: 'slug' } as unknown as VideoVariant
-      ])
+      // overflow queries
+      prismaMock.video.findUniqueOrThrow.mockResolvedValue(videos[0])
       // variant
       prismaMock.videoVariant.findUnique.mockResolvedValueOnce({
         id: 'variantId'
@@ -662,8 +660,8 @@ describe('video', () => {
             }
           },
           variants: {
-            where: {
-              published: true
+            select: {
+              languageId: true
             }
           },
           videoEditions: true,
@@ -758,6 +756,18 @@ describe('video', () => {
           }
         }
       })
+      expect(prismaMock.video.findUniqueOrThrow).toHaveBeenCalledWith({
+        include: {
+          variants: {
+            where: {
+              published: true
+            }
+          }
+        },
+        where: {
+          id: 'videoId'
+        }
+      })
       expect(data).toHaveProperty('data.videos', result)
     })
 
@@ -765,15 +775,8 @@ describe('video', () => {
       prismaMock.video.findMany.mockResolvedValueOnce([
         { ...videos[0], slug: 'slug', noIndex: true }
       ])
-
-      // variantLanguages
-      prismaMock.videoVariant.findMany.mockResolvedValueOnce([
-        { languageId: 'languageId' } as unknown as VideoVariant
-      ])
-      // variantLanguagesWithSlug
-      prismaMock.videoVariant.findMany.mockResolvedValueOnce([
-        { languageId: 'languageId', slug: 'slug' } as unknown as VideoVariant
-      ])
+      // overflow queries
+      prismaMock.video.findUniqueOrThrow.mockResolvedValue(videos[0])
       // variant
       prismaMock.videoVariant.findUnique.mockResolvedValueOnce(null)
 
@@ -795,15 +798,8 @@ describe('video', () => {
 
     it('should query videoVariants with variables', async () => {
       prismaMock.video.findMany.mockResolvedValueOnce(videos)
-
-      // variantLanguages
-      prismaMock.videoVariant.findMany.mockResolvedValueOnce([
-        { languageId: 'languageId' } as unknown as VideoVariant
-      ])
-      // variantLanguagesWithSlug
-      prismaMock.videoVariant.findMany.mockResolvedValueOnce([
-        { languageId: 'languageId', slug: 'slug' } as unknown as VideoVariant
-      ])
+      // overflow queries
+      prismaMock.video.findUniqueOrThrow.mockResolvedValue(videos[0])
       // variant
       prismaMock.videoVariant.findUnique.mockResolvedValueOnce({
         id: 'variantId'
@@ -852,8 +848,8 @@ describe('video', () => {
             }
           },
           variants: {
-            where: {
-              published: true
+            select: {
+              languageId: true
             }
           },
           videoEditions: true,
@@ -975,20 +971,25 @@ describe('video', () => {
           }
         }
       })
+      expect(prismaMock.video.findUniqueOrThrow).toHaveBeenCalledWith({
+        include: {
+          variants: {
+            where: {
+              published: true
+            }
+          }
+        },
+        where: {
+          id: 'videoId'
+        }
+      })
       expect(data).toHaveProperty('data.videos', result)
     })
 
     it('should query videoVariants with different variable precedence', async () => {
       prismaMock.video.findMany.mockResolvedValueOnce(videos)
-
-      // variantLanguages
-      prismaMock.videoVariant.findMany.mockResolvedValueOnce([
-        { languageId: 'languageId' } as unknown as VideoVariant
-      ])
-      // variantLanguagesWithSlug
-      prismaMock.videoVariant.findMany.mockResolvedValueOnce([
-        { languageId: 'languageId', slug: 'slug' } as unknown as VideoVariant
-      ])
+      // overflow queries
+      prismaMock.video.findUniqueOrThrow.mockResolvedValue(videos[0])
       // variant - test the precedence logic
       prismaMock.videoVariant.findUnique.mockResolvedValueOnce({
         id: 'variantId'
@@ -1335,12 +1336,16 @@ describe('video', () => {
           }
         ],
         variant: { id: 'variantId' },
-        variantLanguages: [{ id: 'languageId' }],
+        variantLanguages: [{ id: 'languageId2' }, { id: 'languageId1' }],
         variantLanguagesCount: 2,
         variantLanguagesWithSlug: [
           {
-            language: { id: 'languageId' },
-            slug: 'slug'
+            language: { id: 'languageId2' },
+            slug: 'slug2'
+          },
+          {
+            language: { id: 'languageId1' },
+            slug: 'slug1'
           }
         ],
         images: [
@@ -1354,15 +1359,7 @@ describe('video', () => {
 
     it('should query videos', async () => {
       prismaMock.video.findMany.mockResolvedValueOnce(videos)
-
-      // variantLanguages
-      prismaMock.videoVariant.findMany.mockResolvedValueOnce([
-        { languageId: 'languageId' } as unknown as VideoVariant
-      ])
-      // variantLanguagesWithSlug
-      prismaMock.videoVariant.findMany.mockResolvedValueOnce([
-        { languageId: 'languageId', slug: 'slug' } as unknown as VideoVariant
-      ])
+      prismaMock.video.findUniqueOrThrow.mockResolvedValue(videos[0])
       // variant
       prismaMock.videoVariant.findUnique.mockResolvedValueOnce({
         id: 'variantId'
@@ -1392,6 +1389,11 @@ describe('video', () => {
                   published: true
                 }
               }
+            }
+          },
+          variants: {
+            select: {
+              languageId: true
             }
           },
           bibleCitation: {
@@ -1491,14 +1493,7 @@ describe('video', () => {
       prismaMock.video.findMany.mockResolvedValueOnce([
         { ...videos[0], slug: 'slug', noIndex: true }
       ])
-      // variantLanguages
-      prismaMock.videoVariant.findMany.mockResolvedValueOnce([
-        { languageId: 'languageId' } as unknown as VideoVariant
-      ])
-      // variantLanguagesWithSlug
-      prismaMock.videoVariant.findMany.mockResolvedValueOnce([
-        { languageId: 'languageId', slug: 'slug' } as unknown as VideoVariant
-      ])
+      prismaMock.video.findUniqueOrThrow.mockResolvedValue(videos[0])
       // variant
       prismaMock.videoVariant.findUnique.mockResolvedValueOnce(null)
       prismaMock.userMediaRole.findUnique.mockResolvedValueOnce({
@@ -1520,14 +1515,7 @@ describe('video', () => {
 
     it('should query videoVariants with variables', async () => {
       prismaMock.video.findMany.mockResolvedValueOnce(videos)
-      // variantLanguages
-      prismaMock.videoVariant.findMany.mockResolvedValueOnce([
-        { languageId: 'languageId' } as unknown as VideoVariant
-      ])
-      // variantLanguagesWithSlug
-      prismaMock.videoVariant.findMany.mockResolvedValueOnce([
-        { languageId: 'languageId', slug: 'slug' } as unknown as VideoVariant
-      ])
+      prismaMock.video.findUniqueOrThrow.mockResolvedValue(videos[0])
       prismaMock.userMediaRole.findUnique.mockResolvedValueOnce({
         id: 'userId',
         userId: 'userId',
@@ -1602,6 +1590,11 @@ describe('video', () => {
                   languageId: '987'
                 }
               ]
+            }
+          },
+          variants: {
+            select: {
+              languageId: true
             }
           },
           imageAlt: {
