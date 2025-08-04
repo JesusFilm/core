@@ -86,6 +86,22 @@ export const journeySimpleImageSchema = z.object({
 })
 export type JourneySimpleImage = z.infer<typeof journeySimpleImageSchema>
 
+// --- Video Schema ---
+export const journeySimpleVideoSchema = z.object({
+  source: z
+    .enum(['internal', 'youTube'])
+    .describe(
+      'The source of the video. Whether it is an video from the internal video library or from YouTube.'
+    ),
+  videoId: z.string().describe('The id of the video.'),
+  videoVariantLanguageId: z
+    .string()
+    .optional()
+    .describe('Language variant ID for internal videos.'),
+  title: z.string().optional().describe('The title of the video.'),
+  description: z.string().optional().describe('The description of the video.')
+})
+
 // --- Card Schemas ---
 export const journeySimpleCardSchema = z.object({
   id: z
@@ -94,21 +110,32 @@ export const journeySimpleCardSchema = z.object({
   heading: z
     .string()
     .optional()
-    .describe('A heading for the card, if present.'),
+    .describe(
+      'A heading for the card, if present. Not required for video cards.'
+    ),
   text: z.string().optional().describe('The main text content of the card.'),
   button: journeySimpleButtonSchema
     .optional()
-    .describe('A button object for this card, if present.'),
+    .describe(
+      'A button object for this card, if present. Not required for video cards.'
+    ),
   poll: z
     .array(journeySimplePollOptionSchema)
     .optional()
-    .describe('An array of poll options for this card, if present.'),
+    .describe(
+      'An array of poll options for this card, if present. Not required for video cards.'
+    ),
   image: journeySimpleImageSchema
     .optional()
-    .describe('Image object for the card.'),
+    .describe('Image object for the card. Not required for video cards.'),
   backgroundImage: journeySimpleImageSchema
     .optional()
-    .describe('Background image object for the card.'),
+    .describe(
+      'Background image object for the card. Not required for video cards.'
+    ),
+  video: journeySimpleVideoSchema
+    .optional()
+    .describe('Video object for the card.'),
   defaultNextCard: z
     .string()
     .optional()
