@@ -1,6 +1,8 @@
 import { exec } from 'child_process'
 import { constants, createReadStream, statSync } from 'fs'
 import { access } from 'fs/promises'
+import os from 'os'
+import path from 'path'
 import { promisify } from 'util'
 
 const execAsync = promisify(exec)
@@ -11,39 +13,80 @@ interface FileDiagnostics {
   readable: boolean
   size: number
   permissions: string
-  owner: string
-  group: string
-  diskSpace: {
-    available: number
-    total: number
-    used: number
-  }
-  fileSystem: string
-  mountPoint: string
-  inode: number
   lastModified: Date
-  lastAccessed: Date
-  lastChanged: Date
   isDirectory: boolean
   isFile: boolean
-  isSymbolicLink: boolean
   canRead: boolean
   canWrite: boolean
-  canExecute: boolean
+  // Windows-specific checks
+  pathLength: number
+  hasInvalidChars: boolean
+  isReservedName: boolean
+  possibleFileLock: boolean
+  // Cross-platform disk info
+  diskSpace?: {
+    available: string
+    total: string
+    free: string
+  }
 }
+
+// Windows reserved names
+const WINDOWS_RESERVED_NAMES = [
+  'CON',
+  'PRN',
+  'AUX',
+  'NUL',
+  'COM1',
+  'COM2',
+  'COM3',
+  'COM4',
+  'COM5',
+  'COM6',
+  'COM7',
+  'COM8',
+  'COM9',
+  'LPT1',
+  'LPT2',
+  'LPT3',
+  'LPT4',
+  'LPT5',
+  'LPT6',
+  'LPT7',
+  'LPT8',
+  'LPT9'
+]
 
 export async function testFileRead(filePath: string): Promise<void> {
   const startTime = Date.now()
   let bytesRead = 0
 
   return new Promise((resolve, reject) => {
-    const stream = createReadStream(filePath, { highWaterMark: 64 * 1024 })
+    const stream = createReadStream(filePath, {
+      highWaterMark: 1024 * 1024 // 1MB chunks for better performance
+    })
+
+    const cleanup = () => {
+      if (!stream.destroyed) {
+        stream.destroy()
+      }
+    }
+
+    const timeout = setTimeout(() => {
+      cleanup()
+      const duration = Date.now() - startTime
+      console.error(
+        `   Read test details: ${bytesRead} bytes read in ${duration}ms`
+      )
+      reject(new Error('Read test timed out after 30 seconds'))
+    }, 30000)
 
     stream.on('data', (chunk) => {
       bytesRead += chunk.length
     })
 
     stream.on('end', () => {
+      clearTimeout(timeout)
       const duration = Date.now() - startTime
       console.log(
         `   File read test passed: ${bytesRead} bytes read in ${duration}ms`
@@ -52,55 +95,102 @@ export async function testFileRead(filePath: string): Promise<void> {
     })
 
     stream.on('error', (err) => {
+      clearTimeout(timeout)
+      cleanup()
       const duration = Date.now() - startTime
-      console.error(`   File read test failed: ${err.message}`)
       console.error(
         `   Read test details: ${bytesRead} bytes read in ${duration}ms`
       )
       reject(new Error(`File read test failed: ${err.message}`))
     })
-
-    // Timeout after 30 seconds
-    setTimeout(() => {
-      const duration = Date.now() - startTime
-      console.error(`   File read test failed: Read test timed out`)
-      console.error(
-        `   Read test details: ${bytesRead} bytes read in ${duration}ms`
-      )
-      reject(new Error('Read test timed out'))
-    }, 30000)
   })
 }
 
-export async function diagnoseFile(filePath: string): Promise<FileDiagnostics> {
-  const diagnostics: Partial<FileDiagnostics> = {
-    filePath
+async function getDiskSpace(
+  filePath: string
+): Promise<FileDiagnostics['diskSpace']> {
+  try {
+    if (os.platform() === 'win32') {
+      // Windows: Use wmic
+      const drive = path.parse(filePath).root
+      const { stdout } = await execAsync(
+        `wmic logicaldisk where "DeviceID='${drive.replace('\\', '')}'" get size,freespace /format:csv`
+      )
+      const lines = stdout.split('\n').filter((line) => line.includes(','))
+      if (lines.length > 0) {
+        const parts = lines[0].split(',')
+        const freeSpace = parseInt(parts[1]) || 0
+        const totalSpace = parseInt(parts[2]) || 0
+        return {
+          free: `${Math.round(freeSpace / 1024 / 1024 / 1024)} GB`,
+          total: `${Math.round(totalSpace / 1024 / 1024 / 1024)} GB`,
+          available: `${Math.round(freeSpace / 1024 / 1024 / 1024)} GB`
+        }
+      }
+    } else {
+      // Unix/Linux/macOS
+      const { stdout } = await execAsync(`df -h "${filePath}" | tail -1`)
+      const parts = stdout.trim().split(/\s+/)
+      if (parts.length >= 4) {
+        return {
+          total: parts[1],
+          available: parts[3],
+          free: parts[3]
+        }
+      }
+    }
+  } catch (error) {
+    console.warn('Could not get disk space info:', error)
   }
+  return undefined
+}
+
+function checkWindowsSpecificIssues(filePath: string): {
+  pathLength: number
+  hasInvalidChars: boolean
+  isReservedName: boolean
+} {
+  const pathLength = filePath.length
+  const fileName = path.basename(filePath, path.extname(filePath)).toUpperCase()
+
+  // Windows invalid characters: < > : " | ? * and control characters
+  const invalidCharsRegex = /[<>:"|?*]/
+  const hasInvalidChars =
+    invalidCharsRegex.test(filePath) ||
+    Array.from(filePath).some((char) => char.charCodeAt(0) < 32)
+
+  const isReservedName = WINDOWS_RESERVED_NAMES.includes(fileName)
+
+  return { pathLength, hasInvalidChars, isReservedName }
+}
+
+export async function diagnoseFile(filePath: string): Promise<FileDiagnostics> {
+  const diagnostics: Partial<FileDiagnostics> = { filePath }
+
+  // Windows-specific checks
+  const windowsChecks = checkWindowsSpecificIssues(filePath)
+  diagnostics.pathLength = windowsChecks.pathLength
+  diagnostics.hasInvalidChars = windowsChecks.hasInvalidChars
+  diagnostics.isReservedName = windowsChecks.isReservedName
 
   try {
-    // Basic file existence and permissions
     const stats = statSync(filePath)
     diagnostics.exists = true
     diagnostics.size = stats.size
     diagnostics.lastModified = stats.mtime
-    diagnostics.lastAccessed = stats.atime
-    diagnostics.lastChanged = stats.ctime
     diagnostics.isDirectory = stats.isDirectory()
     diagnostics.isFile = stats.isFile()
-    diagnostics.isSymbolicLink = stats.isSymbolicLink()
-    diagnostics.inode = stats.ino
 
-    // Check read permissions
+    // Cross-platform permission checks
     try {
       await access(filePath, constants.R_OK)
-      diagnostics.readable = true
       diagnostics.canRead = true
+      diagnostics.readable = true
     } catch {
-      diagnostics.readable = false
       diagnostics.canRead = false
+      diagnostics.readable = false
     }
 
-    // Check write permissions
     try {
       await access(filePath, constants.W_OK)
       diagnostics.canWrite = true
@@ -108,52 +198,44 @@ export async function diagnoseFile(filePath: string): Promise<FileDiagnostics> {
       diagnostics.canWrite = false
     }
 
-    // Check execute permissions
-    try {
-      await access(filePath, constants.X_OK)
-      diagnostics.canExecute = true
-    } catch {
-      diagnostics.canExecute = false
-    }
+    // Simple permission representation
+    diagnostics.permissions =
+      os.platform() === 'win32'
+        ? `R:${diagnostics.canRead} W:${diagnostics.canWrite}`
+        : (stats.mode & 0o777).toString(8)
 
-    // Get file permissions in octal format
-    diagnostics.permissions = (stats.mode & 0o777).toString(8)
-
-    // Get disk space information
-    try {
-      const { stdout } = await execAsync(`df -h "${filePath}" | tail -1`)
-      const parts = stdout.trim().split(/\s+/)
-      if (parts.length >= 4) {
-        diagnostics.diskSpace = {
-          available: parseInt(parts[3].replace(/[^\d]/g, ''), 10),
-          total: parseInt(parts[1].replace(/[^\d]/g, ''), 10),
-          used: parseInt(parts[2].replace(/[^\d]/g, ''), 10)
-        }
-        diagnostics.fileSystem = parts[0]
-        diagnostics.mountPoint = parts[5]
+    // Check for possible file lock (Windows-specific issue)
+    if (os.platform() === 'win32' && diagnostics.canRead) {
+      try {
+        // Try to open file exclusively to detect locks
+        const testStream = createReadStream(filePath, {
+          flags: 'r',
+          highWaterMark: 1
+        })
+        await new Promise((resolve, reject) => {
+          testStream.on('open', () => {
+            testStream.close()
+            resolve(void 0)
+          })
+          testStream.on('error', reject)
+          setTimeout(() => reject(new Error('timeout')), 1000)
+        })
+        diagnostics.possibleFileLock = false
+      } catch {
+        diagnostics.possibleFileLock = true
       }
-    } catch (error) {
-      console.warn('Could not get disk space info:', error)
+    } else {
+      diagnostics.possibleFileLock = false
     }
 
-    // Get file owner and group
-    try {
-      const { stdout } = await execAsync(`ls -l "${filePath}"`)
-      const parts = stdout.trim().split(/\s+/)
-      if (parts.length >= 3) {
-        diagnostics.owner = parts[2]
-        diagnostics.group = parts[3]
-      }
-    } catch (error) {
-      console.warn('Could not get file owner info:', error)
-    }
+    // Get disk space
+    diagnostics.diskSpace = await getDiskSpace(filePath)
   } catch (error) {
     diagnostics.exists = false
     diagnostics.readable = false
-    console.error(
-      `File ${filePath} does not exist or is not accessible:`,
-      error
-    )
+    diagnostics.canRead = false
+    diagnostics.canWrite = false
+    diagnostics.possibleFileLock = false
   }
 
   return diagnostics as FileDiagnostics
@@ -165,26 +247,33 @@ export function printDiagnostics(diagnostics: FileDiagnostics): void {
   console.log(`Exists: ${diagnostics.exists}`)
   console.log(`Readable: ${diagnostics.readable}`)
   console.log(
-    `Size: ${diagnostics.size} bytes (${(diagnostics.size / 1024 / 1024).toFixed(2)} MB)`
+    `Size: ${diagnostics.size.toLocaleString()} bytes (${(diagnostics.size / 1024 / 1024).toFixed(2)} MB)`
   )
   console.log(`Permissions: ${diagnostics.permissions}`)
-  console.log(`Owner: ${diagnostics.owner}`)
-  console.log(`Group: ${diagnostics.group}`)
-  console.log(
-    `Type: ${diagnostics.isFile ? 'File' : diagnostics.isDirectory ? 'Directory' : 'Other'}`
-  )
   console.log(`Can Read: ${diagnostics.canRead}`)
   console.log(`Can Write: ${diagnostics.canWrite}`)
-  console.log(`Can Execute: ${diagnostics.canExecute}`)
   console.log(`Last Modified: ${diagnostics.lastModified.toISOString()}`)
-  console.log(`Inode: ${diagnostics.inode}`)
+
+  // Windows-specific diagnostics
+  if (os.platform() === 'win32') {
+    console.log('\n--- Windows-Specific Checks ---')
+    console.log(
+      `Path Length: ${diagnostics.pathLength} characters ${diagnostics.pathLength > 260 ? '⚠️  (May be too long)' : '✅'}`
+    )
+    console.log(
+      `Invalid Characters: ${diagnostics.hasInvalidChars ? '❌ Yes' : '✅ No'}`
+    )
+    console.log(
+      `Reserved Name: ${diagnostics.isReservedName ? '❌ Yes' : '✅ No'}`
+    )
+    console.log(
+      `Possible File Lock: ${diagnostics.possibleFileLock ? '⚠️  Yes' : '✅ No'}`
+    )
+  }
 
   if (diagnostics.diskSpace) {
-    console.log(`\nDisk Space:`)
-    console.log(`  Available: ${diagnostics.diskSpace.available} MB`)
-    console.log(`  Total: ${diagnostics.diskSpace.total} MB`)
-    console.log(`  Used: ${diagnostics.diskSpace.used} MB`)
-    console.log(`  File System: ${diagnostics.fileSystem}`)
-    console.log(`  Mount Point: ${diagnostics.mountPoint}`)
+    console.log('\n--- Disk Space ---')
+    console.log(`Available: ${diagnostics.diskSpace.available}`)
+    console.log(`Total: ${diagnostics.diskSpace.total}`)
   }
 }
