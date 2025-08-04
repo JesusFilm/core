@@ -27,6 +27,7 @@ interface HeaderProps {
   hideSpacer?: boolean
   /** Theme mode to apply to the header. */
   themeMode?: ThemeMode
+  showLanguageSwitcher?: boolean
 }
 
 /**
@@ -43,7 +44,8 @@ export function Header({
   hideTopAppBar,
   hideBottomAppBar,
   hideSpacer,
-  themeMode = ThemeMode.light
+  themeMode = ThemeMode.light,
+  showLanguageSwitcher = false
 }: HeaderProps): ReactElement {
   /** State to control the drawer open/closed state. */
   const [drawerOpen, setDrawerOpen] = useState(false)
@@ -79,6 +81,7 @@ export function Header({
               hideSpacer={hideSpacer}
               onMenuClick={() => setDrawerOpen((prev) => !prev)}
               menuOpen={drawerOpen}
+              showLanguageSwitcher={showLanguageSwitcher}
             />
           </Box>
         )}
