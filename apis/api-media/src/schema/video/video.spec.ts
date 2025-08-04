@@ -46,7 +46,7 @@ describe('video', () => {
     studyQuestions: VideoStudyQuestion[]
     imageAlt: VideoImageAlt[]
     children: Video[]
-    parent: Video[]
+    parents: Video[]
     subtitles: VideoSubtitle[]
     images: CloudflareImage[]
     cloudflareAssets: CloudflareR2[]
@@ -213,7 +213,7 @@ describe('video', () => {
         }
       ],
       children,
-      parent: parents,
+      parents: parents,
       subtitles: [
         {
           id: 'subtitleId',
@@ -586,15 +586,15 @@ describe('video', () => {
         variant: { id: 'variantId' },
         variants: [
           {
-            id: 'variantId1',
-            language: {
-              id: 'languageId1'
-            }
-          },
-          {
             id: 'variantId2',
             language: {
               id: 'languageId2'
+            }
+          },
+          {
+            id: 'variantId1',
+            language: {
+              id: 'languageId1'
             }
           }
         ],
@@ -639,17 +639,6 @@ describe('video', () => {
         id: 'variantId'
       } as unknown as VideoVariant)
 
-      prismaMock.videoVariant.findMany.mockResolvedValueOnce([
-        {
-          id: 'variantId1',
-          languageId: 'languageId1'
-        } as unknown as VideoVariant,
-        {
-          id: 'variantId2',
-          languageId: 'languageId2'
-        } as unknown as VideoVariant
-      ])
-
       const data = await client({
         document: VIDEOS_QUERY
       })
@@ -670,6 +659,11 @@ describe('video', () => {
                   published: true
                 }
               }
+            }
+          },
+          variants: {
+            where: {
+              published: true
             }
           },
           videoEditions: true,
@@ -708,7 +702,7 @@ describe('video', () => {
               languageId: '529'
             }
           },
-          parent: {
+          parents: {
             where: {}
           },
           children: {
@@ -783,17 +777,6 @@ describe('video', () => {
       // variant
       prismaMock.videoVariant.findUnique.mockResolvedValueOnce(null)
 
-      prismaMock.videoVariant.findMany.mockResolvedValueOnce([
-        {
-          id: 'variantId1',
-          languageId: 'languageId1'
-        } as unknown as VideoVariant,
-        {
-          id: 'variantId2',
-          languageId: 'languageId2'
-        } as unknown as VideoVariant
-      ])
-
       const data = await client({
         document: VIDEOS_QUERY,
         variables: {
@@ -825,17 +808,6 @@ describe('video', () => {
       prismaMock.videoVariant.findUnique.mockResolvedValueOnce({
         id: 'variantId'
       } as unknown as VideoVariant)
-
-      prismaMock.videoVariant.findMany.mockResolvedValueOnce([
-        {
-          id: 'variantId1',
-          languageId: 'languageId1'
-        } as unknown as VideoVariant,
-        {
-          id: 'variantId2',
-          languageId: 'languageId2'
-        } as unknown as VideoVariant
-      ])
 
       const data = await client({
         document: VIDEOS_QUERY,
@@ -877,6 +849,11 @@ describe('video', () => {
                   published: true
                 }
               }
+            }
+          },
+          variants: {
+            where: {
+              published: true
             }
           },
           videoEditions: true,
@@ -921,7 +898,7 @@ describe('video', () => {
               languageId: '987'
             }
           },
-          parent: {
+          parents: {
             where: {}
           },
           children: {
@@ -1016,17 +993,6 @@ describe('video', () => {
       prismaMock.videoVariant.findUnique.mockResolvedValueOnce({
         id: 'variantId'
       } as unknown as VideoVariant)
-
-      prismaMock.videoVariant.findMany.mockResolvedValueOnce([
-        {
-          id: 'variantId1',
-          languageId: 'languageId1'
-        } as unknown as VideoVariant,
-        {
-          id: 'variantId2',
-          languageId: 'languageId2'
-        } as unknown as VideoVariant
-      ])
 
       const data = await client({
         document: VIDEOS_QUERY,
@@ -1462,7 +1428,7 @@ describe('video', () => {
               languageId: '529'
             }
           },
-          parent: {
+          parents: {
             where: {}
           },
           children: {
@@ -1620,7 +1586,7 @@ describe('video', () => {
           children: {
             where: {}
           },
-          parent: {
+          parents: {
             where: {}
           },
           description: {
