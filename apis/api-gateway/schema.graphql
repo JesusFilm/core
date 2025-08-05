@@ -2922,11 +2922,11 @@ union MutationSiteCreateResult @join__type(graph: API_ANALYTICS)  @join__unionMe
 
 union MediaVideo @join__type(graph: API_JOURNEYS_MODERN)  @join__unionMember(graph: API_JOURNEYS_MODERN, member: "MuxVideo")  @join__unionMember(graph: API_JOURNEYS_MODERN, member: "Video")  @join__unionMember(graph: API_JOURNEYS_MODERN, member: "YouTube")  = MuxVideo | Video | YouTube
 
-union MutationShortLinkCreateResult @join__type(graph: API_MEDIA)  @join__unionMember(graph: API_MEDIA, member: "ZodError")  @join__unionMember(graph: API_MEDIA, member: "NotUniqueError")  @join__unionMember(graph: API_MEDIA, member: "MutationShortLinkCreateSuccess")  = ZodError | NotUniqueError | MutationShortLinkCreateSuccess
+union MutationShortLinkCreateResult @join__type(graph: API_MEDIA)  @join__unionMember(graph: API_MEDIA, member: "NotUniqueError")  @join__unionMember(graph: API_MEDIA, member: "ZodError")  @join__unionMember(graph: API_MEDIA, member: "MutationShortLinkCreateSuccess")  = NotUniqueError | ZodError | MutationShortLinkCreateSuccess
 
 union MutationShortLinkDeleteResult @join__type(graph: API_MEDIA)  @join__unionMember(graph: API_MEDIA, member: "NotFoundError")  @join__unionMember(graph: API_MEDIA, member: "MutationShortLinkDeleteSuccess")  = NotFoundError | MutationShortLinkDeleteSuccess
 
-union MutationShortLinkDomainCreateResult @join__type(graph: API_MEDIA)  @join__unionMember(graph: API_MEDIA, member: "ZodError")  @join__unionMember(graph: API_MEDIA, member: "NotUniqueError")  @join__unionMember(graph: API_MEDIA, member: "MutationShortLinkDomainCreateSuccess")  = ZodError | NotUniqueError | MutationShortLinkDomainCreateSuccess
+union MutationShortLinkDomainCreateResult @join__type(graph: API_MEDIA)  @join__unionMember(graph: API_MEDIA, member: "NotUniqueError")  @join__unionMember(graph: API_MEDIA, member: "ZodError")  @join__unionMember(graph: API_MEDIA, member: "MutationShortLinkDomainCreateSuccess")  = NotUniqueError | ZodError | MutationShortLinkDomainCreateSuccess
 
 union MutationShortLinkDomainDeleteResult @join__type(graph: API_MEDIA)  @join__unionMember(graph: API_MEDIA, member: "NotFoundError")  @join__unionMember(graph: API_MEDIA, member: "ForeignKeyConstraintError")  @join__unionMember(graph: API_MEDIA, member: "MutationShortLinkDomainDeleteSuccess")  = NotFoundError | ForeignKeyConstraintError | MutationShortLinkDomainDeleteSuccess
 
