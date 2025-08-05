@@ -69,13 +69,13 @@ describe('generateBlurhashAndMetadataFromUrl', () => {
     })
   })
 
-  it('returns safe default values when fetch fails', async () => {
+  it('returns default values when fetch fails', async () => {
     mockFetch.mockRejectedValue(new Error('fetch error'))
     const result = await generateBlurhashAndMetadataFromUrl(
       'https://example.com/image.jpg'
     )
     expect(result).toEqual({
-      blurhash: 'L9AJ$Nof00WB~qofM{of00WB~qj[',
+      blurhash: '',
       width: 0,
       height: 0
     })
@@ -90,7 +90,7 @@ describe('generateBlurhashAndMetadataFromUrl', () => {
       'https://example.com/image.jpg'
     )
     expect(result).toEqual({
-      blurhash: 'L9AJ$Nof00WB~qofM{of00WB~qj[',
+      blurhash: '',
       width: 0,
       height: 0
     })

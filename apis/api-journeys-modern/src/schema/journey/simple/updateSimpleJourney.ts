@@ -21,10 +21,6 @@ const ALLOWED_IMAGE_HOSTNAMES = [
   'image.mux.com'
 ]
 
-/**
- * Checks if a given image URL is allowed by your remotePatterns.
- * Accepts both http and https, and matches subdomains.
- */
 const isValidImageUrl = (url: string): boolean => {
   try {
     const parsed = new URL(url)
@@ -105,24 +101,23 @@ export async function updateSimpleJourney(
   journeyId: string,
   simple: JourneySimpleUpdate
 ) {
-  // Process all background images and card images outside the transaction
-  const processedBackgroundImages = new Map()
-  const processedCardImages = new Map()
-
-  for (const card of simple.cards) {
-    if (card.backgroundImage != null) {
-      processedBackgroundImages.set(
-        card.id,
-        await processImage(card.backgroundImage)
-      )
-    }
-
-    if (card.image != null) {
-      processedCardImages.set(card.id, await processImage(card.image))
-    }
-  }
-
   return prisma.$transaction(async (tx) => {
+    const processedBackgroundImages = new Map()
+    const processedCardImages = new Map()
+
+    for (const card of simple.cards) {
+      if (card.backgroundImage != null) {
+        processedBackgroundImages.set(
+          card.id,
+          await processImage(card.backgroundImage)
+        )
+      }
+
+      if (card.image != null) {
+        processedCardImages.set(card.id, await processImage(card.image))
+      }
+    }
+
     // Mark all non-deleted blocks for this journey as deleted
     await tx.block.updateMany({
       where: { journeyId, deletedAt: null },
@@ -145,24 +140,15 @@ export async function updateSimpleJourney(
       simpleCardId: string
     }[] = []
 
-    // Grid layout constants
-    const CARD_SPACING_X = 400
-    const CARD_SPACING_Y = 300
-
     // 1. Create StepBlocks and CardBlocks
     for (const [i, simpleCard] of simple.cards.entries()) {
-      const row = i % 3
-      const col = Math.floor(i / 3)
-      const x = col * CARD_SPACING_X
-      const y = row * CARD_SPACING_Y
-
       const stepBlock = await tx.block.create({
         data: {
           journeyId,
           typename: 'StepBlock',
           parentOrder: i,
-          x,
-          y
+          x: simpleCard.x ?? 0,
+          y: simpleCard.y ?? 0
         }
       })
 

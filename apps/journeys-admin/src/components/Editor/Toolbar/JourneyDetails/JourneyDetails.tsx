@@ -43,7 +43,7 @@ export function JourneyDetails(): ReactElement {
           </Typography>
           <Box
             sx={{
-              display: { xs: '-webkit-box', md: 'unset' },
+              display: { xs: '-webkit-box', md: 'flex' },
               typography: { xs: 'caption', md: 'body2' },
               '-webkit-line-clamp': { xs: '2', md: '1' },
               '-webkit-box-orient': 'vertical',
