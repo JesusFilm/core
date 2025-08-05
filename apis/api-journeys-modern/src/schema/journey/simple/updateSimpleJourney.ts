@@ -101,22 +101,6 @@ export async function updateSimpleJourney(
   journeyId: string,
   simple: JourneySimpleUpdate
 ) {
-  const processedBackgroundImages = new Map()
-  const processedCardImages = new Map()
-
-  for (const card of simple.cards) {
-    if (card.backgroundImage != null) {
-      processedBackgroundImages.set(
-        card.id,
-        await processImage(card.backgroundImage)
-      )
-    }
-
-    if (card.image != null) {
-      processedCardImages.set(card.id, await processImage(card.image))
-    }
-  }
-
   return prisma.$transaction(async (tx) => {
     const processedBackgroundImages = new Map()
     const processedCardImages = new Map()
