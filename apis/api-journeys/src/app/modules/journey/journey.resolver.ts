@@ -636,11 +636,13 @@ export class JourneyResolver {
         // save base blocks
         await this.blockService.saveAll(
           duplicateBlocks.map((block) => ({
+            // if updating the omit, also do the same in block.service.ts saveAll
             ...omit(block, [
               'journeyId',
               'parentBlockId',
               'posterBlockId',
               'coverBlockId',
+              'pollOptionImageBlockId',
               'nextBlockId',
               'action'
             ]),
@@ -652,12 +654,14 @@ export class JourneyResolver {
           }))
         )
         // update block references after import
+        // if updating references, also do the same in block.service.ts saveAll
         for (const block of duplicateBlocks) {
           if (
             block.parentBlockId != null ||
             block.posterBlockId != null ||
             block.coverBlockId != null ||
-            block.nextBlockId != null
+            block.nextBlockId != null ||
+            block.pollOptionImageBlockId != null
           ) {
             await this.prismaService.block.update({
               where: { id: block.id },
@@ -665,7 +669,9 @@ export class JourneyResolver {
                 parentBlockId: block.parentBlockId ?? undefined,
                 posterBlockId: block.posterBlockId ?? undefined,
                 coverBlockId: block.coverBlockId ?? undefined,
-                nextBlockId: block.nextBlockId ?? undefined
+                nextBlockId: block.nextBlockId ?? undefined,
+                pollOptionImageBlockId:
+                  block.pollOptionImageBlockId ?? undefined
               }
             })
           }

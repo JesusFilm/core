@@ -18,6 +18,7 @@ interface AccordionProps {
   value?: string
   param?: string
   children: ReactNode
+  disabled?: boolean
 }
 
 export function Accordion({
@@ -26,7 +27,8 @@ export function Accordion({
   name,
   value,
   param,
-  children
+  children,
+  disabled = false
 }: AccordionProps): ReactElement {
   const router = useRouter()
   const {
@@ -64,8 +66,16 @@ export function Accordion({
       expanded={expanded}
       onChange={handleClick}
       onClick={(e) => e.stopPropagation()}
-      sx={{ p: 0, '&.Mui-expanded:before': { opacity: 1 } }}
+      sx={{
+        p: 0,
+        '&.Mui-expanded:before': { opacity: 1 },
+        '&.Mui-disabled': {
+          pointerEvents: 'none',
+          backgroundColor: 'transparent'
+        }
+      }}
       data-testid={`Accordion-${id ?? ''}`}
+      disabled={disabled}
     >
       <AccordionSummary
         sx={{ p: 4, '.MuiAccordionSummary-content': { m: 0 } }}
