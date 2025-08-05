@@ -355,6 +355,9 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   journeyCollectionCreate(input: JourneyCollectionCreateInput!) : JourneyCollection! @join__field(graph: API_JOURNEYS) 
   journeyCollectionUpdate(id: ID!, input: JourneyCollectionUpdateInput!) : JourneyCollection! @join__field(graph: API_JOURNEYS) 
   journeyCollectionDelete(id: ID!) : JourneyCollection! @join__field(graph: API_JOURNEYS) 
+  journeyCustomizationFieldCreate(id: ID!, journeyId: ID!, input: JourneyCustomizationFieldInput!) : JourneyCustomizationField! @join__field(graph: API_JOURNEYS) 
+  journeyCustomizationFieldUpdate(id: ID!, journeyId: ID!, input: JourneyCustomizationFieldInput!) : JourneyCustomizationField! @join__field(graph: API_JOURNEYS) 
+  journeyCustomizationFieldDelete(id: ID!, journeyId: ID!) : JourneyCustomizationField! @join__field(graph: API_JOURNEYS) 
   journeyNotificationUpdate(input: JourneyNotificationUpdateInput!) : JourneyNotification! @join__field(graph: API_JOURNEYS) 
   journeyProfileCreate: JourneyProfile! @join__field(graph: API_JOURNEYS) 
   journeyProfileUpdate(input: JourneyProfileUpdateInput!) : JourneyProfile! @join__field(graph: API_JOURNEYS) 
@@ -642,6 +645,8 @@ type Query @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS)  
   journey(id: ID!, idType: IdType, options: JourneysQueryOptions) : Journey! @join__field(graph: API_JOURNEYS) 
   journeyCollection(id: ID!) : JourneyCollection! @join__field(graph: API_JOURNEYS) 
   journeyCollections(teamId: ID!) : [JourneyCollection]! @join__field(graph: API_JOURNEYS) 
+  journeyCustomizationField(id: ID!) : JourneyCustomizationField! @join__field(graph: API_JOURNEYS) 
+  journeyCustomizationFields(journeyId: ID!) : [JourneyCustomizationField!]! @join__field(graph: API_JOURNEYS) 
   journeyEventsConnection(journeyId: ID!, filter: JourneyEventsFilter, first: Int, after: String) : JourneyEventsConnection! @join__field(graph: API_JOURNEYS) 
   journeyEventsCount(journeyId: ID!, filter: JourneyEventsFilter) : Int! @join__field(graph: API_JOURNEYS) 
   getJourneyProfile: JourneyProfile @join__field(graph: API_JOURNEYS) 
@@ -1728,6 +1733,15 @@ type JourneyCollection @join__type(graph: API_JOURNEYS)  {
   title: String
   customDomains: [CustomDomain!]
   journeys: [Journey!]
+}
+
+type JourneyCustomizationField @join__type(graph: API_JOURNEYS)  {
+  id: ID!
+  journeyId: ID!
+  key: String!
+  value: String
+  defaultValue: String
+  fieldType: JourneyCustomizationFieldType!
 }
 
 """
@@ -3193,6 +3207,11 @@ enum UserJourneyRole @join__type(graph: API_JOURNEYS)  {
   owner @join__enumValue(graph: API_JOURNEYS) 
 }
 
+enum JourneyCustomizationFieldType @join__type(graph: API_JOURNEYS)  {
+  text @join__enumValue(graph: API_JOURNEYS) 
+  link @join__enumValue(graph: API_JOURNEYS) 
+}
+
 enum UserTeamRole @join__type(graph: API_JOURNEYS)  {
   manager @join__enumValue(graph: API_JOURNEYS) 
   member @join__enumValue(graph: API_JOURNEYS) 
@@ -4245,6 +4264,12 @@ input JourneyCollectionCreateInput @join__type(graph: API_JOURNEYS)  {
 input JourneyCollectionUpdateInput @join__type(graph: API_JOURNEYS)  {
   title: String
   journeyIds: [String!]
+}
+
+input JourneyCustomizationFieldInput @join__type(graph: API_JOURNEYS)  {
+  key: String!
+  value: String!
+  fieldType: JourneyCustomizationFieldType!
 }
 
 input JourneyEventsFilter @join__type(graph: API_JOURNEYS)  {

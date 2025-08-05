@@ -227,6 +227,11 @@ export enum JourneysReportType {
     singleSummary = "singleSummary"
 }
 
+export enum JourneyCustomizationFieldType {
+    text = "text",
+    link = "link"
+}
+
 export enum JourneyVisitorSort {
     date = "date",
     duration = "duration",
@@ -797,6 +802,12 @@ export class JourneyCollectionUpdateInput {
     journeyIds?: Nullable<string[]>;
 }
 
+export class JourneyCustomizationFieldInput {
+    key: string;
+    value: string;
+    fieldType: JourneyCustomizationFieldType;
+}
+
 export class JourneyEventsFilter {
     typenames?: Nullable<string[]>;
     periodRangeStart?: Nullable<DateTime>;
@@ -1128,6 +1139,12 @@ export abstract class IMutation {
 
     abstract journeyCollectionDelete(id: string): JourneyCollection | Promise<JourneyCollection>;
 
+    abstract journeyCustomizationFieldCreate(id: string, journeyId: string, input: JourneyCustomizationFieldInput): JourneyCustomizationField | Promise<JourneyCustomizationField>;
+
+    abstract journeyCustomizationFieldUpdate(id: string, journeyId: string, input: JourneyCustomizationFieldInput): JourneyCustomizationField | Promise<JourneyCustomizationField>;
+
+    abstract journeyCustomizationFieldDelete(id: string, journeyId: string): JourneyCustomizationField | Promise<JourneyCustomizationField>;
+
     abstract journeyNotificationUpdate(input: JourneyNotificationUpdateInput): JourneyNotification | Promise<JourneyNotification>;
 
     abstract journeyProfileCreate(): JourneyProfile | Promise<JourneyProfile>;
@@ -1266,6 +1283,10 @@ export abstract class IQuery {
     abstract journeyCollection(id: string): JourneyCollection | Promise<JourneyCollection>;
 
     abstract journeyCollections(teamId: string): Nullable<JourneyCollection>[] | Promise<Nullable<JourneyCollection>[]>;
+
+    abstract journeyCustomizationField(id: string): JourneyCustomizationField | Promise<JourneyCustomizationField>;
+
+    abstract journeyCustomizationFields(journeyId: string): JourneyCustomizationField[] | Promise<JourneyCustomizationField[]>;
 
     abstract journeyEventsConnection(journeyId: string, filter?: Nullable<JourneyEventsFilter>, first?: Nullable<number>, after?: Nullable<string>): JourneyEventsConnection | Promise<JourneyEventsConnection>;
 
@@ -1778,6 +1799,16 @@ export class JourneyCollection {
     title?: Nullable<string>;
     customDomains?: Nullable<CustomDomain[]>;
     journeys?: Nullable<Journey[]>;
+}
+
+export class JourneyCustomizationField {
+    __typename?: 'JourneyCustomizationField';
+    id: string;
+    journeyId: string;
+    key: string;
+    value?: Nullable<string>;
+    defaultValue?: Nullable<string>;
+    fieldType: JourneyCustomizationFieldType;
 }
 
 export class JourneyEvent implements Event {

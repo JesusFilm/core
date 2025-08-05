@@ -330,6 +330,9 @@ type Mutation {
   journeyCollectionCreate(input: JourneyCollectionCreateInput!): JourneyCollection!
   journeyCollectionUpdate(id: ID!, input: JourneyCollectionUpdateInput!): JourneyCollection!
   journeyCollectionDelete(id: ID!): JourneyCollection!
+  journeyCustomizationFieldCreate(id: ID!, journeyId: ID!, input: JourneyCustomizationFieldInput!): JourneyCustomizationField!
+  journeyCustomizationFieldUpdate(id: ID!, journeyId: ID!, input: JourneyCustomizationFieldInput!): JourneyCustomizationField!
+  journeyCustomizationFieldDelete(id: ID!, journeyId: ID!): JourneyCustomizationField!
   journeyNotificationUpdate(input: JourneyNotificationUpdateInput!): JourneyNotification!
   journeyProfileCreate: JourneyProfile!
   journeyProfileUpdate(input: JourneyProfileUpdateInput!): JourneyProfile!
@@ -455,11 +458,6 @@ input BlockDuplicateIdMap {
 }
 
 type Query {
-  _entities(representations: [_Any!]!): [_Entity]!
-  _service: _Service!
-}
-
-extend type Query {
   blocks(where: BlocksFilter): [Block!]!
   block(id: ID!): Block!
   customDomain(id: ID!): CustomDomain!
@@ -487,6 +485,8 @@ extend type Query {
   journey(id: ID!, idType: IdType, options: JourneysQueryOptions): Journey!
   journeyCollection(id: ID!): JourneyCollection!
   journeyCollections(teamId: ID!): [JourneyCollection]!
+  journeyCustomizationField(id: ID!): JourneyCustomizationField!
+  journeyCustomizationFields(journeyId: ID!): [JourneyCustomizationField!]!
   journeyEventsConnection(journeyId: ID!, filter: JourneyEventsFilter, first: Int, after: String): JourneyEventsConnection!
   journeyEventsCount(journeyId: ID!, filter: JourneyEventsFilter): Int!
   getJourneyProfile: JourneyProfile
@@ -563,6 +563,8 @@ extend type Query {
 
   """Get a single visitor"""
   visitor(id: ID!): Visitor!
+  _entities(representations: [_Any!]!): [_Entity]!
+  _service: _Service!
 }
 
 enum ButtonVariant {
@@ -2412,6 +2414,28 @@ input JourneyCollectionCreateInput {
 input JourneyCollectionUpdateInput {
   title: String
   journeyIds: [String!]
+}
+
+enum JourneyCustomizationFieldType {
+  text
+  link
+}
+
+type JourneyCustomizationField
+  @shareable
+{
+  id: ID!
+  journeyId: ID!
+  key: String!
+  value: String
+  defaultValue: String
+  fieldType: JourneyCustomizationFieldType!
+}
+
+input JourneyCustomizationFieldInput {
+  key: String!
+  value: String!
+  fieldType: JourneyCustomizationFieldType!
 }
 
 """
