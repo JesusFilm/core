@@ -3,6 +3,7 @@ import { VideoBlockSource } from '../../enums'
 import { EventInterface } from '../event'
 
 export const VideoCollapseEventRef = builder.prismaObject('Event', {
+  shareable: true,
   interfaces: [EventInterface],
   variant: 'VideoCollapseEvent',
   isTypeOf: (obj: any) => obj.typename === 'VideoCollapseEvent',

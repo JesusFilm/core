@@ -6,6 +6,7 @@ export const BrowserRef = builder
     version?: string | null
   }>('Browser')
   .implement({
+    shareable: true,
     fields: (t) => ({
       name: t.string({
         nullable: true,

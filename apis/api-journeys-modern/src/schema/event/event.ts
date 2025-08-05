@@ -4,7 +4,7 @@ import { builder } from '../builder'
 export const EventInterface = builder.prismaInterface('Event', {
   fields: (t) => ({
     id: t.exposeID('id'),
-    journeyId: t.exposeString('journeyId', { nullable: true }),
+    journeyId: t.exposeID('journeyId', { nullable: true }),
     createdAt: t.expose('createdAt', { type: 'DateTime' }),
     label: t.exposeString('label', { nullable: true }),
     value: t.exposeString('value', { nullable: true })

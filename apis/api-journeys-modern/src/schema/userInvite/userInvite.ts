@@ -2,6 +2,7 @@ import { prisma } from '../../lib/prisma'
 import { builder } from '../builder'
 
 export const UserInviteRef = builder.prismaObject('UserInvite', {
+  shareable: true,
   fields: (t) => ({
     id: t.exposeID('id'),
     journeyId: t.exposeID('journeyId'),

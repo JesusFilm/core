@@ -1,6 +1,7 @@
 import { builder } from '../builder'
 
 export const JourneyThemeRef = builder.prismaObject('JourneyTheme', {
+  shareable: true,
   fields: (t) => ({
     id: t.exposeID('id'),
     journeyId: t.exposeID('journeyId'),

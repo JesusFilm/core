@@ -1,7 +1,8 @@
 import { builder } from '../builder'
 import { MessagePlatform } from '../enums'
 
-const ChatButtonRef = builder.prismaObject('ChatButton', {
+export const ChatButtonRef = builder.prismaObject('ChatButton', {
+  shareable: true,
   fields: (t) => ({
     id: t.exposeID('id'),
     link: t.exposeString('link'),

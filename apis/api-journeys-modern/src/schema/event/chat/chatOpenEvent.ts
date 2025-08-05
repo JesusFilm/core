@@ -2,8 +2,8 @@ import { builder } from '../../builder'
 import { MessagePlatform as MessagePlatformEnum } from '../../enums'
 import { EventInterface } from '../event'
 
-// ChatOpenEvent type
 export const ChatOpenEventRef = builder.prismaObject('Event', {
+  shareable: true,
   interfaces: [EventInterface],
   variant: 'ChatOpenEvent',
   isTypeOf: (obj: any) => obj.typename === 'ChatOpenEvent',

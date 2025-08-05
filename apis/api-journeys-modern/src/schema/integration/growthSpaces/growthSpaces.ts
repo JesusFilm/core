@@ -16,6 +16,7 @@ const IntegrationGrowthSpacesRoute =
   )
 
 IntegrationGrowthSpacesRoute.implement({
+  shareable: true,
   fields: (t) => ({
     id: t.exposeString('id'),
     name: t.exposeString('name')
@@ -23,6 +24,7 @@ IntegrationGrowthSpacesRoute.implement({
 })
 
 export const IntegrationGrowthSpacesRef = builder.prismaObject('Integration', {
+  shareable: true,
   interfaces: [IntegrationRef],
   include: { team: true },
   variant: 'IntegrationGrowthSpaces',

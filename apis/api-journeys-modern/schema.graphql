@@ -26,7 +26,9 @@ input BlocksFilter {
   typenames: [String!]
 }
 
-type Browser {
+type Browser
+  @shareable
+{
   name: String
   version: String
 }
@@ -99,9 +101,11 @@ input ButtonBlockUpdateInput {
   settings: ButtonBlockSettingsInput
 }
 
-type ButtonClickEvent implements Event {
+type ButtonClickEvent implements Event
+  @shareable
+{
   id: ID
-  journeyId: String
+  journeyId: ID
   createdAt: DateTime
   label: String
   value: String
@@ -198,7 +202,9 @@ input CardBlockUpdateInput {
   themeName: ThemeName
 }
 
-type ChatButton {
+type ChatButton
+  @shareable
+{
   id: ID
   link: String
   platform: MessagePlatform
@@ -214,9 +220,11 @@ input ChatButtonUpdateInput {
   platform: MessagePlatform!
 }
 
-type ChatOpenEvent implements Event {
+type ChatOpenEvent implements Event
+  @shareable
+{
   id: ID
-  journeyId: String
+  journeyId: ID
   createdAt: DateTime
   label: String
   value: String
@@ -232,7 +240,9 @@ input ChatOpenEventCreateInput {
   messagePlatform: MessagePlatform
 }
 
-type CustomDomain {
+type CustomDomain
+  @shareable
+{
   id: ID
   name: String
   apexName: String
@@ -269,7 +279,9 @@ A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the `dat
 """
 scalar DateTimeISO
 
-type Device {
+type Device
+  @shareable
+{
   model: String
   type: DeviceType
   vendor: String
@@ -300,7 +312,7 @@ input EmailActionInput {
 
 interface Event {
   id: ID
-  journeyId: String
+  journeyId: ID
   createdAt: DateTime
   label: String
   value: String
@@ -404,9 +416,12 @@ enum GridJustifyContent {
   center
 }
 
-type Host {
+type Host
+  @key(fields: "id")
+  @shareable
+{
   id: ID
-  teamId: String
+  teamId: ID
   title: String
   location: String
   src1: String
@@ -560,7 +575,9 @@ interface Integration {
   team: Team
 }
 
-type IntegrationGrowthSpaces implements Integration {
+type IntegrationGrowthSpaces implements Integration
+  @shareable
+{
   id: ID
   type: IntegrationType
   team: Team
@@ -575,7 +592,9 @@ input IntegrationGrowthSpacesCreateInput {
   teamId: String!
 }
 
-type IntegrationGrowthSpacesRoute {
+type IntegrationGrowthSpacesRoute
+  @shareable
+{
   id: String
   name: String
 }
@@ -591,6 +610,7 @@ enum IntegrationType {
 
 type Journey
   @key(fields: "id")
+  @shareable
 {
   id: ID! @shareable
 
@@ -671,7 +691,9 @@ type JourneyAiTranslateProgress {
 }
 
 """A collection of journeys associated with a team"""
-type JourneyCollection {
+type JourneyCollection
+  @shareable
+{
   id: ID
   title: String
   team: Team
@@ -708,9 +730,11 @@ input JourneyCreateInput {
   slug: String
 }
 
-type JourneyEvent implements Event & Node {
+type JourneyEvent implements Event & Node
+  @shareable
+{
   id: ID!
-  journeyId: String
+  journeyId: ID
   createdAt: DateTime
   label: String
   value: String
@@ -765,7 +789,10 @@ enum JourneyMenuButtonIcon {
   chevronDown
 }
 
-type JourneyNotification {
+type JourneyNotification
+  @key(fields: "id")
+  @shareable
+{
   id: ID
   userId: ID
   journeyId: ID
@@ -784,6 +811,7 @@ input JourneyNotificationUpdateInput {
 
 type JourneyProfile
   @key(fields: "id")
+  @shareable
 {
   id: ID
   userId: ID
@@ -813,7 +841,9 @@ input JourneyTemplateInput {
   template: Boolean
 }
 
-type JourneyTheme {
+type JourneyTheme
+  @shareable
+{
   id: ID
   journeyId: ID
   userId: ID
@@ -871,13 +901,15 @@ input JourneyUpdateInput {
   socialNodeY: Int
 }
 
-type JourneyViewEvent implements Event {
+type JourneyViewEvent implements Event
+  @shareable
+{
   id: ID
-  journeyId: String
+  journeyId: ID
   createdAt: DateTime
   label: String
   value: String
-  language: Json
+  language: Language
 }
 
 input JourneyViewEventCreateInput {
@@ -888,11 +920,11 @@ input JourneyViewEventCreateInput {
 }
 
 type JourneyVisitor
+  @key(fields: "visitorId journeyId")
   @shareable
 {
-  id: ID
-  journeyId: String
-  visitorId: String
+  journeyId: ID
+  visitorId: ID
   createdAt: DateTime
   duration: Int
   lastChatStartedAt: DateTime
@@ -902,12 +934,9 @@ type JourneyVisitor
   lastTextResponse: String
   lastRadioQuestion: String
   lastRadioOptionSubmission: String
-  activityCount: Int
-  updatedAt: DateTime
   countryCode: String
   messagePlatform: MessagePlatform
   notes: String
-  journey: Journey
   visitor: Visitor
   events: [Event!]
 }
@@ -928,7 +957,9 @@ enum JourneyVisitorSort {
   activity
 }
 
-type JourneysEmailPreference {
+type JourneysEmailPreference
+  @shareable
+{
   email: String
   unsubscribeAll: Boolean
   accountNotifications: Boolean
@@ -1075,7 +1106,9 @@ interface Node {
   id: ID!
 }
 
-type OperatingSystem {
+type OperatingSystem
+  @shareable
+{
   name: String
   version: String
 }
@@ -1087,7 +1120,9 @@ input PlausibleStatsAggregateFilter {
   interval: String
 }
 
-type PlausibleStatsAggregateResponse {
+type PlausibleStatsAggregateResponse
+  @shareable
+{
   visitors: PlausibleStatsAggregateValue
   visits: PlausibleStatsAggregateValue
   pageviews: PlausibleStatsAggregateValue
@@ -1099,7 +1134,9 @@ type PlausibleStatsAggregateResponse {
   timeOnPage: PlausibleStatsAggregateValue
 }
 
-type PlausibleStatsAggregateValue {
+type PlausibleStatsAggregateValue
+  @shareable
+{
   value: Float
   change: Int
 }
@@ -1113,7 +1150,9 @@ input PlausibleStatsBreakdownFilter {
   filters: String
 }
 
-type PlausibleStatsResponse {
+type PlausibleStatsResponse
+  @shareable
+{
   property: String
   visitors: Int
   visits: Int
@@ -1135,6 +1174,7 @@ input PlausibleStatsTimeseriesFilter {
 
 type QrCode
   @key(fields: "id")
+  @shareable
 {
   id: ID
   teamId: ID
@@ -1222,9 +1262,11 @@ input RadioQuestionBlockUpdateInput {
   parentBlockId: ID
 }
 
-type RadioQuestionSubmissionEvent implements Event {
+type RadioQuestionSubmissionEvent implements Event
+  @shareable
+{
   id: ID
-  journeyId: String
+  journeyId: ID
   createdAt: DateTime
   label: String
   value: String
@@ -1265,9 +1307,11 @@ input SignUpBlockUpdateInput {
   submitLabel: String
 }
 
-type SignUpSubmissionEvent implements Event {
+type SignUpSubmissionEvent implements Event
+  @shareable
+{
   id: ID
-  journeyId: String
+  journeyId: ID
   createdAt: DateTime
   label: String
   value: String
@@ -1388,9 +1432,11 @@ input StepBlockUpdateInput {
   slug: String
 }
 
-type StepNextEvent implements Event {
+type StepNextEvent implements Event
+  @shareable
+{
   id: ID
-  journeyId: String
+  journeyId: ID
   createdAt: DateTime
   label: String
   value: String
@@ -1404,9 +1450,11 @@ input StepNextEventCreateInput {
   value: String
 }
 
-type StepPreviousEvent implements Event {
+type StepPreviousEvent implements Event
+  @shareable
+{
   id: ID
-  journeyId: String
+  journeyId: ID
   createdAt: DateTime
   label: String
   value: String
@@ -1420,9 +1468,11 @@ input StepPreviousEventCreateInput {
   value: String
 }
 
-type StepViewEvent implements Event {
+type StepViewEvent implements Event
+  @shareable
+{
   id: ID
-  journeyId: String
+  journeyId: ID
   createdAt: DateTime
   label: String
   value: String
@@ -1445,7 +1495,9 @@ type Tag
   id: ID! @external
 }
 
-type Team {
+type Team
+  @shareable
+{
   id: ID
   title: String
   publicTitle: String
@@ -1501,9 +1553,11 @@ input TextResponseBlockUpdateInput {
   integrationId: String
 }
 
-type TextResponseSubmissionEvent implements Event {
+type TextResponseSubmissionEvent implements Event
+  @shareable
+{
   id: ID
-  journeyId: String
+  journeyId: ID
   createdAt: DateTime
   label: String
   value: String
@@ -1611,7 +1665,9 @@ type User
   id: ID! @external
 }
 
-type UserAgent {
+type UserAgent
+  @shareable
+{
   browser: Browser
   device: Device
   os: OperatingSystem
@@ -1619,6 +1675,7 @@ type UserAgent {
 
 type UserInvite
   @key(fields: "id")
+  @shareable
 {
   id: ID
   journeyId: ID
@@ -1634,7 +1691,9 @@ input UserInviteCreateInput {
   email: String!
 }
 
-type UserJourney {
+type UserJourney
+  @shareable
+{
   id: ID
   userId: ID
   journeyId: ID
@@ -1653,13 +1712,17 @@ enum UserJourneyRole {
 
 type UserRole
   @key(fields: "id")
+  @shareable
 {
   id: ID
   userId: ID
   roles: [Role!]
 }
 
-type UserTeam {
+type UserTeam
+  @key(fields: "id")
+  @shareable
+{
   id: ID
   teamId: ID
   userId: ID
@@ -1677,6 +1740,7 @@ input UserTeamFilterInput {
 
 type UserTeamInvite
   @key(fields: "id")
+  @shareable
 {
   id: ID
   teamId: ID
@@ -1714,6 +1778,7 @@ type Video
 
 type VideoBlock implements Block
   @key(fields: "id")
+  @shareable
   @key(fields: "id")
 {
   id: ID! @shareable
@@ -1724,8 +1789,8 @@ type VideoBlock implements Block
   startAt: Int @shareable
   endAt: Int @shareable
   muted: Boolean! @shareable
-  videoId: String @shareable
-  videoVariantLanguageId: String @shareable
+  videoId: ID @shareable
+  videoVariantLanguageId: ID @shareable
   source: VideoBlockSource @shareable
   title: String! @shareable
   description: String! @shareable
@@ -1788,9 +1853,11 @@ input VideoBlockUpdateInput {
   fullsize: Boolean
 }
 
-type VideoCollapseEvent implements Event {
+type VideoCollapseEvent implements Event
+  @shareable
+{
   id: ID
-  journeyId: String
+  journeyId: ID
   createdAt: DateTime
   label: String
   value: String
@@ -1807,9 +1874,11 @@ input VideoCollapseEventCreateInput {
   value: VideoBlockSource
 }
 
-type VideoCompleteEvent implements Event {
+type VideoCompleteEvent implements Event
+  @shareable
+{
   id: ID
-  journeyId: String
+  journeyId: ID
   createdAt: DateTime
   label: String
   value: String
@@ -1826,9 +1895,11 @@ input VideoCompleteEventCreateInput {
   value: VideoBlockSource
 }
 
-type VideoExpandEvent implements Event {
+type VideoExpandEvent implements Event
+  @shareable
+{
   id: ID
-  journeyId: String
+  journeyId: ID
   createdAt: DateTime
   label: String
   value: String
@@ -1845,9 +1916,11 @@ input VideoExpandEventCreateInput {
   value: VideoBlockSource
 }
 
-type VideoPauseEvent implements Event {
+type VideoPauseEvent implements Event
+  @shareable
+{
   id: ID
-  journeyId: String
+  journeyId: ID
   createdAt: DateTime
   label: String
   value: String
@@ -1864,9 +1937,11 @@ input VideoPauseEventCreateInput {
   value: VideoBlockSource
 }
 
-type VideoPlayEvent implements Event {
+type VideoPlayEvent implements Event
+  @shareable
+{
   id: ID
-  journeyId: String
+  journeyId: ID
   createdAt: DateTime
   label: String
   value: String
@@ -1883,9 +1958,11 @@ input VideoPlayEventCreateInput {
   value: VideoBlockSource
 }
 
-type VideoProgressEvent implements Event {
+type VideoProgressEvent implements Event
+  @shareable
+{
   id: ID
-  journeyId: String
+  journeyId: ID
   createdAt: DateTime
   label: String
   value: String
@@ -1904,9 +1981,11 @@ input VideoProgressEventCreateInput {
   progress: Int
 }
 
-type VideoStartEvent implements Event {
+type VideoStartEvent implements Event
+  @shareable
+{
   id: ID
-  journeyId: String
+  journeyId: ID
   createdAt: DateTime
   label: String
   value: String

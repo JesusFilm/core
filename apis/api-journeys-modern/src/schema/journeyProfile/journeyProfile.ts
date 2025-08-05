@@ -2,6 +2,7 @@ import { prisma } from '../../lib/prisma'
 import { builder } from '../builder'
 
 export const JourneyProfileRef = builder.prismaObject('JourneyProfile', {
+  shareable: true,
   fields: (t) => ({
     id: t.exposeID('id'),
     userId: t.exposeID('userId'),

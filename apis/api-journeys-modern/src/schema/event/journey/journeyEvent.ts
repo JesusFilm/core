@@ -9,6 +9,7 @@ export const JourneyEventRef = builder.prismaNode('Event', {
   interfaces: [EventInterface],
   id: { field: 'id' },
   nullable: true,
+  shareable: true,
   fields: (t) => ({
     action: t.expose('action', { type: ButtonActionEnum, nullable: true }),
     actionValue: t.exposeString('actionValue', { nullable: true }),

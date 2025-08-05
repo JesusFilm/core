@@ -1,9 +1,12 @@
-import { builder } from "../../../builder"
+import { builder } from '../../../builder'
 
-export const OperatingSystemRef = builder.objectRef<{
+export const OperatingSystemRef = builder
+  .objectRef<{
     name?: string | null
     version?: string | null
-  }>('OperatingSystem').implement({
+  }>('OperatingSystem')
+  .implement({
+    shareable: true,
     fields: (t) => ({
       name: t.string({
         nullable: true,

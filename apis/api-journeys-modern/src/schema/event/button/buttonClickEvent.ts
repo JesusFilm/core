@@ -3,10 +3,8 @@ import { EventInterface } from '../event'
 
 import { ButtonActionEnum } from './enums'
 
-// Define ButtonAction enum
-
-// ButtonClickEvent type
 export const ButtonClickEventRef = builder.prismaObject('Event', {
+  shareable: true,
   interfaces: [EventInterface],
   variant: 'ButtonClickEvent',
   isTypeOf: (obj: any) => obj.typename === 'ButtonClickEvent',

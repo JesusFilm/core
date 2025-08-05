@@ -6,6 +6,7 @@ import { JourneyNotificationRef } from '../journeyNotification/journeyNotificati
 import { UserRef } from '../user/user'
 
 export const UserTeamRef = builder.prismaObject('UserTeam', {
+  shareable: true,
   fields: (t) => ({
     id: t.exposeID('id'),
     teamId: t.exposeID('teamId'),
@@ -52,3 +53,11 @@ export const UserTeamRef = builder.prismaObject('UserTeam', {
   })
 })
 
+builder.asEntity(UserTeamRef, {
+  key: builder.selection<{ id: string }>('id'),
+  resolveReference: async (userTeam) => {
+    return await prisma.userTeam.findUnique({
+      where: { id: userTeam.id }
+    })
+  }
+})

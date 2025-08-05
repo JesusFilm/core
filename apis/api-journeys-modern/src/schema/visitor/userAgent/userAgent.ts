@@ -5,6 +5,7 @@ import { DeviceRef } from './device/device'
 import { OperatingSystemRef } from './operatingSystem/operatingSystem'
 
 export const UserAgentRef = builder.objectRef<any>('UserAgent').implement({
+  shareable: true,
   fields: (t) => ({
     browser: t.field({
       type: BrowserRef,

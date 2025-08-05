@@ -18,6 +18,7 @@ Tag.implement({
 })
 
 export const JourneyRef = builder.prismaObject('Journey', {
+  shareable: true,
   fields: (t) => ({
     id: t.exposeID('id', { shareable: true, nullable: false }),
     title: t.exposeString('title', {
@@ -219,4 +220,3 @@ builder.asEntity(JourneyRef, {
     })
   }
 })
-

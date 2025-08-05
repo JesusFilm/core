@@ -4,6 +4,7 @@ import { JourneyRef } from '../journey/journey'
 
 export const JourneyCollectionRef = builder.prismaObject('JourneyCollection', {
   description: 'A collection of journeys associated with a team',
+  shareable: true,
   fields: (t) => ({
     id: t.exposeID('id'),
     title: t.exposeString('title', { nullable: true }),

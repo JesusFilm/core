@@ -1,6 +1,7 @@
 import { builder } from '../builder'
 
 builder.prismaObject('CustomDomain', {
+  shareable: true,
   fields: (t) => ({
     id: t.exposeID('id'),
     name: t.exposeString('name'),

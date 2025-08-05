@@ -12,6 +12,7 @@ const ShortLink = builder
 
 // Define QrCode object type
 export const QrCodeRef = builder.prismaObject('QrCode', {
+  shareable: true,
   fields: (t) => ({
     id: t.exposeID('id'),
     teamId: t.exposeID('teamId'),

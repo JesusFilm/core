@@ -1,6 +1,7 @@
 import { builder } from '../builder'
 
 export const TeamRef = builder.prismaObject('Team', {
+  shareable: true,
   fields: (t) => ({
     id: t.exposeID('id'),
     title: t.exposeString('title'),

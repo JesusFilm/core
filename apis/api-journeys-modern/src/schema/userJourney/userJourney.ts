@@ -6,6 +6,7 @@ import { UserRef } from '../user/user'
 import { UserJourneyRoleEnum } from './enums'
 
 export const UserJourneyRef = builder.prismaObject('UserJourney', {
+  shareable: true,
   fields: (t) => ({
     id: t.exposeID('id'),
     userId: t.exposeID('userId'),

@@ -7,9 +7,6 @@ import { Block } from '../block'
 
 import { VideoBlockObjectFit } from './enums/videoObjectFit'
 
-// Input types for VideoBlock operations
-
-// Type guard for allowed media video sources
 function isMediaVideoSource(
   source: string
 ): source is 'internal' | 'mux' | 'youTube' {
@@ -17,6 +14,7 @@ function isMediaVideoSource(
 }
 
 export const VideoBlock = builder.prismaObject('Block', {
+  shareable: true,
   interfaces: [Block],
   variant: 'VideoBlock',
   isTypeOf: (obj: any) => obj.typename === 'VideoBlock',
@@ -42,7 +40,7 @@ export const VideoBlock = builder.prismaObject('Block', {
     }),
     startAt: t.exposeInt('startAt', {
       nullable: true,
-      directives: { shareable: true },
+      directives: { shareable: true }
     }),
     endAt: t.exposeInt('endAt', {
       nullable: true,
@@ -53,11 +51,11 @@ export const VideoBlock = builder.prismaObject('Block', {
       directives: { shareable: true },
       resolve: (block) => block.muted ?? false
     }),
-    videoId: t.exposeString('videoId', {
+    videoId: t.exposeID('videoId', {
       nullable: true,
       directives: { shareable: true }
     }),
-    videoVariantLanguageId: t.exposeString('videoVariantLanguageId', {
+    videoVariantLanguageId: t.exposeID('videoVariantLanguageId', {
       nullable: true,
       directives: { shareable: true }
     }),

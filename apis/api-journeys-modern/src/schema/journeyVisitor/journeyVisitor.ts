@@ -5,9 +5,8 @@ import { MessagePlatform } from '../enums'
 export const JourneyVisitorRef = builder.prismaObject('JourneyVisitor', {
   shareable: true,
   fields: (t) => ({
-    id: t.exposeID('id'),
-    journeyId: t.exposeString('journeyId'),
-    visitorId: t.exposeString('visitorId'),
+    journeyId: t.exposeID('journeyId'),
+    visitorId: t.exposeID('visitorId'),
     createdAt: t.expose('createdAt', { type: 'DateTime' }),
     duration: t.exposeInt('duration'),
     lastChatStartedAt: t.expose('lastChatStartedAt', {
@@ -28,9 +27,6 @@ export const JourneyVisitorRef = builder.prismaObject('JourneyVisitor', {
     lastRadioOptionSubmission: t.exposeString('lastRadioOptionSubmission', {
       nullable: true
     }),
-    activityCount: t.exposeInt('activityCount'),
-    updatedAt: t.expose('updatedAt', { type: 'DateTime' }),
-    // Additional fields from visitor relation for convenience
     countryCode: t.field({
       type: 'String',
       nullable: true,
@@ -64,9 +60,23 @@ export const JourneyVisitorRef = builder.prismaObject('JourneyVisitor', {
         return visitor?.notes || null
       }
     }),
-    // Relations
-    journey: t.relation('journey'),
     visitor: t.relation('visitor'),
     events: t.relation('events')
   })
+})
+
+builder.asEntity(JourneyVisitorRef, {
+  key: builder.selection<{ visitorId: string; journeyId: string }>(
+    'visitorId journeyId'
+  ),
+  resolveReference: async (journeyVisitor) => {
+    return await prisma.journeyVisitor.findUnique({
+      where: {
+        journeyId_visitorId: {
+          visitorId: journeyVisitor.visitorId,
+          journeyId: journeyVisitor.journeyId
+        }
+      }
+    })
+  }
 })

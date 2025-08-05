@@ -1,9 +1,11 @@
+import { prisma } from '../../lib/prisma'
 import { builder } from '../builder'
 
 export const HostRef = builder.prismaObject('Host', {
+  shareable: true,
   fields: (t) => ({
     id: t.exposeID('id'),
-    teamId: t.exposeString('teamId'),
+    teamId: t.exposeID('teamId'),
     title: t.exposeString('title'),
     location: t.exposeString('location', { nullable: true }),
     src1: t.exposeString('src1', { nullable: true }),
@@ -12,4 +14,13 @@ export const HostRef = builder.prismaObject('Host', {
     team: t.relation('team'),
     journeys: t.relation('journeys')
   })
+})
+
+builder.asEntity(HostRef, {
+  key: builder.selection<{ id: string }>('id'),
+  resolveReference: async (host) => {
+    return await prisma.host.findUnique({
+      where: { id: host.id }
+    })
+  }
 })

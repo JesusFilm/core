@@ -46,6 +46,7 @@ const PlausibleStatsResponseRef = builder.objectRef<PlausibleStatsResponse>(
 
 // Implement object types
 PlausibleStatsAggregateValueRef.implement({
+  shareable: true,
   fields: (t) => ({
     value: t.float({
       resolve: (parent) => parent.value
@@ -58,6 +59,7 @@ PlausibleStatsAggregateValueRef.implement({
 })
 
 PlausibleStatsAggregateResponseRef.implement({
+  shareable: true,
   fields: (t) => ({
     visitors: t.field({
       type: PlausibleStatsAggregateValueRef,
@@ -99,6 +101,7 @@ PlausibleStatsAggregateResponseRef.implement({
 })
 
 PlausibleStatsResponseRef.implement({
+  shareable: true,
   fields: (t) => ({
     property: t.string({
       resolve: (parent) => parent.property
