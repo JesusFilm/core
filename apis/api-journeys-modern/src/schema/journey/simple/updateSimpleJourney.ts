@@ -21,10 +21,6 @@ const ALLOWED_IMAGE_HOSTNAMES = [
   'image.mux.com'
 ]
 
-/**
- * Checks if a given image URL is allowed by your remotePatterns.
- * Accepts both http and https, and matches subdomains.
- */
 const isValidImageUrl = (url: string): boolean => {
   try {
     const parsed = new URL(url)
@@ -106,7 +102,6 @@ export async function updateSimpleJourney(
   simple: JourneySimpleUpdate
 ) {
   return prisma.$transaction(async (tx) => {
-    // Process all background images and card images outside the transaction
     const processedBackgroundImages = new Map()
     const processedCardImages = new Map()
 

@@ -2,13 +2,15 @@ import { encode } from 'blurhash'
 import fetch from 'node-fetch'
 import sharp from 'sharp'
 
-export async function generateBlurhashAndMetadataFromUrl(
-  imageUrl: string
-): Promise<{
+interface ImageMetadata {
   blurhash: string
   width: number
   height: number
-}> {
+}
+
+export async function generateBlurhashAndMetadataFromUrl(
+  imageUrl: string
+): Promise<ImageMetadata> {
   try {
     const response = await fetch(imageUrl)
     const buffer = await response.buffer()
