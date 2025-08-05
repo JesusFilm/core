@@ -11,21 +11,21 @@ import { RadioOptionBlockCreateInput, ButtonVariant, ButtonColor, ButtonSize, Bu
 
 export interface RadioOptionBlockCreate_radioOptionBlockCreate_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
-  parentBlockId: string;
+  parentBlockId: string | null;
   gtmEventName: string | null;
   blockId: string;
 }
 
 export interface RadioOptionBlockCreate_radioOptionBlockCreate_action_LinkAction {
   __typename: "LinkAction";
-  parentBlockId: string;
+  parentBlockId: string | null;
   gtmEventName: string | null;
   url: string;
 }
 
 export interface RadioOptionBlockCreate_radioOptionBlockCreate_action_EmailAction {
   __typename: "EmailAction";
-  parentBlockId: string;
+  parentBlockId: string | null;
   gtmEventName: string | null;
   email: string;
 }

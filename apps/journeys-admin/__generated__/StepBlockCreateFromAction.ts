@@ -88,8 +88,8 @@ export interface StepBlockCreateFromAction_blockUpdateAction_parentBlock {
 
 export interface StepBlockCreateFromAction_blockUpdateAction {
   __typename: "NavigateToBlockAction" | "LinkAction" | "EmailAction";
-  parentBlockId: string;
-  parentBlock: StepBlockCreateFromAction_blockUpdateAction_parentBlock;
+  parentBlockId: string | null;
+  parentBlock: StepBlockCreateFromAction_blockUpdateAction_parentBlock | null;
   gtmEventName: string | null;
 }
 

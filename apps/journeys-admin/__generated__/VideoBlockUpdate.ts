@@ -62,21 +62,21 @@ export type VideoBlockUpdate_videoBlockUpdate_mediaVideo = VideoBlockUpdate_vide
 
 export interface VideoBlockUpdate_videoBlockUpdate_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
-  parentBlockId: string;
+  parentBlockId: string | null;
   gtmEventName: string | null;
   blockId: string;
 }
 
 export interface VideoBlockUpdate_videoBlockUpdate_action_LinkAction {
   __typename: "LinkAction";
-  parentBlockId: string;
+  parentBlockId: string | null;
   gtmEventName: string | null;
   url: string;
 }
 
 export interface VideoBlockUpdate_videoBlockUpdate_action_EmailAction {
   __typename: "EmailAction";
-  parentBlockId: string;
+  parentBlockId: string | null;
   gtmEventName: string | null;
   email: string;
 }
