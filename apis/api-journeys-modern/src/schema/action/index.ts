@@ -3,5 +3,3 @@ import './action'
 import './emailAction'
 import './linkAction'
 import './navigateToBlockAction'
-
-export { ActionInterface } from './action'
