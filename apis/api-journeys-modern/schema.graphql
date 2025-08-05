@@ -228,7 +228,7 @@ input ChatOpenEventCreateInput {
   blockId: ID!
   stepId: ID
   label: String
-  value: String
+  value: MessagePlatform
   messagePlatform: MessagePlatform
 }
 
@@ -884,7 +884,7 @@ input JourneyViewEventCreateInput {
   id: ID
   journeyId: ID!
   label: String
-  value: String
+  value: ID
 }
 
 type JourneyVisitor
@@ -1133,7 +1133,9 @@ input PlausibleStatsTimeseriesFilter {
   interval: String
 }
 
-type QrCode {
+type QrCode
+  @key(fields: "id")
+{
   id: ID
   teamId: ID
   journeyId: ID
@@ -1673,7 +1675,9 @@ input UserTeamFilterInput {
   role: [UserTeamRole!]
 }
 
-type UserTeamInvite {
+type UserTeamInvite
+  @key(fields: "id")
+{
   id: ID
   teamId: ID
   email: String
@@ -1936,6 +1940,7 @@ type VideoTriggerBlock implements Block
 }
 
 type Visitor
+  @key(fields: "id")
   @shareable
 {
   id: ID

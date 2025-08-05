@@ -9,7 +9,7 @@ export const ChatOpenEventCreateInput = builder.inputType(
       blockId: t.id({ required: true }),
       stepId: t.id({ required: false }),
       label: t.string({ required: false }),
-      value: t.string({ required: false }),
+      value: t.field({ type: MessagePlatform, required: false }),
       messagePlatform: t.field({ type: MessagePlatform, required: false })
     })
   }

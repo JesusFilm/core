@@ -1,4 +1,4 @@
-
+import { prisma } from '../../lib/prisma'
 import { builder } from '../builder'
 
 // Define ShortLink interface for federation
@@ -30,3 +30,11 @@ export const QrCodeRef = builder.prismaObject('QrCode', {
   })
 })
 
+builder.asEntity(QrCodeRef, {
+  key: builder.selection<{ id: string }>('id'),
+  resolveReference: async (qrCode) => {
+    return await prisma.qrCode.findUnique({
+      where: { id: qrCode.id }
+    })
+  }
+})

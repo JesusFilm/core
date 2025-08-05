@@ -1,3 +1,4 @@
+import { prisma } from '../../lib/prisma'
 import { builder } from '../builder'
 
 export const UserTeamInviteRef = builder.prismaObject('UserTeamInvite', {
@@ -13,4 +14,13 @@ export const UserTeamInviteRef = builder.prismaObject('UserTeamInvite', {
     updatedAt: t.expose('updatedAt', { type: 'DateTime' }),
     team: t.relation('team')
   })
+})
+
+builder.asEntity(UserTeamInviteRef, {
+  key: builder.selection<{ id: string }>('id'),
+  resolveReference: async (userTeamInvite) => {
+    return await prisma.userTeamInvite.findUnique({
+      where: { id: userTeamInvite.id }
+    })
+  }
 })

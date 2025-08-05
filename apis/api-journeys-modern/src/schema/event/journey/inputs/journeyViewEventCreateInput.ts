@@ -7,7 +7,7 @@ export const JourneyViewEventCreateInput = builder.inputType(
       id: t.id({ required: false }),
       journeyId: t.id({ required: true }),
       label: t.string({ required: false }),
-      value: t.string({ required: false })
+      value: t.id({ required: false })
     })
   }
 )
