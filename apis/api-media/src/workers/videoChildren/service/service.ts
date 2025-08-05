@@ -1,6 +1,6 @@
 import { Logger } from 'pino'
 
-import { prisma } from '../../../lib/prisma'
+import { prisma } from '@core/prisma/media/client'
 
 async function getVideoIds(): Promise<string[]> {
   const videos = await prisma.video.findMany({

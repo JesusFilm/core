@@ -7,8 +7,8 @@ import {
   CustomDomain,
   Journey,
   QrCode
-} from '.prisma/api-journeys-client'
-import { ShortLink } from '.prisma/api-media-client'
+} from '@core/prisma/journeys/client'
+import { ShortLink } from '@core/prisma/media/client'
 
 import { Service } from '../../../__generated__/graphql'
 import { PrismaService } from '../../lib/prisma.service'

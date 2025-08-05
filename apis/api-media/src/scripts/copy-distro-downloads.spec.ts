@@ -1,4 +1,4 @@
-import { VideoVariantDownloadQuality } from '.prisma/api-media-client'
+import { VideoVariantDownloadQuality } from '@core/prisma/media/client'
 
 import { prismaMock } from '../../test/prismaMock'
 

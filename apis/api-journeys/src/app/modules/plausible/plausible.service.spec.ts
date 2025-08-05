@@ -3,7 +3,7 @@ import { Test, TestingModule } from '@nestjs/testing'
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
 import { setupServer } from 'msw/node'
 
-import { Journey, Team } from '.prisma/api-journeys-client'
+import { Journey, Team } from '@core/prisma/journeys/client'
 
 import { PrismaService } from '../../lib/prisma.service'
 

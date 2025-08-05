@@ -1,4 +1,4 @@
-import { ImageAspectRatio as PrismaImageAspectRatio } from '.prisma/api-media-client'
+import { ImageAspectRatio as PrismaImageAspectRatio } from '@core/prisma/media/client'
 
 import { builder } from '../../../builder'
 

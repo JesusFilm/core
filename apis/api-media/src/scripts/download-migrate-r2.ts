@@ -3,7 +3,8 @@ import path from 'path'
 import { PutObjectCommand, S3Client } from '@aws-sdk/client-s3'
 import { Logger } from 'pino'
 
-import { prisma } from '../lib/prisma'
+import { prisma } from '@core/prisma/media/client'
+
 import { logger } from '../logger'
 
 function getR2Client(): S3Client {

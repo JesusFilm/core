@@ -1,4 +1,4 @@
-import { MuxVideo } from '.prisma/api-media-client'
+import { MuxVideo } from '@core/prisma/media/client'
 import { graphql } from '@core/shared/gql'
 
 import { getClient } from '../../../../test/client'

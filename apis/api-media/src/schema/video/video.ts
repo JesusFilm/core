@@ -3,9 +3,12 @@ import compact from 'lodash/compact'
 import isEmpty from 'lodash/isEmpty'
 import orderBy from 'lodash/orderBy'
 
-import { Prisma, Platform as PrismaPlatform } from '.prisma/api-media-client'
+import {
+  Prisma,
+  Platform as PrismaPlatform,
+  prisma
+} from '@core/prisma/media/client'
 
-import { prisma } from '../../lib/prisma'
 import { videoCacheReset } from '../../lib/videoCacheReset'
 import { updateVideoInAlgolia } from '../../workers/algolia/service'
 import { builder } from '../builder'

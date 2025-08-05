@@ -3,7 +3,7 @@ import isNil from 'lodash/isNil'
 import omit from 'lodash/omit'
 import omitBy from 'lodash/omitBy'
 
-import { Prisma } from '.prisma/api-journeys-client'
+import { Prisma } from '@core/prisma/journeys/client'
 
 import {
   ButtonAction,

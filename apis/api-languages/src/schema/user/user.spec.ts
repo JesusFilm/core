@@ -1,4 +1,4 @@
-import { LanguageRole } from '.prisma/api-languages-client'
+import { LanguageRole } from '@core/prisma/languages/client'
 import { graphql } from '@core/shared/gql'
 
 import { getClient } from '../../../test/client'

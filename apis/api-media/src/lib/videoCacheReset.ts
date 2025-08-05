@@ -1,8 +1,8 @@
 import fetch from 'node-fetch'
 
-import { cache } from '../yoga'
+import { prisma } from '@core/prisma/media/client'
 
-import { prisma } from './prisma'
+import { cache } from '../yoga'
 
 async function revalidateWatchApp(url: string): Promise<void> {
   try {
