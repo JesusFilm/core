@@ -3402,12 +3402,12 @@ input BlockUpdateActionInput @join__type(graph: API_JOURNEYS)  {
   blockId: String
 }
 
-input BlocksFilter @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
+input BlocksFilter @join__type(graph: API_JOURNEYS)  {
   journeyIds: [ID!]
   typenames: [String!]
 }
 
-input BlockDuplicateIdMap @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
+input BlockDuplicateIdMap @join__type(graph: API_JOURNEYS)  {
   oldId: ID!
   newId: ID!
 }

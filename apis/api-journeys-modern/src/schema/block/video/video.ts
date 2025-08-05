@@ -1,5 +1,4 @@
 import { prisma } from '../../../lib/prisma'
-import { ActionInterface } from '../../action/action'
 import { builder } from '../../builder'
 import { VideoBlockSource } from '../../enums'
 import { MediaVideo } from '../../mediaVideo/mediaVideo'
@@ -20,19 +19,6 @@ export const VideoBlock = builder.prismaObject('Block', {
   isTypeOf: (obj: any) => obj.typename === 'VideoBlock',
   directives: { key: { fields: 'id' } },
   fields: (t) => ({
-    id: t.exposeID('id', { nullable: false, directives: { shareable: true } }),
-    journeyId: t.exposeID('journeyId', {
-      nullable: false,
-      directives: { shareable: true }
-    }),
-    parentBlockId: t.exposeID('parentBlockId', {
-      nullable: true,
-      directives: { shareable: true }
-    }),
-    parentOrder: t.exposeInt('parentOrder', {
-      nullable: true,
-      directives: { shareable: true }
-    }),
     autoplay: t.boolean({
       nullable: false,
       directives: { shareable: true },
@@ -98,17 +84,7 @@ export const VideoBlock = builder.prismaObject('Block', {
       directives: { shareable: true },
       resolve: (block) => block.fullsize ?? false
     }),
-    action: t.field({
-      type: ActionInterface,
-      nullable: true,
-      directives: { shareable: true },
-      resolve: async (block) => {
-        const action = await prisma.action.findUnique({
-          where: { parentBlockId: block.id }
-        })
-        return action
-      }
-    }),
+    action: t.relation('action'),
     mediaVideo: t.field({
       type: MediaVideo,
       nullable: true,

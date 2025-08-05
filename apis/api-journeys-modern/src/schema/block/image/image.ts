@@ -6,20 +6,8 @@ export const ImageBlock = builder.prismaObject('Block', {
   variant: 'ImageBlock',
   isTypeOf: (obj: any) => obj.typename === 'ImageBlock',
   directives: { key: { fields: 'id' } },
+  shareable: true,
   fields: (t) => ({
-    id: t.exposeID('id', { nullable: false, directives: { shareable: true } }),
-    journeyId: t.exposeID('journeyId', {
-      nullable: false,
-      directives: { shareable: true }
-    }),
-    parentBlockId: t.exposeID('parentBlockId', {
-      nullable: true,
-      directives: { shareable: true }
-    }),
-    parentOrder: t.exposeInt('parentOrder', {
-      nullable: true,
-      directives: { shareable: true }
-    }),
     src: t.exposeString('src', {
       nullable: true,
       directives: { shareable: true }

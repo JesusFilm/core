@@ -8,20 +8,8 @@ export const VideoTriggerBlock = builder.prismaObject('Block', {
   variant: 'VideoTriggerBlock',
   isTypeOf: (obj: any) => obj.typename === 'VideoTriggerBlock',
   directives: { key: { fields: 'id' } },
+  shareable: true,
   fields: (t) => ({
-    id: t.exposeID('id', { nullable: false, directives: { shareable: true } }),
-    journeyId: t.exposeID('journeyId', {
-      nullable: false,
-      directives: { shareable: true }
-    }),
-    parentBlockId: t.exposeID('parentBlockId', {
-      nullable: true,
-      directives: { shareable: true }
-    }),
-    parentOrder: t.exposeInt('parentOrder', {
-      nullable: true,
-      directives: { shareable: true }
-    }),
     triggerStart: t.int({
       nullable: false,
       directives: { shareable: true },

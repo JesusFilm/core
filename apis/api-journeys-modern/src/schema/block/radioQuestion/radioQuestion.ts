@@ -6,20 +6,8 @@ export const RadioQuestionBlock = builder.prismaObject('Block', {
   variant: 'RadioQuestionBlock',
   isTypeOf: (obj: any) => obj.typename === 'RadioQuestionBlock',
   directives: { key: { fields: 'id' } },
+  shareable: true,
   fields: (t) => ({
-    id: t.exposeID('id', { nullable: false, directives: { shareable: true } }),
-    journeyId: t.exposeID('journeyId', {
-      nullable: false,
-      directives: { shareable: true }
-    }),
-    parentBlockId: t.exposeID('parentBlockId', {
-      nullable: true,
-      directives: { shareable: true }
-    }),
-    parentOrder: t.exposeInt('parentOrder', {
-      nullable: true,
-      directives: { shareable: true }
-    }),
     gridView: t.exposeBoolean('gridView', {
       nullable: true,
       directives: { shareable: true }

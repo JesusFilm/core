@@ -16,16 +16,6 @@ interface Block
   parentOrder: Int
 }
 
-input BlockDuplicateIdMap {
-  oldId: ID!
-  newId: ID!
-}
-
-input BlocksFilter {
-  journeyIds: [ID!]
-  typenames: [String!]
-}
-
 enum ButtonAlignment {
   left
   center
@@ -34,12 +24,13 @@ enum ButtonAlignment {
 }
 
 type ButtonBlock implements Block
+  @shareable
   @key(fields: "id")
 {
-  id: ID! @shareable
-  journeyId: ID! @shareable
-  parentBlockId: ID @shareable
-  parentOrder: Int @shareable
+  id: ID!
+  journeyId: ID!
+  parentBlockId: ID
+  parentOrder: Int
   label: String! @shareable
   variant: ButtonVariant @shareable
   color: ButtonColor @shareable
@@ -63,7 +54,9 @@ input ButtonBlockCreateInput {
   settings: ButtonBlockSettingsInput
 }
 
-type ButtonBlockSettings {
+type ButtonBlockSettings
+  @shareable
+{
   """Alignment of the button"""
   alignment: ButtonAlignment @shareable
 
@@ -108,12 +101,13 @@ enum ButtonVariant {
 }
 
 type CardBlock implements Block
+  @shareable
   @key(fields: "id")
 {
-  id: ID! @shareable
-  journeyId: ID! @shareable
-  parentBlockId: ID @shareable
-  parentOrder: Int @shareable
+  id: ID!
+  journeyId: ID!
+  parentBlockId: ID
+  parentOrder: Int
 
   """backgroundColor should be a HEX color value e.g #FFFFFF for white."""
   backgroundColor: String @shareable
@@ -233,12 +227,13 @@ enum GridAlignItems {
 }
 
 type GridContainerBlock implements Block
+  @shareable
   @key(fields: "id")
 {
-  id: ID! @shareable
-  journeyId: ID! @shareable
-  parentBlockId: ID @shareable
-  parentOrder: Int @shareable
+  id: ID!
+  journeyId: ID!
+  parentBlockId: ID
+  parentOrder: Int
   gap: Int! @shareable
   direction: GridDirection! @shareable
   justifyContent: GridJustifyContent! @shareable
@@ -271,12 +266,13 @@ enum GridDirection {
 }
 
 type GridItemBlock implements Block
+  @shareable
   @key(fields: "id")
 {
-  id: ID! @shareable
-  journeyId: ID! @shareable
-  parentBlockId: ID @shareable
-  parentOrder: Int @shareable
+  id: ID!
+  journeyId: ID!
+  parentBlockId: ID
+  parentOrder: Int
   xl: Int! @shareable
   lg: Int! @shareable
   sm: Int! @shareable
@@ -305,12 +301,13 @@ enum GridJustifyContent {
 }
 
 type IconBlock implements Block
+  @shareable
   @key(fields: "id")
 {
-  id: ID! @shareable
-  journeyId: ID! @shareable
-  parentBlockId: ID @shareable
-  parentOrder: Int @shareable
+  id: ID!
+  journeyId: ID!
+  parentBlockId: ID
+  parentOrder: Int
   name: IconName @shareable
   color: IconColor @shareable
   size: IconSize @shareable
@@ -374,12 +371,13 @@ enum IconSize {
 }
 
 type ImageBlock implements Block
+  @shareable
   @key(fields: "id")
 {
-  id: ID! @shareable
-  journeyId: ID! @shareable
-  parentBlockId: ID @shareable
-  parentOrder: Int @shareable
+  id: ID!
+  journeyId: ID!
+  parentBlockId: ID
+  parentOrder: Int
   src: String @shareable
   alt: String! @shareable
   width: Int! @shareable
@@ -604,12 +602,13 @@ type Query {
 }
 
 type RadioOptionBlock implements Block
+  @shareable
   @key(fields: "id")
 {
-  id: ID! @shareable
-  journeyId: ID! @shareable
-  parentBlockId: ID @shareable
-  parentOrder: Int @shareable
+  id: ID!
+  journeyId: ID!
+  parentBlockId: ID
+  parentOrder: Int
   label: String! @shareable
 
   """
@@ -633,12 +632,13 @@ input RadioOptionBlockUpdateInput {
 }
 
 type RadioQuestionBlock implements Block
+  @shareable
   @key(fields: "id")
 {
-  id: ID! @shareable
-  journeyId: ID! @shareable
-  parentBlockId: ID @shareable
-  parentOrder: Int @shareable
+  id: ID!
+  journeyId: ID!
+  parentBlockId: ID
+  parentOrder: Int
   gridView: Boolean @shareable
 }
 
@@ -653,12 +653,13 @@ input RadioQuestionBlockUpdateInput {
 }
 
 type SignUpBlock implements Block
+  @shareable
   @key(fields: "id")
 {
-  id: ID! @shareable
-  journeyId: ID! @shareable
-  parentBlockId: ID @shareable
-  parentOrder: Int @shareable
+  id: ID!
+  journeyId: ID!
+  parentBlockId: ID
+  parentOrder: Int
   submitIconId: ID @shareable
   submitLabel: String @shareable
 }
@@ -677,12 +678,13 @@ input SignUpBlockUpdateInput {
 }
 
 type SpacerBlock implements Block
+  @shareable
   @key(fields: "id")
 {
-  id: ID! @shareable
-  journeyId: ID! @shareable
-  parentBlockId: ID @shareable
-  parentOrder: Int @shareable
+  id: ID!
+  journeyId: ID!
+  parentBlockId: ID
+  parentOrder: Int
   spacing: Int @shareable
 }
 
@@ -698,12 +700,13 @@ input SpacerBlockUpdateInput {
 }
 
 type StepBlock implements Block
+  @shareable
   @key(fields: "id")
 {
-  id: ID! @shareable
-  journeyId: ID! @shareable
-  parentBlockId: ID @shareable
-  parentOrder: Int @shareable
+  id: ID!
+  journeyId: ID!
+  parentBlockId: ID
+  parentOrder: Int
 
   """
   locked will be set to true if the user should not be able to manually
@@ -787,12 +790,13 @@ type Subscription {
 }
 
 type TextResponseBlock implements Block
+  @shareable
   @key(fields: "id")
 {
-  id: ID! @shareable
-  journeyId: ID! @shareable
-  parentBlockId: ID @shareable
-  parentOrder: Int @shareable
+  id: ID!
+  journeyId: ID!
+  parentBlockId: ID
+  parentOrder: Int
   label: String! @shareable
   placeholder: String @shareable
   required: Boolean @shareable
@@ -845,12 +849,13 @@ enum TypographyAlign {
 }
 
 type TypographyBlock implements Block
+  @shareable
   @key(fields: "id")
 {
-  id: ID! @shareable
-  journeyId: ID! @shareable
-  parentBlockId: ID @shareable
-  parentOrder: Int @shareable
+  id: ID!
+  journeyId: ID!
+  parentBlockId: ID
+  parentOrder: Int
   content: String! @shareable
   variant: TypographyVariant @shareable
   color: TypographyColor @shareable
@@ -869,7 +874,9 @@ input TypographyBlockCreateInput {
   settings: TypographyBlockSettingsInput
 }
 
-type TypographyBlockSettings {
+type TypographyBlockSettings
+  @shareable
+{
   """Color of the typography"""
   color: String @shareable
 }
@@ -922,10 +929,10 @@ type VideoBlock implements Block
   @shareable
   @key(fields: "id")
 {
-  id: ID! @shareable
-  journeyId: ID! @shareable
-  parentBlockId: ID @shareable
-  parentOrder: Int @shareable
+  id: ID!
+  journeyId: ID!
+  parentBlockId: ID
+  parentOrder: Int
   autoplay: Boolean! @shareable
   startAt: Int @shareable
   endAt: Int @shareable
@@ -940,7 +947,7 @@ type VideoBlock implements Block
   objectFit: VideoBlockObjectFit @shareable
   posterBlockId: ID @shareable
   fullsize: Boolean! @shareable
-  action: Action @shareable
+  action: Action
   mediaVideo: MediaVideo @shareable
 }
 
@@ -995,12 +1002,13 @@ input VideoBlockUpdateInput {
 }
 
 type VideoTriggerBlock implements Block
+  @shareable
   @key(fields: "id")
 {
-  id: ID! @shareable
-  journeyId: ID! @shareable
-  parentBlockId: ID @shareable
-  parentOrder: Int @shareable
+  id: ID!
+  journeyId: ID!
+  parentBlockId: ID
+  parentOrder: Int
 
   """
   triggerStart sets the time as to when a video navigates to the next block,
