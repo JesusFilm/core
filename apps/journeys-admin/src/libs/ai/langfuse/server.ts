@@ -1,7 +1,7 @@
 import { Langfuse } from 'langfuse'
 import { LangfuseExporter } from 'langfuse-vercel'
 
-export const langfuseEnvironment = 'ux'
+export const langfuseEnvironment = 'howard'
 
 export const langfuseExporter = new LangfuseExporter({
   environment: langfuseEnvironment
