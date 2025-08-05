@@ -23,6 +23,8 @@ describe('updateSimpleJourney', () => {
     cards: [
       {
         id: 'card-1',
+        x: 0,
+        y: 0,
         heading: 'Heading',
         text: 'Text',
         image: {
@@ -48,6 +50,8 @@ describe('updateSimpleJourney', () => {
       },
       {
         id: 'card-2',
+        x: 100,
+        y: 100,
         heading: 'Second',
         text: 'Second text'
       }
@@ -114,7 +118,7 @@ describe('updateSimpleJourney', () => {
     const minimal: JourneySimple = {
       title: 't',
       description: 'd',
-      cards: [{ id: 'c1' }]
+      cards: [{ id: 'c1', x: 0, y: 0 }]
     }
     await expect(updateSimpleJourney(journeyId, minimal)).resolves.not.toThrow()
   })
