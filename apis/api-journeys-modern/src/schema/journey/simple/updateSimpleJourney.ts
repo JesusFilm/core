@@ -101,7 +101,6 @@ export async function updateSimpleJourney(
   journeyId: string,
   simple: JourneySimpleUpdate
 ) {
-  // Process all background images and card images outside the transaction
   const processedBackgroundImages = new Map()
   const processedCardImages = new Map()
 
