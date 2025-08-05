@@ -7,7 +7,6 @@ import {
   S3Client
 } from '@aws-sdk/client-s3'
 import { Upload } from '@aws-sdk/lib-storage'
-import fetch from 'node-fetch'
 
 import { getGraphQLClient } from '../gql/graphqlClient'
 import { CREATE_CLOUDFLARE_R2_ASSET } from '../gql/mutations'
@@ -163,7 +162,7 @@ export async function uploadToR2({
   if (contentLength < MULTIPART_THRESHOLD) {
     // Single upload - keep your existing logic
     return withRetry(async () => {
-      await uploadViaPUTBuffer(uploadUrl, filePath, contentType, contentLength)
+      await uploadViaPUTBuffer(uploadUrl, filePath, contentType)
 
       const verified = await verifyR2Upload(bucket, key, contentLength)
       if (!verified) {
@@ -329,8 +328,7 @@ async function uploadViaMultipart(
 async function uploadViaPUTBuffer(
   uploadUrl: string,
   filePath: string,
-  contentType: string,
-  contentLength: number
+  contentType: string
 ): Promise<void> {
   const fileStream = createReadStream(filePath)
 
