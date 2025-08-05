@@ -90,6 +90,16 @@ export async function cli(argv = process.argv): Promise<void> {
       queue = new Queue(queueName, { connection })
       break
     }
+    case 'shortlinks': {
+      const config = await import(
+        /* webpackChunkName: "shortlinks" */
+        './shortlinks'
+      )
+      queueName = config.queueName
+      jobName = config.jobName
+      queue = new Queue(queueName, { connection })
+      break
+    }
     case 'process-video-downloads': {
       const config = await import(
         /* webpackChunkName: "process-video-downloads" */
