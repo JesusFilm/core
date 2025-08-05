@@ -1,7 +1,10 @@
 import { ApolloClient, InMemoryCache, createHttpLink } from '@apollo/client'
 import { graphql } from 'gql.tada'
 
-import { JourneySimpleUpdate } from '@core/shared/ai/journeySimpleTypes'
+import {
+  JourneySimpleImage,
+  JourneySimpleUpdate
+} from '@core/shared/ai/journeySimpleTypes'
 
 import { prisma } from '../../../lib/prisma'
 import { generateBlurhashAndMetadataFromUrl } from '../../../utils/generateBlurhashAndMetadataFromUrl'
@@ -61,11 +64,65 @@ const CREATE_CLOUDFLARE_IMAGE = graphql(`
   }
 `)
 
+// Helper function to process images
+async function processImage(image: JourneySimpleImage) {
+  let src = image.src
+  let blurhash = image.blurhash ?? ''
+  let width = image.width ?? 1
+  let height = image.height ?? 1
+
+  // Only upload if src is not already valid
+  if (!isValidImageUrl(src)) {
+    const { data } = await apollo.mutate({
+      mutation: CREATE_CLOUDFLARE_IMAGE,
+      variables: { url: src }
+    })
+
+    const imageId = data?.createCloudflareUploadByUrl?.id
+    if (imageId != null) {
+      src = `https://imagedelivery.net/${
+        process.env.CLOUDFLARE_UPLOAD_KEY ?? ''
+      }/${imageId}/public`
+
+      // Generate blurhash for the uploaded image
+      const blurhashData = await generateBlurhashAndMetadataFromUrl(src)
+      blurhash = blurhashData.blurhash
+      width = blurhashData.width
+      height = blurhashData.height
+    }
+  }
+
+  return {
+    src,
+    blurhash,
+    width,
+    height,
+    alt: image.alt
+  }
+}
+
 export async function updateSimpleJourney(
   journeyId: string,
   simple: JourneySimpleUpdate
 ) {
   return prisma.$transaction(async (tx) => {
+    // Process all background images and card images outside the transaction
+    const processedBackgroundImages = new Map()
+    const processedCardImages = new Map()
+
+    for (const card of simple.cards) {
+      if (card.backgroundImage != null) {
+        processedBackgroundImages.set(
+          card.id,
+          await processImage(card.backgroundImage)
+        )
+      }
+
+      if (card.image != null) {
+        processedCardImages.set(card.id, await processImage(card.image))
+      }
+    }
+
     // Mark all non-deleted blocks for this journey as deleted
     await tx.block.updateMany({
       where: { journeyId, deletedAt: null },
@@ -163,47 +220,22 @@ export async function updateSimpleJourney(
       }
 
       if (card.image != null) {
-        let src = card.image.src
-        let blurhash = card.image.blurhash ?? ''
-        let width = card.image.width ?? 1
-        let height = card.image.height ?? 1
-
-        // Only upload if src is not already valid
-        if (!isValidImageUrl(src)) {
-          const { data } = await apollo.mutate({
-            mutation: CREATE_CLOUDFLARE_IMAGE,
-            variables: { url: src }
+        const processedImg = processedCardImages.get(card.id)
+        if (processedImg) {
+          await tx.block.create({
+            data: {
+              journeyId,
+              typename: 'ImageBlock',
+              parentBlockId: cardBlockId,
+              parentOrder: parentOrder++,
+              src: processedImg.src,
+              alt: processedImg.alt,
+              width: processedImg.width,
+              height: processedImg.height,
+              blurhash: processedImg.blurhash
+            }
           })
-
-          const imageId = data?.createCloudflareUploadByUrl.id
-
-          if (imageId != null) {
-            src = `https://imagedelivery.net/${
-              process.env.CLOUDFLARE_UPLOAD_KEY ?? ''
-            }/${imageId}/public`
-
-            // Generate blurhash for the uploaded image
-            const blurhashData = await generateBlurhashAndMetadataFromUrl(src)
-            blurhash = blurhashData.blurhash
-            width = blurhashData.width
-            height = blurhashData.height
-          }
         }
-
-        // use that source url in the block creation
-        await tx.block.create({
-          data: {
-            journeyId,
-            typename: 'ImageBlock',
-            parentBlockId: cardBlockId,
-            parentOrder: parentOrder++,
-            src,
-            alt: card.image.alt,
-            width,
-            height,
-            blurhash
-          }
-        })
       }
 
       if (card.poll != null && card.poll.length > 0) {
@@ -269,47 +301,25 @@ export async function updateSimpleJourney(
       }
 
       if (card.backgroundImage != null) {
-        let bgSrc = card.backgroundImage.src
-        let bgBlurhash = card.backgroundImage.blurhash ?? ''
-        let bgWidth = card.backgroundImage.width ?? 1
-        let bgHeight = card.backgroundImage.height ?? 1
-
-        // Only upload if bgSrc is not already valid
-        if (!isValidImageUrl(bgSrc)) {
-          const { data } = await apollo.mutate({
-            mutation: CREATE_CLOUDFLARE_IMAGE,
-            variables: { url: bgSrc }
+        const processedBg = processedBackgroundImages.get(card.id)
+        if (processedBg) {
+          const bgImage = await tx.block.create({
+            data: {
+              journeyId,
+              typename: 'ImageBlock',
+              src: processedBg.src,
+              alt: processedBg.alt,
+              parentBlockId: cardBlockId,
+              width: processedBg.width,
+              height: processedBg.height,
+              blurhash: processedBg.blurhash
+            }
           })
-
-          const imageId = data?.createCloudflareUploadByUrl?.id
-          if (imageId != null) {
-            bgSrc = `https://imagedelivery.net/${
-              process.env.CLOUDFLARE_UPLOAD_KEY ?? ''
-            }/${imageId}/public`
-
-            // Generate blurhash for the uploaded background image
-            const blurhashData = await generateBlurhashAndMetadataFromUrl(bgSrc)
-            bgBlurhash = blurhashData.blurhash
-            bgWidth = blurhashData.width
-            bgHeight = blurhashData.height
-          }
+          await tx.block.update({
+            where: { id: cardBlockId },
+            data: { coverBlockId: bgImage.id }
+          })
         }
-        const bgImage = await tx.block.create({
-          data: {
-            journeyId,
-            typename: 'ImageBlock',
-            src: bgSrc,
-            alt: card.backgroundImage.alt,
-            parentBlockId: cardBlockId,
-            width: bgWidth,
-            height: bgHeight,
-            blurhash: bgBlurhash
-          }
-        })
-        await tx.block.update({
-          where: { id: cardBlockId },
-          data: { coverBlockId: bgImage.id }
-        })
       }
 
       if (card.defaultNextCard != null) {
