@@ -15,7 +15,7 @@ import {
 } from './enums/typographyVariant'
 
 interface TypographyBlockSettingsType {
-  color: string
+  color: string | null
 }
 
 const TypographyBlockSettingsRef =

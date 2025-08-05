@@ -1,10 +1,7 @@
 import { builder } from '../../builder'
 import { Block } from '../block'
 
-import {
-  TextResponseType,
-  type TextResponseTypeType
-} from './enums/textResponseType'
+import { TextResponseType } from './enums/textResponseType'
 
 export const TextResponseBlock = builder.prismaObject('Block', {
   interfaces: [Block],
@@ -50,7 +47,7 @@ export const TextResponseBlock = builder.prismaObject('Block', {
       type: TextResponseType,
       nullable: true,
       directives: { shareable: true },
-      resolve: (block) => block.type as TextResponseTypeType
+      resolve: (block) => block.type
     }),
     routeId: t.exposeString('routeId', {
       nullable: true,

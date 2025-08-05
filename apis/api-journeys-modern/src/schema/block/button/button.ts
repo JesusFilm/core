@@ -1,3 +1,4 @@
+import { ActionInterface } from '../../action/action'
 import { builder } from '../../builder'
 import { Block } from '../block'
 
@@ -14,27 +15,26 @@ interface ButtonBlockSettingsType {
   color: string
 }
 
-const ButtonBlockSettingsRef = builder.objectRef<ButtonBlockSettingsType>(
-  'ButtonBlockSettings'
-)
-
-export const ButtonBlockSettings = builder.objectType(ButtonBlockSettingsRef, {
-  fields: (t) => ({
-    alignment: t.field({
-      type: ButtonAlignment,
-      nullable: true,
-      directives: { shareable: true },
-      description: 'Alignment of the button',
-      resolve: (settings: ButtonBlockSettingsType) => settings.alignment
-    }),
-    color: t.string({
-      nullable: true,
-      directives: { shareable: true },
-      description: 'Color of the button',
-      resolve: (settings: ButtonBlockSettingsType) => settings.color
+const ButtonBlockSettings = builder.objectType(
+  builder.objectRef<ButtonBlockSettingsType>('ButtonBlockSettings'),
+  {
+    fields: (t) => ({
+      alignment: t.field({
+        type: ButtonAlignment,
+        nullable: true,
+        directives: { shareable: true },
+        description: 'Alignment of the button',
+        resolve: (settings: ButtonBlockSettingsType) => settings.alignment
+      }),
+      color: t.string({
+        nullable: true,
+        directives: { shareable: true },
+        description: 'Color of the button',
+        resolve: (settings: ButtonBlockSettingsType) => settings.color
+      })
     })
-  })
-})
+  }
+)
 
 export const ButtonBlock = builder.prismaObject('Block', {
   variant: 'ButtonBlock',
@@ -95,6 +95,15 @@ export const ButtonBlock = builder.prismaObject('Block', {
       nullable: true,
       directives: { shareable: true },
       resolve: ({ settings }) => settings as unknown as ButtonBlockSettingsType
+    }),
+    action: t.field({
+      type: ActionInterface,
+      nullable: true,
+      directives: { shareable: true },
+      select: {
+        action: true
+      },
+      resolve: async (block) => block.action
     })
   })
 })
