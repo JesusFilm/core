@@ -16,6 +16,10 @@ interface Video {
 export interface AlgoliaVideo extends Hit<BaseHit> {
   videoId: string
   titles: string[]
+  titlesWithLanguages: {
+    languageId: string
+    value: string
+  }[]
   description: string[]
   duration: number
   languageId: string

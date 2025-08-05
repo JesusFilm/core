@@ -123,12 +123,14 @@ import LayoutScale from './LayoutScale'
 import Lightning2 from './Lightning2'
 import LightningCircleContained from './LightningCircleContained'
 import Line from './Line'
+import LineNumbers from './LineNumbers'
 import Link from './Link'
 import LinkAngled from './LinkAngled'
 import LinkBroken from './LinkBroken'
 import LinkExternal from './LinkExternal'
 import Lock1 from './Lock1'
 import LockOpen1 from './LockOpen1'
+import LogoGrayscale from './LogoGrayscale'
 import Logout2 from './Logout2'
 import Mail1 from './Mail1'
 import Mail2 from './Mail2'
@@ -345,10 +347,12 @@ export type IconName =
   | 'Line'
   | 'LinkAngled'
   | 'LinkBroken'
+  | 'LineNumbers'
   | 'LinkExternal'
   | 'Link'
   | 'Lock1'
   | 'LockOpen1'
+  | 'LogoGrayscale'
   | 'Logout2'
   | 'Mail1'
   | 'Mail2'
@@ -570,9 +574,11 @@ const iconComponents: IconComponents = {
   LinkAngled,
   LinkBroken,
   LinkExternal,
+  LineNumbers,
   Link,
   Lock1,
   LockOpen1,
+  LogoGrayscale,
   Logout2,
   Mail1,
   Mail2,
