@@ -21,10 +21,6 @@ const ALLOWED_IMAGE_HOSTNAMES = [
   'image.mux.com'
 ]
 
-/**
- * Checks if a given image URL is allowed by your remotePatterns.
- * Accepts both http and https, and matches subdomains.
- */
 const isValidImageUrl = (url: string): boolean => {
   try {
     const parsed = new URL(url)
@@ -123,6 +119,22 @@ export async function updateSimpleJourney(
   }
 
   return prisma.$transaction(async (tx) => {
+    const processedBackgroundImages = new Map()
+    const processedCardImages = new Map()
+
+    for (const card of simple.cards) {
+      if (card.backgroundImage != null) {
+        processedBackgroundImages.set(
+          card.id,
+          await processImage(card.backgroundImage)
+        )
+      }
+
+      if (card.image != null) {
+        processedCardImages.set(card.id, await processImage(card.image))
+      }
+    }
+
     // Mark all non-deleted blocks for this journey as deleted
     await tx.block.updateMany({
       where: { journeyId, deletedAt: null },
@@ -152,8 +164,8 @@ export async function updateSimpleJourney(
           journeyId,
           typename: 'StepBlock',
           parentOrder: i,
-          x: simpleCard.x,
-          y: simpleCard.y
+          x: simpleCard.x ?? 0,
+          y: simpleCard.y ?? 0
         }
       })
 
