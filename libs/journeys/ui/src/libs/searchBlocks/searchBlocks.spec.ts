@@ -37,6 +37,7 @@ describe('searchBlocks', () => {
             id: 'RadioQuestion1',
             parentBlockId: 'RadioQuestion1',
             parentOrder: 1,
+            gridView: false,
             children: [
               {
                 __typename: 'RadioOptionBlock',
@@ -45,6 +46,7 @@ describe('searchBlocks', () => {
                 parentBlockId: 'RadioQuestion1',
                 parentOrder: 0,
                 action: null,
+                pollOptionImageBlockId: null,
                 children: []
               },
               {
@@ -54,6 +56,7 @@ describe('searchBlocks', () => {
                 parentBlockId: 'RadioQuestion1',
                 parentOrder: 1,
                 action: null,
+                pollOptionImageBlockId: null,
                 children: []
               }
             ]
@@ -70,6 +73,7 @@ describe('searchBlocks', () => {
       parentBlockId: 'RadioQuestion1',
       parentOrder: 0,
       action: null,
+      pollOptionImageBlockId: null,
       children: []
     })
   })
@@ -108,6 +112,7 @@ describe('searchBlocks', () => {
             id: 'RadioQuestion1',
             parentBlockId: 'RadioQuestion1',
             parentOrder: 1,
+            gridView: false,
             children: [
               {
                 __typename: 'RadioOptionBlock',
@@ -116,6 +121,7 @@ describe('searchBlocks', () => {
                 parentBlockId: 'RadioQuestion1',
                 parentOrder: 0,
                 action: null,
+                pollOptionImageBlockId: null,
                 children: []
               },
               {
@@ -125,6 +131,7 @@ describe('searchBlocks', () => {
                 parentBlockId: 'RadioQuestion1',
                 parentOrder: 1,
                 action: null,
+                pollOptionImageBlockId: null,
                 children: []
               }
             ]
