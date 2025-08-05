@@ -140,24 +140,15 @@ export async function updateSimpleJourney(
       simpleCardId: string
     }[] = []
 
-    // Grid layout constants
-    const CARD_SPACING_X = 400
-    const CARD_SPACING_Y = 300
-
     // 1. Create StepBlocks and CardBlocks
     for (const [i, simpleCard] of simple.cards.entries()) {
-      const row = i % 3
-      const col = Math.floor(i / 3)
-      const x = col * CARD_SPACING_X
-      const y = row * CARD_SPACING_Y
-
       const stepBlock = await tx.block.create({
         data: {
           journeyId,
           typename: 'StepBlock',
           parentOrder: i,
-          x,
-          y
+          x: simpleCard.x ?? 0,
+          y: simpleCard.y ?? 0
         }
       })
 
