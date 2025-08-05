@@ -1,5 +1,4 @@
 import { Meta, StoryObj } from '@storybook/react'
-import noop from 'lodash/noop'
 import { ComponentPropsWithoutRef } from 'react'
 
 import { sharedUiConfig } from '@core/shared/ui/sharedUiConfig'
@@ -22,7 +21,8 @@ export const Default: Story = {
     questions: [
       {
         value: 'What did you learn from this video?',
-        __typename: 'VideoStudyQuestion'
+        __typename: 'VideoStudyQuestion',
+        primary: true
       }
     ]
   }
