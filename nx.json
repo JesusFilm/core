@@ -79,7 +79,7 @@
     },
     "codegen": {
       "cache": true,
-      "inputs": ["default"]
+      "inputs": ["{workspaceRoot}/apis/api-gateway/schema.graphql"]
     },
     "e2e": {
       "cache": true
@@ -87,6 +87,14 @@
     "extract-translations": {
       "cache": true,
       "inputs": ["default"]
+    },
+    "lint": {
+      "inputs": [
+        "default",
+        "{workspaceRoot}/.eslintrc.json",
+        "{workspaceRoot}/eslint.config.js"
+      ],
+      "cache": true
     },
     "prisma-generate": {
       "cache": true,
