@@ -64,6 +64,34 @@ This document captures common issues, solutions, and lessons learned during Watc
 - **Client Components (`'use client'`)**: Interactive features, browser APIs, state management
 - **Decision Rule**: Only use client components when absolutely necessary
 
+## Learnings 
+
+#### **Internationalization**
+- **Pattern**: Using `next-intl` for translations
+- **Location**: `apps/watch-modern/src/i18n/en.json`
+- **Keys**: Consistent naming with component prefix (e.g., `Header.searchPlaceholder`)
+
+#### **Testing Strategy**
+- **Framework**: React Testing Library with comprehensive RTL tests
+- **Coverage**: Component rendering, user interactions, accessibility
+- **Mocking**: Proper mocking of Next.js navigation and internationalization
+
+#### **Accessibility**
+- **Pattern**: Proper ARIA labels and semantic HTML
+- **Implementation**: All interactive elements have appropriate `aria-label` attributes
+- **Testing**: Accessibility features included in test coverage
+
+#### **Styling**
+- **Pattern**: Tailwind CSS with responsive design
+- **Implementation**: Glassmorphism effects with backdrop blur
+- **Responsive**: Mobile-first approach with proper breakpoints
+
+#### **Client vs Server Components**
+- **Issue**: Components using `useState`, `useRouter`, or other client hooks need `'use client'` directive
+- **Solution**: Add `'use client'` at the top of components that use client-side hooks
+- **Pattern**: Import organization - `'use client'` must be first, then imports in alphabetical order
+- **TypeScript**: Use `import type` for type-only imports when `verbatimModuleSyntax` is enabled
+
 ---
 **Applies To**: Watch-Modern Application
 
