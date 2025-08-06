@@ -39,24 +39,35 @@ export function journeySimpleGet(
     parameters: z.object({
       journeyId: z.string().describe('The ID of the journey to fetch.')
     }),
+
     execute: async ({ journeyId }) => {
-      // Call the real backend GraphQL query
-      const { data } = await client.query<
-        JourneySimpleGet,
-        JourneySimpleGetVariables
-      >({
-        query: JOURNEY_SIMPLE_GET,
-        variables: { id: journeyId }
-      })
-      // Validate the returned data with the Zod schema
-      const result = journeySimpleSchema.safeParse(data.journeySimpleGet)
-      if (!result.success) {
-        throw new Error(
-          'Returned journey is invalid: ' +
-            JSON.stringify(result.error.format())
-        )
+      try {
+        // Call the real backend GraphQL query
+        const { data } = await client.query<
+          JourneySimpleGet,
+          JourneySimpleGetVariables
+        >({
+          query: JOURNEY_SIMPLE_GET,
+          variables: { id: journeyId }
+        })
+        // Validate the returned data with the Zod schema
+        const result = journeySimpleSchema.safeParse(data.journeySimpleGet)
+        if (!result.success) {
+          throw new Error(
+            'Returned journey is invalid: ' +
+              JSON.stringify(result.error.format())
+          )
+        }
+        return result.data
+      } catch (error) {
+        return {
+          success: false,
+          errors:
+            error instanceof Error
+              ? [{ message: error.message }]
+              : [{ message: 'Invalid journey object' }]
+        }
       }
-      return result.data
     }
   })
 }

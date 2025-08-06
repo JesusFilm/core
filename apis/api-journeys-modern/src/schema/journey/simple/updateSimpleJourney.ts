@@ -1,7 +1,6 @@
-import fetch from 'node-fetch'
-
 import { ApolloClient, InMemoryCache, createHttpLink } from '@apollo/client'
 import { graphql } from 'gql.tada'
+import fetch from 'node-fetch'
 
 import {
   JourneySimpleImage,
@@ -232,11 +231,17 @@ export async function updateSimpleJourney(
           card.defaultNextCard != null
             ? stepBlocks.find((s) => s.simpleCardId === card.defaultNextCard)
             : undefined
-        const videoId = extractYouTubeVideoId(card.video.url)
+        const videoId =
+          card.video.source === 'youTube'
+            ? extractYouTubeVideoId(card.video.src ?? '')
+            : card.video.src
         if (videoId == null) {
           throw new Error('Invalid YouTube video URL')
         }
-        const videoDuration = await getYouTubeVideoDuration(videoId)
+        const videoDuration =
+          card.video.source === 'youTube'
+            ? await getYouTubeVideoDuration(videoId)
+            : undefined
         await tx.block.create({
           data: {
             journeyId,
@@ -244,8 +249,9 @@ export async function updateSimpleJourney(
             parentBlockId: cardBlockId,
             parentOrder: parentOrder++,
             videoId,
-            source: 'youTube',
-            autoPlay: true,
+            videoVariantLanguageId: '529',
+            source: card.video.source,
+            autoplay: true,
             startAt: card.video.startAt ?? 0,
             endAt: card.video.endAt ?? videoDuration,
             action:
@@ -286,24 +292,24 @@ export async function updateSimpleJourney(
           })
         }
 
-      if (card.image != null) {
-        const processedImg = processedCardImages.get(card.id)
-        if (processedImg) {
-          await tx.block.create({
-            data: {
-              journeyId,
-              typename: 'ImageBlock',
-              parentBlockId: cardBlockId,
-              parentOrder: parentOrder++,
-              src: processedImg.src,
-              alt: processedImg.alt,
-              width: processedImg.width,
-              height: processedImg.height,
-              blurhash: processedImg.blurhash
-            }
-          })
+        if (card.image != null) {
+          const processedImg = processedCardImages.get(card.id)
+          if (processedImg) {
+            await tx.block.create({
+              data: {
+                journeyId,
+                typename: 'ImageBlock',
+                parentBlockId: cardBlockId,
+                parentOrder: parentOrder++,
+                src: processedImg.src,
+                alt: processedImg.alt,
+                width: processedImg.width,
+                height: processedImg.height,
+                blurhash: processedImg.blurhash
+              }
+            })
+          }
         }
-      }
 
         if (card.poll != null && card.poll.length > 0) {
           const radioQuestion = await tx.block.create({
@@ -367,67 +373,39 @@ export async function updateSimpleJourney(
           })
         }
 
-      if (card.backgroundImage != null) {
-        const processedBg = processedBackgroundImages.get(card.id)
-        if (processedBg) {
-          const bgImage = await tx.block.create({
-            data: {
-              journeyId,
-              typename: 'ImageBlock',
-              src: processedBg.src,
-              alt: processedBg.alt,
-              parentBlockId: cardBlockId,
-              width: processedBg.width,
-              height: processedBg.height,
-              blurhash: processedBg.blurhash
-            }
-          })
-          await tx.block.update({
-            where: { id: cardBlockId },
-            data: { coverBlockId: bgImage.id }
-          })
-        }
-      }
-
-      if (card.video != null) {
-        const nextStepBlock =
-          card.defaultNextCard != null
-            ? stepBlocks.find((s) => s.simpleCardId === card.defaultNextCard)
-            : undefined
-        await tx.block.create({
-          data: {
-            journeyId,
-            typename: 'VideoBlock',
-            videoId: card.video.videoId,
-            source: card.video.source,
-            videoVariantLanguageId: card.video.videoVariantLanguageId,
-            title: card.video.title,
-            description: card.video.description,
-            parentBlockId: cardBlockId,
-            parentOrder: parentOrder++,
-            duration: card.video.duration,
-            action:
-              nextStepBlock != null
-                ? {
-                    create: {
-                      blockId: nextStepBlock.stepBlockId
-                    }
-                  }
-                : undefined
+        if (card.backgroundImage != null) {
+          const processedBg = processedBackgroundImages.get(card.id)
+          if (processedBg) {
+            const bgImage = await tx.block.create({
+              data: {
+                journeyId,
+                typename: 'ImageBlock',
+                src: processedBg.src,
+                alt: processedBg.alt,
+                parentBlockId: cardBlockId,
+                width: processedBg.width,
+                height: processedBg.height,
+                blurhash: processedBg.blurhash
+              }
+            })
+            await tx.block.update({
+              where: { id: cardBlockId },
+              data: { coverBlockId: bgImage.id }
+            })
           }
-        })
-      }
+        }
 
-      if (card.defaultNextCard != null) {
-        const nextStepBlock =
-          card.defaultNextCard != null
-            ? stepBlocks.find((s) => s.simpleCardId === card.defaultNextCard)
-            : undefined
-        if (nextStepBlock != null) {
-          await tx.block.update({
-            where: { id: stepBlockId },
-            data: { nextBlockId: nextStepBlock.stepBlockId }
-          })
+        if (card.defaultNextCard != null) {
+          const nextStepBlock =
+            card.defaultNextCard != null
+              ? stepBlocks.find((s) => s.simpleCardId === card.defaultNextCard)
+              : undefined
+          if (nextStepBlock != null) {
+            await tx.block.update({
+              where: { id: stepBlockId },
+              data: { nextBlockId: nextStepBlock.stepBlockId }
+            })
+          }
         }
       }
     }
