@@ -23,23 +23,6 @@
   },
   "$schema": "./node_modules/nx/schemas/nx-schema.json",
   "targetDefaults": {
-    "build": {
-      "dependsOn": ["^build"],
-      "inputs": ["production", "^production"],
-      "cache": true
-    },
-    "build-storybook": {
-      "inputs": [
-        "default",
-        "^production",
-        "{workspaceRoot}/.storybook/**/*",
-        "{projectRoot}/.storybook/**/*",
-        "{projectRoot}/tsconfig.storybook.json"
-      ]
-    },
-    "e2e": {
-      "cache": true
-    },
     "@nx/jest:jest": {
       "inputs": ["default", "^production", "{workspaceRoot}/jest.preset.js"],
       "cache": true,
@@ -80,9 +63,42 @@
       "cache": true,
       "inputs": ["default", "^production"]
     },
+    "build": {
+      "dependsOn": ["^build"],
+      "inputs": ["production", "^production"],
+      "cache": true
+    },
+    "build-storybook": {
+      "inputs": [
+        "default",
+        "^production",
+        "{workspaceRoot}/.storybook/**/*",
+        "{projectRoot}/.storybook/**/*",
+        "{projectRoot}/tsconfig.storybook.json"
+      ]
+    },
+    "codegen": {
+      "cache": true,
+      "inputs": ["default"]
+    },
+    "e2e": {
+      "cache": true
+    },
+    "extract-translations": {
+      "cache": true,
+      "inputs": ["default"]
+    },
     "prisma-generate": {
       "cache": true,
       "inputs": ["{projectRoot}/**/schema.prisma"]
+    },
+    "subgraph-check": {
+      "cache": true,
+      "inputs": ["default"]
+    },
+    "type-check": {
+      "cache": true,
+      "inputs": ["default"]
     }
   },
   "namedInputs": {
