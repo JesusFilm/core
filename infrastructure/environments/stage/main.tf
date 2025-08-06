@@ -74,7 +74,7 @@ locals {
 module "api-gateway-stage" {
   source = "../../../apis/api-gateway/infrastructure"
   ecs_config = merge(local.public_ecs_config, {
-    alb_target_group = merge(local.alb_target_group, {
+    alb_target_group = merge(local.public_ecs_config.alb_target_group, {
       health_check_interval            = 5
       health_check_timeout             = 3
       health_check_healthy_threshold   = 2
