@@ -48,9 +48,7 @@ export async function initAndAuthApp({
   makeAccountOnAnonymous = false
 }: InitAndAuthAppProps): Promise<InitAndAuth> {
   if (user == null && makeAccountOnAnonymous) {
-    await signInAnonymously(getAuth(getApp()), {
-      persistence: 'NONE'
-    })
+    await signInAnonymously(getAuth(getApp()))
   }
 
   const ldUser =
