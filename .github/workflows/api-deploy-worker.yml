@@ -71,7 +71,7 @@ jobs:
         run: npm install --silent
       - name: Get affected apps
         run: |
-          echo "apps=$()" >> $GITHUB_OUTPUT
+          echo "apps=$(npx ts-node tools/scripts/affected-apps.ts --projects apis/api-*)" >> $GITHUB_OUTPUT
           cat $GITHUB_OUTPUT
         id: affected-apps
       - name: Prisma Generate
