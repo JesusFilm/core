@@ -563,7 +563,7 @@ model JourneyCustomizationField {
   value        String?
   defaultValue String?
   fieldType    JourneyCustomizationFieldType
-  Journey      Journey                       @relation(fields: [journeyId], references: [id], onDelete: Cascade)
+  journey      Journey                       @relation(fields: [journeyId], references: [id], onDelete: Cascade)
 
   @@unique([journeyId, key])
   @@unique([journeyId, key, value])
