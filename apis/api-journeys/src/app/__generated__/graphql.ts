@@ -803,9 +803,9 @@ export class JourneyCollectionUpdateInput {
 }
 
 export class JourneyCustomizationFieldInput {
+    id: string;
     key: string;
-    value: string;
-    fieldType: JourneyCustomizationFieldType;
+    value?: Nullable<string>;
 }
 
 export class JourneyEventsFilter {
@@ -1139,11 +1139,9 @@ export abstract class IMutation {
 
     abstract journeyCollectionDelete(id: string): JourneyCollection | Promise<JourneyCollection>;
 
-    abstract journeyCustomizationFieldCreate(id: string, journeyId: string, input: JourneyCustomizationFieldInput): JourneyCustomizationField | Promise<JourneyCustomizationField>;
+    abstract journeyCustomizationFieldPublisherUpdate(journeyId: string, string: string): JourneyCustomizationField[] | Promise<JourneyCustomizationField[]>;
 
-    abstract journeyCustomizationFieldUpdate(id: string, journeyId: string, input: JourneyCustomizationFieldInput): JourneyCustomizationField | Promise<JourneyCustomizationField>;
-
-    abstract journeyCustomizationFieldDelete(id: string, journeyId: string): JourneyCustomizationField | Promise<JourneyCustomizationField>;
+    abstract journeyCustomizationFieldUserUpdate(journeyId: string, input: JourneyCustomizationFieldInput[]): JourneyCustomizationField[] | Promise<JourneyCustomizationField[]>;
 
     abstract journeyNotificationUpdate(input: JourneyNotificationUpdateInput): JourneyNotification | Promise<JourneyNotification>;
 
@@ -1283,10 +1281,6 @@ export abstract class IQuery {
     abstract journeyCollection(id: string): JourneyCollection | Promise<JourneyCollection>;
 
     abstract journeyCollections(teamId: string): Nullable<JourneyCollection>[] | Promise<Nullable<JourneyCollection>[]>;
-
-    abstract journeyCustomizationField(id: string): JourneyCustomizationField | Promise<JourneyCustomizationField>;
-
-    abstract journeyCustomizationFields(journeyId: string): JourneyCustomizationField[] | Promise<JourneyCustomizationField[]>;
 
     abstract journeyEventsConnection(journeyId: string, filter?: Nullable<JourneyEventsFilter>, first?: Nullable<number>, after?: Nullable<string>): JourneyEventsConnection | Promise<JourneyEventsConnection>;
 

@@ -24,6 +24,7 @@ import {
   Host,
   Journey,
   JourneyCollection,
+  JourneyCustomizationField,
   JourneyTheme,
   Prisma,
   Team,
@@ -1183,6 +1184,15 @@ export class JourneyResolver {
   @ResolveField()
   async journeyTheme(@Parent() journey: Journey): Promise<JourneyTheme | null> {
     return await this.prismaService.journeyTheme.findUnique({
+      where: { journeyId: journey.id }
+    })
+  }
+
+  @ResolveField()
+  async journeyCustomizationFields(
+    @Parent() journey: Journey
+  ): Promise<JourneyCustomizationField[]> {
+    return await this.prismaService.journeyCustomizationField.findMany({
       where: { journeyId: journey.id }
     })
   }

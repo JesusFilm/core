@@ -26,6 +26,7 @@ import { getPowerBiEmbed } from '@core/nest/powerBi/getPowerBiEmbed'
 
 import {
   IdType,
+  JourneyCustomizationFieldType,
   JourneyStatus,
   JourneysReportType
 } from '../../__generated__/graphql'
@@ -107,7 +108,8 @@ describe('JourneyResolver', () => {
     menuStepBlockId: null,
     socialNodeX: null,
     socialNodeY: null,
-    fromTemplateId: null
+    fromTemplateId: null,
+    journeyCustomizationDescription: null
   }
   const journeyWithUserTeam = {
     ...journey,
@@ -2661,6 +2663,40 @@ describe('JourneyResolver', () => {
       expect(
         await resolver.plausibleToken(ability, journeyNoAbility)
       ).toBeNull()
+    })
+  })
+
+  describe('journeyCustomizationFields', () => {
+    it('returns journey customization fields', async () => {
+      const mockJourneyCustomizationField = {
+        id: 'field-id',
+        journeyId: 'journeyId',
+        key: 'name',
+        value: 'John Doe',
+        defaultValue: 'John Doe',
+        fieldType: JourneyCustomizationFieldType.text
+      }
+      prismaService.journeyCustomizationField.findMany.mockResolvedValueOnce([
+        mockJourneyCustomizationField
+      ])
+      expect(await resolver.journeyCustomizationFields(journey)).toEqual([
+        mockJourneyCustomizationField
+      ])
+      expect(
+        prismaService.journeyCustomizationField.findMany
+      ).toHaveBeenCalledWith({
+        where: { journeyId: 'journeyId' }
+      })
+    })
+
+    it('returns empty array when no customization fields exist', async () => {
+      prismaService.journeyCustomizationField.findMany.mockResolvedValueOnce([])
+      expect(await resolver.journeyCustomizationFields(journey)).toEqual([])
+      expect(
+        prismaService.journeyCustomizationField.findMany
+      ).toHaveBeenCalledWith({
+        where: { journeyId: 'journeyId' }
+      })
     })
   })
 })
