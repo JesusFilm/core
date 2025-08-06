@@ -67,10 +67,18 @@ jobs:
         with:
           targets: lint
           args: --fix
-      - name: type-check, extract-translations, subgraph-check
+      - name: Type Check
         uses: mansagroup/nrwl-nx-action@v3
         with:
-          targets: type-check,extract-translations,subgraph-check
+          targets: type-check
+      - name: Extract Translations
+        uses: mansagroup/nrwl-nx-action@v3
+        with:
+          targets: extract-translations
+      - name: Subgraph Check
+        uses: mansagroup/nrwl-nx-action@v3
+        with:
+          targets: subgraph-check
         env:
           HIVE_TOKEN: ${{ secrets.HIVE_PROD_READ_ONLY_TOKEN }}
       - name: lint branch name
