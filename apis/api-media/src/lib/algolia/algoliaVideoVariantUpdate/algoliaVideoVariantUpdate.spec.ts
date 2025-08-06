@@ -1,6 +1,6 @@
 import { Logger } from 'pino'
 
-import { prismaMock } from '../../../../../test/prismaMock'
+import { prismaMock } from '../../../../test/prismaMock'
 
 import { updateVideoVariantInAlgolia } from './algoliaVideoVariantUpdate'
 
