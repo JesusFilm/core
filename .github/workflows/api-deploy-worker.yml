@@ -57,27 +57,23 @@ jobs:
         id: node-version
         run: echo "version=$(node -v)" >> $GITHUB_OUTPUT
 
-      - name: Get affected apps
-        run: |
-          echo "apps=$(npx ts-node tools/scripts/affected-apps.ts --projects apis/api-*)" >> $GITHUB_OUTPUT
-          cat $GITHUB_OUTPUT
-        id: affected-apps
-
       - name: Mount NPM Cache
-        if: contains(steps.affected-apps.outputs.apps, inputs.name)
         uses: useblacksmith/stickydisk@v1
         with:
           key: ${{ github.repository }}-${{ steps.node-version.outputs.version }}-npm-cache
           path: ~/.npm
       - name: Mount node_modules
-        if: contains(steps.affected-apps.outputs.apps, inputs.name)
         uses: useblacksmith/stickydisk@v1
         with:
           key: ${{ github.repository }}-${{ steps.node-version.outputs.version }}-node-modules
           path: ./node_modules
       - name: NPM Install
-        if: contains(steps.affected-apps.outputs.apps, inputs.name)
         run: npm install --silent
+      - name: Get affected apps
+        run: |
+          echo "apps=$()" >> $GITHUB_OUTPUT
+          cat $GITHUB_OUTPUT
+        id: affected-apps
       - name: Prisma Generate
         if: contains(steps.affected-apps.outputs.apps, inputs.name)
         uses: mansagroup/nrwl-nx-action@v3

@@ -28,33 +28,29 @@ jobs:
       - uses: useblacksmith/setup-node@v5
         with:
           node-version: ${{ matrix.node-version }}
-
-      - name: Get affected apps
-        run: |
-          echo "apps=$(npx ts-node tools/scripts/affected-apps.ts --projects apis/api-*)" >> $GITHUB_OUTPUT
-          cat $GITHUB_OUTPUT
-        id: affected-apps
       - name: Get Node Version
-        if: contains(steps.affected-apps.outputs.apps, 'api-gateway')
         id: node-version
         run: echo "version=$(node -v)" >> $GITHUB_OUTPUT
 
       - name: Mount NPM Cache
-        if: contains(steps.affected-apps.outputs.apps, 'api-gateway')
         uses: useblacksmith/stickydisk@v1
         with:
           key: ${{ github.repository }}-${{ steps.node-version.outputs.version }}-npm-cache
           path: ~/.npm
       - name: Mount node_modules
-        if: contains(steps.affected-apps.outputs.apps, 'api-gateway')
         uses: useblacksmith/stickydisk@v1
         with:
           key: ${{ github.repository }}-${{ steps.node-version.outputs.version }}-node-modules
           path: ./node_modules
+      - name: Get affected apps
+        run: |
+          echo "apps=$(npx ts-node tools/scripts/affected-apps.ts --projects apis/api-*)" >> $GITHUB_OUTPUT
+          cat $GITHUB_OUTPUT
+        id: affected-apps
 
-      - name: nx Install
+      - name: NPM Install
         if: contains(steps.affected-apps.outputs.apps, 'api-gateway')
-        run: npm install -g nx --silent
+        run: npm install --silent
 
       #ECS Deployment
       - name: Configure ECS AWS credentials
