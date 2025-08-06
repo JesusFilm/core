@@ -47,6 +47,42 @@ variable "service_config" {
       })
     })
   })
+
+  validation {
+    condition = (
+      var.service_config.alb_target_group.health_check_interval == null ||
+      (var.service_config.alb_target_group.health_check_interval >= 5 &&
+      var.service_config.alb_target_group.health_check_interval <= 300)
+    )
+    error_message = "health_check_interval must be between 5 and 300 seconds to comply with ALB constraints."
+  }
+
+  validation {
+    condition = (
+      var.service_config.alb_target_group.health_check_timeout == null ||
+      (var.service_config.alb_target_group.health_check_timeout >= 2 &&
+      var.service_config.alb_target_group.health_check_timeout <= 120)
+    )
+    error_message = "health_check_timeout must be between 2 and 120 seconds to comply with ALB constraints."
+  }
+
+  validation {
+    condition = (
+      var.service_config.alb_target_group.health_check_healthy_threshold == null ||
+      (var.service_config.alb_target_group.health_check_healthy_threshold >= 2 &&
+      var.service_config.alb_target_group.health_check_healthy_threshold <= 10)
+    )
+    error_message = "health_check_healthy_threshold must be between 2 and 10 to comply with ALB constraints."
+  }
+
+  validation {
+    condition = (
+      var.service_config.alb_target_group.health_check_unhealthy_threshold == null ||
+      (var.service_config.alb_target_group.health_check_unhealthy_threshold >= 2 &&
+      var.service_config.alb_target_group.health_check_unhealthy_threshold <= 10)
+    )
+    error_message = "health_check_unhealthy_threshold must be between 2 and 10 to comply with ALB constraints."
+  }
 }
 
 variable "env" {
