@@ -13,7 +13,7 @@ input StepViewEventCreateInput {
   value: String
 }
 
-type StepViewEvent implements Event {
+type StepViewEvent implements Event @shareable {
   id: ID!
   """
   ID of the journey that the stepBlock belongs to
@@ -56,7 +56,7 @@ input StepNextEventCreateInput {
   value: String
 }
 
-type StepNextEvent implements Event {
+type StepNextEvent implements Event @shareable {
   id: ID!
   """
   ID of the journey that the stepBlock belongs to
@@ -99,7 +99,7 @@ input StepPreviousEventCreateInput {
   value: String
 }
 
-type StepPreviousEvent implements Event {
+type StepPreviousEvent implements Event @shareable {
   id: ID!
   """
   ID of the journey that the stepBlock belongs to
