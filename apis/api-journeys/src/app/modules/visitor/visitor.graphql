@@ -1,4 +1,4 @@
-type Browser {
+type Browser @shareable {
   name: String
   version: String
 }
@@ -12,13 +12,13 @@ enum DeviceType {
   embedded
 }
 
-type Device {
+type Device @shareable {
   model: String
   type: DeviceType
   vendor: String
 }
 
-type OperatingSystem {
+type OperatingSystem @shareable {
   name: String
   version: String
 }
@@ -26,7 +26,7 @@ type OperatingSystem {
 """
 These types are a subset provided by the @types/ua-parser-js library.
 """
-type UserAgent {
+type UserAgent @shareable {
   browser: Browser!
   device: Device!
   os: OperatingSystem!
@@ -53,7 +53,7 @@ enum VisitorStatus {
 """
 A visitor with attributes connected to a team.
 """
-type Visitor @key(fields: "id") {
+type Visitor @key(fields: "id") @shareable {
   id: ID!
   """
   The time when the visitor created their first event on a journey connected
@@ -153,7 +153,7 @@ type Visitor @key(fields: "id") {
 """
 An edge in a connection.
 """
-type VisitorEdge {
+type VisitorEdge @shareable {
   """
   A cursor for use in pagination.
   """
@@ -189,7 +189,7 @@ type PageInfo @shareable {
 """
 A list of visitors connected with a team.
 """
-type VisitorsConnection {
+type VisitorsConnection @shareable {
   """
   A list of edges.
   """

@@ -22,7 +22,7 @@ input VideoStartEventCreateInput {
   value: VideoBlockSource
 }
 
-type VideoStartEvent implements Event {
+type VideoStartEvent implements Event @shareable {
   id: ID!
   """
   ID of the journey that the videoBlock belongs to
@@ -74,7 +74,7 @@ input VideoPlayEventCreateInput {
   value: VideoBlockSource
 }
 
-type VideoPlayEvent implements Event {
+type VideoPlayEvent implements Event @shareable {
   id: ID!
   """
   ID of the journey that the videoBlock belongs to
@@ -126,7 +126,7 @@ input VideoPauseEventCreateInput {
   value: VideoBlockSource
 }
 
-type VideoPauseEvent implements Event {
+type VideoPauseEvent implements Event @shareable {
   id: ID!
   """
   ID of the journey that the videoBlock belongs to
@@ -178,7 +178,7 @@ input VideoCompleteEventCreateInput {
   value: VideoBlockSource
 }
 
-type VideoCompleteEvent implements Event {
+type VideoCompleteEvent implements Event @shareable {
   id: ID!
   """
   ID of the journey that the videoBlock belongs to
@@ -230,7 +230,7 @@ input VideoExpandEventCreateInput {
   value: VideoBlockSource
 }
 
-type VideoExpandEvent implements Event {
+type VideoExpandEvent implements Event @shareable {
   id: ID!
   """
   ID of the journey that the videoBlock belongs to
@@ -282,7 +282,7 @@ input VideoCollapseEventCreateInput {
   value: VideoBlockSource
 }
 
-type VideoCollapseEvent implements Event {
+type VideoCollapseEvent implements Event @shareable {
   id: ID!
   """
   ID of the journey that the videoBlock belongs to
@@ -338,7 +338,7 @@ input VideoProgressEventCreateInput {
   value: VideoBlockSource
 }
 
-type VideoProgressEvent implements Event {
+type VideoProgressEvent implements Event @shareable {
   id: ID!
   """
   ID of the journey that the videoBlock belongs to

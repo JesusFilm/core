@@ -4,6 +4,10 @@ export const algoliaVideos = [
   {
     videoId: '1_jf-0-0',
     titles: ['JESUS'],
+    titlesWithLanguages: [
+      { value: 'JESUS', languageId: '529' },
+      { value: 'JESUS', languageId: '21028' }
+    ],
     description: [
       "This film is a perfect introduction to Jesus through the Gospel of Luke. Jesus constantly surprises and confounds people, from His miraculous birth to His rise from the grave. Follow His life through excerpts from the Book of Luke, all the miracles, the teachings, and the passion. \n\nGod creates everything and loves mankind. But mankind disobeys God. God and mankind are separated, but God loves mankind so much, He arranges redemption for mankind. He sends his Son Jesus to be a perfect sacrifice to make amends for us.\n\nBefore Jesus arrives, God prepares mankind. Prophets speak of the birth, the life, and the death of Jesus.\n\nJesus attracts attention. He teaches in parables no one really understands, gives sight to the blind, and helps those who no one sees as worth helping.\n\nHe scares the Jewish leaders, they see him as a threat. So they arrange, through Judas the traitor and their Roman oppressors, for the crucifixion of Jesus. They think the matter is settled. But the women who serve Jesus discover an empty tomb. The disciples panic. When Jesus appears, they doubt He's real. But it's what He proclaimed all along: He is their perfect sacrifice, their Savior, victor over death. He ascends to heaven, telling His followers to tell others about Him and His teachings."
     ],
@@ -60,6 +64,10 @@ export const algoliaVideos = [
   {
     videoId: '2_GOJ-0-0',
     titles: ['Life of Jesus (Gospel of John)'],
+    titlesWithLanguages: [
+      { value: 'Life of Jesus (Gospel of John)', languageId: '529' },
+      { value: 'Life of Jesus (Gospel of John)', languageId: '21028' }
+    ],
     description: [
       'And truly Jesus did many other signs in the presence of His disciples, which are not written in this book; but these are written that you may believe that Jesus is the Christ, the Son of God, and that believing you may have life in His name. -John 20:30-31 NKJV\n\n" I have come that they may have life, and that they may have it more abundantly." - John 10:10 NKJV\n\n"And this is eternal life, that they may know You, the only true God, and Jesus Christ whom You have sent." - John 17:3 NKJV'
     ],
@@ -79,6 +87,10 @@ export const algoliaVideos = [
   {
     videoId: '1_jf6119-0-0',
     titles: ['Jesus Calms the Storm'],
+    titlesWithLanguages: [
+      { value: 'Jesus Calms the Storm', languageId: '529' },
+      { value: 'Jesus Calms the Storm', languageId: '21028' }
+    ],
     description: [
       "Jesus gets into a boat and tells His disciples they should all go to the other side of the lake. Along the way, Jesus falls asleep. A storm starts to rage. Waves stretch high over the bow. And the boat starts to take on water.\n\nThe whole time, Jesus stays asleep. The disciples hold on tight. They try to keep the boat afloat. Finally, Peter cries out to the still sleeping Jesus. He tells Jesus that the boat is taking on water and that they'll all be drowned.\n\nJesus stands and puts a hand out toward the storm. The storm clears. And the seas immediately calm."
     ],
@@ -135,6 +147,10 @@ export const algoliaVideos = [
   {
     videoId: '1_wl604423-0-0',
     titles: ['The Woman with the Issue of Blood'],
+    titlesWithLanguages: [
+      { value: 'The Woman with the Issue of Blood', languageId: '529' },
+      { value: 'The Woman with the Issue of Blood', languageId: '21028' }
+    ],
     description: [
       'A woman suffering from 12 years of bleeding could find no one to help her.'
     ],
@@ -186,6 +202,10 @@ export const algoliaVideos = [
   {
     videoId: 'MAG1',
     titles: ['Magdalena'],
+    titlesWithLanguages: [
+      { value: 'Magdalena', languageId: '529' },
+      { value: 'Magdalena', languageId: '21028' }
+    ],
     description: [
       '"Magdalena", the compelling film portraying Jesus\' tender regard for women, is being met with incredible response around the world. Magdalena is inspiring women everywhere to realize and reclaim the purpose they were always intended for...to know Jesus, and with loving hearts and a gentle touch make Him known.\n\nThis collection includes the 1-hour version of "Magdalena" as well as the original 82 minute director\'s cut. A series of short clips (2-5 minutes) with thought-provoking questions help viewers delve deeper into God’s Word to discover hope for their lives. '
     ],
@@ -237,6 +257,10 @@ export const algoliaVideos = [
   {
     videoId: '1_wl7-0-0',
     titles: ['Reflections of Hope'],
+    titlesWithLanguages: [
+      { value: 'Reflections of Hope', languageId: '529' },
+      { value: 'Reflections of Hope', languageId: '21028' }
+    ],
     description: [
       "Reflections of Hope is an eight-lesson Bible study that helps women deepen their understanding of Jesus' love and care for them. They learn of His promise to be with them each step of life's journey. This collection includes seven short clips from Magdalena that correspond with the lessons in the study. It also provides thought provoking questions to help women go deeper into God's Word and find the value that God placed in each one of them."
     ],
@@ -256,6 +280,10 @@ export const algoliaVideos = [
   {
     videoId: '3_0-8DWJ-WIJ_06-0-0',
     titles: ['Day 6: Jesus Died for Me'],
+    titlesWithLanguages: [
+      { value: 'Day 6: Jesus Died for Me', languageId: '529' },
+      { value: 'Day 6: Jesus Died for Me', languageId: '21028' }
+    ],
     description: [
       "They arrive at the place where the crosses are being set up. Others are being tied to their crosses. Jesus is stripped and led to His own cross. They throw Him down on it. There are cries as the others are nailed to their crosses.\n\nThe nails are hammered through Jesus's wrists and feet as He screams. Then slowly, the crosses are erected as Romans pulls the ropes. Jesus is lifted high in the air. He hangs on the cross, tired and in pain. He prays for those in the crowd. He asks God to forgive them because they don't know what they do.\n\nThe crowd murmurs at the feet of the cross. Annas and Caiaphas comment that He saved others. They wonder why He doesn't save Himself. The crowd starts to jeer. They urge Him to save Himself. But He doesn't."
     ],
@@ -275,6 +303,10 @@ export const algoliaVideos = [
   {
     videoId: '2_Acts-0-0',
     titles: ['Book of Acts'],
+    titlesWithLanguages: [
+      { value: 'Book of Acts', languageId: '529' },
+      { value: 'Book of Acts', languageId: '21028' }
+    ],
     description: [
       'This film depicts the birth of the early church through the eyes of Luke, the author of the Gospel of Luke.'
     ],
@@ -294,6 +326,10 @@ export const algoliaVideos = [
   {
     videoId: '2_GOJ4904-0-0',
     titles: ['Wedding in Cana'],
+    titlesWithLanguages: [
+      { value: 'Wedding in Cana', languageId: '529' },
+      { value: 'Wedding in Cana', languageId: '21028' }
+    ],
     description: [
       'Jesus performs His first recorded miracle at a Wedding by transforming water into Wine.'
     ],
@@ -313,6 +349,10 @@ export const algoliaVideos = [
   {
     videoId: '2_Acts7331-0-0',
     titles: ["Peter's Miraculous Escape From Prison"],
+    titlesWithLanguages: [
+      { value: "Peter's Miraculous Escape From Prison", languageId: '529' },
+      { value: "Peter's Miraculous Escape From Prison", languageId: '21028' }
+    ],
     description: ['Peter escapes "death row" with help from an angel.'],
     duration: 298,
     languageId: '529',
@@ -330,6 +370,10 @@ export const algoliaVideos = [
   {
     videoId: '3_0-8DWJ-WIJ',
     titles: ['8 Days with Jesus: Who is Jesus?'],
+    titlesWithLanguages: [
+      { value: '8 Days with Jesus: Who is Jesus?', languageId: '529' },
+      { value: '8 Days with Jesus: Who is Jesus?', languageId: '21028' }
+    ],
     description: [
       'MentorLink International and The JESUS Film Project have partnered to develop "Days with Jesus", a series of innovative tools specifically designed to help users deepen their walk with Christ. "Days with Jesus" delivers video clips from The JESUS Film along with thought-provoking questions designed to challenge and transform a person’s heart, character, values and motives. Take this opportunity to enhance and deepen your understanding of Jesus, the Son of God. Visit www.mentorlink.org for more information.\n\nAbout Days with Jesus:\nMentorLink International and The JESUS Film Project have partnered to develop "Days with Jesus", a series of innovative tools specially designed to help users deepen their walk with Christ. "Days with Jesus" uses The JESUS Film, an already-successful means for reaching people with the Gospel, and unpacks it one step further. Each video segment from The JESUS Film is carefully selected to convey God’s message of truth, and each question has been deliberately chosen and worded. Our prayer for this series is that people would learn from Jesus how to be like Jesus.\n\n8 Days with Jesus: Who is Jesus? will introduce you to Jesus and who He is. Take this opportunity to enhance and deepen your understanding of Jesus, the Son of God. \n\nVisit www.mentorlink.org for more information.'
     ],
@@ -349,6 +393,10 @@ export const algoliaVideos = [
   {
     videoId: '2_ChosenWitness',
     titles: ['Chosen Witness'],
+    titlesWithLanguages: [
+      { value: 'Chosen Witness', languageId: '529' },
+      { value: 'Chosen Witness', languageId: '21028' }
+    ],
     description: [
       "An unlikely woman's life is dramatically transformed by a man who will soon change the world forever. In this animated short film, experience the life of Jesus through the eyes of one of his followers, Mary Magdalene."
     ],
@@ -368,6 +416,10 @@ export const algoliaVideos = [
   {
     videoId: 'GOMattCollection',
     titles: ['LUMO - The Gospel of Matthew'],
+    titlesWithLanguages: [
+      { value: 'LUMO - The Gospel of Matthew', languageId: '529' },
+      { value: 'LUMO - The Gospel of Matthew', languageId: '21028' }
+    ],
     description: [
       'The Gospel of Matthew begins by highlighting the royal genealogy of Jesus before disclosing who he is - the Messiah! The entire narrative gives insight into who Jesus is in a historical context and what that means for his followers. Watch and listen to gain a better understanding of the life of Jesus in this documentary style, word-for-word telling of the Gospel of Matthew.\n\nFor more information please visit - https://lumoproject.com\nFollow us on Facebook - https://www.facebook.com/thelumoproject\nFollow us on Twitter - https://twitter.com/TheLumoProject\nFollow us on Instagram - https://www.instagram.com/lumo.project'
     ],
@@ -387,6 +439,10 @@ export const algoliaVideos = [
   {
     videoId: 'GOMarkCollection',
     titles: ['LUMO - The Gospel of Mark'],
+    titlesWithLanguages: [
+      { value: 'LUMO - The Gospel of Mark', languageId: '529' },
+      { value: 'LUMO - The Gospel of Mark', languageId: '21028' }
+    ],
     description: [
       "According to THE GOSPEL OF MARK, Jesus is a heroic man of action, healer, and miracle worker - the Son of God who keeps his identity secret. This critically acclaimed, epic production - five years in the making - is based on the latest theological, historical, and archaeological research, and offers an unforgettable, highly authentic telling of the Jesus story - ending with the empty tomb, a promise to meet again in Galilee, and Jesus's instructions to spread the good news of the resurrection.\n\nFor more information please visit - https://lumoproject.com\nFollow us on Facebook - https://www.facebook.com/thelumoproject\nFollow us on Twitter - https://twitter.com/TheLumoProject\nFollow us on Instagram - https://www.instagram.com/lumo.project"
     ],
@@ -406,6 +462,10 @@ export const algoliaVideos = [
   {
     videoId: 'GOLukeCollection',
     titles: ['LUMO - The Gospel of Luke'],
+    titlesWithLanguages: [
+      { value: 'LUMO - The Gospel of Luke', languageId: '529' },
+      { value: 'LUMO - The Gospel of Luke', languageId: '21028' }
+    ],
     description: [
       "Luke's Gospel, more than any other, fits the category of ancient biography. Luke acts as a 'narrator' of events rather than the conventional author, painting a picture of Jesus as a very human character, full of compassion for all the suffering world. Luke sees Jesus as the 'Savior' of all people irrespective of their beliefs, always on the side of the needy and the deprived against the rich and the powerful. He constantly challenges those in power for their self-righteousness. This film about the life of Jesus takes the actual Gospel text as it's script, word-for-word, unedited. Five years in the making, this epic production has been critically acclaimed by leading religious scholars as a unique and highly authentic telling of the Jesus story. \n \nFor more information please visit: https://lumoproject.com/\nFollow us on Facebook - https://www.facebook.com/thelumoproject\nFollow us on Twitter - https://twitter.com/TheLumoProject"
     ],
@@ -425,6 +485,10 @@ export const algoliaVideos = [
   {
     videoId: 'GOJohnCollection',
     titles: ['LUMO - The Gospel of John'],
+    titlesWithLanguages: [
+      { value: 'LUMO - The Gospel of John', languageId: '529' },
+      { value: 'LUMO - The Gospel of John', languageId: '21028' }
+    ],
     description: [
       "The Gospel of John is a word-for-word portrayal of the biblical text. This profound film sheds new light on one of history's most sacred texts. Beautifully shot and informed by the latest theological, historical, and archeological research, this film is something to be enjoyed and treasured.\n\nFor more information please visit - https://lumoproject.com\nFollow us on Facebook - https://www.facebook.com/thelumoproject\nFollow us on Twitter - https://twitter.com/TheLumoProject\nFollow us on Instagram - https://www.instagram.com/lumo.project"
     ],
@@ -444,6 +508,10 @@ export const algoliaVideos = [
   {
     videoId: 'IsItWorthIt',
     titles: ['Is it Worth it?'],
+    titlesWithLanguages: [
+      { value: 'Is it Worth it?', languageId: '529' },
+      { value: 'Is it Worth it?', languageId: '21028' }
+    ],
     description: [
       'Injury, loss, and winning are critical issues all athletes deal with. Hear what a professional basketball player, a USA hammer thrower, and a world champion wrestler have experienced and what they all have in common.'
     ],
@@ -463,6 +531,10 @@ export const algoliaVideos = [
   {
     videoId: '8_NBC',
     titles: ['New Believer Course'],
+    titlesWithLanguages: [
+      { value: 'New Believer Course', languageId: '529' },
+      { value: 'New Believer Course', languageId: '21028' }
+    ],
     description: [
       'If you’ve ever wondered what Christianity is about, or what sort of lifestyle it empowers you to live, the New Believer Course exists to help you understand the Gospel and live your life in response to it.'
     ],
@@ -482,6 +554,10 @@ export const algoliaVideos = [
   {
     videoId: '1_cl1309-0-0',
     titles: ['StoryClubs: Jesus and Zacchaeus'],
+    titlesWithLanguages: [
+      { value: 'StoryClubs: Jesus and Zacchaeus', languageId: '529' },
+      { value: 'StoryClubs: Jesus and Zacchaeus', languageId: '21028' }
+    ],
     description: [
       "Jesus enters the town surrounded by crowds pushing in on Him. Zacchaeus, a short man, tries to see Jesus. But he can't see above the crowds or get through them. He climbs a tree. Jesus calls out to him.\n\nHe tells Zacchaeus to come down from the tree because He wants to have dinner with him. People are appalled. Zacchaeus is the town tax collector. But Zacchaeus is more than happy. He comes down from the tree and leads the way.\n\nTo download the entire lesson, go to: http://katw-kidstory.com/download/english-kidstory-jesus-film-lessons/"
     ],
@@ -501,6 +577,10 @@ export const algoliaVideos = [
   {
     videoId: '1_jf6102-0-0',
     titles: ['Birth of Jesus'],
+    titlesWithLanguages: [
+      { value: 'Birth of Jesus', languageId: '529' },
+      { value: 'Birth of Jesus', languageId: '21028' }
+    ],
     description: [
       "Luke makes his introduction as the careful author of this Gospel. The angel Gabriel appears to Mary, a virgin in Nazareth. He announces to her that she has found favor with God and will give birth to Jesus, the Son of God.\n\nThrough Jesus' birth, prophecies are fulfilled by the arrangement of events. God leaves no detail unnoticed. The same can be said of our own lives."
     ],
@@ -557,6 +637,10 @@ export const algoliaVideos = [
   {
     videoId: '2_0-FallingPlates',
     titles: ['#FallingPlates'],
+    titlesWithLanguages: [
+      { value: '#FallingPlates', languageId: '529' },
+      { value: '#FallingPlates', languageId: '21028' }
+    ],
     description: [
       '#FallingPlates leads through a series of visual metaphors: creation, the fall, Christ’s coming and resurrection, redemption, and our salvation. The video ends with Jesus asking you to respond to His life altering question, “Will you follow me?”.\n\n#FallingPlates is an award winning short film about life, death & love of a Savior. It’s a flying 4 minute video depiction of the Gospel message with viral momentum (over 4 million views).\n\nAfter you showing the #FallingPlates video to a friend, ask: “Sometime, I’d like to hear more about your spiritual journey... would you be up for that?” And, during that conversation (or in the next one) you will ask if you can meet to hear his or her story.\n\nAn Easy Approach...\nExplore Past Experiences: Where they’ve been\n- What was your religious background as a child?\n- What have you tried in your spiritual journey since?\n\nExplore Present Attitudes: Where they are\n- Where are you now in your spiritual journey?\n- How has your search left you feeling?\n\nExplore Future Direction: Where they are going\n- Do you think you are moving toward God, away from God, or staying about the same?\n- On a scale of 1-10, how would you rate your desire to know God personally?\n- Proceed with sharing the Gospel.\n\nContinue the Conversation: http://www.fallingplates.com/ \n\nTRANSLATION requests for this video email: FallingPlatesVideo@gmail.com'
     ],
@@ -638,6 +722,10 @@ export const algoliaVideos = [
   {
     videoId: '2_Acts7345-0-0',
     titles: ['Paul and Silas in Prison'],
+    titlesWithLanguages: [
+      { value: 'Paul and Silas in Prison', languageId: '529' },
+      { value: 'Paul and Silas in Prison', languageId: '21028' }
+    ],
     description: [
       'Paul and Silas beaten and imprisoned for casting out a demon.'
     ],
@@ -657,6 +745,10 @@ export const algoliaVideos = [
   {
     videoId: '1_mld-0-0',
     titles: ['My Last Day'],
+    titlesWithLanguages: [
+      { value: 'My Last Day', languageId: '529' },
+      { value: 'My Last Day', languageId: '21028' }
+    ],
     description: [
       "In a beautiful animé style, a prisoner watches as Jesus gets flogged in Pilate's courtyard. He remembers Jesus teaching and wonders why they're hurting an innocent man. Horrified, he remembers his own crime.\n\nThe crowds in the courtyard scream for Jesus to be crucified. The thief, another man, and Jesus are loaded with the beams for their crosses and march to Golgotha. \n\nThey arrive and nails are driven through their wrists. Each man is hung on a cross, their feet nailed to a wooden shelf.Our thief claims Jesus is the Messiah and asks that Jesus remember him. Jesus promises him they will be in paradise together that day. A dark storm overwhelms the hill and Jesus dies.\n\nThe thief passes away with a gasp and sees Jesus in a beautiful place."
     ],
@@ -676,6 +768,10 @@ export const algoliaVideos = [
   {
     videoId: '1_jf6101-0-0',
     titles: ['The Beginning'],
+    titlesWithLanguages: [
+      { value: 'The Beginning', languageId: '529' },
+      { value: 'The Beginning', languageId: '21028' }
+    ],
     description: [
       'The story of Jesus fits within the larger story of the Judeo Christian tradition. The purpose of everything since creation has been to point to the life of Jesus.\n\nAll of creation speaks of the majesty of God. As God created man and woman he intended them to live in peace with him forever. But because of their disobedience mankind was separated from God. But God still loved mankind so throughout the Scriptures God reveals his plan to save the world.'
     ],

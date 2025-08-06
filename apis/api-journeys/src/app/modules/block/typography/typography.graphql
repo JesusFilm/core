@@ -29,11 +29,11 @@ input TypographyBlockSettingsInput {
   color: String
 }
 
-type TypographyBlockSettings {
+type TypographyBlockSettings @shareable {
   color: String @shareable
 }
 
-type TypographyBlock implements Block @key(fields: "id") {
+type TypographyBlock implements Block @key(fields: "id") @shareable {
   id: ID! @shareable
   journeyId: ID! @shareable
   parentBlockId: ID @shareable

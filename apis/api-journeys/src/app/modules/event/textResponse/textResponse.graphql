@@ -18,7 +18,7 @@ input TextResponseSubmissionEventCreateInput {
   value: String!
 }
 
-type TextResponseSubmissionEvent implements Event {
+type TextResponseSubmissionEvent implements Event @shareable {
   id: ID!
   """
   ID of the journey that the buttonBlock belongs to

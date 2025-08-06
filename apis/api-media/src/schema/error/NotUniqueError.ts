@@ -1,3 +1,5 @@
+import { GraphQLError } from 'graphql'
+
 import { builder } from '../builder'
 
 import { ErrorInterface } from './error'
@@ -13,12 +15,17 @@ interface NotUniqueErrorLocation {
   value: string
 }
 
-export class NotUniqueError extends Error {
+export class NotUniqueError extends GraphQLError {
   constructor(
     message: string,
     readonly location: NotUniqueErrorLocation[]
   ) {
-    super(message)
+    super(message, {
+      extensions: {
+        code: 'NOT_UNIQUE_ERROR',
+        location
+      }
+    })
     this.name = 'NotUniqueError'
   }
 }

@@ -1,8 +1,24 @@
+import { ApolloClient } from '@apollo/client'
+
 import type { JourneySimple } from '@core/shared/ai/journeySimpleTypes'
 
 import { prismaMock } from '../../../../test/prismaMock'
 
 import { updateSimpleJourney } from './updateSimpleJourney'
+
+jest.mock('../../../utils/generateBlurhashAndMetadataFromUrl', () => ({
+  generateBlurhashAndMetadataFromUrl: jest.fn().mockResolvedValue({
+    blurhash: 'mocked-blurhash',
+    width: 100,
+    height: 100
+  })
+}))
+
+// Mock environment variables
+const originalEnv = process.env
+
+// Mock ApolloClient
+jest.mock('@apollo/client')
 
 const txMock = {
   block: {
@@ -23,10 +39,12 @@ describe('updateSimpleJourney', () => {
     cards: [
       {
         id: 'card-1',
+        x: 0,
+        y: 0,
         heading: 'Heading',
         text: 'Text',
         image: {
-          src: 'img.jpg',
+          src: 'https://images.unsplash.com/photo-1601142634808-38923eb7c560?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80',
           alt: 'alt',
           width: 100,
           height: 100,
@@ -38,7 +56,7 @@ describe('updateSimpleJourney', () => {
         ],
         button: { text: 'Next', nextCard: 'card-2' },
         backgroundImage: {
-          src: 'bg.jpg',
+          src: 'https://images.unsplash.com/photo-1601142634808-38923eb7c560?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80',
           alt: 'bg',
           width: 200,
           height: 200,
@@ -48,6 +66,8 @@ describe('updateSimpleJourney', () => {
       },
       {
         id: 'card-2',
+        x: 100,
+        y: 100,
         heading: 'Second',
         text: 'Second text'
       }
@@ -61,6 +81,14 @@ describe('updateSimpleJourney', () => {
     prismaMock.$transaction.mockImplementation(
       async (callback) => await callback(txMock as any)
     )
+    // Mock environment variables
+    process.env = { ...originalEnv }
+    process.env.CLOUDFLARE_UPLOAD_KEY = 'test-cloudflare-account-hash'
+  })
+
+  afterEach(() => {
+    process.env = originalEnv
+    jest.clearAllMocks()
   })
 
   it('wraps all operations in a transaction', async () => {
@@ -114,8 +142,129 @@ describe('updateSimpleJourney', () => {
     const minimal: JourneySimple = {
       title: 't',
       description: 'd',
-      cards: [{ id: 'c1' }]
+      cards: [{ id: 'c1', x: 0, y: 0 }]
     }
     await expect(updateSimpleJourney(journeyId, minimal)).resolves.not.toThrow()
+  })
+
+  describe('cloudflare upload', () => {
+    it('uploads invalid image URLs to Cloudflare and uses the returned URL', async () => {
+      // Mock Apollo mutation to return a specific image ID
+      const mockImageId = 'test-cloudflare-image-id'
+      jest.spyOn(ApolloClient.prototype, 'mutate').mockImplementation(
+        async () =>
+          await Promise.resolve({
+            data: {
+              createCloudflareUploadByUrl: {
+                id: mockImageId
+              }
+            }
+          })
+      )
+
+      // Test with invalid URLs that should trigger upload
+      const testData = {
+        ...simple,
+        cards: [
+          {
+            ...simple.cards[0],
+            image: {
+              src: 'https://invalid-domain.com/image.jpg', // Invalid URL
+              alt: 'test',
+              width: 150,
+              height: 150,
+              blurhash: ''
+            },
+            backgroundImage: {
+              src: 'https://another-invalid-domain.com/bg.jpg', // Invalid URL
+              alt: 'bg',
+              width: 200,
+              height: 200,
+              blurhash: ''
+            }
+          }
+        ]
+      }
+
+      await updateSimpleJourney(journeyId, testData)
+
+      // Verify Apollo mutation was called for both images
+      expect(ApolloClient.prototype.mutate).toHaveBeenCalledTimes(2)
+
+      // Verify the correct Cloudflare URLs were used in block creation
+      const imageBlockCalls = txMock.block.create.mock.calls.filter(
+        ([data]: [any]) => data.data.typename === 'ImageBlock'
+      )
+
+      expect(imageBlockCalls).toHaveLength(2)
+      expect(imageBlockCalls[0][0].data.src).toBe(
+        `https://imagedelivery.net/test-cloudflare-account-hash/${mockImageId}/public`
+      )
+      expect(imageBlockCalls[1][0].data.src).toBe(
+        `https://imagedelivery.net/test-cloudflare-account-hash/${mockImageId}/public`
+      )
+      // Verify mocked width, height, and blurhash values are used (from generateBlurhashAndMetadataFromUrl)
+      for (const call of imageBlockCalls) {
+        expect(call[0].data.width).toBe(100)
+        expect(call[0].data.height).toBe(100)
+        expect(call[0].data.blurhash).toBe('mocked-blurhash')
+      }
+    })
+
+    it('uses valid image URLs as-is without uploading to Cloudflare', async () => {
+      // Mock Apollo mutation to not be called
+      jest.spyOn(ApolloClient.prototype, 'mutate').mockImplementationOnce(
+        async () =>
+          await Promise.resolve({
+            data: {
+              createCloudflareUploadByUrl: {
+                id: 'test-cloudflare-image-id'
+              }
+            }
+          })
+      )
+
+      // Test with valid URLs that should NOT trigger upload
+      const testData = {
+        ...simple,
+        cards: [
+          {
+            ...simple.cards[0],
+            image: {
+              src: 'https://imagedelivery.net/test/valid-image-id/public', // Valid URL
+              alt: 'test',
+              width: 100,
+              height: 100,
+              blurhash: ''
+            },
+            backgroundImage: {
+              src: 'https://images.unsplash.com/photo-123456789', // Valid URL
+              alt: 'bg',
+              width: 200,
+              height: 200,
+              blurhash: ''
+            }
+          }
+        ]
+      }
+
+      await updateSimpleJourney(journeyId, testData)
+
+      // Verify Apollo mutation was NOT called
+      expect(ApolloClient.prototype.mutate).not.toHaveBeenCalled()
+
+      // Verify the original URLs were used in block creation
+      const imageBlockCalls = txMock.block.create.mock.calls.filter(
+        ([data]: [any]) => data.data.typename === 'ImageBlock'
+      )
+
+      expect(imageBlockCalls).toHaveLength(2)
+      expect(imageBlockCalls[0][0].data.src).toBe(
+        'https://imagedelivery.net/test/valid-image-id/public'
+      )
+      expect(imageBlockCalls[1][0].data.src).toBe(
+        'https://images.unsplash.com/photo-123456789'
+      )
+    })
   })
 })
