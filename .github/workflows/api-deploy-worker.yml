@@ -47,20 +47,21 @@ jobs:
         with:
           fetch-depth: 0
       - uses: nrwl/nx-set-shas@v4
+
+      - name: Setup Node.js
+        uses: useblacksmith/setup-node@v5
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: Get Node Version
+        id: node-version
+        run: echo "version=$(node -v)" >> $GITHUB_OUTPUT
+
       - name: Get affected apps
         run: |
           echo "apps=$(npx ts-node tools/scripts/affected-apps.ts --projects apis/api-*)" >> $GITHUB_OUTPUT
           cat $GITHUB_OUTPUT
         id: affected-apps
-      - uses: useblacksmith/setup-node@v5
-        if: contains(steps.affected-apps.outputs.apps, inputs.name)
-        with:
-          node-version: ${{ matrix.node-version }}
-
-      - name: Get Node Version
-        if: contains(steps.affected-apps.outputs.apps, inputs.name)
-        id: node-version
-        run: echo "version=$(node -v)" >> $GITHUB_OUTPUT
 
       - name: Mount NPM Cache
         if: contains(steps.affected-apps.outputs.apps, inputs.name)
