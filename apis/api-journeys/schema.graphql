@@ -449,6 +449,7 @@ type Journey
   socialNodeX: Int
   socialNodeY: Int
   fromTemplateId: String
+  journeyCustomizationFields: [JourneyCustomizationField!]!
   journeyTheme: JourneyTheme
   userJourneys: [UserJourney!]
 }
@@ -2496,7 +2497,9 @@ input JourneyCollectionUpdateInput {
   journeyIds: [String!]
 }
 
-type JourneyCustomizationField {
+type JourneyCustomizationField
+  @shareable
+{
   id: ID!
   journeyId: ID!
   key: String!
