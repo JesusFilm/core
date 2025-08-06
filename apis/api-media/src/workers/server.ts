@@ -91,13 +91,6 @@ async function main(): Promise<void> {
     )
   }
 
-  run(
-    await import(
-      /* webpackChunkName: "published" */
-      './published'
-    )
-  )
-
   if (process.env.NODE_ENV !== 'production') {
     run(
       await import(
