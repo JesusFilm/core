@@ -22,23 +22,20 @@ jobs:
       - name: Fetch other branches
         if: ${{ github.event_name == 'pull_request' }}
         run: git fetch --no-tags --prune --depth=5 origin $GITHUB_BASE_REF
-      - uses: useblacksmith/setup-node@v5
+      - uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
+          cache: 'npm'
       - run: npx nx-cloud start-ci-run --distribute-on="3 linux-medium-js" --stop-agents-after="build"
       - name: Get Node Version
         id: node-version
         run: echo "version=$(node -v)" >> $GITHUB_OUTPUT
-      - name: Mount NPM Cache
-        uses: useblacksmith/stickydisk@v1
+      - name: Cache Node Modules
+        id: cache-node-modules
+        uses: actions/cache@v4
         with:
-          key: ${{ github.repository }}-${{ steps.node-version.outputs.version }}-npm-cache
-          path: ~/.npm
-      - name: Mount node_modules
-        uses: useblacksmith/stickydisk@v1
-        with:
-          key: ${{ github.repository }}-${{ steps.node-version.outputs.version }}-node-modules
-          path: ./node_modules
+          path: node_modules
+          key: node-modules-${{ steps.node-version.outputs.version }}-${{ hashFiles('package-lock.json') }}
       - name: NPM Install
         run: npm install --silent
       - name: generate prisma imports
@@ -91,22 +88,21 @@ jobs:
       - name: Fetch other branches
         if: ${{ github.event_name == 'pull_request' }}
         run: git fetch --no-tags --prune --depth=5 origin $GITHUB_BASE_REF
-      - uses: useblacksmith/setup-node@v5
+      - uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
+          cache: 'npm'
       - name: Get Node Version
         id: node-version
         run: echo "version=$(node -v)" >> $GITHUB_OUTPUT
-      - name: Mount NPM Cache
-        uses: useblacksmith/stickydisk@v1
+      - name: Cache Node Modules
+        id: cache-node-modules
+        uses: actions/cache@v4
         with:
-          key: ${{ github.repository }}-${{ steps.node-version.outputs.version }}-npm-cache
-          path: ~/.npm
-      - name: Mount node_modules
-        uses: useblacksmith/stickydisk@v1
-        with:
-          key: ${{ github.repository }}-${{ steps.node-version.outputs.version }}-node-modules
-          path: ./node_modules
+          path: node_modules
+          key: node-modules-${{ steps.node-version.outputs.version }}-${{ hashFiles('package-lock.json') }}
+      - name: Install Dependencies
+        run: npm ci --silent
       - name: NPM Install
         run: npm install --silent
       - name: generate prisma imports
