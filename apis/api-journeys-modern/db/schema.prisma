@@ -565,7 +565,6 @@ model JourneyCustomizationField {
   fieldType    JourneyCustomizationFieldType
   journey      Journey                       @relation(fields: [journeyId], references: [id], onDelete: Cascade)
 
-  @@unique([journeyId, key])
   @@unique([journeyId, key, value])
   @@index([journeyId])
 }

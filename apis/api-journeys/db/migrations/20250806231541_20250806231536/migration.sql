@@ -20,9 +20,6 @@ CREATE TABLE "JourneyCustomizationField" (
 CREATE INDEX "JourneyCustomizationField_journeyId_idx" ON "JourneyCustomizationField"("journeyId");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "JourneyCustomizationField_journeyId_key_key" ON "JourneyCustomizationField"("journeyId", "key");
-
--- CreateIndex
 CREATE UNIQUE INDEX "JourneyCustomizationField_journeyId_key_value_key" ON "JourneyCustomizationField"("journeyId", "key", "value");
 
 -- AddForeignKey
