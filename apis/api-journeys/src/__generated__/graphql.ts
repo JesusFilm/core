@@ -846,6 +846,7 @@ export type Journey = {
   host?: Maybe<Host>;
   id: Scalars['ID']['output'];
   journeyCollections: Array<JourneyCollection>;
+  journeyCustomizationFields: Array<JourneyCustomizationField>;
   journeyTheme?: Maybe<JourneyTheme>;
   language: Language;
   languageId: Scalars['String']['output'];
@@ -945,6 +946,27 @@ export type JourneyCreateInput = {
   themeName?: InputMaybe<ThemeName>;
   title: Scalars['String']['input'];
 };
+
+export type JourneyCustomizationField = {
+  __typename?: 'JourneyCustomizationField';
+  defaultValue?: Maybe<Scalars['String']['output']>;
+  fieldType: JourneyCustomizationFieldType;
+  id: Scalars['ID']['output'];
+  journeyId: Scalars['ID']['output'];
+  key: Scalars['String']['output'];
+  value?: Maybe<Scalars['String']['output']>;
+};
+
+export type JourneyCustomizationFieldInput = {
+  id: Scalars['ID']['input'];
+  key: Scalars['String']['input'];
+  value?: InputMaybe<Scalars['String']['input']>;
+};
+
+export enum JourneyCustomizationFieldType {
+  Link = 'link',
+  Text = 'text'
+}
 
 /**
  * JourneyEvent aggregates all event types. For detailed event type definitions,
@@ -1490,6 +1512,8 @@ export type Mutation = {
   journeyCollectionDelete: JourneyCollection;
   journeyCollectionUpdate: JourneyCollection;
   journeyCreate: Journey;
+  journeyCustomizationFieldPublisherUpdate: Array<JourneyCustomizationField>;
+  journeyCustomizationFieldUserUpdate: Array<JourneyCustomizationField>;
   journeyDuplicate: Journey;
   /** Sets journey status to featured */
   journeyFeature?: Maybe<Journey>;
@@ -1964,6 +1988,18 @@ export type MutationJourneyCollectionUpdateArgs = {
 export type MutationJourneyCreateArgs = {
   input: JourneyCreateInput;
   teamId: Scalars['ID']['input'];
+};
+
+
+export type MutationJourneyCustomizationFieldPublisherUpdateArgs = {
+  journeyId: Scalars['ID']['input'];
+  string: Scalars['String']['input'];
+};
+
+
+export type MutationJourneyCustomizationFieldUserUpdateArgs = {
+  input: Array<JourneyCustomizationFieldInput>;
+  journeyId: Scalars['ID']['input'];
 };
 
 
