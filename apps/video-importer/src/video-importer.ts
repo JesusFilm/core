@@ -7,12 +7,7 @@ import { v4 as uuidv4 } from 'uuid'
 
 import { importOrUpdateAudioPreview } from './services/audiopreview'
 import { createAndWaitForMuxVideo } from './services/mux'
-import {
-  createR2Asset,
-  r2ConnectionTest,
-  uploadFileToR2Direct,
-  uploadToR2
-} from './services/r2'
+import { createR2Asset, r2ConnectionTest, uploadToR2 } from './services/r2'
 import { importOrUpdateSubtitle } from './services/subtitle'
 import { importOrUpdateVideoVariant } from './services/video'
 import type { ProcessingSummary } from './types'
@@ -150,16 +145,6 @@ async function main() {
     }
 
     const filePath = path.join(folderPath, file)
-
-    try {
-      await testFileRead(filePath)
-    } catch (validationError) {
-      console.error('   File validation failed:', validationError)
-      const diagnostics = await diagnoseFile(filePath)
-      printDiagnostics(diagnostics)
-      summary.failed++
-      continue
-    }
 
     const contentType = 'video/mp4'
     const originalFilename = file
@@ -381,24 +366,41 @@ async function main() {
       continue
     }
 
-    console.log('   Uploading audio preview to R2...')
+    console.log('   Preparing Cloudflare R2 asset for audio preview...')
+    const fileName = `audiopreview/${languageId}.aac`
 
-    const bucket = process.env.CLOUDFLARE_R2_BUCKET!
-    const key = `audiopreview/${languageId}.aac`
-
-    let publicUrl
+    let r2Asset
     try {
-      publicUrl = await uploadFileToR2Direct({
-        bucket,
-        key,
+      r2Asset = await createR2Asset({
+        fileName,
+        contentType,
+        originalFilename: file,
+        videoId: 'audiopreview',
+        contentLength
+      })
+    } catch (error) {
+      console.error(`   Failed to create R2 asset for audio preview:`, error)
+      summary.failed++
+      continue
+    }
+
+    console.log('   R2 Public URL:', r2Asset.publicUrl)
+    console.log('   Uploading audio preview to R2...')
+    try {
+      await uploadToR2({
+        uploadUrl: r2Asset.uploadUrl,
+        bucket: process.env.CLOUDFLARE_R2_BUCKET!,
         filePath,
-        contentType
+        contentType,
+        contentLength
       })
     } catch (error) {
       console.error(`   Failed to upload audio preview to R2:`, error)
       summary.failed++
       continue
     }
+
+    const publicUrl = r2Asset.publicUrl
 
     console.log('   Importing or updating audio preview record...')
 
