@@ -9,6 +9,8 @@ jobs:
     strategy:
       matrix:
         node-version: [22]
+    env:
+      NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
     outputs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
     steps:
