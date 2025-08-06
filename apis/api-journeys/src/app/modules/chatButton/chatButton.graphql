@@ -1,4 +1,4 @@
-type ChatButton {
+type ChatButton @shareable {
   id: ID!
   link: String
   platform: MessagePlatform
