@@ -1,4 +1,4 @@
-type JourneyVisitor @key(fields: "visitorId journeyId") {
+type JourneyVisitor @key(fields: "visitorId journeyId") @shareable {
   visitorId: ID!
   journeyId: ID!
   """
@@ -68,7 +68,7 @@ type JourneyVisitor @key(fields: "visitorId journeyId") {
   visitor: Visitor!
 }
 
-type JourneyVisitorEdge {
+type JourneyVisitorEdge @shareable {
   """
   A cursor for use in pagination.
   """
@@ -79,7 +79,7 @@ type JourneyVisitorEdge {
   node: JourneyVisitor!
 }
 
-type JourneyVisitorsConnection {
+type JourneyVisitorsConnection @shareable {
   """
   A list of edges.
   """

@@ -1,9 +1,9 @@
-type PlausibleStatsAggregateValue {
+type PlausibleStatsAggregateValue @shareable {
   value: Float!
   change: Int
 }
 
-type PlausibleStatsAggregateResponse {
+type PlausibleStatsAggregateResponse @shareable {
   """
   The number of unique visitors.
   """
@@ -110,7 +110,7 @@ input PlausibleStatsBreakdownFilter {
   filters: String
 }
 
-type PlausibleStatsResponse {
+type PlausibleStatsResponse @shareable {
   """
   On breakdown queries, this is the property that was broken down by.
   On aggregate queries, this is the date the stats are for.
