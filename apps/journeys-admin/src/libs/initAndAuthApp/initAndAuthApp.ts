@@ -1,4 +1,6 @@
 import { ApolloClient, NormalizedCacheObject, gql } from '@apollo/client'
+import { getApp } from 'firebase/app'
+import { getAuth, signInAnonymously } from 'firebase/auth'
 import { Redirect } from 'next'
 import { User } from 'next-firebase-auth'
 import { SSRConfig } from 'next-i18next'
@@ -16,6 +18,7 @@ interface InitAndAuthAppProps {
   user?: User
   locale: string | undefined
   resolvedUrl?: string
+  makeAccountOnAnonymous?: boolean
 }
 
 interface InitAndAuth {
@@ -41,8 +44,15 @@ export const ACCEPT_ALL_INVITES = gql`
 export async function initAndAuthApp({
   user,
   locale,
-  resolvedUrl
+  resolvedUrl,
+  makeAccountOnAnonymous = false
 }: InitAndAuthAppProps): Promise<InitAndAuth> {
+  if (user == null && makeAccountOnAnonymous) {
+    await signInAnonymously(getAuth(getApp()), {
+      persistence: 'NONE'
+    })
+  }
+
   const ldUser =
     user?.id != null
       ? {

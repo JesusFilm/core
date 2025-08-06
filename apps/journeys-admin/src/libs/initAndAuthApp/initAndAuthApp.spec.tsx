@@ -1,4 +1,6 @@
 import { ApolloClient, NormalizedCacheObject } from '@apollo/client'
+import { getApp } from 'firebase/app'
+import { getAuth, signInAnonymously } from 'firebase/auth'
 import { LDClient } from 'launchdarkly-node-server-sdk'
 import { User } from 'next-firebase-auth'
 import { SSRConfig } from 'next-i18next'
@@ -16,6 +18,8 @@ jest.mock('next-i18next/serverSideTranslations')
 jest.mock('@core/shared/ui/getLaunchDarklyClient')
 jest.mock('../apolloClient')
 jest.mock('../checkConditionalRedirect')
+jest.mock('firebase/app')
+jest.mock('firebase/auth')
 
 const serverSideTranslationsMock =
   serverSideTranslations as jest.MockedFunction<typeof serverSideTranslations>
@@ -29,6 +33,11 @@ const checkConditionalRedirectMock =
   checkConditionalRedirect as jest.MockedFunction<
     typeof checkConditionalRedirect
   >
+const getAppMock = getApp as jest.MockedFunction<typeof getApp>
+const getAuthMock = getAuth as jest.MockedFunction<typeof getAuth>
+const signInAnonymouslyMock = signInAnonymously as jest.MockedFunction<
+  typeof signInAnonymously
+>
 
 describe('initAndAuthApp', () => {
   const mockUser = {
@@ -70,6 +79,11 @@ describe('initAndAuthApp', () => {
       destination: '/users/terms-and-conditions',
       permanent: false
     })
+
+    // mock Firebase functions
+    getAppMock.mockReturnValue({} as any)
+    getAuthMock.mockReturnValue({} as any)
+    signInAnonymouslyMock.mockResolvedValue({} as any)
   })
 
   it('should return with apolloClient, flags, redirect, and translations when auth user', async () => {
@@ -217,5 +231,21 @@ describe('initAndAuthApp', () => {
       resolvedUrl: '/templates',
       teamName: "test's Team"
     })
+  })
+
+  it('should call signInAnonymously when makeAccountOnAnonymous is true and user is null', async () => {
+    await initAndAuthApp({
+      user: null,
+      locale: 'en',
+      resolvedUrl: '/templates',
+      makeAccountOnAnonymous: true
+    })
+
+    expect(signInAnonymouslyMock).toHaveBeenCalledWith(
+      {},
+      {
+        persistence: 'NONE'
+      }
+    )
   })
 })
