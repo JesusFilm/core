@@ -1,6 +1,6 @@
 import { createReadStream } from 'fs'
 
-import { ListObjectsCommand, S3Client } from '@aws-sdk/client-s3'
+import { GetObjectCommand, S3Client } from '@aws-sdk/client-s3'
 import { Upload } from '@aws-sdk/lib-storage'
 
 import { getGraphQLClient } from '../gql/graphqlClient'
@@ -100,6 +100,10 @@ export async function uploadToR2({
 
   await uploadViaMultipart(bucket, key, filePath, contentType)
   console.log('[R2 Service] Multipart upload completed')
+
+  // Verify the uploaded file is retrievable
+  await verifyFileUpload(bucket, key, contentLength)
+  console.log('[R2 Service] File verification completed')
 }
 
 async function uploadViaMultipart(
@@ -128,7 +132,6 @@ async function uploadViaMultipart(
     leavePartsOnError: false
   })
 
-  // Progress tracking
   let lastPercent = 0
   let lastLogTime = Date.now()
 
@@ -137,7 +140,6 @@ async function uploadViaMultipart(
       const percent = Math.floor((progress.loaded / progress.total) * 100)
       const now = Date.now()
 
-      // Log every 10% or every 2 minutes
       if (percent >= lastPercent + 10 || now - lastLogTime > 120000) {
         const uploadedMB = (progress.loaded / 1024 / 1024).toFixed(1)
         const totalMB = (progress.total / 1024 / 1024).toFixed(1)
@@ -153,24 +155,38 @@ async function uploadViaMultipart(
   await upload.done()
 }
 
-export async function r2ConnectionTest() {
-  console.log('Testing R2 connection...')
-
-  if (!process.env.CLOUDFLARE_R2_BUCKET) {
-    throw new Error('CLOUDFLARE_R2_BUCKET environment variable is required')
-  }
-
-  const command = new ListObjectsCommand({
-    Bucket: process.env.CLOUDFLARE_R2_BUCKET
-  })
+async function verifyFileUpload(
+  bucket: string,
+  key: string,
+  expectedContentLength: number
+): Promise<void> {
+  console.log('[R2 Service] Verifying uploaded file...')
 
   try {
-    const response = await s3Client.send(command)
-    console.log('R2 connection test successful')
-    console.log(`Found ${response.Contents?.length || 0} objects in bucket`)
-    return true
+    const getObjectCommand = new GetObjectCommand({
+      Bucket: bucket,
+      Key: key
+    })
+
+    const response = await s3Client.send(getObjectCommand)
+
+    if (!response.ContentLength) {
+      throw new Error('File verification failed: No content length returned')
+    }
+
+    if (response.ContentLength !== expectedContentLength) {
+      throw new Error(
+        `File verification failed: Expected ${expectedContentLength} bytes, got ${response.ContentLength} bytes`
+      )
+    }
+
+    console.log(
+      `[R2 Service] File verification successful: ${response.ContentLength} bytes`
+    )
   } catch (error) {
-    console.error('R2 connection test failed:', error)
-    throw error
+    console.error('[R2 Service] File verification failed:', error)
+    throw new Error(
+      `File verification failed: ${error instanceof Error ? error.message : 'Unknown error'}`
+    )
   }
 }

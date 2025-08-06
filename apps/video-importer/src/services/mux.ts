@@ -3,85 +3,28 @@ import { CREATE_MUX_VIDEO } from '../gql/mutations'
 import { GET_MUX_VIDEO } from '../gql/queries'
 import type { MuxVideoResponse, MuxVideoStatusResponse } from '../types'
 
-const LARGE_FILE_THRESHOLD = 1024 * 1024 * 1024 // 1GB
-
-const POLLING_PROFILES = {
-  regular: {
-    timeoutMinutes: 45,
-    intervalSeconds: 30
-  },
-  large: {
-    timeoutMinutes: 150,
-    intervalSeconds: 120
-  }
-} as const
-
-async function pollForMuxCompletion(
-  muxId: string,
-  profile: 'regular' | 'large'
-): Promise<{ id: string; playbackId: string }> {
-  const client = await getGraphQLClient()
-  const config = POLLING_PROFILES[profile]
-  const maxAttempts = Math.floor(
-    (config.timeoutMinutes * 60) / config.intervalSeconds
-  )
-
-  console.log(
-    `[Mux Service] Polling for ${muxId} completion (${profile} profile: ${config.timeoutMinutes}min timeout, ${config.intervalSeconds}s intervals)`
-  )
-
-  for (let attempt = 1; attempt <= maxAttempts; attempt++) {
-    try {
-      const response = await client.request<MuxVideoStatusResponse>(
-        GET_MUX_VIDEO,
-        {
-          id: muxId,
-          userGenerated: false
-        }
-      )
-
-      if (response?.getMyMuxVideo?.readyToStream === true) {
-        const { id, playbackId } = response.getMyMuxVideo
-        console.log(
-          `[Mux Service] Video ${id} ready with playback ID: ${playbackId}`
-        )
-        return { id, playbackId }
-      }
-
-      if (attempt % 10 === 0) {
-        const elapsedMinutes = Math.round(
-          (attempt * config.intervalSeconds) / 60
-        )
-        console.log(
-          `[Mux Service] Still processing ${muxId}... (${elapsedMinutes} minutes elapsed)`
-        )
-      }
-
-      if (attempt < maxAttempts) {
-        await new Promise((resolve) =>
-          setTimeout(resolve, config.intervalSeconds * 1000)
-        )
-      }
-    } catch (error) {
-      console.warn(`[Mux Service] Polling attempt ${attempt} failed:`, error)
-
-      if (attempt < maxAttempts) {
-        await new Promise((resolve) =>
-          setTimeout(resolve, config.intervalSeconds * 1000)
-        )
-      }
-    }
-  }
-
-  throw new Error(
-    `Mux video processing timed out after ${config.timeoutMinutes} minutes`
-  )
+export interface MuxVideoInitResult {
+  id: string
+  publicUrl: string
+  fileSizeBytes?: number
 }
 
-export async function createAndWaitForMuxVideo(
+export interface MuxVideoProcessingResult {
+  id: string
+  playbackId: string
+  readyToStream: boolean
+}
+
+export interface PendingMuxVideo {
+  id: string
+  publicUrl: string
+  fileSizeBytes?: number
+}
+
+export async function createMuxAsset(
   publicUrl: string,
   fileSizeBytes?: number
-): Promise<{ id: string; playbackId: string }> {
+): Promise<MuxVideoInitResult> {
   const client = await getGraphQLClient()
 
   const response = await client.request<MuxVideoResponse>(CREATE_MUX_VIDEO, {
@@ -94,10 +37,119 @@ export async function createAndWaitForMuxVideo(
     throw new Error('Failed to create Mux video - no ID returned')
   }
 
-  console.log(`[Mux Service] Created Mux video: ${muxId}`)
+  console.log(`[Mux Service] Created Mux asset: ${muxId}`)
 
-  const profile =
-    fileSizeBytes && fileSizeBytes > LARGE_FILE_THRESHOLD ? 'large' : 'regular'
+  return {
+    id: muxId,
+    publicUrl,
+    fileSizeBytes
+  }
+}
 
-  return await pollForMuxCompletion(muxId, profile)
+export async function checkMuxVideoStatus(
+  muxId: string
+): Promise<MuxVideoProcessingResult> {
+  const client = await getGraphQLClient()
+
+  const response = await client.request<MuxVideoStatusResponse>(GET_MUX_VIDEO, {
+    id: muxId,
+    userGenerated: false
+  })
+
+  const video = response?.getMyMuxVideo
+  if (!video) {
+    throw new Error(`Mux video ${muxId} not found`)
+  }
+
+  return {
+    id: video.id,
+    playbackId: video.playbackId || '',
+    readyToStream: video.readyToStream
+  }
+}
+
+/**
+ * Wait for a Mux video to complete processing
+ */
+export async function waitForMuxVideoCompletion(
+  muxId: string,
+  timeoutMinutes: number = 150
+): Promise<{ id: string; playbackId: string }> {
+  const maxAttempts = Math.floor((timeoutMinutes * 60) / 5) // Check every 5 seconds
+  let currentInterval = 5
+
+  console.log(`[Mux Service] Waiting for ${muxId} to complete processing...`)
+
+  for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+    try {
+      const status = await checkMuxVideoStatus(muxId)
+
+      if (status.readyToStream && status.playbackId) {
+        console.log(
+          `[Mux Service] Video ${muxId} ready with playback ID: ${status.playbackId}`
+        )
+        return { id: status.id, playbackId: status.playbackId }
+      }
+
+      // Log progress every 10 attempts
+      if (attempt % 10 === 0) {
+        const elapsedMinutes = Math.round((attempt * currentInterval) / 60)
+        console.log(
+          `[Mux Service] Still processing ${muxId}... (${elapsedMinutes} minutes elapsed)`
+        )
+      }
+
+      if (attempt < maxAttempts) {
+        const interval = currentInterval
+        await new Promise((resolve) => setTimeout(resolve, interval * 1000))
+
+        // Increase interval gradually (max 2 minutes)
+        currentInterval = Math.min(currentInterval * 1.5, 120)
+      }
+    } catch (error) {
+      console.warn(`[Mux Service] Polling attempt ${attempt} failed:`, error)
+
+      if (attempt < maxAttempts) {
+        const interval = currentInterval
+        await new Promise((resolve) => setTimeout(resolve, interval * 1000))
+      }
+    }
+  }
+
+  throw new Error(
+    `Mux video processing timed out after ${timeoutMinutes} minutes`
+  )
+}
+
+/**
+ * Process multiple pending Mux videos
+ */
+export async function processPendingMuxVideos(
+  pendingVideos: PendingMuxVideo[]
+): Promise<{ id: string; playbackId: string }[]> {
+  if (pendingVideos.length === 0) {
+    console.log('[Mux Service] No pending videos to process')
+    return []
+  }
+
+  console.log(
+    `[Mux Service] Processing ${pendingVideos.length} pending videos...`
+  )
+
+  const results: { id: string; playbackId: string }[] = []
+
+  for (const video of pendingVideos) {
+    try {
+      console.log(`[Mux Service] Waiting for video ${video.id} to complete...`)
+      const result = await waitForMuxVideoCompletion(video.id)
+      results.push(result)
+      console.log(`[Mux Service] Video ${video.id} completed successfully`)
+    } catch (error) {
+      console.error(`[Mux Service] Failed to process video ${video.id}:`, error)
+      throw error
+    }
+  }
+
+  console.log(`[Mux Service] Successfully processed ${results.length} videos`)
+  return results
 }

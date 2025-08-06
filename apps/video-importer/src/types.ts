@@ -62,6 +62,17 @@ export interface ProcessingSummary {
   failed: number
 }
 
+export interface VideoProcessingData {
+  videoId: string
+  languageId: string
+  edition: string
+  version: number
+  metadata: any
+  muxVideoId: string
+  filePath: string
+  fileName: string
+}
+
 export interface VideoMetadata {
   durationMs: number
   duration: number
