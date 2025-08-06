@@ -90,7 +90,6 @@ export type JourneySimpleImage = z.infer<typeof journeySimpleImageSchema>
 export const journeySimpleVideoSchema = z.object({
   src: z
     .string()
-    .optional()
     .describe('The YouTube video URL or internal video ID.'),
   source: z.enum(['youTube', 'internal']).describe('The type of video source.'),
   startAt: z
