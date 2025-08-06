@@ -23,6 +23,59 @@ export function simplifyJourney(
       (block) => block.parentBlockId === cardBlock.id
     )
 
+    // --- VIDEO BLOCK HANDLING ---
+    const youtubeBlock = childBlocks.find(
+      (block) => block.typename === 'VideoBlock' && block.source === 'youTube'
+    )
+    if (youtubeBlock) {
+      const card: JourneySimpleCard = {
+        id: `card-${index + 1}`,
+        x: stepBlock.x ?? 0,
+        y: stepBlock.y ?? 0,
+        video: {
+          src: `https://youtube.com/watch?v=${youtubeBlock.videoId}`,
+          startAt: youtubeBlock.startAt ?? undefined,
+          endAt: youtubeBlock.endAt ?? undefined,
+          source: 'youTube'
+        }
+      }
+      if (stepBlock.nextBlockId) {
+        const nextStepBlockIndex = stepBlocks.findIndex(
+          (s) => s.id === stepBlock.nextBlockId
+        )
+        if (nextStepBlockIndex >= 0) {
+          card.defaultNextCard = `card-${nextStepBlockIndex + 1}`
+        }
+      }
+      return card
+    }
+    const videoBlock = childBlocks.find(
+      (block) => block.typename === 'VideoBlock' && block.source === 'internal'
+    )
+    if (videoBlock) {
+      const card: JourneySimpleCard = {
+        id: `card-${index + 1}`,
+        x: stepBlock.x ?? 0,
+        y: stepBlock.y ?? 0,
+        video: {
+          src: videoBlock.src ?? '',
+          startAt: videoBlock.startAt ?? undefined,
+          endAt: videoBlock.endAt ?? undefined,
+          source: 'internal'
+        }
+      }
+      if (stepBlock.nextBlockId) {
+        const nextStepBlockIndex = stepBlocks.findIndex(
+          (s) => s.id === stepBlock.nextBlockId
+        )
+        if (nextStepBlockIndex >= 0) {
+          card.defaultNextCard = `card-${nextStepBlockIndex + 1}`
+        }
+      }
+      return card
+    }
+
+    // --- NON-VIDEO CARDS (existing logic) ---
     const card: JourneySimpleCard = {
       id: `card-${index + 1}`,
       x: stepBlock.x ?? 0,
