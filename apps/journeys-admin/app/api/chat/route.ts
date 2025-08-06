@@ -13,8 +13,8 @@ import {
 import { tools } from '../../../src/libs/ai/tools'
 import { createApolloClient } from '../../../src/libs/apolloClient'
 
-// Allow streaming responses up to 30 seconds
-export const maxDuration = 30
+// Allow streaming responses up to 60 seconds
+export const maxDuration = 60
 
 export function errorHandler(error: unknown) {
   if (error == null) {
@@ -79,7 +79,7 @@ export async function POST(req: NextRequest) {
   const langfuseTraceId = uuidv4()
 
   const result = streamText({
-    model: google('gemini-2.0-flash'),
+    model: google('gemini-2.5-flash'),
     messages: messages.filter((message) => message.role !== 'system'),
     system: systemPrompt.compile({
       journeyId: journeyId ?? 'none',
@@ -121,7 +121,7 @@ export async function POST(req: NextRequest) {
       })
       return { ...toolCall, args: JSON.stringify(repairedArgs) }
     },
-    maxSteps: 5,
+    maxSteps: 10,
     onFinish: async (result) => {
       await langfuseExporter.forceFlush()
       const trace = langfuse.trace({
