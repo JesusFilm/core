@@ -24,12 +24,16 @@ variable "service_config" {
     zone_id              = string
     is_public            = bool
     alb_target_group = object({
-      port              = number
-      protocol          = string
-      path_pattern      = list(string)
-      health_check_path = string
-      health_check_port = optional(number)
-      priority          = number
+      port                             = number
+      protocol                         = string
+      path_pattern                     = list(string)
+      health_check_path                = string
+      health_check_port                = optional(number)
+      priority                         = number
+      health_check_interval            = optional(number, 10)
+      health_check_timeout             = optional(number, 4)
+      health_check_healthy_threshold   = optional(number, 2)
+      health_check_unhealthy_threshold = optional(number, 4)
     })
 
     auto_scaling = object({
