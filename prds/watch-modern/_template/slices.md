@@ -1,6 +1,20 @@
 # Slices Plan (vertical, value-first)
 
-See `/workspaces/core/prds/watch-modern/_template/slices-instructions.md` for instrucitons on how to fill this template with actual tasks.
+# Instructions for Filling Slices Template
+
+This template follows ShapeUp principles of vertical, value-first feature delivery. Each slice should:
+
+1. Deliver end-to-end user value
+2. Address risks early
+3. Start simple and iterate
+4. Be testable and production-ready
+
+See `/workspaces/core/prds/watch-modern/_template/slices-instructions.md` for detailed instructions on:
+- Breaking down features into vertical slices
+- Defining must-haves vs nice-to-haves
+- Setting clear Definition of Done criteria
+- Tracking slice status and progress
+- Mapping requirements to implementation
 
 # Basic implementation
 
