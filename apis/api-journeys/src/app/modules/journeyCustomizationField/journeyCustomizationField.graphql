@@ -1,10 +1,14 @@
-type JourneyCustomizationField {
+type JourneyCustomizationField @shareable {
   id: ID!
   journeyId: ID!
   key: String!
   value: String
   defaultValue: String
   fieldType: JourneyCustomizationFieldType!
+}
+
+extend type Journey {
+  journeyCustomizationFields: [JourneyCustomizationField!]!
 }
 
 enum JourneyCustomizationFieldType {

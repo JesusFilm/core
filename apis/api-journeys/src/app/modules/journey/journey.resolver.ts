@@ -1188,7 +1188,7 @@ export class JourneyResolver {
     })
   }
 
-  @ResolveField()
+  @ResolveField('journeyCustomizationFields')
   async journeyCustomizationFields(
     @Parent() journey: Journey
   ): Promise<JourneyCustomizationField[]> {
