@@ -1,9 +1,13 @@
+import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
+import Divider from '@mui/material/Divider'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { ReactElement } from 'react'
 
 import ArrowRightIcon from '@core/shared/ui/icons/ArrowRight'
+
+import { TextScreen as TextScreenTest } from '../../../../TextScreen'
 
 interface TextScreenProps {
   handleNext: () => void
@@ -26,6 +30,9 @@ export function TextScreen({ handleNext }: TextScreenProps): ReactElement {
       >
         <ArrowRightIcon />
       </Button>
+      <Box sx={{ border: '1px solid red' }}>
+        <TextScreenTest />
+      </Box>
     </Stack>
   )
 }
