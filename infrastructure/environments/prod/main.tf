@@ -42,15 +42,8 @@ locals {
 }
 
 module "api-gateway" {
-  source = "../../../apis/api-gateway/infrastructure"
-  ecs_config = merge(local.public_ecs_config, {
-    alb_target_group = merge(local.public_ecs_config.alb_target_group, {
-      health_check_interval            = 5
-      health_check_timeout             = 3
-      health_check_healthy_threshold   = 2
-      health_check_unhealthy_threshold = 2
-    })
-  })
+  source           = "../../../apis/api-gateway/infrastructure"
+  ecs_config       = local.public_ecs_config
   doppler_token    = data.aws_ssm_parameter.doppler_api_gateway_prod_token.value
   alb_listener_arn = module.prod.public_alb.alb_listener.arn
   alb_dns_name     = module.prod.public_alb.dns_name
