@@ -13,7 +13,7 @@ export const commonConfig = defineConfig({
   logging: logger,
   port: 4000,
   graphqlEndpoint: '/',
-  healthCheckEndpoint: '/readiness',
+  healthCheckEndpoint: '/health',
   propagateHeaders: {
     fromClientToSubgraphs: ({ request, subgraphName }) => {
       const headers: Record<string, string> = {
