@@ -1,26 +1,88 @@
-import { GetServerSideProps } from 'next'
+import Typography from '@mui/material/Typography'
+import { useRouter } from 'next/router'
+import { withUser, withUserTokenSSR } from 'next-firebase-auth'
 import { useTranslation } from 'next-i18next'
 import { NextSeo } from 'next-seo'
 
-import { MultiStepForm } from '../../../src/components/TemplateCustomization/MultiStepForm'
+import { GET_JOURNEY, useJourneyQuery } from '@core/journeys/ui/useJourneyQuery'
 
-function CustomizePage({ journeyId }) {
+import {
+  GetJourney,
+  GetJourneyVariables
+} from '../../../__generated__/GetJourney'
+import { IdType } from '../../../__generated__/globalTypes'
+import { MultiStepForm } from '../../../src/components/TemplateCustomization/MultiStepForm'
+import { initAndAuthApp } from '../../../src/libs/initAndAuthApp'
+
+function CustomizePage() {
+  const router = useRouter()
   const { t } = useTranslation('apps-journeys-admin')
+  const { data } = useJourneyQuery({
+    id: router.query.journeyId as string,
+    idType: IdType.databaseId
+  })
+
+  const title = data?.journey?.title
 
   return (
     <>
       <NextSeo title={t('Customize Template')} />
+      <Typography variant="h1">{title}</Typography>
       <MultiStepForm />
     </>
   )
 }
 
-export const getServerSideProps: GetServerSideProps = async ({ params }) => {
-  return {
-    props: {
-      journeyId: params?.journeyId
+export const getServerSideProps = withUserTokenSSR()(async ({
+  user,
+  locale,
+  resolvedUrl,
+  params
+}) => {
+  const { apolloClient, flags, translations } = await initAndAuthApp({
+    user,
+    locale,
+    resolvedUrl,
+    makeAccountOnAnonymous: true
+  })
+
+  const journeyId = params?.journeyId
+  if (journeyId == null) {
+    return {
+      redirect: {
+        destination: '/templates',
+        permanent: false
+      }
     }
   }
-}
 
-export default CustomizePage
+  try {
+    await apolloClient.query<GetJourney, GetJourneyVariables>({
+      query: GET_JOURNEY,
+      variables: {
+        id: journeyId.toString(),
+        idType: IdType.databaseId
+      }
+    })
+  } catch (error) {
+    if (error.message === 'journey not found') {
+      return {
+        redirect: {
+          destination: '/templates',
+          permanent: false
+        }
+      }
+    }
+    throw error
+  }
+
+  return {
+    props: {
+      ...translations,
+      flags,
+      initialApolloState: apolloClient.cache.extract()
+    }
+  }
+})
+
+export default withUser()(CustomizePage)
