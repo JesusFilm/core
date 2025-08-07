@@ -91,6 +91,16 @@ describe('ToolInvocationPart', () => {
       }
     } as ToolInvocationUIPart
 
+    const agentInternalVideoSearchPart = {
+      type: 'tool-invocation' as const,
+      toolInvocation: {
+        toolCallId: 'test-id',
+        toolName: 'agentInternalVideoSearch',
+        args: {},
+        state: 'call' as const
+      }
+    } as ToolInvocationUIPart
+
     it('should render BasicTool for agentWebSearch with shimmer text', () => {
       render(
         <ToolInvocationPart
@@ -122,6 +132,37 @@ describe('ToolInvocationPart', () => {
       )
 
       expect(screen.getByText('Updating journey...')).toBeInTheDocument()
+    })
+
+    it('should render BasicTool for agentInternalVideoSearch with shimmer text', () => {
+      render(
+        <ToolInvocationPart
+          part={agentInternalVideoSearchPart}
+          addToolResult={mockAddToolResult}
+        />
+      )
+
+      expect(screen.getByText('Searching Internal Videos...')).toBeInTheDocument()
+    })
+
+    it('should render BasicTool result state for agentInternalVideoSearch', () => {
+      const agentInternalVideoSearchResultPart = {
+        ...agentInternalVideoSearchPart,
+        toolInvocation: {
+          ...agentInternalVideoSearchPart.toolInvocation,
+          state: 'result' as const
+        }
+      } as ToolInvocationUIPart
+
+      render(
+        <ToolInvocationPart
+          part={agentInternalVideoSearchResultPart}
+          addToolResult={mockAddToolResult}
+        />
+      )
+
+      expect(screen.getByText('Videos Search Completed!')).toBeInTheDocument()
+      expect(screen.queryByText('Searching Internal Videos...')).not.toBeInTheDocument()
     })
 
     it('should render BasicTool result state for journeySimpleGet', () => {
