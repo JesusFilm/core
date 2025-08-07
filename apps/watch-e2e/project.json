@@ -11,7 +11,15 @@
       "options": {
         "commands": ["playwright test"],
         "cwd": "apps/watch-e2e"
-      }
+      },
+      "inputs": [
+        "default",
+        "watch",
+        "api-gateway",
+        "api-languages",
+        "api-media"
+      ],
+      "cache": true
     },
     "update-snapshots": {
       "executor": "nx:run-commands",

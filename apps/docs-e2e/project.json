@@ -11,7 +11,9 @@
       "options": {
         "commands": ["playwright test"],
         "cwd": "apps/docs-e2e"
-      }
+      },
+      "inputs": ["default", "docs"],
+      "cache": true
     },
     "update-snapshots": {
       "executor": "nx:run-commands",

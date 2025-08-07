@@ -11,7 +11,19 @@
       "options": {
         "commands": ["playwright test"],
         "cwd": "apps/journeys-admin-e2e"
-      }
+      },
+      "inputs": [
+        "default",
+        "journeys-admin",
+        "api-analytics",
+        "api-gateway",
+        "api-journeys",
+        "api-journeys-modern",
+        "api-languages",
+        "api-media",
+        "api-users"
+      ],
+      "cache": true
     },
     "update-snapshots": {
       "executor": "nx:run-commands",
