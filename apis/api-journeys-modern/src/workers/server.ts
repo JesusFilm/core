@@ -2,6 +2,7 @@ import { Job, Queue, Worker } from 'bullmq'
 import { Logger } from 'pino'
 
 import { connection } from './lib/connection'
+import { runIfLeader } from './lib/leader'
 import { logger } from './lib/logger'
 
 const ONE_HOUR = 3600
@@ -51,30 +52,60 @@ function run({
 }
 
 async function main(): Promise<void> {
-  run(
-    await import(
-      /* webpackChunkName: "email" */
-      './email'
+  if (process.env.NODE_ENV !== 'production') {
+    run(
+      await import(
+        /* webpackChunkName: 'email' */
+        './email'
+      )
     )
-  )
-  run(
-    await import(
-      /* webpackChunkName: "emailEvents" */
-      './emailEvents'
+    run(
+      await import(
+        /* webpackChunkName: 'emailEvents' */
+        './emailEvents'
+      )
     )
-  )
-  run(
-    await import(
-      /* webpackChunkName: "revalidate" */
-      './revalidate'
+    run(
+      await import(
+        /* webpackChunkName: 'revalidate' */
+        './revalidate'
+      )
     )
-  )
-  run(
-    await import(
-      /* webpackChunkName: "shortlinkUpdater" */
-      './shortlinkUpdater'
+    run(
+      await import(
+        /* webpackChunkName: 'shortlinkUpdater' */
+        './shortlinkUpdater'
+      )
     )
-  )
+    return
+  }
+
+  await runIfLeader(async () => {
+    run(
+      await import(
+        /* webpackChunkName: 'email' */
+        './email'
+      )
+    )
+    run(
+      await import(
+        /* webpackChunkName: 'emailEvents' */
+        './emailEvents'
+      )
+    )
+    run(
+      await import(
+        /* webpackChunkName: 'revalidate' */
+        './revalidate'
+      )
+    )
+    run(
+      await import(
+        /* webpackChunkName: 'shortlinkUpdater' */
+        './shortlinkUpdater'
+      )
+    )
+  })
 }
 
 // avoid running on test environment

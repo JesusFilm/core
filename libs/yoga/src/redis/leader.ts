@@ -1,0 +1,176 @@
+import os from 'node:os'
+
+import Redis from 'ioredis'
+import type { Logger } from 'pino'
+
+import { connection } from './connection'
+
+type RunIfLeaderOptions = {
+  lockKey: string
+  lockTtlMs?: number
+  contend?: boolean
+  contendDelayMs?: number
+  logger?: Logger
+}
+
+const DEFAULT_LOCK_TTL_MS = 60_000
+const DEFAULT_CONTEND = true
+const DEFAULT_CONTEND_DELAY_MS = 10_000
+
+export async function runIfLeader(
+  task: () => Promise<void> | void,
+  options: RunIfLeaderOptions
+): Promise<void> {
+  const lockKey = options.lockKey
+  const lockTtlMs = options.lockTtlMs ?? DEFAULT_LOCK_TTL_MS
+  const contend = options.contend ?? DEFAULT_CONTEND
+  const contendDelayMs = options.contendDelayMs ?? DEFAULT_CONTEND_DELAY_MS
+  const logger = options.logger
+
+  const redis = new Redis({ host: connection.host, port: connection.port })
+  const instanceId = `${os.hostname()}:${process.pid}:${Math.random()
+    .toString(36)
+    .slice(2)}`
+
+  let isLeader = false
+  let taskHasRun = false
+  let renewInterval: NodeJS.Timeout | undefined
+  let contendInterval: NodeJS.Timeout | undefined
+
+  const renewScript = `
+    if redis.call('GET', KEYS[1]) == ARGV[1] then
+      return redis.call('PEXPIRE', KEYS[1], ARGV[2])
+    else
+      return 0
+    end
+  `
+
+  const releaseScript = `
+    if redis.call('GET', KEYS[1]) == ARGV[1] then
+      return redis.call('DEL', KEYS[1])
+    else
+      return 0
+    end
+  `
+
+  const stopRenewal = (): void => {
+    if (renewInterval != null) clearInterval(renewInterval)
+    renewInterval = undefined
+  }
+
+  const startRenewal = (): void => {
+    const renewIntervalMs = Math.floor(lockTtlMs / 2)
+    renewInterval = setInterval(() => {
+      void (async () => {
+        try {
+          const result = (await redis.eval(
+            renewScript,
+            1,
+            lockKey,
+            instanceId,
+            String(lockTtlMs)
+          )) as number
+          if (result === 0) {
+            if (isLeader) logger?.warn({ lockKey }, 'lost leader lock')
+            isLeader = false
+            stopRenewal()
+            startContending()
+          }
+        } catch (error) {
+          logger?.error({ error }, 'failed to renew leader lock')
+        }
+      })()
+    }, renewIntervalMs)
+  }
+
+  const runTaskOnce = async (): Promise<void> => {
+    if (taskHasRun) return
+    taskHasRun = true
+    await task()
+  }
+
+  const becomeLeader = async (): Promise<void> => {
+    if (isLeader) return
+    isLeader = true
+    if (contendInterval != null) clearInterval(contendInterval)
+    contendInterval = undefined
+    logger?.info(
+      { lockKey, instanceId },
+      'acquired leader lock; initializing workers'
+    )
+    startRenewal()
+    await runTaskOnce()
+  }
+
+  const tryAcquire = async (): Promise<void> => {
+    try {
+      const setResult = await redis.set(
+        lockKey,
+        instanceId,
+        'PX',
+        lockTtlMs,
+        'NX'
+      )
+      if (setResult === 'OK') await becomeLeader()
+    } catch (error) {
+      logger?.error({ error }, 'error attempting to acquire leader lock')
+    }
+  }
+
+  const startContending = (): void => {
+    if (!contend || contendInterval != null) return
+    logger?.info(
+      { lockKey, delayMs: contendDelayMs },
+      'contending for leader lock'
+    )
+    contendInterval = setInterval(() => {
+      void tryAcquire()
+    }, contendDelayMs)
+  }
+
+  const release = async (): Promise<void> => {
+    try {
+      stopRenewal()
+      if (isLeader) await redis.eval(releaseScript, 1, lockKey, instanceId)
+    } catch (error) {
+      logger?.error({ error }, 'failed to release leader lock')
+    } finally {
+      await redis.quit()
+    }
+  }
+
+  const onExit = async (): Promise<void> => {
+    await release()
+    // eslint-disable-next-line no-process-exit
+    process.exit()
+  }
+  process.once('SIGINT', () => {
+    void onExit()
+  })
+  process.once('SIGTERM', () => {
+    void onExit()
+  })
+  process.once('beforeExit', () => {
+    void release()
+  })
+
+  // Initial attempt
+  const setResult = await redis.set(lockKey, instanceId, 'PX', lockTtlMs, 'NX')
+  if (setResult === 'OK') {
+    await becomeLeader()
+    return
+  }
+
+  if (contend) {
+    startContending()
+    // Keep the promise unresolved so the process can become leader later
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
+    return new Promise<void>(() => {})
+  }
+
+  logger?.info(
+    { lockKey },
+    'another instance holds the leader lock; not contending'
+  )
+  await redis.quit()
+}
