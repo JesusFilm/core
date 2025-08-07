@@ -1,5 +1,6 @@
--- CreateEnum
-CREATE TYPE "JourneyCustomizationFieldType" AS ENUM ('text', 'link');
+-- AlterTable
+ALTER TABLE "Action" ADD COLUMN     "customizable" BOOLEAN,
+ADD COLUMN     "parentStepId" TEXT;
 
 -- AlterTable
 ALTER TABLE "Journey" ADD COLUMN     "journeyCustomizationDescription" TEXT;
@@ -11,7 +12,6 @@ CREATE TABLE "JourneyCustomizationField" (
     "key" TEXT NOT NULL,
     "value" TEXT,
     "defaultValue" TEXT,
-    "fieldType" "JourneyCustomizationFieldType" NOT NULL,
 
     CONSTRAINT "JourneyCustomizationField_pkey" PRIMARY KEY ("id")
 );

@@ -578,6 +578,8 @@ model Action {
   url           String?
   target        String?
   email         String?
+  customizable  Boolean?
+  parentStepId  String?
   updatedAt     DateTime @default(now()) @updatedAt
   parentBlock   Block    @relation(fields: [parentBlockId], references: [id], onDelete: Cascade)
   journey       Journey? @relation(fields: [journeyId], references: [id])
@@ -685,19 +687,13 @@ model JourneyTheme {
   @@index(userId)
 }
 
-enum JourneyCustomizationFieldType {
-  text
-  link
-}
-
 model JourneyCustomizationField {
-  id           String                        @id @default(uuid())
+  id           String  @id @default(uuid())
   journeyId    String
   key          String
   value        String?
   defaultValue String?
-  fieldType    JourneyCustomizationFieldType
-  journey      Journey                       @relation(fields: [journeyId], references: [id], onDelete: Cascade)
+  journey      Journey @relation(fields: [journeyId], references: [id], onDelete: Cascade)
 
   @@unique([journeyId, key, value])
   @@index(journeyId)

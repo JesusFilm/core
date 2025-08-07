@@ -450,6 +450,8 @@ model Action {
   target        String?
   email         String?
   updatedAt     DateTime @default(now()) @updatedAt
+  customizable  Boolean?
+  parentStepId  String?
   block         Block?   @relation("Block", fields: [blockId], references: [id])
   journey       Journey? @relation(fields: [journeyId], references: [id])
   parentBlock   Block    @relation(fields: [parentBlockId], references: [id], onDelete: Cascade)
@@ -557,13 +559,12 @@ model JourneyTheme {
 }
 
 model JourneyCustomizationField {
-  id           String                        @id
+  id           String  @id
   journeyId    String
   key          String
   value        String?
   defaultValue String?
-  fieldType    JourneyCustomizationFieldType
-  journey      Journey                       @relation(fields: [journeyId], references: [id], onDelete: Cascade)
+  journey      Journey @relation(fields: [journeyId], references: [id], onDelete: Cascade)
 
   @@unique([journeyId, key, value])
   @@index([journeyId])
@@ -699,9 +700,4 @@ enum VideoBlockObjectFit {
   fill
   fit
   zoomed
-}
-
-enum JourneyCustomizationFieldType {
-  text
-  link
 }
