@@ -12,10 +12,7 @@ import {
 } from '.prisma/api-journeys-client'
 import { CaslAuthModule } from '@core/nest/common/CaslAuthModule'
 
-import {
-  JourneyCustomizationFieldInput,
-  JourneyCustomizationFieldType
-} from '../../__generated__/graphql'
+import { JourneyCustomizationFieldInput } from '../../__generated__/graphql'
 import { AppAbility, AppCaslFactory } from '../../lib/casl/caslFactory'
 import { parseCustomizationFieldsFromString } from '../../lib/parseCustomizationFieldsFromString/parseCustomizationFieldsFromString.utils'
 import { PrismaService } from '../../lib/prisma.service'
@@ -134,8 +131,7 @@ describe('JourneyCustomizationFieldResolver', () => {
     journeyId: 'journey-id',
     key: 'name',
     value: 'John Doe',
-    defaultValue: 'John Doe',
-    fieldType: JourneyCustomizationFieldType.text
+    defaultValue: 'John Doe'
   }
 
   const mockJourneyCustomizationFieldInput: JourneyCustomizationFieldInput = {
@@ -196,8 +192,7 @@ describe('JourneyCustomizationFieldResolver', () => {
           journeyId: 'journey-id',
           key: 'name',
           value: 'John',
-          defaultValue: 'John',
-          fieldType: JourneyCustomizationFieldType.text
+          defaultValue: 'John'
         }
       ]
 
