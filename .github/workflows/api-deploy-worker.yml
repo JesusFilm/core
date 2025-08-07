@@ -47,7 +47,9 @@ jobs:
         with:
           fetch-depth: 0
       - uses: nrwl/nx-set-shas@v4
-      - uses: useblacksmith/setup-node@v5
+
+      - name: Setup Node.js
+        uses: useblacksmith/setup-node@v5
         with:
           node-version: ${{ matrix.node-version }}
 
@@ -67,29 +69,16 @@ jobs:
           path: ./node_modules
       - name: NPM Install
         run: npm install --silent
-
-      - name: nx Install
-        run: npm install -g nx --silent
-
       - name: Get affected apps
         run: |
           echo "apps=$(npx ts-node tools/scripts/affected-apps.ts --projects apis/api-*)" >> $GITHUB_OUTPUT
           cat $GITHUB_OUTPUT
         id: affected-apps
-
-      - name: Has Prisma
-        id: has_prisma
-        uses: andstor/file-existence-action@v3
-        with:
-          files: 'apis/${{inputs.name}}/db/schema.prisma'
-
-      - name: Prisma Migrate
-        if: steps.has_prisma.outputs.files_exists == 'true' && contains(steps.affected-apps.outputs.apps, inputs.name)
+      - name: Prisma Generate
+        if: contains(steps.affected-apps.outputs.apps, inputs.name)
         uses: mansagroup/nrwl-nx-action@v3
         with:
           targets: prisma-generate
-          projects: ${{ inputs.name }}
-          parallel: 1
         env:
           DISABLE_ERD: true
       - name: Build ${{ inputs.name }}
@@ -102,6 +91,7 @@ jobs:
 
       # ECS Deployment
       - name: Configure ECS AWS credentials
+        if: contains(steps.affected-apps.outputs.apps, inputs.name)
         uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-access-key-id: ${{ secrets.JFP_AWS_ACCESS_KEY_ID }}
@@ -142,5 +132,6 @@ jobs:
           aws ecs update-service --force-new-deployment --service $ECS_SERVICE --cluster $ECS_CLUSTER
 
       - name: Update Hive managed subgraph
+        if: contains(steps.affected-apps.outputs.apps, inputs.name)
         run: |
           npx hive schema:publish apis/${{ inputs.name }}/schema.graphql --service ${{ inputs.name }} --url ${{ inputs.endpoint_url }} --github

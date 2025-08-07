@@ -1,4 +1,4 @@
-type JourneyTheme {
+type JourneyTheme @shareable {
   id: ID!
   journeyId: ID!
   journey: Journey!
