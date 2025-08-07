@@ -533,15 +533,19 @@ export enum DeviceType {
 
 export type EmailAction = Action & {
   __typename?: 'EmailAction';
+  customizable?: Maybe<Scalars['Boolean']['output']>;
   email: Scalars['String']['output'];
   gtmEventName?: Maybe<Scalars['String']['output']>;
   parentBlock: Block;
   parentBlockId: Scalars['ID']['output'];
+  parentStepId?: Maybe<Scalars['String']['output']>;
 };
 
 export type EmailActionInput = {
+  customizable?: InputMaybe<Scalars['Boolean']['input']>;
   email: Scalars['String']['input'];
   gtmEventName?: InputMaybe<Scalars['String']['input']>;
+  parentStepId?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type Error = BaseError & {
@@ -950,7 +954,6 @@ export type JourneyCreateInput = {
 export type JourneyCustomizationField = {
   __typename?: 'JourneyCustomizationField';
   defaultValue?: Maybe<Scalars['String']['output']>;
-  fieldType: JourneyCustomizationFieldType;
   id: Scalars['ID']['output'];
   journeyId: Scalars['ID']['output'];
   key: Scalars['String']['output'];
@@ -962,11 +965,6 @@ export type JourneyCustomizationFieldInput = {
   key: Scalars['String']['input'];
   value?: InputMaybe<Scalars['String']['input']>;
 };
-
-export enum JourneyCustomizationFieldType {
-  Link = 'link',
-  Text = 'text'
-}
 
 /**
  * JourneyEvent aggregates all event types. For detailed event type definitions,
@@ -1381,15 +1379,19 @@ export type LanguagesFilter = {
 
 export type LinkAction = Action & {
   __typename?: 'LinkAction';
+  customizable?: Maybe<Scalars['Boolean']['output']>;
   gtmEventName?: Maybe<Scalars['String']['output']>;
   parentBlock: Block;
   parentBlockId: Scalars['ID']['output'];
+  parentStepId?: Maybe<Scalars['String']['output']>;
   target?: Maybe<Scalars['String']['output']>;
   url: Scalars['String']['output'];
 };
 
 export type LinkActionInput = {
+  customizable?: InputMaybe<Scalars['Boolean']['input']>;
   gtmEventName?: InputMaybe<Scalars['String']['input']>;
+  parentStepId?: InputMaybe<Scalars['String']['input']>;
   target?: InputMaybe<Scalars['String']['input']>;
   url: Scalars['String']['input'];
 };
