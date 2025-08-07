@@ -2,7 +2,7 @@ extend type ShortLink @key(fields: "id") {
   id: ID! @external
 }
 
-type QrCode {
+type QrCode @shareable {
   id: ID!
   """
   Team where the Qr Code belongs to

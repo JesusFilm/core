@@ -1,4 +1,4 @@
-type TextResponseBlock implements Block @key(fields: "id") {
+type TextResponseBlock implements Block @key(fields: "id") @shareable {
   id: ID! @shareable
   journeyId: ID! @shareable
   parentBlockId: ID @shareable
