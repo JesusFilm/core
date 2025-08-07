@@ -29,7 +29,8 @@ export async function createMuxAsset(
 
   const response = await client.request<MuxVideoResponse>(CREATE_MUX_VIDEO, {
     url: publicUrl,
-    userGenerated: false
+    userGenerated: false,
+    downloadable: true
   })
 
   const muxId = response.createMuxVideoUploadByUrl?.id
