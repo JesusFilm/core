@@ -75,6 +75,8 @@ jobs:
             github-ref-name: stage
             github-event-name: push
     runs-on: blacksmith-4vcpu-ubuntu-2204
+    env:
+      NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
     outputs:
       url: ${{ steps.deployment-url.outputs.deployment-url }}
     permissions:
