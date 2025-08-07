@@ -2,18 +2,19 @@ import { v4 as uuidv4 } from 'uuid'
 
 import { JourneyCustomizationField } from '.prisma/api-journeys-client'
 
-import { JourneyCustomizationFieldType } from '../../__generated__/graphql'
-
 /**
  * Transforms a string containing customization field syntax into an array of CustomizationFieldData objects
- * @param inputString - The string to parse for {{ key: value }} patterns
+ * @param inputString - The string to parse for {{ key: value }} and {{ key }} patterns
  * @param journeyId - The ID of the journey these fields belong to
  * @returns Array of CustomizationFieldData objects ready for Prisma createMany
  *
  * Supports:
- * - Keys with underscores (e.g., {{ user_name: John }})
- * - Empty string values (e.g., {{ description: }})
- * - URL detection for automatic field type assignment
+ * - Keys with values (e.g., {{ user_name: John }})
+ * - Keys without values (e.g., {{ user_name }})
+ * - Keys with empty string values (e.g., {{ description: '' }})
+ * - Keys with quoted values (e.g., {{ title: 'Hello World' }})
+ * - Keys with colon but no value (e.g., {{ description: }})
+ * - Keys with underscores
  */
 export function parseCustomizationFieldsFromString(
   inputString: string,
@@ -21,28 +22,28 @@ export function parseCustomizationFieldsFromString(
 ): JourneyCustomizationField[] {
   const fields: JourneyCustomizationField[] = []
 
-  // Regex pattern to match {{ key: value }} syntax
-  // Allows empty values, underscores in keys, and handles whitespace
-  const pattern = /\{\{\s*([^:]+)\s*:\s*([^}]*?)\s*\}\}/g
+  // Regex pattern to match both {{ key: value }} and {{ key }} syntax
+  // Handles quoted values, empty strings, and whitespace
+  const pattern =
+    /\{\{\s*([^:}]+)(?:\s*:\s*(?:(['"])([^'"]*)\2|([^}]*?)))?\s*\}\}/g
 
   for (const match of inputString.matchAll(pattern)) {
     const key = match[1].trim()
-    const value = match[2].trim()
-
-    // Determine field type based on the value
-    // If value looks like a URL, use 'link', otherwise use 'text'
-    const isUrl = /^https?:\/\/.+/.test(value) || /^www\./.test(value)
-    const fieldType: JourneyCustomizationFieldType = isUrl
-      ? JourneyCustomizationFieldType.link
-      : JourneyCustomizationFieldType.text
+    const quotedValue = match[3]
+    const unquotedValue = match[4]
+    const value =
+      quotedValue !== undefined
+        ? quotedValue
+        : unquotedValue !== undefined
+          ? unquotedValue.trim()
+          : null
 
     fields.push({
-      id: uuidv4(), // Generate unique ID for each field
+      id: uuidv4(),
       journeyId,
-      value: value || null, // Empty string becomes null
+      value: value || null,
       key,
-      defaultValue: value || null, // Set default value same as current value
-      fieldType
+      defaultValue: value || null
     })
   }
 

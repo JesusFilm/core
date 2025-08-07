@@ -26,7 +26,6 @@ import { getPowerBiEmbed } from '@core/nest/powerBi/getPowerBiEmbed'
 
 import {
   IdType,
-  JourneyCustomizationFieldType,
   JourneyStatus,
   JourneysReportType
 } from '../../__generated__/graphql'
@@ -1113,7 +1112,9 @@ describe('JourneyResolver', () => {
         email: null,
         updatedAt: new Date(),
         parentBlockId: 'stepId',
-        blockId: 'nextStepId'
+        blockId: 'nextStepId',
+        customizable: null,
+        parentStepId: null
       }
     }
     const duplicatedButton = {
@@ -1183,8 +1184,7 @@ describe('JourneyResolver', () => {
         journeyId: 'journeyId',
         key: 'church_name',
         value: 'Some Church Name',
-        defaultValue: 'Some Church Name',
-        fieldType: JourneyCustomizationFieldType.text
+        defaultValue: 'Some Church Name'
       }
     ]
 
@@ -2717,8 +2717,7 @@ describe('JourneyResolver', () => {
         journeyId: 'journeyId',
         key: 'name',
         value: 'John Doe',
-        defaultValue: 'John Doe',
-        fieldType: JourneyCustomizationFieldType.text
+        defaultValue: 'John Doe'
       }
       prismaService.journeyCustomizationField.findMany.mockResolvedValueOnce([
         mockJourneyCustomizationField
