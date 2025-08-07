@@ -50,6 +50,7 @@ describe('NavigateToBlockActionResolver', () => {
       parentOrder: 3,
       label: 'label',
       description: 'description',
+
       updatedAt: new Date()
     } as unknown as Block),
     action: {
@@ -60,6 +61,8 @@ describe('NavigateToBlockActionResolver', () => {
       journeyId: null,
       target: null,
       email: null,
+      customizable: null,
+      parentStepId: null,
       updatedAt: new Date()
     }
   }
