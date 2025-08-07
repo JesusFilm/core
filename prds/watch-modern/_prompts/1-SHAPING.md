@@ -9,6 +9,9 @@ STEPS
 2. Read all mockup files in `/workspaces/core/prds/watch-modern/$FEATURE/intake/ui/**`.  
 3. Ask the user clarifying questions until **every** backend, state, and data-model ambiguity is resolved.  
 4. Fill spec files under `/workspaces/core/prds/watch-modern/$FEATURE/spec/`.  
+   * **CRITICAL**: When filling `requirements.md`, create TWO sections:
+     - Section 1: Functional & Technical Requirements (detailed descriptions)
+     - Section 2: EARS-style Requirements (categorized by user activity/hierarchy)
    * Mark any new GraphQL schema fields under "Proposed schema changes" and ask user approval.  
 5. **CRITICAL**: When filling `slices.md`, follow ShapeUp principles:
    - Each slice represents a STAGE of the SAME FEATURE, not different features
