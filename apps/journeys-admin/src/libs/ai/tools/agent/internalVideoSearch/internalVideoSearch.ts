@@ -91,16 +91,29 @@ export function agentInternalVideoSearch(
   _options: ToolOptions
 ): Tool {
   return tool({
-    description: 'Search for internal videos using Algolia. Returns video metadata with videoId for card block references.',
+    description:
+      'Search for internal videos using Algolia. Returns video metadata with videoId for card block references.',
     parameters: z.object({
-      searchTerm: z.string().describe('The search term to find internal videos. Can be a title, description, or any text to search for.'),
-      limit: z.number().optional().default(5).describe('Maximum number of results to return (default: 5, max: 10)')
+      searchTerm: z
+        .string()
+        .describe(
+          'The search term to find internal videos. Can be a title, description, or any text to search for.'
+        ),
+      limit: z
+        .number()
+        .optional()
+        .default(5)
+        .describe('Maximum number of results to return (default: 5, max: 10)')
     }),
-          execute: async ({ searchTerm, limit = 5 }) => {
+    execute: async ({ searchTerm, limit = 5 }) => {
       try {
         const validatedLimit = Math.min(Math.max(limit, 1), 10)
         const client = await initAlgoliaClient()
-        const hits = await searchVideosAlgolia(searchTerm, client, validatedLimit)
+        const hits = await searchVideosAlgolia(
+          searchTerm,
+          client,
+          validatedLimit
+        )
         const results = transformVideoHits(hits)
 
         return {
@@ -113,10 +126,11 @@ export function agentInternalVideoSearch(
         console.log('Error searching internal videos:', error)
         return {
           success: false,
-          error: error instanceof Error ? error.message : 'Unknown error occurred',
+          error:
+            error instanceof Error ? error.message : 'Unknown error occurred',
           searchTerm
         }
       }
     }
   })
-} 
+}
