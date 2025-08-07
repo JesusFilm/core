@@ -1,4 +1,4 @@
-type IntegrationGrowthSpaces implements Integration {
+type IntegrationGrowthSpaces implements Integration @shareable {
   id: ID!
   team: Team!
   type: IntegrationType!
@@ -18,7 +18,7 @@ input IntegrationGrowthSpacesUpdateInput {
   accessSecret: String!
 }
 
-type IntegrationGrowthSpacesRoute {
+type IntegrationGrowthSpacesRoute @shareable {
   id: String!
   name: String!
 }

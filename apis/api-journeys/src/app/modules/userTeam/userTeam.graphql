@@ -7,7 +7,7 @@ enum UserTeamRole {
   member
 }
 
-type UserTeam @key(fields: "id") {
+type UserTeam @key(fields: "id") @shareable {
   id: ID!
   user: User!
   role: UserTeamRole!

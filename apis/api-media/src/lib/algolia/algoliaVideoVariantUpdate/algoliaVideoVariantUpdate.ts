@@ -1,6 +1,6 @@
 import { Logger } from 'pino'
 
-import { prisma } from '../../../../lib/prisma'
+import { prisma } from '../../prisma'
 import { getAlgoliaClient } from '../algoliaClient'
 import { getLanguages } from '../languages'
 

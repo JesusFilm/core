@@ -5,9 +5,9 @@ import orderBy from 'lodash/orderBy'
 
 import { Prisma, Platform as PrismaPlatform } from '.prisma/api-media-client'
 
+import { updateVideoInAlgolia } from '../../lib/algolia/algoliaVideoUpdate'
 import { prisma } from '../../lib/prisma'
 import { videoCacheReset } from '../../lib/videoCacheReset'
-import { updateVideoInAlgolia } from '../../workers/algolia/service'
 import { builder } from '../builder'
 import { ImageAspectRatio } from '../cloudflare/image/enums'
 import { deleteR2File } from '../cloudflare/r2/asset'
