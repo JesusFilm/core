@@ -54,12 +54,6 @@ function run({
 async function main(): Promise<void> {
   if (process.env.NODE_ENV === 'production') {
     await runIfLeader(async () => {
-      // run(
-      //   await import(
-      //     /* webpackChunkName: "algolia" */
-      //     './algolia'
-      //   )
-      // )
       run(
         await import(
           /* webpackChunkName: "crowdin" */
