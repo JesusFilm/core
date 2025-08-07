@@ -1,7 +1,7 @@
 import { getGraphQLClient } from '../gql/graphqlClient'
 import { CREATE_AUDIO_PREVIEW, UPDATE_AUDIO_PREVIEW } from '../gql/mutations'
 import { GET_AUDIO_PREVIEW } from '../gql/queries'
-import { createR2Asset, uploadToR2 } from '../services/r2'
+import { uploadFileToR2Direct } from '../services/r2'
 import { type AudioPreviewInput, type ProcessingSummary } from '../types'
 import { getAudioMetadata } from '../utils/fileMetadataHelpers'
 import { markFileAsCompleted } from '../utils/fileUtils'
@@ -93,41 +93,20 @@ export async function processAudioPreviewFile(
     return
   }
 
-  console.log('   Preparing Cloudflare R2 asset for audio preview...')
-  const fileName = `audiopreview/${languageId}.aac`
+  let publicUrl: string
 
-  let r2Asset
   try {
-    r2Asset = await createR2Asset({
-      fileName,
-      contentType,
-      originalFilename: file,
-      videoId: 'audiopreview',
-      contentLength
-    })
-  } catch (error) {
-    console.error(`   Failed to create R2 asset for audio preview:`, error)
-    summary.failed++
-    return
-  }
-
-  console.log('   R2 Public URL:', r2Asset.publicUrl)
-  console.log('   Uploading audio preview to R2...')
-  try {
-    await uploadToR2({
-      uploadUrl: r2Asset.uploadUrl,
+    publicUrl = await uploadFileToR2Direct({
       bucket: process.env.CLOUDFLARE_R2_BUCKET!,
+      key: `audiopreview/${languageId}.aac`,
       filePath,
-      contentType,
-      contentLength
+      contentType
     })
   } catch (error) {
     console.error(`   Failed to upload audio preview to R2:`, error)
     summary.failed++
     return
   }
-
-  const publicUrl = r2Asset.publicUrl
 
   console.log('   Importing or updating audio preview record...')
 

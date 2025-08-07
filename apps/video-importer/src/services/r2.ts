@@ -1,6 +1,10 @@
 import { createReadStream } from 'fs'
 
-import { GetObjectCommand, S3Client } from '@aws-sdk/client-s3'
+import {
+  GetObjectCommand,
+  PutObjectCommand,
+  S3Client
+} from '@aws-sdk/client-s3'
 import { Upload } from '@aws-sdk/lib-storage'
 
 import { getGraphQLClient } from '../gql/graphqlClient'
@@ -189,4 +193,39 @@ async function verifyFileUpload(
       `File verification failed: ${error instanceof Error ? error.message : 'Unknown error'}`
     )
   }
+}
+
+export async function uploadFileToR2Direct({
+  bucket,
+  key,
+  filePath,
+  contentType
+}: {
+  bucket: string
+  key: string
+  filePath: string
+  contentType: string
+}): Promise<string> {
+  console.log(`[R2 Service] Uploading file to R2: ${key}`)
+  const fileStream = createReadStream(filePath)
+  await s3Client.send(
+    new PutObjectCommand({
+      Bucket: bucket,
+      Key: key,
+      Body: fileStream,
+      ContentType: contentType
+    })
+  )
+
+  console.log(`[R2 Service] Direct upload completed: ${key}`)
+
+  if (!process.env.CLOUDFLARE_R2_ENDPOINT) {
+    throw new Error(
+      'CLOUDFLARE_R2_ENDPOINT is required for public URL generation'
+    )
+  }
+
+  const publicBaseUrl = `https://${bucket}.${new URL(process.env.CLOUDFLARE_R2_ENDPOINT).hostname}`
+
+  return `${publicBaseUrl.replace(/\/$/, '')}/${key}`
 }
