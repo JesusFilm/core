@@ -1,195 +1,148 @@
-# Instructions for Code Agent AI: Filling Slices Template
-
-## Overview
-This document provides step-by-step instructions for AI code agents on how to transform data from `pitch.md` into a comprehensive `slices.md` plan following ShapeUp principles of vertical, value-first feature delivery.
+# ShapeUp Slicing Instructions
 
 ## Core Principles
-- **Vertical Slices**: Each slice delivers end-to-end value, not horizontal layers
-- **Value First**: Prioritize features that provide immediate user value
-- **Gradual Improvement**: Start with basic functionality, then enhance iteratively
-- **Risk Mitigation**: Address unknowns early in the process
 
-## Step-by-Step Process
+### 1. Vertical Slicing (Not Horizontal)
+- **Vertical**: Each slice delivers end-to-end user value
+- **Horizontal**: Building layers (e.g., "all components", then "all styling", then "all logic")
+- **Goal**: Each slice should be a complete, working feature that users can interact with
 
-### Step 1: Analyze pitch.md Data
-1. **Extract Problem Statement**: Identify the core user problem being solved
-2. **Parse Solution Overview**: Break down the proposed solution into discrete features
-3. **Identify Must-haves vs Nice-to-haves**: Categorize requirements by priority
-4. **Map Technical Approach**: Understand implementation constraints and dependencies
-5. **Assess Risks/Unknowns**: Note areas requiring early validation
+### 2. Same Feature, Different Stages
+- **Basic**: Minimal working version of the complete feature
+- **Improved**: Enhanced version with additional capabilities
+- **Polished**: Final optimized version with advanced features
 
-### Step 2: Define Vertical Features
-For each major feature identified in the solution overview:
-- **Name the Feature**: Use descriptive, action-oriented names
-- **Define Scope**: What constitutes a minimal viable version
-- **Identify Dependencies**: What must be built first
-- **Estimate Complexity**: Simple, Medium, or Complex
+### 3. Production-Ready at Each Stage
+- Every slice should be deployable and usable
+- Users can interact with the feature at each stage
+- Quality standards maintained throughout
 
-### Step 3: Create Basic Implementation Slices
-For each vertical feature, create a "Basic" slice that includes:
+## Common Mistakes to Avoid
 
-#### Must-haves Structure:
+### ❌ Wrong Approach: Separate Features
 ```
-- [ ] Core Functionality
-    - [ ] Primary user action (e.g., "User can view video grid")
-    - [ ] Essential data loading
-    - [ ] Basic error handling
-    - [ ] Minimal styling for functionality
-
-- [ ] User Experience Basics
-    - [ ] Responsive layout (mobile-first)
-    - [ ] Accessibility fundamentals (ARIA labels, keyboard navigation)
-    - [ ] Loading states
-    - [ ] Error states
-
-- [ ] Technical Foundation
-    - [ ] Component structure
-    - [ ] Data fetching/integration
-    - [ ] Basic routing (if needed)
-    - [ ] Integration with existing systems
+Slice 1: Header Component
+Slice 2: Hero Section  
+Slice 3: Video Grid
+Slice 4: Footer
 ```
 
-#### Definition of Done (DoD):
-- Tests for core functionality
-- Accessibility basics implemented
-- Responsive baseline achieved
-- Integration with existing analytics/SEO patterns
-
-### Step 4: Create Improved Implementation Slices
-For each feature, define enhancements that add value:
-
-#### Nice-to-haves Structure:
+### ✅ Correct Approach: Same Feature, Different Stages
 ```
-- [ ] Enhanced User Experience
-    - [ ] Improved animations/transitions
-    - [ ] Better loading states
-    - [ ] Enhanced error handling
-    - [ ] Performance optimizations
-
-- [ ] Advanced Features
-    - [ ] Additional functionality
-    - [ ] Edge case handling
-    - [ ] Advanced interactions
-    - [ ] Integration with other features
+Slice 1 Basic: Complete homepage (minimal)
+Slice 1 Improved: Same homepage (enhanced)
+Slice 1 Polished: Same homepage (optimized)
 ```
 
-#### Definition of Done (DoD):
-- Tests for new functionality
-- Performance validation (if relevant)
-- User acceptance criteria met
-
-### Step 5: Create Polished Implementation Slices
-Focus on UX refinements and production readiness:
-
-#### Polish Tasks Structure:
+### ❌ Wrong Approach: Technical Layers
 ```
-- [ ] UX Refinements
-    - [ ] Micro-interactions
-    - [ ] Edge state handling
-    - [ ] Accessibility improvements
-    - [ ] Visual polish
-
-- [ ] Production Readiness
-    - [ ] Documentation updates
-    - [ ] Telemetry/analytics hooks
-    - [ ] SEO optimizations
-    - [ ] Performance monitoring
+Slice 1: All Components
+Slice 2: All Styling
+Slice 3: All Logic
+Slice 4: All Tests
 ```
 
-#### Definition of Done (DoD):
-- Documentation updated
-- Telemetry hooks implemented (if needed)
-- Production deployment ready
-
-## Template Filling Guidelines
-
-### Naming Conventions
-- **Slice Names**: Use format "Slice X — [Feature Name] [Phase]"
-- **Feature Names**: Action-oriented, user-focused (e.g., "Video Grid Display", "Search Functionality")
-- **Phases**: Basic → Improved → Polished
-
-### Scope Descriptions
-- **Basic**: "Minimal end-to-end path for [feature]"
-- **Improved**: "Enhanced functionality and user experience"
-- **Polished**: "UX refinements, edge states, and production readiness"
-
-### Status Tracking
-- Use consistent status indicators: [PLANNED], [IN PROGRESS], [COMPLETED], [BLOCKED]
-
-## Data Mapping from pitch.md
-
-### Problem Statement → Slice Prioritization
-- High-impact problems get earlier slices
-- Risk mitigation drives slice ordering
-- User value determines feature priority
-
-### Solution Overview → Feature Breakdown
-- Each major section becomes a vertical feature
-- Break complex features into smaller slices
-- Identify dependencies between features
-
-### Must-haves → Basic Slice Requirements
-- Direct mapping to must-have requirements
-- Ensure each must-have is covered in basic slices
-- Prioritize by user impact and technical risk
-
-### Nice-to-haves → Improved/Polished Slices
-- Distribute across improved and polished phases
-- Consider technical complexity and user value
-- Balance feature richness with delivery speed
-
-### Technical Approach → Implementation Details
-- Use existing patterns mentioned in technical approach
-- Integrate with existing systems (GraphQL, analytics, etc.)
-- Follow established conventions for the codebase
-
-### Risks/Unknowns → Early Slices
-- Address unknowns in early basic slices
-- Create validation slices for high-risk areas
-- Plan for potential pivots based on findings
-
-## Quality Checklist
-
-Before finalizing the slices plan, verify:
-
-1. **Vertical Delivery**: Each slice delivers end-to-end value
-2. **Dependency Order**: Earlier slices don't depend on later ones
-3. **Risk Distribution**: High-risk items addressed early
-4. **User Value**: Each slice provides meaningful user benefit
-5. **Technical Feasibility**: Implementation approach is realistic
-6. **Testing Strategy**: DoD includes appropriate testing
-7. **Integration Points**: Existing systems properly integrated
-
-## Example Transformation
-
-**From pitch.md:**
+### ✅ Correct Approach: User-Facing Features
 ```
-Solution Overview:
-- Hero Section with animated background
-- Video Bible Collection carousel
-- Video Course Section
-- Category Browse
-- Enhanced Navigation
+Slice 1: Complete feature with basic styling and logic
+Slice 2: Same feature with enhanced styling and interactions
+Slice 3: Same feature with advanced features and optimization
 ```
 
-**To slices.md:**
-```
-Slice 1 — Hero Section Basic [Status: PLANNED]
-Scope: Minimal animated hero with audience segmentation
+## Example: Homepage Feature
 
-Slice 2 — Video Grid Basic [Status: PLANNED]  
-Scope: Basic video display with essential navigation
+### Basic Implementation
+- Complete homepage with static content
+- All sections present but minimal
+- Basic responsive design
+- No animations or advanced interactions
 
-Slice 3 — Navigation Enhancement Basic [Status: PLANNED]
-Scope: Language switcher and search functionality
-```
+### Improved Implementation  
+- Same homepage with animations
+- Enhanced interactions and hover effects
+- Better responsive design
+- Additional user interactions
 
-## Final Notes
+### Polished Implementation
+- Same homepage with performance optimization
+- Advanced features (search, analytics)
+- Internationalization
+- SEO optimization
 
-- **Keep it Simple**: Start with the simplest possible implementation
-- **Value First**: Every slice should provide user value
-- **Iterate**: Plan for learning and adjustment
-- **Document**: Include rationale for slice ordering and scope decisions
-- **Validate**: Plan for user feedback and technical validation
+## Guidelines for Each Stage
 
-Remember: The goal is to deliver working, valuable features quickly while building toward the full vision outlined in the pitch. 
+### Basic Stage
+- **Goal**: Prove the concept works
+- **Scope**: Minimal viable feature
+- **Quality**: Functional but simple
+- **Testing**: Basic functionality tests
+
+### Improved Stage
+- **Goal**: Enhance user experience
+- **Scope**: Add polish and interactions
+- **Quality**: Good user experience
+- **Testing**: Interaction and edge case tests
+
+### Polished Stage
+- **Goal**: Production-ready excellence
+- **Scope**: Performance and advanced features
+- **Quality**: Professional grade
+- **Testing**: Comprehensive test coverage
+
+## Definition of Done (DoD) Examples
+
+### Basic Stage DoD
+- [ ] Feature renders correctly
+- [ ] Basic functionality works
+- [ ] Responsive design implemented
+- [ ] Accessibility basics (keyboard navigation, screen reader)
+- [ ] Unit tests for core functionality
+
+### Improved Stage DoD
+- [ ] Enhanced interactions work
+- [ ] Animations perform well
+- [ ] Edge cases handled
+- [ ] Integration tests pass
+- [ ] Performance meets baseline
+
+### Polished Stage DoD
+- [ ] Performance targets met
+- [ ] Advanced features complete
+- [ ] Comprehensive test coverage
+- [ ] Documentation updated
+- [ ] Production deployment ready
+
+## Risk Mitigation
+
+### Early Risk Identification
+- Address technical risks in Basic stage
+- Test integrations early
+- Validate assumptions with minimal implementation
+
+### Iterative Validation
+- Each stage validates the approach
+- User feedback incorporated
+- Technical debt managed
+
+### Quality Assurance
+- Each stage maintains quality standards
+- Testing increases with complexity
+- Performance monitored throughout
+
+## Success Metrics
+
+### Basic Stage
+- Feature works end-to-end
+- No critical bugs
+- Basic user acceptance
+
+### Improved Stage
+- Enhanced user experience
+- Performance meets targets
+- Integration tests pass
+
+### Polished Stage
+- Production-ready quality
+- Comprehensive test coverage
+- Performance optimized
+- Advanced features complete 

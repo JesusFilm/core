@@ -10,6 +10,13 @@ STEPS
 3. Ask the user clarifying questions until **every** backend, state, and data-model ambiguity is resolved.  
 4. Fill spec files under `/workspaces/core/prds/watch-modern/$FEATURE/spec/`.  
    * Mark any new GraphQL schema fields under "Proposed schema changes" and ask user approval.  
-5. Ask: "Approve spec? yes/no" → loop if no.
-6. If user approves commit changes: `git add -A && git commit -m "spec($FEATURE): generated from intake mockup"`    
-7. When approved: ask "Start BUILDER slices now?"
+5. **CRITICAL**: When filling `slices.md`, follow ShapeUp principles:
+   - Each slice represents a STAGE of the SAME FEATURE, not different features
+   - Basic Implementation: Minimal working version of the complete feature
+   - Improved Implementation: Enhanced version of the same feature
+   - Polished Implementation: Final optimized version of the same feature
+   - DO NOT create separate features for each slice
+   - Example: "Homepage Basic" → "Homepage Improved" → "Homepage Polished"
+6. Ask: "Approve spec? yes/no" → loop if no.
+7. If user approves commit changes: `git add -A && git commit -m "spec($FEATURE): generated from intake mockup"`    
+8. When approved: ask "Start BUILDER slices now?"

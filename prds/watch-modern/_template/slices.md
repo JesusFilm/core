@@ -9,6 +9,26 @@ This template follows ShapeUp principles of vertical, value-first feature delive
 3. Start simple and iterate
 4. Be testable and production-ready
 
+## CRITICAL: ShapeUp Slicing Approach
+
+**IMPORTANT**: Each slice represents a STAGE of the SAME FEATURE, not different features. The approach is:
+
+1. **Basic Implementation**: Minimal working version of the complete feature
+2. **Improved Implementation**: Enhanced version of the same feature with additional capabilities
+3. **Polished Implementation**: Final optimized version of the same feature
+
+**DO NOT** create separate features for each slice. Instead, create stages of the same feature with increasing sophistication.
+
+### Example Structure:
+- **Slice 1 Basic**: Minimal homepage with static content
+- **Slice 1 Improved**: Same homepage with animations and interactions
+- **Slice 1 Polished**: Same homepage with performance optimization and advanced features
+
+### Common Mistakes to Avoid:
+- ❌ Creating separate features (e.g., "Header", "Hero", "Video Grid" as different slices)
+- ❌ Building different components in each slice
+- ✅ Building the SAME feature with increasing complexity
+
 See `/workspaces/core/prds/watch-modern/_template/slices-instructions.md` for detailed instructions on:
 - Breaking down features into vertical slices
 - Defining must-haves vs nice-to-haves
@@ -18,8 +38,8 @@ See `/workspaces/core/prds/watch-modern/_template/slices-instructions.md` for de
 
 # Basic implementation
 
-## Slice 1 — <Vertical Feature 1> Basic  [Status: PLANNED]
-Scope: <minimal end-to-end path>
+## Slice 1 — <Feature Name> Basic  [Status: PLANNED]
+Scope: <minimal end-to-end path for the complete feature>
 
 Must-haves: 
 - [ ] Must-haves 1
@@ -36,8 +56,8 @@ Must-haves:
 
 DoD: tests for <X>, <Y>; a11y basics; responsive baseline.
 
-## Slice 2 — <Vertical Feature 2> Basic  [Status: PLANNED]
-Scope: <minimal end-to-end path>
+## Slice 2 — <Feature Name> Basic  [Status: PLANNED]
+Scope: <minimal end-to-end path for the complete feature>
 Must-haves:
 - [ ] Must-haves 1
     - [ ] ...
@@ -53,8 +73,8 @@ Must-haves:
 
 DoD: tests for <X>, <Y>; a11y basics; responsive baseline.
 
-## Slice 3 — <Vertical Feature 3> Basic  [Status: PLANNED]
-Scope: <minimal end-to-end path>
+## Slice 3 — <Feature Name> Basic  [Status: PLANNED]
+Scope: <minimal end-to-end path for the complete feature>
 Must-haves:
 - [ ] Must-haves 1
     - [ ] ...
@@ -76,8 +96,9 @@ DoD: tests for <X>, <Y>; a11y basics; responsive baseline.
 
 # Improved implementation
 
-## Slice 1 — <Vertical Feature 1> Improved  [Status: PLANNED]
-Scope: <additions>
+## Slice 1 — <Feature Name> Improved  [Status: PLANNED]
+Scope: <enhanced version of the same feature>
+
 Nice-to-haves (~):
 - [ ] Nice-to-have 1
     - [ ] ...
@@ -93,9 +114,8 @@ Nice-to-haves (~):
 
 DoD: tests for new paths; perf check if relevant.
 
-## Slice 2— <Vertical Feature 2> Improved  [Status: PLANNED]
-Scope: <additions>
-Nice-to-haves:
+## Slice 2 — <Feature Name> Improved  [Status: PLANNED]
+Scope: <enhanced version of the same feature>
 Nice-to-haves (~):
 - [ ] Nice-to-have 1
     - [ ] ...
@@ -111,9 +131,8 @@ Nice-to-haves (~):
 
 DoD: tests for new paths; perf check if relevant.
 
-## Slice 3 — <Vertical Feature 3> Improved  [Status: PLANNED]
-Scope: <additions>
-Nice-to-haves:
+## Slice 3 — <Feature Name> Improved  [Status: PLANNED]
+Scope: <enhanced version of the same feature>
 Nice-to-haves (~):
 - [ ] Nice-to-have 1
     - [ ] ...
@@ -135,56 +154,56 @@ DoD: tests for new paths; perf check if relevant.
 
 # Polished Implementation
 
-## Slice 2 — <Vertical Feature 2> Polished  [Status: PLANNED]
-Scope: <UX refinements, edge states>
+## Slice 1 — <Feature Name> Polished  [Status: PLANNED]
+Scope: <final optimized version of the same feature>
 
-- [ ] Parent task
+- [ ] Performance optimizations
     - [ ] ...
     - [ ] ...
     - ...
 
-- [ ] Parent task
-    - [ ] ...
-    - [ ] ...
-    - ...
-
-...
-
-DoD: docs updated; telemetry hooks if needed.
-
-## Slice 3 — <Vertical Feature 3> Polished  [Status: PLANNED]
-Scope: <UX refinements, edge states>
-
-- [ ] Parent task
-    - [ ] ...
-    - [ ] ...
-    - ...
-
-- [ ] Parent task
+- [ ] Advanced features
     - [ ] ...
     - [ ] ...
     - ...
 
 ...
 
-DoD: docs updated; telemetry hooks if needed.
+DoD: performance targets met; advanced features complete; production-ready.
 
-## Slice 4 — <Vertical Feature 4> Polished  [Status: PLANNED]
-Scope: <UX refinements, edge states>
+## Slice 2 — <Feature Name> Polished  [Status: PLANNED]
+Scope: <final optimized version of the same feature>
 
-- [ ] Parent task
+- [ ] Advanced integrations
     - [ ] ...
     - [ ] ...
     - ...
 
-- [ ] Parent task
+- [ ] Optimization
     - [ ] ...
     - [ ] ...
     - ...
 
 ...
 
-DoD: docs updated; telemetry hooks if needed.
+DoD: integrations complete; optimization complete; production-ready.
+
+## Slice 3 — <Feature Name> Polished  [Status: PLANNED]
+Scope: <final optimized version of the same feature>
+
+- [ ] Advanced features
+    - [ ] ...
+    - [ ] ...
+    - ...
+
+- [ ] Internationalization
+    - [ ] ...
+    - [ ] ...
+    - ...
+
+...
+
+DoD: advanced features complete; i18n implemented; production-ready.
 
 ...
 
