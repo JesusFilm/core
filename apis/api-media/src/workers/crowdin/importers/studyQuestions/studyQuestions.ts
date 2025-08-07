@@ -14,6 +14,7 @@ const questionSchema = z.object({
   value: z.string(),
   languageId: z.string(),
   order: z.number(),
+  videoId: z.string(),
   primary: z.boolean()
 })
 
