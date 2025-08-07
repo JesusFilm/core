@@ -45,6 +45,14 @@ export function ToolInvocationPart({
           resultText={t('Journey updated')}
         />
       )
+    case 'agentInternalVideoSearch':
+      return (
+        <BasicTool
+          part={part}
+          callText={t('Searching Internal Videos...')}
+          resultText={t('Videos Search Completed!')}
+        />
+      )
     case 'clientSelectImage':
       return <ClientSelectImageTool part={part} addToolResult={addToolResult} />
     case 'clientRedirectUserToEditor':
