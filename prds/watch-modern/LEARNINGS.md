@@ -92,6 +92,61 @@ This document captures common issues, solutions, and lessons learned during Watc
 - **Pattern**: Import organization - `'use client'` must be first, then imports in alphabetical order
 - **TypeScript**: Use `import type` for type-only imports when `verbatimModuleSyntax` is enabled
 
+#### **Homepage Basic Implementation (Slice 1)**
+- **Pattern**: Copy intake markup to production components while preserving Tailwind classes
+- **Structure**: Header component with logo, search bar, and language button
+- **Hero Section**: Static background with gradient overlays and mission statement
+- **Components**: Modular approach with separate Header and HeroSection components
+- **Testing**: Comprehensive RTL tests for rendering, accessibility, and user interactions
+- **TypeScript**: Strict type checking requires proper type-only imports for verbatimModuleSyntax
+- **Build Process**: Must fix all TypeScript errors before successful compilation
+- **Dependencies**: Ensure all required packages (clsx, tailwind-merge, class-variance-authority) are installed
+
+#### **Responsive Design Improvements**
+- **Header Height**: Responsive header height (60px mobile, 80px tablet, 120px desktop) to prevent text overlap
+- **Padding Strategy**: Dynamic padding that scales with screen size (px-4 mobile, px-8 tablet, px-20 desktop)
+- **Text Sizing**: Responsive text sizes using Tailwind's responsive prefixes (text-2xl sm:text-4xl)
+- **Spacing**: Proper spacing between elements that adapts to screen size (gap-2 sm:gap-3)
+- **Icon Sizing**: Responsive icon sizes for better mobile experience (w-4 h-4 sm:w-5 sm:h-5)
+- **Button Scaling**: Responsive button padding and text sizes for touch-friendly mobile interface
+- **Layout Prevention**: Added top padding to hero section to prevent header overlap (pt-[60px] sm:pt-[80px] lg:pt-[120px])
+
+#### **Mobile Typography Improvements**
+- **Heading Font Size**: Increased mobile font size from text-2xl to text-3xl for better readability
+- **Left Alignment**: Ensured all text blocks and logo are properly left-aligned with consistent spacing
+- **Logo Container**: Added proper flex container for logo to maintain alignment consistency
+- **Visual Hierarchy**: Maintained proper text hierarchy while improving mobile readability
+
+#### **Responsive Layout Optimization**
+- **Stacked Layout Padding**: Removed horizontal padding on secondary content when layout is stacked on smaller screens
+- **Conditional Padding**: Used `lg:p-8` instead of `p-4 sm:p-8` to only apply padding on large screens
+- **Content Alignment**: Ensures text blocks align properly with main content when stacked vertically
+- **Mobile-First Approach**: Prioritizes content readability on smaller screens by removing unnecessary spacing
+
+#### **Navigation and Routing**
+- **Logo Link**: Updated logo to link to local `/watch` route instead of external JesusFilm domain
+- **Local Navigation**: Ensures users stay within the application when clicking the logo
+- **Consistent Routing**: Maintains proper navigation patterns within the Next.js application
+
+#### **Video Collection Implementation (Slice 2)**
+- **Client Component Pattern**: Used `'use client'` directive for interactive components with event handlers
+- **Video Grid Layout**: Responsive grid with 1-4 columns based on screen size (grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4)
+- **Video Card Structure**: Each card includes thumbnail, metadata (duration, languages), title, and subtitle
+- **Interactive Elements**: Click and keyboard navigation (Enter/Space) with proper accessibility attributes
+- **Mobile Optimization**: Cards limited to 75% width on mobile with increased vertical spacing (gap-16)
+- **Loading States**: Skeleton loading animation with proper test IDs for testing
+- **Error Handling**: Graceful error display when API calls fail
+
+#### **GraphQL Integration Implementation**
+- **Apollo Client Setup**: Created Apollo Client configuration with proper TypeScript types
+- **GraphQL Queries**: Implemented `GET_FILMS` query using existing `VIDEO_CONTENT_FIELDS` fragment
+- **Type Safety**: Proper TypeScript interfaces for GraphQL data structures
+- **Environment Configuration**: Fallback URL handling for development vs production
+- **Testing Strategy**: Mocked Apollo Provider for comprehensive test coverage
+- **Data Transformation**: Duration formatting (seconds to "X HR Y MIN") and language count formatting
+- **Image Integration**: Using API-provided `mobileCinematicHigh` images instead of third-party URLs
+- **Navigation Integration**: Proper slug-based routing to video detail pages
+
 ---
 **Applies To**: Watch-Modern Application
 
