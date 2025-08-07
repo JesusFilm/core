@@ -1177,11 +1177,27 @@ describe('JourneyResolver', () => {
       journeyId: 'duplicateJourneyId'
     }
 
+    const mockCustomizationFields = [
+      {
+        id: 'field-1',
+        journeyId: 'journeyId',
+        key: 'church_name',
+        value: 'Some Church Name',
+        defaultValue: 'Some Church Name',
+        fieldType: JourneyCustomizationFieldType.text
+      }
+    ]
+
+    const journeyWithUserTeamAndCustomizationFields = {
+      ...journeyWithUserTeam,
+      journeyCustomizationFields: mockCustomizationFields
+    }
+
     beforeEach(() => {
       mockUuidv4.mockReturnValueOnce('duplicateJourneyId')
       prismaService.journey.findUnique
         // lookup existing journey to duplicate and authorize
-        .mockResolvedValueOnce(journeyWithUserTeam)
+        .mockResolvedValueOnce(journeyWithUserTeamAndCustomizationFields)
         // lookup duplicate journey once created and authorize
         .mockResolvedValueOnce(journeyWithUserTeam)
       // find existing duplicate journeys
@@ -1267,7 +1283,10 @@ describe('JourneyResolver', () => {
           journeyId: 'journeyId'
         }
       ]
-      const journeyWithTags = { ...journeyWithUserTeam, journeyTags }
+      const journeyWithTags = {
+        ...journeyWithUserTeamAndCustomizationFields,
+        journeyTags
+      }
       prismaService.journey.findUnique
         .mockReset()
         // lookup journey to duplicate and authorize
@@ -1463,7 +1482,7 @@ describe('JourneyResolver', () => {
         .mockReset()
         // lookup existing journey to duplicate and authorize
         .mockResolvedValueOnce({
-          ...journeyWithUserTeam,
+          ...journeyWithUserTeamAndCustomizationFields,
           primaryImageBlockId: primaryImage.id
         })
         // lookup duplicate journey once created and authorize
@@ -1547,7 +1566,7 @@ describe('JourneyResolver', () => {
         .mockReset()
         // lookup existing journey to duplicate and authorize
         .mockResolvedValueOnce({
-          ...journeyWithUserTeam,
+          ...journeyWithUserTeamAndCustomizationFields,
           logoImageBlockId: logoImage.id
         })
         // lookup duplicate journey once created and authorize
@@ -1631,7 +1650,7 @@ describe('JourneyResolver', () => {
         .mockReset()
         // lookup existing journey to duplicate and authorize
         .mockResolvedValueOnce({
-          ...journeyWithUserTeam,
+          ...journeyWithUserTeamAndCustomizationFields,
           menuStepBlockId: menuStep.id
         })
         // lookup duplicate journey once created and authorize
@@ -1747,6 +1766,31 @@ describe('JourneyResolver', () => {
       })
     })
 
+    it('should duplicate customization fields', async () => {
+      mockUuidv4.mockReturnValueOnce(duplicatedStep.id)
+      mockUuidv4.mockReturnValueOnce('duplicateFieldId')
+      prismaService.journey.findUnique
+        .mockReset()
+        // lookup existing journey to duplicate and authorize
+        .mockResolvedValueOnce({
+          ...journeyWithUserTeamAndCustomizationFields,
+          menuStepBlockId: menuStep.id
+        })
+        // lookup duplicate journey once created and authorize
+        .mockResolvedValueOnce(journeyWithUserTeam)
+
+      await resolver.journeyDuplicate(ability, 'journeyId', 'userId', 'teamId')
+      expect(
+        prismaService.journeyCustomizationField.createMany
+      ).toHaveBeenCalledWith({
+        data: mockCustomizationFields.map((field) => ({
+          ...field,
+          id: 'duplicateFieldId',
+          journeyId: 'duplicateJourneyId'
+        }))
+      })
+    })
+
     it('throws error and does not get stuck in retry loop', async () => {
       prismaService.journey.create.mockRejectedValueOnce(
         new Error('database error')
@@ -1775,7 +1819,7 @@ describe('JourneyResolver', () => {
     it('throws error if duplicate journey not authorized', async () => {
       prismaService.journey.findUnique
         .mockReset()
-        .mockResolvedValueOnce(journeyWithUserTeam)
+        .mockResolvedValueOnce(journeyWithUserTeamAndCustomizationFields)
         .mockResolvedValueOnce(journey)
       await expect(
         resolver.journeyDuplicate(ability, 'journeyId', 'userId', 'teamId')
@@ -1785,7 +1829,7 @@ describe('JourneyResolver', () => {
     it('throws error if duplicate journey not found', async () => {
       prismaService.journey.findUnique
         .mockReset()
-        .mockResolvedValueOnce(journeyWithUserTeam)
+        .mockResolvedValueOnce(journeyWithUserTeamAndCustomizationFields)
         .mockResolvedValueOnce(null)
       await expect(
         resolver.journeyDuplicate(ability, 'journeyId', 'userId', 'teamId')

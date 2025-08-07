@@ -465,7 +465,8 @@ export class JourneyResolver {
         journeyTags: true,
         team: {
           include: { userTeams: true }
-        }
+        },
+        journeyCustomizationFields: true
       }
     })
     if (journey == null)
@@ -569,6 +570,14 @@ export class JourneyResolver {
       strict: true
     })
 
+    const duplicateCustomizationFields = journey.journeyCustomizationFields.map(
+      (field) => ({
+        ...field,
+        id: uuidv4(),
+        journeyId: duplicateJourneyId
+      })
+    )
+
     let retry = true
     while (retry) {
       try {
@@ -587,7 +596,8 @@ export class JourneyResolver {
                   'strategySlug',
                   'journeyTags',
                   'logoImageBlockId',
-                  'menuStepBlockId'
+                  'menuStepBlockId',
+                  'journeyCustomizationFields'
                 ]),
                 id: duplicateJourneyId,
                 slug,
@@ -608,6 +618,11 @@ export class JourneyResolver {
                 }
               }
             })
+
+            await tx.journeyCustomizationField.createMany({
+              data: duplicateCustomizationFields
+            })
+
             const duplicateJourney = await tx.journey.findUnique({
               where: { id: duplicateJourneyId },
               include: {
