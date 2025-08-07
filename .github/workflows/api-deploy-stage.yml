@@ -39,7 +39,7 @@ jobs:
       - id: set-matrix
         name: set matrix app to affected array
         run: |
-          echo "matrix=$(npx ts-node tools/scripts/deploy-apps.ts --projects apis/*)" >> $GITHUB_OUTPUT
+          echo "matrix=$(npx ts-node tools/scripts/affected-apps.ts --projects apis/*)" >> $GITHUB_OUTPUT
           cat $GITHUB_OUTPUT
   api-analytics:
     needs: affected
