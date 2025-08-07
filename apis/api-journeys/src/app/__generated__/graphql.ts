@@ -227,11 +227,6 @@ export enum JourneysReportType {
     singleSummary = "singleSummary"
 }
 
-export enum JourneyCustomizationFieldType {
-    text = "text",
-    link = "link"
-}
-
 export enum JourneyVisitorSort {
     date = "date",
     duration = "duration",
@@ -284,11 +279,15 @@ export class LinkActionInput {
     gtmEventName?: Nullable<string>;
     url: string;
     target?: Nullable<string>;
+    customizable?: Nullable<boolean>;
+    parentStepId?: Nullable<string>;
 }
 
 export class EmailActionInput {
     gtmEventName?: Nullable<string>;
     email: string;
+    customizable?: Nullable<boolean>;
+    parentStepId?: Nullable<string>;
 }
 
 export class BlockUpdateActionInput {
@@ -974,6 +973,8 @@ export class LinkAction implements Action {
     gtmEventName?: Nullable<string>;
     url: string;
     target?: Nullable<string>;
+    customizable?: Nullable<boolean>;
+    parentStepId?: Nullable<string>;
 }
 
 export class EmailAction implements Action {
@@ -982,6 +983,8 @@ export class EmailAction implements Action {
     parentBlock: Block;
     gtmEventName?: Nullable<string>;
     email: string;
+    customizable?: Nullable<boolean>;
+    parentStepId?: Nullable<string>;
 }
 
 export abstract class IMutation {
@@ -1803,7 +1806,6 @@ export class JourneyCustomizationField {
     key: string;
     value?: Nullable<string>;
     defaultValue?: Nullable<string>;
-    fieldType: JourneyCustomizationFieldType;
 }
 
 export class JourneyEvent implements Event {

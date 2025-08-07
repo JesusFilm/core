@@ -72,6 +72,8 @@ type LinkAction implements Action
   gtmEventName: String
   url: String!
   target: String
+  customizable: Boolean
+  parentStepId: String
 }
 
 type EmailAction implements Action
@@ -81,6 +83,8 @@ type EmailAction implements Action
   parentBlock: Block!
   gtmEventName: String
   email: String!
+  customizable: Boolean
+  parentStepId: String
 }
 
 input NavigateToBlockActionInput {
@@ -92,11 +96,15 @@ input LinkActionInput {
   gtmEventName: String
   url: String!
   target: String
+  customizable: Boolean
+  parentStepId: String
 }
 
 input EmailActionInput {
   gtmEventName: String
   email: String!
+  customizable: Boolean
+  parentStepId: String
 }
 
 input BlockUpdateActionInput {
@@ -2505,12 +2513,6 @@ type JourneyCustomizationField
   key: String!
   value: String
   defaultValue: String
-  fieldType: JourneyCustomizationFieldType!
-}
-
-enum JourneyCustomizationFieldType {
-  text
-  link
 }
 
 input JourneyCustomizationFieldInput {

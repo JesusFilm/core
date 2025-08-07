@@ -4,16 +4,10 @@ type JourneyCustomizationField @shareable {
   key: String!
   value: String
   defaultValue: String
-  fieldType: JourneyCustomizationFieldType!
 }
 
 extend type Journey {
   journeyCustomizationFields: [JourneyCustomizationField!]!
-}
-
-enum JourneyCustomizationFieldType {
-  text
-  link
 }
 
 input JourneyCustomizationFieldInput {
