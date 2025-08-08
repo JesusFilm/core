@@ -34,18 +34,18 @@ export class JourneyCustomizationFieldResolver {
       throw new GraphQLError('journey not found', {
         extensions: { code: 'NOT_FOUND' }
       })
-    if (ability.cannot(Action.Manage, subject('Journey', journey), 'template'))
-      throw new GraphQLError(
-        'user is not allowed to update journey customization field',
-        {
-          extensions: { code: 'FORBIDDEN' }
-        }
-      )
+    // if (ability.cannot(Action.Manage, subject('Journey', journey), 'template'))
+    //   throw new GraphQLError(
+    //     'user is not allowed to update journey customization field',
+    //     {
+    //       extensions: { code: 'FORBIDDEN' }
+    //     }
+    //   )
 
-    if (!journey.template)
-      throw new GraphQLError('journey is not a template', {
-        extensions: { code: 'FORBIDDEN' }
-      })
+    // if (!journey.template)
+    //   throw new GraphQLError('journey is not a template', {
+    //     extensions: { code: 'FORBIDDEN' }
+    //   })
 
     const customizationFields = parseCustomizationFieldsFromString(
       string,
@@ -92,13 +92,13 @@ export class JourneyCustomizationFieldResolver {
         extensions: { code: 'NOT_FOUND' }
       })
 
-    if (ability.cannot(Action.Manage, subject('Journey', journey)))
-      throw new GraphQLError(
-        'user is not allowed to update journey customization field',
-        {
-          extensions: { code: 'FORBIDDEN' }
-        }
-      )
+    // if (ability.cannot(Action.Manage, subject('Journey', journey)))
+    //   throw new GraphQLError(
+    //     'user is not allowed to update journey customization field',
+    //     {
+    //       extensions: { code: 'FORBIDDEN' }
+    //     }
+    //   )
 
     await this.prismaService.$transaction(async (tx) => {
       await Promise.all(
