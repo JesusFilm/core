@@ -23,6 +23,7 @@ import { AboutTabPanel } from './AboutTabPanel'
 import { CategoriesTabPanel } from './CategoriesTabPanel'
 import { MetadataTabPanel } from './MetadataTabPanel'
 import { TemplateSettingsFormValues } from './useTemplateSettingsForm'
+import { formateTemplateCustomizationString } from './utils/formateTemplateCustomizationString'
 import { getTemplateCustomizationFields } from './utils/getTemplateCustomizationFields'
 
 export const JOURNEY_FEATURE_UPDATE = gql`
@@ -48,18 +49,26 @@ export function TemplateSettingsDialog({
   open,
   onClose
 }: TemplateSettingsFormProp): ReactElement {
-  const [customizationText, setCustomizationText] =
-    useState<string>(customizationString)
+  const [customizationText, setCustomizationText] = useState<string | null>(
+    customizationString
+  )
 
   const [tab, setTab] = useState(0)
   const { t } = useTranslation('apps-journeys-admin')
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
   const { journey } = useJourney()
-  const templateCustomizationFields = getTemplateCustomizationFields(journey)
-  console.log(templateCustomizationFields)
   const [journeySettingsUpdate] = useJourneyUpdateMutation()
   const [journeyFeature] = useMutation<JourneyFeature>(JOURNEY_FEATURE_UPDATE)
   const { enqueueSnackbar } = useSnackbar()
+
+  if (customizationText == null) {
+    setCustomizationText(
+      formateTemplateCustomizationString(
+        getTemplateCustomizationFields(journey)
+      )
+    )
+  }
+
   const validationSchema = object({
     strategySlug: string()
       .trim()
@@ -88,7 +97,7 @@ export function TemplateSettingsDialog({
     tagIds: journey?.tags.map(({ id }) => id),
     creatorDescription: journey?.creatorDescription,
     languageId: journey?.language?.id,
-    customizationText
+    customizationText: customizationText ?? ''
   }
 
   function handleTabChange(_event, newValue: number): void {
