@@ -20,6 +20,9 @@ if [ ! -d "$SPEC_PATH" ]; then
 fi
 ```
 
+# Activate watch-modern cursor rules
+/core/.cursor/rules/watch-modern.mdc
+
 ---
 
 ## 🔁 FOR EACH SLICE

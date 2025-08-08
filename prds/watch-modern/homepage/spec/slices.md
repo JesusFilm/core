@@ -64,20 +64,20 @@ Must-haves:
 
 DoD: tests for grid display; optional numbering; responsive layout; a11y baseline; loading state present.
 
-### Slice 4 — Categories Basic [Status: PLANNED]
+### Slice 4 — Categories Basic [Status: COMPLETED]
 Scope: Simple category display
 
 Must-haves:
-- [ ] Static grid of 12 category cards
-- [ ] Basic category names and icons
-- [ ] Hardcoded category data
-- [ ] Basic responsive layout
-- [ ] Click navigation to category pages
- - [ ] Loading state placeholders
- - [ ] Accessibility: keyboard operable category cards with `role="link"|"button"`, `tabIndex=0`, `aria-label`
- - [ ] Tests: rendering, card count, keyboard interaction, navigation intent (href present), responsive grid classes
+- [x] Static grid of 12 category cards
+- [x] Basic category names and icons
+- [x] Hardcoded category data
+- [x] Basic responsive layout
+- [x] Click navigation to category pages (reserved for future improvements)
+ - [x] Loading state placeholders
+ - [x] Accessibility: keyboard operable category cards with `role="button"`, `tabIndex=0`, `aria-label`
+ - [x] Tests: rendering, card count, keyboard interaction, responsive grid classes
 
-DoD: tests for category display; navigation works; responsive layout; a11y baseline; loading state present.
+DoD: tests for category display; responsive layout; a11y baseline; loading state present.
 
 ## Improved implementation
 

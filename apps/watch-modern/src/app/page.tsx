@@ -1,6 +1,7 @@
 import { getTranslations } from 'next-intl/server'
 import type { ReactElement } from 'react'
 
+import { CategoriesSection } from '@/components/CategoriesSection'
 import { Header } from '@/components/Header'
 import { HeroSection } from '@/components/HeroSection'
 import { VideoCollection } from '@/components/VideoCollection'
@@ -29,6 +30,9 @@ export default async function RootIndexPage(): Promise<ReactElement> {
 
       {/* Generic Video Grid Section */}
       <VideoGridSection />
+
+      {/* Categories Section */}
+      <CategoriesSection />
     </main>
   )
 }
