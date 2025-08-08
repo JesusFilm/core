@@ -52,7 +52,7 @@ function run({
 }
 
 async function main(): Promise<void> {
-  if (process.env.NODE_ENV !== 'production') {
+  async function importAndRunAllWorkers(): Promise<void> {
     run(
       await import(
         /* webpackChunkName: 'email' */
@@ -77,34 +77,15 @@ async function main(): Promise<void> {
         './shortlinkUpdater'
       )
     )
+  }
+
+  if (process.env.NODE_ENV !== 'production') {
+    await importAndRunAllWorkers()
     return
   }
 
   await runIfLeader(async () => {
-    run(
-      await import(
-        /* webpackChunkName: 'email' */
-        './email'
-      )
-    )
-    run(
-      await import(
-        /* webpackChunkName: 'emailEvents' */
-        './emailEvents'
-      )
-    )
-    run(
-      await import(
-        /* webpackChunkName: 'revalidate' */
-        './revalidate'
-      )
-    )
-    run(
-      await import(
-        /* webpackChunkName: 'shortlinkUpdater' */
-        './shortlinkUpdater'
-      )
-    )
+    await importAndRunAllWorkers()
   })
 }
 
