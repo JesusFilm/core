@@ -10,7 +10,17 @@ import { DeleteBlock } from './DeleteBlock'
 import { DuplicateBlock } from './DuplicateBlock'
 import { MoveBlock } from './MoveBlock'
 
-export function QuickControls({ open, anchorEl, block }): ReactElement {
+interface QuickControlsProps {
+  open: boolean
+  anchorEl: HTMLElement | null
+  block: any
+}
+
+export function QuickControls({
+  open,
+  anchorEl,
+  block
+}: QuickControlsProps): ReactElement {
   const isVideoBlock = block?.__typename === 'VideoBlock'
 
   function handleClick(e: MouseEvent<HTMLDivElement>): void {
@@ -30,7 +40,7 @@ export function QuickControls({ open, anchorEl, block }): ReactElement {
           {
             name: 'offset',
             options: {
-              offset: () => [0, isVideoBlock ? -70 : 0]
+              offset: () => [isVideoBlock ? 0 : 64, isVideoBlock ? -64 : 0]
             }
           }
         ]}
@@ -40,8 +50,8 @@ export function QuickControls({ open, anchorEl, block }): ReactElement {
       >
         {({ TransitionProps }) => (
           <Fade {...TransitionProps} timeout={350}>
-            <Paper sx={{ mb: 2, p: 1 }}>
-              <Stack spacing={2} direction="row">
+            <Paper sx={{ mb: 4, py: 0.5, pl: 0.5, pr: 1, borderRadius: 2 }}>
+              <Stack spacing={0.5} direction="row">
                 <MoveBlock />
                 <DuplicateBlock disabled={isVideoBlock} />
                 <DeleteBlock variant="button" />
