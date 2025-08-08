@@ -381,7 +381,7 @@
   "overrides": {
     "react-is": "^18.3.1",
     "html-tokenize": {
-      "readable-stream": "^2.3.8"
+      "readable-stream": "^3.6.0"
     }
   }
 }

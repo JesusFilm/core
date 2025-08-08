@@ -4,26 +4,30 @@ interface Action {
   gtmEventName: String
 }
 
-type NavigateToBlockAction implements Action {
+type NavigateToBlockAction implements Action @shareable {
   parentBlockId: ID!
   parentBlock: Block!
   gtmEventName: String
   blockId: String!
 }
 
-type LinkAction implements Action {
+type LinkAction implements Action @shareable {
   parentBlockId: ID!
   parentBlock: Block!
   gtmEventName: String
   url: String!
   target: String
+  customizable: Boolean
+  parentStepId: String
 }
 
-type EmailAction implements Action {
+type EmailAction implements Action @shareable {
   parentBlockId: ID!
   parentBlock: Block!
   gtmEventName: String
   email: String!
+  customizable: Boolean
+  parentStepId: String
 }
 
 input NavigateToBlockActionInput {
@@ -35,11 +39,15 @@ input LinkActionInput {
   gtmEventName: String
   url: String!
   target: String
+  customizable: Boolean
+  parentStepId: String
 }
 
 input EmailActionInput {
   gtmEventName: String
   email: String!
+  customizable: Boolean
+  parentStepId: String
 }
 
 input BlockUpdateActionInput {

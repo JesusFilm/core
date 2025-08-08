@@ -17,7 +17,7 @@ enum JourneyMenuButtonIcon {
   chevronDown
 }
 
-type Journey @key(fields: "id") {
+type Journey @key(fields: "id") @shareable {
   id: ID!
   """
   private title for creators
@@ -119,7 +119,7 @@ enum JourneysReportType {
   singleSummary
 }
 
-type PowerBiEmbed {
+type PowerBiEmbed @shareable {
   """
   The report ID
   """
