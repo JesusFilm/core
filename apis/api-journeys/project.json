@@ -83,7 +83,9 @@
       "executor": "nx:run-commands",
       "options": {
         "command": "graphql-codegen --config apis/api-journeys/codegen.ts"
-      }
+      },
+      "cache": true,
+      "inputs": ["{projectRoot}/schema.graphql"]
     },
     "generate-graphql": {
       "executor": "nx:run-commands",
