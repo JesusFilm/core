@@ -850,6 +850,7 @@ export type Journey = {
   host?: Maybe<Host>;
   id: Scalars['ID']['output'];
   journeyCollections: Array<JourneyCollection>;
+  journeyCustomizationDescription?: Maybe<Scalars['String']['output']>;
   journeyCustomizationFields: Array<JourneyCustomizationField>;
   journeyTheme?: Maybe<JourneyTheme>;
   language: Language;
