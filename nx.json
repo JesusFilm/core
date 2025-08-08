@@ -81,7 +81,7 @@
       "inputs": ["default", "^production"]
     },
     "prisma-generate": {
-      "cache": true,
+      "cache": false,
       "inputs": ["{projectRoot}/**/schema.prisma"]
     }
   },
