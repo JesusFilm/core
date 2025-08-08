@@ -3,7 +3,6 @@ import Stack from '@mui/material/Stack'
 import { Theme } from '@mui/material/styles'
 import Tab from '@mui/material/Tab'
 import Tabs from '@mui/material/Tabs'
-import TextField from '@mui/material/TextField'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { Form, Formik } from 'formik'
 import omit from 'lodash/omit'
@@ -209,16 +208,6 @@ export function TemplateSettingsDialog({
               </TabPanel>
               <TabPanel name="about" value={tab} index={2}>
                 <Stack sx={{ pt: 6 }} gap={5}>
-                  {/* //TODO: remove */}
-                  <TextField
-                    label="Local State - customizationText"
-                    value={customizationText}
-                    fullWidth
-                    multiline
-                    InputProps={{
-                      readOnly: true
-                    }}
-                  />
                   <AboutTabPanel />
                 </Stack>
               </TabPanel>

@@ -1,3 +1,46 @@
+/**
+ * Formats template customization string by ensuring all required template fields are present.
+ *
+ * This function processes a customization text that may contain parameterized placeholders
+ * in the format `{{key: value}}`. It compares the keys found in the text against a provided
+ * array of required template fields. If any required fields are missing from the text,
+ * they are appended at the bottom with empty values.
+ *
+ * @param templateCustomizationFields - Array of required template field keys that should be present in the text
+ * @param customizationText - Optional text containing parameterized placeholders in format `{{key: value}}`
+ *
+ * @returns Formatted string with all required template fields. If no template fields are provided,
+ *          returns empty string. If text is null/undefined, treats it as empty string.
+ *
+ * @example
+ * ```typescript
+ * // Basic usage with existing text
+ * formateTemplateCustomizationString(
+ *   ['name', 'email', 'company'],
+ *   'Hello {{name: John}}, your email is {{email: john@example.com}}'
+ * )
+ * // Returns: "Hello {{name: John}}, your email is {{email: john@example.com}}\n{{company: }}"
+ *
+ * // With null text
+ * formateTemplateCustomizationString(['name', 'email'], null)
+ * // Returns: "{{name: }}\n{{email: }}"
+ *
+ * // With empty text
+ * formateTemplateCustomizationString(['name', 'email'], '')
+ * // Returns: "{{name: }}\n{{email: }}"
+ *
+ * // All fields already present
+ * formateTemplateCustomizationString(
+ *   ['name', 'email'],
+ *   'Hello {{name: John}} {{email: john@example.com}}'
+ * )
+ * // Returns: "Hello {{name: John}} {{email: john@example.com}}"
+ *
+ * // Empty template fields
+ * formateTemplateCustomizationString([], 'some text')
+ * // Returns: ""
+ * ```
+ */
 export function formateTemplateCustomizationString(
   templateCustomizationFields: string[],
   customizationText?: string

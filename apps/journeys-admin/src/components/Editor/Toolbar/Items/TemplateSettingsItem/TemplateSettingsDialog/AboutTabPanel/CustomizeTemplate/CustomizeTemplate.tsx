@@ -42,7 +42,7 @@ export function CustomizeTemplate(): ReactElement {
         justifyContent="space-between"
         sx={{ mb: 4 }}
       >
-        <Typography variant="h6">{t('Text for Customisation')}</Typography>
+        <Typography variant="h6">{t('Text for Customization')}</Typography>
         <IconButton
           onClick={handleRefresh}
           aria-label={t('Refresh template variables')}
@@ -54,7 +54,6 @@ export function CustomizeTemplate(): ReactElement {
       <TextField
         fullWidth
         multiline
-        rows={4}
         value={customizationText}
         onChange={handleChange}
         variant="outlined"
