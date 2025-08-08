@@ -11,9 +11,7 @@
       "options": {
         "commands": ["playwright test"],
         "cwd": "apps/arclight-e2e"
-      },
-      "cache": false,
-      "dependsOn": ["arclight", "api-languages", "api-media", "api-gateway"]
+      }
     },
     "update-snapshots": {
       "executor": "nx:run-commands",

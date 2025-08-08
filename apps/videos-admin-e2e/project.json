@@ -11,14 +11,7 @@
       "options": {
         "commands": ["playwright test"],
         "cwd": "apps/videos-admin-e2e"
-      },
-      "dependsOn": [
-        "videos-admin",
-        "api-gateway",
-        "api-languages",
-        "api-media",
-        "api-users"
-      ]
+      }
     },
     "update-snapshots": {
       "executor": "nx:run-commands",

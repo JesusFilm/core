@@ -11,8 +11,7 @@
       "options": {
         "commands": ["playwright test"],
         "cwd": "apps/watch-e2e"
-      },
-      "dependsOn": ["watch", "api-gateway", "api-languages", "api-media"]
+      }
     },
     "update-snapshots": {
       "executor": "nx:run-commands",

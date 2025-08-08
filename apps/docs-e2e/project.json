@@ -11,8 +11,7 @@
       "options": {
         "commands": ["playwright test"],
         "cwd": "apps/docs-e2e"
-      },
-      "dependsOn": ["docs"]
+      }
     },
     "update-snapshots": {
       "executor": "nx:run-commands",
