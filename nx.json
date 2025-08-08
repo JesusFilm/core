@@ -85,7 +85,7 @@
       "inputs": ["{projectRoot}/**/schema.prisma"]
     },
     "subgraph-check": {
-      "cache": true,
+      "cache": false,
       "inputs": ["default"]
     },
     "type-check": {
