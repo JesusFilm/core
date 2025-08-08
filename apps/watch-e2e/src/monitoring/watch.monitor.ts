@@ -57,9 +57,9 @@ class VideoMonitoringHelpers {
       
       // Use regex patterns to ensure proper domain matching
       const domainPatterns = [
-        /^https?:\/\/[^\/]*mux\.com\//,
-        /^https?:\/\/[^\/]*litix\.io\//,
-        /^https?:\/\/[^\/]*inferred\.litix\.io\//
+        /^https?:\/\/[^/]*mux\.com\//,
+        /^https?:\/\/[^/]*litix\.io\//,
+        /^https?:\/\/[^/]*inferred\.litix\.io\//
       ]
       
       const hasValidDomain = domainPatterns.some(pattern => pattern.test(urlLower))
@@ -95,9 +95,9 @@ class VideoMonitoringHelpers {
       // Fallback for malformed URLs - use secure regex patterns
       const urlLower = url.toLowerCase()
       const muxPatterns = [
-        /^https?:\/\/[^\/]*mux\.com\//,
-        /^https?:\/\/[^\/]*litix\.io\//,
-        /^https?:\/\/[^\/]*inferred\.litix\.io\//
+        /^https?:\/\/[^/]*mux\.com\//,
+        /^https?:\/\/[^/]*litix\.io\//,
+        /^https?:\/\/[^/]*inferred\.litix\.io\//
       ]
       return muxPatterns.some(pattern => pattern.test(urlLower))
     }
