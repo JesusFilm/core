@@ -3,9 +3,9 @@ import { expect, test } from '@playwright/test'
 /**
  * @check
  * @name Watch Video Monitoring
- * @retries 8 // Will retry the test 8 times
- * @retryInterval 10 // Will wait 10 seconds between retries
- * @maxRetryTime 600 // Will stop retrying after 10 minutes
+ * @retries 8 // Retry up to 8 times for network flakiness
+ * @retryInterval 10 // Wait 10 seconds between retries
+ * @maxRetryTime 600 // Stop retrying after 10 minutes total
  */
 
 /**
@@ -19,6 +19,114 @@ import { expect, test } from '@playwright/test'
  *
  * Based on the Slack conversation about videos from MUX not loading in production.
  */
+
+// Helper functions for URL and error analysis
+class VideoMonitoringHelpers {
+  private static readonly ALLOWED_DOMAINS = ['mux.com', 'litix.io', 'inferred.litix.io']
+  private static readonly VIDEO_PATH_PATTERNS = ['.hls', '.m3u8', '/video', '/stream']
+  private static readonly VIDEO_ERROR_PATTERNS = [
+    'mux.com',
+    'litix.io',
+    'inferred.litix.io',
+    'net::err_connection_refused',
+    'net::err_connection_timed_out',
+    'net::err_connection_reset',
+    'net::err_network_changed',
+    'net::err_internet_disconnected'
+  ]
+
+  static isVideoRelatedUrl(url: string): boolean {
+    try {
+      const urlObj = new URL(url)
+      const hostname = urlObj.hostname.toLowerCase()
+
+      // Check for specific domains using exact matching
+      const isAllowedDomain = this.ALLOWED_DOMAINS.some(
+        (domain) => hostname === domain || hostname.endsWith('.' + domain)
+      )
+
+      // Check for video-related path patterns
+      const hasVideoPath = this.VIDEO_PATH_PATTERNS.some((pattern) =>
+        urlObj.pathname.toLowerCase().includes(pattern)
+      )
+
+      return isAllowedDomain || hasVideoPath
+    } catch {
+      // Fallback for malformed URLs - use more secure pattern matching
+      const urlLower = url.toLowerCase()
+      
+      // Use regex patterns to ensure proper domain matching
+      const domainPatterns = [
+        /^https?:\/\/[^\/]*mux\.com\//,
+        /^https?:\/\/[^\/]*litix\.io\//,
+        /^https?:\/\/[^\/]*inferred\.litix\.io\//
+      ]
+      
+      const hasValidDomain = domainPatterns.some(pattern => pattern.test(urlLower))
+      
+      // Check for video file extensions in path
+      const videoExtensions = ['.hls', '.m3u8']
+      const hasVideoExtension = videoExtensions.some(ext => 
+        urlLower.includes(ext) && !urlLower.includes('javascript:') && !urlLower.includes('data:')
+      )
+      
+      return hasValidDomain || hasVideoExtension
+    }
+  }
+
+  static isVideoRelatedError(error: string): boolean {
+    const errorLower = error.toLowerCase()
+    return this.VIDEO_ERROR_PATTERNS.some((pattern) => errorLower.includes(pattern))
+  }
+
+  static isMuxRequest(url: string): boolean {
+    try {
+      const urlObj = new URL(url)
+      const hostname = urlObj.hostname.toLowerCase()
+      return (
+        hostname === 'mux.com' ||
+        hostname.endsWith('.mux.com') ||
+        hostname === 'litix.io' ||
+        hostname.endsWith('.litix.io') ||
+        hostname === 'inferred.litix.io' ||
+        hostname.endsWith('.inferred.litix.io')
+      )
+    } catch {
+      // Fallback for malformed URLs - use secure regex patterns
+      const urlLower = url.toLowerCase()
+      const muxPatterns = [
+        /^https?:\/\/[^\/]*mux\.com\//,
+        /^https?:\/\/[^\/]*litix\.io\//,
+        /^https?:\/\/[^\/]*inferred\.litix\.io\//
+      ]
+      return muxPatterns.some(pattern => pattern.test(urlLower))
+    }
+  }
+
+  static isHlsRequest(url: string): boolean {
+    try {
+      const urlObj = new URL(url)
+      return (
+        urlObj.pathname.toLowerCase().includes('.hls') ||
+        urlObj.pathname.toLowerCase().includes('.m3u8')
+      )
+    } catch {
+      // Fallback for malformed URLs - use secure pattern matching
+      const urlLower = url.toLowerCase()
+      
+      // Only match if it's a proper URL with video extensions
+      const hlsPatterns = [
+        /\.hls(?:\?|$|#)/,
+        /\.m3u8(?:\?|$|#)/
+      ]
+      
+      return hlsPatterns.some(pattern => pattern.test(urlLower)) &&
+             !urlLower.includes('javascript:') &&
+             !urlLower.includes('data:')
+    }
+  }
+}
+
 test('Video playback and MUX network connectivity monitoring', async ({
   page
 }) => {
@@ -32,64 +140,10 @@ test('Video playback and MUX network connectivity monitoring', async ({
     }
   >()
 
-  // Helper function to safely check if a URL is video-related
-  const isVideoRelatedUrl = (url: string): boolean => {
-    try {
-      const urlObj = new URL(url)
-      const hostname = urlObj.hostname.toLowerCase()
-
-      // Check for specific domains using exact matching
-      const allowedDomains = ['mux.com', 'litix.io', 'inferred.litix.io']
-      const isAllowedDomain = allowedDomains.some(
-        (domain) => hostname === domain || hostname.endsWith('.' + domain)
-      )
-
-      // Check for video-related path patterns
-      const videoPathPatterns = ['.hls', '.m3u8', '/video', '/stream']
-      const hasVideoPath = videoPathPatterns.some((pattern) =>
-        urlObj.pathname.toLowerCase().includes(pattern)
-      )
-
-      return isAllowedDomain || hasVideoPath
-    } catch {
-      // Fallback for malformed URLs - use safer substring matching
-      const urlLower = url.toLowerCase()
-      const safePatterns = [
-        'mux.com/',
-        'litix.io/',
-        'inferred.litix.io/',
-        '.hls',
-        '.m3u8'
-      ]
-      return safePatterns.some((pattern) => urlLower.includes(pattern))
-    }
-  }
-
-  // Helper function to safely check if an error message is related to video services
-  const isVideoRelatedError = (error: string): boolean => {
-    const errorLower = error.toLowerCase()
-
-    // Check for specific error patterns related to video services only
-    const videoErrorPatterns = [
-      'mux.com',
-      'litix.io',
-      'inferred.litix.io',
-      'net::err_connection_refused',
-      'net::err_connection_timed_out',
-      'net::err_connection_reset',
-      'net::err_network_changed',
-      'net::err_internet_disconnected'
-    ]
-
-    // Only consider errors that are specifically related to video services
-    // Ignore general 422/400 errors that might be from analytics or other services
-    return videoErrorPatterns.some((pattern) => errorLower.includes(pattern))
-  }
-
   // Listen to all network requests
   page.on('request', (request) => {
     const url = request.url()
-    if (isVideoRelatedUrl(url)) {
+    if (VideoMonitoringHelpers.isVideoRelatedUrl(url)) {
       networkRequests.set(url, { url, status: 0 })
     }
   })
@@ -99,7 +153,7 @@ test('Video playback and MUX network connectivity monitoring', async ({
     const url = response.url()
     const status = response.status()
 
-    if (isVideoRelatedUrl(url)) {
+    if (VideoMonitoringHelpers.isVideoRelatedUrl(url)) {
       const request = networkRequests.get(url)
       if (request) {
         request.status = status
@@ -110,7 +164,7 @@ test('Video playback and MUX network connectivity monitoring', async ({
   // Listen to failed requests
   page.on('requestfailed', (request) => {
     const url = request.url()
-    if (isVideoRelatedUrl(url)) {
+    if (VideoMonitoringHelpers.isVideoRelatedUrl(url)) {
       networkRequests.set(url, {
         url,
         status: 0,
@@ -139,7 +193,7 @@ test('Video playback and MUX network connectivity monitoring', async ({
     timeout: 10000
   })
 
-  // Look for a video title to click on (using the original working selector)
+  // Look for a video title to click on (using the working selector)
   const videoTitle = page.getByRole('button', {
     name: 'Jesus Calms the Storm Jesus Calms the Storm Chapter 1:59'
   })
@@ -175,43 +229,14 @@ test('Video playback and MUX network connectivity monitoring', async ({
     (req) => req.status >= 200 && req.status < 300
   )
 
-  // Check for specific MUX-related network issues using proper URL parsing
-  const muxRequests = networkRequestsArray.filter((req) => {
-    try {
-      const urlObj = new URL(req.url)
-      const hostname = urlObj.hostname.toLowerCase()
-      return (
-        hostname === 'mux.com' ||
-        hostname.endsWith('.mux.com') ||
-        hostname === 'litix.io' ||
-        hostname.endsWith('.litix.io') ||
-        hostname === 'inferred.litix.io' ||
-        hostname.endsWith('.inferred.litix.io')
-      )
-    } catch {
-      // Fallback for malformed URLs
-      const urlLower = req.url.toLowerCase()
-      return (
-        urlLower.includes('mux.com/') ||
-        urlLower.includes('litix.io/') ||
-        urlLower.includes('inferred.litix.io/')
-      )
-    }
-  })
+  // Check for specific MUX-related network issues using helper functions
+  const muxRequests = networkRequestsArray.filter((req) => 
+    VideoMonitoringHelpers.isMuxRequest(req.url)
+  )
 
-  const hlsRequests = networkRequestsArray.filter((req) => {
-    try {
-      const urlObj = new URL(req.url)
-      return (
-        urlObj.pathname.toLowerCase().includes('.hls') ||
-        urlObj.pathname.toLowerCase().includes('.m3u8')
-      )
-    } catch {
-      // Fallback for malformed URLs
-      const urlLower = req.url.toLowerCase()
-      return urlLower.includes('/.hls') || urlLower.includes('/.m3u8')
-    }
-  })
+  const hlsRequests = networkRequestsArray.filter((req) => 
+    VideoMonitoringHelpers.isHlsRequest(req.url)
+  )
 
   // Log network analysis
   console.log(`📊 Network Analysis:
@@ -223,7 +248,7 @@ test('Video playback and MUX network connectivity monitoring', async ({
 
   // Check for critical errors (only the specific types mentioned in the Slack conversation)
   const criticalErrors = consoleErrors.filter((error) =>
-    isVideoRelatedError(error)
+    VideoMonitoringHelpers.isVideoRelatedError(error)
   )
 
   // Fail the test if there are critical network issues
@@ -241,7 +266,7 @@ test('Video playback and MUX network connectivity monitoring', async ({
     )
   }
 
-  // Fix the logic error: Check for no successful requests OR no total requests
+  // Check for no successful requests OR no total requests
   if (successfulRequests.length === 0) {
     if (networkRequestsArray.length === 0) {
       throw new Error('No video-related network requests detected')
