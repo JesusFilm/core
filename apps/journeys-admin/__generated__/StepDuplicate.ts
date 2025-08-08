@@ -45,6 +45,10 @@ export interface StepDuplicate_blockDuplicate_ButtonBlock_settings {
    * Alignment of the button
    */
   alignment: ButtonAlignment | null;
+  /**
+   * Color of the button
+   */
+  color: string | null;
 }
 
 export interface StepDuplicate_blockDuplicate_ButtonBlock {

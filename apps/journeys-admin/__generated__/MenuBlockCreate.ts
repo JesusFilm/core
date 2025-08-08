@@ -150,6 +150,10 @@ export interface MenuBlockCreate_button1_settings {
    * Alignment of the button
    */
   alignment: ButtonAlignment | null;
+  /**
+   * Color of the button
+   */
+  color: string | null;
 }
 
 export interface MenuBlockCreate_button1 {
@@ -197,6 +201,10 @@ export interface MenuBlockCreate_button2_settings {
    * Alignment of the button
    */
   alignment: ButtonAlignment | null;
+  /**
+   * Color of the button
+   */
+  color: string | null;
 }
 
 export interface MenuBlockCreate_button2 {
@@ -244,6 +252,10 @@ export interface MenuBlockCreate_button3_settings {
    * Alignment of the button
    */
   alignment: ButtonAlignment | null;
+  /**
+   * Color of the button
+   */
+  color: string | null;
 }
 
 export interface MenuBlockCreate_button3 {
