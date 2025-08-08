@@ -22,8 +22,17 @@ import { expect, test } from '@playwright/test'
 
 // Helper functions for URL and error analysis
 class VideoMonitoringHelpers {
-  private static readonly ALLOWED_DOMAINS = ['mux.com', 'litix.io', 'inferred.litix.io']
-  private static readonly VIDEO_PATH_PATTERNS = ['.hls', '.m3u8', '/video', '/stream']
+  private static readonly ALLOWED_DOMAINS = [
+    'mux.com',
+    'litix.io',
+    'inferred.litix.io'
+  ]
+  private static readonly VIDEO_PATH_PATTERNS = [
+    '.hls',
+    '.m3u8',
+    '/video',
+    '/stream'
+  ]
   private static readonly VIDEO_ERROR_PATTERNS = [
     'mux.com',
     'litix.io',
@@ -54,29 +63,36 @@ class VideoMonitoringHelpers {
     } catch {
       // Fallback for malformed URLs - use more secure pattern matching
       const urlLower = url.toLowerCase()
-      
+
       // Use regex patterns to ensure proper domain matching
       const domainPatterns = [
         /^https?:\/\/[^/]*mux\.com\//,
         /^https?:\/\/[^/]*litix\.io\//,
         /^https?:\/\/[^/]*inferred\.litix\.io\//
       ]
-      
-      const hasValidDomain = domainPatterns.some(pattern => pattern.test(urlLower))
-      
+
+      const hasValidDomain = domainPatterns.some((pattern) =>
+        pattern.test(urlLower)
+      )
+
       // Check for video file extensions in path
       const videoExtensions = ['.hls', '.m3u8']
-      const hasVideoExtension = videoExtensions.some(ext => 
-        urlLower.includes(ext) && !urlLower.includes('javascript:') && !urlLower.includes('data:')
+      const hasVideoExtension = videoExtensions.some(
+        (ext) =>
+          urlLower.includes(ext) &&
+          !urlLower.includes('javascript:') &&
+          !urlLower.includes('data:')
       )
-      
+
       return hasValidDomain || hasVideoExtension
     }
   }
 
   static isVideoRelatedError(error: string): boolean {
     const errorLower = error.toLowerCase()
-    return this.VIDEO_ERROR_PATTERNS.some((pattern) => errorLower.includes(pattern))
+    return this.VIDEO_ERROR_PATTERNS.some((pattern) =>
+      errorLower.includes(pattern)
+    )
   }
 
   static isMuxRequest(url: string): boolean {
@@ -99,7 +115,7 @@ class VideoMonitoringHelpers {
         /^https?:\/\/[^/]*litix\.io\//,
         /^https?:\/\/[^/]*inferred\.litix\.io\//
       ]
-      return muxPatterns.some(pattern => pattern.test(urlLower))
+      return muxPatterns.some((pattern) => pattern.test(urlLower))
     }
   }
 
@@ -113,16 +129,15 @@ class VideoMonitoringHelpers {
     } catch {
       // Fallback for malformed URLs - use secure pattern matching
       const urlLower = url.toLowerCase()
-      
+
       // Only match if it's a proper URL with video extensions
-      const hlsPatterns = [
-        /\.hls(?:\?|$|#)/,
-        /\.m3u8(?:\?|$|#)/
-      ]
-      
-      return hlsPatterns.some(pattern => pattern.test(urlLower)) &&
-             !urlLower.includes('javascript:') &&
-             !urlLower.includes('data:')
+      const hlsPatterns = [/\.hls(?:\?|$|#)/, /\.m3u8(?:\?|$|#)/]
+
+      return (
+        hlsPatterns.some((pattern) => pattern.test(urlLower)) &&
+        !urlLower.includes('javascript:') &&
+        !urlLower.includes('data:')
+      )
     }
   }
 }
@@ -230,11 +245,11 @@ test('Video playback and MUX network connectivity monitoring', async ({
   )
 
   // Check for specific MUX-related network issues using helper functions
-  const muxRequests = networkRequestsArray.filter((req) => 
+  const muxRequests = networkRequestsArray.filter((req) =>
     VideoMonitoringHelpers.isMuxRequest(req.url)
   )
 
-  const hlsRequests = networkRequestsArray.filter((req) => 
+  const hlsRequests = networkRequestsArray.filter((req) =>
     VideoMonitoringHelpers.isHlsRequest(req.url)
   )
 
