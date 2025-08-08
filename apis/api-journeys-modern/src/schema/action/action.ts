@@ -4,9 +4,10 @@ import { builder } from '../builder'
 
 export const ActionInterface = builder.prismaInterface('Action', {
   fields: (t) => ({
-    parentBlockId: t.exposeID('parentBlockId'),
+    parentBlockId: t.exposeID('parentBlockId', { nullable: false }),
     gtmEventName: t.exposeString('gtmEventName', { nullable: true }),
     parentBlock: t.relation('parentBlock', {
+      nullable: false,
       resolve: async (action: any) => {
         if (!action.parentBlock) {
           throw new GraphQLError('Parent block not found', {

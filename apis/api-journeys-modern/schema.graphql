@@ -2,9 +2,9 @@ extend schema
   @link(url: "https://specs.apollo.dev/federation/v2.6", import: ["@extends", "@external", "@key", "@shareable"])
 
 interface Action {
-  parentBlockId: ID
+  parentBlockId: ID!
   gtmEventName: String
-  parentBlock: Block
+  parentBlock: Block!
 }
 
 interface Block
@@ -128,9 +128,9 @@ scalar DateTimeISO
 type EmailAction implements Action
   @shareable
 {
-  parentBlockId: ID
+  parentBlockId: ID!
   gtmEventName: String
-  parentBlock: Block
+  parentBlock: Block!
   email: String!
   customizable: Boolean
   parentStepId: String
@@ -357,9 +357,9 @@ type Language
 type LinkAction implements Action
   @shareable
 {
-  parentBlockId: ID
+  parentBlockId: ID!
   gtmEventName: String
-  parentBlock: Block
+  parentBlock: Block!
   url: String!
   target: String
   customizable: Boolean
@@ -403,9 +403,9 @@ type MuxVideo
 type NavigateToBlockAction implements Action
   @shareable
 {
-  parentBlockId: ID
+  parentBlockId: ID!
   gtmEventName: String
-  parentBlock: Block
+  parentBlock: Block!
   blockId: String!
 }
 

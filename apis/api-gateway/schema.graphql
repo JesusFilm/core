@@ -531,15 +531,15 @@ type SiteSharedLink @join__type(graph: API_ANALYTICS)  {
 }
 
 type NavigateToBlockAction implements Action @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  @join__implements(graph: API_JOURNEYS, interface: "Action")  @join__implements(graph: API_JOURNEYS_MODERN, interface: "Action")  {
-  parentBlockId: ID @join__field(graph: API_JOURNEYS, type: "ID!")  @join__field(graph: API_JOURNEYS_MODERN, type: "ID") 
-  parentBlock: Block @join__field(graph: API_JOURNEYS, type: "Block!")  @join__field(graph: API_JOURNEYS_MODERN, type: "Block") 
+  parentBlockId: ID!
+  parentBlock: Block!
   gtmEventName: String
   blockId: String!
 }
 
 type LinkAction implements Action @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  @join__implements(graph: API_JOURNEYS, interface: "Action")  @join__implements(graph: API_JOURNEYS_MODERN, interface: "Action")  {
-  parentBlockId: ID @join__field(graph: API_JOURNEYS, type: "ID!")  @join__field(graph: API_JOURNEYS_MODERN, type: "ID") 
-  parentBlock: Block @join__field(graph: API_JOURNEYS, type: "Block!")  @join__field(graph: API_JOURNEYS_MODERN, type: "Block") 
+  parentBlockId: ID!
+  parentBlock: Block!
   gtmEventName: String
   url: String!
   target: String
@@ -548,8 +548,8 @@ type LinkAction implements Action @join__type(graph: API_JOURNEYS)  @join__type(
 }
 
 type EmailAction implements Action @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  @join__implements(graph: API_JOURNEYS, interface: "Action")  @join__implements(graph: API_JOURNEYS_MODERN, interface: "Action")  {
-  parentBlockId: ID @join__field(graph: API_JOURNEYS, type: "ID!")  @join__field(graph: API_JOURNEYS_MODERN, type: "ID") 
-  parentBlock: Block @join__field(graph: API_JOURNEYS, type: "Block!")  @join__field(graph: API_JOURNEYS_MODERN, type: "Block") 
+  parentBlockId: ID!
+  parentBlock: Block!
   gtmEventName: String
   email: String!
   customizable: Boolean
@@ -2908,8 +2908,8 @@ interface BaseError @join__type(graph: API_ANALYTICS)  @join__type(graph: API_ME
 }
 
 interface Action @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
-  parentBlockId: ID
-  parentBlock: Block
+  parentBlockId: ID!
+  parentBlock: Block!
   gtmEventName: String
 }
 
