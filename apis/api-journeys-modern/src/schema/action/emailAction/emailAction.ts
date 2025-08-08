@@ -10,6 +10,8 @@ export const EmailActionRef = builder.prismaObject('Action', {
     email: t.string({
       nullable: false,
       resolve: (action) => action.email || ''
-    })
+    }),
+    customizable: t.exposeBoolean('customizable', { nullable: true }),
+    parentStepId: t.exposeString('parentStepId', { nullable: true })
   })
 })

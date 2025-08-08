@@ -132,11 +132,15 @@ type EmailAction implements Action
   gtmEventName: String
   parentBlock: Block
   email: String!
+  customizable: Boolean
+  parentStepId: String
 }
 
 input EmailActionInput {
   gtmEventName: String
   email: String!
+  customizable: Boolean
+  parentStepId: String
 }
 
 enum EventType {
@@ -358,12 +362,16 @@ type LinkAction implements Action
   parentBlock: Block
   url: String!
   target: String
+  customizable: Boolean
+  parentStepId: String
 }
 
 input LinkActionInput {
   gtmEventName: String
   url: String!
   target: String
+  customizable: Boolean
+  parentStepId: String
 }
 
 union MediaVideo = MuxVideo | Video | YouTube

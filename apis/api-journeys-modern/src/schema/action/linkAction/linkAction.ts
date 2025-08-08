@@ -11,6 +11,8 @@ export const LinkActionRef = builder.prismaObject('Action', {
       nullable: false,
       resolve: (action) => action.url || ''
     }),
-    target: t.exposeString('target', { nullable: true })
+    target: t.exposeString('target', { nullable: true }),
+    customizable: t.exposeBoolean('customizable', { nullable: true }),
+    parentStepId: t.exposeString('parentStepId', { nullable: true })
   })
 })
