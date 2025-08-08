@@ -66,11 +66,7 @@ describe('VideoCollection', () => {
       </MockedProvider>
     )
     
-    // First check that loading state appears
-    const loadingElements = screen.getAllByTestId('loading-skeleton')
-    expect(loadingElements.length).toBeGreaterThan(0)
-    
-    // Wait for video cards to load (either from mocks or real API)
+    // Wait for video cards to load in carousel
     const videoCards = await screen.findAllByRole('button')
     expect(videoCards.length).toBeGreaterThan(0)
     

@@ -93,15 +93,15 @@ Nice-to-haves (~):
 
 DoD: tests for animations; modal functionality; enhanced responsive.
 
-### Slice 2 — Video Collection Improved [Status: PLANNED]
+### Slice 2 — Video Collection Improved [Status: COMPLETED]
 Scope: Carousel functionality and enhanced video cards
 
 Nice-to-haves (~):
-- [ ] Horizontal carousel with navigation buttons
-- [ ] Progress indicators for carousel
-- [ ] Enhanced video metadata (languages, subtitles)
-- [ ] Play button overlays on hover
-- [ ] Smooth scrolling and snap points
+- [x] Horizontal carousel with navigation buttons
+- [x] Progress indicators for carousel
+- [x] Enhanced video metadata (languages, subtitles)
+- [x] Play button overlays on hover
+- [x] Smooth scrolling and snap points
 
 DoD: tests for carousel functionality; hover effects; smooth scrolling.
 

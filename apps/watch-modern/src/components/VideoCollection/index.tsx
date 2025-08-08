@@ -3,7 +3,17 @@
 import { useQuery } from '@apollo/client'
 import { Play } from "lucide-react"
 import Image from "next/image"
+import { useEffect, useState } from "react"
 
+import { Button } from '@/components/ui/button'
+import {
+  type CarouselApi,
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from '@/components/ui/carousel'
 import { GET_VIDEOS } from '@/libs/queries/films'
 
 interface CloudflareImage {
@@ -53,15 +63,32 @@ interface GetVideosVars {
 }
 
 export function VideoCollection() {
+  const [carouselApi, setCarouselApi] = useState<CarouselApi>()
+  const [current, setCurrent] = useState(0)
+  const [count, setCount] = useState(0)
+
   const { data, loading, error } = useQuery<GetVideosData, GetVideosVars>(GET_VIDEOS, {
     variables: {
       languageId: '529', // English language ID
-      limit: 6
+      limit: 10 // Increased limit for carousel
     },
     errorPolicy: 'all', // Don't throw on network errors
     notifyOnNetworkStatusChange: false,
     fetchPolicy: 'cache-and-network'
   })
+
+  useEffect(() => {
+    if (!carouselApi) {
+      return
+    }
+
+    setCount(carouselApi.scrollSnapList().length)
+    setCurrent(carouselApi.selectedScrollSnap() + 1)
+
+    carouselApi.on("select", () => {
+      setCurrent(carouselApi.selectedScrollSnap() + 1)
+    })
+  }, [carouselApi])
 
   const handleVideoClick = (videoId: string) => {
     // Navigate to video detail page
@@ -116,6 +143,13 @@ export function VideoCollection() {
                 {description}
               </p>
             </div>
+            <Button
+              size="lg"
+              className="bg-white text-slate-900 hover:bg-blue-50 px-10 py-4 rounded-full font-semibold tracking-wide transition-all duration-200 flex items-center gap-3 mt-8 shadow-2xl hover:shadow-white/20"
+            >
+              <Play className="w-5 h-5 fill-slate-900" />
+              WATCH NOW
+            </Button>
           </div>
         </div>
         <div className="max-w-[1920px] mx-auto px-4 sm:px-8 lg:px-20 relative z-10 mb-12">
@@ -185,80 +219,122 @@ export function VideoCollection() {
               {description}
             </p>
           </div>
+          <Button
+            size="lg"
+            className="bg-white text-slate-900 hover:bg-blue-50 px-10 py-4 rounded-full font-semibold tracking-wide transition-all duration-200 flex items-center gap-3 mt-8 shadow-2xl hover:shadow-white/20"
+          >
+            <Play className="w-5 h-5 fill-slate-900" />
+            WATCH NOW
+          </Button>
         </div>
       </div>
 
-      {/* Video Grid - Basic Static Grid */}
-      <div className="max-w-[1920px] mx-auto px-4 sm:px-8 lg:px-20 relative z-10 mb-12">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-16 sm:gap-6">
-          {videos.map((video) => {
-            // Get the first image from the array, or use a fallback
-            const firstImage = video.images?.[0]
-            const imageUrl = firstImage?.mobileCinematicHigh || '/placeholder-image.jpg'
-            
-            // Get the first title, snippet, description, and imageAlt from their arrays
-            const videoTitle = video.title?.[0]?.value
-            const videoImageAlt = video.imageAlt?.[0]?.value || videoTitle || 'Video'
-            
-            return (
-              <div 
-                key={video.id} 
-                className="group cursor-pointer w-[75%] sm:w-auto mx-auto sm:mx-0"
-                onClick={() => handleVideoClick(video.slug)}
-                role="button"
-                tabIndex={0}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter' || e.key === ' ') {
-                    e.preventDefault()
-                    handleVideoClick(video.slug)
-                  }
-                }}
-                aria-label={`Watch ${videoTitle || 'Video'}`}
-              >
-                {/* Video Thumbnail */}
-                <div className="relative aspect-[2/3] rounded-xl overflow-hidden mb-3 bg-slate-800 shadow-2xl hover:shadow-3xl transition-all duration-300">
-                  <Image
-                    src={imageUrl}
-                    alt={videoImageAlt}
-                    fill
-                    className="object-cover transition-transform duration-300 group-hover:scale-105"
-                  />
+      {/* Video Carousel - Full Width */}
+      <div className="relative z-10 mb-12">
+        <div 
+          className="film-carousel"
+          style={{
+            paddingBottom: "80px",
+          }}
+        >
+          <Carousel 
+            opts={{
+              align: "start",
+              loop: false,
+            }}
+            setApi={setCarouselApi}
+            className="w-full"
+          >
+            <CarouselContent className="-ml-6 pl-6">
+              {videos.map((video, index) => {
+                // Get the first image from the array, or use a fallback
+                const firstImage = video.images?.[0]
+                const imageUrl = firstImage?.mobileCinematicHigh || '/placeholder-image.jpg'
+                
+                // Get the first title, snippet, description, and imageAlt from their arrays
+                const videoTitle = video.title?.[0]?.value
+                const videoImageAlt = video.imageAlt?.[0]?.value || videoTitle || 'Video'
+                
+                return (
+                  <CarouselItem key={video.id} className={`basis-auto ${index === 0 ? 'pl-24' : 'pl-6'}`}>
+                    <div className="w-[280px]">
+                      <div 
+                        className="relative aspect-[2/3] rounded-2xl overflow-hidden group cursor-pointer shadow-2xl hover:shadow-3xl transition-all duration-300 slide-with-bevel"
+                        onClick={() => handleVideoClick(video.slug)}
+                        role="button"
+                        tabIndex={0}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter' || e.key === ' ') {
+                            e.preventDefault()
+                            handleVideoClick(video.slug)
+                          }
+                        }}
+                        aria-label={`Watch ${videoTitle || 'Video'}`}
+                      >
+                        <Image
+                          src={imageUrl}
+                          alt={videoImageAlt}
+                          fill
+                          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent" />
+                        <div className="absolute inset-0 bg-gradient-to-t from-stone-950/80 via-transparent to-transparent opacity-80" />
 
-                  {/* Opacity Gradient Overlay */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent" />
-                  <div className="absolute inset-0 bg-gradient-to-t from-stone-950/80 via-transparent to-transparent opacity-80" />
+                        {/* Play Button Overlay */}
+                        <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                          <div className="bg-white/20 backdrop-blur-sm rounded-full p-6 border border-white/30">
+                            <Play className="w-8 h-8 text-white fill-white" />
+                          </div>
+                        </div>
 
-                  {/* Play Button Overlay */}
-                  <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                    <div className="bg-white/20 backdrop-blur-sm rounded-full p-6 border border-white/30">
-                      <Play className="w-8 h-8 text-white fill-white" />
+                        <div className="absolute bottom-0 left-0 right-0 p-6">
+                          <div className="mb-3">
+                            <div className="flex items-center gap-2 text-stone-200/80 text-xs uppercase tracking-wider mb-2">
+                              <span>{formatDuration(video.variant?.duration || 0)}</span>
+                              <span className="w-1 h-1 bg-stone-200/60 rounded-full"></span>
+                              <span>{formatLanguageCount(video.variantLanguagesCount || 0)}</span>
+                            </div>
+                            <h3 className="text-white text-xl font-semibold mb-2 tracking-wide leading-tight">
+                              {videoTitle || 'Video Title'}
+                            </h3>
+                            <p className="text-stone-100/90 text-sm leading-relaxed">
+                              {video.snippet?.[0]?.value || video.description?.[0]?.value || ''}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
                     </div>
-                  </div>
+                  </CarouselItem>
+                )
+              })}
+            </CarouselContent>
+            <CarouselPrevious className="left-2 w-14 h-14 bg-white/10 backdrop-blur-sm border-white/20 hover:bg-white/20 text-white shadow-2xl" />
+            <CarouselNext className="right-2 w-14 h-14 bg-white/10 backdrop-blur-sm border-white/20 hover:bg-white/20 text-white shadow-2xl" />
+          </Carousel>
 
-                  {/* Duration Badge */}
-                  <div className="absolute bottom-2 right-2 bg-black/80 text-white text-xs px-2 py-1 rounded font-medium flex items-center gap-1">
-                    <Play className="w-2.5 h-2.5 fill-white" />
-                    {formatDuration(video.variant?.duration || 0)}
-                  </div>
-                </div>
-
-                {/* Video Info */}
-                <div className="space-y-1">
-                  <div className="flex items-center gap-2 text-stone-200/80 text-xs uppercase tracking-wider mb-2">
-                    <span>{formatDuration(video.variant?.duration || 0)}</span>
-                    <span className="w-1 h-1 bg-stone-200/60 rounded-full"></span>
-                    <span>{formatLanguageCount(video.variantLanguagesCount || 0)}</span>
-                  </div>
-                  <h3 className="text-white text-3xl font-semibold leading-tight line-clamp-2 group-hover:text-stone-200 transition-colors duration-200">
-                    {videoTitle || 'Video Title'}
-                  </h3>
-                  <p className="text-stone-100/90 text-sm leading-relaxed line-clamp-2">
-                    {video.snippet?.[0]?.value || video.description?.[0]?.value || ''}
-                  </p>
-                </div>
+          {/* Progress Indicator */}
+          <div className="flex justify-center mt-8">
+            <div className="flex items-center gap-3 bg-white/5 backdrop-blur-sm rounded-full px-6 py-3 border border-white/10">
+              <div className="flex items-center gap-2">
+                {Array.from({ length: count }, (_, index) => (
+                  <button
+                    key={index}
+                    onClick={() => carouselApi?.scrollTo(index)}
+                    className={`transition-all duration-300 rounded-full ${
+                      index + 1 === current
+                        ? "w-8 h-2 bg-white shadow-lg"
+                        : "w-2 h-2 bg-white/30 hover:bg-white/50"
+                    }`}
+                    aria-label={`Go to slide ${index + 1}`}
+                  />
+                ))}
               </div>
-            )
-          })}
+              <div className="w-px h-4 bg-white/20" />
+              <span className="text-white/80 text-sm font-medium tracking-wide">
+                {current} / {count}
+              </span>
+            </div>
+          </div>
         </div>
       </div>
 

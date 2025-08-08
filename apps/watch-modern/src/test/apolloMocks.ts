@@ -14,7 +14,7 @@ export interface GetVideosMockOptions {
 
 export function makeGetVideosMock(options: GetVideosMockOptions = {}): MockedResponse {
   const {
-    variables = { languageId: '529', limit: 6 },
+    variables = { languageId: '529', limit: 10 },
     data = mockVideosData,
     error
   } = options

@@ -30,6 +30,28 @@ exports[`VideoCollection renders correctly 1`] = `
             Experience the life of Jesus through authentic, faithful films translated into thousands of languages worldwide.
           </p>
         </div>
+        <button
+          class="justify-center whitespace-nowrap text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 h-11 bg-white text-slate-900 hover:bg-blue-50 px-10 py-4 rounded-full font-semibold tracking-wide transition-all duration-200 flex items-center gap-3 mt-8 shadow-2xl hover:shadow-white/20"
+        >
+          <svg
+            aria-hidden="true"
+            class="lucide lucide-play w-5 h-5 fill-slate-900"
+            fill="none"
+            height="24"
+            stroke="currentColor"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+            width="24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <polygon
+              points="6 3 20 12 6 21 6 3"
+            />
+          </svg>
+          WATCH NOW
+        </button>
       </div>
     </div>
     <div
