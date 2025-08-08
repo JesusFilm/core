@@ -63,11 +63,6 @@
       "cache": true,
       "inputs": ["default", "^production"]
     },
-    "build": {
-      "dependsOn": ["^build"],
-      "inputs": ["production", "^production"],
-      "cache": true
-    },
     "build-storybook": {
       "inputs": [
         "default",
@@ -81,23 +76,12 @@
       "cache": true,
       "inputs": ["{workspaceRoot}/apis/api-gateway/schema.graphql"]
     },
-    "e2e": {
-      "cache": true
-    },
     "extract-translations": {
-      "cache": true,
+      "cache": false,
       "inputs": ["default"]
     },
-    "lint": {
-      "inputs": [
-        "default",
-        "{workspaceRoot}/.eslintrc.json",
-        "{workspaceRoot}/eslint.config.js"
-      ],
-      "cache": true
-    },
     "prisma-generate": {
-      "cache": true,
+      "cache": false,
       "inputs": ["{projectRoot}/**/schema.prisma"]
     },
     "subgraph-check": {
