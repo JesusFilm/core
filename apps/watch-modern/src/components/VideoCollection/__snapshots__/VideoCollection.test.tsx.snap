@@ -1,0 +1,273 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`VideoCollection renders correctly 1`] = `
+<div>
+  <section
+    class="min-h-screen bg-slate-950 bg-gradient-to-tr from-blue-950/10 via-purple-950/10 to-[#91214A]/90 py-16 scroll-snap-start-always text-white relative"
+  >
+    <div
+      class="max-w-[1920px] mx-auto px-4 sm:px-8 lg:px-20 py-12 relative z-10"
+    >
+      <div
+        class="flex justify-between items-start mb-12"
+      >
+        <div
+          class="max-w-5xl"
+        >
+          <p
+            class="text-stone-200/80 text-sm tracking-[0.3em] uppercase mb-8 font-medium text-[rgba(255,255,255,0.6)]"
+          >
+            VIDEO BIBLE COLLECTION
+          </p>
+          <h2
+            class="text-3xl xl:text-4xl 2xl:text-5xl font-bold leading-[0.95] tracking-tight text-white mb-6"
+          >
+            Video Gospel in every style and language
+          </h2>
+          <p
+            class="text-stone-100/90 text-xl leading-relaxed max-w-3xl text-[rgba(255,255,255,0.9)]"
+          >
+            Experience the life of Jesus through authentic, faithful films translated into thousands of languages worldwide.
+          </p>
+        </div>
+      </div>
+    </div>
+    <div
+      class="max-w-[1920px] mx-auto px-4 sm:px-8 lg:px-20 relative z-10 mb-12"
+    >
+      <div
+        class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-16 sm:gap-6"
+      >
+        <div
+          class="w-[75%] sm:w-auto mx-auto sm:mx-0"
+        >
+          <div
+            class="relative aspect-[2/3] rounded-xl overflow-hidden mb-3 bg-slate-800 animate-pulse"
+          >
+            <div
+              class="absolute inset-0 bg-slate-700"
+            />
+          </div>
+          <div
+            class="space-y-1"
+          >
+            <div
+              class="flex items-center gap-2 text-stone-200/80 text-xs uppercase tracking-wider mb-2"
+            >
+              <div
+                class="h-4 bg-slate-700 rounded animate-pulse w-16"
+                data-testid="loading-skeleton"
+              />
+              <span
+                class="w-1 h-1 bg-stone-200/60 rounded-full"
+              />
+              <div
+                class="h-4 bg-slate-700 rounded animate-pulse w-20"
+                data-testid="loading-skeleton"
+              />
+            </div>
+            <div
+              class="h-6 bg-slate-700 rounded animate-pulse mb-2"
+              data-testid="loading-skeleton"
+            />
+            <div
+              class="h-4 bg-slate-700 rounded animate-pulse"
+              data-testid="loading-skeleton"
+            />
+          </div>
+        </div>
+        <div
+          class="w-[75%] sm:w-auto mx-auto sm:mx-0"
+        >
+          <div
+            class="relative aspect-[2/3] rounded-xl overflow-hidden mb-3 bg-slate-800 animate-pulse"
+          >
+            <div
+              class="absolute inset-0 bg-slate-700"
+            />
+          </div>
+          <div
+            class="space-y-1"
+          >
+            <div
+              class="flex items-center gap-2 text-stone-200/80 text-xs uppercase tracking-wider mb-2"
+            >
+              <div
+                class="h-4 bg-slate-700 rounded animate-pulse w-16"
+                data-testid="loading-skeleton"
+              />
+              <span
+                class="w-1 h-1 bg-stone-200/60 rounded-full"
+              />
+              <div
+                class="h-4 bg-slate-700 rounded animate-pulse w-20"
+                data-testid="loading-skeleton"
+              />
+            </div>
+            <div
+              class="h-6 bg-slate-700 rounded animate-pulse mb-2"
+              data-testid="loading-skeleton"
+            />
+            <div
+              class="h-4 bg-slate-700 rounded animate-pulse"
+              data-testid="loading-skeleton"
+            />
+          </div>
+        </div>
+        <div
+          class="w-[75%] sm:w-auto mx-auto sm:mx-0"
+        >
+          <div
+            class="relative aspect-[2/3] rounded-xl overflow-hidden mb-3 bg-slate-800 animate-pulse"
+          >
+            <div
+              class="absolute inset-0 bg-slate-700"
+            />
+          </div>
+          <div
+            class="space-y-1"
+          >
+            <div
+              class="flex items-center gap-2 text-stone-200/80 text-xs uppercase tracking-wider mb-2"
+            >
+              <div
+                class="h-4 bg-slate-700 rounded animate-pulse w-16"
+                data-testid="loading-skeleton"
+              />
+              <span
+                class="w-1 h-1 bg-stone-200/60 rounded-full"
+              />
+              <div
+                class="h-4 bg-slate-700 rounded animate-pulse w-20"
+                data-testid="loading-skeleton"
+              />
+            </div>
+            <div
+              class="h-6 bg-slate-700 rounded animate-pulse mb-2"
+              data-testid="loading-skeleton"
+            />
+            <div
+              class="h-4 bg-slate-700 rounded animate-pulse"
+              data-testid="loading-skeleton"
+            />
+          </div>
+        </div>
+        <div
+          class="w-[75%] sm:w-auto mx-auto sm:mx-0"
+        >
+          <div
+            class="relative aspect-[2/3] rounded-xl overflow-hidden mb-3 bg-slate-800 animate-pulse"
+          >
+            <div
+              class="absolute inset-0 bg-slate-700"
+            />
+          </div>
+          <div
+            class="space-y-1"
+          >
+            <div
+              class="flex items-center gap-2 text-stone-200/80 text-xs uppercase tracking-wider mb-2"
+            >
+              <div
+                class="h-4 bg-slate-700 rounded animate-pulse w-16"
+                data-testid="loading-skeleton"
+              />
+              <span
+                class="w-1 h-1 bg-stone-200/60 rounded-full"
+              />
+              <div
+                class="h-4 bg-slate-700 rounded animate-pulse w-20"
+                data-testid="loading-skeleton"
+              />
+            </div>
+            <div
+              class="h-6 bg-slate-700 rounded animate-pulse mb-2"
+              data-testid="loading-skeleton"
+            />
+            <div
+              class="h-4 bg-slate-700 rounded animate-pulse"
+              data-testid="loading-skeleton"
+            />
+          </div>
+        </div>
+        <div
+          class="w-[75%] sm:w-auto mx-auto sm:mx-0"
+        >
+          <div
+            class="relative aspect-[2/3] rounded-xl overflow-hidden mb-3 bg-slate-800 animate-pulse"
+          >
+            <div
+              class="absolute inset-0 bg-slate-700"
+            />
+          </div>
+          <div
+            class="space-y-1"
+          >
+            <div
+              class="flex items-center gap-2 text-stone-200/80 text-xs uppercase tracking-wider mb-2"
+            >
+              <div
+                class="h-4 bg-slate-700 rounded animate-pulse w-16"
+                data-testid="loading-skeleton"
+              />
+              <span
+                class="w-1 h-1 bg-stone-200/60 rounded-full"
+              />
+              <div
+                class="h-4 bg-slate-700 rounded animate-pulse w-20"
+                data-testid="loading-skeleton"
+              />
+            </div>
+            <div
+              class="h-6 bg-slate-700 rounded animate-pulse mb-2"
+              data-testid="loading-skeleton"
+            />
+            <div
+              class="h-4 bg-slate-700 rounded animate-pulse"
+              data-testid="loading-skeleton"
+            />
+          </div>
+        </div>
+        <div
+          class="w-[75%] sm:w-auto mx-auto sm:mx-0"
+        >
+          <div
+            class="relative aspect-[2/3] rounded-xl overflow-hidden mb-3 bg-slate-800 animate-pulse"
+          >
+            <div
+              class="absolute inset-0 bg-slate-700"
+            />
+          </div>
+          <div
+            class="space-y-1"
+          >
+            <div
+              class="flex items-center gap-2 text-stone-200/80 text-xs uppercase tracking-wider mb-2"
+            >
+              <div
+                class="h-4 bg-slate-700 rounded animate-pulse w-16"
+                data-testid="loading-skeleton"
+              />
+              <span
+                class="w-1 h-1 bg-stone-200/60 rounded-full"
+              />
+              <div
+                class="h-4 bg-slate-700 rounded animate-pulse w-20"
+                data-testid="loading-skeleton"
+              />
+            </div>
+            <div
+              class="h-6 bg-slate-700 rounded animate-pulse mb-2"
+              data-testid="loading-skeleton"
+            />
+            <div
+              class="h-4 bg-slate-700 rounded animate-pulse"
+              data-testid="loading-skeleton"
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+`;

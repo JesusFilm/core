@@ -28,7 +28,8 @@ export type TrendingCategory =
   | 'videoGospel' 
   | 'shortVideos' 
   | 'animatedSeries' 
-  | 'upcomingEvents';
+  | 'upcomingEvents'
+  | 'lumoMark';
 
 export interface LanguageOption {
   code: Language;

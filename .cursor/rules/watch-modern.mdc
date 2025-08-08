@@ -67,6 +67,21 @@ Follow these rules when you write code:
 - Implement accessibility features on elements. For example, a tag should have a tabindex="0", aria-label, on:click, and on:keydown, and similar attributes.
 - "All components and functions must be fully typed with TypeScript."
 
+## 2. Apollo Client — Runtime and Testing Rules
+
+- Runtime Provider:
+  - The app root must wrap children with an ApolloProvider. Use a dedicated client wrapper (e.g., `apps/watch-modern/src/app/ApolloClientProvider.tsx`) that calls `useApolloClient()` and renders `<ApolloProvider client={client}>`.
+  - Ensure this wrapper is used in `src/app/layout.tsx`.
+- Component Usage:
+  - Components must consume Apollo Client from React context. Do NOT construct an ApolloClient in components. Do NOT pass a `client` prop to `useQuery`.
+- Testing:
+  - Wrap components with `MockedProvider` in tests.
+  - Provide mocks as `MockedResponse[]` using `{ request: { query, variables }, result: { data } }`.
+  - Keep data shapes consistent with GraphQL schema (arrays for `title`, `snippet`, `description`, `imageAlt`, and `images`).
+  - Avoid brittle assertions that depend on live content; assert structure/roles or use stable fixture values.
+- Env Vars:
+  - `NEXT_PUBLIC_GATEWAY_URL` affects runtime network calls only. Tests must not depend on it; they should be hermetic with `MockedProvider`.
+
 ## 3. Testing Strategy & Implementation
 
 ### Testing Technology Stack
@@ -110,142 +125,29 @@ Development (TDD) methodology.
 5. **Conditional logic**: Different states and prop combinations
 6. **CSS classes**: Correct Tailwind classes applied
 
-### Example Test Patterns
-```typescript
-describe('MyComponent', () => {
-  it('should render with correct text', () => {
-    render(<MyComponent text="Hello World" />)
-    expect(screen.getByText('Hello World')).toBeInTheDocument()
-  })
-
-  it('should handle click events', async () => {
-    const handleClick = jest.fn()
-    render(<MyComponent onClick={handleClick} />)
-    
-    await user.click(screen.getByRole('button'))
-    expect(handleClick).toHaveBeenCalledTimes(1)
-  })
-
-  it('should apply correct CSS classes', () => {
-    render(<MyComponent className="custom-class" />)
-    expect(screen.getByRole('button')).toHaveClass('custom-class')
-  })
-})
-```
-
 ## Documentation Guidelines
-
 - Keep documentation up to date with code changes.
 
 ## Component Patterns
-
 - Export all components through index.ts files
 - Use alphabetical order for imports and exports
 
 ### Component Naming Conventions
-
-Components should follow a consistent naming pattern based on their type/category to improve organization and discoverability:
-
-- **Pages**: Prefix with 'Page'
-  - PageHome
-  - PageVideo  
-  - PageCollection
-  - PageSearch
-  - PageSettings
-
-- **Dialogs/Modals**: Prefix with 'Dialog'
-  - DialogConfirm
-  - DialogShare
-  - DialogSettings
-
-- **Sections**: Prefix with 'Section'
-  - SectionHeader
-  - SectionFooter 
-  - SectionHero
-  - SectionFeatures
-
-- **Layout Components**: Prefix with 'Layout'
-  - LayoutDefault
-  - LayoutFullWidth
-  - LayoutSidebar
-
+- Pages: `PageHome`, `PageVideo`, `PageCollection`, `PageSearch`, `PageSettings`
+- Dialogs: `DialogConfirm`, `DialogShare`, `DialogSettings`
+- Sections: `SectionHeader`, `SectionFooter`, `SectionHero`, `SectionFeatures`
+- Layouts: `LayoutDefault`, `LayoutFullWidth`, `LayoutSidebar`
 
 - Prefix interface names with component name: `PageLayoutProps`
 
 **CSS Class Patterns**:
-
 - Use component classes from globals.css: `.container-standard`, `.responsive-padding`, `.space-between`
 - Follow z-index system: `.z-header`, `.z-content`, `.z-modal`
 - Use responsive patterns: `.hide-mobile`, `.show-mobile`
 
 **Linting Requirements**:
-
 - Use type-only imports for React types: `import type { ReactElement }`
 - Maintain alphabetical import order
-
-## Component Implementation Patterns
-
-**React Component Structure**:
-
-- Define interfaces above the component function
-- Use destructured props with default values
-
-**Component Props Patterns**:
-
-- Use optional props with sensible defaults: `hideHeader = false`
-- Include className prop for extensibility: `className?: string`
-- Use ReactNode for children and content slots: `children?: ReactNode`
-- Name interfaces with component name prefix: `ComponentNameProps`
-
-**Layout Integration Patterns**:
-
-- Use semantic HTML elements: `<header>`, `<main>`, `<footer>`
-- Apply z-index classes semantically: `.z-header`, `.z-content`
-- Use container and responsive padding patterns consistently
-- Implement responsive behavior with established hide/show classes
-
-## Test-Driven Development Patterns
-
-**Component Testing Workflow**:
-
-1. **Write test file first**: Create `ComponentName.spec.tsx` before `ComponentName.tsx`
-2. **Test component rendering**: Verify component renders without crashing
-3. **Test props and interactions**: Test all props, user interactions, and state changes
-4. **Test accessibility**: Ensure proper ARIA labels, keyboard navigation, screen reader support
-5. **Test responsive behavior**: Verify hide/show patterns and responsive classes
-
-**Test File Organization**:
-
-- Place test files adjacent to components: `ComponentName.spec.tsx`
-- Use descriptive test names: `should render header with correct brand text`
-- Group related tests with `describe` blocks
-- Use `beforeEach` for common setup, `afterEach` for cleanup
-
-**Testing Layout Components**:
-
-- Test CSS class application: `.container-standard`, `.responsive-padding`
-- Test conditional rendering: `hideHeader`, `hideFooter` props
-- Test responsive behavior: mobile/desktop class visibility
-- Test accessibility: semantic HTML elements, ARIA attributes
-
-**Example TDD Workflow**:
-
-```typescript
-// 1. RED: Write failing test first
-describe('MyComponent', () => {
-  it('should render with correct text', () => {
-    render(<MyComponent text="Hello" />)
-    expect(screen.getByText('Hello')).toBeInTheDocument()
-  })
-})
-
-// 2. GREEN: Write minimal implementation
-export function MyComponent({ text }: { text: string }) {
-  return <div>{text}</div>
-}
-
-// 3. REFACTOR: Improve while maintaining tests
-```
 
 # READ FIRST
 - Before coding: read prds/watch-modern/<feature>/{requirements.md,design.md,slices.md,intake.md}
@@ -261,17 +163,3 @@ export function MyComponent({ text }: { text: string }) {
 # STOP CONDITIONS
 - If spec is ambiguous/conflicting → stop and ask.
 - If spec files missing → stop; run SHAPING agent first.
-
-- Update apps/watch-modern/LEARNINGS.md after each slice.
-
-# STOP CONDITIONS
-- If spec is ambiguous/conflicting → stop and ask.
-- If spec files missing → stop and request SHAPING agent first.
-
-- Update apps/watch-modern/LEARNINGS.md after each slice.
-
-# STOP CONDITIONS
-- If spec is ambiguous/conflicting → stop and ask.
-- If spec files missing → stop and request SHAPING agent first.
-
-- Update apps/watch-modern/LEARNINGS.md after each slice.

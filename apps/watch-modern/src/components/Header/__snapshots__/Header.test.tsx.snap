@@ -1,0 +1,94 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Header renders correctly 1`] = `
+<div>
+  <div
+    class="absolute top-0 left-0 right-0 w-full h-[60px] sm:h-[80px] lg:h-[120px] max-w-[1920px] mx-auto z-[99] flex items-center justify-between px-4 sm:px-8 lg:px-20"
+    data-testid="CollectionsHeader"
+  >
+    <div
+      class="flex items-center"
+    >
+      <a
+        class="flex items-center"
+        href="/watch"
+      >
+        <img
+          alt="JesusFilm Project"
+          src="https://www.jesusfilm.org/watch/assets/jesusfilm-sign.svg"
+        />
+      </a>
+    </div>
+    <div
+      class="flex items-center gap-2 sm:gap-3"
+    >
+      <div
+        class="relative"
+      >
+        <input
+          class="w-40 sm:w-48 lg:w-64 pl-10 sm:pl-12 pr-3 sm:pr-4 py-2 sm:py-3 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 hover:bg-white/20 focus:bg-white/20 focus:outline-none focus:ring-2 focus:ring-white/30 transition-all duration-200 text-white placeholder-white/60 text-xs sm:text-sm"
+          data-testid="SearchField"
+          placeholder="Search videos..."
+          type="text"
+        />
+        <svg
+          aria-hidden="true"
+          class="lucide lucide-search absolute left-3 sm:left-4 top-1/2 transform -translate-y-1/2 w-4 h-4 sm:w-5 sm:h-5 text-white/60 pointer-events-none"
+          fill="none"
+          focusable="false"
+          height="24"
+          stroke="currentColor"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          viewBox="0 0 24 24"
+          width="24"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="m21 21-4.34-4.34"
+          />
+          <circle
+            cx="11"
+            cy="11"
+            r="8"
+          />
+        </svg>
+      </div>
+      <button
+        aria-label="select language"
+        class="inline-flex items-center justify-center p-2 sm:p-3 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 hover:bg-white/20 transition-all duration-200 text-white"
+        data-testid="LanguageButton"
+        type="button"
+      >
+        <svg
+          aria-hidden="true"
+          class="lucide lucide-globe w-5 h-5 sm:w-6 sm:h-6"
+          fill="none"
+          focusable="false"
+          height="24"
+          stroke="currentColor"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          viewBox="0 0 24 24"
+          width="24"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <circle
+            cx="12"
+            cy="12"
+            r="10"
+          />
+          <path
+            d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"
+          />
+          <path
+            d="M2 12h20"
+          />
+        </svg>
+      </button>
+    </div>
+  </div>
+</div>
+`;

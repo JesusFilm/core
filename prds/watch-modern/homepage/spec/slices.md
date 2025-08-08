@@ -1,0 +1,227 @@
+# Homepage Implementation Slices
+
+## Instructions for Filling Slices Template
+
+This template follows ShapeUp principles of vertical, value-first feature delivery. Each slice should:
+
+1. Deliver end-to-end user value
+2. Address risks early
+3. Start simple and iterate
+4. Be testable and production-ready
+
+## Basic implementation
+
+### Slice 1 — Homepage Basic [Status: COMPLETED]
+Scope: Minimal homepage with hero section and basic navigation
+
+Must-haves:
+- [x] Basic page structure with Next.js App Router
+- [x] Header with logo and search bar (no functionality)
+- [x] Hero section with static background (no animation)
+- [x] Mission statement text (no gradient effects)
+- [x] Single CTA button linking to video collection
+- [x] Basic responsive layout (mobile/desktop)
+
+DoD: tests for page rendering; a11y basics; responsive baseline.
+
+### Slice 2 — Video Collection Basic [Status: IN PROGRESS]
+Scope: Simple video grid display
+
+Must-haves:
+- [x] Static grid of 6 video cards (no carousel)
+- [x] Basic video metadata display (title, duration)
+- [x] GraphQL integration for video data (implemented)
+- [x] Click navigation to video detail pages
+- [x] Basic responsive grid (2-4 columns)
+- [ ] API connection verification and data loading
+
+DoD: tests for video display; navigation works; responsive grid; GraphQL integration complete.
+
+### Slice 3 — Course Section Basic [Status: PLANNED]
+Scope: Simple course episode display
+
+Must-haves:
+- [ ] Static grid of 10 course episodes
+- [ ] Episode numbers and basic metadata
+- [ ] Hardcoded course data
+- [ ] Basic responsive layout
+- [ ] "SEE ALL" button (no functionality)
+
+DoD: tests for course display; episode numbering; responsive layout.
+
+### Slice 4 — Categories Basic [Status: PLANNED]
+Scope: Simple category display
+
+Must-haves:
+- [ ] Static grid of 12 category cards
+- [ ] Basic category names and icons
+- [ ] Hardcoded category data
+- [ ] Basic responsive layout
+- [ ] Click navigation to category pages
+
+DoD: tests for category display; navigation works; responsive layout.
+
+## Improved implementation
+
+### Slice 1 — Homepage Improved [Status: PLANNED]
+Scope: Enhanced hero with animations and audience segmentation
+
+Nice-to-haves (~):
+- [ ] Animated background grid (simplified version)
+- [ ] Gradient text effects on mission statement
+- [ ] Audience segmentation buttons (3 options)
+- [ ] Language button with modal trigger
+- [ ] Enhanced responsive design
+
+DoD: tests for animations; modal functionality; enhanced responsive.
+
+### Slice 2 — Video Collection Improved [Status: PLANNED]
+Scope: Carousel functionality and enhanced video cards
+
+Nice-to-haves (~):
+- [ ] Horizontal carousel with navigation buttons
+- [ ] Progress indicators for carousel
+- [ ] Enhanced video metadata (languages, subtitles)
+- [ ] Play button overlays on hover
+- [ ] Smooth scrolling and snap points
+
+DoD: tests for carousel functionality; hover effects; smooth scrolling.
+
+### Slice 3 — Course Section Improved [Status: PLANNED]
+Scope: Enhanced course display with background and effects
+
+Nice-to-haves (~):
+- [ ] Background image with overlay effects
+- [ ] Enhanced episode numbering with glow effects
+- [ ] Duration badges and play overlays
+- [ ] Improved responsive grid (4 columns)
+- [ ] "SEE ALL" button with proper linking
+
+DoD: tests for background effects; enhanced styling; proper linking.
+
+### Slice 4 — Categories Improved [Status: PLANNED]
+Scope: Enhanced category display with gradients and carousel
+
+Nice-to-haves (~):
+- [ ] Gradient backgrounds for each category
+- [ ] Horizontal carousel with navigation
+- [ ] Enhanced hover effects and transitions
+- [ ] Improved responsive design
+- [ ] Category-specific icons and colors
+
+DoD: tests for gradients; carousel functionality; enhanced hover effects.
+
+## Polished Implementation
+
+### Slice 1 — Homepage Polished [Status: PLANNED]
+Scope: Performance optimization and advanced animations
+
+- [ ] Performance optimizations
+  - [ ] Lazy loading for images
+  - [ ] Core Web Vitals optimization
+  - [ ] Bundle size optimization
+  - [ ] Image optimization with Next.js Image
+- [ ] Advanced animations
+  - [ ] Smooth 60fps background animation
+  - [ ] Reduced motion support
+  - [ ] Hardware acceleration
+  - [ ] Animation performance monitoring
+
+DoD: performance targets met; animations optimized; accessibility enhanced.
+
+### Slice 2 — Video Collection Polished [Status: PLANNED]
+Scope: API integration and advanced features
+
+- [ ] API integration
+  - [ ] GraphQL integration for video data
+  - [ ] Media API for thumbnails
+  - [ ] Error handling and loading states
+  - [ ] Data caching and optimization
+- [ ] Advanced features
+  - [ ] Search integration with Algolia
+  - [ ] Analytics tracking for video interactions
+  - [ ] SEO optimization for video content
+  - [ ] Structured data markup
+
+DoD: API integration complete; search functional; analytics tracking.
+
+### Slice 3 — Course Section Polished [Status: PLANNED]
+Scope: Advanced course features and optimization
+
+- [ ] Advanced course features
+  - [ ] Course progress tracking
+  - [ ] Episode completion states
+  - [ ] Course metadata and descriptions
+  - [ ] Related content suggestions
+- [ ] Optimization
+  - [ ] Video preloading for next episodes
+  - [ ] Course analytics tracking
+  - [ ] SEO optimization for course content
+  - [ ] Performance monitoring
+
+DoD: course features complete; analytics tracking; performance optimized.
+
+### Slice 4 — Categories Polished [Status: PLANNED]
+Scope: Advanced category features and internationalization
+
+- [ ] Advanced category features
+  - [ ] Category-specific content filtering
+  - [ ] Category analytics tracking
+  - [ ] Category metadata and descriptions
+  - [ ] Category-specific layouts
+- [ ] Internationalization
+  - [ ] Category name translations
+  - [ ] Multi-language support
+  - [ ] Language-specific content
+  - [ ] RTL language support
+
+DoD: category features complete; i18n implemented; analytics tracking.
+
+## Technical Dependencies
+
+### External Libraries
+- Next.js 14+ with App Router
+- Tailwind CSS 3.4+
+- Shadcn/ui components
+- Lucide React icons
+- Algolia InstantSearch.js
+- Apollo Client for GraphQL
+
+### Internal Dependencies
+- Existing Algolia configuration from `/apps/watch`
+- Language modal component from `/apps/watch`
+- Internationalization setup from `/apps/watch`
+- Analytics patterns from `/apps/watch`
+
+### API Dependencies
+- GraphQL API for video data
+- Media API for video thumbnails
+- Algolia search API
+- Translation API for i18n
+
+## Risk Mitigation
+
+### High Risk Items
+- **Animation Performance**: Implement reduced motion support and fallbacks
+- **Search Integration**: Thorough testing of Algolia integration
+- **Internationalization**: Comprehensive testing of all supported languages
+
+### Medium Risk Items
+- **Responsive Design**: Extensive testing across devices
+- **SEO Implementation**: Regular audits and monitoring
+- **Performance**: Continuous monitoring and optimization
+
+### Low Risk Items
+- **Component Development**: Standard React/Next.js patterns
+- **Styling**: Well-established Tailwind CSS approach
+- **Testing**: Standard testing practices
+
+## Success Criteria
+- Homepage loads in under 3 seconds
+- All animations run at 60fps
+- Accessibility score of 100%
+- SEO score of 90+ on Lighthouse
+- Cross-browser compatibility
+- Mobile-first responsive design
+- Full internationalization support
+

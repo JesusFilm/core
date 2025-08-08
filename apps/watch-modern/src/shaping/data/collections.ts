@@ -1,6 +1,6 @@
 // Hardcoded Collections for WAT-135 Shaping
 
-import { TrendingCategory, LanguageOption } from '../types/homepage.types';
+import type { TrendingCategory, LanguageOption } from '../types/homepage.types';
 
 export const COLLECTIONS = {
   featured: 'col_featured_001',
@@ -23,7 +23,8 @@ export const TRENDING_CATEGORIES: Record<TrendingCategory, string> = {
   videoGospel: 'Video Gospel',
   shortVideos: 'Short Videos',
   animatedSeries: 'Animated Series',
-  upcomingEvents: 'Upcoming Events'
+  upcomingEvents: 'Upcoming Events',
+  lumoMark: 'LUMO - Mark'
 };
 
 export const HERO_CONTENT = {

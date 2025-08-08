@@ -4,6 +4,7 @@ import { getLangDir } from 'rtl-detect'
 
 import DatadogErrorBoundary from '@/components/Datadog/ErrorBoundary'
 import DatadogInit from '@/components/Datadog/Init'
+import { ApolloClientProvider } from '@/app/ApolloClientProvider'
 
 import '@/app/globals.css'
 
@@ -20,7 +21,9 @@ export default async function RootLayout({
       <body>
         <DatadogInit />
         <NextIntlClientProvider>
-          <DatadogErrorBoundary>{children}</DatadogErrorBoundary>
+          <ApolloClientProvider>
+            <DatadogErrorBoundary>{children}</DatadogErrorBoundary>
+          </ApolloClientProvider>
         </NextIntlClientProvider>
       </body>
     </html>

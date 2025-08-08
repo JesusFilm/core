@@ -1,13 +1,14 @@
 'use client'
 
-import { ReactElement, useRef } from 'react'
+import { useRef } from 'react'
+import type { ReactElement } from 'react'
 import { A11y, FreeMode, Mousewheel, Navigation } from 'swiper/modules'
 import { Swiper, SwiperSlide } from 'swiper/react'
 import 'swiper/css'
 import 'swiper/css/navigation'
 import 'swiper/css/pagination'
 
-import { Video } from '../../types/homepage.types'
+import type { Video } from '../../types/homepage.types'
 import { VideoCard } from '../cards'
 
 interface VideoCarouselProps {
@@ -21,8 +22,9 @@ export function VideoCarousel({
   title,
   description
 }: VideoCarouselProps): ReactElement {
-  const nextRef = useRef<HTMLDivElement>(null)
-  const prevRef = useRef<HTMLDivElement>(null)
+  const nextRef = useRef<HTMLButtonElement>(null)
+  const prevRef = useRef<HTMLButtonElement>(null)
+  const noVideosText = 'No videos available'
 
   console.log('VideoCarousel videos:', videos)
 
@@ -42,7 +44,7 @@ export function VideoCarousel({
       <div className="relative h-80">
         {videos.length === 0 ? (
           <div className="flex items-center justify-center h-full text-stone-400">
-            <p>No videos available</p>
+            <p>{noVideosText}</p>
           </div>
         ) : (
           <>

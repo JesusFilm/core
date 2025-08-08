@@ -1,6 +1,6 @@
 // Mock Video Data for WAT-135 Shaping
 
-import { Video, VideoCollection } from '../types/homepage.types';
+import type { Video, VideoCollection } from '../types/homepage.types';
 import { COLLECTIONS } from './collections';
 
 // Mock videos with realistic data

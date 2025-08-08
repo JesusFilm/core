@@ -1,7 +1,7 @@
 'use client'
 
 import { MOCK_COLLECTIONS } from '../../shaping/data/mockVideos';
-import { HERO_CONTENT, LANGUAGES } from '../../shaping/data/collections';
+import { HERO_CONTENT } from '../../shaping/data/collections';
 import { Globe } from 'lucide-react';
 import { VideoCarousel } from '../../shaping/components/carousel/VideoCarousel';
 import VideoCard from '../../shaping/components/cards/VideoCard';

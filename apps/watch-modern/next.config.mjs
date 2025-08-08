@@ -42,6 +42,8 @@ const nextConfig = {
       { protocol: 'https', hostname: 'd3s4plubcuq0w9.cloudfront.net' },
       // cloudflare
       { protocol: 'https', hostname: 'imagedelivery.net' },
+      // droplr cdn for intake images
+      { protocol: 'https', hostname: 'cdn-std.droplr.net' },
       {
         protocol: 'https',
         hostname: `customer-${env.NEXT_PUBLIC_CLOUDFLARE_STREAM_CUSTOMER_CODE}.cloudflarestream.com`
