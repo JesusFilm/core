@@ -9,6 +9,8 @@ on:
         required: true
       JFP_AWS_SECRET_ACCESS_KEY:
         required: true
+permissions:
+  contents: read
 
 jobs:
   build-and-deploy:

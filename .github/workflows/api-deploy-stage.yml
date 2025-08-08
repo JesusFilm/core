@@ -3,6 +3,9 @@ on:
   push:
     branches:
       - stage
+permissions:
+  contents: read
+  checks: write
 jobs:
   affected:
     runs-on: blacksmith-2vcpu-ubuntu-2204

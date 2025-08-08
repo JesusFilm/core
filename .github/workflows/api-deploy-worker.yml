@@ -26,6 +26,9 @@ on:
         required: true
       AWS_NETWORK_CONFIG:
         required: true
+permissions:
+  contents: read
+  checks: write
 
 jobs:
   build-and-deploy:
