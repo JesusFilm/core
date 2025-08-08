@@ -81,15 +81,15 @@ DoD: tests for category display; responsive layout; a11y baseline; loading state
 
 ## Improved implementation
 
-### Slice 1 — Homepage Improved [Status: PLANNED]
+### Slice 1 — Homepage Improved [Status: COMPLETED]
 Scope: Enhanced hero with animations and audience segmentation
 
 Nice-to-haves (~):
-- [ ] Animated background grid (simplified version)
-- [ ] Gradient text effects on mission statement
-- [ ] Audience segmentation buttons (3 options)
-- [ ] Language button with modal trigger
-- [ ] Enhanced responsive design
+- [x] Animated background grid (simplified version)
+- [x] Gradient text effects on mission statement
+- [x] Audience segmentation buttons (3 options)
+- [x] Language button with modal trigger (removed - already in header)
+- [x] Enhanced responsive design
 
 DoD: tests for animations; modal functionality; enhanced responsive.
 

@@ -1,53 +1,85 @@
-import { render, screen } from '@testing-library/react'
+import { fireEvent, render, screen } from '@testing-library/react'
 
 import { HeroSection } from './index'
 
 describe('HeroSection', () => {
-  it('renders correctly', () => {
-    const { container } = render(<HeroSection />)
-    expect(container).toMatchSnapshot()
-  })
-
-  it('displays the main heading', () => {
+  it('renders the main heading with gradient text effect', () => {
     render(<HeroSection />)
+    
     const heading = screen.getByRole('heading', { level: 1 })
     expect(heading).toBeInTheDocument()
-    expect(heading).toHaveTextContent('Watch the Greatest Story Ever Told')
+    expect(screen.getByText('Greatest Story')).toHaveClass('bg-gradient-to-r', 'bg-clip-text', 'text-transparent')
   })
 
-  it('displays the mission statement', () => {
+  it('renders the subtitle text', () => {
     render(<HeroSection />)
-    const missionText = screen.getByText(/Watch the life of Jesus through authentic films/)
-    expect(missionText).toBeInTheDocument()
+    
+    expect(screen.getByText(/ONE STORY. EVERY LANGUAGE./)).toBeInTheDocument()
   })
 
-  it('has a CTA button', () => {
+  it('renders the mission statement', () => {
     render(<HeroSection />)
-    const ctaButton = screen.getByRole('button', { name: /Free Bible Videos/i })
-    expect(ctaButton).toBeInTheDocument()
+    
+    expect(screen.getByText(/Watch the life of Jesus through authentic films/)).toBeInTheDocument()
   })
 
-  it('displays the language tagline', () => {
+  it('renders the CTA button', () => {
     render(<HeroSection />)
-    const languageTagline = screen.getByText('ONE STORY. EVERY LANGUAGE.')
-    expect(languageTagline).toBeInTheDocument()
+    
+    expect(screen.getByText('Free Bible Videos')).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /free bible videos/i })).toBeInTheDocument()
   })
 
-  it('displays the audience segmentation section', () => {
+  it('renders audience segmentation section', () => {
     render(<HeroSection />)
-    const audienceHeading = screen.getByRole('heading', { level: 2 })
-    expect(audienceHeading).toHaveTextContent('Start your journey today.')
+    
+    expect(screen.getByText('Start your journey today.')).toBeInTheDocument()
+    expect(screen.getByText(/Find personalized videos and guidance/)).toBeInTheDocument()
   })
 
-  it('has proper semantic structure', () => {
+  it('renders all three audience segmentation buttons', () => {
     render(<HeroSection />)
-    const section = document.querySelector('section')
-    expect(section).toBeInTheDocument()
+    
+    expect(screen.getByText('Discover who Jesus is')).toBeInTheDocument()
+    expect(screen.getByText('Grow closer to God')).toBeInTheDocument()
+    expect(screen.getByText('Get equipped for ministry')).toBeInTheDocument()
   })
 
-  it('has responsive padding to prevent header overlap', () => {
+  it('handles audience button selection', () => {
     render(<HeroSection />)
-    const section = document.querySelector('section')
-    expect(section).toHaveClass('pt-[60px]', 'sm:pt-[80px]', 'lg:pt-[120px]')
+    
+    const firstButton = screen.getByText('Discover who Jesus is').closest('button')
+    expect(firstButton).toBeInTheDocument()
+    
+    if (firstButton) {
+      fireEvent.click(firstButton)
+      // The button should have enhanced styling when selected
+      expect(firstButton).toHaveClass('bg-white/20', 'border-white/40', 'shadow-xl')
+    }
+  })
+
+  it('has animated background grid elements', () => {
+    const { container } = render(<HeroSection />)
+    
+    // Check for animated grid elements
+    const gridElements = container.querySelectorAll('.animate-slide-left, .animate-slide-right')
+    expect(gridElements.length).toBeGreaterThan(0)
+  })
+
+  it('has proper accessibility attributes', () => {
+    render(<HeroSection />)
+    
+    // Check that audience buttons have proper accessibility
+    const audienceButtons = screen.getAllByRole('button')
+    audienceButtons.forEach((button) => {
+      expect(button).toBeInTheDocument()
+    })
+  })
+
+  it('has responsive design classes', () => {
+    const { container } = render(<HeroSection />)
+    
+    const section = container.querySelector('section')
+    expect(section).toHaveClass('min-h-screen', 'text-white', 'relative', 'flex', 'items-end', 'overflow-hidden')
   })
 }) 

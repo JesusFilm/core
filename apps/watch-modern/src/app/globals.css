@@ -185,4 +185,31 @@
     scroll-snap-align: start;
     scroll-snap-stop: always;
   }
+
+  /* Animated background grid */
+  @keyframes slide-left {
+    0% {
+      transform: translateX(0%);
+    }
+    100% {
+      transform: translateX(-100%);
+    }
+  }
+
+  @keyframes slide-right {
+    0% {
+      transform: translateX(-100%);
+    }
+    100% {
+      transform: translateX(0%);
+    }
+  }
+
+  .animate-slide-left {
+    animation: slide-left 20s linear infinite;
+  }
+
+  .animate-slide-right {
+    animation: slide-right 20s linear infinite;
+  }
 }
