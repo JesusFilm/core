@@ -160,34 +160,16 @@
         "command": "npm run ts-node apis/api-media/src/workers/cli.ts crowdin"
       }
     },
-    "queue-algolia": {
-      "executor": "nx:run-commands",
-      "options": {
-        "command": "npm run ts-node apis/api-media/src/workers/cli.ts algolia"
-      }
-    },
     "queue-blocklist": {
       "executor": "nx:run-commands",
       "options": {
         "command": "npm run ts-node apis/api-media/src/workers/cli.ts blocklist"
       }
     },
-    "queue-publish": {
-      "executor": "nx:run-commands",
-      "options": {
-        "command": "npm run ts-node apis/api-media/src/workers/cli.ts publish"
-      }
-    },
     "queue-seed": {
       "executor": "nx:run-commands",
       "options": {
         "command": "npm run ts-node apis/api-media/src/workers/cli.ts seed"
-      }
-    },
-    "queue-mux-downloads": {
-      "executor": "nx:run-commands",
-      "options": {
-        "command": "npm run ts-node apis/api-media/src/workers/cli.ts mux-downloads"
       }
     },
     "export-language-slugs": {
@@ -228,6 +210,12 @@
       "executor": "nx:run-commands",
       "options": {
         "command": "npm run ts-node apis/api-media/src/scripts/copy-distro-downloads.ts"
+      }
+    },
+    "update-arcgt-urls": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npm run ts-node apis/api-media/src/scripts/update-arcgt-urls.ts"
       }
     },
     "mux-videos": {

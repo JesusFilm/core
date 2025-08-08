@@ -1,1 +1,1 @@
-export { RadioOption, StyledRadioOption } from './RadioOption'
+export { RadioOption } from './RadioOption'

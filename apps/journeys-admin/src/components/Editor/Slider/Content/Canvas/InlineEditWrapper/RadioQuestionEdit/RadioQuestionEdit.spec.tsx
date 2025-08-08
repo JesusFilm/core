@@ -35,6 +35,7 @@ describe('RadioQuestionEdit', () => {
       parentBlockId: 'card.id',
       parentOrder: 0,
       id: 'radioQuestion.id',
+      gridView: false,
       children: children ?? []
     }
   }
@@ -46,6 +47,7 @@ describe('RadioQuestionEdit', () => {
     parentBlockId: 'card',
     parentOrder: 0,
     action: null,
+    pollOptionImageBlockId: null,
     children: []
   }
 
@@ -110,7 +112,7 @@ describe('RadioQuestionEdit', () => {
 
     const buttons = getAllByRole('button')
     expect(buttons).toHaveLength(12)
-    expect(buttons[11]).toHaveTextContent('Add New Option')
+    expect(buttons[11]).toHaveTextContent('Add Option')
 
     fireEvent.click(buttons[11])
     await waitFor(() => expect(result).toHaveBeenCalled())
@@ -186,7 +188,7 @@ describe('RadioQuestionEdit', () => {
     )
 
     const buttons = getAllByRole('button')
-    expect(buttons[11]).toHaveTextContent('Add New Option')
+    expect(buttons[11]).toHaveTextContent('Add Option')
 
     fireEvent.click(buttons[11])
     await waitFor(() => expect(result).toHaveBeenCalled())
@@ -275,7 +277,7 @@ describe('RadioQuestionEdit', () => {
     )
 
     const buttons = getAllByRole('button')
-    expect(buttons[11]).toHaveTextContent('Add New Option')
+    expect(buttons[11]).toHaveTextContent('Add Option')
 
     fireEvent.click(buttons[11])
     await waitFor(() => expect(result).toHaveBeenCalled())

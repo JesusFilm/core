@@ -67,6 +67,7 @@ export const basic: TreeBlock[] = [
             __typename: 'RadioQuestionBlock',
             parentBlockId: 'card1.id',
             parentOrder: 3,
+            gridView: false,
             children: [
               {
                 id: 'radioOption2.id',
@@ -80,6 +81,7 @@ export const basic: TreeBlock[] = [
                   gtmEventName: 'gtmEventName',
                   blockId: 'step2.id'
                 },
+                pollOptionImageBlockId: null,
                 children: []
               },
               {
@@ -94,6 +96,7 @@ export const basic: TreeBlock[] = [
                   gtmEventName: 'gtmEventName',
                   blockId: 'step3.id'
                 },
+                pollOptionImageBlockId: null,
                 children: []
               },
               {
@@ -108,6 +111,7 @@ export const basic: TreeBlock[] = [
                   gtmEventName: 'gtmEventName',
                   blockId: 'step4.id'
                 },
+                pollOptionImageBlockId: null,
                 children: []
               }
             ]
@@ -187,6 +191,7 @@ export const basic: TreeBlock[] = [
             __typename: 'RadioQuestionBlock',
             parentBlockId: 'card2.id',
             parentOrder: 2,
+            gridView: false,
             children: [
               {
                 id: 'radioOption1.id',
@@ -200,6 +205,7 @@ export const basic: TreeBlock[] = [
                   gtmEventName: 'gtmEventName',
                   blockId: 'step1.id'
                 },
+                pollOptionImageBlockId: null,
                 children: []
               },
               {
@@ -214,6 +220,7 @@ export const basic: TreeBlock[] = [
                   gtmEventName: 'gtmEventName',
                   blockId: 'step3.id'
                 },
+                pollOptionImageBlockId: null,
                 children: []
               },
               {
@@ -228,6 +235,7 @@ export const basic: TreeBlock[] = [
                   gtmEventName: 'gtmEventName',
                   blockId: 'step4.id'
                 },
+                pollOptionImageBlockId: null,
                 children: []
               }
             ]
@@ -292,6 +300,7 @@ export const basic: TreeBlock[] = [
             __typename: 'RadioQuestionBlock',
             parentBlockId: 'card3.id',
             parentOrder: 2,
+            gridView: false,
             children: [
               {
                 id: 'radioOption1.id',
@@ -305,6 +314,7 @@ export const basic: TreeBlock[] = [
                   gtmEventName: 'gtmEventName',
                   blockId: 'step1.id'
                 },
+                pollOptionImageBlockId: null,
                 children: []
               },
               {
@@ -319,6 +329,7 @@ export const basic: TreeBlock[] = [
                   gtmEventName: 'gtmEventName',
                   blockId: 'step2.id'
                 },
+                pollOptionImageBlockId: null,
                 children: []
               },
               {
@@ -333,6 +344,7 @@ export const basic: TreeBlock[] = [
                   gtmEventName: 'gtmEventName',
                   blockId: 'step4.id'
                 },
+                pollOptionImageBlockId: null,
                 children: []
               }
             ]
@@ -397,6 +409,7 @@ export const basic: TreeBlock[] = [
             __typename: 'RadioQuestionBlock',
             parentBlockId: 'card4.id',
             parentOrder: 2,
+            gridView: false,
             children: [
               {
                 id: 'radioOption1.id',
@@ -410,6 +423,7 @@ export const basic: TreeBlock[] = [
                   gtmEventName: 'gtmEventName',
                   blockId: 'step1.id'
                 },
+                pollOptionImageBlockId: null,
                 children: []
               },
               {
@@ -424,6 +438,7 @@ export const basic: TreeBlock[] = [
                   gtmEventName: 'gtmEventName',
                   blockId: 'step2.id'
                 },
+                pollOptionImageBlockId: null,
                 children: []
               },
               {
@@ -438,6 +453,7 @@ export const basic: TreeBlock[] = [
                   gtmEventName: 'gtmEventName',
                   blockId: 'step3.id'
                 },
+                pollOptionImageBlockId: null,
                 children: []
               }
             ]
@@ -785,6 +801,7 @@ export const imageBlocks: TreeBlock[] = [
             __typename: 'RadioQuestionBlock',
             parentBlockId: 'step2.id',
             parentOrder: 2,
+            gridView: false,
             children: [
               {
                 id: 'radioOption1.id',
@@ -793,6 +810,7 @@ export const imageBlocks: TreeBlock[] = [
                 parentOrder: 0,
                 label: 'Yes, God likes good people',
                 action: null,
+                pollOptionImageBlockId: null,
                 children: []
               },
               {
@@ -802,6 +820,7 @@ export const imageBlocks: TreeBlock[] = [
                 parentOrder: 1,
                 label: 'No, He will accept me as I am',
                 action: null,
+                pollOptionImageBlockId: null,
                 children: []
               }
             ]
@@ -1084,6 +1103,7 @@ export const videoBlocks: TreeBlock[] = [
             __typename: 'RadioQuestionBlock',
             parentBlockId: 'card2.id',
             parentOrder: 2,
+            gridView: false,
             children: [
               {
                 id: 'radioOption1.id',
@@ -1097,6 +1117,7 @@ export const videoBlocks: TreeBlock[] = [
                   gtmEventName: 'gtmEventName',
                   blockId: 'step3.id'
                 },
+                pollOptionImageBlockId: null,
                 children: []
               },
               {
@@ -1111,6 +1132,7 @@ export const videoBlocks: TreeBlock[] = [
                   gtmEventName: 'gtmEventName',
                   blockId: 'step4.id'
                 },
+                pollOptionImageBlockId: null,
                 children: []
               }
             ]
@@ -1362,6 +1384,7 @@ export const videoBlocksNoPoster: TreeBlock[] = [
             __typename: 'RadioQuestionBlock',
             parentBlockId: 'card2.id',
             parentOrder: 2,
+            gridView: false,
             children: [
               {
                 id: 'radioOption1.id',
@@ -1375,6 +1398,7 @@ export const videoBlocksNoPoster: TreeBlock[] = [
                   gtmEventName: 'gtmEventName',
                   blockId: 'step3.id'
                 },
+                pollOptionImageBlockId: null,
                 children: []
               },
               {
@@ -1389,6 +1413,7 @@ export const videoBlocksNoPoster: TreeBlock[] = [
                   gtmEventName: 'gtmEventName',
                   blockId: 'step4.id'
                 },
+                pollOptionImageBlockId: null,
                 children: []
               }
             ]
@@ -1649,6 +1674,7 @@ export const videoBlocksNoVideo: TreeBlock[] = [
             __typename: 'RadioQuestionBlock',
             parentBlockId: 'card2.id',
             parentOrder: 2,
+            gridView: false,
             children: [
               {
                 id: 'radioOption1.id',
@@ -1662,6 +1688,7 @@ export const videoBlocksNoVideo: TreeBlock[] = [
                   gtmEventName: 'gtmEventName',
                   blockId: 'step3.id'
                 },
+                pollOptionImageBlockId: null,
                 children: []
               },
               {
@@ -1676,6 +1703,7 @@ export const videoBlocksNoVideo: TreeBlock[] = [
                   gtmEventName: 'gtmEventName',
                   blockId: 'step4.id'
                 },
+                pollOptionImageBlockId: null,
                 children: []
               }
             ]
