@@ -1,3 +1,4 @@
+import { ActionInterface } from '../../action/action'
 import { builder } from '../../builder'
 import { Block } from '../block'
 
@@ -14,47 +15,35 @@ interface ButtonBlockSettingsType {
   color: string
 }
 
-const ButtonBlockSettingsRef = builder.objectRef<ButtonBlockSettingsType>(
-  'ButtonBlockSettings'
-)
-
-export const ButtonBlockSettings = builder.objectType(ButtonBlockSettingsRef, {
-  fields: (t) => ({
-    alignment: t.field({
-      type: ButtonAlignment,
-      nullable: true,
-      directives: { shareable: true },
-      description: 'Alignment of the button',
-      resolve: (settings: ButtonBlockSettingsType) => settings.alignment
-    }),
-    color: t.string({
-      nullable: true,
-      directives: { shareable: true },
-      description: 'Color of the button',
-      resolve: (settings: ButtonBlockSettingsType) => settings.color
+const ButtonBlockSettings = builder.objectType(
+  builder.objectRef<ButtonBlockSettingsType>('ButtonBlockSettings'),
+  {
+    shareable: true,
+    fields: (t) => ({
+      alignment: t.field({
+        type: ButtonAlignment,
+        nullable: true,
+        directives: { shareable: true },
+        description: 'Alignment of the button',
+        resolve: (settings: ButtonBlockSettingsType) => settings.alignment
+      }),
+      color: t.string({
+        nullable: true,
+        directives: { shareable: true },
+        description: 'Color of the button',
+        resolve: (settings: ButtonBlockSettingsType) => settings.color
+      })
     })
-  })
-})
+  }
+)
 
 export const ButtonBlock = builder.prismaObject('Block', {
   variant: 'ButtonBlock',
   interfaces: [Block],
   isTypeOf: (obj: any) => obj.typename === 'ButtonBlock',
   directives: { key: { fields: 'id' } },
+  shareable: true,
   fields: (t) => ({
-    id: t.exposeID('id', { nullable: false, directives: { shareable: true } }),
-    journeyId: t.exposeID('journeyId', {
-      nullable: false,
-      directives: { shareable: true }
-    }),
-    parentBlockId: t.exposeID('parentBlockId', {
-      nullable: true,
-      directives: { shareable: true }
-    }),
-    parentOrder: t.exposeInt('parentOrder', {
-      nullable: true,
-      directives: { shareable: true }
-    }),
     label: t.string({
       nullable: false,
       directives: { shareable: true },
@@ -95,6 +84,15 @@ export const ButtonBlock = builder.prismaObject('Block', {
       nullable: true,
       directives: { shareable: true },
       resolve: ({ settings }) => settings as unknown as ButtonBlockSettingsType
+    }),
+    action: t.field({
+      type: ActionInterface,
+      nullable: true,
+      directives: { shareable: true },
+      select: {
+        action: true
+      },
+      resolve: async (block) => block.action
     })
   })
 })

@@ -1,30 +1,15 @@
 import { builder } from '../../builder'
 import { Block } from '../block'
 
-import {
-  TextResponseType,
-  type TextResponseTypeType
-} from './enums/textResponseType'
+import { TextResponseType } from './enums/textResponseType'
 
 export const TextResponseBlock = builder.prismaObject('Block', {
   interfaces: [Block],
   variant: 'TextResponseBlock',
   isTypeOf: (obj: any) => obj.typename === 'TextResponseBlock',
   directives: { key: { fields: 'id' } },
+  shareable: true,
   fields: (t) => ({
-    id: t.exposeID('id', { nullable: false, directives: { shareable: true } }),
-    journeyId: t.exposeID('journeyId', {
-      nullable: false,
-      directives: { shareable: true }
-    }),
-    parentBlockId: t.exposeID('parentBlockId', {
-      nullable: true,
-      directives: { shareable: true }
-    }),
-    parentOrder: t.exposeInt('parentOrder', {
-      nullable: true,
-      directives: { shareable: true }
-    }),
     label: t.string({
       nullable: false,
       directives: { shareable: true },
@@ -50,7 +35,7 @@ export const TextResponseBlock = builder.prismaObject('Block', {
       type: TextResponseType,
       nullable: true,
       directives: { shareable: true },
-      resolve: (block) => block.type as TextResponseTypeType
+      resolve: (block) => block.type
     }),
     routeId: t.exposeString('routeId', {
       nullable: true,

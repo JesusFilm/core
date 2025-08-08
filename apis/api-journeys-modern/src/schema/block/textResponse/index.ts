@@ -1,1 +1,2 @@
 import './textResponse'
+import './inputs'
