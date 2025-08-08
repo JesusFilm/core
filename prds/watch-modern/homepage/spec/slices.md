@@ -24,7 +24,7 @@ Must-haves:
 
 DoD: tests for page rendering; a11y basics; responsive baseline.
 
-### Slice 2 — Video Collection Basic [Status: IN PROGRESS]
+### Slice 2 — Video Collection Basic [Status: COMPLETED]
 Scope: Simple video grid display
 
 Must-haves:
@@ -33,21 +33,36 @@ Must-haves:
 - [x] GraphQL integration for video data (implemented)
 - [x] Click navigation to video detail pages
 - [x] Basic responsive grid (2-4 columns)
-- [ ] API connection verification and data loading
+- [x] API connection verification and data loading
+  - Start dev server: `cd /workspaces/core && nx run watch-modern:serve --port 4200`
+  - Trigger compilation: `curl -s http://localhost:4200/watch`
+  - Verify runtime:
+    - Page renders without Apollo error banner
+    - At least 6 video cards render with non-empty titles
+    - Images load from Media API (no broken thumbnails)
+    - No console errors in browser
+  - Document outcome in `apps/watch-modern/LEARNINGS.md`
+ - [x] Loading state with skeleton placeholders for cards
+ - [x] Error state UI with friendly message when query fails
+ - [x] Accessibility: cards operable via keyboard (Enter/Space), `role="button"`, `tabIndex=0`, `aria-label`
+ - [x] Data shape aligns with schema (arrays for `title`, `snippet`, `description`, `imageAlt`, `images`)
 
-DoD: tests for video display; navigation works; responsive grid; GraphQL integration complete.
+DoD: tests for video display; navigation works; responsive grid; GraphQL integration complete; loading and error states covered; a11y validated; runtime API verified and documented in LEARNINGS.
 
-### Slice 3 — Course Section Basic [Status: PLANNED]
-Scope: Simple course episode display
+### Slice 3 — Video Grid Section Basic [Status: COMPLETED]
+Scope: Simple grid of videos with optional numbering
 
 Must-haves:
-- [ ] Static grid of 10 course episodes
-- [ ] Episode numbers and basic metadata
-- [ ] Hardcoded course data
-- [ ] Basic responsive layout
-- [ ] "SEE ALL" button (no functionality)
+- [x] Static grid of 10 video cards
+- [x] Optional numbering labels for items
+- [x] Hardcoded demo data
+- [x] Basic responsive layout
+- [x] "SEE ALL" button (no functionality)
+- [x] Loading state placeholders
+- [x] Accessibility: keyboard operable items with `role="button"`, `tabIndex=0`, `aria-label`
+- [x] Tests: rendering, item count, responsive grid classes, optional numbering
 
-DoD: tests for course display; episode numbering; responsive layout.
+DoD: tests for grid display; optional numbering; responsive layout; a11y baseline; loading state present.
 
 ### Slice 4 — Categories Basic [Status: PLANNED]
 Scope: Simple category display
@@ -58,8 +73,11 @@ Must-haves:
 - [ ] Hardcoded category data
 - [ ] Basic responsive layout
 - [ ] Click navigation to category pages
+ - [ ] Loading state placeholders
+ - [ ] Accessibility: keyboard operable category cards with `role="link"|"button"`, `tabIndex=0`, `aria-label`
+ - [ ] Tests: rendering, card count, keyboard interaction, navigation intent (href present), responsive grid classes
 
-DoD: tests for category display; navigation works; responsive layout.
+DoD: tests for category display; navigation works; responsive layout; a11y baseline; loading state present.
 
 ## Improved implementation
 

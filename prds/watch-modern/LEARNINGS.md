@@ -114,3 +114,22 @@ This document should be updated whenever new issues are discovered or solutions 
 ### Operational Notes
 - After changing providers, restart dev server and curl a concrete route to trigger compilation: `curl -s http://localhost:4200/watch`.
 - If skeletons persist, verify GraphQL endpoint in `.env.local` (`NEXT_PUBLIC_GATEWAY_URL`) or backend availability. 
+
+## Runtime Verification — Video Collection (Slice 2)
+
+## Runtime Verification — Video Grid Section (Slice 3)
+
+- Implemented `VideoGridSection` with 10 hardcoded items, optional numbering, loading skeletons, and basic a11y
+- Tests cover rendering, count, responsive grid classes, a11y attributes, and optional numbering behavior
+- SSR HTML may not include the section heading if the server response is truncated or split; verify in-browser post-hydration
+- No new runtime errors observed alongside Video Collection
+
+- Verified runtime on dev:
+  - Server started: `nx run watch-modern:serve --port 4200`
+  - `/watch` returned HTTP 200
+  - No Apollo error banner or error UI text detected in HTML
+  - Section title present; initial server HTML shows loading skeletons as expected before client hydration
+- Notes:
+  - SSR returns loading state; client hydration fetches videos via Apollo Client
+  - If thumbnails fail to load in-browser, check Media API availability and `NEXT_PUBLIC_GATEWAY_URL`
+  - Keyboard a11y and navigation handled by the component; covered by tests

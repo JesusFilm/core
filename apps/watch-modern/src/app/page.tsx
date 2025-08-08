@@ -4,6 +4,7 @@ import type { ReactElement } from 'react'
 import { Header } from '@/components/Header'
 import { HeroSection } from '@/components/HeroSection'
 import { VideoCollection } from '@/components/VideoCollection'
+import { VideoGridSection } from '@/components/VideoGridSection'
 
 export const generateMetadata = async () => {
   const t = await getTranslations('RootIndexPage')
@@ -25,6 +26,9 @@ export default async function RootIndexPage(): Promise<ReactElement> {
 
       {/* Video Collection Section */}
       <VideoCollection />
+
+      {/* Generic Video Grid Section */}
+      <VideoGridSection />
     </main>
   )
 }
