@@ -18,6 +18,7 @@ import { TabPanel, tabA11yProps } from '@core/shared/ui/TabPanel'
 
 import { JourneyFeature } from '../../../../../../../__generated__/JourneyFeature'
 import { useJourneyUpdateMutation } from '../../../../../../libs/useJourneyUpdateMutation'
+import { getTemplateCustomizationStrings } from '../../../../utils/getTemplateCustomizationStrings'
 
 import { AboutTabPanel } from './AboutTabPanel'
 import { CategoriesTabPanel } from './CategoriesTabPanel'
@@ -54,6 +55,8 @@ export function TemplateSettingsDialog({
   const { t } = useTranslation('apps-journeys-admin')
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
   const { journey } = useJourney()
+  const templateCustomizationStrings = getTemplateCustomizationStrings(journey)
+  console.log(templateCustomizationStrings)
   const [journeySettingsUpdate] = useJourneyUpdateMutation()
   const [journeyFeature] = useMutation<JourneyFeature>(JOURNEY_FEATURE_UPDATE)
   const { enqueueSnackbar } = useSnackbar()
