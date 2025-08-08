@@ -226,6 +226,8 @@ export async function runIfLeader(
   const release = async (): Promise<void> => {
     try {
       stopRenewal()
+      if (contendInterval != null) clearInterval(contendInterval)
+      contendInterval = undefined
       if (isLeader) await redis.eval(releaseScript, 1, lockKey, instanceId)
     } catch (error) {
       logger?.error({ error }, 'failed to release leader lock')
