@@ -28,8 +28,8 @@ export type Scalars = {
 
 export type Action = {
   gtmEventName?: Maybe<Scalars['String']['output']>;
-  parentBlock?: Maybe<Block>;
-  parentBlockId?: Maybe<Scalars['ID']['output']>;
+  parentBlock: Block;
+  parentBlockId: Scalars['ID']['output'];
 };
 
 export type ArclightApiKey = {
@@ -536,8 +536,8 @@ export type EmailAction = Action & {
   customizable?: Maybe<Scalars['Boolean']['output']>;
   email: Scalars['String']['output'];
   gtmEventName?: Maybe<Scalars['String']['output']>;
-  parentBlock?: Maybe<Block>;
-  parentBlockId?: Maybe<Scalars['ID']['output']>;
+  parentBlock: Block;
+  parentBlockId: Scalars['ID']['output'];
   parentStepId?: Maybe<Scalars['String']['output']>;
 };
 
@@ -1382,8 +1382,8 @@ export type LinkAction = Action & {
   __typename?: 'LinkAction';
   customizable?: Maybe<Scalars['Boolean']['output']>;
   gtmEventName?: Maybe<Scalars['String']['output']>;
-  parentBlock?: Maybe<Block>;
-  parentBlockId?: Maybe<Scalars['ID']['output']>;
+  parentBlock: Block;
+  parentBlockId: Scalars['ID']['output'];
   parentStepId?: Maybe<Scalars['String']['output']>;
   target?: Maybe<Scalars['String']['output']>;
   url: Scalars['String']['output'];
@@ -2765,8 +2765,8 @@ export type NavigateToBlockAction = Action & {
   __typename?: 'NavigateToBlockAction';
   blockId: Scalars['String']['output'];
   gtmEventName?: Maybe<Scalars['String']['output']>;
-  parentBlock?: Maybe<Block>;
-  parentBlockId?: Maybe<Scalars['ID']['output']>;
+  parentBlock: Block;
+  parentBlockId: Scalars['ID']['output'];
 };
 
 export type NavigateToBlockActionInput = {

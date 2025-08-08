@@ -9,7 +9,7 @@
 
 export interface BlockActionNavigateToBlockUpdate_blockUpdateNavigateToBlockAction {
   __typename: "NavigateToBlockAction";
-  parentBlockId: string | null;
+  parentBlockId: string;
   gtmEventName: string | null;
   blockId: string;
 }
