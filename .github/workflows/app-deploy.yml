@@ -221,6 +221,7 @@ jobs:
           fi
           shopt -s nullglob
           files=(e2e-input/*.txt)
+          echo "E2E input files found: ${files[*]:-none}"
           if [ ${#files[@]} -eq 0 ]; then
             echo "matrix=${matrix}" >> $GITHUB_OUTPUT
             exit 0
@@ -228,13 +229,15 @@ jobs:
           for f in "${files[@]}"; do
             app=$(basename "${f}" .txt)
             url=$(cat "${f}")
+            echo "Adding app=${app} url=${url}"
             if [ -n "${url}" ]; then
               matrix=$(jq -c --arg app "${app}" --arg url "${url}" '. + [{app:$app, url:$url}]' <<<"${matrix}")
             fi
           done
+          echo "Final E2E matrix: ${matrix}"
           echo "matrix=${matrix}" >> $GITHUB_OUTPUT
   e2e:
-    name: Playwright E2E
+    name: Playwright E2E (${{ matrix.app }})
     needs: [build-e2e-matrix]
     # Only run if ALL deploy-preview matrix entries succeeded and we have URLs
     if: ${{ needs.build-e2e-matrix.result == 'success' && needs.build-e2e-matrix.outputs.matrix != '[]' && needs.build-e2e-matrix.outputs.matrix != '' }}
