@@ -20,9 +20,7 @@ import { PrismaService } from '../../lib/prisma.service'
 import { JourneyCustomizationFieldResolver } from './journeyCustomizationField.resolver'
 
 // Mock the parseCustomizationFieldsFromString utility
-jest.mock(
-  '../../lib/parseCustomizationFieldsFromString/parseCustomizationFieldsFromString.utils'
-)
+jest.mock('../../lib/parseCustomizationFieldsFromString')
 
 const mockParseCustomizationFieldsFromString =
   parseCustomizationFieldsFromString as jest.MockedFunction<
