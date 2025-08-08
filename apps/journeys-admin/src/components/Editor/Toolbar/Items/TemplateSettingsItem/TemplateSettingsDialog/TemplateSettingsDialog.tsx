@@ -3,6 +3,7 @@ import Stack from '@mui/material/Stack'
 import { Theme } from '@mui/material/styles'
 import Tab from '@mui/material/Tab'
 import Tabs from '@mui/material/Tabs'
+import TextField from '@mui/material/TextField'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { Form, Formik } from 'formik'
 import omit from 'lodash/omit'
@@ -32,6 +33,11 @@ export const JOURNEY_FEATURE_UPDATE = gql`
   }
 `
 
+const customizationString: string = `The church name is {{Church_name}}
+the first chanel is {{channel_1}}
+the second chanel is {{channel_2}}
+the third chanel is {{channel_3}}`
+
 interface TemplateSettingsFormProp {
   open: boolean
   onClose: () => void
@@ -41,6 +47,9 @@ export function TemplateSettingsDialog({
   open,
   onClose
 }: TemplateSettingsFormProp): ReactElement {
+  const [customizationText, setCustomizationText] =
+    useState<string>(customizationString)
+
   const [tab, setTab] = useState(0)
   const { t } = useTranslation('apps-journeys-admin')
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
@@ -75,7 +84,8 @@ export function TemplateSettingsDialog({
     strategySlug: journey?.strategySlug,
     tagIds: journey?.tags.map(({ id }) => id),
     creatorDescription: journey?.creatorDescription,
-    languageId: journey?.language?.id
+    languageId: journey?.language?.id,
+    customizationText
   }
 
   function handleTabChange(_event, newValue: number): void {
@@ -95,11 +105,15 @@ export function TemplateSettingsDialog({
   ): Promise<void> {
     if (journey == null) return
     try {
+      // Update local state for customization text
+      setCustomizationText(values.customizationText)
+
+      // Submit other form values
       await journeySettingsUpdate({
         variables: {
           id: journey.id,
           input: {
-            ...omit(values, 'featured')
+            ...omit(values, ['featured', 'customizationText'])
           }
         }
       })
@@ -183,6 +197,16 @@ export function TemplateSettingsDialog({
               </TabPanel>
               <TabPanel name="about" value={tab} index={2}>
                 <Stack sx={{ pt: 6 }} gap={5}>
+                  {/* //TODO: remove */}
+                  <TextField
+                    label="Local State - customizationText"
+                    value={customizationText}
+                    fullWidth
+                    multiline
+                    InputProps={{
+                      readOnly: true
+                    }}
+                  />
                   <AboutTabPanel />
                 </Stack>
               </TabPanel>
