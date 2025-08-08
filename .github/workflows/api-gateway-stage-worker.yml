@@ -16,7 +16,7 @@ jobs:
   build-and-deploy:
     env:
       IMAGE_TAG: ${{ github.sha }}
-    runs-on: [self-hosted, blacksmith-2vcpu-ubuntu-2204]
+    runs-on: blacksmith-2vcpu-ubuntu-2204
     steps:
       - name: Checkout current branch
         uses: actions/checkout@v4
