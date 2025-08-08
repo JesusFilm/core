@@ -1,1 +1,0 @@
-export { getTemplateCustomizationStrings } from './getTemplateCustomizationStrings'

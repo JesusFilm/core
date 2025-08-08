@@ -1,21 +1,17 @@
 import { JourneyFields as Journey } from '@core/journeys/ui/JourneyProvider/__generated__/JourneyFields'
 
-export function getTemplateCustomizationStrings(journey?: Journey): string[] {
-  const templateStrings: string[] = []
-  if (!journey) return templateStrings
+export function getTemplateCustomizationFields(journey?: Journey): string[] {
+  const templateStrings = new Set<string>()
+  if (journey == null) return []
 
   // Helper function to extract template strings from text
   const extractTemplateStrings = (text: string | null | undefined): void => {
-    if (!text) return
-
-    const regex = /\{\{([^}]+)\}\}/g
-    let match
-
+    if (text == null || text === '') return
+    const regex = /\{\{\s*([^}]+?)\s*\}\}/g
+    let match: RegExpExecArray | null
     while ((match = regex.exec(text)) !== null) {
       const keyName = match[1].trim()
-      if (keyName && !templateStrings.includes(keyName)) {
-        templateStrings.push(keyName)
-      }
+      if (keyName !== '') templateStrings.add(keyName)
     }
   }
 
@@ -28,12 +24,6 @@ export function getTemplateCustomizationStrings(journey?: Journey): string[] {
   extractTemplateStrings(journey.displayTitle)
   extractTemplateStrings(journey.slug)
   extractTemplateStrings(journey.strategySlug)
-
-  // Extract from host
-  if (journey.host) {
-    extractTemplateStrings(journey.host.title)
-    extractTemplateStrings(journey.host.location)
-  }
 
   // Extract from user journeys
   if (journey.userJourneys) {
@@ -76,5 +66,5 @@ export function getTemplateCustomizationStrings(journey?: Journey): string[] {
     })
   }
 
-  return templateStrings
+  return Array.from(templateStrings)
 }

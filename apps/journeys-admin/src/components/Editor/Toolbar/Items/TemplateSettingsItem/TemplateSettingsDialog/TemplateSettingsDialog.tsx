@@ -18,12 +18,12 @@ import { TabPanel, tabA11yProps } from '@core/shared/ui/TabPanel'
 
 import { JourneyFeature } from '../../../../../../../__generated__/JourneyFeature'
 import { useJourneyUpdateMutation } from '../../../../../../libs/useJourneyUpdateMutation'
-import { getTemplateCustomizationStrings } from '../../../../utils/getTemplateCustomizationStrings'
 
 import { AboutTabPanel } from './AboutTabPanel'
 import { CategoriesTabPanel } from './CategoriesTabPanel'
 import { MetadataTabPanel } from './MetadataTabPanel'
 import { TemplateSettingsFormValues } from './useTemplateSettingsForm'
+import { getTemplateCustomizationFields } from './utils/getTemplateCustomizationFields'
 
 export const JOURNEY_FEATURE_UPDATE = gql`
   mutation JourneyFeature($id: ID!, $feature: Boolean!) {
@@ -55,8 +55,8 @@ export function TemplateSettingsDialog({
   const { t } = useTranslation('apps-journeys-admin')
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
   const { journey } = useJourney()
-  const templateCustomizationStrings = getTemplateCustomizationStrings(journey)
-  console.log(templateCustomizationStrings)
+  const templateCustomizationFields = getTemplateCustomizationFields(journey)
+  console.log(templateCustomizationFields)
   const [journeySettingsUpdate] = useJourneyUpdateMutation()
   const [journeyFeature] = useMutation<JourneyFeature>(JOURNEY_FEATURE_UPDATE)
   const { enqueueSnackbar } = useSnackbar()
