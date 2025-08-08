@@ -7,10 +7,15 @@ import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 
+import { useJourney } from '@core/journeys/ui/JourneyProvider'
+
 import { useTemplateSettingsForm } from '../../useTemplateSettingsForm'
+import { formateTemplateCustomizationString } from '../../utils/formateTemplateCustomizationString'
+import { getTemplateCustomizationFields } from '../../utils/getTemplateCustomizationFields'
 
 export function CustomizeTemplate(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
+  const { journey } = useJourney()
   const {
     values: { customizationText },
     setFieldValue
@@ -22,7 +27,11 @@ export function CustomizeTemplate(): ReactElement {
   }
 
   const handleRefresh = (): void => {
-    // TODO: Implement refresh functionality
+    const formattedCustomizationText = formateTemplateCustomizationString(
+      getTemplateCustomizationFields(journey),
+      customizationText
+    )
+    void setFieldValue('customizationText', formattedCustomizationText)
   }
 
   return (
