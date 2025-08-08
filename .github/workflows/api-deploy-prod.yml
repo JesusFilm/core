@@ -8,7 +8,7 @@ permissions:
   checks: write
 jobs:
   affected:
-    runs-on: blacksmith-2vcpu-ubuntu-2204
+    runs-on: [self-hosted, linux, x64, blacksmith-2vcpu-ubuntu-2204]
     strategy:
       matrix:
         node-version: [22]
@@ -59,6 +59,7 @@ jobs:
       JFP_AWS_ACCESS_KEY_ID: ${{ secrets.JFP_AWS_ACCESS_KEY_ID }}
       JFP_AWS_SECRET_ACCESS_KEY: ${{ secrets.JFP_AWS_SECRET_ACCESS_KEY }}
       AWS_NETWORK_CONFIG: ${{ secrets.AWS_NETWORK_CONFIG }}
+      NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
   api-journeys:
     needs: affected
     if: contains(needs.affected.outputs.matrix, 'api-journeys')
@@ -74,6 +75,7 @@ jobs:
       JFP_AWS_ACCESS_KEY_ID: ${{ secrets.JFP_AWS_ACCESS_KEY_ID }}
       JFP_AWS_SECRET_ACCESS_KEY: ${{ secrets.JFP_AWS_SECRET_ACCESS_KEY }}
       AWS_NETWORK_CONFIG: ${{ secrets.AWS_NETWORK_CONFIG }}
+      NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
   api-journeys-modern:
     needs: affected
     if: contains(needs.affected.outputs.matrix, 'api-journeys-modern')
@@ -89,6 +91,7 @@ jobs:
       JFP_AWS_ACCESS_KEY_ID: ${{ secrets.JFP_AWS_ACCESS_KEY_ID }}
       JFP_AWS_SECRET_ACCESS_KEY: ${{ secrets.JFP_AWS_SECRET_ACCESS_KEY }}
       AWS_NETWORK_CONFIG: ${{ secrets.AWS_NETWORK_CONFIG }}
+      NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
   api-users:
     needs: affected
     if: contains(needs.affected.outputs.matrix, 'api-users')
@@ -104,6 +107,7 @@ jobs:
       JFP_AWS_ACCESS_KEY_ID: ${{ secrets.JFP_AWS_ACCESS_KEY_ID }}
       JFP_AWS_SECRET_ACCESS_KEY: ${{ secrets.JFP_AWS_SECRET_ACCESS_KEY }}
       AWS_NETWORK_CONFIG: ${{ secrets.AWS_NETWORK_CONFIG }}
+      NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
   api-languages:
     needs: affected
     if: contains(needs.affected.outputs.matrix, 'api-languages')
@@ -119,6 +123,7 @@ jobs:
       JFP_AWS_ACCESS_KEY_ID: ${{ secrets.JFP_AWS_ACCESS_KEY_ID }}
       JFP_AWS_SECRET_ACCESS_KEY: ${{ secrets.JFP_AWS_SECRET_ACCESS_KEY }}
       AWS_NETWORK_CONFIG: ${{ secrets.AWS_NETWORK_CONFIG }}
+      NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
   api-media:
     needs: affected
     if: contains(needs.affected.outputs.matrix, 'api-media')
@@ -134,6 +139,7 @@ jobs:
       JFP_AWS_ACCESS_KEY_ID: ${{ secrets.JFP_AWS_ACCESS_KEY_ID }}
       JFP_AWS_SECRET_ACCESS_KEY: ${{ secrets.JFP_AWS_SECRET_ACCESS_KEY }}
       AWS_NETWORK_CONFIG: ${{ secrets.AWS_NETWORK_CONFIG }}
+      NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
 
   api-gateway:
     needs: affected
