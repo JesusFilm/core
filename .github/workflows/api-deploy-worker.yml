@@ -26,13 +26,15 @@ on:
         required: true
       AWS_NETWORK_CONFIG:
         required: true
+      NX_CLOUD_ACCESS_TOKEN:
+        required: true
 permissions:
   contents: read
   checks: write
 
 jobs:
   build-and-deploy:
-    environment: Production
+    environment: ${{ inputs.env }}
     env:
       HIVE_TOKEN: ${{ secrets.HIVE_TOKEN }}
       ENV_SUFFIX: ${{ inputs.branch }}
@@ -41,7 +43,7 @@ jobs:
       ECR_REPOSITORY: jfp-${{ inputs.name }}-${{ inputs.env }}
       IMAGE_TAG: ${{ github.sha }}
       NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
-    runs-on: blacksmith-2vcpu-ubuntu-2204
+    runs-on: [self-hosted, blacksmith-2vcpu-ubuntu-2204]
     strategy:
       matrix:
         node-version: [22]
