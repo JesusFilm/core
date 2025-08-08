@@ -1,3 +1,7 @@
+---
+description: Apply there tools everytime you work on developing /watch-modern project.
+alwaysApply: false
+---
 # Watch-Modern Rules
 
 - @base.mdc

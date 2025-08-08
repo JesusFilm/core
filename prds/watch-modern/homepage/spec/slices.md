@@ -117,15 +117,15 @@ Nice-to-haves (~):
 
 DoD: tests for background effects; enhanced styling; proper linking.
 
-### Slice 4 — Categories Improved [Status: PLANNED]
+### Slice 4 — Categories Improved [Status: COMPLETED]
 Scope: Enhanced category display with gradients and carousel
 
 Nice-to-haves (~):
-- [ ] Gradient backgrounds for each category
-- [ ] Horizontal carousel with navigation
-- [ ] Enhanced hover effects and transitions
-- [ ] Improved responsive design
-- [ ] Category-specific icons and colors
+- [x] Gradient backgrounds for each category
+- [x] Horizontal carousel with navigation
+- [x] Enhanced hover effects and transitions
+- [x] Improved responsive design
+- [x] Category-specific icons and colors
 
 DoD: tests for gradients; carousel functionality; enhanced hover effects.
 

@@ -12,6 +12,35 @@ jest.mock('next/image', () => ({
   )
 }))
 
+// Mock carousel components to prevent browser API errors in tests
+jest.mock('@/components/ui/carousel', () => ({
+  Carousel: ({ children, className }: { children: React.ReactNode; className?: string }) => (
+    <div className={className} data-testid="carousel">
+      {children}
+    </div>
+  ),
+  CarouselContent: ({ children, className }: { children: React.ReactNode; className?: string }) => (
+    <div className={className} data-testid="carousel-content">
+      {children}
+    </div>
+  ),
+  CarouselItem: ({ children, className }: { children: React.ReactNode; className?: string }) => (
+    <div className={className} data-testid="carousel-item">
+      {children}
+    </div>
+  ),
+  CarouselNext: ({ className }: { className?: string }) => (
+    <button className={className} aria-label="Next slide" data-testid="carousel-next">
+      Next
+    </button>
+  ),
+  CarouselPrevious: ({ className }: { className?: string }) => (
+    <button className={className} aria-label="Previous slide" data-testid="carousel-previous">
+      Previous
+    </button>
+  ),
+}))
+
 Object.defineProperty(
   window.navigator,
   'userAgent',
