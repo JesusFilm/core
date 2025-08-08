@@ -17,6 +17,8 @@ type LinkAction implements Action @shareable {
   gtmEventName: String
   url: String!
   target: String
+  customizable: Boolean
+  parentStepId: String
 }
 
 type EmailAction implements Action @shareable {
@@ -24,6 +26,8 @@ type EmailAction implements Action @shareable {
   parentBlock: Block!
   gtmEventName: String
   email: String!
+  customizable: Boolean
+  parentStepId: String
 }
 
 input NavigateToBlockActionInput {
@@ -35,11 +39,15 @@ input LinkActionInput {
   gtmEventName: String
   url: String!
   target: String
+  customizable: Boolean
+  parentStepId: String
 }
 
 input EmailActionInput {
   gtmEventName: String
   email: String!
+  customizable: Boolean
+  parentStepId: String
 }
 
 input BlockUpdateActionInput {
