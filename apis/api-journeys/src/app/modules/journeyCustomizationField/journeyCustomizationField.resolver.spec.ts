@@ -14,7 +14,7 @@ import { CaslAuthModule } from '@core/nest/common/CaslAuthModule'
 
 import { JourneyCustomizationFieldInput } from '../../__generated__/graphql'
 import { AppAbility, AppCaslFactory } from '../../lib/casl/caslFactory'
-import { parseCustomizationFieldsFromString } from '../../lib/parseCustomizationFieldsFromString/parseCustomizationFieldsFromString.utils'
+import { parseCustomizationFieldsFromString } from '../../lib/parseCustomizationFieldsFromString'
 import { PrismaService } from '../../lib/prisma.service'
 
 import { JourneyCustomizationFieldResolver } from './journeyCustomizationField.resolver'
