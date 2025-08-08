@@ -33,11 +33,55 @@ Copy matching intake markup into prod path, preserving Tailwind classes.
 
 ---
 
+### 1.1. File Operation Safety
+
+**BEFORE ANY search_replace OPERATIONS:**
+```bash
+# Always read file content first to verify exact strings
+read_file target_file start_line end_line
+# Verify string exists before replacement
+grep_search "exact_string_to_replace"
+```
+
+**COMMON FAILURES:**
+- String mismatches due to whitespace differences
+- Missing imports causing syntax errors
+- Incorrect file paths
+
 ### 2. Replace Data
 
 Replace hard-coded data with GraphQL hooks.
 
 ---
+
+### 2.1. GraphQL Integration Best Practices
+
+**CRITICAL PATTERNS:**
+- **Schema Analysis First**: Always analyze `/core/apis/api-gateway/schema.graphql` before writing queries
+- **Query Structure**: Use `video(id: $id) { children }` for parent-child relationships
+- **Fragment Management**: Remove unused fragments to avoid GraphQL errors
+- **Data Transformation**: Create separate transformation layer for GraphQL → Component data
+- **Error Handling**: Implement graceful fallbacks for GraphQL errors
+- **Loading States**: Use `skip` option for conditional query execution
+
+**COMMON PITFALLS TO AVOID:**
+- Don't use `videos(where: { parentId: $id })` - use `video(id: $id) { children }`
+- Don't keep unused fragments in queries
+- Don't construct ApolloClient in components - use context
+- Don't forget to wrap tests with MockedProvider
+
+### 2.2. Component Architecture Validation
+
+**BEFORE MAJOR COMPONENT CHANGES:**
+- Validate architectural decisions with user
+- Update all related test files
+- Check for breaking changes in props/interfaces
+- Verify GraphQL data flow remains intact
+
+**COMMON ARCHITECTURAL PATTERNS:**
+- Use boolean props (`showNumbering`) instead of string variants (`variant="course"`)
+- Keep components focused on single responsibility
+- Maintain consistent prop interfaces across variants
 
 ### 2.5. Configure GraphQL Endpoint
 
@@ -80,19 +124,28 @@ fi
 
 ---
 
-### 4. Verify Dev Server
+### 4. Enhanced Dev Server Management
 
-Check if development server is responding on `localhost:4200`:
-
+**MORE ROBUST SERVER CHECKS:**
 ```bash
-sleep 5
-if ! curl -s -o /dev/null -w "%{http_code}" http://localhost:4200 | grep -q 200; then
-  echo "⚠️ Dev server not responding properly. Starting manually..."
-  nx run watch-modern:serve --port=4200 &
-  sleep 5
-else
-  echo "✅ Dev server healthy at http://localhost:4200"
-fi
+# Check multiple ports and processes
+ps aux | grep "nx run watch-modern:serve" | grep -v grep
+netstat -tlnp | grep :4200
+
+# Force restart if needed
+pkill -f "nx run watch-modern:serve"
+nohup nx run watch-modern:serve --port 4200 > /tmp/watch-modern.log 2>&1 &
+sleep 15
+
+
+# Force restart if needed
+pkill -f "nx run watch-modern:serve"
+nohup nx run watch-modern:serve --port 4200 > /tmp/watch-modern.log 2>&1 &
+sleep 15
+
+
+# Verify server health
+curl -s http://localhost:4200/watch | head -10
 ```
 
 ---

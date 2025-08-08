@@ -1,5 +1,6 @@
 import { getTranslations } from 'next-intl/server'
 import type { ReactElement } from 'react'
+import React from 'react'
 
 import { CategoriesSection } from '@/components/CategoriesSection'
 import { Header } from '@/components/Header'
@@ -28,8 +29,11 @@ export default async function RootIndexPage(): Promise<ReactElement> {
       {/* Video Collection Section */}
       <VideoCollection />
 
-      {/* Generic Video Grid Section */}
-      <VideoGridSection />
+            {/* Course Section */}
+      <VideoGridSection
+        showNumbering={true}
+        collectionId="8_NBC"
+      />
 
       {/* Categories Section */}
       <CategoriesSection />

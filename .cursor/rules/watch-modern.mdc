@@ -1,8 +1,3 @@
----
-title: Watch Modern Build Rules
-globs: core/apps/watch-modern/**
-alwaysApply: false
----
 # Watch-Modern Rules
 
 - @base.mdc
@@ -159,6 +154,49 @@ Development (TDD) methodology.
 - Each new component must have a *.spec.tsx sibling.
 - After each slice: update slices.md (status + progress + deviations).
 - Update apps/watch-modern/LEARNINGS.md after each slice.
+
+# STOP CONDITIONS
+- If spec is ambiguous/conflicting → stop and ask.
+- If spec files missing → stop; run SHAPING agent first.
+
+## 4. GraphQL Testing & Runtime Rules
+
+### Apollo Client Testing
+- **ALWAYS** wrap components with `MockedProvider` in tests
+- **NEVER** construct ApolloClient inside components
+- **ALWAYS** use `skip` option for conditional queries
+- **ALWAYS** provide complete mock data matching GraphQL schema
+
+### GraphQL Query Patterns
+- **Parent-Child**: Use `video(id: $id) { children }` not `videos(parentId: $id)`
+- **Fragment Management**: Remove unused fragments immediately
+- **Error Handling**: Implement fallbacks for GraphQL errors
+- **Data Transformation**: Separate GraphQL data from component data
+
+### File Operation Safety Rules
+- **ALWAYS** read file content before search_replace operations
+- **ALWAYS** verify exact strings exist before replacement
+- **ALWAYS** check for syntax errors after file modifications
+- **ALWAYS** run tests after any component changes
+
+### Component Architecture Rules
+- **BEFORE** major component changes, validate with user
+- **ALWAYS** update tests when component interfaces change
+- **PREFER** boolean props over string variants
+- **MAINTAIN** consistent prop interfaces across variants
+
+## **🎯 Key Benefits of These Updates:**
+
+1. **Prevents GraphQL Query Iterations**: Clear patterns for parent-child relationships
+2. **Reduces File Operation Failures**: Safety checks before search_replace
+3. **Improves Test Reliability**: Better Apollo Client testing patterns
+4. **Enhances Dev Server Stability**: More robust server management
+5. **Validates Architectural Changes**: Prevents mid-task refactoring issues
+
+These updates would have prevented most of the issues we encountered, especially the multiple GraphQL query iterations and file operation failures. The enhanced dev server management would have also reduced the time spent debugging server issues.
+
+Would you like me to implement these specific updates to the files?
+
 
 # STOP CONDITIONS
 - If spec is ambiguous/conflicting → stop and ask.

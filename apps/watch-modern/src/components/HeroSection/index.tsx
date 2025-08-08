@@ -88,11 +88,9 @@ export function HeroSection() {
       <div
         className="absolute inset-0 opacity-50 z-10"
         style={{
-          backgroundImage:
-            'url("https://www.jesusfilm.org/_next/static/media/overlay.d86a559d.svg")',
-          backgroundSize: "cover",
+          backgroundImage: 'url("/overlay.svg")',
           backgroundPosition: "center",
-          backgroundRepeat: "no-repeat",
+          backgroundRepeat: "repeat",
         }}
       />
 

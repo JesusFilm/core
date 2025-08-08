@@ -105,15 +105,15 @@ Nice-to-haves (~):
 
 DoD: tests for carousel functionality; hover effects; smooth scrolling.
 
-### Slice 3 — Course Section Improved [Status: PLANNED]
+### Slice 3 — Course Section Improved [Status: COMPLETED]
 Scope: Enhanced course display with background and effects
 
 Nice-to-haves (~):
-- [ ] Background image with overlay effects
-- [ ] Enhanced episode numbering with glow effects
-- [ ] Duration badges and play overlays
-- [ ] Improved responsive grid (4 columns)
-- [ ] "SEE ALL" button with proper linking
+- [x] Background image with overlay effects
+- [x] Enhanced episode numbering with glow effects
+- [x] Duration badges and play overlays
+- [x] Improved responsive grid (4 columns)
+- [x] "SEE ALL" button with proper linking
 
 DoD: tests for background effects; enhanced styling; proper linking.
 
