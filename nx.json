@@ -97,7 +97,7 @@
       "cache": true
     },
     "prisma-generate": {
-      "cache": true,
+      "cache": false,
       "inputs": ["{projectRoot}/**/schema.prisma"]
     },
     "subgraph-check": {
