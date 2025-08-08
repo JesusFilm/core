@@ -1,14 +1,140 @@
+import { v4 as uuidv4 } from 'uuid'
+
+import { getGraphQLClient } from '../gql/graphqlClient'
+import { CREATE_VIDEO_VARIANT, UPDATE_VIDEO_VARIANT } from '../gql/mutations'
+import { GET_VIDEO_DETAILS_FOR_VARIANT_UPSERT } from '../gql/queries'
+import { PendingMuxVideo, createMuxAsset } from '../services/mux'
+import { createR2Asset, uploadToR2 } from '../services/r2'
+import { ProcessingSummary } from '../types'
 import type {
   GetVideoDetailsForVariantUpsertResponse,
   VideoMetadata,
+  VideoProcessingData,
   VideoVariantInput,
   VideoVariantResponse,
   VideoVariantUpdateResponse
 } from '../types'
+import { getVideoMetadata } from '../utils/fileMetadataHelpers'
+import { markFileAsCompleted } from '../utils/fileUtils'
+import { validateVideoAndEdition } from '../utils/videoEditionValidator'
 
-import { CREATE_VIDEO_VARIANT, UPDATE_VIDEO_VARIANT } from './gql/mutations'
-import { GET_VIDEO_DETAILS_FOR_VARIANT_UPSERT } from './gql/queries'
-import { getGraphQLClient } from './graphqlClient'
+export const VIDEO_FILENAME_REGEX =
+  /^([^.]+?)---([^.]+?)---([^-]+)---([^-]+)(?:---([^-]+))*\.mp4$/
+
+export async function processVideoFile(
+  file: string,
+  filePath: string,
+  contentLength: number,
+  pendingMuxVideos: PendingMuxVideo[],
+  videoProcessingData: VideoProcessingData[],
+  summary: ProcessingSummary
+): Promise<void> {
+  const match = file.match(VIDEO_FILENAME_REGEX)
+  if (!match) return
+
+  const [, videoId, editionName, languageId, version, ...extraFields] = match
+  const edition = editionName.toLowerCase()
+
+  console.log(
+    `   - IDs: Video=${videoId}, Edition=${edition}, Lang=${languageId}, Version=${version}`
+  )
+  if (extraFields.length > 0) {
+    console.log(`   - Extra fields: ${extraFields.filter(Boolean).join(', ')}`)
+  }
+
+  try {
+    await validateVideoAndEdition(videoId, edition)
+  } catch (error) {
+    console.error(`   Validation failed:`, error)
+    summary.failed++
+    return
+  }
+
+  const contentType = 'video/mp4'
+  const originalFilename = file
+
+  console.log('   Reading video metadata...')
+  let metadata
+  try {
+    metadata = await getVideoMetadata(filePath)
+    console.log('      Video metadata:', metadata)
+    if (
+      metadata.durationMs === undefined ||
+      metadata.width === undefined ||
+      metadata.height === undefined
+    ) {
+      throw new Error('Incomplete metadata: missing required properties')
+    }
+  } catch (error) {
+    console.error(`   Failed to extract metadata from ${file}:`, error)
+    summary.failed++
+    return
+  }
+
+  console.log('   Preparing Cloudflare R2 asset...')
+
+  const videoVariantId = `${languageId}_${videoId}`
+  const fileName = `${videoId}/variants/${languageId}/videos/${uuidv4()}/${videoVariantId}.mp4`
+
+  let r2Asset
+  try {
+    r2Asset = await createR2Asset({
+      fileName,
+      contentType,
+      originalFilename,
+      videoId,
+      contentLength
+    })
+  } catch (error) {
+    console.error(`   Failed to create R2 asset:`, error)
+    summary.failed++
+    return
+  }
+
+  console.log('   R2 Public URL:', r2Asset.publicUrl)
+  console.log('   Uploading to R2...')
+  try {
+    await uploadToR2({
+      uploadUrl: r2Asset.uploadUrl,
+      bucket: process.env.CLOUDFLARE_R2_BUCKET!,
+      filePath,
+      contentType,
+      contentLength
+    })
+  } catch (error) {
+    console.error(`   Failed to upload to R2:`, error)
+    summary.failed++
+    return
+  }
+
+  console.log('   Creating Mux asset...')
+  try {
+    const muxVideo = await createMuxAsset(r2Asset.publicUrl, contentLength)
+    console.log(`      Mux Video ID: ${muxVideo.id}`)
+
+    pendingMuxVideos.push({
+      id: muxVideo.id,
+      publicUrl: r2Asset.publicUrl,
+      fileSizeBytes: contentLength
+    })
+
+    videoProcessingData.push({
+      videoId,
+      languageId,
+      edition,
+      version: parseInt(version),
+      metadata,
+      muxVideoId: muxVideo.id,
+      filePath,
+      fileName
+    })
+
+    await markFileAsCompleted(filePath)
+  } catch (error) {
+    console.error(`   Failed to initialize Mux video:`, error)
+    summary.failed++
+  }
+}
 
 export async function getVideoVariantInput({
   videoId,
@@ -16,16 +142,16 @@ export async function getVideoVariantInput({
   edition,
   muxId,
   playbackId,
-  r2PublicUrl,
-  metadata
+  metadata,
+  version
 }: {
   videoId: string
   languageId: string
   edition: string
   muxId: string
   playbackId: string
-  r2PublicUrl: string
   metadata: VideoMetadata
+  version: number
 }): Promise<VideoVariantInput> {
   // Parse source from videoId (e.g., "0_JesusVisionLumo" -> source="0" videoId="JesusVisionLumo")
   const [source, ...restParts] = videoId.split('_')
@@ -92,37 +218,36 @@ export async function getVideoVariantInput({
     share: `${watchPageBaseUrl}${slug}`,
     lengthInMilliseconds: metadata.durationMs,
     duration: metadata.duration,
-    version: 1
+    version: version
   }
 }
 
-export async function createVideoVariant({
+export async function importOrUpdateVideoVariant({
   videoId,
   languageId,
   edition,
   muxId,
   playbackId,
-  r2PublicUrl,
-  metadata
+  metadata,
+  version
 }: {
   videoId: string
   languageId: string
   edition: string
   muxId: string
   playbackId: string
-  r2PublicUrl: string
   metadata: VideoMetadata
-}): Promise<'created' | 'updated'> {
+  version: number
+}): Promise<void> {
   const client = await getGraphQLClient()
-  // Generate all input details first, including the potential client-side composite ID
   const { existingVariantId, ...input } = await getVideoVariantInput({
     videoId,
     languageId,
     edition,
     muxId,
     playbackId,
-    r2PublicUrl,
-    metadata
+    metadata,
+    version
   })
 
   if (existingVariantId) {
@@ -147,7 +272,7 @@ export async function createVideoVariant({
         version: input.version
       }
     })
-    return 'updated'
+    console.log('   [VideoService] Updated video variant')
   } else {
     console.log(
       `[Variant Service] No existing variant found for videoId: ${input.videoId} and languageId: ${input.languageId}. Creating new one with ID: ${input.id}...`
@@ -178,6 +303,6 @@ export async function createVideoVariant({
       throw new Error('Failed to create video variant')
     }
 
-    return 'created'
+    console.log('   [VideoService] Created video variant')
   }
 }
