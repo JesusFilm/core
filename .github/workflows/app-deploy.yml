@@ -195,36 +195,63 @@ jobs:
       - name: Failing deploy
         if: ${{ contains(needs.*.result, 'failure') }}
         run: exit 1
+  build-e2e-matrix:
+    name: Build E2E Matrix
+    needs: [affected, deploy-preview]
+    if: ${{ needs.deploy-preview.result == 'success' }}
+    runs-on: blacksmith-2vcpu-ubuntu-2204
+    permissions:
+      contents: read
+      deployments: read
+    outputs:
+      matrix: ${{ steps.build.outputs.matrix }}
+    steps:
+      - name: Build matrix from deployments
+        id: build
+        env:
+          OWNER_REPO: ${{ github.repository }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          APPS_JSON: ${{ needs.affected.outputs.matrix }}
+          GIT_SHA: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+          matrix='[]'
+          if [ -z "${APPS_JSON}" ] || [ "${APPS_JSON}" = "[]" ]; then
+            echo "matrix=${matrix}" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+          for app in $(echo "${APPS_JSON}" | jq -r '.[]'); do
+            env_name="Preview - ${app}"
+            env_q=$(printf '%s' "${env_name}" | jq -sRr @uri)
+            dep=$(curl -sfL -H "Authorization: Bearer ${GITHUB_TOKEN}" -H "Accept: application/vnd.github+json" "https://api.github.com/repos/${OWNER_REPO}/deployments?environment=${env_q}&sha=${GIT_SHA}&per_page=1") || dep='[]'
+            dep_id=$(echo "${dep}" | jq -r '.[0].id // empty')
+            if [ -z "${dep_id}" ]; then
+              continue
+            fi
+            statuses=$(curl -sfL -H "Authorization: Bearer ${GITHUB_TOKEN}" -H "Accept: application/vnd.github+json" "https://api.github.com/repos/${OWNER_REPO}/deployments/${dep_id}/statuses?per_page=1") || statuses='[]'
+            url=$(echo "${statuses}" | jq -r '.[0].environment_url // empty')
+            if [ -n "${url}" ]; then
+              matrix=$(jq -c --arg app "${app}" --arg url "${url}" '. + [{app:$app, url:$url}]' <<<"${matrix}")
+            fi
+          done
+          echo "matrix=${matrix}" >> $GITHUB_OUTPUT
   e2e:
     name: Playwright E2E
-    needs: [affected, deploy-preview]
-    # Only run if ALL deploy-preview matrix entries succeeded
-    if: ${{ needs.deploy-preview.result == 'success' }}
+    needs: [build-e2e-matrix]
+    # Only run if ALL deploy-preview matrix entries succeeded and we have URLs
+    if: ${{ needs.build-e2e-matrix.result == 'success' && needs.build-e2e-matrix.outputs.matrix != '[]' && needs.build-e2e-matrix.outputs.matrix != '' }}
     runs-on: blacksmith-4vcpu-ubuntu-2204
     env:
       NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
     strategy:
       fail-fast: false
       matrix:
-        app: ${{fromJson(needs.affected.outputs.matrix)}}
-        github-ref-name: ['${{ github.ref_name }}']
-        github-event-name: ['${{ github.event_name }}']
-        node-version: [22]
-        exclude:
-          - app: journeys
-            github-ref-name: stage
-            github-event-name: push
-          - app: short-links
-            github-ref-name: stage
-            github-event-name: push
-          - app: journeys-admin
-            github-ref-name: stage
-            github-event-name: push
+        include: ${{ fromJson(needs.build-e2e-matrix.outputs.matrix) }}
     steps:
       - uses: actions/checkout@v4
       - uses: useblacksmith/setup-node@v5
         with:
-          node-version: ${{ matrix.node-version }}
+          node-version: 22
       - name: Get Node Version
         id: node-version
         run: echo "version=$(node -v)" >> $GITHUB_OUTPUT
@@ -245,25 +272,11 @@ jobs:
           path: ~/.cache/ms-playwright
       - name: NPM Install
         run: npm install --silent
-      - name: Download deployment URL artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: deployment-url-${{ matrix.app }}
-          path: .
-      - name: Detect deployment URL
-        id: detect-url
-        run: |
-          if [ -f "apps/${{ matrix.app }}/.vercel-url" ]; then
-            echo "has=true" >> $GITHUB_OUTPUT
-            echo "DEPLOYMENT_URL=$(cat apps/${{ matrix.app }}/.vercel-url)" >> $GITHUB_ENV
-          else
-            echo "has=false" >> $GITHUB_OUTPUT
-          fi
       - run: npx playwright install --with-deps
       - name: Run Playwright tests
-        if: ${{ steps.detect-url.outputs.has == 'true' }}
         run: npx nx run ${{ matrix.app }}-e2e:e2e
         env:
+          DEPLOYMENT_URL: ${{ matrix.url }}
           PLAYWRIGHT_USER: ${{ secrets.PLAYWRIGHT_USER }}
           PLAYWRIGHT_TEAM_NAME: ${{ secrets.PLAYWRIGHT_TEAM_NAME }}
           EXAMPLE_EMAIL_TOKEN: ${{ secrets.EXAMPLE_EMAIL_TOKEN }}
@@ -278,7 +291,7 @@ jobs:
           PLAYWRIGHT_EMAIL5: ${{ secrets.PLAYWRIGHT_EMAIL5 }}
           PLAYWRIGHT_PASSWORD5: ${{ secrets.PLAYWRIGHT_PASSWORD5 }}
       - uses: actions/upload-artifact@v4
-        if: ${{ always() && steps.detect-url.outputs.has == 'true' }}
+        if: always()
         with:
           name: ${{ matrix.app }}-playwright-report
           path: |
