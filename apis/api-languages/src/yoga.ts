@@ -90,10 +90,10 @@ export const yoga = createYoga<
             get(request, '_json.extensions.jwt.payload.user_id') ??
             request.headers.get('interop-token') ??
             null,
-          enabled: (request) =>
-            get(request, '_json.extensions.jwt.payload.user_id') == null &&
-            request.headers.get('interop-token') == null,
           cache,
+          scopePerSchemaCoordinate: {
+            User: 'PRIVATE'
+          },
           ttlPerSchemaCoordinate: {
             'Query.getMyLanguage': 0,
             'Query.getLanguage': 0
