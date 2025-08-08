@@ -16,6 +16,10 @@ interface Video {
 export interface AlgoliaVideo extends Hit<BaseHit> {
   videoId: string
   titles: string[]
+  titlesWithLanguages: {
+    languageId: string
+    value: string
+  }[]
   description: string[]
   duration: number
   languageId: string
@@ -40,7 +44,8 @@ export function transformItemsDefault(items: AlgoliaVideo[]): Video[] {
 }
 
 interface useAlgoliaVideosOptions<T> {
-  transformItems?: (items: Array<Hit<AlgoliaVideo>>) => T[]
+  transformItems?: (items: Array<Hit<AlgoliaVideo>>, languageId?: string) => T[]
+  languageId?: string
 }
 
 interface useAlgoliaVideosResult<T> {
@@ -55,13 +60,13 @@ interface useAlgoliaVideosResult<T> {
 export function useAlgoliaVideos<T = Video>(
   options?: useAlgoliaVideosOptions<T>
 ): useAlgoliaVideosResult<T> {
-  const { transformItems = transformItemsDefault } = options ?? {}
+  const { transformItems = transformItemsDefault, languageId } = options ?? {}
 
   const { status, results } = useInstantSearch()
   const { items, showMore, isLastPage, sendEvent } =
     useInfiniteHits<AlgoliaVideo>()
 
-  const transformedItems = transformItems(items) as T[]
+  const transformedItems = transformItems(items, languageId) as T[]
 
   return {
     showMore,

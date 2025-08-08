@@ -24,7 +24,8 @@ export const Default: Story = {
     questions: [
       {
         value: 'What did you learn from this video?',
-        __typename: 'VideoStudyQuestion'
+        __typename: 'VideoStudyQuestion',
+        primary: true
       }
     ]
   }
@@ -35,15 +36,18 @@ export const MultipleQuestions: Story = {
     questions: [
       {
         value: 'What did you learn from this video?',
-        __typename: 'VideoStudyQuestion'
+        __typename: 'VideoStudyQuestion',
+        primary: true
       },
       {
         value: 'How does this message relate to your life?',
-        __typename: 'VideoStudyQuestion'
+        __typename: 'VideoStudyQuestion',
+        primary: true
       },
       {
         value: 'What questions do you have about the content?',
-        __typename: 'VideoStudyQuestion'
+        __typename: 'VideoStudyQuestion',
+        primary: true
       }
     ]
   }

@@ -8,5 +8,6 @@ module "ecs-task" {
   alb_listener_arn      = var.alb_listener_arn
   alb_dns_name          = var.alb_dns_name
   host_name             = var.host_name
+  host_names            = var.host_names
   dd_source             = "nextjs"
 }

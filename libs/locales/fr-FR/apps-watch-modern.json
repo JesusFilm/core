@@ -1,17 +1,35 @@
 {
   "Metadata": {
-    "pageTitle": "{title} | Jesus Film Project"
+    "pageTitle": "{title} | Projet de film sur Jésus"
   },
   "RootIndexPage": {
-    "pageTitle": "Regarder",
-    "title": "Bibliothèque de <underline>vidéos</underline> de la Bible.",
-    "description": "Regardez, apprenez et partagez la Bible dans plus de 2000 langues"
+    "pageTitle": "Regarde",
+    "title": "Bibliothèque de vidéos évangéliques gratuites <underline>en streaming</underline>.",
+    "description": "Regarde, apprends et partage l'évangile dans plus de 2000 langues."
+  },
+  "ModernTestPage": {
+    "pageTitle": "Test Modern",
+    "title": "Page de test modern",
+    "description": "Cette page est servie par l'application moderne de watch via une routage intelligent.",
+    "feature1": {
+      "title": "Architecture moderne",
+      "description": "Construit avec Next.js App Router et des modèles React modernes pour une performance optimale et une expérience de développement."
+    },
+    "feature2": {
+      "title": "Routage intelligent",
+      "description": "Un routage intelligent qui dirige le trafic vers le backend approprié."
+    },
+    "feature3": {
+      "title": "Design responsive",
+      "description": "Un design responsive qui fonctionne parfaitement sur tous les appareils et tailles d'écran."
+    },
+    "footer": "Cette page est servie par l'application moderne de watch via une routage intelligent."
   },
   "DatadogErrorBoundary": {
-    "somethingWentWrong": "Quelque chose s'est mal passé",
-    "anErrorOccurred": "Une erreur est survenue lors du chargement de cette page. Veuillez réessayer.",
+    "somethingWentWrong": "Quelque chose a mal tourné",
+    "anErrorOccurred": "Une erreur s'est produite lors du chargement de cette page. Essaie de la rafraîchir.",
     "errorDetails": "Détails de l'erreur",
-    "tryAgain": "Réessayer",
+    "tryAgain": "Essaie à nouveau",
     "unknownError": "Erreur inconnue"
   }
 }

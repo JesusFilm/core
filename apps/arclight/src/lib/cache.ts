@@ -1,5 +1,10 @@
 import { Redis } from 'ioredis'
 
+import { logger as parentLogger } from '../logger'
+
+// Create a Redis-specific child logger
+const logger = parentLogger.child({ module: 'redis' })
+
 /**
  * Cache Flow
  * 1. Try fresh cache
@@ -20,7 +25,7 @@ export const connection = {
   maxRetriesPerRequest: 2,
   retryStrategy(times: number) {
     if (times > 3) {
-      console.error('[Redis] Max retries reached, giving up')
+      logger.error('Max retries reached, giving up')
       return null // stop retrying after 3 attempts
     }
     const delay = Math.min(times * 200, 1000)
@@ -31,7 +36,7 @@ export const connection = {
 const redis = new Redis(connection)
 
 redis.on('error', (err) => {
-  console.error('[Redis] Connection error:', err)
+  logger.error({ error: err }, 'Redis connection error')
 })
 
 // Cache configuration
@@ -56,7 +61,7 @@ async function getFromCache<T>(key: string): Promise<T | null> {
     }
     return JSON.parse(data)
   } catch (err) {
-    console.error(`[Redis] Failed to get key ${key}:`, err)
+    logger.error({ error: err, key }, 'Failed to get key from cache')
     return null
   }
 }
@@ -67,7 +72,7 @@ async function setInCache<T>(key: string, data: T): Promise<void> {
     await redis.set(key, JSON.stringify(data), 'EX', DEFAULT_TTL)
     await redis.set(`${key}:stale`, JSON.stringify(data), 'EX', STALE_TTL)
   } catch (error) {
-    console.error(`[Redis] Failed to set key ${key}:`, error)
+    logger.error({ error, key }, 'Failed to set key in cache')
     throw error // Propagate error for better handling upstream
   }
 }
@@ -78,7 +83,7 @@ async function acquireLock(key: string): Promise<boolean> {
     const result = await redis.set(lockKey, '1', 'EX', REFRESH_LOCK_TTL, 'NX')
     return result === 'OK'
   } catch (err) {
-    console.error('Failed to acquire lock', { error: err })
+    logger.error({ error: err }, 'Failed to acquire lock')
     return false
   }
 }
@@ -90,18 +95,18 @@ async function refreshCacheInBackground<T>(
   // Try to acquire lock first
   const lockAcquired = await acquireLock(key)
   if (!lockAcquired) {
-    console.debug(`[Redis] Refresh already in progress for key: ${key}`)
+    logger.debug({ key }, 'Refresh already in progress for key')
     return
   }
 
   try {
     const newData = await fetchFn()
     await setInCache(key, newData)
-    console.debug(`[Redis] Successfully refreshed cache for key: ${key}`)
+    logger.debug({ key }, 'Successfully refreshed cache for key')
   } catch (error) {
-    console.error(
-      `[Redis] Background refresh failed for key: ${key}`,
-      error instanceof Error ? error.message : 'Unknown error'
+    logger.error(
+      { error: error instanceof Error ? error.message : 'Unknown error', key },
+      'Background refresh failed for key'
     )
   }
   // Lock will auto-expire after REFRESH_LOCK_TTL seconds
@@ -131,17 +136,24 @@ export async function getWithStaleCache<T>(
     try {
       await setInCache(key, fresh)
     } catch (cacheError) {
-      console.error(
-        `[Redis] Failed to cache fresh data for key ${key}:`,
-        cacheError instanceof Error ? cacheError.message : 'Unknown error'
+      logger.error(
+        {
+          error:
+            cacheError instanceof Error ? cacheError.message : 'Unknown error',
+          key
+        },
+        'Failed to cache fresh data for key'
       )
       // Continue since we still have the fresh data to return
     }
     return fresh
   } catch (error) {
-    console.error(
-      `[Redis] Error retrieving from cache for key ${key}:`,
-      error instanceof Error ? error.message : 'Unknown error'
+    logger.error(
+      {
+        error: error instanceof Error ? error.message : 'Unknown error',
+        key
+      },
+      'Error retrieving from cache for key'
     )
     return await fetchFn()
   }
@@ -159,25 +171,30 @@ export async function getWithStrictCache<T>(
   try {
     const cached = await getFromCache<T>(key)
     if (cached) {
-      console.log('returning cached')
       return cached
     }
     const fresh = await fetchFn()
     try {
       await redis.set(key, JSON.stringify(fresh), 'EX', ttlSeconds)
     } catch (cacheError) {
-      console.error(
-        `[Redis] Failed to cache fresh data for key ${key}:`,
-        cacheError instanceof Error ? cacheError.message : 'Unknown error'
+      logger.error(
+        {
+          error:
+            cacheError instanceof Error ? cacheError.message : 'Unknown error',
+          key
+        },
+        'Failed to cache fresh data for key'
       )
       // Continue since we still have the fresh data to return
     }
-    console.log('returning fresh')
     return fresh
   } catch (error) {
-    console.error(
-      `[Redis] Error retrieving from strict cache for key ${key}:`,
-      error instanceof Error ? error.message : 'Unknown error'
+    logger.error(
+      {
+        error: error instanceof Error ? error.message : 'Unknown error',
+        key
+      },
+      'Error retrieving from strict cache for key'
     )
     return await fetchFn()
   }

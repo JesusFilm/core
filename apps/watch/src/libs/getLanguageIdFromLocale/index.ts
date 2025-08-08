@@ -1,0 +1,1 @@
+export { getLanguageIdFromLocale } from './getLanguageIdFromLocale'
