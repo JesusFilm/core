@@ -1,1 +1,2 @@
 import './video'
+import './inputs'

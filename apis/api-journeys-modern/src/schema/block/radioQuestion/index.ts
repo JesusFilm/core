@@ -1,1 +1,2 @@
 import './radioQuestion'
+import './inputs'
