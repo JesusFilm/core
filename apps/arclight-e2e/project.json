@@ -12,14 +12,7 @@
         "commands": ["playwright test"],
         "cwd": "apps/arclight-e2e"
       },
-      "inputs": [
-        "default",
-        "arclight",
-        "api-languages",
-        "api-media",
-        "api-gateway"
-      ],
-      "cache": true,
+      "cache": false,
       "dependsOn": ["arclight", "api-languages", "api-media", "api-gateway"]
     },
     "update-snapshots": {

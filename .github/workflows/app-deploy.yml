@@ -43,10 +43,10 @@ jobs:
       - id: set-matrix
         name: set matrix app to affected array
         run: |
-          echo "matrix=$(npx ts-node tools/scripts/deploy-apps.ts --projects apps/* --exclude api-*)" >> $GITHUB_OUTPUT
+          echo "matrix=$(npx ts-node tools/scripts/deploy-apps.ts --projects apps/*)" >> $GITHUB_OUTPUT
           cat $GITHUB_OUTPUT
   deploy-preview:
-    name: Deploy Preview and Test
+    name: Deploy Preview
     needs: affected
     # if branch is not main or is a pull request
     if: |
@@ -74,7 +74,7 @@ jobs:
           - app: journeys-admin
             github-ref-name: stage
             github-event-name: push
-    runs-on: blacksmith-4vcpu-ubuntu-2204
+    runs-on: blacksmith-2vcpu-ubuntu-2204
     env:
       NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
     outputs:
@@ -176,11 +176,94 @@ jobs:
           state: ${{ job.status }}
           environment-url: ${{ steps.deployment-url.outputs.deployment-url }}
           deployment-id: ${{ steps.deployment.outputs.deployment_id }}
+      - name: Upload deployment URL
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: deployment-url-${{ matrix.app }}
+          path: apps/${{ matrix.app }}/.vercel-url
+          if-no-files-found: ignore
+          retention-days: 2
+  deploy-status:
+    runs-on: blacksmith-2vcpu-ubuntu-2204
+    needs: [affected, deploy-preview]
+    if: ${{ always() && github.event_name == 'pull_request' }}
+    steps:
+      - name: Successful deploy
+        if: ${{ !(contains(needs.*.result, 'failure')) }}
+        run: exit 0
+      - name: Failing deploy
+        if: ${{ contains(needs.*.result, 'failure') }}
+        run: exit 1
+  e2e:
+    name: Playwright E2E
+    needs: [affected, deploy-preview]
+    # Only run if ALL deploy-preview matrix entries succeeded
+    if: ${{ needs.deploy-preview.result == 'success' }}
+    runs-on: blacksmith-4vcpu-ubuntu-2204
+    env:
+      NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
+    strategy:
+      fail-fast: false
+      matrix:
+        app: ${{fromJson(needs.affected.outputs.matrix)}}
+        github-ref-name: ['${{ github.ref_name }}']
+        github-event-name: ['${{ github.event_name }}']
+        node-version: [22]
+        exclude:
+          - app: journeys
+            github-ref-name: stage
+            github-event-name: push
+          - app: short-links
+            github-ref-name: stage
+            github-event-name: push
+          - app: journeys-admin
+            github-ref-name: stage
+            github-event-name: push
+    steps:
+      - uses: actions/checkout@v4
+      - uses: useblacksmith/setup-node@v5
+        with:
+          node-version: ${{ matrix.node-version }}
+      - name: Get Node Version
+        id: node-version
+        run: echo "version=$(node -v)" >> $GITHUB_OUTPUT
+      - name: Mount NPM Cache
+        uses: useblacksmith/stickydisk@v1
+        with:
+          key: ${{ github.repository }}-${{ steps.node-version.outputs.version }}-npm-cache
+          path: ~/.npm
+      - name: Mount node_modules
+        uses: useblacksmith/stickydisk@v1
+        with:
+          key: ${{ github.repository }}-${{ steps.node-version.outputs.version }}-node-modules
+          path: ./node_modules
+      - name: Mount playwright cache
+        uses: useblacksmith/stickydisk@v1
+        with:
+          key: ${{ github.repository }}-playwright-cache
+          path: ~/.cache/ms-playwright
+      - name: NPM Install
+        run: npm install --silent
+      - name: Download deployment URL artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: deployment-url-${{ matrix.app }}
+          path: .
+      - name: Detect deployment URL
+        id: detect-url
+        run: |
+          if [ -f "apps/${{ matrix.app }}/.vercel-url" ]; then
+            echo "has=true" >> $GITHUB_OUTPUT
+            echo "DEPLOYMENT_URL=$(cat apps/${{ matrix.app }}/.vercel-url)" >> $GITHUB_ENV
+          else
+            echo "has=false" >> $GITHUB_OUTPUT
+          fi
       - run: npx playwright install --with-deps
       - name: Run Playwright tests
+        if: ${{ steps.detect-url.outputs.has == 'true' }}
         run: npx nx run ${{ matrix.app }}-e2e:e2e
         env:
-          DEPLOYMENT_URL: ${{ steps.deployment-url.outputs.deployment-url }}
           PLAYWRIGHT_USER: ${{ secrets.PLAYWRIGHT_USER }}
           PLAYWRIGHT_TEAM_NAME: ${{ secrets.PLAYWRIGHT_TEAM_NAME }}
           EXAMPLE_EMAIL_TOKEN: ${{ secrets.EXAMPLE_EMAIL_TOKEN }}
@@ -195,23 +278,12 @@ jobs:
           PLAYWRIGHT_EMAIL5: ${{ secrets.PLAYWRIGHT_EMAIL5 }}
           PLAYWRIGHT_PASSWORD5: ${{ secrets.PLAYWRIGHT_PASSWORD5 }}
       - uses: actions/upload-artifact@v4
-        if: always()
+        if: ${{ always() && steps.detect-url.outputs.has == 'true' }}
         with:
           name: ${{ matrix.app }}-playwright-report
           path: |
             playwright-report/
           retention-days: 30
-  deploy-status:
-    runs-on: blacksmith-2vcpu-ubuntu-2204
-    needs: [affected, deploy-preview]
-    if: ${{ always() && github.event_name == 'pull_request' }}
-    steps:
-      - name: Successful deploy
-        if: ${{ !(contains(needs.*.result, 'failure')) }}
-        run: exit 0
-      - name: Failing deploy
-        if: ${{ contains(needs.*.result, 'failure') }}
-        run: exit 1
   deploy-production:
     name: Deploy Production
     # if push to main or stage

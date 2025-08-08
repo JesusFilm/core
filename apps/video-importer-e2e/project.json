@@ -12,8 +12,7 @@
         "commands": ["nx build video-importer", "playwright test"],
         "cwd": "apps/video-importer-e2e"
       },
-      "inputs": ["default", "video-importer"],
-      "cache": true
+      "dependsOn": ["video-importer"]
     },
     "update-snapshots": {
       "executor": "nx:run-commands",

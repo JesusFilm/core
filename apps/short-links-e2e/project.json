@@ -10,8 +10,7 @@
         "commands": ["playwright test"],
         "cwd": "apps/short-links-e2e"
       },
-      "inputs": ["default", "short-links", "api-gateway", "api-media"],
-      "cache": true
+      "dependsOn": ["short-links", "api-gateway", "api-media"]
     },
     "update-snapshots": {
       "executor": "nx:run-commands",
