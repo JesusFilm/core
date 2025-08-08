@@ -20,6 +20,7 @@ import { HostModule } from './modules/host/host.module'
 import { IntegrationModule } from './modules/integration/integration.module'
 import { JourneyModule } from './modules/journey/journey.module'
 import { JourneyCollectionModule } from './modules/journeyCollection/journeyCollection.module'
+import { JourneyCustomizationFieldModule } from './modules/journeyCustomizationField/journeyCustomizationField.module'
 import { JourneyEventModule } from './modules/journeyEvent/journeyEvent.module'
 import { JourneyNotificationModule } from './modules/journeyNotification/journeyNotification.module'
 import { JourneyProfileModule } from './modules/journeyProfile/journeyProfile.module'
@@ -46,6 +47,7 @@ import { VisitorModule } from './modules/visitor/visitor.module'
     HostModule,
     IntegrationModule,
     JourneyCollectionModule,
+    JourneyCustomizationFieldModule,
     JourneyEventModule,
     JourneysEmailPreferenceModule,
     JourneyModule,

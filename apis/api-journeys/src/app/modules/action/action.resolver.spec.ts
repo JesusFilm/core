@@ -43,7 +43,9 @@ describe('ActionResolver', () => {
     journeyId: null,
     target: null,
     url: null,
-    email: 'john.smith@example.com'
+    email: 'john.smith@example.com',
+    customizable: null,
+    parentStepId: null
   }
   const linkAction: Action = {
     parentBlockId: 'parentBlockId',
@@ -53,7 +55,9 @@ describe('ActionResolver', () => {
     journeyId: null,
     target: 'target',
     url: 'https://google.com',
-    email: null
+    email: null,
+    customizable: null,
+    parentStepId: null
   }
   const navigateToBlockAction: Action = {
     parentBlockId: 'parentBlockId',
@@ -63,7 +67,9 @@ describe('ActionResolver', () => {
     journeyId: null,
     target: null,
     url: null,
-    email: null
+    email: null,
+    customizable: null,
+    parentStepId: null
   }
 
   beforeEach(async () => {
