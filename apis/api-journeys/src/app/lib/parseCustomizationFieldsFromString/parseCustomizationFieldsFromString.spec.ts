@@ -1,4 +1,4 @@
-import { parseCustomizationFieldsFromString } from './parseCustomizationFieldsFromString.utils'
+import { parseCustomizationFieldsFromString } from './parseCustomizationFieldsFromString'
 
 describe('parseCustomizationFieldsFromString Utils', () => {
   describe('parseCustomizationFieldsFromString', () => {

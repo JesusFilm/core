@@ -1,1 +1,1 @@
-export { parseCustomizationFieldsFromString } from './parseCustomizationFieldsFromString.utils'
+export { parseCustomizationFieldsFromString } from './parseCustomizationFieldsFromString'

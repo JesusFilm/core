@@ -50,7 +50,6 @@ describe('NavigateToBlockActionResolver', () => {
       parentOrder: 3,
       label: 'label',
       description: 'description',
-
       updatedAt: new Date()
     } as unknown as Block),
     action: {
