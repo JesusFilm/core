@@ -247,13 +247,32 @@ jobs:
       fail-fast: false
       matrix:
         include: ${{ fromJson(needs.build-e2e-matrix.outputs.matrix) }}
+        node-version: [22]
     steps:
       - uses: actions/checkout@v4
+      - uses: useblacksmith/setup-node@v5
+        with:
+          node-version: ${{ matrix.node-version }}
       - name: Mount playwright cache
         uses: useblacksmith/stickydisk@v1
         with:
           key: ${{ github.repository }}-playwright-cache
           path: ~/.cache/ms-playwright
+      - name: Get Node Version
+        id: node-version
+        run: echo "version=$(node -v)" >> $GITHUB_OUTPUT
+      - name: Mount NPM Cache
+        uses: useblacksmith/stickydisk@v1
+        with:
+          key: ${{ github.repository }}-${{ steps.node-version.outputs.version }}-npm-cache
+          path: ~/.npm
+      - name: Mount node_modules
+        uses: useblacksmith/stickydisk@v1
+        with:
+          key: ${{ github.repository }}-${{ steps.node-version.outputs.version }}-node-modules
+          path: ./node_modules
+      - name: NPM Install
+        run: npm ci --silent
       - run: npx playwright install --with-deps
       - name: Run Playwright tests
         run: npx nx run ${{ matrix.app }}-e2e:e2e
