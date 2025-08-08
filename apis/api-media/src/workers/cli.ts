@@ -10,16 +10,6 @@ export async function cli(argv = process.argv): Promise<void> {
   let queue: Queue, jobName: string, queueName: string
 
   switch (argv[2]) {
-    case 'algolia': {
-      const config = await import(
-        /* webpackChunkName: "algolia" */
-        './algolia'
-      )
-      queueName = config.queueName
-      jobName = config.jobName
-      queue = new Queue(queueName, { connection })
-      break
-    }
     case 'video-children': {
       const config = await import(
         /* webpackChunkName: "video-children" */
@@ -64,26 +54,6 @@ export async function cli(argv = process.argv): Promise<void> {
       const config = await import(
         /* webpackChunkName: "data-export" */
         './dataExport'
-      )
-      queueName = config.queueName
-      jobName = config.jobName
-      queue = new Queue(queueName, { connection })
-      break
-    }
-    case 'publish': {
-      const config = await import(
-        /* webpackChunkName: "published" */
-        './published'
-      )
-      queueName = config.queueName
-      jobName = config.jobName
-      queue = new Queue(queueName, { connection })
-      break
-    }
-    case 'mux-downloads': {
-      const config = await import(
-        /* webpackChunkName: "mux-downloads" */
-        './muxDownloads'
       )
       queueName = config.queueName
       jobName = config.jobName

@@ -1,4 +1,4 @@
-type Team @key(fields: "id") {
+type Team @key(fields: "id") @shareable {
   id: ID!
   title: String!
   publicTitle: String

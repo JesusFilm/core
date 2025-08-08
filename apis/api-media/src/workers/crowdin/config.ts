@@ -50,7 +50,7 @@ export const CROWDIN_CONFIG = {
 
 export const LANGUAGE_CODES = {
   ko: '3804',
-  ar: '139485',
+  ar: '22658',
   'es-MX': '21028',
   'pt-BR': '584',
   tr: '1942',

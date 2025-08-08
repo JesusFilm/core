@@ -14,3 +14,5 @@ import './textResponse'
 import './videoTrigger'
 import './video'
 import './typography'
+
+export { Block } from './block'

@@ -64,22 +64,4 @@ describe('CLI', () => {
     )
     expect(mockExit).toHaveBeenCalledWith(0)
   })
-
-  it('should run algolia when algolia command is provided', async () => {
-    process.argv = ['node', 'cli.js', 'algolia']
-    await cli()
-    expect(mockConsoleLog).toHaveBeenCalledWith(
-      expect.any(String),
-      expect.any(String),
-      'api-languages-algolia-job',
-      expect.any(String)
-    )
-    expect(mockConsoleLog).toHaveBeenCalledWith(
-      expect.stringContaining('test-id')
-    )
-    expect(mockConsoleLog).toHaveBeenCalledWith(
-      expect.stringContaining('you must start the worker')
-    )
-    expect(mockExit).toHaveBeenCalledWith(0)
-  })
 })

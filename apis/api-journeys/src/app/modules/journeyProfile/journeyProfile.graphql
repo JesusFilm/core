@@ -1,4 +1,4 @@
-type JourneyProfile @key(fields: "id") {
+type JourneyProfile @key(fields: "id") @shareable {
   id: ID!
   userId: ID!
   acceptedTermsAt: DateTime

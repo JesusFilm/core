@@ -24,7 +24,7 @@ const testQuestion: VideoStudyQuestion = {
   crowdInId: 'QUESTION123',
   value: 'Default question text',
   languageId: '529',
-  primary: false
+  primary: true
 }
 
 describe('importStudyQuestions', () => {
@@ -76,14 +76,16 @@ describe('importStudyQuestions', () => {
         value: testTranslation.text,
         languageId: testTranslation.languageId,
         order: testQuestion.order,
-        primary: false
+        videoId: testQuestion.videoId,
+        primary: true
       },
       create: {
         crowdInId: testQuestion.crowdInId,
         value: testTranslation.text,
         languageId: testTranslation.languageId,
         order: testQuestion.order,
-        primary: false
+        videoId: testQuestion.videoId,
+        primary: true
       }
     })
   })

@@ -1,4 +1,4 @@
-type StepBlock implements Block @key(fields: "id") {
+type StepBlock implements Block @key(fields: "id") @shareable {
   id: ID! @shareable
   journeyId: ID! @shareable
   """

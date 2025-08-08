@@ -33,7 +33,7 @@ jest.mock('../cloudflare/r2/asset', () => ({
 }))
 
 // Mock the Algolia service
-jest.mock('../../workers/algolia/service', () => ({
+jest.mock('../../lib/algolia/algoliaVideoVariantUpdate', () => ({
   updateVideoVariantInAlgolia: jest.fn()
 }))
 
@@ -47,7 +47,7 @@ const { deleteR2File: mockedDeleteR2File } = jest.requireMock(
   '../cloudflare/r2/asset'
 )
 const { updateVideoVariantInAlgolia: mockedUpdateVideoVariantInAlgolia } =
-  jest.requireMock('../../workers/algolia/service')
+  jest.requireMock('../../lib/algolia/algoliaVideoVariantUpdate')
 
 type VideoVariantAndIncludes = VideoVariant & {
   downloads: VideoVariantDownload[]

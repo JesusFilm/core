@@ -1,4 +1,4 @@
-type UserRole @key(fields: "id") {
+type UserRole @key(fields: "id") @shareable {
   id: ID!
   userId: ID!
   roles: [Role!]

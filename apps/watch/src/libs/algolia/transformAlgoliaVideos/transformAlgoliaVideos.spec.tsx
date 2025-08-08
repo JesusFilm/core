@@ -79,6 +79,7 @@ describe('transformAlgoliaVideos', () => {
     const videosWithNoTitles = [
       {
         ...algoliaVideos[0],
+        titles: [],
         titlesWithLanguages: []
       }
     ] as unknown as AlgoliaVideo[]
@@ -89,5 +90,18 @@ describe('transformAlgoliaVideos', () => {
   it('should transform all other video properties correctly', () => {
     const result = transformAlgoliaVideos(algoliaVideos)
     expect(result).toEqual(transformedVideos)
+  })
+
+  it('should fallback to title, when titlesWithLanguages is empty', () => {
+    const videosWithNoTitles = [
+      {
+        ...algoliaVideos[0],
+        titles: ['fall back title'],
+        titlesWithLanguages: null
+      }
+    ] as unknown as AlgoliaVideo[]
+
+    const result = transformAlgoliaVideos(videosWithNoTitles)
+    expect(result[0].title[0].value).toBe('fall back title')
   })
 })

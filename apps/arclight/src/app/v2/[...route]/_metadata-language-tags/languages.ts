@@ -99,5 +99,10 @@ export const languages: Language[] = [
     tag: 'vi',
     name: 'Vietnamese',
     nameNative: 'Tiếng Việt'
+  },
+  {
+    tag: 'bn',
+    name: 'Bangla',
+    nameNative: 'বাংলা'
   }
 ]
