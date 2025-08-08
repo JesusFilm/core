@@ -109,11 +109,6 @@ jobs:
         with:
           key: ${{ github.repository }}-${{ steps.node-version.outputs.version }}-node-modules
           path: ./node_modules
-      - name: Mount playwright cache
-        uses: useblacksmith/stickydisk@v1
-        with:
-          key: ${{ github.repository }}-playwright-cache
-          path: ~/.cache/ms-playwright
       - name: NPM Install
         run: npm install --silent
       - uses: nrwl/nx-set-shas@v4
@@ -183,7 +178,7 @@ jobs:
       - name: Upload E2E input artifact
         uses: actions/upload-artifact@v4
         with:
-          name: e2e-input
+          name: e2e-input-${{ matrix.app }}
           path: e2e-input/${{ matrix.app }}.txt
           if-no-files-found: ignore
           retention-days: 2
@@ -209,12 +204,12 @@ jobs:
     outputs:
       matrix: ${{ steps.build.outputs.matrix }}
     steps:
-      - name: Download E2E input artifact
+      - name: Download all E2E input artifacts
         uses: actions/download-artifact@v4
         with:
-          name: e2e-input
           path: e2e-input
-        continue-on-error: true
+          pattern: e2e-input-*
+          merge-multiple: true
       - name: Build matrix from deployments
         id: build
         run: |
@@ -254,29 +249,11 @@ jobs:
         include: ${{ fromJson(needs.build-e2e-matrix.outputs.matrix) }}
     steps:
       - uses: actions/checkout@v4
-      - uses: useblacksmith/setup-node@v5
-        with:
-          node-version: 22
-      - name: Get Node Version
-        id: node-version
-        run: echo "version=$(node -v)" >> $GITHUB_OUTPUT
-      - name: Mount NPM Cache
-        uses: useblacksmith/stickydisk@v1
-        with:
-          key: ${{ github.repository }}-${{ steps.node-version.outputs.version }}-npm-cache
-          path: ~/.npm
-      - name: Mount node_modules
-        uses: useblacksmith/stickydisk@v1
-        with:
-          key: ${{ github.repository }}-${{ steps.node-version.outputs.version }}-node-modules
-          path: ./node_modules
       - name: Mount playwright cache
         uses: useblacksmith/stickydisk@v1
         with:
           key: ${{ github.repository }}-playwright-cache
           path: ~/.cache/ms-playwright
-      - name: NPM Install
-        run: npm install --silent
       - run: npx playwright install --with-deps
       - name: Run Playwright tests
         run: npx nx run ${{ matrix.app }}-e2e:e2e
