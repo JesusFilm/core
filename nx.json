@@ -83,6 +83,14 @@
     "prisma-generate": {
       "cache": false,
       "inputs": ["{projectRoot}/**/schema.prisma"]
+    },
+    "subgraph-check": {
+      "cache": false,
+      "inputs": ["default"]
+    },
+    "type-check": {
+      "cache": true,
+      "inputs": ["default"]
     }
   },
   "namedInputs": {
