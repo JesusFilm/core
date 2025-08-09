@@ -3,8 +3,50 @@ on:
   push:
     branches:
       - stage
+permissions:
+  contents: read
+  checks: write
 jobs:
+  affected:
+    runs-on: blacksmith-2vcpu-ubuntu-2204
+    strategy:
+      matrix:
+        node-version: [22]
+    env:
+      NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: useblacksmith/setup-node@v5
+        with:
+          node-version: ${{ matrix.node-version }}
+      - name: Get Node Version
+        id: node-version
+        run: echo "version=$(node -v)" >> $GITHUB_OUTPUT
+      - name: Mount NPM Cache
+        uses: useblacksmith/stickydisk@v1
+        with:
+          key: ${{ github.repository }}-${{ steps.node-version.outputs.version }}-npm-cache
+          path: ~/.npm
+      - name: Mount node_modules
+        uses: useblacksmith/stickydisk@v1
+        with:
+          key: ${{ github.repository }}-${{ steps.node-version.outputs.version }}-node-modules
+          path: ./node_modules
+      - name: NPM Install
+        run: npm install --silent
+      - uses: nrwl/nx-set-shas@v4
+      - id: set-matrix
+        name: set matrix app to affected array
+        run: |
+          echo "matrix=$(npx ts-node tools/scripts/affected-apps.ts --projects apis/*)" >> $GITHUB_OUTPUT
+          cat $GITHUB_OUTPUT
   api-analytics:
+    needs: affected
+    if: contains(needs.affected.outputs.matrix, 'api-analytics')
     uses: JesusFilm/core/.github/workflows/api-deploy-worker.yml@stage
     with:
       name: api-analytics
@@ -17,7 +59,10 @@ jobs:
       JFP_AWS_ACCESS_KEY_ID: ${{ secrets.JFP_AWS_ACCESS_KEY_ID }}
       JFP_AWS_SECRET_ACCESS_KEY: ${{ secrets.JFP_AWS_SECRET_ACCESS_KEY }}
       AWS_NETWORK_CONFIG: ${{ secrets.AWS_NETWORK_CONFIG }}
+      NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
   api-journeys:
+    needs: affected
+    if: contains(needs.affected.outputs.matrix, 'api-journeys')
     uses: JesusFilm/core/.github/workflows/api-deploy-worker.yml@stage
     with:
       name: api-journeys
@@ -30,7 +75,10 @@ jobs:
       JFP_AWS_ACCESS_KEY_ID: ${{ secrets.JFP_AWS_ACCESS_KEY_ID }}
       JFP_AWS_SECRET_ACCESS_KEY: ${{ secrets.JFP_AWS_SECRET_ACCESS_KEY }}
       AWS_NETWORK_CONFIG: ${{ secrets.AWS_NETWORK_CONFIG }}
+      NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
   api-journeys-modern:
+    needs: affected
+    if: contains(needs.affected.outputs.matrix, 'api-journeys-modern')
     uses: JesusFilm/core/.github/workflows/api-deploy-worker.yml@stage
     with:
       name: api-journeys-modern
@@ -43,7 +91,10 @@ jobs:
       JFP_AWS_ACCESS_KEY_ID: ${{ secrets.JFP_AWS_ACCESS_KEY_ID }}
       JFP_AWS_SECRET_ACCESS_KEY: ${{ secrets.JFP_AWS_SECRET_ACCESS_KEY }}
       AWS_NETWORK_CONFIG: ${{ secrets.AWS_NETWORK_CONFIG }}
+      NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
   api-users:
+    needs: affected
+    if: contains(needs.affected.outputs.matrix, 'api-users')
     uses: JesusFilm/core/.github/workflows/api-deploy-worker.yml@stage
     with:
       name: api-users
@@ -56,7 +107,10 @@ jobs:
       JFP_AWS_ACCESS_KEY_ID: ${{ secrets.JFP_AWS_ACCESS_KEY_ID }}
       JFP_AWS_SECRET_ACCESS_KEY: ${{ secrets.JFP_AWS_SECRET_ACCESS_KEY }}
       AWS_NETWORK_CONFIG: ${{ secrets.AWS_NETWORK_CONFIG }}
+      NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
   api-languages:
+    needs: affected
+    if: contains(needs.affected.outputs.matrix, 'api-languages')
     uses: JesusFilm/core/.github/workflows/api-deploy-worker.yml@stage
     with:
       name: api-languages
@@ -69,7 +123,10 @@ jobs:
       JFP_AWS_ACCESS_KEY_ID: ${{ secrets.JFP_AWS_ACCESS_KEY_ID }}
       JFP_AWS_SECRET_ACCESS_KEY: ${{ secrets.JFP_AWS_SECRET_ACCESS_KEY }}
       AWS_NETWORK_CONFIG: ${{ secrets.AWS_NETWORK_CONFIG }}
+      NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
   api-media:
+    needs: affected
+    if: contains(needs.affected.outputs.matrix, 'api-media')
     uses: JesusFilm/core/.github/workflows/api-deploy-worker.yml@stage
     with:
       name: api-media
@@ -82,8 +139,11 @@ jobs:
       JFP_AWS_ACCESS_KEY_ID: ${{ secrets.JFP_AWS_ACCESS_KEY_ID }}
       JFP_AWS_SECRET_ACCESS_KEY: ${{ secrets.JFP_AWS_SECRET_ACCESS_KEY }}
       AWS_NETWORK_CONFIG: ${{ secrets.AWS_NETWORK_CONFIG }}
+      NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
 
   api-gateway:
+    needs: affected
+    if: contains(needs.affected.outputs.matrix, 'api-gateway')
     uses: JesusFilm/core/.github/workflows/api-gateway-stage-worker.yml@stage
     secrets:
       AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
