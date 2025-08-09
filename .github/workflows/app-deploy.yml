@@ -174,11 +174,112 @@ jobs:
           state: ${{ job.status }}
           environment-url: ${{ steps.deployment-url.outputs.deployment-url }}
           deployment-id: ${{ steps.deployment.outputs.deployment_id }}
+      - name: Prepare E2E input file
+        run: |
+          mkdir -p e2e-input
+          echo "${{ steps.deployment-url.outputs.deployment-url }}" > e2e-input/${{ matrix.app }}.txt
+      - name: Upload E2E input artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: e2e-input-${{ matrix.app }}
+          path: e2e-input/${{ matrix.app }}.txt
+          if-no-files-found: ignore
+          retention-days: 2
+  deploy-status:
+    runs-on: blacksmith-2vcpu-ubuntu-2204
+    needs: [affected, deploy-preview]
+    if: ${{ always() && github.event_name == 'pull_request' }}
+    steps:
+      - name: Successful deploy
+        if: ${{ !(contains(needs.*.result, 'failure')) }}
+        run: exit 0
+      - name: Failing deploy
+        if: ${{ contains(needs.*.result, 'failure') }}
+        run: exit 1
+  build-e2e-matrix:
+    name: Build E2E Matrix
+    needs: [affected, deploy-preview]
+    if: ${{ needs.deploy-preview.result == 'success' }}
+    permissions:
+      actions: read
+      contents: read
+    runs-on: blacksmith-2vcpu-ubuntu-2204
+    outputs:
+      matrix: ${{ steps.build.outputs.matrix }}
+    steps:
+      - name: Download all E2E input artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: e2e-input
+          pattern: e2e-input-*
+          merge-multiple: true
+      - name: Build matrix from inputs
+        id: build
+        run: |
+          set -euo pipefail
+          matrix='[]'
+          if [ ! -d e2e-input ]; then
+            echo "matrix=${matrix}" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+          shopt -s nullglob
+          files=(e2e-input/*.txt)
+          if [ ${#files[@]} -eq 0 ]; then
+            echo "matrix=${matrix}" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+          for f in "${files[@]}"; do
+            app=$(basename "${f}" .txt)
+            url=$(cat "${f}")
+            if [ -n "${url}" ]; then
+              matrix=$(jq -c --arg app "${app}" --arg url "${url}" '. + [{app:$app, url:$url}]' <<<"${matrix}")
+            fi
+          done
+          echo "matrix=${matrix}" >> $GITHUB_OUTPUT
+  e2e:
+    name: Playwright E2E (${{ matrix.app }}, ${{ matrix.node-version }})
+    needs: [build-e2e-matrix]
+    if: ${{ needs.build-e2e-matrix.result == 'success' && needs.build-e2e-matrix.outputs.matrix != '[]' && needs.build-e2e-matrix.outputs.matrix != '' }}
+    permissions:
+      contents: read
+    runs-on: blacksmith-4vcpu-ubuntu-2204
+    env:
+      NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include: ${{ fromJson(needs.build-e2e-matrix.outputs.matrix) }}
+        node-version: [22]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: useblacksmith/setup-node@v5
+        with:
+          node-version: ${{ matrix.node-version }}
+      - name: Mount playwright cache
+        uses: useblacksmith/stickydisk@v1
+        with:
+          key: ${{ github.repository }}-playwright-cache
+          path: ~/.cache/ms-playwright
+      - name: Get Node Version
+        id: node-version
+        run: echo "version=$(node -v)" >> $GITHUB_OUTPUT
+      - name: Mount NPM Cache
+        uses: useblacksmith/stickydisk@v1
+        with:
+          key: ${{ github.repository }}-${{ steps.node-version.outputs.version }}-npm-cache
+          path: ~/.npm
+      - name: Mount node_modules
+        uses: useblacksmith/stickydisk@v1
+        with:
+          key: ${{ github.repository }}-${{ steps.node-version.outputs.version }}-node-modules
+          path: ./node_modules
+      - name: NPM Install
+        run: npm ci --silent
       - run: npx playwright install --with-deps
       - name: Run Playwright tests
         run: npx nx run ${{ matrix.app }}-e2e:e2e
         env:
-          DEPLOYMENT_URL: ${{ steps.deployment-url.outputs.deployment-url }}
+          DEPLOYMENT_URL: ${{ matrix.url }}
           PLAYWRIGHT_USER: ${{ secrets.PLAYWRIGHT_USER }}
           PLAYWRIGHT_TEAM_NAME: ${{ secrets.PLAYWRIGHT_TEAM_NAME }}
           EXAMPLE_EMAIL_TOKEN: ${{ secrets.EXAMPLE_EMAIL_TOKEN }}
@@ -199,17 +300,6 @@ jobs:
           path: |
             playwright-report/
           retention-days: 30
-  deploy-status:
-    runs-on: blacksmith-2vcpu-ubuntu-2204
-    needs: [affected, deploy-preview]
-    if: ${{ always() && github.event_name == 'pull_request' }}
-    steps:
-      - name: Successful deploy
-        if: ${{ !(contains(needs.*.result, 'failure')) }}
-        run: exit 0
-      - name: Failing deploy
-        if: ${{ contains(needs.*.result, 'failure') }}
-        run: exit 1
   deploy-production:
     name: Deploy Production
     # if push to main or stage
