@@ -181,6 +181,7 @@ jobs:
           name: e2e-input-${{ matrix.app }}
           path: e2e-input/${{ matrix.app }}.txt
           if-no-files-found: ignore
+          overwrite: true
           retention-days: 2
       - name: Prepare E2E input file
         run: |
