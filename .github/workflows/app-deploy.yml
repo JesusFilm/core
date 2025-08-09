@@ -183,17 +183,6 @@ jobs:
           if-no-files-found: ignore
           overwrite: true
           retention-days: 2
-      - name: Prepare E2E input file
-        run: |
-          mkdir -p e2e-input
-          echo "${{ steps.deployment-url.outputs.deployment-url }}" > e2e-input/${{ matrix.app }}.txt
-      - name: Upload E2E input artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: e2e-input-${{ matrix.app }}
-          path: e2e-input/${{ matrix.app }}.txt
-          if-no-files-found: ignore
-          retention-days: 2
   deploy-status:
     runs-on: blacksmith-2vcpu-ubuntu-2204
     needs: [affected, deploy-preview]
