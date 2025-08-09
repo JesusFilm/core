@@ -94,46 +94,6 @@ You can trigger a manual export using:
 nx run api-media:data-export
 ```
 
-## Copy Distro Downloads Script
-
-The copy distro downloads script copies existing VideoVariantDownloads to their matched distro downloads. This is useful for creating distribution center versions of video downloads.
-
-### Usage
-
-```bash
-nx run api-media:copy-distro-downloads
-```
-
-### Process
-
-The script will:
-
-1. Find all VideoVariantDownloads with qualities: `low`, `sd`, `high`
-2. For each download, create corresponding downloads:
-   - `low` → `distroLow`
-   - `sd` → `distroSd`
-   - `high` → `distroHigh` + `highest`
-3. Process downloads in batches of 1000 for optimal performance
-4. Preserve all original metadata (size, dimensions, bitrate, etc.)
-
-### Quality Mapping
-
-| Original Quality | Target Qualities    |
-| ---------------- | ------------------- |
-| low              | distroLow           |
-| sd               | distroSd            |
-| high             | distroHigh, highest |
-
-### Error Handling
-
-The script includes error handling for:
-
-- Database connection issues
-- Batch processing failures
-- Progress tracking and reporting
-
-If any error occurs, the script will exit with a non-zero code and display an appropriate error message.
-
 ## Update Arc.gt URLs Script
 
 The update arc.gt URLs script updates VideoVariantDownload URLs from `https://arc.gt` to `https://api-v1.arclight.org` for specific distribution qualities.
