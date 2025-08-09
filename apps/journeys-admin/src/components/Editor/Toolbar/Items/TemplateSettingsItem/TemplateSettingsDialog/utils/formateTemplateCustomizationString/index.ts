@@ -1,0 +1,1 @@
+export { formateTemplateCustomizationString } from './formateTemplateCustomizationString'
