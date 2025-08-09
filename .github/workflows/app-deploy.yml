@@ -203,7 +203,8 @@ jobs:
       contents: read
     runs-on: blacksmith-2vcpu-ubuntu-2204
     outputs:
-      matrix: ${{ steps.build.outputs.matrix }}
+      include: ${{ steps.build.outputs.include }}
+      apps: ${{ steps.build.outputs.apps }}
     steps:
       - name: Download all E2E input artifacts
         uses: actions/download-artifact@v4
@@ -215,16 +216,18 @@ jobs:
         id: build
         run: |
           set -euo pipefail
-          matrix='[]'
+          include='[]'
           if [ ! -d e2e-input ]; then
-            echo "matrix=${matrix}" >> $GITHUB_OUTPUT
+            echo "include=${include}" >> $GITHUB_OUTPUT
+            echo "apps=[]" >> $GITHUB_OUTPUT
             exit 0
           fi
           shopt -s nullglob
           files=(e2e-input/*.txt)
           echo "E2E input files found: ${files[*]:-none}"
           if [ ${#files[@]} -eq 0 ]; then
-            echo "matrix=${matrix}" >> $GITHUB_OUTPUT
+            echo "include=${include}" >> $GITHUB_OUTPUT
+            echo "apps=[]" >> $GITHUB_OUTPUT
             exit 0
           fi
           for f in "${files[@]}"; do
@@ -232,16 +235,18 @@ jobs:
             url=$(cat "${f}")
             echo "Adding app=${app} url=${url}"
             if [ -n "${url}" ]; then
-              matrix=$(jq -c --arg app "${app}" --arg url "${url}" '. + [{app:$app, url:$url}]' <<<"${matrix}")
+              include=$(jq -c --arg app "${app}" --arg url "${url}" '. + [{app:$app, url:$url}]' <<<"${include}")
             fi
           done
-          echo "Final E2E matrix: ${matrix}"
-          echo "matrix=${matrix}" >> $GITHUB_OUTPUT
+          apps=$(jq -c '[.[] | .app]' <<<"${include}")
+          echo "Final E2E include: ${include}"
+          echo "include=${include}" >> $GITHUB_OUTPUT
+          echo "apps=${apps}" >> $GITHUB_OUTPUT
   e2e:
     name: Playwright E2E (${{ matrix.app }})
     needs: [build-e2e-matrix]
     # Only run if ALL deploy-preview matrix entries succeeded and we have URLs
-    if: ${{ needs.build-e2e-matrix.result == 'success' && needs.build-e2e-matrix.outputs.matrix != '[]' && needs.build-e2e-matrix.outputs.matrix != '' }}
+    if: ${{ needs.build-e2e-matrix.result == 'success' && needs.build-e2e-matrix.outputs.apps != '[]' && needs.build-e2e-matrix.outputs.apps != '' }}
     permissions:
       contents: read
     runs-on: blacksmith-4vcpu-ubuntu-2204
@@ -250,8 +255,9 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        include: ${{ fromJson(needs.build-e2e-matrix.outputs.matrix) }}
+        app: ${{ fromJson(needs.build-e2e-matrix.outputs.apps) }}
         node-version: [22]
+        include: ${{ fromJson(needs.build-e2e-matrix.outputs.include) }}
     steps:
       - uses: actions/checkout@v4
       - uses: useblacksmith/setup-node@v5
