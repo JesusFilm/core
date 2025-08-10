@@ -629,6 +629,15 @@ export interface GetAdminJourneyWithPlausibleToken_journey_journeyTheme {
   labelFont: string | null;
 }
 
+export interface GetAdminJourneyWithPlausibleToken_journey_journeyCustomizationFields {
+  __typename: "JourneyCustomizationField";
+  id: string;
+  journeyId: string;
+  key: string;
+  value: string | null;
+  defaultValue: string | null;
+}
+
 export interface GetAdminJourneyWithPlausibleToken_journey {
   __typename: "Journey";
   id: string;
@@ -674,6 +683,8 @@ export interface GetAdminJourneyWithPlausibleToken_journey {
   menuButtonIcon: JourneyMenuButtonIcon | null;
   menuStepBlock: GetAdminJourneyWithPlausibleToken_journey_menuStepBlock | null;
   journeyTheme: GetAdminJourneyWithPlausibleToken_journey_journeyTheme | null;
+  journeyCustomizationDescription: string | null;
+  journeyCustomizationFields: GetAdminJourneyWithPlausibleToken_journey_journeyCustomizationFields[];
   /**
    * used in a plausible share link to embed report
    */
