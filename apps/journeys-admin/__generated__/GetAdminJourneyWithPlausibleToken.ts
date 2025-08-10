@@ -674,6 +674,7 @@ export interface GetAdminJourneyWithPlausibleToken_journey {
   menuButtonIcon: JourneyMenuButtonIcon | null;
   menuStepBlock: GetAdminJourneyWithPlausibleToken_journey_menuStepBlock | null;
   journeyTheme: GetAdminJourneyWithPlausibleToken_journey_journeyTheme | null;
+  journeyCustomizationDescription: string | null;
   /**
    * used in a plausible share link to embed report
    */

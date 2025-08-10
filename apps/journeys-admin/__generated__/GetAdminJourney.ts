@@ -674,6 +674,7 @@ export interface GetAdminJourney_journey {
   menuButtonIcon: JourneyMenuButtonIcon | null;
   menuStepBlock: GetAdminJourney_journey_menuStepBlock | null;
   journeyTheme: GetAdminJourney_journey_journeyTheme | null;
+  journeyCustomizationDescription: string | null;
 }
 
 export interface GetAdminJourney {

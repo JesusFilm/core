@@ -674,6 +674,7 @@ export interface GetPublisherTemplate_publisherTemplate {
   menuButtonIcon: JourneyMenuButtonIcon | null;
   menuStepBlock: GetPublisherTemplate_publisherTemplate_menuStepBlock | null;
   journeyTheme: GetPublisherTemplate_publisherTemplate_journeyTheme | null;
+  journeyCustomizationDescription: string | null;
 }
 
 export interface GetPublisherTemplate {
