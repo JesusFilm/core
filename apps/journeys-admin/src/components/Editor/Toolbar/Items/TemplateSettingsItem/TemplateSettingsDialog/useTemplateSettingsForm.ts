@@ -4,8 +4,7 @@ import { JourneyUpdateInput } from '../../../../../../../__generated__/globalTyp
 
 export interface TemplateSettingsFormValues extends JourneyUpdateInput {
   featured: boolean
-  // TODO: add these to journey update input
-  customizationText: string
+  journeyCustomizationDescription: string
 }
 
 export function useTemplateSettingsForm(): FormikContextType<TemplateSettingsFormValues> {

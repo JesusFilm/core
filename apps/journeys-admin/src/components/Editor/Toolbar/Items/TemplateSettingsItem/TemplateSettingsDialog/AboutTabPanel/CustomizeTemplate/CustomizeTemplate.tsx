@@ -17,7 +17,7 @@ export function CustomizeTemplate(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { journey } = useJourney()
   const {
-    values: { customizationText },
+    values: { journeyCustomizationDescription },
     setFieldValue
   } = useTemplateSettingsForm()
 
@@ -25,15 +25,18 @@ export function CustomizeTemplate(): ReactElement {
     event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ): void => {
     const newValue = event.target.value
-    void setFieldValue('customizationText', newValue)
+    void setFieldValue('journeyCustomizationDescription', newValue)
   }
 
   const handleRefresh = (): void => {
     const formattedCustomizationText = formatTemplateCustomizationString(
       getTemplateCustomizationFields(journey),
-      customizationText
+      journeyCustomizationDescription
     )
-    void setFieldValue('customizationText', formattedCustomizationText)
+    void setFieldValue(
+      'journeyCustomizationDescription',
+      formattedCustomizationText
+    )
   }
 
   return (
@@ -56,7 +59,7 @@ export function CustomizeTemplate(): ReactElement {
       <TextField
         fullWidth
         multiline
-        value={customizationText}
+        value={journeyCustomizationDescription}
         onChange={handleChange}
         variant="outlined"
       />
