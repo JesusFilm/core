@@ -79,7 +79,7 @@ export async function POST(req: NextRequest) {
   const langfuseTraceId = uuidv4()
 
   const result = streamText({
-    model: google('gemini-2.0-flash'),
+    model: google('gemini-2.5-flash'),
     messages: messages.filter((message) => message.role !== 'system'),
     system: systemPrompt.compile({
       journeyId: journeyId ?? 'none',
@@ -108,7 +108,7 @@ export async function POST(req: NextRequest) {
       const tool = tools[toolCall.toolName]
 
       const { object: repairedArgs } = await generateObject({
-        model: google('gemini-2.0-flash'),
+        model: google('gemini-2.5-flash'),
         schema: tool.parameters,
         prompt: [
           `The model tried to call the tool "${toolCall.toolName}"` +
