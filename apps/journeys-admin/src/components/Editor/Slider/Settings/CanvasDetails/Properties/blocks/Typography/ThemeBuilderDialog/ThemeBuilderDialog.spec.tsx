@@ -74,7 +74,8 @@ describe('ThemeBuilderDialog', () => {
       headerFont: FontFamily.Montserrat,
       bodyFont: FontFamily.Inter,
       labelFont: FontFamily.Nunito
-    }
+    },
+    journeyCustomizationDescription: null
   }
 
   const mockJourneyWithoutTheme: JourneyFields = {
