@@ -62,5 +62,6 @@ export const journey: Journey = {
   logoImageBlock: null,
   menuButtonIcon: null,
   menuStepBlock: null,
-  journeyTheme: null
+  journeyTheme: null,
+  journeyCustomizationDescription: null
 }
