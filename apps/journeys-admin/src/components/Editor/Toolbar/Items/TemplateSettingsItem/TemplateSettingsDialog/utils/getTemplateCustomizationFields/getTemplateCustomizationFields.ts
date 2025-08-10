@@ -113,9 +113,6 @@ export function getTemplateCustomizationFields(journey?: Journey): string[] {
         case 'SignUpBlock':
           extractTemplateStrings(block.submitLabel)
           break
-        case 'IconBlock':
-          extractTemplateStrings(block.iconName)
-          break
         default:
           break
       }

@@ -22,7 +22,7 @@ import { AboutTabPanel } from './AboutTabPanel'
 import { CategoriesTabPanel } from './CategoriesTabPanel'
 import { MetadataTabPanel } from './MetadataTabPanel'
 import { TemplateSettingsFormValues } from './useTemplateSettingsForm'
-import { formateTemplateCustomizationString } from './utils/formateTemplateCustomizationString'
+import { formatTemplateCustomizationString } from './utils/formatTemplateCustomizationString'
 import { getTemplateCustomizationFields } from './utils/getTemplateCustomizationFields'
 
 export const JOURNEY_FEATURE_UPDATE = gql`
@@ -62,9 +62,7 @@ export function TemplateSettingsDialog({
 
   if (customizationText == null) {
     setCustomizationText(
-      formateTemplateCustomizationString(
-        getTemplateCustomizationFields(journey)
-      )
+      formatTemplateCustomizationString(getTemplateCustomizationFields(journey))
     )
   }
 

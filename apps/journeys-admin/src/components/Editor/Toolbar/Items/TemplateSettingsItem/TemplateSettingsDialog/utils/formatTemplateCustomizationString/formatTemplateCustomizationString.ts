@@ -41,7 +41,7 @@
  * // Returns: ""
  * ```
  */
-export function formateTemplateCustomizationString(
+export function formatTemplateCustomizationString(
   templateCustomizationFields: string[],
   customizationText?: string
 ): string {

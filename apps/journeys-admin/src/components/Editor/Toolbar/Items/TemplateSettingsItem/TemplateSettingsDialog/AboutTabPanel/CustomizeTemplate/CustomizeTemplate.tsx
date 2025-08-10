@@ -10,7 +10,7 @@ import { ReactElement } from 'react'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 
 import { useTemplateSettingsForm } from '../../useTemplateSettingsForm'
-import { formateTemplateCustomizationString } from '../../utils/formateTemplateCustomizationString'
+import { formatTemplateCustomizationString } from '../../utils/formatTemplateCustomizationString'
 import { getTemplateCustomizationFields } from '../../utils/getTemplateCustomizationFields'
 
 export function CustomizeTemplate(): ReactElement {
@@ -21,13 +21,15 @@ export function CustomizeTemplate(): ReactElement {
     setFieldValue
   } = useTemplateSettingsForm()
 
-  const handleChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
+  const handleChange = (
+    event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ): void => {
     const newValue = event.target.value
     void setFieldValue('customizationText', newValue)
   }
 
   const handleRefresh = (): void => {
-    const formattedCustomizationText = formateTemplateCustomizationString(
+    const formattedCustomizationText = formatTemplateCustomizationString(
       getTemplateCustomizationFields(journey),
       customizationText
     )
