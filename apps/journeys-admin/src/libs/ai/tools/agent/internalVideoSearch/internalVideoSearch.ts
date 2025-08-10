@@ -94,11 +94,19 @@ export function agentInternalVideoSearch(
     description: 'Search for internal videos using Algolia. Returns video metadata with videoId for card block references.',
     parameters: z.object({
       searchTerm: z.string().describe('The search term to find internal videos. Can be a title, description, or any text to search for.'),
-      limit: z.number().optional().default(5).describe('Maximum number of results to return (default: 5, max: 10)')
+      limit: z
+        .number()
+        .optional()
+        .default(20)
+        .describe('Maximum number of results to return (default: 20)')
     }),
-          execute: async ({ searchTerm, limit = 5 }) => {
+          execute: async ({ searchTerm, limit = 20 }) => {
       try {
-        const validatedLimit = Math.min(Math.max(limit, 1), 10)
+        const normalizedLimit =
+          typeof limit === 'number' && Number.isFinite(limit)
+            ? Math.floor(limit)
+            : 20
+        const validatedLimit = Math.max(normalizedLimit, 1)
         const client = await initAlgoliaClient()
         const hits = await searchVideosAlgolia(searchTerm, client, validatedLimit)
         const results = transformVideoHits(hits)
