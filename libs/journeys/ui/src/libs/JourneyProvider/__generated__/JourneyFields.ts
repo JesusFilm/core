@@ -674,4 +674,5 @@ export interface JourneyFields {
   menuButtonIcon: JourneyMenuButtonIcon | null;
   menuStepBlock: JourneyFields_menuStepBlock | null;
   journeyTheme: JourneyFields_journeyTheme | null;
+  journeyCustomizationDescription: string | null;
 }

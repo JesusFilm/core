@@ -244,67 +244,69 @@ model JourneyTag {
 }
 
 model Journey {
-  id                        String                      @id @default(uuid())
-  title                     String
-  languageId                String
-  description               String?
-  slug                      String                      @unique
-  archivedAt                DateTime?
-  createdAt                 DateTime                    @default(now())
-  deletedAt                 DateTime?
-  publishedAt               DateTime?
-  trashedAt                 DateTime?
-  featuredAt                DateTime?
-  status                    JourneyStatus
-  seoTitle                  String?
-  seoDescription            String?
-  primaryImageBlockId       String?                     @unique
-  creatorImageBlockId       String?                     @unique
-  creatorDescription        String?
-  template                  Boolean?                    @default(false)
-  teamId                    String
-  hostId                    String?
-  themeMode                 ThemeMode?                  @default(light)
-  themeName                 ThemeName?                  @default(base)
-  updatedAt                 DateTime                    @default(now()) @updatedAt
-  strategySlug              String?
-  plausibleToken            String?
-  website                   Boolean?                    @default(false)
-  showShareButton           Boolean?                    @default(false)
-  showLikeButton            Boolean?                    @default(false)
-  showDislikeButton         Boolean?                    @default(false)
-  displayTitle              String?
-  showHosts                 Boolean?                    @default(false)
-  showChatButtons           Boolean?                    @default(false)
-  showReactionButtons       Boolean?                    @default(false)
-  showLogo                  Boolean?                    @default(false)
-  showMenu                  Boolean?                    @default(false)
-  showDisplayTitle          Boolean?                    @default(true)
-  logoImageBlockId          String?                     @unique
-  menuStepBlockId           String?                     @unique
-  menuButtonIcon            JourneyMenuButtonIcon?
-  socialNodeX               Int?                        @default(-240)
-  socialNodeY               Int?                        @default(-46)
-  fromTemplateId            String?
-  actions                   Action[]
-  blocks                    Block[]
-  chatButtons               ChatButton[]
-  Event                     Event[]
-  creatorImageBlock         Block?                      @relation("CreatorImageBlock", fields: [creatorImageBlockId], references: [id])
-  host                      Host?                       @relation(fields: [hostId], references: [id])
-  logoImageBlock            Block?                      @relation("LogoImageBlock", fields: [logoImageBlockId], references: [id])
-  menuStepBlock             Block?                      @relation("MenuStepBlock", fields: [menuStepBlockId], references: [id])
-  primaryImageBlock         Block?                      @relation("PrimaryImageBlock", fields: [primaryImageBlockId], references: [id])
-  team                      Team                        @relation(fields: [teamId], references: [id])
-  journeyCollectionJourneys JourneyCollectionJourneys[]
-  journeyEventsExportLogs   JourneyEventsExportLog[]
-  journeyNotifications      JourneyNotification[]
-  journeyTags               JourneyTag[]
-  journeyTheme              JourneyTheme?
-  journeyVisitors           JourneyVisitor[]
-  qrCode                    QrCode[]
-  userInvites               UserInvite[]
-  userJourneys              UserJourney[]
+  id                              String                      @id @default(uuid())
+  title                           String
+  languageId                      String
+  description                     String?
+  slug                            String                      @unique
+  archivedAt                      DateTime?
+  createdAt                       DateTime                    @default(now())
+  deletedAt                       DateTime?
+  publishedAt                     DateTime?
+  trashedAt                       DateTime?
+  featuredAt                      DateTime?
+  status                          JourneyStatus
+  seoTitle                        String?
+  seoDescription                  String?
+  primaryImageBlockId             String?                     @unique
+  creatorImageBlockId             String?                     @unique
+  creatorDescription              String?
+  template                        Boolean?                    @default(false)
+  teamId                          String
+  hostId                          String?
+  themeMode                       ThemeMode?                  @default(light)
+  themeName                       ThemeName?                  @default(base)
+  updatedAt                       DateTime                    @default(now()) @updatedAt
+  strategySlug                    String?
+  plausibleToken                  String?
+  website                         Boolean?                    @default(false)
+  showShareButton                 Boolean?                    @default(false)
+  showLikeButton                  Boolean?                    @default(false)
+  showDislikeButton               Boolean?                    @default(false)
+  displayTitle                    String?
+  showHosts                       Boolean?                    @default(false)
+  showChatButtons                 Boolean?                    @default(false)
+  showReactionButtons             Boolean?                    @default(false)
+  showLogo                        Boolean?                    @default(false)
+  showMenu                        Boolean?                    @default(false)
+  showDisplayTitle                Boolean?                    @default(true)
+  logoImageBlockId                String?                     @unique
+  menuStepBlockId                 String?                     @unique
+  menuButtonIcon                  JourneyMenuButtonIcon?
+  socialNodeX                     Int?                        @default(-240)
+  socialNodeY                     Int?                        @default(-46)
+  fromTemplateId                  String?
+  journeyCustomizationDescription String?
+  actions                         Action[]
+  blocks                          Block[]
+  chatButtons                     ChatButton[]
+  Event                           Event[]
+  creatorImageBlock               Block?                      @relation("CreatorImageBlock", fields: [creatorImageBlockId], references: [id])
+  host                            Host?                       @relation(fields: [hostId], references: [id])
+  logoImageBlock                  Block?                      @relation("LogoImageBlock", fields: [logoImageBlockId], references: [id])
+  menuStepBlock                   Block?                      @relation("MenuStepBlock", fields: [menuStepBlockId], references: [id])
+  primaryImageBlock               Block?                      @relation("PrimaryImageBlock", fields: [primaryImageBlockId], references: [id])
+  team                            Team                        @relation(fields: [teamId], references: [id])
+  journeyCollectionJourneys       JourneyCollectionJourneys[]
+  JourneyCustomizationField       JourneyCustomizationField[]
+  journeyEventsExportLogs         JourneyEventsExportLog[]
+  journeyNotifications            JourneyNotification[]
+  journeyTags                     JourneyTag[]
+  journeyTheme                    JourneyTheme?
+  journeyVisitors                 JourneyVisitor[]
+  qrCode                          QrCode[]
+  userInvites                     UserInvite[]
+  userJourneys                    UserJourney[]
 
   @@index([title])
 }
@@ -448,6 +450,8 @@ model Action {
   target        String?
   email         String?
   updatedAt     DateTime @default(now()) @updatedAt
+  customizable  Boolean?
+  parentStepId  String?
   block         Block?   @relation("Block", fields: [blockId], references: [id])
   journey       Journey? @relation(fields: [journeyId], references: [id])
   parentBlock   Block    @relation(fields: [parentBlockId], references: [id], onDelete: Cascade)
@@ -552,6 +556,18 @@ model JourneyTheme {
 
   @@index([journeyId])
   @@index([userId])
+}
+
+model JourneyCustomizationField {
+  id           String  @id
+  journeyId    String
+  key          String
+  value        String?
+  defaultValue String?
+  journey      Journey @relation(fields: [journeyId], references: [id], onDelete: Cascade)
+
+  @@unique([journeyId, key, value])
+  @@index([journeyId])
 }
 
 enum MessagePlatform {

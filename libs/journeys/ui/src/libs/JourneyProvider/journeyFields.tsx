@@ -106,5 +106,6 @@ export const JOURNEY_FIELDS = gql`
       bodyFont
       labelFont
     }
+    journeyCustomizationDescription
   }
 `
