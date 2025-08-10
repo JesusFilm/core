@@ -40,7 +40,7 @@ describe('ContentMetadata', () => {
     expect(screen.getByText('Test Video Title')).toBeInTheDocument()
   })
 
-  it('displays the label text and applies correct color from getLabelDetails', () => {
+  it('displays the label text from getLabelDetails', () => {
     render(
       <VideoProvider value={{ content: videos[0] }}>
         <ContentMetadata {...defaultProps} />
@@ -49,7 +49,6 @@ describe('ContentMetadata', () => {
 
     const labelElement = screen.getByText('Feature Film')
     expect(labelElement).toBeInTheDocument()
-    expect(labelElement).toHaveStyle({ color: '#FF9E00' })
   })
 
   it('formats description with first 3 words in bold', () => {

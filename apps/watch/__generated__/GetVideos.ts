@@ -54,7 +54,7 @@ export interface GetVideos_videos {
   slug: string;
   variant: GetVideos_videos_variant | null;
   /**
-   * the number value of the amount of children on a video
+   * The number of published child videos associated with this video
    */
   childrenCount: number;
 }

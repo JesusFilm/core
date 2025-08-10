@@ -5,6 +5,7 @@ import Stack from '@mui/material/Stack'
 import { ThemeProvider, alpha } from '@mui/material/styles'
 import { ReactElement, ReactNode } from 'react'
 
+import { getEnvironmentBannerHeight } from '../../libs/environment'
 import { theme } from '../../theme'
 
 import { AppNavbar } from './_AppNavbar'
@@ -18,10 +19,12 @@ interface DashboardLayoutProps {
 export default function DashboardLayout({
   children
 }: DashboardLayoutProps): ReactElement {
+  const environmentBannerHeight = getEnvironmentBannerHeight()
+
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline enableColorScheme />
-      <Box sx={{ display: 'flex' }}>
+      <Box sx={{ display: 'flex', paddingTop: `${environmentBannerHeight}px` }}>
         <SideMenu />
         <AppNavbar />
         <Box

@@ -84,7 +84,11 @@ const steps: Array<TreeBlock<StepBlock>> = [
             color: null,
             content: "What's our purpose, and how did we get here?",
             variant: TypographyVariant.h3,
-            children: []
+            children: [],
+            settings: {
+              __typename: 'TypographyBlockSettings',
+              color: null
+            }
           },
           {
             id: 'typographyBlockId2',
@@ -96,7 +100,11 @@ const steps: Array<TreeBlock<StepBlock>> = [
             content:
               'Follow the journey of a curious Irishman traveling around the world looking for answers and wrestling with the things that just don’t seem to make sense. ',
             variant: null,
-            children: []
+            children: [],
+            settings: {
+              __typename: 'TypographyBlockSettings',
+              color: null
+            }
           },
           {
             __typename: 'ButtonBlock',
@@ -179,7 +187,11 @@ const steps: Array<TreeBlock<StepBlock>> = [
             color: null,
             content: 'a quick question...',
             variant: TypographyVariant.h6,
-            children: []
+            children: [],
+            settings: {
+              __typename: 'TypographyBlockSettings',
+              color: null
+            }
           },
           {
             id: 'typographyBlockId12',
@@ -190,7 +202,11 @@ const steps: Array<TreeBlock<StepBlock>> = [
             color: null,
             content: 'Can we trust the story of Jesus ?',
             variant: TypographyVariant.h3,
-            children: []
+            children: [],
+            settings: {
+              __typename: 'TypographyBlockSettings',
+              color: null
+            }
           },
           {
             __typename: 'ButtonBlock',
@@ -273,13 +289,18 @@ const steps: Array<TreeBlock<StepBlock>> = [
             color: null,
             content: 'if it’s true...',
             variant: TypographyVariant.h6,
-            children: []
+            children: [],
+            settings: {
+              __typename: 'TypographyBlockSettings',
+              color: null
+            }
           },
           {
             id: 'radioQuestion1.id',
             __typename: 'RadioQuestionBlock',
             parentOrder: 2,
             parentBlockId: 'card2.id',
+            gridView: false,
             children: [
               {
                 id: 'radioOption1.id',
@@ -287,6 +308,7 @@ const steps: Array<TreeBlock<StepBlock>> = [
                 parentBlockId: 'radioQuestion1.id',
                 parentOrder: 0,
                 label: 'One of many ways to God',
+                pollOptionImageBlockId: null,
                 action: {
                   __typename: 'NavigateToBlockAction',
                   parentBlockId: 'radioOption1.id',
@@ -301,6 +323,7 @@ const steps: Array<TreeBlock<StepBlock>> = [
                 parentBlockId: 'radioQuestion1.id',
                 parentOrder: 1,
                 label: 'One great lie...',
+                pollOptionImageBlockId: null,
                 action: {
                   __typename: 'NavigateToBlockAction',
                   parentBlockId: 'radioOption2.id',
@@ -315,6 +338,7 @@ const steps: Array<TreeBlock<StepBlock>> = [
                 parentBlockId: 'radioQuestion1.id',
                 parentOrder: 2,
                 label: 'One true way to God',
+                pollOptionImageBlockId: null,
                 action: {
                   __typename: 'NavigateToBlockAction',
                   parentBlockId: 'radioOption3.id',
@@ -374,13 +398,18 @@ const steps: Array<TreeBlock<StepBlock>> = [
             color: null,
             content: 'What do you think?',
             variant: TypographyVariant.h6,
-            children: []
+            children: [],
+            settings: {
+              __typename: 'TypographyBlockSettings',
+              color: null
+            }
           },
           {
             id: 'radioQuestion1.id',
             __typename: 'RadioQuestionBlock',
             parentBlockId: 'card3.id',
             parentOrder: 2,
+            gridView: false,
             children: [
               {
                 id: 'radioOption1.id',
@@ -388,6 +417,7 @@ const steps: Array<TreeBlock<StepBlock>> = [
                 parentBlockId: 'radioQuestion1.id',
                 parentOrder: 0,
                 label: 'Yes, God likes good people',
+                pollOptionImageBlockId: null,
                 action: {
                   __typename: 'NavigateToBlockAction',
                   parentBlockId: 'radioOption1.id',
@@ -402,6 +432,7 @@ const steps: Array<TreeBlock<StepBlock>> = [
                 parentBlockId: 'radioQuestion1.id',
                 parentOrder: 1,
                 label: 'No, He will accept me as I am',
+                pollOptionImageBlockId: null,
                 action: {
                   __typename: 'NavigateToBlockAction',
                   parentBlockId: 'radioOption2.id',
@@ -581,7 +612,11 @@ const steps: Array<TreeBlock<StepBlock>> = [
             color: null,
             content: 'a quote',
             variant: TypographyVariant.overline,
-            children: []
+            children: [],
+            settings: {
+              __typename: 'TypographyBlockSettings',
+              color: null
+            }
           },
           {
             id: 'typographyBlockId12',
@@ -593,7 +628,11 @@ const steps: Array<TreeBlock<StepBlock>> = [
             content:
               '“God sent his Son into the world not to judge the world, but to save the world through him.”',
             variant: TypographyVariant.subtitle1,
-            children: []
+            children: [],
+            settings: {
+              __typename: 'TypographyBlockSettings',
+              color: null
+            }
           },
           {
             id: 'typographyBlockId13',
@@ -604,7 +643,11 @@ const steps: Array<TreeBlock<StepBlock>> = [
             color: null,
             content: '–  The Bible, John 3:17',
             variant: TypographyVariant.caption,
-            children: []
+            children: [],
+            settings: {
+              __typename: 'TypographyBlockSettings',
+              color: null
+            }
           },
           {
             __typename: 'ButtonBlock',

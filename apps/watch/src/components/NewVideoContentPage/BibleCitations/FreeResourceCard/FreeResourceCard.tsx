@@ -35,7 +35,7 @@ export function FreeResourceCard({
         <span className="text-xs font-medium tracking-wider uppercase text-white/80">
           {heading}
         </span>
-        <h3 className="text-xl font-normal text-white mt-2 mb-4">{text}</h3>
+        <p className="text-xl font-normal text-white mt-2 mb-4">{text}</p>
         {cta != null && (
           <button
             role="link"

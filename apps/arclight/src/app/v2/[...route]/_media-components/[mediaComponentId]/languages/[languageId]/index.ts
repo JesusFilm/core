@@ -1,7 +1,9 @@
 import { OpenAPIHono, createRoute, z } from '@hono/zod-openapi'
-import { ResultOf, graphql } from 'gql.tada'
+
+import { ResultOf, graphql } from '@core/shared/gql'
 
 import { getApolloClient } from '../../../../../../../lib/apolloClient'
+import { findDownloadWithFallback } from '../../../../../../../lib/downloadHelpers'
 import { getDefaultPlatformForApiKey } from '../../../../../../../lib/getPlatformFromApiKey'
 import {
   getWebEmbedPlayer,
@@ -227,11 +229,15 @@ mediaComponentLanguage.openapi(route, async (c) => {
 
   if (video == null || video.variant == null) return c.notFound()
 
-  const downloadLow = video.variant?.downloads?.find(
-    (download) => download.quality === 'low'
+  const downloadLow = findDownloadWithFallback(
+    video.variant?.downloads,
+    'low',
+    apiKey
   )
-  const downloadHigh = video.variant?.downloads?.find(
-    (download) => download.quality === 'high'
+  const downloadHigh = findDownloadWithFallback(
+    video.variant?.downloads,
+    'high',
+    apiKey
   )
   const downloadSd = video.variant?.downloads?.find(
     (download) => download.quality === 'sd'
@@ -243,18 +249,18 @@ mediaComponentLanguage.openapi(route, async (c) => {
         ? undefined
         : {
             url: downloadLow.url,
-            height: downloadLow.height,
-            width: downloadLow.width,
-            sizeInBytes: downloadLow.size
+            height: downloadLow.height || 240,
+            width: downloadLow.width || 426,
+            sizeInBytes: downloadLow.size || 0
           },
     high:
       downloadHigh == null
         ? undefined
         : {
             url: downloadHigh.url,
-            height: downloadHigh.height,
-            width: downloadHigh.width,
-            sizeInBytes: downloadHigh.size
+            height: downloadHigh.height || 720,
+            width: downloadHigh.width || 1280,
+            sizeInBytes: downloadHigh.size || 0
           }
   }
 
@@ -402,38 +408,36 @@ mediaComponentLanguage.openapi(route, async (c) => {
                 })) ?? []
             },
             downloadUrls: {
-              low: child.variant?.downloads?.find(
-                (d) => d.quality === 'low'
-              ) && {
-                url:
-                  child.variant.downloads.find((d) => d.quality === 'low')
-                    ?.url ?? '',
-                height:
-                  child.variant.downloads.find((d) => d.quality === 'low')
-                    ?.height ?? 240,
-                width:
-                  child.variant.downloads.find((d) => d.quality === 'low')
-                    ?.width ?? 426,
-                sizeInBytes:
-                  child.variant.downloads.find((d) => d.quality === 'low')
-                    ?.size ?? 0
-              },
-              high: child.variant?.downloads?.find(
-                (d) => d.quality === 'high'
-              ) && {
-                url:
-                  child.variant.downloads.find((d) => d.quality === 'high')
-                    ?.url ?? '',
-                height:
-                  child.variant.downloads.find((d) => d.quality === 'high')
-                    ?.height ?? 720,
-                width:
-                  child.variant.downloads.find((d) => d.quality === 'high')
-                    ?.width ?? 1280,
-                sizeInBytes:
-                  child.variant.downloads.find((d) => d.quality === 'high')
-                    ?.size ?? 0
-              }
+              low: (() => {
+                const lowDownload = findDownloadWithFallback(
+                  child.variant?.downloads,
+                  'low',
+                  apiKey
+                )
+                return (
+                  lowDownload && {
+                    url: lowDownload.url,
+                    height: lowDownload.height || 240,
+                    width: lowDownload.width || 426,
+                    sizeInBytes: lowDownload.size || 0
+                  }
+                )
+              })(),
+              high: (() => {
+                const highDownload = findDownloadWithFallback(
+                  child.variant?.downloads,
+                  'high',
+                  apiKey
+                )
+                return (
+                  highDownload && {
+                    url: highDownload.url,
+                    height: highDownload.height || 720,
+                    width: highDownload.width || 1280,
+                    sizeInBytes: highDownload.size || 0
+                  }
+                )
+              })()
             },
             streamingUrls: {
               m3u8: [

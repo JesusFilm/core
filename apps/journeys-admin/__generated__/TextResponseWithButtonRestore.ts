@@ -159,6 +159,12 @@ export interface TextResponseWithButtonRestore_textResponse_RadioOptionBlock {
   parentOrder: number | null;
   label: string;
   action: TextResponseWithButtonRestore_textResponse_RadioOptionBlock_action | null;
+  /**
+   * pollOptionImageBlockId is present if a child block should be used as a poll option image.
+   *       This child block should not be rendered normally, instead it should be used
+   *       as a poll option image. Blocks are often of type ImageBlock
+   */
+  pollOptionImageBlockId: string | null;
 }
 
 export interface TextResponseWithButtonRestore_textResponse_RadioQuestionBlock {
@@ -166,6 +172,7 @@ export interface TextResponseWithButtonRestore_textResponse_RadioQuestionBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
+  gridView: boolean | null;
 }
 
 export interface TextResponseWithButtonRestore_textResponse_SignUpBlock_action_NavigateToBlockAction {
@@ -249,6 +256,14 @@ export interface TextResponseWithButtonRestore_textResponse_TextResponseBlock {
   integrationId: string | null;
 }
 
+export interface TextResponseWithButtonRestore_textResponse_TypographyBlock_settings {
+  __typename: "TypographyBlockSettings";
+  /**
+   * Color of the typography
+   */
+  color: string | null;
+}
+
 export interface TextResponseWithButtonRestore_textResponse_TypographyBlock {
   __typename: "TypographyBlock";
   id: string;
@@ -258,6 +273,7 @@ export interface TextResponseWithButtonRestore_textResponse_TypographyBlock {
   color: TypographyColor | null;
   content: string;
   variant: TypographyVariant | null;
+  settings: TextResponseWithButtonRestore_textResponse_TypographyBlock_settings | null;
 }
 
 export interface TextResponseWithButtonRestore_textResponse_VideoBlock_mediaVideo_Video_title {
@@ -597,6 +613,12 @@ export interface TextResponseWithButtonRestore_button_RadioOptionBlock {
   parentOrder: number | null;
   label: string;
   action: TextResponseWithButtonRestore_button_RadioOptionBlock_action | null;
+  /**
+   * pollOptionImageBlockId is present if a child block should be used as a poll option image.
+   *       This child block should not be rendered normally, instead it should be used
+   *       as a poll option image. Blocks are often of type ImageBlock
+   */
+  pollOptionImageBlockId: string | null;
 }
 
 export interface TextResponseWithButtonRestore_button_RadioQuestionBlock {
@@ -604,6 +626,7 @@ export interface TextResponseWithButtonRestore_button_RadioQuestionBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
+  gridView: boolean | null;
 }
 
 export interface TextResponseWithButtonRestore_button_SignUpBlock_action_NavigateToBlockAction {
@@ -687,6 +710,14 @@ export interface TextResponseWithButtonRestore_button_TextResponseBlock {
   integrationId: string | null;
 }
 
+export interface TextResponseWithButtonRestore_button_TypographyBlock_settings {
+  __typename: "TypographyBlockSettings";
+  /**
+   * Color of the typography
+   */
+  color: string | null;
+}
+
 export interface TextResponseWithButtonRestore_button_TypographyBlock {
   __typename: "TypographyBlock";
   id: string;
@@ -696,6 +727,7 @@ export interface TextResponseWithButtonRestore_button_TypographyBlock {
   color: TypographyColor | null;
   content: string;
   variant: TypographyVariant | null;
+  settings: TextResponseWithButtonRestore_button_TypographyBlock_settings | null;
 }
 
 export interface TextResponseWithButtonRestore_button_VideoBlock_mediaVideo_Video_title {
@@ -1035,6 +1067,12 @@ export interface TextResponseWithButtonRestore_startIcon_RadioOptionBlock {
   parentOrder: number | null;
   label: string;
   action: TextResponseWithButtonRestore_startIcon_RadioOptionBlock_action | null;
+  /**
+   * pollOptionImageBlockId is present if a child block should be used as a poll option image.
+   *       This child block should not be rendered normally, instead it should be used
+   *       as a poll option image. Blocks are often of type ImageBlock
+   */
+  pollOptionImageBlockId: string | null;
 }
 
 export interface TextResponseWithButtonRestore_startIcon_RadioQuestionBlock {
@@ -1042,6 +1080,7 @@ export interface TextResponseWithButtonRestore_startIcon_RadioQuestionBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
+  gridView: boolean | null;
 }
 
 export interface TextResponseWithButtonRestore_startIcon_SignUpBlock_action_NavigateToBlockAction {
@@ -1125,6 +1164,14 @@ export interface TextResponseWithButtonRestore_startIcon_TextResponseBlock {
   integrationId: string | null;
 }
 
+export interface TextResponseWithButtonRestore_startIcon_TypographyBlock_settings {
+  __typename: "TypographyBlockSettings";
+  /**
+   * Color of the typography
+   */
+  color: string | null;
+}
+
 export interface TextResponseWithButtonRestore_startIcon_TypographyBlock {
   __typename: "TypographyBlock";
   id: string;
@@ -1134,6 +1181,7 @@ export interface TextResponseWithButtonRestore_startIcon_TypographyBlock {
   color: TypographyColor | null;
   content: string;
   variant: TypographyVariant | null;
+  settings: TextResponseWithButtonRestore_startIcon_TypographyBlock_settings | null;
 }
 
 export interface TextResponseWithButtonRestore_startIcon_VideoBlock_mediaVideo_Video_title {
@@ -1473,6 +1521,12 @@ export interface TextResponseWithButtonRestore_endIcon_RadioOptionBlock {
   parentOrder: number | null;
   label: string;
   action: TextResponseWithButtonRestore_endIcon_RadioOptionBlock_action | null;
+  /**
+   * pollOptionImageBlockId is present if a child block should be used as a poll option image.
+   *       This child block should not be rendered normally, instead it should be used
+   *       as a poll option image. Blocks are often of type ImageBlock
+   */
+  pollOptionImageBlockId: string | null;
 }
 
 export interface TextResponseWithButtonRestore_endIcon_RadioQuestionBlock {
@@ -1480,6 +1534,7 @@ export interface TextResponseWithButtonRestore_endIcon_RadioQuestionBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
+  gridView: boolean | null;
 }
 
 export interface TextResponseWithButtonRestore_endIcon_SignUpBlock_action_NavigateToBlockAction {
@@ -1563,6 +1618,14 @@ export interface TextResponseWithButtonRestore_endIcon_TextResponseBlock {
   integrationId: string | null;
 }
 
+export interface TextResponseWithButtonRestore_endIcon_TypographyBlock_settings {
+  __typename: "TypographyBlockSettings";
+  /**
+   * Color of the typography
+   */
+  color: string | null;
+}
+
 export interface TextResponseWithButtonRestore_endIcon_TypographyBlock {
   __typename: "TypographyBlock";
   id: string;
@@ -1572,6 +1635,7 @@ export interface TextResponseWithButtonRestore_endIcon_TypographyBlock {
   color: TypographyColor | null;
   content: string;
   variant: TypographyVariant | null;
+  settings: TextResponseWithButtonRestore_endIcon_TypographyBlock_settings | null;
 }
 
 export interface TextResponseWithButtonRestore_endIcon_VideoBlock_mediaVideo_Video_title {

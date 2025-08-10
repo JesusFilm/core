@@ -13,18 +13,8 @@ jobs:
     strategy:
       matrix:
         node-version: [22]
-    services:
-      postgres:
-        image: postgres
-        env:
-          POSTGRES_PASSWORD: postgres
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-        ports:
-          - 5432:5432
+    env:
+      NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -77,15 +67,23 @@ jobs:
         with:
           targets: lint
           args: --fix
-      - name: type-check, extract-translations, subgraph-check
+      - name: Type Check
         uses: mansagroup/nrwl-nx-action@v3
         with:
-          targets: type-check,extract-translations,subgraph-check
+          targets: type-check
+      - name: Extract Translations
+        uses: mansagroup/nrwl-nx-action@v3
+        with:
+          targets: extract-translations
+      - name: Subgraph Check
+        uses: mansagroup/nrwl-nx-action@v3
+        with:
+          targets: subgraph-check
         env:
           HIVE_TOKEN: ${{ secrets.HIVE_PROD_READ_ONLY_TOKEN }}
       - name: lint branch name
         if: ${{ github.event_name == 'pull_request' }}
         run: npx validate-branch-name -t $GITHUB_HEAD_REF
-      - uses: autofix-ci/action@551dded8c6cc8a1054039c8bc0b8b48c51dfc6ef
+      - uses: autofix-ci/action@635ffb0c9798bd160680f18fd73371e355b85f27
         with:
           commit-message: 'fix: lint issues'

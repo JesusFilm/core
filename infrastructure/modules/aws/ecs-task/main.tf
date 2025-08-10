@@ -76,11 +76,11 @@ resource "aws_ecs_task_definition" "ecs_task_definition" {
         }
         ]), var.include_aws_env_vars ? [
         {
-          name  = "AWS_ACCESS_KEY_ID",
+          name      = "AWS_ACCESS_KEY_ID",
           valueFrom = "arn:aws:ssm:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:parameter/terraform/prd/AWS_ACCESS_KEY_ID"
         },
         {
-          name  = "AWS_SECRET_ACCESS_KEY",
+          name      = "AWS_SECRET_ACCESS_KEY",
           valueFrom = "arn:aws:ssm:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:parameter/terraform/prd/AWS_SECRET_ACCESS_KEY"
         }
       ] : [])
@@ -262,10 +262,10 @@ resource "aws_alb_target_group" "alb_target_group" {
   vpc_id      = var.ecs_config.vpc_id
 
   health_check {
-    healthy_threshold   = 2
-    unhealthy_threshold = 4
-    interval            = 10
-    timeout             = 4
+    healthy_threshold   = var.service_config.alb_target_group.health_check_healthy_threshold
+    unhealthy_threshold = var.service_config.alb_target_group.health_check_unhealthy_threshold
+    interval            = var.service_config.alb_target_group.health_check_interval
+    timeout             = var.service_config.alb_target_group.health_check_timeout
     path                = var.service_config.alb_target_group.health_check_path
     port                = var.service_config.alb_target_group.health_check_port
     protocol            = var.service_config.alb_target_group.protocol
@@ -280,7 +280,7 @@ resource "aws_alb_listener_rule" "alb_listener_rule" {
   }
   condition {
     host_header {
-      values = [
+      values = length(var.host_names) > 0 ? var.host_names : [
         coalesce(
           var.host_name,
           format("%s.%s", var.service_config.name, data.aws_route53_zone.zone.name)

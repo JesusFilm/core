@@ -67,6 +67,7 @@ const radioQuestion: TreeBlock<RadioQuestionBlock> = {
   id: 'RadioQuestion1',
   parentBlockId: 'RadioQuestion1',
   parentOrder: 0,
+  gridView: false,
   children: []
 }
 
@@ -106,7 +107,11 @@ const typography: TreeBlock<TypographyBlock> = {
   variant: null,
   color: null,
   align: null,
-  children: []
+  children: [],
+  settings: {
+    __typename: 'TypographyBlockSettings',
+    color: null
+  }
 }
 
 const video: TreeBlock<VideoBlock> = {

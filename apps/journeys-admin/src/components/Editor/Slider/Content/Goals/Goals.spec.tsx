@@ -160,7 +160,8 @@ describe('Goals', () => {
     displayTitle: null,
     logoImageBlock: null,
     menuButtonIcon: null,
-    menuStepBlock: null
+    menuStepBlock: null,
+    journeyTheme: null
   }
 
   it('should render placeholder', () => {

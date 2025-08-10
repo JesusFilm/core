@@ -173,6 +173,12 @@ export interface GetJourney_journey_blocks_RadioOptionBlock {
   parentOrder: number | null;
   label: string;
   action: GetJourney_journey_blocks_RadioOptionBlock_action | null;
+  /**
+   * pollOptionImageBlockId is present if a child block should be used as a poll option image.
+   *       This child block should not be rendered normally, instead it should be used
+   *       as a poll option image. Blocks are often of type ImageBlock
+   */
+  pollOptionImageBlockId: string | null;
 }
 
 export interface GetJourney_journey_blocks_RadioQuestionBlock {
@@ -180,6 +186,7 @@ export interface GetJourney_journey_blocks_RadioQuestionBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
+  gridView: boolean | null;
 }
 
 export interface GetJourney_journey_blocks_SignUpBlock_action_NavigateToBlockAction {
@@ -263,6 +270,14 @@ export interface GetJourney_journey_blocks_TextResponseBlock {
   integrationId: string | null;
 }
 
+export interface GetJourney_journey_blocks_TypographyBlock_settings {
+  __typename: "TypographyBlockSettings";
+  /**
+   * Color of the typography
+   */
+  color: string | null;
+}
+
 export interface GetJourney_journey_blocks_TypographyBlock {
   __typename: "TypographyBlock";
   id: string;
@@ -272,6 +287,7 @@ export interface GetJourney_journey_blocks_TypographyBlock {
   color: TypographyColor | null;
   content: string;
   variant: TypographyVariant | null;
+  settings: GetJourney_journey_blocks_TypographyBlock_settings | null;
 }
 
 export interface GetJourney_journey_blocks_VideoBlock_mediaVideo_Video_title {
@@ -605,6 +621,14 @@ export interface GetJourney_journey_menuStepBlock {
   slug: string | null;
 }
 
+export interface GetJourney_journey_journeyTheme {
+  __typename: "JourneyTheme";
+  id: string;
+  headerFont: string | null;
+  bodyFont: string | null;
+  labelFont: string | null;
+}
+
 export interface GetJourney_journey {
   __typename: "Journey";
   id: string;
@@ -649,6 +673,7 @@ export interface GetJourney_journey {
   logoImageBlock: GetJourney_journey_logoImageBlock | null;
   menuButtonIcon: JourneyMenuButtonIcon | null;
   menuStepBlock: GetJourney_journey_menuStepBlock | null;
+  journeyTheme: GetJourney_journey_journeyTheme | null;
 }
 
 export interface GetJourney {

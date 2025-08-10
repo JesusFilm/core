@@ -1,0 +1,17 @@
+{
+  "Metadata": {
+    "pageTitle": "{title} | येशू फिल्म परियोजना"
+  },
+  "RootIndexPage": {
+    "pageTitle": "हेर्नुहोस्",
+    "title": "नि:शुल्क सुसमाचार भिडियो <underline>स्ट्रिमिङ</underline> पुस्तकालय।",
+    "description": "२००० भन्दा बढी भाषाहरूमा सुसमाचार हेर्नुहोस्, सिक्नुहोस् र साझा गर्नुहोस्"
+  },
+  "DatadogErrorBoundary": {
+    "somethingWentWrong": "केही गडबड भयो।",
+    "anErrorOccurred": "यो पृष्ठ लोड गर्दा एउटा त्रुटि भयो। कृपया पुन:ताजा गर्ने प्रयास गर्नुहोस्।",
+    "errorDetails": "त्रुटि विवरणहरू",
+    "tryAgain": "फेरि प्रयास गर्नुहोस्",
+    "unknownError": "अज्ञात त्रुटि"
+  }
+}

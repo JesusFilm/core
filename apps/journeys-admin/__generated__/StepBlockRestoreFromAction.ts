@@ -159,6 +159,12 @@ export interface StepBlockRestoreFromAction_blockRestore_RadioOptionBlock {
   parentOrder: number | null;
   label: string;
   action: StepBlockRestoreFromAction_blockRestore_RadioOptionBlock_action | null;
+  /**
+   * pollOptionImageBlockId is present if a child block should be used as a poll option image.
+   *       This child block should not be rendered normally, instead it should be used
+   *       as a poll option image. Blocks are often of type ImageBlock
+   */
+  pollOptionImageBlockId: string | null;
 }
 
 export interface StepBlockRestoreFromAction_blockRestore_RadioQuestionBlock {
@@ -166,6 +172,7 @@ export interface StepBlockRestoreFromAction_blockRestore_RadioQuestionBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
+  gridView: boolean | null;
 }
 
 export interface StepBlockRestoreFromAction_blockRestore_SignUpBlock_action_NavigateToBlockAction {
@@ -259,6 +266,14 @@ export interface StepBlockRestoreFromAction_blockRestore_TextResponseBlock {
   integrationId: string | null;
 }
 
+export interface StepBlockRestoreFromAction_blockRestore_TypographyBlock_settings {
+  __typename: "TypographyBlockSettings";
+  /**
+   * Color of the typography
+   */
+  color: string | null;
+}
+
 export interface StepBlockRestoreFromAction_blockRestore_TypographyBlock {
   __typename: "TypographyBlock";
   id: string;
@@ -268,6 +283,7 @@ export interface StepBlockRestoreFromAction_blockRestore_TypographyBlock {
   color: TypographyColor | null;
   content: string;
   variant: TypographyVariant | null;
+  settings: StepBlockRestoreFromAction_blockRestore_TypographyBlock_settings | null;
 }
 
 export interface StepBlockRestoreFromAction_blockRestore_VideoBlock_mediaVideo_Video_title {

@@ -310,6 +310,7 @@ export interface ButtonBlockCreateInput {
 
 export interface ButtonBlockSettingsInput {
   alignment?: ButtonAlignment | null;
+  color?: string | null;
 }
 
 export interface ButtonBlockUpdateInput {
@@ -392,6 +393,8 @@ export interface CustomDomainUpdateInput {
 export interface EmailActionInput {
   gtmEventName?: string | null;
   email: string;
+  customizable?: boolean | null;
+  parentStepId?: string | null;
 }
 
 export interface HostCreateInput {
@@ -496,6 +499,19 @@ export interface JourneyTemplateInput {
   template?: boolean | null;
 }
 
+export interface JourneyThemeCreateInput {
+  journeyId: string;
+  headerFont?: string | null;
+  bodyFont?: string | null;
+  labelFont?: string | null;
+}
+
+export interface JourneyThemeUpdateInput {
+  headerFont?: string | null;
+  bodyFont?: string | null;
+  labelFont?: string | null;
+}
+
 export interface JourneyUpdateInput {
   title?: string | null;
   languageId?: string | null;
@@ -571,6 +587,8 @@ export interface LinkActionInput {
   gtmEventName?: string | null;
   url: string;
   target?: string | null;
+  customizable?: boolean | null;
+  parentStepId?: string | null;
 }
 
 export interface MeInput {
@@ -597,6 +615,7 @@ export interface RadioOptionBlockCreateInput {
 export interface RadioOptionBlockUpdateInput {
   parentBlockId?: string | null;
   label?: string | null;
+  pollOptionImageBlockId?: string | null;
 }
 
 export interface RadioQuestionBlockCreateInput {
