@@ -53,6 +53,22 @@ export function ToolInvocationPart({
           resultText={t('Videos Search Completed!')}
         />
       )
+    case 'loadVideoSubtitleContent':
+      return (
+        <BasicTool
+          part={part}
+          callText={t('Loading Video Subtitle Content...')}
+          resultText={t('Video Subtitle Content Loaded!')}
+        />
+      )
+    case 'loadLanguages':
+      return (
+        <BasicTool
+          part={part}
+          callText={t('Loading Languages...')}
+          resultText={t('Languages Loaded!')}
+        />
+      )
     case 'clientSelectImage':
       return <ClientSelectImageTool part={part} addToolResult={addToolResult} />
     case 'clientRedirectUserToEditor':
