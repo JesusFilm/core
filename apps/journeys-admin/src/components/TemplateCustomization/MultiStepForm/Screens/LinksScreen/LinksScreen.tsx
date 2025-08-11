@@ -9,6 +9,9 @@ import { transformer } from '@core/journeys/ui/transformer'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 
 import { getJourneyLinks } from '../../../utils/getJourneyLinks'
+import { BlockFields_StepBlock as StepBlock } from '../../../../../../__generated__/BlockFields'
+import { CardsPreview } from './CardsPreview'
+import { TreeBlock } from '@core/journeys/ui/block'
 
 interface LinksScreenProps {
   handleNext: () => void
@@ -22,9 +25,7 @@ export function LinksScreen({ handleNext }: LinksScreenProps): ReactElement {
     links.some(
       (link) => link.linkType === 'block' && link.parentStepId === block.id
     )
-  )
-
-  console.log(links)
+  ) as Array<TreeBlock<StepBlock>>
 
   async function handleSubmit(): Promise<void> {
     //TODO: handle submit
@@ -37,7 +38,7 @@ export function LinksScreen({ handleNext }: LinksScreenProps): ReactElement {
       sx={{ px: { xs: 2, md: 8 }, maxWidth: '1000px' }}
       gap={6}
     >
-      {/* //TODO: Card Previews */}
+      <CardsPreview steps={treeBlocks} />
       <Typography variant="h6" color="text.secondary">
         {t('This invite has buttons leading to external links')}
       </Typography>

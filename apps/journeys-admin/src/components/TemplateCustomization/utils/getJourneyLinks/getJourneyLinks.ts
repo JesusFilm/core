@@ -85,7 +85,7 @@ export function getJourneyLinks(journey?: Journey): JourneyLink[] {
         break
       case 'EmailAction':
         if (action.customizable === true) {
-          url = `mailto:${action.email}`
+          url = action.email
           parentStepId = action.parentStepId ?? null
         }
         break
