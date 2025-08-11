@@ -66,25 +66,25 @@ describe('getTextResponseValues', () => {
   it('resolves values for embed variant', () => {
     const input: TextResponseStrings = {
       label: '  {{ name }}  ',
-      placeholder: '  {{ title: CTO }}  ',
+      placeholder: '{{ title: CTO }}',
       hint: '{{ some: value }}'
     }
     const result = getTextResponseValues(input, fields, 'embed')
-    expect(result.label).toBe('Alice')
+    expect(result.label).toBe('  Alice  ')
     expect(result.placeholder).toBe('Child of God')
     expect(result.hint).toBe('Some Value')
   })
 
-  it('returns original strings when not a strict pattern match', () => {
+  it('replaces custom fields within mixed strings and leaves non-custom-field text intact', () => {
     const input: TextResponseStrings = {
       label: 'Hello {{ name }}!',
       placeholder: 'name',
       hint: '{{name}} extra'
     }
     const result = getTextResponseValues(input, fields, 'default')
-    expect(result.label).toBe('Hello {{ name }}!')
+    expect(result.label).toBe('Hello Alice!')
     expect(result.placeholder).toBe('name')
-    expect(result.hint).toBe('{{name}} extra')
+    expect(result.hint).toBe('Alice extra')
   })
 
   it('handles null placeholder and hint', () => {

@@ -134,7 +134,7 @@ describe('Typography', () => {
     ).toBeInTheDocument()
   })
 
-  it('returns original string when not a strict match', () => {
+  it('replaces custom fields within mixed strings and leaves other text intact', () => {
     const journey = {
       journeyCustomizationFields: [
         {
@@ -157,7 +157,7 @@ describe('Typography', () => {
     )
 
     expect(
-      screen.getByRole('heading', { name: 'Hello {{ name }}!', level: 3 })
+      screen.getByRole('heading', { name: 'Hello Alice!', level: 3 })
     ).toBeInTheDocument()
   })
 

@@ -14,13 +14,13 @@ describe('resolveJourneyCustomizationString', () => {
     expect(resolveJourneyCustomizationString(null, fields)).toBeNull()
   })
 
-  it('returns the original string when it does not strictly match the pattern', () => {
+  it('replaces custom fields within mixed strings and leaves non-token text intact', () => {
     expect(resolveJourneyCustomizationString('Hello {{ name }}!', fields)).toBe(
-      'Hello {{ name }}!'
+      'Hello Alice!'
     )
     expect(resolveJourneyCustomizationString('name', fields)).toBe('name')
     expect(resolveJourneyCustomizationString('{{name}} extra', fields)).toBe(
-      '{{name}} extra'
+      'Alice extra'
     )
   })
 
@@ -60,13 +60,13 @@ describe('resolveJourneyCustomizationString', () => {
     )
   })
 
-  it('matches with leading/trailing whitespace around the entire string', () => {
+  it('replaces custom fields regardless of surrounding whitespace', () => {
     expect(resolveJourneyCustomizationString('  {{ name }}  ', fields)).toBe(
-      'Alice'
+      '  Alice  '
     )
     expect(
       resolveJourneyCustomizationString('  {{ title:  Some Title  }}', fields)
-    ).toBe('Child of God')
+    ).toBe('  Child of God')
   })
 
   it('trims spaces around the key before lookup', () => {

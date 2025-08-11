@@ -1067,7 +1067,7 @@ describe('Button', () => {
       expect(screen.getByRole('button')).toHaveTextContent('{{ name }}')
     })
 
-    it('returns original label when not a strict match', () => {
+    it('replaces custom fields within mixed strings and leaves other text intact', () => {
       const journeyWithFields = {
         journeyCustomizationFields: [
           {
@@ -1093,7 +1093,7 @@ describe('Button', () => {
         </MockedProvider>
       )
 
-      expect(screen.getByRole('button')).toHaveTextContent('Hello {{ name }}!')
+      expect(screen.getByRole('button')).toHaveTextContent('Hello Alice!')
     })
 
     it('uses defaultValue when value is null', () => {

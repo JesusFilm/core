@@ -13,18 +13,15 @@ export function resolveJourneyCustomizationString(
 ): string | null {
   if (input == null) return null
 
-  const trimmed = input.trim()
+  const customFieldsPattern =
+    /\{\{\s*([^:}]+)(?:\s*:\s*(?:(['"])([^'"]*)\2|([^}]*?)))?\s*\}\}/g
 
-  const pattern =
-    /^\{\{\s*([^:}]+)(?:\s*:\s*(?:(['"])([^'"]*)\2|([^}]*?)))?\s*\}\}$/
+  const replaced = input.replace(customFieldsPattern, (fullMatch, key) => {
+    const trimmedKey = String(key).trim()
+    const field = journeyCustomizationFields.find((f) => f.key === trimmedKey)
+    const resolved = field?.value ?? field?.defaultValue
+    return resolved ?? fullMatch
+  })
 
-  const match = trimmed.match(pattern)
-  if (match == null) return input
-
-  const key = match[1].trim()
-  const field = journeyCustomizationFields.find((f) => f.key === key)
-  if (field == null) return input
-
-  const resolved = field.value ?? field.defaultValue
-  return resolved ?? input
+  return replaced
 }
