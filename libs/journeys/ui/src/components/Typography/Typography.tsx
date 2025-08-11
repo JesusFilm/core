@@ -1,9 +1,11 @@
 import MuiTypography from '@mui/material/Typography'
-import { ReactElement } from 'react'
+import { ReactElement, useMemo } from 'react'
 
 import type { TreeBlock } from '../../libs/block'
 
 import { TypographyFields } from './__generated__/TypographyFields'
+import { useJourney } from '../../libs/JourneyProvider'
+import { resolveJourneyCustomizationString } from '../../libs/resolveJourneyCustomizationString'
 
 export interface TypographyProps extends TreeBlock<TypographyFields> {
   editableContent?: ReactElement
@@ -19,7 +21,20 @@ export function Typography({
   editableContent,
   placeholderText
 }: TypographyProps): ReactElement {
-  let displayContent: ReactElement | string = content
+  const { journey, variant: journeyVariant } = useJourney()
+
+  const resolvedContent = useMemo(
+    () =>
+      journeyVariant === 'admin'
+        ? content
+        : (resolveJourneyCustomizationString(
+            content,
+            journey?.journeyCustomizationFields ?? []
+          ) ?? ''),
+    [journeyVariant, content, journey?.journeyCustomizationFields]
+  )
+
+  let displayContent: ReactElement | string = resolvedContent
 
   if (editableContent != null) {
     displayContent = editableContent

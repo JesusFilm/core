@@ -6,7 +6,7 @@ import Typography from '@mui/material/Typography'
 import { SxProps } from '@mui/system/styleFunctionSx'
 import { useFormikContext } from 'formik'
 import { useTranslation } from 'next-i18next'
-import { ReactElement, useEffect, useState } from 'react'
+import { ReactElement, useEffect, useMemo, useState } from 'react'
 
 import { TextResponseType } from '../../../__generated__/globalTypes'
 import type { TreeBlock } from '../../libs/block'
@@ -84,10 +84,14 @@ export const TextResponse = ({
     label: resolvedLabel,
     placeholder: resolvedPlaceholder,
     hint: resolvedHint
-  } = getTextResponseValues(
-    { label, placeholder, hint },
-    journey?.journeyCustomizationFields ?? [],
-    variant ?? 'default'
+  } = useMemo(
+    () =>
+      getTextResponseValues(
+        { label, placeholder, hint },
+        journey?.journeyCustomizationFields ?? [],
+        variant ?? 'default'
+      ),
+    [label, placeholder, hint, journey?.journeyCustomizationFields, variant]
   )
 
   const trimmedPlaceholder =
