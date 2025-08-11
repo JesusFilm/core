@@ -216,7 +216,7 @@ resource "aws_s3_bucket_lifecycle_configuration" "public_alb_logs" {
   rule {
     id     = "expire-logs"
     status = "Enabled"
-    expiration { days = 90 }
+    expiration { days = 14 }
   }
 }
 
@@ -262,7 +262,7 @@ resource "aws_s3_bucket_lifecycle_configuration" "internal_alb_logs" {
   rule {
     id     = "expire-logs"
     status = "Enabled"
-    expiration { days = 90 }
+    expiration { days = 14 }
   }
 }
 
