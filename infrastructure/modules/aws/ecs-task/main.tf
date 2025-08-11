@@ -262,10 +262,10 @@ resource "aws_alb_target_group" "alb_target_group" {
   vpc_id      = var.ecs_config.vpc_id
 
   health_check {
-    healthy_threshold   = 2
-    unhealthy_threshold = 4
-    interval            = 10
-    timeout             = 4
+    healthy_threshold   = var.service_config.alb_target_group.health_check_healthy_threshold
+    unhealthy_threshold = var.service_config.alb_target_group.health_check_unhealthy_threshold
+    interval            = var.service_config.alb_target_group.health_check_interval
+    timeout             = var.service_config.alb_target_group.health_check_timeout
     path                = var.service_config.alb_target_group.health_check_path
     port                = var.service_config.alb_target_group.health_check_port
     protocol            = var.service_config.alb_target_group.protocol

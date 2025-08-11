@@ -72,8 +72,13 @@ locals {
 }
 
 module "api-gateway-stage" {
-  source           = "../../../apis/api-gateway/infrastructure"
-  ecs_config       = local.public_ecs_config
+  source = "../../../apis/api-gateway/infrastructure"
+  ecs_config = merge(local.public_ecs_config, {
+    alb_target_group = merge(local.alb_target_group, {
+      health_check_path = "/readiness"
+      health_check_port = "4000"
+    })
+  })
   env              = "stage"
   doppler_token    = data.aws_ssm_parameter.doppler_api_gateway_stage_token.value
   alb_listener_arn = module.stage.public_alb.alb_listener.arn

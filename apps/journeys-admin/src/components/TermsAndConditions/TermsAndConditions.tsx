@@ -57,7 +57,12 @@ export function TermsAndConditions(): ReactElement {
   const router = useRouter()
 
   const handleJourneyProfileCreate = async (): Promise<void> => {
-    if (user?.displayName == null) return
+    let displayName = user?.displayName
+    // displayName may not be set for email pass login
+    if (displayName == null && user?.email != null) {
+      displayName = user?.email?.split('@')[0]
+    }
+    if (displayName == null) return
 
     setLoading(true)
     await journeyProfileCreate()
@@ -66,10 +71,10 @@ export function TermsAndConditions(): ReactElement {
       variables: {
         input: {
           title: t('{{ displayName }} & Team', {
-            displayName: user.displayName
+            displayName
           }),
           publicTitle: t('{{ displayName }} Team', {
-            displayName: user.displayName?.charAt(0)
+            displayName: displayName.charAt(0)
           })
         }
       }

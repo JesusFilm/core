@@ -1,0 +1,30 @@
+type JourneyCustomizationField @shareable {
+  id: ID!
+  journeyId: ID!
+  key: String!
+  value: String
+  defaultValue: String
+}
+
+extend type Journey {
+  journeyCustomizationDescription: String
+  journeyCustomizationFields: [JourneyCustomizationField!]!
+}
+
+input JourneyCustomizationFieldInput {
+  id: ID!
+  key: String!
+  value: String
+}
+
+extend type Mutation {
+  journeyCustomizationFieldPublisherUpdate(
+    journeyId: ID!
+    string: String!
+  ): [JourneyCustomizationField!]!
+
+  journeyCustomizationFieldUserUpdate(
+    journeyId: ID!
+    input: [JourneyCustomizationFieldInput!]!
+  ): [JourneyCustomizationField!]!
+}

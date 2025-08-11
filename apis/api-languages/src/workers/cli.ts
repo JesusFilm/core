@@ -10,16 +10,6 @@ export async function cli(argv = process.argv): Promise<void> {
   let queue: Queue, jobName: string, queueName: string
 
   switch (argv[2]) {
-    case 'algolia': {
-      const config = await import(
-        /* webpackChunkName: "algolia" */
-        './algolia'
-      )
-      queueName = config.queueName
-      jobName = config.jobName
-      queue = new Queue(queueName, { connection })
-      break
-    }
     case 'data-export': {
       const config = await import(
         /* webpackChunkName: "data-export" */
