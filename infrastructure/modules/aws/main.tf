@@ -86,12 +86,15 @@ module "public_bastion_security_group" {
 }
 
 module "internal_alb" {
-  source          = "./alb"
-  name            = "jfp-internal-alb-${var.env}"
-  subnets         = module.vpc.internal_subnets
-  vpc_id          = module.vpc.vpc_id
-  internal        = true
-  security_groups = [module.internal_alb_security_group.security_group_id]
+  source              = "./alb"
+  name                = "jfp-internal-alb-${var.env}"
+  subnets             = module.vpc.internal_subnets
+  vpc_id              = module.vpc.vpc_id
+  internal            = true
+  security_groups     = [module.internal_alb_security_group.security_group_id]
+  access_logs_enabled = true
+  access_logs_bucket  = aws_s3_bucket.internal_alb_logs.bucket
+  access_logs_prefix  = ""
 }
 
 module "internal_alb_listener" {
@@ -102,13 +105,16 @@ module "internal_alb_listener" {
 }
 
 module "public_alb" {
-  source          = "./alb"
-  name            = "jfp-public-alb-${var.env}"
-  subnets         = module.vpc.public_subnets
-  vpc_id          = module.vpc.vpc_id
-  internal        = false
-  redirects       = local.public_alb_config.redirects
-  security_groups = [module.public_alb_security_group.security_group_id]
+  source              = "./alb"
+  name                = "jfp-public-alb-${var.env}"
+  subnets             = module.vpc.public_subnets
+  vpc_id              = module.vpc.vpc_id
+  internal            = false
+  redirects           = local.public_alb_config.redirects
+  security_groups     = [module.public_alb_security_group.security_group_id]
+  access_logs_enabled = true
+  access_logs_bucket  = aws_s3_bucket.public_alb_logs.bucket
+  access_logs_prefix  = ""
 }
 
 module "public_alb_listener" {
