@@ -16,7 +16,6 @@ jobs:
   build-and-deploy:
     env:
       IMAGE_TAG: ${{ github.sha }}
-      NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
     runs-on: blacksmith-2vcpu-ubuntu-2204
     steps:
       - name: Checkout current branch
