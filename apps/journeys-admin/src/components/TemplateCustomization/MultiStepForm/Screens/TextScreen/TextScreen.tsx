@@ -159,7 +159,11 @@ export function TextScreen({ handleNext }: TextScreenProps): ReactElement {
   }
 
   return (
-    <Stack sx={{ px: { xs: 2, md: 8 }, maxWidth: '1000px' }} gap={6}>
+    <Stack
+      alignItems="center"
+      sx={{ px: { xs: 2, md: 8 }, maxWidth: '1000px' }}
+      gap={6}
+    >
       <Typography variant="h6" color="text.secondary">
         {t(
           "Here's a script of this invitation. Change the blue areas and it will be customized for you."

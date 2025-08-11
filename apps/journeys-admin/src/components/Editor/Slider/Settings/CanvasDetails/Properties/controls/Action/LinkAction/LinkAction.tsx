@@ -60,7 +60,9 @@ export function LinkAction(): ReactElement {
         __typename: 'LinkAction',
         parentBlockId: id,
         gtmEventName: '',
-        url
+        url,
+        customizable: false,
+        parentStepId: null
       },
       undoAction: action,
       editorFocus: {

@@ -74,7 +74,8 @@ const journey: Journey = {
   menuButtonIcon: null,
   menuStepBlock: null,
   journeyTheme: null,
-  journeyCustomizationDescription: null
+  journeyCustomizationDescription: null,
+  journeyCustomizationFields: []
 }
 
 describe('CardLayout', () => {

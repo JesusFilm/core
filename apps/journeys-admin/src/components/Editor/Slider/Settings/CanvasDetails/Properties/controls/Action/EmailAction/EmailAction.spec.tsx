@@ -37,7 +37,9 @@ describe('EmailAction', () => {
       parentBlockId: 'button2.id',
       __typename: 'EmailAction',
       gtmEventName: 'gtmEventName',
-      email: 'imissedmondshen@gmail.com'
+      email: 'imissedmondshen@gmail.com',
+      customizable: false,
+      parentStepId: null
     },
     children: [],
     settings: null

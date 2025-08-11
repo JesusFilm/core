@@ -38,7 +38,9 @@ describe('LinkAction', () => {
       parentBlockId: 'button2.id',
       __typename: 'LinkAction',
       gtmEventName: 'gtmEventName',
-      url: 'https://www.google.com'
+      url: 'https://www.google.com',
+      customizable: false,
+      parentStepId: null
     },
     children: [],
     settings: null
