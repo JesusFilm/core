@@ -7,10 +7,10 @@ import { z } from 'zod'
 
 import {
   langfuse,
-  langfuseEnvironment,
   langfuseExporter
 } from '../../../src/libs/ai/langfuse/server'
-import { tools } from '../../../src/libs/ai/tools'
+import { orchestrateRequest } from '../../../src/libs/ai/orchestrator'
+import { getLangfusePrompt } from '../../../src/libs/ai/orchestrator/buildDynamicPrompt'
 import { createApolloClient } from '../../../src/libs/apolloClient'
 
 // Allow streaming responses up to 30 seconds
@@ -32,17 +32,19 @@ export function errorHandler(error: unknown) {
   return JSON.stringify(error)
 }
 
+export const messagesSchema = z.array(
+  z.object({
+    role: z.enum(['system', 'user', 'assistant']),
+    content: z.string()
+  })
+)
+
+export type Messages = z.infer<typeof messagesSchema>
+
 export async function POST(req: NextRequest) {
   const body = await req.json()
   const schema = z.object({
-    messages: z.array(
-      z
-        .object({
-          role: z.enum(['system', 'user', 'assistant']),
-          content: z.string()
-        })
-        .passthrough()
-    ),
+    messages: messagesSchema,
     journeyId: z.string().optional(),
     selectedStepId: z.string().optional(),
     selectedBlockId: z.string().optional(),
@@ -64,29 +66,27 @@ export async function POST(req: NextRequest) {
 
   const client = createApolloClient(token.split(' ')[1])
 
-  const systemPrompt = await langfuse.getPrompt(
-    //'ai-chat-system-prompt',
-    'system/api/chat/route',
-    undefined,
-    {
-      label: langfuseEnvironment,
-      cacheTtlSeconds: ['development', 'preview'].includes(langfuseEnvironment)
-        ? 0
-        : 60
-    }
-  )
-
   const langfuseTraceId = uuidv4()
+
+  const systemPrompt = await getLangfusePrompt('base-system-prompt')
+
+  const { classification, finalSystemPrompt, selectedTools } =
+    await orchestrateRequest(messages, langfuseTraceId, {
+      journeyId,
+      selectedStepId,
+      selectedBlockId,
+      apolloClient: client
+    })
+
+  const systemPromptWithClassification = classification
+    ? `## User Intent Classification\n\n${classification.reasoning}\n\n${finalSystemPrompt}`
+    : finalSystemPrompt
 
   const result = streamText({
     model: google('gemini-2.5-flash'),
     messages: messages.filter((message) => message.role !== 'system'),
-    system: systemPrompt.compile({
-      journeyId: journeyId ?? 'none',
-      selectedStepId: selectedStepId ?? 'none',
-      selectedBlockId: selectedBlockId ?? 'none'
-    }),
-    tools: tools(client, { langfuseTraceId }),
+    system: systemPromptWithClassification,
+    tools: selectedTools,
     experimental_telemetry: {
       isEnabled: true,
       functionId: 'ai-chat-stream',
@@ -121,7 +121,7 @@ export async function POST(req: NextRequest) {
       })
       return { ...toolCall, args: JSON.stringify(repairedArgs) }
     },
-    maxSteps: 5,
+    maxSteps: 10,
     onFinish: async (result) => {
       await langfuseExporter.forceFlush()
       const trace = langfuse.trace({
