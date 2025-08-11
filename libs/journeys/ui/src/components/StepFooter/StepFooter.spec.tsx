@@ -73,7 +73,8 @@ describe('StepFooter', () => {
     logoImageBlock: null,
     menuButtonIcon: null,
     menuStepBlock: null,
-    journeyTheme: null
+    journeyTheme: null,
+    journeyCustomizationDescription: null
   }
 
   it('should render custom styles', () => {
