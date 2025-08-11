@@ -142,7 +142,9 @@ describe('ToolInvocationPart', () => {
         />
       )
 
-      expect(screen.getByText('Searching Internal Videos...')).toBeInTheDocument()
+      expect(
+        screen.getByText('Searching Internal Videos...')
+      ).toBeInTheDocument()
     })
 
     it('should render BasicTool result state for agentInternalVideoSearch', () => {
@@ -162,7 +164,9 @@ describe('ToolInvocationPart', () => {
       )
 
       expect(screen.getByText('Videos Search Completed!')).toBeInTheDocument()
-      expect(screen.queryByText('Searching Internal Videos...')).not.toBeInTheDocument()
+      expect(
+        screen.queryByText('Searching Internal Videos...')
+      ).not.toBeInTheDocument()
     })
 
     it('should render BasicTool result state for journeySimpleGet', () => {
