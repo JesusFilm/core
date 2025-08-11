@@ -167,7 +167,7 @@ export function TextScreen(): ReactElement {
       }}
     >
       <Typography variant="h1">Text Screen</Typography>
-      <Stack direction="row" gap={2} sx={{ width: '100%' }}>
+      {/* <Stack direction="row" gap={2} sx={{ width: '100%' }}>
         <TextField fullWidth multiline rows={7} value={string} />
         <TextField
           fullWidth
@@ -175,7 +175,7 @@ export function TextScreen(): ReactElement {
           rows={30}
           value={JSON.stringify(replacementItems, null, 2)}
         />
-      </Stack>
+      </Stack> */}
       <Stack direction="row" gap={2} sx={{ width: '100%' }}>
         <Box
           sx={{
@@ -190,7 +190,7 @@ export function TextScreen(): ReactElement {
         >
           {renderEditableText(string, replacementItems, handleValueChange)}
         </Box>
-        <TextField fullWidth multiline rows={10} value={displayString} />
+        {/* <TextField fullWidth multiline rows={10} value={displayString} /> */}
       </Stack>
     </Box>
   )

@@ -16,7 +16,7 @@ import { Dialog } from '@core/shared/ui/Dialog'
 import { TabPanel, tabA11yProps } from '@core/shared/ui/TabPanel'
 
 import { JourneyFeature } from '../../../../../../../__generated__/JourneyFeature'
-import { JourneyCustomizationFieldUpdate } from '../../../../../../../__generated__/JourneyCustomizationFieldUpdate'
+import { JourneyCustomizationDescriptionUpdate } from '../../../../../../../__generated__/JourneyCustomizationDescriptionUpdate'
 import { useJourneyUpdateMutation } from '../../../../../../libs/useJourneyUpdateMutation'
 
 import { AboutTabPanel } from './AboutTabPanel'
@@ -35,8 +35,11 @@ export const JOURNEY_FEATURE_UPDATE = gql`
   }
 `
 
-export const JOURNEY_CUSTOMIZATION_FIELD_UPDATE = gql`
-  mutation JourneyCustomizationFieldUpdate($journeyId: ID!, $string: String!) {
+export const JOURNEY_CUSTOMIZATION_DESCRIPTION_UPDATE = gql`
+  mutation JourneyCustomizationDescriptionUpdate(
+    $journeyId: ID!
+    $string: String!
+  ) {
     journeyCustomizationFieldPublisherUpdate(
       journeyId: $journeyId
       string: $string
@@ -63,9 +66,9 @@ export function TemplateSettingsDialog({
   const { journey } = useJourney()
   const [journeySettingsUpdate] = useJourneyUpdateMutation()
   const [journeyFeature] = useMutation<JourneyFeature>(JOURNEY_FEATURE_UPDATE)
-  const [journeyCustomizationFieldUpdate] =
-    useMutation<JourneyCustomizationFieldUpdate>(
-      JOURNEY_CUSTOMIZATION_FIELD_UPDATE
+  const [journeyCustomizationDescriptionUpdate] =
+    useMutation<JourneyCustomizationDescriptionUpdate>(
+      JOURNEY_CUSTOMIZATION_DESCRIPTION_UPDATE
     )
   const { enqueueSnackbar } = useSnackbar()
 
@@ -128,7 +131,7 @@ export function TemplateSettingsDialog({
           }
         }
       })
-      await journeyCustomizationFieldUpdate({
+      await journeyCustomizationDescriptionUpdate({
         variables: {
           journeyId: journey.id,
           string: values.journeyCustomizationDescription
