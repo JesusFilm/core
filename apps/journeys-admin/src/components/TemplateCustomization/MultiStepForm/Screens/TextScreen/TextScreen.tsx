@@ -129,7 +129,7 @@ interface TextScreenProps {
 export function TextScreen({ handleNext }: TextScreenProps): ReactElement {
   const { t } = useTranslation()
   const { journey } = useJourney()
-  const [journeyCustomizationFieldUpdate] =
+  const [journeyCustomizationFieldUpdate, { loading: isSubmitting }] =
     useMutation<JourneyCustomizationFieldUpdate>(
       JOURNEY_CUSTOMIZATION_FIELD_UPDATE
     )
@@ -186,6 +186,8 @@ export function TextScreen({ handleNext }: TextScreenProps): ReactElement {
         variant="contained"
         color="secondary"
         onClick={handleSubmit}
+        loading={isSubmitting}
+        aria-label={t('Save and continue')}
         sx={{ width: '300px', alignSelf: 'center', mt: 4 }}
       >
         <ArrowRightIcon />
