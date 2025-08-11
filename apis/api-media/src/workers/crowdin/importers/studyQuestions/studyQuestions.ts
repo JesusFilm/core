@@ -66,7 +66,6 @@ async function initializeQuestionMap(logger?: Logger): Promise<void> {
     },
     where: {
       crowdInId: { not: null },
-      videoId: { not: null },
       languageId: { equals: '529' }
     }
   })
@@ -101,11 +100,6 @@ async function upsertStudyQuestionTranslation(
     const questionData = getQuestionData(questionId)
 
     if (!questionData) {
-      missingQuestions.add(questionId)
-      return
-    }
-
-    if (questionData.videoId === null) {
       missingQuestions.add(questionId)
       return
     }
