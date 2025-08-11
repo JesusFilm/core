@@ -6,6 +6,10 @@ import { tools as agentTools } from './agent'
 import { tools as journeyTools } from './journey'
 import { tools as languageTools } from './language'
 import { tools as videoSubtitleTools } from './videoSubtitle'
+import {
+  // youTubeTranscriptTool,
+  youtubeAnalyzerTool
+} from './youtube'
 
 export interface ToolOptions {
   langfuseTraceId: string
@@ -20,7 +24,9 @@ export function tools(
     // ...clientTools,
     ...journeyTools,
     ...languageTools,
-    ...videoSubtitleTools
+    ...videoSubtitleTools,
+    // youTubeTranscriptTool,
+    youtubeAnalyzerTool
   }
 
   return {
