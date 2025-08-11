@@ -332,7 +332,7 @@ resource "aws_s3_bucket_policy" "internal_alb_logs" {
 
 # Permission for S3 to invoke Datadog Lambda for public ALB logs
 resource "aws_lambda_permission" "allow_s3_public_alb_logs" {
-  statement_id  = "AllowS3PublicALBLogs"
+  statement_id  = "AllowS3PublicALBLogs-${var.env}"
   action        = "lambda:InvokeFunction"
   function_name = var.datadog_forwarder_lambda_arn
   principal     = "s3.amazonaws.com"
@@ -341,7 +341,7 @@ resource "aws_lambda_permission" "allow_s3_public_alb_logs" {
 
 # Permission for S3 to invoke Datadog Lambda for internal ALB logs
 resource "aws_lambda_permission" "allow_s3_internal_alb_logs" {
-  statement_id  = "AllowS3InternalALBLogs"
+  statement_id  = "AllowS3InternalALBLogs-${var.env}"
   action        = "lambda:InvokeFunction"
   function_name = var.datadog_forwarder_lambda_arn
   principal     = "s3.amazonaws.com"
