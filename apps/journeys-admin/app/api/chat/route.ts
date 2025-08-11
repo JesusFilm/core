@@ -68,7 +68,7 @@ export async function POST(req: NextRequest) {
 
   const langfuseTraceId = uuidv4()
 
-  const systemPrompt = await getLangfusePrompt('base-system-prompt')
+  const systemPrompt = await getLangfusePrompt('feature/base-system-prompt')
 
   const { classification, finalSystemPrompt, selectedTools } =
     await orchestrateRequest(messages, langfuseTraceId, {

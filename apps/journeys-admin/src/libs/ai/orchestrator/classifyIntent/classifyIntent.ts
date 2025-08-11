@@ -29,7 +29,7 @@ export async function classifyIntent(
   messages: Array<{ role: string; content: string }>
 ): Promise<IntentClassification> {
   const intentClassifierPrompt = await langfuse.getPrompt(
-    'intent-classifier',
+    'feature/intent-classifier',
     undefined,
     {
       label: langfuseEnvironment,
