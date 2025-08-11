@@ -174,3 +174,133 @@ module "ecs" {
   public_alb_security_group   = module.public_alb_security_group
   env                         = var.env
 }
+
+# S3 buckets for ALB access logs (public and internal)
+resource "aws_s3_bucket" "public_alb_logs" {
+  bucket = "jfp-public-alb-logs-${var.env}-${data.aws_caller_identity.current.account_id}"
+
+  tags = {
+    Name        = "Public ALB Access Logs"
+    Environment = var.env
+    Purpose     = "public-alb-logging"
+  }
+}
+
+resource "aws_s3_bucket_server_side_encryption_configuration" "public_alb_logs" {
+  bucket = aws_s3_bucket.public_alb_logs.bucket
+
+  rule {
+    apply_server_side_encryption_by_default {
+      sse_algorithm = "AES256"
+    }
+  }
+}
+
+resource "aws_s3_bucket_public_access_block" "public_alb_logs" {
+  bucket = aws_s3_bucket.public_alb_logs.bucket
+
+  block_public_acls       = true
+  block_public_policy     = true
+  ignore_public_acls      = true
+  restrict_public_buckets = true
+}
+
+resource "aws_s3_bucket_ownership_controls" "public_alb_logs" {
+  bucket = aws_s3_bucket.public_alb_logs.id
+  rule {
+    object_ownership = "BucketOwnerEnforced"
+  }
+}
+
+resource "aws_s3_bucket_lifecycle_configuration" "public_alb_logs" {
+  bucket = aws_s3_bucket.public_alb_logs.id
+  rule {
+    id     = "expire-logs"
+    status = "Enabled"
+    expiration { days = 90 }
+  }
+}
+
+# S3 bucket for internal ALB access logs
+resource "aws_s3_bucket" "internal_alb_logs" {
+  bucket = "jfp-internal-alb-logs-${var.env}-${data.aws_caller_identity.current.account_id}"
+
+  tags = {
+    Name        = "Internal ALB Access Logs"
+    Environment = var.env
+    Purpose     = "internal-alb-logging"
+  }
+}
+
+resource "aws_s3_bucket_server_side_encryption_configuration" "internal_alb_logs" {
+  bucket = aws_s3_bucket.internal_alb_logs.bucket
+
+  rule {
+    apply_server_side_encryption_by_default {
+      sse_algorithm = "AES256"
+    }
+  }
+}
+
+resource "aws_s3_bucket_public_access_block" "internal_alb_logs" {
+  bucket = aws_s3_bucket.internal_alb_logs.bucket
+
+  block_public_acls       = true
+  block_public_policy     = true
+  ignore_public_acls      = true
+  restrict_public_buckets = true
+}
+
+resource "aws_s3_bucket_ownership_controls" "internal_alb_logs" {
+  bucket = aws_s3_bucket.internal_alb_logs.id
+  rule {
+    object_ownership = "BucketOwnerEnforced"
+  }
+}
+
+resource "aws_s3_bucket_lifecycle_configuration" "internal_alb_logs" {
+  bucket = aws_s3_bucket.internal_alb_logs.id
+  rule {
+    id     = "expire-logs"
+    status = "Enabled"
+    expiration { days = 90 }
+  }
+}
+
+# Bucket policy for public ALB logs
+resource "aws_s3_bucket_policy" "public_alb_logs" {
+  bucket = aws_s3_bucket.public_alb_logs.bucket
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Principal = {
+          AWS = "arn:aws:iam::${data.aws_elb_service_account.main.id}:root"
+        }
+        Action   = "s3:PutObject"
+        Resource = "${aws_s3_bucket.public_alb_logs.arn}/AWSLogs/${data.aws_caller_identity.current.account_id}/*"
+      }
+    ]
+  })
+}
+
+# Bucket policy for internal ALB logs
+resource "aws_s3_bucket_policy" "internal_alb_logs" {
+  bucket = aws_s3_bucket.internal_alb_logs.bucket
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Principal = {
+          AWS = "arn:aws:iam::${data.aws_elb_service_account.main.id}:root"
+        }
+        Action   = "s3:PutObject"
+        Resource = "${aws_s3_bucket.internal_alb_logs.arn}/AWSLogs/${data.aws_caller_identity.current.account_id}/*"
+      }
+    ]
+  })
+}
