@@ -23,8 +23,5 @@ variable "datadog_forwarder_lambda_arn" {
   description = "ARN of the Datadog log forwarder Lambda function"
 }
 
-variable "datadog_forwarder_lambda_function_name" {
-  type        = string
-  description = "Name of the Datadog log forwarder Lambda function"
-}
+
 

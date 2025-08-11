@@ -57,14 +57,7 @@ module "public_bastion_security_group" {
       from_port   = 22
       to_port     = 22
       protocol    = "tcp"
-      cidr_blocks = ["47.36.114.169/32"]
-    },
-    {
-      // Mike Allison
-      from_port   = 22
-      to_port     = 22
-      protocol    = "tcp"
-      cidr_blocks = ["172.221.20.229/32"]
+      cidr_blocks = ["16.203.137.254/32"]
     },
     {
       // Tataihono Nikora
@@ -214,7 +207,7 @@ resource "aws_s3_bucket_public_access_block" "public_alb_logs" {
 resource "aws_s3_bucket_ownership_controls" "public_alb_logs" {
   bucket = aws_s3_bucket.public_alb_logs.id
   rule {
-    object_ownership = "BucketOwnerEnforced"
+    object_ownership = "BucketOwnerPreferred"
   }
 }
 
@@ -260,7 +253,7 @@ resource "aws_s3_bucket_public_access_block" "internal_alb_logs" {
 resource "aws_s3_bucket_ownership_controls" "internal_alb_logs" {
   bucket = aws_s3_bucket.internal_alb_logs.id
   rule {
-    object_ownership = "BucketOwnerEnforced"
+    object_ownership = "BucketOwnerPreferred"
   }
 }
 
@@ -287,6 +280,19 @@ resource "aws_s3_bucket_policy" "public_alb_logs" {
         }
         Action   = "s3:PutObject"
         Resource = "${aws_s3_bucket.public_alb_logs.arn}/AWSLogs/${data.aws_caller_identity.current.account_id}/*"
+        Condition = {
+          StringEquals = {
+            "s3:x-amz-acl" = "bucket-owner-full-control"
+          }
+        }
+      },
+      {
+        Effect = "Allow"
+        Principal = {
+          AWS = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/datadog-log-forwarder"
+        }
+        Action   = ["s3:GetObject"]
+        Resource = "${aws_s3_bucket.public_alb_logs.arn}/AWSLogs/${data.aws_caller_identity.current.account_id}/*"
       }
     ]
   })
@@ -306,6 +312,19 @@ resource "aws_s3_bucket_policy" "internal_alb_logs" {
         }
         Action   = "s3:PutObject"
         Resource = "${aws_s3_bucket.internal_alb_logs.arn}/AWSLogs/${data.aws_caller_identity.current.account_id}/*"
+        Condition = {
+          StringEquals = {
+            "s3:x-amz-acl" = "bucket-owner-full-control"
+          }
+        }
+      },
+      {
+        Effect = "Allow"
+        Principal = {
+          AWS = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/datadog-log-forwarder"
+        }
+        Action   = ["s3:GetObject"]
+        Resource = "${aws_s3_bucket.internal_alb_logs.arn}/AWSLogs/${data.aws_caller_identity.current.account_id}/*"
       }
     ]
   })
@@ -315,7 +334,7 @@ resource "aws_s3_bucket_policy" "internal_alb_logs" {
 resource "aws_lambda_permission" "allow_s3_public_alb_logs" {
   statement_id  = "AllowS3PublicALBLogs"
   action        = "lambda:InvokeFunction"
-  function_name = var.datadog_forwarder_lambda_function_name
+  function_name = var.datadog_forwarder_lambda_arn
   principal     = "s3.amazonaws.com"
   source_arn    = aws_s3_bucket.public_alb_logs.arn
 }
@@ -324,7 +343,7 @@ resource "aws_lambda_permission" "allow_s3_public_alb_logs" {
 resource "aws_lambda_permission" "allow_s3_internal_alb_logs" {
   statement_id  = "AllowS3InternalALBLogs"
   action        = "lambda:InvokeFunction"
-  function_name = var.datadog_forwarder_lambda_function_name
+  function_name = var.datadog_forwarder_lambda_arn
   principal     = "s3.amazonaws.com"
   source_arn    = aws_s3_bucket.internal_alb_logs.arn
 }
