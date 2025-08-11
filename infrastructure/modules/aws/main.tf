@@ -310,3 +310,49 @@ resource "aws_s3_bucket_policy" "internal_alb_logs" {
     ]
   })
 }
+
+# Permission for S3 to invoke Datadog Lambda for public ALB logs
+resource "aws_lambda_permission" "allow_s3_public_alb_logs" {
+  statement_id  = "AllowS3PublicALBLogs"
+  action        = "lambda:InvokeFunction"
+  function_name = var.datadog_forwarder_lambda_function_name
+  principal     = "s3.amazonaws.com"
+  source_arn    = aws_s3_bucket.public_alb_logs.arn
+}
+
+# Permission for S3 to invoke Datadog Lambda for internal ALB logs
+resource "aws_lambda_permission" "allow_s3_internal_alb_logs" {
+  statement_id  = "AllowS3InternalALBLogs"
+  action        = "lambda:InvokeFunction"
+  function_name = var.datadog_forwarder_lambda_function_name
+  principal     = "s3.amazonaws.com"
+  source_arn    = aws_s3_bucket.internal_alb_logs.arn
+}
+
+# S3 bucket notification for public ALB logs
+resource "aws_s3_bucket_notification" "public_alb_logs" {
+  bucket = aws_s3_bucket.public_alb_logs.bucket
+
+  lambda_function {
+    lambda_function_arn = var.datadog_forwarder_lambda_arn
+    events              = ["s3:ObjectCreated:*"]
+    filter_prefix       = "AWSLogs/"
+    filter_suffix       = ".gz"
+  }
+
+  depends_on = [aws_lambda_permission.allow_s3_public_alb_logs]
+}
+
+# S3 bucket notification for internal ALB logs
+resource "aws_s3_bucket_notification" "internal_alb_logs" {
+  bucket = aws_s3_bucket.internal_alb_logs.bucket
+
+  lambda_function {
+    lambda_function_arn = var.datadog_forwarder_lambda_arn
+    events              = ["s3:ObjectCreated:*"]
+    filter_prefix       = "AWSLogs/"
+    filter_suffix       = ".gz"
+  }
+
+  depends_on = [aws_lambda_permission.allow_s3_internal_alb_logs]
+}
