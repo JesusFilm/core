@@ -1,3 +1,5 @@
+import { TFunction } from 'i18next'
+
 import {
   GetJourney_journey_blocks_ButtonBlock as ButtonBlock,
   GetJourney_journey as Journey,
@@ -7,7 +9,7 @@ import {
 } from '../../../../../__generated__/GetJourney'
 import { MessagePlatform } from '../../../../../__generated__/globalTypes'
 
-type JourneyLink =
+export type JourneyLink =
   | {
       id: string
       linkType: 'chatButtons'
@@ -17,13 +19,16 @@ type JourneyLink =
     }
   | {
       id: string
-      linkType: 'block'
+      linkType: 'url' | 'email'
       url: string
       label: string
       parentStepId?: string | null
     }
 
-export function getJourneyLinks(journey?: Journey): JourneyLink[] {
+export function getJourneyLinks(
+  t: TFunction,
+  journey?: Journey
+): JourneyLink[] {
   if (journey == null) return []
 
   const links: JourneyLink[] = []
@@ -35,8 +40,7 @@ export function getJourneyLinks(journey?: Journey): JourneyLink[] {
       id: chatButton.id,
       linkType: 'chatButtons',
       url: chatButton.link ?? '',
-      label:
-        chatButton.platform != null ? MessagePlatform[chatButton.platform] : ''
+      label: `${t('Chat')}: ${chatButton.platform != null ? MessagePlatform[chatButton.platform] : ''}`
     })
   })
 
@@ -76,17 +80,20 @@ export function getJourneyLinks(journey?: Journey): JourneyLink[] {
 
     let url: string | null = null
     let parentStepId: string | null = null
+    let linkType: 'url' | 'email' = 'url'
     switch (action.__typename) {
       case 'LinkAction':
         if (action.customizable === true) {
           url = action.url
           parentStepId = action.parentStepId ?? null
+          linkType = 'url'
         }
         break
       case 'EmailAction':
         if (action.customizable === true) {
           url = action.email
           parentStepId = action.parentStepId ?? null
+          linkType = 'email'
         }
         break
       default:
@@ -96,12 +103,12 @@ export function getJourneyLinks(journey?: Journey): JourneyLink[] {
 
     links.push({
       id: block.id,
-      linkType: 'block',
+      linkType,
       parentStepId,
       url,
       label
     })
   })
-
+  // TODO: replace label {{}} with real values
   return links
 }
