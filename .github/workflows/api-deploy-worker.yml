@@ -26,10 +26,15 @@ on:
         required: true
       AWS_NETWORK_CONFIG:
         required: true
+      NX_CLOUD_ACCESS_TOKEN:
+        required: true
+permissions:
+  contents: read
+  checks: write
 
 jobs:
   build-and-deploy:
-    environment: Production
+    environment: ${{ inputs.env }}
     env:
       HIVE_TOKEN: ${{ secrets.HIVE_TOKEN }}
       ENV_SUFFIX: ${{ inputs.branch }}
