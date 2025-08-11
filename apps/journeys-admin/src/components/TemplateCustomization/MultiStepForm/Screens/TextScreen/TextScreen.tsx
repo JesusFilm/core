@@ -63,12 +63,13 @@ const renderEditableText = (
         key={`editable-${key}`}
         contentEditable
         suppressContentEditableWarning
+        tabIndex={0}
         style={{
           backgroundColor: '#42a5f5',
           color: '#ffffff',
           border: 'none',
-          borderRadius: '9999px',
-          padding: '2px 4px',
+          borderRadius: '20px',
+          padding: '2px 12px',
           minWidth: '20px',
           maxWidth: '100%',
           display: 'inline-block',
@@ -82,9 +83,25 @@ const renderEditableText = (
           onValueChange(key, newValue)
         }}
         onKeyDown={(e) => {
-          if (e.key === 'Enter') {
-            e.preventDefault()
+          if (e.key === 'Tab' || e.key === 'Enter') {
             e.currentTarget.blur()
+
+            const newValue = e.currentTarget.textContent || ''
+            onValueChange(key, newValue)
+            const parent = e.currentTarget.parentElement
+            const editables =
+              parent != null
+                ? (Array.from(
+                    parent.querySelectorAll('[contenteditable="true"]')
+                  ) as HTMLElement[])
+                : []
+            const index = editables.indexOf(e.currentTarget as HTMLElement)
+            const nextIndex = e.shiftKey ? index - 1 : index + 1
+            const nextEl = editables[nextIndex]
+            if (nextEl != null) {
+              e.preventDefault()
+              nextEl.focus()
+            }
           }
         }}
       >
@@ -142,7 +159,7 @@ export function TextScreen({ handleNext }: TextScreenProps): ReactElement {
   }
 
   return (
-    <Stack sx={{ px: { xs: 2, md: 8 } }} gap={6}>
+    <Stack sx={{ px: { xs: 2, md: 8 }, maxWidth: '1000px' }} gap={6}>
       <Typography variant="h6" color="text.secondary">
         {t(
           "Here's a script of this invitation. Change the blue areas and it will be customized for you."

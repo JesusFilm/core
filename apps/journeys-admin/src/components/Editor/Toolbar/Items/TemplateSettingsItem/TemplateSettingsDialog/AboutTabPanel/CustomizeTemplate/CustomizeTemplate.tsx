@@ -28,6 +28,35 @@ export function CustomizeTemplate(): ReactElement {
     void setFieldValue('journeyCustomizationDescription', newValue)
   }
 
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>): void => {
+    if (event.key !== 'Tab') return
+
+    event.preventDefault()
+
+    const target = event.target as HTMLTextAreaElement | HTMLInputElement
+    const currentValue = journeyCustomizationDescription ?? ''
+    const selectionStart = target.selectionStart ?? currentValue.length
+    const selectionEnd = target.selectionEnd ?? selectionStart
+
+    const SPECIAL_EM_SPACE = '\u2003'
+    const updatedValue =
+      currentValue.slice(0, selectionStart) +
+      SPECIAL_EM_SPACE +
+      currentValue.slice(selectionEnd)
+
+    void setFieldValue('journeyCustomizationDescription', updatedValue)
+
+    // Restore caret position after React re-renders the controlled value
+    const newCaretPosition = selectionStart + SPECIAL_EM_SPACE.length
+    requestAnimationFrame(() => {
+      try {
+        target.setSelectionRange(newCaretPosition, newCaretPosition)
+      } catch {
+        // noop if element is not focusable
+      }
+    })
+  }
+
   const handleRefresh = (): void => {
     const formattedCustomizationText = formatTemplateCustomizationString(
       getTemplateCustomizationFields(journey),
@@ -61,6 +90,7 @@ export function CustomizeTemplate(): ReactElement {
         multiline
         value={journeyCustomizationDescription}
         onChange={handleChange}
+        onKeyDown={handleKeyDown}
         variant="outlined"
       />
     </Box>
