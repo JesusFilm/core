@@ -42,31 +42,31 @@ describe('resolveJourneyCustomizationString', () => {
     )
   })
 
-  it('ignores inline value content and still resolves from fields (quoted)', () => {
+  it('does not support inline values; leaves tokens with colon unchanged (quoted)', () => {
     expect(
       resolveJourneyCustomizationString("{{ name: 'Knee Sail' }}", fields)
-    ).toBe('Alice')
+    ).toBe("{{ name: 'Knee Sail' }}")
     expect(
       resolveJourneyCustomizationString(
         '{{ title: "Some Random Title" }}',
         fields
       )
-    ).toBe('Child of God')
+    ).toBe('{{ title: "Some Random Title" }}')
   })
 
-  it('ignores inline value content and still resolves from fields (unquoted)', () => {
+  it('does not support inline values; leaves tokens with colon unchanged (unquoted)', () => {
     expect(resolveJourneyCustomizationString('{{ some: value }}', fields)).toBe(
-      'Some Value'
+      '{{ some: value }}'
     )
   })
 
-  it('replaces custom fields regardless of surrounding whitespace', () => {
+  it('replaces key-only custom fields regardless of surrounding whitespace', () => {
     expect(resolveJourneyCustomizationString('  {{ name }}  ', fields)).toBe(
       '  Alice  '
     )
     expect(
       resolveJourneyCustomizationString('  {{ title:  Some Title  }}', fields)
-    ).toBe('  Child of God')
+    ).toBe('  {{ title:  Some Title  }}')
   })
 
   it('trims spaces around the key before lookup', () => {

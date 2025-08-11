@@ -1,11 +1,10 @@
 import { JourneyFields_journeyCustomizationFields as JourneyCustomizationField } from '../../libs/JourneyProvider/__generated__/JourneyFields'
 
 /**
- * Resolves a string that may strictly equal a customization template of the form
- * "{{ key }}" or "{{ key: value }}" against provided journey customization fields.
- * - Requires the entire string (after trim) to match the pattern.
- * - If key is found, returns field.value ?? field.defaultValue.
- * - If no match, key not found, or no resolved value, returns the original input.
+ * Resolves all occurrences of customization templates within a string.
+ * Supports only the "{{ key }}" syntax (no inline value support).
+ * - For each custom field: returns field.value ?? field.defaultValue if key exists; otherwise keeps the custom field.
+ * - Multiple custom fields and repeated keys are supported in one pass.
  */
 export function resolveJourneyCustomizationString(
   input: string | null,
@@ -13,8 +12,7 @@ export function resolveJourneyCustomizationString(
 ): string | null {
   if (input == null) return null
 
-  const customFieldsPattern =
-    /\{\{\s*([^:}]+)(?:\s*:\s*(?:(['"])([^'"]*)\2|([^}]*?)))?\s*\}\}/g
+  const customFieldsPattern = /\{\{\s*([^:}]+)\s*\}\}/g
 
   const replaced = input.replace(customFieldsPattern, (fullMatch, key) => {
     const trimmedKey = String(key).trim()
