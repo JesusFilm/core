@@ -20,11 +20,13 @@ module "acm_central_jesusfilm_org" {
 }
 
 module "prod" {
-  source = "./environments/prod"
+  source                       = "./environments/prod"
+  datadog_forwarder_lambda_arn = module.datadog.log_forwarder_lambda_arn
 }
 
 module "stage" {
-  source = "./environments/stage"
+  source                       = "./environments/stage"
+  datadog_forwarder_lambda_arn = module.datadog.log_forwarder_lambda_arn
 }
 
 module "datadog" {
