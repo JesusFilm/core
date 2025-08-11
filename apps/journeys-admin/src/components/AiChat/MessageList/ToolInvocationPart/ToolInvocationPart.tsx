@@ -69,6 +69,14 @@ export function ToolInvocationPart({
           resultText={t('Languages Loaded!')}
         />
       )
+    case 'youtubeAnalyzerTool':
+      return (
+        <BasicTool
+          part={part}
+          callText={t('Analyzing YouTube Video...')}
+          resultText={t('YouTube Video Analyzed!')}
+        />
+      )
     case 'clientSelectImage':
       return <ClientSelectImageTool part={part} addToolResult={addToolResult} />
     case 'clientRedirectUserToEditor':
