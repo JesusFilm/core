@@ -4,6 +4,7 @@ import { ReactElement } from 'react'
 import type { TreeBlock } from '../../libs/block'
 
 import { TypographyFields } from './__generated__/TypographyFields'
+import { useGetValueFromJourneyCustomizationString } from '../../libs/useGetValueFromJourneyCustomizationString'
 
 export interface TypographyProps extends TreeBlock<TypographyFields> {
   editableContent?: ReactElement
@@ -19,7 +20,9 @@ export function Typography({
   editableContent,
   placeholderText
 }: TypographyProps): ReactElement {
-  let displayContent: ReactElement | string = content
+  const resolvedContent = useGetValueFromJourneyCustomizationString(content)
+
+  let displayContent: ReactElement | string = resolvedContent
 
   if (editableContent != null) {
     displayContent = editableContent
