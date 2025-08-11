@@ -240,7 +240,7 @@ describe('ClientLayout', () => {
     })
   })
 
-  it('should open publish all confirmation dialog when Publish All button is clicked', async () => {
+  it('should navigate to publish all dialog route when Publish All button is clicked', async () => {
     render(
       <MockedProvider>
         <ClientLayout params={{ videoId: 'video123' }}>
@@ -251,85 +251,12 @@ describe('ClientLayout', () => {
 
     fireEvent.click(screen.getByText('Publish All'))
 
-    await waitFor(() => {
-      expect(
-        screen.getByText('Publish All Draft Audio Languages')
-      ).toBeInTheDocument()
-    })
-
-    expect(
-      screen.getByText(
-        /Are you sure you want to publish all draft audio language variants/
-      )
-    ).toBeInTheDocument()
-  })
-
-  it('should close dialog when Cancel is clicked', async () => {
-    render(
-      <MockedProvider>
-        <ClientLayout params={{ videoId: 'video123' }}>
-          <div>Child content</div>
-        </ClientLayout>
-      </MockedProvider>
-    )
-
-    fireEvent.click(screen.getByText('Publish All'))
-
-    await waitFor(() => {
-      expect(
-        screen.getByText('Publish All Draft Audio Languages')
-      ).toBeInTheDocument()
-    })
-
-    fireEvent.click(screen.getByText('Cancel'))
-
-    await waitFor(() => {
-      expect(
-        screen.queryByText('Publish All Draft Audio Languages')
-      ).not.toBeInTheDocument()
+    expect(mockPush).toHaveBeenCalledWith('/videos/video123/audio/publishAll', {
+      scroll: false
     })
   })
 
-  it('should publish all draft variants when confirmed', async () => {
-    render(
-      <MockedProvider>
-        <ClientLayout params={{ videoId: 'video123' }}>
-          <div>Child content</div>
-        </ClientLayout>
-      </MockedProvider>
-    )
-
-    fireEvent.click(screen.getByText('Publish All'))
-
-    await waitFor(() => {
-      expect(
-        screen.getByText('Publish All Draft Audio Languages')
-      ).toBeInTheDocument()
-    })
-
-    // Click the confirm button in the dialog (there are two "Publish All" buttons)
-    const confirmButton = screen.getAllByText('Publish All')[1]
-    fireEvent.click(confirmButton)
-
-    await waitFor(() => {
-      // Should call mutation for each draft variant (only variant2 is unpublished)
-      expect(mockUpdateVariant).toHaveBeenCalledWith({
-        variables: {
-          input: {
-            id: 'variant2',
-            published: true
-          }
-        }
-      })
-    })
-
-    expect(mockEnqueueSnackbar).toHaveBeenCalledWith(
-      'Successfully published all draft audio languages',
-      { variant: 'success' }
-    )
-  })
-
-  it('should show info message when no draft variants exist', async () => {
+  it('should show info message when no draft variants exist (and not navigate)', async () => {
     // Mock data with all published variants
     const mockedUseQuery = useQuery as jest.MockedFunction<typeof useQuery>
     const allPublishedVariants = [
@@ -392,6 +319,10 @@ describe('ClientLayout', () => {
     expect(mockEnqueueSnackbar).toHaveBeenCalledWith(
       'No draft audio languages to publish',
       { variant: 'info' }
+    )
+    expect(mockPush).not.toHaveBeenCalledWith(
+      '/videos/video123/audio/publishAll',
+      expect.anything()
     )
   })
 
@@ -631,67 +562,5 @@ describe('ClientLayout', () => {
     )
 
     expect(mockRefetch).not.toHaveBeenCalled()
-  })
-
-  it('should handle mutation error when publishing fails', async () => {
-    // Mock mutation to throw error
-    mockUpdateVariant.mockRejectedValueOnce(new Error('Network error'))
-
-    render(
-      <MockedProvider>
-        <ClientLayout params={{ videoId: 'video123' }}>
-          <div>Child content</div>
-        </ClientLayout>
-      </MockedProvider>
-    )
-
-    fireEvent.click(screen.getByText('Publish All'))
-
-    await waitFor(() => {
-      expect(
-        screen.getByText('Publish All Draft Audio Languages')
-      ).toBeInTheDocument()
-    })
-
-    const confirmButton = screen.getAllByText('Publish All')[1]
-    fireEvent.click(confirmButton)
-
-    await waitFor(() => {
-      expect(mockEnqueueSnackbar).toHaveBeenCalledWith(
-        'Failed to publish audio languages',
-        { variant: 'error' }
-      )
-    })
-  })
-
-  it('should show loading state in Publish All button when publishing', async () => {
-    // Mock mutation loading state
-    const mockedUseMutation = useMutation as jest.MockedFunction<
-      typeof useMutation
-    >
-    mockedUseMutation.mockReturnValue([
-      mockUpdateVariant,
-      {
-        loading: true,
-        error: undefined,
-        data: undefined,
-        called: false,
-        client: {} as any,
-        reset: jest.fn()
-      }
-    ])
-
-    render(
-      <MockedProvider>
-        <ClientLayout params={{ videoId: 'video123' }}>
-          <div>Child content</div>
-        </ClientLayout>
-      </MockedProvider>
-    )
-
-    expect(
-      screen.getByText('Publishing audio languages...')
-    ).toBeInTheDocument()
-    expect(screen.getByText('Publishing audio languages...')).toBeDisabled()
   })
 })

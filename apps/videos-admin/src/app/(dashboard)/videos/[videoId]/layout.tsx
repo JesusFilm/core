@@ -1,16 +1,10 @@
 'use client'
 
-import { useMutation, useSuspenseQuery } from '@apollo/client'
+import { useSuspenseQuery } from '@apollo/client'
 import DeleteIcon from '@mui/icons-material/Delete'
 import PublishIcon from '@mui/icons-material/Publish'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
-import CircularProgress from '@mui/material/CircularProgress'
-import Dialog from '@mui/material/Dialog'
-import DialogActions from '@mui/material/DialogActions'
-import DialogContent from '@mui/material/DialogContent'
-import DialogContentText from '@mui/material/DialogContentText'
-import DialogTitle from '@mui/material/DialogTitle'
 import Divider from '@mui/material/Divider'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
@@ -75,24 +69,6 @@ const GET_VIDEO_CHILDREN_FOR_PUBLISH = graphql(`
   }
 `)
 
-const UPDATE_VIDEO = graphql(`
-  mutation UpdateVideo($input: VideoUpdateInput!) {
-    videoUpdate(input: $input) {
-      id
-      published
-    }
-  }
-`)
-
-const UPDATE_VIDEO_VARIANT = graphql(`
-  mutation UpdateVideoVariant($input: VideoVariantUpdateInput!) {
-    videoVariantUpdate(input: $input) {
-      id
-      published
-    }
-  }
-`)
-
 interface VideoViewLayoutProps {
   children: ReactNode
   studyQuestions: ReactNode
@@ -108,8 +84,6 @@ export default function VideoViewLayout({
 }: VideoViewLayoutProps): ReactNode {
   const router = useRouter()
   const { enqueueSnackbar } = useSnackbar()
-  const [showPublishDialog, setShowPublishDialog] = useState(false)
-  const [isPublishing, setIsPublishing] = useState(false)
 
   // keep metadata visible when modal is open
   const availableTabs = ['metadata', 'audio', 'children', 'editions']
@@ -131,9 +105,6 @@ export default function VideoViewLayout({
       variables: { id: videoId }
     }
   )
-
-  const [updateVideo] = useMutation(UPDATE_VIDEO)
-  const [updateVariant] = useMutation(UPDATE_VIDEO_VARIANT)
 
   if (data.adminVideo == null) {
     return <VideoViewFallback />
@@ -167,114 +138,8 @@ export default function VideoViewLayout({
       })
       return
     }
-
-    setShowPublishDialog(true)
-  }, [unpublishedChildren.length, enqueueSnackbar])
-
-  const handlePublishChildren = useCallback(async () => {
-    setIsPublishing(true)
-    setShowPublishDialog(false)
-
-    const mutationResults = await Promise.all(
-      unpublishedChildren.map((child) =>
-        updateVideo({
-          variables: {
-            input: {
-              id: child.id,
-              published: true
-            }
-          }
-        })
-      )
-    )
-
-    const hasErrors = mutationResults.some((result) => result.errors != null)
-
-    if (hasErrors) {
-      enqueueSnackbar('Failed to publish children', {
-        variant: 'error'
-      })
-    } else {
-      enqueueSnackbar(
-        `Successfully published ${unpublishedChildren.length} children`,
-        { variant: 'success' }
-      )
-      void refetchChildren()
-    }
-
-    setIsPublishing(false)
-  }, [unpublishedChildren, updateVideo, enqueueSnackbar, refetchChildren])
-
-  const handlePublishChildrenAndLanguages = useCallback(async () => {
-    setIsPublishing(true)
-    setShowPublishDialog(false)
-
-    // First publish all children
-    const childrenResults = await Promise.all(
-      unpublishedChildren.map((child) =>
-        updateVideo({
-          variables: {
-            input: {
-              id: child.id,
-              published: true
-            }
-          }
-        })
-      )
-    )
-
-    const childrenHasErrors = childrenResults.some(
-      (result) => result.errors != null
-    )
-
-    // Then publish all unpublished variants of all children
-    const allUnpublishedVariants =
-      childrenData?.adminVideo?.children?.flatMap(
-        (child) => child.variants?.filter((variant) => !variant.published) ?? []
-      ) ?? []
-
-    let variantsHasErrors = false
-    if (allUnpublishedVariants.length > 0) {
-      const variantResults = await Promise.all(
-        allUnpublishedVariants.map((variant) =>
-          updateVariant({
-            variables: {
-              input: {
-                id: variant.id,
-                published: true
-              }
-            }
-          })
-        )
-      )
-      variantsHasErrors = variantResults.some((result) => result.errors != null)
-    }
-
-    if (childrenHasErrors || variantsHasErrors) {
-      enqueueSnackbar('Failed to publish children and languages', {
-        variant: 'error'
-      })
-    } else {
-      enqueueSnackbar(
-        `Successfully published ${unpublishedChildren.length} children and ${allUnpublishedVariants.length} languages`,
-        { variant: 'success' }
-      )
-      void refetchChildren()
-    }
-
-    setIsPublishing(false)
-  }, [
-    unpublishedChildren,
-    childrenData?.adminVideo?.children,
-    updateVideo,
-    updateVariant,
-    enqueueSnackbar,
-    refetchChildren
-  ])
-
-  const handleDialogClose = useCallback(() => {
-    setShowPublishDialog(false)
-  }, [])
+    router.push(`/videos/${videoId}/publishAll`, { scroll: false })
+  }, [enqueueSnackbar, router, unpublishedChildren.length, videoId])
 
   return (
     <Stack
@@ -305,17 +170,14 @@ export default function VideoViewLayout({
           {hasChildren && unpublishedChildren.length > 0 && (
             <Button
               variant="outlined"
-              startIcon={
-                isPublishing ? <CircularProgress size={16} /> : <PublishIcon />
-              }
+              startIcon={<PublishIcon />}
               onClick={handlePublishAllClick}
-              disabled={isPublishing}
               sx={{
                 alignSelf: { xs: 'stretch', sm: 'center' },
                 whiteSpace: 'nowrap'
               }}
             >
-              {isPublishing ? 'Publishing...' : 'Publish All'}
+              Publish All
             </Button>
           )}
           {canDelete && (
@@ -375,59 +237,6 @@ export default function VideoViewLayout({
           {children}
         </Box>
       </Stack>
-
-      {/* Publish All Confirmation Dialog */}
-      <Dialog
-        open={showPublishDialog}
-        onClose={handleDialogClose}
-        aria-labelledby="publish-all-dialog-title"
-        aria-describedby="publish-all-dialog-description"
-      >
-        <DialogTitle id="publish-all-dialog-title">
-          Publish All Children
-        </DialogTitle>
-        <DialogContent>
-          <DialogContentText id="publish-all-dialog-description">
-            Choose how you would like to publish the children of this video:
-          </DialogContentText>
-          <Stack spacing={2} sx={{ mt: 2 }}>
-            <Typography variant="body2" color="text.secondary">
-              • <strong>Publish Children Only:</strong> Publishes{' '}
-              {unpublishedChildren.length} unpublished children
-            </Typography>
-            <Typography variant="body2" color="text.secondary">
-              • <strong>Publish Children + Languages:</strong> Publishes
-              children and all their languages
-            </Typography>
-            <Typography variant="body2" color="text.secondary">
-              This will make them publicly available and cannot be easily
-              undone.
-            </Typography>
-          </Stack>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleDialogClose} color="primary">
-            Cancel
-          </Button>
-          <Button
-            onClick={handlePublishChildren}
-            color="primary"
-            variant="outlined"
-            disabled={isPublishing}
-          >
-            Publish Children Only
-          </Button>
-          <Button
-            onClick={handlePublishChildrenAndLanguages}
-            color="primary"
-            variant="contained"
-            disabled={isPublishing}
-            autoFocus
-          >
-            Publish Children + Languages
-          </Button>
-        </DialogActions>
-      </Dialog>
     </Stack>
   )
 }

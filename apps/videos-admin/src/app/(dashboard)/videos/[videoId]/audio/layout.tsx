@@ -7,13 +7,8 @@ import OpenInNewIcon from '@mui/icons-material/OpenInNew'
 import PublishIcon from '@mui/icons-material/Publish'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
-import CircularProgress from '@mui/material/CircularProgress'
-import Dialog from '@mui/material/Dialog'
-import DialogActions from '@mui/material/DialogActions'
-import DialogContent from '@mui/material/DialogContent'
-import DialogContentText from '@mui/material/DialogContentText'
-import DialogTitle from '@mui/material/DialogTitle'
 import IconButton from '@mui/material/IconButton'
+import CircularProgress from '@mui/material/CircularProgress'
 import List from '@mui/material/List'
 import ListItem from '@mui/material/ListItem'
 import ListItemText from '@mui/material/ListItemText'
@@ -76,7 +71,6 @@ export default function ClientLayout({
 
   const [updateVariant, { loading: isPublishing }] =
     useMutation(UPDATE_VIDEO_VARIANT)
-  const [showPublishDialog, setShowPublishDialog] = useState(false)
 
   useEffect(() => {
     if (reloadOnPathChange) void refetch()
@@ -131,61 +125,15 @@ export default function ClientLayout({
 
   const handlePublishAllClick = useCallback(() => {
     if (!data?.adminVideo.variants) return
-
-    // Get all unpublished (draft) variants
-    const draftVariants = data.adminVideo.variants.filter(
-      (variant) => !variant.published
-    )
-
+    const draftVariants = data.adminVideo.variants.filter((v) => !v.published)
     if (draftVariants.length === 0) {
       enqueueSnackbar('No draft audio languages to publish', {
         variant: 'info'
       })
       return
     }
-
-    setShowPublishDialog(true)
-  }, [data?.adminVideo.variants, enqueueSnackbar])
-
-  const handlePublishAllConfirm = useCallback(async () => {
-    if (!data?.adminVideo.variants) return
-
-    // Get all unpublished (draft) variants
-    const draftVariants = data.adminVideo.variants.filter(
-      (variant) => !variant.published
-    )
-
-    setShowPublishDialog(false)
-
-    try {
-      // Update each variant individually
-      await Promise.all(
-        draftVariants.map((variant) =>
-          updateVariant({
-            variables: {
-              input: {
-                id: variant.id,
-                published: true
-              }
-            }
-          })
-        )
-      )
-
-      enqueueSnackbar('Successfully published all draft audio languages', {
-        variant: 'success'
-      })
-      void refetch()
-    } catch {
-      enqueueSnackbar('Failed to publish audio languages', {
-        variant: 'error'
-      })
-    }
-  }, [data?.adminVideo.variants, updateVariant, enqueueSnackbar, refetch])
-
-  const handlePublishAllCancel = useCallback(() => {
-    setShowPublishDialog(false)
-  }, [])
+    router.push(`/videos/${videoId}/audio/publishAll`, { scroll: false })
+  }, [data?.adminVideo.variants, enqueueSnackbar, router, videoId])
 
   const renderContent = () => {
     if (loading) {
@@ -338,14 +286,12 @@ export default function ClientLayout({
           <Stack direction="row" spacing={1}>
             <Button
               variant="outlined"
-              startIcon={
-                isPublishing ? <CircularProgress size={16} /> : <PublishIcon />
-              }
+              startIcon={<PublishIcon />}
               onClick={handlePublishAllClick}
-              disabled={isPublishing || loading}
+              disabled={loading}
               size="small"
             >
-              {isPublishing ? 'Publishing audio languages...' : 'Publish All'}
+              Publish All
             </Button>
             <Button
               variant="contained"
@@ -362,37 +308,6 @@ export default function ClientLayout({
         <Box sx={{ flex: 1, overflow: 'auto' }}>{renderContent()}</Box>
       </Stack>
       {children}
-
-      {/* Publish All Confirmation Dialog */}
-      <Dialog
-        open={showPublishDialog}
-        onClose={handlePublishAllCancel}
-        aria-labelledby="publish-all-dialog-title"
-        aria-describedby="publish-all-dialog-description"
-      >
-        <DialogTitle id="publish-all-dialog-title">
-          Publish All Draft Audio Languages
-        </DialogTitle>
-        <DialogContent>
-          <DialogContentText id="publish-all-dialog-description">
-            Are you sure you want to publish all draft audio language variants?
-            This will make them publicly available and cannot be easily undone.
-          </DialogContentText>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handlePublishAllCancel} color="primary">
-            Cancel
-          </Button>
-          <Button
-            onClick={handlePublishAllConfirm}
-            color="primary"
-            variant="contained"
-            autoFocus
-          >
-            Publish All
-          </Button>
-        </DialogActions>
-      </Dialog>
     </>
   )
 }
