@@ -40,7 +40,7 @@ import {
 import { findMessagePlatform } from './utils/findMessagePlatform'
 import { getActionLabel } from './utils/getActionLabel'
 import { getLinkActionGoal } from './utils/getLinkActionGoal'
-import { resolveJourneyCustomizationString } from '../../libs/resolveJourneyCustomizationString'
+import { useGetValueFromJourneyCustomizationString } from '../../libs/useGetValueFromJourneyCustomizationString'
 
 export const BUTTON_CLICK_EVENT_CREATE = gql`
   mutation ButtonClickEventCreate($input: ButtonClickEventCreateInput!) {
@@ -115,16 +115,7 @@ export function Button({
   const plausible = usePlausible<JourneyPlausibleEvents>()
   const { variant, journey } = useJourney()
 
-  const resolvedLabel = useMemo(
-    () =>
-      variant === 'admin'
-        ? label
-        : (resolveJourneyCustomizationString(
-            label,
-            journey?.journeyCustomizationFields ?? []
-          ) ?? ''),
-    [variant, label, journey?.journeyCustomizationFields]
-  )
+  const resolvedLabel = useGetValueFromJourneyCustomizationString(label)
 
   const { treeBlocks, blockHistory } = useBlocks()
   const { t } = useTranslation('libs-journeys-ui')
