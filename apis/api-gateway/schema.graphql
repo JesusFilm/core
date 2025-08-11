@@ -355,6 +355,8 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   journeyCollectionCreate(input: JourneyCollectionCreateInput!) : JourneyCollection! @join__field(graph: API_JOURNEYS) 
   journeyCollectionUpdate(id: ID!, input: JourneyCollectionUpdateInput!) : JourneyCollection! @join__field(graph: API_JOURNEYS) 
   journeyCollectionDelete(id: ID!) : JourneyCollection! @join__field(graph: API_JOURNEYS) 
+  journeyCustomizationFieldPublisherUpdate(journeyId: ID!, string: String!) : [JourneyCustomizationField!]! @join__field(graph: API_JOURNEYS) 
+  journeyCustomizationFieldUserUpdate(journeyId: ID!, input: [JourneyCustomizationFieldInput!]!) : [JourneyCustomizationField!]! @join__field(graph: API_JOURNEYS) 
   journeyNotificationUpdate(input: JourneyNotificationUpdateInput!) : JourneyNotification! @join__field(graph: API_JOURNEYS) 
   journeyProfileCreate: JourneyProfile! @join__field(graph: API_JOURNEYS) 
   journeyProfileUpdate(input: JourneyProfileUpdateInput!) : JourneyProfile! @join__field(graph: API_JOURNEYS) 
@@ -529,25 +531,29 @@ type SiteSharedLink @join__type(graph: API_ANALYTICS)  {
 }
 
 type NavigateToBlockAction implements Action @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  @join__implements(graph: API_JOURNEYS, interface: "Action")  @join__implements(graph: API_JOURNEYS_MODERN, interface: "Action")  {
-  parentBlockId: ID @join__field(graph: API_JOURNEYS, type: "ID!")  @join__field(graph: API_JOURNEYS_MODERN, type: "ID") 
-  parentBlock: Block @join__field(graph: API_JOURNEYS, type: "Block!")  @join__field(graph: API_JOURNEYS_MODERN, type: "Block") 
+  parentBlockId: ID!
+  parentBlock: Block!
   gtmEventName: String
   blockId: String!
 }
 
 type LinkAction implements Action @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  @join__implements(graph: API_JOURNEYS, interface: "Action")  @join__implements(graph: API_JOURNEYS_MODERN, interface: "Action")  {
-  parentBlockId: ID @join__field(graph: API_JOURNEYS, type: "ID!")  @join__field(graph: API_JOURNEYS_MODERN, type: "ID") 
-  parentBlock: Block @join__field(graph: API_JOURNEYS, type: "Block!")  @join__field(graph: API_JOURNEYS_MODERN, type: "Block") 
+  parentBlockId: ID!
+  parentBlock: Block!
   gtmEventName: String
   url: String!
   target: String
+  customizable: Boolean
+  parentStepId: String
 }
 
 type EmailAction implements Action @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  @join__implements(graph: API_JOURNEYS, interface: "Action")  @join__implements(graph: API_JOURNEYS_MODERN, interface: "Action")  {
-  parentBlockId: ID @join__field(graph: API_JOURNEYS, type: "ID!")  @join__field(graph: API_JOURNEYS_MODERN, type: "ID") 
-  parentBlock: Block @join__field(graph: API_JOURNEYS, type: "Block!")  @join__field(graph: API_JOURNEYS_MODERN, type: "Block") 
+  parentBlockId: ID!
+  parentBlock: Block!
   gtmEventName: String
   email: String!
+  customizable: Boolean
+  parentStepId: String
 }
 
 type Journey @join__type(graph: API_JOURNEYS, key: "id")  @join__type(graph: API_JOURNEYS_MODERN, key: "id")  {
@@ -610,6 +616,8 @@ type Journey @join__type(graph: API_JOURNEYS, key: "id")  @join__type(graph: API
   socialNodeX: Int @join__field(graph: API_JOURNEYS) 
   socialNodeY: Int @join__field(graph: API_JOURNEYS) 
   fromTemplateId: String @join__field(graph: API_JOURNEYS) 
+  journeyCustomizationDescription: String @join__field(graph: API_JOURNEYS) 
+  journeyCustomizationFields: [JourneyCustomizationField!]! @join__field(graph: API_JOURNEYS) 
   journeyTheme: JourneyTheme @join__field(graph: API_JOURNEYS) 
   userJourneys: [UserJourney!] @join__field(graph: API_JOURNEYS) 
 }
@@ -1728,6 +1736,14 @@ type JourneyCollection @join__type(graph: API_JOURNEYS)  {
   title: String
   customDomains: [CustomDomain!]
   journeys: [Journey!]
+}
+
+type JourneyCustomizationField @join__type(graph: API_JOURNEYS)  {
+  id: ID!
+  journeyId: ID!
+  key: String!
+  value: String
+  defaultValue: String
 }
 
 """
@@ -2892,8 +2908,8 @@ interface BaseError @join__type(graph: API_ANALYTICS)  @join__type(graph: API_ME
 }
 
 interface Action @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
-  parentBlockId: ID
-  parentBlock: Block
+  parentBlockId: ID!
+  parentBlock: Block!
   gtmEventName: String
 }
 
@@ -2922,11 +2938,11 @@ union MutationSiteCreateResult @join__type(graph: API_ANALYTICS)  @join__unionMe
 
 union MediaVideo @join__type(graph: API_JOURNEYS_MODERN)  @join__unionMember(graph: API_JOURNEYS_MODERN, member: "MuxVideo")  @join__unionMember(graph: API_JOURNEYS_MODERN, member: "Video")  @join__unionMember(graph: API_JOURNEYS_MODERN, member: "YouTube")  = MuxVideo | Video | YouTube
 
-union MutationShortLinkCreateResult @join__type(graph: API_MEDIA)  @join__unionMember(graph: API_MEDIA, member: "ZodError")  @join__unionMember(graph: API_MEDIA, member: "NotUniqueError")  @join__unionMember(graph: API_MEDIA, member: "MutationShortLinkCreateSuccess")  = ZodError | NotUniqueError | MutationShortLinkCreateSuccess
+union MutationShortLinkCreateResult @join__type(graph: API_MEDIA)  @join__unionMember(graph: API_MEDIA, member: "NotUniqueError")  @join__unionMember(graph: API_MEDIA, member: "ZodError")  @join__unionMember(graph: API_MEDIA, member: "MutationShortLinkCreateSuccess")  = NotUniqueError | ZodError | MutationShortLinkCreateSuccess
 
 union MutationShortLinkDeleteResult @join__type(graph: API_MEDIA)  @join__unionMember(graph: API_MEDIA, member: "NotFoundError")  @join__unionMember(graph: API_MEDIA, member: "MutationShortLinkDeleteSuccess")  = NotFoundError | MutationShortLinkDeleteSuccess
 
-union MutationShortLinkDomainCreateResult @join__type(graph: API_MEDIA)  @join__unionMember(graph: API_MEDIA, member: "ZodError")  @join__unionMember(graph: API_MEDIA, member: "NotUniqueError")  @join__unionMember(graph: API_MEDIA, member: "MutationShortLinkDomainCreateSuccess")  = ZodError | NotUniqueError | MutationShortLinkDomainCreateSuccess
+union MutationShortLinkDomainCreateResult @join__type(graph: API_MEDIA)  @join__unionMember(graph: API_MEDIA, member: "NotUniqueError")  @join__unionMember(graph: API_MEDIA, member: "ZodError")  @join__unionMember(graph: API_MEDIA, member: "MutationShortLinkDomainCreateSuccess")  = NotUniqueError | ZodError | MutationShortLinkDomainCreateSuccess
 
 union MutationShortLinkDomainDeleteResult @join__type(graph: API_MEDIA)  @join__unionMember(graph: API_MEDIA, member: "NotFoundError")  @join__unionMember(graph: API_MEDIA, member: "ForeignKeyConstraintError")  @join__unionMember(graph: API_MEDIA, member: "MutationShortLinkDomainDeleteSuccess")  = NotFoundError | ForeignKeyConstraintError | MutationShortLinkDomainDeleteSuccess
 
@@ -3387,11 +3403,15 @@ input LinkActionInput @join__type(graph: API_JOURNEYS)  @join__type(graph: API_J
   gtmEventName: String
   url: String!
   target: String
+  customizable: Boolean
+  parentStepId: String
 }
 
 input EmailActionInput @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
   gtmEventName: String
   email: String!
+  customizable: Boolean
+  parentStepId: String
 }
 
 input BlockUpdateActionInput @join__type(graph: API_JOURNEYS)  {
@@ -3402,12 +3422,12 @@ input BlockUpdateActionInput @join__type(graph: API_JOURNEYS)  {
   blockId: String
 }
 
-input BlocksFilter @join__type(graph: API_JOURNEYS)  {
+input BlocksFilter @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
   journeyIds: [ID!]
   typenames: [String!]
 }
 
-input BlockDuplicateIdMap @join__type(graph: API_JOURNEYS)  {
+input BlockDuplicateIdMap @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
   oldId: ID!
   newId: ID!
 }
@@ -4240,6 +4260,12 @@ input JourneyCollectionCreateInput @join__type(graph: API_JOURNEYS)  {
 input JourneyCollectionUpdateInput @join__type(graph: API_JOURNEYS)  {
   title: String
   journeyIds: [String!]
+}
+
+input JourneyCustomizationFieldInput @join__type(graph: API_JOURNEYS)  {
+  id: ID!
+  key: String!
+  value: String
 }
 
 input JourneyEventsFilter @join__type(graph: API_JOURNEYS)  {

@@ -2,9 +2,9 @@ extend schema
   @link(url: "https://specs.apollo.dev/federation/v2.6", import: ["@extends", "@external", "@key", "@shareable"])
 
 interface Action {
-  parentBlockId: ID
+  parentBlockId: ID!
   gtmEventName: String
-  parentBlock: Block
+  parentBlock: Block!
 }
 
 interface Block
@@ -14,6 +14,16 @@ interface Block
   journeyId: ID!
   parentBlockId: ID
   parentOrder: Int
+}
+
+input BlockDuplicateIdMap {
+  oldId: ID!
+  newId: ID!
+}
+
+input BlocksFilter {
+  journeyIds: [ID!]
+  typenames: [String!]
 }
 
 enum ButtonAlignment {
@@ -189,15 +199,19 @@ scalar DateTimeISO
 type EmailAction implements Action
   @shareable
 {
-  parentBlockId: ID
+  parentBlockId: ID!
   gtmEventName: String
-  parentBlock: Block
+  parentBlock: Block!
   email: String!
+  customizable: Boolean
+  parentStepId: String
 }
 
 input EmailActionInput {
   gtmEventName: String
   email: String!
+  customizable: Boolean
+  parentStepId: String
 }
 
 enum EventType {
@@ -512,17 +526,21 @@ type Language
 type LinkAction implements Action
   @shareable
 {
-  parentBlockId: ID
+  parentBlockId: ID!
   gtmEventName: String
-  parentBlock: Block
+  parentBlock: Block!
   url: String!
   target: String
+  customizable: Boolean
+  parentStepId: String
 }
 
 input LinkActionInput {
   gtmEventName: String
   url: String!
   target: String
+  customizable: Boolean
+  parentStepId: String
 }
 
 union MediaVideo = MuxVideo | Video | YouTube
@@ -591,9 +609,9 @@ type MuxVideo
 type NavigateToBlockAction implements Action
   @shareable
 {
-  parentBlockId: ID
+  parentBlockId: ID!
   gtmEventName: String
-  parentBlock: Block
+  parentBlock: Block!
   blockId: String!
 }
 

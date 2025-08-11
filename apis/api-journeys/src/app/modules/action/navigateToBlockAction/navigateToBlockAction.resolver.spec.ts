@@ -60,6 +60,8 @@ describe('NavigateToBlockActionResolver', () => {
       journeyId: null,
       target: null,
       email: null,
+      customizable: null,
+      parentStepId: null,
       updatedAt: new Date()
     }
   }
