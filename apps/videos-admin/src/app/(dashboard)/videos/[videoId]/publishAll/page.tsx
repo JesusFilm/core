@@ -193,8 +193,8 @@ export default function PublishAllChildrenDialog({
           {unpublishedChildren.length} unpublished children
         </Typography>
         <Typography variant="body2" color="text.secondary">
-          • <strong>Publish Children + Languages:</strong> Publishes this
-          video, its children, and all their languages
+          • <strong>Publish Children + Languages:</strong> Publishes this video,
+          its children, and all their languages
         </Typography>
         <Typography variant="body2" color="text.secondary">
           This will make them publicly available and cannot be easily undone.
