@@ -399,4 +399,171 @@ describe('TermsAndConditions', () => {
       'https://your.nextstep.is/community-guidelines'
     )
   })
+
+  it('should use email username as displayName fallback when displayName is null', async () => {
+    mockUseUser.mockReturnValue({
+      displayName: null,
+      email: 'testuser@example.com'
+    } as unknown as User)
+
+    mockUseRouter.mockReturnValue({
+      push,
+      query: { redirect: null }
+    } as unknown as NextRouter)
+
+    const teamCreateMockWithEmailUsername: MockedResponse<TeamCreate> = {
+      request: {
+        query: TEAM_CREATE,
+        variables: {
+          input: {
+            title: 'testuser & Team',
+            publicTitle: 't Team'
+          }
+        }
+      },
+      result: {
+        data: {
+          teamCreate: {
+            id: 'teamId1',
+            title: 'testuser & Team',
+            publicTitle: 't Team',
+            __typename: 'Team',
+            userTeams: [],
+            customDomains: []
+          }
+        }
+      }
+    }
+
+    const journeyProfileCreateMockResult = jest
+      .fn()
+      .mockReturnValue(journeyProfileCreateMock.result)
+
+    const teamCreateMockResult = jest
+      .fn()
+      .mockReturnValue(teamCreateMockWithEmailUsername.result)
+
+    const { getByRole } = render(
+      <MockedProvider
+        mocks={[
+          {
+            ...journeyProfileCreateMock,
+            result: journeyProfileCreateMockResult
+          },
+          {
+            ...teamCreateMockWithEmailUsername,
+            result: teamCreateMockResult
+          },
+          getTeams,
+          getTeams,
+          updateLastActiveTeamIdMock,
+          journeyDuplicateMock
+        ]}
+      >
+        <SnackbarProvider>
+          <TeamProvider>
+            <TermsAndConditions />
+          </TeamProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    fireEvent.click(getByRole('checkbox'))
+    fireEvent.click(getByRole('button', { name: 'Next' }))
+
+    await waitFor(() => {
+      expect(teamCreateMockResult).toHaveBeenCalled()
+    })
+  })
+
+  it('should return early when displayName and email are both null', async () => {
+    mockUseUser.mockReturnValue({
+      displayName: null,
+      email: null
+    } as unknown as User)
+
+    const journeyProfileCreateMockResult = jest
+      .fn()
+      .mockReturnValue(journeyProfileCreateMock.result)
+
+    const { getByRole } = render(
+      <MockedProvider
+        mocks={[
+          {
+            ...journeyProfileCreateMock,
+            result: journeyProfileCreateMockResult
+          }
+        ]}
+      >
+        <SnackbarProvider>
+          <TeamProvider>
+            <TermsAndConditions />
+          </TeamProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    fireEvent.click(getByRole('checkbox'))
+    fireEvent.click(getByRole('button', { name: 'Next' }))
+
+    // Wait a bit to ensure no mutations are called
+    await waitFor(() => {
+      expect(journeyProfileCreateMockResult).not.toHaveBeenCalled()
+    })
+  })
+
+  it('should have proper accessibility attributes on checkbox', () => {
+    const { getByRole } = render(
+      <MockedProvider>
+        <SnackbarProvider>
+          <TeamProvider>
+            <TermsAndConditions />
+          </TeamProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    const checkbox = getByRole('checkbox')
+    expect(checkbox).toHaveAttribute('aria-labelledby', 'i-agree-label')
+    expect(checkbox).toHaveAttribute('tabindex', '-1')
+  })
+
+  it('should show loading spinner and disable button during submission', async () => {
+    mockUseRouter.mockReturnValue({
+      push,
+      query: { redirect: null }
+    } as unknown as NextRouter)
+
+    const { getByRole, getByTestId } = render(
+      <MockedProvider
+        mocks={[
+          journeyProfileCreateMock,
+          teamCreateMock,
+          getTeams,
+          getTeams,
+          updateLastActiveTeamIdMock,
+          journeyDuplicateMock
+        ]}
+      >
+        <SnackbarProvider>
+          <TeamProvider>
+            <TermsAndConditions />
+          </TeamProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    fireEvent.click(getByRole('checkbox'))
+    const nextButton = getByTestId('TermsAndConditionsNextButton')
+
+    expect(nextButton).not.toBeDisabled()
+    fireEvent.click(nextButton)
+
+    expect(nextButton).toBeDisabled()
+    expect(getByRole('progressbar')).toBeInTheDocument()
+
+    await waitFor(() => {
+      expect(nextButton).not.toBeDisabled()
+    })
+  })
 })

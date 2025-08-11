@@ -47,7 +47,7 @@ describe('RadioQuestionBlockResolver', () => {
   const blockUpdateInput: RadioOptionBlockUpdateInput = {
     parentBlockId: 'parentBlockId',
     label: 'label',
-    pollOptionImageId: 'pollOptionImageId'
+    pollOptionImageBlockId: 'pollOptionImageBlockId'
   }
 
   beforeEach(async () => {

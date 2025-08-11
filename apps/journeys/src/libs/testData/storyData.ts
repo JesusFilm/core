@@ -81,7 +81,7 @@ export const basic: TreeBlock[] = [
                   gtmEventName: 'gtmEventName',
                   blockId: 'step2.id'
                 },
-                pollOptionImageId: null,
+                pollOptionImageBlockId: null,
                 children: []
               },
               {
@@ -96,7 +96,7 @@ export const basic: TreeBlock[] = [
                   gtmEventName: 'gtmEventName',
                   blockId: 'step3.id'
                 },
-                pollOptionImageId: null,
+                pollOptionImageBlockId: null,
                 children: []
               },
               {
@@ -111,7 +111,7 @@ export const basic: TreeBlock[] = [
                   gtmEventName: 'gtmEventName',
                   blockId: 'step4.id'
                 },
-                pollOptionImageId: null,
+                pollOptionImageBlockId: null,
                 children: []
               }
             ]
@@ -205,7 +205,7 @@ export const basic: TreeBlock[] = [
                   gtmEventName: 'gtmEventName',
                   blockId: 'step1.id'
                 },
-                pollOptionImageId: null,
+                pollOptionImageBlockId: null,
                 children: []
               },
               {
@@ -220,7 +220,7 @@ export const basic: TreeBlock[] = [
                   gtmEventName: 'gtmEventName',
                   blockId: 'step3.id'
                 },
-                pollOptionImageId: null,
+                pollOptionImageBlockId: null,
                 children: []
               },
               {
@@ -235,7 +235,7 @@ export const basic: TreeBlock[] = [
                   gtmEventName: 'gtmEventName',
                   blockId: 'step4.id'
                 },
-                pollOptionImageId: null,
+                pollOptionImageBlockId: null,
                 children: []
               }
             ]
@@ -314,7 +314,7 @@ export const basic: TreeBlock[] = [
                   gtmEventName: 'gtmEventName',
                   blockId: 'step1.id'
                 },
-                pollOptionImageId: null,
+                pollOptionImageBlockId: null,
                 children: []
               },
               {
@@ -329,7 +329,7 @@ export const basic: TreeBlock[] = [
                   gtmEventName: 'gtmEventName',
                   blockId: 'step2.id'
                 },
-                pollOptionImageId: null,
+                pollOptionImageBlockId: null,
                 children: []
               },
               {
@@ -344,7 +344,7 @@ export const basic: TreeBlock[] = [
                   gtmEventName: 'gtmEventName',
                   blockId: 'step4.id'
                 },
-                pollOptionImageId: null,
+                pollOptionImageBlockId: null,
                 children: []
               }
             ]
@@ -423,7 +423,7 @@ export const basic: TreeBlock[] = [
                   gtmEventName: 'gtmEventName',
                   blockId: 'step1.id'
                 },
-                pollOptionImageId: null,
+                pollOptionImageBlockId: null,
                 children: []
               },
               {
@@ -438,7 +438,7 @@ export const basic: TreeBlock[] = [
                   gtmEventName: 'gtmEventName',
                   blockId: 'step2.id'
                 },
-                pollOptionImageId: null,
+                pollOptionImageBlockId: null,
                 children: []
               },
               {
@@ -453,7 +453,7 @@ export const basic: TreeBlock[] = [
                   gtmEventName: 'gtmEventName',
                   blockId: 'step3.id'
                 },
-                pollOptionImageId: null,
+                pollOptionImageBlockId: null,
                 children: []
               }
             ]
@@ -810,7 +810,7 @@ export const imageBlocks: TreeBlock[] = [
                 parentOrder: 0,
                 label: 'Yes, God likes good people',
                 action: null,
-                pollOptionImageId: null,
+                pollOptionImageBlockId: null,
                 children: []
               },
               {
@@ -820,7 +820,7 @@ export const imageBlocks: TreeBlock[] = [
                 parentOrder: 1,
                 label: 'No, He will accept me as I am',
                 action: null,
-                pollOptionImageId: null,
+                pollOptionImageBlockId: null,
                 children: []
               }
             ]
@@ -1117,7 +1117,7 @@ export const videoBlocks: TreeBlock[] = [
                   gtmEventName: 'gtmEventName',
                   blockId: 'step3.id'
                 },
-                pollOptionImageId: null,
+                pollOptionImageBlockId: null,
                 children: []
               },
               {
@@ -1132,7 +1132,7 @@ export const videoBlocks: TreeBlock[] = [
                   gtmEventName: 'gtmEventName',
                   blockId: 'step4.id'
                 },
-                pollOptionImageId: null,
+                pollOptionImageBlockId: null,
                 children: []
               }
             ]
@@ -1398,7 +1398,7 @@ export const videoBlocksNoPoster: TreeBlock[] = [
                   gtmEventName: 'gtmEventName',
                   blockId: 'step3.id'
                 },
-                pollOptionImageId: null,
+                pollOptionImageBlockId: null,
                 children: []
               },
               {
@@ -1413,7 +1413,7 @@ export const videoBlocksNoPoster: TreeBlock[] = [
                   gtmEventName: 'gtmEventName',
                   blockId: 'step4.id'
                 },
-                pollOptionImageId: null,
+                pollOptionImageBlockId: null,
                 children: []
               }
             ]
@@ -1688,7 +1688,7 @@ export const videoBlocksNoVideo: TreeBlock[] = [
                   gtmEventName: 'gtmEventName',
                   blockId: 'step3.id'
                 },
-                pollOptionImageId: null,
+                pollOptionImageBlockId: null,
                 children: []
               },
               {
@@ -1703,7 +1703,7 @@ export const videoBlocksNoVideo: TreeBlock[] = [
                   gtmEventName: 'gtmEventName',
                   blockId: 'step4.id'
                 },
-                pollOptionImageId: null,
+                pollOptionImageBlockId: null,
                 children: []
               }
             ]

@@ -10,7 +10,8 @@
       "options": {
         "commands": [
           "cp -r libs/locales apps/arclight/public",
-          "nx _build arclight"
+          "nx _build arclight",
+          "cp apps/arclight/next-logger.config.js dist/apps/arclight/next-logger.config.js"
         ],
         "parallel": false
       },
@@ -18,7 +19,8 @@
         "production": {
           "commands": [
             "cp -r libs/locales apps/arclight/public",
-            "CI=true nx _build arclight --prod"
+            "CI=true nx _build arclight --prod",
+            "cp apps/arclight/next-logger.config.js dist/apps/arclight/next-logger.config.js"
           ]
         }
       }

@@ -222,7 +222,7 @@ describe('CardPoll', () => {
           label: 'Turning the other cheek',
           action: null,
           __typename: 'RadioOptionBlock',
-          pollOptionImageId: null
+          pollOptionImageBlockId: null
         },
         radioOption2: {
           id: 'radioOption2Id',
@@ -231,7 +231,7 @@ describe('CardPoll', () => {
           label: 'Loving your enemies',
           action: null,
           __typename: 'RadioOptionBlock',
-          pollOptionImageId: null
+          pollOptionImageBlockId: null
         },
         radioOption3: {
           id: 'radioOption3Id',
@@ -240,7 +240,7 @@ describe('CardPoll', () => {
           label: 'Not worrying about tomorrow',
           action: null,
           __typename: 'RadioOptionBlock',
-          pollOptionImageId: null
+          pollOptionImageBlockId: null
         },
         radioOption4: {
           id: 'radioOption4Id',
@@ -249,7 +249,7 @@ describe('CardPoll', () => {
           label: 'Seeking first the kingdom of God',
           action: null,
           __typename: 'RadioOptionBlock',
-          pollOptionImageId: null
+          pollOptionImageBlockId: null
         },
         body: {
           id: 'bodyId',

@@ -1,4 +1,4 @@
-type JourneyCollection {
+type JourneyCollection @shareable {
   id: ID!
   team: Team!
   title: String

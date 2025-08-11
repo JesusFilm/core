@@ -1,11 +1,14 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { render, waitFor } from '@testing-library/react'
+import { getByTestId, render, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 
-import { BlockFields_RadioOptionBlock as RadioOptionBlock } from '../../../../../../../../../__generated__/BlockFields'
+import {
+  BlockFields_RadioOptionBlock as RadioOptionBlock,
+  BlockFields_RadioQuestionBlock as RadioQuestionBlock
+} from '../../../../../../../../../__generated__/BlockFields'
 import { TestEditorState } from '../../../../../../../../libs/TestEditorState'
 import { ThemeProvider } from '../../../../../../../ThemeProvider'
 
@@ -19,7 +22,7 @@ describe('RadioOption Attribute', () => {
     parentOrder: 0,
     label: 'Radio Option',
     action: null,
-    pollOptionImageId: null,
+    pollOptionImageBlockId: null,
     children: []
   }
 
@@ -81,5 +84,99 @@ describe('RadioOption Attribute', () => {
     expect(
       getByText('selectedAttributeId: radioOption1.id-radio-option-action')
     ).toBeInTheDocument()
+  })
+
+  it('should disable image accordion when radio question block gridView is false', async () => {
+    const parentBlock: TreeBlock<RadioQuestionBlock> = {
+      id: 'step1.id',
+      __typename: 'RadioQuestionBlock',
+      parentBlockId: 'step0.id',
+      parentOrder: 0,
+      gridView: false,
+      children: []
+    }
+
+    const radioOptionBlock: TreeBlock<RadioOptionBlock> = {
+      ...block,
+      parentBlockId: 'step1.id'
+    }
+
+    const { getByRole } = render(
+      <MockedProvider>
+        <ThemeProvider>
+          <EditorProvider
+            initialState={{
+              selectedBlock: radioOptionBlock,
+              selectedStep: {
+                id: 'step0.id',
+                __typename: 'StepBlock',
+                parentBlockId: 'journey1.id',
+                parentOrder: 0,
+                children: [parentBlock],
+                locked: false,
+                nextBlockId: null,
+                slug: null
+              }
+            }}
+          >
+            <RadioOption {...radioOptionBlock} />
+          </EditorProvider>
+        </ThemeProvider>
+      </MockedProvider>
+    )
+
+    await waitFor(() => {
+      const imageAccordion = getByRole('button', {
+        name: 'Image Source No image'
+      })
+      expect(imageAccordion).toBeDisabled()
+    })
+  })
+
+  it('should enable image accordion when radio question block gridView is true', async () => {
+    const parentBlock: TreeBlock<RadioQuestionBlock> = {
+      id: 'step1.id',
+      __typename: 'RadioQuestionBlock',
+      parentBlockId: 'step0.id',
+      parentOrder: 0,
+      gridView: true,
+      children: []
+    }
+
+    const radioOptionBlock: TreeBlock<RadioOptionBlock> = {
+      ...block,
+      parentBlockId: 'step1.id'
+    }
+
+    const { getByRole } = render(
+      <MockedProvider>
+        <ThemeProvider>
+          <EditorProvider
+            initialState={{
+              selectedBlock: radioOptionBlock,
+              selectedStep: {
+                id: 'step0.id',
+                __typename: 'StepBlock',
+                parentBlockId: 'journey1.id',
+                parentOrder: 0,
+                children: [parentBlock],
+                locked: false,
+                nextBlockId: null,
+                slug: null
+              }
+            }}
+          >
+            <RadioOption {...radioOptionBlock} />
+          </EditorProvider>
+        </ThemeProvider>
+      </MockedProvider>
+    )
+
+    await waitFor(() => {
+      const imageAccordion = getByRole('button', {
+        name: 'Image Source No image'
+      })
+      expect(imageAccordion).not.toBeDisabled()
+    })
   })
 })

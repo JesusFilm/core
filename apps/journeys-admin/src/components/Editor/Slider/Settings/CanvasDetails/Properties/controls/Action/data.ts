@@ -292,7 +292,7 @@ export const steps: Array<TreeBlock<StepBlock>> = [
                 parentBlockId: 'radioQuestion1.id',
                 parentOrder: 0,
                 label: 'One of many ways to God',
-                pollOptionImageId: null,
+                pollOptionImageBlockId: null,
                 action: {
                   parentBlockId: 'radioOption1.id',
                   __typename: 'NavigateToBlockAction',
@@ -307,7 +307,7 @@ export const steps: Array<TreeBlock<StepBlock>> = [
                 parentBlockId: 'radioQuestion1.id',
                 parentOrder: 1,
                 label: 'One great lie...',
-                pollOptionImageId: null,
+                pollOptionImageBlockId: null,
                 action: {
                   parentBlockId: 'radioOption3.id',
                   __typename: 'NavigateToBlockAction',
@@ -322,7 +322,7 @@ export const steps: Array<TreeBlock<StepBlock>> = [
                 parentBlockId: 'radioQuestion1.id',
                 parentOrder: 2,
                 label: 'One true way to God',
-                pollOptionImageId: null,
+                pollOptionImageBlockId: null,
                 action: {
                   parentBlockId: 'radioOption4.id',
                   __typename: 'NavigateToBlockAction',
@@ -437,7 +437,7 @@ export const steps: Array<TreeBlock<StepBlock>> = [
                 parentBlockId: 'radioQuestion1.id',
                 parentOrder: 0,
                 label: 'Yes, God likes good people',
-                pollOptionImageId: null,
+                pollOptionImageBlockId: null,
                 action: {
                   parentBlockId: 'radioOption1.id',
                   __typename: 'NavigateToBlockAction',
@@ -452,7 +452,7 @@ export const steps: Array<TreeBlock<StepBlock>> = [
                 parentBlockId: 'radioQuestion1.id',
                 parentOrder: 1,
                 label: 'No, He will accept me as I am',
-                pollOptionImageId: null,
+                pollOptionImageBlockId: null,
                 action: {
                   parentBlockId: 'radioOption3.id',
                   __typename: 'NavigateToBlockAction',
