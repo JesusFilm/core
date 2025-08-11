@@ -355,6 +355,8 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   journeyCollectionCreate(input: JourneyCollectionCreateInput!) : JourneyCollection! @join__field(graph: API_JOURNEYS) 
   journeyCollectionUpdate(id: ID!, input: JourneyCollectionUpdateInput!) : JourneyCollection! @join__field(graph: API_JOURNEYS) 
   journeyCollectionDelete(id: ID!) : JourneyCollection! @join__field(graph: API_JOURNEYS) 
+  journeyCustomizationFieldPublisherUpdate(journeyId: ID!, string: String!) : [JourneyCustomizationField!]! @join__field(graph: API_JOURNEYS) 
+  journeyCustomizationFieldUserUpdate(journeyId: ID!, input: [JourneyCustomizationFieldInput!]!) : [JourneyCustomizationField!]! @join__field(graph: API_JOURNEYS) 
   journeyNotificationUpdate(input: JourneyNotificationUpdateInput!) : JourneyNotification! @join__field(graph: API_JOURNEYS) 
   journeyProfileCreate: JourneyProfile! @join__field(graph: API_JOURNEYS) 
   journeyProfileUpdate(input: JourneyProfileUpdateInput!) : JourneyProfile! @join__field(graph: API_JOURNEYS) 
@@ -541,6 +543,8 @@ type LinkAction implements Action @join__type(graph: API_JOURNEYS)  @join__imple
   gtmEventName: String
   url: String!
   target: String
+  customizable: Boolean
+  parentStepId: String
 }
 
 type EmailAction implements Action @join__type(graph: API_JOURNEYS)  @join__implements(graph: API_JOURNEYS, interface: "Action")  {
@@ -548,6 +552,8 @@ type EmailAction implements Action @join__type(graph: API_JOURNEYS)  @join__impl
   parentBlock: Block!
   gtmEventName: String
   email: String!
+  customizable: Boolean
+  parentStepId: String
 }
 
 type Journey @join__type(graph: API_JOURNEYS, key: "id")  @join__type(graph: API_JOURNEYS_MODERN, key: "id")  {
@@ -610,6 +616,8 @@ type Journey @join__type(graph: API_JOURNEYS, key: "id")  @join__type(graph: API
   socialNodeX: Int @join__field(graph: API_JOURNEYS) 
   socialNodeY: Int @join__field(graph: API_JOURNEYS) 
   fromTemplateId: String @join__field(graph: API_JOURNEYS) 
+  journeyCustomizationDescription: String @join__field(graph: API_JOURNEYS) 
+  journeyCustomizationFields: [JourneyCustomizationField!]! @join__field(graph: API_JOURNEYS) 
   journeyTheme: JourneyTheme @join__field(graph: API_JOURNEYS) 
   userJourneys: [UserJourney!] @join__field(graph: API_JOURNEYS) 
 }
@@ -1728,6 +1736,14 @@ type JourneyCollection @join__type(graph: API_JOURNEYS)  {
   title: String
   customDomains: [CustomDomain!]
   journeys: [Journey!]
+}
+
+type JourneyCustomizationField @join__type(graph: API_JOURNEYS)  {
+  id: ID!
+  journeyId: ID!
+  key: String!
+  value: String
+  defaultValue: String
 }
 
 """
@@ -3387,11 +3403,15 @@ input LinkActionInput @join__type(graph: API_JOURNEYS)  {
   gtmEventName: String
   url: String!
   target: String
+  customizable: Boolean
+  parentStepId: String
 }
 
 input EmailActionInput @join__type(graph: API_JOURNEYS)  {
   gtmEventName: String
   email: String!
+  customizable: Boolean
+  parentStepId: String
 }
 
 input BlockUpdateActionInput @join__type(graph: API_JOURNEYS)  {
@@ -4245,6 +4265,12 @@ input JourneyCollectionCreateInput @join__type(graph: API_JOURNEYS)  {
 input JourneyCollectionUpdateInput @join__type(graph: API_JOURNEYS)  {
   title: String
   journeyIds: [String!]
+}
+
+input JourneyCustomizationFieldInput @join__type(graph: API_JOURNEYS)  {
+  id: ID!
+  key: String!
+  value: String
 }
 
 input JourneyEventsFilter @join__type(graph: API_JOURNEYS)  {
