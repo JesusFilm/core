@@ -93,6 +93,18 @@ export const journeySimpleVideoSchema = z.object({
     .optional()
     .describe('The YouTube video URL or internal video ID.'),
   source: z.enum(['youTube', 'internal']).describe('The type of video source.'),
+  summary: z
+    .string()
+    .optional()
+    .describe(
+      'A summary of the section of the video. Used as context for the next logical and relevant next card.'
+    ),
+  questions: z
+    .array(z.string())
+    .optional()
+    .describe(
+      'An array of reflective questions to ask the user after the video. Used as context for the next logical and relevant next card.'
+    ),
   startAt: z
     .number()
     .int()
@@ -132,7 +144,9 @@ export type JourneySimpleVideoUpdate = z.infer<
 export const journeySimpleCardSchema = z.object({
   id: z
     .string()
-    .describe('The id of the card. Something like card-1, card-2, etc.'),
+    .describe(
+      'The id of the card. Something like card-1, card-2, card-2a, card-2b, etc.'
+    ),
   x: z.number().describe('The x coordinate for the card layout position.'),
   y: z.number().describe('The y coordinate for the card layout position.'),
   heading: z
@@ -162,13 +176,13 @@ export const journeySimpleCardSchema = z.object({
   video: journeySimpleVideoSchema
     .optional()
     .describe(
-      'Video segment for this card, if present. If present, only "id", "video", and (optionally) "defaultNextCard" should be set on this card. All other content fields (heading, text, button, poll, image, backgroundImage, etc.) must be omitted.'
+      'Video segment for this card, if present. If present, only "id", "video", and "defaultNextCard" should be set on this card. All other content fields (heading, text, button, poll, image, backgroundImage, etc.) must be omitted.'
     ),
   defaultNextCard: z
     .string()
     .optional()
     .describe(
-      'The id of the card to navigate to after this card by default. Something like card-1, card-2, etc.'
+      'The id of the card to navigate to after this card by default. Something like card-1, card-2, card-2a, card-2b, etc.'
     )
 })
 
