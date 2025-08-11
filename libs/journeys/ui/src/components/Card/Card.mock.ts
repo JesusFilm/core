@@ -257,7 +257,8 @@ export const journey = {
   id: 'journey.id',
   language: {
     bcp: 'en'
-  }
+  },
+  journeyCustomizationFields: []
 } as unknown as Journey
 
 // GraphQL mocks

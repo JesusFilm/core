@@ -67,7 +67,8 @@ const journey: Journey = {
   menuButtonIcon: null,
   menuStepBlock: null,
   journeyTheme: null,
-  journeyCustomizationDescription: null
+  journeyCustomizationDescription: null,
+  journeyCustomizationFields: []
 }
 
 type Story = StoryObj<ComponentPropsWithoutRef<typeof InformationButton>>

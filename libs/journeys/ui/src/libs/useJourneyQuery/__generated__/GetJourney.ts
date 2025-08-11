@@ -629,6 +629,15 @@ export interface GetJourney_journey_journeyTheme {
   labelFont: string | null;
 }
 
+export interface GetJourney_journey_journeyCustomizationFields {
+  __typename: "JourneyCustomizationField";
+  id: string;
+  journeyId: string;
+  key: string;
+  value: string | null;
+  defaultValue: string | null;
+}
+
 export interface GetJourney_journey {
   __typename: "Journey";
   id: string;
@@ -675,6 +684,7 @@ export interface GetJourney_journey {
   menuStepBlock: GetJourney_journey_menuStepBlock | null;
   journeyTheme: GetJourney_journey_journeyTheme | null;
   journeyCustomizationDescription: string | null;
+  journeyCustomizationFields: GetJourney_journey_journeyCustomizationFields[];
 }
 
 export interface GetJourney {

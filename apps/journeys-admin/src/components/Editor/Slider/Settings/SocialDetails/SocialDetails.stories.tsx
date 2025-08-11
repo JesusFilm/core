@@ -8,7 +8,7 @@ import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { journeysAdminConfig } from '@core/shared/ui/storybook'
 
 import { BlockFields_ImageBlock as ImageBlock } from '../../../../../../__generated__/BlockFields'
-import { GetJourney_journey as Journey } from '../../../../../../__generated__/GetJourney'
+import { JourneyFields as Journey } from '@core/journeys/ui/JourneyProvider/__generated__/JourneyFields'
 import {
   JourneyStatus,
   ThemeMode,
@@ -77,7 +77,8 @@ const journey: Journey = {
   menuButtonIcon: null,
   menuStepBlock: null,
   journeyTheme: null,
-  journeyCustomizationDescription: null
+  journeyCustomizationDescription: null,
+  journeyCustomizationFields: []
 }
 
 const image: ImageBlock = {

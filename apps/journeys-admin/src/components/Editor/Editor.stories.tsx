@@ -8,7 +8,7 @@ import {
 } from '@core/journeys/ui/TemplateView/data'
 import { journeysAdminConfig } from '@core/shared/ui/storybook'
 
-import { GetJourney_journey as Journey } from '../../../__generated__/GetJourney'
+import { JourneyFields as Journey } from '@core/journeys/ui/JourneyProvider/__generated__/JourneyFields'
 import { GetStepBlocksWithPosition } from '../../../__generated__/GetStepBlocksWithPosition'
 import {
   JourneyStatus,
@@ -85,7 +85,8 @@ const journey: Journey = {
   menuButtonIcon: null,
   menuStepBlock: null,
   journeyTheme: null,
-  journeyCustomizationDescription: null
+  journeyCustomizationDescription: null,
+  journeyCustomizationFields: []
 }
 
 const mockGetStepBlocksWithPosition: MockedResponse<GetStepBlocksWithPosition> =
