@@ -7,10 +7,10 @@ import { z } from 'zod'
 
 import {
   langfuse,
+  langfuseEnvironment,
   langfuseExporter
 } from '../../../src/libs/ai/langfuse/server'
-import { orchestrateRequest } from '../../../src/libs/ai/orchestrator'
-import { getLangfusePrompt } from '../../../src/libs/ai/orchestrator/buildDynamicPrompt'
+import { tools } from '../../../src/libs/ai/tools'
 import { createApolloClient } from '../../../src/libs/apolloClient'
 
 // Allow streaming responses up to 30 seconds
@@ -68,25 +68,26 @@ export async function POST(req: NextRequest) {
 
   const langfuseTraceId = uuidv4()
 
-  const systemPrompt = await getLangfusePrompt('feature/base-system-prompt')
-
-  const { classification, finalSystemPrompt, selectedTools } =
-    await orchestrateRequest(messages, langfuseTraceId, {
-      journeyId,
-      selectedStepId,
-      selectedBlockId,
-      apolloClient: client
-    })
-
-  const systemPromptWithClassification = classification
-    ? `## User Intent Classification\n\n${classification.reasoning}\n\n${finalSystemPrompt}`
-    : finalSystemPrompt
+  const systemPrompt = await langfuse.getPrompt(
+    'system/api/chat/route',
+    undefined,
+    {
+      label: langfuseEnvironment,
+      cacheTtlSeconds: ['development', 'preview'].includes(langfuseEnvironment)
+        ? 0
+        : 60
+    }
+  )
 
   const result = streamText({
     model: google('gemini-2.5-flash'),
     messages: messages.filter((message) => message.role !== 'system'),
-    system: systemPromptWithClassification,
-    tools: selectedTools,
+    system: systemPrompt.compile({
+      journeyId: journeyId ?? 'none',
+      selectedStepId: selectedStepId ?? 'none',
+      selectedBlockId: selectedBlockId ?? 'none'
+    }),
+    tools: tools(client, { langfuseTraceId }),
     experimental_telemetry: {
       isEnabled: true,
       functionId: 'ai-chat-stream',
