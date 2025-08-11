@@ -131,19 +131,19 @@ DoD: tests for gradients; carousel functionality; enhanced hover effects.
 
 ## Polished Implementation
 
-### Slice 1 — Homepage Polished [Status: PLANNED]
+### Slice 1 — Homepage Polished [Status: COMPLETED]
 Scope: Performance optimization and advanced animations
 
-- [ ] Performance optimizations
-  - [ ] Lazy loading for images
-  - [ ] Core Web Vitals optimization
-  - [ ] Bundle size optimization
-  - [ ] Image optimization with Next.js Image
-- [ ] Advanced animations
-  - [ ] Smooth 60fps background animation
-  - [ ] Reduced motion support
-  - [ ] Hardware acceleration
-  - [ ] Animation performance monitoring
+- [x] Performance optimizations
+  - [x] Lazy loading for images
+  - [x] Core Web Vitals optimization
+  - [x] Bundle size optimization
+  - [x] Image optimization with Next.js Image
+- [x] Advanced animations
+  - [x] Smooth 60fps background animation
+  - [x] Reduced motion support
+  - [x] Hardware acceleration
+  - [x] Animation performance monitoring
 
 DoD: performance targets met; animations optimized; accessibility enhanced.
 

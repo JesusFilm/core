@@ -1,12 +1,12 @@
 'use client'
 
-import { Clapperboard, Languages, Compass, Sprout, Footprints, ArrowRight } from "lucide-react"
+import React, { useCallback, useEffect, useMemo, useState } from "react"
+import { ArrowRight, Clapperboard, Compass, Footprints, Languages, Sprout } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { useState } from "react"
 
 type AudienceOption = {
   text: string
-  icon: React.ComponentType<{ className?: string }>
+  icon: React.ComponentType<any>
 }
 
 const audienceOptions: AudienceOption[] = [
@@ -24,13 +24,90 @@ const audienceOptions: AudienceOption[] = [
   }
 ]
 
+// Performance monitoring hook
+const usePerformanceMonitor = () => {
+  const [fps, setFps] = useState<number>(60)
+  const [animationFrame, setAnimationFrame] = useState<number>(0)
+
+  useEffect(() => {
+    let frameCount = 0
+    let lastTime = performance.now()
+    
+    const measureFPS = () => {
+      frameCount++
+      const currentTime = performance.now()
+      
+      if (currentTime - lastTime >= 1000) {
+        setFps(Math.round((frameCount * 1000) / (currentTime - lastTime)))
+        frameCount = 0
+        lastTime = currentTime
+      }
+      
+      setAnimationFrame(requestAnimationFrame(measureFPS))
+    }
+    
+    setAnimationFrame(requestAnimationFrame(measureFPS))
+    
+    return () => {
+      if (animationFrame) {
+        cancelAnimationFrame(animationFrame)
+      }
+    }
+  }, [animationFrame])
+
+  return { fps }
+}
+
+// Reduced motion detection
+const useReducedMotion = () => {
+  const [prefersReducedMotion, setPrefersReducedMotion] = useState(false)
+  
+  useEffect(() => {
+    // Check if we're in a browser environment
+    if (typeof window === 'undefined' || !window.matchMedia) {
+      return
+    }
+    
+    const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)')
+    setPrefersReducedMotion(mediaQuery.matches)
+    
+    const handleChange = (e: MediaQueryListEvent) => {
+      setPrefersReducedMotion(e.matches)
+    }
+    
+    mediaQuery.addEventListener('change', handleChange)
+    return () => mediaQuery.removeEventListener('change', handleChange)
+  }, [])
+  
+  return prefersReducedMotion
+}
+
 export function HeroSection() {
   const [selectedAudience, setSelectedAudience] = useState<number | null>(null)
+  const [imagesLoaded, setImagesLoaded] = useState(false)
+  const { fps } = usePerformanceMonitor()
+  const prefersReducedMotion = useReducedMotion()
 
-  const handleAudienceSelection = (index: number) => {
+  const handleAudienceSelection = useCallback((index: number) => {
     setSelectedAudience(index)
     // Future: Add navigation or filtering logic
-  }
+  }, [])
+
+  // Memoized grid items for performance
+  const gridItems = useMemo(() => {
+    return Array.from({ length: 8 }).map((_, rowIndex) => ({
+      rowIndex,
+      animationDelay: rowIndex * -3,
+      animationDirection: rowIndex % 2 === 0 ? 'left' : 'right'
+    }))
+  }, [])
+
+  // Lazy load background texture
+  useEffect(() => {
+    const img = new window.Image()
+    img.onload = () => setImagesLoaded(true)
+    img.src = "/overlay.svg"
+  }, [])
 
   return (
     <section
@@ -40,59 +117,79 @@ export function HeroSection() {
           "linear-gradient(140deg, #0c0a09 0%, #292524 30%, #44403c 60%, #1c1917 100%)",
         backgroundColor: "#0c0a09",
         backgroundBlendMode: "normal",
+        // Hardware acceleration
+        transform: "translateZ(0)",
+        willChange: "transform",
       }}
     >
-      {/* Animated Grid Background */}
-      <div className="absolute inset-0 pointer-events-none">
-        <div
-          className="absolute inset-0"
-          style={{
-            transform: "rotate(-45deg)",
-            transformOrigin: "center center",
-            width: "200%",
-            height: "200%",
-            top: "-50%",
-            left: "-50%",
-            overflow: "hidden",
-          }}
-        >
-          {Array.from({ length: 8 }).map((_, rowIndex) => (
-            <div
-              key={rowIndex}
-              className={`absolute left-0 right-0 flex ${
-                rowIndex % 2 === 0 ? 'animate-slide-left' : 'animate-slide-right'
-              }`}
-              style={{
-                top: `${rowIndex * 12}%`,
-                height: "10%",
-                animationDelay: `${rowIndex * -3}s`,
-              }}
-            >
-              {/* Simplified grid items - just colored rectangles for performance */}
-              {Array.from({ length: 6 }).map((_, imageIndex) => (
-                <div
-                  key={imageIndex}
-                  className="mr-8 flex-shrink-0 w-72 h-96 rounded-2xl shadow-2xl opacity-10"
-                  style={{
-                    background: `linear-gradient(45deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%)`,
-                    border: '1px solid rgba(255,255,255,0.1)',
-                  }}
-                />
-              ))}
-            </div>
-          ))}
+      {/* Performance monitoring (development only) */}
+      {process.env.NODE_ENV === 'development' && (
+        <div className="fixed top-4 right-4 bg-black/80 text-white p-2 rounded text-xs z-50">
+          FPS: {fps}
         </div>
-      </div>
+      )}
 
-      {/* Background Texture */}
-      <div
-        className="absolute inset-0 opacity-50 z-10"
-        style={{
-          backgroundImage: 'url("/overlay.svg")',
-          backgroundPosition: "center",
-          backgroundRepeat: "repeat",
-        }}
-      />
+      {/* Animated Grid Background - Optimized for performance */}
+      {!prefersReducedMotion && (
+        <div className="absolute inset-0 pointer-events-none">
+          <div
+            className="absolute inset-0"
+            style={{
+              transform: "rotate(-45deg)",
+              transformOrigin: "center center",
+              width: "200%",
+              height: "200%",
+              top: "-50%",
+              left: "-50%",
+              overflow: "hidden",
+              // Hardware acceleration
+              willChange: "transform",
+            }}
+          >
+            {gridItems.map(({ rowIndex, animationDelay, animationDirection }) => (
+              <div
+                key={rowIndex}
+                className={`absolute left-0 right-0 flex ${
+                  animationDirection === 'left' ? 'animate-slide-left' : 'animate-slide-right'
+                }`}
+                style={{
+                  top: `${rowIndex * 12}%`,
+                  height: "10%",
+                  animationDelay: `${animationDelay}s`,
+                  // Hardware acceleration
+                  willChange: "transform",
+                }}
+              >
+                {/* Simplified grid items - just colored rectangles for performance */}
+                {Array.from({ length: 6 }).map((_, imageIndex) => (
+                  <div
+                    key={imageIndex}
+                    className="mr-8 flex-shrink-0 w-72 h-96 rounded-2xl shadow-2xl opacity-10"
+                    style={{
+                      background: `linear-gradient(45deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%)`,
+                      border: '1px solid rgba(255,255,255,0.1)',
+                      // Hardware acceleration
+                      willChange: "transform",
+                    }}
+                  />
+                ))}
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Background Texture - Lazy loaded */}
+      {imagesLoaded && (
+        <div
+          className="absolute inset-0 opacity-50 z-10"
+          style={{
+            backgroundImage: 'url("/overlay.svg")',
+            backgroundPosition: "center",
+            backgroundRepeat: "repeat",
+          }}
+        />
+      )}
 
       {/* Text Readability Gradient Overlay */}
       <div
@@ -124,7 +221,7 @@ export function HeroSection() {
             </div>
 
             <h1 className="text-3xl sm:text-4xl md:text-6xl xl:text-7xl font-bold leading-[0.9] tracking-tight text-white mb-4 sm:mb-6">
-              Watch the <span className="bg-gradient-to-r from-stone-200 via-orange-200 to-yellow-200 bg-clip-text text-transparent animate-pulse">Greatest Story</span> Ever Told
+              Watch the <span className={`bg-gradient-to-r from-stone-200 via-orange-200 to-yellow-200 bg-clip-text text-transparent ${!prefersReducedMotion ? 'animate-pulse' : ''}`}>Greatest Story</span> Ever Told
             </h1>
 
             <p className="text-stone-100/90 text-base sm:text-xl md:text-2xl leading-relaxed max-w-3xl mb-6 sm:mb-8">
