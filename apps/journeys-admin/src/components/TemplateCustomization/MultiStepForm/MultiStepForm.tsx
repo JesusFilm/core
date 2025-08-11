@@ -52,7 +52,7 @@ export function MultiStepForm(): ReactElement {
     <Container
       maxWidth="lg"
       sx={{
-        height: '100svh',
+        height: '100%',
         width: '100%',
         backgroundColor: 'background.paper'
       }}

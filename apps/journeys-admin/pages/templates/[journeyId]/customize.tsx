@@ -1,10 +1,10 @@
-import Typography from '@mui/material/Typography'
 import { useRouter } from 'next/router'
 import { withUser, withUserTokenSSR } from 'next-firebase-auth'
 import { useTranslation } from 'next-i18next'
 import { NextSeo } from 'next-seo'
 
 import { GET_JOURNEY, useJourneyQuery } from '@core/journeys/ui/useJourneyQuery'
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
 import {
   GetJourney,
@@ -22,13 +22,17 @@ function CustomizePage() {
     idType: IdType.databaseId
   })
 
-  const title = data?.journey?.title
-
   return (
     <>
       <NextSeo title={t('Customize Template')} />
-      <Typography variant="h1">{title}</Typography>
-      <MultiStepForm />
+      <JourneyProvider
+        value={{
+          journey: data?.journey,
+          variant: 'admin'
+        }}
+      >
+        <MultiStepForm />
+      </JourneyProvider>
     </>
   )
 }

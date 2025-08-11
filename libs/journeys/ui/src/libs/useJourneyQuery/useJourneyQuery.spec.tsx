@@ -80,7 +80,8 @@ describe('useJourneyQuery', () => {
       menuButtonIcon: null,
       menuStepBlock: null,
       journeyTheme: null,
-      journeyCustomizationDescription: null
+      journeyCustomizationDescription: null,
+      journeyCustomizationFields: []
     }
 
     const result = jest.fn(() => ({ data: { journey } }))

@@ -3,11 +3,13 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
+import { JourneyCustomizationFieldInput } from "./globalTypes";
+
 // ====================================================
 // GraphQL mutation operation: JourneyCustomizationFieldUpdate
 // ====================================================
 
-export interface JourneyCustomizationFieldUpdate_journeyCustomizationFieldPublisherUpdate {
+export interface JourneyCustomizationFieldUpdate_journeyCustomizationFieldUserUpdate {
   __typename: "JourneyCustomizationField";
   id: string;
   key: string;
@@ -15,10 +17,10 @@ export interface JourneyCustomizationFieldUpdate_journeyCustomizationFieldPublis
 }
 
 export interface JourneyCustomizationFieldUpdate {
-  journeyCustomizationFieldPublisherUpdate: JourneyCustomizationFieldUpdate_journeyCustomizationFieldPublisherUpdate[];
+  journeyCustomizationFieldUserUpdate: JourneyCustomizationFieldUpdate_journeyCustomizationFieldUserUpdate[];
 }
 
 export interface JourneyCustomizationFieldUpdateVariables {
   journeyId: string;
-  string: string;
+  input: JourneyCustomizationFieldInput[];
 }

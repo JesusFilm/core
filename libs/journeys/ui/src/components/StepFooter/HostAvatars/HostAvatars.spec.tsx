@@ -67,7 +67,8 @@ describe('HostAvatars', () => {
     menuButtonIcon: null,
     menuStepBlock: null,
     journeyTheme: null,
-    journeyCustomizationDescription: null
+    journeyCustomizationDescription: null,
+    journeyCustomizationFields: []
   }
 
   it('renders both avatars if both images are set', () => {
