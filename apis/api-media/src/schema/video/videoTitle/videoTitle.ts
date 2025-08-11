@@ -1,3 +1,7 @@
+import {
+  exportVideoTitleToCrowdin,
+  updateVideoTitleInCrowdin
+} from '../../../lib/crowdin/videoTitle'
 import { prisma } from '../../../lib/prisma'
 import { builder } from '../../builder'
 import { Language } from '../../language'
@@ -13,7 +17,8 @@ builder.prismaObject('VideoTitle', {
       type: Language,
       nullable: false,
       resolve: ({ languageId: id }) => ({ id })
-    })
+    }),
+    crowdInId: t.exposeString('crowdInId')
   })
 })
 
@@ -25,13 +30,23 @@ builder.mutationFields((t) => ({
       input: t.arg({ type: VideoTranslationCreateInput, required: true })
     },
     resolve: async (query, _parent, { input }) => {
-      return await prisma.videoTitle.create({
+      let crowdInId: string | null = null
+      try {
+        crowdInId = await exportVideoTitleToCrowdin(input.videoId, input.value)
+      } catch (error) {
+        console.error('Crowdin export error:', error)
+      }
+
+      const videoTitle = await prisma.videoTitle.create({
         ...query,
         data: {
           ...input,
-          id: input.id ?? undefined
+          id: input.id ?? undefined,
+          crowdInId: crowdInId ?? undefined
         }
       })
+
+      return videoTitle
     }
   }),
   videoTitleUpdate: t.withAuth({ isPublisher: true }).prismaField({
@@ -41,7 +56,7 @@ builder.mutationFields((t) => ({
       input: t.arg({ type: VideoTranslationUpdateInput, required: true })
     },
     resolve: async (query, _parent, { input }) => {
-      return await prisma.videoTitle.update({
+      const videoTitle = await prisma.videoTitle.update({
         ...query,
         where: { id: input.id },
         data: {
@@ -50,6 +65,18 @@ builder.mutationFields((t) => ({
           languageId: input.languageId ?? undefined
         }
       })
+
+      try {
+        await updateVideoTitleInCrowdin(
+          videoTitle.videoId,
+          videoTitle.value,
+          videoTitle.crowdInId ?? null
+        )
+      } catch (error) {
+        console.error('Crowdin export error:', error)
+      }
+
+      return videoTitle
     }
   }),
   videoTitleDelete: t.withAuth({ isPublisher: true }).prismaField({

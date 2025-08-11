@@ -1,3 +1,7 @@
+import {
+  exportStudyQuestionToCrowdin,
+  updateStudyQuestionInCrowdin
+} from '../../../lib/crowdin/videoStudyQuestion'
 import { prisma } from '../../../lib/prisma'
 import { builder } from '../../builder'
 import { Language } from '../../language'
@@ -21,7 +25,8 @@ builder.prismaObject('VideoStudyQuestion', {
       type: Language,
       nullable: false,
       resolve: ({ languageId: id }) => ({ id })
-    })
+    }),
+    crowdInId: t.exposeString('crowdInId')
   })
 })
 
@@ -33,24 +38,31 @@ builder.mutationFields((t) => ({
       input: t.arg({ type: VideoStudyQuestionCreateInput, required: true })
     },
     resolve: async (query, _parent, { input }) => {
-      return await prisma.$transaction(
-        async (transaction) => {
-          await updateOrderCreate({
-            videoId: input.videoId,
-            languageId: input.languageId,
-            order: input.order,
-            transaction
-          })
-          return await transaction.videoStudyQuestion.create({
+      return await prisma.$transaction(async (transaction) => {
+        await updateOrderCreate({
+          videoId: input.videoId,
+          languageId: input.languageId,
+          order: input.order,
+          transaction
+        })
+
+        const newVideoStudyQuestion =
+          await transaction.videoStudyQuestion.create({
             ...query,
             data: {
               ...input,
               id: input.id ?? undefined
             }
           })
-        },
-        { timeout: 10000 }
-      )
+        if (newVideoStudyQuestion.videoId != null) {
+          await exportStudyQuestionToCrowdin(
+            newVideoStudyQuestion.videoId,
+            newVideoStudyQuestion.value,
+            newVideoStudyQuestion.order
+          )
+        }
+        return newVideoStudyQuestion
+      })
     }
   }),
   videoStudyQuestionUpdate: t.withAuth({ isPublisher: true }).prismaField({
@@ -80,6 +92,12 @@ builder.mutationFields((t) => ({
               order: input.order,
               transaction
             })
+
+          await updateStudyQuestionInCrowdin(
+            existing.videoId,
+            input.value ?? '',
+            input.crowdInId ?? null
+          )
 
           return await transaction.videoStudyQuestion.update({
             ...query,
