@@ -6,7 +6,7 @@ import { langfuse, langfuseEnvironment } from '../../langfuse/server'
 
 const classificationSchema = z.object({
   intentType: z
-    .enum(['general', 'simple_crud', 'plan_journey'])
+    .enum(['general', 'simple_crud', 'plan_journey', 'error'])
     .describe('The type of intent that the user is trying to perform.'),
   requiresTools: z.boolean().describe('Whether the intent requires tools.'),
   toolCategories: z
@@ -64,7 +64,7 @@ export async function classifyIntent(
         details: error.message
       })
       return {
-        intentType: 'general',
+        intentType: 'error',
         requiresTools: false,
         toolCategories: [],
         promptModules: [],
@@ -74,7 +74,7 @@ export async function classifyIntent(
 
     console.error('Classification failed due to unexpected error', { error })
     return {
-      intentType: 'general',
+      intentType: 'error',
       requiresTools: false,
       toolCategories: [],
       promptModules: [],
