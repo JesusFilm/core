@@ -1007,4 +1007,122 @@ describe('Button', () => {
     fireEvent.click(submitButton)
     expect(handleSubmit).toHaveBeenCalledTimes(1)
   })
+
+  describe('customization string resolution', () => {
+    it('resolves label using journey customization fields on default variant', () => {
+      const journeyWithFields = {
+        journeyCustomizationFields: [
+          {
+            __typename: 'JourneyCustomizationField',
+            id: '1',
+            journeyId: 'journeyId',
+            key: 'name',
+            value: 'Alice',
+            defaultValue: 'Anonymous'
+          }
+        ]
+      } as unknown as Journey
+
+      const btn = { ...block, label: '{{ name }}' }
+
+      render(
+        <MockedProvider>
+          <JourneyProvider
+            value={{ journey: journeyWithFields, variant: 'default' }}
+          >
+            <Button {...btn} />
+          </JourneyProvider>
+        </MockedProvider>
+      )
+
+      expect(screen.getByRole('button')).toHaveTextContent('Alice')
+    })
+
+    it('does not resolve label on admin variant', () => {
+      const journeyWithFields = {
+        journeyCustomizationFields: [
+          {
+            __typename: 'JourneyCustomizationField',
+            id: '1',
+            journeyId: 'journeyId',
+            key: 'name',
+            value: 'Alice',
+            defaultValue: 'Anonymous'
+          }
+        ]
+      } as unknown as Journey
+
+      const btn = { ...block, label: '{{ name }}' }
+
+      render(
+        <MockedProvider>
+          <JourneyProvider
+            value={{ journey: journeyWithFields, variant: 'admin' }}
+          >
+            <Button {...btn} />
+          </JourneyProvider>
+        </MockedProvider>
+      )
+
+      expect(screen.getByRole('button')).toHaveTextContent('{{ name }}')
+    })
+
+    it('replaces custom fields within mixed strings and leaves other text intact', () => {
+      const journeyWithFields = {
+        journeyCustomizationFields: [
+          {
+            __typename: 'JourneyCustomizationField',
+            id: '1',
+            journeyId: 'journeyId',
+            key: 'name',
+            value: 'Alice',
+            defaultValue: 'Anonymous'
+          }
+        ]
+      } as unknown as Journey
+
+      const btn = { ...block, label: 'Hello {{ name }}!' }
+
+      render(
+        <MockedProvider>
+          <JourneyProvider
+            value={{ journey: journeyWithFields, variant: 'default' }}
+          >
+            <Button {...btn} />
+          </JourneyProvider>
+        </MockedProvider>
+      )
+
+      expect(screen.getByRole('button')).toHaveTextContent('Hello Alice!')
+    })
+
+    it('uses defaultValue when value is null', () => {
+      const journeyWithFields = {
+        journeyCustomizationFields: [
+          {
+            __typename: 'JourneyCustomizationField',
+            id: '2',
+            journeyId: 'journeyId',
+            key: 'title',
+            value: null,
+            defaultValue: 'Child of God'
+          }
+        ]
+      } as unknown as Journey
+
+      const btn = { ...block, label: '{{ title }}' }
+
+      render(
+        <MockedProvider>
+          <JourneyProvider
+            value={{ journey: journeyWithFields, variant: 'default' }}
+          >
+            <Button {...btn} />
+          </JourneyProvider>
+        </MockedProvider>
+      )
+
+      expect(screen.getByRole('button')).toHaveTextContent('Child of God')
+    })
+  })
 })
