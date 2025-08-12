@@ -35,8 +35,12 @@ describe('CitationForm Validation', () => {
           'greaterThanVerseStart',
           'End verse must be greater than or equal to start verse',
           function (value) {
-            const { verseStart } = this.parent
-            return !value || !verseStart || value >= verseStart
+            const { verseStart, chapterStart, chapterEnd } = this.parent
+            // Only validate end verse against start verse if chapters are the same
+            const isSameChapter = !chapterEnd || chapterEnd === chapterStart
+            return (
+              !value || !verseStart || !isSameChapter || value >= verseStart
+            )
           }
         )
     })
@@ -63,17 +67,29 @@ describe('CitationForm Validation', () => {
       'End chapter must be greater than or equal to start chapter'
     )
 
-    // Test validation for invalid verse end (less than start)
-    const invalidVerseEnd = {
+    // Test validation for invalid verse end (less than start) - same chapter
+    const invalidVerseEndSameChapter = {
       bibleBookId: 'gen',
       chapterStart: 1,
-      chapterEnd: 2,
+      chapterEnd: 1, // Same chapter
       verseStart: 5,
       verseEnd: 3
     }
-    expect(() => validationSchema.validateSync(invalidVerseEnd)).toThrow(
-      'End verse must be greater than or equal to start verse'
-    )
+    expect(() =>
+      validationSchema.validateSync(invalidVerseEndSameChapter)
+    ).toThrow('End verse must be greater than or equal to start verse')
+
+    // Test validation for valid verse end - different chapters (should pass)
+    const validVerseEndDifferentChapter = {
+      bibleBookId: 'gen',
+      chapterStart: 1,
+      chapterEnd: 2, // Different chapter
+      verseStart: 5,
+      verseEnd: 3 // This should be valid since chapters are different
+    }
+    expect(() =>
+      validationSchema.validateSync(validVerseEndDifferentChapter)
+    ).not.toThrow()
   })
 
   // Test for optional verse fields
@@ -106,8 +122,12 @@ describe('CitationForm Validation', () => {
           'greaterThanVerseStart',
           'End verse must be greater than or equal to start verse',
           function (value) {
-            const { verseStart } = this.parent
-            return !value || !verseStart || value >= verseStart
+            const { verseStart, chapterStart, chapterEnd } = this.parent
+            // Only validate end verse against start verse if chapters are the same
+            const isSameChapter = !chapterEnd || chapterEnd === chapterStart
+            return (
+              !value || !verseStart || !isSameChapter || value >= verseStart
+            )
           }
         )
     })
@@ -165,8 +185,12 @@ describe('CitationForm Validation', () => {
           'greaterThanVerseStart',
           'End verse must be greater than or equal to start verse',
           function (value) {
-            const { verseStart } = this.parent
-            return !value || !verseStart || value >= verseStart
+            const { verseStart, chapterStart, chapterEnd } = this.parent
+            // Only validate end verse against start verse if chapters are the same
+            const isSameChapter = !chapterEnd || chapterEnd === chapterStart
+            return (
+              !value || !verseStart || !isSameChapter || value >= verseStart
+            )
           }
         )
     })
@@ -194,6 +218,107 @@ describe('CitationForm Validation', () => {
     expect(() => validationSchema.validateSync(negativeVerseStart)).toThrow(
       'Start verse must be a positive number'
     )
+  })
+
+  // Test specifically for the new chapter-based verse validation logic
+  it('validates end verse only when chapters are the same', () => {
+    const validationSchema = object().shape({
+      bibleBookId: string().required('Bible book is required'),
+      chapterStart: number()
+        .typeError('Chapter must be a number')
+        .required('Start chapter is required')
+        .positive('Start chapter must be a positive number'),
+      chapterEnd: number()
+        .typeError('Chapter must be a number')
+        .nullable()
+        .test(
+          'greaterThanChapterStart',
+          'End chapter must be greater than or equal to start chapter',
+          function (value) {
+            const { chapterStart } = this.parent
+            return !value || value >= chapterStart
+          }
+        ),
+      verseStart: number()
+        .typeError('Verse must be a number')
+        .nullable()
+        .positive('Start verse must be a positive number'),
+      verseEnd: number()
+        .typeError('Verse must be a number')
+        .nullable()
+        .test(
+          'greaterThanVerseStart',
+          'End verse must be greater than or equal to start verse',
+          function (value) {
+            const { verseStart, chapterStart, chapterEnd } = this.parent
+            // Only validate end verse against start verse if chapters are the same
+            const isSameChapter = !chapterEnd || chapterEnd === chapterStart
+            return (
+              !value || !verseStart || !isSameChapter || value >= verseStart
+            )
+          }
+        )
+    })
+
+    // Test case 1: Same chapter, end verse < start verse (should fail)
+    const sameChapterInvalidVerse = {
+      bibleBookId: 'gen',
+      chapterStart: 1,
+      chapterEnd: 1,
+      verseStart: 10,
+      verseEnd: 5
+    }
+    expect(() =>
+      validationSchema.validateSync(sameChapterInvalidVerse)
+    ).toThrow('End verse must be greater than or equal to start verse')
+
+    // Test case 2: Same chapter (no chapterEnd), end verse < start verse (should fail)
+    const sameChapterNoEndInvalidVerse = {
+      bibleBookId: 'gen',
+      chapterStart: 1,
+      chapterEnd: null,
+      verseStart: 10,
+      verseEnd: 5
+    }
+    expect(() =>
+      validationSchema.validateSync(sameChapterNoEndInvalidVerse)
+    ).toThrow('End verse must be greater than or equal to start verse')
+
+    // Test case 3: Different chapters, end verse < start verse (should pass)
+    const differentChapterValidVerse = {
+      bibleBookId: 'gen',
+      chapterStart: 1,
+      chapterEnd: 2,
+      verseStart: 10,
+      verseEnd: 5
+    }
+    expect(() =>
+      validationSchema.validateSync(differentChapterValidVerse)
+    ).not.toThrow()
+
+    // Test case 4: Same chapter, end verse >= start verse (should pass)
+    const sameChapterValidVerse = {
+      bibleBookId: 'gen',
+      chapterStart: 1,
+      chapterEnd: 1,
+      verseStart: 5,
+      verseEnd: 10
+    }
+    expect(() =>
+      validationSchema.validateSync(sameChapterValidVerse)
+    ).not.toThrow()
+
+    // Test case 5: Different chapters, normal verse range (should pass)
+    const differentChapterNormalVerse = {
+      bibleBookId: 'gen',
+      chapterStart: 1,
+      chapterEnd: 3,
+      verseStart: 1,
+      verseEnd: 25
+    }
+    expect(() =>
+      validationSchema.validateSync(differentChapterNormalVerse)
+    ).not.toThrow()
   })
 
   it('renders a simple form with the expected fields', () => {

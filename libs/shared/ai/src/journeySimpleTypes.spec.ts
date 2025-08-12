@@ -305,7 +305,7 @@ describe('journeySimpleVideoSchemaUpdate (strict)', () => {
 // journeySimpleCardSchema tests
 
 describe('journeySimpleCardSchema (base, permissive)', () => {
-  const base = { id: 'card-1' }
+  const base = { id: 'card-1', x: 0, y: 0 }
 
   it('validates with button', () => {
     expect(
@@ -370,7 +370,7 @@ describe('journeySimpleCardSchema (base, permissive)', () => {
 })
 
 describe('journeySimpleCardSchemaUpdate (strict)', () => {
-  const base = { id: 'card-1' }
+  const base = { id: 'card-1', x: 0, y: 0 }
 
   it('validates with button', () => {
     expect(

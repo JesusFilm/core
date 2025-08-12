@@ -4,11 +4,12 @@ import {
   GridFilterModel,
   GridPaginationModel
 } from '@mui/x-data-grid'
-import { VariablesOf } from 'gql.tada'
 import { useSearchParams } from 'next/navigation'
 import qs, { ParsedQs } from 'qs'
 import { Dispatch, useReducer } from 'react'
 import { z } from 'zod'
+
+import { VariablesOf } from '@core/shared/gql'
 
 import { GET_ADMIN_VIDEOS_AND_COUNT } from '../../app/(dashboard)/videos/_VideoList/VideoList'
 

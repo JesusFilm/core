@@ -533,15 +533,19 @@ export enum DeviceType {
 
 export type EmailAction = Action & {
   __typename?: 'EmailAction';
+  customizable?: Maybe<Scalars['Boolean']['output']>;
   email: Scalars['String']['output'];
   gtmEventName?: Maybe<Scalars['String']['output']>;
   parentBlock: Block;
   parentBlockId: Scalars['ID']['output'];
+  parentStepId?: Maybe<Scalars['String']['output']>;
 };
 
 export type EmailActionInput = {
+  customizable?: InputMaybe<Scalars['Boolean']['input']>;
   email: Scalars['String']['input'];
   gtmEventName?: InputMaybe<Scalars['String']['input']>;
+  parentStepId?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type Error = BaseError & {
@@ -846,6 +850,8 @@ export type Journey = {
   host?: Maybe<Host>;
   id: Scalars['ID']['output'];
   journeyCollections: Array<JourneyCollection>;
+  journeyCustomizationDescription?: Maybe<Scalars['String']['output']>;
+  journeyCustomizationFields: Array<JourneyCustomizationField>;
   journeyTheme?: Maybe<JourneyTheme>;
   language: Language;
   languageId: Scalars['String']['output'];
@@ -944,6 +950,21 @@ export type JourneyCreateInput = {
   themeMode?: InputMaybe<ThemeMode>;
   themeName?: InputMaybe<ThemeName>;
   title: Scalars['String']['input'];
+};
+
+export type JourneyCustomizationField = {
+  __typename?: 'JourneyCustomizationField';
+  defaultValue?: Maybe<Scalars['String']['output']>;
+  id: Scalars['ID']['output'];
+  journeyId: Scalars['ID']['output'];
+  key: Scalars['String']['output'];
+  value?: Maybe<Scalars['String']['output']>;
+};
+
+export type JourneyCustomizationFieldInput = {
+  id: Scalars['ID']['input'];
+  key: Scalars['String']['input'];
+  value?: InputMaybe<Scalars['String']['input']>;
 };
 
 /**
@@ -1359,18 +1380,28 @@ export type LanguagesFilter = {
 
 export type LinkAction = Action & {
   __typename?: 'LinkAction';
+  customizable?: Maybe<Scalars['Boolean']['output']>;
   gtmEventName?: Maybe<Scalars['String']['output']>;
   parentBlock: Block;
   parentBlockId: Scalars['ID']['output'];
+  parentStepId?: Maybe<Scalars['String']['output']>;
   target?: Maybe<Scalars['String']['output']>;
   url: Scalars['String']['output'];
 };
 
 export type LinkActionInput = {
+  customizable?: InputMaybe<Scalars['Boolean']['input']>;
   gtmEventName?: InputMaybe<Scalars['String']['input']>;
+  parentStepId?: InputMaybe<Scalars['String']['input']>;
   target?: InputMaybe<Scalars['String']['input']>;
   url: Scalars['String']['input'];
 };
+
+export enum MaxResolutionTier {
+  Fhd = 'fhd',
+  Qhd = 'qhd',
+  Uhd = 'uhd'
+}
 
 export type MeInput = {
   redirect?: InputMaybe<Scalars['String']['input']>;
@@ -1484,6 +1515,8 @@ export type Mutation = {
   journeyCollectionDelete: JourneyCollection;
   journeyCollectionUpdate: JourneyCollection;
   journeyCreate: Journey;
+  journeyCustomizationFieldPublisherUpdate: Array<JourneyCustomizationField>;
+  journeyCustomizationFieldUserUpdate: Array<JourneyCustomizationField>;
   journeyDuplicate: Journey;
   /** Sets journey status to featured */
   journeyFeature?: Maybe<Journey>;
@@ -1818,6 +1851,7 @@ export type MutationCreateKeywordArgs = {
 
 export type MutationCreateMuxVideoUploadByFileArgs = {
   downloadable?: InputMaybe<Scalars['Boolean']['input']>;
+  maxResolution?: InputMaybe<MaxResolutionTier>;
   name: Scalars['String']['input'];
   userGenerated?: InputMaybe<Scalars['Boolean']['input']>;
 };
@@ -1825,6 +1859,7 @@ export type MutationCreateMuxVideoUploadByFileArgs = {
 
 export type MutationCreateMuxVideoUploadByUrlArgs = {
   downloadable?: InputMaybe<Scalars['Boolean']['input']>;
+  maxResolution?: InputMaybe<MaxResolutionTier>;
   url: Scalars['String']['input'];
   userGenerated?: InputMaybe<Scalars['Boolean']['input']>;
 };
@@ -1959,6 +1994,18 @@ export type MutationJourneyCreateArgs = {
 };
 
 
+export type MutationJourneyCustomizationFieldPublisherUpdateArgs = {
+  journeyId: Scalars['ID']['input'];
+  string: Scalars['String']['input'];
+};
+
+
+export type MutationJourneyCustomizationFieldUserUpdateArgs = {
+  input: Array<JourneyCustomizationFieldInput>;
+  journeyId: Scalars['ID']['input'];
+};
+
+
 export type MutationJourneyDuplicateArgs = {
   id: Scalars['ID']['input'];
   teamId: Scalars['ID']['input'];
@@ -2084,8 +2131,8 @@ export type MutationRadioQuestionBlockCreateArgs = {
 
 
 export type MutationRadioQuestionBlockUpdateArgs = {
+  gridView?: InputMaybe<Scalars['Boolean']['input']>;
   id: Scalars['ID']['input'];
-  journeyId?: InputMaybe<Scalars['ID']['input']>;
   parentBlockId: Scalars['ID']['input'];
 };
 
@@ -2593,12 +2640,18 @@ export type MutationJourneyLanguageAiDetectInput = {
 };
 
 export type MutationShortLinkCreateInput = {
+  /** bitrate of the video variant download */
+  bitrate?: InputMaybe<Scalars['Int']['input']>;
+  /** brightcove video ID for video redirects */
+  brightcoveId?: InputMaybe<Scalars['String']['input']>;
   /** the fully qualified domain name (FQDN) to redirect the short link service should redirect the user to */
   hostname: Scalars['String']['input'];
   /** the unique identifier for the short link (will generate if not given) */
   id?: InputMaybe<Scalars['String']['input']>;
   /** short link path not including the leading slash (defaults to a random 11 character string that is URL friendly) */
   pathname?: InputMaybe<Scalars['String']['input']>;
+  /** type of video redirect (hls, dl, dh, s) */
+  redirectType?: InputMaybe<RedirectType>;
   /** the service that created this short link */
   service: Service;
   /** the fully qualified domain name (FQDN) to redirect the short link service should redirect the user to */
@@ -2654,7 +2707,13 @@ export type MutationShortLinkDomainUpdateSuccess = {
 };
 
 export type MutationShortLinkUpdateInput = {
+  /** bitrate of the video variant download */
+  bitrate?: InputMaybe<Scalars['Int']['input']>;
+  /** brightcove video ID for video redirects */
+  brightcoveId?: InputMaybe<Scalars['String']['input']>;
   id: Scalars['String']['input'];
+  /** type of video redirect (hls, dl, dh, s) */
+  redirectType?: InputMaybe<RedirectType>;
   /** the fully qualified domain name (FQDN) to redirect the short link service should redirect the user to */
   to: Scalars['String']['input'];
 };
@@ -3556,6 +3615,12 @@ export type RadioOptionBlock = Block & {
   label: Scalars['String']['output'];
   parentBlockId?: Maybe<Scalars['ID']['output']>;
   parentOrder?: Maybe<Scalars['Int']['output']>;
+  /**
+   * pollOptionImageBlockId is present if a child block should be used as a poll option image.
+   *       This child block should not be rendered normally, instead it should be used
+   *       as a poll option image. Blocks are often of type ImageBlock
+   */
+  pollOptionImageBlockId?: Maybe<Scalars['ID']['output']>;
 };
 
 export type RadioOptionBlockCreateInput = {
@@ -3568,10 +3633,12 @@ export type RadioOptionBlockCreateInput = {
 export type RadioOptionBlockUpdateInput = {
   label?: InputMaybe<Scalars['String']['input']>;
   parentBlockId?: InputMaybe<Scalars['ID']['input']>;
+  pollOptionImageBlockId?: InputMaybe<Scalars['ID']['input']>;
 };
 
 export type RadioQuestionBlock = Block & {
   __typename?: 'RadioQuestionBlock';
+  gridView?: Maybe<Scalars['Boolean']['output']>;
   id: Scalars['ID']['output'];
   journeyId: Scalars['ID']['output'];
   parentBlockId?: Maybe<Scalars['ID']['output']>;
@@ -3610,6 +3677,13 @@ export type RadioQuestionSubmissionEventCreateInput = {
   value?: InputMaybe<Scalars['String']['input']>;
 };
 
+export enum RedirectType {
+  Dh = 'dh',
+  Dl = 'dl',
+  Hls = 'hls',
+  S = 's'
+}
+
 export enum Role {
   /**
    * User can create templates and
@@ -3637,10 +3711,16 @@ export enum Service {
 /** A short link that redirects to a full URL */
 export type ShortLink = {
   __typename?: 'ShortLink';
+  /** bitrate of the video variant download */
+  bitrate?: Maybe<Scalars['Int']['output']>;
+  /** brightcove video ID for video redirects */
+  brightcoveId?: Maybe<Scalars['String']['output']>;
   domain: ShortLinkDomain;
   id: Scalars['ID']['output'];
   /** short link path not including the leading slash */
   pathname: Scalars['String']['output'];
+  /** type of video redirect (hls, dl, dh, s) */
+  redirectType?: Maybe<RedirectType>;
   /** the service that created this short link */
   service: Service;
   /** the fully qualified domain name (FQDN) to redirect the short link service should redirect the user to */
@@ -4400,7 +4480,7 @@ export type Video = {
   availableLanguages: Array<Scalars['String']['output']>;
   bibleCitations: Array<BibleCitation>;
   children: Array<Video>;
-  /** the number value of the amount of children on a video */
+  /** The number of published child videos associated with this video */
   childrenCount: Scalars['Int']['output'];
   cloudflareAssets: Array<CloudflareR2>;
   description: Array<VideoDescription>;
@@ -4482,6 +4562,7 @@ export type VideoTitleArgs = {
 
 
 export type VideoVariantArgs = {
+  input?: InputMaybe<VideoVariantFilter>;
   languageId?: InputMaybe<Scalars['ID']['input']>;
 };
 
@@ -4938,6 +5019,13 @@ export type VideoProgressEventCreateInput = {
   value?: InputMaybe<VideoBlockSource>;
 };
 
+export enum VideoRedirectType {
+  Dh = 'dh',
+  Dl = 'dl',
+  Hls = 'hls',
+  S = 's'
+}
+
 export type VideoSnippet = {
   __typename?: 'VideoSnippet';
   id: Scalars['ID']['output'];
@@ -5112,6 +5200,7 @@ export type VideoVariant = {
   __typename?: 'VideoVariant';
   /** master video file */
   asset?: Maybe<CloudflareR2>;
+  brightcoveId?: Maybe<Scalars['String']['output']>;
   dash?: Maybe<Scalars['String']['output']>;
   downloadable: Scalars['Boolean']['output'];
   downloads: Array<VideoVariantDownload>;
@@ -5141,6 +5230,7 @@ export type VideoVariantSubtitleArgs = {
 
 export type VideoVariantCreateInput = {
   assetId?: InputMaybe<Scalars['String']['input']>;
+  brightcoveId?: InputMaybe<Scalars['String']['input']>;
   dash?: InputMaybe<Scalars['String']['input']>;
   downloadable: Scalars['Boolean']['input'];
   duration?: InputMaybe<Scalars['Int']['input']>;
@@ -5217,6 +5307,7 @@ export type VideoVariantFilter = {
 
 export type VideoVariantUpdateInput = {
   assetId?: InputMaybe<Scalars['String']['input']>;
+  brightcoveId?: InputMaybe<Scalars['String']['input']>;
   dash?: InputMaybe<Scalars['String']['input']>;
   downloadable?: InputMaybe<Scalars['Boolean']['input']>;
   duration?: InputMaybe<Scalars['Int']['input']>;

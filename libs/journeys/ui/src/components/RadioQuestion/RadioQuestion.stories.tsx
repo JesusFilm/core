@@ -31,7 +31,11 @@ const typographyProps: ComponentProps<typeof Typography> = {
   color: null,
   variant: TypographyVariant.h3,
   content: 'How can we help you know more about Jesus?',
-  children: []
+  children: [],
+  settings: {
+    __typename: 'TypographyBlockSettings',
+    color: null
+  }
 }
 
 const children: Array<TreeBlock<RadioOptionFields>> = [
@@ -42,6 +46,7 @@ const children: Array<TreeBlock<RadioOptionFields>> = [
     parentBlockId: 'MoreQuestions',
     parentOrder: 0,
     action: null,
+    pollOptionImageBlockId: null,
     children: []
   },
   {
@@ -51,6 +56,7 @@ const children: Array<TreeBlock<RadioOptionFields>> = [
     parentBlockId: 'MoreQuestions',
     parentOrder: 1,
     action: null,
+    pollOptionImageBlockId: null,
     children: []
   },
   {
@@ -60,6 +66,7 @@ const children: Array<TreeBlock<RadioOptionFields>> = [
     parentBlockId: 'MoreQuestions',
     parentOrder: 2,
     action: null,
+    pollOptionImageBlockId: null,
     children: []
   },
   {
@@ -69,6 +76,7 @@ const children: Array<TreeBlock<RadioOptionFields>> = [
     parentBlockId: 'MoreQuestions',
     parentOrder: 3,
     action: null,
+    pollOptionImageBlockId: null,
     children: []
   }
 ]

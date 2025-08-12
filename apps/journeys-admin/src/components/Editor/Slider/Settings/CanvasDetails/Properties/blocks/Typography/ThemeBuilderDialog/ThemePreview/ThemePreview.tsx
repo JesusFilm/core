@@ -112,7 +112,8 @@ export function ThemePreview({
                       color: TypographyColor.primary,
                       variant: TypographyVariant.h1,
                       content: t('Display Text'),
-                      children: []
+                      children: [],
+                      settings: null
                     }}
                   />
                   <Typography
@@ -125,7 +126,8 @@ export function ThemePreview({
                       color: TypographyColor.primary,
                       variant: TypographyVariant.h2,
                       content: t('This is a Heading'),
-                      children: []
+                      children: [],
+                      settings: null
                     }}
                   />
                 </Stack>
@@ -142,7 +144,8 @@ export function ThemePreview({
                       content: t(
                         'This is a subheading that supports additional content'
                       ),
-                      children: []
+                      children: [],
+                      settings: null
                     }}
                   />
                   <Typography
@@ -157,7 +160,8 @@ export function ThemePreview({
                       content: t(
                         'This is body text, used for general content like paragraphs and instructions.'
                       ),
-                      children: []
+                      children: [],
+                      settings: null
                     }}
                   />
                 </Stack>
@@ -187,6 +191,7 @@ export function ThemePreview({
                     id: 'RadioQuestion1',
                     parentBlockId: 'parent.id',
                     parentOrder: 0,
+                    gridView: false,
                     children: [
                       {
                         __typename: 'RadioOptionBlock',
@@ -195,6 +200,7 @@ export function ThemePreview({
                         parentBlockId: 'RadioQuestion1',
                         parentOrder: 0,
                         action: null,
+                        pollOptionImageBlockId: null,
                         children: []
                       },
                       {
@@ -204,6 +210,7 @@ export function ThemePreview({
                         parentBlockId: 'RadioQuestion1',
                         parentOrder: 1,
                         action: null,
+                        pollOptionImageBlockId: null,
                         children: []
                       }
                     ]

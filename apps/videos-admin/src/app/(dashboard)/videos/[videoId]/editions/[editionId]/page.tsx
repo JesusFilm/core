@@ -7,11 +7,11 @@ import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
 import { Form, Formik } from 'formik'
-import { graphql } from 'gql.tada'
 import { useRouter } from 'next/navigation'
 import { useSnackbar } from 'notistack'
 import { object, string } from 'yup'
 
+import { graphql } from '@core/shared/gql'
 import { Dialog } from '@core/shared/ui/Dialog'
 import Plus2 from '@core/shared/ui/icons/Plus2'
 
@@ -237,14 +237,14 @@ export default function EditEditionPage({
                       actions={{
                         edit: () =>
                           router.push(
-                            `/videos/${videoId}/editions/${editionId}/subtitles/${subtitle.id}`,
+                            `/videos/${videoId}/editions/${editionId}/subtitle/${subtitle.id}`,
                             {
                               scroll: false
                             }
                           ),
                         delete: () =>
                           router.push(
-                            `/videos/${videoId}/editions/${editionId}/subtitles/${subtitle.id}/delete`,
+                            `/videos/${videoId}/editions/${editionId}/subtitle/${subtitle.id}/delete`,
                             {
                               scroll: false
                             }

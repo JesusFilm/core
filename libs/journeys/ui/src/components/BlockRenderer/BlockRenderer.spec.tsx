@@ -138,7 +138,11 @@ describe('BlockRenderer', () => {
           color: null,
           content: 'How did we get here?',
           variant: null,
-          children: []
+          children: [],
+          settings: {
+            __typename: 'TypographyBlockSettings',
+            color: null
+          }
         }
       ]
     }
@@ -174,7 +178,11 @@ describe('BlockRenderer', () => {
           color: null,
           content: 'How did we get here?',
           variant: null,
-          children: []
+          children: [],
+          settings: {
+            __typename: 'TypographyBlockSettings',
+            color: null
+          }
         }
       ]
     }
@@ -275,6 +283,7 @@ describe('BlockRenderer', () => {
       parentOrder: 0,
       label: 'radio option',
       action: null,
+      pollOptionImageBlockId: null,
       children: []
     }
     const { getByText } = render(
@@ -285,7 +294,7 @@ describe('BlockRenderer', () => {
     await waitFor(() => expect(getByText('radio option')).toBeInTheDocument())
   })
 
-  it('should render RadioOption with general wrapper and specific wrapper', () => {
+  it('should render RadioOption with general wrapper and specific wrapper', async () => {
     const block: TreeBlock = {
       __typename: 'RadioOptionBlock',
       id: 'main',
@@ -293,6 +302,7 @@ describe('BlockRenderer', () => {
       parentOrder: 0,
       label: 'radio option',
       action: null,
+      pollOptionImageBlockId: null,
       children: []
     }
     const { getByTestId, getByText } = render(
@@ -313,6 +323,42 @@ describe('BlockRenderer', () => {
     expect(
       getByTestId('general-wrapper').children[0].getAttribute('data-testid')
     ).toBe('radio-option-wrapper')
+    await waitFor(() => expect(getByText('radio option')).toBeInTheDocument())
+    expect(getByTestId('radio-option-wrapper')).toContainElement(
+      getByText('radio option')
+    )
+  })
+
+  it('should render RadioOption with gridView', async () => {
+    const block: TreeBlock = {
+      __typename: 'RadioOptionBlock',
+      id: 'main',
+      parentBlockId: null,
+      parentOrder: 0,
+      label: 'radio option',
+      action: null,
+      pollOptionImageBlockId: null,
+      children: []
+    }
+    const { getByTestId, getByText } = render(
+      <MockedProvider mocks={[]} addTypename={false}>
+        <BlockRenderer
+          block={{ ...block, gridView: true }}
+          wrappers={{
+            Wrapper: ({ children }) => (
+              <div data-testid="general-wrapper">{children}</div>
+            ),
+            RadioOptionWrapper: ({ children }) => (
+              <div data-testid="radio-option-wrapper">{children}</div>
+            )
+          }}
+        />
+      </MockedProvider>
+    )
+    expect(
+      getByTestId('general-wrapper').children[0].getAttribute('data-testid')
+    ).toBe('radio-option-wrapper')
+    await waitFor(() => expect(getByText('radio option')).toBeInTheDocument())
     expect(getByTestId('radio-option-wrapper')).toContainElement(
       getByText('radio option')
     )
@@ -326,6 +372,7 @@ describe('BlockRenderer', () => {
       parentOrder: 0,
       label: 'radio option 1',
       action: null,
+      pollOptionImageBlockId: null,
       children: []
     }
 
@@ -334,6 +381,7 @@ describe('BlockRenderer', () => {
       id: 'main',
       parentBlockId: null,
       parentOrder: 0,
+      gridView: false,
       children: [option, { ...option, label: 'radio option 2' }]
     }
     const { getByText } = render(
@@ -351,6 +399,7 @@ describe('BlockRenderer', () => {
       id: 'main',
       parentBlockId: null,
       parentOrder: 0,
+      gridView: false,
       children: []
     }
     const { getByTestId, getByRole } = render(
@@ -549,7 +598,11 @@ describe('BlockRenderer', () => {
       color: null,
       content: 'How did we get here?',
       variant: null,
-      children: []
+      children: [],
+      settings: {
+        __typename: 'TypographyBlockSettings',
+        color: null
+      }
     }
     const { getByText } = render(<BlockRenderer block={block} />)
     expect(getByText('How did we get here?')).toBeInTheDocument()
@@ -565,7 +618,11 @@ describe('BlockRenderer', () => {
       color: null,
       content: 'How did we get here?',
       variant: null,
-      children: []
+      children: [],
+      settings: {
+        __typename: 'TypographyBlockSettings',
+        color: null
+      }
     }
     const { getByTestId } = render(
       <BlockRenderer

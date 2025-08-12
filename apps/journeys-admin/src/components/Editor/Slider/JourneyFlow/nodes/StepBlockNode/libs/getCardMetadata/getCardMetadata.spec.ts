@@ -24,7 +24,11 @@ const typography: TreeBlock<TypographyBlock> = {
   color: null,
   content: 'title content',
   variant: TypographyVariant.h1,
-  children: []
+  children: [],
+  settings: {
+    __typename: 'TypographyBlockSettings',
+    color: null
+  }
 }
 
 const button1: TreeBlock<ButtonBlock> = {
@@ -123,6 +127,7 @@ const radioQuestionBlock: TreeBlock<RadioQuestionBlock> = {
   id: 'RadioQuestion1',
   parentBlockId: 'parent.id',
   parentOrder: 3,
+  gridView: false,
   children: [
     {
       __typename: 'RadioOptionBlock',
@@ -131,6 +136,7 @@ const radioQuestionBlock: TreeBlock<RadioQuestionBlock> = {
       parentBlockId: 'RadioQuestion1',
       parentOrder: 0,
       action: null,
+      pollOptionImageBlockId: null,
       children: []
     },
     {
@@ -140,6 +146,7 @@ const radioQuestionBlock: TreeBlock<RadioQuestionBlock> = {
       parentBlockId: 'RadioQuestion1',
       parentOrder: 1,
       action: null,
+      pollOptionImageBlockId: null,
       children: []
     }
   ]

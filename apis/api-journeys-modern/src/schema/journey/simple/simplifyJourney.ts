@@ -49,7 +49,9 @@ export function simplifyJourney(
 
     // --- NON-VIDEO CARDS (existing logic) ---
     const card: JourneySimpleCard = {
-      id: `card-${index + 1}`
+      id: `card-${index + 1}`,
+      x: stepBlock.x ?? 0,
+      y: stepBlock.y ?? 0
     }
 
     const headingBlock = childBlocks.find(

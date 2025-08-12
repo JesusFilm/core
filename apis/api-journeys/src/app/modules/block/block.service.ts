@@ -142,13 +142,15 @@ export class BlockService {
     )
     await this.saveAll(
       blockAndChildrenData.map((block) => ({
+        // if updating the omit, also do the same in journey.resolver.ts journeyDuplicate uses this saveAll function.
         ...omit(block, [
           'parentBlockId',
           'posterBlockId',
           'coverBlockId',
           'nextBlockId',
           'action',
-          'slug'
+          'slug',
+          'pollOptionImageBlockId'
         ]),
         settings: block.settings ?? {},
         journey: {
@@ -158,11 +160,13 @@ export class BlockService {
     )
     const duplicateBlockAndChildren = await Promise.all(
       blockAndChildrenData.map(async (newBlock) => {
+        // if updating references, also do the same in journey.resolver.ts journeyDuplicate uses this saveAll function.
         if (
           newBlock.parentBlockId != null ||
           newBlock.posterBlockId != null ||
           newBlock.coverBlockId != null ||
           newBlock.nextBlockId != null ||
+          newBlock.pollOptionImageBlockId != null ||
           newBlock.action != null
         ) {
           const isActionEmpty = Object.keys(newBlock.action ?? {}).length === 0
@@ -171,6 +175,8 @@ export class BlockService {
             posterBlockId: newBlock.posterBlockId ?? undefined,
             coverBlockId: newBlock.coverBlockId ?? undefined,
             nextBlockId: newBlock.nextBlockId ?? undefined,
+            pollOptionImageBlockId:
+              newBlock.pollOptionImageBlockId ?? undefined,
             action:
               !isActionEmpty && newBlock.action != null
                 ? { create: newBlock.action }

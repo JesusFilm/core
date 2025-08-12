@@ -18,7 +18,7 @@ input SignUpSubmissionEventCreateInput {
   email: String!
 }
 
-type SignUpSubmissionEvent implements Event {
+type SignUpSubmissionEvent implements Event @shareable {
   id: ID!
   """
   ID of the journey that the block belongs to

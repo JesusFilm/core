@@ -159,6 +159,12 @@ export interface CardPollRestore_imageRestore_RadioOptionBlock {
   parentOrder: number | null;
   label: string;
   action: CardPollRestore_imageRestore_RadioOptionBlock_action | null;
+  /**
+   * pollOptionImageBlockId is present if a child block should be used as a poll option image.
+   *       This child block should not be rendered normally, instead it should be used
+   *       as a poll option image. Blocks are often of type ImageBlock
+   */
+  pollOptionImageBlockId: string | null;
 }
 
 export interface CardPollRestore_imageRestore_RadioQuestionBlock {
@@ -166,6 +172,7 @@ export interface CardPollRestore_imageRestore_RadioQuestionBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
+  gridView: boolean | null;
 }
 
 export interface CardPollRestore_imageRestore_SignUpBlock_action_NavigateToBlockAction {
@@ -249,6 +256,14 @@ export interface CardPollRestore_imageRestore_TextResponseBlock {
   integrationId: string | null;
 }
 
+export interface CardPollRestore_imageRestore_TypographyBlock_settings {
+  __typename: "TypographyBlockSettings";
+  /**
+   * Color of the typography
+   */
+  color: string | null;
+}
+
 export interface CardPollRestore_imageRestore_TypographyBlock {
   __typename: "TypographyBlock";
   id: string;
@@ -258,6 +273,7 @@ export interface CardPollRestore_imageRestore_TypographyBlock {
   color: TypographyColor | null;
   content: string;
   variant: TypographyVariant | null;
+  settings: CardPollRestore_imageRestore_TypographyBlock_settings | null;
 }
 
 export interface CardPollRestore_imageRestore_VideoBlock_mediaVideo_Video_title {
@@ -597,6 +613,12 @@ export interface CardPollRestore_subtitleRestore_RadioOptionBlock {
   parentOrder: number | null;
   label: string;
   action: CardPollRestore_subtitleRestore_RadioOptionBlock_action | null;
+  /**
+   * pollOptionImageBlockId is present if a child block should be used as a poll option image.
+   *       This child block should not be rendered normally, instead it should be used
+   *       as a poll option image. Blocks are often of type ImageBlock
+   */
+  pollOptionImageBlockId: string | null;
 }
 
 export interface CardPollRestore_subtitleRestore_RadioQuestionBlock {
@@ -604,6 +626,7 @@ export interface CardPollRestore_subtitleRestore_RadioQuestionBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
+  gridView: boolean | null;
 }
 
 export interface CardPollRestore_subtitleRestore_SignUpBlock_action_NavigateToBlockAction {
@@ -687,6 +710,14 @@ export interface CardPollRestore_subtitleRestore_TextResponseBlock {
   integrationId: string | null;
 }
 
+export interface CardPollRestore_subtitleRestore_TypographyBlock_settings {
+  __typename: "TypographyBlockSettings";
+  /**
+   * Color of the typography
+   */
+  color: string | null;
+}
+
 export interface CardPollRestore_subtitleRestore_TypographyBlock {
   __typename: "TypographyBlock";
   id: string;
@@ -696,6 +727,7 @@ export interface CardPollRestore_subtitleRestore_TypographyBlock {
   color: TypographyColor | null;
   content: string;
   variant: TypographyVariant | null;
+  settings: CardPollRestore_subtitleRestore_TypographyBlock_settings | null;
 }
 
 export interface CardPollRestore_subtitleRestore_VideoBlock_mediaVideo_Video_title {
@@ -1035,6 +1067,12 @@ export interface CardPollRestore_titleRestore_RadioOptionBlock {
   parentOrder: number | null;
   label: string;
   action: CardPollRestore_titleRestore_RadioOptionBlock_action | null;
+  /**
+   * pollOptionImageBlockId is present if a child block should be used as a poll option image.
+   *       This child block should not be rendered normally, instead it should be used
+   *       as a poll option image. Blocks are often of type ImageBlock
+   */
+  pollOptionImageBlockId: string | null;
 }
 
 export interface CardPollRestore_titleRestore_RadioQuestionBlock {
@@ -1042,6 +1080,7 @@ export interface CardPollRestore_titleRestore_RadioQuestionBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
+  gridView: boolean | null;
 }
 
 export interface CardPollRestore_titleRestore_SignUpBlock_action_NavigateToBlockAction {
@@ -1125,6 +1164,14 @@ export interface CardPollRestore_titleRestore_TextResponseBlock {
   integrationId: string | null;
 }
 
+export interface CardPollRestore_titleRestore_TypographyBlock_settings {
+  __typename: "TypographyBlockSettings";
+  /**
+   * Color of the typography
+   */
+  color: string | null;
+}
+
 export interface CardPollRestore_titleRestore_TypographyBlock {
   __typename: "TypographyBlock";
   id: string;
@@ -1134,6 +1181,7 @@ export interface CardPollRestore_titleRestore_TypographyBlock {
   color: TypographyColor | null;
   content: string;
   variant: TypographyVariant | null;
+  settings: CardPollRestore_titleRestore_TypographyBlock_settings | null;
 }
 
 export interface CardPollRestore_titleRestore_VideoBlock_mediaVideo_Video_title {
@@ -1473,6 +1521,12 @@ export interface CardPollRestore_radioQuestionRestore_RadioOptionBlock {
   parentOrder: number | null;
   label: string;
   action: CardPollRestore_radioQuestionRestore_RadioOptionBlock_action | null;
+  /**
+   * pollOptionImageBlockId is present if a child block should be used as a poll option image.
+   *       This child block should not be rendered normally, instead it should be used
+   *       as a poll option image. Blocks are often of type ImageBlock
+   */
+  pollOptionImageBlockId: string | null;
 }
 
 export interface CardPollRestore_radioQuestionRestore_RadioQuestionBlock {
@@ -1480,6 +1534,7 @@ export interface CardPollRestore_radioQuestionRestore_RadioQuestionBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
+  gridView: boolean | null;
 }
 
 export interface CardPollRestore_radioQuestionRestore_SignUpBlock_action_NavigateToBlockAction {
@@ -1563,6 +1618,14 @@ export interface CardPollRestore_radioQuestionRestore_TextResponseBlock {
   integrationId: string | null;
 }
 
+export interface CardPollRestore_radioQuestionRestore_TypographyBlock_settings {
+  __typename: "TypographyBlockSettings";
+  /**
+   * Color of the typography
+   */
+  color: string | null;
+}
+
 export interface CardPollRestore_radioQuestionRestore_TypographyBlock {
   __typename: "TypographyBlock";
   id: string;
@@ -1572,6 +1635,7 @@ export interface CardPollRestore_radioQuestionRestore_TypographyBlock {
   color: TypographyColor | null;
   content: string;
   variant: TypographyVariant | null;
+  settings: CardPollRestore_radioQuestionRestore_TypographyBlock_settings | null;
 }
 
 export interface CardPollRestore_radioQuestionRestore_VideoBlock_mediaVideo_Video_title {
@@ -1911,6 +1975,12 @@ export interface CardPollRestore_radioOption1Restore_RadioOptionBlock {
   parentOrder: number | null;
   label: string;
   action: CardPollRestore_radioOption1Restore_RadioOptionBlock_action | null;
+  /**
+   * pollOptionImageBlockId is present if a child block should be used as a poll option image.
+   *       This child block should not be rendered normally, instead it should be used
+   *       as a poll option image. Blocks are often of type ImageBlock
+   */
+  pollOptionImageBlockId: string | null;
 }
 
 export interface CardPollRestore_radioOption1Restore_RadioQuestionBlock {
@@ -1918,6 +1988,7 @@ export interface CardPollRestore_radioOption1Restore_RadioQuestionBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
+  gridView: boolean | null;
 }
 
 export interface CardPollRestore_radioOption1Restore_SignUpBlock_action_NavigateToBlockAction {
@@ -2001,6 +2072,14 @@ export interface CardPollRestore_radioOption1Restore_TextResponseBlock {
   integrationId: string | null;
 }
 
+export interface CardPollRestore_radioOption1Restore_TypographyBlock_settings {
+  __typename: "TypographyBlockSettings";
+  /**
+   * Color of the typography
+   */
+  color: string | null;
+}
+
 export interface CardPollRestore_radioOption1Restore_TypographyBlock {
   __typename: "TypographyBlock";
   id: string;
@@ -2010,6 +2089,7 @@ export interface CardPollRestore_radioOption1Restore_TypographyBlock {
   color: TypographyColor | null;
   content: string;
   variant: TypographyVariant | null;
+  settings: CardPollRestore_radioOption1Restore_TypographyBlock_settings | null;
 }
 
 export interface CardPollRestore_radioOption1Restore_VideoBlock_mediaVideo_Video_title {
@@ -2349,6 +2429,12 @@ export interface CardPollRestore_radioOption2Restore_RadioOptionBlock {
   parentOrder: number | null;
   label: string;
   action: CardPollRestore_radioOption2Restore_RadioOptionBlock_action | null;
+  /**
+   * pollOptionImageBlockId is present if a child block should be used as a poll option image.
+   *       This child block should not be rendered normally, instead it should be used
+   *       as a poll option image. Blocks are often of type ImageBlock
+   */
+  pollOptionImageBlockId: string | null;
 }
 
 export interface CardPollRestore_radioOption2Restore_RadioQuestionBlock {
@@ -2356,6 +2442,7 @@ export interface CardPollRestore_radioOption2Restore_RadioQuestionBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
+  gridView: boolean | null;
 }
 
 export interface CardPollRestore_radioOption2Restore_SignUpBlock_action_NavigateToBlockAction {
@@ -2439,6 +2526,14 @@ export interface CardPollRestore_radioOption2Restore_TextResponseBlock {
   integrationId: string | null;
 }
 
+export interface CardPollRestore_radioOption2Restore_TypographyBlock_settings {
+  __typename: "TypographyBlockSettings";
+  /**
+   * Color of the typography
+   */
+  color: string | null;
+}
+
 export interface CardPollRestore_radioOption2Restore_TypographyBlock {
   __typename: "TypographyBlock";
   id: string;
@@ -2448,6 +2543,7 @@ export interface CardPollRestore_radioOption2Restore_TypographyBlock {
   color: TypographyColor | null;
   content: string;
   variant: TypographyVariant | null;
+  settings: CardPollRestore_radioOption2Restore_TypographyBlock_settings | null;
 }
 
 export interface CardPollRestore_radioOption2Restore_VideoBlock_mediaVideo_Video_title {
@@ -2787,6 +2883,12 @@ export interface CardPollRestore_radioOption3Restore_RadioOptionBlock {
   parentOrder: number | null;
   label: string;
   action: CardPollRestore_radioOption3Restore_RadioOptionBlock_action | null;
+  /**
+   * pollOptionImageBlockId is present if a child block should be used as a poll option image.
+   *       This child block should not be rendered normally, instead it should be used
+   *       as a poll option image. Blocks are often of type ImageBlock
+   */
+  pollOptionImageBlockId: string | null;
 }
 
 export interface CardPollRestore_radioOption3Restore_RadioQuestionBlock {
@@ -2794,6 +2896,7 @@ export interface CardPollRestore_radioOption3Restore_RadioQuestionBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
+  gridView: boolean | null;
 }
 
 export interface CardPollRestore_radioOption3Restore_SignUpBlock_action_NavigateToBlockAction {
@@ -2877,6 +2980,14 @@ export interface CardPollRestore_radioOption3Restore_TextResponseBlock {
   integrationId: string | null;
 }
 
+export interface CardPollRestore_radioOption3Restore_TypographyBlock_settings {
+  __typename: "TypographyBlockSettings";
+  /**
+   * Color of the typography
+   */
+  color: string | null;
+}
+
 export interface CardPollRestore_radioOption3Restore_TypographyBlock {
   __typename: "TypographyBlock";
   id: string;
@@ -2886,6 +2997,7 @@ export interface CardPollRestore_radioOption3Restore_TypographyBlock {
   color: TypographyColor | null;
   content: string;
   variant: TypographyVariant | null;
+  settings: CardPollRestore_radioOption3Restore_TypographyBlock_settings | null;
 }
 
 export interface CardPollRestore_radioOption3Restore_VideoBlock_mediaVideo_Video_title {
@@ -3225,6 +3337,12 @@ export interface CardPollRestore_radioOption4Restore_RadioOptionBlock {
   parentOrder: number | null;
   label: string;
   action: CardPollRestore_radioOption4Restore_RadioOptionBlock_action | null;
+  /**
+   * pollOptionImageBlockId is present if a child block should be used as a poll option image.
+   *       This child block should not be rendered normally, instead it should be used
+   *       as a poll option image. Blocks are often of type ImageBlock
+   */
+  pollOptionImageBlockId: string | null;
 }
 
 export interface CardPollRestore_radioOption4Restore_RadioQuestionBlock {
@@ -3232,6 +3350,7 @@ export interface CardPollRestore_radioOption4Restore_RadioQuestionBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
+  gridView: boolean | null;
 }
 
 export interface CardPollRestore_radioOption4Restore_SignUpBlock_action_NavigateToBlockAction {
@@ -3315,6 +3434,14 @@ export interface CardPollRestore_radioOption4Restore_TextResponseBlock {
   integrationId: string | null;
 }
 
+export interface CardPollRestore_radioOption4Restore_TypographyBlock_settings {
+  __typename: "TypographyBlockSettings";
+  /**
+   * Color of the typography
+   */
+  color: string | null;
+}
+
 export interface CardPollRestore_radioOption4Restore_TypographyBlock {
   __typename: "TypographyBlock";
   id: string;
@@ -3324,6 +3451,7 @@ export interface CardPollRestore_radioOption4Restore_TypographyBlock {
   color: TypographyColor | null;
   content: string;
   variant: TypographyVariant | null;
+  settings: CardPollRestore_radioOption4Restore_TypographyBlock_settings | null;
 }
 
 export interface CardPollRestore_radioOption4Restore_VideoBlock_mediaVideo_Video_title {
@@ -3663,6 +3791,12 @@ export interface CardPollRestore_bodyRestore_RadioOptionBlock {
   parentOrder: number | null;
   label: string;
   action: CardPollRestore_bodyRestore_RadioOptionBlock_action | null;
+  /**
+   * pollOptionImageBlockId is present if a child block should be used as a poll option image.
+   *       This child block should not be rendered normally, instead it should be used
+   *       as a poll option image. Blocks are often of type ImageBlock
+   */
+  pollOptionImageBlockId: string | null;
 }
 
 export interface CardPollRestore_bodyRestore_RadioQuestionBlock {
@@ -3670,6 +3804,7 @@ export interface CardPollRestore_bodyRestore_RadioQuestionBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
+  gridView: boolean | null;
 }
 
 export interface CardPollRestore_bodyRestore_SignUpBlock_action_NavigateToBlockAction {
@@ -3753,6 +3888,14 @@ export interface CardPollRestore_bodyRestore_TextResponseBlock {
   integrationId: string | null;
 }
 
+export interface CardPollRestore_bodyRestore_TypographyBlock_settings {
+  __typename: "TypographyBlockSettings";
+  /**
+   * Color of the typography
+   */
+  color: string | null;
+}
+
 export interface CardPollRestore_bodyRestore_TypographyBlock {
   __typename: "TypographyBlock";
   id: string;
@@ -3762,6 +3905,7 @@ export interface CardPollRestore_bodyRestore_TypographyBlock {
   color: TypographyColor | null;
   content: string;
   variant: TypographyVariant | null;
+  settings: CardPollRestore_bodyRestore_TypographyBlock_settings | null;
 }
 
 export interface CardPollRestore_bodyRestore_VideoBlock_mediaVideo_Video_title {

@@ -1,4 +1,4 @@
-type JourneysEmailPreference {
+type JourneysEmailPreference @shareable {
   email: String!
   unsubscribeAll: Boolean!
   accountNotifications: Boolean!

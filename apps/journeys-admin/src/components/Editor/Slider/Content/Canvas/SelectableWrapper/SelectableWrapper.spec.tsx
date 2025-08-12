@@ -47,7 +47,11 @@ describe('SelectableWrapper', () => {
     content: 'typography content',
     color: null,
     align: null,
-    children: []
+    children: [],
+    settings: {
+      __typename: 'TypographyBlockSettings',
+      color: null
+    }
   }
 
   const buttonBlock: TreeBlock<ButtonFields> = {
@@ -95,6 +99,7 @@ describe('SelectableWrapper', () => {
     parentBlockId: 'RadioQuestion1',
     parentOrder: 0,
     action: null,
+    pollOptionImageBlockId: null,
     children: []
   }
 
@@ -103,6 +108,7 @@ describe('SelectableWrapper', () => {
     id: 'RadioQuestion1',
     parentBlockId: 'parent.id',
     parentOrder: 0,
+    gridView: false,
     children: [
       radioOption1,
       {
@@ -112,6 +118,7 @@ describe('SelectableWrapper', () => {
         parentBlockId: 'RadioQuestion1',
         parentOrder: 1,
         action: null,
+        pollOptionImageBlockId: null,
         children: []
       }
     ]
@@ -198,7 +205,7 @@ describe('SelectableWrapper', () => {
       })
     )
     fireEvent.click(
-      getByTestId(`JourneysRadioQuestion-${radioQuestionBlock.id}`)
+      getByTestId(`JourneysRadioQuestionList-${radioQuestionBlock.id}`)
     )
     expect(
       getByTestId(`SelectableWrapper-${radioQuestionBlock.id}`)

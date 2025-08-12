@@ -2,6 +2,7 @@ import { Job, Queue, Worker } from 'bullmq'
 import { Logger } from 'pino'
 
 import { connection } from './lib/connection'
+import { runIfLeader } from './lib/leader'
 import { logger } from './lib/logger'
 
 const ONE_HOUR = 3600
@@ -51,19 +52,15 @@ function run({
 }
 
 async function main(): Promise<void> {
-  run(
-    await import(
-      /* webpackChunkName: "algolia" */
-      './algolia'
-    )
-  )
   if (process.env.NODE_ENV === 'production') {
-    run(
-      await import(
-        /* webpackChunkName: "data-export" */
-        './dataExport'
+    await runIfLeader(async () => {
+      run(
+        await import(
+          /* webpackChunkName: "data-export" */
+          './dataExport'
+        )
       )
-    )
+    })
   }
 }
 

@@ -279,11 +279,15 @@ export class LinkActionInput {
     gtmEventName?: Nullable<string>;
     url: string;
     target?: Nullable<string>;
+    customizable?: Nullable<boolean>;
+    parentStepId?: Nullable<string>;
 }
 
 export class EmailActionInput {
     gtmEventName?: Nullable<string>;
     email: string;
+    customizable?: Nullable<boolean>;
+    parentStepId?: Nullable<string>;
 }
 
 export class BlockUpdateActionInput {
@@ -406,6 +410,7 @@ export class RadioOptionBlockCreateInput {
 export class RadioOptionBlockUpdateInput {
     parentBlockId?: Nullable<string>;
     label?: Nullable<string>;
+    pollOptionImageBlockId?: Nullable<string>;
 }
 
 export class RadioQuestionBlockCreateInput {
@@ -796,6 +801,12 @@ export class JourneyCollectionUpdateInput {
     journeyIds?: Nullable<string[]>;
 }
 
+export class JourneyCustomizationFieldInput {
+    id: string;
+    key: string;
+    value?: Nullable<string>;
+}
+
 export class JourneyEventsFilter {
     typenames?: Nullable<string[]>;
     periodRangeStart?: Nullable<DateTime>;
@@ -962,6 +973,8 @@ export class LinkAction implements Action {
     gtmEventName?: Nullable<string>;
     url: string;
     target?: Nullable<string>;
+    customizable?: Nullable<boolean>;
+    parentStepId?: Nullable<string>;
 }
 
 export class EmailAction implements Action {
@@ -970,6 +983,8 @@ export class EmailAction implements Action {
     parentBlock: Block;
     gtmEventName?: Nullable<string>;
     email: string;
+    customizable?: Nullable<boolean>;
+    parentStepId?: Nullable<string>;
 }
 
 export abstract class IMutation {
@@ -1015,7 +1030,7 @@ export abstract class IMutation {
 
     abstract radioQuestionBlockCreate(input: RadioQuestionBlockCreateInput): RadioQuestionBlock | Promise<RadioQuestionBlock>;
 
-    abstract radioQuestionBlockUpdate(id: string, parentBlockId: string, journeyId?: Nullable<string>): RadioQuestionBlock | Promise<RadioQuestionBlock>;
+    abstract radioQuestionBlockUpdate(id: string, parentBlockId: string, gridView?: Nullable<boolean>): RadioQuestionBlock | Promise<RadioQuestionBlock>;
 
     abstract signUpBlockCreate(input: SignUpBlockCreateInput): SignUpBlock | Promise<SignUpBlock>;
 
@@ -1127,6 +1142,10 @@ export abstract class IMutation {
 
     abstract journeyCollectionDelete(id: string): JourneyCollection | Promise<JourneyCollection>;
 
+    abstract journeyCustomizationFieldPublisherUpdate(journeyId: string, string: string): JourneyCustomizationField[] | Promise<JourneyCustomizationField[]>;
+
+    abstract journeyCustomizationFieldUserUpdate(journeyId: string, input: JourneyCustomizationFieldInput[]): JourneyCustomizationField[] | Promise<JourneyCustomizationField[]>;
+
     abstract journeyNotificationUpdate(input: JourneyNotificationUpdateInput): JourneyNotification | Promise<JourneyNotification>;
 
     abstract journeyProfileCreate(): JourneyProfile | Promise<JourneyProfile>;
@@ -1233,6 +1252,8 @@ export class Journey {
     socialNodeX?: Nullable<number>;
     socialNodeY?: Nullable<number>;
     fromTemplateId?: Nullable<string>;
+    journeyCustomizationDescription?: Nullable<string>;
+    journeyCustomizationFields: JourneyCustomizationField[];
     journeyTheme?: Nullable<JourneyTheme>;
     userJourneys?: Nullable<UserJourney[]>;
 }
@@ -1406,6 +1427,7 @@ export class RadioOptionBlock implements Block {
     parentOrder?: Nullable<number>;
     label: string;
     action?: Nullable<Action>;
+    pollOptionImageBlockId?: Nullable<string>;
 }
 
 export class RadioQuestionBlock implements Block {
@@ -1414,6 +1436,7 @@ export class RadioQuestionBlock implements Block {
     journeyId: string;
     parentBlockId?: Nullable<string>;
     parentOrder?: Nullable<number>;
+    gridView?: Nullable<boolean>;
 }
 
 export class SignUpBlock implements Block {
@@ -1775,6 +1798,15 @@ export class JourneyCollection {
     title?: Nullable<string>;
     customDomains?: Nullable<CustomDomain[]>;
     journeys?: Nullable<Journey[]>;
+}
+
+export class JourneyCustomizationField {
+    __typename?: 'JourneyCustomizationField';
+    id: string;
+    journeyId: string;
+    key: string;
+    value?: Nullable<string>;
+    defaultValue?: Nullable<string>;
 }
 
 export class JourneyEvent implements Event {

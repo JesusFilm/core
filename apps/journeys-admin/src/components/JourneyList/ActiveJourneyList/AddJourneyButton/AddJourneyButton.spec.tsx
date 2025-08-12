@@ -89,15 +89,27 @@ describe('AddJourneyButton', () => {
     },
     headlineTypographyBlockCreate: {
       id: 'headlineTypographyId',
-      __typename: 'TypographyBlock'
+      __typename: 'TypographyBlock',
+      settings: {
+        __typename: 'TypographyBlockSettings',
+        color: null
+      }
     },
     bodyTypographyBlockCreate: {
       id: 'bodyTypographyId',
-      __typename: 'TypographyBlock'
+      __typename: 'TypographyBlock',
+      settings: {
+        __typename: 'TypographyBlockSettings',
+        color: null
+      }
     },
     captionTypographyBlockCreate: {
       id: 'captionTypographyId',
-      __typename: 'TypographyBlock'
+      __typename: 'TypographyBlock',
+      settings: {
+        __typename: 'TypographyBlockSettings',
+        color: null
+      }
     }
   }
 
