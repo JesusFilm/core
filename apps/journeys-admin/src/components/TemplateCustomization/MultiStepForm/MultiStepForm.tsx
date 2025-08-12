@@ -72,7 +72,7 @@ export function MultiStepForm(): ReactElement {
           totalSteps={screens.length}
         />
 
-        <Box sx={{ alignSelf: 'center' }}>
+        <Box sx={{ alignSelf: 'center', width: '100%' }}>
           {renderScreen(activeScreen, handleNext)}
         </Box>
 
