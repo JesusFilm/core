@@ -5,10 +5,10 @@ import Box from '@mui/material/Box'
 import NextImage from 'next/image'
 import { useTranslation } from 'react-i18next'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
-import Button from '@mui/material/Button'
 import Drawer from '@mui/material/Drawer'
 import IconButton from '@mui/material/IconButton'
 import X2Icon from '@core/shared/ui/icons/X2'
+import GridEmptyIcon from '@core/shared/ui/icons/GridEmpty'
 
 interface ShareDrawerProps {
   open: boolean
@@ -40,17 +40,30 @@ export function ShareDrawer({ open, onClose }: ShareDrawerProps): ReactElement {
             mt: 6
           }}
         >
-          <Box sx={{ height: 160, position: 'relative' }}>
-            <NextImage
-              src={journey?.primaryImageBlock?.src ?? ''}
-              alt={journey?.seoTitle ?? ''}
-              fill
-              objectFit="cover"
-              style={{
-                borderRadius: 2
-              }}
-            />
-          </Box>
+          <Stack
+            justifyContent="center"
+            alignItems="center"
+            sx={{
+              height: 160,
+              position: 'relative',
+              overflow: 'hidden',
+              backgroundColor: 'background.default'
+            }}
+          >
+            {journey?.primaryImageBlock?.src != null ? (
+              <NextImage
+                src={journey?.primaryImageBlock?.src ?? ''}
+                alt={journey?.seoTitle ?? ''}
+                fill
+                objectFit="cover"
+                style={{
+                  borderRadius: 2
+                }}
+              />
+            ) : (
+              <GridEmptyIcon fontSize="large" />
+            )}
+          </Stack>
           <Typography variant="subtitle1" fontWeight={600} noWrap>
             {journey?.seoTitle ?? journey?.displayTitle ?? ''}
           </Typography>

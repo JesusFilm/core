@@ -4,6 +4,7 @@ import Button from '@mui/material/Button'
 import Typography from '@mui/material/Typography'
 import { ReactElement, useState } from 'react'
 import dynamic from 'next/dynamic'
+import GridEmptyIcon from '@core/shared/ui/icons/GridEmpty'
 
 import OpenInNewIcon from '@mui/icons-material/OpenInNew'
 import ShareIcon from '@mui/icons-material/Share'
@@ -60,17 +61,30 @@ export function DoneScreen(): ReactElement {
             mt: 6
           }}
         >
-          <Box sx={{ height: 160, position: 'relative' }}>
-            <NextImage
-              src={journey?.primaryImageBlock?.src ?? ''}
-              alt={journey?.seoTitle ?? ''}
-              fill
-              objectFit="cover"
-              style={{
-                borderRadius: 2
-              }}
-            />
-          </Box>
+          <Stack
+            justifyContent="center"
+            alignItems="center"
+            sx={{
+              height: 160,
+              position: 'relative',
+              overflow: 'hidden',
+              backgroundColor: 'background.default'
+            }}
+          >
+            {journey?.primaryImageBlock?.src != null ? (
+              <NextImage
+                src={journey?.primaryImageBlock?.src ?? ''}
+                alt={journey?.seoTitle ?? ''}
+                fill
+                objectFit="cover"
+                style={{
+                  borderRadius: 2
+                }}
+              />
+            ) : (
+              <GridEmptyIcon fontSize="large" />
+            )}
+          </Stack>
           <Typography variant="subtitle1" fontWeight={600} noWrap>
             {journey?.seoTitle ?? journey?.displayTitle ?? ''}
           </Typography>
