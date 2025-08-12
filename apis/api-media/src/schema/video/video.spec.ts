@@ -171,7 +171,8 @@ describe('video', () => {
           value: 'value',
           primary: true,
           languageId: 'languageId',
-          videoId: 'videoId'
+          videoId: 'videoId',
+          crowdInId: null
         }
       ],
       snippet: [
@@ -189,7 +190,8 @@ describe('video', () => {
           value: 'value',
           primary: true,
           languageId: 'languageId',
-          videoId: 'videoId'
+          videoId: 'videoId',
+          crowdInId: null
         }
       ],
       studyQuestions: [

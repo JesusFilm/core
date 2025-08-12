@@ -213,7 +213,7 @@ describe('videoStudyQuestion', () => {
         })
         prismaMock.videoStudyQuestion.findUnique.mockResolvedValue({
           id: 'id',
-          videoId: null,
+          videoId: 'videoId',
           value: 'value',
           primary: true,
           languageId: 'languageId',

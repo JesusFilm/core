@@ -36,7 +36,8 @@ describe('videoTitle', () => {
           videoId: 'videoId',
           value: 'value',
           primary: true,
-          languageId: 'languageId'
+          languageId: 'languageId',
+          crowdInId: null
         })
         const result = await authClient({
           document: CREATE_VIDEO_TITLE_MUTATION,
@@ -101,7 +102,8 @@ describe('videoTitle', () => {
           videoId: 'videoId',
           value: 'value',
           primary: true,
-          languageId: 'languageId'
+          languageId: 'languageId',
+          crowdInId: null
         })
         const result = await authClient({
           document: UPDATE_VIDEO_TITLE_MUTATION,
@@ -163,7 +165,8 @@ describe('videoTitle', () => {
           videoId: 'videoId',
           value: 'value',
           primary: true,
-          languageId: 'languageId'
+          languageId: 'languageId',
+          crowdInId: null
         })
         const result = await authClient({
           document: DELETE_VIDEO_TITLE_MUTATION,
