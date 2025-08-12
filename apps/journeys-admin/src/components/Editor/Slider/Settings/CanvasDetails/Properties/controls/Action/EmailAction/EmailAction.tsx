@@ -34,7 +34,7 @@ export function EmailAction(): ReactElement {
   })
 
   function handleSubmit(email: string): void {
-    if (selectedBlock == null) return
+    if (selectedBlock == null || selectedStep == null) return
 
     const { id, action, __typename: blockTypename } = selectedBlock
     addAction({
@@ -45,8 +45,8 @@ export function EmailAction(): ReactElement {
         parentBlockId: id,
         gtmEventName: '',
         email,
-        customizable: false,
-        parentStepId: null
+        customizable: emailAction?.customizable ?? false,
+        parentStepId: selectedStep.id
       },
       undoAction: action,
       editorFocus: {

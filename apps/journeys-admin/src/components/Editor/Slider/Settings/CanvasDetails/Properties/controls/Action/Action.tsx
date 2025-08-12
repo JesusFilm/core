@@ -21,6 +21,7 @@ import { EmailAction } from './EmailAction'
 import { LinkAction } from './LinkAction'
 import { NavigateToBlockAction } from './NavigateToBlockAction'
 import { ActionValue, actions } from './utils/actions'
+import { CustomizationToggle } from './CustomizationToggle'
 
 export function Action(): ReactElement {
   const {
@@ -77,6 +78,9 @@ export function Action(): ReactElement {
     setAction(event.target.value as ActionValue)
   }
 
+  const isLink = !isSubmitButton && action === 'LinkAction'
+  const isEmail = !isSubmitButton && action === 'EmailAction'
+
   return (
     <>
       <Stack sx={{ p: 4, pt: 0 }} data-testid="Action">
@@ -102,9 +106,10 @@ export function Action(): ReactElement {
             })}
           </Select>
         </FormControl>
-        {!isSubmitButton && action === 'LinkAction' && <LinkAction />}
-        {!isSubmitButton && action === 'EmailAction' && <EmailAction />}
+        {isLink && <LinkAction />}
+        {isEmail && <EmailAction />}
         {action === 'NavigateToBlockAction' && <NavigateToBlockAction />}
+        {(isLink || isEmail) && <CustomizationToggle />}
       </Stack>
     </>
   )
