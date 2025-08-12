@@ -9,7 +9,7 @@ export async function updateStudyQuestionInCrowdin(
   crowdInId: string | null,
   logger?: Logger
 ): Promise<void> {
-  logger?.info('Starting video title update to Crowdin')
+  logger?.info('Starting video study question update to Crowdin')
 
   if (crowdInId === null) {
     logger?.info('No Crowdin ID provided, skipping update')

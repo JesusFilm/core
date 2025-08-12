@@ -9,7 +9,7 @@ export async function updateVideoDescriptionInCrowdin(
   crowdInId: string | null,
   logger?: Logger
 ): Promise<void> {
-  logger?.info('Starting video title update to Crowdin')
+  logger?.info('Starting video description update to Crowdin')
 
   if (crowdInId === null) {
     logger?.info('No Crowdin ID provided, skipping update')
