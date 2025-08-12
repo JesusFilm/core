@@ -169,7 +169,7 @@ export function TextScreen({ handleNext }: TextScreenProps): ReactElement {
   return (
     <Stack
       alignItems="center"
-      sx={{ px: { xs: 2, md: 8 }, maxWidth: '1000px' }}
+      sx={{ px: { xs: 2, md: 8 }, maxWidth: '1000px', width: '100%' }}
       gap={6}
     >
       <Typography variant="h6" color="text.secondary">

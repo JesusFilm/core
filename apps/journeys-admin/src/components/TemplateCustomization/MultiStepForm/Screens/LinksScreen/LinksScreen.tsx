@@ -23,6 +23,7 @@ import { useBlockActionEmailUpdateMutation } from '../../../../../libs/useBlockA
 import { useMutation } from '@apollo/client'
 import { JourneyChatButtonUpdate } from '../../../../../../__generated__/JourneyChatButtonUpdate'
 import { JOURNEY_CHAT_BUTTON_UPDATE } from '../../../../Editor/Slider/Settings/CanvasDetails/JourneyAppearance/Chat/ChatOption/Details/Details'
+import { JourneyFields_chatButtons as JourneyChatButton } from '@core/journeys/ui/JourneyProvider/__generated__/JourneyFields'
 
 interface LinksScreenProps {
   handleNext: () => void
@@ -63,44 +64,65 @@ export function LinksScreen({ handleNext }: LinksScreenProps): ReactElement {
       return hasProtocolPrefix.test(val) ? val : `https://${val}`
     }
 
-    const updatePromises = links.map((l) => {
-      const newValueRaw = (values[l.id] ?? '').trim()
-      const oldValueRaw = (l.url ?? '').trim()
-      if (errors[l.id] != null) return Promise.resolve(undefined)
-      if (l.linkType === 'chatButtons') {
-        const chatButton = journey?.chatButtons?.find((b) => b.id === l.id)
+    const updatePromises = links.map((link) => {
+      const newValueRaw = (values[link.id] ?? '').trim()
+      const oldValueRaw = (link.url ?? '').trim()
+
+      if (errors[link.id] != null) return Promise.resolve(undefined)
+
+      if (link.linkType === 'chatButtons') {
+        const chatButton = journey?.chatButtons?.find(
+          (button: JourneyChatButton) => button.id === link.id
+        )
+
         if (chatButton == null) return Promise.resolve(undefined)
-        const link = normalizeChatLink(newValueRaw)
-        const oldLink = normalizeChatLink(oldValueRaw)
-        if (link === oldLink) return Promise.resolve(undefined)
+
+        const normalizedLink = normalizeChatLink(newValueRaw)
+        const normalizedOldLink = normalizeChatLink(oldValueRaw)
+
+        if (normalizedLink === normalizedOldLink)
+          return Promise.resolve(undefined)
+
         return journeyChatButtonUpdate({
           variables: {
             chatButtonUpdateId: chatButton.id,
             journeyId: journey?.id,
-            input: { link, platform: chatButton.platform }
+            input: { link: normalizedLink, platform: chatButton.platform }
           },
           optimisticResponse: {
             chatButtonUpdate: {
               __typename: 'ChatButton',
               id: chatButton.id,
-              link,
+              link: normalizedLink,
               platform: chatButton.platform
             }
           }
         })
       }
-      const block = journey?.blocks?.find((b) => b.id === l.id)
+      const block = journey?.blocks?.find((block) => block.id === link.id)
+
       if (block == null) return Promise.resolve(undefined)
       if (newValueRaw === oldValueRaw) return Promise.resolve(undefined)
+
       const blockRef = {
-        id: l.id,
+        id: link.id,
         __typename: (block as { __typename: BlockFields['__typename'] })
           .__typename
       } as Pick<BlockFields, 'id' | '__typename'>
 
-      return l.linkType === 'email'
-        ? updateEmailAction(blockRef, newValueRaw)
-        : updateLinkAction(blockRef, newValueRaw)
+      return link.linkType === 'email'
+        ? updateEmailAction(
+            blockRef,
+            newValueRaw,
+            link.customizable ?? null,
+            link.parentStepId ?? null
+          )
+        : updateLinkAction(
+            blockRef,
+            newValueRaw,
+            link.customizable ?? null,
+            link.parentStepId ?? null
+          )
     })
 
     await Promise.allSettled(updatePromises)

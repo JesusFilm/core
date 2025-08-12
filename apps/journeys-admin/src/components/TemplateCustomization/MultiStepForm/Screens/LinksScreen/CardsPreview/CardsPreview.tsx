@@ -53,6 +53,7 @@ const CONTAINER_HEIGHT = Math.round(FRAME_HEIGHT * IFRAME_SCALE)
 
 // Spacing and offsets
 const CARD_MARGIN_RIGHT = 7
+const EDGE_FADE_PX = 16
 
 function CardsPreviewItem({ step }: CardsPreviewItemProps): ReactElement {
   const { journey } = useJourney()
@@ -159,12 +160,16 @@ export function CardsPreview({ steps }: CardsPreviewProps): ReactElement {
       watchOverflow
       slidesPerView="auto"
       spaceBetween={12}
+      slidesOffsetBefore={EDGE_FADE_PX}
       observer
       observeParents
       sx={{
-        overflow: 'visible',
+        overflow: 'hidden',
         zIndex: 2,
-        height: CONTAINER_HEIGHT
+        height: CONTAINER_HEIGHT + 15,
+        width: '100%',
+        maskImage: `linear-gradient(to right, rgba(0,0,0,0) 0, rgba(0,0,0,1) ${EDGE_FADE_PX}px, rgba(0,0,0,1) calc(100% - ${EDGE_FADE_PX}px), rgba(0,0,0,0) 100%)`,
+        WebkitMaskImage: `linear-gradient(to right, rgba(0,0,0,0) 0, rgba(0,0,0,1) ${EDGE_FADE_PX}px, rgba(0,0,0,1) calc(100% - ${EDGE_FADE_PX}px), rgba(0,0,0,0) 100%)`
       }}
     >
       {slidesToRender.map((step) => (
@@ -228,8 +233,8 @@ export function CardsPreview({ steps }: CardsPreviewProps): ReactElement {
           <Box
             sx={{
               position: 'absolute',
-              bottom: { xs: -10, sm: -10 },
-              left: 30,
+              left: 21,
+              top: 11,
               zIndex: -2,
               minWidth: CONTAINER_WIDTH,
               mr: CARD_MARGIN_RIGHT,

@@ -38,7 +38,7 @@ export function LinksForm({ links }: LinksFormProps): ReactElement {
 
   return (
     <Form id="linksForm" style={{ width: '100%' }}>
-      <Stack sx={{ width: '100%', maxWidth: 700 }}>
+      <Stack sx={{ width: '100%' }}>
         {links.map((link) => {
           const fieldName = link.id
           const hasError =
