@@ -18,7 +18,7 @@ export async function updateVideoDescriptionInCrowdin(
 
   try {
     await apis.sourceStrings.editString(
-      CROWDIN_CONFIG.projectId,
+      process.env.CROWDIN_PROJECT_ID,
       Number(crowdInId),
       [
         {
@@ -47,7 +47,7 @@ export async function exportVideoDescriptionToCrowdin(
 
   try {
     const crowdInResponse = await apis.sourceStrings.addString(
-      CROWDIN_CONFIG.projectId,
+      process.env.CROWDIN_PROJECT_ID,
       {
         fileId: CROWDIN_CONFIG.files.media_metadata_description.id,
         identifier: videoId,

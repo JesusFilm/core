@@ -18,7 +18,7 @@ export async function updateStudyQuestionInCrowdin(
 
   try {
     await apis.sourceStrings.editString(
-      CROWDIN_CONFIG.projectId,
+      process.env.CROWDIN_PROJECT_ID,
       Number(crowdInId),
       [
         {
@@ -46,7 +46,7 @@ export async function exportStudyQuestionToCrowdin(
 ): Promise<string | null> {
   try {
     const crowdInResponse = await apis.sourceStrings.addString(
-      CROWDIN_CONFIG.projectId,
+      process.env.CROWDIN_PROJECT_ID,
       {
         fileId: CROWDIN_CONFIG.files.study_questions.id,
         identifier: videoId,

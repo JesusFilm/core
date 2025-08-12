@@ -135,7 +135,7 @@ export async function fetchSourceStrings(
   try {
     return await fetchPaginatedData(
       (offset, limit) =>
-        api.listProjectStrings(CROWDIN_CONFIG.projectId, {
+        api.listProjectStrings(process.env.CROWDIN_PROJECT_ID, {
           fileId,
           limit,
           offset
@@ -159,11 +159,15 @@ export async function fetchTranslations(
   try {
     const translations = await fetchPaginatedData(
       (offset, limit) =>
-        api.listLanguageTranslations(CROWDIN_CONFIG.projectId, languageCode, {
-          fileId,
-          limit,
-          offset
-        }),
+        api.listLanguageTranslations(
+          process.env.CROWDIN_PROJECT_ID,
+          languageCode,
+          {
+            fileId,
+            limit,
+            offset
+          }
+        ),
       500
     )
 
