@@ -5,7 +5,6 @@ export const GridItemBlock = builder.prismaObject('Block', {
   interfaces: [Block],
   variant: 'GridItemBlock',
   isTypeOf: (obj: any) => obj.typename === 'GridItemBlock',
-  directives: { key: { fields: 'id' } },
   fields: (t) => ({
     id: t.exposeID('id', { nullable: false, directives: { shareable: true } }),
     journeyId: t.exposeID('journeyId', {

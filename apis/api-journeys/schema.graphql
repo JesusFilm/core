@@ -1243,6 +1243,7 @@ enum VideoBlockObjectFit {
 }
 
 type VideoBlock implements Block
+  @key(fields: "id")
   @shareable
 {
   id: ID! @shareable
@@ -3401,4 +3402,4 @@ type _Service {
   sdl: String
 }
 
-union _Entity = Journey | JourneyProfile | JourneyVisitor | Language | ShortLink | Tag | Team | User | UserInvite | UserJourney | UserRole | UserTeam | Video | Visitor
+union _Entity = Journey | JourneyProfile | JourneyVisitor | Language | ShortLink | Tag | Team | User | UserInvite | UserJourney | UserRole | UserTeam | Video | VideoBlock | Visitor

@@ -40,7 +40,6 @@ export const ButtonBlock = builder.prismaObject('Block', {
   variant: 'ButtonBlock',
   interfaces: [Block],
   isTypeOf: (obj: any) => obj.typename === 'ButtonBlock',
-  directives: { key: { fields: 'id' } },
   fields: (t) => ({
     id: t.exposeID('id', { nullable: false, directives: { shareable: true } }),
     journeyId: t.exposeID('journeyId', {
