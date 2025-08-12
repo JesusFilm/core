@@ -1,5 +1,7 @@
 import { TFunction } from 'i18next'
 
+import { resolveJourneyCustomizationString } from '@core/journeys/ui/resolveJourneyCustomizationString'
+
 import {
   GetJourney_journey_blocks_ButtonBlock as ButtonBlock,
   GetJourney_journey as Journey,
@@ -58,15 +60,27 @@ export function getJourneyLinks(
     switch (block.__typename) {
       case 'ButtonBlock':
         action = block.action
-        label = block.label
+        label =
+          resolveJourneyCustomizationString(
+            block.label,
+            journey.journeyCustomizationFields ?? []
+          ) ?? ''
         break
       case 'RadioOptionBlock':
         action = block.action
-        label = block.label
+        label =
+          resolveJourneyCustomizationString(
+            block.label,
+            journey.journeyCustomizationFields ?? []
+          ) ?? ''
         break
       case 'VideoBlock':
         action = block.action
-        label = block.title ?? ''
+        label =
+          resolveJourneyCustomizationString(
+            block.title,
+            journey.journeyCustomizationFields ?? []
+          ) ?? ''
         break
       case 'VideoTriggerBlock':
         action = block.triggerAction
@@ -109,6 +123,5 @@ export function getJourneyLinks(
       label
     })
   })
-  // TODO: replace label {{}} with real values
   return links
 }
