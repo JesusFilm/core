@@ -284,9 +284,7 @@ export type CardBlock = Block & {
 };
 
 export type CardBlockCreateInput = {
-  /** backdropBlur should be a number representing blur amount in pixels e.g 20. */
   backdropBlur?: InputMaybe<Scalars['Int']['input']>;
-  /** backgroundColor should be a HEX color value e.g #FFFFFF for white. */
   backgroundColor?: InputMaybe<Scalars['String']['input']>;
   fullscreen?: InputMaybe<Scalars['Boolean']['input']>;
   id?: InputMaybe<Scalars['ID']['input']>;
@@ -616,24 +614,6 @@ export type GridContainerBlock = Block & {
   parentOrder?: Maybe<Scalars['Int']['output']>;
 };
 
-export type GridContainerBlockCreateInput = {
-  alignItems?: InputMaybe<GridAlignItems>;
-  direction?: InputMaybe<GridDirection>;
-  gap?: InputMaybe<Scalars['Int']['input']>;
-  id?: InputMaybe<Scalars['ID']['input']>;
-  journeyId: Scalars['ID']['input'];
-  justifyContent?: InputMaybe<GridJustifyContent>;
-  parentBlockId: Scalars['ID']['input'];
-};
-
-export type GridContainerBlockUpdateInput = {
-  alignItems?: InputMaybe<GridAlignItems>;
-  direction?: InputMaybe<GridDirection>;
-  gap?: InputMaybe<Scalars['Int']['input']>;
-  justifyContent?: InputMaybe<GridJustifyContent>;
-  parentBlockId?: InputMaybe<Scalars['ID']['input']>;
-};
-
 export enum GridDirection {
   Column = 'column',
   ColumnReverse = 'columnReverse',
@@ -650,22 +630,6 @@ export type GridItemBlock = Block & {
   parentOrder?: Maybe<Scalars['Int']['output']>;
   sm: Scalars['Int']['output'];
   xl: Scalars['Int']['output'];
-};
-
-export type GridItemBlockCreateInput = {
-  id?: InputMaybe<Scalars['ID']['input']>;
-  journeyId: Scalars['ID']['input'];
-  lg?: InputMaybe<Scalars['Int']['input']>;
-  parentBlockId: Scalars['ID']['input'];
-  sm?: InputMaybe<Scalars['Int']['input']>;
-  xl?: InputMaybe<Scalars['Int']['input']>;
-};
-
-export type GridItemBlockUpdateInput = {
-  lg?: InputMaybe<Scalars['Int']['input']>;
-  parentBlockId?: InputMaybe<Scalars['ID']['input']>;
-  sm?: InputMaybe<Scalars['Int']['input']>;
-  xl?: InputMaybe<Scalars['Int']['input']>;
 };
 
 export enum GridJustifyContent {
@@ -3669,6 +3633,7 @@ export type RadioOptionBlockCreateInput = {
 export type RadioOptionBlockUpdateInput = {
   label?: InputMaybe<Scalars['String']['input']>;
   parentBlockId?: InputMaybe<Scalars['ID']['input']>;
+  pollOptionImageBlockId?: InputMaybe<Scalars['ID']['input']>;
 };
 
 export type RadioQuestionBlock = Block & {
@@ -3684,10 +3649,6 @@ export type RadioQuestionBlockCreateInput = {
   id?: InputMaybe<Scalars['ID']['input']>;
   journeyId: Scalars['ID']['input'];
   parentBlockId: Scalars['ID']['input'];
-};
-
-export type RadioQuestionBlockUpdateInput = {
-  parentBlockId?: InputMaybe<Scalars['ID']['input']>;
 };
 
 export type RadioQuestionSubmissionEvent = Event & {
@@ -3902,6 +3863,7 @@ export type SpacerBlockCreateInput = {
 };
 
 export type SpacerBlockUpdateInput = {
+  parentBlockId?: InputMaybe<Scalars['ID']['input']>;
   spacing?: InputMaybe<Scalars['Int']['input']>;
 };
 
@@ -4664,7 +4626,7 @@ export type VideoBlock = Block & {
    * internal source: videoId, videoVariantLanguageId, and video present
    * youTube source: videoId, title, description, and duration present
    */
-  source?: Maybe<VideoBlockSource>;
+  source: VideoBlockSource;
   /** startAt dictates at which point of time the video should start playing */
   startAt?: Maybe<Scalars['Int']['output']>;
   /**
@@ -4701,6 +4663,8 @@ export type VideoBlockCreateInput = {
   endAt?: InputMaybe<Scalars['Int']['input']>;
   fullsize?: InputMaybe<Scalars['Boolean']['input']>;
   id?: InputMaybe<Scalars['ID']['input']>;
+  /** True if the coverBlockId in a parent block should be set to this block's id. */
+  isCover?: InputMaybe<Scalars['Boolean']['input']>;
   journeyId: Scalars['ID']['input'];
   muted?: InputMaybe<Scalars['Boolean']['input']>;
   /** how the video should display within the VideoBlock */
@@ -4780,6 +4744,11 @@ export type VideoBlockUpdateInput = {
    * as the video poster. PosterBlock should be of type ImageBlock.
    */
   posterBlockId?: InputMaybe<Scalars['ID']['input']>;
+  /**
+   * internal source: videoId and videoVariantLanguageId required
+   * youTube source: videoId required
+   */
+  source?: InputMaybe<VideoBlockSource>;
   /** startAt dictates at which point of time the video should start playing */
   startAt?: InputMaybe<Scalars['Int']['input']>;
   /**
@@ -5202,7 +5171,7 @@ export type VideoTranslationUpdateInput = {
  */
 export type VideoTriggerBlock = Block & {
   __typename?: 'VideoTriggerBlock';
-  action?: Maybe<Action>;
+  action: Action;
   id: Scalars['ID']['output'];
   journeyId: Scalars['ID']['output'];
   parentBlockId?: Maybe<Scalars['ID']['output']>;

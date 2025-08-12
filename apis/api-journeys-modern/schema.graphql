@@ -153,14 +153,8 @@ type CardBlock implements Block
 input CardBlockCreateInput {
   id: ID
   journeyId: ID!
-  parentBlockId: ID
-
-  """backgroundColor should be a HEX color value e.g #FFFFFF for white."""
+  parentBlockId: ID!
   backgroundColor: String
-
-  """
-  backdropBlur should be a number representing blur amount in pixels e.g 20.
-  """
   backdropBlur: Int
   fullscreen: Boolean
   themeMode: ThemeMode
@@ -243,28 +237,10 @@ type GridContainerBlock implements Block
   journeyId: ID!
   parentBlockId: ID
   parentOrder: Int
-  gap: Int! @shareable
-  direction: GridDirection! @shareable
-  justifyContent: GridJustifyContent! @shareable
-  alignItems: GridAlignItems! @shareable
-}
-
-input GridContainerBlockCreateInput {
-  id: ID
-  journeyId: ID!
-  parentBlockId: ID!
-  gap: Int
-  direction: GridDirection
-  justifyContent: GridJustifyContent
-  alignItems: GridAlignItems
-}
-
-input GridContainerBlockUpdateInput {
-  parentBlockId: ID
-  gap: Int
-  direction: GridDirection
-  justifyContent: GridJustifyContent
-  alignItems: GridAlignItems
+  gap: Int!
+  direction: GridDirection!
+  justifyContent: GridJustifyContent!
+  alignItems: GridAlignItems!
 }
 
 enum GridDirection {
@@ -286,22 +262,6 @@ type GridItemBlock implements Block
   sm: Int!
 }
 
-input GridItemBlockCreateInput {
-  id: ID
-  journeyId: ID!
-  parentBlockId: ID!
-  xl: Int
-  lg: Int
-  sm: Int
-}
-
-input GridItemBlockUpdateInput {
-  parentBlockId: ID
-  xl: Int
-  lg: Int
-  sm: Int
-}
-
 enum GridJustifyContent {
   flexStart
   flexEnd
@@ -315,9 +275,9 @@ type IconBlock implements Block
   journeyId: ID!
   parentBlockId: ID
   parentOrder: Int
-  name: IconName @shareable
-  color: IconColor @shareable
-  size: IconSize @shareable
+  name: IconName
+  color: IconColor
+  size: IconSize
 }
 
 input IconBlockCreateInput {
@@ -619,14 +579,14 @@ type RadioOptionBlock implements Block
   journeyId: ID!
   parentBlockId: ID
   parentOrder: Int
-  label: String! @shareable
+  label: String!
 
   """
   pollOptionImageBlockId is present if a child block should be used as a poll option image.
         This child block should not be rendered normally, instead it should be used
         as a poll option image. Blocks are often of type ImageBlock
   """
-  pollOptionImageBlockId: ID @shareable
+  pollOptionImageBlockId: ID
 }
 
 input RadioOptionBlockCreateInput {
@@ -639,6 +599,7 @@ input RadioOptionBlockCreateInput {
 input RadioOptionBlockUpdateInput {
   parentBlockId: ID
   label: String
+  pollOptionImageBlockId: ID
 }
 
 type RadioQuestionBlock implements Block
@@ -664,8 +625,8 @@ type SignUpBlock implements Block
   journeyId: ID!
   parentBlockId: ID
   parentOrder: Int
-  submitIconId: ID @shareable
-  submitLabel: String @shareable
+  submitIconId: ID
+  submitLabel: String
 }
 
 input SignUpBlockCreateInput {
@@ -688,7 +649,7 @@ type SpacerBlock implements Block
   journeyId: ID!
   parentBlockId: ID
   parentOrder: Int
-  spacing: Int @shareable
+  spacing: Int
 }
 
 input SpacerBlockCreateInput {
@@ -699,6 +660,7 @@ input SpacerBlockCreateInput {
 }
 
 input SpacerBlockUpdateInput {
+  parentBlockId: ID
   spacing: Int
 }
 
@@ -798,14 +760,14 @@ type TextResponseBlock implements Block
   journeyId: ID!
   parentBlockId: ID
   parentOrder: Int
-  label: String! @shareable
-  placeholder: String @shareable
-  required: Boolean @shareable
-  hint: String @shareable
-  minRows: Int @shareable
-  type: TextResponseType @shareable
-  routeId: String @shareable
-  integrationId: String @shareable
+  label: String!
+  placeholder: String
+  required: Boolean
+  hint: String
+  minRows: Int
+  type: TextResponseType
+  routeId: String
+  integrationId: String
 }
 
 input TextResponseBlockCreateInput {
@@ -932,20 +894,25 @@ type VideoBlock implements Block
   journeyId: ID!
   parentBlockId: ID
   parentOrder: Int
-  autoplay: Boolean!
+  autoplay: Boolean
   startAt: Int
   endAt: Int
-  muted: Boolean!
+  muted: Boolean
   videoId: ID
   videoVariantLanguageId: ID
-  source: VideoBlockSource
-  title: String!
-  description: String!
+
+  """
+  internal source: videoId, videoVariantLanguageId, and video present
+  youTube source: videoId, title, description, and duration present
+  """
+  source: VideoBlockSource!
+  title: String
+  description: String
   image: String
   duration: Int
   objectFit: VideoBlockObjectFit
   posterBlockId: ID
-  fullsize: Boolean!
+  fullsize: Boolean
   action: Action
   mediaVideo: MediaVideo
 }
@@ -957,6 +924,11 @@ input VideoBlockCreateInput {
   videoId: ID
   videoVariantLanguageId: ID
   source: VideoBlockSource
+
+  """
+  True if the coverBlockId in a parent block should be set to this block's id.
+  """
+  isCover: Boolean
   title: String
   description: String
   image: String
@@ -998,6 +970,12 @@ input VideoBlockUpdateInput {
   muted: Boolean
   autoplay: Boolean
   fullsize: Boolean
+
+  """
+  internal source: videoId and videoVariantLanguageId required
+    youTube source: videoId required
+  """
+  source: VideoBlockSource
 }
 
 type VideoTriggerBlock implements Block
@@ -1013,7 +991,7 @@ type VideoTriggerBlock implements Block
   this is the number of seconds since the start of the video
   """
   triggerStart: Int!
-  action: Action
+  action: Action!
 }
 
 type YouTube

@@ -18,21 +18,21 @@ export interface MenuBlockRestore_stepRestore_GridContainerBlock {
 
 export interface MenuBlockRestore_stepRestore_ButtonBlock_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
-  parentBlockId: string | null;
+  parentBlockId: string;
   gtmEventName: string | null;
   blockId: string;
 }
 
 export interface MenuBlockRestore_stepRestore_ButtonBlock_action_LinkAction {
   __typename: "LinkAction";
-  parentBlockId: string | null;
+  parentBlockId: string;
   gtmEventName: string | null;
   url: string;
 }
 
 export interface MenuBlockRestore_stepRestore_ButtonBlock_action_EmailAction {
   __typename: "EmailAction";
-  parentBlockId: string | null;
+  parentBlockId: string;
   gtmEventName: string | null;
   email: string;
 }
@@ -131,21 +131,21 @@ export interface MenuBlockRestore_stepRestore_ImageBlock {
 
 export interface MenuBlockRestore_stepRestore_RadioOptionBlock_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
-  parentBlockId: string | null;
+  parentBlockId: string;
   gtmEventName: string | null;
   blockId: string;
 }
 
 export interface MenuBlockRestore_stepRestore_RadioOptionBlock_action_LinkAction {
   __typename: "LinkAction";
-  parentBlockId: string | null;
+  parentBlockId: string;
   gtmEventName: string | null;
   url: string;
 }
 
 export interface MenuBlockRestore_stepRestore_RadioOptionBlock_action_EmailAction {
   __typename: "EmailAction";
-  parentBlockId: string | null;
+  parentBlockId: string;
   gtmEventName: string | null;
   email: string;
 }
@@ -177,21 +177,21 @@ export interface MenuBlockRestore_stepRestore_RadioQuestionBlock {
 
 export interface MenuBlockRestore_stepRestore_SignUpBlock_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
-  parentBlockId: string | null;
+  parentBlockId: string;
   gtmEventName: string | null;
   blockId: string;
 }
 
 export interface MenuBlockRestore_stepRestore_SignUpBlock_action_LinkAction {
   __typename: "LinkAction";
-  parentBlockId: string | null;
+  parentBlockId: string;
   gtmEventName: string | null;
   url: string;
 }
 
 export interface MenuBlockRestore_stepRestore_SignUpBlock_action_EmailAction {
   __typename: "EmailAction";
-  parentBlockId: string | null;
+  parentBlockId: string;
   gtmEventName: string | null;
   email: string;
 }
@@ -339,21 +339,21 @@ export type MenuBlockRestore_stepRestore_VideoBlock_mediaVideo = MenuBlockRestor
 
 export interface MenuBlockRestore_stepRestore_VideoBlock_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
-  parentBlockId: string | null;
+  parentBlockId: string;
   gtmEventName: string | null;
   blockId: string;
 }
 
 export interface MenuBlockRestore_stepRestore_VideoBlock_action_LinkAction {
   __typename: "LinkAction";
-  parentBlockId: string | null;
+  parentBlockId: string;
   gtmEventName: string | null;
   url: string;
 }
 
 export interface MenuBlockRestore_stepRestore_VideoBlock_action_EmailAction {
   __typename: "EmailAction";
-  parentBlockId: string | null;
+  parentBlockId: string;
   gtmEventName: string | null;
   email: string;
 }
@@ -437,21 +437,21 @@ export interface MenuBlockRestore_stepRestore_VideoBlock {
 
 export interface MenuBlockRestore_stepRestore_VideoTriggerBlock_triggerAction_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
-  parentBlockId: string | null;
+  parentBlockId: string;
   gtmEventName: string | null;
   blockId: string;
 }
 
 export interface MenuBlockRestore_stepRestore_VideoTriggerBlock_triggerAction_LinkAction {
   __typename: "LinkAction";
-  parentBlockId: string | null;
+  parentBlockId: string;
   gtmEventName: string | null;
   url: string;
 }
 
 export interface MenuBlockRestore_stepRestore_VideoTriggerBlock_triggerAction_EmailAction {
   __typename: "EmailAction";
-  parentBlockId: string | null;
+  parentBlockId: string;
   gtmEventName: string | null;
   email: string;
 }

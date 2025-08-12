@@ -1114,15 +1114,15 @@ type VideoBlock implements Block @join__type(graph: API_JOURNEYS, key: "id")  @j
   endAt dictates at which point of time the video should end
   """
   endAt: Int
-  muted: Boolean @join__field(graph: API_JOURNEYS, type: "Boolean")  @join__field(graph: API_JOURNEYS_MODERN, type: "Boolean!") 
-  autoplay: Boolean @join__field(graph: API_JOURNEYS, type: "Boolean")  @join__field(graph: API_JOURNEYS_MODERN, type: "Boolean!") 
+  muted: Boolean
+  autoplay: Boolean
   """
   posterBlockId is present if a child block should be used as a poster.
   This child block should not be rendered normally, instead it should be used
   as the video poster. PosterBlock should be of type ImageBlock.
   """
   posterBlockId: ID
-  fullsize: Boolean @join__field(graph: API_JOURNEYS, type: "Boolean")  @join__field(graph: API_JOURNEYS_MODERN, type: "Boolean!") 
+  fullsize: Boolean
   """
   internal source videos: video is only populated when videoID and
   videoVariantLanguageId are present
@@ -1144,19 +1144,19 @@ type VideoBlock implements Block @join__type(graph: API_JOURNEYS, key: "id")  @j
   internal source: videoId, videoVariantLanguageId, and video present
   youTube source: videoId, title, description, and duration present
   """
-  source: VideoBlockSource @join__field(graph: API_JOURNEYS, type: "VideoBlockSource!")  @join__field(graph: API_JOURNEYS_MODERN, type: "VideoBlockSource") 
+  source: VideoBlockSource!
   """
   internal source videos: this field is not populated and instead only present
   in the video field.
   For other sources this is automatically populated.
   """
-  title: String @join__field(graph: API_JOURNEYS, type: "String")  @join__field(graph: API_JOURNEYS_MODERN, type: "String!") 
+  title: String
   """
   internal source videos: this field is not populated and instead only present
   in the video field
   For other sources this is automatically populated.
   """
-  description: String @join__field(graph: API_JOURNEYS, type: "String")  @join__field(graph: API_JOURNEYS_MODERN, type: "String!") 
+  description: String
   """
   internal source videos: this field is not populated and instead only present
   in the video field
@@ -1195,7 +1195,7 @@ type VideoTriggerBlock implements Block @join__type(graph: API_JOURNEYS)  @join_
   this is the number of seconds since the start of the video
   """
   triggerStart: Int!
-  action: Action @join__field(graph: API_JOURNEYS, type: "Action!")  @join__field(graph: API_JOURNEYS_MODERN, type: "Action") 
+  action: Action!
 }
 
 type ChatButton @join__type(graph: API_JOURNEYS)  {
@@ -3464,14 +3464,8 @@ input ButtonBlockUpdateInput @join__type(graph: API_JOURNEYS)  @join__type(graph
 input CardBlockCreateInput @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
   id: ID
   journeyId: ID!
-  parentBlockId: ID! @join__field(graph: API_JOURNEYS, type: "ID!")  @join__field(graph: API_JOURNEYS_MODERN, type: "ID") 
-  """
-  backgroundColor should be a HEX color value e.g #FFFFFF for white.
-  """
+  parentBlockId: ID!
   backgroundColor: String
-  """
-  backdropBlur should be a number representing blur amount in pixels e.g 20.
-  """
   backdropBlur: Int
   fullscreen: Boolean
   themeMode: ThemeMode
@@ -3555,6 +3549,7 @@ input RadioOptionBlockCreateInput @join__type(graph: API_JOURNEYS)  @join__type(
 input RadioOptionBlockUpdateInput @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
   parentBlockId: ID
   label: String
+  pollOptionImageBlockId: ID
 }
 
 input RadioQuestionBlockCreateInput @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
@@ -3584,6 +3579,7 @@ input SpacerBlockCreateInput @join__type(graph: API_JOURNEYS)  @join__type(graph
 }
 
 input SpacerBlockUpdateInput @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
+  parentBlockId: ID
   spacing: Int
 }
 
@@ -3717,6 +3713,10 @@ input VideoBlockCreateInput @join__type(graph: API_JOURNEYS)  @join__type(graph:
   posterBlockId: ID
   fullsize: Boolean
   """
+  True if the coverBlockId in a parent block should be set to this block's id.
+  """
+  isCover: Boolean
+  """
   how the video should display within the VideoBlock
   """
   objectFit: VideoBlockObjectFit
@@ -3746,6 +3746,11 @@ input VideoBlockUpdateInput @join__type(graph: API_JOURNEYS)  @join__type(graph:
   For other sources only videoId needs to be set.
   """
   videoVariantLanguageId: ID
+  """
+  internal source: videoId and videoVariantLanguageId required
+  youTube source: videoId required
+  """
+  source: VideoBlockSource
   """
   posterBlockId is present if a child block should be used as a poster.
   This child block should not be rendered normally, instead it should be used
@@ -4496,40 +4501,6 @@ input VisitorUpdateInput @join__type(graph: API_JOURNEYS)  {
   The phone number of the visitor
   """
   phone: String
-}
-
-input GridContainerBlockCreateInput @join__type(graph: API_JOURNEYS_MODERN)  {
-  id: ID
-  journeyId: ID!
-  parentBlockId: ID!
-  gap: Int
-  direction: GridDirection
-  justifyContent: GridJustifyContent
-  alignItems: GridAlignItems
-}
-
-input GridContainerBlockUpdateInput @join__type(graph: API_JOURNEYS_MODERN)  {
-  parentBlockId: ID
-  gap: Int
-  direction: GridDirection
-  justifyContent: GridJustifyContent
-  alignItems: GridAlignItems
-}
-
-input GridItemBlockCreateInput @join__type(graph: API_JOURNEYS_MODERN)  {
-  id: ID
-  journeyId: ID!
-  parentBlockId: ID!
-  xl: Int
-  lg: Int
-  sm: Int
-}
-
-input GridItemBlockUpdateInput @join__type(graph: API_JOURNEYS_MODERN)  {
-  parentBlockId: ID
-  xl: Int
-  lg: Int
-  sm: Int
 }
 
 input JourneyAiTranslateInput @join__type(graph: API_JOURNEYS_MODERN)  {

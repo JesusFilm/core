@@ -123,21 +123,21 @@ export interface MenuBlockCreate_subHeading {
 
 export interface MenuBlockCreate_button1_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
-  parentBlockId: string | null;
+  parentBlockId: string;
   gtmEventName: string | null;
   blockId: string;
 }
 
 export interface MenuBlockCreate_button1_action_LinkAction {
   __typename: "LinkAction";
-  parentBlockId: string | null;
+  parentBlockId: string;
   gtmEventName: string | null;
   url: string;
 }
 
 export interface MenuBlockCreate_button1_action_EmailAction {
   __typename: "EmailAction";
-  parentBlockId: string | null;
+  parentBlockId: string;
   gtmEventName: string | null;
   email: string;
 }
@@ -170,21 +170,21 @@ export interface MenuBlockCreate_button1 {
 
 export interface MenuBlockCreate_button2_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
-  parentBlockId: string | null;
+  parentBlockId: string;
   gtmEventName: string | null;
   blockId: string;
 }
 
 export interface MenuBlockCreate_button2_action_LinkAction {
   __typename: "LinkAction";
-  parentBlockId: string | null;
+  parentBlockId: string;
   gtmEventName: string | null;
   url: string;
 }
 
 export interface MenuBlockCreate_button2_action_EmailAction {
   __typename: "EmailAction";
-  parentBlockId: string | null;
+  parentBlockId: string;
   gtmEventName: string | null;
   email: string;
 }
@@ -217,21 +217,21 @@ export interface MenuBlockCreate_button2 {
 
 export interface MenuBlockCreate_button3_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
-  parentBlockId: string | null;
+  parentBlockId: string;
   gtmEventName: string | null;
   blockId: string;
 }
 
 export interface MenuBlockCreate_button3_action_LinkAction {
   __typename: "LinkAction";
-  parentBlockId: string | null;
+  parentBlockId: string;
   gtmEventName: string | null;
   url: string;
 }
 
 export interface MenuBlockCreate_button3_action_EmailAction {
   __typename: "EmailAction";
-  parentBlockId: string | null;
+  parentBlockId: string;
   gtmEventName: string | null;
   email: string;
 }

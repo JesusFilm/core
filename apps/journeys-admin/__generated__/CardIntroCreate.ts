@@ -71,21 +71,21 @@ export interface CardIntroCreate_body {
 
 export interface CardIntroCreate_button_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
-  parentBlockId: string | null;
+  parentBlockId: string;
   gtmEventName: string | null;
   blockId: string;
 }
 
 export interface CardIntroCreate_button_action_LinkAction {
   __typename: "LinkAction";
-  parentBlockId: string | null;
+  parentBlockId: string;
   gtmEventName: string | null;
   url: string;
 }
 
 export interface CardIntroCreate_button_action_EmailAction {
   __typename: "EmailAction";
-  parentBlockId: string | null;
+  parentBlockId: string;
   gtmEventName: string | null;
   email: string;
 }
@@ -138,21 +138,21 @@ export interface CardIntroCreate_endIcon {
 
 export interface CardIntroCreate_buttonBlockUpdate_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
-  parentBlockId: string | null;
+  parentBlockId: string;
   gtmEventName: string | null;
   blockId: string;
 }
 
 export interface CardIntroCreate_buttonBlockUpdate_action_LinkAction {
   __typename: "LinkAction";
-  parentBlockId: string | null;
+  parentBlockId: string;
   gtmEventName: string | null;
   url: string;
 }
 
 export interface CardIntroCreate_buttonBlockUpdate_action_EmailAction {
   __typename: "EmailAction";
-  parentBlockId: string | null;
+  parentBlockId: string;
   gtmEventName: string | null;
   email: string;
 }
@@ -236,21 +236,21 @@ export type CardIntroCreate_video_mediaVideo = CardIntroCreate_video_mediaVideo_
 
 export interface CardIntroCreate_video_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
-  parentBlockId: string | null;
+  parentBlockId: string;
   gtmEventName: string | null;
   blockId: string;
 }
 
 export interface CardIntroCreate_video_action_LinkAction {
   __typename: "LinkAction";
-  parentBlockId: string | null;
+  parentBlockId: string;
   gtmEventName: string | null;
   url: string;
 }
 
 export interface CardIntroCreate_video_action_EmailAction {
   __typename: "EmailAction";
-  parentBlockId: string | null;
+  parentBlockId: string;
   gtmEventName: string | null;
   email: string;
 }

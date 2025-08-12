@@ -1,2 +1,1 @@
 import './gridItem'
-import './inputs'

@@ -1,4 +1,5 @@
-import { prisma } from '../../../lib/prisma'
+import { GraphQLError } from 'graphql'
+
 import { ActionInterface } from '../../action/action'
 import { builder } from '../../builder'
 import { Block } from '../block'
@@ -15,15 +16,10 @@ export const VideoTriggerBlock = builder.prismaObject('Block', {
 this is the number of seconds since the start of the video`,
       resolve: (block) => block.triggerStart ?? 0
     }),
-    action: t.field({
+    action: t.relation('action', {
       type: ActionInterface,
-      nullable: true,
-      resolve: async (block) => {
-        const action = await prisma.action.findUnique({
-          where: { parentBlockId: block.id }
-        })
-        return action
-      }
+      nullable: false,
+      onNull: () => new GraphQLError('Action not found')
     })
   })
 })

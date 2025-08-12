@@ -72,6 +72,9 @@ export const ButtonBlock = builder.prismaObject('Block', {
     settings: t.field({
       type: ButtonBlockSettings,
       nullable: true,
+      select: {
+        settings: true
+      },
       resolve: ({ settings }) => settings as unknown as ButtonBlockSettingsType
     }),
     action: t.field({

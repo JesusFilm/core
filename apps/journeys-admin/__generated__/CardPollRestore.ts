@@ -18,21 +18,21 @@ export interface CardPollRestore_imageRestore_GridContainerBlock {
 
 export interface CardPollRestore_imageRestore_ButtonBlock_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
-  parentBlockId: string | null;
+  parentBlockId: string;
   gtmEventName: string | null;
   blockId: string;
 }
 
 export interface CardPollRestore_imageRestore_ButtonBlock_action_LinkAction {
   __typename: "LinkAction";
-  parentBlockId: string | null;
+  parentBlockId: string;
   gtmEventName: string | null;
   url: string;
 }
 
 export interface CardPollRestore_imageRestore_ButtonBlock_action_EmailAction {
   __typename: "EmailAction";
-  parentBlockId: string | null;
+  parentBlockId: string;
   gtmEventName: string | null;
   email: string;
 }
@@ -131,21 +131,21 @@ export interface CardPollRestore_imageRestore_ImageBlock {
 
 export interface CardPollRestore_imageRestore_RadioOptionBlock_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
-  parentBlockId: string | null;
+  parentBlockId: string;
   gtmEventName: string | null;
   blockId: string;
 }
 
 export interface CardPollRestore_imageRestore_RadioOptionBlock_action_LinkAction {
   __typename: "LinkAction";
-  parentBlockId: string | null;
+  parentBlockId: string;
   gtmEventName: string | null;
   url: string;
 }
 
 export interface CardPollRestore_imageRestore_RadioOptionBlock_action_EmailAction {
   __typename: "EmailAction";
-  parentBlockId: string | null;
+  parentBlockId: string;
   gtmEventName: string | null;
   email: string;
 }
@@ -177,21 +177,21 @@ export interface CardPollRestore_imageRestore_RadioQuestionBlock {
 
 export interface CardPollRestore_imageRestore_SignUpBlock_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
-  parentBlockId: string | null;
+  parentBlockId: string;
   gtmEventName: string | null;
   blockId: string;
 }
 
 export interface CardPollRestore_imageRestore_SignUpBlock_action_LinkAction {
   __typename: "LinkAction";
-  parentBlockId: string | null;
+  parentBlockId: string;
   gtmEventName: string | null;
   url: string;
 }
 
 export interface CardPollRestore_imageRestore_SignUpBlock_action_EmailAction {
   __typename: "EmailAction";
-  parentBlockId: string | null;
+  parentBlockId: string;
   gtmEventName: string | null;
   email: string;
 }
@@ -329,21 +329,21 @@ export type CardPollRestore_imageRestore_VideoBlock_mediaVideo = CardPollRestore
 
 export interface CardPollRestore_imageRestore_VideoBlock_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
-  parentBlockId: string | null;
+  parentBlockId: string;
   gtmEventName: string | null;
   blockId: string;
 }
 
 export interface CardPollRestore_imageRestore_VideoBlock_action_LinkAction {
   __typename: "LinkAction";
-  parentBlockId: string | null;
+  parentBlockId: string;
   gtmEventName: string | null;
   url: string;
 }
 
 export interface CardPollRestore_imageRestore_VideoBlock_action_EmailAction {
   __typename: "EmailAction";
-  parentBlockId: string | null;
+  parentBlockId: string;
   gtmEventName: string | null;
   email: string;
 }
@@ -427,21 +427,21 @@ export interface CardPollRestore_imageRestore_VideoBlock {
 
 export interface CardPollRestore_imageRestore_VideoTriggerBlock_triggerAction_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
-  parentBlockId: string | null;
+  parentBlockId: string;
   gtmEventName: string | null;
   blockId: string;
 }
 
 export interface CardPollRestore_imageRestore_VideoTriggerBlock_triggerAction_LinkAction {
   __typename: "LinkAction";
-  parentBlockId: string | null;
+  parentBlockId: string;
   gtmEventName: string | null;
   url: string;
 }
 
 export interface CardPollRestore_imageRestore_VideoTriggerBlock_triggerAction_EmailAction {
   __typename: "EmailAction";
-  parentBlockId: string | null;
+  parentBlockId: string;
   gtmEventName: string | null;
   email: string;
 }
@@ -472,21 +472,21 @@ export interface CardPollRestore_subtitleRestore_GridContainerBlock {
 
 export interface CardPollRestore_subtitleRestore_ButtonBlock_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
-  parentBlockId: string | null;
+  parentBlockId: string;
   gtmEventName: string | null;
   blockId: string;
 }
 
 export interface CardPollRestore_subtitleRestore_ButtonBlock_action_LinkAction {
   __typename: "LinkAction";
-  parentBlockId: string | null;
+  parentBlockId: string;
   gtmEventName: string | null;
   url: string;
 }
 
 export interface CardPollRestore_subtitleRestore_ButtonBlock_action_EmailAction {
   __typename: "EmailAction";
-  parentBlockId: string | null;
+  parentBlockId: string;
   gtmEventName: string | null;
   email: string;
 }
@@ -585,21 +585,21 @@ export interface CardPollRestore_subtitleRestore_ImageBlock {
 
 export interface CardPollRestore_subtitleRestore_RadioOptionBlock_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
-  parentBlockId: string | null;
+  parentBlockId: string;
   gtmEventName: string | null;
   blockId: string;
 }
 
 export interface CardPollRestore_subtitleRestore_RadioOptionBlock_action_LinkAction {
   __typename: "LinkAction";
-  parentBlockId: string | null;
+  parentBlockId: string;
   gtmEventName: string | null;
   url: string;
 }
 
 export interface CardPollRestore_subtitleRestore_RadioOptionBlock_action_EmailAction {
   __typename: "EmailAction";
-  parentBlockId: string | null;
+  parentBlockId: string;
   gtmEventName: string | null;
   email: string;
 }
@@ -631,21 +631,21 @@ export interface CardPollRestore_subtitleRestore_RadioQuestionBlock {
 
 export interface CardPollRestore_subtitleRestore_SignUpBlock_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
-  parentBlockId: string | null;
+  parentBlockId: string;
   gtmEventName: string | null;
   blockId: string;
 }
 
 export interface CardPollRestore_subtitleRestore_SignUpBlock_action_LinkAction {
   __typename: "LinkAction";
-  parentBlockId: string | null;
+  parentBlockId: string;
   gtmEventName: string | null;
   url: string;
 }
 
 export interface CardPollRestore_subtitleRestore_SignUpBlock_action_EmailAction {
   __typename: "EmailAction";
-  parentBlockId: string | null;
+  parentBlockId: string;
   gtmEventName: string | null;
   email: string;
 }
@@ -783,21 +783,21 @@ export type CardPollRestore_subtitleRestore_VideoBlock_mediaVideo = CardPollRest
 
 export interface CardPollRestore_subtitleRestore_VideoBlock_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
-  parentBlockId: string | null;
+  parentBlockId: string;
   gtmEventName: string | null;
   blockId: string;
 }
 
 export interface CardPollRestore_subtitleRestore_VideoBlock_action_LinkAction {
   __typename: "LinkAction";
-  parentBlockId: string | null;
+  parentBlockId: string;
   gtmEventName: string | null;
   url: string;
 }
 
 export interface CardPollRestore_subtitleRestore_VideoBlock_action_EmailAction {
   __typename: "EmailAction";
-  parentBlockId: string | null;
+  parentBlockId: string;
   gtmEventName: string | null;
   email: string;
 }
@@ -881,21 +881,21 @@ export interface CardPollRestore_subtitleRestore_VideoBlock {
 
 export interface CardPollRestore_subtitleRestore_VideoTriggerBlock_triggerAction_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
-  parentBlockId: string | null;
+  parentBlockId: string;
   gtmEventName: string | null;
   blockId: string;
 }
 
 export interface CardPollRestore_subtitleRestore_VideoTriggerBlock_triggerAction_LinkAction {
   __typename: "LinkAction";
-  parentBlockId: string | null;
+  parentBlockId: string;
   gtmEventName: string | null;
   url: string;
 }
 
 export interface CardPollRestore_subtitleRestore_VideoTriggerBlock_triggerAction_EmailAction {
   __typename: "EmailAction";
-  parentBlockId: string | null;
+  parentBlockId: string;
   gtmEventName: string | null;
   email: string;
 }
@@ -926,21 +926,21 @@ export interface CardPollRestore_titleRestore_GridContainerBlock {
 
 export interface CardPollRestore_titleRestore_ButtonBlock_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
-  parentBlockId: string | null;
+  parentBlockId: string;
   gtmEventName: string | null;
   blockId: string;
 }
 
 export interface CardPollRestore_titleRestore_ButtonBlock_action_LinkAction {
   __typename: "LinkAction";
-  parentBlockId: string | null;
+  parentBlockId: string;
   gtmEventName: string | null;
   url: string;
 }
 
 export interface CardPollRestore_titleRestore_ButtonBlock_action_EmailAction {
   __typename: "EmailAction";
-  parentBlockId: string | null;
+  parentBlockId: string;
   gtmEventName: string | null;
   email: string;
 }
@@ -1039,21 +1039,21 @@ export interface CardPollRestore_titleRestore_ImageBlock {
 
 export interface CardPollRestore_titleRestore_RadioOptionBlock_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
-  parentBlockId: string | null;
+  parentBlockId: string;
   gtmEventName: string | null;
   blockId: string;
 }
 
 export interface CardPollRestore_titleRestore_RadioOptionBlock_action_LinkAction {
   __typename: "LinkAction";
-  parentBlockId: string | null;
+  parentBlockId: string;
   gtmEventName: string | null;
   url: string;
 }
 
 export interface CardPollRestore_titleRestore_RadioOptionBlock_action_EmailAction {
   __typename: "EmailAction";
-  parentBlockId: string | null;
+  parentBlockId: string;
   gtmEventName: string | null;
   email: string;
 }
@@ -1085,21 +1085,21 @@ export interface CardPollRestore_titleRestore_RadioQuestionBlock {
 
 export interface CardPollRestore_titleRestore_SignUpBlock_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
-  parentBlockId: string | null;
+  parentBlockId: string;
   gtmEventName: string | null;
   blockId: string;
 }
 
 export interface CardPollRestore_titleRestore_SignUpBlock_action_LinkAction {
   __typename: "LinkAction";
-  parentBlockId: string | null;
+  parentBlockId: string;
   gtmEventName: string | null;
   url: string;
 }
 
 export interface CardPollRestore_titleRestore_SignUpBlock_action_EmailAction {
   __typename: "EmailAction";
-  parentBlockId: string | null;
+  parentBlockId: string;
   gtmEventName: string | null;
   email: string;
 }
@@ -1237,21 +1237,21 @@ export type CardPollRestore_titleRestore_VideoBlock_mediaVideo = CardPollRestore
 
 export interface CardPollRestore_titleRestore_VideoBlock_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
-  parentBlockId: string | null;
+  parentBlockId: string;
   gtmEventName: string | null;
   blockId: string;
 }
 
 export interface CardPollRestore_titleRestore_VideoBlock_action_LinkAction {
   __typename: "LinkAction";
-  parentBlockId: string | null;
+  parentBlockId: string;
   gtmEventName: string | null;
   url: string;
 }
 
 export interface CardPollRestore_titleRestore_VideoBlock_action_EmailAction {
   __typename: "EmailAction";
-  parentBlockId: string | null;
+  parentBlockId: string;
   gtmEventName: string | null;
   email: string;
 }
@@ -1335,21 +1335,21 @@ export interface CardPollRestore_titleRestore_VideoBlock {
 
 export interface CardPollRestore_titleRestore_VideoTriggerBlock_triggerAction_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
-  parentBlockId: string | null;
+  parentBlockId: string;
   gtmEventName: string | null;
   blockId: string;
 }
 
 export interface CardPollRestore_titleRestore_VideoTriggerBlock_triggerAction_LinkAction {
   __typename: "LinkAction";
-  parentBlockId: string | null;
+  parentBlockId: string;
   gtmEventName: string | null;
   url: string;
 }
 
 export interface CardPollRestore_titleRestore_VideoTriggerBlock_triggerAction_EmailAction {
   __typename: "EmailAction";
-  parentBlockId: string | null;
+  parentBlockId: string;
   gtmEventName: string | null;
   email: string;
 }
@@ -1380,21 +1380,21 @@ export interface CardPollRestore_radioQuestionRestore_GridContainerBlock {
 
 export interface CardPollRestore_radioQuestionRestore_ButtonBlock_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
-  parentBlockId: string | null;
+  parentBlockId: string;
   gtmEventName: string | null;
   blockId: string;
 }
 
 export interface CardPollRestore_radioQuestionRestore_ButtonBlock_action_LinkAction {
   __typename: "LinkAction";
-  parentBlockId: string | null;
+  parentBlockId: string;
   gtmEventName: string | null;
   url: string;
 }
 
 export interface CardPollRestore_radioQuestionRestore_ButtonBlock_action_EmailAction {
   __typename: "EmailAction";
-  parentBlockId: string | null;
+  parentBlockId: string;
   gtmEventName: string | null;
   email: string;
 }
@@ -1493,21 +1493,21 @@ export interface CardPollRestore_radioQuestionRestore_ImageBlock {
 
 export interface CardPollRestore_radioQuestionRestore_RadioOptionBlock_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
-  parentBlockId: string | null;
+  parentBlockId: string;
   gtmEventName: string | null;
   blockId: string;
 }
 
 export interface CardPollRestore_radioQuestionRestore_RadioOptionBlock_action_LinkAction {
   __typename: "LinkAction";
-  parentBlockId: string | null;
+  parentBlockId: string;
   gtmEventName: string | null;
   url: string;
 }
 
 export interface CardPollRestore_radioQuestionRestore_RadioOptionBlock_action_EmailAction {
   __typename: "EmailAction";
-  parentBlockId: string | null;
+  parentBlockId: string;
   gtmEventName: string | null;
   email: string;
 }
@@ -1539,21 +1539,21 @@ export interface CardPollRestore_radioQuestionRestore_RadioQuestionBlock {
 
 export interface CardPollRestore_radioQuestionRestore_SignUpBlock_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
-  parentBlockId: string | null;
+  parentBlockId: string;
   gtmEventName: string | null;
   blockId: string;
 }
 
 export interface CardPollRestore_radioQuestionRestore_SignUpBlock_action_LinkAction {
   __typename: "LinkAction";
-  parentBlockId: string | null;
+  parentBlockId: string;
   gtmEventName: string | null;
   url: string;
 }
 
 export interface CardPollRestore_radioQuestionRestore_SignUpBlock_action_EmailAction {
   __typename: "EmailAction";
-  parentBlockId: string | null;
+  parentBlockId: string;
   gtmEventName: string | null;
   email: string;
 }
@@ -1691,21 +1691,21 @@ export type CardPollRestore_radioQuestionRestore_VideoBlock_mediaVideo = CardPol
 
 export interface CardPollRestore_radioQuestionRestore_VideoBlock_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
-  parentBlockId: string | null;
+  parentBlockId: string;
   gtmEventName: string | null;
   blockId: string;
 }
 
 export interface CardPollRestore_radioQuestionRestore_VideoBlock_action_LinkAction {
   __typename: "LinkAction";
-  parentBlockId: string | null;
+  parentBlockId: string;
   gtmEventName: string | null;
   url: string;
 }
 
 export interface CardPollRestore_radioQuestionRestore_VideoBlock_action_EmailAction {
   __typename: "EmailAction";
-  parentBlockId: string | null;
+  parentBlockId: string;
   gtmEventName: string | null;
   email: string;
 }
@@ -1789,21 +1789,21 @@ export interface CardPollRestore_radioQuestionRestore_VideoBlock {
 
 export interface CardPollRestore_radioQuestionRestore_VideoTriggerBlock_triggerAction_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
-  parentBlockId: string | null;
+  parentBlockId: string;
   gtmEventName: string | null;
   blockId: string;
 }
 
 export interface CardPollRestore_radioQuestionRestore_VideoTriggerBlock_triggerAction_LinkAction {
   __typename: "LinkAction";
-  parentBlockId: string | null;
+  parentBlockId: string;
   gtmEventName: string | null;
   url: string;
 }
 
 export interface CardPollRestore_radioQuestionRestore_VideoTriggerBlock_triggerAction_EmailAction {
   __typename: "EmailAction";
-  parentBlockId: string | null;
+  parentBlockId: string;
   gtmEventName: string | null;
   email: string;
 }
@@ -1834,21 +1834,21 @@ export interface CardPollRestore_radioOption1Restore_GridContainerBlock {
 
 export interface CardPollRestore_radioOption1Restore_ButtonBlock_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
-  parentBlockId: string | null;
+  parentBlockId: string;
   gtmEventName: string | null;
   blockId: string;
 }
 
 export interface CardPollRestore_radioOption1Restore_ButtonBlock_action_LinkAction {
   __typename: "LinkAction";
-  parentBlockId: string | null;
+  parentBlockId: string;
   gtmEventName: string | null;
   url: string;
 }
 
 export interface CardPollRestore_radioOption1Restore_ButtonBlock_action_EmailAction {
   __typename: "EmailAction";
-  parentBlockId: string | null;
+  parentBlockId: string;
   gtmEventName: string | null;
   email: string;
 }
@@ -1947,21 +1947,21 @@ export interface CardPollRestore_radioOption1Restore_ImageBlock {
 
 export interface CardPollRestore_radioOption1Restore_RadioOptionBlock_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
-  parentBlockId: string | null;
+  parentBlockId: string;
   gtmEventName: string | null;
   blockId: string;
 }
 
 export interface CardPollRestore_radioOption1Restore_RadioOptionBlock_action_LinkAction {
   __typename: "LinkAction";
-  parentBlockId: string | null;
+  parentBlockId: string;
   gtmEventName: string | null;
   url: string;
 }
 
 export interface CardPollRestore_radioOption1Restore_RadioOptionBlock_action_EmailAction {
   __typename: "EmailAction";
-  parentBlockId: string | null;
+  parentBlockId: string;
   gtmEventName: string | null;
   email: string;
 }
@@ -1993,21 +1993,21 @@ export interface CardPollRestore_radioOption1Restore_RadioQuestionBlock {
 
 export interface CardPollRestore_radioOption1Restore_SignUpBlock_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
-  parentBlockId: string | null;
+  parentBlockId: string;
   gtmEventName: string | null;
   blockId: string;
 }
 
 export interface CardPollRestore_radioOption1Restore_SignUpBlock_action_LinkAction {
   __typename: "LinkAction";
-  parentBlockId: string | null;
+  parentBlockId: string;
   gtmEventName: string | null;
   url: string;
 }
 
 export interface CardPollRestore_radioOption1Restore_SignUpBlock_action_EmailAction {
   __typename: "EmailAction";
-  parentBlockId: string | null;
+  parentBlockId: string;
   gtmEventName: string | null;
   email: string;
 }
@@ -2145,21 +2145,21 @@ export type CardPollRestore_radioOption1Restore_VideoBlock_mediaVideo = CardPoll
 
 export interface CardPollRestore_radioOption1Restore_VideoBlock_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
-  parentBlockId: string | null;
+  parentBlockId: string;
   gtmEventName: string | null;
   blockId: string;
 }
 
 export interface CardPollRestore_radioOption1Restore_VideoBlock_action_LinkAction {
   __typename: "LinkAction";
-  parentBlockId: string | null;
+  parentBlockId: string;
   gtmEventName: string | null;
   url: string;
 }
 
 export interface CardPollRestore_radioOption1Restore_VideoBlock_action_EmailAction {
   __typename: "EmailAction";
-  parentBlockId: string | null;
+  parentBlockId: string;
   gtmEventName: string | null;
   email: string;
 }
@@ -2243,21 +2243,21 @@ export interface CardPollRestore_radioOption1Restore_VideoBlock {
 
 export interface CardPollRestore_radioOption1Restore_VideoTriggerBlock_triggerAction_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
-  parentBlockId: string | null;
+  parentBlockId: string;
   gtmEventName: string | null;
   blockId: string;
 }
 
 export interface CardPollRestore_radioOption1Restore_VideoTriggerBlock_triggerAction_LinkAction {
   __typename: "LinkAction";
-  parentBlockId: string | null;
+  parentBlockId: string;
   gtmEventName: string | null;
   url: string;
 }
 
 export interface CardPollRestore_radioOption1Restore_VideoTriggerBlock_triggerAction_EmailAction {
   __typename: "EmailAction";
-  parentBlockId: string | null;
+  parentBlockId: string;
   gtmEventName: string | null;
   email: string;
 }
@@ -2288,21 +2288,21 @@ export interface CardPollRestore_radioOption2Restore_GridContainerBlock {
 
 export interface CardPollRestore_radioOption2Restore_ButtonBlock_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
-  parentBlockId: string | null;
+  parentBlockId: string;
   gtmEventName: string | null;
   blockId: string;
 }
 
 export interface CardPollRestore_radioOption2Restore_ButtonBlock_action_LinkAction {
   __typename: "LinkAction";
-  parentBlockId: string | null;
+  parentBlockId: string;
   gtmEventName: string | null;
   url: string;
 }
 
 export interface CardPollRestore_radioOption2Restore_ButtonBlock_action_EmailAction {
   __typename: "EmailAction";
-  parentBlockId: string | null;
+  parentBlockId: string;
   gtmEventName: string | null;
   email: string;
 }
@@ -2401,21 +2401,21 @@ export interface CardPollRestore_radioOption2Restore_ImageBlock {
 
 export interface CardPollRestore_radioOption2Restore_RadioOptionBlock_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
-  parentBlockId: string | null;
+  parentBlockId: string;
   gtmEventName: string | null;
   blockId: string;
 }
 
 export interface CardPollRestore_radioOption2Restore_RadioOptionBlock_action_LinkAction {
   __typename: "LinkAction";
-  parentBlockId: string | null;
+  parentBlockId: string;
   gtmEventName: string | null;
   url: string;
 }
 
 export interface CardPollRestore_radioOption2Restore_RadioOptionBlock_action_EmailAction {
   __typename: "EmailAction";
-  parentBlockId: string | null;
+  parentBlockId: string;
   gtmEventName: string | null;
   email: string;
 }
@@ -2447,21 +2447,21 @@ export interface CardPollRestore_radioOption2Restore_RadioQuestionBlock {
 
 export interface CardPollRestore_radioOption2Restore_SignUpBlock_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
-  parentBlockId: string | null;
+  parentBlockId: string;
   gtmEventName: string | null;
   blockId: string;
 }
 
 export interface CardPollRestore_radioOption2Restore_SignUpBlock_action_LinkAction {
   __typename: "LinkAction";
-  parentBlockId: string | null;
+  parentBlockId: string;
   gtmEventName: string | null;
   url: string;
 }
 
 export interface CardPollRestore_radioOption2Restore_SignUpBlock_action_EmailAction {
   __typename: "EmailAction";
-  parentBlockId: string | null;
+  parentBlockId: string;
   gtmEventName: string | null;
   email: string;
 }
@@ -2599,21 +2599,21 @@ export type CardPollRestore_radioOption2Restore_VideoBlock_mediaVideo = CardPoll
 
 export interface CardPollRestore_radioOption2Restore_VideoBlock_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
-  parentBlockId: string | null;
+  parentBlockId: string;
   gtmEventName: string | null;
   blockId: string;
 }
 
 export interface CardPollRestore_radioOption2Restore_VideoBlock_action_LinkAction {
   __typename: "LinkAction";
-  parentBlockId: string | null;
+  parentBlockId: string;
   gtmEventName: string | null;
   url: string;
 }
 
 export interface CardPollRestore_radioOption2Restore_VideoBlock_action_EmailAction {
   __typename: "EmailAction";
-  parentBlockId: string | null;
+  parentBlockId: string;
   gtmEventName: string | null;
   email: string;
 }
@@ -2697,21 +2697,21 @@ export interface CardPollRestore_radioOption2Restore_VideoBlock {
 
 export interface CardPollRestore_radioOption2Restore_VideoTriggerBlock_triggerAction_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
-  parentBlockId: string | null;
+  parentBlockId: string;
   gtmEventName: string | null;
   blockId: string;
 }
 
 export interface CardPollRestore_radioOption2Restore_VideoTriggerBlock_triggerAction_LinkAction {
   __typename: "LinkAction";
-  parentBlockId: string | null;
+  parentBlockId: string;
   gtmEventName: string | null;
   url: string;
 }
 
 export interface CardPollRestore_radioOption2Restore_VideoTriggerBlock_triggerAction_EmailAction {
   __typename: "EmailAction";
-  parentBlockId: string | null;
+  parentBlockId: string;
   gtmEventName: string | null;
   email: string;
 }
@@ -2742,21 +2742,21 @@ export interface CardPollRestore_radioOption3Restore_GridContainerBlock {
 
 export interface CardPollRestore_radioOption3Restore_ButtonBlock_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
-  parentBlockId: string | null;
+  parentBlockId: string;
   gtmEventName: string | null;
   blockId: string;
 }
 
 export interface CardPollRestore_radioOption3Restore_ButtonBlock_action_LinkAction {
   __typename: "LinkAction";
-  parentBlockId: string | null;
+  parentBlockId: string;
   gtmEventName: string | null;
   url: string;
 }
 
 export interface CardPollRestore_radioOption3Restore_ButtonBlock_action_EmailAction {
   __typename: "EmailAction";
-  parentBlockId: string | null;
+  parentBlockId: string;
   gtmEventName: string | null;
   email: string;
 }
@@ -2855,21 +2855,21 @@ export interface CardPollRestore_radioOption3Restore_ImageBlock {
 
 export interface CardPollRestore_radioOption3Restore_RadioOptionBlock_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
-  parentBlockId: string | null;
+  parentBlockId: string;
   gtmEventName: string | null;
   blockId: string;
 }
 
 export interface CardPollRestore_radioOption3Restore_RadioOptionBlock_action_LinkAction {
   __typename: "LinkAction";
-  parentBlockId: string | null;
+  parentBlockId: string;
   gtmEventName: string | null;
   url: string;
 }
 
 export interface CardPollRestore_radioOption3Restore_RadioOptionBlock_action_EmailAction {
   __typename: "EmailAction";
-  parentBlockId: string | null;
+  parentBlockId: string;
   gtmEventName: string | null;
   email: string;
 }
@@ -2901,21 +2901,21 @@ export interface CardPollRestore_radioOption3Restore_RadioQuestionBlock {
 
 export interface CardPollRestore_radioOption3Restore_SignUpBlock_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
-  parentBlockId: string | null;
+  parentBlockId: string;
   gtmEventName: string | null;
   blockId: string;
 }
 
 export interface CardPollRestore_radioOption3Restore_SignUpBlock_action_LinkAction {
   __typename: "LinkAction";
-  parentBlockId: string | null;
+  parentBlockId: string;
   gtmEventName: string | null;
   url: string;
 }
 
 export interface CardPollRestore_radioOption3Restore_SignUpBlock_action_EmailAction {
   __typename: "EmailAction";
-  parentBlockId: string | null;
+  parentBlockId: string;
   gtmEventName: string | null;
   email: string;
 }
@@ -3053,21 +3053,21 @@ export type CardPollRestore_radioOption3Restore_VideoBlock_mediaVideo = CardPoll
 
 export interface CardPollRestore_radioOption3Restore_VideoBlock_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
-  parentBlockId: string | null;
+  parentBlockId: string;
   gtmEventName: string | null;
   blockId: string;
 }
 
 export interface CardPollRestore_radioOption3Restore_VideoBlock_action_LinkAction {
   __typename: "LinkAction";
-  parentBlockId: string | null;
+  parentBlockId: string;
   gtmEventName: string | null;
   url: string;
 }
 
 export interface CardPollRestore_radioOption3Restore_VideoBlock_action_EmailAction {
   __typename: "EmailAction";
-  parentBlockId: string | null;
+  parentBlockId: string;
   gtmEventName: string | null;
   email: string;
 }
@@ -3151,21 +3151,21 @@ export interface CardPollRestore_radioOption3Restore_VideoBlock {
 
 export interface CardPollRestore_radioOption3Restore_VideoTriggerBlock_triggerAction_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
-  parentBlockId: string | null;
+  parentBlockId: string;
   gtmEventName: string | null;
   blockId: string;
 }
 
 export interface CardPollRestore_radioOption3Restore_VideoTriggerBlock_triggerAction_LinkAction {
   __typename: "LinkAction";
-  parentBlockId: string | null;
+  parentBlockId: string;
   gtmEventName: string | null;
   url: string;
 }
 
 export interface CardPollRestore_radioOption3Restore_VideoTriggerBlock_triggerAction_EmailAction {
   __typename: "EmailAction";
-  parentBlockId: string | null;
+  parentBlockId: string;
   gtmEventName: string | null;
   email: string;
 }
@@ -3196,21 +3196,21 @@ export interface CardPollRestore_radioOption4Restore_GridContainerBlock {
 
 export interface CardPollRestore_radioOption4Restore_ButtonBlock_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
-  parentBlockId: string | null;
+  parentBlockId: string;
   gtmEventName: string | null;
   blockId: string;
 }
 
 export interface CardPollRestore_radioOption4Restore_ButtonBlock_action_LinkAction {
   __typename: "LinkAction";
-  parentBlockId: string | null;
+  parentBlockId: string;
   gtmEventName: string | null;
   url: string;
 }
 
 export interface CardPollRestore_radioOption4Restore_ButtonBlock_action_EmailAction {
   __typename: "EmailAction";
-  parentBlockId: string | null;
+  parentBlockId: string;
   gtmEventName: string | null;
   email: string;
 }
@@ -3309,21 +3309,21 @@ export interface CardPollRestore_radioOption4Restore_ImageBlock {
 
 export interface CardPollRestore_radioOption4Restore_RadioOptionBlock_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
-  parentBlockId: string | null;
+  parentBlockId: string;
   gtmEventName: string | null;
   blockId: string;
 }
 
 export interface CardPollRestore_radioOption4Restore_RadioOptionBlock_action_LinkAction {
   __typename: "LinkAction";
-  parentBlockId: string | null;
+  parentBlockId: string;
   gtmEventName: string | null;
   url: string;
 }
 
 export interface CardPollRestore_radioOption4Restore_RadioOptionBlock_action_EmailAction {
   __typename: "EmailAction";
-  parentBlockId: string | null;
+  parentBlockId: string;
   gtmEventName: string | null;
   email: string;
 }
@@ -3355,21 +3355,21 @@ export interface CardPollRestore_radioOption4Restore_RadioQuestionBlock {
 
 export interface CardPollRestore_radioOption4Restore_SignUpBlock_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
-  parentBlockId: string | null;
+  parentBlockId: string;
   gtmEventName: string | null;
   blockId: string;
 }
 
 export interface CardPollRestore_radioOption4Restore_SignUpBlock_action_LinkAction {
   __typename: "LinkAction";
-  parentBlockId: string | null;
+  parentBlockId: string;
   gtmEventName: string | null;
   url: string;
 }
 
 export interface CardPollRestore_radioOption4Restore_SignUpBlock_action_EmailAction {
   __typename: "EmailAction";
-  parentBlockId: string | null;
+  parentBlockId: string;
   gtmEventName: string | null;
   email: string;
 }
@@ -3507,21 +3507,21 @@ export type CardPollRestore_radioOption4Restore_VideoBlock_mediaVideo = CardPoll
 
 export interface CardPollRestore_radioOption4Restore_VideoBlock_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
-  parentBlockId: string | null;
+  parentBlockId: string;
   gtmEventName: string | null;
   blockId: string;
 }
 
 export interface CardPollRestore_radioOption4Restore_VideoBlock_action_LinkAction {
   __typename: "LinkAction";
-  parentBlockId: string | null;
+  parentBlockId: string;
   gtmEventName: string | null;
   url: string;
 }
 
 export interface CardPollRestore_radioOption4Restore_VideoBlock_action_EmailAction {
   __typename: "EmailAction";
-  parentBlockId: string | null;
+  parentBlockId: string;
   gtmEventName: string | null;
   email: string;
 }
@@ -3605,21 +3605,21 @@ export interface CardPollRestore_radioOption4Restore_VideoBlock {
 
 export interface CardPollRestore_radioOption4Restore_VideoTriggerBlock_triggerAction_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
-  parentBlockId: string | null;
+  parentBlockId: string;
   gtmEventName: string | null;
   blockId: string;
 }
 
 export interface CardPollRestore_radioOption4Restore_VideoTriggerBlock_triggerAction_LinkAction {
   __typename: "LinkAction";
-  parentBlockId: string | null;
+  parentBlockId: string;
   gtmEventName: string | null;
   url: string;
 }
 
 export interface CardPollRestore_radioOption4Restore_VideoTriggerBlock_triggerAction_EmailAction {
   __typename: "EmailAction";
-  parentBlockId: string | null;
+  parentBlockId: string;
   gtmEventName: string | null;
   email: string;
 }
@@ -3650,21 +3650,21 @@ export interface CardPollRestore_bodyRestore_GridContainerBlock {
 
 export interface CardPollRestore_bodyRestore_ButtonBlock_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
-  parentBlockId: string | null;
+  parentBlockId: string;
   gtmEventName: string | null;
   blockId: string;
 }
 
 export interface CardPollRestore_bodyRestore_ButtonBlock_action_LinkAction {
   __typename: "LinkAction";
-  parentBlockId: string | null;
+  parentBlockId: string;
   gtmEventName: string | null;
   url: string;
 }
 
 export interface CardPollRestore_bodyRestore_ButtonBlock_action_EmailAction {
   __typename: "EmailAction";
-  parentBlockId: string | null;
+  parentBlockId: string;
   gtmEventName: string | null;
   email: string;
 }
@@ -3763,21 +3763,21 @@ export interface CardPollRestore_bodyRestore_ImageBlock {
 
 export interface CardPollRestore_bodyRestore_RadioOptionBlock_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
-  parentBlockId: string | null;
+  parentBlockId: string;
   gtmEventName: string | null;
   blockId: string;
 }
 
 export interface CardPollRestore_bodyRestore_RadioOptionBlock_action_LinkAction {
   __typename: "LinkAction";
-  parentBlockId: string | null;
+  parentBlockId: string;
   gtmEventName: string | null;
   url: string;
 }
 
 export interface CardPollRestore_bodyRestore_RadioOptionBlock_action_EmailAction {
   __typename: "EmailAction";
-  parentBlockId: string | null;
+  parentBlockId: string;
   gtmEventName: string | null;
   email: string;
 }
@@ -3809,21 +3809,21 @@ export interface CardPollRestore_bodyRestore_RadioQuestionBlock {
 
 export interface CardPollRestore_bodyRestore_SignUpBlock_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
-  parentBlockId: string | null;
+  parentBlockId: string;
   gtmEventName: string | null;
   blockId: string;
 }
 
 export interface CardPollRestore_bodyRestore_SignUpBlock_action_LinkAction {
   __typename: "LinkAction";
-  parentBlockId: string | null;
+  parentBlockId: string;
   gtmEventName: string | null;
   url: string;
 }
 
 export interface CardPollRestore_bodyRestore_SignUpBlock_action_EmailAction {
   __typename: "EmailAction";
-  parentBlockId: string | null;
+  parentBlockId: string;
   gtmEventName: string | null;
   email: string;
 }
@@ -3961,21 +3961,21 @@ export type CardPollRestore_bodyRestore_VideoBlock_mediaVideo = CardPollRestore_
 
 export interface CardPollRestore_bodyRestore_VideoBlock_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
-  parentBlockId: string | null;
+  parentBlockId: string;
   gtmEventName: string | null;
   blockId: string;
 }
 
 export interface CardPollRestore_bodyRestore_VideoBlock_action_LinkAction {
   __typename: "LinkAction";
-  parentBlockId: string | null;
+  parentBlockId: string;
   gtmEventName: string | null;
   url: string;
 }
 
 export interface CardPollRestore_bodyRestore_VideoBlock_action_EmailAction {
   __typename: "EmailAction";
-  parentBlockId: string | null;
+  parentBlockId: string;
   gtmEventName: string | null;
   email: string;
 }
@@ -4059,21 +4059,21 @@ export interface CardPollRestore_bodyRestore_VideoBlock {
 
 export interface CardPollRestore_bodyRestore_VideoTriggerBlock_triggerAction_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
-  parentBlockId: string | null;
+  parentBlockId: string;
   gtmEventName: string | null;
   blockId: string;
 }
 
 export interface CardPollRestore_bodyRestore_VideoTriggerBlock_triggerAction_LinkAction {
   __typename: "LinkAction";
-  parentBlockId: string | null;
+  parentBlockId: string;
   gtmEventName: string | null;
   url: string;
 }
 
 export interface CardPollRestore_bodyRestore_VideoTriggerBlock_triggerAction_EmailAction {
   __typename: "EmailAction";
-  parentBlockId: string | null;
+  parentBlockId: string;
   gtmEventName: string | null;
   email: string;
 }

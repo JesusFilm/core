@@ -18,21 +18,21 @@ export interface BlockFields_GridContainerBlock {
 
 export interface BlockFields_ButtonBlock_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
-  parentBlockId: string | null;
+  parentBlockId: string;
   gtmEventName: string | null;
   blockId: string;
 }
 
 export interface BlockFields_ButtonBlock_action_LinkAction {
   __typename: "LinkAction";
-  parentBlockId: string | null;
+  parentBlockId: string;
   gtmEventName: string | null;
   url: string;
 }
 
 export interface BlockFields_ButtonBlock_action_EmailAction {
   __typename: "EmailAction";
-  parentBlockId: string | null;
+  parentBlockId: string;
   gtmEventName: string | null;
   email: string;
 }
@@ -131,21 +131,21 @@ export interface BlockFields_ImageBlock {
 
 export interface BlockFields_RadioOptionBlock_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
-  parentBlockId: string | null;
+  parentBlockId: string;
   gtmEventName: string | null;
   blockId: string;
 }
 
 export interface BlockFields_RadioOptionBlock_action_LinkAction {
   __typename: "LinkAction";
-  parentBlockId: string | null;
+  parentBlockId: string;
   gtmEventName: string | null;
   url: string;
 }
 
 export interface BlockFields_RadioOptionBlock_action_EmailAction {
   __typename: "EmailAction";
-  parentBlockId: string | null;
+  parentBlockId: string;
   gtmEventName: string | null;
   email: string;
 }
@@ -177,21 +177,21 @@ export interface BlockFields_RadioQuestionBlock {
 
 export interface BlockFields_SignUpBlock_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
-  parentBlockId: string | null;
+  parentBlockId: string;
   gtmEventName: string | null;
   blockId: string;
 }
 
 export interface BlockFields_SignUpBlock_action_LinkAction {
   __typename: "LinkAction";
-  parentBlockId: string | null;
+  parentBlockId: string;
   gtmEventName: string | null;
   url: string;
 }
 
 export interface BlockFields_SignUpBlock_action_EmailAction {
   __typename: "EmailAction";
-  parentBlockId: string | null;
+  parentBlockId: string;
   gtmEventName: string | null;
   email: string;
 }
@@ -329,21 +329,21 @@ export type BlockFields_VideoBlock_mediaVideo = BlockFields_VideoBlock_mediaVide
 
 export interface BlockFields_VideoBlock_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
-  parentBlockId: string | null;
+  parentBlockId: string;
   gtmEventName: string | null;
   blockId: string;
 }
 
 export interface BlockFields_VideoBlock_action_LinkAction {
   __typename: "LinkAction";
-  parentBlockId: string | null;
+  parentBlockId: string;
   gtmEventName: string | null;
   url: string;
 }
 
 export interface BlockFields_VideoBlock_action_EmailAction {
   __typename: "EmailAction";
-  parentBlockId: string | null;
+  parentBlockId: string;
   gtmEventName: string | null;
   email: string;
 }
@@ -427,21 +427,21 @@ export interface BlockFields_VideoBlock {
 
 export interface BlockFields_VideoTriggerBlock_triggerAction_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
-  parentBlockId: string | null;
+  parentBlockId: string;
   gtmEventName: string | null;
   blockId: string;
 }
 
 export interface BlockFields_VideoTriggerBlock_triggerAction_LinkAction {
   __typename: "LinkAction";
-  parentBlockId: string | null;
+  parentBlockId: string;
   gtmEventName: string | null;
   url: string;
 }
 
 export interface BlockFields_VideoTriggerBlock_triggerAction_EmailAction {
   __typename: "EmailAction";
-  parentBlockId: string | null;
+  parentBlockId: string;
   gtmEventName: string | null;
   email: string;
 }

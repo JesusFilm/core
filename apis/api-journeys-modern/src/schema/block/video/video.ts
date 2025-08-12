@@ -19,7 +19,7 @@ export const VideoBlock = builder.prismaObject('Block', {
   isTypeOf: (obj: any) => obj.typename === 'VideoBlock',
   fields: (t) => ({
     autoplay: t.boolean({
-      nullable: false,
+      nullable: true,
       resolve: (block) => block.autoplay ?? false
     }),
     startAt: t.exposeInt('startAt', {
@@ -29,7 +29,7 @@ export const VideoBlock = builder.prismaObject('Block', {
       nullable: true
     }),
     muted: t.boolean({
-      nullable: false,
+      nullable: true,
       resolve: (block) => block.muted ?? false
     }),
     videoId: t.exposeID('videoId', {
@@ -38,17 +38,18 @@ export const VideoBlock = builder.prismaObject('Block', {
     videoVariantLanguageId: t.exposeID('videoVariantLanguageId', {
       nullable: true
     }),
-    source: t.expose('source', {
+    source: t.field({
       type: VideoBlockSource,
+      nullable: false,
+      description: `internal source: videoId, videoVariantLanguageId, and video present
+youTube source: videoId, title, description, and duration present`,
+      resolve: (block) => block.source ?? 'internal'
+    }),
+    title: t.exposeString('title', {
       nullable: true
     }),
-    title: t.string({
-      nullable: false,
-      resolve: (block) => block.title ?? ''
-    }),
-    description: t.string({
-      nullable: false,
-      resolve: (block) => block.description ?? ''
+    description: t.exposeString('description', {
+      nullable: true
     }),
     image: t.exposeString('image', {
       nullable: true
@@ -64,13 +65,18 @@ export const VideoBlock = builder.prismaObject('Block', {
       nullable: true
     }),
     fullsize: t.boolean({
-      nullable: false,
+      nullable: true,
       resolve: (block) => block.fullsize ?? false
     }),
     action: t.relation('action'),
     mediaVideo: t.field({
       type: MediaVideo,
       nullable: true,
+      select: {
+        source: true,
+        videoId: true,
+        videoVariantLanguageId: true
+      },
       resolve: (block) => {
         if (
           !block.source ||
