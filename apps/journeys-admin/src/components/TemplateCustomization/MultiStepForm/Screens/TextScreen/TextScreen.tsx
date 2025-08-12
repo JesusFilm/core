@@ -145,16 +145,24 @@ export function TextScreen({ handleNext }: TextScreenProps): ReactElement {
 
   async function handleSubmit(): Promise<void> {
     if (!journey) return
-    await journeyCustomizationFieldUpdate({
-      variables: {
-        journeyId: journey.id,
-        input: replacementItems.map((item) => ({
-          id: item.id,
-          key: item.key,
-          value: item.value
-        }))
-      }
+    const originalItems = journey.journeyCustomizationFields ?? []
+    const hasChanges = replacementItems.some((item) => {
+      const original = originalItems.find((o) => o.id === item.id)
+      return (original?.value ?? '') !== (item.value ?? '')
     })
+
+    if (hasChanges) {
+      await journeyCustomizationFieldUpdate({
+        variables: {
+          journeyId: journey.id,
+          input: replacementItems.map((item) => ({
+            id: item.id,
+            key: item.key,
+            value: item.value
+          }))
+        }
+      })
+    }
     handleNext()
   }
 

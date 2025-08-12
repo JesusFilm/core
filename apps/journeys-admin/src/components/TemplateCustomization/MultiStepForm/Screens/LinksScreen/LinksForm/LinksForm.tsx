@@ -2,7 +2,7 @@ import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import TextField from '@mui/material/TextField'
 import IconButton from '@mui/material/IconButton'
-import OpenInNewIcon from '@mui/icons-material/OpenInNew'
+import LinkExternal from '@core/shared/ui/icons/LinkExternal'
 import { Form, useFormikContext } from 'formik'
 import { ReactElement } from 'react'
 import { useTranslation } from 'next-i18next'
@@ -37,7 +37,7 @@ export function LinksForm({ links }: LinksFormProps): ReactElement {
   }
 
   return (
-    <Form style={{ width: '100%' }}>
+    <Form id="linksForm" style={{ width: '100%' }}>
       <Stack sx={{ width: '100%', maxWidth: 700 }}>
         {links.map((link) => {
           const fieldName = link.id
@@ -50,7 +50,7 @@ export function LinksForm({ links }: LinksFormProps): ReactElement {
                 alignItems="center"
                 justifyContent="space-between"
               >
-                <Typography variant="body1" color="text.primary">
+                <Typography variant="h6" color="text.primary">
                   {link.label}
                 </Typography>
                 <IconButton
@@ -61,7 +61,7 @@ export function LinksForm({ links }: LinksFormProps): ReactElement {
                   edge="end"
                   color="error"
                 >
-                  <OpenInNewIcon />
+                  <LinkExternal />
                 </IconButton>
               </Stack>
               <TextField
