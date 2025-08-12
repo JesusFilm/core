@@ -42,7 +42,7 @@ describe('useBlockActionLinkUpdateMutation', () => {
     })
 
     await act(async () => {
-      await result.current[0](block1, 'https://github.com')
+      await result.current[0](block1, 'https://github.com', null, null)
 
       expect(mockResult).toHaveBeenCalled()
     })
@@ -65,7 +65,7 @@ describe('useBlockActionLinkUpdateMutation', () => {
     })
 
     await act(async () => {
-      await result.current[0](block1, 'https://github.com')
+      await result.current[0](block1, 'https://github.com', null, null)
 
       await waitFor(() =>
         expect(cache.extract()['ButtonBlock:button2.id']).toEqual({

@@ -25,6 +25,7 @@ export type JourneyLink =
       url: string
       label: string
       parentStepId?: string | null
+      customizable?: boolean | null
     }
 
 export function getJourneyLinks(
@@ -94,6 +95,7 @@ export function getJourneyLinks(
 
     let url: string | null = null
     let parentStepId: string | null = null
+    let customizable: boolean | null = null
     let linkType: 'url' | 'email' = 'url'
     switch (action.__typename) {
       case 'LinkAction':
@@ -101,6 +103,7 @@ export function getJourneyLinks(
           url = action.url
           parentStepId = action.parentStepId ?? null
           linkType = 'url'
+          customizable = action.customizable
         }
         break
       case 'EmailAction':
@@ -108,6 +111,7 @@ export function getJourneyLinks(
           url = action.email
           parentStepId = action.parentStepId ?? null
           linkType = 'email'
+          customizable = action.customizable
         }
         break
       default:
@@ -120,7 +124,8 @@ export function getJourneyLinks(
       linkType,
       parentStepId,
       url,
-      label
+      customizable,
+      label: label == null || label === '' ? t('No label provided') : label
     })
   })
   return links
