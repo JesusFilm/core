@@ -1,9 +1,24 @@
 import Button from '@mui/material/Button'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
-import { ReactElement } from 'react'
+import { ReactElement, useState } from 'react'
 
 import ArrowRightIcon from '@core/shared/ui/icons/ArrowRight'
+import Box from '@mui/material/Box'
+
+import { useTranslation } from 'next-i18next'
+import { LanguageScreenCardPreview } from './LanguageScreenCardPreview'
+import { useUser } from 'next-firebase-auth'
+import { useTeam } from '@core/journeys/ui/TeamProvider'
+import FormControl from '@mui/material/FormControl'
+import { Formik, FormikValues } from 'formik'
+import { boolean, object, string } from 'yup'
+import sortBy from 'lodash/sortBy'
+import { JourneyCustomizeTeamSelect } from './JourneyCustomizeTeamSelect'
+import { useJourneyDuplicateMutation } from '@core/journeys/ui/useJourneyDuplicateMutation'
+import { useJourney } from '@core/journeys/ui/JourneyProvider'
+import { useRouter } from 'next/router'
+import { useSnackbar } from 'notistack'
 
 interface LanguageScreenProps {
   handleNext: () => void
@@ -12,22 +27,97 @@ interface LanguageScreenProps {
 export function LanguageScreen({
   handleNext
 }: LanguageScreenProps): ReactElement {
+  const { t } = useTranslation('journeys-ui')
+  const user = useUser()
+  const router = useRouter()
+  const [loading, setLoading] = useState(false)
+  const { enqueueSnackbar } = useSnackbar()
+
+  const { journey } = useJourney()
+  //If the user is not authenticated, useUser will return a User instance with a null id https://github.com/gladly-team/next-firebase-auth?tab=readme-ov-file#useuser
+  const isSignedIn = user?.id != null
+  const { query } = useTeam()
+  const teams = query?.data?.teams ?? []
+
+  const validationSchema = object({
+    teamSelect: string().required()
+  })
+
+  const initialValues = {
+    teamSelect: query?.data?.getJourneyProfile?.lastActiveTeamId ?? ''
+  }
+
+  const [journeyDuplicate] = useJourneyDuplicateMutation()
+
+  async function handleSubmit(values: FormikValues) {
+    setLoading(true)
+    if (journey == null) {
+      setLoading(false)
+      return
+    }
+    if (isSignedIn) {
+      const { teamSelect: teamId } = values
+      const { data: duplicateData } = await journeyDuplicate({
+        variables: { id: journey.id, teamId }
+      })
+      if (duplicateData?.journeyDuplicate == null) {
+        enqueueSnackbar(
+          t(
+            'Failed to duplicate journey to team, please refresh the page and try again'
+          ),
+          {
+            variant: 'error'
+          }
+        )
+        setLoading(false)
+
+        return
+      }
+      await router.push(
+        `/templates/${duplicateData.journeyDuplicate.id}/customize`,
+        undefined,
+        { shallow: true }
+      )
+      handleNext()
+      setLoading(false)
+    }
+  }
+
   return (
-    <Stack>
+    <Stack justifyContent="center" alignItems="center" gap={4}>
       <Typography variant="h4" component="h1" gutterBottom>
-        Language Selection
+        {t('Lets get started!')}
       </Typography>
-      <Typography variant="body1" color="text.secondary">
-        Choose your preferred language for the journey template.
+      <LanguageScreenCardPreview />
+
+      <Typography variant="body1" color="text.secondary" align="center">
+        {t('Select a team')}
       </Typography>
-      <Button
-        variant="contained"
-        color="secondary"
-        onClick={handleNext}
-        sx={{ width: '300px', alignSelf: 'center', mt: 4 }}
+      <Formik
+        initialValues={initialValues}
+        validationSchema={validationSchema}
+        enableReinitialize
+        onSubmit={handleSubmit}
       >
-        <ArrowRightIcon />
-      </Button>
+        {({ handleSubmit }) => (
+          <FormControl sx={{ alignSelf: 'center' }}>
+            {isSignedIn && <JourneyCustomizeTeamSelect />}
+            <Button
+              disabled={loading}
+              variant="contained"
+              color="secondary"
+              onClick={() => handleSubmit()}
+              sx={{
+                width: { xs: '100%', sm: 300 },
+                alignSelf: 'center',
+                mt: 4
+              }}
+            >
+              <ArrowRightIcon />
+            </Button>
+          </FormControl>
+        )}
+      </Formik>
     </Stack>
   )
 }
