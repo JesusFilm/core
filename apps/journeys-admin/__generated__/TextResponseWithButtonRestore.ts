@@ -160,11 +160,11 @@ export interface TextResponseWithButtonRestore_textResponse_RadioOptionBlock {
   label: string;
   action: TextResponseWithButtonRestore_textResponse_RadioOptionBlock_action | null;
   /**
-   * pollOptionImageId is present if a child block should be used as a poll option image.
-   * This child block should not be rendered normally, instead it should be used
-   * as a poll option image. Blocks are often of type ImageBlock
+   * pollOptionImageBlockId is present if a child block should be used as a poll option image.
+   *       This child block should not be rendered normally, instead it should be used
+   *       as a poll option image. Blocks are often of type ImageBlock
    */
-  pollOptionImageId: string | null;
+  pollOptionImageBlockId: string | null;
 }
 
 export interface TextResponseWithButtonRestore_textResponse_RadioQuestionBlock {
@@ -614,11 +614,11 @@ export interface TextResponseWithButtonRestore_button_RadioOptionBlock {
   label: string;
   action: TextResponseWithButtonRestore_button_RadioOptionBlock_action | null;
   /**
-   * pollOptionImageId is present if a child block should be used as a poll option image.
-   * This child block should not be rendered normally, instead it should be used
-   * as a poll option image. Blocks are often of type ImageBlock
+   * pollOptionImageBlockId is present if a child block should be used as a poll option image.
+   *       This child block should not be rendered normally, instead it should be used
+   *       as a poll option image. Blocks are often of type ImageBlock
    */
-  pollOptionImageId: string | null;
+  pollOptionImageBlockId: string | null;
 }
 
 export interface TextResponseWithButtonRestore_button_RadioQuestionBlock {
@@ -1068,11 +1068,11 @@ export interface TextResponseWithButtonRestore_startIcon_RadioOptionBlock {
   label: string;
   action: TextResponseWithButtonRestore_startIcon_RadioOptionBlock_action | null;
   /**
-   * pollOptionImageId is present if a child block should be used as a poll option image.
-   * This child block should not be rendered normally, instead it should be used
-   * as a poll option image. Blocks are often of type ImageBlock
+   * pollOptionImageBlockId is present if a child block should be used as a poll option image.
+   *       This child block should not be rendered normally, instead it should be used
+   *       as a poll option image. Blocks are often of type ImageBlock
    */
-  pollOptionImageId: string | null;
+  pollOptionImageBlockId: string | null;
 }
 
 export interface TextResponseWithButtonRestore_startIcon_RadioQuestionBlock {
@@ -1522,11 +1522,11 @@ export interface TextResponseWithButtonRestore_endIcon_RadioOptionBlock {
   label: string;
   action: TextResponseWithButtonRestore_endIcon_RadioOptionBlock_action | null;
   /**
-   * pollOptionImageId is present if a child block should be used as a poll option image.
-   * This child block should not be rendered normally, instead it should be used
-   * as a poll option image. Blocks are often of type ImageBlock
+   * pollOptionImageBlockId is present if a child block should be used as a poll option image.
+   *       This child block should not be rendered normally, instead it should be used
+   *       as a poll option image. Blocks are often of type ImageBlock
    */
-  pollOptionImageId: string | null;
+  pollOptionImageBlockId: string | null;
 }
 
 export interface TextResponseWithButtonRestore_endIcon_RadioQuestionBlock {

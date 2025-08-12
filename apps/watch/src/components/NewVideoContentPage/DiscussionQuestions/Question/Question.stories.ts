@@ -21,7 +21,8 @@ export const Default: Story = {
     questions: [
       {
         value: 'What did you learn from this video?',
-        __typename: 'VideoStudyQuestion'
+        __typename: 'VideoStudyQuestion',
+        primary: true
       }
     ]
   }

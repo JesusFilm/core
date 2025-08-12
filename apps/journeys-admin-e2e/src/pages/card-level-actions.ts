@@ -519,7 +519,7 @@ export class CardLevelActionPage {
       this.page
         .frameLocator(this.journeyCardFrame)
         .locator(
-          'div[data-testid="CardOverlayContent"] div[data-testid*="SelectableWrapper"] button[data-testid="JourneysRadioOption"]'
+          'div[data-testid="CardOverlayContent"] div[data-testid*="SelectableWrapper"] button[data-testid="JourneysRadioOptionList"]'
         )
         .first()
     ).toBeVisible()
@@ -537,7 +537,7 @@ export class CardLevelActionPage {
       await this.page
         .frameLocator(this.journeyCardFrame)
         .locator(
-          'div[data-testid="CardOverlayContent"] div[data-testid*="SelectableWrapper"] button[data-testid="JourneysRadioOption"]'
+          'div[data-testid="CardOverlayContent"] div[data-testid*="SelectableWrapper"] button[data-testid="JourneysRadioOptionList"]'
         )
         .nth(pollOption - 1)
         .click()
@@ -545,7 +545,7 @@ export class CardLevelActionPage {
       await this.page
         .frameLocator(this.journeyCardFrame)
         .locator(
-          'div[data-testid="CardOverlayContent"] div[data-testid*="SelectableWrapper"] button[data-testid="JourneysRadioOption"]'
+          'div[data-testid="CardOverlayContent"] div[data-testid*="SelectableWrapper"] button[data-testid="JourneysRadioOptionList"]'
         )
         .nth(pollOption - 1)
         .click()
@@ -559,7 +559,7 @@ export class CardLevelActionPage {
       await this.page
         .frameLocator(this.journeyCardFrame)
         .locator(
-          'div[data-testid="CardOverlayContent"] div[data-testid*="SelectableWrapper"] button[data-testid="JourneysRadioOption"]'
+          'div[data-testid="CardOverlayContent"] div[data-testid*="SelectableWrapper"] button[data-testid="JourneysRadioOptionList"]'
         )
         .nth(pollOption - 1)
         .click()
@@ -605,7 +605,7 @@ export class CardLevelActionPage {
       await this.page
         .frameLocator(this.journeyCardFrame)
         .locator(
-          'div[data-testid="CardOverlayContent"] div[data-testid*="SelectableWrapper"] button[data-testid="JourneysRadioOption"]'
+          'div[data-testid="CardOverlayContent"] div[data-testid*="SelectableWrapper"] button[data-testid="JourneysRadioOptionList"]'
         )
         .nth(pollOption - 1)
         .dblclick()
@@ -613,7 +613,7 @@ export class CardLevelActionPage {
       await this.page
         .frameLocator(this.journeyCardFrame)
         .locator(
-          'div[data-testid="CardOverlayContent"] div[data-testid*="SelectableWrapper"] button[data-testid="JourneysRadioOption"]'
+          'div[data-testid="CardOverlayContent"] div[data-testid*="SelectableWrapper"] button[data-testid="JourneysRadioOptionList"]'
         )
         .nth(pollOption - 1)
         .click()
@@ -627,7 +627,7 @@ export class CardLevelActionPage {
       await this.page
         .frameLocator(this.journeyCardFrame)
         .locator(
-          'div[data-testid="CardOverlayContent"] div[data-testid*="SelectableWrapper"] button[data-testid="JourneysRadioOption"]'
+          'div[data-testid="CardOverlayContent"] div[data-testid*="SelectableWrapper"] button[data-testid="JourneysRadioOptionList"]'
         )
         .nth(pollOption - 1)
         .dblclick()
@@ -635,7 +635,7 @@ export class CardLevelActionPage {
     await this.page
       .frameLocator(this.journeyCardFrame)
       .locator(
-        'div[data-testid="CardOverlayContent"] div[data-testid*="SelectableWrapper"] button[data-testid="JourneysRadioOption"]'
+        'div[data-testid="CardOverlayContent"] div[data-testid*="SelectableWrapper"] button[data-testid="JourneysRadioOptionList"]'
       )
       .nth(pollOption - 1)
       .locator('textarea[name="radioOptionLabel"]')
@@ -647,18 +647,18 @@ export class CardLevelActionPage {
       this.page
         .frameLocator(this.journeyCardFrame)
         .locator(
-          'div[data-testid="CardOverlayContent"] div[data-testid*="SelectableWrapper"] button[data-testid="JourneysRadioOption"]',
+          'div[data-testid="CardOverlayContent"] div[data-testid*="SelectableWrapper"] button[data-testid="JourneysRadioOptionList"]',
           { hasText: this.pollRename }
         )
     ).toBeVisible()
   }
 
   async selectWholePollOptions() {
-    // await this.page.frameLocator(this.journeyCardFrame).locator('div[data-testid="CardOverlayContent"] div[data-testid*="SelectableWrapper"] div[data-testid*="JourneysRadioQuestion"] button').first().click()
+    // await this.page.frameLocator(this.journeyCardFrame).locator('div[data-testid="CardOverlayContent"] div[data-testid*="SelectableWrapper"] div[data-testid*="JourneysRadioQuestionList"] button').first().click()
     await this.page
       .frameLocator(this.journeyCardFrame)
       .locator(
-        'div[data-testid*="JourneysRadioQuestion"] div[role="group"] div:not([data-testid*="SelectableWrapper"])',
+        'div[data-testid*="JourneysRadioQuestionList"] div[role="group"] div:not([data-testid*="SelectableWrapper"])',
         { hasText: 'Add New Option' }
       )
       .click()
@@ -669,7 +669,7 @@ export class CardLevelActionPage {
       this.page
         .frameLocator(this.journeyCardFrame)
         .locator(
-          'div[data-testid="CardOverlayContent"] div[data-testid*="SelectableWrapper"] div[data-testid*="JourneysRadioQuestion"]'
+          'div[data-testid="CardOverlayContent"] div[data-testid*="SelectableWrapper"] div[data-testid*="JourneysRadioQuestionList"]'
         )
     ).toBeHidden()
   }
@@ -1111,21 +1111,21 @@ export class CardLevelActionPage {
     const pollOptionCount = await this.page
       .frameLocator(this.journeyCardFrame)
       .locator(
-        'div[data-testid*="JourneysRadioQuestion"] div[role="group"] [data-testid*="SelectableWrapper"]'
+        'div[data-testid*="JourneysRadioQuestionList"] div[role="group"] [data-testid*="SelectableWrapper"]'
       )
       .count()
     for (let poll = 0; poll < pollOptionCount; poll++) {
       await this.page
         .frameLocator(this.journeyCardFrame)
         .locator(
-          'div[data-testid*="JourneysRadioQuestion"] div[role="group"] [data-testid*="SelectableWrapper"]'
+          'div[data-testid*="JourneysRadioQuestionList"] div[role="group"] [data-testid*="SelectableWrapper"]'
         )
         .last()
         .click()
       await this.page
         .frameLocator(this.journeyCardFrame)
         .locator(
-          'div[data-testid*="JourneysRadioQuestion"] div[role="group"] [data-testid*="SelectableWrapper"]'
+          'div[data-testid*="JourneysRadioQuestionList"] div[role="group"] [data-testid*="SelectableWrapper"]'
         )
         .last()
         .click({ delay: 2000 })

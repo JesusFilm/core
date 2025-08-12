@@ -24,6 +24,7 @@ import {
   Host,
   Journey,
   JourneyCollection,
+  JourneyCustomizationField,
   JourneyTheme,
   Prisma,
   Team,
@@ -464,7 +465,8 @@ export class JourneyResolver {
         journeyTags: true,
         team: {
           include: { userTeams: true }
-        }
+        },
+        journeyCustomizationFields: true
       }
     })
     if (journey == null)
@@ -568,6 +570,14 @@ export class JourneyResolver {
       strict: true
     })
 
+    const duplicateCustomizationFields = journey.journeyCustomizationFields.map(
+      (field) => ({
+        ...field,
+        id: uuidv4(),
+        journeyId: duplicateJourneyId
+      })
+    )
+
     let retry = true
     while (retry) {
       try {
@@ -586,7 +596,8 @@ export class JourneyResolver {
                   'strategySlug',
                   'journeyTags',
                   'logoImageBlockId',
-                  'menuStepBlockId'
+                  'menuStepBlockId',
+                  'journeyCustomizationFields'
                 ]),
                 id: duplicateJourneyId,
                 slug,
@@ -607,6 +618,11 @@ export class JourneyResolver {
                 }
               }
             })
+
+            await tx.journeyCustomizationField.createMany({
+              data: duplicateCustomizationFields
+            })
+
             const duplicateJourney = await tx.journey.findUnique({
               where: { id: duplicateJourneyId },
               include: {
@@ -642,7 +658,7 @@ export class JourneyResolver {
               'parentBlockId',
               'posterBlockId',
               'coverBlockId',
-              'pollOptionImageId',
+              'pollOptionImageBlockId',
               'nextBlockId',
               'action'
             ]),
@@ -654,12 +670,14 @@ export class JourneyResolver {
           }))
         )
         // update block references after import
+        // if updating references, also do the same in block.service.ts saveAll
         for (const block of duplicateBlocks) {
           if (
             block.parentBlockId != null ||
             block.posterBlockId != null ||
             block.coverBlockId != null ||
-            block.nextBlockId != null
+            block.nextBlockId != null ||
+            block.pollOptionImageBlockId != null
           ) {
             await this.prismaService.block.update({
               where: { id: block.id },
@@ -667,7 +685,9 @@ export class JourneyResolver {
                 parentBlockId: block.parentBlockId ?? undefined,
                 posterBlockId: block.posterBlockId ?? undefined,
                 coverBlockId: block.coverBlockId ?? undefined,
-                nextBlockId: block.nextBlockId ?? undefined
+                nextBlockId: block.nextBlockId ?? undefined,
+                pollOptionImageBlockId:
+                  block.pollOptionImageBlockId ?? undefined
               }
             })
           }
@@ -1179,6 +1199,15 @@ export class JourneyResolver {
   @ResolveField()
   async journeyTheme(@Parent() journey: Journey): Promise<JourneyTheme | null> {
     return await this.prismaService.journeyTheme.findUnique({
+      where: { journeyId: journey.id }
+    })
+  }
+
+  @ResolveField('journeyCustomizationFields')
+  async journeyCustomizationFields(
+    @Parent() journey: Journey
+  ): Promise<JourneyCustomizationField[]> {
+    return await this.prismaService.journeyCustomizationField.findMany({
       where: { journeyId: journey.id }
     })
   }
