@@ -84,9 +84,6 @@ jobs:
       - uses: nrwl/nx-set-shas@v4
       - name: worker deployment
         env:
-          # Nx Cloud - Environment-specific cache using branch prefix
-          NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
-          NX_BRANCH: staging
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           GIT_COMMIT_SHA: ${{ github.sha }}
         run: npx nx run-many --target=deploy --projects=${{ matrix.app }}
@@ -130,9 +127,6 @@ jobs:
       - uses: nrwl/nx-set-shas@v4
       - name: worker deployment
         env:
-          # Nx Cloud - Environment-specific cache using branch prefix
-          NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
-          NX_BRANCH: production
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           GIT_COMMIT_SHA: ${{ github.sha }}
         run: npx nx run-many --target=deploy --projects=${{ matrix.app }} --prod

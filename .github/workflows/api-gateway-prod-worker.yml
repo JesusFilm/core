@@ -20,15 +20,6 @@ jobs:
     steps:
       - name: Checkout current branch
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-      - uses: nrwl/nx-set-shas@v4
-      - name: Get affected apps
-        run: |
-          echo "apps=$(npx ts-node tools/scripts/affected-apps.ts --projects apis/api-*)" >> $GITHUB_OUTPUT
-          cat $GITHUB_OUTPUT
-        id: affected-apps
-
       #ECS Deployment
       - name: Configure ECS AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
