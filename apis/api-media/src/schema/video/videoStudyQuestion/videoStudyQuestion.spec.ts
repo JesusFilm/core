@@ -15,6 +15,11 @@ jest.mock('./updateOrder', () => ({
   updateOrderUpdate: jest.fn()
 }))
 
+jest.mock('../../../lib/crowdin/videoStudyQuestion', () => ({
+  exportStudyQuestionToCrowdin: jest.fn().mockResolvedValue(null),
+  updateStudyQuestionInCrowdin: jest.fn().mockResolvedValue(undefined)
+}))
+
 describe('videoStudyQuestion', () => {
   const client = getClient()
 
@@ -43,6 +48,7 @@ describe('videoStudyQuestion', () => {
         prismaMock.$transaction.mockImplementation(
           async (callback) => await callback(prismaMock)
         )
+        ;(updateOrderCreate as jest.Mock).mockResolvedValue(undefined)
         prismaMock.userMediaRole.findUnique.mockResolvedValue({
           id: 'userId',
           userId: 'userId',
@@ -58,6 +64,15 @@ describe('videoStudyQuestion', () => {
           order: 1
         })
         prismaMock.videoStudyQuestion.create.mockResolvedValue({
+          id: 'id',
+          videoId: 'videoId',
+          value: 'value',
+          primary: true,
+          languageId: 'languageId',
+          crowdInId: 'crowdInId',
+          order: 1
+        })
+        prismaMock.videoStudyQuestion.update.mockResolvedValue({
           id: 'id',
           videoId: 'videoId',
           value: 'value',

@@ -3,6 +3,11 @@ import { graphql } from '@core/shared/gql'
 import { getClient } from '../../../../test/client'
 import { prismaMock } from '../../../../test/prismaMock'
 
+jest.mock('../../../lib/crowdin/videoTitle', () => ({
+  exportVideoTitleToCrowdin: jest.fn().mockResolvedValue(null),
+  updateVideoTitleInCrowdin: jest.fn().mockResolvedValue(undefined)
+}))
+
 describe('videoTitle', () => {
   const client = getClient()
 
@@ -26,12 +31,23 @@ describe('videoTitle', () => {
       `)
 
       it('should create video title', async () => {
+        prismaMock.$transaction.mockImplementation(
+          async (callback) => await callback(prismaMock)
+        )
         prismaMock.userMediaRole.findUnique.mockResolvedValue({
           id: 'userId',
           userId: 'userId',
           roles: ['publisher']
         })
         prismaMock.videoTitle.create.mockResolvedValue({
+          id: 'id',
+          videoId: 'videoId',
+          value: 'value',
+          primary: true,
+          languageId: 'languageId',
+          crowdInId: null
+        })
+        prismaMock.videoTitle.update.mockResolvedValue({
           id: 'id',
           videoId: 'videoId',
           value: 'value',
@@ -51,15 +67,17 @@ describe('videoTitle', () => {
             }
           }
         })
-        expect(prismaMock.videoTitle.create).toHaveBeenCalledWith({
-          data: {
-            id: 'id',
-            videoId: 'videoId',
-            value: 'value',
-            primary: true,
-            languageId: 'languageId'
-          }
-        })
+        expect(prismaMock.videoTitle.create).toHaveBeenCalledWith(
+          expect.objectContaining({
+            data: {
+              id: 'id',
+              videoId: 'videoId',
+              value: 'value',
+              primary: true,
+              languageId: 'languageId'
+            }
+          })
+        )
         expect(result).toHaveProperty('data.videoTitleCreate', {
           id: 'id'
         })
@@ -92,11 +110,22 @@ describe('videoTitle', () => {
       `)
 
       it('should update video title', async () => {
+        prismaMock.$transaction.mockImplementation(
+          async (callback) => await callback(prismaMock)
+        )
         prismaMock.userMediaRole.findUnique.mockResolvedValue({
           id: 'userId',
           userId: 'userId',
           roles: ['publisher']
         })
+        prismaMock.videoTitle.findUnique.mockResolvedValue({
+          id: 'id',
+          videoId: 'videoId',
+          value: 'value',
+          primary: true,
+          languageId: 'languageId',
+          crowdInId: null
+        } as any)
         prismaMock.videoTitle.update.mockResolvedValue({
           id: 'id',
           videoId: 'videoId',
@@ -124,6 +153,7 @@ describe('videoTitle', () => {
             languageId: 'languageId'
           }
         })
+
         expect(result).toHaveProperty('data.videoTitleUpdate', {
           id: 'id'
         })
