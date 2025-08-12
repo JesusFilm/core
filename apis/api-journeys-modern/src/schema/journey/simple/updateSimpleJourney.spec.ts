@@ -88,17 +88,11 @@ describe('updateSimpleJourney', () => {
   beforeEach(() => {
     jest.clearAllMocks()
     txMock.block.create.mockResolvedValue({ id: 'mock-block-id' } as any)
-    txMock.block.update.mockResolvedValue({} as any)
     prismaMock.$transaction.mockImplementation(
       async (callback) => await callback(txMock as any)
     )
     process.env = { ...originalEnv }
     process.env.CLOUDFLARE_UPLOAD_KEY = 'test-cloudflare-account-hash'
-  })
-
-  afterEach(() => {
-    process.env = originalEnv
-    jest.clearAllMocks()
 
     mockFetch.mockResolvedValue({
       json: () =>
