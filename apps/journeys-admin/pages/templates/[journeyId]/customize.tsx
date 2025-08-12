@@ -1,5 +1,5 @@
 import { useRouter } from 'next/router'
-import { withUser, withUserTokenSSR } from 'next-firebase-auth'
+import { AuthAction, withUser, withUserTokenSSR } from 'next-firebase-auth'
 import { useTranslation } from 'next-i18next'
 import { NextSeo } from 'next-seo'
 
@@ -28,7 +28,7 @@ function CustomizePage() {
       <JourneyProvider
         value={{
           journey: data?.journey,
-          variant: 'admin'
+          variant: 'default'
         }}
       >
         <MultiStepForm />
@@ -89,4 +89,7 @@ export const getServerSideProps = withUserTokenSSR()(async ({
   }
 })
 
-export default withUser()(CustomizePage)
+export default withUser({
+  // TODO: remove this after anon user is implemented
+  whenUnauthedBeforeInit: AuthAction.REDIRECT_TO_LOGIN
+})(CustomizePage)
