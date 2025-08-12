@@ -63,6 +63,5 @@ themeMode from journey`,
 themeName from journey`,
       resolve: (block) => block.themeName as ThemeNameType
     })
-  }),
-  directives: { key: { fields: 'id' } }
+  })
 })
