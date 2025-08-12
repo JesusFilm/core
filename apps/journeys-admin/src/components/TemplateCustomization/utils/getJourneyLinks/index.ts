@@ -1,0 +1,1 @@
+export { getJourneyLinks } from './getJourneyLinks'

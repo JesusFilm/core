@@ -44,7 +44,9 @@ export function EmailAction(): ReactElement {
         __typename: 'EmailAction',
         parentBlockId: id,
         gtmEventName: '',
-        email
+        email,
+        customizable: false,
+        parentStepId: null
       },
       undoAction: action,
       editorFocus: {

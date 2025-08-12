@@ -79,7 +79,9 @@ export const journey: Journey = {
         __typename: 'LinkAction',
         parentBlockId: 'button1.id',
         gtmEventName: null,
-        url: 'https://www.google.com/'
+        url: 'https://www.google.com/',
+        customizable: false,
+        parentStepId: null
       },
       settings: null
     },
@@ -129,7 +131,9 @@ export const journey: Journey = {
         __typename: 'LinkAction',
         parentBlockId: 'signup.id',
         gtmEventName: 'signup',
-        url: 'https://www.google.com/'
+        url: 'https://www.google.com/',
+        customizable: false,
+        parentStepId: null
       },
       submitIconId: 'icon'
     },

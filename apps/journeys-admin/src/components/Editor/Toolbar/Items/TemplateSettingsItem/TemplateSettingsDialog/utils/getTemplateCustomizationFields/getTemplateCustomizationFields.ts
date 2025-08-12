@@ -1,59 +1,37 @@
 import { JourneyFields as Journey } from '@core/journeys/ui/JourneyProvider/__generated__/JourneyFields'
 
 /**
- * Extracts all template customization fields from a journey object.
+ * Extracts template customization field names from a journey's blocks.
  *
- * This function traverses through a journey object and extracts all template strings
- * that are enclosed in double curly braces `{{templateString}}`. It searches through
- * various journey properties including title, description, SEO fields, user information,
- * and block content to find all template placeholders.
+ * Searches block text properties for occurrences of `{{ templateKey }}` and returns
+ * a de-duplicated array of the keys found. Journey-level properties (e.g. title,
+ * description, SEO fields, slugs) and `userJourneys` are intentionally ignored.
  *
- * The function handles different block types and extracts template strings from their
- * relevant text fields. It uses a Set to ensure unique template field names are returned.
+ * Searched block properties:
+ * - TypographyBlock: content
+ * - ButtonBlock: label
+ * - TextResponseBlock: label, placeholder, hint
+ * - RadioOptionBlock: label
+ * - SignUpBlock: submitLabel
  *
- * @param journey - Optional journey object containing various text fields and blocks
- *                  that may contain template strings
- *
- * @returns Array of unique template field names found in the journey. Returns empty
- *          array if journey is null/undefined or no template strings are found.
+ * @param journey Optional journey whose blocks may contain template strings.
+ * @returns Array of unique template field names. Returns [] when none are found
+ *          or when `journey` is null/undefined.
  *
  * @example
- * ```typescript
- * // Journey with template strings in various fields
+ * ```ts
  * const journey = {
- *   title: 'Welcome {{userName}}',
- *   description: 'Your journey to {{goal}}',
  *   blocks: [
- *     {
- *       __typename: 'TypographyBlock',
- *       content: 'Hello {{firstName}} {{lastName}}'
- *     },
- *     {
- *       __typename: 'ButtonBlock',
- *       label: 'Continue to {{nextStep}}'
- *     }
+ *     { __typename: 'TypographyBlock', content: 'Hello {{firstName}}' },
+ *     { __typename: 'ButtonBlock', label: 'Go to {{nextStep}}' }
  *   ]
  * }
+ * getTemplateCustomizationFields(journey) // ['firstName', 'nextStep']
+ * ```
  *
- * getTemplateCustomizationFields(journey)
- * // Returns: ['userName', 'goal', 'firstName', 'lastName', 'nextStep']
- *
- * // Journey with no template strings
- * const simpleJourney = {
- *   title: 'Simple Journey',
- *   description: 'No templates here'
- * }
- *
- * getTemplateCustomizationFields(simpleJourney)
- * // Returns: []
- *
- * // Null journey
- * getTemplateCustomizationFields(null)
- * // Returns: []
- *
- * // Undefined journey
- * getTemplateCustomizationFields(undefined)
- * // Returns: []
+ * @example
+ * ```ts
+ * getTemplateCustomizationFields(undefined) // []
  * ```
  */
 export function getTemplateCustomizationFields(journey?: Journey): string[] {
@@ -69,27 +47,6 @@ export function getTemplateCustomizationFields(journey?: Journey): string[] {
       const keyName = match[1].trim()
       if (keyName !== '') templateStrings.add(keyName)
     }
-  }
-
-  // Extract from journey-level text fields
-  extractTemplateStrings(journey.title)
-  extractTemplateStrings(journey.description)
-  extractTemplateStrings(journey.seoTitle)
-  extractTemplateStrings(journey.seoDescription)
-  extractTemplateStrings(journey.creatorDescription)
-  extractTemplateStrings(journey.displayTitle)
-  extractTemplateStrings(journey.slug)
-  extractTemplateStrings(journey.strategySlug)
-
-  // Extract from user journeys
-  if (journey.userJourneys) {
-    journey.userJourneys.forEach((userJourney) => {
-      if (userJourney.user) {
-        extractTemplateStrings(userJourney.user.firstName)
-        extractTemplateStrings(userJourney.user.lastName)
-        extractTemplateStrings(userJourney.user.imageUrl)
-      }
-    })
   }
 
   // Flatten and extract from blocks
