@@ -91,31 +91,12 @@ This document outlines the coding standards, best practices, and development gui
 - Maintain WCAG compliance standards
 - Include semantic HTML elements: `<header>`, `<main>`, `<footer>`
 
-## Test-Driven Development (TDD)
-
-### Critical Requirements
-
-**CRITICAL REQUIREMENT**: All development must follow Test-Driven Development (TDD) methodology.
-
-### TDD Process
-
-**Red-Green-Refactor Cycle**: Always follow the three-step TDD cycle
-
-1. **Red**: Write failing tests first before any implementation
-2. **Green**: Write minimal code to make tests pass
-3. **Refactor**: Improve code while maintaining test coverage
-
-### TDD Rules
-
-- **Test First**: Never write implementation code before corresponding tests exist
-- **Existing Test Verification**: Before modifying existing code, run and verify all existing tests
-- **Minimum Coverage**: Maintain 80% test coverage for all new code
 
 ### Testing Patterns
 
 #### Component Testing Workflow
 
-1. **Write test file first**: Create `ComponentName.spec.tsx` before `ComponentName.tsx`
+1. **Write test files**: Create `ComponentName.spec.tsx` before `ComponentName.tsx`
 2. **Test component rendering**: Verify component renders without crashing
 3. **Test props and interactions**: Test all props, user interactions, and state changes
 4. **Test accessibility**: Ensure proper ARIA labels, keyboard navigation, screen reader support
@@ -128,24 +109,6 @@ This document outlines the coding standards, best practices, and development gui
 - Group related tests with `describe` blocks
 - Use `beforeEach` for common setup, `afterEach` for cleanup
 
-#### Example TDD Workflow
-
-```typescript
-// 1. RED: Write failing test first
-describe('MyComponent', () => {
-  it('should render with correct text', () => {
-    render(<MyComponent text="Hello" />)
-    expect(screen.getByText('Hello')).toBeInTheDocument()
-  })
-})
-
-// 2. GREEN: Write minimal implementation
-export function MyComponent({ text }: { text: string }) {
-  return <div>{text}</div>
-}
-
-// 3. REFACTOR: Improve while maintaining tests
-```
 
 ## Component Patterns
 
