@@ -16,26 +16,22 @@ export const GridContainerBlock = builder.prismaObject('Block', {
   fields: (t) => ({
     gap: t.int({
       nullable: false,
-      directives: { shareable: true },
       resolve: (block) => block.gap ?? 0
     }),
     direction: t.field({
       type: GridDirection,
       nullable: false,
-      directives: { shareable: true },
       resolve: (block) => (block.direction as GridDirectionType) ?? 'column'
     }),
     justifyContent: t.field({
       type: GridJustifyContent,
       nullable: false,
-      directives: { shareable: true },
       resolve: (block) =>
         (block.justifyContent as GridJustifyContentType) ?? 'flexStart'
     }),
     alignItems: t.field({
       type: GridAlignItems,
       nullable: false,
-      directives: { shareable: true },
       resolve: (block) =>
         (block.alignItems as GridAlignItemsType) ?? 'flexStart'
     })

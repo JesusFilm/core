@@ -9,17 +9,14 @@ export const GridItemBlock = builder.prismaObject('Block', {
   fields: (t) => ({
     xl: t.int({
       nullable: false,
-      directives: { shareable: true },
       resolve: (block) => block.xl ?? 12
     }),
     lg: t.int({
       nullable: false,
-      directives: { shareable: true },
       resolve: (block) => block.lg ?? 12
     }),
     sm: t.int({
       nullable: false,
-      directives: { shareable: true },
       resolve: (block) => block.sm ?? 12
     })
   })

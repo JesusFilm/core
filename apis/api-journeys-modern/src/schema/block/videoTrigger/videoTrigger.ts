@@ -11,7 +11,6 @@ export const VideoTriggerBlock = builder.prismaObject('Block', {
   fields: (t) => ({
     triggerStart: t.int({
       nullable: false,
-      directives: { shareable: true },
       description: `triggerStart sets the time as to when a video navigates to the next block,
 this is the number of seconds since the start of the video`,
       resolve: (block) => block.triggerStart ?? 0
@@ -19,7 +18,6 @@ this is the number of seconds since the start of the video`,
     action: t.field({
       type: ActionInterface,
       nullable: true,
-      directives: { shareable: true },
       resolve: async (block) => {
         const action = await prisma.action.findUnique({
           where: { parentBlockId: block.id }

@@ -8,8 +8,7 @@ export const SpacerBlock = builder.prismaObject('Block', {
   shareable: true,
   fields: (t) => ({
     spacing: t.exposeInt('spacing', {
-      nullable: true,
-      directives: { shareable: true }
+      nullable: true
     })
   })
 })

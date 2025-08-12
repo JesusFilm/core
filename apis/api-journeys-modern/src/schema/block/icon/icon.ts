@@ -14,19 +14,16 @@ export const IconBlock = builder.prismaObject('Block', {
     name: t.field({
       type: IconName,
       nullable: true,
-      directives: { shareable: true },
       resolve: (block) => block.name as IconNameType
     }),
     color: t.field({
       type: IconColor,
       nullable: true,
-      directives: { shareable: true },
       resolve: (block) => block.color as IconColorType
     }),
     size: t.field({
       type: IconSize,
       nullable: true,
-      directives: { shareable: true },
       resolve: (block) => block.size as IconSizeType
     })
   })

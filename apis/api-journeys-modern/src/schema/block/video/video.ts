@@ -20,72 +20,57 @@ export const VideoBlock = builder.prismaObject('Block', {
   fields: (t) => ({
     autoplay: t.boolean({
       nullable: false,
-      directives: { shareable: true },
       resolve: (block) => block.autoplay ?? false
     }),
     startAt: t.exposeInt('startAt', {
-      nullable: true,
-      directives: { shareable: true }
+      nullable: true
     }),
     endAt: t.exposeInt('endAt', {
-      nullable: true,
-      directives: { shareable: true }
+      nullable: true
     }),
     muted: t.boolean({
       nullable: false,
-      directives: { shareable: true },
       resolve: (block) => block.muted ?? false
     }),
     videoId: t.exposeID('videoId', {
-      nullable: true,
-      directives: { shareable: true }
+      nullable: true
     }),
     videoVariantLanguageId: t.exposeID('videoVariantLanguageId', {
-      nullable: true,
-      directives: { shareable: true }
+      nullable: true
     }),
     source: t.expose('source', {
       type: VideoBlockSource,
-      nullable: true,
-      directives: { shareable: true }
+      nullable: true
     }),
     title: t.string({
       nullable: false,
-      directives: { shareable: true },
       resolve: (block) => block.title ?? ''
     }),
     description: t.string({
       nullable: false,
-      directives: { shareable: true },
       resolve: (block) => block.description ?? ''
     }),
     image: t.exposeString('image', {
-      nullable: true,
-      directives: { shareable: true }
+      nullable: true
     }),
     duration: t.exposeInt('duration', {
-      nullable: true,
-      directives: { shareable: true }
+      nullable: true
     }),
     objectFit: t.expose('objectFit', {
       type: VideoBlockObjectFit,
-      nullable: true,
-      directives: { shareable: true }
+      nullable: true
     }),
     posterBlockId: t.exposeID('posterBlockId', {
-      nullable: true,
-      directives: { shareable: true }
+      nullable: true
     }),
     fullsize: t.boolean({
       nullable: false,
-      directives: { shareable: true },
       resolve: (block) => block.fullsize ?? false
     }),
     action: t.relation('action'),
     mediaVideo: t.field({
       type: MediaVideo,
       nullable: true,
-      directives: { shareable: true },
       resolve: (block) => {
         if (
           !block.source ||
@@ -104,4 +89,11 @@ export const VideoBlock = builder.prismaObject('Block', {
       }
     })
   })
+})
+
+builder.asEntity(VideoBlock, {
+  key: builder.selection<{ id: string }>('id'),
+  resolveReference: async (ref) => {
+    return await prisma.block.findUnique({ where: { id: ref.id } })
+  }
 })

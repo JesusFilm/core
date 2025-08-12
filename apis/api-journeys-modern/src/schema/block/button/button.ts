@@ -23,13 +23,11 @@ const ButtonBlockSettings = builder.objectType(
       alignment: t.field({
         type: ButtonAlignment,
         nullable: true,
-        directives: { shareable: true },
         description: 'Alignment of the button',
         resolve: (settings: ButtonBlockSettingsType) => settings.alignment
       }),
       color: t.string({
         nullable: true,
-        directives: { shareable: true },
         description: 'Color of the button',
         resolve: (settings: ButtonBlockSettingsType) => settings.color
       })
@@ -45,49 +43,40 @@ export const ButtonBlock = builder.prismaObject('Block', {
   fields: (t) => ({
     label: t.string({
       nullable: false,
-      directives: { shareable: true },
       resolve: (block) => block.label ?? ''
     }),
     variant: t.field({
       type: ButtonVariant,
       nullable: true,
-      directives: { shareable: true },
       resolve: (block) => block.variant as ButtonVariantType
     }),
     color: t.field({
       type: ButtonColor,
       nullable: true,
-      directives: { shareable: true },
       resolve: (block) => block.color as ButtonColorType
     }),
     size: t.field({
       type: ButtonSize,
       nullable: true,
-      directives: { shareable: true },
       resolve: (block) => block.size as ButtonSizeType
     }),
     startIconId: t.exposeID('startIconId', {
-      nullable: true,
-      directives: { shareable: true }
+      nullable: true
     }),
     endIconId: t.exposeID('endIconId', {
-      nullable: true,
-      directives: { shareable: true }
+      nullable: true
     }),
     submitEnabled: t.exposeBoolean('submitEnabled', {
-      nullable: true,
-      directives: { shareable: true }
+      nullable: true
     }),
     settings: t.field({
       type: ButtonBlockSettings,
       nullable: true,
-      directives: { shareable: true },
       resolve: ({ settings }) => settings as unknown as ButtonBlockSettingsType
     }),
     action: t.field({
       type: ActionInterface,
       nullable: true,
-      directives: { shareable: true },
       select: {
         action: true
       },

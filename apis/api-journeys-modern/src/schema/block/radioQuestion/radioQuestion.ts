@@ -8,8 +8,7 @@ export const RadioQuestionBlock = builder.prismaObject('Block', {
   shareable: true,
   fields: (t) => ({
     gridView: t.exposeBoolean('gridView', {
-      nullable: true,
-      directives: { shareable: true }
+      nullable: true
     })
   })
 })

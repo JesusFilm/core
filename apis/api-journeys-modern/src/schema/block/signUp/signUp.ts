@@ -8,12 +8,10 @@ export const SignUpBlock = builder.prismaObject('Block', {
   shareable: true,
   fields: (t) => ({
     submitIconId: t.exposeID('submitIconId', {
-      nullable: true,
-      directives: { shareable: true }
+      nullable: true
     }),
     submitLabel: t.exposeString('submitLabel', {
-      nullable: true,
-      directives: { shareable: true }
+      nullable: true
     })
   })
 })
