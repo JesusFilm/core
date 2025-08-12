@@ -1,7 +1,6 @@
-import fetch from 'node-fetch'
-
 import { ApolloClient, InMemoryCache, createHttpLink } from '@apollo/client'
 import { graphql } from 'gql.tada'
+import fetch from 'node-fetch'
 
 import {
   JourneySimpleImage,
@@ -99,17 +98,16 @@ async function processImage(image: JourneySimpleImage) {
   }
 }
 
-// extract youtube video id from url
-function extractYouTubeVideoId(input: string): string | null {
-  // If input is already an 11-char video ID, return as-is
-  if (/^[\w-]{11}$/.test(input)) return input
-  // Otherwise, try to extract from URL
-  const match = input.match(
+function extractYouTubeVideoId(url: string): string | null {
+  // If url is already an 11-char video ID, return as-is
+  if (/^[\w-]{11}$/.test(url)) return url
+  // Otherwise, try to extract from url
+  const match = url.match(
     /(?:v=|vi=|youtu\.be\/|\/v\/|embed\/|shorts\/|\/watch\?v=|\/watch\?.+&v=)([\w-]{11})/
   )
   if (match) return match[1]
   // Fallback: try generic 11-char match
-  const generic = input.match(/([\w-]{11})/)
+  const generic = url.match(/([\w-]{11})/)
   return generic ? generic[1] : null
 }
 
@@ -139,7 +137,6 @@ async function getYouTubeVideoDuration(videoId: string): Promise<number> {
     `https://www.googleapis.com/youtube/v3/videos?${videosQuery}`
   )
   const data = await response.json()
-  console.log(data)
   const isoDuration = data.items?.[0]?.contentDetails?.duration
   if (!isoDuration) throw new Error('Could not fetch video duration')
   return parseISO8601Duration(isoDuration)
@@ -245,7 +242,7 @@ export async function updateSimpleJourney(
             parentOrder: parentOrder++,
             videoId,
             source: 'youTube',
-            autoPlay: true,
+            autoplay: true,
             startAt: card.video.startAt ?? 0,
             endAt: card.video.endAt ?? videoDuration,
             action:
@@ -286,24 +283,24 @@ export async function updateSimpleJourney(
           })
         }
 
-      if (card.image != null) {
-        const processedImg = processedCardImages.get(card.id)
-        if (processedImg) {
-          await tx.block.create({
-            data: {
-              journeyId,
-              typename: 'ImageBlock',
-              parentBlockId: cardBlockId,
-              parentOrder: parentOrder++,
-              src: processedImg.src,
-              alt: processedImg.alt,
-              width: processedImg.width,
-              height: processedImg.height,
-              blurhash: processedImg.blurhash
-            }
-          })
+        if (card.image != null) {
+          const processedImg = processedCardImages.get(card.id)
+          if (processedImg) {
+            await tx.block.create({
+              data: {
+                journeyId,
+                typename: 'ImageBlock',
+                parentBlockId: cardBlockId,
+                parentOrder: parentOrder++,
+                src: processedImg.src,
+                alt: processedImg.alt,
+                width: processedImg.width,
+                height: processedImg.height,
+                blurhash: processedImg.blurhash
+              }
+            })
+          }
         }
-      }
 
         if (card.poll != null && card.poll.length > 0) {
           const radioQuestion = await tx.block.create({
@@ -367,38 +364,39 @@ export async function updateSimpleJourney(
           })
         }
 
-      if (card.backgroundImage != null) {
-        const processedBg = processedBackgroundImages.get(card.id)
-        if (processedBg) {
-          const bgImage = await tx.block.create({
-            data: {
-              journeyId,
-              typename: 'ImageBlock',
-              src: processedBg.src,
-              alt: processedBg.alt,
-              parentBlockId: cardBlockId,
-              width: processedBg.width,
-              height: processedBg.height,
-              blurhash: processedBg.blurhash
-            }
-          })
-          await tx.block.update({
-            where: { id: cardBlockId },
-            data: { coverBlockId: bgImage.id }
-          })
+        if (card.backgroundImage != null) {
+          const processedBg = processedBackgroundImages.get(card.id)
+          if (processedBg) {
+            const bgImage = await tx.block.create({
+              data: {
+                journeyId,
+                typename: 'ImageBlock',
+                src: processedBg.src,
+                alt: processedBg.alt,
+                parentBlockId: cardBlockId,
+                width: processedBg.width,
+                height: processedBg.height,
+                blurhash: processedBg.blurhash
+              }
+            })
+            await tx.block.update({
+              where: { id: cardBlockId },
+              data: { coverBlockId: bgImage.id }
+            })
+          }
         }
-      }
 
-      if (card.defaultNextCard != null) {
-        const nextStepBlock =
-          card.defaultNextCard != null
-            ? stepBlocks.find((s) => s.simpleCardId === card.defaultNextCard)
-            : undefined
-        if (nextStepBlock != null) {
-          await tx.block.update({
-            where: { id: stepBlockId },
-            data: { nextBlockId: nextStepBlock.stepBlockId }
-          })
+        if (card.defaultNextCard != null) {
+          const nextStepBlock =
+            card.defaultNextCard != null
+              ? stepBlocks.find((s) => s.simpleCardId === card.defaultNextCard)
+              : undefined
+          if (nextStepBlock != null) {
+            await tx.block.update({
+              where: { id: stepBlockId },
+              data: { nextBlockId: nextStepBlock.stepBlockId }
+            })
+          }
         }
       }
     }
