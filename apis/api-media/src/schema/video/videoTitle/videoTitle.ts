@@ -3,6 +3,7 @@ import {
   updateVideoTitleInCrowdin
 } from '../../../lib/crowdin/videoTitle'
 import { prisma } from '../../../lib/prisma'
+import { logger } from '../../../logger'
 import { builder } from '../../builder'
 import { Language } from '../../language'
 import { VideoTranslationCreateInput } from '../inputs/videoTranslationCreate'
@@ -30,23 +31,35 @@ builder.mutationFields((t) => ({
       input: t.arg({ type: VideoTranslationCreateInput, required: true })
     },
     resolve: async (query, _parent, { input }) => {
-      let crowdInId: string | null = null
-      try {
-        crowdInId = await exportVideoTitleToCrowdin(input.videoId, input.value)
-      } catch (error) {
-        console.error('Crowdin export error:', error)
-      }
+      return await prisma.$transaction(async (tx) => {
+        const videoTitle = await tx.videoTitle.create({
+          ...query,
+          data: {
+            ...input,
+            id: input.id ?? undefined
+          }
+        })
 
-      const videoTitle = await prisma.videoTitle.create({
-        ...query,
-        data: {
-          ...input,
-          id: input.id ?? undefined,
-          crowdInId: crowdInId ?? undefined
+        if (videoTitle.videoId != null) {
+          try {
+            const crowdInId = await exportVideoTitleToCrowdin(
+              videoTitle.videoId,
+              videoTitle.value
+            )
+
+            return await tx.videoTitle.update({
+              ...query,
+              where: { id: videoTitle.id },
+              data: { crowdInId: crowdInId ?? undefined }
+            })
+          } catch (error) {
+            logger?.error('Crowdin export error:', error)
+            return videoTitle
+          }
         }
-      })
 
-      return videoTitle
+        return videoTitle
+      })
     }
   }),
   videoTitleUpdate: t.withAuth({ isPublisher: true }).prismaField({
@@ -56,27 +69,44 @@ builder.mutationFields((t) => ({
       input: t.arg({ type: VideoTranslationUpdateInput, required: true })
     },
     resolve: async (query, _parent, { input }) => {
-      const videoTitle = await prisma.videoTitle.update({
-        ...query,
-        where: { id: input.id },
-        data: {
-          value: input.value ?? undefined,
-          primary: input.primary ?? undefined,
-          languageId: input.languageId ?? undefined
+      return await prisma.$transaction(
+        async (transaction) => {
+          const existing = await transaction.videoTitle.findUnique({
+            where: { id: input.id },
+            select: { videoId: true, crowdInId: true }
+          })
+          if (existing == null)
+            throw new Error(`videoTitle ${input.id} not found`)
+
+          if (existing.videoId == null)
+            throw new Error(`videoTitle ${input.id} videoId not found`)
+
+          const updatedRecord = await transaction.videoTitle.update({
+            ...query,
+            where: { id: input.id },
+            data: {
+              value: input.value ?? undefined,
+              primary: input.primary ?? undefined,
+              languageId: input.languageId ?? undefined
+            }
+          })
+
+          try {
+            await updateVideoTitleInCrowdin(
+              existing.videoId,
+              input.value ?? '',
+              existing.crowdInId ?? null
+            )
+          } catch (error) {
+            logger?.error('Crowdin export error:', error)
+          }
+
+          return updatedRecord
+        },
+        {
+          timeout: 10000
         }
-      })
-
-      try {
-        await updateVideoTitleInCrowdin(
-          videoTitle.videoId,
-          videoTitle.value,
-          videoTitle.crowdInId ?? null
-        )
-      } catch (error) {
-        console.error('Crowdin export error:', error)
-      }
-
-      return videoTitle
+      )
     }
   }),
   videoTitleDelete: t.withAuth({ isPublisher: true }).prismaField({

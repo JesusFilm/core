@@ -3,6 +3,7 @@ import {
   updateVideoDescriptionInCrowdin
 } from '../../../lib/crowdin/videoDescription'
 import { prisma } from '../../../lib/prisma'
+import { logger } from '../../../logger'
 import { builder } from '../../builder'
 import { Language } from '../../language'
 import { VideoTranslationCreateInput } from '../inputs/videoTranslationCreate'
@@ -30,24 +31,35 @@ builder.mutationFields((t) => ({
       input: t.arg({ type: VideoTranslationCreateInput, required: true })
     },
     resolve: async (query, _parent, { input }) => {
-      const newVideoDescription = await prisma.videoDescription.create({
-        ...query,
-        data: {
-          ...input,
-          id: input.id ?? undefined
-        }
-      })
-      if (newVideoDescription.videoId != null) {
-        const crowdInId = await exportVideoDescriptionToCrowdin(
-          newVideoDescription.videoId,
-          newVideoDescription.value
-        )
-        await prisma.videoDescription.update({
-          where: { id: newVideoDescription.id },
-          data: { crowdInId: crowdInId ?? undefined }
+      return await prisma.$transaction(async (tx) => {
+        const newVideoDescription = await tx.videoDescription.create({
+          ...query,
+          data: {
+            ...input,
+            id: input.id ?? undefined
+          }
         })
-      }
-      return newVideoDescription
+
+        if (newVideoDescription.videoId != null) {
+          try {
+            const crowdInId = await exportVideoDescriptionToCrowdin(
+              newVideoDescription.videoId,
+              newVideoDescription.value
+            )
+
+            return await tx.videoDescription.update({
+              ...query,
+              where: { id: newVideoDescription.id },
+              data: { crowdInId: crowdInId ?? undefined }
+            })
+          } catch (error) {
+            logger?.error('Crowdin export error:', error)
+            return newVideoDescription
+          }
+        }
+
+        return newVideoDescription
+      })
     }
   }),
   videoDescriptionUpdate: t.withAuth({ isPublisher: true }).prismaField({
@@ -57,23 +69,40 @@ builder.mutationFields((t) => ({
       input: t.arg({ type: VideoTranslationUpdateInput, required: true })
     },
     resolve: async (query, _parent, { input }) => {
-      const updatedVideoDescription = await prisma.videoDescription.update({
-        ...query,
-        where: { id: input.id },
-        data: {
-          value: input.value ?? undefined,
-          primary: input.primary ?? undefined,
-          languageId: input.languageId ?? undefined
+      return await prisma.$transaction(
+        async (transaction) => {
+          const existing = await transaction.videoDescription.findUnique({
+            where: { id: input.id },
+            select: { videoId: true, crowdInId: true }
+          })
+          if (existing == null)
+            throw new Error(`videoDescription ${input.id} not found`)
+
+          if (existing.videoId == null)
+            throw new Error(`videoDescription ${input.id} videoId not found`)
+
+          const updatedRecord = await transaction.videoDescription.update({
+            ...query,
+            where: { id: input.id },
+            data: {
+              value: input.value ?? undefined,
+              primary: input.primary ?? undefined,
+              languageId: input.languageId ?? undefined
+            }
+          })
+
+          await updateVideoDescriptionInCrowdin(
+            existing.videoId,
+            input.value ?? '',
+            existing.crowdInId ?? null
+          )
+
+          return updatedRecord
+        },
+        {
+          timeout: 10000
         }
-      })
-      if (updatedVideoDescription.videoId != null) {
-        await updateVideoDescriptionInCrowdin(
-          updatedVideoDescription.videoId,
-          updatedVideoDescription.value,
-          updatedVideoDescription.crowdInId
-        )
-      }
-      return updatedVideoDescription
+      )
     }
   }),
   videoDescriptionDelete: t.withAuth({ isPublisher: true }).prismaField({

@@ -3,6 +3,7 @@ import {
   updateStudyQuestionInCrowdin
 } from '../../../lib/crowdin/videoStudyQuestion'
 import { prisma } from '../../../lib/prisma'
+import { logger } from '../../../logger'
 import { builder } from '../../builder'
 import { Language } from '../../language'
 
@@ -55,11 +56,22 @@ builder.mutationFields((t) => ({
             }
           })
         if (newVideoStudyQuestion.videoId != null) {
-          await exportStudyQuestionToCrowdin(
-            newVideoStudyQuestion.videoId,
-            newVideoStudyQuestion.value,
-            newVideoStudyQuestion.order
-          )
+          try {
+            const crowdInId = await exportStudyQuestionToCrowdin(
+              newVideoStudyQuestion.videoId,
+              newVideoStudyQuestion.value,
+              newVideoStudyQuestion.order
+            )
+
+            return await transaction.videoStudyQuestion.update({
+              ...query,
+              where: { id: newVideoStudyQuestion.id },
+              data: { crowdInId: crowdInId ?? undefined }
+            })
+          } catch (error) {
+            logger?.error('Crowdin export error:', error)
+            return newVideoStudyQuestion
+          }
         }
         return newVideoStudyQuestion
       })
@@ -76,15 +88,12 @@ builder.mutationFields((t) => ({
         async (transaction) => {
           const existing = await transaction.videoStudyQuestion.findUnique({
             where: { id: input.id },
-            select: { videoId: true, languageId: true }
+            select: { videoId: true, languageId: true, crowdInId: true }
           })
           if (existing == null)
             throw new Error(`videoStudyQuestion ${input.id} not found`)
 
-          if (existing.videoId == null)
-            throw new Error(`videoStudyQuestion ${input.id} videoId not found`)
-
-          if (input.order != null)
+          if (input.order != null) {
             await updateOrderUpdate({
               videoId: existing.videoId,
               id: input.id,
@@ -92,14 +101,9 @@ builder.mutationFields((t) => ({
               order: input.order,
               transaction
             })
+          }
 
-          await updateStudyQuestionInCrowdin(
-            existing.videoId,
-            input.value ?? '',
-            input.crowdInId ?? null
-          )
-
-          return await transaction.videoStudyQuestion.update({
+          const updatedRecord = await transaction.videoStudyQuestion.update({
             ...query,
             where: { id: input.id },
             data: {
@@ -108,6 +112,14 @@ builder.mutationFields((t) => ({
               crowdInId: input.crowdInId ?? undefined
             }
           })
+
+          await updateStudyQuestionInCrowdin(
+            existing.videoId,
+            input.value ?? '',
+            existing.crowdInId ?? null
+          )
+
+          return updatedRecord
         },
         {
           timeout: 10000
