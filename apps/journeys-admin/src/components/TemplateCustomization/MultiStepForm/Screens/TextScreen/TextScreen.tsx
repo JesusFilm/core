@@ -145,21 +145,33 @@ export function TextScreen({ handleNext }: TextScreenProps): ReactElement {
 
   async function handleSubmit(): Promise<void> {
     if (!journey) return
-    await journeyCustomizationFieldUpdate({
-      variables: {
-        journeyId: journey.id,
-        input: replacementItems.map((item) => ({
-          id: item.id,
-          key: item.key,
-          value: item.value
-        }))
-      }
+    const originalItems = journey.journeyCustomizationFields ?? []
+    const hasChanges = replacementItems.some((item) => {
+      const original = originalItems.find((o) => o.id === item.id)
+      return (original?.value ?? '') !== (item.value ?? '')
     })
+
+    if (hasChanges) {
+      await journeyCustomizationFieldUpdate({
+        variables: {
+          journeyId: journey.id,
+          input: replacementItems.map((item) => ({
+            id: item.id,
+            key: item.key,
+            value: item.value
+          }))
+        }
+      })
+    }
     handleNext()
   }
 
   return (
-    <Stack sx={{ px: { xs: 2, md: 8 }, maxWidth: '1000px' }} gap={6}>
+    <Stack
+      alignItems="center"
+      sx={{ px: { xs: 2, md: 8 }, maxWidth: '1000px' }}
+      gap={6}
+    >
       <Typography variant="h6" color="text.secondary">
         {t(
           "Here's a script of this invitation. Change the blue areas and it will be customized for you."
