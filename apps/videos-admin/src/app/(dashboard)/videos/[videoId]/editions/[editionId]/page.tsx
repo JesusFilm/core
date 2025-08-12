@@ -237,14 +237,14 @@ export default function EditEditionPage({
                       actions={{
                         edit: () =>
                           router.push(
-                            `/videos/${videoId}/editions/${editionId}/subtitles/${subtitle.id}`,
+                            `/videos/${videoId}/editions/${editionId}/subtitle/${subtitle.id}`,
                             {
                               scroll: false
                             }
                           ),
                         delete: () =>
                           router.push(
-                            `/videos/${videoId}/editions/${editionId}/subtitles/${subtitle.id}/delete`,
+                            `/videos/${videoId}/editions/${editionId}/subtitle/${subtitle.id}/delete`,
                             {
                               scroll: false
                             }

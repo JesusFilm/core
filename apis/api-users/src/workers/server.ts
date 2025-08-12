@@ -2,6 +2,7 @@ import { Job, Worker } from 'bullmq'
 import { Logger } from 'pino'
 
 import { connection } from './lib/connection'
+import { runIfLeader } from './lib/leader'
 import { logger } from './lib/logger'
 
 function run({
@@ -31,12 +32,24 @@ function run({
 }
 
 async function main(): Promise<void> {
-  run(
-    await import(
-      /* webpackChunkName: "email" */
-      './email'
+  if (process.env.NODE_ENV !== 'production') {
+    run(
+      await import(
+        /* webpackChunkName: 'email' */
+        './email'
+      )
     )
-  )
+    return
+  }
+
+  await runIfLeader(async () => {
+    run(
+      await import(
+        /* webpackChunkName: 'email' */
+        './email'
+      )
+    )
+  })
 }
 
 // avoid running on test environment

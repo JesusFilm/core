@@ -5,7 +5,6 @@ export const RadioOptionBlock = builder.prismaObject('Block', {
   interfaces: [Block],
   variant: 'RadioOptionBlock',
   isTypeOf: (obj: any) => obj.typename === 'RadioOptionBlock',
-  directives: { key: { fields: 'id' } },
   fields: (t) => ({
     id: t.exposeID('id', { nullable: false, directives: { shareable: true } }),
     journeyId: t.exposeID('journeyId', {
@@ -25,12 +24,12 @@ export const RadioOptionBlock = builder.prismaObject('Block', {
       directives: { shareable: true },
       resolve: (block) => block.label ?? ''
     }),
-    pollOptionImageId: t.exposeID('pollOptionImageId', {
+    pollOptionImageBlockId: t.exposeID('pollOptionImageBlockId', {
       nullable: true,
       directives: { shareable: true },
-      description: `pollOptionImageId is present if a child block should be used as a poll option image.
-This child block should not be rendered normally, instead it should be used
-as a poll option image. Blocks are often of type ImageBlock`
+      description: `pollOptionImageBlockId is present if a child block should be used as a poll option image.
+      This child block should not be rendered normally, instead it should be used
+      as a poll option image. Blocks are often of type ImageBlock`
     })
   })
 })

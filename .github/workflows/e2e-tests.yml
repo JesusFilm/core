@@ -1,33 +1,172 @@
 name: E2E Tests
 on:
+  schedule:
+    # Run every morning at 6am New Zealand time (5pm UTC)
+    - cron: '0 17 * * *'
   workflow_dispatch:
     inputs:
-      TargetAction:
-        description: 'Pick e2e to run e2e tests or update-snapshots'
-        type: choice
-        default: 'e2e'
-        required: true
-        options:
-          - 'e2e'
-          - 'update-snapshots'
       TargetTests:
         description: 'Pick the tests you want to run'
         type: choice
-        default:
+        default: 'all-e2e'
         required: true
         options:
+          - 'arclight-e2e'
           - 'docs-e2e'
           - 'journeys-e2e'
           - 'journeys-admin-e2e'
           - 'watch-e2e'
+          - 'watch-modern-e2e'
+          - 'videos-admin-e2e'
+          - 'short-links-e2e'
+          - 'all-e2e'
       TargetAppUrl:
-        description: 'Test app URL without / at the end'
+        description: 'App URL (required for single test runs, ignored for all-e2e)'
         type: string
-        required: true
+        required: false
+        default: ''
+
+permissions:
+  contents: read
+  actions: read
+  deployments: write
+  pull-requests: write
+
 jobs:
+  deploy-and-test:
+    if: inputs.TargetTests == 'all-e2e' || github.event_name == 'schedule'
+    runs-on: blacksmith-4vcpu-ubuntu-2204
+    strategy:
+      fail-fast: false
+      matrix:
+        app:
+          [
+            'arclight',
+            'docs',
+            'journeys',
+            'journeys-admin',
+            'watch',
+            'watch-modern',
+            'videos-admin',
+            'short-links'
+          ]
+    permissions:
+      deployments: write
+      contents: write
+    steps:
+      - name: Set target tests for scheduled runs
+        if: github.event_name == 'schedule'
+        run: |
+          echo "TARGET_TESTS=all-e2e" >> $GITHUB_ENV
+      - name: start deployment
+        uses: chrnorm/deployment-action@v2
+        id: deployment
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          environment: Daily E2E - ${{ matrix.app }}
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{ github.event_name == 'schedule' && 'main' || github.ref }}
+      - uses: useblacksmith/setup-node@v5
+        with:
+          node-version: 22
+      - name: Get Node Version
+        id: node-version
+        run: echo "version=$(node -v)" >> $GITHUB_OUTPUT
+      - name: Mount NPM Cache
+        uses: useblacksmith/stickydisk@v1
+        with:
+          key: ${{ github.repository }}-${{ steps.node-version.outputs.version }}-npm-cache-${{ matrix.app }}
+          path: ~/.npm
+      - name: Mount node_modules
+        uses: useblacksmith/stickydisk@v1
+        with:
+          key: ${{ github.repository }}-${{ steps.node-version.outputs.version }}-node-modules-${{ matrix.app }}
+          path: ./node_modules
+      - name: Mount playwright cache
+        uses: useblacksmith/stickydisk@v1
+        with:
+          key: ${{ github.repository }}-playwright-cache-${{ matrix.app }}
+          path: ~/.cache/ms-playwright
+      - name: NPM Install
+        run: npm install --silent
+      - uses: nrwl/nx-set-shas@v4
+      - name: vercel deployment
+        env:
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          ARCLIGHT_VERCEL_PROJECT_ID: ${{ secrets.ARCLIGHT_VERCEL_PROJECT_ID }}
+          DOCS_VERCEL_PROJECT_ID: ${{ secrets.DOCS_VERCEL_PROJECT_ID }}
+          JOURNEYS_VERCEL_PROJECT_ID: ${{ secrets.JOURNEYS_STAGE_VERCEL_PROJECT_ID }}
+          JOURNEYS_ADMIN_VERCEL_PROJECT_ID: ${{ secrets.JOURNEYS_ADMIN_VERCEL_PROJECT_ID }}
+          SHORT_LINKS_VERCEL_PROJECT_ID: ${{ secrets.SHORT_LINKS_STAGE_VERCEL_PROJECT_ID }}
+          VIDEOS_ADMIN_VERCEL_PROJECT_ID: ${{ secrets.VIDEOS_ADMIN_VERCEL_PROJECT_ID }}
+          WATCH_VERCEL_PROJECT_ID: ${{ secrets.WATCH_VERCEL_PROJECT_ID }}
+          WATCH_MODERN_VERCEL_PROJECT_ID: ${{ secrets.WATCH_MODERN_VERCEL_PROJECT_ID }}
+          NEXT_PUBLIC_VERCEL_ENV: preview
+          NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA: ${{ github.sha }}
+        run: npx nx run-many --target=deploy --projects=${{ matrix.app }}
+      - name: Set consistent Vercel alias for daily e2e
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+        run: |
+          # Create consistent alias for daily e2e environment
+          DEPLOYMENT_URL=$(cat apps/${{ matrix.app }}/.vercel-url)
+          CONSISTENT_ALIAS="${{ matrix.app }}-daily-e2e-jesusfilm.vercel.app"
+
+          # Set the alias
+          npx vercel alias set "$DEPLOYMENT_URL" "$CONSISTENT_ALIAS" --token=$VERCEL_TOKEN --scope=jesusfilm
+
+          # Update the .vercel-url file with the consistent URL
+          echo "https://$CONSISTENT_ALIAS" > apps/${{ matrix.app }}/.vercel-url
+      - name: Generate deployment URL
+        id: deployment-url
+        env:
+          APP: ${{ matrix.app }}
+        run: ./tools/scripts/generate-deployment-comment.sh
+      - name: Validate deployment URL
+        run: |
+          if [ -z "${{ steps.deployment-url.outputs.deployment-url }}" ]; then
+            echo "Failed to obtain deployment URL"
+            exit 1
+          fi
+      - name: update deployment status
+        uses: chrnorm/deployment-status@v2
+        if: always()
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          state: ${{ job.status }}
+          environment-url: ${{ steps.deployment-url.outputs.deployment-url }}
+          deployment-id: ${{ steps.deployment.outputs.deployment_id }}
+      - name: Install Playwright Browsers
+        run: npx playwright install --with-deps
+      - name: Run Playwright tests
+        run: npx nx run ${{ matrix.app }}-e2e:e2e
+        env:
+          DEPLOYMENT_URL: ${{ steps.deployment-url.outputs.deployment-url }}
+          PLAYWRIGHT_EMAIL: ${{ secrets.PLAYWRIGHT_EMAIL }}
+          PLAYWRIGHT_PASSWORD: ${{ secrets.PLAYWRIGHT_PASSWORD }}
+          PLAYWRIGHT_USER: ${{ secrets.PLAYWRIGHT_USER }}
+          PLAYWRIGHT_TEAM_NAME: ${{ secrets.PLAYWRIGHT_TEAM_NAME }}
+          EXAMPLE_EMAIL_TOKEN: ${{ secrets.EXAMPLE_EMAIL_TOKEN }}
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: ${{ matrix.app }}-e2e-playwright-report
+          path: |
+            playwright-report/
+            apps/${{ matrix.app }}-e2e/src/e2e/
+            test-results
+          retention-days: 30
+
   E2E_Tests:
+    if: inputs.TargetTests != 'all-e2e' && github.event_name != 'schedule'
     timeout-minutes: 60
     runs-on: blacksmith-2vcpu-ubuntu-2204
+    strategy:
+      matrix:
+        test-suite: ${{ fromJSON(format('["{0}"]', inputs.TargetTests)) }}
     steps:
       - uses: actions/checkout@v4
       - uses: useblacksmith/setup-node@v5
@@ -39,28 +178,33 @@ jobs:
       - name: Mount NPM Cache
         uses: useblacksmith/stickydisk@v1
         with:
-          key: ${{ github.repository }}-${{ steps.node-version.outputs.version }}-npm-cache
+          key: ${{ github.repository }}-${{ steps.node-version.outputs.version }}-npm-cache-${{ matrix.test-suite }}
           path: ~/.npm
       - name: Mount node_modules
         uses: useblacksmith/stickydisk@v1
         with:
-          key: ${{ github.repository }}-${{ steps.node-version.outputs.version }}-node-modules
+          key: ${{ github.repository }}-${{ steps.node-version.outputs.version }}-node-modules-${{ matrix.test-suite }}
           path: ./node_modules
       - name: Mount playwright cache
         uses: useblacksmith/stickydisk@v1
         with:
-          key: ${{ github.repository }}-playwright-cache
+          key: ${{ github.repository }}-playwright-cache-${{ matrix.test-suite }}
           path: ~/.cache/ms-playwright
       - name: Install dependencies
         run: npm install --silent
       - name: Install Playwright Browsers
         run: npx playwright install --with-deps
+      - name: Set deployment URL for single test run
+        run: |
+          if [ -z "${{ inputs.TargetAppUrl }}" ]; then
+            echo "Error: TargetAppUrl is required for single test runs"
+            exit 1
+          fi
+          echo "DEPLOYMENT_URL=${{ inputs.TargetAppUrl }}" >> $GITHUB_ENV
       - name: Run Playwright tests
-        run: npx nx run ${{ inputs.TargetTests }}:${{ inputs.TargetAction }}
+        run: npx nx run ${{ matrix.test-suite }}:e2e
         env:
-          # Nx Cloud - Use separate cache for manual E2E tests
-          NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
-          DEPLOYMENT_URL: ${{ inputs.TargetAppUrl }}
+          DEPLOYMENT_URL: ${{ env.DEPLOYMENT_URL }}
           PLAYWRIGHT_EMAIL: ${{ secrets.PLAYWRIGHT_EMAIL }}
           PLAYWRIGHT_PASSWORD: ${{ secrets.PLAYWRIGHT_PASSWORD }}
           PLAYWRIGHT_USER: ${{ secrets.PLAYWRIGHT_USER }}
@@ -69,9 +213,9 @@ jobs:
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: ${{ inputs.TargetTests }}-playwright-report
+          name: ${{ matrix.test-suite }}-playwright-report
           path: |
             playwright-report/
-            apps/${{ inputs.TargetTests }}/src/e2e/
+            apps/${{ matrix.test-suite }}/src/e2e/
             test-results
           retention-days: 30

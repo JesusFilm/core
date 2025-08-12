@@ -18,7 +18,7 @@ extend type Language @key(fields: "id") {
   id: ID! @external
 }
 
-type JourneyViewEvent implements Event {
+type JourneyViewEvent implements Event @shareable {
   id: ID!
   """
   ID of the journey being viewed
