@@ -35,7 +35,7 @@ enum VideoBlockObjectFit {
   zoomed
 }
 
-type VideoBlock implements Block @key(fields: "id") @shareable {
+type VideoBlock implements Block @shareable {
   id: ID! @shareable
   journeyId: ID! @shareable
   parentBlockId: ID @shareable

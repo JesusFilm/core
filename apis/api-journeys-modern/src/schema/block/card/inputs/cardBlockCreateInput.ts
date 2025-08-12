@@ -5,7 +5,7 @@ export const CardBlockCreateInput = builder.inputType('CardBlockCreateInput', {
   fields: (t) => ({
     id: t.id({ required: false }),
     journeyId: t.id({ required: true }),
-    parentBlockId: t.id({ required: true }),
+    parentBlockId: t.id({ required: false }),
     backgroundColor: t.string({
       required: false,
       description:

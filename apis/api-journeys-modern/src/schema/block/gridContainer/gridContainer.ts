@@ -12,7 +12,6 @@ export const GridContainerBlock = builder.prismaObject('Block', {
   interfaces: [Block],
   variant: 'GridContainerBlock',
   isTypeOf: (obj: any) => obj.typename === 'GridContainerBlock',
-  directives: { key: { fields: 'id' } },
   shareable: true,
   fields: (t) => ({
     gap: t.int({

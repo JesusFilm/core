@@ -5,7 +5,6 @@ export const RadioOptionBlock = builder.prismaObject('Block', {
   interfaces: [Block],
   variant: 'RadioOptionBlock',
   isTypeOf: (obj: any) => obj.typename === 'RadioOptionBlock',
-  directives: { key: { fields: 'id' } },
   shareable: true,
   fields: (t) => ({
     label: t.string({

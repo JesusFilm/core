@@ -5,7 +5,6 @@ export const StepBlock = builder.prismaObject('Block', {
   interfaces: [Block],
   variant: 'StepBlock',
   isTypeOf: (obj: any) => obj.typename === 'StepBlock',
-  directives: { key: { fields: 'id' } },
   shareable: true,
   fields: (t) => ({
     locked: t.boolean({

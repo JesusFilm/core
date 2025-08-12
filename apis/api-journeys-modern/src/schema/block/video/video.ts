@@ -17,7 +17,6 @@ export const VideoBlock = builder.prismaObject('Block', {
   interfaces: [Block],
   variant: 'VideoBlock',
   isTypeOf: (obj: any) => obj.typename === 'VideoBlock',
-  directives: { key: { fields: 'id' } },
   fields: (t) => ({
     autoplay: t.boolean({
       nullable: false,
@@ -45,11 +44,10 @@ export const VideoBlock = builder.prismaObject('Block', {
       nullable: true,
       directives: { shareable: true }
     }),
-    source: t.field({
+    source: t.expose('source', {
       type: VideoBlockSource,
       nullable: true,
-      directives: { shareable: true },
-      resolve: (block) => block.source as any
+      directives: { shareable: true }
     }),
     title: t.string({
       nullable: false,
@@ -69,11 +67,10 @@ export const VideoBlock = builder.prismaObject('Block', {
       nullable: true,
       directives: { shareable: true }
     }),
-    objectFit: t.field({
+    objectFit: t.expose('objectFit', {
       type: VideoBlockObjectFit,
       nullable: true,
-      directives: { shareable: true },
-      resolve: (block) => block.objectFit as any
+      directives: { shareable: true }
     }),
     posterBlockId: t.exposeID('posterBlockId', {
       nullable: true,
@@ -107,11 +104,4 @@ export const VideoBlock = builder.prismaObject('Block', {
       }
     })
   })
-})
-
-builder.asEntity(VideoBlock, {
-  key: builder.selection<{ id: string }>('id'),
-  resolveReference: async (ref) => {
-    return await prisma.block.findUnique({ where: { id: ref.id } })
-  }
 })

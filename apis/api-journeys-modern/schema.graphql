@@ -7,9 +7,7 @@ interface Action {
   parentBlock: Block!
 }
 
-interface Block
-  @key(fields: "id")
-{
+interface Block {
   id: ID!
   journeyId: ID!
   parentBlockId: ID
@@ -35,7 +33,6 @@ enum ButtonAlignment {
 
 type ButtonBlock implements Block
   @shareable
-  @key(fields: "id")
 {
   id: ID!
   journeyId: ID!
@@ -112,7 +109,6 @@ enum ButtonVariant {
 
 type CardBlock implements Block
   @shareable
-  @key(fields: "id")
 {
   id: ID!
   journeyId: ID!
@@ -157,7 +153,7 @@ type CardBlock implements Block
 input CardBlockCreateInput {
   id: ID
   journeyId: ID!
-  parentBlockId: ID!
+  parentBlockId: ID
 
   """backgroundColor should be a HEX color value e.g #FFFFFF for white."""
   backgroundColor: String
@@ -242,7 +238,6 @@ enum GridAlignItems {
 
 type GridContainerBlock implements Block
   @shareable
-  @key(fields: "id")
 {
   id: ID!
   journeyId: ID!
@@ -281,7 +276,6 @@ enum GridDirection {
 
 type GridItemBlock implements Block
   @shareable
-  @key(fields: "id")
 {
   id: ID!
   journeyId: ID!
@@ -316,7 +310,6 @@ enum GridJustifyContent {
 
 type IconBlock implements Block
   @shareable
-  @key(fields: "id")
 {
   id: ID!
   journeyId: ID!
@@ -386,7 +379,6 @@ enum IconSize {
 
 type ImageBlock implements Block
   @shareable
-  @key(fields: "id")
 {
   id: ID!
   journeyId: ID!
@@ -445,6 +437,7 @@ input ImageBlockUpdateInput {
   blurhash: String
   width: Int
   height: Int
+  isCover: Boolean
   scale: Int
   focalTop: Int
   focalLeft: Int
@@ -621,7 +614,6 @@ type Query {
 
 type RadioOptionBlock implements Block
   @shareable
-  @key(fields: "id")
 {
   id: ID!
   journeyId: ID!
@@ -651,7 +643,6 @@ input RadioOptionBlockUpdateInput {
 
 type RadioQuestionBlock implements Block
   @shareable
-  @key(fields: "id")
 {
   id: ID!
   journeyId: ID!
@@ -666,13 +657,8 @@ input RadioQuestionBlockCreateInput {
   parentBlockId: ID!
 }
 
-input RadioQuestionBlockUpdateInput {
-  parentBlockId: ID
-}
-
 type SignUpBlock implements Block
   @shareable
-  @key(fields: "id")
 {
   id: ID!
   journeyId: ID!
@@ -697,7 +683,6 @@ input SignUpBlockUpdateInput {
 
 type SpacerBlock implements Block
   @shareable
-  @key(fields: "id")
 {
   id: ID!
   journeyId: ID!
@@ -719,7 +704,6 @@ input SpacerBlockUpdateInput {
 
 type StepBlock implements Block
   @shareable
-  @key(fields: "id")
 {
   id: ID!
   journeyId: ID!
@@ -809,7 +793,6 @@ type Subscription {
 
 type TextResponseBlock implements Block
   @shareable
-  @key(fields: "id")
 {
   id: ID!
   journeyId: ID!
@@ -868,7 +851,6 @@ enum TypographyAlign {
 
 type TypographyBlock implements Block
   @shareable
-  @key(fields: "id")
 {
   id: ID!
   journeyId: ID!
@@ -943,9 +925,7 @@ type Video
 }
 
 type VideoBlock implements Block
-  @key(fields: "id")
   @shareable
-  @key(fields: "id")
 {
   id: ID!
   journeyId: ID!
@@ -1021,7 +1001,6 @@ input VideoBlockUpdateInput {
 
 type VideoTriggerBlock implements Block
   @shareable
-  @key(fields: "id")
 {
   id: ID!
   journeyId: ID!

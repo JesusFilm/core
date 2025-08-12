@@ -56,6 +56,5 @@ themeMode from journey`,
 themeName from journey`,
       resolve: (block) => block.themeName as PrismaThemeName | null
     })
-  }),
-  directives: { key: { fields: 'id' } }
+  })
 })

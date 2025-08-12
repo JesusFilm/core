@@ -5,7 +5,6 @@ export const SignUpBlock = builder.prismaObject('Block', {
   interfaces: [Block],
   variant: 'SignUpBlock',
   isTypeOf: (obj: any) => obj.typename === 'SignUpBlock',
-  directives: { key: { fields: 'id' } },
   shareable: true,
   fields: (t) => ({
     submitIconId: t.exposeID('submitIconId', {

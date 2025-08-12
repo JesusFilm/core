@@ -41,7 +41,6 @@ export const ButtonBlock = builder.prismaObject('Block', {
   variant: 'ButtonBlock',
   interfaces: [Block],
   isTypeOf: (obj: any) => obj.typename === 'ButtonBlock',
-  directives: { key: { fields: 'id' } },
   shareable: true,
   fields: (t) => ({
     label: t.string({

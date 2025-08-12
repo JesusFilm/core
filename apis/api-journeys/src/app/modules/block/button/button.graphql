@@ -34,7 +34,7 @@ type ButtonBlockSettings @shareable {
   color: String @shareable
 }
 
-type ButtonBlock implements Block @key(fields: "id") @shareable {
+type ButtonBlock implements Block @shareable {
   id: ID! @shareable
   journeyId: ID! @shareable
   parentBlockId: ID @shareable

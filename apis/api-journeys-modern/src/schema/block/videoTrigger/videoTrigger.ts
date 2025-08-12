@@ -7,7 +7,6 @@ export const VideoTriggerBlock = builder.prismaObject('Block', {
   interfaces: [Block],
   variant: 'VideoTriggerBlock',
   isTypeOf: (obj: any) => obj.typename === 'VideoTriggerBlock',
-  directives: { key: { fields: 'id' } },
   shareable: true,
   fields: (t) => ({
     triggerStart: t.int({

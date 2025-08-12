@@ -7,7 +7,6 @@ export const TextResponseBlock = builder.prismaObject('Block', {
   interfaces: [Block],
   variant: 'TextResponseBlock',
   isTypeOf: (obj: any) => obj.typename === 'TextResponseBlock',
-  directives: { key: { fields: 'id' } },
   shareable: true,
   fields: (t) => ({
     label: t.string({

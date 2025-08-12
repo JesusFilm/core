@@ -5,7 +5,6 @@ export const ImageBlock = builder.prismaObject('Block', {
   interfaces: [Block],
   variant: 'ImageBlock',
   isTypeOf: (obj: any) => obj.typename === 'ImageBlock',
-  directives: { key: { fields: 'id' } },
   shareable: true,
   fields: (t) => ({
     src: t.exposeString('src', {
