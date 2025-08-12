@@ -14,10 +14,14 @@ async function fetchCrowdinSourceStrings(
 ): Promise<CrowdinSourceString[]> {
   const sourceStrings = await fetchSourceStrings(fileId, apis.sourceStrings)
 
-  return sourceStrings.map((str) => ({
-    id: str.id,
-    identifier: str.identifier || ''
-  }))
+  return sourceStrings
+    .map((str) => ({
+      id: str.id,
+      identifier: str.identifier
+    }))
+    .filter((str) => {
+      return str.identifier && str.identifier.trim().length > 0
+    })
 }
 
 function findMatchingVideoId(
