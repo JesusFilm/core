@@ -202,7 +202,7 @@ describe('videoStudyQuestion', () => {
         expect(result).toHaveProperty('data', null)
       })
 
-      it('should throw if videoId not found', async () => {
+      it('should throw if referenced video not found', async () => {
         prismaMock.$transaction.mockImplementation(
           async (callback) => await callback(prismaMock)
         )
@@ -220,6 +220,7 @@ describe('videoStudyQuestion', () => {
           crowdInId: 'crowdInId',
           order: 1
         })
+        prismaMock.video.findUnique.mockResolvedValue(null)
         const result = await authClient({
           document: UPDATE_VIDEO_STUDY_QUESTION_MUTATION,
           variables: {
