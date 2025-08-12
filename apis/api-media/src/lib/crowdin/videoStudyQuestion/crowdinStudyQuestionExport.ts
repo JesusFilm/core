@@ -1,7 +1,7 @@
 import { Logger } from 'pino'
 
 import { CROWDIN_CONFIG } from '../../../workers/crowdin/config'
-import { apis } from '../../../workers/crowdin/importer'
+import { apis, getCrowdinProjectId } from '../../../workers/crowdin/importer'
 
 export async function updateStudyQuestionInCrowdin(
   videoId: string,
@@ -18,18 +18,13 @@ export async function updateStudyQuestionInCrowdin(
 
   try {
     await apis.sourceStrings.editString(
-      process.env.CROWDIN_PROJECT_ID,
+      getCrowdinProjectId(),
       Number(crowdInId),
       [
         {
           op: 'replace',
           path: '/text',
           value: videoStudyQuestionText
-        },
-        {
-          op: 'replace',
-          path: '/identifier',
-          value: videoId
         }
       ]
     )
@@ -46,10 +41,10 @@ export async function exportStudyQuestionToCrowdin(
 ): Promise<string | null> {
   try {
     const crowdInResponse = await apis.sourceStrings.addString(
-      process.env.CROWDIN_PROJECT_ID,
+      getCrowdinProjectId(),
       {
         fileId: CROWDIN_CONFIG.files.study_questions.id,
-        identifier: videoId,
+        identifier: videoId + '_study_question_' + order,
         text: videoStudyQuestionText,
         context: `StudyQuestion for videoId: ${videoId}, Order: ${order}`
       }

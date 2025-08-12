@@ -5,7 +5,7 @@ import crowdinClient, {
 import { SourceStringsModel } from '@crowdin/crowdin-api-client/out/sourceStrings'
 import { Logger } from 'pino'
 
-import { CROWDIN_CONFIG, LANGUAGE_CODES } from './config'
+import { LANGUAGE_CODES } from './config'
 import {
   ArclightFile,
   CrowdinApis,
@@ -23,6 +23,15 @@ export const client = new crowdinClient({
 export const apis: CrowdinApis = {
   sourceStrings: client.sourceStringsApi,
   stringTranslations: client.stringTranslationsApi
+}
+
+export const getCrowdinProjectId = (): number => {
+  if (!process.env.CROWDIN_PROJECT_ID) {
+    throw new Error('CROWDIN_PROJECT_ID is not set')
+  }
+  const envValue = process.env.CROWDIN_PROJECT_ID
+  const parsed = Number(envValue ?? 0)
+  return parsed
 }
 
 export async function processFile(
@@ -135,7 +144,7 @@ export async function fetchSourceStrings(
   try {
     return await fetchPaginatedData(
       (offset, limit) =>
-        api.listProjectStrings(process.env.CROWDIN_PROJECT_ID, {
+        api.listProjectStrings(getCrowdinProjectId(), {
           fileId,
           limit,
           offset
@@ -159,15 +168,11 @@ export async function fetchTranslations(
   try {
     const translations = await fetchPaginatedData(
       (offset, limit) =>
-        api.listLanguageTranslations(
-          process.env.CROWDIN_PROJECT_ID,
-          languageCode,
-          {
-            fileId,
-            limit,
-            offset
-          }
-        ),
+        api.listLanguageTranslations(getCrowdinProjectId(), languageCode, {
+          fileId,
+          limit,
+          offset
+        }),
       500
     )
 

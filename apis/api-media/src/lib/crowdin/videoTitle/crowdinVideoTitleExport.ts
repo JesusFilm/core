@@ -1,7 +1,7 @@
 import { Logger } from 'pino'
 
 import { CROWDIN_CONFIG } from '../../../workers/crowdin/config'
-import { apis } from '../../../workers/crowdin/importer'
+import { apis, getCrowdinProjectId } from '../../../workers/crowdin/importer'
 
 export async function updateVideoTitleInCrowdin(
   videoId: string,
@@ -18,18 +18,13 @@ export async function updateVideoTitleInCrowdin(
 
   try {
     await apis.sourceStrings.editString(
-      process.env.CROWDIN_PROJECT_ID,
+      getCrowdinProjectId(),
       Number(crowdInId),
       [
         {
           op: 'replace',
           path: '/text',
           value: videoTitleText
-        },
-        {
-          op: 'replace',
-          path: '/identifier',
-          value: videoId
         }
       ]
     )
@@ -47,7 +42,7 @@ export async function exportVideoTitleToCrowdin(
 
   try {
     const crowdInResponse = await apis.sourceStrings.addString(
-      process.env.CROWDIN_PROJECT_ID,
+      getCrowdinProjectId(),
       {
         fileId: CROWDIN_CONFIG.files.media_metadata_tile.id,
         identifier: videoId,

@@ -1,11 +1,11 @@
-import { Prisma } from '.prisma/api-media-client'
+import { Prisma, PrismaClient } from '.prisma/api-media-client'
 
 interface updateOrderUpdateParams {
   videoId: string
   languageId: string
   id: string
   order: number
-  transaction: Prisma.TransactionClient
+  transaction: Prisma.TransactionClient | PrismaClient
 }
 
 export async function updateOrderUpdate({
@@ -47,7 +47,7 @@ interface createOrderUpdateParams {
   videoId: string
   languageId: string
   order: number
-  transaction: Prisma.TransactionClient
+  transaction: Prisma.TransactionClient | PrismaClient
 }
 
 export async function updateOrderCreate({
@@ -81,7 +81,7 @@ export async function updateOrderCreate({
 interface deleteOrderUpdateParams {
   videoId: string
   languageId: string
-  transaction: Prisma.TransactionClient
+  transaction: Prisma.TransactionClient | PrismaClient
 }
 
 export async function updateOrderDelete({

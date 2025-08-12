@@ -47,11 +47,13 @@ builder.mutationFields((t) => ({
               newVideoDescription.value
             )
 
-            return await tx.videoDescription.update({
-              ...query,
-              where: { id: newVideoDescription.id },
-              data: { crowdInId: crowdInId ?? undefined }
-            })
+            if (crowdInId != null) {
+              return await tx.videoDescription.update({
+                ...query,
+                where: { id: newVideoDescription.id },
+                data: { crowdInId: crowdInId ?? undefined }
+              })
+            }
           } catch (error) {
             logger?.error('Crowdin export error:', error)
             return newVideoDescription
@@ -91,11 +93,13 @@ builder.mutationFields((t) => ({
             }
           })
 
-          await updateVideoDescriptionInCrowdin(
-            existing.videoId,
-            input.value ?? '',
-            existing.crowdInId ?? null
-          )
+          if (input.value != null) {
+            await updateVideoDescriptionInCrowdin(
+              existing.videoId,
+              updatedRecord.value,
+              existing.crowdInId ?? null
+            )
+          }
 
           return updatedRecord
         },
