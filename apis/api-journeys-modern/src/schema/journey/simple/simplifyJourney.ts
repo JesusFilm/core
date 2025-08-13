@@ -30,6 +30,8 @@ export function simplifyJourney(
     if (videoBlock) {
       const card: JourneySimpleCard = {
         id: `card-${index + 1}`,
+        x: stepBlock.x ?? 0,
+        y: stepBlock.y ?? 0,
         video: {
           url: `https://youtube.com/watch?v=${videoBlock.videoId}`,
           startAt: videoBlock.startAt ?? undefined,
