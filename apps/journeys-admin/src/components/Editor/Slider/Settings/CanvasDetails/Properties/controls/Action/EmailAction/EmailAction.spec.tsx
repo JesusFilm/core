@@ -59,6 +59,7 @@ describe('EmailAction', () => {
   })
 
   it('updates action email', async () => {
+    // TODO TEST: update for new props (customizable, parentStepId)
     const result = jest.fn().mockReturnValue(blockActionEmailUpdateMock.result)
     render(
       <MockedProvider mocks={[{ ...blockActionEmailUpdateMock, result }]}>

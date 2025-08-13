@@ -27,6 +27,7 @@ describe('useBlockActionEmailUpdateMutation', () => {
   }
 
   it('should update block action', async () => {
+    // TODO TEST: update for new props (customizable, parentStepId)
     const mockResult = jest
       .fn()
       .mockReturnValue(blockActionEmailUpdateMock.result)

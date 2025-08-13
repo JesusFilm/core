@@ -60,6 +60,7 @@ describe('LinkAction', () => {
   })
 
   it('updates action url', async () => {
+    // TODO TEST: update for new props (customizable, parentStepId)
     const result = jest.fn().mockReturnValue(blockActionLinkUpdateMock.result)
     render(
       <MockedProvider mocks={[{ ...blockActionLinkUpdateMock, result }]}>
