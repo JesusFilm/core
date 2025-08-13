@@ -695,6 +695,8 @@ export class JourneyResolver {
             await this.prismaService.action.create({
               data: {
                 ...block.action,
+                customizable: false,
+                parentStepId: null,
                 parentBlockId: block.id
               }
             })

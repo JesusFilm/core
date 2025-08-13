@@ -1,4 +1,4 @@
-type RadioQuestionBlock implements Block @key(fields: "id") @shareable {
+type RadioQuestionBlock implements Block @shareable {
   id: ID! @shareable
   journeyId: ID! @shareable
   parentBlockId: ID @shareable
