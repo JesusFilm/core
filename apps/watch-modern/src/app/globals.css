@@ -114,21 +114,6 @@
     @apply absolute inset-0;
   }
 
-  /* Blur and Backdrop Effects */
-  .blur-overlay {
-    backdrop-filter: var(--blur-backdrop);
-    @apply bg-black/10;
-  }
-
-  .page-blur-filter {
-    @apply bg-[#131111] text-white relative font-sans min-h-screen;
-  }
-
-  .blur-filter-layer {
-    @apply max-w-[1920px] mx-auto sticky h-screen top-0 bg-black/10 z-[1];
-    backdrop-filter: var(--blur-backdrop);
-  }
-
   .content-container {
     @apply max-w-[1920px] mx-auto overflow-hidden -mt-[100vh];
   }
