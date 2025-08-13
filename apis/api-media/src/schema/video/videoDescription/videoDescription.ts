@@ -39,27 +39,27 @@ builder.mutationFields((t) => ({
         }
       })
 
-      if (newVideoDescription.videoId != null) {
-        try {
-          const crowdInId = await exportVideoDescriptionToCrowdin(
-            newVideoDescription.videoId,
-            newVideoDescription.value,
-            logger
-          )
-          if (crowdInId != null) {
-            return await prisma.videoDescription.update({
-              ...query,
-              where: { id: newVideoDescription.id },
-              data: { crowdInId }
-            })
-          }
-        } catch (err) {
-          logger?.error(
-            { err, id: newVideoDescription.id },
-            'Crowdin export error (create videoDescription)'
-          )
+      if (newVideoDescription.videoId != null) return newVideoDescription
+      try {
+        const crowdInId = await exportVideoDescriptionToCrowdin(
+          newVideoDescription.videoId,
+          newVideoDescription.value,
+          logger
+        )
+        if (crowdInId != null) {
+          return await prisma.videoDescription.update({
+            ...query,
+            where: { id: newVideoDescription.id },
+            data: { crowdInId }
+          })
         }
+      } catch (err) {
+        logger?.error(
+          { err, id: newVideoDescription.id },
+          'Crowdin export error (create videoDescription)'
+        )
       }
+
       return newVideoDescription
     }
   }),

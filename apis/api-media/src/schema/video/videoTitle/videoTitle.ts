@@ -39,25 +39,22 @@ builder.mutationFields((t) => ({
         }
       })
 
-      if (videoTitle.videoId != null) {
-        try {
-          const crowdInId = await exportVideoTitleToCrowdin(
-            videoTitle.videoId,
-            videoTitle.value
-          )
+      if (videoTitle.videoId != null) return videoTitle
+      try {
+        const crowdInId = await exportVideoTitleToCrowdin(
+          videoTitle.videoId,
+          videoTitle.value
+        )
 
-          return await prisma.videoTitle.update({
-            ...query,
-            where: { id: videoTitle.id },
-            data: { crowdInId: crowdInId ?? undefined }
-          })
-        } catch (error) {
-          logger?.error('Crowdin export error:', error)
-          return videoTitle
-        }
+        return await prisma.videoTitle.update({
+          ...query,
+          where: { id: videoTitle.id },
+          data: { crowdInId: crowdInId ?? undefined }
+        })
+      } catch (error) {
+        logger?.error('Crowdin export error:', error)
+        return videoTitle
       }
-
-      return videoTitle
     }
   }),
   videoTitleUpdate: t.withAuth({ isPublisher: true }).prismaField({
