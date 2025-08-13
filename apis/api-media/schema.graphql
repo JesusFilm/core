@@ -825,12 +825,18 @@ type Video
   published: Boolean!
   cloudflareAssets: [CloudflareR2!]!
   videoEditions: [VideoEdition!]!
+
+  """The languages of the video variants. Includes languages of children."""
   availableLanguages: [String!]!
   title(languageId: ID, primary: Boolean): [VideoTitle!]!
   snippet(languageId: ID, primary: Boolean): [VideoSnippet!]!
   description(languageId: ID, primary: Boolean): [VideoDescription!]!
   studyQuestions(languageId: ID, primary: Boolean): [VideoStudyQuestion!]!
   imageAlt(languageId: ID, primary: Boolean): [VideoImageAlt!]!
+
+  """
+  The languages of published video variants. Does not include languages of children.
+  """
   variantLanguages: [Language!]!
   variantLanguagesCount(input: VideoVariantFilter): Int!
 
@@ -840,6 +846,10 @@ type Video
 
   """The number of published child videos associated with this video"""
   childrenCount: Int!
+
+  """
+  The languages of published video variants. Includes languages of children.
+  """
   variantLanguagesWithSlug(input: VideoVariantFilter): [LanguageWithSlug!]!
   variants(input: VideoVariantFilter): [VideoVariant!]!
   subtitles(languageId: ID, primary: Boolean, edition: String): [VideoSubtitle!]!

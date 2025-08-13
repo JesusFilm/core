@@ -17,11 +17,7 @@ import { Language, LanguageWithSlug } from '../language'
 import { deleteVideo } from '../mux/video/service'
 import { VideoSource, VideoSourceShape } from '../videoSource/videoSource'
 import { VideoVariantFilter } from '../videoVariant/inputs/videoVariantFilter'
-import {
-  VideoVariant,
-  handleParentVariantCleanup,
-  handleParentVariantCreation
-} from '../videoVariant/videoVariant'
+import { VideoVariant } from '../videoVariant/videoVariant'
 
 import { Platform } from './enums/platform'
 import { VideoLabel } from './enums/videoLabel'
@@ -118,7 +114,23 @@ const Video = builder.prismaObject('Video', {
     videoEditions: t.relation('videoEditions', { nullable: false }),
     availableLanguages: t.stringList({
       nullable: false,
-      resolve: ({ availableLanguages }) => availableLanguages
+      description:
+        'The languages of the video variants. Includes languages of children.',
+      select: {
+        children: {
+          select: {
+            availableLanguages: true
+          }
+        }
+      },
+      resolve: (video) => {
+        return Array.from(
+          new Set([
+            ...video.availableLanguages,
+            ...video.children.flatMap((child) => child.availableLanguages)
+          ])
+        ).sort((a, b) => Number(a) - Number(b))
+      }
     }),
     title: t.relation('title', {
       nullable: false,
@@ -203,10 +215,15 @@ const Video = builder.prismaObject('Video', {
     variantLanguages: t.field({
       type: [Language],
       nullable: false,
+      description:
+        'The languages of published video variants. Does not include languages of children.',
       select: () => ({
         variants: {
           select: {
             languageId: true
+          },
+          where: {
+            published: true
           }
         }
       }),
@@ -242,6 +259,8 @@ const Video = builder.prismaObject('Video', {
       args: {
         input: t.arg({ type: VideoVariantFilter, required: false })
       },
+      description:
+        'The languages of published video variants. Includes languages of children.',
       select: ({ input }) => ({
         variants: {
           select: {
@@ -251,13 +270,37 @@ const Video = builder.prismaObject('Video', {
           where: {
             published: input?.onlyPublished === false ? undefined : true
           }
+        },
+        children: {
+          select: {
+            variants: {
+              select: {
+                languageId: true,
+                slug: true
+              },
+              where: {
+                published: input?.onlyPublished === false ? undefined : true
+              }
+            }
+          }
         }
       }),
-      resolve: (video) =>
-        video.variants.map(({ slug, languageId }) => ({
-          slug,
-          language: { id: languageId }
-        }))
+      resolve: (video) => {
+        return Array.from(
+          new Set([
+            ...video.variants.map(({ slug, languageId }) => ({
+              slug,
+              language: { id: languageId }
+            })),
+            ...video.children.flatMap((child) =>
+              child.variants.map(({ slug, languageId }) => ({
+                slug,
+                language: { id: languageId }
+              }))
+            )
+          ])
+        )
+      }
     }),
     variants: t.field({
       type: [VideoVariant],
@@ -758,31 +801,6 @@ builder.mutationFields((t) => ({
           children: true
         }
       })
-
-      // Handle parent variant changes if video published status changed
-      if (currentVideo && input.published !== undefined) {
-        const wasPublished = currentVideo.published
-        const isNowPublished = input.published
-
-        if (
-          wasPublished !== isNowPublished &&
-          currentVideo.variants.length > 0
-        ) {
-          try {
-            for (const variant of currentVideo.variants) {
-              if (isNowPublished) {
-                // Video was unpublished and is now published - create parent variants for all published variants
-                await handleParentVariantCreation(input.id, variant.languageId)
-              } else {
-                // Video was published and is now unpublished - cleanup parent variants for all variants
-                await handleParentVariantCleanup(input.id, variant.languageId)
-              }
-            }
-          } catch (error) {
-            console.error('Parent variant video update error:', error)
-          }
-        }
-      }
 
       try {
         await updateVideoInAlgolia(video.id)

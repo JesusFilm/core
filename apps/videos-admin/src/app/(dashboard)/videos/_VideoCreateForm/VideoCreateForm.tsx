@@ -207,34 +207,6 @@ export function VideoCreateForm({
             }
           })
 
-          // Create null video variant for series and collections with language 529 (English)
-          // Currently required for the video to be visible in the frontend
-          if (values.label === 'series' || values.label === 'collection') {
-            try {
-              const variantId = `529_${videoId}`
-              const slug = `${values.slug}/english`
-
-              await createVideoVariant({
-                variables: {
-                  input: {
-                    id: variantId,
-                    videoId,
-                    edition: 'base',
-                    languageId: '529',
-                    slug,
-                    downloadable: false,
-                    published: false
-                  }
-                }
-              })
-            } catch (variantError) {
-              console.warn(
-                'Failed to create null video variant for collection or series:',
-                variantError
-              )
-            }
-          }
-
           enqueueSnackbar('Successfully created video.', {
             variant: 'success'
           })
