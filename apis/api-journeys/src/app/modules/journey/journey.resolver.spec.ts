@@ -1735,7 +1735,7 @@ describe('JourneyResolver', () => {
       ])
     })
 
-    it('should duplicate actions', async () => {
+    it('should duplicate actions with customizable=false and parentStepId=null', async () => {
       mockUuidv4.mockReturnValueOnce(duplicatedStep.id)
       mockUuidv4.mockReturnValueOnce(duplicatedNextStep.id)
       mockUuidv4.mockReturnValueOnce(duplicatedButton.id)
@@ -1760,6 +1760,8 @@ describe('JourneyResolver', () => {
       expect(prismaService.action.create).toHaveBeenCalledWith({
         data: {
           ...duplicatedButton.action,
+          customizable: false,
+          parentStepId: null,
           blockId: duplicatedNextStep.id,
           parentBlockId: duplicatedButton.id
         }

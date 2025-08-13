@@ -5,7 +5,6 @@ builder.prismaObject('Block', {
   interfaces: [Block],
   variant: 'VideoTriggerBlock',
   isTypeOf: (obj: any) => obj.typename === 'VideoTriggerBlock',
-  directives: { key: { fields: 'id' } },
   fields: (t) => ({
     id: t.exposeID('id', { nullable: false, directives: { shareable: true } }),
     journeyId: t.exposeID('journeyId', {
