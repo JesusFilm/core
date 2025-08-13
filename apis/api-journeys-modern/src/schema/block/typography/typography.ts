@@ -36,9 +36,6 @@ export const TypographyBlock = builder.prismaObject('Block', {
   variant: 'TypographyBlock',
   interfaces: [Block],
   isTypeOf: (obj: any) => obj.typename === 'TypographyBlock',
-  directives: {
-    key: { fields: 'id' }
-  },
   fields: (t) => ({
     id: t.exposeID('id', { nullable: false, directives: { shareable: true } }),
     journeyId: t.exposeID('journeyId', {

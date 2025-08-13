@@ -98,17 +98,16 @@ async function processImage(image: JourneySimpleImage) {
   }
 }
 
-// extract youtube video id from url
-function extractYouTubeVideoId(input: string): string | null {
-  // If input is already an 11-char video ID, return as-is
-  if (/^[\w-]{11}$/.test(input)) return input
-  // Otherwise, try to extract from URL
-  const match = input.match(
+function extractYouTubeVideoId(url: string): string | null {
+  // If url is already an 11-char video ID, return as-is
+  if (/^[\w-]{11}$/.test(url)) return url
+  // Otherwise, try to extract from url
+  const match = url.match(
     /(?:v=|vi=|youtu\.be\/|\/v\/|embed\/|shorts\/|\/watch\?v=|\/watch\?.+&v=)([\w-]{11})/
   )
   if (match) return match[1]
   // Fallback: try generic 11-char match
-  const generic = input.match(/([\w-]{11})/)
+  const generic = url.match(/([\w-]{11})/)
   return generic ? generic[1] : null
 }
 
@@ -138,7 +137,6 @@ async function getYouTubeVideoDuration(videoId: string): Promise<number> {
     `https://www.googleapis.com/youtube/v3/videos?${videosQuery}`
   )
   const data = await response.json()
-  console.log(data)
   const isoDuration = data.items?.[0]?.contentDetails?.duration
   if (!isoDuration) throw new Error('Could not fetch video duration')
   return parseISO8601Duration(isoDuration)
@@ -270,14 +268,38 @@ export async function updateSimpleJourney(
           await tx.block.create({
             data: {
               journeyId,
+              typename: 'VideoBlock',
+            parentBlockId: cardBlockId,
+            parentOrder: parentOrder++,
+            videoId,
+            source: 'youTube',
+            autoplay: true,
+            startAt: card.video.startAt ?? 0,
+            endAt: card.video.endAt ?? videoDuration,
+            action:
+              nextStepBlock != null
+                ? {
+                    create: {
+                      blockId: nextStepBlock.stepBlockId
+                    }
+                  }
+                : undefined
+          }
+        })
+      } else {
+        // if not video, create other card content
+        if (card.heading != null) {
+          await tx.block.create({
+            data: {
+              journeyId,
               typename: 'TypographyBlock',
-              parentBlockId: cardBlockId,
-              parentOrder: parentOrder++,
-              content: card.heading,
-              variant: 'h3'
-            }
-          })
-        }
+                parentBlockId: cardBlockId,
+                parentOrder: parentOrder++,
+                content: card.heading,
+                variant: 'h3'
+              }
+            })
+          }
 
         if (card.text != null) {
           await tx.block.create({

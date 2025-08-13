@@ -274,7 +274,7 @@
     "@nx/web": "21.3.11",
     "@nx/webpack": "21.3.11",
     "@nx/workspace": "21.3.11",
-    "@playwright/test": "^1.51.1",
+    "@playwright/test": "^1.54.2",
     "@storybook/addon-a11y": "^8.4.0",
     "@storybook/addon-essentials": "^8.4.0",
     "@storybook/addon-interactions": "^8.4.0",
@@ -396,7 +396,7 @@
   "overrides": {
     "react-is": "^18.3.1",
     "html-tokenize": {
-      "readable-stream": "^2.3.8"
+      "readable-stream": "^3.6.0"
     }
   }
 }

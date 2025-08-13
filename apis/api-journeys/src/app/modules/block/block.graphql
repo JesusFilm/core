@@ -1,4 +1,4 @@
-interface Block @key(fields: "id") {
+interface Block {
   id: ID!
   journeyId: ID!
   parentBlockId: ID

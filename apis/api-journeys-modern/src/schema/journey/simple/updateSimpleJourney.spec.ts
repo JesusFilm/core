@@ -78,6 +78,8 @@ describe('updateSimpleJourney', () => {
       },
       {
         id: 'card-3',
+        x: 200,
+        y: 200,
         button: { text: 'End', url: 'https://example.com' }
       }
     ]
@@ -86,20 +88,12 @@ describe('updateSimpleJourney', () => {
   beforeEach(() => {
     jest.clearAllMocks()
     txMock.block.create.mockResolvedValue({ id: 'mock-block-id' } as any)
-    txMock.block.update.mockResolvedValue({} as any)
     prismaMock.$transaction.mockImplementation(
       async (callback) => await callback(txMock as any)
     )
-    // Mock environment variables
     process.env = { ...originalEnv }
     process.env.CLOUDFLARE_UPLOAD_KEY = 'test-cloudflare-account-hash'
-  })
 
-  afterEach(() => {
-    process.env = originalEnv
-    jest.clearAllMocks()
-
-    // Mock successful YouTube API response
     mockFetch.mockResolvedValue({
       json: () =>
         Promise.resolve({
@@ -168,6 +162,8 @@ describe('updateSimpleJourney', () => {
       cards: [
         {
           id: 'video-card-1',
+          x: 0,
+          y: 0,
           video: {
             url: 'https://youtube.com/watch?v=dQw4w9WgXcQ',
             startAt: 30,
@@ -177,6 +173,8 @@ describe('updateSimpleJourney', () => {
         },
         {
           id: 'card-2',
+          x: 0,
+          y: 400,
           button: { text: 'End', url: 'https://example.com' }
         }
       ]
@@ -203,6 +201,8 @@ describe('updateSimpleJourney', () => {
       cards: [
         {
           id: 'video-card-1',
+          x: 0,
+          y: 0,
           video: {
             url: 'https://youtube.com/watch?v=dQw4w9WgXcQ'
             // No startAt/endAt provided
@@ -211,6 +211,8 @@ describe('updateSimpleJourney', () => {
         },
         {
           id: 'card-2',
+          x: 0,
+          y: 400,
           button: { text: 'End', url: 'https://example.com' }
         }
       ]
@@ -247,11 +249,15 @@ describe('updateSimpleJourney', () => {
         cards: [
           {
             id: 'video-card-1',
+            x: 0,
+            y: 0,
             video: { url },
             defaultNextCard: 'card-2'
           },
           {
             id: 'card-2',
+            x: 0,
+            y: 400,
             button: { text: 'End', url: 'https://example.com' }
           }
         ]
@@ -277,6 +283,8 @@ describe('updateSimpleJourney', () => {
       cards: [
         {
           id: 'video-card-1',
+          x: 0,
+          y: 0,
           video: {
             url: 'https://vimeo.com/123456789' // Not YouTube
           },
@@ -284,6 +292,8 @@ describe('updateSimpleJourney', () => {
         },
         {
           id: 'card-2',
+          x: 0,
+          y: 400,
           button: { text: 'End', url: 'https://example.com' }
         }
       ]
@@ -308,6 +318,8 @@ describe('updateSimpleJourney', () => {
       cards: [
         {
           id: 'video-card-1',
+          x: 0,
+          y: 0,
           video: {
             url: 'https://youtube.com/watch?v=dQw4w9WgXcQ'
           },
@@ -315,6 +327,8 @@ describe('updateSimpleJourney', () => {
         },
         {
           id: 'card-2',
+          x: 0,
+          y: 400,
           button: { text: 'End', url: 'https://example.com' }
         }
       ]
@@ -332,6 +346,8 @@ describe('updateSimpleJourney', () => {
       cards: [
         {
           id: 'video-card-1',
+          x: 0,
+          y: 0,
           video: {
             url: 'https://youtube.com/watch?v=dQw4w9WgXcQ',
             startAt: 0,
@@ -341,6 +357,8 @@ describe('updateSimpleJourney', () => {
         },
         {
           id: 'card-2',
+          x: 0,
+          y: 400,
           button: { text: 'End', url: 'https://example.com' }
         }
       ]
@@ -363,6 +381,8 @@ describe('updateSimpleJourney', () => {
       cards: [
         {
           id: 'video-card-1',
+          x: 0,
+          y: 0,
           video: {
             url: 'https://youtube.com/watch?v=dQw4w9WgXcQ'
           },
@@ -370,6 +390,8 @@ describe('updateSimpleJourney', () => {
         },
         {
           id: 'card-2',
+          x: 0,
+          y: 400,
           button: { text: 'End', url: 'https://example.com' }
         }
       ]
@@ -422,11 +444,15 @@ describe('updateSimpleJourney', () => {
         cards: [
           {
             id: 'video-card',
+            x: 0,
+            y: 0,
             video: { url: 'https://youtube.com/watch?v=dQw4w9WgXcQ' }, // Use valid video ID
             defaultNextCard: 'end-card'
           },
           {
             id: 'end-card',
+            x: 0,
+            y: 400,
             button: { text: 'End', url: 'https://example.com' }
           }
         ]
@@ -449,16 +475,11 @@ describe('updateSimpleJourney', () => {
       title: 't',
       description: 'd',
       cards: [
-        {
-          id: 'c1',
-          x: 0,
-          y: 0,
-          defaultNextCard: 'c2'
-        },
+        { id: 'c1', x: 0, y: 0 },
         {
           id: 'c2',
-          x: 1,
-          y: 1,
+          x: 0,
+          y: 400,
           button: { text: 'End', url: 'https://example.com' }
         }
       ]

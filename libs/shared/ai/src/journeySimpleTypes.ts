@@ -88,6 +88,44 @@ export type JourneySimpleImage = z.infer<typeof journeySimpleImageSchema>
 
 // --- Video Schema ---
 export const journeySimpleVideoSchema = z.object({
+  url: z.string().describe('The YouTube video URL.'),
+  startAt: z
+    .number()
+    .int()
+    .nonnegative()
+    .optional()
+    .describe('Start time in seconds. If not provided, defaults to 0.'),
+  endAt: z
+    .number()
+    .int()
+    .positive()
+    .optional()
+    .describe(
+      'End time in seconds. If not provided, defaults to the video duration.'
+    )
+})
+export type JourneySimpleVideo = z.infer<typeof journeySimpleVideoSchema>
+
+// --- Video Update Schema (with stricter validation) ---
+export const journeySimpleVideoSchemaUpdate =
+  journeySimpleVideoSchema.superRefine((data, ctx) => {
+    if (
+      data.startAt !== undefined &&
+      data.endAt !== undefined &&
+      data.endAt <= data.startAt
+    ) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: 'endAt must be greater than startAt if both are provided.'
+      })
+    }
+  })
+export type JourneySimpleVideoUpdate = z.infer<
+  typeof journeySimpleVideoSchemaUpdate
+>
+
+// --- Video Schema ---
+export const journeySimpleVideoSchema = z.object({
   src: z.string().describe('The YouTube video URL or internal video ID.'),
   source: z.enum(['youTube', 'internal']).describe('The type of video source.'),
   summary: z
@@ -173,7 +211,7 @@ export const journeySimpleCardSchema = z.object({
   video: journeySimpleVideoSchema
     .optional()
     .describe(
-      'Video segment for this card, if present. If present, only "id", "video", and "defaultNextCard" should be set on this card. All other content fields (heading, text, button, poll, image, backgroundImage, etc.) must be omitted.'
+      'Video segment for this card, if present. If present, only "id", "video", and (optionally) "defaultNextCard" should be set on this card. All other content fields (heading, text, button, poll, image, backgroundImage, etc.) must be omitted.'
     ),
   defaultNextCard: z
     .string()

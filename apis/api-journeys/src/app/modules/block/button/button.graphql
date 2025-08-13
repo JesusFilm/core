@@ -29,12 +29,12 @@ input ButtonBlockSettingsInput {
   color: String
 }
 
-type ButtonBlockSettings {
+type ButtonBlockSettings @shareable {
   alignment: ButtonAlignment @shareable
   color: String @shareable
 }
 
-type ButtonBlock implements Block @key(fields: "id") {
+type ButtonBlock implements Block @shareable {
   id: ID! @shareable
   journeyId: ID! @shareable
   parentBlockId: ID @shareable
