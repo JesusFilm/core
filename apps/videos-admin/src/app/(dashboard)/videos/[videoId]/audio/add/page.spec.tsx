@@ -268,16 +268,9 @@ describe('AddAudioLanguageDialog', () => {
       })
     })
 
-    // Select Max Resolution
-    await act(async () => {
-      fireEvent.change(screen.getAllByTestId('mui-select')[1], {
-        target: { value: 'fhd' }
-      })
-    })
-
     // Select Status
     await act(async () => {
-      fireEvent.change(screen.getAllByTestId('mui-select')[2], {
+      fireEvent.change(screen.getAllByTestId('mui-select')[1], {
         target: { value: 'published' }
       })
     })
