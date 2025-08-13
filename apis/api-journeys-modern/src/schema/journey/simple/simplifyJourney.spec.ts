@@ -142,6 +142,220 @@ describe('simplifyJourney', () => {
     expect(journeySimpleSchema.safeParse(result).success).toBe(true)
   })
 
+  it('transforms a journey with video block (YouTube)', () => {
+    const journey: TestJourney = {
+      ...baseJourney,
+      blocks: [
+        {
+          id: 'step-1',
+          typename: 'StepBlock',
+          nextBlockId: 'step-2'
+        },
+        {
+          id: 'card-1',
+          typename: 'CardBlock',
+          parentBlockId: 'step-1'
+        },
+        {
+          id: 'video-1',
+          typename: 'VideoBlock',
+          parentBlockId: 'card-1',
+          source: 'youTube',
+          videoId: 'dQw4w9WgXcQ',
+          startAt: 30,
+          endAt: 120
+        },
+        { id: 'step-2', typename: 'StepBlock' },
+        { id: 'card-2', typename: 'CardBlock', parentBlockId: 'step-2' },
+        {
+          id: 'button-2',
+          typename: 'ButtonBlock',
+          parentBlockId: 'card-2',
+          label: 'End',
+          action: { url: 'https://example.com' }
+        }
+      ] as any
+    }
+    const result = simplifyJourney(journey)
+    expect(result.cards.length).toBe(2)
+
+    const videoCard = result.cards[0]
+    expect(videoCard.id).toBe('card-1')
+    expect(videoCard.video).toBeDefined()
+    expect(videoCard.video?.url).toBe('https://youtube.com/watch?v=dQw4w9WgXcQ')
+    expect(videoCard.video?.startAt).toBe(30)
+    expect(videoCard.video?.endAt).toBe(120)
+    expect(videoCard.defaultNextCard).toBe('card-2')
+
+    // Video cards should not have other content
+    expect(videoCard.heading).toBeUndefined()
+    expect(videoCard.text).toBeUndefined()
+    expect(videoCard.button).toBeUndefined()
+    expect(videoCard.poll).toBeUndefined()
+    expect(videoCard.image).toBeUndefined()
+    expect(videoCard.backgroundImage).toBeUndefined()
+
+    expect(journeySimpleSchema.safeParse(result).success).toBe(true)
+  })
+
+  it('transforms a journey with video block (minimal - no timing)', () => {
+    const journey: TestJourney = {
+      ...baseJourney,
+      blocks: [
+        {
+          id: 'step-1',
+          typename: 'StepBlock',
+          nextBlockId: 'step-2'
+        },
+        {
+          id: 'card-1',
+          typename: 'CardBlock',
+          parentBlockId: 'step-1'
+        },
+        {
+          id: 'video-1',
+          typename: 'VideoBlock',
+          parentBlockId: 'card-1',
+          source: 'youTube',
+          videoId: 'dQw4w9WgXcQ'
+          // No startAt/endAt
+        },
+        { id: 'step-2', typename: 'StepBlock' },
+        { id: 'card-2', typename: 'CardBlock', parentBlockId: 'step-2' },
+        {
+          id: 'button-2',
+          typename: 'ButtonBlock',
+          parentBlockId: 'card-2',
+          label: 'End',
+          action: { url: 'https://example.com' }
+        }
+      ] as any
+    }
+    const result = simplifyJourney(journey)
+
+    const videoCard = result.cards[0]
+    expect(videoCard.video).toBeDefined()
+    expect(videoCard.video?.url).toBe('https://youtube.com/watch?v=dQw4w9WgXcQ')
+    expect(videoCard.video?.startAt).toBeUndefined()
+    expect(videoCard.video?.endAt).toBeUndefined()
+    expect(videoCard.defaultNextCard).toBe('card-2')
+
+    expect(journeySimpleSchema.safeParse(result).success).toBe(true)
+  })
+
+  it('transforms a journey with video block (null timing values)', () => {
+    const journey: TestJourney = {
+      ...baseJourney,
+      blocks: [
+        {
+          id: 'step-1',
+          typename: 'StepBlock',
+          nextBlockId: 'step-2'
+        },
+        {
+          id: 'card-1',
+          typename: 'CardBlock',
+          parentBlockId: 'step-1'
+        },
+        {
+          id: 'video-1',
+          typename: 'VideoBlock',
+          parentBlockId: 'card-1',
+          source: 'youTube',
+          videoId: 'dQw4w9WgXcQ',
+          startAt: null,
+          endAt: null
+        },
+        { id: 'step-2', typename: 'StepBlock' },
+        { id: 'card-2', typename: 'CardBlock', parentBlockId: 'step-2' },
+        {
+          id: 'button-2',
+          typename: 'ButtonBlock',
+          parentBlockId: 'card-2',
+          label: 'End',
+          action: { url: 'https://example.com' }
+        }
+      ] as any
+    }
+    const result = simplifyJourney(journey)
+
+    const videoCard = result.cards[0]
+    expect(videoCard.video?.startAt).toBeUndefined()
+    expect(videoCard.video?.endAt).toBeUndefined()
+
+    expect(journeySimpleSchema.safeParse(result).success).toBe(true)
+  })
+
+  it('ignores non-YouTube video blocks', () => {
+    const journey: TestJourney = {
+      ...baseJourney,
+      blocks: [
+        {
+          id: 'step-1',
+          typename: 'StepBlock'
+        },
+        {
+          id: 'card-1',
+          typename: 'CardBlock',
+          parentBlockId: 'step-1'
+        },
+        {
+          id: 'video-1',
+          typename: 'VideoBlock',
+          parentBlockId: 'card-1',
+          source: 'internal', // Not YouTube
+          videoId: 'some-id'
+        },
+        {
+          id: 'button-1',
+          typename: 'ButtonBlock',
+          parentBlockId: 'card-1',
+          label: 'Next',
+          action: { url: 'https://example.com' }
+        }
+      ] as any
+    }
+    const result = simplifyJourney(journey)
+
+    const card = result.cards[0]
+    expect(card.video).toBeUndefined()
+    expect(card.button?.text).toBe('Next') // Should process as regular card
+
+    expect(journeySimpleSchema.safeParse(result).success).toBe(true)
+  })
+
+  it('transforms video card without step navigation (no defaultNextCard)', () => {
+    const journey: TestJourney = {
+      ...baseJourney,
+      blocks: [
+        {
+          id: 'step-1',
+          typename: 'StepBlock'
+          // No nextBlockId
+        },
+        {
+          id: 'card-1',
+          typename: 'CardBlock',
+          parentBlockId: 'step-1'
+        },
+        {
+          id: 'video-1',
+          typename: 'VideoBlock',
+          parentBlockId: 'card-1',
+          source: 'youTube',
+          videoId: 'dQw4w9WgXcQ'
+        }
+      ] as any
+    }
+    const result = simplifyJourney(journey)
+
+    const videoCard = result.cards[0]
+    expect(videoCard.video).toBeDefined()
+    expect(videoCard.defaultNextCard).toBeUndefined()
+
+    expect(journeySimpleSchema.safeParse(result).success).toBe(true)
+  })
+
   it('handles edge case: missing/extra/invalid data gracefully', () => {
     const journey: TestJourney = {
       ...baseJourney,
