@@ -31,35 +31,33 @@ builder.mutationFields((t) => ({
       input: t.arg({ type: VideoTranslationCreateInput, required: true })
     },
     resolve: async (query, _parent, { input }) => {
-      return await prisma.$transaction(async (tx) => {
-        const videoTitle = await tx.videoTitle.create({
-          ...query,
-          data: {
-            ...input,
-            id: input.id ?? undefined
-          }
-        })
-
-        if (videoTitle.videoId != null) {
-          try {
-            const crowdInId = await exportVideoTitleToCrowdin(
-              videoTitle.videoId,
-              videoTitle.value
-            )
-
-            return await tx.videoTitle.update({
-              ...query,
-              where: { id: videoTitle.id },
-              data: { crowdInId: crowdInId ?? undefined }
-            })
-          } catch (error) {
-            logger?.error('Crowdin export error:', error)
-            return videoTitle
-          }
+      const videoTitle = await prisma.videoTitle.create({
+        ...query,
+        data: {
+          ...input,
+          id: input.id ?? undefined
         }
-
-        return videoTitle
       })
+
+      if (videoTitle.videoId != null) {
+        try {
+          const crowdInId = await exportVideoTitleToCrowdin(
+            videoTitle.videoId,
+            videoTitle.value
+          )
+
+          return await prisma.videoTitle.update({
+            ...query,
+            where: { id: videoTitle.id },
+            data: { crowdInId: crowdInId ?? undefined }
+          })
+        } catch (error) {
+          logger?.error('Crowdin export error:', error)
+          return videoTitle
+        }
+      }
+
+      return videoTitle
     }
   }),
   videoTitleUpdate: t.withAuth({ isPublisher: true }).prismaField({
@@ -69,44 +67,36 @@ builder.mutationFields((t) => ({
       input: t.arg({ type: VideoTranslationUpdateInput, required: true })
     },
     resolve: async (query, _parent, { input }) => {
-      return await prisma.$transaction(
-        async (transaction) => {
-          const existing = await transaction.videoTitle.findUnique({
-            where: { id: input.id },
-            select: { videoId: true, crowdInId: true }
-          })
-          if (existing == null)
-            throw new Error(`videoTitle ${input.id} not found`)
+      const existing = await prisma.videoTitle.findUnique({
+        where: { id: input.id },
+        select: { videoId: true, crowdInId: true }
+      })
+      if (existing == null) throw new Error(`videoTitle ${input.id} not found`)
 
-          if (existing.videoId == null)
-            throw new Error(`videoTitle ${input.id} videoId not found`)
+      if (existing.videoId == null)
+        throw new Error(`videoTitle ${input.id} videoId not found`)
 
-          const updatedRecord = await transaction.videoTitle.update({
-            ...query,
-            where: { id: input.id },
-            data: {
-              value: input.value ?? undefined,
-              primary: input.primary ?? undefined,
-              languageId: input.languageId ?? undefined
-            }
-          })
-
-          try {
-            await updateVideoTitleInCrowdin(
-              existing.videoId,
-              input.value ?? '',
-              existing.crowdInId ?? null
-            )
-          } catch (error) {
-            logger?.error('Crowdin export error:', error)
-          }
-
-          return updatedRecord
-        },
-        {
-          timeout: 10000
+      const updatedRecord = await prisma.videoTitle.update({
+        ...query,
+        where: { id: input.id },
+        data: {
+          value: input.value ?? undefined,
+          primary: input.primary ?? undefined,
+          languageId: input.languageId ?? undefined
         }
-      )
+      })
+
+      try {
+        await updateVideoTitleInCrowdin(
+          existing.videoId,
+          input.value ?? '',
+          existing.crowdInId ?? null
+        )
+      } catch (error) {
+        logger?.error('Crowdin export error:', error)
+      }
+
+      return updatedRecord
     }
   }),
   videoTitleDelete: t.withAuth({ isPublisher: true }).prismaField({
