@@ -45,6 +45,7 @@ export function AboutTabPanel(): ReactElement {
       <Divider />
       <CustomizeTemplate />
       <TextField
+        data-testid="StrategySlugEdit"
         id="strategySlug"
         name="strategySlug"
         value={values.strategySlug}
