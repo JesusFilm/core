@@ -43,22 +43,24 @@ builder.mutationFields((t) => ({
         try {
           const crowdInId = await exportVideoDescriptionToCrowdin(
             newVideoDescription.videoId,
-            newVideoDescription.value
+            newVideoDescription.value,
+            logger
           )
-
           if (crowdInId != null) {
             return await prisma.videoDescription.update({
               ...query,
               where: { id: newVideoDescription.id },
-              data: { crowdInId: crowdInId ?? undefined }
+              data: { crowdInId }
             })
           }
-        } catch (error) {
-          logger?.error('Crowdin export error:', error)
+        } catch (err) {
+          logger?.error(
+            { err, id: newVideoDescription.id },
+            'Crowdin export error (create videoDescription)'
+          )
         }
-
-        return newVideoDescription
       }
+      return newVideoDescription
     }
   }),
 
@@ -93,7 +95,8 @@ builder.mutationFields((t) => ({
         await updateVideoDescriptionInCrowdin(
           existing.videoId,
           updatedRecord.value,
-          existing.crowdInId ?? null
+          existing.crowdInId ?? null,
+          logger
         )
       }
 
