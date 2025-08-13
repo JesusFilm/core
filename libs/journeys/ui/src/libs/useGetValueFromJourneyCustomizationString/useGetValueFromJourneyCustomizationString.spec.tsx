@@ -6,8 +6,9 @@ import { JourneyFields as Journey } from '../JourneyProvider/__generated__/Journ
 import { useGetValueFromJourneyCustomizationString } from './useGetValueFromJourneyCustomizationString'
 
 describe('useGetValueFromJourneyCustomizationString', () => {
-  it('returns input if admin variant', () => {
+  it('returns input if admin variant and template is true', () => {
     const journey = {
+      template: true,
       journeyCustomizationFields: [
         {
           __typename: 'JourneyCustomizationField',
@@ -41,6 +42,7 @@ describe('useGetValueFromJourneyCustomizationString', () => {
 
   it('resolves value from journey customization fields for default variant', () => {
     const journey = {
+      template: false,
       journeyCustomizationFields: [
         {
           __typename: 'JourneyCustomizationField',
@@ -85,6 +87,7 @@ describe('useGetValueFromJourneyCustomizationString', () => {
 
   it('replaces custom fields within mixed strings and leaves non-custom-field text intact', () => {
     const journey = {
+      template: false,
       journeyCustomizationFields: [
         {
           __typename: 'JourneyCustomizationField',
@@ -115,6 +118,7 @@ describe('useGetValueFromJourneyCustomizationString', () => {
 
   it('supports multiple custom fields in one string and repeated keys', () => {
     const journey = {
+      template: false,
       journeyCustomizationFields: [
         {
           __typename: 'JourneyCustomizationField',

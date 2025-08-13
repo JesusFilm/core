@@ -16,7 +16,7 @@ export function useGetValueFromJourneyCustomizationString(
 
   return useMemo(() => {
     const input = label ?? ''
-    if (variant === 'admin') return input
+    if (variant === 'admin' && journey.template) return input
     return (
       resolveJourneyCustomizationString(
         input,
