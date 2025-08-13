@@ -533,6 +533,54 @@ describe('BlockService', () => {
         block2
       ])
     })
+
+    it('should set customizable to false and parentStepId to null for duplicated actions', async () => {
+      const blockWithActionCustomizable = {
+        ...block,
+        action: {
+          // initial action with customizable=true simulates source state
+          customizable: true,
+          parentStepId: 'originalStepId'
+        } as Action
+      } as unknown as BlockWithAction
+
+      const duplicatedBlockWithActionCustomizable = {
+        ...duplicatedBlock,
+        action: {
+          customizable: true,
+          parentStepId: 'originalStepId'
+        } as Action
+      } as unknown as BlockWithAction
+
+      service.getDuplicateBlockAndChildren = jest
+        .fn()
+        .mockReturnValue([duplicatedBlockWithActionCustomizable])
+
+      prismaService.block.update
+        .mockResolvedValueOnce(duplicatedBlockWithActionCustomizable)
+        .mockResolvedValueOnce(blockChild)
+        .mockResolvedValueOnce(block2)
+
+      await service.duplicateBlock(blockWithActionCustomizable, false, -1)
+
+      expect(prismaService.block.update).toHaveBeenCalledWith({
+        where: { id: duplicatedBlockWithActionCustomizable.id },
+        include: { action: true },
+        data: {
+          parentBlockId: '3',
+          posterBlockId: undefined,
+          coverBlockId: '4',
+          nextBlockId: undefined,
+          pollOptionImageBlockId: undefined,
+          action: {
+            create: {
+              customizable: false,
+              parentStepId: null
+            }
+          }
+        }
+      })
+    })
   })
 
   describe('getDuplicateBlockAndChildren', () => {

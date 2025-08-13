@@ -131,6 +131,7 @@ export class BlockService {
     x?: number,
     y?: number
   ): Promise<BlockWithAction[]> {
+    console.log('block', block)
     const duplicateBlockId = idMap?.find((map) => block.id === map.oldId)?.newId
     const blockAndChildrenData = await this.getDuplicateBlockAndChildren(
       block.id,
@@ -140,6 +141,8 @@ export class BlockService {
       duplicateBlockId,
       idMap
     )
+
+    console.log('blockAndChildrenData', blockAndChildrenData)
     await this.saveAll(
       blockAndChildrenData.map((block) => ({
         // if updating the omit, also do the same in journey.resolver.ts journeyDuplicate uses this saveAll function.
@@ -179,7 +182,13 @@ export class BlockService {
               newBlock.pollOptionImageBlockId ?? undefined,
             action:
               !isActionEmpty && newBlock.action != null
-                ? { create: newBlock.action }
+                ? {
+                    create: {
+                      ...newBlock.action,
+                      customizable: false,
+                      parentStepId: null
+                    }
+                  }
                 : undefined
           }
           if (newBlock.typename === 'StepBlock') {
@@ -193,6 +202,7 @@ export class BlockService {
               }
             })
           } else {
+            console.log('updateBlockData', updateBlockData)
             return await this.prismaService.block.update({
               where: { id: newBlock.id },
               include: { action: true },
