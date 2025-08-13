@@ -268,38 +268,14 @@ export async function updateSimpleJourney(
           await tx.block.create({
             data: {
               journeyId,
-              typename: 'VideoBlock',
-            parentBlockId: cardBlockId,
-            parentOrder: parentOrder++,
-            videoId,
-            source: 'youTube',
-            autoplay: true,
-            startAt: card.video.startAt ?? 0,
-            endAt: card.video.endAt ?? videoDuration,
-            action:
-              nextStepBlock != null
-                ? {
-                    create: {
-                      blockId: nextStepBlock.stepBlockId
-                    }
-                  }
-                : undefined
-          }
-        })
-      } else {
-        // if not video, create other card content
-        if (card.heading != null) {
-          await tx.block.create({
-            data: {
-              journeyId,
               typename: 'TypographyBlock',
-                parentBlockId: cardBlockId,
-                parentOrder: parentOrder++,
-                content: card.heading,
-                variant: 'h3'
-              }
-            })
-          }
+              parentBlockId: cardBlockId,
+              parentOrder: parentOrder++,
+              content: card.heading,
+              variant: 'h3'
+            }
+          })
+        }
 
         if (card.text != null) {
           await tx.block.create({
