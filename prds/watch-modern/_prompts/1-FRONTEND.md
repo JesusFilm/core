@@ -4,6 +4,11 @@ You are the FRONTEND agent. You can run terminal commands. Build the polished UI
 INPUT
 <FEATURE> = homepage
 
+CONSTRAINTS
+- Use placeholder data only (no real APIs).
+- Prefer the design system and existing components.
+- Do not create or edit files under /spec/**.
+- Do not define or assume backend contracts.
 
 <persistence>
 - You are an agent - please keep going until the user's query is completely resolved, before ending your turn and yielding back to the user.
@@ -14,12 +19,13 @@ INPUT
 
 
 ##STEPS
+
+Important: Don't stop after each step. procced to the next step automatically without user confirmation until the last step completed.
 	
 ### 0. Before proceeding read and learn development practices from:
 
 - `/workspaces/core/prds/watch-modern/GUIDELINES.md`.
 - `/workspaces/core/.cursor/rules/watch-modern.mdc`.
-
 
 ---
 
@@ -44,13 +50,53 @@ fi
 Check if development server is responding on `localhost:4200`:
 
 ```bash
+set -Eeuo pipefail
+
 sleep 5
-if ! curl -s -o /dev/null -w "%{http_code}" http://localhost:4200 | grep -q 200; then
-  echo "⚠️ Dev server not responding properly. Starting manually..."
-  nx run watch-modern:serve --port=4200 &
-  sleep 5
+cd /workspaces/core
+
+health_url="http://localhost:4200"
+alive_final_codes="200"
+
+final_code_and_url() {
+  curl -sS \
+    --connect-timeout 1 \
+    --max-time 3 \
+    -L -o /dev/null \
+    -w '%{http_code} %{url_effective}' \
+    "$health_url" || echo ""
+}
+
+is_final_ok() {
+  local code="$1"
+  for a in $alive_final_codes; do
+    [[ "$code" == "$a" ]] && return 0
+  done
+  return 1
+}
+
+read code url <<<"$(final_code_and_url || true)"
+
+if ! is_final_ok "${code:-}"; then
+  echo "⚠️ Dev server not healthy yet (final ${code:-none} at ${url:-n/a}). Starting…"
+  nx run watch-modern:serve --port=4200 > /tmp/watch_modern_serve.log 2>&1 &
+
+  for i in $(seq 1 20); do
+    sleep 1
+    read code url <<<"$(final_code_and_url || true)"
+    if is_final_ok "${code:-}"; then
+      echo "✅ Dev server healthy at $url (HTTP $code)"
+      exit 0
+    else
+      echo "⏳ Still waiting… attempt $i/20 (got ${code:-none} at ${url:-n/a})"
+    fi
+  done
+
+  echo "❌ Dev server never came up. Last check: ${code:-none} at ${url:-n/a}."
+  echo "   Tail /tmp/watch_modern_serve.log for errors."
+  exit 1
 else
-  echo "✅ Dev server healthy at http://localhost:4200"
+  echo "✅ Dev server already healthy at $url (HTTP $code)"
 fi
 ```
 
@@ -109,33 +155,46 @@ done
 echo "✅ Page renders cleanly after $max_retries attempts"
 ```
 
-**Key improvements:**
-- **Actual React errors**: `Too many re-renders`, `Maximum update depth exceeded`
-- **JavaScript runtime errors**: `TypeError`, `ReferenceError`, `RangeError`
-- **Error boundary activation**: Real error boundary displays, not just message definitions
-- **Next.js error pages**: Actual error page displays, not just templates
-- **Multiple retries**: Ensures consistent error detection
+Don't stop a this step procced to the next step without asking for user confirmation.
 
 ---
 
 4.	Read all mockup files in `/workspaces/core/prds/watch-modern/$FEATURE/intake/ui/**`.
+
+After this step completed: procced to the next step without asking for the user's confirmation.
 	
 5.	<critical task>
-- Recreate the exact visual design pixel-perfect. Match typography, spacing, colors, shadows, borders, and layout precisely
-- Reuse existing Tailwind/Shadcn classes and component structures when available 
-- If using different styling library, translate to equivalent Tailwind classes maintaining exact visual fidelity
-- Preserve all visual hierarchy, component proportions, and responsive breakpoints from mockups
-- Match exact font weights, sizes, line heights, and letter spacing
-- Replicate precise color values, gradients, and opacity levels
-- Maintain exact padding, margins, and gap measurements
-- Copy button styles, hover states, and interactive feedback exactly
-- Preserve all visual decorations: icons, badges, borders, shadows, and animations
-- Copy layout and classes as close to the original as possible to recreate design exactly as it is.
-- Use the same number of content items on the pages, don't simplify or change the content in any way.
-- Reuse the same text lines.
-- Reuse the same images. Don't replace with mocked images, link to the same image url sources.
-- Recreate the same look and feel including decorations and animations.
+Implement visuals (placeholder data):
+   - Recreate the mockups exactly:
+     - Match typography: fonts, weights, sizes, line-heights, letter-spacing.
+     - Match spacing: padding, margins, gaps to the pixel (use Tailwind arbitrary values if needed).
+     - Match colors, borders, shadows, radii, gradients, and icon sizes.
+     - Match layout and responsive breakpoints represented in mockups.
+   - Reuse design-system components or existing project components when possible.
+   - Use the same number of UI items as in mockups; do not simplify.
+   - Use placeholder text/images that mirror the structure and lengths of the mockups. Do not connect to real data.
+
+STRICT INTAKE PARITY:
+- Source of truth: /workspaces/core/prds/watch-modern/homepage/intake/ui/**
+- Reproduce visuals 1:1. No creative liberties.
+- Do NOT introduce new globals/utilities (e.g., no new classes like blur-filter-layer).
+- Use the SAME: fonts, sizes, spacing, icons, z-index values, overlays, gradients, masks.
+- Section effects must be per-intake (no global wrappers).
+- If something is missing, mimic intake locally; do not generalize.
+- After edits, output a delta report (fonts, spacing, icons, z-index, backgrounds/effects). Any delta = fix.
+
+- Enforce classes: “Only use classnames and patterns visible in intake/ui; no additional Tailwind tokens beyond what intake demonstrates.”
+
+- Global CSS: “Don’t modify global CSS; implement overlays/gradients inside each section as in intake.”
+
+-Layering: “Match intake stacking order; use only z-10, z-15, z-20, z-[99] where used in intake.”
 </critical task>
+
+
+- check if typography includsing custom fonts, font-sized, line height and text styling recreated 1:1 with original provided in intake folder.
+
+
+Stop after completing this step and ask user for approval before procceeding to the next step.
 
 ### 6. Write Tests
 
@@ -143,6 +202,8 @@ Write snapshot and RTL tests.
 Write tests:
 	    •	Visual regression tests matching mockups
 	    •	Mocked interaction tests for basic UI behavior
+
+Don't stop a this step procced to the next step without asking for user confirmation.
 
 ---
 
@@ -154,9 +215,13 @@ Run tests and halt if failing:
 npm test || { echo "❌ Tests failing. Fix before proceeding."; exit 1; }
 ```
 
+Don't stop a this step procced to the next step without asking for user confirmation.
+
 ---
 
 ### 8. Separate repeating parts into reusable components.
+
+Don't stop a this step procced to the next step without asking for user confirmation.
 
 ---
 
@@ -167,6 +232,8 @@ If patterns emerge, propose rules/templates and commit to:
 ```text
 /workspaces/core/prds/_proposals/
 ```
+
+Don't stop a this step procced to the next step without asking for user confirmation.
 
 
 ---

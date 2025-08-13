@@ -9,17 +9,10 @@
 cp -R <exported-mockup> prds/watch-modern/<feature>/intake/ui/
 ```
 
-## 2. Run agents in order
+## 2. Run agents in order with the next prompts
 
-| Agent (prompt file) | What it does | Your actions |
-|---------------------|--------------|--------------|
-| **SHAPING** (`prompts/01-SHAPING-agent.md`) | Reads the mockup, interviews you, writes spec (`prds/.../spec/`). | Answer questions → **approve spec**. |
-| **BUILDER** (`prompts/02-BUILDER-agent.md`) | Implements feature **slice-by-slice**: copies markup, adds GraphQL, tests, logs learnings. | Review commits, accept/reject rule/doc tweaks, tell agent to continue/stop. |
-| **CLEANUP** (`prompts/03-CLEANUP-agent.md`) | Archives the intake folder after first prod slice ships; suggests shaping-rule tweaks. | Accept/reject tweaks. |
-| **RETRO** (`prompts/04-RETRO-agent.md`) | Scans `LEARNINGS.md`, proposes global rule/template improvements. | Accept/reject proposals. |
-
-> **Design lock:** Builder must preserve every Tailwind class; snapshot tests fail if UI drifts.
-
+### 1: 
+`Start the dev process per the FRONTEND prompt desciribed in @1-FRONTEND.md`
 ---
 
 ## 3. Progress & docs
@@ -31,9 +24,10 @@ cp -R <exported-mockup> prds/watch-modern/<feature>/intake/ui/
 
 ### TL;DR
 
-1. **Drop mockup → run SHAPING → approve.**  
-2. **Run BUILDER** until must‑haves done.  
+1. **Drop mockup → run FRONTEND agent → approve.**  
+2. **Run SHAPING agent** until all unknowns defined.  
+2. **Run BUILDER** until all implemented.
 3. **Run CLEANUP** (optional) then **RETRO**.  
 4. Merge.
 
-All prompts live in **`/prompts`** – open the next one and hit **Run**. Happy shipping!
+All prompts live in **`/_prompts`** – open the next one and hit **Run**. Happy shipping!
