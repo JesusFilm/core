@@ -1,9 +1,5 @@
-import {
-  SourceStrings as MockSourceStrings,
-  StringTranslations as MockStringTranslations,
-  mockSourceString,
-  mockTranslation
-} from './__mocks__/@crowdin/crowdin-api-client'
+import { mockSourceString, mockTranslation } from '../../../test/crowdinMock'
+
 import { LANGUAGE_CODES } from './config'
 import {
   apis,
@@ -12,12 +8,11 @@ import {
   processFile
 } from './importer'
 
-const sourceStringsApi = MockSourceStrings as jest.Mocked<
-  typeof MockSourceStrings
->
-const stringTranslationsApi = MockStringTranslations as jest.Mocked<
-  typeof MockStringTranslations
->
+// Cast apis to mocked types for better TypeScript support
+const mockedApis = apis as {
+  sourceStrings: jest.Mocked<typeof apis.sourceStrings>
+  stringTranslations: jest.Mocked<typeof apis.stringTranslations>
+}
 
 const mockFile = {
   id: 1,
@@ -34,27 +29,34 @@ describe('Crowdin Importer', () => {
   describe('fetchSourceStrings', () => {
     it('should handle pagination correctly', async () => {
       // First page has full results, second page has partial
-      sourceStringsApi.listProjectStrings
+      mockedApis.sourceStrings.listProjectStrings
         .mockResolvedValueOnce({
-          data: Array(500).fill({ data: mockSourceString })
+          data: Array(500).fill({ data: mockSourceString }),
+          pagination: { offset: 0, limit: 500 }
         })
         .mockResolvedValueOnce({
-          data: Array(50).fill({ data: mockSourceString })
+          data: Array(50).fill({ data: mockSourceString }),
+          pagination: { offset: 500, limit: 500 }
         })
 
       const strings = await fetchSourceStrings(mockFile.id, apis.sourceStrings)
       expect(strings).toHaveLength(550)
-      expect(sourceStringsApi.listProjectStrings).toHaveBeenCalledTimes(2)
+      expect(mockedApis.sourceStrings.listProjectStrings).toHaveBeenCalledTimes(
+        2
+      )
     })
 
     it('should handle empty results', async () => {
-      sourceStringsApi.listProjectStrings.mockResolvedValue({ data: [] })
+      mockedApis.sourceStrings.listProjectStrings.mockResolvedValue({
+        data: [],
+        pagination: { offset: 0, limit: 500 }
+      })
       const strings = await fetchSourceStrings(mockFile.id, apis.sourceStrings)
       expect(strings).toHaveLength(0)
     })
 
     it('should handle API errors', async () => {
-      sourceStringsApi.listProjectStrings.mockRejectedValue(
+      mockedApis.sourceStrings.listProjectStrings.mockRejectedValue(
         new Error('API Error')
       )
       await expect(
@@ -65,11 +67,12 @@ describe('Crowdin Importer', () => {
 
   describe('fetchTranslations', () => {
     it('should filter non-plain text translations', async () => {
-      stringTranslationsApi.listLanguageTranslations.mockResolvedValue({
+      mockedApis.stringTranslations.listLanguageTranslations.mockResolvedValue({
         data: [
           { data: mockTranslation },
           { data: { ...mockTranslation, contentType: 'text/html' } }
-        ]
+        ],
+        pagination: { offset: 0, limit: 500 }
       })
 
       const translations = await fetchTranslations(
@@ -82,12 +85,14 @@ describe('Crowdin Importer', () => {
     })
 
     it('should handle pagination in translations', async () => {
-      stringTranslationsApi.listLanguageTranslations
+      mockedApis.stringTranslations.listLanguageTranslations
         .mockResolvedValueOnce({
-          data: Array(500).fill({ data: mockTranslation })
+          data: Array(500).fill({ data: mockTranslation }),
+          pagination: { offset: 0, limit: 500 }
         })
         .mockResolvedValueOnce({
-          data: Array(50).fill({ data: mockTranslation })
+          data: Array(50).fill({ data: mockTranslation }),
+          pagination: { offset: 500, limit: 500 }
         })
 
       const translations = await fetchTranslations(
@@ -102,21 +107,25 @@ describe('Crowdin Importer', () => {
   describe('processFile', () => {
     it('should process multiple languages', async () => {
       // Set up source strings to return data first
-      sourceStringsApi.listProjectStrings.mockResolvedValue({
-        data: [{ data: mockSourceString }]
+      mockedApis.sourceStrings.listProjectStrings.mockResolvedValue({
+        data: [{ data: mockSourceString }],
+        pagination: { offset: 0, limit: 500 }
       })
 
       const importOne = jest.fn()
       await processFile(mockFile, importOne)
 
       expect(
-        stringTranslationsApi.listLanguageTranslations
+        mockedApis.stringTranslations.listLanguageTranslations
       ).toHaveBeenCalledTimes(Object.keys(LANGUAGE_CODES).length)
       expect(importOne).toHaveBeenCalled()
     })
 
     it('should skip processing when no source strings exist', async () => {
-      sourceStringsApi.listProjectStrings.mockResolvedValue({ data: [] })
+      mockedApis.sourceStrings.listProjectStrings.mockResolvedValue({
+        data: [],
+        pagination: { offset: 0, limit: 500 }
+      })
       const importOne = jest.fn()
 
       await processFile(mockFile, importOne)
@@ -124,7 +133,7 @@ describe('Crowdin Importer', () => {
     })
 
     it('should handle errors for individual languages', async () => {
-      stringTranslationsApi.listLanguageTranslations.mockRejectedValue(
+      mockedApis.stringTranslations.listLanguageTranslations.mockRejectedValue(
         new Error('Translation API Error')
       )
       const importOne = jest.fn()
