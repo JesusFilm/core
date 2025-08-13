@@ -85,33 +85,43 @@ builder.mutationFields((t) => ({
       input: t.arg({ type: VideoStudyQuestionUpdateInput, required: true })
     },
     resolve: async (query, _parent, { input }) => {
-      const existing = await transaction.videoStudyQuestion.findUnique({
-        where: { id: input.id },
-        select: { videoId: true, languageId: true, crowdInId: true }
-      })
-      if (existing == null)
-        throw new Error(`videoStudyQuestion ${input.id} not found`)
+      return await prisma.$transaction(
+        async (transaction) => {
+          const existing = await transaction.videoStudyQuestion.findUnique({
+            where: { id: input.id },
+            select: { videoId: true, languageId: true, crowdInId: true }
+          })
+          if (existing == null)
+            throw new Error(`videoStudyQuestion ${input.id} not found`)
 
-      if (input.order != null) {
-        await updateOrderUpdate({
-          videoId: existing.videoId,
-          id: input.id,
-          languageId: existing.languageId,
-          order: input.order,
-          transaction
-        })
-      }
+          if (input.order != null) {
+            await updateOrderUpdate({
+              videoId: existing.videoId,
+              id: input.id,
+              languageId: existing.languageId,
+              order: input.order,
+              transaction
+            })
+          }
 
-      const updatedRecord = await transaction.videoStudyQuestion.update({
-        ...query,
-        where: { id: input.id },
-        data: {
-          value: input.value ?? undefined,
-          primary: input.primary ?? undefined,
-          crowdInId: input.crowdInId ?? undefined
+          const updatedRecord = await transaction.videoStudyQuestion.update({
+            ...query,
+            where: { id: input.id },
+            data: {
+              value: input.value ?? undefined,
+              primary: input.primary ?? undefined,
+              crowdInId: input.crowdInId ?? undefined
+            }
+          })
+
+          return updatedRecord
+        },
+        {
+          timeout: 10000
         }
-      })
+      )
 
+      // Update Crowdin after successful database transaction
       await updateStudyQuestionInCrowdin(
         existing.videoId,
         input.value ?? '',
