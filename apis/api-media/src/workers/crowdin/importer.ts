@@ -25,13 +25,16 @@ export const apis: CrowdinApis = {
   stringTranslations: client.stringTranslationsApi
 }
 
+let crowdinProjectId: number | undefined
 export const getCrowdinProjectId = (): number => {
-  if (!process.env.CROWDIN_PROJECT_ID) {
-    throw new Error('CROWDIN_PROJECT_ID is not set')
+  if (crowdinProjectId != null) return crowdinProjectId
+  const rawProjectId = process.env.CROWDIN_PROJECT_ID
+  if (!rawProjectId) throw new Error('CROWDIN_PROJECT_ID is not set')
+  crowdinProjectId = Number(rawProjectId)
+  if (!Number.isFinite(crowdinProjectId)) {
+    throw new Error(`CROWDIN_PROJECT_ID must be numeric, got: ${rawProjectId}`)
   }
-  const envValue = process.env.CROWDIN_PROJECT_ID
-  const parsed = Number(envValue ?? 0)
-  return parsed
+  return crowdinProjectId
 }
 
 export async function processFile(
