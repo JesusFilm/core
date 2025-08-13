@@ -33,9 +33,11 @@ export function youtubeAnalyzerTool(
               text: `Analyze the video and divide it into meaningful sections based on content or topic changes.
 
               For each section, provide:
-              - A summary that captures the **core message or essence** of the section
+              - A summary that captures the **core message or essence** of the section.
               - One or more **reflective questions** that can be used following the video to get user input.
-              - A start and end timestamp in "MM:SS" or "HH:MM:SS" format
+              - A start and end timestamp in "MM:SS" or "HH:MM:SS" format.
+              - The timestamps of each section do not need to be contiguous.
+              - The end timestamp should not be greater than the video duration.
               
               Output your response as **JSON** using this exact structure:
               
