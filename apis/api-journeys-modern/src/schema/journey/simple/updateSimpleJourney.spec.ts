@@ -452,7 +452,10 @@ describe('updateSimpleJourney', () => {
             id: 'video-card',
             x: 0,
             y: 0,
-            video: { src: 'https://youtube.com/watch?v=dQw4w9WgXcQ', source: 'youTube' }, // Use valid video ID
+            video: {
+              src: 'https://youtube.com/watch?v=dQw4w9WgXcQ',
+              source: 'youTube'
+            }, // Use valid video ID
             defaultNextCard: 'end-card'
           },
           {
@@ -639,13 +642,17 @@ describe('updateSimpleJourney', () => {
       expect(videoCalls.length).toBe(2)
 
       // Check YouTube video
-      const youtubeVideo = videoCalls.find(([data]: [any]) => data.data.source === 'youTube')
+      const youtubeVideo = videoCalls.find(
+        ([data]: [any]) => data.data.source === 'youTube'
+      )
       expect(youtubeVideo).toBeDefined()
       expect(youtubeVideo![0].data.videoId).toBe('dQw4w9WgXcQ')
       expect(youtubeVideo![0].data.endAt).toBe(225) // From mocked API response
 
       // Check internal video
-      const internalVideo = videoCalls.find(([data]: [any]) => data.data.source === 'internal')
+      const internalVideo = videoCalls.find(
+        ([data]: [any]) => data.data.source === 'internal'
+      )
       expect(internalVideo).toBeDefined()
       expect(internalVideo![0].data.videoId).toBe('internal-video-mixed')
       expect(internalVideo![0].data.endAt).toBeUndefined() // No duration fetching
