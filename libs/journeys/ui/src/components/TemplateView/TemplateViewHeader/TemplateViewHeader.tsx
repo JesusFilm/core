@@ -13,6 +13,7 @@ import { PreviewTemplateButton } from './PreviewTemplateButton'
 import { SocialImage } from './SocialImage'
 import { TemplateCreatorDetails } from './TemplateCreatorDetails/TemplateCreatorDetails'
 import { TemplateEditButton } from './TemplateEditButton/TemplateEditButton'
+import { CustomizeTemplateButton } from './CustomizeTemplateButton/CustomizeTemplateButton'
 
 interface TemplateViewHeaderProps {
   isPublisher: boolean | undefined
@@ -151,6 +152,7 @@ export function TemplateViewHeader({
           >
             <CreateJourneyButton signedIn={authUser?.id != null} />
             <PreviewTemplateButton slug={journey?.slug} />
+            <CustomizeTemplateButton journeyId={journey?.id} />
             {journey != null && isPublisher === true && (
               <TemplateEditButton journeyId={journey.id} />
             )}
