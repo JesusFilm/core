@@ -27,7 +27,6 @@ describe('useBlockActionEmailUpdateMutation', () => {
   }
 
   it('should update block action', async () => {
-    // TODO TEST: update for new props (customizable, parentStepId)
     const mockResult = jest
       .fn()
       .mockReturnValue(blockActionEmailUpdateMock.result)
@@ -43,7 +42,12 @@ describe('useBlockActionEmailUpdateMutation', () => {
     })
 
     await act(async () => {
-      await result.current[0](block1, 'edmondwashere@gmail.com', null, null)
+      await result.current[0](
+        block1,
+        'edmondwashere@gmail.com',
+        false,
+        'step.id'
+      )
 
       expect(mockResult).toHaveBeenCalled()
     })
@@ -66,7 +70,12 @@ describe('useBlockActionEmailUpdateMutation', () => {
     })
 
     await act(async () => {
-      await result.current[0](block1, 'edmondwashere@gmail.com', null, null)
+      await result.current[0](
+        block1,
+        'edmondwashere@gmail.com',
+        false,
+        'step.id'
+      )
 
       await waitFor(() =>
         expect(cache.extract()['ButtonBlock:button2.id']).toEqual({
@@ -75,7 +84,9 @@ describe('useBlockActionEmailUpdateMutation', () => {
             __typename: 'EmailAction',
             gtmEventName: null,
             parentBlockId: 'button2.id',
-            email: 'edmondwashere@gmail.com'
+            email: 'edmondwashere@gmail.com',
+            customizable: false,
+            parentStepId: 'step.id'
           }
         })
       )

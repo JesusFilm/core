@@ -549,8 +549,4 @@ describe('TemplateSettingsDialog', () => {
       )
     })
   })
-
-  it('should update Customize Template text area', () => {
-    // TODO TEST: updates Customize Template text area
-  })
 })

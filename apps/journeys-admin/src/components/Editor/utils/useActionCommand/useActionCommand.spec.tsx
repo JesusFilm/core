@@ -41,7 +41,6 @@ const blockActionDeleteMock: MockedResponse<
 describe('useActionCommand', () => {
   describe('addAction', () => {
     it('should call actionLinkUpdate and handle undo/redo', async () => {
-      // TODO TEST: update for new props (customizable, parentStepId)
       const mockResult = jest.fn().mockReturnValue(blockActionDeleteMock.result)
       const mockRedoResult = jest
         .fn()
@@ -72,7 +71,7 @@ describe('useActionCommand', () => {
           parentBlockId: 'button2.id',
           gtmEventName: '',
           customizable: false,
-          parentStepId: null
+          parentStepId: 'step.id'
         },
         undoAction: null
       })
@@ -87,7 +86,6 @@ describe('useActionCommand', () => {
     })
 
     it('should call actionEmailUpdate and handle undo/redo', async () => {
-      // TODO TEST: update for new props (customizable, parentStepId)
       const mockResult = jest.fn().mockReturnValue(blockActionDeleteMock.result)
       const mockRedoResult = jest
         .fn()
@@ -118,7 +116,7 @@ describe('useActionCommand', () => {
           parentBlockId: 'button2.id',
           gtmEventName: '',
           customizable: false,
-          parentStepId: null
+          parentStepId: 'step.id'
         },
         undoAction: null
       })
@@ -252,7 +250,7 @@ describe('useActionCommand', () => {
           parentBlockId: 'button2.id',
           gtmEventName: '',
           customizable: false,
-          parentStepId: null
+          parentStepId: 'step.id'
         },
         undoAction: null,
         editorFocus: {
