@@ -1,4 +1,4 @@
-import { SourceStringsModel } from '@crowdin/crowdin-api-client/out/sourceStrings'
+import { SourceStringsModel } from '@crowdin/crowdin-api-client'
 import { StringTranslationsModel } from '@crowdin/crowdin-api-client/out/stringTranslations'
 
 export interface CrowdinApiErrorData {

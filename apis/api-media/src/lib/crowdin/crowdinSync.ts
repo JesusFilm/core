@@ -1,8 +1,6 @@
 import { Logger } from 'pino'
 
-import { getCrowdinProjectId } from '../../workers/crowdin/importer'
-
-import { crowdinClient } from './crowdinClient'
+import { crowdinClient, crowdinProjectId } from './crowdinClient'
 
 const FILE_NAMES = {
   videoTitle: 'media_metadata_tile.csv',
@@ -23,7 +21,7 @@ export async function syncWithCrowdin(
   if (crowdInId === null) {
     try {
       const response = await crowdinClient.sourceFilesApi.listProjectFiles(
-        getCrowdinProjectId(),
+        crowdinProjectId,
         {
           filter: fileName,
           limit: 1,
@@ -31,7 +29,7 @@ export async function syncWithCrowdin(
         }
       )
 
-      if (response.data.length < 0) {
+      if (response.data.length === 0) {
         logger?.error(`No file found for ${fileName} in crowdin project`)
         return null
       }
@@ -40,7 +38,7 @@ export async function syncWithCrowdin(
 
       const existingString =
         await crowdinClient.sourceStringsApi.listProjectStrings(
-          getCrowdinProjectId(),
+          crowdinProjectId,
           {
             fileId: fileId,
             filter: identifier,
@@ -57,7 +55,7 @@ export async function syncWithCrowdin(
       }
 
       const crowdInResponse = await crowdinClient.sourceStringsApi.addString(
-        getCrowdinProjectId(),
+        crowdinProjectId,
         {
           fileId: fileId,
           identifier: identifier,
@@ -86,7 +84,7 @@ async function updateCrowdinString(
   text: string
 ): Promise<string | null> {
   const response = await crowdinClient.sourceStringsApi.editString(
-    getCrowdinProjectId(),
+    crowdinProjectId,
     Number(crowdinId),
     [
       {

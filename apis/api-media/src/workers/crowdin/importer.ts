@@ -1,7 +1,10 @@
-import { SourceStringsModel } from '@crowdin/crowdin-api-client/out/sourceStrings'
+import { SourceStringsModel } from '@crowdin/crowdin-api-client'
 import { Logger } from 'pino'
 
-import { crowdinClient } from '../../lib/crowdin/crowdinClient'
+import {
+  crowdinClient,
+  crowdinProjectId
+} from '../../lib/crowdin/crowdinClient'
 
 import { LANGUAGE_CODES } from './config'
 import {
@@ -12,18 +15,6 @@ import {
   createCrowdinApiError,
   handleCrowdinError
 } from './types'
-
-let crowdinProjectId: number | undefined
-export const getCrowdinProjectId = (): number => {
-  if (crowdinProjectId != null) return crowdinProjectId
-  const rawProjectId = process.env.CROWDIN_PROJECT_ID
-  if (!rawProjectId) throw new Error('CROWDIN_PROJECT_ID is not set')
-  crowdinProjectId = Number(rawProjectId)
-  if (!Number.isFinite(crowdinProjectId)) {
-    throw new Error(`CROWDIN_PROJECT_ID must be numeric, got: ${rawProjectId}`)
-  }
-  return crowdinProjectId
-}
 
 export async function processFile(
   file: ArclightFile,
@@ -130,14 +121,11 @@ export async function fetchSourceStrings(
   try {
     return await fetchPaginatedData(
       (offset, limit) =>
-        crowdinClient.sourceStringsApi.listProjectStrings(
-          getCrowdinProjectId(),
-          {
-            fileId,
-            limit,
-            offset
-          }
-        ),
+        crowdinClient.sourceStringsApi.listProjectStrings(crowdinProjectId, {
+          fileId,
+          limit,
+          offset
+        }),
       500
     )
   } catch (error) {
@@ -157,7 +145,7 @@ export async function fetchTranslations(
     const translations = await fetchPaginatedData(
       (offset, limit) =>
         crowdinClient.stringTranslationsApi.listLanguageTranslations(
-          getCrowdinProjectId(),
+          crowdinProjectId,
           languageCode,
           {
             fileId,
