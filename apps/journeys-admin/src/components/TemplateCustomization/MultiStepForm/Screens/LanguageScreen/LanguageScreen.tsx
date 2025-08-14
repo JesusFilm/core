@@ -2,7 +2,7 @@ import Button from '@mui/material/Button'
 import FormControl from '@mui/material/FormControl'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
-import { Formik, FormikValues } from 'formik'
+import { Form, Formik, FormikValues } from 'formik'
 import { useRouter } from 'next/router'
 import { useUser } from 'next-firebase-auth'
 import { useTranslation } from 'next-i18next'
@@ -97,22 +97,25 @@ export function LanguageScreen({
         onSubmit={handleSubmit}
       >
         {({ handleSubmit }) => (
-          <FormControl sx={{ alignSelf: 'center' }}>
-            {isSignedIn && <JourneyCustomizeTeamSelect />}
-            <Button
-              disabled={loading}
-              variant="contained"
-              color="secondary"
-              onClick={() => handleSubmit()}
-              sx={{
-                width: { xs: '100%', sm: 300 },
-                alignSelf: 'center',
-                mt: 4
-              }}
-            >
-              <ArrowRightIcon />
-            </Button>
-          </FormControl>
+          <Form>
+            <FormControl sx={{ alignSelf: 'center' }}>
+              {isSignedIn && <JourneyCustomizeTeamSelect />}
+              <Button
+                data-testid="LanguageScreenSubmitButton"
+                disabled={loading}
+                variant="contained"
+                color="secondary"
+                onClick={() => handleSubmit()}
+                sx={{
+                  width: { xs: '100%', sm: 300 },
+                  alignSelf: 'center',
+                  mt: 4
+                }}
+              >
+                <ArrowRightIcon />
+              </Button>
+            </FormControl>
+          </Form>
         )}
       </Formik>
     </Stack>
