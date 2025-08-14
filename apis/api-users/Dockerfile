@@ -19,7 +19,6 @@ RUN npm install --production
 
 WORKDIR /prisma
 COPY ./apis/api-users/db .
-RUN npx prisma@6 generate --generator client
 
 WORKDIR /app
 CMD npx prisma@6 migrate deploy --schema /prisma/schema.prisma; node ./main.js
