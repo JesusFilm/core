@@ -251,7 +251,7 @@ export async function updateSimpleJourney(
             source: card.video.source,
             autoplay: true,
             startAt: card.video.startAt ?? 0,
-            endAt: card.video.endAt ?? videoDuration,
+            endAt:  videoDuration,
             action:
               nextStepBlock != null
                 ? {
