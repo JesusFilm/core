@@ -1,6 +1,8 @@
 import { render, screen, fireEvent } from '@testing-library/react'
 
 import { MultiStepForm } from './MultiStepForm'
+import { JourneyFields as Journey } from '../../../../__generated__/JourneyFields'
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
 // Mock complex dependencies that the screens use
 jest.mock('next-firebase-auth', () => ({
@@ -82,5 +84,37 @@ describe('MultiStepForm', () => {
     // DoneScreen
     expect(screen.getByTestId('progress-stepper-step-3')).toBeInTheDocument()
     expect(screen.getByTestId('done-screen')).toBeInTheDocument()
+  })
+
+  it('should render edit manually button', () => {
+    const journey = {
+      id: 'test-journey-id'
+    } as unknown as Journey
+
+    render(
+      <JourneyProvider value={{ journey }}>
+        <MultiStepForm />
+      </JourneyProvider>
+    )
+    expect(screen.getByRole('link', { name: 'Edit Manually' })).toHaveAttribute(
+      'href',
+      '/journeys/test-journey-id'
+    )
+  })
+
+  it('should disable edit manually button if journey is not found', () => {
+    const journey = {
+      id: null
+    } as unknown as Journey
+
+    render(
+      <JourneyProvider value={{ journey }}>
+        <MultiStepForm />
+      </JourneyProvider>
+    )
+    expect(screen.getByRole('link', { name: 'Edit Manually' })).toHaveAttribute(
+      'aria-disabled',
+      'true'
+    )
   })
 })
