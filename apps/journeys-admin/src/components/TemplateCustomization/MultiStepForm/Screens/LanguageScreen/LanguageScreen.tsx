@@ -4,7 +4,6 @@ import Typography from '@mui/material/Typography'
 import { ReactElement, useState } from 'react'
 
 import ArrowRightIcon from '@core/shared/ui/icons/ArrowRight'
-import Box from '@mui/material/Box'
 
 import { useTranslation } from 'next-i18next'
 import { LanguageScreenCardPreview } from './LanguageScreenCardPreview'
@@ -12,8 +11,7 @@ import { useUser } from 'next-firebase-auth'
 import { useTeam } from '@core/journeys/ui/TeamProvider'
 import FormControl from '@mui/material/FormControl'
 import { Formik, FormikValues } from 'formik'
-import { boolean, object, string } from 'yup'
-import sortBy from 'lodash/sortBy'
+import { object, string } from 'yup'
 import { JourneyCustomizeTeamSelect } from './JourneyCustomizeTeamSelect'
 import { useJourneyDuplicateMutation } from '@core/journeys/ui/useJourneyDuplicateMutation'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
@@ -37,7 +35,6 @@ export function LanguageScreen({
   //If the user is not authenticated, useUser will return a User instance with a null id https://github.com/gladly-team/next-firebase-auth?tab=readme-ov-file#useuser
   const isSignedIn = user?.id != null
   const { query } = useTeam()
-  const teams = query?.data?.teams ?? []
 
   const validationSchema = object({
     teamSelect: string().required()
