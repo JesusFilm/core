@@ -1,4 +1,4 @@
-FROM node:22-alpine3.20
+FROM node:22-alpine3.22
 
 EXPOSE 4002
 
@@ -18,7 +18,9 @@ COPY ./package-lock.json .
 RUN npm install --production
 
 WORKDIR /prisma
-COPY ./apis/api-users/db .
+COPY ./libs/prisma/users/db .
+RUN npx prisma@6 generate --generator client
 
 WORKDIR /app
-CMD npx prisma@6 migrate deploy --schema /prisma/schema.prisma; node ./main.js
+RUN npm install @prisma/client@6
+CMD npx prisma@6 migrate deploy --schema /prisma/db/schema.prisma; node ./main.js

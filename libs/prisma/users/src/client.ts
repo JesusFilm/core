@@ -1,6 +1,6 @@
-import { Prisma, PrismaClient } from './.prisma/client'
+import { Prisma, PrismaClient } from '.prisma/api-users-client'
 
-export * from './.prisma/client'
+export * from '.prisma/api-users-client'
 export { Prisma as PrismaUsers }
 export { PrismaClient as PrismaClientUsers }
 
