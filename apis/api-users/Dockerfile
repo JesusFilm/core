@@ -10,20 +10,16 @@ RUN apk upgrade --update-cache --available && \
     apk add g++ make python3 py3-pip curl-dev && \
     rm -rf /var/cache/apk/*
 
-WORKDIR /build
-COPY . .
-RUN npm install
-RUN nx prisma-generate prisma-users
-RUN nx build api-users --production
-RUN mv /build/dist/apps/api-users /app
-RUN mv /build/node_modules /app/
-RUN mv /build/package-lock.json /app/
+WORKDIR /app
+COPY ./dist/apps/api-users .
+COPY ./package-lock.json .
 
-WORKDIR /prisma/users
-COPY ./libs/prisma/users/db .
+# dependencies that nestjs needs
+RUN npm install --production
+
+WORKDIR /prisma
+COPY ./apis/api-users/db .
+RUN npx prisma@6 generate --generator client
 
 WORKDIR /app
-RUN rm -rf /build
-RUN npm install --production
-RUN npm install @prisma/client@6
-CMD npx prisma@6 migrate deploy --schema /prisma/users/schema.prisma; node ./main.js
+CMD npx prisma@6 migrate deploy --schema /prisma/schema.prisma; node ./main.js
