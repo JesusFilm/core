@@ -102,6 +102,7 @@ export function LanguageScreenCardPreview(): ReactElement {
             }}
           />
           <FramePortal
+            data-testid="LanguageScreenCardPreviewFramePortal"
             sx={{
               width: { xs: 485, sm: 445 },
               height: { xs: 738, sm: 673 }
