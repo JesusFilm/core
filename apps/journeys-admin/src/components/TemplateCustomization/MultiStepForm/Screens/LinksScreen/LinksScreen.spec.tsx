@@ -126,8 +126,6 @@ describe('LinksScreen', () => {
     await waitFor(() => expect(handleNext).toHaveBeenCalled())
   })
 
-  it('should handle submit', () => {})
-
   it('calls correct mutations for changed url, email and chat values', async () => {
     const handleNext = jest.fn()
 
