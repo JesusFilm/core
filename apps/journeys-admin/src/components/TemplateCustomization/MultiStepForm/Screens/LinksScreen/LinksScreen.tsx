@@ -1,29 +1,30 @@
+import { useMutation } from '@apollo/client'
 import Button from '@mui/material/Button'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
-import { ReactElement } from 'react'
-import { Formik, FormikProvider, FormikHelpers } from 'formik'
-import { object, string } from 'yup'
+import { Formik, FormikHelpers, FormikProvider } from 'formik'
 import { useTranslation } from 'next-i18next'
+import { ReactElement } from 'react'
+import { object, string } from 'yup'
 
-import ArrowRightIcon from '@core/shared/ui/icons/ArrowRight'
-import { transformer } from '@core/journeys/ui/transformer'
+import { TreeBlock } from '@core/journeys/ui/block'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
+import { JourneyFields_chatButtons as JourneyChatButton } from '@core/journeys/ui/JourneyProvider/__generated__/JourneyFields'
+import { transformer } from '@core/journeys/ui/transformer'
+import ArrowRightIcon from '@core/shared/ui/icons/ArrowRight'
 
-import { getJourneyLinks } from '../../../utils/getJourneyLinks'
 import {
   BlockFields,
   BlockFields_StepBlock as StepBlock
 } from '../../../../../../__generated__/BlockFields'
-import { CardsPreview } from './CardsPreview'
-import { TreeBlock } from '@core/journeys/ui/block'
-import { LinksForm } from './LinksForm'
-import { useBlockActionLinkUpdateMutation } from '../../../../../libs/useBlockActionLinkUpdateMutation'
-import { useBlockActionEmailUpdateMutation } from '../../../../../libs/useBlockActionEmailUpdateMutation'
-import { useMutation } from '@apollo/client'
 import { JourneyChatButtonUpdate } from '../../../../../../__generated__/JourneyChatButtonUpdate'
+import { useBlockActionEmailUpdateMutation } from '../../../../../libs/useBlockActionEmailUpdateMutation'
+import { useBlockActionLinkUpdateMutation } from '../../../../../libs/useBlockActionLinkUpdateMutation'
 import { JOURNEY_CHAT_BUTTON_UPDATE } from '../../../../Editor/Slider/Settings/CanvasDetails/JourneyAppearance/Chat/ChatOption/Details/Details'
-import { JourneyFields_chatButtons as JourneyChatButton } from '@core/journeys/ui/JourneyProvider/__generated__/JourneyFields'
+import { getJourneyLinks } from '../../../utils/getJourneyLinks'
+
+import { CardsPreview } from './CardsPreview'
+import { LinksForm } from './LinksForm'
 
 interface LinksScreenProps {
   handleNext: () => void
@@ -53,7 +54,7 @@ export function LinksScreen({ handleNext }: LinksScreenProps): ReactElement {
     formikHelpers: FormikHelpers<Record<string, string>>
   ): Promise<void> {
     const errors = await formikHelpers.validateForm()
-    formikHelpers.setTouched(
+    void formikHelpers.setTouched(
       Object.fromEntries(Object.keys(values).map((k) => [k, true])),
       true
     )

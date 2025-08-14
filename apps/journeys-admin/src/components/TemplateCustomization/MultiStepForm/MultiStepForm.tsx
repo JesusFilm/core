@@ -9,13 +9,7 @@ import { ReactElement, useState } from 'react'
 import ArrowRightIcon from '@core/shared/ui/icons/ArrowRight'
 
 import { ProgressStepper } from './ProgressStepper'
-import {
-  DoneScreen,
-  LanguageScreen,
-  LinksScreen,
-  SocialScreen,
-  TextScreen
-} from './Screens'
+import { DoneScreen, LanguageScreen, LinksScreen, TextScreen } from './Screens'
 
 // NOTE: login is a dialog -> regular sign up path (that can show the image/title from journey) -> redirects back current step (URL parameter)
 // NOTE: share is a dialog
@@ -29,12 +23,13 @@ function renderScreen(screen: number, handleNext: () => void): ReactElement {
       return <TextScreen handleNext={handleNext} />
     case 2:
       return <LinksScreen handleNext={handleNext} />
+    // TODO: uncomment this when we have the social screen
+    // case 3:
+    //   return <SocialScreen handleNext={handleNext} />
     case 3:
-      return <SocialScreen handleNext={handleNext} />
-    case 4:
       return <DoneScreen />
     default:
-      return <Typography>Not Found</Typography>
+      return <></>
   }
 }
 
@@ -76,8 +71,8 @@ export function MultiStepForm(): ReactElement {
           {renderScreen(activeScreen, handleNext)}
         </Box>
 
-        {/* TODO: delete back button */}
-        <Button
+        {/* TODO: delete back button. This is only here for the dev's to use */}
+        {/* <Button
           variant="contained"
           color="primary"
           onClick={() => {
@@ -88,7 +83,7 @@ export function MultiStepForm(): ReactElement {
           sx={{ width: '300px', alignSelf: 'center' }}
         >
           {`back (this will be deleted)`}
-        </Button>
+        </Button> */}
       </Stack>
     </Container>
   )

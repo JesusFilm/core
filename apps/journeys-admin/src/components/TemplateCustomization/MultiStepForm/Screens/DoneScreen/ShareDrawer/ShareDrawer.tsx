@@ -1,14 +1,15 @@
-import { ReactElement } from 'react'
-import Stack from '@mui/material/Stack'
-import Typography from '@mui/material/Typography'
 import Box from '@mui/material/Box'
-import NextImage from 'next/image'
-import { useTranslation } from 'react-i18next'
-import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import Drawer from '@mui/material/Drawer'
 import IconButton from '@mui/material/IconButton'
-import X2Icon from '@core/shared/ui/icons/X2'
+import Stack from '@mui/material/Stack'
+import Typography from '@mui/material/Typography'
+import NextImage from 'next/image'
+import { useTranslation } from 'next-i18next'
+import { ReactElement } from 'react'
+
+import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import GridEmptyIcon from '@core/shared/ui/icons/GridEmpty'
+import X2Icon from '@core/shared/ui/icons/X2'
 
 interface ShareDrawerProps {
   open: boolean

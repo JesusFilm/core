@@ -1,22 +1,22 @@
 import Button from '@mui/material/Button'
+import FormControl from '@mui/material/FormControl'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
+import { Formik, FormikValues } from 'formik'
+import { useRouter } from 'next/router'
+import { useUser } from 'next-firebase-auth'
+import { useTranslation } from 'next-i18next'
+import { useSnackbar } from 'notistack'
 import { ReactElement, useState } from 'react'
+import { object, string } from 'yup'
 
+import { useJourney } from '@core/journeys/ui/JourneyProvider'
+import { useTeam } from '@core/journeys/ui/TeamProvider'
+import { useJourneyDuplicateMutation } from '@core/journeys/ui/useJourneyDuplicateMutation'
 import ArrowRightIcon from '@core/shared/ui/icons/ArrowRight'
 
-import { useTranslation } from 'next-i18next'
-import { LanguageScreenCardPreview } from './LanguageScreenCardPreview'
-import { useUser } from 'next-firebase-auth'
-import { useTeam } from '@core/journeys/ui/TeamProvider'
-import FormControl from '@mui/material/FormControl'
-import { Formik, FormikValues } from 'formik'
-import { object, string } from 'yup'
 import { JourneyCustomizeTeamSelect } from './JourneyCustomizeTeamSelect'
-import { useJourneyDuplicateMutation } from '@core/journeys/ui/useJourneyDuplicateMutation'
-import { useJourney } from '@core/journeys/ui/JourneyProvider'
-import { useRouter } from 'next/router'
-import { useSnackbar } from 'notistack'
+import { LanguageScreenCardPreview } from './LanguageScreenCardPreview'
 
 interface LanguageScreenProps {
   handleNext: () => void

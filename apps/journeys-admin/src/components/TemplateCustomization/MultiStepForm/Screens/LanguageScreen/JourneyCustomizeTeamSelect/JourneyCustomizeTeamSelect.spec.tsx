@@ -1,13 +1,14 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { fireEvent, render, waitFor, within } from '@testing-library/react'
+import { fireEvent, render, waitFor } from '@testing-library/react'
 import { Formik } from 'formik'
-
-import { JourneyCustomizeTeamSelect } from './JourneyCustomizeTeamSelect'
+import noop from 'lodash/noop'
 
 import {
   GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS,
   TeamProvider
 } from '@core/journeys/ui/TeamProvider'
+
+import { JourneyCustomizeTeamSelect } from './JourneyCustomizeTeamSelect'
 
 describe('JourneyCustomizeTeamSelect', () => {
   beforeEach(() => {
@@ -46,7 +47,7 @@ describe('JourneyCustomizeTeamSelect', () => {
         ]}
       >
         <TeamProvider>
-          <Formik initialValues={{ teamSelect: 'teamId2' }} onSubmit={() => {}}>
+          <Formik initialValues={{ teamSelect: 'teamId2' }} onSubmit={noop}>
             <JourneyCustomizeTeamSelect />
           </Formik>
         </TeamProvider>
@@ -88,7 +89,7 @@ describe('JourneyCustomizeTeamSelect', () => {
         ]}
       >
         <TeamProvider>
-          <Formik initialValues={{ teamSelect: 'teamId1' }} onSubmit={() => {}}>
+          <Formik initialValues={{ teamSelect: 'teamId1' }} onSubmit={noop}>
             <JourneyCustomizeTeamSelect />
           </Formik>
         </TeamProvider>
@@ -105,7 +106,7 @@ describe('JourneyCustomizeTeamSelect', () => {
       { id: 'teamId2', title: 'Team Two', publicTitle: 'Team 2' }
     ]
 
-    const { getByRole, getAllByRole } = render(
+    const { getByRole } = render(
       <MockedProvider
         mocks={[
           {
@@ -131,7 +132,7 @@ describe('JourneyCustomizeTeamSelect', () => {
         ]}
       >
         <TeamProvider>
-          <Formik initialValues={{ teamSelect: 'teamId1' }} onSubmit={() => {}}>
+          <Formik initialValues={{ teamSelect: 'teamId1' }} onSubmit={noop}>
             <JourneyCustomizeTeamSelect />
           </Formik>
         </TeamProvider>

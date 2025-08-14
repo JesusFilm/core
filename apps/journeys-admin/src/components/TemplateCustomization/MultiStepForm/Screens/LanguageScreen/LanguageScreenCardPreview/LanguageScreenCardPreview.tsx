@@ -1,14 +1,14 @@
+import Box from '@mui/material/Box'
 import { ReactElement, useMemo } from 'react'
 
-import Box from '@mui/material/Box'
-
+import { TreeBlock } from '@core/journeys/ui/block'
 import { BlockRenderer } from '@core/journeys/ui/BlockRenderer'
 import { CardWrapper } from '@core/journeys/ui/CardWrapper'
 import { FramePortal } from '@core/journeys/ui/FramePortal'
-import { useJourney } from '@core/journeys/ui/JourneyProvider'
-import { TreeBlock } from '@core/journeys/ui/block'
 import { getStepTheme } from '@core/journeys/ui/getStepTheme'
+import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { getJourneyRTL } from '@core/journeys/ui/rtl'
+import { StepFields } from '@core/journeys/ui/Step/__generated__/StepFields'
 import { transformer } from '@core/journeys/ui/transformer'
 import { VideoWrapper } from '@core/journeys/ui/VideoWrapper'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider/ThemeProvider'
@@ -17,8 +17,6 @@ import {
   BlockFields_CardBlock as CardBlock,
   BlockFields_StepBlock as StepBlock
 } from '../../../../../../../__generated__/BlockFields'
-
-import { StepFields } from '@core/journeys/ui/Step/__generated__/StepFields'
 import {
   ThemeMode,
   ThemeName

@@ -15,8 +15,8 @@ import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { Dialog } from '@core/shared/ui/Dialog'
 import { TabPanel, tabA11yProps } from '@core/shared/ui/TabPanel'
 
-import { JourneyFeature } from '../../../../../../../__generated__/JourneyFeature'
 import { JourneyCustomizationDescriptionUpdate } from '../../../../../../../__generated__/JourneyCustomizationDescriptionUpdate'
+import { JourneyFeature } from '../../../../../../../__generated__/JourneyFeature'
 import { useJourneyUpdateMutation } from '../../../../../../libs/useJourneyUpdateMutation'
 
 import { AboutTabPanel } from './AboutTabPanel'

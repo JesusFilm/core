@@ -1,18 +1,19 @@
-import Box from '@mui/material/Box'
-import Stack from '@mui/material/Stack'
-import Button from '@mui/material/Button'
-import Typography from '@mui/material/Typography'
-import { ReactElement, useState } from 'react'
-import dynamic from 'next/dynamic'
-import GridEmptyIcon from '@core/shared/ui/icons/GridEmpty'
-
+import EditIcon from '@mui/icons-material/Edit'
 import OpenInNewIcon from '@mui/icons-material/OpenInNew'
 import ShareIcon from '@mui/icons-material/Share'
-import EditIcon from '@mui/icons-material/Edit'
-import { useJourney } from '@core/journeys/ui/JourneyProvider'
-import { useRouter } from 'next/router'
-import { useTranslation } from 'react-i18next'
+import Box from '@mui/material/Box'
+import Button from '@mui/material/Button'
+import Stack from '@mui/material/Stack'
+import Typography from '@mui/material/Typography'
+import dynamic from 'next/dynamic'
 import NextImage from 'next/image'
+import { useRouter } from 'next/router'
+import { useTranslation } from 'next-i18next'
+import { ReactElement, useState } from 'react'
+
+import { useJourney } from '@core/journeys/ui/JourneyProvider'
+import GridEmptyIcon from '@core/shared/ui/icons/GridEmpty'
+
 const ShareDrawer = dynamic(
   async () =>
     await import(

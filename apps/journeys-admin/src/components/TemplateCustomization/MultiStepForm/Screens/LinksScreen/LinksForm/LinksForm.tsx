@@ -1,11 +1,12 @@
-import Stack from '@mui/material/Stack'
-import Typography from '@mui/material/Typography'
-import TextField from '@mui/material/TextField'
 import IconButton from '@mui/material/IconButton'
-import LinkExternal from '@core/shared/ui/icons/LinkExternal'
+import Stack from '@mui/material/Stack'
+import TextField from '@mui/material/TextField'
+import Typography from '@mui/material/Typography'
 import { Form, useFormikContext } from 'formik'
-import { ReactElement } from 'react'
 import { useTranslation } from 'next-i18next'
+import { ReactElement } from 'react'
+
+import LinkExternal from '@core/shared/ui/icons/LinkExternal'
 
 import { JourneyLink } from '../../../../utils/getJourneyLinks/getJourneyLinks'
 
