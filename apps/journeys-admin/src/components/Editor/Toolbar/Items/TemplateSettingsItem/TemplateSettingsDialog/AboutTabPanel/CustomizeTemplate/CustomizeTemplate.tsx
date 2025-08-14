@@ -86,6 +86,7 @@ export function CustomizeTemplate(): ReactElement {
         </IconButton>
       </Stack>
       <TextField
+        data-testid="CustomizationDescriptionEdit"
         fullWidth
         multiline
         value={journeyCustomizationDescription}

@@ -17,11 +17,12 @@ import {
   BlockFields_CardBlock as CardBlock,
   BlockFields_StepBlock as StepBlock
 } from '../../../../../../../__generated__/BlockFields'
+
+import { StepFields } from '@core/journeys/ui/Step/__generated__/StepFields'
 import {
   ThemeMode,
   ThemeName
-} from 'libs/journeys/ui/__generated__/globalTypes'
-import { StepFields } from '@core/journeys/ui/Step/__generated__/StepFields'
+} from '../../../../../../../__generated__/globalTypes'
 
 export function LanguageScreenCardPreview(): ReactElement {
   const { journey } = useJourney()
