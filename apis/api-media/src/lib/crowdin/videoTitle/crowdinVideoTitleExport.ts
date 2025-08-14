@@ -1,7 +1,8 @@
 import { Logger } from 'pino'
 
 import { CROWDIN_CONFIG } from '../../../workers/crowdin/config'
-import { apis, getCrowdinProjectId } from '../../../workers/crowdin/importer'
+import { getCrowdinProjectId } from '../../../workers/crowdin/importer'
+import { crowdinClient } from '../crowdinClient'
 
 export async function updateVideoTitleInCrowdin(
   videoId: string,
@@ -12,12 +13,12 @@ export async function updateVideoTitleInCrowdin(
   logger?.info('Starting video title update to Crowdin')
 
   if (crowdInId === null) {
-    logger?.info('No Crowdin ID provided, skipping update')
+    await exportVideoTitleToCrowdin(videoId, videoTitleText, logger)
     return
   }
 
   try {
-    await apis.sourceStrings.editString(
+    await crowdinClient.sourceStringsApi.editString(
       getCrowdinProjectId(),
       Number(crowdInId),
       [
@@ -41,7 +42,7 @@ export async function exportVideoTitleToCrowdin(
   logger?.info('Starting video title export to Crowdin')
 
   try {
-    const crowdInResponse = await apis.sourceStrings.addString(
+    const crowdInResponse = await crowdinClient.sourceStringsApi.addString(
       getCrowdinProjectId(),
       {
         fileId: CROWDIN_CONFIG.files.media_metadata_tile.id,

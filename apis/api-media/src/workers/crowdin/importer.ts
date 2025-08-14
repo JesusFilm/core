@@ -1,29 +1,17 @@
-import crowdinClient, {
-  SourceStrings,
-  StringTranslations
-} from '@crowdin/crowdin-api-client'
 import { SourceStringsModel } from '@crowdin/crowdin-api-client/out/sourceStrings'
 import { Logger } from 'pino'
+
+import { crowdinClient } from '../../lib/crowdin/crowdinClient'
 
 import { LANGUAGE_CODES } from './config'
 import {
   ArclightFile,
-  CrowdinApis,
   CrowdinError,
   CrowdinTranslation,
   ProcessedTranslation,
   createCrowdinApiError,
   handleCrowdinError
 } from './types'
-
-export const client = new crowdinClient({
-  token: process.env.CROWDIN_API_KEY ?? ''
-})
-
-export const apis: CrowdinApis = {
-  sourceStrings: client.sourceStringsApi,
-  stringTranslations: client.stringTranslationsApi
-}
 
 let crowdinProjectId: number | undefined
 export const getCrowdinProjectId = (): number => {
@@ -50,7 +38,7 @@ export async function processFile(
   const errors: CrowdinError[] = []
 
   try {
-    const sourceStrings = await fetchSourceStrings(file.id, apis.sourceStrings)
+    const sourceStrings = await fetchSourceStrings(file.id)
     if (sourceStrings.length === 0) {
       logger?.info('no source strings found for file: ' + file.name)
       return
@@ -61,11 +49,7 @@ export async function processFile(
 
     for (const [languageCode, languageId] of Object.entries(LANGUAGE_CODES)) {
       try {
-        const translations = await fetchTranslations(
-          languageCode,
-          file.id,
-          apis.stringTranslations
-        )
+        const translations = await fetchTranslations(languageCode, file.id)
 
         if (translations.length === 0) continue
         logger?.info(
@@ -141,17 +125,19 @@ async function fetchPaginatedData<T>(
 }
 
 export async function fetchSourceStrings(
-  fileId: number,
-  api: SourceStrings
+  fileId: number
 ): Promise<Array<SourceStringsModel.String>> {
   try {
     return await fetchPaginatedData(
       (offset, limit) =>
-        api.listProjectStrings(getCrowdinProjectId(), {
-          fileId,
-          limit,
-          offset
-        }),
+        crowdinClient.sourceStringsApi.listProjectStrings(
+          getCrowdinProjectId(),
+          {
+            fileId,
+            limit,
+            offset
+          }
+        ),
       500
     )
   } catch (error) {
@@ -165,17 +151,20 @@ export async function fetchSourceStrings(
 
 export async function fetchTranslations(
   languageCode: string,
-  fileId: number,
-  api: StringTranslations
+  fileId: number
 ): Promise<CrowdinTranslation[]> {
   try {
     const translations = await fetchPaginatedData(
       (offset, limit) =>
-        api.listLanguageTranslations(getCrowdinProjectId(), languageCode, {
-          fileId,
-          limit,
-          offset
-        }),
+        crowdinClient.stringTranslationsApi.listLanguageTranslations(
+          getCrowdinProjectId(),
+          languageCode,
+          {
+            fileId,
+            limit,
+            offset
+          }
+        ),
       500
     )
 

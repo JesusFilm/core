@@ -2,7 +2,7 @@ import { Logger } from 'pino'
 
 import { prisma } from '../../../../lib/prisma'
 import { CROWDIN_CONFIG } from '../../config'
-import { apis, fetchSourceStrings } from '../../importer'
+import { fetchSourceStrings } from '../../importer'
 
 interface CrowdinSourceString {
   id: number
@@ -12,7 +12,7 @@ interface CrowdinSourceString {
 async function fetchCrowdinSourceStrings(
   fileId: number
 ): Promise<CrowdinSourceString[]> {
-  const sourceStrings = await fetchSourceStrings(fileId, apis.sourceStrings)
+  const sourceStrings = await fetchSourceStrings(fileId)
 
   return sourceStrings
     .map((str) => ({

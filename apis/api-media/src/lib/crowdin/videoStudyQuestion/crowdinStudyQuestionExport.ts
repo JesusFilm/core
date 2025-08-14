@@ -1,7 +1,8 @@
 import { Logger } from 'pino'
 
 import { CROWDIN_CONFIG } from '../../../workers/crowdin/config'
-import { apis, getCrowdinProjectId } from '../../../workers/crowdin/importer'
+import { getCrowdinProjectId } from '../../../workers/crowdin/importer'
+import { crowdinClient } from '../crowdinClient'
 
 export async function updateStudyQuestionInCrowdin(
   videoId: string,
@@ -17,7 +18,7 @@ export async function updateStudyQuestionInCrowdin(
   }
 
   try {
-    await apis.sourceStrings.editString(
+    await crowdinClient.sourceStringsApi.editString(
       getCrowdinProjectId(),
       Number(crowdInId),
       [
@@ -40,7 +41,7 @@ export async function exportStudyQuestionToCrowdin(
   logger?: Logger
 ): Promise<string | null> {
   try {
-    const crowdInResponse = await apis.sourceStrings.addString(
+    const crowdInResponse = await crowdinClient.sourceStringsApi.addString(
       getCrowdinProjectId(),
       {
         fileId: CROWDIN_CONFIG.files.study_questions.id,
