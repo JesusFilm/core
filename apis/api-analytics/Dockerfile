@@ -1,4 +1,5 @@
 FROM node:22-alpine3.20
+ENV PRISMA_LOCATION_ANALYTICS=/app/node_modules/.prisma/api-analytics-client
 
 EXPOSE 4008
 
@@ -12,6 +13,11 @@ RUN apk upgrade --update-cache --available && \
 WORKDIR /app
 COPY ./dist/apps/api-analytics .
 COPY ./package-lock.json .
+COPY ./libs/prisma/analytics/db ./prisma
+
 RUN npm install --production
+RUN npm install @prisma/client@6.14.0
+RUN npm install -D prisma@6.14.0
+RUN npx prisma generate --generator client --schema ./prisma/schema.prisma
 
 CMD node ./main.js
