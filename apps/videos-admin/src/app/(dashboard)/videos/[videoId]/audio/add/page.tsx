@@ -34,16 +34,14 @@ interface AddAudioLanguageDialogProps {
 const validationSchema = object().shape({
   edition: string().required('Edition is required'),
   language: object().nullable().required('Language is required'),
-  file: mixed().required('Video file is required'),
-  maxResolution: string().required('Max resolution is required')
+  file: mixed().required('Video file is required')
 })
 
 const initialValues: FormikValues = {
   edition: 'base',
   language: null,
   file: null,
-  published: 'unpublished',
-  maxResolution: 'fhd'
+  published: 'unpublished'
 }
 
 const GET_ADMIN_VIDEO_VARIANTS = graphql(`
@@ -100,7 +98,6 @@ export default function AddAudioLanguageDialog({
       values.edition,
       values.published === 'published',
       videoSlug,
-      values.maxResolution,
       () => {
         router.push(returnUrl, {
           scroll: false
@@ -202,38 +199,6 @@ export default function AddAudioLanguageDialog({
                     )}
                   />
                 </Box>
-                <FormControl
-                  fullWidth
-                  error={touched.maxResolution && errors.maxResolution != null}
-                >
-                  <InputLabel id="max-resolution-label">
-                    Max Resolution
-                  </InputLabel>
-                  <Select
-                    labelId="max-resolution-label"
-                    data-testid="MaxResolutionSelect"
-                    id="maxResolution"
-                    name="maxResolution"
-                    label="Video Resolution"
-                    error={
-                      touched.maxResolution && errors.maxResolution != null
-                    }
-                    value={values.maxResolution}
-                    onChange={async (event) => {
-                      await setFieldValue('maxResolution', event.target.value)
-                    }}
-                    disabled={isUploadInProgress}
-                  >
-                    <MenuItem value="fhd">Up to 1K - Full HD (1080p)</MenuItem>
-                    <MenuItem value="qhd">2K - Quad HD (1440p)</MenuItem>
-                    <MenuItem value="uhd">4K - Ultra HD (2160p)</MenuItem>
-                  </Select>
-                  <FormHelperText>
-                    {touched.maxResolution && errors.maxResolution
-                      ? (errors.maxResolution as string)
-                      : undefined}
-                  </FormHelperText>
-                </FormControl>
                 <FormControl variant="standard">
                   <InputLabel id="status-select-label">Status</InputLabel>
                   <Select
@@ -279,8 +244,7 @@ export default function AddAudioLanguageDialog({
                       isUploadInProgress ||
                       values.language == null ||
                       values.edition === '' ||
-                      values.file == null ||
-                      values.maxResolution === ''
+                      values.file == null
                     }
                   >
                     Add

@@ -9,7 +9,6 @@ export const IconBlock = builder.prismaObject('Block', {
   interfaces: [Block],
   variant: 'IconBlock',
   isTypeOf: (obj: any) => obj.typename === 'IconBlock',
-  directives: { key: { fields: 'id' } },
   fields: (t) => ({
     id: t.exposeID('id', { nullable: false, directives: { shareable: true } }),
     journeyId: t.exposeID('journeyId', {
