@@ -15,7 +15,7 @@ interface LinksFormProps {
 }
 
 export function LinksForm({ links }: LinksFormProps): ReactElement {
-  const { t } = useTranslation()
+  const { t } = useTranslation('apps-journeys-admin')
   const { values, errors, touched, handleChange, handleBlur } =
     useFormikContext<Record<string, string>>()
 

@@ -17,11 +17,7 @@ export function ProgressStepper({
   // Create steps array based on totalSteps
   const steps = Array.from({ length: totalSteps }, (_, index) => index)
 
-  const ProgressStepperIcon = ({
-    active,
-    completed,
-    icon
-  }: StepIconProps): ReactElement => {
+  const ProgressStepperIcon = ({ icon }: StepIconProps): ReactElement => {
     const stepIndex = Number(icon) - 1
     const isLastScreen = activeStep === totalSteps - 1
     const isCurrentStep = stepIndex === activeStep
@@ -83,6 +79,7 @@ export function ProgressStepper({
         maxWidth: '400px',
         margin: '0 auto'
       }}
+      data-testid="progress-stepper"
     >
       <Stepper
         activeStep={activeStep}
@@ -98,7 +95,7 @@ export function ProgressStepper({
         }}
       >
         {steps.map((step) => (
-          <Step key={step}>
+          <Step key={step} data-testid={`progress-stepper-step-${step}`}>
             <Box
               sx={{
                 display: 'flex',
