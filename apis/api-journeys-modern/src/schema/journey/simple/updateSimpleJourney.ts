@@ -239,7 +239,7 @@ export async function updateSimpleJourney(
         const videoDuration =
           card.video.source === 'youTube'
             ? await getYouTubeVideoDuration(videoId)
-            : undefined
+            : card.video.endAt
         await tx.block.create({
           data: {
             journeyId,
