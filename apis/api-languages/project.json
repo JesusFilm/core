@@ -85,12 +85,6 @@
         "command": "codecov -f coverage/apis/api-languages/cobertura-coverage.xml -F apps.api-languages"
       }
     },
-    "queue-algolia": {
-      "executor": "nx:run-commands",
-      "options": {
-        "command": "npm run ts-node apis/api-languages/src/workers/cli.ts algolia"
-      }
-    },
     "data-export": {
       "executor": "nx:run-commands",
       "options": {

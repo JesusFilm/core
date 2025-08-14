@@ -261,7 +261,8 @@ describe('HostResolver', () => {
       menuStepBlockId: null,
       socialNodeX: null,
       socialNodeY: null,
-      fromTemplateId: null
+      fromTemplateId: null,
+      journeyCustomizationDescription: null
     }
 
     it('deletes an existing host', async () => {

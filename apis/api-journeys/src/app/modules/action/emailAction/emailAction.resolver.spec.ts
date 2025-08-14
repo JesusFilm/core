@@ -39,6 +39,8 @@ describe('EmailActionResolver', () => {
       journeyId: null,
       target: null,
       email: '',
+      customizable: null,
+      parentStepId: null,
       updatedAt: new Date()
     }
   }

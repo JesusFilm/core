@@ -140,6 +140,7 @@ export class BlockService {
       duplicateBlockId,
       idMap
     )
+
     await this.saveAll(
       blockAndChildrenData.map((block) => ({
         // if updating the omit, also do the same in journey.resolver.ts journeyDuplicate uses this saveAll function.
@@ -179,7 +180,13 @@ export class BlockService {
               newBlock.pollOptionImageBlockId ?? undefined,
             action:
               !isActionEmpty && newBlock.action != null
-                ? { create: newBlock.action }
+                ? {
+                    create: {
+                      ...newBlock.action,
+                      customizable: false,
+                      parentStepId: null
+                    }
+                  }
                 : undefined
           }
           if (newBlock.typename === 'StepBlock') {

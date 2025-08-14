@@ -15,6 +15,7 @@ const questionSchema = z.object({
   value: z.string(),
   languageId: z.string(),
   order: z.number(),
+  videoId: z.string(),
   primary: z.boolean()
 })
 
@@ -99,7 +100,13 @@ async function upsertStudyQuestionTranslation(
     }
 
     const questionData = getQuestionData(questionId)
+
     if (!questionData) {
+      missingQuestions.add(questionId)
+      return
+    }
+
+    if (questionData.videoId === null) {
       missingQuestions.add(questionId)
       return
     }
@@ -109,7 +116,8 @@ async function upsertStudyQuestionTranslation(
       value: data.text,
       languageId: data.languageId,
       order: questionData.order,
-      primary: false
+      videoId: questionData.videoId,
+      primary: data.languageId === '529'
     })
 
     await prisma.videoStudyQuestion.upsert({
