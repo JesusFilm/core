@@ -23,7 +23,8 @@ const ShareDrawer = dynamic(
 )
 
 export function DoneScreen(): ReactElement {
-  const [openShareDrawer, setOpenShareDrawer] = useState<boolean | null>(null)
+  // TODO: Add share drawer back in
+  // const [openShareDrawer, setOpenShareDrawer] = useState<boolean | null>(null)
 
   const { t } = useTranslation('apps-journeys-admin')
   const { journey } = useJourney()
@@ -31,15 +32,17 @@ export function DoneScreen(): ReactElement {
   const journeyPath = `/api/preview?slug=${journey?.slug}`
   const href = journey?.slug != null ? journeyPath : undefined
 
+  // TODO: Add share drawer back in
   // needed to preload the drawer chunk to preserve first-open animations
   // only run on hover events
-  function handlePreloadShareDrawer(): void {
-    setOpenShareDrawer(false)
-  }
+  // function handlePreloadShareDrawer(): void {
+  //   setOpenShareDrawer(false)
+  // }
 
-  function handleShare(): void {
-    setOpenShareDrawer(true)
-  }
+  // TODO: Add share drawer back in
+  // function handleShare(): void {
+  //   setOpenShareDrawer(true)
+  // }
 
   function handleContinueEditing(): void {
     if (journey?.id != null) void router.push(`/journeys/${journey.id}`)
@@ -119,7 +122,8 @@ export function DoneScreen(): ReactElement {
             <Typography variant="h6">{t('Preview in new tab')}</Typography>
           </Button>
 
-          <Button
+          {/* TODO: Add share drawer back in */}
+          {/* <Button
             fullWidth
             variant="contained"
             onClick={handleShare}
@@ -133,7 +137,7 @@ export function DoneScreen(): ReactElement {
             }}
           >
             <Typography variant="h6">{t('Share')}</Typography>
-          </Button>
+          </Button> */}
 
           <Button
             fullWidth
@@ -149,12 +153,13 @@ export function DoneScreen(): ReactElement {
           </Button>
         </Stack>
       </Stack>
-      {openShareDrawer != null && (
+      {/* TODO: Add share drawer back in */}
+      {/* {openShareDrawer != null && (
         <ShareDrawer
           open={openShareDrawer}
           onClose={() => setOpenShareDrawer(false)}
         />
-      )}
+      )} */}
     </>
   )
 }
