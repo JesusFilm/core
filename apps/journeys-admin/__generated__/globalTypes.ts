@@ -470,6 +470,12 @@ export interface JourneyCollectionUpdateInput {
   journeyIds?: string[] | null;
 }
 
+export interface JourneyCustomizationFieldInput {
+  id: string;
+  key: string;
+  value?: string | null;
+}
+
 export interface JourneyEventsExportLogInput {
   journeyId: string;
   eventsFilter: EventType[];
