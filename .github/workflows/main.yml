@@ -46,6 +46,7 @@ jobs:
         uses: mansagroup/nrwl-nx-action@v3
         with:
           targets: prisma-generate
+          all: true
         env:
           DISABLE_ERD: true
       - name: Install Doppler
@@ -53,9 +54,6 @@ jobs:
       - name: fetch-secrets and build
         uses: mansagroup/nrwl-nx-action@v3
         env:
-          # Nx Cloud - PR-specific cache, or ci for main branch
-          NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
-          NX_BRANCH: ${{ github.event_name == 'pull_request' && format('pr-{0}', github.event.number) || 'ci' }}
           DOPPLER_API_ANALYTICS_TOKEN: ${{ secrets.DOPPLER_API_ANALYTICS_TOKEN }}
           DOPPLER_API_GATEWAY_TOKEN: ${{ secrets.DOPPLER_API_GATEWAY_TOKEN }}
           DOPPLER_API_JOURNEYS_TOKEN: ${{ secrets.DOPPLER_API_JOURNEYS_TOKEN }}
@@ -115,6 +113,7 @@ jobs:
         uses: mansagroup/nrwl-nx-action@v3
         with:
           targets: prisma-generate
+          all: true
         env:
           DISABLE_ERD: true
       - name: Get number of CPU cores
