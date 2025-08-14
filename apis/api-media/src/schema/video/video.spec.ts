@@ -45,7 +45,7 @@ describe('video', () => {
     description: VideoDescription[]
     studyQuestions: VideoStudyQuestion[]
     imageAlt: VideoImageAlt[]
-    children: Video[]
+    children: Array<Video & { variants: VideoVariant[] }>
     parents: Video[]
     subtitles: VideoSubtitle[]
     images: CloudflareImage[]
@@ -60,7 +60,7 @@ describe('video', () => {
     }
   }
 
-  const children: Video[] = [
+  const children: Array<Video & { variants: VideoVariant[] }> = [
     {
       id: 'videoId2',
       label: 'collection',
@@ -74,7 +74,14 @@ describe('video', () => {
       originId: null,
       restrictDownloadPlatforms: [],
       restrictViewPlatforms: [],
-      publishedAt: null
+      publishedAt: null,
+      variants: [
+        {
+          id: 'childVariantId',
+          languageId: 'languageId',
+          slug: 'childSlug1'
+        }
+      ] as unknown as VideoVariant[]
     },
     {
       id: 'videoId1',
@@ -89,7 +96,14 @@ describe('video', () => {
       originId: null,
       restrictDownloadPlatforms: [],
       restrictViewPlatforms: [],
-      publishedAt: null
+      publishedAt: null,
+      variants: [
+        {
+          id: 'childVariantId2',
+          languageId: 'languageId2',
+          slug: 'childSlug2'
+        }
+      ] as unknown as VideoVariant[]
     }
   ]
 
@@ -1346,6 +1360,14 @@ describe('video', () => {
           {
             language: { id: 'languageId1' },
             slug: 'slug1'
+          },
+          {
+            language: { id: 'languageId' },
+            slug: 'childSlug1'
+          },
+          {
+            language: { id: 'languageId1' },
+            slug: 'childSlug1'
           }
         ],
         images: [
@@ -1595,6 +1617,9 @@ describe('video', () => {
           variants: {
             select: {
               languageId: true
+            },
+            where: {
+              published: true
             }
           },
           imageAlt: {
