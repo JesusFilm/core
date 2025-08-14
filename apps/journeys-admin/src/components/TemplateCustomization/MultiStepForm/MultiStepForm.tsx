@@ -53,14 +53,15 @@ export function MultiStepForm(): ReactElement {
       }}
     >
       <Stack gap={12} data-testid="MultiStepForm">
-        <Button
+        {/* TODO: uncomment out when we have the edit manually button */}
+        {/* <Button
           variant="text"
           color="secondary"
           endIcon={<ArrowRightIcon />}
           sx={{ alignSelf: 'flex-end' }}
         >
           {t('Edit Manually')}
-        </Button>
+        </Button> */}
 
         <ProgressStepper
           activeStep={activeScreen}
