@@ -1,4 +1,4 @@
-FROM node:22-alpine3.22
+FROM node:22-alpine3.20
 
 EXPOSE 4002
 
@@ -19,8 +19,8 @@ RUN npm install --production
 
 WORKDIR /prisma
 COPY ./libs/prisma/users/db .
-RUN npx prisma@6 generate --generator client
+RUN npx prisma@6.14 generate --generator client
 
 WORKDIR /app
 RUN npm install @prisma/client@6
-CMD npx prisma@6 migrate deploy --schema /prisma/db/schema.prisma; node ./main.js
+CMD npx prisma@6.14 migrate deploy --schema /prisma/db/schema.prisma; node ./main.js
