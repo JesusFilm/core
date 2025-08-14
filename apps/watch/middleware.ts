@@ -88,13 +88,13 @@ function getBrowserLanguage(req: NextRequest): string {
 }
 
 function getLocale(req: NextRequest): string {
-  // Priority 1: Cookie
-  const cookieLocale = req.cookies.get('NEXT_LOCALE')?.value?.split('---')[1]
-  if (cookieLocale != null) return cookieLocale
-
-  // Priority 2: URL Path
+  // Priority 1: URL Path
   const pathLocale = getLocaleFromPath(req.nextUrl.pathname)
   if (pathLocale != null) return pathLocale
+
+  // Priority 2: Cookie
+  const cookieLocale = req.cookies.get('NEXT_LOCALE')?.value?.split('---')[1]
+  if (cookieLocale != null) return cookieLocale
 
   // Priority 3: Browser Language
   const browserLocale = getBrowserLanguage(req)
