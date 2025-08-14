@@ -30,6 +30,13 @@ Follow these rules when you write code:
 - Implement accessibility features on elements. For example, a tag should have a tabindex=“0”, aria-label, on:click, and on:keydown, and similar attributes.
 
 
+For Watch project componets inside apps/watch/src/components/* redefine rules as follows:
+
+- Use Tailwind CSS classes for styling instead of MUI components
+- Use standard HTML elements with Tailwind classes
+- For styling, prioritize Tailwind utility classes over custom CSS
+- Follow Tailwind's responsive design patterns using breakpoint prefixes (sm:, md:, lg:, etc.)
+
 ### Testing Implementation Guidelines
 
 Follow these rules when you write tests in the frontend: 
