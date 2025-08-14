@@ -31,7 +31,7 @@ interface LinksScreenProps {
 }
 
 export function LinksScreen({ handleNext }: LinksScreenProps): ReactElement {
-  const { t } = useTranslation()
+  const { t } = useTranslation('apps-journeys-admin')
   const [journeyChatButtonUpdate, { loading: chatLoading }] =
     useMutation<JourneyChatButtonUpdate>(JOURNEY_CHAT_BUTTON_UPDATE)
   const [updateLinkAction, { loading: linkLoading }] =

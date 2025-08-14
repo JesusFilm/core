@@ -1,8 +1,8 @@
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Container from '@mui/material/Container'
+import NextLink from 'next/link'
 import Stack from '@mui/material/Stack'
-import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, useState } from 'react'
 
@@ -10,6 +10,7 @@ import ArrowRightIcon from '@core/shared/ui/icons/ArrowRight'
 
 import { ProgressStepper } from './ProgressStepper'
 import { DoneScreen, LanguageScreen, LinksScreen, TextScreen } from './Screens'
+import { useJourney } from '@core/journeys/ui/JourneyProvider'
 
 // NOTE: login is a dialog -> regular sign up path (that can show the image/title from journey) -> redirects back current step (URL parameter)
 // NOTE: share is a dialog
@@ -35,6 +36,7 @@ function renderScreen(screen: number, handleNext: () => void): ReactElement {
 
 export function MultiStepForm(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
+  const { journey } = useJourney()
   const [activeScreen, setActiveScreen] = useState(0)
 
   async function handleNext(): Promise<void> {
@@ -42,6 +44,8 @@ export function MultiStepForm(): ReactElement {
       setActiveScreen(activeScreen + 1)
     }
   }
+
+  const link = `/journeys/${journey?.id ?? ''}`
 
   return (
     <Container
@@ -53,15 +57,17 @@ export function MultiStepForm(): ReactElement {
       }}
     >
       <Stack gap={12} data-testid="MultiStepForm">
-        {/* TODO: uncomment out when we have the edit manually button */}
-        {/* <Button
-          variant="text"
-          color="secondary"
-          endIcon={<ArrowRightIcon />}
-          sx={{ alignSelf: 'flex-end' }}
-        >
-          {t('Edit Manually')}
-        </Button> */}
+        <NextLink href={link} passHref legacyBehavior>
+          <Button
+            variant="text"
+            color="secondary"
+            endIcon={<ArrowRightIcon />}
+            sx={{ alignSelf: 'flex-end' }}
+            disabled={journey?.id == null}
+          >
+            {t('Edit Manually')}
+          </Button>
+        </NextLink>
 
         <ProgressStepper
           activeStep={activeScreen}

@@ -8,7 +8,6 @@ import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 import { A11y, FreeMode, Mousewheel } from 'swiper/modules'
 import { Swiper, SwiperSlide } from 'swiper/react'
-import { SwiperOptions } from 'swiper/types'
 
 import { TreeBlock } from '@core/journeys/ui/block'
 import { BlockRenderer } from '@core/journeys/ui/BlockRenderer'
@@ -125,7 +124,7 @@ function CardsPreviewItem({ step }: CardsPreviewItemProps): ReactElement {
 }
 
 export function CardsPreview({ steps }: CardsPreviewProps): ReactElement {
-  const { t } = useTranslation()
+  const { t } = useTranslation('apps-journeys-admin')
 
   const slidesToRender: Array<TreeBlock<StepBlock>> = take(steps, 7)
 

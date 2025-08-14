@@ -1,9 +1,5 @@
-/* eslint-disable jest/valid-title */
-/* eslint-disable jest/valid-title */
-/* eslint-disable jest/valid-title */
 import { render, screen, fireEvent, within } from '@testing-library/react'
 import { Formik, FormikProvider } from 'formik'
-import React from 'react'
 
 import { LinksForm } from './LinksForm'
 import { JourneyLink } from '../../../../utils/getJourneyLinks/getJourneyLinks'
