@@ -13,9 +13,11 @@ RUN apk upgrade --update-cache --available && \
 WORKDIR /app
 COPY ./dist/apps/api-users .
 COPY ./package-lock.json .
-COPY ./libs/prisma/users/db /prisma
+COPY ./libs/prisma/users/db ./prisma
 
 RUN npm install --production
-RUN npx prisma@6.14 generate --generator client --schema /prisma/schema.prisma
+RUN npm install @prisma/client@6.14.0
+RUN npm install -D prisma@6.14.0
+RUN npx prisma generate --generator client --schema ./prisma/schema.prisma
 
-CMD npx prisma@6.14 migrate deploy --schema /prisma/schema.prisma; node ./main.js
+CMD npx prisma migrate deploy --schema ./prisma/schema.prisma; node ./main.js
