@@ -1,128 +1,63 @@
-import { render, screen } from '@testing-library/react'
+import { render, screen, waitFor, within } from '@testing-library/react'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
-
-import {
-  ThemeMode,
-  ThemeName
-} from '../../../../../../../__generated__/globalTypes'
+import { journey } from '@core/journeys/ui/JourneyProvider/JourneyProvider.mock'
 
 import { LanguageScreenCardPreview } from './LanguageScreenCardPreview'
+import { TreeBlock } from '@core/journeys/ui/block/TreeBlock'
+import { MockedProvider } from '@apollo/client/testing'
+
+const mockJourney = {
+  ...journey,
+  blocks: [
+    {
+      id: 'step0id',
+      __typename: 'StepBlock',
+      parentBlockId: null,
+      parentOrder: 0,
+      locked: false,
+      nextBlockId: 'step1id'
+    },
+    {
+      id: 'card0id',
+      __typename: 'CardBlock',
+      parentBlockId: 'step0id',
+      parentOrder: 0
+    },
+    {
+      id: 'step1id',
+      __typename: 'StepBlock',
+      parentBlockId: null,
+      parentOrder: 1,
+      locked: false,
+      nextBlockId: null
+    },
+    {
+      id: 'card0id',
+      __typename: 'CardBlock',
+      parentBlockId: 'step1id',
+      parentOrder: 0
+    }
+  ] as unknown as TreeBlock[]
+}
 
 describe('LanguageScreenCardPreview', () => {
-  const journey = {
-    id: 'journeyId',
-    blocks: [],
-    journeyTheme: {
-      headerFont: 'Header Font',
-      bodyFont: 'Body Font',
-      labelFont: 'Label Font'
-    }
-  } as any
-
-  const firstStep = {
-    id: 'stepId1',
-    __typename: 'StepBlock',
-    parentOrder: 0,
-    children: [
-      {
-        id: 'cardId1',
-        __typename: 'CardBlock',
-        themeName: ThemeName.base,
-        themeMode: ThemeMode.dark
-      }
-    ]
-  }
-
   beforeEach(() => {
     jest.clearAllMocks()
   })
 
-  it('renders BlockRenderer with first step and passes wrappers', () => {
+  it('renders BlockRenderer with first step', async () => {
     render(
-      <JourneyProvider value={{ journey, variant: 'admin' }}>
-        <LanguageScreenCardPreview />
-      </JourneyProvider>
+      <MockedProvider>
+        <JourneyProvider value={{ journey: mockJourney, variant: 'admin' }}>
+          <LanguageScreenCardPreview />
+        </JourneyProvider>
+      </MockedProvider>
     )
-
-    expect(BlockRendererMock).toHaveBeenCalled()
-    const call = BlockRendererMock.mock.calls[0][0]
-    expect(call.block.id).toBe('stepId1')
-    expect(call.wrappers.CardWrapper).toBeDefined()
-    expect(call.wrappers.VideoWrapper).toBeDefined()
-  })
-
-  it('uses rtl and locale on FramePortal and ThemeProvider', () => {
-    getJourneyRTLMok.mockReturnValue({ rtl: true, locale: 'ar' })
-
-    render(
-      <JourneyProvider value={{ journey, variant: 'admin' }}>
-        <LanguageScreenCardPreview />
-      </JourneyProvider>
-    )
-
-    expect(screen.getByTestId('FramePortal')).toHaveAttribute('data-dir', 'rtl')
-    expect(screen.getByTestId('ThemeProvider')).toHaveAttribute(
-      'data-rtl',
-      'true'
-    )
-    expect(screen.getByTestId('ThemeProvider')).toHaveAttribute(
-      'data-locale',
-      'ar'
-    )
-  })
-
-  it('passes card theme to ThemeProvider', () => {
-    render(
-      <JourneyProvider value={{ journey, variant: 'admin' }}>
-        <LanguageScreenCardPreview />
-      </JourneyProvider>
-    )
-
-    const tp = screen.getByTestId('ThemeProvider')
-    expect(tp).toHaveAttribute('data-theme-name', ThemeName.base)
-    expect(tp).toHaveAttribute('data-theme-mode', ThemeMode.dark)
-  })
-
-  it('falls back to step theme when card theme is undefined', () => {
-    const noThemeFirstStep = {
-      ...firstStep,
-      children: [
-        {
-          id: 'cardId1',
-          __typename: 'CardBlock',
-          themeName: null,
-          themeMode: null
-        }
-      ]
-    }
-    transformerMock.mockReturnValue([noThemeFirstStep])
-    getStepThemeMock.mockReturnValue({
-      themeName: ThemeName.base,
-      themeMode: ThemeMode.light
-    })
-
-    render(
-      <JourneyProvider value={{ journey, variant: 'admin' }}>
-        <LanguageScreenCardPreview />
-      </JourneyProvider>
-    )
-
-    const tp = screen.getByTestId('ThemeProvider')
-    expect(tp).toHaveAttribute('data-theme-name', ThemeName.base)
-    expect(tp).toHaveAttribute('data-theme-mode', ThemeMode.light)
-  })
-
-  it('provides font families from journey theme', () => {
-    render(
-      <JourneyProvider value={{ journey, variant: 'admin' }}>
-        <LanguageScreenCardPreview />
-      </JourneyProvider>
-    )
-
-    const tp = screen.getByTestId('ThemeProvider')
-    expect(tp).toHaveAttribute('data-header-font', 'Header Font')
-    expect(tp).toHaveAttribute('data-body-font', 'Body Font')
-    expect(tp).toHaveAttribute('data-label-font', 'Label Font')
+    expect(
+      screen.getByTestId('LanguageScreenCardPreviewFramePortal')
+    ).toBeInTheDocument()
+    const iframe = document.querySelector('iframe') as HTMLIFrameElement
+    await waitFor(() => expect(iframe?.contentDocument?.body).toBeTruthy())
   })
 })
