@@ -1,7 +1,4 @@
-import {
-  exportVideoDescriptionToCrowdin,
-  updateVideoDescriptionInCrowdin
-} from '../../../lib/crowdin/videoDescription'
+import { syncWithCrowdin } from '../../../lib/crowdin/crowdinSync'
 import { prisma } from '../../../lib/prisma'
 import { logger } from '../../../logger'
 import { builder } from '../../builder'
@@ -31,36 +28,30 @@ builder.mutationFields((t) => ({
       input: t.arg({ type: VideoTranslationCreateInput, required: true })
     },
     resolve: async (query, _parent, { input }) => {
-      const newVideoDescription = await prisma.videoDescription.create({
+      let crowdInId: string | null = null
+      try {
+        crowdInId = await syncWithCrowdin(
+          'videoDescription',
+          input.videoId,
+          input.value,
+          `Description for videoId: ${input.videoId}`,
+          null,
+          logger
+        )
+      } catch (error) {
+        logger?.error('Crowdin export error:', error)
+      }
+
+      const videoDescription = await prisma.videoDescription.create({
         ...query,
         data: {
           ...input,
-          id: input.id ?? undefined
+          id: input.id ?? undefined,
+          crowdInId: crowdInId ?? undefined
         }
       })
 
-      if (newVideoDescription.videoId != null) return newVideoDescription
-      try {
-        const crowdInId = await exportVideoDescriptionToCrowdin(
-          newVideoDescription.videoId,
-          newVideoDescription.value,
-          logger
-        )
-        if (crowdInId != null) {
-          return await prisma.videoDescription.update({
-            ...query,
-            where: { id: newVideoDescription.id },
-            data: { crowdInId }
-          })
-        }
-      } catch (err) {
-        logger?.error(
-          { err, id: newVideoDescription.id },
-          'Crowdin export error (create videoDescription)'
-        )
-      }
-
-      return newVideoDescription
+      return videoDescription
     }
   }),
 
@@ -91,13 +82,25 @@ builder.mutationFields((t) => ({
         }
       })
 
-      if (input.value != null) {
-        await updateVideoDescriptionInCrowdin(
+      try {
+        const crowdInId = await syncWithCrowdin(
+          'videoDescription',
           existing.videoId,
-          updatedRecord.value,
+          input.value ?? '',
+          `Description for videoId: ${existing.videoId}`,
           existing.crowdInId ?? null,
           logger
         )
+
+        if (crowdInId && crowdInId !== existing.crowdInId) {
+          return await prisma.videoDescription.update({
+            ...query,
+            where: { id: input.id },
+            data: { crowdInId }
+          })
+        }
+      } catch (error) {
+        logger?.error('Crowdin export error:', error)
       }
 
       return updatedRecord

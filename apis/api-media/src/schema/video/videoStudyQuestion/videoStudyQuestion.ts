@@ -1,7 +1,4 @@
-import {
-  exportStudyQuestionToCrowdin,
-  updateStudyQuestionInCrowdin
-} from '../../../lib/crowdin/videoStudyQuestion'
+import { syncWithCrowdin } from '../../../lib/crowdin/crowdinSync'
 import { prisma } from '../../../lib/prisma'
 import { logger } from '../../../logger'
 import { builder } from '../../builder'
@@ -39,6 +36,20 @@ builder.mutationFields((t) => ({
       input: t.arg({ type: VideoStudyQuestionCreateInput, required: true })
     },
     resolve: async (query, _parent, { input }) => {
+      let crowdInId: string | null = null
+      try {
+        crowdInId = await syncWithCrowdin(
+          'videoStudyQuestion',
+          `${input.videoId}_${input.order}`,
+          input.value,
+          `Study question ${input.order} for videoId: ${input.videoId}`,
+          null,
+          logger
+        )
+      } catch (error) {
+        logger?.error('Crowdin export error:', error)
+      }
+
       const created = await prisma.$transaction(
         async (transaction) => {
           await updateOrderCreate({
@@ -52,7 +63,8 @@ builder.mutationFields((t) => ({
             ...query,
             data: {
               ...input,
-              id: input.id ?? undefined
+              id: input.id ?? undefined,
+              crowdInId: crowdInId ?? undefined
             }
           })
         },
@@ -61,28 +73,6 @@ builder.mutationFields((t) => ({
         }
       )
 
-      if (created.videoId != null && input.value != null) {
-        try {
-          const crowdInId = await exportStudyQuestionToCrowdin(
-            created.videoId,
-            created.value,
-            created.order,
-            logger
-          )
-          if (crowdInId != null) {
-            return await prisma.videoStudyQuestion.update({
-              ...query,
-              where: { id: created.id },
-              data: { crowdInId }
-            })
-          }
-        } catch (error) {
-          logger?.error(
-            { videoId: created.videoId, id: created.id, err: error },
-            'Crowdin export error while creating videoStudyQuestion'
-          )
-        }
-      }
       return created
     }
   }),
@@ -97,7 +87,12 @@ builder.mutationFields((t) => ({
         async (transaction) => {
           const existing = await transaction.videoStudyQuestion.findUnique({
             where: { id: input.id },
-            select: { videoId: true, languageId: true, crowdInId: true }
+            select: {
+              videoId: true,
+              languageId: true,
+              crowdInId: true,
+              order: true
+            }
           })
           if (existing == null)
             throw new Error(`videoStudyQuestion ${input.id} not found`)
@@ -117,8 +112,7 @@ builder.mutationFields((t) => ({
             where: { id: input.id },
             data: {
               value: input.value ?? undefined,
-              primary: input.primary ?? undefined,
-              crowdInId: input.crowdInId ?? undefined
+              primary: input.primary ?? undefined
             }
           })
         },
@@ -127,17 +121,25 @@ builder.mutationFields((t) => ({
         }
       )
 
-      if (
-        result.videoId != null &&
-        result.crowdInId != null &&
-        input.value != null
-      ) {
-        await updateStudyQuestionInCrowdin(
-          result.videoId,
-          input.value,
-          result.crowdInId,
+      try {
+        const crowdInId = await syncWithCrowdin(
+          'videoStudyQuestion',
+          `${result.videoId}_${result.order}`,
+          input.value ?? '',
+          `Study question ${result.order} for videoId: ${result.videoId}`,
+          result.crowdInId ?? null,
           logger
         )
+
+        if (crowdInId && crowdInId !== result.crowdInId) {
+          return await prisma.videoStudyQuestion.update({
+            ...query,
+            where: { id: input.id },
+            data: { crowdInId }
+          })
+        }
+      } catch (error) {
+        logger?.error('Crowdin export error:', error)
       }
 
       return result
