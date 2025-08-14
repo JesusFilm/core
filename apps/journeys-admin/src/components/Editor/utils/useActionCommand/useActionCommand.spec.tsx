@@ -71,7 +71,7 @@ describe('useActionCommand', () => {
           parentBlockId: 'button2.id',
           gtmEventName: '',
           customizable: false,
-          parentStepId: null
+          parentStepId: 'step.id'
         },
         undoAction: null
       })
@@ -116,7 +116,7 @@ describe('useActionCommand', () => {
           parentBlockId: 'button2.id',
           gtmEventName: '',
           customizable: false,
-          parentStepId: null
+          parentStepId: 'step.id'
         },
         undoAction: null
       })
@@ -250,7 +250,7 @@ describe('useActionCommand', () => {
           parentBlockId: 'button2.id',
           gtmEventName: '',
           customizable: false,
-          parentStepId: null
+          parentStepId: 'step.id'
         },
         undoAction: null,
         editorFocus: {
