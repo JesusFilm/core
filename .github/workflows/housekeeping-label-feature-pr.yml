@@ -12,7 +12,7 @@ jobs:
           script: |
             const branch = context.payload.pull_request.head.ref;
             if (/^feature\/.*/.test(branch)) {
-              await github.issues.addLabels({
+              await github.rest.issues.addLabels({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
                 issue_number: context.payload.number,
