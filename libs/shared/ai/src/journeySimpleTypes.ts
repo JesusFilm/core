@@ -88,7 +88,20 @@ export type JourneySimpleImage = z.infer<typeof journeySimpleImageSchema>
 
 // --- Video Schema ---
 export const journeySimpleVideoSchema = z.object({
-  url: z.string().describe('The YouTube video URL.'),
+  src: z.string().describe('The YouTube video URL or internal video ID.'),
+  source: z.enum(['youTube', 'internal']).describe('The type of video source.'),
+  summary: z
+    .string()
+    .optional()
+    .describe(
+      'A summary of the section of the video. Used as context for the next logical and relevant next card.'
+    ),
+  questions: z
+    .array(z.string())
+    .optional()
+    .describe(
+      'An array of reflective questions to ask the user after the video. Used as context for the next logical and relevant next card.'
+    ),
   startAt: z
     .number()
     .int()
@@ -152,7 +165,7 @@ export const journeySimpleCardSchema = z.object({
   video: journeySimpleVideoSchema
     .optional()
     .describe(
-      'Video segment for this card, if present. If present, only "id", "video", and (optionally) "defaultNextCard" should be set on this card. All other content fields (heading, text, button, poll, image, backgroundImage, etc.) must be omitted.'
+      'Video segment for this card, if present. If present, only "id", "x", "y", "video", and (optionally) "defaultNextCard" should be set on this card. All other content fields (heading, text, button, poll, image, backgroundImage, etc.) must be omitted.'
     ),
   defaultNextCard: z
     .string()
