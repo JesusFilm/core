@@ -22,7 +22,7 @@ export function ShareDrawer({ open, onClose }: ShareDrawerProps): ReactElement {
 
   return (
     <Drawer open={open} anchor="bottom">
-      <Stack alignItems="center" gap={4} sx={{ pb: 4, height: '100svh' }}>
+      <Stack alignItems="center" gap={4} sx={{ pb: 4 }}>
         <Stack direction="row" justifyContent="flex-end" width="100%">
           <IconButton aria-label="close-share-drawer" onClick={onClose}>
             <X2Icon />
