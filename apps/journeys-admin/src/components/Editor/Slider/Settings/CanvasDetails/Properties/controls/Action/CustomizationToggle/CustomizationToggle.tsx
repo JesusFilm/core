@@ -1,10 +1,12 @@
-import { ReactElement } from 'react'
-import Typography from '@mui/material/Typography'
 import Stack from '@mui/material/Stack'
 import Switch from '@mui/material/Switch'
+import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next'
+import { ReactElement } from 'react'
+
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { isActionBlock } from '@core/journeys/ui/isActionBlock'
+
 import { useActionCommand } from '../../../../../../../utils/useActionCommand'
 
 export function CustomizationToggle(): ReactElement {

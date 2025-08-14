@@ -1,11 +1,10 @@
-import { ReactElement } from 'react'
-
 import FormControl from '@mui/material/FormControl'
 import MenuItem from '@mui/material/MenuItem'
 import Select from '@mui/material/Select'
 import Typography from '@mui/material/Typography'
-import sortBy from 'lodash/sortBy'
 import { useFormikContext } from 'formik'
+import sortBy from 'lodash/sortBy'
+import { ReactElement } from 'react'
 
 import { useTeam } from '@core/journeys/ui/TeamProvider'
 
@@ -33,7 +32,7 @@ export function JourneyCustomizeTeamSelect(): ReactElement {
         displayEmpty
         inputProps={{ 'aria-label': 'Team' }}
         renderValue={(selected) => {
-          const team = teams.find((t) => t.id === (selected as string))
+          const team = teams.find((t) => t.id === selected)
           const label = team?.title ?? team?.publicTitle ?? ''
           return (
             <Typography

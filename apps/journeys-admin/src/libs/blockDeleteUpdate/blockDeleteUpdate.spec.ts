@@ -1,12 +1,12 @@
 import { InMemoryCache } from '@apollo/client'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
+import { JourneyFields as Journey } from '@core/journeys/ui/JourneyProvider/__generated__/JourneyFields'
 
 import {
   GetJourney_journey_blocks_ImageBlock as ImageBlock,
   GetJourney_journey_blocks_VideoBlock as VideoBlock
 } from '../../../__generated__/GetJourney'
-import { JourneyFields as Journey } from '@core/journeys/ui/JourneyProvider/__generated__/JourneyFields'
 import {
   JourneyStatus,
   ThemeMode,

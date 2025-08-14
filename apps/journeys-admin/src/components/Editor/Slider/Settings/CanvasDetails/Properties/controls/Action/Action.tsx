@@ -17,11 +17,11 @@ import {
 } from '../../../../../../../../../__generated__/BlockFields'
 import { useActionCommand } from '../../../../../../utils/useActionCommand'
 
+import { CustomizationToggle } from './CustomizationToggle'
 import { EmailAction } from './EmailAction'
 import { LinkAction } from './LinkAction'
 import { NavigateToBlockAction } from './NavigateToBlockAction'
 import { ActionValue, actions } from './utils/actions'
-import { CustomizationToggle } from './CustomizationToggle'
 
 export function Action(): ReactElement {
   const {

@@ -3,8 +3,8 @@ import { AuthAction, withUser, withUserTokenSSR } from 'next-firebase-auth'
 import { useTranslation } from 'next-i18next'
 import { NextSeo } from 'next-seo'
 
-import { GET_JOURNEY, useJourneyQuery } from '@core/journeys/ui/useJourneyQuery'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+import { GET_JOURNEY, useJourneyQuery } from '@core/journeys/ui/useJourneyQuery'
 
 import {
   GetJourney,

@@ -3,12 +3,13 @@ import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
-import { ReactElement, useCallback, useState } from 'react'
-import { GetJourney_journey_journeyCustomizationFields as JourneyCustomizationField } from '../../../../../../__generated__/GetJourney'
-
-import ArrowRightIcon from '@core/shared/ui/icons/ArrowRight'
-import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { useTranslation } from 'next-i18next'
+import { ReactElement, useCallback, useState } from 'react'
+
+import { useJourney } from '@core/journeys/ui/JourneyProvider'
+import ArrowRightIcon from '@core/shared/ui/icons/ArrowRight'
+
+import { GetJourney_journey_journeyCustomizationFields as JourneyCustomizationField } from '../../../../../../__generated__/GetJourney'
 import { JourneyCustomizationFieldUpdate } from '../../../../../../__generated__/JourneyCustomizationFieldUpdate'
 
 export const JOURNEY_CUSTOMIZATION_FIELD_UPDATE = gql`
@@ -93,7 +94,7 @@ const renderEditableText = (
               parent != null
                 ? (Array.from(
                     parent.querySelectorAll('[contenteditable="true"]')
-                  ) as HTMLElement[])
+                  ))
                 : []
             const index = editables.indexOf(e.currentTarget as HTMLElement)
             const nextIndex = e.shiftKey ? index - 1 : index + 1

@@ -5,10 +5,10 @@ import { screen, userEvent } from '@storybook/test'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+import { JourneyFields as Journey } from '@core/journeys/ui/JourneyProvider/__generated__/JourneyFields'
 import { journeysAdminConfig } from '@core/shared/ui/storybook'
 
 import { BlockFields_ImageBlock as ImageBlock } from '../../../../../../__generated__/BlockFields'
-import { JourneyFields as Journey } from '@core/journeys/ui/JourneyProvider/__generated__/JourneyFields'
 import {
   JourneyStatus,
   ThemeMode,
