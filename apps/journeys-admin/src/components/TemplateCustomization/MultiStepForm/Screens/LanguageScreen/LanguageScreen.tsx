@@ -15,9 +15,8 @@ import { useTeam } from '@core/journeys/ui/TeamProvider'
 import { useJourneyDuplicateMutation } from '@core/journeys/ui/useJourneyDuplicateMutation'
 import ArrowRightIcon from '@core/shared/ui/icons/ArrowRight'
 
-import { LanguageScreenCardPreview } from './LanguageScreenCardPreview'
-
 import { JourneyCustomizeTeamSelect } from './JourneyCustomizeTeamSelect'
+import { LanguageScreenCardPreview } from './LanguageScreenCardPreview'
 
 interface LanguageScreenProps {
   handleNext: () => void

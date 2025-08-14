@@ -54,7 +54,7 @@ export function LinksScreen({ handleNext }: LinksScreenProps): ReactElement {
     formikHelpers: FormikHelpers<Record<string, string>>
   ): Promise<void> {
     const errors = await formikHelpers.validateForm()
-    formikHelpers.setTouched(
+    void formikHelpers.setTouched(
       Object.fromEntries(Object.keys(values).map((k) => [k, true])),
       true
     )

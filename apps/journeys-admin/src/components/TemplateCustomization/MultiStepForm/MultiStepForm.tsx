@@ -16,7 +16,6 @@ import { DoneScreen, LanguageScreen, LinksScreen, TextScreen } from './Screens'
 const screens = ['language', 'text', 'links', 'social', 'done']
 
 function renderScreen(screen: number, handleNext: () => void): ReactElement {
-  const { t } = useTranslation('apps-journeys-admin')
   switch (screen) {
     case 0:
       return <LanguageScreen handleNext={handleNext} />
@@ -30,7 +29,7 @@ function renderScreen(screen: number, handleNext: () => void): ReactElement {
     case 3:
       return <DoneScreen />
     default:
-      return <Typography>{t('Not Found')}</Typography>
+      return <></>
   }
 }
 
