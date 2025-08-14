@@ -51,7 +51,8 @@ jobs:
     # if branch is not main or is a pull request
     if: |
       needs.affected.outputs.matrix != '[]' &&
-      needs.affected.outputs.matrix != '' && (
+      needs.affected.outputs.matrix != '' &&
+      github.event_name != 'merge_group' && (
         github.ref != 'refs/heads/main' || github.event_name == 'pull_request'
       )
     strategy:
@@ -197,7 +198,7 @@ jobs:
   build-e2e-matrix:
     name: Build E2E Matrix
     needs: [affected, deploy-preview]
-    if: ${{ needs.deploy-preview.result == 'success' }}
+    if: ${{ github.event_name != 'merge_group' && needs.deploy-preview.result == 'success' }}
     permissions:
       actions: read
       contents: read
@@ -246,7 +247,7 @@ jobs:
     name: Playwright E2E (${{ matrix.app }})
     needs: [build-e2e-matrix]
     # Only run if ALL deploy-preview matrix entries succeeded and we have URLs
-    if: ${{ needs.build-e2e-matrix.result == 'success' && needs.build-e2e-matrix.outputs.apps != '[]' && needs.build-e2e-matrix.outputs.apps != '' }}
+    if: ${{ github.event_name != 'merge_group' && needs.build-e2e-matrix.result == 'success' && needs.build-e2e-matrix.outputs.apps != '[]' && needs.build-e2e-matrix.outputs.apps != '' }}
     permissions:
       contents: read
     runs-on: blacksmith-4vcpu-ubuntu-2204
