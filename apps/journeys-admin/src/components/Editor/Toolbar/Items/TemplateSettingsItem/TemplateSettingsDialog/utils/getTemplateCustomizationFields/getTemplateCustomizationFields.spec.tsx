@@ -1,11 +1,43 @@
+import { JourneyFields as Journey } from '@core/journeys/ui/JourneyProvider/__generated__/JourneyFields'
+
+import { getTemplateCustomizationFields } from './getTemplateCustomizationFields'
+
 describe('getTemplateCustomizationFields', () => {
-  it('should return empty array if no journey is provided', () => {
-    // TODO TEST: returns empty array if no journey is provided
+  it('returns empty array when journey is undefined', () => {
+    expect(getTemplateCustomizationFields(undefined)).toEqual([])
   })
-  it('should return empty array if journey has no blocks', () => {
-    // TODO TEST: returns empty array if journey has no blocks
+
+  it('returns empty array when journey has no blocks', () => {
+    const journey = { blocks: [] } as unknown as Journey
+    expect(getTemplateCustomizationFields(journey)).toEqual([])
   })
-  it('should return array of customization fields', () => {
-    // TODO TEST: returns array of customization fields for [TypographyBlock, ButtonBlock, TextResponseBlock, RadioOptionBlock, SignUpBlock]
+
+  it('extracts de-duplicated field names from supported block properties', () => {
+    const journey = {
+      blocks: [
+        {
+          __typename: 'TypographyBlock',
+          content: 'Hi {{ firstName }} and {{lastName}}!'
+        },
+        { __typename: 'ButtonBlock', label: 'Go to {{ nextStep }}' },
+        {
+          __typename: 'TextResponseBlock',
+          label: 'Enter {{ email }}',
+          placeholder: '{{ company }}',
+          hint: 'Hint {{ email }}'
+        },
+        { __typename: 'RadioOptionBlock', label: 'Pick {{ option }}' },
+        { __typename: 'SignUpBlock', submitLabel: 'Submit {{ email }}' }
+      ]
+    } as unknown as Journey
+
+    expect(getTemplateCustomizationFields(journey)).toEqual([
+      'firstName',
+      'lastName',
+      'nextStep',
+      'email',
+      'company',
+      'option'
+    ])
   })
 })
