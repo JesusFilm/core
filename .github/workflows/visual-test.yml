@@ -1,74 +1,74 @@
-name: Visual Test
-on:
-  push:
-    branches: [main, feature/*]
-  pull_request:
-    branches: [main, feature/*]
-    types: [labeled, synchronize]
-  merge_group:
-    branches: [main]
-concurrency:
-  group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
-  cancel-in-progress: true
-jobs:
-  visual-test:
-    runs-on: blacksmith-2vcpu-ubuntu-2204
-    strategy:
-      matrix:
-        node-version: [22]
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-      - name: Check branch up to date with base
-        run: ./tools/scripts/check-git-diff.sh
-      - uses: useblacksmith/setup-node@v5
-        with:
-          node-version: ${{ matrix.node-version }}
-      - name: Get Node Version
-        id: node-version
-        run: echo "version=$(node -v)" >> $GITHUB_OUTPUT
-      - name: Mount NPM Cache
-        uses: useblacksmith/stickydisk@v1
-        with:
-          key: ${{ github.repository }}-${{ steps.node-version.outputs.version }}-npm-cache
-          path: ~/.npm
-      - name: Mount node_modules
-        uses: useblacksmith/stickydisk@v1
-        with:
-          key: ${{ github.repository }}-${{ steps.node-version.outputs.version }}-node-modules
-          path: ./node_modules
-      - name: NPM Install
-        run: npm install --silent
-      - uses: nrwl/nx-set-shas@v4
-      - name: nx Install
-        run: npm install -g nx --silent
-      - name: Build Stories
-        id: build-storybook
-        run: nx affected --target=build-storybook shared-storybook --webpack-stats-json
-      # ADD CHROMATIC BACK DURING A COOLDOWN
-      # - name: Check for frontend changes
-      #   id: check_files
-      #   uses: andstor/file-existence-action@v3
-      #   with:
-      #     files: 'dist/storybook/shared-storybook'
-      #👇 Adds Chromatic as a step in the workflow
-      # - name: Run VR tests
-      #   if: ${{ steps.check_files.outputs.files_exists == 'true' }}
-      #   uses: chromaui/action@v1
-      #   # Options required for Chromatic's GitHub Action
-      #   # https://www.chromatic.com/docs/github-actions#available-options
-      #   # https://github.com/chromaui/chromatic-cli/blob/main/action.yml
-      #   with:
-      #     #👇 Chromatic projectToken, see https://storybook.js.org/tutorials/intro-to-storybook/react/en/deploy/ to obtain it
-      #     projectToken: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
-      #     token: ${{ secrets.GITHUB_TOKEN }}
-      #     storybookBuildDir: 'dist/storybook/shared-storybook'
-      #     exitOnceUploaded: 'true'
-      #     autoAcceptChanges: 'main'
-      #     onlyChanged: 'true'
-      #     skip: '@(dependabot/**|00-00-CI-chore-update-translations)'
-      #     untraced: '@(package*.json|.storybook/**)'
-      #     traceChanged: 'expanded'
-      # dryRun: 'true'
-      # debug: 'true'
+# ADD CHROMATIC BACK DURING A COOLDOWN
+# name: Visual Test
+# on:
+#   push:
+#     branches: [main, feature/*]
+#   pull_request:
+#     branches: [main, feature/*]
+#     types: [labeled, synchronize]
+#   merge_group:
+#     branches: [main]
+# concurrency:
+#   group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
+#   cancel-in-progress: true
+# jobs:
+#   visual-test:
+#     runs-on: blacksmith-2vcpu-ubuntu-2204
+#     strategy:
+#       matrix:
+#         node-version: [22]
+#     steps:
+#       - uses: actions/checkout@v4
+#         with:
+#           fetch-depth: 0
+#       - name: Check branch up to date with base
+#         run: ./tools/scripts/check-git-diff.sh
+#       - uses: useblacksmith/setup-node@v5
+#         with:
+#           node-version: ${{ matrix.node-version }}
+#       - name: Get Node Version
+#         id: node-version
+#         run: echo "version=$(node -v)" >> $GITHUB_OUTPUT
+#       - name: Mount NPM Cache
+#         uses: useblacksmith/stickydisk@v1
+#         with:
+#           key: ${{ github.repository }}-${{ steps.node-version.outputs.version }}-npm-cache
+#           path: ~/.npm
+#       - name: Mount node_modules
+#         uses: useblacksmith/stickydisk@v1
+#         with:
+#           key: ${{ github.repository }}-${{ steps.node-version.outputs.version }}-node-modules
+#           path: ./node_modules
+#       - name: NPM Install
+#         run: npm install --silent
+#       - uses: nrwl/nx-set-shas@v4
+#       - name: nx Install
+#         run: npm install -g nx --silent
+#       - name: Build Stories
+#         id: build-storybook
+#         run: nx affected --target=build-storybook shared-storybook --webpack-stats-json
+# - name: Check for frontend changes
+#   id: check_files
+#   uses: andstor/file-existence-action@v3
+#   with:
+#     files: 'dist/storybook/shared-storybook'
+#👇 Adds Chromatic as a step in the workflow
+# - name: Run VR tests
+#   if: ${{ steps.check_files.outputs.files_exists == 'true' }}
+#   uses: chromaui/action@v1
+#   # Options required for Chromatic's GitHub Action
+#   # https://www.chromatic.com/docs/github-actions#available-options
+#   # https://github.com/chromaui/chromatic-cli/blob/main/action.yml
+#   with:
+#     #👇 Chromatic projectToken, see https://storybook.js.org/tutorials/intro-to-storybook/react/en/deploy/ to obtain it
+#     projectToken: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
+#     token: ${{ secrets.GITHUB_TOKEN }}
+#     storybookBuildDir: 'dist/storybook/shared-storybook'
+#     exitOnceUploaded: 'true'
+#     autoAcceptChanges: 'main'
+#     onlyChanged: 'true'
+#     skip: '@(dependabot/**|00-00-CI-chore-update-translations)'
+#     untraced: '@(package*.json|.storybook/**)'
+#     traceChanged: 'expanded'
+# dryRun: 'true'
+# debug: 'true'
