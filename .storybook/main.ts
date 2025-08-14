@@ -80,9 +80,7 @@ const config: StorybookConfig = {
     name: '@storybook/nextjs',
     options: {}
   },
-  docs: {
-    autodocs: true
-  },
+  docs: {},
   features: {
     experimentalRSC: true
   },

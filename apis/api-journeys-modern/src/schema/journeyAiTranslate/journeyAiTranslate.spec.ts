@@ -1,5 +1,7 @@
 import { generateObject, streamObject } from 'ai'
 
+import { hardenPrompt, preSystemPrompt } from '@core/shared/ai/prompts'
+
 import { getClient } from '../../../test/client'
 import { prismaMock } from '../../../test/prismaMock'
 import { Action, ability, subject } from '../../lib/auth/ability'
