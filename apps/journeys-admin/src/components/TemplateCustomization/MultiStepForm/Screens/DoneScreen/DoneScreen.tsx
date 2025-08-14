@@ -1,6 +1,5 @@
 import EditIcon from '@mui/icons-material/Edit'
 import OpenInNewIcon from '@mui/icons-material/OpenInNew'
-import ShareIcon from '@mui/icons-material/Share'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Stack from '@mui/material/Stack'
@@ -78,7 +77,7 @@ export function DoneScreen(): ReactElement {
             {journey?.primaryImageBlock?.src != null ? (
               <NextImage
                 src={journey?.primaryImageBlock?.src ?? ''}
-                alt={journey?.seoTitle ?? ''}
+                alt={journey?.primaryImageBlock.alt ?? ''}
                 fill
                 objectFit="cover"
                 style={{
@@ -108,6 +107,7 @@ export function DoneScreen(): ReactElement {
 
         <Stack gap={4} sx={{ width: { xs: '100%', sm: 300 }, mt: 6 }}>
           <Button
+            data-testid="DoneScreenPreviewButton"
             fullWidth
             variant="contained"
             href={href}
@@ -140,6 +140,7 @@ export function DoneScreen(): ReactElement {
           </Button> */}
 
           <Button
+            data-testid="DoneScreenContinueEditingButton"
             fullWidth
             variant="contained"
             onClick={handleContinueEditing}
