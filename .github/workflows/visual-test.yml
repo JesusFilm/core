@@ -1,12 +1,14 @@
 name: Visual Test
 on:
   push:
-    branches: [main, feature/*]
-  pull_request:
-    branches: [main, feature/*]
-    types: [labeled, synchronize]
-  merge_group:
-    branches: [main]
+    branches: [never]
+  # push:
+  #   branches: [main, feature/*]
+  # pull_request:
+  #   branches: [main, feature/*]
+  #   types: [labeled, synchronize]
+  # merge_group:
+  #   branches: [main]
 jobs:
   visual-test:
     runs-on: blacksmith-2vcpu-ubuntu-2204
