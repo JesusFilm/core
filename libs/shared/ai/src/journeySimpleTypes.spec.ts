@@ -390,7 +390,7 @@ describe('journeySimpleCardSchema (base, permissive)', () => {
     expect(
       journeySimpleCardSchema.safeParse({
         ...base,
-        video: { 
+        video: {
           src: 'https://youtube.com/watch?v=dQw4w9WgXcQ',
           source: 'youTube'
         },
@@ -403,7 +403,7 @@ describe('journeySimpleCardSchema (base, permissive)', () => {
     expect(
       journeySimpleCardSchema.safeParse({
         ...base,
-        video: { 
+        video: {
           src: 'https://youtube.com/watch?v=dQw4w9WgXcQ',
           source: 'youTube'
         },
@@ -418,7 +418,7 @@ describe('journeySimpleCardSchema (base, permissive)', () => {
     expect(
       journeySimpleCardSchema.safeParse({
         ...base,
-        video: { 
+        video: {
           src: 'https://youtube.com/watch?v=dQw4w9WgXcQ',
           source: 'youTube'
         }
@@ -466,7 +466,7 @@ describe('journeySimpleCardSchemaUpdate (strict)', () => {
     expect(
       journeySimpleCardSchemaUpdate.safeParse({
         ...base,
-        video: { 
+        video: {
           src: 'https://youtube.com/watch?v=dQw4w9WgXcQ',
           source: 'youTube'
         },
@@ -478,7 +478,7 @@ describe('journeySimpleCardSchemaUpdate (strict)', () => {
   it('fails with video and other content fields (strict)', () => {
     const result = journeySimpleCardSchemaUpdate.safeParse({
       ...base,
-      video: { 
+      video: {
         src: 'https://youtube.com/watch?v=dQw4w9WgXcQ',
         source: 'youTube'
       },
@@ -496,7 +496,7 @@ describe('journeySimpleCardSchemaUpdate (strict)', () => {
   it('fails with video and button (strict)', () => {
     const result = journeySimpleCardSchemaUpdate.safeParse({
       ...base,
-      video: { 
+      video: {
         src: 'https://youtube.com/watch?v=dQw4w9WgXcQ',
         source: 'youTube'
       },
@@ -514,7 +514,7 @@ describe('journeySimpleCardSchemaUpdate (strict)', () => {
   it('fails with video and poll (strict)', () => {
     const result = journeySimpleCardSchemaUpdate.safeParse({
       ...base,
-      video: { 
+      video: {
         src: 'https://youtube.com/watch?v=dQw4w9WgXcQ',
         source: 'youTube'
       },
@@ -532,7 +532,7 @@ describe('journeySimpleCardSchemaUpdate (strict)', () => {
   it('fails with video and image (strict)', () => {
     const result = journeySimpleCardSchemaUpdate.safeParse({
       ...base,
-      video: { 
+      video: {
         src: 'https://youtube.com/watch?v=dQw4w9WgXcQ',
         source: 'youTube'
       },
@@ -556,7 +556,7 @@ describe('journeySimpleCardSchemaUpdate (strict)', () => {
   it('fails with video but no defaultNextCard (strict)', () => {
     const result = journeySimpleCardSchemaUpdate.safeParse({
       ...base,
-      video: { 
+      video: {
         src: 'https://youtube.com/watch?v=dQw4w9WgXcQ',
         source: 'youTube'
       }
