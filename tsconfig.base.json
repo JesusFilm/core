@@ -26,6 +26,7 @@
       "@core/nest/gqlAuthGuard/*": ["libs/nest/gqlAuthGuard/src/lib/*"],
       "@core/nest/powerBi/*": ["libs/nest/powerBi/src/lib/*"],
       "@core/prisma/analytics/*": ["libs/prisma/analytics/src/*"],
+      "@core/prisma/users/*": ["libs/prisma/users/src/*"],
       "@core/shared/ai/*": ["libs/shared/ai/src/*"],
       "@core/shared/gql": ["libs/shared/gql/src"],
       "@core/shared/ui-dynamic/*": [
