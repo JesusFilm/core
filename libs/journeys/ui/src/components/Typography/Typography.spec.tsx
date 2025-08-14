@@ -107,8 +107,9 @@ describe('Typography', () => {
     ).toBeInTheDocument()
   })
 
-  it('does not resolve content on admin variant', () => {
+  it('does not resolve content on admin variant for template journeys', () => {
     const journey = {
+      template: true,
       journeyCustomizationFields: [
         {
           __typename: 'JourneyCustomizationField',

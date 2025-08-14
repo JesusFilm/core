@@ -1044,8 +1044,9 @@ describe('Button', () => {
       expect(screen.getByRole('button')).toHaveTextContent('Alice')
     })
 
-    it('does not resolve label on admin variant', () => {
+    it('does not resolve label on admin variant for template journeys', () => {
       const journeyWithFields = {
+        template: true,
         journeyCustomizationFields: [
           {
             __typename: 'JourneyCustomizationField',
