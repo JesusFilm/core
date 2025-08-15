@@ -16,8 +16,8 @@ COPY ./package-lock.json .
 COPY ./libs/prisma/analytics/db ./prisma
 
 RUN npm install --production
-RUN npm install @prisma/client@6.14.0
-RUN npm install -D prisma@6.14.0
+RUN npm install @prisma/client@6.5.0
+RUN npm install -D prisma@6.5.0
 RUN npx prisma generate --generator client --schema ./prisma/schema.prisma
 
 CMD node ./main.js
