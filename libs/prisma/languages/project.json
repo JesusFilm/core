@@ -61,6 +61,12 @@
           "npx prisma validate --schema libs/prisma/languages/db/schema.prisma"
         ]
       }
+    },
+    "type-check": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": ["npx tsc -b libs/prisma/languages/tsconfig.json"]
+      }
     }
   }
 }
