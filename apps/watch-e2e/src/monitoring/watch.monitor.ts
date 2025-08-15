@@ -204,7 +204,7 @@ test('Video playback and MUX network connectivity monitoring', async ({
   expect(response?.status()).toEqual(200)
 
   // Wait for the page to be ready by checking for the title and main content
-  await expect(page).toHaveTitle(/Watch | Jesus Film Project/)
+  await expect(page).toHaveTitle('Watch | Jesus Film Project')
 
   // Wait for the main content to be loaded by looking for video elements
   await page.waitForSelector('[data-testid="VideoCard"], [role="button"]', {
