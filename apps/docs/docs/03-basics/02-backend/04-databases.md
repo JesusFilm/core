@@ -20,7 +20,7 @@ What follows is the most up to date Entity Relationship Diagrams ([main branch](
 
 ### API Languages
 
-![API Languages ERD](https://raw.githubusercontent.com/JesusFilm/core/main/apis/api-languages/db/ERD.svg)
+![API Languages ERD](https://raw.githubusercontent.com/JesusFilm/core/main/libs/prisma/languages/db/ERD.svg)
 
 ### API Media
 
