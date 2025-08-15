@@ -45,6 +45,10 @@ export interface CardIntroRestore_subtitle_ButtonBlock_settings {
    * Alignment of the button
    */
   alignment: ButtonAlignment | null;
+  /**
+   * Color of the button
+   */
+  color: string | null;
 }
 
 export interface CardIntroRestore_subtitle_ButtonBlock {
@@ -499,6 +503,10 @@ export interface CardIntroRestore_title_ButtonBlock_settings {
    * Alignment of the button
    */
   alignment: ButtonAlignment | null;
+  /**
+   * Color of the button
+   */
+  color: string | null;
 }
 
 export interface CardIntroRestore_title_ButtonBlock {
@@ -953,6 +961,10 @@ export interface CardIntroRestore_body_ButtonBlock_settings {
    * Alignment of the button
    */
   alignment: ButtonAlignment | null;
+  /**
+   * Color of the button
+   */
+  color: string | null;
 }
 
 export interface CardIntroRestore_body_ButtonBlock {
@@ -1407,6 +1419,10 @@ export interface CardIntroRestore_button_ButtonBlock_settings {
    * Alignment of the button
    */
   alignment: ButtonAlignment | null;
+  /**
+   * Color of the button
+   */
+  color: string | null;
 }
 
 export interface CardIntroRestore_button_ButtonBlock {
@@ -1861,6 +1877,10 @@ export interface CardIntroRestore_startIcon_ButtonBlock_settings {
    * Alignment of the button
    */
   alignment: ButtonAlignment | null;
+  /**
+   * Color of the button
+   */
+  color: string | null;
 }
 
 export interface CardIntroRestore_startIcon_ButtonBlock {
@@ -2315,6 +2335,10 @@ export interface CardIntroRestore_endIcon_ButtonBlock_settings {
    * Alignment of the button
    */
   alignment: ButtonAlignment | null;
+  /**
+   * Color of the button
+   */
+  color: string | null;
 }
 
 export interface CardIntroRestore_endIcon_ButtonBlock {
@@ -2769,6 +2793,10 @@ export interface CardIntroRestore_video_ButtonBlock_settings {
    * Alignment of the button
    */
   alignment: ButtonAlignment | null;
+  /**
+   * Color of the button
+   */
+  color: string | null;
 }
 
 export interface CardIntroRestore_video_ButtonBlock {

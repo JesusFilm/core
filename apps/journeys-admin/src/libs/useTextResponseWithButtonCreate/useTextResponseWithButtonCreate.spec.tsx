@@ -46,7 +46,8 @@ describe('useTextResponseWithButtonCreate', () => {
       submitEnabled: true,
       settings: {
         __typename: 'ButtonBlockSettings',
-        alignment: ButtonAlignment.justify
+        alignment: ButtonAlignment.justify,
+        color: null
       },
       __typename: 'ButtonBlock' as const
     } satisfies ButtonBlock

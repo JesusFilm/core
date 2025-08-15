@@ -3,16 +3,24 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { ButtonColor } from "./globalTypes";
+import { ButtonBlockUpdateInput } from "./globalTypes";
 
 // ====================================================
 // GraphQL mutation operation: ButtonBlockUpdateColor
 // ====================================================
 
+export interface ButtonBlockUpdateColor_buttonBlockUpdate_settings {
+  __typename: "ButtonBlockSettings";
+  /**
+   * Color of the button
+   */
+  color: string | null;
+}
+
 export interface ButtonBlockUpdateColor_buttonBlockUpdate {
   __typename: "ButtonBlock";
   id: string;
-  color: ButtonColor | null;
+  settings: ButtonBlockUpdateColor_buttonBlockUpdate_settings | null;
 }
 
 export interface ButtonBlockUpdateColor {
@@ -21,5 +29,5 @@ export interface ButtonBlockUpdateColor {
 
 export interface ButtonBlockUpdateColorVariables {
   id: string;
-  color: ButtonColor;
+  input: ButtonBlockUpdateInput;
 }
