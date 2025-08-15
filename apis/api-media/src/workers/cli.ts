@@ -70,6 +70,16 @@ export async function cli(argv = process.argv): Promise<void> {
       queue = new Queue(queueName, { connection })
       break
     }
+    case 'populate-crowdin-ids': {
+      const config = await import(
+        /* webpackChunkName: "populate-crowdin-ids" */
+        './crowdin/importers/populateCrowdinIds'
+      )
+      queueName = config.queueName
+      jobName = config.jobName
+      queue = new Queue(queueName, { connection })
+      break
+    }
     default:
       throw new Error('unknown queue')
   }
