@@ -116,6 +116,12 @@
       "options": {
         "command": "codecov -f coverage/apis/api-journeys/cobertura-coverage.xml -F apps.api-journeys"
       }
+    },
+    "prisma-seed": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": ["npm run ts-node apis/api-journeys/db/seed.ts"]
+      }
     }
   }
 }

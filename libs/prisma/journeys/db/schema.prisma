@@ -3,7 +3,7 @@
 
 generator client {
   provider      = "prisma-client-js"
-  output        = "../src/.prisma/client"
+  output        = env("PRISMA_LOCATION_JOURNEYS")
   binaryTargets = ["native", "linux-musl-openssl-3.0.x"]
 }
 
@@ -16,7 +16,7 @@ generator erd {
 generator pothos {
   provider     = "prisma-pothos-types"
   output       = "../src/__generated__/pothos-types.ts"
-  clientOutput = "../.prisma/client"
+  clientOutput = ".prisma/api-journeys-client"
 }
 
 datasource db {

@@ -1,4 +1,3 @@
-/* eslint-disable */
 import type { Prisma, ChatButton, Event, Visitor, Host, JourneyVisitor, Team, Integration, UserTeam, UserTeamInvite, UserJourney, JourneyTag, Journey, UserRole, JourneyProfile, UserInvite, Block, Action, JourneysEmailPreference, JourneyNotification, CustomDomain, JourneyCollection, JourneyCollectionJourneys, QrCode, JourneyEventsExportLog, JourneyTheme, JourneyCustomizationField } from ".prisma/api-journeys-client/index.js";
 export default interface PrismaTypes {
     ChatButton: {
