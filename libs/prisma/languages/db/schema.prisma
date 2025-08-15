@@ -3,7 +3,7 @@
 
 generator client {
   provider      = "prisma-client-js"
-  output        = "../src/.prisma/client"
+  output        = env("PRISMA_LOCATION_LANGUAGES")
   binaryTargets = ["native", "linux-musl-openssl-3.0.x"]
 }
 
@@ -20,7 +20,7 @@ datasource db {
 
 generator pothos {
   provider     = "prisma-pothos-types"
-  clientOutput = "../.prisma/client"
+  clientOutput = ".prisma/api-languages-client"
   output       = "../src/__generated__/pothos-types.ts"
 }
 

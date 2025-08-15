@@ -1,5 +1,5 @@
 /* eslint-disable */
-import type { Prisma, Language, LanguageName, Country, CountryLanguage, CountryName, Continent, ContinentName, AudioPreview, ImportTimes, UserLanguageRole } from "../.prisma/client/index.js";
+import type { Prisma, Language, LanguageName, Country, CountryLanguage, CountryName, Continent, ContinentName, AudioPreview, ImportTimes, UserLanguageRole } from ".prisma/api-languages-client/index.js";
 export default interface PrismaTypes {
     Language: {
         Name: "Language";

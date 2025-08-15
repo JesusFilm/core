@@ -4,6 +4,7 @@ EXPOSE 4008
 
 ARG SERVICE_VERSION=0.0.1
 ENV OTEL_RESOURCE_ATTRIBUTES="service.version=$SERVICE_VERSION"
+ENV PRISMA_LOCATION_ANALYTICS=/app/node_modules/.prisma/api-analytics-client
 
 RUN apk upgrade --update-cache --available && \
     apk add g++ make python3 py3-pip curl-dev && \
