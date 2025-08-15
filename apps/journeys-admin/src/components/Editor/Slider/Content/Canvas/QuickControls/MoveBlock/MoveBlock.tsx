@@ -79,6 +79,9 @@ export function MoveBlock(): ReactElement {
         disabled={selectedBlock?.parentOrder === 0}
         // onClickCapture event does not get ovverridden by parent components for RadioOptionBlocks
         onClickCapture={handleMoveBlockUp}
+        sx={{
+          p: 1
+        }}
       >
         <ChevronUpIcon />
       </IconButton>
@@ -87,6 +90,9 @@ export function MoveBlock(): ReactElement {
         disabled={selectedBlock?.parentOrder === lastBlockIndex}
         // onClickCapture event does not get ovverridden by parent components for RadioOptionBlocks
         onClickCapture={handleMoveBlockDown}
+        sx={{
+          p: 1
+        }}
       >
         <ChevronDownIcon />
       </IconButton>
