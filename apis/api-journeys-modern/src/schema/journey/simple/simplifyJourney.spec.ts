@@ -182,7 +182,7 @@ describe('simplifyJourney', () => {
     const videoCard = result.cards[0]
     expect(videoCard.id).toBe('card-1')
     expect(videoCard.video).toBeDefined()
-    expect(videoCard.video?.url).toBe('https://youtube.com/watch?v=dQw4w9WgXcQ')
+    expect(videoCard.video?.src).toBe('https://youtube.com/watch?v=dQw4w9WgXcQ')
     expect(videoCard.video?.startAt).toBe(30)
     expect(videoCard.video?.endAt).toBe(120)
     expect(videoCard.defaultNextCard).toBe('card-2')
@@ -235,7 +235,7 @@ describe('simplifyJourney', () => {
 
     const videoCard = result.cards[0]
     expect(videoCard.video).toBeDefined()
-    expect(videoCard.video?.url).toBe('https://youtube.com/watch?v=dQw4w9WgXcQ')
+    expect(videoCard.video?.src).toBe('https://youtube.com/watch?v=dQw4w9WgXcQ')
     expect(videoCard.video?.startAt).toBeUndefined()
     expect(videoCard.video?.endAt).toBeUndefined()
     expect(videoCard.defaultNextCard).toBe('card-2')
@@ -286,7 +286,7 @@ describe('simplifyJourney', () => {
     expect(journeySimpleSchema.safeParse(result).success).toBe(true)
   })
 
-  it('ignores non-YouTube video blocks', () => {
+  it('transforms internal video blocks into video cards', () => {
     const journey: TestJourney = {
       ...baseJourney,
       blocks: [
@@ -303,23 +303,19 @@ describe('simplifyJourney', () => {
           id: 'video-1',
           typename: 'VideoBlock',
           parentBlockId: 'card-1',
-          source: 'internal', // Not YouTube
+          source: 'internal',
+          src: 'internal-video-url',
           videoId: 'some-id'
-        },
-        {
-          id: 'button-1',
-          typename: 'ButtonBlock',
-          parentBlockId: 'card-1',
-          label: 'Next',
-          action: { url: 'https://example.com' }
         }
       ] as any
     }
     const result = simplifyJourney(journey)
 
     const card = result.cards[0]
-    expect(card.video).toBeUndefined()
-    expect(card.button?.text).toBe('Next') // Should process as regular card
+    expect(card.video).toBeDefined()
+    expect(card.video?.source).toBe('internal')
+    expect(card.video?.src).toBe('internal-video-url')
+    expect(card.button).toBeUndefined() // Video cards should not have other content
 
     expect(journeySimpleSchema.safeParse(result).success).toBe(true)
   })

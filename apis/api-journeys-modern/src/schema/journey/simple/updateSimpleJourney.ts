@@ -4,7 +4,8 @@ import fetch from 'node-fetch'
 
 import {
   JourneySimpleImage,
-  JourneySimpleUpdate
+  JourneySimpleUpdate,
+  JourneySimpleVideo
 } from '@core/shared/ai/journeySimpleTypes'
 
 import { prisma } from '../../../lib/prisma'
@@ -142,6 +143,31 @@ async function getYouTubeVideoDuration(videoId: string): Promise<number> {
   return parseISO8601Duration(isoDuration)
 }
 
+function getVideoId(video: JourneySimpleVideo): string {
+  if (video.source === 'youTube') {
+    const videoId = extractYouTubeVideoId(video.src)
+    if (videoId == null) {
+      throw new Error('Invalid YouTube video URL')
+    }
+    return videoId
+  }
+
+  if (video.source === 'internal') {
+    return video.src
+  }
+
+  throw new Error(`Unsupported video source: ${video.source as string}`)
+}
+
+async function getVideoEndAt(
+  video: JourneySimpleVideo
+): Promise<number | undefined> {
+  if (video.source === 'youTube' && !video.endAt) {
+    return await getYouTubeVideoDuration(video.src)
+  }
+  return video.endAt
+}
+
 export async function updateSimpleJourney(
   journeyId: string,
   simple: JourneySimpleUpdate
@@ -225,15 +251,17 @@ export async function updateSimpleJourney(
       let parentOrder = 0
 
       if (card.video != null) {
+        if (!card.video.source || !card.video.src) {
+          throw new Error('Video source and src is required')
+        }
+        const videoId = getVideoId(card.video)
+        const videoEndAt = await getVideoEndAt(card.video)
+
         const nextStepBlock =
           card.defaultNextCard != null
             ? stepBlocks.find((s) => s.simpleCardId === card.defaultNextCard)
             : undefined
-        const videoId = extractYouTubeVideoId(card.video.url)
-        if (videoId == null) {
-          throw new Error('Invalid YouTube video URL')
-        }
-        const videoDuration = await getYouTubeVideoDuration(videoId)
+
         await tx.block.create({
           data: {
             journeyId,
@@ -241,10 +269,11 @@ export async function updateSimpleJourney(
             parentBlockId: cardBlockId,
             parentOrder: parentOrder++,
             videoId,
-            source: 'youTube',
+            videoVariantLanguageId: '529',
+            source: card.video.source,
             autoplay: true,
             startAt: card.video.startAt ?? 0,
-            endAt: card.video.endAt ?? videoDuration,
+            endAt: videoEndAt,
             action:
               nextStepBlock != null
                 ? {
