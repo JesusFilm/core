@@ -1,6 +1,7 @@
 import { Logger } from 'pino'
 
-import { prisma } from '../../../../lib/prisma'
+import { prisma } from '@core/prisma/media/client'
+
 import { CROWDIN_CONFIG } from '../../config'
 import { fetchSourceStrings } from '../../importer'
 
