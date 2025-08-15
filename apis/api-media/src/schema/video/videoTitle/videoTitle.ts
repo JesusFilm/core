@@ -1,5 +1,7 @@
 import { prisma } from '@core/prisma/media/client'
 
+import { syncWithCrowdin } from '../../../lib/crowdin/crowdinSync'
+import { logger } from '../../../logger'
 import { builder } from '../../builder'
 import { Language } from '../../language'
 import { VideoTranslationCreateInput } from '../inputs/videoTranslationCreate'
@@ -14,7 +16,8 @@ builder.prismaObject('VideoTitle', {
       type: Language,
       nullable: false,
       resolve: ({ languageId: id }) => ({ id })
-    })
+    }),
+    crowdInId: t.exposeString('crowdInId')
   })
 })
 
@@ -26,13 +29,30 @@ builder.mutationFields((t) => ({
       input: t.arg({ type: VideoTranslationCreateInput, required: true })
     },
     resolve: async (query, _parent, { input }) => {
-      return await prisma.videoTitle.create({
+      let crowdInId: string | null = null
+      try {
+        crowdInId = await syncWithCrowdin(
+          'videoTitle',
+          input.videoId,
+          input.value,
+          `Title for videoId: ${input.videoId}`,
+          null,
+          logger
+        )
+      } catch (error) {
+        logger?.error('Crowdin export error:', error)
+      }
+
+      const videoTitle = await prisma.videoTitle.create({
         ...query,
         data: {
           ...input,
-          id: input.id ?? undefined
+          id: input.id ?? undefined,
+          crowdInId: crowdInId ?? undefined
         }
       })
+
+      return videoTitle
     }
   }),
   videoTitleUpdate: t.withAuth({ isPublisher: true }).prismaField({
@@ -42,7 +62,16 @@ builder.mutationFields((t) => ({
       input: t.arg({ type: VideoTranslationUpdateInput, required: true })
     },
     resolve: async (query, _parent, { input }) => {
-      return await prisma.videoTitle.update({
+      const existing = await prisma.videoTitle.findUnique({
+        where: { id: input.id },
+        select: { videoId: true, crowdInId: true }
+      })
+      if (existing == null) throw new Error(`videoTitle ${input.id} not found`)
+
+      if (existing.videoId == null)
+        throw new Error(`videoTitle ${input.id} videoId not found`)
+
+      const updatedRecord = await prisma.videoTitle.update({
         ...query,
         where: { id: input.id },
         data: {
@@ -51,6 +80,29 @@ builder.mutationFields((t) => ({
           languageId: input.languageId ?? undefined
         }
       })
+
+      try {
+        const crowdInId = await syncWithCrowdin(
+          'videoTitle',
+          existing.videoId,
+          input.value ?? '',
+          `Title for videoId: ${existing.videoId}`,
+          existing.crowdInId ?? null,
+          logger
+        )
+
+        if (crowdInId && crowdInId !== existing.crowdInId) {
+          return await prisma.videoTitle.update({
+            ...query,
+            where: { id: input.id },
+            data: { crowdInId }
+          })
+        }
+      } catch (error) {
+        logger?.error('Crowdin export error:', error)
+      }
+
+      return updatedRecord
     }
   }),
   videoTitleDelete: t.withAuth({ isPublisher: true }).prismaField({

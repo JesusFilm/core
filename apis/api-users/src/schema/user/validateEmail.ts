@@ -1,8 +1,8 @@
 import { getAuth } from 'firebase-admin/auth'
 
+import { prisma } from '@core/prisma/users/client'
 import { firebaseClient } from '@core/yoga/firebaseClient'
 
-import { prisma } from '../../lib/prisma'
 import { queue } from '../../workers/email/queue'
 
 export async function validateEmail(
