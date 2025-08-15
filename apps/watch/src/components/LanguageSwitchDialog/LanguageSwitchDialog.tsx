@@ -3,7 +3,6 @@ import CloseIcon from '@mui/icons-material/Close'
 import Box from '@mui/material/Box'
 import Dialog from '@mui/material/Dialog'
 import DialogContent from '@mui/material/DialogContent'
-import Divider from '@mui/material/Divider'
 import IconButton from '@mui/material/IconButton'
 import Stack from '@mui/material/Stack'
 import { ThemeProvider } from '@mui/material/styles'
@@ -16,7 +15,6 @@ import { GetAllLanguages } from '../../../__generated__/GetAllLanguages'
 import { useWatch } from '../../libs/watchContext'
 
 import { AudioTrackSelect } from './AudioTrackSelect'
-import { SiteLanguageSelect } from './SiteLanguageSelect'
 import { SubtitlesSelect } from './SubtitlesSelect'
 
 export const GET_ALL_LANGUAGES = gql`
@@ -97,8 +95,6 @@ export const LanguageSwitchDialog = memo(function LanguageSwitchDialog({
 
         <DialogContent sx={{ pt: 0, pb: 6, px: 0 }}>
           <Stack gap={8}>
-            <SiteLanguageSelect />
-            <Divider />
             <AudioTrackSelect />
             <SubtitlesSelect />
           </Stack>

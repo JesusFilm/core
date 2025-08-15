@@ -138,27 +138,6 @@ describe('LanguageSwitchDialog', () => {
     })
   })
 
-  describe('component structure', () => {
-    it('should render components in correct order with separators', () => {
-      render(
-        <MockedProvider mocks={[]} addTypename={false}>
-          <WatchProvider initialState={defaultWatchState}>
-            <LanguageSwitchDialog open={true} handleClose={mockHandleClose} />
-          </WatchProvider>
-        </MockedProvider>
-      )
-
-      const dialog = screen.getByRole('dialog')
-
-      // Verify horizontal rule separator exists
-      const separator = dialog.querySelector('hr')
-      expect(separator).toBeInTheDocument()
-
-      // Verify dialog contains the main content structure
-      expect(dialog).toBeInTheDocument()
-    })
-  })
-
   describe('GraphQL integration', () => {
     it('should call getAllLanguages query and update state with SetAllLanguages dispatch', async () => {
       render(
