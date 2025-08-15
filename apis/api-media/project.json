@@ -223,6 +223,12 @@
       "options": {
         "command": "npm run ts-node apis/api-media/src/scripts/mux-videos.ts"
       }
+    },
+    "populate-crowdin-ids": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npm run ts-node apis/api-media/src/workers/cli.ts populate-crowdin-ids"
+      }
     }
   }
 }
