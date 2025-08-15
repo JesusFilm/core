@@ -1,9 +1,10 @@
 module "stage" {
-  source            = "../../modules/aws"
-  env               = "stage"
-  cidr              = "10.11.0.0/16"
-  internal_url_name = "stage.internal"
-  certificate_arn   = aws_acm_certificate.stage.arn
+  source                       = "../../modules/aws"
+  env                          = "stage"
+  cidr                         = "10.11.0.0/16"
+  internal_url_name            = "stage.internal"
+  certificate_arn              = aws_acm_certificate.stage.arn
+  datadog_forwarder_lambda_arn = var.datadog_forwarder_lambda_arn
 }
 
 module "route53_stage_central_jesusfilm_org" {
@@ -72,8 +73,13 @@ locals {
 }
 
 module "api-gateway-stage" {
-  source           = "../../../apis/api-gateway/infrastructure"
-  ecs_config       = local.public_ecs_config
+  source = "../../../apis/api-gateway/infrastructure"
+  ecs_config = merge(local.public_ecs_config, {
+    alb_target_group = merge(local.alb_target_group, {
+      health_check_path = "/readiness"
+      health_check_port = "4000"
+    })
+  })
   env              = "stage"
   doppler_token    = data.aws_ssm_parameter.doppler_api_gateway_stage_token.value
   alb_listener_arn = module.stage.public_alb.alb_listener.arn
@@ -160,6 +166,7 @@ module "arclight" {
   alb_listener_arn = module.stage.public_alb.alb_listener.arn
   alb_dns_name     = module.stage.public_alb.dns_name
   host_name        = "core-stage.arclight.org"
+  host_names       = ["*.arclight.org", "*.arc.gt"] // handle any arclight or arc.gt subdomain passed to stage alb
   env              = "stage"
 }
 
@@ -170,7 +177,7 @@ module "bastion" {
   dns_name           = "bastion.stage.central.jesusfilm.org"
   subnet_id          = module.stage.vpc.public_subnets[0]
   zone_id            = data.aws_route53_zone.route53_stage_central_jesusfilm_org.zone_id
-  security_group_ids = [module.stage.public_bastion_security_group_id]
+  security_group_ids = [module.stage.public_bastion_security_group_id, "sg-0d3fe6651aeda358e"]
 }
 
 

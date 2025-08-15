@@ -3,7 +3,7 @@ import { generateObject, streamObject } from 'ai'
 import { GraphQLError } from 'graphql'
 import { z } from 'zod'
 
-import { prisma } from '@core/prisma-journeys/client'
+import { prisma } from '@core/prisma/journeys/client'
 import { hardenPrompt, preSystemPrompt } from '@core/shared/ai/prompts'
 
 import { Action, ability, subject } from '../../lib/auth/ability'

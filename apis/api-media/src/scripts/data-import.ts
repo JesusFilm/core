@@ -1,12 +1,17 @@
 import { spawn } from 'child_process'
-import fs, { promises as fsPromises } from 'fs'
+import fs, {
+  createReadStream,
+  createWriteStream,
+  promises as fsPromises
+} from 'fs'
 import { join } from 'path'
+import { createInterface } from 'readline'
 import { Readable } from 'stream'
 import { pipeline } from 'stream/promises'
 import { TransformStream } from 'stream/web'
 import { createGunzip } from 'zlib'
 
-import { prisma } from '@core/prisma-media/client'
+import { prisma } from '@core/prisma/media/client'
 
 // Constants
 const GZIPPED_BACKUP_FILE_NAME = 'media-backup.sql.gz'
@@ -160,6 +165,7 @@ async function decompressFile(
 
 /**
  * Preprocesses the SQL file to ensure compatibility with existing database
+ * Uses streaming to handle large files without loading them entirely into memory
  */
 async function preprocessSqlFile(
   inputFile: string,
@@ -168,16 +174,75 @@ async function preprocessSqlFile(
   console.log('Preprocessing SQL file for compatibility')
 
   try {
-    const sqlContent = await fsPromises.readFile(inputFile, 'utf8')
-
-    // Remove all CREATE PUBLICATION statements completely
-    const processedContent = sqlContent.replace(
-      /CREATE PUBLICATION .* FOR .*;(\r?\n)?/g,
-      ''
+    // Get file size for progress reporting
+    const stats = await fsPromises.stat(inputFile)
+    const totalSize = stats.size
+    const fileName = inputFile.split('/').pop() || inputFile
+    console.log(
+      `Processing ${fileName} (${(totalSize / 1024 / 1024).toFixed(2)} MB)`
     )
 
-    await fsPromises.writeFile(outputFile, processedContent)
-    console.log('SQL file preprocessing completed')
+    const startTime = Date.now()
+    let processedBytes = 0
+    let linesProcessed = 0
+    let publicationStatementsRemoved = 0
+
+    // Create read and write streams
+    const readStream = createReadStream(inputFile)
+    const writeStream = createWriteStream(outputFile)
+
+    // Create readline interface for line-by-line processing
+    const rl = createInterface({
+      input: readStream,
+      crlfDelay: Infinity // Handle Windows line endings
+    })
+
+    // Progress reporting
+    const progressInterval = setInterval(() => {
+      const percent =
+        totalSize > 0 ? Math.round((processedBytes / totalSize) * 100) : 0
+      console.log(
+        `Processing: ${percent}% (${linesProcessed.toLocaleString()} lines, ${publicationStatementsRemoved} publication statements removed)`
+      )
+    }, 3000)
+
+    // Process each line
+    for await (const line of rl) {
+      linesProcessed++
+      processedBytes += Buffer.byteLength(line, 'utf8') + 1 // +1 for newline
+
+      // Check if this line contains a CREATE PUBLICATION statement
+      if (/CREATE PUBLICATION .* FOR .*;/.test(line)) {
+        publicationStatementsRemoved++
+        // Skip this line (don't write it to output)
+        continue
+      }
+
+      // Write the line to output file
+      writeStream.write(line + '\n')
+    }
+
+    // Close the write stream
+    writeStream.end()
+
+    // Wait for the write stream to finish
+    await new Promise<void>((resolve, reject) => {
+      writeStream.on('finish', resolve)
+      writeStream.on('error', reject)
+    })
+
+    clearInterval(progressInterval)
+
+    // Verify the output file exists and has content
+    const outputStats = await fsPromises.stat(outputFile)
+    if (outputStats.size === 0) {
+      throw new Error('Processed file is empty')
+    }
+
+    const duration = ((Date.now() - startTime) / 1000).toFixed(1)
+    console.log(
+      `SQL file preprocessing completed: ${fileName} -> ${(outputStats.size / 1024 / 1024).toFixed(2)} MB (${linesProcessed.toLocaleString()} lines processed, ${publicationStatementsRemoved} publication statements removed, took ${duration}s)`
+    )
   } catch (error) {
     console.error('Error preprocessing SQL file:', error)
     throw error
@@ -470,3 +535,4 @@ if (require.main === module) {
 }
 
 export default main
+export { preprocessSqlFile }

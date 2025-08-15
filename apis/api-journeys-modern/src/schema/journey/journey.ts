@@ -1,7 +1,11 @@
-import { prisma } from '@core/prisma-journeys/client'
+import { prisma } from '@core/prisma/journeys/client'
+import { journeySimpleSchema } from '@core/shared/ai/journeySimpleTypes'
 
 import { builder } from '../builder'
 import { Language } from '../language'
+
+import { Action, journeyAcl } from './journey.acl'
+import { getSimpleJourney, updateSimpleJourney } from './simple'
 
 // Define JourneyStatus enum to match api-journeys
 builder.enumType('JourneyStatus', {
@@ -64,3 +68,54 @@ builder.asEntity(JourneyRef, {
     })
   }
 })
+
+builder.queryField('journeySimpleGet', (t) =>
+  t.field({
+    type: 'Json',
+    args: {
+      id: t.arg({ type: 'ID', required: true })
+    },
+    resolve: async (_parent, { id }) => getSimpleJourney(id)
+  })
+)
+
+builder.mutationField('journeySimpleUpdate', (t) =>
+  t.withAuth({ isAuthenticated: true }).field({
+    type: 'Json',
+    args: {
+      id: t.arg({ type: 'ID', required: true }),
+      journey: t.arg({ type: 'Json', required: true })
+    },
+    resolve: async (_parent, { id, journey }, context) => {
+      // 1. Fetch journey with ACL info
+      const dbJourney = await prisma.journey.findUnique({
+        where: { id },
+        include: {
+          userJourneys: true,
+          team: { include: { userTeams: true } }
+        }
+      })
+      if (!dbJourney) throw new Error('Journey not found')
+
+      // 2. Check ACL
+      if (!journeyAcl(Action.Update, dbJourney, context.user)) {
+        throw new Error('You do not have permission to update this journey')
+      }
+
+      // 3. Validate input
+      const result = journeySimpleSchema.safeParse(journey)
+      if (!result.success) {
+        throw new Error(
+          'Input journey data is invalid: ' +
+            JSON.stringify(result.error.format())
+        )
+      }
+
+      // 4. Update journey and blocks using the service
+      await updateSimpleJourney(id, result.data)
+
+      // 5. Return the updated journey in simple format
+      return getSimpleJourney(id)
+    }
+  })
+)

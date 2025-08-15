@@ -161,6 +161,12 @@ type LanguageWithSlug {
   slug: String!
 }
 
+enum MaxResolutionTier {
+  fhd
+  qhd
+  uhd
+}
+
 enum MediaRole {
   publisher
 }
@@ -183,8 +189,8 @@ type Mutation {
   bibleCitationUpdate(input: MutationBibleCitationUpdateInput!): BibleCitation
   bibleCitationDelete(id: ID!): Boolean
   createKeyword(value: String!, languageId: String!): Keyword!
-  createMuxVideoUploadByFile(name: String!, userGenerated: Boolean): MuxVideo!
-  createMuxVideoUploadByUrl(url: String!, userGenerated: Boolean): MuxVideo!
+  createMuxVideoUploadByFile(name: String!, userGenerated: Boolean, downloadable: Boolean = false, maxResolution: MaxResolutionTier = fhd): MuxVideo!
+  createMuxVideoUploadByUrl(url: String!, userGenerated: Boolean, downloadable: Boolean = false, maxResolution: MaxResolutionTier = fhd): MuxVideo!
   enableMuxDownload(id: ID!, resolution: String): MuxVideo
   deleteMuxVideo(id: ID!, userGenerated: Boolean): Boolean!
 
@@ -209,8 +215,18 @@ type Mutation {
 
   """delete an existing short link"""
   shortLinkDelete(id: String!): MutationShortLinkDeleteResult!
+  videoSubtitleCreate(input: VideoSubtitleCreateInput!): VideoSubtitle!
+  videoSubtitleUpdate(input: VideoSubtitleUpdateInput!): VideoSubtitle!
+  videoSubtitleDelete(id: ID!): VideoSubtitle!
+  videoVariantDownloadCreate(input: VideoVariantDownloadCreateInput!): VideoVariantDownload!
+  videoVariantDownloadUpdate(input: VideoVariantDownloadUpdateInput!): VideoVariantDownload!
+  videoVariantDownloadDelete(id: ID!): VideoVariantDownload!
+  videoVariantCreate(input: VideoVariantCreateInput!): VideoVariant!
+  videoVariantUpdate(input: VideoVariantUpdateInput!): VideoVariant!
+  videoVariantDelete(id: ID!): VideoVariant!
   videoCreate(input: VideoCreateInput!): Video!
   videoUpdate(input: VideoUpdateInput!): Video!
+  videoDelete(id: ID!): Video!
   videoDescriptionCreate(input: VideoTranslationCreateInput!): VideoDescription!
   videoDescriptionUpdate(input: VideoTranslationUpdateInput!): VideoDescription!
   videoDescriptionDelete(id: ID!): VideoDescription!
@@ -223,9 +239,6 @@ type Mutation {
   videoStudyQuestionCreate(input: VideoStudyQuestionCreateInput!): VideoStudyQuestion!
   videoStudyQuestionUpdate(input: VideoStudyQuestionUpdateInput!): VideoStudyQuestion!
   videoStudyQuestionDelete(id: ID!): VideoStudyQuestion!
-  videoSubtitleCreate(input: VideoSubtitleCreateInput!): VideoSubtitle!
-  videoSubtitleUpdate(input: VideoSubtitleUpdateInput!): VideoSubtitle!
-  videoSubtitleDelete(id: ID!): VideoSubtitle!
   videoTitleCreate(input: VideoTranslationCreateInput!): VideoTitle!
   videoTitleUpdate(input: VideoTranslationUpdateInput!): VideoTitle!
   videoTitleDelete(id: ID!): VideoTitle!
@@ -235,12 +248,6 @@ type Mutation {
   videoEditionCreate(input: VideoEditionCreateInput!): VideoEdition!
   videoEditionUpdate(input: VideoEditionUpdateInput!): VideoEdition!
   videoEditionDelete(id: ID!): VideoEdition!
-  videoVariantCreate(input: VideoVariantCreateInput!): VideoVariant!
-  videoVariantUpdate(input: VideoVariantUpdateInput!): VideoVariant!
-  videoVariantDelete(id: ID!): VideoVariant!
-  videoVariantDownloadCreate(input: VideoVariantDownloadCreateInput!): VideoVariantDownload!
-  videoVariantDownloadUpdate(input: VideoVariantDownloadUpdateInput!): VideoVariantDownload!
-  videoVariantDownloadDelete(id: ID!): VideoVariantDownload!
 }
 
 input MutationBibleCitationCreateInput {
@@ -287,9 +294,18 @@ input MutationShortLinkCreateInput {
 
   """the service that created this short link"""
   service: Service!
+
+  """brightcove video ID for video redirects"""
+  brightcoveId: String
+
+  """type of video redirect (hls, dl, dh, s)"""
+  redirectType: RedirectType
+
+  """bitrate of the video variant download"""
+  bitrate: Int
 }
 
-union MutationShortLinkCreateResult = ZodError | NotUniqueError | MutationShortLinkCreateSuccess
+union MutationShortLinkCreateResult = NotUniqueError | ZodError | MutationShortLinkCreateSuccess
 
 type MutationShortLinkCreateSuccess {
   data: ShortLink!
@@ -311,7 +327,7 @@ input MutationShortLinkDomainCreateInput {
   services: [Service!]
 }
 
-union MutationShortLinkDomainCreateResult = ZodError | NotUniqueError | MutationShortLinkDomainCreateSuccess
+union MutationShortLinkDomainCreateResult = NotUniqueError | ZodError | MutationShortLinkDomainCreateSuccess
 
 type MutationShortLinkDomainCreateSuccess {
   data: ShortLinkDomain!
@@ -345,6 +361,15 @@ input MutationShortLinkUpdateInput {
   the fully qualified domain name (FQDN) to redirect the short link service should redirect the user to
   """
   to: String!
+
+  """brightcove video ID for video redirects"""
+  brightcoveId: String
+
+  """type of video redirect (hls, dl, dh, s)"""
+  redirectType: RedirectType
+
+  """bitrate of the video variant download"""
+  bitrate: Int
 }
 
 union MutationShortLinkUpdateResult = ZodError | NotFoundError | MutationShortLinkUpdateSuccess
@@ -426,6 +451,12 @@ type PageInfo
   endCursor: String
 }
 
+enum Platform {
+  arclight
+  journeys
+  watch
+}
+
 type Query {
   getTranscodeAssetProgress(jobId: String!): Int
   getMyCloudflareImages(offset: Int, limit: Int): [CloudflareImage!]!
@@ -474,16 +505,17 @@ type Query {
     first: Int
     last: Int
   ): QueryShortLinksConnection!
+  videoVariant(id: ID!): VideoVariant!
+  videoVariants(input: VideoVariantFilter): [VideoVariant!]!
   adminVideo(id: ID!, idType: IdType = databaseId): Video!
   adminVideos(where: VideosFilter, offset: Int, limit: Int): [Video!]!
   adminVideosCount(where: VideosFilter): Int!
   video(id: ID!, idType: IdType = databaseId): Video!
   videos(where: VideosFilter, offset: Int, limit: Int): [Video!]!
   videosCount(where: VideosFilter): Int!
+  videoOrigins: [VideoOrigin!]!
   videoEditions: [VideoEdition!]!
   videoEdition(id: ID!): VideoEdition
-  videoVariant(id: ID!): VideoVariant!
-  videoVariants(input: VideoVariantFilter): [VideoVariant!]!
   tags: [Tag!]!
   taxonomies(category: String, languageCodes: [String!]): [Taxonomy!]!
   arclightApiKeys: [ArclightApiKey!]!
@@ -530,6 +562,13 @@ type QueryShortLinksConnectionEdge {
   cursor: String!
 }
 
+enum RedirectType {
+  hls
+  dl
+  dh
+  s
+}
+
 enum SegmindModel {
   sdxl1__0_txt2img
   kandinsky2__2_txt2img
@@ -563,6 +602,15 @@ type ShortLink
 
   """the service that created this short link"""
   service: Service!
+
+  """brightcove video ID for video redirects"""
+  brightcoveId: String
+
+  """type of video redirect (hls, dl, dh, s)"""
+  redirectType: RedirectType
+
+  """bitrate of the video variant download"""
+  bitrate: Int
 }
 
 """A domain that can be used for short links"""
@@ -789,16 +837,19 @@ type Video
   """slug is a permanent link to the video."""
   slug: String!
   noIndex: Boolean
-  children: [Video!]!
 
-  """the number value of the amount of children on a video"""
+  """The number of published child videos associated with this video"""
   childrenCount: Int!
-  parents: [Video!]!
   variantLanguagesWithSlug(input: VideoVariantFilter): [LanguageWithSlug!]!
   variants(input: VideoVariantFilter): [VideoVariant!]!
   subtitles(languageId: ID, primary: Boolean, edition: String): [VideoSubtitle!]!
-  variant(languageId: ID): VideoVariant
+  variant(languageId: ID, input: VideoVariantFilter): VideoVariant
   images(aspectRatio: ImageAspectRatio): [CloudflareImage!]!
+  restrictDownloadPlatforms: [Platform!]!
+  restrictViewPlatforms: [Platform!]!
+  publishedAt: Date
+  children: [Video!]!
+  parents: [Video!]!
 }
 
 enum VideoBlockSource {
@@ -816,6 +867,7 @@ input VideoCreateInput {
   slug: String!
   noIndex: Boolean!
   childIds: [String!]!
+  originId: String!
 }
 
 type VideoDescription {
@@ -823,6 +875,7 @@ type VideoDescription {
   value: String!
   primary: Boolean!
   language: Language!
+  crowdInId: String
 }
 
 type VideoEdition {
@@ -867,6 +920,13 @@ type VideoOrigin {
   description: String
 }
 
+enum VideoRedirectType {
+  hls
+  dl
+  dh
+  s
+}
+
 type VideoSnippet {
   id: ID!
   value: String!
@@ -880,6 +940,7 @@ type VideoStudyQuestion {
   primary: Boolean!
   order: Int!
   language: Language!
+  crowdInId: String
 }
 
 input VideoStudyQuestionCreateInput {
@@ -960,6 +1021,7 @@ type VideoTitle {
   value: String!
   primary: Boolean!
   language: Language!
+  crowdInId: String
 }
 
 input VideoTranslationCreateInput {
@@ -986,6 +1048,8 @@ input VideoUpdateInput {
   noIndex: Boolean
   childIds: [String!]
   keywordIds: [String!]
+  restrictDownloadPlatforms: [Platform!]
+  restrictViewPlatforms: [Platform!]
 }
 
 type VideoVariant {
@@ -1003,6 +1067,7 @@ type VideoVariant {
   lengthInMilliseconds: Int!
   language: Language!
   muxVideo: MuxVideo
+  brightcoveId: String
   published: Boolean!
   videoEdition: VideoEdition!
   subtitle(languageId: ID, primary: Boolean): [VideoSubtitle!]!
@@ -1030,6 +1095,7 @@ input VideoVariantCreateInput {
   downloadable: Boolean!
   published: Boolean = true
   muxVideoId: String
+  brightcoveId: String
   version: Int
 }
 
@@ -1063,9 +1129,16 @@ input VideoVariantDownloadCreateInput {
 }
 
 enum VideoVariantDownloadQuality {
+  distroLow
+  distroSd
+  distroHigh
   low
   sd
   high
+  fhd
+  qhd
+  uhd
+  highest
 }
 
 input VideoVariantDownloadUpdateInput {
@@ -1100,6 +1173,7 @@ input VideoVariantUpdateInput {
   downloadable: Boolean
   published: Boolean
   muxVideoId: String
+  brightcoveId: String
   version: Int
 }
 

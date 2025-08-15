@@ -4,7 +4,7 @@ import axios, { AxiosError, AxiosResponse } from 'axios'
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
 
 import { CaslAuthModule } from '@core/nest/common/CaslAuthModule'
-import { Integration, Prisma, Team } from '@core/prisma-journeys/client'
+import { Integration, Prisma, Team } from '@core/prisma/journeys/client'
 
 import { IntegrationGrowthSpacesCreateInput } from '../../../../__generated__/graphql'
 import {

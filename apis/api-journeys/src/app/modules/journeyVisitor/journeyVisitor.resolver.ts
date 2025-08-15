@@ -9,7 +9,7 @@ import {
   JourneyVisitor,
   Prisma,
   Visitor
-} from '@core/prisma-journeys/client'
+} from '@core/prisma/journeys/client'
 
 import {
   JourneyVisitorFilter,

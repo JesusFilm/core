@@ -12,7 +12,7 @@ import {
   UserTeamInvite,
   UserTeamRole,
   Visitor
-} from '@core/prisma-journeys/client'
+} from '@core/prisma/journeys/client'
 
 import { Action, AppAbility, AppCaslFactory } from '.'
 

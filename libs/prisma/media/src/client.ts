@@ -1,10 +1,6 @@
-import { Prisma, PrismaClient } from './.prisma/client'
-
-export * from './.prisma/client'
-export { Prisma as PrismaMedia }
-export { PrismaClient as PrismaClientMedia }
+import { Prisma, PrismaClient } from '.prisma/api-media-client'
 
 const globalForPrisma = global as unknown as { prisma: PrismaClient }
 
+export * from '.prisma/api-media-client'
 export const prisma = globalForPrisma.prisma || new PrismaClient()
-export const prismaMedia = globalForPrisma.prisma || new PrismaClient()

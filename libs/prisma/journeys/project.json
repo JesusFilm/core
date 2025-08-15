@@ -54,12 +54,6 @@
         ]
       }
     },
-    "prisma-seed": {
-      "executor": "nx:run-commands",
-      "options": {
-        "commands": ["npm run ts-node libs/prisma/journeys/db/seed.ts"]
-      }
-    },
     "prisma-studio": {
       "executor": "nx:run-commands",
       "options": {
@@ -74,6 +68,12 @@
         "commands": [
           "npx prisma validate --schema libs/prisma/journeys/db/schema.prisma"
         ]
+      }
+    },
+    "type-check": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": ["npx tsc -b libs/prisma/journeys/tsconfig.json"]
       }
     }
   }

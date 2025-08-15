@@ -1,6 +1,6 @@
 import fetch from 'node-fetch'
 
-import { prisma } from '@core/prisma-media/client'
+import { prisma } from '@core/prisma/media/client'
 
 import { cache } from '../yoga'
 
@@ -13,7 +13,7 @@ jest.mock('../yoga', () => ({
     invalidate: jest.fn()
   }
 }))
-jest.mock('@core/prisma-media/client', () => ({
+jest.mock('@core/prisma/media/client', () => ({
   prisma: {
     video: {
       findUnique: jest.fn()

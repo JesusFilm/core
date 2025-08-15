@@ -8,7 +8,7 @@ import {
   UserTeamRole,
   Visitor,
   prisma
-} from '@core/prisma-journeys/client'
+} from '@core/prisma/journeys/client'
 
 import { prismaMock } from '../../../../test/prismaMock'
 
@@ -128,7 +128,8 @@ describe('fetchEmailDetails', () => {
     menuStepBlockId: null,
     socialNodeX: null,
     socialNodeY: null,
-    fromTemplateId: null
+    fromTemplateId: null,
+    journeyCustomizationDescription: null
   }
 
   const event: Event = {

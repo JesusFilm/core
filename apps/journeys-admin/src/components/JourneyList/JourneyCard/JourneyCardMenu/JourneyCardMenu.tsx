@@ -205,7 +205,7 @@ export function JourneyCardMenu({
             pointerEvents: 'none'
           }}
         >
-          <MoreIcon />
+          <MoreIcon data-testid="MoreIcon" />
         </IconButton>
       </Box>
       <Menu

@@ -1,6 +1,6 @@
 import { Args, Mutation, Resolver } from '@nestjs/graphql'
 
-import { ChatButton } from '@core/prisma-journeys/client'
+import { ChatButton } from '@core/prisma/journeys/client'
 
 import {
   ChatButtonCreateInput,

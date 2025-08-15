@@ -15,8 +15,8 @@ import ZodPlugin from '@pothos/plugin-zod'
 import { createOpenTelemetryWrapper } from '@pothos/tracing-opentelemetry'
 import { DateResolver } from 'graphql-scalars'
 
-import type PrismaTypes from '@core/prisma-media/__generated__/pothos-types'
-import { MediaRole, Prisma, prisma } from '@core/prisma-media/client'
+import type PrismaTypes from '@core/prisma/media/__generated__/pothos-types'
+import { MediaRole, Prisma, prisma } from '@core/prisma/media/client'
 import { User } from '@core/yoga/firebaseClient'
 import { InteropContext } from '@core/yoga/interop'
 
@@ -24,6 +24,7 @@ const PrismaPlugin = pluginName
 
 interface BaseContext {
   type: string
+  clientName?: string
 }
 
 interface PublicContext extends BaseContext {

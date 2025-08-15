@@ -83,7 +83,9 @@
       "executor": "nx:run-commands",
       "options": {
         "command": "graphql-codegen --config apis/api-journeys/codegen.ts"
-      }
+      },
+      "cache": true,
+      "inputs": ["{projectRoot}/schema.graphql"]
     },
     "generate-graphql": {
       "executor": "nx:run-commands",
@@ -115,10 +117,10 @@
         "command": "codecov -f coverage/apis/api-journeys/cobertura-coverage.xml -F apps.api-journeys"
       }
     },
-    "prisma-generate-ci": {
+    "prisma-seed": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "nx prisma-generate prisma-journeys"
+        "commands": ["npm run ts-node apis/api-journeys/db/seed.ts"]
       }
     }
   }

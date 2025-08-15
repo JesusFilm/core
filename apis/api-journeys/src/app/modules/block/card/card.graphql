@@ -1,12 +1,4 @@
-type CardBlockClassNames {
-  self: String! @shareable
-}
-
-input CardBlockClassNamesInput {
-  self: String!
-}
-
-type CardBlock implements Block @key(fields: "id") {
+type CardBlock implements Block @shareable {
   id: ID! @shareable
   journeyId: ID! @shareable
   parentBlockId: ID @shareable
@@ -15,6 +7,10 @@ type CardBlock implements Block @key(fields: "id") {
   backgroundColor should be a HEX color value e.g #FFFFFF for white.
   """
   backgroundColor: String @shareable
+  """
+  backdropBlur should be a number representing blur amount in pixels e.g 20.
+  """
+  backdropBlur: Int @shareable
   """
   coverBlockId is present if a child block should be used as a cover.
   This child block should not be rendered normally, instead it should be used
@@ -27,10 +23,6 @@ type CardBlock implements Block @key(fields: "id") {
   background.
   """
   fullscreen: Boolean! @shareable
-  """
-  classNames is an object of tailwind class names for the block
-  """
-  classNames: CardBlockClassNames! @shareable
   """
   themeMode can override journey themeMode. If nothing is set then use
   themeMode from journey
@@ -48,20 +40,20 @@ input CardBlockCreateInput {
   journeyId: ID!
   parentBlockId: ID!
   backgroundColor: String
+  backdropBlur: Int
   fullscreen: Boolean
   themeMode: ThemeMode
   themeName: ThemeName
-  classNames: CardBlockClassNamesInput
 }
 
 input CardBlockUpdateInput {
   parentBlockId: ID
   coverBlockId: ID
   backgroundColor: String
+  backdropBlur: Int
   fullscreen: Boolean
   themeMode: ThemeMode
   themeName: ThemeName
-  classNames: CardBlockClassNamesInput
 }
 
 extend type Mutation {

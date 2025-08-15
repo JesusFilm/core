@@ -5,26 +5,6 @@ import { GetJourneyVisitors_visitors_edges_node_events as Event } from '../../..
 import { VisitorCardDetails } from '.'
 
 describe('VisitorCardDetails', () => {
-  it('should show name', () => {
-    const { getByText } = render(
-      <VisitorCardDetails
-        loading={false}
-        name="test name"
-        events={[
-          {
-            __typename: 'TextResponseSubmissionEvent',
-            id: 'event.id',
-            createdAt: 'isostring',
-            label: 'label',
-            value: 'value',
-            blockId: 'blockId'
-          }
-        ]}
-      />
-    )
-    expect(getByText('test name')).toBeInTheDocument()
-  })
-
   it('should show filtered events', () => {
     const events: Event[] = [
       {
@@ -58,7 +38,7 @@ describe('VisitorCardDetails', () => {
       }
     ]
     const { getByText, queryByText } = render(
-      <VisitorCardDetails name="test name" events={events} loading={false} />
+      <VisitorCardDetails events={events} loading={false} />
     )
 
     expect(getByText('Chat Started')).toBeInTheDocument()
@@ -104,7 +84,7 @@ describe('VisitorCardDetails', () => {
       }
     ]
     const { getAllByText, getByText } = render(
-      <VisitorCardDetails name="test name" events={events} loading={false} />
+      <VisitorCardDetails events={events} loading={false} />
     )
 
     expect(getAllByText('text value block id 1')).toHaveLength(1)
@@ -144,7 +124,7 @@ describe('VisitorCardDetails', () => {
       }
     ]
     const { queryByText, getAllByTestId } = render(
-      <VisitorCardDetails name="test name" events={events} loading />
+      <VisitorCardDetails events={events} loading />
     )
 
     expect(queryByText('Chat Started')).not.toBeInTheDocument()

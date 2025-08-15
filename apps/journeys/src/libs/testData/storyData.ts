@@ -27,6 +27,7 @@ export const basic: TreeBlock[] = [
         parentOrder: 0,
         coverBlockId: 'image1.id',
         backgroundColor: null,
+        backdropBlur: null,
         themeMode: null,
         themeName: null,
         fullscreen: true,
@@ -40,7 +41,11 @@ export const basic: TreeBlock[] = [
             color: null,
             content: 'Step 1',
             variant: TypographyVariant.h3,
-            children: []
+            children: [],
+            settings: {
+              __typename: 'TypographyBlockSettings',
+              color: null
+            }
           },
           {
             id: 'typographyBlockId2',
@@ -51,13 +56,18 @@ export const basic: TreeBlock[] = [
             color: null,
             content: 'Start',
             variant: TypographyVariant.body2,
-            children: []
+            children: [],
+            settings: {
+              __typename: 'TypographyBlockSettings',
+              color: null
+            }
           },
           {
             id: 'radioQuestion1.id',
             __typename: 'RadioQuestionBlock',
             parentBlockId: 'card1.id',
             parentOrder: 3,
+            gridView: false,
             children: [
               {
                 id: 'radioOption2.id',
@@ -71,6 +81,7 @@ export const basic: TreeBlock[] = [
                   gtmEventName: 'gtmEventName',
                   blockId: 'step2.id'
                 },
+                pollOptionImageBlockId: null,
                 children: []
               },
               {
@@ -85,6 +96,7 @@ export const basic: TreeBlock[] = [
                   gtmEventName: 'gtmEventName',
                   blockId: 'step3.id'
                 },
+                pollOptionImageBlockId: null,
                 children: []
               },
               {
@@ -99,6 +111,7 @@ export const basic: TreeBlock[] = [
                   gtmEventName: 'gtmEventName',
                   blockId: 'step4.id'
                 },
+                pollOptionImageBlockId: null,
                 children: []
               }
             ]
@@ -137,6 +150,7 @@ export const basic: TreeBlock[] = [
         parentBlockId: 'step2.id',
         parentOrder: 0,
         backgroundColor: null,
+        backdropBlur: null,
         coverBlockId: null,
         themeMode: null,
         themeName: null,
@@ -151,7 +165,11 @@ export const basic: TreeBlock[] = [
             color: null,
             content: 'Step 2',
             variant: TypographyVariant.h3,
-            children: []
+            children: [],
+            settings: {
+              __typename: 'TypographyBlockSettings',
+              color: null
+            }
           },
           {
             id: 'typographyBlockId2',
@@ -162,13 +180,18 @@ export const basic: TreeBlock[] = [
             color: null,
             content: 'Locked',
             variant: TypographyVariant.body2,
-            children: []
+            children: [],
+            settings: {
+              __typename: 'TypographyBlockSettings',
+              color: null
+            }
           },
           {
             id: 'radioQuestion1.id',
             __typename: 'RadioQuestionBlock',
             parentBlockId: 'card2.id',
             parentOrder: 2,
+            gridView: false,
             children: [
               {
                 id: 'radioOption1.id',
@@ -182,6 +205,7 @@ export const basic: TreeBlock[] = [
                   gtmEventName: 'gtmEventName',
                   blockId: 'step1.id'
                 },
+                pollOptionImageBlockId: null,
                 children: []
               },
               {
@@ -196,6 +220,7 @@ export const basic: TreeBlock[] = [
                   gtmEventName: 'gtmEventName',
                   blockId: 'step3.id'
                 },
+                pollOptionImageBlockId: null,
                 children: []
               },
               {
@@ -210,6 +235,7 @@ export const basic: TreeBlock[] = [
                   gtmEventName: 'gtmEventName',
                   blockId: 'step4.id'
                 },
+                pollOptionImageBlockId: null,
                 children: []
               }
             ]
@@ -233,6 +259,7 @@ export const basic: TreeBlock[] = [
         parentBlockId: 'step3.id',
         parentOrder: 0,
         backgroundColor: null,
+        backdropBlur: null,
         coverBlockId: null,
         themeMode: null,
         themeName: null,
@@ -247,7 +274,11 @@ export const basic: TreeBlock[] = [
             color: null,
             content: 'Step 3',
             variant: TypographyVariant.h3,
-            children: []
+            children: [],
+            settings: {
+              __typename: 'TypographyBlockSettings',
+              color: null
+            }
           },
           {
             id: 'typographyBlockId2',
@@ -258,13 +289,18 @@ export const basic: TreeBlock[] = [
             color: null,
             content: 'No nextBlockId',
             variant: TypographyVariant.body2,
-            children: []
+            children: [],
+            settings: {
+              __typename: 'TypographyBlockSettings',
+              color: null
+            }
           },
           {
             id: 'radioQuestion1.id',
             __typename: 'RadioQuestionBlock',
             parentBlockId: 'card3.id',
             parentOrder: 2,
+            gridView: false,
             children: [
               {
                 id: 'radioOption1.id',
@@ -278,6 +314,7 @@ export const basic: TreeBlock[] = [
                   gtmEventName: 'gtmEventName',
                   blockId: 'step1.id'
                 },
+                pollOptionImageBlockId: null,
                 children: []
               },
               {
@@ -292,6 +329,7 @@ export const basic: TreeBlock[] = [
                   gtmEventName: 'gtmEventName',
                   blockId: 'step2.id'
                 },
+                pollOptionImageBlockId: null,
                 children: []
               },
               {
@@ -306,6 +344,7 @@ export const basic: TreeBlock[] = [
                   gtmEventName: 'gtmEventName',
                   blockId: 'step4.id'
                 },
+                pollOptionImageBlockId: null,
                 children: []
               }
             ]
@@ -329,6 +368,7 @@ export const basic: TreeBlock[] = [
         parentBlockId: 'step4.id',
         parentOrder: 0,
         backgroundColor: null,
+        backdropBlur: null,
         coverBlockId: null,
         themeMode: null,
         themeName: null,
@@ -343,7 +383,11 @@ export const basic: TreeBlock[] = [
             color: null,
             content: 'Step 4',
             variant: TypographyVariant.h3,
-            children: []
+            children: [],
+            settings: {
+              __typename: 'TypographyBlockSettings',
+              color: null
+            }
           },
           {
             id: 'typographyBlockId2',
@@ -354,13 +398,18 @@ export const basic: TreeBlock[] = [
             color: null,
             content: 'End',
             variant: TypographyVariant.body2,
-            children: []
+            children: [],
+            settings: {
+              __typename: 'TypographyBlockSettings',
+              color: null
+            }
           },
           {
             id: 'radioQuestion1.id',
             __typename: 'RadioQuestionBlock',
             parentBlockId: 'card4.id',
             parentOrder: 2,
+            gridView: false,
             children: [
               {
                 id: 'radioOption1.id',
@@ -374,6 +423,7 @@ export const basic: TreeBlock[] = [
                   gtmEventName: 'gtmEventName',
                   blockId: 'step1.id'
                 },
+                pollOptionImageBlockId: null,
                 children: []
               },
               {
@@ -388,6 +438,7 @@ export const basic: TreeBlock[] = [
                   gtmEventName: 'gtmEventName',
                   blockId: 'step2.id'
                 },
+                pollOptionImageBlockId: null,
                 children: []
               },
               {
@@ -402,6 +453,7 @@ export const basic: TreeBlock[] = [
                   gtmEventName: 'gtmEventName',
                   blockId: 'step3.id'
                 },
+                pollOptionImageBlockId: null,
                 children: []
               }
             ]
@@ -429,6 +481,7 @@ export const imageBlocks: TreeBlock[] = [
         parentOrder: 1,
         coverBlockId: 'image0.id',
         backgroundColor: null,
+        backdropBlur: null,
         themeMode: null,
         themeName: null,
         fullscreen: false,
@@ -442,7 +495,11 @@ export const imageBlocks: TreeBlock[] = [
             color: null,
             content: "What's our purpose, and how did we get here?",
             variant: TypographyVariant.h3,
-            children: []
+            children: [],
+            settings: {
+              __typename: 'TypographyBlockSettings',
+              color: null
+            }
           },
           {
             id: 'typographyBlockId2',
@@ -454,7 +511,11 @@ export const imageBlocks: TreeBlock[] = [
             content:
               'Follow the journey of a curious Irishman traveling around the world looking for answers and wrestling with the things that just don’t seem to make sense. ',
             variant: null,
-            children: []
+            children: [],
+            settings: {
+              __typename: 'TypographyBlockSettings',
+              color: null
+            }
           },
           {
             __typename: 'ButtonBlock',
@@ -480,7 +541,8 @@ export const imageBlocks: TreeBlock[] = [
                 iconSize: IconSize.md,
                 children: []
               }
-            ]
+            ],
+            settings: null
           },
           {
             id: 'image0.id',
@@ -517,6 +579,7 @@ export const imageBlocks: TreeBlock[] = [
         parentOrder: 1,
         coverBlockId: 'image0.id',
         backgroundColor: null,
+        backdropBlur: null,
         themeMode: null,
         themeName: null,
         fullscreen: false,
@@ -530,7 +593,11 @@ export const imageBlocks: TreeBlock[] = [
             color: null,
             content: 'a quick question...',
             variant: TypographyVariant.h6,
-            children: []
+            children: [],
+            settings: {
+              __typename: 'TypographyBlockSettings',
+              color: null
+            }
           },
           {
             id: 'typographyBlockId12',
@@ -541,7 +608,11 @@ export const imageBlocks: TreeBlock[] = [
             color: null,
             content: 'Can we trust the story of Jesus ?',
             variant: TypographyVariant.h3,
-            children: []
+            children: [],
+            settings: {
+              __typename: 'TypographyBlockSettings',
+              color: null
+            }
           },
           {
             __typename: 'ButtonBlock',
@@ -567,7 +638,8 @@ export const imageBlocks: TreeBlock[] = [
                 iconSize: IconSize.md,
                 children: []
               }
-            ]
+            ],
+            settings: null
           },
           {
             id: 'image0.id',
@@ -604,6 +676,7 @@ export const imageBlocks: TreeBlock[] = [
         parentOrder: 1,
         coverBlockId: 'image0.id',
         backgroundColor: null,
+        backdropBlur: null,
         themeMode: null,
         themeName: null,
         fullscreen: false,
@@ -617,7 +690,11 @@ export const imageBlocks: TreeBlock[] = [
             color: null,
             content: 'if it’s true...',
             variant: TypographyVariant.h6,
-            children: []
+            children: [],
+            settings: {
+              __typename: 'TypographyBlockSettings',
+              color: null
+            }
           },
           {
             id: 'typographyBlockId12',
@@ -628,7 +705,11 @@ export const imageBlocks: TreeBlock[] = [
             color: null,
             content: 'What is Christianity to you?',
             variant: TypographyVariant.h3,
-            children: []
+            children: [],
+            settings: {
+              __typename: 'TypographyBlockSettings',
+              color: null
+            }
           },
           {
             id: 'textResponse.id',
@@ -680,6 +761,7 @@ export const imageBlocks: TreeBlock[] = [
         parentOrder: 1,
         coverBlockId: 'image0.id',
         backgroundColor: null,
+        backdropBlur: null,
         themeMode: null,
         themeName: null,
         fullscreen: false,
@@ -693,7 +775,11 @@ export const imageBlocks: TreeBlock[] = [
             color: null,
             content: 'What do you think?',
             variant: TypographyVariant.h6,
-            children: []
+            children: [],
+            settings: {
+              __typename: 'TypographyBlockSettings',
+              color: null
+            }
           },
           {
             id: 'typographyBlockId12',
@@ -704,13 +790,18 @@ export const imageBlocks: TreeBlock[] = [
             color: null,
             content: 'Do you need to change to be good enough for God?',
             variant: TypographyVariant.h3,
-            children: []
+            children: [],
+            settings: {
+              __typename: 'TypographyBlockSettings',
+              color: null
+            }
           },
           {
             id: 'radioQuestion1.id',
             __typename: 'RadioQuestionBlock',
             parentBlockId: 'step2.id',
             parentOrder: 2,
+            gridView: false,
             children: [
               {
                 id: 'radioOption1.id',
@@ -719,6 +810,7 @@ export const imageBlocks: TreeBlock[] = [
                 parentOrder: 0,
                 label: 'Yes, God likes good people',
                 action: null,
+                pollOptionImageBlockId: null,
                 children: []
               },
               {
@@ -728,6 +820,7 @@ export const imageBlocks: TreeBlock[] = [
                 parentOrder: 1,
                 label: 'No, He will accept me as I am',
                 action: null,
+                pollOptionImageBlockId: null,
                 children: []
               }
             ]
@@ -767,6 +860,7 @@ export const imageBlocks: TreeBlock[] = [
         coverBlockId: 'image0.id',
         parentOrder: 1,
         backgroundColor: null,
+        backdropBlur: null,
         themeMode: null,
         themeName: null,
         fullscreen: false,
@@ -795,7 +889,11 @@ export const imageBlocks: TreeBlock[] = [
             color: null,
             content: 'a quote',
             variant: TypographyVariant.overline,
-            children: []
+            children: [],
+            settings: {
+              __typename: 'TypographyBlockSettings',
+              color: null
+            }
           },
           {
             id: 'typographyBlockId12',
@@ -807,7 +905,11 @@ export const imageBlocks: TreeBlock[] = [
             content:
               '“God sent his Son into the world not to judge the world, but to save the world through him.”',
             variant: TypographyVariant.subtitle1,
-            children: []
+            children: [],
+            settings: {
+              __typename: 'TypographyBlockSettings',
+              color: null
+            }
           },
           {
             id: 'typographyBlockId13',
@@ -818,7 +920,11 @@ export const imageBlocks: TreeBlock[] = [
             color: null,
             content: '–  The Bible, John 3:17',
             variant: TypographyVariant.caption,
-            children: []
+            children: [],
+            settings: {
+              __typename: 'TypographyBlockSettings',
+              color: null
+            }
           },
 
           {
@@ -850,7 +956,8 @@ export const imageBlocks: TreeBlock[] = [
                 iconSize: IconSize.md,
                 children: []
               }
-            ]
+            ],
+            settings: null
           }
         ]
       }
@@ -875,6 +982,7 @@ export const videoBlocks: TreeBlock[] = [
         coverBlockId: null,
         parentOrder: 0,
         backgroundColor: null,
+        backdropBlur: null,
         themeMode: null,
         themeName: null,
         fullscreen: false,
@@ -954,6 +1062,7 @@ export const videoBlocks: TreeBlock[] = [
         parentBlockId: 'step2.id',
         parentOrder: 0,
         backgroundColor: null,
+        backdropBlur: null,
         coverBlockId: null,
         themeMode: null,
         themeName: null,
@@ -968,7 +1077,11 @@ export const videoBlocks: TreeBlock[] = [
             color: null,
             content: 'Step 2',
             variant: TypographyVariant.h3,
-            children: []
+            children: [],
+            settings: {
+              __typename: 'TypographyBlockSettings',
+              color: null
+            }
           },
           {
             id: 'typographyBlockId2',
@@ -979,13 +1092,18 @@ export const videoBlocks: TreeBlock[] = [
             color: null,
             content: 'Locked',
             variant: TypographyVariant.body2,
-            children: []
+            children: [],
+            settings: {
+              __typename: 'TypographyBlockSettings',
+              color: null
+            }
           },
           {
             id: 'radioQuestion1.id',
             __typename: 'RadioQuestionBlock',
             parentBlockId: 'card2.id',
             parentOrder: 2,
+            gridView: false,
             children: [
               {
                 id: 'radioOption1.id',
@@ -999,6 +1117,7 @@ export const videoBlocks: TreeBlock[] = [
                   gtmEventName: 'gtmEventName',
                   blockId: 'step3.id'
                 },
+                pollOptionImageBlockId: null,
                 children: []
               },
               {
@@ -1013,6 +1132,7 @@ export const videoBlocks: TreeBlock[] = [
                   gtmEventName: 'gtmEventName',
                   blockId: 'step4.id'
                 },
+                pollOptionImageBlockId: null,
                 children: []
               }
             ]
@@ -1036,6 +1156,7 @@ export const videoBlocks: TreeBlock[] = [
         parentBlockId: 'step3.id',
         parentOrder: 0,
         backgroundColor: null,
+        backdropBlur: null,
         coverBlockId: null,
         themeMode: null,
         themeName: null,
@@ -1102,6 +1223,7 @@ export const videoBlocks: TreeBlock[] = [
         parentBlockId: 'step4.id',
         parentOrder: 0,
         backgroundColor: null,
+        backdropBlur: null,
         coverBlockId: null,
         themeMode: null,
         themeName: null,
@@ -1156,6 +1278,7 @@ export const videoBlocksNoPoster: TreeBlock[] = [
         coverBlockId: null,
         parentOrder: 0,
         backgroundColor: null,
+        backdropBlur: null,
         themeMode: null,
         themeName: null,
         fullscreen: false,
@@ -1220,6 +1343,7 @@ export const videoBlocksNoPoster: TreeBlock[] = [
         parentBlockId: 'step2.id',
         parentOrder: 0,
         backgroundColor: null,
+        backdropBlur: null,
         coverBlockId: null,
         themeMode: null,
         themeName: null,
@@ -1234,7 +1358,11 @@ export const videoBlocksNoPoster: TreeBlock[] = [
             color: null,
             content: 'Step 2',
             variant: TypographyVariant.h3,
-            children: []
+            children: [],
+            settings: {
+              __typename: 'TypographyBlockSettings',
+              color: null
+            }
           },
           {
             id: 'typographyBlockId2',
@@ -1245,13 +1373,18 @@ export const videoBlocksNoPoster: TreeBlock[] = [
             color: null,
             content: 'Locked',
             variant: TypographyVariant.body2,
-            children: []
+            children: [],
+            settings: {
+              __typename: 'TypographyBlockSettings',
+              color: null
+            }
           },
           {
             id: 'radioQuestion1.id',
             __typename: 'RadioQuestionBlock',
             parentBlockId: 'card2.id',
             parentOrder: 2,
+            gridView: false,
             children: [
               {
                 id: 'radioOption1.id',
@@ -1265,6 +1398,7 @@ export const videoBlocksNoPoster: TreeBlock[] = [
                   gtmEventName: 'gtmEventName',
                   blockId: 'step3.id'
                 },
+                pollOptionImageBlockId: null,
                 children: []
               },
               {
@@ -1279,6 +1413,7 @@ export const videoBlocksNoPoster: TreeBlock[] = [
                   gtmEventName: 'gtmEventName',
                   blockId: 'step4.id'
                 },
+                pollOptionImageBlockId: null,
                 children: []
               }
             ]
@@ -1302,6 +1437,7 @@ export const videoBlocksNoPoster: TreeBlock[] = [
         parentBlockId: 'step3.id',
         parentOrder: 0,
         backgroundColor: null,
+        backdropBlur: null,
         coverBlockId: null,
         themeMode: null,
         themeName: null,
@@ -1368,6 +1504,7 @@ export const videoBlocksNoPoster: TreeBlock[] = [
         parentBlockId: 'step4.id',
         parentOrder: 0,
         backgroundColor: null,
+        backdropBlur: null,
         coverBlockId: null,
         themeMode: null,
         themeName: null,
@@ -1422,6 +1559,7 @@ export const videoBlocksNoVideo: TreeBlock[] = [
         coverBlockId: null,
         parentOrder: 0,
         backgroundColor: null,
+        backdropBlur: null,
         themeMode: null,
         themeName: null,
         fullscreen: false,
@@ -1495,6 +1633,7 @@ export const videoBlocksNoVideo: TreeBlock[] = [
         parentBlockId: 'step2.id',
         parentOrder: 0,
         backgroundColor: null,
+        backdropBlur: null,
         coverBlockId: null,
         themeMode: null,
         themeName: null,
@@ -1509,7 +1648,11 @@ export const videoBlocksNoVideo: TreeBlock[] = [
             color: null,
             content: 'Step 2',
             variant: TypographyVariant.h3,
-            children: []
+            children: [],
+            settings: {
+              __typename: 'TypographyBlockSettings',
+              color: null
+            }
           },
           {
             id: 'typographyBlockId2',
@@ -1520,13 +1663,18 @@ export const videoBlocksNoVideo: TreeBlock[] = [
             color: null,
             content: 'Locked',
             variant: TypographyVariant.body2,
-            children: []
+            children: [],
+            settings: {
+              __typename: 'TypographyBlockSettings',
+              color: null
+            }
           },
           {
             id: 'radioQuestion1.id',
             __typename: 'RadioQuestionBlock',
             parentBlockId: 'card2.id',
             parentOrder: 2,
+            gridView: false,
             children: [
               {
                 id: 'radioOption1.id',
@@ -1540,6 +1688,7 @@ export const videoBlocksNoVideo: TreeBlock[] = [
                   gtmEventName: 'gtmEventName',
                   blockId: 'step3.id'
                 },
+                pollOptionImageBlockId: null,
                 children: []
               },
               {
@@ -1554,6 +1703,7 @@ export const videoBlocksNoVideo: TreeBlock[] = [
                   gtmEventName: 'gtmEventName',
                   blockId: 'step4.id'
                 },
+                pollOptionImageBlockId: null,
                 children: []
               }
             ]
@@ -1577,6 +1727,7 @@ export const videoBlocksNoVideo: TreeBlock[] = [
         parentBlockId: 'step3.id',
         parentOrder: 0,
         backgroundColor: null,
+        backdropBlur: null,
         coverBlockId: null,
         themeMode: null,
         themeName: null,
@@ -1643,6 +1794,7 @@ export const videoBlocksNoVideo: TreeBlock[] = [
         parentBlockId: 'step4.id',
         parentOrder: 0,
         backgroundColor: null,
+        backdropBlur: null,
         coverBlockId: null,
         themeMode: null,
         themeName: null,
@@ -1697,6 +1849,7 @@ export const videoLoop: TreeBlock[] = [
         parentOrder: 1,
         coverBlockId: 'video1.id',
         backgroundColor: null,
+        backdropBlur: null,
         themeMode: null,
         themeName: null,
         fullscreen: false,
@@ -1710,7 +1863,11 @@ export const videoLoop: TreeBlock[] = [
             color: null,
             content: "What's our purpose, and how did we get here?",
             variant: TypographyVariant.h3,
-            children: []
+            children: [],
+            settings: {
+              __typename: 'TypographyBlockSettings',
+              color: null
+            }
           },
           {
             id: 'typographyBlockId2',
@@ -1722,7 +1879,11 @@ export const videoLoop: TreeBlock[] = [
             content:
               'Follow the journey of a curious Irishman traveling around the world looking for answers and wrestling with the things that just don’t seem to make sense. ',
             variant: null,
-            children: []
+            children: [],
+            settings: {
+              __typename: 'TypographyBlockSettings',
+              color: null
+            }
           },
           {
             __typename: 'ButtonBlock',
@@ -1748,7 +1909,8 @@ export const videoLoop: TreeBlock[] = [
                 iconSize: IconSize.md,
                 children: []
               }
-            ]
+            ],
+            settings: null
           },
           {
             id: 'video1.id',
@@ -1812,6 +1974,7 @@ export const videoLoop: TreeBlock[] = [
         coverBlockId: null,
         parentOrder: 0,
         backgroundColor: null,
+        backdropBlur: null,
         themeMode: null,
         themeName: null,
         fullscreen: false,
@@ -1883,6 +2046,7 @@ export const videoLoop: TreeBlock[] = [
         coverBlockId: null,
         parentOrder: 0,
         backgroundColor: null,
+        backdropBlur: null,
         themeMode: null,
         themeName: null,
         fullscreen: false,

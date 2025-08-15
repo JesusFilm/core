@@ -1,0 +1,17 @@
+{
+  "Metadata": {
+    "pageTitle": "{title} | مشروع فيلم يسوع"
+  },
+  "RootIndexPage": {
+    "pageTitle": "مشاهدة",
+    "title": "مكتبة <underline>بث</underline> فيديو الإنجيل المجانية.",
+    "description": "شاهد وتعلم وشارك الإنجيل بأكثر من 2000 لغة"
+  },
+  "DatadogErrorBoundary": {
+    "somethingWentWrong": "حدث خطأ ما",
+    "anErrorOccurred": "حدث خطأ أثناء تحميل هذه الصفحة. يرجى محاولة التحديث.",
+    "errorDetails": "تفاصيل الخطأ",
+    "tryAgain": "حاول مرة أخرى",
+    "unknownError": "خطأ غير معروف"
+  }
+}

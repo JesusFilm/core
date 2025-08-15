@@ -1,7 +1,7 @@
 import { Logger } from 'pino'
 import { z } from 'zod'
 
-import { prisma } from '@core/prisma-media/client'
+import { prisma } from '@core/prisma/media/client'
 
 import { CROWDIN_CONFIG } from '../../config'
 import { processFile } from '../../importer'
@@ -15,6 +15,7 @@ const questionSchema = z.object({
   value: z.string(),
   languageId: z.string(),
   order: z.number(),
+  videoId: z.string(),
   primary: z.boolean()
 })
 
@@ -66,7 +67,6 @@ async function initializeQuestionMap(logger?: Logger): Promise<void> {
     },
     where: {
       crowdInId: { not: null },
-      videoId: { not: null },
       languageId: { equals: '529' }
     }
   })
@@ -99,6 +99,7 @@ async function upsertStudyQuestionTranslation(
     }
 
     const questionData = getQuestionData(questionId)
+
     if (!questionData) {
       missingQuestions.add(questionId)
       return
@@ -109,7 +110,8 @@ async function upsertStudyQuestionTranslation(
       value: data.text,
       languageId: data.languageId,
       order: questionData.order,
-      primary: false
+      videoId: questionData.videoId,
+      primary: data.languageId === '529'
     })
 
     await prisma.videoStudyQuestion.upsert({

@@ -3,7 +3,7 @@
 
 generator client {
   provider      = "prisma-client-js"
-  output        = "../src/.prisma/client"
+  output        = env("PRISMA_LOCATION_LANGUAGES")
   binaryTargets = ["native", "linux-musl-openssl-3.0.x"]
 }
 
@@ -20,7 +20,7 @@ datasource db {
 
 generator pothos {
   provider     = "prisma-pothos-types"
-  clientOutput = "../.prisma/client"
+  clientOutput = ".prisma/api-languages-client"
   output       = "../src/__generated__/pothos-types.ts"
 }
 
@@ -42,6 +42,7 @@ model Language {
 
   @@index(bcp47(type: Hash))
   @@index(hasVideos)
+  @@index(iso3(type: Hash))
 }
 
 model LanguageName {
@@ -57,6 +58,7 @@ model LanguageName {
   @@index(parentLanguageId(type: Hash))
   @@index(primary(type: Hash))
   @@index(languageId(type: Hash))
+  @@index([value(ops: raw("gin_trgm_ops"))], type: Gin, name: "LanguageName_value_trgm_idx")
 }
 
 model Country {
@@ -88,6 +90,7 @@ model CountryLanguage {
   @@unique([languageId, countryId, suggested])
   @@index(languageId(type: Hash))
   @@index(countryId(type: Hash))
+  @@index([countryId, suggested])
 }
 
 model CountryName {
@@ -103,6 +106,7 @@ model CountryName {
   @@index(languageId(type: Hash))
   @@index(primary(type: Hash))
   @@index(countryId(type: Hash))
+  @@index([value(ops: raw("gin_trgm_ops"))], type: Gin, name: "CountryName_value_trgm_idx")
 }
 
 model Continent {
@@ -135,11 +139,19 @@ model AudioPreview {
   codec      String   @default("aac")
   updatedAt  DateTime
   language   Language @relation(fields: [languageId], references: [id])
-
-  @@index(languageId(type: Hash))
 }
 
 model ImportTimes {
   modelName  String   @id
   lastImport DateTime
+}
+
+enum LanguageRole {
+  publisher
+}
+
+model UserLanguageRole {
+  id     String         @id @default(uuid())
+  userId String         @unique
+  roles  LanguageRole[]
 }

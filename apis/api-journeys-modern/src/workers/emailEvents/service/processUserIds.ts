@@ -1,4 +1,4 @@
-import { UserJourneyRole } from '@core/prisma-journeys/client'
+import { UserJourneyRole } from '@core/prisma/journeys/client'
 
 import { JourneyWithTeamAndUserJourney } from './prisma.types'
 

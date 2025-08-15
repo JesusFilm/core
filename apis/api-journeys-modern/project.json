@@ -85,12 +85,6 @@
         "command": "codecov -f coverage/apis/api-journeys-modern/cobertura-coverage.xml -F apps.api-journeys-modern"
       }
     },
-    "codegen": {
-      "executor": "nx:run-commands",
-      "options": {
-        "command": "gql.tada generate output --tsconfig apis/api-journeys-modern/tsconfig.json"
-      }
-    },
     "email": {
       "executor": "nx:run-commands",
       "options": {
@@ -113,12 +107,6 @@
       "options": {
         "command": "npx ts-node -P apis/api-journeys-modern/tsconfig.app.json apis/api-journeys-modern/src/workers/cli.ts e2e-cleanup"
       }
-    },
-    "prisma-generate-ci": {
-      "executor": "nx:run-commands",
-      "options": {
-        "command": "nx prisma-generate prisma-journeys"
-      }
     }
-  } 
+  }
 }

@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing'
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
 
 import { CaslAuthModule } from '@core/nest/common/CaslAuthModule'
-import { Block, Journey, UserTeamRole } from '@core/prisma-journeys/client'
+import { Block, Journey, UserTeamRole } from '@core/prisma/journeys/client'
 
 import { RadioQuestionBlockCreateInput } from '../../../__generated__/graphql'
 import { AppAbility, AppCaslFactory } from '../../../lib/casl/caslFactory'
@@ -118,24 +118,36 @@ describe('RadioQuestionBlockResolver', () => {
       await resolver.radioQuestionBlockUpdate(
         ability,
         'blockId',
-        'parentBlockId'
+        'parentBlockId',
+        false
       )
       expect(service.update).toHaveBeenCalledWith('blockId', {
-        parentBlockId: 'parentBlockId'
+        parentBlockId: 'parentBlockId',
+        gridView: false
       })
     })
 
     it('throws error if not found', async () => {
       prismaService.block.findUnique.mockResolvedValueOnce(null)
       await expect(
-        resolver.radioQuestionBlockUpdate(ability, 'blockId', 'parentBlockId')
+        resolver.radioQuestionBlockUpdate(
+          ability,
+          'blockId',
+          'parentBlockId',
+          false
+        )
       ).rejects.toThrow('block not found')
     })
 
     it('throws error if not authorized', async () => {
       prismaService.block.findUnique.mockResolvedValueOnce(block)
       await expect(
-        resolver.radioQuestionBlockUpdate(ability, 'blockId', 'parentBlockId')
+        resolver.radioQuestionBlockUpdate(
+          ability,
+          'blockId',
+          'parentBlockId',
+          false
+        )
       ).rejects.toThrow('user is not allowed to update block')
     })
   })

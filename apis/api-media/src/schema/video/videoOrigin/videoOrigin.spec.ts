@@ -1,4 +1,4 @@
-import { graphql } from 'gql.tada'
+import { graphql } from '@core/shared/gql'
 
 import { getClient } from '../../../../test/client'
 import { prismaMock } from '../../../../test/prismaMock'
@@ -12,6 +12,65 @@ describe('videoOrigin', () => {
     context: {
       currentRoles: ['publisher']
     }
+  })
+
+  describe('queries', () => {
+    describe('videoOrigins', () => {
+      const VIDEO_ORIGINS_QUERY = graphql(`
+        query VideoOriginsQuery {
+          videoOrigins {
+            id
+            name
+            description
+          }
+        }
+      `)
+
+      it('should fetch video origins', async () => {
+        prismaMock.userMediaRole.findUnique.mockResolvedValue({
+          id: 'userId',
+          userId: 'userId',
+          roles: ['publisher']
+        })
+        prismaMock.videoOrigin.findMany.mockResolvedValue([
+          {
+            id: 'origin1',
+            name: 'Origin A',
+            description: 'First origin'
+          },
+          {
+            id: 'origin2',
+            name: 'Origin B',
+            description: 'Second origin'
+          }
+        ])
+        const result = await authClient({
+          document: VIDEO_ORIGINS_QUERY
+        })
+        expect(prismaMock.videoOrigin.findMany).toHaveBeenCalledWith({
+          orderBy: { name: 'asc' }
+        })
+        expect(result).toHaveProperty('data.videoOrigins', [
+          {
+            id: 'origin1',
+            name: 'Origin A',
+            description: 'First origin'
+          },
+          {
+            id: 'origin2',
+            name: 'Origin B',
+            description: 'Second origin'
+          }
+        ])
+      })
+
+      it('should reject if not publisher', async () => {
+        const result = await client({
+          document: VIDEO_ORIGINS_QUERY
+        })
+        expect(result).toHaveProperty('data', null)
+      })
+    })
   })
 
   describe('mutations', () => {

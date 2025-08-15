@@ -1,5 +1,5 @@
-import LoadingButton from '@mui/lab/LoadingButton'
 import Box from '@mui/material/Box'
+import Button from '@mui/material/Button'
 import Divider from '@mui/material/Divider'
 import List from '@mui/material/List'
 import ListItem from '@mui/material/ListItem'
@@ -89,7 +89,7 @@ export function VideoList({
       <Box
         sx={{ display: 'flex', justifyContent: 'center', mx: 'auto', my: 6 }}
       >
-        <LoadingButton
+        <Button
           variant="outlined"
           onClick={fetchMore}
           loading={loading}
@@ -100,7 +100,7 @@ export function VideoList({
           {videos?.length === 0 || !hasMore
             ? t('No More Videos')
             : t('Load More')}
-        </LoadingButton>
+        </Button>
       </Box>
     </>
   )

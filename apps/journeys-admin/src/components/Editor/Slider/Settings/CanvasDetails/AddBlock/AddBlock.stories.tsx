@@ -53,6 +53,7 @@ const disabledStep: TreeBlock<StepBlock> = {
       themeMode: null,
       themeName: null,
       fullscreen: false,
+      backdropBlur: null,
       children: [
         {
           id: 'typography0.id',
@@ -63,7 +64,11 @@ const disabledStep: TreeBlock<StepBlock> = {
           variant: TypographyVariant.h1,
           color: TypographyColor.primary,
           align: TypographyAlign.center,
-          children: []
+          children: [],
+          settings: {
+            __typename: 'TypographyBlockSettings',
+            color: null
+          }
         }
       ]
     }

@@ -3,7 +3,7 @@ import { Injectable } from '@nestjs/common'
 import { Queue } from 'bullmq'
 
 import { User } from '@core/nest/common/firebaseClient'
-import { Prisma } from '@core/prisma-journeys/client'
+import { Prisma } from '@core/prisma/journeys/client'
 
 import { JourneyEditInviteJob } from '../../lib/prisma.types'
 

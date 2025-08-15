@@ -1,6 +1,6 @@
 import { Meta, StoryObj } from '@storybook/react'
 
-import { Event } from '@core/prisma-journeys/client'
+import { Event } from '@core/prisma/journeys/client'
 
 import { VisitorInteraction } from '../templates/VisitorInteraction'
 

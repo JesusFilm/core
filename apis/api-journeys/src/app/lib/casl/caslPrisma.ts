@@ -6,7 +6,7 @@ import {
   createAccessibleByFactory
 } from '@casl/prisma/runtime'
 
-import type { Prisma, PrismaClient } from '@core/prisma-journeys/client'
+import type { Prisma, PrismaClient } from '@core/prisma/journeys/client'
 
 type ModelName = Prisma.ModelName
 type ModelWhereInput = {

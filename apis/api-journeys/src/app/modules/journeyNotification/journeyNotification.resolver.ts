@@ -5,7 +5,7 @@ import { GraphQLError } from 'graphql'
 
 import { CaslAbility } from '@core/nest/common/CaslAuthModule'
 import { CurrentUserId } from '@core/nest/decorators/CurrentUserId'
-import { JourneyNotification } from '@core/prisma-journeys/client'
+import { JourneyNotification } from '@core/prisma/journeys/client'
 
 import { JourneyNotificationUpdateInput } from '../../__generated__/graphql'
 import { Action, AppAbility } from '../../lib/casl/caslFactory'

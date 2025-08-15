@@ -97,7 +97,7 @@ export function ImageBlockHeader({
         }}
       >
         {showAdd && selectedBlock?.src != null ? (
-          <Edit2Icon color="primary" />
+          <Edit2Icon color="primary" data-testid="imageBlockHeaderEdit" />
         ) : showAdd ? (
           <Plus2Icon color="primary" />
         ) : selectedBlock?.src != null ? (

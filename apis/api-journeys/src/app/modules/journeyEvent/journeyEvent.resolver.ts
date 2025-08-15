@@ -2,7 +2,7 @@ import { UseGuards } from '@nestjs/common'
 import { Args, Query, Resolver } from '@nestjs/graphql'
 
 import { CaslAccessible } from '@core/nest/common/CaslAuthModule'
-import { Prisma } from '@core/prisma-journeys/client'
+import { Prisma } from '@core/prisma/journeys/client'
 
 import {
   JourneyEventsConnection,

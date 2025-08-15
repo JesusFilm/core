@@ -7,7 +7,7 @@ import omit from 'lodash/omit'
 import { CaslAbility, CaslAccessible } from '@core/nest/common/CaslAuthModule'
 import { User } from '@core/nest/common/firebaseClient'
 import { CurrentUser } from '@core/nest/decorators/CurrentUser'
-import { Prisma, Team, UserTeamInvite } from '@core/prisma-journeys/client'
+import { Prisma, Team, UserTeamInvite } from '@core/prisma/journeys/client'
 
 import {
   UserTeamInviteCreateInput,

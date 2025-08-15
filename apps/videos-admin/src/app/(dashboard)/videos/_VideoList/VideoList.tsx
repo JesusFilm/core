@@ -26,12 +26,12 @@ import {
   gridClasses,
   useGridApiContext
 } from '@mui/x-data-grid'
-import { ResultOf, VariablesOf, graphql } from 'gql.tada'
 import omitBy from 'lodash/omitBy'
 import { usePathname, useRouter } from 'next/navigation'
 import { ReactElement, useState } from 'react'
 import { renderToString } from 'react-dom/server'
 
+import { ResultOf, VariablesOf, graphql } from '@core/shared/gql'
 import Lock1 from '@core/shared/ui/icons/Lock1'
 
 import { PublishedChip } from '../../../../components/PublishedChip'
@@ -728,6 +728,7 @@ export function VideoList(): ReactElement {
             }
           }
         }}
+        showToolbar
       />
     </Stack>
   )

@@ -2,7 +2,7 @@ import {
   JourneyStatus,
   UserJourneyRole,
   UserTeamRole
-} from '@core/prisma-journeys/client'
+} from '@core/prisma/journeys/client'
 
 import { Action } from '../../lib/auth/ability'
 

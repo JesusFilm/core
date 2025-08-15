@@ -9,7 +9,7 @@ import {
   JourneyVisitor,
   Prisma,
   Visitor
-} from '@core/prisma-journeys/client'
+} from '@core/prisma/journeys/client'
 import { EventsNotificationJob } from '@core/yoga/emailEvents/types'
 
 import { PrismaService } from '../../lib/prisma.service'

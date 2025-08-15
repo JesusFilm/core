@@ -1,4 +1,4 @@
-import { prisma } from '@core/prisma-media/client'
+import { prisma } from '@core/prisma/media/client'
 
 const BATCH_SIZE = 100
 const MAX_RETRIES = 3

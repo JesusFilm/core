@@ -8,7 +8,7 @@ import {
 import { createYoga, useReadinessCheck } from 'graphql-yoga'
 import get from 'lodash/get'
 
-import { prisma } from '@core/prisma-users/client'
+import { prisma } from '@core/prisma/users/client'
 import { getUserFromPayload } from '@core/yoga/firebaseClient'
 import { getInteropContext } from '@core/yoga/interop'
 

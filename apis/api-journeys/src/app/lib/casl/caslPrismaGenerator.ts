@@ -5,7 +5,7 @@ import chalk from 'chalk'
 import keys from 'lodash/keys'
 import sortBy from 'lodash/sortBy'
 
-import { Prisma } from '@core/prisma-journeys/client'
+import { Prisma } from '@core/prisma/journeys/client'
 
 // this script is run automatically on `nx generate-prisma api-journeys`
 
@@ -20,7 +20,7 @@ import { Subjects } from '@casl/prisma'
 
 import {
 ${imports}
-} from '@core/prisma-journeys/client'
+} from '@core/prisma/journeys/client'
 
 export type PrismaSubjects = Subjects<{
 ${subjects}

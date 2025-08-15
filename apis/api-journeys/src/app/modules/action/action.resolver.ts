@@ -7,7 +7,7 @@ import { z } from 'zod'
 
 import { CaslAbility } from '@core/nest/common/CaslAuthModule'
 import { FromPostgresql } from '@core/nest/decorators/FromPostgresql'
-import { Action, Block } from '@core/prisma-journeys/client'
+import { Action, Block } from '@core/prisma/journeys/client'
 
 import { BlockUpdateActionInput } from '../../__generated__/graphql'
 import { AppAbility, Action as CaslAction } from '../../lib/casl/caslFactory'

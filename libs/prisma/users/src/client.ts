@@ -1,10 +1,6 @@
-import { Prisma, PrismaClient } from './.prisma/client'
-
-export * from './.prisma/client'
-export { Prisma as PrismaUsers }
-export { PrismaClient as PrismaClientUsers }
+import { Prisma, PrismaClient } from '.prisma/api-users-client'
 
 const globalForPrisma = global as unknown as { prisma: PrismaClient }
 
+export * from '.prisma/api-users-client'
 export const prisma = globalForPrisma.prisma || new PrismaClient()
-export const prismaUsers = globalForPrisma.prisma || new PrismaClient()

@@ -1,6 +1,6 @@
 import ShortUniqueId from 'short-unique-id'
 
-import { Prisma, prisma } from '@core/prisma-analytics/client'
+import { Prisma, prisma } from '@core/prisma/analytics/client'
 
 import { builder } from '../builder'
 

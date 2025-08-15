@@ -1,4 +1,4 @@
-import { Prisma, User, prisma } from '@core/prisma-users/client'
+import { Prisma, User, prisma } from '@core/prisma/users/client'
 import { auth } from '@core/yoga/firebaseClient'
 
 import { verifyUser } from './verifyUser'
@@ -36,8 +36,29 @@ export async function findOrFetchUser(
     photoURL: imageUrl
   } = await auth.getUser(userId)
 
-  const firstName = displayName?.split(' ')?.slice(0, -1)?.join(' ') ?? ''
-  const lastName = displayName?.split(' ')?.slice(-1)?.join(' ') ?? ''
+  // Extract firstName and lastName from displayName with better fallbacks
+  let firstName = ''
+  let lastName = ''
+
+  if (displayName?.trim()) {
+    const nameParts = displayName
+      .trim()
+      .split(' ')
+      .filter((part) => part.length > 0)
+    if (nameParts.length === 1) {
+      // Single name - use as firstName
+      firstName = nameParts[0]
+    } else if (nameParts.length > 1) {
+      // Multiple parts - first parts as firstName, last part as lastName
+      firstName = nameParts.slice(0, -1).join(' ')
+      lastName = nameParts[nameParts.length - 1]
+    }
+  }
+
+  // Ensure firstName is never empty for database constraint
+  if (!firstName.trim()) {
+    firstName = 'Unknown User'
+  }
 
   const data = {
     userId,

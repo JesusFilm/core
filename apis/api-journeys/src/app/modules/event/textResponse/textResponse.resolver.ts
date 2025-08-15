@@ -5,7 +5,7 @@ import { Args, Mutation, Resolver } from '@nestjs/graphql'
 
 import { CurrentUserId } from '@core/nest/decorators/CurrentUserId'
 import { GqlAuthGuard } from '@core/nest/gqlAuthGuard/GqlAuthGuard'
-import { Prisma } from '@core/prisma-journeys/client'
+import { Prisma } from '@core/prisma/journeys/client'
 
 import {
   TextResponseSubmissionEvent,

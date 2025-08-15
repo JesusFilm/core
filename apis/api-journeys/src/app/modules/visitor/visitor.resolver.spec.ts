@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing'
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
 
 import { CaslAuthModule } from '@core/nest/common/CaslAuthModule'
-import { Event, Visitor } from '@core/prisma-journeys/client'
+import { Event, Visitor } from '@core/prisma/journeys/client'
 
 import {
   MessagePlatform,

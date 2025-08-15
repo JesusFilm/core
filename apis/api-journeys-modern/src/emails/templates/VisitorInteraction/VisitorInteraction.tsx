@@ -14,7 +14,7 @@ import { Tailwind } from '@react-email/tailwind'
 import { intlFormat, parseISO } from 'date-fns'
 import { ReactElement, ReactNode } from 'react'
 
-import { Event, Prisma } from '@core/prisma-journeys/client'
+import { Event, Prisma } from '@core/prisma/journeys/client'
 import {
   ActionCard,
   BodyWrapper,

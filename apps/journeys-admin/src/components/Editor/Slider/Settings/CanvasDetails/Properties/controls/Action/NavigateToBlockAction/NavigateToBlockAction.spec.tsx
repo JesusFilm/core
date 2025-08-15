@@ -35,7 +35,8 @@ describe('NavigateToBlockAction', () => {
       gtmEventName: 'gtmEventName',
       blockId: 'block0.id'
     },
-    children: []
+    children: [],
+    settings: null
   }
 
   it("should show 'back to map' button", () => {

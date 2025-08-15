@@ -1,5 +1,5 @@
 /* eslint-disable */
-import type { Prisma, ChatButton, Event, Visitor, Host, JourneyVisitor, Team, Integration, UserTeam, UserTeamInvite, UserJourney, JourneyTag, Journey, UserRole, JourneyProfile, UserInvite, Block, Action, JourneysEmailPreference, JourneyNotification, CustomDomain, JourneyCollection, JourneyCollectionJourneys, QrCode, JourneyEventsExportLog } from "../.prisma/client/index.js";
+import type { Prisma, ChatButton, Event, Visitor, Host, JourneyVisitor, Team, Integration, UserTeam, UserTeamInvite, UserJourney, JourneyTag, Journey, UserRole, JourneyProfile, UserInvite, Block, Action, JourneysEmailPreference, JourneyNotification, CustomDomain, JourneyCollection, JourneyCollectionJourneys, QrCode, JourneyEventsExportLog, JourneyTheme, JourneyCustomizationField } from ".prisma/api-journeys-client/index.js";
 export default interface PrismaTypes {
     ChatButton: {
         Name: "ChatButton";
@@ -316,8 +316,8 @@ export default interface PrismaTypes {
         Where: Prisma.JourneyWhereInput;
         Create: {};
         Update: {};
-        RelationName: "userJourneys" | "team" | "userInvites" | "blocks" | "chatButtons" | "host" | "journeyTags" | "actions" | "primaryImageBlock" | "creatorImageBlock" | "journeyVisitors" | "journeyCollectionJourneys" | "journeyNotifications" | "logoImageBlock" | "menuStepBlock" | "qrCode" | "Event" | "journeyEventsExportLogs";
-        ListRelations: "userJourneys" | "userInvites" | "blocks" | "chatButtons" | "journeyTags" | "actions" | "journeyVisitors" | "journeyCollectionJourneys" | "journeyNotifications" | "qrCode" | "Event" | "journeyEventsExportLogs";
+        RelationName: "userJourneys" | "team" | "userInvites" | "blocks" | "chatButtons" | "host" | "journeyTags" | "actions" | "primaryImageBlock" | "creatorImageBlock" | "journeyVisitors" | "journeyCollectionJourneys" | "journeyNotifications" | "logoImageBlock" | "menuStepBlock" | "qrCode" | "Event" | "journeyEventsExportLogs" | "journeyTheme" | "journeyCustomizationFields";
+        ListRelations: "userJourneys" | "userInvites" | "blocks" | "chatButtons" | "journeyTags" | "actions" | "journeyVisitors" | "journeyCollectionJourneys" | "journeyNotifications" | "qrCode" | "Event" | "journeyEventsExportLogs" | "journeyCustomizationFields";
         Relations: {
             userJourneys: {
                 Shape: UserJourney[];
@@ -409,6 +409,16 @@ export default interface PrismaTypes {
                 Name: "JourneyEventsExportLog";
                 Nullable: false;
             };
+            journeyTheme: {
+                Shape: JourneyTheme | null;
+                Name: "JourneyTheme";
+                Nullable: true;
+            };
+            journeyCustomizationFields: {
+                Shape: JourneyCustomizationField[];
+                Name: "JourneyCustomizationField";
+                Nullable: false;
+            };
         };
     };
     UserRole: {
@@ -469,7 +479,7 @@ export default interface PrismaTypes {
         Where: Prisma.BlockWhereInput;
         Create: {};
         Update: {};
-        RelationName: "action" | "journey" | "posterBlock" | "posterBlockParent" | "coverBlock" | "coverBlockParent" | "primaryImageBlockParent" | "creatorImageBlockParent" | "nextBlock" | "nextBlockParents" | "parentBlock" | "childBlocks" | "targetActions" | "menuStepBlockParent" | "logoImageBlockParent";
+        RelationName: "action" | "journey" | "posterBlock" | "posterBlockParent" | "coverBlock" | "coverBlockParent" | "pollOptionImageBlock" | "pollOptionImageBlockParent" | "primaryImageBlockParent" | "creatorImageBlockParent" | "nextBlock" | "nextBlockParents" | "parentBlock" | "childBlocks" | "targetActions" | "menuStepBlockParent" | "logoImageBlockParent";
         ListRelations: "nextBlockParents" | "childBlocks" | "targetActions";
         Relations: {
             action: {
@@ -498,6 +508,16 @@ export default interface PrismaTypes {
                 Nullable: true;
             };
             coverBlockParent: {
+                Shape: Block | null;
+                Name: "Block";
+                Nullable: true;
+            };
+            pollOptionImageBlock: {
+                Shape: Block | null;
+                Name: "Block";
+                Nullable: true;
+            };
+            pollOptionImageBlockParent: {
                 Shape: Block | null;
                 Name: "Block";
                 Nullable: true;
@@ -736,6 +756,46 @@ export default interface PrismaTypes {
         OrderBy: Prisma.JourneyEventsExportLogOrderByWithRelationInput;
         WhereUnique: Prisma.JourneyEventsExportLogWhereUniqueInput;
         Where: Prisma.JourneyEventsExportLogWhereInput;
+        Create: {};
+        Update: {};
+        RelationName: "journey";
+        ListRelations: never;
+        Relations: {
+            journey: {
+                Shape: Journey;
+                Name: "Journey";
+                Nullable: false;
+            };
+        };
+    };
+    JourneyTheme: {
+        Name: "JourneyTheme";
+        Shape: JourneyTheme;
+        Include: Prisma.JourneyThemeInclude;
+        Select: Prisma.JourneyThemeSelect;
+        OrderBy: Prisma.JourneyThemeOrderByWithRelationInput;
+        WhereUnique: Prisma.JourneyThemeWhereUniqueInput;
+        Where: Prisma.JourneyThemeWhereInput;
+        Create: {};
+        Update: {};
+        RelationName: "journey";
+        ListRelations: never;
+        Relations: {
+            journey: {
+                Shape: Journey;
+                Name: "Journey";
+                Nullable: false;
+            };
+        };
+    };
+    JourneyCustomizationField: {
+        Name: "JourneyCustomizationField";
+        Shape: JourneyCustomizationField;
+        Include: Prisma.JourneyCustomizationFieldInclude;
+        Select: Prisma.JourneyCustomizationFieldSelect;
+        OrderBy: Prisma.JourneyCustomizationFieldOrderByWithRelationInput;
+        WhereUnique: Prisma.JourneyCustomizationFieldWhereUniqueInput;
+        Where: Prisma.JourneyCustomizationFieldWhereInput;
         Create: {};
         Update: {};
         RelationName: "journey";

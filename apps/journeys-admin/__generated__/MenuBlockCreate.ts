@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { StepBlockCreateInput, CardBlockCreateInput, TypographyBlockCreateInput, ButtonBlockCreateInput, JourneyUpdateInput, ThemeMode, ThemeName, TypographyAlign, TypographyColor, TypographyVariant, ButtonVariant, ButtonColor, ButtonSize } from "./globalTypes";
+import { StepBlockCreateInput, CardBlockCreateInput, TypographyBlockCreateInput, ButtonBlockCreateInput, JourneyUpdateInput, ThemeMode, ThemeName, TypographyAlign, TypographyColor, TypographyVariant, ButtonVariant, ButtonColor, ButtonSize, ButtonAlignment } from "./globalTypes";
 
 // ====================================================
 // GraphQL mutation operation: MenuBlockCreate
@@ -54,6 +54,10 @@ export interface MenuBlockCreate_card {
    */
   backgroundColor: string | null;
   /**
+   * backdropBlur should be a number representing blur amount in pixels e.g 20.
+   */
+  backdropBlur: number | null;
+  /**
    * coverBlockId is present if a child block should be used as a cover.
    * This child block should not be rendered normally, instead it should be used
    * as a background. Blocks are often of type ImageBlock or VideoBlock.
@@ -77,6 +81,14 @@ export interface MenuBlockCreate_card {
   fullscreen: boolean;
 }
 
+export interface MenuBlockCreate_heading_settings {
+  __typename: "TypographyBlockSettings";
+  /**
+   * Color of the typography
+   */
+  color: string | null;
+}
+
 export interface MenuBlockCreate_heading {
   __typename: "TypographyBlock";
   id: string;
@@ -86,6 +98,15 @@ export interface MenuBlockCreate_heading {
   color: TypographyColor | null;
   content: string;
   variant: TypographyVariant | null;
+  settings: MenuBlockCreate_heading_settings | null;
+}
+
+export interface MenuBlockCreate_subHeading_settings {
+  __typename: "TypographyBlockSettings";
+  /**
+   * Color of the typography
+   */
+  color: string | null;
 }
 
 export interface MenuBlockCreate_subHeading {
@@ -97,6 +118,7 @@ export interface MenuBlockCreate_subHeading {
   color: TypographyColor | null;
   content: string;
   variant: TypographyVariant | null;
+  settings: MenuBlockCreate_subHeading_settings | null;
 }
 
 export interface MenuBlockCreate_button1_action_NavigateToBlockAction {
@@ -122,6 +144,14 @@ export interface MenuBlockCreate_button1_action_EmailAction {
 
 export type MenuBlockCreate_button1_action = MenuBlockCreate_button1_action_NavigateToBlockAction | MenuBlockCreate_button1_action_LinkAction | MenuBlockCreate_button1_action_EmailAction;
 
+export interface MenuBlockCreate_button1_settings {
+  __typename: "ButtonBlockSettings";
+  /**
+   * Alignment of the button
+   */
+  alignment: ButtonAlignment | null;
+}
+
 export interface MenuBlockCreate_button1 {
   __typename: "ButtonBlock";
   id: string;
@@ -135,6 +165,7 @@ export interface MenuBlockCreate_button1 {
   endIconId: string | null;
   submitEnabled: boolean | null;
   action: MenuBlockCreate_button1_action | null;
+  settings: MenuBlockCreate_button1_settings | null;
 }
 
 export interface MenuBlockCreate_button2_action_NavigateToBlockAction {
@@ -160,6 +191,14 @@ export interface MenuBlockCreate_button2_action_EmailAction {
 
 export type MenuBlockCreate_button2_action = MenuBlockCreate_button2_action_NavigateToBlockAction | MenuBlockCreate_button2_action_LinkAction | MenuBlockCreate_button2_action_EmailAction;
 
+export interface MenuBlockCreate_button2_settings {
+  __typename: "ButtonBlockSettings";
+  /**
+   * Alignment of the button
+   */
+  alignment: ButtonAlignment | null;
+}
+
 export interface MenuBlockCreate_button2 {
   __typename: "ButtonBlock";
   id: string;
@@ -173,6 +212,7 @@ export interface MenuBlockCreate_button2 {
   endIconId: string | null;
   submitEnabled: boolean | null;
   action: MenuBlockCreate_button2_action | null;
+  settings: MenuBlockCreate_button2_settings | null;
 }
 
 export interface MenuBlockCreate_button3_action_NavigateToBlockAction {
@@ -198,6 +238,14 @@ export interface MenuBlockCreate_button3_action_EmailAction {
 
 export type MenuBlockCreate_button3_action = MenuBlockCreate_button3_action_NavigateToBlockAction | MenuBlockCreate_button3_action_LinkAction | MenuBlockCreate_button3_action_EmailAction;
 
+export interface MenuBlockCreate_button3_settings {
+  __typename: "ButtonBlockSettings";
+  /**
+   * Alignment of the button
+   */
+  alignment: ButtonAlignment | null;
+}
+
 export interface MenuBlockCreate_button3 {
   __typename: "ButtonBlock";
   id: string;
@@ -211,6 +259,7 @@ export interface MenuBlockCreate_button3 {
   endIconId: string | null;
   submitEnabled: boolean | null;
   action: MenuBlockCreate_button3_action | null;
+  settings: MenuBlockCreate_button3_settings | null;
 }
 
 export interface MenuBlockCreate_journeyUpdate_menuStepBlock {

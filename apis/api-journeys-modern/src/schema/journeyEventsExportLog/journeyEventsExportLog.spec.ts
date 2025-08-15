@@ -1,4 +1,4 @@
-import { Prisma } from '@core/prisma-journeys/client'
+import { Prisma } from '@core/prisma/journeys/client'
 
 import { getClient } from '../../../test/client'
 import { prismaMock } from '../../../test/prismaMock'

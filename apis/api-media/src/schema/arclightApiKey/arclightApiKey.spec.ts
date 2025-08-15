@@ -1,10 +1,10 @@
 import { ExecutionResult } from 'graphql'
 
-import { ArclightApiKey } from '@core/prisma-media/client'
+import { ArclightApiKey } from '@core/prisma/media/client'
+import { graphql } from '@core/shared/gql'
 
 import { getClient } from '../../../test/client'
 import { prismaMock } from '../../../test/prismaMock'
-import { graphql } from '../../lib/graphql/subgraphGraphql'
 
 describe('ArclightApiKey', () => {
   const client = getClient()

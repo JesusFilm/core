@@ -1,8 +1,4 @@
-input VideoBlockClassNamesInput {
-  self: String!
-}
-
-extend type Video @key(fields: "id primaryLanguageId") {
+extend type Video @key(fields: "id primaryLanguageId") @shareable {
   id: ID! @external
   primaryLanguageId: ID! @external
 }
@@ -12,10 +8,6 @@ enum VideoBlockSource {
   youTube
   cloudflare
   mux
-}
-
-type VideoBlockClassNames {
-  self: String! @shareable
 }
 
 enum VideoBlockObjectFit {
@@ -43,7 +35,7 @@ enum VideoBlockObjectFit {
   zoomed
 }
 
-type VideoBlock implements Block @key(fields: "id") {
+type VideoBlock implements Block @key(fields: "id") @shareable {
   id: ID! @shareable
   journeyId: ID! @shareable
   parentBlockId: ID @shareable
@@ -120,10 +112,6 @@ type VideoBlock implements Block @key(fields: "id") {
   how the video should display within the VideoBlock
   """
   objectFit: VideoBlockObjectFit @shareable
-  """
-  classNames is an object of tailwind class names for the block
-  """
-  classNames: VideoBlockClassNames! @shareable
 }
 
 input VideoBlockCreateInput {
@@ -174,7 +162,6 @@ input VideoBlockCreateInput {
   how the video should display within the VideoBlock
   """
   objectFit: VideoBlockObjectFit
-  classNames: VideoBlockClassNamesInput
 }
 
 input VideoBlockUpdateInput {
@@ -218,7 +205,6 @@ input VideoBlockUpdateInput {
   how the video should display within the VideoBlock
   """
   objectFit: VideoBlockObjectFit
-  classNames: VideoBlockClassNamesInput
 }
 
 extend type Mutation {

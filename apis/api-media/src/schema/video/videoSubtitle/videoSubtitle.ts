@@ -1,4 +1,4 @@
-import { prisma } from '@core/prisma-media/client'
+import { prisma } from '@core/prisma/media/client'
 
 import { builder } from '../../builder'
 import { Language } from '../../language'
@@ -6,7 +6,7 @@ import { Language } from '../../language'
 import { VideoSubtitleCreateInput } from './inputs/videoSubtitleCreate'
 import { VideoSubtitleUpdateInput } from './inputs/videoSubtitleUpdate'
 
-builder.prismaObject('VideoSubtitle', {
+export const VideoSubtitle = builder.prismaObject('VideoSubtitle', {
   fields: (t) => ({
     id: t.exposeID('id', { nullable: false }),
     languageId: t.exposeID('languageId', { nullable: false }),

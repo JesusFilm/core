@@ -4,7 +4,7 @@ export default [
   ...baseConfig,
   {
     ignores: [
-      'libs/prisma/languages/eslint.config.js',
+      'libs/prisma/languages/eslint.config.mjs',
       'libs/prisma/languages/src/.prisma/**',
       'libs/prisma/languages/db/**'
     ]

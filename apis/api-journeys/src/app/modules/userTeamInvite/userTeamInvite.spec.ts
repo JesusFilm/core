@@ -6,7 +6,7 @@ import {
   Team,
   UserTeamInvite,
   UserTeamRole
-} from '@core/prisma-journeys/client'
+} from '@core/prisma/journeys/client'
 
 import { UserTeamInviteCreateInput } from '../../__generated__/graphql'
 import { AppAbility, AppCaslFactory } from '../../lib/casl/caslFactory'

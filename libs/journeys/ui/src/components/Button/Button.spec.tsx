@@ -6,6 +6,7 @@ import { usePlausible } from 'next-plausible'
 import { v4 as uuidv4 } from 'uuid'
 
 import {
+  ButtonAlignment,
   ButtonColor,
   ButtonSize,
   ButtonVariant,
@@ -99,6 +100,10 @@ const block: TreeBlock<ButtonFields> = {
   endIconId: null,
   action: null,
   submitEnabled: false,
+  settings: {
+    __typename: 'ButtonBlockSettings',
+    alignment: ButtonAlignment.justify
+  },
   children: []
 }
 
@@ -121,6 +126,7 @@ const activeBlock: TreeBlock<StepBlock> = {
       themeMode: null,
       themeName: null,
       fullscreen: false,
+      backdropBlur: null,
       children: [
         {
           __typename: 'TypographyBlock',
@@ -131,7 +137,11 @@ const activeBlock: TreeBlock<StepBlock> = {
           color: null,
           variant: null,
           parentOrder: 0,
-          children: []
+          children: [],
+          settings: {
+            __typename: 'TypographyBlockSettings',
+            color: null
+          }
         }
       ]
     }
@@ -407,6 +417,7 @@ describe('Button', () => {
           themeMode: null,
           themeName: null,
           fullscreen: false,
+          backdropBlur: null,
           children: []
         }
       ]
@@ -736,6 +747,100 @@ describe('Button', () => {
       },
       undefined
     )
+  })
+
+  it('should show red outline when editableLabel is provided', () => {
+    const EditableLabelComponent = () => (
+      <span data-testid="editable-label">Edit Me</span>
+    )
+
+    const buttonWithEditableLabel = {
+      ...block,
+      editableLabel: <EditableLabelComponent />
+    }
+
+    render(
+      <MockedProvider>
+        <Button {...buttonWithEditableLabel} />
+      </MockedProvider>
+    )
+
+    const button = screen.getByRole('button')
+    expect(button).toHaveStyle({
+      outline: '2px solid',
+      outlineColor: '#C52D3A',
+      outlineOffset: '5px',
+      zIndex: '1'
+    })
+  })
+
+  it('should not show red outline when editableLabel is not provided', () => {
+    render(
+      <MockedProvider>
+        <Button {...block} />
+      </MockedProvider>
+    )
+
+    const button = screen.getByRole('button')
+    expect(button).toHaveStyle({
+      outline: '2px solid',
+      outlineColor: 'transparent',
+      outlineOffset: '5px',
+      zIndex: '0'
+    })
+  })
+
+  it('should apply left alignment styles correctly', () => {
+    const leftAlignedButton = {
+      ...block,
+      settings: {
+        __typename: 'ButtonBlockSettings' as const,
+        alignment: ButtonAlignment.left
+      }
+    }
+
+    render(
+      <MockedProvider>
+        <Button {...leftAlignedButton} />
+      </MockedProvider>
+    )
+
+    const buttonContainer = screen.getByTestId(`JourneysButton-${block.id}`)
+    expect(buttonContainer).toHaveStyle({
+      display: 'flex',
+      justifyContent: 'flex-start'
+    })
+
+    const button = screen.getByRole('button')
+    expect(button).toHaveStyle({
+      width: 'fit-content',
+      maxWidth: '75%'
+    })
+  })
+
+  it('should default to justify alignment when no alignment is specified', () => {
+    const buttonWithoutAlignment = {
+      ...block,
+      settings: null
+    }
+
+    render(
+      <MockedProvider>
+        <Button {...buttonWithoutAlignment} />
+      </MockedProvider>
+    )
+
+    const buttonContainer = screen.getByTestId(`JourneysButton-${block.id}`)
+    expect(buttonContainer).toHaveStyle({
+      display: 'flex',
+      justifyContent: 'space-evenly'
+    })
+
+    const button = screen.getByRole('button')
+    expect(button).toHaveStyle({
+      width: '100%',
+      maxWidth: '100%'
+    })
   })
 
   describe('button label rendering', () => {

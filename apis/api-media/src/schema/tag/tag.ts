@@ -1,6 +1,6 @@
 import compact from 'lodash/compact'
 
-import { prisma } from '@core/prisma-media/client'
+import { prisma } from '@core/prisma/media/client'
 
 import { builder } from '../builder'
 import { Service } from '../enums/service'

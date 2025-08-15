@@ -1,4 +1,4 @@
-import { Prisma } from '@core/prisma-media/client'
+import { Prisma } from '@core/prisma/media/client'
 
 import {
   updateOrderCreate,

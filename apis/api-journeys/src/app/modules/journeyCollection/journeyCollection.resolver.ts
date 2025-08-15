@@ -17,7 +17,7 @@ import {
   Journey,
   JourneyCollection,
   Prisma
-} from '@core/prisma-journeys/client'
+} from '@core/prisma/journeys/client'
 
 import {
   JourneyCollectionCreateInput,

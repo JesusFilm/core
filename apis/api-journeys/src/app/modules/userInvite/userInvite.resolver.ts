@@ -11,7 +11,7 @@ import {
   Prisma,
   UserInvite,
   UserJourneyRole
-} from '@core/prisma-journeys/client'
+} from '@core/prisma/journeys/client'
 
 import { UserInviteCreateInput } from '../../__generated__/graphql'
 import { Action, AppAbility } from '../../lib/casl/caslFactory'

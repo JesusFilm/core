@@ -2,11 +2,13 @@ import { nanoid } from 'nanoid'
 import { v4 as uuidv4 } from 'uuid'
 import { ZodError } from 'zod'
 
-import { Prisma, prisma } from '@core/prisma-media/client'
+import { Prisma, prisma } from '@core/prisma/media/client'
 
 import { builder } from '../builder'
 import { Service } from '../enums/service'
 import { NotFoundError, NotUniqueError } from '../error'
+
+import { RedirectType } from './enums/redirectType'
 
 const ShortLink = builder.prismaObject('ShortLink', {
   description: 'A short link that redirects to a full URL',
@@ -26,6 +28,19 @@ const ShortLink = builder.prismaObject('ShortLink', {
       type: Service,
       nullable: false,
       description: 'the service that created this short link'
+    }),
+    brightcoveId: t.exposeString('brightcoveId', {
+      nullable: true,
+      description: 'brightcove video ID for video redirects'
+    }),
+    redirectType: t.expose('redirectType', {
+      type: RedirectType,
+      nullable: true,
+      description: 'type of video redirect (hls, dl, dh, s)'
+    }),
+    bitrate: t.exposeInt('bitrate', {
+      nullable: true,
+      description: 'bitrate of the video variant download'
     })
   })
 })
@@ -190,6 +205,19 @@ builder.mutationFields((t) => ({
           type: Service,
           required: true,
           description: 'the service that created this short link'
+        }),
+        brightcoveId: t.input.string({
+          required: false,
+          description: 'brightcove video ID for video redirects'
+        }),
+        redirectType: t.input.field({
+          type: RedirectType,
+          required: false,
+          description: 'type of video redirect (hls, dl, dh, s)'
+        }),
+        bitrate: t.input.int({
+          required: false,
+          description: 'bitrate of the video variant download'
         })
       },
       validate: [
@@ -216,7 +244,16 @@ builder.mutationFields((t) => ({
         query,
         _,
         {
-          input: { id: inputId, pathname: inputPathname, to, hostname, service }
+          input: {
+            id: inputId,
+            pathname: inputPathname,
+            to,
+            hostname,
+            service,
+            brightcoveId,
+            redirectType,
+            bitrate
+          }
         },
         context
       ) => {
@@ -232,7 +269,10 @@ builder.mutationFields((t) => ({
               domain: { connect: { hostname } },
               service,
               userId:
-                context.type === 'authenticated' ? context.user.id : undefined
+                context.type === 'authenticated' ? context.user.id : undefined,
+              brightcoveId,
+              redirectType,
+              bitrate
             }
           })
         } catch (e) {
@@ -285,14 +325,36 @@ builder.mutationFields((t) => ({
               }
             ]
           }
+        }),
+        brightcoveId: t.input.string({
+          required: false,
+          description: 'brightcove video ID for video redirects'
+        }),
+        redirectType: t.input.field({
+          type: RedirectType,
+          required: false,
+          description: 'type of video redirect (hls, dl, dh, s)'
+        }),
+        bitrate: t.input.int({
+          required: false,
+          description: 'bitrate of the video variant download'
         })
       },
-      resolve: async (query, _, { input: { id, to } }) => {
+      resolve: async (
+        query,
+        _,
+        { input: { id, to, brightcoveId, redirectType, bitrate } }
+      ) => {
         try {
           return await prisma.shortLink.update({
             ...query,
             where: { id },
-            data: { to }
+            data: {
+              to,
+              brightcoveId,
+              redirectType,
+              bitrate
+            }
           })
         } catch (e) {
           if (

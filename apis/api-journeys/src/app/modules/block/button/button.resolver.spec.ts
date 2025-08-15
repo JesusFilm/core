@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing'
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
 
 import { CaslAuthModule } from '@core/nest/common/CaslAuthModule'
-import { Block, Journey, UserTeamRole } from '@core/prisma-journeys/client'
+import { Block, Journey, UserTeamRole } from '@core/prisma/journeys/client'
 
 import {
   ButtonBlockCreateInput,
@@ -111,6 +111,7 @@ describe('ButtonBlock', () => {
           label: 'label',
           parentBlock: { connect: { id: 'parentBlockId' } },
           parentOrder: 2,
+          settings: {},
           size: 'medium',
           typename: 'ButtonBlock',
           variant: 'contained'

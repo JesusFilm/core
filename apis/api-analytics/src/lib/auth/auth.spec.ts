@@ -1,6 +1,6 @@
 import { createHash } from 'node:crypto'
 
-import { api_keys as PrismaApiKey } from '@core/prisma-analytics/client'
+import { api_keys as PrismaApiKey } from '@core/prisma/analytics/client'
 
 import { prismaMock } from '../../../test/prismaMock'
 

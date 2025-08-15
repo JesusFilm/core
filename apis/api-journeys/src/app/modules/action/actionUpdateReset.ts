@@ -1,4 +1,4 @@
-import { Prisma } from '@core/prisma-journeys/client'
+import { Prisma } from '@core/prisma/journeys/client'
 
 /**
  * ACTION_UPDATE_RESET should be used to reset an action when performing

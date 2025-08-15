@@ -3,14 +3,15 @@
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "apps/arclight",
   "projectType": "application",
-  "tags": [],
+  "tags": ["doppler_config:stg_dev"],
   "targets": {
     "build": {
       "executor": "nx:run-commands",
       "options": {
         "commands": [
           "cp -r libs/locales apps/arclight/public",
-          "nx _build arclight"
+          "nx _build arclight",
+          "cp apps/arclight/next-logger.config.js dist/apps/arclight/next-logger.config.js"
         ],
         "parallel": false
       },
@@ -18,7 +19,8 @@
         "production": {
           "commands": [
             "cp -r libs/locales apps/arclight/public",
-            "CI=true nx _build arclight --prod"
+            "CI=true nx _build arclight --prod",
+            "cp apps/arclight/next-logger.config.js dist/apps/arclight/next-logger.config.js"
           ]
         }
       }
@@ -131,12 +133,6 @@
             "command": "DOPPLER_TOKEN=$DOPPLER_ARCLIGHT_TOKEN doppler secrets download --no-file --format=env-no-quotes --project arclight > apps/arclight/.env"
           }
         ]
-      }
-    },
-    "codegen": {
-      "executor": "nx:run-commands",
-      "options": {
-        "command": "gql.tada generate output --tsconfig apps/arclight/tsconfig.json"
       }
     },
     "extract-translations": {

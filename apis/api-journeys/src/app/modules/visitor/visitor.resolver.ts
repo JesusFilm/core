@@ -16,7 +16,7 @@ import { IResult, UAParser } from 'ua-parser-js'
 import { CaslAbility, CaslAccessible } from '@core/nest/common/CaslAuthModule'
 import { CurrentUserId } from '@core/nest/decorators/CurrentUserId'
 import { FromPostgresql } from '@core/nest/decorators/FromPostgresql'
-import { Event, Prisma, Visitor } from '@core/prisma-journeys/client'
+import { Event, Prisma, Visitor } from '@core/prisma/journeys/client'
 
 import { VisitorUpdateInput } from '../../__generated__/graphql'
 import { Action, AppAbility } from '../../lib/casl/caslFactory'

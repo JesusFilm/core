@@ -1,7 +1,7 @@
 import { getQueueToken } from '@nestjs/bullmq'
 import { Test, TestingModule } from '@nestjs/testing'
 
-import { Team, UserTeamRole } from '@core/prisma-journeys/client'
+import { Team, UserTeamRole } from '@core/prisma/journeys/client'
 
 import { TeamWithUserTeam } from '../../lib/prisma.types'
 

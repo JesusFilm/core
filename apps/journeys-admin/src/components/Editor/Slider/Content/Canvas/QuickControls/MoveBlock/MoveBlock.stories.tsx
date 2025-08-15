@@ -23,7 +23,11 @@ const block: TreeBlock = {
   color: null,
   content: 'Text1',
   variant: null,
-  children: []
+  children: [],
+  settings: {
+    __typename: 'TypographyBlockSettings',
+    color: null
+  }
 }
 
 const step: TreeBlock = {
@@ -45,6 +49,7 @@ const step: TreeBlock = {
       themeMode: null,
       themeName: null,
       fullscreen: false,
+      backdropBlur: null,
       children: [
         block,
         {
@@ -56,7 +61,11 @@ const step: TreeBlock = {
           color: null,
           content: 'Text2',
           variant: null,
-          children: []
+          children: [],
+          settings: {
+            __typename: 'TypographyBlockSettings',
+            color: null
+          }
         }
       ]
     }

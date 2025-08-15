@@ -3,7 +3,7 @@ import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
 
 import { CaslAuthModule } from '@core/nest/common/CaslAuthModule'
 import { User } from '@core/nest/common/firebaseClient'
-import { JourneyProfile } from '@core/prisma-journeys/client'
+import { JourneyProfile } from '@core/prisma/journeys/client'
 
 import { AppCaslFactory } from '../../lib/casl/caslFactory'
 import { PrismaService } from '../../lib/prisma.service'

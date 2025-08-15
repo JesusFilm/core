@@ -1,6 +1,6 @@
 import { ZodError } from 'zod'
 
-import { Prisma, prisma } from '@core/prisma-media/client'
+import { Prisma, prisma } from '@core/prisma/media/client'
 
 import { builder } from '../../builder'
 import { Service } from '../../enums/service'

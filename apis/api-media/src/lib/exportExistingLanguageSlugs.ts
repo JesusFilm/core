@@ -1,6 +1,6 @@
 import { writeFileSync } from 'node:fs'
 
-import { PrismaClient } from '@core/prisma-media/client'
+import { PrismaClient } from '@core/prisma/media/client'
 
 const prisma = new PrismaClient()
 

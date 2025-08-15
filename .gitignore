@@ -34,6 +34,7 @@ yarn-error.log
 testem.log
 /typings
 **/public/locales
+**/apps/watch-modern/src/i18n/locales/**/*
 apis/api-gateway/router
 /**/tsconfig.tsbuildinfo
 .history/
@@ -89,5 +90,5 @@ terraform.tfstate.backup
 /exports/*
 /imports/*
 
-# prisma
-.prisma/
+# node sea
+sea-prep.blob

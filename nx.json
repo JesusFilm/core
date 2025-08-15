@@ -1,12 +1,4 @@
 {
-  "tasksRunnerOptions": {
-    "default": {
-      "options": {
-        "canTrackAnalytics": false,
-        "showUsageWarnings": true
-      }
-    }
-  },
   "generators": {
     "@nx/react": {
       "application": {
@@ -31,23 +23,6 @@
   },
   "$schema": "./node_modules/nx/schemas/nx-schema.json",
   "targetDefaults": {
-    "build": {
-      "dependsOn": ["^build"],
-      "inputs": ["production", "^production"],
-      "cache": true
-    },
-    "build-storybook": {
-      "inputs": [
-        "default",
-        "^production",
-        "{workspaceRoot}/.storybook/**/*",
-        "{projectRoot}/.storybook/**/*",
-        "{projectRoot}/tsconfig.storybook.json"
-      ]
-    },
-    "e2e": {
-      "cache": true
-    },
     "@nx/jest:jest": {
       "inputs": ["default", "^production", "{workspaceRoot}/jest.preset.js"],
       "cache": true,
@@ -87,6 +62,35 @@
     "@nx/vite:test": {
       "cache": true,
       "inputs": ["default", "^production"]
+    },
+    "build-storybook": {
+      "inputs": [
+        "default",
+        "^production",
+        "{workspaceRoot}/.storybook/**/*",
+        "{projectRoot}/.storybook/**/*",
+        "{projectRoot}/tsconfig.storybook.json"
+      ]
+    },
+    "codegen": {
+      "cache": true,
+      "inputs": ["{workspaceRoot}/apis/api-gateway/schema.graphql"]
+    },
+    "extract-translations": {
+      "cache": false,
+      "inputs": ["default"]
+    },
+    "prisma-generate": {
+      "cache": false,
+      "inputs": ["{projectRoot}/**/schema.prisma"]
+    },
+    "subgraph-check": {
+      "cache": false,
+      "inputs": ["default"]
+    },
+    "type-check": {
+      "cache": true,
+      "inputs": ["default"]
     }
   },
   "namedInputs": {

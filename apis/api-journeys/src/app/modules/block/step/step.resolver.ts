@@ -6,7 +6,7 @@ import omit from 'lodash/omit'
 import slugify from 'slugify'
 
 import { CaslAbility } from '@core/nest/common/CaslAuthModule'
-import { Block } from '@core/prisma-journeys/client'
+import { Block } from '@core/prisma/journeys/client'
 
 import {
   StepBlockCreateInput,

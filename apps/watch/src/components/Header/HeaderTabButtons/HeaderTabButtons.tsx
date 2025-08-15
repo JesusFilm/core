@@ -25,12 +25,20 @@ export function HeaderTabButtons(): ReactElement {
 
   const headerItems = compact([
     strategies
-      ? { label: t('Resources'), icon: <TerminalIcon />, href: '/resources' }
+      ? {
+          label: t('Resources', { lng: 'en' }),
+          icon: <TerminalIcon />,
+          href: '/resources'
+        }
       : undefined,
     journeys
-      ? { label: t('Journeys'), icon: <JourneysIcon />, href: '/journeys' }
+      ? {
+          label: t('Journeys', { lng: 'en' }),
+          icon: <JourneysIcon />,
+          href: '/journeys'
+        }
       : undefined,
-    { label: t('Videos'), icon: <Play1Icon />, href: '/watch' }
+    { label: t('Videos', { lng: 'en' }), icon: <Play1Icon />, href: '/watch' }
   ])
 
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
@@ -122,7 +130,7 @@ export function HeaderTabButtons(): ReactElement {
           >
             {buttonIcon}
             <Typography variant="inherit">{buttonLabel}</Typography>
-            <ChervonDownIcon />
+            <ChervonDownIcon data-testid="ChevronDownIcon" />
           </Stack>
         </Button>
       </Box>
@@ -142,7 +150,7 @@ export function HeaderTabButtons(): ReactElement {
               <Stack direction="row" alignItems="center" width="100%" px={2.5}>
                 <ListItemIcon>{icon}</ListItemIcon>
                 <ListItemText
-                  primary={t(label)}
+                  primary={label}
                   primaryTypographyProps={{
                     variant: 'h6',
                     sx: {

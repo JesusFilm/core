@@ -8,7 +8,7 @@ import {
   Team,
   UserTeam,
   UserTeamRole
-} from '@core/prisma-journeys/client'
+} from '@core/prisma/journeys/client'
 
 import { AppAbility, AppCaslFactory } from '../../lib/casl/caslFactory'
 import { PrismaService } from '../../lib/prisma.service'

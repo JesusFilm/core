@@ -68,7 +68,7 @@ describe('QuizButton', () => {
       expect(screen.getByTestId('QuizModal')).toBeInTheDocument()
     })
 
-    const closeButton = screen.getByRole('button', { name: 'close quiz' })
+    const closeButton = screen.getByRole('button', { name: 'close' })
     fireEvent.click(closeButton)
 
     await waitFor(() => {
