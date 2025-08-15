@@ -77,14 +77,16 @@ class VideoMonitoringHelpers {
         !urlLower.includes('mailto:') &&
         !urlLower.includes('tel:')
       )
-      
+
       return hasValidDomain || hasVideoExtension
     }
   }
 
   static isVideoRelatedError(error: string): boolean {
     const errorLower = error.toLowerCase()
-    return this.VIDEO_ERROR_PATTERNS.some((pattern) => errorLower.includes(pattern))
+    return this.VIDEO_ERROR_PATTERNS.some((pattern) =>
+      errorLower.includes(pattern)
+    )
   }
 
   static isMuxRequest(url: string): boolean {
@@ -107,7 +109,7 @@ class VideoMonitoringHelpers {
         /^https?:\/\/[^/]*litix\.io\//,
         /^https?:\/\/[^/]*inferred\.litix\.io\//
       ]
-      return muxPatterns.some(pattern => pattern.test(urlLower))
+      return muxPatterns.some((pattern) => pattern.test(urlLower))
     }
   }
 
@@ -240,11 +242,11 @@ test('Video playback and MUX network connectivity monitoring', async ({
   )
 
   // Check for specific MUX-related network issues using helper functions
-  const muxRequests = networkRequestsArray.filter((req) => 
+  const muxRequests = networkRequestsArray.filter((req) =>
     VideoMonitoringHelpers.isMuxRequest(req.url)
   )
 
-  const hlsRequests = networkRequestsArray.filter((req) => 
+  const hlsRequests = networkRequestsArray.filter((req) =>
     VideoMonitoringHelpers.isHlsRequest(req.url)
   )
 
