@@ -13,18 +13,18 @@ import { GraphQLError } from 'graphql'
 import filter from 'lodash/filter'
 
 import {
-  CustomDomain,
-  Integration,
-  Prisma,
-  Team,
-  UserTeam
-} from '.prisma/api-journeys-client'
-import {
   CaslAbility,
   CaslAccessible,
   CaslPolicy
 } from '@core/nest/common/CaslAuthModule'
 import { CurrentUserId } from '@core/nest/decorators/CurrentUserId'
+import {
+  CustomDomain,
+  Integration,
+  Prisma,
+  Team,
+  UserTeam
+} from '@core/prisma/journeys/client'
 
 import { Action, AppAbility } from '../../lib/casl/caslFactory'
 import { AppCaslGuard } from '../../lib/casl/caslGuard'

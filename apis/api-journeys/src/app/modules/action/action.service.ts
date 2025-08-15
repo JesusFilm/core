@@ -3,7 +3,7 @@ import { GraphQLError } from 'graphql'
 import omit from 'lodash/omit'
 import { z } from 'zod'
 
-import { Action, Block } from '.prisma/api-journeys-client'
+import { Action, Block } from '@core/prisma/journeys/client'
 
 import {
   EmailActionInput,

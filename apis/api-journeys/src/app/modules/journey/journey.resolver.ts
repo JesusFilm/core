@@ -17,6 +17,13 @@ import omit from 'lodash/omit'
 import slugify from 'slugify'
 import { v4 as uuidv4 } from 'uuid'
 
+import { CaslAbility, CaslAccessible } from '@core/nest/common/CaslAuthModule'
+import { CurrentUserId } from '@core/nest/decorators/CurrentUserId'
+import { FromPostgresql } from '@core/nest/decorators/FromPostgresql'
+import {
+  PowerBiEmbed,
+  getPowerBiEmbed
+} from '@core/nest/powerBi/getPowerBiEmbed'
 import {
   Block,
   Action as BlockAction,
@@ -30,14 +37,7 @@ import {
   Team,
   UserJourney,
   UserJourneyRole
-} from '.prisma/api-journeys-client'
-import { CaslAbility, CaslAccessible } from '@core/nest/common/CaslAuthModule'
-import { CurrentUserId } from '@core/nest/decorators/CurrentUserId'
-import { FromPostgresql } from '@core/nest/decorators/FromPostgresql'
-import {
-  PowerBiEmbed,
-  getPowerBiEmbed
-} from '@core/nest/powerBi/getPowerBiEmbed'
+} from '@core/prisma/journeys/client'
 
 import {
   IdType,
