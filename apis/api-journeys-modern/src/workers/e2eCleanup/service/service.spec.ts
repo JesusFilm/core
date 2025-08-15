@@ -15,7 +15,7 @@ const mockPrismaUsers = {
   }
 }
 
-jest.mock('@core/prisma-users/client', () => ({
+jest.mock('@core/prisma/users/client', () => ({
   prismaUsers: mockPrismaUsers
 }))
 
@@ -53,7 +53,7 @@ describe('E2E Cleanup Service', () => {
           email: 'playwright123@example.com'
         },
         {
-          id: 'user-2', 
+          id: 'user-2',
           userId: 'playwright-user-2',
           email: 'playwright456@example.com'
         }
@@ -78,7 +78,7 @@ describe('E2E Cleanup Service', () => {
           title: 'Test Journey 2',
           userJourneys: [
             {
-              userId: 'playwright-user-2', 
+              userId: 'playwright-user-2',
               role: UserJourneyRole.owner
             }
           ]
@@ -349,7 +349,7 @@ describe('E2E Cleanup Service', () => {
       const expectedCutoffTime = Date.now() - 24 * 60 * 60 * 1000
       const actualCall = mockPrismaUsers.user.findMany.mock.calls[0][0]
       const actualCutoffTime = actualCall.where.createdAt.lt.getTime()
-      
+
       // Allow for small time difference due to test execution time
       expect(Math.abs(actualCutoffTime - expectedCutoffTime)).toBeLessThan(1000)
     })
@@ -433,7 +433,7 @@ describe('E2E Cleanup Service', () => {
       const expectedCutoffTime = Date.now() - olderThanHours * 60 * 60 * 1000
       const actualCall = mockPrismaUsers.user.findMany.mock.calls[0][0]
       const actualCutoffTime = actualCall.where.createdAt.lt.getTime()
-      
+
       // Allow for small time difference due to test execution time
       expect(Math.abs(actualCutoffTime - expectedCutoffTime)).toBeLessThan(1000)
     })
