@@ -1,0 +1,80 @@
+{
+  "name": "prisma-media",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/prisma/media/src",
+  "projectType": "library",
+  "tags": ["type:prisma", "scope:media"],
+  "targets": {
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "cache": true,
+        "cacheLocation": ".cache/prisma-media/eslint",
+        "cacheStrategy": "content"
+      }
+    },
+    "prisma-generate": {
+      "executor": "nx:run-commands",
+      "options": {
+        "parallel": false,
+        "commands": [
+          "npx prisma generate --schema libs/prisma/media/db/schema.prisma"
+        ]
+      }
+    },
+    "prisma-migrate": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          "tools/scripts/env-validator.sh --DOPPLER_CONFIG=dev --PG_DATABASE_URL_MEDIA=postgresql://postgres:postgres@db:5432/media?schema=public \"bash -c 'npx prisma migrate dev --schema libs/prisma/media/db/schema.prisma --name `date +\\\"%Y%m%d%H%M%S\\\"`'\""
+        ]
+      },
+      "configurations": {
+        "production": {
+          "commands": [
+            "tools/scripts/env-validator.sh --DOPPLER_CONFIG=dev --PG_DATABASE_URL_MEDIA=postgresql://postgres:postgres@db:5432/media?schema=public \"npx prisma migrate deploy --schema libs/prisma/media/db/schema.prisma\""
+          ]
+        }
+      }
+    },
+    "prisma-reset": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          "tools/scripts/env-validator.sh --DOPPLER_CONFIG=dev --PG_DATABASE_URL_MEDIA=postgresql://postgres:postgres@db:5432/media?schema=public \"npx prisma migrate reset --schema libs/prisma/media/db/schema.prisma --force\""
+        ]
+      }
+    },
+    "prisma-resolve-squash": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          "npx prisma migrate resolve --schema libs/prisma/media/db/schema.prisma --applied 000000000000_squashed_migrations"
+        ]
+      }
+    },
+    "prisma-studio": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          "npx prisma studio --schema libs/prisma/media/db/schema.prisma"
+        ]
+      }
+    },
+    "prisma-validate": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          "npx prisma validate --schema libs/prisma/media/db/schema.prisma"
+        ]
+      }
+    },
+    "type-check": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": ["npx tsc -b libs/prisma/media/tsconfig.json"]
+      }
+    }
+  }
+}
