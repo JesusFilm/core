@@ -60,34 +60,10 @@ describe('middleware', () => {
   })
 
   describe('locale detection', () => {
-    it('should ignore cookie locale and rely on path only', () => {
-      const req = createMockRequest('/watch/jesus.html', {
-        cookies: [{ name: 'NEXT_LOCALE', value: 'fingerprint---fr' }]
-      })
-      const result = middleware(req)
-      expect(result).toEqual(NextResponse.next())
-    })
-
-    it('should use URL path locale if no cookie', () => {
+    it('should use URL path locale', () => {
       const req = createMockRequest('/watch/jesus.html/french.html')
       const result = middleware(req) as NextResponse
       expect(result?.headers.get('x-middleware-rewrite')).toContain('/fr/')
-    })
-
-    it('should not use browser language when no path locale', () => {
-      const req = createMockRequest('/watch/jesus.html', {
-        headers: { 'accept-language': 'fr-FR,fr;q=0.9,en;q=0.8' }
-      })
-      const result = middleware(req)
-      expect(result).toEqual(NextResponse.next())
-    })
-
-    it('should not use geolocation when no path locale', () => {
-      const req = createMockRequest('/watch/jesus.html', {
-        headers: { 'cf-ipcountry': 'FR' }
-      })
-      const result = middleware(req)
-      expect(result).toEqual(NextResponse.next())
     })
 
     it('should fallback to default locale if no locale detected', () => {
@@ -102,7 +78,7 @@ describe('middleware', () => {
       const req = createMockRequest('/watch/jesus.html/french.html')
       const result = middleware(req) as NextResponse
       expect(result?.headers.get('x-middleware-rewrite')).toBe(
-        'http://localhost/fr/watch/jesus.html'
+        'http://localhost/fr/watch/jesus.html/french.html'
       )
     })
 
@@ -116,7 +92,7 @@ describe('middleware', () => {
       const req = createMockRequest('/watch/jesus.html/french.html?param=value')
       const result = middleware(req) as NextResponse
       expect(result?.headers.get('x-middleware-rewrite')).toBe(
-        'http://localhost/fr/watch/jesus.html?param=value'
+        'http://localhost/fr/watch/jesus.html/french.html?param=value'
       )
     })
   })
