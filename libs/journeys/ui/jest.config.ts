@@ -1,6 +1,7 @@
 import type { Config } from 'jest'
 
 const config: Config = {
+  injectGlobals: true,
   displayName: 'journeys-ui',
   moduleNameMapper: {
     'swiper/react': '<rootDir>/../../../apps/__mocks__/swiper/react',
@@ -15,7 +16,7 @@ const config: Config = {
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx'],
   coverageDirectory: '../../../coverage/libs/journeys/ui',
   setupFilesAfterEnv: ['<rootDir>setupTests.ts'],
-  collectCoverage: true,
+  collectCoverageFrom: ['src/**/*.{ts,tsx}', '!src/**/*.spec.{ts,tsx}'],
   coverageReporters: ['cobertura'],
   preset: '../../../jest.preset.js'
 }

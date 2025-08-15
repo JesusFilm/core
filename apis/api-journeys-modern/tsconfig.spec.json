@@ -6,6 +6,7 @@
     "jsx": "react-jsx",
     "types": [
       "jest",
+      "@jest/globals",
       "node",
       "@nx/react/typings/cssmodule.d.ts",
       "@nx/react/typings/image.d.ts"

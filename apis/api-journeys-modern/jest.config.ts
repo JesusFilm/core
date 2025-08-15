@@ -1,6 +1,7 @@
 import type { Config } from 'jest'
 
 const config: Config = {
+  injectGlobals: true,
   displayName: 'api-journeys-modern',
   globals: {},
   testEnvironment: 'node',
@@ -16,11 +17,10 @@ const config: Config = {
   },
   moduleFileExtensions: ['ts', 'js', 'html'],
   coverageDirectory: '../../coverage/apis/api-journeys-modern',
-  collectCoverage: true,
+  collectCoverageFrom: ['src/**/*.{ts,js}', '!src/**/*.spec.ts'],
   coverageReporters: ['cobertura'],
   preset: '../../jest.preset.js',
   setupFilesAfterEnv: ['<rootDir>/test/prismaMock.ts'],
-  testRunner: 'jest-circus/runner',
   transformIgnorePatterns: ['node_modules/(?!(@react-email/render)/)'],
   moduleNameMapper: {
     '@react-email/render': '<rootDir>/test/reactEmailRenderMock.ts'

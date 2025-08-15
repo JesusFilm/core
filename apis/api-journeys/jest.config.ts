@@ -1,6 +1,7 @@
 import type { Config } from 'jest'
 
 const config: Config = {
+  injectGlobals: true,
   displayName: 'api-journeys',
   globals: {},
   testEnvironment: 'node',
