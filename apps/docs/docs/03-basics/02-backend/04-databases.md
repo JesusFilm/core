@@ -28,4 +28,4 @@ What follows is the most up to date Entity Relationship Diagrams ([main branch](
 
 ### API Users
 
-![API Users ERD](https://raw.githubusercontent.com/JesusFilm/core/main/apis/api-users/db/ERD.svg)
+![API Users ERD](https://raw.githubusercontent.com/JesusFilm/core/main/libs/prisma/users/db/ERD.svg)

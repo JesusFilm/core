@@ -1,6 +1,6 @@
-import { Prisma, PrismaClient } from '.prisma/api-analytics-client'
+import { Prisma, PrismaClient } from '.prisma/api-users-client'
 
 const globalForPrisma = global as unknown as { prisma: PrismaClient }
 
-export * from '.prisma/api-analytics-client'
+export * from '.prisma/api-users-client'
 export const prisma = globalForPrisma.prisma || new PrismaClient()
