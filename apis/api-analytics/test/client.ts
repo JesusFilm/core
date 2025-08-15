@@ -2,7 +2,7 @@ import { createHash } from 'node:crypto'
 
 import { buildHTTPExecutor } from '@graphql-tools/executor-http'
 
-import { api_keys as PrismaApiKey } from '.prisma/api-analytics-client'
+import { api_keys as PrismaApiKey } from '@core/prisma/analytics/client'
 
 import { yoga } from '../src/yoga'
 
