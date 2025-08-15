@@ -1,9 +1,10 @@
+import { PrismaClient } from '.prisma/api-journeys-client'
+
 import {
   JourneyStatus,
   ThemeMode,
   ThemeName
 } from '../../src/app/__generated__/graphql'
-import { PrismaClient } from '../../../../libs/prisma/journeys/src/client'
 
 const prisma = new PrismaClient()
 
