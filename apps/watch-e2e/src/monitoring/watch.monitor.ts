@@ -23,7 +23,7 @@ import { expect, test } from '@playwright/test'
 // Helper functions for URL and error analysis
 class VideoMonitoringHelpers {
   private static readonly ALLOWED_DOMAINS = ['mux.com', 'litix.io', 'inferred.litix.io']
-  private static readonly VIDEO_PATH_PATTERNS = ['.hls', '.m3u8', '/video', '/stream']
+  private static readonly VIDEO_PATH_PATTERNS = ['.hls', '.m3u8']
   private static readonly VIDEO_ERROR_PATTERNS = [
     'mux.com',
     'litix.io',
@@ -52,10 +52,10 @@ class VideoMonitoringHelpers {
 
       return isAllowedDomain || hasVideoPath
     } catch {
-      // Fallback for malformed URLs - use more secure pattern matching
+      // Conservative fallback for malformed URLs - only match specific video file extensions
       const urlLower = url.toLowerCase()
       
-      // Use regex patterns to ensure proper domain matching
+      // Use strict regex patterns to ensure proper domain matching
       const domainPatterns = [
         /^https?:\/\/[^/]*mux\.com\//,
         /^https?:\/\/[^/]*litix\.io\//,
@@ -64,10 +64,18 @@ class VideoMonitoringHelpers {
       
       const hasValidDomain = domainPatterns.some(pattern => pattern.test(urlLower))
       
-      // Check for video file extensions in path
-      const videoExtensions = ['.hls', '.m3u8']
-      const hasVideoExtension = videoExtensions.some(ext => 
-        urlLower.includes(ext) && !urlLower.includes('javascript:') && !urlLower.includes('data:')
+      // Only match specific video file extensions with strict boundary checking
+      const videoExtensionPatterns = [
+        /\.hls(?:\?|$|#|\/)/,
+        /\.m3u8(?:\?|$|#|\/)/
+      ]
+      
+      const hasVideoExtension = videoExtensionPatterns.some(pattern => 
+        pattern.test(urlLower) && 
+        !urlLower.includes('javascript:') && 
+        !urlLower.includes('data:') &&
+        !urlLower.includes('mailto:') &&
+        !urlLower.includes('tel:')
       )
       
       return hasValidDomain || hasVideoExtension
@@ -111,18 +119,20 @@ class VideoMonitoringHelpers {
         urlObj.pathname.toLowerCase().includes('.m3u8')
       )
     } catch {
-      // Fallback for malformed URLs - use secure pattern matching
+      // Conservative fallback for malformed URLs - use strict pattern matching
       const urlLower = url.toLowerCase()
       
-      // Only match if it's a proper URL with video extensions
+      // Only match if it's a proper URL with video extensions and strict boundary checking
       const hlsPatterns = [
-        /\.hls(?:\?|$|#)/,
-        /\.m3u8(?:\?|$|#)/
+        /\.hls(?:\?|$|#|\/)/,
+        /\.m3u8(?:\?|$|#|\/)/
       ]
       
       return hlsPatterns.some(pattern => pattern.test(urlLower)) &&
              !urlLower.includes('javascript:') &&
-             !urlLower.includes('data:')
+             !urlLower.includes('data:') &&
+             !urlLower.includes('mailto:') &&
+             !urlLower.includes('tel:')
     }
   }
 }
@@ -257,8 +267,8 @@ test('Video playback and MUX network connectivity monitoring', async ({
     throw new Error(`Critical network errors: ${criticalErrors.join(', ')}`)
   }
 
-  // Fail if there are failed MUX requests (only if they have actual errors)
-  const failedMuxRequests = muxRequests.filter((req) => req.error)
+  // Fail if there are failed MUX requests (including HTTP errors with status 400+)
+  const failedMuxRequests = muxRequests.filter((req) => req.error || req.status >= 400)
   if (failedMuxRequests.length > 0) {
     console.log('🚨 Failed MUX requests:', failedMuxRequests)
     throw new Error(
