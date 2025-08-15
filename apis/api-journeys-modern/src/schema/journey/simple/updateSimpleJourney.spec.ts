@@ -343,6 +343,92 @@ describe('updateSimpleJourney', () => {
     )
   })
 
+  it('throws error when video is missing source property', async () => {
+    const videoJourney: JourneySimpleUpdate = {
+      title: 'Invalid Video Journey',
+      description: 'A journey with video missing source',
+      cards: [
+        {
+          id: 'video-card-1',
+          x: 0,
+          y: 0,
+          video: {
+            src: 'https://youtube.com/watch?v=dQw4w9WgXcQ'
+            // Missing source property
+          } as any,
+          defaultNextCard: 'card-2'
+        },
+        {
+          id: 'card-2',
+          x: 0,
+          y: 400,
+          button: { text: 'End', url: 'https://example.com' }
+        }
+      ]
+    }
+
+    await expect(updateSimpleJourney(journeyId, videoJourney)).rejects.toThrow(
+      'Video source and src is required'
+    )
+  })
+
+  it('throws error when video is missing src property', async () => {
+    const videoJourney: JourneySimpleUpdate = {
+      title: 'Invalid Video Journey',
+      description: 'A journey with video missing src',
+      cards: [
+        {
+          id: 'video-card-1',
+          x: 0,
+          y: 0,
+          video: {
+            source: 'youTube'
+            // Missing src property
+          } as any,
+          defaultNextCard: 'card-2'
+        },
+        {
+          id: 'card-2',
+          x: 0,
+          y: 400,
+          button: { text: 'End', url: 'https://example.com' }
+        }
+      ]
+    }
+
+    await expect(updateSimpleJourney(journeyId, videoJourney)).rejects.toThrow(
+      'Video source and src is required'
+    )
+  })
+
+  it('throws error when video is missing both source and src properties', async () => {
+    const videoJourney: JourneySimpleUpdate = {
+      title: 'Invalid Video Journey',
+      description: 'A journey with video missing both source and src',
+      cards: [
+        {
+          id: 'video-card-1',
+          x: 0,
+          y: 0,
+          video: {
+            // Missing both source and src properties
+          } as any,
+          defaultNextCard: 'card-2'
+        },
+        {
+          id: 'card-2',
+          x: 0,
+          y: 400,
+          button: { text: 'End', url: 'https://example.com' }
+        }
+      ]
+    }
+
+    await expect(updateSimpleJourney(journeyId, videoJourney)).rejects.toThrow(
+      'Video source and src is required'
+    )
+  })
+
   it('creates video block with navigation action when defaultNextCard is provided', async () => {
     const videoJourney: JourneySimpleUpdate = {
       title: 'Video Journey',
