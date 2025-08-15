@@ -38,8 +38,7 @@ export function useLanguageActions() {
       const newAudioLanguage = selectedLangObj?.id ?? state.audioLanguage
       const newSubtitleLanguage = selectedLangObj?.id ?? state.subtitleLanguage
 
-      // Set all affected cookies
-      setCookie('NEXT_LOCALE', language)
+      // Set affected cookies (exclude site language cookie; language defined by URL)
       setCookie('AUDIO_LANGUAGE', newAudioLanguage)
       setCookie('SUBTITLE_LANGUAGE', newSubtitleLanguage)
 

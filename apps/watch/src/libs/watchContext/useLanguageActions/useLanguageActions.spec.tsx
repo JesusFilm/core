@@ -90,10 +90,9 @@ describe('useLanguageActions', () => {
         result.current.actions.updateSiteLanguage('es')
       })
 
-      expect(mockSetCookie).toHaveBeenCalledWith('NEXT_LOCALE', 'es')
       expect(mockSetCookie).toHaveBeenCalledWith('AUDIO_LANGUAGE', '530')
       expect(mockSetCookie).toHaveBeenCalledWith('SUBTITLE_LANGUAGE', '530')
-      expect(mockSetCookie).toHaveBeenCalledTimes(3)
+      expect(mockSetCookie).toHaveBeenCalledTimes(2)
     })
 
     it('should fallback to current language IDs when selected language not found', async () => {
@@ -126,7 +125,6 @@ describe('useLanguageActions', () => {
         result.current.actions.updateSiteLanguage('de')
       })
 
-      expect(mockSetCookie).toHaveBeenCalledWith('NEXT_LOCALE', 'de')
       expect(mockSetCookie).toHaveBeenCalledWith('AUDIO_LANGUAGE', '529') // fallback to current
       expect(mockSetCookie).toHaveBeenCalledWith('SUBTITLE_LANGUAGE', '529') // fallback to current
     })
@@ -207,7 +205,6 @@ describe('useLanguageActions', () => {
         result.current.actions.updateSiteLanguage('es')
       })
 
-      expect(mockSetCookie).toHaveBeenCalledWith('NEXT_LOCALE', 'es')
       expect(mockSetCookie).toHaveBeenCalledWith('AUDIO_LANGUAGE', '529')
       expect(mockSetCookie).toHaveBeenCalledWith('SUBTITLE_LANGUAGE', '529')
     })

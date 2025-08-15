@@ -88,21 +88,11 @@ function getBrowserLanguage(req: NextRequest): string {
 }
 
 function getLocale(req: NextRequest): string {
-  // Priority 1: URL Path
+  // Only URL Path should determine language
   const pathLocale = getLocaleFromPath(req.nextUrl.pathname)
   if (pathLocale != null) return pathLocale
 
-  // Priority 2: Cookie
-  const cookieLocale = req.cookies.get('NEXT_LOCALE')?.value?.split('---')[1]
-  if (cookieLocale != null) return cookieLocale
-
-  // Priority 3: Browser Language
-  const browserLocale = getBrowserLanguage(req)
-  if (browserLocale !== DEFAULT_LOCALE) return browserLocale
-
-  // Priority 4: Geolocation (only check if no other locale found)
-  const geoLocale = getLocaleFromGeoHeaders(req)
-  return geoLocale ?? DEFAULT_LOCALE
+  return DEFAULT_LOCALE
 }
 
 export function middleware(req: NextRequest): NextResponse | undefined {
