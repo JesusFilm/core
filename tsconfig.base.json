@@ -25,6 +25,7 @@
       "@core/nest/decorators/*": ["libs/nest/decorators/src/lib/*"],
       "@core/nest/gqlAuthGuard/*": ["libs/nest/gqlAuthGuard/src/lib/*"],
       "@core/nest/powerBi/*": ["libs/nest/powerBi/src/lib/*"],
+      "@core/prisma/media/*": ["libs/prisma/media/src/*"],
       "@core/shared/ai/*": ["libs/shared/ai/src/*"],
       "@core/shared/gql": ["libs/shared/gql/src"],
       "@core/shared/ui-dynamic/*": [

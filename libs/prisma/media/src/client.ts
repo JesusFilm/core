@@ -1,6 +1,6 @@
-import { Prisma, PrismaClient } from './.prisma/client'
+import { Prisma, PrismaClient } from '.prisma/api-media-client'
 
-export * from './.prisma/client'
+export * from '.prisma/api-media-client'
 export { Prisma as PrismaMedia }
 export { PrismaClient as PrismaClientMedia }
 
