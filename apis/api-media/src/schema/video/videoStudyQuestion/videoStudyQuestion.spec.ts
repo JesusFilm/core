@@ -15,11 +15,6 @@ jest.mock('./updateOrder', () => ({
   updateOrderUpdate: jest.fn()
 }))
 
-jest.mock('../../../lib/crowdin/videoStudyQuestion', () => ({
-  exportStudyQuestionToCrowdin: jest.fn().mockResolvedValue(null),
-  updateStudyQuestionInCrowdin: jest.fn().mockResolvedValue(undefined)
-}))
-
 describe('videoStudyQuestion', () => {
   const client = getClient()
 

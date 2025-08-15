@@ -1,3 +1,7 @@
+import { DeepMockProxy, mockDeep, mockReset } from 'jest-mock-extended'
+
+import { crowdinClient } from '../src/lib/crowdin/crowdinClient'
+
 process.env.CROWDIN_PROJECT_ID = '1'
 process.env.CROWDIN_API_KEY = 'test-key'
 
@@ -41,33 +45,16 @@ export const mockTranslation = {
   updatedAt: '2024-01-01T00:00:00Z'
 }
 
-// Mock API objects
-const SourceStrings = {
-  listProjectStrings: jest.fn().mockImplementation(() => {
-    return {
-      data: [{ data: mockSourceString }],
-      pagination: { offset: 0, limit: 500 }
-    }
-  })
-}
+jest.mock('../src/lib/crowdin/crowdinClient', () => ({
+  __esModule: true,
+  crowdinClient: mockDeep<typeof crowdinClient>(),
+  crowdinProjectId: 1
+}))
 
-const StringTranslations = {
-  listLanguageTranslations: jest.fn().mockImplementation(() => {
-    return {
-      data: [{ data: mockTranslation }],
-      pagination: { offset: 0, limit: 500 }
-    }
-  })
-}
-
-jest.mock('@crowdin/crowdin-api-client', () => {
-  return {
-    __esModule: true,
-    default: function CrowdinClient() {
-      return {
-        sourceStringsApi: SourceStrings,
-        stringTranslationsApi: StringTranslations
-      }
-    }
-  }
+beforeEach(() => {
+  mockReset(crowdinClientMock)
 })
+
+export const crowdinClientMock = crowdinClient as DeepMockProxy<
+  typeof crowdinClient
+>

@@ -163,5 +163,6 @@ export async function fetchTranslations(
     )
   } catch (error) {
     handleCrowdinError(error, fileId, languageCode)
+    return []
   }
 }

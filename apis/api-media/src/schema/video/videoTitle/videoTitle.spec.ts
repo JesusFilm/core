@@ -3,11 +3,6 @@ import { graphql } from '@core/shared/gql'
 import { getClient } from '../../../../test/client'
 import { prismaMock } from '../../../../test/prismaMock'
 
-jest.mock('../../../lib/crowdin/videoTitle', () => ({
-  exportVideoTitleToCrowdin: jest.fn().mockResolvedValue(null),
-  updateVideoTitleInCrowdin: jest.fn().mockResolvedValue(undefined)
-}))
-
 describe('videoTitle', () => {
   const client = getClient()
 
