@@ -50,12 +50,12 @@ interface FindLanguagesByPreferenceResult {
 /**
  * Parameters for URL update functionality
  */
-interface UpdateURLParams {
-  /** Next.js router instance for navigation */
-  router: NextRouter
-  /** Target language slug to update the URL to */
-  targetSlug?: string | null
-}
+// interface UpdateURLParams {
+//   /** Next.js router instance for navigation */
+//   router: NextRouter
+//   /** Target language slug to update the URL to */
+//   targetSlug?: string | null
+// }
 
 /**
  * Parameters for setting language and helper text
@@ -123,18 +123,18 @@ function findLanguagesByPreference({
  * // Updates URL from /watch/video/english to /watch/video/spanish
  * ```
  */
-function updateURLIfNeeded({ router, targetSlug }: UpdateURLParams): void {
-  if (!targetSlug) return
+// function updateURLIfNeeded({ router, targetSlug }: UpdateURLParams): void {
+//   if (!targetSlug) return
 
-  const path = router.asPath.split('/')
-  const currentPathSlug = last(path)?.replace('.html', '')
+//   const path = router.asPath.split('/')
+//   const currentPathSlug = last(path)?.replace('.html', '')
 
-  if (currentPathSlug !== targetSlug) {
-    void router.push(
-      router.asPath.replace(last(router.asPath.split('/')) ?? '', targetSlug)
-    )
-  }
-}
+//   if (currentPathSlug !== targetSlug) {
+//     void router.push(
+//       router.asPath.replace(last(router.asPath.split('/')) ?? '', targetSlug)
+//     )
+//   }
+// }
 
 /**
  * Sets the current language selection and appropriate helper text
@@ -214,7 +214,7 @@ export function selectLanguageForVideo({
       setHelperText,
       t
     })
-    updateURLIfNeeded({ router, targetSlug: preferredAudioLanguage.slug })
+    // updateURLIfNeeded({ router, targetSlug: preferredAudioLanguage.slug })
   }
   // Scenario 2: Different preference is matched
   else if (currentAudioLanguage != null) {
@@ -229,7 +229,7 @@ export function selectLanguageForVideo({
         setHelperText,
         t
       })
-      updateURLIfNeeded({ router, targetSlug: currentAudioLanguage.slug })
+      // updateURLIfNeeded({ router, targetSlug: currentAudioLanguage.slug })
     }
   }
   // Scenario 3: Use path language

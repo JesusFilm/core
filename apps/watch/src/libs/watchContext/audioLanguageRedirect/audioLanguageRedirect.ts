@@ -7,7 +7,7 @@ import { getCookie } from '../../cookieHandler'
  * Handles redirect to preferred audio language URL if current URL doesn't match
  * the user's audio language preference stored in cookies
  */
-export async function audioLanguageRedirect({
+export function audioLanguageRedirect({
   languageVariantsLoading,
   languageVariantsData,
   router,
@@ -17,7 +17,8 @@ export async function audioLanguageRedirect({
   languageVariantsData?: GetLanguagesSlug
   router: NextRouter
   containerSlug?: string | null
-}): Promise<void> {
+}): string | undefined {
+  // }): Promise<void> {
   const cookieAudioLanguageId = getCookie('AUDIO_LANGUAGE')
   if (languageVariantsLoading || cookieAudioLanguageId == null) return
 
@@ -32,11 +33,22 @@ export async function audioLanguageRedirect({
   const selectedLanguage = selectedLanguageSlug?.split('/')[1]
 
   if (selectedLanguageSlug == null || selectedLanguage === currentLanguageSlug)
-    return
+    return undefined
 
-  await router.replace(
-    `/watch${
-      containerSlug != null ? `/${containerSlug}/` : '/'
-    }${selectedLanguageSlug}`
-  )
+  // console.log(
+  //   'link',
+  //   `watch${
+  //     containerSlug != null ? `/${containerSlug}/` : '/'
+  //   }${selectedLanguageSlug}`
+  // )
+
+  return `/watch${
+    containerSlug != null ? `/${containerSlug}/` : '/'
+  }${selectedLanguageSlug}`
+
+  // await router.replace(
+  //   `/watch${
+  //     containerSlug != null ? `/${containerSlug}/` : '/'
+  //   }${selectedLanguageSlug}`
+  // )
 }

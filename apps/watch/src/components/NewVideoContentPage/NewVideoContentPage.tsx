@@ -1,4 +1,8 @@
 import { useQuery } from '@apollo/client'
+import CloseIcon from '@mui/icons-material/Close'
+import IconButton from '@mui/material/IconButton'
+import Snackbar from '@mui/material/Snackbar'
+import Button from '@mui/material/Button'
 import { sendGTMEvent } from '@next/third-parties/google'
 import last from 'lodash/last'
 import { useRouter } from 'next/router'
@@ -51,6 +55,8 @@ export function NewVideoContentPage(): ReactElement {
 
   const [showShare, setShowShare] = useState(false)
   const [isFullscreen, setIsFullscreen] = useState(false)
+  const [redirectUrl, setRedirectUrl] = useState<string | null>(null)
+  const [openSnackbar, setOpenSnackbar] = useState(false)
   const { dispatch } = useWatch()
 
   const variantSlug = container?.variant?.slug ?? variant?.slug
@@ -78,12 +84,16 @@ export function NewVideoContentPage(): ReactElement {
 
   // Handle locale checking and redirect
   useEffect(() => {
-    void audioLanguageRedirect({
+    const url = audioLanguageRedirect({
       languageVariantsLoading,
       languageVariantsData,
       router,
       containerSlug: container?.slug
     })
+    if (url) {
+      setRedirectUrl(url)
+      setOpenSnackbar(true)
+    }
   }, [languageVariantsLoading, languageVariantsData, router, container?.slug])
 
   const filteredChildren = useMemo(
@@ -194,6 +204,35 @@ export function NewVideoContentPage(): ReactElement {
         hideFooter
         isFullscreen={isFullscreen}
       >
+        <Snackbar
+          open={openSnackbar}
+          onClose={() => setOpenSnackbar(false)}
+          message={t('Redirect to preferred language')}
+          anchorOrigin={{
+            vertical: 'top',
+            horizontal: 'right'
+          }}
+          action={
+            <>
+              <Button
+                color="secondary"
+                size="small"
+                onClick={() => {
+                  setOpenSnackbar(false)
+                  router.push(redirectUrl)
+                }}
+                sx={{
+                  color: '#cb333b'
+                }}
+              >
+                {redirectUrl?.split('/')?.pop() ?? 'Redirect'}
+              </Button>
+              <IconButton onClick={() => setOpenSnackbar(false)}>
+                <CloseIcon />
+              </IconButton>
+            </>
+          }
+        />
         <ContentPageBlurFilter>
           <NewVideoContentHeader loading={loading} videos={filteredChildren} />
           {((container?.childrenCount ?? 0) > 0 || childrenCount > 0) &&
