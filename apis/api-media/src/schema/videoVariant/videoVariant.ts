@@ -1,9 +1,8 @@
 import compact from 'lodash/compact'
 
-import { Platform } from '.prisma/api-media-client'
+import { Platform, prisma } from '@core/prisma/media/client'
 
 import { updateVideoVariantInAlgolia } from '../../lib/algolia/algoliaVideoVariantUpdate'
-import { prisma } from '../../lib/prisma'
 import {
   videoCacheReset,
   videoVariantCacheReset

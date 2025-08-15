@@ -73,69 +73,6 @@
         "command": "DOPPLER_TOKEN=$DOPPLER_API_MEDIA_TOKEN doppler secrets download --no-file --format=env-no-quotes --project api-media > apis/api-media/.env"
       }
     },
-    "prisma-generate": {
-      "executor": "nx:run-commands",
-      "options": {
-        "parallel": false,
-        "commands": [
-          "npx prisma generate --schema apis/api-media/db/schema.prisma"
-        ]
-      }
-    },
-    "prisma-migrate": {
-      "executor": "nx:run-commands",
-      "options": {
-        "commands": [
-          "bash -c 'npx prisma migrate dev --schema apis/api-media/db/schema.prisma --name `date +\"%Y%m%d%H%M%S\"`'"
-        ],
-        "parallel": false
-      },
-      "configurations": {
-        "production": {
-          "commands": [
-            "tools/scripts/env-validator.sh --DOPPLER_CONFIG=dev --PG_DATABASE_URL_MEDIA=postgresql://postgres:postgres@db:5432/media?schema=public \"npx prisma migrate deploy --schema apis/api-media/db/schema.prisma\""
-          ]
-        }
-      }
-    },
-    "prisma-reset": {
-      "executor": "nx:run-commands",
-      "options": {
-        "commands": [
-          "tools/scripts/env-validator.sh --DOPPLER_CONFIG=dev --PG_DATABASE_URL_MEDIA=postgresql://postgres:postgres@db:5432/media?schema=public \"npx prisma migrate reset --schema apis/api-media/db/schema.prisma --force\""
-        ]
-      }
-    },
-    "prisma-resolve-squash": {
-      "executor": "nx:run-commands",
-      "options": {
-        "commands": [
-          "npx prisma migrate resolve --schema apis/api-media/db/schema.prisma --applied 000000000000_squashed_migrations"
-        ]
-      }
-    },
-    "prisma-seed": {
-      "executor": "nx:run-commands",
-      "options": {
-        "commands": ["npm run ts-node apis/api-media/db/seed.ts"]
-      }
-    },
-    "prisma-studio": {
-      "executor": "nx:run-commands",
-      "options": {
-        "commands": [
-          "npx prisma studio --schema apis/api-media/db/schema.prisma"
-        ]
-      }
-    },
-    "prisma-validate": {
-      "executor": "nx:run-commands",
-      "options": {
-        "commands": [
-          "npx prisma validate --schema apis/api-media/db/schema.prisma"
-        ]
-      }
-    },
     "type-check": {
       "executor": "nx:run-commands",
       "options": {
@@ -228,6 +165,12 @@
       "executor": "nx:run-commands",
       "options": {
         "command": "npm run ts-node apis/api-media/src/workers/cli.ts populate-crowdin-ids"
+      }
+    },
+    "prisma-seed": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": ["npm run ts-node apis/api-media/db/seed.ts"]
       }
     }
   }

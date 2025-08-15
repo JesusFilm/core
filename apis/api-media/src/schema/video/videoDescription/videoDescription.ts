@@ -1,5 +1,6 @@
+import { prisma } from '@core/prisma/media/client'
+
 import { syncWithCrowdin } from '../../../lib/crowdin/crowdinSync'
-import { prisma } from '../../../lib/prisma'
 import { logger } from '../../../logger'
 import { builder } from '../../builder'
 import { Language } from '../../language'

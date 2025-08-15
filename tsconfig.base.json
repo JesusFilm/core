@@ -27,6 +27,7 @@
       "@core/nest/powerBi/*": ["libs/nest/powerBi/src/lib/*"],
       "@core/prisma/analytics/*": ["libs/prisma/analytics/src/*"],
       "@core/prisma/languages/*": ["libs/prisma/languages/src/*"],
+      "@core/prisma/media/*": ["libs/prisma/media/src/*"],
       "@core/prisma/users/*": ["libs/prisma/users/src/*"],
       "@core/shared/ai/*": ["libs/shared/ai/src/*"],
       "@core/shared/gql": ["libs/shared/gql/src"],

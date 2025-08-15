@@ -1,7 +1,8 @@
 import { Logger } from 'pino'
 import { z } from 'zod'
 
-import { prisma } from '../../../../lib/prisma'
+import { prisma } from '@core/prisma/media/client'
+
 import { CROWDIN_CONFIG } from '../../config'
 import { processFile } from '../../importer'
 import { ProcessedTranslation } from '../../types'

@@ -3,7 +3,7 @@ import readline from 'node:readline'
 import axios from 'axios'
 import { Logger } from 'pino'
 
-import { prisma } from '../../../lib/prisma'
+import { prisma } from '@core/prisma/media/client'
 
 export async function service(_logger?: Logger): Promise<void> {
   const response = await axios.get(

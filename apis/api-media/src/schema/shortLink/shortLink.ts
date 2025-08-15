@@ -2,9 +2,8 @@ import { nanoid } from 'nanoid'
 import { v4 as uuidv4 } from 'uuid'
 import { ZodError } from 'zod'
 
-import { Prisma } from '.prisma/api-media-client'
+import { Prisma, prisma } from '@core/prisma/media/client'
 
-import { prisma } from '../../lib/prisma'
 import { builder } from '../builder'
 import { Service } from '../enums/service'
 import { NotFoundError, NotUniqueError } from '../error'
