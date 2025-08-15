@@ -47,7 +47,6 @@ jobs:
         with:
           targets: prisma-generate
           all: true
-          parallel: 1
         env:
           DISABLE_ERD: true
       - name: Install Doppler
@@ -115,7 +114,6 @@ jobs:
         with:
           targets: prisma-generate
           all: true
-          parallel: 1
         env:
           DISABLE_ERD: true
       - name: Get number of CPU cores
