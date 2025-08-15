@@ -166,6 +166,12 @@
       "options": {
         "command": "npm run ts-node apis/api-media/src/workers/cli.ts populate-crowdin-ids"
       }
+    },
+    "prisma-seed": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": ["npm run ts-node apis/api-media/db/seed.ts"]
+      }
     }
   }
 }
