@@ -58,7 +58,6 @@ describe('importStudyQuestions', () => {
       },
       where: {
         crowdInId: { not: null },
-        videoId: { not: null },
         languageId: { equals: '529' }
       }
     })

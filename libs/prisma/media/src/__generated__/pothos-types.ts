@@ -185,9 +185,9 @@ export default interface PrismaTypes {
         ListRelations: never;
         Relations: {
             video: {
-                Shape: Video | null;
+                Shape: Video;
                 Name: "Video";
-                Nullable: true;
+                Nullable: false;
             };
         };
     };
@@ -335,9 +335,9 @@ export default interface PrismaTypes {
         ListRelations: never;
         Relations: {
             video: {
-                Shape: Video | null;
+                Shape: Video;
                 Name: "Video";
-                Nullable: true;
+                Nullable: false;
             };
         };
     };
@@ -355,9 +355,9 @@ export default interface PrismaTypes {
         ListRelations: never;
         Relations: {
             video: {
-                Shape: Video | null;
+                Shape: Video;
                 Name: "Video";
-                Nullable: true;
+                Nullable: false;
             };
         };
     };
@@ -375,9 +375,9 @@ export default interface PrismaTypes {
         ListRelations: never;
         Relations: {
             video: {
-                Shape: Video | null;
+                Shape: Video;
                 Name: "Video";
-                Nullable: true;
+                Nullable: false;
             };
         };
     };
@@ -395,9 +395,9 @@ export default interface PrismaTypes {
         ListRelations: never;
         Relations: {
             video: {
-                Shape: Video | null;
+                Shape: Video;
                 Name: "Video";
-                Nullable: true;
+                Nullable: false;
             };
         };
     };
