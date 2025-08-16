@@ -2,9 +2,8 @@ import { ApolloClient, InMemoryCache, createHttpLink } from '@apollo/client'
 import { Job } from 'bullmq'
 import { Logger } from 'pino'
 
+import { prisma } from '@core/prisma/journeys/client'
 import { graphql } from '@core/shared/gql'
-
-import { prisma } from '../../../lib/prisma'
 
 // GraphQL queries for ShortLink operations
 export const GET_SHORT_LINK = graphql(`
