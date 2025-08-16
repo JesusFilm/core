@@ -7,6 +7,24 @@
     "title": "Biblioteca gratuita de <underline>streaming</underline> de vídeos evangélicos.",
     "description": "Watch, learn and share the gospel in over 2000 languages"
   },
+  "ModernTestPage": {
+    "pageTitle": "Teste moderno",
+    "title": "Página de teste moderna",
+    "description": "Esta é uma página de teste para o aplicativo de relógio moderno. Ela demonstra a nova funcionalidade de roteamento e proxy.",
+    "feature1": {
+      "title": "Arquitetura moderna",
+      "description": "Criado com o Next.js App Router e os padrões modernos do React para otimizar o desempenho e a experiência do desenvolvedor."
+    },
+    "feature2": {
+      "title": "Roteamento inteligente",
+      "description": "Roteamento avançado de proxy que direciona de forma inteligente o tráfego para os serviços de back-end apropriados."
+    },
+    "feature3": {
+      "title": "Design responsivo",
+      "description": "Design totalmente responsivo que funciona perfeitamente em todos os dispositivos e tamanhos de tela."
+    },
+    "footer": "Essa página é servida pelo aplicativo Modern Watch por meio de roteamento de proxy inteligente."
+  },
   "DatadogErrorBoundary": {
     "somethingWentWrong": "Algo deu errado",
     "anErrorOccurred": "Ocorreu um erro ao carregar esta página. Tente atualizar.",
