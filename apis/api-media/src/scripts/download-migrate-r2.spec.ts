@@ -2,7 +2,7 @@ import { S3Client } from '@aws-sdk/client-s3'
 import { mockDeep } from 'jest-mock-extended'
 import { Logger } from 'pino'
 
-import { VideoVariantDownloadQuality } from '.prisma/api-media-client'
+import { VideoVariantDownloadQuality } from '@core/prisma/media/client'
 
 import { prismaMock } from '../../test/prismaMock'
 
