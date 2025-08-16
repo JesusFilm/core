@@ -5,6 +5,12 @@
   "projectType": "library",
   "tags": ["type:prisma", "scope:media"],
   "targets": {
+    "fetch-secrets": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "DOPPLER_TOKEN=$DOPPLER_API_MEDIA_TOKEN doppler secrets download --no-file --format=env-no-quotes --project api-media > libs/prisma/media/.env"
+      }
+    },
     "lint": {
       "executor": "@nx/eslint:lint",
       "outputs": ["{options.outputFile}"],

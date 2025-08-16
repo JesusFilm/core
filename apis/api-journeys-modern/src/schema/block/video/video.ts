@@ -1,4 +1,5 @@
-import { prisma } from '../../../lib/prisma'
+import { prisma } from '@core/prisma/journeys/client'
+
 import { builder } from '../../builder'
 import { VideoBlockSource } from '../../enums'
 import { MediaVideo } from '../../mediaVideo/mediaVideo'

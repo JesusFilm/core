@@ -283,7 +283,7 @@
     "@types/jest": "29.5.14",
     "@types/lodash": "^4.14.198",
     "@types/moxios": "^0.4.17",
-    "@types/node": "22.15.17",
+    "@types/node": "22.17.2",
     "@types/nodemailer": "^6.4.15",
     "@types/react": "18.3.23",
     "@types/react-beautiful-dnd": "^13.1.7",

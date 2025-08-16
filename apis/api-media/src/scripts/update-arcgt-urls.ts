@@ -1,4 +1,9 @@
-import { VideoVariantDownloadQuality, prisma } from '@core/prisma/media/client'
+import {
+  PrismaClient,
+  VideoVariantDownloadQuality
+} from '.prisma/api-media-client'
+
+const prisma = new PrismaClient()
 
 // Target qualities to update
 const TARGET_QUALITIES: VideoVariantDownloadQuality[] = [

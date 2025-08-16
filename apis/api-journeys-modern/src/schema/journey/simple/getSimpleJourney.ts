@@ -1,11 +1,10 @@
 import { GraphQLError } from 'graphql'
 
+import { prisma } from '@core/prisma/journeys/client'
 import {
   JourneySimple,
   journeySimpleSchema
 } from '@core/shared/ai/journeySimpleTypes'
-
-import { prisma } from '../../../lib/prisma'
 
 import { simplifyJourney } from './simplifyJourney'
 

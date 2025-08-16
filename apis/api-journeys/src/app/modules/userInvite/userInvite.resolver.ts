@@ -4,14 +4,14 @@ import { Args, Mutation, Query, Resolver } from '@nestjs/graphql'
 import { GraphQLError } from 'graphql'
 import omit from 'lodash/omit'
 
+import { CaslAbility, CaslAccessible } from '@core/nest/common/CaslAuthModule'
+import { User } from '@core/nest/common/firebaseClient'
+import { CurrentUser } from '@core/nest/decorators/CurrentUser'
 import {
   Prisma,
   UserInvite,
   UserJourneyRole
-} from '.prisma/api-journeys-client'
-import { CaslAbility, CaslAccessible } from '@core/nest/common/CaslAuthModule'
-import { User } from '@core/nest/common/firebaseClient'
-import { CurrentUser } from '@core/nest/decorators/CurrentUser'
+} from '@core/prisma/journeys/client'
 
 import { UserInviteCreateInput } from '../../__generated__/graphql'
 import { Action, AppAbility } from '../../lib/casl/caslFactory'
