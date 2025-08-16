@@ -615,6 +615,7 @@ export interface RadioOptionBlockCreateInput {
 export interface RadioOptionBlockUpdateInput {
   parentBlockId?: string | null;
   label?: string | null;
+  pollOptionImageBlockId?: string | null;
 }
 
 export interface RadioQuestionBlockCreateInput {
@@ -797,6 +798,7 @@ export interface VideoBlockCreateInput {
   source?: VideoBlockSource | null;
   posterBlockId?: string | null;
   fullsize?: boolean | null;
+  isCover?: boolean | null;
   objectFit?: VideoBlockObjectFit | null;
 }
 
@@ -808,6 +810,7 @@ export interface VideoBlockUpdateInput {
   duration?: number | null;
   videoId?: string | null;
   videoVariantLanguageId?: string | null;
+  source?: VideoBlockSource | null;
   posterBlockId?: string | null;
   fullsize?: boolean | null;
   objectFit?: VideoBlockObjectFit | null;

@@ -388,7 +388,7 @@ export interface CardFormRestore_image_VideoBlock {
    * internal source: videoId, videoVariantLanguageId, and video present
    * youTube source: videoId, title, description, and duration present
    */
-  source: VideoBlockSource | null;
+  source: VideoBlockSource;
   /**
    * internal source videos: this field is not populated and instead only present
    * in the video field.
@@ -842,7 +842,7 @@ export interface CardFormRestore_subtitle_VideoBlock {
    * internal source: videoId, videoVariantLanguageId, and video present
    * youTube source: videoId, title, description, and duration present
    */
-  source: VideoBlockSource | null;
+  source: VideoBlockSource;
   /**
    * internal source videos: this field is not populated and instead only present
    * in the video field.
@@ -1296,7 +1296,7 @@ export interface CardFormRestore_title_VideoBlock {
    * internal source: videoId, videoVariantLanguageId, and video present
    * youTube source: videoId, title, description, and duration present
    */
-  source: VideoBlockSource | null;
+  source: VideoBlockSource;
   /**
    * internal source videos: this field is not populated and instead only present
    * in the video field.
@@ -1750,7 +1750,7 @@ export interface CardFormRestore_textResponse_VideoBlock {
    * internal source: videoId, videoVariantLanguageId, and video present
    * youTube source: videoId, title, description, and duration present
    */
-  source: VideoBlockSource | null;
+  source: VideoBlockSource;
   /**
    * internal source videos: this field is not populated and instead only present
    * in the video field.
@@ -2204,7 +2204,7 @@ export interface CardFormRestore_button_VideoBlock {
    * internal source: videoId, videoVariantLanguageId, and video present
    * youTube source: videoId, title, description, and duration present
    */
-  source: VideoBlockSource | null;
+  source: VideoBlockSource;
   /**
    * internal source videos: this field is not populated and instead only present
    * in the video field.
@@ -2658,7 +2658,7 @@ export interface CardFormRestore_startIcon_VideoBlock {
    * internal source: videoId, videoVariantLanguageId, and video present
    * youTube source: videoId, title, description, and duration present
    */
-  source: VideoBlockSource | null;
+  source: VideoBlockSource;
   /**
    * internal source videos: this field is not populated and instead only present
    * in the video field.
@@ -3112,7 +3112,7 @@ export interface CardFormRestore_endIcon_VideoBlock {
    * internal source: videoId, videoVariantLanguageId, and video present
    * youTube source: videoId, title, description, and duration present
    */
-  source: VideoBlockSource | null;
+  source: VideoBlockSource;
   /**
    * internal source videos: this field is not populated and instead only present
    * in the video field.
@@ -3566,7 +3566,7 @@ export interface CardFormRestore_body_VideoBlock {
    * internal source: videoId, videoVariantLanguageId, and video present
    * youTube source: videoId, title, description, and duration present
    */
-  source: VideoBlockSource | null;
+  source: VideoBlockSource;
   /**
    * internal source videos: this field is not populated and instead only present
    * in the video field.

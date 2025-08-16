@@ -388,7 +388,7 @@ export interface CardCtaRestore_imageRestore_VideoBlock {
    * internal source: videoId, videoVariantLanguageId, and video present
    * youTube source: videoId, title, description, and duration present
    */
-  source: VideoBlockSource | null;
+  source: VideoBlockSource;
   /**
    * internal source videos: this field is not populated and instead only present
    * in the video field.
@@ -842,7 +842,7 @@ export interface CardCtaRestore_subtitleRestore_VideoBlock {
    * internal source: videoId, videoVariantLanguageId, and video present
    * youTube source: videoId, title, description, and duration present
    */
-  source: VideoBlockSource | null;
+  source: VideoBlockSource;
   /**
    * internal source videos: this field is not populated and instead only present
    * in the video field.
@@ -1296,7 +1296,7 @@ export interface CardCtaRestore_titleRestore_VideoBlock {
    * internal source: videoId, videoVariantLanguageId, and video present
    * youTube source: videoId, title, description, and duration present
    */
-  source: VideoBlockSource | null;
+  source: VideoBlockSource;
   /**
    * internal source videos: this field is not populated and instead only present
    * in the video field.
@@ -1750,7 +1750,7 @@ export interface CardCtaRestore_button1Restore_VideoBlock {
    * internal source: videoId, videoVariantLanguageId, and video present
    * youTube source: videoId, title, description, and duration present
    */
-  source: VideoBlockSource | null;
+  source: VideoBlockSource;
   /**
    * internal source videos: this field is not populated and instead only present
    * in the video field.
@@ -2204,7 +2204,7 @@ export interface CardCtaRestore_startIcon1Restore_VideoBlock {
    * internal source: videoId, videoVariantLanguageId, and video present
    * youTube source: videoId, title, description, and duration present
    */
-  source: VideoBlockSource | null;
+  source: VideoBlockSource;
   /**
    * internal source videos: this field is not populated and instead only present
    * in the video field.
@@ -2658,7 +2658,7 @@ export interface CardCtaRestore_endIcon1Restore_VideoBlock {
    * internal source: videoId, videoVariantLanguageId, and video present
    * youTube source: videoId, title, description, and duration present
    */
-  source: VideoBlockSource | null;
+  source: VideoBlockSource;
   /**
    * internal source videos: this field is not populated and instead only present
    * in the video field.
@@ -3112,7 +3112,7 @@ export interface CardCtaRestore_button2Restore_VideoBlock {
    * internal source: videoId, videoVariantLanguageId, and video present
    * youTube source: videoId, title, description, and duration present
    */
-  source: VideoBlockSource | null;
+  source: VideoBlockSource;
   /**
    * internal source videos: this field is not populated and instead only present
    * in the video field.
@@ -3566,7 +3566,7 @@ export interface CardCtaRestore_startIcon2Restore_VideoBlock {
    * internal source: videoId, videoVariantLanguageId, and video present
    * youTube source: videoId, title, description, and duration present
    */
-  source: VideoBlockSource | null;
+  source: VideoBlockSource;
   /**
    * internal source videos: this field is not populated and instead only present
    * in the video field.
@@ -4020,7 +4020,7 @@ export interface CardCtaRestore_endIcon2Restore_VideoBlock {
    * internal source: videoId, videoVariantLanguageId, and video present
    * youTube source: videoId, title, description, and duration present
    */
-  source: VideoBlockSource | null;
+  source: VideoBlockSource;
   /**
    * internal source videos: this field is not populated and instead only present
    * in the video field.
@@ -4474,7 +4474,7 @@ export interface CardCtaRestore_button3Restore_VideoBlock {
    * internal source: videoId, videoVariantLanguageId, and video present
    * youTube source: videoId, title, description, and duration present
    */
-  source: VideoBlockSource | null;
+  source: VideoBlockSource;
   /**
    * internal source videos: this field is not populated and instead only present
    * in the video field.
@@ -4928,7 +4928,7 @@ export interface CardCtaRestore_startIcon3Restore_VideoBlock {
    * internal source: videoId, videoVariantLanguageId, and video present
    * youTube source: videoId, title, description, and duration present
    */
-  source: VideoBlockSource | null;
+  source: VideoBlockSource;
   /**
    * internal source videos: this field is not populated and instead only present
    * in the video field.
@@ -5382,7 +5382,7 @@ export interface CardCtaRestore_endIcon3Restore_VideoBlock {
    * internal source: videoId, videoVariantLanguageId, and video present
    * youTube source: videoId, title, description, and duration present
    */
-  source: VideoBlockSource | null;
+  source: VideoBlockSource;
   /**
    * internal source videos: this field is not populated and instead only present
    * in the video field.
