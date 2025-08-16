@@ -1,14 +1,42 @@
 import Image from 'next/image'
 import NextLink from 'next/link'
+import { useRouter } from 'next/router'
 import { ReactElement } from 'react'
 
+import { LANGUAGE_MAPPINGS } from '../../../../libs/localeMapping'
 import { usePlayer } from '../../../../libs/playerContext/PlayerContext'
 import { AudioLanguageButton } from '../../../VideoContentPage/AudioLanguageButton'
+
+/**
+ * Determines the correct logo link based on the current URL path.
+ * For inner pages with language slugs, returns /watch/{languageSlug}.html
+ * Otherwise returns /watch
+ */
+function getLogoLink(pathname: string): string {
+  const segments = pathname.split('/').filter(Boolean)
+  
+  // Find if there's a language slug in the path
+  for (const segment of segments) {
+    const mapping = Object.values(LANGUAGE_MAPPINGS).find((m) =>
+      m.languageSlugs.includes(segment)
+    )
+    
+    if (mapping) {
+      // Found a language slug, return the watch path with that language
+      return `/watch/${segment}`
+    }
+  }
+  
+  // No language slug found, return /watch
+  return '/watch'
+}
 
 export function ContentHeader(): ReactElement {
   const {
     state: { play, active, loading }
   } = usePlayer()
+  const router = useRouter()
+  const logoLink = router?.asPath ? getLogoLink(router.asPath) : '/watch'
   const visible = !play || active || loading
   return (
     <div
@@ -20,7 +48,7 @@ export function ContentHeader(): ReactElement {
           visible ? 'opacity-100' : 'opacity-0'
         } ${visible ? 'delay-0' : 'delay-[2000ms]'}`}
     >
-      <NextLink href="/watch">
+      <NextLink href={logoLink}>
         <Image
           src="/watch/assets/jesusfilm-sign.svg"
           alt="JesusFilm Project"
