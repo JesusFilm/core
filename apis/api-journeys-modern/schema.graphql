@@ -2,14 +2,12 @@ extend schema
   @link(url: "https://specs.apollo.dev/federation/v2.6", import: ["@extends", "@external", "@key", "@shareable"])
 
 interface Action {
-  parentBlockId: ID
+  parentBlockId: ID!
   gtmEventName: String
-  parentBlock: Block
+  parentBlock: Block!
 }
 
-interface Block
-  @key(fields: "id")
-{
+interface Block {
   id: ID!
   journeyId: ID!
   parentBlockId: ID
@@ -40,21 +38,21 @@ enum ButtonAlignment {
 }
 
 type ButtonBlock implements Block
-  @key(fields: "id")
+  @shareable
 {
-  id: ID! @shareable
-  journeyId: ID! @shareable
-  parentBlockId: ID @shareable
-  parentOrder: Int @shareable
-  label: String! @shareable
-  variant: ButtonVariant @shareable
-  color: ButtonColor @shareable
-  size: ButtonSize @shareable
-  startIconId: ID @shareable
-  endIconId: ID @shareable
-  submitEnabled: Boolean @shareable
-  settings: ButtonBlockSettings @shareable
-  action: Action @shareable
+  id: ID!
+  journeyId: ID!
+  parentBlockId: ID
+  parentOrder: Int
+  label: String!
+  variant: ButtonVariant
+  color: ButtonColor
+  size: ButtonSize
+  startIconId: ID
+  endIconId: ID
+  submitEnabled: Boolean
+  settings: ButtonBlockSettings
+  action: Action
 }
 
 input ButtonBlockCreateInput {
@@ -69,12 +67,14 @@ input ButtonBlockCreateInput {
   settings: ButtonBlockSettingsInput
 }
 
-type ButtonBlockSettings {
+type ButtonBlockSettings
+  @shareable
+{
   """Alignment of the button"""
-  alignment: ButtonAlignment @shareable
+  alignment: ButtonAlignment
 
   """Color of the button"""
-  color: String @shareable
+  color: String
 }
 
 input ButtonBlockSettingsInput {
@@ -126,52 +126,12 @@ enum ButtonVariant {
 }
 
 type CardBlock implements Block
-  @key(fields: "id")
+  @shareable
 {
-  id: ID! @shareable
-  journeyId: ID! @shareable
-  parentBlockId: ID @shareable
-  parentOrder: Int @shareable
-
-  """backgroundColor should be a HEX color value e.g #FFFFFF for white."""
-  backgroundColor: String @shareable
-
-  """
-  backdropBlur should be a number representing blur amount in pixels e.g 20.
-  """
-  backdropBlur: Int @shareable
-
-  """
-  coverBlockId is present if a child block should be used as a cover.
-  This child block should not be rendered normally, instead it should be used
-  as a background. Blocks are often of type ImageBlock or VideoBlock.
-  """
-  coverBlockId: ID @shareable
-
-  """
-  fullscreen should control how the coverBlock is displayed. When fullscreen
-  is set to true the coverBlock Image should be displayed as a blur in the
-  background.
-  """
-  fullscreen: Boolean! @shareable
-
-  """
-  themeMode can override journey themeMode. If nothing is set then use
-  themeMode from journey
-  """
-  themeMode: ThemeMode @shareable
-
-  """
-  themeName can override journey themeName. If nothing is set then use
-  themeName from journey
-  """
-  themeName: ThemeName @shareable
-}
-
-input CardBlockCreateInput {
-  id: ID
+  id: ID!
   journeyId: ID!
-  parentBlockId: ID!
+  parentBlockId: ID
+  parentOrder: Int
 
   """backgroundColor should be a HEX color value e.g #FFFFFF for white."""
   backgroundColor: String
@@ -179,6 +139,40 @@ input CardBlockCreateInput {
   """
   backdropBlur should be a number representing blur amount in pixels e.g 20.
   """
+  backdropBlur: Int
+
+  """
+  coverBlockId is present if a child block should be used as a cover.
+  This child block should not be rendered normally, instead it should be used
+  as a background. Blocks are often of type ImageBlock or VideoBlock.
+  """
+  coverBlockId: ID
+
+  """
+  fullscreen should control how the coverBlock is displayed. When fullscreen
+  is set to true the coverBlock Image should be displayed as a blur in the
+  background.
+  """
+  fullscreen: Boolean!
+
+  """
+  themeMode can override journey themeMode. If nothing is set then use
+  themeMode from journey
+  """
+  themeMode: ThemeMode
+
+  """
+  themeName can override journey themeName. If nothing is set then use
+  themeName from journey
+  """
+  themeName: ThemeName
+}
+
+input CardBlockCreateInput {
+  id: ID
+  journeyId: ID!
+  parentBlockId: ID!
+  backgroundColor: String
   backdropBlur: Int
   fullscreen: Boolean
   themeMode: ThemeMode
@@ -233,15 +227,19 @@ scalar DateTimeISO
 type EmailAction implements Action
   @shareable
 {
-  parentBlockId: ID
+  parentBlockId: ID!
   gtmEventName: String
-  parentBlock: Block
+  parentBlock: Block!
   email: String!
+  customizable: Boolean
+  parentStepId: String
 }
 
 input EmailActionInput {
   gtmEventName: String
   email: String!
+  customizable: Boolean
+  parentStepId: String
 }
 
 interface Event {
@@ -279,34 +277,16 @@ enum GridAlignItems {
 }
 
 type GridContainerBlock implements Block
-  @key(fields: "id")
+  @shareable
 {
-  id: ID! @shareable
-  journeyId: ID! @shareable
-  parentBlockId: ID @shareable
-  parentOrder: Int @shareable
-  gap: Int! @shareable
-  direction: GridDirection! @shareable
-  justifyContent: GridJustifyContent! @shareable
-  alignItems: GridAlignItems! @shareable
-}
-
-input GridContainerBlockCreateInput {
-  id: ID
+  id: ID!
   journeyId: ID!
-  parentBlockId: ID!
-  gap: Int
-  direction: GridDirection
-  justifyContent: GridJustifyContent
-  alignItems: GridAlignItems
-}
-
-input GridContainerBlockUpdateInput {
   parentBlockId: ID
-  gap: Int
-  direction: GridDirection
-  justifyContent: GridJustifyContent
-  alignItems: GridAlignItems
+  parentOrder: Int
+  gap: Int!
+  direction: GridDirection!
+  justifyContent: GridJustifyContent!
+  alignItems: GridAlignItems!
 }
 
 enum GridDirection {
@@ -317,31 +297,15 @@ enum GridDirection {
 }
 
 type GridItemBlock implements Block
-  @key(fields: "id")
+  @shareable
 {
-  id: ID! @shareable
-  journeyId: ID! @shareable
-  parentBlockId: ID @shareable
-  parentOrder: Int @shareable
-  xl: Int! @shareable
-  lg: Int! @shareable
-  sm: Int! @shareable
-}
-
-input GridItemBlockCreateInput {
-  id: ID
+  id: ID!
   journeyId: ID!
-  parentBlockId: ID!
-  xl: Int
-  lg: Int
-  sm: Int
-}
-
-input GridItemBlockUpdateInput {
   parentBlockId: ID
-  xl: Int
-  lg: Int
-  sm: Int
+  parentOrder: Int
+  xl: Int!
+  lg: Int!
+  sm: Int!
 }
 
 enum GridJustifyContent {
@@ -351,15 +315,15 @@ enum GridJustifyContent {
 }
 
 type IconBlock implements Block
-  @key(fields: "id")
+  @shareable
 {
-  id: ID! @shareable
-  journeyId: ID! @shareable
-  parentBlockId: ID @shareable
-  parentOrder: Int @shareable
-  name: IconName @shareable
-  color: IconColor @shareable
-  size: IconSize @shareable
+  id: ID!
+  journeyId: ID!
+  parentBlockId: ID
+  parentOrder: Int
+  name: IconName
+  color: IconColor
+  size: IconSize
 }
 
 input IconBlockCreateInput {
@@ -420,26 +384,26 @@ enum IconSize {
 }
 
 type ImageBlock implements Block
-  @key(fields: "id")
+  @shareable
 {
-  id: ID! @shareable
-  journeyId: ID! @shareable
-  parentBlockId: ID @shareable
-  parentOrder: Int @shareable
-  src: String @shareable
-  alt: String! @shareable
-  width: Int! @shareable
-  height: Int! @shareable
+  id: ID!
+  journeyId: ID!
+  parentBlockId: ID
+  parentOrder: Int
+  src: String
+  alt: String!
+  width: Int!
+  height: Int!
 
   """
   blurhash is a compact representation of a placeholder for an image.
   Find a frontend implementation at https://github.com/woltapp/blurhash
     
   """
-  blurhash: String! @shareable
-  focalTop: Int @shareable
-  focalLeft: Int @shareable
-  scale: Int @shareable
+  blurhash: String!
+  focalTop: Int
+  focalLeft: Int
+  scale: Int
 }
 
 input ImageBlockCreateInput {
@@ -479,6 +443,7 @@ input ImageBlockUpdateInput {
   blurhash: String
   width: Int
   height: Int
+  isCover: Boolean
   scale: Int
   focalTop: Int
   focalLeft: Int
@@ -609,17 +574,21 @@ type Language
 type LinkAction implements Action
   @shareable
 {
-  parentBlockId: ID
+  parentBlockId: ID!
   gtmEventName: String
-  parentBlock: Block
+  parentBlock: Block!
   url: String!
   target: String
+  customizable: Boolean
+  parentStepId: String
 }
 
 input LinkActionInput {
   gtmEventName: String
   url: String!
   target: String
+  customizable: Boolean
+  parentStepId: String
 }
 
 union MediaVideo = MuxVideo | Video | YouTube
@@ -688,9 +657,9 @@ type MuxVideo
 type NavigateToBlockAction implements Action
   @shareable
 {
-  parentBlockId: ID
+  parentBlockId: ID!
   gtmEventName: String
-  parentBlock: Block
+  parentBlock: Block!
   blockId: String!
 }
 
@@ -705,20 +674,20 @@ type Query {
 }
 
 type RadioOptionBlock implements Block
-  @key(fields: "id")
+  @shareable
 {
-  id: ID! @shareable
-  journeyId: ID! @shareable
-  parentBlockId: ID @shareable
-  parentOrder: Int @shareable
-  label: String! @shareable
+  id: ID!
+  journeyId: ID!
+  parentBlockId: ID
+  parentOrder: Int
+  label: String!
 
   """
   pollOptionImageBlockId is present if a child block should be used as a poll option image.
         This child block should not be rendered normally, instead it should be used
         as a poll option image. Blocks are often of type ImageBlock
   """
-  pollOptionImageBlockId: ID @shareable
+  pollOptionImageBlockId: ID
 }
 
 input RadioOptionBlockCreateInput {
@@ -731,26 +700,23 @@ input RadioOptionBlockCreateInput {
 input RadioOptionBlockUpdateInput {
   parentBlockId: ID
   label: String
+  pollOptionImageBlockId: ID
 }
 
 type RadioQuestionBlock implements Block
-  @key(fields: "id")
+  @shareable
 {
-  id: ID! @shareable
-  journeyId: ID! @shareable
-  parentBlockId: ID @shareable
-  parentOrder: Int @shareable
-  gridView: Boolean @shareable
+  id: ID!
+  journeyId: ID!
+  parentBlockId: ID
+  parentOrder: Int
+  gridView: Boolean
 }
 
 input RadioQuestionBlockCreateInput {
   id: ID
   journeyId: ID!
   parentBlockId: ID!
-}
-
-input RadioQuestionBlockUpdateInput {
-  parentBlockId: ID
 }
 
 type RadioQuestionSubmissionEvent implements Event
@@ -764,14 +730,14 @@ type RadioQuestionSubmissionEvent implements Event
 }
 
 type SignUpBlock implements Block
-  @key(fields: "id")
+  @shareable
 {
-  id: ID! @shareable
-  journeyId: ID! @shareable
-  parentBlockId: ID @shareable
-  parentOrder: Int @shareable
-  submitIconId: ID @shareable
-  submitLabel: String @shareable
+  id: ID!
+  journeyId: ID!
+  parentBlockId: ID
+  parentOrder: Int
+  submitIconId: ID
+  submitLabel: String
 }
 
 input SignUpBlockCreateInput {
@@ -807,13 +773,13 @@ input SignUpSubmissionEventCreateInput {
 }
 
 type SpacerBlock implements Block
-  @key(fields: "id")
+  @shareable
 {
-  id: ID! @shareable
-  journeyId: ID! @shareable
-  parentBlockId: ID @shareable
-  parentOrder: Int @shareable
-  spacing: Int @shareable
+  id: ID!
+  journeyId: ID!
+  parentBlockId: ID
+  parentOrder: Int
+  spacing: Int
 }
 
 input SpacerBlockCreateInput {
@@ -824,40 +790,41 @@ input SpacerBlockCreateInput {
 }
 
 input SpacerBlockUpdateInput {
+  parentBlockId: ID
   spacing: Int
 }
 
 type StepBlock implements Block
-  @key(fields: "id")
+  @shareable
 {
-  id: ID! @shareable
-  journeyId: ID! @shareable
-  parentBlockId: ID @shareable
-  parentOrder: Int @shareable
+  id: ID!
+  journeyId: ID!
+  parentBlockId: ID
+  parentOrder: Int
 
   """
   locked will be set to true if the user should not be able to manually
   advance to the next step.
   """
-  locked: Boolean! @shareable
+  locked: Boolean!
 
   """
   nextBlockId contains the preferred block to navigate to, users will have to
   manually set the next block they want to card to navigate to
   """
-  nextBlockId: ID @shareable
+  nextBlockId: ID
 
   """
   x is used to position the block horizontally in the journey flow diagram on
   the editor.
   """
-  x: Int @shareable
+  x: Int
 
   """
   y is used to position the block vertically in the journey flow diagram on
   the editor.
   """
-  y: Int @shareable
+  y: Int
 
   """
   Slug should be unique amongst all blocks
@@ -866,7 +833,7 @@ type StepBlock implements Block
   If the generated slug is not unique the uuid will be placed
   at the end of the slug guaranteeing uniqueness
   """
-  slug: String @shareable
+  slug: String
 }
 
 input StepBlockCreateInput {
@@ -969,20 +936,20 @@ type Subscription {
 }
 
 type TextResponseBlock implements Block
-  @key(fields: "id")
+  @shareable
 {
-  id: ID! @shareable
-  journeyId: ID! @shareable
-  parentBlockId: ID @shareable
-  parentOrder: Int @shareable
-  label: String! @shareable
-  placeholder: String @shareable
-  required: Boolean @shareable
-  hint: String @shareable
-  minRows: Int @shareable
-  type: TextResponseType @shareable
-  routeId: String @shareable
-  integrationId: String @shareable
+  id: ID!
+  journeyId: ID!
+  parentBlockId: ID
+  parentOrder: Int
+  label: String!
+  placeholder: String
+  required: Boolean
+  hint: String
+  minRows: Int
+  type: TextResponseType
+  routeId: String
+  integrationId: String
 }
 
 input TextResponseBlockCreateInput {
@@ -1046,17 +1013,17 @@ enum TypographyAlign {
 }
 
 type TypographyBlock implements Block
-  @key(fields: "id")
+  @shareable
 {
-  id: ID! @shareable
-  journeyId: ID! @shareable
-  parentBlockId: ID @shareable
-  parentOrder: Int @shareable
-  content: String! @shareable
-  variant: TypographyVariant @shareable
-  color: TypographyColor @shareable
-  align: TypographyAlign @shareable
-  settings: TypographyBlockSettings @shareable
+  id: ID!
+  journeyId: ID!
+  parentBlockId: ID
+  parentOrder: Int
+  content: String!
+  variant: TypographyVariant
+  color: TypographyColor
+  align: TypographyAlign
+  settings: TypographyBlockSettings
 }
 
 input TypographyBlockCreateInput {
@@ -1070,9 +1037,11 @@ input TypographyBlockCreateInput {
   settings: TypographyBlockSettingsInput
 }
 
-type TypographyBlockSettings {
+type TypographyBlockSettings
+  @shareable
+{
   """Color of the typography"""
-  color: String @shareable
+  color: String
 }
 
 input TypographyBlockSettingsInput {
@@ -1121,28 +1090,32 @@ type Video
 type VideoBlock implements Block
   @key(fields: "id")
   @shareable
-  @key(fields: "id")
 {
-  id: ID! @shareable
-  journeyId: ID! @shareable
-  parentBlockId: ID @shareable
-  parentOrder: Int @shareable
-  autoplay: Boolean! @shareable
-  startAt: Int @shareable
-  endAt: Int @shareable
-  muted: Boolean! @shareable
-  videoId: ID @shareable
-  videoVariantLanguageId: ID @shareable
-  source: VideoBlockSource @shareable
-  title: String! @shareable
-  description: String! @shareable
-  image: String @shareable
-  duration: Int @shareable
-  objectFit: VideoBlockObjectFit @shareable
-  posterBlockId: ID @shareable
-  fullsize: Boolean! @shareable
-  action: Action @shareable
-  mediaVideo: MediaVideo @shareable
+  id: ID!
+  journeyId: ID!
+  parentBlockId: ID
+  parentOrder: Int
+  autoplay: Boolean
+  startAt: Int
+  endAt: Int
+  muted: Boolean
+  videoId: ID
+  videoVariantLanguageId: ID
+
+  """
+  internal source: videoId, videoVariantLanguageId, and video present
+  youTube source: videoId, title, description, and duration present
+  """
+  source: VideoBlockSource!
+  title: String
+  description: String
+  image: String
+  duration: Int
+  objectFit: VideoBlockObjectFit
+  posterBlockId: ID
+  fullsize: Boolean
+  action: Action
+  mediaVideo: MediaVideo
 }
 
 input VideoBlockCreateInput {
@@ -1152,6 +1125,11 @@ input VideoBlockCreateInput {
   videoId: ID
   videoVariantLanguageId: ID
   source: VideoBlockSource
+
+  """
+  True if the coverBlockId in a parent block should be set to this block's id.
+  """
+  isCover: Boolean
   title: String
   description: String
   image: String
@@ -1193,6 +1171,12 @@ input VideoBlockUpdateInput {
   muted: Boolean
   autoplay: Boolean
   fullsize: Boolean
+
+  """
+  internal source: videoId and videoVariantLanguageId required
+    youTube source: videoId required
+  """
+  source: VideoBlockSource
 }
 
 type VideoCollapseEvent implements Event
@@ -1345,19 +1329,19 @@ input VideoStartEventCreateInput {
 }
 
 type VideoTriggerBlock implements Block
-  @key(fields: "id")
+  @shareable
 {
-  id: ID! @shareable
-  journeyId: ID! @shareable
-  parentBlockId: ID @shareable
-  parentOrder: Int @shareable
+  id: ID!
+  journeyId: ID!
+  parentBlockId: ID
+  parentOrder: Int
 
   """
   triggerStart sets the time as to when a video navigates to the next block,
   this is the number of seconds since the start of the video
   """
-  triggerStart: Int! @shareable
-  action: Action @shareable
+  triggerStart: Int!
+  action: Action!
 }
 
 type YouTube

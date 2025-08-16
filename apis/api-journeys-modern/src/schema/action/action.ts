@@ -1,25 +1,20 @@
 import { GraphQLError } from 'graphql'
 
-import { prisma } from '../../lib/prisma'
-import { Block } from '../block'
 import { builder } from '../builder'
 
 export const ActionInterface = builder.prismaInterface('Action', {
   fields: (t) => ({
-    parentBlockId: t.exposeID('parentBlockId'),
+    parentBlockId: t.exposeID('parentBlockId', { nullable: false }),
     gtmEventName: t.exposeString('gtmEventName', { nullable: true }),
-    parentBlock: t.field({
-      type: Block,
-      resolve: async (action) => {
-        const block = await prisma.block.findUnique({
-          where: { id: action.parentBlockId }
-        })
-        if (!block) {
+    parentBlock: t.relation('parentBlock', {
+      nullable: false,
+      resolve: async (action: any) => {
+        if (!action.parentBlock) {
           throw new GraphQLError('Parent block not found', {
             extensions: { code: 'NOT_FOUND' }
           })
         }
-        return block
+        return action.parentBlock
       }
     })
   }),

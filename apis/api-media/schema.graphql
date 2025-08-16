@@ -305,7 +305,7 @@ input MutationShortLinkCreateInput {
   bitrate: Int
 }
 
-union MutationShortLinkCreateResult = ZodError | NotUniqueError | MutationShortLinkCreateSuccess
+union MutationShortLinkCreateResult = NotUniqueError | ZodError | MutationShortLinkCreateSuccess
 
 type MutationShortLinkCreateSuccess {
   data: ShortLink!
@@ -327,7 +327,7 @@ input MutationShortLinkDomainCreateInput {
   services: [Service!]
 }
 
-union MutationShortLinkDomainCreateResult = ZodError | NotUniqueError | MutationShortLinkDomainCreateSuccess
+union MutationShortLinkDomainCreateResult = NotUniqueError | ZodError | MutationShortLinkDomainCreateSuccess
 
 type MutationShortLinkDomainCreateSuccess {
   data: ShortLinkDomain!
@@ -875,6 +875,7 @@ type VideoDescription {
   value: String!
   primary: Boolean!
   language: Language!
+  crowdInId: String
 }
 
 type VideoEdition {
@@ -939,6 +940,7 @@ type VideoStudyQuestion {
   primary: Boolean!
   order: Int!
   language: Language!
+  crowdInId: String
 }
 
 input VideoStudyQuestionCreateInput {
@@ -1019,6 +1021,7 @@ type VideoTitle {
   value: String!
   primary: Boolean!
   language: Language!
+  crowdInId: String
 }
 
 input VideoTranslationCreateInput {

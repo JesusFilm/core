@@ -12,6 +12,11 @@ export const VideoBlockCreateInput = builder.inputType(
       videoId: t.id({ required: false }),
       videoVariantLanguageId: t.id({ required: false }),
       source: t.field({ type: VideoBlockSource, required: false }),
+      isCover: t.boolean({
+        required: false,
+        description:
+          "True if the coverBlockId in a parent block should be set to this block's id."
+      }),
       title: t.string({ required: false }),
       description: t.string({ required: false }),
       image: t.string({ required: false }),

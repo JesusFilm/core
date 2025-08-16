@@ -1,4 +1,5 @@
 import { builder } from '../../../builder'
+import { VideoBlockSource } from '../../../enums'
 import { VideoBlockObjectFit } from '../enums/videoObjectFit'
 
 export const VideoBlockUpdateInput = builder.inputType(
@@ -18,7 +19,13 @@ export const VideoBlockUpdateInput = builder.inputType(
       endAt: t.int({ required: false }),
       muted: t.boolean({ required: false }),
       autoplay: t.boolean({ required: false }),
-      fullsize: t.boolean({ required: false })
+      fullsize: t.boolean({ required: false }),
+      source: t.field({
+        type: VideoBlockSource,
+        required: false,
+        description: `internal source: videoId and videoVariantLanguageId required
+  youTube source: videoId required`
+      })
     })
   }
 )

@@ -533,15 +533,19 @@ export enum DeviceType {
 
 export type EmailAction = Action & {
   __typename?: 'EmailAction';
+  customizable?: Maybe<Scalars['Boolean']['output']>;
   email: Scalars['String']['output'];
   gtmEventName?: Maybe<Scalars['String']['output']>;
-  parentBlock?: Maybe<Block>;
-  parentBlockId?: Maybe<Scalars['ID']['output']>;
+  parentBlock: Block;
+  parentBlockId: Scalars['ID']['output'];
+  parentStepId?: Maybe<Scalars['String']['output']>;
 };
 
 export type EmailActionInput = {
+  customizable?: InputMaybe<Scalars['Boolean']['input']>;
   email: Scalars['String']['input'];
   gtmEventName?: InputMaybe<Scalars['String']['input']>;
+  parentStepId?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type Error = BaseError & {
@@ -846,6 +850,8 @@ export type Journey = {
   host?: Maybe<Host>;
   id: Scalars['ID']['output'];
   journeyCollections: Array<JourneyCollection>;
+  journeyCustomizationDescription?: Maybe<Scalars['String']['output']>;
+  journeyCustomizationFields: Array<JourneyCustomizationField>;
   journeyTheme?: Maybe<JourneyTheme>;
   language: Language;
   languageId: Scalars['String']['output'];
@@ -944,6 +950,21 @@ export type JourneyCreateInput = {
   themeMode?: InputMaybe<ThemeMode>;
   themeName?: InputMaybe<ThemeName>;
   title: Scalars['String']['input'];
+};
+
+export type JourneyCustomizationField = {
+  __typename?: 'JourneyCustomizationField';
+  defaultValue?: Maybe<Scalars['String']['output']>;
+  id: Scalars['ID']['output'];
+  journeyId: Scalars['ID']['output'];
+  key: Scalars['String']['output'];
+  value?: Maybe<Scalars['String']['output']>;
+};
+
+export type JourneyCustomizationFieldInput = {
+  id: Scalars['ID']['input'];
+  key: Scalars['String']['input'];
+  value?: InputMaybe<Scalars['String']['input']>;
 };
 
 /**
@@ -1359,15 +1380,19 @@ export type LanguagesFilter = {
 
 export type LinkAction = Action & {
   __typename?: 'LinkAction';
+  customizable?: Maybe<Scalars['Boolean']['output']>;
   gtmEventName?: Maybe<Scalars['String']['output']>;
-  parentBlock?: Maybe<Block>;
-  parentBlockId?: Maybe<Scalars['ID']['output']>;
+  parentBlock: Block;
+  parentBlockId: Scalars['ID']['output'];
+  parentStepId?: Maybe<Scalars['String']['output']>;
   target?: Maybe<Scalars['String']['output']>;
   url: Scalars['String']['output'];
 };
 
 export type LinkActionInput = {
+  customizable?: InputMaybe<Scalars['Boolean']['input']>;
   gtmEventName?: InputMaybe<Scalars['String']['input']>;
+  parentStepId?: InputMaybe<Scalars['String']['input']>;
   target?: InputMaybe<Scalars['String']['input']>;
   url: Scalars['String']['input'];
 };
@@ -1490,6 +1515,8 @@ export type Mutation = {
   journeyCollectionDelete: JourneyCollection;
   journeyCollectionUpdate: JourneyCollection;
   journeyCreate: Journey;
+  journeyCustomizationFieldPublisherUpdate: Array<JourneyCustomizationField>;
+  journeyCustomizationFieldUserUpdate: Array<JourneyCustomizationField>;
   journeyDuplicate: Journey;
   /** Sets journey status to featured */
   journeyFeature?: Maybe<Journey>;
@@ -1964,6 +1991,18 @@ export type MutationJourneyCollectionUpdateArgs = {
 export type MutationJourneyCreateArgs = {
   input: JourneyCreateInput;
   teamId: Scalars['ID']['input'];
+};
+
+
+export type MutationJourneyCustomizationFieldPublisherUpdateArgs = {
+  journeyId: Scalars['ID']['input'];
+  string: Scalars['String']['input'];
+};
+
+
+export type MutationJourneyCustomizationFieldUserUpdateArgs = {
+  input: Array<JourneyCustomizationFieldInput>;
+  journeyId: Scalars['ID']['input'];
 };
 
 

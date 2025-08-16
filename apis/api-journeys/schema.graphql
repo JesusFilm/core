@@ -72,6 +72,8 @@ type LinkAction implements Action
   gtmEventName: String
   url: String!
   target: String
+  customizable: Boolean
+  parentStepId: String
 }
 
 type EmailAction implements Action
@@ -81,6 +83,8 @@ type EmailAction implements Action
   parentBlock: Block!
   gtmEventName: String
   email: String!
+  customizable: Boolean
+  parentStepId: String
 }
 
 input NavigateToBlockActionInput {
@@ -92,11 +96,15 @@ input LinkActionInput {
   gtmEventName: String
   url: String!
   target: String
+  customizable: Boolean
+  parentStepId: String
 }
 
 input EmailActionInput {
   gtmEventName: String
   email: String!
+  customizable: Boolean
+  parentStepId: String
 }
 
 input BlockUpdateActionInput {
@@ -336,6 +344,8 @@ type Mutation {
   journeyCollectionCreate(input: JourneyCollectionCreateInput!): JourneyCollection!
   journeyCollectionUpdate(id: ID!, input: JourneyCollectionUpdateInput!): JourneyCollection!
   journeyCollectionDelete(id: ID!): JourneyCollection!
+  journeyCustomizationFieldPublisherUpdate(journeyId: ID!, string: String!): [JourneyCustomizationField!]!
+  journeyCustomizationFieldUserUpdate(journeyId: ID!, input: [JourneyCustomizationFieldInput!]!): [JourneyCustomizationField!]!
   journeyNotificationUpdate(input: JourneyNotificationUpdateInput!): JourneyNotification!
   journeyProfileCreate: JourneyProfile!
   journeyProfileUpdate(input: JourneyProfileUpdateInput!): JourneyProfile!
@@ -379,9 +389,7 @@ type Mutation {
   visitorUpdateForCurrentUser(input: VisitorUpdateInput!): Visitor!
 }
 
-interface Block
-  @key(fields: "id")
-{
+interface Block {
   id: ID!
   journeyId: ID!
   parentBlockId: ID
@@ -447,6 +455,8 @@ type Journey
   socialNodeX: Int
   socialNodeY: Int
   fromTemplateId: String
+  journeyCustomizationDescription: String
+  journeyCustomizationFields: [JourneyCustomizationField!]!
   journeyTheme: JourneyTheme
   userJourneys: [UserJourney!]
 }
@@ -611,7 +621,6 @@ type ButtonBlockSettings
 }
 
 type ButtonBlock implements Block
-  @key(fields: "id")
   @shareable
 {
   id: ID! @shareable
@@ -654,7 +663,6 @@ input ButtonBlockUpdateInput {
 }
 
 type CardBlock implements Block
-  @key(fields: "id")
   @shareable
 {
   id: ID! @shareable
@@ -739,7 +747,6 @@ enum GridAlignItems {
 }
 
 type GridContainerBlock implements Block
-  @key(fields: "id")
   @shareable
 {
   id: ID! @shareable
@@ -753,7 +760,6 @@ type GridContainerBlock implements Block
 }
 
 type GridItemBlock implements Block
-  @key(fields: "id")
   @shareable
 {
   id: ID! @shareable
@@ -806,7 +812,6 @@ enum IconSize {
 }
 
 type IconBlock implements Block
-  @key(fields: "id")
   @shareable
 {
   id: ID! @shareable
@@ -837,7 +842,6 @@ input IconBlockUpdateInput {
 }
 
 type ImageBlock implements Block
-  @key(fields: "id")
   @shareable
 {
   id: ID! @shareable
@@ -902,7 +906,6 @@ input ImageBlockUpdateInput {
 }
 
 type RadioOptionBlock implements Block
-  @key(fields: "id")
   @shareable
 {
   id: ID! @shareable
@@ -928,7 +931,6 @@ input RadioOptionBlockUpdateInput {
 }
 
 type RadioQuestionBlock implements Block
-  @key(fields: "id")
   @shareable
 {
   id: ID! @shareable
@@ -945,7 +947,6 @@ input RadioQuestionBlockCreateInput {
 }
 
 type SignUpBlock implements Block
-  @key(fields: "id")
   @shareable
 {
   id: ID! @shareable
@@ -971,7 +972,6 @@ input SignUpBlockUpdateInput {
 }
 
 type SpacerBlock implements Block
-  @key(fields: "id")
   @shareable
 {
   id: ID! @shareable
@@ -994,7 +994,6 @@ input SpacerBlockUpdateInput {
 }
 
 type StepBlock implements Block
-  @key(fields: "id")
   @shareable
 {
   id: ID! @shareable
@@ -1088,7 +1087,6 @@ input StepBlockPositionUpdateInput {
 }
 
 type TextResponseBlock implements Block
-  @key(fields: "id")
   @shareable
 {
   id: ID! @shareable
@@ -1169,7 +1167,6 @@ type TypographyBlockSettings
 }
 
 type TypographyBlock implements Block
-  @key(fields: "id")
   @shareable
 {
   id: ID! @shareable
@@ -1431,7 +1428,6 @@ VideoTriggerBlock is a block that indicates the video to navigate
 to the next block at the designated time.
 """
 type VideoTriggerBlock implements Block
-  @key(fields: "id")
   @shareable
 {
   id: ID! @shareable
@@ -2494,6 +2490,22 @@ input JourneyCollectionUpdateInput {
   journeyIds: [String!]
 }
 
+type JourneyCustomizationField
+  @shareable
+{
+  id: ID!
+  journeyId: ID!
+  key: String!
+  value: String
+  defaultValue: String
+}
+
+input JourneyCustomizationFieldInput {
+  id: ID!
+  key: String!
+  value: String
+}
+
 """
 JourneyEvent aggregates all event types. For detailed event type definitions,
 see the specific event files in the event module
@@ -3390,4 +3402,4 @@ type _Service {
   sdl: String
 }
 
-union _Entity = ButtonBlock | CardBlock | GridContainerBlock | GridItemBlock | IconBlock | ImageBlock | Journey | JourneyProfile | JourneyVisitor | Language | RadioOptionBlock | RadioQuestionBlock | ShortLink | SignUpBlock | SpacerBlock | StepBlock | Tag | Team | TextResponseBlock | TypographyBlock | User | UserInvite | UserJourney | UserRole | UserTeam | Video | VideoBlock | VideoTriggerBlock | Visitor
+union _Entity = Journey | JourneyProfile | JourneyVisitor | Language | ShortLink | Tag | Team | User | UserInvite | UserJourney | UserRole | UserTeam | Video | VideoBlock | Visitor

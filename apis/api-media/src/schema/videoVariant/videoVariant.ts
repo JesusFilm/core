@@ -1,13 +1,12 @@
 import compact from 'lodash/compact'
 
-import { Platform } from '.prisma/api-media-client'
+import { Platform, prisma } from '@core/prisma/media/client'
 
-import { prisma } from '../../lib/prisma'
+import { updateVideoVariantInAlgolia } from '../../lib/algolia/algoliaVideoVariantUpdate'
 import {
   videoCacheReset,
   videoVariantCacheReset
 } from '../../lib/videoCacheReset'
-import { updateVideoVariantInAlgolia } from '../../workers/algolia/service'
 import { builder } from '../builder'
 import { deleteR2File } from '../cloudflare/r2/asset'
 import { Language } from '../language'

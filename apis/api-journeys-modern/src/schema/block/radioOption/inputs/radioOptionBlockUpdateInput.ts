@@ -5,7 +5,8 @@ export const RadioOptionBlockUpdateInput = builder.inputType(
   {
     fields: (t) => ({
       parentBlockId: t.id({ required: false }),
-      label: t.string({ required: false })
+      label: t.string({ required: false }),
+      pollOptionImageBlockId: t.id({ required: false })
     })
   }
 )
