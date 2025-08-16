@@ -11,7 +11,7 @@ import { ChatOpenEventCreateInput } from "./globalTypes";
 
 export interface ChatOpenEventCreate_chatOpenEventCreate {
   __typename: "ChatOpenEvent";
-  id: string;
+  id: string | null;
 }
 
 export interface ChatOpenEventCreate {

@@ -11,7 +11,7 @@ import { VideoPlayEventCreateInput } from "./globalTypes";
 
 export interface VideoPlayEventCreate_videoPlayEventCreate {
   __typename: "VideoPlayEvent";
-  id: string;
+  id: string | null;
 }
 
 export interface VideoPlayEventCreate {

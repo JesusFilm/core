@@ -11,7 +11,7 @@ import { StepViewEventCreateInput } from "./globalTypes";
 
 export interface StepViewEventCreate_stepViewEventCreate {
   __typename: "StepViewEvent";
-  id: string;
+  id: string | null;
 }
 
 export interface StepViewEventCreate {

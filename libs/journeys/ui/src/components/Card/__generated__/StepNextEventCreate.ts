@@ -11,7 +11,7 @@ import { StepNextEventCreateInput } from "./../../../../__generated__/globalType
 
 export interface StepNextEventCreate_stepNextEventCreate {
   __typename: "StepNextEvent";
-  id: string;
+  id: string | null;
 }
 
 export interface StepNextEventCreate {

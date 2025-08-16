@@ -11,7 +11,7 @@ import { VideoPauseEventCreateInput } from "./globalTypes";
 
 export interface VideoPauseEventCreate_videoPauseEventCreate {
   __typename: "VideoPauseEvent";
-  id: string;
+  id: string | null;
 }
 
 export interface VideoPauseEventCreate {

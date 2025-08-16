@@ -11,20 +11,20 @@ import { ButtonAction, VideoBlockSource, MessagePlatform } from "./globalTypes";
 
 export interface GetVisitorEvents_visitor_events_JourneyEvent {
   __typename: "JourneyEvent" | "RadioQuestionSubmissionEvent" | "StepViewEvent" | "StepNextEvent" | "StepPreviousEvent" | "TextResponseSubmissionEvent";
-  id: string;
-  journeyId: string;
+  id: string | null;
+  journeyId: string | null;
   label: string | null;
   value: string | null;
-  createdAt: any;
+  createdAt: any | null;
 }
 
 export interface GetVisitorEvents_visitor_events_ButtonClickEvent {
   __typename: "ButtonClickEvent";
-  id: string;
+  id: string | null;
   /**
    * ID of the journey that the buttonBlock belongs to
    */
-  journeyId: string;
+  journeyId: string | null;
   /**
    * stepName of the parent stepBlock
    */
@@ -36,7 +36,7 @@ export interface GetVisitorEvents_visitor_events_ButtonClickEvent {
   /**
    * time event was created
    */
-  createdAt: any;
+  createdAt: any | null;
   /**
    * Action type of the button when it was clicked
    */
@@ -62,11 +62,11 @@ export interface GetVisitorEvents_visitor_events_JourneyViewEvent_language {
 
 export interface GetVisitorEvents_visitor_events_JourneyViewEvent {
   __typename: "JourneyViewEvent";
-  id: string;
+  id: string | null;
   /**
    * ID of the journey being viewed
    */
-  journeyId: string;
+  journeyId: string | null;
   /**
    * title of the journey being viewed
    */
@@ -78,7 +78,7 @@ export interface GetVisitorEvents_visitor_events_JourneyViewEvent {
   /**
    * time event was created
    */
-  createdAt: any;
+  createdAt: any | null;
   /**
    * language of the journey being viewed (based on the ID in the value field)
    */
@@ -87,11 +87,11 @@ export interface GetVisitorEvents_visitor_events_JourneyViewEvent {
 
 export interface GetVisitorEvents_visitor_events_SignUpSubmissionEvent {
   __typename: "SignUpSubmissionEvent";
-  id: string;
+  id: string | null;
   /**
    * ID of the journey that the block belongs to
    */
-  journeyId: string;
+  journeyId: string | null;
   /**
    * null for signUpSubmissionEvent
    */
@@ -103,7 +103,7 @@ export interface GetVisitorEvents_visitor_events_SignUpSubmissionEvent {
   /**
    * time event was created
    */
-  createdAt: any;
+  createdAt: any | null;
   /**
    * email from the signUpBlock form
    */
@@ -112,11 +112,11 @@ export interface GetVisitorEvents_visitor_events_SignUpSubmissionEvent {
 
 export interface GetVisitorEvents_visitor_events_VideoStartEvent {
   __typename: "VideoStartEvent";
-  id: string;
+  id: string | null;
   /**
    * ID of the journey that the videoBlock belongs to
    */
-  journeyId: string;
+  journeyId: string | null;
   /**
    * title of the video
    */
@@ -128,7 +128,7 @@ export interface GetVisitorEvents_visitor_events_VideoStartEvent {
   /**
    * time event was created
    */
-  createdAt: any;
+  createdAt: any | null;
   /**
    * source of the video (based on the source in the value field)
    */
@@ -141,11 +141,11 @@ export interface GetVisitorEvents_visitor_events_VideoStartEvent {
 
 export interface GetVisitorEvents_visitor_events_VideoCompleteEvent {
   __typename: "VideoCompleteEvent";
-  id: string;
+  id: string | null;
   /**
    * ID of the journey that the videoBlock belongs to
    */
-  journeyId: string;
+  journeyId: string | null;
   /**
    * title of the video
    */
@@ -157,7 +157,7 @@ export interface GetVisitorEvents_visitor_events_VideoCompleteEvent {
   /**
    * time event was created
    */
-  createdAt: any;
+  createdAt: any | null;
   /**
    * source of the video (based on the source in the value field)
    */
@@ -166,11 +166,11 @@ export interface GetVisitorEvents_visitor_events_VideoCompleteEvent {
 
 export interface GetVisitorEvents_visitor_events_ChatOpenEvent {
   __typename: "ChatOpenEvent";
-  id: string;
+  id: string | null;
   /**
    * ID of the journey that the buttonBlock belongs to
    */
-  journeyId: string;
+  journeyId: string | null;
   /**
    * null for ChatOpenEvent
    */
@@ -182,7 +182,7 @@ export interface GetVisitorEvents_visitor_events_ChatOpenEvent {
   /**
    * time event was created
    */
-  createdAt: any;
+  createdAt: any | null;
   /**
    * messagePlatform of the link used for chat (based on the messagePlatform in the value field)
    */
@@ -191,11 +191,11 @@ export interface GetVisitorEvents_visitor_events_ChatOpenEvent {
 
 export interface GetVisitorEvents_visitor_events_VideoCollapseEvent {
   __typename: "VideoCollapseEvent";
-  id: string;
+  id: string | null;
   /**
    * ID of the journey that the videoBlock belongs to
    */
-  journeyId: string;
+  journeyId: string | null;
   /**
    * title of the video
    */
@@ -207,7 +207,7 @@ export interface GetVisitorEvents_visitor_events_VideoCollapseEvent {
   /**
    * time event was created
    */
-  createdAt: any;
+  createdAt: any | null;
   /**
    * duration of the video played when the VideoCollapseEvent is triggered
    */
@@ -220,11 +220,11 @@ export interface GetVisitorEvents_visitor_events_VideoCollapseEvent {
 
 export interface GetVisitorEvents_visitor_events_VideoExpandEvent {
   __typename: "VideoExpandEvent";
-  id: string;
+  id: string | null;
   /**
    * ID of the journey that the videoBlock belongs to
    */
-  journeyId: string;
+  journeyId: string | null;
   /**
    * title of the video
    */
@@ -236,7 +236,7 @@ export interface GetVisitorEvents_visitor_events_VideoExpandEvent {
   /**
    * time event was created
    */
-  createdAt: any;
+  createdAt: any | null;
   /**
    * duration of the video played when the VideoExpandEvent is triggered
    */
@@ -249,11 +249,11 @@ export interface GetVisitorEvents_visitor_events_VideoExpandEvent {
 
 export interface GetVisitorEvents_visitor_events_VideoPauseEvent {
   __typename: "VideoPauseEvent";
-  id: string;
+  id: string | null;
   /**
    * ID of the journey that the videoBlock belongs to
    */
-  journeyId: string;
+  journeyId: string | null;
   /**
    * title of the video
    */
@@ -265,7 +265,7 @@ export interface GetVisitorEvents_visitor_events_VideoPauseEvent {
   /**
    * time event was created
    */
-  createdAt: any;
+  createdAt: any | null;
   /**
    * duration of the video played when the VideoPauseEvent is triggered
    */
@@ -278,11 +278,11 @@ export interface GetVisitorEvents_visitor_events_VideoPauseEvent {
 
 export interface GetVisitorEvents_visitor_events_VideoPlayEvent {
   __typename: "VideoPlayEvent";
-  id: string;
+  id: string | null;
   /**
    * ID of the journey that the videoBlock belongs to
    */
-  journeyId: string;
+  journeyId: string | null;
   /**
    * title of the video
    */
@@ -294,7 +294,7 @@ export interface GetVisitorEvents_visitor_events_VideoPlayEvent {
   /**
    * time event was created
    */
-  createdAt: any;
+  createdAt: any | null;
   /**
    * duration of the video played when the VideoPlayEvent is triggered
    */
@@ -307,11 +307,11 @@ export interface GetVisitorEvents_visitor_events_VideoPlayEvent {
 
 export interface GetVisitorEvents_visitor_events_VideoProgressEvent {
   __typename: "VideoProgressEvent";
-  id: string;
+  id: string | null;
   /**
    * ID of the journey that the videoBlock belongs to
    */
-  journeyId: string;
+  journeyId: string | null;
   /**
    * title of the video
    */
@@ -323,7 +323,7 @@ export interface GetVisitorEvents_visitor_events_VideoProgressEvent {
   /**
    * time event was created
    */
-  createdAt: any;
+  createdAt: any | null;
   /**
    * duration of the video played when the VideoProgressEvent is triggered
    */
@@ -335,7 +335,7 @@ export interface GetVisitorEvents_visitor_events_VideoProgressEvent {
   /**
    * progress is a integer indicating the precentage completion from the startAt to the endAt times of the videoBlock
    */
-  progress: number;
+  progress: number | null;
 }
 
 export type GetVisitorEvents_visitor_events = GetVisitorEvents_visitor_events_JourneyEvent | GetVisitorEvents_visitor_events_ButtonClickEvent | GetVisitorEvents_visitor_events_JourneyViewEvent | GetVisitorEvents_visitor_events_SignUpSubmissionEvent | GetVisitorEvents_visitor_events_VideoStartEvent | GetVisitorEvents_visitor_events_VideoCompleteEvent | GetVisitorEvents_visitor_events_ChatOpenEvent | GetVisitorEvents_visitor_events_VideoCollapseEvent | GetVisitorEvents_visitor_events_VideoExpandEvent | GetVisitorEvents_visitor_events_VideoPauseEvent | GetVisitorEvents_visitor_events_VideoPlayEvent | GetVisitorEvents_visitor_events_VideoProgressEvent;

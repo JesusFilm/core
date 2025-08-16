@@ -11,7 +11,7 @@ import { JourneyEventsFilter } from "./globalTypes";
 
 export interface GetJourneyEvents_journeyEventsConnection_edges_node {
   __typename: "JourneyEvent";
-  journeyId: string;
+  journeyId: string | null;
   visitorId: string | null;
   label: string | null;
   value: string | null;
@@ -27,7 +27,7 @@ export interface GetJourneyEvents_journeyEventsConnection_edges_node {
   visitorName: string | null;
   visitorEmail: string | null;
   visitorPhone: string | null;
-  createdAt: any;
+  createdAt: any | null;
 }
 
 export interface GetJourneyEvents_journeyEventsConnection_edges {

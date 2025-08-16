@@ -11,7 +11,7 @@ import { VideoCollapseEventCreateInput } from "./../../../../__generated__/globa
 
 export interface VideoCollapseEventCreate_videoCollapseEventCreate {
   __typename: "VideoCollapseEvent";
-  id: string;
+  id: string | null;
 }
 
 export interface VideoCollapseEventCreate {

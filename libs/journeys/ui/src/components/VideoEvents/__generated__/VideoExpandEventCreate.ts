@@ -11,7 +11,7 @@ import { VideoExpandEventCreateInput } from "./../../../../__generated__/globalT
 
 export interface VideoExpandEventCreate_videoExpandEventCreate {
   __typename: "VideoExpandEvent";
-  id: string;
+  id: string | null;
 }
 
 export interface VideoExpandEventCreate {
