@@ -1,1 +1,2 @@
-export { RadioQuestionSubmissionEventRef } from './radioQuestionSubmissionEvent'
+import './radioQuestionSubmissionEvent'
+import './inputs'

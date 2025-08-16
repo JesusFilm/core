@@ -3858,7 +3858,7 @@ input JourneyViewEventCreateInput @join__type(graph: API_JOURNEYS)  @join__type(
   value: ID
 }
 
-input RadioQuestionSubmissionEventCreateInput @join__type(graph: API_JOURNEYS)  {
+input RadioQuestionSubmissionEventCreateInput @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
   """
   ID should be unique Event UUID (Provided for optimistic mutation result matching)
   """

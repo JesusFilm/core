@@ -12,6 +12,9 @@ export const JourneyViewEventRef = builder.prismaObject('Event', {
     language: t.field({
       type: Language,
       nullable: true,
+      select: {
+        languageId: true
+      },
       resolve: async (event) => {
         if (!event.languageId) return null
         return { id: event.languageId }

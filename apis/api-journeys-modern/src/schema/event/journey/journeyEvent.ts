@@ -8,7 +8,6 @@ export const JourneyEventRef = builder.prismaNode('Event', {
   variant: 'JourneyEvent',
   interfaces: [EventInterface],
   id: { field: 'id' },
-  nullable: true,
   shareable: true,
   fields: (t) => ({
     action: t.expose('action', { type: ButtonActionEnum, nullable: true }),
@@ -58,7 +57,11 @@ export const JourneyEventRef = builder.prismaNode('Event', {
       type: 'String',
       nullable: true,
       select: {
-        name: true
+        visitor: {
+          select: {
+            name: true
+          }
+        }
       },
       resolve: async (event: any) => {
         return event.visitor?.name ?? null
@@ -68,7 +71,11 @@ export const JourneyEventRef = builder.prismaNode('Event', {
       type: 'String',
       nullable: true,
       select: {
-        email: true
+        visitor: {
+          select: {
+            email: true
+          }
+        }
       },
       resolve: async (event: any) => {
         return event.visitor?.email ?? null
@@ -78,7 +85,11 @@ export const JourneyEventRef = builder.prismaNode('Event', {
       type: 'String',
       nullable: true,
       select: {
-        phone: true
+        visitor: {
+          select: {
+            phone: true
+          }
+        }
       },
       resolve: async (event: any) => {
         return event.visitor?.phone ?? null

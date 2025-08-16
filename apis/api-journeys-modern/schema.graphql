@@ -204,9 +204,7 @@ input ChatOpenEventCreateInput {
   id: ID
   blockId: ID!
   stepId: ID
-  label: String
   value: MessagePlatform
-  messagePlatform: MessagePlatform
 }
 
 """
@@ -725,6 +723,15 @@ type RadioQuestionSubmissionEvent implements Event
   id: ID!
   journeyId: ID!
   createdAt: DateTime!
+  label: String
+  value: String
+}
+
+input RadioQuestionSubmissionEventCreateInput {
+  id: ID
+  blockId: ID!
+  radioOptionBlockId: ID!
+  stepId: ID
   label: String
   value: String
 }
