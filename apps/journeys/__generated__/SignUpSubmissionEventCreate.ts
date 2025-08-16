@@ -11,7 +11,7 @@ import { SignUpSubmissionEventCreateInput } from "./globalTypes";
 
 export interface SignUpSubmissionEventCreate_signUpSubmissionEventCreate {
   __typename: "SignUpSubmissionEvent";
-  id: string | null;
+  id: string;
 }
 
 export interface SignUpSubmissionEventCreate {

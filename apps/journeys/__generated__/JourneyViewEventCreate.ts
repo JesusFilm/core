@@ -11,7 +11,7 @@ import { JourneyViewEventCreateInput } from "./globalTypes";
 
 export interface JourneyViewEventCreate_journeyViewEventCreate {
   __typename: "JourneyViewEvent";
-  id: string | null;
+  id: string;
 }
 
 export interface JourneyViewEventCreate {

@@ -37,19 +37,19 @@ export interface GetJourneyVisitors_visitors_edges_node_visitor {
 
 export interface GetJourneyVisitors_visitors_edges_node_events_JourneyEvent {
   __typename: "JourneyEvent" | "ButtonClickEvent" | "ChatOpenEvent" | "JourneyViewEvent" | "RadioQuestionSubmissionEvent" | "SignUpSubmissionEvent" | "StepViewEvent" | "StepNextEvent" | "StepPreviousEvent" | "VideoStartEvent" | "VideoPlayEvent" | "VideoPauseEvent" | "VideoCompleteEvent" | "VideoExpandEvent" | "VideoCollapseEvent" | "VideoProgressEvent";
-  id: string | null;
-  createdAt: any | null;
+  id: string;
+  createdAt: any;
   label: string | null;
   value: string | null;
 }
 
 export interface GetJourneyVisitors_visitors_edges_node_events_TextResponseSubmissionEvent {
   __typename: "TextResponseSubmissionEvent";
-  id: string | null;
+  id: string;
   /**
    * time event was created
    */
-  createdAt: any | null;
+  createdAt: any;
   /**
    * stepName of the parent stepBlock
    */

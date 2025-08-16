@@ -1249,15 +1249,15 @@ type CustomDomainVerificationResponse @join__type(graph: API_JOURNEYS)  {
 }
 
 type ButtonClickEvent implements Event @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  @join__implements(graph: API_JOURNEYS, interface: "Event")  @join__implements(graph: API_JOURNEYS_MODERN, interface: "Event")  {
-  id: ID @join__field(graph: API_JOURNEYS, type: "ID!")  @join__field(graph: API_JOURNEYS_MODERN, type: "ID") 
+  id: ID!
   """
   ID of the journey that the buttonBlock belongs to
   """
-  journeyId: ID @join__field(graph: API_JOURNEYS, type: "ID!")  @join__field(graph: API_JOURNEYS_MODERN, type: "ID") 
+  journeyId: ID!
   """
   time event was created
   """
-  createdAt: DateTime @join__field(graph: API_JOURNEYS, type: "DateTime!")  @join__field(graph: API_JOURNEYS_MODERN, type: "DateTime") 
+  createdAt: DateTime!
   """
   stepName of the parent stepBlock
   """
@@ -1279,15 +1279,15 @@ type ButtonClickEvent implements Event @join__type(graph: API_JOURNEYS)  @join__
 }
 
 type ChatOpenEvent implements Event @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  @join__implements(graph: API_JOURNEYS, interface: "Event")  @join__implements(graph: API_JOURNEYS_MODERN, interface: "Event")  {
-  id: ID @join__field(graph: API_JOURNEYS, type: "ID!")  @join__field(graph: API_JOURNEYS_MODERN, type: "ID") 
+  id: ID!
   """
   ID of the journey that the buttonBlock belongs to
   """
-  journeyId: ID @join__field(graph: API_JOURNEYS, type: "ID!")  @join__field(graph: API_JOURNEYS_MODERN, type: "ID") 
+  journeyId: ID!
   """
   time event was created
   """
-  createdAt: DateTime @join__field(graph: API_JOURNEYS, type: "DateTime!")  @join__field(graph: API_JOURNEYS_MODERN, type: "DateTime") 
+  createdAt: DateTime!
   """
   null for ChatOpenEvent
   """
@@ -1314,15 +1314,15 @@ type Language @join__type(graph: API_JOURNEYS, key: "id", extension: true)  @joi
 }
 
 type JourneyViewEvent implements Event @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  @join__implements(graph: API_JOURNEYS, interface: "Event")  @join__implements(graph: API_JOURNEYS_MODERN, interface: "Event")  {
-  id: ID @join__field(graph: API_JOURNEYS, type: "ID!")  @join__field(graph: API_JOURNEYS_MODERN, type: "ID") 
+  id: ID!
   """
   ID of the journey being viewed
   """
-  journeyId: ID @join__field(graph: API_JOURNEYS, type: "ID!")  @join__field(graph: API_JOURNEYS_MODERN, type: "ID") 
+  journeyId: ID!
   """
   time event was created
   """
-  createdAt: DateTime @join__field(graph: API_JOURNEYS, type: "DateTime!")  @join__field(graph: API_JOURNEYS_MODERN, type: "DateTime") 
+  createdAt: DateTime!
   """
   title of the journey being viewed
   """
@@ -1338,15 +1338,15 @@ type JourneyViewEvent implements Event @join__type(graph: API_JOURNEYS)  @join__
 }
 
 type RadioQuestionSubmissionEvent implements Event @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  @join__implements(graph: API_JOURNEYS, interface: "Event")  @join__implements(graph: API_JOURNEYS_MODERN, interface: "Event")  {
-  id: ID @join__field(graph: API_JOURNEYS, type: "ID!")  @join__field(graph: API_JOURNEYS_MODERN, type: "ID") 
+  id: ID!
   """
   ID of the journey that the radioQuestionBlock belongs to
   """
-  journeyId: ID @join__field(graph: API_JOURNEYS, type: "ID!")  @join__field(graph: API_JOURNEYS_MODERN, type: "ID") 
+  journeyId: ID!
   """
   time event was created
   """
-  createdAt: DateTime @join__field(graph: API_JOURNEYS, type: "DateTime!")  @join__field(graph: API_JOURNEYS_MODERN, type: "DateTime") 
+  createdAt: DateTime!
   """
   stepName of the parent stepBlock
   """
@@ -1358,15 +1358,15 @@ type RadioQuestionSubmissionEvent implements Event @join__type(graph: API_JOURNE
 }
 
 type SignUpSubmissionEvent implements Event @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  @join__implements(graph: API_JOURNEYS, interface: "Event")  @join__implements(graph: API_JOURNEYS_MODERN, interface: "Event")  {
-  id: ID @join__field(graph: API_JOURNEYS, type: "ID!")  @join__field(graph: API_JOURNEYS_MODERN, type: "ID") 
+  id: ID!
   """
   ID of the journey that the block belongs to
   """
-  journeyId: ID @join__field(graph: API_JOURNEYS, type: "ID!")  @join__field(graph: API_JOURNEYS_MODERN, type: "ID") 
+  journeyId: ID!
   """
   time event was created
   """
-  createdAt: DateTime @join__field(graph: API_JOURNEYS, type: "DateTime!")  @join__field(graph: API_JOURNEYS_MODERN, type: "DateTime") 
+  createdAt: DateTime!
   """
   null for signUpSubmissionEvent
   """
@@ -1382,15 +1382,15 @@ type SignUpSubmissionEvent implements Event @join__type(graph: API_JOURNEYS)  @j
 }
 
 type StepViewEvent implements Event @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  @join__implements(graph: API_JOURNEYS, interface: "Event")  @join__implements(graph: API_JOURNEYS_MODERN, interface: "Event")  {
-  id: ID @join__field(graph: API_JOURNEYS, type: "ID!")  @join__field(graph: API_JOURNEYS_MODERN, type: "ID") 
+  id: ID!
   """
   ID of the journey that the stepBlock belongs to
   """
-  journeyId: ID @join__field(graph: API_JOURNEYS, type: "ID!")  @join__field(graph: API_JOURNEYS_MODERN, type: "ID") 
+  journeyId: ID!
   """
   time event was created
   """
-  createdAt: DateTime @join__field(graph: API_JOURNEYS, type: "DateTime!")  @join__field(graph: API_JOURNEYS_MODERN, type: "DateTime") 
+  createdAt: DateTime!
   """
   null for stepViewEvent
   """
@@ -1402,15 +1402,15 @@ type StepViewEvent implements Event @join__type(graph: API_JOURNEYS)  @join__typ
 }
 
 type StepNextEvent implements Event @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  @join__implements(graph: API_JOURNEYS, interface: "Event")  @join__implements(graph: API_JOURNEYS_MODERN, interface: "Event")  {
-  id: ID @join__field(graph: API_JOURNEYS, type: "ID!")  @join__field(graph: API_JOURNEYS_MODERN, type: "ID") 
+  id: ID!
   """
   ID of the journey that the stepBlock belongs to
   """
-  journeyId: ID @join__field(graph: API_JOURNEYS, type: "ID!")  @join__field(graph: API_JOURNEYS_MODERN, type: "ID") 
+  journeyId: ID!
   """
   time event was created
   """
-  createdAt: DateTime @join__field(graph: API_JOURNEYS, type: "DateTime!")  @join__field(graph: API_JOURNEYS_MODERN, type: "DateTime") 
+  createdAt: DateTime!
   """
   stepName of the stepBlock
   """
@@ -1422,15 +1422,15 @@ type StepNextEvent implements Event @join__type(graph: API_JOURNEYS)  @join__typ
 }
 
 type StepPreviousEvent implements Event @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  @join__implements(graph: API_JOURNEYS, interface: "Event")  @join__implements(graph: API_JOURNEYS_MODERN, interface: "Event")  {
-  id: ID @join__field(graph: API_JOURNEYS, type: "ID!")  @join__field(graph: API_JOURNEYS_MODERN, type: "ID") 
+  id: ID!
   """
   ID of the journey that the stepBlock belongs to
   """
-  journeyId: ID @join__field(graph: API_JOURNEYS, type: "ID!")  @join__field(graph: API_JOURNEYS_MODERN, type: "ID") 
+  journeyId: ID!
   """
   time event was created
   """
-  createdAt: DateTime @join__field(graph: API_JOURNEYS, type: "DateTime!")  @join__field(graph: API_JOURNEYS_MODERN, type: "DateTime") 
+  createdAt: DateTime!
   """
   stepName of the current stepBlock
   """
@@ -1442,15 +1442,15 @@ type StepPreviousEvent implements Event @join__type(graph: API_JOURNEYS)  @join_
 }
 
 type TextResponseSubmissionEvent implements Event @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  @join__implements(graph: API_JOURNEYS, interface: "Event")  @join__implements(graph: API_JOURNEYS_MODERN, interface: "Event")  {
-  id: ID @join__field(graph: API_JOURNEYS, type: "ID!")  @join__field(graph: API_JOURNEYS_MODERN, type: "ID") 
+  id: ID!
   """
   ID of the journey that the buttonBlock belongs to
   """
-  journeyId: ID @join__field(graph: API_JOURNEYS, type: "ID!")  @join__field(graph: API_JOURNEYS_MODERN, type: "ID") 
+  journeyId: ID!
   """
   time event was created
   """
-  createdAt: DateTime @join__field(graph: API_JOURNEYS, type: "DateTime!")  @join__field(graph: API_JOURNEYS_MODERN, type: "DateTime") 
+  createdAt: DateTime!
   """
   stepName of the parent stepBlock
   """
@@ -1466,15 +1466,15 @@ type TextResponseSubmissionEvent implements Event @join__type(graph: API_JOURNEY
 }
 
 type VideoStartEvent implements Event @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  @join__implements(graph: API_JOURNEYS, interface: "Event")  @join__implements(graph: API_JOURNEYS_MODERN, interface: "Event")  {
-  id: ID @join__field(graph: API_JOURNEYS, type: "ID!")  @join__field(graph: API_JOURNEYS_MODERN, type: "ID") 
+  id: ID!
   """
   ID of the journey that the videoBlock belongs to
   """
-  journeyId: ID @join__field(graph: API_JOURNEYS, type: "ID!")  @join__field(graph: API_JOURNEYS_MODERN, type: "ID") 
+  journeyId: ID!
   """
   time event was created
   """
-  createdAt: DateTime @join__field(graph: API_JOURNEYS, type: "DateTime!")  @join__field(graph: API_JOURNEYS_MODERN, type: "DateTime") 
+  createdAt: DateTime!
   """
   title of the video
   """
@@ -1494,15 +1494,15 @@ type VideoStartEvent implements Event @join__type(graph: API_JOURNEYS)  @join__t
 }
 
 type VideoPlayEvent implements Event @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  @join__implements(graph: API_JOURNEYS, interface: "Event")  @join__implements(graph: API_JOURNEYS_MODERN, interface: "Event")  {
-  id: ID @join__field(graph: API_JOURNEYS, type: "ID!")  @join__field(graph: API_JOURNEYS_MODERN, type: "ID") 
+  id: ID!
   """
   ID of the journey that the videoBlock belongs to
   """
-  journeyId: ID @join__field(graph: API_JOURNEYS, type: "ID!")  @join__field(graph: API_JOURNEYS_MODERN, type: "ID") 
+  journeyId: ID!
   """
   time event was created
   """
-  createdAt: DateTime @join__field(graph: API_JOURNEYS, type: "DateTime!")  @join__field(graph: API_JOURNEYS_MODERN, type: "DateTime") 
+  createdAt: DateTime!
   """
   title of the video
   """
@@ -1522,15 +1522,15 @@ type VideoPlayEvent implements Event @join__type(graph: API_JOURNEYS)  @join__ty
 }
 
 type VideoPauseEvent implements Event @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  @join__implements(graph: API_JOURNEYS, interface: "Event")  @join__implements(graph: API_JOURNEYS_MODERN, interface: "Event")  {
-  id: ID @join__field(graph: API_JOURNEYS, type: "ID!")  @join__field(graph: API_JOURNEYS_MODERN, type: "ID") 
+  id: ID!
   """
   ID of the journey that the videoBlock belongs to
   """
-  journeyId: ID @join__field(graph: API_JOURNEYS, type: "ID!")  @join__field(graph: API_JOURNEYS_MODERN, type: "ID") 
+  journeyId: ID!
   """
   time event was created
   """
-  createdAt: DateTime @join__field(graph: API_JOURNEYS, type: "DateTime!")  @join__field(graph: API_JOURNEYS_MODERN, type: "DateTime") 
+  createdAt: DateTime!
   """
   title of the video
   """
@@ -1550,15 +1550,15 @@ type VideoPauseEvent implements Event @join__type(graph: API_JOURNEYS)  @join__t
 }
 
 type VideoCompleteEvent implements Event @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  @join__implements(graph: API_JOURNEYS, interface: "Event")  @join__implements(graph: API_JOURNEYS_MODERN, interface: "Event")  {
-  id: ID @join__field(graph: API_JOURNEYS, type: "ID!")  @join__field(graph: API_JOURNEYS_MODERN, type: "ID") 
+  id: ID!
   """
   ID of the journey that the videoBlock belongs to
   """
-  journeyId: ID @join__field(graph: API_JOURNEYS, type: "ID!")  @join__field(graph: API_JOURNEYS_MODERN, type: "ID") 
+  journeyId: ID!
   """
   time event was created
   """
-  createdAt: DateTime @join__field(graph: API_JOURNEYS, type: "DateTime!")  @join__field(graph: API_JOURNEYS_MODERN, type: "DateTime") 
+  createdAt: DateTime!
   """
   title of the video
   """
@@ -1578,15 +1578,15 @@ type VideoCompleteEvent implements Event @join__type(graph: API_JOURNEYS)  @join
 }
 
 type VideoExpandEvent implements Event @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  @join__implements(graph: API_JOURNEYS, interface: "Event")  @join__implements(graph: API_JOURNEYS_MODERN, interface: "Event")  {
-  id: ID @join__field(graph: API_JOURNEYS, type: "ID!")  @join__field(graph: API_JOURNEYS_MODERN, type: "ID") 
+  id: ID!
   """
   ID of the journey that the videoBlock belongs to
   """
-  journeyId: ID @join__field(graph: API_JOURNEYS, type: "ID!")  @join__field(graph: API_JOURNEYS_MODERN, type: "ID") 
+  journeyId: ID!
   """
   time event was created
   """
-  createdAt: DateTime @join__field(graph: API_JOURNEYS, type: "DateTime!")  @join__field(graph: API_JOURNEYS_MODERN, type: "DateTime") 
+  createdAt: DateTime!
   """
   title of the video
   """
@@ -1606,15 +1606,15 @@ type VideoExpandEvent implements Event @join__type(graph: API_JOURNEYS)  @join__
 }
 
 type VideoCollapseEvent implements Event @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  @join__implements(graph: API_JOURNEYS, interface: "Event")  @join__implements(graph: API_JOURNEYS_MODERN, interface: "Event")  {
-  id: ID @join__field(graph: API_JOURNEYS, type: "ID!")  @join__field(graph: API_JOURNEYS_MODERN, type: "ID") 
+  id: ID!
   """
   ID of the journey that the videoBlock belongs to
   """
-  journeyId: ID @join__field(graph: API_JOURNEYS, type: "ID!")  @join__field(graph: API_JOURNEYS_MODERN, type: "ID") 
+  journeyId: ID!
   """
   time event was created
   """
-  createdAt: DateTime @join__field(graph: API_JOURNEYS, type: "DateTime!")  @join__field(graph: API_JOURNEYS_MODERN, type: "DateTime") 
+  createdAt: DateTime!
   """
   title of the video
   """
@@ -1634,15 +1634,15 @@ type VideoCollapseEvent implements Event @join__type(graph: API_JOURNEYS)  @join
 }
 
 type VideoProgressEvent implements Event @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  @join__implements(graph: API_JOURNEYS, interface: "Event")  @join__implements(graph: API_JOURNEYS_MODERN, interface: "Event")  {
-  id: ID @join__field(graph: API_JOURNEYS, type: "ID!")  @join__field(graph: API_JOURNEYS_MODERN, type: "ID") 
+  id: ID!
   """
   ID of the journey that the videoBlock belongs to
   """
-  journeyId: ID @join__field(graph: API_JOURNEYS, type: "ID!")  @join__field(graph: API_JOURNEYS_MODERN, type: "ID") 
+  journeyId: ID!
   """
   time event was created
   """
-  createdAt: DateTime @join__field(graph: API_JOURNEYS, type: "DateTime!")  @join__field(graph: API_JOURNEYS_MODERN, type: "DateTime") 
+  createdAt: DateTime!
   """
   title of the video
   """
@@ -1662,7 +1662,7 @@ type VideoProgressEvent implements Event @join__type(graph: API_JOURNEYS)  @join
   """
   progress is a integer indicating the precentage completion from the startAt to the endAt times of the videoBlock
   """
-  progress: Int @join__field(graph: API_JOURNEYS, type: "Int!")  @join__field(graph: API_JOURNEYS_MODERN, type: "Int") 
+  progress: Int!
 }
 
 type Host @join__type(graph: API_JOURNEYS)  {
@@ -1757,8 +1757,8 @@ type JourneyEvent implements Event & Node @join__type(graph: API_JOURNEYS)  @joi
   Base event fields from Event interface
   """
   id: ID!
-  journeyId: ID @join__field(graph: API_JOURNEYS, type: "ID!")  @join__field(graph: API_JOURNEYS_MODERN, type: "ID") 
-  createdAt: DateTime @join__field(graph: API_JOURNEYS, type: "DateTime!")  @join__field(graph: API_JOURNEYS_MODERN, type: "DateTime") 
+  journeyId: ID!
+  createdAt: DateTime!
   label: String
   value: String
   """
@@ -2926,9 +2926,9 @@ interface Block @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEY
 }
 
 interface Event @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
-  id: ID
-  journeyId: ID
-  createdAt: DateTime
+  id: ID!
+  journeyId: ID!
+  createdAt: DateTime!
   label: String
   value: String
 }
@@ -4141,7 +4141,7 @@ input VideoProgressEventCreateInput @join__type(graph: API_JOURNEYS)  @join__typ
   """
   progress is a integer indicating the precentage completion from the startAt to the endAt times of the videoBlock
   """
-  progress: Int! @join__field(graph: API_JOURNEYS, type: "Int!")  @join__field(graph: API_JOURNEYS_MODERN, type: "Int") 
+  progress: Int!
   """
   title of the video
   """

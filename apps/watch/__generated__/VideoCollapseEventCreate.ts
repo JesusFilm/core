@@ -11,7 +11,7 @@ import { VideoCollapseEventCreateInput } from "./globalTypes";
 
 export interface VideoCollapseEventCreate_videoCollapseEventCreate {
   __typename: "VideoCollapseEvent";
-  id: string | null;
+  id: string;
 }
 
 export interface VideoCollapseEventCreate {

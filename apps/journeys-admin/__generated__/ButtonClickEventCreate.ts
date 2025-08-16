@@ -11,7 +11,7 @@ import { ButtonClickEventCreateInput } from "./globalTypes";
 
 export interface ButtonClickEventCreate_buttonClickEventCreate {
   __typename: "ButtonClickEvent";
-  id: string | null;
+  id: string;
 }
 
 export interface ButtonClickEventCreate {

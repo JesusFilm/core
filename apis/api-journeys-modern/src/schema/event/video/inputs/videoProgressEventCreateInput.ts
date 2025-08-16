@@ -11,7 +11,7 @@ export const VideoProgressEventCreateInput = builder.inputType(
       position: t.float({ required: false }),
       label: t.string({ required: false }),
       value: t.field({ type: VideoBlockSource, required: false }),
-      progress: t.int({ required: false })
+      progress: t.int({ required: true })
     })
   }
 )

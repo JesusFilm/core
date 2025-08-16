@@ -11,7 +11,7 @@ import { VideoCompleteEventCreateInput } from "./globalTypes";
 
 export interface VideoCompleteEventCreate_videoCompleteEventCreate {
   __typename: "VideoCompleteEvent";
-  id: string | null;
+  id: string;
 }
 
 export interface VideoCompleteEventCreate {

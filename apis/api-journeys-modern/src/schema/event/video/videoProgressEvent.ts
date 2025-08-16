@@ -1,3 +1,5 @@
+import { GraphQLError } from 'graphql'
+
 import { builder } from '../../builder'
 import { VideoBlockSource } from '../../enums'
 import { EventInterface } from '../event'
@@ -10,6 +12,18 @@ export const VideoProgressEventRef = builder.prismaObject('Event', {
   fields: (t) => ({
     position: t.exposeFloat('position', { nullable: true }),
     source: t.expose('source', { type: VideoBlockSource, nullable: true }),
-    progress: t.exposeInt('progress', { nullable: true })
+    progress: t.field({
+      type: 'Int',
+      nullable: false,
+      select: {
+        progress: true
+      },
+      resolve: ({ progress }) => {
+        if (!progress) {
+          throw new GraphQLError('Progress is required')
+        }
+        return progress
+      }
+    })
   })
 })

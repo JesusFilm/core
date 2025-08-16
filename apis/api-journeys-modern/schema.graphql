@@ -97,9 +97,9 @@ input ButtonBlockUpdateInput {
 type ButtonClickEvent implements Event
   @shareable
 {
-  id: ID
-  journeyId: ID
-  createdAt: DateTime
+  id: ID!
+  journeyId: ID!
+  createdAt: DateTime!
   label: String
   value: String
   action: ButtonAction
@@ -192,9 +192,9 @@ input CardBlockUpdateInput {
 type ChatOpenEvent implements Event
   @shareable
 {
-  id: ID
-  journeyId: ID
-  createdAt: DateTime
+  id: ID!
+  journeyId: ID!
+  createdAt: DateTime!
   label: String
   value: String
   messagePlatform: MessagePlatform
@@ -243,9 +243,9 @@ input EmailActionInput {
 }
 
 interface Event {
-  id: ID
-  journeyId: ID
-  createdAt: DateTime
+  id: ID!
+  journeyId: ID!
+  createdAt: DateTime!
   label: String
   value: String
 }
@@ -489,8 +489,8 @@ type JourneyEvent implements Event & Node
   @shareable
 {
   id: ID!
-  journeyId: ID
-  createdAt: DateTime
+  journeyId: ID!
+  createdAt: DateTime!
   label: String
   value: String
   action: ButtonAction
@@ -544,9 +544,9 @@ enum JourneyStatus {
 type JourneyViewEvent implements Event
   @shareable
 {
-  id: ID
-  journeyId: ID
-  createdAt: DateTime
+  id: ID!
+  journeyId: ID!
+  createdAt: DateTime!
   label: String
   value: String
   language: Language
@@ -722,9 +722,9 @@ input RadioQuestionBlockCreateInput {
 type RadioQuestionSubmissionEvent implements Event
   @shareable
 {
-  id: ID
-  journeyId: ID
-  createdAt: DateTime
+  id: ID!
+  journeyId: ID!
+  createdAt: DateTime!
   label: String
   value: String
 }
@@ -756,9 +756,9 @@ input SignUpBlockUpdateInput {
 type SignUpSubmissionEvent implements Event
   @shareable
 {
-  id: ID
-  journeyId: ID
-  createdAt: DateTime
+  id: ID!
+  journeyId: ID!
+  createdAt: DateTime!
   label: String
   value: String
   email: String
@@ -882,9 +882,9 @@ input StepBlockUpdateInput {
 type StepNextEvent implements Event
   @shareable
 {
-  id: ID
-  journeyId: ID
-  createdAt: DateTime
+  id: ID!
+  journeyId: ID!
+  createdAt: DateTime!
   label: String
   value: String
 }
@@ -900,9 +900,9 @@ input StepNextEventCreateInput {
 type StepPreviousEvent implements Event
   @shareable
 {
-  id: ID
-  journeyId: ID
-  createdAt: DateTime
+  id: ID!
+  journeyId: ID!
+  createdAt: DateTime!
   label: String
   value: String
 }
@@ -918,9 +918,9 @@ input StepPreviousEventCreateInput {
 type StepViewEvent implements Event
   @shareable
 {
-  id: ID
-  journeyId: ID
-  createdAt: DateTime
+  id: ID!
+  journeyId: ID!
+  createdAt: DateTime!
   label: String
   value: String
 }
@@ -974,9 +974,9 @@ input TextResponseBlockUpdateInput {
 type TextResponseSubmissionEvent implements Event
   @shareable
 {
-  id: ID
-  journeyId: ID
-  createdAt: DateTime
+  id: ID!
+  journeyId: ID!
+  createdAt: DateTime!
   label: String
   value: String
   blockId: String
@@ -1182,9 +1182,9 @@ input VideoBlockUpdateInput {
 type VideoCollapseEvent implements Event
   @shareable
 {
-  id: ID
-  journeyId: ID
-  createdAt: DateTime
+  id: ID!
+  journeyId: ID!
+  createdAt: DateTime!
   label: String
   value: String
   position: Float
@@ -1203,9 +1203,9 @@ input VideoCollapseEventCreateInput {
 type VideoCompleteEvent implements Event
   @shareable
 {
-  id: ID
-  journeyId: ID
-  createdAt: DateTime
+  id: ID!
+  journeyId: ID!
+  createdAt: DateTime!
   label: String
   value: String
   position: Float
@@ -1224,9 +1224,9 @@ input VideoCompleteEventCreateInput {
 type VideoExpandEvent implements Event
   @shareable
 {
-  id: ID
-  journeyId: ID
-  createdAt: DateTime
+  id: ID!
+  journeyId: ID!
+  createdAt: DateTime!
   label: String
   value: String
   position: Float
@@ -1245,9 +1245,9 @@ input VideoExpandEventCreateInput {
 type VideoPauseEvent implements Event
   @shareable
 {
-  id: ID
-  journeyId: ID
-  createdAt: DateTime
+  id: ID!
+  journeyId: ID!
+  createdAt: DateTime!
   label: String
   value: String
   position: Float
@@ -1266,9 +1266,9 @@ input VideoPauseEventCreateInput {
 type VideoPlayEvent implements Event
   @shareable
 {
-  id: ID
-  journeyId: ID
-  createdAt: DateTime
+  id: ID!
+  journeyId: ID!
+  createdAt: DateTime!
   label: String
   value: String
   position: Float
@@ -1287,14 +1287,14 @@ input VideoPlayEventCreateInput {
 type VideoProgressEvent implements Event
   @shareable
 {
-  id: ID
-  journeyId: ID
-  createdAt: DateTime
+  id: ID!
+  journeyId: ID!
+  createdAt: DateTime!
   label: String
   value: String
   position: Float
   source: VideoBlockSource
-  progress: Int
+  progress: Int!
 }
 
 input VideoProgressEventCreateInput {
@@ -1304,15 +1304,15 @@ input VideoProgressEventCreateInput {
   position: Float
   label: String
   value: VideoBlockSource
-  progress: Int
+  progress: Int!
 }
 
 type VideoStartEvent implements Event
   @shareable
 {
-  id: ID
-  journeyId: ID
-  createdAt: DateTime
+  id: ID!
+  journeyId: ID!
+  createdAt: DateTime!
   label: String
   value: String
   position: Float
