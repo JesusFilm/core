@@ -35,11 +35,12 @@ const KNOWN_LOCALES = new Set(
  */
 function getEnglishNameFromSlug(slug: string): string | undefined {
   const language = (languagesData as LanguagesData).languages.find((lang: Language) => lang.slug === slug)
+  
   if (!language) return undefined
   
   // Find the English name (primary=false, language.id="529" which is English)
   const englishName = language.name.find((name: LanguageName) => 
-    name.primary === false && name.language.id === "529"
+    name.primary === false
   )
   
   return englishName?.value
@@ -53,8 +54,9 @@ function findLanguageSlug(pathname: string): LangHit | undefined {
   const segments = pathname.split('/').filter(Boolean)
   for (let i = 0; i < segments.length; i++) {
     const seg = segments[i]
+    const cleanSeg = seg.replace(/\.html$/, '')
     const mapping = Object.values(LANGUAGE_MAPPINGS).find((m: any) =>
-      m.languageSlugs.includes(seg)
+      m.languageSlugs.includes(cleanSeg)
     ) as { locale: string } | undefined
 
     if (mapping) return { locale: mapping.locale, index: i }
@@ -76,12 +78,13 @@ export function middleware(req: NextRequest): NextResponse | undefined {
 
   const segments = pathname.split('/').filter(Boolean)
 
-  // If already prefixed with a known locale, let it through untouched
+    // If already prefixed with a known locale, let it through untouched
   if (segments.length && KNOWN_LOCALES.has(segments[0])) {
     return NextResponse.next()
   }
 
   const hit = findLanguageSlug(pathname)
+
   if (!hit) {
     return NextResponse.next()
   }
@@ -89,46 +92,63 @@ export function middleware(req: NextRequest): NextResponse | undefined {
   const { locale, index: langIdx } = hit
   const watchIdx = segments.indexOf('watch')
 
-  if (watchIdx === -1) {
-    return NextResponse.next()
-  }
+  // if (watchIdx === -1) {
+  //   return NextResponse.next()
+  // }
 
   const rewriteUrl = req.nextUrl.clone()
 
   // MAIN PAGE legacy format:
   //   /watch/{languageSlug}.html/…  ->  /{locale?}/watch/…  (drop the languageSlug segment)
-  if (langIdx === watchIdx + 1) {
-    // Ensure the URL has the language refinement param (visible to the user)
-    const langSeg = segments[langIdx]
-    const englishName = getEnglishNameFromSlug(langSeg) || langSeg.replace(/\.html$/, '').replace(/-/g, ' ')
+  const isMainPage = langIdx === watchIdx + 1
 
+  if (isMainPage) {
+    // Extract language slug from URL (e.g., "spanish" from "spanish.html")
+    const langSeg = segments[langIdx]
+    const cleanLangSeg = langSeg.replace(/\.html$/, '')
+    
+    // Convert slug to English name (e.g., "spanish" -> "Spanish, Latin American")
+    const englishName = getEnglishNameFromSlug(cleanLangSeg)  // Keep original slug
+
+    // Check if search param already exists to avoid duplicate redirects
     const paramKey = 'refinementList[languageEnglishName][0]'
     const hasParam = req.nextUrl.searchParams.has(paramKey)
 
+    // Add language filter to search params if missing
+    // This ensures the UI shows the correct language filter
     if (!hasParam && englishName) {
       const redirectUrl = req.nextUrl.clone()
       redirectUrl.searchParams.set(paramKey, englishName)
       return NextResponse.redirect(redirectUrl)
     }
 
+    // Remove language slug from path segments for URL rewrite
     const withoutLang = segments.slice(0, langIdx).concat(segments.slice(langIdx + 1))
 
     // Default locale: no prefix. Non-default: prefix with /{locale}
-    if (locale !== DEFAULT_LOCALE) {
+    const isNonDefaultLocale = locale !== DEFAULT_LOCALE
+
+    if (isNonDefaultLocale) {
       rewriteUrl.pathname = '/' + [locale, ...withoutLang].join('/')
     } else {
       rewriteUrl.pathname = '/' + withoutLang.join('/')
     }
 
-    return NextResponse.rewrite(rewriteUrl)
+    const response = NextResponse.rewrite(rewriteUrl)
+    response.headers.set('x-middleware-rewrite', rewriteUrl.toString())
+    return response
   }
 
   // INNER PAGE legacy format:
   //   /watch/{page}.html/{languageSlug}.html/…  ->  /{locale?}/watch/{page}.html/{languageSlug}.html/…
   // Keep the full path, only add locale prefix for non-default locales.
-  if (locale !== DEFAULT_LOCALE) {
+  const isNonDefaultLocale = locale !== DEFAULT_LOCALE
+
+  if (isNonDefaultLocale) {
     rewriteUrl.pathname = '/' + [locale, ...segments].join('/')
-    return NextResponse.rewrite(rewriteUrl)
+    const response = NextResponse.rewrite(rewriteUrl)
+    response.headers.set('x-middleware-rewrite', rewriteUrl.toString())
+    return response
   }
 
   // Default-locale inner pages can pass through unchanged

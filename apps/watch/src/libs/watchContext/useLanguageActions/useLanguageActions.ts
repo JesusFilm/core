@@ -42,8 +42,32 @@ export function useLanguageActions() {
       setCookie('AUDIO_LANGUAGE', newAudioLanguage)
       setCookie('SUBTITLE_LANGUAGE', newSubtitleLanguage)
 
-      // Trigger page reload
-      if (state.router) {
+      // Find the language slug for the selected language
+      const languageSlug = selectedLangObj?.slug
+
+      // Change the URL to include the language slug while preserving current page context
+      if (state.router && languageSlug && state.router.asPath) {
+        const currentPath = state.router.asPath
+        
+        // Check if we're on a main page or inner page
+        if (currentPath.includes('/watch/') && currentPath.includes('.html/')) {
+          // Inner page: preserve the page structure but update language
+          // Example: /watch/jesus-calms-the-storm.html/english.html -> /watch/jesus-calms-the-storm.html/spanish.html
+          const pathParts = currentPath.split('/')
+          
+          // Replace the language part with the new language slug
+          const newLastPart = `${languageSlug}.html`
+          pathParts[pathParts.length - 1] = newLastPart
+          
+          const newUrl = pathParts.join('/')
+          void state.router.push(newUrl)
+        } else {
+          // Main page: go to language-specific main page
+          const newUrl = `/watch/${languageSlug}`
+          void state.router.push(newUrl)
+        }
+      } else {
+        // Fallback to reload if no slug found
         setTimeout(() => state.router?.reload(), 0)
       }
     },

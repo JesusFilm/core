@@ -16,7 +16,11 @@ const mockSetCookie = setCookie as jest.MockedFunction<typeof setCookie>
 
 describe('useLanguageActions', () => {
   const mockReload = jest.fn()
-  const mockRouter = { reload: mockReload } as unknown as NextRouter
+  const mockRouter = { 
+    reload: mockReload,
+    asPath: '/watch/english.html',
+    push: jest.fn()
+  } as unknown as NextRouter
 
   const defaultInitialState: WatchInitialState = {
     siteLanguage: 'en',

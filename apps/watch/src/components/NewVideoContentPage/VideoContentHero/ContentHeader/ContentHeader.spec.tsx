@@ -59,7 +59,7 @@ describe('ContentHeader', () => {
     expect(header).toBeInTheDocument()
 
     const link = screen.getByRole('link')
-    expect(link).toHaveAttribute('href', '/watch/russian.html')
+    expect(link).toHaveAttribute('href', '/watch/russian')
   })
 
   it('renders the header with a logo linking to /watch when router is not available (SSR)', () => {

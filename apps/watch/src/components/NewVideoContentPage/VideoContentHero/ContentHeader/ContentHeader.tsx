@@ -17,13 +17,14 @@ function getLogoLink(pathname: string): string {
   
   // Find if there's a language slug in the path
   for (const segment of segments) {
+    const cleanSegment = segment.replace(/\.html$/, '')
     const mapping = Object.values(LANGUAGE_MAPPINGS).find((m) =>
-      m.languageSlugs.includes(segment)
+      m.languageSlugs.includes(cleanSegment)
     )
     
     if (mapping) {
       // Found a language slug, return the watch path with that language
-      return `/watch/${segment}`
+      return `/watch/${cleanSegment}`
     }
   }
   

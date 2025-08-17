@@ -14,7 +14,11 @@ export function extractQueryParams(url: string): FilterParams {
   const query = params.get('query')
   const languageId = params.get('menu[languageId]')
   const subtitleId = params.get('menu[subtitles]')
-  const languageEnglishName = params.get('languageEnglishName')
+  
+  // Fix: Handle the correct parameter format for languageEnglishName
+  const languageEnglishName = params.get('refinementList[languageEnglishName][0]') || 
+                             params.get('languageEnglishName') // fallback for backward compatibility
+  
   return { query, languageId, subtitleId, languageEnglishName }
 }
 

@@ -36,7 +36,8 @@ describe('FilterList', () => {
   const useAlgoliaRouter: FilterParams = {
     query: null,
     languageId: null,
-    subtitleId: null
+    subtitleId: null,
+    languageEnglishName: null
   }
 
   beforeEach(() => {
