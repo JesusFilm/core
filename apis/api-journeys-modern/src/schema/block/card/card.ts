@@ -1,7 +1,7 @@
 import {
   ThemeMode as PrismaThemeMode,
   ThemeName as PrismaThemeName
-} from '.prisma/api-journeys-modern-client'
+} from '@core/prisma/journeys/client'
 
 import { builder } from '../../builder'
 import { Block } from '../block'

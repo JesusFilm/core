@@ -1,6 +1,6 @@
+import { prisma } from '@core/prisma/journeys/client'
 import { journeySimpleSchema } from '@core/shared/ai/journeySimpleTypes'
 
-import { prisma } from '../../lib/prisma'
 import { builder } from '../builder'
 import { Language } from '../language'
 
