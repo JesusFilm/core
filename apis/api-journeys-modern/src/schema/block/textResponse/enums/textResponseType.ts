@@ -1,4 +1,4 @@
-import { TextResponseType as PrismaTextResponseType } from '.prisma/api-journeys-modern-client'
+import { TextResponseType as PrismaTextResponseType } from '@core/prisma/journeys/client'
 
 import { builder } from '../../../builder'
 
