@@ -159,9 +159,10 @@ function getVideoId(video: JourneySimpleVideo): string {
   throw new Error(`Unsupported video source: ${video.source as string}`)
 }
 
-async function getVideoEndAt(video: JourneySimpleVideo): Promise<number | undefined> {
-  if (video.source === 'youTube' && !video.endAt) {
-    return await getYouTubeVideoDuration(video.src)
+async function getVideoEndAt(video: JourneySimpleVideo, videoId: string): Promise<number | undefined> {
+  if (video.source === 'youTube' && video.endAt == null) {
+    // youtube source and endAt not specified -> use full duration as end
+    return await getYouTubeVideoDuration(videoId)
   }
   return video.endAt
 }
@@ -253,7 +254,7 @@ export async function updateSimpleJourney(
           throw new Error('Video source and src is required')
         }
         const videoId = getVideoId(card.video)
-        const videoEndAt = await getVideoEndAt(card.video)
+        const videoEndAt = await getVideoEndAt(card.video, videoId)
 
         const nextStepBlock =
           card.defaultNextCard != null
