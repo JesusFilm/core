@@ -159,7 +159,10 @@ function getVideoId(video: JourneySimpleVideo): string {
   throw new Error(`Unsupported video source: ${video.source as string}`)
 }
 
-async function getVideoEndAt(video: JourneySimpleVideo, videoId: string): Promise<number | undefined> {
+async function getVideoEndAt(
+  video: JourneySimpleVideo,
+  videoId: string
+): Promise<number | undefined> {
   if (video.source === 'youTube' && video.endAt == null) {
     // youtube source and endAt not specified -> use full duration as end
     return await getYouTubeVideoDuration(videoId)
