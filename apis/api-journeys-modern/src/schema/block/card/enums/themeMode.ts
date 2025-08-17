@@ -1,4 +1,4 @@
-import { ThemeMode as PrismaThemeMode } from '.prisma/api-journeys-modern-client'
+import { ThemeMode as PrismaThemeMode } from '@core/prisma/journeys/client'
 
 import { builder } from '../../../builder'
 

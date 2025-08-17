@@ -13,6 +13,12 @@ generator erd {
   disabled    = true
 }
 
+generator pothos {
+  provider     = "prisma-pothos-types"
+  output       = "../src/__generated__/pothos-types.ts"
+  clientOutput = ".prisma/api-journeys-client"
+}
+
 datasource db {
   provider = "postgresql"
   url      = env("PG_DATABASE_URL_JOURNEYS")
