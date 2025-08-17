@@ -1,6 +1,6 @@
 import { Logger } from 'pino'
 
-import { prisma } from '../../../lib/prisma'
+import { prisma } from '@core/prisma/media/client'
 
 // Cache for study question IDs to avoid repeated database queries
 let questionMap = new Map<string, Array<{ videoId: string; order: number }>>()

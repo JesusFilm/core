@@ -1,4 +1,4 @@
-import { ThemeName as PrismaThemeName } from '.prisma/api-journeys-modern-client'
+import { ThemeName as PrismaThemeName } from '@core/prisma/journeys/client'
 
 import { builder } from '../../../builder'
 

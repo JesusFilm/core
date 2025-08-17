@@ -12,20 +12,20 @@ It is important to note that in development we run one Database instance with pe
 
 ## Entity Relationship Diagrams (ERD)
 
-What follows is the most up to date Entity Relationship Diagrams ([main branch](https://github.com/JesusFilm/core)). These are generated automatically when running `nx run api-*:prisma-generate` from your Dev Container.
+What follows is the most up to date Entity Relationship Diagrams ([main branch](https://github.com/JesusFilm/core)). These are generated automatically when running `nx run prisma-*:prisma-generate` from your Dev Container.
 
-### API Journeys
+### Journeys
 
-![API Journeys ERD](https://raw.githubusercontent.com/JesusFilm/core/main/apis/api-journeys/db/ERD.svg)
+![Journeys ERD](https://raw.githubusercontent.com/JesusFilm/core/main/libs/prisma/journeys/db/ERD.svg)
 
 ### API Languages
 
-![API Languages ERD](https://raw.githubusercontent.com/JesusFilm/core/main/apis/api-languages/db/ERD.svg)
+![API Languages ERD](https://raw.githubusercontent.com/JesusFilm/core/main/libs/prisma/languages/db/ERD.svg)
 
 ### API Media
 
-![API Media ERD](https://raw.githubusercontent.com/JesusFilm/core/main/apis/api-media/db/ERD.svg)
+![API Media ERD](https://raw.githubusercontent.com/JesusFilm/core/main/libs/prisma/media/db/ERD.svg)
 
 ### API Users
 
-![API Users ERD](https://raw.githubusercontent.com/JesusFilm/core/main/apis/api-users/db/ERD.svg)
+![API Users ERD](https://raw.githubusercontent.com/JesusFilm/core/main/libs/prisma/users/db/ERD.svg)

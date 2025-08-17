@@ -1,7 +1,6 @@
-import { Prisma } from '.prisma/api-languages-client'
+import { Prisma, prisma } from '@core/prisma/languages/client'
 
 import { parseFullTextSearch } from '../../lib/parseFullTextSearch'
-import { prisma } from '../../lib/prisma'
 import { builder } from '../builder'
 
 enum LanguageIdType {
