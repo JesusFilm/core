@@ -151,11 +151,11 @@ function getVideoId(video: JourneySimpleVideo): string {
     }
     return videoId
   }
-  
+
   if (video.source === 'internal') {
     return video.src
   }
-  
+
   throw new Error(`Unsupported video source: ${video.source as string}`)
 }
 
@@ -260,7 +260,7 @@ export async function updateSimpleJourney(
           card.defaultNextCard != null
             ? stepBlocks.find((s) => s.simpleCardId === card.defaultNextCard)
             : undefined
-        
+
         await tx.block.create({
           data: {
             journeyId,
