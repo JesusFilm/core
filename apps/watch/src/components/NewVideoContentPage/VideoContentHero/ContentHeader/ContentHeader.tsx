@@ -14,20 +14,20 @@ import { AudioLanguageButton } from '../../../VideoContentPage/AudioLanguageButt
  */
 function getLogoLink(pathname: string): string {
   const segments = pathname.split('/').filter(Boolean)
-  
+
   // Find if there's a language slug in the path
   for (const segment of segments) {
     const cleanSegment = segment.replace(/\.html$/, '')
     const mapping = Object.values(LANGUAGE_MAPPINGS).find((m) =>
       m.languageSlugs.includes(cleanSegment)
     )
-    
+
     if (mapping) {
       // Found a language slug, return the watch path with that language
       return `/watch/${cleanSegment}`
     }
   }
-  
+
   // No language slug found, return /watch
   return '/watch'
 }

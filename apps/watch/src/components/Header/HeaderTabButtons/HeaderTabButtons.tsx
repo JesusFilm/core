@@ -36,14 +36,14 @@ function getVideosLink(query: Record<string, string | string[]>): string {
       const mapping = Object.values(LANGUAGE_MAPPINGS).find((m) =>
         m.languageSlugs.includes(cleanValue)
       )
-      
+
       if (mapping) {
         // Found a language slug, return the watch path with that language
         return `/watch/${cleanValue}`
       }
     }
   }
-  
+
   // No language slug found, return /watch
   return '/watch'
 }
@@ -52,7 +52,9 @@ export function HeaderTabButtons(): ReactElement {
   const { strategies, journeys } = useFlags()
   const { t } = useTranslation('apps-watch')
   const router = useRouter()
-  const videosLink = router?.query ? getVideosLink(router.query as Record<string, string | string[]>) : '/watch'
+  const videosLink = router?.query
+    ? getVideosLink(router.query as Record<string, string | string[]>)
+    : '/watch'
 
   const headerItems = compact([
     strategies

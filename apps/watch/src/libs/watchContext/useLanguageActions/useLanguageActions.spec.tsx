@@ -16,7 +16,7 @@ const mockSetCookie = setCookie as jest.MockedFunction<typeof setCookie>
 
 describe('useLanguageActions', () => {
   const mockReload = jest.fn()
-  const mockRouter = { 
+  const mockRouter = {
     reload: mockReload,
     asPath: '/watch/english.html',
     push: jest.fn()

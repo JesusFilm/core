@@ -14,24 +14,33 @@ export function extractQueryParams(url: string): FilterParams {
   const query = params.get('query')
   const languageId = params.get('menu[languageId]')
   const subtitleId = params.get('menu[subtitles]')
-  
+
   // Fix: Handle the correct parameter format for languageEnglishName
-  const languageEnglishName = params.get('refinementList[languageEnglishName][0]') || 
-                             params.get('languageEnglishName') // fallback for backward compatibility
-  
+  const languageEnglishName =
+    params.get('refinementList[languageEnglishName][0]') ||
+    params.get('languageEnglishName') // fallback for backward compatibility
+
   return { query, languageId, subtitleId, languageEnglishName }
 }
 
 export function useAlgoliaRouter(languageEnglishName?: string): FilterParams {
   const router = useRouter()
   const decodedUrl = decodeURIComponent(router?.asPath ?? '')
-  const { query, languageId, subtitleId, languageEnglishName: urlLanguageEnglishName } = extractQueryParams(decodedUrl)
-  
+  const {
+    query,
+    languageId,
+    subtitleId,
+    languageEnglishName: urlLanguageEnglishName
+  } = extractQueryParams(decodedUrl)
+
   // Use provided parameter or fall back to URL parameter
   const finalLanguageEnglishName = languageEnglishName ?? urlLanguageEnglishName
-  
+
   const hasQueryParams =
-    query != null || languageId != null || subtitleId != null || finalLanguageEnglishName != null
+    query != null ||
+    languageId != null ||
+    subtitleId != null ||
+    finalLanguageEnglishName != null
 
   const { refresh } = useInstantSearch()
   useEffect(() => {
@@ -42,5 +51,10 @@ export function useAlgoliaRouter(languageEnglishName?: string): FilterParams {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  return { query, languageId, subtitleId, languageEnglishName: finalLanguageEnglishName }
+  return {
+    query,
+    languageId,
+    subtitleId,
+    languageEnglishName: finalLanguageEnglishName
+  }
 }

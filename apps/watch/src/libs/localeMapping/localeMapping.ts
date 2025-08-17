@@ -129,11 +129,7 @@ export const LANGUAGE_MAPPINGS: Record<string, LocaleMapping> = {
     locale: 'ko',
     localName: '한국어',
     nativeName: 'Korean',
-    languageSlugs: [
-      'korean',
-      'korean-sign-language',
-      'korean-north'
-    ],
+    languageSlugs: ['korean', 'korean-sign-language', 'korean-north'],
     geoLocations: [
       'KR', // South Korea
       'KP' // North Korea

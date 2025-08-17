@@ -34,15 +34,17 @@ const KNOWN_LOCALES = new Set(
  * Find the English name for a language slug from the languages.json data
  */
 function getEnglishNameFromSlug(slug: string): string | undefined {
-  const language = (languagesData as LanguagesData).languages.find((lang: Language) => lang.slug === slug)
-  
-  if (!language) return undefined
-  
-  // Find the English name (primary=false, language.id="529" which is English)
-  const englishName = language.name.find((name: LanguageName) => 
-    name.primary === false
+  const language = (languagesData as LanguagesData).languages.find(
+    (lang: Language) => lang.slug === slug
   )
-  
+
+  if (!language) return undefined
+
+  // Find the English name (primary=false, language.id="529" which is English)
+  const englishName = language.name.find(
+    (name: LanguageName) => name.primary === false
+  )
+
   return englishName?.value
 }
 
@@ -78,7 +80,7 @@ export function middleware(req: NextRequest): NextResponse | undefined {
 
   const segments = pathname.split('/').filter(Boolean)
 
-    // If already prefixed with a known locale, let it through untouched
+  // If already prefixed with a known locale, let it through untouched
   if (segments.length && KNOWN_LOCALES.has(segments[0])) {
     return NextResponse.next()
   }
@@ -106,9 +108,9 @@ export function middleware(req: NextRequest): NextResponse | undefined {
     // Extract language slug from URL (e.g., "spanish" from "spanish.html")
     const langSeg = segments[langIdx]
     const cleanLangSeg = langSeg.replace(/\.html$/, '')
-    
+
     // Convert slug to English name (e.g., "spanish" -> "Spanish, Latin American")
-    const englishName = getEnglishNameFromSlug(cleanLangSeg)  // Keep original slug
+    const englishName = getEnglishNameFromSlug(cleanLangSeg) // Keep original slug
 
     // Check if search param already exists to avoid duplicate redirects
     const paramKey = 'refinementList[languageEnglishName][0]'
@@ -123,7 +125,9 @@ export function middleware(req: NextRequest): NextResponse | undefined {
     }
 
     // Remove language slug from path segments for URL rewrite
-    const withoutLang = segments.slice(0, langIdx).concat(segments.slice(langIdx + 1))
+    const withoutLang = segments
+      .slice(0, langIdx)
+      .concat(segments.slice(langIdx + 1))
 
     // Default locale: no prefix. Non-default: prefix with /{locale}
     const isNonDefaultLocale = locale !== DEFAULT_LOCALE
