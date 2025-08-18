@@ -1,4 +1,4 @@
-import { Prisma } from '.prisma/api-journeys-modern-client'
+import { Prisma } from '@core/prisma/journeys/client'
 
 export type JourneyWithTeamAndUserJourney = Prisma.JourneyGetPayload<{
   include: {

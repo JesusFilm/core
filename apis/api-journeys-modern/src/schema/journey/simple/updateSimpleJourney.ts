@@ -2,12 +2,12 @@ import { ApolloClient, InMemoryCache, createHttpLink } from '@apollo/client'
 import { graphql } from 'gql.tada'
 import fetch from 'node-fetch'
 
+import { prisma } from '@core/prisma/journeys/client'
 import {
   JourneySimpleImage,
   JourneySimpleUpdate
 } from '@core/shared/ai/journeySimpleTypes'
 
-import { prisma } from '../../../lib/prisma'
 import { generateBlurhashAndMetadataFromUrl } from '../../../utils/generateBlurhashAndMetadataFromUrl'
 
 const ALLOWED_IMAGE_HOSTNAMES = [
