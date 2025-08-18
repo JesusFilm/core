@@ -1,9 +1,13 @@
 import { ReactElement } from 'react'
 
-import type { WrapperProps } from '../BlockRenderer'
+import type { WrapperProps, WrappersProps } from '../BlockRenderer'
+import type { BlockFields_CardBlock as CardBlock } from '../../libs/block/__generated__/BlockFields'
 import { Card } from '../Card'
 
-export function CardWrapper({ block, children }: WrapperProps): ReactElement {
+export function CardWrapper({
+  block,
+  children
+}: WrapperProps<CardBlock, { wrappers?: WrappersProps }>): ReactElement {
   if (block.__typename === 'CardBlock') {
     const blocks = block.children.map((child) => {
       if (

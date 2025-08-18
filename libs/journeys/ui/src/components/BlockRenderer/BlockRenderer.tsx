@@ -18,9 +18,9 @@ import {
 } from '../../libs/block/__generated__/BlockFields'
 import { Video } from '../Video'
 
-export interface WrapperProps<T = Block> {
+export interface WrapperProps<T = Block, P = unknown> {
   block: TreeBlock<T>
-  children: ReactElement
+  children: ReactElement<P>
 }
 
 type WrapperFn<T = Block> = (props: WrapperProps<T>) => ReactElement
