@@ -6,13 +6,9 @@ import {
   createDownloadsFromMuxAsset,
   downloadsReadyToStore
 } from '../lib/downloads'
-import { logger as baseLogger } from '../logger'
 import { getVideo } from '../schema/mux/video/service'
 
 const prisma = new PrismaClient()
-
-// Create a child logger for the script
-const logger = baseLogger.child({ script: 'mux-videos' })
 
 function getMuxClient(): Mux {
   if (process.env.MUX_ACCESS_TOKEN_ID == null)
@@ -28,13 +24,6 @@ function getMuxClient(): Mux {
 }
 
 export async function createMuxAsset(url: string, mux: Mux): Promise<string> {
-  // let maxResolutionTier: '1080p' | '1440p' | '2160p' = '1080p'
-  // if (height > 1080 && height <= 1440) {
-  //   maxResolutionTier = '1440p'
-  // } else if (height > 1440) {
-  //   maxResolutionTier = '2160p'
-  // }
-
   const muxVideo = await mux.video.assets.create({
     inputs: [
       {
@@ -259,7 +248,7 @@ export async function updateHls(mux: Mux): Promise<void> {
   }
 }
 
-export async function processDownloads(mux: Mux): Promise<void> {
+export async function processDownloads(): Promise<void> {
   console.log('mux downloads processing started')
 
   const take = 100
@@ -393,7 +382,7 @@ async function runMuxVideosScript(): Promise<void> {
     // Run all three processes in sequence
     await importMuxVideos(mux)
     await updateHls(mux)
-    await processDownloads(mux)
+    await processDownloads()
 
     console.log('Mux Videos processing completed successfully!')
   } catch (error) {
