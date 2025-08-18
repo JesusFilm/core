@@ -76,12 +76,15 @@ export async function waitForMuxVideoCompletion(
   muxId: string,
   timeoutMinutes: number = 150
 ): Promise<{ id: string; playbackId: string }> {
-  const maxAttempts = Math.floor((timeoutMinutes * 60) / 5) // Check every 5 seconds
+  const timeoutMs = timeoutMinutes * 60 * 1000
+  const startTime = Date.now()
+
   let currentInterval = 5
 
   console.log(`[Mux Service] Waiting for ${muxId} to complete processing...`)
 
-  for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+  let attempt = 1
+  while (Date.now() - startTime < timeoutMs) {
     try {
       const status = await checkMuxVideoStatus(muxId)
 
@@ -92,28 +95,28 @@ export async function waitForMuxVideoCompletion(
         return { id: status.id, playbackId: status.playbackId }
       }
 
-      // Log progress every 10 attempts
       if (attempt % 10 === 0) {
-        const elapsedMinutes = Math.round((attempt * currentInterval) / 60)
+        const elapsedMinutes = Math.round((Date.now() - startTime) / 60000)
         console.log(
           `[Mux Service] Still processing ${muxId}... (${elapsedMinutes} minutes elapsed)`
         )
       }
 
-      if (attempt < maxAttempts) {
+      if (Date.now() - startTime < timeoutMs) {
         const interval = currentInterval
         await new Promise((resolve) => setTimeout(resolve, interval * 1000))
 
-        // Increase interval gradually (max 2 minutes)
         currentInterval = Math.min(currentInterval * 1.5, 120)
       }
+      attempt++
     } catch (error) {
       console.warn(`[Mux Service] Polling attempt ${attempt} failed:`, error)
 
-      if (attempt < maxAttempts) {
+      if (Date.now() - startTime < timeoutMs) {
         const interval = currentInterval
         await new Promise((resolve) => setTimeout(resolve, interval * 1000))
       }
+      attempt++
     }
   }
 
