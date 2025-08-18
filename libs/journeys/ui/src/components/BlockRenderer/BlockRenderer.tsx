@@ -23,12 +23,14 @@ export interface WrapperProps<T = Block, P = unknown> {
   children: ReactElement<P>
 }
 
-type WrapperFn<T = Block> = (props: WrapperProps<T>) => ReactElement
+type WrapperFn<T = Block, P = unknown> = (
+  props: WrapperProps<T, P>
+) => ReactElement
 
 export interface WrappersProps {
   Wrapper?: WrapperFn
   ButtonWrapper?: WrapperFn<ButtonBlock>
-  CardWrapper?: WrapperFn<CardBlock>
+  CardWrapper?: WrapperFn<CardBlock, { wrappers?: WrappersProps }>
   ImageWrapper?: WrapperFn<ImageBlock>
   RadioOptionWrapper?: WrapperFn<RadioOptionBlock>
   RadioQuestionWrapper?: WrapperFn<RadioQuestionBlock>
