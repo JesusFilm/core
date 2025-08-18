@@ -1,9 +1,13 @@
+import { v4 as uuidv4 } from 'uuid'
+
 import { Prisma, User } from '.prisma/api-users-client'
 import { auth } from '@core/yoga/firebaseClient'
 
 import { prisma } from '../../lib/prisma'
 
 import { verifyUser } from './verifyUser'
+
+const GUEST_EMAIL_DOMAIN = '@guestuser.is'
 
 export async function findOrFetchUser(
   query: { select?: Prisma.UserSelect; include?: undefined },
@@ -28,20 +32,15 @@ export async function findOrFetchUser(
     return user
   }
 
-  if (existingUser != null && existingUser.emailVerified != null)
-    return existingUser
-
   const {
     displayName,
     email,
     emailVerified,
     photoURL: imageUrl
   } = await auth.getUser(userId)
-
   // Extract firstName and lastName from displayName with better fallbacks
   let firstName = ''
   let lastName = ''
-
   if (displayName?.trim()) {
     const nameParts = displayName
       .trim()
@@ -57,16 +56,32 @@ export async function findOrFetchUser(
     }
   }
 
-  // Ensure firstName is never empty for database constraint
   if (!firstName.trim()) {
     firstName = 'Unknown User'
+  }
+
+  // if user created an account from a gusest user, update the user with the new information
+  if (existingUser != null && existingUser.emailVerified != null) {
+    const user = await prisma.user.update({
+      where: {
+        userId
+      },
+      data: {
+        firstName,
+        lastName,
+        email,
+        imageUrl,
+        emailVerified
+      }
+    })
+    return user
   }
 
   const data = {
     userId,
     firstName,
     lastName,
-    email: email ?? '',
+    email: email ?? uuidv4() + GUEST_EMAIL_DOMAIN,
     imageUrl,
     emailVerified
   }
