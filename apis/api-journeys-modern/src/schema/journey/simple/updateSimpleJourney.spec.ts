@@ -813,7 +813,9 @@ describe('updateSimpleJourney', () => {
         ]
       }
 
-      await expect(updateSimpleJourney(journeyId, internalVideoJourney)).rejects.toThrow(
+      await expect(
+        updateSimpleJourney(journeyId, internalVideoJourney)
+      ).rejects.toThrow(
         'subtitleId must be a non-empty string when provided for internal videos'
       )
     })
@@ -838,7 +840,9 @@ describe('updateSimpleJourney', () => {
         ]
       }
 
-      await expect(updateSimpleJourney(journeyId, internalVideoJourney)).rejects.toThrow(
+      await expect(
+        updateSimpleJourney(journeyId, internalVideoJourney)
+      ).rejects.toThrow(
         'subtitleId must be a non-empty string when provided for internal videos'
       )
     })
