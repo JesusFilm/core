@@ -2,7 +2,6 @@ import { GraphQLError } from 'graphql'
 
 import { builder } from '../builder'
 
-// Define Event interface
 export const EventInterface = builder.prismaInterface('Event', {
   fields: (t) => ({
     id: t.exposeID('id', { nullable: false }),
