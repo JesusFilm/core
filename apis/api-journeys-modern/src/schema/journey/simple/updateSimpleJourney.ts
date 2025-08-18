@@ -256,8 +256,29 @@ export async function updateSimpleJourney(
         if (!card.video.source || !card.video.src) {
           throw new Error('Video source and src is required')
         }
+        
+        // Validate subtitleId for internal videos
+        if (card.video.source === 'internal' && card.video.subtitleId !== undefined && card.video.subtitleId !== null) {
+          if (typeof card.video.subtitleId !== 'string' || card.video.subtitleId.trim() === '') {
+            throw new Error('subtitleId must be a non-empty string when provided for internal videos')
+          }
+        }
+        
         const videoId = getVideoId(card.video)
         const videoEndAt = await getVideoEndAt(card.video, videoId)
+        
+        // Determine videoVariantLanguageId with logging for fallback scenarios
+        let videoVariantLanguageId: string | null
+        if (card.video.source === 'internal') {
+          if (card.video.subtitleId !== undefined && card.video.subtitleId !== null) {
+            videoVariantLanguageId = card.video.subtitleId
+          } else {
+            videoVariantLanguageId = '529'
+            console.log(`Using default subtitleId '529' for internal video ${videoId} (no subtitleId provided)`)
+          }
+        } else {
+          videoVariantLanguageId = null
+        }
 
         const nextStepBlock =
           card.defaultNextCard != null
@@ -271,7 +292,7 @@ export async function updateSimpleJourney(
             parentBlockId: cardBlockId,
             parentOrder: parentOrder++,
             videoId,
-            videoVariantLanguageId: '529',
+            videoVariantLanguageId,
             source: card.video.source,
             autoplay: true,
             startAt: card.video.startAt ?? 0,

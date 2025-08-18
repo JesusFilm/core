@@ -647,6 +647,48 @@ describe('updateSimpleJourney', () => {
       expect(videoBlockData.endAt).toBeUndefined() // No duration fetching for internal videos
     })
 
+    it('creates VideoBlock for internal video with custom subtitleId', async () => {
+      const internalVideoJourney: JourneySimpleUpdate = {
+        title: 'Internal Video Journey',
+        description: 'A journey with internal video and custom subtitle',
+        cards: [
+          {
+            id: 'internal-video-card-1',
+            x: 0,
+            y: 0,
+            video: {
+              src: 'internal-video-123',
+              source: 'internal',
+              subtitleId: 'custom-subtitle-456',
+              startAt: 10,
+              endAt: 60
+            },
+            defaultNextCard: 'card-2'
+          },
+          {
+            id: 'card-2',
+            x: 0,
+            y: 400,
+            button: { text: 'End', url: 'https://example.com' }
+          }
+        ]
+      }
+
+      await updateSimpleJourney(journeyId, internalVideoJourney)
+
+      const videoCalls = txMock.block.create.mock.calls.filter(
+        ([data]: [any]) => data.data.typename === 'VideoBlock'
+      )
+      expect(videoCalls.length).toBe(1)
+
+      const videoBlockData = videoCalls[0][0].data
+      expect(videoBlockData.source).toBe('internal')
+      expect(videoBlockData.videoId).toBe('internal-video-123')
+      expect(videoBlockData.videoVariantLanguageId).toBe('custom-subtitle-456')
+      expect(videoBlockData.startAt).toBe(10)
+      expect(videoBlockData.endAt).toBe(60)
+    })
+
     it('creates video block with navigation action for internal video when defaultNextCard is provided', async () => {
       const internalVideoJourney: JourneySimpleUpdate = {
         title: 'Internal Video Journey',
@@ -681,6 +723,156 @@ describe('updateSimpleJourney', () => {
       const videoBlockData = videoCalls[0][0].data
       expect(videoBlockData.action).toBeDefined()
       expect(videoBlockData.action.create.blockId).toBeDefined()
+    })
+
+    it('creates VideoBlock for internal video without subtitleId (defaults to 529)', async () => {
+      const internalVideoJourney: JourneySimpleUpdate = {
+        title: 'Internal Video Journey',
+        description: 'A journey with internal video without subtitle',
+        cards: [
+          {
+            id: 'internal-video-card-1',
+            x: 0,
+            y: 0,
+            video: {
+              src: 'internal-video-789',
+              source: 'internal',
+              startAt: 0,
+              endAt: 60
+            }
+          }
+        ]
+      }
+
+      await updateSimpleJourney(journeyId, internalVideoJourney)
+
+      const videoCalls = txMock.block.create.mock.calls.filter(
+        ([data]: [any]) => data.data.typename === 'VideoBlock'
+      )
+      expect(videoCalls.length).toBe(1)
+
+      const videoBlockData = videoCalls[0][0].data
+      expect(videoBlockData.videoVariantLanguageId).toBe('529')
+      expect(videoBlockData.source).toBe('internal')
+      expect(videoBlockData.videoId).toBe('internal-video-789')
+      expect(videoBlockData.startAt).toBe(0)
+      expect(videoBlockData.endAt).toBe(60)
+    })
+
+    it('creates VideoBlock for YouTube video with null videoVariantLanguageId (unchanged behavior)', async () => {
+      const youtubeVideoJourney: JourneySimpleUpdate = {
+        title: 'YouTube Video Journey',
+        description: 'A journey with YouTube video',
+        cards: [
+          {
+            id: 'youtube-video-card-1',
+            x: 0,
+            y: 0,
+            video: {
+              src: 'https://youtube.com/watch?v=dQw4w9WgXcQ',
+              source: 'youTube',
+              startAt: 30,
+              endAt: 90
+            }
+          }
+        ]
+      }
+
+      await updateSimpleJourney(journeyId, youtubeVideoJourney)
+
+      const videoCalls = txMock.block.create.mock.calls.filter(
+        ([data]: [any]) => data.data.typename === 'VideoBlock'
+      )
+      expect(videoCalls.length).toBe(1)
+
+      const videoBlockData = videoCalls[0][0].data
+      expect(videoBlockData.videoVariantLanguageId).toBeNull()
+      expect(videoBlockData.source).toBe('youTube')
+      expect(videoBlockData.videoId).toBe('dQw4w9WgXcQ')
+      expect(videoBlockData.startAt).toBe(30)
+      expect(videoBlockData.endAt).toBe(90)
+    })
+
+    it('throws error for internal video with empty string subtitleId', async () => {
+      const internalVideoJourney: JourneySimpleUpdate = {
+        title: 'Internal Video Journey',
+        description: 'A journey with internal video and empty subtitleId',
+        cards: [
+          {
+            id: 'internal-video-card-1',
+            x: 0,
+            y: 0,
+            video: {
+              src: 'internal-video-789',
+              source: 'internal',
+              subtitleId: '',
+              startAt: 0,
+              endAt: 60
+            }
+          }
+        ]
+      }
+
+      await expect(updateSimpleJourney(journeyId, internalVideoJourney)).rejects.toThrow(
+        'subtitleId must be a non-empty string when provided for internal videos'
+      )
+    })
+
+    it('throws error for internal video with whitespace-only subtitleId', async () => {
+      const internalVideoJourney: JourneySimpleUpdate = {
+        title: 'Internal Video Journey',
+        description: 'A journey with internal video and whitespace subtitleId',
+        cards: [
+          {
+            id: 'internal-video-card-1',
+            x: 0,
+            y: 0,
+            video: {
+              src: 'internal-video-789',
+              source: 'internal',
+              subtitleId: '   ',
+              startAt: 0,
+              endAt: 60
+            }
+          }
+        ]
+      }
+
+      await expect(updateSimpleJourney(journeyId, internalVideoJourney)).rejects.toThrow(
+        'subtitleId must be a non-empty string when provided for internal videos'
+      )
+    })
+
+    it('handles internal video with null subtitleId (treats as undefined)', async () => {
+      const internalVideoJourney: JourneySimpleUpdate = {
+        title: 'Internal Video Journey',
+        description: 'A journey with internal video and null subtitleId',
+        cards: [
+          {
+            id: 'internal-video-card-1',
+            x: 0,
+            y: 0,
+            video: {
+              src: 'internal-video-789',
+              source: 'internal',
+              subtitleId: null as any,
+              startAt: 0,
+              endAt: 60
+            }
+          }
+        ]
+      }
+
+      await updateSimpleJourney(journeyId, internalVideoJourney)
+
+      const videoCalls = txMock.block.create.mock.calls.filter(
+        ([data]: [any]) => data.data.typename === 'VideoBlock'
+      )
+      expect(videoCalls.length).toBe(1)
+
+      const videoBlockData = videoCalls[0][0].data
+      expect(videoBlockData.videoVariantLanguageId).toBe('529')
+      expect(videoBlockData.source).toBe('internal')
     })
 
     it('handles mixed YouTube and internal videos in same journey', async () => {

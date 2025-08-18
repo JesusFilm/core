@@ -93,6 +93,10 @@ export const journeySimpleVideoSchema = z.object({
     .min(1, 'src must be a non-empty string')
     .describe('The YouTube video URL or internal video ID.'),
   source: z.enum(['youTube', 'internal']).describe('The type of video source.'),
+  subtitleId: z
+    .string()
+    .optional()
+    .describe('Subtitle ID for internal videos only. Not supported for YouTube videos. Defaults to "529" if not provided.'),
   summary: z
     .string()
     .optional()
@@ -119,6 +123,14 @@ export const journeySimpleVideoSchema = z.object({
     .describe(
       'End time in seconds. If not provided, defaults to the video duration.'
     )
+}).superRefine((data, ctx) => {
+  // subtitleId should only be provided for internal videos
+  if (data.source === 'youTube' && data.subtitleId !== undefined) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: 'subtitleId should not be provided for YouTube videos. It is only supported for internal videos.'
+    })
+  }
 })
 export type JourneySimpleVideo = z.infer<typeof journeySimpleVideoSchema>
 

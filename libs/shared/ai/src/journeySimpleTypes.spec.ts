@@ -282,6 +282,44 @@ describe('journeySimpleVideoSchema (base, permissive)', () => {
       }).success
     ).toBe(true)
   })
+
+  it('validates with subtitleId field', () => {
+    expect(
+      journeySimpleVideoSchema.safeParse({
+        src: 'video-123',
+        source: 'internal',
+        subtitleId: 'custom-subtitle-456'
+      }).success
+    ).toBe(true)
+  })
+
+  it('fails with subtitleId for YouTube videos', () => {
+    const result = journeySimpleVideoSchema.safeParse({
+      src: 'https://youtube.com/watch?v=dQw4w9WgXcQ',
+      source: 'youTube',
+      subtitleId: 'youtube-subtitle-789'
+    })
+    expect(result.success).toBe(false)
+    if (!result.success) {
+      expect(result.error.issues[0].message).toMatch(
+        /subtitleId should not be provided for YouTube videos/
+      )
+    }
+  })
+
+  it('validates with all fields including subtitleId', () => {
+    expect(
+      journeySimpleVideoSchema.safeParse({
+        src: 'video-123',
+        source: 'internal',
+        subtitleId: 'custom-subtitle-456',
+        summary: 'This video covers important topics',
+        questions: ['What did you learn?'],
+        startAt: 30,
+        endAt: 120
+      }).success
+    ).toBe(true)
+  })
 })
 
 describe('journeySimpleVideoSchemaUpdate (strict)', () => {
@@ -353,6 +391,28 @@ describe('journeySimpleVideoSchemaUpdate (strict)', () => {
         /endAt must be greater than startAt/
       )
     }
+  })
+
+  it('validates with subtitleId field', () => {
+    expect(
+      journeySimpleVideoSchemaUpdate.safeParse({
+        src: 'video-123',
+        source: 'internal',
+        subtitleId: 'custom-subtitle-456'
+      }).success
+    ).toBe(true)
+  })
+
+  it('validates with subtitleId and valid time range', () => {
+    expect(
+      journeySimpleVideoSchemaUpdate.safeParse({
+        src: 'video-123',
+        source: 'internal',
+        subtitleId: 'custom-subtitle-456',
+        startAt: 30,
+        endAt: 120
+      }).success
+    ).toBe(true)
   })
 })
 
