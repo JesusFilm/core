@@ -63,10 +63,15 @@ export async function processSubtitleFile(
 
   console.log('   R2 Public URL:', r2Asset.publicUrl)
   console.log('   Uploading subtitle to R2...')
+  if (!process.env.CLOUDFLARE_R2_BUCKET) {
+    console.error('   CLOUDFLARE_R2_BUCKET is not set')
+    summary.failed++
+    return
+  }
   try {
     await uploadToR2({
       uploadUrl: r2Asset.uploadUrl,
-      bucket: process.env.CLOUDFLARE_R2_BUCKET!,
+      bucket: process.env.CLOUDFLARE_R2_BUCKET,
       filePath,
       contentType,
       contentLength
@@ -132,10 +137,14 @@ export async function importOrUpdateSubtitle({
         edition: existingSubtitle.edition,
         languageId: existingSubtitle.languageId,
         primary: existingSubtitle.primary,
-        srtSrc: r2Asset.publicUrl,
-        vttSrc: r2Asset.publicUrl,
-        srtAssetId: r2Asset.id,
-        vttAssetId: r2Asset.id,
+        srtSrc:
+          fileType === 'text/srt' ? r2Asset.publicUrl : existingSubtitle.srtSrc,
+        vttSrc:
+          fileType === 'text/vtt' ? r2Asset.publicUrl : existingSubtitle.vttSrc,
+        srtAssetId:
+          fileType === 'text/srt' ? r2Asset.id : existingSubtitle.srtAssetId,
+        vttAssetId:
+          fileType === 'text/vtt' ? r2Asset.id : existingSubtitle.vttAssetId,
         srtVersion: existingSubtitle.srtVersion
           ? existingSubtitle.srtVersion + 1
           : 1,
@@ -156,8 +165,8 @@ export async function importOrUpdateSubtitle({
       primary: languageId === '529',
       vttSrc: isVtt ? r2Asset.publicUrl : undefined,
       srtSrc: isSrt ? r2Asset.publicUrl : undefined,
-      vttAssetId: isVtt && r2Asset.id ? r2Asset.id : undefined,
-      srtAssetId: isSrt && r2Asset.id ? r2Asset.id : undefined,
+      vttAssetId: isVtt ? r2Asset.id : undefined,
+      srtAssetId: isSrt ? r2Asset.id : undefined,
       vttVersion: 1,
       srtVersion: 1
     }
