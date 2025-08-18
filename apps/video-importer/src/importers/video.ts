@@ -93,10 +93,15 @@ export async function processVideoFile(
 
   console.log('   R2 Public URL:', r2Asset.publicUrl)
   console.log('   Uploading to R2...')
+  if (!process.env.CLOUDFLARE_R2_BUCKET) {
+    console.error('   CLOUDFLARE_R2_BUCKET is not set')
+    summary.failed++
+    return
+  }
   try {
     await uploadToR2({
       uploadUrl: r2Asset.uploadUrl,
-      bucket: process.env.CLOUDFLARE_R2_BUCKET!,
+      bucket: process.env.CLOUDFLARE_R2_BUCKET,
       filePath,
       contentType,
       contentLength
@@ -257,6 +262,7 @@ export async function importOrUpdateVideoVariant({
 
     await client.request<VideoVariantUpdateResponse>(UPDATE_VIDEO_VARIANT, {
       input: {
+        id: existingVariantId,
         published: true,
         muxVideoId: input.muxVideoId,
         hls: input.hls,
