@@ -96,7 +96,7 @@ async function main() {
 
   console.log('\n=== PHASE 2: Queue Video Processing Jobs ===')
   console.log(`Queuing ${videoProcessingData.length} video processing jobs...`)
-
+  let processedCount = 0
   if (videoProcessingData.length > 0) {
     try {
       for (const processingData of videoProcessingData) {
@@ -113,17 +113,18 @@ async function main() {
           })
           summary.successful++
           console.log(`      ✅ Job queued successfully`)
+          processedCount++
         } catch (error) {
           console.error(`   Failed to queue job:`, error)
           summary.failed++
+          processedCount++
         }
       }
 
-      // Close job queue connection
       await closeJobQueue()
     } catch (error) {
       console.error('Failed to queue video processing jobs:', error)
-      summary.failed += videoProcessingData.length
+      summary.failed += videoProcessingData.length - processedCount
     }
   }
 
