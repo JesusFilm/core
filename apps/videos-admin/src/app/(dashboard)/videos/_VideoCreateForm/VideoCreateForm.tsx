@@ -5,11 +5,12 @@ import Button from '@mui/material/Button'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { Form, Formik } from 'formik'
-import { ResultOf, VariablesOf, graphql } from 'gql.tada'
 import { useRouter } from 'next/navigation'
 import { useSnackbar } from 'notistack'
 import { ReactElement, useMemo, useState } from 'react'
 import { InferType, mixed, object, string } from 'yup'
+
+import { ResultOf, VariablesOf, graphql } from '@core/shared/gql'
 
 import { FormSelectField } from '../../../../components/FormSelectField'
 import { FormTextField } from '../../../../components/FormTextField'
@@ -64,6 +65,18 @@ export const CREATE_EDITION = graphql(`
   }
 `)
 
+export const CREATE_VIDEO_VARIANT = graphql(`
+  mutation CreateVideoVariant($input: VideoVariantCreateInput!) {
+    videoVariantCreate(input: $input) {
+      id
+      language {
+        id
+      }
+      slug
+    }
+  }
+`)
+
 export type CreateVideoVariables = VariablesOf<typeof CREATE_VIDEO>
 export type CreateVideo = ResultOf<typeof CREATE_VIDEO>
 
@@ -100,6 +113,7 @@ export function VideoCreateForm({
 
   const [createVideo] = useMutation(CREATE_VIDEO)
   const [createEdition] = useMutation(CREATE_EDITION)
+  const [createVideoVariant] = useMutation(CREATE_VIDEO_VARIANT)
 
   // Determine valid child labels and suggested label based on parent label
   const { validChildLabels, suggestedLabel } = useMemo(() => {
@@ -158,69 +172,135 @@ export function VideoCreateForm({
 
     setIsSubmitting(true)
 
-    try {
-      await createVideo({
-        variables: {
-          input: {
-            id: values.id,
-            slug: values.slug,
-            label: values.label,
-            originId: values.originId,
-            primaryLanguageId: '529',
-            noIndex: false,
-            published: false,
-            childIds: []
-          }
-        },
-        update: (cache, { data }) => {
-          if (!data?.videoCreate) return
+    await createVideo({
+      variables: {
+        input: {
+          id: values.id,
+          slug: values.slug,
+          label: values.label,
+          originId: values.originId,
+          primaryLanguageId: '529',
+          noIndex: false,
+          published: false,
+          childIds: []
+        }
+      },
+      update: (cache, { data }) => {
+        if (!data?.videoCreate) return
 
-          // Invalidate all adminVideos and adminVideosCount queries in the cache
-          // This ensures that any active queries will refetch and show the new video
-          cache.evict({ fieldName: 'adminVideos' })
-          cache.evict({ fieldName: 'adminVideosCount' })
-          cache.gc()
-        },
-        onCompleted: async (data) => {
-          const videoId = data.videoCreate.id
+        // Invalidate all adminVideos and adminVideosCount queries in the cache
+        // This ensures that any active queries will refetch and show the new video
+        cache.evict({ fieldName: 'adminVideos' })
+        cache.evict({ fieldName: 'adminVideosCount' })
+        cache.gc()
+      },
+      onCompleted: async (data) => {
+        const videoId = data.videoCreate.id
 
-          try {
-            await createEdition({
-              variables: {
-                input: {
-                  videoId,
-                  name: 'base'
-                }
+        try {
+          await createEdition({
+            variables: {
+              input: {
+                videoId,
+                name: 'base'
               }
-            })
-
-            enqueueSnackbar('Successfully created video.', {
-              variant: 'success'
-            })
-
-            if (onCreateSuccess != null) {
-              await onCreateSuccess(videoId)
-            } else {
-              router.push(`/videos/${videoId}`)
             }
-          } catch (error) {
-            enqueueSnackbar('Failed to create video edition.', {
-              variant: 'error'
-            })
-          } finally {
-            setIsSubmitting(false)
+          })
+
+          // Create null video variant for series and collections with language 529 (English)
+          // Currently required for the video to be visible in the frontend
+          if (values.label === 'series' || values.label === 'collection') {
+            try {
+              const variantId = `529_${videoId}`
+              const slug = `${values.slug}/english`
+
+              await createVideoVariant({
+                variables: {
+                  input: {
+                    id: variantId,
+                    videoId,
+                    edition: 'base',
+                    languageId: '529',
+                    slug,
+                    downloadable: false,
+                    published: false
+                  }
+                }
+              })
+            } catch (variantError) {
+              console.warn(
+                'Failed to create null video variant for collection or series:',
+                variantError
+              )
+            }
           }
-        },
-        onError: () => {
-          // TODO: proper error handling for specific errors
-          enqueueSnackbar('Something went wrong.', { variant: 'error' })
+
+          enqueueSnackbar('Successfully created video.', {
+            variant: 'success'
+          })
+
+          if (onCreateSuccess != null) {
+            await onCreateSuccess(videoId)
+          } else {
+            router.push(`/videos/${videoId}`)
+          }
+        } catch (error) {
+          enqueueSnackbar('Failed to create video edition.', {
+            variant: 'error'
+          })
+        } finally {
           setIsSubmitting(false)
         }
-      })
-    } catch (error) {
-      enqueueSnackbar('Something went wrong.', { variant: 'error' })
-      setIsSubmitting(false)
-    }
+      },
+      onError: (error) => {
+        // Handle specific error messages
+        let errorMessage = 'Something went wrong.'
+
+        // Check for GraphQL errors in both direct GraphQL errors and network errors
+        const directErrors = error.graphQLErrors || []
+        const networkErrors =
+          error.networkError &&
+          typeof error.networkError === 'object' &&
+          'graphQLErrors' in error.networkError &&
+          Array.isArray(error.networkError.graphQLErrors)
+            ? error.networkError.graphQLErrors
+            : []
+
+        const graphQLErrors =
+          directErrors.length > 0 ? directErrors : networkErrors
+
+        if (graphQLErrors.length > 0) {
+          const graphQLError = graphQLErrors[0]
+
+          // Check for NotUniqueError
+          if (graphQLError.extensions?.code === 'NOT_UNIQUE_ERROR') {
+            const location = graphQLError.extensions?.location
+            if (Array.isArray(location) && location.length > 0) {
+              const errorLocation = location[0]
+              if (errorLocation.path?.includes('slug')) {
+                errorMessage =
+                  'This slug is already in use. Please choose a different slug.'
+              } else if (errorLocation.path?.includes('id')) {
+                errorMessage =
+                  'This ID is already in use. Please choose a different ID.'
+              } else {
+                errorMessage =
+                  'This video already exists with the same information.'
+              }
+            } else {
+              errorMessage =
+                graphQLError.message || 'This information is already in use.'
+            }
+          } else {
+            // Use the GraphQL error message if available
+            errorMessage = graphQLError.message || errorMessage
+          }
+        }
+
+        enqueueSnackbar(errorMessage, { variant: 'error' })
+        setIsSubmitting(false)
+      }
+    })
   }
 
   const initialValues: InferType<typeof validationSchema> = {
@@ -246,8 +326,18 @@ export function VideoCreateForm({
             fullWidth
             disabled={originsLoading}
           />
-          <FormTextField name="id" label="ID" fullWidth />
-          <FormTextField name="slug" label="Slug" fullWidth />
+          <FormTextField
+            name="id"
+            label="ID"
+            placeholder="eg. 1_jf_0_0"
+            fullWidth
+          />
+          <FormTextField
+            name="slug"
+            label="Slug"
+            placeholder="eg. jesus-walks-on-water"
+            fullWidth
+          />
           <FormSelectField
             name="label"
             label="Label"

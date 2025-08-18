@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { ButtonVariant, ButtonColor, ButtonSize, ThemeMode, ThemeName, IconName, IconSize, IconColor, TextResponseType, TypographyAlign, TypographyColor, TypographyVariant, VideoBlockSource, VideoBlockObjectFit } from "./../../../../__generated__/globalTypes";
+import { ButtonVariant, ButtonColor, ButtonSize, ButtonAlignment, ThemeMode, ThemeName, IconName, IconSize, IconColor, TextResponseType, TypographyAlign, TypographyColor, TypographyVariant, VideoBlockSource, VideoBlockObjectFit } from "./../../../../__generated__/globalTypes";
 
 // ====================================================
 // GraphQL fragment: BlockFields
@@ -39,6 +39,14 @@ export interface BlockFields_ButtonBlock_action_EmailAction {
 
 export type BlockFields_ButtonBlock_action = BlockFields_ButtonBlock_action_NavigateToBlockAction | BlockFields_ButtonBlock_action_LinkAction | BlockFields_ButtonBlock_action_EmailAction;
 
+export interface BlockFields_ButtonBlock_settings {
+  __typename: "ButtonBlockSettings";
+  /**
+   * Alignment of the button
+   */
+  alignment: ButtonAlignment | null;
+}
+
 export interface BlockFields_ButtonBlock {
   __typename: "ButtonBlock";
   id: string;
@@ -52,6 +60,7 @@ export interface BlockFields_ButtonBlock {
   endIconId: string | null;
   submitEnabled: boolean | null;
   action: BlockFields_ButtonBlock_action | null;
+  settings: BlockFields_ButtonBlock_settings | null;
 }
 
 export interface BlockFields_CardBlock {
@@ -150,6 +159,12 @@ export interface BlockFields_RadioOptionBlock {
   parentOrder: number | null;
   label: string;
   action: BlockFields_RadioOptionBlock_action | null;
+  /**
+   * pollOptionImageBlockId is present if a child block should be used as a poll option image.
+   *       This child block should not be rendered normally, instead it should be used
+   *       as a poll option image. Blocks are often of type ImageBlock
+   */
+  pollOptionImageBlockId: string | null;
 }
 
 export interface BlockFields_RadioQuestionBlock {
@@ -157,6 +172,7 @@ export interface BlockFields_RadioQuestionBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
+  gridView: boolean | null;
 }
 
 export interface BlockFields_SignUpBlock_action_NavigateToBlockAction {
@@ -240,6 +256,14 @@ export interface BlockFields_TextResponseBlock {
   integrationId: string | null;
 }
 
+export interface BlockFields_TypographyBlock_settings {
+  __typename: "TypographyBlockSettings";
+  /**
+   * Color of the typography
+   */
+  color: string | null;
+}
+
 export interface BlockFields_TypographyBlock {
   __typename: "TypographyBlock";
   id: string;
@@ -249,6 +273,7 @@ export interface BlockFields_TypographyBlock {
   color: TypographyColor | null;
   content: string;
   variant: TypographyVariant | null;
+  settings: BlockFields_TypographyBlock_settings | null;
 }
 
 export interface BlockFields_VideoBlock_mediaVideo_Video_title {

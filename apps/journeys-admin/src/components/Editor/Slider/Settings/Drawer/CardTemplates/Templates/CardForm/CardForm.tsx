@@ -270,7 +270,11 @@ export function CardForm(): ReactElement {
       color: null,
       content: t('Prayer Request'),
       variant: TypographyVariant.h6,
-      __typename: 'TypographyBlock'
+      __typename: 'TypographyBlock',
+      settings: {
+        __typename: 'TypographyBlockSettings',
+        color: null
+      }
     } satisfies TypographyBlock
 
     const title = {
@@ -281,7 +285,11 @@ export function CardForm(): ReactElement {
       color: null,
       content: t('How can we pray for you?'),
       variant: TypographyVariant.h1,
-      __typename: 'TypographyBlock'
+      __typename: 'TypographyBlock',
+      settings: {
+        __typename: 'TypographyBlockSettings',
+        color: null
+      }
     } satisfies TypographyBlock
 
     const textResponseBlock = {
@@ -311,7 +319,8 @@ export function CardForm(): ReactElement {
       startIconId: uuidv4(),
       endIconId: uuidv4(),
       action: null,
-      submitEnabled: true
+      submitEnabled: true,
+      settings: null
     } satisfies ButtonBlock
 
     const body = {
@@ -324,7 +333,11 @@ export function CardForm(): ReactElement {
         "Each day, we pray for those in our city. We'd be grateful to include your personal needs."
       ),
       variant: TypographyVariant.caption,
-      __typename: 'TypographyBlock'
+      __typename: 'TypographyBlock',
+      settings: {
+        __typename: 'TypographyBlockSettings',
+        color: null
+      }
     } satisfies TypographyBlock
 
     const cardBlock = {
@@ -360,11 +373,23 @@ export function CardForm(): ReactElement {
               isCover: true
             },
             subtitleInput: {
-              ...omit(subtitle, ['__typename', 'parentOrder']),
+              ...omit(
+                {
+                  ...subtitle,
+                  settings: { color: subtitle.settings?.color }
+                },
+                ['__typename', 'parentOrder']
+              ),
               journeyId: journey.id
             },
             titleInput: {
-              ...omit(title, ['__typename', 'parentOrder']),
+              ...omit(
+                {
+                  ...title,
+                  settings: { color: title.settings?.color }
+                },
+                ['__typename', 'parentOrder']
+              ),
               journeyId: journey.id
             },
             textResponseInput: {
@@ -409,7 +434,13 @@ export function CardForm(): ReactElement {
               name: null
             },
             bodyInput: {
-              ...omit(body, ['__typename', 'parentOrder']),
+              ...omit(
+                {
+                  ...body,
+                  settings: { color: body.settings?.color }
+                },
+                ['__typename', 'parentOrder']
+              ),
               journeyId: journey.id
             },
             journeyId: journey.id,

@@ -13,6 +13,7 @@ import {
   Journey, 
   JourneyCollection, 
   JourneyCollectionJourneys, 
+  JourneyCustomizationField, 
   JourneyEventsExportLog, 
   JourneyNotification, 
   JourneyProfile, 
@@ -28,7 +29,7 @@ import {
   UserTeam, 
   UserTeamInvite, 
   Visitor
-} from '.prisma/api-journeys-client'
+} from '@core/prisma/journeys/client'
 
 export type PrismaSubjects = Subjects<{
   Action: Action, 
@@ -41,6 +42,7 @@ export type PrismaSubjects = Subjects<{
   Journey: Journey, 
   JourneyCollection: JourneyCollection, 
   JourneyCollectionJourneys: JourneyCollectionJourneys, 
+  JourneyCustomizationField: JourneyCustomizationField, 
   JourneyEventsExportLog: JourneyEventsExportLog, 
   JourneyNotification: JourneyNotification, 
   JourneyProfile: JourneyProfile, 

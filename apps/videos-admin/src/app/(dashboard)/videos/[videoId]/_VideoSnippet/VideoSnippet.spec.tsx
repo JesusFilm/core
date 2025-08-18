@@ -2,9 +2,10 @@ import { NetworkStatus, useSuspenseQuery } from '@apollo/client'
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { act, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { ResultOf, VariablesOf } from 'gql.tada'
 import _unescape from 'lodash/unescape'
 import { SnackbarProvider } from 'notistack'
+
+import { ResultOf, VariablesOf } from '@core/shared/gql'
 
 import {
   CREATE_VIDEO_SNIPPET,

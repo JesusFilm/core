@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { CardBlockUpdateInput, ButtonVariant, ButtonColor, ButtonSize, ThemeMode, ThemeName, IconName, IconSize, IconColor, TextResponseType, TypographyAlign, TypographyColor, TypographyVariant, VideoBlockSource, VideoBlockObjectFit } from "./globalTypes";
+import { CardBlockUpdateInput, ButtonVariant, ButtonColor, ButtonSize, ButtonAlignment, ThemeMode, ThemeName, IconName, IconSize, IconColor, TextResponseType, TypographyAlign, TypographyColor, TypographyVariant, VideoBlockSource, VideoBlockObjectFit } from "./globalTypes";
 
 // ====================================================
 // GraphQL mutation operation: CardFormRestore
@@ -39,6 +39,14 @@ export interface CardFormRestore_image_ButtonBlock_action_EmailAction {
 
 export type CardFormRestore_image_ButtonBlock_action = CardFormRestore_image_ButtonBlock_action_NavigateToBlockAction | CardFormRestore_image_ButtonBlock_action_LinkAction | CardFormRestore_image_ButtonBlock_action_EmailAction;
 
+export interface CardFormRestore_image_ButtonBlock_settings {
+  __typename: "ButtonBlockSettings";
+  /**
+   * Alignment of the button
+   */
+  alignment: ButtonAlignment | null;
+}
+
 export interface CardFormRestore_image_ButtonBlock {
   __typename: "ButtonBlock";
   id: string;
@@ -52,6 +60,7 @@ export interface CardFormRestore_image_ButtonBlock {
   endIconId: string | null;
   submitEnabled: boolean | null;
   action: CardFormRestore_image_ButtonBlock_action | null;
+  settings: CardFormRestore_image_ButtonBlock_settings | null;
 }
 
 export interface CardFormRestore_image_CardBlock {
@@ -150,6 +159,12 @@ export interface CardFormRestore_image_RadioOptionBlock {
   parentOrder: number | null;
   label: string;
   action: CardFormRestore_image_RadioOptionBlock_action | null;
+  /**
+   * pollOptionImageBlockId is present if a child block should be used as a poll option image.
+   *       This child block should not be rendered normally, instead it should be used
+   *       as a poll option image. Blocks are often of type ImageBlock
+   */
+  pollOptionImageBlockId: string | null;
 }
 
 export interface CardFormRestore_image_RadioQuestionBlock {
@@ -157,6 +172,7 @@ export interface CardFormRestore_image_RadioQuestionBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
+  gridView: boolean | null;
 }
 
 export interface CardFormRestore_image_SignUpBlock_action_NavigateToBlockAction {
@@ -240,6 +256,14 @@ export interface CardFormRestore_image_TextResponseBlock {
   integrationId: string | null;
 }
 
+export interface CardFormRestore_image_TypographyBlock_settings {
+  __typename: "TypographyBlockSettings";
+  /**
+   * Color of the typography
+   */
+  color: string | null;
+}
+
 export interface CardFormRestore_image_TypographyBlock {
   __typename: "TypographyBlock";
   id: string;
@@ -249,6 +273,7 @@ export interface CardFormRestore_image_TypographyBlock {
   color: TypographyColor | null;
   content: string;
   variant: TypographyVariant | null;
+  settings: CardFormRestore_image_TypographyBlock_settings | null;
 }
 
 export interface CardFormRestore_image_VideoBlock_mediaVideo_Video_title {
@@ -468,6 +493,14 @@ export interface CardFormRestore_subtitle_ButtonBlock_action_EmailAction {
 
 export type CardFormRestore_subtitle_ButtonBlock_action = CardFormRestore_subtitle_ButtonBlock_action_NavigateToBlockAction | CardFormRestore_subtitle_ButtonBlock_action_LinkAction | CardFormRestore_subtitle_ButtonBlock_action_EmailAction;
 
+export interface CardFormRestore_subtitle_ButtonBlock_settings {
+  __typename: "ButtonBlockSettings";
+  /**
+   * Alignment of the button
+   */
+  alignment: ButtonAlignment | null;
+}
+
 export interface CardFormRestore_subtitle_ButtonBlock {
   __typename: "ButtonBlock";
   id: string;
@@ -481,6 +514,7 @@ export interface CardFormRestore_subtitle_ButtonBlock {
   endIconId: string | null;
   submitEnabled: boolean | null;
   action: CardFormRestore_subtitle_ButtonBlock_action | null;
+  settings: CardFormRestore_subtitle_ButtonBlock_settings | null;
 }
 
 export interface CardFormRestore_subtitle_CardBlock {
@@ -579,6 +613,12 @@ export interface CardFormRestore_subtitle_RadioOptionBlock {
   parentOrder: number | null;
   label: string;
   action: CardFormRestore_subtitle_RadioOptionBlock_action | null;
+  /**
+   * pollOptionImageBlockId is present if a child block should be used as a poll option image.
+   *       This child block should not be rendered normally, instead it should be used
+   *       as a poll option image. Blocks are often of type ImageBlock
+   */
+  pollOptionImageBlockId: string | null;
 }
 
 export interface CardFormRestore_subtitle_RadioQuestionBlock {
@@ -586,6 +626,7 @@ export interface CardFormRestore_subtitle_RadioQuestionBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
+  gridView: boolean | null;
 }
 
 export interface CardFormRestore_subtitle_SignUpBlock_action_NavigateToBlockAction {
@@ -669,6 +710,14 @@ export interface CardFormRestore_subtitle_TextResponseBlock {
   integrationId: string | null;
 }
 
+export interface CardFormRestore_subtitle_TypographyBlock_settings {
+  __typename: "TypographyBlockSettings";
+  /**
+   * Color of the typography
+   */
+  color: string | null;
+}
+
 export interface CardFormRestore_subtitle_TypographyBlock {
   __typename: "TypographyBlock";
   id: string;
@@ -678,6 +727,7 @@ export interface CardFormRestore_subtitle_TypographyBlock {
   color: TypographyColor | null;
   content: string;
   variant: TypographyVariant | null;
+  settings: CardFormRestore_subtitle_TypographyBlock_settings | null;
 }
 
 export interface CardFormRestore_subtitle_VideoBlock_mediaVideo_Video_title {
@@ -897,6 +947,14 @@ export interface CardFormRestore_title_ButtonBlock_action_EmailAction {
 
 export type CardFormRestore_title_ButtonBlock_action = CardFormRestore_title_ButtonBlock_action_NavigateToBlockAction | CardFormRestore_title_ButtonBlock_action_LinkAction | CardFormRestore_title_ButtonBlock_action_EmailAction;
 
+export interface CardFormRestore_title_ButtonBlock_settings {
+  __typename: "ButtonBlockSettings";
+  /**
+   * Alignment of the button
+   */
+  alignment: ButtonAlignment | null;
+}
+
 export interface CardFormRestore_title_ButtonBlock {
   __typename: "ButtonBlock";
   id: string;
@@ -910,6 +968,7 @@ export interface CardFormRestore_title_ButtonBlock {
   endIconId: string | null;
   submitEnabled: boolean | null;
   action: CardFormRestore_title_ButtonBlock_action | null;
+  settings: CardFormRestore_title_ButtonBlock_settings | null;
 }
 
 export interface CardFormRestore_title_CardBlock {
@@ -1008,6 +1067,12 @@ export interface CardFormRestore_title_RadioOptionBlock {
   parentOrder: number | null;
   label: string;
   action: CardFormRestore_title_RadioOptionBlock_action | null;
+  /**
+   * pollOptionImageBlockId is present if a child block should be used as a poll option image.
+   *       This child block should not be rendered normally, instead it should be used
+   *       as a poll option image. Blocks are often of type ImageBlock
+   */
+  pollOptionImageBlockId: string | null;
 }
 
 export interface CardFormRestore_title_RadioQuestionBlock {
@@ -1015,6 +1080,7 @@ export interface CardFormRestore_title_RadioQuestionBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
+  gridView: boolean | null;
 }
 
 export interface CardFormRestore_title_SignUpBlock_action_NavigateToBlockAction {
@@ -1098,6 +1164,14 @@ export interface CardFormRestore_title_TextResponseBlock {
   integrationId: string | null;
 }
 
+export interface CardFormRestore_title_TypographyBlock_settings {
+  __typename: "TypographyBlockSettings";
+  /**
+   * Color of the typography
+   */
+  color: string | null;
+}
+
 export interface CardFormRestore_title_TypographyBlock {
   __typename: "TypographyBlock";
   id: string;
@@ -1107,6 +1181,7 @@ export interface CardFormRestore_title_TypographyBlock {
   color: TypographyColor | null;
   content: string;
   variant: TypographyVariant | null;
+  settings: CardFormRestore_title_TypographyBlock_settings | null;
 }
 
 export interface CardFormRestore_title_VideoBlock_mediaVideo_Video_title {
@@ -1326,6 +1401,14 @@ export interface CardFormRestore_textResponse_ButtonBlock_action_EmailAction {
 
 export type CardFormRestore_textResponse_ButtonBlock_action = CardFormRestore_textResponse_ButtonBlock_action_NavigateToBlockAction | CardFormRestore_textResponse_ButtonBlock_action_LinkAction | CardFormRestore_textResponse_ButtonBlock_action_EmailAction;
 
+export interface CardFormRestore_textResponse_ButtonBlock_settings {
+  __typename: "ButtonBlockSettings";
+  /**
+   * Alignment of the button
+   */
+  alignment: ButtonAlignment | null;
+}
+
 export interface CardFormRestore_textResponse_ButtonBlock {
   __typename: "ButtonBlock";
   id: string;
@@ -1339,6 +1422,7 @@ export interface CardFormRestore_textResponse_ButtonBlock {
   endIconId: string | null;
   submitEnabled: boolean | null;
   action: CardFormRestore_textResponse_ButtonBlock_action | null;
+  settings: CardFormRestore_textResponse_ButtonBlock_settings | null;
 }
 
 export interface CardFormRestore_textResponse_CardBlock {
@@ -1437,6 +1521,12 @@ export interface CardFormRestore_textResponse_RadioOptionBlock {
   parentOrder: number | null;
   label: string;
   action: CardFormRestore_textResponse_RadioOptionBlock_action | null;
+  /**
+   * pollOptionImageBlockId is present if a child block should be used as a poll option image.
+   *       This child block should not be rendered normally, instead it should be used
+   *       as a poll option image. Blocks are often of type ImageBlock
+   */
+  pollOptionImageBlockId: string | null;
 }
 
 export interface CardFormRestore_textResponse_RadioQuestionBlock {
@@ -1444,6 +1534,7 @@ export interface CardFormRestore_textResponse_RadioQuestionBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
+  gridView: boolean | null;
 }
 
 export interface CardFormRestore_textResponse_SignUpBlock_action_NavigateToBlockAction {
@@ -1527,6 +1618,14 @@ export interface CardFormRestore_textResponse_TextResponseBlock {
   integrationId: string | null;
 }
 
+export interface CardFormRestore_textResponse_TypographyBlock_settings {
+  __typename: "TypographyBlockSettings";
+  /**
+   * Color of the typography
+   */
+  color: string | null;
+}
+
 export interface CardFormRestore_textResponse_TypographyBlock {
   __typename: "TypographyBlock";
   id: string;
@@ -1536,6 +1635,7 @@ export interface CardFormRestore_textResponse_TypographyBlock {
   color: TypographyColor | null;
   content: string;
   variant: TypographyVariant | null;
+  settings: CardFormRestore_textResponse_TypographyBlock_settings | null;
 }
 
 export interface CardFormRestore_textResponse_VideoBlock_mediaVideo_Video_title {
@@ -1755,6 +1855,14 @@ export interface CardFormRestore_button_ButtonBlock_action_EmailAction {
 
 export type CardFormRestore_button_ButtonBlock_action = CardFormRestore_button_ButtonBlock_action_NavigateToBlockAction | CardFormRestore_button_ButtonBlock_action_LinkAction | CardFormRestore_button_ButtonBlock_action_EmailAction;
 
+export interface CardFormRestore_button_ButtonBlock_settings {
+  __typename: "ButtonBlockSettings";
+  /**
+   * Alignment of the button
+   */
+  alignment: ButtonAlignment | null;
+}
+
 export interface CardFormRestore_button_ButtonBlock {
   __typename: "ButtonBlock";
   id: string;
@@ -1768,6 +1876,7 @@ export interface CardFormRestore_button_ButtonBlock {
   endIconId: string | null;
   submitEnabled: boolean | null;
   action: CardFormRestore_button_ButtonBlock_action | null;
+  settings: CardFormRestore_button_ButtonBlock_settings | null;
 }
 
 export interface CardFormRestore_button_CardBlock {
@@ -1866,6 +1975,12 @@ export interface CardFormRestore_button_RadioOptionBlock {
   parentOrder: number | null;
   label: string;
   action: CardFormRestore_button_RadioOptionBlock_action | null;
+  /**
+   * pollOptionImageBlockId is present if a child block should be used as a poll option image.
+   *       This child block should not be rendered normally, instead it should be used
+   *       as a poll option image. Blocks are often of type ImageBlock
+   */
+  pollOptionImageBlockId: string | null;
 }
 
 export interface CardFormRestore_button_RadioQuestionBlock {
@@ -1873,6 +1988,7 @@ export interface CardFormRestore_button_RadioQuestionBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
+  gridView: boolean | null;
 }
 
 export interface CardFormRestore_button_SignUpBlock_action_NavigateToBlockAction {
@@ -1956,6 +2072,14 @@ export interface CardFormRestore_button_TextResponseBlock {
   integrationId: string | null;
 }
 
+export interface CardFormRestore_button_TypographyBlock_settings {
+  __typename: "TypographyBlockSettings";
+  /**
+   * Color of the typography
+   */
+  color: string | null;
+}
+
 export interface CardFormRestore_button_TypographyBlock {
   __typename: "TypographyBlock";
   id: string;
@@ -1965,6 +2089,7 @@ export interface CardFormRestore_button_TypographyBlock {
   color: TypographyColor | null;
   content: string;
   variant: TypographyVariant | null;
+  settings: CardFormRestore_button_TypographyBlock_settings | null;
 }
 
 export interface CardFormRestore_button_VideoBlock_mediaVideo_Video_title {
@@ -2184,6 +2309,14 @@ export interface CardFormRestore_startIcon_ButtonBlock_action_EmailAction {
 
 export type CardFormRestore_startIcon_ButtonBlock_action = CardFormRestore_startIcon_ButtonBlock_action_NavigateToBlockAction | CardFormRestore_startIcon_ButtonBlock_action_LinkAction | CardFormRestore_startIcon_ButtonBlock_action_EmailAction;
 
+export interface CardFormRestore_startIcon_ButtonBlock_settings {
+  __typename: "ButtonBlockSettings";
+  /**
+   * Alignment of the button
+   */
+  alignment: ButtonAlignment | null;
+}
+
 export interface CardFormRestore_startIcon_ButtonBlock {
   __typename: "ButtonBlock";
   id: string;
@@ -2197,6 +2330,7 @@ export interface CardFormRestore_startIcon_ButtonBlock {
   endIconId: string | null;
   submitEnabled: boolean | null;
   action: CardFormRestore_startIcon_ButtonBlock_action | null;
+  settings: CardFormRestore_startIcon_ButtonBlock_settings | null;
 }
 
 export interface CardFormRestore_startIcon_CardBlock {
@@ -2295,6 +2429,12 @@ export interface CardFormRestore_startIcon_RadioOptionBlock {
   parentOrder: number | null;
   label: string;
   action: CardFormRestore_startIcon_RadioOptionBlock_action | null;
+  /**
+   * pollOptionImageBlockId is present if a child block should be used as a poll option image.
+   *       This child block should not be rendered normally, instead it should be used
+   *       as a poll option image. Blocks are often of type ImageBlock
+   */
+  pollOptionImageBlockId: string | null;
 }
 
 export interface CardFormRestore_startIcon_RadioQuestionBlock {
@@ -2302,6 +2442,7 @@ export interface CardFormRestore_startIcon_RadioQuestionBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
+  gridView: boolean | null;
 }
 
 export interface CardFormRestore_startIcon_SignUpBlock_action_NavigateToBlockAction {
@@ -2385,6 +2526,14 @@ export interface CardFormRestore_startIcon_TextResponseBlock {
   integrationId: string | null;
 }
 
+export interface CardFormRestore_startIcon_TypographyBlock_settings {
+  __typename: "TypographyBlockSettings";
+  /**
+   * Color of the typography
+   */
+  color: string | null;
+}
+
 export interface CardFormRestore_startIcon_TypographyBlock {
   __typename: "TypographyBlock";
   id: string;
@@ -2394,6 +2543,7 @@ export interface CardFormRestore_startIcon_TypographyBlock {
   color: TypographyColor | null;
   content: string;
   variant: TypographyVariant | null;
+  settings: CardFormRestore_startIcon_TypographyBlock_settings | null;
 }
 
 export interface CardFormRestore_startIcon_VideoBlock_mediaVideo_Video_title {
@@ -2613,6 +2763,14 @@ export interface CardFormRestore_endIcon_ButtonBlock_action_EmailAction {
 
 export type CardFormRestore_endIcon_ButtonBlock_action = CardFormRestore_endIcon_ButtonBlock_action_NavigateToBlockAction | CardFormRestore_endIcon_ButtonBlock_action_LinkAction | CardFormRestore_endIcon_ButtonBlock_action_EmailAction;
 
+export interface CardFormRestore_endIcon_ButtonBlock_settings {
+  __typename: "ButtonBlockSettings";
+  /**
+   * Alignment of the button
+   */
+  alignment: ButtonAlignment | null;
+}
+
 export interface CardFormRestore_endIcon_ButtonBlock {
   __typename: "ButtonBlock";
   id: string;
@@ -2626,6 +2784,7 @@ export interface CardFormRestore_endIcon_ButtonBlock {
   endIconId: string | null;
   submitEnabled: boolean | null;
   action: CardFormRestore_endIcon_ButtonBlock_action | null;
+  settings: CardFormRestore_endIcon_ButtonBlock_settings | null;
 }
 
 export interface CardFormRestore_endIcon_CardBlock {
@@ -2724,6 +2883,12 @@ export interface CardFormRestore_endIcon_RadioOptionBlock {
   parentOrder: number | null;
   label: string;
   action: CardFormRestore_endIcon_RadioOptionBlock_action | null;
+  /**
+   * pollOptionImageBlockId is present if a child block should be used as a poll option image.
+   *       This child block should not be rendered normally, instead it should be used
+   *       as a poll option image. Blocks are often of type ImageBlock
+   */
+  pollOptionImageBlockId: string | null;
 }
 
 export interface CardFormRestore_endIcon_RadioQuestionBlock {
@@ -2731,6 +2896,7 @@ export interface CardFormRestore_endIcon_RadioQuestionBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
+  gridView: boolean | null;
 }
 
 export interface CardFormRestore_endIcon_SignUpBlock_action_NavigateToBlockAction {
@@ -2814,6 +2980,14 @@ export interface CardFormRestore_endIcon_TextResponseBlock {
   integrationId: string | null;
 }
 
+export interface CardFormRestore_endIcon_TypographyBlock_settings {
+  __typename: "TypographyBlockSettings";
+  /**
+   * Color of the typography
+   */
+  color: string | null;
+}
+
 export interface CardFormRestore_endIcon_TypographyBlock {
   __typename: "TypographyBlock";
   id: string;
@@ -2823,6 +2997,7 @@ export interface CardFormRestore_endIcon_TypographyBlock {
   color: TypographyColor | null;
   content: string;
   variant: TypographyVariant | null;
+  settings: CardFormRestore_endIcon_TypographyBlock_settings | null;
 }
 
 export interface CardFormRestore_endIcon_VideoBlock_mediaVideo_Video_title {
@@ -3042,6 +3217,14 @@ export interface CardFormRestore_body_ButtonBlock_action_EmailAction {
 
 export type CardFormRestore_body_ButtonBlock_action = CardFormRestore_body_ButtonBlock_action_NavigateToBlockAction | CardFormRestore_body_ButtonBlock_action_LinkAction | CardFormRestore_body_ButtonBlock_action_EmailAction;
 
+export interface CardFormRestore_body_ButtonBlock_settings {
+  __typename: "ButtonBlockSettings";
+  /**
+   * Alignment of the button
+   */
+  alignment: ButtonAlignment | null;
+}
+
 export interface CardFormRestore_body_ButtonBlock {
   __typename: "ButtonBlock";
   id: string;
@@ -3055,6 +3238,7 @@ export interface CardFormRestore_body_ButtonBlock {
   endIconId: string | null;
   submitEnabled: boolean | null;
   action: CardFormRestore_body_ButtonBlock_action | null;
+  settings: CardFormRestore_body_ButtonBlock_settings | null;
 }
 
 export interface CardFormRestore_body_CardBlock {
@@ -3153,6 +3337,12 @@ export interface CardFormRestore_body_RadioOptionBlock {
   parentOrder: number | null;
   label: string;
   action: CardFormRestore_body_RadioOptionBlock_action | null;
+  /**
+   * pollOptionImageBlockId is present if a child block should be used as a poll option image.
+   *       This child block should not be rendered normally, instead it should be used
+   *       as a poll option image. Blocks are often of type ImageBlock
+   */
+  pollOptionImageBlockId: string | null;
 }
 
 export interface CardFormRestore_body_RadioQuestionBlock {
@@ -3160,6 +3350,7 @@ export interface CardFormRestore_body_RadioQuestionBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
+  gridView: boolean | null;
 }
 
 export interface CardFormRestore_body_SignUpBlock_action_NavigateToBlockAction {
@@ -3243,6 +3434,14 @@ export interface CardFormRestore_body_TextResponseBlock {
   integrationId: string | null;
 }
 
+export interface CardFormRestore_body_TypographyBlock_settings {
+  __typename: "TypographyBlockSettings";
+  /**
+   * Color of the typography
+   */
+  color: string | null;
+}
+
 export interface CardFormRestore_body_TypographyBlock {
   __typename: "TypographyBlock";
   id: string;
@@ -3252,6 +3451,7 @@ export interface CardFormRestore_body_TypographyBlock {
   color: TypographyColor | null;
   content: string;
   variant: TypographyVariant | null;
+  settings: CardFormRestore_body_TypographyBlock_settings | null;
 }
 
 export interface CardFormRestore_body_VideoBlock_mediaVideo_Video_title {

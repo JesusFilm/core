@@ -318,7 +318,11 @@ export function CardCta(): ReactElement {
       color: null,
       content: t("Let's Connect"),
       variant: TypographyVariant.h6,
-      __typename: 'TypographyBlock'
+      __typename: 'TypographyBlock',
+      settings: {
+        __typename: 'TypographyBlockSettings',
+        color: null
+      }
     } satisfies TypographyBlock
 
     const title = {
@@ -329,7 +333,11 @@ export function CardCta(): ReactElement {
       color: null,
       content: t("From 'hello' to heartfelt conversations"),
       variant: TypographyVariant.h3,
-      __typename: 'TypographyBlock'
+      __typename: 'TypographyBlock',
+      settings: {
+        __typename: 'TypographyBlockSettings',
+        color: null
+      }
     } satisfies TypographyBlock
 
     const buttonBlock1 = {
@@ -344,6 +352,7 @@ export function CardCta(): ReactElement {
       endIconId: null,
       submitEnabled: null,
       action: null,
+      settings: null,
       __typename: 'ButtonBlock'
     } satisfies ButtonBlock
 
@@ -379,6 +388,7 @@ export function CardCta(): ReactElement {
       endIconId: null,
       submitEnabled: null,
       action: null,
+      settings: null,
       __typename: 'ButtonBlock'
     } satisfies ButtonBlock
 
@@ -414,6 +424,7 @@ export function CardCta(): ReactElement {
       endIconId: null,
       submitEnabled: null,
       action: null,
+      settings: null,
       __typename: 'ButtonBlock'
     } satisfies ButtonBlock
 
@@ -477,11 +488,23 @@ export function CardCta(): ReactElement {
               isCover: true
             },
             subtitleInput: {
-              ...omit(subtitle, ['__typename', 'parentOrder']),
+              ...omit(
+                {
+                  ...subtitle,
+                  settings: { color: subtitle.settings?.color }
+                },
+                ['__typename', 'parentOrder']
+              ),
               journeyId: journey.id
             },
             titleInput: {
-              ...omit(title, ['__typename', 'parentOrder']),
+              ...omit(
+                {
+                  ...title,
+                  settings: { color: title.settings?.color }
+                },
+                ['__typename', 'parentOrder']
+              ),
               journeyId: journey.id
             },
             button1Id: buttonBlock1.id,

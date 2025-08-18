@@ -94,7 +94,10 @@ export function useTextResponseWithButtonCreate(): [
           variant: buttonBlock.buttonVariant,
           color: buttonBlock.buttonColor,
           size: buttonBlock.size,
-          submitEnabled: true
+          submitEnabled: true,
+          settings: {
+            alignment: buttonBlock.settings?.alignment
+          }
         },
         iconInput1: {
           id: buttonBlock.startIconId,

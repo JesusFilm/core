@@ -99,6 +99,7 @@ import Grid1 from './Grid1'
 import GridEmpty from './GridEmpty'
 import Hash1 from './Hash1'
 import Hash2 from './Hash2'
+import Header1 from './Header1'
 import HelpCircleContained from './HelpCircleContained'
 import HelpSquareContained from './HelpSquareContained'
 import Home3 from './Home3'
@@ -122,12 +123,14 @@ import LayoutScale from './LayoutScale'
 import Lightning2 from './Lightning2'
 import LightningCircleContained from './LightningCircleContained'
 import Line from './Line'
+import LineNumbers from './LineNumbers'
 import Link from './Link'
 import LinkAngled from './LinkAngled'
 import LinkBroken from './LinkBroken'
 import LinkExternal from './LinkExternal'
 import Lock1 from './Lock1'
 import LockOpen1 from './LockOpen1'
+import LogoGrayscale from './LogoGrayscale'
 import Logout2 from './Logout2'
 import Mail1 from './Mail1'
 import Mail2 from './Mail2'
@@ -194,6 +197,7 @@ import Transform from './Transform'
 import Trash2 from './Trash2'
 import TrendDown1 from './TrendDown1'
 import TwitterLogo from './TwitterLogo'
+import Type1 from './Type1'
 import Type2 from './Type2'
 import Type3 from './Type3'
 import Upload1 from './Upload1'
@@ -207,6 +211,8 @@ import UsersProfiles3 from './UsersProfiles3'
 import Viber from './Viber'
 import VideoOn from './VideoOn'
 import Vk from './Vk'
+import Volume5 from './Volume5'
+import VolumeOff from './VolumeOff'
 import Web from './Web'
 import WhatsApp from './WhatsApp'
 import X1 from './X1'
@@ -315,6 +321,7 @@ export type IconName =
   | 'GridEmpty'
   | 'Hash1'
   | 'Hash2'
+  | 'Header1'
   | 'HelpCircleContained'
   | 'HelpSquareContained'
   | 'Home3'
@@ -340,10 +347,12 @@ export type IconName =
   | 'Line'
   | 'LinkAngled'
   | 'LinkBroken'
+  | 'LineNumbers'
   | 'LinkExternal'
   | 'Link'
   | 'Lock1'
   | 'LockOpen1'
+  | 'LogoGrayscale'
   | 'Logout2'
   | 'Mail1'
   | 'Mail2'
@@ -410,6 +419,7 @@ export type IconName =
   | 'Transform'
   | 'TrendDown1'
   | 'TwitterLogo'
+  | 'Type1'
   | 'Type2'
   | 'Type3'
   | 'Upload1'
@@ -423,6 +433,8 @@ export type IconName =
   | 'Viber'
   | 'VideoOn'
   | 'Vk'
+  | 'VolumeOff'
+  | 'Volume5'
   | 'Web'
   | 'WhatsApp'
   | 'X1'
@@ -535,6 +547,7 @@ const iconComponents: IconComponents = {
   GridEmpty,
   Hash1,
   Hash2,
+  Header1,
   HelpCircleContained,
   HelpSquareContained,
   Home3,
@@ -561,9 +574,11 @@ const iconComponents: IconComponents = {
   LinkAngled,
   LinkBroken,
   LinkExternal,
+  LineNumbers,
   Link,
   Lock1,
   LockOpen1,
+  LogoGrayscale,
   Logout2,
   Mail1,
   Mail2,
@@ -630,6 +645,7 @@ const iconComponents: IconComponents = {
   Transform,
   TrendDown1,
   TwitterLogo,
+  Type1,
   Type2,
   Type3,
   Upload1,
@@ -643,6 +659,8 @@ const iconComponents: IconComponents = {
   Viber,
   VideoOn,
   Vk,
+  VolumeOff,
+  Volume5,
   Web,
   WhatsApp,
   X1,

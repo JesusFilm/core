@@ -1,8 +1,10 @@
 import { OpenAPIHono, createRoute, z } from '@hono/zod-openapi'
-import { ResultOf, graphql } from 'gql.tada'
 import { HTTPException } from 'hono/http-exception'
 
+import { ResultOf, graphql } from '@core/shared/gql'
+
 import { getApolloClient } from '../../../../../lib/apolloClient'
+import { getDownloadSize } from '../../../../../lib/downloadHelpers'
 import { getLanguageIdsFromTags } from '../../../../../lib/getLanguageIdsFromTags'
 import { getDefaultPlatformForApiKey } from '../../../../../lib/getPlatformFromApiKey'
 import { mediaComponentSchema } from '../../mediaComponent.schema'
@@ -253,12 +255,16 @@ mediaComponent.openapi(route, async (c) => {
       containsCount: video.childrenCount,
       isDownloadable: video.variant?.downloadable ?? false,
       downloadSizes: {
-        approximateSmallDownloadSizeInBytes:
-          video.variant?.downloads?.find(({ quality }) => quality === 'low')
-            ?.size ?? 0,
-        approximateLargeDownloadSizeInBytes:
-          video.variant?.downloads?.find(({ quality }) => quality === 'high')
-            ?.size ?? 0
+        approximateSmallDownloadSizeInBytes: getDownloadSize(
+          video.variant?.downloads,
+          'low',
+          apiKey
+        ),
+        approximateLargeDownloadSizeInBytes: getDownloadSize(
+          video.variant?.downloads,
+          'high',
+          apiKey
+        )
       },
       bibleCitations: video.bibleCitations.map((citation) => ({
         osisBibleBook: citation.osisId,

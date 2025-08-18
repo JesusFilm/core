@@ -28,7 +28,11 @@ describe('DragItemWrapper', () => {
     content: 'typography content',
     color: null,
     align: null,
-    children: []
+    children: [],
+    settings: {
+      __typename: 'TypographyBlockSettings',
+      color: null
+    }
   }
 
   const step = (blocks: TreeBlock[]): TreeBlock<StepFields> => {

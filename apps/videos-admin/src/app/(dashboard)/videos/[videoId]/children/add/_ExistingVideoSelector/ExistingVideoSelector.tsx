@@ -8,8 +8,9 @@ import CircularProgress from '@mui/material/CircularProgress'
 import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
-import { graphql } from 'gql.tada'
 import { ReactElement, useEffect, useRef, useState } from 'react'
+
+import { graphql } from '@core/shared/gql'
 
 const SEARCH_VIDEOS = graphql(`
   query SearchVideos($title: String!) {

@@ -134,7 +134,11 @@ export const block: TreeBlock<CardBlock> = {
       color: null,
       content: 'How did we get here?',
       variant: null,
-      children: []
+      children: [],
+      settings: {
+        __typename: 'TypographyBlockSettings',
+        color: null
+      }
     }
   ]
 }
@@ -191,7 +195,8 @@ export const buttonBlock: TreeBlock<ButtonFields> = {
   endIconId: null,
   action: action,
   submitEnabled: null,
-  children: []
+  children: [],
+  settings: null
 }
 
 export const videoBlock: TreeBlock<VideoFields> = {

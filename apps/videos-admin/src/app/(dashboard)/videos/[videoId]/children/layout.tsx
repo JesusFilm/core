@@ -3,11 +3,11 @@
 import { useMutation, useQuery } from '@apollo/client'
 import { DragEndEvent } from '@dnd-kit/core'
 import { arrayMove } from '@dnd-kit/sortable'
-import { graphql } from 'gql.tada'
 import { usePathname, useRouter } from 'next/navigation'
 import { useSnackbar } from 'notistack'
 import { ReactNode, useEffect, useState } from 'react'
 
+import { graphql } from '@core/shared/gql'
 import Plus2 from '@core/shared/ui/icons/Plus2'
 
 import { OrderedList } from '../../../../../components/OrderedList'

@@ -1,8 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
 
-import { Event, JourneyVisitor, Visitor } from '.prisma/api-journeys-client'
 import { CaslAuthModule } from '@core/nest/common/CaslAuthModule'
+import { Event, JourneyVisitor, Visitor } from '@core/prisma/journeys/client'
 
 import {
   JourneyVisitorSort,

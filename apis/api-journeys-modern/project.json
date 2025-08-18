@@ -73,38 +73,6 @@
         "command": "DOPPLER_TOKEN=$DOPPLER_API_JOURNEYS_TOKEN doppler secrets download --no-file --format=env-no-quotes --project api-journeys > apis/api-journeys-modern/.env"
       }
     },
-    "prisma-generate": {
-      "executor": "nx:run-commands",
-      "options": {
-        "commands": [
-          "npx prisma generate --schema apis/api-journeys-modern/db/schema.prisma"
-        ]
-      }
-    },
-    "prisma-studio": {
-      "executor": "nx:run-commands",
-      "options": {
-        "commands": [
-          "npx prisma studio --schema apis/api-journeys-modern/db/schema.prisma"
-        ]
-      }
-    },
-    "prisma-validate": {
-      "executor": "nx:run-commands",
-      "options": {
-        "commands": [
-          "npx prisma validate --schema apis/api-journeys-modern/db/schema.prisma"
-        ]
-      }
-    },
-    "prisma-introspect": {
-      "executor": "nx:run-commands",
-      "options": {
-        "commands": [
-          "npx prisma db pull --schema apis/api-journeys-modern/db/schema.prisma"
-        ]
-      }
-    },
     "type-check": {
       "executor": "nx:run-commands",
       "options": {
@@ -115,12 +83,6 @@
       "executor": "nx:run-commands",
       "options": {
         "command": "codecov -f coverage/apis/api-journeys-modern/cobertura-coverage.xml -F apps.api-journeys-modern"
-      }
-    },
-    "codegen": {
-      "executor": "nx:run-commands",
-      "options": {
-        "command": "gql.tada generate output --tsconfig apis/api-journeys-modern/tsconfig.json"
       }
     },
     "email": {
