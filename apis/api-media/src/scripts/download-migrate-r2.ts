@@ -2,9 +2,12 @@ import path from 'path'
 
 import { PutObjectCommand, S3Client } from '@aws-sdk/client-s3'
 
-import { VideoVariantDownloadQuality } from '.prisma/api-media-client'
+import {
+  PrismaClient,
+  VideoVariantDownloadQuality
+} from '.prisma/api-media-client'
 
-import { prisma } from '../lib/prisma'
+const prisma = new PrismaClient()
 
 function getR2Client(): S3Client {
   if (process.env.CLOUDFLARE_R2_ENDPOINT == null)
