@@ -13,8 +13,16 @@ export const CREATE_CLOUDFLARE_R2_ASSET = graphql(`
 `)
 
 export const CREATE_MUX_VIDEO = graphql(`
-  mutation CreateMuxVideoUploadByUrl($url: String!, $userGenerated: Boolean) {
-    createMuxVideoUploadByUrl(url: $url, userGenerated: $userGenerated) {
+  mutation CreateMuxVideoUploadByUrl(
+    $url: String!
+    $userGenerated: Boolean
+    $downloadable: Boolean
+  ) {
+    createMuxVideoUploadByUrl(
+      url: $url
+      userGenerated: $userGenerated
+      downloadable: $downloadable
+    ) {
       id
       assetId
       playbackId

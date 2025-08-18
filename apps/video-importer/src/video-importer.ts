@@ -12,12 +12,9 @@ import {
   SUBTITLE_FILENAME_REGEX,
   processSubtitleFile
 } from './importers/subtitle'
-import {
-  VIDEO_FILENAME_REGEX,
-  importOrUpdateVideoVariant,
-  processVideoFile
-} from './importers/video'
-import { type PendingMuxVideo, processPendingMuxVideos } from './services/mux'
+import { VIDEO_FILENAME_REGEX, processVideoFile } from './importers/video'
+import { closeJobQueue, triggerVideoUploadJob } from './services/job-queue'
+import { type PendingMuxVideo } from './services/mux'
 import type { ProcessingSummary, VideoProcessingData } from './types'
 import { checkEnvironmentVariables } from './utils/envVarTest'
 
@@ -97,52 +94,36 @@ async function main() {
     }
   }
 
-  console.log('\n=== PHASE 2: Process Mux Videos ===')
-  console.log(`Waiting for ${pendingMuxVideos.length} videos to be ready...`)
+  console.log('\n=== PHASE 2: Queue Video Processing Jobs ===')
+  console.log(`Queuing ${videoProcessingData.length} video processing jobs...`)
 
-  if (pendingMuxVideos.length > 0) {
+  if (videoProcessingData.length > 0) {
     try {
-      const completedVideos = await processPendingMuxVideos(pendingMuxVideos)
-
-      const completedVideoMap = new Map(
-        completedVideos.map((video) => [video.id, video])
-      )
-
       for (const processingData of videoProcessingData) {
-        const completedVideo = completedVideoMap.get(processingData.muxVideoId)
-        if (!completedVideo) {
-          console.error(
-            `   Failed to find completed video for ${processingData.muxVideoId}`
-          )
-          summary.failed++
-          continue
-        }
-
-        console.log(
-          `   Creating video variant for ${processingData.fileName}...`
-        )
+        console.log(`   Queuing job for ${processingData.fileName}...`)
         try {
-          await importOrUpdateVideoVariant({
+          await triggerVideoUploadJob({
             videoId: processingData.videoId,
-            languageId: processingData.languageId,
             edition: processingData.edition,
-            muxId: completedVideo.id,
-            playbackId: completedVideo.playbackId,
+            languageId: processingData.languageId,
+            version: processingData.version,
+            muxVideoId: processingData.muxVideoId,
             metadata: processingData.metadata,
-            version: processingData.version
+            originalFilename: processingData.fileName
           })
           summary.successful++
-          console.log(
-            `      Mux Playback URL: https://stream.mux.com/${completedVideo.playbackId}.m3u8`
-          )
+          console.log(`      ✅ Job queued successfully`)
         } catch (error) {
-          console.error(`   Failed to save video variant:`, error)
+          console.error(`   Failed to queue job:`, error)
           summary.failed++
         }
       }
+
+      // Close job queue connection
+      await closeJobQueue()
     } catch (error) {
-      console.error('Failed to process Mux videos:', error)
-      summary.failed += pendingMuxVideos.length
+      console.error('Failed to queue video processing jobs:', error)
+      summary.failed += videoProcessingData.length
     }
   }
 

@@ -257,16 +257,9 @@ export async function importOrUpdateVideoVariant({
 
     await client.request<VideoVariantUpdateResponse>(UPDATE_VIDEO_VARIANT, {
       input: {
-        id: existingVariantId,
-        videoId: input.videoId,
-        edition: input.edition,
-        languageId: input.languageId,
-        slug: input.slug,
-        downloadable: input.downloadable,
-        published: input.published,
+        published: true,
         muxVideoId: input.muxVideoId,
         hls: input.hls,
-        share: input.share,
         duration: input.duration,
         lengthInMilliseconds: input.lengthInMilliseconds,
         version: input.version
