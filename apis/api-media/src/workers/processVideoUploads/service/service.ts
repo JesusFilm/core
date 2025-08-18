@@ -10,6 +10,7 @@ import { Logger } from 'pino'
 import { prisma } from '@core/prisma/media/client'
 
 import { getVideo } from '../../../schema/mux/video/service'
+import { jobName as processVideoDownloadsNowJobName } from '../../processVideoDownloads/config'
 import { queue as processVideoDownloadsQueue } from '../../processVideoDownloads/queue'
 
 const GET_LANGUAGE_SLUG = gql`
@@ -107,11 +108,17 @@ export async function service(
         logger
       })
     }
-
-    logger?.info(
-      { videoId, muxVideoId, finalStatus },
-      'Video upload processing completed'
-    )
+    if (finalStatus === 'ready') {
+      logger?.info(
+        { videoId, muxVideoId, finalStatus },
+        'Video upload processing completed'
+      )
+    } else {
+      logger?.warn(
+        { videoId, muxVideoId, finalStatus },
+        'Video upload processing failed due to timeout'
+      )
+    }
   } catch (error) {
     logger?.error(
       `Video upload processing failed for video ${videoId} and mux video ${muxVideoId}: ${error as Error}`
@@ -158,11 +165,14 @@ async function waitForMuxVideoCompletion(
 
         // Trigger download processing immediately
         try {
-          await processVideoDownloadsQueue.add('process-video-downloads', {
-            videoId: muxVideo.id,
-            assetId: muxVideo.assetId,
-            isUserGenerated: false
-          })
+          await processVideoDownloadsQueue.add(
+            processVideoDownloadsNowJobName,
+            {
+              videoId: muxVideo.id,
+              assetId: muxVideo.assetId,
+              isUserGenerated: false
+            }
+          )
 
           logger?.info(
             { muxVideoId: muxVideo.id, assetId: muxVideo.assetId },
