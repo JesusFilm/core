@@ -24,6 +24,12 @@ input BlocksFilter {
   typenames: [String!]
 }
 
+enum ButtonAction {
+  NavigateToBlockAction
+  LinkAction
+  EmailAction
+}
+
 enum ButtonAlignment {
   left
   center
@@ -86,6 +92,18 @@ input ButtonBlockUpdateInput {
   endIconId: ID
   submitEnabled: Boolean
   settings: ButtonBlockSettingsInput
+}
+
+type ButtonClickEvent implements Event
+  @shareable
+{
+  id: ID!
+  journeyId: ID!
+  createdAt: DateTime!
+  label: String
+  value: String
+  action: ButtonAction
+  actionValue: String
 }
 
 enum ButtonColor {
@@ -171,6 +189,24 @@ input CardBlockUpdateInput {
   themeName: ThemeName
 }
 
+type ChatOpenEvent implements Event
+  @shareable
+{
+  id: ID!
+  journeyId: ID!
+  createdAt: DateTime!
+  label: String
+  value: String
+  messagePlatform: MessagePlatform
+}
+
+input ChatOpenEventCreateInput {
+  id: ID
+  blockId: ID!
+  stepId: ID
+  value: MessagePlatform
+}
+
 """
 A date string, such as 2007-12-03, compliant with the `full-date` format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar.
 """
@@ -202,6 +238,14 @@ input EmailActionInput {
   email: String!
   customizable: Boolean
   parentStepId: String
+}
+
+interface Event {
+  id: ID!
+  journeyId: ID!
+  createdAt: DateTime!
+  label: String
+  value: String
 }
 
 enum EventType {
@@ -439,6 +483,31 @@ type JourneyAiTranslateProgress {
   journey: Journey
 }
 
+type JourneyEvent implements Event & Node
+  @shareable
+{
+  id: ID!
+  journeyId: ID!
+  createdAt: DateTime!
+  label: String
+  value: String
+  action: ButtonAction
+  actionValue: String
+  messagePlatform: MessagePlatform
+  language: Language
+  email: String
+  blockId: String
+  position: Float
+  source: VideoBlockSource
+  progress: Int
+  typename: String
+  visitorId: String
+  journeySlug: String
+  visitorName: String
+  visitorEmail: String
+  visitorPhone: String
+}
+
 type JourneyEventsExportLog {
   id: ID!
   createdAt: DateTimeISO!
@@ -456,12 +525,36 @@ input JourneyEventsExportLogInput {
   dateRangeEnd: DateTimeISO
 }
 
+input JourneyEventsFilter {
+  typenames: [String!]
+  periodRangeStart: DateTime
+  periodRangeEnd: DateTime
+}
+
 enum JourneyStatus {
   archived
   deleted
   draft
   published
   trashed
+}
+
+type JourneyViewEvent implements Event
+  @shareable
+{
+  id: ID!
+  journeyId: ID!
+  createdAt: DateTime!
+  label: String
+  value: String
+  language: Language
+}
+
+input JourneyViewEventCreateInput {
+  id: ID
+  journeyId: ID!
+  label: String
+  value: ID
 }
 
 """
@@ -568,7 +661,13 @@ type NavigateToBlockAction implements Action
   blockId: String!
 }
 
+interface Node {
+  id: ID!
+}
+
 type Query {
+  node(id: ID!): Node
+  nodes(ids: [ID!]!): [Node]!
   journeySimpleGet(id: ID!): Json
 }
 
@@ -618,6 +717,25 @@ input RadioQuestionBlockCreateInput {
   parentBlockId: ID!
 }
 
+type RadioQuestionSubmissionEvent implements Event
+  @shareable
+{
+  id: ID!
+  journeyId: ID!
+  createdAt: DateTime!
+  label: String
+  value: String
+}
+
+input RadioQuestionSubmissionEventCreateInput {
+  id: ID
+  blockId: ID!
+  radioOptionBlockId: ID!
+  stepId: ID
+  label: String
+  value: String
+}
+
 type SignUpBlock implements Block
   @shareable
 {
@@ -640,6 +758,25 @@ input SignUpBlockUpdateInput {
   parentBlockId: ID
   submitIconId: ID
   submitLabel: String
+}
+
+type SignUpSubmissionEvent implements Event
+  @shareable
+{
+  id: ID!
+  journeyId: ID!
+  createdAt: DateTime!
+  label: String
+  value: String
+  email: String
+}
+
+input SignUpSubmissionEventCreateInput {
+  id: ID
+  blockId: ID!
+  stepId: ID
+  name: String!
+  email: String!
 }
 
 type SpacerBlock implements Block
@@ -749,6 +886,58 @@ input StepBlockUpdateInput {
   slug: String
 }
 
+type StepNextEvent implements Event
+  @shareable
+{
+  id: ID!
+  journeyId: ID!
+  createdAt: DateTime!
+  label: String
+  value: String
+}
+
+input StepNextEventCreateInput {
+  id: ID
+  blockId: ID!
+  nextStepId: ID!
+  label: String
+  value: String
+}
+
+type StepPreviousEvent implements Event
+  @shareable
+{
+  id: ID!
+  journeyId: ID!
+  createdAt: DateTime!
+  label: String
+  value: String
+}
+
+input StepPreviousEventCreateInput {
+  id: ID
+  blockId: ID!
+  previousStepId: ID!
+  label: String
+  value: String
+}
+
+type StepViewEvent implements Event
+  @shareable
+{
+  id: ID!
+  journeyId: ID!
+  createdAt: DateTime!
+  label: String
+  value: String
+}
+
+input StepViewEventCreateInput {
+  id: ID
+  blockId: ID!
+  value: String
+}
+
 type Subscription {
   journeyAiTranslateCreateSubscription(input: JourneyAiTranslateInput!): JourneyAiTranslateProgress!
 }
@@ -787,6 +976,25 @@ input TextResponseBlockUpdateInput {
   routeId: String
   type: TextResponseType
   integrationId: String
+}
+
+type TextResponseSubmissionEvent implements Event
+  @shareable
+{
+  id: ID!
+  journeyId: ID!
+  createdAt: DateTime!
+  label: String
+  value: String
+  blockId: String
+}
+
+input TextResponseSubmissionEventCreateInput {
+  id: ID
+  blockId: ID!
+  stepId: ID
+  label: String
+  value: String!
 }
 
 enum TextResponseType {
@@ -976,6 +1184,155 @@ input VideoBlockUpdateInput {
     youTube source: videoId required
   """
   source: VideoBlockSource
+}
+
+type VideoCollapseEvent implements Event
+  @shareable
+{
+  id: ID!
+  journeyId: ID!
+  createdAt: DateTime!
+  label: String
+  value: String
+  position: Float
+  source: VideoBlockSource
+}
+
+input VideoCollapseEventCreateInput {
+  id: ID
+  blockId: ID!
+  stepId: ID
+  position: Float
+  label: String
+  value: VideoBlockSource
+}
+
+type VideoCompleteEvent implements Event
+  @shareable
+{
+  id: ID!
+  journeyId: ID!
+  createdAt: DateTime!
+  label: String
+  value: String
+  position: Float
+  source: VideoBlockSource
+}
+
+input VideoCompleteEventCreateInput {
+  id: ID
+  blockId: ID!
+  stepId: ID
+  position: Float
+  label: String
+  value: VideoBlockSource
+}
+
+type VideoExpandEvent implements Event
+  @shareable
+{
+  id: ID!
+  journeyId: ID!
+  createdAt: DateTime!
+  label: String
+  value: String
+  position: Float
+  source: VideoBlockSource
+}
+
+input VideoExpandEventCreateInput {
+  id: ID
+  blockId: ID!
+  stepId: ID
+  position: Float
+  label: String
+  value: VideoBlockSource
+}
+
+type VideoPauseEvent implements Event
+  @shareable
+{
+  id: ID!
+  journeyId: ID!
+  createdAt: DateTime!
+  label: String
+  value: String
+  position: Float
+  source: VideoBlockSource
+}
+
+input VideoPauseEventCreateInput {
+  id: ID
+  blockId: ID!
+  stepId: ID
+  position: Float
+  label: String
+  value: VideoBlockSource
+}
+
+type VideoPlayEvent implements Event
+  @shareable
+{
+  id: ID!
+  journeyId: ID!
+  createdAt: DateTime!
+  label: String
+  value: String
+  position: Float
+  source: VideoBlockSource
+}
+
+input VideoPlayEventCreateInput {
+  id: ID
+  blockId: ID!
+  stepId: ID
+  position: Float
+  label: String
+  value: VideoBlockSource
+}
+
+type VideoProgressEvent implements Event
+  @shareable
+{
+  id: ID!
+  journeyId: ID!
+  createdAt: DateTime!
+  label: String
+  value: String
+  position: Float
+  source: VideoBlockSource
+  progress: Int!
+}
+
+input VideoProgressEventCreateInput {
+  id: ID
+  blockId: ID!
+  stepId: ID
+  position: Float
+  label: String
+  value: VideoBlockSource
+  progress: Int!
+}
+
+type VideoStartEvent implements Event
+  @shareable
+{
+  id: ID!
+  journeyId: ID!
+  createdAt: DateTime!
+  label: String
+  value: String
+  position: Float
+  source: VideoBlockSource
+}
+
+input VideoStartEventCreateInput {
+  id: ID
+  blockId: ID!
+  stepId: ID
+  position: Float
+  label: String
+  value: VideoBlockSource
 }
 
 type VideoTriggerBlock implements Block
