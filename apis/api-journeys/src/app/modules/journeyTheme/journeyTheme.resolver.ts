@@ -3,9 +3,9 @@ import { UseGuards } from '@nestjs/common'
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql'
 import { GraphQLError } from 'graphql'
 
-import { JourneyTheme } from '.prisma/api-journeys-client'
 import { CaslAbility } from '@core/nest/common/CaslAuthModule'
 import { CurrentUserId } from '@core/nest/decorators/CurrentUserId'
+import { JourneyTheme } from '@core/prisma/journeys/client'
 
 import {
   JourneyThemeCreateInput,

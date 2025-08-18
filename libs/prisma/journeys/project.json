@@ -1,0 +1,86 @@
+{
+  "name": "prisma-journeys",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/prisma/journeys/src",
+  "projectType": "library",
+  "tags": ["type:prisma", "scope:journeys"],
+  "targets": {
+    "fetch-secrets": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "DOPPLER_TOKEN=$DOPPLER_API_JOURNEYS_TOKEN doppler secrets download --no-file --format=env-no-quotes --project api-journeys > libs/prisma/journeys/.env"
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "cache": true,
+        "cacheLocation": ".cache/prisma-journeys/eslint",
+        "cacheStrategy": "content"
+      }
+    },
+    "prisma-generate": {
+      "executor": "nx:run-commands",
+      "options": {
+        "parallel": false,
+        "commands": [
+          "npx prisma generate --schema libs/prisma/journeys/db/schema.prisma"
+        ]
+      }
+    },
+    "prisma-migrate": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          "tools/scripts/env-validator.sh --DOPPLER_CONFIG=dev --PG_DATABASE_URL_JOURNEYS=postgresql://postgres:postgres@db:5432/journeys?schema=public \"bash -c 'npx prisma migrate dev --schema libs/prisma/journeys/db/schema.prisma --name `date +\\\"%Y%m%d%H%M%S\\\"`'\""
+        ]
+      },
+      "configurations": {
+        "production": {
+          "commands": [
+            "tools/scripts/env-validator.sh --DOPPLER_CONFIG=dev --PG_DATABASE_URL_JOURNEYS=postgresql://postgres:postgres@db:5432/journeys?schema=public \"npx prisma migrate deploy --schema libs/prisma/journeys/db/schema.prisma\""
+          ]
+        }
+      }
+    },
+    "prisma-reset": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          "tools/scripts/env-validator.sh --DOPPLER_CONFIG=dev --PG_DATABASE_URL_JOURNEYS=postgresql://postgres:postgres@db:5432/journeys?schema=public \"npx prisma migrate reset --schema libs/prisma/journeys/db/schema.prisma --force\""
+        ]
+      }
+    },
+    "prisma-resolve-squash": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          "npx prisma migrate resolve --schema libs/prisma/journeys/db/schema.prisma --applied 000000000000_squashed_migrations"
+        ]
+      }
+    },
+    "prisma-studio": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          "npx prisma studio --schema libs/prisma/journeys/db/schema.prisma"
+        ]
+      }
+    },
+    "prisma-validate": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          "npx prisma validate --schema libs/prisma/journeys/db/schema.prisma"
+        ]
+      }
+    },
+    "type-check": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": ["npx tsc -b libs/prisma/journeys/tsconfig.json"]
+      }
+    }
+  }
+}

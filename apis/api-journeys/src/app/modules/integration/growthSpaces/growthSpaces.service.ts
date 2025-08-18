@@ -10,8 +10,8 @@ import axios, { AxiosError, AxiosInstance } from 'axios'
 import { Cache } from 'cache-manager'
 import { GraphQLError } from 'graphql/error'
 
-import { Block, Integration, Prisma } from '.prisma/api-journeys-client'
 import { decryptSymmetric, encryptSymmetric } from '@core/nest/common/crypto'
+import { Block, Integration, Prisma } from '@core/prisma/journeys/client'
 
 import {
   GetLanguagesQuery,

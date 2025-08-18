@@ -1,4 +1,4 @@
-import { VideoVariantDownloadQuality as PrismaVideoVariantDownloadQuality } from '.prisma/api-media-client'
+import { VideoVariantDownloadQuality as PrismaVideoVariantDownloadQuality } from '@core/prisma/media/client'
 
 import { builder } from '../../../builder'
 
