@@ -1,10 +1,10 @@
 import path from 'path'
 
 import { PutObjectCommand, S3Client } from '@aws-sdk/client-s3'
-import { Logger } from 'pino'
+
+import { VideoVariantDownloadQuality } from '.prisma/api-media-client'
 
 import { prisma } from '../lib/prisma'
-import { logger } from '../logger'
 
 function getR2Client(): S3Client {
   if (process.env.CLOUDFLARE_R2_ENDPOINT == null)
@@ -28,15 +28,14 @@ async function uploadToR2FromUrl(
   url: string,
   fileName: string,
   contentType: string,
-  expectedSize?: number,
-  logger?: Logger
+  expectedSize?: number
 ): Promise<{ publicUrl: string; actualSize: number }> {
   if (process.env.CLOUDFLARE_R2_BUCKET == null)
     throw new Error('Missing CLOUDFLARE_R2_BUCKET')
   if (process.env.CLOUDFLARE_R2_CUSTOM_DOMAIN == null)
     throw new Error('Missing CLOUDFLARE_R2_CUSTOM_DOMAIN')
 
-  logger?.info(`Downloading file from ${url}`)
+  console.info(`Downloading file from ${url}`)
   const response = await fetch(url)
 
   if (!response.ok) {
@@ -55,7 +54,7 @@ async function uploadToR2FromUrl(
     const maxToleranceBytes = expectedSize * sizeTolerancePercent
 
     if (sizeDifference > maxToleranceBytes) {
-      logger?.warn(
+      console.warn(
         {
           expectedSize,
           actualSize,
@@ -65,7 +64,7 @@ async function uploadToR2FromUrl(
         'Downloaded file size differs significantly from expected size'
       )
     } else {
-      logger?.info(
+      console.info(
         {
           expectedSize,
           actualSize,
@@ -81,7 +80,7 @@ async function uploadToR2FromUrl(
     throw new Error(`Downloaded file is empty: ${fileName}`)
   }
 
-  logger?.info(`Uploading file to R2: ${fileName} (${actualSize} bytes)`)
+  console.info(`Uploading file to R2: ${fileName} (${actualSize} bytes)`)
 
   const client = getR2Client()
   await client.send(
@@ -94,125 +93,170 @@ async function uploadToR2FromUrl(
   )
 
   const publicUrl = `${process.env.CLOUDFLARE_R2_CUSTOM_DOMAIN}/${fileName}`
-  logger?.info(`File uploaded to R2: ${publicUrl}`)
+  console.info(`File uploaded to R2: ${publicUrl}`)
 
   return { publicUrl, actualSize }
 }
 
-async function migrateDownloadsToR2(logger?: Logger): Promise<void> {
-  logger?.info('Starting download migration to R2')
+async function migrateDownloadsToR2(): Promise<void> {
+  console.info('Starting download migration to R2')
 
-  const downloadsWithoutAssets = await prisma.videoVariantDownload.findMany({
-    where: {
-      assetId: null,
-      url: { not: '' }
-    },
-    include: {
-      videoVariant: {
-        select: {
-          id: true,
-          languageId: true,
-          videoId: true
+  for (const quality of [
+    VideoVariantDownloadQuality.high,
+    VideoVariantDownloadQuality.distroHigh,
+    VideoVariantDownloadQuality.sd,
+    VideoVariantDownloadQuality.distroSd,
+    VideoVariantDownloadQuality.low,
+    VideoVariantDownloadQuality.distroLow
+  ]) {
+    const where = {
+      where: {
+        videoVariantId: '13_9774-0-RPGospelIntro',
+        assetId: null,
+        AND: [
+          { url: { not: '' } },
+          { url: { not: { startsWith: 'https://stream' } } }
+        ],
+        quality
+      },
+      include: {
+        videoVariant: {
+          select: {
+            id: true,
+            languageId: true,
+            videoId: true
+          }
         }
       }
     }
-  })
-
-  logger?.info(
-    `Found ${downloadsWithoutAssets.length} downloads without assets`
-  )
-
-  for (const download of downloadsWithoutAssets) {
-    if (download.videoVariant == null) {
-      logger?.error(
-        { downloadId: download.id },
-        'Download has no associated video variant'
+    let download = await prisma.videoVariantDownload.findFirst(where)
+    while (download != null) {
+      console.info(
+        `Processing download: ${download.videoVariantId} - ${download.quality}`
       )
-      continue
-    }
+      try {
+        // Skip any downloads missing a videoVariant
+        if (!download.videoVariant) {
+          console.error(
+            { downloadId: download.id },
+            'VideoVariant is null for download'
+          )
+          continue
+        }
 
-    const videoId = download.videoVariant.videoId
+        const videoId = download.videoVariant?.videoId
+        const fileExtension =
+          path.extname(new URL(download.url).pathname) || '.mp4'
+        const fileName =
+          `${videoId}/variants/${download.videoVariant.languageId}` +
+          `/downloads/${download.videoVariant.id}_${download.quality}${fileExtension}`
 
-    try {
-      const fileExtension =
-        path.extname(new URL(download.url).pathname) || '.mp4'
-      const fileName = `${videoId}/variants/${download.videoVariant.languageId}/downloads/${download.videoVariant.id}_${download.quality}${fileExtension}`
+        const contentType =
+          fileExtension === '.mp4' ? 'video/mp4' : 'application/octet-stream'
 
-      const contentType =
-        fileExtension === '.mp4' ? 'video/mp4' : 'application/octet-stream'
+        const expectedSize =
+          download.size && download.size > 0 ? download.size : undefined
 
-      const expectedSize =
-        download.size && download.size > 0 ? download.size : undefined
+        const asset = await prisma.cloudflareR2.create({
+          data: {
+            fileName,
+            userId: 'system',
+            contentType,
+            contentLength: expectedSize ? Math.floor(expectedSize) : 0,
+            videoId
+          }
+        })
 
-      const asset = await prisma.cloudflareR2.create({
-        data: {
+        console.info(`Created CloudflareR2 asset: ${asset.id}`)
+
+        const { publicUrl, actualSize } = await uploadToR2FromUrl(
+          download.url,
           fileName,
-          userId: 'system',
           contentType,
-          contentLength: expectedSize ? Math.floor(expectedSize) : 0,
-          videoId
-        }
-      })
-
-      logger?.info(`Created CloudflareR2 asset: ${asset.id}`)
-
-      const { publicUrl, actualSize } = await uploadToR2FromUrl(
-        download.url,
-        fileName,
-        contentType,
-        expectedSize,
-        logger
-      )
-
-      // Update the asset with the actual size and public URL
-      await prisma.cloudflareR2.update({
-        where: { id: asset.id },
-        data: {
-          publicUrl,
-          contentLength: actualSize
-        }
-      })
-
-      // Update the download with the actual size if it was 0 or null
-      const updateData: { assetId: string; url: string; size?: number } = {
-        assetId: asset.id,
-        url: publicUrl
-      }
-
-      if (expectedSize == null || expectedSize === 0) {
-        updateData.size = actualSize
-        logger?.info(
-          { downloadId: download.id, actualSize },
-          'Updated download size with actual file size'
+          expectedSize
         )
+
+        // Update the asset with the actual size and public URL
+        await prisma.cloudflareR2.update({
+          where: { id: asset.id },
+          data: {
+            publicUrl,
+            contentLength: actualSize
+          }
+        })
+
+        // Update the download with the actual size if it was 0 or null
+        const updateData: { assetId: string; url: string; size?: number } = {
+          assetId: asset.id,
+          url: publicUrl
+        }
+
+        if (expectedSize == null || expectedSize === 0) {
+          updateData.size = actualSize
+          console.info(
+            { downloadId: download.id, actualSize },
+            'Updated download size with actual file size'
+          )
+        }
+
+        // Update all downloads with the same URL to use the new asset
+        await prisma.videoVariantDownload.updateMany({
+          where: { url: download.url },
+          data: updateData
+        })
+
+        if (quality === VideoVariantDownloadQuality.high) {
+          await prisma.videoVariantDownload.updateMany({
+            where: {
+              videoVariantId: download.videoVariantId,
+              quality: VideoVariantDownloadQuality.distroHigh
+            },
+            data: updateData
+          })
+        }
+
+        if (quality === VideoVariantDownloadQuality.sd) {
+          await prisma.videoVariantDownload.updateMany({
+            where: {
+              videoVariantId: download.videoVariantId,
+              quality: VideoVariantDownloadQuality.distroSd
+            },
+            data: updateData
+          })
+        }
+
+        if (quality === VideoVariantDownloadQuality.low) {
+          await prisma.videoVariantDownload.updateMany({
+            where: {
+              videoVariantId: download.videoVariantId,
+              quality: VideoVariantDownloadQuality.distroLow
+            },
+            data: updateData
+          })
+        }
+
+        console.info('Successfully processed download')
+      } catch (error) {
+        console.error(
+          { error, downloadId: download.id },
+          `Error processing download: ${download.id}`
+        )
+        download = await prisma.videoVariantDownload.findFirst(where)
       }
-
-      await prisma.videoVariantDownload.update({
-        where: { id: download.id },
-        data: updateData
-      })
-
-      logger?.info(`Successfully processed download: ${download.id}`)
-    } catch (error) {
-      logger?.error(
-        { error, downloadId: download.id },
-        `Error processing download: ${download.id}`
-      )
+      download = await prisma.videoVariantDownload.findFirst(where)
     }
   }
 
-  logger?.info('Completed download migration to R2')
+  console.info('Completed download migration to R2')
 }
 
 async function main(): Promise<void> {
-  const scriptLogger = logger.child({ script: 'download-migrate-r2' })
-
   try {
-    scriptLogger.info('Starting download-migrate-r2 script')
-    await migrateDownloadsToR2(scriptLogger)
-    scriptLogger.info('Download-migrate-r2 script completed successfully')
+    console.info('Starting download-migrate-r2 script')
+    await migrateDownloadsToR2()
+    console.info('Download-migrate-r2 script completed successfully')
   } catch (error) {
-    scriptLogger.error({ error }, 'Download-migrate-r2 script failed')
+    console.error({ error }, 'Download-migrate-r2 script failed')
     process.exit(1)
   }
 }

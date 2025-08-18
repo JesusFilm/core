@@ -20,17 +20,13 @@ function getMuxClient(): Mux {
   })
 }
 
-export async function createMuxAsset(
-  url: string,
-  mux: Mux,
-  height: number
-): Promise<string> {
-  let maxResolutionTier: '1080p' | '1440p' | '2160p' = '1080p'
-  if (height > 1080 && height <= 1440) {
-    maxResolutionTier = '1440p'
-  } else if (height > 1440) {
-    maxResolutionTier = '2160p'
-  }
+export async function createMuxAsset(url: string, mux: Mux): Promise<string> {
+  // let maxResolutionTier: '1080p' | '1440p' | '2160p' = '1080p'
+  // if (height > 1080 && height <= 1440) {
+  //   maxResolutionTier = '1440p'
+  // } else if (height > 1440) {
+  //   maxResolutionTier = '2160p'
+  // }
 
   const muxVideo = await mux.video.assets.create({
     inputs: [
@@ -40,15 +36,15 @@ export async function createMuxAsset(
     ],
     video_quality: 'plus',
     playback_policy: ['public'],
-    max_resolution_tier: maxResolutionTier,
+    max_resolution_tier: '2160p',
     static_renditions: [
       { resolution: '270p' },
       { resolution: '360p' },
-      { resolution: '480p' },
-      { resolution: '720p' },
-      { resolution: '1080p' },
-      { resolution: '1440p' },
-      { resolution: '2160p' }
+      // { resolution: '480p' }
+      { resolution: '720p' }
+      // { resolution: '1080p' }
+      // { resolution: '1440p' }
+      // { resolution: '2160p' }
     ]
   })
   return muxVideo.id
@@ -63,17 +59,46 @@ export async function importMuxVideos(mux: Mux): Promise<void> {
   while (hasMore) {
     const variants = await prisma.videoVariant.findMany({
       where: {
+        // videoId: { not: { startsWith: '1_' } },
         // id: {
-        //   not: { contains: '-jf61' }
+        // not: { contains: '-jf61' },
+        // not: { startsWith: '2_' }
         // },
-        id: { startsWith: '4_' },
-        video: {
-          slug: { not: { startsWith: 'jesus/' } }
-        },
+        AND: [
+          { videoId: { not: { startsWith: '1_' } } },
+          { videoId: { not: { startsWith: 'MAG' } } },
+          {
+            id: {
+              not: {
+                in: [
+                  '2_1106-0-CanKnowGod',
+                  '2_1106-0-JesusReally',
+                  '2_21028-0-Jatku-Leiba',
+                  '2_529-0-Ctrl-Z'
+                ]
+              }
+            }
+          }
+        ],
+        //   // { masterHeight: { lt: 480 } }
+        //   // { masterHeight: { gt: 360 } }
+        //   { videoId: { not: { startsWith: '1_jf61' } } },
+        //   { videoId: { not: { startsWith: '1_jf-' } } }
+        // ],
+        // id: {
+        //   in: [
+        //     '1_3934-jf-0-0',
+        //     '1_5541-jf-0-0',
+        //     '1_1370-jf-0-0',
+        //     '1_144134-jf-0-0'
+        //   ]
+        // },
+        // video: {
+        //   slug: { not: { startsWith: 'jesus/' } }
+        // },
         muxVideoId: null,
-        // masterHeight: { not: null },
-        masterUrl: { not: null },
-        masterHeight: 2160
+        masterUrl: { not: null }
+        // masterWidth: 1080
         // OR: [
         //   { masterHeight: { gt: 720 } },
         //   { video: { originId: { not: '1' } } }
@@ -89,11 +114,7 @@ export async function importMuxVideos(mux: Mux): Promise<void> {
       await new Promise((resolve) => setTimeout(resolve, 2000)) // wait 2 sec to avoid rate limit
       let muxVideoId: string | null = null
       try {
-        muxVideoId = await createMuxAsset(
-          variant.masterUrl as string,
-          mux,
-          variant.masterHeight as number
-        )
+        muxVideoId = await createMuxAsset(variant.masterUrl as string, mux)
       } catch (error) {
         if (error instanceof Error) {
           console.error(
