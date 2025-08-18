@@ -4,7 +4,7 @@ import { Test, TestingModule } from '@nestjs/testing'
 import axios, { AxiosError, AxiosResponse } from 'axios'
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
 
-import { Block, Integration, Journey } from '.prisma/api-journeys-client'
+import { Block, Integration, Journey } from '@core/prisma/journeys/client'
 
 import { PrismaService } from '../../../lib/prisma.service'
 

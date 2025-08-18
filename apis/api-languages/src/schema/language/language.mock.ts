@@ -2,7 +2,7 @@ import {
   AudioPreview,
   Language,
   LanguageName
-} from '.prisma/api-languages-client'
+} from '@core/prisma/languages/client'
 
 export const audioPreview: AudioPreview = {
   value: 'abc.mp3',

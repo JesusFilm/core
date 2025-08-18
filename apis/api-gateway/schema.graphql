@@ -2766,6 +2766,7 @@ type VideoDescription @join__type(graph: API_MEDIA)  {
   value: String!
   primary: Boolean!
   language: Language!
+  crowdInId: String
 }
 
 type VideoEdition @join__type(graph: API_MEDIA)  {
@@ -2801,6 +2802,7 @@ type VideoStudyQuestion @join__type(graph: API_MEDIA)  {
   primary: Boolean!
   order: Int!
   language: Language!
+  crowdInId: String
 }
 
 type VideoSubtitle @join__type(graph: API_MEDIA)  {
@@ -2836,6 +2838,7 @@ type VideoTitle @join__type(graph: API_MEDIA)  {
   value: String!
   primary: Boolean!
   language: Language!
+  crowdInId: String
 }
 
 type VideoVariant @join__type(graph: API_MEDIA)  {

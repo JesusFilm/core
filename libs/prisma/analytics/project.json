@@ -5,6 +5,12 @@
   "projectType": "library",
   "tags": ["type:prisma", "scope:analytics"],
   "targets": {
+    "fetch-secrets": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "DOPPLER_TOKEN=$DOPPLER_API_ANALYTICS_TOKEN doppler secrets download --no-file --format=env-no-quotes --project api-analytics > libs/prisma/analytics/.env"
+      }
+    },
     "lint": {
       "executor": "@nx/eslint:lint",
       "outputs": ["{options.outputFile}"],
@@ -47,27 +53,18 @@
         ]
       }
     },
-    "prisma-migrate": {
-      "executor": "nx:run-commands",
-      "options": {
-        "commands": [
-          "tools/scripts/env-validator.sh --DOPPLER_CONFIG=dev --PG_DATABASE_URL_ANALYTICS=postgresql://postgres:postgres@db:5432/analytics?schema=public \"bash -c 'npx prisma migrate dev --schema libs/prisma/analytics/db/schema.prisma --name `date +\\\"%Y%m%d%H%M%S\\\"`'\""
-        ]
-      },
-      "configurations": {
-        "production": {
-          "commands": [
-            "tools/scripts/env-validator.sh --DOPPLER_CONFIG=dev --PG_DATABASE_URL_ANALYTICS=postgresql://postgres:postgres@db:5432/analytics?schema=public \"npx prisma migrate deploy --schema libs/prisma/analytics/db/schema.prisma\""
-          ]
-        }
-      }
-    },
     "prisma-reset": {
       "executor": "nx:run-commands",
       "options": {
         "commands": [
           "tools/scripts/env-validator.sh --DOPPLER_CONFIG=dev --PG_DATABASE_URL_ANALYTICS=postgresql://postgres:postgres@db:5432/analytics?schema=public \"npx prisma migrate reset --schema libs/prisma/analytics/db/schema.prisma --force\""
         ]
+      }
+    },
+    "type-check": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": ["npx tsc -b libs/prisma/analytics/tsconfig.json"]
       }
     }
   }

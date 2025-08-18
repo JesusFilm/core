@@ -1,4 +1,4 @@
-import { VideoLabel as PrismaVideoLabel } from '.prisma/api-media-client'
+import { VideoLabel as PrismaVideoLabel } from '@core/prisma/media/client'
 
 import { builder } from '../../builder'
 
