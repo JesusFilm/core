@@ -841,7 +841,7 @@ type Video
   """The number of published child videos associated with this video"""
   childrenCount: Int!
   variantLanguagesWithSlug(input: VideoVariantFilter): [LanguageWithSlug!]!
-  variants(input: VideoVariantFilter): [VideoVariant!]!
+  variants(input: VideoVariantFilter, languageId: ID): [VideoVariant!]!
   subtitles(languageId: ID, primary: Boolean, edition: String): [VideoSubtitle!]!
   variant(languageId: ID, input: VideoVariantFilter): VideoVariant
   images(aspectRatio: ImageAspectRatio): [CloudflareImage!]!

@@ -1005,6 +1005,89 @@ describe('video', () => {
       })
       expect(data).toHaveProperty('data.videos', result)
     })
+
+    it('should query variants with languageId parameter', async () => {
+      const VARIANTS_WITH_LANGUAGE_ID_QUERY = graphql(`
+        query VideosWithVariantsLanguageId($languageId: ID) {
+          videos {
+            id
+            variants(languageId: $languageId) {
+              id
+              language {
+                id
+              }
+            }
+          }
+        }
+      `)
+
+      const filteredVariants = [
+        {
+          id: 'variantId2',
+          hls: 'hlsUrl',
+          languageId: 'languageId2',
+          slug: 'slug2',
+          videoId: 'videoId',
+          edition: 'edition',
+          dash: null,
+          downloadable: true,
+          duration: null,
+          lengthInMilliseconds: null,
+          share: null,
+          published: true,
+          muxVideoId: 'muxVideoId',
+          masterUrl: 'masterUrl',
+          masterWidth: 320,
+          masterHeight: 180,
+          assetId: null,
+          brightcoveId: null,
+          version: 1
+        }
+      ]
+
+      const videoWithFilteredVariants = {
+        ...videos[0]
+      }
+      videoWithFilteredVariants.variants = filteredVariants
+      prismaMock.video.findMany.mockResolvedValueOnce([
+        videoWithFilteredVariants
+      ])
+
+      const data = await client({
+        document: VARIANTS_WITH_LANGUAGE_ID_QUERY,
+        variables: {
+          languageId: 'languageId2'
+        }
+      })
+
+      expect(prismaMock.video.findMany).toHaveBeenCalledWith({
+        skip: 0,
+        take: 100,
+        where: { published: true },
+        include: expect.objectContaining({
+          variants: {
+            where: {
+              published: true,
+              languageId: 'languageId2'
+            }
+          }
+        })
+      })
+
+      expect(data).toHaveProperty('data.videos', [
+        {
+          id: 'videoId',
+          variants: [
+            {
+              id: 'variantId2',
+              language: {
+                id: 'languageId2'
+              }
+            }
+          ]
+        }
+      ])
+    })
   })
 
   describe('video', () => {
