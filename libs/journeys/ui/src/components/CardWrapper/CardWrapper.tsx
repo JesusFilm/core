@@ -1,7 +1,7 @@
 import { ReactElement } from 'react'
 
-import type { WrapperProps, WrappersProps } from '../BlockRenderer'
 import type { BlockFields_CardBlock as CardBlock } from '../../libs/block/__generated__/BlockFields'
+import type { WrapperProps, WrappersProps } from '../BlockRenderer'
 import { Card } from '../Card'
 
 export function CardWrapper({

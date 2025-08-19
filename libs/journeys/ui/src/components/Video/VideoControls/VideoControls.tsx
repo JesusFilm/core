@@ -20,8 +20,8 @@ import { useBlocks } from '../../../libs/block'
 import { useJourney } from '../../../libs/JourneyProvider'
 import {
   PlaybackEvent,
-  playbackReducer,
-  type PlaybackState
+  type PlaybackState,
+  playbackReducer
 } from '../utils/playbackReducer'
 import VideoJsPlayer from '../utils/videoJsTypes'
 import { VideoStats } from '../VideoStats'

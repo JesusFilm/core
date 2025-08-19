@@ -13,6 +13,7 @@ import type {
 import { Card } from '@core/journeys/ui/Card'
 import { ActiveSlide, useEditor } from '@core/journeys/ui/EditorProvider'
 import Plus2Icon from '@core/shared/ui/icons/Plus2'
+
 import type { BlockFields_CardBlock as CardBlock } from '../../../../../../../__generated__/BlockFields'
 
 export function CardWrapper({
