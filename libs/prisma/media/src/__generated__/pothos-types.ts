@@ -51,8 +51,8 @@ export default interface PrismaTypes {
         Where: Prisma.CloudflareR2WhereInput;
         Create: {};
         Update: {};
-        RelationName: "video" | "videoVariant" | "videoVariantDownload" | "videoSubtitleSrt" | "videoSubtitleVtt";
-        ListRelations: never;
+        RelationName: "video" | "videoVariant" | "videoVariantDownloads" | "videoSubtitleSrt" | "videoSubtitleVtt";
+        ListRelations: "videoVariantDownloads";
         Relations: {
             video: {
                 Shape: Video | null;
@@ -64,10 +64,10 @@ export default interface PrismaTypes {
                 Name: "VideoVariant";
                 Nullable: true;
             };
-            videoVariantDownload: {
-                Shape: VideoVariantDownload | null;
+            videoVariantDownloads: {
+                Shape: VideoVariantDownload[];
                 Name: "VideoVariantDownload";
-                Nullable: true;
+                Nullable: false;
             };
             videoSubtitleSrt: {
                 Shape: VideoSubtitle | null;
