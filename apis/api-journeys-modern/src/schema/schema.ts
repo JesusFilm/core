@@ -3,6 +3,7 @@
 
 import './action'
 import './block'
+import './event'
 import './journey'
 import './journeyAiTranslate'
 import './journeyEventsExportLog'
