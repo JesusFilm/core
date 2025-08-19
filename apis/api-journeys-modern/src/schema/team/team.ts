@@ -1,29 +1,12 @@
 import { GraphQLError } from 'graphql'
 
-import { Team, UserTeamRole } from '.prisma/api-journeys-modern-client'
+import { UserTeamRole, prisma } from '@core/prisma/journeys/client'
 
-import { prisma } from '../../lib/prisma'
 import { builder } from '../builder'
 
+import { TeamCreateInput, TeamUpdateInput } from './inputs'
 import { Team as TeamWithIncludes, teamAcl } from './team.acl'
-import { TeamService } from './team.service'
 
-// Define input types
-const TeamCreateInput = builder.inputType('TeamCreateInput', {
-  fields: (t) => ({
-    title: t.string({ required: true }),
-    publicTitle: t.string({ required: false })
-  })
-})
-
-const TeamUpdateInput = builder.inputType('TeamUpdateInput', {
-  fields: (t) => ({
-    title: t.string({ required: true }),
-    publicTitle: t.string({ required: false })
-  })
-})
-
-// Define Team object type
 const TeamRef = builder.prismaObject('Team', {
   fields: (t) => ({
     id: t.exposeID('id'),

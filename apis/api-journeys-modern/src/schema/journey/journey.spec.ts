@@ -1,7 +1,4 @@
-import {
-  JourneyStatus,
-  UserJourneyRole
-} from '.prisma/api-journeys-modern-client'
+import { JourneyStatus, UserJourneyRole } from '@core/prisma/journeys/client'
 
 describe('Journey Schema Implementation', () => {
   it('should define JourneyStatus enum values correctly', () => {

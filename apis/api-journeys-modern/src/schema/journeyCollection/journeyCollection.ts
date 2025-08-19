@@ -1,8 +1,9 @@
 import { GraphQLError } from 'graphql'
 import omit from 'lodash/omit'
 
+import { prisma } from '@core/prisma/journeys/client'
+
 import { Action } from '../../lib/auth/ability'
-import { prisma } from '../../lib/prisma'
 import { builder } from '../builder'
 import { JourneyRef } from '../journey/journey'
 

@@ -1,4 +1,4 @@
-import { Role } from '.prisma/api-journeys-modern-client'
+import { Role } from '@core/prisma/journeys/client'
 
 describe('UserRole Schema Implementation', () => {
   it('should define Role enum values correctly', () => {

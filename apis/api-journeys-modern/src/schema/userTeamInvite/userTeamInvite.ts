@@ -2,23 +2,14 @@ import { GraphQLError } from 'graphql'
 
 import {
   UserTeamInvite,
-  UserTeamRole
-} from '.prisma/api-journeys-modern-client'
+  UserTeamRole,
+  prisma
+} from '@core/prisma/journeys/client'
 
-import { prisma } from '../../lib/prisma'
 import { builder } from '../builder'
 
+import { UserTeamInviteCreateInput } from './inputs'
 import { UserTeamInviteService } from './userTeamInvite.service'
-
-// Define input types
-const UserTeamInviteCreateInput = builder.inputType(
-  'UserTeamInviteCreateInput',
-  {
-    fields: (t) => ({
-      email: t.string({ required: true })
-    })
-  }
-)
 
 // Define UserTeamInvite object type
 const UserTeamInviteRef = builder.prismaObject('UserTeamInvite', {

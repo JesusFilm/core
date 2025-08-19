@@ -2,7 +2,8 @@ import { GraphQLError, GraphQLResolveInfo, Kind, SelectionNode } from 'graphql'
 import pull from 'lodash/pull'
 import snakeCase from 'lodash/snakeCase'
 
-import { prisma } from '../../lib/prisma'
+import { prisma } from '@core/prisma/journeys/client'
+
 import { builder } from '../builder'
 import { IdType } from '../journey/enums/idType'
 

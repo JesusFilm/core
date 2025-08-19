@@ -3,10 +3,9 @@ import omit from 'lodash/omit'
 
 import {
   UserJourneyRole as PrismaUserJourneyRole,
-  UserJourney
-} from '.prisma/api-journeys-modern-client'
+  prisma
+} from '@core/prisma/journeys/client'
 
-import { prisma } from '../../lib/prisma'
 import { builder } from '../builder'
 import { JourneyNotificationRef } from '../journeyNotification/journeyNotification'
 import { UserRef } from '../user/user'
@@ -14,7 +13,6 @@ import { UserRef } from '../user/user'
 import { UserJourneyRole } from './enums/userJourneyRole'
 import { UserJourneyService } from './userJourney.service'
 
-// Define UserJourney object type
 const UserJourneyRef = builder.prismaObject('UserJourney', {
   fields: (t) => ({
     id: t.exposeID('id'),

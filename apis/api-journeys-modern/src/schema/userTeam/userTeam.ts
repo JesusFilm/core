@@ -1,38 +1,24 @@
 import { GraphQLError } from 'graphql'
 
-import { UserTeam, UserTeamRole } from '.prisma/api-journeys-modern-client'
+import {
+  UserTeamRole as PrismaUserTeamRole,
+  prisma
+} from '@core/prisma/journeys/client'
 
-import { prisma } from '../../lib/prisma'
 import { builder } from '../builder'
 import { JourneyNotificationRef } from '../journeyNotification/journeyNotification'
 import { UserRef } from '../user/user'
 
-// Define UserTeamRole enum
-const UserTeamRoleEnum = builder.enumType(UserTeamRole, {
-  name: 'UserTeamRole'
-})
+import { UserTeamRole } from './enums'
+import { UserTeamFilterInput, UserTeamUpdateInput } from './inputs'
 
-// Define input types
-const UserTeamUpdateInput = builder.inputType('UserTeamUpdateInput', {
-  fields: (t) => ({
-    role: t.field({ type: UserTeamRoleEnum, required: true })
-  })
-})
-
-const UserTeamFilterInput = builder.inputType('UserTeamFilterInput', {
-  fields: (t) => ({
-    role: t.field({ type: [UserTeamRoleEnum], required: false })
-  })
-})
-
-// Define UserTeam object type
 const UserTeamRef = builder.prismaObject('UserTeam', {
   fields: (t) => ({
     id: t.exposeID('id'),
     teamId: t.exposeID('teamId'),
     userId: t.exposeID('userId'),
     role: t.field({
-      type: UserTeamRoleEnum,
+      type: UserTeamRole,
       resolve: (userTeam) => userTeam.role
     }),
     createdAt: t.expose('createdAt', { type: 'DateTime' }),
@@ -98,7 +84,7 @@ function canAccessUserTeam(action: string, userTeam: any, user: any): boolean {
     case 'update':
     case 'delete':
       // Can update/delete if user is a manager of the team
-      return currentUserTeam?.role === UserTeamRole.manager
+      return currentUserTeam?.role === PrismaUserTeamRole.manager
     default:
       return false
   }

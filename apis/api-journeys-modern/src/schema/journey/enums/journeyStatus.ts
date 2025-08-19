@@ -1,4 +1,4 @@
-import { JourneyStatus as PrismaJourneyStatus } from '.prisma/api-journeys-modern-client'
+import { JourneyStatus as PrismaJourneyStatus } from '@core/prisma/journeys/client'
 
 import { builder } from '../../builder'
 

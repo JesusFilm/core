@@ -1,6 +1,6 @@
 import { mockDeep } from 'jest-mock-extended'
 
-import { Prisma, PrismaClient } from '.prisma/api-journeys-modern-client'
+import { Prisma, PrismaClient } from '@core/prisma/journeys/client'
 
 import { prismaMock } from '../../../../test/prismaMock'
 import { VideoBlockSource } from '../../enums'

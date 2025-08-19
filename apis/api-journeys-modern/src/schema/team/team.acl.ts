@@ -2,7 +2,7 @@ import {
   Team as PrismaTeam,
   UserTeam,
   UserTeamRole
-} from '.prisma/api-journeys-modern-client'
+} from '@core/prisma/journeys/client'
 import { User as BaseUser } from '@core/yoga/firebaseClient'
 
 export interface Team extends PrismaTeam {

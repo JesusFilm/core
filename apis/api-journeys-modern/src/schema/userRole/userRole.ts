@@ -1,14 +1,10 @@
 import { GraphQLError } from 'graphql'
 
-import { Role, UserRole } from '.prisma/api-journeys-modern-client'
+import { UserRole, prisma } from '@core/prisma/journeys/client'
 
-import { prisma } from '../../lib/prisma'
 import { builder } from '../builder'
 
-// Define Role enum
-const RoleEnum = builder.enumType(Role, {
-  name: 'Role'
-})
+import { Role } from './enums'
 
 // Define UserRole object type
 const UserRoleRef = builder.prismaObject('UserRole', {
@@ -16,7 +12,7 @@ const UserRoleRef = builder.prismaObject('UserRole', {
     id: t.exposeID('id'),
     userId: t.exposeID('userId'),
     roles: t.field({
-      type: [RoleEnum],
+      type: [Role],
       resolve: (userRole) => userRole.roles
     })
   })

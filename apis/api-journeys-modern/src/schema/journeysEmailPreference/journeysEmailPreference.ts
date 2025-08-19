@@ -1,27 +1,16 @@
 import { GraphQLError } from 'graphql'
 import { z } from 'zod'
 
-import { JourneysEmailPreference } from '.prisma/api-journeys-modern-client'
+import { prisma } from '@core/prisma/journeys/client'
 
-import { prisma } from '../../lib/prisma'
 import { builder } from '../builder'
+
+import { JourneysEmailPreferenceUpdateInput } from './inputs'
 
 // Email validation schema
 const emailSchema = z.object({
   email: z.string().email('Invalid email format')
 })
-
-// Input types
-const JourneysEmailPreferenceUpdateInput = builder.inputType(
-  'JourneysEmailPreferenceUpdateInput',
-  {
-    fields: (t) => ({
-      email: t.string({ required: true }),
-      preference: t.string({ required: true }),
-      value: t.boolean({ required: true })
-    })
-  }
-)
 
 // JourneysEmailPreference object type
 const JourneysEmailPreferenceRef = builder.prismaObject(

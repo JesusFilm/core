@@ -1,7 +1,4 @@
-import {
-  UserJourneyRole,
-  UserTeamRole
-} from '.prisma/api-journeys-modern-client'
+import { UserJourneyRole, UserTeamRole } from '@core/prisma/journeys/client'
 import { User as BaseUser } from '@core/yoga/firebaseClient'
 
 import { Action } from '../../lib/auth/ability'

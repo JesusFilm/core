@@ -1,15 +1,13 @@
-import { subject } from '@casl/ability'
 import { GraphQLError } from 'graphql'
 import { v4 as uuidv4 } from 'uuid'
 
-import { Prisma } from '.prisma/api-journeys-modern-client'
+import { Prisma, prisma } from '@core/prisma/journeys/client'
 
 import {
   Action,
   ability,
   subject as abilitySubject
 } from '../../lib/auth/ability'
-import { prisma } from '../../lib/prisma'
 import { builder } from '../builder'
 
 export const Block = builder.prismaInterface('Block', {

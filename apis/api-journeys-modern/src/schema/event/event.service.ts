@@ -1,10 +1,6 @@
 import { GraphQLError } from 'graphql'
 
-import {
-  Block,
-  JourneyVisitor,
-  Visitor
-} from '.prisma/api-journeys-modern-client'
+import { Block, JourneyVisitor, Visitor } from '@core/prisma/journeys/client'
 
 import { prisma } from '../../lib/prisma'
 

@@ -2,16 +2,12 @@ import { GraphQLError } from 'graphql'
 import omit from 'lodash/omit'
 import { v4 as uuidv4 } from 'uuid'
 
-import { QrCode } from '.prisma/api-journeys-modern-client'
+import { prisma } from '@core/prisma/journeys/client'
 
-import {
-  Action,
-  ability,
-  subject as abilitySubject
-} from '../../lib/auth/ability'
-import { prisma } from '../../lib/prisma'
+import { Action } from '../../lib/auth/ability'
 import { builder } from '../builder'
 
+import { QrCodeCreateInput, QrCodeUpdateInput, QrCodesFilter } from './inputs'
 import {
   INCLUDE_QR_CODE_ACL,
   QrCode as QrCodeWithAcl,
@@ -19,34 +15,6 @@ import {
 } from './qrCode.acl'
 import { QrCodeService } from './qrCode.service'
 
-// Define input types
-const QrCodesFilter = builder.inputType('QrCodesFilter', {
-  fields: (t) => ({
-    journeyId: t.id({ required: false }),
-    teamId: t.id({ required: false })
-  })
-})
-
-const QrCodeCreateInput = builder.inputType('QrCodeCreateInput', {
-  fields: (t) => ({
-    teamId: t.id({ required: true }),
-    journeyId: t.id({ required: true })
-  })
-})
-
-const QrCodeUpdateInput = builder.inputType('QrCodeUpdateInput', {
-  fields: (t) => ({
-    to: t.string({
-      required: false,
-      description:
-        'journey url where the QR code redirects to, will be parsed and stored as ids'
-    }),
-    color: t.string({ required: false }),
-    backgroundColor: t.string({ required: false })
-  })
-})
-
-// Define ShortLink interface for federation
 const ShortLink = builder
   .externalRef('ShortLink', builder.selection<{ id: string }>('id'))
   .implement({
@@ -55,7 +23,6 @@ const ShortLink = builder
     })
   })
 
-// Define QrCode object type
 const QrCodeRef = builder.prismaObject('QrCode', {
   fields: (t) => ({
     id: t.exposeID('id'),
@@ -75,7 +42,6 @@ const QrCodeRef = builder.prismaObject('QrCode', {
   })
 })
 
-// Helper functions
 async function fetchQrCodeWithAclIncludes(
   id: string
 ): Promise<QrCodeWithAcl | null> {
@@ -85,10 +51,8 @@ async function fetchQrCodeWithAclIncludes(
   })) as QrCodeWithAcl | null
 }
 
-// Initialize service
 const qrCodeService = new QrCodeService()
 
-// Queries
 builder.queryField('qrCode', (t) =>
   t.field({
     type: QrCodeRef,

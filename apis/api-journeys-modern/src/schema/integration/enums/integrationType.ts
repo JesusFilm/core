@@ -1,4 +1,4 @@
-import { IntegrationType as PrismaIntegrationType } from '.prisma/api-journeys-modern-client'
+import { IntegrationType as PrismaIntegrationType } from '@core/prisma/journeys/client'
 
 import { builder } from '../../builder'
 

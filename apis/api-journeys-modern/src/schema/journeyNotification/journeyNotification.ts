@@ -1,13 +1,11 @@
 import { GraphQLError } from 'graphql'
 
-import { JourneyNotification } from '.prisma/api-journeys-modern-client'
+import { prisma } from '@core/prisma/journeys/client'
 
-import { Action, ability, subject } from '../../lib/auth/ability'
-import { prisma } from '../../lib/prisma'
 import { builder } from '../builder'
-import { UserRef } from '../user/user'
 
-// Define JourneyNotification object type
+import { JourneyNotificationUpdateInput } from './inputs'
+
 const JourneyNotificationRef = builder.prismaObject('JourneyNotification', {
   fields: (t) => ({
     id: t.exposeID('id'),
@@ -21,17 +19,6 @@ const JourneyNotificationRef = builder.prismaObject('JourneyNotification', {
     userJourney: t.relation('userJourney', { nullable: true })
   })
 })
-
-// Input type for updating journey notifications
-const JourneyNotificationUpdateInput = builder.inputType(
-  'JourneyNotificationUpdateInput',
-  {
-    fields: (t) => ({
-      journeyId: t.id({ required: true }),
-      visitorInteractionEmail: t.boolean({ required: true })
-    })
-  }
-)
 
 // Helper function to check if user can manage journey notification
 function canManageJourneyNotification(

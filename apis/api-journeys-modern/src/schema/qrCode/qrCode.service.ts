@@ -2,11 +2,8 @@ import { ApolloClient, InMemoryCache, createHttpLink } from '@apollo/client'
 import { graphql } from 'gql.tada'
 import { GraphQLError } from 'graphql'
 
-import { QrCode } from '.prisma/api-journeys-modern-client'
+import { QrCode, prisma } from '@core/prisma/journeys/client'
 
-import { prisma } from '../../lib/prisma'
-
-// Apollo client for shortlink service interaction
 const httpLink = createHttpLink({
   uri: process.env.GATEWAY_URL,
   headers: {

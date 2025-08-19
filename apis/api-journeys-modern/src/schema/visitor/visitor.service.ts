@@ -1,9 +1,7 @@
 import isNil from 'lodash/isNil'
 import omitBy from 'lodash/omitBy'
 
-import { Prisma } from '.prisma/api-journeys-modern-client'
-
-import { prisma } from '../../lib/prisma'
+import { Prisma, prisma } from '@core/prisma/journeys/client'
 
 interface JourneyVisitorFilter {
   journeyId: string

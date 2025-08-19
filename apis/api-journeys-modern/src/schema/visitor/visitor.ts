@@ -2,25 +2,14 @@ import { GraphQLError } from 'graphql'
 import isNil from 'lodash/isNil'
 import omitBy from 'lodash/omitBy'
 
-import { Prisma } from '.prisma/api-journeys-modern-client'
+import { Prisma, prisma } from '@core/prisma/journeys/client'
 
-import { Action } from '../../lib/auth/ability'
-import { prisma } from '../../lib/prisma'
 import { builder } from '../builder'
 import { MessagePlatform } from '../enums'
 
 import { JourneyVisitorSort, VisitorStatus } from './enums'
-import {
-  JourneyVisitorFilter,
-  VisitorUpdateForCurrentUserInput,
-  VisitorUpdateInput
-} from './inputs'
+import { JourneyVisitorFilter, VisitorUpdateInput } from './inputs'
 import { UserAgentRef } from './types'
-// import { canAccessJourneyVisitors } from './visitor.acl'
-import { VisitorService } from './visitor.service'
-
-// Create service instance
-const visitorService = new VisitorService()
 
 // Define Visitor type using Prisma model
 const VisitorRef = builder.prismaObject('Visitor', {

@@ -1,19 +1,15 @@
 import { GraphQLError } from 'graphql'
-import omit from 'lodash/omit'
 
-import { UserInvite, UserJourneyRole } from '.prisma/api-journeys-modern-client'
+import {
+  UserInvite,
+  UserJourneyRole,
+  prisma
+} from '@core/prisma/journeys/client'
 
-import { prisma } from '../../lib/prisma'
 import { builder } from '../builder'
 
-// Define input types
-const UserInviteCreateInput = builder.inputType('UserInviteCreateInput', {
-  fields: (t) => ({
-    email: t.string({ required: true })
-  })
-})
+import { UserInviteCreateInput } from './inputs'
 
-// Define UserInvite object type
 const UserInviteRef = builder.prismaObject('UserInvite', {
   fields: (t) => ({
     id: t.exposeID('id'),

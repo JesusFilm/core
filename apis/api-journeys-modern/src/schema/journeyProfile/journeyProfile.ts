@@ -1,24 +1,11 @@
 import { GraphQLError } from 'graphql'
 
-import { JourneyProfile } from '.prisma/api-journeys-modern-client'
+import { JourneyProfile, prisma } from '@core/prisma/journeys/client'
 
-import { prisma } from '../../lib/prisma'
 import { builder } from '../builder'
 
-// Define input types
-const JourneyProfileUpdateInput = builder.inputType(
-  'JourneyProfileUpdateInput',
-  {
-    fields: (t) => ({
-      lastActiveTeamId: t.string({ required: false }),
-      journeyFlowBackButtonClicked: t.boolean({ required: false }),
-      plausibleJourneyFlowViewed: t.boolean({ required: false }),
-      plausibleDashboardViewed: t.boolean({ required: false })
-    })
-  }
-)
+import { JourneyProfileUpdateInput } from './inputs'
 
-// Define JourneyProfile object type
 const JourneyProfileRef = builder.prismaObject('JourneyProfile', {
   fields: (t) => ({
     id: t.exposeID('id'),

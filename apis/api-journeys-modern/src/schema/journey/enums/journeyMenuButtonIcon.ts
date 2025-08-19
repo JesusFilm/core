@@ -1,4 +1,4 @@
-import { JourneyMenuButtonIcon as PrismaJourneyMenuButtonIcon } from '.prisma/api-journeys-modern-client'
+import { JourneyMenuButtonIcon as PrismaJourneyMenuButtonIcon } from '@core/prisma/journeys/client'
 
 import { builder } from '../../builder'
 

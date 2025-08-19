@@ -1,2 +1,3 @@
 import './linkAction'
-import './inputs'
+
+export { LinkActionRef } from './linkAction'

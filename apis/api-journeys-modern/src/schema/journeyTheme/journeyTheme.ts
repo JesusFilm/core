@@ -1,18 +1,13 @@
 import { GraphQLError } from 'graphql'
 
-import { JourneyTheme } from '.prisma/api-journeys-modern-client'
+import { JourneyTheme, prisma } from '@core/prisma/journeys/client'
 
 import { Action } from '../../lib/auth/ability'
-import { prisma } from '../../lib/prisma'
 import { builder } from '../builder'
 
 import { JourneyThemeCreateInput, JourneyThemeUpdateInput } from './inputs'
 import { canAccessJourneyTheme } from './journeyTheme.acl'
 
-// Define input types
-// Input types are now imported from ./inputs/
-
-// Define JourneyTheme object type
 const JourneyThemeRef = builder.prismaObject('JourneyTheme', {
   fields: (t) => ({
     id: t.exposeID('id'),

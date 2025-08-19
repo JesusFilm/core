@@ -1,4 +1,4 @@
-import { UserTeamRole as PrismaUserTeamRole } from '.prisma/api-journeys-modern-client'
+import { UserTeamRole as PrismaUserTeamRole } from '@core/prisma/journeys/client'
 
 import { builder } from '../../builder'
 
