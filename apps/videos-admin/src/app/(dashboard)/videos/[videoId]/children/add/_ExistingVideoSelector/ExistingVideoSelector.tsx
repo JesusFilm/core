@@ -1,15 +1,16 @@
 'use client'
 
 import { useLazyQuery } from '@apollo/client'
-import Autocomplete from '@mui/material/Autocomplete'
+import Autocomplete, { createFilterOptions } from '@mui/material/Autocomplete'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import CircularProgress from '@mui/material/CircularProgress'
 import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
-import { graphql } from 'gql.tada'
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
+
+import { graphql } from '@core/shared/gql'
 
 const SEARCH_VIDEOS = graphql(`
   query SearchVideos($title: String!) {
@@ -33,6 +34,40 @@ interface VideoOption {
   title: string
 }
 
+/**
+ * Prepares a search term to improve match quality
+ * This normalizes spaces and adds wildcards for partial matching
+ */
+function prepareSearchTerm(term: string): string {
+  // Normalize consecutive spaces
+  const normalized = term.trim().replace(/\s+/g, ' ')
+
+  // For very short terms (1-2 chars), use as is
+  if (normalized.length <= 2) {
+    return normalized
+  }
+
+  // For longer terms, we want to support partial matching
+  // Split words and prepare each independently
+  const words = normalized.split(' ')
+
+  // If it's just one short word, return as is
+  if (words.length === 1 && words[0].length <= 3) {
+    return words[0]
+  }
+
+  // For multiple words or longer words, prepare search
+  if (words.length > 1) {
+    // If multiple words, each word should be searchable independently
+    return words.map((word) => word).join(' ')
+  }
+
+  // For a single longer word
+  return normalized
+}
+
+const filter = createFilterOptions<VideoOption>()
+
 export function ExistingVideoSelector({
   onSelect,
   onCancel
@@ -40,18 +75,39 @@ export function ExistingVideoSelector({
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedVideo, setSelectedVideo] = useState<VideoOption | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null)
 
   const [searchVideos, { loading, data }] = useLazyQuery(SEARCH_VIDEOS)
 
+  // Debounce search to avoid too many requests and improve search quality
   const handleInputChange = (
     _event: React.SyntheticEvent,
     value: string
   ): void => {
     setSearchTerm(value)
-    if (value.length >= 2) {
-      void searchVideos({ variables: { title: value } })
+
+    // Clear the previous timeout
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current)
     }
+
+    // Set a new timeout
+    timeoutRef.current = setTimeout(() => {
+      if (value.length >= 2) {
+        const searchValue = prepareSearchTerm(value)
+        void searchVideos({ variables: { title: searchValue } })
+      }
+    }, 300) // Debounce for 300ms
   }
+
+  // Clear timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current)
+      }
+    }
+  }, [])
 
   const handleSubmit = async (): Promise<void> => {
     if (selectedVideo) {
@@ -70,6 +126,20 @@ export function ExistingVideoSelector({
     }
   }
 
+  // Handle selection of a video option or input that's not in the options list
+  const handleChange = (
+    _event: React.SyntheticEvent,
+    newValue: VideoOption | null
+  ): void => {
+    if (newValue === null) {
+      setSelectedVideo(null)
+      return
+    }
+
+    setSelectedVideo(newValue)
+  }
+
+  // Process titles to make matching more visible
   const options: VideoOption[] =
     data?.adminVideos.map((video) => ({
       id: video.id,
@@ -78,14 +148,16 @@ export function ExistingVideoSelector({
 
   return (
     <Stack spacing={2} sx={{ p: 2 }}>
-      <Autocomplete
+      <Autocomplete<VideoOption, false, false, false>
         fullWidth
         options={options}
         loading={loading}
         onInputChange={handleInputChange}
-        onChange={(_event, newValue) => setSelectedVideo(newValue)}
-        getOptionLabel={(option) => option.title}
-        isOptionEqualToValue={(option, value) => option.id === value.id}
+        onChange={handleChange}
+        getOptionLabel={(option: VideoOption) => option.title}
+        isOptionEqualToValue={(option: VideoOption, value: VideoOption) =>
+          option.id === value.id
+        }
         renderInput={(params) => (
           <TextField
             {...params}
@@ -104,7 +176,7 @@ export function ExistingVideoSelector({
             }}
           />
         )}
-        renderOption={(props, option) => (
+        renderOption={(props, option: VideoOption) => (
           <Box component="li" {...props}>
             <Typography variant="body1">{option.title}</Typography>
             <Typography variant="caption" color="text.secondary" sx={{ ml: 1 }}>
@@ -115,8 +187,15 @@ export function ExistingVideoSelector({
         noOptionsText={
           searchTerm.length < 2
             ? 'Type at least 2 characters to search'
-            : 'No videos found'
+            : loading
+              ? 'Searching...'
+              : 'No videos found'
         }
+        filterOptions={(options, params) => {
+          const filtered = filter(options, params)
+          return filtered
+        }}
+        value={selectedVideo}
       />
       <Stack direction="row" sx={{ gap: 1, mt: 2 }}>
         <Button

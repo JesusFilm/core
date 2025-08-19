@@ -1,9 +1,11 @@
 import { gql } from '@apollo/client'
 import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
+import { useTheme } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 import { SxProps } from '@mui/system/styleFunctionSx'
 import { useFormikContext } from 'formik'
+import { useTranslation } from 'next-i18next'
 import { ReactElement, useEffect, useState } from 'react'
 
 import { TextResponseType } from '../../../__generated__/globalTypes'
@@ -55,7 +57,9 @@ export const TextResponse = ({
   type,
   required
 }: TextResponseProps): ReactElement => {
+  const { t } = useTranslation('libs-journeys-ui')
   const [value, setValue] = useState('')
+  const theme = useTheme()
 
   const formikContext = useFormikContext<{
     [key: string]: string
@@ -104,10 +108,12 @@ export const TextResponse = ({
           id={`textResponse-label-${blockId}`}
           variant="subtitle2"
           sx={{
-            fontSize: 14
+            fontSize: 14,
+            fontWeight: 500,
+            fontFamily: theme.typography.button.fontFamily
           }}
         >
-          {label.trim() === '' ? 'Label' : label}
+          {label.trim() === '' ? t('Label') : label}
           {(required ?? false) ? '*' : ''}
         </Typography>
         <TextField
@@ -136,7 +142,14 @@ export const TextResponse = ({
             },
             input: {
               sx: {
-                pt: 0
+                pt: 0,
+                fontSize: 16,
+                fontFamily: theme.typography.button.fontFamily
+              }
+            },
+            formHelperText: {
+              sx: {
+                fontFamily: theme.typography.button.fontFamily
               }
             }
           }}

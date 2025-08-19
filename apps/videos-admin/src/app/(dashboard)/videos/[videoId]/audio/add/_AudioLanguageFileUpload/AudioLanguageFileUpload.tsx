@@ -5,7 +5,7 @@ import Button from '@mui/material/Button'
 import LinearProgress from '@mui/material/LinearProgress'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
-import { ReactElement, useState } from 'react'
+import { ReactElement, useEffect, useState } from 'react'
 import { FileRejection, useDropzone } from 'react-dropzone'
 
 interface AudioLanguageFileUploadProps {
@@ -17,6 +17,7 @@ interface AudioLanguageFileUploadProps {
   processing?: boolean
   selectedFile?: File | null
   uploadProgress?: number
+  clearUploadState?: () => void
 }
 
 export function AudioLanguageFileUpload({
@@ -27,10 +28,20 @@ export function AudioLanguageFileUpload({
   uploading,
   processing,
   selectedFile,
-  uploadProgress = 0
+  uploadProgress = 0,
+  clearUploadState
 }: AudioLanguageFileUploadProps): ReactElement {
   const [fileRejected, setFileRejected] = useState(false)
   const [fileInvalidType, setFileInvalidType] = useState(false)
+
+  // Reset upload state when component unmounts
+  useEffect(() => {
+    return () => {
+      if (clearUploadState) {
+        clearUploadState()
+      }
+    }
+  }, [])
 
   const onDrop = async (): Promise<void> => {
     setFileRejected(false)

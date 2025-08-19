@@ -47,7 +47,8 @@ const blocks: Blocks[] = [
       parentBlockId: '84d742c8-9905-4b77-8987-99c08c04cde3',
       gtmEventName: null,
       url: 'https://www.google.com/'
-    }
+    },
+    settings: null
   },
   {
     __typename: 'ButtonBlock',
@@ -66,7 +67,8 @@ const blocks: Blocks[] = [
       parentBlockId: 'button2.id',
       gtmEventName: null,
       url: 'https://m.me/some_user'
-    }
+    },
+    settings: null
   },
   {
     __typename: 'ButtonBlock',
@@ -85,7 +87,8 @@ const blocks: Blocks[] = [
       parentBlockId: '84d742c8-9905-4b77-8987-99c08c04cde3',
       gtmEventName: null,
       url: 'https://www.bible.com/'
-    }
+    },
+    settings: null
   },
   {
     __typename: 'StepBlock',
@@ -105,7 +108,8 @@ const blocks: Blocks[] = [
     coverBlockId: '9caf671e-713e-492d-ac8a-b33e71fc5e18',
     themeMode: null,
     themeName: null,
-    fullscreen: false
+    fullscreen: false,
+    backdropBlur: null
   }
 ]
 
@@ -135,6 +139,7 @@ describe('Goals', () => {
     description: 'my cool journey',
     status: JourneyStatus.draft,
     createdAt: '2021-11-19T12:34:56.647Z',
+    updatedAt: '2021-11-19T12:34:56.647Z',
     publishedAt: null,
     blocks: [],
     primaryImageBlock: null,
@@ -155,7 +160,8 @@ describe('Goals', () => {
     displayTitle: null,
     logoImageBlock: null,
     menuButtonIcon: null,
-    menuStepBlock: null
+    menuStepBlock: null,
+    journeyTheme: null
   }
 
   it('should render placeholder', () => {

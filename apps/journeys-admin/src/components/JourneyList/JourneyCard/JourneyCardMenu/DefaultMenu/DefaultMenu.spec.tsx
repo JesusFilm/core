@@ -57,13 +57,17 @@ const currentUserMock = {
       me: {
         __typename: 'User',
         id: 'current-user-id',
-        email: 'current@example.com'
+        email: 'current@example.com',
+        lastName: 'userLastName',
+        firstName: 'userFirstName',
+        imageUrl: 'https://example.com/image.jpg'
       }
     }
   }
 }
 
-const teamWithManagerMock = {
+// Base team mock with manager role
+const baseTeamMock = {
   request: {
     query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS
   },
@@ -82,6 +86,9 @@ const teamWithManagerMock = {
               user: {
                 id: 'userId',
                 email: 'current@example.com',
+                lastName: 'userLastName',
+                firstName: 'userFirstName',
+                imageUrl: 'https://example.com/image.jpg',
                 __typename: 'User'
               },
               __typename: 'UserTeam'
@@ -99,38 +106,27 @@ const teamWithManagerMock = {
   }
 }
 
+// Team mock with manager role (for clarity)
+const teamWithManagerMock = baseTeamMock
+
+// Team mock with member role (override the role)
 const teamWithMemberMock = {
-  request: {
-    query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS
-  },
+  ...baseTeamMock,
   result: {
+    ...baseTeamMock.result,
     data: {
+      ...baseTeamMock.result.data,
       teams: [
         {
-          id: 'teamId',
-          title: 'Team Title',
-          publicTitle: null,
-          __typename: 'Team',
+          ...baseTeamMock.result.data.teams[0],
           userTeams: [
             {
-              id: 'userTeamId',
-              role: UserTeamRole.member,
-              user: {
-                id: 'userId',
-                email: 'current@example.com',
-                __typename: 'User'
-              },
-              __typename: 'UserTeam'
+              ...baseTeamMock.result.data.teams[0].userTeams[0],
+              role: UserTeamRole.member
             }
-          ],
-          customDomains: []
+          ]
         }
-      ],
-      getJourneyProfile: {
-        __typename: 'JourneyProfile',
-        id: 'journeyProfileId',
-        lastActiveTeamId: 'teamId'
-      }
+      ]
     }
   }
 }
@@ -165,10 +161,32 @@ const userRoleNonPublisherMock = {
   }
 }
 
+// Team mock for tests that need a non-manager user (for testing disabled Archive/Trash)
+const teamMockForNonManager = {
+  ...baseTeamMock,
+  result: {
+    ...baseTeamMock.result,
+    data: {
+      ...baseTeamMock.result.data,
+      teams: [
+        {
+          ...baseTeamMock.result.data.teams[0],
+          userTeams: [
+            {
+              ...baseTeamMock.result.data.teams[0].userTeams[0],
+              role: UserTeamRole.member
+            }
+          ]
+        }
+      ]
+    }
+  }
+}
+
 describe('DefaultMenu', () => {
-  it('should render menu for journey', () => {
+  it('should render menu for journey', async () => {
     const { getByRole } = render(
-      <MockedProvider>
+      <MockedProvider mocks={[teamWithManagerMock]}>
         <SnackbarProvider>
           <TeamProvider>
             <DefaultMenu
@@ -181,6 +199,7 @@ describe('DefaultMenu', () => {
               handleCloseMenu={noop}
               setOpenTrashDialog={noop}
               setOpenDetailsDialog={noop}
+              setOpenTranslateDialog={noop}
             />
           </TeamProvider>
         </SnackbarProvider>
@@ -189,35 +208,55 @@ describe('DefaultMenu', () => {
     expect(getByRole('menuitem', { name: 'Edit Details' })).toBeInTheDocument()
     expect(getByRole('menuitem', { name: 'Access' })).toBeInTheDocument()
     expect(getByRole('menuitem', { name: 'Preview' })).toBeInTheDocument()
+    expect(getByRole('menuitem', { name: 'Share' })).toBeInTheDocument()
+    await waitFor(() =>
+      expect(getByRole('menuitem', { name: 'Duplicate' })).toBeInTheDocument()
+    )
+    expect(getByRole('menuitem', { name: 'Translate' })).toBeInTheDocument()
     expect(getByRole('menuitem', { name: 'Copy to ...' })).toBeInTheDocument()
-    expect(getByRole('menuitem', { name: 'Archive' })).toBeInTheDocument()
+    await waitFor(() => {
+      expect(getByRole('menuitem', { name: 'Archive' })).toBeInTheDocument()
+    })
     expect(getByRole('menuitem', { name: 'Trash' })).toBeInTheDocument()
   })
 
-  it('should render menu for templates', () => {
+  it('should render menu for templates', async () => {
     const { queryByRole, getByRole } = render(
-      <MockedProvider>
+      <MockedProvider mocks={[teamWithManagerMock, userRolePublisherMock]}>
         <SnackbarProvider>
-          <DefaultMenu
-            id="template-id"
-            slug="template-slug"
-            status={JourneyStatus.published}
-            journeyId="template-id"
-            published
-            setOpenAccessDialog={noop}
-            handleCloseMenu={noop}
-            template
-            setOpenTrashDialog={noop}
-            setOpenDetailsDialog={noop}
-          />
+          <TeamProvider>
+            <DefaultMenu
+              id="template-id"
+              slug="template-slug"
+              status={JourneyStatus.published}
+              journeyId="template-id"
+              published
+              setOpenAccessDialog={noop}
+              handleCloseMenu={noop}
+              template
+              setOpenTrashDialog={noop}
+              setOpenDetailsDialog={noop}
+              setOpenTranslateDialog={noop}
+            />
+          </TeamProvider>
         </SnackbarProvider>
       </MockedProvider>
     )
+
     expect(getByRole('menuitem', { name: 'Edit Details' })).toBeInTheDocument()
     expect(getByRole('menuitem', { name: 'Preview' })).toBeInTheDocument()
-    expect(getByRole('menuitem', { name: 'Archive' })).toBeInTheDocument()
+    await waitFor(() => {
+      expect(getByRole('menuitem', { name: 'Archive' })).toBeInTheDocument()
+    })
+    expect(getByRole('menuitem', { name: 'Share' })).toBeInTheDocument()
     expect(getByRole('menuitem', { name: 'Trash' })).toBeInTheDocument()
     expect(queryByRole('menuitem', { name: 'Access' })).not.toBeInTheDocument()
+    expect(
+      queryByRole('menuitem', { name: 'Duplicate' })
+    ).not.toBeInTheDocument()
+    expect(
+      queryByRole('menuitem', { name: 'Translate' })
+    ).not.toBeInTheDocument()
     expect(queryByRole('menuitem', { name: 'Copy to' })).not.toBeInTheDocument()
   })
 
@@ -239,6 +278,7 @@ describe('DefaultMenu', () => {
               handleCloseMenu={handleCloseMenu}
               setOpenTrashDialog={noop}
               setOpenDetailsDialog={noop}
+              setOpenTranslateDialog={noop}
             />
           </TeamProvider>
         </SnackbarProvider>
@@ -266,6 +306,7 @@ describe('DefaultMenu', () => {
                 handleCloseMenu={noop}
                 setOpenTrashDialog={noop}
                 setOpenDetailsDialog={noop}
+                setOpenTranslateDialog={noop}
               />
             </TeamProvider>
           </MockedProvider>
@@ -304,6 +345,7 @@ describe('DefaultMenu', () => {
                 handleCloseMenu={noop}
                 setOpenTrashDialog={noop}
                 setOpenDetailsDialog={noop}
+                setOpenTranslateDialog={noop}
               />
             </TeamProvider>
           </MockedProvider>
@@ -324,12 +366,12 @@ describe('DefaultMenu', () => {
     )
   })
 
-  it('should call correct functions on Delete click', () => {
+  it('should call correct functions on Delete click', async () => {
     const handleCloseMenu = jest.fn()
     const setOpenTrashDialog = jest.fn()
 
     const { getByRole } = render(
-      <MockedProvider>
+      <MockedProvider mocks={[teamWithManagerMock]}>
         <SnackbarProvider>
           <TeamProvider>
             <DefaultMenu
@@ -342,13 +384,17 @@ describe('DefaultMenu', () => {
               handleCloseMenu={handleCloseMenu}
               setOpenTrashDialog={setOpenTrashDialog}
               setOpenDetailsDialog={noop}
+              setOpenTranslateDialog={noop}
             />
           </TeamProvider>
         </SnackbarProvider>
       </MockedProvider>
     )
 
-    fireEvent.click(getByRole('menuitem', { name: 'Trash' }))
+    await waitFor(() => {
+      fireEvent.click(getByRole('menuitem', { name: 'Trash' }))
+    })
+
     expect(setOpenTrashDialog).toHaveBeenCalled()
     expect(handleCloseMenu).toHaveBeenCalled()
   })
@@ -365,7 +411,8 @@ describe('DefaultMenu', () => {
           role: UserJourneyRole.owner,
           user: {
             __typename: 'User',
-            id: 'current-user-id'
+            id: 'current-user-id',
+            email: 'current@example.com'
           }
         }
       ]
@@ -378,14 +425,14 @@ describe('DefaultMenu', () => {
       },
       result: {
         data: {
-          journey: journeyData
+          adminJourney: journeyData
         }
       }
     }
 
     const { getByRole } = render(
       <MockedProvider
-        mocks={[currentUserMock, journeyMock, teamWithMemberMock]}
+        mocks={[currentUserMock, journeyMock, teamWithManagerMock]}
       >
         <SnackbarProvider>
           <TeamProvider>
@@ -399,6 +446,7 @@ describe('DefaultMenu', () => {
               handleCloseMenu={noop}
               setOpenTrashDialog={noop}
               setOpenDetailsDialog={noop}
+              setOpenTranslateDialog={noop}
             />
           </TeamProvider>
         </SnackbarProvider>
@@ -440,7 +488,7 @@ describe('DefaultMenu', () => {
       },
       result: {
         data: {
-          journey: journeyData
+          adminJourney: journeyData
         }
       }
     }
@@ -461,6 +509,7 @@ describe('DefaultMenu', () => {
               handleCloseMenu={noop}
               setOpenTrashDialog={noop}
               setOpenDetailsDialog={noop}
+              setOpenTranslateDialog={noop}
             />
           </TeamProvider>
         </SnackbarProvider>
@@ -502,7 +551,7 @@ describe('DefaultMenu', () => {
       },
       result: {
         data: {
-          journey: journeyData
+          adminJourney: journeyData
         }
       }
     }
@@ -523,6 +572,7 @@ describe('DefaultMenu', () => {
               handleCloseMenu={noop}
               setOpenTrashDialog={noop}
               setOpenDetailsDialog={noop}
+              setOpenTranslateDialog={noop}
             />
           </TeamProvider>
         </SnackbarProvider>
@@ -566,7 +616,7 @@ describe('DefaultMenu', () => {
       },
       result: {
         data: {
-          journey: journeyData
+          adminJourney: journeyData
         }
       }
     }
@@ -587,6 +637,7 @@ describe('DefaultMenu', () => {
               handleCloseMenu={noop}
               setOpenTrashDialog={noop}
               setOpenDetailsDialog={noop}
+              setOpenTranslateDialog={noop}
             />
           </TeamProvider>
         </SnackbarProvider>
@@ -621,28 +672,36 @@ describe('DefaultMenu', () => {
       },
       result: {
         data: {
-          journey: templateData
+          adminJourney: templateData
         }
       }
     }
 
     const { getByRole } = render(
       <MockedProvider
-        mocks={[userRolePublisherMock, journeyMock, currentUserMock]}
+        mocks={[
+          userRolePublisherMock,
+          journeyMock,
+          currentUserMock,
+          teamWithManagerMock
+        ]}
       >
         <SnackbarProvider>
-          <DefaultMenu
-            id="template-id"
-            slug="template-slug"
-            status={JourneyStatus.published}
-            journeyId="template-id"
-            published
-            setOpenAccessDialog={noop}
-            handleCloseMenu={noop}
-            template
-            setOpenTrashDialog={noop}
-            setOpenDetailsDialog={noop}
-          />
+          <TeamProvider>
+            <DefaultMenu
+              id="template-id"
+              slug="template-slug"
+              status={JourneyStatus.published}
+              journeyId="template-id"
+              published
+              setOpenAccessDialog={noop}
+              handleCloseMenu={noop}
+              template
+              setOpenTrashDialog={noop}
+              setOpenDetailsDialog={noop}
+              setOpenTranslateDialog={noop}
+            />
+          </TeamProvider>
         </SnackbarProvider>
       </MockedProvider>
     )
@@ -672,28 +731,36 @@ describe('DefaultMenu', () => {
       },
       result: {
         data: {
-          journey: journeyData
+          adminJourney: journeyData
         }
       }
     }
 
     const { getByRole } = render(
       <MockedProvider
-        mocks={[userRolePublisherMock, journeyMock, currentUserMock]}
+        mocks={[
+          userRolePublisherMock,
+          journeyMock,
+          currentUserMock,
+          teamMockForNonManager
+        ]}
       >
         <SnackbarProvider>
-          <DefaultMenu
-            id="journey-id"
-            slug="journey-slug"
-            status={JourneyStatus.published}
-            journeyId="journey-id"
-            published
-            setOpenAccessDialog={noop}
-            handleCloseMenu={noop}
-            template={false}
-            setOpenTrashDialog={noop}
-            setOpenDetailsDialog={noop}
-          />
+          <TeamProvider>
+            <DefaultMenu
+              id="journey-id"
+              slug="journey-slug"
+              status={JourneyStatus.published}
+              journeyId="journey-id"
+              published
+              setOpenAccessDialog={noop}
+              handleCloseMenu={noop}
+              template={false}
+              setOpenTrashDialog={noop}
+              setOpenDetailsDialog={noop}
+              setOpenTranslateDialog={noop}
+            />
+          </TeamProvider>
         </SnackbarProvider>
       </MockedProvider>
     )
@@ -725,28 +792,36 @@ describe('DefaultMenu', () => {
       },
       result: {
         data: {
-          journey: templateData
+          adminJourney: templateData
         }
       }
     }
 
     const { getByRole } = render(
       <MockedProvider
-        mocks={[userRoleNonPublisherMock, journeyMock, currentUserMock]}
+        mocks={[
+          userRoleNonPublisherMock,
+          journeyMock,
+          currentUserMock,
+          teamMockForNonManager
+        ]}
       >
         <SnackbarProvider>
-          <DefaultMenu
-            id="template-id"
-            slug="template-slug"
-            status={JourneyStatus.published}
-            journeyId="template-id"
-            published
-            setOpenAccessDialog={noop}
-            handleCloseMenu={noop}
-            template
-            setOpenTrashDialog={noop}
-            setOpenDetailsDialog={noop}
-          />
+          <TeamProvider>
+            <DefaultMenu
+              id="template-id"
+              slug="template-slug"
+              status={JourneyStatus.published}
+              journeyId="template-id"
+              published
+              setOpenAccessDialog={noop}
+              handleCloseMenu={noop}
+              template
+              setOpenTrashDialog={noop}
+              setOpenDetailsDialog={noop}
+              setOpenTranslateDialog={noop}
+            />
+          </TeamProvider>
         </SnackbarProvider>
       </MockedProvider>
     )
@@ -788,7 +863,7 @@ describe('DefaultMenu', () => {
       },
       result: {
         data: {
-          journey: journeyData
+          adminJourney: journeyData
         }
       }
     }
@@ -814,6 +889,7 @@ describe('DefaultMenu', () => {
               handleCloseMenu={noop}
               setOpenTrashDialog={noop}
               setOpenDetailsDialog={noop}
+              setOpenTranslateDialog={noop}
             />
           </TeamProvider>
         </SnackbarProvider>
@@ -831,5 +907,37 @@ describe('DefaultMenu', () => {
         'true'
       )
     })
+  })
+
+  it('should call correct functions on Translate click', async () => {
+    const setOpenTranslateDialog = jest.fn()
+    const handleCloseMenu = jest.fn()
+
+    const { getByRole } = render(
+      <MockedProvider mocks={[teamWithManagerMock]}>
+        <SnackbarProvider>
+          <TeamProvider>
+            <DefaultMenu
+              id="journey-id"
+              slug="journey-slug"
+              status={JourneyStatus.draft}
+              journeyId="journey-id"
+              published={false}
+              setOpenAccessDialog={noop}
+              handleCloseMenu={handleCloseMenu}
+              setOpenTrashDialog={noop}
+              setOpenDetailsDialog={noop}
+              setOpenTranslateDialog={setOpenTranslateDialog}
+            />
+          </TeamProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    await waitFor(() => {
+      fireEvent.click(getByRole('menuitem', { name: 'Translate' }))
+    })
+    expect(setOpenTranslateDialog).toHaveBeenCalled()
+    expect(handleCloseMenu).toHaveBeenCalled()
   })
 })

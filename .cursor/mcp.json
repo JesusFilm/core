@@ -1,7 +1,7 @@
 {
   "mcpServers": {
     "nx-mcp": {
-      "command": "npx nx-mcp"
+      "url": "http://localhost:9747/sse"
     }
   }
 }

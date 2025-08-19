@@ -1,6 +1,6 @@
 import type { Logger } from 'pino'
 
-import { Video } from '.prisma/api-media-client'
+import { Video } from '@core/prisma/media/client'
 
 import { prismaMock } from '../../../../../test/prismaMock'
 import { processFile } from '../../importer'
@@ -23,7 +23,11 @@ const testVideo: Video = {
   noIndex: false,
   childIds: [],
   locked: false,
-  availableLanguages: ['529']
+  availableLanguages: ['529'],
+  originId: null,
+  restrictDownloadPlatforms: [],
+  restrictViewPlatforms: [],
+  publishedAt: null
 }
 
 const testTranslation: ProcessedTranslation = {

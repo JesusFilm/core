@@ -1,4 +1,4 @@
-import { Prisma, Team } from '.prisma/api-journeys-client'
+import { Prisma, Team } from '@core/prisma/journeys/client'
 import { User } from '@core/yoga/firebaseClient'
 
 export type ApiJourneysJob =
@@ -74,4 +74,10 @@ export interface VerifyUserJob {
   email: string
   token: string
   redirect: string | undefined
+}
+
+export interface RevalidateJob {
+  slug: string
+  hostname?: string
+  fbReScrape?: boolean
 }

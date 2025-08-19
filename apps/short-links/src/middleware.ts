@@ -18,38 +18,22 @@ export function middleware(request: NextRequest) {
   const hostname = request.nextUrl.hostname
   const pathname = request.nextUrl.pathname
 
-  if (
-    pathname.startsWith('/hls/') ||
-    pathname.startsWith('/dl/') ||
-    pathname.startsWith('/dh/') ||
-    pathname.startsWith('/s/')
-  ) {
-    const parts = pathname.split('/')
-    if (parts.length !== 4) {
-      return new NextResponse('Invalid URL format', { status: 400 })
-    }
+  let baseUrl = ''
+  if (hostname === 'arc.gt' || hostname === 'core.arc.gt') {
+    baseUrl = 'https://api.arclight.org'
+  } else if (hostname === 'stg.arc.gt') {
+    baseUrl = 'https://core-stage.arclight.org'
+  }
 
-    const [, type, param1, param2] = parts
-
-    switch (type) {
-      case 'hls':
-        return NextResponse.redirect(
-          `https://api.arclight.org/hls/${param1}/${param2}`,
-          307
-        )
-      case 'dl':
-        return NextResponse.redirect(
-          `https://api.arclight.org/dl/${param1}/${param2}`
-        )
-      case 'dh':
-        return NextResponse.redirect(
-          `https://api.arclight.org/dh/${param1}/${param2}`
-        )
-      case 's':
-        return NextResponse.redirect(
-          `https://api.arclight.org/s/${param1}/${param2}`
-        )
-    }
+  // Redirect all requests for arc.gt and stg.arc.gt
+  if (baseUrl !== '') {
+    const redirectUrl = `${baseUrl}${pathname}${request.nextUrl.search}`
+    const response = NextResponse.redirect(redirectUrl, 302)
+    response.headers.set('Access-Control-Allow-Origin', '*')
+    response.headers.set('Access-Control-Allow-Methods', 'GET, OPTIONS')
+    response.headers.set('Access-Control-Allow-Headers', '*')
+    response.headers.set('Access-Control-Expose-Headers', '*')
+    return response
   }
 
   const url = new URL(`/${hostname}${pathname}`, request.url)

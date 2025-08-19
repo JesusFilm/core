@@ -3,11 +3,12 @@ import { useMutation, useSuspenseQuery } from '@apollo/client'
 import Divider from '@mui/material/Divider'
 import Stack from '@mui/material/Stack'
 import { Form, Formik, FormikProps, FormikValues } from 'formik'
-import { graphql } from 'gql.tada'
 import _unescape from 'lodash/unescape'
 import { useSnackbar } from 'notistack'
-import { ReactElement } from 'react'
+import { ReactElement, useEffect, useState } from 'react'
 import { object, string } from 'yup'
+
+import { graphql } from '@core/shared/gql'
 
 import { CancelButton } from '../../../../../components/CancelButton'
 import { ResizableTextField } from '../../../../../components/ResizableTextField'
@@ -50,8 +51,40 @@ interface VideoSnippetProps {
 
 export function VideoSnippet({ videoId }: VideoSnippetProps): ReactElement {
   const { enqueueSnackbar } = useSnackbar()
-  const [createVideoSnippet] = useMutation(CREATE_VIDEO_SNIPPET)
-  const [updateVideoSnippet] = useMutation(UPDATE_VIDEO_SNIPPET)
+  const [createdSnippetId, setCreatedSnippetId] = useState<string | null>(null)
+  const [createVideoSnippet] = useMutation(CREATE_VIDEO_SNIPPET, {
+    refetchQueries: [
+      {
+        query: GET_VIDEO_SNIPPET,
+        variables: { videoId, languageId: DEFAULT_VIDEO_LANGUAGE_ID }
+      }
+    ],
+    update(cache, { data: mutationData }) {
+      if (!mutationData?.videoSnippetCreate) return
+      const existing = cache.readQuery({
+        query: GET_VIDEO_SNIPPET,
+        variables: { videoId, languageId: DEFAULT_VIDEO_LANGUAGE_ID }
+      })
+      cache.writeQuery({
+        query: GET_VIDEO_SNIPPET,
+        variables: { videoId, languageId: DEFAULT_VIDEO_LANGUAGE_ID },
+        data: {
+          adminVideo: {
+            ...existing?.adminVideo,
+            snippet: [mutationData.videoSnippetCreate]
+          }
+        }
+      })
+    }
+  })
+  const [updateVideoSnippet] = useMutation(UPDATE_VIDEO_SNIPPET, {
+    refetchQueries: [
+      {
+        query: GET_VIDEO_SNIPPET,
+        variables: { videoId, languageId: DEFAULT_VIDEO_LANGUAGE_ID }
+      }
+    ]
+  })
 
   const validationSchema = object().shape({
     snippet: string().required('Snippet is required')
@@ -60,12 +93,19 @@ export function VideoSnippet({ videoId }: VideoSnippetProps): ReactElement {
   const { data } = useSuspenseQuery(GET_VIDEO_SNIPPET, {
     variables: { videoId, languageId: DEFAULT_VIDEO_LANGUAGE_ID }
   })
+  const snippets = data?.adminVideo.snippet
+  // If the query data is in sync, clear the local createdSnippetId
+  useEffect(() => {
+    if (createdSnippetId && snippets.length > 0) {
+      setCreatedSnippetId(null)
+    }
+  }, [createdSnippetId, snippets])
 
   async function handleUpdateVideoSnippet(
     values: FormikValues,
     { resetForm }: FormikProps<FormikValues>
   ): Promise<void> {
-    if (data?.adminVideo.snippet.length === 0) {
+    if (snippets.length === 0 && !createdSnippetId) {
       await createVideoSnippet({
         variables: {
           input: {
@@ -75,10 +115,12 @@ export function VideoSnippet({ videoId }: VideoSnippetProps): ReactElement {
             languageId: DEFAULT_VIDEO_LANGUAGE_ID
           }
         },
-        onCompleted: () => {
+        onCompleted: (mutationData) => {
           enqueueSnackbar('Video short description created', {
             variant: 'success'
           })
+          resetForm({ values })
+          setCreatedSnippetId(mutationData?.videoSnippetCreate?.id ?? null)
         },
         onError: () => {
           enqueueSnackbar('Failed to create video short description', {
@@ -87,10 +129,17 @@ export function VideoSnippet({ videoId }: VideoSnippetProps): ReactElement {
         }
       })
     } else {
+      const updateId = snippets[0]?.id || createdSnippetId
+      if (!updateId) {
+        enqueueSnackbar('No snippet ID available for update', {
+          variant: 'error'
+        })
+        return
+      }
       await updateVideoSnippet({
         variables: {
           input: {
-            id: data?.adminVideo.snippet[0].id,
+            id: updateId,
             value: values.snippet
           }
         },
@@ -142,6 +191,8 @@ export function VideoSnippet({ videoId }: VideoSnippetProps): ReactElement {
               helperText={errors.snippet as string}
               minRows={6}
               maxRows={6}
+              spellCheck={true}
+              placeholder="Please enter a short description, up to 160 characters."
             />
             <Divider sx={{ mx: -4 }} />
             <Stack direction="row" justifyContent="flex-end" gap={1}>

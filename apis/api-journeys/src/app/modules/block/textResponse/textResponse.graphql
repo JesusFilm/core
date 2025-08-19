@@ -1,16 +1,16 @@
-type TextResponseBlock implements Block {
-  id: ID!
-  journeyId: ID!
-  parentBlockId: ID
-  parentOrder: Int
-  label: String!
-  placeholder: String
-  required: Boolean
-  hint: String
-  minRows: Int
-  type: TextResponseType
-  routeId: String
-  integrationId: String
+type TextResponseBlock implements Block @shareable {
+  id: ID! @shareable
+  journeyId: ID! @shareable
+  parentBlockId: ID @shareable
+  parentOrder: Int @shareable
+  label: String! @shareable
+  placeholder: String @shareable
+  required: Boolean @shareable
+  hint: String @shareable
+  minRows: Int @shareable
+  type: TextResponseType @shareable
+  routeId: String @shareable
+  integrationId: String @shareable
 }
 
 enum TextResponseType {
@@ -26,6 +26,7 @@ input TextResponseBlockCreateInput {
   parentBlockId: ID!
   label: String!
 }
+
 input TextResponseBlockUpdateInput {
   parentBlockId: ID
   label: String
@@ -37,6 +38,7 @@ input TextResponseBlockUpdateInput {
   type: TextResponseType
   integrationId: String
 }
+
 extend type Mutation {
   textResponseBlockCreate(
     input: TextResponseBlockCreateInput!

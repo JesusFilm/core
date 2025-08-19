@@ -1,7 +1,7 @@
 import { subject } from '@casl/ability'
 import { Test, TestingModule } from '@nestjs/testing'
 
-import { Integration } from '.prisma/api-journeys-client'
+import { Integration } from '@core/prisma/journeys/client'
 
 import { UserTeamRole } from '../../__generated__/graphql'
 import { Action, AppAbility, AppCaslFactory } from '../../lib/casl/caslFactory'

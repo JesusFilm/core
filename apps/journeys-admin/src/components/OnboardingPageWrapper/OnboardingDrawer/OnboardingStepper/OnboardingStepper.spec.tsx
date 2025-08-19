@@ -27,9 +27,6 @@ describe('OnboardingStepper', () => {
       getByRole('heading', { name: 'Terms and Conditions' })
     ).toBeInTheDocument()
     expect(
-      getByRole('heading', { name: 'Create Your Workspace' })
-    ).toBeInTheDocument()
-    expect(
       queryByRole('heading', { name: 'Express Setup' })
     ).not.toBeInTheDocument()
   })

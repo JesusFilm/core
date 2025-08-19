@@ -10,20 +10,10 @@ export async function cli(argv = process.argv): Promise<void> {
   let queue: Queue, jobName: string, queueName: string
 
   switch (argv[2]) {
-    case 'algolia': {
+    case 'video-children': {
       const config = await import(
-        /* webpackChunkName: "algolia" */
-        './algolia'
-      )
-      queueName = config.queueName
-      jobName = config.jobName
-      queue = new Queue(queueName, { connection })
-      break
-    }
-    case 'big-query': {
-      const config = await import(
-        /* webpackChunkName: "big-query" */
-        './bigQuery'
+        /* webpackChunkName: "video-children" */
+        './videoChildren'
       )
       queueName = config.queueName
       jobName = config.jobName
@@ -64,6 +54,26 @@ export async function cli(argv = process.argv): Promise<void> {
       const config = await import(
         /* webpackChunkName: "data-export" */
         './dataExport'
+      )
+      queueName = config.queueName
+      jobName = config.jobName
+      queue = new Queue(queueName, { connection })
+      break
+    }
+    case 'process-video-downloads': {
+      const config = await import(
+        /* webpackChunkName: "process-video-downloads" */
+        './processVideoDownloads'
+      )
+      queueName = config.queueName
+      jobName = config.jobName
+      queue = new Queue(queueName, { connection })
+      break
+    }
+    case 'populate-crowdin-ids': {
+      const config = await import(
+        /* webpackChunkName: "populate-crowdin-ids" */
+        './crowdin/importers/populateCrowdinIds'
       )
       queueName = config.queueName
       jobName = config.jobName

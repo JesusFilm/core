@@ -34,7 +34,7 @@ input ButtonClickEventCreateInput {
   actionValue: String
 }
 
-type ButtonClickEvent implements Event {
+type ButtonClickEvent implements Event @shareable {
   id: ID!
   """
   ID of the journey that the buttonBlock belongs to
@@ -117,7 +117,7 @@ input ChatOpenEventCreateInput {
   value: MessagePlatform
 }
 
-type ChatOpenEvent implements Event {
+type ChatOpenEvent implements Event @shareable {
   id: ID!
   """
   ID of the journey that the buttonBlock belongs to

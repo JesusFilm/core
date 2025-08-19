@@ -4,10 +4,11 @@ import Divider from '@mui/material/Divider'
 import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
 import { Form, Formik, FormikProps, FormikValues } from 'formik'
-import { graphql } from 'gql.tada'
 import { useSnackbar } from 'notistack'
-import { ReactElement } from 'react'
+import { ReactElement, useEffect, useState } from 'react'
 import { object, string } from 'yup'
+
+import { graphql } from '@core/shared/gql'
 
 import { CancelButton } from '../../../../../components/CancelButton'
 import { SaveButton } from '../../../../../components/SaveButton'
@@ -49,9 +50,49 @@ interface VideoImageAltProps {
 
 export function VideoImageAlt({ videoId }: VideoImageAltProps): ReactElement {
   const { enqueueSnackbar } = useSnackbar()
+  const [createdImageAltId, setCreatedImageAltId] = useState<string | null>(
+    null
+  )
 
-  const [createVideoImageAlt] = useMutation(CREATE_VIDEO_IMAGE_ALT)
-  const [updateVideoImageAlt] = useMutation(UPDATE_VIDEO_IMAGE_ALT)
+  const [createVideoImageAlt] = useMutation(CREATE_VIDEO_IMAGE_ALT, {
+    refetchQueries: [
+      {
+        query: GET_VIDEO_IMAGE_ALT,
+        variables: {
+          id: videoId,
+          languageId: DEFAULT_VIDEO_LANGUAGE_ID
+        }
+      }
+    ],
+    update(cache, { data: mutationData }) {
+      if (!mutationData?.videoImageAltCreate) return
+      const existing = cache.readQuery({
+        query: GET_VIDEO_IMAGE_ALT,
+        variables: { id: videoId, languageId: DEFAULT_VIDEO_LANGUAGE_ID }
+      })
+      cache.writeQuery({
+        query: GET_VIDEO_IMAGE_ALT,
+        variables: { id: videoId, languageId: DEFAULT_VIDEO_LANGUAGE_ID },
+        data: {
+          adminVideo: {
+            ...existing?.adminVideo,
+            imageAlt: [mutationData.videoImageAltCreate]
+          }
+        }
+      })
+    }
+  })
+  const [updateVideoImageAlt] = useMutation(UPDATE_VIDEO_IMAGE_ALT, {
+    refetchQueries: [
+      {
+        query: GET_VIDEO_IMAGE_ALT,
+        variables: {
+          id: videoId,
+          languageId: DEFAULT_VIDEO_LANGUAGE_ID
+        }
+      }
+    ]
+  })
 
   const validationSchema = object().shape({
     imageAlt: string().trim().required('Image Alt is required')
@@ -63,12 +104,19 @@ export function VideoImageAlt({ videoId }: VideoImageAltProps): ReactElement {
       languageId: DEFAULT_VIDEO_LANGUAGE_ID
     }
   })
+  const imageAlts = data.adminVideo.imageAlt
+  // If the query data is in sync, clear the local createdImageAltId
+  useEffect(() => {
+    if (createdImageAltId && imageAlts.length > 0) {
+      setCreatedImageAltId(null)
+    }
+  }, [createdImageAltId, imageAlts])
 
   async function handleUpdateVideoImageAlt(
     values: FormikValues,
     { resetForm }: FormikProps<FormikValues>
   ): Promise<void> {
-    if (data.adminVideo.imageAlt.length === 0) {
+    if (imageAlts.length === 0 && !createdImageAltId) {
       await createVideoImageAlt({
         variables: {
           input: {
@@ -78,11 +126,12 @@ export function VideoImageAlt({ videoId }: VideoImageAltProps): ReactElement {
             languageId: DEFAULT_VIDEO_LANGUAGE_ID
           }
         },
-        onCompleted: () => {
+        onCompleted: (mutationData) => {
           enqueueSnackbar('Video image alt created', {
             variant: 'success'
           })
           resetForm({ values })
+          setCreatedImageAltId(mutationData?.videoImageAltCreate?.id ?? null)
         },
         onError: () => {
           enqueueSnackbar('Failed to create video image alt', {
@@ -91,10 +140,17 @@ export function VideoImageAlt({ videoId }: VideoImageAltProps): ReactElement {
         }
       })
     } else {
+      const updateId = imageAlts[0]?.id || createdImageAltId
+      if (!updateId) {
+        enqueueSnackbar('No image alt ID available for update', {
+          variant: 'error'
+        })
+        return
+      }
       await updateVideoImageAlt({
         variables: {
           input: {
-            id: data.adminVideo.imageAlt[0].id,
+            id: updateId,
             value: values.imageAlt
           }
         },
@@ -102,6 +158,7 @@ export function VideoImageAlt({ videoId }: VideoImageAltProps): ReactElement {
           enqueueSnackbar('Video image alt updated', {
             variant: 'success'
           })
+          resetForm({ values })
         },
         onError: () => {
           enqueueSnackbar('Failed to update video image alt', {
@@ -135,13 +192,15 @@ export function VideoImageAlt({ videoId }: VideoImageAltProps): ReactElement {
               <TextField
                 id="imageAlt"
                 name="imageAlt"
-                label="Image Alt"
+                label="Image Accessibility Text"
                 fullWidth
                 value={values.imageAlt}
                 variant="outlined"
                 error={Boolean(errors.imageAlt)}
                 onChange={handleChange}
                 helperText={errors.imageAlt as string}
+                spellCheck={true}
+                placeholder="Please enter a short image description, up to 160 characters."
               />
             </Stack>
             <Divider sx={{ mx: -4 }} />

@@ -1,0 +1,525 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider        = "prisma-client-js"
+  output          = env("PRISMA_LOCATION_MEDIA")
+  binaryTargets   = ["native", "linux-musl-openssl-3.0.x"]
+  previewFeatures = ["fullTextSearchPostgres"]
+}
+
+generator pothos {
+  provider     = "prisma-pothos-types"
+  clientOutput = ".prisma/api-media-client"
+  output       = "../src/__generated__/pothos-types.ts"
+}
+
+generator erd {
+  provider    = "prisma-erd-generator"
+  ignoreEnums = true
+  disabled    = true
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("PG_DATABASE_URL_MEDIA")
+}
+
+enum ImageAspectRatio {
+  hd // 16:9
+  banner // 2.13:1
+}
+
+model CloudflareImage {
+  id          String            @id @default(uuid())
+  uploadUrl   String?
+  userId      String
+  createdAt   DateTime          @default(now())
+  uploaded    Boolean           @default(false)
+  updatedAt   DateTime          @default(now()) @updatedAt
+  aspectRatio ImageAspectRatio?
+  videoId     String?
+  video       Video?            @relation(fields: [videoId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model MuxVideo {
+  id            String         @id @default(uuid())
+  playbackId    String?        @unique
+  uploadUrl     String?
+  uploadId      String?        @unique
+  assetId       String?        @unique
+  userId        String
+  name          String?
+  duration      Int            @default(0)
+  downloadable  Boolean        @default(false)
+  createdAt     DateTime       @default(now())
+  readyToStream Boolean        @default(false)
+  updatedAt     DateTime       @default(now()) @updatedAt
+  videoVariants VideoVariant[]
+
+  @@index(userId(type: Hash))
+  @@index(assetId(type: Hash))
+}
+
+model CloudflareR2 {
+  id                    String                 @id @default(uuid())
+  fileName              String
+  originalFilename      String?
+  uploadUrl             String?
+  userId                String
+  publicUrl             String?
+  videoId               String?
+  contentType           String                 @default("application/octet-stream")
+  contentLength         Int                    @default(0)
+  createdAt             DateTime               @default(now())
+  updatedAt             DateTime               @default(now()) @updatedAt
+  video                 Video?                 @relation(fields: [videoId], references: [id])
+  videoVariant          VideoVariant?
+  videoVariantDownloads VideoVariantDownload[]
+  videoSubtitleSrt      VideoSubtitle?         @relation("SrtAsset")
+  videoSubtitleVtt      VideoSubtitle?         @relation("VttAsset")
+
+  @@index(videoId(type: Hash))
+  @@index(userId(type: Hash))
+}
+
+enum IdType {
+  databaseId
+  slug
+}
+
+enum Platform {
+  arclight
+  journeys
+  watch
+}
+
+enum VideoLabel {
+  collection
+  episode
+  featureFilm
+  segment
+  series
+  shortFilm
+  trailer
+  behindTheScenes
+}
+
+model Video {
+  id                        String               @id @default(uuid())
+  label                     VideoLabel
+  primaryLanguageId         String
+  published                 Boolean              @default(true)
+  title                     VideoTitle[]
+  snippet                   VideoSnippet[]
+  description               VideoDescription[]
+  studyQuestions            VideoStudyQuestion[]
+  imageAlt                  VideoImageAlt[]
+  slug                      String?              @unique
+  noIndex                   Boolean?
+  childIds                  String[] // needed for child sort order
+  locked                    Boolean              @default(false)
+  subtitles                 VideoSubtitle[]
+  children                  Video[]              @relation("ParentChild")
+  parents                   Video[]              @relation("ParentChild")
+  variants                  VideoVariant[]
+  bibleCitation             BibleCitation[]
+  keywords                  Keyword[]            @relation("VideoToKeyword")
+  images                    CloudflareImage[]
+  cloudflareAssets          CloudflareR2[]
+  videoEditions             VideoEdition[]
+  availableLanguages        String[]
+  origin                    VideoOrigin?         @relation(fields: [originId], references: [id])
+  originId                  String?
+  restrictDownloadPlatforms Platform[]           @default([])
+  restrictViewPlatforms     Platform[]           @default([])
+  publishedAt               DateTime?
+
+  @@index(label)
+  @@index(childIds)
+  @@index(published(type: Hash))
+  @@index(originId(type: Hash))
+}
+
+model VideoTitle {
+  id         String  @id @default(uuid())
+  value      String
+  languageId String
+  primary    Boolean
+  crowdInId  String?
+  videoId    String
+  video      Video   @relation(fields: [videoId], references: [id], onDelete: Cascade)
+
+  @@unique([videoId, languageId])
+  @@index(value(type: Hash))
+  @@index(primary(type: Hash))
+  @@index(languageId(type: Hash))
+}
+
+enum VideoVariantDownloadQuality {
+  distroLow // transcoded 2x0p for distribution centers
+  distroSd // transcoded 360p for distribution centers
+  distroHigh // transcoded 720p for distribution centers
+  low // mux 2x0p
+  sd // mux 360p
+  high // mux 720p  
+  fhd // mux 1080p
+  qhd // mux 1440p
+  uhd // mux 2160p
+  highest // higest available quality,
+}
+
+model VideoVariantDownload {
+  id             String                      @id @default(uuid())
+  quality        VideoVariantDownloadQuality
+  size           Float?
+  height         Int?
+  width          Int?
+  bitrate        Int?
+  version        Int                         @default(1)
+  url            String
+  assetId        String?
+  asset          CloudflareR2?               @relation(fields: [assetId], references: [id])
+  videoVariantId String?
+  videoVariant   VideoVariant?               @relation(fields: [videoVariantId], references: [id], onDelete: Cascade)
+
+  @@unique([quality, videoVariantId])
+  @@index(videoVariantId(type: Hash))
+}
+
+model VideoVariant {
+  id                   String                 @id
+  hls                  String?
+  dash                 String?
+  share                String?
+  downloadable         Boolean                @default(true)
+  downloads            VideoVariantDownload[]
+  duration             Int?
+  lengthInMilliseconds Int?
+  languageId           String
+  masterUrl            String?
+  masterWidth          Int?
+  masterHeight         Int?
+  published            Boolean                @default(true)
+  version              Int                    @default(1)
+  edition              String                 @default("base")
+  videoEdition         VideoEdition           @relation(fields: [edition, videoId], references: [name, videoId])
+  slug                 String                 @unique
+  video                Video?                 @relation(fields: [videoId], references: [id], onDelete: Cascade)
+  videoId              String
+  assetId              String?                @unique
+  asset                CloudflareR2?          @relation(fields: [assetId], references: [id])
+  muxVideoId           String?
+  muxVideo             MuxVideo?              @relation(fields: [muxVideoId], references: [id])
+  brightcoveId         String?
+
+  @@unique([languageId, videoId])
+  @@index(languageId(type: Hash))
+  @@index(videoId(type: Hash))
+}
+
+model VideoEdition {
+  id             String          @id @default(uuid())
+  name           String
+  videoId        String
+  video          Video           @relation(fields: [videoId], references: [id], onDelete: Cascade)
+  videoVariants  VideoVariant[]
+  videoSubtitles VideoSubtitle[]
+
+  @@unique([name, videoId])
+}
+
+model VideoSubtitle {
+  id String @id @default(uuid())
+
+  videoId      String
+  edition      String        @default("base")
+  vttAssetId   String?       @unique
+  vttSrc       String?
+  vttVersion   Int           @default(1)
+  srtAssetId   String?       @unique
+  srtSrc       String?
+  srtVersion   Int           @default(1)
+  primary      Boolean
+  languageId   String
+  srtAsset     CloudflareR2? @relation("SrtAsset", fields: [srtAssetId], references: [id])
+  vttAsset     CloudflareR2? @relation("VttAsset", fields: [vttAssetId], references: [id])
+  video        Video         @relation(fields: [videoId], references: [id], onDelete: Cascade)
+  videoEdition VideoEdition  @relation(fields: [edition, videoId], references: [name, videoId])
+
+  @@unique([videoId, edition, languageId])
+  @@index(languageId(type: Hash))
+  @@index(edition(type: Hash))
+  @@index(primary(type: Hash))
+  @@index(videoId(type: Hash))
+}
+
+model VideoSnippet {
+  id         String  @id @default(uuid())
+  value      String
+  languageId String
+  primary    Boolean
+  videoId    String
+  video      Video   @relation(fields: [videoId], references: [id], onDelete: Cascade)
+
+  @@unique([videoId, languageId])
+  @@index(value(type: Hash))
+  @@index(primary(type: Hash))
+  @@index(languageId(type: Hash))
+}
+
+model VideoDescription {
+  id         String  @id @default(uuid())
+  value      String
+  languageId String
+  primary    Boolean
+  videoId    String
+  crowdInId  String?
+  video      Video   @relation(fields: [videoId], references: [id], onDelete: Cascade)
+
+  @@unique([videoId, languageId])
+  @@index(value(type: Hash))
+  @@index(primary(type: Hash))
+  @@index(languageId(type: Hash))
+}
+
+model VideoImageAlt {
+  id         String  @id @default(uuid())
+  value      String
+  languageId String
+  primary    Boolean
+  videoId    String
+  video      Video   @relation(fields: [videoId], references: [id], onDelete: Cascade)
+
+  @@unique([videoId, languageId])
+  @@index(value(type: Hash))
+  @@index(primary(type: Hash))
+  @@index(languageId(type: Hash))
+}
+
+model VideoStudyQuestion {
+  id         String  @id @default(uuid())
+  value      String
+  languageId String
+  order      Int
+  primary    Boolean
+  crowdInId  String?
+  videoId    String
+  video      Video   @relation(fields: [videoId], references: [id], onDelete: Cascade)
+
+  @@unique([videoId, languageId, order])
+  @@index(value(type: Hash))
+  @@index(primary(type: Hash))
+  @@index(languageId(type: Hash))
+  @@index(order)
+}
+
+model ImportTimes {
+  modelName  String   @id
+  lastImport DateTime
+}
+
+model BibleCitation {
+  id           String    @id @default(uuid())
+  bibleBookId  String
+  osisId       String
+  chapterStart Int       @default(-1)
+  chapterEnd   Int       @default(-1)
+  verseStart   Int       @default(-1)
+  verseEnd     Int       @default(-1)
+  videoId      String
+  order        Int
+  video        Video     @relation(fields: [videoId], references: [id])
+  bibleBook    BibleBook @relation(fields: [bibleBookId], references: [id])
+
+  @@unique([videoId, bibleBookId, chapterStart, chapterEnd, verseStart, verseEnd])
+  @@index([order])
+}
+
+model BibleBook {
+  id                   String          @id @default(uuid())
+  osisId               String
+  name                 BibleBookName[]
+  alternateName        String?
+  paratextAbbreviation String
+  isNewTestament       Boolean
+  order                Int
+  bibleCitation        BibleCitation[]
+}
+
+model BibleBookName {
+  id          String    @id @default(uuid())
+  value       String
+  languageId  String
+  primary     Boolean
+  bibleBookId String
+  bibleBook   BibleBook @relation(fields: [bibleBookId], references: [id])
+
+  @@unique([bibleBookId, languageId])
+  @@index(value(type: Hash))
+  @@index(primary(type: Hash))
+  @@index(languageId(type: Hash))
+}
+
+model Keyword {
+  id         String  @id @default(uuid())
+  value      String
+  languageId String
+  videos     Video[] @relation("VideoToKeyword")
+
+  @@unique([value, languageId])
+  @@index([value(type: Hash)])
+}
+
+enum Service {
+  apiJourneys
+  apiLanguages
+  apiMedia
+  apiTags
+  apiUsers
+  apiVideos
+}
+
+enum VideoRedirectType {
+  hls
+  dl
+  dh
+  s
+}
+
+model TagName {
+  id         String   @id @default(uuid())
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  value      String
+  languageId String
+  primary    Boolean
+  tagId      String
+  tag        Tag      @relation(fields: [tagId], references: [id])
+
+  @@unique([tagId, languageId])
+  @@index(value(type: Hash))
+  @@index(primary(type: Hash))
+  @@index(languageId(type: Hash))
+}
+
+model Tag {
+  id        String    @id @default(uuid())
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  name      String    @unique
+  Tagging   Tagging[]
+  parent    Tag?      @relation("ParentChildren", fields: [parentId], references: [id], onDelete: Cascade)
+  parentId  String?
+  children  Tag[]     @relation("ParentChildren")
+  service   Service?
+  tagName   TagName[]
+}
+
+model Tagging {
+  id           String   @id @default(uuid())
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  tag          Tag      @relation(fields: [tagId], references: [id], onDelete: Cascade)
+  tagId        String
+  taggableType String
+  taggableId   String
+  context      String
+
+  @@unique([taggableId, taggableType, tagId, context])
+  @@index([tagId])
+}
+
+model Taxonomy {
+  id       String         @id @default(uuid())
+  category String
+  term     String         @unique
+  name     TaxonomyName[]
+}
+
+model TaxonomyName {
+  id           String   @id @default(uuid())
+  term         String
+  label        String
+  languageId   String
+  languageCode String
+  taxonomy     Taxonomy @relation(fields: [term], references: [term])
+
+  @@unique([term, languageId])
+  @@index([term])
+  @@index([languageId])
+  @@index([languageCode])
+}
+
+enum MediaRole {
+  publisher
+}
+
+model UserMediaRole {
+  id     String      @id @default(uuid())
+  userId String      @unique
+  roles  MediaRole[]
+}
+
+model ShortLinkDomain {
+  id         String      @id @default(uuid())
+  /// the hostname including subdomain, domain, and TLD, but excluding port
+  hostname   String      @unique
+  /// the name of the apex domain (e.g. "example.com" for "www.example.com")
+  apexName   String
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
+  /// which services are able to use this domain in their short links
+  services   Service[]
+  shortLinks ShortLink[]
+}
+
+model ShortLink {
+  id           String             @id @default(uuid())
+  /// should not include the leading slash
+  pathname     String
+  /// the fully qualified domain name (FQDN) to redirect the short link service should redirect the user to
+  to           String
+  domainId     String
+  /// the user created this short link (if empty, it was created by a subgraph)
+  userId       String?
+  /// the service that created this short link
+  service      Service
+  /// brightcove video ID for video redirects
+  brightcoveId String?
+  /// type of video redirect (hls, dl, dh, s)
+  redirectType VideoRedirectType?
+  /// bitrate of the video variant download
+  bitrate      Int?
+  createdAt    DateTime           @default(now())
+  updatedAt    DateTime           @updatedAt
+  domain       ShortLinkDomain    @relation(fields: [domainId], references: [id], onDelete: Restrict)
+
+  @@unique([pathname, domainId])
+}
+
+model ShortLinkBlocklistDomain {
+  /// the hostname including subdomain, domain, and TLD, but excluding port
+  hostname String @id
+}
+
+model VideoOrigin {
+  id          String  @id @default(uuid())
+  name        String
+  description String?
+  videos      Video[]
+}
+
+enum DefaultPlatform {
+  ios
+  android
+  web
+}
+
+model ArclightApiKey {
+  key             String          @unique
+  desc            String?
+  defaultPlatform DefaultPlatform
+}

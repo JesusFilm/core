@@ -4,15 +4,8 @@ import { fireEvent, render, waitFor } from '@testing-library/react'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
 import { GetJourney_journey as Journey } from '../../../../../../../__generated__/GetJourney'
-import { revalidateJourney } from '../../../../../../libs/revalidateJourney'
 
 import { JOURNEY_SEO_TITLE_UPDATE, TitleEdit } from './TitleEdit'
-
-jest.mock('../../../../../../libs/revalidateJourney')
-
-const mockRevalidateJourney = revalidateJourney as jest.MockedFunction<
-  typeof revalidateJourney
->
 
 describe('TitleEdit', () => {
   it('should display suggested title length', () => {
@@ -107,10 +100,6 @@ describe('TitleEdit', () => {
     fireEvent.change(getByRole('textbox'), { target: { value: 'new title' } })
     fireEvent.blur(getByRole('textbox'))
     await waitFor(() => expect(result).toHaveBeenCalled())
-    expect(mockRevalidateJourney).toHaveBeenCalledWith({
-      hostname: undefined,
-      slug: 'some-slug'
-    })
   })
 
   it('should show error text when character limit exeeded', async () => {

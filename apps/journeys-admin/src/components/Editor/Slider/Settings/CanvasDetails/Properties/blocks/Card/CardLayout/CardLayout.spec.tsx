@@ -8,7 +8,8 @@ import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
 import {
   BlockFields_CardBlock as CardBlock,
-  BlockFields_StepBlock as StepBlock
+  BlockFields_StepBlock as StepBlock,
+  BlockFields_VideoBlock as VideoBlock
 } from '../../../../../../../../../../__generated__/BlockFields'
 import { GetJourney_journey as Journey } from '../../../../../../../../../../__generated__/GetJourney'
 import {
@@ -50,6 +51,7 @@ const journey: Journey = {
   description: 'my cool journey',
   status: JourneyStatus.draft,
   createdAt: '2021-11-19T12:34:56.647Z',
+  updatedAt: '2021-11-19T12:34:56.647Z',
   publishedAt: null,
   blocks: [] as TreeBlock[],
   primaryImageBlock: null,
@@ -70,7 +72,8 @@ const journey: Journey = {
   displayTitle: null,
   logoImageBlock: null,
   menuButtonIcon: null,
-  menuStepBlock: null
+  menuStepBlock: null,
+  journeyTheme: null
 }
 
 describe('CardLayout', () => {
@@ -85,6 +88,7 @@ describe('CardLayout', () => {
       themeMode: null,
       themeName: null,
       fullscreen: false,
+      backdropBlur: null,
       children: []
     }
     render(
@@ -113,6 +117,7 @@ describe('CardLayout', () => {
       themeMode: ThemeMode.dark,
       themeName: null,
       fullscreen: true,
+      backdropBlur: null,
       children: []
     }
     render(
@@ -141,6 +146,7 @@ describe('CardLayout', () => {
       themeMode: null,
       themeName: null,
       fullscreen: false,
+      backdropBlur: null,
       children: []
     }
     const step: TreeBlock<StepBlock> = {
@@ -192,6 +198,7 @@ describe('CardLayout', () => {
       themeMode: null,
       themeName: null,
       fullscreen: false,
+      backdropBlur: null,
       children: []
     }
     render(
@@ -250,6 +257,7 @@ describe('CardLayout', () => {
       themeMode: null,
       themeName: null,
       fullscreen: false,
+      backdropBlur: null,
       children: []
     }
     render(
@@ -287,5 +295,59 @@ describe('CardLayout', () => {
     await waitFor(() => expect(result).toHaveBeenCalled())
     fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
     await waitFor(() => expect(result2).toHaveBeenCalled())
+  })
+
+  it('prevents clicking expanded layout when card contains video block', async () => {
+    const videoBlock = {
+      id: 'video1.id',
+      __typename: 'VideoBlock'
+    } as unknown as TreeBlock<VideoBlock>
+    const card = {
+      id: 'card1.id',
+      __typename: 'CardBlock',
+      fullscreen: false,
+      children: [videoBlock]
+    } as unknown as TreeBlock<CardBlock>
+
+    const result = jest.fn(() => ({
+      data: {
+        cardBlockUpdate: { id: 'card1.id', fullscreen: true }
+      }
+    }))
+
+    render(
+      <MockedProvider
+        mocks={[
+          {
+            request: {
+              query: CARD_BLOCK_LAYOUT_UPDATE,
+              variables: {
+                id: 'card1.id',
+                input: {
+                  fullscreen: true
+                }
+              }
+            },
+            result
+          }
+        ]}
+      >
+        <JourneyProvider value={{ journey, variant: 'admin' }}>
+          <EditorProvider initialState={{ selectedBlock: card }}>
+            <CardLayout disableExpanded />
+          </EditorProvider>
+        </JourneyProvider>
+      </MockedProvider>
+    )
+
+    const expandedBox = screen.getByTestId('true')
+    expect(expandedBox).toHaveStyle({
+      opacity: '0.3',
+      filter: 'grayscale(100%)'
+    })
+    expect(expandedBox).toHaveAttribute('aria-disabled', 'true')
+
+    fireEvent.click(expandedBox)
+    await waitFor(() => expect(result).not.toHaveBeenCalled())
   })
 })

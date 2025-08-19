@@ -1,4 +1,4 @@
-import { graphql } from 'gql.tada'
+import { graphql } from '@core/shared/gql'
 
 import { getClient } from '../../../../test/client'
 import { prismaMock } from '../../../../test/prismaMock'
@@ -26,6 +26,9 @@ describe('videoDescription', () => {
       `)
 
       it('should create video description', async () => {
+        prismaMock.$transaction.mockImplementation(
+          async (callback) => await callback(prismaMock)
+        )
         prismaMock.userMediaRole.findUnique.mockResolvedValue({
           id: 'userId',
           userId: 'userId',
@@ -36,7 +39,16 @@ describe('videoDescription', () => {
           videoId: 'videoId',
           value: 'value',
           primary: true,
-          languageId: 'languageId'
+          languageId: 'languageId',
+          crowdInId: null
+        })
+        prismaMock.videoDescription.update.mockResolvedValue({
+          id: 'id',
+          videoId: 'videoId',
+          value: 'value',
+          primary: true,
+          languageId: 'languageId',
+          crowdInId: null
         })
         const result = await authClient({
           document: CREATE_VIDEO_DESCRIPTION_MUTATION,
@@ -82,17 +94,25 @@ describe('videoDescription', () => {
       `)
 
       it('should update video description', async () => {
+        prismaMock.$transaction.mockImplementation(
+          async (callback) => await callback(prismaMock)
+        )
         prismaMock.userMediaRole.findUnique.mockResolvedValue({
           id: 'userId',
           userId: 'userId',
           roles: ['publisher']
         })
+        prismaMock.videoDescription.findUnique.mockResolvedValue({
+          videoId: 'videoId',
+          crowdInId: null
+        } as any)
         prismaMock.videoDescription.update.mockResolvedValue({
           id: 'id',
           videoId: 'videoId',
           value: 'value',
           primary: true,
-          languageId: 'languageId'
+          languageId: 'languageId',
+          crowdInId: null
         })
         const result = await authClient({
           document: UPDATE_VIDEO_DESCRIPTION_MUTATION,
@@ -146,7 +166,8 @@ describe('videoDescription', () => {
           videoId: 'videoId',
           value: 'value',
           primary: true,
-          languageId: 'languageId'
+          languageId: 'languageId',
+          crowdInId: null
         })
         const result = await authClient({
           document: DELETE_VIDEO_DESCRIPTION_MUTATION,

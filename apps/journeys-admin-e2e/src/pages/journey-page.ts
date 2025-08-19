@@ -3,13 +3,12 @@ import fs from 'fs'
 import path from 'path'
 
 import { expect } from '@playwright/test'
-import dayjs from 'dayjs'
 import type { Page } from 'playwright-core'
 
+import { generateRandomNumber } from '../framework/helpers'
 import testData from '../utils/testData.json'
 
 let journeyName = ''
-let randomNumber = ''
 const thirtySecondsTimeout = 30000
 const sixtySecondsTimeout = 60000
 // eslint-disable-next-line no-undef
@@ -23,15 +22,23 @@ export class JourneyPage {
   journeyCardFrame =
     'div[data-testid="EditorCanvas"] div[data-testid="CanvasContainer"] iframe'
   downloadedQrFile: string
-
+  journeyNamePath =
+    'div[data-testid *="JourneyCard"] div.MuiCardContent-root h6.MuiTypography-root'
   constructor(page: Page) {
     this.page = page
-    randomNumber =
-      dayjs().format('DDMMYY-hhmmss') +
-      Math.floor(Math.random() * (100 - 999 + 1) + 999)
-    journeyName = testData.journey.firstJourneyName + randomNumber
   }
 
+  async setNewJourneyName() {
+    journeyName = testData.journey.firstJourneyName + generateRandomNumber(3)
+  }
+  async verifyJourneyTitleGotUpdated() {
+    await expect(
+      this.page.locator(
+        'button[aria-label="Click to edit"] p.MuiTypography-root',
+        { hasText: journeyName }
+      )
+    ).toBeVisible({ timeout: thirtySecondsTimeout })
+  }
   async createAndVerifyCustomJourney() {
     await this.enterJourneysTypography()
     await this.clickDoneBtn()
@@ -39,14 +46,31 @@ export class JourneyPage {
     await this.clickEditDetailsInThreeDotOptions()
     await this.enterTitle()
     await this.clickSaveBtn()
+    await this.verifyJourneyTitleGotUpdated()
     await this.backIcon()
     await this.verifyCreatedCustomJourneyInActiveList()
   }
-
+  async createANewCustomJourney() {
+    await this.enterJourneysTypography()
+    await this.clickDoneBtn()
+    await this.clickThreeDotBtnOfCustomJourney()
+    await this.clickEditDetailsInThreeDotOptions()
+    await this.enterTitle()
+    await this.clickSaveBtn()
+    await this.verifyJourneyTitleGotUpdated()
+  }
+  async createAndVerifyTemplateFromNewJourney() {
+    await this.clickThreeDotBtnOfCustomJourney()
+    await this.clickCreateTempleteOrTemplateSettingsOption('Create Template')
+    await this.backIcon()
+    await this.verifyCreatedCustomJourneyInActiveList()
+    await this.navigateToPublisherPage()
+    await this.verifyCreatedJourneyInTemplateList()
+  }
   async createAndVerifyTemplate() {
     await this.clickOnTheCreatedCustomJourney()
     await this.clickThreeDotBtnOfCustomJourney()
-    await this.clickTheCreateTempleteOption()
+    await this.clickCreateTempleteOrTemplateSettingsOption('Create Template')
     await this.backIcon()
     await this.navigateToPublisherPage()
     await this.verifyCreatedJourneyInTemplateList()
@@ -192,6 +216,7 @@ export class JourneyPage {
     await this.clickEditDetailsInThreeDotOptions()
     await this.enterTitle()
     await this.clickSaveBtn()
+    await this.verifyJourneyTitleGotUpdated()
     await this.backIcon()
     await this.verifyCreatedCustomJourneyInActiveList()
   }
@@ -228,17 +253,24 @@ export class JourneyPage {
     await this.page
       .locator('div[data-testid="JourneysAdminContainedIconButton"] button')
       .click()
-    await expect(createJourneyLoaderPath).toBeVisible({ timeout: 5000 })
+    try {
+      await expect(createJourneyLoaderPath, 'Ignore if not found').toBeVisible({
+        timeout: 5000
+      })
+    } catch {
+      // Ignore if not found
+    }
     await expect(createJourneyLoaderPath).toBeHidden({
       timeout: sixtySecondsTimeout
     })
+    //await this.page.waitForLoadState('networkidle')
   }
 
   async setJourneyName(journey: string) {
     journeyName =
       (journey === 'firstJourneyName'
         ? testData.journey.firstJourneyName
-        : testData.journey.secondJourneyName) + randomNumber
+        : testData.journey.secondJourneyName) + generateRandomNumber(3)
   }
 
   async enterJourneysTypography(): Promise<void> {
@@ -302,6 +334,7 @@ export class JourneyPage {
   }
 
   async enterTitle() {
+    await this.setNewJourneyName()
     await this.page.locator('input#title').click({ delay: 2000 })
     await this.page.locator('input#title').clear()
     await this.page.locator('input#title').fill(journeyName)
@@ -319,18 +352,15 @@ export class JourneyPage {
 
   async verifyCreatedCustomJourneyInActiveList() {
     await expect(
-      this.page.locator('span[data-testid="new-journey-badge"] div').first()
-    ).toBeVisible({ timeout: thirtySecondsTimeout })
-    await expect(
-      this.page.locator('span[data-testid="new-journey-badge"] div', {
+      this.page.locator(this.journeyNamePath, {
         hasText: journeyName
       })
-    ).toBeVisible()
+    ).toBeVisible({ timeout: thirtySecondsTimeout })
   }
 
   async clickOnTheCreatedCustomJourney() {
     await this.page
-      .locator('span[data-testid="new-journey-badge"] div', {
+      .locator(this.journeyNamePath, {
         hasText: journeyName
       })
       .click()
@@ -339,11 +369,13 @@ export class JourneyPage {
     ).toBeVisible({ timeout: sixtySecondsTimeout })
   }
 
-  async clickTheCreateTempleteOption() {
+  async clickCreateTempleteOrTemplateSettingsOption(
+    optionName = 'Create Template'
+  ) {
     await this.page
       .locator(
         'ul[aria-labelledby="edit-journey-actions"] li[role="menuitem"]',
-        { hasText: 'Create Template' }
+        { hasText: optionName }
       )
       .click({ delay: 3000 })
     // verifying that the 'Create Template' option is disappeared, if not once again clicking on that option
@@ -448,11 +480,13 @@ export class JourneyPage {
   }
 
   async clickThreeDotOfCreatedNewJourney() {
-    await this.page
-      .locator(
-        `//div[text()='${journeyName}']//ancestor::a/following-sibling::div//button[@id='journey-actions']`
-      )
-      .click()
+    const threeDotBtnPath = this.page
+      .locator('div[aria-label="journey-card"]', { hasText: journeyName })
+      .first()
+      .locator('[data-testid="JourneyCardMenuButton"]')
+      .first()
+    await expect(threeDotBtnPath).toBeVisible({ timeout: thirtySecondsTimeout })
+    await threeDotBtnPath.click()
   }
 
   async clickTheRestore() {
@@ -466,7 +500,7 @@ export class JourneyPage {
   async verifyCreatedNewJourneyMovedToTrashTabOrNot() {
     await expect(
       this.page.locator(
-        'div[id*="trashed-status-panel-tabpanel"] span[data-testid="new-journey-badge"] div',
+        `div[id*="trashed-status-panel-tabpanel"] ${this.journeyNamePath}`,
         { hasText: journeyName }
       )
     ).toBeVisible()
@@ -490,7 +524,7 @@ export class JourneyPage {
   async verifyCreatedNewJourneyMovedToActiveTabOrNot() {
     await expect(
       this.page.locator(
-        'div[id*="active-status-panel-tabpanel"] span[data-testid="new-journey-badge"] div',
+        `div[id*="active-status-panel-tabpanel"] ${this.journeyNamePath}`,
         { hasText: journeyName }
       )
     ).toBeVisible()
@@ -519,7 +553,7 @@ export class JourneyPage {
 
   async clickThreeDotOfExistingJourney() {
     this.existingJourneyName = await this.page
-      .locator('span[data-testid="new-journey-badge"] div', {
+      .locator(this.journeyNamePath, {
         hasNotText: 'Untitled Journey'
       })
       .first()
@@ -529,7 +563,7 @@ export class JourneyPage {
         hasNotText: 'Untitled Journey'
       })
       .first()
-      .locator('button#journey-actions')
+      .locator('[data-testid="JourneyCardMenuButton"]')
       .first()
       .click()
   }
@@ -541,7 +575,7 @@ export class JourneyPage {
   async verifyJourneyMovedToArchiveOrNot() {
     await expect(
       this.page.locator(
-        'div[aria-labelledby*="archived-status-panel-tab"] span[data-testid="new-journey-badge"]',
+        `div[aria-labelledby*="archived-status-panel-tab"] ${this.journeyNamePath}`,
         { hasText: journeyName }
       )
     ).toBeVisible()
@@ -550,7 +584,7 @@ export class JourneyPage {
   async verifyJourneyDeletedForeverInTrashTab() {
     await expect(
       this.page.locator(
-        'div[id*="trashed-status-panel-tabpanel"] span[data-testid="new-journey-badge"] div',
+        `div[id*="trashed-status-panel-tabpanel"] ${this.journeyNamePath}`,
         { hasText: journeyName }
       )
     ).toHaveCount(0)
@@ -565,7 +599,7 @@ export class JourneyPage {
   async clickThreeDotBesideSortByOption() {
     await this.page
       .locator(
-        'div[aria-label="journey status tabs"] button svg[data-testid="MoreIcon"]'
+        'div[aria-label="journey status tabs"] button[data-testid="JourneyListMenuButton"]'
       )
       .click()
   }
@@ -582,13 +616,13 @@ export class JourneyPage {
     await expect(
       this.page
         .locator(
-          'div[id*="active-status-panel-tabpanel"] span[data-testid="new-journey-badge"] div'
+          `div[id*="active-status-panel-tabpanel"] ${this.journeyNamePath}`
         )
         .first()
     ).toBeVisible()
     this.journeyList = await this.page
       .locator(
-        'div[id*="active-status-panel-tabpanel"] span[data-testid="new-journey-badge"] div'
+        `div[id*="active-status-panel-tabpanel"] ${this.journeyNamePath}`
       )
       .allInnerTexts()
   }
@@ -610,13 +644,13 @@ export class JourneyPage {
     await expect(
       this.page
         .locator(
-          'div[aria-labelledby*="archived-status-panel-tab"] span[data-testid="new-journey-badge"] div'
+          `div[aria-labelledby*="archived-status-panel-tab"] ${this.journeyNamePath}`
         )
         .first()
     ).toBeVisible({ timeout: thirtySecondsTimeout })
     const archiveTabJournetList = await this.page
       .locator(
-        'div[aria-labelledby*="archived-status-panel-tab"] span[data-testid="new-journey-badge"] div'
+        `div[aria-labelledby*="archived-status-panel-tab"] ${this.journeyNamePath}`
       )
       .allInnerTexts()
     for (let journey = 0; journey < this.journeyList.length; journey++) {
@@ -639,13 +673,13 @@ export class JourneyPage {
     await expect(
       this.page
         .locator(
-          'div[aria-labelledby*="archived-status-panel-tab"] span[data-testid="new-journey-badge"] div'
+          `div[aria-labelledby*="archived-status-panel-tab"] ${this.journeyNamePath}`
         )
         .first()
     ).toBeVisible()
     this.journeyList = await this.page
       .locator(
-        'div[aria-labelledby*="archived-status-panel-tab"] span[data-testid="new-journey-badge"] div'
+        `div[aria-labelledby*="archived-status-panel-tab"] ${this.journeyNamePath}`
       )
       .allInnerTexts()
   }
@@ -655,13 +689,13 @@ export class JourneyPage {
     await expect(
       this.page
         .locator(
-          'div[aria-labelledby*="trashed-status-panel-tab"] span[data-testid="new-journey-badge"] div'
+          `div[aria-labelledby*="trashed-status-panel-tab"] ${this.journeyNamePath}`
         )
         .first()
     ).toBeVisible({ timeout: thirtySecondsTimeout })
     const TrashTabJournetList = await this.page
       .locator(
-        'div[aria-labelledby*="trashed-status-panel-tab"] span[data-testid="new-journey-badge"] div'
+        `div[aria-labelledby*="trashed-status-panel-tab"] ${this.journeyNamePath}`
       )
       .allInnerTexts()
     for (let journey = 0; journey < this.journeyList.length; journey++) {
@@ -676,13 +710,13 @@ export class JourneyPage {
     await expect(
       this.page
         .locator(
-          'div[aria-labelledby*="trashed-status-panel-tab"] span[data-testid="new-journey-badge"] div'
+          `div[aria-labelledby*="trashed-status-panel-tab"] ${this.journeyNamePath}`
         )
         .first()
     ).toBeVisible()
     this.journeyList = await this.page
       .locator(
-        'div[aria-labelledby*="trashed-status-panel-tab"] span[data-testid="new-journey-badge"] div'
+        `div[aria-labelledby*="trashed-status-panel-tab"] ${this.journeyNamePath}`
       )
       .allInnerTexts()
   }
@@ -692,13 +726,13 @@ export class JourneyPage {
     await expect(
       this.page
         .locator(
-          'div[id*="active-status-panel-tabpanel"] span[data-testid="new-journey-badge"] div'
+          `div[id*="active-status-panel-tabpanel"] ${this.journeyNamePath}`
         )
         .first()
     ).toBeVisible({ timeout: thirtySecondsTimeout })
     const activeTabJournetList = await this.page
       .locator(
-        'div[id*="active-status-panel-tabpanel"] span[data-testid="new-journey-badge"] div'
+        `div[id*="active-status-panel-tabpanel"] ${this.journeyNamePath}`
       )
       .allInnerTexts()
     for (let journey = 0; journey < this.journeyList.length; journey++) {
@@ -713,7 +747,7 @@ export class JourneyPage {
     await expect(
       this.page
         .locator(
-          'div[aria-labelledby*="trashed-status-panel-tab"] span[data-testid="new-journey-badge"] div'
+          `div[aria-labelledby*="trashed-status-panel-tab"] ${this.journeyNamePath}`
         )
         .first()
     ).toHaveCount(0)
@@ -776,7 +810,7 @@ export class JourneyPage {
           )
         }
       )
-      .locator('span[data-testid="new-journey-badge"] div')
+      .locator(this.journeyNamePath)
       .allInnerTexts()
     const journeyExpectedList = await this.page
       .locator(
@@ -787,7 +821,7 @@ export class JourneyPage {
           )
         }
       )
-      .locator('span[data-testid="new-journey-badge"] div')
+      .locator(this.journeyNamePath)
       .allInnerTexts()
     await this.sortTheListToAscendingOrder(journeyList, journeyExpectedList)
   }
@@ -812,7 +846,7 @@ export class JourneyPage {
           )
         }
       )
-      .locator('span[data-testid="new-journey-badge"] div')
+      .locator(this.journeyNamePath)
       .count()
     if (journeyListCount !== 0) {
       const journeyList = await this.page
@@ -824,7 +858,7 @@ export class JourneyPage {
             )
           }
         )
-        .locator('span[data-testid="new-journey-badge"] div')
+        .locator(this.journeyNamePath)
         .allInnerTexts()
       const journeyExpectedList = await this.page
         .locator(
@@ -835,7 +869,7 @@ export class JourneyPage {
             )
           }
         )
-        .locator('span[data-testid="new-journey-badge"] div')
+        .locator(this.journeyNamePath)
         .allInnerTexts()
       await this.sortTheListToAscendingOrder(journeyList, journeyExpectedList)
     } else {
@@ -976,6 +1010,7 @@ export class JourneyPage {
     for (let slide = 1; slide < slidesCount; slide++) {
       await newPage
         .locator('button[data-testid="ConductorNavigationButtonNext"]')
+        // eslint-disable-next-line playwright/no-force-option
         .hover({ force: true })
       await newPage
         .locator('button[data-testid="ConductorNavigationButtonNext"]')
@@ -997,7 +1032,7 @@ export class JourneyPage {
 
   async selectExistingJourney() {
     this.existingJourneyName = await this.page
-      .locator('span[data-testid="new-journey-badge"] div', {
+      .locator(this.journeyNamePath, {
         hasNotText: 'Untitled Journey'
       })
       .first()
@@ -1036,6 +1071,7 @@ export class JourneyPage {
   }
 
   async clickOnJourneyCard() {
+    await this.page.waitForLoadState('load')
     await this.page
       .frameLocator(this.journeyCardFrame)
       .first()

@@ -49,6 +49,7 @@ export function StudyQuestionForm({
               onChange={handleChange}
               helperText={errors.value}
               autoFocus
+              spellCheck={true}
               sx={{
                 '& .MuiInputBase-root': {
                   height: 'auto'

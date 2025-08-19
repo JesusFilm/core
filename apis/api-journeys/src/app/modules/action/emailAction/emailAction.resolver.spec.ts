@@ -1,8 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
 
-import { Action, Block, Journey } from '.prisma/api-journeys-client'
 import { CaslAuthModule } from '@core/nest/common/CaslAuthModule'
+import { Action, Block, Journey } from '@core/prisma/journeys/client'
 
 import { EmailActionInput, UserTeamRole } from '../../../__generated__/graphql'
 import { AppAbility, AppCaslFactory } from '../../../lib/casl/caslFactory'
@@ -39,6 +39,8 @@ describe('EmailActionResolver', () => {
       journeyId: null,
       target: null,
       email: '',
+      customizable: null,
+      parentStepId: null,
       updatedAt: new Date()
     }
   }

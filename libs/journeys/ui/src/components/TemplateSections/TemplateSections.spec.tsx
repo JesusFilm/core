@@ -52,6 +52,7 @@ describe('TemplateSections', () => {
     },
     publishedAt: '2023-08-14T04:24:24.392Z',
     createdAt: '2023-08-14T04:24:24.392Z',
+    updatedAt: '2023-08-14T04:24:24.392Z',
     featuredAt: '2023-08-14T04:24:24.392Z',
     status: JourneyStatus.published,
     seoTitle: null,
@@ -99,6 +100,7 @@ describe('TemplateSections', () => {
       id: 'featuredId1',
       title: 'Featured Template 1',
       createdAt: '2023-09-05T23:27:45.596Z',
+      updatedAt: '2023-09-05T23:27:45.596Z',
       tags: [acceptance]
     },
     {
@@ -106,6 +108,7 @@ describe('TemplateSections', () => {
       id: 'featuredId2',
       title: 'Featured Template 2',
       createdAt: '2023-08-05T23:27:45.596Z',
+      updatedAt: '2023-08-05T23:27:45.596Z',
       tags: [addiction]
     },
     {
@@ -113,6 +116,7 @@ describe('TemplateSections', () => {
       id: 'featuredId3',
       title: 'Featured Template 3',
       createdAt: '2023-08-05T23:27:45.596Z',
+      updatedAt: '2023-08-05T23:27:45.596Z',
       tags: [acceptance]
     },
     {
@@ -120,6 +124,7 @@ describe('TemplateSections', () => {
       id: 'newId1',
       title: 'New Template 1',
       createdAt: '2023-09-05T23:27:45.596Z',
+      updatedAt: '2023-09-05T23:27:45.596Z',
       tags: [acceptance, addiction],
       featuredAt: null
     },
@@ -128,6 +133,7 @@ describe('TemplateSections', () => {
       id: 'newId2',
       title: 'New Template 2',
       createdAt: '2023-08-05T23:27:45.596Z',
+      updatedAt: '2023-08-05T23:27:45.596Z',
       featuredAt: null
     },
     {
@@ -135,6 +141,7 @@ describe('TemplateSections', () => {
       id: 'newId3',
       title: 'New Template 3',
       createdAt: '2023-08-05T23:27:45.596Z',
+      updatedAt: '2023-08-05T23:27:45.596Z',
       tags: [acceptance, addiction],
       featuredAt: null
     },
@@ -143,6 +150,7 @@ describe('TemplateSections', () => {
       id: 'newId4',
       title: 'New Template 4',
       createdAt: '2023-08-05T23:27:45.596Z',
+      updatedAt: '2023-08-05T23:27:45.596Z',
       tags: [addiction],
       featuredAt: null
     },
@@ -151,6 +159,7 @@ describe('TemplateSections', () => {
       id: 'newId5',
       title: 'New Template 5',
       createdAt: '2023-08-05T23:27:45.596Z',
+      updatedAt: '2023-08-05T23:27:45.596Z',
       tags: [acceptance],
       featuredAt: null
     }

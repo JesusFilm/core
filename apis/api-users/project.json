@@ -72,53 +72,6 @@
         "command": "DOPPLER_TOKEN=$DOPPLER_API_USERS_TOKEN doppler secrets download --no-file --format=env-no-quotes --project api-users > apis/api-users/.env"
       }
     },
-    "prisma-generate": {
-      "executor": "nx:run-commands",
-      "options": {
-        "commands": [
-          "npx prisma generate --schema apis/api-users/db/schema.prisma"
-        ]
-      }
-    },
-    "prisma-migrate": {
-      "executor": "nx:run-commands",
-      "options": {
-        "commands": [
-          "bash -c 'npx prisma migrate dev --schema apis/api-users/db/schema.prisma --name `date +\"%Y%m%d%H%M%S\"`'"
-        ]
-      },
-      "configurations": {
-        "production": {
-          "commands": [
-            "tools/scripts/env-validator.sh --DOPPLER_CONFIG=dev --PG_DATABASE_URL_USERS=postgresql://postgres:postgres@db:5432/users?schema=public \"npx prisma migrate deploy --schema apis/api-users/db/schema.prisma\""
-          ]
-        }
-      }
-    },
-    "prisma-reset": {
-      "executor": "nx:run-commands",
-      "options": {
-        "commands": [
-          "tools/scripts/env-validator.sh --DOPPLER_CONFIG=dev --PG_DATABASE_URL_USERS=postgresql://postgres:postgres@db:5432/users?schema=public \"npx prisma migrate reset --schema apis/api-users/db/schema.prisma --force\""
-        ]
-      }
-    },
-    "prisma-studio": {
-      "executor": "nx:run-commands",
-      "options": {
-        "commands": [
-          "npx prisma studio --schema apis/api-users/db/schema.prisma"
-        ]
-      }
-    },
-    "prisma-validate": {
-      "executor": "nx:run-commands",
-      "options": {
-        "commands": [
-          "npx prisma validate --schema apis/api-users/db/schema.prisma"
-        ]
-      }
-    },
     "type-check": {
       "executor": "nx:run-commands",
       "options": {
@@ -139,12 +92,6 @@
           "if lsof -Pi :4601 -sTCP:LISTEN -t>/dev/null; then\nkill -9 $(lsof -Pi :4601 -sTCP:LISTEN -t)\nfi",
           "email dev --dir apis/api-users/src/emails/templates --port 4601"
         ]
-      }
-    },
-    "codegen": {
-      "executor": "nx:run-commands",
-      "options": {
-        "command": "gql.tada generate output --tsconfig apis/api-users/tsconfig.json"
       }
     },
     "demo": {

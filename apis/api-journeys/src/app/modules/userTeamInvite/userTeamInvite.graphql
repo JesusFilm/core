@@ -1,4 +1,4 @@
-type UserTeamInvite {
+type UserTeamInvite @shareable {
   id: ID!
   teamId: ID!
   email: String!

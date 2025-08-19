@@ -4,8 +4,8 @@ import { Args, Mutation, Resolver } from '@nestjs/graphql'
 import { GraphQLError } from 'graphql'
 import omit from 'lodash/omit'
 
-import { Block } from '.prisma/api-journeys-client'
 import { CaslAbility } from '@core/nest/common/CaslAuthModule'
+import { Block, Prisma } from '@core/prisma/journeys/client'
 
 import {
   ButtonBlockCreateInput,
@@ -41,7 +41,8 @@ export class ButtonBlockResolver {
           typename: 'ButtonBlock',
           journey: { connect: { id: input.journeyId } },
           parentBlock: { connect: { id: input.parentBlockId } },
-          parentOrder
+          parentOrder,
+          settings: (input.settings ?? {}) as Prisma.JsonObject
         },
         include: {
           action: true,
@@ -103,6 +104,15 @@ export class ButtonBlockResolver {
       throw new GraphQLError('user is not allowed to update block', {
         extensions: { code: 'FORBIDDEN' }
       })
-    return await this.blockService.update(id, input)
+    return await this.blockService.update(id, {
+      ...input,
+      settings:
+        input.settings != null
+          ? {
+              ...((block.settings ?? {}) as Prisma.JsonObject),
+              ...(input.settings as Prisma.JsonObject)
+            }
+          : undefined
+    })
   }
 }

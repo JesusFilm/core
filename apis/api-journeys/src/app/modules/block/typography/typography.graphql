@@ -25,15 +25,24 @@ enum TypographyAlign {
   right
 }
 
-type TypographyBlock implements Block {
-  id: ID!
-  journeyId: ID!
-  parentBlockId: ID
-  parentOrder: Int
-  content: String!
-  variant: TypographyVariant
-  color: TypographyColor
-  align: TypographyAlign
+input TypographyBlockSettingsInput {
+  color: String
+}
+
+type TypographyBlockSettings @shareable {
+  color: String @shareable
+}
+
+type TypographyBlock implements Block @shareable {
+  id: ID! @shareable
+  journeyId: ID! @shareable
+  parentBlockId: ID @shareable
+  parentOrder: Int @shareable
+  content: String! @shareable
+  variant: TypographyVariant @shareable
+  color: TypographyColor @shareable
+  align: TypographyAlign @shareable
+  settings: TypographyBlockSettings! @shareable
 }
 
 input TypographyBlockCreateInput {
@@ -44,6 +53,7 @@ input TypographyBlockCreateInput {
   variant: TypographyVariant
   color: TypographyColor
   align: TypographyAlign
+  settings: TypographyBlockSettingsInput
 }
 
 input TypographyBlockUpdateInput {
@@ -52,6 +62,7 @@ input TypographyBlockUpdateInput {
   variant: TypographyVariant
   color: TypographyColor
   align: TypographyAlign
+  settings: TypographyBlockSettingsInput
 }
 
 extend type Mutation {

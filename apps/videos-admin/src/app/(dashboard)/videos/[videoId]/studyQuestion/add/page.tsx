@@ -5,12 +5,12 @@ import Button from '@mui/material/Button'
 import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
 import { Form, Formik } from 'formik'
-import { graphql } from 'gql.tada'
 import { useRouter } from 'next/navigation'
 import { useSnackbar } from 'notistack'
 import { ReactElement } from 'react'
 import { object, string } from 'yup'
 
+import { graphql } from '@core/shared/gql'
 import { Dialog } from '@core/shared/ui/Dialog'
 
 const GET_STUDY_QUESTIONS = graphql(`
@@ -52,9 +52,10 @@ export default function StudyQuestionsAddPage({
     value: string().required('Study question is required')
   })
   const order =
-    (data.adminVideo.studyQuestions.length > 1
-      ? Math.max(...data.adminVideo.studyQuestions.map(({ order }) => order))
-      : 0) + 1
+    data.adminVideo.studyQuestions.length === 0
+      ? 1
+      : Math.max(...data.adminVideo.studyQuestions.map(({ order }) => order)) +
+        1
   const returnUrl = `/videos/${videoId}`
   const [createStudyQuestion, { loading }] = useMutation(CREATE_STUDY_QUESTION)
   const handleSubmit = async (values: { value: string }): Promise<void> => {

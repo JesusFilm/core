@@ -1,4 +1,4 @@
-extend type Video @key(fields: "id primaryLanguageId") {
+extend type Video @key(fields: "id primaryLanguageId") @shareable {
   id: ID! @external
   primaryLanguageId: ID! @external
 }
@@ -9,6 +9,7 @@ enum VideoBlockSource {
   cloudflare
   mux
 }
+
 enum VideoBlockObjectFit {
   """
   The video is scaled to maintain its aspect ratio while filling the
@@ -34,28 +35,28 @@ enum VideoBlockObjectFit {
   zoomed
 }
 
-type VideoBlock implements Block {
-  id: ID!
-  journeyId: ID!
-  parentBlockId: ID
-  parentOrder: Int
+type VideoBlock implements Block @key(fields: "id") @shareable {
+  id: ID! @shareable
+  journeyId: ID! @shareable
+  parentBlockId: ID @shareable
+  parentOrder: Int @shareable
   """
   startAt dictates at which point of time the video should start playing
   """
-  startAt: Int
+  startAt: Int @shareable
   """
   endAt dictates at which point of time the video should end
   """
-  endAt: Int
-  muted: Boolean
-  autoplay: Boolean
+  endAt: Int @shareable
+  muted: Boolean @shareable
+  autoplay: Boolean @shareable
   """
   posterBlockId is present if a child block should be used as a poster.
   This child block should not be rendered normally, instead it should be used
   as the video poster. PosterBlock should be of type ImageBlock.
   """
-  posterBlockId: ID
-  fullsize: Boolean
+  posterBlockId: ID @shareable
+  fullsize: Boolean @shareable
   """
   internal source videos: video is only populated when videoID and
   videoVariantLanguageId are present
@@ -66,43 +67,43 @@ type VideoBlock implements Block {
   to select a video.
   For other sources only videoId needs to be set.
   """
-  videoId: ID
+  videoId: ID @shareable
   """
   internal source videos: videoId and videoVariantLanguageId both need to be set
   to select a video.
   For other sources only videoId needs to be set.
   """
-  videoVariantLanguageId: ID
+  videoVariantLanguageId: ID @shareable
   """
   internal source: videoId, videoVariantLanguageId, and video present
   youTube source: videoId, title, description, and duration present
   """
-  source: VideoBlockSource!
+  source: VideoBlockSource! @shareable
   """
   internal source videos: this field is not populated and instead only present
   in the video field.
   For other sources this is automatically populated.
   """
-  title: String
+  title: String @shareable
   """
   internal source videos: this field is not populated and instead only present
   in the video field
   For other sources this is automatically populated.
   """
-  description: String
+  description: String @shareable
   """
   internal source videos: this field is not populated and instead only present
   in the video field
   For other sources this is automatically populated.
   """
-  image: String
+  image: String @shareable
   """
   internal source videos: this field is not populated and instead only present
   in the video field
   For other sources this is automatically populated.
   duration in seconds.
   """
-  duration: Int
+  duration: Int @shareable
   """
   action that should be performed when the video ends
   """
@@ -110,7 +111,7 @@ type VideoBlock implements Block {
   """
   how the video should display within the VideoBlock
   """
-  objectFit: VideoBlockObjectFit
+  objectFit: VideoBlockObjectFit @shareable
 }
 
 input VideoBlockCreateInput {

@@ -77,6 +77,7 @@ export function Card({
   id,
   children,
   backgroundColor,
+  backdropBlur,
   coverBlockId,
   fullscreen,
   wrappers
@@ -100,7 +101,7 @@ export function Card({
     backgroundColor != null
       ? backgroundColor
       : // Card theme is determined in Conductor
-        theme.palette.background.paper
+        `${theme.palette.background.paper}4D`
 
   useEffect(() => {
     document
@@ -213,6 +214,8 @@ export function Card({
       })
   }
 
+  const isContained = (coverBlock != null && !fullscreen) || videoBlock != null
+
   return (
     <Formik
       initialValues={formikInitialValues}
@@ -250,7 +253,7 @@ export function Card({
             }}
             elevation={3}
           >
-            {(coverBlock != null && !fullscreen) || videoBlock != null ? (
+            {isContained ? (
               <ContainedCover
                 backgroundColor={cardColor}
                 backgroundBlur={blurUrl}
@@ -264,6 +267,7 @@ export function Card({
               <ExpandedCover
                 backgroundColor={cardColor}
                 backgroundBlur={blurUrl}
+                backdropBlur={backdropBlur ?? 20}
                 imageBlock={imageBlock}
                 hasFullscreenVideo={hasFullscreenVideo}
               >

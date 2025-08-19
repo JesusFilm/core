@@ -81,6 +81,7 @@ export const card1: TreeBlock<CardBlock> = {
   themeName: null,
   themeMode: null,
   fullscreen: false,
+  backdropBlur: null,
   children: [step1]
 }
 
@@ -94,6 +95,7 @@ export const card2: TreeBlock<CardBlock> = {
   themeName: null,
   themeMode: null,
   fullscreen: false,
+  backdropBlur: null,
   children: [step2]
 }
 
@@ -107,6 +109,7 @@ export const card3: TreeBlock<CardBlock> = {
   themeName: null,
   themeMode: null,
   fullscreen: false,
+  backdropBlur: null,
   children: [step3]
 }
 
@@ -120,6 +123,7 @@ export const block: TreeBlock<CardBlock> = {
   themeMode: null,
   themeName: null,
   fullscreen: false,
+  backdropBlur: null,
   children: [
     {
       id: 'typographyBlockId',
@@ -130,7 +134,11 @@ export const block: TreeBlock<CardBlock> = {
       color: null,
       content: 'How did we get here?',
       variant: null,
-      children: []
+      children: [],
+      settings: {
+        __typename: 'TypographyBlockSettings',
+        color: null
+      }
     }
   ]
 }
@@ -187,7 +195,8 @@ export const buttonBlock: TreeBlock<ButtonFields> = {
   endIconId: null,
   action: action,
   submitEnabled: null,
-  children: []
+  children: [],
+  settings: null
 }
 
 export const videoBlock: TreeBlock<VideoFields> = {

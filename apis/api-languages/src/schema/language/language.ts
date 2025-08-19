@@ -1,7 +1,6 @@
-import { Prisma } from '.prisma/api-languages-client'
+import { Prisma, prisma } from '@core/prisma/languages/client'
 
 import { parseFullTextSearch } from '../../lib/parseFullTextSearch'
-import { prisma } from '../../lib/prisma'
 import { builder } from '../builder'
 
 enum LanguageIdType {
@@ -22,17 +21,6 @@ const LanguagesFilter = builder.inputType('LanguagesFilter', {
     iso3: t.field({
       type: ['String']
     })
-  })
-})
-
-builder.prismaObject('AudioPreview', {
-  fields: (t) => ({
-    language: t.relation('language', { nullable: false }),
-    value: t.exposeString('value', { nullable: false }),
-    duration: t.exposeInt('duration', { nullable: false }),
-    size: t.exposeInt('size', { nullable: false }),
-    bitrate: t.exposeInt('bitrate', { nullable: false }),
-    codec: t.exposeString('codec', { nullable: false })
   })
 })
 

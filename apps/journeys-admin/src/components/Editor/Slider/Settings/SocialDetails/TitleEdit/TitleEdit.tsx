@@ -9,7 +9,6 @@ import { object, string } from 'yup'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 
 import { JourneySeoTitleUpdate } from '../../../../../../../__generated__/JourneySeoTitleUpdate'
-import { revalidateJourney } from '../../../../../../libs/revalidateJourney'
 
 export const JOURNEY_SEO_TITLE_UPDATE = gql`
   mutation JourneySeoTitleUpdate($id: ID!, $input: JourneyUpdateInput!) {
@@ -46,10 +45,6 @@ export function TitleEdit(): ReactElement {
         }
       }
     })
-    void revalidateJourney({
-      slug: journey.slug,
-      hostname: journey.host?.title
-    })
   }
 
   const initialValues =
@@ -77,7 +72,7 @@ export function TitleEdit(): ReactElement {
                 id="seoTitle"
                 name="seoTitle"
                 variant="filled"
-                label={t('Title')}
+                label={t('Headline')}
                 fullWidth
                 multiline
                 maxRows={2}
@@ -104,7 +99,7 @@ export function TitleEdit(): ReactElement {
       ) : (
         <TextField
           variant="filled"
-          label={t('Title')}
+          label={t('Headline')}
           fullWidth
           disabled
           helperText={t('Recommended length: 5 words')}

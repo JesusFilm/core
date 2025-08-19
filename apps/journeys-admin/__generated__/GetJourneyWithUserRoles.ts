@@ -9,26 +9,27 @@ import { UserJourneyRole } from "./globalTypes";
 // GraphQL query operation: GetJourneyWithUserRoles
 // ====================================================
 
-export interface GetJourneyWithUserRoles_journey_userJourneys_user {
+export interface GetJourneyWithUserRoles_adminJourney_userJourneys_user {
   __typename: "User";
   id: string;
+  email: string;
 }
 
-export interface GetJourneyWithUserRoles_journey_userJourneys {
+export interface GetJourneyWithUserRoles_adminJourney_userJourneys {
   __typename: "UserJourney";
   id: string;
   role: UserJourneyRole;
-  user: GetJourneyWithUserRoles_journey_userJourneys_user | null;
+  user: GetJourneyWithUserRoles_adminJourney_userJourneys_user | null;
 }
 
-export interface GetJourneyWithUserRoles_journey {
+export interface GetJourneyWithUserRoles_adminJourney {
   __typename: "Journey";
   id: string;
-  userJourneys: GetJourneyWithUserRoles_journey_userJourneys[] | null;
+  userJourneys: GetJourneyWithUserRoles_adminJourney_userJourneys[] | null;
 }
 
 export interface GetJourneyWithUserRoles {
-  journey: GetJourneyWithUserRoles_journey;
+  adminJourney: GetJourneyWithUserRoles_adminJourney;
 }
 
 export interface GetJourneyWithUserRolesVariables {

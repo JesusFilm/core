@@ -1,6 +1,6 @@
 'use client'
 
-import { useMutation, useSuspenseQuery } from '@apollo/client'
+import { useSuspenseQuery } from '@apollo/client'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import FormControl from '@mui/material/FormControl'
@@ -11,13 +11,12 @@ import Select from '@mui/material/Select'
 import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
 import { Form, Formik, FormikProps, FormikValues } from 'formik'
-import { graphql } from 'gql.tada'
 import { useRouter } from 'next/navigation'
-import { useSnackbar } from 'notistack'
 import { ReactElement, useRef } from 'react'
 import { mixed, object, string } from 'yup'
 
 import { useLanguagesQuery } from '@core/journeys/ui/useLanguagesQuery'
+import { graphql } from '@core/shared/gql'
 import { Dialog } from '@core/shared/ui/Dialog'
 import { LanguageAutocomplete } from '@core/shared/ui/LanguageAutocomplete'
 
@@ -25,22 +24,6 @@ import { videoStatuses } from '../../../../../../constants'
 import { useUploadVideoVariant } from '../../../../../_UploadVideoVariantProvider'
 
 import { AudioLanguageFileUpload } from './_AudioLanguageFileUpload'
-
-const VIDEO_VARIANT_DOWNLOAD_CREATE = graphql(`
-  mutation VideoVariantDownloadCreate(
-    $input: VideoVariantDownloadCreateInput!
-  ) {
-    videoVariantDownloadCreate(input: $input) {
-      id
-      quality
-      size
-      height
-      width
-      url
-      version
-    }
-  }
-`)
 
 interface AddAudioLanguageDialogProps {
   params: {
@@ -55,7 +38,7 @@ const validationSchema = object().shape({
 })
 
 const initialValues: FormikValues = {
-  edition: '',
+  edition: 'base',
   language: null,
   file: null,
   published: 'unpublished'
@@ -64,6 +47,7 @@ const initialValues: FormikValues = {
 const GET_ADMIN_VIDEO_VARIANTS = graphql(`
   query GetAdminVideoVariants($id: ID!) {
     adminVideo(id: $id) {
+      slug
       variants {
         id
         language {
@@ -82,8 +66,7 @@ export default function AddAudioLanguageDialog({
   params: { videoId }
 }: AddAudioLanguageDialogProps): ReactElement {
   const router = useRouter()
-  const { enqueueSnackbar } = useSnackbar()
-  const { uploadState, startUpload } = useUploadVideoVariant()
+  const { uploadState, startUpload, clearUploadState } = useUploadVideoVariant()
 
   const formikRef = useRef<FormikProps<FormikValues>>(null)
 
@@ -95,9 +78,6 @@ export default function AddAudioLanguageDialog({
     variables: { id: videoId }
   })
 
-  const [createVideoVariantDownload] = useMutation(
-    VIDEO_VARIANT_DOWNLOAD_CREATE
-  )
   const availableLanguages = data?.languages?.filter(
     (language) =>
       !variantsData.adminVideo.variants.some(
@@ -108,6 +88,8 @@ export default function AddAudioLanguageDialog({
   const returnUrl = `/videos/${videoId}/audio`
   const handleSubmit = async (values: FormikValues): Promise<void> => {
     if (values.language == null || values.file == null) return
+    const videoSlug = variantsData.adminVideo.slug
+    if (!videoSlug) return
     await startUpload(
       values.file,
       videoId,
@@ -115,28 +97,10 @@ export default function AddAudioLanguageDialog({
       values.language.slug,
       values.edition,
       values.published === 'published',
-      async () => {
-        await createVideoVariantDownload({
-          variables: {
-            input: {
-              videoVariantId: videoId,
-              url: values.file.name,
-              quality: 'high'
-            }
-          },
-          onCompleted: () => {
-            enqueueSnackbar('Audio language added successfully', {
-              variant: 'success'
-            })
-            router.push(returnUrl, {
-              scroll: false
-            })
-          },
-          onError: (_error) => {
-            enqueueSnackbar('Error adding audio language', {
-              variant: 'error'
-            })
-          }
+      videoSlug,
+      () => {
+        router.push(returnUrl, {
+          scroll: false
         })
       }
     )
@@ -270,6 +234,7 @@ export default function AddAudioLanguageDialog({
                   processing={uploadState.isProcessing}
                   selectedFile={values.file}
                   uploadProgress={uploadState.uploadProgress}
+                  clearUploadState={clearUploadState}
                 />
                 <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
                   <Button

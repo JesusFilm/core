@@ -17,18 +17,6 @@ import omit from 'lodash/omit'
 import slugify from 'slugify'
 import { v4 as uuidv4 } from 'uuid'
 
-import {
-  Block,
-  Action as BlockAction,
-  ChatButton,
-  Host,
-  Journey,
-  JourneyCollection,
-  Prisma,
-  Team,
-  UserJourney,
-  UserJourneyRole
-} from '.prisma/api-journeys-client'
 import { CaslAbility, CaslAccessible } from '@core/nest/common/CaslAuthModule'
 import { CurrentUserId } from '@core/nest/decorators/CurrentUserId'
 import { FromPostgresql } from '@core/nest/decorators/FromPostgresql'
@@ -36,6 +24,20 @@ import {
   PowerBiEmbed,
   getPowerBiEmbed
 } from '@core/nest/powerBi/getPowerBiEmbed'
+import {
+  Block,
+  Action as BlockAction,
+  ChatButton,
+  Host,
+  Journey,
+  JourneyCollection,
+  JourneyCustomizationField,
+  JourneyTheme,
+  Prisma,
+  Team,
+  UserJourney,
+  UserJourneyRole
+} from '@core/prisma/journeys/client'
 
 import {
   IdType,
@@ -50,6 +52,7 @@ import {
 import { Action, AppAbility } from '../../lib/casl/caslFactory'
 import { AppCaslGuard } from '../../lib/casl/caslGuard'
 import { PrismaService } from '../../lib/prisma.service'
+import { RevalidateJob } from '../../lib/prisma.types'
 import { ERROR_PSQL_UNIQUE_CONSTRAINT_VIOLATED } from '../../lib/prismaErrors'
 import { BlockService } from '../block/block.service'
 import { PlausibleJob } from '../plausible/plausible.consumer'
@@ -62,6 +65,8 @@ const FIVE_DAYS = 5 * 24 * 60 * 60 // in seconds
 @Resolver('Journey')
 export class JourneyResolver {
   constructor(
+    @InjectQueue('api-journeys-revalidate')
+    private readonly revalidateQueue: Queue<RevalidateJob>,
     @InjectQueue('api-journeys-plausible')
     private readonly plausibleQueue: Queue<PlausibleJob>,
     private readonly blockService: BlockService,
@@ -460,7 +465,8 @@ export class JourneyResolver {
         journeyTags: true,
         team: {
           include: { userTeams: true }
-        }
+        },
+        journeyCustomizationFields: true
       }
     })
     if (journey == null)
@@ -564,6 +570,14 @@ export class JourneyResolver {
       strict: true
     })
 
+    const duplicateCustomizationFields = journey.journeyCustomizationFields.map(
+      (field) => ({
+        ...field,
+        id: uuidv4(),
+        journeyId: duplicateJourneyId
+      })
+    )
+
     let retry = true
     while (retry) {
       try {
@@ -582,7 +596,8 @@ export class JourneyResolver {
                   'strategySlug',
                   'journeyTags',
                   'logoImageBlockId',
-                  'menuStepBlockId'
+                  'menuStepBlockId',
+                  'journeyCustomizationFields'
                 ]),
                 id: duplicateJourneyId,
                 slug,
@@ -591,6 +606,9 @@ export class JourneyResolver {
                 publishedAt: new Date(),
                 featuredAt: null,
                 template: false,
+                fromTemplateId: journey.template
+                  ? id
+                  : (journey.fromTemplateId ?? null),
                 team: { connect: { id: teamId } },
                 userJourneys: {
                   create: {
@@ -600,6 +618,11 @@ export class JourneyResolver {
                 }
               }
             })
+
+            await tx.journeyCustomizationField.createMany({
+              data: duplicateCustomizationFields
+            })
+
             const duplicateJourney = await tx.journey.findUnique({
               where: { id: duplicateJourneyId },
               include: {
@@ -629,27 +652,32 @@ export class JourneyResolver {
         // save base blocks
         await this.blockService.saveAll(
           duplicateBlocks.map((block) => ({
+            // if updating the omit, also do the same in block.service.ts saveAll
             ...omit(block, [
               'journeyId',
               'parentBlockId',
               'posterBlockId',
               'coverBlockId',
+              'pollOptionImageBlockId',
               'nextBlockId',
               'action'
             ]),
             typename: block.typename,
             journey: {
               connect: { id: duplicateJourneyId }
-            }
+            },
+            settings: block.settings ?? {}
           }))
         )
         // update block references after import
+        // if updating references, also do the same in block.service.ts saveAll
         for (const block of duplicateBlocks) {
           if (
             block.parentBlockId != null ||
             block.posterBlockId != null ||
             block.coverBlockId != null ||
-            block.nextBlockId != null
+            block.nextBlockId != null ||
+            block.pollOptionImageBlockId != null
           ) {
             await this.prismaService.block.update({
               where: { id: block.id },
@@ -657,7 +685,9 @@ export class JourneyResolver {
                 parentBlockId: block.parentBlockId ?? undefined,
                 posterBlockId: block.posterBlockId ?? undefined,
                 coverBlockId: block.coverBlockId ?? undefined,
-                nextBlockId: block.nextBlockId ?? undefined
+                nextBlockId: block.nextBlockId ?? undefined,
+                pollOptionImageBlockId:
+                  block.pollOptionImageBlockId ?? undefined
               }
             })
           }
@@ -665,6 +695,8 @@ export class JourneyResolver {
             await this.prismaService.action.create({
               data: {
                 ...block.action,
+                customizable: false,
+                parentStepId: null,
                 parentBlockId: block.id
               }
             })
@@ -782,6 +814,13 @@ export class JourneyResolver {
 
         const updatedJourney = await tx.journey.update({
           where: { id },
+          include: {
+            team: {
+              include: {
+                customDomains: true
+              }
+            }
+          },
           data: {
             ...omit(input, ['tagIds']),
             title: input.title ?? undefined,
@@ -799,6 +838,18 @@ export class JourneyResolver {
             updatedJourney.id,
             input.slug
           )
+        }
+
+        if (
+          input.seoTitle != null ||
+          input.seoDescription != null ||
+          input.primaryImageBlockId != null
+        ) {
+          await this.revalidateQueue.add('revalidate', {
+            slug: updatedJourney.slug,
+            hostname: updatedJourney.team.customDomains[0]?.name,
+            fbReScrape: true
+          })
         }
 
         return updatedJourney
@@ -1144,6 +1195,22 @@ export class JourneyResolver {
       where: {
         journeyCollectionJourneys: { some: { journeyId: parent.id } }
       }
+    })
+  }
+
+  @ResolveField()
+  async journeyTheme(@Parent() journey: Journey): Promise<JourneyTheme | null> {
+    return await this.prismaService.journeyTheme.findUnique({
+      where: { journeyId: journey.id }
+    })
+  }
+
+  @ResolveField('journeyCustomizationFields')
+  async journeyCustomizationFields(
+    @Parent() journey: Journey
+  ): Promise<JourneyCustomizationField[]> {
+    return await this.prismaService.journeyCustomizationField.findMany({
+      where: { journeyId: journey.id }
     })
   }
 }

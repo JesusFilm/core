@@ -1,8 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
 
-import { Block, Journey, UserTeamRole } from '.prisma/api-journeys-client'
 import { CaslAuthModule } from '@core/nest/common/CaslAuthModule'
+import { Block, Journey, UserTeamRole } from '@core/prisma/journeys/client'
 
 import {
   RadioOptionBlockCreateInput,
@@ -46,7 +46,8 @@ describe('RadioQuestionBlockResolver', () => {
 
   const blockUpdateInput: RadioOptionBlockUpdateInput = {
     parentBlockId: 'parentBlockId',
-    label: 'label'
+    label: 'label',
+    pollOptionImageBlockId: 'pollOptionImageBlockId'
   }
 
   beforeEach(async () => {

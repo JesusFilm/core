@@ -104,6 +104,6 @@ describe('accordion', () => {
     const summary = screen.getByTestId('AccordionSummary')
 
     expect(within(summary).getByText('name')).toBeInTheDocument()
-    expect(within(summary).queryAllByRole('heading')).toHaveLength(1)
+    expect(within(summary).queryAllByRole('paragraph')).toHaveLength(1)
   })
 })

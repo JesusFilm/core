@@ -66,6 +66,10 @@ const noJourneysMock: MockedResponse<
 }
 
 describe('ArchivedJourneyList', () => {
+  beforeEach(() => {
+    jest.clearAllMocks()
+  })
+
   beforeAll(() => {
     jest.useFakeTimers()
     jest.setSystemTime(new Date(fakeDate))
@@ -130,11 +134,11 @@ describe('ArchivedJourneyList', () => {
 
     await waitFor(() =>
       expect(getAllByLabelText('journey-card')[0].textContent).toContain(
-        'a lower case title11 months agoEnglish'
+        'a lower case titleEnglish•11 months ago00'
       )
     )
     expect(getAllByLabelText('journey-card')[1].textContent).toContain(
-      'An Old Journey Heading1 year ago - Journey created before the current year should also show the year in the dateEnglish'
+      'An Old Journey HeadingEnglish•1 year ago00'
     )
   })
 
@@ -249,7 +253,7 @@ describe('ArchivedJourneyList', () => {
     })
 
     it('should trash all journeys', async () => {
-      const { getByText } = render(
+      const { getByText, getByRole } = render(
         <MockedProvider
           mocks={[archivedJourneysMock, trashJourneysMock, noJourneysMock]}
         >
@@ -266,12 +270,12 @@ describe('ArchivedJourneyList', () => {
       await waitFor(() =>
         expect(getByText('Default Journey Heading')).toBeInTheDocument()
       )
-      fireEvent.click(getByText('Trash'))
+      fireEvent.click(getByRole('button', { name: 'Trash' }))
       await waitFor(() => expect(result).toHaveBeenCalled())
     })
 
     it('should show error', async () => {
-      const { getByText } = render(
+      const { getByText, getByRole } = render(
         <MockedProvider
           mocks={[
             archivedJourneysMock,
@@ -293,7 +297,7 @@ describe('ArchivedJourneyList', () => {
       await waitFor(() =>
         expect(getByText('Default Journey Heading')).toBeInTheDocument()
       )
-      fireEvent.click(getByText('Trash'))
+      fireEvent.click(getByRole('button', { name: 'Trash' }))
       await waitFor(() => expect(getByText('error')).toBeInTheDocument())
     })
   })

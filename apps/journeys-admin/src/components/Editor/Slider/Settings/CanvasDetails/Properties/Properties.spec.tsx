@@ -59,6 +59,7 @@ describe('Properties', () => {
       __typename: 'CardBlock',
       id: 'block.id',
       fullscreen: false,
+      backdropBlur: null,
       children: []
     }
     const selectedStep = {}
@@ -173,7 +174,11 @@ describe('Properties', () => {
     const block = {
       __typename: 'TypographyBlock',
       id: 'block.id',
-      children: []
+      children: [],
+      settings: {
+        __typename: 'TypographyBlockSettings',
+        color: null
+      }
     } as unknown as TreeBlock
 
     render(
@@ -336,6 +341,7 @@ describe('Properties', () => {
       __typename: 'CardBlock',
       id: 'block.id',
       fullscreen: false,
+      backdropBlur: null,
       children: []
     }
     const selectedStep = {}
@@ -382,6 +388,7 @@ describe('Properties', () => {
       themeMode: ThemeMode.light,
       themeName: ThemeName.base,
       fullscreen: false,
+      backdropBlur: null,
       children: []
     }
 

@@ -1,1 +1,0 @@
-export { importLanguageNames } from './languageNames'

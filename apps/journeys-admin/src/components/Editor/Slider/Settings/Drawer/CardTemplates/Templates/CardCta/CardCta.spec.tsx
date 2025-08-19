@@ -57,6 +57,7 @@ describe('CardCta', () => {
     themeMode: null,
     themeName: null,
     fullscreen: false,
+    backdropBlur: null,
     children: []
   }
   const step: TreeBlock = {
@@ -104,7 +105,10 @@ describe('CardCta', () => {
           journeyId: 'journeyId',
           parentBlockId: 'cardId',
           content: "Let's Connect",
-          variant: TypographyVariant.h6
+          variant: TypographyVariant.h6,
+          settings: {
+            color: null
+          }
         },
         titleInput: {
           id: 'titleId',
@@ -113,7 +117,10 @@ describe('CardCta', () => {
           journeyId: 'journeyId',
           parentBlockId: 'cardId',
           content: "From 'hello' to heartfelt conversations",
-          variant: TypographyVariant.h3
+          variant: TypographyVariant.h3,
+          settings: {
+            color: null
+          }
         },
         button1Id: 'button1Id',
         button1Input: {
@@ -122,7 +129,8 @@ describe('CardCta', () => {
           parentBlockId: 'cardId',
           label: 'Chat with us',
           variant: ButtonVariant.contained,
-          size: ButtonSize.large
+          size: ButtonSize.large,
+          submitEnabled: null
         },
         startIcon1Input: {
           id: 'startIcon1Id',
@@ -146,7 +154,8 @@ describe('CardCta', () => {
           parentBlockId: 'cardId',
           label: 'Email us',
           variant: ButtonVariant.contained,
-          size: ButtonSize.large
+          size: ButtonSize.large,
+          submitEnabled: null
         },
         startIcon2Input: {
           id: 'startIcon2Id',
@@ -171,7 +180,8 @@ describe('CardCta', () => {
           label: 'More about us',
           variant: ButtonVariant.text,
           color: ButtonColor.secondary,
-          size: ButtonSize.large
+          size: ButtonSize.large,
+          submitEnabled: null
         },
         startIcon3Input: {
           id: 'startIcon3Id',
@@ -218,7 +228,11 @@ describe('CardCta', () => {
           color: null,
           content: "Let's Connect",
           variant: TypographyVariant.h6,
-          __typename: 'TypographyBlock'
+          __typename: 'TypographyBlock',
+          settings: {
+            __typename: 'TypographyBlockSettings',
+            color: null
+          }
         },
         title: {
           id: 'titleId',
@@ -228,7 +242,11 @@ describe('CardCta', () => {
           color: null,
           content: "From 'hello' to heartfelt conversations",
           variant: TypographyVariant.h3,
-          __typename: 'TypographyBlock'
+          __typename: 'TypographyBlock',
+          settings: {
+            __typename: 'TypographyBlockSettings',
+            color: null
+          }
         },
         button1: {
           id: 'button1Id',
@@ -242,6 +260,7 @@ describe('CardCta', () => {
           endIconId: null,
           submitEnabled: null,
           action: null,
+          settings: null,
           __typename: 'ButtonBlock'
         },
         startIcon1: {
@@ -274,6 +293,7 @@ describe('CardCta', () => {
           endIconId: 'endIcon1Id',
           submitEnabled: null,
           action: null,
+          settings: null,
           __typename: 'ButtonBlock'
         },
         button2: {
@@ -288,6 +308,7 @@ describe('CardCta', () => {
           endIconId: null,
           submitEnabled: null,
           action: null,
+          settings: null,
           __typename: 'ButtonBlock'
         },
         startIcon2: {
@@ -320,6 +341,7 @@ describe('CardCta', () => {
           endIconId: 'endIcon2Id',
           submitEnabled: null,
           action: null,
+          settings: null,
           __typename: 'ButtonBlock'
         },
         button3: {
@@ -334,6 +356,7 @@ describe('CardCta', () => {
           endIconId: null,
           submitEnabled: null,
           action: null,
+          settings: null,
           __typename: 'ButtonBlock'
         },
         startIcon3: {
@@ -366,6 +389,7 @@ describe('CardCta', () => {
           endIconId: 'endIcon3Id',
           submitEnabled: null,
           action: null,
+          settings: null,
           __typename: 'ButtonBlock'
         },
         cardBlockUpdate: {
@@ -377,6 +401,7 @@ describe('CardCta', () => {
           themeMode: null,
           themeName: null,
           fullscreen: false,
+          backdropBlur: null,
           __typename: 'CardBlock'
         }
       }

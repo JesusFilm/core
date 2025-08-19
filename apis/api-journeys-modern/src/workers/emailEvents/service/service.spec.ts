@@ -10,7 +10,7 @@ import {
   UserJourneyRole,
   UserTeamRole,
   Visitor
-} from '.prisma/api-journeys-modern-client'
+} from '@core/prisma/journeys/client'
 import { sendEmail } from '@core/yoga/email'
 import { EventsNotificationJob } from '@core/yoga/emailEvents/types'
 
@@ -135,7 +135,11 @@ const journey: JourneyWithTeamAndUserJourney = {
   showDisplayTitle: null,
   menuButtonIcon: null,
   logoImageBlockId: null,
-  menuStepBlockId: null
+  menuStepBlockId: null,
+  socialNodeX: null,
+  socialNodeY: null,
+  fromTemplateId: null,
+  journeyCustomizationDescription: null
 }
 
 const event: Event = {
@@ -174,6 +178,7 @@ const visitor: Visitor & { events: Event[] } = {
   messagePlatform: MessagePlatform.whatsApp,
   name: 'Bob Smith',
   notes: 'Bob called this afternoon to arrange a meet-up.',
+  phone: null,
   status: 'star',
   teamId: 'teamId',
   userAgent: null,

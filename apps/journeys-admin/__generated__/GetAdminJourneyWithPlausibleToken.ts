@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { JourneyStatus, ThemeName, ThemeMode, ButtonVariant, ButtonColor, ButtonSize, IconName, IconSize, IconColor, TextResponseType, TypographyAlign, TypographyColor, TypographyVariant, VideoBlockSource, VideoBlockObjectFit, UserJourneyRole, MessagePlatform, JourneyMenuButtonIcon } from "./globalTypes";
+import { JourneyStatus, ThemeName, ThemeMode, ButtonVariant, ButtonColor, ButtonSize, ButtonAlignment, IconName, IconSize, IconColor, TextResponseType, TypographyAlign, TypographyColor, TypographyVariant, VideoBlockSource, VideoBlockObjectFit, UserJourneyRole, MessagePlatform, JourneyMenuButtonIcon } from "./globalTypes";
 
 // ====================================================
 // GraphQL query operation: GetAdminJourneyWithPlausibleToken
@@ -53,6 +53,14 @@ export interface GetAdminJourneyWithPlausibleToken_journey_blocks_ButtonBlock_ac
 
 export type GetAdminJourneyWithPlausibleToken_journey_blocks_ButtonBlock_action = GetAdminJourneyWithPlausibleToken_journey_blocks_ButtonBlock_action_NavigateToBlockAction | GetAdminJourneyWithPlausibleToken_journey_blocks_ButtonBlock_action_LinkAction | GetAdminJourneyWithPlausibleToken_journey_blocks_ButtonBlock_action_EmailAction;
 
+export interface GetAdminJourneyWithPlausibleToken_journey_blocks_ButtonBlock_settings {
+  __typename: "ButtonBlockSettings";
+  /**
+   * Alignment of the button
+   */
+  alignment: ButtonAlignment | null;
+}
+
 export interface GetAdminJourneyWithPlausibleToken_journey_blocks_ButtonBlock {
   __typename: "ButtonBlock";
   id: string;
@@ -66,6 +74,7 @@ export interface GetAdminJourneyWithPlausibleToken_journey_blocks_ButtonBlock {
   endIconId: string | null;
   submitEnabled: boolean | null;
   action: GetAdminJourneyWithPlausibleToken_journey_blocks_ButtonBlock_action | null;
+  settings: GetAdminJourneyWithPlausibleToken_journey_blocks_ButtonBlock_settings | null;
 }
 
 export interface GetAdminJourneyWithPlausibleToken_journey_blocks_CardBlock {
@@ -77,6 +86,10 @@ export interface GetAdminJourneyWithPlausibleToken_journey_blocks_CardBlock {
    * backgroundColor should be a HEX color value e.g #FFFFFF for white.
    */
   backgroundColor: string | null;
+  /**
+   * backdropBlur should be a number representing blur amount in pixels e.g 20.
+   */
+  backdropBlur: number | null;
   /**
    * coverBlockId is present if a child block should be used as a cover.
    * This child block should not be rendered normally, instead it should be used
@@ -160,6 +173,12 @@ export interface GetAdminJourneyWithPlausibleToken_journey_blocks_RadioOptionBlo
   parentOrder: number | null;
   label: string;
   action: GetAdminJourneyWithPlausibleToken_journey_blocks_RadioOptionBlock_action | null;
+  /**
+   * pollOptionImageBlockId is present if a child block should be used as a poll option image.
+   *       This child block should not be rendered normally, instead it should be used
+   *       as a poll option image. Blocks are often of type ImageBlock
+   */
+  pollOptionImageBlockId: string | null;
 }
 
 export interface GetAdminJourneyWithPlausibleToken_journey_blocks_RadioQuestionBlock {
@@ -167,6 +186,7 @@ export interface GetAdminJourneyWithPlausibleToken_journey_blocks_RadioQuestionB
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
+  gridView: boolean | null;
 }
 
 export interface GetAdminJourneyWithPlausibleToken_journey_blocks_SignUpBlock_action_NavigateToBlockAction {
@@ -250,6 +270,14 @@ export interface GetAdminJourneyWithPlausibleToken_journey_blocks_TextResponseBl
   integrationId: string | null;
 }
 
+export interface GetAdminJourneyWithPlausibleToken_journey_blocks_TypographyBlock_settings {
+  __typename: "TypographyBlockSettings";
+  /**
+   * Color of the typography
+   */
+  color: string | null;
+}
+
 export interface GetAdminJourneyWithPlausibleToken_journey_blocks_TypographyBlock {
   __typename: "TypographyBlock";
   id: string;
@@ -259,6 +287,7 @@ export interface GetAdminJourneyWithPlausibleToken_journey_blocks_TypographyBloc
   color: TypographyColor | null;
   content: string;
   variant: TypographyVariant | null;
+  settings: GetAdminJourneyWithPlausibleToken_journey_blocks_TypographyBlock_settings | null;
 }
 
 export interface GetAdminJourneyWithPlausibleToken_journey_blocks_VideoBlock_mediaVideo_Video_title {
@@ -592,6 +621,14 @@ export interface GetAdminJourneyWithPlausibleToken_journey_menuStepBlock {
   slug: string | null;
 }
 
+export interface GetAdminJourneyWithPlausibleToken_journey_journeyTheme {
+  __typename: "JourneyTheme";
+  id: string;
+  headerFont: string | null;
+  bodyFont: string | null;
+  labelFont: string | null;
+}
+
 export interface GetAdminJourneyWithPlausibleToken_journey {
   __typename: "Journey";
   id: string;
@@ -604,6 +641,7 @@ export interface GetAdminJourneyWithPlausibleToken_journey {
   status: JourneyStatus;
   language: GetAdminJourneyWithPlausibleToken_journey_language;
   createdAt: any;
+  updatedAt: any;
   featuredAt: any | null;
   publishedAt: any | null;
   themeName: ThemeName;
@@ -635,6 +673,7 @@ export interface GetAdminJourneyWithPlausibleToken_journey {
   logoImageBlock: GetAdminJourneyWithPlausibleToken_journey_logoImageBlock | null;
   menuButtonIcon: JourneyMenuButtonIcon | null;
   menuStepBlock: GetAdminJourneyWithPlausibleToken_journey_menuStepBlock | null;
+  journeyTheme: GetAdminJourneyWithPlausibleToken_journey_journeyTheme | null;
   /**
    * used in a plausible share link to embed report
    */

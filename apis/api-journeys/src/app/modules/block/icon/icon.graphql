@@ -40,14 +40,14 @@ enum IconSize {
   inherit
 }
 
-type IconBlock implements Block {
-  id: ID!
-  journeyId: ID!
-  parentBlockId: ID
-  parentOrder: Int
-  name: IconName
-  color: IconColor
-  size: IconSize
+type IconBlock implements Block @shareable {
+  id: ID! @shareable
+  journeyId: ID! @shareable
+  parentBlockId: ID @shareable
+  parentOrder: Int @shareable
+  name: IconName @shareable
+  color: IconColor @shareable
+  size: IconSize @shareable
 }
 
 input IconBlockCreateInput {

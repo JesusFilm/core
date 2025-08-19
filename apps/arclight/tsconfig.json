@@ -12,17 +12,12 @@
     "isolatedModules": true,
     "incremental": true,
     "tsBuildInfoFile": "../../.cache/arclight/tsc/.tsbuildinfo",
+    "types": ["jest", "node"],
     "plugins": [
       {
         "name": "next"
-      },
-      {
-        "name": "gql.tada/ts-plugin",
-        "schema": "../../apis/api-gateway/schema.graphql",
-        "tadaOutputLocation": "./apps/arclight/src/__generated__/graphql-env.d.ts"
       }
-    ],
-    "types": ["jest", "node"]
+    ]
   },
   "include": [
     "**/*.ts",
@@ -31,6 +26,7 @@
     "**/*.jsx",
     "../../apps/arclight/.next/types/**/*.ts",
     "../../dist/apps/arclight/.next/types/**/*.ts",
+    "postcss.config.mjs",
     "next-env.d.ts",
     ".next/types/**/*.ts"
   ],

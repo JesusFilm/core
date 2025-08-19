@@ -11,22 +11,12 @@ concurrency:
   cancel-in-progress: true
 jobs:
   build:
-    runs-on: blacksmith-2vcpu-ubuntu-2204
+    runs-on: blacksmith-4vcpu-ubuntu-2204
     strategy:
       matrix:
         node-version: [22]
-    services:
-      postgres:
-        image: postgres
-        env:
-          POSTGRES_PASSWORD: postgres
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-        ports:
-          - 5432:5432
+    env:
+      NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -57,15 +47,10 @@ jobs:
         with:
           targets: prisma-generate
           all: true
-          parallel: 1
         env:
           DISABLE_ERD: true
       - name: Install Doppler
-        run: |
-          sudo apt-get update && sudo apt-get install -y apt-transport-https ca-certificates curl gnupg
-          curl -sLf --retry 3 --tlsv1.2 --proto "=https" 'https://packages.doppler.com/public/cli/gpg.DE2A7741A397C129.key' | sudo apt-key add -
-          echo "deb https://packages.doppler.com/public/cli/deb/debian any-version main" | sudo tee /etc/apt/sources.list.d/doppler-cli.list
-          sudo apt-get update && sudo apt-get -y install doppler
+        uses: dopplerhq/cli-action@v3
       - name: fetch-secrets and build
         uses: mansagroup/nrwl-nx-action@v3
         env:
@@ -81,32 +66,24 @@ jobs:
           DOPPLER_JOURNEYS_ADMIN_TOKEN: ${{ secrets.DOPPLER_JOURNEYS_ADMIN_TOKEN }}
           DOPPLER_SHORT_LINKS_TOKEN: ${{ secrets.DOPPLER_SHORT_LINKS_TOKEN }}
           DOPPLER_WATCH_TOKEN: ${{ secrets.DOPPLER_WATCH_TOKEN }}
+          DOPPLER_WATCH_MODERN_TOKEN: ${{ secrets.DOPPLER_WATCH_MODERN_TOKEN }}
           DOPPLER_WATCH_ADMIN_TOKEN: ${{ secrets.DOPPLER_WATCH_ADMIN_TOKEN }}
           DOPPLER_VIDEOS_ADMIN_TOKEN: ${{ secrets.DOPPLER_VIDEOS_ADMIN_TOKEN }}
+          DOPPLER_VIDEO_IMPORTER_TOKEN: ${{ secrets.DOPPLER_VIDEO_IMPORTER_TOKEN }}
           DOPPLER_GITHUB_SERVICE_TOKEN: ${{ secrets.DOPPLER_GITHUB_SERVICE_TOKEN }}
           DOPPLER_CONFIG: stg
         with:
           targets: fetch-secrets,build
   test:
-    runs-on: blacksmith-2vcpu-ubuntu-2204
+    runs-on: blacksmith-4vcpu-ubuntu-2204
     strategy:
       fail-fast: false
       matrix:
         node-version: [22]
         # https://jestjs.io/docs/cli#--shard
         shard: ['1/3', '2/3', '3/3']
-    services:
-      postgres:
-        image: postgres
-        env:
-          POSTGRES_PASSWORD: postgres
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-        ports:
-          - 5432:5432
+    env:
+      NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -137,7 +114,6 @@ jobs:
         with:
           targets: prisma-generate
           all: true
-          parallel: 1
         env:
           DISABLE_ERD: true
       - name: Get number of CPU cores

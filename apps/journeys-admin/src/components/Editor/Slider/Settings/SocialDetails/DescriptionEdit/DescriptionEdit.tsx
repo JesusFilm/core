@@ -9,7 +9,6 @@ import { object, string } from 'yup'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 
 import { JourneySeoDescriptionUpdate } from '../../../../../../../__generated__/JourneySeoDescriptionUpdate'
-import { revalidateJourney } from '../../../../../../libs/revalidateJourney'
 
 export const JOURNEY_SEO_DESCRIPTION_UPDATE = gql`
   mutation JourneySeoDescriptionUpdate($id: ID!, $input: JourneyUpdateInput!) {
@@ -46,16 +45,12 @@ export function DescriptionEdit(): ReactElement {
         }
       }
     })
-    void revalidateJourney({
-      slug: journey.slug,
-      hostname: journey.host?.title
-    })
   }
 
   const initialValues =
     journey != null
       ? {
-          seoDescription: journey.seoDescription ?? journey.description ?? ''
+          seoDescription: journey.seoDescription ?? ''
         }
       : null
 
@@ -77,7 +72,7 @@ export function DescriptionEdit(): ReactElement {
                 id="seoDescription"
                 name="seoDescription"
                 variant="filled"
-                label={t('Description')}
+                label={t('Secondary Text')}
                 fullWidth
                 multiline
                 maxRows={5}
@@ -107,7 +102,7 @@ export function DescriptionEdit(): ReactElement {
       ) : (
         <TextField
           variant="filled"
-          label={t('Description')}
+          label={t('Secondary Text')}
           fullWidth
           disabled
           helperText={t('Recommended length: up to 18 words')}

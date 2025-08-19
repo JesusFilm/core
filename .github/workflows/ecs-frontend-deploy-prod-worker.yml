@@ -41,6 +41,8 @@ on:
         required: true
       DOPPLER_WATCH_TOKEN:
         required: true
+      DOPPLER_WATCH_MODERN_TOKEN:
+        required: true
       DOPPLER_WATCH_ADMIN_TOKEN:
         required: true
       DOPPLER_GITHUB_SERVICE_TOKEN:
@@ -84,11 +86,7 @@ jobs:
         with:
           key: ${{ github.repository }}-${{ steps.node-version.outputs.version }}-node-modules
           path: ./node_modules
-      - name: Mount next cache
-        uses: useblacksmith/stickydisk@v1
-        with:
-          key: ${{ github.repository }}-${{ inputs.name }}-next-cache
-          path: ./apps/${{ inputs.name }}/.next
+
       - name: NPM Install
         run: npm install --silent
 
@@ -123,6 +121,7 @@ jobs:
           DOPPLER_JOURNEYS_TOKEN: ${{ secrets.DOPPLER_JOURNEYS_TOKEN }}
           DOPPLER_JOURNEYS_ADMIN_TOKEN: ${{ secrets.DOPPLER_JOURNEYS_ADMIN_TOKEN }}
           DOPPLER_WATCH_TOKEN: ${{ secrets.DOPPLER_WATCH_TOKEN }}
+          DOPPLER_WATCH_MODERN_TOKEN: ${{ secrets.DOPPLER_WATCH_MODERN_TOKEN }}
           DOPPLER_WATCH_ADMIN_TOKEN: ${{ secrets.DOPPLER_WATCH_ADMIN_TOKEN }}
           DOPPLER_GITHUB_SERVICE_TOKEN: ${{ secrets.DOPPLER_GITHUB_SERVICE_TOKEN }}
           NEXT_PUBLIC_VERCEL_ENV: prod
@@ -154,17 +153,28 @@ jobs:
         id: login-ecr-ecs
         uses: aws-actions/amazon-ecr-login@v2
 
-      - name: Build, tag, and push the image to Amazon ECR
+      - name: Set up Docker Buildx
+        if: contains(steps.affected-apps.outputs.apps, inputs.name)
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build and push Docker image to Amazon ECR
         if: contains(steps.affected-apps.outputs.apps, inputs.name)
         id: build-image-ecs
-        env:
-          ECR_REGISTRY: ${{ steps.login-ecr-ecs.outputs.registry }}
+        uses: useblacksmith/build-push-action@v1
+        with:
+          context: .
+          file: apps/${{ inputs.name }}/Dockerfile
+          push: true
+          tags: |
+            ${{ steps.login-ecr-ecs.outputs.registry }}/${{ env.ECR_REPOSITORY }}:${{ env.IMAGE_TAG }}
+            ${{ steps.login-ecr-ecs.outputs.registry }}/${{ env.ECR_REPOSITORY }}:latest
+          build-args: |
+            SERVICE_VERSION=${{ env.IMAGE_TAG }}
+
+      - name: Set image output
+        if: contains(steps.affected-apps.outputs.apps, inputs.name)
         run: |
-          # Build a docker container and push it to ECR 
-          docker build --build-arg SERVICE_VERSION=$IMAGE_TAG -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG -t $ECR_REGISTRY/$ECR_REPOSITORY:latest . -f apps/${{ inputs.name }}/Dockerfile
-          echo "Pushing image to ECR..."
-          docker push -a $ECR_REGISTRY/$ECR_REPOSITORY
-          echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
+          echo "image=${{ steps.login-ecr-ecs.outputs.registry }}/${{ env.ECR_REPOSITORY }}:${{ env.IMAGE_TAG }}" >> $GITHUB_OUTPUT
 
       - name: Restart task definition
         if: contains(steps.affected-apps.outputs.apps, inputs.name)

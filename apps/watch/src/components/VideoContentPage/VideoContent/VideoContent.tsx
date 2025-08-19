@@ -1,12 +1,17 @@
-import ArrowForwardIcon from '@mui/icons-material/ArrowForward'
 import Box from '@mui/material/Box'
-import ButtonBase from '@mui/material/ButtonBase'
 import Stack from '@mui/material/Stack'
 import Tab from '@mui/material/Tab'
 import Tabs from '@mui/material/Tabs'
 import Typography from '@mui/material/Typography'
+import last from 'lodash/last'
 import { useTranslation } from 'next-i18next'
-import { ReactElement, SyntheticEvent, useEffect, useState } from 'react'
+import {
+  ReactElement,
+  SyntheticEvent,
+  useEffect,
+  useMemo,
+  useState
+} from 'react'
 
 import { TabPanel, tabA11yProps } from '@core/shared/ui/TabPanel'
 
@@ -17,6 +22,25 @@ export function VideoContent(): ReactElement {
   const { description, studyQuestions } = useVideo()
   const [tabValue, setTabValue] = useState(0)
   const { t } = useTranslation('apps-watch')
+
+  const filteredStudyQuestions = useMemo(() => {
+    if (!studyQuestions?.length) return []
+
+    const nonPrimaryQuestions = studyQuestions.filter(
+      (q) => q.primary === false
+    )
+    if (nonPrimaryQuestions.length > 0) {
+      return nonPrimaryQuestions
+    }
+
+    const primaryQuestions = studyQuestions.filter((q) => q.primary === true)
+    if (primaryQuestions.length > 0) {
+      return primaryQuestions
+    }
+
+    return []
+  }, [studyQuestions])
+
   const handleTabChange = (
     _event: SyntheticEvent<Element, Event>,
     newValue: number
@@ -30,64 +54,6 @@ export function VideoContent(): ReactElement {
 
   return (
     <Box width="100%" data-testid="VideoContent">
-      <ButtonBase
-        component="a"
-        href="https://www.jesusfilm.org/watch/easter.html/english.html?utm=easter2025"
-        sx={{
-          width: '100%',
-          mb: 3,
-          p: 4,
-          borderRadius: 3,
-          border: '2px solid',
-          borderColor: 'primary.main',
-          bgcolor: 'transparent',
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          cursor: 'pointer',
-          textDecoration: 'none',
-          '&:hover': {
-            bgcolor: 'primary.main',
-            '& .banner-text': {
-              color: 'primary.contrastText'
-            },
-            '& .banner-icon': {
-              color: 'primary.contrastText'
-            }
-          }
-        }}
-      >
-        <Typography
-          variant="h5"
-          sx={{
-            lineHeight: 1.125,
-            fontWeight: 600,
-            fontSize: { md: '18px' },
-            width: '100%'
-          }}
-          className="banner-text"
-          color="primary.main"
-        >
-          {t('Experience and Share the Joy of Easter with Powerful Videos')}
-        </Typography>
-        <ArrowForwardIcon
-          sx={{ color: 'primary.main', ml: 4 }}
-          className="banner-icon"
-        />
-        <Typography
-          variant="h3"
-          sx={{
-            whiteSpace: 'nowrap',
-            ml: 4,
-            mr: 1,
-            fontSize: { md: '27px' }
-          }}
-          className="banner-text"
-          color="primary.main"
-        >
-          {t('Easter 2025')}
-        </Typography>
-      </ButtonBase>
       <Tabs
         value={tabValue}
         onChange={handleTabChange}
@@ -126,7 +92,7 @@ export function VideoContent(): ReactElement {
           }
           {...tabA11yProps('description', 0)}
         />
-        {studyQuestions?.length !== 0 && (
+        {filteredStudyQuestions.length !== 0 && (
           <Tab
             data-testid="discussion"
             label={
@@ -159,10 +125,10 @@ export function VideoContent(): ReactElement {
             }
           }}
         >
-          {description[0]?.value}
+          {last(description)?.value}
         </TextFormatter>
       </TabPanel>
-      {studyQuestions?.length !== 0 && (
+      {filteredStudyQuestions.length !== 0 && (
         <TabPanel name="discussion-questions" value={tabValue} index={1}>
           <Stack
             direction="column"
@@ -171,7 +137,7 @@ export function VideoContent(): ReactElement {
               py: 2
             }}
           >
-            {studyQuestions?.map((question, index: number) => (
+            {filteredStudyQuestions.map((question, index: number) => (
               <Stack
                 direction="row"
                 spacing={4}

@@ -1,7 +1,9 @@
 import { OpenAPIHono, createRoute, z } from '@hono/zod-openapi'
-import { ResultOf, graphql } from 'gql.tada'
+
+import { ResultOf, graphql } from '@core/shared/gql'
 
 import { getApolloClient } from '../../../../../lib/apolloClient'
+import { getDownloadSize } from '../../../../../lib/downloadHelpers'
 import { mediaComponentSchema } from '../../mediaComponent.schema'
 
 const GET_VIDEO_CHILDREN = graphql(`
@@ -55,7 +57,7 @@ const GET_VIDEO_CHILDREN = graphql(`
         availableLanguages
         variant {
           hls
-          duration
+          lengthInMilliseconds
           language {
             bcp47
           }
@@ -114,7 +116,7 @@ const GET_VIDEO_CHILDREN = graphql(`
         availableLanguages
         variant {
           hls
-          duration
+          lengthInMilliseconds
           language {
             bcp47
           }
@@ -140,7 +142,8 @@ const ParamsSchema = z.object({
 const QuerySchema = z.object({
   expand: z.string().optional(),
   rel: z.string().optional(),
-  languageIds: z.string().optional()
+  languageIds: z.string().optional(),
+  apiKey: z.string().optional().describe('API key for authentication')
 })
 
 const ResponseSchema = z.object({
@@ -193,6 +196,7 @@ export const route = createRoute({
 mediaComponentLinksWithId.openapi(route, async (c) => {
   const mediaComponentId = c.req.param('mediaComponentId')
   const expand = c.req.query('expand') ?? ''
+  const apiKey = c.req.query('apiKey')
   const rel = c.req.query('rel') ?? ''
   const languageIds =
     c.req.query('languageIds')?.split(',').filter(Boolean) ?? []
@@ -269,7 +273,7 @@ mediaComponentLinksWithId.openapi(route, async (c) => {
     },
     ...(expand.includes('mediaComponents')
       ? {
-          __embedded: {
+          _embedded: {
             contains: video.children
               .filter(
                 ({ availableLanguages }) =>
@@ -316,10 +320,21 @@ mediaComponentLinksWithId.openapi(route, async (c) => {
                         (image) => image.mobileCinematicVeryLow != null
                       )?.mobileCinematicVeryLow ?? ''
                   },
-                  lengthInMilliseconds: variant?.duration ?? 0,
+                  lengthInMilliseconds: variant?.lengthInMilliseconds ?? 0,
                   containsCount: childrenCount,
                   isDownloadable: variant?.downloadable ?? false,
-                  downloadSizes: {},
+                  downloadSizes: {
+                    approximateSmallDownloadSizeInBytes: getDownloadSize(
+                      variant?.downloads,
+                      'low',
+                      apiKey
+                    ),
+                    approximateLargeDownloadSizeInBytes: getDownloadSize(
+                      variant?.downloads,
+                      'high',
+                      apiKey
+                    )
+                  },
                   bibleCitations: bibleCitations.map((citation) => ({
                     osisBibleBook: citation.osisId,
                     chapterStart: citation.chapterStart,
@@ -394,10 +409,22 @@ mediaComponentLinksWithId.openapi(route, async (c) => {
                               (image) => image.mobileCinematicVeryLow != null
                             )?.mobileCinematicVeryLow ?? ''
                         },
-                        lengthInMilliseconds: variant?.duration ?? 0,
+                        lengthInMilliseconds:
+                          variant?.lengthInMilliseconds ?? 0,
                         containsCount: childrenCount,
                         isDownloadable: variant?.downloadable ?? false,
-                        downloadSizes: {},
+                        downloadSizes: {
+                          approximateSmallDownloadSizeInBytes: getDownloadSize(
+                            variant?.downloads,
+                            'low',
+                            apiKey
+                          ),
+                          approximateLargeDownloadSizeInBytes: getDownloadSize(
+                            variant?.downloads,
+                            'high',
+                            apiKey
+                          )
+                        },
                         bibleCitations: bibleCitations.map((citation) => ({
                           osisBibleBook: citation.osisId,
                           chapterStart: citation.chapterStart,

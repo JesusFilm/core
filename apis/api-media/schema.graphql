@@ -1,6 +1,14 @@
 extend schema
   @link(url: "https://specs.apollo.dev/federation/v2.6", import: ["@extends", "@external", "@key", "@shareable"])
 
+type ArclightApiKey
+  @key(fields: "key")
+{
+  key: String!
+  desc: String
+  defaultPlatform: DefaultPlatform!
+}
+
 interface BaseError {
   message: String
 }
@@ -27,6 +35,7 @@ type BibleCitation {
   bibleBook: BibleBook!
   chapterStart: Int!
   chapterEnd: Int
+  order: Int!
   verseStart: Int
   verseEnd: Int
   video: Video!
@@ -82,6 +91,12 @@ input CloudflareR2CreateInput {
 A date string, such as 2007-12-03, compliant with the `full-date` format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar.
 """
 scalar Date
+
+enum DefaultPlatform {
+  ios
+  android
+  web
+}
 
 type Error implements BaseError
   @shareable
@@ -146,6 +161,12 @@ type LanguageWithSlug {
   slug: String!
 }
 
+enum MaxResolutionTier {
+  fhd
+  qhd
+  uhd
+}
+
 enum MediaRole {
   publisher
 }
@@ -164,8 +185,12 @@ type Mutation {
   cloudflareR2Delete(id: ID!): CloudflareR2!
   createImageBySegmindPrompt(prompt: String!, model: SegmindModel!): CloudflareImage! @deprecated(reason: "use createCloudflareImageFromPrompt")
   triggerUnsplashDownload(url: String!): Boolean!
-  createMuxVideoUploadByFile(name: String!, userGenerated: Boolean): MuxVideo!
-  createMuxVideoUploadByUrl(url: String!, userGenerated: Boolean): MuxVideo!
+  bibleCitationCreate(input: MutationBibleCitationCreateInput!): BibleCitation
+  bibleCitationUpdate(input: MutationBibleCitationUpdateInput!): BibleCitation
+  bibleCitationDelete(id: ID!): Boolean
+  createKeyword(value: String!, languageId: String!): Keyword!
+  createMuxVideoUploadByFile(name: String!, userGenerated: Boolean, downloadable: Boolean = false, maxResolution: MaxResolutionTier = fhd): MuxVideo!
+  createMuxVideoUploadByUrl(url: String!, userGenerated: Boolean, downloadable: Boolean = false, maxResolution: MaxResolutionTier = fhd): MuxVideo!
   enableMuxDownload(id: ID!, resolution: String): MuxVideo
   deleteMuxVideo(id: ID!, userGenerated: Boolean): Boolean!
 
@@ -190,8 +215,18 @@ type Mutation {
 
   """delete an existing short link"""
   shortLinkDelete(id: String!): MutationShortLinkDeleteResult!
+  videoSubtitleCreate(input: VideoSubtitleCreateInput!): VideoSubtitle!
+  videoSubtitleUpdate(input: VideoSubtitleUpdateInput!): VideoSubtitle!
+  videoSubtitleDelete(id: ID!): VideoSubtitle!
+  videoVariantDownloadCreate(input: VideoVariantDownloadCreateInput!): VideoVariantDownload!
+  videoVariantDownloadUpdate(input: VideoVariantDownloadUpdateInput!): VideoVariantDownload!
+  videoVariantDownloadDelete(id: ID!): VideoVariantDownload!
+  videoVariantCreate(input: VideoVariantCreateInput!): VideoVariant!
+  videoVariantUpdate(input: VideoVariantUpdateInput!): VideoVariant!
+  videoVariantDelete(id: ID!): VideoVariant!
   videoCreate(input: VideoCreateInput!): Video!
   videoUpdate(input: VideoUpdateInput!): Video!
+  videoDelete(id: ID!): Video!
   videoDescriptionCreate(input: VideoTranslationCreateInput!): VideoDescription!
   videoDescriptionUpdate(input: VideoTranslationUpdateInput!): VideoDescription!
   videoDescriptionDelete(id: ID!): VideoDescription!
@@ -204,21 +239,38 @@ type Mutation {
   videoStudyQuestionCreate(input: VideoStudyQuestionCreateInput!): VideoStudyQuestion!
   videoStudyQuestionUpdate(input: VideoStudyQuestionUpdateInput!): VideoStudyQuestion!
   videoStudyQuestionDelete(id: ID!): VideoStudyQuestion!
-  videoSubtitleCreate(input: VideoSubtitleCreateInput!): VideoSubtitle!
-  videoSubtitleUpdate(input: VideoSubtitleUpdateInput!): VideoSubtitle!
-  videoSubtitleDelete(id: ID!): VideoSubtitle!
   videoTitleCreate(input: VideoTranslationCreateInput!): VideoTitle!
   videoTitleUpdate(input: VideoTranslationUpdateInput!): VideoTitle!
   videoTitleDelete(id: ID!): VideoTitle!
+  videoOriginCreate(input: MutationVideoOriginCreateInput!): VideoOrigin!
+  videoOriginUpdate(input: MutationVideoOriginUpdateInput!): VideoOrigin!
+  videoOriginDelete(id: ID!): VideoOrigin!
   videoEditionCreate(input: VideoEditionCreateInput!): VideoEdition!
   videoEditionUpdate(input: VideoEditionUpdateInput!): VideoEdition!
   videoEditionDelete(id: ID!): VideoEdition!
-  videoVariantCreate(input: VideoVariantCreateInput!): VideoVariant!
-  videoVariantUpdate(input: VideoVariantUpdateInput!): VideoVariant!
-  videoVariantDelete(id: ID!): VideoVariant!
-  videoVariantDownloadCreate(input: VideoVariantDownloadCreateInput!): VideoVariantDownload!
-  videoVariantDownloadUpdate(input: VideoVariantDownloadUpdateInput!): VideoVariantDownload!
-  videoVariantDownloadDelete(id: ID!): VideoVariantDownload!
+}
+
+input MutationBibleCitationCreateInput {
+  id: ID
+  osisId: String!
+  videoId: ID!
+  bibleBookId: ID!
+  chapterStart: Int!
+  chapterEnd: Int
+  verseStart: Int
+  verseEnd: Int
+  order: Int!
+}
+
+input MutationBibleCitationUpdateInput {
+  id: ID!
+  osisId: String
+  bibleBookId: ID
+  chapterStart: Int
+  chapterEnd: Int
+  verseStart: Int
+  verseEnd: Int
+  order: Int
 }
 
 input MutationShortLinkCreateInput {
@@ -242,9 +294,18 @@ input MutationShortLinkCreateInput {
 
   """the service that created this short link"""
   service: Service!
+
+  """brightcove video ID for video redirects"""
+  brightcoveId: String
+
+  """type of video redirect (hls, dl, dh, s)"""
+  redirectType: RedirectType
+
+  """bitrate of the video variant download"""
+  bitrate: Int
 }
 
-union MutationShortLinkCreateResult = ZodError | NotUniqueError | MutationShortLinkCreateSuccess
+union MutationShortLinkCreateResult = NotUniqueError | ZodError | MutationShortLinkCreateSuccess
 
 type MutationShortLinkCreateSuccess {
   data: ShortLink!
@@ -266,7 +327,7 @@ input MutationShortLinkDomainCreateInput {
   services: [Service!]
 }
 
-union MutationShortLinkDomainCreateResult = ZodError | NotUniqueError | MutationShortLinkDomainCreateSuccess
+union MutationShortLinkDomainCreateResult = NotUniqueError | ZodError | MutationShortLinkDomainCreateSuccess
 
 type MutationShortLinkDomainCreateSuccess {
   data: ShortLinkDomain!
@@ -300,12 +361,32 @@ input MutationShortLinkUpdateInput {
   the fully qualified domain name (FQDN) to redirect the short link service should redirect the user to
   """
   to: String!
+
+  """brightcove video ID for video redirects"""
+  brightcoveId: String
+
+  """type of video redirect (hls, dl, dh, s)"""
+  redirectType: RedirectType
+
+  """bitrate of the video variant download"""
+  bitrate: Int
 }
 
 union MutationShortLinkUpdateResult = ZodError | NotFoundError | MutationShortLinkUpdateSuccess
 
 type MutationShortLinkUpdateSuccess {
   data: ShortLink!
+}
+
+input MutationVideoOriginCreateInput {
+  name: String!
+  description: String
+}
+
+input MutationVideoOriginUpdateInput {
+  id: ID!
+  name: String
+  description: String
 }
 
 type MuxVideo
@@ -370,6 +451,12 @@ type PageInfo
   endCursor: String
 }
 
+enum Platform {
+  arclight
+  journeys
+  watch
+}
+
 type Query {
   getTranscodeAssetProgress(jobId: String!): Int
   getMyCloudflareImages(offset: Int, limit: Int): [CloudflareImage!]!
@@ -377,7 +464,8 @@ type Query {
   listUnsplashCollectionPhotos(collectionId: String!, page: Int, perPage: Int, orientation: UnsplashPhotoOrientation): [UnsplashPhoto!]!
   searchUnsplashPhotos(query: String!, page: Int, perPage: Int, orderBy: UnsplashOrderBy, collections: [String!], contentFilter: UnsplashContentFilter, color: UnsplashColor, orientation: UnsplashPhotoOrientation): UnsplashQueryResponse!
   bibleBooks: [BibleBook!]!
-  bibleCitations: [BibleCitation!]!
+  bibleCitations(videoId: ID): [BibleCitation!]!
+  bibleCitation(id: ID!): BibleCitation!
   keywords: [Keyword!]!
   getMyMuxVideos(offset: Int, limit: Int): [MuxVideo!]!
   getMyMuxVideo(id: ID!, userGenerated: Boolean): MuxVideo!
@@ -417,18 +505,21 @@ type Query {
     first: Int
     last: Int
   ): QueryShortLinksConnection!
+  videoVariant(id: ID!): VideoVariant!
+  videoVariants(input: VideoVariantFilter): [VideoVariant!]!
   adminVideo(id: ID!, idType: IdType = databaseId): Video!
   adminVideos(where: VideosFilter, offset: Int, limit: Int): [Video!]!
   adminVideosCount(where: VideosFilter): Int!
   video(id: ID!, idType: IdType = databaseId): Video!
   videos(where: VideosFilter, offset: Int, limit: Int): [Video!]!
   videosCount(where: VideosFilter): Int!
+  videoOrigins: [VideoOrigin!]!
   videoEditions: [VideoEdition!]!
   videoEdition(id: ID!): VideoEdition
-  videoVariant(id: ID!): VideoVariant!
-  videoVariants(input: VideoVariantFilter): [VideoVariant!]!
   tags: [Tag!]!
   taxonomies(category: String, languageCodes: [String!]): [Taxonomy!]!
+  arclightApiKeys: [ArclightApiKey!]!
+  arclightApiKeyByKey(key: String!): ArclightApiKey
 }
 
 union QueryShortLinkByPathResult = NotFoundError | QueryShortLinkByPathSuccess
@@ -471,6 +562,13 @@ type QueryShortLinksConnectionEdge {
   cursor: String!
 }
 
+enum RedirectType {
+  hls
+  dl
+  dh
+  s
+}
+
 enum SegmindModel {
   sdxl1__0_txt2img
   kandinsky2__2_txt2img
@@ -504,6 +602,15 @@ type ShortLink
 
   """the service that created this short link"""
   service: Service!
+
+  """brightcove video ID for video redirects"""
+  brightcoveId: String
+
+  """type of video redirect (hls, dl, dh, s)"""
+  redirectType: RedirectType
+
+  """bitrate of the video variant download"""
+  bitrate: Int
 }
 
 """A domain that can be used for short links"""
@@ -708,6 +815,7 @@ type Video
   @shareable
 {
   bibleCitations: [BibleCitation!]!
+  origin: VideoOrigin
   source: VideoBlockSource @shareable
   keywords(languageId: ID): [Keyword!]!
   id: ID!
@@ -729,16 +837,19 @@ type Video
   """slug is a permanent link to the video."""
   slug: String!
   noIndex: Boolean
-  children: [Video!]!
 
-  """the number value of the amount of children on a video"""
+  """The number of published child videos associated with this video"""
   childrenCount: Int!
-  parents: [Video!]!
   variantLanguagesWithSlug(input: VideoVariantFilter): [LanguageWithSlug!]!
   variants(input: VideoVariantFilter): [VideoVariant!]!
   subtitles(languageId: ID, primary: Boolean, edition: String): [VideoSubtitle!]!
-  variant(languageId: ID): VideoVariant
+  variant(languageId: ID, input: VideoVariantFilter): VideoVariant
   images(aspectRatio: ImageAspectRatio): [CloudflareImage!]!
+  restrictDownloadPlatforms: [Platform!]!
+  restrictViewPlatforms: [Platform!]!
+  publishedAt: Date
+  children: [Video!]!
+  parents: [Video!]!
 }
 
 enum VideoBlockSource {
@@ -756,6 +867,7 @@ input VideoCreateInput {
   slug: String!
   noIndex: Boolean!
   childIds: [String!]!
+  originId: String!
 }
 
 type VideoDescription {
@@ -763,6 +875,7 @@ type VideoDescription {
   value: String!
   primary: Boolean!
   language: Language!
+  crowdInId: String
 }
 
 type VideoEdition {
@@ -801,6 +914,19 @@ enum VideoLabel {
   behindTheScenes
 }
 
+type VideoOrigin {
+  id: ID!
+  name: String!
+  description: String
+}
+
+enum VideoRedirectType {
+  hls
+  dl
+  dh
+  s
+}
+
 type VideoSnippet {
   id: ID!
   value: String!
@@ -814,6 +940,7 @@ type VideoStudyQuestion {
   primary: Boolean!
   order: Int!
   language: Language!
+  crowdInId: String
 }
 
 input VideoStudyQuestionCreateInput {
@@ -894,6 +1021,7 @@ type VideoTitle {
   value: String!
   primary: Boolean!
   language: Language!
+  crowdInId: String
 }
 
 input VideoTranslationCreateInput {
@@ -919,6 +1047,9 @@ input VideoUpdateInput {
   slug: String
   noIndex: Boolean
   childIds: [String!]
+  keywordIds: [String!]
+  restrictDownloadPlatforms: [Platform!]
+  restrictViewPlatforms: [Platform!]
 }
 
 type VideoVariant {
@@ -936,6 +1067,7 @@ type VideoVariant {
   lengthInMilliseconds: Int!
   language: Language!
   muxVideo: MuxVideo
+  brightcoveId: String
   published: Boolean!
   videoEdition: VideoEdition!
   subtitle(languageId: ID, primary: Boolean): [VideoSubtitle!]!
@@ -963,6 +1095,7 @@ input VideoVariantCreateInput {
   downloadable: Boolean!
   published: Boolean = true
   muxVideoId: String
+  brightcoveId: String
   version: Int
 }
 
@@ -975,6 +1108,7 @@ type VideoVariantDownload {
   size: Float!
   height: Int!
   width: Int!
+  bitrate: Int!
   url: String!
 
   """master video file version"""
@@ -989,13 +1123,22 @@ input VideoVariantDownloadCreateInput {
   size: Float
   height: Int
   width: Int
+  bitrate: Int
   url: String!
   version: Int
 }
 
 enum VideoVariantDownloadQuality {
+  distroLow
+  distroSd
+  distroHigh
   low
+  sd
   high
+  fhd
+  qhd
+  uhd
+  highest
 }
 
 input VideoVariantDownloadUpdateInput {
@@ -1006,6 +1149,7 @@ input VideoVariantDownloadUpdateInput {
   size: Float
   height: Int
   width: Int
+  bitrate: Int
   url: String
   version: Int
 }
@@ -1029,6 +1173,7 @@ input VideoVariantUpdateInput {
   downloadable: Boolean
   published: Boolean
   muxVideoId: String
+  brightcoveId: String
   version: Int
 }
 

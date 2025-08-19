@@ -1,11 +1,11 @@
-type SignUpBlock implements Block {
-  id: ID!
-  journeyId: ID!
-  parentBlockId: ID
-  parentOrder: Int
+type SignUpBlock implements Block @shareable {
+  id: ID! @shareable
+  journeyId: ID! @shareable
+  parentBlockId: ID @shareable
+  parentOrder: Int @shareable
   action: Action
-  submitIconId: ID
-  submitLabel: String
+  submitIconId: ID @shareable
+  submitLabel: String @shareable
 }
 
 input SignUpBlockCreateInput {

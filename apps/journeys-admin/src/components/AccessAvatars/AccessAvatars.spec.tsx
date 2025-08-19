@@ -36,7 +36,7 @@ describe('AccessAvatars', () => {
         </MockedProvider>
       </SnackbarProvider>
     )
-    expect(getByAltText('Janelle Five')).toBeInTheDocument()
+    expect(getByAltText('Horace Two')).toBeInTheDocument()
   })
 
   it('should use first name and last as tooltip', async () => {
@@ -58,13 +58,31 @@ describe('AccessAvatars', () => {
         </MockedProvider>
       </SnackbarProvider>
     )
-    fireEvent.mouseOver(getByRole('img', { name: 'Janelle Five' }))
+    fireEvent.mouseOver(getByRole('img', { name: 'Horace Two' }))
     await waitFor(() =>
-      expect(getByRole('tooltip', { name: 'Janelle Five' })).toBeInTheDocument()
+      expect(getByRole('tooltip', { name: 'Horace Two' })).toBeInTheDocument()
     )
   })
 
-  it('should display 2 mobile and 4 desktop avatars max', () => {
+  it('should display multiple (3) avatars', () => {
+    const { getAllByRole } = render(
+      <SnackbarProvider>
+        <MockedProvider>
+          <ThemeProvider>
+            <AccessAvatars
+              journeyId="journeyId"
+              userJourneys={[userJourney1, userJourney2, userJourney3]}
+            />
+          </ThemeProvider>
+        </MockedProvider>
+      </SnackbarProvider>
+    )
+    expect(
+      getAllByRole('img').map((element) => element.getAttribute('alt'))
+    ).toEqual(['Coral Three', 'Horace Two', 'Amin One'])
+  })
+
+  it('should display 2 valid avatars max when >3 avatars exist for journey', () => {
     const { getAllByRole } = render(
       <SnackbarProvider>
         <MockedProvider>
@@ -76,8 +94,7 @@ describe('AccessAvatars', () => {
                 userJourney2,
                 userJourney3,
                 userJourney4,
-                userJourney5,
-                userJourney6
+                userJourney5
               ]}
             />
           </ThemeProvider>
@@ -86,16 +103,7 @@ describe('AccessAvatars', () => {
     )
     expect(
       getAllByRole('img').map((element) => element.getAttribute('alt'))
-    ).toEqual([
-      // Mobile
-      'Horace Two',
-      'Amin One',
-      // Desktop
-      'Effie Four',
-      'Coral Three',
-      'Horace Two',
-      'Amin One'
-    ])
+    ).toEqual(['Horace Two', 'Amin One'])
   })
 
   it('should show access dialog on click', async () => {
@@ -121,12 +129,12 @@ describe('AccessAvatars', () => {
     )
   })
 
-  it('should show notification badge', () => {
+  it('should show alternative tooltip for user with requested access', async () => {
     const inviteRequestedUserJourney = {
       ...userJourney6,
       role: UserJourneyRole.inviteRequested
     }
-    const { getAllByLabelText } = render(
+    const { getByRole } = render(
       <SnackbarProvider>
         <MockedProvider>
           <ThemeProvider>
@@ -135,9 +143,6 @@ describe('AccessAvatars', () => {
               userJourneys={[
                 userJourney1,
                 userJourney2,
-                userJourney3,
-                userJourney4,
-                userJourney5,
                 inviteRequestedUserJourney
               ]}
             />
@@ -145,25 +150,12 @@ describe('AccessAvatars', () => {
         </MockedProvider>
       </SnackbarProvider>
     )
-    expect(getAllByLabelText('overflow-notification-badge')).toHaveLength(2)
-  })
-
-  it('should show manage button', async () => {
-    const { queryAllByLabelText } = render(
-      <SnackbarProvider>
-        <MockedProvider>
-          <ThemeProvider>
-            <AccessAvatars
-              journeyId="journeyId"
-              userJourneys={[userJourney1]}
-              showManageButton
-            />
-          </ThemeProvider>
-        </MockedProvider>
-      </SnackbarProvider>
+    fireEvent.mouseOver(getByRole('img', { name: 'Drake Six' }))
+    await waitFor(() =>
+      expect(
+        getByRole('tooltip', { name: 'User with Requested Access' })
+      ).toBeInTheDocument()
     )
-
-    expect(queryAllByLabelText('Manage Access')).toHaveLength(2)
   })
 
   it('should display owner of journey first', async () => {
@@ -201,18 +193,31 @@ describe('AccessAvatars', () => {
         </MockedProvider>
       </SnackbarProvider>
     )
-    // expect the owner, Horace Two, to be at the final index for both mobile and desktop, as it is the first index displayed to the user
+    // expect the owner, Horace Two, to be at the final index as it is the first index displayed to the user
     expect(
       getAllByRole('img').map((element) => element.getAttribute('alt'))
-    ).toEqual([
-      // Mobile
-      'Amin One',
-      'Horace Two',
-      // Desktop
-      'Coral Three',
-      'Effie Four',
-      'Amin One',
-      'Horace Two'
-    ])
+    ).toEqual(['Amin One', 'Horace Two'])
+  })
+
+  it('should show +N on the third avatar when there are more than 3 users', () => {
+    const { getByText } = render(
+      <SnackbarProvider>
+        <MockedProvider>
+          <ThemeProvider>
+            <AccessAvatars
+              journeyId="journeyId"
+              userJourneys={[
+                userJourney1,
+                userJourney2,
+                userJourney3,
+                userJourney4,
+                userJourney5
+              ]}
+            />
+          </ThemeProvider>
+        </MockedProvider>
+      </SnackbarProvider>
+    )
+    expect(getByText('+3')).toBeInTheDocument()
   })
 })

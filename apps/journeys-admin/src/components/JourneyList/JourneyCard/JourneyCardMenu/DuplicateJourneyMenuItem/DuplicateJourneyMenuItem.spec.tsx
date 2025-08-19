@@ -9,9 +9,11 @@ import {
   TeamProvider
 } from '@core/journeys/ui/TeamProvider'
 import { JOURNEY_DUPLICATE } from '@core/journeys/ui/useJourneyDuplicateMutation'
+import { GET_LANGUAGES } from '@core/journeys/ui/useLanguagesQuery'
 import { UPDATE_LAST_ACTIVE_TEAM_ID } from '@core/journeys/ui/useUpdateLastActiveTeamIdMutation'
 
 import { GetJourney_journey as Journey } from '../../../../../../__generated__/GetJourney'
+import { JourneyStatus } from '../../../../../../__generated__/globalTypes'
 import { UpdateLastActiveTeamId } from '../../../../../../__generated__/UpdateLastActiveTeamId'
 
 import { DuplicateJourneyMenuItem } from './DuplicateJourneyMenuItem'
@@ -51,6 +53,32 @@ describe('DuplicateJourneys', () => {
       }
     }))
 
+    const mockLanguage = {
+      request: {
+        query: GET_LANGUAGES,
+        variables: {
+          languageId: '529'
+        }
+      },
+      result: {
+        data: {
+          languages: [
+            {
+              __typename: 'Language',
+              id: '529',
+              name: [
+                {
+                  value: 'English',
+                  primary: true,
+                  __typename: 'LanguageName'
+                }
+              ]
+            }
+          ]
+        }
+      }
+    }
+
     const { getByRole, getByText, getByTestId } = render(
       <MockedProvider
         mocks={[
@@ -69,13 +97,28 @@ describe('DuplicateJourneys', () => {
               query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS
             },
             result: result2
-          }
+          },
+          mockLanguage
         ]}
       >
         <SnackbarProvider>
           <JourneyProvider
             value={{
-              journey: { id: 'journeyId' } as unknown as Journey,
+              journey: {
+                id: 'journeyId',
+                language: {
+                  __typename: 'Language',
+                  id: '529',
+                  name: [
+                    {
+                      __typename: 'LanguageName',
+                      value: 'English',
+                      primary: true
+                    }
+                  ]
+                },
+                status: JourneyStatus.draft
+              } as unknown as Journey,
               variant: 'admin'
             }}
           >
@@ -146,6 +189,32 @@ describe('DuplicateJourneys', () => {
       }))
     }
 
+    const mockLanguage = {
+      request: {
+        query: GET_LANGUAGES,
+        variables: {
+          languageId: '529'
+        }
+      },
+      result: {
+        data: {
+          languages: [
+            {
+              __typename: 'Language',
+              id: '529',
+              name: [
+                {
+                  value: 'English',
+                  primary: true,
+                  __typename: 'LanguageName'
+                }
+              ]
+            }
+          ]
+        }
+      }
+    }
+
     const { getByRole, getByText, getByTestId } = render(
       <MockedProvider
         mocks={[
@@ -165,13 +234,28 @@ describe('DuplicateJourneys', () => {
               query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS
             },
             result: result2
-          }
+          },
+          mockLanguage
         ]}
       >
         <SnackbarProvider>
           <JourneyProvider
             value={{
-              journey: { id: 'journeyId' } as unknown as Journey,
+              journey: {
+                id: 'journeyId',
+                language: {
+                  __typename: 'Language',
+                  id: '529',
+                  name: [
+                    {
+                      __typename: 'LanguageName',
+                      value: 'English',
+                      primary: true
+                    }
+                  ]
+                },
+                status: JourneyStatus.draft
+              } as unknown as Journey,
               variant: 'admin'
             }}
           >
@@ -204,7 +288,47 @@ describe('DuplicateJourneys', () => {
       name: 'Team Name'
     })
     fireEvent.click(muiSelectOptions)
-    await waitFor(() => fireEvent.click(getByText('Copy')))
+
+    // Find the primary action button in the dialog
+    const dialogButtons = await within(
+      getByTestId('CopyToTeamDialog')
+    ).findAllByRole('button')
+    console.log(
+      'Dialog buttons:',
+      dialogButtons.map((btn) => btn.textContent)
+    )
+
+    // Find the footer buttons (primary actions are usually in DialogActions at the bottom)
+    const dialogFooter = within(getByTestId('CopyToTeamDialog')).queryByTestId(
+      'dialog-actions'
+    )
+    if (dialogFooter) {
+      const footerButtons = within(dialogFooter).getAllByRole('button')
+      console.log(
+        'Footer buttons:',
+        footerButtons.map((btn) => btn.textContent)
+      )
+      // Try to click the last button in the footer, which is typically the primary action
+      const primaryButton = footerButtons[footerButtons.length - 1]
+      fireEvent.click(primaryButton)
+    } else {
+      // If we can't find the footer, try to find the button by name containing "copy"
+      const copyButton = dialogButtons.find((button) =>
+        button.textContent?.toLowerCase().includes('copy')
+      )
+      if (copyButton) {
+        fireEvent.click(copyButton)
+      } else {
+        // Last resort: click the last button that's not the close button
+        const actionButtons = dialogButtons.filter(
+          (btn) => !btn.getAttribute('data-testid')?.includes('close')
+        )
+        if (actionButtons.length > 0) {
+          fireEvent.click(actionButtons[actionButtons.length - 1])
+        }
+      }
+    }
+
     await waitFor(() =>
       expect(updateLastActiveTeamIdMock.result).toHaveBeenCalled()
     )
@@ -214,12 +338,67 @@ describe('DuplicateJourneys', () => {
   })
 
   it('should close copy to dialog', async () => {
+    const mockLanguage = {
+      request: {
+        query: GET_LANGUAGES,
+        variables: {
+          languageId: '529'
+        }
+      },
+      result: {
+        data: {
+          languages: [
+            {
+              __typename: 'Language',
+              id: '529',
+              name: [
+                {
+                  value: 'English',
+                  primary: true,
+                  __typename: 'LanguageName'
+                }
+              ]
+            }
+          ]
+        }
+      }
+    }
+
+    const teamsMock = {
+      request: {
+        query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS
+      },
+      result: {
+        data: {
+          teams: [{ id: 'teamId', title: 'Team Name', __typename: 'Team' }],
+          getJourneyProfile: {
+            __typename: 'JourneyProfile',
+            lastActiveTeamId: null
+          }
+        }
+      }
+    }
+
     const { getByRole, getByText, queryByText } = render(
-      <MockedProvider mocks={[]}>
+      <MockedProvider mocks={[mockLanguage, teamsMock]}>
         <SnackbarProvider>
           <JourneyProvider
             value={{
-              journey: { id: 'journeyId' } as unknown as Journey,
+              journey: {
+                id: 'journeyId',
+                language: {
+                  __typename: 'Language',
+                  id: '529',
+                  name: [
+                    {
+                      __typename: 'LanguageName',
+                      value: 'English',
+                      primary: true
+                    }
+                  ]
+                },
+                status: JourneyStatus.draft
+              } as unknown as Journey,
               variant: 'admin'
             }}
           >

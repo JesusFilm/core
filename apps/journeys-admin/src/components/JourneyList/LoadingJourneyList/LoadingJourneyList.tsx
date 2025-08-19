@@ -1,9 +1,7 @@
-import MuiAvatar from '@mui/material/Avatar'
-import AvatarGroup from '@mui/material/AvatarGroup'
 import Box from '@mui/material/Box'
 import Card from '@mui/material/Card'
-import CardActions from '@mui/material/CardActions'
 import CardContent from '@mui/material/CardContent'
+import Grid from '@mui/material/Grid'
 import Skeleton from '@mui/material/Skeleton'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
@@ -14,81 +12,89 @@ function LoadingJourneyCard(): ReactElement {
     <Card
       variant="outlined"
       sx={{
-        borderRadius: 0,
         borderColor: 'divider',
         borderBottom: 'none',
+        position: 'relative',
+        display: 'flex',
+        flexDirection: 'column',
         '&:last-of-type': {
-          borderBottomLeftRadius: { xs: 0, sm: 12 },
-          borderBottomRightRadius: { xs: 0, sm: 12 },
+          borderBottomLeftRadius: '12px',
+          borderBottomRightRadius: '12px',
+          borderTopLeftRadius: '12px',
+          borderTopRightRadius: '12px',
           borderBottom: '1px solid',
           borderColor: 'divider'
-        }
+        },
+        height: '100%'
       }}
     >
-      <CardContent
+      <Box
         sx={{
-          px: 6,
-          py: 4
+          position: 'relative',
+          width: 'auto',
+          aspectRatio: {
+            xs: '2',
+            sm: '1.43'
+          },
+          mx: { xs: 3, sm: 1.75 },
+          mt: { xs: 3, sm: 1.75 },
+          borderRadius: '8px',
+          borderWidth: 1,
+          borderStyle: 'solid',
+          borderColor: 'rgba(0, 0, 0, 0.05)',
+          overflow: 'hidden',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          minHeight: 120
         }}
       >
-        <Typography
-          variant="subtitle1"
-          component="div"
-          noWrap
-          gutterBottom
-          sx={{ color: 'secondary.main' }}
-        >
-          <Skeleton variant="text" width={400} />
-        </Typography>
-        <Typography
-          variant="caption"
-          noWrap
+        <Skeleton
+          variant="rectangular"
+          width="100%"
+          height="100%"
           sx={{
-            display: 'block',
-            color: 'secondary.main'
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            height: '100%',
+            width: '100%'
           }}
-        >
-          <Skeleton variant="text" width={120} />
-        </Typography>
-      </CardContent>
-      <CardActions
+        />
+      </Box>
+      <CardContent
         sx={{
-          px: 6,
-          pb: 4
+          pl: { xs: 3, sm: 2 },
+          pr: 1,
+          pt: 1,
+          height: { xs: 139, sm: 137 },
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'flex-start'
+        }}
+      >
+        <Skeleton variant="text" width="100%" height={25} />
+        <Skeleton variant="text" width="60%" height={25} />
+      </CardContent>
+      <Box
+        sx={{
+          position: 'absolute',
+          bottom: 3,
+          left: 8,
+          right: 8,
+          zIndex: 3
         }}
       >
         <Stack
           direction="row"
           alignItems="center"
-          spacing={4}
-          flexGrow={1}
-          sx={{ width: '95%' }}
+          justifyContent="space-between"
+          sx={{ mb: 1 }}
         >
-          <AvatarGroup
-            max={3}
-            sx={{
-              zIndex: 1,
-              '& .MuiAvatar-root': {
-                width: 31,
-                height: 31,
-                fontSize: 12,
-                borderWidth: 2,
-                borderColor: 'primary.contrastText'
-              },
-              '> .MuiAvatarGroup-avatar': {
-                backgroundColor: 'primary.contrastText'
-              }
-            }}
-          >
-            {[0, 1, 2].map((i) => (
-              <MuiAvatar key={i}>
-                <Skeleton variant="circular" height={31} width={31} />
-              </MuiAvatar>
-            ))}
-          </AvatarGroup>
-          <Skeleton variant="text" width={40} />
+          <Skeleton variant="text" width={80} height={25} />
+          <Skeleton variant="circular" width={27} height={27} />
         </Stack>
-      </CardActions>
+      </Box>
     </Card>
   )
 }
@@ -102,12 +108,22 @@ export function LoadingJourneyList({
 }: LoadingJourneyListProps): ReactElement {
   return (
     <>
-      <Box>
-        {[0, 1, 2].map((index) => (
-          <>
-            <LoadingJourneyCard key={`journeyCard${index}`} />
-          </>
-        ))}
+      <Box
+        sx={{
+          mt: { xs: 3, sm: 2 },
+          px: { xs: 5, sm: 0 }
+        }}
+      >
+        <Grid container spacing={4} rowSpacing={{ xs: 2.5, sm: 4 }}>
+          {[0, 1, 2].map((index) => (
+            <Grid
+              key={`journeyCard${index}`}
+              size={{ xs: 12, sm: 6, md: 6, lg: 3, xl: 3 }}
+            >
+              <LoadingJourneyCard />
+            </Grid>
+          ))}
+        </Grid>
       </Box>
       {!hideHelperText && (
         <Stack alignItems="center">

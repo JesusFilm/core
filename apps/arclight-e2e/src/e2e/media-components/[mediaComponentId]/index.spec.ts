@@ -38,6 +38,65 @@ test('media component returns expected data structure', async ({ request }) => {
   })
 })
 
+test.describe('media component detail apiKey tests', () => {
+  test('download sizes respect special apiKey fallback logic', async ({
+    request
+  }) => {
+    const specialApiKey = '607f41540b2ca6.32427244'
+    const regularApiKey = 'regular_test_key'
+
+    // Get download sizes with regular API key
+    const regularResponse = await request.get(
+      `${await getBaseUrl()}/v2/media-components/${mediaComponentId}?${createQueryParams(
+        {
+          apiKey: regularApiKey
+        }
+      )}`
+    )
+    expect(regularResponse.ok()).toBeTruthy()
+    const regularData = await regularResponse.json()
+
+    // Get download sizes with special API key
+    const specialResponse = await request.get(
+      `${await getBaseUrl()}/v2/media-components/${mediaComponentId}?${createQueryParams(
+        {
+          apiKey: specialApiKey
+        }
+      )}`
+    )
+    expect(specialResponse.ok()).toBeTruthy()
+    const specialData = await specialResponse.json()
+
+    // Both should have the same structure
+    expect(regularData).toMatchObject({
+      downloadSizes: {
+        approximateSmallDownloadSizeInBytes: expect.any(Number),
+        approximateLargeDownloadSizeInBytes: expect.any(Number)
+      }
+    })
+    expect(specialData).toMatchObject({
+      downloadSizes: {
+        approximateSmallDownloadSizeInBytes: expect.any(Number),
+        approximateLargeDownloadSizeInBytes: expect.any(Number)
+      }
+    })
+
+    // Verify sizes are valid
+    expect(
+      regularData.downloadSizes.approximateSmallDownloadSizeInBytes
+    ).toBeGreaterThanOrEqual(0)
+    expect(
+      regularData.downloadSizes.approximateLargeDownloadSizeInBytes
+    ).toBeGreaterThanOrEqual(0)
+    expect(
+      specialData.downloadSizes.approximateSmallDownloadSizeInBytes
+    ).toBeGreaterThanOrEqual(0)
+    expect(
+      specialData.downloadSizes.approximateLargeDownloadSizeInBytes
+    ).toBeGreaterThanOrEqual(0)
+  })
+})
+
 // TODO: Check if crowdin import is working on stage
 test.fixme(
   'media component with metadata language returns localized content',
@@ -128,19 +187,16 @@ test('media component returns 400 for non-existent ID', async ({ request }) => {
   })
 })
 
-test('media component returns 400 for invalid language with no fallback content', async ({
+test('media component returns 200 and defaults to english for invalid language with no fallback content', async ({
   request
 }) => {
   const response = await request.get(
     `${await getBaseUrl()}/v2/media-components/${mediaComponentId}?${createQueryParams({ metadataLanguageTags: 'xx' })}`
   )
 
-  expect(response.status()).toBe(400)
+  expect(response.ok()).toBeTruthy()
+  expect(response.status()).toBe(200)
   const data = await response.json()
-  expect(data).toMatchObject({
-    message: expect.stringContaining(
-      'Not acceptable metadata language tag(s): xx'
-    ),
-    logref: 400
-  })
+  expect(data).toHaveProperty('metadataLanguageTag')
+  expect(data.metadataLanguageTag).toBe('en')
 })

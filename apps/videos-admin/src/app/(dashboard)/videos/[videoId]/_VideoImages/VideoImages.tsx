@@ -1,6 +1,6 @@
 import Box from '@mui/material/Box'
 import CircularProgress from '@mui/material/CircularProgress'
-import Grid from '@mui/material/Grid'
+import Grid from '@mui/material/GridLegacy'
 import Typography from '@mui/material/Typography'
 import { ReactElement, Suspense } from 'react'
 
@@ -24,7 +24,7 @@ export function VideoImages({ videoId }: VideoImagesProps): ReactElement {
     <Grid container spacing={2}>
       <Grid item xs={12} sm={6}>
         <Typography variant="subtitle2" gutterBottom>
-          Banner Image
+          Banner Image (1280x600)
         </Typography>
         <Suspense fallback={<Loading />}>
           <BannerImage videoId={videoId} />
@@ -32,7 +32,7 @@ export function VideoImages({ videoId }: VideoImagesProps): ReactElement {
       </Grid>
       <Grid item xs={12} sm={6}>
         <Typography variant="subtitle2" gutterBottom>
-          HD Image
+          HD Image (1920x1080)
         </Typography>
         <Suspense fallback={<Loading />}>
           <HdImage videoId={videoId} />

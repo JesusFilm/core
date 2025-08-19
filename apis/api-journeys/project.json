@@ -83,7 +83,9 @@
       "executor": "nx:run-commands",
       "options": {
         "command": "graphql-codegen --config apis/api-journeys/codegen.ts"
-      }
+      },
+      "cache": true,
+      "inputs": ["{projectRoot}/schema.graphql"]
     },
     "generate-graphql": {
       "executor": "nx:run-commands",
@@ -103,77 +105,6 @@
         "command": "DOPPLER_TOKEN=$DOPPLER_API_JOURNEYS_TOKEN doppler secrets download --no-file --format=env-no-quotes --project api-journeys > apis/api-journeys/.env"
       }
     },
-    "prisma-generate": {
-      "executor": "nx:run-commands",
-      "options": {
-        "parallel": false,
-        "commands": [
-          "npx prisma generate --schema apis/api-journeys/db/schema.prisma",
-          "npm run ts-node apis/api-journeys/src/app/lib/casl/caslPrismaGenerator.ts"
-        ]
-      }
-    },
-    "prisma-migrate": {
-      "executor": "nx:run-commands",
-      "options": {
-        "commands": [
-          "bash -c 'npx prisma migrate dev --schema apis/api-journeys/db/schema.prisma --name `date +\"%Y%m%d%H%M%S\"`'"
-        ]
-      },
-      "configurations": {
-        "production": {
-          "commands": [
-            "tools/scripts/env-validator.sh --DOPPLER_CONFIG=dev --PG_DATABASE_URL_JOURNEYS=postgresql://postgres:postgres@db:5432/journeys?schema=public \"npx prisma migrate deploy --schema apis/api-journeys/db/schema.prisma\""
-          ]
-        }
-      }
-    },
-    "prisma-resolve-squash": {
-      "executor": "nx:run-commands",
-      "options": {
-        "commands": [
-          "npx prisma migrate resolve --schema apis/api-journeys/db/schema.prisma --applied 000000000000_squashed_migrations"
-        ]
-      }
-    },
-    "prisma-reset": {
-      "executor": "nx:run-commands",
-      "options": {
-        "commands": [
-          "tools/scripts/env-validator.sh --DOPPLER_CONFIG=dev --PG_DATABASE_URL_JOURNEYS=postgresql://postgres:postgres@db:5432/journeys?schema=public \"npx prisma migrate reset --schema apis/api-journeys/db/schema.prisma --force\""
-        ]
-      }
-    },
-    "prisma-seed": {
-      "executor": "nx:run-commands",
-      "options": {
-        "commands": ["npm run ts-node apis/api-journeys/db/seed.ts"]
-      }
-    },
-    "prisma-studio": {
-      "executor": "nx:run-commands",
-      "options": {
-        "commands": [
-          "npx prisma studio --schema apis/api-journeys/db/schema.prisma"
-        ]
-      }
-    },
-    "prisma-validate": {
-      "executor": "nx:run-commands",
-      "options": {
-        "commands": [
-          "npx prisma validate --schema apis/api-journeys/db/schema.prisma"
-        ]
-      }
-    },
-    "prisma-resolve": {
-      "executor": "nx:run-commands",
-      "options": {
-        "commands": [
-          "npx prisma migrate resolve --schema apis/api-journeys/db/schema.prisma --applied 20230711193802_20230711193801"
-        ]
-      }
-    },
     "type-check": {
       "executor": "nx:run-commands",
       "options": {
@@ -184,6 +115,12 @@
       "executor": "nx:run-commands",
       "options": {
         "command": "codecov -f coverage/apis/api-journeys/cobertura-coverage.xml -F apps.api-journeys"
+      }
+    },
+    "prisma-seed": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": ["npm run ts-node apis/api-journeys/db/seed.ts"]
       }
     }
   }

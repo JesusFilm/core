@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { ButtonVariant, ButtonColor, ButtonSize, ThemeMode, ThemeName, IconName, IconSize, IconColor, TextResponseType, TypographyAlign, TypographyColor, TypographyVariant, VideoBlockSource, VideoBlockObjectFit } from "./globalTypes";
+import { ButtonVariant, ButtonColor, ButtonSize, ButtonAlignment, ThemeMode, ThemeName, IconName, IconSize, IconColor, TextResponseType, TypographyAlign, TypographyColor, TypographyVariant, VideoBlockSource, VideoBlockObjectFit } from "./globalTypes";
 
 // ====================================================
 // GraphQL mutation operation: CardIntroRestore
@@ -39,6 +39,14 @@ export interface CardIntroRestore_subtitle_ButtonBlock_action_EmailAction {
 
 export type CardIntroRestore_subtitle_ButtonBlock_action = CardIntroRestore_subtitle_ButtonBlock_action_NavigateToBlockAction | CardIntroRestore_subtitle_ButtonBlock_action_LinkAction | CardIntroRestore_subtitle_ButtonBlock_action_EmailAction;
 
+export interface CardIntroRestore_subtitle_ButtonBlock_settings {
+  __typename: "ButtonBlockSettings";
+  /**
+   * Alignment of the button
+   */
+  alignment: ButtonAlignment | null;
+}
+
 export interface CardIntroRestore_subtitle_ButtonBlock {
   __typename: "ButtonBlock";
   id: string;
@@ -52,6 +60,7 @@ export interface CardIntroRestore_subtitle_ButtonBlock {
   endIconId: string | null;
   submitEnabled: boolean | null;
   action: CardIntroRestore_subtitle_ButtonBlock_action | null;
+  settings: CardIntroRestore_subtitle_ButtonBlock_settings | null;
 }
 
 export interface CardIntroRestore_subtitle_CardBlock {
@@ -63,6 +72,10 @@ export interface CardIntroRestore_subtitle_CardBlock {
    * backgroundColor should be a HEX color value e.g #FFFFFF for white.
    */
   backgroundColor: string | null;
+  /**
+   * backdropBlur should be a number representing blur amount in pixels e.g 20.
+   */
+  backdropBlur: number | null;
   /**
    * coverBlockId is present if a child block should be used as a cover.
    * This child block should not be rendered normally, instead it should be used
@@ -146,6 +159,12 @@ export interface CardIntroRestore_subtitle_RadioOptionBlock {
   parentOrder: number | null;
   label: string;
   action: CardIntroRestore_subtitle_RadioOptionBlock_action | null;
+  /**
+   * pollOptionImageBlockId is present if a child block should be used as a poll option image.
+   *       This child block should not be rendered normally, instead it should be used
+   *       as a poll option image. Blocks are often of type ImageBlock
+   */
+  pollOptionImageBlockId: string | null;
 }
 
 export interface CardIntroRestore_subtitle_RadioQuestionBlock {
@@ -153,6 +172,7 @@ export interface CardIntroRestore_subtitle_RadioQuestionBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
+  gridView: boolean | null;
 }
 
 export interface CardIntroRestore_subtitle_SignUpBlock_action_NavigateToBlockAction {
@@ -236,6 +256,14 @@ export interface CardIntroRestore_subtitle_TextResponseBlock {
   integrationId: string | null;
 }
 
+export interface CardIntroRestore_subtitle_TypographyBlock_settings {
+  __typename: "TypographyBlockSettings";
+  /**
+   * Color of the typography
+   */
+  color: string | null;
+}
+
 export interface CardIntroRestore_subtitle_TypographyBlock {
   __typename: "TypographyBlock";
   id: string;
@@ -245,6 +273,7 @@ export interface CardIntroRestore_subtitle_TypographyBlock {
   color: TypographyColor | null;
   content: string;
   variant: TypographyVariant | null;
+  settings: CardIntroRestore_subtitle_TypographyBlock_settings | null;
 }
 
 export interface CardIntroRestore_subtitle_VideoBlock_mediaVideo_Video_title {
@@ -464,6 +493,14 @@ export interface CardIntroRestore_title_ButtonBlock_action_EmailAction {
 
 export type CardIntroRestore_title_ButtonBlock_action = CardIntroRestore_title_ButtonBlock_action_NavigateToBlockAction | CardIntroRestore_title_ButtonBlock_action_LinkAction | CardIntroRestore_title_ButtonBlock_action_EmailAction;
 
+export interface CardIntroRestore_title_ButtonBlock_settings {
+  __typename: "ButtonBlockSettings";
+  /**
+   * Alignment of the button
+   */
+  alignment: ButtonAlignment | null;
+}
+
 export interface CardIntroRestore_title_ButtonBlock {
   __typename: "ButtonBlock";
   id: string;
@@ -477,6 +514,7 @@ export interface CardIntroRestore_title_ButtonBlock {
   endIconId: string | null;
   submitEnabled: boolean | null;
   action: CardIntroRestore_title_ButtonBlock_action | null;
+  settings: CardIntroRestore_title_ButtonBlock_settings | null;
 }
 
 export interface CardIntroRestore_title_CardBlock {
@@ -488,6 +526,10 @@ export interface CardIntroRestore_title_CardBlock {
    * backgroundColor should be a HEX color value e.g #FFFFFF for white.
    */
   backgroundColor: string | null;
+  /**
+   * backdropBlur should be a number representing blur amount in pixels e.g 20.
+   */
+  backdropBlur: number | null;
   /**
    * coverBlockId is present if a child block should be used as a cover.
    * This child block should not be rendered normally, instead it should be used
@@ -571,6 +613,12 @@ export interface CardIntroRestore_title_RadioOptionBlock {
   parentOrder: number | null;
   label: string;
   action: CardIntroRestore_title_RadioOptionBlock_action | null;
+  /**
+   * pollOptionImageBlockId is present if a child block should be used as a poll option image.
+   *       This child block should not be rendered normally, instead it should be used
+   *       as a poll option image. Blocks are often of type ImageBlock
+   */
+  pollOptionImageBlockId: string | null;
 }
 
 export interface CardIntroRestore_title_RadioQuestionBlock {
@@ -578,6 +626,7 @@ export interface CardIntroRestore_title_RadioQuestionBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
+  gridView: boolean | null;
 }
 
 export interface CardIntroRestore_title_SignUpBlock_action_NavigateToBlockAction {
@@ -661,6 +710,14 @@ export interface CardIntroRestore_title_TextResponseBlock {
   integrationId: string | null;
 }
 
+export interface CardIntroRestore_title_TypographyBlock_settings {
+  __typename: "TypographyBlockSettings";
+  /**
+   * Color of the typography
+   */
+  color: string | null;
+}
+
 export interface CardIntroRestore_title_TypographyBlock {
   __typename: "TypographyBlock";
   id: string;
@@ -670,6 +727,7 @@ export interface CardIntroRestore_title_TypographyBlock {
   color: TypographyColor | null;
   content: string;
   variant: TypographyVariant | null;
+  settings: CardIntroRestore_title_TypographyBlock_settings | null;
 }
 
 export interface CardIntroRestore_title_VideoBlock_mediaVideo_Video_title {
@@ -889,6 +947,14 @@ export interface CardIntroRestore_body_ButtonBlock_action_EmailAction {
 
 export type CardIntroRestore_body_ButtonBlock_action = CardIntroRestore_body_ButtonBlock_action_NavigateToBlockAction | CardIntroRestore_body_ButtonBlock_action_LinkAction | CardIntroRestore_body_ButtonBlock_action_EmailAction;
 
+export interface CardIntroRestore_body_ButtonBlock_settings {
+  __typename: "ButtonBlockSettings";
+  /**
+   * Alignment of the button
+   */
+  alignment: ButtonAlignment | null;
+}
+
 export interface CardIntroRestore_body_ButtonBlock {
   __typename: "ButtonBlock";
   id: string;
@@ -902,6 +968,7 @@ export interface CardIntroRestore_body_ButtonBlock {
   endIconId: string | null;
   submitEnabled: boolean | null;
   action: CardIntroRestore_body_ButtonBlock_action | null;
+  settings: CardIntroRestore_body_ButtonBlock_settings | null;
 }
 
 export interface CardIntroRestore_body_CardBlock {
@@ -913,6 +980,10 @@ export interface CardIntroRestore_body_CardBlock {
    * backgroundColor should be a HEX color value e.g #FFFFFF for white.
    */
   backgroundColor: string | null;
+  /**
+   * backdropBlur should be a number representing blur amount in pixels e.g 20.
+   */
+  backdropBlur: number | null;
   /**
    * coverBlockId is present if a child block should be used as a cover.
    * This child block should not be rendered normally, instead it should be used
@@ -996,6 +1067,12 @@ export interface CardIntroRestore_body_RadioOptionBlock {
   parentOrder: number | null;
   label: string;
   action: CardIntroRestore_body_RadioOptionBlock_action | null;
+  /**
+   * pollOptionImageBlockId is present if a child block should be used as a poll option image.
+   *       This child block should not be rendered normally, instead it should be used
+   *       as a poll option image. Blocks are often of type ImageBlock
+   */
+  pollOptionImageBlockId: string | null;
 }
 
 export interface CardIntroRestore_body_RadioQuestionBlock {
@@ -1003,6 +1080,7 @@ export interface CardIntroRestore_body_RadioQuestionBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
+  gridView: boolean | null;
 }
 
 export interface CardIntroRestore_body_SignUpBlock_action_NavigateToBlockAction {
@@ -1086,6 +1164,14 @@ export interface CardIntroRestore_body_TextResponseBlock {
   integrationId: string | null;
 }
 
+export interface CardIntroRestore_body_TypographyBlock_settings {
+  __typename: "TypographyBlockSettings";
+  /**
+   * Color of the typography
+   */
+  color: string | null;
+}
+
 export interface CardIntroRestore_body_TypographyBlock {
   __typename: "TypographyBlock";
   id: string;
@@ -1095,6 +1181,7 @@ export interface CardIntroRestore_body_TypographyBlock {
   color: TypographyColor | null;
   content: string;
   variant: TypographyVariant | null;
+  settings: CardIntroRestore_body_TypographyBlock_settings | null;
 }
 
 export interface CardIntroRestore_body_VideoBlock_mediaVideo_Video_title {
@@ -1314,6 +1401,14 @@ export interface CardIntroRestore_button_ButtonBlock_action_EmailAction {
 
 export type CardIntroRestore_button_ButtonBlock_action = CardIntroRestore_button_ButtonBlock_action_NavigateToBlockAction | CardIntroRestore_button_ButtonBlock_action_LinkAction | CardIntroRestore_button_ButtonBlock_action_EmailAction;
 
+export interface CardIntroRestore_button_ButtonBlock_settings {
+  __typename: "ButtonBlockSettings";
+  /**
+   * Alignment of the button
+   */
+  alignment: ButtonAlignment | null;
+}
+
 export interface CardIntroRestore_button_ButtonBlock {
   __typename: "ButtonBlock";
   id: string;
@@ -1327,6 +1422,7 @@ export interface CardIntroRestore_button_ButtonBlock {
   endIconId: string | null;
   submitEnabled: boolean | null;
   action: CardIntroRestore_button_ButtonBlock_action | null;
+  settings: CardIntroRestore_button_ButtonBlock_settings | null;
 }
 
 export interface CardIntroRestore_button_CardBlock {
@@ -1338,6 +1434,10 @@ export interface CardIntroRestore_button_CardBlock {
    * backgroundColor should be a HEX color value e.g #FFFFFF for white.
    */
   backgroundColor: string | null;
+  /**
+   * backdropBlur should be a number representing blur amount in pixels e.g 20.
+   */
+  backdropBlur: number | null;
   /**
    * coverBlockId is present if a child block should be used as a cover.
    * This child block should not be rendered normally, instead it should be used
@@ -1421,6 +1521,12 @@ export interface CardIntroRestore_button_RadioOptionBlock {
   parentOrder: number | null;
   label: string;
   action: CardIntroRestore_button_RadioOptionBlock_action | null;
+  /**
+   * pollOptionImageBlockId is present if a child block should be used as a poll option image.
+   *       This child block should not be rendered normally, instead it should be used
+   *       as a poll option image. Blocks are often of type ImageBlock
+   */
+  pollOptionImageBlockId: string | null;
 }
 
 export interface CardIntroRestore_button_RadioQuestionBlock {
@@ -1428,6 +1534,7 @@ export interface CardIntroRestore_button_RadioQuestionBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
+  gridView: boolean | null;
 }
 
 export interface CardIntroRestore_button_SignUpBlock_action_NavigateToBlockAction {
@@ -1511,6 +1618,14 @@ export interface CardIntroRestore_button_TextResponseBlock {
   integrationId: string | null;
 }
 
+export interface CardIntroRestore_button_TypographyBlock_settings {
+  __typename: "TypographyBlockSettings";
+  /**
+   * Color of the typography
+   */
+  color: string | null;
+}
+
 export interface CardIntroRestore_button_TypographyBlock {
   __typename: "TypographyBlock";
   id: string;
@@ -1520,6 +1635,7 @@ export interface CardIntroRestore_button_TypographyBlock {
   color: TypographyColor | null;
   content: string;
   variant: TypographyVariant | null;
+  settings: CardIntroRestore_button_TypographyBlock_settings | null;
 }
 
 export interface CardIntroRestore_button_VideoBlock_mediaVideo_Video_title {
@@ -1739,6 +1855,14 @@ export interface CardIntroRestore_startIcon_ButtonBlock_action_EmailAction {
 
 export type CardIntroRestore_startIcon_ButtonBlock_action = CardIntroRestore_startIcon_ButtonBlock_action_NavigateToBlockAction | CardIntroRestore_startIcon_ButtonBlock_action_LinkAction | CardIntroRestore_startIcon_ButtonBlock_action_EmailAction;
 
+export interface CardIntroRestore_startIcon_ButtonBlock_settings {
+  __typename: "ButtonBlockSettings";
+  /**
+   * Alignment of the button
+   */
+  alignment: ButtonAlignment | null;
+}
+
 export interface CardIntroRestore_startIcon_ButtonBlock {
   __typename: "ButtonBlock";
   id: string;
@@ -1752,6 +1876,7 @@ export interface CardIntroRestore_startIcon_ButtonBlock {
   endIconId: string | null;
   submitEnabled: boolean | null;
   action: CardIntroRestore_startIcon_ButtonBlock_action | null;
+  settings: CardIntroRestore_startIcon_ButtonBlock_settings | null;
 }
 
 export interface CardIntroRestore_startIcon_CardBlock {
@@ -1763,6 +1888,10 @@ export interface CardIntroRestore_startIcon_CardBlock {
    * backgroundColor should be a HEX color value e.g #FFFFFF for white.
    */
   backgroundColor: string | null;
+  /**
+   * backdropBlur should be a number representing blur amount in pixels e.g 20.
+   */
+  backdropBlur: number | null;
   /**
    * coverBlockId is present if a child block should be used as a cover.
    * This child block should not be rendered normally, instead it should be used
@@ -1846,6 +1975,12 @@ export interface CardIntroRestore_startIcon_RadioOptionBlock {
   parentOrder: number | null;
   label: string;
   action: CardIntroRestore_startIcon_RadioOptionBlock_action | null;
+  /**
+   * pollOptionImageBlockId is present if a child block should be used as a poll option image.
+   *       This child block should not be rendered normally, instead it should be used
+   *       as a poll option image. Blocks are often of type ImageBlock
+   */
+  pollOptionImageBlockId: string | null;
 }
 
 export interface CardIntroRestore_startIcon_RadioQuestionBlock {
@@ -1853,6 +1988,7 @@ export interface CardIntroRestore_startIcon_RadioQuestionBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
+  gridView: boolean | null;
 }
 
 export interface CardIntroRestore_startIcon_SignUpBlock_action_NavigateToBlockAction {
@@ -1936,6 +2072,14 @@ export interface CardIntroRestore_startIcon_TextResponseBlock {
   integrationId: string | null;
 }
 
+export interface CardIntroRestore_startIcon_TypographyBlock_settings {
+  __typename: "TypographyBlockSettings";
+  /**
+   * Color of the typography
+   */
+  color: string | null;
+}
+
 export interface CardIntroRestore_startIcon_TypographyBlock {
   __typename: "TypographyBlock";
   id: string;
@@ -1945,6 +2089,7 @@ export interface CardIntroRestore_startIcon_TypographyBlock {
   color: TypographyColor | null;
   content: string;
   variant: TypographyVariant | null;
+  settings: CardIntroRestore_startIcon_TypographyBlock_settings | null;
 }
 
 export interface CardIntroRestore_startIcon_VideoBlock_mediaVideo_Video_title {
@@ -2164,6 +2309,14 @@ export interface CardIntroRestore_endIcon_ButtonBlock_action_EmailAction {
 
 export type CardIntroRestore_endIcon_ButtonBlock_action = CardIntroRestore_endIcon_ButtonBlock_action_NavigateToBlockAction | CardIntroRestore_endIcon_ButtonBlock_action_LinkAction | CardIntroRestore_endIcon_ButtonBlock_action_EmailAction;
 
+export interface CardIntroRestore_endIcon_ButtonBlock_settings {
+  __typename: "ButtonBlockSettings";
+  /**
+   * Alignment of the button
+   */
+  alignment: ButtonAlignment | null;
+}
+
 export interface CardIntroRestore_endIcon_ButtonBlock {
   __typename: "ButtonBlock";
   id: string;
@@ -2177,6 +2330,7 @@ export interface CardIntroRestore_endIcon_ButtonBlock {
   endIconId: string | null;
   submitEnabled: boolean | null;
   action: CardIntroRestore_endIcon_ButtonBlock_action | null;
+  settings: CardIntroRestore_endIcon_ButtonBlock_settings | null;
 }
 
 export interface CardIntroRestore_endIcon_CardBlock {
@@ -2188,6 +2342,10 @@ export interface CardIntroRestore_endIcon_CardBlock {
    * backgroundColor should be a HEX color value e.g #FFFFFF for white.
    */
   backgroundColor: string | null;
+  /**
+   * backdropBlur should be a number representing blur amount in pixels e.g 20.
+   */
+  backdropBlur: number | null;
   /**
    * coverBlockId is present if a child block should be used as a cover.
    * This child block should not be rendered normally, instead it should be used
@@ -2271,6 +2429,12 @@ export interface CardIntroRestore_endIcon_RadioOptionBlock {
   parentOrder: number | null;
   label: string;
   action: CardIntroRestore_endIcon_RadioOptionBlock_action | null;
+  /**
+   * pollOptionImageBlockId is present if a child block should be used as a poll option image.
+   *       This child block should not be rendered normally, instead it should be used
+   *       as a poll option image. Blocks are often of type ImageBlock
+   */
+  pollOptionImageBlockId: string | null;
 }
 
 export interface CardIntroRestore_endIcon_RadioQuestionBlock {
@@ -2278,6 +2442,7 @@ export interface CardIntroRestore_endIcon_RadioQuestionBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
+  gridView: boolean | null;
 }
 
 export interface CardIntroRestore_endIcon_SignUpBlock_action_NavigateToBlockAction {
@@ -2361,6 +2526,14 @@ export interface CardIntroRestore_endIcon_TextResponseBlock {
   integrationId: string | null;
 }
 
+export interface CardIntroRestore_endIcon_TypographyBlock_settings {
+  __typename: "TypographyBlockSettings";
+  /**
+   * Color of the typography
+   */
+  color: string | null;
+}
+
 export interface CardIntroRestore_endIcon_TypographyBlock {
   __typename: "TypographyBlock";
   id: string;
@@ -2370,6 +2543,7 @@ export interface CardIntroRestore_endIcon_TypographyBlock {
   color: TypographyColor | null;
   content: string;
   variant: TypographyVariant | null;
+  settings: CardIntroRestore_endIcon_TypographyBlock_settings | null;
 }
 
 export interface CardIntroRestore_endIcon_VideoBlock_mediaVideo_Video_title {
@@ -2589,6 +2763,14 @@ export interface CardIntroRestore_video_ButtonBlock_action_EmailAction {
 
 export type CardIntroRestore_video_ButtonBlock_action = CardIntroRestore_video_ButtonBlock_action_NavigateToBlockAction | CardIntroRestore_video_ButtonBlock_action_LinkAction | CardIntroRestore_video_ButtonBlock_action_EmailAction;
 
+export interface CardIntroRestore_video_ButtonBlock_settings {
+  __typename: "ButtonBlockSettings";
+  /**
+   * Alignment of the button
+   */
+  alignment: ButtonAlignment | null;
+}
+
 export interface CardIntroRestore_video_ButtonBlock {
   __typename: "ButtonBlock";
   id: string;
@@ -2602,6 +2784,7 @@ export interface CardIntroRestore_video_ButtonBlock {
   endIconId: string | null;
   submitEnabled: boolean | null;
   action: CardIntroRestore_video_ButtonBlock_action | null;
+  settings: CardIntroRestore_video_ButtonBlock_settings | null;
 }
 
 export interface CardIntroRestore_video_CardBlock {
@@ -2613,6 +2796,10 @@ export interface CardIntroRestore_video_CardBlock {
    * backgroundColor should be a HEX color value e.g #FFFFFF for white.
    */
   backgroundColor: string | null;
+  /**
+   * backdropBlur should be a number representing blur amount in pixels e.g 20.
+   */
+  backdropBlur: number | null;
   /**
    * coverBlockId is present if a child block should be used as a cover.
    * This child block should not be rendered normally, instead it should be used
@@ -2696,6 +2883,12 @@ export interface CardIntroRestore_video_RadioOptionBlock {
   parentOrder: number | null;
   label: string;
   action: CardIntroRestore_video_RadioOptionBlock_action | null;
+  /**
+   * pollOptionImageBlockId is present if a child block should be used as a poll option image.
+   *       This child block should not be rendered normally, instead it should be used
+   *       as a poll option image. Blocks are often of type ImageBlock
+   */
+  pollOptionImageBlockId: string | null;
 }
 
 export interface CardIntroRestore_video_RadioQuestionBlock {
@@ -2703,6 +2896,7 @@ export interface CardIntroRestore_video_RadioQuestionBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
+  gridView: boolean | null;
 }
 
 export interface CardIntroRestore_video_SignUpBlock_action_NavigateToBlockAction {
@@ -2786,6 +2980,14 @@ export interface CardIntroRestore_video_TextResponseBlock {
   integrationId: string | null;
 }
 
+export interface CardIntroRestore_video_TypographyBlock_settings {
+  __typename: "TypographyBlockSettings";
+  /**
+   * Color of the typography
+   */
+  color: string | null;
+}
+
 export interface CardIntroRestore_video_TypographyBlock {
   __typename: "TypographyBlock";
   id: string;
@@ -2795,6 +2997,7 @@ export interface CardIntroRestore_video_TypographyBlock {
   color: TypographyColor | null;
   content: string;
   variant: TypographyVariant | null;
+  settings: CardIntroRestore_video_TypographyBlock_settings | null;
 }
 
 export interface CardIntroRestore_video_VideoBlock_mediaVideo_Video_title {

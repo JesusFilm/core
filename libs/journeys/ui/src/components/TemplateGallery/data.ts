@@ -54,6 +54,7 @@ const defaultTemplate: Journey = {
   publishedAt: '2023-08-14T04:24:24.392Z',
   createdAt: '2023-08-14T04:24:24.392Z',
   featuredAt: '2023-08-14T04:24:24.392Z',
+  updatedAt: '2023-08-14T04:24:24.392Z',
   status: JourneyStatus.published,
   seoTitle: null,
   seoDescription: null,
@@ -293,7 +294,8 @@ export const getLanguagesMock: MockedResponse<GetLanguages> = {
           '1942',
           '5541',
           '6788',
-          '3804'
+          '3804',
+          '1370'
         ]
       }
     }
