@@ -1,4 +1,5 @@
 // Import all event types
+import './event'
 import './button'
 import './chat'
 import './journey'

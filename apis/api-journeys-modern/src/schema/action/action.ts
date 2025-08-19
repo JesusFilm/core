@@ -1,40 +1,35 @@
 import { GraphQLError } from 'graphql'
 import { v4 as uuidv4 } from 'uuid'
 
-import { Action as PrismaAction } from '.prisma/api-journeys-modern-client'
+import { Action as PrismaAction, prisma } from '@core/prisma/journeys/client'
 
 import { Action, ability, subject } from '../../lib/auth/ability'
-import { prisma } from '../../lib/prisma'
 import { Block } from '../block/block'
 import { builder } from '../builder'
 
-// Create the Action interface reference
-const ActionInterface = builder.interfaceRef<PrismaAction>('Action')
+import { EmailActionRef } from './emailAction/emailAction'
+import {
+  BlockUpdateActionInput,
+  EmailActionInput,
+  LinkActionInput,
+  NavigateToBlockActionInput
+} from './inputs'
+import { LinkActionRef } from './linkAction'
+import { NavigateToBlockActionRef } from './navigateToBlockAction'
 
-// Create concrete action references
-const NavigateToBlockActionRef = builder.objectRef<PrismaAction>(
-  'NavigateToBlockAction'
-)
-const LinkActionRef = builder.objectRef<PrismaAction>('LinkAction')
-const EmailActionRef = builder.objectRef<PrismaAction>('EmailAction')
-
-// Define the Action interface
-ActionInterface.implement({
+export const ActionInterface = builder.prismaInterface('Action', {
   fields: (t) => ({
-    parentBlockId: t.exposeID('parentBlockId'),
+    parentBlockId: t.exposeID('parentBlockId', { nullable: false }),
     gtmEventName: t.exposeString('gtmEventName', { nullable: true }),
-    parentBlock: t.field({
-      type: Block,
-      resolve: async (action) => {
-        const block = await prisma.block.findUnique({
-          where: { id: action.parentBlockId }
-        })
-        if (!block) {
+    parentBlock: t.relation('parentBlock', {
+      nullable: false,
+      resolve: async (action: any) => {
+        if (!action.parentBlock) {
           throw new GraphQLError('Parent block not found', {
             extensions: { code: 'NOT_FOUND' }
           })
         }
-        return block
+        return action.parentBlock
       }
     })
   }),
@@ -43,127 +38,6 @@ ActionInterface.implement({
     if (action.email != null) return 'EmailAction'
     return 'LinkAction'
   }
-})
-
-// NavigateToBlockAction implementation
-NavigateToBlockActionRef.implement({
-  interfaces: [ActionInterface],
-  isTypeOf: (action: any) => action.blockId != null,
-  fields: (t) => ({
-    parentBlockId: t.exposeID('parentBlockId'),
-    gtmEventName: t.exposeString('gtmEventName', { nullable: true }),
-    blockId: t.string({
-      nullable: false,
-      resolve: (action) => action.blockId || ''
-    }),
-    parentBlock: t.field({
-      type: Block,
-      resolve: async (action) => {
-        const block = await prisma.block.findUnique({
-          where: { id: action.parentBlockId }
-        })
-        if (!block) {
-          throw new GraphQLError('Parent block not found', {
-            extensions: { code: 'NOT_FOUND' }
-          })
-        }
-        return block
-      }
-    })
-  })
-})
-
-// LinkAction implementation
-LinkActionRef.implement({
-  interfaces: [ActionInterface],
-  isTypeOf: (action: any) => action.url != null && action.email == null,
-  fields: (t) => ({
-    parentBlockId: t.exposeID('parentBlockId'),
-    gtmEventName: t.exposeString('gtmEventName', { nullable: true }),
-    url: t.string({
-      nullable: false,
-      resolve: (action) => action.url || ''
-    }),
-    target: t.exposeString('target', { nullable: true }),
-    parentBlock: t.field({
-      type: Block,
-      resolve: async (action) => {
-        const block = await prisma.block.findUnique({
-          where: { id: action.parentBlockId }
-        })
-        if (!block) {
-          throw new GraphQLError('Parent block not found', {
-            extensions: { code: 'NOT_FOUND' }
-          })
-        }
-        return block
-      }
-    })
-  })
-})
-
-// EmailAction implementation
-EmailActionRef.implement({
-  interfaces: [ActionInterface],
-  isTypeOf: (action: any) => action.email != null,
-  fields: (t) => ({
-    parentBlockId: t.exposeID('parentBlockId'),
-    gtmEventName: t.exposeString('gtmEventName', { nullable: true }),
-    email: t.string({
-      nullable: false,
-      resolve: (action) => action.email || ''
-    }),
-    parentBlock: t.field({
-      type: Block,
-      resolve: async (action) => {
-        const block = await prisma.block.findUnique({
-          where: { id: action.parentBlockId }
-        })
-        if (!block) {
-          throw new GraphQLError('Parent block not found', {
-            extensions: { code: 'NOT_FOUND' }
-          })
-        }
-        return block
-      }
-    })
-  })
-})
-
-// Input types for actions
-const NavigateToBlockActionInput = builder.inputType(
-  'NavigateToBlockActionInput',
-  {
-    fields: (t) => ({
-      gtmEventName: t.string({ required: false }),
-      blockId: t.string({ required: true })
-    })
-  }
-)
-
-const LinkActionInput = builder.inputType('LinkActionInput', {
-  fields: (t) => ({
-    gtmEventName: t.string({ required: false }),
-    url: t.string({ required: true }),
-    target: t.string({ required: false })
-  })
-})
-
-const EmailActionInput = builder.inputType('EmailActionInput', {
-  fields: (t) => ({
-    gtmEventName: t.string({ required: false }),
-    email: t.string({ required: true })
-  })
-})
-
-const BlockUpdateActionInput = builder.inputType('BlockUpdateActionInput', {
-  fields: (t) => ({
-    gtmEventName: t.string({ required: false }),
-    email: t.string({ required: false }),
-    url: t.string({ required: false }),
-    target: t.string({ required: false }),
-    blockId: t.string({ required: false })
-  })
 })
 
 // Helper function to check if a block can have actions
@@ -581,11 +455,3 @@ builder.mutationField('blockUpdateEmailAction', (t) =>
     }
   })
 )
-
-// Export the action types for use in other files
-export {
-  ActionInterface,
-  NavigateToBlockActionRef,
-  LinkActionRef,
-  EmailActionRef
-}

@@ -1,19 +1,16 @@
 import { v4 as uuidv4 } from 'uuid'
 
-import { ButtonAction } from '.prisma/api-journeys-modern-client'
+import { prisma } from '@core/prisma/journeys/client'
 
-import { prisma } from '../../../lib/prisma'
 import { builder } from '../../builder'
 import { EventInterface } from '../event'
 import { validateBlockEvent } from '../utils'
 
-// Define ButtonAction enum
-export const ButtonActionEnum = builder.enumType('ButtonAction', {
-  values: Object.values(ButtonAction)
-})
+import { ButtonActionEnum } from './enums'
+import { ButtonClickEventCreateInput } from './inputs'
 
-// ButtonClickEvent type
 export const ButtonClickEventRef = builder.prismaObject('Event', {
+  shareable: true,
   interfaces: [EventInterface],
   variant: 'ButtonClickEvent',
   isTypeOf: (obj: any) => obj.typename === 'ButtonClickEvent',
@@ -23,25 +20,6 @@ export const ButtonClickEventRef = builder.prismaObject('Event', {
   })
 })
 
-// Input types
-const ButtonClickEventCreateInput = builder.inputType(
-  'ButtonClickEventCreateInput',
-  {
-    fields: (t) => ({
-      id: t.string({ required: false }),
-      blockId: t.string({ required: true }),
-      stepId: t.string({ required: false }),
-      label: t.string({ required: false }),
-      value: t.string({ required: false }),
-      action: t.field({ type: ButtonActionEnum, required: false }),
-      actionValue: t.string({ required: false })
-    })
-  }
-)
-
-// Helper functions are imported from shared/utils
-
-// Mutation: Button Click Event
 builder.mutationField('buttonClickEventCreate', (t) =>
   t.withAuth({ isAuthenticated: true }).field({
     type: ButtonClickEventRef,

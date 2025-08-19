@@ -13,10 +13,10 @@ import { initContextCache } from '@pothos/core'
 import { createYoga, useReadinessCheck } from 'graphql-yoga'
 import get from 'lodash/get'
 
+import { prisma } from '@core/prisma/languages/client'
 import { getUserFromPayload } from '@core/yoga/firebaseClient'
 import { getInteropContext } from '@core/yoga/interop'
 
-import { prisma } from './lib/prisma'
 import { logger } from './logger'
 import { schema } from './schema'
 import type { Context } from './schema/builder'
@@ -90,10 +90,10 @@ export const yoga = createYoga<
             get(request, '_json.extensions.jwt.payload.user_id') ??
             request.headers.get('interop-token') ??
             null,
-          enabled: (request) =>
-            get(request, '_json.extensions.jwt.payload.user_id') == null &&
-            request.headers.get('interop-token') == null,
           cache,
+          scopePerSchemaCoordinate: {
+            User: 'PRIVATE'
+          },
           ttlPerSchemaCoordinate: {
             'Query.getMyLanguage': 0,
             'Query.getLanguage': 0

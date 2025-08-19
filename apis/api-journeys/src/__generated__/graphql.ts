@@ -191,9 +191,12 @@ export type ButtonClickEvent = Event & {
   __typename?: 'ButtonClickEvent';
   action?: Maybe<ButtonAction>;
   actionValue?: Maybe<Scalars['String']['output']>;
+  /** time event was created */
   createdAt?: Maybe<Scalars['DateTime']['output']>;
   id?: Maybe<Scalars['ID']['output']>;
-  journeyId?: Maybe<Scalars['String']['output']>;
+  /** ID of the journey that the buttonBlock belongs to */
+  journeyId?: Maybe<Scalars['ID']['output']>;
+  /** stepName of the parent stepBlock */
   label?: Maybe<Scalars['String']['output']>;
   value?: Maybe<Scalars['String']['output']>;
 };
@@ -303,9 +306,12 @@ export type ChatButtonUpdateInput = {
 
 export type ChatOpenEvent = Event & {
   __typename?: 'ChatOpenEvent';
+  /** time event was created */
   createdAt?: Maybe<Scalars['DateTime']['output']>;
   id?: Maybe<Scalars['ID']['output']>;
-  journeyId?: Maybe<Scalars['String']['output']>;
+  /** ID of the journey that the buttonBlock belongs to */
+  journeyId?: Maybe<Scalars['ID']['output']>;
+  /** null for ChatOpenEvent */
   label?: Maybe<Scalars['String']['output']>;
   messagePlatform?: Maybe<MessagePlatform>;
   value?: Maybe<Scalars['String']['output']>;
@@ -475,15 +481,19 @@ export enum DeviceType {
 
 export type EmailAction = Action & {
   __typename?: 'EmailAction';
+  customizable?: Maybe<Scalars['Boolean']['output']>;
   email: Scalars['String']['output'];
   gtmEventName?: Maybe<Scalars['String']['output']>;
-  parentBlock?: Maybe<Block>;
-  parentBlockId?: Maybe<Scalars['ID']['output']>;
+  parentBlock: Block;
+  parentBlockId: Scalars['ID']['output'];
+  parentStepId?: Maybe<Scalars['String']['output']>;
 };
 
 export type EmailActionInput = {
+  customizable?: InputMaybe<Scalars['Boolean']['input']>;
   email: Scalars['String']['input'];
   gtmEventName?: InputMaybe<Scalars['String']['input']>;
+  parentStepId?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type Error = BaseError & {
@@ -494,7 +504,7 @@ export type Error = BaseError & {
 export type Event = {
   createdAt?: Maybe<Scalars['DateTime']['output']>;
   id?: Maybe<Scalars['ID']['output']>;
-  journeyId?: Maybe<Scalars['String']['output']>;
+  journeyId?: Maybe<Scalars['ID']['output']>;
   label?: Maybe<Scalars['String']['output']>;
   value?: Maybe<Scalars['String']['output']>;
 };
@@ -823,6 +833,8 @@ export type Journey = {
   host?: Maybe<Host>;
   id: Scalars['ID']['output'];
   journeyCollections: Array<JourneyCollection>;
+  journeyCustomizationDescription?: Maybe<Scalars['String']['output']>;
+  journeyCustomizationFields: Array<JourneyCustomizationField>;
   journeyTheme?: Maybe<JourneyTheme>;
   language: Language;
   languageId: Scalars['String']['output'];
@@ -915,6 +927,25 @@ export type JourneyCreateInput = {
   title: Scalars['String']['input'];
 };
 
+export type JourneyCustomizationField = {
+  __typename?: 'JourneyCustomizationField';
+  defaultValue?: Maybe<Scalars['String']['output']>;
+  id: Scalars['ID']['output'];
+  journeyId: Scalars['ID']['output'];
+  key: Scalars['String']['output'];
+  value?: Maybe<Scalars['String']['output']>;
+};
+
+export type JourneyCustomizationFieldInput = {
+  id: Scalars['ID']['input'];
+  key: Scalars['String']['input'];
+  value?: InputMaybe<Scalars['String']['input']>;
+};
+
+/**
+ * JourneyEvent aggregates all event types. For detailed event type definitions,
+ * see the specific event files in the event module
+ */
 export type JourneyEvent = Event & Node & {
   __typename?: 'JourneyEvent';
   action?: Maybe<ButtonAction>;
@@ -923,7 +954,8 @@ export type JourneyEvent = Event & Node & {
   createdAt?: Maybe<Scalars['DateTime']['output']>;
   email?: Maybe<Scalars['String']['output']>;
   id: Scalars['ID']['output'];
-  journeyId?: Maybe<Scalars['String']['output']>;
+  journeyId?: Maybe<Scalars['ID']['output']>;
+  /** Related fields queried from relevant ids in the events table */
   journeySlug?: Maybe<Scalars['String']['output']>;
   label?: Maybe<Scalars['String']['output']>;
   language?: Maybe<Language>;
@@ -1083,9 +1115,12 @@ export type JourneyUpdateInput = {
 
 export type JourneyViewEvent = Event & {
   __typename?: 'JourneyViewEvent';
+  /** time event was created */
   createdAt?: Maybe<Scalars['DateTime']['output']>;
   id?: Maybe<Scalars['ID']['output']>;
-  journeyId?: Maybe<Scalars['String']['output']>;
+  /** ID of the journey being viewed */
+  journeyId?: Maybe<Scalars['ID']['output']>;
+  /** title of the journey being viewed */
   label?: Maybe<Scalars['String']['output']>;
   language?: Maybe<Scalars['Json']['output']>;
   value?: Maybe<Scalars['String']['output']>;
@@ -1239,15 +1274,19 @@ export type LanguagesFilter = {
 
 export type LinkAction = Action & {
   __typename?: 'LinkAction';
+  customizable?: Maybe<Scalars['Boolean']['output']>;
   gtmEventName?: Maybe<Scalars['String']['output']>;
-  parentBlock?: Maybe<Block>;
-  parentBlockId?: Maybe<Scalars['ID']['output']>;
+  parentBlock: Block;
+  parentBlockId: Scalars['ID']['output'];
+  parentStepId?: Maybe<Scalars['String']['output']>;
   target?: Maybe<Scalars['String']['output']>;
   url: Scalars['String']['output'];
 };
 
 export type LinkActionInput = {
+  customizable?: InputMaybe<Scalars['Boolean']['input']>;
   gtmEventName?: InputMaybe<Scalars['String']['input']>;
+  parentStepId?: InputMaybe<Scalars['String']['input']>;
   target?: InputMaybe<Scalars['String']['input']>;
   url: Scalars['String']['input'];
 };
@@ -1374,6 +1413,8 @@ export type Mutation = {
   journeyCollectionDelete: JourneyCollection;
   journeyCollectionUpdate: JourneyCollection;
   journeyCreate: Journey;
+  journeyCustomizationFieldPublisherUpdate: Array<JourneyCustomizationField>;
+  journeyCustomizationFieldUserUpdate: Array<JourneyCustomizationField>;
   journeyDuplicate: Journey;
   journeyFeature: Journey;
   journeyLanguageAiDetect: Scalars['Boolean']['output'];
@@ -1862,6 +1903,18 @@ export type MutationJourneyCreateArgs = {
 };
 
 
+export type MutationJourneyCustomizationFieldPublisherUpdateArgs = {
+  journeyId: Scalars['ID']['input'];
+  string: Scalars['String']['input'];
+};
+
+
+export type MutationJourneyCustomizationFieldUserUpdateArgs = {
+  input: Array<JourneyCustomizationFieldInput>;
+  journeyId: Scalars['ID']['input'];
+};
+
+
 export type MutationJourneyDuplicateArgs = {
   id: Scalars['ID']['input'];
   teamId: Scalars['ID']['input'];
@@ -1987,9 +2040,9 @@ export type MutationRadioQuestionBlockCreateArgs = {
 
 
 export type MutationRadioQuestionBlockUpdateArgs = {
+  gridView?: InputMaybe<Scalars['Boolean']['input']>;
   id: Scalars['ID']['input'];
-  input: RadioQuestionBlockUpdateInput;
-  journeyId?: InputMaybe<Scalars['ID']['input']>;
+  parentBlockId: Scalars['ID']['input'];
 };
 
 
@@ -3373,6 +3426,12 @@ export type RadioOptionBlock = Block & {
   label: Scalars['String']['output'];
   parentBlockId?: Maybe<Scalars['ID']['output']>;
   parentOrder?: Maybe<Scalars['Int']['output']>;
+  /**
+   * pollOptionImageBlockId is present if a child block should be used as a poll option image.
+   *       This child block should not be rendered normally, instead it should be used
+   *       as a poll option image. Blocks are often of type ImageBlock
+   */
+  pollOptionImageBlockId?: Maybe<Scalars['ID']['output']>;
 };
 
 export type RadioOptionBlockCreateInput = {
@@ -3389,6 +3448,7 @@ export type RadioOptionBlockUpdateInput = {
 
 export type RadioQuestionBlock = Block & {
   __typename?: 'RadioQuestionBlock';
+  gridView?: Maybe<Scalars['Boolean']['output']>;
   id: Scalars['ID']['output'];
   journeyId: Scalars['ID']['output'];
   parentBlockId?: Maybe<Scalars['ID']['output']>;
@@ -3407,9 +3467,12 @@ export type RadioQuestionBlockUpdateInput = {
 
 export type RadioQuestionSubmissionEvent = Event & {
   __typename?: 'RadioQuestionSubmissionEvent';
+  /** time event was created */
   createdAt?: Maybe<Scalars['DateTime']['output']>;
   id?: Maybe<Scalars['ID']['output']>;
-  journeyId?: Maybe<Scalars['String']['output']>;
+  /** ID of the journey that the radioQuestionBlock belongs to */
+  journeyId?: Maybe<Scalars['ID']['output']>;
+  /** stepName of the parent stepBlock */
   label?: Maybe<Scalars['String']['output']>;
   value?: Maybe<Scalars['String']['output']>;
 };
@@ -3531,10 +3594,14 @@ export type SignUpBlockUpdateInput = {
 
 export type SignUpSubmissionEvent = Event & {
   __typename?: 'SignUpSubmissionEvent';
+  /** time event was created */
   createdAt?: Maybe<Scalars['DateTime']['output']>;
+  /** email from the signUpBlock form */
   email?: Maybe<Scalars['String']['output']>;
   id?: Maybe<Scalars['ID']['output']>;
-  journeyId?: Maybe<Scalars['String']['output']>;
+  /** ID of the journey that the block belongs to */
+  journeyId?: Maybe<Scalars['ID']['output']>;
+  /** null for signUpSubmissionEvent */
   label?: Maybe<Scalars['String']['output']>;
   value?: Maybe<Scalars['String']['output']>;
 };
@@ -3665,9 +3732,12 @@ export type StepBlockUpdateInput = {
 
 export type StepNextEvent = Event & {
   __typename?: 'StepNextEvent';
+  /** time event was created */
   createdAt?: Maybe<Scalars['DateTime']['output']>;
   id?: Maybe<Scalars['ID']['output']>;
-  journeyId?: Maybe<Scalars['String']['output']>;
+  /** ID of the journey that the stepBlock belongs to */
+  journeyId?: Maybe<Scalars['ID']['output']>;
+  /** stepName of the stepBlock */
   label?: Maybe<Scalars['String']['output']>;
   value?: Maybe<Scalars['String']['output']>;
 };
@@ -3682,9 +3752,12 @@ export type StepNextEventCreateInput = {
 
 export type StepPreviousEvent = Event & {
   __typename?: 'StepPreviousEvent';
+  /** time event was created */
   createdAt?: Maybe<Scalars['DateTime']['output']>;
   id?: Maybe<Scalars['ID']['output']>;
-  journeyId?: Maybe<Scalars['String']['output']>;
+  /** ID of the journey that the stepBlock belongs to */
+  journeyId?: Maybe<Scalars['ID']['output']>;
+  /** stepName of the current stepBlock */
   label?: Maybe<Scalars['String']['output']>;
   value?: Maybe<Scalars['String']['output']>;
 };
@@ -3699,9 +3772,12 @@ export type StepPreviousEventCreateInput = {
 
 export type StepViewEvent = Event & {
   __typename?: 'StepViewEvent';
+  /** time event was created */
   createdAt?: Maybe<Scalars['DateTime']['output']>;
   id?: Maybe<Scalars['ID']['output']>;
-  journeyId?: Maybe<Scalars['String']['output']>;
+  /** ID of the journey that the stepBlock belongs to */
+  journeyId?: Maybe<Scalars['ID']['output']>;
+  /** null for stepViewEvent */
   label?: Maybe<Scalars['String']['output']>;
   value?: Maybe<Scalars['String']['output']>;
 };
@@ -3826,9 +3902,12 @@ export type TextResponseBlockUpdateInput = {
 export type TextResponseSubmissionEvent = Event & {
   __typename?: 'TextResponseSubmissionEvent';
   blockId?: Maybe<Scalars['String']['output']>;
+  /** time event was created */
   createdAt?: Maybe<Scalars['DateTime']['output']>;
   id?: Maybe<Scalars['ID']['output']>;
-  journeyId?: Maybe<Scalars['String']['output']>;
+  /** ID of the journey that the buttonBlock belongs to */
+  journeyId?: Maybe<Scalars['ID']['output']>;
+  /** stepName of the parent stepBlock */
   label?: Maybe<Scalars['String']['output']>;
   value?: Maybe<Scalars['String']['output']>;
 };
@@ -4161,7 +4240,7 @@ export type Video = {
   availableLanguages: Array<Scalars['String']['output']>;
   bibleCitations: Array<BibleCitation>;
   children: Array<Video>;
-  /** the number value of the amount of children on a video */
+  /** The number of published child videos associated with this video */
   childrenCount: Scalars['Int']['output'];
   cloudflareAssets: Array<CloudflareR2>;
   description: Array<VideoDescription>;
@@ -4243,6 +4322,7 @@ export type VideoTitleArgs = {
 
 
 export type VideoVariantArgs = {
+  input?: InputMaybe<VideoVariantFilter>;
   languageId?: InputMaybe<Scalars['ID']['input']>;
 };
 
@@ -4278,7 +4358,12 @@ export type VideoBlock = Block & {
   parentBlockId?: Maybe<Scalars['ID']['output']>;
   parentOrder?: Maybe<Scalars['Int']['output']>;
   posterBlockId?: Maybe<Scalars['ID']['output']>;
+  /**
+   * internal source: videoId, videoVariantLanguageId, and video present
+   * youTube source: videoId, title, description, and duration present
+   */
   source?: Maybe<VideoBlockSource>;
+  /** startAt dictates at which point of time the video should start playing */
   startAt?: Maybe<Scalars['Int']['output']>;
   title: Scalars['String']['output'];
   videoId?: Maybe<Scalars['String']['output']>;
@@ -4292,7 +4377,6 @@ export type VideoBlockCreateInput = {
   endAt?: InputMaybe<Scalars['Int']['input']>;
   fullsize?: InputMaybe<Scalars['Boolean']['input']>;
   id?: InputMaybe<Scalars['ID']['input']>;
-  image?: InputMaybe<Scalars['String']['input']>;
   journeyId: Scalars['ID']['input'];
   muted?: InputMaybe<Scalars['Boolean']['input']>;
   objectFit?: InputMaybe<VideoBlockObjectFit>;
@@ -4329,6 +4413,7 @@ export type VideoBlockUpdateInput = {
   objectFit?: InputMaybe<VideoBlockObjectFit>;
   parentBlockId?: InputMaybe<Scalars['ID']['input']>;
   posterBlockId?: InputMaybe<Scalars['ID']['input']>;
+  /** startAt dictates at which point of time the video should start playing */
   startAt?: InputMaybe<Scalars['Int']['input']>;
   title?: InputMaybe<Scalars['String']['input']>;
   videoId?: InputMaybe<Scalars['ID']['input']>;
@@ -4337,9 +4422,12 @@ export type VideoBlockUpdateInput = {
 
 export type VideoCollapseEvent = Event & {
   __typename?: 'VideoCollapseEvent';
+  /** time event was created */
   createdAt?: Maybe<Scalars['DateTime']['output']>;
   id?: Maybe<Scalars['ID']['output']>;
-  journeyId?: Maybe<Scalars['String']['output']>;
+  /** ID of the journey that the videoBlock belongs to */
+  journeyId?: Maybe<Scalars['ID']['output']>;
+  /** title of the video */
   label?: Maybe<Scalars['String']['output']>;
   position?: Maybe<Scalars['Float']['output']>;
   source?: Maybe<VideoBlockSource>;
@@ -4357,9 +4445,12 @@ export type VideoCollapseEventCreateInput = {
 
 export type VideoCompleteEvent = Event & {
   __typename?: 'VideoCompleteEvent';
+  /** time event was created */
   createdAt?: Maybe<Scalars['DateTime']['output']>;
   id?: Maybe<Scalars['ID']['output']>;
-  journeyId?: Maybe<Scalars['String']['output']>;
+  /** ID of the journey that the videoBlock belongs to */
+  journeyId?: Maybe<Scalars['ID']['output']>;
+  /** title of the video */
   label?: Maybe<Scalars['String']['output']>;
   position?: Maybe<Scalars['Float']['output']>;
   source?: Maybe<VideoBlockSource>;
@@ -4388,6 +4479,7 @@ export type VideoCreateInput = {
 
 export type VideoDescription = {
   __typename?: 'VideoDescription';
+  crowdInId?: Maybe<Scalars['String']['output']>;
   id: Scalars['ID']['output'];
   language: Language;
   primary: Scalars['Boolean']['output'];
@@ -4415,9 +4507,12 @@ export type VideoEditionUpdateInput = {
 
 export type VideoExpandEvent = Event & {
   __typename?: 'VideoExpandEvent';
+  /** time event was created */
   createdAt?: Maybe<Scalars['DateTime']['output']>;
   id?: Maybe<Scalars['ID']['output']>;
-  journeyId?: Maybe<Scalars['String']['output']>;
+  /** ID of the journey that the videoBlock belongs to */
+  journeyId?: Maybe<Scalars['ID']['output']>;
+  /** title of the video */
   label?: Maybe<Scalars['String']['output']>;
   position?: Maybe<Scalars['Float']['output']>;
   source?: Maybe<VideoBlockSource>;
@@ -4461,9 +4556,12 @@ export type VideoOrigin = {
 
 export type VideoPauseEvent = Event & {
   __typename?: 'VideoPauseEvent';
+  /** time event was created */
   createdAt?: Maybe<Scalars['DateTime']['output']>;
   id?: Maybe<Scalars['ID']['output']>;
-  journeyId?: Maybe<Scalars['String']['output']>;
+  /** ID of the journey that the videoBlock belongs to */
+  journeyId?: Maybe<Scalars['ID']['output']>;
+  /** title of the video */
   label?: Maybe<Scalars['String']['output']>;
   position?: Maybe<Scalars['Float']['output']>;
   source?: Maybe<VideoBlockSource>;
@@ -4481,9 +4579,12 @@ export type VideoPauseEventCreateInput = {
 
 export type VideoPlayEvent = Event & {
   __typename?: 'VideoPlayEvent';
+  /** time event was created */
   createdAt?: Maybe<Scalars['DateTime']['output']>;
   id?: Maybe<Scalars['ID']['output']>;
-  journeyId?: Maybe<Scalars['String']['output']>;
+  /** ID of the journey that the videoBlock belongs to */
+  journeyId?: Maybe<Scalars['ID']['output']>;
+  /** title of the video */
   label?: Maybe<Scalars['String']['output']>;
   position?: Maybe<Scalars['Float']['output']>;
   source?: Maybe<VideoBlockSource>;
@@ -4501,12 +4602,17 @@ export type VideoPlayEventCreateInput = {
 
 export type VideoProgressEvent = Event & {
   __typename?: 'VideoProgressEvent';
+  /** time event was created */
   createdAt?: Maybe<Scalars['DateTime']['output']>;
   id?: Maybe<Scalars['ID']['output']>;
-  journeyId?: Maybe<Scalars['String']['output']>;
+  /** ID of the journey that the videoBlock belongs to */
+  journeyId?: Maybe<Scalars['ID']['output']>;
+  /** title of the video */
   label?: Maybe<Scalars['String']['output']>;
   position?: Maybe<Scalars['Float']['output']>;
+  /** progress is a integer indicating the precentage completion from the startAt to the endAt times of the videoBlock */
   progress?: Maybe<Scalars['Int']['output']>;
+  /** source of the video (based on the source in the value field) */
   source?: Maybe<VideoBlockSource>;
   value?: Maybe<Scalars['String']['output']>;
 };
@@ -4538,9 +4644,12 @@ export type VideoSnippet = {
 
 export type VideoStartEvent = Event & {
   __typename?: 'VideoStartEvent';
+  /** time event was created */
   createdAt?: Maybe<Scalars['DateTime']['output']>;
   id?: Maybe<Scalars['ID']['output']>;
-  journeyId?: Maybe<Scalars['String']['output']>;
+  /** ID of the journey that the videoBlock belongs to */
+  journeyId?: Maybe<Scalars['ID']['output']>;
+  /** title of the video */
   label?: Maybe<Scalars['String']['output']>;
   position?: Maybe<Scalars['Float']['output']>;
   source?: Maybe<VideoBlockSource>;
@@ -4558,6 +4667,7 @@ export type VideoStartEventCreateInput = {
 
 export type VideoStudyQuestion = {
   __typename?: 'VideoStudyQuestion';
+  crowdInId?: Maybe<Scalars['String']['output']>;
   id: Scalars['ID']['output'];
   language: Language;
   order: Scalars['Int']['output'];
@@ -4635,6 +4745,7 @@ export type VideoSubtitleUpdateInput = {
 
 export type VideoTitle = {
   __typename?: 'VideoTitle';
+  crowdInId?: Maybe<Scalars['String']['output']>;
   id: Scalars['ID']['output'];
   language: Language;
   primary: Scalars['Boolean']['output'];

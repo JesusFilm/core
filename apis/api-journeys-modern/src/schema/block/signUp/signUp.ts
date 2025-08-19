@@ -1,71 +1,29 @@
 import { GraphQLError } from 'graphql'
 import { v4 as uuidv4 } from 'uuid'
 
+import { prisma } from '@core/prisma/journeys/client'
+
 import {
   Action,
   ability,
   subject as abilitySubject
 } from '../../../lib/auth/ability'
-import { prisma } from '../../../lib/prisma'
-import { ActionInterface } from '../../action/action'
 import { builder } from '../../builder'
 import { Block } from '../block'
 
-// Input types for SignUpBlock operations
-const SignUpBlockCreateInput = builder.inputType('SignUpBlockCreateInput', {
-  fields: (t) => ({
-    id: t.id({ required: false }),
-    journeyId: t.id({ required: true }),
-    parentBlockId: t.id({ required: true }),
-    submitLabel: t.string({ required: true })
-  })
-})
-
-const SignUpBlockUpdateInput = builder.inputType('SignUpBlockUpdateInput', {
-  fields: (t) => ({
-    parentBlockId: t.id({ required: false }),
-    submitIconId: t.id({ required: false }),
-    submitLabel: t.string({ required: false })
-  })
-})
+import { SignUpBlockCreateInput, SignUpBlockUpdateInput } from './inputs'
 
 export const SignUpBlock = builder.prismaObject('Block', {
   interfaces: [Block],
   variant: 'SignUpBlock',
   isTypeOf: (obj: any) => obj.typename === 'SignUpBlock',
-  directives: { key: { fields: 'id' } },
+  shareable: true,
   fields: (t) => ({
-    id: t.exposeID('id', { nullable: false, directives: { shareable: true } }),
-    journeyId: t.exposeID('journeyId', {
-      nullable: false,
-      directives: { shareable: true }
-    }),
-    parentBlockId: t.exposeID('parentBlockId', {
-      nullable: true,
-      directives: { shareable: true }
-    }),
-    parentOrder: t.exposeInt('parentOrder', {
-      nullable: true,
-      directives: { shareable: true }
-    }),
     submitIconId: t.exposeID('submitIconId', {
-      nullable: true,
-      directives: { shareable: true }
+      nullable: true
     }),
     submitLabel: t.exposeString('submitLabel', {
-      nullable: true,
-      directives: { shareable: true }
-    }),
-    action: t.field({
-      type: ActionInterface,
-      nullable: true,
-      directives: { shareable: true },
-      resolve: async (block) => {
-        const action = await prisma.action.findUnique({
-          where: { parentBlockId: block.id }
-        })
-        return action
-      }
+      nullable: true
     })
   })
 })

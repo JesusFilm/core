@@ -1,6 +1,6 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { sendGTMEvent } from '@next/third-parties/google'
-import { fireEvent, render, waitFor, within } from '@testing-library/react'
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { usePlausible } from 'next-plausible'
 
 import type { TreeBlock } from '../../libs/block'
@@ -45,6 +45,7 @@ const block: TreeBlock<RadioQuestionFields> = {
   id: 'RadioQuestion1',
   parentBlockId: 'RadioQuestion1',
   parentOrder: 0,
+  gridView: false,
   children: [
     {
       __typename: 'RadioOptionBlock',
@@ -53,6 +54,7 @@ const block: TreeBlock<RadioQuestionFields> = {
       parentBlockId: 'RadioQuestion1',
       parentOrder: 0,
       action: null,
+      pollOptionImageBlockId: null,
       children: []
     },
     {
@@ -62,6 +64,7 @@ const block: TreeBlock<RadioQuestionFields> = {
       parentBlockId: 'RadioQuestion1',
       parentOrder: 1,
       action: null,
+      pollOptionImageBlockId: null,
       children: []
     }
   ]
@@ -101,12 +104,12 @@ describe('RadioQuestion', () => {
   it('should display the correct options', () => {
     const { getByText } = render(
       <MockedProvider mocks={[]} addTypename={false}>
-        <RadioQuestion {...block} addOption={<div>Add option</div>} />
+        <RadioQuestion {...block} addOption={jest.fn()} />
       </MockedProvider>
     )
     expect(getByText('Option 1')).toBeInTheDocument()
     expect(getByText('Option 2')).toBeInTheDocument()
-    expect(getByText('Add option')).toBeInTheDocument()
+    expect(getByText('Add Option')).toBeInTheDocument()
   })
 
   it('should select an option onClick', async () => {
@@ -120,7 +123,7 @@ describe('RadioQuestion', () => {
       }
     }))
 
-    const { getByTestId, getAllByRole } = render(
+    const { getAllByRole } = render(
       <MockedProvider
         mocks={[
           {
@@ -150,15 +153,12 @@ describe('RadioQuestion', () => {
     fireEvent.click(buttons[0])
     await waitFor(() => expect(result).toHaveBeenCalled())
     expect(buttons[0]).toBeDisabled()
-    expect(buttons[0]).toContainElement(
-      getByTestId('RadioOptionCheckCircleIcon')
-    )
   })
 
   it('should disable unselected options', async () => {
     blockHistoryVar([activeBlock])
 
-    const { getByTestId, getAllByRole } = render(
+    const { getAllByRole } = render(
       <MockedProvider
         mocks={[
           {
@@ -192,18 +192,12 @@ describe('RadioQuestion', () => {
     const buttons = getAllByRole('button')
     fireEvent.click(buttons[0])
     await waitFor(() => expect(buttons[0]).toBeDisabled())
-    expect(
-      getByTestId('RadioOptionRadioButtonUncheckedIcon')
-    ).toBeInTheDocument()
     expect(buttons[1]).toBeDisabled()
-    expect(buttons[1]).toContainElement(
-      getByTestId('RadioOptionRadioButtonUncheckedIcon')
-    )
     fireEvent.click(buttons[1])
     expect(buttons[1]).toBeDisabled()
   })
 
-  it('should display options with wrappers', async () => {
+  it('should display list options with wrappers', async () => {
     const { getByText, getAllByTestId } = render(
       <MockedProvider mocks={[]} addTypename={false}>
         <RadioQuestion
@@ -216,10 +210,42 @@ describe('RadioQuestion', () => {
         />
       </MockedProvider>
     )
+
     await waitFor(() =>
-      expect(getAllByTestId('radioOptionWrapper')[0]).toContainElement(
-        getByText('Option 1')
-      )
+      expect(
+        screen.getByTestId(`JourneysRadioQuestionList-${block.id}`)
+      ).toBeInTheDocument()
+    )
+    expect(getAllByTestId('radioOptionWrapper')[0]).toContainElement(
+      getByText('Option 1')
+    )
+    expect(getAllByTestId('radioOptionWrapper')[1]).toContainElement(
+      getByText('Option 2')
+    )
+  })
+
+  it('should display grid options with wrappers', async () => {
+    const { getByText, getAllByTestId } = render(
+      <MockedProvider mocks={[]} addTypename={false}>
+        <RadioQuestion
+          {...block}
+          gridView={true}
+          wrappers={{
+            RadioOptionWrapper: ({ children }) => (
+              <div data-testid="radioOptionWrapper">{children}</div>
+            )
+          }}
+        />
+      </MockedProvider>
+    )
+
+    await waitFor(() =>
+      expect(
+        screen.getByTestId(`JourneysRadioQuestionGrid-${block.id}`)
+      ).toBeInTheDocument()
+    )
+    expect(getAllByTestId('radioOptionWrapper')[0]).toContainElement(
+      getByText('Option 1')
     )
     expect(getAllByTestId('radioOptionWrapper')[1]).toContainElement(
       getByText('Option 2')
@@ -375,11 +401,6 @@ describe('RadioQuestion', () => {
 
     buttons.forEach((button) => {
       expect(button).not.toBeDisabled()
-      const icon = within(button).getByTestId(
-        'RadioOptionRadioButtonUncheckedIcon'
-      )
-      expect(icon).toBeInTheDocument()
-      expect(button).toContainElement(icon)
     })
   })
 })

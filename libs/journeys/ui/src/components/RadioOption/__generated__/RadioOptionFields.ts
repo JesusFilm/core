@@ -37,4 +37,10 @@ export interface RadioOptionFields {
   parentOrder: number | null;
   label: string;
   action: RadioOptionFields_action | null;
+  /**
+   * pollOptionImageBlockId is present if a child block should be used as a poll option image.
+   *       This child block should not be rendered normally, instead it should be used
+   *       as a poll option image. Blocks are often of type ImageBlock
+   */
+  pollOptionImageBlockId: string | null;
 }

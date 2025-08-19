@@ -73,48 +73,16 @@
         "command": "DOPPLER_TOKEN=$DOPPLER_API_ANALYTICS_TOKEN doppler secrets download --no-file --format=env-no-quotes --project api-analytics > apis/api-analytics/.env"
       }
     },
-    "prisma-generate": {
+    "type-check": {
       "executor": "nx:run-commands",
       "options": {
-        "commands": [
-          "npx prisma generate --schema apis/api-analytics/db/schema.prisma"
-        ]
-      }
-    },
-    "prisma-studio": {
-      "executor": "nx:run-commands",
-      "options": {
-        "commands": [
-          "npx prisma studio --schema apis/api-analytics/db/schema.prisma"
-        ]
-      }
-    },
-    "prisma-validate": {
-      "executor": "nx:run-commands",
-      "options": {
-        "commands": [
-          "npx prisma validate --schema apis/api-analytics/db/schema.prisma"
-        ]
-      }
-    },
-    "prisma-introspect": {
-      "executor": "nx:run-commands",
-      "options": {
-        "commands": [
-          "npx prisma introspect --schema apis/api-analytics/db/schema.prisma"
-        ]
+        "command": "npx tsc -b apis/api-analytics/tsconfig.json"
       }
     },
     "codecov": {
       "executor": "nx:run-commands",
       "options": {
         "command": "codecov -f coverage/apis/api-analytics/cobertura-coverage.xml -F apps.api-analytics"
-      }
-    },
-    "type-check": {
-      "executor": "nx:run-commands",
-      "options": {
-        "command": "npx tsc -b apis/api-analytics/tsconfig.json"
       }
     }
   }

@@ -1,78 +1,38 @@
 import { GraphQLError } from 'graphql'
 import { v4 as uuidv4 } from 'uuid'
 
+import { prisma } from '@core/prisma/journeys/client'
+
 import {
   Action,
   ability,
   subject as abilitySubject
 } from '../../../lib/auth/ability'
-import { prisma } from '../../../lib/prisma'
 import { ActionInterface } from '../../action/action'
 import { builder } from '../../builder'
 import { Block } from '../block'
 
-// Input types for VideoTriggerBlock operations
-const VideoTriggerBlockCreateInput = builder.inputType(
-  'VideoTriggerBlockCreateInput',
-  {
-    fields: (t) => ({
-      id: t.id({ required: false }),
-      journeyId: t.id({ required: true }),
-      parentBlockId: t.id({ required: true }),
-      triggerStart: t.int({
-        required: false,
-        description:
-          'triggerStart sets the time as to when a video navigates to the next block, this is the number of seconds since the start of the video'
-      })
-    })
-  }
-)
-
-const VideoTriggerBlockUpdateInput = builder.inputType(
-  'VideoTriggerBlockUpdateInput',
-  {
-    fields: (t) => ({
-      triggerStart: t.int({ required: false })
-    })
-  }
-)
+import {
+  VideoTriggerBlockCreateInput,
+  VideoTriggerBlockUpdateInput
+} from './inputs'
 
 export const VideoTriggerBlock = builder.prismaObject('Block', {
   interfaces: [Block],
   variant: 'VideoTriggerBlock',
   isTypeOf: (obj: any) => obj.typename === 'VideoTriggerBlock',
-  directives: { key: { fields: 'id' } },
+  shareable: true,
   fields: (t) => ({
-    id: t.exposeID('id', { nullable: false, directives: { shareable: true } }),
-    journeyId: t.exposeID('journeyId', {
-      nullable: false,
-      directives: { shareable: true }
-    }),
-    parentBlockId: t.exposeID('parentBlockId', {
-      nullable: true,
-      directives: { shareable: true }
-    }),
-    parentOrder: t.exposeInt('parentOrder', {
-      nullable: true,
-      directives: { shareable: true }
-    }),
     triggerStart: t.int({
       nullable: false,
-      directives: { shareable: true },
       description: `triggerStart sets the time as to when a video navigates to the next block,
 this is the number of seconds since the start of the video`,
       resolve: (block) => block.triggerStart ?? 0
     }),
-    action: t.field({
+    action: t.relation('action', {
       type: ActionInterface,
-      nullable: true,
-      directives: { shareable: true },
-      resolve: async (block) => {
-        const action = await prisma.action.findUnique({
-          where: { parentBlockId: block.id }
-        })
-        return action
-      }
+      nullable: false,
+      onNull: () => new GraphQLError('Action not found')
     })
   })
 })

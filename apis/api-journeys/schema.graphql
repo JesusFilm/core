@@ -55,26 +55,36 @@ interface Action {
   gtmEventName: String
 }
 
-type NavigateToBlockAction implements Action {
+type NavigateToBlockAction implements Action
+  @shareable
+{
   parentBlockId: ID!
   parentBlock: Block!
   gtmEventName: String
   blockId: String!
 }
 
-type LinkAction implements Action {
+type LinkAction implements Action
+  @shareable
+{
   parentBlockId: ID!
   parentBlock: Block!
   gtmEventName: String
   url: String!
   target: String
+  customizable: Boolean
+  parentStepId: String
 }
 
-type EmailAction implements Action {
+type EmailAction implements Action
+  @shareable
+{
   parentBlockId: ID!
   parentBlock: Block!
   gtmEventName: String
   email: String!
+  customizable: Boolean
+  parentStepId: String
 }
 
 input NavigateToBlockActionInput {
@@ -86,11 +96,15 @@ input LinkActionInput {
   gtmEventName: String
   url: String!
   target: String
+  customizable: Boolean
+  parentStepId: String
 }
 
 input EmailActionInput {
   gtmEventName: String
   email: String!
+  customizable: Boolean
+  parentStepId: String
 }
 
 input BlockUpdateActionInput {
@@ -224,13 +238,7 @@ type Mutation {
     journeyId: ID
   ): RadioOptionBlock!
   radioQuestionBlockCreate(input: RadioQuestionBlockCreateInput!): RadioQuestionBlock!
-  radioQuestionBlockUpdate(
-    id: ID!
-    parentBlockId: ID!
-
-    """drop this parameter after merging teams"""
-    journeyId: ID
-  ): RadioQuestionBlock!
+  radioQuestionBlockUpdate(id: ID!, parentBlockId: ID!, gridView: Boolean): RadioQuestionBlock!
   signUpBlockCreate(input: SignUpBlockCreateInput!): SignUpBlock!
   signUpBlockUpdate(
     id: ID!
@@ -336,6 +344,8 @@ type Mutation {
   journeyCollectionCreate(input: JourneyCollectionCreateInput!): JourneyCollection!
   journeyCollectionUpdate(id: ID!, input: JourneyCollectionUpdateInput!): JourneyCollection!
   journeyCollectionDelete(id: ID!): JourneyCollection!
+  journeyCustomizationFieldPublisherUpdate(journeyId: ID!, string: String!): [JourneyCustomizationField!]!
+  journeyCustomizationFieldUserUpdate(journeyId: ID!, input: [JourneyCustomizationFieldInput!]!): [JourneyCustomizationField!]!
   journeyNotificationUpdate(input: JourneyNotificationUpdateInput!): JourneyNotification!
   journeyProfileCreate: JourneyProfile!
   journeyProfileUpdate(input: JourneyProfileUpdateInput!): JourneyProfile!
@@ -379,9 +389,7 @@ type Mutation {
   visitorUpdateForCurrentUser(input: VisitorUpdateInput!): Visitor!
 }
 
-interface Block
-  @key(fields: "id")
-{
+interface Block {
   id: ID!
   journeyId: ID!
   parentBlockId: ID
@@ -390,6 +398,7 @@ interface Block
 
 type Journey
   @key(fields: "id")
+  @shareable
 {
   blocks: [Block!] @shareable
   primaryImageBlock: ImageBlock
@@ -446,6 +455,8 @@ type Journey
   socialNodeX: Int
   socialNodeY: Int
   fromTemplateId: String
+  journeyCustomizationDescription: String
+  journeyCustomizationFields: [JourneyCustomizationField!]!
   journeyTheme: JourneyTheme
   userJourneys: [UserJourney!]
 }
@@ -602,13 +613,15 @@ input ButtonBlockSettingsInput {
   color: String
 }
 
-type ButtonBlockSettings {
+type ButtonBlockSettings
+  @shareable
+{
   alignment: ButtonAlignment @shareable
   color: String @shareable
 }
 
 type ButtonBlock implements Block
-  @key(fields: "id")
+  @shareable
 {
   id: ID! @shareable
   journeyId: ID! @shareable
@@ -650,7 +663,7 @@ input ButtonBlockUpdateInput {
 }
 
 type CardBlock implements Block
-  @key(fields: "id")
+  @shareable
 {
   id: ID! @shareable
   journeyId: ID! @shareable
@@ -734,7 +747,7 @@ enum GridAlignItems {
 }
 
 type GridContainerBlock implements Block
-  @key(fields: "id")
+  @shareable
 {
   id: ID! @shareable
   journeyId: ID! @shareable
@@ -747,7 +760,7 @@ type GridContainerBlock implements Block
 }
 
 type GridItemBlock implements Block
-  @key(fields: "id")
+  @shareable
 {
   id: ID! @shareable
   journeyId: ID! @shareable
@@ -799,7 +812,7 @@ enum IconSize {
 }
 
 type IconBlock implements Block
-  @key(fields: "id")
+  @shareable
 {
   id: ID! @shareable
   journeyId: ID! @shareable
@@ -829,7 +842,7 @@ input IconBlockUpdateInput {
 }
 
 type ImageBlock implements Block
-  @key(fields: "id")
+  @shareable
 {
   id: ID! @shareable
   journeyId: ID! @shareable
@@ -893,7 +906,7 @@ input ImageBlockUpdateInput {
 }
 
 type RadioOptionBlock implements Block
-  @key(fields: "id")
+  @shareable
 {
   id: ID! @shareable
   journeyId: ID! @shareable
@@ -901,6 +914,7 @@ type RadioOptionBlock implements Block
   parentOrder: Int @shareable
   label: String! @shareable
   action: Action
+  pollOptionImageBlockId: ID @shareable
 }
 
 input RadioOptionBlockCreateInput {
@@ -913,15 +927,17 @@ input RadioOptionBlockCreateInput {
 input RadioOptionBlockUpdateInput {
   parentBlockId: ID
   label: String
+  pollOptionImageBlockId: ID
 }
 
 type RadioQuestionBlock implements Block
-  @key(fields: "id")
+  @shareable
 {
   id: ID! @shareable
   journeyId: ID! @shareable
   parentBlockId: ID @shareable
   parentOrder: Int @shareable
+  gridView: Boolean @shareable
 }
 
 input RadioQuestionBlockCreateInput {
@@ -931,7 +947,7 @@ input RadioQuestionBlockCreateInput {
 }
 
 type SignUpBlock implements Block
-  @key(fields: "id")
+  @shareable
 {
   id: ID! @shareable
   journeyId: ID! @shareable
@@ -956,7 +972,7 @@ input SignUpBlockUpdateInput {
 }
 
 type SpacerBlock implements Block
-  @key(fields: "id")
+  @shareable
 {
   id: ID! @shareable
   journeyId: ID! @shareable
@@ -978,7 +994,7 @@ input SpacerBlockUpdateInput {
 }
 
 type StepBlock implements Block
-  @key(fields: "id")
+  @shareable
 {
   id: ID! @shareable
   journeyId: ID! @shareable
@@ -1071,7 +1087,7 @@ input StepBlockPositionUpdateInput {
 }
 
 type TextResponseBlock implements Block
-  @key(fields: "id")
+  @shareable
 {
   id: ID! @shareable
   journeyId: ID! @shareable
@@ -1144,12 +1160,14 @@ input TypographyBlockSettingsInput {
   color: String
 }
 
-type TypographyBlockSettings {
+type TypographyBlockSettings
+  @shareable
+{
   color: String @shareable
 }
 
 type TypographyBlock implements Block
-  @key(fields: "id")
+  @shareable
 {
   id: ID! @shareable
   journeyId: ID! @shareable
@@ -1184,6 +1202,7 @@ input TypographyBlockUpdateInput {
 
 extend type Video
   @key(fields: "id primaryLanguageId")
+  @shareable
 {
   id: ID! @external
   primaryLanguageId: ID! @external
@@ -1225,6 +1244,7 @@ enum VideoBlockObjectFit {
 
 type VideoBlock implements Block
   @key(fields: "id")
+  @shareable
 {
   id: ID! @shareable
   journeyId: ID! @shareable
@@ -1408,7 +1428,7 @@ VideoTriggerBlock is a block that indicates the video to navigate
 to the next block at the designated time.
 """
 type VideoTriggerBlock implements Block
-  @key(fields: "id")
+  @shareable
 {
   id: ID! @shareable
   journeyId: ID! @shareable
@@ -1423,7 +1443,9 @@ type VideoTriggerBlock implements Block
   action: Action!
 }
 
-type ChatButton {
+type ChatButton
+  @shareable
+{
   id: ID!
   link: String
   platform: MessagePlatform
@@ -1439,7 +1461,9 @@ input ChatButtonUpdateInput {
   platform: MessagePlatform
 }
 
-type CustomDomain {
+type CustomDomain
+  @shareable
+{
   id: ID!
   team: Team!
   name: String!
@@ -1448,7 +1472,9 @@ type CustomDomain {
   routeAllTeamJourneys: Boolean!
 }
 
-type CustomDomainCheck {
+type CustomDomainCheck
+  @shareable
+{
   """
   Is the domain correctly configured in the DNS?
   If false, A Record and CNAME Record should be added by the user.
@@ -1481,14 +1507,18 @@ input CustomDomainUpdateInput {
   routeAllTeamJourneys: Boolean
 }
 
-type CustomDomainVerification {
+type CustomDomainVerification
+  @shareable
+{
   type: String!
   domain: String!
   value: String!
   reason: String!
 }
 
-type CustomDomainVerificationResponse {
+type CustomDomainVerificationResponse
+  @shareable
+{
   code: String!
   message: String!
 }
@@ -1526,7 +1556,9 @@ input ButtonClickEventCreateInput {
   actionValue: String
 }
 
-type ButtonClickEvent implements Event {
+type ButtonClickEvent implements Event
+  @shareable
+{
   id: ID!
 
   """ID of the journey that the buttonBlock belongs to"""
@@ -1603,7 +1635,9 @@ input ChatOpenEventCreateInput {
   value: MessagePlatform
 }
 
-type ChatOpenEvent implements Event {
+type ChatOpenEvent implements Event
+  @shareable
+{
   id: ID!
 
   """ID of the journey that the buttonBlock belongs to"""
@@ -1652,7 +1686,9 @@ extend type Language
   id: ID! @external
 }
 
-type JourneyViewEvent implements Event {
+type JourneyViewEvent implements Event
+  @shareable
+{
   id: ID!
 
   """ID of the journey being viewed"""
@@ -1691,7 +1727,9 @@ input RadioQuestionSubmissionEventCreateInput {
   value: String
 }
 
-type RadioQuestionSubmissionEvent implements Event {
+type RadioQuestionSubmissionEvent implements Event
+  @shareable
+{
   id: ID!
 
   """ID of the journey that the radioQuestionBlock belongs to"""
@@ -1724,7 +1762,9 @@ input SignUpSubmissionEventCreateInput {
   email: String!
 }
 
-type SignUpSubmissionEvent implements Event {
+type SignUpSubmissionEvent implements Event
+  @shareable
+{
   id: ID!
 
   """ID of the journey that the block belongs to"""
@@ -1756,7 +1796,9 @@ input StepViewEventCreateInput {
   value: String
 }
 
-type StepViewEvent implements Event {
+type StepViewEvent implements Event
+  @shareable
+{
   id: ID!
 
   """ID of the journey that the stepBlock belongs to"""
@@ -1791,7 +1833,9 @@ input StepNextEventCreateInput {
   value: String
 }
 
-type StepNextEvent implements Event {
+type StepNextEvent implements Event
+  @shareable
+{
   id: ID!
 
   """ID of the journey that the stepBlock belongs to"""
@@ -1826,7 +1870,9 @@ input StepPreviousEventCreateInput {
   value: String
 }
 
-type StepPreviousEvent implements Event {
+type StepPreviousEvent implements Event
+  @shareable
+{
   id: ID!
 
   """ID of the journey that the stepBlock belongs to"""
@@ -1859,7 +1905,9 @@ input TextResponseSubmissionEventCreateInput {
   value: String!
 }
 
-type TextResponseSubmissionEvent implements Event {
+type TextResponseSubmissionEvent implements Event
+  @shareable
+{
   id: ID!
 
   """ID of the journey that the buttonBlock belongs to"""
@@ -1898,7 +1946,9 @@ input VideoStartEventCreateInput {
   value: VideoBlockSource
 }
 
-type VideoStartEvent implements Event {
+type VideoStartEvent implements Event
+  @shareable
+{
   id: ID!
 
   """ID of the journey that the videoBlock belongs to"""
@@ -1940,7 +1990,9 @@ input VideoPlayEventCreateInput {
   value: VideoBlockSource
 }
 
-type VideoPlayEvent implements Event {
+type VideoPlayEvent implements Event
+  @shareable
+{
   id: ID!
 
   """ID of the journey that the videoBlock belongs to"""
@@ -1982,7 +2034,9 @@ input VideoPauseEventCreateInput {
   value: VideoBlockSource
 }
 
-type VideoPauseEvent implements Event {
+type VideoPauseEvent implements Event
+  @shareable
+{
   id: ID!
 
   """ID of the journey that the videoBlock belongs to"""
@@ -2024,7 +2078,9 @@ input VideoCompleteEventCreateInput {
   value: VideoBlockSource
 }
 
-type VideoCompleteEvent implements Event {
+type VideoCompleteEvent implements Event
+  @shareable
+{
   id: ID!
 
   """ID of the journey that the videoBlock belongs to"""
@@ -2066,7 +2122,9 @@ input VideoExpandEventCreateInput {
   value: VideoBlockSource
 }
 
-type VideoExpandEvent implements Event {
+type VideoExpandEvent implements Event
+  @shareable
+{
   id: ID!
 
   """ID of the journey that the videoBlock belongs to"""
@@ -2108,7 +2166,9 @@ input VideoCollapseEventCreateInput {
   value: VideoBlockSource
 }
 
-type VideoCollapseEvent implements Event {
+type VideoCollapseEvent implements Event
+  @shareable
+{
   id: ID!
 
   """ID of the journey that the videoBlock belongs to"""
@@ -2155,7 +2215,9 @@ input VideoProgressEventCreateInput {
   value: VideoBlockSource
 }
 
-type VideoProgressEvent implements Event {
+type VideoProgressEvent implements Event
+  @shareable
+{
   id: ID!
 
   """ID of the journey that the videoBlock belongs to"""
@@ -2182,7 +2244,9 @@ type VideoProgressEvent implements Event {
   progress: Int!
 }
 
-type Host {
+type Host
+  @shareable
+{
   id: ID!
   teamId: ID!
   title: String!
@@ -2208,7 +2272,9 @@ input HostCreateInput {
   src2: String
 }
 
-type IntegrationGrowthSpaces implements Integration {
+type IntegrationGrowthSpaces implements Integration
+  @shareable
+{
   id: ID!
   team: Team!
   type: IntegrationType!
@@ -2228,7 +2294,9 @@ input IntegrationGrowthSpacesUpdateInput {
   accessSecret: String!
 }
 
-type IntegrationGrowthSpacesRoute {
+type IntegrationGrowthSpacesRoute
+  @shareable
+{
   id: String!
   name: String!
 }
@@ -2306,7 +2374,9 @@ enum JourneysReportType {
   singleSummary
 }
 
-type PowerBiEmbed {
+type PowerBiEmbed
+  @shareable
+{
   """The report ID"""
   reportId: String!
 
@@ -2380,6 +2450,7 @@ input JourneyUpdateInput {
 
 type UserJourney
   @key(fields: "id")
+  @shareable
 {
   journey: Journey
   journeyNotification: JourneyNotification
@@ -2397,7 +2468,9 @@ input JourneyTemplateInput {
   template: Boolean
 }
 
-type JourneyCollection {
+type JourneyCollection
+  @shareable
+{
   id: ID!
   team: Team!
   title: String
@@ -2417,11 +2490,29 @@ input JourneyCollectionUpdateInput {
   journeyIds: [String!]
 }
 
+type JourneyCustomizationField
+  @shareable
+{
+  id: ID!
+  journeyId: ID!
+  key: String!
+  value: String
+  defaultValue: String
+}
+
+input JourneyCustomizationFieldInput {
+  id: ID!
+  key: String!
+  value: String
+}
+
 """
 JourneyEvent aggregates all event types. For detailed event type definitions,
 see the specific event files in the event module
 """
-type JourneyEvent implements Event {
+type JourneyEvent implements Event
+  @shareable
+{
   """Base event fields from Event interface"""
   id: ID!
   journeyId: ID!
@@ -2453,12 +2544,16 @@ type JourneyEvent implements Event {
   visitorPhone: String
 }
 
-type JourneyEventEdge {
+type JourneyEventEdge
+  @shareable
+{
   cursor: String!
   node: JourneyEvent!
 }
 
-type JourneyEventsConnection {
+type JourneyEventsConnection
+  @shareable
+{
   edges: [JourneyEventEdge!]!
   pageInfo: PageInfo!
 }
@@ -2469,7 +2564,9 @@ input JourneyEventsFilter {
   periodRangeEnd: DateTime
 }
 
-type JourneyNotification {
+type JourneyNotification
+  @shareable
+{
   id: ID!
   userId: ID!
   journeyId: ID!
@@ -2480,6 +2577,7 @@ type JourneyNotification {
 
 type UserTeam
   @key(fields: "id")
+  @shareable
 {
   journeyNotification(journeyId: ID!): JourneyNotification
   id: ID!
@@ -2496,6 +2594,7 @@ input JourneyNotificationUpdateInput {
 
 type JourneyProfile
   @key(fields: "id")
+  @shareable
 {
   id: ID!
   userId: ID!
@@ -2513,7 +2612,9 @@ input JourneyProfileUpdateInput {
   plausibleDashboardViewed: Boolean
 }
 
-type JourneyTheme {
+type JourneyTheme
+  @shareable
+{
   id: ID!
   journeyId: ID!
   journey: Journey!
@@ -2540,6 +2641,7 @@ input JourneyThemeUpdateInput {
 
 type JourneyVisitor
   @key(fields: "visitorId journeyId")
+  @shareable
 {
   visitorId: ID!
   journeyId: ID!
@@ -2620,7 +2722,9 @@ type JourneyVisitor
   visitor: Visitor!
 }
 
-type JourneyVisitorEdge {
+type JourneyVisitorEdge
+  @shareable
+{
   """A cursor for use in pagination."""
   cursor: String!
 
@@ -2628,7 +2732,9 @@ type JourneyVisitorEdge {
   node: JourneyVisitor!
 }
 
-type JourneyVisitorsConnection {
+type JourneyVisitorsConnection
+  @shareable
+{
   """A list of edges."""
   edges: [JourneyVisitorEdge!]!
 
@@ -2652,7 +2758,9 @@ enum JourneyVisitorSort {
   activity
 }
 
-type JourneysEmailPreference {
+type JourneysEmailPreference
+  @shareable
+{
   email: String!
   unsubscribeAll: Boolean!
   accountNotifications: Boolean!
@@ -2664,12 +2772,16 @@ input JourneysEmailPreferenceUpdateInput {
   value: Boolean!
 }
 
-type PlausibleStatsAggregateValue {
+type PlausibleStatsAggregateValue
+  @shareable
+{
   value: Float!
   change: Int
 }
 
-type PlausibleStatsAggregateResponse {
+type PlausibleStatsAggregateResponse
+  @shareable
+{
   """The number of unique visitors."""
   visitors: PlausibleStatsAggregateValue
 
@@ -2782,7 +2894,9 @@ input PlausibleStatsBreakdownFilter {
   filters: String
 }
 
-type PlausibleStatsResponse {
+type PlausibleStatsResponse
+  @shareable
+{
   """
   On breakdown queries, this is the property that was broken down by.
   On aggregate queries, this is the date the stats are for.
@@ -2865,7 +2979,9 @@ extend type ShortLink
   id: ID! @external
 }
 
-type QrCode {
+type QrCode
+  @shareable
+{
   id: ID!
 
   """Team where the Qr Code belongs to"""
@@ -2903,6 +3019,7 @@ input QrCodeUpdateInput {
 
 type Team
   @key(fields: "id")
+  @shareable
 {
   id: ID!
   title: String!
@@ -2927,6 +3044,7 @@ input TeamUpdateInput {
 
 type UserInvite
   @key(fields: "id")
+  @shareable
 {
   id: ID!
   journeyId: ID!
@@ -2954,6 +3072,7 @@ extend type User
 
 type UserRole
   @key(fields: "id")
+  @shareable
 {
   id: ID!
   userId: ID!
@@ -2981,7 +3100,9 @@ input UserTeamFilterInput {
   role: [UserTeamRole!]
 }
 
-type UserTeamInvite {
+type UserTeamInvite
+  @shareable
+{
   id: ID!
   teamId: ID!
   email: String!
@@ -2991,7 +3112,9 @@ input UserTeamInviteCreateInput {
   email: String!
 }
 
-type Browser {
+type Browser
+  @shareable
+{
   name: String
   version: String
 }
@@ -3005,19 +3128,25 @@ enum DeviceType {
   embedded
 }
 
-type Device {
+type Device
+  @shareable
+{
   model: String
   type: DeviceType
   vendor: String
 }
 
-type OperatingSystem {
+type OperatingSystem
+  @shareable
+{
   name: String
   version: String
 }
 
 """These types are a subset provided by the @types/ua-parser-js library."""
-type UserAgent {
+type UserAgent
+  @shareable
+{
   browser: Browser!
   device: Device!
   os: OperatingSystem!
@@ -3044,6 +3173,7 @@ enum VisitorStatus {
 """A visitor with attributes connected to a team."""
 type Visitor
   @key(fields: "id")
+  @shareable
 {
   id: ID!
 
@@ -3152,7 +3282,9 @@ type Visitor
 }
 
 """An edge in a connection."""
-type VisitorEdge {
+type VisitorEdge
+  @shareable
+{
   """A cursor for use in pagination."""
   cursor: String!
 
@@ -3178,7 +3310,9 @@ type PageInfo
 }
 
 """A list of visitors connected with a team."""
-type VisitorsConnection {
+type VisitorsConnection
+  @shareable
+{
   """A list of edges."""
   edges: [VisitorEdge!]!
 
@@ -3268,4 +3402,4 @@ type _Service {
   sdl: String
 }
 
-union _Entity = ButtonBlock | CardBlock | GridContainerBlock | GridItemBlock | IconBlock | ImageBlock | Journey | JourneyProfile | JourneyVisitor | Language | RadioOptionBlock | RadioQuestionBlock | ShortLink | SignUpBlock | SpacerBlock | StepBlock | Tag | Team | TextResponseBlock | TypographyBlock | User | UserInvite | UserJourney | UserRole | UserTeam | Video | VideoBlock | VideoTriggerBlock | Visitor
+union _Entity = Journey | JourneyProfile | JourneyVisitor | Language | ShortLink | Tag | Team | User | UserInvite | UserJourney | UserRole | UserTeam | Video | VideoBlock | Visitor

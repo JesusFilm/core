@@ -1,4 +1,4 @@
-type Host {
+type Host @shareable {
   id: ID!
   teamId: ID!
   title: String!

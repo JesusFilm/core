@@ -3,93 +3,44 @@ import { v4 as uuidv4 } from 'uuid'
 
 import {
   ThemeMode as PrismaThemeMode,
-  ThemeName as PrismaThemeName
-} from '.prisma/api-journeys-modern-client'
+  ThemeName as PrismaThemeName,
+  prisma
+} from '@core/prisma/journeys/client'
 
 import {
   Action,
   ability,
   subject as abilitySubject
 } from '../../../lib/auth/ability'
-import { prisma } from '../../../lib/prisma'
 import { builder } from '../../builder'
 import { Block } from '../block'
 
 import { ThemeMode } from './enums/themeMode'
 import { ThemeName } from './enums/themeName'
-
-// Input types for CardBlock operations
-const CardBlockCreateInput = builder.inputType('CardBlockCreateInput', {
-  fields: (t) => ({
-    id: t.id({ required: false }),
-    journeyId: t.id({ required: true }),
-    parentBlockId: t.id({ required: true }),
-    backgroundColor: t.string({
-      required: false,
-      description:
-        'backgroundColor should be a HEX color value e.g #FFFFFF for white.'
-    }),
-    backdropBlur: t.int({
-      required: false,
-      description:
-        'backdropBlur should be a number representing blur amount in pixels e.g 20.'
-    }),
-    fullscreen: t.boolean({ required: false }),
-    themeMode: t.field({ type: ThemeMode, required: false }),
-    themeName: t.field({ type: ThemeName, required: false })
-  })
-})
-
-const CardBlockUpdateInput = builder.inputType('CardBlockUpdateInput', {
-  fields: (t) => ({
-    parentBlockId: t.id({ required: false }),
-    coverBlockId: t.id({ required: false }),
-    backgroundColor: t.string({ required: false }),
-    backdropBlur: t.int({ required: false }),
-    fullscreen: t.boolean({ required: false }),
-    themeMode: t.field({ type: ThemeMode, required: false }),
-    themeName: t.field({ type: ThemeName, required: false })
-  })
-})
+import { CardBlockCreateInput, CardBlockUpdateInput } from './inputs'
 
 export const CardBlock = builder.prismaObject('Block', {
   interfaces: [Block],
   variant: 'CardBlock',
   isTypeOf: (obj: any) => obj.typename === 'CardBlock',
+  shareable: true,
   fields: (t) => ({
-    id: t.exposeID('id', { nullable: false, directives: { shareable: true } }),
-    journeyId: t.exposeID('journeyId', {
-      nullable: false,
-      directives: { shareable: true }
-    }),
-    parentBlockId: t.exposeID('parentBlockId', {
-      nullable: true,
-      directives: { shareable: true }
-    }),
-    parentOrder: t.exposeInt('parentOrder', {
-      nullable: true,
-      directives: { shareable: true }
-    }),
     backgroundColor: t.exposeString('backgroundColor', {
       nullable: true,
-      directives: { shareable: true },
       description: `backgroundColor should be a HEX color value e.g #FFFFFF for white.`
     }),
     backdropBlur: t.exposeInt('backdropBlur', {
       nullable: true,
-      directives: { shareable: true },
       description: `backdropBlur should be a number representing blur amount in pixels e.g 20.`
     }),
     coverBlockId: t.exposeID('coverBlockId', {
       nullable: true,
-      directives: { shareable: true },
       description: `coverBlockId is present if a child block should be used as a cover.
 This child block should not be rendered normally, instead it should be used
 as a background. Blocks are often of type ImageBlock or VideoBlock.`
     }),
     fullscreen: t.boolean({
       nullable: false,
-      directives: { shareable: true },
       description: `fullscreen should control how the coverBlock is displayed. When fullscreen
 is set to true the coverBlock Image should be displayed as a blur in the
 background.`,
@@ -98,7 +49,6 @@ background.`,
     themeMode: t.field({
       type: ThemeMode,
       nullable: true,
-      directives: { shareable: true },
       description: `themeMode can override journey themeMode. If nothing is set then use
 themeMode from journey`,
       resolve: (block) => block.themeMode as PrismaThemeMode | null
@@ -106,13 +56,11 @@ themeMode from journey`,
     themeName: t.field({
       type: ThemeName,
       nullable: true,
-      directives: { shareable: true },
       description: `themeName can override journey themeName. If nothing is set then use
 themeName from journey`,
       resolve: (block) => block.themeName as PrismaThemeName | null
     })
-  }),
-  directives: { key: { fields: 'id' } }
+  })
 })
 
 // Helper function to fetch journey with ACL includes

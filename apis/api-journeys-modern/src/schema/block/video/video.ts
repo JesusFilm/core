@@ -1,63 +1,21 @@
 import { GraphQLError } from 'graphql'
 import { v4 as uuidv4 } from 'uuid'
 
+import { prisma } from '@core/prisma/journeys/client'
+
 import {
   Action,
   ability,
   subject as abilitySubject
 } from '../../../lib/auth/ability'
-import { prisma } from '../../../lib/prisma'
-import { ActionInterface } from '../../action/action'
 import { builder } from '../../builder'
 import { VideoBlockSource } from '../../enums'
 import { MediaVideo } from '../../mediaVideo/mediaVideo'
 import { Block } from '../block'
 
 import { VideoBlockObjectFit } from './enums/videoObjectFit'
+import { VideoBlockCreateInput, VideoBlockUpdateInput } from './inputs'
 
-// Input types for VideoBlock operations
-const VideoBlockCreateInput = builder.inputType('VideoBlockCreateInput', {
-  fields: (t) => ({
-    id: t.id({ required: false }),
-    journeyId: t.id({ required: true }),
-    parentBlockId: t.id({ required: true }),
-    videoId: t.id({ required: false }),
-    videoVariantLanguageId: t.id({ required: false }),
-    source: t.field({ type: VideoBlockSource, required: false }),
-    title: t.string({ required: false }),
-    description: t.string({ required: false }),
-    image: t.string({ required: false }),
-    duration: t.int({ required: false }),
-    objectFit: t.field({ type: VideoBlockObjectFit, required: false }),
-    startAt: t.int({ required: false }),
-    endAt: t.int({ required: false }),
-    muted: t.boolean({ required: false }),
-    autoplay: t.boolean({ required: false }),
-    fullsize: t.boolean({ required: false }),
-    posterBlockId: t.id({ required: false })
-  })
-})
-
-const VideoBlockUpdateInput = builder.inputType('VideoBlockUpdateInput', {
-  fields: (t) => ({
-    parentBlockId: t.id({ required: false }),
-    videoId: t.id({ required: false }),
-    videoVariantLanguageId: t.id({ required: false }),
-    posterBlockId: t.id({ required: false }),
-    title: t.string({ required: false }),
-    description: t.string({ required: false }),
-    image: t.string({ required: false }),
-    duration: t.int({ required: false }),
-    objectFit: t.field({ type: VideoBlockObjectFit, required: false }),
-    startAt: t.int({ required: false }),
-    endAt: t.int({ required: false }),
-    muted: t.boolean({ required: false }),
-    autoplay: t.boolean({ required: false }),
-    fullsize: t.boolean({ required: false })
-  })
-})
-
-// Type guard for allowed media video sources
 function isMediaVideoSource(
   source: string
 ): source is 'internal' | 'mux' | 'youTube' {
@@ -65,104 +23,70 @@ function isMediaVideoSource(
 }
 
 export const VideoBlock = builder.prismaObject('Block', {
+  shareable: true,
   interfaces: [Block],
   variant: 'VideoBlock',
   isTypeOf: (obj: any) => obj.typename === 'VideoBlock',
-  directives: { key: { fields: 'id' } },
   fields: (t) => ({
-    id: t.exposeID('id', { nullable: false, directives: { shareable: true } }),
-    journeyId: t.exposeID('journeyId', {
-      nullable: false,
-      directives: { shareable: true }
-    }),
-    parentBlockId: t.exposeID('parentBlockId', {
-      nullable: true,
-      directives: { shareable: true }
-    }),
-    parentOrder: t.exposeInt('parentOrder', {
-      nullable: true,
-      directives: { shareable: true }
-    }),
     autoplay: t.boolean({
-      nullable: false,
-      directives: { shareable: true },
+      nullable: true,
       resolve: (block) => block.autoplay ?? false
     }),
     startAt: t.exposeInt('startAt', {
-      nullable: true,
-      directives: { shareable: true }
+      nullable: true
     }),
     endAt: t.exposeInt('endAt', {
-      nullable: true,
-      directives: { shareable: true }
+      nullable: true
     }),
     muted: t.boolean({
-      nullable: false,
-      directives: { shareable: true },
+      nullable: true,
       resolve: (block) => block.muted ?? false
     }),
-    videoId: t.exposeString('videoId', {
-      nullable: true,
-      directives: { shareable: true }
+    videoId: t.exposeID('videoId', {
+      nullable: true
     }),
-    videoVariantLanguageId: t.exposeString('videoVariantLanguageId', {
-      nullable: true,
-      directives: { shareable: true }
+    videoVariantLanguageId: t.exposeID('videoVariantLanguageId', {
+      nullable: true
     }),
     source: t.field({
       type: VideoBlockSource,
-      nullable: true,
-      directives: { shareable: true },
-      resolve: (block) => block.source as any
-    }),
-    title: t.string({
       nullable: false,
-      directives: { shareable: true },
-      resolve: (block) => block.title ?? ''
+      description: `internal source: videoId, videoVariantLanguageId, and video present
+youTube source: videoId, title, description, and duration present`,
+      resolve: (block) => block.source ?? 'internal'
     }),
-    description: t.string({
-      nullable: false,
-      directives: { shareable: true },
-      resolve: (block) => block.description ?? ''
+    title: t.exposeString('title', {
+      nullable: true
+    }),
+    description: t.exposeString('description', {
+      nullable: true
     }),
     image: t.exposeString('image', {
-      nullable: true,
-      directives: { shareable: true }
+      nullable: true
     }),
     duration: t.exposeInt('duration', {
-      nullable: true,
-      directives: { shareable: true }
+      nullable: true
     }),
-    objectFit: t.field({
+    objectFit: t.expose('objectFit', {
       type: VideoBlockObjectFit,
-      nullable: true,
-      directives: { shareable: true },
-      resolve: (block) => block.objectFit as any
+      nullable: true
     }),
     posterBlockId: t.exposeID('posterBlockId', {
-      nullable: true,
-      directives: { shareable: true }
+      nullable: true
     }),
     fullsize: t.boolean({
-      nullable: false,
-      directives: { shareable: true },
+      nullable: true,
       resolve: (block) => block.fullsize ?? false
     }),
-    action: t.field({
-      type: ActionInterface,
-      nullable: true,
-      directives: { shareable: true },
-      resolve: async (block) => {
-        const action = await prisma.action.findUnique({
-          where: { parentBlockId: block.id }
-        })
-        return action
-      }
-    }),
+    action: t.relation('action'),
     mediaVideo: t.field({
       type: MediaVideo,
       nullable: true,
-      directives: { shareable: true },
+      select: {
+        source: true,
+        videoId: true,
+        videoVariantLanguageId: true
+      },
       resolve: (block) => {
         if (
           !block.source ||

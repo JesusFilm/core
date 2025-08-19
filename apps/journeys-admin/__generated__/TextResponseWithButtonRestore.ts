@@ -156,6 +156,12 @@ export interface TextResponseWithButtonRestore_textResponse_RadioOptionBlock {
   parentOrder: number | null;
   label: string;
   action: TextResponseWithButtonRestore_textResponse_RadioOptionBlock_action | null;
+  /**
+   * pollOptionImageBlockId is present if a child block should be used as a poll option image.
+   *       This child block should not be rendered normally, instead it should be used
+   *       as a poll option image. Blocks are often of type ImageBlock
+   */
+  pollOptionImageBlockId: string | null;
 }
 
 export interface TextResponseWithButtonRestore_textResponse_RadioQuestionBlock {
@@ -163,6 +169,7 @@ export interface TextResponseWithButtonRestore_textResponse_RadioQuestionBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
+  gridView: boolean | null;
 }
 
 export interface TextResponseWithButtonRestore_textResponse_SignUpBlock_action_NavigateToBlockAction {
@@ -548,6 +555,12 @@ export interface TextResponseWithButtonRestore_button_RadioOptionBlock {
   parentOrder: number | null;
   label: string;
   action: TextResponseWithButtonRestore_button_RadioOptionBlock_action | null;
+  /**
+   * pollOptionImageBlockId is present if a child block should be used as a poll option image.
+   *       This child block should not be rendered normally, instead it should be used
+   *       as a poll option image. Blocks are often of type ImageBlock
+   */
+  pollOptionImageBlockId: string | null;
 }
 
 export interface TextResponseWithButtonRestore_button_RadioQuestionBlock {
@@ -555,6 +568,7 @@ export interface TextResponseWithButtonRestore_button_RadioQuestionBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
+  gridView: boolean | null;
 }
 
 export interface TextResponseWithButtonRestore_button_SignUpBlock_action_NavigateToBlockAction {
@@ -940,6 +954,12 @@ export interface TextResponseWithButtonRestore_startIcon_RadioOptionBlock {
   parentOrder: number | null;
   label: string;
   action: TextResponseWithButtonRestore_startIcon_RadioOptionBlock_action | null;
+  /**
+   * pollOptionImageBlockId is present if a child block should be used as a poll option image.
+   *       This child block should not be rendered normally, instead it should be used
+   *       as a poll option image. Blocks are often of type ImageBlock
+   */
+  pollOptionImageBlockId: string | null;
 }
 
 export interface TextResponseWithButtonRestore_startIcon_RadioQuestionBlock {
@@ -947,6 +967,7 @@ export interface TextResponseWithButtonRestore_startIcon_RadioQuestionBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
+  gridView: boolean | null;
 }
 
 export interface TextResponseWithButtonRestore_startIcon_SignUpBlock_action_NavigateToBlockAction {
@@ -1332,6 +1353,12 @@ export interface TextResponseWithButtonRestore_endIcon_RadioOptionBlock {
   parentOrder: number | null;
   label: string;
   action: TextResponseWithButtonRestore_endIcon_RadioOptionBlock_action | null;
+  /**
+   * pollOptionImageBlockId is present if a child block should be used as a poll option image.
+   *       This child block should not be rendered normally, instead it should be used
+   *       as a poll option image. Blocks are often of type ImageBlock
+   */
+  pollOptionImageBlockId: string | null;
 }
 
 export interface TextResponseWithButtonRestore_endIcon_RadioQuestionBlock {
@@ -1339,6 +1366,7 @@ export interface TextResponseWithButtonRestore_endIcon_RadioQuestionBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
+  gridView: boolean | null;
 }
 
 export interface TextResponseWithButtonRestore_endIcon_SignUpBlock_action_NavigateToBlockAction {

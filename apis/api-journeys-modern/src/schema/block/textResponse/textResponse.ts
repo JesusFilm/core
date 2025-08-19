@@ -1,102 +1,54 @@
 import { GraphQLError } from 'graphql'
 import { v4 as uuidv4 } from 'uuid'
 
-import { TextResponseType as PrismaTextResponseType } from '.prisma/api-journeys-modern-client'
+import { prisma } from '@core/prisma/journeys/client'
 
 import {
   Action,
   ability,
   subject as abilitySubject
 } from '../../../lib/auth/ability'
-import { prisma } from '../../../lib/prisma'
 import { builder } from '../../builder'
 import { Block } from '../block'
 
-import { TextResponseType } from './enums/textResponseType'
-
-// Input types for TextResponseBlock operations
-const TextResponseBlockCreateInput = builder.inputType(
-  'TextResponseBlockCreateInput',
-  {
-    fields: (t) => ({
-      id: t.id({ required: false }),
-      journeyId: t.id({ required: true }),
-      parentBlockId: t.id({ required: true }),
-      label: t.string({ required: true })
-    })
-  }
-)
-
-const TextResponseBlockUpdateInput = builder.inputType(
-  'TextResponseBlockUpdateInput',
-  {
-    fields: (t) => ({
-      parentBlockId: t.id({ required: false }),
-      label: t.string({ required: false }),
-      placeholder: t.string({ required: false }),
-      required: t.boolean({ required: false }),
-      hint: t.string({ required: false }),
-      minRows: t.int({ required: false }),
-      routeId: t.string({ required: false }),
-      type: t.field({ type: TextResponseType, required: false }),
-      integrationId: t.string({ required: false })
-    })
-  }
-)
+import { TextResponseType } from './enums'
+import {
+  TextResponseBlockCreateInput,
+  TextResponseBlockUpdateInput
+} from './inputs'
 
 export const TextResponseBlock = builder.prismaObject('Block', {
   interfaces: [Block],
   variant: 'TextResponseBlock',
   isTypeOf: (obj: any) => obj.typename === 'TextResponseBlock',
-  directives: { key: { fields: 'id' } },
+  shareable: true,
   fields: (t) => ({
-    id: t.exposeID('id', { nullable: false, directives: { shareable: true } }),
-    journeyId: t.exposeID('journeyId', {
-      nullable: false,
-      directives: { shareable: true }
-    }),
-    parentBlockId: t.exposeID('parentBlockId', {
-      nullable: true,
-      directives: { shareable: true }
-    }),
-    parentOrder: t.exposeInt('parentOrder', {
-      nullable: true,
-      directives: { shareable: true }
-    }),
     label: t.string({
       nullable: false,
-      directives: { shareable: true },
       resolve: (block) => block.label ?? ''
     }),
     placeholder: t.exposeString('placeholder', {
-      nullable: true,
-      directives: { shareable: true }
+      nullable: true
     }),
     required: t.exposeBoolean('required', {
-      nullable: true,
-      directives: { shareable: true }
+      nullable: true
     }),
     hint: t.exposeString('hint', {
-      nullable: true,
-      directives: { shareable: true }
+      nullable: true
     }),
     minRows: t.exposeInt('minRows', {
-      nullable: true,
-      directives: { shareable: true }
+      nullable: true
     }),
     type: t.field({
       type: TextResponseType,
       nullable: true,
-      directives: { shareable: true },
       resolve: (block) => block.type
     }),
     routeId: t.exposeString('routeId', {
-      nullable: true,
-      directives: { shareable: true }
+      nullable: true
     }),
     integrationId: t.exposeString('integrationId', {
-      nullable: true,
-      directives: { shareable: true }
+      nullable: true
     })
   })
 })

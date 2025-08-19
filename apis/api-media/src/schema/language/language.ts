@@ -1,4 +1,5 @@
-import { prisma } from '../../lib/prisma'
+import { prisma } from '@core/prisma/media/client'
+
 import { builder } from '../builder'
 
 export const Language = builder.externalRef(
@@ -30,60 +31,51 @@ Language.implement({
       type: LabeledVideoCounts,
       nullable: false,
       load: async (languageIds: readonly string[]) => {
-        const results = await prisma.videoVariant.findMany({
-          where: {
-            languageId: { in: Array.from(languageIds) },
-            video: {
-              label: { in: ['series', 'featureFilm', 'shortFilm'] }
-            }
-          },
-          select: {
-            languageId: true,
-            video: {
-              select: {
-                label: true
-              }
-            }
-          }
-        })
+        // Get counts for each label separately using efficient count queries
+        const [seriesCounts, featureFilmCounts, shortFilmCounts] =
+          await Promise.all([
+            prisma.videoVariant.groupBy({
+              by: ['languageId'],
+              where: {
+                languageId: { in: Array.from(languageIds) },
+                video: { label: 'series' }
+              },
+              _count: { _all: true }
+            }),
+            prisma.videoVariant.groupBy({
+              by: ['languageId'],
+              where: {
+                languageId: { in: Array.from(languageIds) },
+                video: { label: 'featureFilm' }
+              },
+              _count: { _all: true }
+            }),
+            prisma.videoVariant.groupBy({
+              by: ['languageId'],
+              where: {
+                languageId: { in: Array.from(languageIds) },
+                video: { label: 'shortFilm' }
+              },
+              _count: { _all: true }
+            })
+          ])
 
-        const countsMap = new Map<string, LabeledVideoCountsType>()
-
-        languageIds.forEach((id) => {
-          countsMap.set(id.toString(), {
-            seriesCount: 0,
-            featureFilmCount: 0,
-            shortFilmCount: 0
-          })
-        })
-
-        results.forEach((variant) => {
-          if (variant.video?.label) {
-            const counts = countsMap.get(variant.languageId)
-            if (counts) {
-              switch (variant.video.label) {
-                case 'series':
-                  counts.seriesCount++
-                  break
-                case 'featureFilm':
-                  counts.featureFilmCount++
-                  break
-                case 'shortFilm':
-                  counts.shortFilmCount++
-                  break
-              }
-            }
-          }
-        })
-
-        return languageIds.map(
-          (id) =>
-            countsMap.get(id.toString()) || {
-              seriesCount: 0,
-              featureFilmCount: 0,
-              shortFilmCount: 0
-            }
+        // Create maps for O(1) lookup
+        const seriesMap = new Map(
+          seriesCounts.map((item) => [item.languageId, item._count._all])
         )
+        const featureFilmMap = new Map(
+          featureFilmCounts.map((item) => [item.languageId, item._count._all])
+        )
+        const shortFilmMap = new Map(
+          shortFilmCounts.map((item) => [item.languageId, item._count._all])
+        )
+
+        return languageIds.map((id) => ({
+          seriesCount: seriesMap.get(id) || 0,
+          featureFilmCount: featureFilmMap.get(id) || 0,
+          shortFilmCount: shortFilmMap.get(id) || 0
+        }))
       },
       resolve: (parent) => parent.id
     })

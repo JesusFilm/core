@@ -1,12 +1,15 @@
 import { v4 as uuidv4 } from 'uuid'
 
-import { prisma } from '../../../lib/prisma'
+import { prisma } from '@core/prisma/journeys/client'
+
 import { builder } from '../../builder'
 import { EventInterface } from '../event'
 import { validateBlockEvent } from '../utils'
 
-// SignUpSubmissionEvent type
+import { SignUpSubmissionEventCreateInput } from './inputs'
+
 export const SignUpSubmissionEventRef = builder.prismaObject('Event', {
+  shareable: true,
   interfaces: [EventInterface],
   variant: 'SignUpSubmissionEvent',
   isTypeOf: (obj: any) => obj.typename === 'SignUpSubmissionEvent',
@@ -15,21 +18,6 @@ export const SignUpSubmissionEventRef = builder.prismaObject('Event', {
   })
 })
 
-// Input types
-const SignUpSubmissionEventCreateInput = builder.inputType(
-  'SignUpSubmissionEventCreateInput',
-  {
-    fields: (t) => ({
-      id: t.string({ required: false }),
-      blockId: t.string({ required: true }),
-      stepId: t.string({ required: false }),
-      name: t.string({ required: true }),
-      email: t.string({ required: true })
-    })
-  }
-)
-
-// Mutation: Sign Up Submission Event
 builder.mutationField('signUpSubmissionEventCreate', (t) =>
   t.withAuth({ isAuthenticated: true }).field({
     type: SignUpSubmissionEventRef,

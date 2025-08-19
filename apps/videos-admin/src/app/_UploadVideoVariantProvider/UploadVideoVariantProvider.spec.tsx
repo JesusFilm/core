@@ -52,7 +52,8 @@ const createMuxVideoUploadByUrlMock = {
     variables: {
       url: 'https://mock.cloudflare-domain.com/video-id/variants/language-id/videos/uuidv4/language-id_video-id.mp4',
       userGenerated: false,
-      downloadable: true
+      downloadable: true,
+      maxResolution: 'uhd'
     }
   },
   result: {
@@ -168,7 +169,8 @@ const createMuxVideoUploadByUrlErrorMock = {
     variables: {
       url: 'https://mock.cloudflare-domain.com/video-id/variants/language-id/videos/uuidv4/language-id_video-id.mp4',
       userGenerated: false,
-      downloadable: true
+      downloadable: true,
+      maxResolution: 'uhd'
     }
   },
   error: new Error('Mux creation failed')
@@ -267,7 +269,8 @@ describe('UploadVideoVariantContext', () => {
           'en',
           'base',
           false,
-          'video-slug'
+          'video-slug',
+          undefined
         )
       })
 
@@ -324,7 +327,8 @@ describe('UploadVideoVariantContext', () => {
           'en',
           'base',
           false,
-          'video-slug'
+          'video-slug',
+          undefined
         )
       })
 
@@ -363,7 +367,8 @@ describe('UploadVideoVariantContext', () => {
           'en',
           'base',
           false,
-          'video-slug'
+          'video-slug',
+          undefined
         )
       })
 
@@ -402,7 +407,8 @@ describe('UploadVideoVariantContext', () => {
           'en',
           'base',
           false,
-          'video-slug'
+          'video-slug',
+          undefined
         )
       })
 
@@ -458,7 +464,8 @@ describe('UploadVideoVariantContext', () => {
           'en',
           'base',
           false,
-          'video-slug'
+          'video-slug',
+          undefined
         )
       })
 

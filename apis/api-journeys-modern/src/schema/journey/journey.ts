@@ -8,8 +8,9 @@ import { v4 as uuidv4 } from 'uuid'
 import {
   Prisma,
   JourneyStatus as PrismaJourneyStatus,
-  UserJourneyRole
-} from '.prisma/api-journeys-modern-client'
+  UserJourneyRole,
+  prisma
+} from '@core/prisma/journeys/client'
 import {
   JourneySimpleUpdate,
   journeySimpleSchema
@@ -20,7 +21,6 @@ import {
   ability,
   subject as abilitySubject
 } from '../../lib/auth/ability'
-import { prisma } from '../../lib/prisma'
 import { ThemeMode } from '../block/card/enums/themeMode'
 import { ThemeName } from '../block/card/enums/themeName'
 import { ImageBlock } from '../block/image'

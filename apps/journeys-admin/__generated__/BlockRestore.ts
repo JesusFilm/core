@@ -156,6 +156,12 @@ export interface BlockRestore_blockRestore_RadioOptionBlock {
   parentOrder: number | null;
   label: string;
   action: BlockRestore_blockRestore_RadioOptionBlock_action | null;
+  /**
+   * pollOptionImageBlockId is present if a child block should be used as a poll option image.
+   *       This child block should not be rendered normally, instead it should be used
+   *       as a poll option image. Blocks are often of type ImageBlock
+   */
+  pollOptionImageBlockId: string | null;
 }
 
 export interface BlockRestore_blockRestore_RadioQuestionBlock {
@@ -163,6 +169,7 @@ export interface BlockRestore_blockRestore_RadioQuestionBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
+  gridView: boolean | null;
 }
 
 export interface BlockRestore_blockRestore_SignUpBlock_action_NavigateToBlockAction {
