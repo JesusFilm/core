@@ -74,7 +74,7 @@ function HomePage({
             insights
             routing={createInstantSearchRouter()}
           >
-            <Configure ruleContexts={['home_page']} />
+            <Configure ruleContexts={[`home_page_${localLanguageId}`]} />
             <VideoHomePage languageId={localLanguageId} />
           </InstantSearch>
         </WatchProvider>
