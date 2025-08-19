@@ -40,7 +40,7 @@ export function QuickControls({
           {
             name: 'offset',
             options: {
-              offset: () => [isVideoBlock ? 0 : 64, isVideoBlock ? -64 : 0]
+              offset: () => [0, isVideoBlock ? -70 : 0]
             }
           }
         ]}
@@ -50,8 +50,16 @@ export function QuickControls({
       >
         {({ TransitionProps }) => (
           <Fade {...TransitionProps} timeout={350}>
-            <Paper sx={{ mb: 4, py: 0.5, pl: 0.5, pr: 1, borderRadius: 2 }}>
-              <Stack spacing={0.5} direction="row">
+            <Paper
+              sx={{
+                mb: 4,
+                py: { xs: 1, sm: 0.5 },
+                pl: { xs: 1, sm: 0.5 },
+                pr: 1,
+                borderRadius: 2
+              }}
+            >
+              <Stack direction="row" sx={{ gap: { xs: 2, sm: 0.5 } }}>
                 <MoveBlock />
                 <DuplicateBlock disabled={isVideoBlock} />
                 <DeleteBlock variant="button" />
