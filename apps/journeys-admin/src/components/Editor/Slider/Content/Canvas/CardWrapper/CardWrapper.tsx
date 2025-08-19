@@ -6,12 +6,19 @@ import useMediaQuery from '@mui/material/useMediaQuery'
 import { Trans, useTranslation } from 'next-i18next'
 import type { MouseEvent, ReactElement } from 'react'
 
-import type { WrapperProps } from '@core/journeys/ui/BlockRenderer'
+import type {
+  WrapperProps,
+  WrappersProps
+} from '@core/journeys/ui/BlockRenderer'
 import { Card } from '@core/journeys/ui/Card'
 import { ActiveSlide, useEditor } from '@core/journeys/ui/EditorProvider'
 import Plus2Icon from '@core/shared/ui/icons/Plus2'
+import type { BlockFields_CardBlock as CardBlock } from '../../../../../../../__generated__/BlockFields'
 
-export function CardWrapper({ block, children }: WrapperProps): ReactElement {
+export function CardWrapper({
+  block,
+  children
+}: WrapperProps<CardBlock, { wrappers?: WrappersProps }>): ReactElement {
   // overriding base theme to match default mui breakpoint
   const lgUp = useMediaQuery('@media (min-width: 900px)')
   const { t } = useTranslation('apps-journeys-admin')

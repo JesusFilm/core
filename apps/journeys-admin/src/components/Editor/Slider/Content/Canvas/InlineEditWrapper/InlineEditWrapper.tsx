@@ -1,7 +1,10 @@
 import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 
-import { WrapperProps } from '@core/journeys/ui/BlockRenderer'
+import {
+  WrapperProps,
+  type WrappersProps
+} from '@core/journeys/ui/BlockRenderer'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { Typography } from '@core/journeys/ui/Typography'
 
@@ -25,7 +28,8 @@ interface InlineEditWrapperProps
     | RadioQuestionFields
     | RadioOptionFields
     | TextResponseFields
-    | SignUpFields
+    | SignUpFields,
+    { wrappers?: WrappersProps }
   > {}
 
 export function InlineEditWrapper({

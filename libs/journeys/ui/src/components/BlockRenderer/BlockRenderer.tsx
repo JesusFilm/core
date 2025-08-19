@@ -29,16 +29,22 @@ type WrapperFn<T = Block, P = unknown> = (
 
 export interface WrappersProps {
   Wrapper?: WrapperFn
-  ButtonWrapper?: WrapperFn<ButtonBlock>
+  ButtonWrapper?: WrapperFn<ButtonBlock, { wrappers?: WrappersProps }>
   CardWrapper?: WrapperFn<CardBlock, { wrappers?: WrappersProps }>
   ImageWrapper?: WrapperFn<ImageBlock>
-  RadioOptionWrapper?: WrapperFn<RadioOptionBlock>
-  RadioQuestionWrapper?: WrapperFn<RadioQuestionBlock>
-  SignUpWrapper?: WrapperFn<SignUpBlock>
+  RadioOptionWrapper?: WrapperFn<RadioOptionBlock, { wrappers?: WrappersProps }>
+  RadioQuestionWrapper?: WrapperFn<
+    RadioQuestionBlock,
+    { wrappers?: WrappersProps }
+  >
+  SignUpWrapper?: WrapperFn<SignUpBlock, { wrappers?: WrappersProps }>
   SpacerWrapper?: WrapperFn<SpacerBlock>
   StepWrapper?: WrapperFn<StepBlock>
-  TextResponseWrapper?: WrapperFn<TextResponseBlock>
-  TypographyWrapper?: WrapperFn<TypographyBlock>
+  TextResponseWrapper?: WrapperFn<
+    TextResponseBlock,
+    { wrappers?: WrappersProps }
+  >
+  TypographyWrapper?: WrapperFn<TypographyBlock, { wrappers?: WrappersProps }>
   VideoWrapper?: WrapperFn<VideoBlock>
   DragItemWrapper?: WrapperFn
 }
