@@ -18,6 +18,9 @@ export async function audioLanguageRedirect({
   router: NextRouter
   containerSlug?: string | null
 }): Promise<void> {
+  const noRedirect = router.query.noredirect === 'true'
+  if (noRedirect) return
+
   const cookieAudioLanguageId = getCookie('AUDIO_LANGUAGE')
   if (languageVariantsLoading || cookieAudioLanguageId == null) return
 

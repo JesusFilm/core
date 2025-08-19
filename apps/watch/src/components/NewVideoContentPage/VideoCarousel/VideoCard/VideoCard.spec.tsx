@@ -31,4 +31,14 @@ describe('VideoCard', () => {
     expect(card).toHaveAttribute('tabIndex', '0')
     expect(card).toHaveAttribute('aria-label', `Navigate to ${videos[0].slug}`)
   })
+
+  it('should have noredirect query param when noredirect is true', () => {
+    render(<VideoCard video={videos[0]} active={false} />)
+
+    const card = screen.getByRole('link')
+    expect(card).toHaveAttribute(
+      'href',
+      expect.stringContaining('noredirect=true')
+    )
+  })
 })

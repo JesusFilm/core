@@ -86,13 +86,17 @@ function HomePage({
 export const getStaticProps: GetStaticProps<HomePageProps> = async ({
   locale
 }) => {
-  const serverState = await getServerState(<HomePage />, {
-    renderToString
-  })
-
-  const apolloClient = createApolloClient()
   const currentLocale = locale ?? 'en'
   const localLanguageId = getLanguageIdFromLocale(currentLocale)
+
+  const serverState = await getServerState(
+    <HomePage localLanguageId={localLanguageId} />,
+    {
+      renderToString
+    }
+  )
+
+  const apolloClient = createApolloClient()
 
   return {
     revalidate: 3600,

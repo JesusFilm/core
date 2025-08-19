@@ -80,7 +80,7 @@ export function VideoCard({
   const href = getSlug(containerSlug, video?.label, video?.variant?.slug)
 
   return (
-    <NextLink href={href} passHref legacyBehavior>
+    <NextLink href={`${href}?noredirect=true`} passHref legacyBehavior>
       <Link
         display="block"
         underline="none"
