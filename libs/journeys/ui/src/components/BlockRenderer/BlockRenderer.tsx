@@ -128,7 +128,10 @@ const DynamicTypography = dynamic<TreeBlock<TypographyBlock>>(
 )
 
 interface BlockRenderProps {
-  block?: TreeBlock
+  block?: TreeBlock & {
+    // pass radioQuestion variant into radioOption
+    gridView?: boolean | null
+  }
   wrappers?: WrappersProps
 }
 

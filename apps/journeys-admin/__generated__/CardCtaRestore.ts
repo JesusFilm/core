@@ -171,6 +171,12 @@ export interface CardCtaRestore_imageRestore_RadioOptionBlock {
   parentOrder: number | null;
   label: string;
   action: CardCtaRestore_imageRestore_RadioOptionBlock_action | null;
+  /**
+   * pollOptionImageBlockId is present if a child block should be used as a poll option image.
+   *       This child block should not be rendered normally, instead it should be used
+   *       as a poll option image. Blocks are often of type ImageBlock
+   */
+  pollOptionImageBlockId: string | null;
 }
 
 export interface CardCtaRestore_imageRestore_RadioQuestionBlock {
@@ -178,6 +184,7 @@ export interface CardCtaRestore_imageRestore_RadioQuestionBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
+  gridView: boolean | null;
 }
 
 export interface CardCtaRestore_imageRestore_SignUpBlock_action_PhoneAction {
@@ -648,6 +655,12 @@ export interface CardCtaRestore_subtitleRestore_RadioOptionBlock {
   parentOrder: number | null;
   label: string;
   action: CardCtaRestore_subtitleRestore_RadioOptionBlock_action | null;
+  /**
+   * pollOptionImageBlockId is present if a child block should be used as a poll option image.
+   *       This child block should not be rendered normally, instead it should be used
+   *       as a poll option image. Blocks are often of type ImageBlock
+   */
+  pollOptionImageBlockId: string | null;
 }
 
 export interface CardCtaRestore_subtitleRestore_RadioQuestionBlock {
@@ -655,6 +668,7 @@ export interface CardCtaRestore_subtitleRestore_RadioQuestionBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
+  gridView: boolean | null;
 }
 
 export interface CardCtaRestore_subtitleRestore_SignUpBlock_action_PhoneAction {
@@ -1125,6 +1139,12 @@ export interface CardCtaRestore_titleRestore_RadioOptionBlock {
   parentOrder: number | null;
   label: string;
   action: CardCtaRestore_titleRestore_RadioOptionBlock_action | null;
+  /**
+   * pollOptionImageBlockId is present if a child block should be used as a poll option image.
+   *       This child block should not be rendered normally, instead it should be used
+   *       as a poll option image. Blocks are often of type ImageBlock
+   */
+  pollOptionImageBlockId: string | null;
 }
 
 export interface CardCtaRestore_titleRestore_RadioQuestionBlock {
@@ -1132,6 +1152,7 @@ export interface CardCtaRestore_titleRestore_RadioQuestionBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
+  gridView: boolean | null;
 }
 
 export interface CardCtaRestore_titleRestore_SignUpBlock_action_PhoneAction {
@@ -1602,6 +1623,12 @@ export interface CardCtaRestore_button1Restore_RadioOptionBlock {
   parentOrder: number | null;
   label: string;
   action: CardCtaRestore_button1Restore_RadioOptionBlock_action | null;
+  /**
+   * pollOptionImageBlockId is present if a child block should be used as a poll option image.
+   *       This child block should not be rendered normally, instead it should be used
+   *       as a poll option image. Blocks are often of type ImageBlock
+   */
+  pollOptionImageBlockId: string | null;
 }
 
 export interface CardCtaRestore_button1Restore_RadioQuestionBlock {
@@ -1609,6 +1636,7 @@ export interface CardCtaRestore_button1Restore_RadioQuestionBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
+  gridView: boolean | null;
 }
 
 export interface CardCtaRestore_button1Restore_SignUpBlock_action_PhoneAction {
@@ -2079,6 +2107,12 @@ export interface CardCtaRestore_startIcon1Restore_RadioOptionBlock {
   parentOrder: number | null;
   label: string;
   action: CardCtaRestore_startIcon1Restore_RadioOptionBlock_action | null;
+  /**
+   * pollOptionImageBlockId is present if a child block should be used as a poll option image.
+   *       This child block should not be rendered normally, instead it should be used
+   *       as a poll option image. Blocks are often of type ImageBlock
+   */
+  pollOptionImageBlockId: string | null;
 }
 
 export interface CardCtaRestore_startIcon1Restore_RadioQuestionBlock {
@@ -2086,6 +2120,7 @@ export interface CardCtaRestore_startIcon1Restore_RadioQuestionBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
+  gridView: boolean | null;
 }
 
 export interface CardCtaRestore_startIcon1Restore_SignUpBlock_action_PhoneAction {
@@ -2556,6 +2591,12 @@ export interface CardCtaRestore_endIcon1Restore_RadioOptionBlock {
   parentOrder: number | null;
   label: string;
   action: CardCtaRestore_endIcon1Restore_RadioOptionBlock_action | null;
+  /**
+   * pollOptionImageBlockId is present if a child block should be used as a poll option image.
+   *       This child block should not be rendered normally, instead it should be used
+   *       as a poll option image. Blocks are often of type ImageBlock
+   */
+  pollOptionImageBlockId: string | null;
 }
 
 export interface CardCtaRestore_endIcon1Restore_RadioQuestionBlock {
@@ -2563,6 +2604,7 @@ export interface CardCtaRestore_endIcon1Restore_RadioQuestionBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
+  gridView: boolean | null;
 }
 
 export interface CardCtaRestore_endIcon1Restore_SignUpBlock_action_PhoneAction {
@@ -3033,6 +3075,12 @@ export interface CardCtaRestore_button2Restore_RadioOptionBlock {
   parentOrder: number | null;
   label: string;
   action: CardCtaRestore_button2Restore_RadioOptionBlock_action | null;
+  /**
+   * pollOptionImageBlockId is present if a child block should be used as a poll option image.
+   *       This child block should not be rendered normally, instead it should be used
+   *       as a poll option image. Blocks are often of type ImageBlock
+   */
+  pollOptionImageBlockId: string | null;
 }
 
 export interface CardCtaRestore_button2Restore_RadioQuestionBlock {
@@ -3040,6 +3088,7 @@ export interface CardCtaRestore_button2Restore_RadioQuestionBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
+  gridView: boolean | null;
 }
 
 export interface CardCtaRestore_button2Restore_SignUpBlock_action_PhoneAction {
@@ -3510,6 +3559,12 @@ export interface CardCtaRestore_startIcon2Restore_RadioOptionBlock {
   parentOrder: number | null;
   label: string;
   action: CardCtaRestore_startIcon2Restore_RadioOptionBlock_action | null;
+  /**
+   * pollOptionImageBlockId is present if a child block should be used as a poll option image.
+   *       This child block should not be rendered normally, instead it should be used
+   *       as a poll option image. Blocks are often of type ImageBlock
+   */
+  pollOptionImageBlockId: string | null;
 }
 
 export interface CardCtaRestore_startIcon2Restore_RadioQuestionBlock {
@@ -3517,6 +3572,7 @@ export interface CardCtaRestore_startIcon2Restore_RadioQuestionBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
+  gridView: boolean | null;
 }
 
 export interface CardCtaRestore_startIcon2Restore_SignUpBlock_action_PhoneAction {
@@ -3987,6 +4043,12 @@ export interface CardCtaRestore_endIcon2Restore_RadioOptionBlock {
   parentOrder: number | null;
   label: string;
   action: CardCtaRestore_endIcon2Restore_RadioOptionBlock_action | null;
+  /**
+   * pollOptionImageBlockId is present if a child block should be used as a poll option image.
+   *       This child block should not be rendered normally, instead it should be used
+   *       as a poll option image. Blocks are often of type ImageBlock
+   */
+  pollOptionImageBlockId: string | null;
 }
 
 export interface CardCtaRestore_endIcon2Restore_RadioQuestionBlock {
@@ -3994,6 +4056,7 @@ export interface CardCtaRestore_endIcon2Restore_RadioQuestionBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
+  gridView: boolean | null;
 }
 
 export interface CardCtaRestore_endIcon2Restore_SignUpBlock_action_PhoneAction {
@@ -4464,6 +4527,12 @@ export interface CardCtaRestore_button3Restore_RadioOptionBlock {
   parentOrder: number | null;
   label: string;
   action: CardCtaRestore_button3Restore_RadioOptionBlock_action | null;
+  /**
+   * pollOptionImageBlockId is present if a child block should be used as a poll option image.
+   *       This child block should not be rendered normally, instead it should be used
+   *       as a poll option image. Blocks are often of type ImageBlock
+   */
+  pollOptionImageBlockId: string | null;
 }
 
 export interface CardCtaRestore_button3Restore_RadioQuestionBlock {
@@ -4471,6 +4540,7 @@ export interface CardCtaRestore_button3Restore_RadioQuestionBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
+  gridView: boolean | null;
 }
 
 export interface CardCtaRestore_button3Restore_SignUpBlock_action_PhoneAction {
@@ -4941,6 +5011,12 @@ export interface CardCtaRestore_startIcon3Restore_RadioOptionBlock {
   parentOrder: number | null;
   label: string;
   action: CardCtaRestore_startIcon3Restore_RadioOptionBlock_action | null;
+  /**
+   * pollOptionImageBlockId is present if a child block should be used as a poll option image.
+   *       This child block should not be rendered normally, instead it should be used
+   *       as a poll option image. Blocks are often of type ImageBlock
+   */
+  pollOptionImageBlockId: string | null;
 }
 
 export interface CardCtaRestore_startIcon3Restore_RadioQuestionBlock {
@@ -4948,6 +5024,7 @@ export interface CardCtaRestore_startIcon3Restore_RadioQuestionBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
+  gridView: boolean | null;
 }
 
 export interface CardCtaRestore_startIcon3Restore_SignUpBlock_action_PhoneAction {
@@ -5418,6 +5495,12 @@ export interface CardCtaRestore_endIcon3Restore_RadioOptionBlock {
   parentOrder: number | null;
   label: string;
   action: CardCtaRestore_endIcon3Restore_RadioOptionBlock_action | null;
+  /**
+   * pollOptionImageBlockId is present if a child block should be used as a poll option image.
+   *       This child block should not be rendered normally, instead it should be used
+   *       as a poll option image. Blocks are often of type ImageBlock
+   */
+  pollOptionImageBlockId: string | null;
 }
 
 export interface CardCtaRestore_endIcon3Restore_RadioQuestionBlock {
@@ -5425,6 +5508,7 @@ export interface CardCtaRestore_endIcon3Restore_RadioQuestionBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
+  gridView: boolean | null;
 }
 
 export interface CardCtaRestore_endIcon3Restore_SignUpBlock_action_PhoneAction {

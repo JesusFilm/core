@@ -32,6 +32,7 @@ export interface GetVideoContainerPart2_container_description {
 export interface GetVideoContainerPart2_container_studyQuestions {
   __typename: "VideoStudyQuestion";
   value: string;
+  primary: boolean;
 }
 
 export interface GetVideoContainerPart2_container_bibleCitations_bibleBook_name {
@@ -111,7 +112,7 @@ export interface GetVideoContainerPart2_container {
    */
   slug: string;
   /**
-   * the number value of the amount of children on a video
+   * The number of published child videos associated with this video
    */
   childrenCount: number;
 }

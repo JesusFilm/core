@@ -1,9 +1,11 @@
-import Mux from '@mux/mux-node'
 import { AssetOptions } from '@mux/mux-node/resources/video/assets'
 import { Job } from 'bullmq'
 import { Logger } from 'pino'
 
-import { MuxVideo, VideoVariantDownloadQuality } from '.prisma/api-media-client'
+import {
+  MuxVideo,
+  VideoVariantDownloadQuality
+} from '@core/prisma/media/client'
 
 import { prismaMock } from '../../../../test/prismaMock'
 import { getVideo } from '../../../schema/mux/video/service'

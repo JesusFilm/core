@@ -1,11 +1,10 @@
-import { Prisma } from '.prisma/api-languages-client'
+import { Prisma, prisma } from '@core/prisma/languages/client'
 
 import { parseFullTextSearch } from '../../lib/parseFullTextSearch'
-import { prisma } from '../../lib/prisma'
 import { builder } from '../builder'
 import { Language } from '../language/language'
 
-const CountryName = builder.prismaObject('CountryName', {
+builder.prismaObject('CountryName', {
   fields: (t) => ({
     value: t.exposeString('value', { nullable: false }),
     primary: t.exposeBoolean('primary', { nullable: false }),
@@ -22,62 +21,43 @@ const Country = builder.prismaObject('Country', {
     flagPngSrc: t.exposeString('flagPngSrc'),
     flagWebpSrc: t.exposeString('flagWebpSrc'),
     languages: t.relation('languages', { type: Language, nullable: false }),
-    name: t.prismaField({
-      type: [CountryName],
+    name: t.relation('name', {
       nullable: false,
       args: {
         languageId: t.arg.id({ required: false }),
         primary: t.arg.boolean({ required: false })
       },
-      resolve: async (query, country, { languageId, primary }) => {
+      query: ({ languageId, primary }) => {
         const where: Prisma.CountryNameWhereInput = {
-          countryId: country.id,
           OR: languageId == null && primary == null ? undefined : []
         }
         if (languageId != null) where.OR?.push({ languageId })
         if (primary != null) where.OR?.push({ primary })
-        return await prisma.countryName.findMany({
-          ...query,
+        return {
           where,
           orderBy: { primary: 'desc' },
           include: { language: true }
-        })
+        }
       }
     }),
     continent: t.relation('continent', { nullable: false, onNull: 'error' }),
-    countryLanguages: t.prismaField({
-      type: ['CountryLanguage'],
+    countryLanguages: t.relation('countryLanguages', {
       nullable: false,
-      resolve: async (query, country) => {
-        return await prisma.countryLanguage.findMany({
-          ...query,
-          where: {
-            countryId: country.id,
-            language: {
-              hasVideos: true
-            }
-          }
-        })
-      }
-    }),
-    languageCount: t.int({
-      nullable: false,
-      resolve: async (country) => {
-        return await prisma.countryLanguage.count({
-          where: { countryId: country.id, suggested: false }
-        })
-      }
-    }),
-    languageHavingMediaCount: t.int({
-      nullable: false,
-      resolve: async (country) => {
-        return await prisma.language.count({
-          where: {
-            countryLanguages: { some: { countryId: country.id } },
+      query: {
+        where: {
+          language: {
             hasVideos: true
           }
-        })
+        }
       }
+    }),
+    languageCount: t.relationCount('countryLanguages', {
+      nullable: false,
+      where: { suggested: false }
+    }),
+    languageHavingMediaCount: t.relationCount('countryLanguages', {
+      nullable: false,
+      where: { suggested: false, language: { hasVideos: true } }
     })
   })
 })

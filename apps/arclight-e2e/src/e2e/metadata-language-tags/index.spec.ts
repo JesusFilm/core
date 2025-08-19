@@ -41,6 +41,6 @@ test.describe('GET /v2/metadata-language-tags', () => {
       }
     })
 
-    expect(data._embedded.metadataLanguageTags).toHaveLength(19)
+    expect(data._embedded.metadataLanguageTags).toHaveLength(20)
   })
 })

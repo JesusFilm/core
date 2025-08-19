@@ -212,7 +212,8 @@ describe('CardPoll', () => {
           id: 'radioQuestionId',
           parentBlockId: 'cardId',
           parentOrder: 2,
-          __typename: 'RadioQuestionBlock'
+          __typename: 'RadioQuestionBlock',
+          gridView: false
         },
         radioOption1: {
           id: 'radioOption1Id',
@@ -220,7 +221,8 @@ describe('CardPoll', () => {
           parentOrder: 0,
           label: 'Turning the other cheek',
           action: null,
-          __typename: 'RadioOptionBlock'
+          __typename: 'RadioOptionBlock',
+          pollOptionImageBlockId: null
         },
         radioOption2: {
           id: 'radioOption2Id',
@@ -228,7 +230,8 @@ describe('CardPoll', () => {
           parentOrder: 1,
           label: 'Loving your enemies',
           action: null,
-          __typename: 'RadioOptionBlock'
+          __typename: 'RadioOptionBlock',
+          pollOptionImageBlockId: null
         },
         radioOption3: {
           id: 'radioOption3Id',
@@ -236,7 +239,8 @@ describe('CardPoll', () => {
           parentOrder: 2,
           label: 'Not worrying about tomorrow',
           action: null,
-          __typename: 'RadioOptionBlock'
+          __typename: 'RadioOptionBlock',
+          pollOptionImageBlockId: null
         },
         radioOption4: {
           id: 'radioOption4Id',
@@ -244,7 +248,8 @@ describe('CardPoll', () => {
           parentOrder: 3,
           label: 'Seeking first the kingdom of God',
           action: null,
-          __typename: 'RadioOptionBlock'
+          __typename: 'RadioOptionBlock',
+          pollOptionImageBlockId: null
         },
         body: {
           id: 'bodyId',

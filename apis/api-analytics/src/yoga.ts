@@ -5,8 +5,9 @@ import { useHmacSignatureValidation } from '@graphql-hive/gateway'
 import { initContextCache } from '@pothos/core'
 import { createYoga, useReadinessCheck } from 'graphql-yoga'
 
+import { prisma } from '@core/prisma/analytics/client'
+
 import { getUserFromApiKey } from './lib/auth'
-import { prisma } from './lib/prisma'
 import { logger } from './logger'
 import { schema } from './schema'
 import { Context } from './schema/builder'

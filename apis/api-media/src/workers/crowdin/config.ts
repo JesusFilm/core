@@ -7,7 +7,6 @@ const EVERY_DAY_AT_2_AM = '0 0 3 * * *'
 export const repeat = EVERY_DAY_AT_2_AM
 
 export const CROWDIN_CONFIG = {
-  projectId: 47654,
   files: {
     collection_title: {
       id: 31,
@@ -50,7 +49,7 @@ export const CROWDIN_CONFIG = {
 
 export const LANGUAGE_CODES = {
   ko: '3804',
-  ar: '139485',
+  ar: '22658',
   'es-MX': '21028',
   'pt-BR': '584',
   tr: '1942',

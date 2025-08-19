@@ -8,7 +8,7 @@ extend type Journey {
   userJourneys: [UserJourney!]
 }
 
-type UserJourney @key(fields: "id") {
+type UserJourney @key(fields: "id") @shareable {
   id: ID!
   userId: ID!
   journeyId: ID!

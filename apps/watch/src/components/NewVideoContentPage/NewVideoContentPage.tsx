@@ -1,17 +1,24 @@
+import { useQuery } from '@apollo/client'
 import { sendGTMEvent } from '@next/third-parties/google'
+import last from 'lodash/last'
+import { useRouter } from 'next/router'
 import { useTranslation } from 'next-i18next'
 import { NextSeo } from 'next-seo'
-import { ReactElement, useMemo, useState } from 'react'
+import { ReactElement, useEffect, useMemo, useState } from 'react'
 import { v4 as uuidv4 } from 'uuid'
 
 import Bible from '@core/shared/ui/icons/Bible'
 import LinkExternal from '@core/shared/ui/icons/LinkExternal'
 import { ThemeMode } from '@core/shared/ui/themes'
 
-import { VideoContentFields_studyQuestions } from '../../../__generated__/VideoContentFields'
+import { GetLanguagesSlug } from '../../../__generated__/GetLanguagesSlug'
+import { VideoContentFields_studyQuestions as StudyQuestions } from '../../../__generated__/VideoContentFields'
 import { useVideoChildren } from '../../libs/useVideoChildren'
 import { getWatchUrl } from '../../libs/utils/getWatchUrl'
 import { useVideo } from '../../libs/videoContext'
+import { useWatch } from '../../libs/watchContext'
+import { audioLanguageRedirect } from '../../libs/watchContext/audioLanguageRedirect'
+import { GET_LANGUAGES_SLUG } from '../AudioLanguageDialog/AudioLanguageDialog'
 import { PageWrapper } from '../PageWrapper'
 import { ShareDialog } from '../ShareDialog'
 
@@ -25,6 +32,7 @@ import { VideoContentHero } from './VideoContentHero'
 
 export function NewVideoContentPage(): ReactElement {
   const { t } = useTranslation('apps-watch')
+  const router = useRouter()
   const {
     id,
     container,
@@ -43,26 +51,87 @@ export function NewVideoContentPage(): ReactElement {
 
   const [showShare, setShowShare] = useState(false)
   const [isFullscreen, setIsFullscreen] = useState(false)
+  const { dispatch } = useWatch()
 
   const variantSlug = container?.variant?.slug ?? variant?.slug
   const watchUrl = getWatchUrl(container?.slug, label, variant?.slug)
 
-  const { children, loading } = useVideoChildren(variantSlug)
+  const { children, loading } = useVideoChildren(
+    variantSlug,
+    variant?.language.bcp47 ?? 'en'
+  )
+
+  const { loading: languageVariantsLoading, data: languageVariantsData } =
+    useQuery<GetLanguagesSlug>(GET_LANGUAGES_SLUG, {
+      variables: {
+        id
+      },
+      onCompleted: (data) => {
+        if (data?.video?.variantLanguagesWithSlug) {
+          dispatch({
+            type: 'SetVideoAudioLanguages',
+            videoAudioLanguages: data.video.variantLanguagesWithSlug
+          })
+        }
+      }
+    })
+
+  // Handle locale checking and redirect
+  useEffect(() => {
+    void audioLanguageRedirect({
+      languageVariantsLoading,
+      languageVariantsData,
+      router,
+      containerSlug: container?.slug
+    })
+  }, [languageVariantsLoading, languageVariantsData, router, container?.slug])
+
   const filteredChildren = useMemo(
     () => children.filter((video) => video.variant !== null),
     [children]
   )
 
-  const questions =
-    studyQuestions.length > 0
-      ? studyQuestions
-      : ([
-          {
-            value: t(
-              'If you could ask the creator of this video a question, what would it be?'
-            )
-          }
-        ] as unknown as VideoContentFields_studyQuestions[])
+  const questions = useMemo(() => {
+    if (!studyQuestions?.length)
+      return [
+        {
+          value: t(
+            'If you could ask the creator of this video a question, what would it be?'
+          )
+        }
+      ] as unknown as StudyQuestions[]
+
+    const { nonPrimary, primary } = studyQuestions.reduce(
+      (acc, q) => {
+        if (q.primary === false) {
+          acc.nonPrimary.push(q)
+        } else if (q.primary === true) {
+          acc.primary.push(q)
+        }
+        return acc
+      },
+      {
+        nonPrimary: [] as StudyQuestions[],
+        primary: [] as StudyQuestions[]
+      }
+    )
+
+    if (nonPrimary.length > 0) {
+      return nonPrimary
+    }
+
+    if (primary.length > 0) {
+      return primary
+    }
+
+    return [
+      {
+        value: t(
+          'If you could ask the creator of this video a question, what would it be?'
+        )
+      }
+    ] as unknown as StudyQuestions[]
+  }, [studyQuestions])
 
   const handleFreeResourceClick = () => {
     sendGTMEvent({
@@ -80,24 +149,24 @@ export function NewVideoContentPage(): ReactElement {
   return (
     <>
       <NextSeo
-        title={title[0].value}
-        description={snippet[0].value ?? undefined}
+        title={last(title)?.value}
+        description={last(snippet)?.value ?? undefined}
         openGraph={{
           type: 'website',
-          title: title[0].value,
+          title: last(title)?.value,
           url: `${
             process.env.NEXT_PUBLIC_WATCH_URL ??
             'https://watch-jesusfilm.vercel.app'
           }${watchUrl}`,
-          description: snippet[0].value ?? undefined,
+          description: last(snippet)?.value ?? undefined,
           images:
-            images[0]?.mobileCinematicHigh != null
+            last(images)?.mobileCinematicHigh != null
               ? [
                   {
-                    url: images[0].mobileCinematicHigh,
+                    url: last(images)?.mobileCinematicHigh ?? '',
                     width: 1080,
                     height: 600,
-                    alt: imageAlt[0].value,
+                    alt: last(imageAlt)?.value ?? '',
                     type: 'image/jpeg'
                   }
                 ]
@@ -143,8 +212,8 @@ export function NewVideoContentPage(): ReactElement {
           >
             <div className="grid grid-cols-1 xl:grid-cols-[3fr_2fr] z-10 gap-20">
               <ContentMetadata
-                title={title[0].value}
-                description={description[0].value}
+                title={last(title)?.value ?? ''}
+                description={last(description)?.value ?? ''}
                 label={label}
               />
               <DiscussionQuestions questions={questions} />

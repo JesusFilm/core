@@ -507,7 +507,8 @@ export const blocks: Block[] = [
     id: 'radioQuestion1.id',
     __typename: 'RadioQuestionBlock',
     parentBlockId: 'card2.id',
-    parentOrder: 2
+    parentOrder: 2,
+    gridView: false
   },
   {
     id: 'radioOption1.id',
@@ -515,6 +516,7 @@ export const blocks: Block[] = [
     parentBlockId: 'radioQuestion1.id',
     parentOrder: 0,
     label: 'One of many ways to God',
+    pollOptionImageBlockId: null,
     action: {
       __typename: 'NavigateToBlockAction',
       parentBlockId: 'radioOption1.id',
@@ -528,6 +530,7 @@ export const blocks: Block[] = [
     parentBlockId: 'radioQuestion1.id',
     parentOrder: 1,
     label: 'One great lie...',
+    pollOptionImageBlockId: null,
     action: {
       __typename: 'NavigateToBlockAction',
       parentBlockId: 'radioOption2.id',
@@ -541,6 +544,7 @@ export const blocks: Block[] = [
     parentBlockId: 'radioQuestion1.id',
     parentOrder: 2,
     label: 'One true way to God',
+    pollOptionImageBlockId: null,
     action: {
       __typename: 'NavigateToBlockAction',
       parentBlockId: 'radioOption3.id',
@@ -615,7 +619,8 @@ export const blocks: Block[] = [
     id: 'radioQuestion2.id',
     __typename: 'RadioQuestionBlock',
     parentBlockId: 'card3.id',
-    parentOrder: 2
+    parentOrder: 2,
+    gridView: false
   },
   {
     id: 'radioOption4.id',
@@ -623,6 +628,7 @@ export const blocks: Block[] = [
     parentBlockId: 'radioQuestion2.id',
     parentOrder: 0,
     label: 'Yes, God likes good people',
+    pollOptionImageBlockId: null,
     action: {
       __typename: 'NavigateToBlockAction',
       parentBlockId: 'radioOption4.id',
@@ -636,6 +642,7 @@ export const blocks: Block[] = [
     parentBlockId: 'radioQuestion2.id',
     parentOrder: 1,
     label: 'No, He will accept me as I am',
+    pollOptionImageBlockId: null,
     action: {
       __typename: 'NavigateToBlockAction',
       parentBlockId: 'radioOption5.id',

@@ -9,3 +9,15 @@ data "aws_acm_certificate" "acm_core_arclight_org" {
 data "aws_acm_certificate" "acm_core_stage_arclight_org" {
   domain = "core-stage.arclight.org"
 }
+
+data "aws_acm_certificate" "acm_arclight_org" {
+  domain = "arclight.org"
+}
+
+data "aws_acm_certificate" "acm_arc_gt" {
+  domain = "arc.gt"
+}
+
+# Data sources for ALB logging
+data "aws_elb_service_account" "main" {}
+data "aws_caller_identity" "current" {}

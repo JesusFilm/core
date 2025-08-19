@@ -3,7 +3,7 @@ import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
 import omit from 'lodash/omit'
 import { v4 as uuidv4 } from 'uuid'
 
-import { Action, Block } from '.prisma/api-journeys-client'
+import { Action, Block } from '@core/prisma/journeys/client'
 
 import {
   JourneyStatus,
@@ -206,7 +206,8 @@ describe('BlockService', () => {
               'coverBlockId',
               'nextBlockId',
               'posterBlockId',
-              'action'
+              'action',
+              'pollOptionImageBlockId'
             ),
             typename: 'CardBlock',
             journey: { connect: { id: journey.id } },
@@ -531,6 +532,54 @@ describe('BlockService', () => {
         duplicatedBlock,
         block2
       ])
+    })
+
+    it('should set customizable to false and parentStepId to null for duplicated actions', async () => {
+      const blockWithActionCustomizable = {
+        ...block,
+        action: {
+          // initial action with customizable=true simulates source state
+          customizable: true,
+          parentStepId: 'originalStepId'
+        } as Action
+      } as unknown as BlockWithAction
+
+      const duplicatedBlockWithActionCustomizable = {
+        ...duplicatedBlock,
+        action: {
+          customizable: true,
+          parentStepId: 'originalStepId'
+        } as Action
+      } as unknown as BlockWithAction
+
+      service.getDuplicateBlockAndChildren = jest
+        .fn()
+        .mockReturnValue([duplicatedBlockWithActionCustomizable])
+
+      prismaService.block.update
+        .mockResolvedValueOnce(duplicatedBlockWithActionCustomizable)
+        .mockResolvedValueOnce(blockChild)
+        .mockResolvedValueOnce(block2)
+
+      await service.duplicateBlock(blockWithActionCustomizable, false, -1)
+
+      expect(prismaService.block.update).toHaveBeenCalledWith({
+        where: { id: duplicatedBlockWithActionCustomizable.id },
+        include: { action: true },
+        data: {
+          parentBlockId: '3',
+          posterBlockId: undefined,
+          coverBlockId: '4',
+          nextBlockId: undefined,
+          pollOptionImageBlockId: undefined,
+          action: {
+            create: {
+              customizable: false,
+              parentStepId: null
+            }
+          }
+        }
+      })
     })
   })
 
