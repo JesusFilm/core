@@ -170,6 +170,23 @@ async function getVideoEndAt(
   return video.endAt
 }
 
+function getVideoVariantLanguageId(video: JourneySimpleVideo): string | null {
+  let videoVariantLanguageId: string | null
+  if (video.source === 'internal') {
+    if (
+      video.subtitleId !== undefined &&
+      video.subtitleId !== null
+    ) {
+      videoVariantLanguageId = video.subtitleId
+    } else {
+      videoVariantLanguageId = '529'
+    }
+  } else {
+    videoVariantLanguageId = null
+  }
+  return videoVariantLanguageId
+}
+
 export async function updateSimpleJourney(
   journeyId: string,
   simple: JourneySimpleUpdate
@@ -275,24 +292,7 @@ export async function updateSimpleJourney(
 
         const videoId = getVideoId(card.video)
         const videoEndAt = await getVideoEndAt(card.video, videoId)
-
-        // Determine videoVariantLanguageId with logging for fallback scenarios
-        let videoVariantLanguageId: string | null
-        if (card.video.source === 'internal') {
-          if (
-            card.video.subtitleId !== undefined &&
-            card.video.subtitleId !== null
-          ) {
-            videoVariantLanguageId = card.video.subtitleId
-          } else {
-            videoVariantLanguageId = '529'
-            console.log(
-              `Using default subtitleId '529' for internal video ${videoId} (no subtitleId provided)`
-            )
-          }
-        } else {
-          videoVariantLanguageId = null
-        }
+        const videoVariantLanguageId = getVideoVariantLanguageId(card.video)
 
         const nextStepBlock =
           card.defaultNextCard != null
