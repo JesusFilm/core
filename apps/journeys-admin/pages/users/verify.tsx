@@ -243,7 +243,8 @@ export const getServerSideProps = withUserTokenSSR({
     }
   }
 
-  const email = typeof query?.email === 'string' ? query.email : null
+  const rawEmail = typeof query?.email === 'string' ? query.email : null
+  const email = rawEmail != null ? rawEmail.replace(/\s/g, '+') : null
   const token = typeof query?.token === 'string' ? query.token : null
 
   if (email != null && token != null) {
