@@ -1,6 +1,4 @@
 export async function checkEnvironmentVariables(): Promise<void> {
-  console.log('Validating environment variables...')
-
   const requiredEnvVars = [
     'GRAPHQL_ENDPOINT',
     'FIREBASE_EMAIL',
@@ -16,7 +14,6 @@ export async function checkEnvironmentVariables(): Promise<void> {
   for (const envVar of requiredEnvVars) {
     if (!process.env[envVar]) {
       missingVars.push(envVar)
-      console.log(`   Missing: ${envVar}`)
     }
   }
 
@@ -25,6 +22,4 @@ export async function checkEnvironmentVariables(): Promise<void> {
       `Missing required environment variables: ${missingVars.join(', ')}`
     )
   }
-
-  console.log('   All required environment variables are set')
 }

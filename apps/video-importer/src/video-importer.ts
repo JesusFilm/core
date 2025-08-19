@@ -13,9 +13,7 @@ import {
   processSubtitleFile
 } from './importers/subtitle'
 import { VIDEO_FILENAME_REGEX, processVideoFile } from './importers/video'
-import { closeJobQueue, triggerVideoUploadJob } from './services/job-queue'
-import { type PendingMuxVideo } from './services/mux'
-import type { ProcessingSummary, VideoProcessingData } from './types'
+import type { ProcessingSummary } from './types'
 import { checkEnvironmentVariables } from './utils/envVarTest'
 
 const program = new Command()
@@ -30,6 +28,8 @@ program
 const options = program.opts()
 
 async function main() {
+  console.log('Video Importer Starting...')
+
   const runningInSEA = require('node:sea').isSea()
   const defaultFolderPath = runningInSEA
     ? path.dirname(process.execPath)
@@ -39,10 +39,12 @@ async function main() {
     ? path.resolve(options.folder)
     : defaultFolderPath
 
+  console.log(`Processing folder: ${folderPath}`)
+
   try {
     await checkEnvironmentVariables()
   } catch (error) {
-    console.error('Environment variables check failed:', error)
+    console.error('Environment check failed:', error)
     process.exit(1)
   }
 
@@ -60,15 +62,13 @@ async function main() {
     failed: 0
   }
 
-  const pendingMuxVideos: PendingMuxVideo[] = []
-  const videoProcessingData: VideoProcessingData[] = []
-
-  console.log('\n=== PHASE 1: Upload and Initialize ===')
-  console.log('Uploading files to R2 and initializing Mux videos...')
-
   const filesToProcess = files.filter((file) => {
     return !file.endsWith('.completed')
   })
+
+  console.log(
+    `Found ${filesToProcess.length} files to process (${files.length - filesToProcess.length} already completed)`
+  )
 
   for (const file of filesToProcess) {
     console.log(`\nProcessing: ${file}`)
@@ -77,61 +77,25 @@ async function main() {
     const { size: contentLength } = await promises.stat(filePath)
 
     if (VIDEO_FILENAME_REGEX.test(file)) {
-      await processVideoFile(
-        file,
-        filePath,
-        contentLength,
-        pendingMuxVideos,
-        videoProcessingData,
-        summary
-      )
+      await processVideoFile(file, filePath, contentLength, summary)
     } else if (SUBTITLE_FILENAME_REGEX.test(file)) {
       await processSubtitleFile(file, filePath, contentLength, summary)
     } else if (AUDIO_PREVIEW_FILENAME_REGEX.test(file)) {
       await processAudioPreviewFile(file, filePath, contentLength, summary)
     } else {
-      console.log(`   Skipping unsupported file type: ${file}`)
+      console.log(`Skipping unsupported file: ${file}`)
     }
   }
 
-  console.log('\n=== PHASE 2: Queue Video Processing Jobs ===')
-  console.log(`Queuing ${videoProcessingData.length} video processing jobs...`)
-  let processedCount = 0
-  if (videoProcessingData.length > 0) {
-    try {
-      for (const processingData of videoProcessingData) {
-        console.log(`   Queuing job for ${processingData.fileName}...`)
-        try {
-          await triggerVideoUploadJob({
-            videoId: processingData.videoId,
-            edition: processingData.edition,
-            languageId: processingData.languageId,
-            version: processingData.version,
-            muxVideoId: processingData.muxVideoId,
-            metadata: processingData.metadata,
-            originalFilename: processingData.fileName
-          })
-          summary.successful++
-          console.log(`      ✅ Job queued successfully`)
-          processedCount++
-        } catch (error) {
-          console.error(`   Failed to queue job:`, error)
-          summary.failed++
-          processedCount++
-        }
-      }
-
-      await closeJobQueue()
-    } catch (error) {
-      console.error('Failed to queue video processing jobs:', error)
-      summary.failed += videoProcessingData.length - processedCount
-    }
-  }
-
-  console.log('\n=== Processing Summary ===')
+  console.log('\n=== SUMMARY ===')
   console.log(`Total files: ${summary.total}`)
   console.log(`Successfully processed: ${summary.successful}`)
   console.log(`Failed: ${summary.failed}`)
+  console.log(`Already completed: ${files.length - filesToProcess.length}`)
+
+  if (summary.successful > 0) {
+    console.log(`\n${summary.successful} job(s) queued successfully`)
+  }
 }
 
 main().catch((err) => {

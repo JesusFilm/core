@@ -18,33 +18,31 @@ export async function processSubtitleFile(
   const match = file.match(SUBTITLE_FILENAME_REGEX)
   if (!match) return
 
-  const [, videoId, editionName, languageId, ...extraFields] = match
+  // Parse file properly - extension is captured in match[5], extraFields in match[4]
+  const [, videoId, editionName, languageId, extraField, fileExtension] = match
   const edition = editionName.toLowerCase()
 
+  // Filter out the extension and empty values from extraFields
+  const extraFields = extraField ? [extraField] : []
+
   console.log(
-    `   - IDs: Video=${videoId}, Edition=${edition}, Lang=${languageId}`
+    `Processing subtitle: Video=${videoId}, Edition=${edition}, Lang=${languageId}`
   )
   if (extraFields.length > 0) {
-    console.log(
-      `     - Extra fields: ${extraFields.filter(Boolean).join(', ')}`
-    )
+    console.log(`Extra fields: ${extraFields.join(', ')}`)
   }
-
-  console.log('   Validating video and edition...')
   try {
     await validateVideoAndEdition(videoId, edition)
   } catch (error) {
-    console.error(`   Validation failed:`, error)
+    console.error(`Validation failed:`, error)
     summary.failed++
     return
   }
 
-  const contentType = file.endsWith('.srt') ? 'text/srt' : 'text/vtt'
+  const contentType = fileExtension === 'srt' ? 'text/srt' : 'text/vtt'
   const originalFilename = file
-
-  console.log('   Preparing Cloudflare R2 asset for subtitle...')
   const subtitleVariantId = `${languageId}_${edition}_${videoId}`
-  const fileName = `${videoId}/editions/${edition}/subtitles/${subtitleVariantId}.${contentType.split('/')[1]}`
+  const fileName = `${videoId}/editions/${edition}/subtitles/${subtitleVariantId}.${fileExtension}`
 
   let r2Asset
   try {
@@ -56,15 +54,13 @@ export async function processSubtitleFile(
       contentLength
     })
   } catch (error) {
-    console.error(`   Failed to create R2 asset for subtitle:`, error)
+    console.error(`Failed to create R2 asset for subtitle:`, error)
     summary.failed++
     return
   }
 
-  console.log('   R2 Public URL:', r2Asset.publicUrl)
-  console.log('   Uploading subtitle to R2...')
   if (!process.env.CLOUDFLARE_R2_BUCKET) {
-    console.error('   CLOUDFLARE_R2_BUCKET is not set')
+    console.error('CLOUDFLARE_R2_BUCKET is not set')
     summary.failed++
     return
   }
@@ -77,12 +73,11 @@ export async function processSubtitleFile(
       contentLength
     })
   } catch (error) {
-    console.error(`   Failed to upload subtitle to R2:`, error)
+    console.error(`Failed to upload subtitle to R2:`, error)
     summary.failed++
     return
   }
 
-  console.log('   Importing or updating subtitle...')
   try {
     await importOrUpdateSubtitle({
       videoId,
@@ -91,10 +86,11 @@ export async function processSubtitleFile(
       fileType: contentType,
       r2Asset
     })
-    summary.successful++
     await markFileAsCompleted(filePath)
+    summary.successful++
+    console.log(`Successfully processed subtitle ${file}`)
   } catch (error) {
-    console.error(`   Failed to import/update subtitle:`, error)
+    console.error(`Failed to import/update subtitle:`, error)
     summary.failed++
   }
 }
@@ -124,7 +120,6 @@ export async function importOrUpdateSubtitle({
     existingSubtitle = existingSubtitles?.video?.subtitles?.find(
       (subtitle) => subtitle.languageId === languageId
     )
-    console.log('      Existing subtitle:', existingSubtitle)
   } catch (error) {
     console.error('Error fetching existing subtitle:', error)
     throw new Error('Failed to fetch existing subtitle')
@@ -145,15 +140,20 @@ export async function importOrUpdateSubtitle({
           fileType === 'text/srt' ? r2Asset.id : existingSubtitle.srtAssetId,
         vttAssetId:
           fileType === 'text/vtt' ? r2Asset.id : existingSubtitle.vttAssetId,
-        srtVersion: existingSubtitle.srtVersion
-          ? existingSubtitle.srtVersion + 1
-          : 1,
-        vttVersion: existingSubtitle.vttVersion
-          ? existingSubtitle.vttVersion + 1
-          : 1
+        srtVersion:
+          fileType === 'text/srt'
+            ? existingSubtitle.srtVersion
+              ? existingSubtitle.srtVersion + 1
+              : 1
+            : undefined,
+        vttVersion:
+          fileType === 'text/vtt'
+            ? existingSubtitle.vttVersion
+              ? existingSubtitle.vttVersion + 1
+              : 1
+            : undefined
       }
     })
-    console.log('     Updated existing video subtitle')
   } else {
     const isVtt = fileType === 'text/vtt'
     const isSrt = fileType === 'text/srt'
@@ -171,6 +171,5 @@ export async function importOrUpdateSubtitle({
       srtVersion: 1
     }
     await client.request(CREATE_VIDEO_SUBTITLE, { input })
-    console.log('     Created new video subtitle')
   }
 }

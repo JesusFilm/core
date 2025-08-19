@@ -49,7 +49,7 @@ export async function importOrUpdateAudioPreview({
   if (existingPreview != null) {
     try {
       await client.request(UPDATE_AUDIO_PREVIEW, { input })
-      console.log('[AudioPreview] Updated audio preview')
+
       return 'updated'
     } catch (error) {
       console.error('[AudioPreview] Failed to update audio preview:', error)
@@ -59,7 +59,7 @@ export async function importOrUpdateAudioPreview({
 
   try {
     await client.request(CREATE_AUDIO_PREVIEW, { input })
-    console.log('[AudioPreview] Created audio preview')
+
     return 'created'
   } catch (error) {
     console.error('[AudioPreview] Failed to create audio preview:', error)
@@ -78,17 +78,15 @@ export async function processAudioPreviewFile(
 
   const [, languageId] = match
 
-  console.log(`   Language ID: ${languageId}`)
+  console.log(`Processing audio preview: Language=${languageId}`)
 
   const contentType = 'audio/aac'
 
-  // Extract audio metadata
   let audioMetadata
   try {
     audioMetadata = await getAudioMetadata(filePath)
-    console.log('      Audio metadata:', audioMetadata)
   } catch (error) {
-    console.error(`   Failed to extract audio metadata from ${file}:`, error)
+    console.error(`Failed to extract audio metadata from ${file}:`, error)
     summary.failed++
     return
   }
@@ -103,12 +101,10 @@ export async function processAudioPreviewFile(
       contentType
     })
   } catch (error) {
-    console.error(`   Failed to upload audio preview to R2:`, error)
+    console.error(`Failed to upload audio preview to R2:`, error)
     summary.failed++
     return
   }
-
-  console.log('   Importing or updating audio preview record...')
 
   try {
     const result = await importOrUpdateAudioPreview({
@@ -123,11 +119,12 @@ export async function processAudioPreviewFile(
     if (result === 'failed') {
       summary.failed++
     } else {
-      summary.successful++
       await markFileAsCompleted(filePath)
+      summary.successful++
+      console.log(`Successfully processed audio preview ${file}`)
     }
   } catch (error) {
-    console.error(`   Failed to import/update audio preview:`, error)
+    console.error(`Failed to import/update audio preview:`, error)
     summary.failed++
   }
 }

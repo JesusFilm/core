@@ -28,14 +28,19 @@ export async function triggerVideoUploadJob(
   data: VideoUploadJobData
 ): Promise<void> {
   try {
-    const job = await videoUploadsQueue.add('process-video-upload', data)
-    console.log(`[Job Queue] Triggered video upload job with ID: ${job.id}`)
-    console.log(`   - Video ID: ${data.videoId}`)
-    console.log(`   - Mux Video ID: ${data.muxVideoId}`)
-    console.log(`   - Edition: ${data.edition}`)
-    console.log(`   - Language: ${data.languageId}`)
+    const job = await videoUploadsQueue.add('process-video-upload', data, {
+      attempts: 3,
+      backoff: {
+        type: 'exponential',
+        delay: 2000
+      },
+      removeOnComplete: 10,
+      removeOnFail: 50
+    })
+
+    console.log(`Queued job ${job.id} for ${data.originalFilename}`)
   } catch (error) {
-    console.error('[Job Queue] Failed to trigger video upload job:', error)
+    console.error(`Failed to queue job for ${data.originalFilename}:`, error)
     throw error
   }
 }
