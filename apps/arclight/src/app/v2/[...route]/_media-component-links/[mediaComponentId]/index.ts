@@ -55,7 +55,7 @@ const GET_VIDEO_CHILDREN = graphql(`
         }
         childrenCount
         availableLanguages
-        variants {
+        variants(languageId: "529") {
           hls
           lengthInMilliseconds
           language {
@@ -115,7 +115,7 @@ const GET_VIDEO_CHILDREN = graphql(`
         }
         childrenCount
         availableLanguages
-        variants {
+        variants(languageId: "529") {
           hls
           lengthInMilliseconds
           language {
