@@ -171,18 +171,10 @@ async function getVideoEndAt(
 }
 
 function getVideoVariantLanguageId(video: JourneySimpleVideo): string | null {
-  let videoVariantLanguageId: string | null
-  if (video.source === 'internal') {
-    if (video.subtitleId !== undefined && video.subtitleId !== null) {
-      videoVariantLanguageId = video.subtitleId
-    } else {
-      videoVariantLanguageId = '529'
-    }
-  } else {
-    videoVariantLanguageId = null
-  }
-  return videoVariantLanguageId
-}
+  if(video.source === 'youTube') return null
+  if (video.subtitleId != null) return video.subtitleId
+  return '529'
+ }
 
 export async function updateSimpleJourney(
   journeyId: string,
