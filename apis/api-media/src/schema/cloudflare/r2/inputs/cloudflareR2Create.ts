@@ -5,9 +5,10 @@ export const CloudflareR2CreateInput = builder.inputType(
   {
     fields: (t) => ({
       id: t.string({ required: false }),
-      contentLength: t.int({
+      contentLength: t.string({
         required: true,
-        description: 'the size of the file that is being uploaded'
+        description:
+          'the size of the file that is being uploaded (as string to support large files)'
       }),
       contentType: t.string({
         required: true,

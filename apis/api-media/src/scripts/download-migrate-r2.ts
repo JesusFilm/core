@@ -31,7 +31,7 @@ async function uploadToR2FromUrl(
   url: string,
   fileName: string,
   contentType: string,
-  expectedSize?: number,
+  expectedSize?: string,
   logger?: Logger
 ): Promise<{ publicUrl: string; actualSize: number }> {
   if (process.env.CLOUDFLARE_R2_BUCKET == null)
@@ -52,10 +52,10 @@ async function uploadToR2FromUrl(
   const actualSize = fileBuffer.byteLength
 
   // Validate file size if expected size is provided and > 0
-  if (expectedSize != null && expectedSize > 0) {
-    const sizeDifference = Math.abs(actualSize - expectedSize)
+  if (expectedSize != null && expectedSize !== '0') {
+    const sizeDifference = Math.abs(actualSize - Number(expectedSize))
     const sizeTolerancePercent = 0.05 // 5% tolerance
-    const maxToleranceBytes = expectedSize * sizeTolerancePercent
+    const maxToleranceBytes = Number(expectedSize) * sizeTolerancePercent
 
     if (sizeDifference > maxToleranceBytes) {
       logger?.warn(
@@ -145,14 +145,14 @@ async function migrateDownloadsToR2(logger?: Logger): Promise<void> {
         fileExtension === '.mp4' ? 'video/mp4' : 'application/octet-stream'
 
       const expectedSize =
-        download.size && download.size > 0 ? download.size : undefined
+        download.size && download.size > 0 ? download.size.toString() : '0'
 
       const asset = await prisma.cloudflareR2.create({
         data: {
           fileName,
           userId: 'system',
           contentType,
-          contentLength: expectedSize ? Math.floor(expectedSize) : 0,
+          contentLength: expectedSize,
           videoId
         }
       })
@@ -172,7 +172,7 @@ async function migrateDownloadsToR2(logger?: Logger): Promise<void> {
         where: { id: asset.id },
         data: {
           publicUrl,
-          contentLength: actualSize
+          contentLength: actualSize.toString()
         }
       })
 
@@ -182,7 +182,7 @@ async function migrateDownloadsToR2(logger?: Logger): Promise<void> {
         url: publicUrl
       }
 
-      if (expectedSize == null || expectedSize === 0) {
+      if (expectedSize == null || expectedSize === '0') {
         updateData.size = actualSize
         logger?.info(
           { downloadId: download.id, actualSize },
