@@ -82,23 +82,12 @@ async function monitorStaticRenditionStatus(
   const maxAttempts = 180 // 30 minutes (180 * 10 seconds)
   let attempts = 0
 
-  logger?.info(
-    { assetId, maxAttempts, intervalSeconds: monitoringIntervalMs / 1000 },
-    'Starting static rendition monitoring'
-  )
-
   while (attempts < maxAttempts) {
     try {
       const muxVideo = await getVideo(assetId, isUserGenerated)
 
       // Check if static renditions exist
       if (!muxVideo.static_renditions?.files) {
-        if (attempts === 0 || attempts % 5 === 0) {
-          logger?.info(
-            { assetId, attempts: attempts + 1 },
-            'No static renditions available yet - waiting'
-          )
-        }
         attempts++
         await new Promise((resolve) =>
           setTimeout(resolve, monitoringIntervalMs)
@@ -139,19 +128,6 @@ async function monitorStaticRenditionStatus(
       }
 
       // Continue monitoring if renditions are still processing
-
-      // Log progress every 5 attempts (50 seconds)
-      if (attempts % 5 === 0 && attempts > 0) {
-        logger?.info(
-          {
-            assetId,
-            attempts: attempts + 1,
-            maxAttempts,
-            renditionStatuses
-          },
-          'Still monitoring static renditions - not ready yet'
-        )
-      }
 
       attempts++
 
