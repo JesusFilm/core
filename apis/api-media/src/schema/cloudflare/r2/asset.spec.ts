@@ -74,7 +74,7 @@ describe('cloudflare/r2/asset', () => {
               originalFilename: 'originalFilename.jpg',
               videoId: 'videoId',
               contentType: 'image/jpeg',
-              contentLength: 0
+              contentLength: '0'
             }
           }
         })
@@ -88,7 +88,7 @@ describe('cloudflare/r2/asset', () => {
             publicUrl: 'https://assets.jesusfilm.org/fileName',
             videoId: 'videoId',
             contentType: 'image/jpeg',
-            contentLength: 0
+            contentLength: '0'
           }
         })
         expect(result).toHaveProperty('data.cloudflareR2Create.id', 'id')
@@ -118,7 +118,7 @@ describe('cloudflare/r2/asset', () => {
         )
         expect(result).toHaveProperty(
           'data.cloudflareR2Create.contentLength',
-          0
+          '0'
         )
       })
 
@@ -132,7 +132,7 @@ describe('cloudflare/r2/asset', () => {
               originalFilename: 'originalFilename.jpg',
               videoId: 'videoId',
               contentType: 'image/jpeg',
-              contentLength: 0
+              contentLength: '0'
             }
           }
         })
@@ -213,7 +213,7 @@ describe('cloudflare/r2/asset', () => {
         )
         expect(result).toHaveProperty(
           'data.cloudflareR2Delete.contentLength',
-          0
+          '0'
         )
       })
 
