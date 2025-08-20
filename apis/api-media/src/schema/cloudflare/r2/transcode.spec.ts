@@ -140,7 +140,7 @@ describe('cloudflare/r2/transcode', () => {
           publicUrl: 'https://assets.jesusfilm.org/input.mp4',
           userId: 'userId',
           contentType: 'video/mp4',
-          contentLength: 1000,
+          contentLength: '1000',
           createdAt: new Date(),
           updatedAt: new Date(),
           videoId: 'videoId',

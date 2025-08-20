@@ -1094,7 +1094,7 @@ type Video @join__type(graph: API_JOURNEYS, key: "id primaryLanguageId", extensi
   variantLanguagesWithSlug(input: VideoVariantFilter) : [LanguageWithSlug!]! @join__field(graph: API_MEDIA) 
   variants(input: VideoVariantFilter) : [VideoVariant!]! @join__field(graph: API_MEDIA) 
   subtitles(languageId: ID, primary: Boolean, edition: String) : [VideoSubtitle!]! @join__field(graph: API_MEDIA) 
-  variant(languageId: ID, input: VideoVariantFilter) : VideoVariant @join__field(graph: API_MEDIA) 
+  variant(languageId: ID, input: VideoVariantFilter) : VideoVariant @join__field(graph: API_MEDIA)  @deprecated(reason: "Use variants instead") 
   images(aspectRatio: ImageAspectRatio) : [CloudflareImage!]! @join__field(graph: API_MEDIA) 
   restrictDownloadPlatforms: [Platform!]! @join__field(graph: API_MEDIA) 
   restrictViewPlatforms: [Platform!]! @join__field(graph: API_MEDIA) 
@@ -2472,7 +2472,7 @@ type CloudflareImage @join__type(graph: API_MEDIA)  {
 
 type CloudflareR2 @join__type(graph: API_MEDIA)  {
   id: ID!
-  contentLength: Int!
+  contentLength: String!
   contentType: String!
   fileName: String!
   originalFilename: String
@@ -4562,9 +4562,9 @@ input MutationAudioPreviewUpdateInput @join__type(graph: API_LANGUAGES)  {
 input CloudflareR2CreateInput @join__type(graph: API_MEDIA)  {
   id: String
   """
-  the size of the file that is being uploaded
+  the size of the file that is being uploaded (as string to support large files)
   """
-  contentLength: Int!
+  contentLength: String!
   """
   the type of file that is being uploaded. e.g. image or video/mp4
   """
