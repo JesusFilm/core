@@ -62,7 +62,11 @@ export async function deleteR2File(fileName: string): Promise<void> {
 builder.prismaObject('CloudflareR2', {
   fields: (t) => ({
     id: t.exposeID('id', { nullable: false }),
-    contentLength: t.exposeInt('contentLength', { nullable: false }),
+    contentLength: t.field({
+      type: 'BigInt',
+      nullable: false,
+      resolve: (parent) => BigInt(parent.contentLength)
+    }),
     contentType: t.exposeString('contentType', { nullable: false }),
     fileName: t.exposeString('fileName', { nullable: false }),
     originalFilename: t.exposeString('originalFilename'),
@@ -104,7 +108,7 @@ builder.mutationFields((t) => ({
           uploadUrl,
           publicUrl: `${process.env.CLOUDFLARE_R2_CUSTOM_DOMAIN}/${input.fileName}`,
           contentType: input.contentType,
-          contentLength: input.contentLength
+          contentLength: Number(input.contentLength)
         }
       })
     }
