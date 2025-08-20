@@ -82,6 +82,8 @@ export function generateActionTargetKey(action: Action): string {
       return `link:${action.url}`
     case 'EmailAction':
       return `email:${action.email}`
+    default:
+      throw new Error(`Unknown action type`)
   }
 }
 
