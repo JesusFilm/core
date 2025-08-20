@@ -1,1 +1,2 @@
 import './customDomain'
+import './inputs'

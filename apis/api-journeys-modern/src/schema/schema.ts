@@ -3,7 +3,11 @@
 
 import './action'
 import './block'
+import './chatButton'
+import './customDomain'
 import './event'
+import './host'
+import './integration'
 import './journey'
 import './journeyAiTranslate'
 import './journeyEventsExportLog'

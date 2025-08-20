@@ -189,6 +189,24 @@ input CardBlockUpdateInput {
   themeName: ThemeName
 }
 
+type ChatButton
+  @shareable
+{
+  id: ID
+  link: String
+  platform: MessagePlatform
+}
+
+input ChatButtonCreateInput {
+  link: String!
+  platform: MessagePlatform!
+}
+
+input ChatButtonUpdateInput {
+  link: String!
+  platform: MessagePlatform!
+}
+
 type ChatOpenEvent implements Event
   @shareable
 {
