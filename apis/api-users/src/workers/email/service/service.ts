@@ -23,13 +23,8 @@ export async function service(
     emailAlias = job.data.email.replace(/\+/g, '%2B')
 
   let redirectParam = ''
-
-  if (job.data.redirect != null) {
-    if (job.data.redirect.includes('redirect')) {
-      redirectParam = `&${job.data.redirect.replace(/\?/, '')}`
-    } else {
-      redirectParam = `&redirect=${job.data.redirect}`
-    }
+  if (job.data.redirect != null && job.data.redirect !== '') {
+    redirectParam = `&redirect=${encodeURIComponent(job.data.redirect)}`
   }
 
   const url = `${process.env.JOURNEYS_ADMIN_URL ?? ''}/users/verify?token=${
