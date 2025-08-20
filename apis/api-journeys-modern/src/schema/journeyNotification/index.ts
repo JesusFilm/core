@@ -1,1 +1,1 @@
-export * from './journeyNotification'
+export { JourneyNotificationRef } from './journeyNotification'

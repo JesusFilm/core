@@ -1,1 +1,1 @@
-export * from './userJourney'
+import './userJourney'

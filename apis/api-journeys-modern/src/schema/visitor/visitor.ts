@@ -1,4 +1,5 @@
-import { prisma } from '../../lib/prisma'
+import { prisma } from '@core/prisma/journeys/client'
+
 import { builder } from '../builder'
 import { MessagePlatform } from '../enums'
 
@@ -8,8 +9,8 @@ import { UserAgentRef } from './userAgent'
 export const VisitorRef = builder.prismaObject('Visitor', {
   shareable: true,
   fields: (t) => ({
-    id: t.exposeID('id'),
-    createdAt: t.expose('createdAt', { type: 'DateTime' }),
+    id: t.exposeID('id', { nullable: false }),
+    createdAt: t.expose('createdAt', { type: 'DateTime', nullable: false }),
     duration: t.exposeInt('duration'),
     lastChatStartedAt: t.expose('lastChatStartedAt', {
       type: 'DateTime',
@@ -45,14 +46,7 @@ export const VisitorRef = builder.prismaObject('Visitor', {
       nullable: true
     }),
     referrer: t.exposeString('referrer', { nullable: true }),
-    phone: t.exposeString('phone', { nullable: true }),
-    teamId: t.exposeString('teamId'),
-    userId: t.exposeString('userId'),
-    updatedAt: t.expose('updatedAt', { type: 'DateTime' }),
-    // Relations
-    team: t.relation('team'),
-    journeyVisitors: t.relation('journeyVisitors'),
-    events: t.relation('events')
+    events: t.relation('events', { nullable: false })
   })
 })
 

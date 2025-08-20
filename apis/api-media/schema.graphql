@@ -843,7 +843,7 @@ type Video
   variantLanguagesWithSlug(input: VideoVariantFilter): [LanguageWithSlug!]!
   variants(input: VideoVariantFilter): [VideoVariant!]!
   subtitles(languageId: ID, primary: Boolean, edition: String): [VideoSubtitle!]!
-  variant(languageId: ID, input: VideoVariantFilter): VideoVariant
+  variant(languageId: ID, input: VideoVariantFilter): VideoVariant @deprecated(reason: "Use variants instead")
   images(aspectRatio: ImageAspectRatio): [CloudflareImage!]!
   restrictDownloadPlatforms: [Platform!]!
   restrictViewPlatforms: [Platform!]!

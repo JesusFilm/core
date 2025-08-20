@@ -1,1 +1,3 @@
-export * from './journeysEmailPreference'
+import './inputs'
+
+export { JourneysEmailPreferenceRef } from './journeysEmailPreference'

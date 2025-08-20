@@ -1,1 +1,2 @@
 import './plausible'
+import './inputs'
