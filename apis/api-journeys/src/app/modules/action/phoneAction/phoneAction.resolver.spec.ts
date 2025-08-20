@@ -4,15 +4,15 @@ import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
 import { CaslAuthModule } from '@core/nest/common/CaslAuthModule'
 import { Action, Block, Journey } from '@core/prisma/journeys/client'
 
-import { EmailActionInput, UserTeamRole } from '../../../__generated__/graphql'
+import { PhoneActionInput, UserTeamRole } from '../../../__generated__/graphql'
 import { AppAbility, AppCaslFactory } from '../../../lib/casl/caslFactory'
 import { PrismaService } from '../../../lib/prisma.service'
 import { ActionService } from '../action.service'
 
-import { EmailActionResolver } from './emailAction.resolver'
+import { PhoneActionResolver } from './phoneAction.resolver'
 
-describe('EmailActionResolver', () => {
-  let resolver: EmailActionResolver,
+describe('PhoneActionResolver', () => {
+  let resolver: PhoneActionResolver,
     prismaService: DeepMockProxy<PrismaService>,
     actionService: DeepMockProxy<ActionService>,
     ability: AppAbility
@@ -38,8 +38,8 @@ describe('EmailActionResolver', () => {
       blockId: null,
       journeyId: null,
       target: null,
-      email: '',
-      phone: null,
+      email: null,
+      phone: '1234567890',
       customizable: null,
       parentStepId: null,
       updatedAt: new Date()
@@ -49,16 +49,16 @@ describe('EmailActionResolver', () => {
     ...block,
     journey
   }
-  const input: EmailActionInput = {
+  const input: PhoneActionInput = {
     gtmEventName: 'gtmEventName',
-    email: 'edmondshen@gmail.com'
+    phone: 'edmondshen@gmail.com'
   }
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [CaslAuthModule.register(AppCaslFactory)],
       providers: [
-        EmailActionResolver,
+        PhoneActionResolver,
         {
           provide: ActionService,
           useValue: mockDeep<ActionService>()
@@ -69,7 +69,7 @@ describe('EmailActionResolver', () => {
         }
       ]
     }).compile()
-    resolver = module.get<EmailActionResolver>(EmailActionResolver)
+    resolver = module.get<PhoneActionResolver>(PhoneActionResolver)
     prismaService = module.get<PrismaService>(
       PrismaService
     ) as DeepMockProxy<PrismaService>
@@ -79,11 +79,11 @@ describe('EmailActionResolver', () => {
     ability = await new AppCaslFactory().createAbility({ id: 'userId' })
   })
 
-  describe('blockUpdateEmailAction', () => {
-    it('updates email action', async () => {
+  describe('blockUpdatePhoneAction', () => {
+    it('updates phone action', async () => {
       prismaService.block.findUnique.mockResolvedValueOnce(blockWithUserTeam)
-      await resolver.blockUpdateEmailAction(ability, block.id, input)
-      expect(actionService.emailActionUpdate).toHaveBeenCalledWith(
+      await resolver.blockUpdatePhoneAction(ability, block.id, input)
+      expect(actionService.phoneActionUpdate).toHaveBeenCalledWith(
         '1',
         blockWithUserTeam,
         input
@@ -97,21 +97,21 @@ describe('EmailActionResolver', () => {
       }
       prismaService.block.findUnique.mockResolvedValueOnce(wrongBlock)
       await expect(
-        resolver.blockUpdateEmailAction(ability, wrongBlock.id, input)
-      ).rejects.toThrow('This block does not support email actions')
+        resolver.blockUpdatePhoneAction(ability, wrongBlock.id, input)
+      ).rejects.toThrow('This block does not support phone actions')
     })
 
     it('throws error if not found', async () => {
       prismaService.block.findUnique.mockResolvedValueOnce(null)
       await expect(
-        resolver.blockUpdateEmailAction(ability, block.id, input)
+        resolver.blockUpdatePhoneAction(ability, block.id, input)
       ).rejects.toThrow('block not found')
     })
 
     it('throws error if not authorized', async () => {
       prismaService.block.findUnique.mockResolvedValueOnce(block)
       await expect(
-        resolver.blockUpdateEmailAction(ability, block.id, input)
+        resolver.blockUpdatePhoneAction(ability, block.id, input)
       ).rejects.toThrow('user is not allowed to update block')
     })
   })

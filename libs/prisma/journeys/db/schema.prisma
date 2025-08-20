@@ -585,6 +585,7 @@ model Action {
   url           String?
   target        String?
   email         String?
+  phone         String?
   customizable  Boolean?
   parentStepId  String?
   updatedAt     DateTime @default(now()) @updatedAt
