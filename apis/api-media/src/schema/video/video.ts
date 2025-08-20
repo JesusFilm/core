@@ -310,6 +310,7 @@ const Video = builder.prismaObject('Video', {
       })
     }),
     variant: t.prismaField({
+      deprecationReason: 'Use variants instead',
       type: VideoVariant,
       args: {
         languageId: t.arg.id({ required: false }),
