@@ -75,7 +75,7 @@ export function ResourceCard({
         }
       }}
     >
-      <NextLink href={item?.link ?? ''} passHref legacyBehavior>
+      <NextLink href={item?.link ?? ''} passHref legacyBehavior locale="">
         <Box
           component="a"
           tabIndex={-1}

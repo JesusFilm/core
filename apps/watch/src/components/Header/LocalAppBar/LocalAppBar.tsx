@@ -63,7 +63,12 @@ export function LocalAppBar({
           alignItems="center"
           flexGrow={1}
         >
-          <NextLink passHref legacyBehavior href="https://www.jesusfilm.org/">
+          <NextLink
+            passHref
+            legacyBehavior
+            href="https://www.jesusfilm.org/"
+            locale=""
+          >
             <Box
               data-testid="WatchLogo"
               sx={{

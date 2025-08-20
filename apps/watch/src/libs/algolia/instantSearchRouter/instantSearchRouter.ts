@@ -11,6 +11,9 @@ interface createInstantSearchRouterProps {
   indexName?: string
   serverUrl?: string
   mapRefinements?: (indexUiState) => any
+  defaults?: {
+    refinementList?: { [index: string]: string[] }
+  }
 }
 
 function defaultMapRefinements(indexUiState): { languageEnglishName: string } {
@@ -22,7 +25,8 @@ function defaultMapRefinements(indexUiState): { languageEnglishName: string } {
 export function createInstantSearchRouter({
   indexName = process.env.NEXT_PUBLIC_ALGOLIA_INDEX ?? '',
   serverUrl = process.env.NEXT_PUBLIC_WATCH_URL ?? '',
-  mapRefinements = defaultMapRefinements
+  mapRefinements = defaultMapRefinements,
+  defaults = {}
 }: createInstantSearchRouterProps = {}): NextRouter {
   return {
     // Manages the URL paramers with instant search state
@@ -45,8 +49,16 @@ export function createInstantSearchRouter({
         return stateRoute
       },
       routeToState(routeState) {
+        const indexRouteState = routeState[indexName] || {}
+
         return {
-          [indexName]: routeState
+          [indexName]: {
+            ...indexRouteState,
+            refinementList: {
+              ...(defaults.refinementList || {}),
+              ...(indexRouteState.refinementList || {})
+            }
+          }
         }
       }
     }

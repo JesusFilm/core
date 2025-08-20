@@ -34,6 +34,7 @@ export function VideoCard({
       style={{ pointerEvents: video != null ? 'auto' : 'none' }}
       aria-label="VideoCard"
       data-testid={video != null ? `VideoCard-${video.id}` : 'VideoCard'}
+      locale=""
     >
       <div className="flex flex-col gap-6">
         <button
