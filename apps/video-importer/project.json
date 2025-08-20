@@ -26,15 +26,7 @@
     "package": {
       "executor": "nx:run-commands",
       "options": {
-        "commands": [
-          "nx run video-importer:bundle",
-          {
-            "command": "./build-scripts/build-cross-platform.sh",
-            "cwd": "apps/video-importer"
-          },
-          "npx shx cp apps/video-importer/README.md dist/apps/video-importer-executable/README.md"
-        ],
-        "parallel": false
+        "command": "nx run video-importer:bundle && cd apps/video-importer && ./build-scripts/build-cross-platform.sh && cd ../.. && npx shx cp apps/video-importer/README.md dist/apps/video-importer-executable/README.md"
       }
     },
     "fetch-secrets": {
