@@ -96,6 +96,12 @@ builder.mutationFields((t) => ({
     },
     resolve: async (query, _parent, { input }, { user }) => {
       if (user == null) throw new Error('User not found')
+      
+      // Validate contentLength is non-negative
+      if (input.contentLength < 0) {
+        throw new Error('Content length must be non-negative')
+      }
+      
       const uploadUrl = await getPresignedUrl(input.fileName, input.contentType)
       return await prisma.cloudflareR2.create({
         ...query,
@@ -108,7 +114,7 @@ builder.mutationFields((t) => ({
           uploadUrl,
           publicUrl: `${process.env.CLOUDFLARE_R2_CUSTOM_DOMAIN}/${input.fileName}`,
           contentType: input.contentType,
-          contentLength: Number(input.contentLength)
+          contentLength: input.contentLength
         }
       })
     }
