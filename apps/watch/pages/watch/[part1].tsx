@@ -23,9 +23,9 @@ import {
 } from '../../src/libs/apolloClient'
 import { getCookie } from '../../src/libs/cookieHandler'
 import { getFlags } from '../../src/libs/getFlags'
+import { LANGUAGE_MAPPINGS, LocaleMapping } from '../../src/libs/localeMapping'
 import { VIDEO_CHILD_FIELDS } from '../../src/libs/videoChildFields'
 import { WatchProvider } from '../../src/libs/watchContext/WatchContext'
-import { LANGUAGE_MAPPINGS, LocaleMapping } from '../../src/libs/localeMapping'
 
 export const GET_HOME_VIDEOS = gql`
   ${VIDEO_CHILD_FIELDS}
