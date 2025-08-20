@@ -26,6 +26,7 @@ Object.defineProperty(
 jest.mock('next/router', () => require('next-router-mock'))
 
 // Mock PointerEvent and HTMLElement methods for shadcn/ui Select component testing
+// https://stackoverflow.com/questions/78975098/testing-shadcn-select-with-jest-and-react-testing-library | https://github.com/shadcn-ui/ui/discussions/4168#discussioncomment-10502077
 function createMockPointerEvent(
   type: string,
   props: PointerEventInit = {}
@@ -40,12 +41,14 @@ function createMockPointerEvent(
 }
 
 // Mock PointerEvent globally - needed for shadcn/ui Select component testing
+// https://stackoverflow.com/questions/78975098/testing-shadcn-select-with-jest-and-react-testing-library | https://github.com/shadcn-ui/ui/discussions/4168#discussioncomment-10502077
 Object.defineProperty(window, 'PointerEvent', {
   writable: true,
   value: createMockPointerEvent as any
 })
 
 // Mock HTMLElement methods globally - needed for shadcn/ui Select component testing
+// https://stackoverflow.com/questions/78975098/testing-shadcn-select-with-jest-and-react-testing-library | https://github.com/shadcn-ui/ui/discussions/4168#discussioncomment-10502077
 Object.assign(window.HTMLElement.prototype, {
   scrollIntoView: jest.fn(),
   releasePointerCapture: jest.fn(),
