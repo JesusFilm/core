@@ -49,6 +49,37 @@ function createLanguageClient(): ApolloClient<any> {
   })
 }
 
+async function getLanguageSlug(
+  videoSlug: string,
+  languageId: string,
+  logger?: Logger
+): Promise<string> {
+  let apollo: ApolloClient<any> | null = null
+  try {
+    apollo = createLanguageClient()
+    const { data } = await apollo.query({
+      query: GET_LANGUAGE_SLUG,
+      variables: { languageId },
+      fetchPolicy: 'no-cache'
+    })
+
+    if (!data.language?.slug) {
+      throw new Error(`No language slug found for language ID: ${languageId}`)
+    }
+
+    return `${videoSlug}/${data.language.slug}`
+  } catch (error) {
+    logger?.error(
+      `Failed to get language slug for language ${languageId}: ${error as Error}`
+    )
+    throw new Error(`Failed to create slug for variant: ${error as Error}`)
+  } finally {
+    if (apollo) {
+      void apollo.stop()
+    }
+  }
+}
+
 interface ProcessVideoUploadJobData {
   videoId: string
   edition: string
@@ -108,12 +139,7 @@ export async function service(
         logger
       })
     }
-    if (finalStatus === 'ready') {
-      logger?.info(
-        { videoId, muxVideoId, finalStatus },
-        'Video upload processing completed'
-      )
-    } else {
+    if (finalStatus !== 'ready') {
       logger?.warn(
         { videoId, muxVideoId, finalStatus },
         'Video upload processing failed due to timeout'
@@ -175,7 +201,7 @@ async function waitForMuxVideoCompletion(
           )
 
           logger?.info(
-            { muxVideoId: muxVideo.id, assetId: muxVideo.assetId },
+            { muxVideoId: muxVideo.id },
             'Queued download processing job'
           )
         } catch (error) {
@@ -186,12 +212,7 @@ async function waitForMuxVideoCompletion(
         }
 
         logger?.info(
-          {
-            muxVideoId: muxVideo.id,
-            assetId: muxVideo.assetId,
-            playbackId,
-            attempts: attempts + 1
-          },
+          { muxVideoId: muxVideo.id, playbackId },
           'Mux video is ready for streaming'
         )
         return {
@@ -200,15 +221,12 @@ async function waitForMuxVideoCompletion(
         }
       }
 
-      if (attempts % 10 === 0 && attempts > 0) {
+      if (attempts % 20 === 0 && attempts > 0) {
         const elapsedMinutes = Math.round((attempts * intervalMs) / 60000)
-        // TODO: Remove this log for prod
         logger?.info(
           {
             muxVideoId: muxVideo.id,
-            assetId: muxVideo.assetId,
             status: muxVideoAsset.status,
-            hasPlaybackId: !!playbackId,
             attempts: attempts + 1,
             elapsedMinutes
           },
@@ -263,20 +281,6 @@ async function createVideoVariant({
   }
   logger?: Logger
 }): Promise<void> {
-  // TODO: Remove this log for prod
-  logger?.info(
-    {
-      videoId,
-      edition,
-      languageId,
-      version,
-      muxVideoId,
-      playbackId,
-      metadata
-    },
-    'Creating video variant'
-  )
-
   const [source, ...restParts] = videoId.split('_')
   const restOfId = restParts.join('_') || videoId
   const variantId = `${source}_${languageId}-${restOfId}`
@@ -286,7 +290,6 @@ async function createVideoVariant({
   const watchPageBaseUrl =
     process.env.WATCH_PAGE_BASE_URL || 'http://jesusfilm.org/watch/'
 
-  // First, get video info and check if variant already exists
   const [videoInfo, existingVariant] = await Promise.all([
     prisma.video.findUnique({
       where: { id: videoId },
@@ -311,67 +314,27 @@ async function createVideoVariant({
     throw new Error(`Video not found: ${videoId}`)
   }
 
-  let slug: string
-  if (existingVariant?.slug) {
-    slug = existingVariant.slug
-  } else {
-    let apollo: ApolloClient<any> | null = null
-    try {
-      apollo = createLanguageClient()
-      const { data } = await apollo.query({
-        query: GET_LANGUAGE_SLUG,
-        variables: { languageId },
-        fetchPolicy: 'no-cache'
-      })
+  const slug =
+    existingVariant?.slug ||
+    (await getLanguageSlug(videoInfo.slug, languageId, logger))
 
-      if (!data.language?.slug) {
-        throw new Error(`No language slug found for language ID: ${languageId}`)
-      }
-
-      slug = `${videoInfo.slug}/${data.language.slug}`
-    } catch (error) {
-      logger?.error(
-        `Failed to get language slug for language ${languageId}: ${error as Error}`
-      )
-      throw new Error(`Failed to create slug for variant: ${error as Error}`)
-    } finally {
-      if (apollo) {
-        void apollo.stop()
-      }
-    }
+  const variantData = {
+    hls: `${muxStreamBaseUrl}${playbackId}.m3u8`,
+    share: `${watchPageBaseUrl}${slug}`,
+    duration: metadata.duration,
+    lengthInMilliseconds: metadata.durationMs,
+    muxVideoId,
+    published: true,
+    downloadable: true,
+    version
   }
-
-  const hlsUrl = `${muxStreamBaseUrl}${playbackId}.m3u8`
-  const shareUrl = `${watchPageBaseUrl}${slug}`
 
   try {
     if (existingVariant) {
       await prisma.videoVariant.update({
         where: { id: existingVariant.id },
-        data: {
-          hls: hlsUrl,
-          share: shareUrl,
-          duration: metadata.duration,
-          lengthInMilliseconds: metadata.durationMs,
-          muxVideoId,
-          published: true,
-          downloadable: true,
-          version
-        }
+        data: variantData
       })
-
-      // TODO: Remove this log for prod
-      logger?.info(
-        {
-          videoId,
-          edition,
-          languageId,
-          variantId: existingVariant.id,
-          muxVideoId,
-          playbackId
-        },
-        'Successfully updated existing video variant'
-      )
     } else {
       await prisma.videoVariant.create({
         data: {
@@ -380,29 +343,9 @@ async function createVideoVariant({
           edition,
           languageId,
           slug,
-          hls: hlsUrl,
-          share: shareUrl,
-          duration: metadata.duration,
-          lengthInMilliseconds: metadata.durationMs,
-          muxVideoId,
-          published: true,
-          downloadable: true,
-          version
+          ...variantData
         }
       })
-
-      // TODO: Remove this log for prod
-      logger?.info(
-        {
-          videoId,
-          edition,
-          languageId,
-          variantId,
-          muxVideoId,
-          playbackId
-        },
-        'Successfully created new video variant'
-      )
     }
   } catch (error) {
     logger?.error(
