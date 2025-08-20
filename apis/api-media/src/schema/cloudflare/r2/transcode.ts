@@ -42,7 +42,8 @@ const completeJob = async (jobId: string) => {
       data: {
         publicUrl: job.data.publicUrl,
         contentType: job.data.contentType,
-        contentLength: job.data.outputSize ?? '0',
+        contentLength:
+          job.data.outputSize != null ? String(job.data.outputSize) : '0',
         fileName: job.data.outputFilename,
         userId: job.data.userId
       }
