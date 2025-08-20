@@ -31,34 +31,43 @@ export const JourneyVisitorRef = builder.prismaObject('JourneyVisitor', {
     countryCode: t.field({
       type: 'String',
       nullable: true,
-      resolve: async (journeyVisitor) => {
-        const visitor = await prisma.visitor.findUnique({
-          where: { id: journeyVisitor.visitorId },
-          select: { countryCode: true }
-        })
-        return visitor?.countryCode || null
+      select: {
+        visitor: {
+          select: {
+            countryCode: true
+          }
+        }
+      },
+      resolve: ({ visitor }) => {
+        return visitor.countryCode ?? null
       }
     }),
     messagePlatform: t.field({
       type: MessagePlatform,
       nullable: true,
-      resolve: async (journeyVisitor) => {
-        const visitor = await prisma.visitor.findUnique({
-          where: { id: journeyVisitor.visitorId },
-          select: { messagePlatform: true }
-        })
-        return visitor?.messagePlatform || null
+      select: {
+        visitor: {
+          select: {
+            messagePlatform: true
+          }
+        }
+      },
+      resolve: ({ visitor }) => {
+        return visitor.messagePlatform ?? null
       }
     }),
     notes: t.field({
       type: 'String',
       nullable: true,
-      resolve: async (journeyVisitor) => {
-        const visitor = await prisma.visitor.findUnique({
-          where: { id: journeyVisitor.visitorId },
-          select: { notes: true }
-        })
-        return visitor?.notes || null
+      select: {
+        visitor: {
+          select: {
+            notes: true
+          }
+        }
+      },
+      resolve: ({ visitor }) => {
+        return visitor.notes ?? null
       }
     }),
     visitor: t.relation('visitor', { nullable: false }),

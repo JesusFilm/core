@@ -20,6 +20,9 @@ export const QrCodeRef = builder.prismaObject('QrCode', {
     shortLink: t.field({
       nullable: false,
       type: ShortLink,
+      select: {
+        shortLinkId: true
+      },
       resolve: (qrCode) => ({ id: qrCode.shortLinkId })
     })
   })
