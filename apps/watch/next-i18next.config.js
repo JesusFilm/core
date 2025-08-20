@@ -30,7 +30,8 @@ const i18nConfig = {
       'tr', // Turkish
       'zh', // Chinese
       'zh-Hans-CN' // Chinese, Simplified
-    ]
+    ],
+    localeDetection: false
   },
   localePath,
   fallbackLng: {

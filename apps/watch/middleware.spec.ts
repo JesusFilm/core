@@ -60,32 +60,8 @@ describe('middleware', () => {
   })
 
   describe('locale detection', () => {
-    it('should use cookie locale if available', () => {
-      const req = createMockRequest('/watch/jesus.html', {
-        cookies: [{ name: 'NEXT_LOCALE', value: 'fingerprint---fr' }]
-      })
-      const result = middleware(req) as NextResponse
-      expect(result?.headers.get('x-middleware-rewrite')).toContain('/fr/')
-    })
-
-    it('should use URL path locale if no cookie', () => {
+    it('should use URL path locale', () => {
       const req = createMockRequest('/watch/jesus.html/french.html')
-      const result = middleware(req) as NextResponse
-      expect(result?.headers.get('x-middleware-rewrite')).toContain('/fr/')
-    })
-
-    it('should use browser language if no cookie or path locale', () => {
-      const req = createMockRequest('/watch/jesus.html', {
-        headers: { 'accept-language': 'fr-FR,fr;q=0.9,en;q=0.8' }
-      })
-      const result = middleware(req) as NextResponse
-      expect(result?.headers.get('x-middleware-rewrite')).toContain('/fr/')
-    })
-
-    it('should use geolocation if no other locale indicators', () => {
-      const req = createMockRequest('/watch/jesus.html', {
-        headers: { 'cf-ipcountry': 'FR' }
-      })
       const result = middleware(req) as NextResponse
       expect(result?.headers.get('x-middleware-rewrite')).toContain('/fr/')
     })
@@ -98,55 +74,49 @@ describe('middleware', () => {
   })
 
   describe('URL rewriting', () => {
-    it('should rewrite URL with locale prefix for non-default locale', () => {
-      const req = createMockRequest('/watch/jesus.html', {
-        cookies: [{ name: 'NEXT_LOCALE', value: 'fingerprint---fr' }]
-      })
+    it('should rewrite URL when path contains locale slug', () => {
+      const req = createMockRequest('/watch/jesus.html/french.html')
       const result = middleware(req) as NextResponse
       expect(result?.headers.get('x-middleware-rewrite')).toBe(
-        'http://localhost/fr/watch/jesus.html'
+        'http://localhost/fr/watch/jesus.html/french.html'
       )
     })
 
-    it('should not rewrite URL for default locale', () => {
-      const req = createMockRequest('/watch/jesus.html', {
-        cookies: [{ name: 'NEXT_LOCALE', value: 'fingerprint---en' }]
-      })
+    it('should not rewrite URL when no path locale present', () => {
+      const req = createMockRequest('/watch/jesus.html')
       const result = middleware(req)
       expect(result).toEqual(NextResponse.next())
     })
 
     it('should preserve query parameters when rewriting URL', () => {
-      const req = createMockRequest('/watch/jesus.html?param=value', {
-        cookies: [{ name: 'NEXT_LOCALE', value: 'fingerprint---fr' }]
-      })
+      const req = createMockRequest('/watch/jesus.html/french.html?param=value')
       const result = middleware(req) as NextResponse
       expect(result?.headers.get('x-middleware-rewrite')).toBe(
-        'http://localhost/fr/watch/jesus.html?param=value'
+        'http://localhost/fr/watch/jesus.html/french.html?param=value'
       )
     })
   })
 
   describe('browser language parsing', () => {
-    it('should handle multiple language preferences with weights', () => {
+    it('should ignore browser preferences and not rewrite without path locale', () => {
       const req = createMockRequest('/watch/jesus.html', {
         headers: {
           'accept-language': 'fr-FR;q=0.9,fr;q=0.8,en-US;q=0.7,en;q=0.6'
         }
       })
-      const result = middleware(req) as NextResponse
-      expect(result?.headers.get('x-middleware-rewrite')).toContain('/fr/')
+      const result = middleware(req)
+      expect(result).toEqual(NextResponse.next())
     })
 
-    it('should handle simple language codes', () => {
+    it('should ignore simple language codes without path locale', () => {
       const req = createMockRequest('/watch/jesus.html', {
         headers: { 'accept-language': 'fr' }
       })
-      const result = middleware(req) as NextResponse
-      expect(result?.headers.get('x-middleware-rewrite')).toContain('/fr/')
+      const result = middleware(req)
+      expect(result).toEqual(NextResponse.next())
     })
 
-    it('should handle unsupported languages by using default', () => {
+    it('should not rewrite for unsupported languages when no path locale', () => {
       const req = createMockRequest('/watch/jesus.html', {
         headers: { 'accept-language': 'xx-XX' }
       })
@@ -156,20 +126,20 @@ describe('middleware', () => {
   })
 
   describe('geolocation handling', () => {
-    it('should handle Cloudflare country headers', () => {
+    it('should ignore Cloudflare country headers without path locale', () => {
       const req = createMockRequest('/watch/jesus.html', {
         headers: { 'cf-ipcountry': 'FR' }
       })
-      const result = middleware(req) as NextResponse
-      expect(result?.headers.get('x-middleware-rewrite')).toContain('/fr/')
+      const result = middleware(req)
+      expect(result).toEqual(NextResponse.next())
     })
 
-    it('should handle Vercel country headers', () => {
+    it('should ignore Vercel country headers without path locale', () => {
       const req = createMockRequest('/watch/jesus.html', {
         headers: { 'x-vercel-ip-country': 'FR' }
       })
-      const result = middleware(req) as NextResponse
-      expect(result?.headers.get('x-middleware-rewrite')).toContain('/fr/')
+      const result = middleware(req)
+      expect(result).toEqual(NextResponse.next())
     })
 
     it('should handle unsupported country codes by using default', () => {

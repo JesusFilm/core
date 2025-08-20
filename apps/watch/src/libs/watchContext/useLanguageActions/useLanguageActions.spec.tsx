@@ -16,7 +16,11 @@ const mockSetCookie = setCookie as jest.MockedFunction<typeof setCookie>
 
 describe('useLanguageActions', () => {
   const mockReload = jest.fn()
-  const mockRouter = { reload: mockReload } as unknown as NextRouter
+  const mockRouter = {
+    reload: mockReload,
+    asPath: '/watch/english.html',
+    push: jest.fn()
+  } as unknown as NextRouter
 
   const defaultInitialState: WatchInitialState = {
     siteLanguage: 'en',
@@ -90,10 +94,9 @@ describe('useLanguageActions', () => {
         result.current.actions.updateSiteLanguage('es')
       })
 
-      expect(mockSetCookie).toHaveBeenCalledWith('NEXT_LOCALE', 'es')
       expect(mockSetCookie).toHaveBeenCalledWith('AUDIO_LANGUAGE', '530')
       expect(mockSetCookie).toHaveBeenCalledWith('SUBTITLE_LANGUAGE', '530')
-      expect(mockSetCookie).toHaveBeenCalledTimes(3)
+      expect(mockSetCookie).toHaveBeenCalledTimes(2)
     })
 
     it('should fallback to current language IDs when selected language not found', async () => {
@@ -126,7 +129,6 @@ describe('useLanguageActions', () => {
         result.current.actions.updateSiteLanguage('de')
       })
 
-      expect(mockSetCookie).toHaveBeenCalledWith('NEXT_LOCALE', 'de')
       expect(mockSetCookie).toHaveBeenCalledWith('AUDIO_LANGUAGE', '529') // fallback to current
       expect(mockSetCookie).toHaveBeenCalledWith('SUBTITLE_LANGUAGE', '529') // fallback to current
     })
@@ -207,7 +209,6 @@ describe('useLanguageActions', () => {
         result.current.actions.updateSiteLanguage('es')
       })
 
-      expect(mockSetCookie).toHaveBeenCalledWith('NEXT_LOCALE', 'es')
       expect(mockSetCookie).toHaveBeenCalledWith('AUDIO_LANGUAGE', '529')
       expect(mockSetCookie).toHaveBeenCalledWith('SUBTITLE_LANGUAGE', '529')
     })

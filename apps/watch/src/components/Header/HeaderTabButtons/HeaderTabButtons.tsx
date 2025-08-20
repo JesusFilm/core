@@ -18,10 +18,43 @@ import JourneysIcon from '@core/shared/ui/icons/Journeys'
 import Play1Icon from '@core/shared/ui/icons/Play1'
 import TerminalIcon from '@core/shared/ui/icons/Terminal'
 
+import { LANGUAGE_MAPPINGS } from '../../../libs/localeMapping'
+
+/**
+ * Determines the correct Videos link based on the current URL query parameters.
+ * For inner pages with language slugs, returns /watch/{languageSlug}
+ * Otherwise returns /watch
+ */
+function getVideosLink(query: Record<string, string | string[]>): string {
+  // Check all query values for language slugs
+  const queryValues = Object.values(query).flat()
+
+  // Find if there's a language slug in the query values
+  for (const value of queryValues) {
+    if (typeof value === 'string') {
+      const cleanValue = value.replace(/\.html$/, '')
+      const mapping = Object.values(LANGUAGE_MAPPINGS).find((m) =>
+        m.languageSlugs.includes(cleanValue)
+      )
+
+      if (mapping) {
+        // Found a language slug, return the watch path with that language
+        return `/watch/${cleanValue}`
+      }
+    }
+  }
+
+  // No language slug found, return /watch
+  return '/watch'
+}
+
 export function HeaderTabButtons(): ReactElement {
   const { strategies, journeys } = useFlags()
   const { t } = useTranslation('apps-watch')
   const router = useRouter()
+  const videosLink = router?.query
+    ? getVideosLink(router.query as Record<string, string | string[]>)
+    : '/watch'
 
   const headerItems = compact([
     strategies
@@ -38,7 +71,7 @@ export function HeaderTabButtons(): ReactElement {
           href: '/journeys'
         }
       : undefined,
-    { label: t('Videos', { lng: 'en' }), icon: <Play1Icon />, href: '/watch' }
+    { label: t('Videos', { lng: 'en' }), icon: <Play1Icon />, href: videosLink }
   ])
 
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
