@@ -9,8 +9,8 @@ export const UserInviteRef = builder.prismaObject('UserInvite', {
     journeyId: t.exposeID('journeyId', { nullable: false }),
     senderId: t.exposeID('senderId', { nullable: false }),
     email: t.exposeString('email', { nullable: false }),
-    acceptedAt: t.expose('acceptedAt', { type: 'DateTime' }),
-    removedAt: t.expose('removedAt', { type: 'DateTime' })
+    acceptedAt: t.expose('acceptedAt', { type: 'DateTime', nullable: true }),
+    removedAt: t.expose('removedAt', { type: 'DateTime', nullable: true })
   })
 })
 

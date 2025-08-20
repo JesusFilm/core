@@ -1,7 +1,4 @@
-import { prisma } from '@core/prisma/journeys/client'
-
 import { builder } from '../builder'
-import { JourneyNotificationRef } from '../journeyNotification/journeyNotification'
 import { UserRef } from '../user'
 
 import { UserJourneyRole } from './enums/userJourneyRole'
@@ -25,24 +22,6 @@ export const UserJourneyRef = builder.prismaObject('UserJourney', {
         id: userJourney.userId
       })
     }),
-    journeyNotification: t.field({
-      type: JourneyNotificationRef,
-      nullable: true,
-      resolve: async (userJourney) => {
-        const journeyNotification = await prisma.userJourney
-          .findUnique({
-            where: { id: userJourney.id }
-          })
-          .then((uj) =>
-            uj
-              ? prisma.journeyNotification.findUnique({
-                  where: { userJourneyId: uj.id }
-                })
-              : null
-          )
-
-        return journeyNotification
-      }
-    })
+    journeyNotification: t.relation('journeyNotification', { nullable: true })
   })
 })

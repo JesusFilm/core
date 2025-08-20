@@ -5,8 +5,8 @@ export const ChatButtonUpdateInput = builder.inputType(
   'ChatButtonUpdateInput',
   {
     fields: (t) => ({
-      link: t.string(),
-      platform: t.field({ type: MessagePlatform })
+      link: t.string({ required: false }),
+      platform: t.field({ type: MessagePlatform, required: false })
     })
   }
 )

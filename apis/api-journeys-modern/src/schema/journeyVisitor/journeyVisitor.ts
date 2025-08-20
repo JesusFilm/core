@@ -81,6 +81,9 @@ builder.asEntity(JourneyVisitorRef, {
   ),
   resolveReference: async (journeyVisitor) => {
     return await prisma.journeyVisitor.findUnique({
+      include: {
+        visitor: true
+      },
       where: {
         journeyId_visitorId: {
           visitorId: journeyVisitor.visitorId,
