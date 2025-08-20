@@ -4264,14 +4264,14 @@ input JourneyTemplateInput @join__type(graph: API_JOURNEYS)  @join__type(graph: 
   template: Boolean
 }
 
-input JourneyCollectionCreateInput @join__type(graph: API_JOURNEYS)  {
+input JourneyCollectionCreateInput @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
   id: ID
   teamId: String!
   title: String
   journeyIds: [String!]
 }
 
-input JourneyCollectionUpdateInput @join__type(graph: API_JOURNEYS)  {
+input JourneyCollectionUpdateInput @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
   title: String
   journeyIds: [String!]
 }
@@ -4288,7 +4288,7 @@ input JourneyEventsFilter @join__type(graph: API_JOURNEYS)  @join__type(graph: A
   periodRangeEnd: DateTime
 }
 
-input JourneyNotificationUpdateInput @join__type(graph: API_JOURNEYS)  {
+input JourneyNotificationUpdateInput @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
   journeyId: ID!
   visitorInteractionEmail: Boolean!
 }

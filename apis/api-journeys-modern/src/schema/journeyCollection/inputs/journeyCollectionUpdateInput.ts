@@ -5,7 +5,7 @@ export const JourneyCollectionUpdateInput = builder.inputType(
   {
     fields: (t) => ({
       title: t.string({ required: false }),
-      journeyIds: t.idList({ required: false })
+      journeyIds: t.stringList({ required: false })
     })
   }
 )

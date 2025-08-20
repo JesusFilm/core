@@ -5,9 +5,9 @@ export const JourneyCollectionCreateInput = builder.inputType(
   {
     fields: (t) => ({
       id: t.id({ required: false }),
-      teamId: t.id({ required: true }),
+      teamId: t.string({ required: true }),
       title: t.string({ required: false }),
-      journeyIds: t.idList({ required: false })
+      journeyIds: t.stringList({ required: false })
     })
   }
 )

@@ -648,6 +648,18 @@ type JourneyCollection
   journeys: [Journey!]
 }
 
+input JourneyCollectionCreateInput {
+  id: ID
+  teamId: String!
+  title: String
+  journeyIds: [String!]
+}
+
+input JourneyCollectionUpdateInput {
+  title: String
+  journeyIds: [String!]
+}
+
 input JourneyCreateInput {
   """
   ID should be unique Response UUID (Provided for optimistic mutation result matching)
@@ -732,6 +744,11 @@ type JourneyNotification
   journeyId: ID!
   userTeamId: ID
   userJourneyId: ID
+  visitorInteractionEmail: Boolean!
+}
+
+input JourneyNotificationUpdateInput {
+  journeyId: ID!
   visitorInteractionEmail: Boolean!
 }
 
