@@ -57,7 +57,7 @@ type CloudflareImage {
 
 type CloudflareR2 {
   id: ID!
-  contentLength: Int!
+  contentLength: String!
   contentType: String!
   fileName: String!
   originalFilename: String
@@ -71,8 +71,10 @@ type CloudflareR2 {
 input CloudflareR2CreateInput {
   id: String
 
-  """the size of the file that is being uploaded"""
-  contentLength: Int!
+  """
+  the size of the file that is being uploaded (as string to support large files)
+  """
+  contentLength: String!
 
   """the type of file that is being uploaded. e.g. image or video/mp4"""
   contentType: String!
@@ -843,7 +845,7 @@ type Video
   variantLanguagesWithSlug(input: VideoVariantFilter): [LanguageWithSlug!]!
   variants(input: VideoVariantFilter): [VideoVariant!]!
   subtitles(languageId: ID, primary: Boolean, edition: String): [VideoSubtitle!]!
-  variant(languageId: ID, input: VideoVariantFilter): VideoVariant
+  variant(languageId: ID, input: VideoVariantFilter): VideoVariant @deprecated(reason: "Use variants instead")
   images(aspectRatio: ImageAspectRatio): [CloudflareImage!]!
   restrictDownloadPlatforms: [Platform!]!
   restrictViewPlatforms: [Platform!]!
