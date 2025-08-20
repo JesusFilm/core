@@ -62,10 +62,7 @@ export async function deleteR2File(fileName: string): Promise<void> {
 builder.prismaObject('CloudflareR2', {
   fields: (t) => ({
     id: t.exposeID('id', { nullable: false }),
-    contentLength: t.string({
-      nullable: false,
-      resolve: (parent) => parent.contentLength.toString()
-    }),
+    contentLength: t.exposeString('contentLength', { nullable: false }),
     contentType: t.exposeString('contentType', { nullable: false }),
     fileName: t.exposeString('fileName', { nullable: false }),
     originalFilename: t.exposeString('originalFilename'),
