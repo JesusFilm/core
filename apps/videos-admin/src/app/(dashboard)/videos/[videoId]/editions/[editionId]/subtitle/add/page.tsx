@@ -131,7 +131,7 @@ export default function SubtitleCreate({
               fileName: fileName,
               originalFilename: vttFile.name,
               contentType: vttFile.type,
-              contentLength: vttFile.size
+              contentLength: vttFile.size.toString()
             }
           },
           context: {
@@ -171,7 +171,7 @@ export default function SubtitleCreate({
               fileName: fileName,
               originalFilename: srtFile.name,
               contentType: srtFile.type,
-              contentLength: srtFile.size
+              contentLength: srtFile.size.toString()
             }
           },
           context: {

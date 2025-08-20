@@ -379,7 +379,7 @@ export default function AddVideoVariantDownloadDialog({
             fileName: `${videoId}/variants/${languageId}/downloads/${variantId}_${values.quality}${extension}`,
             originalFilename: values.file.name,
             contentType: uploadedFile.type,
-            contentLength: uploadedFile.size
+            contentLength: uploadedFile.size.toString()
           }
         }
       })

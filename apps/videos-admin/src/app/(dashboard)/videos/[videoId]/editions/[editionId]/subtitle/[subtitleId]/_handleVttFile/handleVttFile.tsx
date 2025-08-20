@@ -46,7 +46,7 @@ export async function handleVttFile({
         fileName: fileName,
         originalFilename: vttFile.name,
         contentType: vttFile.type,
-        contentLength: vttFile.size
+        contentLength: vttFile.size.toString()
       }
     },
     context: {

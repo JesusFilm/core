@@ -9,7 +9,7 @@ const createR2AssetMock = getCreateR2AssetMock({
   fileName: 'test.txt',
   originalFilename: 'test.txt',
   contentType: 'text/vtt',
-  contentLength: 100
+  contentLength: '100'
 })
 
 describe('useCreateR2AssetMutation', () => {
@@ -28,7 +28,7 @@ describe('useCreateR2AssetMutation', () => {
             fileName: 'test.txt',
             originalFilename: 'test.txt',
             contentType: 'text/vtt',
-            contentLength: 100
+            contentLength: '100'
           }
         }
       })

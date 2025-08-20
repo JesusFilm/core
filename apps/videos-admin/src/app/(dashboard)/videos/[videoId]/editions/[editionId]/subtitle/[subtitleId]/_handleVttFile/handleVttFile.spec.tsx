@@ -43,7 +43,7 @@ describe('handleVttFile', () => {
           fileName: expect.any(String),
           originalFilename: mockFile.name,
           contentType: mockFile.type,
-          contentLength: mockFile.size
+          contentLength: mockFile.size.toString()
         }
       },
       context: {

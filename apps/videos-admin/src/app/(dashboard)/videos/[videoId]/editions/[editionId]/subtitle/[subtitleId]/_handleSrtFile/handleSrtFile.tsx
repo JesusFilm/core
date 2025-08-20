@@ -46,7 +46,7 @@ export async function handleSrtFile({
         fileName: fileName,
         originalFilename: srtFile.name,
         contentType: srtFile.type,
-        contentLength: srtFile.size
+        contentLength: srtFile.size.toString()
       }
     },
     context: {

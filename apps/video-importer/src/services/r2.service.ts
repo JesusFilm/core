@@ -46,10 +46,9 @@ export async function createR2Asset({
   contentType: string
   originalFilename: string
   videoId: string
-  contentLength: number
+  contentLength: string
 }): Promise<R2Asset> {
   const client = await getGraphQLClient()
-  const safeContentLength = contentLength > 2_147_483_647 ? -1 : contentLength
   const data: { cloudflareR2Create: R2Asset } = await client.request(
     CREATE_CLOUDFLARE_R2_ASSET,
     {
@@ -58,7 +57,7 @@ export async function createR2Asset({
         contentType,
         originalFilename,
         videoId,
-        contentLength: safeContentLength
+        contentLength
       }
     }
   )
@@ -86,7 +85,7 @@ export async function uploadToR2({
   bucket: string
   filePath: string
   contentType: string
-  contentLength: number
+  contentLength: string // string to support large files
 }) {
   // Extract the key from the uploadUrl for multipart uploads
   const url = new URL(uploadUrl)

@@ -133,7 +133,7 @@ describe('SubtitleCreate', () => {
               videoId: mockVideoId,
               fileName: expect.any(String),
               contentType: expect.any(String),
-              contentLength: expect.any(Number)
+              contentLength: expect.any(String)
             }
           }
         },

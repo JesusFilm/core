@@ -41,7 +41,7 @@ jest.mock(
 const createR2AssetMock = getCreateR2AssetMock({
   fileName: `video-id/variants/language-id/videos/uuidv4/language-id_video-id.mp4`,
   contentType: 'video/mp4',
-  contentLength: 4, // File(['test']) has length 4
+  contentLength: '4', // File(['test']) has length 4
   originalFilename: 'test.mp4',
   videoId: 'video-id'
 })
@@ -136,7 +136,7 @@ const createR2AssetErrorMock = {
     query: getCreateR2AssetMock({
       fileName: `video-id/variants/language-id/videos/uuidv4/language-id_video-id.mp4`,
       contentType: 'video/mp4',
-      contentLength: 4,
+      contentLength: '4',
       originalFilename: 'test.mp4',
       videoId: 'video-id'
     }).request.query,
@@ -144,7 +144,7 @@ const createR2AssetErrorMock = {
       input: {
         fileName: `video-id/variants/language-id/videos/uuidv4/language-id_video-id.mp4`,
         contentType: 'video/mp4',
-        contentLength: 4,
+        contentLength: '4',
         originalFilename: 'test.mp4',
         videoId: 'video-id'
       }

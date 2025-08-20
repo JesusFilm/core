@@ -114,7 +114,8 @@ async function main() {
       const filePath = path.join(folderPath, file)
       const contentType = 'video/mp4'
       const originalFilename = file
-      const { size: contentLength } = await promises.stat(filePath)
+      const { size } = await promises.stat(filePath)
+      const contentLength = size.toString()
 
       console.log('   🔎 Reading video metadata...')
       let metadata
@@ -231,7 +232,8 @@ async function main() {
       const filePath = path.join(folderPath, file)
       const contentType = file.endsWith('.srt') ? 'text/srt' : 'text/vtt'
       const originalFilename = file
-      const { size: contentLength } = await promises.stat(filePath)
+      const { size } = await promises.stat(filePath)
+      const contentLength = size.toString()
 
       console.log('   ☁️  Preparing Cloudflare R2 asset for subtitle...')
 
@@ -303,7 +305,8 @@ async function main() {
     try {
       const filePath = path.join(folderPath, file)
       const contentType = 'audio/aac'
-      const { size: contentLength } = await promises.stat(filePath)
+      const { size } = await promises.stat(filePath)
+      const contentLength = size.toString()
 
       // Extract audio metadata
       let audioMetadata

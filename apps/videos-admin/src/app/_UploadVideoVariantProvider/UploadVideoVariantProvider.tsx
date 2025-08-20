@@ -319,7 +319,7 @@ export function UploadVideoVariantProvider({
             fileName: `${videoId}/variants/${languageId}/videos/${uuidv4()}/${videoVariantId}${extension}`,
             contentType: file.type,
             originalFilename: file.name,
-            contentLength: file.size,
+            contentLength: file.size.toString(),
             videoId
           }
         }
