@@ -314,6 +314,10 @@ async function createVideoVariant({
     throw new Error(`Video not found: ${videoId}`)
   }
 
+  if (!videoInfo.slug) {
+    throw new Error(`Video slug not found: ${videoId}`)
+  }
+
   const slug =
     existingVariant?.slug ||
     (await getLanguageSlug(videoInfo.slug, languageId, logger))
