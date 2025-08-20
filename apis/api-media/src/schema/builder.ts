@@ -62,7 +62,7 @@ export const builder = new SchemaBuilder<{
   Scalars: {
     Date: { Input: Date; Output: Date }
     ID: { Input: string; Output: number | string }
-    BigInt: { Input: bigint; Output: bigint }
+    BigInt: { Input: number | bigint; Output: number | bigint }
   }
 }>({
   plugins: [
