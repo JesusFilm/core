@@ -1,7 +1,7 @@
 import { getAuth, signInWithEmailAndPassword } from 'firebase/auth'
 import { GraphQLClient } from 'graphql-request'
 
-import { firebaseClient } from '../services/firebase'
+import { firebaseClient } from '../firebaseClient'
 
 const GRAPHQL_ENDPOINT = process.env.GRAPHQL_ENDPOINT
 if (!GRAPHQL_ENDPOINT) {

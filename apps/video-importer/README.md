@@ -89,60 +89,14 @@ Before you can use the Video Importer binary, make sure you have the following:
      ```sh
      ./video-importer --dry-run
      ```
-   - To skip retrying failed files (only process new files):
-     ```sh
-     ./video-importer --skip-retry
-     ```
 
 3. **Troubleshoot as Necessary**
    - Review the output in your terminal for any errors or warnings.
    - Common issues:
      - Incorrect file naming or unsupported file types/extensions
-     - Missing required environment variables
+     - Missing required environment variables (see below)
      - Network or authentication errors
-     - Video doesn't exist in the database (see Common Issues below)
-       - Fix any issues and re-run the executable as needed.
-
----
-
-## File Status Tracking & Automatic Retry
-
-The video importer automatically tracks the processing status of your files to avoid reprocessing and enable easy retries:
-
-### File Renaming Behavior
-
-- **Successful files** are renamed with `.completed` extension
-
-  - `video.mp4` → `video.mp4.completed`
-  - `subtitle.srt` → `subtitle.srt.completed`
-  - `audio.aac` → `audio.aac.completed`
-
-- **Failed files** are renamed with `.failed` extension
-  - `video.mp4` → `video.mp4.failed`
-  - `subtitle.srt` → `subtitle.srt.failed`
-  - `audio.aac` → `audio.aac.failed`
-
-### Automatic Retry Logic
-
-- **First run**: Processes all valid files in the folder
-- **Subsequent runs**:
-  - ✅ Skips `.completed` files (already processed successfully)
-  - 🔄 Automatically retries `.failed` files
-  - 🆕 Processes any new files
-- **With `--skip-retry`**: Only processes new files, ignores `.failed` files
-
-This means you can safely re-run the importer without worrying about duplicate processing or losing track of what failed.
-
-### Managing Failed Files
-
-If you want to manually handle failed files:
-
-1. **Review failures**: Check the console output for specific error messages
-2. **Fix issues**: Address problems (e.g., create missing videos in database)
-3. **Retry**: Run the importer again to automatically retry failed files
-4. **Skip retries**: Use `--skip-retry` to only process new files
-
----
+   - Fix any issues and re-run the executable as needed.
 
 ## Example Usage
 
@@ -153,66 +107,6 @@ If you want to manually handle failed files:
 ```sh
 ./video-importer --dry-run
 ```
-
----
-
-## Common Issues & Troubleshooting
-
-### "Foreign key constraint violated" Error
-
-**Error message:** `Foreign key constraint violated on the constraint: CloudflareR2_videoId_fkey`
-
-**Cause:** The video with the specified ID doesn't exist in the database.
-
-**Solution:**
-
-1. Verify the video ID from your filename is correct
-2. Ensure the video has been created in the system before importing assets
-3. Contact the team to create the missing video record
-
-**Example:**
-
-- Filename: `1_jf6113---ot---23924.mp4`
-- Video ID: `1_jf6113` ← This video must exist in the database first
-
-### Authentication/Permission Errors
-
-**Error message:** `User not found` or `Authorization failed`
-
-**Cause:** Invalid credentials or insufficient permissions.
-
-**Solution:**
-
-1. Check that your `.env` file is in the same directory as the executable
-2. Verify your authentication credentials are correct
-3. Ensure your user account has "publisher" permissions
-
-### Network/Upload Errors
-
-**Error message:** Connection timeouts or R2 upload failures
-
-**Cause:** Network connectivity or Cloudflare R2 configuration issues.
-
-**Solution:**
-
-1. Check your internet connection
-2. Verify Cloudflare R2 credentials in the `.env` file
-3. Ensure firewall allows outbound connections
-
-### File Format/Naming Errors
-
-**Error message:** `No valid files found` or processing skipped
-
-**Cause:** Files don't match the required naming convention or format.
-
-**Solution:**
-
-1. Double-check file naming follows the exact pattern:
-   - Videos: `<videoId>---<edition>---<languageId>.mp4`
-   - Subtitles: `<videoId>---<edition>---<languageId>.(srt|vtt)`
-   - Audio: `<languageId>.aac`
-2. Ensure file extensions are lowercase
-3. Verify no extra spaces or special characters
 
 ---
 
