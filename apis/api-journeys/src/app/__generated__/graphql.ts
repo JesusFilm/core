@@ -152,7 +152,8 @@ export enum VideoBlockObjectFit {
 export enum ButtonAction {
     NavigateToBlockAction = "NavigateToBlockAction",
     LinkAction = "LinkAction",
-    EmailAction = "EmailAction"
+    EmailAction = "EmailAction",
+    PhoneAction = "PhoneAction"
 }
 
 export enum MessagePlatform {
@@ -296,6 +297,11 @@ export class BlockUpdateActionInput {
     url?: Nullable<string>;
     target?: Nullable<string>;
     blockId?: Nullable<string>;
+}
+
+export class PhoneActionInput {
+    gtmEventName?: Nullable<string>;
+    phone: string;
 }
 
 export class BlocksFilter {
@@ -987,6 +993,14 @@ export class EmailAction implements Action {
     parentStepId?: Nullable<string>;
 }
 
+export class PhoneAction implements Action {
+    __typename?: 'PhoneAction';
+    parentBlockId: string;
+    parentBlock: Block;
+    gtmEventName?: Nullable<string>;
+    phone: string;
+}
+
 export abstract class IMutation {
     __typename?: 'IMutation';
 
@@ -997,6 +1011,8 @@ export abstract class IMutation {
     abstract blockUpdateLinkAction(id: string, input: LinkActionInput, journeyId?: Nullable<string>): LinkAction | Promise<LinkAction>;
 
     abstract blockUpdateEmailAction(id: string, input: EmailActionInput, journeyId?: Nullable<string>): EmailAction | Promise<EmailAction>;
+
+    abstract blockUpdatePhoneAction(id: string, input: PhoneActionInput, journeyId?: Nullable<string>): PhoneAction | Promise<PhoneAction>;
 
     abstract blockUpdateAction(id: string, input?: Nullable<BlockUpdateActionInput>): Action | Promise<Action>;
 

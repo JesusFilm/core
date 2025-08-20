@@ -68,6 +68,12 @@ export interface CardCtaCreate_title {
   settings: CardCtaCreate_title_settings | null;
 }
 
+export interface CardCtaCreate_button1_action_PhoneAction {
+  __typename: "PhoneAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+}
+
 export interface CardCtaCreate_button1_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
   parentBlockId: string;
@@ -89,7 +95,7 @@ export interface CardCtaCreate_button1_action_EmailAction {
   email: string;
 }
 
-export type CardCtaCreate_button1_action = CardCtaCreate_button1_action_NavigateToBlockAction | CardCtaCreate_button1_action_LinkAction | CardCtaCreate_button1_action_EmailAction;
+export type CardCtaCreate_button1_action = CardCtaCreate_button1_action_PhoneAction | CardCtaCreate_button1_action_NavigateToBlockAction | CardCtaCreate_button1_action_LinkAction | CardCtaCreate_button1_action_EmailAction;
 
 export interface CardCtaCreate_button1_settings {
   __typename: "ButtonBlockSettings";
@@ -135,6 +141,12 @@ export interface CardCtaCreate_endIcon1 {
   iconColor: IconColor | null;
 }
 
+export interface CardCtaCreate_button1Update_action_PhoneAction {
+  __typename: "PhoneAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+}
+
 export interface CardCtaCreate_button1Update_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
   parentBlockId: string;
@@ -156,7 +168,7 @@ export interface CardCtaCreate_button1Update_action_EmailAction {
   email: string;
 }
 
-export type CardCtaCreate_button1Update_action = CardCtaCreate_button1Update_action_NavigateToBlockAction | CardCtaCreate_button1Update_action_LinkAction | CardCtaCreate_button1Update_action_EmailAction;
+export type CardCtaCreate_button1Update_action = CardCtaCreate_button1Update_action_PhoneAction | CardCtaCreate_button1Update_action_NavigateToBlockAction | CardCtaCreate_button1Update_action_LinkAction | CardCtaCreate_button1Update_action_EmailAction;
 
 export interface CardCtaCreate_button1Update_settings {
   __typename: "ButtonBlockSettings";
@@ -182,6 +194,12 @@ export interface CardCtaCreate_button1Update {
   settings: CardCtaCreate_button1Update_settings | null;
 }
 
+export interface CardCtaCreate_button2_action_PhoneAction {
+  __typename: "PhoneAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+}
+
 export interface CardCtaCreate_button2_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
   parentBlockId: string;
@@ -203,7 +221,7 @@ export interface CardCtaCreate_button2_action_EmailAction {
   email: string;
 }
 
-export type CardCtaCreate_button2_action = CardCtaCreate_button2_action_NavigateToBlockAction | CardCtaCreate_button2_action_LinkAction | CardCtaCreate_button2_action_EmailAction;
+export type CardCtaCreate_button2_action = CardCtaCreate_button2_action_PhoneAction | CardCtaCreate_button2_action_NavigateToBlockAction | CardCtaCreate_button2_action_LinkAction | CardCtaCreate_button2_action_EmailAction;
 
 export interface CardCtaCreate_button2_settings {
   __typename: "ButtonBlockSettings";
@@ -249,6 +267,12 @@ export interface CardCtaCreate_endIcon2 {
   iconColor: IconColor | null;
 }
 
+export interface CardCtaCreate_button2Update_action_PhoneAction {
+  __typename: "PhoneAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+}
+
 export interface CardCtaCreate_button2Update_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
   parentBlockId: string;
@@ -270,7 +294,7 @@ export interface CardCtaCreate_button2Update_action_EmailAction {
   email: string;
 }
 
-export type CardCtaCreate_button2Update_action = CardCtaCreate_button2Update_action_NavigateToBlockAction | CardCtaCreate_button2Update_action_LinkAction | CardCtaCreate_button2Update_action_EmailAction;
+export type CardCtaCreate_button2Update_action = CardCtaCreate_button2Update_action_PhoneAction | CardCtaCreate_button2Update_action_NavigateToBlockAction | CardCtaCreate_button2Update_action_LinkAction | CardCtaCreate_button2Update_action_EmailAction;
 
 export interface CardCtaCreate_button2Update_settings {
   __typename: "ButtonBlockSettings";
@@ -296,6 +320,12 @@ export interface CardCtaCreate_button2Update {
   settings: CardCtaCreate_button2Update_settings | null;
 }
 
+export interface CardCtaCreate_button3_action_PhoneAction {
+  __typename: "PhoneAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+}
+
 export interface CardCtaCreate_button3_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
   parentBlockId: string;
@@ -317,7 +347,7 @@ export interface CardCtaCreate_button3_action_EmailAction {
   email: string;
 }
 
-export type CardCtaCreate_button3_action = CardCtaCreate_button3_action_NavigateToBlockAction | CardCtaCreate_button3_action_LinkAction | CardCtaCreate_button3_action_EmailAction;
+export type CardCtaCreate_button3_action = CardCtaCreate_button3_action_PhoneAction | CardCtaCreate_button3_action_NavigateToBlockAction | CardCtaCreate_button3_action_LinkAction | CardCtaCreate_button3_action_EmailAction;
 
 export interface CardCtaCreate_button3_settings {
   __typename: "ButtonBlockSettings";
@@ -363,6 +393,12 @@ export interface CardCtaCreate_endIcon3 {
   iconColor: IconColor | null;
 }
 
+export interface CardCtaCreate_button3Update_action_PhoneAction {
+  __typename: "PhoneAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+}
+
 export interface CardCtaCreate_button3Update_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
   parentBlockId: string;
@@ -384,7 +420,7 @@ export interface CardCtaCreate_button3Update_action_EmailAction {
   email: string;
 }
 
-export type CardCtaCreate_button3Update_action = CardCtaCreate_button3Update_action_NavigateToBlockAction | CardCtaCreate_button3Update_action_LinkAction | CardCtaCreate_button3Update_action_EmailAction;
+export type CardCtaCreate_button3Update_action = CardCtaCreate_button3Update_action_PhoneAction | CardCtaCreate_button3Update_action_NavigateToBlockAction | CardCtaCreate_button3Update_action_LinkAction | CardCtaCreate_button3Update_action_EmailAction;
 
 export interface CardCtaCreate_button3Update_settings {
   __typename: "ButtonBlockSettings";
