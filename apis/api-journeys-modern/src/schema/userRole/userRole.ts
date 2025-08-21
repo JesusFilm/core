@@ -6,11 +6,11 @@ import { builder } from '../builder'
 
 import { Role } from './enums'
 
-// Define UserRole object type
-const UserRoleRef = builder.prismaObject('UserRole', {
+export const UserRoleRef = builder.prismaObject('UserRole', {
+  shareable: true,
   fields: (t) => ({
-    id: t.exposeID('id'),
-    userId: t.exposeID('userId'),
+    id: t.exposeID('id', { nullable: false }),
+    userId: t.exposeID('userId', { nullable: false }),
     roles: t.field({
       type: [Role],
       resolve: (userRole) => userRole.roles
@@ -18,7 +18,6 @@ const UserRoleRef = builder.prismaObject('UserRole', {
   })
 })
 
-// Register as a federated entity
 builder.asEntity(UserRoleRef, {
   key: builder.selection<{ id: string }>('id'),
   resolveReference: async ({ id }) =>
@@ -60,5 +59,3 @@ builder.queryField('getUserRole', (t) =>
     }
   })
 )
-
-export { UserRoleRef }

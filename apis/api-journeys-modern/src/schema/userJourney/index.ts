@@ -1,1 +1,2 @@
-export * from './userJourney'
+import './userJourney'
+import './enums'

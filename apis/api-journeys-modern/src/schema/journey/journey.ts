@@ -1,4 +1,3 @@
-import { subject } from '@casl/ability'
 import { GraphQLError } from 'graphql'
 import isEmpty from 'lodash/isEmpty'
 import omit from 'lodash/omit'
@@ -24,10 +23,11 @@ import {
 import { ThemeMode } from '../block/card/enums/themeMode'
 import { ThemeName } from '../block/card/enums/themeName'
 import { ImageBlock } from '../block/image'
+import { StepBlock } from '../block/step'
 import { builder } from '../builder'
 import { Language } from '../language'
 
-import { IdType, JourneyMenuButtonIcon, JourneyStatus } from './enums'
+import { IdType, JourneyMenuButtonIcon } from './enums'
 import {
   JourneyCreateInput,
   JourneyTemplateInput,
@@ -35,10 +35,8 @@ import {
   JourneysFilter,
   JourneysQueryOptions
 } from './inputs'
-import { journeyAcl } from './journey.acl'
 import { getSimpleJourney, updateSimpleJourney } from './simple'
 
-// Helper interfaces for journey duplication
 interface BlockWithAction {
   id: string
   typename: string
@@ -54,7 +52,6 @@ interface DuplicateStepIds {
   set(key: string, value: string): void
 }
 
-// Define external references for federated types
 const Tag = builder.externalRef('Tag', builder.selection<{ id: string }>('id'))
 
 Tag.implement({
@@ -64,57 +61,45 @@ Tag.implement({
   })
 })
 
-// Import JourneyCollection from the existing schema
-// Note: JourneyCollection is defined as a Prisma object in the schema
-
-// JourneyStatus enum moved to ./enums/journeyStatus.ts
-
-// Input types and enums are now imported from ./inputs/
-
 export const JourneyRef = builder.prismaObject('Journey', {
+  shareable: true,
   fields: (t) => ({
     id: t.exposeID('id', { shareable: true, nullable: false }),
     title: t.exposeString('title', {
-      shareable: true,
       nullable: false,
       description: 'private title for creators'
     }),
     description: t.exposeString('description', {
-      nullable: true,
-      shareable: true
+      nullable: true
     }),
     slug: t.exposeString('slug', { shareable: true, nullable: false }),
     createdAt: t.expose('createdAt', {
       type: 'DateTime',
-      shareable: true,
       nullable: false
     }),
     updatedAt: t.expose('updatedAt', {
       type: 'DateTime',
-      shareable: true,
       nullable: false
     }),
     status: t.field({
       type: 'JourneyStatus',
       nullable: false,
-      shareable: true,
       resolve: (journey) => journey.status
     }),
     languageId: t.exposeString('languageId', {
-      shareable: true,
       nullable: false
     }),
     language: t.field({
       type: Language,
-      shareable: true,
       nullable: false,
       resolve: (journey) => ({ id: journey.languageId ?? '529' })
     }),
     blocks: t.relation('blocks', {
-      shareable: true,
       nullable: true
     }),
-    chatButtons: t.relation('chatButtons'),
+    chatButtons: t.relation('chatButtons', {
+      nullable: false
+    }),
 
     // Date/Timestamp Fields
     archivedAt: t.expose('archivedAt', {
@@ -166,13 +151,16 @@ export const JourneyRef = builder.prismaObject('Journey', {
       type: ImageBlock
     }),
     creatorImageBlock: t.relation('creatorImageBlock', {
-      nullable: true
+      nullable: true,
+      type: ImageBlock
     }),
     logoImageBlock: t.relation('logoImageBlock', {
-      nullable: true
+      nullable: true,
+      type: ImageBlock
     }),
     menuStepBlock: t.relation('menuStepBlock', {
-      nullable: true
+      nullable: true,
+      type: StepBlock
     }),
 
     // Creator and Content Fields

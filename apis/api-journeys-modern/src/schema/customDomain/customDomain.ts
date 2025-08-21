@@ -1,27 +1,26 @@
 import { GraphQLError } from 'graphql'
 import omit from 'lodash/omit'
 
-import { prisma } from '../../lib/prisma'
+import { prisma } from '@core/prisma/journeys/client'
+
 import { builder } from '../builder'
 
 import { CustomDomainCreateInput, CustomDomainUpdateInput } from './inputs'
 
-// CustomDomain Type using Prisma model
-const CustomDomainRef = builder.prismaObject('CustomDomain', {
+export const CustomDomainRef = builder.prismaObject('CustomDomain', {
+  shareable: true,
   fields: (t) => ({
-    id: t.exposeID('id'),
-    name: t.exposeString('name'),
-    apexName: t.exposeString('apexName'),
-    routeAllTeamJourneys: t.exposeBoolean('routeAllTeamJourneys'),
-    // Relations
-    team: t.relation('team'),
+    id: t.exposeID('id', { nullable: false }),
+    name: t.exposeString('name', { nullable: false }),
+    apexName: t.exposeString('apexName', { nullable: false }),
+    routeAllTeamJourneys: t.exposeBoolean('routeAllTeamJourneys', {
+      nullable: false
+    }),
+    team: t.relation('team', { nullable: false }),
     journeyCollection: t.relation('journeyCollection', { nullable: true })
   })
 })
 
-// Input types are now imported from ./inputs/
-
-// Helper function to validate domain format
 function isDomainValid(domain: string): boolean {
   return (
     domain.match(

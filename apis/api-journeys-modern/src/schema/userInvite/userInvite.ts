@@ -10,16 +10,15 @@ import { builder } from '../builder'
 
 import { UserInviteCreateInput } from './inputs'
 
-const UserInviteRef = builder.prismaObject('UserInvite', {
+export const UserInviteRef = builder.prismaObject('UserInvite', {
+  shareable: true,
   fields: (t) => ({
-    id: t.exposeID('id'),
-    journeyId: t.exposeID('journeyId'),
-    senderId: t.exposeID('senderId'),
-    email: t.exposeString('email'),
+    id: t.exposeID('id', { nullable: false }),
+    journeyId: t.exposeID('journeyId', { nullable: false }),
+    senderId: t.exposeID('senderId', { nullable: false }),
+    email: t.exposeString('email', { nullable: false }),
     acceptedAt: t.expose('acceptedAt', { type: 'DateTime', nullable: true }),
-    removedAt: t.expose('removedAt', { type: 'DateTime', nullable: true }),
-    updatedAt: t.expose('updatedAt', { type: 'DateTime' }),
-    journey: t.relation('journey')
+    removedAt: t.expose('removedAt', { type: 'DateTime', nullable: true })
   })
 })
 
@@ -271,5 +270,3 @@ builder.mutationField('userInviteAcceptAll', (t) =>
     }
   })
 )
-
-export { UserInviteRef }

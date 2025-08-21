@@ -1,1 +1,2 @@
 import './team'
+import './inputs'

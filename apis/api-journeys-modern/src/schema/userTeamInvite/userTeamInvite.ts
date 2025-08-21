@@ -11,19 +11,12 @@ import { builder } from '../builder'
 import { UserTeamInviteCreateInput } from './inputs'
 import { UserTeamInviteService } from './userTeamInvite.service'
 
-// Define UserTeamInvite object type
-const UserTeamInviteRef = builder.prismaObject('UserTeamInvite', {
+export const UserTeamInviteRef = builder.prismaObject('UserTeamInvite', {
+  shareable: true,
   fields: (t) => ({
-    id: t.exposeID('id'),
-    teamId: t.exposeID('teamId'),
-    email: t.exposeString('email'),
-    senderId: t.exposeID('senderId'),
-    receipientId: t.exposeID('receipientId', { nullable: true }),
-    acceptedAt: t.expose('acceptedAt', { type: 'DateTime', nullable: true }),
-    removedAt: t.expose('removedAt', { type: 'DateTime', nullable: true }),
-    createdAt: t.expose('createdAt', { type: 'DateTime' }),
-    updatedAt: t.expose('updatedAt', { type: 'DateTime' }),
-    team: t.relation('team')
+    id: t.exposeID('id', { nullable: false }),
+    teamId: t.exposeID('teamId', { nullable: false }),
+    email: t.exposeString('email', { nullable: false })
   })
 })
 
@@ -274,5 +267,3 @@ builder.mutationField('userTeamInviteAcceptAll', (t) =>
     }
   })
 )
-
-export { UserTeamInviteRef }

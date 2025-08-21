@@ -6,19 +6,22 @@ import { builder } from '../builder'
 
 import { JourneyNotificationUpdateInput } from './inputs'
 
-const JourneyNotificationRef = builder.prismaObject('JourneyNotification', {
-  fields: (t) => ({
-    id: t.exposeID('id'),
-    userId: t.exposeID('userId'),
-    journeyId: t.exposeID('journeyId'),
-    userTeamId: t.exposeID('userTeamId', { nullable: true }),
-    userJourneyId: t.exposeID('userJourneyId', { nullable: true }),
-    visitorInteractionEmail: t.exposeBoolean('visitorInteractionEmail'),
-    journey: t.relation('journey'),
-    userTeam: t.relation('userTeam', { nullable: true }),
-    userJourney: t.relation('userJourney', { nullable: true })
-  })
-})
+export const JourneyNotificationRef = builder.prismaObject(
+  'JourneyNotification',
+  {
+    shareable: true,
+    fields: (t) => ({
+      id: t.exposeID('id', { nullable: false }),
+      userId: t.exposeID('userId', { nullable: false }),
+      journeyId: t.exposeID('journeyId', { nullable: false }),
+      userTeamId: t.exposeID('userTeamId', { nullable: true }),
+      userJourneyId: t.exposeID('userJourneyId', { nullable: true }),
+      visitorInteractionEmail: t.exposeBoolean('visitorInteractionEmail', {
+        nullable: false
+      })
+    })
+  }
+)
 
 // Helper function to check if user can manage journey notification
 function canManageJourneyNotification(
@@ -117,5 +120,3 @@ builder.mutationField('journeyNotificationUpdate', (t) =>
     }
   })
 )
-
-export { JourneyNotificationRef }

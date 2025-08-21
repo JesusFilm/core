@@ -1,6 +1,6 @@
 import { GraphQLError } from 'graphql'
 
-import { JourneyTheme, prisma } from '@core/prisma/journeys/client'
+import { prisma } from '@core/prisma/journeys/client'
 
 import { Action } from '../../lib/auth/ability'
 import { builder } from '../builder'
@@ -8,17 +8,18 @@ import { builder } from '../builder'
 import { JourneyThemeCreateInput, JourneyThemeUpdateInput } from './inputs'
 import { canAccessJourneyTheme } from './journeyTheme.acl'
 
-const JourneyThemeRef = builder.prismaObject('JourneyTheme', {
+export const JourneyThemeRef = builder.prismaObject('JourneyTheme', {
+  shareable: true,
   fields: (t) => ({
-    id: t.exposeID('id'),
-    journeyId: t.exposeID('journeyId'),
-    userId: t.exposeID('userId'),
+    id: t.exposeID('id', { nullable: false }),
+    journeyId: t.exposeID('journeyId', { nullable: false }),
+    userId: t.exposeID('userId', { nullable: false }),
     headerFont: t.exposeString('headerFont', { nullable: true }),
     bodyFont: t.exposeString('bodyFont', { nullable: true }),
     labelFont: t.exposeString('labelFont', { nullable: true }),
-    createdAt: t.expose('createdAt', { type: 'DateTime' }),
-    updatedAt: t.expose('updatedAt', { type: 'DateTime' }),
-    journey: t.relation('journey')
+    createdAt: t.expose('createdAt', { type: 'DateTime', nullable: false }),
+    updatedAt: t.expose('updatedAt', { type: 'DateTime', nullable: false }),
+    journey: t.relation('journey', { nullable: false })
   })
 })
 

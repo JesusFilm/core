@@ -1,24 +1,14 @@
-import { prisma } from '../../lib/prisma'
+import { prisma } from '@core/prisma/journeys/client'
+
 import { builder } from '../builder'
 import { MessagePlatform } from '../enums'
 
-const ChatButtonCreateInput = builder.inputType('ChatButtonCreateInput', {
-  fields: (t) => ({
-    link: t.string({ required: true }),
-    platform: t.field({ type: MessagePlatform, required: true })
-  })
-})
+import { ChatButtonCreateInput, ChatButtonUpdateInput } from './inputs'
 
-const ChatButtonUpdateInput = builder.inputType('ChatButtonUpdateInput', {
+export const ChatButtonRef = builder.prismaObject('ChatButton', {
+  shareable: true,
   fields: (t) => ({
-    link: t.string({ required: true }),
-    platform: t.field({ type: MessagePlatform, required: true })
-  })
-})
-
-const ChatButtonRef = builder.prismaObject('ChatButton', {
-  fields: (t) => ({
-    id: t.exposeID('id'),
+    id: t.exposeID('id', { nullable: false }),
     link: t.exposeString('link'),
     platform: t.field({
       type: MessagePlatform,

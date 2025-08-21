@@ -6,16 +6,17 @@ import { Prisma, prisma } from '@core/prisma/journeys/client'
 
 import { builder } from '../builder'
 import { MessagePlatform } from '../enums'
+import { JourneyVisitorRef } from '../journeyVisitor/journeyVisitor'
 
 import { JourneyVisitorSort, VisitorStatus } from './enums'
 import { JourneyVisitorFilter, VisitorUpdateInput } from './inputs'
-import { UserAgentRef } from './types'
+import { UserAgentRef } from './userAgent'
 
-// Define Visitor type using Prisma model
-const VisitorRef = builder.prismaObject('Visitor', {
+export const VisitorRef = builder.prismaObject('Visitor', {
+  shareable: true,
   fields: (t) => ({
-    id: t.exposeID('id'),
-    createdAt: t.expose('createdAt', { type: 'DateTime' }),
+    id: t.exposeID('id', { nullable: false }),
+    createdAt: t.expose('createdAt', { type: 'DateTime', nullable: false }),
     duration: t.exposeInt('duration'),
     lastChatStartedAt: t.expose('lastChatStartedAt', {
       type: 'DateTime',
@@ -51,83 +52,7 @@ const VisitorRef = builder.prismaObject('Visitor', {
       nullable: true
     }),
     referrer: t.exposeString('referrer', { nullable: true }),
-    phone: t.exposeString('phone', { nullable: true }),
-    teamId: t.exposeString('teamId'),
-    userId: t.exposeString('userId'),
-    updatedAt: t.expose('updatedAt', { type: 'DateTime' }),
-    // Relations
-    team: t.relation('team'),
-    journeyVisitors: t.relation('journeyVisitors'),
-    events: t.relation('events')
-  })
-})
-
-// Define JourneyVisitor type using Prisma model
-const JourneyVisitorRef = builder.prismaObject('JourneyVisitor', {
-  fields: (t) => ({
-    id: t.exposeID('id'),
-    journeyId: t.exposeString('journeyId'),
-    visitorId: t.exposeString('visitorId'),
-    createdAt: t.expose('createdAt', { type: 'DateTime' }),
-    duration: t.exposeInt('duration'),
-    lastChatStartedAt: t.expose('lastChatStartedAt', {
-      type: 'DateTime',
-      nullable: true
-    }),
-    lastChatPlatform: t.expose('lastChatPlatform', {
-      type: MessagePlatform,
-      nullable: true
-    }),
-    lastStepViewedAt: t.expose('lastStepViewedAt', {
-      type: 'DateTime',
-      nullable: true
-    }),
-    lastLinkAction: t.exposeString('lastLinkAction', { nullable: true }),
-    lastTextResponse: t.exposeString('lastTextResponse', { nullable: true }),
-    lastRadioQuestion: t.exposeString('lastRadioQuestion', { nullable: true }),
-    lastRadioOptionSubmission: t.exposeString('lastRadioOptionSubmission', {
-      nullable: true
-    }),
-    activityCount: t.exposeInt('activityCount'),
-    updatedAt: t.expose('updatedAt', { type: 'DateTime' }),
-    // Additional fields from visitor relation for convenience
-    countryCode: t.field({
-      type: 'String',
-      nullable: true,
-      resolve: async (journeyVisitor) => {
-        const visitor = await prisma.visitor.findUnique({
-          where: { id: journeyVisitor.visitorId },
-          select: { countryCode: true }
-        })
-        return visitor?.countryCode || null
-      }
-    }),
-    messagePlatform: t.field({
-      type: MessagePlatform,
-      nullable: true,
-      resolve: async (journeyVisitor) => {
-        const visitor = await prisma.visitor.findUnique({
-          where: { id: journeyVisitor.visitorId },
-          select: { messagePlatform: true }
-        })
-        return visitor?.messagePlatform || null
-      }
-    }),
-    notes: t.field({
-      type: 'String',
-      nullable: true,
-      resolve: async (journeyVisitor) => {
-        const visitor = await prisma.visitor.findUnique({
-          where: { id: journeyVisitor.visitorId },
-          select: { notes: true }
-        })
-        return visitor?.notes || null
-      }
-    }),
-    // Relations
-    journey: t.relation('journey'),
-    visitor: t.relation('visitor'),
-    events: t.relation('events')
+    events: t.relation('events', { nullable: false })
   })
 })
 
@@ -485,3 +410,12 @@ builder.mutationField('visitorUpdateForCurrentUser', (t) =>
     }
   })
 )
+
+builder.asEntity(VisitorRef, {
+  key: builder.selection<{ id: string }>('id'),
+  resolveReference: async (visitor) => {
+    return await prisma.visitor.findUnique({
+      where: { id: visitor.id }
+    })
+  }
+})

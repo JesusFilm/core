@@ -1,15 +1,16 @@
 import { GraphQLError } from 'graphql'
 
-import { JourneyProfile, prisma } from '@core/prisma/journeys/client'
+import { prisma } from '@core/prisma/journeys/client'
 
 import { builder } from '../builder'
 
 import { JourneyProfileUpdateInput } from './inputs'
 
-const JourneyProfileRef = builder.prismaObject('JourneyProfile', {
+export const JourneyProfileRef = builder.prismaObject('JourneyProfile', {
+  shareable: true,
   fields: (t) => ({
-    id: t.exposeID('id'),
-    userId: t.exposeID('userId'),
+    id: t.exposeID('id', { nullable: false }),
+    userId: t.exposeID('userId', { nullable: false }),
     acceptedTermsAt: t.expose('acceptedTermsAt', {
       type: 'DateTime',
       nullable: true

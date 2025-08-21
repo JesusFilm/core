@@ -13,12 +13,14 @@ import { UserRef } from '../user/user'
 import { UserJourneyRole } from './enums/userJourneyRole'
 import { UserJourneyService } from './userJourney.service'
 
-const UserJourneyRef = builder.prismaObject('UserJourney', {
+export const UserJourneyRef = builder.prismaObject('UserJourney', {
+  shareable: true,
   fields: (t) => ({
-    id: t.exposeID('id'),
-    userId: t.exposeID('userId'),
-    journeyId: t.exposeID('journeyId'),
+    id: t.exposeID('id', { nullable: false }),
+    userId: t.exposeID('userId', { nullable: false }),
+    journeyId: t.exposeID('journeyId', { nullable: false }),
     role: t.field({
+      nullable: false,
       type: UserJourneyRole,
       resolve: (userJourney) => userJourney.role
     }),
@@ -30,25 +32,7 @@ const UserJourneyRef = builder.prismaObject('UserJourney', {
         id: userJourney.userId
       })
     }),
-    journeyNotification: t.field({
-      type: JourneyNotificationRef,
-      nullable: true,
-      resolve: async (userJourney) => {
-        const journeyNotification = await prisma.userJourney
-          .findUnique({
-            where: { id: userJourney.id }
-          })
-          .then((uj) =>
-            uj
-              ? prisma.journeyNotification.findUnique({
-                  where: { userJourneyId: uj.id }
-                })
-              : null
-          )
-
-        return journeyNotification
-      }
-    })
+    journeyNotification: t.relation('journeyNotification', { nullable: true })
   })
 })
 

@@ -12,14 +12,16 @@ const emailSchema = z.object({
   email: z.string().email('Invalid email format')
 })
 
-// JourneysEmailPreference object type
-const JourneysEmailPreferenceRef = builder.prismaObject(
+export const JourneysEmailPreferenceRef = builder.prismaObject(
   'JourneysEmailPreference',
   {
+    shareable: true,
     fields: (t) => ({
-      email: t.exposeString('email'),
-      unsubscribeAll: t.exposeBoolean('unsubscribeAll'),
-      accountNotifications: t.exposeBoolean('accountNotifications')
+      email: t.exposeString('email', { nullable: false }),
+      unsubscribeAll: t.exposeBoolean('unsubscribeAll', { nullable: false }),
+      accountNotifications: t.exposeBoolean('accountNotifications', {
+        nullable: false
+      })
     })
   }
 )

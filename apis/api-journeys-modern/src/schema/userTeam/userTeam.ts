@@ -6,25 +6,25 @@ import {
 } from '@core/prisma/journeys/client'
 
 import { builder } from '../builder'
-import { JourneyNotificationRef } from '../journeyNotification/journeyNotification'
-import { UserRef } from '../user/user'
+import { JourneyNotificationRef } from '../journeyNotification'
+import { UserRef } from '../user'
 
 import { UserTeamRole } from './enums'
 import { UserTeamFilterInput, UserTeamUpdateInput } from './inputs'
 
-const UserTeamRef = builder.prismaObject('UserTeam', {
+export const UserTeamRef = builder.prismaObject('UserTeam', {
+  shareable: true,
   fields: (t) => ({
-    id: t.exposeID('id'),
-    teamId: t.exposeID('teamId'),
-    userId: t.exposeID('userId'),
+    id: t.exposeID('id', { nullable: false }),
     role: t.field({
+      nullable: false,
       type: UserTeamRole,
       resolve: (userTeam) => userTeam.role
     }),
-    createdAt: t.expose('createdAt', { type: 'DateTime' }),
-    updatedAt: t.expose('updatedAt', { type: 'DateTime' }),
-    team: t.relation('team'),
+    createdAt: t.expose('createdAt', { type: 'DateTime', nullable: false }),
+    updatedAt: t.expose('updatedAt', { type: 'DateTime', nullable: false }),
     user: t.field({
+      nullable: false,
       type: UserRef,
       resolve: (userTeam) => ({
         id: userTeam.userId
@@ -36,23 +36,15 @@ const UserTeamRef = builder.prismaObject('UserTeam', {
       args: {
         journeyId: t.arg.id({ required: true })
       },
-      resolve: async (userTeam, args) => {
-        const { journeyId } = args
-        const journeyNotifications = await prisma.userTeam
-          .findUnique({
-            where: { id: userTeam.id }
-          })
-          .then((ut) =>
-            ut
-              ? prisma.journeyNotification.findMany({
-                  where: {
-                    userTeamId: ut.id,
-                    journeyId
-                  }
-                })
-              : []
-          )
 
+      select: (args) => ({
+        journeyNotifications: {
+          where: {
+            journeyId: args.journeyId
+          }
+        }
+      }),
+      resolve: async ({ journeyNotifications }) => {
         return journeyNotifications[0] || null
       }
     })
@@ -235,5 +227,3 @@ builder.mutationField('userTeamDelete', (t) =>
     }
   })
 )
-
-export { UserTeamRef }

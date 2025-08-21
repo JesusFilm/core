@@ -7,6 +7,10 @@ import { Action } from '../../lib/auth/ability'
 import { builder } from '../builder'
 import { JourneyRef } from '../journey/journey'
 
+import {
+  JourneyCollectionCreateInput,
+  JourneyCollectionUpdateInput
+} from './inputs'
 import { canAccessJourneyCollection } from './journeyCollection.acl'
 
 // Helper function to fetch journey collection with team info for ACL
@@ -21,64 +25,29 @@ async function fetchJourneyCollectionWithAclIncludes(where: { id: string }) {
   })
 }
 
-// JourneyCollection Type
 export const JourneyCollectionRef = builder.prismaObject('JourneyCollection', {
-  description: 'A collection of journeys associated with a team',
+  shareable: true,
   fields: (t) => ({
-    id: t.exposeID('id'),
+    id: t.exposeID('id', { nullable: false }),
     title: t.exposeString('title', { nullable: true }),
-    team: t.relation('team'),
-    customDomains: t.relation('customDomains'),
+    team: t.relation('team', { nullable: false }),
+    customDomains: t.relation('customDomains', { nullable: true }),
     journeys: t.field({
       type: [JourneyRef],
-      resolve: async (journeyCollection) => {
-        const journeys = await prisma.journey.findMany({
-          where: {
-            journeyCollectionJourneys: {
-              some: { journeyCollectionId: journeyCollection.id }
-            }
-          },
+      select: {
+        journeyCollectionJourneys: {
           include: {
-            journeyCollectionJourneys: {
-              where: { journeyCollectionId: journeyCollection.id },
-              orderBy: { order: 'asc' }
-            }
-          }
-        })
-
-        // Sort journeys by their order in the collection
-        return journeys.sort((a, b) => {
-          const orderA = a.journeyCollectionJourneys[0]?.order ?? 0
-          const orderB = b.journeyCollectionJourneys[0]?.order ?? 0
-          return orderA - orderB
-        })
+            journey: true
+          },
+          orderBy: { order: 'asc' }
+        }
+      },
+      resolve: async ({ journeyCollectionJourneys }) => {
+        return journeyCollectionJourneys.map((jcj) => jcj.journey)
       }
     })
   })
 })
-
-// Input Types
-const JourneyCollectionCreateInput = builder.inputType(
-  'JourneyCollectionCreateInput',
-  {
-    fields: (t) => ({
-      id: t.id({ required: false }),
-      teamId: t.id({ required: true }),
-      title: t.string({ required: false }),
-      journeyIds: t.idList({ required: false })
-    })
-  }
-)
-
-const JourneyCollectionUpdateInput = builder.inputType(
-  'JourneyCollectionUpdateInput',
-  {
-    fields: (t) => ({
-      title: t.string({ required: false }),
-      journeyIds: t.idList({ required: false })
-    })
-  }
-)
 
 // Query: Get single journey collection
 builder.queryField('journeyCollection', (t) =>

@@ -1,1 +1,4 @@
-export * from './journeyCollection'
+import './inputs'
+import './journeyCollection'
+
+export { JourneyCollectionRef } from './journeyCollection'

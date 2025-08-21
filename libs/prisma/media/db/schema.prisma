@@ -64,22 +64,22 @@ model MuxVideo {
 }
 
 model CloudflareR2 {
-  id                   String                @id @default(uuid())
-  fileName             String
-  originalFilename     String?
-  uploadUrl            String?
-  userId               String
-  publicUrl            String?
-  videoId              String?
-  contentType          String                @default("application/octet-stream")
-  contentLength        Int                   @default(0)
-  createdAt            DateTime              @default(now())
-  updatedAt            DateTime              @default(now()) @updatedAt
-  video                Video?                @relation(fields: [videoId], references: [id])
-  videoVariant         VideoVariant?
-  videoVariantDownload VideoVariantDownload?
-  videoSubtitleSrt     VideoSubtitle?        @relation("SrtAsset")
-  videoSubtitleVtt     VideoSubtitle?        @relation("VttAsset")
+  id                    String                 @id @default(uuid())
+  fileName              String
+  originalFilename      String?
+  uploadUrl             String?
+  userId                String
+  publicUrl             String?
+  videoId               String?
+  contentType           String                 @default("application/octet-stream")
+  contentLength         BigInt                 @default(0)
+  createdAt             DateTime               @default(now())
+  updatedAt             DateTime               @default(now()) @updatedAt
+  video                 Video?                 @relation(fields: [videoId], references: [id])
+  videoVariant          VideoVariant?
+  videoVariantDownloads VideoVariantDownload[]
+  videoSubtitleSrt      VideoSubtitle?         @relation("SrtAsset")
+  videoSubtitleVtt      VideoSubtitle?         @relation("VttAsset")
 
   @@index(videoId(type: Hash))
   @@index(userId(type: Hash))
@@ -180,7 +180,7 @@ model VideoVariantDownload {
   bitrate        Int?
   version        Int                         @default(1)
   url            String
-  assetId        String?                     @unique
+  assetId        String?
   asset          CloudflareR2?               @relation(fields: [assetId], references: [id])
   videoVariantId String?
   videoVariant   VideoVariant?               @relation(fields: [videoVariantId], references: [id], onDelete: Cascade)
