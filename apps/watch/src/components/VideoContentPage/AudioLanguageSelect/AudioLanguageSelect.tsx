@@ -1,13 +1,12 @@
 import AddOutlined from '@mui/icons-material/AddOutlined'
 import KeyboardArrowDownOutlined from '@mui/icons-material/KeyboardArrowDownOutlined'
 import LanguageOutlined from '@mui/icons-material/LanguageOutlined'
-import { useTranslation } from 'next-i18next'
 import dynamic from 'next/dynamic'
+import { useTranslation } from 'next-i18next'
 import { ReactElement, useState } from 'react'
 
-import { Select, SelectTrigger, SelectValue } from '../../Select'
-
 import { useVideo } from '../../../libs/videoContext'
+import { Select, SelectTrigger, SelectValue } from '../../Select'
 
 const DynamicAudoLanguageSelectContent = dynamic(
   async () =>

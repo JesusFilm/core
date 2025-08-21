@@ -1,12 +1,13 @@
 import { useQuery } from '@apollo/client'
+import compact from 'lodash/compact'
+
 import {
   GetLanguagesSlug,
   GetLanguagesSlug_video_variantLanguagesWithSlug_language as Language
 } from '../../../../../__generated__/GetLanguagesSlug'
-import { SelectContent } from '../../../Select'
 import { useVideo } from '../../../../libs/videoContext'
-import compact from 'lodash/compact'
 import { GET_LANGUAGES_SLUG } from '../../../AudioLanguageDialog'
+import { SelectContent } from '../../../Select'
 
 export function AudoLanguageSelectContent() {
   const { id, container } = useVideo()

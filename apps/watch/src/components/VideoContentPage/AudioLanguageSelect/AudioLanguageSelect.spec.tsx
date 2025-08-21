@@ -1,11 +1,12 @@
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 
-import { VideoProvider } from '../../../libs/videoContext'
-import { videos } from '../../Videos/__generated__/testData'
-import { GET_LANGUAGES_SLUG } from '../../AudioLanguageDialog'
-import { AudioLanguageSelect } from './AudioLanguageSelect'
 import { GetLanguagesSlug } from '../../../../__generated__/GetLanguagesSlug'
+import { VideoProvider } from '../../../libs/videoContext'
+import { GET_LANGUAGES_SLUG } from '../../AudioLanguageDialog'
+import { videos } from '../../Videos/__generated__/testData'
+
+import { AudioLanguageSelect } from './AudioLanguageSelect'
 
 jest.mock('next-i18next', () => ({
   useTranslation: () => ({

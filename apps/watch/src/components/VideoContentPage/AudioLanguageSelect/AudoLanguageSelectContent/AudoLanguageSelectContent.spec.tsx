@@ -1,12 +1,13 @@
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 
-import { VideoProvider } from '../../../../libs/videoContext'
-import { videos } from '../../../Videos/__generated__/testData'
-import { GET_LANGUAGES_SLUG } from '../../../AudioLanguageDialog'
-import { AudoLanguageSelectContent } from './AudoLanguageSelectContent'
 import { GetLanguagesSlug } from '../../../../../__generated__/GetLanguagesSlug'
+import { VideoProvider } from '../../../../libs/videoContext'
+import { GET_LANGUAGES_SLUG } from '../../../AudioLanguageDialog'
 import { Select, SelectTrigger } from '../../../Select'
+import { videos } from '../../../Videos/__generated__/testData'
+
+import { AudoLanguageSelectContent } from './AudoLanguageSelectContent'
 
 describe('AudoLanguageSelectContent', () => {
   const mockVideo = videos[0]
