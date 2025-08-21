@@ -102,10 +102,24 @@ describe('SubtitlesSelect', () => {
 
   const mockT = jest.fn((key: string) => key)
 
+  const originalPointerEvent = window.PointerEvent
+
   beforeEach(() => {
     useRouterMock.mockReturnValue(mockRouter)
     useTranslationMock.mockReturnValue({ t: mockT })
     jest.clearAllMocks()
+
+    Object.defineProperty(window, 'PointerEvent', {
+      writable: true,
+      value: null
+    })
+  })
+
+  afterEach(() => {
+    Object.defineProperty(window, 'PointerEvent', {
+      writable: true,
+      value: originalPointerEvent
+    })
   })
 
   it('should render all components correctly', () => {
@@ -718,11 +732,21 @@ describe('SubtitlesSelect', () => {
     )
 
     expect(screen.getByText('autoSubtitle: true')).toBeInTheDocument()
-    const checkbox = screen.getByRole('checkbox')
+    const checkbox = screen.getByRole('checkbox') as HTMLInputElement
     expect(checkbox).toBeChecked()
 
+    // Ensure checkbox is not disabled
+    expect(checkbox.disabled).toBe(false)
+
+    // Click the checkbox to toggle autoSubtitle
     await user.click(checkbox)
 
-    expect(screen.getByText('autoSubtitle: false')).toBeInTheDocument()
+    // Wait for the state update to be reflected in the UI
+    await waitFor(
+      () => {
+        expect(screen.getByText('autoSubtitle: false')).toBeInTheDocument()
+      },
+      { timeout: 3000 }
+    )
   })
 })

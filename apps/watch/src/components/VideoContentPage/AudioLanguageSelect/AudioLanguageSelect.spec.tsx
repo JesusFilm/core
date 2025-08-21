@@ -103,6 +103,10 @@ describe('AudioLanguageSelect', () => {
     container: mockContainer
   }
 
+  beforeEach(() => {
+    jest.clearAllMocks()
+  })
+
   it('should render the language selector with current language', async () => {
     const result = jest.fn().mockReturnValue({ ...getLanguagesSlugMock.result })
 
