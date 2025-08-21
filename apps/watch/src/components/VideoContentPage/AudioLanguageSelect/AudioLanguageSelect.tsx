@@ -2,49 +2,25 @@ import AddOutlined from '@mui/icons-material/AddOutlined'
 import KeyboardArrowDownOutlined from '@mui/icons-material/KeyboardArrowDownOutlined'
 import LanguageOutlined from '@mui/icons-material/LanguageOutlined'
 import { useTranslation } from 'next-i18next'
-import { ReactElement, useCallback } from 'react'
-import { gql, useQuery } from '@apollo/client'
-import compact from 'lodash/compact'
+import dynamic from 'next/dynamic'
+import { ReactElement, useState } from 'react'
 
-import { Select, SelectContent, SelectTrigger, SelectValue } from '../../Select'
+import { Select, SelectTrigger, SelectValue } from '../../Select'
 
 import { useVideo } from '../../../libs/videoContext'
-import {
-  GetLanguagesSlug,
-  GetLanguagesSlug_video_variantLanguagesWithSlug_language as Language
-} from '../../../../__generated__/GetLanguagesSlug'
 
-const GET_LANGUAGES_SLUG = gql`
-  query GetLanguagesSlug($id: ID!) {
-    video(id: $id, idType: databaseId) {
-      variantLanguagesWithSlug {
-        slug
-        language {
-          id
-          slug
-          name {
-            value
-            primary
-          }
-        }
-      }
-    }
-  }
-`
+const DynamicAudoLanguageSelectContent = dynamic(
+  async () =>
+    await import(
+      /* webpackChunkName: "AudoLanguageSelectContent" */
+      './AudoLanguageSelectContent'
+    ).then((mod) => mod.AudoLanguageSelectContent)
+)
 
 export function AudioLanguageSelect(): ReactElement {
   const { t } = useTranslation('apps-watch')
-  const { id, variant, variantLanguagesCount, container } = useVideo()
-
-  const { data } = useQuery<GetLanguagesSlug>(GET_LANGUAGES_SLUG, {
-    variables: {
-      id
-    }
-  })
-
-  const languages = compact(
-    data?.video?.variantLanguagesWithSlug?.map(({ language }) => language)
-  )
+  const { variant, variantLanguagesCount } = useVideo()
+  const [open, setOpen] = useState<boolean | null>(null)
 
   const nativeName = variant?.language?.name.find(
     ({ primary }) => !primary
@@ -53,29 +29,16 @@ export function AudioLanguageSelect(): ReactElement {
     ({ primary }) => primary
   )?.value
 
-  function getLanguageHref(languageId: string): string {
-    const languageSlug = data?.video?.variantLanguagesWithSlug?.find(
-      (languages) => languages.language?.id === languageId
-    )?.slug
-
-    if (languageSlug != null) {
-      return `/watch${
-        container?.slug != null ? `/${container.slug}/` : '/'
-      }${languageSlug}`
-    }
-    return '#'
-  }
-
-  function getNonPrimaryLanguageName(language: Language): string | undefined {
-    // 529 (English) does not have a non-primary language name
-    if (language.id === '529')
-      return language.name.find(({ primary }) => primary)?.value
-    return language.name.find(({ primary }) => !primary)?.value
-  }
-
   return (
-    <Select value={variant?.id}>
+    <Select
+      value={variant?.id}
+      data-testid="AudioLanguageSelect"
+      onOpenChange={(open) => {
+        setOpen(open)
+      }}
+    >
       <SelectTrigger
+        onMouseEnter={() => setOpen(false)}
         data-testid="AudioLanguageSelectTrigger"
         className={`
           border-none
@@ -134,45 +97,7 @@ export function AudioLanguageSelect(): ReactElement {
           <KeyboardArrowDownOutlined fontSize="small" className="text-white" />
         </div>
       </SelectTrigger>
-      <SelectContent className="bg-white border border-gray-200 shadow-lg">
-        {languages?.map((language: Language) => {
-          const href = getLanguageHref(language.id)
-          return (
-            <a
-              key={language.id}
-              href={href}
-              className={`
-                block
-                hover:bg-gray-100
-                focus:bg-gray-100
-                data-[highlighted]:bg-gray-100
-                data-[state=checked]:bg-blue-50
-                data-[state=checked]:text-blue-900
-                cursor-pointer
-                p-2
-                rounded
-              `}
-            >
-              <div className="flex items-center gap-1">
-                <span
-                  className="text-sm text-black font-sans"
-                  data-testid="AudioLanguageSelectNonPrimaryLanguageName"
-                >
-                  {getNonPrimaryLanguageName(language)}
-                </span>
-                {language.name.find(({ primary }) => primary)?.value && (
-                  <span
-                    className="text-xs text-gray-600 font-sans"
-                    data-testid="AudioLanguageSelectPrimaryLanguageName"
-                  >
-                    ({language.name.find(({ primary }) => primary)?.value})
-                  </span>
-                )}
-              </div>
-            </a>
-          )
-        })}
-      </SelectContent>
+      {open != null && <DynamicAudoLanguageSelectContent />}
     </Select>
   )
 }
