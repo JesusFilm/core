@@ -1,5 +1,11 @@
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
-import { render, screen, waitFor } from '@testing-library/react'
+import {
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+  within
+} from '@testing-library/react'
 import { useRouter } from 'next/router'
 import { useTranslation } from 'next-i18next'
 
@@ -131,7 +137,7 @@ describe('AudioTrackSelect', () => {
     )
 
     // Should render main elements
-    expect(screen.getByText('Audio Track')).toBeInTheDocument()
+    expect(screen.getByText('Language')).toBeInTheDocument()
     expect(screen.getByRole('combobox')).toBeInTheDocument()
     expect(document.querySelector('svg')).toBeInTheDocument() // SpatialAudioOffOutlinedIcon
   })
@@ -222,7 +228,7 @@ describe('AudioTrackSelect', () => {
     // Should not display any native name since no language matches audioLanguage or path slug
     expect(screen.queryByText('English Native')).not.toBeInTheDocument()
     // But should still render the basic components
-    expect(screen.getByText('Audio Track')).toBeInTheDocument()
+    expect(screen.getByText('Language')).toBeInTheDocument()
   })
 
   it('should use path slug when currentAudioLanguage is undefined and audioLanguage does not match', () => {
@@ -289,7 +295,7 @@ describe('AudioTrackSelect', () => {
 
     // Should display Spanish native name since path slug 'spanish' matches
     expect(screen.getByText('Español')).toBeInTheDocument()
-    expect(screen.getByText('Audio Track')).toBeInTheDocument()
+    expect(screen.getByText('Language')).toBeInTheDocument()
   })
 
   it('should prioritize currentAudioLanguage over path slug', async () => {
@@ -375,7 +381,7 @@ describe('AudioTrackSelect', () => {
     await waitFor(() => {
       expect(screen.getByText('Español')).toBeInTheDocument()
       expect(screen.queryByText('English Native')).not.toBeInTheDocument()
-      expect(screen.getByText('Audio Track')).toBeInTheDocument()
+      expect(screen.getByText('Language')).toBeInTheDocument()
     })
   })
 
@@ -398,7 +404,7 @@ describe('AudioTrackSelect', () => {
 
     // Should not display any native name since allLanguages is falsy
     expect(screen.queryByText('English Native')).not.toBeInTheDocument()
-    expect(screen.getByText('Audio Track')).toBeInTheDocument()
+    expect(screen.getByText('Language')).toBeInTheDocument()
   })
 
   it('should handle language with missing non-primary name', () => {
@@ -434,7 +440,7 @@ describe('AudioTrackSelect', () => {
     )
 
     // Should not crash and should render basic components
-    expect(screen.getByText('Audio Track')).toBeInTheDocument()
+    expect(screen.getByText('Language')).toBeInTheDocument()
     // Native name area should be empty or not show anything problematic
   })
 
@@ -472,7 +478,7 @@ describe('AudioTrackSelect', () => {
 
     // Should display the native name in the top right
     expect(screen.getByText('Native Only')).toBeInTheDocument()
-    expect(screen.getByText('Audio Track')).toBeInTheDocument()
+    expect(screen.getByText('Language')).toBeInTheDocument()
   })
 
   it('should handle when preferred language is available for video', async () => {
@@ -548,7 +554,7 @@ describe('AudioTrackSelect', () => {
 
     // Wait for selectLanguageForVideo logic to complete
     await waitFor(() => {
-      expect(screen.getByText('Audio Track')).toBeInTheDocument()
+      expect(screen.getByText('Language')).toBeInTheDocument()
       // Should show "2000 translations" since preferred language is available
       expect(screen.getByText('2000 translations')).toBeInTheDocument()
     })
@@ -635,7 +641,7 @@ describe('AudioTrackSelect', () => {
 
     // Wait for selectLanguageForVideo logic to complete
     await waitFor(() => {
-      expect(screen.getByText('Audio Track')).toBeInTheDocument()
+      expect(screen.getByText('Language')).toBeInTheDocument()
       // Should show "Not available in english" since preferred language is not available
       expect(screen.getByText('Not available in english')).toBeInTheDocument()
     })
@@ -679,7 +685,7 @@ describe('AudioTrackSelect', () => {
     )
 
     // Should render with default state when no videoId
-    expect(screen.getByText('Audio Track')).toBeInTheDocument()
+    expect(screen.getByText('Language')).toBeInTheDocument()
     expect(screen.getByRole('combobox')).toBeInTheDocument()
 
     // Should display default helper text
@@ -760,7 +766,7 @@ describe('AudioTrackSelect', () => {
     })
 
     // Verify the component renders correctly after the query
-    expect(screen.getByText('Audio Track')).toBeInTheDocument()
+    expect(screen.getByText('Language')).toBeInTheDocument()
     expect(screen.getByRole('combobox')).toBeInTheDocument()
   })
 
@@ -814,7 +820,7 @@ describe('AudioTrackSelect', () => {
 
       // Wait for component to render
       await waitFor(() => {
-        expect(screen.getByText('Audio Track')).toBeInTheDocument()
+        expect(screen.getByText('Language')).toBeInTheDocument()
       })
 
       // Since we can't directly trigger the onChange event from the LanguageAutocomplete component,
@@ -891,6 +897,19 @@ describe('AudioTrackSelect', () => {
                 primary: true
               }
             ]
+          },
+          {
+            __typename: 'Language' as const,
+            id: '496',
+            slug: 'spanish',
+            bcp47: 'es',
+            name: [
+              {
+                __typename: 'LanguageName' as const,
+                value: 'Spanish',
+                primary: true
+              }
+            ]
           }
         ]
       }
@@ -905,7 +924,12 @@ describe('AudioTrackSelect', () => {
 
       // Wait for component to render
       await waitFor(() => {
-        expect(screen.getByText('Audio Track')).toBeInTheDocument()
+        expect(screen.getByText('Language')).toBeInTheDocument()
+      })
+
+      fireEvent.click(screen.getByRole('combobox'))
+      fireEvent.change(screen.getByRole('combobox'), {
+        target: { value: '496' }
       })
 
       // Verify that instant search index UI state was not updated
@@ -934,6 +958,19 @@ describe('AudioTrackSelect', () => {
                 primary: true
               }
             ]
+          },
+          {
+            __typename: 'Language' as const,
+            id: '496',
+            slug: 'spanish',
+            bcp47: 'es',
+            name: [
+              {
+                __typename: 'LanguageName' as const,
+                value: 'Spanish',
+                primary: true
+              }
+            ]
           }
         ]
       }
@@ -948,7 +985,12 @@ describe('AudioTrackSelect', () => {
 
       // Wait for component to render
       await waitFor(() => {
-        expect(screen.getByText('Audio Track')).toBeInTheDocument()
+        expect(screen.getByText('Language')).toBeInTheDocument()
+      })
+
+      fireEvent.click(screen.getByRole('combobox'))
+      fireEvent.change(screen.getByRole('combobox'), {
+        target: { value: '496' }
       })
 
       // Verify that instant search index UI state was not updated when localName is undefined
@@ -996,7 +1038,7 @@ describe('AudioTrackSelect', () => {
 
       // Wait for component to render
       await waitFor(() => {
-        expect(screen.getByText('Audio Track')).toBeInTheDocument()
+        expect(screen.getByText('Language')).toBeInTheDocument()
       })
 
       // Verify that the component still works without instant search
@@ -1025,6 +1067,24 @@ describe('AudioTrackSelect', () => {
                 primary: true
               }
             ]
+          },
+          {
+            __typename: 'Language' as const,
+            id: '496',
+            slug: 'spanish',
+            bcp47: 'es',
+            name: [
+              {
+                __typename: 'LanguageName' as const,
+                value: 'Español',
+                primary: true
+              },
+              {
+                __typename: 'LanguageName' as const,
+                value: 'Spanish',
+                primary: false
+              }
+            ]
           }
         ]
       }
@@ -1037,18 +1097,24 @@ describe('AudioTrackSelect', () => {
         </MockedProvider>
       )
 
-      // Wait for component to render
+      const input = screen.getByRole('combobox')
+
+      // Simulate typing to trigger async load
+      await fireEvent.change(input, { target: { value: 'Spanish' } })
+
+      // Wait for the dropdown to open
       await waitFor(() => {
-        expect(screen.getByText('Audio Track')).toBeInTheDocument()
+        const listbox = screen.getByRole('listbox')
+        expect(within(listbox).getByText('Spanish')).toBeInTheDocument()
       })
+      fireEvent.click(screen.getByText('Spanish'))
 
       // Verify that the setIndexUiState callback preserves existing state
       const setIndexUiStateCallback = mockSetIndexUiState.mock.calls[0][0]
       const mockPrevState = {
         refinementList: {
-          category: ['movies'],
-          genre: ['action'],
-          existingFilter: ['value']
+          existingFilter: ['value'],
+          languageEnglishName: ['English']
         },
         otherState: 'preserved'
       }
@@ -1056,10 +1122,8 @@ describe('AudioTrackSelect', () => {
       const result = setIndexUiStateCallback(mockPrevState)
       expect(result).toEqual({
         refinementList: {
-          category: ['movies'],
-          genre: ['action'],
           existingFilter: ['value'],
-          languageEnglishName: ['English']
+          languageEnglishName: ['Spanish']
         },
         otherState: 'preserved'
       })

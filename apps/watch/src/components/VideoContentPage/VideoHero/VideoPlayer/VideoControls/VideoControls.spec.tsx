@@ -289,7 +289,7 @@ describe('VideoControls', () => {
 
   it('sets cookie, dispatches action, and opens dialog when subtitle button is clicked', async () => {
     const { getByTestId } = render(
-      <MockedProvider>
+      <MockedProvider mocks={[]}>
         <VideoProvider value={{ content: videos[0] }}>
           <VideoControls player={player} />
         </VideoProvider>
