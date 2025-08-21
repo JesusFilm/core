@@ -1223,7 +1223,7 @@ describe('videoVariant', () => {
           publicUrl: 'publicUrl',
           videoId: 'videoId',
           contentType: 'video/mp4',
-          contentLength: 2000,
+          contentLength: BigInt(2000),
           createdAt: new Date(),
           updatedAt: new Date()
         })
@@ -1409,7 +1409,7 @@ describe('videoVariant', () => {
           publicUrl: 'publicUrl',
           videoId: 'videoId',
           contentType: 'video/mp4',
-          contentLength: 2000,
+          contentLength: BigInt(2000),
           createdAt: new Date(),
           updatedAt: new Date()
         })
