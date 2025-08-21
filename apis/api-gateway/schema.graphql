@@ -103,6 +103,11 @@ A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the `dat
 """
 scalar DateTimeISO @join__type(graph: API_JOURNEYS_MODERN) 
 
+"""
+The `BigInt` scalar type represents non-fractional signed whole numeric values.
+"""
+scalar BigInt @join__type(graph: API_MEDIA) 
+
 type Error implements BaseError @join__type(graph: API_ANALYTICS)  @join__type(graph: API_MEDIA)  @join__implements(graph: API_ANALYTICS, interface: "BaseError")  @join__implements(graph: API_MEDIA, interface: "BaseError")  {
   message: String
 }
@@ -1109,7 +1114,7 @@ type Video @join__type(graph: API_JOURNEYS, key: "id primaryLanguageId", extensi
   variantLanguagesWithSlug(input: VideoVariantFilter) : [LanguageWithSlug!]! @join__field(graph: API_MEDIA) 
   variants(input: VideoVariantFilter) : [VideoVariant!]! @join__field(graph: API_MEDIA) 
   subtitles(languageId: ID, primary: Boolean, edition: String) : [VideoSubtitle!]! @join__field(graph: API_MEDIA) 
-  variant(languageId: ID, input: VideoVariantFilter) : VideoVariant @join__field(graph: API_MEDIA) 
+  variant(languageId: ID, input: VideoVariantFilter) : VideoVariant @join__field(graph: API_MEDIA)  @deprecated(reason: "Use variants instead") 
   images(aspectRatio: ImageAspectRatio) : [CloudflareImage!]! @join__field(graph: API_MEDIA) 
   restrictDownloadPlatforms: [Platform!]! @join__field(graph: API_MEDIA) 
   restrictViewPlatforms: [Platform!]! @join__field(graph: API_MEDIA) 
@@ -2487,7 +2492,7 @@ type CloudflareImage @join__type(graph: API_MEDIA)  {
 
 type CloudflareR2 @join__type(graph: API_MEDIA)  {
   id: ID!
-  contentLength: Int!
+  contentLength: BigInt!
   contentType: String!
   fileName: String!
   originalFilename: String
@@ -4585,7 +4590,7 @@ input CloudflareR2CreateInput @join__type(graph: API_MEDIA)  {
   """
   the size of the file that is being uploaded
   """
-  contentLength: Int!
+  contentLength: BigInt!
   """
   the type of file that is being uploaded. e.g. image or video/mp4
   """

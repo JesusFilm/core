@@ -14,6 +14,8 @@ export type Scalars = {
   Boolean: { input: boolean; output: boolean; }
   Int: { input: number; output: number; }
   Float: { input: number; output: number; }
+  /** The `BigInt` scalar type represents non-fractional signed whole numeric values. */
+  BigInt: { input: any; output: any; }
   /** A date string, such as 2007-12-03, compliant with the `full-date` format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar. */
   Date: { input: any; output: any; }
   /** A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the `date-time` format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar. */
@@ -364,7 +366,7 @@ export type CloudflareImage = {
 
 export type CloudflareR2 = {
   __typename?: 'CloudflareR2';
-  contentLength: Scalars['Int']['output'];
+  contentLength: Scalars['BigInt']['output'];
   contentType: Scalars['String']['output'];
   createdAt: Scalars['Date']['output'];
   fileName: Scalars['String']['output'];
@@ -378,7 +380,7 @@ export type CloudflareR2 = {
 
 export type CloudflareR2CreateInput = {
   /** the size of the file that is being uploaded */
-  contentLength: Scalars['Int']['input'];
+  contentLength: Scalars['BigInt']['input'];
   /** the type of file that is being uploaded. e.g. image or video/mp4 */
   contentType: Scalars['String']['input'];
   /** the name of the file that is being uploaded */
@@ -4543,6 +4545,7 @@ export type Video = {
   studyQuestions: Array<VideoStudyQuestion>;
   subtitles: Array<VideoSubtitle>;
   title: Array<VideoTitle>;
+  /** @deprecated Use variants instead */
   variant?: Maybe<VideoVariant>;
   variantLanguages: Array<Language>;
   variantLanguagesCount: Scalars['Int']['output'];
