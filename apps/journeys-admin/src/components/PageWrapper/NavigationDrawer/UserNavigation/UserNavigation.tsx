@@ -117,6 +117,7 @@ export function UserNavigation({
       {userRoleData?.getUserRole?.roles?.includes(Role.publisher) === true && (
         <NextLink href="/publisher" passHref legacyBehavior>
           <ListItemButton
+            component="a"
             selected={selectedPage === 'publisher'}
             data-testid="NavigationListItemPublisher"
           >

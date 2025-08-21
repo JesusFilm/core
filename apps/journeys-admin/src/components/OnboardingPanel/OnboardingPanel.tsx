@@ -50,6 +50,7 @@ export function OnboardingPanel(): ReactElement {
       <SidePanelContainer border={false}>
         <NextLink href="/templates" passHref legacyBehavior>
           <Button
+            component="a"
             variant="outlined"
             size="small"
             startIcon={<Grid1Icon />}

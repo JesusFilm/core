@@ -1,6 +1,6 @@
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
-import { SnackbarProvider } from 'notistack'
+import React from 'react'
 
 import {
   CheckCustomDomain,
@@ -17,6 +17,16 @@ Object.assign(navigator, {
     writeText
   }
 })
+
+const enqueueSnackbar = jest.fn()
+
+jest.mock('notistack', () => ({
+  __esModule: true,
+  useSnackbar: () => ({ enqueueSnackbar }),
+  SnackbarProvider: ({ children }: { children: React.ReactNode }) => (
+    <>{children}</>
+  )
+}))
 
 const checkCustomDomainMock: (
   customDomainCheck?: Partial<CustomDomainCheck>
@@ -63,12 +73,10 @@ describe('DNSConfigSection', () => {
   })
 
   it('should show copy A value to clipboard', async () => {
-    const { getAllByRole, getByText } = render(
-      <SnackbarProvider>
-        <MockedProvider mocks={[checkCustomDomainMock()]}>
-          <DNSConfigSection customDomain={customDomain} />
-        </MockedProvider>
-      </SnackbarProvider>
+    const { getAllByRole } = render(
+      <MockedProvider mocks={[checkCustomDomainMock()]}>
+        <DNSConfigSection customDomain={customDomain} />
+      </MockedProvider>
     )
     await waitFor(() =>
       expect(getAllByRole('button', { name: 'Copy' })[0]).toBeInTheDocument()
@@ -77,16 +85,19 @@ describe('DNSConfigSection', () => {
     await waitFor(() =>
       expect(navigator.clipboard.writeText).toHaveBeenCalledWith('76.76.21.21')
     )
-    expect(getByText('Copied')).toBeInTheDocument()
+    await waitFor(() =>
+      expect(enqueueSnackbar).toHaveBeenCalledWith('Copied', {
+        variant: 'success',
+        preventDuplicate: true
+      })
+    )
   })
 
   it('should show copy CNAME value to clipboard', async () => {
-    const { getAllByRole, getByText } = render(
-      <SnackbarProvider>
-        <MockedProvider mocks={[checkCustomDomainMock()]}>
-          <DNSConfigSection customDomain={customSubdomain} />
-        </MockedProvider>
-      </SnackbarProvider>
+    const { getAllByRole } = render(
+      <MockedProvider mocks={[checkCustomDomainMock()]}>
+        <DNSConfigSection customDomain={customSubdomain} />
+      </MockedProvider>
     )
     await waitFor(() =>
       expect(getAllByRole('button', { name: 'Copy' })[0]).toBeInTheDocument()
@@ -97,37 +108,40 @@ describe('DNSConfigSection', () => {
         'cname.vercel-dns.com'
       )
     )
-    expect(getByText('Copied')).toBeInTheDocument()
+    await waitFor(() =>
+      expect(enqueueSnackbar).toHaveBeenCalledWith('Copied', {
+        variant: 'success',
+        preventDuplicate: true
+      })
+    )
   })
 
   it('should show copy TXT value to clipboard', async () => {
-    const { getAllByRole, getByText } = render(
-      <SnackbarProvider>
-        <MockedProvider
-          mocks={[
-            checkCustomDomainMock({
-              verified: false,
-              verification: [
-                {
-                  __typename: 'CustomDomainVerification',
-                  type: 'TXT',
-                  domain: '_vercel.example.com',
-                  value: 'vc-domain-verify=example.com,61eb769fc89e3d03578a',
-                  reason: ''
-                }
-              ],
-              verificationResponse: {
-                __typename: 'CustomDomainVerificationResponse',
-                code: 'missing_txt_record',
-                message:
-                  'Domain _vercel.example.com is missing required TXT Record "vc-domain-verify=www.example.com,e886cd36c2ae9464e6b5"'
+    const { getAllByRole } = render(
+      <MockedProvider
+        mocks={[
+          checkCustomDomainMock({
+            verified: false,
+            verification: [
+              {
+                __typename: 'CustomDomainVerification',
+                type: 'TXT',
+                domain: '_vercel.example.com',
+                value: 'vc-domain-verify=example.com,61eb769fc89e3d03578a',
+                reason: ''
               }
-            })
-          ]}
-        >
-          <DNSConfigSection customDomain={customDomain} />
-        </MockedProvider>
-      </SnackbarProvider>
+            ],
+            verificationResponse: {
+              __typename: 'CustomDomainVerificationResponse',
+              code: 'missing_txt_record',
+              message:
+                'Domain _vercel.example.com is missing required TXT Record "vc-domain-verify=www.example.com,e886cd36c2ae9464e6b5"'
+            }
+          })
+        ]}
+      >
+        <DNSConfigSection customDomain={customDomain} />
+      </MockedProvider>
     )
     await waitFor(() =>
       expect(getAllByRole('button', { name: 'Copy' })[0]).toBeInTheDocument()
@@ -138,6 +152,11 @@ describe('DNSConfigSection', () => {
         'vc-domain-verify=example.com,61eb769fc89e3d03578a'
       )
     )
-    expect(getByText('Copied')).toBeInTheDocument()
+    await waitFor(() =>
+      expect(enqueueSnackbar).toHaveBeenCalledWith('Copied', {
+        variant: 'success',
+        preventDuplicate: true
+      })
+    )
   })
 })

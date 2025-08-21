@@ -2,6 +2,7 @@ import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
+import { act } from 'react'
 
 import { TreeBlock } from '@core/journeys/ui/block'
 import {
@@ -69,9 +70,23 @@ describe('Slider', () => {
     jest.clearAllMocks()
   })
 
+  const defaultJourneyFlowMock: MockedResponse<getJourneyFlowBackButtonClicked> =
+    {
+      request: { query: GET_JOURNEY_FLOW_BACK_BUTTON_CLICKED },
+      result: {
+        data: {
+          getJourneyProfile: {
+            __typename: 'JourneyProfile',
+            id: 'userProfile.id',
+            journeyFlowBackButtonClicked: true
+          }
+        }
+      }
+    }
+
   it('renders slides', () => {
     render(
-      <MockedProvider>
+      <MockedProvider mocks={[defaultJourneyFlowMock]}>
         <EditorProvider initialState={state}>
           <Slider />
         </EditorProvider>
@@ -86,7 +101,7 @@ describe('Slider', () => {
 
   it('dispatches SetActiveSlideAction on activeIndexChange', () => {
     render(
-      <MockedProvider>
+      <MockedProvider mocks={[defaultJourneyFlowMock]}>
         <SnackbarProvider>
           <EditorProvider initialState={state}>
             <TestEditorState />
@@ -108,7 +123,7 @@ describe('Slider', () => {
     }
 
     render(
-      <MockedProvider>
+      <MockedProvider mocks={[defaultJourneyFlowMock]}>
         <EditorProvider initialState={contentState}>
           <TestEditorState />
           <Slider />
@@ -117,7 +132,9 @@ describe('Slider', () => {
     )
 
     expect(screen.getByText('activeSlide: 1')).toBeInTheDocument()
-    fireEvent.click(screen.getByTestId('ChevronLeftIcon'))
+    await act(async () => {
+      fireEvent.click(screen.getByTestId('ChevronLeftIcon'))
+    })
     expect(screen.getByText('activeSlide: 0')).toBeInTheDocument()
   })
 
@@ -129,7 +146,7 @@ describe('Slider', () => {
     }
 
     render(
-      <MockedProvider>
+      <MockedProvider mocks={[defaultJourneyFlowMock]}>
         <EditorProvider initialState={contentState}>
           <TestEditorState />
           <Slider />
@@ -139,7 +156,9 @@ describe('Slider', () => {
 
     expect(screen.getByText('activeSlide: 1')).toBeInTheDocument()
     expect(screen.getByText('activeContent: goals')).toBeInTheDocument()
-    fireEvent.click(screen.getByTestId('ChevronLeftIcon'))
+    await act(async () => {
+      fireEvent.click(screen.getByTestId('ChevronLeftIcon'))
+    })
     expect(screen.getByText('activeSlide: 0')).toBeInTheDocument()
     expect(screen.getByText('activeContent: canvas')).toBeInTheDocument()
   })
@@ -153,7 +172,7 @@ describe('Slider', () => {
     }
 
     render(
-      <MockedProvider>
+      <MockedProvider mocks={[defaultJourneyFlowMock]}>
         <EditorProvider initialState={contentState}>
           <TestEditorState />
           <Slider />
@@ -163,7 +182,9 @@ describe('Slider', () => {
 
     expect(screen.getByText('activeSlide: 1')).toBeInTheDocument()
     expect(screen.getByText('activeContent: goals')).toBeInTheDocument()
-    fireEvent.click(screen.getByTestId('ChevronLeftIcon'))
+    await act(async () => {
+      fireEvent.click(screen.getByTestId('ChevronLeftIcon'))
+    })
     expect(screen.getByText('activeSlide: 0')).toBeInTheDocument()
     expect(screen.getByText('activeContent: social')).toBeInTheDocument()
   })
@@ -233,7 +254,9 @@ describe('Slider', () => {
       expect(mockGetJourneyFlowBackButtonClicked.result).toHaveBeenCalled()
     )
     expect(screen.getByText('back to map')).toBeVisible()
-    fireEvent.click(screen.getByTestId('ChevronLeftIcon'))
+    await act(async () => {
+      fireEvent.click(screen.getByTestId('ChevronLeftIcon'))
+    })
     await waitFor(() =>
       expect(mockUpdateJourneyFlowBackButtonClicked.result).toHaveBeenCalled()
     )

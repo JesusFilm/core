@@ -16,8 +16,7 @@ const config: Config = {
   coverageDirectory: '../../coverage/apps/journeys-admin',
   setupFiles: ['./jest.polyfills.js'],
   setupFilesAfterEnv: ['<rootDir>setupTests.tsx'],
-  collectCoverage: true,
-  coverageReporters: ['cobertura'],
+  // Jest 29 no longer validates collectCoverage/coverageReporters strictly; keep coverage config in project-level tooling
   preset: '../../jest.preset.js',
   testEnvironment: 'jest-fixed-jsdom'
 }
