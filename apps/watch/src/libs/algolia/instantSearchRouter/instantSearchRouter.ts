@@ -1,11 +1,7 @@
-import { Router, StateMapping, UiState } from 'instantsearch.js'
+import { UiState } from 'instantsearch.js'
+import { RouterProps } from 'instantsearch.js/es/middlewares'
 import singletonRouter from 'next/router'
 import { createInstantSearchRouterNext } from 'react-instantsearch-router-nextjs'
-
-interface NextRouter {
-  router: Router
-  stateMapping: StateMapping<UiState, UiState>
-}
 
 interface createInstantSearchRouterProps {
   indexName?: string
@@ -27,7 +23,7 @@ export function createInstantSearchRouter({
   serverUrl = process.env.NEXT_PUBLIC_WATCH_URL ?? '',
   mapRefinements = defaultMapRefinements,
   defaults = {}
-}: createInstantSearchRouterProps = {}): NextRouter {
+}: createInstantSearchRouterProps = {}): RouterProps {
   return {
     // Manages the URL paramers with instant search state
     router: createInstantSearchRouterNext({

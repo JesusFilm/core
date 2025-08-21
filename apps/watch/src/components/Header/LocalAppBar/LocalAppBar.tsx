@@ -67,7 +67,7 @@ export function LocalAppBar({
             passHref
             legacyBehavior
             href="https://www.jesusfilm.org/"
-            locale=""
+            locale={false}
           >
             <Box
               data-testid="WatchLogo"

@@ -8,7 +8,7 @@ export function SeeAllVideos(): ReactElement {
   const { t } = useTranslation('apps-watch')
   return (
     <Stack sx={{ pt: '54px', alignItems: 'center' }}>
-      <NextLink href="/watch/videos" passHref legacyBehavior locale="">
+      <NextLink href="/watch/videos" passHref legacyBehavior locale={false}>
         <Button
           size="small"
           color="secondary"

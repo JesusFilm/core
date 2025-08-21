@@ -42,7 +42,7 @@ export function NewVideoContentHeader({
                 href={`/watch/${container.variant?.slug as string}`}
                 passHref
                 legacyBehavior
-                locale=""
+                locale={false}
               >
                 <a className="uppercase text-sm tracking-wider text-primary no-underline">
                   {last(container.title)?.value}
@@ -68,7 +68,7 @@ export function NewVideoContentHeader({
               href={`/watch/${container.variant?.slug as string}`}
               passHref
               legacyBehavior
-              locale=""
+              locale={false}
             >
               <button className="border border-[#bbbcbc] rounded-md px-2 py-1 text-sm text-[#bbbcbc] hidden xl:block cursor-pointer font-bold">
                 {container.label === VideoLabel.featureFilm
