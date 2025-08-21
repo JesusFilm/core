@@ -13,7 +13,7 @@ import TracingPlugin, { isRootField } from '@pothos/plugin-tracing'
 import WithInputPlugin from '@pothos/plugin-with-input'
 import ZodPlugin from '@pothos/plugin-zod'
 import { createOpenTelemetryWrapper } from '@pothos/tracing-opentelemetry'
-import { DateResolver } from 'graphql-scalars'
+import { BigIntResolver, DateResolver } from 'graphql-scalars'
 
 import type PrismaTypes from '@core/prisma/media/__generated__/pothos-types'
 import { MediaRole, Prisma, prisma } from '@core/prisma/media/client'
@@ -62,6 +62,7 @@ export const builder = new SchemaBuilder<{
   Scalars: {
     Date: { Input: Date; Output: Date }
     ID: { Input: string; Output: number | string }
+    BigInt: { Input: number | bigint; Output: number | bigint }
   }
 }>({
   plugins: [
@@ -117,6 +118,7 @@ export const builder = new SchemaBuilder<{
 })
 
 builder.addScalarType('Date', DateResolver)
+builder.addScalarType('BigInt', BigIntResolver)
 
 builder.queryType({})
 

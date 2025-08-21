@@ -280,7 +280,7 @@ describe('video', () => {
           createdAt: new Date(),
           updatedAt: new Date(),
           contentType: 'application/octet-stream',
-          contentLength: 0,
+          contentLength: BigInt(0),
           originalFilename: null
         }
       ],
