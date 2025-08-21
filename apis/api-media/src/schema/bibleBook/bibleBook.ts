@@ -1,6 +1,7 @@
 import compact from 'lodash/compact'
 
-import { prisma } from '../../lib/prisma'
+import { prisma } from '@core/prisma/media/client'
+
 import { builder } from '../builder'
 import { Language } from '../language'
 

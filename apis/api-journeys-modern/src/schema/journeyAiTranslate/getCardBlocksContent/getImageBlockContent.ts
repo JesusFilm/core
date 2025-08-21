@@ -1,4 +1,4 @@
-import { Block } from '.prisma/api-journeys-modern-client'
+import { Block } from '@core/prisma/journeys/client'
 import { getImageDescription } from '@core/shared/ai/getImageDescription'
 
 export async function getImageBlockContent({
