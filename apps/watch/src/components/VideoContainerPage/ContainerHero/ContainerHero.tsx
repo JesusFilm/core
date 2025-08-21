@@ -12,7 +12,7 @@ import { ReactElement } from 'react'
 import { getLabelDetails } from '../../../libs/utils/getLabelDetails/getLabelDetails'
 import { useVideo } from '../../../libs/videoContext'
 import { HeroOverlay } from '../../HeroOverlay'
-import { AudioLanguageSelect } from '../../VideoContentPage/AudioLanguageSelect'
+import { AudioLanguageSelect } from '../AudioLanguageSelect'
 
 interface ContainerHeroProps {
   openDialog: () => void
