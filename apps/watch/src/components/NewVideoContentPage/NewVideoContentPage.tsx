@@ -97,10 +97,13 @@ export function NewVideoContentPage(): ReactElement {
             'If you could ask the creator of this video a question, what would it be?'
           )
         }
-      ] as unknown as StudyQuestions[]
+      ] as StudyQuestions[]
 
     const { nonPrimary, primary } = studyQuestions.reduce(
-      (acc, q) => {
+      (
+        acc: { nonPrimary: StudyQuestions[]; primary: StudyQuestions[] },
+        q: StudyQuestions
+      ) => {
         if (q.primary === false) {
           acc.nonPrimary.push(q)
         } else if (q.primary === true) {
@@ -109,8 +112,8 @@ export function NewVideoContentPage(): ReactElement {
         return acc
       },
       {
-        nonPrimary: [] as StudyQuestions[],
-        primary: [] as StudyQuestions[]
+        nonPrimary: [],
+        primary: []
       }
     )
 
@@ -128,7 +131,7 @@ export function NewVideoContentPage(): ReactElement {
           'If you could ask the creator of this video a question, what would it be?'
         )
       }
-    ] as unknown as StudyQuestions[]
+    ] as StudyQuestions[]
   }, [studyQuestions])
 
   const handleFreeResourceClick = () => {
