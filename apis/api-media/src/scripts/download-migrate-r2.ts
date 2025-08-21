@@ -5,6 +5,8 @@ import {
   PutObjectCommand,
   S3Client
 } from '@aws-sdk/client-s3'
+import { Upload } from '@aws-sdk/lib-storage'
+import fetch from 'node-fetch'
 
 import {
   PrismaClient,
@@ -51,11 +53,12 @@ async function uploadToR2FromUrl(
     )
   }
 
-  const fileBuffer = await response.arrayBuffer()
-  const downloadedSize = fileBuffer.byteLength
+  const contentLengthHeader = response.headers.get('content-length')
+  const downloadedSize =
+    contentLengthHeader != null ? Number(contentLengthHeader) : undefined
 
   // Validate file size if expected size is provided and > 0
-  if (expectedSize != null && expectedSize > 0) {
+  if (downloadedSize != null && expectedSize != null && expectedSize > 0) {
     const sizeDifference = Math.abs(downloadedSize - expectedSize)
     const sizeTolerancePercent = 0.05 // 5% tolerance
     const maxToleranceBytes = expectedSize * sizeTolerancePercent
@@ -87,17 +90,48 @@ async function uploadToR2FromUrl(
     throw new Error(`Downloaded file is empty: ${fileName}`)
   }
 
-  console.info(`Uploading file to R2: ${fileName} (${downloadedSize} bytes)`)
+  console.info(
+    `Uploading file to R2: ${fileName} (${downloadedSize ?? 'unknown'} bytes)`
+  )
 
   const client = getR2Client()
-  await client.send(
-    new PutObjectCommand({
-      Bucket: process.env.CLOUDFLARE_R2_BUCKET,
-      Key: fileName,
-      Body: Buffer.from(fileBuffer),
-      ContentType: contentType
+  const MULTIPART_THRESHOLD = 100 * 1024 * 1024 // 100MB
+  const MULTIPART_PART_SIZE = 10 * 1024 * 1024 // 10MB
+
+  const shouldUseMultipart =
+    downloadedSize == null || downloadedSize >= MULTIPART_THRESHOLD
+
+  if (shouldUseMultipart) {
+    const upload = new Upload({
+      client,
+      params: {
+        Bucket: process.env.CLOUDFLARE_R2_BUCKET,
+        Key: fileName,
+        Body: response.body as any,
+        ContentType: contentType
+      },
+      queueSize: 4,
+      partSize: MULTIPART_PART_SIZE
     })
-  )
+
+    upload.on('httpUploadProgress', (progress) => {
+      if (progress.loaded && progress.total) {
+        const percent = Math.floor((progress.loaded / progress.total) * 100)
+        console.info(`[R2 Upload] Multipart progress: ${percent}%`)
+      }
+    })
+
+    await upload.done()
+  } else {
+    await client.send(
+      new PutObjectCommand({
+        Bucket: process.env.CLOUDFLARE_R2_BUCKET,
+        Key: fileName,
+        Body: response.body as any,
+        ContentType: contentType
+      })
+    )
+  }
 
   // Verify size on R2 via HEAD before updating prisma
   const head = await client.send(
@@ -112,7 +146,7 @@ async function uploadToR2FromUrl(
     throw new Error(`R2 stored object has size 0: ${fileName}`)
   }
 
-  if (r2Size !== downloadedSize) {
+  if (downloadedSize != null && r2Size !== downloadedSize) {
     console.warn(
       { downloadedSize, r2Size, fileName },
       'R2 object size does not match downloaded size'
@@ -139,7 +173,7 @@ async function migrateDownloadsToR2(): Promise<void> {
   ]) {
     const where = {
       where: {
-        videoVariantId: '1_101833-jf-0-0', // {
+        // videoVariantId: '1_101833-jf-0-0', // {
         // startsWith: '10\\_'
         // },
         assetId: null,
