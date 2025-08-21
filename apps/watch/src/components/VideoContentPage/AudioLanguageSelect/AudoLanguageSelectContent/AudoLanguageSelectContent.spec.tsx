@@ -3,7 +3,7 @@ import { fireEvent, render, waitFor } from '@testing-library/react'
 
 import { GetLanguagesSlug } from '../../../../../__generated__/GetLanguagesSlug'
 import { VideoProvider } from '../../../../libs/videoContext'
-import { GET_LANGUAGES_SLUG } from '../../../AudioLanguageDialog'
+import { GET_LANGUAGES_SLUG } from '../../../../libs/useLanguagesSlugQuery'
 import { Select, SelectTrigger } from '../../../Select'
 import { videos } from '../../../Videos/__generated__/testData'
 

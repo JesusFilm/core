@@ -5,9 +5,9 @@ import { useTranslation } from 'next-i18next'
 
 import { GetLanguagesSlug } from '../../../../__generated__/GetLanguagesSlug'
 import { WatchProvider } from '../../../libs/watchContext'
-import { GET_LANGUAGES_SLUG } from '../../AudioLanguageDialog/AudioLanguageDialog'
 
 import { AudioTrackSelect } from './AudioTrackSelect'
+import { GET_LANGUAGES_SLUG } from '../../../libs/useLanguagesSlugQuery'
 
 // Mock only external libraries
 jest.mock('next/router', () => ({
