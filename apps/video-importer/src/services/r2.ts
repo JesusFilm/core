@@ -53,7 +53,6 @@ export async function createR2Asset({
   )
 
   const client = await getGraphQLClient()
-  const safeContentLength = contentLength > 2_147_483_647 ? -1 : contentLength
 
   try {
     const data: { cloudflareR2Create: R2Asset } = await client.request(
@@ -64,7 +63,7 @@ export async function createR2Asset({
           contentType,
           originalFilename,
           videoId,
-          contentLength: safeContentLength
+          contentLength
         }
       }
     )
