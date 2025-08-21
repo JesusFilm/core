@@ -36,7 +36,7 @@ export function Action(): ReactElement {
     | TreeBlock<VideoBlock>
     | undefined
   const [action, setAction] = useState<ActionValue>(
-    selectedBlock?.action?.__typename ?? 'None'
+    getAction(t, selectedBlock?.action?.__typename).value
   )
 
   const isSubmitButton =
