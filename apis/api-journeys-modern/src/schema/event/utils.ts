@@ -1,6 +1,6 @@
 import { GraphQLError } from 'graphql'
 
-import { prisma } from '../../lib/prisma'
+import { prisma } from '@core/prisma/journeys/client'
 
 // Re-export event service functions for convenient access
 export {

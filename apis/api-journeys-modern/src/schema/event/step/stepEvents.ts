@@ -1,6 +1,7 @@
 import { v4 as uuidv4 } from 'uuid'
 
-import { prisma } from '../../../lib/prisma'
+import { prisma } from '@core/prisma/journeys/client'
+
 import { builder } from '../../builder'
 import { EventInterface } from '../event'
 import { validateBlockEvent } from '../utils'

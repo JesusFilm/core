@@ -1,8 +1,16 @@
+import { GraphQLError } from 'graphql'
+
+import { Prisma, prisma } from '@core/prisma/journeys/client'
+
 import { builder } from '../../builder'
 import { MessagePlatform, VideoBlockSource } from '../../enums'
+import { Action } from '../../journey/journey.acl'
 import { Language } from '../../language/language'
 import { ButtonActionEnum } from '../button/enums'
 import { EventInterface } from '../event'
+
+import { JourneyEventsFilter } from './inputs'
+import { canAccessJourneyEvents } from './journeyEvent.acl'
 
 export const JourneyEventRef = builder.prismaNode('Event', {
   variant: 'JourneyEvent',

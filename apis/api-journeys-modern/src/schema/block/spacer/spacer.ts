@@ -1,30 +1,17 @@
 import { GraphQLError } from 'graphql'
 import { v4 as uuidv4 } from 'uuid'
 
+import { prisma } from '@core/prisma/journeys/client'
+
 import {
   Action,
   ability,
   subject as abilitySubject
 } from '../../../lib/auth/ability'
-import { prisma } from '../../../lib/prisma'
 import { builder } from '../../builder'
 import { Block } from '../block'
 
-// Input types for SpacerBlock operations
-const SpacerBlockCreateInput = builder.inputType('SpacerBlockCreateInput', {
-  fields: (t) => ({
-    id: t.id({ required: false }),
-    journeyId: t.id({ required: true }),
-    parentBlockId: t.id({ required: true }),
-    spacing: t.int({ required: false })
-  })
-})
-
-const SpacerBlockUpdateInput = builder.inputType('SpacerBlockUpdateInput', {
-  fields: (t) => ({
-    spacing: t.int({ required: false })
-  })
-})
+import { SpacerBlockCreateInput, SpacerBlockUpdateInput } from './inputs'
 
 export const SpacerBlock = builder.prismaObject('Block', {
   interfaces: [Block],

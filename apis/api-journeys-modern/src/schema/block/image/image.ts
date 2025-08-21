@@ -1,12 +1,13 @@
 import { GraphQLError } from 'graphql'
 import { v4 as uuidv4 } from 'uuid'
 
+import { prisma } from '@core/prisma/journeys/client'
+
 import {
   Action,
   ability,
   subject as abilitySubject
 } from '../../../lib/auth/ability'
-import { prisma } from '../../../lib/prisma'
 import { builder } from '../../builder'
 import { Block } from '../block'
 

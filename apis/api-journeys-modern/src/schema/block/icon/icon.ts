@@ -1,42 +1,20 @@
 import { GraphQLError } from 'graphql'
 import { v4 as uuidv4 } from 'uuid'
 
+import { prisma } from '@core/prisma/journeys/client'
+
 import {
   Action,
   ability,
   subject as abilitySubject
 } from '../../../lib/auth/ability'
-import { prisma } from '../../../lib/prisma'
 import { builder } from '../../builder'
 import { Block } from '../block'
 
 import { IconColor, type IconColorType } from './enums/iconColor'
 import { IconName, type IconNameType } from './enums/iconName'
 import { IconSize, type IconSizeType } from './enums/iconSize'
-
-// Input types for IconBlock operations
-const IconBlockCreateInput = builder.inputType('IconBlockCreateInput', {
-  fields: (t) => ({
-    id: t.id({
-      required: false,
-      description:
-        'ID should be unique Response UUID (Provided for optimistic mutation result matching)'
-    }),
-    parentBlockId: t.id({ required: true }),
-    journeyId: t.id({ required: true }),
-    name: t.field({ type: IconName, required: false }),
-    color: t.field({ type: IconColor, required: false }),
-    size: t.field({ type: IconSize, required: false })
-  })
-})
-
-const IconBlockUpdateInput = builder.inputType('IconBlockUpdateInput', {
-  fields: (t) => ({
-    name: t.field({ type: IconName, required: false }),
-    color: t.field({ type: IconColor, required: false }),
-    size: t.field({ type: IconSize, required: false })
-  })
-})
+import { IconBlockCreateInput, IconBlockUpdateInput } from './inputs'
 
 export const IconBlock = builder.prismaObject('Block', {
   interfaces: [Block],

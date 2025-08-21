@@ -1,12 +1,13 @@
 import { GraphQLError } from 'graphql'
 import { v4 as uuidv4 } from 'uuid'
 
+import { prisma } from '@core/prisma/journeys/client'
+
 import {
   Action,
   ability,
   subject as abilitySubject
 } from '../../../lib/auth/ability'
-import { prisma } from '../../../lib/prisma'
 import { builder } from '../../builder'
 import { Block } from '../block'
 
@@ -22,50 +23,14 @@ import {
   TypographyVariant,
   type TypographyVariantType
 } from './enums/typographyVariant'
+import {
+  TypographyBlockCreateInput,
+  TypographyBlockUpdateInput
+} from './inputs'
 
 interface TypographyBlockSettingsType {
   color: string | null
 }
-
-// Input types for TypographyBlock operations
-const TypographyBlockSettingsInput = builder.inputType(
-  'TypographyBlockSettingsInput',
-  {
-    fields: (t) => ({
-      color: t.string({ required: false })
-    })
-  }
-)
-
-const TypographyBlockCreateInput = builder.inputType(
-  'TypographyBlockCreateInput',
-  {
-    fields: (t) => ({
-      id: t.id({ required: false }),
-      journeyId: t.id({ required: true }),
-      parentBlockId: t.id({ required: true }),
-      content: t.string({ required: true }),
-      variant: t.field({ type: TypographyVariant, required: false }),
-      color: t.field({ type: TypographyColor, required: false }),
-      align: t.field({ type: TypographyAlign, required: false }),
-      settings: t.field({ type: TypographyBlockSettingsInput, required: false })
-    })
-  }
-)
-
-const TypographyBlockUpdateInput = builder.inputType(
-  'TypographyBlockUpdateInput',
-  {
-    fields: (t) => ({
-      parentBlockId: t.id({ required: false }),
-      content: t.string({ required: false }),
-      variant: t.field({ type: TypographyVariant, required: false }),
-      color: t.field({ type: TypographyColor, required: false }),
-      align: t.field({ type: TypographyAlign, required: false }),
-      settings: t.field({ type: TypographyBlockSettingsInput, required: false })
-    })
-  }
-)
 
 const TypographyBlockSettingsRef =
   builder.objectRef<TypographyBlockSettingsType>('TypographyBlockSettings')

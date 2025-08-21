@@ -1,8 +1,11 @@
 import { GraphQLError } from 'graphql'
 
-import { Block, JourneyVisitor, Visitor } from '@core/prisma/journeys/client'
-
-import { prisma } from '../../lib/prisma'
+import {
+  Block,
+  JourneyVisitor,
+  Visitor,
+  prisma
+} from '@core/prisma/journeys/client'
 
 export async function validateBlockEvent(
   userId: string,

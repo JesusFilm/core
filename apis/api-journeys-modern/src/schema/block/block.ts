@@ -10,6 +10,8 @@ import {
 } from '../../lib/auth/ability'
 import { builder } from '../builder'
 
+import { BlockDuplicateIdMapInput, BlocksFilterInput } from './inputs'
+
 export const Block = builder.prismaInterface('Block', {
   name: 'Block',
   fields: (t) => ({
@@ -27,21 +29,6 @@ export const Block = builder.prismaInterface('Block', {
   resolveType: (obj) => {
     return obj.typename
   }
-})
-
-// Input types for block operations
-const BlocksFilter = builder.inputType('BlocksFilter', {
-  fields: (t) => ({
-    journeyIds: t.idList({ required: false }),
-    typenames: t.stringList({ required: false })
-  })
-})
-
-const BlockDuplicateIdMap = builder.inputType('BlockDuplicateIdMap', {
-  fields: (t) => ({
-    oldId: t.id({ required: true }),
-    newId: t.id({ required: true })
-  })
 })
 
 // Helper function to fetch journey with ACL includes for block operations
@@ -81,7 +68,7 @@ builder.queryField('blocks', (t) =>
     type: [Block],
     nullable: false,
     args: {
-      where: t.arg({ type: BlocksFilter, required: false })
+      where: t.arg({ type: BlocksFilterInput, required: false })
     },
     resolve: async (_parent, args) => {
       const { where } = args
@@ -211,7 +198,7 @@ builder.mutationField('blockDuplicate', (t) =>
           'parentOrder defines the position to add the duplicated block. Negative values defines the position from the end of the array. Positions greater than the length of the array or null parentOrder will add duplicate at end of the array.'
       }),
       idMap: t.arg({
-        type: [BlockDuplicateIdMap],
+        type: [BlockDuplicateIdMapInput],
         required: false,
         description:
           'idMap is used to set custom ids for the duplicated block and its descendants.'

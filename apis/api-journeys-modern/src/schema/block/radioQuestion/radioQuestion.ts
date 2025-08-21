@@ -1,35 +1,17 @@
 import { GraphQLError } from 'graphql'
 import { v4 as uuidv4 } from 'uuid'
 
+import { prisma } from '@core/prisma/journeys/client'
+
 import {
   Action,
   ability,
   subject as abilitySubject
 } from '../../../lib/auth/ability'
-import { prisma } from '../../../lib/prisma'
 import { builder } from '../../builder'
 import { Block } from '../block'
 
-// Input types for RadioQuestionBlock operations
-const RadioQuestionBlockCreateInput = builder.inputType(
-  'RadioQuestionBlockCreateInput',
-  {
-    fields: (t) => ({
-      id: t.id({ required: false }),
-      journeyId: t.id({ required: true }),
-      parentBlockId: t.id({ required: true })
-    })
-  }
-)
-
-const RadioQuestionBlockUpdateInput = builder.inputType(
-  'RadioQuestionBlockUpdateInput',
-  {
-    fields: (t) => ({
-      parentBlockId: t.id({ required: false })
-    })
-  }
-)
+import { RadioQuestionBlockCreateInput } from './inputs'
 
 export const RadioQuestionBlock = builder.prismaObject('Block', {
   interfaces: [Block],
@@ -148,16 +130,11 @@ builder.mutationField('radioQuestionBlockUpdate', (t) =>
     nullable: false,
     args: {
       id: t.arg({ type: 'ID', required: true }),
-      input: t.arg({ type: RadioQuestionBlockUpdateInput, required: true }),
-      journeyId: t.arg({
-        type: 'ID',
-        required: false,
-        description: 'drop this parameter after merging teams'
-      })
+      parentBlockId: t.arg({ type: 'ID', required: true }),
+      gridView: t.arg({ type: 'Boolean', required: false })
     },
     resolve: async (_parent, args, context) => {
-      const { id, input } = args
-      const { parentBlockId } = input
+      const { id, parentBlockId, gridView } = args
 
       const blockWithJourney = await fetchBlockWithJourneyAcl(id)
       if (!blockWithJourney) {

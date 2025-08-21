@@ -8,14 +8,12 @@ import { Block } from '../block/block'
 import { builder } from '../builder'
 
 import { EmailActionRef } from './emailAction/emailAction'
-import {
-  BlockUpdateActionInput,
-  EmailActionInput,
-  LinkActionInput,
-  NavigateToBlockActionInput
-} from './inputs'
+import { EmailActionInput } from './emailAction/inputs/emailActionInput'
+import { BlockUpdateActionInput } from './inputs'
 import { LinkActionRef } from './linkAction'
+import { LinkActionInput } from './linkAction/inputs/linkActionInput'
 import { NavigateToBlockActionRef } from './navigateToBlockAction'
+import { NavigateToBlockActionInput } from './navigateToBlockAction/inputs/navigateToBlockActionInput'
 
 export const ActionInterface = builder.prismaInterface('Action', {
   fields: (t) => ({

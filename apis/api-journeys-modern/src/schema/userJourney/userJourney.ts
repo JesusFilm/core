@@ -7,7 +7,6 @@ import {
 } from '@core/prisma/journeys/client'
 
 import { builder } from '../builder'
-import { JourneyNotificationRef } from '../journeyNotification/journeyNotification'
 import { UserRef } from '../user/user'
 
 import { UserJourneyRole } from './enums/userJourneyRole'
