@@ -18,33 +18,25 @@ import {
 } from '../../libs/block/__generated__/BlockFields'
 import { Video } from '../Video'
 
-export interface WrapperProps<T = Block, P = unknown> {
+export interface WrapperProps<T = Block> {
   block: TreeBlock<T>
-  children: ReactElement<P>
+  children: ReactElement
 }
 
-type WrapperFn<T = Block, P = unknown> = (
-  props: WrapperProps<T, P>
-) => ReactElement
+type WrapperFn<T = Block> = (props: WrapperProps<T>) => ReactElement
 
 export interface WrappersProps {
   Wrapper?: WrapperFn
-  ButtonWrapper?: WrapperFn<ButtonBlock, { wrappers?: WrappersProps }>
-  CardWrapper?: WrapperFn<CardBlock, { wrappers?: WrappersProps }>
+  ButtonWrapper?: WrapperFn<ButtonBlock>
+  CardWrapper?: WrapperFn<CardBlock>
   ImageWrapper?: WrapperFn<ImageBlock>
-  RadioOptionWrapper?: WrapperFn<RadioOptionBlock, { wrappers?: WrappersProps }>
-  RadioQuestionWrapper?: WrapperFn<
-    RadioQuestionBlock,
-    { wrappers?: WrappersProps }
-  >
-  SignUpWrapper?: WrapperFn<SignUpBlock, { wrappers?: WrappersProps }>
+  RadioOptionWrapper?: WrapperFn<RadioOptionBlock>
+  RadioQuestionWrapper?: WrapperFn<RadioQuestionBlock>
+  SignUpWrapper?: WrapperFn<SignUpBlock>
   SpacerWrapper?: WrapperFn<SpacerBlock>
   StepWrapper?: WrapperFn<StepBlock>
-  TextResponseWrapper?: WrapperFn<
-    TextResponseBlock,
-    { wrappers?: WrappersProps }
-  >
-  TypographyWrapper?: WrapperFn<TypographyBlock, { wrappers?: WrappersProps }>
+  TextResponseWrapper?: WrapperFn<TextResponseBlock>
+  TypographyWrapper?: WrapperFn<TypographyBlock>
   VideoWrapper?: WrapperFn<VideoBlock>
   DragItemWrapper?: WrapperFn
 }
