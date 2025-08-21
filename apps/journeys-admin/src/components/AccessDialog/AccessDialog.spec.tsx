@@ -352,7 +352,7 @@ describe('AccessDialog', () => {
     expect(queryByText('Koichi Hirose')).not.toBeInTheDocument()
     expect(queryByText('Josuke Higashikata')).not.toBeInTheDocument()
   })
-  
+
   it('should display header for journey owners with no team members', async () => {
     // Create mock for journey owner scenario with empty team
     const mocksJourneyOwner = [
@@ -423,15 +423,19 @@ describe('AccessDialog', () => {
     })
 
     // Verify that the header icons are present by checking for their test IDs
-    expect(document.querySelector('[data-testid="EmailIcon"]')).toBeInTheDocument()
-    expect(document.querySelector('[data-testid="ShieldCheckIcon"]')).toBeInTheDocument()
+    expect(
+      document.querySelector('[data-testid="EmailIcon"]')
+    ).toBeInTheDocument()
+    expect(
+      document.querySelector('[data-testid="ShieldCheckIcon"]')
+    ).toBeInTheDocument()
 
     // No team members should be displayed
     expect(queryByText('Jotaro Kujo')).not.toBeInTheDocument()
     expect(queryByText('Koichi Hirose')).not.toBeInTheDocument()
     expect(queryByText('Josuke Higashikata')).not.toBeInTheDocument()
   })
-  
+
   it('should display header for guests with no team access', async () => {
     // Create mock for guest user scenario with empty team
     const mocksGuestUser = [
@@ -502,15 +506,19 @@ describe('AccessDialog', () => {
     })
 
     // Verify that the header icons are present by checking for their test IDs
-    expect(document.querySelector('[data-testid="EmailIcon"]')).toBeInTheDocument()
-    expect(document.querySelector('[data-testid="ShieldCheckIcon"]')).toBeInTheDocument()
+    expect(
+      document.querySelector('[data-testid="EmailIcon"]')
+    ).toBeInTheDocument()
+    expect(
+      document.querySelector('[data-testid="ShieldCheckIcon"]')
+    ).toBeInTheDocument()
 
     // No team members should be displayed
     expect(queryByText('Jotaro Kujo')).not.toBeInTheDocument()
     expect(queryByText('Koichi Hirose')).not.toBeInTheDocument()
     expect(queryByText('Josuke Higashikata')).not.toBeInTheDocument()
   })
-  
+
   it('should verify tooltip functionality works regardless of team member presence', async () => {
     // Create mock with empty team members
     const mocksEmptyTeam = [
@@ -582,13 +590,15 @@ describe('AccessDialog', () => {
     // Find the tooltip elements by their aria-label attributes
     const emailIcon = document.querySelector('[data-testid="EmailIcon"]')
     const shieldIcon = document.querySelector('[data-testid="ShieldCheckIcon"]')
-    
+
     expect(emailIcon).toBeInTheDocument()
     expect(shieldIcon).toBeInTheDocument()
-    
+
     // Verify that tooltips are properly associated with their icons
     // The tooltips are implemented using MUI Tooltip which adds aria-describedby attributes
-    expect(emailIcon?.closest('[aria-label="Email Notifications"]')).toBeInTheDocument()
+    expect(
+      emailIcon?.closest('[aria-label="Email Notifications"]')
+    ).toBeInTheDocument()
     expect(shieldIcon?.closest('[aria-label="User Role"]')).toBeInTheDocument()
   })
 
