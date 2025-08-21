@@ -1,3 +1,4 @@
+// eslint-disable-next-line import/no-namespace
 import * as SelectPrimitive from '@radix-ui/react-select'
 import { CheckIcon, ChevronDownIcon, ChevronUpIcon } from 'lucide-react'
 
