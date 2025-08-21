@@ -95,7 +95,8 @@ export function NewVideoContentPage(): ReactElement {
         {
           value: t(
             'If you could ask the creator of this video a question, what would it be?'
-          )
+          ),
+          primary: false
         }
       ] as StudyQuestions[]
 
@@ -129,7 +130,8 @@ export function NewVideoContentPage(): ReactElement {
       {
         value: t(
           'If you could ask the creator of this video a question, what would it be?'
-        )
+        ),
+        primary: false
       }
     ] as StudyQuestions[]
   }, [studyQuestions])
