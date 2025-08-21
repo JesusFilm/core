@@ -128,7 +128,8 @@ async function uploadToR2FromUrl(
         Bucket: process.env.CLOUDFLARE_R2_BUCKET,
         Key: fileName,
         Body: response.body as any,
-        ContentType: contentType
+        ContentType: contentType,
+        ContentLength: downloadedSize
       })
     )
   }
