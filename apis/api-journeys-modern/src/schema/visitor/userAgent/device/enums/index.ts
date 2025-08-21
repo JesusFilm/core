@@ -1,0 +1,1 @@
+export { DeviceType } from './deviceType'
