@@ -17,6 +17,15 @@ import { selectLanguageForVideo } from '../utils/audioLanguageSetter'
 import { getCurrentAudioLanguage } from '../utils/getCurrentAudioLanguage'
 import { renderInput } from '../utils/renderInput'
 import { renderOption } from '../utils/renderOption'
+import { useInstantSearch } from 'react-instantsearch'
+
+function useSafeInstantSearch() {
+  try {
+    return useInstantSearch()
+  } catch {
+    return undefined
+  }
+}
 
 export const AudioTrackSelect = memo(function AudioTrackSelect(): ReactElement {
   const {
@@ -48,6 +57,7 @@ export const AudioTrackSelect = memo(function AudioTrackSelect(): ReactElement {
   const { t } = useTranslation()
   const router = useRouter()
   const [helperText, setHelperText] = useState<string>(t('2000 translations'))
+  const instantSearch = useSafeInstantSearch()
 
   // Fetch audio languages for current video when needed
   useEffect(() => {
@@ -108,6 +118,15 @@ export const AudioTrackSelect = memo(function AudioTrackSelect(): ReactElement {
 
   function handleChange(language: LanguageOption): void {
     updateAudioLanguage(language.id)
+
+    if (instantSearch != null && language.localName != null)
+      instantSearch.setIndexUiState((prev) => ({
+        ...prev,
+        refinementList: {
+          ...prev.refinementList,
+          languageEnglishName: [language.localName ?? '']
+        }
+      }))
   }
 
   return (
@@ -117,7 +136,7 @@ export const AudioTrackSelect = memo(function AudioTrackSelect(): ReactElement {
           htmlFor="audio-select"
           className="block text-xl font-medium text-gray-700 ml-7"
         >
-          {t('Audio Track')}
+          {t('Language')}
         </label>
         <span className="text-sm text-gray-400 opacity-60">
           {currentLanguage?.nativeName}
