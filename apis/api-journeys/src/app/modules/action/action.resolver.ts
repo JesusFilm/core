@@ -113,9 +113,12 @@ export class ActionResolver {
     const { success: isNavigateToBlock, data: navigateToBlockInput } =
       navigateToBlockActionInputSchema.safeParse(input)
 
-    const numberOfValidInputs = [isLink, isEmail, isPhone, isNavigateToBlock].filter(
-      Boolean
-    ).length
+    const numberOfValidInputs = [
+      isLink,
+      isEmail,
+      isPhone,
+      isNavigateToBlock
+    ].filter(Boolean).length
 
     if (numberOfValidInputs > 1)
       throw new GraphQLError('invalid combination of inputs provided', {
