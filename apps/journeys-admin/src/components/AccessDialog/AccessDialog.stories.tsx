@@ -203,4 +203,84 @@ export const Loading: StoryObj<typeof AccessDialog> = {
   render: () => <LoadingAccessDialog />
 }
 
+const NoTeamMembersAccessDialog = (): ReactNode => {
+  const [open, setOpen] = useState(true)
+  return (
+    <MockedProvider
+      mocks={[
+        {
+          request: {
+            query: GET_JOURNEY_WITH_PERMISSIONS,
+            variables: {
+              id: 'journeyId'
+            }
+          },
+          result: {
+            data: {
+              journey: {
+                id: 'journeyId',
+                team: {
+                  __typename: 'Team',
+                  id: 'teamId',
+                  userTeams: [] // Empty team members array
+                },
+                userJourneys: [
+                  {
+                    __typename: 'UserJourney',
+                    id: 'userJourneyId1',
+                    role: 'editor',
+                    user: {
+                      id: 'userId10',
+                      firstName: 'Guest',
+                      lastName: 'User',
+                      imageUrl: 'https://bit.ly/3Gth4Yf',
+                      email: 'guest@email.com'
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        },
+        {
+          request: {
+            query: GET_USER_INVITES,
+            variables: {
+              journeyId: 'journeyId'
+            }
+          },
+          result: {
+            data: {
+              userInvites: []
+            }
+          }
+        },
+        {
+          request: {
+            query: GET_CURRENT_USER
+          },
+          result: {
+            data: {
+              me: {
+                id: 'userId10',
+                email: 'guest@email.com'
+              }
+            }
+          }
+        }
+      ]}
+    >
+      <AccessDialog
+        journeyId="journeyId"
+        open={open}
+        onClose={() => setOpen(false)}
+      />
+    </MockedProvider>
+  )
+}
+
+export const NoTeamMembers: StoryObj<typeof AccessDialog> = {
+  render: () => <NoTeamMembersAccessDialog />
+}
+
 export default Demo

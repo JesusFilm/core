@@ -159,47 +159,45 @@ export function AccessDialog({
       testId="AccessDialog"
     >
       <Stack spacing={4}>
+        <Grid container spacing={1} alignItems="center" sx={{ pb: 4 }}>
+          <Grid xs={2} sm={1}>
+            <Stack sx={{ ml: 2 }}>
+              <UsersProfiles2 sx={{ color: 'secondary.light' }} />
+            </Stack>
+          </Grid>
+          <Grid xs={5} sm={7}>
+            <Typography
+              variant="subtitle3"
+              color="secondary.light"
+              sx={{ opacity: 0.8, ml: 1 }}
+            >
+              {t('Team Members')}
+            </Typography>
+          </Grid>
+          <Grid xs={2} sm={2}>
+            <Stack sx={{ ml: 4 }}>
+              <Tooltip title={t('Email Notifications')}>
+                <EmailIcon sx={{ color: 'secondary.light' }} />
+              </Tooltip>
+            </Stack>
+          </Grid>
+          <Grid xs={3} sm={2}>
+            <Stack sx={{ ml: 7 }}>
+              <Tooltip title={t('User Role')}>
+                <ShieldCheck sx={{ color: 'secondary.light' }} />
+              </Tooltip>
+            </Stack>
+          </Grid>
+        </Grid>
         {data?.journey?.team?.userTeams != null &&
           data?.journey?.team?.userTeams.length > 0 && (
-            <>
-              <Grid container spacing={1} alignItems="center" sx={{ pb: 4 }}>
-                <Grid xs={2} sm={1}>
-                  <Stack sx={{ ml: 2 }}>
-                    <UsersProfiles2 sx={{ color: 'secondary.light' }} />
-                  </Stack>
-                </Grid>
-                <Grid xs={5} sm={7}>
-                  <Typography
-                    variant="subtitle3"
-                    color="secondary.light"
-                    sx={{ opacity: 0.8, ml: 1 }}
-                  >
-                    {t('Team Members')}
-                  </Typography>
-                </Grid>
-                <Grid xs={2} sm={2}>
-                  <Stack sx={{ ml: 4 }}>
-                    <Tooltip title={t('Email Notifications')}>
-                      <EmailIcon sx={{ color: 'secondary.light' }} />
-                    </Tooltip>
-                  </Stack>
-                </Grid>
-                <Grid xs={3} sm={2}>
-                  <Stack sx={{ ml: 7 }}>
-                    <Tooltip title={t('User Role')}>
-                      <ShieldCheck sx={{ color: 'secondary.light' }} />
-                    </Tooltip>
-                  </Stack>
-                </Grid>
-              </Grid>
-              <UserTeamList
-                data={data?.journey?.team ?? undefined}
-                currentUserTeam={currentUserTeam}
-                loading={loading}
-                variant="readonly"
-                journeyId={journeyId}
-              />
-            </>
+            <UserTeamList
+              data={data?.journey?.team ?? undefined}
+              currentUserTeam={currentUserTeam}
+              loading={loading}
+              variant="readonly"
+              journeyId={journeyId}
+            />
           )}
         <UserList
           title={t('Requested Access')}

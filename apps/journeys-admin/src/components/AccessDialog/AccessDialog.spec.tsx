@@ -278,6 +278,320 @@ describe('AccessDialog', () => {
     expect(getAllByText('Jotaro Kujo')).toHaveLength(1)
   })
 
+  it('should display header with icons when no team members exist', async () => {
+    const mocksNoTeamMembers = [
+      {
+        request: {
+          query: GET_JOURNEY_WITH_PERMISSIONS,
+          variables: {
+            id: 'journeyId'
+          }
+        },
+        result: {
+          data: {
+            journey: {
+              id: 'journeyId',
+              team: {
+                __typename: 'Team',
+                id: 'teamId',
+                userTeams: [] // Empty array - no team members
+              },
+              userJourneys: [
+                {
+                  __typename: 'UserJourney',
+                  id: 'userJourneyId1',
+                  role: 'owner',
+                  user: {
+                    ...user1,
+                    firstName: 'Amin',
+                    lastName: 'One',
+                    imageUrl: 'https://bit.ly/3Gth4Yf'
+                  },
+                  journeyNotification: {
+                    id: 'journeyNotificationId',
+                    visitorInteractionEmail: true
+                  }
+                }
+              ]
+            }
+          }
+        }
+      },
+      {
+        request: {
+          query: GET_USER_INVITES,
+          variables: {
+            journeyId: 'journeyId'
+          }
+        },
+        result: {
+          data: {
+            userInvites: []
+          }
+        }
+      }
+    ]
+
+    const handleClose = jest.fn()
+    const { getByText, queryByText } = render(
+      <SnackbarProvider>
+        <MockedProvider addTypename mocks={mocksNoTeamMembers}>
+          <AccessDialog journeyId="journeyId" open onClose={handleClose} />
+        </MockedProvider>
+      </SnackbarProvider>
+    )
+
+    await waitFor(() => {
+      // Header should always be visible
+      expect(getByText('Team Members')).toBeInTheDocument()
+    })
+
+    // UserTeamList should NOT be rendered when no team members exist
+    // We can verify this by checking that no team member names appear
+    expect(queryByText('Jotaro Kujo')).not.toBeInTheDocument()
+    expect(queryByText('Koichi Hirose')).not.toBeInTheDocument()
+    expect(queryByText('Josuke Higashikata')).not.toBeInTheDocument()
+  })
+  
+  it('should display header for journey owners with no team members', async () => {
+    // Create mock for journey owner scenario with empty team
+    const mocksJourneyOwner = [
+      {
+        request: {
+          query: GET_JOURNEY_WITH_PERMISSIONS,
+          variables: {
+            id: 'journeyId'
+          }
+        },
+        result: {
+          data: {
+            journey: {
+              id: 'journeyId',
+              team: {
+                __typename: 'Team',
+                id: 'teamId',
+                userTeams: [] // Empty team members array
+              },
+              userJourneys: [
+                {
+                  __typename: 'UserJourney',
+                  id: 'userJourneyId1',
+                  role: 'owner', // Current user is journey owner
+                  user: {
+                    ...user1, // Using the same user that's mocked as current user
+                    firstName: 'Owner',
+                    lastName: 'User',
+                    imageUrl: 'https://bit.ly/3Gth4Yf'
+                  },
+                  journeyNotification: {
+                    id: 'journeyNotificationId',
+                    visitorInteractionEmail: true
+                  }
+                }
+              ]
+            }
+          }
+        }
+      },
+      {
+        request: {
+          query: GET_USER_INVITES,
+          variables: {
+            journeyId: 'journeyId'
+          }
+        },
+        result: {
+          data: {
+            userInvites: []
+          }
+        }
+      }
+    ]
+
+    const handleClose = jest.fn()
+    const { getByText, queryByText } = render(
+      <SnackbarProvider>
+        <MockedProvider addTypename mocks={mocksJourneyOwner}>
+          <AccessDialog journeyId="journeyId" open onClose={handleClose} />
+        </MockedProvider>
+      </SnackbarProvider>
+    )
+
+    await waitFor(() => {
+      // Header should be visible for journey owners
+      expect(getByText('Team Members')).toBeInTheDocument()
+    })
+
+    // Verify that the header icons are present by checking for their test IDs
+    expect(document.querySelector('[data-testid="EmailIcon"]')).toBeInTheDocument()
+    expect(document.querySelector('[data-testid="ShieldCheckIcon"]')).toBeInTheDocument()
+
+    // No team members should be displayed
+    expect(queryByText('Jotaro Kujo')).not.toBeInTheDocument()
+    expect(queryByText('Koichi Hirose')).not.toBeInTheDocument()
+    expect(queryByText('Josuke Higashikata')).not.toBeInTheDocument()
+  })
+  
+  it('should display header for guests with no team access', async () => {
+    // Create mock for guest user scenario with empty team
+    const mocksGuestUser = [
+      {
+        request: {
+          query: GET_JOURNEY_WITH_PERMISSIONS,
+          variables: {
+            id: 'journeyId'
+          }
+        },
+        result: {
+          data: {
+            journey: {
+              id: 'journeyId',
+              team: {
+                __typename: 'Team',
+                id: 'teamId',
+                userTeams: [] // Empty team members array
+              },
+              userJourneys: [
+                {
+                  __typename: 'UserJourney',
+                  id: 'userJourneyId1',
+                  role: 'editor', // Guest user with editor role
+                  user: {
+                    ...user1, // Using the same user that's mocked as current user
+                    firstName: 'Guest',
+                    lastName: 'User',
+                    imageUrl: 'https://bit.ly/3Gth4Yf'
+                  },
+                  journeyNotification: {
+                    id: 'journeyNotificationId',
+                    visitorInteractionEmail: true
+                  }
+                }
+              ]
+            }
+          }
+        }
+      },
+      {
+        request: {
+          query: GET_USER_INVITES,
+          variables: {
+            journeyId: 'journeyId'
+          }
+        },
+        result: {
+          data: {
+            userInvites: []
+          }
+        }
+      }
+    ]
+
+    const handleClose = jest.fn()
+    const { getByText, queryByText } = render(
+      <SnackbarProvider>
+        <MockedProvider addTypename mocks={mocksGuestUser}>
+          <AccessDialog journeyId="journeyId" open onClose={handleClose} />
+        </MockedProvider>
+      </SnackbarProvider>
+    )
+
+    await waitFor(() => {
+      // Header should be visible for guests
+      expect(getByText('Team Members')).toBeInTheDocument()
+    })
+
+    // Verify that the header icons are present by checking for their test IDs
+    expect(document.querySelector('[data-testid="EmailIcon"]')).toBeInTheDocument()
+    expect(document.querySelector('[data-testid="ShieldCheckIcon"]')).toBeInTheDocument()
+
+    // No team members should be displayed
+    expect(queryByText('Jotaro Kujo')).not.toBeInTheDocument()
+    expect(queryByText('Koichi Hirose')).not.toBeInTheDocument()
+    expect(queryByText('Josuke Higashikata')).not.toBeInTheDocument()
+  })
+  
+  it('should verify tooltip functionality works regardless of team member presence', async () => {
+    // Create mock with empty team members
+    const mocksEmptyTeam = [
+      {
+        request: {
+          query: GET_JOURNEY_WITH_PERMISSIONS,
+          variables: {
+            id: 'journeyId'
+          }
+        },
+        result: {
+          data: {
+            journey: {
+              id: 'journeyId',
+              team: {
+                __typename: 'Team',
+                id: 'teamId',
+                userTeams: [] // Empty team members array
+              },
+              userJourneys: [
+                {
+                  __typename: 'UserJourney',
+                  id: 'userJourneyId1',
+                  role: 'editor',
+                  user: {
+                    ...user1,
+                    firstName: 'Test',
+                    lastName: 'User',
+                    imageUrl: 'https://bit.ly/3Gth4Yf'
+                  },
+                  journeyNotification: {
+                    id: 'journeyNotificationId',
+                    visitorInteractionEmail: true
+                  }
+                }
+              ]
+            }
+          }
+        }
+      },
+      {
+        request: {
+          query: GET_USER_INVITES,
+          variables: {
+            journeyId: 'journeyId'
+          }
+        },
+        result: {
+          data: {
+            userInvites: []
+          }
+        }
+      }
+    ]
+
+    const handleClose = jest.fn()
+    const { getByText, getAllByRole } = render(
+      <SnackbarProvider>
+        <MockedProvider addTypename mocks={mocksEmptyTeam}>
+          <AccessDialog journeyId="journeyId" open onClose={handleClose} />
+        </MockedProvider>
+      </SnackbarProvider>
+    )
+
+    await waitFor(() => {
+      expect(getByText('Team Members')).toBeInTheDocument()
+    })
+
+    // Find the tooltip elements by their aria-label attributes
+    const emailIcon = document.querySelector('[data-testid="EmailIcon"]')
+    const shieldIcon = document.querySelector('[data-testid="ShieldCheckIcon"]')
+    
+    expect(emailIcon).toBeInTheDocument()
+    expect(shieldIcon).toBeInTheDocument()
+    
+    // Verify that tooltips are properly associated with their icons
+    // The tooltips are implemented using MUI Tooltip which adds aria-describedby attributes
+    expect(emailIcon?.closest('[aria-label="Email Notifications"]')).toBeInTheDocument()
+    expect(shieldIcon?.closest('[aria-label="User Role"]')).toBeInTheDocument()
+  })
+
   it('calls on close', () => {
     const handleClose = jest.fn()
     const { getByTestId } = render(
