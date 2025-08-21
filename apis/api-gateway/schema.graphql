@@ -3450,6 +3450,7 @@ input BlockUpdateActionInput @join__type(graph: API_JOURNEYS)  {
   url: String
   target: String
   blockId: String
+  phone: String
 }
 
 input PhoneActionInput @join__type(graph: API_JOURNEYS)  {

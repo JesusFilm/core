@@ -29,6 +29,11 @@ const emailActionInputSchema = z.object({
   email: z.string().email()
 })
 
+const phoneActionInputSchema = z.object({
+  gtmEventName: z.string().nullable(),
+  phone: z.string()
+})
+
 const navigateToBlockActionInputSchema = z.object({
   gtmEventName: z.string().nullable(),
   blockId: z.string()
@@ -45,6 +50,7 @@ export class ActionResolver {
   __resolveType(obj: Action): string {
     if (get(obj, 'blockId') != null) return 'NavigateToBlockAction'
     if (get(obj, 'email') != null) return 'EmailAction'
+    if (get(obj, 'phone') != null) return 'PhoneAction'
     return 'LinkAction'
   }
 
@@ -102,10 +108,12 @@ export class ActionResolver {
       linkActionInputSchema.safeParse(input)
     const { success: isEmail, data: emailInput } =
       emailActionInputSchema.safeParse(input)
+    const { success: isPhone, data: phoneInput } =
+      phoneActionInputSchema.safeParse(input)
     const { success: isNavigateToBlock, data: navigateToBlockInput } =
       navigateToBlockActionInputSchema.safeParse(input)
 
-    const numberOfValidInputs = [isLink, isEmail, isNavigateToBlock].filter(
+    const numberOfValidInputs = [isLink, isEmail, isPhone, isNavigateToBlock].filter(
       Boolean
     ).length
 
@@ -141,6 +149,9 @@ export class ActionResolver {
 
     if (isEmail)
       return await this.actionService.emailActionUpdate(id, block, emailInput)
+
+    if (isPhone)
+      return await this.actionService.phoneActionUpdate(id, block, phoneInput)
 
     if (isNavigateToBlock)
       return await this.actionService.navigateToBlockActionUpdate(

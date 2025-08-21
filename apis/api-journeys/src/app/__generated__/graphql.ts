@@ -297,6 +297,7 @@ export class BlockUpdateActionInput {
     url?: Nullable<string>;
     target?: Nullable<string>;
     blockId?: Nullable<string>;
+    phone?: Nullable<string>;
 }
 
 export class PhoneActionInput {
