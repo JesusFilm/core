@@ -1,6 +1,10 @@
 import path from 'path'
 
-import { PutObjectCommand, S3Client } from '@aws-sdk/client-s3'
+import {
+  HeadObjectCommand,
+  PutObjectCommand,
+  S3Client
+} from '@aws-sdk/client-s3'
 
 import {
   PrismaClient,
@@ -48,11 +52,11 @@ async function uploadToR2FromUrl(
   }
 
   const fileBuffer = await response.arrayBuffer()
-  const actualSize = fileBuffer.byteLength
+  const downloadedSize = fileBuffer.byteLength
 
   // Validate file size if expected size is provided and > 0
   if (expectedSize != null && expectedSize > 0) {
-    const sizeDifference = Math.abs(actualSize - expectedSize)
+    const sizeDifference = Math.abs(downloadedSize - expectedSize)
     const sizeTolerancePercent = 0.05 // 5% tolerance
     const maxToleranceBytes = expectedSize * sizeTolerancePercent
 
@@ -60,7 +64,7 @@ async function uploadToR2FromUrl(
       console.warn(
         {
           expectedSize,
-          actualSize,
+          actualSize: downloadedSize,
           sizeDifference,
           fileName
         },
@@ -70,7 +74,7 @@ async function uploadToR2FromUrl(
       console.info(
         {
           expectedSize,
-          actualSize,
+          actualSize: downloadedSize,
           fileName
         },
         'Downloaded file size matches expected size within tolerance'
@@ -79,11 +83,11 @@ async function uploadToR2FromUrl(
   }
 
   // Validate that the file is not empty
-  if (actualSize === 0) {
+  if (downloadedSize === 0) {
     throw new Error(`Downloaded file is empty: ${fileName}`)
   }
 
-  console.info(`Uploading file to R2: ${fileName} (${actualSize} bytes)`)
+  console.info(`Uploading file to R2: ${fileName} (${downloadedSize} bytes)`)
 
   const client = getR2Client()
   await client.send(
@@ -95,10 +99,31 @@ async function uploadToR2FromUrl(
     })
   )
 
+  // Verify size on R2 via HEAD before updating prisma
+  const head = await client.send(
+    new HeadObjectCommand({
+      Bucket: process.env.CLOUDFLARE_R2_BUCKET,
+      Key: fileName
+    })
+  )
+  const r2Size = head.ContentLength ?? 0
+
+  if (r2Size === 0) {
+    throw new Error(`R2 stored object has size 0: ${fileName}`)
+  }
+
+  if (r2Size !== downloadedSize) {
+    console.warn(
+      { downloadedSize, r2Size, fileName },
+      'R2 object size does not match downloaded size'
+    )
+  }
+
   const publicUrl = `${process.env.CLOUDFLARE_R2_CUSTOM_DOMAIN}/${fileName}`
   console.info(`File uploaded to R2: ${publicUrl}`)
 
-  return { publicUrl, actualSize }
+  // Return the size verified from R2
+  return { publicUrl, actualSize: r2Size }
 }
 
 async function migrateDownloadsToR2(): Promise<void> {
@@ -114,11 +139,14 @@ async function migrateDownloadsToR2(): Promise<void> {
   ]) {
     const where = {
       where: {
-        videoVariantId: '13_9774-0-RPGospelIntro',
+        videoVariantId: '1_101833-jf-0-0', // {
+        // startsWith: '10\\_'
+        // },
         assetId: null,
         AND: [
           { url: { not: '' } },
-          { url: { not: { startsWith: 'https://stream' } } }
+          { url: { not: { startsWith: 'https://stream' } } },
+          { url: { not: { startsWith: 'https://api-media' } } }
         ],
         quality
       },
@@ -160,12 +188,16 @@ async function migrateDownloadsToR2(): Promise<void> {
         const expectedSize =
           download.size && download.size > 0 ? download.size : undefined
 
+        const expectedSizeRounded =
+          download.size && download.size > 0 ? Math.floor(download.size) : 0
+        const safeExpectedSizeBigInt = BigInt(expectedSizeRounded)
+
         const asset = await prisma.cloudflareR2.create({
           data: {
             fileName,
             userId: 'system',
             contentType,
-            contentLength: expectedSize ? Math.floor(expectedSize) : 0,
+            contentLength: safeExpectedSizeBigInt,
             videoId
           }
         })
@@ -180,11 +212,13 @@ async function migrateDownloadsToR2(): Promise<void> {
         )
 
         // Update the asset with the actual size and public URL
+        const safeActualSizeBigInt = BigInt(actualSize)
+
         await prisma.cloudflareR2.update({
           where: { id: asset.id },
           data: {
             publicUrl,
-            contentLength: actualSize
+            contentLength: safeActualSizeBigInt
           }
         })
 
