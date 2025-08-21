@@ -111,9 +111,9 @@ export function Drawer({
           width: { xs: 'auto', md: DRAWER_WIDTH },
           left: { xs: 0, md: 'auto' },
           top: { xs: 0, md: 15 },
-          right: { xs: 0, md: 16 },
+          right: { xs: 0, md: 32 },
           bottom: 0,
-          height: 'calc(100% - 20px)'
+          height: '100%'
         }
       }}
     >
@@ -121,7 +121,7 @@ export function Drawer({
       <Box
         data-testid="SettingsDrawerContent"
         className="swiper-no-swiping"
-        sx={{ flexGrow: 1, overflow: 'auto', mb: { md: 4 } }}
+        sx={{ flexGrow: 1, overflow: 'auto' }}
       >
         {children}
       </Box>
