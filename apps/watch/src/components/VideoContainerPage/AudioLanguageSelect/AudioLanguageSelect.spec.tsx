@@ -103,9 +103,55 @@ describe('AudioLanguageSelect', () => {
     content: mockVideo,
     container: mockContainer
   }
+  const originalPointerEvent = window.PointerEvent
+
+  // Store original HTMLElement prototype methods
+  const originalHTMLElementMethods = {
+    scrollIntoView: window.HTMLElement.prototype.scrollIntoView,
+    releasePointerCapture: window.HTMLElement.prototype.releasePointerCapture,
+    hasPointerCapture: window.HTMLElement.prototype.hasPointerCapture
+  }
+
+  // Mock PointerEvent and HTMLElement methods for shadcn/ui Select component testing
+  // https://stackoverflow.com/questions/78975098/testing-shadcn-select-with-jest-and-react-testing-library | https://github.com/shadcn-ui/ui/discussions/4168#discussioncomment-10502077
+  function createMockPointerEvent(
+    type: string,
+    props: PointerEventInit = {}
+  ): PointerEvent {
+    const event = new Event(type, props) as PointerEvent
+    Object.assign(event, {
+      button: props.button ?? 0,
+      ctrlKey: props.ctrlKey ?? false,
+      pointerType: props.pointerType ?? 'mouse'
+    })
+    return event
+  }
 
   beforeEach(() => {
+    // Mock PointerEvent globally - needed for shadcn/ui Select component testing
+    // https://stackoverflow.com/questions/78975098/testing-shadcn-select-with-jest-and-react-testing-library | https://github.com/shadcn-ui/ui/discussions/4168#discussioncomment-10502077
+    Object.defineProperty(window, 'PointerEvent', {
+      writable: true,
+      value: createMockPointerEvent as any
+    })
+
+    // Mock HTMLElement methods globally - needed for shadcn/ui Select component testing
+    // https://stackoverflow.com/questions/78975098/testing-shadcn-select-with-jest-and-react-testing-library | https://github.com/shadcn-ui/ui/discussions/4168#discussioncomment-10502077
+    Object.assign(window.HTMLElement.prototype, {
+      scrollIntoView: jest.fn(),
+      releasePointerCapture: jest.fn(),
+      hasPointerCapture: jest.fn()
+    })
     jest.clearAllMocks()
+  })
+
+  afterEach(() => {
+    // Restore original HTMLElement prototype methods
+    Object.assign(window.HTMLElement.prototype, originalHTMLElementMethods)
+    Object.defineProperty(window, 'PointerEvent', {
+      writable: true,
+      value: originalPointerEvent
+    })
   })
 
   it('should render the language selector with current language', async () => {

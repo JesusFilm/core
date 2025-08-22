@@ -101,24 +101,11 @@ describe('SubtitlesSelect', () => {
   }
 
   const mockT = jest.fn((key: string) => key)
-  const originalPointerEvent = window.PointerEvent
 
   beforeEach(() => {
     useRouterMock.mockReturnValue(mockRouter)
     useTranslationMock.mockReturnValue({ t: mockT })
     jest.clearAllMocks()
-
-    Object.defineProperty(window, 'PointerEvent', {
-      writable: true,
-      value: null
-    })
-  })
-
-  afterEach(() => {
-    Object.defineProperty(window, 'PointerEvent', {
-      writable: true,
-      value: originalPointerEvent
-    })
   })
 
   it('should render all components correctly', () => {
