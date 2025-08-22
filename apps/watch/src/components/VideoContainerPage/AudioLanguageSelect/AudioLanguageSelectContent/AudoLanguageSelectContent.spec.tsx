@@ -2,8 +2,8 @@ import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 
 import { GetLanguagesSlug } from '../../../../../__generated__/GetLanguagesSlug'
-import { VideoProvider } from '../../../../libs/videoContext'
 import { GET_LANGUAGES_SLUG } from '../../../../libs/useLanguagesSlugQuery'
+import { VideoProvider } from '../../../../libs/videoContext'
 import { Select, SelectTrigger } from '../../../Select'
 import { videos } from '../../../Videos/__generated__/testData'
 
