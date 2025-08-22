@@ -73,6 +73,7 @@ export function LocalAppBar({
               mb: { xs: -1.2, lg: -3.5 },
               zIndex: (theme) => ({ xs: theme.zIndex.drawer + 1, lg: 0 })
             }}
+            locale={false}
           >
             <Image
               src={logo}

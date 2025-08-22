@@ -89,6 +89,7 @@ export function ResourceCard({
           event.stopPropagation()
           sendEvent('click', hit, 'Resource Clicked')
         }}
+        locale={false}
       >
         <Stack
           justifyContent="center"

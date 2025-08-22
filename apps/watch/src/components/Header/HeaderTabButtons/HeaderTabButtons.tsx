@@ -72,29 +72,29 @@ export function HeaderTabButtons(): ReactElement {
         }}
       >
         {headerItems.map(({ label, icon, href }) => (
-          <Button
-            key={label}
-            LinkComponent={NextLink}
-            href={href}
-            data-testid={`${label}Button`}
-            color="inherit"
-            sx={{
-              flexGrow: 1,
-              textAlign: 'center',
-              borderRadius: '40px !important',
-              border: '2px solid',
-              borderColor:
-                (router?.pathname?.startsWith(href) ?? false)
-                  ? (theme) => theme.palette.primary.main
-                  : 'transparent',
-              py: { sm: 1 },
-              px: { sm: 2 },
-              fontSize: { sm: '0.875rem', md: '1rem' }
-            }}
-            startIcon={icon}
-          >
-            {label}
-          </Button>
+          <NextLink key={label} href={href} locale={false}>
+            <Button
+              data-testid={`${label}Button`}
+              color="inherit"
+              component="a"
+              sx={{
+                flexGrow: 1,
+                textAlign: 'center',
+                borderRadius: '40px !important',
+                border: '2px solid',
+                borderColor:
+                  (router?.pathname?.startsWith(href) ?? false)
+                    ? (theme) => theme.palette.primary.main
+                    : 'transparent',
+                py: { sm: 1 },
+                px: { sm: 2 },
+                fontSize: { sm: '0.875rem', md: '1rem' }
+              }}
+              startIcon={icon}
+            >
+              {label}
+            </Button>
+          </NextLink>
         ))}
       </Box>
       <Box
@@ -142,27 +142,26 @@ export function HeaderTabButtons(): ReactElement {
         slotProps={{ paper: { style: { width: anchorEl?.clientWidth } } }}
       >
         {headerItems.map(({ label, icon, href }) => (
-          <MenuItem
-            key={label}
-            component={NextLink}
-            href={href}
-            onClick={handleCloseMenu}
-            selected={router?.pathname?.startsWith(href)}
-          >
-            <Stack direction="row" alignItems="center" width="100%" px={2.5}>
-              <ListItemIcon>{icon}</ListItemIcon>
-              <ListItemText
-                primary={label}
-                primaryTypographyProps={{
-                  variant: 'h6',
-                  sx: {
-                    textAlign: 'center'
-                  }
-                }}
-              />
-              <Box sx={{ width: 30 }} />
-            </Stack>
-          </MenuItem>
+          <NextLink key={label} href={href} locale={false}>
+            <MenuItem
+              onClick={handleCloseMenu}
+              selected={router?.pathname?.startsWith(href)}
+            >
+              <Stack direction="row" alignItems="center" width="100%" px={2.5}>
+                <ListItemIcon>{icon}</ListItemIcon>
+                <ListItemText
+                  primary={label}
+                  primaryTypographyProps={{
+                    variant: 'h6',
+                    sx: {
+                      textAlign: 'center'
+                    }
+                  }}
+                />
+                <Box sx={{ width: 30 }} />
+              </Stack>
+            </MenuItem>
+          </NextLink>
         ))}
       </MuiMenu>
     </>

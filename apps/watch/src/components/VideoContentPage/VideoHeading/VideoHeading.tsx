@@ -74,15 +74,19 @@ export function VideoHeading({
               alignItems="center"
             >
               <Stack direction="row" alignItems="center" spacing={2}>
-                <Link
-                  component={NextLink}
+                <NextLink
                   href={`/watch/${container.variant?.slug as string}`}
-                  variant="overline1"
-                  color="primary"
-                  sx={{ textDecoration: 'none' }}
+                  locale={false}
                 >
-                  {last(container.title)?.value}
-                </Link>
+                  <Link
+                    component="a"
+                    variant="overline1"
+                    color="primary"
+                    sx={{ textDecoration: 'none' }}
+                  >
+                    {last(container.title)?.value}
+                  </Link>
+                </NextLink>
                 <Typography
                   variant="overline1"
                   color="secondary"
@@ -107,18 +111,22 @@ export function VideoHeading({
                   )}
                 </Typography>
               </Stack>
-              <Button
-                LinkComponent={NextLink}
+              <NextLink
                 href={`/watch/${container.variant?.slug as string}`}
-                variant="outlined"
-                size="small"
-                color="secondary"
-                sx={{ display: { xs: 'none', xl: 'block' } }}
+                locale={false}
               >
-                {container.label === VideoLabel.featureFilm
-                  ? t('Watch Full Film')
-                  : t('See All')}
-              </Button>
+                <Button
+                  component="a"
+                  variant="outlined"
+                  size="small"
+                  color="secondary"
+                  sx={{ display: { xs: 'none', xl: 'block' } }}
+                >
+                  {container.label === VideoLabel.featureFilm
+                    ? t('Watch Full Film')
+                    : t('See All')}
+                </Button>
+              </NextLink>
               <Typography
                 data-testid="container-progress-short"
                 variant="overline1"

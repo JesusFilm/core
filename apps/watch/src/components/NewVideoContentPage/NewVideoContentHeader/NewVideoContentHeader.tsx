@@ -38,7 +38,10 @@ export function NewVideoContentHeader({
             data-testid="VideoHeading"
           >
             <div className="flex flex-row items-center space-x-4">
-              <NextLink href={`/watch/${container.variant?.slug as string}`}>
+              <NextLink
+                href={`/watch/${container.variant?.slug as string}`}
+                locale={false}
+              >
                 <a className="uppercase text-sm tracking-wider text-primary no-underline">
                   {last(container.title)?.value}
                 </a>
@@ -59,7 +62,10 @@ export function NewVideoContentHeader({
                 )}
               </p>
             </div>
-            <NextLink href={`/watch/${container.variant?.slug as string}`}>
+            <NextLink
+              href={`/watch/${container.variant?.slug as string}`}
+              locale={false}
+            >
               <button className="border border-[#bbbcbc] rounded-md px-2 py-1 text-sm text-[#bbbcbc] hidden xl:block cursor-pointer font-bold">
                 {container.label === VideoLabel.featureFilm
                   ? 'Watch Full Film'

@@ -90,6 +90,7 @@ export function VideoCard({
       aria-label="VideoCard"
       data-testid={video != null ? `VideoCard-${video.id}` : 'VideoCard'}
       onClick={handleClick?.(video?.id)}
+      locale={false}
     >
       <Stack spacing={3}>
         <ImageButton
