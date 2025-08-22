@@ -107,7 +107,7 @@ describe('blockUpdateNavigateToBlockAction mutation', () => {
       })
 
       expect(result).toEqual({
-        data: { blockUpdateNavigateToBlockAction: null },
+        data: null,
         errors: [expect.objectContaining({ message: 'block not found' })]
       })
     })
@@ -128,7 +128,7 @@ describe('blockUpdateNavigateToBlockAction mutation', () => {
       })
 
       expect(result).toEqual({
-        data: { blockUpdateNavigateToBlockAction: null },
+        data: null,
         errors: [
           expect.objectContaining({
             message: 'user is not allowed to update block'
@@ -150,7 +150,7 @@ describe('blockUpdateNavigateToBlockAction mutation', () => {
       })
 
       expect(result).toEqual({
-        data: { blockUpdateNavigateToBlockAction: null },
+        data: null,
         errors: [
           expect.objectContaining({
             message: 'This block does not support navigate to block actions'

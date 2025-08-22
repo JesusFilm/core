@@ -102,7 +102,7 @@ describe('blockUpdateEmailAction mutation', () => {
       })
 
       expect(result).toEqual({
-        data: { blockUpdateEmailAction: null },
+        data: null,
         errors: [expect.objectContaining({ message: 'block not found' })]
       })
     })
@@ -123,7 +123,7 @@ describe('blockUpdateEmailAction mutation', () => {
       })
 
       expect(result).toEqual({
-        data: { blockUpdateEmailAction: null },
+        data: null,
         errors: [
           expect.objectContaining({
             message: 'user is not allowed to update block'
@@ -145,7 +145,7 @@ describe('blockUpdateEmailAction mutation', () => {
       })
 
       expect(result).toEqual({
-        data: { blockUpdateEmailAction: null },
+        data: null,
         errors: [
           expect.objectContaining({
             message: 'This block does not support email actions'

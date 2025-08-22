@@ -215,7 +215,7 @@ describe('blockUpdateAction mutation', () => {
       })
 
       expect(result).toEqual({
-        data: { blockUpdateAction: null },
+        data: null,
         errors: [
           expect.objectContaining({
             message: 'invalid combination of inputs provided'
@@ -233,7 +233,7 @@ describe('blockUpdateAction mutation', () => {
       })
 
       expect(result).toEqual({
-        data: { blockUpdateAction: null },
+        data: null,
         errors: [
           expect.objectContaining({ message: 'no valid inputs provided' })
         ]
@@ -252,7 +252,7 @@ describe('blockUpdateAction mutation', () => {
       })
 
       expect(result).toEqual({
-        data: { blockUpdateAction: null },
+        data: null,
         errors: [expect.objectContaining({ message: 'block not found' })]
       })
     })
@@ -273,7 +273,7 @@ describe('blockUpdateAction mutation', () => {
       })
 
       expect(result).toEqual({
-        data: { blockUpdateAction: null },
+        data: null,
         errors: [
           expect.objectContaining({
             message: 'user is not allowed to update block'
@@ -295,7 +295,7 @@ describe('blockUpdateAction mutation', () => {
       })
 
       expect(result).toEqual({
-        data: { blockUpdateAction: null },
+        data: null,
         errors: [
           expect.objectContaining({
             message: 'This block does not support actions'
@@ -322,7 +322,7 @@ describe('blockUpdateAction mutation', () => {
       })
 
       expect(result).toEqual({
-        data: { blockUpdateAction: null },
+        data: null,
         errors: [
           expect.objectContaining({
             message: 'blockId cannot be the parent step block id'

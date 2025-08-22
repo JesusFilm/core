@@ -113,7 +113,7 @@ describe('blockUpdateLinkAction mutation', () => {
       })
 
       expect(result).toEqual({
-        data: { blockUpdateLinkAction: null },
+        data: null,
         errors: [expect.objectContaining({ message: 'block not found' })]
       })
     })
@@ -138,7 +138,7 @@ describe('blockUpdateLinkAction mutation', () => {
       })
 
       expect(result).toEqual({
-        data: { blockUpdateLinkAction: null },
+        data: null,
         errors: [
           expect.objectContaining({
             message: 'user is not allowed to update block'
@@ -164,7 +164,7 @@ describe('blockUpdateLinkAction mutation', () => {
       })
 
       expect(result).toEqual({
-        data: { blockUpdateLinkAction: null },
+        data: null,
         errors: [
           expect.objectContaining({
             message: 'This block does not support link actions'

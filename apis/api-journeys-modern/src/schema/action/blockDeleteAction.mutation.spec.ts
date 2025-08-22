@@ -79,7 +79,7 @@ describe('blockDeleteAction mutation', () => {
       })
 
       expect(result).toEqual({
-        data: { blockDeleteAction: null },
+        data: null,
         errors: [expect.objectContaining({ message: 'block not found' })]
       })
     })
@@ -97,7 +97,7 @@ describe('blockDeleteAction mutation', () => {
       })
 
       expect(result).toEqual({
-        data: { blockDeleteAction: null },
+        data: null,
         errors: [
           expect.objectContaining({
             message: 'user is not allowed to update block'
@@ -116,7 +116,7 @@ describe('blockDeleteAction mutation', () => {
       })
 
       expect(result).toEqual({
-        data: { blockDeleteAction: null },
+        data: null,
         errors: [
           expect.objectContaining({
             message: 'This block does not support actions'
