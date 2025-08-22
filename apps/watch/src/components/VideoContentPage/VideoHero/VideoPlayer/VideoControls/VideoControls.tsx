@@ -45,7 +45,7 @@ const DynamicLanguageSwitchDialog = dynamic<{
   async () =>
     await import(
       /* webpackChunkName: "LanguageSwitchDialog" */
-      '../../../../LanguageSwitchDialog/LanguageSwitchDialog'
+      '../../../../LanguageSwitchDialog'
     ).then((mod) => mod.LanguageSwitchDialog)
 )
 
@@ -97,10 +97,8 @@ export function VideoControls({
     },
     dispatch: dispatchPlayer
   } = usePlayer()
-  const [loadLanguageSwitchDialog, setLoadLanguageSwitchDialog] =
-    useState(false)
   const [openLanguageSwitchDialog, setOpenLanguageSwitchDialog] =
-    useState(false)
+    useState<boolean>()
 
   const { dispatch: dispatchWatch } = useWatch()
   const { id, title, variant, images, imageAlt } = useVideo()
@@ -478,7 +476,6 @@ export function VideoControls({
     setCookie('SUBTITLES_ON', 'true')
 
     setOpenLanguageSwitchDialog(true)
-    setLoadLanguageSwitchDialog(true)
   }
 
   return (
@@ -774,7 +771,7 @@ export function VideoControls({
                   </IconButton>
                 </Stack>
               </Stack>
-              {loadLanguageSwitchDialog && (
+              {openLanguageSwitchDialog != null && (
                 <DynamicLanguageSwitchDialog
                   open={openLanguageSwitchDialog}
                   handleClose={() => setOpenLanguageSwitchDialog(false)}

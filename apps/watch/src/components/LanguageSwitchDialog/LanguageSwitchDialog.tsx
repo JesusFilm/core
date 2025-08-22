@@ -16,7 +16,6 @@ import { GetAllLanguages } from '../../../__generated__/GetAllLanguages'
 import { useWatch } from '../../libs/watchContext'
 
 import { AudioTrackSelect } from './AudioTrackSelect'
-import { SiteLanguageSelect } from './SiteLanguageSelect'
 import { SubtitlesSelect } from './SubtitlesSelect'
 
 export const GET_ALL_LANGUAGES = gql`
@@ -97,8 +96,6 @@ export const LanguageSwitchDialog = memo(function LanguageSwitchDialog({
 
         <DialogContent sx={{ pt: 0, pb: 6, px: 0 }}>
           <Stack gap={8}>
-            <SiteLanguageSelect />
-            <Divider />
             <AudioTrackSelect />
             <SubtitlesSelect />
           </Stack>
