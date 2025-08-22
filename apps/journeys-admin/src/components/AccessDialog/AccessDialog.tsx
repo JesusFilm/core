@@ -1,5 +1,5 @@
 import { gql, useLazyQuery } from '@apollo/client'
-import Grid from '@mui/material/GridLegacy'
+import Grid from '@mui/material/Grid'
 import Stack from '@mui/material/Stack'
 import { Theme } from '@mui/material/styles'
 import Tooltip from '@mui/material/Tooltip'
@@ -163,12 +163,12 @@ export function AccessDialog({
           data?.journey?.team?.userTeams.length > 0 && (
             <>
               <Grid container spacing={1} alignItems="center" sx={{ pb: 4 }}>
-                <Grid xs={2} sm={1}>
+                <Grid size={{xs: 2, sm: 1}}>
                   <Stack sx={{ ml: 2 }}>
                     <UsersProfiles2 sx={{ color: 'secondary.light' }} />
                   </Stack>
                 </Grid>
-                <Grid xs={5} sm={7}>
+                <Grid size={{xs: 5, sm: 7}}>                
                   <Typography
                     variant="subtitle3"
                     color="secondary.light"
@@ -177,14 +177,14 @@ export function AccessDialog({
                     {t('Team Members')}
                   </Typography>
                 </Grid>
-                <Grid xs={2} sm={2}>
+                <Grid size={{xs: 2, sm: 2}}>
                   <Stack sx={{ ml: 4 }}>
                     <Tooltip title={t('Email Notifications')}>
                       <EmailIcon sx={{ color: 'secondary.light' }} />
                     </Tooltip>
                   </Stack>
                 </Grid>
-                <Grid xs={3} sm={2}>
+                <Grid size={{xs: 3, sm: 2}}>
                   <Stack sx={{ ml: 7 }}>
                     <Tooltip title={t('User Role')}>
                       <ShieldCheck sx={{ color: 'secondary.light' }} />
