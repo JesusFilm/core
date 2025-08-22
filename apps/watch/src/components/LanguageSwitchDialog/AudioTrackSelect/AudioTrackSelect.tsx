@@ -3,6 +3,7 @@ import SpatialAudioOffOutlinedIcon from '@mui/icons-material/SpatialAudioOffOutl
 import { useRouter } from 'next/router'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, memo, useEffect, useMemo, useState } from 'react'
+import { useInstantSearch } from 'react-instantsearch'
 
 import {
   LanguageAutocomplete,
@@ -17,7 +18,6 @@ import { selectLanguageForVideo } from '../utils/audioLanguageSetter'
 import { getCurrentAudioLanguage } from '../utils/getCurrentAudioLanguage'
 import { renderInput } from '../utils/renderInput'
 import { renderOption } from '../utils/renderOption'
-import { useInstantSearch } from 'react-instantsearch'
 
 function useSafeInstantSearch() {
   try {
