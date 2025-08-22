@@ -198,7 +198,7 @@ jobs:
   build-e2e-matrix:
     name: Build E2E Matrix
     needs: [affected, deploy-preview]
-    if: ${{ github.event_name != 'merge_group' && needs.deploy-preview.result == 'success' && !(github.event_name == 'push' && github.ref == 'refs/heads/stage') }}
+    if: ${{ github.event_name != 'merge_group' && needs.deploy-preview.result == 'success' && !(github.event_name == 'push' && github.ref == 'refs/heads/stage') && (github.event_name != 'pull_request' || !github.event.pull_request.draft) }}
     permissions:
       actions: read
       contents: read
@@ -247,7 +247,7 @@ jobs:
     name: Playwright E2E (${{ matrix.app }})
     needs: [build-e2e-matrix]
     # Only run if ALL deploy-preview matrix entries succeeded and we have URLs
-    if: ${{ github.event_name != 'merge_group' && needs.build-e2e-matrix.result == 'success' && needs.build-e2e-matrix.outputs.apps != '[]' && needs.build-e2e-matrix.outputs.apps != '' && !(github.event_name == 'push' && github.ref == 'refs/heads/stage') }}
+    if: ${{ github.event_name != 'merge_group' && needs.build-e2e-matrix.result == 'success' && needs.build-e2e-matrix.outputs.apps != '[]' && needs.build-e2e-matrix.outputs.apps != '' && !(github.event_name == 'push' && github.ref == 'refs/heads/stage') && (github.event_name != 'pull_request' || !github.event.pull_request.draft) }}
     permissions:
       contents: read
     runs-on: blacksmith-4vcpu-ubuntu-2204
