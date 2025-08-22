@@ -5,7 +5,7 @@ import { useVideo } from '../../../../libs/videoContext'
 import { useLanguagesSlugQuery } from '../../../../libs/useLanguagesSlugQuery'
 import { SelectContent } from '../../../Select'
 
-export function AudoLanguageSelectContent() {
+export function AudioLanguageSelectContent() {
   const { id, container } = useVideo()
 
   const { data } = useLanguagesSlugQuery({
