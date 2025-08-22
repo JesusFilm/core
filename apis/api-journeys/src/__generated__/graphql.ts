@@ -1462,16 +1462,16 @@ export type Mutation = {
   bibleCitationUpdate?: Maybe<BibleCitation>;
   /** blockDelete returns the updated sibling blocks on successful delete */
   blockDelete: Array<Block>;
-  blockDeleteAction: Block;
+  blockDeleteAction?: Maybe<Block>;
   /** blockDuplicate returns the updated block, it's children and sibling blocks on successful duplicate */
   blockDuplicate: Array<Block>;
   blockOrderUpdate: Array<Block>;
   /** blockRestore is used for redo/undo */
   blockRestore: Array<Block>;
-  blockUpdateAction: Action;
-  blockUpdateEmailAction: EmailAction;
-  blockUpdateLinkAction: LinkAction;
-  blockUpdateNavigateToBlockAction: NavigateToBlockAction;
+  blockUpdateAction?: Maybe<Action>;
+  blockUpdateEmailAction?: Maybe<EmailAction>;
+  blockUpdateLinkAction?: Maybe<LinkAction>;
+  blockUpdateNavigateToBlockAction?: Maybe<NavigateToBlockAction>;
   buttonBlockCreate: ButtonBlock;
   buttonBlockUpdate?: Maybe<ButtonBlock>;
   buttonClickEventCreate: ButtonClickEvent;
@@ -1725,7 +1725,7 @@ export type MutationBlockRestoreArgs = {
 
 export type MutationBlockUpdateActionArgs = {
   id: Scalars['ID']['input'];
-  input?: InputMaybe<BlockUpdateActionInput>;
+  input: BlockUpdateActionInput;
 };
 
 

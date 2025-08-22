@@ -117,7 +117,7 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   blockDeleteAction(id: ID!, """
   drop this parameter after merging teams
   """
-  journeyId: ID) : Block @join__field(graph: API_JOURNEYS_MODERN, type: "Block", override: "api-journeys") 
+  journeyId: ID) : Block! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
   blockUpdateNavigateToBlockAction(
     id: ID!
     input: NavigateToBlockActionInput!
@@ -125,11 +125,7 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
     drop this parameter after merging teams
     """
     journeyId: ID
-  ): NavigateToBlockAction @join__field(
-    graph: API_JOURNEYS_MODERN
-    type: "NavigateToBlockAction"
-    override: "api-journeys"
-  )
+  ): NavigateToBlockAction! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
   blockUpdateLinkAction(
     id: ID!
     input: LinkActionInput!
@@ -137,7 +133,7 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
     drop this parameter after merging teams
     """
     journeyId: ID
-  ): LinkAction @join__field(graph: API_JOURNEYS_MODERN, type: "LinkAction", override: "api-journeys") 
+  ): LinkAction! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
   blockUpdateEmailAction(
     id: ID!
     input: EmailActionInput!
@@ -145,8 +141,8 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
     drop this parameter after merging teams
     """
     journeyId: ID
-  ): EmailAction @join__field(graph: API_JOURNEYS_MODERN, type: "EmailAction", override: "api-journeys") 
-  blockUpdateAction(id: ID!, input: BlockUpdateActionInput!) : Action @join__field(graph: API_JOURNEYS_MODERN, type: "Action", override: "api-journeys") 
+  ): EmailAction! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
+  blockUpdateAction(id: ID!, input: BlockUpdateActionInput!) : Action! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
   """
   blockDelete returns the updated sibling blocks on successful delete
   """

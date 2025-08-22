@@ -59,6 +59,7 @@ builder.mutationField('blockUpdateAction', (t) =>
       id: t.arg.id({ required: true }),
       input: t.arg({ type: BlockUpdateActionInput, required: true })
     },
+    nullable: false,
     resolve: async (_parent, args, context) => {
       const { id, input } = args
       const user = context.user

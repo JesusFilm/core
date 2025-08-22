@@ -20,6 +20,7 @@ builder.mutationField('blockUpdateLinkAction', (t) =>
       input: t.arg({ type: LinkActionInput, required: true }),
       journeyId: t.arg.id({ required: false })
     },
+    nullable: false,
     resolve: async (_parent, args, context) => {
       const { id, input } = args
       const user = context.user

@@ -18,6 +18,7 @@ builder.mutationField('blockDeleteAction', (t) =>
       id: t.arg.id({ required: true }),
       journeyId: t.arg.id({ required: false })
     },
+    nullable: false,
     resolve: async (_parent, args, context) => {
       const { id } = args
       const user = context.user

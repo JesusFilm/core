@@ -215,7 +215,7 @@ describe('blockUpdateAction mutation', () => {
       })
 
       expect(result).toEqual({
-        data: null,
+        data: { blockUpdateAction: null },
         errors: [
           expect.objectContaining({
             message: 'invalid combination of inputs provided'
@@ -233,7 +233,7 @@ describe('blockUpdateAction mutation', () => {
       })
 
       expect(result).toEqual({
-        data: null,
+        data: { blockUpdateAction: null },
         errors: [
           expect.objectContaining({ message: 'no valid inputs provided' })
         ]
@@ -245,11 +245,14 @@ describe('blockUpdateAction mutation', () => {
 
       const result = await authClient({
         document: MUTATION,
-        variables: { id: 'missing', input: { email: 'example@example.com' } }
+        variables: {
+          id: 'missing',
+          input: { gtmEventName: null, email: 'example@example.com' }
+        }
       })
 
       expect(result).toEqual({
-        data: null,
+        data: { blockUpdateAction: null },
         errors: [expect.objectContaining({ message: 'block not found' })]
       })
     })
@@ -263,13 +266,18 @@ describe('blockUpdateAction mutation', () => {
 
       const result = await authClient({
         document: MUTATION,
-        variables: { id: noAccessBlock.id, input: { email: 'example@example.com' } }
+        variables: {
+          id: noAccessBlock.id,
+          input: { gtmEventName: null, email: 'example@example.com' }
+        }
       })
 
       expect(result).toEqual({
-        data: null,
+        data: { blockUpdateAction: null },
         errors: [
-          expect.objectContaining({ message: 'user is not allowed to update block' })
+          expect.objectContaining({
+            message: 'user is not allowed to update block'
+          })
         ]
       })
     })
@@ -280,13 +288,18 @@ describe('blockUpdateAction mutation', () => {
 
       const result = await authClient({
         document: MUTATION,
-        variables: { id: wrongBlock.id, input: { email: 'example@example.com' } }
+        variables: {
+          id: wrongBlock.id,
+          input: { gtmEventName: null, email: 'example@example.com' }
+        }
       })
 
       expect(result).toEqual({
-        data: null,
+        data: { blockUpdateAction: null },
         errors: [
-          expect.objectContaining({ message: 'This block does not support actions' })
+          expect.objectContaining({
+            message: 'This block does not support actions'
+          })
         ]
       })
     })
@@ -302,13 +315,18 @@ describe('blockUpdateAction mutation', () => {
 
       const result = await authClient({
         document: MUTATION,
-        variables: { id: actionableBlock.id, input: { blockId: 'step-1' } }
+        variables: {
+          id: actionableBlock.id,
+          input: { gtmEventName: null, blockId: 'step-1' }
+        }
       })
 
       expect(result).toEqual({
-        data: null,
+        data: { blockUpdateAction: null },
         errors: [
-          expect.objectContaining({ message: 'blockId cannot be the parent step block id' })
+          expect.objectContaining({
+            message: 'blockId cannot be the parent step block id'
+          })
         ]
       })
     })

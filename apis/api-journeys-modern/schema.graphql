@@ -1026,11 +1026,11 @@ enum MessagePlatform {
 }
 
 type Mutation {
-  blockDeleteAction(id: ID!, journeyId: ID): Block @override(from: "api-journeys")
-  blockUpdateAction(id: ID!, input: BlockUpdateActionInput!): Action @override(from: "api-journeys")
-  blockUpdateEmailAction(id: ID!, input: EmailActionInput!, journeyId: ID): EmailAction @override(from: "api-journeys")
-  blockUpdateLinkAction(id: ID!, input: LinkActionInput!, journeyId: ID): LinkAction @override(from: "api-journeys")
-  blockUpdateNavigateToBlockAction(id: ID!, input: NavigateToBlockActionInput!, journeyId: ID): NavigateToBlockAction @override(from: "api-journeys")
+  blockDeleteAction(id: ID!, journeyId: ID): Block! @override(from: "api-journeys")
+  blockUpdateAction(id: ID!, input: BlockUpdateActionInput!): Action! @override(from: "api-journeys")
+  blockUpdateEmailAction(id: ID!, input: EmailActionInput!, journeyId: ID): EmailAction! @override(from: "api-journeys")
+  blockUpdateLinkAction(id: ID!, input: LinkActionInput!, journeyId: ID): LinkAction! @override(from: "api-journeys")
+  blockUpdateNavigateToBlockAction(id: ID!, input: NavigateToBlockActionInput!, journeyId: ID): NavigateToBlockAction! @override(from: "api-journeys")
   journeySimpleUpdate(id: ID!, journey: Json!): Json
   journeyAiTranslateCreate(input: JourneyAiTranslateInput!): Journey!
   createJourneyEventsExportLog(input: JourneyEventsExportLogInput!): JourneyEventsExportLog!
