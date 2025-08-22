@@ -255,11 +255,12 @@ resource "aws_ecs_task_definition" "ecs_task_definition" {
 }
 
 resource "aws_alb_target_group" "alb_target_group" {
-  name        = "${local.service_config_name_env}-tg"
-  port        = var.service_config.alb_target_group.port
-  protocol    = var.service_config.alb_target_group.protocol
-  target_type = "ip"
-  vpc_id      = var.ecs_config.vpc_id
+  name                 = "${local.service_config_name_env}-tg"
+  port                 = var.service_config.alb_target_group.port
+  protocol             = var.service_config.alb_target_group.protocol
+  target_type          = "ip"
+  vpc_id               = var.ecs_config.vpc_id
+  deregistration_delay = var.service_config.alb_target_group.deregistration_delay
 
   health_check {
     healthy_threshold   = var.service_config.alb_target_group.health_check_healthy_threshold
