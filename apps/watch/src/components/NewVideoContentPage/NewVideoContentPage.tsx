@@ -93,6 +93,7 @@ export function NewVideoContentPage(): ReactElement {
     if (!studyQuestions?.length)
       return [
         {
+          __typename: 'VideoStudyQuestion',
           value: t(
             'If you could ask the creator of this video a question, what would it be?'
           ),
@@ -128,6 +129,7 @@ export function NewVideoContentPage(): ReactElement {
 
     return [
       {
+        __typename: 'VideoStudyQuestion',
         value: t(
           'If you could ask the creator of this video a question, what would it be?'
         ),
