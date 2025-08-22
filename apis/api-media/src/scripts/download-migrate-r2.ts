@@ -174,9 +174,11 @@ async function migrateDownloadsToR2(): Promise<void> {
   ]) {
     const where = {
       where: {
-        // videoVariantId: '1_101833-jf-0-0', // {
-        // startsWith: '10\\_'
-        // },
+        videoVariantId: {
+          // not: {
+          startsWith: '6\\_'
+          // }
+        },
         assetId: null,
         AND: [
           { url: { not: '' } },
@@ -239,12 +241,85 @@ async function migrateDownloadsToR2(): Promise<void> {
 
         console.info(`Created CloudflareR2 asset: ${asset.id}`)
 
-        const { publicUrl, actualSize } = await uploadToR2FromUrl(
-          download.url,
-          fileName,
-          contentType,
-          expectedSize
-        )
+        // Attempt primary download URL first. If it's an arc.gt URL and fails,
+        // try falling back to the distro-quality URL for the same variant.
+        const primaryUrl = download.url
+        const qualityAtAttempt = download.quality
+        const videoVariantIdAtAttempt = download.videoVariantId
+        if (videoVariantIdAtAttempt == null) {
+          throw new Error(`videoVariantId is null for download ${download.id}`)
+        }
+        const downloadIdAtAttempt = download.id
+
+        const attemptUploadWithFallback = async (
+          urlToUse: string,
+          qualityToUse: VideoVariantDownloadQuality,
+          videoVariantId: string,
+          downloadId: string,
+          expected: number | undefined
+        ): Promise<{
+          publicUrl: string
+          actualSize: number
+          usedUrl: string
+        }> => {
+          try {
+            const result = await uploadToR2FromUrl(
+              urlToUse,
+              fileName,
+              contentType,
+              expected
+            )
+            return { ...result, usedUrl: urlToUse }
+          } catch (primaryErr) {
+            const isArcGt = urlToUse.startsWith('https://arc.gt')
+            const fallbackQuality =
+              qualityToUse === VideoVariantDownloadQuality.high
+                ? VideoVariantDownloadQuality.distroHigh
+                : qualityToUse === VideoVariantDownloadQuality.sd
+                  ? VideoVariantDownloadQuality.distroSd
+                  : qualityToUse === VideoVariantDownloadQuality.low
+                    ? VideoVariantDownloadQuality.distroLow
+                    : null
+
+            if (!isArcGt || fallbackQuality == null) throw primaryErr
+
+            const fallback = await prisma.videoVariantDownload.findFirst({
+              where: {
+                videoVariantId,
+                quality: fallbackQuality,
+                url: { not: '' }
+              }
+            })
+
+            if (fallback == null) throw primaryErr
+
+            console.warn(
+              {
+                downloadId: downloadId,
+                primaryUrl: urlToUse,
+                fallbackUrl: fallback.url
+              },
+              'Primary arc.gt URL failed; trying distro URL as fallback'
+            )
+
+            const result = await uploadToR2FromUrl(
+              fallback.url,
+              fileName,
+              contentType,
+              fallback.size && fallback.size > 0 ? fallback.size : undefined
+            )
+            return { ...result, usedUrl: fallback.url }
+          }
+        }
+
+        const { publicUrl, actualSize, usedUrl } =
+          await attemptUploadWithFallback(
+            primaryUrl,
+            qualityAtAttempt,
+            videoVariantIdAtAttempt,
+            downloadIdAtAttempt,
+            expectedSize
+          )
 
         // Update the asset with the actual size and public URL
         const safeActualSizeBigInt = BigInt(actualSize)
@@ -271,11 +346,18 @@ async function migrateDownloadsToR2(): Promise<void> {
           )
         }
 
-        // Update all downloads with the same URL to use the new asset
+        // Update all downloads with the same original URL to use the new asset
         await prisma.videoVariantDownload.updateMany({
           where: { url: download.url },
           data: updateData
         })
+        // If a fallback URL was used and differs from the original, update those too
+        if (usedUrl !== download.url) {
+          await prisma.videoVariantDownload.updateMany({
+            where: { url: usedUrl },
+            data: updateData
+          })
+        }
 
         if (quality === VideoVariantDownloadQuality.high) {
           await prisma.videoVariantDownload.updateMany({
