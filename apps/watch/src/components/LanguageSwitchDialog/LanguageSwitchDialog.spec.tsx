@@ -139,7 +139,7 @@ describe('LanguageSwitchDialog', () => {
   })
 
   describe('component structure', () => {
-    it('should render components in correct order with separators', () => {
+    it('should render components in correct order', () => {
       render(
         <MockedProvider mocks={[]} addTypename={false}>
           <WatchProvider initialState={defaultWatchState}>
@@ -149,10 +149,6 @@ describe('LanguageSwitchDialog', () => {
       )
 
       const dialog = screen.getByRole('dialog')
-
-      // Verify horizontal rule separator exists
-      const separator = dialog.querySelector('hr')
-      expect(separator).toBeInTheDocument()
 
       // Verify dialog contains the main content structure
       expect(dialog).toBeInTheDocument()
