@@ -1,3 +1,5 @@
+import fs from 'fs'
+import { mkdir, readFile, writeFile } from 'fs/promises'
 import path from 'path'
 
 import {
@@ -164,6 +166,31 @@ async function uploadToR2FromUrl(
 async function migrateDownloadsToR2(): Promise<void> {
   console.info('Starting download migration to R2')
 
+  const BAD_URLS_PATH = path.resolve('.cache/api-media/bad-download-urls.json')
+  async function loadBadUrls(): Promise<Set<string>> {
+    try {
+      const data = await readFile(BAD_URLS_PATH, 'utf-8')
+      const arr: unknown = JSON.parse(data)
+      if (Array.isArray(arr)) {
+        return new Set(arr.filter((x) => typeof x === 'string'))
+      }
+      return new Set()
+    } catch {
+      return new Set()
+    }
+  }
+  async function saveBadUrls(badSet: Set<string>): Promise<void> {
+    const dir = path.dirname(BAD_URLS_PATH)
+    if (!fs.existsSync(dir)) {
+      await mkdir(dir, { recursive: true })
+    }
+    const arr = Array.from(badSet)
+    arr.sort()
+    await writeFile(BAD_URLS_PATH, JSON.stringify(arr, null, 2), 'utf-8')
+  }
+
+  const badUrls = await loadBadUrls()
+
   for (const quality of [
     VideoVariantDownloadQuality.high,
     VideoVariantDownloadQuality.distroHigh,
@@ -172,18 +199,19 @@ async function migrateDownloadsToR2(): Promise<void> {
     VideoVariantDownloadQuality.low,
     VideoVariantDownloadQuality.distroLow
   ]) {
-    const where = {
+    const getWhere = () => ({
       where: {
         videoVariantId: {
           // not: {
-          startsWith: '6\\_'
+          startsWith: '2\\_'
           // }
         },
         assetId: null,
         AND: [
           { url: { not: '' } },
           { url: { not: { startsWith: 'https://stream' } } },
-          { url: { not: { startsWith: 'https://api-media' } } }
+          { url: { not: { startsWith: 'https://api-media' } } },
+          { url: { notIn: Array.from(badUrls) } }
         ],
         quality
       },
@@ -196,8 +224,8 @@ async function migrateDownloadsToR2(): Promise<void> {
           }
         }
       }
-    }
-    let download = await prisma.videoVariantDownload.findFirst(where)
+    })
+    let download = await prisma.videoVariantDownload.findFirst(getWhere())
     while (download != null) {
       console.info(
         `Processing download: ${download.videoVariantId} - ${download.quality}`
@@ -302,13 +330,25 @@ async function migrateDownloadsToR2(): Promise<void> {
               'Primary arc.gt URL failed; trying distro URL as fallback'
             )
 
-            const result = await uploadToR2FromUrl(
-              fallback.url,
-              fileName,
-              contentType,
-              fallback.size && fallback.size > 0 ? fallback.size : undefined
-            )
-            return { ...result, usedUrl: fallback.url }
+            try {
+              const result = await uploadToR2FromUrl(
+                fallback.url,
+                fileName,
+                contentType,
+                fallback.size && fallback.size > 0 ? fallback.size : undefined
+              )
+              return { ...result, usedUrl: fallback.url }
+            } catch (fallbackErr) {
+              // Mark both primary and fallback URLs as known bad to avoid retrying in future
+              badUrls.add(urlToUse)
+              badUrls.add(fallback.url)
+              await saveBadUrls(badUrls)
+              console.warn(
+                { primaryUrl: urlToUse, fallbackUrl: fallback.url },
+                'Both primary and fallback URLs failed; marking as known bad'
+              )
+              throw fallbackErr
+            }
           }
         }
 
@@ -395,9 +435,9 @@ async function migrateDownloadsToR2(): Promise<void> {
           { error, downloadId: download.id },
           `Error processing download: ${download.id}`
         )
-        download = await prisma.videoVariantDownload.findFirst(where)
+        download = await prisma.videoVariantDownload.findFirst(getWhere())
       }
-      download = await prisma.videoVariantDownload.findFirst(where)
+      download = await prisma.videoVariantDownload.findFirst(getWhere())
     }
   }
 
