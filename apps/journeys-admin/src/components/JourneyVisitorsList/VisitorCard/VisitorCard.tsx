@@ -25,13 +25,11 @@ export function VisitorCard({
   const withLink = (block: ReactElement): ReactElement => {
     return (
       <NextLink
-        href={`/reports/visitors/${visitorNode?.visitorId ?? ''}/${
+        href={`/reports/visitors/${visitorNode?.visitorId ?? ''}/$${
           router.query?.journeyId != null
             ? `?journeyId=${router.query.journeyId as string}`
             : ''
         }`}
-        passHref
-        legacyBehavior
         prefetch={false}
       >
         {block}

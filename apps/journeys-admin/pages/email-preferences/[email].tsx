@@ -137,15 +137,15 @@ function EmailPreferencesPage({
             </Stack>
           </CardContent>
         </Card>
-        <NextLink href="/" passHref legacyBehavior>
-          <Button
-            variant="contained"
-            disabled={loading}
-            sx={{ backgroundColor: 'secondary.dark' }}
-          >
-            {t('Done')}
-          </Button>
-        </NextLink>
+        <Button
+          LinkComponent={NextLink}
+          href="/"
+          variant="contained"
+          disabled={loading}
+          sx={{ backgroundColor: 'secondary.dark' }}
+        >
+          {t('Done')}
+        </Button>
       </Stack>
     </OnboardingPageWrapper>
   )

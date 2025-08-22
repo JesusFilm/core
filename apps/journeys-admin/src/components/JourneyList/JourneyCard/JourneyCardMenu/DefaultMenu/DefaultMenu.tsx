@@ -196,8 +196,6 @@ export function DefaultMenu({
         href={`/api/preview?slug=${slug}${
           hostname != null ? `&hostname=${hostname}` : ''
         }`}
-        passHref
-        legacyBehavior
         prefetch={false}
       >
         <MenuItem

@@ -78,38 +78,32 @@ export function InformationButton({
           </Typography>
         </MuiMenuItem>
         <Divider />
-        <NextLink
+        <MuiMenuItem
+          component={NextLink}
           href={`mailto:support@nextstep.is?subject=Report%20Journey:%20${
             journey?.title ?? journey?.seoTitle ?? ''
           }&body=I want to report journey (your.nextstep.is/${
             journey?.slug ?? ''
           }) because ...`}
-          passHref
-          legacyBehavior
+          onClick={handleClose}
         >
-          <MuiMenuItem onClick={handleClose}>
-            <Typography color="text.primary" variant="body2">
-              {t('Report this content')}
-            </Typography>
-          </MuiMenuItem>
-        </NextLink>
+          <Typography color="text.primary" variant="body2">
+            {t('Report this content')}
+          </Typography>
+        </MuiMenuItem>
         <Divider />
-        <NextLink
+        <Link
+          component={NextLink}
           href="https://www.cru.org/us/en/about/terms-of-use.html"
-          passHref
-          legacyBehavior
+          variant="body2"
+          underline="none"
+          rel="noopener"
+          target="_blank"
+          sx={{ px: 0 }}
+          onClick={handleClose}
         >
-          <Link
-            variant="body2"
-            underline="none"
-            rel="noopener"
-            target="_blank"
-            sx={{ px: 0 }}
-            onClick={handleClose}
-          >
-            <MuiMenuItem>{t('Terms & Conditions')}</MuiMenuItem>
-          </Link>
-        </NextLink>
+          <MuiMenuItem>{t('Terms & Conditions')}</MuiMenuItem>
+        </Link>
         <Box sx={{ px: 4, py: 1, maxWidth: '204px' }}>
           <Typography
             color={theme.palette.action.disabled}
