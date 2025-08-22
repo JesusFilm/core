@@ -17,31 +17,6 @@ import { videoItems } from './data'
 
 import { VideoLibrary } from '.'
 
-// Avoid dynamic components invoking network work in tests
-jest.mock('./VideoDetails', () => ({
-  __esModule: true,
-  VideoDetails: ({
-    id,
-    onSelect
-  }: {
-    id: string
-    onSelect: (v: unknown) => void
-  }) => (
-    <button
-      data-testid="VideoDetailsSelect"
-      onClick={() =>
-        onSelect({
-          videoId: id,
-          videoVariantLanguageId: '529',
-          duration: 0,
-          source: 'internal',
-          startAt: 0,
-          endAt: 0
-        })
-      }
-    />
-  )
-}))
 jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
   default: jest.fn()
@@ -187,8 +162,7 @@ describe('VideoLibrary', () => {
     await waitFor(() =>
       fireEvent.click(screen.getByTestId('VideoListItem-videoId'))
     )
-    // Click mocked VideoDetails select button
-    fireEvent.click(screen.getByTestId('VideoDetailsSelect'))
+    fireEvent.click(screen.getByRole('button', { name: 'Select' }))
     expect(onSelect).toHaveBeenCalledWith({
       duration: 0,
       endAt: 0,
@@ -241,10 +215,7 @@ describe('VideoLibrary', () => {
       </MockedProvider>
     )
 
-    // Our mocked VideoDetails renders a select button as a proxy for being open
-    await waitFor(() =>
-      expect(screen.getByTestId('VideoDetailsSelect')).toBeInTheDocument()
-    )
+    await waitFor(() => expect(screen.getByText('Video Details')).toBeVisible())
   })
 
   it('should render YouTube', async () => {

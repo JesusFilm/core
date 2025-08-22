@@ -1,5 +1,4 @@
 import { MockedProvider } from '@apollo/client/testing'
-import React from 'react'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 
@@ -30,18 +29,6 @@ describe('VideoList', () => {
     expect(getByText('Brand_Video')).toBeInTheDocument()
     expect(getByText('The Demoniac')).toBeInTheDocument()
   })
-
-  // Mock nested VideoDetails to render a Select button to complete flow
-  jest.mock('../VideoListItem/VideoListItem', () => ({
-    __esModule: true,
-    VideoListItem: ({
-      onSelect,
-      id
-    }: {
-      onSelect: (v: unknown) => void
-      id: string
-    }) => <button onClick={() => onSelect({})}>Select</button>
-  }))
 
   it('should call onSelect when Video is clicked', async () => {
     const onSelect = jest.fn()

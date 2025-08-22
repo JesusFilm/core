@@ -20,32 +20,6 @@ import { getOnboardingJourneysMock, getTeamsMock } from './data'
 
 import { OnboardingPanel } from '.'
 
-// Make next/dynamic resolve OnboardingList synchronously in tests
-jest.mock('next/dynamic', () => {
-  // eslint-disable-next-line @typescript-eslint/no-var-requires
-  const { OnboardingList } = require('./OnboardingList/OnboardingList')
-  return () => OnboardingList
-})
-
-// Avoid Apollo/team queries in tests by mocking TeamProvider and useTeam
-jest.mock('@core/journeys/ui/TeamProvider', () => ({
-  __esModule: true,
-  TeamProvider: ({ children }: { children: React.ReactNode }) => (
-    <>{children}</>
-  ),
-  useTeam: () => ({ query: { loading: false }, activeTeam: { id: 'teamId' } })
-}))
-
-// Keep GraphQL exports, but render list as noop to avoid Suspense issues
-jest.mock('./OnboardingList/OnboardingList', () => {
-  // eslint-disable-next-line @typescript-eslint/no-var-requires
-  const actual = require('./OnboardingList/OnboardingList')
-  return {
-    ...actual,
-    OnboardingList: () => null
-  }
-})
-
 jest.mock('next/router', () => ({
   __esModule: true,
   useRouter: jest.fn()
@@ -58,15 +32,6 @@ jest.mock('uuid', () => ({
 
 const mockUuidv4 = uuidv4 as jest.MockedFunction<typeof uuidv4>
 const mockUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
-// Mock the journey creation hook to avoid Apollo mutation plumbing in tests
-jest.mock('../../libs/useJourneyCreateMutation', () => ({
-  __esModule: true,
-  useJourneyCreateMutation: () => ({
-    createJourney: async () => ({ id: variables.journeyId }),
-    loading: false
-  })
-}))
-
 const variables = {
   journeyId: 'createdJourneyId',
   title: 'Untitled Journey',
@@ -167,9 +132,11 @@ describe('OnboardingPanel', () => {
     mockUuidv4.mockReturnValueOnce(variables.cardId)
     mockUuidv4.mockReturnValueOnce(variables.imageId)
     const { getByRole } = render(
-      <TeamProvider>
-        <OnboardingPanel />
-      </TeamProvider>
+      <MockedProvider mocks={mocks}>
+        <TeamProvider>
+          <OnboardingPanel />
+        </TeamProvider>
+      </MockedProvider>
     )
     await waitFor(() =>
       expect(
@@ -196,9 +163,20 @@ describe('OnboardingPanel', () => {
       }
     })
     const { queryByRole } = render(
-      <TeamProvider>
-        <OnboardingPanel />
-      </TeamProvider>
+      <MockedProvider
+        mocks={[
+          createJourneyMock,
+          getOnboardingJourneysMock,
+          {
+            ...getTeamsMock,
+            result
+          }
+        ]}
+      >
+        <TeamProvider>
+          <OnboardingPanel />
+        </TeamProvider>
+      </MockedProvider>
     )
 
     await waitFor(() => expect(result).toHaveBeenCalled())
@@ -209,9 +187,11 @@ describe('OnboardingPanel', () => {
 
   it('should display onboarding templates', async () => {
     const { getByText } = render(
-      <TeamProvider>
-        <OnboardingPanel />
-      </TeamProvider>
+      <MockedProvider mocks={mocks}>
+        <TeamProvider>
+          <OnboardingPanel />
+        </TeamProvider>
+      </MockedProvider>
     )
     await waitFor(() =>
       expect(getByText('template 1 title')).toBeInTheDocument()
@@ -227,9 +207,11 @@ describe('OnboardingPanel', () => {
     mockUseRouter.mockReturnValue({ push } as unknown as NextRouter)
 
     const { getByText, getByRole } = render(
-      <TeamProvider>
-        <OnboardingPanel />
-      </TeamProvider>
+      <MockedProvider mocks={mocks}>
+        <TeamProvider>
+          <OnboardingPanel />
+        </TeamProvider>
+      </MockedProvider>
     )
 
     await waitFor(() =>
@@ -244,9 +226,11 @@ describe('OnboardingPanel', () => {
 
   it('should redirect on See all link', () => {
     const { getByRole } = render(
-      <TeamProvider>
-        <OnboardingPanel />
-      </TeamProvider>
+      <MockedProvider mocks={mocks}>
+        <TeamProvider>
+          <OnboardingPanel />
+        </TeamProvider>
+      </MockedProvider>
     )
 
     expect(getByRole('link', { name: 'See all' })).toHaveAttribute(
@@ -257,9 +241,11 @@ describe('OnboardingPanel', () => {
 
   it('should redirect on See all templates button', () => {
     const { getByRole } = render(
-      <TeamProvider>
-        <OnboardingPanel />
-      </TeamProvider>
+      <MockedProvider mocks={[]}>
+        <TeamProvider>
+          <OnboardingPanel />
+        </TeamProvider>
+      </MockedProvider>
     )
 
     expect(getByRole('link', { name: 'See all templates' })).toHaveAttribute(

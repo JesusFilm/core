@@ -1,10 +1,7 @@
 import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 
-import {
-  WrapperProps,
-  type WrappersProps
-} from '@core/journeys/ui/BlockRenderer'
+import { WrapperProps } from '@core/journeys/ui/BlockRenderer'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { Typography } from '@core/journeys/ui/Typography'
 
@@ -28,8 +25,7 @@ interface InlineEditWrapperProps
     | RadioQuestionFields
     | RadioOptionFields
     | TextResponseFields
-    | SignUpFields,
-    { wrappers?: WrappersProps }
+    | SignUpFields
   > {}
 
 export function InlineEditWrapper({
@@ -65,7 +61,10 @@ export function InlineEditWrapper({
     case 'RadioQuestionBlock':
       if (showEditable)
         component = (
-          <RadioQuestionEdit {...block} wrappers={children.props.wrappers} />
+          <RadioQuestionEdit
+            {...block}
+            wrappers={(children.props as any).wrappers}
+          />
         )
       break
     case 'SignUpBlock':

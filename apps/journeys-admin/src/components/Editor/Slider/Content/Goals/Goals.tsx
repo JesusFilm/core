@@ -1,7 +1,7 @@
 import Stack from '@mui/material/Stack'
 import { Theme } from '@mui/material/styles'
 import useMediaQuery from '@mui/material/useMediaQuery'
-import { ReactElement, useEffect, useMemo } from 'react'
+import { ReactElement, useMemo } from 'react'
 
 import {
   GoalType,
@@ -44,16 +44,13 @@ export function Goals(): ReactElement {
         }
         return result
       }, [])
+    if (smUp)
+      dispatch({
+        type: 'SetSelectedGoalUrlAction',
+        selectedGoalUrl: goals[0]?.url
+      })
     return goals
   }, [journey?.blocks, dispatch, smUp])
-
-  useEffect(() => {
-    if (!smUp) return
-    dispatch({
-      type: 'SetSelectedGoalUrlAction',
-      selectedGoalUrl: goals[0]?.url
-    })
-  }, [smUp, goals, dispatch])
 
   return (
     <Stack
