@@ -17,17 +17,15 @@ describe('useJourneyNotificationUpdate', () => {
     })
 
     await act(async () => {
-      await waitFor(async () => {
-        await result.current[0]({
-          variables: {
-            input: {
-              journeyId: 'journeyId',
-              visitorInteractionEmail: true
-            }
+      await result.current[0]({
+        variables: {
+          input: {
+            journeyId: 'journeyId',
+            visitorInteractionEmail: true
           }
-        })
-        expect(useJourneyNotifcationUpdateMock.result).toHaveBeenCalled()
+        }
       })
     })
+    expect(useJourneyNotifcationUpdateMock.result).toHaveBeenCalled()
   })
 })

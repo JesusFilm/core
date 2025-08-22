@@ -72,15 +72,13 @@ describe('useBlockRestoreMutation', () => {
     })
 
     await act(async () => {
-      await waitFor(async () => {
-        await result.current[0]({
-          variables: {
-            id: stepBlock.id
-          }
-        })
-        expect(useBlockRestoreMutationMock.result).toHaveBeenCalled()
+      await result.current[0]({
+        variables: {
+          id: stepBlock.id
+        }
       })
     })
+    expect(useBlockRestoreMutationMock.result).toHaveBeenCalled()
 
     const extractedCache = cache.extract()
     expect(extractedCache['Journey:journey-id']?.blocks).toEqual([

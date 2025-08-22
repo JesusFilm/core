@@ -55,33 +55,30 @@ describe('useHostUpdateMutation', () => {
     })
 
     await act(async () => {
-      await waitFor(async () => {
-        expect(
-          await result.current.updateHost({
-            id: 'hostId',
-            teamId: 'teamId',
-            input: {
-              title: 'newTitle',
-              location: 'newLocation',
-              src1: 'newSrc1',
-              src2: 'newSrc2'
-            }
-          })
-        ).toMatchObject({
-          id: 'hostId',
-          __typename: 'Host',
+      const updated = await result.current.updateHost({
+        id: 'hostId',
+        teamId: 'teamId',
+        input: {
           title: 'newTitle',
           location: 'newLocation',
           src1: 'newSrc1',
           src2: 'newSrc2'
-        })
+        }
       })
-      await waitFor(async () => {
-        expect(cache.extract()?.ROOT_QUERY?.hosts).toEqual([
-          { __ref: 'Host:hostId' }
-        ])
+      expect(updated).toMatchObject({
+        id: 'hostId',
+        __typename: 'Host',
+        title: 'newTitle',
+        location: 'newLocation',
+        src1: 'newSrc1',
+        src2: 'newSrc2'
       })
     })
+    await waitFor(() =>
+      expect(cache.extract()?.ROOT_QUERY?.hosts).toEqual([
+        { __ref: 'Host:hostId' }
+      ])
+    )
   })
 
   it('returns a function which returns undefined if error', async () => {
@@ -95,7 +92,8 @@ describe('useHostUpdateMutation', () => {
                 query: UPDATE_HOST,
                 variables: {
                   id: 'hostId',
-                  teamId: 'teamId'
+                  teamId: 'teamId',
+                  input: {}
                 }
               },
               result: {
@@ -110,15 +108,12 @@ describe('useHostUpdateMutation', () => {
     })
 
     await act(async () => {
-      await waitFor(async () => {
-        expect(
-          await result.current.updateHost({
-            id: 'hostId',
-            teamId: 'teamId',
-            input: {}
-          })
-        ).toBeUndefined()
+      const updated = await result.current.updateHost({
+        id: 'hostId',
+        teamId: 'teamId',
+        input: {}
       })
+      expect(updated).toBeUndefined()
     })
   })
 })

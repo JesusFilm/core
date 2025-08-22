@@ -15,6 +15,8 @@ import {
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { defaultJourney } from '@core/journeys/ui/TemplateView/data'
 import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
+import { GET_CURRENT_USER } from '../../../../../../libs/useCurrentUserLazyQuery'
+import { GET_USER_TEAMS_AND_INVITES } from '../../../../../../libs/useUserTeamsAndInvitesQuery/useUserTeamsAndInvitesQuery'
 
 import { TestEditorState } from '../../../../../../libs/TestEditorState'
 
@@ -39,7 +41,22 @@ describe('JourneyAppearance', () => {
 
   it('should display JourneyAppearance attributes for Journey mode', async () => {
     render(
-      <MockedProvider>
+      <MockedProvider
+        mocks={[
+          {
+            request: { query: GET_CURRENT_USER },
+            result: {
+              data: {
+                me: { __typename: 'User', id: 'u1', email: 'u1@example.com' }
+              }
+            }
+          },
+          {
+            request: { query: GET_USER_TEAMS_AND_INVITES },
+            result: { data: { userTeams: [], userTeamInvites: [] } }
+          }
+        ]}
+      >
         <SnackbarProvider>
           <FlagsProvider flags={{ websiteMode: true }}>
             <JourneyProvider value={{ journey: defaultJourney }}>
@@ -79,7 +96,22 @@ describe('JourneyAppearance', () => {
 
   it('should display JourneyAppearance attributes for Website mode', async () => {
     render(
-      <MockedProvider>
+      <MockedProvider
+        mocks={[
+          {
+            request: { query: GET_CURRENT_USER },
+            result: {
+              data: {
+                me: { __typename: 'User', id: 'u1', email: 'u1@example.com' }
+              }
+            }
+          },
+          {
+            request: { query: GET_USER_TEAMS_AND_INVITES },
+            result: { data: { userTeams: [], userTeamInvites: [] } }
+          }
+        ]}
+      >
         <SnackbarProvider>
           <FlagsProvider flags={{ websiteMode: true }}>
             <JourneyProvider
@@ -122,7 +154,22 @@ describe('JourneyAppearance', () => {
   it('should return to journey map when close icon is clicked', async () => {
     const contentState = { ...state, activeSlide: ActiveSlide.Content }
     render(
-      <MockedProvider>
+      <MockedProvider
+        mocks={[
+          {
+            request: { query: GET_CURRENT_USER },
+            result: {
+              data: {
+                me: { __typename: 'User', id: 'u1', email: 'u1@example.com' }
+              }
+            }
+          },
+          {
+            request: { query: GET_USER_TEAMS_AND_INVITES },
+            result: { data: { userTeams: [], userTeamInvites: [] } }
+          }
+        ]}
+      >
         <SnackbarProvider>
           <EditorProvider initialState={contentState}>
             <TestEditorState />
