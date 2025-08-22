@@ -31,14 +31,16 @@ export function AlgoliaVideoGrid({
     }
 
   return (
-    <VideoGrid
-      videos={algoliaVideos}
-      loading={loading}
-      showMore={showMore}
-      hasNextPage={!isLastPage}
-      hasNoResults={noResults}
-      onCardClick={handleClick}
-      {...props}
-    />
+    <>
+      <VideoGrid
+        videos={algoliaVideos}
+        loading={loading}
+        showMore={showMore}
+        hasNextPage={!isLastPage}
+        hasNoResults={noResults}
+        onCardClick={handleClick}
+        {...props}
+      />
+    </>
   )
 }

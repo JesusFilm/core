@@ -149,4 +149,16 @@ describe('audioLanguageRedirect', () => {
 
     expect(mockRouter.replace).toHaveBeenCalledWith('/watch/video/spanish')
   })
+
+  it('should not call router.replace when noredirect is true', async () => {
+    mockRouter.query = { noredirect: 'true' }
+    await audioLanguageRedirect({
+      languageVariantsLoading: false,
+      languageVariantsData: mockLanguageVariantsData as any,
+      router: mockRouter,
+      containerSlug: undefined
+    })
+
+    expect(mockRouter.replace).not.toHaveBeenCalled()
+  })
 })

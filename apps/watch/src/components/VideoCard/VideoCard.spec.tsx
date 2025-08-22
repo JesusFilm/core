@@ -82,7 +82,7 @@ describe('VideoCard', () => {
       )
       expect(getByRole('link')).toHaveAttribute(
         'href',
-        `/watch/${videoId}.html/${languageId}.html`
+        `/watch/${videoId}.html/${languageId}.html?noredirect=true`
       )
     })
 
@@ -96,7 +96,7 @@ describe('VideoCard', () => {
       )
       expect(getByRole('link')).toHaveAttribute(
         'href',
-        `/watch/container.html/${videos[0].variant?.slug as string}.html`
+        `/watch/container.html/${videos[0].variant?.slug as string}.html?noredirect=true`
       )
     })
 
@@ -113,7 +113,7 @@ describe('VideoCard', () => {
       )
       expect(getByRole('link')).toHaveAttribute(
         'href',
-        `/watch/${videoId}.html/${languageId}.html`
+        `/watch/${videoId}.html/${languageId}.html?noredirect=true`
       )
     })
 
@@ -130,7 +130,7 @@ describe('VideoCard', () => {
       )
       expect(getByRole('link')).toHaveAttribute(
         'href',
-        `/watch/${videoId}.html/${languageId}.html`
+        `/watch/${videoId}.html/${languageId}.html?noredirect=true`
       )
     })
 
