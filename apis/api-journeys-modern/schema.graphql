@@ -666,6 +666,20 @@ interface Node {
   id: ID!
 }
 
+type PhoneAction implements Action
+  @shareable
+{
+  parentBlockId: ID!
+  gtmEventName: String
+  parentBlock: Block!
+  phone: String!
+}
+
+input PhoneActionInput {
+  gtmEventName: String
+  phone: String!
+}
+
 type Query {
   node(id: ID!): Node
   nodes(ids: [ID!]!): [Node]!
