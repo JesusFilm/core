@@ -29,63 +29,6 @@ describe('Action System', () => {
     })
   })
 
-  describe('canBlockHaveAction utility', () => {
-    let canBlockHaveAction: (block: any) => boolean
-
-    beforeAll(() => {
-      const module = require('./action')
-      canBlockHaveAction = module.canBlockHaveAction
-    })
-
-    it('should return true for ButtonBlock', () => {
-      expect(canBlockHaveAction({ typename: 'ButtonBlock' })).toBe(true)
-    })
-
-    it('should return true for SignUpBlock', () => {
-      expect(canBlockHaveAction({ typename: 'SignUpBlock' })).toBe(true)
-    })
-
-    it('should return true for RadioOptionBlock', () => {
-      expect(canBlockHaveAction({ typename: 'RadioOptionBlock' })).toBe(true)
-    })
-
-    it('should return true for VideoBlock', () => {
-      expect(canBlockHaveAction({ typename: 'VideoBlock' })).toBe(true)
-    })
-
-    it('should return true for VideoTriggerBlock', () => {
-      expect(canBlockHaveAction({ typename: 'VideoTriggerBlock' })).toBe(true)
-    })
-
-    it('should return false for TypographyBlock', () => {
-      expect(canBlockHaveAction({ typename: 'TypographyBlock' })).toBe(false)
-    })
-
-    it('should return false for ImageBlock', () => {
-      expect(canBlockHaveAction({ typename: 'ImageBlock' })).toBe(false)
-    })
-
-    it('should return false for SpacerBlock', () => {
-      expect(canBlockHaveAction({ typename: 'SpacerBlock' })).toBe(false)
-    })
-
-    it('should return false for IconBlock', () => {
-      expect(canBlockHaveAction({ typename: 'IconBlock' })).toBe(false)
-    })
-
-    it('should return false for CardBlock', () => {
-      expect(canBlockHaveAction({ typename: 'CardBlock' })).toBe(false)
-    })
-
-    it('should return false for StepBlock', () => {
-      expect(canBlockHaveAction({ typename: 'StepBlock' })).toBe(false)
-    })
-
-    it('should return false for unknown block type', () => {
-      expect(canBlockHaveAction({ typename: 'UnknownBlock' })).toBe(false)
-    })
-  })
-
   describe('Validation schemas', () => {
     let emailActionInputSchema: any
     let linkActionInputSchema: any

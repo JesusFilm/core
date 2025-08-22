@@ -1,5 +1,5 @@
 extend schema
-  @link(url: "https://specs.apollo.dev/federation/v2.6", import: ["@extends", "@external", "@key", "@shareable"])
+  @link(url: "https://specs.apollo.dev/federation/v2.6", import: ["@extends", "@external", "@key", "@override", "@shareable"])
 
 interface Action {
   parentBlockId: ID!
@@ -17,6 +17,14 @@ interface Block {
 input BlockDuplicateIdMap {
   oldId: ID!
   newId: ID!
+}
+
+input BlockUpdateActionInput {
+  gtmEventName: String
+  email: String
+  url: String
+  target: String
+  blockId: String
 }
 
 input BlocksFilter {
@@ -1018,6 +1026,11 @@ enum MessagePlatform {
 }
 
 type Mutation {
+  blockDeleteAction(id: ID!, journeyId: ID): Block @override(from: "api-journeys")
+  blockUpdateAction(id: ID!, input: BlockUpdateActionInput!): Action @override(from: "api-journeys")
+  blockUpdateEmailAction(id: ID!, input: EmailActionInput!, journeyId: ID): EmailAction @override(from: "api-journeys")
+  blockUpdateLinkAction(id: ID!, input: LinkActionInput!, journeyId: ID): LinkAction @override(from: "api-journeys")
+  blockUpdateNavigateToBlockAction(id: ID!, input: NavigateToBlockActionInput!, journeyId: ID): NavigateToBlockAction @override(from: "api-journeys")
   journeySimpleUpdate(id: ID!, journey: Json!): Json
   journeyAiTranslateCreate(input: JourneyAiTranslateInput!): Journey!
   createJourneyEventsExportLog(input: JourneyEventsExportLogInput!): JourneyEventsExportLog!
@@ -1047,6 +1060,11 @@ type NavigateToBlockAction implements Action
   parentBlockId: ID!
   gtmEventName: String
   parentBlock: Block!
+  blockId: String!
+}
+
+input NavigateToBlockActionInput {
+  gtmEventName: String
   blockId: String!
 }
 
@@ -1172,6 +1190,7 @@ type RadioOptionBlock implements Block
         as a poll option image. Blocks are often of type ImageBlock
   """
   pollOptionImageBlockId: ID
+  action: Action
 }
 
 input RadioOptionBlockCreateInput {
@@ -1242,6 +1261,7 @@ type SignUpBlock implements Block
   parentOrder: Int
   submitIconId: ID
   submitLabel: String
+  action: Action
 }
 
 input SignUpBlockCreateInput {
