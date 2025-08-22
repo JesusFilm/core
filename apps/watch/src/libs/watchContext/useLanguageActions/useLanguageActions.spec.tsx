@@ -182,6 +182,22 @@ describe('useLanguageActions', () => {
       expect(mockReload).not.toHaveBeenCalled()
     })
 
+    it('should not trigger reload when reload is false', async () => {
+      const wrapper = ({ children }: { children: ReactNode }) => (
+        <WatchProvider initialState={defaultInitialState}>
+          {children}
+        </WatchProvider>
+      )
+
+      const { result } = renderHook(() => useLanguageActions(), { wrapper })
+
+      act(() => {
+        result.current.updateSiteLanguage('es', false)
+      })
+
+      expect(mockReload).not.toHaveBeenCalled()
+    })
+
     it('should handle missing allLanguages gracefully', async () => {
       const wrapper = ({ children }: { children: ReactNode }) => (
         <WatchProvider initialState={defaultInitialState}>
@@ -289,6 +305,22 @@ describe('useLanguageActions', () => {
 
     act(() => {
       result.current.updateAudioLanguage('530')
+    })
+
+    expect(mockReload).not.toHaveBeenCalled()
+  })
+
+  it('should not trigger reload when reload is false', async () => {
+    const wrapper = ({ children }: { children: ReactNode }) => (
+      <WatchProvider initialState={defaultInitialState}>
+        {children}
+      </WatchProvider>
+    )
+
+    const { result } = renderHook(() => useLanguageActions(), { wrapper })
+
+    act(() => {
+      result.current.updateAudioLanguage('530', false)
     })
 
     expect(mockReload).not.toHaveBeenCalled()
