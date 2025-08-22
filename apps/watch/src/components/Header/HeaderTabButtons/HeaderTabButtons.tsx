@@ -72,29 +72,29 @@ export function HeaderTabButtons(): ReactElement {
         }}
       >
         {headerItems.map(({ label, icon, href }) => (
-          <NextLink key={label} href={href} locale={false}>
-            <Button
-              data-testid={`${label}Button`}
-              color="inherit"
-              component="a"
-              sx={{
-                flexGrow: 1,
-                textAlign: 'center',
-                borderRadius: '40px !important',
-                border: '2px solid',
-                borderColor:
-                  (router?.pathname?.startsWith(href) ?? false)
-                    ? (theme) => theme.palette.primary.main
-                    : 'transparent',
-                py: { sm: 1 },
-                px: { sm: 2 },
-                fontSize: { sm: '0.875rem', md: '1rem' }
-              }}
-              startIcon={icon}
-            >
-              {label}
-            </Button>
-          </NextLink>
+          <Button
+            data-testid={`${label}Button`}
+            color="inherit"
+            component={NextLink}
+            href={href}
+            key={label}
+            sx={{
+              flexGrow: 1,
+              textAlign: 'center',
+              borderRadius: '40px !important',
+              border: '2px solid',
+              borderColor:
+                (router?.pathname?.startsWith(href) ?? false)
+                  ? (theme) => theme.palette.primary.main
+                  : 'transparent',
+              py: { sm: 1 },
+              px: { sm: 2 },
+              fontSize: { sm: '0.875rem', md: '1rem' }
+            }}
+            startIcon={icon}
+          >
+            {label}
+          </Button>
         ))}
       </Box>
       <Box
