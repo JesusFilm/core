@@ -117,6 +117,7 @@ export function JourneyCard({
         </Box>
         <CardActionArea
           component={NextLink}
+          prefetch={false}
           href={`/journeys/${journey.id}`}
           disabled={isNavigating}
           sx={{
