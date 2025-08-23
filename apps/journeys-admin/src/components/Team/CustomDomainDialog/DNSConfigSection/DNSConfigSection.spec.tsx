@@ -18,11 +18,11 @@ Object.assign(navigator, {
   }
 })
 
-const enqueueSnackbar = jest.fn()
+const mockEnqueueSnackbar = jest.fn()
 
 jest.mock('notistack', () => ({
   __esModule: true,
-  useSnackbar: () => ({ enqueueSnackbar }),
+  useSnackbar: () => ({ enqueueSnackbar: mockEnqueueSnackbar }),
   SnackbarProvider: ({ children }: { children: React.ReactNode }) => (
     <>{children}</>
   )
@@ -86,7 +86,7 @@ describe('DNSConfigSection', () => {
       expect(navigator.clipboard.writeText).toHaveBeenCalledWith('76.76.21.21')
     )
     await waitFor(() =>
-      expect(enqueueSnackbar).toHaveBeenCalledWith('Copied', {
+      expect(mockEnqueueSnackbar).toHaveBeenCalledWith('Copied', {
         variant: 'success',
         preventDuplicate: true
       })
@@ -109,7 +109,7 @@ describe('DNSConfigSection', () => {
       )
     )
     await waitFor(() =>
-      expect(enqueueSnackbar).toHaveBeenCalledWith('Copied', {
+      expect(mockEnqueueSnackbar).toHaveBeenCalledWith('Copied', {
         variant: 'success',
         preventDuplicate: true
       })
@@ -153,7 +153,7 @@ describe('DNSConfigSection', () => {
       )
     )
     await waitFor(() =>
-      expect(enqueueSnackbar).toHaveBeenCalledWith('Copied', {
+      expect(mockEnqueueSnackbar).toHaveBeenCalledWith('Copied', {
         variant: 'success',
         preventDuplicate: true
       })

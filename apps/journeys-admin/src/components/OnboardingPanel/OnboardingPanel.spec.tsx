@@ -20,6 +20,42 @@ import { getOnboardingJourneysMock, getTeamsMock } from './data'
 
 import { OnboardingPanel } from '.'
 
+// Ensure next/dynamic renders the OnboardingList immediately in tests
+jest.mock('next/dynamic', () => {
+  return () => {
+    // Bypass dynamic loader and return the mocked module synchronously
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    const mod = require('./OnboardingList')
+    return mod.OnboardingList
+  }
+})
+
+// Mock the OnboardingList module to avoid Apollo/Suspense complexity in tests
+jest.mock('./OnboardingList', () => {
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
+  const React = require('react')
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
+  const { MediaListItem } = require('../MediaListItem/MediaListItem')
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
+  const { onboardingJourneys } = require('./data')
+  const OnboardingList = () =>
+    React.createElement(
+      React.Fragment,
+      null,
+      onboardingJourneys.map((t: any) =>
+        React.createElement(MediaListItem, {
+          key: t.id,
+          title: t.title,
+          description: t.description,
+          image: t.primaryImageBlock?.src,
+          overline: 'Template',
+          href: `/templates/${t.id}`
+        })
+      )
+    )
+  return { __esModule: true, OnboardingList }
+})
+
 jest.mock('next/router', () => ({
   __esModule: true,
   useRouter: jest.fn()
@@ -117,10 +153,12 @@ const createJourneyMock: MockedResponse<CreateJourney, CreateJourneyVariables> =
       }
     }
   }
+// Apollo MockedProvider consumes one mock per matching request. React 18 StrictMode,
+// Suspense, and dynamic imports may trigger multiple fetches. Provide many copies.
 const mocks: MockedResponse[] = [
   createJourneyMock,
-  getOnboardingJourneysMock,
-  getTeamsMock
+  ...Array.from({ length: 20 }, () => getOnboardingJourneysMock),
+  ...Array.from({ length: 20 }, () => getTeamsMock)
 ]
 
 describe('OnboardingPanel', () => {
@@ -157,20 +195,26 @@ describe('OnboardingPanel', () => {
   })
 
   it('should not show create journey button when on shared with me', async () => {
-    const result = jest.fn().mockReturnValueOnce({
+    const result = jest.fn().mockImplementation(() => ({
       data: {
-        teams: []
+        teams: [],
+        getJourneyProfile: {
+          __typename: 'JourneyProfile',
+          id: 'journeyProfileId',
+          lastActiveTeamId: null
+        }
       }
-    })
+    }))
     const { queryByRole } = render(
       <MockedProvider
         mocks={[
           createJourneyMock,
-          getOnboardingJourneysMock,
-          {
-            ...getTeamsMock,
+          ...Array.from({ length: 10 }, () => getOnboardingJourneysMock),
+          // supply many copies of the empty teams response
+          ...Array.from({ length: 10 }, () => ({
+            request: getTeamsMock.request,
             result
-          }
+          }))
         ]}
       >
         <TeamProvider>

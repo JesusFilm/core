@@ -76,7 +76,7 @@ export const getTeamsMock: MockedResponse<GetLastActiveTeamIdAndTeams> = {
   request: {
     query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS
   },
-  result: {
+  newData: () => ({
     data: {
       teams: [
         {
@@ -94,7 +94,7 @@ export const getTeamsMock: MockedResponse<GetLastActiveTeamIdAndTeams> = {
         lastActiveTeamId: 'teamId'
       }
     }
-  }
+  })
 }
 
 export const getOnboardingJourneysMock: MockedResponse<
@@ -109,7 +109,7 @@ export const getOnboardingJourneysMock: MockedResponse<
       }
     }
   },
-  result: {
+  newData: () => ({
     data: { onboardingJourneys }
-  }
+  })
 }

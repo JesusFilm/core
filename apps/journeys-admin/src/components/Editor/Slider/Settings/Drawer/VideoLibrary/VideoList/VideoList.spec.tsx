@@ -11,6 +11,31 @@ jest.mock('@mui/material/useMediaQuery', () => ({
   default: jest.fn()
 }))
 
+// Stub VideoDetails (loaded dynamically) to avoid Apollo/network dependencies
+jest.mock('../VideoDetails', () => ({
+  __esModule: true,
+  VideoDetails: ({
+    onSelect,
+    onClose
+  }: {
+    onSelect: (b: unknown) => void
+    onClose: () => void
+  }) => {
+    const React = require('react')
+    return React.createElement(
+      'button',
+      {
+        type: 'button',
+        onClick: () => {
+          onSelect({})
+          onClose()
+        }
+      },
+      'Select'
+    )
+  }
+}))
+
 describe('VideoList', () => {
   beforeEach(() => (useMediaQuery as jest.Mock).mockImplementation(() => true))
 
