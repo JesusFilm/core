@@ -10,7 +10,7 @@ import { type CoreVideo } from '../../libs/algolia/transformAlgoliaVideos'
 import { getCookie } from '../../libs/cookieHandler'
 import { getVideoChildrenMock } from '../../libs/useVideoChildren/getVideoChildrenMock'
 import { VideoProvider } from '../../libs/videoContext'
-import { GET_LANGUAGES_SLUG } from '../AudioLanguageDialog/AudioLanguageDialog'
+import { GET_LANGUAGES_SLUG } from '../../libs/useLanguagesSlugQuery'
 import { videos } from '../Videos/__generated__/testData'
 
 import { VideoContentPage } from '.'
