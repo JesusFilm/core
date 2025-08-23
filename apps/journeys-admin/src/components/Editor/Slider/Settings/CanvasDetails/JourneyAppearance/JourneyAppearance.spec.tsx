@@ -15,10 +15,10 @@ import {
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { defaultJourney } from '@core/journeys/ui/TemplateView/data'
 import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
-import { GET_CURRENT_USER } from '../../../../../../libs/useCurrentUserLazyQuery'
-import { GET_USER_TEAMS_AND_INVITES } from '../../../../../../libs/useUserTeamsAndInvitesQuery/useUserTeamsAndInvitesQuery'
 
 import { TestEditorState } from '../../../../../../libs/TestEditorState'
+import { GET_CURRENT_USER } from '../../../../../../libs/useCurrentUserLazyQuery'
+import { GET_USER_TEAMS_AND_INVITES } from '../../../../../../libs/useUserTeamsAndInvitesQuery/useUserTeamsAndInvitesQuery'
 
 import { JourneyAppearance } from './JourneyAppearance'
 

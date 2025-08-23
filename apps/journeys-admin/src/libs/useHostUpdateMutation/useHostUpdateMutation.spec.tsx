@@ -1,6 +1,6 @@
 import { InMemoryCache } from '@apollo/client'
 import { MockedProvider } from '@apollo/client/testing'
-import { act, renderHook, waitFor } from '@testing-library/react'
+import { renderHook, waitFor } from '@testing-library/react'
 
 import { UPDATE_HOST, useHostUpdateMutation } from './useHostUpdateMutation'
 
@@ -54,25 +54,23 @@ describe('useHostUpdateMutation', () => {
       )
     })
 
-    await act(async () => {
-      const updated = await result.current.updateHost({
-        id: 'hostId',
-        teamId: 'teamId',
-        input: {
-          title: 'newTitle',
-          location: 'newLocation',
-          src1: 'newSrc1',
-          src2: 'newSrc2'
-        }
-      })
-      expect(updated).toMatchObject({
-        id: 'hostId',
-        __typename: 'Host',
+    const updated = await result.current.updateHost({
+      id: 'hostId',
+      teamId: 'teamId',
+      input: {
         title: 'newTitle',
         location: 'newLocation',
         src1: 'newSrc1',
         src2: 'newSrc2'
-      })
+      }
+    })
+    expect(updated).toMatchObject({
+      id: 'hostId',
+      __typename: 'Host',
+      title: 'newTitle',
+      location: 'newLocation',
+      src1: 'newSrc1',
+      src2: 'newSrc2'
     })
     await waitFor(() =>
       expect(cache.extract()?.ROOT_QUERY?.hosts).toEqual([
@@ -107,13 +105,11 @@ describe('useHostUpdateMutation', () => {
       )
     })
 
-    await act(async () => {
-      const updated = await result.current.updateHost({
-        id: 'hostId',
-        teamId: 'teamId',
-        input: {}
-      })
-      expect(updated).toBeUndefined()
+    const updated = await result.current.updateHost({
+      id: 'hostId',
+      teamId: 'teamId',
+      input: {}
     })
+    await waitFor(() => expect(updated).toBeUndefined())
   })
 })

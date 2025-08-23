@@ -36,8 +36,8 @@ describe('useJourneyEventsExport', () => {
   let consoleWarnSpy: jest.SpyInstance
 
   beforeAll(() => {
-    consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {})
-    consoleWarnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {})
+    consoleErrorSpy = jest.spyOn(console, 'error').mockReturnValue()
+    consoleWarnSpy = jest.spyOn(console, 'warn').mockReturnValue()
   })
 
   afterAll(() => {

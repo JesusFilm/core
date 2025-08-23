@@ -1,6 +1,24 @@
 import { fireEvent, renderHook, screen, waitFor } from '@testing-library/react'
 import { ReactNode } from 'react'
 
+jest.mock('@core/shared/ui/icons/FlipLeft', () => ({
+  __esModule: true,
+  default: () => null
+}))
+
+jest.mock('../Item/Item', () => ({
+  __esModule: true,
+  Item: ({ label, onClick, ButtonProps }: any) => (
+    <button
+      aria-label={label}
+      onClick={onClick}
+      disabled={ButtonProps?.disabled}
+    >
+      {label}
+    </button>
+  )
+}))
+
 import {
   Command,
   CommandProvider,

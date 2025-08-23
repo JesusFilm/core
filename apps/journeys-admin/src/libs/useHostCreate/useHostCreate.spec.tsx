@@ -12,14 +12,12 @@ import { useHostCreate } from './useHostCreate'
 
 describe('useHostCreate', () => {
   it('should not create/update host when journey has no team', async () => {
-    const mockCreateResult = jest.fn().mockResolvedValue({
-      ...hostCreateMock.result,
-      refetchQueries: []
-    })
-    const mockJourneyUpdateResult = jest.fn().mockResolvedValue({
-      ...updateJourneyHostMock.result,
-      refetchQueries: []
-    })
+    const mockCreateResult = jest.fn(() => ({
+      ...hostCreateMock.result
+    }))
+    const mockJourneyUpdateResult = jest.fn(() => ({
+      ...updateJourneyHostMock.result
+    }))
 
     const { result } = renderHook(() => useHostCreate(), {
       wrapper: ({ children }) => (
@@ -45,17 +43,16 @@ describe('useHostCreate', () => {
   })
 
   it('should create host when journey has team', async () => {
-    const mockCreateResult = jest.fn().mockResolvedValue({
-      ...hostCreateMock.result,
-      refetchQueries: []
-    })
-    const mockJourneyUpdateResult = jest.fn().mockResolvedValue({
-      ...updateJourneyHostMock.result,
-      refetchQueries: []
-    })
+    const mockCreateResult = jest.fn(() => ({
+      ...hostCreateMock.result
+    }))
+    const mockJourneyUpdateResult = jest.fn(() => ({
+      ...updateJourneyHostMock.result
+    }))
 
     const journeyWithTeam: JourneyFields = {
       ...journey,
+      id: 'journeyId',
       team: {
         __typename: 'Team',
         id: 'team.id',

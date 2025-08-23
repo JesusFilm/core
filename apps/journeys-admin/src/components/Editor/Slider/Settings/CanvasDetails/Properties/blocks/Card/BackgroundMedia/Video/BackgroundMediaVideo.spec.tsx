@@ -48,9 +48,9 @@ import { COVER_BLOCK_RESTORE } from '../../../../../../../../../../libs/useCover
 import { ThemeProvider } from '../../../../../../../../../ThemeProvider'
 import { CommandRedoItem } from '../../../../../../../../Toolbar/Items/CommandRedoItem'
 import { CommandUndoItem } from '../../../../../../../../Toolbar/Items/CommandUndoItem'
+import { GET_VIDEO_VARIANT_LANGUAGES } from '../../../../../../Drawer/VideoBlockEditor/Source/SourceFromLocal/SourceFromLocal'
 import { videoItems } from '../../../../../../Drawer/VideoLibrary/data'
 import { GET_VIDEO } from '../../../../../../Drawer/VideoLibrary/VideoFromLocal/LocalDetails/LocalDetails'
-import { GET_VIDEO_VARIANT_LANGUAGES } from '../../../../../../Drawer/VideoBlockEditor/Source/SourceFromLocal/SourceFromLocal'
 
 import {
   COVER_VIDEO_BLOCK_CREATE,

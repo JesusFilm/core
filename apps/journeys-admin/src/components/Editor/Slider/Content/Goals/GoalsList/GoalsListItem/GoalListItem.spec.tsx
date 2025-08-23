@@ -1,6 +1,6 @@
-import { fireEvent, render, screen } from '@testing-library/react'
 import Table from '@mui/material/Table'
 import TableBody from '@mui/material/TableBody'
+import { fireEvent, render, screen } from '@testing-library/react'
 
 import { GoalType } from '@core/journeys/ui/Button/utils/getLinkActionGoal'
 import {
