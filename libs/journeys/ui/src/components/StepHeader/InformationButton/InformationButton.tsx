@@ -92,18 +92,19 @@ export function InformationButton({
           </Typography>
         </MuiMenuItem>
         <Divider />
-        <Link
-          component={NextLink}
-          href="https://www.cru.org/us/en/about/terms-of-use.html"
-          variant="body2"
-          underline="none"
-          rel="noopener"
-          target="_blank"
-          sx={{ px: 0 }}
-          onClick={handleClose}
-        >
-          <MuiMenuItem>{t('Terms & Conditions')}</MuiMenuItem>
-        </Link>
+        <MuiMenuItem onClick={handleClose}>
+          <Link
+            component={NextLink}
+            href="https://www.cru.org/us/en/about/terms-of-use.html"
+            variant="body2"
+            underline="none"
+            rel="noopener"
+            target="_blank"
+            sx={{ px: 0, display: 'block', width: '100%' }}
+          >
+            {t('Terms & Conditions')}
+          </Link>
+        </MuiMenuItem>
         <Box sx={{ px: 4, py: 1, maxWidth: '204px' }}>
           <Typography
             color={theme.palette.action.disabled}
