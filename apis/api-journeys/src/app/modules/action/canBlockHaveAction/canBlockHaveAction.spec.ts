@@ -1,4 +1,4 @@
-import { Block } from '.prisma/api-journeys-client'
+import { Block } from '@core/prisma/journeys/client'
 
 import { canBlockHaveAction } from './canBlockHaveAction'
 

@@ -1,4 +1,3 @@
-import { useQuery } from '@apollo/client'
 import { sendGTMEvent } from '@next/third-parties/google'
 import last from 'lodash/last'
 import { useRouter } from 'next/router'
@@ -11,14 +10,13 @@ import Bible from '@core/shared/ui/icons/Bible'
 import LinkExternal from '@core/shared/ui/icons/LinkExternal'
 import { ThemeMode } from '@core/shared/ui/themes'
 
-import { GetLanguagesSlug } from '../../../__generated__/GetLanguagesSlug'
 import { VideoContentFields_studyQuestions as StudyQuestions } from '../../../__generated__/VideoContentFields'
 import { useVideoChildren } from '../../libs/useVideoChildren'
 import { getWatchUrl } from '../../libs/utils/getWatchUrl'
 import { useVideo } from '../../libs/videoContext'
 import { useWatch } from '../../libs/watchContext'
 import { audioLanguageRedirect } from '../../libs/watchContext/audioLanguageRedirect'
-import { GET_LANGUAGES_SLUG } from '../AudioLanguageDialog/AudioLanguageDialog'
+import { useLanguagesSlugQuery } from '../../libs/useLanguagesSlugQuery'
 import { PageWrapper } from '../PageWrapper'
 import { ShareDialog } from '../ShareDialog'
 
@@ -62,7 +60,7 @@ export function NewVideoContentPage(): ReactElement {
   )
 
   const { loading: languageVariantsLoading, data: languageVariantsData } =
-    useQuery<GetLanguagesSlug>(GET_LANGUAGES_SLUG, {
+    useLanguagesSlugQuery({
       variables: {
         id
       },
@@ -95,14 +93,19 @@ export function NewVideoContentPage(): ReactElement {
     if (!studyQuestions?.length)
       return [
         {
+          __typename: 'VideoStudyQuestion',
           value: t(
             'If you could ask the creator of this video a question, what would it be?'
-          )
+          ),
+          primary: false
         }
-      ] as unknown as StudyQuestions[]
+      ] as StudyQuestions[]
 
     const { nonPrimary, primary } = studyQuestions.reduce(
-      (acc, q) => {
+      (
+        acc: { nonPrimary: StudyQuestions[]; primary: StudyQuestions[] },
+        q: StudyQuestions
+      ) => {
         if (q.primary === false) {
           acc.nonPrimary.push(q)
         } else if (q.primary === true) {
@@ -111,8 +114,8 @@ export function NewVideoContentPage(): ReactElement {
         return acc
       },
       {
-        nonPrimary: [] as StudyQuestions[],
-        primary: [] as StudyQuestions[]
+        nonPrimary: [],
+        primary: []
       }
     )
 
@@ -126,11 +129,13 @@ export function NewVideoContentPage(): ReactElement {
 
     return [
       {
+        __typename: 'VideoStudyQuestion',
         value: t(
           'If you could ask the creator of this video a question, what would it be?'
-        )
+        ),
+        primary: false
       }
-    ] as unknown as StudyQuestions[]
+    ] as StudyQuestions[]
   }, [studyQuestions])
 
   const handleFreeResourceClick = () => {

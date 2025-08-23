@@ -1,4 +1,4 @@
-import { MediaRole } from '.prisma/api-media-client'
+import { MediaRole } from '@core/prisma/media/client'
 import { graphql } from '@core/shared/gql'
 
 import { getClient } from '../../../test/client'

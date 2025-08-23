@@ -10,12 +10,10 @@ import TracingPlugin, { isRootField } from '@pothos/plugin-tracing'
 import WithInputPlugin from '@pothos/plugin-with-input'
 import { createOpenTelemetryWrapper } from '@pothos/tracing-opentelemetry'
 
-import { LanguageRole, Prisma } from '.prisma/api-languages-client'
+import type PrismaTypes from '@core/prisma/languages/__generated__/pothos-types'
+import { LanguageRole, Prisma, prisma } from '@core/prisma/languages/client'
 import { User } from '@core/yoga/firebaseClient'
 import { InteropContext } from '@core/yoga/interop'
-
-import type PrismaTypes from '../__generated__/pothos-types'
-import { prisma } from '../lib/prisma'
 
 const PrismaPlugin = pluginName
 

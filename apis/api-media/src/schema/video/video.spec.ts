@@ -17,7 +17,7 @@ import {
   VideoSubtitle,
   VideoTitle,
   VideoVariant
-} from '.prisma/api-media-client'
+} from '@core/prisma/media/client'
 import { ResultOf, graphql } from '@core/shared/gql'
 
 import { getClient } from '../../../test/client'
@@ -171,7 +171,8 @@ describe('video', () => {
           value: 'value',
           primary: true,
           languageId: 'languageId',
-          videoId: 'videoId'
+          videoId: 'videoId',
+          crowdInId: null
         }
       ],
       snippet: [
@@ -189,7 +190,8 @@ describe('video', () => {
           value: 'value',
           primary: true,
           languageId: 'languageId',
-          videoId: 'videoId'
+          videoId: 'videoId',
+          crowdInId: null
         }
       ],
       studyQuestions: [
@@ -278,7 +280,7 @@ describe('video', () => {
           createdAt: new Date(),
           updatedAt: new Date(),
           contentType: 'application/octet-stream',
-          contentLength: 0,
+          contentLength: BigInt(0),
           originalFilename: null
         }
       ],

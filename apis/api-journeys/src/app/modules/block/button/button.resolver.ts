@@ -4,8 +4,8 @@ import { Args, Mutation, Resolver } from '@nestjs/graphql'
 import { GraphQLError } from 'graphql'
 import omit from 'lodash/omit'
 
-import { Block, Prisma } from '.prisma/api-journeys-client'
 import { CaslAbility } from '@core/nest/common/CaslAuthModule'
+import { Block, Prisma } from '@core/prisma/journeys/client'
 
 import {
   ButtonBlockCreateInput,

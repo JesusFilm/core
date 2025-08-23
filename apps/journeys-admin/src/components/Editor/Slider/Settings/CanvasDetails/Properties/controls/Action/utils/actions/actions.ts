@@ -38,14 +38,12 @@ interface ActionTranslation {
 /**
  * Get the action object from the value. If value is not found, return None.
  */
-export function getAction(
-  t: TFunction,
-  value?: ActionValue
-): ActionTranslation {
-  if (value == null)
+export function getAction(t: TFunction, value?: string): ActionTranslation {
+  const action = actions(t).find((act) => act.value === value)
+  if (!action)
     return {
       value: 'None',
       label: t('None')
     }
-  return actions(t).find((act) => act.value === value) as ActionTranslation
+  return action
 }
