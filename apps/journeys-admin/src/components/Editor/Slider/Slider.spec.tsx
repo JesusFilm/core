@@ -9,7 +9,8 @@ import {
   ActiveContent,
   ActiveSlide,
   EditorProvider,
-  EditorState
+  EditorState,
+  useEditor
 } from '@core/journeys/ui/EditorProvider'
 
 import { GetJourney_journey_blocks_StepBlock as StepBlock } from '../../../../__generated__/GetJourney'
@@ -35,19 +36,17 @@ jest.mock('./Content/Goals/Goals', () => ({
   Goals: () => null
 }))
 
-// Simplify Canvas to avoid complex FramePortal/BlockRenderer during these interaction tests
-jest.mock('./Content/Canvas/Canvas', () => ({
-  __esModule: true,
-  Canvas: () => {
-    const React = require('react')
-    const { useEditor } = require('@core/journeys/ui/EditorProvider')
-    const { dispatch } = useEditor()
-    return React.createElement('div', {
-      'data-testid': 'EditorCanvas',
-      onClick: () => dispatch({ type: 'SetActiveSlideAction', activeSlide: 1 })
-    })
-  }
-}))
+// Test helper component to dispatch SetActiveSlideAction without lazy imports
+function DispatchSetActiveSlideButton(): JSX.Element {
+  const { dispatch } = useEditor()
+  return (
+    <button
+      type="button"
+      data-testid="DispatchSetActiveSlide"
+      onClick={() => dispatch({ type: 'SetActiveSlideAction', activeSlide: 1 })}
+    />
+  )
+}
 
 // Stub out heavy/async modules that cause act/suspense noise during tests
 jest.mock(

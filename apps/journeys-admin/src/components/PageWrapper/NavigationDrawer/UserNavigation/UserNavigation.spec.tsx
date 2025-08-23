@@ -67,6 +67,7 @@ jest.mock('../../../../libs/useAdminJourneysSuspenseQuery', () => ({
   useAdminJourneysSuspenseQuery: (...args: unknown[]) =>
     mockUseAdminJourneysSuspenseQuery(...args)
 }))
+
 describe('UserNavigation', () => {
   const user = {
     id: 'userId',
