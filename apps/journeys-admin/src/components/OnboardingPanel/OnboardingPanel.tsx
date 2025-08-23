@@ -32,33 +32,32 @@ export function OnboardingPanel(): ReactElement {
       <SidePanelContainer border={false}>
         <Stack direction="row" justifyContent="space-between">
           <Typography variant="subtitle1">{t('Use Template')}</Typography>
-          <NextLink href="/templates" passHref legacyBehavior>
-            <Link
-              underline="none"
-              variant="subtitle2"
-              sx={{ display: 'flex', alignItems: 'center' }}
-            >
-              {t('See all')}
-              <ChevronRightIcon />
-            </Link>
-          </NextLink>
+          <Link
+            component={NextLink}
+            href="/templates"
+            underline="none"
+            variant="subtitle2"
+            sx={{ display: 'flex', alignItems: 'center' }}
+          >
+            {t('See all')}
+            <ChevronRightIcon />
+          </Link>
         </Stack>
       </SidePanelContainer>
       <Suspense fallback={<OnboardingListLoading />}>
         <DynamicOnboardingList />
       </Suspense>
       <SidePanelContainer border={false}>
-        <NextLink href="/templates" passHref legacyBehavior>
-          <Button
-            component="a"
-            variant="outlined"
-            size="small"
-            startIcon={<Grid1Icon />}
-            sx={{ width: 'max-content', alignSelf: 'center' }}
-          >
-            {t('See all templates')}
-          </Button>
-        </NextLink>
+        <Button
+          LinkComponent={NextLink}
+          href="/templates"
+          variant="outlined"
+          size="small"
+          startIcon={<Grid1Icon />}
+          sx={{ width: 'max-content', alignSelf: 'center' }}
+        >
+          {t('See all templates')}
+        </Button>
       </SidePanelContainer>
     </>
   )
