@@ -1,5 +1,5 @@
 import { SxProps, styled } from '@mui/material/styles'
-import Image, { ImageProps } from 'next/legacy/image'
+import Image, { ImageProps } from "next/image"
 import { ReactElement } from 'react'
 
 interface NextImageProps extends ImageProps {
