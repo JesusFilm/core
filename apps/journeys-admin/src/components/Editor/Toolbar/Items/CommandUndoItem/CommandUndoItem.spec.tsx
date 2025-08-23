@@ -1,6 +1,14 @@
 import { fireEvent, renderHook, screen, waitFor } from '@testing-library/react'
 import { ReactNode } from 'react'
 
+import {
+  Command,
+  CommandProvider,
+  useCommand
+} from '@core/journeys/ui/CommandProvider'
+
+import { CommandUndoItem } from './CommandUndoItem'
+
 jest.mock('@core/shared/ui/icons/FlipLeft', () => ({
   __esModule: true,
   default: () => null
@@ -18,14 +26,6 @@ jest.mock('../Item/Item', () => ({
     </button>
   )
 }))
-
-import {
-  Command,
-  CommandProvider,
-  useCommand
-} from '@core/journeys/ui/CommandProvider'
-
-import { CommandUndoItem } from './CommandUndoItem'
 
 describe('Hotkeys', () => {
   it('should undo command when undo button is clicked', async () => {
