@@ -74,8 +74,8 @@ export function MediaListItem({
 
   return (
     <ListItemButton
-      LinkComponent={href != null ? NextLink : undefined}
-      href={href != null ? href : undefined}
+      LinkComponent={NextLink}
+      href={href ?? ''}
       disabled={loading}
       sx={{
         ...faceOnButtonHoverFix,
