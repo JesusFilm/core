@@ -1,6 +1,6 @@
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import useMediaQuery from '@mui/material/useMediaQuery'
-import { act, fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 
 import { TreeBlock } from '@core/journeys/ui/block'
@@ -9,8 +9,7 @@ import {
   ActiveContent,
   ActiveSlide,
   EditorProvider,
-  EditorState,
-  useEditor
+  EditorState
 } from '@core/journeys/ui/EditorProvider'
 
 import { GetJourney_journey_blocks_StepBlock as StepBlock } from '../../../../__generated__/GetJourney'
@@ -29,56 +28,6 @@ import {
 } from './Slider'
 
 import { Slider } from '.'
-
-// Prevent Goals from dispatching during render in tests (React 19 strict)
-jest.mock('./Content/Goals/Goals', () => ({
-  __esModule: true,
-  Goals: () => null
-}))
-
-// Test helper component to dispatch SetActiveSlideAction without lazy imports
-function DispatchSetActiveSlideButton(): JSX.Element {
-  const { dispatch } = useEditor()
-  return (
-    <button
-      type="button"
-      data-testid="DispatchSetActiveSlide"
-      onClick={() => dispatch({ type: 'SetActiveSlideAction', activeSlide: 1 })}
-    />
-  )
-}
-
-// Stub out heavy/async modules that cause act/suspense noise during tests
-jest.mock(
-  './Content/Canvas/JourneyLocaleProvider/utils/loadJourneyLocaleResources',
-  () => ({
-    __esModule: true,
-    loadJourneyLocaleResources: jest.fn(async () => undefined)
-  })
-)
-jest.mock('react-transition-group', () => {
-  const React = require('react')
-  return {
-    __esModule: true,
-    TransitionGroup: ({ children }: { children: React.ReactNode }) =>
-      React.createElement(React.Fragment, null, children),
-    CSSTransition: ({ children }: { children: React.ReactNode }) =>
-      React.createElement(React.Fragment, null, children)
-  }
-})
-jest.mock('next/dynamic', () => {
-  return () => (mod: any) => mod
-})
-
-// Simplify MUI transition components that depend on react-transition-group
-jest.mock('@mui/material/Collapse', () => ({
-  __esModule: true,
-  default: ({ children }: { children: React.ReactNode }) => children
-}))
-jest.mock('@mui/material/Zoom', () => ({
-  __esModule: true,
-  default: ({ children }: { children: React.ReactNode }) => children
-}))
 
 jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
@@ -120,23 +69,9 @@ describe('Slider', () => {
     jest.clearAllMocks()
   })
 
-  const defaultJourneyFlowMock: MockedResponse<getJourneyFlowBackButtonClicked> =
-    {
-      request: { query: GET_JOURNEY_FLOW_BACK_BUTTON_CLICKED },
-      result: {
-        data: {
-          getJourneyProfile: {
-            __typename: 'JourneyProfile',
-            id: 'userProfile.id',
-            journeyFlowBackButtonClicked: true
-          }
-        }
-      }
-    }
-
   it('renders slides', () => {
     render(
-      <MockedProvider mocks={[defaultJourneyFlowMock]}>
+      <MockedProvider>
         <EditorProvider initialState={state}>
           <Slider />
         </EditorProvider>
@@ -151,7 +86,7 @@ describe('Slider', () => {
 
   it('dispatches SetActiveSlideAction on activeIndexChange', () => {
     render(
-      <MockedProvider mocks={[defaultJourneyFlowMock]}>
+      <MockedProvider>
         <SnackbarProvider>
           <EditorProvider initialState={state}>
             <TestEditorState />
@@ -162,7 +97,6 @@ describe('Slider', () => {
     )
 
     expect(screen.getByText('activeSlide: 0')).toBeInTheDocument()
-    // Canvas is stubbed to dispatch SetActiveSlideAction on click
     fireEvent.click(screen.getByTestId('EditorCanvas'))
     expect(screen.getByText('activeSlide: 1')).toBeInTheDocument()
   })
@@ -174,7 +108,7 @@ describe('Slider', () => {
     }
 
     render(
-      <MockedProvider mocks={[defaultJourneyFlowMock]}>
+      <MockedProvider>
         <EditorProvider initialState={contentState}>
           <TestEditorState />
           <Slider />
@@ -183,9 +117,7 @@ describe('Slider', () => {
     )
 
     expect(screen.getByText('activeSlide: 1')).toBeInTheDocument()
-    await act(async () => {
-      fireEvent.click(screen.getByTestId('ChevronLeftIcon'))
-    })
+    fireEvent.click(screen.getByTestId('ChevronLeftIcon'))
     expect(screen.getByText('activeSlide: 0')).toBeInTheDocument()
   })
 
@@ -197,7 +129,7 @@ describe('Slider', () => {
     }
 
     render(
-      <MockedProvider mocks={[defaultJourneyFlowMock]}>
+      <MockedProvider>
         <EditorProvider initialState={contentState}>
           <TestEditorState />
           <Slider />
@@ -207,9 +139,7 @@ describe('Slider', () => {
 
     expect(screen.getByText('activeSlide: 1')).toBeInTheDocument()
     expect(screen.getByText('activeContent: goals')).toBeInTheDocument()
-    await act(async () => {
-      fireEvent.click(screen.getByTestId('ChevronLeftIcon'))
-    })
+    fireEvent.click(screen.getByTestId('ChevronLeftIcon'))
     expect(screen.getByText('activeSlide: 0')).toBeInTheDocument()
     expect(screen.getByText('activeContent: canvas')).toBeInTheDocument()
   })
@@ -223,7 +153,7 @@ describe('Slider', () => {
     }
 
     render(
-      <MockedProvider mocks={[defaultJourneyFlowMock]}>
+      <MockedProvider>
         <EditorProvider initialState={contentState}>
           <TestEditorState />
           <Slider />
@@ -233,9 +163,7 @@ describe('Slider', () => {
 
     expect(screen.getByText('activeSlide: 1')).toBeInTheDocument()
     expect(screen.getByText('activeContent: goals')).toBeInTheDocument()
-    await act(async () => {
-      fireEvent.click(screen.getByTestId('ChevronLeftIcon'))
-    })
+    fireEvent.click(screen.getByTestId('ChevronLeftIcon'))
     expect(screen.getByText('activeSlide: 0')).toBeInTheDocument()
     expect(screen.getByText('activeContent: social')).toBeInTheDocument()
   })
@@ -304,11 +232,8 @@ describe('Slider', () => {
     await waitFor(() =>
       expect(mockGetJourneyFlowBackButtonClicked.result).toHaveBeenCalled()
     )
-    // With transitions stubbed, the Typography renders; just assert it exists
-    expect(screen.getByText('back to map')).toBeInTheDocument()
-    await act(async () => {
-      fireEvent.click(screen.getByTestId('ChevronLeftIcon'))
-    })
+    expect(screen.getByText('back to map')).toBeVisible()
+    fireEvent.click(screen.getByTestId('ChevronLeftIcon'))
     await waitFor(() =>
       expect(mockUpdateJourneyFlowBackButtonClicked.result).toHaveBeenCalled()
     )
@@ -348,7 +273,6 @@ describe('Slider', () => {
     await waitFor(() =>
       expect(mockGetJourneyFlowBackButtonClicked.result).toHaveBeenCalled()
     )
-    // With Collapse mocked, text is rendered; ensure it's present
-    expect(screen.getByText('back to map')).toBeInTheDocument()
+    expect(screen.getByText('back to map')).not.toBeVisible()
   })
 })
