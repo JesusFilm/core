@@ -24,17 +24,6 @@ jest.mock('@mui/material/useMediaQuery', () => ({
   default: jest.fn()
 }))
 
-// Mock enqueueSnackbar to assert calls reliably across test suite runs
-const mockEnqueueSnackbar = jest.fn()
-jest.mock('notistack', () => ({
-  __esModule: true,
-  enqueueSnackbar: (msg: string, opts?: unknown) =>
-    mockEnqueueSnackbar(msg, opts),
-  SnackbarProvider: ({ children }: { children: React.ReactNode }) => (
-    <>{children}</>
-  )
-}))
-
 describe('ThemeBuilderDialog', () => {
   const handleClose = jest.fn()
 
@@ -248,10 +237,7 @@ describe('ThemeBuilderDialog', () => {
       expect(updateMock.result).toHaveBeenCalled()
     })
     expect(handleClose).toHaveBeenCalled()
-    expect(mockEnqueueSnackbar).toHaveBeenCalledWith('Fonts updated', {
-      variant: 'success',
-      preventDuplicate: true
-    })
+    expect(screen.getByText('Fonts updated')).toBeInTheDocument()
   })
 
   it('should create journey fonts when confirm is clicked and theme does not exist', async () => {
@@ -272,10 +258,7 @@ describe('ThemeBuilderDialog', () => {
       expect(createMock.result).toHaveBeenCalled()
     })
     expect(handleClose).toHaveBeenCalled()
-    expect(mockEnqueueSnackbar).toHaveBeenCalledWith('Theme created', {
-      variant: 'success',
-      preventDuplicate: true
-    })
+    expect(screen.getByText('Theme created')).toBeInTheDocument()
   })
 
   it('should show error snackbar when update fails', async () => {
@@ -304,15 +287,9 @@ describe('ThemeBuilderDialog', () => {
     )
 
     fireEvent.click(screen.getByText('Confirm'))
-    await waitFor(() =>
-      expect(mockEnqueueSnackbar).toHaveBeenCalledWith(
-        'Failed to update fonts',
-        {
-          variant: 'error',
-          preventDuplicate: true
-        }
-      )
-    )
+    await waitFor(() => {
+      expect(screen.queryByText('Failed to update fonts')).toBeInTheDocument()
+    })
   })
 
   it('should show error snackbar when theme creation fails', async () => {
@@ -344,15 +321,9 @@ describe('ThemeBuilderDialog', () => {
     )
 
     fireEvent.click(screen.getByText('Confirm'))
-    await waitFor(() =>
-      expect(mockEnqueueSnackbar).toHaveBeenCalledWith(
-        'Failed to create theme',
-        {
-          variant: 'error',
-          preventDuplicate: true
-        }
-      )
-    )
+    await waitFor(() => {
+      expect(screen.queryByText('Failed to create theme')).toBeInTheDocument()
+    })
   })
 
   it('should disable confirm button while loading', async () => {
