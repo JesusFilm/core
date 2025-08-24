@@ -1,17 +1,11 @@
 import { gql, useLazyQuery } from '@apollo/client'
-import Grid from '@mui/material/Grid'
 import Stack from '@mui/material/Stack'
 import { Theme } from '@mui/material/styles'
-import Tooltip from '@mui/material/Tooltip'
-import Typography from '@mui/material/Typography'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, useEffect, useMemo } from 'react'
 
 import { Dialog } from '@core/shared/ui/Dialog'
-import EmailIcon from '@core/shared/ui/icons/Email'
-import ShieldCheck from '@core/shared/ui/icons/ShieldCheck'
-import UsersProfiles2 from '@core/shared/ui/icons/UsersProfiles2'
 
 import {
   GetJourneyWithPermissions,
@@ -25,6 +19,7 @@ import { UserTeamList } from '../Team/TeamManageDialog/UserTeamList'
 
 import { AddUserSection } from './AddUserSection'
 import { UserList } from './UserList'
+import { TeamMembersHeading } from './TeamMembersHeading/TeamMembersHeading'
 
 export const GET_JOURNEY_WITH_PERMISSIONS = gql`
   query GetJourneyWithPermissions($id: ID!) {
@@ -159,39 +154,15 @@ export function AccessDialog({
       testId="AccessDialog"
     >
       <Stack spacing={4}>
+        <TeamMembersHeading
+          teamMembersText={t('Team Members')}
+          emailNotificationsText={t('Email Notifications')}
+          userRoleText={t('User Role')}
+        />
+
         {data?.journey?.team?.userTeams != null &&
           data?.journey?.team?.userTeams.length > 0 && (
             <>
-              <Grid container spacing={1} alignItems="center" sx={{ pb: 4 }}>
-                <Grid size={{xs: 2, sm: 1}}>
-                  <Stack sx={{ ml: 2 }}>
-                    <UsersProfiles2 sx={{ color: 'secondary.light' }} />
-                  </Stack>
-                </Grid>
-                <Grid size={{xs: 5, sm: 7}}>                
-                  <Typography
-                    variant="subtitle3"
-                    color="secondary.light"
-                    sx={{ opacity: 0.8, ml: 1 }}
-                  >
-                    {t('Team Members')}
-                  </Typography>
-                </Grid>
-                <Grid size={{xs: 2, sm: 2}}>
-                  <Stack sx={{ ml: 4 }}>
-                    <Tooltip title={t('Email Notifications')}>
-                      <EmailIcon sx={{ color: 'secondary.light' }} />
-                    </Tooltip>
-                  </Stack>
-                </Grid>
-                <Grid size={{xs: 3, sm: 2}}>
-                  <Stack sx={{ ml: 7 }}>
-                    <Tooltip title={t('User Role')}>
-                      <ShieldCheck sx={{ color: 'secondary.light' }} />
-                    </Tooltip>
-                  </Stack>
-                </Grid>
-              </Grid>
               <UserTeamList
                 data={data?.journey?.team ?? undefined}
                 currentUserTeam={currentUserTeam}
