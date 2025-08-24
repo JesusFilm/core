@@ -1,5 +1,5 @@
+import { useSuspenseQuery } from '@apollo/client'
 import { render, screen } from '@testing-library/react'
-import * as Apollo from '@apollo/client'
 
 import { onboardingJourneys } from '../data'
 
@@ -13,13 +13,13 @@ jest.mock('@apollo/client', () => {
   }
 })
 
-const mockUseSuspenseQuery = Apollo.useSuspenseQuery as jest.Mock
-
-beforeEach(() => {
-  mockUseSuspenseQuery.mockReturnValue({ data: { onboardingJourneys } })
-})
-
 describe('OnboardingList', () => {
+  beforeEach(() => {
+    ;(useSuspenseQuery as unknown as jest.Mock).mockReturnValue({
+      data: { onboardingJourneys }
+    })
+  })
+
   it('should display onboarding templates', async () => {
     render(<OnboardingList />)
 

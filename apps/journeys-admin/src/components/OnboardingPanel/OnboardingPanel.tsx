@@ -12,8 +12,8 @@ import Grid1Icon from '@core/shared/ui/icons/Grid1'
 import { SidePanelContainer } from '../PageWrapper/SidePanelContainer'
 
 import { CreateJourneyButton } from './CreateJourneyButton'
-import { OnboardingListLoading } from './OnboardingListLoading'
 import { OnboardingList } from './OnboardingList'
+import { OnboardingListLoading } from './OnboardingListLoading'
 
 export function OnboardingPanel(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
