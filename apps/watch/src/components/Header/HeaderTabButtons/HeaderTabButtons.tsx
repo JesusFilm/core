@@ -72,7 +72,13 @@ export function HeaderTabButtons(): ReactElement {
         }}
       >
         {headerItems.map(({ label, icon, href }) => (
-          <NextLink href={href} passHref legacyBehavior key={label}>
+          <NextLink
+            href={href}
+            passHref
+            legacyBehavior
+            key={label}
+            locale={false}
+          >
             <Button
               data-testid={`${label}Button`}
               component="a"
@@ -142,7 +148,13 @@ export function HeaderTabButtons(): ReactElement {
         slotProps={{ paper: { style: { width: anchorEl?.clientWidth } } }}
       >
         {headerItems.map(({ label, icon, href }) => (
-          <NextLink href={href} passHref legacyBehavior key={label}>
+          <NextLink
+            href={href}
+            passHref
+            legacyBehavior
+            key={label}
+            locale={false}
+          >
             <MenuItem
               onClick={handleCloseMenu}
               selected={router?.pathname?.startsWith(href)}

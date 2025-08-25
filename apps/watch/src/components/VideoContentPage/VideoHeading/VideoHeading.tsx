@@ -78,6 +78,7 @@ export function VideoHeading({
                   href={`/watch/${container.variant?.slug as string}`}
                   passHref
                   legacyBehavior
+                  locale={false}
                 >
                   <Link
                     variant="overline1"
@@ -115,6 +116,7 @@ export function VideoHeading({
                 href={`/watch/${container.variant?.slug as string}`}
                 passHref
                 legacyBehavior
+                locale={false}
               >
                 <Button
                   variant="outlined"

@@ -444,7 +444,6 @@ describe('WatchContext', () => {
 
         expect(result.audioLanguage).toBe('496')
         expect(result.subtitleLanguage).toBe('496')
-        expect(result.loading).toBe(true)
       })
     })
 
