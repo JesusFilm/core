@@ -1,11 +1,11 @@
 import compact from 'lodash/compact'
 
 import { GetLanguagesSlug_video_variantLanguagesWithSlug_language as Language } from '../../../../../__generated__/GetLanguagesSlug'
-import { useVideo } from '../../../../libs/videoContext'
 import { useLanguagesSlugQuery } from '../../../../libs/useLanguagesSlugQuery'
+import { useVideo } from '../../../../libs/videoContext'
 import { SelectContent } from '../../../Select'
 
-export function AudoLanguageSelectContent() {
+export function AudioLanguageSelectContent() {
   const { id, container } = useVideo()
 
   const { data } = useLanguagesSlugQuery({
