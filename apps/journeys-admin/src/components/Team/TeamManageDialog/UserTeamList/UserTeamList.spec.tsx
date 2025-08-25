@@ -155,4 +155,47 @@ describe('UserTeamList', () => {
     )
     expect(getAllByRole('checkbox')[1]).toBeDisabled()
   })
+
+  it('should render team list in readonly mode even when currentUserTeam is null', () => {
+    const { getByText, getByRole } = render(
+      <MockedProvider>
+        <UserTeamList
+          data={mockData}
+          currentUserTeam={undefined}
+          loading={false}
+          variant="readonly"
+        />
+      </MockedProvider>
+    )
+
+    // Should still render team members
+    expect(getByText("Miguel O'Hara")).toBeInTheDocument()
+    expect(getByText('Hobie Brown')).toBeInTheDocument()
+    expect(getByText('miguelohara@example.com')).toBeInTheDocument()
+    expect(getByText('hobiebrown@example.com')).toBeInTheDocument()
+    
+    // All buttons should be disabled in readonly mode
+    expect(getByRole('button', { name: 'Manager' })).toBeDisabled()
+    expect(getByRole('button', { name: 'Member' })).toBeDisabled()
+  })
+
+  it('should render nothing when currentUserTeam is null and variant is default', () => {
+    const { container, queryByText } = render(
+      <MockedProvider>
+        <UserTeamList
+          data={mockData}
+          currentUserTeam={undefined}
+          loading={false}
+          variant="default"
+        />
+      </MockedProvider>
+    )
+
+    // Should not render team members when currentUserTeam is null and variant is default
+    expect(queryByText("Miguel O'Hara")).not.toBeInTheDocument()
+    expect(queryByText('Hobie Brown')).not.toBeInTheDocument()
+    
+    // Should render only empty fragments (no substantial content)
+    expect(container.firstChild).toBeNull()
+  })
 })
