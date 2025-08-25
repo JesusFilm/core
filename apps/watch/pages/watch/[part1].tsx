@@ -51,7 +51,7 @@ function HomeLanguagePage({
     siteLanguage: i18n?.language ?? 'en',
     audioLanguage: getCookie('AUDIO_LANGUAGE') ?? languageId,
     subtitleLanguage: getCookie('SUBTITLE_LANGUAGE') ?? languageId,
-    subtitleOn: (getCookie('SUBTITLES_ON') ?? 'false') === 'true'
+    subtitleOn: (getCookie('SUBTITLES_ON') ?? '').toLowerCase() === 'true'
   }
 
   return (
@@ -89,7 +89,13 @@ export const getStaticProps: GetStaticProps<HomeLanguagePageProps> = async ({
       params!.part1 as string
     )
   })
-  const mapping = LANGUAGE_MAPPINGS[key!]
+  if (key == null) {
+    return {
+      notFound: true,
+      revalidate: 60
+    }
+  }
+  const mapping = LANGUAGE_MAPPINGS[key]
   const serverState = await getServerState(
     <HomeLanguagePage
       languageEnglishName={mapping.nativeName}

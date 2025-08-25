@@ -60,6 +60,9 @@ services:
       - redis-data:/data
   serverless-redis-http:
     image: hiett/serverless-redis-http:latest
+    restart: unless-stopped
+    depends_on:
+      - redis
     ports:
       - 8079:80
     environment:

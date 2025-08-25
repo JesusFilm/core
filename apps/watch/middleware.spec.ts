@@ -42,19 +42,19 @@ const createMockRequest = (
 
 describe('middleware', () => {
   let mockRedisGet: jest.Mock,
-    mockRedisSetex: jest.Mock,
+    mockRedisSet: jest.Mock,
     mockGlobalFetch: jest.Mock
 
   beforeEach(() => {
     mockGlobalFetch = jest.fn()
     global.fetch = mockGlobalFetch
     mockRedisGet = jest.fn()
-    mockRedisSetex = jest.fn()
+    mockRedisSet = jest.fn()
     mockRedis.mockImplementation(
       () =>
         ({
           get: mockRedisGet,
-          setex: mockRedisSetex
+          set: mockRedisSet
         }) as unknown as Redis
     )
   })
@@ -219,7 +219,7 @@ describe('middleware', () => {
         mockGlobalFetch.mockResolvedValue(mockApiResponse)
 
         // Mock successful Redis cache set
-        mockRedisSetex.mockResolvedValue('OK')
+        mockRedisSet.mockResolvedValue('OK')
 
         const req = createMockRequest('/watch/jesus.html/english.html', {
           cookies: [{ name: 'AUDIO_LANGUAGE', value: 'fingerprint---123' }]
@@ -233,10 +233,10 @@ describe('middleware', () => {
         )
 
         // Should cache the result
-        expect(mockRedisSetex).toHaveBeenCalledWith(
+        expect(mockRedisSet).toHaveBeenCalledWith(
           'variantLanguages:jesus',
-          86400,
-          mockVariantLanguages
+          mockVariantLanguages,
+          { ex: 86400 }
         )
 
         // Should redirect
@@ -261,7 +261,7 @@ describe('middleware', () => {
         mockGlobalFetch.mockResolvedValue(mockApiResponse)
 
         // Mock Redis cache set failure
-        mockRedisSetex.mockRejectedValue(new Error('Redis error'))
+        mockRedisSet.mockRejectedValue(new Error('Redis error'))
 
         const req = createMockRequest('/watch/jesus.html/english.html', {
           cookies: [{ name: 'AUDIO_LANGUAGE', value: 'fingerprint---123' }]
@@ -486,7 +486,7 @@ describe('middleware', () => {
           cookies: [{ name: 'AUDIO_LANGUAGE', value: 'fingerprint---123' }]
         })
 
-        const result = await middleware(req)
+        await middleware(req)
 
         // Should fall back to API when cached data is invalid
         expect(mockGlobalFetch).toHaveBeenCalled()
@@ -499,7 +499,7 @@ describe('middleware', () => {
           cookies: [{ name: 'AUDIO_LANGUAGE', value: 'fingerprint---123' }]
         })
 
-        const result = await middleware(req)
+        await middleware(req)
 
         // Should fall back to API
         expect(mockGlobalFetch).toHaveBeenCalled()

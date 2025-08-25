@@ -21,17 +21,10 @@ const GET_VIDEO_VARIANT_LANGUAGES = gql`
   }
 `
 
-interface VariantLanguage {
-  slug: string
-  language: {
-    id: string
-  }
-}
-
 interface ApiResponse {
   success: boolean
   data?: {
-    variantLanguages: VariantLanguage[]
+    variantLanguages: GetVideoVariantLanguages['video']['variantLanguagesWithSlug']
   }
   error?: string
 }
@@ -41,6 +34,7 @@ export default async function handler(
   res: NextApiResponse<ApiResponse>
 ): Promise<void> {
   if (req.method !== 'GET') {
+    res.setHeader('Allow', 'GET')
     res.status(405).json({ success: false, error: 'Method not allowed' })
     return
   }
@@ -82,6 +76,10 @@ export default async function handler(
 
     const variantLanguages = data.video.variantLanguagesWithSlug
 
+    res.setHeader(
+      'Cache-Control',
+      'public, max-age=3600, stale-while-revalidate=86400'
+    )
     res.status(200).json({
       success: true,
       data: { variantLanguages }

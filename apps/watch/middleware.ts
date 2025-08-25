@@ -182,7 +182,9 @@ async function audioLanguageRedirect(
 
             // Cache the result
             try {
-              await redis.setex(cacheKey, CACHE_TTL, variantLanguages)
+              await redis.set(cacheKey, variantLanguages, {
+                ex: CACHE_TTL
+              })
             } catch (error) {
               console.error('Redis cache set error:', error)
             }
