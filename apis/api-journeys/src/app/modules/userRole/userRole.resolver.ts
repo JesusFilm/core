@@ -1,9 +1,9 @@
 import { UseGuards } from '@nestjs/common'
 import { Query, Resolver } from '@nestjs/graphql'
 
-import { UserRole } from '.prisma/api-journeys-client'
 import { CurrentUserId } from '@core/nest/decorators/CurrentUserId'
 import { GqlAuthGuard } from '@core/nest/gqlAuthGuard/GqlAuthGuard'
+import { UserRole } from '@core/prisma/journeys/client'
 
 import { UserRoleService } from './userRole.service'
 

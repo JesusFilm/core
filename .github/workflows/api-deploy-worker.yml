@@ -79,6 +79,7 @@ jobs:
         uses: mansagroup/nrwl-nx-action@v3
         with:
           targets: prisma-generate
+          all: true
         env:
           DISABLE_ERD: true
       - name: Build ${{ inputs.name }}

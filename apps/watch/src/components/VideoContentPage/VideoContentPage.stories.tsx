@@ -6,7 +6,7 @@ import { InstantSearchTestWrapper } from '@core/journeys/ui/algolia/InstantSearc
 import { watchConfig } from '../../libs/storybook'
 import { getVideoChildrenMock } from '../../libs/useVideoChildren/getVideoChildrenMock'
 import { VideoProvider } from '../../libs/videoContext'
-import { getLanguagesSlugMock } from '../AudioLanguageDialog/testData'
+import { getLanguagesSlugMock } from '../../libs/useLanguagesSlugQuery/useLanguagesSlugQuery.mock'
 import { getSubtitleMock } from '../SubtitleDialog/testData'
 import { videos } from '../Videos/__generated__/testData'
 

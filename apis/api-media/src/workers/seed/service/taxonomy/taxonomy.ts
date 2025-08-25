@@ -1,4 +1,4 @@
-import { prisma } from '../../../../lib/prisma'
+import { prisma } from '@core/prisma/media/client'
 
 import { taxonomy, taxonomyNames } from './fields'
 
