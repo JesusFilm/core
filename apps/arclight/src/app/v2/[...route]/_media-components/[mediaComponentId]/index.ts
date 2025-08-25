@@ -4,6 +4,7 @@ import { HTTPException } from 'hono/http-exception'
 import { ResultOf, graphql } from '@core/shared/gql'
 
 import { getApolloClient } from '../../../../../lib/apolloClient'
+import { generateCacheKey, getWithStaleCache } from '../../../../../lib/cache'
 import { getDownloadSize } from '../../../../../lib/downloadHelpers'
 import { getLanguageIdsFromTags } from '../../../../../lib/getLanguageIdsFromTags'
 import { getDefaultPlatformForApiKey } from '../../../../../lib/getPlatformFromApiKey'
@@ -171,148 +172,162 @@ mediaComponent.openapi(route, async (c) => {
 
   const { metadataLanguageId, fallbackLanguageId } = languageResult
 
-  try {
-    const { data } = await getApolloClient().query<ResultOf<typeof GET_VIDEO>>({
-      query: GET_VIDEO,
-      variables: {
-        metadataLanguageId,
-        fallbackLanguageId,
-        id: mediaComponentId
+  const cacheKey = generateCacheKey([
+    'media-component',
+    mediaComponentId ?? '',
+    expand,
+    filter,
+    platform,
+    apiKey ?? '',
+    ...metadataLanguageTags.slice(0, 20)
+  ])
+
+  const response = await getWithStaleCache(cacheKey, async () => {
+    try {
+      const { data } = await getApolloClient().query<ResultOf<typeof GET_VIDEO>>({
+        query: GET_VIDEO,
+        variables: {
+          metadataLanguageId,
+          fallbackLanguageId,
+          id: mediaComponentId
+        }
+      })
+      if (data.video == null) return c.notFound()
+
+      const video = data.video
+
+      if (
+        metadataLanguageTags.length > 0 &&
+        video.title[0]?.value == null &&
+        video.fallbackTitle[0]?.value == null &&
+        video.snippet[0]?.value == null &&
+        video.description[0]?.value == null
+      ) {
+        return new Response(
+          JSON.stringify({
+            message: `Media component '${mediaComponentId}' resource not found!`,
+            logref: 404
+          }),
+          {
+            status: 404
+          }
+        )
       }
-    })
-    if (data.video == null) return c.notFound()
 
-    const video = data.video
+      const descriptorsonlyResponse = {
+        mediaComponentId,
+        title: video.title[0]?.value ?? video.fallbackTitle[0]?.value ?? '',
+        shortDescription:
+          video.snippet[0]?.value ?? video.fallbackSnippet[0]?.value ?? '',
+        longDescription:
+          video.description[0]?.value ??
+          video.fallbackDescription[0]?.value ??
+          '',
+        studyQuestions:
+          video.studyQuestions.length > 0
+            ? video.studyQuestions.map((question) => question.value)
+            : video.fallbackStudyQuestions.map((question) => question.value),
+        metadataLanguageTag: video.title[0]?.language.bcp47 ?? 'en',
+        _links: {
+          self: {
+            href: `http://api.arclight.org/v2/media-components/${mediaComponentId}`
+          },
+          mediaComponentLinks: {
+            href: `http://api.arclight.org/v2/media-component-links/${mediaComponentId}`
+          }
+        }
+      }
 
-    if (
-      metadataLanguageTags.length > 0 &&
-      video.title[0]?.value == null &&
-      video.fallbackTitle[0]?.value == null &&
-      video.snippet[0]?.value == null &&
-      video.description[0]?.value == null
-    ) {
-      return new Response(
-        JSON.stringify({
+      if (filter.includes('descriptorsonly')) {
+        return c.json(descriptorsonlyResponse)
+      }
+      const response = {
+        mediaComponentId,
+        componentType: video.variant?.hls != null ? 'content' : 'container',
+        subType: video.label,
+        contentType: 'video',
+        imageUrls: {
+          thumbnail:
+            video.images.find((image) => image.thumbnail != null)?.thumbnail ??
+            '',
+          videoStill:
+            video.images.find((image) => image.videoStill != null)?.videoStill ??
+            '',
+          mobileCinematicHigh:
+            video.images.find((image) => image.mobileCinematicHigh != null)
+              ?.mobileCinematicHigh ?? '',
+          mobileCinematicLow:
+            video.images.find((image) => image.mobileCinematicLow != null)
+              ?.mobileCinematicLow ?? '',
+          mobileCinematicVeryLow:
+            video.images.find((image) => image.mobileCinematicVeryLow != null)
+              ?.mobileCinematicVeryLow ?? ''
+        },
+        lengthInMilliseconds: video.variant?.lengthInMilliseconds ?? 0,
+        containsCount: video.childrenCount,
+        isDownloadable: video.variant?.downloadable ?? false,
+        downloadSizes: {
+          approximateSmallDownloadSizeInBytes: getDownloadSize(
+            video.variant?.downloads,
+            'low',
+            apiKey
+          ),
+          approximateLargeDownloadSizeInBytes: getDownloadSize(
+            video.variant?.downloads,
+            'high',
+            apiKey
+          )
+        },
+        bibleCitations: video.bibleCitations.map((citation) => ({
+          osisBibleBook: citation.osisId,
+          chapterStart: citation.chapterStart,
+          verseStart: citation.verseStart,
+          chapterEnd: citation.chapterEnd,
+          verseEnd: citation.verseEnd
+        })),
+        ...(expand.includes('languageIds')
+          ? { languageIds: video.availableLanguages.map((id) => Number(id)) }
+          : {}),
+        primaryLanguageId: Number(video.primaryLanguageId),
+        title: video.title[0]?.value ?? video.fallbackTitle[0]?.value ?? '',
+        shortDescription:
+          video.snippet[0]?.value ?? video.fallbackSnippet[0]?.value ?? '',
+        longDescription:
+          video.description[0]?.value ??
+          video.fallbackDescription[0]?.value ??
+          '',
+        studyQuestions:
+          video.studyQuestions.length > 0
+            ? video.studyQuestions.map((question) => question.value)
+            : video.fallbackStudyQuestions.map((question) => question.value),
+        metadataLanguageTag: video.title[0]?.language.bcp47 ?? 'en',
+        _links: {
+          sampleMediaComponentLanguage: {
+            href: `http://api.arclight.org/v2/media-components/${mediaComponentId}/languages/529?platform=${platform}&apiKey=${apiKey}`
+          },
+          osisBibleBooks: {
+            href: `http://api.arclight.org/v2/taxonomies/osisBibleBooks?apiKey=${apiKey}`
+          },
+          self: {
+            href: `http://api.arclight.org/v2/media-components/${mediaComponentId}?apiKey=${apiKey}`
+          },
+          mediaComponentLinks: {
+            href: `http://api.arclight.org/v2/media-component-links/${mediaComponentId}?apiKey=${apiKey}`
+          }
+        }
+      }
+
+      return c.json(response)
+    } catch {
+      return c.json(
+        {
           message: `Media component '${mediaComponentId}' resource not found!`,
           logref: 404
-        }),
-        {
-          status: 404
-        }
+        },
+        404
       )
     }
+  })
 
-    const descriptorsonlyResponse = {
-      mediaComponentId,
-      title: video.title[0]?.value ?? video.fallbackTitle[0]?.value ?? '',
-      shortDescription:
-        video.snippet[0]?.value ?? video.fallbackSnippet[0]?.value ?? '',
-      longDescription:
-        video.description[0]?.value ??
-        video.fallbackDescription[0]?.value ??
-        '',
-      studyQuestions:
-        video.studyQuestions.length > 0
-          ? video.studyQuestions.map((question) => question.value)
-          : video.fallbackStudyQuestions.map((question) => question.value),
-      metadataLanguageTag: video.title[0]?.language.bcp47 ?? 'en',
-      _links: {
-        self: {
-          href: `http://api.arclight.org/v2/media-components/${mediaComponentId}`
-        },
-        mediaComponentLinks: {
-          href: `http://api.arclight.org/v2/media-component-links/${mediaComponentId}`
-        }
-      }
-    }
-
-    if (filter.includes('descriptorsonly')) {
-      return c.json(descriptorsonlyResponse)
-    }
-    const response = {
-      mediaComponentId,
-      componentType: video.variant?.hls != null ? 'content' : 'container',
-      subType: video.label,
-      contentType: 'video',
-      imageUrls: {
-        thumbnail:
-          video.images.find((image) => image.thumbnail != null)?.thumbnail ??
-          '',
-        videoStill:
-          video.images.find((image) => image.videoStill != null)?.videoStill ??
-          '',
-        mobileCinematicHigh:
-          video.images.find((image) => image.mobileCinematicHigh != null)
-            ?.mobileCinematicHigh ?? '',
-        mobileCinematicLow:
-          video.images.find((image) => image.mobileCinematicLow != null)
-            ?.mobileCinematicLow ?? '',
-        mobileCinematicVeryLow:
-          video.images.find((image) => image.mobileCinematicVeryLow != null)
-            ?.mobileCinematicVeryLow ?? ''
-      },
-      lengthInMilliseconds: video.variant?.lengthInMilliseconds ?? 0,
-      containsCount: video.childrenCount,
-      isDownloadable: video.variant?.downloadable ?? false,
-      downloadSizes: {
-        approximateSmallDownloadSizeInBytes: getDownloadSize(
-          video.variant?.downloads,
-          'low',
-          apiKey
-        ),
-        approximateLargeDownloadSizeInBytes: getDownloadSize(
-          video.variant?.downloads,
-          'high',
-          apiKey
-        )
-      },
-      bibleCitations: video.bibleCitations.map((citation) => ({
-        osisBibleBook: citation.osisId,
-        chapterStart: citation.chapterStart,
-        verseStart: citation.verseStart,
-        chapterEnd: citation.chapterEnd,
-        verseEnd: citation.verseEnd
-      })),
-      ...(expand.includes('languageIds')
-        ? { languageIds: video.availableLanguages.map((id) => Number(id)) }
-        : {}),
-      primaryLanguageId: Number(video.primaryLanguageId),
-      title: video.title[0]?.value ?? video.fallbackTitle[0]?.value ?? '',
-      shortDescription:
-        video.snippet[0]?.value ?? video.fallbackSnippet[0]?.value ?? '',
-      longDescription:
-        video.description[0]?.value ??
-        video.fallbackDescription[0]?.value ??
-        '',
-      studyQuestions:
-        video.studyQuestions.length > 0
-          ? video.studyQuestions.map((question) => question.value)
-          : video.fallbackStudyQuestions.map((question) => question.value),
-      metadataLanguageTag: video.title[0]?.language.bcp47 ?? 'en',
-      _links: {
-        sampleMediaComponentLanguage: {
-          href: `http://api.arclight.org/v2/media-components/${mediaComponentId}/languages/529?platform=${platform}&apiKey=${apiKey}`
-        },
-        osisBibleBooks: {
-          href: `http://api.arclight.org/v2/taxonomies/osisBibleBooks?apiKey=${apiKey}`
-        },
-        self: {
-          href: `http://api.arclight.org/v2/media-components/${mediaComponentId}?apiKey=${apiKey}`
-        },
-        mediaComponentLinks: {
-          href: `http://api.arclight.org/v2/media-component-links/${mediaComponentId}?apiKey=${apiKey}`
-        }
-      }
-    }
-
-    return c.json(response)
-  } catch {
-    return c.json(
-      {
-        message: `Media component '${mediaComponentId}' resource not found!`,
-        logref: 404
-      },
-      404
-    )
-  }
+  return response
 })
