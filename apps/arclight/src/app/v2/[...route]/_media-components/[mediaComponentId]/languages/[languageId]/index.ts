@@ -280,6 +280,7 @@ mediaComponentLanguage.openapi(route, async (c) => {
                 sizeInBytes: downloadHigh.size || 0
               }
       }
+    
     let webEmbedPlayer = ''
     let webEmbedSharePlayer = ''
     if (platform === 'web') {
@@ -329,6 +330,7 @@ mediaComponentLanguage.openapi(route, async (c) => {
                 .filter((s) => Boolean(s.url))) ?? [],
             srt: []
           }
+        }
       }
 
       let streamingUrls = {}
@@ -502,9 +504,9 @@ mediaComponentLanguage.openapi(route, async (c) => {
     } catch {
       return { notFound: true, type: 'error' }
     }
-  })
+    })
 
-  if (cachedData.notFound) {
+  if (cachedData?.notFound) {
     return c.json(
       {
         message: `Media component '${mediaComponentId}' language '${languageId}' not found!`,
@@ -514,7 +516,7 @@ mediaComponentLanguage.openapi(route, async (c) => {
     )
   }
 
-  if (cachedData.type === 'success') {
+  if (cachedData?.type === 'success') {
     return c.json(cachedData.data)
   }
 
