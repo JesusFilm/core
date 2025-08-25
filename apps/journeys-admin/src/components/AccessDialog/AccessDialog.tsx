@@ -7,17 +7,15 @@ import { ReactElement, useEffect } from 'react'
 
 import { Dialog } from '@core/shared/ui/Dialog'
 
-import {
-  GetJourneyWithPermissions,
-} from '../../../__generated__/GetJourneyWithPermissions'
+import { GetJourneyWithPermissions } from '../../../__generated__/GetJourneyWithPermissions'
+import { useAccessDialogData } from '../../libs/useAccessDialogData/useAccessDialogData'
 import { useCurrentUserLazyQuery } from '../../libs/useCurrentUserLazyQuery'
 import { useUserInvitesLazyQuery } from '../../libs/useUserInvitesLazyQuery'
 import { UserTeamList } from '../Team/TeamManageDialog/UserTeamList'
 
 import { AddUserSection } from './AddUserSection'
-import { UserList } from './UserList'
 import { TeamMembersHeading } from './TeamMembersHeading/TeamMembersHeading'
-import { useAccessDialogData } from '../../libs/useAccessDialogData/useAccessDialogData'
+import { UserList } from './UserList'
 
 export const GET_JOURNEY_WITH_PERMISSIONS = gql`
   query GetJourneyWithPermissions($id: ID!) {
@@ -66,19 +64,24 @@ interface AccessDialogProps {
   onClose: () => void
 }
 
-export function AccessDialog({ journeyId, open, onClose }: AccessDialogProps): ReactElement {
+export function AccessDialog({
+  journeyId,
+  open,
+  onClose
+}: AccessDialogProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
 
   // Data fetching
-  const [, { loading, data, refetch }] = useLazyQuery<GetJourneyWithPermissions>(
-    GET_JOURNEY_WITH_PERMISSIONS,
-    { variables: { id: journeyId } }
-  )
+  const [, { loading, data, refetch }] =
+    useLazyQuery<GetJourneyWithPermissions>(GET_JOURNEY_WITH_PERMISSIONS, {
+      variables: { id: journeyId }
+    })
 
-  const [, { data: userInviteData, refetch: refetchInvites }] = useUserInvitesLazyQuery({ 
-    journeyId 
-  })
+  const [, { data: userInviteData, refetch: refetchInvites }] =
+    useUserInvitesLazyQuery({
+      journeyId
+    })
 
   const { loadUser, data: user } = useCurrentUserLazyQuery()
 
