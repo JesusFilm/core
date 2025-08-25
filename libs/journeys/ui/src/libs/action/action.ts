@@ -39,5 +39,8 @@ export function handleAction(
     case 'EmailAction':
       window.open(`mailto:${action.email}`, '_blank')
       break
+    case 'PhoneAction':
+      window.open(`tel:${action.phone}`, '_blank')
+      break
   }
 }

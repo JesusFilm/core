@@ -9,11 +9,11 @@ import {
   ButtonSize,
   ButtonVariant
 } from '../../../../../../../../../../__generated__/globalTypes'
-import { blockActionEmailUpdateMock } from '../../../../../../../../../libs/useBlockActionEmailUpdateMutation/useBlockActionEmailUpdateMutation.mock'
 import { blockActionNavigateToBlockUpdateMock } from '../../../../../../../../../libs/useBlockActionNavigateToBlockUpdateMutation/useBlockActionNavigateToBlockUpdateMutation.mock'
 import { CommandUndoItem } from '../../../../../../../Toolbar/Items/CommandUndoItem'
 
 import { PhoneAction } from '.'
+import { blockActionPhoneUpdateMock } from '../../../../../../../../../libs/useBlockActionPhoneUpdateMutation/useBlockActionPhoneUpdateMutation.mock'
 
 jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
@@ -55,9 +55,9 @@ describe('PhoneAction', () => {
   })
 
   it('updates action phone number', async () => {
-    const result = jest.fn().mockReturnValue(blockActionEmailUpdateMock.result)
+    const result = jest.fn().mockReturnValue(blockActionPhoneUpdateMock.result)
     render(
-      <MockedProvider mocks={[{ ...blockActionEmailUpdateMock, result }]}>
+      <MockedProvider mocks={[{ ...blockActionPhoneUpdateMock, result }]}>
         <EditorProvider initialState={{ selectedBlock }}>
           <PhoneAction />
         </EditorProvider>
@@ -119,7 +119,7 @@ describe('PhoneAction', () => {
     render(
       <MockedProvider
         mocks={[
-          blockActionEmailUpdateMock,
+          blockActionPhoneUpdateMock,
           { ...blockActionNavigateToBlockUpdateMock, result }
         ]}
       >

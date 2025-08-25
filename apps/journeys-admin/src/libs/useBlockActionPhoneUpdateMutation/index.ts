@@ -1,4 +1,4 @@
 export {
-  useBlockActionPhoneUpdateMutation,
-  BLOCK_ACTION_PHONE_UPDATE
+  BLOCK_ACTION_PHONE_UPDATE,
+  useBlockActionPhoneUpdateMutation
 } from './useBlockActionPhoneUpdateMutation'
