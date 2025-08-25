@@ -184,7 +184,9 @@ mediaComponent.openapi(route, async (c) => {
 
   const response = await getWithStaleCache(cacheKey, async () => {
     try {
-      const { data } = await getApolloClient().query<ResultOf<typeof GET_VIDEO>>({
+      const { data } = await getApolloClient().query<
+        ResultOf<typeof GET_VIDEO>
+      >({
         query: GET_VIDEO,
         variables: {
           metadataLanguageId,
@@ -251,8 +253,8 @@ mediaComponent.openapi(route, async (c) => {
             video.images.find((image) => image.thumbnail != null)?.thumbnail ??
             '',
           videoStill:
-            video.images.find((image) => image.videoStill != null)?.videoStill ??
-            '',
+            video.images.find((image) => image.videoStill != null)
+              ?.videoStill ?? '',
           mobileCinematicHigh:
             video.images.find((image) => image.mobileCinematicHigh != null)
               ?.mobileCinematicHigh ?? '',

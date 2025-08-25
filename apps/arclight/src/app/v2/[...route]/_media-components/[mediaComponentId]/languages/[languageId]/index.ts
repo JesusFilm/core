@@ -3,7 +3,10 @@ import { OpenAPIHono, createRoute, z } from '@hono/zod-openapi'
 import { ResultOf, graphql } from '@core/shared/gql'
 
 import { getApolloClient } from '../../../../../../../lib/apolloClient'
-import { generateCacheKey, getWithStaleCache } from '../../../../../../../lib/cache'
+import {
+  generateCacheKey,
+  getWithStaleCache
+} from '../../../../../../../lib/cache'
 import { findDownloadWithFallback } from '../../../../../../../lib/downloadHelpers'
 import { getDefaultPlatformForApiKey } from '../../../../../../../lib/getPlatformFromApiKey'
 import {
