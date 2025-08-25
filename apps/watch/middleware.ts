@@ -211,22 +211,7 @@ async function audioLanguageRedirect(
 }
 
 export const config = {
-  matcher: [
-    {
-      source: '/watch/((?!assets).*)',
-      missing: [
-        { type: 'header', key: 'next-router-prefetch' },
-        { type: 'header', key: 'purpose', value: 'prefetch' }
-      ]
-    },
-    {
-      source: '/watch',
-      missing: [
-        { type: 'header', key: 'next-router-prefetch' },
-        { type: 'header', key: 'purpose', value: 'prefetch' }
-      ]
-    }
-  ]
+  matcher: ['/watch/((?!assets).*)', '/watch']
 }
 
 export async function middleware(req: NextRequest): Promise<NextResponse> {
