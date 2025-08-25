@@ -1,12 +1,15 @@
 import { Prisma, User, prisma } from '@core/prisma/users/client'
 import { auth } from '@core/yoga/firebaseClient'
 
+import { Context } from '../builder'
+
 import { verifyUser } from './verifyUser'
 
 export async function findOrFetchUser(
   query: { select?: Prisma.UserSelect; include?: undefined },
   userId: string,
-  redirect: string | undefined = undefined
+  redirect: string | undefined = undefined,
+  ctx: Context
 ): Promise<User | null> {
   const existingUser = await prisma.user.findUnique({
     ...query,
@@ -15,6 +18,28 @@ export async function findOrFetchUser(
     }
   })
   if (existingUser != null && existingUser.emailVerified == null) {
+    if (
+      ctx.type === 'authenticated' &&
+      ctx.currentUser.email != null &&
+      existingUser?.email == null
+    ) {
+      const user = await prisma.user.update({
+        where: {
+          id: userId
+        },
+        data: {
+          email: ctx.currentUser.email,
+          firstName: ctx.currentUser.firstName,
+          lastName: ctx.currentUser.lastName,
+          imageUrl: ctx.currentUser.imageUrl,
+          emailVerified: false
+        }
+      })
+      if (user.email != null && !user.emailVerified)
+        void verifyUser(userId, user.email, redirect)
+      return user
+    }
+
     const user = await prisma.user.update({
       where: {
         id: userId
@@ -64,7 +89,7 @@ export async function findOrFetchUser(
     userId,
     firstName,
     lastName,
-    email: email ?? '',
+    email,
     imageUrl,
     emailVerified
   }

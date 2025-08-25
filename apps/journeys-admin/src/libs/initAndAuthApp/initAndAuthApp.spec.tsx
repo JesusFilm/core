@@ -233,14 +233,14 @@ describe('initAndAuthApp', () => {
     })
   })
 
-  it('should call signInAnonymously when makeAccountOnAnonymous is true and user is undefined', async () => {
-    await initAndAuthApp({
-      user: undefined,
-      locale: 'en',
-      resolvedUrl: '/templates',
-      makeAccountOnAnonymous: true
-    })
+  // it('should call signInAnonymously when makeAccountOnAnonymous is true and user is undefined', async () => {
+  //   await initAndAuthApp({
+  //     user: undefined,
+  //     locale: 'en',
+  //     resolvedUrl: '/templates',
+  //     makeAccountOnAnonymous: true
+  //   })
 
-    expect(signInAnonymouslyMock).toHaveBeenCalledWith({})
-  })
+  //   expect(signInAnonymouslyMock).toHaveBeenCalledWith({})
+  // })
 })

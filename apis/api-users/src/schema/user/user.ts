@@ -60,7 +60,8 @@ builder.queryFields((t) => ({
       return await findOrFetchUser(
         query,
         ctx.currentUser.id,
-        input?.redirect ?? undefined
+        input?.redirect ?? undefined,
+        ctx
       )
     }
   }),
