@@ -1,22 +1,22 @@
 import { render, screen } from '@testing-library/react'
 
-import { TeamMembersHeading } from './TeamMembersHeading'
+import { JourneyUsersHeading } from './JourneyUsersHeading'
 
-describe('getTeamMembersHeading', () => {
+describe('JourneyUsersHeading', () => {
   it('should render all text elements and icons correctly', () => {
-    const teamMembersText = 'Team Members'
+    const usersText = 'Journey Users'
     const emailNotificationsText = 'Email Notifications'
     const userRoleText = 'User Role'
 
     render(
-      <TeamMembersHeading
-        teamMembersText={teamMembersText}
+      <JourneyUsersHeading
+        usersText={usersText}
         emailNotificationsText={emailNotificationsText}
         userRoleText={userRoleText}
       />
     )
 
-    expect(screen.getByText(teamMembersText)).toBeInTheDocument()
+    expect(screen.getByText(usersText)).toBeInTheDocument()
     expect(screen.getByLabelText(emailNotificationsText)).toBeInTheDocument()
     expect(screen.getByLabelText(userRoleText)).toBeInTheDocument()
 

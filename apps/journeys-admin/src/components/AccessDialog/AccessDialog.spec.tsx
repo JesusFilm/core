@@ -224,7 +224,7 @@ describe('AccessDialog', () => {
     expect(getAllByText('Jotaro Kujo')).toHaveLength(1)
   })
 
-  it('should display team members', async () => {
+  it('should display journey users', async () => {
     const handleClose = jest.fn()
     const { getByText } = render(
       <SnackbarProvider>
@@ -235,14 +235,14 @@ describe('AccessDialog', () => {
     )
 
     await waitFor(() => {
-      expect(getByText('Team Members')).toBeInTheDocument()
+      expect(getByText('Journey Users')).toBeInTheDocument()
       expect(getByText('Jotaro Kujo')).toBeInTheDocument()
       expect(getByText('Koichi Hirose')).toBeInTheDocument()
       expect(getByText('Josuke Higashikata')).toBeInTheDocument()
     })
   })
 
-  it('team members list should be read only', async () => {
+  it('journey user list should be read only', async () => {
     const handleClose = jest.fn()
     const { getAllByRole, getByText } = render(
       <SnackbarProvider>
@@ -253,7 +253,7 @@ describe('AccessDialog', () => {
     )
 
     await waitFor(() => {
-      expect(getByText('Team Members')).toBeInTheDocument()
+      expect(getByText('Journey Users')).toBeInTheDocument()
     })
 
     // Should now have 2 managers: original team manager + synthetic journey owner
@@ -278,7 +278,7 @@ describe('AccessDialog', () => {
     )
 
     await waitFor(() => {
-      expect(getByText('Team Members')).toBeInTheDocument()
+      expect(getByText('Journey Users')).toBeInTheDocument()
     })
 
     expect(getAllByText('Jotaro Kujo')).toHaveLength(1)

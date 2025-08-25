@@ -8,17 +8,17 @@ import EmailIcon from '@core/shared/ui/icons/Email'
 import ShieldCheck from '@core/shared/ui/icons/ShieldCheck'
 import UsersProfiles2 from '@core/shared/ui/icons/UsersProfiles2'
 
-export interface TeamMembersHeadingProps {
-  teamMembersText: string
+export interface JourneyUsersHeadingProps {
+  usersText: string
   emailNotificationsText: string
   userRoleText: string
 }
 
-export function TeamMembersHeading({
-  teamMembersText,
+export function JourneyUsersHeading({
+  usersText,
   emailNotificationsText,
   userRoleText
-}: TeamMembersHeadingProps): ReactElement {
+}: JourneyUsersHeadingProps): ReactElement {
   return (
     <>
       <Grid container spacing={1} alignItems="center" sx={{ pb: 4 }}>
@@ -33,7 +33,7 @@ export function TeamMembersHeading({
             color="secondary.light"
             sx={{ opacity: 0.8, ml: 1 }}
           >
-            {teamMembersText}
+            {usersText}
           </Typography>
         </Grid>
         <Grid size={{ xs: 2, sm: 2 }}>
