@@ -2,7 +2,7 @@ import { gql, useMutation } from '@apollo/client'
 import Avatar from '@mui/material/Avatar'
 import Button from '@mui/material/Button'
 import Divider from '@mui/material/Divider'
-import Grid from '@mui/material/GridLegacy'
+import Grid from '@mui/material/Grid'
 import Menu from '@mui/material/Menu'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
@@ -90,14 +90,14 @@ export function UserTeamListItem({
   return (
     <>
       <Grid container spacing={1} alignItems="center">
-        <Grid xs={2} sm={1}>
+        <Grid size={{xs: 2, sm: 1}}>
           <Avatar src={imageUrl ?? undefined} alt={displayName ?? email}>
             {displayName != null
               ? displayName.charAt(0)?.toUpperCase()
               : email.charAt(0).toUpperCase()}
           </Avatar>
         </Grid>
-        <Grid xs={journeyId != null ? 5 : 7} sm={journeyId != null ? 7 : 9}>
+        <Grid size={{xs: journeyId != null ? 5 : 7, sm: journeyId != null ? 7 : 9}}>
           <Stack sx={{ ml: 2 }}>
             <Typography variant="subtitle2" sx={{ width: '100%' }}>
               {displayName}
@@ -116,7 +116,7 @@ export function UserTeamListItem({
           </Stack>
         </Grid>
         {journeyId != null && (
-          <Grid xs={2} sm={2}>
+          <Grid size={{xs: 2, sm: 2}}>
             {journeyId != null && (
               <NotificationSwitch
                 name={listItem?.user?.firstName}
@@ -127,7 +127,7 @@ export function UserTeamListItem({
             )}
           </Grid>
         )}
-        <Grid xs={3} sm={2}>
+        <Grid size={{xs: 3, sm: 2}}>
           <Button
             aria-controls={open ? 'basic-menu' : undefined}
             aria-haspopup="true"
