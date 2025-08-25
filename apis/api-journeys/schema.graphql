@@ -2795,20 +2795,6 @@ input JourneysEmailPreferenceUpdateInput {
   value: Boolean!
 }
 
-type PhoneAction implements Action
-  @shareable
-{
-  parentBlockId: ID!
-  gtmEventName: String
-  parentBlock: Block!
-  phone: String!
-}
-
-input PhoneActionInput {
-  gtmEventName: String
-  phone: String!
-}
-
 type PlausibleStatsAggregateValue
   @shareable
 {
