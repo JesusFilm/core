@@ -1,9 +1,8 @@
 import { sendGTMEvent } from '@next/third-parties/google'
 import last from 'lodash/last'
-import { useRouter } from 'next/router'
 import { useTranslation } from 'next-i18next'
 import { NextSeo } from 'next-seo'
-import { ReactElement, useEffect, useMemo, useState } from 'react'
+import { ReactElement, useMemo, useState } from 'react'
 import { v4 as uuidv4 } from 'uuid'
 
 import Bible from '@core/shared/ui/icons/Bible'
@@ -14,9 +13,6 @@ import { VideoContentFields_studyQuestions as StudyQuestions } from '../../../__
 import { useVideoChildren } from '../../libs/useVideoChildren'
 import { getWatchUrl } from '../../libs/utils/getWatchUrl'
 import { useVideo } from '../../libs/videoContext'
-import { useWatch } from '../../libs/watchContext'
-import { audioLanguageRedirect } from '../../libs/watchContext/audioLanguageRedirect'
-import { useLanguagesSlugQuery } from '../../libs/useLanguagesSlugQuery'
 import { PageWrapper } from '../PageWrapper'
 import { ShareDialog } from '../ShareDialog'
 
@@ -30,7 +26,6 @@ import { VideoContentHero } from './VideoContentHero'
 
 export function NewVideoContentPage(): ReactElement {
   const { t } = useTranslation('apps-watch')
-  const router = useRouter()
   const {
     id,
     container,
@@ -49,7 +44,6 @@ export function NewVideoContentPage(): ReactElement {
 
   const [showShare, setShowShare] = useState(false)
   const [isFullscreen, setIsFullscreen] = useState(false)
-  const { dispatch } = useWatch()
 
   const variantSlug = container?.variant?.slug ?? variant?.slug
   const watchUrl = getWatchUrl(container?.slug, label, variant?.slug)
@@ -58,32 +52,6 @@ export function NewVideoContentPage(): ReactElement {
     variantSlug,
     variant?.language.bcp47 ?? 'en'
   )
-
-  const { loading: languageVariantsLoading, data: languageVariantsData } =
-    useLanguagesSlugQuery({
-      variables: {
-        id
-      },
-      onCompleted: (data) => {
-        if (data?.video?.variantLanguagesWithSlug) {
-          dispatch({
-            type: 'SetVideoAudioLanguages',
-            videoAudioLanguages: data.video.variantLanguagesWithSlug
-          })
-        }
-      }
-    })
-
-  // Handle locale checking and redirect
-  useEffect(() => {
-    void audioLanguageRedirect({
-      languageVariantsLoading,
-      languageVariantsData,
-      router,
-      containerSlug: container?.slug
-    })
-  }, [languageVariantsLoading, languageVariantsData, router, container?.slug])
-
   const filteredChildren = useMemo(
     () => children.filter((video) => video.variant !== null),
     [children]

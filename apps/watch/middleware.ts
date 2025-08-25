@@ -1,4 +1,6 @@
+import { Redis } from '@upstash/redis'
 import { NextRequest, NextResponse } from 'next/server'
+import { z } from 'zod'
 
 import {
   DEFAULT_LOCALE,
@@ -6,10 +8,34 @@ import {
   SUPPORTED_LOCALES
 } from './src/libs/localeMapping'
 
+// Zod schema for validating Redis cached data
+const VariantLanguageSchema = z.object({
+  slug: z.string(),
+  language: z.object({
+    id: z.string()
+  })
+})
+
+const VariantLanguagesArraySchema = z.array(VariantLanguageSchema)
+
+// Type inference from the schema
+type VariantLanguage = z.infer<typeof VariantLanguageSchema>
+
 interface LanguagePriority {
   code: string
   priority: number
 }
+
+function redisClient(): Redis {
+  return new Redis({
+    url:
+      process.env.REDIRECT_STORAGE_REDIS_URL ??
+      'http://serverless-redis-http:80',
+    token: process.env.REDIRECT_STORAGE_REDIS_TOKEN ?? 'example_token'
+  })
+}
+
+const CACHE_TTL = 86400 // 1 day in seconds
 
 function parseAcceptLanguageHeader(header: string): LanguagePriority[] {
   return header.split(',').map((item) => {
@@ -105,26 +131,123 @@ function getLocale(req: NextRequest): string {
   return geoLocale ?? DEFAULT_LOCALE
 }
 
-export function middleware(req: NextRequest): NextResponse | undefined {
-  const isNextInternal = req.nextUrl.pathname.startsWith('/_next')
-  const isApi = req.nextUrl.pathname.includes('/api/')
-  const isWatchRoute = req.nextUrl.pathname.startsWith('/watch')
-  const isAsset = req.nextUrl.pathname.includes('/assets/')
+async function audioLanguageRedirect(
+  req: NextRequest
+): Promise<NextResponse | undefined> {
+  const pathname = req.nextUrl.pathname
+  const pathParts = pathname.split('/').filter(Boolean)
 
-  if (isNextInternal || isApi || !isWatchRoute || isAsset) return
+  if (pathParts.length === 3 || pathParts.length === 4) {
+    const [videoSlug, audioLanguage] = pathParts
+      .slice(-2)
+      .map((part) => part.split('.').at(0))
 
-  const locale = getLocale(req)
+    // Check if user has an AUDIO_LANGUAGE cookie
+    const audioLanguageId = req.cookies
+      .get('AUDIO_LANGUAGE')
+      ?.value?.split('---')[1]
 
-  if (locale !== DEFAULT_LOCALE) {
-    const rewriteUrl = req.nextUrl.clone()
-    const [pathname, query] = req.nextUrl.pathname.split('?')
+    if (audioLanguageId) {
+      const redis = redisClient()
+      // User's preferred language doesn't match the current path
+      // Check if we have cached variant languages for this video
+      const cacheKey = `variantLanguages:${videoSlug}`
+      let variantLanguages: VariantLanguage[] | null = null
 
-    if (pathname === '/watch') {
-      rewriteUrl.pathname = `/watch/${LANGUAGE_MAPPINGS[locale].languageSlugs[0]}${query ? `?${query}` : ''}`
-      return NextResponse.redirect(rewriteUrl, 302)
-    } else {
-      rewriteUrl.pathname = `/${locale}${pathname}${query ? `?${query}` : ''}`
+      try {
+        const cachedData = await redis.get(cacheKey)
+        if (cachedData) {
+          try {
+            variantLanguages = VariantLanguagesArraySchema.parse(cachedData)
+          } catch (validationError) {
+            console.error('Redis data validation error:', validationError)
+            // Invalid cached data, will fetch fresh data from API
+          }
+        }
+      } catch (error) {
+        console.error('Redis cache error:', error)
+      }
+
+      // If not cached, fetch from API
+      if (!variantLanguages) {
+        try {
+          const response = await fetch(
+            `${req.nextUrl.origin}/api/variantLanguages?slug=${videoSlug}/${audioLanguage}`
+          )
+          if (response.ok) {
+            const data = await response.json()
+            variantLanguages = VariantLanguagesArraySchema.parse(
+              data.data?.variantLanguages || []
+            )
+
+            // Cache the result
+            try {
+              await redis.setex(cacheKey, CACHE_TTL, variantLanguages)
+            } catch (error) {
+              console.error('Redis cache set error:', error)
+            }
+          }
+        } catch (error) {
+          console.error('API fetch error:', error)
+        }
+      }
+
+      // Check if user's preferred language is available
+      if (variantLanguages) {
+        const userPreferredLanguage = variantLanguages.find(
+          (variant) => variant.language.id === audioLanguageId
+        )
+
+        if (
+          userPreferredLanguage &&
+          audioLanguage !== userPreferredLanguage.slug.split('/').at(-1)
+        ) {
+          // Redirect to user's preferred language
+          const preferredSlug = userPreferredLanguage.slug
+            .split('/')
+            .map((part) => `${part}.html`)
+            .join('/')
+          const newPath = `/watch/${pathParts.length === 4 ? `${pathParts[1]}/` : ''}${preferredSlug}`
+          return NextResponse.redirect(new URL(newPath, req.url))
+        }
+      }
     }
+  }
+}
+
+export const config = {
+  matcher: [
+    {
+      source: '/watch/((?!assets).*)',
+      missing: [
+        { type: 'header', key: 'next-router-prefetch' },
+        { type: 'header', key: 'purpose', value: 'prefetch' }
+      ]
+    },
+    {
+      source: '/watch',
+      missing: [
+        { type: 'header', key: 'next-router-prefetch' },
+        { type: 'header', key: 'purpose', value: 'prefetch' }
+      ]
+    }
+  ]
+}
+
+export async function middleware(req: NextRequest): Promise<NextResponse> {
+  const locale = getLocale(req)
+  const rewriteUrl = req.nextUrl.clone()
+  const pathname = req.nextUrl.pathname
+
+  if (pathname === '/watch' && locale !== DEFAULT_LOCALE) {
+    rewriteUrl.pathname = `/watch/${LANGUAGE_MAPPINGS[locale].languageSlugs[0]}`
+    return NextResponse.redirect(rewriteUrl, 302)
+  } else if (pathname.startsWith('/watch/')) {
+    const redirect = await audioLanguageRedirect(req)
+    if (redirect) return redirect
+  }
+  if (locale !== DEFAULT_LOCALE) {
+    rewriteUrl.pathname = `/${locale}${pathname}`
 
     return NextResponse.rewrite(rewriteUrl)
   }

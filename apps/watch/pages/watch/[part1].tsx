@@ -23,18 +23,8 @@ import {
 } from '../../src/libs/apolloClient'
 import { getCookie } from '../../src/libs/cookieHandler'
 import { getFlags } from '../../src/libs/getFlags'
-import { LANGUAGE_MAPPINGS, LocaleMapping } from '../../src/libs/localeMapping'
-import { VIDEO_CHILD_FIELDS } from '../../src/libs/videoChildFields'
+import { LANGUAGE_MAPPINGS } from '../../src/libs/localeMapping'
 import { WatchProvider } from '../../src/libs/watchContext/WatchContext'
-
-export const GET_HOME_VIDEOS = gql`
-  ${VIDEO_CHILD_FIELDS}
-  query GetHomeVideos($ids: [ID!]!, $languageId: ID) {
-    videos(where: { ids: $ids }) {
-      ...VideoChildFields
-    }
-  }
-`
 
 interface HomeLanguagePageProps {
   initialApolloState?: NormalizedCacheObject
