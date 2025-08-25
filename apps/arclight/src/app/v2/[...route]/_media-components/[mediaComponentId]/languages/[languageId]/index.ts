@@ -284,8 +284,8 @@ mediaComponentLanguage.openapi(route, async (c) => {
     let webEmbedPlayer = ''
     let webEmbedSharePlayer = ''
     if (platform === 'web') {
-      webEmbedPlayer = getWebEmbedPlayer(video.variant.id)
-      webEmbedSharePlayer = getWebEmbedSharePlayer(video.variant.id)
+      webEmbedPlayer = getWebEmbedPlayer(video.variant.id, apiSessionId)
+      webEmbedSharePlayer = getWebEmbedSharePlayer(video.variant.id, apiSessionId)
     }
 
     let subtitleUrls = {}
@@ -321,6 +321,7 @@ mediaComponentLanguage.openapi(route, async (c) => {
               })) ?? []
           }
       }
+    }
 
       let streamingUrls = {}
       if (video.variant?.hls != null || video.variant?.dash != null) {
