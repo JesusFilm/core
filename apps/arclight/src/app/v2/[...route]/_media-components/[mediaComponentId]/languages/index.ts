@@ -265,7 +265,10 @@ mediaComponentLanguages.openapi(route, async (c) => {
                   shareUrl = `https://arc.gt/s/${variant.id}/${variant.language?.id}`
                 }
 
-                const webEmbedPlayer = getWebEmbedPlayer(variant.id, apiSessionId)
+                const webEmbedPlayer = getWebEmbedPlayer(
+                  variant.id,
+                  apiSessionId
+                )
                 const webEmbedSharePlayer = getWebEmbedSharePlayer(
                   variant.id,
                   apiSessionId

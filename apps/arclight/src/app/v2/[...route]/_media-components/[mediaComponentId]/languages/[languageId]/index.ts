@@ -247,243 +247,247 @@ mediaComponentLanguage.openapi(route, async (c) => {
         return { notFound: true, type: 'video_or_variant_not_found' }
       }
 
-    const downloadLow = findDownloadWithFallback(
-      video.variant?.downloads,
-      'low',
-      apiKey
-    )
-    const downloadHigh = findDownloadWithFallback(
-      video.variant?.downloads,
-      'high',
-      apiKey
-    )
-    const downloadSd = video.variant?.downloads?.find(
-      (download) => download.quality === 'sd'
-    )
+      const downloadLow = findDownloadWithFallback(
+        video.variant?.downloads,
+        'low',
+        apiKey
+      )
+      const downloadHigh = findDownloadWithFallback(
+        video.variant?.downloads,
+        'high',
+        apiKey
+      )
+      const downloadSd = video.variant?.downloads?.find(
+        (download) => download.quality === 'sd'
+      )
 
-    const downloadUrls = {
-      low:
-        downloadLow == null
-          ? undefined
-          : {
-              url: downloadLow.url,
-              height: downloadLow.height || 240,
-              width: downloadLow.width || 426,
-              sizeInBytes: downloadLow.size || 0
-            },
-      high:
-        downloadHigh == null
-          ? undefined
-          : {
-              url: downloadHigh.url,
-              height: downloadHigh.height || 720,
-              width: downloadHigh.width || 1280,
-              sizeInBytes: downloadHigh.size || 0
+      const downloadUrls = {
+        low:
+          downloadLow == null
+            ? undefined
+            : {
+                url: downloadLow.url,
+                height: downloadLow.height || 240,
+                width: downloadLow.width || 426,
+                sizeInBytes: downloadLow.size || 0
+              },
+        high:
+          downloadHigh == null
+            ? undefined
+            : {
+                url: downloadHigh.url,
+                height: downloadHigh.height || 720,
+                width: downloadHigh.width || 1280,
+                sizeInBytes: downloadHigh.size || 0
+              }
+      }
+
+      const webEmbedPlayer = getWebEmbedPlayer(video.variant.id, apiSessionId)
+      const webEmbedSharePlayer = getWebEmbedSharePlayer(
+        video.variant.id,
+        apiSessionId
+      )
+
+      let subtitleUrls = {}
+      if (
+        video.variant?.subtitle != null &&
+        video.variant?.subtitle.length > 0
+      ) {
+        switch (platform) {
+          case 'android':
+            subtitleUrls = {
+              vtt:
+                video.variant?.subtitle?.map((subtitle) => ({
+                  languageId: Number(subtitle.language?.id),
+                  languageName: subtitle.language?.name[0].value,
+                  languageTag: subtitle.language?.bcp47,
+                  url: subtitle.vttSrc
+                })) ?? [],
+              srt:
+                video.variant?.subtitle?.map((subtitle) => ({
+                  languageId: Number(subtitle.language?.id),
+                  languageName: subtitle.language?.name[0].value,
+                  languageTag: subtitle.language?.bcp47,
+                  url: subtitle.srtSrc
+                })) ?? []
             }
-    }
-
-    const webEmbedPlayer = getWebEmbedPlayer(video.variant.id, apiSessionId)
-    const webEmbedSharePlayer = getWebEmbedSharePlayer(
-      video.variant.id,
-      apiSessionId
-    )
-
-    let subtitleUrls = {}
-    if (video.variant?.subtitle != null && video.variant?.subtitle.length > 0) {
-      switch (platform) {
-        case 'android':
-          subtitleUrls = {
-            vtt:
-              video.variant?.subtitle?.map((subtitle) => ({
-                languageId: Number(subtitle.language?.id),
-                languageName: subtitle.language?.name[0].value,
-                languageTag: subtitle.language?.bcp47,
-                url: subtitle.vttSrc
-              })) ?? [],
-            srt:
-              video.variant?.subtitle?.map((subtitle) => ({
-                languageId: Number(subtitle.language?.id),
-                languageName: subtitle.language?.name[0].value,
-                languageTag: subtitle.language?.bcp47,
-                url: subtitle.srtSrc
-              })) ?? []
-          }
-          break
-        case 'web':
-        case 'ios':
-          subtitleUrls = {
-            vtt:
-              video.variant?.subtitle?.map((subtitle) => ({
-                languageId: Number(subtitle.language?.id),
-                languageName: subtitle.language?.name[0].value,
-                languageTag: subtitle.language?.bcp47,
-                url: subtitle.vttSrc
-              })) ?? []
-          }
+            break
+          case 'web':
+          case 'ios':
+            subtitleUrls = {
+              vtt:
+                video.variant?.subtitle?.map((subtitle) => ({
+                  languageId: Number(subtitle.language?.id),
+                  languageName: subtitle.language?.name[0].value,
+                  languageTag: subtitle.language?.bcp47,
+                  url: subtitle.vttSrc
+                })) ?? []
+            }
+        }
       }
-    }
 
-    let streamingUrls = {}
-    if (video.variant?.hls != null || video.variant?.dash != null) {
-      switch (platform) {
-        case 'android':
-          streamingUrls = {
-            dash: [{ videoBitrate: 0, url: video.variant?.dash }],
-            hls: [{ videoBitrate: 0, url: video.variant?.hls }],
-            http: [
-              {
-                videoBitrate: downloadLow?.bitrate ?? 0,
-                videoContainer: 'MP4',
-                url: downloadLow?.url
-              },
-              {
-                videoBitrate: downloadSd?.bitrate ?? 0,
-                videoContainer: 'MP4',
-                url: downloadSd?.url
-              },
-              {
-                videoBitrate: downloadSd?.bitrate ?? 0,
-                videoContainer: 'MP4',
-                url: downloadSd?.url
-              },
-              {
-                videoBitrate: downloadSd?.bitrate ?? 0,
-                videoContainer: 'MP4',
-                url: downloadSd?.url
-              },
-              {
-                videoBitrate: downloadSd?.bitrate ?? 0,
-                videoContainer: 'MP4',
-                url: downloadSd?.url
-              },
-              {
-                videoBitrate: downloadHigh?.bitrate ?? 0,
-                videoContainer: 'MP4',
-                url: downloadHigh?.url
-              }
-            ]
-          }
-          break
-        case 'ios':
-          streamingUrls = {
-            m3u8: [
-              {
-                videoBitrate: 0,
-                videoContainer: 'M2TS',
-                url: video.variant?.hls
-              }
-            ],
-            http: []
-          }
-          break
+      let streamingUrls = {}
+      if (video.variant?.hls != null || video.variant?.dash != null) {
+        switch (platform) {
+          case 'android':
+            streamingUrls = {
+              dash: [{ videoBitrate: 0, url: video.variant?.dash }],
+              hls: [{ videoBitrate: 0, url: video.variant?.hls }],
+              http: [
+                {
+                  videoBitrate: downloadLow?.bitrate ?? 0,
+                  videoContainer: 'MP4',
+                  url: downloadLow?.url
+                },
+                {
+                  videoBitrate: downloadSd?.bitrate ?? 0,
+                  videoContainer: 'MP4',
+                  url: downloadSd?.url
+                },
+                {
+                  videoBitrate: downloadSd?.bitrate ?? 0,
+                  videoContainer: 'MP4',
+                  url: downloadSd?.url
+                },
+                {
+                  videoBitrate: downloadSd?.bitrate ?? 0,
+                  videoContainer: 'MP4',
+                  url: downloadSd?.url
+                },
+                {
+                  videoBitrate: downloadSd?.bitrate ?? 0,
+                  videoContainer: 'MP4',
+                  url: downloadSd?.url
+                },
+                {
+                  videoBitrate: downloadHigh?.bitrate ?? 0,
+                  videoContainer: 'MP4',
+                  url: downloadHigh?.url
+                }
+              ]
+            }
+            break
+          case 'ios':
+            streamingUrls = {
+              m3u8: [
+                {
+                  videoBitrate: 0,
+                  videoContainer: 'M2TS',
+                  url: video.variant?.hls
+                }
+              ],
+              http: []
+            }
+            break
+        }
       }
-    }
 
       return {
         data: {
           mediaComponentId,
-      languageId: Number(languageId),
-      refId: video.variant?.id,
-      apiSessionId,
-      platform,
-      lengthInMilliseconds: video.variant?.lengthInMilliseconds ?? 0,
-      subtitleUrls,
-      downloadUrls,
-      streamingUrls,
-      shareUrl: video.variant?.share ?? '',
-      socialMediaUrls: {},
-      ...(platform === 'web' && {
-        webEmbedPlayer,
-        webEmbedSharePlayer
-      }),
-      openGraphVideoPlayer: 'https://jesusfilm.org/',
-      _links: {
-        self: {
-          href: `http://api.arclight.org/v2/media-components/${mediaComponentId}/languages/${languageId}?platform=${platform}&apiKey=${apiKey}`
-        },
-        mediaComponent: {
-          href: `http://api.arclight.org/v2/media-components/${mediaComponentId}?apiKey=${apiKey}`
-        },
-        mediaLanguage: {
-          href: `http://api.arclight.org/v2/media-languages/${languageId}?apiKey=${apiKey}`
-        }
-      },
-      ...(expand.includes('contains') &&
-        video.children && {
-          _embedded: {
-            contains: video.children.map((child) => ({
-              mediaComponentId: child.id,
-              languageId: Number(languageId),
-              refId: `${child.id}_${languageId}-${child.label}`,
-              apiSessionId,
-              lengthInMilliseconds: child.variant?.lengthInMilliseconds ?? 0,
-              subtitleUrls: {
-                vtt:
-                  child.variant?.subtitle?.map((subtitle) => ({
-                    languageId: Number(subtitle.language?.id),
-                    languageName: subtitle.language?.name[0].value,
-                    languageTag: subtitle.language?.bcp47,
-                    url: subtitle.vttSrc
-                  })) ?? []
-              },
-              downloadUrls: {
-                low: (() => {
-                  const lowDownload = findDownloadWithFallback(
-                    child.variant?.downloads,
-                    'low',
-                    apiKey
-                  )
-                  return (
-                    lowDownload && {
-                      url: lowDownload.url,
-                      height: lowDownload.height || 240,
-                      width: lowDownload.width || 426,
-                      sizeInBytes: lowDownload.size || 0
+          languageId: Number(languageId),
+          refId: video.variant?.id,
+          apiSessionId,
+          platform,
+          lengthInMilliseconds: video.variant?.lengthInMilliseconds ?? 0,
+          subtitleUrls,
+          downloadUrls,
+          streamingUrls,
+          shareUrl: video.variant?.share ?? '',
+          socialMediaUrls: {},
+          ...(platform === 'web' && {
+            webEmbedPlayer,
+            webEmbedSharePlayer
+          }),
+          openGraphVideoPlayer: 'https://jesusfilm.org/',
+          _links: {
+            self: {
+              href: `http://api.arclight.org/v2/media-components/${mediaComponentId}/languages/${languageId}?platform=${platform}&apiKey=${apiKey}`
+            },
+            mediaComponent: {
+              href: `http://api.arclight.org/v2/media-components/${mediaComponentId}?apiKey=${apiKey}`
+            },
+            mediaLanguage: {
+              href: `http://api.arclight.org/v2/media-languages/${languageId}?apiKey=${apiKey}`
+            }
+          },
+          ...(expand.includes('contains') &&
+            video.children && {
+              _embedded: {
+                contains: video.children.map((child) => ({
+                  mediaComponentId: child.id,
+                  languageId: Number(languageId),
+                  refId: `${child.id}_${languageId}-${child.label}`,
+                  apiSessionId,
+                  lengthInMilliseconds:
+                    child.variant?.lengthInMilliseconds ?? 0,
+                  subtitleUrls: {
+                    vtt:
+                      child.variant?.subtitle?.map((subtitle) => ({
+                        languageId: Number(subtitle.language?.id),
+                        languageName: subtitle.language?.name[0].value,
+                        languageTag: subtitle.language?.bcp47,
+                        url: subtitle.vttSrc
+                      })) ?? []
+                  },
+                  downloadUrls: {
+                    low: (() => {
+                      const lowDownload = findDownloadWithFallback(
+                        child.variant?.downloads,
+                        'low',
+                        apiKey
+                      )
+                      return (
+                        lowDownload && {
+                          url: lowDownload.url,
+                          height: lowDownload.height || 240,
+                          width: lowDownload.width || 426,
+                          sizeInBytes: lowDownload.size || 0
+                        }
+                      )
+                    })(),
+                    high: (() => {
+                      const highDownload = findDownloadWithFallback(
+                        child.variant?.downloads,
+                        'high',
+                        apiKey
+                      )
+                      return (
+                        highDownload && {
+                          url: highDownload.url,
+                          height: highDownload.height || 720,
+                          width: highDownload.width || 1280,
+                          sizeInBytes: highDownload.size || 0
+                        }
+                      )
+                    })()
+                  },
+                  streamingUrls: {
+                    m3u8: [
+                      {
+                        videoBitrate: 0,
+                        videoContainer: 'M2TS',
+                        url: child.variant?.hls ?? ''
+                      }
+                    ],
+                    http: []
+                  },
+                  shareUrl: child.variant?.share ?? '',
+                  socialMediaUrls: {},
+                  _links: {
+                    self: {
+                      href: `http://api.arclight.org/v2/media-components/${child.id}/languages/${languageId}?apiKey=${apiKey}`
+                    },
+                    mediaComponent: {
+                      href: `http://api.arclight.org/v2/media-components/${child.id}?apiKey=${apiKey}`
+                    },
+                    mediaLanguage: {
+                      href: `http://api.arclight.org/v2/media-languages/${languageId}?apiKey=${apiKey}`
                     }
-                  )
-                })(),
-                high: (() => {
-                  const highDownload = findDownloadWithFallback(
-                    child.variant?.downloads,
-                    'high',
-                    apiKey
-                  )
-                  return (
-                    highDownload && {
-                      url: highDownload.url,
-                      height: highDownload.height || 720,
-                      width: highDownload.width || 1280,
-                      sizeInBytes: highDownload.size || 0
-                    }
-                  )
-                })()
-              },
-              streamingUrls: {
-                m3u8: [
-                  {
-                    videoBitrate: 0,
-                    videoContainer: 'M2TS',
-                    url: child.variant?.hls ?? ''
                   }
-                ],
-                http: []
-              },
-              shareUrl: child.variant?.share ?? '',
-              socialMediaUrls: {},
-              _links: {
-                self: {
-                  href: `http://api.arclight.org/v2/media-components/${child.id}/languages/${languageId}?apiKey=${apiKey}`
-                },
-                mediaComponent: {
-                  href: `http://api.arclight.org/v2/media-components/${child.id}?apiKey=${apiKey}`
-                },
-                mediaLanguage: {
-                  href: `http://api.arclight.org/v2/media-languages/${languageId}?apiKey=${apiKey}`
-                }
+                }))
               }
-            }))
-          }
-        })
+            })
         },
         type: 'success'
       }
@@ -495,7 +499,7 @@ mediaComponentLanguage.openapi(route, async (c) => {
   if (cachedData.notFound) {
     return c.json(
       {
-          message: `Media component '${mediaComponentId}' language '${languageId}' not found!`,
+        message: `Media component '${mediaComponentId}' language '${languageId}' not found!`,
         logref: 404
       },
       404

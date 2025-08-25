@@ -194,7 +194,7 @@ mediaComponent.openapi(route, async (c) => {
           id: mediaComponentId
         }
       })
-      
+
       if (data.video == null) {
         return { notFound: true, type: 'video_not_found' }
       }
@@ -331,7 +331,10 @@ mediaComponent.openapi(route, async (c) => {
     )
   }
 
-  if (cachedData.type === 'descriptors_only' || cachedData.type === 'full_response') {
+  if (
+    cachedData.type === 'descriptors_only' ||
+    cachedData.type === 'full_response'
+  ) {
     return c.json(cachedData.data)
   }
 
