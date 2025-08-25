@@ -27,9 +27,9 @@ import { LANGUAGE_MAPPINGS, LocaleMapping } from '../../src/libs/localeMapping'
 import { VIDEO_CHILD_FIELDS } from '../../src/libs/videoChildFields'
 import { WatchProvider } from '../../src/libs/watchContext/WatchContext'
 
-export const GET_HOME_VIDEOS = gql`
+export const GET_HOME_VIDEOS_FOR_LANGUAGE = gql`
   ${VIDEO_CHILD_FIELDS}
-  query GetHomeVideos($ids: [ID!]!, $languageId: ID) {
+  query GetHomeVideosForLanguage($ids: [ID!]!, $languageId: ID) {
     videos(where: { ids: $ids }) {
       ...VideoChildFields
     }
