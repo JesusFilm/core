@@ -70,7 +70,7 @@ export function UserTeamList({
         </Box>
       ) : (
         <>
-          {sortedUserTeams.length > 0 && currentUserTeam != null && (
+          {sortedUserTeams.length > 0 && (variant === 'readonly' || currentUserTeam != null) && (
             <>
               {sortedUserTeams.map((userTeam) => {
                 return (
@@ -78,8 +78,8 @@ export function UserTeamList({
                     key={userTeam.id}
                     user={userTeam}
                     disabled={
-                      currentUserTeam.role !== UserTeamRole.manager ||
-                      currentUserTeam.user.email === userTeam.user.email ||
+                      currentUserTeam?.role !== UserTeamRole.manager ||
+                      currentUserTeam?.user?.email === userTeam.user.email ||
                       variant === 'readonly'
                     }
                     variant={variant}
