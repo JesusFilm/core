@@ -182,7 +182,7 @@ mediaComponent.openapi(route, async (c) => {
     ...metadataLanguageTags.slice(0, 20)
   ])
 
-  const response = await getWithStaleCache(cacheKey, async () => {
+  const cachedData = await getWithStaleCache(cacheKey, async () => {
     try {
       const { data } = await getApolloClient().query<ResultOf<typeof GET_VIDEO>>({
         query: GET_VIDEO,
@@ -192,7 +192,10 @@ mediaComponent.openapi(route, async (c) => {
           id: mediaComponentId
         }
       })
-      if (data.video == null) return c.notFound()
+      
+      if (data.video == null) {
+        return { notFound: true, type: 'video_not_found' }
+      }
 
       const video = data.video
 
@@ -203,15 +206,7 @@ mediaComponent.openapi(route, async (c) => {
         video.snippet[0]?.value == null &&
         video.description[0]?.value == null
       ) {
-        return new Response(
-          JSON.stringify({
-            message: `Media component '${mediaComponentId}' resource not found!`,
-            logref: 404
-          }),
-          {
-            status: 404
-          }
-        )
+        return { notFound: true, type: 'metadata_not_found' }
       }
 
       const descriptorsonlyResponse = {
@@ -239,9 +234,10 @@ mediaComponent.openapi(route, async (c) => {
       }
 
       if (filter.includes('descriptorsonly')) {
-        return c.json(descriptorsonlyResponse)
+        return { data: descriptorsonlyResponse, type: 'descriptors_only' }
       }
-      const response = {
+
+      const responseData = {
         mediaComponentId,
         componentType: video.variant?.hls != null ? 'content' : 'container',
         subType: video.label,
@@ -317,17 +313,31 @@ mediaComponent.openapi(route, async (c) => {
         }
       }
 
-      return c.json(response)
+      return { data: responseData, type: 'full_response' }
     } catch {
-      return c.json(
-        {
-          message: `Media component '${mediaComponentId}' resource not found!`,
-          logref: 404
-        },
-        404
-      )
+      return { notFound: true, type: 'error' }
     }
   })
 
-  return response
+  if (cachedData.notFound) {
+    return c.json(
+      {
+        message: `Media component '${mediaComponentId}' resource not found!`,
+        logref: 404
+      },
+      404
+    )
+  }
+
+  if (cachedData.type === 'descriptors_only' || cachedData.type === 'full_response') {
+    return c.json(cachedData.data)
+  }
+
+  return c.json(
+    {
+      message: `Media component '${mediaComponentId}' resource not found!`,
+      logref: 404
+    },
+    404
+  )
 })

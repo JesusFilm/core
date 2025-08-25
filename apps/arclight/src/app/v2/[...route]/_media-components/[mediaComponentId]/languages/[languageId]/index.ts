@@ -226,20 +226,23 @@ mediaComponentLanguage.openapi(route, async (c) => {
     apiSessionId
   ])
 
-  const response = await getWithStaleCache(cacheKey, async () => {
-    const { data } = await getApolloClient().query<
-      ResultOf<typeof GET_VIDEO_VARIANT>
-    >({
-      query: GET_VIDEO_VARIANT,
-      variables: {
-        languageId,
-        id: mediaComponentId
+  const cachedData = await getWithStaleCache(cacheKey, async () => {
+    try {
+      const { data } = await getApolloClient().query<
+        ResultOf<typeof GET_VIDEO_VARIANT>
+      >({
+        query: GET_VIDEO_VARIANT,
+        variables: {
+          languageId,
+          id: mediaComponentId
+        }
+      })
+
+      const video = data.video
+
+      if (video == null || video.variant == null) {
+        return { notFound: true, type: 'video_or_variant_not_found' }
       }
-    })
-
-    const video = data.video
-
-    if (video == null || video.variant == null) return c.notFound()
 
     const downloadLow = findDownloadWithFallback(
       video.variant?.downloads,
@@ -373,8 +376,9 @@ mediaComponentLanguage.openapi(route, async (c) => {
       }
     }
 
-    return {
-      mediaComponentId,
+      return {
+        data: {
+          mediaComponentId,
       languageId: Number(languageId),
       refId: video.variant?.id,
       apiSessionId,
@@ -477,8 +481,33 @@ mediaComponentLanguage.openapi(route, async (c) => {
             }))
           }
         })
+        },
+        type: 'success'
+      }
+    } catch {
+      return { notFound: true, type: 'error' }
     }
   })
 
-  return c.json(response)
+  if (cachedData.notFound) {
+    return c.json(
+      {
+          message: `Media component '${mediaComponentId}' language '${languageId}' not found!`,
+        logref: 404
+      },
+      404
+    )
+  }
+
+  if (cachedData.type === 'success') {
+    return c.json(cachedData.data)
+  }
+
+  return c.json(
+    {
+      message: `Media component '${mediaComponentId}' language '${languageId}' not found!`,
+      logref: 404
+    },
+    404
+  )
 })
