@@ -244,7 +244,7 @@ describe('AccessDialog', () => {
 
   it('team members list should be read only', async () => {
     const handleClose = jest.fn()
-    const { getByRole, getAllByRole, getByText } = render(
+    const { getAllByRole, getByText } = render(
       <SnackbarProvider>
         <MockedProvider addTypename mocks={mocks}>
           <AccessDialog journeyId="journeyId" open onClose={handleClose} />
@@ -256,7 +256,13 @@ describe('AccessDialog', () => {
       expect(getByText('Team Members')).toBeInTheDocument()
     })
 
-    expect(getByRole('button', { name: 'Manager' })).toBeDisabled()
+    // Should now have 2 managers: original team manager + synthetic journey owner
+    expect(getAllByRole('button', { name: 'Manager' })).toHaveLength(2)
+    expect(getAllByRole('button', { name: 'Manager' })[0]).toBeDisabled()
+    expect(getAllByRole('button', { name: 'Manager' })[1]).toBeDisabled()
+    
+    // Should still have 2 members
+    expect(getAllByRole('button', { name: 'Member' })).toHaveLength(2)
     expect(getAllByRole('button', { name: 'Member' })[0]).toBeDisabled()
     expect(getAllByRole('button', { name: 'Member' })[1]).toBeDisabled()
   })
