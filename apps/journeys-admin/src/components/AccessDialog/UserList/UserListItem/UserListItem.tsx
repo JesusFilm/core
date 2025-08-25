@@ -113,14 +113,14 @@ export function UserListItem({
         alignItems="center"
         data-testid="UserListItem"
       >
-        <Grid size={{xs: 2, sm: 1}}>
+        <Grid size={{ xs: 2, sm: 1 }}>
           <Avatar src={imageUrl ?? undefined} alt={displayName ?? email}>
             {displayName != null
               ? displayName.charAt(0)?.toUpperCase()
               : email.charAt(0).toUpperCase()}
           </Avatar>
         </Grid>
-        <Grid size={{xs: 5, sm: 7}}>
+        <Grid size={{ xs: 5, sm: 7 }}>
           <Stack sx={{ ml: 2 }}>
             <Typography variant="subtitle2" sx={{ width: '100%', flexGrow: 1 }}>
               {displayName}
@@ -138,7 +138,7 @@ export function UserListItem({
             </Typography>
           </Stack>
         </Grid>
-        <Grid size={{xs: 2, sm: 2}}>
+        <Grid size={{ xs: 2, sm: 2 }}>
           {listItem.__typename !== 'UserInvite' && (
             <NotificationSwitch
               name={listItem?.user?.firstName}
@@ -148,7 +148,7 @@ export function UserListItem({
             />
           )}
         </Grid>
-        <Grid size={{xs: 3, sm: 2}}>
+        <Grid size={{ xs: 3, sm: 2 }}>
           <Button
             aria-controls={open ? 'basic-menu' : undefined}
             aria-haspopup="true"
