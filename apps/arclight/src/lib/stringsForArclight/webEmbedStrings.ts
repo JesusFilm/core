@@ -1,6 +1,6 @@
 export const getWebEmbedPlayer = (
   variantId: string,
-  apiSessionId: string
+  apiSessionId?: string
 ): string => {
   return cleanString(`
     <div class="arc-cont">
@@ -33,7 +33,7 @@ export const getWebEmbedPlayer = (
 
 export const getWebEmbedSharePlayer = (
   variantId: string,
-  apiSessionId: string
+  apiSessionId?: string
 ): string => {
   return cleanString(`
       <div class="arc-cont">
