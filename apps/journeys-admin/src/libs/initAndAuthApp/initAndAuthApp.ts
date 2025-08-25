@@ -141,7 +141,7 @@ export async function initAndAuthApp({
   }
 
   const redirect =
-    resolvedUrl != null && makeAccountOnAnonymous === true
+    resolvedUrl != null && makeAccountOnAnonymous === false
       ? await checkConditionalRedirect({
           apolloClient,
           resolvedUrl,
@@ -149,7 +149,10 @@ export async function initAndAuthApp({
         })
       : undefined
 
-  if (!(redirect?.destination.startsWith('/users/verify') ?? false))
+  if (
+    !(redirect?.destination.startsWith('/users/verify') ?? false) &&
+    user?.email != null
+  )
     await apolloClient.mutate<AcceptAllInvites>({
       mutation: ACCEPT_ALL_INVITES
     })
