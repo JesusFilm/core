@@ -34,7 +34,8 @@ describe('VariantLanguages API', () => {
   const createMockResponse = (): NextApiResponse => {
     const res = {
       status: jest.fn().mockReturnThis(),
-      json: jest.fn()
+      json: jest.fn(),
+      setHeader: jest.fn()
     } as unknown as NextApiResponse
     return res
   }

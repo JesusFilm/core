@@ -23,6 +23,8 @@ import { DiscussionQuestions } from './DiscussionQuestions'
 import { NewVideoContentHeader } from './NewVideoContentHeader'
 import { VideoCarousel } from './VideoCarousel'
 import { VideoContentHero } from './VideoContentHero'
+import { useWatch } from '../../libs/watchContext'
+import { useLanguagesSlugQuery } from '../../libs/useLanguagesSlugQuery'
 
 export function NewVideoContentPage(): ReactElement {
   const { t } = useTranslation('apps-watch')
@@ -44,6 +46,7 @@ export function NewVideoContentPage(): ReactElement {
 
   const [showShare, setShowShare] = useState(false)
   const [isFullscreen, setIsFullscreen] = useState(false)
+  const { dispatch } = useWatch()
 
   const variantSlug = container?.variant?.slug ?? variant?.slug
   const watchUrl = getWatchUrl(container?.slug, label, variant?.slug)
@@ -56,6 +59,20 @@ export function NewVideoContentPage(): ReactElement {
     () => children.filter((video) => video.variant !== null),
     [children]
   )
+
+  useLanguagesSlugQuery({
+    variables: {
+      id
+    },
+    onCompleted: (data) => {
+      if (data?.video?.variantLanguagesWithSlug) {
+        dispatch({
+          type: 'SetVideoAudioLanguages',
+          videoAudioLanguages: data.video.variantLanguagesWithSlug
+        })
+      }
+    }
+  })
 
   const questions = useMemo(() => {
     if (!studyQuestions?.length)
