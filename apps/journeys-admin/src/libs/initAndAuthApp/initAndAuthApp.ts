@@ -9,17 +9,16 @@ import { v4 as uuidv4 } from 'uuid'
 import { getLaunchDarklyClient } from '@core/shared/ui/getLaunchDarklyClient'
 
 import { AcceptAllInvites } from '../../../__generated__/AcceptAllInvites'
-import { GetMe } from '../../../__generated__/GetMe'
+// import { GetMe } from '../../../__generated__/GetMe'
 import i18nConfig from '../../../next-i18next.config'
-import { GET_ME } from '../../components/PageWrapper/NavigationDrawer/UserNavigation/UserNavigation'
+// import { GET_ME } from '../../components/PageWrapper/NavigationDrawer/UserNavigation/UserNavigation'
 import { createApolloClient } from '../apolloClient'
 import { checkConditionalRedirect } from '../checkConditionalRedirect'
-import { firebaseClient } from '../firebaseClient'
 
 async function initializeAnonymousUser(): Promise<InitAndAuth> {
-  const userCredential = await signInAnonymously(getAuth(firebaseClient))
-  const newUser = userCredential.user
-  const token = await newUser.getIdToken()
+  // const userCredential = await signInAnonymously(getAuth(firebaseClient))
+  // const newUser = userCredential.user
+  // const token = await newUser.getIdToken()
 
   // Create a temporary user object for LaunchDarkly
   const ldUser = {
@@ -41,13 +40,13 @@ async function initializeAnonymousUser(): Promise<InitAndAuth> {
     [key: string]: boolean | undefined
   }
 
-  const apolloClient = createApolloClient(token)
+  const apolloClient = createApolloClient()
 
   // create a db user for the guest - needed for guest team creation
-  await apolloClient.query<GetMe>({
-    query: GET_ME,
-    variables: { input: { redirect: '' } }
-  })
+  // await apolloClient.query<GetMe>({
+  //   query: GET_ME,
+  //   variables: { input: { redirect: '' } }
+  // })
 
   return {
     apolloClient,
@@ -90,8 +89,8 @@ export async function initAndAuthApp({
   resolvedUrl,
   makeAccountOnAnonymous = false
 }: InitAndAuthAppProps): Promise<InitAndAuth> {
-  if (user?.id == null && makeAccountOnAnonymous)
-    return await initializeAnonymousUser()
+  // if (user?.email == null && makeAccountOnAnonymous)
+  //   return await initializeAnonymousUser()
 
   const ldUser =
     user?.id != null
@@ -142,7 +141,7 @@ export async function initAndAuthApp({
   }
 
   const redirect =
-    resolvedUrl != null
+    resolvedUrl != null && makeAccountOnAnonymous === true
       ? await checkConditionalRedirect({
           apolloClient,
           resolvedUrl,

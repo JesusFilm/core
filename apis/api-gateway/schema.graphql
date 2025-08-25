@@ -2116,7 +2116,7 @@ type User @join__type(graph: API_JOURNEYS, key: "id", extension: true)  @join__t
   mediaUserRoles: [MediaRole!]! @join__field(graph: API_MEDIA) 
   firstName: String! @join__field(graph: API_USERS) 
   lastName: String @join__field(graph: API_USERS) 
-  email: String! @join__field(graph: API_USERS) 
+  email: String @join__field(graph: API_USERS) 
   imageUrl: String @join__field(graph: API_USERS) 
   superAdmin: Boolean @join__field(graph: API_USERS) 
   emailVerified: Boolean! @join__field(graph: API_USERS) 

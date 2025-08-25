@@ -31,9 +31,10 @@ export function LanguageScreen({
   const [loading, setLoading] = useState(false)
   const { enqueueSnackbar } = useSnackbar()
 
+  console.log('user', user)
+
   const { journey } = useJourney()
-  //If the user is not authenticated, useUser will return a User instance with a null id https://github.com/gladly-team/next-firebase-auth?tab=readme-ov-file#useuser
-  const isSignedIn = user?.id != null
+  const isSignedIn = user?.email != null
   const { query } = useTeam()
 
   const validationSchema = object({

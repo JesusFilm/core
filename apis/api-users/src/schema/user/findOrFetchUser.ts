@@ -1,16 +1,15 @@
-import { v4 as uuidv4 } from 'uuid'
-
 import { Prisma, User, prisma } from '@core/prisma/users/client'
 import { auth } from '@core/yoga/firebaseClient'
 
-import { verifyUser } from './verifyUser'
+import { Context } from '../builder'
 
-const GUEST_EMAIL_DOMAIN = '@guestuser.is'
+import { verifyUser } from './verifyUser'
 
 export async function findOrFetchUser(
   query: { select?: Prisma.UserSelect; include?: undefined },
   userId: string,
-  redirect: string | undefined = undefined
+  redirect: string | undefined = undefined,
+  ctx: Context
 ): Promise<User | null> {
   const existingUser = await prisma.user.findUnique({
     ...query,
@@ -19,6 +18,28 @@ export async function findOrFetchUser(
     }
   })
   if (existingUser != null && existingUser.emailVerified == null) {
+    if (
+      ctx.type === 'authenticated' &&
+      ctx.currentUser.email != null &&
+      existingUser?.email == null
+    ) {
+      const user = await prisma.user.update({
+        where: {
+          id: userId
+        },
+        data: {
+          email: ctx.currentUser.email,
+          firstName: ctx.currentUser.firstName,
+          lastName: ctx.currentUser.lastName,
+          imageUrl: ctx.currentUser.imageUrl,
+          emailVerified: false
+        }
+      })
+      if (user.email != null && !user.emailVerified)
+        void verifyUser(userId, user.email, redirect)
+      return user
+    }
+
     const user = await prisma.user.update({
       where: {
         id: userId
@@ -30,15 +51,20 @@ export async function findOrFetchUser(
     return user
   }
 
+  if (existingUser != null && existingUser.emailVerified != null)
+    return existingUser
+
   const {
     displayName,
     email,
     emailVerified,
     photoURL: imageUrl
   } = await auth.getUser(userId)
+
   // Extract firstName and lastName from displayName with better fallbacks
   let firstName = ''
   let lastName = ''
+
   if (displayName?.trim()) {
     const nameParts = displayName
       .trim()
@@ -54,32 +80,16 @@ export async function findOrFetchUser(
     }
   }
 
+  // Ensure firstName is never empty for database constraint
   if (!firstName.trim()) {
     firstName = 'Unknown User'
-  }
-
-  // if user created an account from a gusest user, update the user with the new information
-  if (existingUser != null && existingUser.emailVerified != null) {
-    const user = await prisma.user.update({
-      where: {
-        userId
-      },
-      data: {
-        firstName,
-        lastName,
-        email,
-        imageUrl,
-        emailVerified
-      }
-    })
-    return user
   }
 
   const data = {
     userId,
     firstName,
     lastName,
-    email: email ?? uuidv4() + GUEST_EMAIL_DOMAIN,
+    email,
     imageUrl,
     emailVerified
   }
