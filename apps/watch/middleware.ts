@@ -31,9 +31,9 @@ function redisClient(): Redis {
   if (_redis == null || process.env.NODE_ENV === 'test') {
     _redis = new Redis({
       url:
-        process.env.REDIRECT_STORAGE_REDIS_URL ??
+        process.env.REDIRECT_STORAGE_KV_REST_API_URL ??
         'http://serverless-redis-http:80',
-      token: process.env.REDIRECT_STORAGE_REDIS_TOKEN ?? 'example_token'
+      token: process.env.REDIRECT_STORAGE_KV_REST_API_TOKEN ?? 'example_token'
     })
   }
   return _redis
