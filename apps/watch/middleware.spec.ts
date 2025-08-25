@@ -158,20 +158,11 @@ describe('middleware', () => {
   })
 
   describe('audio language redirect', () => {
-    const mockVariantLanguages = [
-      {
-        slug: 'jesus/spanish',
-        language: { id: '123' }
-      },
-      {
-        slug: 'jesus/french',
-        language: { id: '456' }
-      },
-      {
-        slug: 'jesus/english',
-        language: { id: '529' }
-      }
-    ]
+    const mockVariantLanguages = {
+      '123': 'jesus/spanish',
+      '456': 'jesus/french',
+      '529': 'jesus/english'
+    }
 
     describe('Redis cache scenarios', () => {
       it('should redirect to preferred audio language when cached data exists', async () => {
@@ -325,7 +316,7 @@ describe('middleware', () => {
         const mockApiResponse = {
           ok: true,
           json: jest.fn().mockResolvedValue({
-            data: { variantLanguages: [] }
+            data: { variantLanguages: {} }
           })
         }
         mockGlobalFetch.mockResolvedValue(mockApiResponse)

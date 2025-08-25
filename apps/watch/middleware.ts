@@ -8,18 +8,11 @@ import {
   SUPPORTED_LOCALES
 } from './src/libs/localeMapping'
 
-// Zod schema for validating Redis cached data
-const VariantLanguageSchema = z.object({
-  slug: z.string(),
-  language: z.object({
-    id: z.string()
-  })
-})
-
-const VariantLanguagesArraySchema = z.array(VariantLanguageSchema)
+// Zod schema for validating Redis cached data (new object format)
+const VariantLanguagesObjectSchema = z.record(z.string(), z.string())
 
 // Type inference from the schema
-type VariantLanguage = z.infer<typeof VariantLanguageSchema>
+type VariantLanguagesMap = z.infer<typeof VariantLanguagesObjectSchema>
 
 interface LanguagePriority {
   code: string
@@ -156,13 +149,13 @@ async function audioLanguageRedirect(
       // User's preferred language doesn't match the current path
       // Check if we have cached variant languages for this video
       const cacheKey = `variantLanguages:${videoSlug}`
-      let variantLanguages: VariantLanguage[] | null = null
+      let variantLanguages: VariantLanguagesMap | null = null
 
       try {
         const cachedData = await redis.get(cacheKey)
         if (cachedData) {
           try {
-            variantLanguages = VariantLanguagesArraySchema.parse(cachedData)
+            variantLanguages = VariantLanguagesObjectSchema.parse(cachedData)
           } catch (validationError) {
             console.error('Redis data validation error:', validationError)
             // Invalid cached data, will fetch fresh data from API
@@ -180,8 +173,8 @@ async function audioLanguageRedirect(
           )
           if (response.ok) {
             const data = await response.json()
-            variantLanguages = VariantLanguagesArraySchema.parse(
-              data.data?.variantLanguages || []
+            variantLanguages = VariantLanguagesObjectSchema.parse(
+              data.data?.variantLanguages || {}
             )
 
             // Cache the result
@@ -200,16 +193,14 @@ async function audioLanguageRedirect(
 
       // Check if user's preferred language is available
       if (variantLanguages) {
-        const userPreferredLanguage = variantLanguages.find(
-          (variant) => variant.language.id === audioLanguageId
-        )
+        const userPreferredSlug = variantLanguages[audioLanguageId]
 
         if (
-          userPreferredLanguage &&
-          audioLanguage !== userPreferredLanguage.slug.split('/').at(-1)
+          userPreferredSlug &&
+          audioLanguage !== userPreferredSlug.split('/').at(-1)
         ) {
           // Redirect to user's preferred language
-          const preferredSlug = userPreferredLanguage.slug
+          const preferredSlug = userPreferredSlug
             .split('/')
             .map((part) => `${part}.html`)
             .join('/')

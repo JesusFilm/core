@@ -24,7 +24,7 @@ const GET_VIDEO_VARIANT_LANGUAGES = gql`
 interface ApiResponse {
   success: boolean
   data?: {
-    variantLanguages: GetVideoVariantLanguages['video']['variantLanguagesWithSlug']
+    variantLanguages: { [languageId: string]: string }
   }
   error?: string
 }
@@ -76,13 +76,24 @@ export default async function handler(
 
     const variantLanguages = data.video.variantLanguagesWithSlug
 
+    // Transform array to object with language ID as key and slug as value
+    const variantLanguagesMap = variantLanguages.reduce<Record<string, string>>(
+      (acc, item) => {
+        if (item.language?.id && item.slug) {
+          acc[item.language.id] = item.slug
+        }
+        return acc
+      },
+      {}
+    )
+
     res.setHeader(
       'Cache-Control',
       'public, max-age=3600, stale-while-revalidate=86400'
     )
     res.status(200).json({
       success: true,
-      data: { variantLanguages }
+      data: { variantLanguages: variantLanguagesMap }
     })
   } catch (error) {
     console.error('Error fetching variant languages:', error)

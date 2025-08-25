@@ -250,7 +250,7 @@ describe('VariantLanguages API', () => {
   })
 
   describe('Success Response Handling', () => {
-    it('should return 200 with variant languages data', async () => {
+    it('should return 200 with variant languages data transformed to object', async () => {
       const slug = 'jesus/english'
       const req = createMockRequest('GET', { slug })
       const res = createMockResponse()
@@ -279,7 +279,10 @@ describe('VariantLanguages API', () => {
       expect(res.json).toHaveBeenCalledWith({
         success: true,
         data: {
-          variantLanguages: mockData.video.variantLanguagesWithSlug
+          variantLanguages: {
+            '529': 'jesus/english',
+            '639': 'jesus/spanish'
+          }
         }
       })
     })
@@ -303,7 +306,51 @@ describe('VariantLanguages API', () => {
       expect(res.json).toHaveBeenCalledWith({
         success: true,
         data: {
-          variantLanguages: []
+          variantLanguages: {}
+        }
+      })
+    })
+
+    it('should handle variant languages with missing language ID or slug gracefully', async () => {
+      const req = createMockRequest('GET', { slug: 'jesus/english' })
+      const res = createMockResponse()
+
+      const mockData = {
+        video: {
+          id: 'video-123',
+          variantLanguagesWithSlug: [
+            {
+              slug: 'jesus/english',
+              language: { id: '529' }
+            },
+            {
+              slug: 'jesus/spanish',
+              language: null // Missing language
+            },
+            {
+              slug: null, // Missing slug
+              language: { id: '639' }
+            },
+            {
+              slug: 'jesus/french',
+              language: { id: '456' }
+            }
+          ]
+        }
+      }
+
+      mockQuery.mockResolvedValue({ data: mockData })
+
+      await handler(req, res)
+
+      expect(res.status).toHaveBeenCalledWith(200)
+      expect(res.json).toHaveBeenCalledWith({
+        success: true,
+        data: {
+          variantLanguages: {
+            '529': 'jesus/english',
+            '456': 'jesus/french'
+          }
         }
       })
     })
