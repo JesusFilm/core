@@ -7,7 +7,7 @@ import CircularProgress from '@mui/material/CircularProgress'
 import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
-import { useState } from 'react'
+import { ReactElement, useState } from 'react'
 
 import { graphql } from '@core/shared/gql'
 
@@ -31,7 +31,7 @@ export interface ExistingVideoByIdSelectorProps {
 export function ExistingVideoByIdSelector({
   onSelect,
   onCancel
-}: ExistingVideoByIdSelectorProps): JSX.Element {
+}: ExistingVideoByIdSelectorProps): ReactElement {
   const [videoId, setVideoId] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
