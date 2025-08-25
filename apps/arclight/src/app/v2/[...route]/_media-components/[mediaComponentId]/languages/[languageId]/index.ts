@@ -280,56 +280,59 @@ mediaComponentLanguage.openapi(route, async (c) => {
                 sizeInBytes: downloadHigh.size || 0
               }
       }
-    
-    let webEmbedPlayer = ''
-    let webEmbedSharePlayer = ''
-    if (platform === 'web') {
-      webEmbedPlayer = getWebEmbedPlayer(video.variant.id, apiSessionId)
-      webEmbedSharePlayer = getWebEmbedSharePlayer(
-        video.variant.id,
-        apiSessionId
-      )
-    }
 
-    let subtitleUrls = {}
-    if (video.variant?.subtitle != null && video.variant?.subtitle.length > 0) {
-      switch (platform) {
-        case 'android':
-          subtitleUrls = {
-            vtt:
-              (video.variant?.subtitle
-                ?.map((subtitle) => ({
-                  languageId: Number(subtitle.language?.id),
-                  languageName: subtitle.language?.name?.[0]?.value ?? '',
-                  languageTag: subtitle.language?.bcp47 ?? '',
-                  url: subtitle.vttSrc
-                }))
-                .filter((s) => Boolean(s.url))) ?? [],
-            srt:
-              (video.variant?.subtitle
-                ?.map((subtitle) => ({
-                  languageId: Number(subtitle.language?.id),
-                  languageName: subtitle.language?.name?.[0]?.value ?? '',
-                  languageTag: subtitle.language?.bcp47 ?? '',
-                  url: subtitle.srtSrc
-                }))
-                .filter((s) => Boolean(s.url))) ?? []
-          }
-          break
-        case 'web':
-        case 'ios':
-          subtitleUrls = {
-            vtt:
-              (video.variant?.subtitle
-                ?.map((subtitle) => ({
-                  languageId: Number(subtitle.language?.id),
-                  languageName: subtitle.language?.name?.[0]?.value ?? '',
-                  languageTag: subtitle.language?.bcp47 ?? '',
-                  url: subtitle.vttSrc
-                }))
-                .filter((s) => Boolean(s.url))) ?? [],
-            srt: []
-          }
+      let webEmbedPlayer = ''
+      let webEmbedSharePlayer = ''
+      if (platform === 'web') {
+        webEmbedPlayer = getWebEmbedPlayer(video.variant.id, apiSessionId)
+        webEmbedSharePlayer = getWebEmbedSharePlayer(
+          video.variant.id,
+          apiSessionId
+        )
+      }
+
+      let subtitleUrls = {}
+      if (
+        video.variant?.subtitle != null &&
+        video.variant?.subtitle.length > 0
+      ) {
+        switch (platform) {
+          case 'android':
+            subtitleUrls = {
+              vtt:
+                video.variant?.subtitle
+                  ?.map((subtitle) => ({
+                    languageId: Number(subtitle.language?.id),
+                    languageName: subtitle.language?.name?.[0]?.value ?? '',
+                    languageTag: subtitle.language?.bcp47 ?? '',
+                    url: subtitle.vttSrc
+                  }))
+                  .filter((s) => Boolean(s.url)) ?? [],
+              srt:
+                video.variant?.subtitle
+                  ?.map((subtitle) => ({
+                    languageId: Number(subtitle.language?.id),
+                    languageName: subtitle.language?.name?.[0]?.value ?? '',
+                    languageTag: subtitle.language?.bcp47 ?? '',
+                    url: subtitle.srtSrc
+                  }))
+                  .filter((s) => Boolean(s.url)) ?? []
+            }
+            break
+          case 'web':
+          case 'ios':
+            subtitleUrls = {
+              vtt:
+                video.variant?.subtitle
+                  ?.map((subtitle) => ({
+                    languageId: Number(subtitle.language?.id),
+                    languageName: subtitle.language?.name?.[0]?.value ?? '',
+                    languageTag: subtitle.language?.bcp47 ?? '',
+                    url: subtitle.vttSrc
+                  }))
+                  .filter((s) => Boolean(s.url)) ?? [],
+              srt: []
+            }
         }
       }
 
@@ -430,14 +433,15 @@ mediaComponentLanguage.openapi(route, async (c) => {
                     child.variant?.lengthInMilliseconds ?? 0,
                   subtitleUrls: {
                     vtt:
-                      (child.variant?.subtitle
+                      child.variant?.subtitle
                         ?.map((subtitle) => ({
                           languageId: Number(subtitle.language?.id),
-                          languageName: subtitle.language?.name?.[0]?.value ?? '',
+                          languageName:
+                            subtitle.language?.name?.[0]?.value ?? '',
                           languageTag: subtitle.language?.bcp47 ?? '',
                           url: subtitle.vttSrc
                         }))
-                        .filter((s) => Boolean(s.url))) ?? [],
+                        .filter((s) => Boolean(s.url)) ?? [],
                     srt: []
                   },
                   downloadUrls: {
@@ -504,7 +508,7 @@ mediaComponentLanguage.openapi(route, async (c) => {
     } catch {
       return { notFound: true, type: 'error' }
     }
-    })
+  })
 
   if (cachedData?.notFound) {
     return c.json(
