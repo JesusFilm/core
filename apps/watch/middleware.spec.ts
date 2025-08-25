@@ -1,7 +1,10 @@
 import { Redis } from '@upstash/redis'
 import { NextRequest, NextResponse } from 'next/server'
 
-import { middleware } from './middleware'
+import {
+  AUDIO_LANGUAGE_REDIRECT_CACHE_SCHEMA_VERSION,
+  middleware
+} from './middleware'
 
 jest.mock('@upstash/redis', () => ({
   Redis: jest.fn()
@@ -165,15 +168,15 @@ describe('middleware', () => {
 
   describe('audio language redirect', () => {
     const mockVariantLanguages = {
-      '123': 'jesus/spanish',
-      '456': 'jesus/french',
-      '529': 'jesus/english'
+      '123': 'spanish',
+      '456': 'french',
+      '529': 'english'
     }
 
     describe('Redis cache scenarios', () => {
       it('should redirect to preferred audio language when cached data exists', async () => {
         mockRedisExists.mockResolvedValue(1)
-        mockRedisHget.mockResolvedValue('jesus/spanish')
+        mockRedisHget.mockResolvedValue('spanish')
 
         const req = createMockRequest('/watch/jesus.html/english.html', {
           cookies: [{ name: 'AUDIO_LANGUAGE', value: 'fingerprint---123' }]
@@ -181,9 +184,11 @@ describe('middleware', () => {
 
         const result = await middleware(req)
 
-        expect(mockRedisExists).toHaveBeenCalledWith('variantLanguages:jesus')
+        expect(mockRedisExists).toHaveBeenCalledWith(
+          `variantLanguages:${AUDIO_LANGUAGE_REDIRECT_CACHE_SCHEMA_VERSION}:jesus`
+        )
         expect(mockRedisHget).toHaveBeenCalledWith(
-          'variantLanguages:jesus',
+          `variantLanguages:${AUDIO_LANGUAGE_REDIRECT_CACHE_SCHEMA_VERSION}:jesus`,
           '123'
         )
         expect(result).toBeInstanceOf(NextResponse)
@@ -196,7 +201,7 @@ describe('middleware', () => {
       it('should not redirect when user is already on preferred audio language', async () => {
         // Mock Redis cache hit
         mockRedisExists.mockResolvedValue(1)
-        mockRedisHget.mockResolvedValue('jesus/spanish')
+        mockRedisHget.mockResolvedValue('spanish')
 
         const req = createMockRequest('/watch/jesus.html/spanish.html', {
           cookies: [{ name: 'AUDIO_LANGUAGE', value: 'fingerprint---123' }]
@@ -204,9 +209,11 @@ describe('middleware', () => {
 
         const result = await middleware(req)
 
-        expect(mockRedisExists).toHaveBeenCalledWith('variantLanguages:jesus')
+        expect(mockRedisExists).toHaveBeenCalledWith(
+          `variantLanguages:${AUDIO_LANGUAGE_REDIRECT_CACHE_SCHEMA_VERSION}:jesus`
+        )
         expect(mockRedisHget).toHaveBeenCalledWith(
-          'variantLanguages:jesus',
+          `variantLanguages:${AUDIO_LANGUAGE_REDIRECT_CACHE_SCHEMA_VERSION}:jesus`,
           '123'
         )
         expect(result?.status).toBe(200)
@@ -228,7 +235,7 @@ describe('middleware', () => {
         // Mock successful Redis cache operations
         mockRedisHset.mockResolvedValue(1)
         mockRedisExpire.mockResolvedValue(1)
-        mockRedisHget.mockResolvedValue('jesus/spanish')
+        mockRedisHget.mockResolvedValue('spanish')
 
         const req = createMockRequest('/watch/jesus.html/english.html', {
           cookies: [{ name: 'AUDIO_LANGUAGE', value: 'fingerprint---123' }]
@@ -243,11 +250,11 @@ describe('middleware', () => {
 
         // Should cache the result using hset and expire
         expect(mockRedisHset).toHaveBeenCalledWith(
-          'variantLanguages:jesus',
+          `variantLanguages:${AUDIO_LANGUAGE_REDIRECT_CACHE_SCHEMA_VERSION}:jesus`,
           mockVariantLanguages
         )
         expect(mockRedisExpire).toHaveBeenCalledWith(
-          'variantLanguages:jesus',
+          `variantLanguages:${AUDIO_LANGUAGE_REDIRECT_CACHE_SCHEMA_VERSION}:jesus`,
           86400
         )
 
@@ -275,7 +282,7 @@ describe('middleware', () => {
         // Mock Redis cache operations with failures
         mockRedisHset.mockRejectedValue(new Error('Redis hset error'))
         mockRedisExpire.mockResolvedValue(1)
-        mockRedisHget.mockResolvedValue('jesus/spanish')
+        mockRedisHget.mockResolvedValue('spanish')
 
         const req = createMockRequest('/watch/jesus.html/english.html', {
           cookies: [{ name: 'AUDIO_LANGUAGE', value: 'fingerprint---123' }]
@@ -412,7 +419,7 @@ describe('middleware', () => {
     describe('path structure handling', () => {
       it('should handle 3-segment paths (video/audio)', async () => {
         mockRedisExists.mockResolvedValue(1)
-        mockRedisHget.mockResolvedValue('jesus/spanish')
+        mockRedisHget.mockResolvedValue('spanish')
 
         const req = createMockRequest('/watch/jesus.html/english.html', {
           cookies: [{ name: 'AUDIO_LANGUAGE', value: 'fingerprint---123' }]
@@ -428,7 +435,7 @@ describe('middleware', () => {
 
       it('should handle 4-segment paths (category/video/audio)', async () => {
         mockRedisExists.mockResolvedValue(1)
-        mockRedisHget.mockResolvedValue('jesus/spanish')
+        mockRedisHget.mockResolvedValue('spanish')
 
         const req = createMockRequest('/watch/movies/jesus.html/english.html', {
           cookies: [{ name: 'AUDIO_LANGUAGE', value: 'fingerprint---123' }]
@@ -475,7 +482,7 @@ describe('middleware', () => {
 
       it('should extract language ID from cookie correctly', async () => {
         mockRedisExists.mockResolvedValue(1)
-        mockRedisHget.mockResolvedValue('jesus/french')
+        mockRedisHget.mockResolvedValue('french')
 
         const req = createMockRequest('/watch/jesus.html/english.html', {
           cookies: [{ name: 'AUDIO_LANGUAGE', value: 'fingerprint---456' }]
@@ -503,9 +510,11 @@ describe('middleware', () => {
         await middleware(req)
 
         // Should not redirect when cached data is invalid
-        expect(mockRedisExists).toHaveBeenCalledWith('variantLanguages:jesus')
+        expect(mockRedisExists).toHaveBeenCalledWith(
+          `variantLanguages:${AUDIO_LANGUAGE_REDIRECT_CACHE_SCHEMA_VERSION}:jesus`
+        )
         expect(mockRedisHget).toHaveBeenCalledWith(
-          'variantLanguages:jesus',
+          `variantLanguages:${AUDIO_LANGUAGE_REDIRECT_CACHE_SCHEMA_VERSION}:jesus`,
           '123'
         )
       })
@@ -521,9 +530,11 @@ describe('middleware', () => {
         await middleware(req)
 
         // Should not redirect when no slug found for language ID
-        expect(mockRedisExists).toHaveBeenCalledWith('variantLanguages:jesus')
+        expect(mockRedisExists).toHaveBeenCalledWith(
+          `variantLanguages:${AUDIO_LANGUAGE_REDIRECT_CACHE_SCHEMA_VERSION}:jesus`
+        )
         expect(mockRedisHget).toHaveBeenCalledWith(
-          'variantLanguages:jesus',
+          `variantLanguages:${AUDIO_LANGUAGE_REDIRECT_CACHE_SCHEMA_VERSION}:jesus`,
           '123'
         )
       })
@@ -541,9 +552,11 @@ describe('middleware', () => {
         const result = await middleware(req)
 
         // Should not redirect when Redis hget fails
-        expect(mockRedisExists).toHaveBeenCalledWith('variantLanguages:jesus')
+        expect(mockRedisExists).toHaveBeenCalledWith(
+          `variantLanguages:${AUDIO_LANGUAGE_REDIRECT_CACHE_SCHEMA_VERSION}:jesus`
+        )
         expect(mockRedisHget).toHaveBeenCalledWith(
-          'variantLanguages:jesus',
+          `variantLanguages:${AUDIO_LANGUAGE_REDIRECT_CACHE_SCHEMA_VERSION}:jesus`,
           '123'
         )
         expect(result?.status).toBe(200)
@@ -560,7 +573,9 @@ describe('middleware', () => {
         const result = await middleware(req)
 
         // Should not redirect when Redis fails
-        expect(mockRedisExists).toHaveBeenCalledWith('variantLanguages:jesus')
+        expect(mockRedisExists).toHaveBeenCalledWith(
+          `variantLanguages:${AUDIO_LANGUAGE_REDIRECT_CACHE_SCHEMA_VERSION}:jesus`
+        )
         expect(result?.status).toBe(200)
       })
     })
@@ -568,7 +583,7 @@ describe('middleware', () => {
     describe('integration with locale detection', () => {
       it('should process audio redirect before locale rewriting', async () => {
         mockRedisExists.mockResolvedValue(1)
-        mockRedisHget.mockResolvedValue('jesus/spanish')
+        mockRedisHget.mockResolvedValue('spanish')
 
         const req = createMockRequest('/watch/jesus.html/english.html', {
           cookies: [

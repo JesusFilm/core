@@ -280,8 +280,8 @@ describe('VariantLanguages API', () => {
         success: true,
         data: {
           variantLanguages: {
-            '529': 'jesus/english',
-            '639': 'jesus/spanish'
+            '529': 'english',
+            '639': 'spanish'
           }
         }
       })
@@ -348,8 +348,8 @@ describe('VariantLanguages API', () => {
         success: true,
         data: {
           variantLanguages: {
-            '529': 'jesus/english',
-            '456': 'jesus/french'
+            '529': 'english',
+            '456': 'french'
           }
         }
       })

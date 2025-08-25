@@ -125,6 +125,8 @@ function getLocale(req: NextRequest): string {
   return geoLocale ?? DEFAULT_LOCALE
 }
 
+export const AUDIO_LANGUAGE_REDIRECT_CACHE_SCHEMA_VERSION = `2025-08-25`
+
 async function audioLanguageRedirect(
   req: NextRequest
 ): Promise<NextResponse | undefined> {
@@ -145,7 +147,7 @@ async function audioLanguageRedirect(
       const redis = redisClient()
       // User's preferred language doesn't match the current path
       // Check if we have cached variant languages for this video
-      const cacheKey = `variantLanguages:${videoSlug}`
+      const cacheKey = `variantLanguages:${AUDIO_LANGUAGE_REDIRECT_CACHE_SCHEMA_VERSION}:${videoSlug}`
 
       // If not cached, fetch from API
 
@@ -153,7 +155,7 @@ async function audioLanguageRedirect(
       try {
         exists = (await redis.exists(cacheKey)) > 0
       } catch (error) {
-        console.error('Redis cache error:', error)
+        console.error('Redis exists check error:', error)
       }
 
       if (!exists) {
@@ -172,7 +174,10 @@ async function audioLanguageRedirect(
             )
 
             if (!success) {
-              console.error('Redis data validation error:', error)
+              console.error(
+                'API variantLanguages data validation error:',
+                error
+              )
               return
             }
 
@@ -181,11 +186,11 @@ async function audioLanguageRedirect(
               await redis.hset(cacheKey, variantLanguages)
               await redis.expire(cacheKey, CACHE_TTL)
             } catch (error) {
-              console.error('Redis cache set error:', error)
+              console.error('Redis cache hset or expire error:', error)
             }
           }
         } catch (error) {
-          console.error('API fetch error:', error)
+          console.error('API variantLanguages fetch error:', error)
         }
       }
 
@@ -194,17 +199,11 @@ async function audioLanguageRedirect(
       try {
         slug = await redis.hget(cacheKey, audioLanguageId)
       } catch (error) {
-        console.error('Redis cache error:', error)
+        console.error('Redis cache hget error:', error)
       }
 
-      // Check if user's preferred language is available
-      if (slug != null && audioLanguage !== slug.split('/').at(-1)) {
-        // Redirect to user's preferred language
-        const preferredSlug = slug
-          .split('/')
-          .map((part) => `${part}.html`)
-          .join('/')
-        const newPath = `/watch/${pathParts.length === 4 ? `${pathParts[1]}/` : ''}${preferredSlug}`
+      if (slug != null && audioLanguage != slug) {
+        const newPath = `/${pathParts.slice(0, -1).join('/')}/${slug}.html`
         return NextResponse.redirect(new URL(newPath, req.url))
       }
     }

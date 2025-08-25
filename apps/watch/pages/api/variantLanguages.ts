@@ -80,7 +80,7 @@ export default async function handler(
     const variantLanguagesMap = variantLanguages.reduce<Record<string, string>>(
       (acc, item) => {
         if (item.language?.id && item.slug) {
-          acc[item.language.id] = item.slug
+          acc[item.language.id] = item.slug.split('/').at(-1) ?? ''
         }
         return acc
       },
