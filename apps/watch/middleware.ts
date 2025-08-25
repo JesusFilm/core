@@ -26,13 +26,17 @@ interface LanguagePriority {
   priority: number
 }
 
+let _redis: Redis | undefined
 function redisClient(): Redis {
-  return new Redis({
-    url:
-      process.env.REDIRECT_STORAGE_REDIS_URL ??
-      'http://serverless-redis-http:80',
-    token: process.env.REDIRECT_STORAGE_REDIS_TOKEN ?? 'example_token'
-  })
+  if (_redis == null || process.env.NODE_ENV === 'test') {
+    _redis = new Redis({
+      url:
+        process.env.REDIRECT_STORAGE_REDIS_URL ??
+        'http://serverless-redis-http:80',
+      token: process.env.REDIRECT_STORAGE_REDIS_TOKEN ?? 'example_token'
+    })
+  }
+  return _redis
 }
 
 const CACHE_TTL = 86400 // 1 day in seconds
