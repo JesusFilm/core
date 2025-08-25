@@ -16,7 +16,7 @@ export interface UpdateJourneyCollection_journeyCollectionUpdate_journeys {
 
 export interface UpdateJourneyCollection_journeyCollectionUpdate {
   __typename: "JourneyCollection";
-  id: string;
+  id: string | null;
   journeys: UpdateJourneyCollection_journeyCollectionUpdate_journeys[] | null;
 }
 

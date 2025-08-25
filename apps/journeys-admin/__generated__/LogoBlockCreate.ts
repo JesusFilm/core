@@ -29,7 +29,7 @@ export interface LogoBlockCreate_imageBlockCreate {
 }
 
 export interface LogoBlockCreate_journeyUpdate_logoImageBlock {
-  __typename: "ImageBlock";
+  __typename: "ImageBlock" | "ButtonBlock" | "CardBlock" | "GridContainerBlock" | "GridItemBlock" | "IconBlock" | "RadioQuestionBlock" | "RadioOptionBlock" | "SignUpBlock" | "SpacerBlock" | "StepBlock" | "TextResponseBlock" | "VideoTriggerBlock" | "VideoBlock" | "TypographyBlock";
   id: string;
 }
 

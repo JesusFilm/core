@@ -18,21 +18,21 @@ export interface CardQuoteRestore_image_GridContainerBlock {
 
 export interface CardQuoteRestore_image_ButtonBlock_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
-  parentBlockId: string;
+  parentBlockId: string | null;
   gtmEventName: string | null;
   blockId: string;
 }
 
 export interface CardQuoteRestore_image_ButtonBlock_action_LinkAction {
   __typename: "LinkAction";
-  parentBlockId: string;
+  parentBlockId: string | null;
   gtmEventName: string | null;
   url: string;
 }
 
 export interface CardQuoteRestore_image_ButtonBlock_action_EmailAction {
   __typename: "EmailAction";
-  parentBlockId: string;
+  parentBlockId: string | null;
   gtmEventName: string | null;
   email: string;
 }
@@ -41,9 +41,6 @@ export type CardQuoteRestore_image_ButtonBlock_action = CardQuoteRestore_image_B
 
 export interface CardQuoteRestore_image_ButtonBlock_settings {
   __typename: "ButtonBlockSettings";
-  /**
-   * Alignment of the button
-   */
   alignment: ButtonAlignment | null;
 }
 
@@ -131,21 +128,21 @@ export interface CardQuoteRestore_image_ImageBlock {
 
 export interface CardQuoteRestore_image_RadioOptionBlock_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
-  parentBlockId: string;
+  parentBlockId: string | null;
   gtmEventName: string | null;
   blockId: string;
 }
 
 export interface CardQuoteRestore_image_RadioOptionBlock_action_LinkAction {
   __typename: "LinkAction";
-  parentBlockId: string;
+  parentBlockId: string | null;
   gtmEventName: string | null;
   url: string;
 }
 
 export interface CardQuoteRestore_image_RadioOptionBlock_action_EmailAction {
   __typename: "EmailAction";
-  parentBlockId: string;
+  parentBlockId: string | null;
   gtmEventName: string | null;
   email: string;
 }
@@ -177,21 +174,21 @@ export interface CardQuoteRestore_image_RadioQuestionBlock {
 
 export interface CardQuoteRestore_image_SignUpBlock_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
-  parentBlockId: string;
+  parentBlockId: string | null;
   gtmEventName: string | null;
   blockId: string;
 }
 
 export interface CardQuoteRestore_image_SignUpBlock_action_LinkAction {
   __typename: "LinkAction";
-  parentBlockId: string;
+  parentBlockId: string | null;
   gtmEventName: string | null;
   url: string;
 }
 
 export interface CardQuoteRestore_image_SignUpBlock_action_EmailAction {
   __typename: "EmailAction";
-  parentBlockId: string;
+  parentBlockId: string | null;
   gtmEventName: string | null;
   email: string;
 }
@@ -329,21 +326,21 @@ export type CardQuoteRestore_image_VideoBlock_mediaVideo = CardQuoteRestore_imag
 
 export interface CardQuoteRestore_image_VideoBlock_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
-  parentBlockId: string;
+  parentBlockId: string | null;
   gtmEventName: string | null;
   blockId: string;
 }
 
 export interface CardQuoteRestore_image_VideoBlock_action_LinkAction {
   __typename: "LinkAction";
-  parentBlockId: string;
+  parentBlockId: string | null;
   gtmEventName: string | null;
   url: string;
 }
 
 export interface CardQuoteRestore_image_VideoBlock_action_EmailAction {
   __typename: "EmailAction";
-  parentBlockId: string;
+  parentBlockId: string | null;
   gtmEventName: string | null;
   email: string;
 }
@@ -355,93 +352,41 @@ export interface CardQuoteRestore_image_VideoBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
-  muted: boolean | null;
-  autoplay: boolean | null;
-  /**
-   * startAt dictates at which point of time the video should start playing
-   */
+  muted: boolean;
+  autoplay: boolean;
   startAt: number | null;
-  /**
-   * endAt dictates at which point of time the video should end
-   */
   endAt: number | null;
-  /**
-   * posterBlockId is present if a child block should be used as a poster.
-   * This child block should not be rendered normally, instead it should be used
-   * as the video poster. PosterBlock should be of type ImageBlock.
-   */
   posterBlockId: string | null;
-  fullsize: boolean | null;
-  /**
-   * internal source videos: videoId and videoVariantLanguageId both need to be set
-   * to select a video.
-   * For other sources only videoId needs to be set.
-   */
+  fullsize: boolean;
   videoId: string | null;
-  /**
-   * internal source videos: videoId and videoVariantLanguageId both need to be set
-   * to select a video.
-   * For other sources only videoId needs to be set.
-   */
   videoVariantLanguageId: string | null;
-  /**
-   * internal source: videoId, videoVariantLanguageId, and video present
-   * youTube source: videoId, title, description, and duration present
-   */
-  source: VideoBlockSource;
-  /**
-   * internal source videos: this field is not populated and instead only present
-   * in the video field.
-   * For other sources this is automatically populated.
-   */
-  title: string | null;
-  /**
-   * internal source videos: this field is not populated and instead only present
-   * in the video field
-   * For other sources this is automatically populated.
-   */
-  description: string | null;
-  /**
-   * internal source videos: this field is not populated and instead only present
-   * in the video field
-   * For other sources this is automatically populated.
-   */
+  source: VideoBlockSource | null;
+  title: string;
+  description: string;
   image: string | null;
-  /**
-   * internal source videos: this field is not populated and instead only present
-   * in the video field
-   * For other sources this is automatically populated.
-   * duration in seconds.
-   */
   duration: number | null;
-  /**
-   * how the video should display within the VideoBlock
-   */
   objectFit: VideoBlockObjectFit | null;
   mediaVideo: CardQuoteRestore_image_VideoBlock_mediaVideo | null;
-  /**
-   * action that should be performed when the video ends
-   */
   action: CardQuoteRestore_image_VideoBlock_action | null;
 }
 
 export interface CardQuoteRestore_image_VideoTriggerBlock_triggerAction_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
-  parentBlockId: string;
+  parentBlockId: string | null;
   gtmEventName: string | null;
   blockId: string;
 }
 
 export interface CardQuoteRestore_image_VideoTriggerBlock_triggerAction_LinkAction {
   __typename: "LinkAction";
-  parentBlockId: string;
+  parentBlockId: string | null;
   gtmEventName: string | null;
   url: string;
 }
 
 export interface CardQuoteRestore_image_VideoTriggerBlock_triggerAction_EmailAction {
   __typename: "EmailAction";
-  parentBlockId: string;
+  parentBlockId: string | null;
   gtmEventName: string | null;
   email: string;
 }
@@ -458,7 +403,7 @@ export interface CardQuoteRestore_image_VideoTriggerBlock {
    * this is the number of seconds since the start of the video
    */
   triggerStart: number;
-  triggerAction: CardQuoteRestore_image_VideoTriggerBlock_triggerAction;
+  triggerAction: CardQuoteRestore_image_VideoTriggerBlock_triggerAction | null;
 }
 
 export type CardQuoteRestore_image = CardQuoteRestore_image_GridContainerBlock | CardQuoteRestore_image_ButtonBlock | CardQuoteRestore_image_CardBlock | CardQuoteRestore_image_IconBlock | CardQuoteRestore_image_ImageBlock | CardQuoteRestore_image_RadioOptionBlock | CardQuoteRestore_image_RadioQuestionBlock | CardQuoteRestore_image_SignUpBlock | CardQuoteRestore_image_SpacerBlock | CardQuoteRestore_image_StepBlock | CardQuoteRestore_image_TextResponseBlock | CardQuoteRestore_image_TypographyBlock | CardQuoteRestore_image_VideoBlock | CardQuoteRestore_image_VideoTriggerBlock;
@@ -472,21 +417,21 @@ export interface CardQuoteRestore_subtitle_GridContainerBlock {
 
 export interface CardQuoteRestore_subtitle_ButtonBlock_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
-  parentBlockId: string;
+  parentBlockId: string | null;
   gtmEventName: string | null;
   blockId: string;
 }
 
 export interface CardQuoteRestore_subtitle_ButtonBlock_action_LinkAction {
   __typename: "LinkAction";
-  parentBlockId: string;
+  parentBlockId: string | null;
   gtmEventName: string | null;
   url: string;
 }
 
 export interface CardQuoteRestore_subtitle_ButtonBlock_action_EmailAction {
   __typename: "EmailAction";
-  parentBlockId: string;
+  parentBlockId: string | null;
   gtmEventName: string | null;
   email: string;
 }
@@ -495,9 +440,6 @@ export type CardQuoteRestore_subtitle_ButtonBlock_action = CardQuoteRestore_subt
 
 export interface CardQuoteRestore_subtitle_ButtonBlock_settings {
   __typename: "ButtonBlockSettings";
-  /**
-   * Alignment of the button
-   */
   alignment: ButtonAlignment | null;
 }
 
@@ -585,21 +527,21 @@ export interface CardQuoteRestore_subtitle_ImageBlock {
 
 export interface CardQuoteRestore_subtitle_RadioOptionBlock_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
-  parentBlockId: string;
+  parentBlockId: string | null;
   gtmEventName: string | null;
   blockId: string;
 }
 
 export interface CardQuoteRestore_subtitle_RadioOptionBlock_action_LinkAction {
   __typename: "LinkAction";
-  parentBlockId: string;
+  parentBlockId: string | null;
   gtmEventName: string | null;
   url: string;
 }
 
 export interface CardQuoteRestore_subtitle_RadioOptionBlock_action_EmailAction {
   __typename: "EmailAction";
-  parentBlockId: string;
+  parentBlockId: string | null;
   gtmEventName: string | null;
   email: string;
 }
@@ -631,21 +573,21 @@ export interface CardQuoteRestore_subtitle_RadioQuestionBlock {
 
 export interface CardQuoteRestore_subtitle_SignUpBlock_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
-  parentBlockId: string;
+  parentBlockId: string | null;
   gtmEventName: string | null;
   blockId: string;
 }
 
 export interface CardQuoteRestore_subtitle_SignUpBlock_action_LinkAction {
   __typename: "LinkAction";
-  parentBlockId: string;
+  parentBlockId: string | null;
   gtmEventName: string | null;
   url: string;
 }
 
 export interface CardQuoteRestore_subtitle_SignUpBlock_action_EmailAction {
   __typename: "EmailAction";
-  parentBlockId: string;
+  parentBlockId: string | null;
   gtmEventName: string | null;
   email: string;
 }
@@ -783,21 +725,21 @@ export type CardQuoteRestore_subtitle_VideoBlock_mediaVideo = CardQuoteRestore_s
 
 export interface CardQuoteRestore_subtitle_VideoBlock_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
-  parentBlockId: string;
+  parentBlockId: string | null;
   gtmEventName: string | null;
   blockId: string;
 }
 
 export interface CardQuoteRestore_subtitle_VideoBlock_action_LinkAction {
   __typename: "LinkAction";
-  parentBlockId: string;
+  parentBlockId: string | null;
   gtmEventName: string | null;
   url: string;
 }
 
 export interface CardQuoteRestore_subtitle_VideoBlock_action_EmailAction {
   __typename: "EmailAction";
-  parentBlockId: string;
+  parentBlockId: string | null;
   gtmEventName: string | null;
   email: string;
 }
@@ -809,93 +751,41 @@ export interface CardQuoteRestore_subtitle_VideoBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
-  muted: boolean | null;
-  autoplay: boolean | null;
-  /**
-   * startAt dictates at which point of time the video should start playing
-   */
+  muted: boolean;
+  autoplay: boolean;
   startAt: number | null;
-  /**
-   * endAt dictates at which point of time the video should end
-   */
   endAt: number | null;
-  /**
-   * posterBlockId is present if a child block should be used as a poster.
-   * This child block should not be rendered normally, instead it should be used
-   * as the video poster. PosterBlock should be of type ImageBlock.
-   */
   posterBlockId: string | null;
-  fullsize: boolean | null;
-  /**
-   * internal source videos: videoId and videoVariantLanguageId both need to be set
-   * to select a video.
-   * For other sources only videoId needs to be set.
-   */
+  fullsize: boolean;
   videoId: string | null;
-  /**
-   * internal source videos: videoId and videoVariantLanguageId both need to be set
-   * to select a video.
-   * For other sources only videoId needs to be set.
-   */
   videoVariantLanguageId: string | null;
-  /**
-   * internal source: videoId, videoVariantLanguageId, and video present
-   * youTube source: videoId, title, description, and duration present
-   */
-  source: VideoBlockSource;
-  /**
-   * internal source videos: this field is not populated and instead only present
-   * in the video field.
-   * For other sources this is automatically populated.
-   */
-  title: string | null;
-  /**
-   * internal source videos: this field is not populated and instead only present
-   * in the video field
-   * For other sources this is automatically populated.
-   */
-  description: string | null;
-  /**
-   * internal source videos: this field is not populated and instead only present
-   * in the video field
-   * For other sources this is automatically populated.
-   */
+  source: VideoBlockSource | null;
+  title: string;
+  description: string;
   image: string | null;
-  /**
-   * internal source videos: this field is not populated and instead only present
-   * in the video field
-   * For other sources this is automatically populated.
-   * duration in seconds.
-   */
   duration: number | null;
-  /**
-   * how the video should display within the VideoBlock
-   */
   objectFit: VideoBlockObjectFit | null;
   mediaVideo: CardQuoteRestore_subtitle_VideoBlock_mediaVideo | null;
-  /**
-   * action that should be performed when the video ends
-   */
   action: CardQuoteRestore_subtitle_VideoBlock_action | null;
 }
 
 export interface CardQuoteRestore_subtitle_VideoTriggerBlock_triggerAction_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
-  parentBlockId: string;
+  parentBlockId: string | null;
   gtmEventName: string | null;
   blockId: string;
 }
 
 export interface CardQuoteRestore_subtitle_VideoTriggerBlock_triggerAction_LinkAction {
   __typename: "LinkAction";
-  parentBlockId: string;
+  parentBlockId: string | null;
   gtmEventName: string | null;
   url: string;
 }
 
 export interface CardQuoteRestore_subtitle_VideoTriggerBlock_triggerAction_EmailAction {
   __typename: "EmailAction";
-  parentBlockId: string;
+  parentBlockId: string | null;
   gtmEventName: string | null;
   email: string;
 }
@@ -912,7 +802,7 @@ export interface CardQuoteRestore_subtitle_VideoTriggerBlock {
    * this is the number of seconds since the start of the video
    */
   triggerStart: number;
-  triggerAction: CardQuoteRestore_subtitle_VideoTriggerBlock_triggerAction;
+  triggerAction: CardQuoteRestore_subtitle_VideoTriggerBlock_triggerAction | null;
 }
 
 export type CardQuoteRestore_subtitle = CardQuoteRestore_subtitle_GridContainerBlock | CardQuoteRestore_subtitle_ButtonBlock | CardQuoteRestore_subtitle_CardBlock | CardQuoteRestore_subtitle_IconBlock | CardQuoteRestore_subtitle_ImageBlock | CardQuoteRestore_subtitle_RadioOptionBlock | CardQuoteRestore_subtitle_RadioQuestionBlock | CardQuoteRestore_subtitle_SignUpBlock | CardQuoteRestore_subtitle_SpacerBlock | CardQuoteRestore_subtitle_StepBlock | CardQuoteRestore_subtitle_TextResponseBlock | CardQuoteRestore_subtitle_TypographyBlock | CardQuoteRestore_subtitle_VideoBlock | CardQuoteRestore_subtitle_VideoTriggerBlock;
@@ -926,21 +816,21 @@ export interface CardQuoteRestore_title_GridContainerBlock {
 
 export interface CardQuoteRestore_title_ButtonBlock_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
-  parentBlockId: string;
+  parentBlockId: string | null;
   gtmEventName: string | null;
   blockId: string;
 }
 
 export interface CardQuoteRestore_title_ButtonBlock_action_LinkAction {
   __typename: "LinkAction";
-  parentBlockId: string;
+  parentBlockId: string | null;
   gtmEventName: string | null;
   url: string;
 }
 
 export interface CardQuoteRestore_title_ButtonBlock_action_EmailAction {
   __typename: "EmailAction";
-  parentBlockId: string;
+  parentBlockId: string | null;
   gtmEventName: string | null;
   email: string;
 }
@@ -949,9 +839,6 @@ export type CardQuoteRestore_title_ButtonBlock_action = CardQuoteRestore_title_B
 
 export interface CardQuoteRestore_title_ButtonBlock_settings {
   __typename: "ButtonBlockSettings";
-  /**
-   * Alignment of the button
-   */
   alignment: ButtonAlignment | null;
 }
 
@@ -1039,21 +926,21 @@ export interface CardQuoteRestore_title_ImageBlock {
 
 export interface CardQuoteRestore_title_RadioOptionBlock_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
-  parentBlockId: string;
+  parentBlockId: string | null;
   gtmEventName: string | null;
   blockId: string;
 }
 
 export interface CardQuoteRestore_title_RadioOptionBlock_action_LinkAction {
   __typename: "LinkAction";
-  parentBlockId: string;
+  parentBlockId: string | null;
   gtmEventName: string | null;
   url: string;
 }
 
 export interface CardQuoteRestore_title_RadioOptionBlock_action_EmailAction {
   __typename: "EmailAction";
-  parentBlockId: string;
+  parentBlockId: string | null;
   gtmEventName: string | null;
   email: string;
 }
@@ -1085,21 +972,21 @@ export interface CardQuoteRestore_title_RadioQuestionBlock {
 
 export interface CardQuoteRestore_title_SignUpBlock_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
-  parentBlockId: string;
+  parentBlockId: string | null;
   gtmEventName: string | null;
   blockId: string;
 }
 
 export interface CardQuoteRestore_title_SignUpBlock_action_LinkAction {
   __typename: "LinkAction";
-  parentBlockId: string;
+  parentBlockId: string | null;
   gtmEventName: string | null;
   url: string;
 }
 
 export interface CardQuoteRestore_title_SignUpBlock_action_EmailAction {
   __typename: "EmailAction";
-  parentBlockId: string;
+  parentBlockId: string | null;
   gtmEventName: string | null;
   email: string;
 }
@@ -1237,21 +1124,21 @@ export type CardQuoteRestore_title_VideoBlock_mediaVideo = CardQuoteRestore_titl
 
 export interface CardQuoteRestore_title_VideoBlock_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
-  parentBlockId: string;
+  parentBlockId: string | null;
   gtmEventName: string | null;
   blockId: string;
 }
 
 export interface CardQuoteRestore_title_VideoBlock_action_LinkAction {
   __typename: "LinkAction";
-  parentBlockId: string;
+  parentBlockId: string | null;
   gtmEventName: string | null;
   url: string;
 }
 
 export interface CardQuoteRestore_title_VideoBlock_action_EmailAction {
   __typename: "EmailAction";
-  parentBlockId: string;
+  parentBlockId: string | null;
   gtmEventName: string | null;
   email: string;
 }
@@ -1263,93 +1150,41 @@ export interface CardQuoteRestore_title_VideoBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
-  muted: boolean | null;
-  autoplay: boolean | null;
-  /**
-   * startAt dictates at which point of time the video should start playing
-   */
+  muted: boolean;
+  autoplay: boolean;
   startAt: number | null;
-  /**
-   * endAt dictates at which point of time the video should end
-   */
   endAt: number | null;
-  /**
-   * posterBlockId is present if a child block should be used as a poster.
-   * This child block should not be rendered normally, instead it should be used
-   * as the video poster. PosterBlock should be of type ImageBlock.
-   */
   posterBlockId: string | null;
-  fullsize: boolean | null;
-  /**
-   * internal source videos: videoId and videoVariantLanguageId both need to be set
-   * to select a video.
-   * For other sources only videoId needs to be set.
-   */
+  fullsize: boolean;
   videoId: string | null;
-  /**
-   * internal source videos: videoId and videoVariantLanguageId both need to be set
-   * to select a video.
-   * For other sources only videoId needs to be set.
-   */
   videoVariantLanguageId: string | null;
-  /**
-   * internal source: videoId, videoVariantLanguageId, and video present
-   * youTube source: videoId, title, description, and duration present
-   */
-  source: VideoBlockSource;
-  /**
-   * internal source videos: this field is not populated and instead only present
-   * in the video field.
-   * For other sources this is automatically populated.
-   */
-  title: string | null;
-  /**
-   * internal source videos: this field is not populated and instead only present
-   * in the video field
-   * For other sources this is automatically populated.
-   */
-  description: string | null;
-  /**
-   * internal source videos: this field is not populated and instead only present
-   * in the video field
-   * For other sources this is automatically populated.
-   */
+  source: VideoBlockSource | null;
+  title: string;
+  description: string;
   image: string | null;
-  /**
-   * internal source videos: this field is not populated and instead only present
-   * in the video field
-   * For other sources this is automatically populated.
-   * duration in seconds.
-   */
   duration: number | null;
-  /**
-   * how the video should display within the VideoBlock
-   */
   objectFit: VideoBlockObjectFit | null;
   mediaVideo: CardQuoteRestore_title_VideoBlock_mediaVideo | null;
-  /**
-   * action that should be performed when the video ends
-   */
   action: CardQuoteRestore_title_VideoBlock_action | null;
 }
 
 export interface CardQuoteRestore_title_VideoTriggerBlock_triggerAction_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
-  parentBlockId: string;
+  parentBlockId: string | null;
   gtmEventName: string | null;
   blockId: string;
 }
 
 export interface CardQuoteRestore_title_VideoTriggerBlock_triggerAction_LinkAction {
   __typename: "LinkAction";
-  parentBlockId: string;
+  parentBlockId: string | null;
   gtmEventName: string | null;
   url: string;
 }
 
 export interface CardQuoteRestore_title_VideoTriggerBlock_triggerAction_EmailAction {
   __typename: "EmailAction";
-  parentBlockId: string;
+  parentBlockId: string | null;
   gtmEventName: string | null;
   email: string;
 }
@@ -1366,7 +1201,7 @@ export interface CardQuoteRestore_title_VideoTriggerBlock {
    * this is the number of seconds since the start of the video
    */
   triggerStart: number;
-  triggerAction: CardQuoteRestore_title_VideoTriggerBlock_triggerAction;
+  triggerAction: CardQuoteRestore_title_VideoTriggerBlock_triggerAction | null;
 }
 
 export type CardQuoteRestore_title = CardQuoteRestore_title_GridContainerBlock | CardQuoteRestore_title_ButtonBlock | CardQuoteRestore_title_CardBlock | CardQuoteRestore_title_IconBlock | CardQuoteRestore_title_ImageBlock | CardQuoteRestore_title_RadioOptionBlock | CardQuoteRestore_title_RadioQuestionBlock | CardQuoteRestore_title_SignUpBlock | CardQuoteRestore_title_SpacerBlock | CardQuoteRestore_title_StepBlock | CardQuoteRestore_title_TextResponseBlock | CardQuoteRestore_title_TypographyBlock | CardQuoteRestore_title_VideoBlock | CardQuoteRestore_title_VideoTriggerBlock;
@@ -1380,21 +1215,21 @@ export interface CardQuoteRestore_body_GridContainerBlock {
 
 export interface CardQuoteRestore_body_ButtonBlock_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
-  parentBlockId: string;
+  parentBlockId: string | null;
   gtmEventName: string | null;
   blockId: string;
 }
 
 export interface CardQuoteRestore_body_ButtonBlock_action_LinkAction {
   __typename: "LinkAction";
-  parentBlockId: string;
+  parentBlockId: string | null;
   gtmEventName: string | null;
   url: string;
 }
 
 export interface CardQuoteRestore_body_ButtonBlock_action_EmailAction {
   __typename: "EmailAction";
-  parentBlockId: string;
+  parentBlockId: string | null;
   gtmEventName: string | null;
   email: string;
 }
@@ -1403,9 +1238,6 @@ export type CardQuoteRestore_body_ButtonBlock_action = CardQuoteRestore_body_But
 
 export interface CardQuoteRestore_body_ButtonBlock_settings {
   __typename: "ButtonBlockSettings";
-  /**
-   * Alignment of the button
-   */
   alignment: ButtonAlignment | null;
 }
 
@@ -1493,21 +1325,21 @@ export interface CardQuoteRestore_body_ImageBlock {
 
 export interface CardQuoteRestore_body_RadioOptionBlock_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
-  parentBlockId: string;
+  parentBlockId: string | null;
   gtmEventName: string | null;
   blockId: string;
 }
 
 export interface CardQuoteRestore_body_RadioOptionBlock_action_LinkAction {
   __typename: "LinkAction";
-  parentBlockId: string;
+  parentBlockId: string | null;
   gtmEventName: string | null;
   url: string;
 }
 
 export interface CardQuoteRestore_body_RadioOptionBlock_action_EmailAction {
   __typename: "EmailAction";
-  parentBlockId: string;
+  parentBlockId: string | null;
   gtmEventName: string | null;
   email: string;
 }
@@ -1539,21 +1371,21 @@ export interface CardQuoteRestore_body_RadioQuestionBlock {
 
 export interface CardQuoteRestore_body_SignUpBlock_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
-  parentBlockId: string;
+  parentBlockId: string | null;
   gtmEventName: string | null;
   blockId: string;
 }
 
 export interface CardQuoteRestore_body_SignUpBlock_action_LinkAction {
   __typename: "LinkAction";
-  parentBlockId: string;
+  parentBlockId: string | null;
   gtmEventName: string | null;
   url: string;
 }
 
 export interface CardQuoteRestore_body_SignUpBlock_action_EmailAction {
   __typename: "EmailAction";
-  parentBlockId: string;
+  parentBlockId: string | null;
   gtmEventName: string | null;
   email: string;
 }
@@ -1691,21 +1523,21 @@ export type CardQuoteRestore_body_VideoBlock_mediaVideo = CardQuoteRestore_body_
 
 export interface CardQuoteRestore_body_VideoBlock_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
-  parentBlockId: string;
+  parentBlockId: string | null;
   gtmEventName: string | null;
   blockId: string;
 }
 
 export interface CardQuoteRestore_body_VideoBlock_action_LinkAction {
   __typename: "LinkAction";
-  parentBlockId: string;
+  parentBlockId: string | null;
   gtmEventName: string | null;
   url: string;
 }
 
 export interface CardQuoteRestore_body_VideoBlock_action_EmailAction {
   __typename: "EmailAction";
-  parentBlockId: string;
+  parentBlockId: string | null;
   gtmEventName: string | null;
   email: string;
 }
@@ -1717,93 +1549,41 @@ export interface CardQuoteRestore_body_VideoBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
-  muted: boolean | null;
-  autoplay: boolean | null;
-  /**
-   * startAt dictates at which point of time the video should start playing
-   */
+  muted: boolean;
+  autoplay: boolean;
   startAt: number | null;
-  /**
-   * endAt dictates at which point of time the video should end
-   */
   endAt: number | null;
-  /**
-   * posterBlockId is present if a child block should be used as a poster.
-   * This child block should not be rendered normally, instead it should be used
-   * as the video poster. PosterBlock should be of type ImageBlock.
-   */
   posterBlockId: string | null;
-  fullsize: boolean | null;
-  /**
-   * internal source videos: videoId and videoVariantLanguageId both need to be set
-   * to select a video.
-   * For other sources only videoId needs to be set.
-   */
+  fullsize: boolean;
   videoId: string | null;
-  /**
-   * internal source videos: videoId and videoVariantLanguageId both need to be set
-   * to select a video.
-   * For other sources only videoId needs to be set.
-   */
   videoVariantLanguageId: string | null;
-  /**
-   * internal source: videoId, videoVariantLanguageId, and video present
-   * youTube source: videoId, title, description, and duration present
-   */
-  source: VideoBlockSource;
-  /**
-   * internal source videos: this field is not populated and instead only present
-   * in the video field.
-   * For other sources this is automatically populated.
-   */
-  title: string | null;
-  /**
-   * internal source videos: this field is not populated and instead only present
-   * in the video field
-   * For other sources this is automatically populated.
-   */
-  description: string | null;
-  /**
-   * internal source videos: this field is not populated and instead only present
-   * in the video field
-   * For other sources this is automatically populated.
-   */
+  source: VideoBlockSource | null;
+  title: string;
+  description: string;
   image: string | null;
-  /**
-   * internal source videos: this field is not populated and instead only present
-   * in the video field
-   * For other sources this is automatically populated.
-   * duration in seconds.
-   */
   duration: number | null;
-  /**
-   * how the video should display within the VideoBlock
-   */
   objectFit: VideoBlockObjectFit | null;
   mediaVideo: CardQuoteRestore_body_VideoBlock_mediaVideo | null;
-  /**
-   * action that should be performed when the video ends
-   */
   action: CardQuoteRestore_body_VideoBlock_action | null;
 }
 
 export interface CardQuoteRestore_body_VideoTriggerBlock_triggerAction_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
-  parentBlockId: string;
+  parentBlockId: string | null;
   gtmEventName: string | null;
   blockId: string;
 }
 
 export interface CardQuoteRestore_body_VideoTriggerBlock_triggerAction_LinkAction {
   __typename: "LinkAction";
-  parentBlockId: string;
+  parentBlockId: string | null;
   gtmEventName: string | null;
   url: string;
 }
 
 export interface CardQuoteRestore_body_VideoTriggerBlock_triggerAction_EmailAction {
   __typename: "EmailAction";
-  parentBlockId: string;
+  parentBlockId: string | null;
   gtmEventName: string | null;
   email: string;
 }
@@ -1820,7 +1600,7 @@ export interface CardQuoteRestore_body_VideoTriggerBlock {
    * this is the number of seconds since the start of the video
    */
   triggerStart: number;
-  triggerAction: CardQuoteRestore_body_VideoTriggerBlock_triggerAction;
+  triggerAction: CardQuoteRestore_body_VideoTriggerBlock_triggerAction | null;
 }
 
 export type CardQuoteRestore_body = CardQuoteRestore_body_GridContainerBlock | CardQuoteRestore_body_ButtonBlock | CardQuoteRestore_body_CardBlock | CardQuoteRestore_body_IconBlock | CardQuoteRestore_body_ImageBlock | CardQuoteRestore_body_RadioOptionBlock | CardQuoteRestore_body_RadioQuestionBlock | CardQuoteRestore_body_SignUpBlock | CardQuoteRestore_body_SpacerBlock | CardQuoteRestore_body_StepBlock | CardQuoteRestore_body_TextResponseBlock | CardQuoteRestore_body_TypographyBlock | CardQuoteRestore_body_VideoBlock | CardQuoteRestore_body_VideoTriggerBlock;

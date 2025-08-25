@@ -9,5 +9,5 @@
 
 export interface NewHost {
   __typename: "Host";
-  id: string;
+  id: string | null;
 }

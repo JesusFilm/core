@@ -9,11 +9,11 @@
 
 export interface DeleteHost_hostDelete {
   __typename: "Host";
-  id: string;
+  id: string | null;
 }
 
 export interface DeleteHost {
-  hostDelete: DeleteHost_hostDelete;
+  hostDelete: DeleteHost_hostDelete | null;
 }
 
 export interface DeleteHostVariables {

@@ -9,13 +9,13 @@
 
 export interface BlockActionNavigateToBlockUpdate_blockUpdateNavigateToBlockAction {
   __typename: "NavigateToBlockAction";
-  parentBlockId: string;
+  parentBlockId: string | null;
   gtmEventName: string | null;
   blockId: string;
 }
 
 export interface BlockActionNavigateToBlockUpdate {
-  blockUpdateNavigateToBlockAction: BlockActionNavigateToBlockUpdate_blockUpdateNavigateToBlockAction;
+  blockUpdateNavigateToBlockAction: BlockActionNavigateToBlockUpdate_blockUpdateNavigateToBlockAction | null;
 }
 
 export interface BlockActionNavigateToBlockUpdateVariables {

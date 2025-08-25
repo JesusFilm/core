@@ -9,7 +9,7 @@
 
 export interface UserJourneyOpen_userJourneyOpen {
   __typename: "UserJourney";
-  id: string;
+  id: string | null;
 }
 
 export interface UserJourneyOpen {

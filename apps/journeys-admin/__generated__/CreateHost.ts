@@ -11,12 +11,12 @@ import { HostCreateInput } from "./globalTypes";
 
 export interface CreateHost_hostCreate {
   __typename: "Host";
-  id: string;
-  title: string;
+  id: string | null;
+  title: string | null;
 }
 
 export interface CreateHost {
-  hostCreate: CreateHost_hostCreate;
+  hostCreate: CreateHost_hostCreate | null;
 }
 
 export interface CreateHostVariables {

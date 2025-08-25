@@ -14,7 +14,7 @@ export interface QrCodeFields_shortLink_domain {
 
 export interface QrCodeFields_shortLink {
   __typename: "ShortLink";
-  id: string;
+  id: string | null;
   domain: QrCodeFields_shortLink_domain;
   /**
    * short link path not including the leading slash
@@ -28,10 +28,7 @@ export interface QrCodeFields_shortLink {
 
 export interface QrCodeFields {
   __typename: "QrCode";
-  id: string;
+  id: string | null;
   toJourneyId: string | null;
-  /**
-   * ShortLink that handles the redirection
-   */
-  shortLink: QrCodeFields_shortLink;
+  shortLink: QrCodeFields_shortLink | null;
 }

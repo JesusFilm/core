@@ -9,5 +9,5 @@
 
 export interface NewChatButton {
   __typename: "ChatButton";
-  id: string;
+  id: string | null;
 }

@@ -9,5 +9,5 @@
 
 export interface NewCustomDomain {
   __typename: "CustomDomain";
-  id: string;
+  id: string | null;
 }

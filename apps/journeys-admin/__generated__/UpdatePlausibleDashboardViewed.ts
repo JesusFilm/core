@@ -11,7 +11,7 @@ import { JourneyProfileUpdateInput } from "./globalTypes";
 
 export interface UpdatePlausibleDashboardViewed_journeyProfileUpdate {
   __typename: "JourneyProfile";
-  id: string;
+  id: string | null;
   plausibleDashboardViewed: boolean | null;
 }
 

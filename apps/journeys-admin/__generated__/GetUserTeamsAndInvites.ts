@@ -20,21 +20,21 @@ export interface GetUserTeamsAndInvites_userTeams_user {
 
 export interface GetUserTeamsAndInvites_userTeams {
   __typename: "UserTeam";
-  id: string;
-  role: UserTeamRole;
-  user: GetUserTeamsAndInvites_userTeams_user;
+  id: string | null;
+  role: UserTeamRole | null;
+  user: GetUserTeamsAndInvites_userTeams_user | null;
 }
 
 export interface GetUserTeamsAndInvites_userTeamInvites {
   __typename: "UserTeamInvite";
-  email: string;
-  id: string;
-  teamId: string;
+  email: string | null;
+  id: string | null;
+  teamId: string | null;
 }
 
 export interface GetUserTeamsAndInvites {
-  userTeams: GetUserTeamsAndInvites_userTeams[];
-  userTeamInvites: GetUserTeamsAndInvites_userTeamInvites[];
+  userTeams: GetUserTeamsAndInvites_userTeams[] | null;
+  userTeamInvites: GetUserTeamsAndInvites_userTeamInvites[] | null;
 }
 
 export interface GetUserTeamsAndInvitesVariables {

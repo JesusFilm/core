@@ -9,18 +9,18 @@
 
 export interface DeleteJourneyCollection_journeyCollectionDelete_customDomains_journeyCollection {
   __typename: "JourneyCollection";
-  id: string;
+  id: string | null;
 }
 
 export interface DeleteJourneyCollection_journeyCollectionDelete_customDomains {
   __typename: "CustomDomain";
-  id: string;
+  id: string | null;
   journeyCollection: DeleteJourneyCollection_journeyCollectionDelete_customDomains_journeyCollection | null;
 }
 
 export interface DeleteJourneyCollection_journeyCollectionDelete {
   __typename: "JourneyCollection";
-  id: string;
+  id: string | null;
   customDomains: DeleteJourneyCollection_journeyCollectionDelete_customDomains[] | null;
 }
 

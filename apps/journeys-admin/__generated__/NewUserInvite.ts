@@ -9,5 +9,5 @@
 
 export interface NewUserInvite {
   __typename: "UserInvite";
-  id: string;
+  id: string | null;
 }

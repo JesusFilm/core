@@ -11,13 +11,13 @@ import { ChatButtonCreateInput, MessagePlatform } from "./globalTypes";
 
 export interface JourneyChatButtonCreate_chatButtonCreate {
   __typename: "ChatButton";
-  id: string;
+  id: string | null;
   link: string | null;
   platform: MessagePlatform | null;
 }
 
 export interface JourneyChatButtonCreate {
-  chatButtonCreate: JourneyChatButtonCreate_chatButtonCreate;
+  chatButtonCreate: JourneyChatButtonCreate_chatButtonCreate | null;
 }
 
 export interface JourneyChatButtonCreateVariables {

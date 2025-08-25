@@ -16,7 +16,7 @@ export interface QrCodeCreate_qrCodeCreate_shortLink_domain {
 
 export interface QrCodeCreate_qrCodeCreate_shortLink {
   __typename: "ShortLink";
-  id: string;
+  id: string | null;
   domain: QrCodeCreate_qrCodeCreate_shortLink_domain;
   /**
    * short link path not including the leading slash
@@ -30,12 +30,9 @@ export interface QrCodeCreate_qrCodeCreate_shortLink {
 
 export interface QrCodeCreate_qrCodeCreate {
   __typename: "QrCode";
-  id: string;
+  id: string | null;
   toJourneyId: string | null;
-  /**
-   * ShortLink that handles the redirection
-   */
-  shortLink: QrCodeCreate_qrCodeCreate_shortLink;
+  shortLink: QrCodeCreate_qrCodeCreate_shortLink | null;
 }
 
 export interface QrCodeCreate {

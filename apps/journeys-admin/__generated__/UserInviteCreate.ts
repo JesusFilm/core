@@ -11,8 +11,8 @@ import { UserInviteCreateInput } from "./globalTypes";
 
 export interface UserInviteCreate_userInviteCreate {
   __typename: "UserInvite";
-  id: string;
-  email: string;
+  id: string | null;
+  email: string | null;
   removedAt: any | null;
   acceptedAt: any | null;
 }

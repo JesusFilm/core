@@ -11,7 +11,7 @@ import { Role } from "./globalTypes";
 
 export interface GetPublisher_getUserRole {
   __typename: "UserRole";
-  id: string;
+  id: string | null;
   roles: Role[] | null;
 }
 

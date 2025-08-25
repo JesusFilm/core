@@ -11,7 +11,7 @@ import { UserTeamRole } from "./../../../../__generated__/globalTypes";
 
 export interface GetLastActiveTeamIdAndTeams_getJourneyProfile {
   __typename: "JourneyProfile";
-  id: string;
+  id: string | null;
   lastActiveTeamId: string | null;
 }
 
@@ -26,27 +26,27 @@ export interface GetLastActiveTeamIdAndTeams_teams_userTeams_user {
 
 export interface GetLastActiveTeamIdAndTeams_teams_userTeams {
   __typename: "UserTeam";
-  id: string;
-  user: GetLastActiveTeamIdAndTeams_teams_userTeams_user;
-  role: UserTeamRole;
+  id: string | null;
+  user: GetLastActiveTeamIdAndTeams_teams_userTeams_user | null;
+  role: UserTeamRole | null;
 }
 
 export interface GetLastActiveTeamIdAndTeams_teams_customDomains {
   __typename: "CustomDomain";
-  id: string;
-  name: string;
+  id: string | null;
+  name: string | null;
 }
 
 export interface GetLastActiveTeamIdAndTeams_teams {
   __typename: "Team";
-  id: string;
-  title: string;
+  id: string | null;
+  title: string | null;
   publicTitle: string | null;
-  userTeams: GetLastActiveTeamIdAndTeams_teams_userTeams[];
-  customDomains: GetLastActiveTeamIdAndTeams_teams_customDomains[];
+  userTeams: GetLastActiveTeamIdAndTeams_teams_userTeams[] | null;
+  customDomains: GetLastActiveTeamIdAndTeams_teams_customDomains[] | null;
 }
 
 export interface GetLastActiveTeamIdAndTeams {
   getJourneyProfile: GetLastActiveTeamIdAndTeams_getJourneyProfile | null;
-  teams: GetLastActiveTeamIdAndTeams_teams[];
+  teams: GetLastActiveTeamIdAndTeams_teams[] | null;
 }

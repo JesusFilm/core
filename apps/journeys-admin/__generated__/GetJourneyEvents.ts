@@ -11,59 +11,41 @@ import { JourneyEventsFilter } from "./globalTypes";
 
 export interface GetJourneyEvents_journeyEventsConnection_edges_node {
   __typename: "JourneyEvent";
-  journeyId: string;
+  journeyId: string | null;
   visitorId: string | null;
   label: string | null;
   value: string | null;
-  /**
-   * database fields from table, not explicitly surfaced from any other types
-   */
   typename: string | null;
   progress: number | null;
-  /**
-   * Related fields queried from relevant ids in the events table
-   */
   journeySlug: string | null;
   visitorName: string | null;
   visitorEmail: string | null;
   visitorPhone: string | null;
-  createdAt: any;
+  createdAt: any | null;
 }
 
 export interface GetJourneyEvents_journeyEventsConnection_edges {
-  __typename: "JourneyEventEdge";
+  __typename: "QueryJourneyEventsConnectionEdge";
   cursor: string;
-  node: GetJourneyEvents_journeyEventsConnection_edges_node;
+  node: GetJourneyEvents_journeyEventsConnection_edges_node | null;
 }
 
 export interface GetJourneyEvents_journeyEventsConnection_pageInfo {
   __typename: "PageInfo";
-  /**
-   * When paginating forwards, the cursor to continue.
-   */
   endCursor: string | null;
-  /**
-   * When paginating forwards, are there more items?
-   */
   hasNextPage: boolean;
-  /**
-   * When paginating backwards, are there more items?
-   */
   hasPreviousPage: boolean;
-  /**
-   * When paginating backwards, the cursor to continue.
-   */
   startCursor: string | null;
 }
 
 export interface GetJourneyEvents_journeyEventsConnection {
-  __typename: "JourneyEventsConnection";
-  edges: GetJourneyEvents_journeyEventsConnection_edges[];
+  __typename: "QueryJourneyEventsConnection";
+  edges: (GetJourneyEvents_journeyEventsConnection_edges | null)[] | null;
   pageInfo: GetJourneyEvents_journeyEventsConnection_pageInfo;
 }
 
 export interface GetJourneyEvents {
-  journeyEventsConnection: GetJourneyEvents_journeyEventsConnection;
+  journeyEventsConnection: GetJourneyEvents_journeyEventsConnection | null;
 }
 
 export interface GetJourneyEventsVariables {

@@ -20,7 +20,7 @@ export interface CreateJourneyCollection_journeyCollectionCreate_journeys {
 
 export interface CreateJourneyCollection_journeyCollectionCreate {
   __typename: "JourneyCollection";
-  id: string;
+  id: string | null;
   journeys: CreateJourneyCollection_journeyCollectionCreate_journeys[] | null;
 }
 
@@ -35,19 +35,19 @@ export interface CreateJourneyCollection_customDomainUpdate_journeyCollection_jo
 
 export interface CreateJourneyCollection_customDomainUpdate_journeyCollection {
   __typename: "JourneyCollection";
-  id: string;
+  id: string | null;
   journeys: CreateJourneyCollection_customDomainUpdate_journeyCollection_journeys[] | null;
 }
 
 export interface CreateJourneyCollection_customDomainUpdate {
   __typename: "CustomDomain";
-  id: string;
+  id: string | null;
   journeyCollection: CreateJourneyCollection_customDomainUpdate_journeyCollection | null;
 }
 
 export interface CreateJourneyCollection {
   journeyCollectionCreate: CreateJourneyCollection_journeyCollectionCreate;
-  customDomainUpdate: CreateJourneyCollection_customDomainUpdate;
+  customDomainUpdate: CreateJourneyCollection_customDomainUpdate | null;
 }
 
 export interface CreateJourneyCollectionVariables {

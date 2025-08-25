@@ -11,13 +11,13 @@ import { EmailActionInput } from "./globalTypes";
 
 export interface BlockActionEmailUpdate_blockUpdateEmailAction {
   __typename: "EmailAction";
-  parentBlockId: string;
+  parentBlockId: string | null;
   gtmEventName: string | null;
   email: string;
 }
 
 export interface BlockActionEmailUpdate {
-  blockUpdateEmailAction: BlockActionEmailUpdate_blockUpdateEmailAction;
+  blockUpdateEmailAction: BlockActionEmailUpdate_blockUpdateEmailAction | null;
 }
 
 export interface BlockActionEmailUpdateVariables {

@@ -70,21 +70,21 @@ export interface CardCtaCreate_title {
 
 export interface CardCtaCreate_button1_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
-  parentBlockId: string;
+  parentBlockId: string | null;
   gtmEventName: string | null;
   blockId: string;
 }
 
 export interface CardCtaCreate_button1_action_LinkAction {
   __typename: "LinkAction";
-  parentBlockId: string;
+  parentBlockId: string | null;
   gtmEventName: string | null;
   url: string;
 }
 
 export interface CardCtaCreate_button1_action_EmailAction {
   __typename: "EmailAction";
-  parentBlockId: string;
+  parentBlockId: string | null;
   gtmEventName: string | null;
   email: string;
 }
@@ -93,9 +93,6 @@ export type CardCtaCreate_button1_action = CardCtaCreate_button1_action_Navigate
 
 export interface CardCtaCreate_button1_settings {
   __typename: "ButtonBlockSettings";
-  /**
-   * Alignment of the button
-   */
   alignment: ButtonAlignment | null;
 }
 
@@ -137,21 +134,21 @@ export interface CardCtaCreate_endIcon1 {
 
 export interface CardCtaCreate_button1Update_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
-  parentBlockId: string;
+  parentBlockId: string | null;
   gtmEventName: string | null;
   blockId: string;
 }
 
 export interface CardCtaCreate_button1Update_action_LinkAction {
   __typename: "LinkAction";
-  parentBlockId: string;
+  parentBlockId: string | null;
   gtmEventName: string | null;
   url: string;
 }
 
 export interface CardCtaCreate_button1Update_action_EmailAction {
   __typename: "EmailAction";
-  parentBlockId: string;
+  parentBlockId: string | null;
   gtmEventName: string | null;
   email: string;
 }
@@ -160,9 +157,6 @@ export type CardCtaCreate_button1Update_action = CardCtaCreate_button1Update_act
 
 export interface CardCtaCreate_button1Update_settings {
   __typename: "ButtonBlockSettings";
-  /**
-   * Alignment of the button
-   */
   alignment: ButtonAlignment | null;
 }
 
@@ -184,21 +178,21 @@ export interface CardCtaCreate_button1Update {
 
 export interface CardCtaCreate_button2_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
-  parentBlockId: string;
+  parentBlockId: string | null;
   gtmEventName: string | null;
   blockId: string;
 }
 
 export interface CardCtaCreate_button2_action_LinkAction {
   __typename: "LinkAction";
-  parentBlockId: string;
+  parentBlockId: string | null;
   gtmEventName: string | null;
   url: string;
 }
 
 export interface CardCtaCreate_button2_action_EmailAction {
   __typename: "EmailAction";
-  parentBlockId: string;
+  parentBlockId: string | null;
   gtmEventName: string | null;
   email: string;
 }
@@ -207,9 +201,6 @@ export type CardCtaCreate_button2_action = CardCtaCreate_button2_action_Navigate
 
 export interface CardCtaCreate_button2_settings {
   __typename: "ButtonBlockSettings";
-  /**
-   * Alignment of the button
-   */
   alignment: ButtonAlignment | null;
 }
 
@@ -251,21 +242,21 @@ export interface CardCtaCreate_endIcon2 {
 
 export interface CardCtaCreate_button2Update_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
-  parentBlockId: string;
+  parentBlockId: string | null;
   gtmEventName: string | null;
   blockId: string;
 }
 
 export interface CardCtaCreate_button2Update_action_LinkAction {
   __typename: "LinkAction";
-  parentBlockId: string;
+  parentBlockId: string | null;
   gtmEventName: string | null;
   url: string;
 }
 
 export interface CardCtaCreate_button2Update_action_EmailAction {
   __typename: "EmailAction";
-  parentBlockId: string;
+  parentBlockId: string | null;
   gtmEventName: string | null;
   email: string;
 }
@@ -274,9 +265,6 @@ export type CardCtaCreate_button2Update_action = CardCtaCreate_button2Update_act
 
 export interface CardCtaCreate_button2Update_settings {
   __typename: "ButtonBlockSettings";
-  /**
-   * Alignment of the button
-   */
   alignment: ButtonAlignment | null;
 }
 
@@ -298,21 +286,21 @@ export interface CardCtaCreate_button2Update {
 
 export interface CardCtaCreate_button3_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
-  parentBlockId: string;
+  parentBlockId: string | null;
   gtmEventName: string | null;
   blockId: string;
 }
 
 export interface CardCtaCreate_button3_action_LinkAction {
   __typename: "LinkAction";
-  parentBlockId: string;
+  parentBlockId: string | null;
   gtmEventName: string | null;
   url: string;
 }
 
 export interface CardCtaCreate_button3_action_EmailAction {
   __typename: "EmailAction";
-  parentBlockId: string;
+  parentBlockId: string | null;
   gtmEventName: string | null;
   email: string;
 }
@@ -321,9 +309,6 @@ export type CardCtaCreate_button3_action = CardCtaCreate_button3_action_Navigate
 
 export interface CardCtaCreate_button3_settings {
   __typename: "ButtonBlockSettings";
-  /**
-   * Alignment of the button
-   */
   alignment: ButtonAlignment | null;
 }
 
@@ -365,21 +350,21 @@ export interface CardCtaCreate_endIcon3 {
 
 export interface CardCtaCreate_button3Update_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
-  parentBlockId: string;
+  parentBlockId: string | null;
   gtmEventName: string | null;
   blockId: string;
 }
 
 export interface CardCtaCreate_button3Update_action_LinkAction {
   __typename: "LinkAction";
-  parentBlockId: string;
+  parentBlockId: string | null;
   gtmEventName: string | null;
   url: string;
 }
 
 export interface CardCtaCreate_button3Update_action_EmailAction {
   __typename: "EmailAction";
-  parentBlockId: string;
+  parentBlockId: string | null;
   gtmEventName: string | null;
   email: string;
 }
@@ -388,9 +373,6 @@ export type CardCtaCreate_button3Update_action = CardCtaCreate_button3Update_act
 
 export interface CardCtaCreate_button3Update_settings {
   __typename: "ButtonBlockSettings";
-  /**
-   * Alignment of the button
-   */
   alignment: ButtonAlignment | null;
 }
 
@@ -454,15 +436,15 @@ export interface CardCtaCreate {
   button1: CardCtaCreate_button1;
   startIcon1: CardCtaCreate_startIcon1;
   endIcon1: CardCtaCreate_endIcon1;
-  button1Update: CardCtaCreate_button1Update | null;
+  button1Update: CardCtaCreate_button1Update;
   button2: CardCtaCreate_button2;
   startIcon2: CardCtaCreate_startIcon2;
   endIcon2: CardCtaCreate_endIcon2;
-  button2Update: CardCtaCreate_button2Update | null;
+  button2Update: CardCtaCreate_button2Update;
   button3: CardCtaCreate_button3;
   startIcon3: CardCtaCreate_startIcon3;
   endIcon3: CardCtaCreate_endIcon3;
-  button3Update: CardCtaCreate_button3Update | null;
+  button3Update: CardCtaCreate_button3Update;
   cardBlockUpdate: CardCtaCreate_cardBlockUpdate;
 }
 

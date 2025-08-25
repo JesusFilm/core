@@ -9,7 +9,7 @@
 
 export interface GetSSRAdminJourney_journey_team {
   __typename: "Team";
-  id: string;
+  id: string | null;
 }
 
 export interface GetSSRAdminJourney_journey_language {

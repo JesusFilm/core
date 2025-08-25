@@ -11,11 +11,11 @@ import { RadioQuestionSubmissionEventCreateInput } from "./globalTypes";
 
 export interface RadioQuestionSubmissionEventCreate_radioQuestionSubmissionEventCreate {
   __typename: "RadioQuestionSubmissionEvent";
-  id: string;
+  id: string | null;
 }
 
 export interface RadioQuestionSubmissionEventCreate {
-  radioQuestionSubmissionEventCreate: RadioQuestionSubmissionEventCreate_radioQuestionSubmissionEventCreate;
+  radioQuestionSubmissionEventCreate: RadioQuestionSubmissionEventCreate_radioQuestionSubmissionEventCreate | null;
 }
 
 export interface RadioQuestionSubmissionEventCreateVariables {

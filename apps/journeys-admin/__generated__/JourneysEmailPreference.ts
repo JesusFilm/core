@@ -9,9 +9,9 @@
 
 export interface JourneysEmailPreference_journeysEmailPreference {
   __typename: "JourneysEmailPreference";
-  email: string;
-  unsubscribeAll: boolean;
-  accountNotifications: boolean;
+  email: string | null;
+  unsubscribeAll: boolean | null;
+  accountNotifications: boolean | null;
 }
 
 export interface JourneysEmailPreference {

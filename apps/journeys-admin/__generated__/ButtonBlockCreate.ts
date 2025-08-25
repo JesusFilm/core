@@ -11,21 +11,21 @@ import { ButtonBlockCreateInput, IconBlockCreateInput, ButtonBlockUpdateInput, B
 
 export interface ButtonBlockCreate_buttonBlockCreate_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
-  parentBlockId: string;
+  parentBlockId: string | null;
   gtmEventName: string | null;
   blockId: string;
 }
 
 export interface ButtonBlockCreate_buttonBlockCreate_action_LinkAction {
   __typename: "LinkAction";
-  parentBlockId: string;
+  parentBlockId: string | null;
   gtmEventName: string | null;
   url: string;
 }
 
 export interface ButtonBlockCreate_buttonBlockCreate_action_EmailAction {
   __typename: "EmailAction";
-  parentBlockId: string;
+  parentBlockId: string | null;
   gtmEventName: string | null;
   email: string;
 }
@@ -34,9 +34,6 @@ export type ButtonBlockCreate_buttonBlockCreate_action = ButtonBlockCreate_butto
 
 export interface ButtonBlockCreate_buttonBlockCreate_settings {
   __typename: "ButtonBlockSettings";
-  /**
-   * Alignment of the button
-   */
   alignment: ButtonAlignment | null;
 }
 
@@ -78,21 +75,21 @@ export interface ButtonBlockCreate_endIcon {
 
 export interface ButtonBlockCreate_buttonBlockUpdate_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
-  parentBlockId: string;
+  parentBlockId: string | null;
   gtmEventName: string | null;
   blockId: string;
 }
 
 export interface ButtonBlockCreate_buttonBlockUpdate_action_LinkAction {
   __typename: "LinkAction";
-  parentBlockId: string;
+  parentBlockId: string | null;
   gtmEventName: string | null;
   url: string;
 }
 
 export interface ButtonBlockCreate_buttonBlockUpdate_action_EmailAction {
   __typename: "EmailAction";
-  parentBlockId: string;
+  parentBlockId: string | null;
   gtmEventName: string | null;
   email: string;
 }
@@ -101,9 +98,6 @@ export type ButtonBlockCreate_buttonBlockUpdate_action = ButtonBlockCreate_butto
 
 export interface ButtonBlockCreate_buttonBlockUpdate_settings {
   __typename: "ButtonBlockSettings";
-  /**
-   * Alignment of the button
-   */
   alignment: ButtonAlignment | null;
 }
 
@@ -127,7 +121,7 @@ export interface ButtonBlockCreate {
   buttonBlockCreate: ButtonBlockCreate_buttonBlockCreate;
   startIcon: ButtonBlockCreate_startIcon;
   endIcon: ButtonBlockCreate_endIcon;
-  buttonBlockUpdate: ButtonBlockCreate_buttonBlockUpdate | null;
+  buttonBlockUpdate: ButtonBlockCreate_buttonBlockUpdate;
 }
 
 export interface ButtonBlockCreateVariables {

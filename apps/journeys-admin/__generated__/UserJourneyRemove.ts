@@ -14,12 +14,12 @@ export interface UserJourneyRemove_userJourneyRemove_journey {
 
 export interface UserJourneyRemove_userJourneyRemove {
   __typename: "UserJourney";
-  id: string;
+  id: string | null;
   journey: UserJourneyRemove_userJourneyRemove_journey | null;
 }
 
 export interface UserJourneyRemove {
-  userJourneyRemove: UserJourneyRemove_userJourneyRemove;
+  userJourneyRemove: UserJourneyRemove_userJourneyRemove | null;
 }
 
 export interface UserJourneyRemoveVariables {

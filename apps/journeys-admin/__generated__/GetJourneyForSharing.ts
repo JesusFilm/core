@@ -25,13 +25,13 @@ export interface GetJourneyForSharing_journey_language {
 
 export interface GetJourneyForSharing_journey_team_customDomains {
   __typename: "CustomDomain";
-  name: string;
+  name: string | null;
 }
 
 export interface GetJourneyForSharing_journey_team {
   __typename: "Team";
-  id: string;
-  customDomains: GetJourneyForSharing_journey_team_customDomains[];
+  id: string | null;
+  customDomains: GetJourneyForSharing_journey_team_customDomains[] | null;
 }
 
 export interface GetJourneyForSharing_journey {

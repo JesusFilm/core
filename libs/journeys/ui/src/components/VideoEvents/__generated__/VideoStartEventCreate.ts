@@ -11,11 +11,11 @@ import { VideoStartEventCreateInput } from "./../../../../__generated__/globalTy
 
 export interface VideoStartEventCreate_videoStartEventCreate {
   __typename: "VideoStartEvent";
-  id: string;
+  id: string | null;
 }
 
 export interface VideoStartEventCreate {
-  videoStartEventCreate: VideoStartEventCreate_videoStartEventCreate;
+  videoStartEventCreate: VideoStartEventCreate_videoStartEventCreate | null;
 }
 
 export interface VideoStartEventCreateVariables {

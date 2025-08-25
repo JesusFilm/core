@@ -11,11 +11,11 @@ import { IntegrationGrowthSpacesUpdateInput } from "./globalTypes";
 
 export interface IntegrationGrowthSpacesUpdate_integrationGrowthSpacesUpdate {
   __typename: "IntegrationGrowthSpaces";
-  id: string;
+  id: string | null;
 }
 
 export interface IntegrationGrowthSpacesUpdate {
-  integrationGrowthSpacesUpdate: IntegrationGrowthSpacesUpdate_integrationGrowthSpacesUpdate;
+  integrationGrowthSpacesUpdate: IntegrationGrowthSpacesUpdate_integrationGrowthSpacesUpdate | null;
 }
 
 export interface IntegrationGrowthSpacesUpdateVariables {

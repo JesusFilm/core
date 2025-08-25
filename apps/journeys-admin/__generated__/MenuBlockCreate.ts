@@ -123,21 +123,21 @@ export interface MenuBlockCreate_subHeading {
 
 export interface MenuBlockCreate_button1_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
-  parentBlockId: string;
+  parentBlockId: string | null;
   gtmEventName: string | null;
   blockId: string;
 }
 
 export interface MenuBlockCreate_button1_action_LinkAction {
   __typename: "LinkAction";
-  parentBlockId: string;
+  parentBlockId: string | null;
   gtmEventName: string | null;
   url: string;
 }
 
 export interface MenuBlockCreate_button1_action_EmailAction {
   __typename: "EmailAction";
-  parentBlockId: string;
+  parentBlockId: string | null;
   gtmEventName: string | null;
   email: string;
 }
@@ -146,9 +146,6 @@ export type MenuBlockCreate_button1_action = MenuBlockCreate_button1_action_Navi
 
 export interface MenuBlockCreate_button1_settings {
   __typename: "ButtonBlockSettings";
-  /**
-   * Alignment of the button
-   */
   alignment: ButtonAlignment | null;
 }
 
@@ -170,21 +167,21 @@ export interface MenuBlockCreate_button1 {
 
 export interface MenuBlockCreate_button2_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
-  parentBlockId: string;
+  parentBlockId: string | null;
   gtmEventName: string | null;
   blockId: string;
 }
 
 export interface MenuBlockCreate_button2_action_LinkAction {
   __typename: "LinkAction";
-  parentBlockId: string;
+  parentBlockId: string | null;
   gtmEventName: string | null;
   url: string;
 }
 
 export interface MenuBlockCreate_button2_action_EmailAction {
   __typename: "EmailAction";
-  parentBlockId: string;
+  parentBlockId: string | null;
   gtmEventName: string | null;
   email: string;
 }
@@ -193,9 +190,6 @@ export type MenuBlockCreate_button2_action = MenuBlockCreate_button2_action_Navi
 
 export interface MenuBlockCreate_button2_settings {
   __typename: "ButtonBlockSettings";
-  /**
-   * Alignment of the button
-   */
   alignment: ButtonAlignment | null;
 }
 
@@ -217,21 +211,21 @@ export interface MenuBlockCreate_button2 {
 
 export interface MenuBlockCreate_button3_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
-  parentBlockId: string;
+  parentBlockId: string | null;
   gtmEventName: string | null;
   blockId: string;
 }
 
 export interface MenuBlockCreate_button3_action_LinkAction {
   __typename: "LinkAction";
-  parentBlockId: string;
+  parentBlockId: string | null;
   gtmEventName: string | null;
   url: string;
 }
 
 export interface MenuBlockCreate_button3_action_EmailAction {
   __typename: "EmailAction";
-  parentBlockId: string;
+  parentBlockId: string | null;
   gtmEventName: string | null;
   email: string;
 }
@@ -240,9 +234,6 @@ export type MenuBlockCreate_button3_action = MenuBlockCreate_button3_action_Navi
 
 export interface MenuBlockCreate_button3_settings {
   __typename: "ButtonBlockSettings";
-  /**
-   * Alignment of the button
-   */
   alignment: ButtonAlignment | null;
 }
 
@@ -262,7 +253,11 @@ export interface MenuBlockCreate_button3 {
   settings: MenuBlockCreate_button3_settings | null;
 }
 
-export interface MenuBlockCreate_journeyUpdate_menuStepBlock {
+export interface MenuBlockCreate_journeyUpdate_menuStepBlock_ImageBlock {
+  __typename: "ImageBlock" | "ButtonBlock" | "CardBlock" | "GridContainerBlock" | "GridItemBlock" | "IconBlock" | "RadioQuestionBlock" | "RadioOptionBlock" | "SignUpBlock" | "SpacerBlock" | "TextResponseBlock" | "VideoTriggerBlock" | "VideoBlock" | "TypographyBlock";
+}
+
+export interface MenuBlockCreate_journeyUpdate_menuStepBlock_StepBlock {
   __typename: "StepBlock";
   id: string;
   parentBlockId: string | null;
@@ -286,6 +281,8 @@ export interface MenuBlockCreate_journeyUpdate_menuStepBlock {
    */
   slug: string | null;
 }
+
+export type MenuBlockCreate_journeyUpdate_menuStepBlock = MenuBlockCreate_journeyUpdate_menuStepBlock_ImageBlock | MenuBlockCreate_journeyUpdate_menuStepBlock_StepBlock;
 
 export interface MenuBlockCreate_journeyUpdate {
   __typename: "Journey";

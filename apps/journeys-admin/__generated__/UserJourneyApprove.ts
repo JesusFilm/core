@@ -11,12 +11,12 @@ import { UserJourneyRole } from "./globalTypes";
 
 export interface UserJourneyApprove_userJourneyApprove {
   __typename: "UserJourney";
-  id: string;
-  role: UserJourneyRole;
+  id: string | null;
+  role: UserJourneyRole | null;
 }
 
 export interface UserJourneyApprove {
-  userJourneyApprove: UserJourneyApprove_userJourneyApprove;
+  userJourneyApprove: UserJourneyApprove_userJourneyApprove | null;
 }
 
 export interface UserJourneyApproveVariables {

@@ -11,8 +11,8 @@ import { JourneyThemeCreateInput } from "./globalTypes";
 
 export interface CreateJourneyFonts_journeyThemeCreate {
   __typename: "JourneyTheme";
-  id: string;
-  journeyId: string;
+  id: string | null;
+  journeyId: string | null;
   headerFont: string | null;
   bodyFont: string | null;
   labelFont: string | null;

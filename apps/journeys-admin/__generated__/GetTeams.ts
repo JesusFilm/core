@@ -9,9 +9,9 @@
 
 export interface GetTeams_teams {
   __typename: "Team";
-  id: string;
+  id: string | null;
 }
 
 export interface GetTeams {
-  teams: GetTeams_teams[];
+  teams: GetTeams_teams[] | null;
 }

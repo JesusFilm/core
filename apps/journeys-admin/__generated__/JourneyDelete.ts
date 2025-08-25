@@ -16,10 +16,7 @@ export interface JourneyDelete_journeysDelete {
 }
 
 export interface JourneyDelete {
-  /**
-   * Sets journeys statuses to deleted
-   */
-  journeysDelete: (JourneyDelete_journeysDelete | null)[] | null;
+  journeysDelete: JourneyDelete_journeysDelete[];
 }
 
 export interface JourneyDeleteVariables {

@@ -67,9 +67,6 @@ export enum IconColor {
   secondary = "secondary",
 }
 
-/**
- * IconName is equivalent to the icons found in @mui/icons-material
- */
 export enum IconName {
   ArrowBackRounded = "ArrowBackRounded",
   ArrowForwardRounded = "ArrowForwardRounded",
@@ -265,11 +262,6 @@ export enum VideoBlockSource {
   youTube = "youTube",
 }
 
-/**
- * The status of a visitor according to team members interacting with the
- * visitor admin interface. This enum should map to an emoji when displayed
- * (names here match Apple's emoji name)
- */
 export enum VisitorStatus {
   checkMarkSymbol = "checkMarkSymbol",
   partyPopper = "partyPopper",
@@ -357,20 +349,22 @@ export interface CardBlockUpdateInput {
 }
 
 export interface ChatButtonCreateInput {
-  link?: string | null;
-  platform?: MessagePlatform | null;
+  link: string;
+  platform: MessagePlatform;
 }
 
 export interface ChatButtonUpdateInput {
-  link?: string | null;
-  platform?: MessagePlatform | null;
+  link: string;
+  platform: MessagePlatform;
 }
 
 export interface ChatOpenEventCreateInput {
   id?: string | null;
   blockId: string;
   stepId?: string | null;
-  value?: MessagePlatform | null;
+  label?: string | null;
+  value?: string | null;
+  messagePlatform?: MessagePlatform | null;
 }
 
 export interface CreateVerificationRequestInput {
@@ -501,14 +495,14 @@ export interface JourneyTemplateInput {
 
 export interface JourneyThemeCreateInput {
   journeyId: string;
-  headerFont?: string | null;
   bodyFont?: string | null;
+  headerFont?: string | null;
   labelFont?: string | null;
 }
 
 export interface JourneyThemeUpdateInput {
-  headerFont?: string | null;
   bodyFont?: string | null;
+  headerFont?: string | null;
   labelFont?: string | null;
 }
 
@@ -787,33 +781,37 @@ export interface VideoBlockCreateInput {
   id?: string | null;
   journeyId: string;
   parentBlockId: string;
-  startAt?: number | null;
-  endAt?: number | null;
-  duration?: number | null;
-  description?: string | null;
-  muted?: boolean | null;
-  autoplay?: boolean | null;
   videoId?: string | null;
   videoVariantLanguageId?: string | null;
   source?: VideoBlockSource | null;
-  posterBlockId?: string | null;
-  fullsize?: boolean | null;
-  isCover?: boolean | null;
+  title?: string | null;
+  description?: string | null;
+  image?: string | null;
+  duration?: number | null;
   objectFit?: VideoBlockObjectFit | null;
+  startAt?: number | null;
+  endAt?: number | null;
+  muted?: boolean | null;
+  autoplay?: boolean | null;
+  fullsize?: boolean | null;
+  posterBlockId?: string | null;
 }
 
 export interface VideoBlockUpdateInput {
+  parentBlockId?: string | null;
+  videoId?: string | null;
+  videoVariantLanguageId?: string | null;
+  posterBlockId?: string | null;
+  title?: string | null;
+  description?: string | null;
+  image?: string | null;
+  duration?: number | null;
+  objectFit?: VideoBlockObjectFit | null;
   startAt?: number | null;
   endAt?: number | null;
   muted?: boolean | null;
   autoplay?: boolean | null;
-  duration?: number | null;
-  videoId?: string | null;
-  videoVariantLanguageId?: string | null;
-  source?: VideoBlockSource | null;
-  posterBlockId?: string | null;
   fullsize?: boolean | null;
-  objectFit?: VideoBlockObjectFit | null;
 }
 
 export interface VideoCollapseEventCreateInput {
@@ -866,9 +864,9 @@ export interface VideoProgressEventCreateInput {
   blockId: string;
   stepId?: string | null;
   position?: number | null;
-  progress: number;
   label?: string | null;
   value?: VideoBlockSource | null;
+  progress?: number | null;
 }
 
 export interface VideoStartEventCreateInput {
@@ -880,14 +878,11 @@ export interface VideoStartEventCreateInput {
   value?: VideoBlockSource | null;
 }
 
-/**
- * A list of fields to update a visitor when calling the visitorUpdate mutation
- */
 export interface VisitorUpdateInput {
   email?: string | null;
-  messagePlatformId?: string | null;
-  messagePlatform?: MessagePlatform | null;
   name?: string | null;
+  messagePlatform?: MessagePlatform | null;
+  messagePlatformId?: string | null;
   notes?: string | null;
   status?: VisitorStatus | null;
   countryCode?: string | null;

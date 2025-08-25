@@ -9,5 +9,5 @@
 
 export interface NewTeam {
   __typename: "Team";
-  id: string;
+  id: string | null;
 }

@@ -9,11 +9,11 @@
 
 export interface UserJourneyRequest_userJourneyRequest {
   __typename: "UserJourney";
-  id: string;
+  id: string | null;
 }
 
 export interface UserJourneyRequest {
-  userJourneyRequest: UserJourneyRequest_userJourneyRequest;
+  userJourneyRequest: UserJourneyRequest_userJourneyRequest | null;
 }
 
 export interface UserJourneyRequestVariables {

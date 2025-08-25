@@ -16,9 +16,6 @@ export interface CreateTemplate_journeyTemplate {
 }
 
 export interface CreateTemplate {
-  /**
-   * Updates template
-   */
   journeyTemplate: CreateTemplate_journeyTemplate;
 }
 

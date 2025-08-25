@@ -11,13 +11,13 @@ import { TeamUpdateInput } from "./globalTypes";
 
 export interface TeamUpdate_teamUpdate {
   __typename: "Team";
-  id: string;
-  title: string;
+  id: string | null;
+  title: string | null;
   publicTitle: string | null;
 }
 
 export interface TeamUpdate {
-  teamUpdate: TeamUpdate_teamUpdate;
+  teamUpdate: TeamUpdate_teamUpdate | null;
 }
 
 export interface TeamUpdateVariables {

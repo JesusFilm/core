@@ -113,6 +113,43 @@ type ButtonClickEvent implements Event
   actionValue: String
 }
 
+input ButtonBlockSettingsInput {
+  alignment: ButtonAlignment
+  color: String
+}
+
+input ButtonBlockUpdateInput {
+  parentBlockId: ID
+  label: String
+  variant: ButtonVariant
+  color: ButtonColor
+  size: ButtonSize
+  startIconId: ID
+  endIconId: ID
+  submitEnabled: Boolean
+  settings: ButtonBlockSettingsInput
+}
+
+type ButtonClickEvent implements Event {
+  id: ID
+  journeyId: String
+  createdAt: DateTime
+  label: String
+  value: String
+  action: ButtonAction
+  actionValue: String
+}
+
+input ButtonClickEventCreateInput {
+  id: String
+  blockId: String!
+  stepId: String
+  label: String
+  value: String
+  action: ButtonAction
+  actionValue: String
+}
+
 enum ButtonColor {
   primary
   secondary
@@ -353,6 +390,24 @@ type GridContainerBlock implements Block
   alignItems: GridAlignItems!
 }
 
+input GridContainerBlockCreateInput {
+  id: ID
+  journeyId: ID!
+  parentBlockId: ID!
+  gap: Int
+  direction: GridDirection
+  justifyContent: GridJustifyContent
+  alignItems: GridAlignItems
+}
+
+input GridContainerBlockUpdateInput {
+  parentBlockId: ID
+  gap: Int
+  direction: GridDirection
+  justifyContent: GridJustifyContent
+  alignItems: GridAlignItems
+}
+
 enum GridDirection {
   columnReverse
   column
@@ -370,6 +425,22 @@ type GridItemBlock implements Block
   xl: Int!
   lg: Int!
   sm: Int!
+}
+
+input GridItemBlockCreateInput {
+  id: ID
+  journeyId: ID!
+  parentBlockId: ID!
+  xl: Int
+  lg: Int
+  sm: Int
+}
+
+input GridItemBlockUpdateInput {
+  parentBlockId: ID
+  xl: Int
+  lg: Int
+  sm: Int
 }
 
 enum GridJustifyContent {
@@ -413,6 +484,24 @@ type IconBlock implements Block
   journeyId: ID!
   parentBlockId: ID
   parentOrder: Int
+  name: IconName
+  color: IconColor
+  size: IconSize
+}
+
+input IconBlockCreateInput {
+  """
+  ID should be unique Response UUID (Provided for optimistic mutation result matching)
+  """
+  id: ID
+  parentBlockId: ID!
+  journeyId: ID!
+  name: IconName
+  color: IconColor
+  size: IconSize
+}
+
+input IconBlockUpdateInput {
   name: IconName
   color: IconColor
   size: IconSize
@@ -1018,10 +1107,256 @@ enum MessagePlatform {
 }
 
 type Mutation {
+  """blockDelete returns the updated sibling blocks on successful delete"""
+  blockDelete(
+    id: ID!
+
+    """drop this parameter after merging teams"""
+    journeyId: ID
+
+    """drop this parameter after merging teams"""
+    parentBlockId: ID
+  ): [Block!]!
+
+  """
+  blockDuplicate returns the updated block, its children and sibling blocks on successful duplicate
+  """
+  blockDuplicate(
+    id: ID!
+
+    """
+    parentOrder defines the position to add the duplicated block. Negative values defines the position from the end of the array. Positions greater than the length of the array or null parentOrder will add duplicate at end of the array.
+    """
+    parentOrder: Int
+
+    """
+    idMap is used to set custom ids for the duplicated block and its descendants.
+    """
+    idMap: [BlockDuplicateIdMap!]
+
+    """drop this parameter after merging teams"""
+    journeyId: ID
+
+    """
+    x is used to position a step block block horizontally in the journey flow diagram on the editor.
+    """
+    x: Int
+
+    """
+    y is used to position a step block block vertically in the journey flow diagram on the editor.
+    """
+    y: Int
+  ): [Block!]!
+  blockOrderUpdate(
+    id: ID!
+    parentOrder: Int!
+
+    """drop this parameter after merging teams"""
+    journeyId: ID
+  ): [Block!]!
+
+  """blockRestore is used for redo/undo"""
+  blockRestore(id: ID!): [Block!]!
+  blockDeleteAction(id: ID!, journeyId: ID): Block
+  blockUpdateAction(id: ID!, input: BlockUpdateActionInput!): Action
+  blockUpdateNavigateToBlockAction(id: ID!, input: NavigateToBlockActionInput!, journeyId: ID): NavigateToBlockAction
+  blockUpdateLinkAction(id: ID!, input: LinkActionInput!, journeyId: ID): LinkAction
+  blockUpdateEmailAction(id: ID!, input: EmailActionInput!, journeyId: ID): EmailAction
+  buttonBlockCreate(input: ButtonBlockCreateInput!): ButtonBlock!
+  buttonBlockUpdate(
+    id: ID!
+    input: ButtonBlockUpdateInput!
+
+    """drop this parameter after merging teams"""
+    journeyId: ID
+  ): ButtonBlock!
+  cardBlockCreate(input: CardBlockCreateInput!): CardBlock!
+  cardBlockUpdate(
+    id: ID!
+    input: CardBlockUpdateInput!
+
+    """drop this parameter after merging teams"""
+    journeyId: ID
+  ): CardBlock!
+  gridContainerBlockCreate(input: GridContainerBlockCreateInput!): GridContainerBlock!
+  gridContainerBlockUpdate(
+    id: ID!
+    input: GridContainerBlockUpdateInput!
+
+    """drop this parameter after merging teams"""
+    journeyId: ID
+  ): GridContainerBlock!
+  gridItemBlockCreate(input: GridItemBlockCreateInput!): GridItemBlock!
+  gridItemBlockUpdate(
+    id: ID!
+    input: GridItemBlockUpdateInput!
+
+    """drop this parameter after merging teams"""
+    journeyId: ID
+  ): GridItemBlock!
+  iconBlockCreate(input: IconBlockCreateInput!): IconBlock!
+  iconBlockUpdate(
+    id: ID!
+    input: IconBlockUpdateInput!
+
+    """drop this parameter after merging teams"""
+    journeyId: ID
+  ): IconBlock!
+  imageBlockCreate(input: ImageBlockCreateInput!): ImageBlock!
+  imageBlockUpdate(
+    id: ID!
+    input: ImageBlockUpdateInput!
+
+    """drop this parameter after merging teams"""
+    journeyId: ID
+  ): ImageBlock!
+  radioQuestionBlockCreate(input: RadioQuestionBlockCreateInput!): RadioQuestionBlock!
+  radioQuestionBlockUpdate(
+    id: ID!
+    input: RadioQuestionBlockUpdateInput!
+
+    """drop this parameter after merging teams"""
+    journeyId: ID
+  ): RadioQuestionBlock!
+  radioOptionBlockCreate(input: RadioOptionBlockCreateInput!): RadioOptionBlock!
+  radioOptionBlockUpdate(
+    id: ID!
+    input: RadioOptionBlockUpdateInput!
+
+    """drop this parameter after merging teams"""
+    journeyId: ID
+  ): RadioOptionBlock!
+  signUpBlockCreate(input: SignUpBlockCreateInput!): SignUpBlock!
+  signUpBlockUpdate(
+    id: ID!
+    input: SignUpBlockUpdateInput!
+
+    """drop this parameter after merging teams"""
+    journeyId: ID
+  ): SignUpBlock!
+  spacerBlockCreate(input: SpacerBlockCreateInput!): SpacerBlock!
+  spacerBlockUpdate(
+    id: ID!
+    input: SpacerBlockUpdateInput!
+
+    """drop this parameter after merging teams"""
+    journeyId: ID
+  ): SpacerBlock!
+  stepBlockCreate(input: StepBlockCreateInput!): StepBlock!
+  stepBlockUpdate(
+    id: ID!
+    input: StepBlockUpdateInput!
+
+    """drop this parameter after merging teams"""
+    journeyId: ID
+  ): StepBlock!
+  stepBlockPositionUpdate(input: [StepBlockPositionUpdateInput!]!): [StepBlock!]!
+  textResponseBlockCreate(input: TextResponseBlockCreateInput!): TextResponseBlock!
+  textResponseBlockUpdate(
+    id: ID!
+    input: TextResponseBlockUpdateInput!
+
+    """drop this parameter after merging teams"""
+    journeyId: ID
+  ): TextResponseBlock!
+  videoTriggerBlockCreate(input: VideoTriggerBlockCreateInput!): VideoTriggerBlock!
+  videoTriggerBlockUpdate(
+    id: ID!
+    input: VideoTriggerBlockUpdateInput!
+
+    """drop this parameter after merging teams"""
+    journeyId: ID
+  ): VideoTriggerBlock!
+  videoBlockCreate(input: VideoBlockCreateInput!): VideoBlock!
+  videoBlockUpdate(
+    id: ID!
+    input: VideoBlockUpdateInput!
+
+    """drop this parameter after merging teams"""
+    journeyId: ID
+  ): VideoBlock!
+  typographyBlockCreate(input: TypographyBlockCreateInput!): TypographyBlock!
+  typographyBlockUpdate(
+    id: ID!
+    input: TypographyBlockUpdateInput!
+
+    """drop this parameter after merging teams"""
+    journeyId: ID
+  ): TypographyBlock!
+  chatButtonCreate(journeyId: ID!, input: ChatButtonCreateInput!): ChatButton
+  chatButtonUpdate(id: ID!, journeyId: ID!, input: ChatButtonUpdateInput!): ChatButton
+  chatButtonRemove(id: ID!): ChatButton
+  journeyCreate(input: JourneyCreateInput!, teamId: ID!): Journey!
+  journeyUpdate(id: ID!, input: JourneyUpdateInput!): Journey!
+  journeyDuplicate(id: ID!, teamId: ID!): Journey!
+  journeyPublish(id: ID!): Journey!
+  journeyFeature(id: ID!, feature: Boolean!): Journey!
+  journeysArchive(ids: [ID!]!): [Journey!]!
+  journeysDelete(ids: [ID!]!): [Journey!]!
+  journeysTrash(ids: [ID!]!): [Journey!]!
+  journeysRestore(ids: [ID!]!): [Journey!]!
+  journeyTemplate(id: ID!, input: JourneyTemplateInput!): Journey!
   journeySimpleUpdate(id: ID!, journey: Json!): Json
   journeyAiTranslateCreate(input: JourneyAiTranslateInput!): Journey!
+  journeyCollectionCreate(input: JourneyCollectionCreateInput!): JourneyCollection!
+  journeyCollectionUpdate(id: ID!, input: JourneyCollectionUpdateInput!): JourneyCollection!
+  journeyCollectionDelete(id: ID!): JourneyCollection!
   createJourneyEventsExportLog(input: JourneyEventsExportLogInput!): JourneyEventsExportLog!
+  journeyProfileCreate: JourneyProfile!
+  journeyProfileUpdate(input: JourneyProfileUpdateInput!): JourneyProfile!
+  journeyThemeCreate(input: JourneyThemeCreateInput!): JourneyTheme!
+  journeyThemeUpdate(id: ID!, input: JourneyThemeUpdateInput!): JourneyTheme!
+  journeyThemeDelete(id: ID!): JourneyTheme!
+  buttonClickEventCreate(input: ButtonClickEventCreateInput!): ButtonClickEvent
+  chatOpenEventCreate(input: ChatOpenEventCreateInput!): ChatOpenEvent
+  journeyViewEventCreate(input: JourneyViewEventCreateInput!): JourneyViewEvent
+  stepViewEventCreate(input: StepViewEventCreateInput!): StepViewEvent
+  stepNextEventCreate(input: StepNextEventCreateInput!): StepNextEvent
+  stepPreviousEventCreate(input: StepPreviousEventCreateInput!): StepPreviousEvent
+  radioQuestionSubmissionEventCreate(input: RadioQuestionSubmissionEventCreateInput!): RadioQuestionSubmissionEvent
+  signUpSubmissionEventCreate(input: SignUpSubmissionEventCreateInput!): SignUpSubmissionEvent
+  textResponseSubmissionEventCreate(input: TextResponseSubmissionEventCreateInput!): TextResponseSubmissionEvent
+  videoStartEventCreate(input: VideoStartEventCreateInput!): VideoStartEvent
+  videoPlayEventCreate(input: VideoPlayEventCreateInput!): VideoPlayEvent
+  videoPauseEventCreate(input: VideoPauseEventCreateInput!): VideoPauseEvent
+  videoCompleteEventCreate(input: VideoCompleteEventCreateInput!): VideoCompleteEvent
+  videoExpandEventCreate(input: VideoExpandEventCreateInput!): VideoExpandEvent
+  videoCollapseEventCreate(input: VideoCollapseEventCreateInput!): VideoCollapseEvent
+  videoProgressEventCreate(input: VideoProgressEventCreateInput!): VideoProgressEvent
+  updateJourneysEmailPreference(input: JourneysEmailPreferenceUpdateInput!): JourneysEmailPreference
+  journeyNotificationUpdate(input: JourneyNotificationUpdateInput!): JourneyNotification
   journeyLanguageAiDetect(input: MutationJourneyLanguageAiDetectInput!): Boolean!
+  customDomainCreate(input: CustomDomainCreateInput!): CustomDomain
+  customDomainUpdate(id: ID!, input: CustomDomainUpdateInput!): CustomDomain
+  customDomainDelete(id: ID!): CustomDomain
+  customDomainCheck(id: ID!): Json
+  hostCreate(teamId: ID!, input: HostCreateInput!): Host
+  hostUpdate(id: ID!, teamId: ID!, input: HostUpdateInput): Host
+  hostDelete(id: ID!, teamId: ID!): Host
+  integrationGrowthSpacesCreate(input: IntegrationGrowthSpacesCreateInput!): IntegrationGrowthSpaces
+  integrationGrowthSpacesUpdate(id: ID!, input: IntegrationGrowthSpacesUpdateInput!): IntegrationGrowthSpaces
+  integrationDelete(id: ID!): Integration
+  visitorUpdate(id: ID!, input: VisitorUpdateInput!): Visitor
+  visitorUpdateForCurrentUser(input: VisitorUpdateInput!): Visitor
+  qrCodeCreate(input: QrCodeCreateInput!): QrCode!
+  qrCodeUpdate(id: ID!, input: QrCodeUpdateInput!): QrCode!
+  qrCodeDelete(id: ID!): QrCode!
+  teamCreate(input: TeamCreateInput!): Team
+  teamUpdate(id: ID!, input: TeamUpdateInput!): Team
+  userTeamUpdate(id: ID!, input: UserTeamUpdateInput!): UserTeam
+  userTeamDelete(id: ID!): UserTeam
+  userTeamInviteCreate(teamId: ID!, input: UserTeamInviteCreateInput!): UserTeamInvite
+  userTeamInviteRemove(id: ID!): UserTeamInvite
+  userTeamInviteAcceptAll: [UserTeamInvite!]
+  userJourneyRequest(journeyId: ID!): UserJourney
+  userJourneyApprove(id: ID!): UserJourney
+  userJourneyPromote(id: ID!): UserJourney
+  userJourneyRemove(id: ID!): UserJourney
+  userJourneyRemoveAll(id: ID!): [UserJourney!]
+  userJourneyOpen(id: ID!): UserJourney
+  userInviteCreate(journeyId: ID!, input: UserInviteCreateInput!): UserInvite
+  userInviteRemove(id: ID!, journeyId: ID!): UserInvite
+  userInviteAcceptAll: [UserInvite!]
 }
 
 input MutationJourneyLanguageAiDetectInput {
@@ -1155,6 +1490,67 @@ type Query {
   node(id: ID!): Node
   nodes(ids: [ID!]!): [Node]!
   journeySimpleGet(id: ID!): Json
+  adminJourneysReport(reportType: JourneysReportType!): Json
+  journeyCollection(id: ID!): JourneyCollection!
+  journeyCollections(teamId: ID!): [JourneyCollection!]!
+  getJourneyProfile: JourneyProfile
+  journeyTheme(journeyId: ID!): JourneyTheme
+  node(id: ID!): Node
+  nodes(ids: [ID!]!): [Node]!
+  journeyEventsConnection(journeyId: ID!, filter: JourneyEventsFilter, before: String, after: String, first: Int, last: Int): QueryJourneyEventsConnection
+  journeyEventsCount(journeyId: ID!, filter: JourneyEventsFilter): Int
+  journeysEmailPreference(email: String!): JourneysEmailPreference
+  customDomain(id: ID!): CustomDomain
+  customDomains(teamId: ID!): [CustomDomain!]
+  hosts(teamId: ID!): [Host!]
+  integrations(teamId: ID!): [Integration!]
+  journeyVisitorsConnection(filter: JourneyVisitorFilter!, sort: JourneyVisitorSort, before: String, after: String, first: Int, last: Int): QueryJourneyVisitorsConnection
+  journeyVisitorCount(filter: JourneyVisitorFilter!): Int
+  visitor(id: ID!): Visitor
+  visitorsConnection(teamId: ID, before: String, after: String, first: Int, last: Int): QueryVisitorsConnection
+  qrCode(id: ID!): QrCode!
+  qrCodes(where: QrCodesFilter!): [QrCode!]!
+  teams: [Team!]
+  team(id: ID!): Team
+  userTeams(teamId: ID!, where: UserTeamFilterInput): [UserTeam!]
+  userTeam(id: ID!): UserTeam
+  userTeamInvites(teamId: ID!): [UserTeamInvite!]
+  userInvites(journeyId: ID!): [UserInvite!]
+  getUserRole: UserRole
+  journeysPlausibleStatsRealtimeVisitors(id: ID!, idType: IdType): Int
+  journeysPlausibleStatsAggregate(id: ID!, idType: IdType, where: PlausibleStatsAggregateFilter!): PlausibleStatsAggregateResponse
+  journeysPlausibleStatsBreakdown(id: ID!, idType: IdType, where: PlausibleStatsBreakdownFilter!): [PlausibleStatsResponse!]
+  journeysPlausibleStatsTimeseries(id: ID!, idType: IdType, where: PlausibleStatsTimeseriesFilter!): [PlausibleStatsResponse!]
+}
+
+type QueryJourneyEventsConnection {
+  pageInfo: PageInfo!
+  edges: [QueryJourneyEventsConnectionEdge]
+}
+
+type QueryJourneyEventsConnectionEdge {
+  node: JourneyEvent
+  cursor: String!
+}
+
+type QueryJourneyVisitorsConnection {
+  pageInfo: PageInfo!
+  edges: [QueryJourneyVisitorsConnectionEdge]
+}
+
+type QueryJourneyVisitorsConnectionEdge {
+  node: JourneyVisitor
+  cursor: String!
+}
+
+type QueryVisitorsConnection {
+  pageInfo: PageInfo!
+  edges: [QueryVisitorsConnectionEdge]
+}
+
+type QueryVisitorsConnectionEdge {
+  node: Visitor
+  cursor: String!
 }
 
 type RadioOptionBlock implements Block
@@ -1298,6 +1694,17 @@ input SpacerBlockUpdateInput {
   spacing: Int
 }
 
+input SpacerBlockCreateInput {
+  id: ID
+  journeyId: ID!
+  parentBlockId: ID!
+  spacing: Int
+}
+
+input SpacerBlockUpdateInput {
+  spacing: Int
+}
+
 type StepBlock implements Block
   @shareable
 {
@@ -1435,6 +1842,95 @@ input StepViewEventCreateInput {
   value: String
 }
 
+input StepBlockCreateInput {
+  id: ID
+  journeyId: ID!
+  nextBlockId: ID
+  locked: Boolean
+
+  """
+  x is used to position the block horizontally in the journey flow diagram on the editor.
+  """
+  x: Int
+
+  """
+  y is used to position the block vertically in the journey flow diagram on the editor.
+  """
+  y: Int
+}
+
+input StepBlockPositionUpdateInput {
+  id: ID!
+  x: Int
+  y: Int
+}
+
+input StepBlockUpdateInput {
+  nextBlockId: ID
+  locked: Boolean
+
+  """
+  x is used to position the block horizontally in the journey flow diagram on the editor.
+  """
+  x: Int
+
+  """
+  y is used to position the block vertically in the journey flow diagram on the editor.
+  """
+  y: Int
+
+  """
+  Slug should be unique amongst all blocks (server will throw BAD_USER_INPUT error if not). If not required will use the current block id. If the generated slug is not unique the uuid will be placed at the end of the slug guaranteeing uniqueness
+  """
+  slug: String
+}
+
+type StepNextEvent implements Event {
+  id: ID
+  journeyId: String
+  createdAt: DateTime
+  label: String
+  value: String
+}
+
+input StepNextEventCreateInput {
+  id: String
+  blockId: String!
+  nextStepId: String!
+  label: String
+  value: String
+}
+
+type StepPreviousEvent implements Event {
+  id: ID
+  journeyId: String
+  createdAt: DateTime
+  label: String
+  value: String
+}
+
+input StepPreviousEventCreateInput {
+  id: String
+  blockId: String!
+  previousStepId: String!
+  label: String
+  value: String
+}
+
+type StepViewEvent implements Event {
+  id: ID
+  journeyId: String
+  createdAt: DateTime
+  label: String
+  value: String
+}
+
+input StepViewEventCreateInput {
+  id: String
+  blockId: String!
+  value: String
+}
+
 type Subscription {
   journeyAiTranslateCreateSubscription(input: JourneyAiTranslateInput!): JourneyAiTranslateProgress!
 }
@@ -1525,6 +2021,42 @@ input TextResponseSubmissionEventCreateInput {
   value: String!
 }
 
+input TextResponseBlockCreateInput {
+  id: ID
+  journeyId: ID!
+  parentBlockId: ID!
+  label: String!
+}
+
+input TextResponseBlockUpdateInput {
+  parentBlockId: ID
+  label: String
+  placeholder: String
+  required: Boolean
+  hint: String
+  minRows: Int
+  routeId: String
+  type: TextResponseType
+  integrationId: String
+}
+
+type TextResponseSubmissionEvent implements Event {
+  id: ID
+  journeyId: String
+  createdAt: DateTime
+  label: String
+  value: String
+  blockId: String
+}
+
+input TextResponseSubmissionEventCreateInput {
+  id: String
+  blockId: String!
+  stepId: String
+  label: String
+  value: String!
+}
+
 enum TextResponseType {
   freeForm
   name
@@ -1577,6 +2109,19 @@ type TypographyBlockSettings
 {
   """Color of the typography"""
   color: String
+}
+
+input TypographyBlockSettingsInput {
+  color: String
+}
+
+input TypographyBlockUpdateInput {
+  parentBlockId: ID
+  content: String
+  variant: TypographyVariant
+  color: TypographyColor
+  align: TypographyAlign
+  settings: TypographyBlockSettingsInput
 }
 
 input TypographyBlockSettingsInput {

@@ -18,21 +18,21 @@ export interface BlockDuplicate_blockDuplicate_GridContainerBlock {
 
 export interface BlockDuplicate_blockDuplicate_ButtonBlock_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
-  parentBlockId: string;
+  parentBlockId: string | null;
   gtmEventName: string | null;
   blockId: string;
 }
 
 export interface BlockDuplicate_blockDuplicate_ButtonBlock_action_LinkAction {
   __typename: "LinkAction";
-  parentBlockId: string;
+  parentBlockId: string | null;
   gtmEventName: string | null;
   url: string;
 }
 
 export interface BlockDuplicate_blockDuplicate_ButtonBlock_action_EmailAction {
   __typename: "EmailAction";
-  parentBlockId: string;
+  parentBlockId: string | null;
   gtmEventName: string | null;
   email: string;
 }
@@ -41,9 +41,6 @@ export type BlockDuplicate_blockDuplicate_ButtonBlock_action = BlockDuplicate_bl
 
 export interface BlockDuplicate_blockDuplicate_ButtonBlock_settings {
   __typename: "ButtonBlockSettings";
-  /**
-   * Alignment of the button
-   */
   alignment: ButtonAlignment | null;
 }
 
@@ -131,21 +128,21 @@ export interface BlockDuplicate_blockDuplicate_ImageBlock {
 
 export interface BlockDuplicate_blockDuplicate_RadioOptionBlock_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
-  parentBlockId: string;
+  parentBlockId: string | null;
   gtmEventName: string | null;
   blockId: string;
 }
 
 export interface BlockDuplicate_blockDuplicate_RadioOptionBlock_action_LinkAction {
   __typename: "LinkAction";
-  parentBlockId: string;
+  parentBlockId: string | null;
   gtmEventName: string | null;
   url: string;
 }
 
 export interface BlockDuplicate_blockDuplicate_RadioOptionBlock_action_EmailAction {
   __typename: "EmailAction";
-  parentBlockId: string;
+  parentBlockId: string | null;
   gtmEventName: string | null;
   email: string;
 }
@@ -177,21 +174,21 @@ export interface BlockDuplicate_blockDuplicate_RadioQuestionBlock {
 
 export interface BlockDuplicate_blockDuplicate_SignUpBlock_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
-  parentBlockId: string;
+  parentBlockId: string | null;
   gtmEventName: string | null;
   blockId: string;
 }
 
 export interface BlockDuplicate_blockDuplicate_SignUpBlock_action_LinkAction {
   __typename: "LinkAction";
-  parentBlockId: string;
+  parentBlockId: string | null;
   gtmEventName: string | null;
   url: string;
 }
 
 export interface BlockDuplicate_blockDuplicate_SignUpBlock_action_EmailAction {
   __typename: "EmailAction";
-  parentBlockId: string;
+  parentBlockId: string | null;
   gtmEventName: string | null;
   email: string;
 }
@@ -329,21 +326,21 @@ export type BlockDuplicate_blockDuplicate_VideoBlock_mediaVideo = BlockDuplicate
 
 export interface BlockDuplicate_blockDuplicate_VideoBlock_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
-  parentBlockId: string;
+  parentBlockId: string | null;
   gtmEventName: string | null;
   blockId: string;
 }
 
 export interface BlockDuplicate_blockDuplicate_VideoBlock_action_LinkAction {
   __typename: "LinkAction";
-  parentBlockId: string;
+  parentBlockId: string | null;
   gtmEventName: string | null;
   url: string;
 }
 
 export interface BlockDuplicate_blockDuplicate_VideoBlock_action_EmailAction {
   __typename: "EmailAction";
-  parentBlockId: string;
+  parentBlockId: string | null;
   gtmEventName: string | null;
   email: string;
 }
@@ -355,93 +352,41 @@ export interface BlockDuplicate_blockDuplicate_VideoBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
-  muted: boolean | null;
-  autoplay: boolean | null;
-  /**
-   * startAt dictates at which point of time the video should start playing
-   */
+  muted: boolean;
+  autoplay: boolean;
   startAt: number | null;
-  /**
-   * endAt dictates at which point of time the video should end
-   */
   endAt: number | null;
-  /**
-   * posterBlockId is present if a child block should be used as a poster.
-   * This child block should not be rendered normally, instead it should be used
-   * as the video poster. PosterBlock should be of type ImageBlock.
-   */
   posterBlockId: string | null;
-  fullsize: boolean | null;
-  /**
-   * internal source videos: videoId and videoVariantLanguageId both need to be set
-   * to select a video.
-   * For other sources only videoId needs to be set.
-   */
+  fullsize: boolean;
   videoId: string | null;
-  /**
-   * internal source videos: videoId and videoVariantLanguageId both need to be set
-   * to select a video.
-   * For other sources only videoId needs to be set.
-   */
   videoVariantLanguageId: string | null;
-  /**
-   * internal source: videoId, videoVariantLanguageId, and video present
-   * youTube source: videoId, title, description, and duration present
-   */
-  source: VideoBlockSource;
-  /**
-   * internal source videos: this field is not populated and instead only present
-   * in the video field.
-   * For other sources this is automatically populated.
-   */
-  title: string | null;
-  /**
-   * internal source videos: this field is not populated and instead only present
-   * in the video field
-   * For other sources this is automatically populated.
-   */
-  description: string | null;
-  /**
-   * internal source videos: this field is not populated and instead only present
-   * in the video field
-   * For other sources this is automatically populated.
-   */
+  source: VideoBlockSource | null;
+  title: string;
+  description: string;
   image: string | null;
-  /**
-   * internal source videos: this field is not populated and instead only present
-   * in the video field
-   * For other sources this is automatically populated.
-   * duration in seconds.
-   */
   duration: number | null;
-  /**
-   * how the video should display within the VideoBlock
-   */
   objectFit: VideoBlockObjectFit | null;
   mediaVideo: BlockDuplicate_blockDuplicate_VideoBlock_mediaVideo | null;
-  /**
-   * action that should be performed when the video ends
-   */
   action: BlockDuplicate_blockDuplicate_VideoBlock_action | null;
 }
 
 export interface BlockDuplicate_blockDuplicate_VideoTriggerBlock_triggerAction_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
-  parentBlockId: string;
+  parentBlockId: string | null;
   gtmEventName: string | null;
   blockId: string;
 }
 
 export interface BlockDuplicate_blockDuplicate_VideoTriggerBlock_triggerAction_LinkAction {
   __typename: "LinkAction";
-  parentBlockId: string;
+  parentBlockId: string | null;
   gtmEventName: string | null;
   url: string;
 }
 
 export interface BlockDuplicate_blockDuplicate_VideoTriggerBlock_triggerAction_EmailAction {
   __typename: "EmailAction";
-  parentBlockId: string;
+  parentBlockId: string | null;
   gtmEventName: string | null;
   email: string;
 }
@@ -458,14 +403,14 @@ export interface BlockDuplicate_blockDuplicate_VideoTriggerBlock {
    * this is the number of seconds since the start of the video
    */
   triggerStart: number;
-  triggerAction: BlockDuplicate_blockDuplicate_VideoTriggerBlock_triggerAction;
+  triggerAction: BlockDuplicate_blockDuplicate_VideoTriggerBlock_triggerAction | null;
 }
 
 export type BlockDuplicate_blockDuplicate = BlockDuplicate_blockDuplicate_GridContainerBlock | BlockDuplicate_blockDuplicate_ButtonBlock | BlockDuplicate_blockDuplicate_CardBlock | BlockDuplicate_blockDuplicate_IconBlock | BlockDuplicate_blockDuplicate_ImageBlock | BlockDuplicate_blockDuplicate_RadioOptionBlock | BlockDuplicate_blockDuplicate_RadioQuestionBlock | BlockDuplicate_blockDuplicate_SignUpBlock | BlockDuplicate_blockDuplicate_SpacerBlock | BlockDuplicate_blockDuplicate_StepBlock | BlockDuplicate_blockDuplicate_TextResponseBlock | BlockDuplicate_blockDuplicate_TypographyBlock | BlockDuplicate_blockDuplicate_VideoBlock | BlockDuplicate_blockDuplicate_VideoTriggerBlock;
 
 export interface BlockDuplicate {
   /**
-   * blockDuplicate returns the updated block, it's children and sibling blocks on successful duplicate
+   * blockDuplicate returns the updated block, its children and sibling blocks on successful duplicate
    */
   blockDuplicate: BlockDuplicate_blockDuplicate[];
 }

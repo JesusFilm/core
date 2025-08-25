@@ -10,7 +10,7 @@ import { BlockUpdateActionInput } from "./globalTypes";
 // ====================================================
 
 export interface StepBlockDeleteFromAction_blockDelete_ImageBlock {
-  __typename: "ImageBlock" | "ButtonBlock" | "CardBlock" | "IconBlock" | "RadioOptionBlock" | "RadioQuestionBlock" | "SignUpBlock" | "SpacerBlock" | "TextResponseBlock" | "TypographyBlock" | "VideoBlock" | "GridContainerBlock" | "GridItemBlock" | "VideoTriggerBlock";
+  __typename: "ImageBlock" | "ButtonBlock" | "CardBlock" | "GridContainerBlock" | "GridItemBlock" | "IconBlock" | "RadioQuestionBlock" | "RadioOptionBlock" | "SignUpBlock" | "SpacerBlock" | "TextResponseBlock" | "VideoTriggerBlock" | "VideoBlock" | "TypographyBlock";
   id: string;
   parentOrder: number | null;
 }
@@ -29,14 +29,14 @@ export interface StepBlockDeleteFromAction_blockDelete_StepBlock {
 export type StepBlockDeleteFromAction_blockDelete = StepBlockDeleteFromAction_blockDelete_ImageBlock | StepBlockDeleteFromAction_blockDelete_StepBlock;
 
 export interface StepBlockDeleteFromAction_blockUpdateAction_parentBlock {
-  __typename: "ImageBlock" | "StepBlock" | "ButtonBlock" | "CardBlock" | "IconBlock" | "RadioOptionBlock" | "RadioQuestionBlock" | "SignUpBlock" | "SpacerBlock" | "TextResponseBlock" | "TypographyBlock" | "VideoBlock" | "GridContainerBlock" | "GridItemBlock" | "VideoTriggerBlock";
+  __typename: "ImageBlock" | "ButtonBlock" | "CardBlock" | "GridContainerBlock" | "GridItemBlock" | "IconBlock" | "RadioQuestionBlock" | "RadioOptionBlock" | "SignUpBlock" | "SpacerBlock" | "StepBlock" | "TextResponseBlock" | "VideoTriggerBlock" | "VideoBlock" | "TypographyBlock";
   id: string;
 }
 
 export interface StepBlockDeleteFromAction_blockUpdateAction {
   __typename: "NavigateToBlockAction" | "LinkAction" | "EmailAction";
-  parentBlockId: string;
-  parentBlock: StepBlockDeleteFromAction_blockUpdateAction_parentBlock;
+  parentBlockId: string | null;
+  parentBlock: StepBlockDeleteFromAction_blockUpdateAction_parentBlock | null;
   gtmEventName: string | null;
 }
 
@@ -45,7 +45,7 @@ export interface StepBlockDeleteFromAction {
    * blockDelete returns the updated sibling blocks on successful delete
    */
   blockDelete: StepBlockDeleteFromAction_blockDelete[];
-  blockUpdateAction: StepBlockDeleteFromAction_blockUpdateAction;
+  blockUpdateAction: StepBlockDeleteFromAction_blockUpdateAction | null;
 }
 
 export interface StepBlockDeleteFromActionVariables {

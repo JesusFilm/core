@@ -10,7 +10,7 @@ import { JourneyEventsFilter } from "./globalTypes";
 // ====================================================
 
 export interface GetJourneyEventsCount {
-  journeyEventsCount: number;
+  journeyEventsCount: number | null;
 }
 
 export interface GetJourneyEventsCountVariables {

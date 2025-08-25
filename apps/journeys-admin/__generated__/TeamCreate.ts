@@ -20,28 +20,28 @@ export interface TeamCreate_teamCreate_userTeams_user {
 
 export interface TeamCreate_teamCreate_userTeams {
   __typename: "UserTeam";
-  id: string;
-  user: TeamCreate_teamCreate_userTeams_user;
-  role: UserTeamRole;
+  id: string | null;
+  user: TeamCreate_teamCreate_userTeams_user | null;
+  role: UserTeamRole | null;
 }
 
 export interface TeamCreate_teamCreate_customDomains {
   __typename: "CustomDomain";
-  id: string;
-  name: string;
+  id: string | null;
+  name: string | null;
 }
 
 export interface TeamCreate_teamCreate {
   __typename: "Team";
-  id: string;
-  title: string;
+  id: string | null;
+  title: string | null;
   publicTitle: string | null;
-  userTeams: TeamCreate_teamCreate_userTeams[];
-  customDomains: TeamCreate_teamCreate_customDomains[];
+  userTeams: TeamCreate_teamCreate_userTeams[] | null;
+  customDomains: TeamCreate_teamCreate_customDomains[] | null;
 }
 
 export interface TeamCreate {
-  teamCreate: TeamCreate_teamCreate;
+  teamCreate: TeamCreate_teamCreate | null;
 }
 
 export interface TeamCreateVariables {

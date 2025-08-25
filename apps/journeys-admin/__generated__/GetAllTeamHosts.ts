@@ -9,15 +9,15 @@
 
 export interface GetAllTeamHosts_hosts {
   __typename: "Host";
-  id: string;
+  id: string | null;
   location: string | null;
   src1: string | null;
   src2: string | null;
-  title: string;
+  title: string | null;
 }
 
 export interface GetAllTeamHosts {
-  hosts: GetAllTeamHosts_hosts[];
+  hosts: GetAllTeamHosts_hosts[] | null;
 }
 
 export interface GetAllTeamHostsVariables {

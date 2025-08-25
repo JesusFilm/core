@@ -9,11 +9,11 @@
 
 export interface UserTeamInviteRemove_userTeamInviteRemove {
   __typename: "UserTeamInvite";
-  id: string;
+  id: string | null;
 }
 
 export interface UserTeamInviteRemove {
-  userTeamInviteRemove: UserTeamInviteRemove_userTeamInviteRemove;
+  userTeamInviteRemove: UserTeamInviteRemove_userTeamInviteRemove | null;
 }
 
 export interface UserTeamInviteRemoveVariables {

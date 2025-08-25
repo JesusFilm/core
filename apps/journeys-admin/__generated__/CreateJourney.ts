@@ -31,7 +31,7 @@ export interface CreateJourney_journeyCreate_userJourneys_user {
 
 export interface CreateJourney_journeyCreate_userJourneys {
   __typename: "UserJourney";
-  id: string;
+  id: string | null;
   user: CreateJourney_journeyCreate_userJourneys_user | null;
 }
 

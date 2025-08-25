@@ -14,10 +14,7 @@ export interface JourneyFeature_journeyFeature {
 }
 
 export interface JourneyFeature {
-  /**
-   * Sets journey status to featured
-   */
-  journeyFeature: JourneyFeature_journeyFeature | null;
+  journeyFeature: JourneyFeature_journeyFeature;
 }
 
 export interface JourneyFeatureVariables {

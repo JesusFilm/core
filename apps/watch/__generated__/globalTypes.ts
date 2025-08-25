@@ -48,9 +48,6 @@ export enum IconColor {
   secondary = "secondary",
 }
 
-/**
- * IconName is equivalent to the icons found in @mui/icons-material
- */
 export enum IconName {
   ArrowBackRounded = "ArrowBackRounded",
   ArrowForwardRounded = "ArrowForwardRounded",
@@ -260,7 +257,9 @@ export interface ChatOpenEventCreateInput {
   id?: string | null;
   blockId: string;
   stepId?: string | null;
-  value?: MessagePlatform | null;
+  label?: string | null;
+  value?: string | null;
+  messagePlatform?: MessagePlatform | null;
 }
 
 export interface JourneyProfileUpdateInput {
@@ -389,9 +388,9 @@ export interface VideoProgressEventCreateInput {
   blockId: string;
   stepId?: string | null;
   position?: number | null;
-  progress: number;
   label?: string | null;
   value?: VideoBlockSource | null;
+  progress?: number | null;
 }
 
 export interface VideoStartEventCreateInput {

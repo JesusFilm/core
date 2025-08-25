@@ -26,21 +26,21 @@ export interface TextResponseWithButtonCreate_textResponse {
 
 export interface TextResponseWithButtonCreate_button_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
-  parentBlockId: string;
+  parentBlockId: string | null;
   gtmEventName: string | null;
   blockId: string;
 }
 
 export interface TextResponseWithButtonCreate_button_action_LinkAction {
   __typename: "LinkAction";
-  parentBlockId: string;
+  parentBlockId: string | null;
   gtmEventName: string | null;
   url: string;
 }
 
 export interface TextResponseWithButtonCreate_button_action_EmailAction {
   __typename: "EmailAction";
-  parentBlockId: string;
+  parentBlockId: string | null;
   gtmEventName: string | null;
   email: string;
 }
@@ -49,9 +49,6 @@ export type TextResponseWithButtonCreate_button_action = TextResponseWithButtonC
 
 export interface TextResponseWithButtonCreate_button_settings {
   __typename: "ButtonBlockSettings";
-  /**
-   * Alignment of the button
-   */
   alignment: ButtonAlignment | null;
 }
 
@@ -93,21 +90,21 @@ export interface TextResponseWithButtonCreate_endIcon {
 
 export interface TextResponseWithButtonCreate_buttonUpdate_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
-  parentBlockId: string;
+  parentBlockId: string | null;
   gtmEventName: string | null;
   blockId: string;
 }
 
 export interface TextResponseWithButtonCreate_buttonUpdate_action_LinkAction {
   __typename: "LinkAction";
-  parentBlockId: string;
+  parentBlockId: string | null;
   gtmEventName: string | null;
   url: string;
 }
 
 export interface TextResponseWithButtonCreate_buttonUpdate_action_EmailAction {
   __typename: "EmailAction";
-  parentBlockId: string;
+  parentBlockId: string | null;
   gtmEventName: string | null;
   email: string;
 }
@@ -116,9 +113,6 @@ export type TextResponseWithButtonCreate_buttonUpdate_action = TextResponseWithB
 
 export interface TextResponseWithButtonCreate_buttonUpdate_settings {
   __typename: "ButtonBlockSettings";
-  /**
-   * Alignment of the button
-   */
   alignment: ButtonAlignment | null;
 }
 
@@ -143,7 +137,7 @@ export interface TextResponseWithButtonCreate {
   button: TextResponseWithButtonCreate_button;
   startIcon: TextResponseWithButtonCreate_startIcon;
   endIcon: TextResponseWithButtonCreate_endIcon;
-  buttonUpdate: TextResponseWithButtonCreate_buttonUpdate | null;
+  buttonUpdate: TextResponseWithButtonCreate_buttonUpdate;
 }
 
 export interface TextResponseWithButtonCreateVariables {

@@ -9,5 +9,5 @@
 
 export interface NewQrCode {
   __typename: "QrCode";
-  id: string;
+  id: string | null;
 }

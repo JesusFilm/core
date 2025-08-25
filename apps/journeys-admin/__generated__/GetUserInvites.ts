@@ -9,9 +9,9 @@
 
 export interface GetUserInvites_userInvites {
   __typename: "UserInvite";
-  id: string;
-  journeyId: string;
-  email: string;
+  id: string | null;
+  journeyId: string | null;
+  email: string | null;
   acceptedAt: any | null;
   removedAt: any | null;
 }

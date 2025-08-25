@@ -11,7 +11,7 @@ import { JourneyUpdateInput } from "./globalTypes";
 
 export interface UpdateJourneyHost_journeyUpdate_host {
   __typename: "Host";
-  id: string;
+  id: string | null;
 }
 
 export interface UpdateJourneyHost_journeyUpdate {

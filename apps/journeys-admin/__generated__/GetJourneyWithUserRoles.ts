@@ -17,8 +17,8 @@ export interface GetJourneyWithUserRoles_adminJourney_userJourneys_user {
 
 export interface GetJourneyWithUserRoles_adminJourney_userJourneys {
   __typename: "UserJourney";
-  id: string;
-  role: UserJourneyRole;
+  id: string | null;
+  role: UserJourneyRole | null;
   user: GetJourneyWithUserRoles_adminJourney_userJourneys_user | null;
 }
 

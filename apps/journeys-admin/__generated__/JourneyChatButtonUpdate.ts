@@ -11,13 +11,13 @@ import { ChatButtonUpdateInput, MessagePlatform } from "./globalTypes";
 
 export interface JourneyChatButtonUpdate_chatButtonUpdate {
   __typename: "ChatButton";
-  id: string;
+  id: string | null;
   link: string | null;
   platform: MessagePlatform | null;
 }
 
 export interface JourneyChatButtonUpdate {
-  chatButtonUpdate: JourneyChatButtonUpdate_chatButtonUpdate;
+  chatButtonUpdate: JourneyChatButtonUpdate_chatButtonUpdate | null;
 }
 
 export interface JourneyChatButtonUpdateVariables {

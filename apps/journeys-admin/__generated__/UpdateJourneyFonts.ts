@@ -11,8 +11,8 @@ import { JourneyThemeUpdateInput } from "./globalTypes";
 
 export interface UpdateJourneyFonts_journeyThemeUpdate {
   __typename: "JourneyTheme";
-  id: string;
-  journeyId: string;
+  id: string | null;
+  journeyId: string | null;
   headerFont: string | null;
   bodyFont: string | null;
   labelFont: string | null;

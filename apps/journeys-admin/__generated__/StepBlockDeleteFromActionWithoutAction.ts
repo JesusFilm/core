@@ -8,7 +8,7 @@
 // ====================================================
 
 export interface StepBlockDeleteFromActionWithoutAction_blockDelete_ImageBlock {
-  __typename: "ImageBlock" | "ButtonBlock" | "CardBlock" | "IconBlock" | "RadioOptionBlock" | "RadioQuestionBlock" | "SignUpBlock" | "SpacerBlock" | "TextResponseBlock" | "TypographyBlock" | "VideoBlock" | "GridContainerBlock" | "GridItemBlock" | "VideoTriggerBlock";
+  __typename: "ImageBlock" | "ButtonBlock" | "CardBlock" | "GridContainerBlock" | "GridItemBlock" | "IconBlock" | "RadioQuestionBlock" | "RadioOptionBlock" | "SignUpBlock" | "SpacerBlock" | "TextResponseBlock" | "VideoTriggerBlock" | "VideoBlock" | "TypographyBlock";
   id: string;
   parentOrder: number | null;
 }
@@ -27,13 +27,13 @@ export interface StepBlockDeleteFromActionWithoutAction_blockDelete_StepBlock {
 export type StepBlockDeleteFromActionWithoutAction_blockDelete = StepBlockDeleteFromActionWithoutAction_blockDelete_ImageBlock | StepBlockDeleteFromActionWithoutAction_blockDelete_StepBlock;
 
 export interface StepBlockDeleteFromActionWithoutAction_blockDeleteAction_ImageBlock {
-  __typename: "ImageBlock" | "StepBlock" | "CardBlock" | "IconBlock" | "RadioQuestionBlock" | "SpacerBlock" | "TextResponseBlock" | "TypographyBlock" | "GridContainerBlock" | "GridItemBlock" | "VideoTriggerBlock";
+  __typename: "ImageBlock" | "CardBlock" | "GridContainerBlock" | "GridItemBlock" | "IconBlock" | "RadioQuestionBlock" | "SpacerBlock" | "StepBlock" | "TextResponseBlock" | "VideoTriggerBlock" | "TypographyBlock";
   id: string;
 }
 
 export interface StepBlockDeleteFromActionWithoutAction_blockDeleteAction_RadioOptionBlock_action {
   __typename: "NavigateToBlockAction" | "LinkAction" | "EmailAction";
-  parentBlockId: string;
+  parentBlockId: string | null;
 }
 
 export interface StepBlockDeleteFromActionWithoutAction_blockDeleteAction_RadioOptionBlock {
@@ -44,7 +44,7 @@ export interface StepBlockDeleteFromActionWithoutAction_blockDeleteAction_RadioO
 
 export interface StepBlockDeleteFromActionWithoutAction_blockDeleteAction_ButtonBlock_action {
   __typename: "NavigateToBlockAction" | "LinkAction" | "EmailAction";
-  parentBlockId: string;
+  parentBlockId: string | null;
 }
 
 export interface StepBlockDeleteFromActionWithoutAction_blockDeleteAction_ButtonBlock {
@@ -55,7 +55,7 @@ export interface StepBlockDeleteFromActionWithoutAction_blockDeleteAction_Button
 
 export interface StepBlockDeleteFromActionWithoutAction_blockDeleteAction_SignUpBlock_action {
   __typename: "NavigateToBlockAction" | "LinkAction" | "EmailAction";
-  parentBlockId: string;
+  parentBlockId: string | null;
 }
 
 export interface StepBlockDeleteFromActionWithoutAction_blockDeleteAction_SignUpBlock {
@@ -66,15 +66,12 @@ export interface StepBlockDeleteFromActionWithoutAction_blockDeleteAction_SignUp
 
 export interface StepBlockDeleteFromActionWithoutAction_blockDeleteAction_VideoBlock_action {
   __typename: "NavigateToBlockAction" | "LinkAction" | "EmailAction";
-  parentBlockId: string;
+  parentBlockId: string | null;
 }
 
 export interface StepBlockDeleteFromActionWithoutAction_blockDeleteAction_VideoBlock {
   __typename: "VideoBlock";
   id: string;
-  /**
-   * action that should be performed when the video ends
-   */
   action: StepBlockDeleteFromActionWithoutAction_blockDeleteAction_VideoBlock_action | null;
 }
 
@@ -85,7 +82,7 @@ export interface StepBlockDeleteFromActionWithoutAction {
    * blockDelete returns the updated sibling blocks on successful delete
    */
   blockDelete: StepBlockDeleteFromActionWithoutAction_blockDelete[];
-  blockDeleteAction: StepBlockDeleteFromActionWithoutAction_blockDeleteAction;
+  blockDeleteAction: StepBlockDeleteFromActionWithoutAction_blockDeleteAction | null;
 }
 
 export interface StepBlockDeleteFromActionWithoutActionVariables {

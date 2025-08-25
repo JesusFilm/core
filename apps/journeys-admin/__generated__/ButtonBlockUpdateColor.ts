@@ -16,7 +16,7 @@ export interface ButtonBlockUpdateColor_buttonBlockUpdate {
 }
 
 export interface ButtonBlockUpdateColor {
-  buttonBlockUpdate: ButtonBlockUpdateColor_buttonBlockUpdate | null;
+  buttonBlockUpdate: ButtonBlockUpdateColor_buttonBlockUpdate;
 }
 
 export interface ButtonBlockUpdateColorVariables {

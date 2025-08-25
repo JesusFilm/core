@@ -18,20 +18,20 @@ export interface GetCustomDomains_customDomains_journeyCollection_journeys {
 
 export interface GetCustomDomains_customDomains_journeyCollection {
   __typename: "JourneyCollection";
-  id: string;
+  id: string | null;
   journeys: GetCustomDomains_customDomains_journeyCollection_journeys[] | null;
 }
 
 export interface GetCustomDomains_customDomains {
   __typename: "CustomDomain";
-  id: string;
-  apexName: string;
-  name: string;
+  id: string | null;
+  apexName: string | null;
+  name: string | null;
   journeyCollection: GetCustomDomains_customDomains_journeyCollection | null;
 }
 
 export interface GetCustomDomains {
-  customDomains: GetCustomDomains_customDomains[];
+  customDomains: GetCustomDomains_customDomains[] | null;
 }
 
 export interface GetCustomDomainsVariables {

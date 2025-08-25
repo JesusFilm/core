@@ -9,7 +9,7 @@
 
 export interface JourneyWithTheme_journeyTheme {
   __typename: "JourneyTheme";
-  id: string;
+  id: string | null;
   headerFont: string | null;
   bodyFont: string | null;
   labelFont: string | null;

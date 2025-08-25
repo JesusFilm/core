@@ -11,8 +11,8 @@ import { UserJourneyRole } from "./globalTypes";
 
 export interface UserJourneyPromote_userJourneyPromote_journey_userJourneys {
   __typename: "UserJourney";
-  id: string;
-  role: UserJourneyRole;
+  id: string | null;
+  role: UserJourneyRole | null;
 }
 
 export interface UserJourneyPromote_userJourneyPromote_journey {
@@ -23,13 +23,13 @@ export interface UserJourneyPromote_userJourneyPromote_journey {
 
 export interface UserJourneyPromote_userJourneyPromote {
   __typename: "UserJourney";
-  id: string;
-  role: UserJourneyRole;
+  id: string | null;
+  role: UserJourneyRole | null;
   journey: UserJourneyPromote_userJourneyPromote_journey | null;
 }
 
 export interface UserJourneyPromote {
-  userJourneyPromote: UserJourneyPromote_userJourneyPromote;
+  userJourneyPromote: UserJourneyPromote_userJourneyPromote | null;
 }
 
 export interface UserJourneyPromoteVariables {

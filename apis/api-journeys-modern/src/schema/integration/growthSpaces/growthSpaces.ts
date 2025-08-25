@@ -8,6 +8,10 @@ import { builder } from '../../builder'
 import { IntegrationRef } from '../integration'
 
 import {
+  IntegrationGrowthSpacesCreateInput,
+  IntegrationGrowthSpacesUpdateInput
+} from './inputs'
+import {
   IntegrationGrowthSpacesRoute,
   IntegrationGrowthSpacesRouteRef
 } from './route'
@@ -76,3 +80,106 @@ export const IntegrationGrowthSpacesRef = builder.prismaObject('Integration', {
     })
   })
 })
+
+builder.mutationField('integrationGrowthSpacesCreate', (t) =>
+  t.withAuth({ isAuthenticated: true }).field({
+    type: IntegrationGrowthSpacesRef,
+    args: {
+      input: t.arg({ type: IntegrationGrowthSpacesCreateInput, required: true })
+    },
+    resolve: async (_parent, args, context) => {
+      const { input } = args
+      const user = context.user
+
+      // Check if user has manage access to this team
+      const userTeam = await prisma.userTeam.findFirst({
+        where: {
+          userId: user.id,
+          teamId: input.teamId,
+          role: { in: ['manager', 'member'] }
+        }
+      })
+
+      if (!userTeam) {
+        throw new GraphQLError('user is not allowed to create integration', {
+          extensions: { code: 'FORBIDDEN' }
+        })
+      }
+
+      // For now, create without external API validation
+      // In full implementation, this would:
+      // 1. Validate credentials with GrowthSpaces API
+      // 2. Encrypt the accessSecret for secure storage
+      return await prisma.integration.create({
+        data: {
+          type: 'growthSpaces',
+          teamId: input.teamId,
+          accessId: input.accessId,
+          accessSecretPart: input.accessSecret.slice(0, 6)
+          // In full implementation:
+          // accessSecretCipherText, accessSecretIv, accessSecretTag would be set
+        },
+        include: {
+          team: true
+        }
+      })
+    }
+  })
+)
+
+builder.mutationField('integrationGrowthSpacesUpdate', (t) =>
+  t.withAuth({ isAuthenticated: true }).field({
+    type: IntegrationGrowthSpacesRef,
+    args: {
+      id: t.arg({ type: 'ID', required: true }),
+      input: t.arg({ type: IntegrationGrowthSpacesUpdateInput, required: true })
+    },
+    resolve: async (_parent, args, context) => {
+      const { id, input } = args
+      const user = context.user
+
+      // Check if integration exists
+      const integration = await prisma.integration.findUnique({
+        where: { id },
+        include: {
+          team: {
+            include: { userTeams: true }
+          }
+        }
+      })
+
+      if (!integration) {
+        throw new GraphQLError('integration not found', {
+          extensions: { code: 'NOT_FOUND' }
+        })
+      }
+
+      // Check if user has manage access
+      const userTeam = integration.team.userTeams.find(
+        (ut) => ut.userId === user.id
+      )
+      if (!userTeam || !['manager', 'member'].includes(userTeam.role)) {
+        throw new GraphQLError('user is not allowed to update integration', {
+          extensions: { code: 'FORBIDDEN' }
+        })
+      }
+
+      // For now, update without external API validation
+      // In full implementation, this would:
+      // 1. Validate new credentials with GrowthSpaces API
+      // 2. Re-encrypt the accessSecret for secure storage
+      return await prisma.integration.update({
+        where: { id },
+        data: {
+          accessId: input.accessId,
+          accessSecretPart: input.accessSecret.slice(0, 6)
+          // In full implementation:
+          // accessSecretCipherText, accessSecretIv, accessSecretTag would be updated
+        },
+        include: {
+          team: true
+        }
+      })
+    }
+  })
+)

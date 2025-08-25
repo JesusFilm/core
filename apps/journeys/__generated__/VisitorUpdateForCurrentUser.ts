@@ -11,14 +11,11 @@ import { VisitorUpdateInput } from "./globalTypes";
 
 export interface VisitorUpdateForCurrentUser_visitorUpdateForCurrentUser {
   __typename: "Visitor";
-  id: string;
+  id: string | null;
 }
 
 export interface VisitorUpdateForCurrentUser {
-  /**
-   * Allow current user to update specific allowable fields of their visitor record
-   */
-  visitorUpdateForCurrentUser: VisitorUpdateForCurrentUser_visitorUpdateForCurrentUser;
+  visitorUpdateForCurrentUser: VisitorUpdateForCurrentUser_visitorUpdateForCurrentUser | null;
 }
 
 export interface VisitorUpdateForCurrentUserVariables {

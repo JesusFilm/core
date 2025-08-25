@@ -16,10 +16,7 @@ export interface DeleteTrashedJourneys_journeysDelete {
 }
 
 export interface DeleteTrashedJourneys {
-  /**
-   * Sets journeys statuses to deleted
-   */
-  journeysDelete: (DeleteTrashedJourneys_journeysDelete | null)[] | null;
+  journeysDelete: DeleteTrashedJourneys_journeysDelete[];
 }
 
 export interface DeleteTrashedJourneysVariables {

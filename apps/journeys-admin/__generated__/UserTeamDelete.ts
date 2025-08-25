@@ -9,11 +9,11 @@
 
 export interface UserTeamDelete_userTeamDelete {
   __typename: "UserTeam";
-  id: string;
+  id: string | null;
 }
 
 export interface UserTeamDelete {
-  userTeamDelete: UserTeamDelete_userTeamDelete;
+  userTeamDelete: UserTeamDelete_userTeamDelete | null;
 }
 
 export interface UserTeamDeleteVariables {

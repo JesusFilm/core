@@ -11,7 +11,7 @@ import { JourneyProfileUpdateInput } from "./globalTypes";
 
 export interface UpdateJourneyFlowBackButtonClicked_journeyProfileUpdate {
   __typename: "JourneyProfile";
-  id: string;
+  id: string | null;
   journeyFlowBackButtonClicked: boolean | null;
 }
 

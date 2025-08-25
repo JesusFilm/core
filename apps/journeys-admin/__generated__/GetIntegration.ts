@@ -11,27 +11,27 @@ import { IntegrationType } from "./globalTypes";
 
 export interface GetIntegration_integrations_team {
   __typename: "Team";
-  id: string;
+  id: string | null;
 }
 
 export interface GetIntegration_integrations_routes {
   __typename: "IntegrationGrowthSpacesRoute";
-  id: string;
-  name: string;
+  id: string | null;
+  name: string | null;
 }
 
 export interface GetIntegration_integrations {
   __typename: "IntegrationGrowthSpaces";
-  id: string;
-  team: GetIntegration_integrations_team;
-  type: IntegrationType;
-  accessId: string;
-  accessSecretPart: string;
-  routes: GetIntegration_integrations_routes[];
+  id: string | null;
+  team: GetIntegration_integrations_team | null;
+  type: IntegrationType | null;
+  accessId: string | null;
+  accessSecretPart: string | null;
+  routes: GetIntegration_integrations_routes[] | null;
 }
 
 export interface GetIntegration {
-  integrations: GetIntegration_integrations[];
+  integrations: GetIntegration_integrations[] | null;
 }
 
 export interface GetIntegrationVariables {

@@ -8,7 +8,7 @@
 // ====================================================
 
 export interface TranslatedJourney_blocks_ImageBlock {
-  __typename: "ImageBlock" | "StepBlock" | "CardBlock" | "IconBlock" | "RadioQuestionBlock" | "SignUpBlock" | "SpacerBlock" | "VideoBlock" | "GridContainerBlock" | "GridItemBlock" | "VideoTriggerBlock";
+  __typename: "ImageBlock" | "CardBlock" | "GridContainerBlock" | "GridItemBlock" | "IconBlock" | "RadioQuestionBlock" | "SignUpBlock" | "SpacerBlock" | "StepBlock" | "VideoTriggerBlock" | "VideoBlock";
   id: string;
 }
 

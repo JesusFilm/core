@@ -11,27 +11,27 @@ import { IntegrationGrowthSpacesCreateInput, IntegrationType } from "./globalTyp
 
 export interface IntegrationGrowthSpacesCreate_integrationGrowthSpacesCreate_team {
   __typename: "Team";
-  id: string;
+  id: string | null;
 }
 
 export interface IntegrationGrowthSpacesCreate_integrationGrowthSpacesCreate_routes {
   __typename: "IntegrationGrowthSpacesRoute";
-  id: string;
-  name: string;
+  id: string | null;
+  name: string | null;
 }
 
 export interface IntegrationGrowthSpacesCreate_integrationGrowthSpacesCreate {
   __typename: "IntegrationGrowthSpaces";
-  id: string;
-  team: IntegrationGrowthSpacesCreate_integrationGrowthSpacesCreate_team;
-  type: IntegrationType;
-  accessId: string;
-  accessSecretPart: string;
-  routes: IntegrationGrowthSpacesCreate_integrationGrowthSpacesCreate_routes[];
+  id: string | null;
+  team: IntegrationGrowthSpacesCreate_integrationGrowthSpacesCreate_team | null;
+  type: IntegrationType | null;
+  accessId: string | null;
+  accessSecretPart: string | null;
+  routes: IntegrationGrowthSpacesCreate_integrationGrowthSpacesCreate_routes[] | null;
 }
 
 export interface IntegrationGrowthSpacesCreate {
-  integrationGrowthSpacesCreate: IntegrationGrowthSpacesCreate_integrationGrowthSpacesCreate;
+  integrationGrowthSpacesCreate: IntegrationGrowthSpacesCreate_integrationGrowthSpacesCreate | null;
 }
 
 export interface IntegrationGrowthSpacesCreateVariables {

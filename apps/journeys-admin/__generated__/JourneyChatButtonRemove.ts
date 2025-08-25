@@ -9,11 +9,11 @@
 
 export interface JourneyChatButtonRemove_chatButtonRemove {
   __typename: "ChatButton";
-  id: string;
+  id: string | null;
 }
 
 export interface JourneyChatButtonRemove {
-  chatButtonRemove: JourneyChatButtonRemove_chatButtonRemove;
+  chatButtonRemove: JourneyChatButtonRemove_chatButtonRemove | null;
 }
 
 export interface JourneyChatButtonRemoveVariables {

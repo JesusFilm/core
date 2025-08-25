@@ -11,9 +11,6 @@ import { ButtonBlockSettingsInput, ButtonAlignment } from "./globalTypes";
 
 export interface ButtonBlockUpdateAlignment_buttonBlockUpdate_settings {
   __typename: "ButtonBlockSettings";
-  /**
-   * Alignment of the button
-   */
   alignment: ButtonAlignment | null;
 }
 
@@ -24,7 +21,7 @@ export interface ButtonBlockUpdateAlignment_buttonBlockUpdate {
 }
 
 export interface ButtonBlockUpdateAlignment {
-  buttonBlockUpdate: ButtonBlockUpdateAlignment_buttonBlockUpdate | null;
+  buttonBlockUpdate: ButtonBlockUpdateAlignment_buttonBlockUpdate;
 }
 
 export interface ButtonBlockUpdateAlignmentVariables {

@@ -9,5 +9,5 @@
 
 export interface Integration {
   __typename: "IntegrationGrowthSpaces";
-  id: string;
+  id: string | null;
 }

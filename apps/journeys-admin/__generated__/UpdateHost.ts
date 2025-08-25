@@ -11,15 +11,15 @@ import { HostUpdateInput } from "./globalTypes";
 
 export interface UpdateHost_hostUpdate {
   __typename: "Host";
-  id: string;
-  title: string;
+  id: string | null;
+  title: string | null;
   location: string | null;
   src1: string | null;
   src2: string | null;
 }
 
 export interface UpdateHost {
-  hostUpdate: UpdateHost_hostUpdate;
+  hostUpdate: UpdateHost_hostUpdate | null;
 }
 
 export interface UpdateHostVariables {

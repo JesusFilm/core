@@ -16,10 +16,7 @@ export interface JourneyArchive_journeysArchive {
 }
 
 export interface JourneyArchive {
-  /**
-   * Sets journeys statuses to archived
-   */
-  journeysArchive: (JourneyArchive_journeysArchive | null)[] | null;
+  journeysArchive: JourneyArchive_journeysArchive[];
 }
 
 export interface JourneyArchiveVariables {

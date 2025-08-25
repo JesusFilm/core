@@ -9,15 +9,15 @@
 
 export interface AcceptAllInvites_userTeamInviteAcceptAll {
   __typename: "UserTeamInvite";
-  id: string;
+  id: string | null;
 }
 
 export interface AcceptAllInvites_userInviteAcceptAll {
   __typename: "UserInvite";
-  id: string;
+  id: string | null;
 }
 
 export interface AcceptAllInvites {
-  userTeamInviteAcceptAll: AcceptAllInvites_userTeamInviteAcceptAll[];
-  userInviteAcceptAll: AcceptAllInvites_userInviteAcceptAll[];
+  userTeamInviteAcceptAll: AcceptAllInvites_userTeamInviteAcceptAll[] | null;
+  userInviteAcceptAll: AcceptAllInvites_userInviteAcceptAll[] | null;
 }

@@ -19,21 +19,21 @@ export interface RadioQuestionBlockCreate_radioQuestionBlockCreate {
 
 export interface RadioQuestionBlockCreate_radioOption1_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
-  parentBlockId: string;
+  parentBlockId: string | null;
   gtmEventName: string | null;
   blockId: string;
 }
 
 export interface RadioQuestionBlockCreate_radioOption1_action_LinkAction {
   __typename: "LinkAction";
-  parentBlockId: string;
+  parentBlockId: string | null;
   gtmEventName: string | null;
   url: string;
 }
 
 export interface RadioQuestionBlockCreate_radioOption1_action_EmailAction {
   __typename: "EmailAction";
-  parentBlockId: string;
+  parentBlockId: string | null;
   gtmEventName: string | null;
   email: string;
 }
@@ -57,21 +57,21 @@ export interface RadioQuestionBlockCreate_radioOption1 {
 
 export interface RadioQuestionBlockCreate_radioOption2_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
-  parentBlockId: string;
+  parentBlockId: string | null;
   gtmEventName: string | null;
   blockId: string;
 }
 
 export interface RadioQuestionBlockCreate_radioOption2_action_LinkAction {
   __typename: "LinkAction";
-  parentBlockId: string;
+  parentBlockId: string | null;
   gtmEventName: string | null;
   url: string;
 }
 
 export interface RadioQuestionBlockCreate_radioOption2_action_EmailAction {
   __typename: "EmailAction";
-  parentBlockId: string;
+  parentBlockId: string | null;
   gtmEventName: string | null;
   email: string;
 }

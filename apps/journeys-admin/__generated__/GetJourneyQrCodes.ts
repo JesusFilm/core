@@ -16,7 +16,7 @@ export interface GetJourneyQrCodes_qrCodes_shortLink_domain {
 
 export interface GetJourneyQrCodes_qrCodes_shortLink {
   __typename: "ShortLink";
-  id: string;
+  id: string | null;
   domain: GetJourneyQrCodes_qrCodes_shortLink_domain;
   /**
    * short link path not including the leading slash
@@ -30,12 +30,9 @@ export interface GetJourneyQrCodes_qrCodes_shortLink {
 
 export interface GetJourneyQrCodes_qrCodes {
   __typename: "QrCode";
-  id: string;
+  id: string | null;
   toJourneyId: string | null;
-  /**
-   * ShortLink that handles the redirection
-   */
-  shortLink: GetJourneyQrCodes_qrCodes_shortLink;
+  shortLink: GetJourneyQrCodes_qrCodes_shortLink | null;
 }
 
 export interface GetJourneyQrCodes {

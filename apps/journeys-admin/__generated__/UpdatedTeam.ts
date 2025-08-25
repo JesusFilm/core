@@ -9,11 +9,11 @@
 
 export interface UpdatedTeam_customDomains {
   __typename: "CustomDomain";
-  id: string;
+  id: string | null;
 }
 
 export interface UpdatedTeam {
   __typename: "Team";
-  id: string;
-  customDomains: UpdatedTeam_customDomains[];
+  id: string | null;
+  customDomains: UpdatedTeam_customDomains[] | null;
 }

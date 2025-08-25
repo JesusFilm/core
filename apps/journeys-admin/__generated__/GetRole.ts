@@ -11,8 +11,8 @@ import { Role } from "./globalTypes";
 
 export interface GetRole_getUserRole {
   __typename: "UserRole";
-  id: string;
-  userId: string;
+  id: string | null;
+  userId: string | null;
   roles: Role[] | null;
 }
 

@@ -9,13 +9,13 @@
 
 export interface UserInviteRemove_userInviteRemove {
   __typename: "UserInvite";
-  id: string;
-  journeyId: string;
+  id: string | null;
+  journeyId: string | null;
   removedAt: any | null;
 }
 
 export interface UserInviteRemove {
-  userInviteRemove: UserInviteRemove_userInviteRemove;
+  userInviteRemove: UserInviteRemove_userInviteRemove | null;
 }
 
 export interface UserInviteRemoveVariables {

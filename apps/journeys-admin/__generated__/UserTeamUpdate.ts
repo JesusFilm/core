@@ -16,13 +16,13 @@ export interface UserTeamUpdate_userTeamUpdate_user {
 
 export interface UserTeamUpdate_userTeamUpdate {
   __typename: "UserTeam";
-  role: UserTeamRole;
-  id: string;
-  user: UserTeamUpdate_userTeamUpdate_user;
+  role: UserTeamRole | null;
+  id: string | null;
+  user: UserTeamUpdate_userTeamUpdate_user | null;
 }
 
 export interface UserTeamUpdate {
-  userTeamUpdate: UserTeamUpdate_userTeamUpdate;
+  userTeamUpdate: UserTeamUpdate_userTeamUpdate | null;
 }
 
 export interface UserTeamUpdateVariables {

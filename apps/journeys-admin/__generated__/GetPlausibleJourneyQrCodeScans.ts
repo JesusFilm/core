@@ -9,19 +9,16 @@
 
 export interface GetPlausibleJourneyQrCodeScans_journeysPlausibleStatsAggregate_visitors {
   __typename: "PlausibleStatsAggregateValue";
-  value: number;
+  value: number | null;
 }
 
 export interface GetPlausibleJourneyQrCodeScans_journeysPlausibleStatsAggregate {
   __typename: "PlausibleStatsAggregateResponse";
-  /**
-   * The number of unique visitors.
-   */
   visitors: GetPlausibleJourneyQrCodeScans_journeysPlausibleStatsAggregate_visitors | null;
 }
 
 export interface GetPlausibleJourneyQrCodeScans {
-  journeysPlausibleStatsAggregate: GetPlausibleJourneyQrCodeScans_journeysPlausibleStatsAggregate;
+  journeysPlausibleStatsAggregate: GetPlausibleJourneyQrCodeScans_journeysPlausibleStatsAggregate | null;
 }
 
 export interface GetPlausibleJourneyQrCodeScansVariables {

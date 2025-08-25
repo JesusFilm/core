@@ -16,7 +16,7 @@ export interface ButtonBlockUpdateSize_buttonBlockUpdate {
 }
 
 export interface ButtonBlockUpdateSize {
-  buttonBlockUpdate: ButtonBlockUpdateSize_buttonBlockUpdate | null;
+  buttonBlockUpdate: ButtonBlockUpdateSize_buttonBlockUpdate;
 }
 
 export interface ButtonBlockUpdateSizeVariables {

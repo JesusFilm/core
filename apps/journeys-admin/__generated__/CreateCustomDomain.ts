@@ -20,20 +20,20 @@ export interface CreateCustomDomain_customDomainCreate_journeyCollection_journey
 
 export interface CreateCustomDomain_customDomainCreate_journeyCollection {
   __typename: "JourneyCollection";
-  id: string;
+  id: string | null;
   journeys: CreateCustomDomain_customDomainCreate_journeyCollection_journeys[] | null;
 }
 
 export interface CreateCustomDomain_customDomainCreate {
   __typename: "CustomDomain";
-  id: string;
-  apexName: string;
-  name: string;
+  id: string | null;
+  apexName: string | null;
+  name: string | null;
   journeyCollection: CreateCustomDomain_customDomainCreate_journeyCollection | null;
 }
 
 export interface CreateCustomDomain {
-  customDomainCreate: CreateCustomDomain_customDomainCreate;
+  customDomainCreate: CreateCustomDomain_customDomainCreate | null;
 }
 
 export interface CreateCustomDomainVariables {

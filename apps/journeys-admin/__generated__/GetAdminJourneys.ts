@@ -31,11 +31,8 @@ export interface GetAdminJourneys_journeys_userJourneys_user {
 
 export interface GetAdminJourneys_journeys_userJourneys {
   __typename: "UserJourney";
-  id: string;
-  role: UserJourneyRole;
-  /**
-   * Date time of when the journey was first opened
-   */
+  id: string | null;
+  role: UserJourneyRole | null;
   openedAt: any | null;
   user: GetAdminJourneys_journeys_userJourneys_user | null;
 }
@@ -84,12 +81,6 @@ export interface GetAdminJourneys_journeys {
 }
 
 export interface GetAdminJourneys {
-  /**
-   * returns all journeys that match the provided filters
-   * If no team id is provided and template is not true then only returns journeys
-   * where the user is not a member of a team but is an editor or owner of the
-   * journey
-   */
   journeys: GetAdminJourneys_journeys[];
 }
 

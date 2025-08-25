@@ -14,7 +14,7 @@ export interface ButtonBlockUpdateContent_buttonBlockUpdate {
 }
 
 export interface ButtonBlockUpdateContent {
-  buttonBlockUpdate: ButtonBlockUpdateContent_buttonBlockUpdate | null;
+  buttonBlockUpdate: ButtonBlockUpdateContent_buttonBlockUpdate;
 }
 
 export interface ButtonBlockUpdateContentVariables {

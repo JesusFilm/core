@@ -15,7 +15,7 @@ export interface JourneyImageBlockAssociationUpdate_journeyUpdate_primaryImageBl
 }
 
 export interface JourneyImageBlockAssociationUpdate_journeyUpdate_creatorImageBlock {
-  __typename: "ImageBlock";
+  __typename: "ImageBlock" | "ButtonBlock" | "CardBlock" | "GridContainerBlock" | "GridItemBlock" | "IconBlock" | "RadioQuestionBlock" | "RadioOptionBlock" | "SignUpBlock" | "SpacerBlock" | "StepBlock" | "TextResponseBlock" | "VideoTriggerBlock" | "VideoBlock" | "TypographyBlock";
   id: string;
 }
 

@@ -9,7 +9,7 @@
 
 export interface GetPlausibleJourneyFlowViewed_getJourneyProfile {
   __typename: "JourneyProfile";
-  id: string;
+  id: string | null;
   plausibleJourneyFlowViewed: boolean | null;
 }
 

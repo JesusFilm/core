@@ -9,11 +9,11 @@
 
 export interface DeleteCustomDomain_customDomainDelete {
   __typename: "CustomDomain";
-  id: string;
+  id: string | null;
 }
 
 export interface DeleteCustomDomain {
-  customDomainDelete: DeleteCustomDomain_customDomainDelete;
+  customDomainDelete: DeleteCustomDomain_customDomainDelete | null;
 }
 
 export interface DeleteCustomDomainVariables {

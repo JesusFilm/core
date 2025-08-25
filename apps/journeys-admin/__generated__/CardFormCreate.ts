@@ -85,21 +85,21 @@ export interface CardFormCreate_textResponse {
 
 export interface CardFormCreate_button_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
-  parentBlockId: string;
+  parentBlockId: string | null;
   gtmEventName: string | null;
   blockId: string;
 }
 
 export interface CardFormCreate_button_action_LinkAction {
   __typename: "LinkAction";
-  parentBlockId: string;
+  parentBlockId: string | null;
   gtmEventName: string | null;
   url: string;
 }
 
 export interface CardFormCreate_button_action_EmailAction {
   __typename: "EmailAction";
-  parentBlockId: string;
+  parentBlockId: string | null;
   gtmEventName: string | null;
   email: string;
 }
@@ -108,9 +108,6 @@ export type CardFormCreate_button_action = CardFormCreate_button_action_Navigate
 
 export interface CardFormCreate_button_settings {
   __typename: "ButtonBlockSettings";
-  /**
-   * Alignment of the button
-   */
   alignment: ButtonAlignment | null;
 }
 
@@ -152,21 +149,21 @@ export interface CardFormCreate_endIcon {
 
 export interface CardFormCreate_buttonUpdate_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
-  parentBlockId: string;
+  parentBlockId: string | null;
   gtmEventName: string | null;
   blockId: string;
 }
 
 export interface CardFormCreate_buttonUpdate_action_LinkAction {
   __typename: "LinkAction";
-  parentBlockId: string;
+  parentBlockId: string | null;
   gtmEventName: string | null;
   url: string;
 }
 
 export interface CardFormCreate_buttonUpdate_action_EmailAction {
   __typename: "EmailAction";
-  parentBlockId: string;
+  parentBlockId: string | null;
   gtmEventName: string | null;
   email: string;
 }
@@ -175,9 +172,6 @@ export type CardFormCreate_buttonUpdate_action = CardFormCreate_buttonUpdate_act
 
 export interface CardFormCreate_buttonUpdate_settings {
   __typename: "ButtonBlockSettings";
-  /**
-   * Alignment of the button
-   */
   alignment: ButtonAlignment | null;
 }
 
@@ -262,7 +256,7 @@ export interface CardFormCreate {
   button: CardFormCreate_button;
   startIcon: CardFormCreate_startIcon;
   endIcon: CardFormCreate_endIcon;
-  buttonUpdate: CardFormCreate_buttonUpdate | null;
+  buttonUpdate: CardFormCreate_buttonUpdate;
   body: CardFormCreate_body;
   cardBlockUpdate: CardFormCreate_cardBlockUpdate;
 }

@@ -9,19 +9,16 @@
 
 export interface GetJourneyPlausibleVisitors_journeyAggregateVisitors_visitors {
   __typename: "PlausibleStatsAggregateValue";
-  value: number;
+  value: number | null;
 }
 
 export interface GetJourneyPlausibleVisitors_journeyAggregateVisitors {
   __typename: "PlausibleStatsAggregateResponse";
-  /**
-   * The number of unique visitors.
-   */
   visitors: GetJourneyPlausibleVisitors_journeyAggregateVisitors_visitors | null;
 }
 
 export interface GetJourneyPlausibleVisitors {
-  journeyAggregateVisitors: GetJourneyPlausibleVisitors_journeyAggregateVisitors;
+  journeyAggregateVisitors: GetJourneyPlausibleVisitors_journeyAggregateVisitors | null;
 }
 
 export interface GetJourneyPlausibleVisitorsVariables {

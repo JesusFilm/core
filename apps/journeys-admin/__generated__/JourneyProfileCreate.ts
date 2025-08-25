@@ -9,8 +9,8 @@
 
 export interface JourneyProfileCreate_journeyProfileCreate {
   __typename: "JourneyProfile";
-  id: string;
-  userId: string;
+  id: string | null;
+  userId: string | null;
   acceptedTermsAt: any | null;
 }
 

@@ -11,9 +11,9 @@ import { UserTeamInviteCreateInput } from "./globalTypes";
 
 export interface UserTeamInviteCreate_userTeamInviteCreate {
   __typename: "UserTeamInvite";
-  email: string;
-  id: string;
-  teamId: string;
+  email: string | null;
+  id: string | null;
+  teamId: string | null;
 }
 
 export interface UserTeamInviteCreate {

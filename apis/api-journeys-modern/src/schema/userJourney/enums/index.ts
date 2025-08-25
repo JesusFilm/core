@@ -1,0 +1,1 @@
+export { UserJourneyRole } from './userJourneyRole'

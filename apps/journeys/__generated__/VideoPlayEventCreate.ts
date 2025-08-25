@@ -11,11 +11,11 @@ import { VideoPlayEventCreateInput } from "./globalTypes";
 
 export interface VideoPlayEventCreate_videoPlayEventCreate {
   __typename: "VideoPlayEvent";
-  id: string;
+  id: string | null;
 }
 
 export interface VideoPlayEventCreate {
-  videoPlayEventCreate: VideoPlayEventCreate_videoPlayEventCreate;
+  videoPlayEventCreate: VideoPlayEventCreate_videoPlayEventCreate | null;
 }
 
 export interface VideoPlayEventCreateVariables {

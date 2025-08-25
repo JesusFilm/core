@@ -9,7 +9,7 @@
 
 export interface getJourneyFlowBackButtonClicked_getJourneyProfile {
   __typename: "JourneyProfile";
-  id: string;
+  id: string | null;
   journeyFlowBackButtonClicked: boolean | null;
 }
 

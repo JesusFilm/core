@@ -11,11 +11,11 @@ import { TextResponseSubmissionEventCreateInput } from "./globalTypes";
 
 export interface TextResponseSubmissionEventCreate_textResponseSubmissionEventCreate {
   __typename: "TextResponseSubmissionEvent";
-  id: string;
+  id: string | null;
 }
 
 export interface TextResponseSubmissionEventCreate {
-  textResponseSubmissionEventCreate: TextResponseSubmissionEventCreate_textResponseSubmissionEventCreate;
+  textResponseSubmissionEventCreate: TextResponseSubmissionEventCreate_textResponseSubmissionEventCreate | null;
 }
 
 export interface TextResponseSubmissionEventCreateVariables {

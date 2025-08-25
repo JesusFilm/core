@@ -10,12 +10,16 @@ import { JourneyUpdateInput } from "./globalTypes";
 // ====================================================
 
 export interface MenuBlockDelete_stepDelete {
-  __typename: "ImageBlock" | "StepBlock" | "ButtonBlock" | "CardBlock" | "IconBlock" | "RadioOptionBlock" | "RadioQuestionBlock" | "SignUpBlock" | "SpacerBlock" | "TextResponseBlock" | "TypographyBlock" | "VideoBlock" | "GridContainerBlock" | "GridItemBlock" | "VideoTriggerBlock";
+  __typename: "ImageBlock" | "ButtonBlock" | "CardBlock" | "GridContainerBlock" | "GridItemBlock" | "IconBlock" | "RadioQuestionBlock" | "RadioOptionBlock" | "SignUpBlock" | "SpacerBlock" | "StepBlock" | "TextResponseBlock" | "VideoTriggerBlock" | "VideoBlock" | "TypographyBlock";
   id: string;
   parentOrder: number | null;
 }
 
-export interface MenuBlockDelete_journeyUpdate_menuStepBlock {
+export interface MenuBlockDelete_journeyUpdate_menuStepBlock_ImageBlock {
+  __typename: "ImageBlock" | "ButtonBlock" | "CardBlock" | "GridContainerBlock" | "GridItemBlock" | "IconBlock" | "RadioQuestionBlock" | "RadioOptionBlock" | "SignUpBlock" | "SpacerBlock" | "TextResponseBlock" | "VideoTriggerBlock" | "VideoBlock" | "TypographyBlock";
+}
+
+export interface MenuBlockDelete_journeyUpdate_menuStepBlock_StepBlock {
   __typename: "StepBlock";
   id: string;
   parentBlockId: string | null;
@@ -39,6 +43,8 @@ export interface MenuBlockDelete_journeyUpdate_menuStepBlock {
    */
   slug: string | null;
 }
+
+export type MenuBlockDelete_journeyUpdate_menuStepBlock = MenuBlockDelete_journeyUpdate_menuStepBlock_ImageBlock | MenuBlockDelete_journeyUpdate_menuStepBlock_StepBlock;
 
 export interface MenuBlockDelete_journeyUpdate {
   __typename: "Journey";

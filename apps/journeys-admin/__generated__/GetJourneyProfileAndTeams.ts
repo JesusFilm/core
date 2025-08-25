@@ -9,17 +9,17 @@
 
 export interface GetJourneyProfileAndTeams_getJourneyProfile {
   __typename: "JourneyProfile";
-  id: string;
-  userId: string;
+  id: string | null;
+  userId: string | null;
   acceptedTermsAt: any | null;
 }
 
 export interface GetJourneyProfileAndTeams_teams {
   __typename: "Team";
-  id: string;
+  id: string | null;
 }
 
 export interface GetJourneyProfileAndTeams {
   getJourneyProfile: GetJourneyProfileAndTeams_getJourneyProfile | null;
-  teams: GetJourneyProfileAndTeams_teams[];
+  teams: GetJourneyProfileAndTeams_teams[] | null;
 }
