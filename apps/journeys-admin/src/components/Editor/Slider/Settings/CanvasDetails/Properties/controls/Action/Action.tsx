@@ -21,7 +21,7 @@ import { CustomizationToggle } from './CustomizationToggle'
 import { EmailAction } from './EmailAction'
 import { LinkAction } from './LinkAction'
 import { NavigateToBlockAction } from './NavigateToBlockAction'
-import { ActionValue, actions } from './utils/actions'
+import { ActionValue, actions, getAction } from './utils/actions'
 
 export function Action(): ReactElement {
   const {
@@ -37,7 +37,7 @@ export function Action(): ReactElement {
     | TreeBlock<VideoBlock>
     | undefined
   const [action, setAction] = useState<ActionValue>(
-    selectedBlock?.action?.__typename ?? 'None'
+    getAction(t, selectedBlock?.action?.__typename).value
   )
 
   const isSubmitButton =
@@ -54,7 +54,7 @@ export function Action(): ReactElement {
     : labels
 
   useEffect(() => {
-    setAction(selectedBlock?.action?.__typename ?? 'None')
+    setAction(getAction(t, selectedBlock?.action?.__typename).value)
   }, [selectedBlock?.action?.__typename])
 
   function removeAction(): void {

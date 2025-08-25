@@ -1,8 +1,17 @@
-import { videos } from '../Videos/__generated__/testData'
+import { MockedResponse } from '@apollo/client/testing'
 
-import { GET_LANGUAGES_SLUG } from './AudioLanguageDialog'
+import {
+  GetLanguagesSlug,
+  GetLanguagesSlugVariables
+} from '../../../__generated__/GetLanguagesSlug'
+import { videos } from '../../components/Videos/__generated__/testData'
 
-export const getLanguagesSlugMock = {
+import { GET_LANGUAGES_SLUG } from './useLanguagesSlugQuery'
+
+export const getLanguagesSlugMock: MockedResponse<
+  GetLanguagesSlug,
+  GetLanguagesSlugVariables
+> = {
   request: {
     query: GET_LANGUAGES_SLUG,
     variables: {
@@ -12,12 +21,14 @@ export const getLanguagesSlugMock = {
   result: {
     data: {
       video: {
+        __typename: 'Video',
         variantLanguagesWithSlug: [
           {
             __typename: 'LanguageWithSlug',
             slug: 'jesus/auhelawa',
             language: {
               id: '529',
+              slug: 'en',
               __typename: 'Language',
               name: [
                 {
@@ -33,6 +44,7 @@ export const getLanguagesSlugMock = {
             slug: 'jesus/a-hmao',
             language: {
               id: '496',
+              slug: 'a-hmao',
               __typename: 'Language',
               name: [
                 {
@@ -53,6 +65,7 @@ export const getLanguagesSlugMock = {
             slug: 'jesus/aari',
             language: {
               id: '1106',
+              slug: 'aari',
               __typename: 'Language',
               name: [
                 {
