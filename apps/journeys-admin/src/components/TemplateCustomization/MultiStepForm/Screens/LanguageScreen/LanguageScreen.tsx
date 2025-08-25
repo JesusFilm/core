@@ -17,6 +17,7 @@ import ArrowRightIcon from '@core/shared/ui/icons/ArrowRight'
 
 import { JourneyCustomizeTeamSelect } from './JourneyCustomizeTeamSelect'
 import { LanguageScreenCardPreview } from './LanguageScreenCardPreview'
+import { useTeamCreateMutation } from '../../../../../libs/useTeamCreateMutation'
 
 interface LanguageScreenProps {
   handleNext: () => void
@@ -36,6 +37,7 @@ export function LanguageScreen({
   const { journey } = useJourney()
   const isSignedIn = user?.email != null
   const { query } = useTeam()
+  const [teamCreate] = useTeamCreateMutation()
 
   const validationSchema = object({
     teamSelect: string().required()
@@ -47,7 +49,7 @@ export function LanguageScreen({
 
   const [journeyDuplicate] = useJourneyDuplicateMutation()
 
-  async function handleSubmit(values: FormikValues) {
+  async function handleSignedInSubmit(values: FormikValues) {
     setLoading(true)
     if (journey == null) {
       setLoading(false)
@@ -81,6 +83,37 @@ export function LanguageScreen({
     }
   }
 
+  async function handleSignedOutSubmit() {
+    setLoading(true)
+    if (journey == null) {
+      setLoading(false)
+      return
+    }
+    const { data: teamCreateData } = await teamCreate({
+      variables: {
+        input: {
+          title: 'My Team'
+        }
+      }
+    })
+    if (teamCreateData?.teamCreate == null) {
+      enqueueSnackbar(
+        t('Failed to create team, please refresh the page and try again'),
+        {
+          variant: 'error'
+        }
+      )
+      setLoading(false)
+      return
+    }
+
+    const { data: duplicateData } = await journeyDuplicate({
+      variables: { id: journey.id, teamId: teamCreateData.teamCreate.id }
+    })
+    handleNext()
+    setLoading(false)
+  }
+
   return (
     <Stack justifyContent="center" alignItems="center" gap={4}>
       <Typography variant="h4" component="h1" gutterBottom>
@@ -91,34 +124,52 @@ export function LanguageScreen({
       <Typography variant="body1" color="text.secondary" align="center">
         {t('Select a team')}
       </Typography>
-      <Formik
-        initialValues={initialValues}
-        validationSchema={validationSchema}
-        enableReinitialize
-        onSubmit={handleSubmit}
-      >
-        {({ handleSubmit }) => (
-          <Form>
-            <FormControl sx={{ alignSelf: 'center' }}>
-              {isSignedIn && <JourneyCustomizeTeamSelect />}
-              <Button
-                data-testid="LanguageScreenSubmitButton"
-                disabled={loading}
-                variant="contained"
-                color="secondary"
-                onClick={() => handleSubmit()}
-                sx={{
-                  width: { xs: '100%', sm: 300 },
-                  alignSelf: 'center',
-                  mt: 4
-                }}
-              >
-                <ArrowRightIcon />
-              </Button>
-            </FormControl>
-          </Form>
-        )}
-      </Formik>
+      {isSignedIn && (
+        <Formik
+          initialValues={initialValues}
+          validationSchema={validationSchema}
+          enableReinitialize
+          onSubmit={handleSignedInSubmit}
+        >
+          {({ handleSubmit }) => (
+            <Form>
+              <FormControl sx={{ alignSelf: 'center' }}>
+                <JourneyCustomizeTeamSelect />
+                <Button
+                  data-testid="LanguageScreenSubmitButton"
+                  disabled={loading}
+                  variant="contained"
+                  color="secondary"
+                  onClick={() => handleSubmit()}
+                  sx={{
+                    width: { xs: '100%', sm: 300 },
+                    alignSelf: 'center',
+                    mt: 4
+                  }}
+                >
+                  <ArrowRightIcon />
+                </Button>
+              </FormControl>
+            </Form>
+          )}
+        </Formik>
+      )}
+      {!isSignedIn && (
+        <Button
+          data-testid="LanguageScreenSubmitButton"
+          disabled={loading}
+          variant="contained"
+          color="secondary"
+          onClick={() => handleSignedOutSubmit()}
+          sx={{
+            width: { xs: '100%', sm: 300 },
+            alignSelf: 'center',
+            mt: 4
+          }}
+        >
+          <ArrowRightIcon />
+        </Button>
+      )}
     </Stack>
   )
 }
