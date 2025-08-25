@@ -41,20 +41,26 @@ const createMockRequest = (
 }
 
 describe('middleware', () => {
-  let mockRedisGet: jest.Mock,
-    mockRedisSet: jest.Mock,
+  let mockRedisExists: jest.Mock,
+    mockRedisHset: jest.Mock,
+    mockRedisHget: jest.Mock,
+    mockRedisExpire: jest.Mock,
     mockGlobalFetch: jest.Mock
 
   beforeEach(() => {
     mockGlobalFetch = jest.fn()
     global.fetch = mockGlobalFetch
-    mockRedisGet = jest.fn()
-    mockRedisSet = jest.fn()
+    mockRedisExists = jest.fn()
+    mockRedisHset = jest.fn()
+    mockRedisHget = jest.fn()
+    mockRedisExpire = jest.fn()
     mockRedis.mockImplementation(
       () =>
         ({
-          get: mockRedisGet,
-          set: mockRedisSet
+          exists: mockRedisExists,
+          hset: mockRedisHset,
+          hget: mockRedisHget,
+          expire: mockRedisExpire
         }) as unknown as Redis
     )
   })
@@ -166,7 +172,8 @@ describe('middleware', () => {
 
     describe('Redis cache scenarios', () => {
       it('should redirect to preferred audio language when cached data exists', async () => {
-        mockRedisGet.mockResolvedValue(mockVariantLanguages)
+        mockRedisExists.mockResolvedValue(1)
+        mockRedisHget.mockResolvedValue('jesus/spanish')
 
         const req = createMockRequest('/watch/jesus.html/english.html', {
           cookies: [{ name: 'AUDIO_LANGUAGE', value: 'fingerprint---123' }]
@@ -174,7 +181,11 @@ describe('middleware', () => {
 
         const result = await middleware(req)
 
-        expect(mockRedisGet).toHaveBeenCalledWith('variantLanguages:jesus')
+        expect(mockRedisExists).toHaveBeenCalledWith('variantLanguages:jesus')
+        expect(mockRedisHget).toHaveBeenCalledWith(
+          'variantLanguages:jesus',
+          '123'
+        )
         expect(result).toBeInstanceOf(NextResponse)
         expect(result?.status).toBe(307)
         expect(result?.headers.get('location')).toContain(
@@ -184,7 +195,8 @@ describe('middleware', () => {
 
       it('should not redirect when user is already on preferred audio language', async () => {
         // Mock Redis cache hit
-        mockRedisGet.mockResolvedValue(mockVariantLanguages)
+        mockRedisExists.mockResolvedValue(1)
+        mockRedisHget.mockResolvedValue('jesus/spanish')
 
         const req = createMockRequest('/watch/jesus.html/spanish.html', {
           cookies: [{ name: 'AUDIO_LANGUAGE', value: 'fingerprint---123' }]
@@ -192,13 +204,17 @@ describe('middleware', () => {
 
         const result = await middleware(req)
 
-        expect(mockRedisGet).toHaveBeenCalledWith('variantLanguages:jesus')
+        expect(mockRedisExists).toHaveBeenCalledWith('variantLanguages:jesus')
+        expect(mockRedisHget).toHaveBeenCalledWith(
+          'variantLanguages:jesus',
+          '123'
+        )
         expect(result?.status).toBe(200)
       })
 
       it('should handle Redis cache miss and fetch from API', async () => {
         // Mock Redis cache miss
-        mockRedisGet.mockResolvedValue(null)
+        mockRedisExists.mockResolvedValue(0)
 
         // Mock API response
         const mockApiResponse = {
@@ -209,8 +225,10 @@ describe('middleware', () => {
         }
         mockGlobalFetch.mockResolvedValue(mockApiResponse)
 
-        // Mock successful Redis cache set
-        mockRedisSet.mockResolvedValue('OK')
+        // Mock successful Redis cache operations
+        mockRedisHset.mockResolvedValue(1)
+        mockRedisExpire.mockResolvedValue(1)
+        mockRedisHget.mockResolvedValue('jesus/spanish')
 
         const req = createMockRequest('/watch/jesus.html/english.html', {
           cookies: [{ name: 'AUDIO_LANGUAGE', value: 'fingerprint---123' }]
@@ -223,11 +241,14 @@ describe('middleware', () => {
           'http://localhost/api/variantLanguages?slug=jesus/english'
         )
 
-        // Should cache the result
-        expect(mockRedisSet).toHaveBeenCalledWith(
+        // Should cache the result using hset and expire
+        expect(mockRedisHset).toHaveBeenCalledWith(
           'variantLanguages:jesus',
-          mockVariantLanguages,
-          { ex: 86400 }
+          mockVariantLanguages
+        )
+        expect(mockRedisExpire).toHaveBeenCalledWith(
+          'variantLanguages:jesus',
+          86400
         )
 
         // Should redirect
@@ -240,7 +261,7 @@ describe('middleware', () => {
 
       it('should handle Redis cache set failures gracefully', async () => {
         // Mock Redis cache miss
-        mockRedisGet.mockResolvedValue(null)
+        mockRedisExists.mockResolvedValue(0)
 
         // Mock API response
         const mockApiResponse = {
@@ -251,8 +272,10 @@ describe('middleware', () => {
         }
         mockGlobalFetch.mockResolvedValue(mockApiResponse)
 
-        // Mock Redis cache set failure
-        mockRedisSet.mockRejectedValue(new Error('Redis error'))
+        // Mock Redis cache operations with failures
+        mockRedisHset.mockRejectedValue(new Error('Redis hset error'))
+        mockRedisExpire.mockResolvedValue(1)
+        mockRedisHget.mockResolvedValue('jesus/spanish')
 
         const req = createMockRequest('/watch/jesus.html/english.html', {
           cookies: [{ name: 'AUDIO_LANGUAGE', value: 'fingerprint---123' }]
@@ -272,7 +295,7 @@ describe('middleware', () => {
     describe('API fallback scenarios', () => {
       it('should handle API fetch failures gracefully', async () => {
         // Mock Redis cache miss
-        mockRedisGet.mockResolvedValue(null)
+        mockRedisExists.mockResolvedValue(0)
 
         // Mock API failure
         mockGlobalFetch.mockRejectedValue(new Error('Network error'))
@@ -288,7 +311,7 @@ describe('middleware', () => {
 
       it('should handle API response validation failures', async () => {
         // Mock Redis cache miss
-        mockRedisGet.mockResolvedValue(null)
+        mockRedisExists.mockResolvedValue(0)
 
         // Mock invalid API response
         const mockApiResponse = {
@@ -310,7 +333,7 @@ describe('middleware', () => {
 
       it('should handle empty API responses', async () => {
         // Mock Redis cache miss
-        mockRedisGet.mockResolvedValue(null)
+        mockRedisExists.mockResolvedValue(0)
 
         // Mock empty API response
         const mockApiResponse = {
@@ -333,7 +356,7 @@ describe('middleware', () => {
 
       it('should handle API response with missing variantLanguages data', async () => {
         // Mock Redis cache miss
-        mockRedisGet.mockResolvedValue(null)
+        mockRedisExists.mockResolvedValue(0)
 
         // Mock API response with missing variantLanguages data
         const mockApiResponse = {
@@ -350,7 +373,7 @@ describe('middleware', () => {
 
         const result = await middleware(req)
 
-        // Should not redirect when no variants available (empty array fallback)
+        // Should not redirect when no variants available (empty object fallback)
         expect(result?.status).toBe(200)
         expect(mockGlobalFetch).toHaveBeenCalled()
         expect(mockGlobalFetch).toHaveBeenCalledWith(
@@ -360,7 +383,7 @@ describe('middleware', () => {
 
       it('should handle API response with undefined variantLanguages data', async () => {
         // Mock Redis cache miss
-        mockRedisGet.mockResolvedValue(null)
+        mockRedisExists.mockResolvedValue(0)
 
         // Mock API response with undefined variantLanguages data
         const mockApiResponse = {
@@ -377,7 +400,7 @@ describe('middleware', () => {
 
         const result = await middleware(req)
 
-        // Should not redirect when no variants available (empty array fallback)
+        // Should not redirect when no variants available (empty object fallback)
         expect(result?.status).toBe(200)
         expect(mockGlobalFetch).toHaveBeenCalled()
         expect(mockGlobalFetch).toHaveBeenCalledWith(
@@ -388,7 +411,8 @@ describe('middleware', () => {
 
     describe('path structure handling', () => {
       it('should handle 3-segment paths (video/audio)', async () => {
-        mockRedisGet.mockResolvedValue(mockVariantLanguages)
+        mockRedisExists.mockResolvedValue(1)
+        mockRedisHget.mockResolvedValue('jesus/spanish')
 
         const req = createMockRequest('/watch/jesus.html/english.html', {
           cookies: [{ name: 'AUDIO_LANGUAGE', value: 'fingerprint---123' }]
@@ -403,7 +427,8 @@ describe('middleware', () => {
       })
 
       it('should handle 4-segment paths (category/video/audio)', async () => {
-        mockRedisGet.mockResolvedValue(mockVariantLanguages)
+        mockRedisExists.mockResolvedValue(1)
+        mockRedisHget.mockResolvedValue('jesus/spanish')
 
         const req = createMockRequest('/watch/movies/jesus.html/english.html', {
           cookies: [{ name: 'AUDIO_LANGUAGE', value: 'fingerprint---123' }]
@@ -430,19 +455,15 @@ describe('middleware', () => {
 
     describe('cookie handling', () => {
       it('should not redirect when AUDIO_LANGUAGE cookie is missing', async () => {
-        mockRedisGet.mockResolvedValue(mockVariantLanguages)
-
         const req = createMockRequest('/watch/jesus.html/english.html')
 
         const result = await middleware(req)
 
         expect(result?.status).toBe(200)
-        expect(mockRedisGet).not.toHaveBeenCalled()
+        expect(mockRedisExists).not.toHaveBeenCalled()
       })
 
       it('should handle malformed AUDIO_LANGUAGE cookie', async () => {
-        mockRedisGet.mockResolvedValue(mockVariantLanguages)
-
         const req = createMockRequest('/watch/jesus.html/english.html', {
           cookies: [{ name: 'AUDIO_LANGUAGE', value: 'invalid-format' }]
         })
@@ -453,7 +474,8 @@ describe('middleware', () => {
       })
 
       it('should extract language ID from cookie correctly', async () => {
-        mockRedisGet.mockResolvedValue(mockVariantLanguages)
+        mockRedisExists.mockResolvedValue(1)
+        mockRedisHget.mockResolvedValue('jesus/french')
 
         const req = createMockRequest('/watch/jesus.html/english.html', {
           cookies: [{ name: 'AUDIO_LANGUAGE', value: 'fingerprint---456' }]
@@ -470,8 +492,9 @@ describe('middleware', () => {
 
     describe('Redis data validation', () => {
       it('should handle invalid cached data gracefully', async () => {
-        // Mock invalid cached data
-        mockRedisGet.mockResolvedValue('invalid-data')
+        // Mock invalid cached data - key exists but data is invalid
+        mockRedisExists.mockResolvedValue(1)
+        mockRedisHget.mockResolvedValue('invalid-data')
 
         const req = createMockRequest('/watch/jesus.html/english.html', {
           cookies: [{ name: 'AUDIO_LANGUAGE', value: 'fingerprint---123' }]
@@ -479,12 +502,17 @@ describe('middleware', () => {
 
         await middleware(req)
 
-        // Should fall back to API when cached data is invalid
-        expect(mockGlobalFetch).toHaveBeenCalled()
+        // Should not redirect when cached data is invalid
+        expect(mockRedisExists).toHaveBeenCalledWith('variantLanguages:jesus')
+        expect(mockRedisHget).toHaveBeenCalledWith(
+          'variantLanguages:jesus',
+          '123'
+        )
       })
 
       it('should handle null cached data', async () => {
-        mockRedisGet.mockResolvedValue(null)
+        mockRedisExists.mockResolvedValue(1)
+        mockRedisHget.mockResolvedValue(null)
 
         const req = createMockRequest('/watch/jesus.html/english.html', {
           cookies: [{ name: 'AUDIO_LANGUAGE', value: 'fingerprint---123' }]
@@ -492,74 +520,55 @@ describe('middleware', () => {
 
         await middleware(req)
 
-        // Should fall back to API
-        expect(mockGlobalFetch).toHaveBeenCalled()
+        // Should not redirect when no slug found for language ID
+        expect(mockRedisExists).toHaveBeenCalledWith('variantLanguages:jesus')
+        expect(mockRedisHget).toHaveBeenCalledWith(
+          'variantLanguages:jesus',
+          '123'
+        )
       })
 
-      it('should handle Redis data validation failures gracefully', async () => {
-        // Mock Redis cache hit with invalid data that will fail Zod validation
-        mockRedisGet.mockResolvedValue('invalid-data-that-fails-zod-validation')
+      it('should handle Redis hget errors gracefully', async () => {
+        mockRedisExists.mockResolvedValue(1)
+        mockRedisHget.mockRejectedValue(
+          new Error('Redis hget connection failed')
+        )
 
         const req = createMockRequest('/watch/jesus.html/english.html', {
           cookies: [{ name: 'AUDIO_LANGUAGE', value: 'fingerprint---123' }]
-        })
-
-        mockGlobalFetch.mockResolvedValue({
-          ok: true,
-          json: jest.fn().mockResolvedValue({
-            data: { variantLanguages: mockVariantLanguages }
-          })
         })
 
         const result = await middleware(req)
 
-        // Should fall back to API when cached data validation fails
-        expect(mockGlobalFetch).toHaveBeenCalled()
-        expect(mockGlobalFetch).toHaveBeenCalledWith(
-          'http://localhost/api/variantLanguages?slug=jesus/english'
+        // Should not redirect when Redis hget fails
+        expect(mockRedisExists).toHaveBeenCalledWith('variantLanguages:jesus')
+        expect(mockRedisHget).toHaveBeenCalledWith(
+          'variantLanguages:jesus',
+          '123'
         )
-
-        // Should still redirect if API provides valid data
-        expect(result?.status).toBe(307)
-        expect(result?.headers.get('location')).toContain(
-          '/watch/jesus.html/spanish.html'
-        )
+        expect(result?.status).toBe(200)
       })
 
       it('should handle Redis cache errors gracefully', async () => {
         // Mock Redis cache error
-        mockRedisGet.mockRejectedValue(new Error('Redis connection failed'))
+        mockRedisExists.mockRejectedValue(new Error('Redis connection failed'))
 
         const req = createMockRequest('/watch/jesus.html/english.html', {
           cookies: [{ name: 'AUDIO_LANGUAGE', value: 'fingerprint---123' }]
         })
 
-        mockGlobalFetch.mockResolvedValue({
-          ok: true,
-          json: jest.fn().mockResolvedValue({
-            data: { variantLanguages: mockVariantLanguages }
-          })
-        })
-
         const result = await middleware(req)
 
-        // Should fall back to API when Redis fails
-        expect(mockGlobalFetch).toHaveBeenCalled()
-        expect(mockGlobalFetch).toHaveBeenCalledWith(
-          'http://localhost/api/variantLanguages?slug=jesus/english'
-        )
-
-        // Should still redirect if API provides valid data
-        expect(result?.status).toBe(307)
-        expect(result?.headers.get('location')).toContain(
-          '/watch/jesus.html/spanish.html'
-        )
+        // Should not redirect when Redis fails
+        expect(mockRedisExists).toHaveBeenCalledWith('variantLanguages:jesus')
+        expect(result?.status).toBe(200)
       })
     })
 
     describe('integration with locale detection', () => {
       it('should process audio redirect before locale rewriting', async () => {
-        mockRedisGet.mockResolvedValue(mockVariantLanguages)
+        mockRedisExists.mockResolvedValue(1)
+        mockRedisHget.mockResolvedValue('jesus/spanish')
 
         const req = createMockRequest('/watch/jesus.html/english.html', {
           cookies: [

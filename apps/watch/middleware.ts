@@ -11,9 +11,6 @@ import {
 // Zod schema for validating Redis cached data (new object format)
 const VariantLanguagesObjectSchema = z.record(z.string(), z.string())
 
-// Type inference from the schema
-type VariantLanguagesMap = z.infer<typeof VariantLanguagesObjectSchema>
-
 interface LanguagePriority {
   code: string
   priority: number
@@ -149,39 +146,40 @@ async function audioLanguageRedirect(
       // User's preferred language doesn't match the current path
       // Check if we have cached variant languages for this video
       const cacheKey = `variantLanguages:${videoSlug}`
-      let variantLanguages: VariantLanguagesMap | null = null
 
+      // If not cached, fetch from API
+
+      let exists = false
       try {
-        const cachedData = await redis.get(cacheKey)
-        if (cachedData) {
-          try {
-            variantLanguages = VariantLanguagesObjectSchema.parse(cachedData)
-          } catch (validationError) {
-            console.error('Redis data validation error:', validationError)
-            // Invalid cached data, will fetch fresh data from API
-          }
-        }
+        exists = (await redis.exists(cacheKey)) > 0
       } catch (error) {
         console.error('Redis cache error:', error)
       }
 
-      // If not cached, fetch from API
-      if (!variantLanguages) {
+      if (!exists) {
         try {
           const response = await fetch(
             `${req.nextUrl.origin}/api/variantLanguages?slug=${videoSlug}/${audioLanguage}`
           )
           if (response.ok) {
             const data = await response.json()
-            variantLanguages = VariantLanguagesObjectSchema.parse(
-              data.data?.variantLanguages || {}
+            const {
+              success,
+              data: variantLanguages,
+              error
+            } = VariantLanguagesObjectSchema.safeParse(
+              data.data?.variantLanguages
             )
+
+            if (!success) {
+              console.error('Redis data validation error:', error)
+              return
+            }
 
             // Cache the result
             try {
-              await redis.set(cacheKey, variantLanguages, {
-                ex: CACHE_TTL
-              })
+              await redis.hset(cacheKey, variantLanguages)
+              await redis.expire(cacheKey, CACHE_TTL)
             } catch (error) {
               console.error('Redis cache set error:', error)
             }
@@ -191,22 +189,23 @@ async function audioLanguageRedirect(
         }
       }
 
-      // Check if user's preferred language is available
-      if (variantLanguages) {
-        const userPreferredSlug = variantLanguages[audioLanguageId]
+      let slug: string | null | undefined
 
-        if (
-          userPreferredSlug &&
-          audioLanguage !== userPreferredSlug.split('/').at(-1)
-        ) {
-          // Redirect to user's preferred language
-          const preferredSlug = userPreferredSlug
-            .split('/')
-            .map((part) => `${part}.html`)
-            .join('/')
-          const newPath = `/watch/${pathParts.length === 4 ? `${pathParts[1]}/` : ''}${preferredSlug}`
-          return NextResponse.redirect(new URL(newPath, req.url))
-        }
+      try {
+        slug = await redis.hget(cacheKey, audioLanguageId)
+      } catch (error) {
+        console.error('Redis cache error:', error)
+      }
+
+      // Check if user's preferred language is available
+      if (slug != null && audioLanguage !== slug.split('/').at(-1)) {
+        // Redirect to user's preferred language
+        const preferredSlug = slug
+          .split('/')
+          .map((part) => `${part}.html`)
+          .join('/')
+        const newPath = `/watch/${pathParts.length === 4 ? `${pathParts[1]}/` : ''}${preferredSlug}`
+        return NextResponse.redirect(new URL(newPath, req.url))
       }
     }
   }
