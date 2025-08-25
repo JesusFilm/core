@@ -1,7 +1,5 @@
 {
   "724": "724",
-  "Language": "Language",
-  "Languages Available": "Languages Available",
   "close": "close",
   "No Downloads Available": "No Downloads Available",
   "Download Video": "Download Video",
@@ -33,6 +31,7 @@
   "Journeys": "Journeys",
   "Videos": "Videos",
   "2000 translations": "2000 translations",
+  "Language": "Language",
   "Site Language": "Site Language",
   "Suggested:": "Suggested:",
   "{{count}} languages_one": "{{count}} languages",
