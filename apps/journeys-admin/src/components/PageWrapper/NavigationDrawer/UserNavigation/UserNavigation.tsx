@@ -115,20 +115,20 @@ export function UserNavigation({
     <>
       <Divider sx={{ mb: 0.5, mx: 6, borderColor: 'secondary.main' }} />
       {userRoleData?.getUserRole?.roles?.includes(Role.publisher) === true && (
-        <NextLink href="/publisher" passHref legacyBehavior>
-          <ListItemButton
-            selected={selectedPage === 'publisher'}
-            data-testid="NavigationListItemPublisher"
-          >
-            <ListItemIcon>
-              <BoxIcon />
-            </ListItemIcon>
-            <ListItemText
-              primary={t('Publisher')}
-              primaryTypographyProps={{ style: { whiteSpace: 'nowrap' } }}
-            />
-          </ListItemButton>
-        </NextLink>
+        <ListItemButton
+          LinkComponent={NextLink}
+          href="/publisher"
+          selected={selectedPage === 'publisher'}
+          data-testid="NavigationListItemPublisher"
+        >
+          <ListItemIcon>
+            <BoxIcon />
+          </ListItemIcon>
+          <ListItemText
+            primary={t('Publisher')}
+            primaryTypographyProps={{ style: { whiteSpace: 'nowrap' } }}
+          />
+        </ListItemButton>
       )}
       {data.me.superAdmin === true && (
         <ListItemButton
