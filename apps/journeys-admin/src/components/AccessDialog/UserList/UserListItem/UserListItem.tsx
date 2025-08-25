@@ -1,7 +1,7 @@
 import Avatar from '@mui/material/Avatar'
 import Button from '@mui/material/Button'
 import Divider from '@mui/material/Divider'
-import Grid from '@mui/material/GridLegacy'
+import Grid from '@mui/material/Grid'
 import Menu from '@mui/material/Menu'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
@@ -111,16 +111,16 @@ export function UserListItem({
         container
         spacing={1}
         alignItems="center"
-        data-testId="UserListItem"
+        data-testid="UserListItem"
       >
-        <Grid xs={2} sm={1}>
+        <Grid size={{xs: 2, sm: 1}}>
           <Avatar src={imageUrl ?? undefined} alt={displayName ?? email}>
             {displayName != null
               ? displayName.charAt(0)?.toUpperCase()
               : email.charAt(0).toUpperCase()}
           </Avatar>
         </Grid>
-        <Grid xs={5} sm={7}>
+        <Grid size={{xs: 5, sm: 7}}>
           <Stack sx={{ ml: 2 }}>
             <Typography variant="subtitle2" sx={{ width: '100%', flexGrow: 1 }}>
               {displayName}
@@ -138,7 +138,7 @@ export function UserListItem({
             </Typography>
           </Stack>
         </Grid>
-        <Grid xs={2} sm={2}>
+        <Grid size={{xs: 2, sm: 2}}>
           {listItem.__typename !== 'UserInvite' && (
             <NotificationSwitch
               name={listItem?.user?.firstName}
@@ -148,7 +148,7 @@ export function UserListItem({
             />
           )}
         </Grid>
-        <Grid xs={3} sm={2}>
+        <Grid size={{xs: 3, sm: 2}}>
           <Button
             aria-controls={open ? 'basic-menu' : undefined}
             aria-haspopup="true"
