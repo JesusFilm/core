@@ -88,7 +88,20 @@ export type JourneySimpleImage = z.infer<typeof journeySimpleImageSchema>
 
 // --- Video Schema ---
 export const journeySimpleVideoSchema = z.object({
-  url: z.string().describe('The YouTube video URL.'),
+  src: z.string().describe('The YouTube video URL or internal video ID.'),
+  source: z.enum(['youTube', 'internal']).describe('The type of video source.'),
+  summary: z
+    .string()
+    .optional()
+    .describe(
+      'A summary of the section of the video. Used as context for the next logical and relevant next card.'
+    ),
+  questions: z
+    .array(z.string())
+    .optional()
+    .describe(
+      'An array of reflective questions to ask the user after the video. Used as context for the next logical and relevant next card.'
+    ),
   startAt: z
     .number()
     .int()
@@ -128,24 +141,32 @@ export type JourneySimpleVideoUpdate = z.infer<
 export const journeySimpleCardSchema = z.object({
   id: z
     .string()
-    .describe('The id of the card. Something like card-1, card-2, etc.'),
+    .describe(
+      'The id of the card. Something like card-1, card-2, card-2a, card-2b, etc.'
+    ),
   x: z.number().describe('The x coordinate for the card layout position.'),
   y: z.number().describe('The y coordinate for the card layout position.'),
   heading: z
     .string()
     .optional()
-    .describe('A heading for the card, if present.'),
+    .describe(
+      'A heading for the card, if present. Not required for video cards.'
+    ),
   text: z.string().optional().describe('The main text content of the card.'),
   button: journeySimpleButtonSchema
     .optional()
-    .describe('A button object for this card, if present.'),
+    .describe(
+      'A button object for this card, if present. Not required for video cards.'
+    ),
   poll: z
     .array(journeySimplePollOptionSchema)
     .optional()
-    .describe('An array of poll options for this card, if present.'),
+    .describe(
+      'An array of poll options for this card, if present. Not required for video cards.'
+    ),
   image: journeySimpleImageSchema
     .optional()
-    .describe('Image object for the card.'),
+    .describe('Image object for the card. Not required for video cards.'),
   backgroundImage: journeySimpleImageSchema
     .optional()
     .describe('Background image object for the card.'),
@@ -158,7 +179,7 @@ export const journeySimpleCardSchema = z.object({
     .string()
     .optional()
     .describe(
-      'The id of the card to navigate to after this card by default. Something like card-1, card-2, etc.'
+      'The id of the card to navigate to after this card by default. Something like card-1, card-2, card-2a, card-2b, etc.'
     )
 })
 

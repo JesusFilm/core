@@ -229,11 +229,17 @@ export async function updateSimpleJourney(
           card.defaultNextCard != null
             ? stepBlocks.find((s) => s.simpleCardId === card.defaultNextCard)
             : undefined
-        const videoId = extractYouTubeVideoId(card.video.url)
+        const videoId =
+          card.video.source === 'youTube'
+            ? extractYouTubeVideoId(card.video.src ?? '')
+            : card.video.src
         if (videoId == null) {
           throw new Error('Invalid YouTube video URL')
         }
-        const videoDuration = await getYouTubeVideoDuration(videoId)
+        const videoDuration =
+          card.video.source === 'youTube'
+            ? await getYouTubeVideoDuration(videoId)
+            : undefined
         await tx.block.create({
           data: {
             journeyId,
@@ -241,7 +247,8 @@ export async function updateSimpleJourney(
             parentBlockId: cardBlockId,
             parentOrder: parentOrder++,
             videoId,
-            source: 'youTube',
+            videoVariantLanguageId: '529',
+            source: card.video.source,
             autoplay: true,
             startAt: card.video.startAt ?? 0,
             endAt: card.video.endAt ?? videoDuration,

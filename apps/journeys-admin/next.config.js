@@ -15,6 +15,10 @@ const nextConfig = {
   i18n,
   images: {
     remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: '**'
+      },
       { protocol: 'http', hostname: 'localhost' },
       { protocol: 'https', hostname: 'unsplash.com' },
       { protocol: 'https', hostname: 'images.unsplash.com' },
@@ -106,7 +110,15 @@ const nextConfig = {
         'node_modules/esbuild-linux-64/bin'
       ]
     },
+    instrumentationHook: true,
     fallbackNodePolyfills: false
+  },
+  webpack: (config) => {
+    config.module.rules.push({
+      test: /\.md$/,
+      use: 'raw-loader'
+    })
+    return config
   }
 }
 const plugins = [withNx]
