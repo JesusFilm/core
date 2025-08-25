@@ -20,6 +20,7 @@ import { useActionCommand } from '../../../../../../utils/useActionCommand'
 import { EmailAction } from './EmailAction'
 import { LinkAction } from './LinkAction'
 import { NavigateToBlockAction } from './NavigateToBlockAction'
+import { PhoneAction } from './PhoneAction'
 import { ActionValue, actions, getAction } from './utils/actions'
 
 export function Action(): ReactElement {
@@ -104,6 +105,7 @@ export function Action(): ReactElement {
         </FormControl>
         {!isSubmitButton && action === 'LinkAction' && <LinkAction />}
         {!isSubmitButton && action === 'EmailAction' && <EmailAction />}
+        {!isSubmitButton && action === 'PhoneAction' && <PhoneAction />}
         {action === 'NavigateToBlockAction' && <NavigateToBlockAction />}
       </Stack>
     </>

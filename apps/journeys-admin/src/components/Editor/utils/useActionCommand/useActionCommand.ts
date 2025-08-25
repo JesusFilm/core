@@ -14,6 +14,7 @@ import { useBlockActionDeleteMutation } from '../../../../libs/useBlockActionDel
 import { useBlockActionEmailUpdateMutation } from '../../../../libs/useBlockActionEmailUpdateMutation'
 import { useBlockActionLinkUpdateMutation } from '../../../../libs/useBlockActionLinkUpdateMutation'
 import { useBlockActionNavigateToBlockUpdateMutation } from '../../../../libs/useBlockActionNavigateToBlockUpdateMutation'
+import { useBlockActionPhoneUpdateMutation } from '../../../../libs/useBlockActionPhoneUpdateMutation'
 
 export type Action =
   | BlockFields_ButtonBlock_action
@@ -38,6 +39,7 @@ export function useActionCommand(): {
   const [actionDelete] = useBlockActionDeleteMutation()
   const [actionLinkUpdate] = useBlockActionLinkUpdateMutation()
   const [actionEmailUpdate] = useBlockActionEmailUpdateMutation()
+  const [actionPhoneUpdate] = useBlockActionPhoneUpdateMutation()
   const [actionNavigateToBlockUpdate] =
     useBlockActionNavigateToBlockUpdateMutation()
 
@@ -77,6 +79,9 @@ export function useActionCommand(): {
               break
             case 'EmailAction':
               void actionEmailUpdate(block, action.email)
+              break
+            case 'PhoneAction':
+              void actionPhoneUpdate(block, action.phone)
               break
             case 'NavigateToBlockAction':
               void actionNavigateToBlockUpdate(block, action.blockId)

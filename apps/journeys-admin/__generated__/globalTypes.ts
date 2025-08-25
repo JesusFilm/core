@@ -597,6 +597,11 @@ export interface MeInput {
   redirect?: string | null;
 }
 
+export interface PhoneActionInput {
+  gtmEventName?: string | null;
+  phone: string;
+}
+
 export interface QrCodeCreateInput {
   teamId: string;
   journeyId: string;

@@ -60,12 +60,6 @@ export interface CardVideoCreate_video_mediaVideo_YouTube {
 
 export type CardVideoCreate_video_mediaVideo = CardVideoCreate_video_mediaVideo_Video | CardVideoCreate_video_mediaVideo_MuxVideo | CardVideoCreate_video_mediaVideo_YouTube;
 
-export interface CardVideoCreate_video_action_PhoneAction {
-  __typename: "PhoneAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-}
-
 export interface CardVideoCreate_video_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
   parentBlockId: string;
@@ -87,7 +81,14 @@ export interface CardVideoCreate_video_action_EmailAction {
   email: string;
 }
 
-export type CardVideoCreate_video_action = CardVideoCreate_video_action_PhoneAction | CardVideoCreate_video_action_NavigateToBlockAction | CardVideoCreate_video_action_LinkAction | CardVideoCreate_video_action_EmailAction;
+export interface CardVideoCreate_video_action_PhoneAction {
+  __typename: "PhoneAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+  phone: string;
+}
+
+export type CardVideoCreate_video_action = CardVideoCreate_video_action_NavigateToBlockAction | CardVideoCreate_video_action_LinkAction | CardVideoCreate_video_action_EmailAction | CardVideoCreate_video_action_PhoneAction;
 
 export interface CardVideoCreate_video {
   __typename: "VideoBlock";
