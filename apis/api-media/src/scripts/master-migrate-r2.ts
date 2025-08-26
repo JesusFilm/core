@@ -104,7 +104,6 @@ async function migrateMastersToR2(): Promise<void> {
 
   let variant = await prisma.videoVariant.findFirst({
     where: {
-      id: '1_24413-jf6159-0-0',
       assetId: null,
       masterUrl: { not: null }
     }
