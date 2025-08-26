@@ -9,6 +9,8 @@ on:
     branches: [main]
 jobs:
   lint:
+    permissions:
+      contents: write
     runs-on: ubuntu-latest
     strategy:
       matrix:
