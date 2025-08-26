@@ -2,10 +2,9 @@ import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { NextRouter, useRouter } from 'next/router'
 
+import { getLanguagesSlugMock } from '../../libs/useLanguagesSlugQuery/useLanguagesSlugQuery.mock'
 import { VideoProvider } from '../../libs/videoContext'
 import { videos } from '../Videos/__generated__/testData'
-
-import { getLanguagesSlugMock } from '../../libs/useLanguagesSlugQuery/useLanguagesSlugQuery.mock'
 
 import { AudioLanguageDialog } from '.'
 
