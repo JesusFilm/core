@@ -68,19 +68,14 @@ describe('blockUpdateLinkAction mutation', () => {
           parentBlockId: '1',
           gtmEventName: null,
           url: 'https://example.com',
-          target: null,
-          blockId: null,
-          journeyId: null,
-          email: null
+          target: null
         },
         update: {
           gtmEventName: null,
           url: 'https://example.com',
-          target: null,
-          blockId: null,
-          journeyId: null,
-          email: null
-        }
+          target: null
+        },
+        include: { parentBlock: true }
       })
 
       expect(result).toEqual({

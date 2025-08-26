@@ -61,20 +61,13 @@ describe('blockUpdateEmailAction mutation', () => {
         create: {
           parentBlockId: '1',
           gtmEventName: null,
-          email: 'example@example.com',
-          blockId: null,
-          journeyId: null,
-          url: null,
-          target: null
+          email: 'example@example.com'
         },
         update: {
           gtmEventName: null,
-          email: 'example@example.com',
-          blockId: null,
-          journeyId: null,
-          url: null,
-          target: null
-        }
+          email: 'example@example.com'
+        },
+        include: { parentBlock: true }
       })
 
       expect(result).toEqual({

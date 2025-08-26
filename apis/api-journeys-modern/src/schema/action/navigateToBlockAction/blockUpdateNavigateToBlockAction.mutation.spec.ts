@@ -66,20 +66,13 @@ describe('blockUpdateNavigateToBlockAction mutation', () => {
         create: {
           parentBlockId: '1',
           gtmEventName: null,
-          blockId: 'child-block',
-          journeyId: 'journeyId',
-          url: null,
-          target: null,
-          email: null
+          blockId: 'child-block'
         },
         update: {
           gtmEventName: null,
-          blockId: 'child-block',
-          journeyId: 'journeyId',
-          url: null,
-          target: null,
-          email: null
-        }
+          blockId: 'child-block'
+        },
+        include: { parentBlock: true }
       })
 
       expect(result).toEqual({

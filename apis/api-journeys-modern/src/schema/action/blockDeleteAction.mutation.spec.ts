@@ -45,7 +45,7 @@ describe('blockDeleteAction mutation', () => {
         variables: { id: actionableBlock.id }
       })
 
-      expect(prismaMock.action.delete).toHaveBeenCalledWith({
+      expect(prismaMock.action.deleteMany).toHaveBeenCalledWith({
         where: { parentBlockId: actionableBlock.id }
       })
       expect(result).toEqual({

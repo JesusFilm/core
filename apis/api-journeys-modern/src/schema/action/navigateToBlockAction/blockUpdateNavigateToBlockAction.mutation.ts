@@ -66,23 +66,10 @@ builder.mutationField('blockUpdateNavigateToBlockAction', (t) =>
         where: { parentBlockId: id },
         create: {
           parentBlockId: id,
-          gtmEventName: input.gtmEventName || null,
-          blockId: input.blockId,
-          journeyId: block.journeyId,
-          // Reset other polymorphic fields
-          url: null,
-          target: null,
-          email: null
+          ...input
         },
-        update: {
-          gtmEventName: input.gtmEventName || null,
-          blockId: input.blockId,
-          journeyId: block.journeyId,
-          // Reset other polymorphic fields
-          url: null,
-          target: null,
-          email: null
-        }
+        update: input,
+        include: { parentBlock: true }
       })
 
       return action

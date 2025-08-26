@@ -27,7 +27,6 @@ builder.mutationField('blockDeleteAction', (t) =>
       const block = await prisma.block.findUnique({
         where: { id },
         include: {
-          action: true,
           journey: {
             include: {
               userJourneys: true,
@@ -57,9 +56,7 @@ builder.mutationField('blockDeleteAction', (t) =>
       }
 
       // Delete the action if it exists
-      if (block.action) {
-        await prisma.action.delete({ where: { parentBlockId: id } })
-      }
+      await prisma.action.deleteMany({ where: { parentBlockId: id } })
 
       return block
     }
