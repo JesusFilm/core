@@ -30,8 +30,6 @@ export function VisitorCard({
             ? `?journeyId=${router.query.journeyId as string}`
             : ''
         }`}
-        passHref
-        legacyBehavior
         prefetch={false}
       >
         {block}

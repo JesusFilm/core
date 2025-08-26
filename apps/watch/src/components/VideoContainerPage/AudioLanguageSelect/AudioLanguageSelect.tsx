@@ -8,12 +8,12 @@ import { ReactElement, useState } from 'react'
 import { useVideo } from '../../../libs/videoContext'
 import { Select, SelectTrigger, SelectValue } from '../../Select'
 
-const DynamicAudoLanguageSelectContent = dynamic(
+const DynamicAudioLanguageSelectContent = dynamic(
   async () =>
     await import(
-      /* webpackChunkName: "AudoLanguageSelectContent" */
-      './AudoLanguageSelectContent'
-    ).then((mod) => mod.AudoLanguageSelectContent)
+      /* webpackChunkName: "AudioLanguageSelectContent" */
+      './AudioLanguageSelectContent'
+    ).then((mod) => mod.AudioLanguageSelectContent)
 )
 
 export function AudioLanguageSelect(): ReactElement {
@@ -96,7 +96,7 @@ export function AudioLanguageSelect(): ReactElement {
           <KeyboardArrowDownOutlined fontSize="small" className="text-white" />
         </div>
       </SelectTrigger>
-      {open != null && <DynamicAudoLanguageSelectContent />}
+      {open != null && <DynamicAudioLanguageSelectContent />}
     </Select>
   )
 }

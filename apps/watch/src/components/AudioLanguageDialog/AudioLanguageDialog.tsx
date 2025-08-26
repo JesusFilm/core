@@ -10,8 +10,8 @@ import { ComponentProps, ReactElement, memo } from 'react'
 import { Dialog } from '@core/shared/ui/Dialog'
 import { LanguageAutocomplete } from '@core/shared/ui/LanguageAutocomplete'
 
-import { useVideo } from '../../libs/videoContext'
 import { useLanguagesSlugQuery } from '../../libs/useLanguagesSlugQuery'
+import { useVideo } from '../../libs/videoContext'
 
 interface AudioLanguageDialogProps
   extends Pick<ComponentProps<typeof Dialog>, 'open' | 'onClose'> {}

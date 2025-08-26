@@ -43,6 +43,7 @@ enum ButtonAction {
   NavigateToBlockAction
   LinkAction
   EmailAction
+  PhoneAction
 }
 
 enum ButtonAlignment {
