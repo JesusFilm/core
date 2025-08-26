@@ -14,7 +14,6 @@ import {
 } from './importers/subtitle'
 import { VIDEO_FILENAME_REGEX, processVideoFile } from './importers/video'
 import type { ProcessingSummary } from './types'
-import { checkEnvironmentVariables } from './utils/envVarTest'
 
 const program = new Command()
 
@@ -23,13 +22,15 @@ program
     '-f, --folder <path>',
     "Folder containing video files. Defaults to the executable's directory."
   )
+  .option('--dry-run', 'Print actions without uploading', false)
   .parse(process.argv)
 
 const options = program.opts()
 
-async function main() {
-  console.log('Video Importer Starting...')
+// Regex patterns are imported from the respective importers
 
+async function main() {
+  // Check if running in a Single Executable Application
   const runningInSEA = require('node:sea').isSea()
   const defaultFolderPath = runningInSEA
     ? path.dirname(process.execPath)
@@ -38,16 +39,6 @@ async function main() {
   const folderPath = options.folder
     ? path.resolve(options.folder)
     : defaultFolderPath
-
-  console.log(`Processing folder: ${folderPath}`)
-
-  try {
-    await checkEnvironmentVariables()
-  } catch (error) {
-    console.error('Environment check failed:', error)
-    process.exit(1)
-  }
-
   let files: string[]
   try {
     files = await promises.readdir(folderPath)
@@ -56,46 +47,105 @@ async function main() {
     process.exit(1)
   }
 
+  const videoFiles = files.filter((file) => VIDEO_FILENAME_REGEX.test(file))
+  const subtitleFiles = files.filter((file) =>
+    SUBTITLE_FILENAME_REGEX.test(file)
+  )
+  const audioPreviewFiles = files.filter((file) =>
+    AUDIO_PREVIEW_FILENAME_REGEX.test(file)
+  )
+
+  if (videoFiles.length === 0) {
+    console.log('No valid video files found in the folder.')
+  } else {
+    console.log(`Found ${videoFiles.length} video files.`)
+  }
+
+  if (subtitleFiles.length === 0) {
+    console.log('No valid subtitle files found in the folder.')
+  } else {
+    console.log(`Found ${subtitleFiles.length} subtitle files.`)
+  }
+
+  if (audioPreviewFiles.length === 0) {
+    console.log('No valid audio preview files found in the folder.')
+  } else {
+    console.log(`Found ${audioPreviewFiles.length} audio preview files.`)
+  }
+
   const summary: ProcessingSummary = {
-    total: files.length,
+    total: videoFiles.length + subtitleFiles.length + audioPreviewFiles.length,
     successful: 0,
     failed: 0
   }
 
-  const filesToProcess = files.filter((file) => {
-    return !file.endsWith('.completed')
-  })
-
-  console.log(
-    `Found ${filesToProcess.length} files to process (${files.length - filesToProcess.length} already completed)`
-  )
-
-  for (const file of filesToProcess) {
+  for (const file of videoFiles) {
     console.log(`\nProcessing: ${file}`)
 
-    const filePath = path.join(folderPath, file)
-    const { size: contentLength } = await promises.stat(filePath)
+    if (options.dryRun) {
+      console.log(`[DRY RUN] Would process file: ${file}`)
+      continue
+    }
 
-    if (VIDEO_FILENAME_REGEX.test(file)) {
+    try {
+      const filePath = path.join(folderPath, file)
+      const { size: contentLength } = await promises.stat(filePath)
       await processVideoFile(file, filePath, contentLength, summary)
-    } else if (SUBTITLE_FILENAME_REGEX.test(file)) {
-      await processSubtitleFile(file, filePath, contentLength, summary)
-    } else if (AUDIO_PREVIEW_FILENAME_REGEX.test(file)) {
-      await processAudioPreviewFile(file, filePath, contentLength, summary)
-    } else {
-      console.log(`Skipping unsupported file: ${file}`)
+    } catch (err) {
+      console.error(`Error processing ${file}:`, err)
+      summary.failed++
     }
   }
 
-  console.log('\n=== SUMMARY ===')
+  for (const file of subtitleFiles) {
+    const match = file.match(SUBTITLE_FILENAME_REGEX)
+    if (!match) continue
+    console.log(`\nProcessing subtitle: ${file}`)
+
+    if (options.dryRun) {
+      console.log(`[DRY RUN] Would process subtitle file: ${file}`)
+      continue
+    }
+
+    try {
+      const filePath = path.join(folderPath, file)
+      const { size: contentLength } = await promises.stat(filePath)
+      await processSubtitleFile(file, filePath, contentLength, summary)
+    } catch (err) {
+      console.error(`Error processing subtitle ${file}:`, err)
+      summary.failed++
+    }
+  }
+
+  // === Audio Preview Processing ===
+  for (const file of audioPreviewFiles) {
+    const match = file.match(AUDIO_PREVIEW_FILENAME_REGEX)
+    if (!match) continue
+
+    console.log(`\nProcessing audio preview: ${file}`)
+
+    if (options.dryRun) {
+      console.log(`[DRY RUN] Would process audio preview file: ${file}`)
+      continue
+    }
+
+    try {
+      const filePath = path.join(folderPath, file)
+      const { size: contentLength } = await promises.stat(filePath)
+      await processAudioPreviewFile(file, filePath, contentLength, summary)
+    } catch (err) {
+      console.error(`Error processing audio preview ${file}:`, err)
+      summary.failed++
+    }
+  }
+
+  // Print summary
+  console.log('\n=== Processing Summary ===')
   console.log(`Total files: ${summary.total}`)
   console.log(`Successfully processed: ${summary.successful}`)
   console.log(`Failed: ${summary.failed}`)
-  console.log(`Already completed: ${files.length - filesToProcess.length}`)
 
-  if (summary.successful > 0) {
-    console.log(`\n${summary.successful} job(s) queued successfully`)
-  }
+  // Errors are logged inline where they occur
 }
 
 main().catch((err) => {

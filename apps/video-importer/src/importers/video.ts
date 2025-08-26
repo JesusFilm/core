@@ -1,7 +1,7 @@
 import { v4 as uuidv4 } from 'uuid'
 
-import { triggerVideoUploadJob } from '../services/job-queue'
-import { createMuxAsset } from '../services/mux'
+import { getGraphQLClient } from '../gql/graphqlClient'
+import { CREATE_MUX_VIDEO_AND_QUEUE_UPLOAD } from '../gql/mutations'
 import { createR2Asset, uploadToR2 } from '../services/r2'
 import { ProcessingSummary } from '../types'
 import { getVideoMetadata } from '../utils/fileMetadataHelpers'
@@ -99,27 +99,22 @@ export async function processVideoFile(
     return
   }
 
-  let muxVideo
   try {
-    muxVideo = await createMuxAsset(r2Asset.publicUrl, contentLength)
-  } catch (error) {
-    console.error(`Failed to create Mux asset:`, error)
-    summary.failed++
-    return
-  }
-
-  try {
-    await triggerVideoUploadJob({
+    const client = await getGraphQLClient()
+    await client.request(CREATE_MUX_VIDEO_AND_QUEUE_UPLOAD, {
       videoId,
       edition,
       languageId,
       version: parsedVersion,
-      muxVideoId: muxVideo.id,
-      metadata,
-      originalFilename: fileName
+      r2PublicUrl: r2Asset.publicUrl,
+      originalFilename,
+      durationMs: metadata.durationMs,
+      duration: metadata.duration,
+      width: metadata.width,
+      height: metadata.height
     })
   } catch (error) {
-    console.error(`Failed to queue job for ${fileName}:`, error)
+    console.error(`Failed to create Mux video and queue upload:`, error)
     summary.failed++
     return
   }
