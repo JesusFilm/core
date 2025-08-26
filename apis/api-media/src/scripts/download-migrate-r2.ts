@@ -203,7 +203,8 @@ async function migrateDownloadsToR2(): Promise<void> {
       where: {
         videoVariantId: {
           // not: {
-          startsWith: '2\\_'
+          startsWith: '1\\_',
+          contains: '-jf'
           // }
         },
         assetId: null,
