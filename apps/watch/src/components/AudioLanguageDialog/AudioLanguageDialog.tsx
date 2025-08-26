@@ -1,4 +1,3 @@
-import { gql, useQuery } from '@apollo/client'
 import LanguageIcon from '@mui/icons-material/Language'
 import CircularProgress from '@mui/material/CircularProgress'
 import TextField from '@mui/material/TextField'
@@ -11,26 +10,8 @@ import { ComponentProps, ReactElement, memo } from 'react'
 import { Dialog } from '@core/shared/ui/Dialog'
 import { LanguageAutocomplete } from '@core/shared/ui/LanguageAutocomplete'
 
-import { GetLanguagesSlug } from '../../../__generated__/GetLanguagesSlug'
+import { useLanguagesSlugQuery } from '../../libs/useLanguagesSlugQuery'
 import { useVideo } from '../../libs/videoContext'
-
-export const GET_LANGUAGES_SLUG = gql`
-  query GetLanguagesSlug($id: ID!) {
-    video(id: $id, idType: databaseId) {
-      variantLanguagesWithSlug {
-        slug
-        language {
-          id
-          slug
-          name {
-            value
-            primary
-          }
-        }
-      }
-    }
-  }
-`
 
 interface AudioLanguageDialogProps
   extends Pick<ComponentProps<typeof Dialog>, 'open' | 'onClose'> {}
@@ -43,7 +24,7 @@ export const AudioLanguageDialog = memo(function AudioLanguageDialog({
   const { id, variant, variantLanguagesCount, container } = useVideo()
   const router = useRouter()
 
-  const { loading, data } = useQuery<GetLanguagesSlug>(GET_LANGUAGES_SLUG, {
+  const { loading, data } = useLanguagesSlugQuery({
     variables: {
       id
     }

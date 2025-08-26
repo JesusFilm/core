@@ -76,10 +76,10 @@ export function VideoHeading({
               <Stack direction="row" alignItems="center" spacing={2}>
                 <NextLink
                   href={`/watch/${container.variant?.slug as string}`}
-                  passHref
-                  legacyBehavior
+                  locale={false}
                 >
                   <Link
+                    component="a"
                     variant="overline1"
                     color="primary"
                     sx={{ textDecoration: 'none' }}
@@ -113,10 +113,10 @@ export function VideoHeading({
               </Stack>
               <NextLink
                 href={`/watch/${container.variant?.slug as string}`}
-                passHref
-                legacyBehavior
+                locale={false}
               >
                 <Button
+                  component="a"
                   variant="outlined"
                   size="small"
                   color="secondary"
