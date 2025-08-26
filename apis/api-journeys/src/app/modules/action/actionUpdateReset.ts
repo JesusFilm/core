@@ -9,6 +9,7 @@ export const ACTION_UPDATE_RESET: Prisma.ActionUpdateInput = {
   url: null,
   target: null,
   email: null,
+  phone: null,
   journey: { disconnect: true },
   block: { disconnect: true }
 }
