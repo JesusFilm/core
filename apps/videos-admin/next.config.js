@@ -31,6 +31,9 @@ const nextConfig = {
     ],
     minimumCacheTTL: 31536000
   },
+  experimental: {
+    reactCompiler: true
+  },
   modularizeImports: {
     lodash: {
       transform: 'lodash/{{member}}'

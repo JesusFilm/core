@@ -106,7 +106,8 @@ const nextConfig = {
     ]
   },
   experimental: {
-    fallbackNodePolyfills: false
+    fallbackNodePolyfills: false,
+    reactCompiler: true
   }
 }
 const plugins = [withNx]

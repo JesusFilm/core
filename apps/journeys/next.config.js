@@ -13,6 +13,9 @@ const nextConfig = {
     svgr: false
   },
   i18n,
+  experimental: {
+    reactCompiler: true
+  },
   images: {
     remotePatterns: [
       { protocol: 'http', hostname: 'localhost' },

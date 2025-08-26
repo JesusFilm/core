@@ -59,6 +59,9 @@ const nextConfig = {
     // See: https://github.com/gregberge/svgr
     svgr: false
   },
+  experimental: {
+    reactCompiler: true
+  },
   productionBrowserSourceMaps: true,
   typescript: {
     // handled by github actions
