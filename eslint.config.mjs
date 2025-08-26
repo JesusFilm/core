@@ -195,30 +195,6 @@ const config = [
       ]
     }
   },
-  // Relax module boundary rule for journeys-admin to allow static imports
-  // of journeys-ui even when some parts are lazy-loaded via Next dynamic
-  {
-    files: ['apps/journeys-admin/**/*.{ts,tsx,js,jsx}'],
-    rules: {
-      '@nx/enforce-module-boundaries': [
-        'error',
-        {
-          enforceBuildableLibDependency: true,
-          allow: [
-            '@core/journeys/ui',
-            '@core/journeys/ui/*',
-            '@core/journeys/ui/**'
-          ],
-          depConstraints: [
-            {
-              sourceTag: '*',
-              onlyDependOnLibsWithTags: ['*']
-            }
-          ]
-        }
-      ]
-    }
-  },
   {
     files: ['**/*.spec.ts', '**/*.spec.tsx', '**/*.spec.js', '**/*.spec.jsx'],
     plugins: { jest: pluginJest, 'jest-formatting': jestFormatting },
