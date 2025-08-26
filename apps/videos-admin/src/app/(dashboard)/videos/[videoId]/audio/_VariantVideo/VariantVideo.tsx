@@ -13,7 +13,7 @@ export function VariantVideo({
 }: {
   hlsSrc: string | null
 }): ReactElement {
-  const playerRef = useRef<Player>()
+  const playerRef = useRef<Player | null>(null)
   const hasHls = hlsSrc != null && hlsSrc !== ''
 
   const videoRef = useCallback((node: HTMLVideoElement | null) => {

@@ -44,6 +44,7 @@ describe('ActionResolver', () => {
     target: null,
     url: null,
     email: 'john.smith@example.com',
+    phone: null,
     customizable: null,
     parentStepId: null
   }
@@ -56,6 +57,7 @@ describe('ActionResolver', () => {
     target: 'target',
     url: 'https://google.com',
     email: null,
+    phone: null,
     customizable: null,
     parentStepId: null
   }
@@ -68,6 +70,20 @@ describe('ActionResolver', () => {
     target: null,
     url: null,
     email: null,
+    phone: null,
+    customizable: null,
+    parentStepId: null
+  }
+  const phoneAction: Action = {
+    parentBlockId: 'parentBlockId',
+    gtmEventName: 'gtmEventName',
+    updatedAt: new Date(),
+    blockId: null,
+    journeyId: null,
+    target: null,
+    url: null,
+    email: null,
+    phone: '1234567890',
     customizable: null,
     parentStepId: null
   }
@@ -106,6 +122,10 @@ describe('ActionResolver', () => {
       expect(resolver.__resolveType(navigateToBlockAction)).toBe(
         'NavigateToBlockAction'
       )
+    })
+
+    it('returns PhoneAction', () => {
+      expect(resolver.__resolveType(phoneAction)).toBe('PhoneAction')
     })
   })
 
@@ -188,6 +208,7 @@ describe('ActionResolver', () => {
           email: null,
           gtmEventName: null,
           journey: { disconnect: true },
+          phone: null,
           target: null,
           url: null
         },
@@ -219,6 +240,7 @@ describe('ActionResolver', () => {
           email: null,
           gtmEventName: null,
           journey: { disconnect: true },
+          phone: null,
           target: null,
           url: 'www.runscape.com'
         },
@@ -249,6 +271,39 @@ describe('ActionResolver', () => {
           email: 'example@example.co.nz',
           gtmEventName: null,
           journey: { disconnect: true },
+          phone: null,
+          target: null,
+          url: null
+        },
+        where: { parentBlockId: '1' }
+      })
+    })
+
+    it('updates a phone action', async () => {
+      const input = {
+        gtmEventName: null,
+        email: null,
+        url: undefined,
+        phone: '1234567890',
+        target: null,
+        blockId: undefined
+      }
+      prismaService.block.findUnique.mockResolvedValueOnce(blockWithUserTeam)
+      await resolver.blockUpdateAction(ability, blockWithUserTeam.id, input)
+
+      expect(prismaService.action.upsert).toHaveBeenCalledWith({
+        create: {
+          phone: '1234567890',
+          gtmEventName: null,
+          parentBlock: { connect: { id: '1' } }
+        },
+        include: { parentBlock: { include: { action: true } } },
+        update: {
+          block: { disconnect: true },
+          email: null,
+          gtmEventName: null,
+          journey: { disconnect: true },
+          phone: '1234567890',
           target: null,
           url: null
         },
