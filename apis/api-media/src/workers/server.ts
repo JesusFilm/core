@@ -52,14 +52,14 @@ function run({
 }
 
 async function main(): Promise<void> {
+  run(
+    await import(
+      /* webpackChunkName: "crowdin" */
+      './crowdin'
+    )
+  )
   if (process.env.NODE_ENV === 'production') {
     await runIfLeader(async () => {
-      run(
-        await import(
-          /* webpackChunkName: "crowdin" */
-          './crowdin'
-        )
-      )
       run(
         await import(
           /* webpackChunkName: "blocklist" */
