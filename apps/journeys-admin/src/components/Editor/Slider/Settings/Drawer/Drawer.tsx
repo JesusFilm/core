@@ -111,9 +111,9 @@ export function Drawer({
           width: { xs: 'auto', md: DRAWER_WIDTH },
           left: { xs: 0, md: 'auto' },
           top: { xs: 0, md: 15 },
-          right: { xs: 0, md: 16 },
+          right: { xs: 0, md: 32 },
           bottom: 0,
-          height: 'calc(100% - 20px)'
+          height: '100%'
         }
       }}
     >
