@@ -189,6 +189,7 @@ type Mutation {
   bibleCitationUpdate(input: MutationBibleCitationUpdateInput!): BibleCitation
   bibleCitationDelete(id: ID!): Boolean
   createKeyword(value: String!, languageId: String!): Keyword!
+  createMuxVideoAndQueueUpload(videoId: ID!, edition: String!, languageId: ID!, version: Int!, r2PublicUrl: String!, originalFilename: String!, durationMs: Int!, duration: Int!, width: Int!, height: Int!, downloadable: Boolean = true, maxResolution: MaxResolutionTier = fhd): MuxVideo!
   createMuxVideoUploadByFile(name: String!, userGenerated: Boolean, downloadable: Boolean = false, maxResolution: MaxResolutionTier = fhd): MuxVideo!
   createMuxVideoUploadByUrl(url: String!, userGenerated: Boolean, downloadable: Boolean = false, maxResolution: MaxResolutionTier = fhd): MuxVideo!
   enableMuxDownload(id: ID!, resolution: String): MuxVideo
@@ -843,7 +844,7 @@ type Video
   variantLanguagesWithSlug(input: VideoVariantFilter): [LanguageWithSlug!]!
   variants(input: VideoVariantFilter): [VideoVariant!]!
   subtitles(languageId: ID, primary: Boolean, edition: String): [VideoSubtitle!]!
-  variant(languageId: ID, input: VideoVariantFilter): VideoVariant
+  variant(languageId: ID, input: VideoVariantFilter): VideoVariant @deprecated(reason: "Use variants instead")
   images(aspectRatio: ImageAspectRatio): [CloudflareImage!]!
   restrictDownloadPlatforms: [Platform!]!
   restrictViewPlatforms: [Platform!]!
