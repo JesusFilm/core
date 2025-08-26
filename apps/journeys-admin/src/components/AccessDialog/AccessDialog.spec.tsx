@@ -260,7 +260,7 @@ describe('AccessDialog', () => {
     expect(getAllByRole('button', { name: 'Manager' })).toHaveLength(2)
     expect(getAllByRole('button', { name: 'Manager' })[0]).toBeDisabled()
     expect(getAllByRole('button', { name: 'Manager' })[1]).toBeDisabled()
-    
+
     // Should still have 2 members
     expect(getAllByRole('button', { name: 'Member' })).toHaveLength(2)
     expect(getAllByRole('button', { name: 'Member' })[0]).toBeDisabled()

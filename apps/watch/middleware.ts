@@ -89,8 +89,8 @@ function getBrowserLanguage(req: NextRequest): string {
 
 function getLocale(req: NextRequest): string {
   // Priority 1: Cookie
-  const cookieLocale = req.cookies.get('NEXT_LOCALE')?.value?.split('---')[1]
-  if (cookieLocale != null) return cookieLocale
+  // const cookieLocale = req.cookies.get('NEXT_LOCALE')?.value?.split('---')[1]
+  // if (cookieLocale != null) return cookieLocale
 
   // Priority 2: URL Path
   const pathLocale = getLocaleFromPath(req.nextUrl.pathname)
@@ -111,16 +111,21 @@ export function middleware(req: NextRequest): NextResponse | undefined {
   const isWatchRoute = req.nextUrl.pathname.startsWith('/watch')
   const isAsset = req.nextUrl.pathname.includes('/assets/')
 
-  if (isNextInternal || isApi || !isWatchRoute || isAsset) {
-    return
-  }
+  if (isNextInternal || isApi || !isWatchRoute || isAsset) return
 
   const locale = getLocale(req)
 
   if (locale !== DEFAULT_LOCALE) {
     const rewriteUrl = req.nextUrl.clone()
-    const cleanPathname = req.nextUrl.pathname.split('?')[0]
-    rewriteUrl.pathname = `/${locale}${cleanPathname}`
+    const [pathname, query] = req.nextUrl.pathname.split('?')
+
+    if (pathname === '/watch') {
+      rewriteUrl.pathname = `/watch/${LANGUAGE_MAPPINGS[locale].languageSlugs[0]}${query ? `?${query}` : ''}`
+      return NextResponse.redirect(rewriteUrl, 302)
+    } else {
+      rewriteUrl.pathname = `/${locale}${pathname}${query ? `?${query}` : ''}`
+    }
+
     return NextResponse.rewrite(rewriteUrl)
   }
 

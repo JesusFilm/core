@@ -1,4 +1,3 @@
-import { useQuery } from '@apollo/client'
 import Box from '@mui/material/Box'
 import Container from '@mui/material/Container'
 import Stack from '@mui/material/Stack'
@@ -7,11 +6,10 @@ import { useRouter } from 'next/router'
 import { NextSeo } from 'next-seo'
 import { ReactElement, useEffect, useState } from 'react'
 
-import { GetLanguagesSlug } from '../../../__generated__/GetLanguagesSlug'
 import { useVideoChildren } from '../../libs/useVideoChildren'
 import { useVideo } from '../../libs/videoContext'
 import { audioLanguageRedirect } from '../../libs/watchContext/audioLanguageRedirect'
-import { GET_LANGUAGES_SLUG } from '../AudioLanguageDialog/AudioLanguageDialog'
+import { useLanguagesSlugQuery } from '../../libs/useLanguagesSlugQuery'
 import { DownloadDialog } from '../DownloadDialog'
 import { PageWrapper } from '../PageWrapper'
 import { ShareButton } from '../ShareButton'
@@ -47,7 +45,7 @@ export function VideoContentPage(): ReactElement {
   )
 
   const { loading: languageVariantsLoading, data: languageVariantsData } =
-    useQuery<GetLanguagesSlug>(GET_LANGUAGES_SLUG, {
+    useLanguagesSlugQuery({
       variables: {
         id
       }

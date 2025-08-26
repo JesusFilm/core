@@ -321,7 +321,6 @@ export const reducer = (state: WatchState, action: WatchAction): WatchState => {
 
       return {
         ...state,
-        loading: true,
         audioLanguage: newAudioLanguage,
         subtitleLanguage: newAudioLanguage
       }

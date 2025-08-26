@@ -12,7 +12,7 @@ import { ReactElement } from 'react'
 import { getLabelDetails } from '../../../libs/utils/getLabelDetails/getLabelDetails'
 import { useVideo } from '../../../libs/videoContext'
 import { HeroOverlay } from '../../HeroOverlay'
-import { AudioLanguageButton } from '../../VideoContentPage/AudioLanguageButton'
+import { AudioLanguageSelect } from '../AudioLanguageSelect'
 
 interface ContainerHeroProps {
   openDialog: () => void
@@ -96,7 +96,7 @@ export function ContainerHero({
             }}
           >
             <Box sx={{ mb: 1 }}>
-              <AudioLanguageButton componentVariant="button" />
+              <AudioLanguageSelect />
             </Box>
             <IconButton
               sx={{

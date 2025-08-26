@@ -24,7 +24,7 @@ export function useLanguageActions() {
   const { state, dispatch } = useWatch()
 
   const updateSiteLanguage = useCallback(
-    (language: string) => {
+    (language: string, reload: boolean = true) => {
       // Dispatch the pure action first
       dispatch({
         type: 'UpdateSiteLanguage',
@@ -44,7 +44,7 @@ export function useLanguageActions() {
       setCookie('SUBTITLE_LANGUAGE', newSubtitleLanguage)
 
       // Trigger page reload
-      if (state.router) {
+      if (state.router && reload) {
         setTimeout(() => state.router?.reload(), 0)
       }
     },
@@ -52,7 +52,7 @@ export function useLanguageActions() {
   )
 
   const updateAudioLanguage = useCallback(
-    (languageId: string) => {
+    (languageId: string, reload: boolean = true) => {
       // Dispatch the pure action first
       dispatch({
         type: 'UpdateAudioLanguage',
@@ -64,7 +64,7 @@ export function useLanguageActions() {
       setCookie('SUBTITLE_LANGUAGE', languageId)
 
       // Trigger page reload
-      if (state.router) {
+      if (state.router && reload) {
         setTimeout(() => state.router?.reload(), 0)
       }
     },

@@ -60,14 +60,6 @@ describe('middleware', () => {
   })
 
   describe('locale detection', () => {
-    it('should use cookie locale if available', () => {
-      const req = createMockRequest('/watch/jesus.html', {
-        cookies: [{ name: 'NEXT_LOCALE', value: 'fingerprint---fr' }]
-      })
-      const result = middleware(req) as NextResponse
-      expect(result?.headers.get('x-middleware-rewrite')).toContain('/fr/')
-    })
-
     it('should use URL path locale if no cookie', () => {
       const req = createMockRequest('/watch/jesus.html/french.html')
       const result = middleware(req) as NextResponse
@@ -98,32 +90,12 @@ describe('middleware', () => {
   })
 
   describe('URL rewriting', () => {
-    it('should rewrite URL with locale prefix for non-default locale', () => {
-      const req = createMockRequest('/watch/jesus.html', {
-        cookies: [{ name: 'NEXT_LOCALE', value: 'fingerprint---fr' }]
-      })
-      const result = middleware(req) as NextResponse
-      expect(result?.headers.get('x-middleware-rewrite')).toBe(
-        'http://localhost/fr/watch/jesus.html'
-      )
-    })
-
     it('should not rewrite URL for default locale', () => {
       const req = createMockRequest('/watch/jesus.html', {
         cookies: [{ name: 'NEXT_LOCALE', value: 'fingerprint---en' }]
       })
       const result = middleware(req)
       expect(result).toEqual(NextResponse.next())
-    })
-
-    it('should preserve query parameters when rewriting URL', () => {
-      const req = createMockRequest('/watch/jesus.html?param=value', {
-        cookies: [{ name: 'NEXT_LOCALE', value: 'fingerprint---fr' }]
-      })
-      const result = middleware(req) as NextResponse
-      expect(result?.headers.get('x-middleware-rewrite')).toBe(
-        'http://localhost/fr/watch/jesus.html?param=value'
-      )
     })
   })
 

@@ -16,16 +16,18 @@ describe('instantSearchRouter', () => {
     }
 
     const mockRouteState = {
-      query: 'test query',
-      refinementList: {
-        languageEnglishName: ['English']
+      [indexName]: {
+        query: 'test query',
+        refinementList: {
+          languageEnglishName: ['English']
+        }
       }
-    } as unknown as UiState
+    }
 
     it('should map state to route correctly', () => {
       const routeState = createInstantSearchRouter({
         indexName
-      }).stateMapping.stateToRoute(mockUiState)
+      }).stateMapping?.stateToRoute(mockUiState)
 
       expect(routeState).toEqual({
         query: 'test query',
@@ -38,10 +40,15 @@ describe('instantSearchRouter', () => {
     it('should map route to state correctly', () => {
       const uiState = createInstantSearchRouter({
         indexName
-      }).stateMapping.routeToState(mockRouteState)
+      }).stateMapping?.routeToState(mockRouteState)
 
       expect(uiState).toEqual({
-        indexName: mockRouteState
+        indexName: {
+          query: 'test query',
+          refinementList: {
+            languageEnglishName: ['English']
+          }
+        }
       })
     })
 
@@ -63,7 +70,7 @@ describe('instantSearchRouter', () => {
         [indexName]: expectedState
       }
 
-      const result = router.stateMapping.stateToRoute(uiState)
+      const result = router.stateMapping?.stateToRoute(uiState)
 
       expect(mockMapRefinements).toHaveBeenCalledWith(uiState[indexName])
       expect(result).toEqual(expectedState)
@@ -92,7 +99,7 @@ describe('instantSearchRouter', () => {
         }
       }
 
-      const result = router.stateMapping.stateToRoute(uiState)
+      const result = router.stateMapping?.stateToRoute(uiState)
 
       expect(result).toEqual({
         query: 'test query',
@@ -109,9 +116,9 @@ describe('instantSearchRouter', () => {
         }
       }
 
-      const result = router.stateMapping.stateToRoute(uiState)
+      const result = router.stateMapping?.stateToRoute(uiState)
 
-      expect(result.refinementList).toEqual({
+      expect(result?.refinementList).toEqual({
         languageEnglishName: ['French']
       })
     })
@@ -126,7 +133,7 @@ describe('instantSearchRouter', () => {
         }
       }
 
-      const result = router.stateMapping.stateToRoute(uiState)
+      const result = router.stateMapping?.stateToRoute(uiState)
 
       expect(result).toEqual({
         query: 'test query',

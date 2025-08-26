@@ -64,7 +64,7 @@ resource "aws_ecs_task_definition" "ecs_task_definition" {
         ], [
         {
           name      = "DD_API_KEY"
-          valueFrom = "arn:aws:ssm:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:parameter/terraform/prd/DATADOG_API_KEY"
+          valueFrom = "arn:aws:ssm:${data.aws_region.current.id}:${data.aws_caller_identity.current.account_id}:parameter/terraform/prd/DATADOG_API_KEY"
         }
       ])
       logConfiguration = {
@@ -82,7 +82,7 @@ resource "aws_ecs_task_definition" "ecs_task_definition" {
         secretOptions = [
           {
             name      = "apikey"
-            valueFrom = "arn:aws:ssm:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:parameter/terraform/prd/DATADOG_API_KEY"
+            valueFrom = "arn:aws:ssm:${data.aws_region.current.id}:${data.aws_caller_identity.current.account_id}:parameter/terraform/prd/DATADOG_API_KEY"
           }
         ]
       }
@@ -123,7 +123,7 @@ resource "aws_ecs_task_definition" "ecs_task_definition" {
       secrets = [
         {
           name      = "DD_API_KEY"
-          valueFrom = "arn:aws:ssm:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:parameter/terraform/prd/DATADOG_API_KEY"
+          valueFrom = "arn:aws:ssm:${data.aws_region.current.id}:${data.aws_caller_identity.current.account_id}:parameter/terraform/prd/DATADOG_API_KEY"
         }
       ]
       mountPoints = []
@@ -138,7 +138,7 @@ resource "aws_ecs_task_definition" "ecs_task_definition" {
         logDriver = "awslogs"
         options = {
           awslogs-group         = resource.aws_cloudwatch_log_group.ecs_cw_log_group.name
-          awslogs-region        = data.aws_region.current.name
+          awslogs-region        = data.aws_region.current.id
           awslogs-stream-prefix = "core"
         }
       }
@@ -168,7 +168,7 @@ resource "aws_ecs_task_definition" "ecs_task_definition" {
         logDriver = "awslogs"
         options = {
           awslogs-group         = resource.aws_cloudwatch_log_group.ecs_cw_log_group.name
-          awslogs-region        = data.aws_region.current.name
+          awslogs-region        = data.aws_region.current.id
           awslogs-stream-prefix = "core"
         }
       }

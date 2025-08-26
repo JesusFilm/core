@@ -22,7 +22,7 @@ import type {
 } from '../../../__generated__/GetVideoContent'
 import type { VideoContentFields } from '../../../__generated__/VideoContentFields'
 import i18nConfig from '../../../next-i18next.config'
-import { GET_LANGUAGES_SLUG } from '../../../src/components/AudioLanguageDialog/AudioLanguageDialog'
+import { GET_LANGUAGES_SLUG } from '../../../src/libs/useLanguagesSlugQuery'
 import { GET_SUBTITLES } from '../../../src/components/SubtitleDialog/SubtitleDialog'
 import { createApolloClient } from '../../../src/libs/apolloClient'
 import { getCookie } from '../../../src/libs/cookieHandler'
