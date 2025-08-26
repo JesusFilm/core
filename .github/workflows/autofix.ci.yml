@@ -32,7 +32,7 @@ jobs:
           cache: 'npm'
           cache-dependency-path: package-lock.json
       - name: NPM Install
-        run: npm install --silent
+        run: npm ci --no-audit --no-fund --prefer-offline --silent
       - name: generate prisma imports
         uses: mansagroup/nrwl-nx-action@v3
         with:
