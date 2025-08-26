@@ -9,7 +9,7 @@ on:
     branches: [main]
 jobs:
   lint:
-    runs-on: blacksmith-2vcpu-ubuntu-2204
+    runs-on: ubuntu-latest
     strategy:
       matrix:
         node-version: [22]
@@ -19,6 +19,8 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
+      - name: Start NX Agent run
+        run: npx nx-cloud start-ci-run --distribute-on="3 linux-medium-js"
       - name: Fetch other branches
         if: ${{ github.event_name == 'pull_request' }}
         run: git fetch --no-tags --prune --depth=5 origin $GITHUB_BASE_REF
@@ -86,3 +88,5 @@ jobs:
       - uses: autofix-ci/action@635ffb0c9798bd160680f18fd73371e355b85f27
         with:
           commit-message: 'fix: lint issues'
+      - name: Stop NX Agent run
+        run: npx nx-cloud stop-ci-run
