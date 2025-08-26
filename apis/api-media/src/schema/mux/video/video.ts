@@ -3,6 +3,8 @@ import { GraphQLError } from 'graphql'
 import { Prisma, prisma } from '@core/prisma/media/client'
 
 import { queue as processVideoDownloadsQueue } from '../../../workers/processVideoDownloads/queue'
+import { jobName as processVideoUploadsJobName } from '../../../workers/processVideoUploads/config'
+import { queue as processVideoUploadsQueue } from '../../../workers/processVideoUploads/queue'
 import { builder } from '../../builder'
 import { VideoSource, VideoSourceShape } from '../../videoSource/videoSource'
 
@@ -203,6 +205,92 @@ builder.queryFields((t) => ({
 }))
 
 builder.mutationFields((t) => ({
+  createMuxVideoAndQueueUpload: t.withAuth({ isPublisher: true }).prismaField({
+    type: 'MuxVideo',
+    nullable: false,
+    args: {
+      videoId: t.arg({ type: 'ID', required: true }),
+      edition: t.arg({ type: 'String', required: true }),
+      languageId: t.arg({ type: 'ID', required: true }),
+      version: t.arg({ type: 'Int', required: true }),
+      r2PublicUrl: t.arg({ type: 'String', required: true }),
+      originalFilename: t.arg({ type: 'String', required: true }),
+      durationMs: t.arg({ type: 'Int', required: true }),
+      duration: t.arg({ type: 'Int', required: true }),
+      width: t.arg({ type: 'Int', required: true }),
+      height: t.arg({ type: 'Int', required: true }),
+      downloadable: t.arg({
+        type: 'Boolean',
+        required: false,
+        defaultValue: true
+      }),
+      maxResolution: t.arg({
+        type: MaxResolutionTier,
+        required: false,
+        defaultValue: 'fhd'
+      })
+    },
+    resolve: async (
+      query,
+      _root,
+      {
+        videoId,
+        edition,
+        languageId,
+        version,
+        r2PublicUrl,
+        originalFilename,
+        durationMs,
+        duration,
+        width,
+        height,
+        downloadable,
+        maxResolution
+      },
+      { user }
+    ) => {
+      if (user == null)
+        throw new GraphQLError('User not found', {
+          extensions: { code: 'NOT_FOUND' }
+        })
+
+      // 1) Create the Mux asset from the R2 public URL
+      const muxAsset = await createVideoFromUrl(
+        r2PublicUrl,
+        false,
+        getMaxResolutionValue(maxResolution ?? 'fhd'),
+        downloadable ?? true
+      )
+
+      // 2) Persist a MuxVideo row
+      const muxVideo = await prisma.muxVideo.create({
+        ...query,
+        data: {
+          assetId: muxAsset.id,
+          userId: user.id,
+          downloadable: downloadable ?? true
+        }
+      })
+
+      // 3) Enqueue processing job inside VPC
+      await processVideoUploadsQueue.add(processVideoUploadsJobName, {
+        videoId,
+        edition,
+        languageId,
+        version,
+        muxVideoId: muxVideo.id,
+        metadata: {
+          durationMs,
+          duration,
+          width,
+          height
+        },
+        originalFilename
+      })
+
+      return muxVideo
+    }
+  }),
   createMuxVideoUploadByFile: t
     .withAuth({ isAuthenticated: true })
     .prismaField({
