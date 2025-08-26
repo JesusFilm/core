@@ -84,7 +84,8 @@ describe('ActionService', () => {
           gtmEventName: null,
           journey: { disconnect: true },
           target: null,
-          url: null
+          url: null,
+          phone: null
         },
         where: { parentBlockId: 'id' }
       })
@@ -119,7 +120,8 @@ describe('ActionService', () => {
           gtmEventName: null,
           journey: { disconnect: true },
           target: null,
-          url: null
+          url: null,
+          phone: null
         },
         where: { parentBlockId: 'id' }
       })
@@ -161,10 +163,47 @@ describe('ActionService', () => {
           gtmEventName: 'gtmEventName',
           journey: { disconnect: true },
           target: undefined,
-          url: 'mycuteemail@hi.com'
+          url: 'mycuteemail@hi.com',
+          phone: null
         },
         where: { parentBlockId: 'id' }
       })
+    })
+  })
+
+  describe('phoneActionUpdate', () => {
+    it('should upsert phone action', async () => {
+      await service.phoneActionUpdate('id', blockWithUserTeam, {
+        gtmEventName: 'gtmEventName',
+        phone: '1234567890'
+      })
+      expect(prismaService.action.upsert).toHaveBeenCalledWith({
+        create: {
+          phone: '1234567890',
+          gtmEventName: 'gtmEventName',
+          parentBlock: { connect: { id: '1' } }
+        },
+        include: { parentBlock: { include: { action: true } } },
+        update: {
+          block: { disconnect: true },
+          email: null,
+          gtmEventName: 'gtmEventName',
+          journey: { disconnect: true },
+          target: null,
+          url: null,
+          phone: '1234567890'
+        },
+        where: { parentBlockId: 'id' }
+      })
+    })
+
+    it('should throw an error if the phone number is not valid', async () => {
+      await expect(
+        service.phoneActionUpdate('id', blockWithUserTeam, {
+          gtmEventName: 'gtmEventName',
+          phone: 'not a phone number'
+        })
+      ).rejects.toThrow('must be a valid phone number')
     })
   })
 })
