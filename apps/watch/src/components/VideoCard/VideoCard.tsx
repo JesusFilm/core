@@ -68,7 +68,7 @@ export function VideoCard({
   index,
   active,
   imageSx,
-  onClick: handleClick
+  onClick: handleClick,
 }: VideoCardProps): ReactElement {
   const { t } = useTranslation('apps-watch')
 
@@ -80,7 +80,15 @@ export function VideoCard({
   const href = getSlug(containerSlug, video?.label, video?.variant?.slug)
 
   return (
-    <NextLink href={href} passHref legacyBehavior locale={false}>
+    <NextLink
+      href={{
+        pathname: href,
+        query: { r: 0 }
+      }}
+      passHref
+      legacyBehavior
+      locale={false}
+    >
       <Link
         display="block"
         underline="none"

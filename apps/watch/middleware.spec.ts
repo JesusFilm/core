@@ -602,6 +602,19 @@ describe('middleware', () => {
         )
       })
     })
+
+    it('should skip audio language redirect when r=0 query parameter is present', async () => {
+      const req = createMockRequest('/watch/jesus.html/english.html?r=0', {
+        cookies: [{ name: 'AUDIO_LANGUAGE', value: 'fingerprint---123' }]
+      })
+
+      const result = await middleware(req)
+
+      // Should not redirect when r=0 is present
+      expect(result?.status).toBe(200)
+      expect(mockRedisExists).not.toHaveBeenCalled()
+      expect(mockRedisHget).not.toHaveBeenCalled()
+    })
   })
 
   describe('middleware configuration', () => {

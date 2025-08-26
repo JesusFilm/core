@@ -130,6 +130,9 @@ export const AUDIO_LANGUAGE_REDIRECT_CACHE_SCHEMA_VERSION = `2025-08-25`
 async function audioLanguageRedirect(
   req: NextRequest
 ): Promise<NextResponse | undefined> {
+  // Check if r=0 query parameter is present to skip audio language redirect
+  if (req.nextUrl.searchParams.get('r') === '0') return
+
   const pathname = req.nextUrl.pathname
   const pathParts = pathname.split('/').filter(Boolean)
 
