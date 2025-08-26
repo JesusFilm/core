@@ -192,10 +192,10 @@ export function GridVariant({
               <NextImage
                 src={imageBlock.src}
                 alt={imageBlock.alt}
-                layout="fill"
-                objectFit="cover"
+                fill
                 onLoad={() => setIsImageLoading(false)}
                 sx={{
+                  objectFit: 'cover',
                   transform: `scale(${(imageBlock.scale ?? 100) / 100})`,
                   transformOrigin: `${imageBlock.focalLeft}% ${imageBlock.focalTop}%`
                 }}

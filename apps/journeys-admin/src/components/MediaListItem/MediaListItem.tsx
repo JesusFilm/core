@@ -101,8 +101,10 @@ export function MediaListItem({
               <NextImage
                 src={image}
                 alt={title}
-                layout="fill"
-                objectFit="cover"
+                fill
+                sx={{
+                  objectFit: 'cover'
+                }}
               />
             ) : (
               <Box
