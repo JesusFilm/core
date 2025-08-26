@@ -99,6 +99,7 @@ describe('blockUpdateAction mutation', () => {
         }
       })
     })
+
     it('updates a navigateToBlock action', async () => {
       prismaMock.block.findUnique.mockResolvedValueOnce(actionableBlock)
       // findParentStepBlock call
