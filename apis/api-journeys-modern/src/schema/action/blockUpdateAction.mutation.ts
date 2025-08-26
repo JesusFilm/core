@@ -45,6 +45,7 @@ const ACTION_UPDATE_RESET: Prisma.ActionUpdateInput = {
   url: null,
   target: null,
   email: null,
+  phone: null,
   journey: { disconnect: true },
   block: { disconnect: true }
 }
@@ -195,14 +196,6 @@ builder.mutationField('blockUpdateAction', (t) =>
         })
 
       if (isPhone) {
-        try {
-          await phoneSchema.parse({ phone: input.phone })
-        } catch {
-          throw new GraphQLError('must be a valid phone number', {
-            extensions: { code: 'BAD_USER_INPUT' }
-          })
-        }
-
         return await prisma.action.upsert({
           where: { parentBlockId: id },
           create: {

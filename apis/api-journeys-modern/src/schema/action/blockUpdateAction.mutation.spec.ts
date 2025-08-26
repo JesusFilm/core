@@ -134,6 +134,7 @@ describe('blockUpdateAction mutation', () => {
           url: null,
           target: null,
           email: null,
+          phone: null,
           journey: { disconnect: true },
           block: { connect: { id: 'blockId' } }
         }),
@@ -182,6 +183,7 @@ describe('blockUpdateAction mutation', () => {
           url: 'https://example.com',
           target: null,
           email: null,
+          phone: null,
           journey: { disconnect: true },
           block: { disconnect: true }
         }),
@@ -229,6 +231,7 @@ describe('blockUpdateAction mutation', () => {
           url: null,
           target: null,
           email: 'example@example.com',
+          phone: null,
           journey: { disconnect: true },
           block: { disconnect: true }
         }),
