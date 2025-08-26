@@ -9,7 +9,7 @@ export const PhoneActionRef = builder.prismaObject('Action', {
   fields: (t) => ({
     phone: t.string({
       nullable: false,
-      resolve: (action) => action.phone || ''
+      resolve: (action: any) => action.phone || ''
     })
   })
 })

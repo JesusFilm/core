@@ -21,6 +21,10 @@ describe('blockUpdateAction mutation', () => {
           email
           gtmEventName
         }
+        ... on PhoneAction {
+          phone
+          gtmEventName
+        }
         ... on NavigateToBlockAction {
           gtmEventName
           blockId
@@ -49,6 +53,52 @@ describe('blockUpdateAction mutation', () => {
   })
 
   describe('success cases', () => {
+    it('updates a phone action', async () => {
+      prismaMock.block.findUnique.mockResolvedValueOnce(actionableBlock)
+
+      prismaMock.action.upsert.mockResolvedValueOnce({
+        parentBlockId: '1',
+        gtmEventName: null,
+        phone: '+15551234567',
+        parentBlock: { id: '1', action: {} }
+      } as any)
+
+      const variables = {
+        id: actionableBlock.id,
+        input: { gtmEventName: null, phone: '+15551234567' }
+      }
+
+      const result = await authClient({ document: MUTATION, variables })
+
+      expect(prismaMock.action.upsert).toHaveBeenCalledWith({
+        where: { parentBlockId: '1' },
+        create: {
+          gtmEventName: null,
+          parentBlock: { connect: { id: '1' } },
+          phone: '+15551234567'
+        },
+        update: expect.objectContaining({
+          gtmEventName: null,
+          url: null,
+          target: null,
+          email: null,
+          journey: { disconnect: true },
+          block: { disconnect: true },
+          phone: '+15551234567'
+        }),
+        include: { parentBlock: { include: { action: true } } }
+      })
+
+      expect(result).toEqual({
+        data: {
+          blockUpdateAction: {
+            __typename: 'PhoneAction',
+            gtmEventName: null,
+            phone: '+15551234567'
+          }
+        }
+      })
+    })
     it('updates a navigateToBlock action', async () => {
       prismaMock.block.findUnique.mockResolvedValueOnce(actionableBlock)
       // findParentStepBlock call

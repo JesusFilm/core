@@ -32,6 +32,15 @@ const navigateToBlockActionInputSchema = z.object({
   blockId: z.string()
 })
 
+const phoneActionInputSchema = z.object({
+  gtmEventName: z.string().nullish(),
+  phone: z.string()
+})
+
+const phoneSchema = z.object({
+  phone: z.string().regex(/^\+?[1-9]\d{1,14}$/)
+})
+
 const ACTION_UPDATE_RESET: Prisma.ActionUpdateInput = {
   url: null,
   target: null,
@@ -70,10 +79,15 @@ builder.mutationField('blockUpdateAction', (t) =>
         emailActionInputSchema.safeParse(input)
       const { success: isNavigateToBlock, data: navigateToBlockInput } =
         navigateToBlockActionInputSchema.safeParse(input)
+      const { success: isPhone, data: phoneInput } =
+        phoneActionInputSchema.safeParse(input)
 
-      const numberOfValidInputs = [isLink, isEmail, isNavigateToBlock].filter(
-        Boolean
-      ).length
+      const numberOfValidInputs = [
+        isLink,
+        isEmail,
+        isNavigateToBlock,
+        isPhone
+      ].filter(Boolean).length
 
       if (numberOfValidInputs > 1)
         throw new GraphQLError('invalid combination of inputs provided', {
@@ -179,6 +193,29 @@ builder.mutationField('blockUpdateAction', (t) =>
           },
           include: { parentBlock: { include: { action: true } } }
         })
+
+      if (isPhone) {
+        try {
+          await phoneSchema.parse({ phone: input.phone })
+        } catch {
+          throw new GraphQLError('must be a valid phone number', {
+            extensions: { code: 'BAD_USER_INPUT' }
+          })
+        }
+
+        return await prisma.action.upsert({
+          where: { parentBlockId: id },
+          create: {
+            ...phoneInput,
+            parentBlock: { connect: { id: block.id } }
+          },
+          update: {
+            ...ACTION_UPDATE_RESET,
+            ...phoneInput
+          },
+          include: { parentBlock: { include: { action: true } } }
+        })
+      }
 
       throw new GraphQLError('no inputs provided', {
         extensions: { code: 'BAD_USER_INPUT' }

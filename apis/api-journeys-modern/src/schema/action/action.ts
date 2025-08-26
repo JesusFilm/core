@@ -21,7 +21,7 @@ export const ActionInterface = builder.prismaInterface('Action', {
   resolveType: (action) => {
     if (action.blockId != null) return 'NavigateToBlockAction'
     if (action.email != null) return 'EmailAction'
-    if (action.phone != null) return 'PhoneAction'
+    if ((action as any).phone != null) return 'PhoneAction'
     return 'LinkAction'
   }
 })
