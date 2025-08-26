@@ -44,36 +44,33 @@ export function ReportsNavigation({
       flexGrow={1}
       data-testid="JourneysAdminReportsNavigation"
     >
-      <NextLink href={href} passHref legacyBehavior>
-        <Chip
-          icon={icon}
-          label={label}
-          component="a"
-          variant="outlined"
-          clickable
-          sx={{
-            display: {
-              xs: 'none',
-              md: 'flex'
-            }
-          }}
-        />
-      </NextLink>
-      <NextLink href={href} passHref legacyBehavior>
-        <IconButton
-          aria-label={label}
-          href={href}
-          target="_blank"
-          sx={{
-            display: {
-              xs: 'flex',
-              md: 'none'
-            }
-          }}
-        >
-          {icon}
-        </IconButton>
-      </NextLink>
+      <Chip
+        icon={icon}
+        label={label}
+        component={NextLink}
+        href={href}
+        variant="outlined"
+        clickable
+        sx={{
+          display: {
+            xs: 'none',
+            md: 'flex'
+          }
+        }}
+      />
+      <IconButton
+        component={NextLink}
+        href={href}
+        aria-label={label}
+        sx={{
+          display: {
+            xs: 'flex',
+            md: 'none'
+          }
+        }}
+      >
+        {icon}
+      </IconButton>
     </Stack>
   )
 }
