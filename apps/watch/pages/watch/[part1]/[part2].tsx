@@ -34,6 +34,7 @@ import { slugMap } from '../../../src/libs/slugMap'
 import { VIDEO_CONTENT_FIELDS } from '../../../src/libs/videoContentFields'
 import { VideoProvider } from '../../../src/libs/videoContext'
 import {
+  AudioLanguageData,
   WatchInitialState,
   WatchProvider
 } from '../../../src/libs/watchContext/WatchContext'
@@ -66,7 +67,7 @@ export const GET_VARIANT_LANGUAGES_ID_AND_SLUG = gql`
 interface Part2PageProps {
   content: VideoContentFields
   videoSubtitleLanguages: VideoVariantSubtitle[]
-  videoAudioLanguagesIdsAndSlugs: VariantLanguageIdAndSlug[]
+  videoAudioLanguagesIdsAndSlugs: AudioLanguageData[]
 }
 
 const DynamicVideoContainerPage = dynamic(
@@ -171,7 +172,7 @@ export const getStaticProps: GetStaticProps<Part2PageProps> = async (
       }
     }
 
-    let videoAudioLanguagesData: GetVariantLanguagesIdAndSlug | undefined
+    let videoAudioLanguagesData: AudioLanguageData[] = []
     if (contentData.content.variant?.slug != null) {
       const { data } = await client.query<
         GetVariantLanguagesIdAndSlug,
@@ -182,7 +183,13 @@ export const getStaticProps: GetStaticProps<Part2PageProps> = async (
           id: contentData.content.id
         }
       })
-      videoAudioLanguagesData = data
+      videoAudioLanguagesData =
+        data?.video?.variantLanguages?.map(
+          ({ id, slug }): AudioLanguageData => ({
+            id,
+            slug
+          })
+        ) || []
     }
 
     // required for auto-subtitle
@@ -202,8 +209,7 @@ export const getStaticProps: GetStaticProps<Part2PageProps> = async (
         flags: await getFlags(),
         content: contentData.content,
         videoSubtitleLanguages: subtitleData?.video?.variant?.subtitle ?? [],
-        videoAudioLanguagesIdsAndSlugs:
-          videoAudioLanguagesData?.video?.variantLanguages ?? [],
+        videoAudioLanguagesIdsAndSlugs: videoAudioLanguagesData,
         ...(await serverSideTranslations(
           context.locale ?? 'en',
           ['apps-watch'],

@@ -41,6 +41,7 @@ import { slugMap } from '../../../../src/libs/slugMap'
 import { VIDEO_CONTENT_FIELDS } from '../../../../src/libs/videoContentFields'
 import { VideoProvider } from '../../../../src/libs/videoContext'
 import {
+  AudioLanguageData,
   WatchInitialState,
   WatchProvider
 } from '../../../../src/libs/watchContext/WatchContext'
@@ -73,7 +74,7 @@ interface Part3PageProps {
   container: VideoContentFields
   content: VideoContentFields
   videoSubtitleLanguages: VideoVariantSubtitle[]
-  videoAudioLanguagesIdsAndSlugs: VariantLanguageIdAndSlug[]
+  videoAudioLanguagesIdsAndSlugs: AudioLanguageData[]
 }
 
 export default function Part3Page({
@@ -176,7 +177,7 @@ export const getStaticProps: GetStaticProps<Part3PageProps> = async (
       }
     }
 
-    let videoAudioLanguagesData: GetVariantLanguagesIdAndSlug | undefined
+    let videoAudioLanguagesData: AudioLanguageData[] = []
     if (contentData.content.variant?.slug != null) {
       const { data } = await client.query<
         GetVariantLanguagesIdAndSlug,
@@ -187,7 +188,13 @@ export const getStaticProps: GetStaticProps<Part3PageProps> = async (
           id: contentData.content.id
         }
       })
-      videoAudioLanguagesData = data
+      videoAudioLanguagesData =
+        data?.video?.variantLanguages?.map(
+          ({ id, slug }): AudioLanguageData => ({
+            id,
+            slug
+          })
+        ) ?? []
     }
 
     // required for auto-subtitle
@@ -209,8 +216,7 @@ export const getStaticProps: GetStaticProps<Part3PageProps> = async (
         container: containerData.container,
         content: contentData.content,
         videoSubtitleLanguages: subtitleData?.video?.variant?.subtitle ?? [],
-        videoAudioLanguagesIdsAndSlugs:
-          videoAudioLanguagesData?.video?.variantLanguages ?? [],
+        videoAudioLanguagesIdsAndSlugs: videoAudioLanguagesData,
         ...(await serverSideTranslations(
           context.locale ?? 'en',
           ['apps-watch'],

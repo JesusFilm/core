@@ -1,11 +1,11 @@
 import { LanguageOption } from '@core/shared/ui/LanguageAutocomplete'
 
 import { GetAllLanguages_languages as Language } from '../../../../../__generated__/GetAllLanguages'
-import { GetVariantLanguagesIdAndSlug_video_variantLanguages as VariantLanguageIdAndSlug } from '../../../../../__generated__/GetVariantLanguagesIdAndSlug'
+import { AudioLanguageData } from '../../../../watchContext/WatchContext'
 
 interface GetCurrentAudioLanguageParams {
   allLanguages?: Language[]
-  currentAudioLanguage?: VariantLanguageIdAndSlug
+  currentAudioLanguage?: AudioLanguageData
   routerAsPath: string
   audioLanguage?: string
 }
@@ -22,7 +22,7 @@ function transformLanguageToOption(language: Language): LanguageOption {
 // Priority 1: Use currentAudioLanguage if available
 function getCurrentLanguageFromAudioState(
   allLanguages: Language[],
-  currentAudioLanguage?: VariantLanguageIdAndSlug
+  currentAudioLanguage?: AudioLanguageData
 ): LanguageOption | undefined {
   if (!currentAudioLanguage) return undefined
 

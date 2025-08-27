@@ -15,6 +15,11 @@ import { LANGUAGE_MAPPINGS } from '../localeMapping'
 
 import { initializeVideoLanguages } from './initializeVideoLanguages'
 
+export interface AudioLanguageData {
+  id: string
+  slug: string | null
+}
+
 /**
  * State interface for watch context containing language preferences and video-specific data
  */
@@ -37,12 +42,12 @@ export interface WatchState {
   videoVariantSlug?: string
   /** All available languages from the system */
   allLanguages?: Language[]
-  /** Available audio languages for the current video (simplified structure with id and slug only) */
-  videoAudioLanguagesIdsAndSlugs?: VariantLanguageIdAndSlug[]
+  /** Available audio languages for the current video (clean structure with id and slug only) */
+  videoAudioLanguagesIdsAndSlugs?: AudioLanguageData[]
   /** Available subtitle languages for the current video */
   videoSubtitleLanguages?: SubtitleLanguage[]
   /** Currently selected audio track for the video object (based on availability and preferences) */
-  currentAudioLanguage?: VariantLanguageIdAndSlug
+  currentAudioLanguage?: AudioLanguageData
   /** Whether subtitles should be enabled (calculation based on if the user's subtitle preference is met but the audio track is not met) */
   autoSubtitle?: boolean
 }
@@ -78,8 +83,8 @@ interface SetAllLanguagesAction {
  */
 interface SetVideoAudioLanguagesAction {
   type: 'SetVideoAudioLanguages'
-  /** Available audio languages for the current video (simplified structure with id and slug only) */
-  videoAudioLanguagesIdsAndSlugs: VariantLanguageIdAndSlug[]
+  /** Available audio languages for the current video id and slug only */
+  videoAudioLanguagesIdsAndSlugs: AudioLanguageData[]
 }
 
 /**
@@ -236,7 +241,7 @@ export const reducer = (state: WatchState, action: WatchAction): WatchState => {
         action.videoAudioLanguagesIdsAndSlugs
 
       // Find the best matching audio language for the current user preference
-      let currentAudioLanguage: VariantLanguageIdAndSlug | undefined
+      let currentAudioLanguage: AudioLanguageData | undefined
 
       // Check if user's audio preference is available for this video
       for (const lang of videoAudioLanguagesIdsAndSlugs) {
