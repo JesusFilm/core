@@ -16,6 +16,12 @@ export interface TextResponseWithButtonRestore_textResponse_GridContainerBlock {
   parentOrder: number | null;
 }
 
+export interface TextResponseWithButtonRestore_textResponse_ButtonBlock_action_PhoneAction {
+  __typename: "PhoneAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+}
+
 export interface TextResponseWithButtonRestore_textResponse_ButtonBlock_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
   parentBlockId: string;
@@ -37,14 +43,7 @@ export interface TextResponseWithButtonRestore_textResponse_ButtonBlock_action_E
   email: string;
 }
 
-export interface TextResponseWithButtonRestore_textResponse_ButtonBlock_action_PhoneAction {
-  __typename: "PhoneAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-  phone: string;
-}
-
-export type TextResponseWithButtonRestore_textResponse_ButtonBlock_action = TextResponseWithButtonRestore_textResponse_ButtonBlock_action_NavigateToBlockAction | TextResponseWithButtonRestore_textResponse_ButtonBlock_action_LinkAction | TextResponseWithButtonRestore_textResponse_ButtonBlock_action_EmailAction | TextResponseWithButtonRestore_textResponse_ButtonBlock_action_PhoneAction;
+export type TextResponseWithButtonRestore_textResponse_ButtonBlock_action = TextResponseWithButtonRestore_textResponse_ButtonBlock_action_PhoneAction | TextResponseWithButtonRestore_textResponse_ButtonBlock_action_NavigateToBlockAction | TextResponseWithButtonRestore_textResponse_ButtonBlock_action_LinkAction | TextResponseWithButtonRestore_textResponse_ButtonBlock_action_EmailAction;
 
 export interface TextResponseWithButtonRestore_textResponse_ButtonBlock_settings {
   __typename: "ButtonBlockSettings";
@@ -136,6 +135,12 @@ export interface TextResponseWithButtonRestore_textResponse_ImageBlock {
   focalLeft: number | null;
 }
 
+export interface TextResponseWithButtonRestore_textResponse_RadioOptionBlock_action_PhoneAction {
+  __typename: "PhoneAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+}
+
 export interface TextResponseWithButtonRestore_textResponse_RadioOptionBlock_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
   parentBlockId: string;
@@ -157,14 +162,7 @@ export interface TextResponseWithButtonRestore_textResponse_RadioOptionBlock_act
   email: string;
 }
 
-export interface TextResponseWithButtonRestore_textResponse_RadioOptionBlock_action_PhoneAction {
-  __typename: "PhoneAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-  phone: string;
-}
-
-export type TextResponseWithButtonRestore_textResponse_RadioOptionBlock_action = TextResponseWithButtonRestore_textResponse_RadioOptionBlock_action_NavigateToBlockAction | TextResponseWithButtonRestore_textResponse_RadioOptionBlock_action_LinkAction | TextResponseWithButtonRestore_textResponse_RadioOptionBlock_action_EmailAction | TextResponseWithButtonRestore_textResponse_RadioOptionBlock_action_PhoneAction;
+export type TextResponseWithButtonRestore_textResponse_RadioOptionBlock_action = TextResponseWithButtonRestore_textResponse_RadioOptionBlock_action_PhoneAction | TextResponseWithButtonRestore_textResponse_RadioOptionBlock_action_NavigateToBlockAction | TextResponseWithButtonRestore_textResponse_RadioOptionBlock_action_LinkAction | TextResponseWithButtonRestore_textResponse_RadioOptionBlock_action_EmailAction;
 
 export interface TextResponseWithButtonRestore_textResponse_RadioOptionBlock {
   __typename: "RadioOptionBlock";
@@ -189,6 +187,12 @@ export interface TextResponseWithButtonRestore_textResponse_RadioQuestionBlock {
   gridView: boolean | null;
 }
 
+export interface TextResponseWithButtonRestore_textResponse_SignUpBlock_action_PhoneAction {
+  __typename: "PhoneAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+}
+
 export interface TextResponseWithButtonRestore_textResponse_SignUpBlock_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
   parentBlockId: string;
@@ -210,14 +214,7 @@ export interface TextResponseWithButtonRestore_textResponse_SignUpBlock_action_E
   email: string;
 }
 
-export interface TextResponseWithButtonRestore_textResponse_SignUpBlock_action_PhoneAction {
-  __typename: "PhoneAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-  phone: string;
-}
-
-export type TextResponseWithButtonRestore_textResponse_SignUpBlock_action = TextResponseWithButtonRestore_textResponse_SignUpBlock_action_NavigateToBlockAction | TextResponseWithButtonRestore_textResponse_SignUpBlock_action_LinkAction | TextResponseWithButtonRestore_textResponse_SignUpBlock_action_EmailAction | TextResponseWithButtonRestore_textResponse_SignUpBlock_action_PhoneAction;
+export type TextResponseWithButtonRestore_textResponse_SignUpBlock_action = TextResponseWithButtonRestore_textResponse_SignUpBlock_action_PhoneAction | TextResponseWithButtonRestore_textResponse_SignUpBlock_action_NavigateToBlockAction | TextResponseWithButtonRestore_textResponse_SignUpBlock_action_LinkAction | TextResponseWithButtonRestore_textResponse_SignUpBlock_action_EmailAction;
 
 export interface TextResponseWithButtonRestore_textResponse_SignUpBlock {
   __typename: "SignUpBlock";
@@ -348,6 +345,12 @@ export interface TextResponseWithButtonRestore_textResponse_VideoBlock_mediaVide
 
 export type TextResponseWithButtonRestore_textResponse_VideoBlock_mediaVideo = TextResponseWithButtonRestore_textResponse_VideoBlock_mediaVideo_Video | TextResponseWithButtonRestore_textResponse_VideoBlock_mediaVideo_MuxVideo | TextResponseWithButtonRestore_textResponse_VideoBlock_mediaVideo_YouTube;
 
+export interface TextResponseWithButtonRestore_textResponse_VideoBlock_action_PhoneAction {
+  __typename: "PhoneAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+}
+
 export interface TextResponseWithButtonRestore_textResponse_VideoBlock_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
   parentBlockId: string;
@@ -369,14 +372,7 @@ export interface TextResponseWithButtonRestore_textResponse_VideoBlock_action_Em
   email: string;
 }
 
-export interface TextResponseWithButtonRestore_textResponse_VideoBlock_action_PhoneAction {
-  __typename: "PhoneAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-  phone: string;
-}
-
-export type TextResponseWithButtonRestore_textResponse_VideoBlock_action = TextResponseWithButtonRestore_textResponse_VideoBlock_action_NavigateToBlockAction | TextResponseWithButtonRestore_textResponse_VideoBlock_action_LinkAction | TextResponseWithButtonRestore_textResponse_VideoBlock_action_EmailAction | TextResponseWithButtonRestore_textResponse_VideoBlock_action_PhoneAction;
+export type TextResponseWithButtonRestore_textResponse_VideoBlock_action = TextResponseWithButtonRestore_textResponse_VideoBlock_action_PhoneAction | TextResponseWithButtonRestore_textResponse_VideoBlock_action_NavigateToBlockAction | TextResponseWithButtonRestore_textResponse_VideoBlock_action_LinkAction | TextResponseWithButtonRestore_textResponse_VideoBlock_action_EmailAction;
 
 export interface TextResponseWithButtonRestore_textResponse_VideoBlock {
   __typename: "VideoBlock";
@@ -453,6 +449,12 @@ export interface TextResponseWithButtonRestore_textResponse_VideoBlock {
   action: TextResponseWithButtonRestore_textResponse_VideoBlock_action | null;
 }
 
+export interface TextResponseWithButtonRestore_textResponse_VideoTriggerBlock_triggerAction_PhoneAction {
+  __typename: "PhoneAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+}
+
 export interface TextResponseWithButtonRestore_textResponse_VideoTriggerBlock_triggerAction_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
   parentBlockId: string;
@@ -474,14 +476,7 @@ export interface TextResponseWithButtonRestore_textResponse_VideoTriggerBlock_tr
   email: string;
 }
 
-export interface TextResponseWithButtonRestore_textResponse_VideoTriggerBlock_triggerAction_PhoneAction {
-  __typename: "PhoneAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-  phone: string;
-}
-
-export type TextResponseWithButtonRestore_textResponse_VideoTriggerBlock_triggerAction = TextResponseWithButtonRestore_textResponse_VideoTriggerBlock_triggerAction_NavigateToBlockAction | TextResponseWithButtonRestore_textResponse_VideoTriggerBlock_triggerAction_LinkAction | TextResponseWithButtonRestore_textResponse_VideoTriggerBlock_triggerAction_EmailAction | TextResponseWithButtonRestore_textResponse_VideoTriggerBlock_triggerAction_PhoneAction;
+export type TextResponseWithButtonRestore_textResponse_VideoTriggerBlock_triggerAction = TextResponseWithButtonRestore_textResponse_VideoTriggerBlock_triggerAction_PhoneAction | TextResponseWithButtonRestore_textResponse_VideoTriggerBlock_triggerAction_NavigateToBlockAction | TextResponseWithButtonRestore_textResponse_VideoTriggerBlock_triggerAction_LinkAction | TextResponseWithButtonRestore_textResponse_VideoTriggerBlock_triggerAction_EmailAction;
 
 export interface TextResponseWithButtonRestore_textResponse_VideoTriggerBlock {
   __typename: "VideoTriggerBlock";
@@ -505,6 +500,12 @@ export interface TextResponseWithButtonRestore_button_GridContainerBlock {
   parentOrder: number | null;
 }
 
+export interface TextResponseWithButtonRestore_button_ButtonBlock_action_PhoneAction {
+  __typename: "PhoneAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+}
+
 export interface TextResponseWithButtonRestore_button_ButtonBlock_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
   parentBlockId: string;
@@ -526,14 +527,7 @@ export interface TextResponseWithButtonRestore_button_ButtonBlock_action_EmailAc
   email: string;
 }
 
-export interface TextResponseWithButtonRestore_button_ButtonBlock_action_PhoneAction {
-  __typename: "PhoneAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-  phone: string;
-}
-
-export type TextResponseWithButtonRestore_button_ButtonBlock_action = TextResponseWithButtonRestore_button_ButtonBlock_action_NavigateToBlockAction | TextResponseWithButtonRestore_button_ButtonBlock_action_LinkAction | TextResponseWithButtonRestore_button_ButtonBlock_action_EmailAction | TextResponseWithButtonRestore_button_ButtonBlock_action_PhoneAction;
+export type TextResponseWithButtonRestore_button_ButtonBlock_action = TextResponseWithButtonRestore_button_ButtonBlock_action_PhoneAction | TextResponseWithButtonRestore_button_ButtonBlock_action_NavigateToBlockAction | TextResponseWithButtonRestore_button_ButtonBlock_action_LinkAction | TextResponseWithButtonRestore_button_ButtonBlock_action_EmailAction;
 
 export interface TextResponseWithButtonRestore_button_ButtonBlock_settings {
   __typename: "ButtonBlockSettings";
@@ -625,6 +619,12 @@ export interface TextResponseWithButtonRestore_button_ImageBlock {
   focalLeft: number | null;
 }
 
+export interface TextResponseWithButtonRestore_button_RadioOptionBlock_action_PhoneAction {
+  __typename: "PhoneAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+}
+
 export interface TextResponseWithButtonRestore_button_RadioOptionBlock_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
   parentBlockId: string;
@@ -646,14 +646,7 @@ export interface TextResponseWithButtonRestore_button_RadioOptionBlock_action_Em
   email: string;
 }
 
-export interface TextResponseWithButtonRestore_button_RadioOptionBlock_action_PhoneAction {
-  __typename: "PhoneAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-  phone: string;
-}
-
-export type TextResponseWithButtonRestore_button_RadioOptionBlock_action = TextResponseWithButtonRestore_button_RadioOptionBlock_action_NavigateToBlockAction | TextResponseWithButtonRestore_button_RadioOptionBlock_action_LinkAction | TextResponseWithButtonRestore_button_RadioOptionBlock_action_EmailAction | TextResponseWithButtonRestore_button_RadioOptionBlock_action_PhoneAction;
+export type TextResponseWithButtonRestore_button_RadioOptionBlock_action = TextResponseWithButtonRestore_button_RadioOptionBlock_action_PhoneAction | TextResponseWithButtonRestore_button_RadioOptionBlock_action_NavigateToBlockAction | TextResponseWithButtonRestore_button_RadioOptionBlock_action_LinkAction | TextResponseWithButtonRestore_button_RadioOptionBlock_action_EmailAction;
 
 export interface TextResponseWithButtonRestore_button_RadioOptionBlock {
   __typename: "RadioOptionBlock";
@@ -678,6 +671,12 @@ export interface TextResponseWithButtonRestore_button_RadioQuestionBlock {
   gridView: boolean | null;
 }
 
+export interface TextResponseWithButtonRestore_button_SignUpBlock_action_PhoneAction {
+  __typename: "PhoneAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+}
+
 export interface TextResponseWithButtonRestore_button_SignUpBlock_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
   parentBlockId: string;
@@ -699,14 +698,7 @@ export interface TextResponseWithButtonRestore_button_SignUpBlock_action_EmailAc
   email: string;
 }
 
-export interface TextResponseWithButtonRestore_button_SignUpBlock_action_PhoneAction {
-  __typename: "PhoneAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-  phone: string;
-}
-
-export type TextResponseWithButtonRestore_button_SignUpBlock_action = TextResponseWithButtonRestore_button_SignUpBlock_action_NavigateToBlockAction | TextResponseWithButtonRestore_button_SignUpBlock_action_LinkAction | TextResponseWithButtonRestore_button_SignUpBlock_action_EmailAction | TextResponseWithButtonRestore_button_SignUpBlock_action_PhoneAction;
+export type TextResponseWithButtonRestore_button_SignUpBlock_action = TextResponseWithButtonRestore_button_SignUpBlock_action_PhoneAction | TextResponseWithButtonRestore_button_SignUpBlock_action_NavigateToBlockAction | TextResponseWithButtonRestore_button_SignUpBlock_action_LinkAction | TextResponseWithButtonRestore_button_SignUpBlock_action_EmailAction;
 
 export interface TextResponseWithButtonRestore_button_SignUpBlock {
   __typename: "SignUpBlock";
@@ -837,6 +829,12 @@ export interface TextResponseWithButtonRestore_button_VideoBlock_mediaVideo_YouT
 
 export type TextResponseWithButtonRestore_button_VideoBlock_mediaVideo = TextResponseWithButtonRestore_button_VideoBlock_mediaVideo_Video | TextResponseWithButtonRestore_button_VideoBlock_mediaVideo_MuxVideo | TextResponseWithButtonRestore_button_VideoBlock_mediaVideo_YouTube;
 
+export interface TextResponseWithButtonRestore_button_VideoBlock_action_PhoneAction {
+  __typename: "PhoneAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+}
+
 export interface TextResponseWithButtonRestore_button_VideoBlock_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
   parentBlockId: string;
@@ -858,14 +856,7 @@ export interface TextResponseWithButtonRestore_button_VideoBlock_action_EmailAct
   email: string;
 }
 
-export interface TextResponseWithButtonRestore_button_VideoBlock_action_PhoneAction {
-  __typename: "PhoneAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-  phone: string;
-}
-
-export type TextResponseWithButtonRestore_button_VideoBlock_action = TextResponseWithButtonRestore_button_VideoBlock_action_NavigateToBlockAction | TextResponseWithButtonRestore_button_VideoBlock_action_LinkAction | TextResponseWithButtonRestore_button_VideoBlock_action_EmailAction | TextResponseWithButtonRestore_button_VideoBlock_action_PhoneAction;
+export type TextResponseWithButtonRestore_button_VideoBlock_action = TextResponseWithButtonRestore_button_VideoBlock_action_PhoneAction | TextResponseWithButtonRestore_button_VideoBlock_action_NavigateToBlockAction | TextResponseWithButtonRestore_button_VideoBlock_action_LinkAction | TextResponseWithButtonRestore_button_VideoBlock_action_EmailAction;
 
 export interface TextResponseWithButtonRestore_button_VideoBlock {
   __typename: "VideoBlock";
@@ -942,6 +933,12 @@ export interface TextResponseWithButtonRestore_button_VideoBlock {
   action: TextResponseWithButtonRestore_button_VideoBlock_action | null;
 }
 
+export interface TextResponseWithButtonRestore_button_VideoTriggerBlock_triggerAction_PhoneAction {
+  __typename: "PhoneAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+}
+
 export interface TextResponseWithButtonRestore_button_VideoTriggerBlock_triggerAction_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
   parentBlockId: string;
@@ -963,14 +960,7 @@ export interface TextResponseWithButtonRestore_button_VideoTriggerBlock_triggerA
   email: string;
 }
 
-export interface TextResponseWithButtonRestore_button_VideoTriggerBlock_triggerAction_PhoneAction {
-  __typename: "PhoneAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-  phone: string;
-}
-
-export type TextResponseWithButtonRestore_button_VideoTriggerBlock_triggerAction = TextResponseWithButtonRestore_button_VideoTriggerBlock_triggerAction_NavigateToBlockAction | TextResponseWithButtonRestore_button_VideoTriggerBlock_triggerAction_LinkAction | TextResponseWithButtonRestore_button_VideoTriggerBlock_triggerAction_EmailAction | TextResponseWithButtonRestore_button_VideoTriggerBlock_triggerAction_PhoneAction;
+export type TextResponseWithButtonRestore_button_VideoTriggerBlock_triggerAction = TextResponseWithButtonRestore_button_VideoTriggerBlock_triggerAction_PhoneAction | TextResponseWithButtonRestore_button_VideoTriggerBlock_triggerAction_NavigateToBlockAction | TextResponseWithButtonRestore_button_VideoTriggerBlock_triggerAction_LinkAction | TextResponseWithButtonRestore_button_VideoTriggerBlock_triggerAction_EmailAction;
 
 export interface TextResponseWithButtonRestore_button_VideoTriggerBlock {
   __typename: "VideoTriggerBlock";
@@ -994,6 +984,12 @@ export interface TextResponseWithButtonRestore_startIcon_GridContainerBlock {
   parentOrder: number | null;
 }
 
+export interface TextResponseWithButtonRestore_startIcon_ButtonBlock_action_PhoneAction {
+  __typename: "PhoneAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+}
+
 export interface TextResponseWithButtonRestore_startIcon_ButtonBlock_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
   parentBlockId: string;
@@ -1015,14 +1011,7 @@ export interface TextResponseWithButtonRestore_startIcon_ButtonBlock_action_Emai
   email: string;
 }
 
-export interface TextResponseWithButtonRestore_startIcon_ButtonBlock_action_PhoneAction {
-  __typename: "PhoneAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-  phone: string;
-}
-
-export type TextResponseWithButtonRestore_startIcon_ButtonBlock_action = TextResponseWithButtonRestore_startIcon_ButtonBlock_action_NavigateToBlockAction | TextResponseWithButtonRestore_startIcon_ButtonBlock_action_LinkAction | TextResponseWithButtonRestore_startIcon_ButtonBlock_action_EmailAction | TextResponseWithButtonRestore_startIcon_ButtonBlock_action_PhoneAction;
+export type TextResponseWithButtonRestore_startIcon_ButtonBlock_action = TextResponseWithButtonRestore_startIcon_ButtonBlock_action_PhoneAction | TextResponseWithButtonRestore_startIcon_ButtonBlock_action_NavigateToBlockAction | TextResponseWithButtonRestore_startIcon_ButtonBlock_action_LinkAction | TextResponseWithButtonRestore_startIcon_ButtonBlock_action_EmailAction;
 
 export interface TextResponseWithButtonRestore_startIcon_ButtonBlock_settings {
   __typename: "ButtonBlockSettings";
@@ -1114,6 +1103,12 @@ export interface TextResponseWithButtonRestore_startIcon_ImageBlock {
   focalLeft: number | null;
 }
 
+export interface TextResponseWithButtonRestore_startIcon_RadioOptionBlock_action_PhoneAction {
+  __typename: "PhoneAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+}
+
 export interface TextResponseWithButtonRestore_startIcon_RadioOptionBlock_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
   parentBlockId: string;
@@ -1135,14 +1130,7 @@ export interface TextResponseWithButtonRestore_startIcon_RadioOptionBlock_action
   email: string;
 }
 
-export interface TextResponseWithButtonRestore_startIcon_RadioOptionBlock_action_PhoneAction {
-  __typename: "PhoneAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-  phone: string;
-}
-
-export type TextResponseWithButtonRestore_startIcon_RadioOptionBlock_action = TextResponseWithButtonRestore_startIcon_RadioOptionBlock_action_NavigateToBlockAction | TextResponseWithButtonRestore_startIcon_RadioOptionBlock_action_LinkAction | TextResponseWithButtonRestore_startIcon_RadioOptionBlock_action_EmailAction | TextResponseWithButtonRestore_startIcon_RadioOptionBlock_action_PhoneAction;
+export type TextResponseWithButtonRestore_startIcon_RadioOptionBlock_action = TextResponseWithButtonRestore_startIcon_RadioOptionBlock_action_PhoneAction | TextResponseWithButtonRestore_startIcon_RadioOptionBlock_action_NavigateToBlockAction | TextResponseWithButtonRestore_startIcon_RadioOptionBlock_action_LinkAction | TextResponseWithButtonRestore_startIcon_RadioOptionBlock_action_EmailAction;
 
 export interface TextResponseWithButtonRestore_startIcon_RadioOptionBlock {
   __typename: "RadioOptionBlock";
@@ -1167,6 +1155,12 @@ export interface TextResponseWithButtonRestore_startIcon_RadioQuestionBlock {
   gridView: boolean | null;
 }
 
+export interface TextResponseWithButtonRestore_startIcon_SignUpBlock_action_PhoneAction {
+  __typename: "PhoneAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+}
+
 export interface TextResponseWithButtonRestore_startIcon_SignUpBlock_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
   parentBlockId: string;
@@ -1188,14 +1182,7 @@ export interface TextResponseWithButtonRestore_startIcon_SignUpBlock_action_Emai
   email: string;
 }
 
-export interface TextResponseWithButtonRestore_startIcon_SignUpBlock_action_PhoneAction {
-  __typename: "PhoneAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-  phone: string;
-}
-
-export type TextResponseWithButtonRestore_startIcon_SignUpBlock_action = TextResponseWithButtonRestore_startIcon_SignUpBlock_action_NavigateToBlockAction | TextResponseWithButtonRestore_startIcon_SignUpBlock_action_LinkAction | TextResponseWithButtonRestore_startIcon_SignUpBlock_action_EmailAction | TextResponseWithButtonRestore_startIcon_SignUpBlock_action_PhoneAction;
+export type TextResponseWithButtonRestore_startIcon_SignUpBlock_action = TextResponseWithButtonRestore_startIcon_SignUpBlock_action_PhoneAction | TextResponseWithButtonRestore_startIcon_SignUpBlock_action_NavigateToBlockAction | TextResponseWithButtonRestore_startIcon_SignUpBlock_action_LinkAction | TextResponseWithButtonRestore_startIcon_SignUpBlock_action_EmailAction;
 
 export interface TextResponseWithButtonRestore_startIcon_SignUpBlock {
   __typename: "SignUpBlock";
@@ -1326,6 +1313,12 @@ export interface TextResponseWithButtonRestore_startIcon_VideoBlock_mediaVideo_Y
 
 export type TextResponseWithButtonRestore_startIcon_VideoBlock_mediaVideo = TextResponseWithButtonRestore_startIcon_VideoBlock_mediaVideo_Video | TextResponseWithButtonRestore_startIcon_VideoBlock_mediaVideo_MuxVideo | TextResponseWithButtonRestore_startIcon_VideoBlock_mediaVideo_YouTube;
 
+export interface TextResponseWithButtonRestore_startIcon_VideoBlock_action_PhoneAction {
+  __typename: "PhoneAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+}
+
 export interface TextResponseWithButtonRestore_startIcon_VideoBlock_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
   parentBlockId: string;
@@ -1347,14 +1340,7 @@ export interface TextResponseWithButtonRestore_startIcon_VideoBlock_action_Email
   email: string;
 }
 
-export interface TextResponseWithButtonRestore_startIcon_VideoBlock_action_PhoneAction {
-  __typename: "PhoneAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-  phone: string;
-}
-
-export type TextResponseWithButtonRestore_startIcon_VideoBlock_action = TextResponseWithButtonRestore_startIcon_VideoBlock_action_NavigateToBlockAction | TextResponseWithButtonRestore_startIcon_VideoBlock_action_LinkAction | TextResponseWithButtonRestore_startIcon_VideoBlock_action_EmailAction | TextResponseWithButtonRestore_startIcon_VideoBlock_action_PhoneAction;
+export type TextResponseWithButtonRestore_startIcon_VideoBlock_action = TextResponseWithButtonRestore_startIcon_VideoBlock_action_PhoneAction | TextResponseWithButtonRestore_startIcon_VideoBlock_action_NavigateToBlockAction | TextResponseWithButtonRestore_startIcon_VideoBlock_action_LinkAction | TextResponseWithButtonRestore_startIcon_VideoBlock_action_EmailAction;
 
 export interface TextResponseWithButtonRestore_startIcon_VideoBlock {
   __typename: "VideoBlock";
@@ -1431,6 +1417,12 @@ export interface TextResponseWithButtonRestore_startIcon_VideoBlock {
   action: TextResponseWithButtonRestore_startIcon_VideoBlock_action | null;
 }
 
+export interface TextResponseWithButtonRestore_startIcon_VideoTriggerBlock_triggerAction_PhoneAction {
+  __typename: "PhoneAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+}
+
 export interface TextResponseWithButtonRestore_startIcon_VideoTriggerBlock_triggerAction_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
   parentBlockId: string;
@@ -1452,14 +1444,7 @@ export interface TextResponseWithButtonRestore_startIcon_VideoTriggerBlock_trigg
   email: string;
 }
 
-export interface TextResponseWithButtonRestore_startIcon_VideoTriggerBlock_triggerAction_PhoneAction {
-  __typename: "PhoneAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-  phone: string;
-}
-
-export type TextResponseWithButtonRestore_startIcon_VideoTriggerBlock_triggerAction = TextResponseWithButtonRestore_startIcon_VideoTriggerBlock_triggerAction_NavigateToBlockAction | TextResponseWithButtonRestore_startIcon_VideoTriggerBlock_triggerAction_LinkAction | TextResponseWithButtonRestore_startIcon_VideoTriggerBlock_triggerAction_EmailAction | TextResponseWithButtonRestore_startIcon_VideoTriggerBlock_triggerAction_PhoneAction;
+export type TextResponseWithButtonRestore_startIcon_VideoTriggerBlock_triggerAction = TextResponseWithButtonRestore_startIcon_VideoTriggerBlock_triggerAction_PhoneAction | TextResponseWithButtonRestore_startIcon_VideoTriggerBlock_triggerAction_NavigateToBlockAction | TextResponseWithButtonRestore_startIcon_VideoTriggerBlock_triggerAction_LinkAction | TextResponseWithButtonRestore_startIcon_VideoTriggerBlock_triggerAction_EmailAction;
 
 export interface TextResponseWithButtonRestore_startIcon_VideoTriggerBlock {
   __typename: "VideoTriggerBlock";
@@ -1483,6 +1468,12 @@ export interface TextResponseWithButtonRestore_endIcon_GridContainerBlock {
   parentOrder: number | null;
 }
 
+export interface TextResponseWithButtonRestore_endIcon_ButtonBlock_action_PhoneAction {
+  __typename: "PhoneAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+}
+
 export interface TextResponseWithButtonRestore_endIcon_ButtonBlock_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
   parentBlockId: string;
@@ -1504,14 +1495,7 @@ export interface TextResponseWithButtonRestore_endIcon_ButtonBlock_action_EmailA
   email: string;
 }
 
-export interface TextResponseWithButtonRestore_endIcon_ButtonBlock_action_PhoneAction {
-  __typename: "PhoneAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-  phone: string;
-}
-
-export type TextResponseWithButtonRestore_endIcon_ButtonBlock_action = TextResponseWithButtonRestore_endIcon_ButtonBlock_action_NavigateToBlockAction | TextResponseWithButtonRestore_endIcon_ButtonBlock_action_LinkAction | TextResponseWithButtonRestore_endIcon_ButtonBlock_action_EmailAction | TextResponseWithButtonRestore_endIcon_ButtonBlock_action_PhoneAction;
+export type TextResponseWithButtonRestore_endIcon_ButtonBlock_action = TextResponseWithButtonRestore_endIcon_ButtonBlock_action_PhoneAction | TextResponseWithButtonRestore_endIcon_ButtonBlock_action_NavigateToBlockAction | TextResponseWithButtonRestore_endIcon_ButtonBlock_action_LinkAction | TextResponseWithButtonRestore_endIcon_ButtonBlock_action_EmailAction;
 
 export interface TextResponseWithButtonRestore_endIcon_ButtonBlock_settings {
   __typename: "ButtonBlockSettings";
@@ -1603,6 +1587,12 @@ export interface TextResponseWithButtonRestore_endIcon_ImageBlock {
   focalLeft: number | null;
 }
 
+export interface TextResponseWithButtonRestore_endIcon_RadioOptionBlock_action_PhoneAction {
+  __typename: "PhoneAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+}
+
 export interface TextResponseWithButtonRestore_endIcon_RadioOptionBlock_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
   parentBlockId: string;
@@ -1624,14 +1614,7 @@ export interface TextResponseWithButtonRestore_endIcon_RadioOptionBlock_action_E
   email: string;
 }
 
-export interface TextResponseWithButtonRestore_endIcon_RadioOptionBlock_action_PhoneAction {
-  __typename: "PhoneAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-  phone: string;
-}
-
-export type TextResponseWithButtonRestore_endIcon_RadioOptionBlock_action = TextResponseWithButtonRestore_endIcon_RadioOptionBlock_action_NavigateToBlockAction | TextResponseWithButtonRestore_endIcon_RadioOptionBlock_action_LinkAction | TextResponseWithButtonRestore_endIcon_RadioOptionBlock_action_EmailAction | TextResponseWithButtonRestore_endIcon_RadioOptionBlock_action_PhoneAction;
+export type TextResponseWithButtonRestore_endIcon_RadioOptionBlock_action = TextResponseWithButtonRestore_endIcon_RadioOptionBlock_action_PhoneAction | TextResponseWithButtonRestore_endIcon_RadioOptionBlock_action_NavigateToBlockAction | TextResponseWithButtonRestore_endIcon_RadioOptionBlock_action_LinkAction | TextResponseWithButtonRestore_endIcon_RadioOptionBlock_action_EmailAction;
 
 export interface TextResponseWithButtonRestore_endIcon_RadioOptionBlock {
   __typename: "RadioOptionBlock";
@@ -1656,6 +1639,12 @@ export interface TextResponseWithButtonRestore_endIcon_RadioQuestionBlock {
   gridView: boolean | null;
 }
 
+export interface TextResponseWithButtonRestore_endIcon_SignUpBlock_action_PhoneAction {
+  __typename: "PhoneAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+}
+
 export interface TextResponseWithButtonRestore_endIcon_SignUpBlock_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
   parentBlockId: string;
@@ -1677,14 +1666,7 @@ export interface TextResponseWithButtonRestore_endIcon_SignUpBlock_action_EmailA
   email: string;
 }
 
-export interface TextResponseWithButtonRestore_endIcon_SignUpBlock_action_PhoneAction {
-  __typename: "PhoneAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-  phone: string;
-}
-
-export type TextResponseWithButtonRestore_endIcon_SignUpBlock_action = TextResponseWithButtonRestore_endIcon_SignUpBlock_action_NavigateToBlockAction | TextResponseWithButtonRestore_endIcon_SignUpBlock_action_LinkAction | TextResponseWithButtonRestore_endIcon_SignUpBlock_action_EmailAction | TextResponseWithButtonRestore_endIcon_SignUpBlock_action_PhoneAction;
+export type TextResponseWithButtonRestore_endIcon_SignUpBlock_action = TextResponseWithButtonRestore_endIcon_SignUpBlock_action_PhoneAction | TextResponseWithButtonRestore_endIcon_SignUpBlock_action_NavigateToBlockAction | TextResponseWithButtonRestore_endIcon_SignUpBlock_action_LinkAction | TextResponseWithButtonRestore_endIcon_SignUpBlock_action_EmailAction;
 
 export interface TextResponseWithButtonRestore_endIcon_SignUpBlock {
   __typename: "SignUpBlock";
@@ -1815,6 +1797,12 @@ export interface TextResponseWithButtonRestore_endIcon_VideoBlock_mediaVideo_You
 
 export type TextResponseWithButtonRestore_endIcon_VideoBlock_mediaVideo = TextResponseWithButtonRestore_endIcon_VideoBlock_mediaVideo_Video | TextResponseWithButtonRestore_endIcon_VideoBlock_mediaVideo_MuxVideo | TextResponseWithButtonRestore_endIcon_VideoBlock_mediaVideo_YouTube;
 
+export interface TextResponseWithButtonRestore_endIcon_VideoBlock_action_PhoneAction {
+  __typename: "PhoneAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+}
+
 export interface TextResponseWithButtonRestore_endIcon_VideoBlock_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
   parentBlockId: string;
@@ -1836,14 +1824,7 @@ export interface TextResponseWithButtonRestore_endIcon_VideoBlock_action_EmailAc
   email: string;
 }
 
-export interface TextResponseWithButtonRestore_endIcon_VideoBlock_action_PhoneAction {
-  __typename: "PhoneAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-  phone: string;
-}
-
-export type TextResponseWithButtonRestore_endIcon_VideoBlock_action = TextResponseWithButtonRestore_endIcon_VideoBlock_action_NavigateToBlockAction | TextResponseWithButtonRestore_endIcon_VideoBlock_action_LinkAction | TextResponseWithButtonRestore_endIcon_VideoBlock_action_EmailAction | TextResponseWithButtonRestore_endIcon_VideoBlock_action_PhoneAction;
+export type TextResponseWithButtonRestore_endIcon_VideoBlock_action = TextResponseWithButtonRestore_endIcon_VideoBlock_action_PhoneAction | TextResponseWithButtonRestore_endIcon_VideoBlock_action_NavigateToBlockAction | TextResponseWithButtonRestore_endIcon_VideoBlock_action_LinkAction | TextResponseWithButtonRestore_endIcon_VideoBlock_action_EmailAction;
 
 export interface TextResponseWithButtonRestore_endIcon_VideoBlock {
   __typename: "VideoBlock";
@@ -1920,6 +1901,12 @@ export interface TextResponseWithButtonRestore_endIcon_VideoBlock {
   action: TextResponseWithButtonRestore_endIcon_VideoBlock_action | null;
 }
 
+export interface TextResponseWithButtonRestore_endIcon_VideoTriggerBlock_triggerAction_PhoneAction {
+  __typename: "PhoneAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+}
+
 export interface TextResponseWithButtonRestore_endIcon_VideoTriggerBlock_triggerAction_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
   parentBlockId: string;
@@ -1941,14 +1928,7 @@ export interface TextResponseWithButtonRestore_endIcon_VideoTriggerBlock_trigger
   email: string;
 }
 
-export interface TextResponseWithButtonRestore_endIcon_VideoTriggerBlock_triggerAction_PhoneAction {
-  __typename: "PhoneAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-  phone: string;
-}
-
-export type TextResponseWithButtonRestore_endIcon_VideoTriggerBlock_triggerAction = TextResponseWithButtonRestore_endIcon_VideoTriggerBlock_triggerAction_NavigateToBlockAction | TextResponseWithButtonRestore_endIcon_VideoTriggerBlock_triggerAction_LinkAction | TextResponseWithButtonRestore_endIcon_VideoTriggerBlock_triggerAction_EmailAction | TextResponseWithButtonRestore_endIcon_VideoTriggerBlock_triggerAction_PhoneAction;
+export type TextResponseWithButtonRestore_endIcon_VideoTriggerBlock_triggerAction = TextResponseWithButtonRestore_endIcon_VideoTriggerBlock_triggerAction_PhoneAction | TextResponseWithButtonRestore_endIcon_VideoTriggerBlock_triggerAction_NavigateToBlockAction | TextResponseWithButtonRestore_endIcon_VideoTriggerBlock_triggerAction_LinkAction | TextResponseWithButtonRestore_endIcon_VideoTriggerBlock_triggerAction_EmailAction;
 
 export interface TextResponseWithButtonRestore_endIcon_VideoTriggerBlock {
   __typename: "VideoTriggerBlock";

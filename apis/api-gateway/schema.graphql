@@ -117,7 +117,7 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   blockDeleteAction(id: ID!, """
   drop this parameter after merging teams
   """
-  journeyId: ID) : Block! @join__field(graph: API_JOURNEYS) 
+  journeyId: ID) : Block! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
   blockUpdateNavigateToBlockAction(
     id: ID!
     input: NavigateToBlockActionInput!
@@ -125,7 +125,7 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
     drop this parameter after merging teams
     """
     journeyId: ID
-  ): NavigateToBlockAction! @join__field(graph: API_JOURNEYS) 
+  ): NavigateToBlockAction! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
   blockUpdateLinkAction(
     id: ID!
     input: LinkActionInput!
@@ -133,7 +133,7 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
     drop this parameter after merging teams
     """
     journeyId: ID
-  ): LinkAction! @join__field(graph: API_JOURNEYS) 
+  ): LinkAction! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
   blockUpdateEmailAction(
     id: ID!
     input: EmailActionInput!
@@ -141,7 +141,7 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
     drop this parameter after merging teams
     """
     journeyId: ID
-  ): EmailAction! @join__field(graph: API_JOURNEYS) 
+  ): EmailAction! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
   blockUpdatePhoneAction(
     id: ID!
     input: PhoneActionInput!
@@ -149,8 +149,8 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
     drop this parameter after merging teams
     """
     journeyId: ID
-  ): PhoneAction! @join__field(graph: API_JOURNEYS) 
-  blockUpdateAction(id: ID!, input: BlockUpdateActionInput) : Action! @join__field(graph: API_JOURNEYS) 
+  ): PhoneAction! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
+  blockUpdateAction(id: ID!, input: BlockUpdateActionInput!) : Action! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
   """
   blockDelete returns the updated sibling blocks on successful delete
   """
@@ -569,11 +569,12 @@ type EmailAction implements Action @join__type(graph: API_JOURNEYS)  @join__type
   parentStepId: String
 }
 
-type PhoneAction implements Action @join__type(graph: API_JOURNEYS)  @join__implements(graph: API_JOURNEYS, interface: "Action")  {
+type PhoneAction implements Action @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  @join__implements(graph: API_JOURNEYS, interface: "Action")  @join__implements(graph: API_JOURNEYS_MODERN, interface: "Action")  {
   parentBlockId: ID!
   parentBlock: Block!
   gtmEventName: String
   phone: String!
+  countryCode: String!
 }
 
 type Journey @join__type(graph: API_JOURNEYS, key: "id")  @join__type(graph: API_JOURNEYS_MODERN, key: "id")  {
@@ -978,7 +979,7 @@ type RadioOptionBlock implements Block @join__type(graph: API_JOURNEYS)  @join__
   parentBlockId: ID
   parentOrder: Int
   label: String!
-  action: Action @join__field(graph: API_JOURNEYS) 
+  action: Action
   """
   pollOptionImageBlockId is present if a child block should be used as a poll option image.
         This child block should not be rendered normally, instead it should be used
@@ -1000,7 +1001,7 @@ type SignUpBlock implements Block @join__type(graph: API_JOURNEYS)  @join__type(
   journeyId: ID!
   parentBlockId: ID
   parentOrder: Int
-  action: Action @join__field(graph: API_JOURNEYS) 
+  action: Action
   submitIconId: ID
   submitLabel: String
 }
@@ -3424,7 +3425,7 @@ input SiteCreateInput @join__type(graph: API_ANALYTICS)  {
   goals: [String!]
 }
 
-input NavigateToBlockActionInput @join__type(graph: API_JOURNEYS)  {
+input NavigateToBlockActionInput @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
   gtmEventName: String
   blockId: String!
 }
@@ -3444,7 +3445,7 @@ input EmailActionInput @join__type(graph: API_JOURNEYS)  @join__type(graph: API_
   parentStepId: String
 }
 
-input BlockUpdateActionInput @join__type(graph: API_JOURNEYS)  {
+input BlockUpdateActionInput @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
   gtmEventName: String
   email: String
   url: String
@@ -3453,9 +3454,10 @@ input BlockUpdateActionInput @join__type(graph: API_JOURNEYS)  {
   phone: String
 }
 
-input PhoneActionInput @join__type(graph: API_JOURNEYS)  {
+input PhoneActionInput @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
   gtmEventName: String
   phone: String!
+  countryCode: String!
 }
 
 input BlocksFilter @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {

@@ -8,6 +8,7 @@ export const BlockUpdateActionInput = builder.inputType(
       email: t.string({ required: false }),
       url: t.string({ required: false }),
       phone: t.string({ required: false }),
+      countryCode: t.string({ required: false }),
       target: t.string({ required: false }),
       blockId: t.string({ required: false })
     })
