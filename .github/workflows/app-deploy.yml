@@ -24,6 +24,13 @@ jobs:
       - uses: useblacksmith/setup-node@v5
         with:
           node-version: ${{ matrix.node-version }}
+      - name: Install pnpm
+        run: |
+          export PNPM_HOME="$HOME/.pnpm"
+          export PATH="$PNPM_HOME:$PATH"
+          curl -fsSL https://get.pnpm.io/install.sh | sh -s -- --version 9.0.0
+          echo "PNPM_HOME=$PNPM_HOME" >> $GITHUB_ENV
+          echo "$PNPM_HOME" >> $GITHUB_PATH
       - name: Get Node Version
         id: node-version
         run: echo "version=$(node -v)" >> $GITHUB_OUTPUT
@@ -37,13 +44,13 @@ jobs:
         with:
           key: ${{ github.repository }}-${{ steps.node-version.outputs.version }}-node-modules
           path: ./node_modules
-      - name: NPM Install
-        run: npm install --silent
+      - name: Install dependencies
+        run: pnpm install --silent
       - uses: nrwl/nx-set-shas@v4
       - id: set-matrix
         name: set matrix app to affected array
         run: |
-          echo "matrix=$(npx ts-node tools/scripts/deploy-apps.ts --projects apps/*)" >> $GITHUB_OUTPUT
+          echo "matrix=$(pnpm ts-node tools/scripts/deploy-apps.ts --projects apps/*)" >> $GITHUB_OUTPUT
           cat $GITHUB_OUTPUT
   deploy-preview:
     name: Deploy Preview
@@ -97,6 +104,13 @@ jobs:
       - uses: useblacksmith/setup-node@v5
         with:
           node-version: ${{ matrix.node-version }}
+      - name: Install pnpm
+        run: |
+          export PNPM_HOME="$HOME/.pnpm"
+          export PATH="$PNPM_HOME:$PATH"
+          curl -fsSL https://get.pnpm.io/install.sh | sh -s -- --version 9.0.0
+          echo "PNPM_HOME=$PNPM_HOME" >> $GITHUB_ENV
+          echo "$PNPM_HOME" >> $GITHUB_PATH
       - name: Get Node Version
         id: node-version
         run: echo "version=$(node -v)" >> $GITHUB_OUTPUT
@@ -110,8 +124,8 @@ jobs:
         with:
           key: ${{ github.repository }}-${{ steps.node-version.outputs.version }}-node-modules
           path: ./node_modules
-      - name: NPM Install
-        run: npm install --silent
+      - name: Install dependencies
+        run: pnpm install --silent
       - uses: nrwl/nx-set-shas@v4
       - name: vercel deployment
         env:
@@ -128,19 +142,19 @@ jobs:
           NEXT_PUBLIC_VERCEL_ENV: ${{ github.event_name == 'push' && github.ref == 'refs/heads/stage' && 'stage' || 'preview' }}
           NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA: ${{ github.sha }}
         # use run-namy to avoid case where deploy command doesn't exist for a project
-        run: npx nx run-many --target=deploy --projects=${{ matrix.app }}
+        run: pnpm exec nx run-many --target=deploy --projects=${{ matrix.app }}
       - name: upload sourcemaps to datadog
         env:
           GIT_COMMIT_SHA: ${{ github.sha }}
           DATADOG_API_KEY: ${{ secrets.DATADOG_API_KEY }}
-        run: npx nx run-many --target=upload-sourcemaps --projects=${{ matrix.app }}
+        run: pnpm exec nx run-many --target=upload-sourcemaps --projects=${{ matrix.app }}
       - name: vercel set alias
         if: ${{ github.event_name == 'pull_request' }}
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
           PR_NUMBER: ${{ github.event.number }}
         # use run-namy to avoid case where deploy command doesn't exist for a project
-        run: npx nx run-many --target=vercel-alias --projects=${{ matrix.app }}
+        run: pnpm exec nx run-many --target=vercel-alias --projects=${{ matrix.app }}
       - name: Generate GitHub deployment comment
         id: deployment-url
         env:
@@ -282,11 +296,18 @@ jobs:
         with:
           key: ${{ github.repository }}-${{ steps.node-version.outputs.version }}-node-modules
           path: ./node_modules
-      - name: NPM Install
-        run: npm install --silent
-      - run: npx playwright install --with-deps
+      - name: Install pnpm
+        run: |
+          export PNPM_HOME="$HOME/.pnpm"
+          export PATH="$PNPM_HOME:$PATH"
+          curl -fsSL https://get.pnpm.io/install.sh | sh -s -- --version 9.0.0
+          echo "PNPM_HOME=$PNPM_HOME" >> $GITHUB_ENV
+          echo "$PNPM_HOME" >> $GITHUB_PATH
+      - name: Install dependencies
+        run: pnpm install --silent
+      - run: pnpm exec playwright install --with-deps
       - name: Run Playwright tests
-        run: npx nx run ${{ matrix.app }}-e2e:e2e
+        run: pnpm exec nx run ${{ matrix.app }}-e2e:e2e
         env:
           DEPLOYMENT_URL: ${{ matrix.url }}
           PLAYWRIGHT_USER: ${{ secrets.PLAYWRIGHT_USER }}
@@ -366,8 +387,15 @@ jobs:
         with:
           key: ${{ github.repository }}-${{ steps.node-version.outputs.version }}-node-modules
           path: ./node_modules
-      - name: NPM Install
-        run: npm install --silent
+      - name: Install pnpm
+        run: |
+          export PNPM_HOME="$HOME/.pnpm"
+          export PATH="$PNPM_HOME:$PATH"
+          curl -fsSL https://get.pnpm.io/install.sh | sh -s -- --version 9.0.0
+          echo "PNPM_HOME=$PNPM_HOME" >> $GITHUB_ENV
+          echo "$PNPM_HOME" >> $GITHUB_PATH
+      - name: Install dependencies
+        run: pnpm install --silent
       - uses: nrwl/nx-set-shas@v4
       - name: vercel deployment
         env:
@@ -384,12 +412,12 @@ jobs:
           NEXT_PUBLIC_VERCEL_ENV: prod
           NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA: ${{ github.sha }}
         # use run-namy to avoid case where deploy command doesn't exist for a project
-        run: npx nx run-many --target=deploy --projects=${{ matrix.app }} --prod
+        run: pnpm exec nx run-many --target=deploy --projects=${{ matrix.app }} --prod
       - name: upload sourcemaps to datadog
         env:
           GIT_COMMIT_SHA: ${{ github.sha }}
           DATADOG_API_KEY: ${{ secrets.DATADOG_API_KEY }}
-        run: npx nx run-many --target=upload-sourcemaps --projects=${{ matrix.app }}
+        run: pnpm exec nx run-many --target=upload-sourcemaps --projects=${{ matrix.app }}
       - name: Generate GitHub comment
         id: deployment-url
         env:

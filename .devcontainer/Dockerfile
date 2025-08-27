@@ -45,5 +45,7 @@ RUN curl https://raw.githubusercontent.com/nektos/act/master/install.sh | bash
 RUN mv bin/act /usr/bin/
 RUN rm -rf bin
 
+RUN export PNPM_HOME="$HOME/.pnpm" && export PATH="$PNPM_HOME:$PATH"
+
 RUN mkdir /home/node/.doppler \
     && chown -R node /home/node/.doppler

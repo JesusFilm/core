@@ -25,6 +25,13 @@ jobs:
       - uses: useblacksmith/setup-node@v5
         with:
           node-version: ${{ matrix.node-version }}
+      - name: Install pnpm
+        run: |
+          export PNPM_HOME="$HOME/.pnpm"
+          export PATH="$PNPM_HOME:$PATH"
+          curl -fsSL https://get.pnpm.io/install.sh | sh -s -- --version 9.0.0
+          echo "PNPM_HOME=$PNPM_HOME" >> $GITHUB_ENV
+          echo "$PNPM_HOME" >> $GITHUB_PATH
       - name: Get Node Version
         id: node-version
         run: echo "version=$(node -v)" >> $GITHUB_OUTPUT
@@ -43,8 +50,8 @@ jobs:
         with:
           key: ${{ github.repository }}-lint
           path: ./.cache
-      - name: NPM Install
-        run: npm install --silent
+      - name: Install dependencies
+        run: pnpm install --silent
       - name: generate prisma imports
         uses: mansagroup/nrwl-nx-action@v3
         with:
@@ -52,15 +59,15 @@ jobs:
           all: true
         env:
           DISABLE_ERD: true
-      - name: NPM apollo and graphql for codegen
-        run: npm i -g apollo graphql
+      - name: Install apollo and graphql for codegen
+        run: pnpm add -g apollo graphql
       - name: Codegen
         uses: mansagroup/nrwl-nx-action@v3
         with:
           targets: codegen
           all: true
       - name: Run Prettier
-        run: npm run prettier:fix --check '!./.cache'
+        run: pnpm run prettier:fix --check '!./.cache'
       - name: Run ESLint
         uses: mansagroup/nrwl-nx-action@v3
         with:
@@ -82,7 +89,7 @@ jobs:
           HIVE_TOKEN: ${{ secrets.HIVE_PROD_READ_ONLY_TOKEN }}
       - name: lint branch name
         if: ${{ github.event_name == 'pull_request' }}
-        run: npx validate-branch-name -t $GITHUB_HEAD_REF
+        run: pnpm exec validate-branch-name -t $GITHUB_HEAD_REF
       - uses: autofix-ci/action@635ffb0c9798bd160680f18fd73371e355b85f27
         with:
           commit-message: 'fix: lint issues'

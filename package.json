@@ -33,7 +33,6 @@
     "prepare": "husky install"
   },
   "private": true,
-  "packageManager": "pnpm@9.0.0",
   "dependencies": {
     "@adobe/apollo-link-mutation-queue": "^1.1.0",
     "@ai-sdk/google": "^1.2.14",
@@ -242,7 +241,6 @@
     "@cloudflare/workers-types": "^4.20240512.0",
     "@commitlint/cli": "^17.7.1",
     "@commitlint/lint": "^17.7.0",
-    "@commitlint/load": "^19.8.1",
     "@docusaurus/module-type-aliases": "^3.7.0",
     "@emotion/babel-plugin": "11.13.5",
     "@eslint/eslintrc": "^3.3.0",
@@ -299,7 +297,7 @@
     "@types/nodemailer": "^6.4.15",
     "@types/react": "19.0.0",
     "@types/react-beautiful-dnd": "^13.1.7",
-    "@types/react-dom": "19.0.",
+    "@types/react-dom": "19.0.0",
     "@types/react-window": "^1.8.8",
     "@types/rtl-detect": "^1.0.3",
     "@types/stylis": "^4.2.0",
@@ -349,7 +347,6 @@
     "jest-fixed-jsdom": "^0.0.9",
     "jest-mock-extended": "^3.0.5",
     "lighthouse": "^9.6.0",
-    "load^16.7.0": "link:@commitlint/load^16.7.0",
     "mini-css-extract-plugin": "^2.6.1",
     "moxios": "^0.4.0",
     "msw": "^2.3.1",
@@ -375,7 +372,6 @@
     "ts-node": "10.9.2",
     "tsconfig-paths": "^4.2.0",
     "tsconfig-paths-webpack-plugin": "^4.1.0",
-    "types^16.7.0": "link:@commitlint/types^16.7.0",
     "typescript": "^5.5.4",
     "typescript-eslint": "^8.26.0",
     "url-loader": "^4.1.1",
@@ -391,6 +387,12 @@
   },
   "msw": {
     "workerDirectory": "./.storybook/static"
+  },
+  "pnpm": {
+    "overrides": {
+      "@types/react": "19.0.0",
+      "@types/react-dom": "19.0.0"
+    }
   },
   "overrides": {
     "react-is": "^19.0.0",

@@ -27,6 +27,13 @@ jobs:
       - uses: useblacksmith/setup-node@v5
         with:
           node-version: ${{ matrix.node-version }}
+      - name: Install pnpm
+        run: |
+          export PNPM_HOME="$HOME/.pnpm"
+          export PATH="$PNPM_HOME:$PATH"
+          curl -fsSL https://get.pnpm.io/install.sh | sh -s -- --version 9.0.0
+          echo "PNPM_HOME=$PNPM_HOME" >> $GITHUB_ENV
+          echo "$PNPM_HOME" >> $GITHUB_PATH
       - name: Get Node Version
         id: node-version
         run: echo "version=$(node -v)" >> $GITHUB_OUTPUT
@@ -40,8 +47,8 @@ jobs:
         with:
           key: ${{ github.repository }}-${{ steps.node-version.outputs.version }}-node-modules
           path: ./node_modules
-      - name: NPM Install
-        run: npm install --silent
+      - name: Install dependencies
+        run: pnpm install --silent
       - name: generate prisma imports
         uses: mansagroup/nrwl-nx-action@v3
         with:
@@ -107,8 +114,8 @@ jobs:
         with:
           key: ${{ github.repository }}-${{ steps.node-version.outputs.version }}-node-modules
           path: ./node_modules
-      - name: NPM Install
-        run: npm install --silent
+      - name: Install dependencies
+        run: pnpm install --silent
       - name: generate prisma imports
         uses: mansagroup/nrwl-nx-action@v3
         with:
