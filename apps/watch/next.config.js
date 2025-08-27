@@ -9,7 +9,6 @@ const { i18n } = require('./next-i18next.config')
  * @type {import('@nx/next/plugins/with-nx').WithNxOptions}
  **/
 const nextConfig = {
-  swcMinify: true,
   images: {
     remotePatterns: [
       { protocol: 'http', hostname: 'localhost' },

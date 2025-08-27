@@ -12,7 +12,15 @@
     "isolatedModules": true,
     "incremental": true,
     "tsBuildInfoFile": "../../.cache/short-links/tsc/.tsbuildinfo",
-    "types": ["jest", "node"]
+    "types": [
+      "jest",
+      "node"
+    ],
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ]
   },
   "include": [
     "**/*.ts",
@@ -25,5 +33,9 @@
     ".next/types/**/*.ts",
     "eslint.config.mjs"
   ],
-  "exclude": ["node_modules", "jest.config.ts", "**/*.spec.ts"]
+  "exclude": [
+    "node_modules",
+    "jest.config.ts",
+    "**/*.spec.ts"
+  ]
 }
