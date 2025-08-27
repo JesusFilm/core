@@ -1,4 +1,5 @@
 import './image'
-import './inputs'
+import './imageBlockCreate.mutation'
+import './imageBlockUpdate.mutation'
 
 export { ImageBlock } from './image'

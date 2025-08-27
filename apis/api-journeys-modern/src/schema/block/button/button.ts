@@ -82,3 +82,6 @@ export const ButtonBlock = builder.prismaObject('Block', {
     })
   })
 })
+
+// ButtonBlock Mutations
+

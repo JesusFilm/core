@@ -1,2 +1,3 @@
 import './icon'
-import './inputs'
+import './iconBlockCreate.mutation'
+import './iconBlockUpdate.mutation'

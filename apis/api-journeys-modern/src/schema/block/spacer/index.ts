@@ -1,2 +1,3 @@
 import './spacer'
-import './inputs'
+import './spacerBlockCreate.mutation'
+import './spacerBlockUpdate.mutation'

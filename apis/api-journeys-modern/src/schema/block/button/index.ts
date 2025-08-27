@@ -1,2 +1,3 @@
 import './button'
-import './inputs'
+import './buttonBlockCreate.mutation'
+import './buttonBlockUpdate.mutation'

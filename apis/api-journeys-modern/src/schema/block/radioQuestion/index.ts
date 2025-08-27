@@ -1,2 +1,3 @@
 import './radioQuestion'
-import './inputs'
+import './radioQuestionBlockCreate.mutation'
+import './radioQuestionBlockUpdate.mutation'

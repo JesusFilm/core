@@ -1,2 +1,3 @@
 import './signUp'
-import './inputs'
+import './signUpBlockCreate.mutation'
+import './signUpBlockUpdate.mutation'
