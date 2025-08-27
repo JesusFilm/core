@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 import { expect } from '@playwright/test'
 import dayjs from 'dayjs'
-import type { Page } from 'playwright-core'
+import type { Page } from '@playwright/test'
 
 import { getOTP, getPassword } from '../framework/helpers'
 import testData from '../utils/testData.json'

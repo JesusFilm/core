@@ -34,6 +34,12 @@
   },
   "private": true,
   "dependencies": {
+    "graphql-request": "^7.1.2",
+    "csv-stringify": "^6.5.2",
+    "graphql-sse": "^2.3.2",
+    "graphql-tag": "^2.12.6",
+    "react-transition-group": "^4.4.5",
+    "zen-observable-ts": "^1.2.5",
     "@adobe/apollo-link-mutation-queue": "^1.1.0",
     "@ai-sdk/google": "^1.2.14",
     "@algolia/client-search": "^5.0.0",
@@ -233,6 +239,8 @@
     "zod": "^3.23.8"
   },
   "devDependencies": {
+    "dayjs": "^1.11.13",
+    "@jest/globals": "^29.7.0",
     "@babel/core": "^7.22.15",
     "@babel/preset-env": "^7.22.15",
     "@babel/preset-typescript": "^7.22.15",
