@@ -1,6 +1,6 @@
 import { ApolloProvider, type NormalizedCacheObject } from '@apollo/client'
 import type { EmotionCache } from '@emotion/cache'
-import { AppCacheProvider } from '@mui/material-nextjs/v14-pagesRouter'
+import { AppCacheProvider } from '@mui/material-nextjs/v15-pagesRouter'
 import { GoogleTagManager } from '@next/third-parties/google'
 import type { AppProps as NextJsAppProps } from 'next/app'
 import { Noto_Serif } from 'next/font/google'

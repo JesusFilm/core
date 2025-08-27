@@ -1,3 +1,5 @@
+'use client'
+
 import { gql, useSuspenseQuery } from '@apollo/client'
 import compact from 'lodash/compact'
 import { useTranslation } from 'next-i18next'

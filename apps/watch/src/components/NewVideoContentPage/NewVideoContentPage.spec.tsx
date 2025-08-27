@@ -6,10 +6,10 @@ import {
   GetLanguagesSlug,
   GetLanguagesSlugVariables
 } from '../../../__generated__/GetLanguagesSlug'
+import { GET_LANGUAGES_SLUG } from '../../libs/useLanguagesSlugQuery'
 import { VideoProvider } from '../../libs/videoContext'
 import { WatchProvider } from '../../libs/watchContext'
 import { TestWatchState } from '../../libs/watchContext/TestWatchState'
-import { GET_LANGUAGES_SLUG } from '../../libs/useLanguagesSlugQuery'
 import { videos } from '../Videos/__generated__/testData'
 
 import { NewVideoContentPage } from './NewVideoContentPage'

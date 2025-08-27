@@ -11,12 +11,12 @@ import LinkExternal from '@core/shared/ui/icons/LinkExternal'
 import { ThemeMode } from '@core/shared/ui/themes'
 
 import { VideoContentFields_studyQuestions as StudyQuestions } from '../../../__generated__/VideoContentFields'
+import { useLanguagesSlugQuery } from '../../libs/useLanguagesSlugQuery'
 import { useVideoChildren } from '../../libs/useVideoChildren'
 import { getWatchUrl } from '../../libs/utils/getWatchUrl'
 import { useVideo } from '../../libs/videoContext'
 import { useWatch } from '../../libs/watchContext'
 import { audioLanguageRedirect } from '../../libs/watchContext/audioLanguageRedirect'
-import { useLanguagesSlugQuery } from '../../libs/useLanguagesSlugQuery'
 import { PageWrapper } from '../PageWrapper'
 import { ShareDialog } from '../ShareDialog'
 
@@ -89,17 +89,21 @@ export function NewVideoContentPage(): ReactElement {
     [children]
   )
 
-  const questions = useMemo(() => {
+  const makeDefaultQuestion = (value: string): StudyQuestions => ({
+    __typename: 'VideoStudyQuestion',
+    value,
+    primary: false
+  })
+
+  const questions = useMemo<StudyQuestions[]>(() => {
     if (!studyQuestions?.length)
       return [
-        {
-          __typename: 'VideoStudyQuestion',
-          value: t(
+        makeDefaultQuestion(
+          t(
             'If you could ask the creator of this video a question, what would it be?'
-          ),
-          primary: false
-        }
-      ] as StudyQuestions[]
+          )
+        )
+      ]
 
     const { nonPrimary, primary } = studyQuestions.reduce(
       (
@@ -128,15 +132,13 @@ export function NewVideoContentPage(): ReactElement {
     }
 
     return [
-      {
-        __typename: 'VideoStudyQuestion',
-        value: t(
+      makeDefaultQuestion(
+        t(
           'If you could ask the creator of this video a question, what would it be?'
-        ),
-        primary: false
-      }
-    ] as StudyQuestions[]
-  }, [studyQuestions])
+        )
+      )
+    ]
+  }, [studyQuestions, t])
 
   const handleFreeResourceClick = () => {
     sendGTMEvent({

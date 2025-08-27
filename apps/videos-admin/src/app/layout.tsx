@@ -1,4 +1,4 @@
-import { AppRouterCacheProvider } from '@mui/material-nextjs/v13-appRouter'
+import { AppRouterCacheProvider } from '@mui/material-nextjs/v15-appRouter'
 import { ReactNode } from 'react'
 
 import { EnvironmentBanner } from '../components/EnvironmentBanner'

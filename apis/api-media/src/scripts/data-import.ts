@@ -188,6 +188,7 @@ async function preprocessSqlFile(
     let processedBytes = 0
     let linesProcessed = 0
     let publicationStatementsRemoved = 0
+    let psqlMetaCommandsRemoved = 0
 
     // Create read and write streams
     const readStream = createReadStream(inputFile)
@@ -220,6 +221,16 @@ async function preprocessSqlFile(
         continue
       }
 
+      // Remove non-essential psql meta-commands (lines starting with a backslash), keep COPY terminator (\.) and \copy commands
+      if (
+        /^\s*\\/.test(line) &&
+        !/^\s*\\\.$/.test(line) &&
+        !/^\s*\\copy\b/i.test(line)
+      ) {
+        psqlMetaCommandsRemoved++
+        continue
+      }
+
       // Write the line to output file
       writeStream.write(line + '\n')
     }
@@ -243,7 +254,7 @@ async function preprocessSqlFile(
 
     const duration = ((Date.now() - startTime) / 1000).toFixed(1)
     console.log(
-      `SQL file preprocessing completed: ${fileName} -> ${(outputStats.size / 1024 / 1024).toFixed(2)} MB (${linesProcessed.toLocaleString()} lines processed, ${publicationStatementsRemoved} publication statements removed, took ${duration}s)`
+      `SQL file preprocessing completed: ${fileName} -> ${(outputStats.size / 1024 / 1024).toFixed(2)} MB (${linesProcessed.toLocaleString()} lines processed, ${publicationStatementsRemoved} publication statements removed, ${psqlMetaCommandsRemoved} psql meta-commands removed, took ${duration}s)`
     )
   } catch (error) {
     console.error('Error preprocessing SQL file:', error)

@@ -2,7 +2,6 @@ import Button from '@mui/material/Button'
 import Link from '@mui/material/Link'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
-import dynamic from 'next/dynamic'
 import NextLink from 'next/link'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, Suspense } from 'react'
@@ -13,16 +12,8 @@ import Grid1Icon from '@core/shared/ui/icons/Grid1'
 import { SidePanelContainer } from '../PageWrapper/SidePanelContainer'
 
 import { CreateJourneyButton } from './CreateJourneyButton'
+import { OnboardingList } from './OnboardingList'
 import { OnboardingListLoading } from './OnboardingListLoading'
-
-const DynamicOnboardingList = dynamic(
-  async () =>
-    await import(
-      /* webpackChunkName: "OnboardingList" */
-      './OnboardingList'
-    ).then((mod) => mod.OnboardingList),
-  { ssr: false, loading: () => <OnboardingListLoading /> }
-)
 
 export function OnboardingPanel(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
@@ -45,7 +36,7 @@ export function OnboardingPanel(): ReactElement {
         </Stack>
       </SidePanelContainer>
       <Suspense fallback={<OnboardingListLoading />}>
-        <DynamicOnboardingList />
+        <OnboardingList />
       </Suspense>
       <SidePanelContainer border={false}>
         <Button

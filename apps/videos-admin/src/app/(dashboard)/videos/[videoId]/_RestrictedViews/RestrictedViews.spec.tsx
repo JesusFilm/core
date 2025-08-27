@@ -10,6 +10,37 @@ import {
   UPDATE_RESTRICTED_VIEWS
 } from './RestrictedViews'
 
+// Mock useSuspenseQuery to avoid relying on Suspense resolution in tests
+jest.mock('@apollo/client', () => {
+  const original = jest.requireActual('@apollo/client')
+  return {
+    ...original,
+    useSuspenseQuery: jest.fn(
+      (query: unknown, options?: { variables?: { id?: string } }) => {
+        const id = options?.variables?.id
+        if (id === 'video2') {
+          return {
+            data: {
+              adminVideo: {
+                id: 'video2',
+                restrictViewPlatforms: ['arclight']
+              }
+            }
+          }
+        }
+        return {
+          data: {
+            adminVideo: {
+              id: id ?? 'video1',
+              restrictViewPlatforms: []
+            }
+          }
+        }
+      }
+    )
+  }
+})
+
 const mockVideoWithNoPlatforms = [
   {
     request: {
