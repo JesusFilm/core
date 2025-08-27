@@ -228,8 +228,9 @@ mediaComponentLanguage.openapi(route, async (c) => {
     apiKey ?? ''
   ])
 
-  const cachedData = await getWithStaleCache(cacheKey, async () => {
-    try {
+  let cachedData
+  try {
+    cachedData = await getWithStaleCache(cacheKey, async () => {
       const { data } = await getApolloClient().query<
         ResultOf<typeof GET_VIDEO_VARIANT>
       >({
@@ -505,10 +506,17 @@ mediaComponentLanguage.openapi(route, async (c) => {
         },
         type: 'success'
       }
-    } catch {
-      return { notFound: true, type: 'error' }
-    }
-  })
+    })
+  } catch (error) {
+    console.error('Error fetching media component language:', error)
+    return c.json(
+      {
+        message: `Media component '${mediaComponentId}' language '${languageId}' not found!`,
+        logref: 500
+      },
+      500
+    )
+  }
 
   if (cachedData?.notFound) {
     return c.json(

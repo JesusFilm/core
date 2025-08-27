@@ -133,8 +133,9 @@ mediaComponentLanguages.openapi(route, async (c) => {
     ...languageIds.slice(0, 20)
   ])
 
-  const cachedData = await getWithStaleCache(cacheKey, async () => {
-    try {
+  let cachedData
+  try {
+    cachedData = await getWithStaleCache(cacheKey, async () => {
       const { data } = await getApolloClient().query<
         ResultOf<typeof GET_VIDEO_LANGUAGES>
       >({
@@ -325,10 +326,17 @@ mediaComponentLanguages.openapi(route, async (c) => {
         },
         type: 'success'
       }
-    } catch {
-      return { notFound: true, type: 'error' }
-    }
-  })
+    })
+  } catch (error) {
+    console.error('Error fetching media component languages:', error)
+    return c.json(
+      {
+        message: `Media component '${mediaComponentId}' languages not found!`,
+        logref: 500
+      },
+      500
+    )
+  }
 
   if (cachedData.notFound) {
     return c.json(
