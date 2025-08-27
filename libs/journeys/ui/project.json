@@ -18,7 +18,7 @@
     "type-check": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "npx tsc -b libs/journeys/ui/tsconfig.json"
+        "command": "pnpm exec tsc -b libs/journeys/ui/tsconfig.json"
       }
     },
     "test": {
@@ -51,7 +51,7 @@
             "command": "rm -rf libs/journeys/ui/__generated__"
           },
           {
-            "command": "npx apollo client:codegen --config libs/journeys/ui/apollo.config.js --target typescript  --globalTypesFile=libs/journeys/ui/__generated__/globalTypes.ts"
+            "command": "pnpm dlx apollo client:codegen --config libs/journeys/ui/apollo.config.js --target typescript  --globalTypesFile=libs/journeys/ui/__generated__/globalTypes.ts"
           }
         ]
       }
@@ -61,7 +61,7 @@
       "options": {
         "commands": [
           {
-            "command": "npx i18next --config libs/journeys/ui/i18next-parser.config.js"
+            "command": "pnpm dlx i18next --config libs/journeys/ui/i18next-parser.config.js"
           }
         ]
       }

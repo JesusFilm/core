@@ -35,22 +35,22 @@
       "executor": "nx:run-commands",
       "options": {
         "commands": [
-          "VERCEL_PROJECT_ID=$WATCH_VERCEL_PROJECT_ID npx vercel pull --environment=preview --token=$VERCEL_TOKEN",
+          "VERCEL_PROJECT_ID=$WATCH_VERCEL_PROJECT_ID pnpm dlx vercel pull --environment=preview --token=$VERCEL_TOKEN",
           "echo \"VERCEL_ENV=\\\"$NEXT_PUBLIC_VERCEL_ENV\\\"\" >> .vercel/.env.preview.local",
           "echo \"VERCEL_GIT_COMMIT_SHA=\\\"$NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA\\\"\" >> .vercel/.env.preview.local",
-          "npx vercel build",
-          "VERCEL_PROJECT_ID=$WATCH_VERCEL_PROJECT_ID npx vercel deploy --prebuilt --token=$VERCEL_TOKEN --archive=tgz > apps/watch/.vercel-url"
+          "pnpm dlx vercel build",
+          "VERCEL_PROJECT_ID=$WATCH_VERCEL_PROJECT_ID pnpm dlx vercel deploy --prebuilt --token=$VERCEL_TOKEN --archive=tgz > apps/watch/.vercel-url"
         ],
         "parallel": false
       },
       "configurations": {
         "production": {
           "commands": [
-            "VERCEL_PROJECT_ID=$WATCH_VERCEL_PROJECT_ID npx vercel pull --environment=production --token=$VERCEL_TOKEN",
+            "VERCEL_PROJECT_ID=$WATCH_VERCEL_PROJECT_ID pnpm dlx vercel pull --environment=production --token=$VERCEL_TOKEN",
             "echo \"VERCEL_ENV=\\\"$NEXT_PUBLIC_VERCEL_ENV\\\"\" >> .vercel/.env.production.local",
             "echo \"VERCEL_GIT_COMMIT_SHA=\\\"$NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA\\\"\" >> .vercel/.env.production.local",
-            "npx vercel build --prod",
-            "VERCEL_PROJECT_ID=$WATCH_VERCEL_PROJECT_ID npx vercel deploy --prebuilt --prod --token=$VERCEL_TOKEN --archive=tgz > apps/watch/.vercel-url"
+            "pnpm dlx vercel build --prod",
+            "VERCEL_PROJECT_ID=$WATCH_VERCEL_PROJECT_ID pnpm dlx vercel deploy --prebuilt --prod --token=$VERCEL_TOKEN --archive=tgz > apps/watch/.vercel-url"
           ]
         }
       }
@@ -59,7 +59,7 @@
       "executor": "nx:run-commands",
       "options": {
         "commands": [
-          "npx @datadog/datadog-ci sourcemaps upload dist/apps/watch/.next/static --service=watch --release-version=$GIT_COMMIT_SHA --minified-path-prefix=/_next/static/"
+          "pnpm dlx @datadog/datadog-ci sourcemaps upload dist/apps/watch/.next/static --service=watch --release-version=$GIT_COMMIT_SHA --minified-path-prefix=/_next/static/"
         ],
         "parallel": false
       }
@@ -68,7 +68,7 @@
       "executor": "nx:run-commands",
       "options": {
         "commands": [
-          "npx vercel alias set $(cat apps/watch/.vercel-url) watch-$PR_NUMBER-jesusfilm.vercel.app --token=$VERCEL_TOKEN --scope=jesusfilm",
+          "pnpm dlx vercel alias set $(cat apps/watch/.vercel-url) watch-$PR_NUMBER-jesusfilm.vercel.app --token=$VERCEL_TOKEN --scope=jesusfilm",
           "echo \"https://watch-$PR_NUMBER-jesusfilm.vercel.app\" > apps/watch/.vercel-url"
         ],
         "parallel": false
@@ -111,7 +111,7 @@
     "generate-test-data": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "NEXT_PUBLIC_GATEWAY_URL=http://127.0.0.1:4000 npx ts-node apps/watch/src/components/Videos/testData.generator.ts"
+        "command": "NEXT_PUBLIC_GATEWAY_URL=http://127.0.0.1:4000 pnpm ts-node apps/watch/src/components/Videos/testData.generator.ts"
       }
     },
     "export": {
@@ -139,7 +139,7 @@
     "type-check": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "npx tsc -b apps/watch/tsconfig.json"
+        "command": "pnpm exec tsc -b apps/watch/tsconfig.json"
       }
     },
     "demo": {
@@ -165,7 +165,7 @@
             "command": "rm -rf apps/watch/__generated__"
           },
           {
-            "command": "npx apollo client:codegen --config apps/watch/apollo.config.js --target typescript --outputFlat apps/watch/__generated__"
+            "command": "pnpm dlx apollo client:codegen --config apps/watch/apollo.config.js --target typescript --outputFlat apps/watch/__generated__"
           }
         ]
       }
@@ -185,7 +185,7 @@
       "options": {
         "commands": [
           {
-            "command": "npx i18next --config apps/watch/i18next-parser.config.js"
+            "command": "pnpm dlx i18next --config apps/watch/i18next-parser.config.js"
           }
         ]
       }

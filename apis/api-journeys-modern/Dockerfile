@@ -12,12 +12,16 @@ RUN apk upgrade --update-cache --available && \
 
 WORKDIR /app
 COPY ./dist/apps/api-journeys-modern .
-COPY ./package-lock.json .
+COPY ./pnpm-lock.yaml .
 COPY ./libs/prisma/journeys/db ./prisma
 
-RUN npm install --production
-RUN npm install @prisma/client@6.5.0
-RUN npm install -D prisma@6.5.0
-RUN npx prisma generate --generator client --schema ./prisma/schema.prisma
+ENV PNPM_HOME="/usr/local/share/pnpm"
+ENV PATH="$PNPM_HOME:$PATH"
+RUN apk add --no-cache curl && \
+    curl -fsSL https://get.pnpm.io/install.sh | sh -s -- --bin-dir $PNPM_HOME --version 9.0.0
+RUN pnpm install --prod --frozen-lockfile
+RUN pnpm add @prisma/client@6.5.0 --prod
+RUN pnpm add -D prisma@6.5.0
+RUN pnpm exec prisma generate --generator client --schema ./prisma/schema.prisma
     
-CMD npx prisma migrate deploy --schema ./prisma/schema.prisma; node ./main.js
+CMD pnpm exec prisma migrate deploy --schema ./prisma/schema.prisma; node ./main.js

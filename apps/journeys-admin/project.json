@@ -40,22 +40,22 @@
       "executor": "nx:run-commands",
       "options": {
         "commands": [
-          "VERCEL_PROJECT_ID=$JOURNEYS_ADMIN_VERCEL_PROJECT_ID npx vercel pull --environment=preview --token=$VERCEL_TOKEN",
+          "VERCEL_PROJECT_ID=$JOURNEYS_ADMIN_VERCEL_PROJECT_ID pnpm dlx vercel pull --environment=preview --token=$VERCEL_TOKEN",
           "echo \"VERCEL_ENV=\\\"$NEXT_PUBLIC_VERCEL_ENV\\\"\" >> .vercel/.env.preview.local",
           "echo \"VERCEL_GIT_COMMIT_SHA=\\\"$NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA\\\"\" >> .vercel/.env.preview.local",
-          "npx vercel build",
-          "VERCEL_PROJECT_ID=$JOURNEYS_ADMIN_VERCEL_PROJECT_ID npx vercel deploy --prebuilt --token=$VERCEL_TOKEN --archive=tgz > apps/journeys-admin/.vercel-url"
+          "pnpm dlx vercel build",
+          "VERCEL_PROJECT_ID=$JOURNEYS_ADMIN_VERCEL_PROJECT_ID pnpm dlx vercel deploy --prebuilt --token=$VERCEL_TOKEN --archive=tgz > apps/journeys-admin/.vercel-url"
         ],
         "parallel": false
       },
       "configurations": {
         "production": {
           "commands": [
-            "VERCEL_PROJECT_ID=$JOURNEYS_ADMIN_VERCEL_PROJECT_ID npx vercel pull --environment=production --token=$VERCEL_TOKEN",
+            "VERCEL_PROJECT_ID=$JOURNEYS_ADMIN_VERCEL_PROJECT_ID pnpm dlx vercel pull --environment=production --token=$VERCEL_TOKEN",
             "echo \"VERCEL_ENV=\\\"$NEXT_PUBLIC_VERCEL_ENV\\\"\" >> .vercel/.env.production.local",
             "echo \"VERCEL_GIT_COMMIT_SHA=\\\"$NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA\\\"\" >> .vercel/.env.production.local",
-            "npx vercel build --prod",
-            "VERCEL_PROJECT_ID=$JOURNEYS_ADMIN_VERCEL_PROJECT_ID npx vercel deploy --prebuilt --prod --token=$VERCEL_TOKEN --archive=tgz > apps/journeys-admin/.vercel-url"
+            "pnpm dlx vercel build --prod",
+            "VERCEL_PROJECT_ID=$JOURNEYS_ADMIN_VERCEL_PROJECT_ID pnpm dlx vercel deploy --prebuilt --prod --token=$VERCEL_TOKEN --archive=tgz > apps/journeys-admin/.vercel-url"
           ]
         }
       }
@@ -64,7 +64,7 @@
       "executor": "nx:run-commands",
       "options": {
         "commands": [
-          "npx @datadog/datadog-ci sourcemaps upload dist/apps/journeys-admin/.next/static --service=journeys-admin --release-version=$GIT_COMMIT_SHA --minified-path-prefix=/_next/static/"
+          "pnpm dlx @datadog/datadog-ci sourcemaps upload dist/apps/journeys-admin/.next/static --service=journeys-admin --release-version=$GIT_COMMIT_SHA --minified-path-prefix=/_next/static/"
         ],
         "parallel": false
       }
@@ -73,7 +73,7 @@
       "executor": "nx:run-commands",
       "options": {
         "commands": [
-          "npx vercel alias set $(cat apps/journeys-admin/.vercel-url) journeys-admin-$PR_NUMBER-jesusfilm.vercel.app --token=$VERCEL_TOKEN --scope=jesusfilm",
+          "pnpm dlx vercel alias set $(cat apps/journeys-admin/.vercel-url) journeys-admin-$PR_NUMBER-jesusfilm.vercel.app --token=$VERCEL_TOKEN --scope=jesusfilm",
           "echo \"https://journeys-admin-$PR_NUMBER-jesusfilm.vercel.app\" > apps/journeys-admin/.vercel-url"
         ],
         "parallel": false
@@ -138,7 +138,7 @@
     "type-check": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "npx tsc -b apps/journeys-admin/tsconfig.json"
+        "command": "pnpm exec tsc -b apps/journeys-admin/tsconfig.json"
       }
     },
     "demo": {
@@ -164,7 +164,7 @@
             "command": "rm -rf apps/journeys-admin/__generated__"
           },
           {
-            "command": "npx apollo client:codegen --config apps/journeys-admin/apollo.config.js --target typescript --outputFlat apps/journeys-admin/__generated__"
+            "command": "pnpm dlx apollo client:codegen --config apps/journeys-admin/apollo.config.js --target typescript --outputFlat apps/journeys-admin/__generated__"
           }
         ]
       }
@@ -184,7 +184,7 @@
       "options": {
         "commands": [
           {
-            "command": "npx i18next --config apps/journeys-admin/i18next-parser.config.js"
+            "command": "pnpm dlx i18next --config apps/journeys-admin/i18next-parser.config.js"
           }
         ]
       }
