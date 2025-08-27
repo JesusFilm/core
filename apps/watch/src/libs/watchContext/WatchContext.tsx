@@ -9,7 +9,6 @@ import {
 
 import { GetAllLanguages_languages as Language } from '../../../__generated__/GetAllLanguages'
 import { GetLanguagesSlug_video_variantLanguagesWithSlug as AudioLanguage } from '../../../__generated__/GetLanguagesSlug'
-import { GetSubtitles_video_variant_subtitle as SubtitleLanguage } from '../../../__generated__/GetSubtitles'
 import { GetVariantLanguagesIdAndSlug_video_variantLanguages as VariantLanguageIdAndSlug } from '../../../__generated__/GetVariantLanguagesIdAndSlug'
 import { LANGUAGE_MAPPINGS } from '../localeMapping'
 
@@ -44,8 +43,8 @@ export interface WatchState {
   allLanguages?: Language[]
   /** Available audio languages for the current video (clean structure with id and slug only) */
   videoAudioLanguagesIdsAndSlugs?: AudioLanguageData[]
-  /** Available subtitle languages for the current video */
-  videoSubtitleLanguages?: SubtitleLanguage[]
+  /** Available subtitle language IDs for the current video */
+  videoSubtitleLanguageIds?: string[]
   /** Currently selected audio track for the video object (based on availability and preferences) */
   currentAudioLanguage?: AudioLanguageData
   /** Whether subtitles should be enabled (calculation based on if the user's subtitle preference is met but the audio track is not met) */
@@ -93,8 +92,8 @@ interface SetVideoAudioLanguagesAction {
  */
 interface SetVideoSubtitleLanguagesAction {
   type: 'SetVideoSubtitleLanguages'
-  /** Available subtitle languages for the current video */
-  videoSubtitleLanguages: SubtitleLanguage[]
+  /** Available subtitle language IDs for the current video */
+  videoSubtitleLanguageIds: string[]
 }
 
 /**
@@ -192,7 +191,7 @@ export type WatchInitialState = Pick<
   | 'subtitleOn'
   | 'videoId'
   | 'videoVariantSlug'
-  | 'videoSubtitleLanguages'
+  | 'videoSubtitleLanguageIds'
   | 'videoAudioLanguagesIdsAndSlugs'
 >
 
@@ -265,7 +264,7 @@ export const reducer = (state: WatchState, action: WatchAction): WatchState => {
       }
     }
     case 'SetVideoSubtitleLanguages': {
-      const videoSubtitleLanguages = action.videoSubtitleLanguages
+      const videoSubtitleLanguageIds = action.videoSubtitleLanguageIds
 
       const langPrefMet =
         state?.audioLanguage === state?.currentAudioLanguage?.id
@@ -273,18 +272,18 @@ export const reducer = (state: WatchState, action: WatchAction): WatchState => {
       if (langPrefMet) {
         return {
           ...state,
-          videoSubtitleLanguages
+          videoSubtitleLanguageIds
         }
       }
 
       // Check if user's subtitle preference is available
-      const subtitleAvailable = videoSubtitleLanguages.some(
-        (subtitle) => subtitle.language.id === state.subtitleLanguage
+      const subtitleAvailable = videoSubtitleLanguageIds.some(
+        (languageId) => languageId === state.subtitleLanguage
       )
 
       return {
         ...state,
-        videoSubtitleLanguages,
+        videoSubtitleLanguageIds,
         autoSubtitle: subtitleAvailable === false ? undefined : true
       }
     }
@@ -389,10 +388,10 @@ export function WatchProvider({ children, initialState }: WatchProviderProps) {
     initializeVideoLanguages(
       dispatch,
       initialState?.videoAudioLanguagesIdsAndSlugs ?? [],
-      initialState?.videoSubtitleLanguages ?? []
+      initialState?.videoSubtitleLanguageIds ?? []
     )
   }, [
-    initialState.videoSubtitleLanguages,
+    initialState.videoSubtitleLanguageIds,
     initialState.videoAudioLanguagesIdsAndSlugs
   ])
 

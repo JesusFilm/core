@@ -13,9 +13,15 @@ export interface GetVariantLanguagesIdAndSlug_video_variantLanguages {
   slug: string | null;
 }
 
+export interface GetVariantLanguagesIdAndSlug_video_subtitles {
+  __typename: "VideoSubtitle";
+  languageId: string;
+}
+
 export interface GetVariantLanguagesIdAndSlug_video {
   __typename: "Video";
   variantLanguages: GetVariantLanguagesIdAndSlug_video_variantLanguages[];
+  subtitles: GetVariantLanguagesIdAndSlug_video_subtitles[];
 }
 
 export interface GetVariantLanguagesIdAndSlug {

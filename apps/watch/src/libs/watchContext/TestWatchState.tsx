@@ -23,7 +23,7 @@ export function TestWatchState(): ReactElement {
         {state.videoAudioLanguagesIdsAndSlugs?.length || 0} audio languages
       </div>
       <div>
-        videoSubtitleLanguages: {state.videoSubtitleLanguages?.length || 0}{' '}
+        videoSubtitleLanguageIds: {state.videoSubtitleLanguageIds?.length || 0}{' '}
         subtitle languages
       </div>
       <div>

@@ -60,13 +60,16 @@ export const GET_VARIANT_LANGUAGES_ID_AND_SLUG = gql`
         id
         slug
       }
+      subtitles {
+        languageId
+      }
     }
   }
 `
 
 interface Part2PageProps {
   content: VideoContentFields
-  videoSubtitleLanguages: VideoVariantSubtitle[]
+  videoSubtitleLanguageIds: string[]
   videoAudioLanguagesIdsAndSlugs: AudioLanguageData[]
 }
 
@@ -88,7 +91,7 @@ const DynamicNewContentPage = dynamic(
 
 export default function Part2Page({
   content,
-  videoSubtitleLanguages,
+  videoSubtitleLanguageIds,
   videoAudioLanguagesIdsAndSlugs
 }: Part2PageProps): ReactElement {
   const { i18n } = useTranslation()
@@ -100,7 +103,7 @@ export default function Part2Page({
     subtitleOn: (getCookie('SUBTITLES_ON') ?? 'false') === 'true',
     videoId: content.id,
     videoVariantSlug: content.variant?.slug,
-    videoSubtitleLanguages,
+    videoSubtitleLanguageIds,
     videoAudioLanguagesIdsAndSlugs
   }
 
@@ -173,6 +176,7 @@ export const getStaticProps: GetStaticProps<Part2PageProps> = async (
     }
 
     let videoAudioLanguagesData: AudioLanguageData[] = []
+    let videoSubtitleLanguageIds: string[] = []
     if (contentData.content.variant?.slug != null) {
       const { data } = await client.query<
         GetVariantLanguagesIdAndSlug,
@@ -190,25 +194,17 @@ export const getStaticProps: GetStaticProps<Part2PageProps> = async (
             slug
           })
         ) || []
+      videoSubtitleLanguageIds = data?.video?.subtitles?.map(
+        ({ languageId }) => languageId
+      )
     }
 
-    // required for auto-subtitle
-    let subtitleData: GetSubtitles | undefined
-    if (contentData.content.variant?.slug != null) {
-      const { data } = await client.query<GetSubtitles, GetSubtitlesVariables>({
-        query: GET_SUBTITLES,
-        variables: {
-          id: contentData.content.variant.slug
-        }
-      })
-      subtitleData = data
-    }
     return {
       revalidate: 3600,
       props: {
         flags: await getFlags(),
         content: contentData.content,
-        videoSubtitleLanguages: subtitleData?.video?.variant?.subtitle ?? [],
+        videoSubtitleLanguageIds: videoSubtitleLanguageIds,
         videoAudioLanguagesIdsAndSlugs: videoAudioLanguagesData,
         ...(await serverSideTranslations(
           context.locale ?? 'en',

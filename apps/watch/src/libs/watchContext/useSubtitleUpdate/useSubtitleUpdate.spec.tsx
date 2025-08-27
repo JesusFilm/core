@@ -2,7 +2,7 @@ import Player from 'video.js/dist/types/player'
 
 import { GetSubtitles_video_variant_subtitle as SubtitleLanguage } from '../../../../__generated__/GetSubtitles'
 
-import { subtitleUpdate } from './subtitleUpdate'
+import { subtitleUpdate } from './useSubtitleUpdate'
 
 // Mock video.js player and track interfaces
 interface MockTextTrack {
