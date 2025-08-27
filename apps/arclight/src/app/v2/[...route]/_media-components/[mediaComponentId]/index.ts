@@ -323,7 +323,7 @@ mediaComponent.openapi(route, async (c) => {
     return c.json(
       {
         message: `Media component '${mediaComponentId}' resource not found!`,
-        logref: 500
+        logref: 404
       },
       500
     )
