@@ -30,16 +30,11 @@ jobs:
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
         with:
-          version: 10.15.0
-      - name: Configure pnpm store
-        run: pnpm config set store-dir ~/.pnpm-store
-      - name: Get Node Version
-        id: node-version
-        run: echo "version=$(node -v)" >> $GITHUB_OUTPUT
-      - name: Mount pnpm store
+          version: 10
+      - name: Cache pnpm store
         uses: useblacksmith/stickydisk@v1
         with:
-          key: ${{ github.repository }}-${{ steps.node-version.outputs.version }}-pnpm-store
+          key: ${{ github.repository }}-pnpm-store
           path: ~/.pnpm-store
       - name: Install dependencies
         run: pnpm install --silent
@@ -99,15 +94,10 @@ jobs:
         uses: pnpm/action-setup@v4
         with:
           version: 10.15.0
-      - name: Configure pnpm store
-        run: pnpm config set store-dir ~/.pnpm-store
-      - name: Get Node Version
-        id: node-version
-        run: echo "version=$(node -v)" >> $GITHUB_OUTPUT
-      - name: Mount pnpm store
+      - name: Cache pnpm store
         uses: useblacksmith/stickydisk@v1
         with:
-          key: ${{ github.repository }}-${{ steps.node-version.outputs.version }}-pnpm-store
+          key: ${{ github.repository }}-pnpm-store
           path: ~/.pnpm-store
       - name: Install dependencies
         run: pnpm install --silent
