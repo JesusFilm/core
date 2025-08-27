@@ -288,7 +288,7 @@ describe('ActionResolver', () => {
         gtmEventName: null,
         email: null,
         url: undefined,
-        phone: '1234567890',
+        phone: '+1234567890',
         countryCode: 'US',
         target: null,
         blockId: undefined
@@ -298,7 +298,7 @@ describe('ActionResolver', () => {
 
       expect(prismaService.action.upsert).toHaveBeenCalledWith({
         create: {
-          phone: '1234567890',
+          phone: '+1234567890',
           countryCode: 'US',
           gtmEventName: null,
           parentBlock: { connect: { id: '1' } }
@@ -309,7 +309,7 @@ describe('ActionResolver', () => {
           email: null,
           gtmEventName: null,
           journey: { disconnect: true },
-          phone: '1234567890',
+          phone: '+1234567890',
           countryCode: 'US',
           target: null,
           url: null

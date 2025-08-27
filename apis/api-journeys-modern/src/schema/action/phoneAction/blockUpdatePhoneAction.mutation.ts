@@ -10,7 +10,7 @@ import { canBlockHaveAction } from '../canBlockHaveAction'
 import { PhoneActionInput } from './inputs'
 import { PhoneActionRef } from './phoneAction'
 
-const phoneRegex = /^\+?[1-9]\d{1,14}$/
+const phoneRegex = /^\+[1-9]\d{1,14}$/
 
 builder.mutationField('blockUpdatePhoneAction', (t) =>
   t.withAuth({ isAuthenticated: true }).field({

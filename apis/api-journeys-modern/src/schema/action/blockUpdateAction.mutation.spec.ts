@@ -60,14 +60,14 @@ describe('blockUpdateAction mutation', () => {
       prismaMock.action.upsert.mockResolvedValueOnce({
         parentBlockId: '1',
         gtmEventName: null,
-        phone: '+15551234567',
+        phone: '+1555123456',
         countryCode: 'US',
         parentBlock: { id: '1', action: {} }
       } as any)
 
       const variables = {
         id: actionableBlock.id,
-        input: { gtmEventName: null, phone: '+15551234567' }
+        input: { gtmEventName: null, phone: '+1555123456', countryCode: 'US' }
       }
 
       const result = await authClient({ document: MUTATION, variables })
@@ -77,7 +77,7 @@ describe('blockUpdateAction mutation', () => {
         create: {
           gtmEventName: null,
           parentBlock: { connect: { id: '1' } },
-          phone: '+15551234567',
+          phone: '+1555123456',
           countryCode: 'US'
         },
         update: expect.objectContaining({
@@ -87,7 +87,7 @@ describe('blockUpdateAction mutation', () => {
           email: null,
           journey: { disconnect: true },
           block: { disconnect: true },
-          phone: '+15551234567',
+          phone: '+1555123456',
           countryCode: 'US'
         }),
         include: { parentBlock: { include: { action: true } } }
@@ -98,7 +98,7 @@ describe('blockUpdateAction mutation', () => {
           blockUpdateAction: {
             __typename: 'PhoneAction',
             gtmEventName: null,
-            phone: '+15551234567',
+            phone: '+1555123456',
             countryCode: 'US'
           }
         }
