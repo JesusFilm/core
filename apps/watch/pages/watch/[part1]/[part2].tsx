@@ -37,6 +37,11 @@ import {
   WatchInitialState,
   WatchProvider
 } from '../../../src/libs/watchContext/WatchContext'
+import {
+  GetVariantLanguagesIdAndSlug,
+  GetVariantLanguagesIdAndSlug_video_variantLanguages as VariantLanguageIdAndSlug,
+  GetVariantLanguagesIdAndSlugVariables
+} from '../../../__generated__/GetVariantLanguagesIdAndSlug'
 
 export const GET_VIDEO_CONTENT = gql`
   ${VIDEO_CONTENT_FIELDS}
@@ -47,10 +52,21 @@ export const GET_VIDEO_CONTENT = gql`
   }
 `
 
+export const GET_VARIANT_LANGUAGES_ID_AND_SLUG = gql`
+  query GetVariantLanguagesIdAndSlug($id: ID!) {
+    video(id: $id, idType: databaseId) {
+      variantLanguages {
+        id
+        slug
+      }
+    }
+  }
+`
+
 interface Part2PageProps {
   content: VideoContentFields
   videoSubtitleLanguages: VideoVariantSubtitle[]
-  videoAudioLanguages: VideoAudioLanguage[]
+  videoAudioLanguagesIdsAndSlugs: VariantLanguageIdAndSlug[]
 }
 
 const DynamicVideoContainerPage = dynamic(
@@ -72,7 +88,7 @@ const DynamicNewContentPage = dynamic(
 export default function Part2Page({
   content,
   videoSubtitleLanguages,
-  videoAudioLanguages
+  videoAudioLanguagesIdsAndSlugs
 }: Part2PageProps): ReactElement {
   const { i18n } = useTranslation()
 
@@ -84,7 +100,7 @@ export default function Part2Page({
     videoId: content.id,
     videoVariantSlug: content.variant?.slug,
     videoSubtitleLanguages,
-    videoAudioLanguages
+    videoAudioLanguagesIdsAndSlugs
   }
 
   return (
@@ -155,13 +171,13 @@ export const getStaticProps: GetStaticProps<Part2PageProps> = async (
       }
     }
 
-    let videoAudioLanguagesData: GetLanguagesSlug | undefined
+    let videoAudioLanguagesData: GetVariantLanguagesIdAndSlug | undefined
     if (contentData.content.variant?.slug != null) {
       const { data } = await client.query<
-        GetLanguagesSlug,
-        GetLanguagesSlugVariables
+        GetVariantLanguagesIdAndSlug,
+        GetVariantLanguagesIdAndSlugVariables
       >({
-        query: GET_LANGUAGES_SLUG,
+        query: GET_VARIANT_LANGUAGES_ID_AND_SLUG,
         variables: {
           id: contentData.content.id
         }
@@ -186,8 +202,8 @@ export const getStaticProps: GetStaticProps<Part2PageProps> = async (
         flags: await getFlags(),
         content: contentData.content,
         videoSubtitleLanguages: subtitleData?.video?.variant?.subtitle ?? [],
-        videoAudioLanguages:
-          videoAudioLanguagesData?.video?.variantLanguagesWithSlug ?? [],
+        videoAudioLanguagesIdsAndSlugs:
+          videoAudioLanguagesData?.video?.variantLanguages ?? [],
         ...(await serverSideTranslations(
           context.locale ?? 'en',
           ['apps-watch'],

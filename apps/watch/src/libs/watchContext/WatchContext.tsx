@@ -10,6 +10,7 @@ import {
 import { GetAllLanguages_languages as Language } from '../../../__generated__/GetAllLanguages'
 import { GetLanguagesSlug_video_variantLanguagesWithSlug as AudioLanguage } from '../../../__generated__/GetLanguagesSlug'
 import { GetSubtitles_video_variant_subtitle as SubtitleLanguage } from '../../../__generated__/GetSubtitles'
+import { GetVariantLanguagesIdAndSlug_video_variantLanguages as VariantLanguageIdAndSlug } from '../../../__generated__/GetVariantLanguagesIdAndSlug'
 import { LANGUAGE_MAPPINGS } from '../localeMapping'
 
 import { initializeVideoLanguages } from './initializeVideoLanguages'
@@ -36,12 +37,12 @@ export interface WatchState {
   videoVariantSlug?: string
   /** All available languages from the system */
   allLanguages?: Language[]
-  /** Available audio languages for the current video */
-  videoAudioLanguages?: AudioLanguage[]
+  /** Available audio languages for the current video (simplified structure with id and slug only) */
+  videoAudioLanguagesIdsAndSlugs?: VariantLanguageIdAndSlug[]
   /** Available subtitle languages for the current video */
   videoSubtitleLanguages?: SubtitleLanguage[]
   /** Currently selected audio track for the video object (based on availability and preferences) */
-  currentAudioLanguage?: AudioLanguage
+  currentAudioLanguage?: VariantLanguageIdAndSlug
   /** Whether subtitles should be enabled (calculation based on if the user's subtitle preference is met but the audio track is not met) */
   autoSubtitle?: boolean
 }
@@ -77,8 +78,8 @@ interface SetAllLanguagesAction {
  */
 interface SetVideoAudioLanguagesAction {
   type: 'SetVideoAudioLanguages'
-  /** Available audio languages for the current video */
-  videoAudioLanguages: AudioLanguage[]
+  /** Available audio languages for the current video (simplified structure with id and slug only) */
+  videoAudioLanguagesIdsAndSlugs: VariantLanguageIdAndSlug[]
 }
 
 /**
@@ -187,7 +188,7 @@ export type WatchInitialState = Pick<
   | 'videoId'
   | 'videoVariantSlug'
   | 'videoSubtitleLanguages'
-  | 'videoAudioLanguages'
+  | 'videoAudioLanguagesIdsAndSlugs'
 >
 
 const WatchContext = createContext<{
@@ -231,18 +232,19 @@ export const reducer = (state: WatchState, action: WatchAction): WatchState => {
         allLanguages: action.allLanguages
       }
     case 'SetVideoAudioLanguages': {
-      const videoAudioLanguages = action.videoAudioLanguages
+      const videoAudioLanguagesIdsAndSlugs =
+        action.videoAudioLanguagesIdsAndSlugs
 
       // Find the best matching audio language for the current user preference
-      let currentAudioLanguage: AudioLanguage | undefined
+      let currentAudioLanguage: VariantLanguageIdAndSlug | undefined
 
       // Check if user's audio preference is available for this video
-      for (const lang of videoAudioLanguages) {
+      for (const lang of videoAudioLanguagesIdsAndSlugs) {
         const siteLanguageMapping = LANGUAGE_MAPPINGS[state.siteLanguage]
         const siteLanguageSlugs = siteLanguageMapping?.languageSlugs || []
 
         if (
-          lang.language.id === state.audioLanguage ||
+          lang.id === state.audioLanguage ||
           siteLanguageSlugs.includes(lang.slug || '')
         ) {
           currentAudioLanguage = lang
@@ -253,7 +255,7 @@ export const reducer = (state: WatchState, action: WatchAction): WatchState => {
       // If no matches found, currentAudioLanguage remains undefined
       return {
         ...state,
-        videoAudioLanguages,
+        videoAudioLanguagesIdsAndSlugs,
         currentAudioLanguage
       }
     }
@@ -261,7 +263,7 @@ export const reducer = (state: WatchState, action: WatchAction): WatchState => {
       const videoSubtitleLanguages = action.videoSubtitleLanguages
 
       const langPrefMet =
-        state?.audioLanguage === state?.currentAudioLanguage?.language.id
+        state?.audioLanguage === state?.currentAudioLanguage?.id
 
       if (langPrefMet) {
         return {
@@ -381,10 +383,13 @@ export function WatchProvider({ children, initialState }: WatchProviderProps) {
     // Initialize video language preferences based on available languages
     initializeVideoLanguages(
       dispatch,
-      initialState?.videoAudioLanguages ?? [],
+      initialState?.videoAudioLanguagesIdsAndSlugs ?? [],
       initialState?.videoSubtitleLanguages ?? []
     )
-  }, [initialState.videoSubtitleLanguages, initialState.videoAudioLanguages])
+  }, [
+    initialState.videoSubtitleLanguages,
+    initialState.videoAudioLanguagesIdsAndSlugs
+  ])
 
   return (
     <WatchContext.Provider value={{ state, dispatch }}>

@@ -44,6 +44,12 @@ import {
   WatchInitialState,
   WatchProvider
 } from '../../../../src/libs/watchContext/WatchContext'
+import { GET_VARIANT_LANGUAGES_ID_AND_SLUG } from '../[part2]'
+import {
+  GetVariantLanguagesIdAndSlug,
+  GetVariantLanguagesIdAndSlug_video_variantLanguages as VariantLanguageIdAndSlug,
+  GetVariantLanguagesIdAndSlugVariables
+} from '../../../../__generated__/GetVariantLanguagesIdAndSlug'
 
 export const GET_VIDEO_CONTAINER_PART_2 = gql`
   ${VIDEO_CONTENT_FIELDS}
@@ -67,14 +73,14 @@ interface Part3PageProps {
   container: VideoContentFields
   content: VideoContentFields
   videoSubtitleLanguages: VideoVariantSubtitle[]
-  videoAudioLanguages: VideoAudioLanguage[]
+  videoAudioLanguagesIdsAndSlugs: VariantLanguageIdAndSlug[]
 }
 
 export default function Part3Page({
   container,
   content,
   videoSubtitleLanguages,
-  videoAudioLanguages
+  videoAudioLanguagesIdsAndSlugs
 }: Part3PageProps): ReactElement {
   const { i18n } = useTranslation()
   const searchClient = useInstantSearchClient()
@@ -88,7 +94,7 @@ export default function Part3Page({
     videoId: content.id,
     videoVariantSlug: content.variant?.slug,
     videoSubtitleLanguages,
-    videoAudioLanguages
+    videoAudioLanguagesIdsAndSlugs
   }
 
   return (
@@ -170,13 +176,13 @@ export const getStaticProps: GetStaticProps<Part3PageProps> = async (
       }
     }
 
-    let videoAudioLanguagesData: GetLanguagesSlug | undefined
+    let videoAudioLanguagesData: GetVariantLanguagesIdAndSlug | undefined
     if (contentData.content.variant?.slug != null) {
       const { data } = await client.query<
-        GetLanguagesSlug,
-        GetLanguagesSlugVariables
+        GetVariantLanguagesIdAndSlug,
+        GetVariantLanguagesIdAndSlugVariables
       >({
-        query: GET_LANGUAGES_SLUG,
+        query: GET_VARIANT_LANGUAGES_ID_AND_SLUG,
         variables: {
           id: contentData.content.id
         }
@@ -203,8 +209,8 @@ export const getStaticProps: GetStaticProps<Part3PageProps> = async (
         container: containerData.container,
         content: contentData.content,
         videoSubtitleLanguages: subtitleData?.video?.variant?.subtitle ?? [],
-        videoAudioLanguages:
-          videoAudioLanguagesData?.video?.variantLanguagesWithSlug ?? [],
+        videoAudioLanguagesIdsAndSlugs:
+          videoAudioLanguagesData?.video?.variantLanguages ?? [],
         ...(await serverSideTranslations(
           context.locale ?? 'en',
           ['apps-watch'],

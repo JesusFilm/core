@@ -34,41 +34,17 @@ export const AudioTrackSelect = memo(function AudioTrackSelect(): ReactElement {
       currentAudioLanguage,
       audioLanguage,
       videoId,
-      videoAudioLanguages,
+      videoAudioLanguagesIdsAndSlugs,
       loading
     },
     dispatch
   } = useWatch()
   const { updateAudioLanguage } = useLanguageActions()
 
-  const [getAudioLanguages, { loading: audioLanguagesLoading }] =
-    useLazyQuery<GetLanguagesSlug>(GET_LANGUAGES_SLUG, {
-      onCompleted: (data) => {
-        if (data?.video?.variantLanguagesWithSlug) {
-          // This action doesn't have side effects, so we can use dispatch directly
-          dispatch({
-            type: 'SetVideoAudioLanguages',
-            videoAudioLanguages: data.video.variantLanguagesWithSlug
-          })
-        }
-      }
-    })
-
   const { t } = useTranslation()
   const router = useRouter()
   const [helperText, setHelperText] = useState<string>(t('2000 translations'))
   const instantSearch = useSafeInstantSearch()
-
-  // Fetch audio languages for current video when needed
-  useEffect(() => {
-    if (videoId != null && videoAudioLanguages == null) {
-      void getAudioLanguages({
-        variables: {
-          id: videoId
-        }
-      })
-    }
-  }, [videoId, videoAudioLanguages, getAudioLanguages])
 
   const currentLanguage = getCurrentAudioLanguage({
     allLanguages,
@@ -91,7 +67,7 @@ export const AudioTrackSelect = memo(function AudioTrackSelect(): ReactElement {
     }
 
     if (videoId != null) {
-      if (videoAudioLanguages == null || audioLanguagesLoading) return
+      if (videoAudioLanguagesIdsAndSlugs == null || loading) return
       selectLanguageForVideo(params)
     }
   }, [
@@ -102,8 +78,8 @@ export const AudioTrackSelect = memo(function AudioTrackSelect(): ReactElement {
     t,
     router,
     videoId,
-    videoAudioLanguages,
-    audioLanguagesLoading
+    videoAudioLanguagesIdsAndSlugs,
+    loading
   ])
 
   const languages = useMemo(
@@ -156,7 +132,7 @@ export const AudioTrackSelect = memo(function AudioTrackSelect(): ReactElement {
             }}
             onChange={handleChange}
             languages={languages}
-            loading={loading || audioLanguagesLoading}
+            loading={loading}
             disabled={loading}
             renderInput={renderInput(helperText)}
             renderOption={renderOption}

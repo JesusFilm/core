@@ -59,30 +59,30 @@ export function NewVideoContentPage(): ReactElement {
     variant?.language.bcp47 ?? 'en'
   )
 
-  const { loading: languageVariantsLoading, data: languageVariantsData } =
-    useLanguagesSlugQuery({
-      variables: {
-        id
-      },
-      onCompleted: (data) => {
-        if (data?.video?.variantLanguagesWithSlug) {
-          dispatch({
-            type: 'SetVideoAudioLanguages',
-            videoAudioLanguages: data.video.variantLanguagesWithSlug
-          })
-        }
-      }
-    })
+  // const { loading: languageVariantsLoading, data: languageVariantsData } =
+  //   useLanguagesSlugQuery({
+  //     variables: {
+  //       id
+  //     },
+  //     onCompleted: (data) => {
+  //       if (data?.video?.variantLanguagesWithSlug) {
+  //         dispatch({
+  //           type: 'SetVideoAudioLanguages',
+  //           videoAudioLanguages: data.video.variantLanguagesWithSlug
+  //         })
+  //       }
+  //     }
+  //   })
 
-  // Handle locale checking and redirect
-  useEffect(() => {
-    void audioLanguageRedirect({
-      languageVariantsLoading,
-      languageVariantsData,
-      router,
-      containerSlug: container?.slug
-    })
-  }, [languageVariantsLoading, languageVariantsData, router, container?.slug])
+  // // Handle locale checking and redirect
+  // useEffect(() => {
+  //   void audioLanguageRedirect({
+  //     languageVariantsLoading,
+  //     languageVariantsData,
+  //     router,
+  //     containerSlug: container?.slug
+  //   })
+  // }, [languageVariantsLoading, languageVariantsData, router, container?.slug])
 
   const filteredChildren = useMemo(
     () => children.filter((video) => video.variant !== null),

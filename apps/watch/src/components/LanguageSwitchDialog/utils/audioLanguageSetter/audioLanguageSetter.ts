@@ -3,14 +3,14 @@ import { NextRouter } from 'next/router'
 import { TFunction } from 'next-i18next'
 
 import { GetAllLanguages_languages as Language } from '../../../../../__generated__/GetAllLanguages'
-import { GetLanguagesSlug_video_variantLanguagesWithSlug as AudioLanguage } from '../../../../../__generated__/GetLanguagesSlug'
+import { GetVariantLanguagesIdAndSlug_video_variantLanguages as VariantLanguageIdAndSlug } from '../../../../../__generated__/GetVariantLanguagesIdAndSlug'
 
 /**
  * Parameters for audio language setter functions
  */
 export interface AudioLanguageSetterParams {
   /** Current audio language selected by the system based on availability */
-  currentAudioLanguage?: AudioLanguage
+  currentAudioLanguage?: VariantLanguageIdAndSlug
   /** All available languages in the system */
   allLanguages?: Language[]
   /** User's preferred audio language ID */
@@ -206,7 +206,7 @@ export function selectLanguageForVideo({
   if (
     currentAudioLanguage != null &&
     preferredAudioLanguage != null &&
-    currentAudioLanguage.language.id === preferredAudioLanguage.id
+    currentAudioLanguage.id === preferredAudioLanguage.id
   ) {
     setHelper({
       language: preferredAudioLanguage,
@@ -214,12 +214,12 @@ export function selectLanguageForVideo({
       setHelperText,
       t
     })
-    updateURLIfNeeded({ router, targetSlug: preferredAudioLanguage.slug })
+    updateURLIfNeeded({ router, targetSlug: currentAudioLanguage.slug })
   }
   // Scenario 2: Different preference is matched
   else if (currentAudioLanguage != null) {
     const matchingLanguage = allLanguages?.find(
-      (lang) => lang.id === currentAudioLanguage.language.id
+      (lang) => lang.id === currentAudioLanguage.id
     )
     if (matchingLanguage) {
       setHelper({
