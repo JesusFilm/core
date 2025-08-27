@@ -78,19 +78,16 @@ jobs:
           curl -fsSL https://get.pnpm.io/install.sh | sh -s -- --version 9.0.0
           echo "PNPM_HOME=$PNPM_HOME" >> $GITHUB_ENV
           echo "$PNPM_HOME" >> $GITHUB_PATH
+      - name: Configure pnpm store
+        run: pnpm config set store-dir ~/.pnpm-store
       - name: Get Node Version
         id: node-version
         run: echo "version=$(node -v)" >> $GITHUB_OUTPUT
-      - name: Mount NPM Cache
+      - name: Mount pnpm store
         uses: useblacksmith/stickydisk@v1
         with:
-          key: ${{ github.repository }}-${{ steps.node-version.outputs.version }}-npm-cache
-          path: ~/.npm
-      - name: Mount node_modules
-        uses: useblacksmith/stickydisk@v1
-        with:
-          key: ${{ github.repository }}-${{ steps.node-version.outputs.version }}-node-modules
-          path: ./node_modules
+          key: ${{ github.repository }}-${{ steps.node-version.outputs.version }}-pnpm-store
+          path: ~/.pnpm-store
       - name: Mount playwright cache
         uses: useblacksmith/stickydisk@v1
         with:
@@ -186,19 +183,16 @@ jobs:
           curl -fsSL https://get.pnpm.io/install.sh | sh -s -- --version 9.0.0
           echo "PNPM_HOME=$PNPM_HOME" >> $GITHUB_ENV
           echo "$PNPM_HOME" >> $GITHUB_PATH
+      - name: Configure pnpm store
+        run: pnpm config set store-dir ~/.pnpm-store
       - name: Get Node Version
         id: node-version
         run: echo "version=$(node -v)" >> $GITHUB_OUTPUT
-      - name: Mount NPM Cache
+      - name: Mount pnpm store
         uses: useblacksmith/stickydisk@v1
         with:
-          key: ${{ github.repository }}-${{ steps.node-version.outputs.version }}-npm-cache-${{ matrix.test-suite }}
-          path: ~/.npm
-      - name: Mount node_modules
-        uses: useblacksmith/stickydisk@v1
-        with:
-          key: ${{ github.repository }}-${{ steps.node-version.outputs.version }}-node-modules-${{ matrix.test-suite }}
-          path: ./node_modules
+          key: ${{ github.repository }}-${{ steps.node-version.outputs.version }}-pnpm-store-${{ matrix.test-suite }}
+          path: ~/.pnpm-store
       - name: Mount playwright cache
         uses: useblacksmith/stickydisk@v1
         with:
