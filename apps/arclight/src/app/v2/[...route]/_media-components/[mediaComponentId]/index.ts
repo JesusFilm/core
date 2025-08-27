@@ -325,7 +325,7 @@ mediaComponent.openapi(route, async (c) => {
         message: `Media component '${mediaComponentId}' resource not found!`,
         logref: 404
       },
-      500
+      404
     )
   }
 
