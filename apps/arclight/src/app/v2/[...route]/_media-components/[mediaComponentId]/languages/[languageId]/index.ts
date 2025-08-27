@@ -228,10 +228,10 @@ mediaComponentLanguage.openapi(route, async (c) => {
     apiKey ?? ''
   ])
 
-  let cachedData
-  try {
-    cachedData = await getWithStaleCache(cacheKey, async () => {
-      const { data } = await getApolloClient().query<
+  const cachedData = await getWithStaleCache(cacheKey, async () => {
+    let data
+    try {
+      const result = await getApolloClient().query<
         ResultOf<typeof GET_VIDEO_VARIANT>
       >({
         query: GET_VIDEO_VARIANT,
@@ -240,303 +240,286 @@ mediaComponentLanguage.openapi(route, async (c) => {
           id: mediaComponentId
         }
       })
-
-      const video = data.video
-
-      if (video == null || video.variant == null) {
-        return { notFound: true, type: 'video_or_variant_not_found' }
-      }
-
-      const downloadLow = findDownloadWithFallback(
-        video.variant?.downloads,
-        'low',
-        apiKey
-      )
-      const downloadHigh = findDownloadWithFallback(
-        video.variant?.downloads,
-        'high',
-        apiKey
-      )
-      const downloadSd = video.variant?.downloads?.find(
-        (download) => download.quality === 'sd'
-      )
-
-      const downloadUrls = {
-        low:
-          downloadLow == null
-            ? undefined
-            : {
-                url: downloadLow.url,
-                height: downloadLow.height || 240,
-                width: downloadLow.width || 426,
-                sizeInBytes: downloadLow.size || 0
-              },
-        high:
-          downloadHigh == null
-            ? undefined
-            : {
-                url: downloadHigh.url,
-                height: downloadHigh.height || 720,
-                width: downloadHigh.width || 1280,
-                sizeInBytes: downloadHigh.size || 0
-              }
-      }
-
-      let webEmbedPlayer = ''
-      let webEmbedSharePlayer = ''
-      if (platform === 'web') {
-        webEmbedPlayer = getWebEmbedPlayer(video.variant.id, apiSessionId)
-        webEmbedSharePlayer = getWebEmbedSharePlayer(
-          video.variant.id,
-          apiSessionId
-        )
-      }
-
-      let subtitleUrls = {}
-      if (
-        video.variant?.subtitle != null &&
-        video.variant?.subtitle.length > 0
-      ) {
-        switch (platform) {
-          case 'android':
-            subtitleUrls = {
-              vtt:
-                video.variant?.subtitle
-                  ?.map((subtitle) => ({
-                    languageId: Number(subtitle.language?.id),
-                    languageName: subtitle.language?.name?.[0]?.value ?? '',
-                    languageTag: subtitle.language?.bcp47 ?? '',
-                    url: subtitle.vttSrc
-                  }))
-                  .filter((s) => Boolean(s.url)) ?? [],
-              srt:
-                video.variant?.subtitle
-                  ?.map((subtitle) => ({
-                    languageId: Number(subtitle.language?.id),
-                    languageName: subtitle.language?.name?.[0]?.value ?? '',
-                    languageTag: subtitle.language?.bcp47 ?? '',
-                    url: subtitle.srtSrc
-                  }))
-                  .filter((s) => Boolean(s.url)) ?? []
-            }
-            break
-          case 'web':
-          case 'ios':
-            subtitleUrls = {
-              vtt:
-                video.variant?.subtitle
-                  ?.map((subtitle) => ({
-                    languageId: Number(subtitle.language?.id),
-                    languageName: subtitle.language?.name?.[0]?.value ?? '',
-                    languageTag: subtitle.language?.bcp47 ?? '',
-                    url: subtitle.vttSrc
-                  }))
-                  .filter((s) => Boolean(s.url)) ?? [],
-              srt: []
-            }
+      data = result.data
+    } catch (error) {
+      if (error instanceof Error && error.message.includes('not found')) {
+        return {
+          data: {
+            message: `Media component '${mediaComponentId}' language '${languageId}' not found!`,
+            logref: 404
+          },
+          statusCode: 404
         }
       }
+      throw error
+    }
 
-      let streamingUrls = {}
-      if (video.variant?.hls != null || video.variant?.dash != null) {
-        switch (platform) {
-          case 'android':
-            streamingUrls = {
-              dash: [{ videoBitrate: 0, url: video.variant?.dash }],
-              hls: [{ videoBitrate: 0, url: video.variant?.hls }],
-              http: [
-                {
-                  videoBitrate: downloadLow?.bitrate ?? 0,
-                  videoContainer: 'MP4',
-                  url: downloadLow?.url
-                },
-                {
-                  videoBitrate: downloadSd?.bitrate ?? 0,
-                  videoContainer: 'MP4',
-                  url: downloadSd?.url
-                },
-                {
-                  videoBitrate: downloadSd?.bitrate ?? 0,
-                  videoContainer: 'MP4',
-                  url: downloadSd?.url
-                },
-                {
-                  videoBitrate: downloadSd?.bitrate ?? 0,
-                  videoContainer: 'MP4',
-                  url: downloadSd?.url
-                },
-                {
-                  videoBitrate: downloadSd?.bitrate ?? 0,
-                  videoContainer: 'MP4',
-                  url: downloadSd?.url
-                },
-                {
-                  videoBitrate: downloadHigh?.bitrate ?? 0,
-                  videoContainer: 'MP4',
-                  url: downloadHigh?.url
-                }
-              ]
-            }
-            break
-          case 'ios':
-            streamingUrls = {
-              m3u8: [
-                {
-                  videoBitrate: 0,
-                  videoContainer: 'M2TS',
-                  url: video.variant?.hls
-                }
-              ],
-              http: []
-            }
-            break
-        }
-      }
+    const video = data.video
 
+    if (video == null || video.variant == null) {
       return {
         data: {
-          mediaComponentId,
-          languageId: Number(languageId),
-          refId: video.variant?.id,
-          apiSessionId,
-          platform,
-          lengthInMilliseconds: video.variant?.lengthInMilliseconds ?? 0,
-          subtitleUrls,
-          downloadUrls,
-          streamingUrls,
-          shareUrl: video.variant?.share ?? '',
-          socialMediaUrls: {},
-          ...(platform === 'web' && {
-            webEmbedPlayer,
-            webEmbedSharePlayer
-          }),
-          openGraphVideoPlayer: 'https://jesusfilm.org/',
-          _links: {
-            self: {
-              href: `http://api.arclight.org/v2/media-components/${mediaComponentId}/languages/${languageId}?platform=${platform}&apiKey=${apiKey}`
-            },
-            mediaComponent: {
-              href: `http://api.arclight.org/v2/media-components/${mediaComponentId}?apiKey=${apiKey}`
-            },
-            mediaLanguage: {
-              href: `http://api.arclight.org/v2/media-languages/${languageId}?apiKey=${apiKey}`
-            }
-          },
-          ...(expand.includes('contains') &&
-            video.children && {
-              _embedded: {
-                contains: video.children.map((child) => ({
-                  mediaComponentId: child.id,
-                  languageId: Number(languageId),
-                  refId: `${child.id}_${languageId}-${child.label}`,
-                  apiSessionId,
-                  lengthInMilliseconds:
-                    child.variant?.lengthInMilliseconds ?? 0,
-                  subtitleUrls: {
-                    vtt:
-                      child.variant?.subtitle
-                        ?.map((subtitle) => ({
-                          languageId: Number(subtitle.language?.id),
-                          languageName:
-                            subtitle.language?.name?.[0]?.value ?? '',
-                          languageTag: subtitle.language?.bcp47 ?? '',
-                          url: subtitle.vttSrc
-                        }))
-                        .filter((s) => Boolean(s.url)) ?? [],
-                    srt: []
-                  },
-                  downloadUrls: {
-                    low: (() => {
-                      const lowDownload = findDownloadWithFallback(
-                        child.variant?.downloads,
-                        'low',
-                        apiKey
-                      )
-                      return (
-                        lowDownload && {
-                          url: lowDownload.url,
-                          height: lowDownload.height || 240,
-                          width: lowDownload.width || 426,
-                          sizeInBytes: lowDownload.size || 0
-                        }
-                      )
-                    })(),
-                    high: (() => {
-                      const highDownload = findDownloadWithFallback(
-                        child.variant?.downloads,
-                        'high',
-                        apiKey
-                      )
-                      return (
-                        highDownload && {
-                          url: highDownload.url,
-                          height: highDownload.height || 720,
-                          width: highDownload.width || 1280,
-                          sizeInBytes: highDownload.size || 0
-                        }
-                      )
-                    })()
-                  },
-                  streamingUrls: {
-                    m3u8: [
-                      {
-                        videoBitrate: 0,
-                        videoContainer: 'M2TS',
-                        url: child.variant?.hls ?? ''
-                      }
-                    ],
-                    http: []
-                  },
-                  shareUrl: child.variant?.share ?? '',
-                  socialMediaUrls: {},
-                  _links: {
-                    self: {
-                      href: `http://api.arclight.org/v2/media-components/${child.id}/languages/${languageId}?apiKey=${apiKey}`
-                    },
-                    mediaComponent: {
-                      href: `http://api.arclight.org/v2/media-components/${child.id}?apiKey=${apiKey}`
-                    },
-                    mediaLanguage: {
-                      href: `http://api.arclight.org/v2/media-languages/${languageId}?apiKey=${apiKey}`
-                    }
-                  }
-                }))
-              }
-            })
+          message: `Media component '${mediaComponentId}' language '${languageId}' not found!`,
+          logref: 404
         },
-        type: 'success'
+        statusCode: 404
       }
-    })
-  } catch (error) {
-    console.error('Error fetching media component language:', error)
-    return c.json(
-      {
-        message: `Media component '${mediaComponentId}' language '${languageId}' not found!`,
-        logref: 500
-      },
-      500
+    }
+
+    const downloadLow = findDownloadWithFallback(
+      video.variant?.downloads,
+      'low',
+      apiKey
     )
-  }
-
-  if (cachedData?.notFound) {
-    return c.json(
-      {
-        message: `Media component '${mediaComponentId}' language '${languageId}' not found!`,
-        logref: 404
-      },
-      404
+    const downloadHigh = findDownloadWithFallback(
+      video.variant?.downloads,
+      'high',
+      apiKey
     )
-  }
+    const downloadSd = video.variant?.downloads?.find(
+      (download) => download.quality === 'sd'
+    )
 
-  if (cachedData?.type === 'success') {
-    return c.json(cachedData.data)
-  }
+    const downloadUrls = {
+      low:
+        downloadLow == null
+          ? undefined
+          : {
+              url: downloadLow.url,
+              height: downloadLow.height || 240,
+              width: downloadLow.width || 426,
+              sizeInBytes: downloadLow.size || 0
+            },
+      high:
+        downloadHigh == null
+          ? undefined
+          : {
+              url: downloadHigh.url,
+              height: downloadHigh.height || 720,
+              width: downloadHigh.width || 1280,
+              sizeInBytes: downloadHigh.size || 0
+            }
+    }
 
-  return c.json(
-    {
-      message: `Media component '${mediaComponentId}' language '${languageId}' not found!`,
-      logref: 404
-    },
-    404
-  )
+    let webEmbedPlayer = ''
+    let webEmbedSharePlayer = ''
+    if (platform === 'web') {
+      webEmbedPlayer = getWebEmbedPlayer(video.variant.id, apiSessionId)
+      webEmbedSharePlayer = getWebEmbedSharePlayer(
+        video.variant.id,
+        apiSessionId
+      )
+    }
+
+    let subtitleUrls = {}
+    if (video.variant?.subtitle != null && video.variant?.subtitle.length > 0) {
+      switch (platform) {
+        case 'android':
+          subtitleUrls = {
+            vtt:
+              video.variant?.subtitle
+                ?.map((subtitle) => ({
+                  languageId: Number(subtitle.language?.id),
+                  languageName: subtitle.language?.name?.[0]?.value ?? '',
+                  languageTag: subtitle.language?.bcp47 ?? '',
+                  url: subtitle.vttSrc
+                }))
+                .filter((s) => Boolean(s.url)) ?? [],
+            srt:
+              video.variant?.subtitle
+                ?.map((subtitle) => ({
+                  languageId: Number(subtitle.language?.id),
+                  languageName: subtitle.language?.name?.[0]?.value ?? '',
+                  languageTag: subtitle.language?.bcp47 ?? '',
+                  url: subtitle.srtSrc
+                }))
+                .filter((s) => Boolean(s.url)) ?? []
+          }
+          break
+        case 'web':
+        case 'ios':
+          subtitleUrls = {
+            vtt:
+              video.variant?.subtitle
+                ?.map((subtitle) => ({
+                  languageId: Number(subtitle.language?.id),
+                  languageName: subtitle.language?.name?.[0]?.value ?? '',
+                  languageTag: subtitle.language?.bcp47 ?? '',
+                  url: subtitle.vttSrc
+                }))
+                .filter((s) => Boolean(s.url)) ?? [],
+            srt: []
+          }
+      }
+    }
+
+    let streamingUrls = {}
+    if (video.variant?.hls != null || video.variant?.dash != null) {
+      switch (platform) {
+        case 'android':
+          streamingUrls = {
+            dash: [{ videoBitrate: 0, url: video.variant?.dash }],
+            hls: [{ videoBitrate: 0, url: video.variant?.hls }],
+            http: [
+              {
+                videoBitrate: downloadLow?.bitrate ?? 0,
+                videoContainer: 'MP4',
+                url: downloadLow?.url
+              },
+              {
+                videoBitrate: downloadSd?.bitrate ?? 0,
+                videoContainer: 'MP4',
+                url: downloadSd?.url
+              },
+              {
+                videoBitrate: downloadSd?.bitrate ?? 0,
+                videoContainer: 'MP4',
+                url: downloadSd?.url
+              },
+              {
+                videoBitrate: downloadSd?.bitrate ?? 0,
+                videoContainer: 'MP4',
+                url: downloadSd?.url
+              },
+              {
+                videoBitrate: downloadSd?.bitrate ?? 0,
+                videoContainer: 'MP4',
+                url: downloadSd?.url
+              },
+              {
+                videoBitrate: downloadHigh?.bitrate ?? 0,
+                videoContainer: 'MP4',
+                url: downloadHigh?.url
+              }
+            ]
+          }
+          break
+        case 'ios':
+          streamingUrls = {
+            m3u8: [
+              {
+                videoBitrate: 0,
+                videoContainer: 'M2TS',
+                url: video.variant?.hls
+              }
+            ],
+            http: []
+          }
+          break
+      }
+    }
+
+    return {
+      data: {
+        mediaComponentId,
+        languageId: Number(languageId),
+        refId: video.variant?.id,
+        apiSessionId,
+        platform,
+        lengthInMilliseconds: video.variant?.lengthInMilliseconds ?? 0,
+        subtitleUrls,
+        downloadUrls,
+        streamingUrls,
+        shareUrl: video.variant?.share ?? '',
+        socialMediaUrls: {},
+        ...(platform === 'web' && {
+          webEmbedPlayer,
+          webEmbedSharePlayer
+        }),
+        openGraphVideoPlayer: 'https://jesusfilm.org/',
+        _links: {
+          self: {
+            href: `http://api.arclight.org/v2/media-components/${mediaComponentId}/languages/${languageId}?platform=${platform}&apiKey=${apiKey}`
+          },
+          mediaComponent: {
+            href: `http://api.arclight.org/v2/media-components/${mediaComponentId}?apiKey=${apiKey}`
+          },
+          mediaLanguage: {
+            href: `http://api.arclight.org/v2/media-languages/${languageId}?apiKey=${apiKey}`
+          }
+        },
+        ...(expand.includes('contains') &&
+          video.children && {
+            _embedded: {
+              contains: video.children.map((child) => ({
+                mediaComponentId: child.id,
+                languageId: Number(languageId),
+                refId: `${child.id}_${languageId}-${child.label}`,
+                apiSessionId,
+                lengthInMilliseconds: child.variant?.lengthInMilliseconds ?? 0,
+                subtitleUrls: {
+                  vtt:
+                    child.variant?.subtitle
+                      ?.map((subtitle) => ({
+                        languageId: Number(subtitle.language?.id),
+                        languageName: subtitle.language?.name?.[0]?.value ?? '',
+                        languageTag: subtitle.language?.bcp47 ?? '',
+                        url: subtitle.vttSrc
+                      }))
+                      .filter((s) => Boolean(s.url)) ?? [],
+                  srt: []
+                },
+                downloadUrls: {
+                  low: (() => {
+                    const lowDownload = findDownloadWithFallback(
+                      child.variant?.downloads,
+                      'low',
+                      apiKey
+                    )
+                    return (
+                      lowDownload && {
+                        url: lowDownload.url,
+                        height: lowDownload.height || 240,
+                        width: lowDownload.width || 426,
+                        sizeInBytes: lowDownload.size || 0
+                      }
+                    )
+                  })(),
+                  high: (() => {
+                    const highDownload = findDownloadWithFallback(
+                      child.variant?.downloads,
+                      'high',
+                      apiKey
+                    )
+                    return (
+                      highDownload && {
+                        url: highDownload.url,
+                        height: highDownload.height || 720,
+                        width: highDownload.width || 1280,
+                        sizeInBytes: highDownload.size || 0
+                      }
+                    )
+                  })()
+                },
+                streamingUrls: {
+                  m3u8: [
+                    {
+                      videoBitrate: 0,
+                      videoContainer: 'M2TS',
+                      url: child.variant?.hls ?? ''
+                    }
+                  ],
+                  http: []
+                },
+                shareUrl: child.variant?.share ?? '',
+                socialMediaUrls: {},
+                _links: {
+                  self: {
+                    href: `http://api.arclight.org/v2/media-components/${child.id}/languages/${languageId}?apiKey=${apiKey}`
+                  },
+                  mediaComponent: {
+                    href: `http://api.arclight.org/v2/media-components/${child.id}?apiKey=${apiKey}`
+                  },
+                  mediaLanguage: {
+                    href: `http://api.arclight.org/v2/media-languages/${languageId}?apiKey=${apiKey}`
+                  }
+                }
+              }))
+            }
+          })
+      },
+      statusCode: 200
+    }
+  })
+  return c.json(cachedData.data, cachedData.statusCode as 200 | 404 | 500)
 })

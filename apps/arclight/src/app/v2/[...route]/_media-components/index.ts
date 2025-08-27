@@ -257,8 +257,9 @@ mediaComponents.openapi(route, async (c) => {
   ])
 
   const response = await getWithStaleCache(cacheKey, async () => {
+    let data
     try {
-      const { data } = await getApolloClient().query<
+      const result = await getApolloClient().query<
         ResultOf<typeof GET_VIDEOS_WITH_FALLBACK>
       >({
         query: GET_VIDEOS_WITH_FALLBACK,
@@ -272,115 +273,143 @@ mediaComponents.openapi(route, async (c) => {
           ...(ids != null ? { ids } : {})
         }
       })
-      const videos = data.videos
-      const total = data.videosCount
-
-      const queryObject = {
-        ...c.req.query(),
-        page: page.toString(),
-        limit: limit.toString()
-      }
-
-      const filteredVideos = videos.filter(
-        (video) =>
-          video.title[0]?.value != null ||
-          video.fallbackTitle[0]?.value != null ||
-          video.snippet[0]?.value != null ||
-          video.description[0]?.value != null
-      )
-      const lastPage =
-        Math.ceil(total / limit) === 0 ? 1 : Math.ceil(total / limit)
-
-      const mediaComponents = filteredVideos.map((video) => {
-        const isDownloadable =
-          video.label === 'collection' || video.label === 'series'
-            ? false
-            : (video.variant?.downloadable ?? false)
+      data = result.data
+    } catch (error) {
+      if (error instanceof Error && error.message.includes('not found')) {
         return {
-          mediaComponentId: video.id,
-          componentType: video.variant?.hls != null ? 'content' : 'container',
-          subType: video.label,
-          contentType: video.variant?.hls != null ? 'video' : 'none',
-          imageUrls: {
-            thumbnail:
-              video.images.find((image) => image.thumbnail != null)
-                ?.thumbnail ?? '',
-            videoStill:
-              video.images.find((image) => image.videoStill != null)
-                ?.videoStill ?? '',
-            mobileCinematicHigh:
-              video.images.find((image) => image.mobileCinematicHigh != null)
-                ?.mobileCinematicHigh ?? '',
-            mobileCinematicLow:
-              video.images.find((image) => image.mobileCinematicLow != null)
-                ?.mobileCinematicLow ?? '',
-            mobileCinematicVeryLow:
-              video.images.find((image) => image.mobileCinematicVeryLow != null)
-                ?.mobileCinematicVeryLow ?? ''
-          },
-          lengthInMilliseconds: video.variant?.lengthInMilliseconds ?? 0,
-          containsCount: video.childrenCount,
-          isDownloadable,
-          downloadSizes: {
-            approximateSmallDownloadSizeInBytes: isDownloadable
-              ? getDownloadSize(video.variant?.downloads, 'low', apiKey)
-              : 0,
-            approximateLargeDownloadSizeInBytes: isDownloadable
-              ? getDownloadSize(video.variant?.downloads, 'high', apiKey)
-              : 0
-          },
-          bibleCitations: video.bibleCitations.map((citation) => ({
-            osisBibleBook: citation.osisId,
-            chapterStart:
-              citation.chapterStart === -1 ? null : citation.chapterStart,
-            verseStart: citation.verseStart === -1 ? null : citation.verseStart,
-            chapterEnd: citation.chapterEnd === -1 ? null : citation.chapterEnd,
-            verseEnd: citation.verseEnd === -1 ? null : citation.verseEnd
-          })),
-          primaryLanguageId: Number(video.primaryLanguageId),
-          title: video.title[0]?.value ?? video.fallbackTitle[0]?.value ?? '',
-          shortDescription:
-            video.snippet[0]?.value ?? video.fallbackSnippet[0]?.value ?? '',
-          longDescription:
-            video.description[0]?.value ??
-            video.fallbackDescription[0]?.value ??
-            '',
-          studyQuestions:
-            video.studyQuestions.length > 0
-              ? video.studyQuestions.map((question) => question.value)
-              : video.fallbackStudyQuestions.map((question) => question.value),
-          metadataLanguageTag: video.title[0]?.language.bcp47 ?? 'en',
-          ...(expand.includes('languageIds')
-            ? {
-                languageIds: video.availableLanguages.map((languageId) =>
-                  typeof languageId === 'string'
-                    ? Number(languageId)
-                    : languageId
-                )
+          data: {
+            page,
+            limit,
+            pages: 1,
+            total: 0,
+            apiSessionId: apiSessionId,
+            _links: {
+              self: {
+                href: `http://api.arclight.org/v2/media-components?${new URLSearchParams(c.req.query()).toString()}`
+              },
+              first: {
+                href: `http://api.arclight.org/v2/media-components?${new URLSearchParams({ ...c.req.query(), page: '1' }).toString()}`
+              },
+              last: {
+                href: `http://api.arclight.org/v2/media-components?${new URLSearchParams({ ...c.req.query(), page: '1' }).toString()}`
               }
-            : {})
+            },
+            _embedded: { mediaComponents: [] }
+          },
+          statusCode: 200
         }
-      })
+      }
+      throw error
+    }
 
-      const queryString = new URLSearchParams(queryObject).toString()
-      const firstQueryString = new URLSearchParams({
-        ...queryObject,
-        page: '1'
-      }).toString()
-      const lastQueryString = new URLSearchParams({
-        ...queryObject,
-        page: lastPage.toString()
-      }).toString()
-      const nextQueryString = new URLSearchParams({
-        ...queryObject,
-        page: (page + 1).toString()
-      }).toString()
-      const previousQueryString = new URLSearchParams({
-        ...queryObject,
-        page: (page - 1).toString()
-      }).toString()
+    const videos = data.videos
+    const total = data.videosCount
 
+    const queryObject = {
+      ...c.req.query(),
+      page: page.toString(),
+      limit: limit.toString()
+    }
+
+    const filteredVideos = videos.filter(
+      (video) =>
+        video.title[0]?.value != null ||
+        video.fallbackTitle[0]?.value != null ||
+        video.snippet[0]?.value != null ||
+        video.description[0]?.value != null
+    )
+    const lastPage =
+      Math.ceil(total / limit) === 0 ? 1 : Math.ceil(total / limit)
+
+    const mediaComponents = filteredVideos.map((video) => {
+      const isDownloadable =
+        video.label === 'collection' || video.label === 'series'
+          ? false
+          : (video.variant?.downloadable ?? false)
       return {
+        mediaComponentId: video.id,
+        componentType: video.variant?.hls != null ? 'content' : 'container',
+        subType: video.label,
+        contentType: video.variant?.hls != null ? 'video' : 'none',
+        imageUrls: {
+          thumbnail:
+            video.images.find((image) => image.thumbnail != null)?.thumbnail ??
+            '',
+          videoStill:
+            video.images.find((image) => image.videoStill != null)
+              ?.videoStill ?? '',
+          mobileCinematicHigh:
+            video.images.find((image) => image.mobileCinematicHigh != null)
+              ?.mobileCinematicHigh ?? '',
+          mobileCinematicLow:
+            video.images.find((image) => image.mobileCinematicLow != null)
+              ?.mobileCinematicLow ?? '',
+          mobileCinematicVeryLow:
+            video.images.find((image) => image.mobileCinematicVeryLow != null)
+              ?.mobileCinematicVeryLow ?? ''
+        },
+        lengthInMilliseconds: video.variant?.lengthInMilliseconds ?? 0,
+        containsCount: video.childrenCount,
+        isDownloadable,
+        downloadSizes: {
+          approximateSmallDownloadSizeInBytes: isDownloadable
+            ? getDownloadSize(video.variant?.downloads, 'low', apiKey)
+            : 0,
+          approximateLargeDownloadSizeInBytes: isDownloadable
+            ? getDownloadSize(video.variant?.downloads, 'high', apiKey)
+            : 0
+        },
+        bibleCitations: video.bibleCitations.map((citation) => ({
+          osisBibleBook: citation.osisId,
+          chapterStart:
+            citation.chapterStart === -1 ? null : citation.chapterStart,
+          verseStart: citation.verseStart === -1 ? null : citation.verseStart,
+          chapterEnd: citation.chapterEnd === -1 ? null : citation.chapterEnd,
+          verseEnd: citation.verseEnd === -1 ? null : citation.verseEnd
+        })),
+        primaryLanguageId: Number(video.primaryLanguageId),
+        title: video.title[0]?.value ?? video.fallbackTitle[0]?.value ?? '',
+        shortDescription:
+          video.snippet[0]?.value ?? video.fallbackSnippet[0]?.value ?? '',
+        longDescription:
+          video.description[0]?.value ??
+          video.fallbackDescription[0]?.value ??
+          '',
+        studyQuestions:
+          video.studyQuestions.length > 0
+            ? video.studyQuestions.map((question) => question.value)
+            : video.fallbackStudyQuestions.map((question) => question.value),
+        metadataLanguageTag: video.title[0]?.language.bcp47 ?? 'en',
+        ...(expand.includes('languageIds')
+          ? {
+              languageIds: video.availableLanguages.map((languageId) =>
+                typeof languageId === 'string' ? Number(languageId) : languageId
+              )
+            }
+          : {})
+      }
+    })
+
+    const queryString = new URLSearchParams(queryObject).toString()
+    const firstQueryString = new URLSearchParams({
+      ...queryObject,
+      page: '1'
+    }).toString()
+    const lastQueryString = new URLSearchParams({
+      ...queryObject,
+      page: lastPage.toString()
+    }).toString()
+    const nextQueryString = new URLSearchParams({
+      ...queryObject,
+      page: (page + 1).toString()
+    }).toString()
+    const previousQueryString = new URLSearchParams({
+      ...queryObject,
+      page: (page - 1).toString()
+    }).toString()
+
+    return {
+      data: {
         page,
         limit,
         pages: lastPage,
@@ -410,13 +439,10 @@ mediaComponents.openapi(route, async (c) => {
         _embedded: {
           mediaComponents
         }
-      }
-    } catch (err) {
-      throw new HTTPException(500, {
-        message: `Failed to get videos with fallback: ${err instanceof Error ? err.message : String(err)}`
-      })
+      },
+      statusCode: 200
     }
   })
 
-  return c.json(response)
+  return c.json(response.data)
 })
