@@ -12,6 +12,8 @@ import Iphone1Icon from '@core/shared/ui/icons/Iphone1'
 import { BlockFields_ButtonBlock as ButtonBlock } from '../../../../../../../../../../__generated__/BlockFields'
 import { TextFieldForm } from '../../../../../../../../TextFieldForm'
 import { useActionCommand } from '../../../../../../../utils/useActionCommand'
+import { CountryCodeAutoComplete } from './CountryCodeAutoComplete'
+import Stack from '@mui/material/Stack'
 
 export function PhoneAction(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
@@ -63,20 +65,17 @@ export function PhoneAction(): ReactElement {
       >
         {t('Open phone dialer with the provided phone number.')}
       </Typography>
-      <Box data-testid="PhoneAction">
+      <Stack data-testid="PhoneAction" direction="row" spacing={2}>
+        <CountryCodeAutoComplete />
         <TextFieldForm
           id="phone"
-          label={t('Paste Phone Number here...')}
+          hiddenLabel
+          placeholder="999999999"
           initialValue={phoneAction?.phone}
           validationSchema={phoneActionSchema}
           onSubmit={handleSubmit}
-          startIcon={
-            <InputAdornment position="start">
-              <Iphone1Icon />
-            </InputAdornment>
-          }
         />
-      </Box>
+      </Stack>
     </>
   )
 }
