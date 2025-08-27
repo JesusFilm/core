@@ -34,11 +34,8 @@ const navigateToBlockActionInputSchema = z.object({
 
 const phoneActionInputSchema = z.object({
   gtmEventName: z.string().nullish(),
-  phone: z.string()
-})
-
-const phoneSchema = z.object({
-  phone: z.string().regex(/^\+?[1-9]\d{1,14}$/)
+  phone: z.string().regex(/^\+[1-9]\d{1,14}$/),
+  countryCode: z.string()
 })
 
 const ACTION_UPDATE_RESET: Prisma.ActionUpdateInput = {

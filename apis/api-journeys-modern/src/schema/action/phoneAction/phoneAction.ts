@@ -10,6 +10,10 @@ export const PhoneActionRef = builder.prismaObject('Action', {
     phone: t.string({
       nullable: false,
       resolve: ({ phone }) => phone ?? ''
+    }),
+    countryCode: t.string({
+      nullable: false,
+      resolve: ({ countryCode }) => countryCode ?? ''
     })
   })
 })

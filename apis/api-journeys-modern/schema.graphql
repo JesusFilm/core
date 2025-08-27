@@ -24,6 +24,7 @@ input BlockUpdateActionInput {
   email: String
   url: String
   phone: String
+  countryCode: String
   target: String
   blockId: String
 }
@@ -1089,11 +1090,13 @@ type PhoneAction implements Action
   gtmEventName: String
   parentBlock: Block!
   phone: String!
+  countryCode: String!
 }
 
 input PhoneActionInput {
   gtmEventName: String
   phone: String!
+  countryCode: String!
 }
 
 input PlausibleStatsAggregateFilter {

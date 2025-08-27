@@ -21,7 +21,7 @@ const emailSchema = z.object({
 })
 
 const phoneSchema = z.object({
-  phone: z.string().regex(/^\+?[1-9]\d{1,14}$/)
+  phone: z.string().regex(/^\+[1-9]\d{1,14}$/)
 })
 
 @Injectable()
