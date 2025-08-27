@@ -14,6 +14,7 @@ import { ShareButton } from '../ShareButton'
 import { ShareDialog } from '../ShareDialog'
 import { getSlug } from '../VideoCard'
 import { VideoCarousel } from '../VideoCarousel'
+
 import { DownloadButton } from './DownloadButton'
 import { VideoContent } from './VideoContent/VideoContent'
 import { VideoHeading } from './VideoHeading'

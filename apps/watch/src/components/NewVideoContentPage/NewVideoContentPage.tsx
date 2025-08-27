@@ -10,11 +10,14 @@ import LinkExternal from '@core/shared/ui/icons/LinkExternal'
 import { ThemeMode } from '@core/shared/ui/themes'
 
 import { VideoContentFields_studyQuestions as StudyQuestions } from '../../../__generated__/VideoContentFields'
+import { useLanguagesSlugQuery } from '../../libs/useLanguagesSlugQuery'
 import { useVideoChildren } from '../../libs/useVideoChildren'
 import { getWatchUrl } from '../../libs/utils/getWatchUrl'
 import { useVideo } from '../../libs/videoContext'
+import { useWatch } from '../../libs/watchContext'
 import { PageWrapper } from '../PageWrapper'
 import { ShareDialog } from '../ShareDialog'
+
 import { BibleCitations } from './BibleCitations'
 import { ContentMetadata } from './ContentMetadata'
 import { ContentPageBlurFilter } from './ContentPageBlurFilter'
@@ -22,8 +25,6 @@ import { DiscussionQuestions } from './DiscussionQuestions'
 import { NewVideoContentHeader } from './NewVideoContentHeader'
 import { VideoCarousel } from './VideoCarousel'
 import { VideoContentHero } from './VideoContentHero'
-import { useWatch } from '../../libs/watchContext'
-import { useLanguagesSlugQuery } from '../../libs/useLanguagesSlugQuery'
 
 export function NewVideoContentPage(): ReactElement {
   const { t } = useTranslation('apps-watch')
