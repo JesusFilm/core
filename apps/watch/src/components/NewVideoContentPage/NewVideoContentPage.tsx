@@ -15,7 +15,6 @@ import { getWatchUrl } from '../../libs/utils/getWatchUrl'
 import { useVideo } from '../../libs/videoContext'
 import { PageWrapper } from '../PageWrapper'
 import { ShareDialog } from '../ShareDialog'
-
 import { BibleCitations } from './BibleCitations'
 import { ContentMetadata } from './ContentMetadata'
 import { ContentPageBlurFilter } from './ContentPageBlurFilter'
@@ -74,17 +73,21 @@ export function NewVideoContentPage(): ReactElement {
     }
   })
 
-  const questions = useMemo(() => {
+  const makeDefaultQuestion = (value: string): StudyQuestions => ({
+    __typename: 'VideoStudyQuestion',
+    value,
+    primary: false
+  })
+
+  const questions = useMemo<StudyQuestions[]>(() => {
     if (!studyQuestions?.length)
       return [
-        {
-          __typename: 'VideoStudyQuestion',
-          value: t(
+        makeDefaultQuestion(
+          t(
             'If you could ask the creator of this video a question, what would it be?'
-          ),
-          primary: false
-        }
-      ] as StudyQuestions[]
+          )
+        )
+      ]
 
     const { nonPrimary, primary } = studyQuestions.reduce(
       (
@@ -113,15 +116,13 @@ export function NewVideoContentPage(): ReactElement {
     }
 
     return [
-      {
-        __typename: 'VideoStudyQuestion',
-        value: t(
+      makeDefaultQuestion(
+        t(
           'If you could ask the creator of this video a question, what would it be?'
-        ),
-        primary: false
-      }
-    ] as StudyQuestions[]
-  }, [studyQuestions])
+        )
+      )
+    ]
+  }, [studyQuestions, t])
 
   const handleFreeResourceClick = () => {
     sendGTMEvent({

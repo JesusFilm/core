@@ -40,7 +40,7 @@ export function YouTubeDetails({
 }: Pick<VideoDetailsProps, 'open' | 'id' | 'onSelect'>): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const videoRef = useRef<HTMLVideoElement>(null)
-  const playerRef = useRef<Player>()
+  const playerRef = useRef<Player | null>(null)
   const [playing, setPlaying] = useState(false)
   const { data, error } = useSWR<YoutubeVideo>(
     () => (open ? id : null),
