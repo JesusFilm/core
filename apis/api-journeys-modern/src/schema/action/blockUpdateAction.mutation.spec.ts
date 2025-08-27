@@ -23,6 +23,7 @@ describe('blockUpdateAction mutation', () => {
         }
         ... on PhoneAction {
           phone
+          countryCode
           gtmEventName
         }
         ... on NavigateToBlockAction {
@@ -60,6 +61,7 @@ describe('blockUpdateAction mutation', () => {
         parentBlockId: '1',
         gtmEventName: null,
         phone: '+15551234567',
+        countryCode: 'US',
         parentBlock: { id: '1', action: {} }
       } as any)
 
@@ -75,7 +77,8 @@ describe('blockUpdateAction mutation', () => {
         create: {
           gtmEventName: null,
           parentBlock: { connect: { id: '1' } },
-          phone: '+15551234567'
+          phone: '+15551234567',
+          countryCode: 'US'
         },
         update: expect.objectContaining({
           gtmEventName: null,
@@ -84,7 +87,8 @@ describe('blockUpdateAction mutation', () => {
           email: null,
           journey: { disconnect: true },
           block: { disconnect: true },
-          phone: '+15551234567'
+          phone: '+15551234567',
+          countryCode: 'US'
         }),
         include: { parentBlock: { include: { action: true } } }
       })
@@ -94,7 +98,8 @@ describe('blockUpdateAction mutation', () => {
           blockUpdateAction: {
             __typename: 'PhoneAction',
             gtmEventName: null,
-            phone: '+15551234567'
+            phone: '+15551234567',
+            countryCode: 'US'
           }
         }
       })
