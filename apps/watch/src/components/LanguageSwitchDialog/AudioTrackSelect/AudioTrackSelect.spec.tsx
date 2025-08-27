@@ -642,8 +642,8 @@ describe('AudioTrackSelect', () => {
     // Wait for selectLanguageForVideo logic to complete
     await waitFor(() => {
       expect(screen.getByText('Language')).toBeInTheDocument()
-      // Should show "Not available in english" since preferred language is not available
-      expect(screen.getByText('Not available in english')).toBeInTheDocument()
+      // Should show "Not available in English" since preferred language is not available
+      expect(screen.getByText('Not available in English')).toBeInTheDocument()
     })
   })
 
