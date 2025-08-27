@@ -14,9 +14,6 @@ const phoneRegex = /^\+?[1-9]\d{1,14}$/
 
 builder.mutationField('blockUpdatePhoneAction', (t) =>
   t.withAuth({ isAuthenticated: true }).field({
-    override: {
-      from: 'api-journeys'
-    },
     type: PhoneActionRef,
     args: {
       id: t.arg.id({ required: true }),

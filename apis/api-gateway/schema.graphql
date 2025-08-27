@@ -114,43 +114,6 @@ type Error implements BaseError @join__type(graph: API_ANALYTICS)  @join__type(g
 
 type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  @join__type(graph: API_LANGUAGES)  @join__type(graph: API_MEDIA)  @join__type(graph: API_USERS)  {
   siteCreate(input: SiteCreateInput!) : MutationSiteCreateResult! @join__field(graph: API_ANALYTICS) 
-  blockDeleteAction(id: ID!, """
-  drop this parameter after merging teams
-  """
-  journeyId: ID) : Block! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
-  blockUpdateNavigateToBlockAction(
-    id: ID!
-    input: NavigateToBlockActionInput!
-    """
-    drop this parameter after merging teams
-    """
-    journeyId: ID
-  ): NavigateToBlockAction! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
-  blockUpdateLinkAction(
-    id: ID!
-    input: LinkActionInput!
-    """
-    drop this parameter after merging teams
-    """
-    journeyId: ID
-  ): LinkAction! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
-  blockUpdateEmailAction(
-    id: ID!
-    input: EmailActionInput!
-    """
-    drop this parameter after merging teams
-    """
-    journeyId: ID
-  ): EmailAction! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
-  blockUpdatePhoneAction(
-    id: ID!
-    input: PhoneActionInput!
-    """
-    drop this parameter after merging teams
-    """
-    journeyId: ID
-  ): PhoneAction! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
-  blockUpdateAction(id: ID!, input: BlockUpdateActionInput!) : Action! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
   """
   blockDelete returns the updated sibling blocks on successful delete
   """
@@ -413,6 +376,12 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   Allow current user to update specific allowable fields of their visitor record
   """
   visitorUpdateForCurrentUser(input: VisitorUpdateInput!) : Visitor! @join__field(graph: API_JOURNEYS) 
+  blockDeleteAction(id: ID!, journeyId: ID) : Block! @join__field(graph: API_JOURNEYS_MODERN) 
+  blockUpdateAction(id: ID!, input: BlockUpdateActionInput!) : Action! @join__field(graph: API_JOURNEYS_MODERN) 
+  blockUpdateEmailAction(id: ID!, input: EmailActionInput!, journeyId: ID) : EmailAction! @join__field(graph: API_JOURNEYS_MODERN) 
+  blockUpdateLinkAction(id: ID!, input: LinkActionInput!, journeyId: ID) : LinkAction! @join__field(graph: API_JOURNEYS_MODERN) 
+  blockUpdateNavigateToBlockAction(id: ID!, input: NavigateToBlockActionInput!, journeyId: ID) : NavigateToBlockAction! @join__field(graph: API_JOURNEYS_MODERN) 
+  blockUpdatePhoneAction(id: ID!, input: PhoneActionInput!, journeyId: ID) : PhoneAction! @join__field(graph: API_JOURNEYS_MODERN) 
   journeySimpleUpdate(id: ID!, journey: Json!) : Json @join__field(graph: API_JOURNEYS_MODERN) 
   journeyAiTranslateCreate(input: JourneyAiTranslateInput!) : Journey! @join__field(graph: API_JOURNEYS_MODERN) 
   createJourneyEventsExportLog(input: JourneyEventsExportLogInput!) : JourneyEventsExportLog! @join__field(graph: API_JOURNEYS_MODERN) 
@@ -2994,11 +2963,6 @@ enum ThemeName @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS
   base @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN) 
 }
 
-enum IdType @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  @join__type(graph: API_MEDIA)  {
-  databaseId @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN)  @join__enumValue(graph: API_MEDIA) 
-  slug @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN)  @join__enumValue(graph: API_MEDIA) 
-}
-
 enum JourneyStatus @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
   archived @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN) 
   deleted @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN) 
@@ -3023,6 +2987,11 @@ enum JourneysReportType @join__type(graph: API_JOURNEYS)  @join__type(graph: API
   multipleSummary @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN) 
   singleFull @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN) 
   singleSummary @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN) 
+}
+
+enum IdType @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  @join__type(graph: API_MEDIA)  {
+  databaseId @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN)  @join__enumValue(graph: API_MEDIA) 
+  slug @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN)  @join__enumValue(graph: API_MEDIA) 
 }
 
 enum JourneyVisitorSort @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
@@ -3422,40 +3391,6 @@ enum VideoVariantDownloadQuality @join__type(graph: API_MEDIA)  {
 input SiteCreateInput @join__type(graph: API_ANALYTICS)  {
   domain: String!
   goals: [String!]
-}
-
-input NavigateToBlockActionInput @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
-  gtmEventName: String
-  blockId: String!
-}
-
-input LinkActionInput @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
-  gtmEventName: String
-  url: String!
-  target: String
-  customizable: Boolean
-  parentStepId: String
-}
-
-input EmailActionInput @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
-  gtmEventName: String
-  email: String!
-  customizable: Boolean
-  parentStepId: String
-}
-
-input BlockUpdateActionInput @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
-  gtmEventName: String
-  email: String
-  url: String
-  target: String
-  blockId: String
-  phone: String
-}
-
-input PhoneActionInput @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
-  gtmEventName: String
-  phone: String!
 }
 
 input BlocksFilter @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
@@ -4539,6 +4474,22 @@ input VisitorUpdateInput @join__type(graph: API_JOURNEYS)  @join__type(graph: AP
   phone: String
 }
 
+input BlockUpdateActionInput @join__type(graph: API_JOURNEYS_MODERN)  {
+  gtmEventName: String
+  email: String
+  url: String
+  phone: String
+  target: String
+  blockId: String
+}
+
+input EmailActionInput @join__type(graph: API_JOURNEYS_MODERN)  {
+  gtmEventName: String
+  email: String!
+  customizable: Boolean
+  parentStepId: String
+}
+
 input JourneyAiTranslateInput @join__type(graph: API_JOURNEYS_MODERN)  {
   journeyId: ID!
   name: String!
@@ -4554,12 +4505,30 @@ input JourneyEventsExportLogInput @join__type(graph: API_JOURNEYS_MODERN)  {
   dateRangeEnd: DateTimeISO
 }
 
+input LinkActionInput @join__type(graph: API_JOURNEYS_MODERN)  {
+  gtmEventName: String
+  url: String!
+  target: String
+  customizable: Boolean
+  parentStepId: String
+}
+
 input MutationJourneyLanguageAiDetectInput @join__type(graph: API_JOURNEYS_MODERN)  {
   journeyId: ID!
   name: String!
   journeyLanguageName: String!
   textLanguageId: ID!
   textLanguageName: String!
+}
+
+input NavigateToBlockActionInput @join__type(graph: API_JOURNEYS_MODERN)  {
+  gtmEventName: String
+  blockId: String!
+}
+
+input PhoneActionInput @join__type(graph: API_JOURNEYS_MODERN)  {
+  gtmEventName: String
+  phone: String!
 }
 
 input LanguagesFilter @join__type(graph: API_LANGUAGES)  {

@@ -11,9 +11,6 @@ import { NavigateToBlockActionRef } from './navigateToBlockAction'
 
 builder.mutationField('blockUpdateNavigateToBlockAction', (t) =>
   t.withAuth({ isAuthenticated: true }).field({
-    override: {
-      from: 'api-journeys'
-    },
     type: NavigateToBlockActionRef,
     args: {
       id: t.arg.id({ required: true }),

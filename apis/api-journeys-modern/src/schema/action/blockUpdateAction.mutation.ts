@@ -34,10 +34,6 @@ const navigateToBlockActionInputSchema = z.object({
 
 const phoneActionInputSchema = z.object({
   gtmEventName: z.string().nullish(),
-  phone: z.string()
-})
-
-const phoneSchema = z.object({
   phone: z.string().regex(/^\+?[1-9]\d{1,14}$/)
 })
 
@@ -61,9 +57,6 @@ async function findParentStepBlock(id?: string): Promise<Block | undefined> {
 
 builder.mutationField('blockUpdateAction', (t) =>
   t.withAuth({ isAuthenticated: true }).field({
-    override: {
-      from: 'api-journeys'
-    },
     type: ActionInterface,
     args: {
       id: t.arg.id({ required: true }),

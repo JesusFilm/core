@@ -11,9 +11,6 @@ import { LinkActionRef } from './linkAction'
 
 builder.mutationField('blockUpdateLinkAction', (t) =>
   t.withAuth({ isAuthenticated: true }).field({
-    override: {
-      from: 'api-journeys'
-    },
     type: LinkActionRef,
     args: {
       id: t.arg.id({ required: true }),
