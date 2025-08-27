@@ -11,12 +11,12 @@ import LinkExternal from '@core/shared/ui/icons/LinkExternal'
 import { ThemeMode } from '@core/shared/ui/themes'
 
 import { VideoContentFields_studyQuestions as StudyQuestions } from '../../../__generated__/VideoContentFields'
+import { useLanguagesSlugQuery } from '../../libs/useLanguagesSlugQuery'
 import { useVideoChildren } from '../../libs/useVideoChildren'
 import { getWatchUrl } from '../../libs/utils/getWatchUrl'
 import { useVideo } from '../../libs/videoContext'
 import { useWatch } from '../../libs/watchContext'
 import { audioLanguageRedirect } from '../../libs/watchContext/audioLanguageRedirect'
-import { useLanguagesSlugQuery } from '../../libs/useLanguagesSlugQuery'
 import { PageWrapper } from '../PageWrapper'
 import { ShareDialog } from '../ShareDialog'
 
@@ -118,8 +118,8 @@ export function NewVideoContentPage(): ReactElement {
         return acc
       },
       {
-        nonPrimary: [] as StudyQuestions[],
-        primary: [] as StudyQuestions[]
+        nonPrimary: [],
+        primary: []
       }
     )
 
