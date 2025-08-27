@@ -107,17 +107,19 @@ export const AudioTrackSelect = memo(function AudioTrackSelect(): ReactElement {
 
   const helperText = useMemo(() => {
     if (videoId == null) return t('2000 translations')
-    if (loading) return t('Loading...')
-    if (audioLanguagesLoading) return t('Loading...')
+    if (loading || audioLanguagesLoading) return t('Loading...')
+
     const found = videoAudioLanguages?.find(
-      ({ language: { id } }) => id === currentAudioLanguage?.language.id
+      ({ language: { id } }) => id === currentAudioLanguage?.language?.id
     )
+
     return found == null
       ? t('Not available in {{value}}', {
-          value: currentLanguage?.localName
+          value: currentLanguage?.localName ?? currentLanguage?.nativeName ?? ''
         })
       : t('2000 translations')
   }, [
+    videoId,
     loading,
     audioLanguagesLoading,
     t,
