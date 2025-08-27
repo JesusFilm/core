@@ -407,5 +407,6 @@
     "html-tokenize": {
       "readable-stream": "^3.6.0"
     }
-  }
+  },
+  "packageManager": "pnpm@10.15.0"
 }

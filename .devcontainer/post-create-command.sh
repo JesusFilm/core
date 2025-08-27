@@ -25,7 +25,7 @@ psql -c "CREATE USER \"test-user\" WITH PASSWORD 'test-password' CREATEDB;" || e
 echo "Installing pnpm..."
 export PNPM_HOME="$HOME/.pnpm"
 export PATH="$PNPM_HOME:$PATH"
-curl -fsSL https://get.pnpm.io/install.sh | sh -s -- --version 9.0.0
+curl -fsSL https://get.pnpm.io/install.sh | sh -s -- --version 10
 
 # install global CLIs
 echo "Installing global CLIs..."

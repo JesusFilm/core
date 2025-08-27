@@ -9,7 +9,7 @@ EXPOSE 4000
 ENV PNPM_HOME="/usr/local/share/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
 RUN apk add --no-cache curl && \
-    curl -fsSL https://get.pnpm.io/install.sh | sh -s -- --bin-dir $PNPM_HOME --version 9.0.0 && \
+    curl -fsSL https://get.pnpm.io/install.sh | sh -s -- --bin-dir $PNPM_HOME --version 10 && \
     pnpm add pino@^9.3.2
 COPY ./apis/api-gateway/gateway.prod.config.ts gateway.config.ts
 COPY ./apis/api-gateway/src src
