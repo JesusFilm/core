@@ -7,7 +7,6 @@ const { composePlugins, withNx } = require('@nx/next')
  * @type {import('@nx/next/plugins/with-nx').WithNxOptions}
  **/
 const nextConfig = {
-  swcMinify: true,
   compiler: {
     emotion: true
   },
@@ -30,6 +29,9 @@ const nextConfig = {
       }
     ],
     minimumCacheTTL: 31536000
+  },
+  experimental: {
+    reactCompiler: true
   },
   modularizeImports: {
     lodash: {
