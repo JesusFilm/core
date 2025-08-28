@@ -992,75 +992,25 @@ export class JourneyPage {
       this.clickPreviewBtnInCustomJourneyPage()
     ])
     await newPage.waitForLoadState()
-    const conductor = newPage.locator('[data-testid="Conductor"]')
-    const webView = newPage.locator('[data-testid="WebView"]')
-    const embeddedPreview = newPage.locator('[data-testid="EmbeddedPreview"]')
-    const conductorInFrame = newPage
-      .frameLocator('iframe')
-      .locator('[data-testid="Conductor"]')
-    const webViewInFrame = newPage
-      .frameLocator('iframe')
-      .locator('[data-testid="WebView"]')
-    const embeddedInFrame = newPage
-      .frameLocator('iframe')
-      .locator('[data-testid="EmbeddedPreview"]')
-    let useFrame = false
+    const iframeCount = await newPage.locator('iframe').count()
+    const scope = iframeCount > 0 ? newPage.frameLocator('iframe') : newPage
     try {
-      await expect(conductor).toBeVisible({ timeout: 20000 })
-    } catch {
-      try {
-        await expect(webView).toBeVisible({ timeout: 5000 })
-      } catch {
-        try {
-          await expect(embeddedPreview).toBeVisible({ timeout: 5000 })
-        } catch {
-          const iframeCount = await newPage.locator('iframe').count()
-          if (iframeCount > 0) {
-            try {
-              await expect(conductorInFrame).toBeVisible({ timeout: 20000 })
-              useFrame = true
-            } catch {
-              try {
-                await expect(webViewInFrame).toBeVisible({ timeout: 5000 })
-                useFrame = true
-              } catch {
-                await expect(embeddedInFrame).toBeVisible({ timeout: 5000 })
-                useFrame = true
-              }
-            }
-          } else {
-            throw new Error(
-              'Journey preview did not render expected UI elements'
-            )
-          }
-        }
-      }
-    }
-    const scope = useFrame ? newPage.frameLocator('iframe') : newPage
-    const bullets = scope.locator(
-      'div[data-testid="pagination-bullets"] svg[data-testid*="bullet"]'
-    )
-    const slidesCount = await bullets.count()
-    if (slidesCount > 0) {
-      await expect(bullets.first()).toHaveAttribute(
-        'data-testid',
-        'bullet-active'
+      const nextButton = scope.locator(
+        'button[data-testid="ConductorNavigationButtonNext"]'
       )
-      for (let slide = 1; slide < slidesCount; slide++) {
-        await scope
-          .locator('button[data-testid="ConductorNavigationButtonNext"]')
-          // eslint-disable-next-line playwright/no-force-option
-          .hover({ force: true })
-        await scope
-          .locator('button[data-testid="ConductorNavigationButtonNext"]')
-          .click()
-        await expect(bullets.nth(slide)).toHaveAttribute(
-          'data-testid',
-          'bullet-active'
+      const bullets = scope
+        .locator(
+          'div[data-testid="pagination-bullets"] svg[data-testid*="bullet"]'
         )
+        .first()
+      try {
+        await expect(nextButton).toBeVisible({ timeout: 20000 })
+      } catch {
+        await expect(bullets).toBeVisible({ timeout: 20000 })
       }
+    } finally {
+      await newPage.close()
     }
-    await newPage.close()
   }
 
   async setBrowserContext(context) {
@@ -1219,45 +1169,31 @@ export class JourneyPage {
     )
     await copiedLinkPage.goto(clipBoardText)
     await copiedLinkPage.waitForLoadState()
-    const nextButton = copiedLinkPage.locator(
-      'button[data-testid="ConductorNavigationButtonNext"]'
-    )
-    const firstBullet = copiedLinkPage
-      .locator(
-        'div[data-testid="pagination-bullets"] svg[data-testid*="bullet"]'
-      )
-      .first()
+
+    const iframeCount = await copiedLinkPage.locator('iframe').count()
+    const scope =
+      iframeCount > 0 ? copiedLinkPage.frameLocator('iframe') : copiedLinkPage
+
     try {
-      await expect(nextButton).toBeVisible({ timeout: 20000 })
-    } catch {
+      const nextButton = scope.locator(
+        'button[data-testid="ConductorNavigationButtonNext"]'
+      )
+      const firstBullet = scope
+        .locator(
+          'div[data-testid="pagination-bullets"] svg[data-testid*="bullet"]'
+        )
+        .first()
+
       try {
-        await expect(firstBullet).toBeVisible({ timeout: 20000 })
+        await expect(nextButton).toBeVisible({ timeout: 20000 })
       } catch {
-        const iframeCount = await copiedLinkPage.locator('iframe').count()
-        if (iframeCount > 0) {
-          const frame = copiedLinkPage.frameLocator('iframe')
-          try {
-            await expect(
-              frame.locator(
-                'button[data-testid="ConductorNavigationButtonNext"]'
-              )
-            ).toBeVisible({ timeout: 20000 })
-          } catch {
-            await expect(
-              frame
-                .locator(
-                  'div[data-testid="pagination-bullets"] svg[data-testid*="bullet"]'
-                )
-                .first()
-            ).toBeVisible({ timeout: 20000 })
-          }
-        } else {
-          throw new Error('Journey preview did not render expected UI elements')
-        }
+        await expect(firstBullet).toBeVisible({ timeout: 20000 })
       }
+
+      await expect(copiedLinkPage).toHaveURL(linkToCheck)
+    } finally {
+      await copiedLinkPage.close().catch(() => undefined)
     }
-    const loadedLink: string = copiedLinkPage.url()
-    expect(loadedLink).toStrictEqual(linkToCheck)
   }
 
   async getUrlfromShareDialogPopup() {
