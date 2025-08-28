@@ -408,7 +408,35 @@
       "@graphql-tools/utils": "10.9.1",
       "@whatwg-node/promise-helpers": "1.3.2",
       "value-or-promise": "1.0.12"
-    }
+    },
+    "onlyBuiltDependencies": [
+      "@apollo/protobufjs",
+      "@datadog/native-appsec",
+      "@datadog/native-iast-taint-tracking",
+      "@datadog/native-metrics",
+      "@datadog/pprof",
+      "@nestjs/core",
+      "@parcel/watcher",
+      "@prisma/client",
+      "@prisma/engines",
+      "@swc/core",
+      "core-js",
+      "core-js-pure",
+      "dd-trace",
+      "esbuild",
+      "msgpackr-extract",
+      "msw",
+      "nestjs-pino",
+      "nx",
+      "prisma",
+      "protobufjs",
+      "puppeteer",
+      "sharp",
+      "unrs-resolver",
+      "vue-demi",
+      "workerd",
+      "yarn"
+    ]
   },
   "overrides": {
     "react-is": "^19.0.0",
