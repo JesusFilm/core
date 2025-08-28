@@ -73,8 +73,6 @@ jobs:
           node-version: 22
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
-        with:
-          version: 10
       - name: Cache pnpm store
         uses: useblacksmith/stickydisk@v1
         with:
@@ -170,8 +168,6 @@ jobs:
           node-version: 22
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
-        with:
-          version: 10.15.0
       - name: Cache pnpm store
         uses: useblacksmith/stickydisk@v1
         with:

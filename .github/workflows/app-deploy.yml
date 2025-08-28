@@ -26,8 +26,6 @@ jobs:
           node-version: ${{ matrix.node-version }}
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
-        with:
-          version: 10
       - name: Cache pnpm store
         uses: useblacksmith/stickydisk@v1
         with:
@@ -95,8 +93,6 @@ jobs:
           node-version: ${{ matrix.node-version }}
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
-        with:
-          version: 10.15.0
       - name: Cache pnpm store
         uses: useblacksmith/stickydisk@v1
         with:
@@ -268,8 +264,6 @@ jobs:
           path: ~/.pnpm-store
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
-        with:
-          version: 10.15.0
       - name: Install dependencies
         run: pnpm install --silent
       - run: pnpm exec playwright install --with-deps
@@ -348,8 +342,6 @@ jobs:
           path: ~/.pnpm-store
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
-        with:
-          version: 10.15.0
       - name: Install dependencies
         run: pnpm install --silent
       - uses: nrwl/nx-set-shas@v4
