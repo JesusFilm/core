@@ -5,9 +5,28 @@ import {
   GetSubtitles,
   GetSubtitles_video_variant_subtitle as SubtitleLanguage
 } from '../../../../__generated__/GetSubtitles'
-import { GET_SUBTITLES } from '../../../components/SubtitleDialog/SubtitleDialog'
-import { useLazyQuery } from '@apollo/client/react'
+import { gql, useLazyQuery } from '@apollo/client'
 import { useVideo } from '../../videoContext'
+
+export const GET_SUBTITLES = gql`
+  query GetSubtitles($id: ID!) {
+    video(id: $id, idType: slug) {
+      variant {
+        subtitle {
+          language {
+            name {
+              value
+              primary
+            }
+            bcp47
+            id
+          }
+          value
+        }
+      }
+    }
+  }
+`
 
 interface SubtitleUpdateParams {
   player: Player & { textTracks?: () => TextTrackList }
@@ -22,12 +41,12 @@ export function useSubtitleUpdate() {
   const { variant } = useVideo()
 
   const subtitleUpdate = useCallback(
-    ({
+    async ({
       player,
       subtitleLanguage,
       subtitleOn,
       autoSubtitle
-    }: SubtitleUpdateParams): void => {
+    }: SubtitleUpdateParams): Promise<void> => {
       if (player == null) return
 
       const tracks = player.textTracks?.() ?? []
@@ -48,7 +67,7 @@ export function useSubtitleUpdate() {
 
       // Fetch subtitle data for the specific language
       if (variant?.slug) {
-        getSubtitleLanguages({
+        await getSubtitleLanguages({
           variables: { id: variant.slug },
           onCompleted: (data) => {
             const selected = data?.video?.variant?.subtitle?.find(
