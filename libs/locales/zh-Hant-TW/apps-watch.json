@@ -1,7 +1,5 @@
 {
   "724": "724",
-  "Language": "語言",
-  "Languages Available": "可用語言",
   "close": "關閉",
   "No Downloads Available": "無下載",
   "Download Video": "下載視訊",
@@ -33,11 +31,11 @@
   "Journeys": "旅程",
   "Videos": "影片",
   "2000 translations": "2000 年翻譯",
-  "Site Language": "網站語言",
-  "Suggested:": "建議：",
+  "Loading...": "載入中...",
+  "Not available in {{value}}": "不適用於 {{value}}",
+  "Language": "語言",
   "Subtitles": "字幕",
   "Show subtitles": "顯示字幕",
-  "Not available in {{value}}": "不適用於 {{value}}",
   "Suggested": "建議",
   "Read more...": "閱讀全文...",
   "Related questions": "相關問題",
@@ -89,6 +87,5 @@
   "Series": "系列",
   "Short Film": "短片",
   "Behind The Scenes": "幕後花絮",
-  "Trailer": "預告片",
-  "{{count}} languages_other": "{{count}} 語言"
+  "Trailer": "預告片"
 }
