@@ -7,6 +7,7 @@ import {
   ability,
   subject as abilitySubject
 } from '../../lib/auth/ability'
+import { fetchBlockWithJourneyAcl } from '../../lib/auth/fetchBlockWithJourneyAcl'
 import { builder } from '../builder'
 
 import { Block } from './block'
@@ -23,26 +24,7 @@ builder.mutationField('blockRestore', (t) =>
       const { id } = args
 
       // Fetch block even if deleted for restore operation
-      const blockWithJourney = await prisma.block.findUnique({
-        where: { id },
-        include: {
-          action: true,
-          journey: {
-            include: {
-              userJourneys: true,
-              team: {
-                include: { userTeams: true }
-              }
-            }
-          }
-        }
-      })
-
-      if (!blockWithJourney) {
-        throw new GraphQLError('block not found', {
-          extensions: { code: 'NOT_FOUND' }
-        })
-      }
+      const blockWithJourney = await fetchBlockWithJourneyAcl(id)
 
       // Check permissions using ACL
       if (

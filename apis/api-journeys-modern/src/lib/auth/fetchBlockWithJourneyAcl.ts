@@ -1,7 +1,9 @@
+import { GraphQLError } from 'graphql'
+
 import { prisma } from '@core/prisma/journeys/client'
 
 export async function fetchBlockWithJourneyAcl(blockId: string) {
-  return await prisma.block.findUnique({
+  const block = await prisma.block.findUnique({
     where: { id: blockId, deletedAt: null },
     include: {
       action: true,
@@ -15,4 +17,10 @@ export async function fetchBlockWithJourneyAcl(blockId: string) {
       }
     }
   })
+  if (!block) {
+    throw new GraphQLError('block not found', {
+      extensions: { code: 'NOT_FOUND' }
+    })
+  }
+  return block
 }

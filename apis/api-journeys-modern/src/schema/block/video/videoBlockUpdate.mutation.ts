@@ -33,11 +33,6 @@ builder.mutationField('videoBlockUpdate', (t) =>
       const { id, input } = args
 
       const blockWithJourney = await fetchBlockWithJourneyAcl(id)
-      if (!blockWithJourney) {
-        throw new GraphQLError('video block not found', {
-          extensions: { code: 'NOT_FOUND' }
-        })
-      }
 
       // Check permissions using ACL
       if (

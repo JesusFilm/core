@@ -30,11 +30,6 @@ builder.mutationField('spacerBlockUpdate', (t) =>
       const { id, input } = args
 
       const blockWithJourney = await fetchBlockWithJourneyAcl(id)
-      if (!blockWithJourney) {
-        throw new GraphQLError('spacer block not found', {
-          extensions: { code: 'NOT_FOUND' }
-        })
-      }
 
       // Check permissions using ACL
       if (

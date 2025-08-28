@@ -29,11 +29,6 @@ builder.mutationField('blockOrderUpdate', (t) =>
       const { id, parentOrder } = args
 
       const blockWithJourney = await fetchBlockWithJourneyAcl(id)
-      if (!blockWithJourney) {
-        throw new GraphQLError('block not found', {
-          extensions: { code: 'NOT_FOUND' }
-        })
-      }
 
       // Check permissions using ACL
       if (

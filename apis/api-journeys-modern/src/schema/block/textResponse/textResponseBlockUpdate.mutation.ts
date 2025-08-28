@@ -30,11 +30,6 @@ builder.mutationField('textResponseBlockUpdate', (t) =>
       const { id, input } = args
 
       const blockWithJourney = await fetchBlockWithJourneyAcl(id)
-      if (!blockWithJourney) {
-        throw new GraphQLError('text response block not found', {
-          extensions: { code: 'NOT_FOUND' }
-        })
-      }
 
       // Check permissions using ACL
       if (
