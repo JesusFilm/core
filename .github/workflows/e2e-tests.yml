@@ -141,7 +141,18 @@ jobs:
           deployment-id: ${{ steps.deployment.outputs.deployment_id }}
       - name: Install Playwright Browsers
         run: npx playwright install --with-deps
+      - name: Run Playwright tests (journeys-admin full)
+        if: matrix.app == 'journeys-admin'
+        run: npx nx run journeys-admin-e2e:e2e-full
+        env:
+          DEPLOYMENT_URL: ${{ steps.deployment-url.outputs.deployment-url }}
+          PLAYWRIGHT_EMAIL: ${{ secrets.PLAYWRIGHT_EMAIL }}
+          PLAYWRIGHT_PASSWORD: ${{ secrets.PLAYWRIGHT_PASSWORD }}
+          PLAYWRIGHT_USER: ${{ secrets.PLAYWRIGHT_USER }}
+          PLAYWRIGHT_TEAM_NAME: ${{ secrets.PLAYWRIGHT_TEAM_NAME }}
+          EXAMPLE_EMAIL_TOKEN: ${{ secrets.EXAMPLE_EMAIL_TOKEN }}
       - name: Run Playwright tests
+        if: matrix.app != 'journeys-admin'
         run: npx nx run ${{ matrix.app }}-e2e:e2e
         env:
           DEPLOYMENT_URL: ${{ steps.deployment-url.outputs.deployment-url }}
@@ -201,7 +212,18 @@ jobs:
             exit 1
           fi
           echo "DEPLOYMENT_URL=${{ inputs.TargetAppUrl }}" >> $GITHUB_ENV
+      - name: Run Playwright tests (journeys-admin full)
+        if: matrix.test-suite == 'journeys-admin-e2e'
+        run: npx nx run journeys-admin-e2e:e2e-full
+        env:
+          DEPLOYMENT_URL: ${{ env.DEPLOYMENT_URL }}
+          PLAYWRIGHT_EMAIL: ${{ secrets.PLAYWRIGHT_EMAIL }}
+          PLAYWRIGHT_PASSWORD: ${{ secrets.PLAYWRIGHT_PASSWORD }}
+          PLAYWRIGHT_USER: ${{ secrets.PLAYWRIGHT_USER }}
+          PLAYWRIGHT_TEAM_NAME: ${{ secrets.PLAYWRIGHT_TEAM_NAME }}
+          EXAMPLE_EMAIL_TOKEN: ${{ secrets.EXAMPLE_EMAIL_TOKEN }}
       - name: Run Playwright tests
+        if: matrix.test-suite != 'journeys-admin-e2e'
         run: npx nx run ${{ matrix.test-suite }}:e2e
         env:
           DEPLOYMENT_URL: ${{ env.DEPLOYMENT_URL }}
