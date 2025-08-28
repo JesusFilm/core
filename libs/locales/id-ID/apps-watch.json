@@ -1,7 +1,5 @@
 {
   "724": "724",
-  "Language": "Bahasa",
-  "Languages Available": "Bahasa yang Tersedia",
   "close": "tutup",
   "No Downloads Available": "Tidak Ada Unduhan yang Tersedia",
   "Download Video": "Unduh Video",
@@ -33,11 +31,11 @@
   "Journeys": "Perjalanan",
   "Videos": "Video",
   "2000 translations": "2000 terjemahan",
-  "Site Language": "Bahasa Situs",
-  "Suggested:": "Disarankan:",
+  "Loading...": "Memuat...",
+  "Not available in {{value}}": "Tidak tersedia di {{value}}",
+  "Language": "Bahasa",
   "Subtitles": "Teks",
   "Show subtitles": "Menampilkan subtitle",
-  "Not available in {{value}}": "Tidak tersedia di {{value}}",
   "Suggested": "Disarankan",
   "Read more...": "Baca selengkapnya...",
   "Related questions": "Pertanyaan terkait",
@@ -89,6 +87,5 @@
   "Series": "Seri",
   "Short Film": "Film Pendek",
   "Behind The Scenes": "Di Balik Layar",
-  "Trailer": "Trailer",
-  "{{count}} languages_other": "{{count}} bahasa"
+  "Trailer": "Trailer"
 }
