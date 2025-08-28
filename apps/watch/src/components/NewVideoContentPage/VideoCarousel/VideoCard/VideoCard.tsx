@@ -28,7 +28,7 @@ export function VideoCard({
 
   return (
     <NextLink
-      href={href}
+      href={{ pathname: href, query: { r: 0 } }}
       scroll={false}
       className="block no-underline text-inherit"
       style={{ pointerEvents: video != null ? 'auto' : 'none' }}

@@ -14,6 +14,7 @@ import { GET_LANGUAGES_SLUG } from '../../../libs/useLanguagesSlugQuery'
 import { WatchProvider } from '../../../libs/watchContext'
 
 import { AudioTrackSelect } from './AudioTrackSelect'
+import userEvent from '@testing-library/user-event'
 
 // Mock only external libraries
 jest.mock('next/router', () => ({
@@ -642,8 +643,8 @@ describe('AudioTrackSelect', () => {
     // Wait for selectLanguageForVideo logic to complete
     await waitFor(() => {
       expect(screen.getByText('Language')).toBeInTheDocument()
-      // Should show "Not available in english" since preferred language is not available
-      expect(screen.getByText('Not available in english')).toBeInTheDocument()
+      // Should show "Not available in English" since preferred language is not available
+      expect(screen.getByText('Not available in English')).toBeInTheDocument()
     })
   })
 
@@ -1126,6 +1127,547 @@ describe('AudioTrackSelect', () => {
           languageEnglishName: ['Spanish']
         },
         otherState: 'preserved'
+      })
+    })
+  })
+
+  describe('handleChange reload logic', () => {
+    it('should set reload=true when language is available for current video', async () => {
+      const initialLanguageState = {
+        siteLanguage: 'en',
+        audioLanguage: '529',
+        subtitleLanguage: '529',
+        subtitleOn: false,
+        videoId: 'video123',
+        allLanguages: [
+          {
+            __typename: 'Language' as const,
+            id: '529',
+            slug: 'english',
+            bcp47: 'en',
+            name: [
+              {
+                __typename: 'LanguageName' as const,
+                value: 'English',
+                primary: true
+              }
+            ]
+          },
+          {
+            __typename: 'Language' as const,
+            id: '496',
+            slug: 'spanish',
+            bcp47: 'es',
+            name: [
+              {
+                __typename: 'LanguageName' as const,
+                value: 'Spanish',
+                primary: true
+              }
+            ]
+          }
+        ],
+        videoAudioLanguages: [
+          {
+            __typename: 'LanguageWithSlug' as const,
+            slug: 'english',
+            language: {
+              __typename: 'Language' as const,
+              id: '529',
+              slug: 'english',
+              name: [
+                {
+                  __typename: 'LanguageName' as const,
+                  value: 'English',
+                  primary: true
+                }
+              ]
+            }
+          },
+          {
+            __typename: 'LanguageWithSlug' as const,
+            slug: 'spanish',
+            language: {
+              __typename: 'Language' as const,
+              id: '496',
+              slug: 'spanish',
+              name: [
+                {
+                  __typename: 'LanguageName' as const,
+                  value: 'Spanish',
+                  primary: true
+                }
+              ]
+            }
+          }
+        ]
+      }
+
+      render(
+        <MockedProvider mocks={[]} addTypename={false}>
+          <WatchProvider initialState={initialLanguageState}>
+            <AudioTrackSelect />
+          </WatchProvider>
+        </MockedProvider>
+      )
+
+      // Wait for component to render
+      await waitFor(() => {
+        expect(screen.getByText('Language')).toBeInTheDocument()
+      })
+
+      userEvent.click(screen.getByRole('combobox'))
+      await waitFor(() => {
+        expect(
+          screen.getByRole('option', { name: 'Spanish' })
+        ).toBeInTheDocument()
+      })
+      userEvent.click(screen.getByRole('option', { name: 'Spanish' }))
+
+      await waitFor(() => {
+        expect(mockUpdateAudioLanguage).toHaveBeenCalledWith(
+          {
+            id: '496',
+            localName: undefined,
+            nativeName: 'Spanish',
+            slug: 'spanish'
+          },
+          true
+        )
+      })
+    })
+
+    it('should set reload=false when language is NOT available for current video', async () => {
+      const initialLanguageState = {
+        siteLanguage: 'en',
+        audioLanguage: '529',
+        subtitleLanguage: '529',
+        subtitleOn: false,
+        videoId: 'video123',
+        allLanguages: [
+          {
+            __typename: 'Language' as const,
+            id: '529',
+            slug: 'english',
+            bcp47: 'en',
+            name: [
+              {
+                __typename: 'LanguageName' as const,
+                value: 'English',
+                primary: true
+              }
+            ]
+          },
+          {
+            __typename: 'Language' as const,
+            id: '496',
+            slug: 'spanish',
+            bcp47: 'es',
+            name: [
+              {
+                __typename: 'LanguageName' as const,
+                value: 'Spanish',
+                primary: true
+              }
+            ]
+          },
+          {
+            __typename: 'Language' as const,
+            id: '497',
+            slug: 'french',
+            bcp47: 'fr',
+            name: [
+              {
+                __typename: 'LanguageName' as const,
+                value: 'French',
+                primary: true
+              }
+            ]
+          }
+        ],
+        videoAudioLanguages: [
+          {
+            __typename: 'LanguageWithSlug' as const,
+            slug: 'english',
+            language: {
+              __typename: 'Language' as const,
+              id: '529',
+              slug: 'english',
+              name: [
+                {
+                  __typename: 'LanguageName' as const,
+                  value: 'English',
+                  primary: true
+                }
+              ]
+            }
+          },
+          {
+            __typename: 'LanguageWithSlug' as const,
+            slug: 'spanish',
+            language: {
+              __typename: 'Language' as const,
+              id: '496',
+              slug: 'spanish',
+              name: [
+                {
+                  __typename: 'LanguageName' as const,
+                  value: 'Spanish',
+                  primary: true
+                }
+              ]
+            }
+          }
+        ]
+      }
+
+      render(
+        <MockedProvider mocks={[]} addTypename={false}>
+          <WatchProvider initialState={initialLanguageState}>
+            <AudioTrackSelect />
+          </WatchProvider>
+        </MockedProvider>
+      )
+
+      // Wait for component to render
+      await waitFor(() => {
+        expect(screen.getByText('Language')).toBeInTheDocument()
+      })
+
+      userEvent.click(screen.getByRole('combobox'))
+      await waitFor(() => {
+        expect(
+          screen.getByRole('option', { name: 'French' })
+        ).toBeInTheDocument()
+      })
+      userEvent.click(screen.getByRole('option', { name: 'French' }))
+
+      await waitFor(() => {
+        expect(mockUpdateAudioLanguage).toHaveBeenCalledWith(
+          {
+            id: '497',
+            localName: undefined,
+            nativeName: 'French',
+            slug: 'french'
+          },
+          false
+        )
+      })
+    })
+
+    it('should set reload=false when instantSearch is null but language is NOT available for video', async () => {
+      useInstantSearchMock.mockReturnValue(undefined)
+
+      const initialLanguageState = {
+        siteLanguage: 'en',
+        audioLanguage: '529',
+        subtitleLanguage: '529',
+        subtitleOn: false,
+        videoId: 'video123',
+        allLanguages: [
+          {
+            __typename: 'Language' as const,
+            id: '529',
+            slug: 'english',
+            bcp47: 'en',
+            name: [
+              {
+                __typename: 'LanguageName' as const,
+                value: 'English',
+                primary: true
+              }
+            ]
+          },
+          {
+            __typename: 'Language' as const,
+            id: '496',
+            slug: 'spanish',
+            bcp47: 'es',
+            name: [
+              {
+                __typename: 'LanguageName' as const,
+                value: 'Spanish',
+                primary: true
+              }
+            ]
+          }
+        ],
+        videoAudioLanguages: [
+          {
+            __typename: 'LanguageWithSlug' as const,
+            slug: 'english',
+            language: {
+              __typename: 'Language' as const,
+              id: '529',
+              slug: 'english',
+              name: [
+                {
+                  __typename: 'LanguageName' as const,
+                  value: 'English',
+                  primary: true
+                }
+              ]
+            }
+          }
+        ]
+      }
+
+      render(
+        <MockedProvider mocks={[]} addTypename={false}>
+          <WatchProvider initialState={initialLanguageState}>
+            <AudioTrackSelect />
+          </WatchProvider>
+        </MockedProvider>
+      )
+
+      // Wait for component to render
+      await waitFor(() => {
+        expect(screen.getByText('Language')).toBeInTheDocument()
+      })
+
+      userEvent.click(screen.getByRole('combobox'))
+      await waitFor(() => {
+        expect(
+          screen.getByRole('option', { name: 'Spanish' })
+        ).toBeInTheDocument()
+      })
+      userEvent.click(screen.getByRole('option', { name: 'Spanish' }))
+
+      await waitFor(() => {
+        expect(mockUpdateAudioLanguage).toHaveBeenCalledWith(
+          {
+            id: '496',
+            localName: undefined,
+            nativeName: 'Spanish',
+            slug: 'spanish'
+          },
+          false
+        )
+      })
+    })
+
+    it('should set reload=false when instantSearch is available (regardless of video availability)', async () => {
+      useInstantSearchMock.mockReturnValue(mockInstantSearch)
+
+      const initialLanguageState = {
+        siteLanguage: 'en',
+        audioLanguage: '529',
+        subtitleLanguage: '529',
+        subtitleOn: false,
+        videoId: 'video123',
+        allLanguages: [
+          {
+            __typename: 'Language' as const,
+            id: '529',
+            slug: 'english',
+            bcp47: 'en',
+            name: [
+              {
+                __typename: 'LanguageName' as const,
+                value: 'English',
+                primary: true
+              }
+            ]
+          },
+          {
+            __typename: 'Language' as const,
+            id: '496',
+            slug: 'spanish',
+            bcp47: 'es',
+            name: [
+              {
+                __typename: 'LanguageName' as const,
+                value: 'Spanish',
+                primary: true
+              }
+            ]
+          }
+        ],
+        videoAudioLanguages: [
+          {
+            __typename: 'LanguageWithSlug' as const,
+            slug: 'english',
+            language: {
+              __typename: 'Language' as const,
+              id: '529',
+              slug: 'english',
+              name: [
+                {
+                  __typename: 'LanguageName' as const,
+                  value: 'English',
+                  primary: true
+                }
+              ]
+            }
+          },
+          {
+            __typename: 'LanguageWithSlug' as const,
+            slug: 'spanish',
+            language: {
+              __typename: 'Language' as const,
+              id: '496',
+              slug: 'spanish',
+              name: [
+                {
+                  __typename: 'LanguageName' as const,
+                  value: 'Spanish',
+                  primary: true
+                }
+              ]
+            }
+          }
+        ]
+      }
+
+      render(
+        <MockedProvider mocks={[]} addTypename={false}>
+          <WatchProvider initialState={initialLanguageState}>
+            <AudioTrackSelect />
+          </WatchProvider>
+        </MockedProvider>
+      )
+
+      // Wait for component to render
+      await waitFor(() => {
+        expect(screen.getByText('Language')).toBeInTheDocument()
+      })
+
+      userEvent.click(screen.getByRole('combobox'))
+      await waitFor(() => {
+        expect(
+          screen.getByRole('option', { name: 'English' })
+        ).toBeInTheDocument()
+      })
+      userEvent.click(screen.getByRole('option', { name: 'English' }))
+
+      await waitFor(() => {
+        expect(mockUpdateAudioLanguage).toHaveBeenCalledWith(
+          {
+            id: '529',
+            localName: undefined,
+            nativeName: 'English',
+            slug: 'english'
+          },
+          false
+        )
+      })
+    })
+
+    it('should handle edge case when videoAudioLanguages is undefined', async () => {
+      const initialLanguageState = {
+        siteLanguage: 'en',
+        audioLanguage: '529',
+        subtitleLanguage: '529',
+        subtitleOn: false,
+        videoId: 'video123',
+        allLanguages: [
+          {
+            __typename: 'Language' as const,
+            id: '529',
+            slug: 'english',
+            bcp47: 'en',
+            name: [
+              {
+                __typename: 'LanguageName' as const,
+                value: 'English',
+                primary: true
+              }
+            ]
+          }
+        ],
+        videoAudioLanguages: undefined
+      }
+
+      render(
+        <MockedProvider mocks={[]} addTypename={false}>
+          <WatchProvider initialState={initialLanguageState}>
+            <AudioTrackSelect />
+          </WatchProvider>
+        </MockedProvider>
+      )
+
+      // Wait for component to render
+      await waitFor(() => {
+        expect(screen.getByText('Language')).toBeInTheDocument()
+      })
+
+      userEvent.click(screen.getByRole('combobox'))
+      await waitFor(() => {
+        expect(
+          screen.getByRole('option', { name: 'English' })
+        ).toBeInTheDocument()
+      })
+      userEvent.click(screen.getByRole('option', { name: 'English' }))
+
+      await waitFor(() => {
+        expect(mockUpdateAudioLanguage).toHaveBeenCalledWith(
+          {
+            id: '529',
+            localName: undefined,
+            nativeName: 'English',
+            slug: 'english'
+          },
+          false
+        )
+      })
+    })
+
+    it('should handle edge case when videoAudioLanguages is empty array', async () => {
+      const initialLanguageState = {
+        siteLanguage: 'en',
+        audioLanguage: '529',
+        subtitleLanguage: '529',
+        subtitleOn: false,
+        videoId: 'video123',
+        allLanguages: [
+          {
+            __typename: 'Language' as const,
+            id: '529',
+            slug: 'english',
+            bcp47: 'en',
+            name: [
+              {
+                __typename: 'LanguageName' as const,
+                value: 'English',
+                primary: true
+              }
+            ]
+          }
+        ],
+        videoAudioLanguages: []
+      }
+
+      render(
+        <MockedProvider mocks={[]} addTypename={false}>
+          <WatchProvider initialState={initialLanguageState}>
+            <AudioTrackSelect />
+          </WatchProvider>
+        </MockedProvider>
+      )
+
+      // Wait for component to render
+      await waitFor(() => {
+        expect(screen.getByText('Language')).toBeInTheDocument()
+      })
+
+      userEvent.click(screen.getByRole('combobox'))
+      await waitFor(() => {
+        expect(
+          screen.getByRole('option', { name: 'English' })
+        ).toBeInTheDocument()
+      })
+      userEvent.click(screen.getByRole('option', { name: 'English' }))
+
+      await waitFor(() => {
+        expect(mockUpdateAudioLanguage).toHaveBeenCalledWith(
+          {
+            id: '529',
+            localName: undefined,
+            nativeName: 'English',
+            slug: 'english'
+          },
+          false
+        )
       })
     })
   })
