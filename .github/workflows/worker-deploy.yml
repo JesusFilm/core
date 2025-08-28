@@ -36,8 +36,9 @@ jobs:
       - id: set-matrix
         name: set matrix worker to affected array
         run: |
-          echo "matrix=$(pnpm ts-node tools/scripts/deploy-apps.ts --projects workers/*)" >> $GITHUB_OUTPUT
-          cat $GITHUB_OUTPUT
+          matrix=$(pnpm -s exec ts-node tools/scripts/deploy-apps.ts --projects workers/*)
+          echo "matrix=${matrix}" >> "$GITHUB_OUTPUT"
+          cat "$GITHUB_OUTPUT"
 
   deploy-stage:
     name: Deploy Stage
