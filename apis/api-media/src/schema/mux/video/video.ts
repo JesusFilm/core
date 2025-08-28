@@ -19,6 +19,8 @@ import {
   getVideo
 } from './service'
 
+const FIVE_DAYS = 5 * 24 * 60 * 60
+
 const MuxVideo = builder.prismaObject('MuxVideo', {
   fields: (t) => ({
     id: t.exposeID('id', { nullable: false }),
@@ -134,11 +136,21 @@ builder.queryFields((t) => ({
           // Queue download processing if the video is downloadable
           if (video.downloadable) {
             try {
-              await processVideoDownloadsQueue.add('process-video-downloads', {
-                videoId: video.id,
-                assetId: video.assetId,
-                isUserGenerated
-              })
+              await processVideoDownloadsQueue.add(
+                'process-video-downloads',
+                {
+                  videoId: video.id,
+                  assetId: video.assetId,
+                  isUserGenerated
+                },
+                {
+                  jobId: `download:${video.id}`,
+                  attempts: 3,
+                  backoff: { type: 'exponential', delay: 1000 },
+                  removeOnComplete: true,
+                  removeOnFail: { age: FIVE_DAYS, count: 50 }
+                }
+              )
             } catch (error) {
               // Log error but don't fail the request - downloads can be processed later
               console.error(
@@ -244,8 +256,7 @@ builder.mutationFields((t) => ({
         duration,
         width,
         height,
-        downloadable,
-        maxResolution
+        downloadable
       },
       { user }
     ) => {
@@ -254,15 +265,13 @@ builder.mutationFields((t) => ({
           extensions: { code: 'NOT_FOUND' }
         })
 
-      // 1) Create the Mux asset from the R2 public URL
       const muxAsset = await createVideoFromUrl(
         r2PublicUrl,
         false,
-        getMaxResolutionValue(maxResolution ?? 'fhd'),
+        '2160p',
         downloadable ?? true
       )
 
-      // 2) Persist a MuxVideo row
       const muxVideo = await prisma.muxVideo.create({
         ...query,
         data: {
@@ -272,21 +281,41 @@ builder.mutationFields((t) => ({
         }
       })
 
-      // 3) Enqueue processing job inside VPC
-      await processVideoUploadsQueue.add(processVideoUploadsJobName, {
-        videoId,
-        edition,
-        languageId,
-        version,
-        muxVideoId: muxVideo.id,
-        metadata: {
-          durationMs,
-          duration,
-          width,
-          height
-        },
-        originalFilename
-      })
+      try {
+        await processVideoUploadsQueue.add(
+          processVideoUploadsJobName,
+          {
+            videoId,
+            edition,
+            languageId,
+            version,
+            muxVideoId: muxVideo.id,
+            metadata: {
+              durationMs,
+              duration,
+              width,
+              height
+            },
+            originalFilename
+          },
+          {
+            jobId: `mux:${muxVideo.id}`,
+            attempts: 5,
+            backoff: { type: 'exponential', delay: 2000 },
+            removeOnComplete: true,
+            removeOnFail: { age: FIVE_DAYS, count: 50 }
+          }
+        )
+      } catch (error) {
+        console.error('Failed to queue video uploads processing:', error)
+        try {
+          await prisma.muxVideo.delete({
+            where: { id: muxVideo.id }
+          })
+        } catch (cleanupError) {
+          console.error('Failed to cleanup orphaned mux video:', cleanupError)
+        }
+      }
 
       return muxVideo
     }
