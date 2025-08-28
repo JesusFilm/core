@@ -1,7 +1,7 @@
+import { gql, useLazyQuery } from '@apollo/client'
 import Player from 'video.js/dist/types/player'
 
 import { GetSubtitles } from '../../../../__generated__/GetSubtitles'
-import { gql, useLazyQuery } from '@apollo/client'
 import { useVideo } from '../../videoContext'
 
 export const GET_SUBTITLES = gql`

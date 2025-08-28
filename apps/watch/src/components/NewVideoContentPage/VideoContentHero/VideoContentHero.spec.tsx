@@ -1,3 +1,4 @@
+import { MockedProvider } from '@apollo/client/testing'
 import { render } from '@testing-library/react'
 import fscreen from 'fscreen'
 
@@ -6,7 +7,6 @@ import { WatchProvider } from '../../../libs/watchContext'
 import { videos } from '../../Videos/__generated__/testData'
 
 import { VideoContentHero } from './VideoContentHero'
-import { MockedProvider } from '@apollo/client/testing'
 
 jest.mock('fscreen')
 

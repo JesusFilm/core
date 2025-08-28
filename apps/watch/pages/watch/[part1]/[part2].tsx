@@ -6,6 +6,10 @@ import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
 import { SnackbarProvider } from 'notistack'
 import type { ReactElement } from 'react'
 
+import {
+  GetVariantLanguagesIdAndSlug,
+  GetVariantLanguagesIdAndSlugVariables
+} from '../../../__generated__/GetVariantLanguagesIdAndSlug'
 import type {
   GetVideoContent,
   GetVideoContentVariables
@@ -19,6 +23,7 @@ import { getLanguageIdFromLocale } from '../../../src/libs/getLanguageIdFromLoca
 import { LanguageProvider } from '../../../src/libs/languageContext/LanguageContext'
 import { PlayerProvider } from '../../../src/libs/playerContext/PlayerContext'
 import { slugMap } from '../../../src/libs/slugMap'
+import { GET_VARIANT_LANGUAGES_ID_AND_SLUG } from '../../../src/libs/useVariantLanguagesIdAndSlugQuery'
 import { VIDEO_CONTENT_FIELDS } from '../../../src/libs/videoContentFields'
 import { VideoProvider } from '../../../src/libs/videoContext'
 import {
@@ -26,11 +31,6 @@ import {
   WatchInitialState,
   WatchProvider
 } from '../../../src/libs/watchContext/WatchContext'
-import {
-  GetVariantLanguagesIdAndSlug,
-  GetVariantLanguagesIdAndSlugVariables
-} from '../../../__generated__/GetVariantLanguagesIdAndSlug'
-import { GET_VARIANT_LANGUAGES_ID_AND_SLUG } from '../../../src/libs/useVariantLanguagesIdAndSlugQuery'
 
 export const GET_VIDEO_CONTENT = gql`
   ${VIDEO_CONTENT_FIELDS}

@@ -1,5 +1,5 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { renderHook, waitFor, act } from '@testing-library/react'
+import { act, renderHook, waitFor } from '@testing-library/react'
 import Player from 'video.js/dist/types/player'
 
 import { VideoProvider } from '../../videoContext'
@@ -72,7 +72,7 @@ describe('useSubtitleUpdate', () => {
     })
 
     act(() => {
-      result.current.subtitleUpdate({
+      void result.current.subtitleUpdate({
         player: mockPlayer,
         subtitleLanguage: '529',
         subtitleOn: true,
@@ -100,7 +100,7 @@ describe('useSubtitleUpdate', () => {
 
     await waitFor(() => {
       act(() => {
-        result.current.subtitleUpdate({
+        void result.current.subtitleUpdate({
           player: mockPlayer,
           subtitleLanguage: '529',
           subtitleOn: false,
@@ -133,7 +133,7 @@ describe('useSubtitleUpdate', () => {
 
     await waitFor(() => {
       act(() => {
-        result.current.subtitleUpdate({
+        void result.current.subtitleUpdate({
           player: mockPlayer,
           subtitleLanguage: null,
           subtitleOn: true,
@@ -171,12 +171,8 @@ describe('useSubtitleUpdate', () => {
       )
     })
 
-    await waitFor(() => {
-      expect(result.current.subtitleUpdate).toBeDefined()
-    })
-
     act(() => {
-      result.current.subtitleUpdate({
+      void result.current.subtitleUpdate({
         player: mockPlayer,
         subtitleLanguage: '529',
         subtitleOn: false, // User preference is off

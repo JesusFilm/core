@@ -1,4 +1,4 @@
-import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing'
 import {
   fireEvent,
   render,
@@ -6,13 +6,13 @@ import {
   waitFor,
   within
 } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import { useRouter } from 'next/router'
 import { useTranslation } from 'next-i18next'
 
 import { WatchProvider } from '../../../libs/watchContext'
 
 import { AudioTrackSelect } from './AudioTrackSelect'
-import userEvent from '@testing-library/user-event'
 
 // Mock only external libraries
 jest.mock('next/router', () => ({
@@ -1028,13 +1028,13 @@ describe('AudioTrackSelect', () => {
         expect(screen.getByText('Language')).toBeInTheDocument()
       })
 
-      userEvent.click(screen.getByRole('combobox'))
+      await userEvent.click(screen.getByRole('combobox'))
       await waitFor(() => {
         expect(
           screen.getByRole('option', { name: 'Spanish' })
         ).toBeInTheDocument()
       })
-      userEvent.click(screen.getByRole('option', { name: 'Spanish' }))
+      await userEvent.click(screen.getByRole('option', { name: 'Spanish' }))
 
       await waitFor(() => {
         expect(mockUpdateAudioLanguage).toHaveBeenCalledWith(
@@ -1122,13 +1122,13 @@ describe('AudioTrackSelect', () => {
         expect(screen.getByText('Language')).toBeInTheDocument()
       })
 
-      userEvent.click(screen.getByRole('combobox'))
+      await userEvent.click(screen.getByRole('combobox'))
       await waitFor(() => {
         expect(
           screen.getByRole('option', { name: 'French' })
         ).toBeInTheDocument()
       })
-      userEvent.click(screen.getByRole('option', { name: 'French' }))
+      await userEvent.click(screen.getByRole('option', { name: 'French' }))
 
       await waitFor(() => {
         expect(mockUpdateAudioLanguage).toHaveBeenCalledWith(
@@ -1201,13 +1201,13 @@ describe('AudioTrackSelect', () => {
         expect(screen.getByText('Language')).toBeInTheDocument()
       })
 
-      userEvent.click(screen.getByRole('combobox'))
+      await userEvent.click(screen.getByRole('combobox'))
       await waitFor(() => {
         expect(
           screen.getByRole('option', { name: 'Spanish' })
         ).toBeInTheDocument()
       })
-      userEvent.click(screen.getByRole('option', { name: 'Spanish' }))
+      await userEvent.click(screen.getByRole('option', { name: 'Spanish' }))
 
       await waitFor(() => {
         expect(mockUpdateAudioLanguage).toHaveBeenCalledWith(
@@ -1284,13 +1284,13 @@ describe('AudioTrackSelect', () => {
         expect(screen.getByText('Language')).toBeInTheDocument()
       })
 
-      userEvent.click(screen.getByRole('combobox'))
+      await userEvent.click(screen.getByRole('combobox'))
       await waitFor(() => {
         expect(
           screen.getByRole('option', { name: 'English' })
         ).toBeInTheDocument()
       })
-      userEvent.click(screen.getByRole('option', { name: 'English' }))
+      await userEvent.click(screen.getByRole('option', { name: 'English' }))
 
       await waitFor(() => {
         expect(mockUpdateAudioLanguage).toHaveBeenCalledWith(
@@ -1343,13 +1343,13 @@ describe('AudioTrackSelect', () => {
         expect(screen.getByText('Language')).toBeInTheDocument()
       })
 
-      userEvent.click(screen.getByRole('combobox'))
+      await userEvent.click(screen.getByRole('combobox'))
       await waitFor(() => {
         expect(
           screen.getByRole('option', { name: 'English' })
         ).toBeInTheDocument()
       })
-      userEvent.click(screen.getByRole('option', { name: 'English' }))
+      await userEvent.click(screen.getByRole('option', { name: 'English' }))
 
       await waitFor(() => {
         expect(mockUpdateAudioLanguage).toHaveBeenCalledWith(
@@ -1402,13 +1402,13 @@ describe('AudioTrackSelect', () => {
         expect(screen.getByText('Language')).toBeInTheDocument()
       })
 
-      userEvent.click(screen.getByRole('combobox'))
+      await userEvent.click(screen.getByRole('combobox'))
       await waitFor(() => {
         expect(
           screen.getByRole('option', { name: 'English' })
         ).toBeInTheDocument()
       })
-      userEvent.click(screen.getByRole('option', { name: 'English' }))
+      await userEvent.click(screen.getByRole('option', { name: 'English' }))
 
       await waitFor(() => {
         expect(mockUpdateAudioLanguage).toHaveBeenCalledWith(
