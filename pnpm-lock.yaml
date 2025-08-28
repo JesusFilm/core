@@ -21,7 +21,7 @@ importers:
         version: 1.1.0(@types/react@19.0.0)(graphql-ws@5.16.0(graphql@16.10.0))(graphql@16.10.0)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(subscriptions-transport-ws@0.11.0(graphql@16.10.0))
       '@ai-sdk/google':
         specifier: ^1.2.14
-        version: 1.2.22(zod@3.24.2)
+        version: 1.2.22(zod@3.25.76)
       '@algolia/client-search':
         specifier: ^5.0.0
         version: 5.21.0
@@ -108,7 +108,7 @@ importers:
         version: 0.5.2(hono@4.7.6)
       '@hono/zod-openapi':
         specifier: ^0.19.0
-        version: 0.19.10(hono@4.7.6)(zod@3.24.2)
+        version: 0.19.10(hono@4.7.6)(zod@3.25.76)
       '@mailchimp/mailchimp_marketing':
         specifier: ^3.0.80
         version: 3.0.80
@@ -237,7 +237,7 @@ importers:
         version: 4.1.0(@pothos/core@4.6.1(graphql@16.10.0))(graphql@16.10.0)
       '@pothos/plugin-zod':
         specifier: ^4.1.0
-        version: 4.2.0(@pothos/core@4.6.1(graphql@16.10.0))(graphql@16.10.0)(zod@3.24.2)
+        version: 4.2.0(@pothos/core@4.6.1(graphql@16.10.0))(graphql@16.10.0)(zod@3.25.76)
       '@pothos/tracing-opentelemetry':
         specifier: ^1.1.0
         version: 1.1.0(@opentelemetry/api@1.9.0)(@opentelemetry/semantic-conventions@1.30.0)(@pothos/core@4.6.1(graphql@16.10.0))(@pothos/plugin-tracing@1.1.2(@pothos/core@4.6.1(graphql@16.10.0))(graphql@16.10.0))(graphql@16.10.0)
@@ -273,19 +273,22 @@ importers:
         version: 8.6.14(storybook@8.6.14(prettier@3.5.3))
       '@t3-oss/env-nextjs':
         specifier: ^0.13.8
-        version: 0.13.8(typescript@5.8.3)(zod@3.24.2)
+        version: 0.13.8(typescript@5.8.3)(zod@3.25.76)
       '@types/mailchimp__mailchimp_marketing':
         specifier: ^3.0.19
         version: 3.0.21
       '@types/node-fetch':
         specifier: 2.6.7
         version: 2.6.7
+      '@upstash/redis':
+        specifier: ^1.35.3
+        version: 1.35.3
       adal-node:
         specifier: ^0.2.3
         version: 0.2.4
       ai:
         specifier: ^4.3.13
-        version: 4.3.19(react@19.0.0)(zod@3.24.2)
+        version: 4.3.19(react@19.0.0)(zod@3.25.76)
       algoliasearch:
         specifier: ^5.0.0
         version: 5.21.0
@@ -626,8 +629,8 @@ importers:
         specifier: ^1.2.5
         version: 1.2.5
       zod:
-        specifier: ^3.23.8
-        version: 3.24.2
+        specifier: ^3.25.76
+        version: 3.25.76
     devDependencies:
       '@babel/core':
         specifier: ^7.22.15
@@ -9546,6 +9549,9 @@ packages:
     resolution: {integrity: sha512-lrW200hZdbfRtztbygyaq/6jP6AKE8qQN2KvPcJ+x7wiD038YtnYtZ82IMNJ69GJibV7bwL3y9FgK+5w/pYt6g==}
     cpu: [x64]
     os: [win32]
+
+  '@upstash/redis@1.35.3':
+    resolution: {integrity: sha512-hSjv66NOuahW3MisRGlSgoszU2uONAY2l5Qo3Sae8OT3/Tng9K+2/cBRuyPBX8egwEGcNNCF9+r0V6grNnhL+w==}
 
   '@vercel/blob@1.0.2':
     resolution: {integrity: sha512-Im/KeFH4oPx7UsM+QiteimnE07bIUD7JK6CBafI9Z0jRFogaialTBMiZj8EKk/30ctUYsrpIIyP9iIY1YxWnUQ==}
@@ -20541,6 +20547,9 @@ packages:
     resolution: {integrity: sha512-eXL4nmJT7oCpkZsHZUOJo8hcX3GbsiDOa0Qu9F646fi8dT3XuSVopVqAcEiVzSKKH7UoDti23wNX3qGFxcW5Qg==}
     engines: {node: '>=0.10.0'}
 
+  uncrypto@0.1.3:
+    resolution: {integrity: sha512-Ql87qFHB3s/De2ClA9e0gsnS6zXG27SkTiSJwjCc9MebbfapQfuPzumMIUMi38ezPZVNFcHI9sUIepeQfw8J8Q==}
+
   underscore.string@3.3.6:
     resolution: {integrity: sha512-VoC83HWXmCrF6rgkyxS9GHv8W9Q5nhMKho+OadDJGzL2oDYbYEppBaCMH6pFlwLeqj2QS+hhkw2kpXkSdD1JxQ==}
 
@@ -21574,8 +21583,8 @@ packages:
   zod@3.24.1:
     resolution: {integrity: sha512-muH7gBL9sI1nciMZV67X5fTKKBLtwpZ5VBp1vsOQzj1MhrBZ4wlVCm3gedKZWLp0Oyel8sIGfeiz54Su+OVT+A==}
 
-  zod@3.24.2:
-    resolution: {integrity: sha512-lY7CDW43ECgW9u1TcT3IoXHflywfVqDYze4waEz812jR/bZ8FHDsl7pFQoSZTz5N+2NqRXs8GBwnAwo3ZNxqhQ==}
+  zod@3.25.76:
+    resolution: {integrity: sha512-gzUt/qt81nXsFGKIFcC3YnfEAx5NkunCfnDlvuBSSFS02bcXu4Lmea0AFIUwbLWxWPx3d9p8S5QoaujKcNQxcQ==}
 
   zustand@4.5.7:
     resolution: {integrity: sha512-CHOUy7mu3lbD6o6LJLfllpjkzhHXSBlX8B9+qPddUsIfeF5S/UZ5q0kmCsnRqT1UHFQZchNFDDzMbQsuesHWlw==}
@@ -21623,39 +21632,39 @@ snapshots:
 
   '@adobe/css-tools@4.4.0': {}
 
-  '@ai-sdk/google@1.2.22(zod@3.24.2)':
+  '@ai-sdk/google@1.2.22(zod@3.25.76)':
     dependencies:
       '@ai-sdk/provider': 1.1.3
-      '@ai-sdk/provider-utils': 2.2.8(zod@3.24.2)
-      zod: 3.24.2
+      '@ai-sdk/provider-utils': 2.2.8(zod@3.25.76)
+      zod: 3.25.76
 
-  '@ai-sdk/provider-utils@2.2.8(zod@3.24.2)':
+  '@ai-sdk/provider-utils@2.2.8(zod@3.25.76)':
     dependencies:
       '@ai-sdk/provider': 1.1.3
       nanoid: 3.3.11
       secure-json-parse: 2.7.0
-      zod: 3.24.2
+      zod: 3.25.76
 
   '@ai-sdk/provider@1.1.3':
     dependencies:
       json-schema: 0.4.0
 
-  '@ai-sdk/react@1.2.12(react@19.0.0)(zod@3.24.2)':
+  '@ai-sdk/react@1.2.12(react@19.0.0)(zod@3.25.76)':
     dependencies:
-      '@ai-sdk/provider-utils': 2.2.8(zod@3.24.2)
-      '@ai-sdk/ui-utils': 1.2.11(zod@3.24.2)
+      '@ai-sdk/provider-utils': 2.2.8(zod@3.25.76)
+      '@ai-sdk/ui-utils': 1.2.11(zod@3.25.76)
       react: 19.0.0
       swr: 2.3.6(react@19.0.0)
       throttleit: 2.1.0
     optionalDependencies:
-      zod: 3.24.2
+      zod: 3.25.76
 
-  '@ai-sdk/ui-utils@1.2.11(zod@3.24.2)':
+  '@ai-sdk/ui-utils@1.2.11(zod@3.25.76)':
     dependencies:
       '@ai-sdk/provider': 1.1.3
-      '@ai-sdk/provider-utils': 2.2.8(zod@3.24.2)
-      zod: 3.24.2
-      zod-to-json-schema: 3.24.6(zod@3.24.2)
+      '@ai-sdk/provider-utils': 2.2.8(zod@3.25.76)
+      zod: 3.25.76
+      zod-to-json-schema: 3.24.6(zod@3.25.76)
 
   '@algolia/autocomplete-core@1.17.9(@algolia/client-search@5.21.0)(algoliasearch@5.21.0)(search-insights@2.17.2)':
     dependencies:
@@ -22029,10 +22038,10 @@ snapshots:
     transitivePeerDependencies:
       - encoding
 
-  '@asteasolutions/zod-to-openapi@7.3.0(zod@3.24.2)':
+  '@asteasolutions/zod-to-openapi@7.3.0(zod@3.25.76)':
     dependencies:
       openapi3-ts: 4.5.0
-      zod: 3.24.2
+      zod: 3.25.76
 
   '@aws-crypto/crc32@5.2.0':
     dependencies:
@@ -24141,7 +24150,7 @@ snapshots:
       semver: 7.7.2
       vitest: 2.1.9(@edge-runtime/vm@3.2.0)(@types/node@22.17.2)(@vitest/ui@2.1.9)(jsdom@20.0.3)(less@4.1.3)(lightningcss@1.29.2)(msw@2.7.3(@types/node@22.17.2)(typescript@5.8.3))(sass-embedded@1.85.1)(sass@1.85.1)(terser@5.31.5)
       wrangler: 3.114.0(@cloudflare/workers-types@4.20250428.0)
-      zod: 3.24.2
+      zod: 3.25.76
     transitivePeerDependencies:
       - '@cloudflare/workers-types'
       - bufferutil
@@ -27955,18 +27964,18 @@ snapshots:
     dependencies:
       hono: 4.7.6
 
-  '@hono/zod-openapi@0.19.10(hono@4.7.6)(zod@3.24.2)':
+  '@hono/zod-openapi@0.19.10(hono@4.7.6)(zod@3.25.76)':
     dependencies:
-      '@asteasolutions/zod-to-openapi': 7.3.0(zod@3.24.2)
-      '@hono/zod-validator': 0.7.2(hono@4.7.6)(zod@3.24.2)
+      '@asteasolutions/zod-to-openapi': 7.3.0(zod@3.25.76)
+      '@hono/zod-validator': 0.7.2(hono@4.7.6)(zod@3.25.76)
       hono: 4.7.6
       openapi3-ts: 4.5.0
-      zod: 3.24.2
+      zod: 3.25.76
 
-  '@hono/zod-validator@0.7.2(hono@4.7.6)(zod@3.24.2)':
+  '@hono/zod-validator@0.7.2(hono@4.7.6)(zod@3.25.76)':
     dependencies:
       hono: 4.7.6
-      zod: 3.24.2
+      zod: 3.25.76
 
   '@humanfs/core@0.19.1': {}
 
@@ -31014,11 +31023,11 @@ snapshots:
       '@pothos/core': 4.6.1(graphql@16.10.0)
       graphql: 16.10.0
 
-  '@pothos/plugin-zod@4.2.0(@pothos/core@4.6.1(graphql@16.10.0))(graphql@16.10.0)(zod@3.24.2)':
+  '@pothos/plugin-zod@4.2.0(@pothos/core@4.6.1(graphql@16.10.0))(graphql@16.10.0)(zod@3.25.76)':
     dependencies:
       '@pothos/core': 4.6.1(graphql@16.10.0)
       graphql: 16.10.0
-      zod: 3.24.2
+      zod: 3.25.76
 
   '@pothos/tracing-opentelemetry@1.1.0(@opentelemetry/api@1.9.0)(@opentelemetry/semantic-conventions@1.30.0)(@pothos/core@4.6.1(graphql@16.10.0))(@pothos/plugin-tracing@1.1.2(@pothos/core@4.6.1(graphql@16.10.0))(graphql@16.10.0))(graphql@16.10.0)':
     dependencies:
@@ -32710,17 +32719,17 @@ snapshots:
     dependencies:
       defer-to-connect: 2.0.1
 
-  '@t3-oss/env-core@0.13.8(typescript@5.8.3)(zod@3.24.2)':
+  '@t3-oss/env-core@0.13.8(typescript@5.8.3)(zod@3.25.76)':
     optionalDependencies:
       typescript: 5.8.3
-      zod: 3.24.2
+      zod: 3.25.76
 
-  '@t3-oss/env-nextjs@0.13.8(typescript@5.8.3)(zod@3.24.2)':
+  '@t3-oss/env-nextjs@0.13.8(typescript@5.8.3)(zod@3.25.76)':
     dependencies:
-      '@t3-oss/env-core': 0.13.8(typescript@5.8.3)(zod@3.24.2)
+      '@t3-oss/env-core': 0.13.8(typescript@5.8.3)(zod@3.25.76)
     optionalDependencies:
       typescript: 5.8.3
-      zod: 3.24.2
+      zod: 3.25.76
 
   '@tailwindcss/node@4.1.3':
     dependencies:
@@ -33650,6 +33659,10 @@ snapshots:
   '@unrs/resolver-binding-win32-x64-msvc@1.11.1':
     optional: true
 
+  '@upstash/redis@1.35.3':
+    dependencies:
+      uncrypto: 0.1.3
+
   '@vercel/blob@1.0.2':
     dependencies:
       async-retry: 1.3.3
@@ -34323,15 +34336,15 @@ snapshots:
       clean-stack: 2.2.0
       indent-string: 4.0.0
 
-  ai@4.3.19(react@19.0.0)(zod@3.24.2):
+  ai@4.3.19(react@19.0.0)(zod@3.25.76):
     dependencies:
       '@ai-sdk/provider': 1.1.3
-      '@ai-sdk/provider-utils': 2.2.8(zod@3.24.2)
-      '@ai-sdk/react': 1.2.12(react@19.0.0)(zod@3.24.2)
-      '@ai-sdk/ui-utils': 1.2.11(zod@3.24.2)
+      '@ai-sdk/provider-utils': 2.2.8(zod@3.25.76)
+      '@ai-sdk/react': 1.2.12(react@19.0.0)(zod@3.25.76)
+      '@ai-sdk/ui-utils': 1.2.11(zod@3.25.76)
       '@opentelemetry/api': 1.9.0
       jsondiffpatch: 0.6.0
-      zod: 3.24.2
+      zod: 3.25.76
     optionalDependencies:
       react: 19.0.0
 
@@ -47433,6 +47446,8 @@ snapshots:
 
   unc-path-regex@0.1.2: {}
 
+  uncrypto@0.1.3: {}
+
   underscore.string@3.3.6:
     dependencies:
       sprintf-js: 1.1.3
@@ -48629,9 +48644,9 @@ snapshots:
       compress-commons: 6.0.2
       readable-stream: 4.7.0
 
-  zod-to-json-schema@3.24.6(zod@3.24.2):
+  zod-to-json-schema@3.24.6(zod@3.25.76):
     dependencies:
-      zod: 3.24.2
+      zod: 3.25.76
 
   zod@3.22.3: {}
 
@@ -48639,7 +48654,7 @@ snapshots:
 
   zod@3.24.1: {}
 
-  zod@3.24.2: {}
+  zod@3.25.76: {}
 
   zustand@4.5.7(@types/react@19.0.0)(immer@9.0.21)(react@19.0.0):
     dependencies:

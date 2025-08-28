@@ -118,5 +118,8 @@
         "targetName": "eslint:lint"
       }
     }
-  ]
+  ],
+  "tui": {
+    "enabled": false
+  }
 }
