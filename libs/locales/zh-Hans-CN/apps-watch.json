@@ -1,7 +1,5 @@
 {
   "724": "724",
-  "Language": "语言",
-  "Languages Available": "可用语言",
   "close": "关闭",
   "No Downloads Available": "无下载",
   "Download Video": "下载视频",
@@ -33,11 +31,11 @@
   "Journeys": "旅程",
   "Videos": "视频",
   "2000 translations": "2000 年译本",
-  "Site Language": "网站语言",
-  "Suggested:": "建议",
+  "Loading...": "正在加载...",
+  "Not available in {{value}}": "不提供 {{value}}",
+  "Language": "语言",
   "Subtitles": "字幕",
   "Show subtitles": "显示字幕",
-  "Not available in {{value}}": "不提供 {{value}}",
   "Suggested": "建议",
   "Read more...": "阅读全文...",
   "Related questions": "相关问题",
@@ -89,6 +87,5 @@
   "Series": "系列",
   "Short Film": "短片",
   "Behind The Scenes": "幕后花絮",
-  "Trailer": "预告片",
-  "{{count}} languages_other": "{{count}} 语言"
+  "Trailer": "预告片"
 }
