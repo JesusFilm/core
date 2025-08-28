@@ -1,4 +1,4 @@
-import { Page } from 'playwright-core'
+import { Page } from '@playwright/test'
 
 export class HomePage {
   readonly page: Page

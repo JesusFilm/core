@@ -71,26 +71,20 @@ jobs:
       - uses: useblacksmith/setup-node@v5
         with:
           node-version: 22
-      - name: Get Node Version
-        id: node-version
-        run: echo "version=$(node -v)" >> $GITHUB_OUTPUT
-      - name: Mount NPM Cache
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+      - name: Cache pnpm store
         uses: useblacksmith/stickydisk@v1
         with:
-          key: ${{ github.repository }}-${{ steps.node-version.outputs.version }}-npm-cache
-          path: ~/.npm
-      - name: Mount node_modules
-        uses: useblacksmith/stickydisk@v1
-        with:
-          key: ${{ github.repository }}-${{ steps.node-version.outputs.version }}-node-modules
-          path: ./node_modules
+          key: ${{ github.repository }}-pnpm-store
+          path: ~/.pnpm-store
       - name: Mount playwright cache
         uses: useblacksmith/stickydisk@v1
         with:
           key: ${{ github.repository }}-playwright-cache
           path: ~/.cache/ms-playwright
-      - name: NPM Install
-        run: npm install --silent
+      - name: Install dependencies
+        run: pnpm install --silent
       - uses: nrwl/nx-set-shas@v4
       - name: vercel deployment
         env:
@@ -106,7 +100,7 @@ jobs:
           WATCH_MODERN_VERCEL_PROJECT_ID: ${{ secrets.WATCH_MODERN_VERCEL_PROJECT_ID }}
           NEXT_PUBLIC_VERCEL_ENV: preview
           NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA: ${{ github.sha }}
-        run: npx nx run-many --target=deploy --projects=${{ matrix.app }}
+        run: pnpm exec nx run-many --target=deploy --projects=${{ matrix.app }}
       - name: Set consistent Vercel alias for daily e2e
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
@@ -116,7 +110,7 @@ jobs:
           CONSISTENT_ALIAS="${{ matrix.app }}-daily-e2e-jesusfilm.vercel.app"
 
           # Set the alias
-          npx vercel alias set "$DEPLOYMENT_URL" "$CONSISTENT_ALIAS" --token=$VERCEL_TOKEN --scope=jesusfilm
+          pnpm exec vercel alias set "$DEPLOYMENT_URL" "$CONSISTENT_ALIAS" --token=$VERCEL_TOKEN --scope=jesusfilm
 
           # Update the .vercel-url file with the consistent URL
           echo "https://$CONSISTENT_ALIAS" > apps/${{ matrix.app }}/.vercel-url
@@ -140,9 +134,9 @@ jobs:
           environment-url: ${{ steps.deployment-url.outputs.deployment-url }}
           deployment-id: ${{ steps.deployment.outputs.deployment_id }}
       - name: Install Playwright Browsers
-        run: npx playwright install --with-deps
+        run: pnpm exec playwright install --with-deps
       - name: Run Playwright tests
-        run: npx nx run ${{ matrix.app }}-e2e:e2e
+        run: pnpm exec nx run ${{ matrix.app }}-e2e:e2e
         env:
           DEPLOYMENT_URL: ${{ steps.deployment-url.outputs.deployment-url }}
           PLAYWRIGHT_EMAIL: ${{ secrets.PLAYWRIGHT_EMAIL }}
@@ -172,28 +166,22 @@ jobs:
       - uses: useblacksmith/setup-node@v5
         with:
           node-version: 22
-      - name: Get Node Version
-        id: node-version
-        run: echo "version=$(node -v)" >> $GITHUB_OUTPUT
-      - name: Mount NPM Cache
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+      - name: Cache pnpm store
         uses: useblacksmith/stickydisk@v1
         with:
-          key: ${{ github.repository }}-${{ steps.node-version.outputs.version }}-npm-cache-${{ matrix.test-suite }}
-          path: ~/.npm
-      - name: Mount node_modules
-        uses: useblacksmith/stickydisk@v1
-        with:
-          key: ${{ github.repository }}-${{ steps.node-version.outputs.version }}-node-modules-${{ matrix.test-suite }}
-          path: ./node_modules
+          key: ${{ github.repository }}-pnpm-store-${{ matrix.test-suite }}
+          path: ~/.pnpm-store
       - name: Mount playwright cache
         uses: useblacksmith/stickydisk@v1
         with:
           key: ${{ github.repository }}-playwright-cache-${{ matrix.test-suite }}
           path: ~/.cache/ms-playwright
       - name: Install dependencies
-        run: npm install --silent
+        run: pnpm install --silent
       - name: Install Playwright Browsers
-        run: npx playwright install --with-deps
+        run: pnpm exec playwright install --with-deps
       - name: Set deployment URL for single test run
         run: |
           if [ -z "${{ inputs.TargetAppUrl }}" ]; then
@@ -202,7 +190,7 @@ jobs:
           fi
           echo "DEPLOYMENT_URL=${{ inputs.TargetAppUrl }}" >> $GITHUB_ENV
       - name: Run Playwright tests
-        run: npx nx run ${{ matrix.test-suite }}:e2e
+        run: pnpm exec nx run ${{ matrix.test-suite }}:e2e
         env:
           DEPLOYMENT_URL: ${{ env.DEPLOYMENT_URL }}
           PLAYWRIGHT_EMAIL: ${{ secrets.PLAYWRIGHT_EMAIL }}

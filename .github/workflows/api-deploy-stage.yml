@@ -23,26 +23,20 @@ jobs:
       - uses: useblacksmith/setup-node@v5
         with:
           node-version: ${{ matrix.node-version }}
-      - name: Get Node Version
-        id: node-version
-        run: echo "version=$(node -v)" >> $GITHUB_OUTPUT
-      - name: Mount NPM Cache
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+      - name: Cache pnpm store
         uses: useblacksmith/stickydisk@v1
         with:
-          key: ${{ github.repository }}-${{ steps.node-version.outputs.version }}-npm-cache
-          path: ~/.npm
-      - name: Mount node_modules
-        uses: useblacksmith/stickydisk@v1
-        with:
-          key: ${{ github.repository }}-${{ steps.node-version.outputs.version }}-node-modules
-          path: ./node_modules
-      - name: NPM Install
-        run: npm install --silent
+          key: ${{ github.repository }}-pnpm-store
+          path: ~/.pnpm-store
+      - name: Install dependencies
+        run: pnpm install --silent
       - uses: nrwl/nx-set-shas@v4
       - id: set-matrix
         name: set matrix app to affected array
         run: |
-          echo "matrix=$(npx ts-node tools/scripts/affected-apps.ts --projects apis/*)" >> $GITHUB_OUTPUT
+          echo "matrix=$(pnpm ts-node tools/scripts/affected-apps.ts --projects apis/*)" >> $GITHUB_OUTPUT
           cat $GITHUB_OUTPUT
   api-analytics:
     needs: affected

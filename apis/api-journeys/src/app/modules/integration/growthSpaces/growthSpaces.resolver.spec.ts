@@ -189,6 +189,7 @@ describe('IntegrationGrowthSpaceResolver', () => {
     })
 
     it('should throw error if encryption fails', async () => {
+      delete process.env.INTEGRATION_ACCESS_KEY_ENCRYPTION_SECRET
       await expect(
         resolver.integrationGrowthSpacesCreate(input, ability)
       ).rejects.toThrow('no crypto key')
@@ -248,7 +249,7 @@ describe('IntegrationGrowthSpaceResolver', () => {
       prismaService.integration.findUnique.mockResolvedValue(
         integrationWithTeam
       )
-
+      delete process.env.INTEGRATION_ACCESS_KEY_ENCRYPTION_SECRET
       await expect(
         resolver.integrationGrowthSpacesUpdate(
           'integrationId',

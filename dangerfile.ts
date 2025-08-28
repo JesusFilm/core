@@ -16,12 +16,12 @@ export default async () => {
   const isDependabot = danger.github.pr.user.login === 'renovate[bot]'
   // check lockfile updated when package changes
   const packageChanged = danger.git.modified_files.includes('package.json')
-  const lockfileChanged =
-    danger.git.modified_files.includes('package-lock.json')
+  const lockfileChanged = danger.git.modified_files.includes('pnpm-lock.yaml')
   if (packageChanged && !lockfileChanged) {
     const message =
-      'Changes were made to package.json, but not to package-lock.json'
-    const idea = 'Perhaps you need to run `npm install`?'
+      'Changes were made to package.json, but not to pnpm-lock.yaml'
+    const idea =
+      'Perhaps you need to run `curl -fsSL https://get.pnpm.io/install.sh | sh -` then `pnpm install`?'
     warn(`${message} - <i>${idea}</i>`)
   }
 
