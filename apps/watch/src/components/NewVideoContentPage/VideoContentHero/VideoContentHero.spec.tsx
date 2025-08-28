@@ -16,9 +16,7 @@ jest.mock('next-i18next', () => ({
   })
 }))
 
-const mockedFscreen = fscreen as jest.Mocked<typeof fscreen> & {
-  fullscreenElement: Element | null
-}
+const mockedFscreen = fscreen
 
 const originalScrollTo = window.scrollTo
 
