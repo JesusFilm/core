@@ -1,7 +1,5 @@
 {
   "724": "724",
-  "Language": "Dil",
-  "Languages Available": "Mevcut Diller",
   "close": "Kapat",
   "No Downloads Available": "Mevcut İndirme Yok",
   "Download Video": "Video İndir",
@@ -33,11 +31,11 @@
   "Journeys": "Yolculuklar",
   "Videos": "Videolar",
   "2000 translations": "2000 çevirileri",
-  "Site Language": "Site Dili",
-  "Suggested:": "Önerilen:",
+  "Loading...": "Yükleniyor...",
+  "Not available in {{value}}": "{{value}}adresinde mevcut değil",
+  "Language": "Dil",
   "Subtitles": "Altyazılar",
   "Show subtitles": "Altyazıları göster",
-  "Not available in {{value}}": "{{value}}adresinde mevcut değil",
   "Suggested": "Önerilen",
   "Read more...": "Daha fazlasını okuyun...",
   "Related questions": "İlgili sorular",
@@ -89,7 +87,5 @@
   "Series": "Seri",
   "Short Film": "Kısa Film",
   "Behind The Scenes": "Perde Arkası",
-  "Trailer": "Fragman",
-  "{{count}} languages_one": "{{count}} diller",
-  "{{count}} languages_other": "{{count}} diller"
+  "Trailer": "Fragman"
 }
