@@ -1,6 +1,6 @@
 import type { Logger } from 'pino'
 
-import { BibleBookName } from '.prisma/api-media-client'
+import { BibleBookName } from '@core/prisma/media/client'
 
 import { prismaMock } from '../../../../../test/prismaMock'
 import { processFile } from '../../importer'

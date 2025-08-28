@@ -1,4 +1,4 @@
-import { Prisma } from '.prisma/api-journeys-client'
+import { Prisma } from '@core/prisma/journeys/client'
 
 /**
  * ACTION_UPDATE_RESET should be used to reset an action when performing
@@ -9,6 +9,7 @@ export const ACTION_UPDATE_RESET: Prisma.ActionUpdateInput = {
   url: null,
   target: null,
   email: null,
+  phone: null,
   journey: { disconnect: true },
   block: { disconnect: true }
 }

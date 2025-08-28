@@ -1,6 +1,6 @@
 import { Meta, StoryObj } from '@storybook/nextjs'
 
-import { Event } from '.prisma/api-journeys-modern-client'
+import { Event } from '@core/prisma/journeys/client'
 
 import { VisitorInteraction } from '../templates/VisitorInteraction'
 

@@ -14,6 +14,8 @@ export type Scalars = {
   Boolean: { input: boolean; output: boolean; }
   Int: { input: number; output: number; }
   Float: { input: number; output: number; }
+  /** The `BigInt` scalar type represents non-fractional signed whole numeric values. */
+  BigInt: { input: any; output: any; }
   /** A date string, such as 2007-12-03, compliant with the `full-date` format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar. */
   Date: { input: any; output: any; }
   /** A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the `date-time` format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar. */
@@ -107,6 +109,7 @@ export type BlockUpdateActionInput = {
   blockId?: InputMaybe<Scalars['String']['input']>;
   email?: InputMaybe<Scalars['String']['input']>;
   gtmEventName?: InputMaybe<Scalars['String']['input']>;
+  phone?: InputMaybe<Scalars['String']['input']>;
   target?: InputMaybe<Scalars['String']['input']>;
   url?: InputMaybe<Scalars['String']['input']>;
 };
@@ -125,7 +128,8 @@ export type Browser = {
 export enum ButtonAction {
   EmailAction = 'EmailAction',
   LinkAction = 'LinkAction',
-  NavigateToBlockAction = 'NavigateToBlockAction'
+  NavigateToBlockAction = 'NavigateToBlockAction',
+  PhoneAction = 'PhoneAction'
 }
 
 export enum ButtonAlignment {
@@ -363,7 +367,7 @@ export type CloudflareImage = {
 
 export type CloudflareR2 = {
   __typename?: 'CloudflareR2';
-  contentLength: Scalars['Int']['output'];
+  contentLength: Scalars['BigInt']['output'];
   contentType: Scalars['String']['output'];
   createdAt: Scalars['Date']['output'];
   fileName: Scalars['String']['output'];
@@ -377,7 +381,7 @@ export type CloudflareR2 = {
 
 export type CloudflareR2CreateInput = {
   /** the size of the file that is being uploaded */
-  contentLength: Scalars['Int']['input'];
+  contentLength: Scalars['BigInt']['input'];
   /** the type of file that is being uploaded. e.g. image or video/mp4 */
   contentType: Scalars['String']['input'];
   /** the name of the file that is being uploaded */
@@ -971,7 +975,7 @@ export type JourneyCustomizationFieldInput = {
  * JourneyEvent aggregates all event types. For detailed event type definitions,
  * see the specific event files in the event module
  */
-export type JourneyEvent = Event & {
+export type JourneyEvent = Event & Node & {
   __typename?: 'JourneyEvent';
   /** Additional specific event fields */
   action?: Maybe<ButtonAction>;
@@ -1470,6 +1474,7 @@ export type Mutation = {
   blockUpdateEmailAction: EmailAction;
   blockUpdateLinkAction: LinkAction;
   blockUpdateNavigateToBlockAction: NavigateToBlockAction;
+  blockUpdatePhoneAction: PhoneAction;
   buttonBlockCreate: ButtonBlock;
   buttonBlockUpdate?: Maybe<ButtonBlock>;
   buttonClickEventCreate: ButtonClickEvent;
@@ -1744,6 +1749,13 @@ export type MutationBlockUpdateLinkActionArgs = {
 export type MutationBlockUpdateNavigateToBlockActionArgs = {
   id: Scalars['ID']['input'];
   input: NavigateToBlockActionInput;
+  journeyId?: InputMaybe<Scalars['ID']['input']>;
+};
+
+
+export type MutationBlockUpdatePhoneActionArgs = {
+  id: Scalars['ID']['input'];
+  input: PhoneActionInput;
   journeyId?: InputMaybe<Scalars['ID']['input']>;
 };
 
@@ -2774,6 +2786,10 @@ export type NavigateToBlockActionInput = {
   gtmEventName?: InputMaybe<Scalars['String']['input']>;
 };
 
+export type Node = {
+  id: Scalars['ID']['output'];
+};
+
 export type NotFoundError = BaseError & {
   __typename?: 'NotFoundError';
   /** The arguments that caused the not found error */
@@ -2821,6 +2837,19 @@ export type PageInfo = {
   hasPreviousPage: Scalars['Boolean']['output'];
   /** When paginating backwards, the cursor to continue. */
   startCursor?: Maybe<Scalars['String']['output']>;
+};
+
+export type PhoneAction = Action & {
+  __typename?: 'PhoneAction';
+  gtmEventName?: Maybe<Scalars['String']['output']>;
+  parentBlock: Block;
+  parentBlockId: Scalars['ID']['output'];
+  phone: Scalars['String']['output'];
+};
+
+export type PhoneActionInput = {
+  gtmEventName?: InputMaybe<Scalars['String']['input']>;
+  phone: Scalars['String']['input'];
 };
 
 export enum Platform {
@@ -3128,6 +3157,8 @@ export type Query = {
   languagesCount: Scalars['Int']['output'];
   listUnsplashCollectionPhotos: Array<UnsplashPhoto>;
   me?: Maybe<User>;
+  node?: Maybe<Node>;
+  nodes: Array<Maybe<Node>>;
   qrCode: QrCode;
   qrCodes: Array<QrCode>;
   searchUnsplashPhotos: UnsplashQueryResponse;
@@ -3415,6 +3446,16 @@ export type QueryListUnsplashCollectionPhotosArgs = {
 
 export type QueryMeArgs = {
   input?: InputMaybe<MeInput>;
+};
+
+
+export type QueryNodeArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type QueryNodesArgs = {
+  ids: Array<Scalars['ID']['input']>;
 };
 
 
@@ -4505,6 +4546,7 @@ export type Video = {
   studyQuestions: Array<VideoStudyQuestion>;
   subtitles: Array<VideoSubtitle>;
   title: Array<VideoTitle>;
+  /** @deprecated Use variants instead */
   variant?: Maybe<VideoVariant>;
   variantLanguages: Array<Language>;
   variantLanguagesCount: Scalars['Int']['output'];
@@ -4840,6 +4882,7 @@ export type VideoCreateInput = {
 
 export type VideoDescription = {
   __typename?: 'VideoDescription';
+  crowdInId?: Maybe<Scalars['String']['output']>;
   id: Scalars['ID']['output'];
   language: Language;
   primary: Scalars['Boolean']['output'];
@@ -5067,6 +5110,7 @@ export type VideoStartEventCreateInput = {
 
 export type VideoStudyQuestion = {
   __typename?: 'VideoStudyQuestion';
+  crowdInId?: Maybe<Scalars['String']['output']>;
   id: Scalars['ID']['output'];
   language: Language;
   order: Scalars['Int']['output'];
@@ -5144,6 +5188,7 @@ export type VideoSubtitleUpdateInput = {
 
 export type VideoTitle = {
   __typename?: 'VideoTitle';
+  crowdInId?: Maybe<Scalars['String']['output']>;
   id: Scalars['ID']['output'];
   language: Language;
   primary: Scalars['Boolean']['output'];

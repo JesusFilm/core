@@ -4,6 +4,8 @@ import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
 import omit from 'lodash/omit'
 import { v4 as uuidv4 } from 'uuid'
 
+import { CaslAuthModule } from '@core/nest/common/CaslAuthModule'
+import { getPowerBiEmbed } from '@core/nest/powerBi/getPowerBiEmbed'
 import {
   Action,
   Block,
@@ -20,9 +22,7 @@ import {
   UserJourney,
   UserJourneyRole,
   UserTeamRole
-} from '.prisma/api-journeys-client'
-import { CaslAuthModule } from '@core/nest/common/CaslAuthModule'
-import { getPowerBiEmbed } from '@core/nest/powerBi/getPowerBiEmbed'
+} from '@core/prisma/journeys/client'
 
 import {
   IdType,
@@ -1110,6 +1110,7 @@ describe('JourneyResolver', () => {
         url: null,
         target: null,
         email: null,
+        phone: null,
         updatedAt: new Date(),
         parentBlockId: 'stepId',
         blockId: 'nextStepId',
@@ -1735,7 +1736,7 @@ describe('JourneyResolver', () => {
       ])
     })
 
-    it('should duplicate actions', async () => {
+    it('should duplicate actions with customizable=false and parentStepId=null', async () => {
       mockUuidv4.mockReturnValueOnce(duplicatedStep.id)
       mockUuidv4.mockReturnValueOnce(duplicatedNextStep.id)
       mockUuidv4.mockReturnValueOnce(duplicatedButton.id)
@@ -1760,6 +1761,8 @@ describe('JourneyResolver', () => {
       expect(prismaService.action.create).toHaveBeenCalledWith({
         data: {
           ...duplicatedButton.action,
+          customizable: false,
+          parentStepId: null,
           blockId: duplicatedNextStep.id,
           parentBlockId: duplicatedButton.id
         }

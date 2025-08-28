@@ -61,7 +61,10 @@ export function InlineEditWrapper({
     case 'RadioQuestionBlock':
       if (showEditable)
         component = (
-          <RadioQuestionEdit {...block} wrappers={children.props.wrappers} />
+          <RadioQuestionEdit
+            {...block}
+            wrappers={(children.props as any).wrappers}
+          />
         )
       break
     case 'SignUpBlock':

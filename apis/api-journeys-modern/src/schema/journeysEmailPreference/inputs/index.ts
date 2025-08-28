@@ -1,0 +1,1 @@
+export { JourneysEmailPreferenceUpdateInput } from './journeysEmailPreferenceUpdateInput'
