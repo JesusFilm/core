@@ -1,7 +1,5 @@
 {
   "724": "724",
-  "Language": "Language",
-  "Languages Available": "Idiomas disponíveis",
   "close": "fechar",
   "No Downloads Available": "Não há downloads disponíveis",
   "Download Video": "Baixar vídeo",
@@ -33,11 +31,11 @@
   "Journeys": "Journeys",
   "Videos": "Videos",
   "2000 translations": "Traduções de 2000",
-  "Site Language": "Idioma do site",
-  "Suggested:": "Sugerido:",
+  "Loading...": "Loading...",
+  "Not available in {{value}}": "Não disponível em {{value}}",
+  "Language": "Language",
   "Subtitles": "Subtitles",
   "Show subtitles": "Mostrar legendas",
-  "Not available in {{value}}": "Não disponível em {{value}}",
   "Suggested": "Sugerido",
   "Read more...": "Leia mais...",
   "Related questions": "Perguntas relacionadas",
@@ -89,7 +87,5 @@
   "Series": "Série",
   "Short Film": "Curta-metragem",
   "Behind The Scenes": "Nos bastidores",
-  "Trailer": "Trailer",
-  "{{count}} languages_one": "{{count}} idiomas",
-  "{{count}} languages_other": "{{count}} idiomas"
+  "Trailer": "Trailer"
 }
