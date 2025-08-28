@@ -1,7 +1,5 @@
 {
   "724": "724",
-  "Language": "言語",
-  "Languages Available": "対応言語",
   "close": "閉じる",
   "No Downloads Available": "ダウンロード不可",
   "Download Video": "ビデオをダウンロード",
@@ -33,11 +31,11 @@
   "Journeys": "旅",
   "Videos": "ビデオ",
   "2000 translations": "2000年の翻訳",
-  "Site Language": "サイトの言語",
-  "Suggested:": "提案された：",
+  "Loading...": "読み込み中...",
+  "Not available in {{value}}": "{{value}}。",
+  "Language": "言語",
   "Subtitles": "字幕",
   "Show subtitles": "字幕を表示する",
-  "Not available in {{value}}": "{{value}}。",
   "Suggested": "推奨",
   "Read more...": "続きを読む...",
   "Related questions": "関連する質問",
@@ -89,6 +87,5 @@
   "Series": "シリーズ",
   "Short Film": "短編映画",
   "Behind The Scenes": "舞台裏",
-  "Trailer": "予告編",
-  "{{count}} languages_other": "{{count}} 言語"
+  "Trailer": "予告編"
 }
