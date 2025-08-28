@@ -1,7 +1,5 @@
 {
   "724": "724",
-  "Language": "Lengua",
-  "Languages Available": "Idiomas disponibles",
   "close": "cierra",
   "No Downloads Available": "No hay descargas disponibles",
   "Download Video": "Descargar vídeo",
@@ -33,11 +31,11 @@
   "Journeys": "Viajes",
   "Videos": "Vídeos",
   "2000 translations": "2000 traducciones",
-  "Site Language": "Idioma del sitio",
-  "Suggested:": "Sugerido:",
+  "Loading...": "Cargando...",
+  "Not available in {{value}}": "No disponible en {{value}}",
+  "Language": "Lengua",
   "Subtitles": "Subtítulos",
   "Show subtitles": "Mostrar subtítulos",
-  "Not available in {{value}}": "No disponible en {{value}}",
   "Suggested": "Sugerencia",
   "Read more...": "Leer más...",
   "Related questions": "Preguntas relacionadas",
@@ -89,7 +87,5 @@
   "Series": "Serie",
   "Short Film": "Cortometraje",
   "Behind The Scenes": "Entre bastidores",
-  "Trailer": "Remolque",
-  "{{count}} languages_one": "{{count}} idiomas",
-  "{{count}} languages_other": "{{count}} idiomas"
+  "Trailer": "Remolque"
 }
