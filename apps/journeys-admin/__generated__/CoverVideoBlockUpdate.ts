@@ -60,12 +60,6 @@ export interface CoverVideoBlockUpdate_videoBlockUpdate_mediaVideo_YouTube {
 
 export type CoverVideoBlockUpdate_videoBlockUpdate_mediaVideo = CoverVideoBlockUpdate_videoBlockUpdate_mediaVideo_Video | CoverVideoBlockUpdate_videoBlockUpdate_mediaVideo_MuxVideo | CoverVideoBlockUpdate_videoBlockUpdate_mediaVideo_YouTube;
 
-export interface CoverVideoBlockUpdate_videoBlockUpdate_action_PhoneAction {
-  __typename: "PhoneAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-}
-
 export interface CoverVideoBlockUpdate_videoBlockUpdate_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
   parentBlockId: string;
@@ -87,7 +81,15 @@ export interface CoverVideoBlockUpdate_videoBlockUpdate_action_EmailAction {
   email: string;
 }
 
-export type CoverVideoBlockUpdate_videoBlockUpdate_action = CoverVideoBlockUpdate_videoBlockUpdate_action_PhoneAction | CoverVideoBlockUpdate_videoBlockUpdate_action_NavigateToBlockAction | CoverVideoBlockUpdate_videoBlockUpdate_action_LinkAction | CoverVideoBlockUpdate_videoBlockUpdate_action_EmailAction;
+export interface CoverVideoBlockUpdate_videoBlockUpdate_action_PhoneAction {
+  __typename: "PhoneAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+  phone: string;
+  countryCode: string;
+}
+
+export type CoverVideoBlockUpdate_videoBlockUpdate_action = CoverVideoBlockUpdate_videoBlockUpdate_action_NavigateToBlockAction | CoverVideoBlockUpdate_videoBlockUpdate_action_LinkAction | CoverVideoBlockUpdate_videoBlockUpdate_action_EmailAction | CoverVideoBlockUpdate_videoBlockUpdate_action_PhoneAction;
 
 export interface CoverVideoBlockUpdate_videoBlockUpdate {
   __typename: "VideoBlock";

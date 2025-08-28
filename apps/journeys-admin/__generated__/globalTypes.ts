@@ -600,6 +600,7 @@ export interface MeInput {
 export interface PhoneActionInput {
   gtmEventName?: string | null;
   phone: string;
+  countryCode: string;
 }
 
 export interface QrCodeCreateInput {

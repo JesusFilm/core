@@ -17,12 +17,6 @@ export interface RadioQuestionBlockCreate_radioQuestionBlockCreate {
   gridView: boolean | null;
 }
 
-export interface RadioQuestionBlockCreate_radioOption1_action_PhoneAction {
-  __typename: "PhoneAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-}
-
 export interface RadioQuestionBlockCreate_radioOption1_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
   parentBlockId: string;
@@ -44,7 +38,15 @@ export interface RadioQuestionBlockCreate_radioOption1_action_EmailAction {
   email: string;
 }
 
-export type RadioQuestionBlockCreate_radioOption1_action = RadioQuestionBlockCreate_radioOption1_action_PhoneAction | RadioQuestionBlockCreate_radioOption1_action_NavigateToBlockAction | RadioQuestionBlockCreate_radioOption1_action_LinkAction | RadioQuestionBlockCreate_radioOption1_action_EmailAction;
+export interface RadioQuestionBlockCreate_radioOption1_action_PhoneAction {
+  __typename: "PhoneAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+  phone: string;
+  countryCode: string;
+}
+
+export type RadioQuestionBlockCreate_radioOption1_action = RadioQuestionBlockCreate_radioOption1_action_NavigateToBlockAction | RadioQuestionBlockCreate_radioOption1_action_LinkAction | RadioQuestionBlockCreate_radioOption1_action_EmailAction | RadioQuestionBlockCreate_radioOption1_action_PhoneAction;
 
 export interface RadioQuestionBlockCreate_radioOption1 {
   __typename: "RadioOptionBlock";
@@ -59,12 +61,6 @@ export interface RadioQuestionBlockCreate_radioOption1 {
    *       as a poll option image. Blocks are often of type ImageBlock
    */
   pollOptionImageBlockId: string | null;
-}
-
-export interface RadioQuestionBlockCreate_radioOption2_action_PhoneAction {
-  __typename: "PhoneAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
 }
 
 export interface RadioQuestionBlockCreate_radioOption2_action_NavigateToBlockAction {
@@ -88,7 +84,15 @@ export interface RadioQuestionBlockCreate_radioOption2_action_EmailAction {
   email: string;
 }
 
-export type RadioQuestionBlockCreate_radioOption2_action = RadioQuestionBlockCreate_radioOption2_action_PhoneAction | RadioQuestionBlockCreate_radioOption2_action_NavigateToBlockAction | RadioQuestionBlockCreate_radioOption2_action_LinkAction | RadioQuestionBlockCreate_radioOption2_action_EmailAction;
+export interface RadioQuestionBlockCreate_radioOption2_action_PhoneAction {
+  __typename: "PhoneAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+  phone: string;
+  countryCode: string;
+}
+
+export type RadioQuestionBlockCreate_radioOption2_action = RadioQuestionBlockCreate_radioOption2_action_NavigateToBlockAction | RadioQuestionBlockCreate_radioOption2_action_LinkAction | RadioQuestionBlockCreate_radioOption2_action_EmailAction | RadioQuestionBlockCreate_radioOption2_action_PhoneAction;
 
 export interface RadioQuestionBlockCreate_radioOption2 {
   __typename: "RadioOptionBlock";

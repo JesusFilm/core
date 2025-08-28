@@ -60,12 +60,6 @@ export interface VideoBlockUpdate_videoBlockUpdate_mediaVideo_YouTube {
 
 export type VideoBlockUpdate_videoBlockUpdate_mediaVideo = VideoBlockUpdate_videoBlockUpdate_mediaVideo_Video | VideoBlockUpdate_videoBlockUpdate_mediaVideo_MuxVideo | VideoBlockUpdate_videoBlockUpdate_mediaVideo_YouTube;
 
-export interface VideoBlockUpdate_videoBlockUpdate_action_PhoneAction {
-  __typename: "PhoneAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-}
-
 export interface VideoBlockUpdate_videoBlockUpdate_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
   parentBlockId: string;
@@ -87,7 +81,15 @@ export interface VideoBlockUpdate_videoBlockUpdate_action_EmailAction {
   email: string;
 }
 
-export type VideoBlockUpdate_videoBlockUpdate_action = VideoBlockUpdate_videoBlockUpdate_action_PhoneAction | VideoBlockUpdate_videoBlockUpdate_action_NavigateToBlockAction | VideoBlockUpdate_videoBlockUpdate_action_LinkAction | VideoBlockUpdate_videoBlockUpdate_action_EmailAction;
+export interface VideoBlockUpdate_videoBlockUpdate_action_PhoneAction {
+  __typename: "PhoneAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+  phone: string;
+  countryCode: string;
+}
+
+export type VideoBlockUpdate_videoBlockUpdate_action = VideoBlockUpdate_videoBlockUpdate_action_NavigateToBlockAction | VideoBlockUpdate_videoBlockUpdate_action_LinkAction | VideoBlockUpdate_videoBlockUpdate_action_EmailAction | VideoBlockUpdate_videoBlockUpdate_action_PhoneAction;
 
 export interface VideoBlockUpdate_videoBlockUpdate {
   __typename: "VideoBlock";

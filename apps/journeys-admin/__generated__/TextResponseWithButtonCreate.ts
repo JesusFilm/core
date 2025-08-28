@@ -24,12 +24,6 @@ export interface TextResponseWithButtonCreate_textResponse {
   integrationId: string | null;
 }
 
-export interface TextResponseWithButtonCreate_button_action_PhoneAction {
-  __typename: "PhoneAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-}
-
 export interface TextResponseWithButtonCreate_button_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
   parentBlockId: string;
@@ -51,7 +45,15 @@ export interface TextResponseWithButtonCreate_button_action_EmailAction {
   email: string;
 }
 
-export type TextResponseWithButtonCreate_button_action = TextResponseWithButtonCreate_button_action_PhoneAction | TextResponseWithButtonCreate_button_action_NavigateToBlockAction | TextResponseWithButtonCreate_button_action_LinkAction | TextResponseWithButtonCreate_button_action_EmailAction;
+export interface TextResponseWithButtonCreate_button_action_PhoneAction {
+  __typename: "PhoneAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+  phone: string;
+  countryCode: string;
+}
+
+export type TextResponseWithButtonCreate_button_action = TextResponseWithButtonCreate_button_action_NavigateToBlockAction | TextResponseWithButtonCreate_button_action_LinkAction | TextResponseWithButtonCreate_button_action_EmailAction | TextResponseWithButtonCreate_button_action_PhoneAction;
 
 export interface TextResponseWithButtonCreate_button_settings {
   __typename: "ButtonBlockSettings";
@@ -97,12 +99,6 @@ export interface TextResponseWithButtonCreate_endIcon {
   iconColor: IconColor | null;
 }
 
-export interface TextResponseWithButtonCreate_buttonUpdate_action_PhoneAction {
-  __typename: "PhoneAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-}
-
 export interface TextResponseWithButtonCreate_buttonUpdate_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
   parentBlockId: string;
@@ -124,7 +120,15 @@ export interface TextResponseWithButtonCreate_buttonUpdate_action_EmailAction {
   email: string;
 }
 
-export type TextResponseWithButtonCreate_buttonUpdate_action = TextResponseWithButtonCreate_buttonUpdate_action_PhoneAction | TextResponseWithButtonCreate_buttonUpdate_action_NavigateToBlockAction | TextResponseWithButtonCreate_buttonUpdate_action_LinkAction | TextResponseWithButtonCreate_buttonUpdate_action_EmailAction;
+export interface TextResponseWithButtonCreate_buttonUpdate_action_PhoneAction {
+  __typename: "PhoneAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+  phone: string;
+  countryCode: string;
+}
+
+export type TextResponseWithButtonCreate_buttonUpdate_action = TextResponseWithButtonCreate_buttonUpdate_action_NavigateToBlockAction | TextResponseWithButtonCreate_buttonUpdate_action_LinkAction | TextResponseWithButtonCreate_buttonUpdate_action_EmailAction | TextResponseWithButtonCreate_buttonUpdate_action_PhoneAction;
 
 export interface TextResponseWithButtonCreate_buttonUpdate_settings {
   __typename: "ButtonBlockSettings";
