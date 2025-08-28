@@ -10,6 +10,7 @@ import LinkExternal from '@core/shared/ui/icons/LinkExternal'
 import { ThemeMode } from '@core/shared/ui/themes'
 
 import { VideoContentFields_studyQuestions as StudyQuestions } from '../../../__generated__/VideoContentFields'
+import { useLanguagesSlugQuery } from '../../libs/useLanguagesSlugQuery'
 import { useVideoChildren } from '../../libs/useVideoChildren'
 import { getWatchUrl } from '../../libs/utils/getWatchUrl'
 import { useVideo } from '../../libs/videoContext'
@@ -67,7 +68,11 @@ export function NewVideoContentPage(): ReactElement {
       if (data?.video?.variantLanguagesWithSlug) {
         dispatch({
           type: 'SetVideoAudioLanguages',
-          videoAudioLanguages: data.video.variantLanguagesWithSlug
+          videoAudioLanguagesIdsAndSlugs:
+            data.video.variantLanguagesWithSlug.map((language) => ({
+              id: language?.language?.id,
+              slug: language?.slug
+            }))
         })
       }
     }
