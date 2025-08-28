@@ -69,7 +69,7 @@ export const AudioTrackSelect = memo(function AudioTrackSelect(): ReactElement {
       )
       reload = found != null
     }
-    updateAudioLanguage(language.id, reload)
+    updateAudioLanguage(language, reload)
 
     if (instantSearch != null && language.localName != null)
       instantSearch.setIndexUiState((prev) => ({
