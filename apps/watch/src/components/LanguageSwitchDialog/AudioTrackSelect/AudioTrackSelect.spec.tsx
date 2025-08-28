@@ -6,13 +6,13 @@ import {
   waitFor,
   within
 } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import { useRouter } from 'next/router'
 import { useTranslation } from 'next-i18next'
 
 import { WatchProvider } from '../../../libs/watchContext'
 
 import { AudioTrackSelect } from './AudioTrackSelect'
-import userEvent from '@testing-library/user-event'
 
 // Mock only external libraries
 jest.mock('next/router', () => ({
