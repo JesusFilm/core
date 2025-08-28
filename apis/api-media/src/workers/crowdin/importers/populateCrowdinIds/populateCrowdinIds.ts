@@ -55,6 +55,73 @@ export async function runCrowdinIdOperation(): Promise<void> {
           }
         }
       }
+    },
+    where: {
+      AND: [
+        {
+          id: {
+            not: {
+              contains: '2_0-Leader'
+            }
+          }
+        },
+        {
+          id: {
+            not: {
+              contains: '2_BoA'
+            }
+          }
+        },
+        {
+          id: {
+            not: {
+              contains: 'LOVE40'
+            }
+          }
+        },
+        {
+          id: {
+            not: {
+              equals: '2_0-Brand_Video'
+            }
+          }
+        },
+        {
+          id: {
+            not: {
+              equals: 'JF-Language-Stack'
+            }
+          }
+        },
+        {
+          id: {
+            not: {
+              contains: 'GOMark'
+            }
+          }
+        },
+        {
+          id: {
+            not: {
+              contains: 'GOMatt'
+            }
+          }
+        },
+        {
+          id: {
+            not: {
+              contains: 'GOLuke'
+            }
+          }
+        },
+        {
+          id: {
+            not: {
+              contains: 'GOJohn'
+            }
+          }
+        }
+      ]
     }
   })
 
@@ -77,31 +144,46 @@ export async function runCrowdinIdOperation(): Promise<void> {
 
     if (existingTitleLanguages.size < 3 && video.title[0]?.crowdInId) {
       const missingLanguageCodes = Object.keys(LANGUAGE_CODES).filter((languageCode) => !existingTitleLanguages.has(languageCode))
-
+      console.log('video.id', video.id)
+      console.log('missingLanguageCodes Title', missingLanguageCodes)
+   
+      const crowdInId = video.title.find((t) => t.languageId === '529')?.crowdInId
+      if (!crowdInId) {
+        continue
+      }
       missingTranslations.push({
         videoId: video.id,
         type: 'title',
-        crowdInId: video.title[0].crowdInId,
+        crowdInId,
         missingLanguageCodes
       })
     }
 
     if (existingDescLanguages.size < 3 && video.description[0]?.crowdInId) {
       const missingLanguageCodes = Object.keys(LANGUAGE_CODES).filter((languageCode) => !existingDescLanguages.has(languageCode))
-
+      console.log('video.id', video.id)
+      console.log('missingLanguageCodes Description', missingLanguageCodes)
+      const crowdInId = video.description.find((d) => d.languageId === '529')?.crowdInId
+      if (!crowdInId) {
+        continue
+      }
       missingTranslations.push({
         videoId: video.id,
         type: 'description',
-        crowdInId: video.description[0].crowdInId,
+        crowdInId,
         missingLanguageCodes
       })
     }
 
     for (const order of Object.keys(existingStudyQuestions)) {
-      const crowdInId = video.studyQuestions.find((sq) => sq.order === Number(order))?.crowdInId
-      if (existingStudyQuestions[Number(order)].size < 3 && crowdInId) {
+      if (existingStudyQuestions[Number(order)].size < 3) {
         const missingLanguageCodes = Object.keys(LANGUAGE_CODES).filter((languageCode) => !existingStudyQuestions[Number(order)].has(languageCode))
-
+        console.log('video.id', video.id)
+        console.log('missingLanguageCodes Study Question order', order, missingLanguageCodes)
+        const crowdInId = video.studyQuestions.find((sq) => sq.languageId === '529' && sq.order === Number(order))?.crowdInId
+        if (!crowdInId) {
+          continue
+        }
         missingTranslations.push({
           videoId: video.id,
           type: 'studyQuestion',
@@ -112,7 +194,7 @@ export async function runCrowdinIdOperation(): Promise<void> {
       }
     }
   }
-
+  
   console.log(`Found ${missingTranslations.length} missing translations`)
 
   for (const missingTranslation of missingTranslations) {
