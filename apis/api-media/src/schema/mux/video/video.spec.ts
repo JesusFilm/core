@@ -8,6 +8,12 @@ import { enableDownload } from './service'
 
 // Mock the processVideoDownloads queue
 
+jest.mock('../../../workers/processVideoUploads/queue', () => ({
+  queue: {
+    add: jest.fn().mockResolvedValue({ id: 'job-id' })
+  }
+}))
+
 jest.mock('./service', () => ({
   createVideoByDirectUpload: jest.fn().mockResolvedValue({
     id: 'uploadId',
@@ -273,11 +279,21 @@ describe('mux/video', () => {
         const { queue } = jest.requireMock(
           '../../../workers/processVideoDownloads/queue'
         )
-        expect(queue.add).toHaveBeenCalledWith('process-video-downloads', {
-          videoId: 'videoId',
-          assetId: 'assetId',
-          isUserGenerated: false
-        })
+        expect(queue.add).toHaveBeenCalledWith(
+          'process-video-downloads',
+          {
+            videoId: 'videoId',
+            assetId: 'assetId',
+            isUserGenerated: false
+          },
+          {
+            jobId: 'download:videoId',
+            attempts: 3,
+            backoff: { type: 'exponential', delay: 1000 },
+            removeOnComplete: true,
+            removeOnFail: { age: 432000, count: 50 }
+          }
+        )
         expect(data).toHaveProperty('data.getMyMuxVideo.readyToStream', true)
       })
 
@@ -390,11 +406,21 @@ describe('mux/video', () => {
           }
         })
 
-        expect(queue.add).toHaveBeenCalledWith('process-video-downloads', {
-          videoId: 'videoId',
-          assetId: 'assetId',
-          isUserGenerated: false
-        })
+        expect(queue.add).toHaveBeenCalledWith(
+          'process-video-downloads',
+          {
+            videoId: 'videoId',
+            assetId: 'assetId',
+            isUserGenerated: false
+          },
+          {
+            jobId: 'download:videoId',
+            attempts: 3,
+            backoff: { type: 'exponential', delay: 1000 },
+            removeOnComplete: true,
+            removeOnFail: { age: 432000, count: 50 }
+          }
+        )
         expect(consoleSpy).toHaveBeenCalledWith(
           'Failed to queue video downloads processing:',
           expect.any(Error)
