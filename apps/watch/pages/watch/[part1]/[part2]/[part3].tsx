@@ -23,7 +23,6 @@ import {
 } from '../../../../__generated__/GetVideoContentPart3'
 import { VideoContentFields } from '../../../../__generated__/VideoContentFields'
 import i18nConfig from '../../../../next-i18next.config'
-import { GET_LANGUAGES_SLUG } from '../../../../src/libs/useLanguagesSlugQuery'
 import { NewVideoContentPage } from '../../../../src/components/NewVideoContentPage'
 import { createApolloClient } from '../../../../src/libs/apolloClient'
 import { getCookie } from '../../../../src/libs/cookieHandler'
@@ -32,6 +31,7 @@ import { getLanguageIdFromLocale } from '../../../../src/libs/getLanguageIdFromL
 import { LanguageProvider } from '../../../../src/libs/languageContext/LanguageContext'
 import { PlayerProvider } from '../../../../src/libs/playerContext/PlayerContext'
 import { slugMap } from '../../../../src/libs/slugMap'
+import { GET_LANGUAGES_SLUG } from '../../../../src/libs/useLanguagesSlugQuery'
 import { VIDEO_CONTENT_FIELDS } from '../../../../src/libs/videoContentFields'
 import { VideoProvider } from '../../../../src/libs/videoContext'
 import {

@@ -23,18 +23,8 @@ import {
 } from '../../src/libs/apolloClient'
 import { getCookie } from '../../src/libs/cookieHandler'
 import { getFlags } from '../../src/libs/getFlags'
-import { LANGUAGE_MAPPINGS, LocaleMapping } from '../../src/libs/localeMapping'
-import { VIDEO_CHILD_FIELDS } from '../../src/libs/videoChildFields'
+import { LANGUAGE_MAPPINGS } from '../../src/libs/localeMapping'
 import { WatchProvider } from '../../src/libs/watchContext/WatchContext'
-
-export const GET_HOME_VIDEOS_FOR_LANGUAGE = gql`
-  ${VIDEO_CHILD_FIELDS}
-  query GetHomeVideosForLanguage($ids: [ID!]!, $languageId: ID) {
-    videos(where: { ids: $ids }) {
-      ...VideoChildFields
-    }
-  }
-`
 
 interface HomeLanguagePageProps {
   initialApolloState?: NormalizedCacheObject
@@ -61,7 +51,7 @@ function HomeLanguagePage({
     siteLanguage: i18n?.language ?? 'en',
     audioLanguage: getCookie('AUDIO_LANGUAGE') ?? languageId,
     subtitleLanguage: getCookie('SUBTITLE_LANGUAGE') ?? languageId,
-    subtitleOn: (getCookie('SUBTITLES_ON') ?? 'false') === 'true'
+    subtitleOn: (getCookie('SUBTITLES_ON') ?? '').toLowerCase() === 'true'
   }
 
   return (
@@ -99,7 +89,13 @@ export const getStaticProps: GetStaticProps<HomeLanguagePageProps> = async ({
       params!.part1 as string
     )
   })
-  const mapping = LANGUAGE_MAPPINGS[key!]
+  if (key == null) {
+    return {
+      notFound: true,
+      revalidate: 60
+    }
+  }
+  const mapping = LANGUAGE_MAPPINGS[key]
   const serverState = await getServerState(
     <HomeLanguagePage
       languageEnglishName={mapping.nativeName}

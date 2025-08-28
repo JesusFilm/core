@@ -10,10 +10,10 @@ import { useRouter } from 'next/router'
 import { useTranslation } from 'next-i18next'
 
 import { GetLanguagesSlug } from '../../../../__generated__/GetLanguagesSlug'
+import { GET_LANGUAGES_SLUG } from '../../../libs/useLanguagesSlugQuery'
 import { WatchProvider } from '../../../libs/watchContext'
 
 import { AudioTrackSelect } from './AudioTrackSelect'
-import { GET_LANGUAGES_SLUG } from '../../../libs/useLanguagesSlugQuery'
 
 // Mock only external libraries
 jest.mock('next/router', () => ({
@@ -642,8 +642,8 @@ describe('AudioTrackSelect', () => {
     // Wait for selectLanguageForVideo logic to complete
     await waitFor(() => {
       expect(screen.getByText('Language')).toBeInTheDocument()
-      // Should show "Not available in english" since preferred language is not available
-      expect(screen.getByText('Not available in english')).toBeInTheDocument()
+      // Should show "Not available in English" since preferred language is not available
+      expect(screen.getByText('Not available in English')).toBeInTheDocument()
     })
   })
 
