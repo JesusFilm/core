@@ -7,8 +7,8 @@ import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 import { ThemeMode, ThemeName } from '@core/shared/ui/themes'
 
 import { watchConfig } from '../../../libs/storybook'
-import { VideoProvider } from '../../../libs/videoContext'
 import { getLanguagesSlugMock } from '../../../libs/useLanguagesSlugQuery/useLanguagesSlugQuery.mock'
+import { VideoProvider } from '../../../libs/videoContext'
 import { getSubtitleMock } from '../../SubtitleDialog/testData'
 import { videos } from '../../Videos/__generated__/testData'
 

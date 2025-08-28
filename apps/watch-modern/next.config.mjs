@@ -25,7 +25,6 @@ const nextConfig = {
   assetPrefix: ['production', 'prod', 'stage'].includes(env.VERCEL_ENV ?? '')
     ? '/watch/modern'
     : '',
-  swcMinify: true,
   images: {
     remotePatterns: [
       { protocol: 'http', hostname: 'localhost' },
@@ -58,6 +57,9 @@ const nextConfig = {
     // Set this to true if you would like to to use SVGR
     // See: https://github.com/gregberge/svgr
     svgr: false
+  },
+  experimental: {
+    reactCompiler: true
   },
   productionBrowserSourceMaps: true,
   typescript: {
