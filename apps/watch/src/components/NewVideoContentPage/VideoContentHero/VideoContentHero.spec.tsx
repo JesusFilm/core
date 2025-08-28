@@ -6,6 +6,7 @@ import { WatchProvider } from '../../../libs/watchContext'
 import { videos } from '../../Videos/__generated__/testData'
 
 import { VideoContentHero } from './VideoContentHero'
+import { MockedProvider } from '@apollo/client/testing'
 
 jest.mock('fscreen')
 
@@ -36,18 +37,20 @@ describe('VideoContentHero', () => {
 
   it('adds and removes fullscreenchange event listener', () => {
     const { unmount } = render(
-      <VideoProvider value={{ content: videos[0] }}>
-        <WatchProvider
-          initialState={{
-            siteLanguage: 'en',
-            audioLanguage: 'en',
-            subtitleLanguage: 'en',
-            subtitleOn: false
-          }}
-        >
-          <VideoContentHero isFullscreen setIsFullscreen={setIsFullscreen} />
-        </WatchProvider>
-      </VideoProvider>
+      <MockedProvider>
+        <VideoProvider value={{ content: videos[0] }}>
+          <WatchProvider
+            initialState={{
+              siteLanguage: 'en',
+              audioLanguage: 'en',
+              subtitleLanguage: 'en',
+              subtitleOn: false
+            }}
+          >
+            <VideoContentHero isFullscreen setIsFullscreen={setIsFullscreen} />
+          </WatchProvider>
+        </VideoProvider>
+      </MockedProvider>
     )
     expect(mockedFscreen.addEventListener).toHaveBeenCalledWith(
       'fullscreenchange',
@@ -67,18 +70,23 @@ describe('VideoContentHero', () => {
   describe('fullscreenchange handler', () => {
     it('calls setIsFullscreen and scrolls to top when entering fullscreen', () => {
       render(
-        <VideoProvider value={{ content: videos[0] }}>
-          <WatchProvider
-            initialState={{
-              siteLanguage: 'en',
-              audioLanguage: 'en',
-              subtitleLanguage: 'en',
-              subtitleOn: false
-            }}
-          >
-            <VideoContentHero isFullscreen setIsFullscreen={setIsFullscreen} />
-          </WatchProvider>
-        </VideoProvider>
+        <MockedProvider>
+          <VideoProvider value={{ content: videos[0] }}>
+            <WatchProvider
+              initialState={{
+                siteLanguage: 'en',
+                audioLanguage: 'en',
+                subtitleLanguage: 'en',
+                subtitleOn: false
+              }}
+            >
+              <VideoContentHero
+                isFullscreen
+                setIsFullscreen={setIsFullscreen}
+              />
+            </WatchProvider>
+          </VideoProvider>
+        </MockedProvider>
       )
       const fullscreenchangeCallback = (
         mockedFscreen.addEventListener as jest.Mock
@@ -96,18 +104,23 @@ describe('VideoContentHero', () => {
 
     it('calls setIsFullscreen and scrolls to top when entering fullscreen', () => {
       render(
-        <VideoProvider value={{ content: videos[0] }}>
-          <WatchProvider
-            initialState={{
-              siteLanguage: 'en',
-              audioLanguage: 'en',
-              subtitleLanguage: 'en',
-              subtitleOn: false
-            }}
-          >
-            <VideoContentHero isFullscreen setIsFullscreen={setIsFullscreen} />
-          </WatchProvider>
-        </VideoProvider>
+        <MockedProvider>
+          <VideoProvider value={{ content: videos[0] }}>
+            <WatchProvider
+              initialState={{
+                siteLanguage: 'en',
+                audioLanguage: 'en',
+                subtitleLanguage: 'en',
+                subtitleOn: false
+              }}
+            >
+              <VideoContentHero
+                isFullscreen
+                setIsFullscreen={setIsFullscreen}
+              />
+            </WatchProvider>
+          </VideoProvider>
+        </MockedProvider>
       )
       const fullscreenchangeCallback = (
         mockedFscreen.addEventListener as jest.Mock
@@ -125,18 +138,23 @@ describe('VideoContentHero', () => {
 
     it('calls setIsFullscreen when exiting fullscreen', () => {
       render(
-        <VideoProvider value={{ content: videos[0] }}>
-          <WatchProvider
-            initialState={{
-              siteLanguage: 'en',
-              audioLanguage: 'en',
-              subtitleLanguage: 'en',
-              subtitleOn: false
-            }}
-          >
-            <VideoContentHero isFullscreen setIsFullscreen={setIsFullscreen} />
-          </WatchProvider>
-        </VideoProvider>
+        <MockedProvider>
+          <VideoProvider value={{ content: videos[0] }}>
+            <WatchProvider
+              initialState={{
+                siteLanguage: 'en',
+                audioLanguage: 'en',
+                subtitleLanguage: 'en',
+                subtitleOn: false
+              }}
+            >
+              <VideoContentHero
+                isFullscreen
+                setIsFullscreen={setIsFullscreen}
+              />
+            </WatchProvider>
+          </VideoProvider>
+        </MockedProvider>
       )
       const fullscreenchangeCallback = (
         mockedFscreen.addEventListener as jest.Mock
