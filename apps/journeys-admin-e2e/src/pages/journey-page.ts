@@ -992,71 +992,73 @@ export class JourneyPage {
       this.clickPreviewBtnInCustomJourneyPage()
     ])
     await newPage.waitForLoadState()
-    const nextButton = newPage.locator(
-      'button[data-testid="ConductorNavigationButtonNext"]'
-    )
-    const firstBullet = newPage
-      .locator(
-        'div[data-testid="pagination-bullets"] svg[data-testid*="bullet"]'
-      )
-      .first()
+    const conductor = newPage.locator('[data-testid="Conductor"]')
+    const webView = newPage.locator('[data-testid="WebView"]')
+    const embeddedPreview = newPage.locator('[data-testid="EmbeddedPreview"]')
+    const conductorInFrame = newPage
+      .frameLocator('iframe')
+      .locator('[data-testid="Conductor"]')
+    const webViewInFrame = newPage
+      .frameLocator('iframe')
+      .locator('[data-testid="WebView"]')
+    const embeddedInFrame = newPage
+      .frameLocator('iframe')
+      .locator('[data-testid="EmbeddedPreview"]')
+    let useFrame = false
     try {
-      await expect(nextButton).toBeVisible({ timeout: 20000 })
+      await expect(conductor).toBeVisible({ timeout: 20000 })
     } catch {
       try {
-        await expect(firstBullet).toBeVisible({ timeout: 20000 })
+        await expect(webView).toBeVisible({ timeout: 5000 })
       } catch {
-        // Fallback: preview may be inside an iframe
-        const iframeCount = await newPage.locator('iframe').count()
-        if (iframeCount > 0) {
-          const frame = newPage.frameLocator('iframe')
-          try {
-            await expect(
-              frame.locator(
-                'button[data-testid="ConductorNavigationButtonNext"]'
-              )
-            ).toBeVisible({ timeout: 20000 })
-          } catch {
-            await expect(
-              frame
-                .locator(
-                  'div[data-testid="pagination-bullets"] svg[data-testid*="bullet"]'
-                )
-                .first()
-            ).toBeVisible({ timeout: 20000 })
+        try {
+          await expect(embeddedPreview).toBeVisible({ timeout: 5000 })
+        } catch {
+          const iframeCount = await newPage.locator('iframe').count()
+          if (iframeCount > 0) {
+            try {
+              await expect(conductorInFrame).toBeVisible({ timeout: 20000 })
+              useFrame = true
+            } catch {
+              try {
+                await expect(webViewInFrame).toBeVisible({ timeout: 5000 })
+                useFrame = true
+              } catch {
+                await expect(embeddedInFrame).toBeVisible({ timeout: 5000 })
+                useFrame = true
+              }
+            }
+          } else {
+            throw new Error(
+              'Journey preview did not render expected UI elements'
+            )
           }
-        } else {
-          throw new Error('Journey preview did not render expected UI elements')
         }
       }
     }
-    const slidesCount = await newPage
-      .locator(
-        'div[data-testid="pagination-bullets"] svg[data-testid*="bullet"]'
+    const scope = useFrame ? newPage.frameLocator('iframe') : newPage
+    const bullets = scope.locator(
+      'div[data-testid="pagination-bullets"] svg[data-testid*="bullet"]'
+    )
+    const slidesCount = await bullets.count()
+    if (slidesCount > 0) {
+      await expect(bullets.first()).toHaveAttribute(
+        'data-testid',
+        'bullet-active'
       )
-      .count()
-    await expect(
-      newPage
-        .locator(
-          'div[data-testid="pagination-bullets"] svg[data-testid*="bullet"]'
+      for (let slide = 1; slide < slidesCount; slide++) {
+        await scope
+          .locator('button[data-testid="ConductorNavigationButtonNext"]')
+          // eslint-disable-next-line playwright/no-force-option
+          .hover({ force: true })
+        await scope
+          .locator('button[data-testid="ConductorNavigationButtonNext"]')
+          .click()
+        await expect(bullets.nth(slide)).toHaveAttribute(
+          'data-testid',
+          'bullet-active'
         )
-        .first()
-    ).toHaveAttribute('data-testid', 'bullet-active')
-    for (let slide = 1; slide < slidesCount; slide++) {
-      await newPage
-        .locator('button[data-testid="ConductorNavigationButtonNext"]')
-        // eslint-disable-next-line playwright/no-force-option
-        .hover({ force: true })
-      await newPage
-        .locator('button[data-testid="ConductorNavigationButtonNext"]')
-        .click()
-      await expect(
-        newPage
-          .locator(
-            'div[data-testid="pagination-bullets"] svg[data-testid*="bullet"]'
-          )
-          .nth(slide)
-      ).toHaveAttribute('data-testid', 'bullet-active')
+      }
     }
     await newPage.close()
   }
