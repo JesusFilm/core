@@ -26,9 +26,10 @@ describe('videoTitle', () => {
       `)
 
       it('should create video title', async () => {
-        prismaMock.$transaction.mockImplementation(
-          async (callback) => await callback(prismaMock)
-        )
+        prismaMock.$transaction.mockImplementation(async (arg: any) => {
+          if (typeof arg === 'function') return arg(prismaMock)
+          return Promise.all(arg as any[])
+        })
         prismaMock.userMediaRole.findUnique.mockResolvedValue({
           id: 'userId',
           userId: 'userId',
@@ -105,9 +106,10 @@ describe('videoTitle', () => {
       `)
 
       it('should update video title', async () => {
-        prismaMock.$transaction.mockImplementation(
-          async (callback) => await callback(prismaMock)
-        )
+        prismaMock.$transaction.mockImplementation(async (arg: any) => {
+          if (typeof arg === 'function') return arg(prismaMock)
+          return Promise.all(arg as any[])
+        })
         prismaMock.userMediaRole.findUnique.mockResolvedValue({
           id: 'userId',
           userId: 'userId',
