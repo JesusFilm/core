@@ -1,7 +1,5 @@
 {
   "724": "724",
-  "Language": "Language",
-  "Languages Available": "Ngôn ngữ có sẵn",
   "close": "đóng",
   "No Downloads Available": "Không có tệp để tải xuống",
   "Download Video": "Tải video",
@@ -33,11 +31,11 @@
   "Journeys": "Journeys",
   "Videos": "Videos",
   "2000 translations": "2000 bản dịch",
-  "Site Language": "Ngôn ngữ trang web",
-  "Suggested:": "Đề xuất:",
+  "Loading...": "Loading...",
+  "Not available in {{value}}": "Không có sẵn trong {{value}}",
+  "Language": "Language",
   "Subtitles": "Subtitles",
   "Show subtitles": "Hiển thị phụ đề",
-  "Not available in {{value}}": "Không có sẵn trong {{value}}",
   "Suggested": "Đề xuất",
   "Read more...": "Đọc thêm...",
   "Related questions": "Câu hỏi liên quan",
@@ -89,6 +87,5 @@
   "Series": "Loạt",
   "Short Film": "Phim ngắn",
   "Behind The Scenes": "Phía sau hậu trường",
-  "Trailer": "Trailer",
-  "{{count}} languages_other": "{{count}} ngôn ngữ"
+  "Trailer": "Trailer"
 }
