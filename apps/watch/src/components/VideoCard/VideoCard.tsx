@@ -82,7 +82,10 @@ export function VideoCard({
   return (
     <Link
       component={NextLink}
-      href={href}
+      href={{
+        pathname: href,
+        query: { r: 0 }
+      }}
       display="block"
       underline="none"
       color="inherit"
