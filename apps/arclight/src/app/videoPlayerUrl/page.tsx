@@ -87,17 +87,16 @@ function handleSubtitles(
   return { activeSubLangId, acceptedSubLangIds }
 }
 
-export default async function Page({
-  searchParams
-}: {
-  searchParams: {
+export default async function Page(props: {
+  searchParams: Promise<{
     refId?: string
     start?: string
     end?: string
     subon?: string
     sublangids?: string
-  }
+  }>
 }) {
+  const searchParams = await props.searchParams
   if (!searchParams.refId) {
     return {
       message: 'Missing refId parameter',

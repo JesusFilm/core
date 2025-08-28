@@ -12,9 +12,8 @@ import {
 
 import { GetAllLanguages_languages as Language } from '../../../../__generated__/GetAllLanguages'
 import { GetLanguagesSlug } from '../../../../__generated__/GetLanguagesSlug'
-import { useLanguageActions, useWatch } from '../../../libs/watchContext'
 import { GET_LANGUAGES_SLUG } from '../../../libs/useLanguagesSlugQuery'
-import { selectLanguageForVideo } from '../utils/audioLanguageSetter'
+import { useLanguageActions, useWatch } from '../../../libs/watchContext'
 import { getCurrentAudioLanguage } from '../utils/getCurrentAudioLanguage'
 import { renderInput } from '../utils/renderInput'
 import { renderOption } from '../utils/renderOption'
@@ -56,7 +55,6 @@ export const AudioTrackSelect = memo(function AudioTrackSelect(): ReactElement {
 
   const { t } = useTranslation()
   const router = useRouter()
-  const [helperText, setHelperText] = useState<string>(t('2000 translations'))
   const instantSearch = useSafeInstantSearch()
 
   // Fetch audio languages for current video when needed
@@ -77,35 +75,6 @@ export const AudioTrackSelect = memo(function AudioTrackSelect(): ReactElement {
     audioLanguage
   })
 
-  useEffect(() => {
-    // Run automatic selection logic based on current state
-    if (allLanguages == null || loading) return
-
-    const params = {
-      currentAudioLanguage,
-      allLanguages,
-      audioLanguage,
-      router,
-      setHelperText,
-      t
-    }
-
-    if (videoId != null) {
-      if (videoAudioLanguages == null || audioLanguagesLoading) return
-      selectLanguageForVideo(params)
-    }
-  }, [
-    loading,
-    allLanguages,
-    audioLanguage,
-    currentAudioLanguage,
-    t,
-    router,
-    videoId,
-    videoAudioLanguages,
-    audioLanguagesLoading
-  ])
-
   const languages = useMemo(
     () =>
       allLanguages?.map((language: Language) => ({
@@ -117,7 +86,14 @@ export const AudioTrackSelect = memo(function AudioTrackSelect(): ReactElement {
   )
 
   function handleChange(language: LanguageOption): void {
-    updateAudioLanguage(language.id, instantSearch == null)
+    let reload = instantSearch == null
+    if (reload) {
+      const found = videoAudioLanguages?.find(
+        ({ language: { id } }) => id === language.id
+      )
+      reload = found != null
+    }
+    updateAudioLanguage(language, reload)
 
     if (instantSearch != null && language.localName != null)
       instantSearch.setIndexUiState((prev) => ({
@@ -128,6 +104,29 @@ export const AudioTrackSelect = memo(function AudioTrackSelect(): ReactElement {
         }
       }))
   }
+
+  const helperText = useMemo(() => {
+    if (videoId == null) return t('2000 translations')
+    if (loading || audioLanguagesLoading) return t('Loading...')
+
+    const found = videoAudioLanguages?.find(
+      ({ language: { id } }) => id === currentAudioLanguage?.language?.id
+    )
+
+    return found == null
+      ? t('Not available in {{value}}', {
+          value: currentLanguage?.localName ?? currentLanguage?.nativeName ?? ''
+        })
+      : t('2000 translations')
+  }, [
+    videoId,
+    loading,
+    audioLanguagesLoading,
+    t,
+    currentAudioLanguage,
+    videoAudioLanguages,
+    currentLanguage
+  ])
 
   return (
     <div className="mx-6 font-sans">

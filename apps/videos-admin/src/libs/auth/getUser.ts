@@ -32,6 +32,6 @@ const toUser = ({ decodedToken, token }: Tokens): User => {
 }
 
 export async function getUser(): Promise<User | null> {
-  const tokens = await getTokens(cookies(), authConfig)
+  const tokens = await getTokens(await cookies(), authConfig)
   return tokens != null ? toUser(tokens) : null
 }
