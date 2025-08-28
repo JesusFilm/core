@@ -124,7 +124,7 @@ export function useSubtitleUpdate() {
         return
       }
     },
-    []
+    [variant?.slug, getSubtitleLanguages]
   )
 
   return { subtitleUpdate, subtitlesLoading }
