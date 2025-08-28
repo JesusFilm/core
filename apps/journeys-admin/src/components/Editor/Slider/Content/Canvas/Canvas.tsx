@@ -150,6 +150,8 @@ export function Canvas(): ReactElement {
     }
   }, [journeyTheme])
 
+  const nodeRef = useRef(null)
+
   return (
     <Stack
       ref={containerRef}
@@ -262,11 +264,13 @@ export function Canvas(): ReactElement {
                     }}
                   >
                     <CSSTransition
+                      nodeRef={nodeRef}
                       key={selectedStep.id}
                       timeout={300}
                       classNames="card"
                     >
                       <Stack
+                        ref={nodeRef}
                         justifyContent="center"
                         sx={{
                           position: 'absolute',

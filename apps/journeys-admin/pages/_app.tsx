@@ -1,7 +1,7 @@
 import { ApolloProvider, NormalizedCacheObject } from '@apollo/client'
 import type { EmotionCache } from '@emotion/cache'
 import GlobalStyles from '@mui/material/GlobalStyles'
-import { AppCacheProvider } from '@mui/material-nextjs/v14-pagesRouter'
+import { AppCacheProvider } from '@mui/material-nextjs/v15-pagesRouter'
 import { GoogleTagManager } from '@next/third-parties/google'
 import { AppProps as NextJsAppProps } from 'next/app'
 import Head from 'next/head'

@@ -64,7 +64,7 @@ export function ResponsesItem({
 
   return (
     <Box data-testid="ResponsesItem">
-      <NextLink href={linkHref} passHref legacyBehavior prefetch={false}>
+      <NextLink href={linkHref} prefetch={false}>
         <Item
           variant={variant}
           label={t('Responses')}
