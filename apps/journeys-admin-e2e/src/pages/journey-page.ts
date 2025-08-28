@@ -992,9 +992,11 @@ export class JourneyPage {
       this.clickPreviewBtnInCustomJourneyPage()
     ])
     await newPage.waitForLoadState()
-    // await expect(await newPage.locator('h3[data-testid="JourneysTypography"]')).toHaveText(this.existingJourneyName)
-    const tabName: string = await newPage.title()
-    expect(tabName.includes(journeyName)).toBeTruthy()
+    await expect(
+      newPage.locator(
+        'div[data-testid="CardOverlayContentContainer"] [data-testid="JourneysTypography"]'
+      )
+    ).toContainText(journeyName)
     const slidesCount = await newPage
       .locator(
         'div[data-testid="pagination-bullets"] svg[data-testid*="bullet"]'
@@ -1182,8 +1184,11 @@ export class JourneyPage {
     )
     await copiedLinkPage.goto(clipBoardText)
     await copiedLinkPage.waitForLoadState()
-    const tabName: string = await copiedLinkPage.title()
-    expect(tabName.includes(this.existingJourneyName)).toBeTruthy()
+    await expect(
+      copiedLinkPage.locator(
+        'div[data-testid="CardOverlayContentContainer"] [data-testid="JourneysTypography"]'
+      )
+    ).toContainText(this.existingJourneyName)
     const loadedLink: string = copiedLinkPage.url()
     expect(loadedLink).toStrictEqual(linkToCheck)
   }
