@@ -1,7 +1,5 @@
 {
   "724": "724",
-  "Language": "Sprache",
-  "Languages Available": "Verfügbare Sprachen",
   "close": "schließen",
   "No Downloads Available": "Keine Downloads verfügbar",
   "Download Video": "Video herunterladen",
@@ -33,11 +31,11 @@
   "Journeys": "Fahrten",
   "Videos": "Videos",
   "2000 translations": "2000 Übersetzungen",
-  "Site Language": "Sprache der Website",
-  "Suggested:": "Vorgeschlagen:",
+  "Loading...": "Laden...",
+  "Not available in {{value}}": "Nicht verfügbar in {{value}}",
+  "Language": "Sprache",
   "Subtitles": "Untertitel",
   "Show subtitles": "Untertitel anzeigen",
-  "Not available in {{value}}": "Nicht verfügbar in {{value}}",
   "Suggested": "Vorgeschlagene",
   "Read more...": "Lies mehr...",
   "Related questions": "Verwandte Fragen",
@@ -89,7 +87,5 @@
   "Series": "Serie",
   "Short Film": "Kurzfilm",
   "Behind The Scenes": "Hinter den Kulissen",
-  "Trailer": "Anhänger",
-  "{{count}} languages_one": "{{count}} Sprachen",
-  "{{count}} languages_other": "{{count}} Sprachen"
+  "Trailer": "Anhänger"
 }
