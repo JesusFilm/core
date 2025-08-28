@@ -1,7 +1,5 @@
 {
   "724": "724",
-  "Language": "언어",
-  "Languages Available": "사용 가능한 언어",
   "close": "닫기",
   "No Downloads Available": "다운로드할 수 없음",
   "Download Video": "비디오 다운로드",
@@ -33,11 +31,11 @@
   "Journeys": "여정",
   "Videos": "동영상",
   "2000 translations": "2000개의 번역",
-  "Site Language": "사이트 언어",
-  "Suggested:": "추천합니다:",
+  "Loading...": "로드 중...",
+  "Not available in {{value}}": "{{value}}에서 사용할 수 없습니다.",
+  "Language": "언어",
   "Subtitles": "자막",
   "Show subtitles": "자막 표시",
-  "Not available in {{value}}": "{{value}}에서 사용할 수 없습니다.",
   "Suggested": "추천",
   "Read more...": "자세히 보기...",
   "Related questions": "관련 질문",
@@ -89,6 +87,5 @@
   "Series": "시리즈",
   "Short Film": "단편 영화",
   "Behind The Scenes": "비하인드 스토리",
-  "Trailer": "트레일러",
-  "{{count}} languages_other": "{{count}} 언어"
+  "Trailer": "트레일러"
 }
