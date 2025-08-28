@@ -1216,13 +1216,13 @@ describe('AudioTrackSelect', () => {
         expect(screen.getByText('Language')).toBeInTheDocument()
       })
 
-      userEvent.click(screen.getByRole('combobox'))
+      await userEvent.click(screen.getByRole('combobox'))
       await waitFor(() => {
         expect(
           screen.getByRole('option', { name: 'Spanish' })
         ).toBeInTheDocument()
       })
-      userEvent.click(screen.getByRole('option', { name: 'Spanish' }))
+      await userEvent.click(screen.getByRole('option', { name: 'Spanish' }))
 
       await waitFor(() => {
         expect(mockUpdateAudioLanguage).toHaveBeenCalledWith(
@@ -1334,13 +1334,13 @@ describe('AudioTrackSelect', () => {
         expect(screen.getByText('Language')).toBeInTheDocument()
       })
 
-      userEvent.click(screen.getByRole('combobox'))
+      await userEvent.click(screen.getByRole('combobox'))
       await waitFor(() => {
         expect(
           screen.getByRole('option', { name: 'French' })
         ).toBeInTheDocument()
       })
-      userEvent.click(screen.getByRole('option', { name: 'French' }))
+      await userEvent.click(screen.getByRole('option', { name: 'French' }))
 
       await waitFor(() => {
         expect(mockUpdateAudioLanguage).toHaveBeenCalledWith(
@@ -1425,13 +1425,13 @@ describe('AudioTrackSelect', () => {
         expect(screen.getByText('Language')).toBeInTheDocument()
       })
 
-      userEvent.click(screen.getByRole('combobox'))
+      await userEvent.click(screen.getByRole('combobox'))
       await waitFor(() => {
         expect(
           screen.getByRole('option', { name: 'Spanish' })
         ).toBeInTheDocument()
       })
-      userEvent.click(screen.getByRole('option', { name: 'Spanish' }))
+      await userEvent.click(screen.getByRole('option', { name: 'Spanish' }))
 
       await waitFor(() => {
         expect(mockUpdateAudioLanguage).toHaveBeenCalledWith(
@@ -1532,13 +1532,13 @@ describe('AudioTrackSelect', () => {
         expect(screen.getByText('Language')).toBeInTheDocument()
       })
 
-      userEvent.click(screen.getByRole('combobox'))
+      await userEvent.click(screen.getByRole('combobox'))
       await waitFor(() => {
         expect(
           screen.getByRole('option', { name: 'English' })
         ).toBeInTheDocument()
       })
-      userEvent.click(screen.getByRole('option', { name: 'English' }))
+      await userEvent.click(screen.getByRole('option', { name: 'English' }))
 
       await waitFor(() => {
         expect(mockUpdateAudioLanguage).toHaveBeenCalledWith(
@@ -1591,13 +1591,13 @@ describe('AudioTrackSelect', () => {
         expect(screen.getByText('Language')).toBeInTheDocument()
       })
 
-      userEvent.click(screen.getByRole('combobox'))
+      await userEvent.click(screen.getByRole('combobox'))
       await waitFor(() => {
         expect(
           screen.getByRole('option', { name: 'English' })
         ).toBeInTheDocument()
       })
-      userEvent.click(screen.getByRole('option', { name: 'English' }))
+      await userEvent.click(screen.getByRole('option', { name: 'English' }))
 
       await waitFor(() => {
         expect(mockUpdateAudioLanguage).toHaveBeenCalledWith(
@@ -1650,13 +1650,13 @@ describe('AudioTrackSelect', () => {
         expect(screen.getByText('Language')).toBeInTheDocument()
       })
 
-      userEvent.click(screen.getByRole('combobox'))
+      await userEvent.click(screen.getByRole('combobox'))
       await waitFor(() => {
         expect(
           screen.getByRole('option', { name: 'English' })
         ).toBeInTheDocument()
       })
-      userEvent.click(screen.getByRole('option', { name: 'English' }))
+      await userEvent.click(screen.getByRole('option', { name: 'English' }))
 
       await waitFor(() => {
         expect(mockUpdateAudioLanguage).toHaveBeenCalledWith(
