@@ -4,13 +4,10 @@ export default [
   ...nextConfig,
   {
     ignores: [
-      'apps/journeys-admin/eslint.config.js',
       'apps/journeys-admin/jest.config.ts',
-      'apps/journeys-admin/postcss.config.mjs',
-      'apps/journeys-admin/.next/*'
+      'apps/journeys-admin/postcss.config.mjs'
     ]
   },
-  { languageOptions: { globals: {} } },
   {
     files: ['**/*.ts', '**/*.tsx', '**/*.js', '**/*.jsx'],
     rules: {
@@ -28,9 +25,6 @@ export default [
     rules: {
       'no-void': ['error', { allowAsStatement: true }],
       '@typescript-eslint/no-misused-promises': 'off'
-    },
-    languageOptions: {
-      parserOptions: { project: ['apps/journeys-admin/tsconfig.*?.json'] }
     }
   },
   // Relax module boundary rule for journeys-admin to allow static imports
@@ -56,9 +50,5 @@ export default [
         }
       ]
     }
-  },
-  {
-    files: ['apps/journeys-admin/next-env.d.ts'],
-    rules: { '@typescript-eslint/triple-slash-reference': 'off' }
   }
 ]

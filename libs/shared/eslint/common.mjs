@@ -1,16 +1,16 @@
-import nxEslintPlugin from '@nx/eslint-plugin'
-import eslintPluginImport from 'eslint-plugin-import'
-import loveConfig from 'eslint-config-love'
-import nodePlugin from 'eslint-plugin-n'
-import promisePlugin from 'eslint-plugin-promise'
-import tsParser from '@typescript-eslint/parser'
-import prettierConfig from 'eslint-config-prettier'
-import tseslint from 'typescript-eslint'
 import eslint from '@eslint/js'
+import nxEslintPlugin from '@nx/eslint-plugin'
+import tsParser from '@typescript-eslint/parser'
+import loveConfig from 'eslint-config-love'
+import prettierConfig from 'eslint-config-prettier'
 import i18next from 'eslint-plugin-i18next'
+import eslintPluginImport from 'eslint-plugin-import'
 import pluginJest from 'eslint-plugin-jest'
 import jestFormatting from 'eslint-plugin-jest-formatting'
+import nodePlugin from 'eslint-plugin-n'
+import promisePlugin from 'eslint-plugin-promise'
 import storybook from 'eslint-plugin-storybook'
+import tseslint from 'typescript-eslint'
 
 const commonConfig = [
   {
@@ -35,6 +35,14 @@ const commonConfig = [
       n: nodePlugin,
       promise: promisePlugin
     },
+
+    linterOptions: {
+      reportUnusedDisableDirectives: 'off'
+    }
+  },
+  { settings: { 'import/internal-regex': '^(@core|.prisma)' } },
+  {
+    files: ['**/*.ts', '**/*.tsx'],
     languageOptions: {
       parser: tsParser,
       parserOptions: {
@@ -43,12 +51,6 @@ const commonConfig = [
         tsconfigRootDir: import.meta.dirname
       }
     },
-    linterOptions: {
-      reportUnusedDisableDirectives: 'off'
-    }
-  },
-  { settings: { 'import/internal-regex': '^(@core|.prisma)' } },
-  {
     rules: {
       '@typescript-eslint/await-thenable': 'off',
       '@typescript-eslint/ban-tslint-comment': 'off',
@@ -157,7 +159,8 @@ const commonConfig = [
       }
     },
     rules: {
-      '@typescript-eslint/no-array-delete': 'off'
+      '@typescript-eslint/no-require-imports': 'off',
+      'import/no-anonymous-default-export': 'off'
     }
   },
   {

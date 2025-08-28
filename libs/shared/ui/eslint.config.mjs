@@ -1,13 +1,9 @@
-import nextConfig from '../../../packages/eslint-config/next.mjs'
+import nextConfig from '../../shared/eslint/next.mjs'
 
 export default [
   ...nextConfig,
   {
-    ignores: [
-      'libs/shared/ui/eslint.config.js',
-      'libs/shared/ui/jest.config.ts',
-      'libs/shared/ui/apollo.config.js'
-    ]
+    ignores: ['libs/shared/ui/jest.config.ts']
   },
   {
     files: ['**/*.ts', '**/*.tsx'],
@@ -15,9 +11,6 @@ export default [
       'no-void': ['error', { allowAsStatement: true }],
       '@typescript-eslint/no-misused-promises': 'off',
       '@typescript-eslint/require-await': 'off'
-    },
-    languageOptions: {
-      parserOptions: { project: ['libs/shared/ui/tsconfig.*?.json'] }
     }
   }
 ]

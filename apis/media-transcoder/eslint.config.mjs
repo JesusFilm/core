@@ -1,3 +1,3 @@
-import commonConfig from '../../libs/shared/eslint/common.mjs'
+import apiConfig from '../../libs/shared/eslint/api.mjs'
 
-export default commonConfig
+export default apiConfig

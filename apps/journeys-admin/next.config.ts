@@ -1,12 +1,10 @@
-const withBundleAnalyzer = require('@next/bundle-analyzer')
-const { composePlugins, withNx } = require('@nx/next')
+import withBundleAnalyzer from '@next/bundle-analyzer'
+import { composePlugins, withNx } from '@nx/next'
+import type { NextConfig } from 'next'
 
-const { i18n } = require('./next-i18next.config')
+import { i18n } from './next-i18next.config'
 
-/**
- * @type {import('@nx/next/plugins/with-nx').WithNxOptions}
- **/
-const nextConfig = {
+const nextConfig: NextConfig = {
   nx: {
     // Set this to true if you would like to to use SVGR
     // See: https://github.com/gregberge/svgr
@@ -110,7 +108,7 @@ const nextConfig = {
     reactCompiler: true
   }
 }
-const plugins = [withNx]
+const plugins: any[] = [withNx]
 if (process.env.ANALYZE === 'true') {
   plugins.push(withBundleAnalyzer({ enabled: true, openAnalyzer: true }))
 }

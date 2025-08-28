@@ -1,12 +1,10 @@
-const { composePlugins, withNx } = require('@nx/next')
-const { withPlausibleProxy } = require('next-plausible')
+import { composePlugins, withNx } from '@nx/next'
+import type { NextConfig } from 'next'
+import { withPlausibleProxy } from 'next-plausible'
 
-const { i18n } = require('./next-i18next.config')
+import { i18n } from './next-i18next.config'
 
-/**
- * @type {import('@nx/next/plugins/with-nx').WithNxOptions}
- **/
-const nextConfig = {
+const nextConfig: NextConfig = {
   nx: {
     // Set this to true if you would like to to use SVGR
     // See: https://github.com/gregberge/svgr
@@ -49,7 +47,7 @@ const nextConfig = {
       'node_modules/esbuild-linux-64/bin'
     ]
   },
-  async rewrites() {
+  rewrites() {
     return [
       {
         source: '/api/graphql',

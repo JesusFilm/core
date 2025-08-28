@@ -1,14 +1,29 @@
-const withBundleAnalyzer = require('@next/bundle-analyzer')({
-  enabled: process.env.ANALYZE === 'true'
-})
-const { composePlugins, withNx } = require('@nx/next')
+//@ts-check
 
-const { i18n } = require('./next-i18next.config')
+import { fileURLToPath } from 'node:url'
+
+import withBundleAnalyzer from '@next/bundle-analyzer'
+import { composePlugins, withNx } from '@nx/next'
+import { createJiti } from 'jiti'
+import type { NextConfig } from 'next'
+import createNextIntlPlugin from 'next-intl/plugin'
+
+const jiti = createJiti(fileURLToPath(import.meta.url))
+
+const { env }: { env: { ANALYZE: string; VERCEL_ENV: string } } =
+  await jiti.import('./src/env')
+
+const withBundleAnalyzerPlugin = withBundleAnalyzer({
+  enabled: env.ANALYZE
+})
 
 /**
  * @type {import('@nx/next/plugins/with-nx').WithNxOptions}
  **/
-const nextConfig = {
+const nextConfig: NextConfig = {
+  assetPrefix: ['production', 'prod', 'stage'].includes(env.VERCEL_ENV ?? '')
+    ? '/watch/modern'
+    : '',
   images: {
     remotePatterns: [
       { protocol: 'http', hostname: 'localhost' },
@@ -27,16 +42,10 @@ const nextConfig = {
       { protocol: 'https', hostname: 'imagedelivery.net' },
       {
         protocol: 'https',
-        hostname: `customer-${
-          process.env.NEXT_PUBLIC_CLOUDFLARE_STREAM_CUSTOMER_CODE ?? ''
-        }.cloudflarestream.com`
+        hostname: `customer-${env.NEXT_PUBLIC_CLOUDFLARE_STREAM_CUSTOMER_CODE}.cloudflarestream.com`
       }
     ],
     minimumCacheTTL: 31536000
-  },
-  i18n,
-  experimental: {
-    reactCompiler: true
   },
   modularizeImports: {
     lodash: {
@@ -48,41 +57,40 @@ const nextConfig = {
     // See: https://github.com/gregberge/svgr
     svgr: false
   },
+  experimental: {
+    reactCompiler: true
+  },
   productionBrowserSourceMaps: true,
   typescript: {
     // handled by github actions
-    ignoreBuildErrors: process.env.CI === 'true'
+    ignoreBuildErrors: env.CI
   },
   eslint: {
     // handled by github actions
-    ignoreDuringBuilds: process.env.CI === 'true'
+    ignoreDuringBuilds: env.CI
   },
-  transpilePackages: ['shared-ui'],
-  outputFileTracingExcludes: {
-    '*': [
-      'node_modules/@swc/core-linux-x64-gnu',
-      'node_modules/@swc/core-linux-x64-musl',
-      'node_modules/esbuild-linux-64/bin'
-    ]
-  },
+  basePath: '/watch',
   async redirects() {
     return [
-      {
-        source: '/',
-        destination: '/watch',
-        permanent: false
-      },
       {
         source: '/bin/jf/watch.html/:videoId/:languageId',
         destination: '/api/jf/watch.html/:videoId/:languageId',
         permanent: false
       },
       {
-        source: '/watch/easter',
-        destination: '/watch/easter.html/english.html',
-        permanent: true
+        source: '/',
+        destination: '/watch',
+        basePath: false,
+        permanent: false
       }
     ]
   }
 }
-module.exports = composePlugins(withBundleAnalyzer, withNx)(nextConfig)
+
+const withNextIntl = createNextIntlPlugin()
+
+export default composePlugins(
+  withBundleAnalyzerPlugin,
+  withNx,
+  withNextIntl
+)(nextConfig)
