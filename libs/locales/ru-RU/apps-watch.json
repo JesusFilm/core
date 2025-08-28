@@ -1,7 +1,5 @@
 {
   "724": "724",
-  "Language": "Язык",
-  "Languages Available": "Доступные языки",
   "close": "закрыть",
   "No Downloads Available": "Загрузки нет",
   "Download Video": "Скачать видео",
@@ -33,11 +31,11 @@
   "Journeys": "Презентации",
   "Videos": "Видео",
   "2000 translations": "2000 переводов",
-  "Site Language": "Язык сайта",
-  "Suggested:": "Предлагается:",
+  "Loading...": "Загрузка...",
+  "Not available in {{value}}": "Недоступно на {{value}}",
+  "Language": "Язык",
   "Subtitles": "Субтитры",
   "Show subtitles": "Показать субтитры",
-  "Not available in {{value}}": "Недоступно на {{value}}",
   "Suggested": "Предлагается",
   "Read more...": "Читать дальше...",
   "Related questions": "Похожие вопросы",
@@ -89,9 +87,5 @@
   "Series": "Серия",
   "Short Film": "Короткометражный фильм",
   "Behind The Scenes": "За кулисами",
-  "Trailer": "Трейлер",
-  "{{count}} languages_one": "{{count}} Языки",
-  "{{count}} languages_few": "{{count}} Языки",
-  "{{count}} languages_many": "{{count}} Языки",
-  "{{count}} languages_other": "{{count}} Языки"
+  "Trailer": "Трейлер"
 }
