@@ -185,7 +185,7 @@
       "options": {
         "commands": [
           {
-            "command": "npx i18next --config apps/watch/i18next-parser.config.js"
+            "command": "npm run i18next --config apps/watch/i18next-parser.config.js"
           }
         ]
       }
