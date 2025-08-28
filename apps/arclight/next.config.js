@@ -28,7 +28,8 @@ const nextConfig = {
     ]
   },
   experimental: {
-    fallbackNodePolyfills: false
+    fallbackNodePolyfills: false,
+    reactCompiler: true
   }
 }
 

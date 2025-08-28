@@ -12,8 +12,8 @@ import {
 
 import { GetAllLanguages_languages as Language } from '../../../../__generated__/GetAllLanguages'
 import { GetLanguagesSlug } from '../../../../__generated__/GetLanguagesSlug'
-import { useLanguageActions, useWatch } from '../../../libs/watchContext'
 import { GET_LANGUAGES_SLUG } from '../../../libs/useLanguagesSlugQuery'
+import { useLanguageActions, useWatch } from '../../../libs/watchContext'
 import { selectLanguageForVideo } from '../utils/audioLanguageSetter'
 import { getCurrentAudioLanguage } from '../utils/getCurrentAudioLanguage'
 import { renderInput } from '../utils/renderInput'
