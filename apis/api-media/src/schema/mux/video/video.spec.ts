@@ -8,12 +8,6 @@ import { enableDownload } from './service'
 
 // Mock the processVideoDownloads queue
 
-jest.mock('../../../workers/processVideoUploads/queue', () => ({
-  queue: {
-    add: jest.fn().mockResolvedValue({ id: 'job-id' })
-  }
-}))
-
 jest.mock('./service', () => ({
   createVideoByDirectUpload: jest.fn().mockResolvedValue({
     id: 'uploadId',
