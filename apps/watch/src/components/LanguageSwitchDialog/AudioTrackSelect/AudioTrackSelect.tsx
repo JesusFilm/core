@@ -66,6 +66,7 @@ export const AudioTrackSelect = memo(function AudioTrackSelect(): ReactElement {
     if (reload) {
       const found = videoAudioLanguagesIdsAndSlugs?.find(
         ({ id }) => id === language.id
+
       )
       reload = found != null
     }
@@ -87,6 +88,7 @@ export const AudioTrackSelect = memo(function AudioTrackSelect(): ReactElement {
 
     const found = videoAudioLanguagesIdsAndSlugs?.find(
       ({ id }) => id === currentAudioLanguage?.id
+
     )
 
     return found == null
@@ -100,6 +102,7 @@ export const AudioTrackSelect = memo(function AudioTrackSelect(): ReactElement {
     t,
     currentAudioLanguage,
     videoAudioLanguagesIdsAndSlugs,
+
     currentLanguage
   ])
 

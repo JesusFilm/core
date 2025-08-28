@@ -59,6 +59,20 @@ export function NewVideoContentPage(): ReactElement {
     [children]
   )
 
+  useLanguagesSlugQuery({
+    variables: {
+      id
+    },
+    onCompleted: (data) => {
+      if (data?.video?.variantLanguagesWithSlug) {
+        dispatch({
+          type: 'SetVideoAudioLanguages',
+          videoAudioLanguages: data.video.variantLanguagesWithSlug
+        })
+      }
+    }
+  })
+
   const makeDefaultQuestion = (value: string): StudyQuestions => ({
     __typename: 'VideoStudyQuestion',
     value,
