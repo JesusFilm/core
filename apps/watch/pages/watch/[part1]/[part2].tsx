@@ -6,23 +6,12 @@ import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
 import { SnackbarProvider } from 'notistack'
 import type { ReactElement } from 'react'
 
-import {
-  GetLanguagesSlug,
-  GetLanguagesSlugVariables,
-  GetLanguagesSlug_video_variantLanguagesWithSlug as VideoAudioLanguage
-} from '../../../__generated__/GetLanguagesSlug'
-import {
-  GetSubtitles,
-  GetSubtitlesVariables,
-  GetSubtitles_video_variant_subtitle as VideoVariantSubtitle
-} from '../../../__generated__/GetSubtitles'
 import type {
   GetVideoContent,
   GetVideoContentVariables
 } from '../../../__generated__/GetVideoContent'
 import type { VideoContentFields } from '../../../__generated__/VideoContentFields'
 import i18nConfig from '../../../next-i18next.config'
-import { GET_SUBTITLES } from '../../../src/components/SubtitleDialog/SubtitleDialog'
 import { createApolloClient } from '../../../src/libs/apolloClient'
 import { getCookie } from '../../../src/libs/cookieHandler'
 import { getFlags } from '../../../src/libs/getFlags'
@@ -30,7 +19,6 @@ import { getLanguageIdFromLocale } from '../../../src/libs/getLanguageIdFromLoca
 import { LanguageProvider } from '../../../src/libs/languageContext/LanguageContext'
 import { PlayerProvider } from '../../../src/libs/playerContext/PlayerContext'
 import { slugMap } from '../../../src/libs/slugMap'
-import { GET_LANGUAGES_SLUG } from '../../../src/libs/useLanguagesSlugQuery'
 import { VIDEO_CONTENT_FIELDS } from '../../../src/libs/videoContentFields'
 import { VideoProvider } from '../../../src/libs/videoContext'
 import {
@@ -40,29 +28,15 @@ import {
 } from '../../../src/libs/watchContext/WatchContext'
 import {
   GetVariantLanguagesIdAndSlug,
-  GetVariantLanguagesIdAndSlug_video_variantLanguages as VariantLanguageIdAndSlug,
   GetVariantLanguagesIdAndSlugVariables
 } from '../../../__generated__/GetVariantLanguagesIdAndSlug'
+import { GET_VARIANT_LANGUAGES_ID_AND_SLUG } from '../../../src/libs/useVariantLanguagesIdAndSlugQuery'
 
 export const GET_VIDEO_CONTENT = gql`
   ${VIDEO_CONTENT_FIELDS}
   query GetVideoContent($id: ID!, $languageId: ID) {
     content: video(id: $id, idType: slug) {
       ...VideoContentFields
-    }
-  }
-`
-
-export const GET_VARIANT_LANGUAGES_ID_AND_SLUG = gql`
-  query GetVariantLanguagesIdAndSlug($id: ID!) {
-    video(id: $id, idType: databaseId) {
-      variantLanguages {
-        id
-        slug
-      }
-      subtitles {
-        languageId
-      }
     }
   }
 `

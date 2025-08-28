@@ -9,11 +9,6 @@ import { InstantSearch } from 'react-instantsearch'
 import { useInstantSearchClient } from '@core/journeys/ui/algolia/InstantSearchProvider'
 
 import {
-  GetLanguagesSlug,
-  GetLanguagesSlugVariables,
-  GetLanguagesSlug_video_variantLanguagesWithSlug as VideoAudioLanguage
-} from '../../../../__generated__/GetLanguagesSlug'
-import {
   GetVideoContainerPart2,
   GetVideoContainerPart2Variables
 } from '../../../../__generated__/GetVideoContainerPart2'
@@ -31,7 +26,6 @@ import { getLanguageIdFromLocale } from '../../../../src/libs/getLanguageIdFromL
 import { LanguageProvider } from '../../../../src/libs/languageContext/LanguageContext'
 import { PlayerProvider } from '../../../../src/libs/playerContext/PlayerContext'
 import { slugMap } from '../../../../src/libs/slugMap'
-import { GET_LANGUAGES_SLUG } from '../../../../src/libs/useLanguagesSlugQuery'
 import { VIDEO_CONTENT_FIELDS } from '../../../../src/libs/videoContentFields'
 import { VideoProvider } from '../../../../src/libs/videoContext'
 import {
@@ -39,12 +33,11 @@ import {
   WatchInitialState,
   WatchProvider
 } from '../../../../src/libs/watchContext/WatchContext'
-import { GET_VARIANT_LANGUAGES_ID_AND_SLUG } from '../[part2]'
 import {
   GetVariantLanguagesIdAndSlug,
-  GetVariantLanguagesIdAndSlug_video_variantLanguages as VariantLanguageIdAndSlug,
   GetVariantLanguagesIdAndSlugVariables
 } from '../../../../__generated__/GetVariantLanguagesIdAndSlug'
+import { GET_VARIANT_LANGUAGES_ID_AND_SLUG } from '../../../../src/libs/useVariantLanguagesIdAndSlugQuery'
 
 export const GET_VIDEO_CONTAINER_PART_2 = gql`
   ${VIDEO_CONTENT_FIELDS}
