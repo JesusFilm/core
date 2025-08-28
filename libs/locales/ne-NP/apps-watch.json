@@ -1,7 +1,5 @@
 {
   "724": "७२४",
-  "Language": "भाषा",
-  "Languages Available": "Languages Available",
   "close": "बन्द गर्नुहोस्",
   "No Downloads Available": "कुनै डाउनलोड उपलब्ध छैन",
   "Download Video": "Download Video",
@@ -33,11 +31,11 @@
   "Journeys": "यात्राहरू",
   "Videos": "भिडियोहरू",
   "2000 translations": "2000 translations",
-  "Site Language": "Site Language",
-  "Suggested:": "Suggested:",
+  "Loading...": "लोड हुँदै...",
+  "Not available in {{value}}": "Not available in {{value}}",
+  "Language": "भाषा",
   "Subtitles": "उपशीर्षकहरू",
   "Show subtitles": "Show subtitles",
-  "Not available in {{value}}": "Not available in {{value}}",
   "Suggested": "Suggested",
   "Read more...": "थप पढ्नुहोस्...",
   "Related questions": "सम्बन्धित प्रश्नहरू",
@@ -89,7 +87,5 @@
   "Series": "Series",
   "Short Film": "Short Film",
   "Behind The Scenes": "Behind The Scenes",
-  "Trailer": "Trailer",
-  "{{count}} languages_one": "{{count}} languages",
-  "{{count}} languages_other": "{{count}} languages"
+  "Trailer": "Trailer"
 }
