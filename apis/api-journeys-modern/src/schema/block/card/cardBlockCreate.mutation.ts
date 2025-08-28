@@ -12,18 +12,18 @@ import { fetchJourneyWithAclIncludes } from '../../../lib/auth/fetchJourneyWithA
 import { builder } from '../../builder'
 import { getNextParentOrder } from '../getNextParentOrder'
 
-import { VideoTriggerBlockCreateInput } from './inputs'
-import { VideoTriggerBlock } from './videoTrigger'
+import { CardBlock } from './card'
+import { CardBlockCreateInput } from './inputs'
 
-builder.mutationField('videoTriggerBlockCreate', (t) =>
+builder.mutationField('cardBlockCreate', (t) =>
   t.withAuth({ isAuthenticated: true }).field({
     override: {
       from: 'api-journeys'
     },
-    type: VideoTriggerBlock,
+    type: CardBlock,
     nullable: false,
     args: {
-      input: t.arg({ type: VideoTriggerBlockCreateInput, required: true })
+      input: t.arg({ type: CardBlockCreateInput, required: true })
     },
     resolve: async (_parent, args, context) => {
       const { input } = args
@@ -43,12 +43,9 @@ builder.mutationField('videoTriggerBlockCreate', (t) =>
           context.user
         )
       ) {
-        throw new GraphQLError(
-          'user is not allowed to create video trigger block',
-          {
-            extensions: { code: 'FORBIDDEN' }
-          }
-        )
+        throw new GraphQLError('user is not allowed to create card block', {
+          extensions: { code: 'FORBIDDEN' }
+        })
       }
 
       return await prisma.$transaction(async (tx) => {
@@ -60,13 +57,17 @@ builder.mutationField('videoTriggerBlockCreate', (t) =>
         const blockData = {
           id: input.id ?? uuidv4(),
           journeyId: input.journeyId,
-          typename: 'VideoTriggerBlock',
+          typename: 'CardBlock',
           parentBlockId: input.parentBlockId,
           parentOrder,
-          triggerStart: input.triggerStart ?? 0
+          backgroundColor: input.backgroundColor,
+          backdropBlur: input.backdropBlur,
+          fullscreen: input.fullscreen ?? false,
+          themeMode: input.themeMode,
+          themeName: input.themeName
         }
 
-        const videoTriggerBlock = await tx.block.create({
+        const cardBlock = await tx.block.create({
           data: blockData
         })
 
@@ -76,7 +77,7 @@ builder.mutationField('videoTriggerBlockCreate', (t) =>
           data: { updatedAt: new Date() }
         })
 
-        return videoTriggerBlock
+        return cardBlock
       })
     }
   })

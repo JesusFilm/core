@@ -1,4 +1,11 @@
 // Export all block schemas from a central location
+import './block'
+import './block.query'
+import './blocks.query'
+import './blockDelete.mutation'
+import './blockDuplicate.mutation'
+import './blockRestore.mutation'
+import './blockOrderUpdate.mutation'
 import './button'
 import './card'
 import './gridContainer'

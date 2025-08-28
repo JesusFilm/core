@@ -1,1 +1,2 @@
-import './videoTrigger'
+import './videoTriggerBlockCreate.mutation'
+import './videoTriggerBlockUpdate.mutation'

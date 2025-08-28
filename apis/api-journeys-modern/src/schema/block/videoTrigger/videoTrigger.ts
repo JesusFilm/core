@@ -1,6 +1,5 @@
 import { GraphQLError } from 'graphql'
 
-import { ActionInterface } from '../../action/action'
 import { builder } from '../../builder'
 import { Block } from '../block'
 

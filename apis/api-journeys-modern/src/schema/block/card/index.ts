@@ -1,2 +1,3 @@
 import './card'
-import './inputs'
+import './cardBlockCreateInput'
+import './cardBlockUpdateInput'
