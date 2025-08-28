@@ -1,8 +1,7 @@
-import { useLazyQuery } from '@apollo/client'
 import SpatialAudioOffOutlinedIcon from '@mui/icons-material/SpatialAudioOffOutlined'
 import { useRouter } from 'next/router'
 import { useTranslation } from 'next-i18next'
-import { ReactElement, memo, useEffect, useMemo, useState } from 'react'
+import { ReactElement, memo, useMemo } from 'react'
 import { useInstantSearch } from 'react-instantsearch'
 
 import {
@@ -11,8 +10,7 @@ import {
 } from '@core/shared/ui/LanguageAutocomplete'
 
 import { GetAllLanguages_languages as Language } from '../../../../__generated__/GetAllLanguages'
-import { GetLanguagesSlug } from '../../../../__generated__/GetLanguagesSlug'
-import { GET_LANGUAGES_SLUG } from '../../../libs/useLanguagesSlugQuery'
+
 import { useLanguageActions, useWatch } from '../../../libs/watchContext'
 import { getCurrentAudioLanguage } from '../utils/getCurrentAudioLanguage'
 import { renderInput } from '../utils/renderInput'
@@ -66,7 +64,6 @@ export const AudioTrackSelect = memo(function AudioTrackSelect(): ReactElement {
     if (reload) {
       const found = videoAudioLanguagesIdsAndSlugs?.find(
         ({ id }) => id === language.id
-
       )
       reload = found != null
     }
@@ -88,7 +85,6 @@ export const AudioTrackSelect = memo(function AudioTrackSelect(): ReactElement {
 
     const found = videoAudioLanguagesIdsAndSlugs?.find(
       ({ id }) => id === currentAudioLanguage?.id
-
     )
 
     return found == null
