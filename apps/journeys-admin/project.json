@@ -40,22 +40,22 @@
       "executor": "nx:run-commands",
       "options": {
         "commands": [
-          "VERCEL_PROJECT_ID=$JOURNEYS_ADMIN_VERCEL_PROJECT_ID pnpm dlx vercel pull --environment=preview --token=$VERCEL_TOKEN",
+          "VERCEL_PROJECT_ID=$JOURNEYS_ADMIN_VERCEL_PROJECT_ID pnpm exec vercel pull --environment=preview --token=$VERCEL_TOKEN",
           "echo \"VERCEL_ENV=\\\"$NEXT_PUBLIC_VERCEL_ENV\\\"\" >> .vercel/.env.preview.local",
           "echo \"VERCEL_GIT_COMMIT_SHA=\\\"$NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA\\\"\" >> .vercel/.env.preview.local",
-          "pnpm dlx vercel build",
-          "VERCEL_PROJECT_ID=$JOURNEYS_ADMIN_VERCEL_PROJECT_ID pnpm dlx vercel deploy --prebuilt --token=$VERCEL_TOKEN --archive=tgz > apps/journeys-admin/.vercel-url"
+          "pnpm exec vercel build",
+          "VERCEL_PROJECT_ID=$JOURNEYS_ADMIN_VERCEL_PROJECT_ID pnpm exec vercel deploy --prebuilt --token=$VERCEL_TOKEN --archive=tgz > apps/journeys-admin/.vercel-url"
         ],
         "parallel": false
       },
       "configurations": {
         "production": {
           "commands": [
-            "VERCEL_PROJECT_ID=$JOURNEYS_ADMIN_VERCEL_PROJECT_ID pnpm dlx vercel pull --environment=production --token=$VERCEL_TOKEN",
+            "VERCEL_PROJECT_ID=$JOURNEYS_ADMIN_VERCEL_PROJECT_ID pnpm exec vercel pull --environment=production --token=$VERCEL_TOKEN",
             "echo \"VERCEL_ENV=\\\"$NEXT_PUBLIC_VERCEL_ENV\\\"\" >> .vercel/.env.production.local",
             "echo \"VERCEL_GIT_COMMIT_SHA=\\\"$NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA\\\"\" >> .vercel/.env.production.local",
-            "pnpm dlx vercel build --prod",
-            "VERCEL_PROJECT_ID=$JOURNEYS_ADMIN_VERCEL_PROJECT_ID pnpm dlx vercel deploy --prebuilt --prod --token=$VERCEL_TOKEN --archive=tgz > apps/journeys-admin/.vercel-url"
+            "pnpm exec vercel build --prod",
+            "VERCEL_PROJECT_ID=$JOURNEYS_ADMIN_VERCEL_PROJECT_ID pnpm exec vercel deploy --prebuilt --prod --token=$VERCEL_TOKEN --archive=tgz > apps/journeys-admin/.vercel-url"
           ]
         }
       }
@@ -73,7 +73,7 @@
       "executor": "nx:run-commands",
       "options": {
         "commands": [
-          "pnpm dlx vercel alias set $(cat apps/journeys-admin/.vercel-url) journeys-admin-$PR_NUMBER-jesusfilm.vercel.app --token=$VERCEL_TOKEN --scope=jesusfilm",
+          "pnpm exec vercel alias set $(cat apps/journeys-admin/.vercel-url) journeys-admin-$PR_NUMBER-jesusfilm.vercel.app --token=$VERCEL_TOKEN --scope=jesusfilm",
           "echo \"https://journeys-admin-$PR_NUMBER-jesusfilm.vercel.app\" > apps/journeys-admin/.vercel-url"
         ],
         "parallel": false
@@ -184,7 +184,7 @@
       "options": {
         "commands": [
           {
-            "command": "pnpm dlx i18next --config apps/journeys-admin/i18next-parser.config.js"
+            "command": "pnpm exec i18next --config apps/journeys-admin/i18next-parser.config.js"
           }
         ]
       }

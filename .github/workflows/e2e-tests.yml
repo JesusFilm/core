@@ -110,7 +110,7 @@ jobs:
           CONSISTENT_ALIAS="${{ matrix.app }}-daily-e2e-jesusfilm.vercel.app"
 
           # Set the alias
-          pnpm dlx vercel alias set "$DEPLOYMENT_URL" "$CONSISTENT_ALIAS" --token=$VERCEL_TOKEN --scope=jesusfilm
+          pnpm exec vercel alias set "$DEPLOYMENT_URL" "$CONSISTENT_ALIAS" --token=$VERCEL_TOKEN --scope=jesusfilm
 
           # Update the .vercel-url file with the consistent URL
           echo "https://$CONSISTENT_ALIAS" > apps/${{ matrix.app }}/.vercel-url
