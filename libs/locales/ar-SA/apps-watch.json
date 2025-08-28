@@ -1,7 +1,5 @@
 {
   "724": "724",
-  "Language": "اللغة",
-  "Languages Available": "اللغات المتاحة",
   "close": "إغلاق",
   "No Downloads Available": "لا توجد تنزيلات متاحة",
   "Download Video": "تحميل الفيديو",
@@ -33,11 +31,11 @@
   "Journeys": "الرحلات",
   "Videos": "مقاطع الفيديو",
   "2000 translations": "ترجمات 2000",
-  "Site Language": "لغة الموقع",
-  "Suggested:": "مقترح:",
+  "Loading...": "جاري التحميل...",
+  "Not available in {{value}}": "غير متوفر في {{value}}",
+  "Language": "اللغة",
   "Subtitles": "الترجمات",
   "Show subtitles": "إظهار الترجمة",
-  "Not available in {{value}}": "غير متوفر في {{value}}",
   "Suggested": "مقترح",
   "Read more...": "اقرأ المزيد...",
   "Related questions": "أسئلة ذات صلة",
@@ -89,11 +87,5 @@
   "Series": "السلسلة",
   "Short Film": "فيلم قصير",
   "Behind The Scenes": "ما وراء الكواليس",
-  "Trailer": "مقطورة",
-  "{{count}} languages_zero": "{{count}} اللغات",
-  "{{count}} languages_one": "{{count}} اللغات",
-  "{{count}} languages_two": "{{count}} اللغات",
-  "{{count}} languages_few": "{{count}} اللغات",
-  "{{count}} languages_many": "{{count}} اللغات",
-  "{{count}} languages_other": "{{count}} اللغات"
+  "Trailer": "مقطورة"
 }
