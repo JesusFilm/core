@@ -40,92 +40,73 @@ export function useSubtitleUpdate() {
     useLazyQuery<GetSubtitles>(GET_SUBTITLES)
   const { variant } = useVideo()
 
-  const subtitleUpdate = useCallback(
-    async ({
-      player,
-      subtitleLanguage,
-      subtitleOn,
-      autoSubtitle
-    }: SubtitleUpdateParams): Promise<void> => {
-      if (player == null) return
+  const subtitleUpdate = async ({
+    player,
+    subtitleLanguage,
+    subtitleOn,
+    autoSubtitle
+  }: SubtitleUpdateParams): Promise<void> => {
+    if (player == null) return
 
-      const tracks = player.textTracks?.() ?? []
+    const tracks = player.textTracks?.() ?? []
 
-      // Use autoSubtitle if available (based on availability), otherwise fall back to user preference
-      const shouldShowSubtitles = autoSubtitle ?? subtitleOn
+    // Use autoSubtitle if available (based on availability), otherwise fall back to user preference
+    const shouldShowSubtitles = autoSubtitle ?? subtitleOn
 
-      if (!shouldShowSubtitles || subtitleLanguage == null) {
-        // Disable all subtitle tracks when subtitles should be off
-        for (let i = 0; i < tracks.length; i++) {
-          const track = tracks[i]
-          if (track.kind === 'subtitles') {
+    if (!shouldShowSubtitles || subtitleLanguage == null) {
+      // Disable all subtitle tracks when subtitles should be off
+      for (let i = 0; i < tracks.length; i++) {
+        const track = tracks[i]
+        if (track.kind === 'subtitles') {
+          track.mode = 'disabled'
+        }
+      }
+      return
+    }
+
+    // Fetch subtitle data for the specific language
+    if (variant?.slug) {
+      const { data } = await getSubtitleLanguages({
+        variables: { id: variant.slug }
+      })
+
+      const selected = data?.video?.variant?.subtitle?.find(
+        (subtitle) => subtitle.language.id === subtitleLanguage
+      )
+
+      if (selected == null) return
+
+      player.addRemoteTextTrack(
+        {
+          id: subtitleLanguage,
+          src: selected?.value,
+          kind: 'subtitles',
+          language:
+            selected.language.bcp47 === null
+              ? undefined
+              : selected.language.bcp47,
+          label: selected.language.name.map((name) => name.value).join(', '),
+          mode: 'showing',
+          default: true
+        },
+        true
+      )
+
+      // Update track modes: show selected language, disable others
+      const updatedTracks = player.textTracks?.() ?? []
+      for (let i = 0; i < updatedTracks.length; i++) {
+        const track = updatedTracks[i]
+        if (track.kind === 'subtitles') {
+          if (track.id === subtitleLanguage) {
+            track.mode = 'showing'
+          } else {
             track.mode = 'disabled'
           }
         }
-        return
       }
-
-      // Fetch subtitle data for the specific language
-      if (variant?.slug) {
-        await getSubtitleLanguages({
-          variables: { id: variant.slug },
-          onCompleted: (data) => {
-            const selected = data?.video?.variant?.subtitle?.find(
-              (subtitle) => subtitle.language.id === subtitleLanguage
-            )
-
-            if (selected == null) return
-
-            // Check if track with this ID already exists
-            let existingTrack: TextTrack | null = null
-            for (let i = 0; i < tracks.length; i++) {
-              const track = tracks[i]
-              if (track.id === subtitleLanguage) {
-                existingTrack = track
-                break
-              }
-            }
-
-            // If track doesn't exist, add it
-            if (existingTrack == null) {
-              player.addRemoteTextTrack(
-                {
-                  id: subtitleLanguage,
-                  src: selected.value,
-                  kind: 'subtitles',
-                  language:
-                    selected.language.bcp47 === null
-                      ? undefined
-                      : selected.language.bcp47,
-                  label: selected.language.name
-                    .map((name) => name.value)
-                    .join(', '),
-                  mode: 'showing',
-                  default: true
-                },
-                true
-              )
-            }
-
-            // Update track modes: show selected language, disable others
-            const updatedTracks = player.textTracks?.() ?? []
-            for (let i = 0; i < updatedTracks.length; i++) {
-              const track = updatedTracks[i]
-              if (track.kind === 'subtitles') {
-                if (track.id === subtitleLanguage) {
-                  track.mode = 'showing'
-                } else {
-                  track.mode = 'disabled'
-                }
-              }
-            }
-          }
-        })
-        return
-      }
-    },
-    [variant?.slug, getSubtitleLanguages]
-  )
+      return
+    }
+  }
 
   return { subtitleUpdate, subtitlesLoading }
 }
