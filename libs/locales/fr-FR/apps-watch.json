@@ -1,7 +1,5 @@
 {
   "724": "724",
-  "Language": "Langue",
-  "Languages Available": "Langues disponibles",
   "close": "fermer",
   "No Downloads Available": "Aucun téléchargement disponible",
   "Download Video": "Télécharger la vidéo",
@@ -33,11 +31,11 @@
   "Journeys": "Voyages",
   "Videos": "Vidéos",
   "2000 translations": "2000 traductions",
-  "Site Language": "Langue du site",
-  "Suggested:": "Suggéré :",
+  "Loading...": "Chargement...",
+  "Not available in {{value}}": "Non disponible sur {{value}}",
+  "Language": "Langue",
   "Subtitles": "Sous-titres",
   "Show subtitles": "Afficher les sous-titres",
-  "Not available in {{value}}": "Non disponible sur {{value}}",
   "Suggested": "Suggéré",
   "Read more...": "Lire la suite...",
   "Related questions": "Questions connexes",
@@ -89,7 +87,5 @@
   "Series": "Série",
   "Short Film": "Court métrage",
   "Behind The Scenes": "Dans les coulisses",
-  "Trailer": "Bande-annonce",
-  "{{count}} languages_one": "{{count}} langues",
-  "{{count}} languages_other": "{{count}} langues"
+  "Trailer": "Bande-annonce"
 }
