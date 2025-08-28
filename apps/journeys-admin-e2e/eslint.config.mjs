@@ -1,27 +1,12 @@
-import { FlatCompat } from '@eslint/eslintrc'
-import js from '@eslint/js'
-import baseConfig from '../../eslint.config.mjs'
-
-const compat = new FlatCompat({
-  baseDirectory: import.meta.dirname,
-  recommendedConfig: js.configs.recommended
-})
+import e2eConfig from '../../libs/shared/eslint/e2e.mjs'
 
 export default [
-  ...baseConfig,
+  ...e2eConfig,
   { ignores: ['apps/journeys-admin-e2e/eslint.config.js'] },
-  ...compat.extends('plugin:playwright/recommended'),
   {
     files: ['**/*.ts', '**/*.tsx'],
     languageOptions: {
       parserOptions: { project: ['apps/journeys-admin-e2e/tsconfig.*?.json'] }
-    }
-  },
-  {
-    files: ['apps/journeys-admin-e2e/src/plugins/index.js'],
-    rules: {
-      '@typescript-eslint/no-var-requires': 'off',
-      'no-undef': 'off'
     }
   }
 ]

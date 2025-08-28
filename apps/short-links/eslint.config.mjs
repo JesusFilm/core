@@ -1,28 +1,7 @@
-import { FlatCompat } from '@eslint/eslintrc'
-import js from '@eslint/js'
-import nextPlugin from '@next/eslint-plugin-next'
-import reactPlugin from 'eslint-plugin-react'
-
-import baseConfig from '../../eslint.config.mjs'
-
-const compat = new FlatCompat({
-  baseDirectory: import.meta.dirname,
-  recommendedConfig: js.configs.recommended
-})
+import nextConfig from '../../libs/shared/eslint/next.mjs'
 
 export default [
-  ...baseConfig,
-  {
-    plugins: {
-      '@next/next': nextPlugin,
-      react: reactPlugin
-    },
-    rules: {
-      ...nextPlugin.configs.recommended.rules,
-      ...nextPlugin.configs['core-web-vitals'].rules
-    }
-  },
-  ...compat.extends('plugin:@nx/react-typescript'),
+  ...nextConfig,
   { ignores: ['apps/short-links/eslint.config.js'] },
   {
     files: ['**/*.ts', '**/*.tsx', '**/*.js', '**/*.jsx'],

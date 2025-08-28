@@ -1,6 +1,6 @@
+import commonConfig from '../../libs/shared/eslint/common.mjs'
 import { FlatCompat } from '@eslint/eslintrc'
 import js from '@eslint/js'
-import baseConfig from '../../eslint.config.mjs'
 
 const compat = new FlatCompat({
   baseDirectory: import.meta.dirname,
@@ -8,7 +8,7 @@ const compat = new FlatCompat({
 })
 
 export default [
-  ...baseConfig,
+  ...commonConfig,
   ...compat.extends('plugin:playwright/recommended'),
   { ignores: ['apps/watch-modern-e2e/eslint.config.js'] },
   {

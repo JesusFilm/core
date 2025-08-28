@@ -1,16 +1,8 @@
-import { FlatCompat } from '@eslint/eslintrc'
-import js from '@eslint/js'
-import baseConfig from '../../eslint.config.mjs'
-
-const compat = new FlatCompat({
-  baseDirectory: import.meta.dirname,
-  recommendedConfig: js.configs.recommended
-})
+import commonConfig from '../../libs/shared/eslint/common.mjs'
 
 export default [
-  ...baseConfig,
+  ...commonConfig,
   { ignores: ['apps/video-importer/eslint.config.js'] },
-  ...compat.extends(),
   {
     files: ['**/*.ts', '**/*.tsx'],
     languageOptions: {

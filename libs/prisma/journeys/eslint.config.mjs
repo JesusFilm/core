@@ -1,7 +1,7 @@
-import baseConfig from '../../../eslint.config.mjs'
+import commonConfig from '../../..//libs/shared/eslint/common.mjs'
 
 export default [
-  ...baseConfig,
+  ...commonConfig,
   {
     ignores: [
       'libs/prisma/journeys/eslint.config.mjs',
@@ -15,7 +15,6 @@ export default [
       parserOptions: { project: ['libs/prisma/journeys/tsconfig.*?.json'] }
     },
     rules: {
-      '@typescript-eslint/no-unused-vars': 'off',
       'import/no-relative-packages': ['error', { ignore: ['./.prisma/client'] }]
     }
   }

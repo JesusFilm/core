@@ -1,19 +1,7 @@
-import { FlatCompat } from '@eslint/eslintrc'
-import js from '@eslint/js'
-import nextPlugin from '@next/eslint-plugin-next'
-import reactPlugin from 'eslint-plugin-react'
-import reactHooksPlugin from 'eslint-plugin-react-hooks'
-import globals from 'globals'
-
-import baseConfig from '../../eslint.config.mjs'
-
-const compat = new FlatCompat({
-  baseDirectory: import.meta.dirname,
-  recommendedConfig: js.configs.recommended
-})
+import nextConfig from '../../libs/shared/eslint/next.mjs'
 
 export default [
-  ...baseConfig,
+  ...nextConfig,
   {
     ignores: [
       'apps/journeys-admin/eslint.config.js',
@@ -22,21 +10,7 @@ export default [
       'apps/journeys-admin/.next/*'
     ]
   },
-  {
-    plugins: {
-      '@next/next': nextPlugin,
-      react: reactPlugin,
-      'react-hooks': reactHooksPlugin
-    },
-    rules: {
-      ...reactPlugin.configs['jsx-runtime'].rules,
-      ...reactHooksPlugin.configs.recommended.rules,
-      ...nextPlugin.configs.recommended.rules,
-      ...nextPlugin.configs['core-web-vitals'].rules
-    }
-  },
-  ...compat.extends('plugin:@nx/react-typescript'),
-  { languageOptions: { globals: { ...globals.jest } } },
+  { languageOptions: { globals: {} } },
   {
     files: ['**/*.ts', '**/*.tsx', '**/*.js', '**/*.jsx'],
     rules: {

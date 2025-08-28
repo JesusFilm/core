@@ -1,7 +1,7 @@
-import baseConfig from '../../../eslint.config.mjs'
+import commonConfig from '../../shared/eslint/common.mjs'
 
 export default [
-  ...baseConfig,
+  ...commonConfig,
   { ignores: ['libs/nest/gqlAuthGuard/eslint.config.js'] },
   {
     files: ['**/*.ts', '**/*.tsx'],

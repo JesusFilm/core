@@ -1,15 +1,13 @@
-import baseConfig from '../../../eslint.config.mjs'
+import commonConfig from '../../../libs/shared/eslint/common.mjs'
 
 export default [
-  ...baseConfig,
+  ...commonConfig,
   { ignores: ['libs/nest/decorators/eslint.config.js'] },
   {
     files: ['**/*.ts', '**/*.tsx'],
     languageOptions: {
       parserOptions: { project: ['libs/nest/decorators/tsconfig.*?.json'] }
     },
-    rules: {
-      '@typescript-eslint/no-unused-vars': 'off'
-    }
+    rules: {}
   }
 ]

@@ -12,7 +12,7 @@ import pluginJest from 'eslint-plugin-jest'
 import jestFormatting from 'eslint-plugin-jest-formatting'
 import storybook from 'eslint-plugin-storybook'
 
-const config = [
+const commonConfig = [
   {
     ignores: [
       'jest.config.ts',
@@ -38,6 +38,7 @@ const config = [
     languageOptions: {
       parser: tsParser,
       parserOptions: {
+        project: ['./tsconfig.*'],
         projectService: true,
         tsconfigRootDir: import.meta.dirname
       }
@@ -83,14 +84,7 @@ const config = [
       '@typescript-eslint/no-unsafe-enum-comparison': 'off',
       '@typescript-eslint/no-unsafe-member-access': 'off',
       '@typescript-eslint/no-unsafe-return': 'off',
-      '@typescript-eslint/no-unused-vars': [
-        'error',
-        {
-          argsIgnorePattern: '^_',
-          varsIgnorePattern: '^_',
-          caughtErrorsIgnorePattern: '^_'
-        }
-      ],
+      '@typescript-eslint/no-unused-vars': 'warn',
       '@typescript-eslint/non-nullable-type-assertion-style': 'off',
       '@typescript-eslint/only-throw-error': 'warn',
       '@typescript-eslint/prefer-nullish-coalescing': 'off',
@@ -117,10 +111,7 @@ const config = [
       'import/order': [
         'error',
         {
-          alphabetize: {
-            order: 'asc',
-            caseInsensitive: true
-          },
+          alphabetize: { order: 'asc', caseInsensitive: true },
           groups: [
             'builtin',
             'external',
@@ -139,7 +130,6 @@ const config = [
       'no-extra-semi': 'off',
       'no-empty': 'warn',
       'no-magic-numbers': 'off',
-
       'no-multiple-empty-lines': ['error', { max: 1 }],
       'no-restricted-imports': [
         'error',
@@ -155,6 +145,19 @@ const config = [
         }
       ],
       'sort-imports': ['error', { ignoreDeclarationSort: true }]
+    }
+  },
+  {
+    files: ['**/*.js', '**/*.cjs', '**/*.mjs'],
+    languageOptions: {
+      globals: {
+        require: 'readonly',
+        module: 'readonly',
+        process: 'readonly'
+      }
+    },
+    rules: {
+      '@typescript-eslint/no-array-delete': 'off'
     }
   },
   {
@@ -205,9 +208,7 @@ const config = [
   {
     files: ['**/*.spec.ts', '**/*.spec.tsx', '**/*.spec.js', '**/*.spec.jsx'],
     plugins: { jest: pluginJest, 'jest-formatting': jestFormatting },
-    languageOptions: {
-      globals: pluginJest.environments.globals.globals
-    },
+    languageOptions: { globals: pluginJest.environments.globals.globals },
     rules: {
       ...jestFormatting.configs.recommended.overrides[0].rules,
       'jest/no-disabled-tests': 'off',
@@ -223,10 +224,17 @@ const config = [
       '**/*.stories.js',
       '**/*.stories.jsx'
     ],
+    rules: { 'i18next/no-literal-string': 'off' }
+  },
+  {
+    files: ['**/jest.config.ts'],
     rules: {
-      'i18next/no-literal-string': 'off'
+      'import/no-anonymous-default-export': 'off'
     }
+  },
+  {
+    ignores: ['./webpack.config.js', './eslint.config.(mj|j)s']
   }
 ]
 
-export default tseslint.config(...config)
+export default commonConfig

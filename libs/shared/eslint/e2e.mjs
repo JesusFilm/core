@@ -1,6 +1,7 @@
-import commonConfig from '../../libs/shared/eslint/common.mjs'
 import { FlatCompat } from '@eslint/eslintrc'
 import js from '@eslint/js'
+
+import commonConfig from './common.mjs'
 
 const compat = new FlatCompat({
   baseDirectory: import.meta.dirname,
@@ -10,15 +11,8 @@ const compat = new FlatCompat({
 export default [
   ...commonConfig,
   ...compat.extends('plugin:playwright/recommended'),
-  { ignores: ['apps/videos-admin-e2e/eslint.config.js'] },
   {
-    files: ['**/*.ts', '**/*.tsx'],
-    languageOptions: {
-      parserOptions: { project: ['apps/videos-admin-e2e/tsconfig.*?.json'] }
-    }
-  },
-  {
-    files: ['apps/videos-admin-e2e/src/plugins/index.js'],
+    files: ['src/plugins/index.js'],
     rules: {
       '@typescript-eslint/no-var-requires': 'off',
       'no-undef': 'off'
