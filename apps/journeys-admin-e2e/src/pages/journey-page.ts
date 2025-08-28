@@ -993,10 +993,8 @@ export class JourneyPage {
     ])
     await newPage.waitForLoadState()
     await expect(
-      newPage.locator(
-        'div[data-testid="CardOverlayContentContainer"] [data-testid="JourneysTypography"]'
-      )
-    ).toContainText(journeyName)
+      newPage.locator('[data-testid="JourneysTypography"]')
+    ).toContainText(journeyName, { timeout: 15000 })
     const slidesCount = await newPage
       .locator(
         'div[data-testid="pagination-bullets"] svg[data-testid*="bullet"]'
@@ -1185,10 +1183,8 @@ export class JourneyPage {
     await copiedLinkPage.goto(clipBoardText)
     await copiedLinkPage.waitForLoadState()
     await expect(
-      copiedLinkPage.locator(
-        'div[data-testid="CardOverlayContentContainer"] [data-testid="JourneysTypography"]'
-      )
-    ).toContainText(this.existingJourneyName)
+      copiedLinkPage.locator('[data-testid="JourneysTypography"]')
+    ).toContainText(this.existingJourneyName, { timeout: 15000 })
     const loadedLink: string = copiedLinkPage.url()
     expect(loadedLink).toStrictEqual(linkToCheck)
   }

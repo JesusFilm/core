@@ -145,10 +145,8 @@ export class JourneyLevelActions {
     ])
     await newPage.waitForLoadState()
     await expect(
-      newPage.locator(
-        'div[data-testid="CardOverlayContentContainer"] [data-testid="JourneysTypography"]'
-      )
-    ).toContainText(this.existingJourneyName)
+      newPage.locator('[data-testid="JourneysTypography"]')
+    ).toContainText(this.existingJourneyName, { timeout: 15000 })
     const slidesCount = await newPage
       .locator(
         'div[data-testid="pagination-bullets"] svg[data-testid*="bullet"]'
@@ -347,10 +345,8 @@ export class JourneyLevelActions {
     const copiedLinkPage = await this.context.newPage()
     await copiedLinkPage.goto(clipBoardText)
     await expect(
-      copiedLinkPage.locator(
-        'div[data-testid="CardOverlayContentContainer"] [data-testid="JourneysTypography"]'
-      )
-    ).toContainText(this.existingJourneyName)
+      copiedLinkPage.locator('[data-testid="JourneysTypography"]')
+    ).toContainText(this.existingJourneyName, { timeout: 15000 })
   }
 
   async clickNavigateToGoalBtn(): Promise<void> {

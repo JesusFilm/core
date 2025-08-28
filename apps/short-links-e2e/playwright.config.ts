@@ -16,6 +16,8 @@ export default defineConfig({
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 3 : 0,
   workers: process.env.CI ? 8 : 1,
+  /* Stop after first failure on CI */
+  maxFailures: process.env.CI ? 1 : undefined,
   reporter: 'html',
   use: {
     baseURL:
