@@ -80,7 +80,7 @@ export function VideoPlayer({
   useEffect(() => {
     if (player == null) return
 
-    subtitleUpdate({
+    void subtitleUpdate({
       player,
       subtitleLanguage,
       subtitleOn,

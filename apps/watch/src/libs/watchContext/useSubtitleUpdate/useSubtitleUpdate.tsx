@@ -1,10 +1,6 @@
-import { useCallback } from 'react'
 import Player from 'video.js/dist/types/player'
 
-import {
-  GetSubtitles,
-  GetSubtitles_video_variant_subtitle as SubtitleLanguage
-} from '../../../../__generated__/GetSubtitles'
+import { GetSubtitles } from '../../../../__generated__/GetSubtitles'
 import { gql, useLazyQuery } from '@apollo/client'
 import { useVideo } from '../../videoContext'
 

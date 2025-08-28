@@ -8,8 +8,6 @@ import {
 } from 'react'
 
 import { GetAllLanguages_languages as Language } from '../../../__generated__/GetAllLanguages'
-import { GetLanguagesSlug_video_variantLanguagesWithSlug as AudioLanguage } from '../../../__generated__/GetLanguagesSlug'
-import { GetVariantLanguagesIdAndSlug_video_variantLanguages as VariantLanguageIdAndSlug } from '../../../__generated__/GetVariantLanguagesIdAndSlug'
 import { LANGUAGE_MAPPINGS } from '../localeMapping'
 
 import { initializeVideoLanguages } from './initializeVideoLanguages'

@@ -12,8 +12,8 @@ import 'videojs-mux'
 import { usePlayer } from '../../../../libs/playerContext/PlayerContext'
 import { useVideo } from '../../../../libs/videoContext'
 import { useWatch } from '../../../../libs/watchContext'
-import { VideoControls } from '../../../VideoContentPage/VideoHero/VideoPlayer/VideoControls'
 import { useSubtitleUpdate } from '../../../../libs/watchContext/useSubtitleUpdate'
+import { VideoControls } from '../../../VideoContentPage/VideoHero/VideoPlayer/VideoControls'
 
 interface HeroVideoProps {
   isFullscreen: boolean
@@ -114,7 +114,7 @@ export function HeroVideo({ isFullscreen }: HeroVideoProps): ReactElement {
   useEffect(() => {
     const player = playerRef.current
     if (player == null) return
-    subtitleUpdate({
+    void subtitleUpdate({
       player,
       subtitleLanguage,
       subtitleOn,
