@@ -8,6 +8,17 @@
   "targets": {
     "e2e": {
       "executor": "nx:run-commands",
+      "cache": true,
+      "inputs": [
+        "default",
+        "^default",
+        { "env": "DEPLOYMENT_URL" },
+        { "env": "DOCS_DAILY_E2E" }
+      ],
+      "outputs": [
+        "{projectRoot}/playwright-report",
+        "{projectRoot}/test-results"
+      ],
       "options": {
         "commands": ["playwright test"],
         "cwd": "apps/docs-e2e"

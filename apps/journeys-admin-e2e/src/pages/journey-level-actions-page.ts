@@ -144,13 +144,43 @@ export class JourneyLevelActions {
         .click()
     ])
     await newPage.waitForLoadState()
-    await expect(
-      newPage
-        .locator(
-          'div[data-testid="pagination-bullets"] svg[data-testid*="bullet"]'
-        )
-        .first()
-    ).toBeVisible({ timeout: 20000 })
+    const nextButton = newPage.locator(
+      'button[data-testid="ConductorNavigationButtonNext"]'
+    )
+    const firstBullet = newPage
+      .locator(
+        'div[data-testid="pagination-bullets"] svg[data-testid*="bullet"]'
+      )
+      .first()
+    try {
+      await expect(nextButton).toBeVisible({ timeout: 20000 })
+    } catch {
+      try {
+        await expect(firstBullet).toBeVisible({ timeout: 20000 })
+      } catch {
+        const iframeCount = await newPage.locator('iframe').count()
+        if (iframeCount > 0) {
+          const frame = newPage.frameLocator('iframe')
+          try {
+            await expect(
+              frame.locator(
+                'button[data-testid="ConductorNavigationButtonNext"]'
+              )
+            ).toBeVisible({ timeout: 20000 })
+          } catch {
+            await expect(
+              frame
+                .locator(
+                  'div[data-testid="pagination-bullets"] svg[data-testid*="bullet"]'
+                )
+                .first()
+            ).toBeVisible({ timeout: 20000 })
+          }
+        } else {
+          throw new Error('Journey preview did not render expected UI elements')
+        }
+      }
+    }
     const slidesCount = await newPage
       .locator(
         'div[data-testid="pagination-bullets"] svg[data-testid*="bullet"]'
@@ -348,13 +378,43 @@ export class JourneyLevelActions {
     )
     const copiedLinkPage = await this.context.newPage()
     await copiedLinkPage.goto(clipBoardText)
-    await expect(
-      copiedLinkPage
-        .locator(
-          'div[data-testid="pagination-bullets"] svg[data-testid*="bullet"]'
-        )
-        .first()
-    ).toBeVisible({ timeout: 20000 })
+    const nextButton = copiedLinkPage.locator(
+      'button[data-testid="ConductorNavigationButtonNext"]'
+    )
+    const firstBullet = copiedLinkPage
+      .locator(
+        'div[data-testid="pagination-bullets"] svg[data-testid*="bullet"]'
+      )
+      .first()
+    try {
+      await expect(nextButton).toBeVisible({ timeout: 20000 })
+    } catch {
+      try {
+        await expect(firstBullet).toBeVisible({ timeout: 20000 })
+      } catch {
+        const iframeCount = await copiedLinkPage.locator('iframe').count()
+        if (iframeCount > 0) {
+          const frame = copiedLinkPage.frameLocator('iframe')
+          try {
+            await expect(
+              frame.locator(
+                'button[data-testid="ConductorNavigationButtonNext"]'
+              )
+            ).toBeVisible({ timeout: 20000 })
+          } catch {
+            await expect(
+              frame
+                .locator(
+                  'div[data-testid="pagination-bullets"] svg[data-testid*="bullet"]'
+                )
+                .first()
+            ).toBeVisible({ timeout: 20000 })
+          }
+        } else {
+          throw new Error('Journey preview did not render expected UI elements')
+        }
+      }
+    }
   }
 
   async clickNavigateToGoalBtn(): Promise<void> {

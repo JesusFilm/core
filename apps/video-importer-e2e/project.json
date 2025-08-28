@@ -8,6 +8,12 @@
   "targets": {
     "e2e": {
       "executor": "nx:run-commands",
+      "cache": true,
+      "inputs": ["default", "^default"],
+      "outputs": [
+        "{projectRoot}/playwright-report",
+        "{projectRoot}/test-results"
+      ],
       "options": {
         "commands": ["nx build video-importer", "playwright test"],
         "cwd": "apps/video-importer-e2e"
