@@ -5,7 +5,7 @@ set -e
 echo "Starting post-create setup..."
 
 
-cd /workspaces/core.worktrees/main
+cd /workspaces
 
 # Wait for database to be ready
 echo "Waiting for database to be ready..."
@@ -21,7 +21,7 @@ echo "Database is ready!"
 echo "Creating test user in database..."
 psql -c "CREATE USER \"test-user\" WITH PASSWORD 'test-password' CREATEDB;" || echo "User test-user might already exist"
 
-# install pnpm (no corepack)
+# install pnpm (no corepack)(leaving paths until everyone is on pnpm)
 echo "Installing pnpm..."
 export PNPM_HOME="$HOME/.pnpm"
 export PATH="$PNPM_HOME:$PATH"
