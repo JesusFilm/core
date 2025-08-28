@@ -13,6 +13,8 @@ import { getVideo } from '../../../schema/mux/video/service'
 import { jobName as processVideoDownloadsNowJobName } from '../../processVideoDownloads/config'
 import { queue as processVideoDownloadsQueue } from '../../processVideoDownloads/queue'
 
+const FIVE_DAYS = 5 * 24 * 60 * 60
+
 const GET_LANGUAGE_SLUG = gql`
   query GetLanguageSlug($languageId: ID!) {
     language(id: $languageId) {
@@ -197,6 +199,13 @@ async function waitForMuxVideoCompletion(
               videoId: muxVideo.id,
               assetId: muxVideo.assetId,
               isUserGenerated: false
+            },
+            {
+              jobId: `download:${muxVideo.id}`,
+              attempts: 3,
+              backoff: { type: 'exponential', delay: 1000 },
+              removeOnComplete: true,
+              removeOnFail: { age: FIVE_DAYS, count: 50 }
             }
           )
 
