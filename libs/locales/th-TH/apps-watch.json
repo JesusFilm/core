@@ -1,7 +1,5 @@
 {
   "724": "724",
-  "Language": "ภาษา",
-  "Languages Available": "ภาษาที่มีให้บริการ",
   "close": "ปิด",
   "No Downloads Available": "ไม่มีการดาวน์โหลดให้ใช้",
   "Download Video": "ดาวน์โหลดวิดีโอ",
@@ -33,11 +31,11 @@
   "Journeys": "การเดินทาง",
   "Videos": "วิดีโอ",
   "2000 translations": "2000 คำแปล",
-  "Site Language": "ภาษาของเว็บไซต์",
-  "Suggested:": "แนะนำ:",
+  "Loading...": "กำลังโหลด...",
+  "Not available in {{value}}": "ไม่มีให้บริการใน {{value}}",
+  "Language": "ภาษา",
   "Subtitles": "คำบรรยาย",
   "Show subtitles": "แสดงคำบรรยาย",
-  "Not available in {{value}}": "ไม่มีให้บริการใน {{value}}",
   "Suggested": "แนะนำ",
   "Read more...": "อ่านเพิ่มเติม...",
   "Related questions": "คำถามที่เกี่ยวข้อง",
@@ -89,6 +87,5 @@
   "Series": "ซีรีส์",
   "Short Film": "ภาพยนตร์สั้น",
   "Behind The Scenes": "เบื้องหลัง",
-  "Trailer": "ตัวอย่างภาพยนตร์",
-  "{{count}} languages_other": "{{count}} ภาษา"
+  "Trailer": "ตัวอย่างภาพยนตร์"
 }
