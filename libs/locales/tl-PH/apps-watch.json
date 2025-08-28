@@ -1,7 +1,5 @@
 {
   "724": "724",
-  "Language": "Language",
-  "Languages Available": "Languages Available",
   "close": "close",
   "No Downloads Available": "No Downloads Available",
   "Download Video": "Download Video",
@@ -33,11 +31,11 @@
   "Journeys": "Mga paglalakbay",
   "Videos": "Videos",
   "2000 translations": "2000 translations",
-  "Site Language": "Site Language",
-  "Suggested:": "Suggested:",
+  "Loading...": "Loading...",
+  "Not available in {{value}}": "Not available in {{value}}",
+  "Language": "Language",
   "Subtitles": "Subtitles",
   "Show subtitles": "Show subtitles",
-  "Not available in {{value}}": "Not available in {{value}}",
   "Suggested": "Suggested",
   "Read more...": "Read more...",
   "Related questions": "Related questions",
@@ -89,7 +87,5 @@
   "Series": "Series",
   "Short Film": "Short Film",
   "Behind The Scenes": "Behind The Scenes",
-  "Trailer": "Trailer",
-  "{{count}} languages_one": "{{count}} languages",
-  "{{count}} languages_other": "{{count}} languages"
+  "Trailer": "Trailer"
 }
