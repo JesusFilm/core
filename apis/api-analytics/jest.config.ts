@@ -3,7 +3,6 @@ import type { Config } from 'jest'
 const config: Config = {
   displayName: 'api-analytics',
   globals: {},
-  injectGlobals: true,
   testEnvironment: 'node',
   transform: {
     '^.+\\.[tj]s$': [
