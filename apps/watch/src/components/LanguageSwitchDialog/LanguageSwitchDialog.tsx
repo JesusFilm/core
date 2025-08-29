@@ -12,11 +12,11 @@ import useSWR from 'swr'
 
 import { websiteLight } from '@core/shared/ui/themes/website/theme'
 
+import { getLanguageIdFromLocale } from '../../libs/getLanguageIdFromLocale'
 import { useWatch } from '../../libs/watchContext'
 
 import { AudioTrackSelect } from './AudioTrackSelect'
 import { SubtitlesSelect } from './SubtitlesSelect'
-import { getLanguageIdFromLocale } from '../../libs/getLanguageIdFromLocale'
 
 const fetcher = (url: string) => fetch(url).then((res) => res.json())
 
