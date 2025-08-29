@@ -5,8 +5,8 @@ import { graphql } from '@core/shared/gql'
 
 import { createApolloClient } from '../../src/libs/apolloClient'
 
-const GET_LANGUAGES = graphql(`
-  query GetLanguages {
+const GET_ALL_LANGUAGES = graphql(`
+  query GetAllLanguages {
     languages {
       id
       slug
@@ -79,7 +79,7 @@ export default async function handler(
     try {
       const apolloClient = createApolloClient()
       const { data } = await apolloClient.query({
-        query: GET_LANGUAGES
+        query: GET_ALL_LANGUAGES
       })
 
       const languages: LanguageTuple[] = data.languages.map((language) => {
