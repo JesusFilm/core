@@ -43,13 +43,11 @@ export const LanguageSwitchDialog = memo(function LanguageSwitchDialog({
           const [languageIdSlugNativeName, ...names] = language
           const [id, slug, nativeName] = languageIdSlugNativeName.split(':')
           const name: {
-            __typename: 'LanguageName'
             primary: boolean
             value: string
           }[] = []
           if (nativeName != undefined) {
             name.push({
-              __typename: 'LanguageName',
               primary: true,
               value: nativeName
             })
@@ -57,15 +55,12 @@ export const LanguageSwitchDialog = memo(function LanguageSwitchDialog({
           names.forEach((returnedName) => {
             const [_languageId, nameValue] = returnedName.split(':')
             name.push({
-              __typename: 'LanguageName',
               primary: false,
               value: nameValue
             })
           })
           return {
-            __typename: 'Language',
             id,
-            bcp47: null,
             slug,
             name
           }

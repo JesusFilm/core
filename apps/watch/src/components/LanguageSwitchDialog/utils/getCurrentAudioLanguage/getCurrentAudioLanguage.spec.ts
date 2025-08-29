@@ -1,10 +1,8 @@
 import { LanguageOption } from '@core/shared/ui/LanguageAutocomplete'
 
-import { GetAllLanguages_languages as Language } from '../../../../../__generated__/GetAllLanguages'
-
 import { getCurrentAudioLanguage } from './getCurrentAudioLanguage'
 
-const mockLanguages: Language[] = [
+const mockLanguages = [
   {
     id: '529',
     slug: 'english',
@@ -29,7 +27,7 @@ const mockLanguages: Language[] = [
       { primary: false, value: 'Français' }
     ]
   }
-] as Language[]
+]
 
 const expectedEnglishOption: LanguageOption = {
   id: '529',
@@ -175,13 +173,13 @@ describe('getCurrentAudioLanguage', () => {
 
   describe('edge cases', () => {
     it('should handle language without native name', () => {
-      const languagesWithoutNative: Language[] = [
+      const languagesWithoutNative = [
         {
           id: '529',
           slug: 'english',
           name: [{ primary: true, value: 'English' }]
         }
-      ] as Language[]
+      ]
 
       const result = getCurrentAudioLanguage({
         allLanguages: languagesWithoutNative,
@@ -199,13 +197,13 @@ describe('getCurrentAudioLanguage', () => {
     })
 
     it('should handle language without local name', () => {
-      const languagesWithoutLocal: Language[] = [
+      const languagesWithoutLocal = [
         {
           id: '529',
           slug: 'english',
           name: [{ primary: false, value: 'English Native' }]
         }
-      ] as Language[]
+      ]
 
       const result = getCurrentAudioLanguage({
         allLanguages: languagesWithoutLocal,

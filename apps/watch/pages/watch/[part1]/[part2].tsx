@@ -71,7 +71,6 @@ export default function Part2Page({
   const { i18n } = useTranslation()
 
   const initialWatchState: WatchInitialState = {
-    siteLanguage: i18n?.language ?? 'en',
     audioLanguage: getCookie('AUDIO_LANGUAGE') ?? '529',
     subtitleLanguage: getCookie('SUBTITLE_LANGUAGE') ?? '529',
     subtitleOn: (getCookie('SUBTITLES_ON') ?? 'false') === 'true',

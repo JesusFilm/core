@@ -1,9 +1,15 @@
 import { render, screen, waitFor } from '@testing-library/react'
 import axios from 'axios'
+import { useTranslation } from 'next-i18next'
 
 import { WatchProvider } from '../../../../libs/watchContext'
 
 import { BibleCitationCard } from './BibleCitationCard'
+
+// Mock next-i18next
+jest.mock('next-i18next', () => ({
+  useTranslation: jest.fn()
+}))
 
 // Mock axios
 jest.mock('axios', () => {
@@ -15,6 +21,7 @@ jest.mock('axios', () => {
   }
 })
 
+const mockUseTranslation = useTranslation as jest.Mock
 const mockAxios = axios as jest.MockedFunction<typeof axios>
 
 let mockAxiosGet: jest.Mock
@@ -51,6 +58,14 @@ const mockScriptureResponse = {
 
 describe('BibleCitationCard', () => {
   beforeEach(() => {
+    // Setup i18n mock - default to English
+    mockUseTranslation.mockReturnValue({
+      t: (key: string) => key, // Returns the key as-is for testing
+      i18n: {
+        language: 'en'
+      }
+    })
+
     // Setup axios mocks
     mockAxiosGet = jest.fn()
     mockAxiosPost = jest.fn()
@@ -66,7 +81,6 @@ describe('BibleCitationCard', () => {
     render(
       <WatchProvider
         initialState={{
-          siteLanguage: 'en',
           audioLanguage: 'en',
           subtitleLanguage: 'en',
           subtitleOn: false
@@ -89,7 +103,6 @@ describe('BibleCitationCard', () => {
     render(
       <WatchProvider
         initialState={{
-          siteLanguage: 'en',
           audioLanguage: 'en',
           subtitleLanguage: 'en',
           subtitleOn: false
@@ -115,7 +128,6 @@ describe('BibleCitationCard', () => {
     render(
       <WatchProvider
         initialState={{
-          siteLanguage: 'en',
           audioLanguage: 'en',
           subtitleLanguage: 'en',
           subtitleOn: false
@@ -139,7 +151,6 @@ describe('BibleCitationCard', () => {
     render(
       <WatchProvider
         initialState={{
-          siteLanguage: 'en',
           audioLanguage: 'en',
           subtitleLanguage: 'en',
           subtitleOn: false
@@ -161,7 +172,6 @@ describe('BibleCitationCard', () => {
     render(
       <WatchProvider
         initialState={{
-          siteLanguage: 'en',
           audioLanguage: 'en',
           subtitleLanguage: 'en',
           subtitleOn: false
@@ -195,7 +205,6 @@ describe('BibleCitationCard', () => {
     render(
       <WatchProvider
         initialState={{
-          siteLanguage: 'en',
           audioLanguage: 'en',
           subtitleLanguage: 'en',
           subtitleOn: false
@@ -219,7 +228,6 @@ describe('BibleCitationCard', () => {
     render(
       <WatchProvider
         initialState={{
-          siteLanguage: 'en',
           audioLanguage: 'en',
           subtitleLanguage: 'en',
           subtitleOn: false
@@ -246,7 +254,6 @@ describe('BibleCitationCard', () => {
     render(
       <WatchProvider
         initialState={{
-          siteLanguage: 'en',
           audioLanguage: 'en',
           subtitleLanguage: 'en',
           subtitleOn: false
@@ -267,7 +274,6 @@ describe('BibleCitationCard', () => {
     render(
       <WatchProvider
         initialState={{
-          siteLanguage: 'en',
           audioLanguage: 'en',
           subtitleLanguage: 'en',
           subtitleOn: false
@@ -283,14 +289,19 @@ describe('BibleCitationCard', () => {
     expect(screen.getByText('John 3:16')).toBeInTheDocument()
   })
 
-  describe('Lanugages', () => {
+  describe('Languages', () => {
     it('should use correct versions for English (en)', async () => {
+      // Set i18n to English
+      mockUseTranslation.mockReturnValue({
+        t: (key: string) => key,
+        i18n: { language: 'en' }
+      })
+
       mockAxiosGet.mockResolvedValue({ data: mockScriptureResponse })
 
       render(
         <WatchProvider
           initialState={{
-            siteLanguage: 'en',
             audioLanguage: 'en',
             subtitleLanguage: 'en',
             subtitleOn: false
@@ -316,10 +327,17 @@ describe('BibleCitationCard', () => {
     })
 
     it('should use correct versions for Spanish (es)', async () => {
+      // Set i18n to Spanish
+      mockUseTranslation.mockReturnValue({
+        t: (key: string) => key,
+        i18n: { language: 'es' }
+      })
+
+      mockAxiosGet.mockResolvedValue({ data: mockScriptureResponse })
+
       render(
         <WatchProvider
           initialState={{
-            siteLanguage: 'es',
             audioLanguage: 'en',
             subtitleLanguage: 'en',
             subtitleOn: false
@@ -345,10 +363,17 @@ describe('BibleCitationCard', () => {
     })
 
     it('should use correct versions for French (fr)', async () => {
+      // Set i18n to French
+      mockUseTranslation.mockReturnValue({
+        t: (key: string) => key,
+        i18n: { language: 'fr' }
+      })
+
+      mockAxiosGet.mockResolvedValue({ data: mockScriptureResponse })
+
       render(
         <WatchProvider
           initialState={{
-            siteLanguage: 'fr',
             audioLanguage: 'en',
             subtitleLanguage: 'en',
             subtitleOn: false
@@ -374,10 +399,17 @@ describe('BibleCitationCard', () => {
     })
 
     it('should use correct versions for Indonesian (id)', async () => {
+      // Set i18n to Indonesian
+      mockUseTranslation.mockReturnValue({
+        t: (key: string) => key,
+        i18n: { language: 'id' }
+      })
+
+      mockAxiosGet.mockResolvedValue({ data: mockScriptureResponse })
+
       render(
         <WatchProvider
           initialState={{
-            siteLanguage: 'id',
             audioLanguage: 'en',
             subtitleLanguage: 'en',
             subtitleOn: false
@@ -403,10 +435,17 @@ describe('BibleCitationCard', () => {
     })
 
     it('should use correct versions for Japanese (ja)', async () => {
+      // Set i18n to Japanese
+      mockUseTranslation.mockReturnValue({
+        t: (key: string) => key,
+        i18n: { language: 'ja' }
+      })
+
+      mockAxiosGet.mockResolvedValue({ data: mockScriptureResponse })
+
       render(
         <WatchProvider
           initialState={{
-            siteLanguage: 'ja',
             audioLanguage: 'en',
             subtitleLanguage: 'en',
             subtitleOn: false
@@ -432,10 +471,17 @@ describe('BibleCitationCard', () => {
     })
 
     it('should use correct versions for Korean (ko)', async () => {
+      // Set i18n to Korean
+      mockUseTranslation.mockReturnValue({
+        t: (key: string) => key,
+        i18n: { language: 'ko' }
+      })
+
+      mockAxiosGet.mockResolvedValue({ data: mockScriptureResponse })
+
       render(
         <WatchProvider
           initialState={{
-            siteLanguage: 'ko',
             audioLanguage: 'en',
             subtitleLanguage: 'en',
             subtitleOn: false
@@ -461,10 +507,17 @@ describe('BibleCitationCard', () => {
     })
 
     it('should use correct versions for Russian (ru)', async () => {
+      // Set i18n to Russian
+      mockUseTranslation.mockReturnValue({
+        t: (key: string) => key,
+        i18n: { language: 'ru' }
+      })
+
+      mockAxiosGet.mockResolvedValue({ data: mockScriptureResponse })
+
       render(
         <WatchProvider
           initialState={{
-            siteLanguage: 'ru',
             audioLanguage: 'en',
             subtitleLanguage: 'en',
             subtitleOn: false
@@ -490,10 +543,17 @@ describe('BibleCitationCard', () => {
     })
 
     it('should use correct versions for Thai (th)', async () => {
+      // Set i18n to Thai
+      mockUseTranslation.mockReturnValue({
+        t: (key: string) => key,
+        i18n: { language: 'th' }
+      })
+
+      mockAxiosGet.mockResolvedValue({ data: mockScriptureResponse })
+
       render(
         <WatchProvider
           initialState={{
-            siteLanguage: 'th',
             audioLanguage: 'en',
             subtitleLanguage: 'en',
             subtitleOn: false
@@ -519,10 +579,17 @@ describe('BibleCitationCard', () => {
     })
 
     it('should use correct versions for Turkish (tr)', async () => {
+      // Set i18n to Turkish
+      mockUseTranslation.mockReturnValue({
+        t: (key: string) => key,
+        i18n: { language: 'tr' }
+      })
+
+      mockAxiosGet.mockResolvedValue({ data: mockScriptureResponse })
+
       render(
         <WatchProvider
           initialState={{
-            siteLanguage: 'tr',
             audioLanguage: 'en',
             subtitleLanguage: 'en',
             subtitleOn: false
@@ -548,10 +615,17 @@ describe('BibleCitationCard', () => {
     })
 
     it('should use correct versions for Traditional Chinese (zh)', async () => {
+      // Set i18n to Traditional Chinese
+      mockUseTranslation.mockReturnValue({
+        t: (key: string) => key,
+        i18n: { language: 'zh' }
+      })
+
+      mockAxiosGet.mockResolvedValue({ data: mockScriptureResponse })
+
       render(
         <WatchProvider
           initialState={{
-            siteLanguage: 'zh',
             audioLanguage: 'en',
             subtitleLanguage: 'en',
             subtitleOn: false
@@ -577,10 +651,17 @@ describe('BibleCitationCard', () => {
     })
 
     it('should use correct versions for Simplified Chinese (zh-Hans-CN)', async () => {
+      // Set i18n to Simplified Chinese
+      mockUseTranslation.mockReturnValue({
+        t: (key: string) => key,
+        i18n: { language: 'zh-Hans-CN' }
+      })
+
+      mockAxiosGet.mockResolvedValue({ data: mockScriptureResponse })
+
       render(
         <WatchProvider
           initialState={{
-            siteLanguage: 'zh-Hans-CN',
             audioLanguage: 'en',
             subtitleLanguage: 'en',
             subtitleOn: false

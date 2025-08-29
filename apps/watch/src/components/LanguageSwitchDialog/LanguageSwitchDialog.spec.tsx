@@ -1,4 +1,4 @@
-import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing'
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { useRouter } from 'next/router'
@@ -28,7 +28,6 @@ const mockT = jest.fn((key: string) => key)
 
 // Default watch context state
 const defaultWatchState: WatchInitialState = {
-  siteLanguage: 'en',
   audioLanguage: '529',
   subtitleLanguage: '529',
   subtitleOn: false,
@@ -153,7 +152,7 @@ describe('LanguageSwitchDialog', () => {
   })
 
   describe('GraphQL integration', () => {
-    it('should call getAllLanguages query and update state with SetAllLanguages dispatch', async () => {
+    it('should call api/languages query and update state with SetAllLanguages dispatch', async () => {
       server.use(
         http.get('/api/languages', () =>
           HttpResponse.json([

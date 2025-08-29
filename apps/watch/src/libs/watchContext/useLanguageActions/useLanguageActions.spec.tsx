@@ -22,7 +22,6 @@ describe('useLanguageActions', () => {
   } as unknown as NextRouter
 
   const defaultInitialState: WatchInitialState = {
-    siteLanguage: 'en',
     audioLanguage: '529',
     subtitleLanguage: '529',
     subtitleOn: false
@@ -31,30 +30,18 @@ describe('useLanguageActions', () => {
   const mockAllLanguages = [
     {
       id: '529',
-      bcp47: 'en',
-      __typename: 'Language' as const,
       slug: 'english',
-      name: [
-        { primary: true, value: 'English', __typename: 'LanguageName' as const }
-      ]
+      name: [{ primary: true, value: 'English' }]
     },
     {
       id: '530',
-      bcp47: 'es',
-      __typename: 'Language' as const,
       slug: 'spanish',
-      name: [
-        { primary: true, value: 'Spanish', __typename: 'LanguageName' as const }
-      ]
+      name: [{ primary: true, value: 'Spanish' }]
     },
     {
       id: '531',
-      bcp47: 'fr',
-      __typename: 'Language' as const,
       slug: 'french',
-      name: [
-        { primary: true, value: 'French', __typename: 'LanguageName' as const }
-      ]
+      name: [{ primary: true, value: 'French' }]
     }
   ]
 
