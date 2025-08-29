@@ -29,14 +29,6 @@ export default [
   },
   ...commonConfig,
   {
-    files: ['**/*.ts', '**/*.tsx'],
-    languageOptions: {
-      parserOptions: {
-        tsconfigRootDir: import.meta.dirname
-      }
-    }
-  },
-  {
     files: ['**/*.js', '**/*.cjs', '**/*.mjs'],
     languageOptions: {
       globals: {

@@ -236,7 +236,7 @@ const commonConfig = [
     }
   },
   {
-    ignores: ['./webpack.config.js', './eslint.config.(mj|j)s']
+    ignores: ['./webpack.config.js', './eslint.config.{mjs,js}']
   }
 ]
 
