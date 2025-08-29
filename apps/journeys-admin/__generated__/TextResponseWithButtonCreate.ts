@@ -59,6 +59,10 @@ export interface TextResponseWithButtonCreate_button_settings {
    * Alignment of the button
    */
   alignment: ButtonAlignment | null;
+  /**
+   * Color of the button
+   */
+  color: string | null;
 }
 
 export interface TextResponseWithButtonCreate_button {
@@ -132,6 +136,10 @@ export interface TextResponseWithButtonCreate_buttonUpdate_settings {
    * Alignment of the button
    */
   alignment: ButtonAlignment | null;
+  /**
+   * Color of the button
+   */
+  color: string | null;
 }
 
 export interface TextResponseWithButtonCreate_buttonUpdate {

@@ -51,6 +51,10 @@ export interface StepBlockRestoreFromSocialPreview_blockRestore_ButtonBlock_sett
    * Alignment of the button
    */
   alignment: ButtonAlignment | null;
+  /**
+   * Color of the button
+   */
+  color: string | null;
 }
 
 export interface StepBlockRestoreFromSocialPreview_blockRestore_ButtonBlock {

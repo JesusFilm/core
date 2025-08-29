@@ -4,5 +4,6 @@ export {
   stripAlphaFromHex,
   addAlphaToHex,
   reduceHexOpacity,
-  applyDefaultAlpha
+  applyDefaultAlpha,
+  bestContrastTextColor
 } from './colorOpacityUtils'
