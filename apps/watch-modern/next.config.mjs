@@ -1,10 +1,30 @@
+//@ts-check
+
+import { fileURLToPath } from 'node:url'
+
 import withBundleAnalyzer from '@next/bundle-analyzer'
 import { composePlugins, withNx } from '@nx/next'
-import type { NextConfig } from 'next'
+import { createJiti } from 'jiti'
+import createNextIntlPlugin from 'next-intl/plugin'
 
-import { i18n } from './next-i18next.config'
+const jiti = createJiti(fileURLToPath(import.meta.url))
 
-const nextConfig: NextConfig = {
+/**
+ * @type {import('@/env')}
+ */
+const { env } = await jiti.import('./src/env')
+
+const withBundleAnalyzerPlugin = withBundleAnalyzer({
+  enabled: env.ANALYZE
+})
+
+/**
+ * @type {import('@nx/next/plugins/with-nx').WithNxOptions}
+ **/
+const nextConfig = {
+  assetPrefix: ['production', 'prod', 'stage'].includes(env.VERCEL_ENV ?? '')
+    ? '/watch/modern'
+    : '',
   images: {
     remotePatterns: [
       { protocol: 'http', hostname: 'localhost' },
@@ -23,16 +43,10 @@ const nextConfig: NextConfig = {
       { protocol: 'https', hostname: 'imagedelivery.net' },
       {
         protocol: 'https',
-        hostname: `customer-${
-          process.env.NEXT_PUBLIC_CLOUDFLARE_STREAM_CUSTOMER_CODE ?? ''
-        }.cloudflarestream.com`
+        hostname: `customer-${env.NEXT_PUBLIC_CLOUDFLARE_STREAM_CUSTOMER_CODE}.cloudflarestream.com`
       }
     ],
     minimumCacheTTL: 31536000
-  },
-  i18n,
-  experimental: {
-    reactCompiler: true
   },
   modularizeImports: {
     lodash: {
@@ -44,41 +58,40 @@ const nextConfig: NextConfig = {
     // See: https://github.com/gregberge/svgr
     svgr: false
   },
+  experimental: {
+    reactCompiler: true
+  },
   productionBrowserSourceMaps: true,
   typescript: {
     // handled by github actions
-    ignoreBuildErrors: process.env.CI === 'true'
+    ignoreBuildErrors: env.CI
   },
   eslint: {
     // handled by github actions
-    ignoreDuringBuilds: process.env.CI === 'true'
+    ignoreDuringBuilds: env.CI
   },
-  transpilePackages: ['shared-ui'],
-  outputFileTracingExcludes: {
-    '*': [
-      'node_modules/@swc/core-linux-x64-gnu',
-      'node_modules/@swc/core-linux-x64-musl',
-      'node_modules/esbuild-linux-64/bin'
-    ]
-  },
+  basePath: '/watch',
   async redirects() {
     return [
-      {
-        source: '/',
-        destination: '/watch',
-        permanent: false
-      },
       {
         source: '/bin/jf/watch.html/:videoId/:languageId',
         destination: '/api/jf/watch.html/:videoId/:languageId',
         permanent: false
       },
       {
-        source: '/watch/easter',
-        destination: '/watch/easter.html/english.html',
-        permanent: true
+        source: '/',
+        destination: '/watch',
+        basePath: false,
+        permanent: false
       }
     ]
   }
 }
-module.exports = composePlugins(withBundleAnalyzer, withNx)(nextConfig)
+
+const withNextIntl = createNextIntlPlugin()
+
+export default composePlugins(
+  withBundleAnalyzerPlugin,
+  withNx,
+  withNextIntl
+)(nextConfig)
