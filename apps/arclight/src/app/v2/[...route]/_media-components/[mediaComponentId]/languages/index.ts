@@ -74,7 +74,7 @@ const route = createRoute({
 mediaComponentLanguages.openapi(route, async (c) => {
   const mediaComponentId = c.req.param('mediaComponentId')
 
-  const apiKey = c.req.query('apiKey')
+  const apiKey = c.req.query('apiKey') ?? ''
 
   let platform = c.req.query('platform')
   if (!platform && apiKey) {
@@ -91,7 +91,7 @@ mediaComponentLanguages.openapi(route, async (c) => {
     'media-component-languages',
     mediaComponentId ?? '',
     platform,
-    apiKey ?? '',
+    apiKey,
     apiSessionId,
     ...languageIds.slice(0, 20)
   ])
@@ -209,96 +209,100 @@ mediaComponentLanguages.openapi(route, async (c) => {
         web: { vtt: 'srtSrc' }
       } as const
 
-      let subtitleUrls = {}
+      const subtitlesByEdition = new Map<string, Record<string, any[]>>()
       if (video?.subtitles?.length > 0) {
         const config = subtitleConfig[platform as keyof typeof subtitleConfig]
 
-        subtitleUrls = Object.entries(config).reduce(
-          (acc, [format, urlField]) => {
-            acc[format] = video.subtitles?.map((subtitle) =>
+        const subtitleGroups = new Map<string, any[]>()
+        for (const subtitle of video.subtitles) {
+          const edition = subtitle.edition || 'default'
+          if (!subtitleGroups.has(edition)) {
+            subtitleGroups.set(edition, [])
+          }
+          subtitleGroups.get(edition)!.push(subtitle)
+        }
+
+        for (const [edition, subtitles] of subtitleGroups) {
+          const editionUrls: Record<string, any[]> = {}
+          for (const [format, urlField] of Object.entries(config)) {
+            editionUrls[format] = subtitles.map((subtitle) =>
               createSubtitleWithLanguageInfo(subtitle, urlField)
             )
-            return acc
-          },
-          {} as Record<string, any[]>
-        )
+          }
+          subtitlesByEdition.set(edition, editionUrls)
+        }
       }
 
-      const mediaComponentLanguage = video.variants.map((variant) => {
+      const buildDownloadUrls = (downloads: any[], apiKey?: string) => {
+        if (!downloads || downloads.length === 0) return {}
+
+        const normalizedDownloads = downloads.map((d) => ({
+          quality: d.quality,
+          url: d.url,
+          size: d.size ?? 0,
+          height: d.height ?? 0,
+          width: d.width ?? 0,
+          bitrate: d.bitrate ?? 0
+        }))
+
         const downloadLow = findDownloadWithFallback(
-          variant.downloads.map((d) => ({
-            ...d,
-            size: d.size ?? undefined,
-            height: d.height ?? undefined,
-            width: d.width ?? undefined,
-            bitrate: d.bitrate ?? undefined
-          })),
+          normalizedDownloads,
           'low',
           apiKey
         )
         const downloadHigh = findDownloadWithFallback(
-          variant.downloads.map((d) => ({
-            ...d,
-            size: d.size ?? undefined,
-            height: d.height ?? undefined,
-            width: d.width ?? undefined,
-            bitrate: d.bitrate ?? undefined
-          })),
+          normalizedDownloads,
           'high',
           apiKey
         )
 
-        let downloadUrls = {}
-        if (downloadLow != null || downloadHigh != null) {
-          downloadUrls = {
-            ...(downloadLow != null && {
-              low: {
-                url: downloadLow.url,
-                sizeInBytes: downloadLow.size || 0
-              }
-            }),
-            ...(downloadHigh != null && {
-              high: {
-                url: downloadHigh.url,
-                sizeInBytes: downloadHigh.size || 0
-              }
-            })
+        const result: any = {}
+        if (downloadLow) {
+          result.low = {
+            url: downloadLow.url,
+            sizeInBytes: downloadLow.size
           }
         }
-
-        let streamingUrls = {}
-        if (variant.hls != null) {
-          switch (platform) {
-            case 'web':
-              streamingUrls = {}
-              break
-            case 'android':
-              streamingUrls = {
-                dash: variant.dash
-                  ? [{ videoBitrate: 0, url: variant.dash }]
-                  : [],
-                hls: [{ videoBitrate: 0, url: variant.hls }],
-                http: []
-              }
-              break
-            case 'ios':
-              streamingUrls = {
-                m3u8: [
-                  {
-                    videoBitrate: 0,
-                    url: variant.hls
-                  }
-                ],
-                http: []
-              }
-              break
+        if (downloadHigh) {
+          result.high = {
+            url: downloadHigh.url,
+            sizeInBytes: downloadHigh.size
           }
         }
+        return result
+      }
 
-        let shareUrl = variant.share
-        if (shareUrl == null) {
-          shareUrl = `https://arc.gt/s/${variant.id}/${variant.languageId}`
+      const getStreamingUrls = (platform: string, variant: any) => {
+        if (!variant.hls) return {}
+
+        const baseEntry = { videoBitrate: 0, url: variant.hls }
+
+        switch (platform) {
+          case 'android':
+            return {
+              dash: variant.dash
+                ? [{ videoBitrate: 0, url: variant.dash }]
+                : [],
+              hls: [baseEntry],
+              http: []
+            }
+          case 'ios':
+            return {
+              m3u8: [baseEntry],
+              http: []
+            }
+          default: // 'web'
+            return {}
         }
+      }
+
+      const mediaComponentLanguage = video.variants.map((variant) => {
+        const downloadUrls = buildDownloadUrls(variant.downloads, apiKey)
+        const streamingUrls = getStreamingUrls(platform, variant)
+
+        const shareUrl =
+          variant.share ??
+          `https://arc.gt/s/${variant.id}/${variant.languageId}`
 
         const webEmbedPlayer = getWebEmbedPlayer(variant.id, apiSessionId)
         const webEmbedSharePlayer = getWebEmbedSharePlayer(
@@ -306,15 +310,8 @@ mediaComponentLanguages.openapi(route, async (c) => {
           apiSessionId
         )
 
-        const editionSubtitleUrls = Object.entries(subtitleUrls).reduce(
-          (acc, [format, subtitles]) => {
-            acc[format] = subtitles.filter(
-              (subtitle) => subtitle.edition === variant.edition
-            )
-            return acc
-          },
-          {} as Record<string, any[]>
-        )
+        const variantEdition = variant.edition ?? 'base'
+        const editionSubtitleUrls = subtitlesByEdition.get(variantEdition) ?? {}
 
         return {
           mediaComponentId,
@@ -346,9 +343,6 @@ mediaComponentLanguages.openapi(route, async (c) => {
         }
       })
 
-      const queryObject = c.req.query()
-      const queryString = new URLSearchParams(queryObject).toString()
-
       return {
         data: {
           mediaComponentId,
@@ -356,7 +350,7 @@ mediaComponentLanguages.openapi(route, async (c) => {
           apiSessionId,
           _links: {
             self: {
-              href: `http://api.arclight.org/v2/media-components/${mediaComponentId}/languages?${queryString}`
+              href: c.req.url
             },
             mediaComponent: {
               href: `http://api.arclight.org/v2/media-components/${mediaComponentId}`
