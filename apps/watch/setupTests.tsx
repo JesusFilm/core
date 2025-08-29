@@ -1,6 +1,7 @@
 import '@testing-library/jest-dom'
 import 'isomorphic-fetch'
 import { configure } from '@testing-library/react'
+
 import { server } from './test/msw'
 
 configure({ asyncUtilTimeout: 2500 })

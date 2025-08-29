@@ -1,15 +1,15 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import { HttpResponse, http } from 'msw'
 import { useRouter } from 'next/router'
+import { SWRConfig } from 'swr'
 
+import { server } from '../../../test/msw'
 import { WatchInitialState, WatchProvider } from '../../libs/watchContext'
 import { TestWatchState } from '../../libs/watchContext/TestWatchState'
 
 import { LanguageSwitchDialog } from './LanguageSwitchDialog'
-import { SWRConfig } from 'swr'
-import { http, HttpResponse } from 'msw'
-import { server } from '../../../test/msw'
 
 // Mock external dependencies
 jest.mock('next/router', () => ({
