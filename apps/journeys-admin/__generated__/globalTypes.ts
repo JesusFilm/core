@@ -293,9 +293,9 @@ export interface BlockUpdateActionInput {
   gtmEventName?: string | null;
   email?: string | null;
   url?: string | null;
+  phone?: string | null;
   target?: string | null;
   blockId?: string | null;
-  phone?: string | null;
 }
 
 export interface ButtonBlockCreateInput {
