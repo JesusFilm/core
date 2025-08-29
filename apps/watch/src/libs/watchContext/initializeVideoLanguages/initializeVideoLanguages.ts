@@ -1,8 +1,6 @@
 import { Dispatch } from 'react'
 
-import { GetLanguagesSlug_video_variantLanguagesWithSlug as AudioLanguage } from '../../../../__generated__/GetLanguagesSlug'
-import { GetSubtitles_video_variant_subtitle as SubtitleLanguage } from '../../../../__generated__/GetSubtitles'
-import { WatchAction } from '../WatchContext'
+import { AudioLanguageData, WatchAction } from '../WatchContext'
 
 /**
  * Initializes video language preferences by setting available audio and subtitle languages
@@ -12,23 +10,23 @@ import { WatchAction } from '../WatchContext'
  * 2. Set available subtitle languages and determine if subtitles should be auto-enabled
  *
  * @param dispatch - The dispatch function from the watch context
- * @param videoAudioLanguages - Available audio languages for the current video
- * @param videoSubtitleLanguages - Available subtitle languages for the current video
+ * @param videoAudioLanguagesIdsAndSlugs - Available audio languages for the current video id and slug only
+ * @param videoSubtitleLanguageIds - Available subtitle language IDs for the current video
  */
 export function initializeVideoLanguages(
   dispatch: Dispatch<WatchAction>,
-  videoAudioLanguages: AudioLanguage[],
-  videoSubtitleLanguages: SubtitleLanguage[]
+  videoAudioLanguagesIdsAndSlugs: AudioLanguageData[],
+  videoSubtitleLanguageIds: string[]
 ): void {
   // Set video audio languages first (needed for auto subtitle calculation)
   dispatch({
     type: 'SetVideoAudioLanguages',
-    videoAudioLanguages: videoAudioLanguages ?? []
+    videoAudioLanguagesIdsAndSlugs: videoAudioLanguagesIdsAndSlugs ?? []
   })
 
   // Set video subtitle languages and calculate auto-subtitle preference
   dispatch({
     type: 'SetVideoSubtitleLanguages',
-    videoSubtitleLanguages: videoSubtitleLanguages ?? []
+    videoSubtitleLanguageIds: videoSubtitleLanguageIds ?? []
   })
 }

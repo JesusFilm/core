@@ -18,7 +18,8 @@ const config: Config = {
   setupFilesAfterEnv: ['<rootDir>setupTests.tsx'],
   collectCoverage: true,
   coverageReporters: ['cobertura'],
-  preset: '../../jest.preset.js'
+  preset: '../../jest.preset.js',
+  testEnvironment: 'jest-fixed-jsdom'
 }
 
 export default config

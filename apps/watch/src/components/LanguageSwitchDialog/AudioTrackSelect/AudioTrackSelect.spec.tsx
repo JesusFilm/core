@@ -1,4 +1,4 @@
-import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing'
 import {
   fireEvent,
   render,
@@ -10,8 +10,6 @@ import userEvent from '@testing-library/user-event'
 import { useRouter } from 'next/router'
 import { useTranslation } from 'next-i18next'
 
-import { GetLanguagesSlug } from '../../../../__generated__/GetLanguagesSlug'
-import { GET_LANGUAGES_SLUG } from '../../../libs/useLanguagesSlugQuery'
 import { WatchProvider } from '../../../libs/watchContext'
 
 import { AudioTrackSelect } from './AudioTrackSelect'
@@ -52,58 +50,9 @@ const useTranslationMock = useTranslation as jest.Mock
 
 // Default mock data for reuse across tests
 const defaultInitialState = {
-  siteLanguage: 'en',
   audioLanguage: '529',
   subtitleLanguage: '529',
   subtitleOn: false
-}
-
-const defaultGetLanguagesSlugMock: MockedResponse<GetLanguagesSlug> = {
-  request: {
-    query: GET_LANGUAGES_SLUG,
-    variables: { id: 'video123' }
-  },
-  result: {
-    data: {
-      video: {
-        __typename: 'Video',
-        variantLanguagesWithSlug: [
-          {
-            __typename: 'LanguageWithSlug',
-            slug: 'english',
-            language: {
-              __typename: 'Language',
-              id: 'lang1',
-              slug: 'english',
-              name: [
-                {
-                  __typename: 'LanguageName',
-                  value: 'English',
-                  primary: true
-                }
-              ]
-            }
-          },
-          {
-            __typename: 'LanguageWithSlug',
-            slug: 'spanish',
-            language: {
-              __typename: 'Language',
-              id: 'lang2',
-              slug: 'spanish',
-              name: [
-                {
-                  __typename: 'LanguageName',
-                  value: 'Spanish',
-                  primary: true
-                }
-              ]
-            }
-          }
-        ]
-      }
-    }
-  }
 }
 
 describe('AudioTrackSelect', () => {
@@ -130,7 +79,7 @@ describe('AudioTrackSelect', () => {
 
   it('should render all components correctly', () => {
     render(
-      <MockedProvider mocks={[defaultGetLanguagesSlugMock]} addTypename={false}>
+      <MockedProvider mocks={[]} addTypename={false}>
         <WatchProvider initialState={defaultInitialState}>
           <AudioTrackSelect />
         </WatchProvider>
@@ -145,7 +94,6 @@ describe('AudioTrackSelect', () => {
 
   it('should display native name when audioLanguage matches a language in allLanguages', () => {
     const initialLanguageState = {
-      siteLanguage: 'en',
       audioLanguage: '529', // This will match the English language
       subtitleLanguage: '529',
       subtitleOn: false,
@@ -192,7 +140,6 @@ describe('AudioTrackSelect', () => {
     useRouterMock.mockReturnValue(mockRouterWithNonMatchingPath)
 
     const initialLanguageState = {
-      siteLanguage: 'en',
       audioLanguage: 'nonexistent-id', // This won't match any language
       subtitleLanguage: '529',
       subtitleOn: false,
@@ -241,7 +188,6 @@ describe('AudioTrackSelect', () => {
     useRouterMock.mockReturnValue(mockRouterWithMatchingPath)
 
     const initialLanguageState = {
-      siteLanguage: 'en',
       audioLanguage: 'nonexistent-id', // This won't match any language
       subtitleLanguage: '529',
       subtitleOn: false,
@@ -308,26 +254,13 @@ describe('AudioTrackSelect', () => {
     useRouterMock.mockReturnValue(mockRouterWithDifferentPath)
 
     const initialLanguageState = {
-      siteLanguage: 'en',
       audioLanguage: '496', // This value is gained from cookies and not slug path, this is required to calculate the currentAudioLanguage
       subtitleLanguage: '529',
       subtitleOn: false,
-      videoAudioLanguages: [
+      videoAudioLanguagesIdsAndSlugs: [
         {
-          __typename: 'LanguageWithSlug' as const,
-          slug: 'spanish',
-          language: {
-            __typename: 'Language' as const,
-            id: '496',
-            slug: 'spanish',
-            name: [
-              {
-                __typename: 'LanguageName' as const,
-                value: 'Spanish',
-                primary: true
-              }
-            ]
-          }
+          id: '496',
+          slug: 'spanish'
         }
       ],
       allLanguages: [
@@ -388,7 +321,6 @@ describe('AudioTrackSelect', () => {
 
   it('should handle when allLanguages is null/undefined', () => {
     const initialLanguageState = {
-      siteLanguage: 'en',
       audioLanguage: '529',
       subtitleLanguage: '529',
       subtitleOn: false,
@@ -410,7 +342,6 @@ describe('AudioTrackSelect', () => {
 
   it('should handle language with missing non-primary name', () => {
     const initialLanguageState = {
-      siteLanguage: 'en',
       audioLanguage: '529',
       subtitleLanguage: '529',
       subtitleOn: false,
@@ -447,7 +378,6 @@ describe('AudioTrackSelect', () => {
 
   it('should handle language with missing primary name', () => {
     const initialLanguageState = {
-      siteLanguage: 'en',
       audioLanguage: '529',
       subtitleLanguage: '529',
       subtitleOn: false,
@@ -484,7 +414,6 @@ describe('AudioTrackSelect', () => {
 
   it('should handle when preferred language is available for video', async () => {
     const initialLanguageState = {
-      siteLanguage: 'en',
       audioLanguage: '529', // User prefers English
       subtitleLanguage: '529',
       subtitleOn: false,
@@ -509,39 +438,15 @@ describe('AudioTrackSelect', () => {
           ]
         }
       ],
-      videoAudioLanguages: [
+      videoAudioLanguagesIdsAndSlugs: [
         {
-          __typename: 'LanguageWithSlug' as const,
-          slug: 'english',
-          language: {
-            __typename: 'Language' as const,
-            id: '529',
-            slug: 'english',
-            name: [
-              {
-                __typename: 'LanguageName' as const,
-                value: 'English',
-                primary: true
-              }
-            ]
-          }
+          id: '529',
+          slug: 'english'
         }
       ],
       currentAudioLanguage: {
-        __typename: 'LanguageWithSlug' as const,
-        slug: 'english',
-        language: {
-          __typename: 'Language' as const,
-          id: '529',
-          slug: 'english',
-          name: [
-            {
-              __typename: 'LanguageName' as const,
-              value: 'English',
-              primary: true
-            }
-          ]
-        }
+        id: '529',
+        slug: 'english'
       }
     }
 
@@ -563,7 +468,6 @@ describe('AudioTrackSelect', () => {
 
   it('should show "Not available in [language]" when preferred language is not available for video', async () => {
     const initialLanguageState = {
-      siteLanguage: 'en',
       audioLanguage: '529', // User prefers English
       subtitleLanguage: '529',
       subtitleOn: false,
@@ -650,7 +554,6 @@ describe('AudioTrackSelect', () => {
 
   it('should display default helper text when videoId is null', () => {
     const initialLanguageState = {
-      siteLanguage: 'en',
       audioLanguage: '529',
       subtitleLanguage: '529',
       subtitleOn: false,
@@ -693,91 +596,12 @@ describe('AudioTrackSelect', () => {
     expect(screen.getByText('2000 translations')).toBeInTheDocument()
   })
 
-  it('should call GET_LANGUAGES_SLUG query when videoId is present and videoAudioLanguages is null', async () => {
-    const initialLanguageState = {
-      siteLanguage: 'en',
-      audioLanguage: '529',
-      subtitleLanguage: '529',
-      subtitleOn: false,
-      videoId: 'video123', // Set videoId
-      videoAudioLanguages: undefined, // No audio languages yet
-      allLanguages: [
-        {
-          __typename: 'Language' as const,
-          id: '529',
-          slug: 'english',
-          bcp47: 'en',
-          name: [
-            {
-              __typename: 'LanguageName' as const,
-              value: 'English',
-              primary: true
-            }
-          ]
-        }
-      ]
-    }
-
-    // Create a mock function to track if the query is called
-    const getLanguagesSlugResult = jest.fn(() => ({
-      data: {
-        video: {
-          __typename: 'Video' as const,
-          variantLanguagesWithSlug: [
-            {
-              __typename: 'LanguageWithSlug' as const,
-              slug: 'english',
-              language: {
-                __typename: 'Language' as const,
-                id: '529',
-                slug: 'english',
-                name: [
-                  {
-                    __typename: 'LanguageName' as const,
-                    value: 'English',
-                    primary: true
-                  }
-                ]
-              }
-            }
-          ]
-        }
-      }
-    }))
-
-    const mockWithFunction: MockedResponse<GetLanguagesSlug> = {
-      request: {
-        query: GET_LANGUAGES_SLUG,
-        variables: { id: 'video123' }
-      },
-      result: getLanguagesSlugResult
-    }
-
-    render(
-      <MockedProvider mocks={[mockWithFunction]} addTypename={false}>
-        <WatchProvider initialState={initialLanguageState}>
-          <AudioTrackSelect />
-        </WatchProvider>
-      </MockedProvider>
-    )
-
-    // Wait for the GraphQL query to be called
-    await waitFor(() => {
-      expect(getLanguagesSlugResult).toHaveBeenCalled()
-    })
-
-    // Verify the component renders correctly after the query
-    expect(screen.getByText('Language')).toBeInTheDocument()
-    expect(screen.getByRole('combobox')).toBeInTheDocument()
-  })
-
   describe('Instant Search Integration', () => {
     it('should update instant search index UI state when language changes and instant search is available', async () => {
       // Mock instant search as available
       useInstantSearchMock.mockReturnValue(mockInstantSearch)
 
       const initialLanguageState = {
-        siteLanguage: 'en',
         audioLanguage: '529',
         subtitleLanguage: '529',
         subtitleOn: false,
@@ -881,7 +705,6 @@ describe('AudioTrackSelect', () => {
       useInstantSearchMock.mockReturnValue(undefined)
 
       const initialLanguageState = {
-        siteLanguage: 'en',
         audioLanguage: '529',
         subtitleLanguage: '529',
         subtitleOn: false,
@@ -942,7 +765,6 @@ describe('AudioTrackSelect', () => {
       useInstantSearchMock.mockReturnValue(mockInstantSearch)
 
       const initialLanguageState = {
-        siteLanguage: 'en',
         audioLanguage: '529',
         subtitleLanguage: '529',
         subtitleOn: false,
@@ -1005,7 +827,6 @@ describe('AudioTrackSelect', () => {
       })
 
       const initialLanguageState = {
-        siteLanguage: 'en',
         audioLanguage: '529',
         subtitleLanguage: '529',
         subtitleOn: false,
@@ -1051,7 +872,6 @@ describe('AudioTrackSelect', () => {
       useInstantSearchMock.mockReturnValue(mockInstantSearch)
 
       const initialLanguageState = {
-        siteLanguage: 'en',
         audioLanguage: '529',
         subtitleLanguage: '529',
         subtitleOn: false,
@@ -1134,7 +954,6 @@ describe('AudioTrackSelect', () => {
   describe('handleChange reload logic', () => {
     it('should set reload=true when language is available for current video', async () => {
       const initialLanguageState = {
-        siteLanguage: 'en',
         audioLanguage: '529',
         subtitleLanguage: '529',
         subtitleOn: false,
@@ -1167,38 +986,14 @@ describe('AudioTrackSelect', () => {
             ]
           }
         ],
-        videoAudioLanguages: [
+        videoAudioLanguagesIdsAndSlugs: [
           {
-            __typename: 'LanguageWithSlug' as const,
-            slug: 'english',
-            language: {
-              __typename: 'Language' as const,
-              id: '529',
-              slug: 'english',
-              name: [
-                {
-                  __typename: 'LanguageName' as const,
-                  value: 'English',
-                  primary: true
-                }
-              ]
-            }
+            id: '529',
+            slug: 'english'
           },
           {
-            __typename: 'LanguageWithSlug' as const,
-            slug: 'spanish',
-            language: {
-              __typename: 'Language' as const,
-              id: '496',
-              slug: 'spanish',
-              name: [
-                {
-                  __typename: 'LanguageName' as const,
-                  value: 'Spanish',
-                  primary: true
-                }
-              ]
-            }
+            id: '496',
+            slug: 'spanish'
           }
         ]
       }
@@ -1239,7 +1034,6 @@ describe('AudioTrackSelect', () => {
 
     it('should set reload=false when language is NOT available for current video', async () => {
       const initialLanguageState = {
-        siteLanguage: 'en',
         audioLanguage: '529',
         subtitleLanguage: '529',
         subtitleOn: false,
@@ -1285,38 +1079,14 @@ describe('AudioTrackSelect', () => {
             ]
           }
         ],
-        videoAudioLanguages: [
+        videoAudioLanguagesIdsAndSlugs: [
           {
-            __typename: 'LanguageWithSlug' as const,
-            slug: 'english',
-            language: {
-              __typename: 'Language' as const,
-              id: '529',
-              slug: 'english',
-              name: [
-                {
-                  __typename: 'LanguageName' as const,
-                  value: 'English',
-                  primary: true
-                }
-              ]
-            }
+            id: '529',
+            slug: 'english'
           },
           {
-            __typename: 'LanguageWithSlug' as const,
-            slug: 'spanish',
-            language: {
-              __typename: 'Language' as const,
-              id: '496',
-              slug: 'spanish',
-              name: [
-                {
-                  __typename: 'LanguageName' as const,
-                  value: 'Spanish',
-                  primary: true
-                }
-              ]
-            }
+            id: '496',
+            slug: 'spanish'
           }
         ]
       }
@@ -1359,7 +1129,6 @@ describe('AudioTrackSelect', () => {
       useInstantSearchMock.mockReturnValue(undefined)
 
       const initialLanguageState = {
-        siteLanguage: 'en',
         audioLanguage: '529',
         subtitleLanguage: '529',
         subtitleOn: false,
@@ -1392,22 +1161,10 @@ describe('AudioTrackSelect', () => {
             ]
           }
         ],
-        videoAudioLanguages: [
+        videoAudioLanguagesIdsAndSlugs: [
           {
-            __typename: 'LanguageWithSlug' as const,
-            slug: 'english',
-            language: {
-              __typename: 'Language' as const,
-              id: '529',
-              slug: 'english',
-              name: [
-                {
-                  __typename: 'LanguageName' as const,
-                  value: 'English',
-                  primary: true
-                }
-              ]
-            }
+            id: '529',
+            slug: 'english'
           }
         ]
       }
@@ -1450,7 +1207,6 @@ describe('AudioTrackSelect', () => {
       useInstantSearchMock.mockReturnValue(mockInstantSearch)
 
       const initialLanguageState = {
-        siteLanguage: 'en',
         audioLanguage: '529',
         subtitleLanguage: '529',
         subtitleOn: false,
@@ -1483,38 +1239,14 @@ describe('AudioTrackSelect', () => {
             ]
           }
         ],
-        videoAudioLanguages: [
+        videoAudioLanguagesIdsAndSlugs: [
           {
-            __typename: 'LanguageWithSlug' as const,
-            slug: 'english',
-            language: {
-              __typename: 'Language' as const,
-              id: '529',
-              slug: 'english',
-              name: [
-                {
-                  __typename: 'LanguageName' as const,
-                  value: 'English',
-                  primary: true
-                }
-              ]
-            }
+            id: '529',
+            slug: 'english'
           },
           {
-            __typename: 'LanguageWithSlug' as const,
-            slug: 'spanish',
-            language: {
-              __typename: 'Language' as const,
-              id: '496',
-              slug: 'spanish',
-              name: [
-                {
-                  __typename: 'LanguageName' as const,
-                  value: 'Spanish',
-                  primary: true
-                }
-              ]
-            }
+            id: '496',
+            slug: 'spanish'
           }
         ]
       }
@@ -1555,7 +1287,6 @@ describe('AudioTrackSelect', () => {
 
     it('should handle edge case when videoAudioLanguages is undefined', async () => {
       const initialLanguageState = {
-        siteLanguage: 'en',
         audioLanguage: '529',
         subtitleLanguage: '529',
         subtitleOn: false,
@@ -1575,7 +1306,7 @@ describe('AudioTrackSelect', () => {
             ]
           }
         ],
-        videoAudioLanguages: undefined
+        videoAudioLanguagesIdsAndSlugs: undefined
       }
 
       render(
@@ -1614,7 +1345,6 @@ describe('AudioTrackSelect', () => {
 
     it('should handle edge case when videoAudioLanguages is empty array', async () => {
       const initialLanguageState = {
-        siteLanguage: 'en',
         audioLanguage: '529',
         subtitleLanguage: '529',
         subtitleOn: false,
