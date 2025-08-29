@@ -14,9 +14,9 @@ import {
 import { VideoBlockSource } from '../../../../../../../__generated__/globalTypes'
 
 import { videoItems } from './data'
+import { GET_VIDEO } from './VideoFromLocal/LocalDetails/LocalDetails'
 
 import { VideoLibrary } from '.'
-import { GET_VIDEO } from './VideoFromLocal/LocalDetails/LocalDetails'
 
 jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
