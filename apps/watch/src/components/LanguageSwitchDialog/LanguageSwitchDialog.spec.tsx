@@ -5,9 +5,8 @@ import { HttpResponse, http } from 'msw'
 import { useRouter } from 'next/router'
 import { SWRConfig } from 'swr'
 
-import { server } from '../../../test/msw'
+import { server } from '../../../test/mswServer'
 import { WatchInitialState, WatchProvider } from '../../libs/watchContext'
-import { TestWatchState } from '../../libs/watchContext/TestWatchState'
 
 import { LanguageSwitchDialog } from './LanguageSwitchDialog'
 
@@ -177,7 +176,7 @@ describe('LanguageSwitchDialog', () => {
       })
 
       const audioTrackSelect = screen.getAllByRole('combobox')[0]
-      userEvent.click(audioTrackSelect)
+      await userEvent.click(audioTrackSelect)
 
       await waitFor(() => {
         expect(screen.getByText('Spanish')).toBeInTheDocument()

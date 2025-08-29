@@ -1,6 +1,6 @@
 import { NextApiRequest, NextApiResponse } from 'next'
 
-import handler from './languages'
+import handler, { LANGUAGES_CACHE_SCHEMA_VERSION } from './languages'
 
 // Mock the Apollo client
 jest.mock('../../src/libs/apolloClient', () => ({
@@ -89,7 +89,9 @@ describe('Languages API', () => {
 
       await handler(req, res)
 
-      expect(mockRedisGet).toHaveBeenCalledWith('languages:2025-08-29')
+      expect(mockRedisGet).toHaveBeenCalledWith(
+        `languages:${LANGUAGES_CACHE_SCHEMA_VERSION}`
+      )
       expect(res.status).toHaveBeenCalledWith(200)
       expect(res.json).toHaveBeenCalledWith(cachedLanguages)
       expect(res.setHeader).toHaveBeenCalledWith(
@@ -121,7 +123,9 @@ describe('Languages API', () => {
 
       await handler(req, res)
 
-      expect(mockRedisGet).toHaveBeenCalledWith('languages:2025-08-29')
+      expect(mockRedisGet).toHaveBeenCalledWith(
+        `languages:${LANGUAGES_CACHE_SCHEMA_VERSION}`
+      )
       expect(mockQuery).toHaveBeenCalled()
       expect(res.status).toHaveBeenCalledWith(200)
     })
@@ -307,7 +311,7 @@ describe('Languages API', () => {
       const expectedLanguages = [['529:en:English', '529:English']]
 
       expect(mockRedisSetex).toHaveBeenCalledWith(
-        'languages:2025-08-29',
+        `languages:${LANGUAGES_CACHE_SCHEMA_VERSION}`,
         86400,
         expectedLanguages
       )
@@ -327,9 +331,11 @@ describe('Languages API', () => {
 
       await handler(req, res)
 
-      expect(mockRedisGet).toHaveBeenCalledWith('languages:2025-08-29')
+      expect(mockRedisGet).toHaveBeenCalledWith(
+        `languages:${LANGUAGES_CACHE_SCHEMA_VERSION}`
+      )
       expect(mockRedisSetex).toHaveBeenCalledWith(
-        'languages:2025-08-29',
+        `languages:${LANGUAGES_CACHE_SCHEMA_VERSION}`,
         86400,
         []
       )
