@@ -34,56 +34,56 @@ export const LanguageSwitchDialog = memo(function LanguageSwitchDialog({
   const router = useRouter()
   const { dispatch } = useWatch()
   useEffect(() => {
-    if (data && i18n.language) {
-      const currentLanguageId = getLanguageIdFromLocale(i18n.language)
-      dispatch({
-        type: 'SetAllLanguages',
-        allLanguages: data.map((language) => {
-          const [languageIdSlugNative, ...names] = language
-          const [id, slug, native] = languageIdSlugNative.split(':')
-          const name: {
-            id: string
-            primary: boolean
-            value: string
-          }[] = names.map((returnedName) => {
-            const [id, nameValue] = returnedName.split(':')
-            return {
-              id,
-              primary: false,
-              value: nameValue
-            }
-          })
-          const currentName =
-            currentLanguageId != '529'
-              ? name.find((name) => name.id === currentLanguageId)
-              : undefined
-          const englishName =
-            id != '529'
-              ? name.find((name) => name.id == '529')
-              : {
-                  id,
-                  primary: true,
-                  value: native
-                }
-          const nativeName =
-            id != '529' && native
-              ? {
-                  id,
-                  primary: true,
-                  value: native
-                }
-              : undefined
+    if (!data || !i18n.language) return
 
+    const currentLanguageId = getLanguageIdFromLocale(i18n.language)
+    dispatch({
+      type: 'SetAllLanguages',
+      allLanguages: data.map((language) => {
+        const [languageIdSlugNative, ...names] = language
+        const [id, slug, native] = languageIdSlugNative.split(':')
+        const name: {
+          id: string
+          primary: boolean
+          value: string
+        }[] = names.map((returnedName) => {
+          const [id, nameValue] = returnedName.split(':')
           return {
             id,
-            slug,
-            name: [nativeName, currentName, englishName].filter(
-              (name) => name != null
-            )
+            primary: false,
+            value: nameValue
           }
         })
+        const currentName =
+          currentLanguageId != '529'
+            ? name.find((name) => name.id === currentLanguageId)
+            : undefined
+        const englishName =
+          id != '529'
+            ? name.find((name) => name.id == '529')
+            : {
+                id,
+                primary: true,
+                value: native
+              }
+        const nativeName =
+          id != '529' && native
+            ? {
+                id,
+                primary: true,
+                value: native
+              }
+            : undefined
+
+        return {
+          id,
+          slug,
+          name: [nativeName, currentName, englishName].filter(
+            (name) => name != null
+          )
+        }
       })
-    }
+    })
   }, [data, i18n])
 
   // Set router in context when component mounts
