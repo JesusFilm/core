@@ -32,8 +32,7 @@ export const AudioTrackSelect = memo(function AudioTrackSelect(): ReactElement {
       videoId,
       videoAudioLanguagesIdsAndSlugs,
       loading
-    },
-    dispatch
+    }
   } = useWatch()
   const { updateAudioLanguage } = useLanguageActions()
 
@@ -50,7 +49,7 @@ export const AudioTrackSelect = memo(function AudioTrackSelect(): ReactElement {
 
   const languages = useMemo(
     () =>
-      allLanguages?.map((language: Language) => ({
+      allLanguages?.map((language) => ({
         id: language.id,
         name: language.name,
         slug: language.slug

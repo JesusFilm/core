@@ -1,36 +1,23 @@
-import { gql, useLazyQuery } from '@apollo/client'
+import { gql } from '@apollo/client'
 import CloseIcon from '@mui/icons-material/Close'
 import Box from '@mui/material/Box'
 import Dialog from '@mui/material/Dialog'
 import DialogContent from '@mui/material/DialogContent'
-import Divider from '@mui/material/Divider'
 import IconButton from '@mui/material/IconButton'
 import Stack from '@mui/material/Stack'
 import { ThemeProvider } from '@mui/material/styles'
 import { useRouter } from 'next/router'
 import { ReactElement, memo, useEffect } from 'react'
+import useSWR from 'swr'
 
 import { websiteLight } from '@core/shared/ui/themes/website/theme'
 
-import { GetAllLanguages } from '../../../__generated__/GetAllLanguages'
 import { useWatch } from '../../libs/watchContext'
 
 import { AudioTrackSelect } from './AudioTrackSelect'
 import { SubtitlesSelect } from './SubtitlesSelect'
 
-export const GET_ALL_LANGUAGES = gql`
-  query GetAllLanguages {
-    languages {
-      id
-      bcp47
-      slug
-      name {
-        primary
-        value
-      }
-    }
-  }
-`
+const fetcher = (url: string) => fetch(url).then((res) => res.json())
 
 interface LanguageSwitchDialogProps {
   open: boolean
@@ -41,30 +28,51 @@ export const LanguageSwitchDialog = memo(function LanguageSwitchDialog({
   open,
   handleClose
 }: LanguageSwitchDialogProps): ReactElement {
+  const { data } = useSWR<string[]>(
+    () => (open ? '/api/languages' : null),
+    fetcher
+  )
   const router = useRouter()
-  const {
-    state: { allLanguages },
-    dispatch
-  } = useWatch()
+  const { dispatch } = useWatch()
 
-  const [getAllLanguages, { loading: languagesLoading }] =
-    useLazyQuery<GetAllLanguages>(GET_ALL_LANGUAGES, {
-      onCompleted: (data) => {
-        if (data?.languages && !allLanguages) {
-          dispatch({
-            type: 'SetAllLanguages',
-            allLanguages: data.languages
-          })
-        }
-      }
-    })
-
-  // Fetch languages when dialog opens if needed
   useEffect(() => {
-    if (open && !allLanguages && !languagesLoading) {
-      void getAllLanguages()
+    if (data) {
+      dispatch({
+        type: 'SetAllLanguages',
+        allLanguages: data.map((language) => {
+          const [languageIdSlugNativeName, ...names] = language
+          const [id, slug, nativeName] = languageIdSlugNativeName.split(':')
+          const name: {
+            __typename: 'LanguageName'
+            primary: boolean
+            value: string
+          }[] = []
+          if (nativeName != undefined) {
+            name.push({
+              __typename: 'LanguageName',
+              primary: true,
+              value: nativeName
+            })
+          }
+          names.forEach((returnedName) => {
+            const [_languageId, nameValue] = returnedName.split(':')
+            name.push({
+              __typename: 'LanguageName',
+              primary: false,
+              value: nameValue
+            })
+          })
+          return {
+            __typename: 'Language',
+            id,
+            bcp47: null,
+            slug,
+            name
+          }
+        })
+      })
     }
-  }, [open, allLanguages, languagesLoading, getAllLanguages])
+  }, [data])
 
   // Set router in context when component mounts
   useEffect(() => {
