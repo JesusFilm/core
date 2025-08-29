@@ -87,6 +87,7 @@ describe('MailChimpService', () => {
     })
 
     it('should throw error if the audience id is undefined', async () => {
+      delete process.env.MAILCHIMP_AUDIENCE_ID
       await expect(mailChimpService.syncUser(user)).rejects.toThrow(
         'Mailchimp Audience ID is undefined'
       )

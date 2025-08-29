@@ -1,7 +1,7 @@
 // import { MockedProvider } from '@apollo/client/testing'
 import { MockedResponse } from '@apollo/client/testing'
 import Stack from '@mui/material/Stack'
-import { Meta, StoryObj } from '@storybook/react'
+import { Meta, StoryObj } from '@storybook/nextjs'
 
 import {
   GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS,
