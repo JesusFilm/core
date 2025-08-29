@@ -9,6 +9,8 @@ import { server } from '../../../test/mswServer'
 import { WatchInitialState, WatchProvider } from '../../libs/watchContext'
 
 import { LanguageSwitchDialog } from './LanguageSwitchDialog'
+import { I18nextProvider } from 'react-i18next'
+import { makeI18n } from '../../../test/i18n'
 
 // Mock external dependencies
 jest.mock('next/router', () => ({
@@ -148,13 +150,15 @@ describe('LanguageSwitchDialog', () => {
     })
   })
 
-  describe('GraphQL integration', () => {
-    it('should call api/languages query and update state with SetAllLanguages dispatch', async () => {
+  describe('language rendering', () => {
+    it('should call api/languages query and render in english', async () => {
       server.use(
         http.get('/api/languages', () =>
           HttpResponse.json([
-            ['529:en:English', '529:English', '639:Inglés'],
-            ['639:es:Español', '529:Spanish', '639:Español']
+            ['529:en:English', '639:Inglés', "496:l'anglais"],
+            ['639:es:Español', '529:Spanish', "496:l'espagnol"],
+            ['496:fr:Français', '529:French', '639:francés'],
+            ['134:ma:', '529:Maori']
           ])
         )
       )
@@ -177,8 +181,52 @@ describe('LanguageSwitchDialog', () => {
       await userEvent.click(audioTrackSelect)
 
       await waitFor(() => {
-        expect(screen.getByText('Spanish')).toBeInTheDocument()
-        expect(screen.getByText('Español')).toBeInTheDocument()
+        const [english, french, maori, spanish] = screen.getAllByRole('option')
+        expect(english).toHaveTextContent('English')
+        expect(french).toHaveTextContent('FrenchFrançais')
+        expect(maori).toHaveTextContent('Maori')
+        expect(spanish).toHaveTextContent('SpanishEspañol')
+      })
+    })
+
+    it('should call api/languages query and render in french', async () => {
+      server.use(
+        http.get('/api/languages', () =>
+          HttpResponse.json([
+            ['529:en:English', '639:Inglés', "496:l'anglais"],
+            ['639:es:Español', '529:Spanish', "496:l'espagnol"],
+            ['496:fr:Français', '529:French', '639:francés'],
+            ['134:ma:Maori', '529:Maori']
+          ])
+        )
+      )
+      const i18n = await makeI18n('fr')
+      render(
+        <I18nextProvider i18n={i18n}>
+          <MockedProvider mocks={[]} addTypename={false}>
+            <WatchProvider initialState={defaultWatchState}>
+              <LanguageSwitchDialog open={true} handleClose={mockHandleClose} />
+            </WatchProvider>
+          </MockedProvider>
+        </I18nextProvider>,
+        {
+          wrapper: TestSWRConfig
+        }
+      )
+
+      await waitFor(() => {
+        expect(screen.getAllByRole('combobox')[0]).toBeInTheDocument()
+      })
+
+      const audioTrackSelect = screen.getAllByRole('combobox')[0]
+      await userEvent.click(audioTrackSelect)
+
+      await waitFor(() => {
+        const [french, english, spanish, maori] = screen.getAllByRole('option')
+        expect(french).toHaveTextContent('FrenchFrançais')
+        expect(english).toHaveTextContent("l'anglais")
+        expect(spanish).toHaveTextContent("l'espagnolEspañol")
+        expect(maori).toHaveTextContent('Maori')
       })
     })
   })

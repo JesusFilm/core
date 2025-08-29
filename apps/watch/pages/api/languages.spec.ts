@@ -176,7 +176,8 @@ describe('Languages API', () => {
             nativeName: [{ value: 'English' }],
             name: [
               { value: 'English', language: { id: '529' } },
-              { value: 'Inglés', language: { id: '639' } }
+              { value: 'Inglés', language: { id: '639' } },
+              { value: '', language: { id: '787' } }
             ]
           },
           {

@@ -15,6 +15,7 @@ export interface AudioLanguageData {
 }
 
 export interface LanguageName {
+  id: string
   primary: boolean
   value: string
 }

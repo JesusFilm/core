@@ -84,9 +84,9 @@ export default async function handler(
 
       const languages: LanguageTuple[] = data.languages.map((language) => {
         const nativeName = language.nativeName[0]?.value
-        const name = language.name.map(
-          (name) => `${name.language.id}:${name.value}`
-        )
+        const name = language.name
+          .filter((name) => name.value !== '')
+          .map((name) => `${name.language.id}:${name.value}`)
         const languageIdAndSlug = `${language.id}:${language.slug ?? ''}${
           nativeName ? `:${nativeName}` : ''
         }`

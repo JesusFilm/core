@@ -414,6 +414,7 @@ describe('SubtitlesSelect', () => {
           slug: 'english',
           name: [
             {
+              id: '529',
               value: 'English',
               primary: true
             }

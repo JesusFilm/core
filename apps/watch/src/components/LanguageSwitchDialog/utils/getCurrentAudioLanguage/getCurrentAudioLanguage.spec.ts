@@ -7,24 +7,24 @@ const mockLanguages = [
     id: '529',
     slug: 'english',
     name: [
-      { primary: true, value: 'English' },
-      { primary: false, value: 'English' }
+      { primary: true, value: 'English', id: '529' },
+      { primary: false, value: 'English', id: '529' }
     ]
   },
   {
     id: '496',
     slug: 'spanish',
     name: [
-      { primary: true, value: 'Spanish' },
-      { primary: false, value: 'Español' }
+      { primary: true, value: 'Spanish', id: '496' },
+      { primary: false, value: 'Español', id: '496' }
     ]
   },
   {
     id: '1106',
     slug: 'french',
     name: [
-      { primary: true, value: 'French' },
-      { primary: false, value: 'Français' }
+      { primary: true, value: 'French', id: '1106' },
+      { primary: false, value: 'Français', id: '1106' }
     ]
   }
 ]
@@ -177,7 +177,7 @@ describe('getCurrentAudioLanguage', () => {
         {
           id: '529',
           slug: 'english',
-          name: [{ primary: true, value: 'English' }]
+          name: [{ primary: true, value: 'English', id: '529' }]
         }
       ]
 
@@ -201,7 +201,7 @@ describe('getCurrentAudioLanguage', () => {
         {
           id: '529',
           slug: 'english',
-          name: [{ primary: false, value: 'English Native' }]
+          name: [{ primary: false, value: 'English Native', id: '529' }]
         }
       ]
 

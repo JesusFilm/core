@@ -6,6 +6,7 @@ import IconButton from '@mui/material/IconButton'
 import Stack from '@mui/material/Stack'
 import { ThemeProvider } from '@mui/material/styles'
 import { useRouter } from 'next/router'
+import { useTranslation } from 'next-i18next'
 import { ReactElement, memo, useEffect } from 'react'
 import useSWR from 'swr'
 
@@ -15,6 +16,7 @@ import { useWatch } from '../../libs/watchContext'
 
 import { AudioTrackSelect } from './AudioTrackSelect'
 import { SubtitlesSelect } from './SubtitlesSelect'
+import { getLanguageIdFromLocale } from '../../libs/getLanguageIdFromLocale'
 
 const fetcher = (url: string) => fetch(url).then((res) => res.json())
 
@@ -27,46 +29,54 @@ export const LanguageSwitchDialog = memo(function LanguageSwitchDialog({
   open,
   handleClose
 }: LanguageSwitchDialogProps): ReactElement {
-  const { data } = useSWR<string[]>(
-    () => (open ? '/api/languages' : null),
-    fetcher
-  )
+  const { i18n } = useTranslation()
+  const { data } = useSWR<string[]>('/api/languages', fetcher)
   const router = useRouter()
   const { dispatch } = useWatch()
-
   useEffect(() => {
-    if (data) {
+    if (data && i18n.language) {
+      const currentLanguageId = getLanguageIdFromLocale(i18n.language)
       dispatch({
         type: 'SetAllLanguages',
         allLanguages: data.map((language) => {
-          const [languageIdSlugNativeName, ...names] = language
-          const [id, slug, nativeName] = languageIdSlugNativeName.split(':')
+          const [languageIdSlugNative, ...names] = language
+          const [id, slug, native] = languageIdSlugNative.split(':')
           const name: {
+            id: string
             primary: boolean
             value: string
-          }[] = []
-          if (nativeName != undefined) {
-            name.push({
-              primary: true,
-              value: nativeName
-            })
-          }
-          names.forEach((returnedName) => {
-            const [, nameValue] = returnedName.split(':')
-            name.push({
+          }[] = names.map((returnedName) => {
+            const [id, nameValue] = returnedName.split(':')
+            return {
+              id,
               primary: false,
               value: nameValue
-            })
+            }
           })
+          const currentName =
+            currentLanguageId != '529'
+              ? name.find((name) => name.id === currentLanguageId)
+              : undefined
+          const englishName = name.find((name) => name.id == '529')
+          const nativeName = native
+            ? {
+                id,
+                primary: true,
+                value: native
+              }
+            : undefined
+
           return {
             id,
             slug,
-            name
+            name: [nativeName, currentName, englishName].filter(
+              (name) => name != null
+            )
           }
         })
       })
     }
-  }, [data])
+  }, [data, i18n])
 
   // Set router in context when component mounts
   useEffect(() => {
