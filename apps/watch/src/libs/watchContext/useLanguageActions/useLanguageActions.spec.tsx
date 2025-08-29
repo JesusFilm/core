@@ -1,9 +1,9 @@
-import { act, renderHook } from '@testing-library/react'
+import { renderHook } from '@testing-library/react'
 import { NextRouter } from 'next/router'
 import { ReactNode } from 'react'
 
 import { setCookie } from '../../cookieHandler'
-import { WatchInitialState, WatchProvider, useWatch } from '../WatchContext'
+import { WatchInitialState, WatchProvider } from '../WatchContext'
 
 import { useLanguageActions } from './useLanguageActions'
 

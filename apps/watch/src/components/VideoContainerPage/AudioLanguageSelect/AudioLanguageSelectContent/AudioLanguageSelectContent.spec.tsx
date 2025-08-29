@@ -218,7 +218,7 @@ describe('AudioLanguageSelectContent', () => {
 
     const result = jest.fn().mockReturnValue({ ...englishMock.result })
 
-    const { getByTestId, queryByTestId } = render(
+    const { getByTestId } = render(
       <MockedProvider mocks={[{ ...englishMock, result }]}>
         <VideoProvider value={defaultProps}>
           <Select>

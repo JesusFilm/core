@@ -15,26 +15,7 @@ import { ThemeMode, ThemeName } from '@core/shared/ui/themes'
 
 import { GetSubtitles } from '../../../__generated__/GetSubtitles'
 import { useVideo } from '../../libs/videoContext'
-
-export const GET_SUBTITLES = gql`
-  query GetSubtitles($id: ID!) {
-    video(id: $id, idType: slug) {
-      variant {
-        subtitle {
-          language {
-            name {
-              value
-              primary
-            }
-            bcp47
-            id
-          }
-          value
-        }
-      }
-    }
-  }
-`
+import { GET_SUBTITLES } from '../../libs/watchContext/useSubtitleUpdate/useSubtitleUpdate'
 
 export interface SubtitleDialogProps
   extends Pick<ComponentProps<typeof Dialog>, 'open' | 'onClose'> {

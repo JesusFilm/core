@@ -81,7 +81,7 @@ describe('getCurrentAudioLanguage', () => {
     it('should return language from currentAudioLanguage when available', () => {
       const result = getCurrentAudioLanguage({
         allLanguages: mockLanguages,
-        currentAudioLanguage: { language: { id: '496' } },
+        currentAudioLanguage: { id: '496', slug: 'spanish' },
         routerAsPath: '/watch/jesus/english.html',
         audioLanguage: '529'
       })
@@ -153,7 +153,7 @@ describe('getCurrentAudioLanguage', () => {
     it('should prioritize currentAudioLanguage over path and audioLanguage', () => {
       const result = getCurrentAudioLanguage({
         allLanguages: mockLanguages,
-        currentAudioLanguage: { language: { id: '1106' } }, // French
+        currentAudioLanguage: { id: '1106', slug: 'french' }, // French
         routerAsPath: '/watch/jesus/spanish.html', // Spanish in path
         audioLanguage: '529' // English as fallback
       })
@@ -185,7 +185,7 @@ describe('getCurrentAudioLanguage', () => {
 
       const result = getCurrentAudioLanguage({
         allLanguages: languagesWithoutNative,
-        currentAudioLanguage: { language: { id: '529' } },
+        currentAudioLanguage: { id: '529', slug: 'english' },
         routerAsPath: '/watch/jesus/spanish.html',
         audioLanguage: '496'
       })
@@ -209,7 +209,7 @@ describe('getCurrentAudioLanguage', () => {
 
       const result = getCurrentAudioLanguage({
         allLanguages: languagesWithoutLocal,
-        currentAudioLanguage: { language: { id: '529' } },
+        currentAudioLanguage: { id: '529', slug: 'english' },
         routerAsPath: '/watch/jesus/spanish.html',
         audioLanguage: '496'
       })

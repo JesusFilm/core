@@ -1,4 +1,4 @@
-import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { type NextRouter, useRouter } from 'next/router'
 import { SnackbarProvider } from 'notistack'
@@ -7,7 +7,6 @@ import { useAlgoliaVideos } from '@core/journeys/ui/algolia/useAlgoliaVideos'
 
 import { type CoreVideo } from '../../libs/algolia/transformAlgoliaVideos'
 import { getCookie } from '../../libs/cookieHandler'
-import { GET_LANGUAGES_SLUG } from '../../libs/useLanguagesSlugQuery'
 import { getVideoChildrenMock } from '../../libs/useVideoChildren/getVideoChildrenMock'
 import { VideoProvider } from '../../libs/videoContext'
 import { videos } from '../Videos/__generated__/testData'
