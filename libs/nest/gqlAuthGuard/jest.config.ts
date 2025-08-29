@@ -1,7 +1,6 @@
 import type { Config } from 'jest'
 
 const config: Config = {
-  injectGlobals: true,
   displayName: 'nest/gqlAuthGuard',
   globals: {},
   transform: {

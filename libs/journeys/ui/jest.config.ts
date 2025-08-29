@@ -1,7 +1,6 @@
 import type { Config } from 'jest'
 
 const config: Config = {
-  injectGlobals: true,
   displayName: 'journeys-ui',
   moduleNameMapper: {
     'swiper/react': '<rootDir>/../../../apps/__mocks__/swiper/react',
