@@ -23,8 +23,6 @@ const mockRouter = {
   asPath: '/watch/video123'
 }
 
-const mockT = jest.fn((key: string) => key)
-
 // Default watch context state
 const defaultWatchState: WatchInitialState = {
   audioLanguage: '529',

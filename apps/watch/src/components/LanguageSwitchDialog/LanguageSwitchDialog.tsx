@@ -1,4 +1,3 @@
-import { gql } from '@apollo/client'
 import CloseIcon from '@mui/icons-material/Close'
 import Box from '@mui/material/Box'
 import Dialog from '@mui/material/Dialog'
@@ -53,7 +52,7 @@ export const LanguageSwitchDialog = memo(function LanguageSwitchDialog({
             })
           }
           names.forEach((returnedName) => {
-            const [_languageId, nameValue] = returnedName.split(':')
+            const [, nameValue] = returnedName.split(':')
             name.push({
               primary: false,
               value: nameValue

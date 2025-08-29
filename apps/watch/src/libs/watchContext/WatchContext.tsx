@@ -7,8 +7,6 @@ import {
   useReducer
 } from 'react'
 
-import { LANGUAGE_MAPPINGS } from '../localeMapping'
-
 import { initializeVideoLanguages } from './initializeVideoLanguages'
 
 export interface AudioLanguageData {

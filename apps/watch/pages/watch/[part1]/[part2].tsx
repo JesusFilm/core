@@ -1,7 +1,6 @@
 import { ApolloError, gql } from '@apollo/client'
 import type { GetStaticPaths, GetStaticProps } from 'next'
 import dynamic from 'next/dynamic'
-import { useTranslation } from 'next-i18next'
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
 import { SnackbarProvider } from 'notistack'
 import type { ReactElement } from 'react'
@@ -68,8 +67,6 @@ export default function Part2Page({
   videoSubtitleLanguageIds,
   videoAudioLanguagesIdsAndSlugs
 }: Part2PageProps): ReactElement {
-  const { i18n } = useTranslation()
-
   const initialWatchState: WatchInitialState = {
     audioLanguage: getCookie('AUDIO_LANGUAGE') ?? '529',
     subtitleLanguage: getCookie('SUBTITLE_LANGUAGE') ?? '529',

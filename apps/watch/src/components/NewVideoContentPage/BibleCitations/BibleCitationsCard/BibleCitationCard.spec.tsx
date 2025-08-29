@@ -1,11 +1,12 @@
 import { render, screen, waitFor } from '@testing-library/react'
 import axios from 'axios'
+// eslint-disable-next-line no-restricted-imports
+import { I18nextProvider } from 'react-i18next'
 
+import { makeI18n } from '../../../../../test/i18n'
 import { WatchProvider } from '../../../../libs/watchContext'
 
 import { BibleCitationCard } from './BibleCitationCard'
-import { I18nextProvider } from 'react-i18next'
-import i18n, { makeI18n } from '../../../../../test/i18n'
 
 // Mock axios
 jest.mock('axios', () => {

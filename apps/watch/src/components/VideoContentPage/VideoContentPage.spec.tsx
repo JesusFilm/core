@@ -29,7 +29,6 @@ const mockRouter: Partial<NextRouter> = {
   asPath: '/watch/video-slug/english.html',
   locale: 'en'
 }
-const mockGetCookie = getCookie as jest.MockedFunction<typeof getCookie>
 const mockUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
 
 describe('VideoContentPage', () => {

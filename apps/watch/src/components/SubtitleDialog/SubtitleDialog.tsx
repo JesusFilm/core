@@ -1,4 +1,4 @@
-import { gql, useQuery } from '@apollo/client'
+import { useQuery } from '@apollo/client'
 import SubtitlesOutlined from '@mui/icons-material/SubtitlesOutlined'
 import CircularProgress from '@mui/material/CircularProgress'
 import TextField from '@mui/material/TextField'

@@ -1,6 +1,5 @@
 import { ApolloError, gql } from '@apollo/client'
 import { GetStaticPaths, GetStaticProps } from 'next'
-import { useTranslation } from 'next-i18next'
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
 import { SnackbarProvider } from 'notistack'
 import { ReactElement } from 'react'
@@ -70,7 +69,6 @@ export default function Part3Page({
   videoSubtitleLanguageIds,
   videoAudioLanguagesIdsAndSlugs
 }: Part3PageProps): ReactElement {
-  const { i18n } = useTranslation()
   const searchClient = useInstantSearchClient()
   const indexName = process.env.NEXT_PUBLIC_ALGOLIA_INDEX ?? ''
 
