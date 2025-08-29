@@ -77,7 +77,7 @@
       "options": {
         "commands": [
           {
-            "command": "npm run i18next --config apps/docs/i18next-parser.config.js"
+            "command": "npx i18next --config apps/docs/i18next-parser.config.js"
           }
         ]
       }

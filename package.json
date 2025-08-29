@@ -380,6 +380,7 @@
   },
   "overrides": {
     "react-is": "^19.0.0",
+    "parse5": "7.1.2",
     "html-tokenize": {
       "readable-stream": "^3.6.0"
     }
