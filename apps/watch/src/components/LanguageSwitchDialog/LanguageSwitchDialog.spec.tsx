@@ -2,6 +2,8 @@ import { MockedProvider } from '@apollo/client/testing'
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { HttpResponse, http } from 'msw'
+// eslint-disable-next-line no-restricted-imports
+import { I18nextProvider } from 'react-i18next'
 import { useRouter } from 'next/router'
 import { SWRConfig } from 'swr'
 
@@ -9,7 +11,6 @@ import { server } from '../../../test/mswServer'
 import { WatchInitialState, WatchProvider } from '../../libs/watchContext'
 
 import { LanguageSwitchDialog } from './LanguageSwitchDialog'
-import { I18nextProvider } from 'react-i18next'
 import { makeI18n } from '../../../test/i18n'
 
 // Mock external dependencies
