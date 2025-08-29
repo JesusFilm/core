@@ -1,7 +1,9 @@
 import { LanguageOption } from '@core/shared/ui/LanguageAutocomplete'
 
-import { GetAllLanguages_languages as Language } from '../../../../../__generated__/GetAllLanguages'
-import { AudioLanguageData } from '../../../../libs/watchContext/WatchContext'
+import {
+  AudioLanguageData,
+  Language
+} from '../../../../libs/watchContext/WatchContext'
 
 interface GetCurrentAudioLanguageParams {
   allLanguages?: Language[]

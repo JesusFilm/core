@@ -10,7 +10,6 @@ export function TestWatchState(): ReactElement {
   const { state } = useWatch()
   return (
     <>
-      <div>siteLanguage: {state.siteLanguage}</div>
       <div>audioLanguage: {state.audioLanguage}</div>
       <div>subtitleLanguage: {state.subtitleLanguage}</div>
       <div>subtitleOn: {state.subtitleOn.toString()}</div>
