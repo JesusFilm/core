@@ -25,7 +25,6 @@ const useTranslationMock = useTranslation as jest.Mock
 
 // Default mock data for reuse across tests
 const defaultInitialState = {
-  siteLanguage: 'en',
   audioLanguage: '529',
   subtitleLanguage: '529',
   subtitleOn: true,
@@ -293,7 +292,6 @@ describe('SubtitlesSelect', () => {
       subtitleLanguage: '529',
       allLanguages: [
         {
-          __typename: 'Language' as const,
           id: '529',
           slug: 'english',
           bcp47: 'en',
@@ -326,26 +324,20 @@ describe('SubtitlesSelect', () => {
       ...defaultInitialState,
       allLanguages: [
         {
-          __typename: 'Language' as const,
           id: '529',
           slug: 'english',
-          bcp47: 'en',
           name: [
             {
-              __typename: 'LanguageName' as const,
               value: 'English',
               primary: true
             }
           ]
         },
         {
-          __typename: 'Language' as const,
           id: '22658',
           slug: 'arabic',
-          bcp47: 'ar',
           name: [
             {
-              __typename: 'LanguageName' as const,
               value: 'اللغة العربية',
               primary: true
             }
@@ -418,13 +410,11 @@ describe('SubtitlesSelect', () => {
       autoSubtitle: true, // This should take precedence
       allLanguages: [
         {
-          __typename: 'Language' as const,
           id: '529',
           slug: 'english',
-          bcp47: 'en',
           name: [
             {
-              __typename: 'LanguageName' as const,
+              id: '529',
               value: 'English',
               primary: true
             }
@@ -457,36 +447,28 @@ describe('SubtitlesSelect', () => {
       videoSubtitleLanguageIds: undefined,
       allLanguages: [
         {
-          __typename: 'Language' as const,
           id: '529',
           slug: 'english',
-          bcp47: 'en',
           name: [
             {
-              __typename: 'LanguageName' as const,
               value: 'English',
               primary: true
             },
             {
-              __typename: 'LanguageName' as const,
               value: 'English Native',
               primary: false
             }
           ]
         },
         {
-          __typename: 'Language' as const,
           id: '22658',
           slug: 'arabic',
-          bcp47: 'ar',
           name: [
             {
-              __typename: 'LanguageName' as const,
               value: 'اللغة العربية',
               primary: true
             },
             {
-              __typename: 'LanguageName' as const,
               value: 'Arabic, Modern Standard',
               primary: false
             }

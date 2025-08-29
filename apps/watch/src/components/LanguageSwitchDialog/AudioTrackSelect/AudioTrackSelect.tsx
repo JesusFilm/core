@@ -9,7 +9,6 @@ import {
   LanguageOption
 } from '@core/shared/ui/LanguageAutocomplete'
 
-import { GetAllLanguages_languages as Language } from '../../../../__generated__/GetAllLanguages'
 import { useLanguageActions, useWatch } from '../../../libs/watchContext'
 import { getCurrentAudioLanguage } from '../utils/getCurrentAudioLanguage'
 import { renderInput } from '../utils/renderInput'
@@ -32,8 +31,7 @@ export const AudioTrackSelect = memo(function AudioTrackSelect(): ReactElement {
       videoId,
       videoAudioLanguagesIdsAndSlugs,
       loading
-    },
-    dispatch
+    }
   } = useWatch()
   const { updateAudioLanguage } = useLanguageActions()
 
@@ -50,7 +48,7 @@ export const AudioTrackSelect = memo(function AudioTrackSelect(): ReactElement {
 
   const languages = useMemo(
     () =>
-      allLanguages?.map((language: Language) => ({
+      allLanguages?.map((language) => ({
         id: language.id,
         name: language.name,
         slug: language.slug

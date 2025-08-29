@@ -7,9 +7,6 @@ import {
   useReducer
 } from 'react'
 
-import { GetAllLanguages_languages as Language } from '../../../__generated__/GetAllLanguages'
-import { LANGUAGE_MAPPINGS } from '../localeMapping'
-
 import { initializeVideoLanguages } from './initializeVideoLanguages'
 
 export interface AudioLanguageData {
@@ -17,12 +14,22 @@ export interface AudioLanguageData {
   slug: string | null
 }
 
+export interface LanguageName {
+  id: string
+  primary: boolean
+  value: string
+}
+
+export interface Language {
+  id: string
+  slug: string | null
+  name: LanguageName[]
+}
+
 /**
  * State interface for watch context containing language preferences and video-specific data
  */
 export interface WatchState {
-  /** Current site/UI language (e.g., 'en', 'es') */
-  siteLanguage: string
   /** User's preferred audio language ID (e.g., '529')*/
   audioLanguage: string
   /** User's preferred subtitle language ID (e.g., '529')*/
@@ -55,8 +62,6 @@ export interface WatchState {
  */
 interface SetLanguagePreferencesAction {
   type: 'SetLanguagePreferences'
-  /** Site/UI language to set */
-  siteLanguage?: string
   /** Audio language preference to set */
   audioLanguage?: string
   /** Subtitle language preference to set */
@@ -122,14 +127,6 @@ interface SetRouterAction {
 }
 
 /**
- * Action to update site language with automatic cascading and page reload
- */
-interface UpdateSiteLanguageAction {
-  type: 'UpdateSiteLanguage'
-  language: string
-}
-
-/**
  * Action to update audio language with automatic cascading and page reload
  */
 interface UpdateAudioLanguageAction {
@@ -172,7 +169,6 @@ export type WatchAction =
   | SetCurrentVideoAction
   | SetLoadingAction
   | SetRouterAction
-  | UpdateSiteLanguageAction
   | UpdateAudioLanguageAction
   | UpdateSubtitleLanguageAction
   | UpdateSubtitlesOnAction
@@ -183,7 +179,6 @@ export type WatchAction =
  */
 export type WatchInitialState = Pick<
   WatchState,
-  | 'siteLanguage'
   | 'audioLanguage'
   | 'subtitleLanguage'
   | 'subtitleOn'
@@ -198,7 +193,6 @@ const WatchContext = createContext<{
   dispatch: Dispatch<WatchAction>
 }>({
   state: {
-    siteLanguage: 'en',
     audioLanguage: '529',
     subtitleLanguage: '529',
     subtitleOn: false,
@@ -223,7 +217,6 @@ export const reducer = (state: WatchState, action: WatchAction): WatchState => {
     case 'SetLanguagePreferences':
       return {
         ...state,
-        siteLanguage: action.siteLanguage ?? state.siteLanguage,
         audioLanguage: action.audioLanguage ?? state.audioLanguage,
         subtitleLanguage: action.subtitleLanguage ?? state.subtitleLanguage,
         subtitleOn: action.subtitleOn ?? state.subtitleOn
@@ -242,12 +235,9 @@ export const reducer = (state: WatchState, action: WatchAction): WatchState => {
 
       // Check if user's audio preference is available for this video
       for (const lang of videoAudioLanguagesIdsAndSlugs) {
-        const siteLanguageMapping = LANGUAGE_MAPPINGS[state.siteLanguage]
-        const siteLanguageSlugs = siteLanguageMapping?.languageSlugs || []
-
         if (
           lang.id === state.audioLanguage ||
-          siteLanguageSlugs.includes(lang.slug || '')
+          lang.slug === state.audioLanguage
         ) {
           currentAudioLanguage = lang
           break
@@ -301,25 +291,6 @@ export const reducer = (state: WatchState, action: WatchAction): WatchState => {
         ...state,
         router: action.router
       }
-    case 'UpdateSiteLanguage': {
-      const newLanguage = action.language
-
-      // Find matching language object for cascading
-      const selectedLangObj = state.allLanguages?.find(
-        (lang) => lang.bcp47 === newLanguage
-      )
-
-      const newAudioLanguage = selectedLangObj?.id ?? state.audioLanguage
-      const newSubtitleLanguage = selectedLangObj?.id ?? state.subtitleLanguage
-
-      return {
-        ...state,
-        loading: true,
-        siteLanguage: newLanguage,
-        audioLanguage: newAudioLanguage,
-        subtitleLanguage: newSubtitleLanguage
-      }
-    }
     case 'UpdateAudioLanguage': {
       const newAudioLanguage = action.languageId
 
@@ -415,11 +386,11 @@ export function WatchProvider({ children, initialState }: WatchProviderProps) {
  *   const handleLanguageChange = (language: string) => {
  *     dispatch({
  *       type: 'SetLanguagePreferences',
- *       siteLanguage: language
+ *       audioLanguage: language
  *     })
  *   }
  *
- *   return <div>Current language: {state.siteLanguage}</div>
+ *   return <div>Current language: {state.audioLanguage}</div>
  * }
  * ```
  */

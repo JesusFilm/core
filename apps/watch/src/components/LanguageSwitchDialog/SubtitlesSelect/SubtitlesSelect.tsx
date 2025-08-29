@@ -24,7 +24,6 @@ export const SubtitlesSelect = memo(function SubtitlesSelect(): ReactElement {
       subtitleOn,
       autoSubtitle,
       videoId,
-      videoSubtitleLanguageIds,
       videoVariantSlug,
       loading
     },

@@ -1,5 +1,4 @@
 import { sendGTMEvent } from '@next/third-parties/google'
-import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 import { A11y, FreeMode, Mousewheel } from 'swiper/modules'
 import { Swiper, SwiperSlide } from 'swiper/react'
@@ -45,8 +44,6 @@ export function BibleQuotesCarousel({
   shareButtonText,
   shareDataTitle
 }: BibleQuotesCarouselProps): ReactElement {
-  const { t } = useTranslation('apps-watch')
-
   function handleShareClick() {
     sendGTMEvent({
       event: 'join_study_button_click',
