@@ -1,17 +1,3 @@
-import baseConfig from '../../eslint.config.mjs'
+import apiConfig from '../../libs/shared/eslint/api.mjs'
 
-export default [
-  ...baseConfig,
-  {
-    ignores: [
-      'apis/media-transcoder/eslint.config.js',
-      'apis/media-transcoder/webpack.config.js'
-    ]
-  },
-  {
-    files: ['**/*.ts', '**/*.tsx'],
-    languageOptions: {
-      parserOptions: { project: ['apis/media-transcoder/tsconfig.*?.json'] }
-    }
-  }
-]
+export default apiConfig
