@@ -3,9 +3,12 @@ import { render, screen } from '@testing-library/react'
 import { HitsRenderState } from 'instantsearch.js/es/connectors/hits/connectHits'
 import { RefinementListRenderState } from 'instantsearch.js/es/connectors/refinement-list/connectRefinementList'
 import { SearchBoxRenderState } from 'instantsearch.js/es/connectors/search-box/connectSearchBox'
+import { HttpResponse, http } from 'msw'
 import { useHits, useRefinementList, useSearchBox } from 'react-instantsearch'
 
 import { SearchBarProvider } from '@core/journeys/ui/algolia/SearchBarProvider'
+
+import { server } from '../../../test/mswServer'
 
 import { resourceItems } from './ResourceSections/ResourceSection/data'
 import { ResourcesView } from './ResourcesView'
@@ -47,6 +50,14 @@ describe('ResourcesView', () => {
     mockUseSearchBox.mockReturnValue(useSearchBox)
     mockedUseHits.mockReturnValue(useHits)
     mockUseRefinementList.mockReturnValue(useRefinementsList)
+
+    server.use(
+      http.get('http://localhost/api/geolocation', () =>
+        HttpResponse.json({
+          country: 'US'
+        })
+      )
+    )
   })
 
   it('should render interaction text', () => {
