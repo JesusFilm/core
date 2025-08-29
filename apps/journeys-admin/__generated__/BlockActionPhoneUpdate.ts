@@ -14,6 +14,7 @@ export interface BlockActionPhoneUpdate_blockUpdatePhoneAction {
   parentBlockId: string;
   gtmEventName: string | null;
   phone: string;
+  countryCode: string;
 }
 
 export interface BlockActionPhoneUpdate {

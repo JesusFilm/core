@@ -81,7 +81,7 @@ export function useActionCommand(): {
               void actionEmailUpdate(block, action.email)
               break
             case 'PhoneAction':
-              void actionPhoneUpdate(block, action.phone)
+              void actionPhoneUpdate(block, action.phone, action.countryCode)
               break
             case 'NavigateToBlockAction':
               void actionNavigateToBlockUpdate(block, action.blockId)
