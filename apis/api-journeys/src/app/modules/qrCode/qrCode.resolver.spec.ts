@@ -18,9 +18,7 @@ jest.mock('uuid', () => ({
   v4: jest.fn()
 }))
 
-// uuid v11 types include overloads that may infer a Uint8Array return when mocked.
-// Cast to a simple zero-arg string-returning function for tests.
-const mockUuidv4 = uuidv4 as unknown as jest.MockedFunction<() => string>
+const mockUuidv4 = uuidv4 as jest.MockedFunction<typeof uuidv4>
 
 describe('QrCode', () => {
   let resolver: QrCodeResolver,

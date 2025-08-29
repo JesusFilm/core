@@ -1,5 +1,5 @@
 import { expect } from '@playwright/test'
-import { Page } from '@playwright/test'
+import { Page } from 'playwright-core'
 
 import { isVisible } from '../framework/actions'
 import { getBaseUrl } from '../framework/helpers'

@@ -1,4 +1,4 @@
-import { FirebaseError } from 'firebase/app'
+import { FirebaseError } from '@firebase/util'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import CircularProgress from '@mui/material/CircularProgress'

@@ -23,12 +23,5 @@
     "../../libs/journeys/ui/src/ImageBlockProvider/ImageBlockProvider.tsx",
     "eslint.config.mjs"
   ],
-  "exclude": [
-    "node_modules",
-    "jest.config.ts",
-    "**/*.spec.ts",
-    "**/*.spec.tsx",
-    "**/*.test.ts",
-    "**/*.test.tsx"
-  ]
+  "exclude": ["node_modules", "jest.config.ts"]
 }

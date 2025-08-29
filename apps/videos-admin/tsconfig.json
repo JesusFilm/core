@@ -29,6 +29,7 @@
     "src/i18n.ts",
     "src/middleware.ts",
     ".next/types/**/*.ts",
+    "../../dist/apps/videos-admin/.next/types/**/*.ts",
     "src/app/(dashboard)/videos/[videoId]/image/[aspectRatio]/layout.tsx"
   ],
   "exclude": ["node_modules", "jest.config.ts", ".next"]

@@ -3,7 +3,7 @@ import fs from 'fs'
 import path from 'path'
 
 import { expect } from '@playwright/test'
-import type { Page } from '@playwright/test'
+import type { Page } from 'playwright-core'
 
 import { generateRandomNumber } from '../framework/helpers'
 import testData from '../utils/testData.json'

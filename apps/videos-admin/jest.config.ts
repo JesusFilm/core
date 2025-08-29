@@ -1,7 +1,6 @@
 import type { Config } from 'jest'
 
 const config: Config = {
-  injectGlobals: true,
   displayName: 'videos-admin',
   transform: {
     '^(?!.*\\.(js|jsx|ts|tsx|css|json)$)': '@nx/react/plugins/jest',

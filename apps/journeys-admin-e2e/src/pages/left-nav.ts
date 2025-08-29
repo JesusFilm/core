@@ -1,4 +1,4 @@
-import type { Page } from '@playwright/test'
+import type { Page } from 'playwright-core'
 
 const sixtySecondsTimeout = 60000
 

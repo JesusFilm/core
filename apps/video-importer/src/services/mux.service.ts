@@ -58,25 +58,20 @@ export async function createAndWaitForMuxVideo(publicUrl: string): Promise<{
     `[Mux Service] Mux Video ID created: ${muxId}. Polling for readyToStream status...`
   )
 
-  const statusResponse: MuxVideoStatusResponse =
-    await poll<MuxVideoStatusResponse>(
-      () =>
-        client.request<MuxVideoStatusResponse>(GET_MUX_VIDEO, {
-          id: muxId,
-          userGenerated: false
-        }),
-      (response: MuxVideoStatusResponse) =>
-        response?.getMyMuxVideo?.readyToStream === true,
-      {
-        maxAttempts: 61, // 10 minutes total: 61 attempts at 10s intervals
-        intervalMs: 10_000 // 10 seconds between attempts
-      }
-    )
+  const statusResponse = await poll(
+    () =>
+      client.request<MuxVideoStatusResponse>(GET_MUX_VIDEO, {
+        id: muxId,
+        userGenerated: false
+      }),
+    (response) => response?.getMyMuxVideo.readyToStream === true,
+    {
+      maxAttempts: 61, // 10 minutes total: 61 attempts at 10s intervals
+      intervalMs: 10_000 // 10 seconds between attempts
+    }
+  )
 
   console.log(`[Mux Service] Mux Video ID: ${muxId} is now readyToStream`)
-  if (!statusResponse.getMyMuxVideo) {
-    throw new Error('Mux video status response missing getMyMuxVideo')
-  }
   return {
     id: statusResponse.getMyMuxVideo.id,
     playbackId: statusResponse.getMyMuxVideo.playbackId

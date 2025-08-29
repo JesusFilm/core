@@ -45,7 +45,7 @@ jest.mock('uuid', () => ({
   v4: jest.fn()
 }))
 
-const mockUuidv4 = uuidv4 as unknown as jest.MockedFunction<() => string>
+const mockUuidv4 = uuidv4 as jest.MockedFunction<typeof uuidv4>
 
 jest.mock('@core/nest/powerBi/getPowerBiEmbed', () => ({
   __esModule: true,

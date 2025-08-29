@@ -1,7 +1,7 @@
 /* eslint-disable playwright/no-force-option */
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 import { expect } from '@playwright/test'
-import type { Page } from '@playwright/test'
+import type { Page } from 'playwright-core'
 
 const sixtySecondsTimeout = 60000
 
