@@ -4,50 +4,7 @@ import type { Page } from '@playwright/test'
 /**
  * Mobile E2E Test for Priority Journey
  * Tests the complete mobile journey experience for the e2e-priority journey
- * URL: https://your-stage.nextstep.is/e2e-priority
  */
-
-// Helper functions for mobile gestures and interactions
-class MobileJourneyHelpers {
-  constructor(private page: Page) {}
-
-  async performSwipeGesture(direction: 'left' | 'right') {
-    const cardContainer = this.page.locator('[data-testid="JourneysCard"]')
-    const startX = direction === 'left' ? 300 : 100
-    const endX = direction === 'left' ? 100 : 300
-    
-    await cardContainer.hover()
-    await this.page.mouse.down()
-    await this.page.mouse.move(endX, 200)
-    await this.page.mouse.up()
-    await this.page.waitForTimeout(500)
-  }
-
-  async navigateToCardWithText(text: string, maxAttempts = 10) {
-    let attempts = 0
-    while (attempts < maxAttempts) {
-      if (await this.page.locator(`text=${text}`).isVisible()) {
-        return true
-      }
-      
-      const nextButton = this.page.getByTestId('ConductorNavigationButtonNext')
-      if (await nextButton.isVisible()) {
-        await nextButton.click()
-        await this.page.waitForTimeout(1000)
-      }
-      
-      attempts++
-    }
-    return false
-  }
-
-  async waitForVideoToLoad() {
-    await this.page.waitForTimeout(2000)
-    const video = this.page.locator('video').first()
-    await video.waitFor({ state: 'visible', timeout: 10000 })
-    return video
-  }
-}
 
 test.describe('Mobile Priority Journey E2E Tests', () => {
   // Configure to only run on mobile projects
@@ -58,11 +15,11 @@ test.describe('Mobile Priority Journey E2E Tests', () => {
     }
   })
   test.beforeEach(async ({ page }) => {
-    // Navigate to the priority journey
+    // Navigate to the priority journey with domcontentloaded instead of load
     await page.goto('/e2e-priority')
     
-    // Wait for page to load
-    await page.waitForLoadState('networkidle')
+    // Wait for the main content to be visible instead of networkidle
+    await page.waitForSelector('[data-testid="JourneysCard"]', { timeout: 30000 })
   })
 
   test('should complete full mobile priority journey flow', async ({ page }) => {
@@ -438,3 +395,45 @@ test.describe('Mobile Priority Journey E2E Tests', () => {
     }
   })
 })
+
+// Helper functions for mobile gestures and interactions
+class MobileJourneyHelpers {
+  constructor(private page: Page) {}
+
+  async performSwipeGesture(direction: 'left' | 'right') {
+    const cardContainer = this.page.locator('[data-testid="JourneysCard"]')
+    const startX = direction === 'left' ? 300 : 100
+    const endX = direction === 'left' ? 100 : 300
+    
+    await cardContainer.hover()
+    await this.page.mouse.down()
+    await this.page.mouse.move(endX, 200)
+    await this.page.mouse.up()
+    await this.page.waitForTimeout(500)
+  }
+
+  async navigateToCardWithText(text: string, maxAttempts = 10) {
+    let attempts = 0
+    while (attempts < maxAttempts) {
+      if (await this.page.locator(`text=${text}`).isVisible()) {
+        return true
+      }
+      
+      const nextButton = this.page.getByTestId('ConductorNavigationButtonNext')
+      if (await nextButton.isVisible()) {
+        await nextButton.click()
+        await this.page.waitForTimeout(1000)
+      }
+      
+      attempts++
+    }
+    return false
+  }
+
+  async waitForVideoToLoad() {
+    await this.page.waitForTimeout(2000)
+    const video = this.page.locator('video').first()
+    await video.waitFor({ state: 'visible', timeout: 10000 })
+    return video
+  }
+}
