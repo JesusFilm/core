@@ -87,6 +87,8 @@ export interface CardIntroCreate_button_action_LinkAction {
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export interface CardIntroCreate_button_action_EmailAction {
@@ -94,6 +96,8 @@ export interface CardIntroCreate_button_action_EmailAction {
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export type CardIntroCreate_button_action = CardIntroCreate_button_action_PhoneAction | CardIntroCreate_button_action_NavigateToBlockAction | CardIntroCreate_button_action_LinkAction | CardIntroCreate_button_action_EmailAction;
@@ -160,6 +164,8 @@ export interface CardIntroCreate_buttonBlockUpdate_action_LinkAction {
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export interface CardIntroCreate_buttonBlockUpdate_action_EmailAction {
@@ -167,6 +173,8 @@ export interface CardIntroCreate_buttonBlockUpdate_action_EmailAction {
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export type CardIntroCreate_buttonBlockUpdate_action = CardIntroCreate_buttonBlockUpdate_action_PhoneAction | CardIntroCreate_buttonBlockUpdate_action_NavigateToBlockAction | CardIntroCreate_buttonBlockUpdate_action_LinkAction | CardIntroCreate_buttonBlockUpdate_action_EmailAction;
@@ -264,6 +272,8 @@ export interface CardIntroCreate_video_action_LinkAction {
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export interface CardIntroCreate_video_action_EmailAction {
@@ -271,6 +281,8 @@ export interface CardIntroCreate_video_action_EmailAction {
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export type CardIntroCreate_video_action = CardIntroCreate_video_action_PhoneAction | CardIntroCreate_video_action_NavigateToBlockAction | CardIntroCreate_video_action_LinkAction | CardIntroCreate_video_action_EmailAction;
