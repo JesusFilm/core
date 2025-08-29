@@ -9,7 +9,21 @@
     "e2e": {
       "executor": "nx:run-commands",
       "options": {
+        "commands": ["playwright test src/smoke"],
+        "cwd": "apps/journeys-admin-e2e"
+      }
+    },
+    "e2e-full": {
+      "executor": "nx:run-commands",
+      "options": {
         "commands": ["playwright test"],
+        "cwd": "apps/journeys-admin-e2e"
+      }
+    },
+    "smoke": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": ["playwright test src/smoke"],
         "cwd": "apps/journeys-admin-e2e"
       }
     },

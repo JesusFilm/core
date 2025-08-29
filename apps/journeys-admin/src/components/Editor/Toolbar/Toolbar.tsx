@@ -176,27 +176,33 @@ export function Toolbar({ user }: ToolbarProps): ReactElement {
         flexShrink: 0
       }}
     >
-      <NextLink href="/" passHref legacyBehavior>
-        <IconButton data-testid="NextStepsLogo" disableRipple>
-          <Image
-            src={logo}
-            alt="Next Steps"
-            height={32}
-            width={32}
-            style={{
-              maxWidth: '100%',
-              height: 'auto'
-            }}
-          />
+      <IconButton
+        component={NextLink}
+        href="/"
+        data-testid="NextStepsLogo"
+        disableRipple
+      >
+        <Image
+          src={logo}
+          alt="Next Steps"
+          height={32}
+          width={32}
+          style={{
+            maxWidth: '100%',
+            height: 'auto'
+          }}
+        />
+      </IconButton>
+      <Tooltip title="See all journeys" placement="bottom" arrow>
+        <IconButton
+          component={NextLink}
+          href="/"
+          data-testid="ToolbarBackButton"
+          disabled={isNavigating}
+        >
+          <FormatListBulletedIcon />
         </IconButton>
-      </NextLink>
-      <NextLink href="/" passHref legacyBehavior>
-        <Tooltip title="See all journeys" placement="bottom" arrow>
-          <IconButton data-testid="ToolbarBackButton" disabled={isNavigating}>
-            <FormatListBulletedIcon />
-          </IconButton>
-        </Tooltip>
-      </NextLink>
+      </Tooltip>
       <Stack
         gap={2}
         direction="row"

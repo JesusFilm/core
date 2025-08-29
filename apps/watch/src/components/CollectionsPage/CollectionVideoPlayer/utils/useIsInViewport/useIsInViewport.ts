@@ -5,7 +5,9 @@ import { useEffect, useState } from 'react'
  * @param ref React ref object pointing to the HTML element to observe
  * @returns boolean indicating whether the element is currently in viewport
  */
-export const useIsInViewport = (ref: React.RefObject<HTMLElement>): boolean => {
+export const useIsInViewport = (
+  ref: React.RefObject<HTMLElement | null>
+): boolean => {
   const [isIntersecting, setIsIntersecting] = useState(false)
 
   useEffect(() => {
