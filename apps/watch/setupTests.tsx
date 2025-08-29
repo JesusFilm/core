@@ -32,6 +32,6 @@ if (process.env.CI === 'true')
   jest.retryTimes(3, { logErrorsBeforeRetry: true })
 
 // Start/stop MSW for node test env
-beforeAll(() => server.listen({ onUnhandledRequest: 'bypass' }))
+beforeAll(() => server.listen({ onUnhandledRequest: 'error' }))
 afterEach(() => server.resetHandlers())
 afterAll(() => server.close())

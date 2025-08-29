@@ -6,12 +6,9 @@ import { SearchBoxRenderState } from 'instantsearch.js/es/connectors/search-box/
 import { useHits, useRefinementList, useSearchBox } from 'react-instantsearch'
 
 import { SearchBarProvider } from '@core/journeys/ui/algolia/SearchBarProvider'
-import { fetchCountryMock } from '@core/journeys/ui/SearchBar/data'
 
 import { resourceItems } from './ResourceSections/ResourceSection/data'
 import { ResourcesView } from './ResourcesView'
-
-global.fetch = jest.fn(fetchCountryMock) as jest.Mock
 
 jest.mock('react-instantsearch')
 
