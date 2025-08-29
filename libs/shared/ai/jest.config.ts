@@ -1,6 +1,7 @@
 import type { Config } from 'jest'
 
 const config: Config = {
+  injectGlobals: true,
   displayName: 'ai',
   transform: {
     '^(?!.*\\.(js|jsx|ts|tsx|css|json)$)': '@nx/react/plugins/jest',
