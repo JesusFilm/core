@@ -19,7 +19,7 @@ describe('VideoHeroOverlay', () => {
       </MockedProvider>
     )
     expect(getByText('JESUS')).toBeInTheDocument()
-    expect(getByText('{{ duration }} min')).toBeInTheDocument()
+    expect(getByText('128 min')).toBeInTheDocument()
     expect(getByRole('button', { name: 'Play Video' })).toBeInTheDocument()
   })
 

@@ -13,6 +13,13 @@
     "incremental": true,
     "tsBuildInfoFile": "../../.cache/journeys/tsc/.tsbuildinfo"
   },
-  "include": ["**/*.ts", "**/*.tsx", "**/*.js", "**/*.jsx", "next-env.d.ts"],
+  "include": [
+    "**/*.ts",
+    "**/*.tsx",
+    "**/*.js",
+    "**/*.jsx",
+    "next-env.d.ts",
+    "postcss.config.mjs"
+  ],
   "exclude": ["node_modules", "jest.config.ts"]
 }

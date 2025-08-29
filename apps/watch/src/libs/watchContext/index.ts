@@ -1,6 +1,7 @@
 export {
   WatchProvider,
   useWatch,
+  reducer,
   type WatchInitialState,
   type WatchAction,
   type WatchState

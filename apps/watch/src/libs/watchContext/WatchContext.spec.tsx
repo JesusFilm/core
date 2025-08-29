@@ -14,7 +14,6 @@ import {
 describe('WatchContext', () => {
   describe('reducer', () => {
     const defaultState: WatchState = {
-      siteLanguage: 'en',
       audioLanguage: '529',
       subtitleLanguage: '529',
       subtitleOn: false
@@ -24,7 +23,6 @@ describe('WatchContext', () => {
       it('should update only provided preference fields', () => {
         const action: WatchAction = {
           type: 'SetLanguagePreferences',
-          siteLanguage: 'es',
           audioLanguage: '496'
         }
 
@@ -32,7 +30,6 @@ describe('WatchContext', () => {
 
         expect(result).toEqual({
           ...defaultState,
-          siteLanguage: 'es',
           audioLanguage: '496'
         })
       })
@@ -328,58 +325,6 @@ describe('WatchContext', () => {
       })
     })
 
-    describe('UpdateSiteLanguage', () => {
-      it('should update site language with cascading to audio and subtitle languages', () => {
-        const mockLanguages = [
-          {
-            id: '529',
-            bcp47: 'en',
-            slug: 'english',
-            name: [{ primary: true, value: 'English' }],
-            __typename: 'Language' as const
-          },
-          {
-            id: '496',
-            bcp47: 'es',
-            slug: 'spanish',
-            name: [{ primary: true, value: 'Spanish' }],
-            __typename: 'Language' as const
-          }
-        ]
-
-        const stateWithLanguages = {
-          ...defaultState,
-          allLanguages: mockLanguages
-        } as WatchState
-
-        const action: WatchAction = {
-          type: 'UpdateSiteLanguage',
-          language: 'es'
-        }
-
-        const result = reducer(stateWithLanguages, action)
-
-        expect(result.siteLanguage).toBe('es')
-        expect(result.audioLanguage).toBe('496')
-        expect(result.subtitleLanguage).toBe('496')
-        expect(result.loading).toBe(true)
-      })
-
-      it('should preserve existing language values when no matching language found', () => {
-        const action: WatchAction = {
-          type: 'UpdateSiteLanguage',
-          language: 'fr'
-        }
-
-        const result = reducer(defaultState, action)
-
-        expect(result.siteLanguage).toBe('fr')
-        expect(result.audioLanguage).toBe(defaultState.audioLanguage)
-        expect(result.subtitleLanguage).toBe(defaultState.subtitleLanguage)
-        expect(result.loading).toBe(true)
-      })
-    })
-
     describe('UpdateAudioLanguage', () => {
       it('should update audio language and cascade to subtitle language', () => {
         const action: WatchAction = {
@@ -441,7 +386,6 @@ describe('WatchContext', () => {
 
   describe('WatchProvider', () => {
     const defaultInitialState: WatchInitialState = {
-      siteLanguage: 'en',
       audioLanguage: '529',
       subtitleLanguage: '529',
       subtitleOn: false
@@ -461,7 +405,6 @@ describe('WatchContext', () => {
       })
 
       expect(result.current.state).toEqual({
-        siteLanguage: 'en',
         audioLanguage: '529',
         autoSubtitle: undefined,
         videoSubtitleLanguageIds: [],
@@ -504,7 +447,6 @@ describe('WatchContext', () => {
       })
 
       expect(result.current.state).toEqual({
-        siteLanguage: 'en',
         audioLanguage: '529',
         subtitleLanguage: '529',
         subtitleOn: false,
@@ -549,7 +491,6 @@ describe('WatchContext', () => {
       })
 
       expect(result.current.state).toEqual({
-        siteLanguage: 'en',
         audioLanguage: '999',
         subtitleLanguage: '529',
         subtitleOn: false,

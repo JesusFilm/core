@@ -1,6 +1,5 @@
 import { sendGTMEvent } from '@next/third-parties/google'
 import dynamic from 'next/dynamic'
-import { useTranslation } from 'next-i18next'
 import { ReactElement, useState } from 'react'
 import { v4 as uuidv4 } from 'uuid'
 
@@ -24,8 +23,6 @@ export const QuizButton = ({
   buttonText,
   contentId
 }: QuizButtonProps): ReactElement => {
-  const { t } = useTranslation('apps-watch')
-
   const [quizModalOpen, setQuizModalOpen] = useState<boolean | null>(null)
 
   function handleClick() {

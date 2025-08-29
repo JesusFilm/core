@@ -50,7 +50,6 @@ const useTranslationMock = useTranslation as jest.Mock
 
 // Default mock data for reuse across tests
 const defaultInitialState = {
-  siteLanguage: 'en',
   audioLanguage: '529',
   subtitleLanguage: '529',
   subtitleOn: false
@@ -95,7 +94,6 @@ describe('AudioTrackSelect', () => {
 
   it('should display native name when audioLanguage matches a language in allLanguages', () => {
     const initialLanguageState = {
-      siteLanguage: 'en',
       audioLanguage: '529', // This will match the English language
       subtitleLanguage: '529',
       subtitleOn: false,
@@ -142,7 +140,6 @@ describe('AudioTrackSelect', () => {
     useRouterMock.mockReturnValue(mockRouterWithNonMatchingPath)
 
     const initialLanguageState = {
-      siteLanguage: 'en',
       audioLanguage: 'nonexistent-id', // This won't match any language
       subtitleLanguage: '529',
       subtitleOn: false,
@@ -191,7 +188,6 @@ describe('AudioTrackSelect', () => {
     useRouterMock.mockReturnValue(mockRouterWithMatchingPath)
 
     const initialLanguageState = {
-      siteLanguage: 'en',
       audioLanguage: 'nonexistent-id', // This won't match any language
       subtitleLanguage: '529',
       subtitleOn: false,
@@ -258,7 +254,6 @@ describe('AudioTrackSelect', () => {
     useRouterMock.mockReturnValue(mockRouterWithDifferentPath)
 
     const initialLanguageState = {
-      siteLanguage: 'en',
       audioLanguage: '496', // This value is gained from cookies and not slug path, this is required to calculate the currentAudioLanguage
       subtitleLanguage: '529',
       subtitleOn: false,
@@ -326,7 +321,6 @@ describe('AudioTrackSelect', () => {
 
   it('should handle when allLanguages is null/undefined', () => {
     const initialLanguageState = {
-      siteLanguage: 'en',
       audioLanguage: '529',
       subtitleLanguage: '529',
       subtitleOn: false,
@@ -348,7 +342,6 @@ describe('AudioTrackSelect', () => {
 
   it('should handle language with missing non-primary name', () => {
     const initialLanguageState = {
-      siteLanguage: 'en',
       audioLanguage: '529',
       subtitleLanguage: '529',
       subtitleOn: false,
@@ -385,7 +378,6 @@ describe('AudioTrackSelect', () => {
 
   it('should handle language with missing primary name', () => {
     const initialLanguageState = {
-      siteLanguage: 'en',
       audioLanguage: '529',
       subtitleLanguage: '529',
       subtitleOn: false,
@@ -422,7 +414,6 @@ describe('AudioTrackSelect', () => {
 
   it('should handle when preferred language is available for video', async () => {
     const initialLanguageState = {
-      siteLanguage: 'en',
       audioLanguage: '529', // User prefers English
       subtitleLanguage: '529',
       subtitleOn: false,
@@ -477,7 +468,6 @@ describe('AudioTrackSelect', () => {
 
   it('should show "Not available in [language]" when preferred language is not available for video', async () => {
     const initialLanguageState = {
-      siteLanguage: 'en',
       audioLanguage: '529', // User prefers English
       subtitleLanguage: '529',
       subtitleOn: false,
@@ -564,7 +554,6 @@ describe('AudioTrackSelect', () => {
 
   it('should display default helper text when videoId is null', () => {
     const initialLanguageState = {
-      siteLanguage: 'en',
       audioLanguage: '529',
       subtitleLanguage: '529',
       subtitleOn: false,
@@ -613,7 +602,6 @@ describe('AudioTrackSelect', () => {
       useInstantSearchMock.mockReturnValue(mockInstantSearch)
 
       const initialLanguageState = {
-        siteLanguage: 'en',
         audioLanguage: '529',
         subtitleLanguage: '529',
         subtitleOn: false,
@@ -717,7 +705,6 @@ describe('AudioTrackSelect', () => {
       useInstantSearchMock.mockReturnValue(undefined)
 
       const initialLanguageState = {
-        siteLanguage: 'en',
         audioLanguage: '529',
         subtitleLanguage: '529',
         subtitleOn: false,
@@ -778,7 +765,6 @@ describe('AudioTrackSelect', () => {
       useInstantSearchMock.mockReturnValue(mockInstantSearch)
 
       const initialLanguageState = {
-        siteLanguage: 'en',
         audioLanguage: '529',
         subtitleLanguage: '529',
         subtitleOn: false,
@@ -841,7 +827,6 @@ describe('AudioTrackSelect', () => {
       })
 
       const initialLanguageState = {
-        siteLanguage: 'en',
         audioLanguage: '529',
         subtitleLanguage: '529',
         subtitleOn: false,
@@ -887,7 +872,6 @@ describe('AudioTrackSelect', () => {
       useInstantSearchMock.mockReturnValue(mockInstantSearch)
 
       const initialLanguageState = {
-        siteLanguage: 'en',
         audioLanguage: '529',
         subtitleLanguage: '529',
         subtitleOn: false,
@@ -970,7 +954,6 @@ describe('AudioTrackSelect', () => {
   describe('handleChange reload logic', () => {
     it('should set reload=true when language is available for current video', async () => {
       const initialLanguageState = {
-        siteLanguage: 'en',
         audioLanguage: '529',
         subtitleLanguage: '529',
         subtitleOn: false,
@@ -1051,7 +1034,6 @@ describe('AudioTrackSelect', () => {
 
     it('should set reload=false when language is NOT available for current video', async () => {
       const initialLanguageState = {
-        siteLanguage: 'en',
         audioLanguage: '529',
         subtitleLanguage: '529',
         subtitleOn: false,
@@ -1147,7 +1129,6 @@ describe('AudioTrackSelect', () => {
       useInstantSearchMock.mockReturnValue(undefined)
 
       const initialLanguageState = {
-        siteLanguage: 'en',
         audioLanguage: '529',
         subtitleLanguage: '529',
         subtitleOn: false,
@@ -1226,7 +1207,6 @@ describe('AudioTrackSelect', () => {
       useInstantSearchMock.mockReturnValue(mockInstantSearch)
 
       const initialLanguageState = {
-        siteLanguage: 'en',
         audioLanguage: '529',
         subtitleLanguage: '529',
         subtitleOn: false,
@@ -1307,7 +1287,6 @@ describe('AudioTrackSelect', () => {
 
     it('should handle edge case when videoAudioLanguages is undefined', async () => {
       const initialLanguageState = {
-        siteLanguage: 'en',
         audioLanguage: '529',
         subtitleLanguage: '529',
         subtitleOn: false,
@@ -1366,7 +1345,6 @@ describe('AudioTrackSelect', () => {
 
     it('should handle edge case when videoAudioLanguages is empty array', async () => {
       const initialLanguageState = {
-        siteLanguage: 'en',
         audioLanguage: '529',
         subtitleLanguage: '529',
         subtitleOn: false,

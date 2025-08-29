@@ -34,7 +34,9 @@ export function LocalAppBar({
   showLanguageSwitcher = false,
   ...props
 }: LocalAppBarProps): ReactElement {
-  const [openLanguagesDialog, setOpenLanguagesDialog] = useState(false)
+  const [openLanguagesDialog, setOpenLanguagesDialog] = useState<
+    boolean | null
+  >(null)
 
   return (
     <AppBar
@@ -103,10 +105,12 @@ export function LocalAppBar({
                     sx={{ fontSize: 39, color: 'text.secondary' }}
                   />
                 </IconButton>
-                <DynamicLanguageSwitchDialog
-                  open={openLanguagesDialog}
-                  handleClose={() => setOpenLanguagesDialog(false)}
-                />
+                {openLanguagesDialog != null && (
+                  <DynamicLanguageSwitchDialog
+                    open={openLanguagesDialog}
+                    handleClose={() => setOpenLanguagesDialog(false)}
+                  />
+                )}
               </>
             )}
 

@@ -1,4 +1,4 @@
-import { ApolloProvider, NormalizedCacheObject, gql } from '@apollo/client'
+import { ApolloProvider, NormalizedCacheObject } from '@apollo/client'
 import type { GetStaticProps } from 'next'
 import { useTranslation } from 'next-i18next'
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations'

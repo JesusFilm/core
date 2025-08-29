@@ -1,18 +1,18 @@
-import nxEslintPlugin from '@nx/eslint-plugin'
-import eslintPluginImport from 'eslint-plugin-import'
-import loveConfig from 'eslint-config-love'
-import nodePlugin from 'eslint-plugin-n'
-import promisePlugin from 'eslint-plugin-promise'
-import tsParser from '@typescript-eslint/parser'
-import prettierConfig from 'eslint-config-prettier'
-import tseslint from 'typescript-eslint'
 import eslint from '@eslint/js'
+import nxEslintPlugin from '@nx/eslint-plugin'
+import tsParser from '@typescript-eslint/parser'
+import loveConfig from 'eslint-config-love'
+import prettierConfig from 'eslint-config-prettier'
 import i18next from 'eslint-plugin-i18next'
+import eslintPluginImport from 'eslint-plugin-import'
 import pluginJest from 'eslint-plugin-jest'
 import jestFormatting from 'eslint-plugin-jest-formatting'
+import nodePlugin from 'eslint-plugin-n'
+import promisePlugin from 'eslint-plugin-promise'
 import storybook from 'eslint-plugin-storybook'
+import tseslint from 'typescript-eslint'
 
-const config = [
+const commonConfig = [
   {
     ignores: [
       'jest.config.ts',
@@ -35,19 +35,22 @@ const config = [
       n: nodePlugin,
       promise: promisePlugin
     },
-    languageOptions: {
-      parser: tsParser,
-      parserOptions: {
-        projectService: true,
-        tsconfigRootDir: import.meta.dirname
-      }
-    },
+
     linterOptions: {
       reportUnusedDisableDirectives: 'off'
     }
   },
   { settings: { 'import/internal-regex': '^(@core|.prisma)' } },
   {
+    files: ['**/*.ts', '**/*.tsx'],
+    languageOptions: {
+      parser: tsParser,
+      parserOptions: {
+        project: ['./tsconfig.*'],
+        projectService: true,
+        tsconfigRootDir: import.meta.dirname
+      }
+    },
     rules: {
       '@typescript-eslint/await-thenable': 'off',
       '@typescript-eslint/ban-tslint-comment': 'off',
@@ -110,10 +113,7 @@ const config = [
       'import/order': [
         'error',
         {
-          alphabetize: {
-            order: 'asc',
-            caseInsensitive: true
-          },
+          alphabetize: { order: 'asc', caseInsensitive: true },
           groups: [
             'builtin',
             'external',
@@ -132,7 +132,6 @@ const config = [
       'no-extra-semi': 'off',
       'no-empty': 'warn',
       'no-magic-numbers': 'off',
-
       'no-multiple-empty-lines': ['error', { max: 1 }],
       'no-restricted-imports': [
         'error',
@@ -148,6 +147,20 @@ const config = [
         }
       ],
       'sort-imports': ['error', { ignoreDeclarationSort: true }]
+    }
+  },
+  {
+    files: ['**/*.js', '**/*.cjs', '**/*.mjs'],
+    languageOptions: {
+      globals: {
+        require: 'readonly',
+        module: 'readonly',
+        process: 'readonly'
+      }
+    },
+    rules: {
+      '@typescript-eslint/no-require-imports': 'off',
+      'import/no-anonymous-default-export': 'off'
     }
   },
   {
@@ -198,9 +211,7 @@ const config = [
   {
     files: ['**/*.spec.ts', '**/*.spec.tsx', '**/*.spec.js', '**/*.spec.jsx'],
     plugins: { jest: pluginJest, 'jest-formatting': jestFormatting },
-    languageOptions: {
-      globals: pluginJest.environments.globals.globals
-    },
+    languageOptions: { globals: pluginJest.environments.globals.globals },
     rules: {
       ...jestFormatting.configs.recommended.overrides[0].rules,
       'jest/no-disabled-tests': 'off',
@@ -216,10 +227,17 @@ const config = [
       '**/*.stories.js',
       '**/*.stories.jsx'
     ],
+    rules: { 'i18next/no-literal-string': 'off' }
+  },
+  {
+    files: ['**/jest.config.ts'],
     rules: {
-      'i18next/no-literal-string': 'off'
+      'import/no-anonymous-default-export': 'off'
     }
+  },
+  {
+    ignores: ['./webpack.config.js', './eslint.config.{mjs,js}']
   }
 ]
 
-export default tseslint.config(...config)
+export default commonConfig
