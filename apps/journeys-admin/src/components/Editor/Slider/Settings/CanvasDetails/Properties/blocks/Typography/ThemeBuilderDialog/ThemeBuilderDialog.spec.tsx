@@ -337,10 +337,9 @@ describe('ThemeBuilderDialog', () => {
 
     const spy = jest.spyOn(require('notistack'), 'enqueueSnackbar')
     fireEvent.click(screen.getByText('Confirm'))
-      expect(enqueueSnackbar).toHaveBeenCalledWith('Failed to create theme', {
-        variant: 'error',
-        preventDuplicate: true
-      })
+    expect(enqueueSnackbar).toHaveBeenCalledWith('Failed to create theme', {
+      variant: 'error',
+      preventDuplicate: true
     })
   })
 
