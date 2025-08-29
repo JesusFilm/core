@@ -15,7 +15,6 @@ import { videos } from '../Videos/__generated__/testData'
 import { NewVideoContentPage } from './NewVideoContentPage'
 
 const initialWatchState = {
-  siteLanguage: 'en',
   audioLanguage: '529',
   subtitleLanguage: '529',
   subtitleOn: true,

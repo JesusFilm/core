@@ -1,35 +1,33 @@
 import { LanguageOption } from '@core/shared/ui/LanguageAutocomplete'
 
-import { GetAllLanguages_languages as Language } from '../../../../../__generated__/GetAllLanguages'
-
 import { getCurrentAudioLanguage } from './getCurrentAudioLanguage'
 
-const mockLanguages: Language[] = [
+const mockLanguages = [
   {
     id: '529',
     slug: 'english',
     name: [
-      { primary: true, value: 'English' },
-      { primary: false, value: 'English' }
+      { primary: true, value: 'English', id: '529' },
+      { primary: false, value: 'English', id: '529' }
     ]
   },
   {
     id: '496',
     slug: 'spanish',
     name: [
-      { primary: true, value: 'Spanish' },
-      { primary: false, value: 'Español' }
+      { primary: true, value: 'Spanish', id: '496' },
+      { primary: false, value: 'Español', id: '496' }
     ]
   },
   {
     id: '1106',
     slug: 'french',
     name: [
-      { primary: true, value: 'French' },
-      { primary: false, value: 'Français' }
+      { primary: true, value: 'French', id: '1106' },
+      { primary: false, value: 'Français', id: '1106' }
     ]
   }
-] as Language[]
+]
 
 const expectedEnglishOption: LanguageOption = {
   id: '529',
@@ -175,13 +173,13 @@ describe('getCurrentAudioLanguage', () => {
 
   describe('edge cases', () => {
     it('should handle language without native name', () => {
-      const languagesWithoutNative: Language[] = [
+      const languagesWithoutNative = [
         {
           id: '529',
           slug: 'english',
-          name: [{ primary: true, value: 'English' }]
+          name: [{ primary: true, value: 'English', id: '529' }]
         }
-      ] as Language[]
+      ]
 
       const result = getCurrentAudioLanguage({
         allLanguages: languagesWithoutNative,
@@ -199,13 +197,13 @@ describe('getCurrentAudioLanguage', () => {
     })
 
     it('should handle language without local name', () => {
-      const languagesWithoutLocal: Language[] = [
+      const languagesWithoutLocal = [
         {
           id: '529',
           slug: 'english',
-          name: [{ primary: false, value: 'English Native' }]
+          name: [{ primary: false, value: 'English Native', id: '529' }]
         }
-      ] as Language[]
+      ]
 
       const result = getCurrentAudioLanguage({
         allLanguages: languagesWithoutLocal,

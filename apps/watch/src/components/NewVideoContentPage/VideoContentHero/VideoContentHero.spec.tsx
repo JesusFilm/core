@@ -39,7 +39,6 @@ describe('VideoContentHero', () => {
         <VideoProvider value={{ content: videos[0] }}>
           <WatchProvider
             initialState={{
-              siteLanguage: 'en',
               audioLanguage: 'en',
               subtitleLanguage: 'en',
               subtitleOn: false
@@ -72,7 +71,6 @@ describe('VideoContentHero', () => {
           <VideoProvider value={{ content: videos[0] }}>
             <WatchProvider
               initialState={{
-                siteLanguage: 'en',
                 audioLanguage: 'en',
                 subtitleLanguage: 'en',
                 subtitleOn: false
@@ -106,7 +104,6 @@ describe('VideoContentHero', () => {
           <VideoProvider value={{ content: videos[0] }}>
             <WatchProvider
               initialState={{
-                siteLanguage: 'en',
                 audioLanguage: 'en',
                 subtitleLanguage: 'en',
                 subtitleOn: false
@@ -140,7 +137,6 @@ describe('VideoContentHero', () => {
           <VideoProvider value={{ content: videos[0] }}>
             <WatchProvider
               initialState={{
-                siteLanguage: 'en',
                 audioLanguage: 'en',
                 subtitleLanguage: 'en',
                 subtitleOn: false

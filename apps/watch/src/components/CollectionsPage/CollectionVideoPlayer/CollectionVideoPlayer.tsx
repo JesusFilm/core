@@ -12,7 +12,6 @@ import Typography from '@mui/material/Typography'
 import { sendGTMEvent } from '@next/third-parties/google'
 import fscreen from 'fscreen'
 import debounce from 'lodash/debounce'
-import { useTranslation } from 'next-i18next'
 import { ReactElement, useEffect, useRef, useState } from 'react'
 import videojs from 'video.js'
 import Player from 'video.js/dist/types/player'
@@ -39,7 +38,6 @@ export function CollectionVideoPlayer({
   setMutePage,
   startAt
 }: VideoPlayerProps): ReactElement {
-  const { t } = useTranslation('apps-watch')
   const containerRef = useRef<HTMLDivElement>(null)
   const videoRef = useRef<HTMLVideoElement>(null)
 
