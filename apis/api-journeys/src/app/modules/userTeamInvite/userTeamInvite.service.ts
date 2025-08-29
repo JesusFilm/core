@@ -21,14 +21,16 @@ export class UserTeamInviteService {
   async sendTeamInviteEmail(
     team: Team,
     email: string,
-    sender: Omit<User, 'id' | 'emailVerified'>
+    sender: Omit<User, 'id' | 'emailVerified'>,
+    senderId: string
   ): Promise<void> {
     await this.emailQueue.add(
       'team-invite',
       {
         team,
         email,
-        sender
+        sender,
+        senderId
       },
       {
         removeOnComplete: true,
@@ -41,13 +43,15 @@ export class UserTeamInviteService {
 
   async sendTeamInviteAcceptedEmail(
     team: TeamWithUserTeam,
-    sender: Omit<User, 'id' | 'emailVerified'>
+    sender: Omit<User, 'id' | 'emailVerified'>,
+    senderId: string
   ): Promise<void> {
     await this.emailQueue.add(
       'team-invite-accepted',
       {
         team,
-        sender
+        sender,
+        senderId
       },
       {
         removeOnComplete: true,

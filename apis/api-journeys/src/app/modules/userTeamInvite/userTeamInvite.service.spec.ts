@@ -42,14 +42,16 @@ describe('UserTeamService', () => {
           'https://images.unsplash.com/photo-1706565026381-29cd21eb9a7c?q=80&w=5464&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'
       }
 
-      await service.sendTeamInviteEmail(team, email, sender)
+      const senderId = 'senderId123'
+      await service.sendTeamInviteEmail(team, email, sender, senderId)
 
       expect(emailQueue.add).toHaveBeenCalledWith(
         'team-invite',
         {
           email,
           team,
-          sender
+          sender,
+          senderId
         },
         {
           removeOnComplete: true,
@@ -84,13 +86,14 @@ describe('UserTeamService', () => {
           'https://images.unsplash.com/photo-1706565026381-29cd21eb9a7c?q=80&w=5464&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'
       }
 
-      await service.sendTeamInviteAcceptedEmail(team, sender)
+      await service.sendTeamInviteAcceptedEmail(team, sender, 'senderId')
 
       expect(emailQueue.add).toHaveBeenCalledWith(
         'team-invite-accepted',
         {
           team,
-          sender
+          sender,
+          senderId: 'senderId'
         },
         {
           removeOnComplete: true,

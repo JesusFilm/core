@@ -50,12 +50,14 @@ type OmittedUser = Omit<User, 'id' | 'emailVerified'>
 export interface TeamInviteAccepted {
   team: TeamWithUserTeam
   sender: OmittedUser
+  senderId: string // Add sender ID to fetch complete user data
 }
 
 export interface TeamInviteJob {
   team: Team
   email: string
   sender: OmittedUser
+  senderId: string // Add sender ID to fetch complete user data
 }
 
 export interface TeamRemoved {

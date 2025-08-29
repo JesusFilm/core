@@ -47,11 +47,14 @@ describe('UserTeamInviteResolver', () => {
     team
   }
 
+  const mockSendTeamInviteEmail = jest.fn().mockResolvedValue(null)
+  const mockSendTeamInviteAcceptedEmail = jest.fn().mockResolvedValue(null)
+
   const userTeamInviteService = {
     provide: UserTeamInviteService,
     useFactory: () => ({
-      sendTeamInviteEmail: jest.fn().mockResolvedValue(null),
-      sendTeamInviteAcceptedEmail: jest.fn().mockResolvedValue(null)
+      sendTeamInviteEmail: mockSendTeamInviteEmail,
+      sendTeamInviteAcceptedEmail: mockSendTeamInviteAcceptedEmail
     })
   }
 
@@ -73,6 +76,10 @@ describe('UserTeamInviteResolver', () => {
       PrismaService
     ) as DeepMockProxy<PrismaService>
     ability = await new AppCaslFactory().createAbility({ id: 'userId' })
+
+    // Reset mocks before each test
+    mockSendTeamInviteEmail.mockClear()
+    mockSendTeamInviteAcceptedEmail.mockClear()
   })
 
   describe('userTeamInvites', () => {
@@ -154,6 +161,19 @@ describe('UserTeamInviteResolver', () => {
           }
         }
       })
+
+      // Verify that sendTeamInviteEmail service method is called with senderId
+      expect(mockSendTeamInviteEmail).toHaveBeenCalledWith(
+        team,
+        input.email,
+        {
+          firstName: user.firstName,
+          lastName: user.lastName,
+          email: user.email,
+          imageUrl: undefined
+        },
+        user.id // Verify senderId is passed correctly
+      )
     })
 
     it('throws error if not authorized', async () => {
