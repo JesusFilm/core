@@ -68,7 +68,11 @@ export function NewVideoContentPage(): ReactElement {
       if (data?.video?.variantLanguagesWithSlug) {
         dispatch({
           type: 'SetVideoAudioLanguages',
-          videoAudioLanguages: data.video.variantLanguagesWithSlug
+          videoAudioLanguagesIdsAndSlugs:
+            data.video.variantLanguagesWithSlug.map((language) => ({
+              id: language?.language?.id,
+              slug: language?.slug
+            }))
         })
       }
     }

@@ -5,9 +5,9 @@ import { useRouter } from 'next/router'
 import { useTranslation } from 'next-i18next'
 
 import { GetSubtitles } from '../../../../__generated__/GetSubtitles'
-import { WatchProvider } from '../../../libs/watchContext'
+import { WatchProvider, WatchState } from '../../../libs/watchContext'
 import { TestWatchState } from '../../../libs/watchContext/TestWatchState'
-import { GET_SUBTITLES } from '../../SubtitleDialog/SubtitleDialog'
+import { GET_SUBTITLES } from '../../../libs/watchContext/useSubtitleUpdate/useSubtitleUpdate'
 
 import { SubtitlesSelect } from './SubtitlesSelect'
 
@@ -28,7 +28,11 @@ const defaultInitialState = {
   siteLanguage: 'en',
   audioLanguage: '529',
   subtitleLanguage: '529',
-  subtitleOn: true
+  subtitleOn: true,
+  videoId: undefined,
+  videoVariantSlug: undefined,
+  videoSubtitleLanguageIds: [],
+  videoAudioLanguagesIdsAndSlugs: []
 }
 
 const defaultGetSubtitlesMock: MockedResponse<GetSubtitles> = {
@@ -117,7 +121,6 @@ describe('SubtitlesSelect', () => {
       </MockedProvider>
     )
 
-    // Should render main elements
     expect(screen.getByText('Subtitles')).toBeInTheDocument()
     expect(screen.getByRole('combobox')).toBeInTheDocument()
     expect(screen.getByLabelText('Show subtitles')).toBeInTheDocument()
@@ -159,14 +162,13 @@ describe('SubtitlesSelect', () => {
       </MockedProvider>
     )
 
-    // Should display the local name (primary) in the autocomplete
     expect(screen.getByDisplayValue('English')).toBeInTheDocument()
   })
 
   it('should handle when subtitleLanguage does not match any language in allLanguages', () => {
     const stateWithNonMatchingSubtitleLanguage = {
       ...defaultInitialState,
-      subtitleLanguage: 'nonexistent-id', // This won't match any language
+      subtitleLanguage: 'nonexistent-id',
       allLanguages: [
         {
           __typename: 'Language' as const,
@@ -197,7 +199,6 @@ describe('SubtitlesSelect', () => {
       </MockedProvider>
     )
 
-    // Should render with empty value since no match is found
     const combobox = screen.getByRole('combobox')
     expect(combobox).toHaveValue('')
   })
@@ -231,7 +232,6 @@ describe('SubtitlesSelect', () => {
       </MockedProvider>
     )
 
-    // Should render with empty value
     const combobox = screen.getByRole('combobox')
     expect(combobox).toHaveValue('')
   })
@@ -251,7 +251,6 @@ describe('SubtitlesSelect', () => {
       </MockedProvider>
     )
 
-    // Should render with empty value
     const combobox = screen.getByRole('combobox')
     expect(combobox).toHaveValue('')
   })
@@ -272,7 +271,6 @@ describe('SubtitlesSelect', () => {
               value: 'English',
               primary: true
             }
-            // Missing non-primary (native) name
           ]
         }
       ]
@@ -286,7 +284,6 @@ describe('SubtitlesSelect', () => {
       </MockedProvider>
     )
 
-    // Should still render the component, but the native name will be undefined
     expect(screen.getByRole('combobox')).toBeInTheDocument()
   })
 
@@ -306,7 +303,6 @@ describe('SubtitlesSelect', () => {
               value: 'English Native',
               primary: false
             }
-            // Missing primary name
           ]
         }
       ]
@@ -320,7 +316,6 @@ describe('SubtitlesSelect', () => {
       </MockedProvider>
     )
 
-    // Should still render the component
     expect(screen.getByRole('combobox')).toBeInTheDocument()
   })
 
@@ -370,14 +365,12 @@ describe('SubtitlesSelect', () => {
     const combobox = screen.getByRole('combobox')
     await user.click(combobox)
 
-    // Wait for options to appear and click on Arabic option
     await waitFor(() => {
       expect(screen.getByText('اللغة العربية')).toBeInTheDocument()
     })
 
     await user.click(screen.getByText('اللغة العربية'))
 
-    // Verify that the selection was made (the input should show the selected value)
     await waitFor(() => {
       expect(screen.getByDisplayValue('اللغة العربية')).toBeInTheDocument()
     })
@@ -387,49 +380,19 @@ describe('SubtitlesSelect', () => {
     const user = userEvent.setup()
 
     // Set up so audioLanguage matches videoAudioLanguages, so autoSubtitle is undefined
-    const stateWithSubtitlesOn = {
+    const stateWithSubtitlesOn: WatchState = {
       ...defaultInitialState,
       subtitleOn: true,
-      autoSubtitle: null,
+      autoSubtitle: undefined,
       audioLanguage: '529',
       subtitleLanguage: '529',
-      videoAudioLanguages: [
+      videoAudioLanguagesIdsAndSlugs: [
         {
-          language: {
-            id: '529',
-            bcp47: 'en',
-            __typename: 'Language' as const,
-            slug: 'english',
-            name: [
-              {
-                primary: true,
-                value: 'English',
-                __typename: 'LanguageName' as const
-              }
-            ]
-          },
-          slug: 'english',
-          __typename: 'LanguageWithSlug' as const
+          id: '529',
+          slug: 'english'
         }
       ],
-      videoSubtitleLanguages: [
-        {
-          language: {
-            id: '529',
-            bcp47: 'en',
-            __typename: 'Language' as const,
-            name: [
-              {
-                primary: true,
-                value: 'English',
-                __typename: 'LanguageName' as const
-              }
-            ]
-          },
-          value: 'English subtitles',
-          __typename: 'VideoSubtitle' as const
-        }
-      ]
+      videoSubtitleLanguageIds: ['529']
     }
 
     render(
@@ -444,15 +407,12 @@ describe('SubtitlesSelect', () => {
     await waitFor(() => {
       expect(checkbox).toBeChecked()
     })
-    // Test that the checkbox can be clicked (interaction works)
     await user.click(checkbox)
-    // Since this is an integration test, the action is executed successfully
-    // if no errors are thrown during the click event
     expect(checkbox).toBeInTheDocument()
   })
 
-  it('should respect autoSubtitle preference over subtitleOn', () => {
-    const stateWithAutoSubtitleDifferent = {
+  it('should respect autoSubtitle preference over subtitleOn', async () => {
+    const stateWithAutoSubtitleDifferent: WatchState = {
       ...defaultInitialState,
       subtitleOn: false,
       autoSubtitle: true, // This should take precedence
@@ -471,24 +431,7 @@ describe('SubtitlesSelect', () => {
           ]
         }
       ],
-      videoSubtitleLanguages: [
-        {
-          language: {
-            id: '529',
-            bcp47: 'en',
-            __typename: 'Language' as const,
-            name: [
-              {
-                primary: true,
-                value: 'English',
-                __typename: 'LanguageName' as const
-              }
-            ]
-          },
-          value: 'English subtitles',
-          __typename: 'VideoSubtitle' as const
-        }
-      ]
+      videoSubtitleLanguageIds: ['529']
     }
 
     render(
@@ -500,6 +443,9 @@ describe('SubtitlesSelect', () => {
     )
 
     const checkbox = screen.getByRole('checkbox')
+    await waitFor(() => {
+      expect(checkbox).toBeChecked()
+    })
     expect(checkbox).toBeChecked() // Should be checked due to AutoSubtitle being true
   })
 
@@ -508,7 +454,7 @@ describe('SubtitlesSelect', () => {
       ...defaultInitialState,
       videoId: 'video123',
       videoVariantSlug: 'video123',
-      videoSubtitleLanguages: undefined,
+      videoSubtitleLanguageIds: undefined,
       allLanguages: [
         {
           __typename: 'Language' as const,
@@ -614,7 +560,7 @@ describe('SubtitlesSelect', () => {
     const stateWithoutVideoId = {
       ...defaultInitialState,
       videoId: undefined,
-      videoSubtitleLanguages: undefined
+      videoSubtitleLanguageIds: undefined
     }
 
     render(
@@ -630,28 +576,11 @@ describe('SubtitlesSelect', () => {
     expect(screen.getByRole('checkbox')).toBeInTheDocument()
   })
 
-  it('should not trigger GraphQL query when videoSubtitleLanguages already exists', () => {
+  it('should not trigger GraphQL query when videoSubtitleLanguageIds already exists', () => {
     const stateWithExistingSubtitleLanguages = {
       ...defaultInitialState,
       videoId: 'video123',
-      videoSubtitleLanguages: [
-        {
-          language: {
-            id: '529',
-            bcp47: 'en',
-            __typename: 'Language' as const,
-            name: [
-              {
-                primary: true,
-                value: 'English',
-                __typename: 'LanguageName' as const
-              }
-            ]
-          },
-          value: 'English subtitles',
-          __typename: 'VideoSubtitle' as const
-        }
-      ]
+      videoSubtitleLanguageIds: ['529']
     }
 
     render(
@@ -688,24 +617,7 @@ describe('SubtitlesSelect', () => {
           ]
         }
       ],
-      videoSubtitleLanguages: [
-        {
-          language: {
-            id: '529',
-            bcp47: 'en',
-            __typename: 'Language' as const,
-            name: [
-              {
-                primary: true,
-                value: 'English',
-                __typename: 'LanguageName' as const
-              }
-            ]
-          },
-          value: 'English subtitles',
-          __typename: 'VideoSubtitle' as const
-        }
-      ]
+      videoSubtitleLanguageIds: ['529']
     }
 
     render(

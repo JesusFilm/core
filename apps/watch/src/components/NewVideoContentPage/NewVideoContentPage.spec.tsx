@@ -216,7 +216,7 @@ describe('NewContentPage', () => {
       </MockedProvider>
     )
     expect(
-      screen.getByText('videoAudioLanguages: 0 audio languages')
+      screen.getByText('videoAudioLanguagesIdsAndSlugs: 0 audio languages')
     ).toBeInTheDocument()
 
     await waitFor(() => {
@@ -224,7 +224,7 @@ describe('NewContentPage', () => {
     })
 
     expect(
-      screen.getByText('videoAudioLanguages: 1 audio languages')
+      screen.getByText('videoAudioLanguagesIdsAndSlugs: 1 audio languages')
     ).toBeInTheDocument()
   })
 })
