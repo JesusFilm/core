@@ -21,7 +21,6 @@ const config: Config = {
   coverageReporters: ['cobertura'],
   preset: '../../jest.preset.js',
   setupFilesAfterEnv: ['<rootDir>/test/prismaMock.ts'],
-  testRunner: 'jest-circus/runner',
   transformIgnorePatterns: ['node_modules/(?!(@react-email/render)/)'],
   moduleNameMapper: {
     '@react-email/render': '<rootDir>/test/reactEmailRenderMock.ts'
