@@ -223,8 +223,8 @@ describe('LanguageSwitchDialog', () => {
 
       await waitFor(() => {
         const [french, english, spanish, maori] = screen.getAllByRole('option')
-        expect(french).toHaveTextContent('FrenchFrançais')
-        expect(english).toHaveTextContent("l'anglais")
+        expect(french).toHaveTextContent('Français')
+        expect(english).toHaveTextContent("l'anglaisEnglish")
         expect(spanish).toHaveTextContent("l'espagnolEspañol")
         expect(maori).toHaveTextContent('Maori')
       })

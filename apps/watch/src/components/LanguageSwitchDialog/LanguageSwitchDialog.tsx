@@ -57,14 +57,22 @@ export const LanguageSwitchDialog = memo(function LanguageSwitchDialog({
             currentLanguageId != '529'
               ? name.find((name) => name.id === currentLanguageId)
               : undefined
-          const englishName = name.find((name) => name.id == '529')
-          const nativeName = native
-            ? {
-                id,
-                primary: true,
-                value: native
-              }
-            : undefined
+          const englishName =
+            id != '529'
+              ? name.find((name) => name.id == '529')
+              : {
+                  id,
+                  primary: true,
+                  value: native
+                }
+          const nativeName =
+            id != '529' && native
+              ? {
+                  id,
+                  primary: true,
+                  value: native
+                }
+              : undefined
 
           return {
             id,
