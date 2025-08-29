@@ -11,6 +11,6 @@
     ],
     "target": "es2021"
   },
-  "exclude": ["**/*.spec.ts", "jest.config.ts"],
-  "include": ["**/*.ts", "**/*.tsx"]
+  "exclude": ["**/*.spec.{ts,tsx}", "jest.config.ts", "./test/**"],
+  "include": ["**/*.{ts,tsx}"]
 }
