@@ -14,6 +14,7 @@ import {
 import { CommandRedoItem } from '../../../../../../../Toolbar/Items/CommandRedoItem'
 import { CommandUndoItem } from '../../../../../../../Toolbar/Items/CommandUndoItem'
 import { createCloudflareUploadByUrlMock } from '../../../../../Drawer/ImageBlockEditor/CustomImage/CustomUrl/data'
+import { listUnsplashCollectionPhotosMock } from '../../../../../Drawer/ImageBlockEditor/UnsplashGallery/data'
 
 import { IMAGE_BLOCK_UPDATE } from './ImageOptions'
 
@@ -101,6 +102,9 @@ describe('ImageOptions', () => {
     render(
       <MockedProvider
         mocks={[
+          listUnsplashCollectionPhotosMock,
+          // Unsplash may be queried multiple times when opening the dialog
+          listUnsplashCollectionPhotosMock,
           createCloudflareUploadByUrlMock,
           {
             ...imageBlockUpdateMock,
@@ -182,6 +186,8 @@ describe('ImageOptions', () => {
     render(
       <MockedProvider
         mocks={[
+          listUnsplashCollectionPhotosMock,
+          listUnsplashCollectionPhotosMock,
           {
             ...imageBlockUpdateMock,
             request: {

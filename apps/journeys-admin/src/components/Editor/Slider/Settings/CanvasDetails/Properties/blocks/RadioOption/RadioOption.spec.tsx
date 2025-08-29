@@ -1,5 +1,5 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { getByTestId, render, waitFor } from '@testing-library/react'
+import { render, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
