@@ -1,5 +1,5 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { renderHook } from '@testing-library/react'
+import { act, renderHook } from '@testing-library/react'
 
 import { TreeBlock } from '@core/journeys/ui/block'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
@@ -39,7 +39,8 @@ describe('useBlockDeleteMutation', () => {
       )
     })
 
-    expect(await result.current[0](block)).toMatchObject({
+    const res = await act(async () => await result.current[0](block))
+    expect(res).toMatchObject({
       data: {
         blockDelete: [
           {

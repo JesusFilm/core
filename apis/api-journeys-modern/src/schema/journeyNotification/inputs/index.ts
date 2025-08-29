@@ -1,0 +1,1 @@
+export { JourneyNotificationUpdateInput } from './journeyNotificationUpdateInput'

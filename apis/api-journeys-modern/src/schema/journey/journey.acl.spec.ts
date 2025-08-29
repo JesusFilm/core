@@ -2,9 +2,9 @@ import {
   JourneyStatus,
   UserJourneyRole,
   UserTeamRole
-} from '.prisma/api-journeys-client'
+} from '@core/prisma/journeys/client'
 
-import { Action, Subject, subject } from '../../lib/auth/ability'
+import { Action } from '../../lib/auth/ability'
 
 import { Journey, journeyAcl } from './journey.acl'
 

@@ -2,7 +2,8 @@ import { google } from '@ai-sdk/google'
 import { generateObject } from 'ai'
 import { z } from 'zod'
 
-import { prisma } from '../../lib/prisma'
+import { prisma } from '@core/prisma/journeys/client'
+
 import { builder } from '../builder'
 
 builder.mutationFields((t) => ({

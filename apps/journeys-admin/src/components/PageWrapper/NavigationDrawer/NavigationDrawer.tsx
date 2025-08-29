@@ -134,43 +134,43 @@ export function NavigationDrawer({
             <ChevronRightIcon />
           </ListItemIcon>
         </ListItemButton>
-        <NextLink href="/" passHref legacyBehavior>
-          <Tooltip title={tooltip} placement="right" arrow>
-            <ListItemButton
-              selected={selectedPage === 'journeys' || selectedPage === ''}
-              data-testid="NavigationListItemDiscover"
-            >
-              <ListItemIcon>
-                <Badge
-                  variant="dot"
-                  color="warning"
-                  overlap="circular"
-                  invisible={tooltip == null}
-                >
-                  <JourneysIcon />
-                </Badge>
-              </ListItemIcon>
-              <ListItemText
-                primary={t('Discover')}
-                primaryTypographyProps={{ style: { whiteSpace: 'nowrap' } }}
-              />
-            </ListItemButton>
-          </Tooltip>
-        </NextLink>
-        <NextLink href="/templates" passHref legacyBehavior>
+        <Tooltip title={tooltip} placement="right" arrow>
           <ListItemButton
-            selected={selectedPage === 'templates'}
-            data-testid="NavigationListItemTemplates"
+            LinkComponent={NextLink}
+            href="/"
+            selected={selectedPage === 'journeys' || selectedPage === ''}
+            data-testid="NavigationListItemDiscover"
           >
             <ListItemIcon>
-              <Bag5Icon />
+              <Badge
+                variant="dot"
+                color="warning"
+                overlap="circular"
+                invisible={tooltip == null}
+              >
+                <JourneysIcon />
+              </Badge>
             </ListItemIcon>
             <ListItemText
-              primary={t('Templates')}
+              primary={t('Discover')}
               primaryTypographyProps={{ style: { whiteSpace: 'nowrap' } }}
             />
           </ListItemButton>
-        </NextLink>
+        </Tooltip>
+        <ListItemButton
+          LinkComponent={NextLink}
+          href="/templates"
+          selected={selectedPage === 'templates'}
+          data-testid="NavigationListItemTemplates"
+        >
+          <ListItemIcon>
+            <Bag5Icon />
+          </ListItemIcon>
+          <ListItemText
+            primary={t('Templates')}
+            primaryTypographyProps={{ style: { whiteSpace: 'nowrap' } }}
+          />
+        </ListItemButton>
         {user?.id != null && (
           <NoSsr>
             <Suspense>

@@ -4,6 +4,12 @@ import { render } from '@testing-library/react'
 import { CodeCanvas } from './CodeCanvas'
 
 describe('CodeCanvas', () => {
+  beforeAll(() => {
+    Object.defineProperty(HTMLCanvasElement.prototype, 'getContext', {
+      value: jest.fn()
+    })
+  })
+
   it('should show qr code', () => {
     render(<CodeCanvas shortLink="url" loading={false} />)
     expect(screen.getByRole('img', { name: 'url' })).toBeInTheDocument()

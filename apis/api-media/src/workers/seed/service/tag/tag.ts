@@ -1,6 +1,4 @@
-import { Service } from '.prisma/api-media-client'
-
-import { prisma } from '../../../../lib/prisma'
+import { Service, prisma } from '@core/prisma/media/client'
 
 export async function upsertTag(
   name: string,

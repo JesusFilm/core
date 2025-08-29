@@ -4,9 +4,9 @@ import { Meta, StoryObj } from '@storybook/react'
 import { InstantSearchTestWrapper } from '@core/journeys/ui/algolia/InstantSearchTestWrapper'
 
 import { watchConfig } from '../../libs/storybook'
+import { getLanguagesSlugMock } from '../../libs/useLanguagesSlugQuery/useLanguagesSlugQuery.mock'
 import { getVideoChildrenMock } from '../../libs/useVideoChildren/getVideoChildrenMock'
 import { VideoProvider } from '../../libs/videoContext'
-import { getLanguagesSlugMock } from '../AudioLanguageDialog/testData'
 import { getSubtitleMock } from '../SubtitleDialog/testData'
 import { videos } from '../Videos/__generated__/testData'
 

@@ -34,7 +34,7 @@ export function BackgroundVideo({
   setLoading
 }: BackgroundVideoProps): ReactElement {
   const videoRef = useRef<HTMLVideoElement>(null)
-  const playerRef = useRef<Player>()
+  const playerRef = useRef<Player | null>(null)
   const isYouTube = source === VideoBlockSource.youTube
 
   // Initiate Video

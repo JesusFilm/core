@@ -18,7 +18,7 @@ enum GridAlignItems {
   center
 }
 
-type GridContainerBlock implements Block @key(fields: "id") @shareable {
+type GridContainerBlock implements Block @shareable {
   id: ID! @shareable
   journeyId: ID! @shareable
   parentBlockId: ID @shareable

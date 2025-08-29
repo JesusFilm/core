@@ -12,6 +12,7 @@ import { ActionService } from './action.service'
 import { EmailActionResolver } from './emailAction/emailAction.resolver'
 import { LinkActionResolver } from './linkAction/linkAction.resolver'
 import { NavigateToBlockActionResolver } from './navigateToBlockAction/navigateToBlockAction.resolver'
+import { PhoneActionResolver } from './phoneAction/phoneAction.resolver'
 
 @Module({
   imports: [CaslAuthModule.register(AppCaslFactory)],
@@ -23,7 +24,8 @@ import { NavigateToBlockActionResolver } from './navigateToBlockAction/navigateT
     PrismaService,
     EmailActionResolver,
     LinkActionResolver,
-    NavigateToBlockActionResolver
+    NavigateToBlockActionResolver,
+    PhoneActionResolver
   ],
   exports: [ActionService]
 })

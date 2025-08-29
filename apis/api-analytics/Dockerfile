@@ -13,14 +13,11 @@ RUN apk upgrade --update-cache --available && \
 WORKDIR /app
 COPY ./dist/apps/api-analytics .
 COPY ./package-lock.json .
+COPY ./libs/prisma/analytics/db ./prisma
 
-# dependencies that nestjs needs
 RUN npm install --production
-
-WORKDIR /prisma
-COPY ./apis/api-analytics/db .
-RUN npx prisma@6 generate --generator client
-
-WORKDIR /app
+RUN npm install @prisma/client@6.5.0
+RUN npm install -D prisma@6.5.0
+RUN npx prisma generate --generator client --schema ./prisma/schema.prisma
 
 CMD node ./main.js

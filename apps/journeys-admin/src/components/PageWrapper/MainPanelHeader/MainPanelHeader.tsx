@@ -53,16 +53,16 @@ export function MainPanelHeader({
             </Box>
           ) : (
             backHref != null && (
-              <NextLink href={backHref} passHref legacyBehavior>
-                <IconButton
-                  edge="start"
-                  size="small"
-                  color="inherit"
-                  sx={{ mr: 2 }}
-                >
-                  <ChevronLeftIcon />
-                </IconButton>
-              </NextLink>
+              <IconButton
+                component={NextLink}
+                href={backHref}
+                edge="start"
+                size="small"
+                color="inherit"
+                sx={{ mr: 2 }}
+              >
+                <ChevronLeftIcon />
+              </IconButton>
             )
           )}
           {title != null && (

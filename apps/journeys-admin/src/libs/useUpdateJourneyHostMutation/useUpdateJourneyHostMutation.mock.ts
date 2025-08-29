@@ -13,7 +13,7 @@ export const updateJourneyHostMock: MockedResponse<
 > = {
   request: {
     query: UPDATE_JOURNEY_HOST,
-    variables: { id: 'journeyId', input: { title: 'value' } }
+    variables: { id: 'journeyId', input: { hostId: 'host.id' } }
   },
   result: {
     data: {

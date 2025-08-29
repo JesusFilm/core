@@ -18,7 +18,7 @@ export function MuxDetails({
   'open' | 'activeVideoBlock' | 'onSelect'
 >): ReactElement {
   const videoRef = useRef<HTMLVideoElement>(null)
-  const playerRef = useRef<Player>()
+  const playerRef = useRef<Player | null>(null)
 
   useEffect(() => {
     if (

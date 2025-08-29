@@ -124,50 +124,45 @@ export function AccessDenied(): ReactElement {
           </List>
           <Stack direction="row" justifyContent="space-between" sx={{ mt: 7 }}>
             <Box display={{ xs: 'none', sm: 'flex' }}>
-              <NextLink href="/" passHref legacyBehavior>
-                <Button
-                  sx={{ color: 'primary.main' }}
-                  startIcon={<ChevronLeftIcon />}
-                  size="small"
-                >
-                  {t('Back to my journeys')}
-                </Button>
-              </NextLink>
+              <Button
+                LinkComponent={NextLink}
+                href="/"
+                sx={{ color: 'primary.main' }}
+                startIcon={<ChevronLeftIcon />}
+                size="small"
+              >
+                {t('Back to my journeys')}
+              </Button>
             </Box>
             <Box display={{ xs: 'flex', sm: 'none' }}>
-              <NextLink href="/" passHref legacyBehavior>
-                <Button
-                  sx={{ color: 'primary.main' }}
-                  startIcon={<ChevronLeftIcon />}
-                  size="small"
-                >
-                  {t('All journeys')}
-                </Button>
-              </NextLink>
-            </Box>
-            <NextLink
-              href="mailto:support@nextstep.is?subject=Need%20help%20with%20requesting%20editing%20access%20to%20the%20journey"
-              passHref
-              legacyBehavior
-              prefetch={false}
-            >
               <Button
-                sx={{
-                  color: 'secondary.main',
-                  borderColor: 'secondary.main',
-                  '&:hover': {
-                    borderColor: 'secondary.main'
-                  }
-                }}
-                startIcon={
-                  <HelpCircleContainedIcon sx={{ color: 'secondary.dark' }} />
-                }
+                LinkComponent={NextLink}
+                href="/"
+                sx={{ color: 'primary.main' }}
+                startIcon={<ChevronLeftIcon />}
                 size="small"
-                variant="outlined"
               >
-                {t('Get Help')}
+                {t('All journeys')}
               </Button>
-            </NextLink>
+            </Box>
+            <Button
+              LinkComponent={NextLink}
+              href="mailto:support@nextstep.is?subject=Need%20help%20with%20requesting%20editing%20access%20to%20the%20journey"
+              sx={{
+                color: 'secondary.main',
+                borderColor: 'secondary.main',
+                '&:hover': {
+                  borderColor: 'secondary.main'
+                }
+              }}
+              startIcon={
+                <HelpCircleContainedIcon sx={{ color: 'secondary.dark' }} />
+              }
+              size="small"
+              variant="outlined"
+            >
+              {t('Get Help')}
+            </Button>
           </Stack>
         </Box>
       </Stack>

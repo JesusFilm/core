@@ -20,7 +20,7 @@ export function ContentHeader(): ReactElement {
           visible ? 'opacity-100' : 'opacity-0'
         } ${visible ? 'delay-0' : 'delay-[2000ms]'}`}
     >
-      <NextLink href="/watch">
+      <NextLink href="/watch" locale={false}>
         <Image
           src="/watch/assets/jesusfilm-sign.svg"
           alt="JesusFilm Project"

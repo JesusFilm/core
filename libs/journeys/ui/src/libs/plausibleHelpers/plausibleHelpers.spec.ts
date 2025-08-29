@@ -30,6 +30,16 @@ describe('PlausibleHelpers', () => {
       } as unknown as Action
       expect(generateActionTargetKey(action)).toBe('email:email')
     })
+
+    it('should throw error for unknown action type', () => {
+      const action = {
+        __typename: 'UnknownAction',
+        unknown: 'unknown'
+      } as unknown as Action
+      expect(() => generateActionTargetKey(action)).toThrow(
+        'Unknown action type'
+      )
+    })
   })
 
   describe('keyify', () => {

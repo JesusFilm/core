@@ -1,5 +1,7 @@
 import { useCallback } from 'react'
 
+import { LanguageOption } from '@core/shared/ui/LanguageAutocomplete'
+
 import { setCookie } from '../../cookieHandler'
 import { useWatch } from '../WatchContext'
 
@@ -12,10 +14,10 @@ import { useWatch } from '../WatchContext'
  * @example
  * ```typescript
  * function LanguageSelector() {
- *   const { updateSiteLanguage, updateAudioLanguage } = useLanguageActions()
+ *   const { updateAudioLanguage } = useLanguageActions()
  *
- *   const handleLanguageChange = (language: string) => {
- *     updateSiteLanguage(language) // Handles state + cookies + reload
+ *   const handleLanguageChange = (language: LanguageOption) => {
+ *     updateAudioLanguage(language) // Handles state + cookies + reload
  *   }
  * }
  * ```
@@ -23,49 +25,22 @@ import { useWatch } from '../WatchContext'
 export function useLanguageActions() {
   const { state, dispatch } = useWatch()
 
-  const updateSiteLanguage = useCallback(
-    (language: string) => {
-      // Dispatch the pure action first
-      dispatch({
-        type: 'UpdateSiteLanguage',
-        language
-      })
-
-      // Handle side effects after dispatch
-      const selectedLangObj = state.allLanguages?.find(
-        (lang) => lang.bcp47 === language
-      )
-      const newAudioLanguage = selectedLangObj?.id ?? state.audioLanguage
-      const newSubtitleLanguage = selectedLangObj?.id ?? state.subtitleLanguage
-
-      // Set all affected cookies
-      setCookie('NEXT_LOCALE', language)
-      setCookie('AUDIO_LANGUAGE', newAudioLanguage)
-      setCookie('SUBTITLE_LANGUAGE', newSubtitleLanguage)
-
-      // Trigger page reload
-      if (state.router) {
-        setTimeout(() => state.router?.reload(), 0)
-      }
-    },
-    [state.allLanguages, state.audioLanguage, state.router, dispatch]
-  )
-
   const updateAudioLanguage = useCallback(
-    (languageId: string) => {
-      // Dispatch the pure action first
-      dispatch({
-        type: 'UpdateAudioLanguage',
-        languageId
-      })
+    (language: LanguageOption, reload: boolean = true) => {
+      dispatch({ type: 'UpdateAudioLanguage', languageId: language.id })
+      setCookie('AUDIO_LANGUAGE', language.id)
+      setCookie('SUBTITLE_LANGUAGE', language.id)
 
-      // Handle side effects after dispatch
-      setCookie('AUDIO_LANGUAGE', languageId)
-      setCookie('SUBTITLE_LANGUAGE', languageId)
-
-      // Trigger page reload
-      if (state.router) {
-        setTimeout(() => state.router?.reload(), 0)
+      if (state.router && reload && language.slug != null) {
+        const { asPath } = state.router
+        const [pathname, query] = asPath.split('?')
+        const segments = pathname.split('/')
+        segments[segments.length - 1] = `${language.slug}.html`
+        const newPath = segments.join('/')
+        void state.router.push({
+          pathname: newPath,
+          query
+        })
       }
     },
     [state.router, dispatch]
@@ -73,13 +48,7 @@ export function useLanguageActions() {
 
   const updateSubtitleLanguage = useCallback(
     (languageId: string) => {
-      // Dispatch the pure action first
-      dispatch({
-        type: 'UpdateSubtitleLanguage',
-        languageId
-      })
-
-      // Handle side effects after dispatch (no reload needed)
+      dispatch({ type: 'UpdateSubtitleLanguage', languageId })
       setCookie('SUBTITLE_LANGUAGE', languageId)
     },
     [dispatch]
@@ -87,21 +56,14 @@ export function useLanguageActions() {
 
   const updateSubtitlesOn = useCallback(
     (enabled: boolean) => {
-      // Dispatch the pure action first
-      dispatch({
-        type: 'UpdateSubtitlesOn',
-        enabled
-      })
-
-      // Handle side effects after dispatch (no reload needed)
+      dispatch({ type: 'UpdateSubtitlesOn', enabled })
       setCookie('SUBTITLES_ON', enabled.toString())
     },
     [dispatch]
   )
 
   return {
-    dispatch, // For actions that don't need side effects
-    updateSiteLanguage,
+    dispatch,
     updateAudioLanguage,
     updateSubtitleLanguage,
     updateSubtitlesOn

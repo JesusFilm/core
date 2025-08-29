@@ -22,6 +22,8 @@ jobs:
       contents: write
       pull-requests: write
       repository-projects: write
+      statuses: write
+      checks: write
     strategy:
       matrix:
         node-version: [22]
@@ -49,3 +51,4 @@ jobs:
         run: npx danger ci --failOnErrors
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          DANGER_GITHUB_API_TOKEN: ${{ secrets.GITHUB_TOKEN }}

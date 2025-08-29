@@ -3,7 +3,7 @@ import { GraphQLError } from 'graphql'
 import clone from 'lodash/clone'
 import fetch, { Response } from 'node-fetch'
 
-import { CustomDomain } from '.prisma/api-journeys-client'
+import { CustomDomain } from '@core/prisma/journeys/client'
 
 import {
   CustomDomainService,

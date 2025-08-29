@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useRef } from 'react'
+import { ReactElement, useEffect, useRef } from 'react'
 import videojs from 'video.js'
 
 import { MuxMetadata } from '@core/shared/ui/muxMetadataType'
@@ -32,7 +32,7 @@ export function VideoPlayer({
   startTime = 0,
   endTime,
   subtitles
-}: VideoPlayerProps): JSX.Element {
+}: VideoPlayerProps): ReactElement {
   const playerRef = useRef<HTMLVideoElement>(null)
   const playerInstanceRef = useRef<any>(null)
 

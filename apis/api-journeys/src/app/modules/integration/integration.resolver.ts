@@ -3,8 +3,8 @@ import { UseGuards } from '@nestjs/common'
 import { Args, Mutation, Query, ResolveField, Resolver } from '@nestjs/graphql'
 import { GraphQLError } from 'graphql'
 
-import { Integration, Prisma } from '.prisma/api-journeys-client'
 import { CaslAbility, CaslAccessible } from '@core/nest/common/CaslAuthModule'
+import { Integration, Prisma } from '@core/prisma/journeys/client'
 
 import { IntegrationType } from '../../__generated__/graphql'
 import { Action, AppAbility } from '../../lib/casl/caslFactory'

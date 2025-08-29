@@ -41,15 +41,14 @@ export function IFrameTest(): ReactElement {
               </strong>
             </Typography>
           </Trans>
-          <NextLink
+          <Button
+            LinkComponent={NextLink}
             href={`/${query.journeySlug?.toString() ?? ''}`}
-            passHref
-            legacyBehavior
+            variant="contained"
+            fullWidth
           >
-            <Button variant="contained" fullWidth>
-              {t('Get me out of here!')}
-            </Button>
-          </NextLink>
+            {t('Get me out of here!')}
+          </Button>
           <iframe
             src={`/embed/${query.journeySlug?.toString() ?? ''}`}
             style={{ border: 0, width: 360, height: 640 }}

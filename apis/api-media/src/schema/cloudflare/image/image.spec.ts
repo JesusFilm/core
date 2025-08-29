@@ -1,6 +1,6 @@
 import { Response } from 'node-fetch'
 
-import { CloudflareImage, ImageAspectRatio } from '.prisma/api-media-client'
+import { CloudflareImage, ImageAspectRatio } from '@core/prisma/media/client'
 import { graphql } from '@core/shared/gql'
 
 import { getClient } from '../../../../test/client'

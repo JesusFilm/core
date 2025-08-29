@@ -87,6 +87,15 @@ type EmailAction implements Action
   parentStepId: String
 }
 
+type PhoneAction implements Action
+  @shareable
+{
+  parentBlockId: ID!
+  parentBlock: Block!
+  gtmEventName: String
+  phone: String!
+}
+
 input NavigateToBlockActionInput {
   gtmEventName: String
   blockId: String!
@@ -113,6 +122,12 @@ input BlockUpdateActionInput {
   url: String
   target: String
   blockId: String
+  phone: String
+}
+
+input PhoneActionInput {
+  gtmEventName: String
+  phone: String!
 }
 
 type Mutation {
@@ -143,6 +158,13 @@ type Mutation {
     """drop this parameter after merging teams"""
     journeyId: ID
   ): EmailAction!
+  blockUpdatePhoneAction(
+    id: ID!
+    input: PhoneActionInput!
+
+    """drop this parameter after merging teams"""
+    journeyId: ID
+  ): PhoneAction!
   blockUpdateAction(id: ID!, input: BlockUpdateActionInput): Action!
 
   """blockDelete returns the updated sibling blocks on successful delete"""
@@ -389,9 +411,7 @@ type Mutation {
   visitorUpdateForCurrentUser(input: VisitorUpdateInput!): Visitor!
 }
 
-interface Block
-  @key(fields: "id")
-{
+interface Block {
   id: ID!
   journeyId: ID!
   parentBlockId: ID
@@ -623,7 +643,6 @@ type ButtonBlockSettings
 }
 
 type ButtonBlock implements Block
-  @key(fields: "id")
   @shareable
 {
   id: ID! @shareable
@@ -666,7 +685,6 @@ input ButtonBlockUpdateInput {
 }
 
 type CardBlock implements Block
-  @key(fields: "id")
   @shareable
 {
   id: ID! @shareable
@@ -751,7 +769,6 @@ enum GridAlignItems {
 }
 
 type GridContainerBlock implements Block
-  @key(fields: "id")
   @shareable
 {
   id: ID! @shareable
@@ -765,7 +782,6 @@ type GridContainerBlock implements Block
 }
 
 type GridItemBlock implements Block
-  @key(fields: "id")
   @shareable
 {
   id: ID! @shareable
@@ -818,7 +834,6 @@ enum IconSize {
 }
 
 type IconBlock implements Block
-  @key(fields: "id")
   @shareable
 {
   id: ID! @shareable
@@ -849,7 +864,6 @@ input IconBlockUpdateInput {
 }
 
 type ImageBlock implements Block
-  @key(fields: "id")
   @shareable
 {
   id: ID! @shareable
@@ -914,7 +928,6 @@ input ImageBlockUpdateInput {
 }
 
 type RadioOptionBlock implements Block
-  @key(fields: "id")
   @shareable
 {
   id: ID! @shareable
@@ -940,7 +953,6 @@ input RadioOptionBlockUpdateInput {
 }
 
 type RadioQuestionBlock implements Block
-  @key(fields: "id")
   @shareable
 {
   id: ID! @shareable
@@ -957,7 +969,6 @@ input RadioQuestionBlockCreateInput {
 }
 
 type SignUpBlock implements Block
-  @key(fields: "id")
   @shareable
 {
   id: ID! @shareable
@@ -983,7 +994,6 @@ input SignUpBlockUpdateInput {
 }
 
 type SpacerBlock implements Block
-  @key(fields: "id")
   @shareable
 {
   id: ID! @shareable
@@ -1006,7 +1016,6 @@ input SpacerBlockUpdateInput {
 }
 
 type StepBlock implements Block
-  @key(fields: "id")
   @shareable
 {
   id: ID! @shareable
@@ -1100,7 +1109,6 @@ input StepBlockPositionUpdateInput {
 }
 
 type TextResponseBlock implements Block
-  @key(fields: "id")
   @shareable
 {
   id: ID! @shareable
@@ -1181,7 +1189,6 @@ type TypographyBlockSettings
 }
 
 type TypographyBlock implements Block
-  @key(fields: "id")
   @shareable
 {
   id: ID! @shareable
@@ -1443,7 +1450,6 @@ VideoTriggerBlock is a block that indicates the video to navigate
 to the next block at the designated time.
 """
 type VideoTriggerBlock implements Block
-  @key(fields: "id")
   @shareable
 {
   id: ID! @shareable
@@ -1543,6 +1549,7 @@ enum ButtonAction {
   NavigateToBlockAction
   LinkAction
   EmailAction
+  PhoneAction
 }
 
 input ButtonClickEventCreateInput {
@@ -3418,4 +3425,4 @@ type _Service {
   sdl: String
 }
 
-union _Entity = ButtonBlock | CardBlock | GridContainerBlock | GridItemBlock | IconBlock | ImageBlock | Journey | JourneyProfile | JourneyVisitor | Language | RadioOptionBlock | RadioQuestionBlock | ShortLink | SignUpBlock | SpacerBlock | StepBlock | Tag | Team | TextResponseBlock | TypographyBlock | User | UserInvite | UserJourney | UserRole | UserTeam | Video | VideoBlock | VideoTriggerBlock | Visitor
+union _Entity = Journey | JourneyProfile | JourneyVisitor | Language | ShortLink | Tag | Team | User | UserInvite | UserJourney | UserRole | UserTeam | Video | VideoBlock | Visitor
