@@ -7,14 +7,12 @@
     "module": "commonjs",
     "types": [
       "node",
-      "jest",
-      "@jest/globals",
       "@nx/react/typings/cssmodule.d.ts",
       "@nx/react/typings/image.d.ts"
     ],
     "emitDecoratorMetadata": true,
     "target": "es2021"
   },
-  "exclude": ["**/*.spec.ts", "**/*.test.ts", "test/**/*", "jest.config.ts"],
+  "exclude": ["**/*.spec.ts", "jest.config.ts"],
   "include": ["**/*.ts", "**/*.tsx"]
 }

@@ -17,7 +17,7 @@ const config: Config = {
   },
   moduleFileExtensions: ['ts', 'js', 'html'],
   coverageDirectory: '../../coverage/apis/api-journeys-modern',
-  collectCoverageFrom: ['src/**/*.{ts,js}', '!src/**/*.spec.ts'],
+  collectCoverage: true,
   coverageReporters: ['cobertura'],
   preset: '../../jest.preset.js',
   setupFilesAfterEnv: ['<rootDir>/test/prismaMock.ts'],
