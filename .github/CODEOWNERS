@@ -1,4 +1,4 @@
 # E2E Tests and Test Infrastructure
 # These files require approval from the E2E test maintainer
-apps/*-e2e/ @kiran-redhat
-.github/workflows/e2e-tests.yml @kiran-redhat
+apps/*-e2e/ @kiran-redhat @tataihono @mikeallisonJS
+.github/workflows/e2e-tests.yml @kiran-redhat @tataihono @mikeallisonJS
