@@ -1,5 +1,4 @@
 import { sendGTMEvent } from '@next/third-parties/google'
-import { useTranslation } from 'next-i18next'
 import { ReactElement, useState } from 'react'
 import { v4 as uuidv4 } from 'uuid'
 
@@ -27,7 +26,6 @@ export const Questions = ({
   contentId
 }: QuestionsProps): ReactElement => {
   const [openQuestion, setOpenQuestion] = useState<number | null>(null)
-  const { t } = useTranslation('apps-watch')
 
   const handleQuestionToggle = (id: number): void => {
     setOpenQuestion(openQuestion === id ? null : id)

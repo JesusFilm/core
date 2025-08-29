@@ -40,7 +40,6 @@ jest.mock('../../../../../libs/watchContext', () => ({
   ...jest.requireActual('../../../../../libs/watchContext'),
   useWatch: jest.fn(() => ({
     state: {
-      siteLanguage: 'en',
       audioLanguage: '529',
       subtitleLanguage: '529',
       subtitleOn: false
@@ -109,7 +108,6 @@ describe('VideoControls', () => {
       <MockedProvider>
         <WatchProvider
           initialState={{
-            siteLanguage: 'en',
             audioLanguage: 'en',
             subtitleLanguage: 'en',
             subtitleOn: false
@@ -140,7 +138,6 @@ describe('VideoControls', () => {
       <MockedProvider>
         <WatchProvider
           initialState={{
-            siteLanguage: 'en',
             audioLanguage: 'en',
             subtitleLanguage: 'en',
             subtitleOn: false
@@ -168,7 +165,6 @@ describe('VideoControls', () => {
       <MockedProvider>
         <WatchProvider
           initialState={{
-            siteLanguage: 'en',
             audioLanguage: 'en',
             subtitleLanguage: 'en',
             subtitleOn: false
@@ -197,7 +193,6 @@ describe('VideoControls', () => {
       <MockedProvider>
         <WatchProvider
           initialState={{
-            siteLanguage: 'en',
             audioLanguage: 'en',
             subtitleLanguage: 'en',
             subtitleOn: false
@@ -227,7 +222,6 @@ describe('VideoControls', () => {
       <MockedProvider>
         <WatchProvider
           initialState={{
-            siteLanguage: 'en',
             audioLanguage: 'en',
             subtitleLanguage: 'en',
             subtitleOn: false
@@ -254,7 +248,6 @@ describe('VideoControls', () => {
       <MockedProvider>
         <WatchProvider
           initialState={{
-            siteLanguage: 'en',
             audioLanguage: 'en',
             subtitleLanguage: 'en',
             subtitleOn: false
@@ -320,7 +313,6 @@ describe('VideoControls', () => {
       <MockedProvider>
         <WatchProvider
           initialState={{
-            siteLanguage: 'en',
             audioLanguage: 'en',
             subtitleLanguage: 'en',
             subtitleOn: false
@@ -355,7 +347,6 @@ describe('VideoControls', () => {
       <MockedProvider>
         <WatchProvider
           initialState={{
-            siteLanguage: 'en',
             audioLanguage: 'en',
             subtitleLanguage: 'en',
             subtitleOn: false
@@ -387,7 +378,6 @@ describe('VideoControls', () => {
       <MockedProvider>
         <WatchProvider
           initialState={{
-            siteLanguage: 'en',
             audioLanguage: 'en',
             subtitleLanguage: 'en',
             subtitleOn: false
@@ -422,7 +412,6 @@ describe('VideoControls', () => {
       <MockedProvider>
         <WatchProvider
           initialState={{
-            siteLanguage: 'en',
             audioLanguage: 'en',
             subtitleLanguage: 'en',
             subtitleOn: false
@@ -486,7 +475,6 @@ describe('VideoControls', () => {
       <MockedProvider>
         <WatchProvider
           initialState={{
-            siteLanguage: 'en',
             audioLanguage: 'en',
             subtitleLanguage: 'en',
             subtitleOn: false
@@ -520,7 +508,6 @@ describe('VideoControls', () => {
       <MockedProvider>
         <WatchProvider
           initialState={{
-            siteLanguage: 'en',
             audioLanguage: 'en',
             subtitleLanguage: 'en',
             subtitleOn: false
@@ -552,7 +539,6 @@ describe('VideoControls', () => {
       <MockedProvider>
         <WatchProvider
           initialState={{
-            siteLanguage: 'en',
             audioLanguage: 'en',
             subtitleLanguage: 'en',
             subtitleOn: false
@@ -590,7 +576,6 @@ describe('VideoControls', () => {
       <MockedProvider>
         <WatchProvider
           initialState={{
-            siteLanguage: 'en',
             audioLanguage: 'en',
             subtitleLanguage: 'en',
             subtitleOn: false

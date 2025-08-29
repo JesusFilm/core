@@ -1,8 +1,7 @@
-import { useLazyQuery } from '@apollo/client'
 import SpatialAudioOffOutlinedIcon from '@mui/icons-material/SpatialAudioOffOutlined'
 import { useRouter } from 'next/router'
 import { useTranslation } from 'next-i18next'
-import { ReactElement, memo, useEffect, useMemo, useState } from 'react'
+import { ReactElement, memo, useMemo } from 'react'
 import { useInstantSearch } from 'react-instantsearch'
 
 import {
@@ -10,9 +9,6 @@ import {
   LanguageOption
 } from '@core/shared/ui/LanguageAutocomplete'
 
-import { GetAllLanguages_languages as Language } from '../../../../__generated__/GetAllLanguages'
-import { GetLanguagesSlug } from '../../../../__generated__/GetLanguagesSlug'
-import { GET_LANGUAGES_SLUG } from '../../../libs/useLanguagesSlugQuery'
 import { useLanguageActions, useWatch } from '../../../libs/watchContext'
 import { getCurrentAudioLanguage } from '../utils/getCurrentAudioLanguage'
 import { renderInput } from '../utils/renderInput'
@@ -33,40 +29,15 @@ export const AudioTrackSelect = memo(function AudioTrackSelect(): ReactElement {
       currentAudioLanguage,
       audioLanguage,
       videoId,
-      videoAudioLanguages,
+      videoAudioLanguagesIdsAndSlugs,
       loading
-    },
-    dispatch
+    }
   } = useWatch()
   const { updateAudioLanguage } = useLanguageActions()
-
-  const [getAudioLanguages, { loading: audioLanguagesLoading }] =
-    useLazyQuery<GetLanguagesSlug>(GET_LANGUAGES_SLUG, {
-      onCompleted: (data) => {
-        if (data?.video?.variantLanguagesWithSlug) {
-          // This action doesn't have side effects, so we can use dispatch directly
-          dispatch({
-            type: 'SetVideoAudioLanguages',
-            videoAudioLanguages: data.video.variantLanguagesWithSlug
-          })
-        }
-      }
-    })
 
   const { t } = useTranslation()
   const router = useRouter()
   const instantSearch = useSafeInstantSearch()
-
-  // Fetch audio languages for current video when needed
-  useEffect(() => {
-    if (videoId != null && videoAudioLanguages == null) {
-      void getAudioLanguages({
-        variables: {
-          id: videoId
-        }
-      })
-    }
-  }, [videoId, videoAudioLanguages, getAudioLanguages])
 
   const currentLanguage = getCurrentAudioLanguage({
     allLanguages,
@@ -77,7 +48,7 @@ export const AudioTrackSelect = memo(function AudioTrackSelect(): ReactElement {
 
   const languages = useMemo(
     () =>
-      allLanguages?.map((language: Language) => ({
+      allLanguages?.map((language) => ({
         id: language.id,
         name: language.name,
         slug: language.slug
@@ -88,8 +59,8 @@ export const AudioTrackSelect = memo(function AudioTrackSelect(): ReactElement {
   function handleChange(language: LanguageOption): void {
     let reload = instantSearch == null
     if (reload) {
-      const found = videoAudioLanguages?.find(
-        ({ language: { id } }) => id === language.id
+      const found = videoAudioLanguagesIdsAndSlugs?.find(
+        ({ id }) => id === language.id
       )
       reload = found != null
     }
@@ -107,10 +78,10 @@ export const AudioTrackSelect = memo(function AudioTrackSelect(): ReactElement {
 
   const helperText = useMemo(() => {
     if (videoId == null) return t('2000 translations')
-    if (loading || audioLanguagesLoading) return t('Loading...')
+    if (loading) return t('Loading...')
 
-    const found = videoAudioLanguages?.find(
-      ({ language: { id } }) => id === currentAudioLanguage?.language?.id
+    const found = videoAudioLanguagesIdsAndSlugs?.find(
+      ({ id }) => id === currentAudioLanguage?.id
     )
 
     return found == null
@@ -121,10 +92,10 @@ export const AudioTrackSelect = memo(function AudioTrackSelect(): ReactElement {
   }, [
     videoId,
     loading,
-    audioLanguagesLoading,
     t,
     currentAudioLanguage,
-    videoAudioLanguages,
+    videoAudioLanguagesIdsAndSlugs,
+
     currentLanguage
   ])
 
@@ -155,7 +126,7 @@ export const AudioTrackSelect = memo(function AudioTrackSelect(): ReactElement {
             }}
             onChange={handleChange}
             languages={languages}
-            loading={loading || audioLanguagesLoading}
+            loading={loading}
             disabled={loading}
             renderInput={renderInput(helperText)}
             renderOption={renderOption}
