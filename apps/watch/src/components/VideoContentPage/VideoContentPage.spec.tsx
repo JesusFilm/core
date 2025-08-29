@@ -6,7 +6,6 @@ import { SnackbarProvider } from 'notistack'
 import { useAlgoliaVideos } from '@core/journeys/ui/algolia/useAlgoliaVideos'
 
 import { type CoreVideo } from '../../libs/algolia/transformAlgoliaVideos'
-import { getCookie } from '../../libs/cookieHandler'
 import { getVideoChildrenMock } from '../../libs/useVideoChildren/getVideoChildrenMock'
 import { VideoProvider } from '../../libs/videoContext'
 import { videos } from '../Videos/__generated__/testData'
@@ -16,9 +15,6 @@ import { VideoContentPage } from '.'
 jest.mock('@core/journeys/ui/algolia/useAlgoliaVideos')
 jest.mock('next/router', () => ({
   useRouter: jest.fn()
-}))
-jest.mock('../../libs/cookieHandler', () => ({
-  getCookie: jest.fn()
 }))
 
 const mockedUseAlgoliaVideos = useAlgoliaVideos as jest.MockedFunction<
