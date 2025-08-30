@@ -440,6 +440,20 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   bibleCitationUpdate(input: MutationBibleCitationUpdateInput!) : BibleCitation @join__field(graph: API_MEDIA) 
   bibleCitationDelete(id: ID!) : Boolean @join__field(graph: API_MEDIA) 
   createKeyword(value: String!, languageId: String!) : Keyword! @join__field(graph: API_MEDIA) 
+  createMuxVideoAndQueueUpload(
+    videoId: ID!
+    edition: String!
+    languageId: ID!
+    version: Int!
+    r2PublicUrl: String!
+    originalFilename: String!
+    durationMs: Int!
+    duration: Int!
+    width: Int!
+    height: Int!
+    downloadable: Boolean = true
+    maxResolution: MaxResolutionTier = fhd
+  ): MuxVideo! @join__field(graph: API_MEDIA) 
   createMuxVideoUploadByFile(
     name: String!
     userGenerated: Boolean

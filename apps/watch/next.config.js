@@ -9,7 +9,6 @@ const { i18n } = require('./next-i18next.config')
  * @type {import('@nx/next/plugins/with-nx').WithNxOptions}
  **/
 const nextConfig = {
-  swcMinify: true,
   images: {
     remotePatterns: [
       { protocol: 'http', hostname: 'localhost' },
@@ -36,6 +35,9 @@ const nextConfig = {
     minimumCacheTTL: 31536000
   },
   i18n,
+  experimental: {
+    reactCompiler: true
+  },
   modularizeImports: {
     lodash: {
       transform: 'lodash/{{member}}'
@@ -56,14 +58,12 @@ const nextConfig = {
     ignoreDuringBuilds: process.env.CI === 'true'
   },
   transpilePackages: ['shared-ui'],
-  experimental: {
-    outputFileTracingExcludes: {
-      '*': [
-        'node_modules/@swc/core-linux-x64-gnu',
-        'node_modules/@swc/core-linux-x64-musl',
-        'node_modules/esbuild-linux-64/bin'
-      ]
-    }
+  outputFileTracingExcludes: {
+    '*': [
+      'node_modules/@swc/core-linux-x64-gnu',
+      'node_modules/@swc/core-linux-x64-musl',
+      'node_modules/esbuild-linux-64/bin'
+    ]
   },
   async redirects() {
     return [
