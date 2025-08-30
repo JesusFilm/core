@@ -175,11 +175,13 @@ describe('ActionService', () => {
     it('should upsert phone action', async () => {
       await service.phoneActionUpdate('id', blockWithUserTeam, {
         gtmEventName: 'gtmEventName',
-        phone: '1234567890'
+        phone: '+1234567890',
+        countryCode: 'US'
       })
       expect(prismaService.action.upsert).toHaveBeenCalledWith({
         create: {
-          phone: '1234567890',
+          phone: '+1234567890',
+          countryCode: 'US',
           gtmEventName: 'gtmEventName',
           parentBlock: { connect: { id: '1' } }
         },
@@ -191,7 +193,8 @@ describe('ActionService', () => {
           journey: { disconnect: true },
           target: null,
           url: null,
-          phone: '1234567890'
+          phone: '+1234567890',
+          countryCode: 'US'
         },
         where: { parentBlockId: 'id' }
       })
@@ -201,7 +204,8 @@ describe('ActionService', () => {
       await expect(
         service.phoneActionUpdate('id', blockWithUserTeam, {
           gtmEventName: 'gtmEventName',
-          phone: 'not a phone number'
+          phone: 'not a phone number',
+          countryCode: 'US'
         })
       ).rejects.toThrow('must be a valid phone number')
     })

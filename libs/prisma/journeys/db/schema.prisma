@@ -586,6 +586,7 @@ model Action {
   target        String?
   email         String?
   phone         String?
+  countryCode   String?
   customizable  Boolean?
   parentStepId  String?
   updatedAt     DateTime @default(now()) @updatedAt

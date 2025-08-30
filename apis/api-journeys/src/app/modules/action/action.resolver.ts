@@ -31,7 +31,8 @@ const emailActionInputSchema = z.object({
 
 const phoneActionInputSchema = z.object({
   gtmEventName: z.string().nullable(),
-  phone: z.string()
+  phone: z.string(),
+  countryCode: z.string()
 })
 
 const navigateToBlockActionInputSchema = z.object({

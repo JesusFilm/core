@@ -35,6 +35,7 @@ type PhoneAction implements Action @shareable {
   parentBlock: Block!
   gtmEventName: String
   phone: String!
+  countryCode: String!
 }
 input NavigateToBlockActionInput {
   gtmEventName: String
@@ -68,6 +69,7 @@ input BlockUpdateActionInput {
 input PhoneActionInput {
   gtmEventName: String
   phone: String!
+  countryCode: String!
 }
 
 extend type Mutation {

@@ -303,6 +303,7 @@ export class BlockUpdateActionInput {
 export class PhoneActionInput {
     gtmEventName?: Nullable<string>;
     phone: string;
+    countryCode: string;
 }
 
 export class BlocksFilter {
@@ -1000,6 +1001,7 @@ export class PhoneAction implements Action {
     parentBlock: Block;
     gtmEventName?: Nullable<string>;
     phone: string;
+    countryCode: string;
 }
 
 export abstract class IMutation {
