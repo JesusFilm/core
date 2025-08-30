@@ -266,12 +266,14 @@ const Video = builder.prismaObject('Video', {
       type: [VideoVariant],
       nullable: false,
       args: {
-        input: t.arg({ type: VideoVariantFilter, required: false })
+        input: t.arg({ type: VideoVariantFilter, required: false }),
+        languageId: t.arg.id({ required: false })
       },
-      select: ({ input }) => ({
+      select: ({ input, languageId }) => ({
         variants: {
           where: {
-            published: input?.onlyPublished === false ? undefined : true
+            published: input?.onlyPublished === false ? undefined : true,
+            languageId: languageId ?? undefined
           }
         }
       }),
