@@ -220,8 +220,9 @@ describe('EmailConsumer', () => {
 
   describe('teamInviteEmail', () => {
     it('should send an email if user exists', async () => {
-      jest.spyOn(ApolloClient.prototype, 'query').mockImplementation(
-        async (options) => {
+      jest
+        .spyOn(ApolloClient.prototype, 'query')
+        .mockImplementation(async (options) => {
           // Mock for fetchSenderData call
           if (options.variables?.userId === 'senderId') {
             return await Promise.resolve({
@@ -250,8 +251,7 @@ describe('EmailConsumer', () => {
             } as unknown as ApolloQueryResult<unknown>)
           }
           throw new Error('Unexpected query')
-        }
-      )
+        })
       await service(teamInviteJob)
       expect(sendEmail).toHaveBeenCalled()
       expect(args).toEqual({
@@ -263,8 +263,9 @@ describe('EmailConsumer', () => {
     })
 
     it('should send an email if user does not exist', async () => {
-      jest.spyOn(ApolloClient.prototype, 'query').mockImplementation(
-        async (options) => {
+      jest
+        .spyOn(ApolloClient.prototype, 'query')
+        .mockImplementation(async (options) => {
           // Mock for fetchSenderData call
           if (options.variables?.userId === 'senderId') {
             return await Promise.resolve({
@@ -288,8 +289,7 @@ describe('EmailConsumer', () => {
             } as unknown as ApolloQueryResult<unknown>)
           }
           throw new Error('Unexpected query')
-        }
-      )
+        })
       await service(teamInviteJob)
       expect(sendEmail).toHaveBeenCalled()
       expect(args).toEqual({
@@ -307,8 +307,9 @@ describe('EmailConsumer', () => {
         accountNotifications: false
       })
 
-      jest.spyOn(ApolloClient.prototype, 'query').mockImplementation(
-        async (options) => {
+      jest
+        .spyOn(ApolloClient.prototype, 'query')
+        .mockImplementation(async (options) => {
           // Mock for fetchSenderData call
           if (options.variables?.userId === 'senderId') {
             return await Promise.resolve({
@@ -337,8 +338,7 @@ describe('EmailConsumer', () => {
             } as unknown as ApolloQueryResult<unknown>)
           }
           throw new Error('Unexpected query')
-        }
-      )
+        })
 
       await service(teamInviteJob)
       expect(sendEmail).not.toHaveBeenCalled()
@@ -347,8 +347,9 @@ describe('EmailConsumer', () => {
 
   describe('teamInviteAcceptedEmail', () => {
     it('should send an email', async () => {
-      jest.spyOn(ApolloClient.prototype, 'query').mockImplementation(
-        async (options) => {
+      jest
+        .spyOn(ApolloClient.prototype, 'query')
+        .mockImplementation(async (options) => {
           // Mock for fetchSenderData call
           if (options.variables?.userId === 'senderId') {
             return await Promise.resolve({
@@ -364,7 +365,10 @@ describe('EmailConsumer', () => {
             } as unknown as ApolloQueryResult<unknown>)
           }
           // Mock for recipient user calls (for both managers)
-          if (options.variables?.userId === 'userId' || options.variables?.userId === 'userId2') {
+          if (
+            options.variables?.userId === 'userId' ||
+            options.variables?.userId === 'userId2'
+          ) {
             return await Promise.resolve({
               data: {
                 user: {
@@ -378,8 +382,7 @@ describe('EmailConsumer', () => {
             } as unknown as ApolloQueryResult<unknown>)
           }
           throw new Error('Unexpected query')
-        }
-      )
+        })
       await service(teamInviteAccepted)
       expect(sendEmail).toHaveBeenCalledTimes(2)
       expect(args).toEqual({
@@ -397,8 +400,9 @@ describe('EmailConsumer', () => {
         accountNotifications: false
       })
 
-      jest.spyOn(ApolloClient.prototype, 'query').mockImplementation(
-        async (options) => {
+      jest
+        .spyOn(ApolloClient.prototype, 'query')
+        .mockImplementation(async (options) => {
           // Mock for fetchSenderData call
           if (options.variables?.userId === 'senderId') {
             return await Promise.resolve({
@@ -414,7 +418,10 @@ describe('EmailConsumer', () => {
             } as unknown as ApolloQueryResult<unknown>)
           }
           // Mock for recipient user calls (for both managers)
-          if (options.variables?.userId === 'userId' || options.variables?.userId === 'userId2') {
+          if (
+            options.variables?.userId === 'userId' ||
+            options.variables?.userId === 'userId2'
+          ) {
             return await Promise.resolve({
               data: {
                 user: {
@@ -428,8 +435,7 @@ describe('EmailConsumer', () => {
             } as unknown as ApolloQueryResult<unknown>)
           }
           throw new Error('Unexpected query')
-        }
-      )
+        })
       await service(teamInviteAccepted)
       expect(sendEmail).not.toHaveBeenCalled()
     })

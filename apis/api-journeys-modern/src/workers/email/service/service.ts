@@ -74,9 +74,15 @@ async function fetchSenderData(senderId: string): Promise<any> {
     query: GET_USER,
     variables: { userId: senderId }
   })
-  
+
   // Handle malformed responses
-  if (!result || !result.data || !result.data.user || typeof result.data.user !== 'object' || !result.data.user.firstName) {
+  if (
+    !result ||
+    !result.data ||
+    !result.data.user ||
+    typeof result.data.user !== 'object' ||
+    !result.data.user.firstName
+  ) {
     throw new Error(`Sender user not found in database: ${senderId}`)
   }
 
