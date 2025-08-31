@@ -285,7 +285,7 @@
     "@types/nodemailer": "^6.4.15",
     "@types/react": "19.0.0",
     "@types/react-beautiful-dnd": "^13.1.7",
-    "@types/react-dom": "19.0.",
+    "@types/react-dom": "19.0.0",
     "@types/react-window": "^1.8.8",
     "@types/rtl-detect": "^1.0.3",
     "@types/stylis": "^4.2.0",
@@ -335,6 +335,7 @@
     "jest-environment-jsdom": "30.0.5",
     "jest-fixed-jsdom": "^0.0.9",
     "jest-mock-extended": "^4.0.0",
+    "jest-util": "30.0.5",
     "lighthouse": "^9.6.0",
     "mini-css-extract-plugin": "^2.6.1",
     "moxios": "^0.4.0",
@@ -373,15 +374,13 @@
     "webpack-merge": "^6.0.0",
     "webpack-node-externals": "^3.0.0",
     "webpack-sources": "^3.0.2",
-    "wrangler": "^3.62.0",
-    "jest-util": "30.0.5"
+    "wrangler": "^3.62.0"
   },
   "msw": {
     "workerDirectory": "./.storybook/static"
   },
   "overrides": {
     "react-is": "^19.0.0",
-    "parse5": "7.1.2",
     "html-tokenize": {
       "readable-stream": "^3.6.0"
     }
