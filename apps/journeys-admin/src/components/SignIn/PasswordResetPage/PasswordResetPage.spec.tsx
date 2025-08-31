@@ -1,10 +1,10 @@
-import { sendPasswordResetEmail } from '@firebase/auth'
 import { fireEvent, render, waitFor } from '@testing-library/react'
+import { sendPasswordResetEmail } from 'firebase/auth'
 
 import { PasswordResetPage } from './PasswordResetPage'
 
-jest.mock('@firebase/auth', () => ({
-  getAuth: jest.fn(),
+jest.mock('firebase/auth', () => ({
+  getAuth: jest.fn(() => ({})),
   sendPasswordResetEmail: jest.fn()
 }))
 

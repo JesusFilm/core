@@ -14,7 +14,7 @@ import {
   forwardRef,
   useMemo
 } from 'react'
-import { FixedSizeList as List } from 'react-window'
+import { List } from 'react-window'
 
 import { defaultRenderOption } from './defaultRenderOption'
 import { OuterElement, OuterElementContext } from './OuterElement'

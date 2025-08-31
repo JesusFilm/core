@@ -3,9 +3,9 @@ import Divider from '@mui/material/Divider'
 import ListItem from '@mui/material/ListItem'
 import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next'
-import { ListChildComponentProps } from 'react-window'
+import { RowComponentProps } from 'react-window'
 
-export const renderOption = (props: ListChildComponentProps) => {
+export const renderOption = (props: RowComponentProps) => {
   const { data, index, style } = props
   const { t } = useTranslation()
   const item = data[index][1]

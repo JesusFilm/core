@@ -1,4 +1,28 @@
 onlyBuiltDependencies:
+  - '@apollo/protobufjs'
+  - '@datadog/native-appsec'
+  - '@datadog/native-iast-taint-tracking'
+  - '@datadog/native-metrics'
+  - '@datadog/pprof'
   - '@nestjs/core'
+  - '@parcel/watcher'
+  - '@prisma/client'
+  - '@prisma/engines'
+  - '@swc/core'
+  - '@tailwindcss/oxide'
+  - core-js
+  - core-js-pure
+  - dd-trace
+  - esbuild
+  - msgpackr-extract
+  - msw
   - nestjs-pino
   - nx
+  - prisma
+  - protobufjs
+  - puppeteer
+  - sharp
+  - unrs-resolver
+  - vue-demi
+  - workerd
+  - yarn
