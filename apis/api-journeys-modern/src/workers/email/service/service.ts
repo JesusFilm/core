@@ -66,42 +66,28 @@ const GET_USER_BY_EMAIL = graphql(`
 `)
 
 /**
- * Enhances sender data by fetching complete information from database
- * with graceful fallbacks for reliability
+ * Fetches complete sender information from database
+ * Throws error if database is unavailable (system fault)
  */
-async function enhanceSenderData(
-  jobSender: any, 
-  senderId?: string
-): Promise<any> {
-  let enhancedSender = jobSender // fallback to job data
+async function fetchSenderData(senderId: string): Promise<any> {
+  const result = await apollo.query({
+    query: GET_USER,
+    variables: { userId: senderId }
+  })
   
-  try {
-    if (senderId != null) {
-      const { data: senderData } = await apollo.query({
-        query: GET_USER,
-        variables: { userId: senderId }
-      })
-      if (senderData.user != null) {
-        enhancedSender = {
-          firstName: senderData.user.firstName,
-          lastName: senderData.user.lastName,
-          email: senderData.user.email,
-          imageUrl: senderData.user.imageUrl
-        }
-      }
-    }
-  } catch (error) {
-    console.warn('Failed to fetch sender data from database, using fallback:', error)
+  // Handle malformed responses
+  if (!result || !result.data || !result.data.user || typeof result.data.user !== 'object' || !result.data.user.firstName) {
+    throw new Error(`Sender user not found in database: ${senderId}`)
   }
 
-  // Ultimate fallback: Extract firstName from email if empty
-  if (!enhancedSender.firstName || enhancedSender.firstName.trim() === '') {
-    const emailLocalPart = enhancedSender.email?.split('@')[0] || 'User'
-    enhancedSender.firstName = emailLocalPart
-    console.info(`Using email-based firstName fallback: ${emailLocalPart} from ${enhancedSender.email}`)
+  const sender = {
+    firstName: result.data.user.firstName,
+    lastName: result.data.user.lastName,
+    email: result.data.user.email,
+    imageUrl: result.data.user.imageUrl
   }
 
-  return enhancedSender
+  return sender
 }
 
 export async function service(job: Job<ApiJourneysJob>): Promise<void> {
@@ -197,8 +183,8 @@ export async function teamInviteEmail(job: Job<TeamInviteJob>): Promise<void> {
   )
     return
 
-  // Enhance sender data with database lookup and fallbacks
-  const enhancedSender = await enhanceSenderData(job.data.sender, job.data.senderId)
+  // Fetch complete sender data from database
+  const sender = await fetchSenderData(job.data.senderId)
 
   const { data } = await apollo.query({
     query: GET_USER_BY_EMAIL,
@@ -210,7 +196,7 @@ export async function teamInviteEmail(job: Job<TeamInviteJob>): Promise<void> {
       TeamInviteNoAccountEmail({
         teamName: job.data.team.title,
         inviteLink: url,
-        sender: enhancedSender,
+        sender,
         recipientEmail: job.data.email
       })
     )
@@ -218,7 +204,7 @@ export async function teamInviteEmail(job: Job<TeamInviteJob>): Promise<void> {
       TeamInviteNoAccountEmail({
         teamName: job.data.team.title,
         inviteLink: url,
-        sender: enhancedSender,
+        sender,
         recipientEmail: job.data.email
       }),
       {
@@ -237,7 +223,7 @@ export async function teamInviteEmail(job: Job<TeamInviteJob>): Promise<void> {
         teamName: job.data.team.title,
         recipient: data.userByEmail,
         inviteLink: url,
-        sender: enhancedSender
+        sender
       })
     )
 
@@ -246,7 +232,7 @@ export async function teamInviteEmail(job: Job<TeamInviteJob>): Promise<void> {
         teamName: job.data.team.title,
         recipient: data.userByEmail,
         inviteLink: url,
-        sender: enhancedSender
+        sender
       }),
       {
         plainText: true
@@ -286,8 +272,8 @@ export async function teamInviteAcceptedEmail(
     throw new Error('Team Managers not found')
   }
 
-  // Enhance sender data with database lookup and fallbacks
-  const enhancedSender = await enhanceSenderData(job.data.sender, job.data.senderId)
+  // Fetch complete sender data from database
+  const sender = await fetchSenderData(job.data.senderId)
 
   for (const recipient of recipientEmails) {
     if (recipient.user == null) throw new Error('User not found')
@@ -316,7 +302,7 @@ export async function teamInviteAcceptedEmail(
       TeamInviteAcceptedEmail({
         teamName: job.data.team.title,
         inviteLink: url,
-        sender: enhancedSender,
+        sender,
         recipient: recipientUser
       })
     )
@@ -325,7 +311,7 @@ export async function teamInviteAcceptedEmail(
       TeamInviteAcceptedEmail({
         teamName: job.data.team.title,
         inviteLink: url,
-        sender: enhancedSender,
+        sender,
         recipient: recipientUser
       }),
       {
@@ -336,7 +322,7 @@ export async function teamInviteAcceptedEmail(
     await sendEmail({
       to: recipient.user.email,
       subject: `${
-        enhancedSender.firstName ?? 'A new member'
+        sender.firstName ?? 'A new member'
       } has been added to your team`,
       text,
       html
