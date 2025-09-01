@@ -40,44 +40,47 @@ export function PhoneAction(): ReactElement {
     initialCountry ?? fallbackCountry
   )
 
-  const initialPhoneNumber = phoneAction?.phone?.substring(
-    selectedCountry.callingCode.replace('-', '').length
+  const initialPhoneDigits = removeCountryCodePrefix(
+    phoneAction?.phone ?? '',
+    selectedCountry.callingCode
   )
-  console.log('selectedCountry', selectedCountry)
-  console.log('callingCode', selectedCountry.callingCode.replace('-', ''))
-  console.log('rawPhoneNumber', phoneAction?.phone)
-  console.log('initialPhoneNumber', initialPhoneNumber)
+
+  const [phoneNumber, setPhoneNumber] = useState<string>(initialPhoneDigits)
+
+  function removeCountryCodePrefix(
+    fullPhoneNumber: string,
+    countryCode: string
+  ): string {
+    const cleanCountryCode = countryCode.replace('-', '')
+    return fullPhoneNumber.substring(cleanCountryCode.length)
+  }
 
   const phoneActionSchema = object({
-    phone: string()
+    [`phone-${selectedCountry.countryCode}`]: string()
       .required(t('Phone number is required'))
       .test(
         'phone-format',
         t('Phone number must be a valid format'),
         function (value) {
-          if (!value) return false
-          // Backend expects: +[1-9]\d{1,14} (total 2-15 chars)
-          // So phone part can be at most: 15 - callingCode.length chars
-          const maxPhoneLength = 15 - selectedCountry.callingCode.length
-          const minPhoneLength = 1
-          return (
-            /^\d+$/.test(value) &&
-            value.length >= minPhoneLength &&
-            value.length <= maxPhoneLength
+          // Validate that the complete phone number matches backend format: /^\+[1-9]\d{1,14}$/
+          const countryCodeDigits = selectedCountry.callingCode.replace(
+            /[-+]/g,
+            ''
           )
+          const fullPhoneNumber = `+${countryCodeDigits}${value}`
+          const isValid = /^\+[1-9]\d{1,14}$/.test(fullPhoneNumber)
+          return isValid
         }
       )
   })
 
   function handleSubmit(phone: string): void {
-    if (selectedBlock == null) return
-    const cleanCallingCode = selectedCountry.callingCode.replace('-', '')
-    const fullPhoneNumber = `${cleanCallingCode}${phone}`
-    console.log('fullPhoneNumber', fullPhoneNumber)
+    if (selectedBlock == null || phone.trim() === '') return
 
+    const countryCodeDigits = selectedCountry.callingCode.replace('-', '')
+    const fullPhoneNumber = `${countryCodeDigits}${phone}`
     const { id, action, __typename: blockTypename } = selectedBlock
 
-    console.log('submit phone action', phone)
     addAction({
       blockId: id,
       blockTypename,
@@ -98,6 +101,7 @@ export function PhoneAction(): ReactElement {
 
   function handleChange(country: CountryType): void {
     setSelectedCountry(country)
+    setPhoneNumber('')
   }
 
   return (
@@ -111,14 +115,16 @@ export function PhoneAction(): ReactElement {
       </Typography>
       <Stack data-testid="PhoneAction" direction="column" spacing={2}>
         <CountryCodeAutoComplete
-          countries={countries}
+          countries={countries.sort((a, b) => {
+            return a.label.localeCompare(b.label)
+          })}
           selectedCountry={selectedCountry}
           handleChange={handleChange}
         />
         <TextFieldForm
-          id="phone"
+          id={`phone-${selectedCountry.countryCode}`}
           label={t('Phone number')}
-          initialValue={initialPhoneNumber}
+          initialValue={phoneNumber}
           validationSchema={phoneActionSchema}
           onSubmit={handleSubmit}
           startIcon={selectedCountry?.callingCode}

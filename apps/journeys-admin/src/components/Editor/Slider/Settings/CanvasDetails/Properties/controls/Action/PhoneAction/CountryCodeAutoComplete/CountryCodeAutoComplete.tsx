@@ -1,7 +1,5 @@
 import Autocomplete from '@mui/material/Autocomplete'
 import Box from '@mui/material/Box'
-import InputAdornment from '@mui/material/InputAdornment'
-import Popper from '@mui/material/Popper'
 import TextField from '@mui/material/TextField'
 import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
@@ -10,7 +8,7 @@ import { CountryFlag } from './CountryFlag'
 import { countries, CountryType } from './countriesList'
 
 interface CountryCodeAutoCompleteProps {
-  countries: readonly CountryType[]
+  countries: CountryType[]
   selectedCountry?: CountryType
   handleChange: (country: CountryType) => void
 }
@@ -28,7 +26,6 @@ export function CountryCodeAutoComplete({
       value={selectedCountry}
       onChange={(event, newValue) => {
         if (newValue) {
-          console.log('newValue', newValue)
           handleChange(newValue)
         }
       }}
