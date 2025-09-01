@@ -46,7 +46,7 @@ describe('CustomizeTemplateButton', () => {
         passHref: true,
         legacyBehavior: true
       }),
-      expect.any(Object)
+      undefined
     )
   })
 
