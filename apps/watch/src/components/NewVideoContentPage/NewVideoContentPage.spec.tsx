@@ -15,7 +15,6 @@ import { videos } from '../Videos/__generated__/testData'
 import { NewVideoContentPage } from './NewVideoContentPage'
 
 const initialWatchState = {
-  siteLanguage: 'en',
   audioLanguage: '529',
   subtitleLanguage: '529',
   subtitleOn: true,
@@ -216,7 +215,7 @@ describe('NewContentPage', () => {
       </MockedProvider>
     )
     expect(
-      screen.getByText('videoAudioLanguages: 0 audio languages')
+      screen.getByText('videoAudioLanguagesIdsAndSlugs: 0 audio languages')
     ).toBeInTheDocument()
 
     await waitFor(() => {
@@ -224,7 +223,7 @@ describe('NewContentPage', () => {
     })
 
     expect(
-      screen.getByText('videoAudioLanguages: 1 audio languages')
+      screen.getByText('videoAudioLanguagesIdsAndSlugs: 1 audio languages')
     ).toBeInTheDocument()
   })
 })

@@ -11,7 +11,7 @@ import {
 import { GetSubtitles } from '../../../../__generated__/GetSubtitles'
 import { SUBTITLE_LANGUAGE_IDS } from '../../../libs/localeMapping'
 import { useLanguageActions, useWatch } from '../../../libs/watchContext'
-import { GET_SUBTITLES } from '../../SubtitleDialog/SubtitleDialog'
+import { GET_SUBTITLES } from '../../../libs/watchContext/useSubtitleUpdate/useSubtitleUpdate'
 import { renderInput } from '../utils/renderInput'
 import { renderOption } from '../utils/renderOption'
 
@@ -24,7 +24,6 @@ export const SubtitlesSelect = memo(function SubtitlesSelect(): ReactElement {
       subtitleOn,
       autoSubtitle,
       videoId,
-      videoSubtitleLanguages,
       videoVariantSlug,
       loading
     },
@@ -33,27 +32,17 @@ export const SubtitlesSelect = memo(function SubtitlesSelect(): ReactElement {
   const { updateSubtitleLanguage, updateSubtitlesOn } = useLanguageActions()
 
   const [getSubtitleLanguages, { loading: subtitlesLoading }] =
-    useLazyQuery<GetSubtitles>(GET_SUBTITLES, {
-      onCompleted: (data) => {
-        if (data?.video?.variant?.subtitle) {
-          // This action doesn't have side effects, so we can use dispatch directly
-          dispatch({
-            type: 'SetVideoSubtitleLanguages',
-            videoSubtitleLanguages: data.video.variant.subtitle
-          })
-        }
-      }
-    })
+    useLazyQuery<GetSubtitles>(GET_SUBTITLES, {})
 
   useEffect(() => {
-    if (videoId != null && videoSubtitleLanguages == null) {
+    if (videoId != null) {
       void getSubtitleLanguages({
         variables: {
           id: videoVariantSlug
         }
       })
     }
-  }, [videoId, videoSubtitleLanguages, getSubtitleLanguages])
+  }, [videoId, getSubtitleLanguages])
 
   const preferredSubtitleOn = autoSubtitle ?? subtitleOn
 
