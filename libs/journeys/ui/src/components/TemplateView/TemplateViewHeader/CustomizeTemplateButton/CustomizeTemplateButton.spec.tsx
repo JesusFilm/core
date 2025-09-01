@@ -1,4 +1,5 @@
 import { render, screen } from '@testing-library/react'
+
 import { CustomizeTemplateButton } from './CustomizeTemplateButton'
 
 // Mock next-i18next
