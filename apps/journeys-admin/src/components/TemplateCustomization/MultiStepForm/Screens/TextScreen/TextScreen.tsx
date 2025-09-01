@@ -4,7 +4,7 @@ import Button from '@mui/material/Button'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next'
-import { ReactElement, useCallback, useState } from 'react'
+import { ReactElement, useCallback, useEffect, useState } from 'react'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import ArrowRightIcon from '@core/shared/ui/icons/ArrowRight'
@@ -92,16 +92,16 @@ const renderEditableText = (
             const parent = e.currentTarget.parentElement
             const editables =
               parent != null
-                ? (Array.from(
+                ? Array.from(
                     parent.querySelectorAll('[contenteditable="true"]')
-                  ))
+                  )
                 : []
             const index = editables.indexOf(e.currentTarget as HTMLElement)
             const nextIndex = e.shiftKey ? index - 1 : index + 1
             const nextEl = editables[nextIndex]
             if (nextEl != null) {
               e.preventDefault()
-              nextEl.focus()
+              ;(nextEl as HTMLElement).focus()
             }
           }
         }}
@@ -138,11 +138,27 @@ export function TextScreen({ handleNext }: TextScreenProps): ReactElement {
     JourneyCustomizationField[]
   >(journey?.journeyCustomizationFields ?? [])
 
-  const handleValueChange = useCallback((key: string, value: string) => {
-    setReplacementItems((prev) =>
-      prev.map((item) => (item.key === key ? { ...item, value } : item))
-    )
-  }, [])
+  useEffect(() => {
+    if (journey?.journeyCustomizationFields != null) {
+      setReplacementItems(journey.journeyCustomizationFields)
+    }
+  }, [journey?.journeyCustomizationFields])
+
+  const handleValueChange = useCallback(
+    (key: string, value: string) => {
+      setReplacementItems((previousItems) => {
+        const baseItems =
+          previousItems != null && previousItems.length > 0
+            ? previousItems
+            : (journey?.journeyCustomizationFields ?? [])
+
+        return baseItems.map((item) =>
+          item.key === key ? { ...item, value } : item
+        )
+      })
+    },
+    [journey?.journeyCustomizationFields]
+  )
 
   async function handleSubmit(): Promise<void> {
     if (!journey) return
