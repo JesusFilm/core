@@ -100,13 +100,13 @@ async function fetchSenderData(senderId: string): Promise<SenderInfo> {
 
     if (!firstName) {
       logger?.warn('Sender data missing firstName', {
-        senderId,
+        senderId
       })
     }
 
     if (!email) {
       logger?.warn('Sender data missing email', {
-        senderId,
+        senderId
       })
     }
 
