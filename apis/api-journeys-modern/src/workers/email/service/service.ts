@@ -17,6 +17,7 @@ import { TeamInviteEmail } from '../../../emails/templates/TeamInvite'
 import { TeamInviteNoAccountEmail } from '../../../emails/templates/TeamInvite/TeamInviteNoAccount'
 import { TeamInviteAcceptedEmail } from '../../../emails/templates/TeamInviteAccepted'
 import { TeamRemovedEmail } from '../../../emails/templates/TeamRemoved'
+import { logger } from '../../../logger'
 
 import {
   ApiJourneysJob,
@@ -83,6 +84,16 @@ async function fetchSenderData(senderId: string): Promise<any> {
     typeof result.data.user !== 'object' ||
     !result.data.user.firstName
   ) {
+    logger?.error('Sender user not found in database:', {
+      senderId,
+      result: result ? {
+        hasData: !!result.data,
+        hasUser: !!result.data?.user,
+        userType: typeof result.data?.user,
+        hasFirstName: !!result.data?.user?.firstName
+      } : null,
+      timestamp: new Date().toISOString()
+    })
     throw new Error(`Sender user not found in database: ${senderId}`)
   }
 
