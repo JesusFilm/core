@@ -65,9 +65,10 @@ describe('action', () => {
         __typename: 'PhoneAction',
         parentBlockId: 'parent-id',
         gtmEventName: null,
-        phone: '1234567890'
+        phone: '+1234567890',
+        countryCode: 'US'
       })
-      expect(window.location.href).toBe('tel:1234567890')
+      expect(window.location.href).toBe('tel:+1234567890')
     })
 
     it('should handle external LinkAction', () => {
