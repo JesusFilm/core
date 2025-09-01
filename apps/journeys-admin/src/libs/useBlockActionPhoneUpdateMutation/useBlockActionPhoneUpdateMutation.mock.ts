@@ -16,7 +16,8 @@ export const blockActionPhoneUpdateMock: MockedResponse<
     variables: {
       id: 'button2.id',
       input: {
-        phone: '+9876543210'
+        phone: '+19876543210',
+        countryCode: 'US'
       }
     }
   },
@@ -26,7 +27,8 @@ export const blockActionPhoneUpdateMock: MockedResponse<
         __typename: 'PhoneAction',
         parentBlockId: 'button2.id',
         gtmEventName: null,
-        phone: '+9876543210'
+        phone: '+19876543210',
+        countryCode: 'US'
       }
     }
   }

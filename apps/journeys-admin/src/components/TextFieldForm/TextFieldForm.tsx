@@ -77,10 +77,14 @@ export function TextFieldForm({
             helperText={errors[id] != null ? errors[id] : helperText}
             InputProps={{
               startAdornment: startIcon ? (
-                <InputAdornment position="start">{startIcon}</InputAdornment>
+                <InputAdornment data-testid="startAdornment" position="start">
+                  {startIcon}
+                </InputAdornment>
               ) : undefined,
               endAdornment: endIcon ? (
-                <InputAdornment position="end">{endIcon}</InputAdornment>
+                <InputAdornment data-testid="endAdornment" position="end">
+                  {endIcon}
+                </InputAdornment>
               ) : undefined
             }}
             onPaste={onPaste}

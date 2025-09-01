@@ -37,13 +37,14 @@ describe('PhoneAction', () => {
       parentBlockId: 'button2.id',
       __typename: 'PhoneAction',
       gtmEventName: 'gtmEventName',
-      phone: '+1234567890'
+      phone: '+1234567890',
+      countryCode: 'US'
     },
     children: [],
     settings: null
   }
 
-  it('displays the action phone number', async () => {
+  it('displays the country code and phone number', async () => {
     render(
       <MockedProvider>
         <EditorProvider initialState={{ selectedBlock }}>
@@ -51,10 +52,13 @@ describe('PhoneAction', () => {
         </EditorProvider>
       </MockedProvider>
     )
-    expect(screen.getByDisplayValue('+1234567890')).toBeInTheDocument()
+    expect(screen.getByTestId('startAdornment')).toHaveTextContent('+1')
+    expect(screen.getByRole('textbox', { name: 'Phone number' })).toHaveValue(
+      '234567890'
+    )
   })
 
-  it('updates action phone number', async () => {
+  it('updates phone number', async () => {
     const result = jest.fn().mockReturnValue(blockActionPhoneUpdateMock.result)
     render(
       <MockedProvider mocks={[{ ...blockActionPhoneUpdateMock, result }]}>
@@ -63,10 +67,10 @@ describe('PhoneAction', () => {
         </EditorProvider>
       </MockedProvider>
     )
-    fireEvent.change(screen.getByRole('textbox'), {
-      target: { value: '+9876543210' }
+    fireEvent.change(screen.getByRole('textbox', { name: 'Phone number' }), {
+      target: { value: '9876543210' }
     })
-    fireEvent.submit(screen.getByRole('textbox'))
+    fireEvent.blur(screen.getByRole('textbox', { name: 'Phone number' }))
     await waitFor(() => expect(result).toHaveBeenCalled())
   })
 
@@ -78,17 +82,12 @@ describe('PhoneAction', () => {
         </EditorProvider>
       </MockedProvider>
     )
-    fireEvent.change(
-      screen.getByRole('textbox', { name: 'Paste Phone Number here...' }),
-      {
-        target: { value: '' }
-      }
-    )
-    fireEvent.blur(
-      screen.getByRole('textbox', { name: 'Paste Phone Number here...' })
-    )
+    fireEvent.change(screen.getByRole('textbox', { name: 'Phone number' }), {
+      target: { value: '' }
+    })
+    fireEvent.blur(screen.getByRole('textbox', { name: 'Phone number' }))
     await waitFor(() =>
-      expect(screen.getByText('Invalid Phone Number')).toBeInTheDocument()
+      expect(screen.getByText('Phone number is required')).toBeInTheDocument()
     )
   })
 
@@ -101,10 +100,10 @@ describe('PhoneAction', () => {
       </MockedProvider>
     )
 
-    fireEvent.change(screen.getByRole('textbox'), {
+    fireEvent.change(screen.getByRole('textbox', { name: 'Phone number' }), {
       target: { value: 'not-a-phone-number' }
     })
-    fireEvent.blur(screen.getByRole('textbox'))
+    fireEvent.blur(screen.getByRole('textbox', { name: 'Phone number' }))
     await waitFor(() =>
       expect(
         screen.getByText('Phone number must be a valid format')
@@ -141,13 +140,90 @@ describe('PhoneAction', () => {
         </EditorProvider>
       </MockedProvider>
     )
-    fireEvent.change(screen.getByRole('textbox'), {
-      target: { value: '+9876543210' }
+    fireEvent.change(screen.getByRole('textbox', { name: 'Phone number' }), {
+      target: { value: '9876543210' }
     })
-    fireEvent.blur(screen.getByRole('textbox'))
+    fireEvent.blur(screen.getByRole('textbox', { name: 'Phone number' }))
     const undo = screen.getByRole('button', { name: 'Undo' })
     await waitFor(() => expect(undo).not.toBeDisabled())
     fireEvent.click(undo)
     await waitFor(() => expect(result).toHaveBeenCalled())
+  })
+
+  it('should show countries in alphabetical order', async () => {
+    render(
+      <MockedProvider>
+        <EditorProvider>
+          <PhoneAction />
+        </EditorProvider>
+      </MockedProvider>
+    )
+    fireEvent.focus(screen.getByRole('combobox', { name: 'Country' }))
+    fireEvent.keyDown(screen.getByRole('combobox', { name: 'Country' }), {
+      key: 'ArrowDown'
+    })
+    expect(screen.queryAllByRole('option')[0]).toHaveTextContent(
+      'Afghanistan (AF) +93'
+    )
+    expect(screen.queryAllByRole('option')[1]).toHaveTextContent(
+      'Albania (AL) +355'
+    )
+    expect(screen.queryAllByRole('option')[2]).toHaveTextContent(
+      'Algeria (DZ) +213'
+    )
+  })
+
+  it('should select country via option click', async () => {
+    render(
+      <MockedProvider>
+        <EditorProvider>
+          <PhoneAction />
+        </EditorProvider>
+      </MockedProvider>
+    )
+    fireEvent.focus(screen.getByRole('combobox', { name: 'Country' }))
+    fireEvent.keyDown(screen.getByRole('combobox', { name: 'Country' }), {
+      key: 'ArrowDown'
+    })
+    fireEvent.click(
+      screen.getByRole('option', {
+        name: 'Canada flag Canada (CA) +1'
+      })
+    )
+    await waitFor(() =>
+      expect(screen.getByRole('combobox', { name: 'Country' })).toHaveValue(
+        'Canada'
+      )
+    )
+  })
+
+  it('should reset phone number when country changes', async () => {
+    render(
+      <MockedProvider>
+        <EditorProvider>
+          <PhoneAction />
+        </EditorProvider>
+      </MockedProvider>
+    )
+
+    const phoneInput = screen.getByRole('textbox', { name: 'Phone number' })
+    fireEvent.change(phoneInput, { target: { value: '1234567890' } })
+    expect(phoneInput).toHaveValue('1234567890')
+
+    fireEvent.focus(screen.getByRole('combobox', { name: 'Country' }))
+    fireEvent.keyDown(screen.getByRole('combobox', { name: 'Country' }), {
+      key: 'ArrowDown'
+    })
+    fireEvent.click(
+      screen.getByRole('option', {
+        name: 'Canada flag Canada (CA) +1'
+      })
+    )
+
+    await waitFor(() =>
+      expect(screen.getByRole('textbox', { name: 'Phone number' })).toHaveValue(
+        ''
+      )
+    )
   })
 })

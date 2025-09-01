@@ -1,5 +1,3 @@
-import Box from '@mui/material/Box'
-import InputAdornment from '@mui/material/InputAdornment'
 import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, useState } from 'react'
@@ -40,12 +38,12 @@ export function PhoneAction(): ReactElement {
     initialCountry ?? fallbackCountry
   )
 
-  const initialPhoneDigits = removeCountryCodePrefix(
+  const phonoDigits = removeCountryCodePrefix(
     phoneAction?.phone ?? '',
     selectedCountry.callingCode
   )
 
-  const [phoneNumber, setPhoneNumber] = useState<string>(initialPhoneDigits)
+  const [phoneNumber, setPhoneNumber] = useState<string>(phonoDigits)
 
   function removeCountryCodePrefix(
     fullPhoneNumber: string,
