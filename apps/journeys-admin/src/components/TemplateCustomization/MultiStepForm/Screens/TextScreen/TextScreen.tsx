@@ -93,15 +93,15 @@ const renderEditableText = (
             const editables =
               parent != null
                 ? Array.from(
-                  parent.querySelectorAll('[contenteditable="true"]')
-                )
+                    parent.querySelectorAll('[contenteditable="true"]')
+                  )
                 : []
             const index = editables.indexOf(e.currentTarget as HTMLElement)
             const nextIndex = e.shiftKey ? index - 1 : index + 1
             const nextEl = editables[nextIndex]
             if (nextEl != null) {
               e.preventDefault()
-                ; (nextEl as HTMLElement).focus()
+              ;(nextEl as HTMLElement).focus()
             }
           }
         }}
@@ -144,21 +144,26 @@ export function TextScreen({ handleNext }: TextScreenProps): ReactElement {
     }
   }, [journey?.journeyCustomizationFields])
 
-  const handleValueChange = useCallback((key: string, value: string) => {
-    setReplacementItems((prev) =>
-      prev.map((item) => {
-        if (item.key !== key) return item
+  const handleValueChange = useCallback(
+    (key: string, value: string) => {
+      setReplacementItems((prev) =>
+        prev.map((item) => {
+          if (item.key !== key) return item
 
-        if (value.trim() === '') {
-          // Find value of original key-value pair to revert token to original value
-          const originalItem = journey?.journeyCustomizationFields?.find((o) => o.key === key)
-          if (originalItem) return { ...item, value: originalItem.value }
-        }
+          if (value.trim() === '') {
+            // Find value of original key-value pair to revert token to original value
+            const originalItem = journey?.journeyCustomizationFields?.find(
+              (o) => o.key === key
+            )
+            if (originalItem) return { ...item, value: originalItem.value }
+          }
 
-        return { ...item, value }
-      })
-    )
-  }, [journey?.journeyCustomizationFields])
+          return { ...item, value }
+        })
+      )
+    },
+    [journey?.journeyCustomizationFields]
+  )
 
   async function handleSubmit(): Promise<void> {
     if (!journey) return
