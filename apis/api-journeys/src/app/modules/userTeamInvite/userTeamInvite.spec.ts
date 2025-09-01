@@ -162,17 +162,17 @@ describe('UserTeamInviteResolver', () => {
         }
       })
 
-      // Verify that sendTeamInviteEmail service method is called with senderId
+      // Verify that sendTeamInviteEmail service method is called with sender including id
       expect(mockSendTeamInviteEmail).toHaveBeenCalledWith(
         team,
         input.email,
         {
+          id: user.id,
           firstName: user.firstName,
           lastName: user.lastName,
           email: user.email,
           imageUrl: undefined
-        },
-        user.id // Verify senderId is passed correctly
+        }
       )
     })
 

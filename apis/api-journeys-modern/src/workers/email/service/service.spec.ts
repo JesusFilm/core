@@ -53,7 +53,13 @@ const teamInviteJob: Job<TeamInviteJob, unknown, string> = {
       title: 'test-team'
     } as unknown as Team,
     email: 'abc@example.com',
-    senderId: 'senderId'
+    sender: {
+      id: 'senderId',
+      firstName: 'Joe',
+      lastName: 'Ron-Imo',
+      email: 'sender@example.com',
+      imageUrl: undefined
+    }
   }
 } as unknown as Job<TeamInviteJob, unknown, string>
 
@@ -78,8 +84,13 @@ const teamInviteAccepted: Job<TeamInviteAccepted, unknown, string> = {
         }
       ]
     },
-    senderId: 'senderId',
-    url: 'http://example.com/'
+    sender: {
+      id: 'senderId',
+      firstName: 'Joe',
+      lastName: 'Ron-Imo',
+      email: 'sender@example.com',
+      imageUrl: undefined
+    }
   }
 } as unknown as Job<TeamInviteAccepted, unknown, string>
 

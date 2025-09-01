@@ -184,7 +184,7 @@ export async function teamInviteEmail(job: Job<TeamInviteJob>): Promise<void> {
     return
 
   // Fetch complete sender data from database
-  const sender = await fetchSenderData(job.data.senderId)
+  const sender = await fetchSenderData(job.data.sender.id)
 
   const { data } = await apollo.query({
     query: GET_USER_BY_EMAIL,
@@ -273,7 +273,7 @@ export async function teamInviteAcceptedEmail(
   }
 
   // Fetch complete sender data from database
-  const sender = await fetchSenderData(job.data.senderId)
+  const sender = await fetchSenderData(job.data.sender.id)
 
   for (const recipient of recipientEmails) {
     if (recipient.user == null) throw new Error('User not found')

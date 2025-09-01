@@ -8,6 +8,14 @@ import { TeamWithUserTeam } from '../../lib/prisma.types'
 import { UserTeamInviteModule } from './userTeamInvite.module'
 import { UserTeamInviteService } from './userTeamInvite.service'
 
+type SenderUser = {
+  id: string
+  firstName: string
+  lastName: string
+  email: string
+  imageUrl?: string
+}
+
 describe('UserTeamService', () => {
   let service: UserTeamInviteService
 
@@ -34,7 +42,8 @@ describe('UserTeamService', () => {
         title: 'Team Title'
       } as unknown as Team
       const email = 'tav@example.com'
-      const sender = {
+      const sender: SenderUser = {
+        id: 'senderId123',
         firstName: 'Joe',
         lastName: 'Ro-Nimo',
         email: 'joe@example.com',
@@ -42,16 +51,14 @@ describe('UserTeamService', () => {
           'https://images.unsplash.com/photo-1706565026381-29cd21eb9a7c?q=80&w=5464&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'
       }
 
-      const senderId = 'senderId123'
-      await service.sendTeamInviteEmail(team, email, sender, senderId)
+      await service.sendTeamInviteEmail(team, email, sender)
 
       expect(emailQueue.add).toHaveBeenCalledWith(
         'team-invite',
         {
           email,
           team,
-          sender,
-          senderId
+          sender
         },
         {
           removeOnComplete: true,
@@ -77,8 +84,8 @@ describe('UserTeamService', () => {
           }
         ]
       } as unknown as TeamWithUserTeam
-      const sender = {
-        id: 'userId',
+      const sender: SenderUser = {
+        id: 'senderId',
         email: 'joRoNimo@example.com',
         firstName: 'Joe',
         lastName: 'Ro-Nimo',
@@ -86,14 +93,13 @@ describe('UserTeamService', () => {
           'https://images.unsplash.com/photo-1706565026381-29cd21eb9a7c?q=80&w=5464&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'
       }
 
-      await service.sendTeamInviteAcceptedEmail(team, sender, 'senderId')
+      await service.sendTeamInviteAcceptedEmail(team, sender)
 
       expect(emailQueue.add).toHaveBeenCalledWith(
         'team-invite-accepted',
         {
           team,
-          sender,
-          senderId: 'senderId'
+          sender
         },
         {
           removeOnComplete: true,
