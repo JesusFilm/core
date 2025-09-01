@@ -8,32 +8,27 @@ describe('CountryCodeAutoComplete', () => {
     {
       countryCode: 'US',
       label: 'United States',
-      callingCode: '+1',
-      placeholder: '(201) 555-0123'
+      callingCode: '+1'
     },
     {
       countryCode: 'CA',
       label: 'Canada',
-      callingCode: '+1',
-      placeholder: '(506) 234-5678'
+      callingCode: '+1'
     },
     {
       countryCode: 'GB',
       label: 'United Kingdom',
-      callingCode: '+44',
-      placeholder: '07400 123456'
+      callingCode: '+44'
     },
     {
       countryCode: 'FR',
       label: 'France',
-      callingCode: '+33',
-      placeholder: '06 12 34 56 78'
+      callingCode: '+33'
     },
     {
       countryCode: 'DE',
       label: 'Germany',
-      callingCode: '+49',
-      placeholder: '0151 23456789'
+      callingCode: '+49'
     }
   ]
 
