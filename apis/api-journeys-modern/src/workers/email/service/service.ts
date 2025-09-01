@@ -222,8 +222,12 @@ export async function teamInviteEmail(job: Job<TeamInviteJob>): Promise<void> {
     return
 
   // Fetch complete sender data from database
-  const sender = await fetchSenderData(job.data.sender.id)
-
+  const sender: {
+    firstName?: string;
+    lastName?: string;
+    email?: string;
+    imageUrl?: string;
+  } = await fetchSenderData(job.data.sender.id)
   // Cannot send email without sender email
   if (!sender.email) return
 
