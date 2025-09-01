@@ -40,7 +40,7 @@ export function handleAction(
       window.open(`mailto:${action.email}`, '_blank')
       break
     case 'PhoneAction':
-      window.location.href = `tel:${action.phone}`
+      window.open(`tel:${action.phone}`, '_blank')
       break
   }
 }
