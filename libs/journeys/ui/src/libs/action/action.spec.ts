@@ -68,7 +68,7 @@ describe('action', () => {
         phone: '+1234567890',
         countryCode: 'US'
       })
-      expect(window.open).toHaveBeenCalledWith('tel:+1234567890', '_blank')
+      expect(window.location.href).toBe('tel:+1234567890')
     })
 
     it('should handle external LinkAction', () => {
