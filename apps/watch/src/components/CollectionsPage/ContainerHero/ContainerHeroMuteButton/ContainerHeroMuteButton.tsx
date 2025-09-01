@@ -1,4 +1,3 @@
-import VolumeOffOutlined from '@mui/icons-material/VolumeOffOutlined'
 import { ReactElement } from 'react'
 
 interface ContainerHeroMuteButtonProps {
