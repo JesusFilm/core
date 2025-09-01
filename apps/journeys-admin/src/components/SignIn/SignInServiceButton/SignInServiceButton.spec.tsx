@@ -10,9 +10,6 @@ jest.mock('firebase/auth', () => ({
   signInWithPopup: jest.fn(),
   GoogleAuthProvider: jest.fn().mockImplementation(() => {
     return { setCustomParameters: mockSetCustomParameters }
-  }),
-  FacebookAuthProvider: jest.fn().mockImplementation(() => {
-    return { setCustomParameters: mockSetCustomParameters }
   })
 }))
 
@@ -30,12 +27,4 @@ describe('SignInServiceButton', () => {
     await waitFor(() => expect(mockSignInWithPopup).toHaveBeenCalled())
   })
 
-  it('should handle Facebook sign-in correctly', async () => {
-    mockSignInWithPopup.mockResolvedValueOnce({} as unknown as UserCredential)
-
-    const { getByRole } = render(<SignInServiceButton service="facebook.com" />)
-
-    fireEvent.click(getByRole('button'))
-    await waitFor(() => expect(mockSignInWithPopup).toHaveBeenCalled())
-  })
 })

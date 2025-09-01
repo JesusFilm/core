@@ -3,7 +3,6 @@ export type ActivePage =
   | 'password'
   | 'register'
   | 'google.com'
-  | 'facebook.com'
   | 'help'
   | 'reset'
 
@@ -14,5 +13,5 @@ export interface PageProps {
   setUserPassword?: (userPassword: string) => void
   activePage?: ActivePage
   setActivePage?: (activePage: ActivePage) => void
-  service?: 'google.com' | 'facebook.com'
+  service?: 'google.com'
 }

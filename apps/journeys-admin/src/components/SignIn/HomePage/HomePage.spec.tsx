@@ -16,13 +16,10 @@ describe('Home', () => {
     )
   })
 
-  it('should render google and facebook login buttons', () => {
+  it('should render google login button', () => {
     const { getByRole } = render(<HomePage />)
     expect(
       getByRole('button', { name: 'Continue with Google' })
-    ).toBeInTheDocument()
-    expect(
-      getByRole('button', { name: 'Continue with Facebook' })
     ).toBeInTheDocument()
   })
 

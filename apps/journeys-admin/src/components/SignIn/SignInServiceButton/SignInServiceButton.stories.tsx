@@ -22,6 +22,5 @@ const Template: StoryObj<typeof SignInServiceButton> = {
 }
 
 export const Google = { ...Template, args: { service: 'google.com' } }
-export const Facebook = { ...Template, args: { service: 'facebook.com' } }
 
 export default SignInServiceButtonStory

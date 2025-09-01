@@ -6,7 +6,7 @@ import { SignInServiceButton } from '../SignInServiceButton'
 import { PageProps } from '../types'
 
 interface EmailUsedPageProps extends PageProps {
-  activePage: 'google.com' | 'facebook.com'
+  activePage: 'google.com'
 }
 
 export function EmailUsedPage({
@@ -22,7 +22,7 @@ export function EmailUsedPage({
       <Typography>
         {t("You've already used {{userEmail}}.", { userEmail })}{' '}
         {t('Sign in with {{service}} to continue', {
-          service: activePage === 'google.com' ? t('Google') : t('Facebook')
+          service: t('Google')
         })}
       </Typography>
       <SignInServiceButton service={activePage} />

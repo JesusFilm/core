@@ -1,6 +1,5 @@
 import Button from '@mui/material/Button'
 import {
-  FacebookAuthProvider,
   GoogleAuthProvider,
   getAuth,
   signInWithPopup
@@ -8,11 +7,10 @@ import {
 import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 
-import { FacebookIcon } from '@core/shared/ui/icons/FacebookIcon'
 import { GoogleIcon } from '@core/shared/ui/icons/GoogleIcon'
 
 interface SignInServiceButtonProps {
-  service: 'google.com' | 'facebook.com'
+  service: 'google.com'
 }
 
 export function SignInServiceButton({
@@ -22,10 +20,7 @@ export function SignInServiceButton({
 
   async function handleSignIn(): Promise<void> {
     const auth = getAuth()
-    const authProvider =
-      service === 'google.com'
-        ? new GoogleAuthProvider()
-        : new FacebookAuthProvider()
+    const authProvider = new GoogleAuthProvider()
     authProvider.setCustomParameters({ prompt: 'select_account' })
     try {
       await signInWithPopup(auth, authProvider)
@@ -39,12 +34,12 @@ export function SignInServiceButton({
       variant="outlined"
       size="large"
       color="secondary"
-      startIcon={service === 'google.com' ? <GoogleIcon /> : <FacebookIcon />}
+      startIcon={<GoogleIcon />}
       onClick={handleSignIn}
       fullWidth
     >
       {t('Continue with {{service}}', {
-        service: service === 'google.com' ? t('Google') : t('Facebook')
+        service: t('Google')
       })}
     </Button>
   )

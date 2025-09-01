@@ -79,19 +79,6 @@ export const Google = {
   }
 }
 
-export const Facebook = {
-  ...Template,
-  args: {
-    children: (
-      <EmailUsedPage
-        activePage="facebook.com"
-        setActivePage={setActivePage}
-        userEmail={userEmail}
-      />
-    )
-  }
-}
-
 export const Help = {
   ...Template,
   args: {
