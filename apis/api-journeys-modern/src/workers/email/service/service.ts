@@ -86,12 +86,14 @@ async function fetchSenderData(senderId: string): Promise<any> {
   ) {
     logger?.error('Sender user not found in database:', {
       senderId,
-      result: result ? {
-        hasData: !!result.data,
-        hasUser: !!result.data?.user,
-        userType: typeof result.data?.user,
-        hasFirstName: !!result.data?.user?.firstName
-      } : null,
+      result: result
+        ? {
+            hasData: !!result.data,
+            hasUser: !!result.data?.user,
+            userType: typeof result.data?.user,
+            hasFirstName: !!result.data?.user?.firstName
+          }
+        : null,
       timestamp: new Date().toISOString()
     })
     throw new Error(`Sender user not found in database: ${senderId}`)
