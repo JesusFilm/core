@@ -23,7 +23,7 @@ describe('TeamInviteJob Interface', () => {
     expect(mockTeamInviteJob).toHaveProperty('team')
     expect(mockTeamInviteJob).toHaveProperty('email')
     expect(mockTeamInviteJob).toHaveProperty('sender')
-    
+
     expect(typeof mockTeamInviteJob.team).toBe('object')
     expect(typeof mockTeamInviteJob.email).toBe('string')
     expect(typeof mockTeamInviteJob.sender).toBe('object')

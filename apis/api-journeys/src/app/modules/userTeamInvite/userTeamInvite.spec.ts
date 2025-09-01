@@ -163,17 +163,13 @@ describe('UserTeamInviteResolver', () => {
       })
 
       // Verify that sendTeamInviteEmail service method is called with sender including id
-      expect(mockSendTeamInviteEmail).toHaveBeenCalledWith(
-        team,
-        input.email,
-        {
-          id: user.id,
-          firstName: user.firstName,
-          lastName: user.lastName,
-          email: user.email,
-          imageUrl: undefined
-        }
-      )
+      expect(mockSendTeamInviteEmail).toHaveBeenCalledWith(team, input.email, {
+        id: user.id,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        email: user.email,
+        imageUrl: undefined
+      })
     })
 
     it('throws error if not authorized', async () => {
