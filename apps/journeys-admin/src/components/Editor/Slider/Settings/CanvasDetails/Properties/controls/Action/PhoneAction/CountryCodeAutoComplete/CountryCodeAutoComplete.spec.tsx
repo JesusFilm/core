@@ -1,10 +1,10 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 
 import { CountryCodeAutoComplete } from './CountryCodeAutoComplete'
-import { CountryType } from './countriesList'
+import { Country } from './countriesList'
 
 describe('CountryCodeAutoComplete', () => {
-  const mockCountries: CountryType[] = [
+  const mockCountries: Country[] = [
     {
       countryCode: 'US',
       label: 'United States',

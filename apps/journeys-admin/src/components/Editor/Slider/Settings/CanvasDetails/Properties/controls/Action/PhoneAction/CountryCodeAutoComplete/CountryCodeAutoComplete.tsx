@@ -5,12 +5,12 @@ import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 
 import { CountryFlag } from './CountryFlag'
-import { CountryType } from './countriesList'
+import { Country } from './countriesList'
 
 interface CountryCodeAutoCompleteProps {
-  countries: CountryType[]
-  selectedCountry?: CountryType
-  handleChange: (country: CountryType) => void
+  countries: Country[]
+  selectedCountry?: Country
+  handleChange: (country: Country) => void
 }
 
 export function CountryCodeAutoComplete({

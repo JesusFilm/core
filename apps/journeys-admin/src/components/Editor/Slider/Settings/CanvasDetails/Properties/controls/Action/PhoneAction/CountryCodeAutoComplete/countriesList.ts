@@ -1,4 +1,4 @@
-export interface CountryType {
+export interface Country {
   countryCode: string
   label: string
   callingCode: string
@@ -7,7 +7,7 @@ export interface CountryType {
 }
 
 // From https://bitbucket.org/atlassian/atlaskit-mk-2/raw/4ad0e56649c3e6c973e226b7efaeb28cb240ccb0/packages/core/select/src/data/countries.js
-export const countries: CountryType[] = [
+export const countries: Country[] = [
   {
     countryCode: 'AD',
     label: 'Andorra',

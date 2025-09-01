@@ -11,7 +11,7 @@ import { TextFieldForm } from '../../../../../../../../TextFieldForm'
 import { useActionCommand } from '../../../../../../../utils/useActionCommand'
 import { CountryCodeAutoComplete } from './CountryCodeAutoComplete'
 import Stack from '@mui/material/Stack'
-import { countries, CountryType } from './CountryCodeAutoComplete/countriesList'
+import { countries, Country } from './CountryCodeAutoComplete/countriesList'
 
 export function PhoneAction(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
@@ -34,7 +34,7 @@ export function PhoneAction(): ReactElement {
   const fallbackCountry =
     countries.find((country) => country.countryCode === 'US') ?? countries[0]
 
-  const [selectedCountry, setSelectedCountry] = useState<CountryType>(
+  const [selectedCountry, setSelectedCountry] = useState<Country>(
     initialCountry ?? fallbackCountry
   )
 
@@ -97,7 +97,7 @@ export function PhoneAction(): ReactElement {
     })
   }
 
-  function handleChange(country: CountryType): void {
+  function handleChange(country: Country): void {
     setSelectedCountry(country)
     setPhoneNumber('')
   }
