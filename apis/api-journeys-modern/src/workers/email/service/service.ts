@@ -67,38 +67,64 @@ const GET_USER_BY_EMAIL = graphql(`
 `)
 
 type SenderInfo = {
-  firstName?: string
+  id: string
+  firstName: string
   lastName?: string
   email?: string
   imageUrl?: string
 }
 
 /**
- * Fetch complete sender information. Throws only if user missing.
+ * Fetch complete sender information. Returns empty fields if database call fails.
  */
 async function fetchSenderData(senderId: string): Promise<SenderInfo> {
-  const result = await apollo.query({
-    query: GET_USER,
-    variables: { userId: senderId }
-  })
-
-  if (!result?.data?.user || typeof result.data.user !== 'object') {
-    logger?.error('Sender user not found in database', {
-      senderId,
-      hasData: !!result?.data,
-      hasUser: !!result?.data?.user,
-      userType: typeof result?.data?.user,
-      timestamp: new Date().toISOString()
+  try {
+    const result = await apollo.query({
+      query: GET_USER,
+      variables: { userId: senderId }
     })
-    throw new Error(`Sender user not found in database: ${senderId}`)
-  }
 
-  const firstName = result.data.user.firstName?.trim()
-  return {
-    firstName: firstName === '' ? undefined : firstName,
-    lastName: result.data.user.lastName ?? undefined,
-    email: result.data.user.email,
-    imageUrl: result.data.user.imageUrl ?? undefined
+    if (!result?.data?.user) {
+      return {
+        id: senderId,
+        firstName: '',
+        lastName: undefined,
+        email: undefined,
+        imageUrl: undefined
+      }
+    }
+
+    const user = result.data.user
+    const firstName = user.firstName?.trim() || ''
+    const email = user.email
+
+    if (!firstName) {
+      logger?.warn('Sender data missing firstName', {
+        senderId,
+      })
+    }
+
+    if (!email) {
+      logger?.warn('Sender data missing email', {
+        senderId,
+      })
+    }
+
+    return {
+      id: senderId,
+      firstName,
+      lastName: user.lastName ?? undefined,
+      email,
+      imageUrl: user.imageUrl ?? undefined
+    }
+  } catch {
+    return {
+      id: senderId,
+      firstName: '',
+      lastName: undefined,
+      email: undefined,
+      imageUrl: undefined
+    }
   }
 }
 
@@ -198,6 +224,9 @@ export async function teamInviteEmail(job: Job<TeamInviteJob>): Promise<void> {
   // Fetch complete sender data from database
   const sender = await fetchSenderData(job.data.sender.id)
 
+  // Cannot send email without sender email
+  if (!sender.email) return
+
   const { data } = await apollo.query({
     query: GET_USER_BY_EMAIL,
     variables: { email: job.data.email }
@@ -286,6 +315,9 @@ export async function teamInviteAcceptedEmail(
 
   // Fetch complete sender data from database
   const sender = await fetchSenderData(job.data.sender.id)
+
+  // Cannot send email without sender email
+  if (!sender.email) return
 
   for (const recipient of recipientEmails) {
     if (recipient.user == null) throw new Error('User not found')
