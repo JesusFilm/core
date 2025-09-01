@@ -5,7 +5,7 @@ import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 
 import { CountryFlag } from './CountryFlag'
-import { countries, CountryType } from './countriesList'
+import { CountryType } from './countriesList'
 
 interface CountryCodeAutoCompleteProps {
   countries: CountryType[]
@@ -24,7 +24,7 @@ export function CountryCodeAutoComplete({
     <Autocomplete
       options={countries}
       value={selectedCountry}
-      onChange={(event, newValue) => {
+      onChange={(_, newValue) => {
         if (newValue) {
           handleChange(newValue)
         }

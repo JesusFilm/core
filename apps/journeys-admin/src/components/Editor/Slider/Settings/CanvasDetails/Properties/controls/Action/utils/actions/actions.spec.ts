@@ -23,6 +23,10 @@ describe('actions', () => {
         {
           value: 'EmailAction',
           label: 'translation_Email'
+        },
+        {
+          value: 'PhoneAction',
+          label: 'translation_Phone'
         }
       ])
     })
