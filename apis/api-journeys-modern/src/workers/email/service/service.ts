@@ -66,47 +66,40 @@ const GET_USER_BY_EMAIL = graphql(`
   }
 `)
 
+type SenderInfo = {
+  firstName?: string
+  lastName?: string
+  email?: string
+  imageUrl?: string
+}
+
 /**
- * Fetches complete sender information from database
- * Throws error if database is unavailable (system fault)
+ * Fetch complete sender information. Throws only if user missing.
  */
-async function fetchSenderData(senderId: string): Promise<any> {
+async function fetchSenderData(senderId: string): Promise<SenderInfo> {
   const result = await apollo.query({
     query: GET_USER,
     variables: { userId: senderId }
   })
 
-  // Handle malformed responses
-  if (
-    !result ||
-    !result.data ||
-    !result.data.user ||
-    typeof result.data.user !== 'object' ||
-    !result.data.user.firstName
-  ) {
-    logger?.error('Sender user not found in database:', {
+  if (!result?.data?.user || typeof result.data.user !== 'object') {
+    logger?.error('Sender user not found in database', {
       senderId,
-      result: result
-        ? {
-            hasData: !!result.data,
-            hasUser: !!result.data?.user,
-            userType: typeof result.data?.user,
-            hasFirstName: !!result.data?.user?.firstName
-          }
-        : null,
+      hasData: !!result?.data,
+      hasUser: !!result?.data?.user,
+      userType: typeof result?.data?.user,
       timestamp: new Date().toISOString()
     })
     throw new Error(`Sender user not found in database: ${senderId}`)
   }
 
-  const sender = {
-    firstName: result.data.user.firstName,
-    lastName: result.data.user.lastName,
+  const firstName = result.data.user.firstName?.trim()
+  return {
+    firstName: firstName === '' ? undefined : firstName,
+    lastName: result.data.user.lastName ?? undefined,
     email: result.data.user.email,
-    imageUrl: result.data.user.imageUrl
+    imageUrl: result.data.user.imageUrl ?? undefined
   }
-
-  return sender
 }
 
 export async function service(job: Job<ApiJourneysJob>): Promise<void> {
