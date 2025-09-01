@@ -110,8 +110,8 @@ export function Drawer({
           borderBottomRightRadius: 0,
           width: { xs: 'auto', md: DRAWER_WIDTH },
           left: { xs: 0, md: 'auto' },
-          top: { xs: 0, md: 15 },
-          right: { xs: 0, md: 16 },
+          top: { xs: 0, md: 32 },
+          right: { xs: 0, md: 32 },
           bottom: 0,
           height: 'calc(100% - 20px)'
         }
