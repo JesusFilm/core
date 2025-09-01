@@ -3,6 +3,8 @@ import { GraphQLError } from 'graphql'
 import { Prisma, prisma } from '@core/prisma/media/client'
 
 import { queue as processVideoDownloadsQueue } from '../../../workers/processVideoDownloads/queue'
+import { jobName as processVideoUploadsJobName } from '../../../workers/processVideoUploads/config'
+import { queue as processVideoUploadsQueue } from '../../../workers/processVideoUploads/queue'
 import { builder } from '../../builder'
 import { VideoSource, VideoSourceShape } from '../../videoSource/videoSource'
 
@@ -16,6 +18,8 @@ import {
   getUpload,
   getVideo
 } from './service'
+
+const FIVE_DAYS = 5 * 24 * 60 * 60
 
 const MuxVideo = builder.prismaObject('MuxVideo', {
   fields: (t) => ({
@@ -132,11 +136,21 @@ builder.queryFields((t) => ({
           // Queue download processing if the video is downloadable
           if (video.downloadable) {
             try {
-              await processVideoDownloadsQueue.add('process-video-downloads', {
-                videoId: video.id,
-                assetId: video.assetId,
-                isUserGenerated
-              })
+              await processVideoDownloadsQueue.add(
+                'process-video-downloads',
+                {
+                  videoId: video.id,
+                  assetId: video.assetId,
+                  isUserGenerated
+                },
+                {
+                  jobId: `download:${video.id}`,
+                  attempts: 3,
+                  backoff: { type: 'exponential', delay: 1000 },
+                  removeOnComplete: true,
+                  removeOnFail: { age: FIVE_DAYS, count: 50 }
+                }
+              )
             } catch (error) {
               // Log error but don't fail the request - downloads can be processed later
               console.error(
@@ -203,6 +217,109 @@ builder.queryFields((t) => ({
 }))
 
 builder.mutationFields((t) => ({
+  createMuxVideoAndQueueUpload: t.withAuth({ isPublisher: true }).prismaField({
+    type: 'MuxVideo',
+    nullable: false,
+    args: {
+      videoId: t.arg({ type: 'ID', required: true }),
+      edition: t.arg({ type: 'String', required: true }),
+      languageId: t.arg({ type: 'ID', required: true }),
+      version: t.arg({ type: 'Int', required: true }),
+      r2PublicUrl: t.arg({ type: 'String', required: true }),
+      originalFilename: t.arg({ type: 'String', required: true }),
+      durationMs: t.arg({ type: 'Int', required: true }),
+      duration: t.arg({ type: 'Int', required: true }),
+      width: t.arg({ type: 'Int', required: true }),
+      height: t.arg({ type: 'Int', required: true }),
+      downloadable: t.arg({
+        type: 'Boolean',
+        required: false,
+        defaultValue: true
+      }),
+      maxResolution: t.arg({
+        type: MaxResolutionTier,
+        required: false,
+        defaultValue: 'fhd'
+      })
+    },
+    resolve: async (
+      query,
+      _root,
+      {
+        videoId,
+        edition,
+        languageId,
+        version,
+        r2PublicUrl,
+        originalFilename,
+        durationMs,
+        duration,
+        width,
+        height,
+        downloadable
+      },
+      { user }
+    ) => {
+      if (user == null)
+        throw new GraphQLError('User not found', {
+          extensions: { code: 'NOT_FOUND' }
+        })
+
+      const muxAsset = await createVideoFromUrl(
+        r2PublicUrl,
+        false,
+        '2160p',
+        downloadable ?? true
+      )
+
+      const muxVideo = await prisma.muxVideo.create({
+        ...query,
+        data: {
+          assetId: muxAsset.id,
+          userId: user.id,
+          downloadable: downloadable ?? true
+        }
+      })
+
+      try {
+        await processVideoUploadsQueue.add(
+          processVideoUploadsJobName,
+          {
+            videoId,
+            edition,
+            languageId,
+            version,
+            muxVideoId: muxVideo.id,
+            metadata: {
+              durationMs,
+              duration,
+              width,
+              height
+            },
+            originalFilename
+          },
+          {
+            jobId: `mux:${muxVideo.id}`,
+            attempts: 5,
+            backoff: { type: 'exponential', delay: 2000 },
+            removeOnComplete: true,
+            removeOnFail: { age: FIVE_DAYS, count: 50 }
+          }
+        )
+      } catch (error) {
+        console.error('Failed to queue video uploads processing:', error)
+        try {
+          await prisma.muxVideo.delete({
+            where: { id: muxVideo.id }
+          })
+        } catch (cleanupError) {
+          console.error('Failed to cleanup orphaned mux video:', cleanupError)
+        }
+      }
+
+      return muxVideo
+    }
+  }),
   createMuxVideoUploadByFile: t
     .withAuth({ isAuthenticated: true })
     .prismaField({
