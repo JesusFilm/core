@@ -42,7 +42,7 @@ describe('useBlockActionPhoneUpdateMutation', () => {
     })
 
     await act(async () => {
-      await result.current[0](block1, '+9876543210')
+      await result.current[0](block1, '+19876543210', 'US')
 
       expect(mockResult).toHaveBeenCalled()
     })
@@ -65,7 +65,7 @@ describe('useBlockActionPhoneUpdateMutation', () => {
     })
 
     await act(async () => {
-      await result.current[0](block1, '+9876543210')
+      await result.current[0](block1, '+19876543210', 'US')
 
       await waitFor(() =>
         expect(cache.extract()['ButtonBlock:button2.id']).toEqual({
@@ -74,7 +74,8 @@ describe('useBlockActionPhoneUpdateMutation', () => {
             __typename: 'PhoneAction',
             gtmEventName: null,
             parentBlockId: 'button2.id',
-            phone: '+9876543210'
+            phone: '+19876543210',
+            countryCode: 'US'
           }
         })
       )
