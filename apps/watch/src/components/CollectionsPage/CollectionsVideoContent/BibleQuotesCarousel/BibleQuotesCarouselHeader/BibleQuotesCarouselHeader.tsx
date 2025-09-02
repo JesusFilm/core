@@ -1,5 +1,4 @@
 import { sendGTMEvent } from '@next/third-parties/google'
-import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 import { v4 as uuidv4 } from 'uuid'
 
@@ -20,8 +19,6 @@ export function BibleQuotesCarouselHeader({
   shareDataTitle,
   contentId
 }: BibleQuotesCarouselHeaderProps): ReactElement {
-  const { t } = useTranslation('apps-watch')
-
   const handleShare = async (): Promise<void> => {
     const shareUrl = new URL(window.location.href)
     shareUrl.searchParams.append('utm_source', 'share')
