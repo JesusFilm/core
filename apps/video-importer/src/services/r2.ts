@@ -1,7 +1,7 @@
 import { createReadStream } from 'fs'
 
 import {
-  GetObjectCommand,
+  HeadObjectCommand,
   PutObjectCommand,
   S3Client
 } from '@aws-sdk/client-s3'
@@ -166,12 +166,12 @@ async function verifyFileUpload(
   console.log('[R2 Service] Verifying uploaded file...')
 
   try {
-    const getObjectCommand = new GetObjectCommand({
+    const headObjectCommand = new HeadObjectCommand({
       Bucket: bucket,
       Key: key
     })
 
-    const response = await s3Client.send(getObjectCommand)
+    const response = await s3Client.send(headObjectCommand)
 
     if (!response.ContentLength) {
       throw new Error('File verification failed: No content length returned')
