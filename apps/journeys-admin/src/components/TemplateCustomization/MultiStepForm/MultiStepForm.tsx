@@ -49,11 +49,12 @@ export function MultiStepForm(): ReactElement {
 
   return (
     <Container
-      maxWidth="lg"
+      maxWidth="sm"
       sx={{
         height: '100%',
         width: '100%',
-        backgroundColor: 'background.paper'
+        backgroundColor: 'background.paper',
+        borderRadius: { xs: '0px', md: '16px' }
       }}
     >
       <Stack gap={12} data-testid="MultiStepForm">
