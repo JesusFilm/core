@@ -152,7 +152,7 @@ mediaComponent.openapi(route, async (c) => {
   const expand = c.req.query('expand') ?? ''
   const filter = c.req.query('filter') ?? ''
 
-  const apiKey = c.req.query('apiKey')
+  const apiKey = c.req.query('apiKey') ?? ''
 
   let platform = c.req.query('platform')
   if (!platform && apiKey) {

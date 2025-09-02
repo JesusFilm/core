@@ -161,7 +161,7 @@ mediaComponentLanguages.openapi(route, async (c) => {
       const subtitleLanguageIds =
         video.subtitles?.map((s) => s.languageId) ?? []
 
-      let languages = []
+      let languages
       if (subtitleLanguageIds.length > 0) {
         try {
           languages = await languagesPrisma.language.findMany({
@@ -187,19 +187,20 @@ mediaComponentLanguages.openapi(route, async (c) => {
         }
       }
 
-      const languageMap = new Map(languages.map((lang) => [lang.id, lang]))
+      const languageMap = new Map(languages?.map((lang) => [lang.id, lang]))
 
       const createSubtitleWithLanguageInfo = (
-        subtitle: any,
-        urlField: 'vttSrc' | 'srtSrc'
+        languageId: string,
+        url: string,
+        edition: string
       ) => {
-        const language = languageMap.get(subtitle.languageId)
+        const language = languageMap.get(languageId)
         return {
-          languageId: Number(subtitle.languageId),
+          languageId: Number(languageId),
           languageName: language?.name[0]?.value ?? '',
           languageTag: language?.bcp47 ?? '',
-          url: subtitle[urlField],
-          edition: subtitle.edition
+          url: url,
+          edition: edition
         }
       }
 
@@ -226,7 +227,11 @@ mediaComponentLanguages.openapi(route, async (c) => {
           const editionUrls: Record<string, any[]> = {}
           for (const [format, urlField] of Object.entries(config)) {
             editionUrls[format] = subtitles.map((subtitle) =>
-              createSubtitleWithLanguageInfo(subtitle, urlField)
+              createSubtitleWithLanguageInfo(
+                subtitle.languageId,
+                subtitle[urlField],
+                subtitle.edition
+              )
             )
           }
           subtitlesByEdition.set(edition, editionUrls)
