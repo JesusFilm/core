@@ -3,9 +3,10 @@ import KeyboardArrowDownOutlined from '@mui/icons-material/KeyboardArrowDownOutl
 import LanguageOutlined from '@mui/icons-material/LanguageOutlined'
 import dynamic from 'next/dynamic'
 import { useTranslation } from 'next-i18next'
-import { ReactElement, useState } from 'react'
+import { ReactElement, useMemo, useState } from 'react'
 
-import { useVideo } from '../../../libs/videoContext'
+import { useLanguages } from '../../../libs/useLanguages'
+import { useWatch } from '../../../libs/watchContext'
 import { Select, SelectTrigger, SelectValue } from '../../Select'
 
 const DynamicAudioLanguageSelectContent = dynamic(
@@ -18,19 +19,20 @@ const DynamicAudioLanguageSelectContent = dynamic(
 
 export function AudioLanguageSelect(): ReactElement {
   const { t } = useTranslation('apps-watch')
-  const { variant, variantLanguagesCount } = useVideo()
-  const [open, setOpen] = useState<boolean | null>(null)
 
-  const nativeName = variant?.language?.name.find(
-    ({ primary }) => !primary
-  )?.value
-  const localName = variant?.language?.name.find(
-    ({ primary }) => primary
-  )?.value
+  const {
+    state: { audioLanguageId, videoAudioLanguageIds }
+  } = useWatch()
+  const [open, setOpen] = useState<boolean | null>(null)
+  const { languages } = useLanguages()
+  const language = useMemo(
+    () => languages.find(({ id }) => id === audioLanguageId),
+    [languages, audioLanguageId]
+  )
 
   return (
     <Select
-      value={variant?.id}
+      value={audioLanguageId}
       data-testid="AudioLanguageSelect"
       onOpenChange={(open) => {
         setOpen(open)
@@ -73,7 +75,7 @@ export function AudioLanguageSelect(): ReactElement {
                 leading-tight
               `}
             >
-              {localName ?? nativeName}
+              {language?.displayName}
             </span>
           </SelectValue>
           <div className="hidden lg:flex items-center gap-1">
@@ -89,7 +91,7 @@ export function AudioLanguageSelect(): ReactElement {
               `}
             >
               {t('{{ languageCount }} Languages', {
-                languageCount: variantLanguagesCount - 1
+                languageCount: videoAudioLanguageIds?.length ?? 0
               })}
             </span>
           </div>

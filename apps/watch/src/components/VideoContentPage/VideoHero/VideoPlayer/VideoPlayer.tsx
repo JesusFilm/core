@@ -23,12 +23,7 @@ export function VideoPlayer({
 }: VideoPlayerProps): ReactElement {
   const { variant, title } = useVideo()
   const {
-    state: {
-      subtitleLanguage,
-      subtitleOn,
-      autoSubtitle,
-      videoSubtitleLanguageIds
-    }
+    state: { subtitleLanguageId, subtitleOn }
   } = useWatch()
   const videoRef = useRef<HTMLVideoElement>(null)
   const [player, setPlayer] = useState<
@@ -80,19 +75,8 @@ export function VideoPlayer({
   useEffect(() => {
     if (player == null) return
 
-    void subtitleUpdate({
-      player,
-      subtitleLanguage,
-      subtitleOn,
-      autoSubtitle
-    })
-  }, [
-    player,
-    videoSubtitleLanguageIds,
-    subtitleLanguage,
-    subtitleOn,
-    autoSubtitle
-  ])
+    void subtitleUpdate({ player, subtitleLanguageId, subtitleOn })
+  }, [player, subtitleLanguageId, subtitleOn])
 
   return (
     <>

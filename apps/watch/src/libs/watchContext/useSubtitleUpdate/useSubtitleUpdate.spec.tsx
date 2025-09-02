@@ -1,5 +1,5 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { act, renderHook, waitFor } from '@testing-library/react'
+import { renderHook, waitFor } from '@testing-library/react'
 import Player from 'video.js/dist/types/player'
 
 import { VideoProvider } from '../../videoContext'
@@ -71,13 +71,10 @@ describe('useSubtitleUpdate', () => {
       expect(typeof result.current.subtitlesLoading).toBe('boolean')
     })
 
-    act(() => {
-      void result.current.subtitleUpdate({
-        player: mockPlayer,
-        subtitleLanguage: '529',
-        subtitleOn: true,
-        autoSubtitle: null
-      })
+    await result.current.subtitleUpdate({
+      player: mockPlayer,
+      subtitleLanguageId: '529',
+      subtitleOn: true
     })
 
     expect(result.current.subtitleUpdate).toBeDefined()
@@ -98,15 +95,10 @@ describe('useSubtitleUpdate', () => {
       )
     })
 
-    await waitFor(() => {
-      act(() => {
-        void result.current.subtitleUpdate({
-          player: mockPlayer,
-          subtitleLanguage: '529',
-          subtitleOn: false,
-          autoSubtitle: null
-        })
-      })
+    await result.current.subtitleUpdate({
+      player: mockPlayer,
+      subtitleLanguageId: '529',
+      subtitleOn: false
     })
 
     const tracks = mockPlayer.textTracks?.()
@@ -131,15 +123,10 @@ describe('useSubtitleUpdate', () => {
       )
     })
 
-    await waitFor(() => {
-      act(() => {
-        void result.current.subtitleUpdate({
-          player: mockPlayer,
-          subtitleLanguage: null,
-          subtitleOn: true,
-          autoSubtitle: null
-        })
-      })
+    await result.current.subtitleUpdate({
+      player: mockPlayer,
+      subtitleLanguageId: null,
+      subtitleOn: true
     })
 
     // Should disable all tracks
@@ -152,38 +139,5 @@ describe('useSubtitleUpdate', () => {
         }
       }
     }
-  })
-
-  it('should use autoSubtitle when available', async () => {
-    const getSubtitlesMockResults = jest
-      .fn()
-      .mockReturnValue({ ...getSubtitlesMock.result })
-
-    const { result } = renderHook(() => useSubtitleUpdate(), {
-      wrapper: ({ children }) => (
-        <MockedProvider
-          mocks={[{ ...getSubtitlesMock, result: getSubtitlesMockResults }]}
-        >
-          <VideoProvider value={{ content: mockVideoContent }}>
-            {children}
-          </VideoProvider>
-        </MockedProvider>
-      )
-    })
-
-    act(() => {
-      void result.current.subtitleUpdate({
-        player: mockPlayer,
-        subtitleLanguage: '529',
-        subtitleOn: false, // User preference is off
-        autoSubtitle: true // But autoSubtitle is enabled
-      })
-    })
-
-    expect(result.current.subtitleUpdate).toBeDefined()
-    expect(result.current.subtitlesLoading).toBeDefined()
-    await waitFor(() => {
-      expect(getSubtitlesMockResults).toHaveBeenCalled()
-    })
   })
 })

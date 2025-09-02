@@ -10,11 +10,9 @@ import LinkExternal from '@core/shared/ui/icons/LinkExternal'
 import { ThemeMode } from '@core/shared/ui/themes'
 
 import { VideoContentFields_studyQuestions as StudyQuestions } from '../../../__generated__/VideoContentFields'
-import { useLanguagesSlugQuery } from '../../libs/useLanguagesSlugQuery'
 import { useVideoChildren } from '../../libs/useVideoChildren'
 import { getWatchUrl } from '../../libs/utils/getWatchUrl'
 import { useVideo } from '../../libs/videoContext'
-import { useWatch } from '../../libs/watchContext'
 import { PageWrapper } from '../PageWrapper'
 import { ShareDialog } from '../ShareDialog'
 
@@ -46,7 +44,6 @@ export function NewVideoContentPage(): ReactElement {
 
   const [showShare, setShowShare] = useState(false)
   const [isFullscreen, setIsFullscreen] = useState(false)
-  const { dispatch } = useWatch()
 
   const variantSlug = container?.variant?.slug ?? variant?.slug
   const watchUrl = getWatchUrl(container?.slug, label, variant?.slug)
@@ -59,24 +56,6 @@ export function NewVideoContentPage(): ReactElement {
     () => children.filter((video) => video.variant !== null),
     [children]
   )
-
-  useLanguagesSlugQuery({
-    variables: {
-      id
-    },
-    onCompleted: (data) => {
-      if (data?.video?.variantLanguagesWithSlug) {
-        dispatch({
-          type: 'SetVideoAudioLanguages',
-          videoAudioLanguagesIdsAndSlugs:
-            data.video.variantLanguagesWithSlug.map((language) => ({
-              id: language?.language?.id,
-              slug: language?.slug
-            }))
-        })
-      }
-    }
-  })
 
   const makeDefaultQuestion = (value: string): StudyQuestions => ({
     __typename: 'VideoStudyQuestion',

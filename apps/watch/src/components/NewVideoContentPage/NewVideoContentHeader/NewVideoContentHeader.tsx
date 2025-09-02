@@ -41,10 +41,9 @@ export function NewVideoContentHeader({
               <NextLink
                 href={`/watch/${container.variant?.slug as string}`}
                 locale={false}
+                className="uppercase text-sm tracking-wider text-primary no-underline"
               >
-                <a className="uppercase text-sm tracking-wider text-primary no-underline">
-                  {last(container.title)?.value}
-                </a>
+                {last(container.title)?.value}
               </NextLink>
               <p className="uppercase text-sm tracking-wider text-[#bbbcbc]  hidden xl:block font-bold">
                 •
@@ -65,6 +64,7 @@ export function NewVideoContentHeader({
             <NextLink
               href={`/watch/${container.variant?.slug as string}`}
               locale={false}
+              passHref
             >
               <button className="border border-[#bbbcbc] rounded-md px-2 py-1 text-sm text-[#bbbcbc] hidden xl:block cursor-pointer font-bold">
                 {container.label === VideoLabel.featureFilm

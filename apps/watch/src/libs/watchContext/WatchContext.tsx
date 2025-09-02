@@ -1,4 +1,3 @@
-import { NextRouter } from 'next/router'
 import {
   Dispatch,
   createContext,
@@ -6,8 +5,6 @@ import {
   useEffect,
   useReducer
 } from 'react'
-
-import { initializeVideoLanguages } from './initializeVideoLanguages'
 
 export interface AudioLanguageData {
   id: string
@@ -31,29 +28,15 @@ export interface Language {
  */
 export interface WatchState {
   /** User's preferred audio language ID (e.g., '529')*/
-  audioLanguage: string
+  audioLanguageId?: string
   /** User's preferred subtitle language ID (e.g., '529')*/
-  subtitleLanguage: string
+  subtitleLanguageId?: string
   /** Whether subtitles are enabled by user preference */
-  subtitleOn: boolean
-  /** Loading state for operations that require page reload */
-  loading?: boolean
-  /** Next.js router instance for triggering page reloads */
-  router?: NextRouter
-  /** Current video ID being watched */
-  videoId?: string
-  /** Current video variant slug being watched */
-  videoVariantSlug?: string
-  /** All available languages from the system */
-  allLanguages?: Language[]
-  /** Available audio languages for the current video (clean structure with id and slug only) */
-  videoAudioLanguagesIdsAndSlugs?: AudioLanguageData[]
+  subtitleOn?: boolean
+  /** Available audio language IDs for the current video */
+  videoAudioLanguageIds?: string[]
   /** Available subtitle language IDs for the current video */
   videoSubtitleLanguageIds?: string[]
-  /** Currently selected audio track for the video object (based on availability and preferences) */
-  currentAudioLanguage?: AudioLanguageData
-  /** Whether subtitles should be enabled (calculation based on if the user's subtitle preference is met but the audio track is not met) */
-  autoSubtitle?: boolean
 }
 
 /**
@@ -63,99 +46,30 @@ export interface WatchState {
 interface SetLanguagePreferencesAction {
   type: 'SetLanguagePreferences'
   /** Audio language preference to set */
-  audioLanguage?: string
+  audioLanguageId?: string
   /** Subtitle language preference to set */
-  subtitleLanguage?: string
+  subtitleLanguageId?: string
   /** Subtitle enabled preference to set */
   subtitleOn?: boolean
 }
 
 /**
- * Action to set all available languages from the system
- */
-interface SetAllLanguagesAction {
-  type: 'SetAllLanguages'
-  /** Complete list of all available languages */
-  allLanguages: Language[]
-}
-
-/**
  * Action to set available audio languages for the current video
- * Also automatically selects the best audio language based on user preferences
  */
-interface SetVideoAudioLanguagesAction {
-  type: 'SetVideoAudioLanguages'
-  /** Available audio languages for the current video id and slug only */
-  videoAudioLanguagesIdsAndSlugs: AudioLanguageData[]
+interface SetVideoAudioLanguageIdsAction {
+  type: 'SetVideoAudioLanguageIds'
+  /** Available audio language IDs for the current video */
+  videoAudioLanguageIds: string[]
 }
 
 /**
  * Action to set available subtitle languages for the current video
  * Also automatically determines if subtitles should be enabled based on availability
  */
-interface SetVideoSubtitleLanguagesAction {
-  type: 'SetVideoSubtitleLanguages'
+interface SetVideoSubtitleLanguageIdsAction {
+  type: 'SetVideoSubtitleLanguageIds'
   /** Available subtitle language IDs for the current video */
   videoSubtitleLanguageIds: string[]
-}
-
-/**
- * Action to set the current video being watched
- */
-interface SetCurrentVideoAction {
-  type: 'SetCurrentVideo'
-  /** Video ID to set */
-  videoId?: string
-  /** Video variant slug to set */
-  videoVariantSlug?: string
-}
-
-/**
- * Action to set loading state
- */
-interface SetLoadingAction {
-  type: 'SetLoading'
-  loading: boolean
-}
-
-/**
- * Action to set router instance
- */
-interface SetRouterAction {
-  type: 'SetRouter'
-  router: NextRouter
-}
-
-/**
- * Action to update audio language with automatic cascading and page reload
- */
-interface UpdateAudioLanguageAction {
-  type: 'UpdateAudioLanguage'
-  languageId: string
-}
-
-/**
- * Action to update subtitle language (no page reload)
- */
-interface UpdateSubtitleLanguageAction {
-  type: 'UpdateSubtitleLanguage'
-  languageId: string
-}
-
-/**
- * Action to update subtitles on/off setting (no page reload)
- */
-interface UpdateSubtitlesOnAction {
-  type: 'UpdateSubtitlesOn'
-  enabled: boolean
-}
-
-/**
- * Action to update auto subtitles on/off setting (no page reload)
- */
-interface UpdateAutoSubtitlesOnAction {
-  type: 'UpdateAutoSubtitlesOn'
-  autoSubtitle: boolean
 }
 
 /**
@@ -163,40 +77,16 @@ interface UpdateAutoSubtitlesOnAction {
  */
 export type WatchAction =
   | SetLanguagePreferencesAction
-  | SetAllLanguagesAction
-  | SetVideoAudioLanguagesAction
-  | SetVideoSubtitleLanguagesAction
-  | SetCurrentVideoAction
-  | SetLoadingAction
-  | SetRouterAction
-  | UpdateAudioLanguageAction
-  | UpdateSubtitleLanguageAction
-  | UpdateSubtitlesOnAction
-  | UpdateAutoSubtitlesOnAction
-
-/**
- * Initial state type for WatchProvider - contains the core fields required for initialization
- */
-export type WatchInitialState = Pick<
-  WatchState,
-  | 'audioLanguage'
-  | 'subtitleLanguage'
-  | 'subtitleOn'
-  | 'videoId'
-  | 'videoVariantSlug'
-  | 'videoSubtitleLanguageIds'
-  | 'videoAudioLanguagesIdsAndSlugs'
->
+  | SetVideoAudioLanguageIdsAction
+  | SetVideoSubtitleLanguageIdsAction
 
 const WatchContext = createContext<{
   state: WatchState
   dispatch: Dispatch<WatchAction>
 }>({
   state: {
-    audioLanguage: '529',
-    subtitleLanguage: '529',
-    subtitleOn: false,
-    loading: false
+    audioLanguageId: '529',
+    subtitleLanguageId: '529'
   },
   dispatch: () => null
 })
@@ -217,109 +107,21 @@ export const reducer = (state: WatchState, action: WatchAction): WatchState => {
     case 'SetLanguagePreferences':
       return {
         ...state,
-        audioLanguage: action.audioLanguage ?? state.audioLanguage,
-        subtitleLanguage: action.subtitleLanguage ?? state.subtitleLanguage,
+        audioLanguageId: action.audioLanguageId ?? state.audioLanguageId,
+        subtitleLanguageId:
+          action.subtitleLanguageId ?? state.subtitleLanguageId,
         subtitleOn: action.subtitleOn ?? state.subtitleOn
       }
-    case 'SetAllLanguages':
+    case 'SetVideoAudioLanguageIds': {
       return {
         ...state,
-        allLanguages: action.allLanguages
-      }
-    case 'SetVideoAudioLanguages': {
-      const videoAudioLanguagesIdsAndSlugs =
-        action.videoAudioLanguagesIdsAndSlugs
-
-      // Find the best matching audio language for the current user preference
-      let currentAudioLanguage: AudioLanguageData | undefined
-
-      // Check if user's audio preference is available for this video
-      for (const lang of videoAudioLanguagesIdsAndSlugs) {
-        if (
-          lang.id === state.audioLanguage ||
-          lang.slug === state.audioLanguage
-        ) {
-          currentAudioLanguage = lang
-          break
-        }
-      }
-
-      // If no matches found, currentAudioLanguage remains undefined
-      return {
-        ...state,
-        videoAudioLanguagesIdsAndSlugs,
-        currentAudioLanguage
+        videoAudioLanguageIds: action.videoAudioLanguageIds
       }
     }
-    case 'SetVideoSubtitleLanguages': {
-      const videoSubtitleLanguageIds = action.videoSubtitleLanguageIds
-
-      const langPrefMet =
-        state?.audioLanguage === state?.currentAudioLanguage?.id
-
-      if (langPrefMet) {
-        return {
-          ...state,
-          videoSubtitleLanguageIds
-        }
-      }
-
-      // Check if user's subtitle preference is available
-      const subtitleAvailable = videoSubtitleLanguageIds.some(
-        (languageId) => languageId === state.subtitleLanguage
-      )
-
+    case 'SetVideoSubtitleLanguageIds': {
       return {
         ...state,
-        videoSubtitleLanguageIds,
-        autoSubtitle: subtitleAvailable === false ? undefined : true
-      }
-    }
-    case 'SetCurrentVideo':
-      return {
-        ...state,
-        videoId: action.videoId,
-        videoVariantSlug: action.videoVariantSlug
-      }
-    case 'SetLoading':
-      return {
-        ...state,
-        loading: action.loading
-      }
-    case 'SetRouter':
-      return {
-        ...state,
-        router: action.router
-      }
-    case 'UpdateAudioLanguage': {
-      const newAudioLanguage = action.languageId
-
-      return {
-        ...state,
-        audioLanguage: newAudioLanguage,
-        subtitleLanguage: newAudioLanguage
-      }
-    }
-    case 'UpdateSubtitleLanguage': {
-      const newSubtitleLanguage = action.languageId
-
-      return {
-        ...state,
-        subtitleLanguage: newSubtitleLanguage
-      }
-    }
-    case 'UpdateSubtitlesOn': {
-      const newSubtitlesOn = action.enabled
-
-      return {
-        ...state,
-        subtitleOn: newSubtitlesOn
-      }
-    }
-    case 'UpdateAutoSubtitlesOn': {
-      return {
-        ...state,
-        autoSubtitle: action.autoSubtitle
+        videoSubtitleLanguageIds: action.videoSubtitleLanguageIds
       }
     }
   }
@@ -332,7 +134,7 @@ interface WatchProviderProps {
   /** Child components that will have access to the watch context */
   children: React.ReactNode
   /** Initial state for the watch context */
-  initialState: WatchInitialState
+  initialState?: WatchState
 }
 
 /**
@@ -346,22 +148,26 @@ interface WatchProviderProps {
  * </WatchProvider>
  * ```
  */
-export function WatchProvider({ children, initialState }: WatchProviderProps) {
-  const [state, dispatch] = useReducer(reducer, {
-    ...initialState,
-    loading: false
-  })
+export function WatchProvider({
+  children,
+  initialState = {}
+}: WatchProviderProps) {
+  const [state, dispatch] = useReducer(reducer, initialState)
 
   useEffect(() => {
-    // Initialize video language preferences based on available languages
-    initializeVideoLanguages(
-      dispatch,
-      initialState?.videoAudioLanguagesIdsAndSlugs ?? [],
-      initialState?.videoSubtitleLanguageIds ?? []
-    )
+    if (initialState?.videoAudioLanguageIds != null)
+      dispatch({
+        type: 'SetVideoAudioLanguageIds',
+        videoAudioLanguageIds: initialState.videoAudioLanguageIds
+      })
+    if (initialState?.videoSubtitleLanguageIds != null)
+      dispatch({
+        type: 'SetVideoSubtitleLanguageIds',
+        videoSubtitleLanguageIds: initialState.videoSubtitleLanguageIds
+      })
   }, [
     initialState.videoSubtitleLanguageIds,
-    initialState.videoAudioLanguagesIdsAndSlugs
+    initialState.videoAudioLanguageIds
   ])
 
   return (
