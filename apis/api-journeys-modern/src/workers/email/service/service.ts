@@ -98,7 +98,7 @@ async function fetchSenderData(senderId: string): Promise<SenderInfo> {
     const firstName = user.firstName?.trim() || ''
     const email = user.email
 
-    if (!firstName) {
+    if (!firstName || firstName === '') {
       logger?.warn('Sender data missing firstName', {
         senderId
       })
@@ -222,12 +222,7 @@ export async function teamInviteEmail(job: Job<TeamInviteJob>): Promise<void> {
     return
 
   // Fetch complete sender data from database
-  const sender: {
-    firstName?: string;
-    lastName?: string;
-    email?: string;
-    imageUrl?: string;
-  } = await fetchSenderData(job.data.sender.id)
+  const sender: SenderInfo = await fetchSenderData(job.data.sender.id)
   // Cannot send email without sender email
   if (!sender.email) return
 
