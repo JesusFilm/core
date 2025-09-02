@@ -293,13 +293,11 @@ mediaComponent.openapi(route, async (c) => {
       downloadSizes: {
         approximateSmallDownloadSizeInBytes: getDownloadSize(
           video.variant?.downloads,
-          'low',
-          apiKey
+          'low'
         ),
         approximateLargeDownloadSizeInBytes: getDownloadSize(
           video.variant?.downloads,
-          'high',
-          apiKey
+          'high'
         )
       },
       bibleCitations: video.bibleCitations.map((citation) => ({
