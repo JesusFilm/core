@@ -1,9 +1,9 @@
-import { act, renderHook } from '@testing-library/react'
+import { renderHook } from '@testing-library/react'
 import { NextRouter } from 'next/router'
 import { ReactNode } from 'react'
 
 import { setCookie } from '../../cookieHandler'
-import { WatchInitialState, WatchProvider, useWatch } from '../WatchContext'
+import { WatchInitialState, WatchProvider } from '../WatchContext'
 
 import { useLanguageActions } from './useLanguageActions'
 
@@ -22,7 +22,6 @@ describe('useLanguageActions', () => {
   } as unknown as NextRouter
 
   const defaultInitialState: WatchInitialState = {
-    siteLanguage: 'en',
     audioLanguage: '529',
     subtitleLanguage: '529',
     subtitleOn: false
@@ -31,30 +30,18 @@ describe('useLanguageActions', () => {
   const mockAllLanguages = [
     {
       id: '529',
-      bcp47: 'en',
-      __typename: 'Language' as const,
       slug: 'english',
-      name: [
-        { primary: true, value: 'English', __typename: 'LanguageName' as const }
-      ]
+      name: [{ primary: true, value: 'English' }]
     },
     {
       id: '530',
-      bcp47: 'es',
-      __typename: 'Language' as const,
       slug: 'spanish',
-      name: [
-        { primary: true, value: 'Spanish', __typename: 'LanguageName' as const }
-      ]
+      name: [{ primary: true, value: 'Spanish' }]
     },
     {
       id: '531',
-      bcp47: 'fr',
-      __typename: 'Language' as const,
       slug: 'french',
-      name: [
-        { primary: true, value: 'French', __typename: 'LanguageName' as const }
-      ]
+      name: [{ primary: true, value: 'French' }]
     }
   ]
 
@@ -63,7 +50,7 @@ describe('useLanguageActions', () => {
   })
 
   describe('updateAudioLanguage', () => {
-    it('should set audio and subtitle language cookies', async () => {
+    it('should set audio and subtitle language cookies', () => {
       const wrapper = ({ children }: { children: ReactNode }) => (
         <WatchProvider
           initialState={
@@ -89,7 +76,7 @@ describe('useLanguageActions', () => {
       })
     })
 
-    it('should trigger router navigation when language has slug', async () => {
+    it('should trigger router navigation when language has slug', () => {
       const wrapper = ({ children }: { children: ReactNode }) => (
         <WatchProvider
           initialState={
@@ -127,7 +114,7 @@ describe('useLanguageActions', () => {
       expect(mockPush).not.toHaveBeenCalled()
     })
 
-    it('should not trigger navigation when reload is false', async () => {
+    it('should not trigger navigation when reload is false', () => {
       const wrapper = ({ children }: { children: ReactNode }) => (
         <WatchProvider
           initialState={
@@ -150,7 +137,7 @@ describe('useLanguageActions', () => {
   })
 
   describe('updateSubtitleLanguage', () => {
-    it('should set subtitle language cookie', async () => {
+    it('should set subtitle language cookie', () => {
       const wrapper = ({ children }: { children: ReactNode }) => (
         <WatchProvider
           initialState={
