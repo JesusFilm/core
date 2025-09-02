@@ -13,17 +13,6 @@ interface Download {
 }
 
 const SPECIAL_API_KEY = '607f41540b2ca6.32427244'
-
-export function normalizeDownloads(downloads: Download[]): Download[] {
-  return downloads.map((d) => ({
-    quality: d.quality,
-    url: d.url ?? '',
-    size: d.size ?? 0,
-    height: d.height ?? 0,
-    width: d.width ?? 0,
-    bitrate: d.bitrate ?? 0
-  }))
-}
 /**
  * Maps standard quality to distro quality variants
  */
