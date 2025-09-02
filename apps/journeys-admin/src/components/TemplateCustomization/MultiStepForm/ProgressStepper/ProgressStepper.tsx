@@ -3,6 +3,7 @@ import Step from '@mui/material/Step'
 import StepConnector from '@mui/material/StepConnector'
 import { StepIconProps } from '@mui/material/StepIcon'
 import Stepper from '@mui/material/Stepper'
+import Check from '@core/shared/ui/icons/Check'
 import { ReactElement } from 'react'
 
 interface ProgressStepperProps {
@@ -26,23 +27,32 @@ export function ProgressStepper({
     return (
       <Box
         sx={{
-          height: 12,
-          width: 12,
+          height: 24,
+          width: 24,
           borderRadius: '50%',
           backgroundColor: isCompleted
             ? 'primary.main'
             : isCurrentStep
-              ? 'primary.main'
-              : 'grey.300',
-          opacity: isCurrentStep && !isLastScreen ? 0.6 : 1,
+              ? '#C52D3A35'
+              : 'white',
+          // opacity: isCurrentStep && !isLastScreen ? 0.6 : 1,
           border: '2px solid',
           borderColor: isCompleted
             ? 'primary.main'
             : isCurrentStep
               ? 'primary.main'
-              : 'grey.300'
+              : 'grey.300',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center'
         }}
-      />
+      >
+        {isCompleted && (
+          <Check
+            sx={{ fontSize: 24, color: 'white' }}
+          />
+        )}
+      </Box>
     )
   }
 
@@ -50,8 +60,6 @@ export function ProgressStepper({
     return (
       <StepConnector
         sx={{
-          marginLeft: '-6px',
-          marginRight: '-6px',
           '&.Mui-active': {
             '& .MuiStepConnector-line': {
               borderColor: 'primary.main'
@@ -64,6 +72,7 @@ export function ProgressStepper({
           },
           '& .MuiStepConnector-line': {
             borderColor: 'grey.300',
+            borderRadius: '1px',
             borderTopWidth: 2,
             minHeight: '2px'
           }
@@ -76,7 +85,7 @@ export function ProgressStepper({
     <Box
       sx={{
         width: '100%',
-        maxWidth: '400px',
+        maxWidth: '70%',
         margin: '0 auto'
       }}
       data-testid="progress-stepper"
@@ -86,8 +95,8 @@ export function ProgressStepper({
         connector={<ProgressStepperConnector />}
         sx={{
           '& .MuiStep-root': {
-            flex: 1,
-            padding: '0 4px'
+            // flex: 1,
+            padding: '0 6px'
           },
           '& .MuiStepLabel-root': {
             padding: 0
