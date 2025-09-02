@@ -9,6 +9,7 @@ import { ChangeEvent, ReactElement, useMemo } from 'react'
 import { SUBTITLE_LANGUAGE_IDS } from '../../../libs/localeMapping'
 import { Language, useLanguages } from '../../../libs/useLanguages'
 import { useLanguageActions } from '../../../libs/watchContext'
+import { filterOptions } from '../utils/filterOptions'
 
 interface SubtitlesSelectProps {
   videoSubtitleLanguageIds?: string[]
@@ -109,6 +110,7 @@ export function SubtitlesSelect({
                       ? t('Available Languages')
                       : t('Other Languages')
             }
+            filterOptions={filterOptions}
             onChange={handleSubtitleLanguageChange}
             loading={isLoading}
             getOptionKey={(option) => option.id}

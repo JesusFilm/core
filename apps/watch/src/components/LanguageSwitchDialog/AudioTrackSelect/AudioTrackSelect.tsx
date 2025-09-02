@@ -9,6 +9,8 @@ import { useInstantSearch } from 'react-instantsearch'
 
 import { type Language, useLanguages } from '../../../libs/useLanguages'
 import { useLanguageActions } from '../../../libs/watchContext'
+import { createFilterOptions } from '@mui/material/Autocomplete'
+import { filterOptions } from '../utils/filterOptions'
 
 function useSafeInstantSearch() {
   try {
@@ -125,6 +127,7 @@ export function AudioTrackSelect({
                       ? t('Available Languages')
                       : t('Other Languages')
             }
+            filterOptions={filterOptions}
             onChange={handleChange}
             loading={isLoading}
             getOptionKey={(option) => option.id}
