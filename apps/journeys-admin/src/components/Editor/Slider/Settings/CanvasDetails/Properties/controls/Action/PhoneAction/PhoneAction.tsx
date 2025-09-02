@@ -122,6 +122,7 @@ export function PhoneAction(): ReactElement {
         <TextFieldForm
           id={`phone-${selectedCountry.countryCode}`}
           label={t('Phone number')}
+          type="tel"
           initialValue={phoneNumber}
           validationSchema={phoneActionSchema}
           onSubmit={handleSubmit}
