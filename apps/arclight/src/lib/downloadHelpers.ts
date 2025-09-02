@@ -60,17 +60,3 @@ export function findDownloadWithFallback(
   const standardDownload = downloads.find((d) => d.quality === standardQuality)
   return standardDownload
 }
-
-/**
- * Helper function to get the best download size for a quality
- * Don't need distro because they don't use low and high download sizes
- */
-export function getDownloadSize(
-  downloads: Download[] | null | undefined,
-  standardQuality: string
-): number {
-  if (!downloads) return 0
-
-  const standardDownload = downloads.find((d) => d.quality === standardQuality)
-  return standardDownload?.size ?? 0
-}

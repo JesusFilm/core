@@ -5,7 +5,6 @@ import { ResultOf, graphql } from '@core/shared/gql'
 
 import { getApolloClient } from '../../../../../lib/apolloClient'
 import { generateCacheKey, getWithStaleCache } from '../../../../../lib/cache'
-import { getDownloadSize } from '../../../../../lib/downloadHelpers'
 import { getLanguageIdsFromTags } from '../../../../../lib/getLanguageIdsFromTags'
 import { getDefaultPlatformForApiKey } from '../../../../../lib/getPlatformFromApiKey'
 import { mediaComponentSchema } from '../../mediaComponent.schema'
@@ -291,14 +290,10 @@ mediaComponent.openapi(route, async (c) => {
       containsCount: video.childrenCount,
       isDownloadable: video.variant?.downloadable ?? false,
       downloadSizes: {
-        approximateSmallDownloadSizeInBytes: getDownloadSize(
-          video.variant?.downloads,
-          'low'
-        ),
-        approximateLargeDownloadSizeInBytes: getDownloadSize(
-          video.variant?.downloads,
-          'high'
-        )
+        approximateSmallDownloadSizeInBytes:
+          video.variant?.downloads.find((d) => d.quality === 'low')?.size ?? 0,
+        approximateLargeDownloadSizeInBytes:
+          video.variant?.downloads.find((d) => d.quality === 'high')?.size ?? 0
       },
       bibleCitations: video.bibleCitations.map((citation) => ({
         osisBibleBook: citation.osisId,
