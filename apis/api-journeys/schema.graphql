@@ -124,6 +124,7 @@ input BlockUpdateActionInput {
   target: String
   blockId: String
   phone: String
+  countryCode: String
 }
 
 input PhoneActionInput {

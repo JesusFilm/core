@@ -298,6 +298,7 @@ export class BlockUpdateActionInput {
     target?: Nullable<string>;
     blockId?: Nullable<string>;
     phone?: Nullable<string>;
+    countryCode?: Nullable<string>;
 }
 
 export class PhoneActionInput {
