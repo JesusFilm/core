@@ -3,10 +3,12 @@ import { sendGTMEvent } from '@next/third-parties/google'
 import dynamic from 'next/dynamic'
 import { useRouter } from 'next/router'
 import { useTranslation } from 'next-i18next'
+import { useSnackbar } from 'notistack'
 import { type ReactElement, useCallback, useEffect, useState } from 'react'
 
 import { useJourney } from '../../../libs/JourneyProvider'
-import { useJourneyDuplicateAndTranslate } from '../../../libs/useJourneyDuplicateAndTranslate'
+import { useJourneyAiTranslateSubscription } from '../../../libs/useJourneyAiTranslateSubscription'
+import { useJourneyDuplicateMutation } from '../../../libs/useJourneyDuplicateMutation'
 import { AccountCheckDialog } from '../AccountCheckDialog'
 
 interface CreateJourneyButtonProps {
@@ -31,22 +33,66 @@ export function CreateJourneyButton({
   signedIn = false
 }: CreateJourneyButtonProps): ReactElement {
   const { t } = useTranslation('libs-journeys-ui')
+  const { enqueueSnackbar } = useSnackbar()
 
   const router = useRouter()
   const { journey } = useJourney()
   const [openAccountDialog, setOpenAccountDialog] = useState(false)
   const [openTeamDialog, setOpenTeamDialog] = useState(false)
+  const [loading, setLoading] = useState(false)
+  const [translationVariables, setTranslationVariables] = useState<
+    | {
+        journeyId: string
+        name: string
+        journeyLanguageName: string
+        textLanguageId: string
+        textLanguageName: string
+      }
+    | undefined
+  >(undefined)
+  const [pendingNavigationId, setPendingNavigationId] = useState<string | null>(
+    null
+  )
 
-  const { duplicateAndTranslate, loading } = useJourneyDuplicateAndTranslate({
-    journeyId: journey?.id,
-    journeyTitle: journey?.title ?? '',
-    journeyLanguageName:
-      journey?.language.name.find(({ primary }) => primary)?.value ?? '',
-    onSuccess: () => {
+  const [journeyDuplicate] = useJourneyDuplicateMutation()
+
+  // Set up the subscription for translation
+  const { data: translationData } = useJourneyAiTranslateSubscription({
+    variables: translationVariables,
+    skip: !translationVariables,
+    onComplete: () => {
+      enqueueSnackbar(t('Journey Translated'), {
+        variant: 'success',
+        preventDuplicate: true
+      })
+      setLoading(false)
+      setTranslationVariables(undefined)
       setOpenTeamDialog(false)
+
+      // Navigate to the translated journey
+      if (pendingNavigationId) {
+        if (journey) {
+          sendGTMEvent({
+            event: 'template_use',
+            journeyId: journey.id,
+            journeyTitle: journey.title
+          })
+        }
+        void router.push(`/journeys/${pendingNavigationId}`, undefined, {
+          shallow: true
+        })
+        setPendingNavigationId(null)
+      }
     },
-    onError: () => {
+    onError(error) {
+      enqueueSnackbar(error.message, {
+        variant: 'error',
+        preventDuplicate: true
+      })
+      setLoading(false)
+      setTranslationVariables(undefined)
       setOpenTeamDialog(false)
+      setPendingNavigationId(null)
     }
   })
 
@@ -58,24 +104,62 @@ export function CreateJourneyButton({
     ): Promise<void> => {
       if (journey == null) return
 
-      const newJourneyId = await duplicateAndTranslate({
-        teamId,
-        selectedLanguage,
-        shouldTranslate: showTranslation
-      })
+      setLoading(true)
 
-      if (newJourneyId != null) {
-        sendGTMEvent({
-          event: 'template_use',
-          journeyId: journey.id,
-          journeyTitle: journey.title
+      try {
+        const { data: duplicateData } = await journeyDuplicate({
+          variables: { id: journey.id, teamId }
         })
-        void router.push(`/journeys/${newJourneyId}`, undefined, {
-          shallow: true
+
+        if (!duplicateData?.journeyDuplicate?.id) {
+          throw new Error('Journey duplication failed')
+        }
+
+        const newJourneyId = duplicateData.journeyDuplicate.id
+
+        if (selectedLanguage == null || !showTranslation) {
+          // No translation needed - navigate immediately
+          setLoading(false)
+          enqueueSnackbar(t('Journey Copied'), {
+            variant: 'success',
+            preventDuplicate: true
+          })
+          setOpenTeamDialog(false)
+
+          sendGTMEvent({
+            event: 'template_use',
+            journeyId: journey.id,
+            journeyTitle: journey.title
+          })
+          void router.push(`/journeys/${newJourneyId}`, undefined, {
+            shallow: true
+          })
+          return
+        }
+
+        // Translation needed - set up subscription and wait
+        setPendingNavigationId(newJourneyId)
+        setTranslationVariables({
+          journeyId: newJourneyId,
+          name: journey.title,
+          journeyLanguageName:
+            journey.language.name.find(({ primary }) => !primary)?.value ?? '',
+          textLanguageId: selectedLanguage.id,
+          textLanguageName:
+            selectedLanguage.nativeName ?? selectedLanguage.localName ?? ''
         })
+
+        // Don't close dialog or navigate yet - wait for translation to complete
+      } catch (error) {
+        setLoading(false)
+        enqueueSnackbar(t('Journey duplication failed'), {
+          variant: 'error',
+          preventDuplicate: true
+        })
+        setOpenTeamDialog(false)
       }
     },
-    [journey, duplicateAndTranslate, router]
+    [journey, journeyDuplicate, router, t, enqueueSnackbar]
   )
 
   const handleCheckSignIn = (): void => {
@@ -108,6 +192,9 @@ export function CreateJourneyButton({
   }
 
   function handleCloseTeamDialog() {
+    // Prevent closing during translation
+    if (loading || translationVariables != null) return
+
     if (setOpenTeamDialog !== undefined) {
       setOpenTeamDialog(false)
       const { createNew, ...queryWithoutCreateNew } = router.query
@@ -160,6 +247,19 @@ export function CreateJourneyButton({
           loading={loading}
           onClose={handleCloseTeamDialog}
           submitAction={handleCreateJourney}
+          translationProgress={
+            translationData?.journeyAiTranslateCreateSubscription
+              ? {
+                  progress:
+                    translationData.journeyAiTranslateCreateSubscription
+                      .progress ?? 0,
+                  message:
+                    translationData.journeyAiTranslateCreateSubscription
+                      .message ?? ''
+                }
+              : undefined
+          }
+          isTranslating={translationVariables != null}
         />
       )}
     </>

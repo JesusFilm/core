@@ -109,7 +109,8 @@ export const defaultJourney: Journey = {
   displayTitle: null,
   logoImageBlock: null,
   menuButtonIcon: null,
-  menuStepBlock: null
+  menuStepBlock: null,
+  journeyTheme: null
 }
 
 export const publishedJourney: Journey = {
@@ -137,7 +138,8 @@ export const publishedJourney: Journey = {
       backgroundColor: null,
       themeMode: null,
       themeName: null,
-      fullscreen: false
+      fullscreen: false,
+      backdropBlur: null
     },
     {
       id: 'image0.id',
@@ -161,7 +163,11 @@ export const publishedJourney: Journey = {
       align: null,
       color: null,
       content: "What's our purpose, and how did we get here?",
-      variant: TypographyVariant.h3
+      variant: TypographyVariant.h3,
+      settings: {
+        __typename: 'TypographyBlockSettings',
+        color: null
+      }
     },
     {
       id: 'typographyBlockId2',
@@ -171,8 +177,12 @@ export const publishedJourney: Journey = {
       align: null,
       color: null,
       content:
-        'Follow the journey of a curious Irishman traveling around the world looking for answers and wrestling with the things that just don’t seem to make sense. ',
-      variant: null
+        "Follow the journey of a curious Irishman traveling around the world looking for answers and wrestling with the things that just don't seem to make sense.",
+      variant: null,
+      settings: {
+        __typename: 'TypographyBlockSettings',
+        color: null
+      }
     },
     {
       __typename: 'ButtonBlock',
@@ -186,7 +196,8 @@ export const publishedJourney: Journey = {
       startIconId: 'icon',
       endIconId: null,
       submitEnabled: null,
-      action: null
+      action: null,
+      settings: null
     },
     {
       id: 'icon',
@@ -231,7 +242,8 @@ export const blocks: Block[] = [
     backgroundColor: null,
     themeMode: null,
     themeName: null,
-    fullscreen: false
+    fullscreen: false,
+    backdropBlur: null
   },
   {
     id: 'typographyBlockId1',
@@ -241,7 +253,11 @@ export const blocks: Block[] = [
     align: null,
     color: null,
     content: "What's our purpose, and how did we get here?",
-    variant: TypographyVariant.h3
+    variant: TypographyVariant.h3,
+    settings: {
+      __typename: 'TypographyBlockSettings',
+      color: null
+    }
   },
   {
     id: 'typographyBlockId2',
@@ -251,8 +267,12 @@ export const blocks: Block[] = [
     align: null,
     color: null,
     content:
-      'Follow the journey of a curious Irishman traveling around the world looking for answers and wrestling with the things that just don’t seem to make sense. ',
-    variant: null
+      "Follow the journey of a curious Irishman traveling around the world looking for answers and wrestling with the things that just don't seem to make sense.",
+    variant: null,
+    settings: {
+      __typename: 'TypographyBlockSettings',
+      color: null
+    }
   },
   {
     __typename: 'ButtonBlock',
@@ -271,7 +291,8 @@ export const blocks: Block[] = [
       parentBlockId: 'button0.id',
       gtmEventName: 'gtmEventName',
       blockId: 'step1.id'
-    }
+    },
+    settings: null
   },
   {
     id: 'icon0-1.id',
@@ -358,7 +379,8 @@ export const blocks: Block[] = [
     backgroundColor: null,
     themeMode: null,
     themeName: null,
-    fullscreen: false
+    fullscreen: false,
+    backdropBlur: null
   },
   {
     id: 'typographyBlockId3',
@@ -368,7 +390,11 @@ export const blocks: Block[] = [
     align: null,
     color: null,
     content: 'a quick question...',
-    variant: TypographyVariant.h6
+    variant: TypographyVariant.h6,
+    settings: {
+      __typename: 'TypographyBlockSettings',
+      color: null
+    }
   },
   {
     id: 'typographyBlockId4',
@@ -378,7 +404,11 @@ export const blocks: Block[] = [
     align: null,
     color: null,
     content: 'Can we trust the story of Jesus ?',
-    variant: TypographyVariant.h3
+    variant: TypographyVariant.h3,
+    settings: {
+      __typename: 'TypographyBlockSettings',
+      color: null
+    }
   },
   {
     __typename: 'ButtonBlock',
@@ -397,7 +427,8 @@ export const blocks: Block[] = [
       parentBlockId: 'button1.id',
       gtmEventName: 'gtmEventName',
       blockId: 'step2.id'
-    }
+    },
+    settings: null
   },
   {
     id: 'icon1-1.id',
@@ -441,7 +472,8 @@ export const blocks: Block[] = [
     backgroundColor: null,
     themeMode: null,
     themeName: null,
-    fullscreen: false
+    fullscreen: false,
+    backdropBlur: null
   },
   {
     id: 'typographyBlockId5',
@@ -450,8 +482,12 @@ export const blocks: Block[] = [
     parentOrder: 0,
     align: null,
     color: null,
-    content: 'if it’s true...',
-    variant: TypographyVariant.h6
+    content: "if it's true...",
+    variant: TypographyVariant.h6,
+    settings: {
+      __typename: 'TypographyBlockSettings',
+      color: null
+    }
   },
   {
     id: 'typographyBlockId1',
@@ -461,13 +497,18 @@ export const blocks: Block[] = [
     align: null,
     color: null,
     content: 'What is Christianity to you?',
-    variant: TypographyVariant.h3
+    variant: TypographyVariant.h3,
+    settings: {
+      __typename: 'TypographyBlockSettings',
+      color: null
+    }
   },
   {
     id: 'radioQuestion1.id',
     __typename: 'RadioQuestionBlock',
     parentBlockId: 'card2.id',
-    parentOrder: 2
+    parentOrder: 2,
+    gridView: false
   },
   {
     id: 'radioOption1.id',
@@ -475,6 +516,7 @@ export const blocks: Block[] = [
     parentBlockId: 'radioQuestion1.id',
     parentOrder: 0,
     label: 'One of many ways to God',
+    pollOptionImageBlockId: null,
     action: {
       __typename: 'NavigateToBlockAction',
       parentBlockId: 'radioOption1.id',
@@ -488,6 +530,7 @@ export const blocks: Block[] = [
     parentBlockId: 'radioQuestion1.id',
     parentOrder: 1,
     label: 'One great lie...',
+    pollOptionImageBlockId: null,
     action: {
       __typename: 'NavigateToBlockAction',
       parentBlockId: 'radioOption2.id',
@@ -501,6 +544,7 @@ export const blocks: Block[] = [
     parentBlockId: 'radioQuestion1.id',
     parentOrder: 2,
     label: 'One true way to God',
+    pollOptionImageBlockId: null,
     action: {
       __typename: 'NavigateToBlockAction',
       parentBlockId: 'radioOption3.id',
@@ -540,7 +584,8 @@ export const blocks: Block[] = [
     backgroundColor: null,
     themeMode: null,
     themeName: null,
-    fullscreen: false
+    fullscreen: false,
+    backdropBlur: null
   },
   {
     id: 'typographyBlockId7',
@@ -550,7 +595,11 @@ export const blocks: Block[] = [
     align: null,
     color: null,
     content: 'What do you think?',
-    variant: TypographyVariant.h6
+    variant: TypographyVariant.h6,
+    settings: {
+      __typename: 'TypographyBlockSettings',
+      color: null
+    }
   },
   {
     id: 'typographyBlockId1',
@@ -560,13 +609,18 @@ export const blocks: Block[] = [
     align: null,
     color: null,
     content: 'Do you need to change to be good enough for God?',
-    variant: TypographyVariant.h3
+    variant: TypographyVariant.h3,
+    settings: {
+      __typename: 'TypographyBlockSettings',
+      color: null
+    }
   },
   {
     id: 'radioQuestion2.id',
     __typename: 'RadioQuestionBlock',
     parentBlockId: 'card3.id',
-    parentOrder: 2
+    parentOrder: 2,
+    gridView: false
   },
   {
     id: 'radioOption4.id',
@@ -574,6 +628,7 @@ export const blocks: Block[] = [
     parentBlockId: 'radioQuestion2.id',
     parentOrder: 0,
     label: 'Yes, God likes good people',
+    pollOptionImageBlockId: null,
     action: {
       __typename: 'NavigateToBlockAction',
       parentBlockId: 'radioOption4.id',
@@ -587,6 +642,7 @@ export const blocks: Block[] = [
     parentBlockId: 'radioQuestion2.id',
     parentOrder: 1,
     label: 'No, He will accept me as I am',
+    pollOptionImageBlockId: null,
     action: {
       __typename: 'NavigateToBlockAction',
       parentBlockId: 'radioOption5.id',
@@ -693,7 +749,8 @@ export const blocks: Block[] = [
     backgroundColor: null,
     themeMode: null,
     themeName: null,
-    fullscreen: false
+    fullscreen: false,
+    backdropBlur: null
   },
   {
     __typename: 'ImageBlock',
@@ -745,7 +802,8 @@ export const blocks: Block[] = [
     backgroundColor: null,
     themeMode: null,
     themeName: null,
-    fullscreen: false
+    fullscreen: false,
+    backdropBlur: null
   },
   {
     id: 'image6.id',
@@ -769,7 +827,11 @@ export const blocks: Block[] = [
     align: null,
     color: null,
     content: 'a quote',
-    variant: TypographyVariant.overline
+    variant: TypographyVariant.overline,
+    settings: {
+      __typename: 'TypographyBlockSettings',
+      color: null
+    }
   },
   {
     id: 'typographyBlockId12',
@@ -779,8 +841,12 @@ export const blocks: Block[] = [
     align: null,
     color: null,
     content:
-      '“God sent his Son into the world not to judge the world, but to save the world through him.”',
-    variant: TypographyVariant.subtitle1
+      '"God sent his Son into the world not to judge the world, but to save the world through him."',
+    variant: TypographyVariant.subtitle1,
+    settings: {
+      __typename: 'TypographyBlockSettings',
+      color: null
+    }
   },
   {
     id: 'typographyBlockId13',
@@ -790,7 +856,11 @@ export const blocks: Block[] = [
     align: null,
     color: null,
     content: '–  The Bible, John 3:17',
-    variant: TypographyVariant.caption
+    variant: TypographyVariant.caption,
+    settings: {
+      __typename: 'TypographyBlockSettings',
+      color: null
+    }
   },
   {
     __typename: 'ButtonBlock',
@@ -809,7 +879,8 @@ export const blocks: Block[] = [
       parentBlockId: 'button3.id',
       gtmEventName: 'gtmEventName',
       blockId: 'step6.id'
-    }
+    },
+    settings: null
   },
   {
     id: 'icon6-1.id',

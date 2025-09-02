@@ -1,6 +1,5 @@
-import { graphql } from 'gql.tada'
-
-import { VideoVariantDownloadQuality } from '.prisma/api-media-client'
+import { VideoVariantDownloadQuality } from '@core/prisma/media/client'
+import { graphql } from '@core/shared/gql'
 
 import { getClient } from '../../../../test/client'
 import { prismaMock } from '../../../../test/prismaMock'

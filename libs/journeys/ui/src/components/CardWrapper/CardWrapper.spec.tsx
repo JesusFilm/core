@@ -27,6 +27,7 @@ describe('CardWrapper', () => {
       themeMode: null,
       themeName: null,
       fullscreen: false,
+      backdropBlur: null,
       children: [
         {
           id: 'video5.id',
@@ -121,6 +122,7 @@ describe('CardWrapper', () => {
         ],
         coverBlockId: 'video5.id',
         fullscreen: false,
+        backdropBlur: null,
         id: 'card5.id',
         parentBlockId: 'step5.id',
         parentOrder: 0,
@@ -128,7 +130,7 @@ describe('CardWrapper', () => {
         themeName: null,
         wrappers: {}
       },
-      {}
+      undefined
     )
   })
 
@@ -146,6 +148,7 @@ describe('CardWrapper', () => {
       themeMode: null,
       themeName: null,
       fullscreen: false,
+      backdropBlur: null,
       children: [
         {
           id: 'video5.id',
@@ -240,6 +243,7 @@ describe('CardWrapper', () => {
         ],
         coverBlockId: 'video5.id',
         fullscreen: false,
+        backdropBlur: null,
         id: 'card5.id',
         parentBlockId: 'step5.id',
         parentOrder: 0,
@@ -247,7 +251,7 @@ describe('CardWrapper', () => {
         themeName: null,
         wrappers: {}
       },
-      {}
+      undefined
     )
   })
 })

@@ -1,14 +1,21 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { type NextRouter, useRouter } from 'next/router'
+import { SnackbarProvider } from 'notistack'
 
 import {
   JourneyStatus,
   ThemeMode,
-  ThemeName
+  ThemeName,
+  UserTeamRole
 } from '../../../../__generated__/globalTypes'
 import { JourneyProvider } from '../../../libs/JourneyProvider'
 import type { JourneyFields as Journey } from '../../../libs/JourneyProvider/__generated__/JourneyFields'
+import { JOURNEY_AI_TRANSLATE_CREATE_SUBSCRIPTION } from '../../../libs/useJourneyAiTranslateSubscription'
+import { SUPPORTED_LANGUAGE_IDS } from '../../../libs/useJourneyAiTranslateSubscription/supportedLanguages'
+import { JOURNEY_DUPLICATE } from '../../../libs/useJourneyDuplicateMutation'
+import { GET_LANGUAGES } from '../../../libs/useLanguagesQuery'
+import { UPDATE_LAST_ACTIVE_TEAM_ID } from '../../../libs/useUpdateLastActiveTeamIdMutation'
 import {
   GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS,
   TeamProvider
@@ -44,6 +51,11 @@ const journey: Journey = {
         __typename: 'LanguageName',
         value: 'English',
         primary: true
+      },
+      {
+        __typename: 'LanguageName',
+        value: 'English',
+        primary: false
       }
     ]
   },
@@ -73,20 +85,149 @@ const journey: Journey = {
   displayTitle: null,
   logoImageBlock: null,
   menuButtonIcon: null,
-  menuStepBlock: null
+  menuStepBlock: null,
+  journeyTheme: null
 }
 
 const teamResult = jest.fn(() => ({
   data: {
-    teams: [{ id: 'teamId', title: 'Team Name', __typename: 'Team' }],
+    teams: [
+      {
+        id: 'teamId',
+        title: 'Team Name',
+        __typename: 'Team',
+        publicTitle: 'Team Name',
+        userTeams: [
+          {
+            id: 'userTeamId',
+            __typename: 'UserTeam',
+            role: UserTeamRole.manager,
+            user: {
+              __typename: 'User',
+              id: 'userId',
+              firstName: 'Test',
+              lastName: 'User',
+              imageUrl: null,
+              email: 'test@example.com'
+            }
+          }
+        ],
+        customDomains: []
+      }
+    ],
     getJourneyProfile: {
+      id: 'profileId',
       __typename: 'JourneyProfile',
       lastActiveTeamId: 'teamId'
     }
   }
 }))
 
-const setOpenTeamDialogMock = jest.fn()
+const getLanguagesMock = {
+  request: {
+    query: GET_LANGUAGES,
+    variables: {
+      languageId: '529',
+      where: {
+        ids: [...SUPPORTED_LANGUAGE_IDS]
+      }
+    }
+  },
+  result: {
+    data: {
+      languages: [
+        {
+          __typename: 'Language',
+          id: '496',
+          bcp47: 'fr',
+          iso3: 'fra',
+          slug: 'french',
+          name: [
+            {
+              value: 'Français',
+              primary: true,
+              __typename: 'LanguageName'
+            },
+            {
+              value: 'French',
+              primary: false,
+              __typename: 'LanguageName'
+            }
+          ]
+        }
+      ]
+    }
+  }
+}
+
+const updateLastActiveTeamIdMock = {
+  request: {
+    query: UPDATE_LAST_ACTIVE_TEAM_ID,
+    variables: {
+      input: {
+        lastActiveTeamId: 'teamId'
+      }
+    }
+  },
+  result: {
+    data: {
+      journeyProfileUpdate: {
+        id: 'profileId',
+        __typename: 'JourneyProfile'
+      }
+    }
+  }
+}
+
+const journeyDuplicateMock = {
+  request: {
+    query: JOURNEY_DUPLICATE,
+    variables: {
+      id: 'journeyId',
+      teamId: 'teamId'
+    }
+  },
+  result: jest.fn(() => ({
+    data: {
+      journeyDuplicate: {
+        id: 'duplicatedJourneyId',
+        __typename: 'Journey'
+      }
+    }
+  }))
+}
+
+const journeyTranslationSubscriptionMock = {
+  request: {
+    query: JOURNEY_AI_TRANSLATE_CREATE_SUBSCRIPTION,
+    variables: {
+      journeyId: 'duplicatedJourneyId',
+      name: 'Template',
+      journeyLanguageName: 'English',
+      textLanguageId: '496',
+      textLanguageName: 'Français'
+    }
+  },
+  result: {
+    data: {
+      journeyAiTranslateCreateSubscription: {
+        progress: 100,
+        message: 'Translation complete',
+        journey: {
+          id: 'duplicatedJourneyId',
+          title: 'Template Traduit',
+          description: 'Description traduite',
+          languageId: '496',
+          createdAt: '2023-04-25T12:34:56Z',
+          updatedAt: '2023-04-25T12:34:56Z',
+          blocks: [],
+          __typename: 'Journey'
+        },
+        __typename: 'JourneyAiTranslateProgress'
+      }
+    }
+  }
+}
 
 const createJourneyButton = (
   <MockedProvider
@@ -96,12 +237,15 @@ const createJourneyButton = (
           query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS
         },
         result: teamResult
-      }
+      },
+      getLanguagesMock
     ]}
   >
-    <JourneyProvider value={{ journey }}>
-      <CreateJourneyButton />
-    </JourneyProvider>
+    <SnackbarProvider>
+      <JourneyProvider value={{ journey }}>
+        <CreateJourneyButton />
+      </JourneyProvider>
+    </SnackbarProvider>
   </MockedProvider>
 )
 
@@ -116,8 +260,14 @@ function defineWindowWithPath(path: string): void {
 
 describe('CreateJourneyButton', () => {
   const prefetch = jest.fn()
-  const push = jest.fn().mockResolvedValueOnce('')
+  const push = jest.fn().mockResolvedValue('')
   const originalEnv = process.env
+
+  beforeEach(() => {
+    jest.clearAllMocks()
+    teamResult.mockClear()
+    journeyDuplicateMock.result.mockClear()
+  })
 
   it('should open team dialog if url query set to createNew', async () => {
     mockUseRouter.mockReturnValue({
@@ -132,10 +282,13 @@ describe('CreateJourneyButton', () => {
               query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS
             },
             result: teamResult
-          }
+          },
+          getLanguagesMock
         ]}
       >
-        <CreateJourneyButton signedIn />
+        <SnackbarProvider>
+          <CreateJourneyButton signedIn />
+        </SnackbarProvider>
       </MockedProvider>
     )
 
@@ -157,12 +310,15 @@ describe('CreateJourneyButton', () => {
               query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS
             },
             result: teamResult
-          }
+          },
+          getLanguagesMock
         ]}
       >
-        <JourneyProvider value={{ journey }}>
-          <CreateJourneyButton signedIn />
-        </JourneyProvider>
+        <SnackbarProvider>
+          <JourneyProvider value={{ journey }}>
+            <CreateJourneyButton signedIn />
+          </JourneyProvider>
+        </SnackbarProvider>
       </MockedProvider>
     )
 
@@ -171,6 +327,105 @@ describe('CreateJourneyButton', () => {
     await waitFor(() =>
       expect(screen.getByTestId('CopyToTeamDialog')).toBeInTheDocument()
     )
+  })
+
+  it('should duplicate journey without translation and navigate immediately', async () => {
+    mockUseRouter.mockReturnValue({
+      query: { createNew: false },
+      push,
+      replace: jest.fn(),
+      pathname: '/templates/journeyId'
+    } as unknown as NextRouter)
+
+    render(
+      <MockedProvider
+        mocks={[
+          {
+            request: {
+              query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS
+            },
+            result: teamResult
+          },
+          getLanguagesMock,
+          journeyDuplicateMock,
+          updateLastActiveTeamIdMock
+        ]}
+      >
+        <SnackbarProvider>
+          <TeamProvider>
+            <JourneyProvider value={{ journey }}>
+              <CreateJourneyButton signedIn />
+            </JourneyProvider>
+          </TeamProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    fireEvent.click(screen.getByRole('button', { name: 'Use This Template' }))
+
+    await waitFor(() =>
+      expect(screen.getByTestId('CopyToTeamDialog')).toBeInTheDocument()
+    )
+
+    // Submit without translation
+    fireEvent.click(screen.getByRole('button', { name: 'Add' }))
+
+    await waitFor(() => {
+      expect(journeyDuplicateMock.result).toHaveBeenCalled()
+    })
+
+    await waitFor(() => {
+      expect(push).toHaveBeenCalledWith(
+        '/journeys/duplicatedJourneyId',
+        undefined,
+        { shallow: true }
+      )
+    })
+  })
+
+  it('should show translation option when enabled', async () => {
+    mockUseRouter.mockReturnValue({
+      query: { createNew: false },
+      push,
+      replace: jest.fn(),
+      pathname: '/templates/journeyId'
+    } as unknown as NextRouter)
+
+    render(
+      <MockedProvider
+        mocks={[
+          {
+            request: {
+              query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS
+            },
+            result: teamResult
+          },
+          getLanguagesMock
+        ]}
+      >
+        <SnackbarProvider>
+          <TeamProvider>
+            <JourneyProvider value={{ journey }}>
+              <CreateJourneyButton signedIn />
+            </JourneyProvider>
+          </TeamProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    fireEvent.click(screen.getByRole('button', { name: 'Use This Template' }))
+
+    await waitFor(() =>
+      expect(screen.getByTestId('CopyToTeamDialog')).toBeInTheDocument()
+    )
+
+    // Enable translation
+    fireEvent.click(screen.getByRole('checkbox'))
+
+    // Language selection should appear
+    await waitFor(() => {
+      expect(screen.getByPlaceholderText('Search Language')).toBeInTheDocument()
+    })
   })
 
   describe('if not signed in', () => {
@@ -384,14 +639,17 @@ describe('CreateJourneyButton', () => {
               query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS
             },
             result: teamResult
-          }
+          },
+          getLanguagesMock
         ]}
       >
-        <TeamProvider>
-          <JourneyProvider value={{}}>
-            <CreateJourneyButton signedIn />
-          </JourneyProvider>
-        </TeamProvider>
+        <SnackbarProvider>
+          <TeamProvider>
+            <JourneyProvider value={{}}>
+              <CreateJourneyButton signedIn />
+            </JourneyProvider>
+          </TeamProvider>
+        </SnackbarProvider>
       </MockedProvider>
     )
 

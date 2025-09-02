@@ -19,6 +19,11 @@ import { getJourneyRTL } from '../../../libs/rtl'
 import { ImageFields } from '../../Image/__generated__/ImageFields'
 import { VideoFields } from '../../Video/__generated__/VideoFields'
 import { OverlayContent } from '../OverlayContent'
+import {
+  addAlphaToHex,
+  reduceHexOpacity,
+  stripAlphaFromHex
+} from '../utils/colorOpacityUtils'
 
 import { BackgroundVideo } from './BackgroundVideo'
 
@@ -59,6 +64,11 @@ const StyledBlurBackground = styled(Stack)(({ theme }) => ({
   }
 }))
 
+// max width for blocks
+const CONTENT_WIDTH = 372
+// content width + extra padding for gradient fade out
+const CONTAINER_WIDTH = 440
+
 export function ContainedCover({
   children,
   backgroundColor,
@@ -71,7 +81,7 @@ export function ContainedCover({
   const [contentHeight, setContentHeight] = useState(0)
   const { journey } = useJourney()
   const { rtl } = getJourneyRTL(journey)
-  const contentRef = useRef() as RefObject<HTMLDivElement>
+  const contentRef = useRef<HTMLDivElement | null>(null)
 
   const posterImage =
     videoBlock?.mediaVideo?.__typename === 'Video'
@@ -96,10 +106,26 @@ export function ContainedCover({
     }
   }, [contentRef])
 
-  const overlayGradient = (direction: string): string =>
-    `linear-gradient(to ${direction}, transparent 0%,  ${backgroundColor}14 10%, ${backgroundColor}33 17%, ${backgroundColor}60 25%, ${backgroundColor}b0 40%, ${backgroundColor}e6 60%, ${backgroundColor} 98%)`
+  const baseBackgroundColor = stripAlphaFromHex(backgroundColor)
 
-  const overlayImageMask = `linear-gradient(to top, transparent 0%, ${backgroundColor}14 5%, ${backgroundColor}33 10%, ${backgroundColor}60 15%, ${backgroundColor}b0 20%, ${backgroundColor}e6 25%, ${backgroundColor} 30%)`
+  const overlayGradient = (direction: string): string =>
+    `linear-gradient(to ${direction},
+    transparent 0%,
+    ${addAlphaToHex(baseBackgroundColor, 8)} 10%,
+    ${addAlphaToHex(baseBackgroundColor, 20)} 17%,
+    ${addAlphaToHex(baseBackgroundColor, 38)} 25%,
+    ${addAlphaToHex(baseBackgroundColor, 69)} 40%,
+    ${addAlphaToHex(baseBackgroundColor, 90)} 60%,
+    ${addAlphaToHex(baseBackgroundColor, 100)} 98%)`
+
+  const overlayImageMask = `linear-gradient(to top,
+    transparent 0%,
+    ${addAlphaToHex(baseBackgroundColor, 8)} 5%,   
+    ${addAlphaToHex(baseBackgroundColor, 20)} 10%,  
+    ${addAlphaToHex(baseBackgroundColor, 38)} 15%,  
+    ${addAlphaToHex(baseBackgroundColor, 69)} 20%,  
+    ${addAlphaToHex(baseBackgroundColor, 90)} 25%,  
+    ${addAlphaToHex(baseBackgroundColor, 100)} 30%)`
 
   return (
     <>
@@ -189,6 +215,10 @@ export function ContainedCover({
             layout="fill"
             objectFit="cover"
             objectPosition={`${imageBlock.focalLeft}% ${imageBlock.focalTop}%`}
+            sx={{
+              transform: `scale(${(imageBlock.scale ?? 100) / 100})`,
+              transformOrigin: `${imageBlock.focalLeft}% ${imageBlock.focalTop}%`
+            }}
           />
         )}
       </Box>
@@ -209,7 +239,10 @@ export function ContainedCover({
             <Stack
               data-testid="overlay-blur"
               sx={{
-                width: { xs: videoBlock != null ? '100%' : '0%', sm: 380 },
+                width: {
+                  xs: videoBlock != null ? '100%' : '0%',
+                  sm: CONTAINER_WIDTH
+                },
                 height: { xs: videoBlock != null ? '85%' : '0%', sm: '100%' },
                 flexDirection: {
                   xs: 'column-reverse',
@@ -250,7 +283,7 @@ export function ContainedCover({
                 position: 'absolute',
                 width: '100%',
                 height: { xs: '100%', sm: '100%' },
-                maxWidth: { xs: '100%', sm: '380px' },
+                maxWidth: { xs: '100%', sm: `${CONTAINER_WIDTH}px` },
                 pt: { xs: videoBlock != null ? 40 : 5, sm: 0 },
                 pb: { xs: 10, sm: 0 },
                 pl: { sm: 50 },
@@ -262,14 +295,14 @@ export function ContainedCover({
                   xs: overlayGradient('bottom'),
                   sm: overlayGradient('right')
                 },
-                backgroundColor: `${backgroundColor}d9`
+                backgroundColor: `${baseBackgroundColor}FF`
               }}
             />
             <OverlayContent
               hasFullscreenVideo={hasFullscreenVideo}
               sx={{
                 // This should match width of journey card content in admin
-                width: { sm: '312px' },
+                width: { sm: `${CONTENT_WIDTH}px` },
                 maxHeight: { xs: '55vh', sm: '65%', md: '100%' }
               }}
             >
@@ -281,9 +314,13 @@ export function ContainedCover({
             className="overlay-gradient"
             sx={{
               background: {
-                xs: `linear-gradient(to top,  ${backgroundColor}ff ${
-                  rtl ? 100 : 0
-                }%, ${backgroundColor}33 60%, ${backgroundColor}00 100%)`,
+                xs: `linear-gradient(to bottom, ${reduceHexOpacity(
+                  backgroundColor,
+                  100
+                )} 0%, ${reduceHexOpacity(
+                  backgroundColor,
+                  70
+                )} 60%, ${backgroundColor} 100%)`,
                 sm: 'unset'
               }
             }}

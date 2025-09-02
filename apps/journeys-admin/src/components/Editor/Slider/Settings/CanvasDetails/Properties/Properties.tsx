@@ -135,7 +135,7 @@ export function Properties({ block, step }: PropertiesProps): ReactElement {
       component = <Image {...selectedBlock} alt={selectedBlock.alt} />
       break
     case 'TypographyBlock':
-      title = t('Typography Properties')
+      title = t('Text Properties')
       component = <Typography {...selectedBlock} />
       break
     case 'ButtonBlock':
@@ -193,7 +193,7 @@ export function Properties({ block, step }: PropertiesProps): ReactElement {
       }}
       border={1}
       borderColor="divider"
-      data-testId="SettingsDrawer"
+      data-testid="SettingsDrawer"
     >
       <DrawerTitle title={title} onClose={onClose} />
       <Stack

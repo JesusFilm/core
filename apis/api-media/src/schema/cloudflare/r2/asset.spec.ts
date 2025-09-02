@@ -1,4 +1,4 @@
-import { graphql } from 'gql.tada'
+import { graphql } from '@core/shared/gql'
 
 import { getClient } from '../../../../test/client'
 import { prismaMock } from '../../../../test/prismaMock'
@@ -63,7 +63,7 @@ describe('cloudflare/r2/asset', () => {
           updatedAt: new Date(),
           videoId: 'videoId',
           contentType: 'image/jpeg',
-          contentLength: 0
+          contentLength: BigInt(0)
         })
         const result = await authClient({
           document: VIDEO_CLOUDFLARE_ASSETS_MUTATION,
@@ -175,7 +175,7 @@ describe('cloudflare/r2/asset', () => {
           updatedAt: new Date(),
           videoId: 'videoId',
           contentType: 'application/octet-stream',
-          contentLength: 0
+          contentLength: BigInt(0)
         })
         const result = await authClient({
           document: VIDEO_CLOUDFLARE_ASSETS_MUTATION,

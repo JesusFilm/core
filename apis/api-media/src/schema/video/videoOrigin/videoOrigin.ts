@@ -1,4 +1,5 @@
-import { prisma } from '../../../lib/prisma'
+import { prisma } from '@core/prisma/media/client'
+
 import { builder } from '../../builder'
 
 builder.prismaObject('VideoOrigin', {
@@ -8,6 +9,19 @@ builder.prismaObject('VideoOrigin', {
     description: t.exposeString('description', { nullable: true })
   })
 })
+
+builder.queryFields((t) => ({
+  videoOrigins: t.withAuth({ isPublisher: true }).prismaField({
+    type: ['VideoOrigin'],
+    nullable: false,
+    resolve: async (query) => {
+      return await prisma.videoOrigin.findMany({
+        ...query,
+        orderBy: { name: 'asc' }
+      })
+    }
+  })
+}))
 
 builder.mutationFields((t) => ({
   videoOriginCreate: t.withAuth({ isPublisher: true }).prismaFieldWithInput({

@@ -1,0 +1,34 @@
+/* eslint-disable i18next/no-literal-string */
+import { ReactElement } from 'react'
+
+import { useWatch } from './WatchContext'
+
+// This is only used for testing purpose
+// We don't need to translate the given text below
+
+export function TestWatchState(): ReactElement {
+  const { state } = useWatch()
+  return (
+    <>
+      <div>audioLanguage: {state.audioLanguage}</div>
+      <div>subtitleLanguage: {state.subtitleLanguage}</div>
+      <div>subtitleOn: {state.subtitleOn.toString()}</div>
+      <div>loading: {state.loading?.toString()}</div>
+      <div>videoId: {state.videoId || 'none'}</div>
+      <div>videoVariantSlug: {state.videoVariantSlug || 'none'}</div>
+      <div>allLanguages: {state.allLanguages?.length || 0} languages</div>
+      <div>
+        videoAudioLanguagesIdsAndSlugs:{' '}
+        {state.videoAudioLanguagesIdsAndSlugs?.length || 0} audio languages
+      </div>
+      <div>
+        videoSubtitleLanguageIds: {state.videoSubtitleLanguageIds?.length || 0}{' '}
+        subtitle languages
+      </div>
+      <div>
+        currentAudioLanguage: {state.currentAudioLanguage?.id || 'none'}
+      </div>
+      <div>autoSubtitle: {state.autoSubtitle?.toString()}</div>
+    </>
+  )
+}

@@ -4,8 +4,8 @@ import { Args, Mutation, Resolver } from '@nestjs/graphql'
 import { GraphQLError } from 'graphql'
 import omit from 'lodash/omit'
 
-import { Block } from '.prisma/api-journeys-client'
 import { CaslAbility } from '@core/nest/common/CaslAuthModule'
+import { Block } from '@core/prisma/journeys/client'
 
 import {
   SignUpBlockCreateInput,
@@ -96,6 +96,8 @@ export class SignUpBlockResolver {
       throw new GraphQLError('user is not allowed to update block', {
         extensions: { code: 'FORBIDDEN' }
       })
-    return await this.blockService.update(id, input)
+    return await this.blockService.update(id, {
+      ...input
+    })
   }
 }

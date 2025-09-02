@@ -1,27 +1,3 @@
-import { FlatCompat } from '@eslint/eslintrc'
-import js from '@eslint/js'
-import baseConfig from '../../eslint.config.mjs'
+import e2eConfig from '../../libs/shared/eslint/e2e.mjs'
 
-const compat = new FlatCompat({
-  baseDirectory: import.meta.dirname,
-  recommendedConfig: js.configs.recommended
-})
-
-export default [
-  ...baseConfig,
-  ...compat.extends('plugin:playwright/recommended'),
-  { ignores: ['apps/watch-e2e/eslint.config.js'] },
-  {
-    files: ['**/*.ts', '**/*.tsx'],
-    languageOptions: {
-      parserOptions: { project: ['apps/watch-e2e/tsconfig.*?.json'] }
-    }
-  },
-  {
-    files: ['src/plugins/index.js'],
-    rules: {
-      '@typescript-eslint/no-var-requires': 'off',
-      'no-undef': 'off'
-    }
-  }
-]
+export default e2eConfig

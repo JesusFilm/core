@@ -2,10 +2,10 @@ import { render } from '@react-email/render'
 import { Job } from 'bullmq'
 import { Logger } from 'pino'
 
+import { prisma } from '@core/prisma/users/client'
 import { sendEmail } from '@core/yoga/email'
 
 import { EmailVerifyEmail } from '../../../emails/templates/EmailVerify/EmailVerify'
-import { prisma } from '../../../lib/prisma'
 
 export interface VerifyUserJob {
   userId: string
@@ -23,13 +23,8 @@ export async function service(
     emailAlias = job.data.email.replace(/\+/g, '%2B')
 
   let redirectParam = ''
-
-  if (job.data.redirect != null) {
-    if (job.data.redirect.includes('redirect')) {
-      redirectParam = `&${job.data.redirect.replace(/\?/, '')}`
-    } else {
-      redirectParam = `&redirect=${job.data.redirect}`
-    }
+  if (job.data.redirect != null && job.data.redirect !== '') {
+    redirectParam = `&redirect=${encodeURIComponent(job.data.redirect)}`
   }
 
   const url = `${process.env.JOURNEYS_ADMIN_URL ?? ''}/users/verify?token=${

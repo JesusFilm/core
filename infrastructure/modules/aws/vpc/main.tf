@@ -98,7 +98,7 @@ resource "aws_nat_gateway" "nat_gateway" {
 }
 
 resource "aws_eip" "eip" {
-  vpc = true
+  domain = "vpc"
   tags = {
     Name = "jfp-eip-${var.env}"
     Env  = var.env

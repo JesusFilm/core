@@ -1,11 +1,9 @@
 import { spawn } from 'child_process'
 import fs, { promises as fsPromises } from 'fs'
-import { join } from 'path'
-import { Readable } from 'stream'
-import { pipeline } from 'stream/promises'
+import { createInterface } from 'readline'
 import { createGunzip } from 'zlib'
 
-import main from './data-import'
+import main, { preprocessSqlFile } from './data-import'
 
 // Mock fs functions
 jest.mock('fs', () => ({
@@ -21,7 +19,14 @@ jest.mock('fs', () => ({
   }),
   createWriteStream: jest.fn().mockReturnValue({
     write: jest.fn(),
-    end: jest.fn()
+    end: jest.fn(),
+    on: jest.fn((event, handler) => {
+      if (event === 'finish') {
+        // Simulate write stream finishing
+        setTimeout(() => handler(), 0)
+      }
+      return { write: jest.fn(), end: jest.fn(), on: jest.fn() }
+    })
   }),
   promises: {
     mkdir: jest.fn().mockResolvedValue(undefined),
@@ -59,6 +64,29 @@ jest.mock('zlib', () => ({
   })
 }))
 
+// Mock readline
+jest.mock('readline', () => ({
+  createInterface: jest.fn().mockReturnValue({
+    [Symbol.asyncIterator]: jest.fn().mockReturnValue({
+      next: jest
+        .fn()
+        .mockResolvedValueOnce({
+          value: 'CREATE TABLE test (id INT);',
+          done: false
+        })
+        .mockResolvedValueOnce({
+          value: 'CREATE PUBLICATION pub FOR ALL TABLES;',
+          done: false
+        })
+        .mockResolvedValueOnce({
+          value: 'INSERT INTO test VALUES (1);',
+          done: false
+        })
+        .mockResolvedValueOnce({ done: true })
+    })
+  })
+}))
+
 // Mock child_process
 jest.mock('child_process', () => ({
   spawn: jest.fn().mockImplementation(() => {
@@ -83,13 +111,16 @@ jest.mock('child_process', () => ({
 }))
 
 // Mock prisma client
-jest.mock('../lib/prisma', () => ({
-  prisma: {
-    importTimes: {
-      upsert: jest.fn().mockResolvedValue({ id: 1 })
-    }
+jest.mock('.prisma/api-media-client', () => {
+  const upsert = jest.fn().mockResolvedValue({ id: 1 })
+  return {
+    PrismaClient: jest.fn().mockImplementation(() => ({
+      importTimes: {
+        upsert
+      }
+    }))
   }
-}))
+})
 
 // Mock fetch function
 global.fetch = jest.fn().mockResolvedValue({
@@ -160,9 +191,9 @@ describe('data-import script', () => {
     // Verify decompression was executed
     expect(createGunzip).toHaveBeenCalled()
 
-    // Verify SQL file was preprocessed
-    expect(fsPromises.readFile).toHaveBeenCalled()
-    expect(fsPromises.writeFile).toHaveBeenCalled()
+    // Verify SQL file was preprocessed using streaming
+    expect(fs.createReadStream).toHaveBeenCalled()
+    expect(fs.createWriteStream).toHaveBeenCalled()
 
     // Verify psql command was executed with the preprocessed file
     expect(spawn).toHaveBeenCalledWith(
@@ -246,5 +277,76 @@ describe('data-import script', () => {
 
     expect(console.error).toHaveBeenCalled()
     expect(process.exit).toHaveBeenCalledWith(1)
+  })
+
+  describe('preprocessSqlFile', () => {
+    it('should process SQL files using streaming and filter out CREATE PUBLICATION statements', async () => {
+      // Mock createInterface to return lines including CREATE PUBLICATION statements
+      const mockLines = [
+        'CREATE TABLE test (id INT);',
+        'CREATE PUBLICATION pub1 FOR ALL TABLES;',
+        'INSERT INTO test VALUES (1);',
+        'CREATE PUBLICATION pub2 FOR TABLE test;',
+        'SELECT * FROM test;'
+      ]
+
+      const mockReadlineInterface = {
+        [Symbol.asyncIterator]: jest.fn().mockReturnValue({
+          next: jest
+            .fn()
+            .mockResolvedValueOnce({ value: mockLines[0], done: false })
+            .mockResolvedValueOnce({ value: mockLines[1], done: false })
+            .mockResolvedValueOnce({ value: mockLines[2], done: false })
+            .mockResolvedValueOnce({ value: mockLines[3], done: false })
+            .mockResolvedValueOnce({ value: mockLines[4], done: false })
+            .mockResolvedValueOnce({ done: true })
+        })
+      }
+
+      ;(createInterface as jest.Mock).mockReturnValueOnce(mockReadlineInterface)
+
+      const mockWriteStream: any = {
+        write: jest.fn(),
+        end: jest.fn(),
+        on: jest.fn((event: string, handler: () => void) => {
+          if (event === 'finish') {
+            setTimeout(() => handler(), 0)
+          }
+          return mockWriteStream
+        })
+      }
+
+      ;(fs.createWriteStream as jest.Mock).mockReturnValueOnce(mockWriteStream)
+
+      await preprocessSqlFile('/input/test.sql', '/output/test.sql')
+
+      // Verify createInterface was called
+      expect(createInterface).toHaveBeenCalled()
+
+      // Verify write stream was created
+      expect(fs.createWriteStream).toHaveBeenCalledWith('/output/test.sql')
+
+      // Verify only non-publication statements were written
+      expect(mockWriteStream.write).toHaveBeenCalledWith(
+        'CREATE TABLE test (id INT);\n'
+      )
+      expect(mockWriteStream.write).toHaveBeenCalledWith(
+        'INSERT INTO test VALUES (1);\n'
+      )
+      expect(mockWriteStream.write).toHaveBeenCalledWith(
+        'SELECT * FROM test;\n'
+      )
+
+      // Verify CREATE PUBLICATION statements were NOT written
+      expect(mockWriteStream.write).not.toHaveBeenCalledWith(
+        'CREATE PUBLICATION pub1 FOR ALL TABLES;\n'
+      )
+      expect(mockWriteStream.write).not.toHaveBeenCalledWith(
+        'CREATE PUBLICATION pub2 FOR TABLE test;\n'
+      )
+
+      // Verify stream was properly closed
+      expect(mockWriteStream.end).toHaveBeenCalled()
+    })
   })
 })

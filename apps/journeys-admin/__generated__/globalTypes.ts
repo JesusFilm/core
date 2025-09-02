@@ -11,6 +11,14 @@ export enum ButtonAction {
   EmailAction = "EmailAction",
   LinkAction = "LinkAction",
   NavigateToBlockAction = "NavigateToBlockAction",
+  PhoneAction = "PhoneAction",
+}
+
+export enum ButtonAlignment {
+  center = "center",
+  justify = "justify",
+  left = "left",
+  right = "right",
 }
 
 export enum ButtonColor {
@@ -28,6 +36,7 @@ export enum ButtonSize {
 
 export enum ButtonVariant {
   contained = "contained",
+  outlined = "outlined",
   text = "text",
 }
 
@@ -286,6 +295,7 @@ export interface BlockUpdateActionInput {
   url?: string | null;
   target?: string | null;
   blockId?: string | null;
+  phone?: string | null;
 }
 
 export interface ButtonBlockCreateInput {
@@ -297,6 +307,12 @@ export interface ButtonBlockCreateInput {
   color?: ButtonColor | null;
   size?: ButtonSize | null;
   submitEnabled?: boolean | null;
+  settings?: ButtonBlockSettingsInput | null;
+}
+
+export interface ButtonBlockSettingsInput {
+  alignment?: ButtonAlignment | null;
+  color?: string | null;
 }
 
 export interface ButtonBlockUpdateInput {
@@ -308,6 +324,7 @@ export interface ButtonBlockUpdateInput {
   startIconId?: string | null;
   endIconId?: string | null;
   submitEnabled?: boolean | null;
+  settings?: ButtonBlockSettingsInput | null;
 }
 
 export interface ButtonClickEventCreateInput {
@@ -325,6 +342,7 @@ export interface CardBlockCreateInput {
   journeyId: string;
   parentBlockId: string;
   backgroundColor?: string | null;
+  backdropBlur?: number | null;
   fullscreen?: boolean | null;
   themeMode?: ThemeMode | null;
   themeName?: ThemeName | null;
@@ -334,6 +352,7 @@ export interface CardBlockUpdateInput {
   parentBlockId?: string | null;
   coverBlockId?: string | null;
   backgroundColor?: string | null;
+  backdropBlur?: number | null;
   fullscreen?: boolean | null;
   themeMode?: ThemeMode | null;
   themeName?: ThemeName | null;
@@ -376,6 +395,8 @@ export interface CustomDomainUpdateInput {
 export interface EmailActionInput {
   gtmEventName?: string | null;
   email: string;
+  customizable?: boolean | null;
+  parentStepId?: string | null;
 }
 
 export interface HostCreateInput {
@@ -480,6 +501,19 @@ export interface JourneyTemplateInput {
   template?: boolean | null;
 }
 
+export interface JourneyThemeCreateInput {
+  journeyId: string;
+  headerFont?: string | null;
+  bodyFont?: string | null;
+  labelFont?: string | null;
+}
+
+export interface JourneyThemeUpdateInput {
+  headerFont?: string | null;
+  bodyFont?: string | null;
+  labelFont?: string | null;
+}
+
 export interface JourneyUpdateInput {
   title?: string | null;
   languageId?: string | null;
@@ -555,6 +589,8 @@ export interface LinkActionInput {
   gtmEventName?: string | null;
   url: string;
   target?: string | null;
+  customizable?: boolean | null;
+  parentStepId?: string | null;
 }
 
 export interface MeInput {
@@ -581,6 +617,7 @@ export interface RadioOptionBlockCreateInput {
 export interface RadioOptionBlockUpdateInput {
   parentBlockId?: string | null;
   label?: string | null;
+  pollOptionImageBlockId?: string | null;
 }
 
 export interface RadioQuestionBlockCreateInput {
@@ -716,6 +753,11 @@ export interface TypographyBlockCreateInput {
   variant?: TypographyVariant | null;
   color?: TypographyColor | null;
   align?: TypographyAlign | null;
+  settings?: TypographyBlockSettingsInput | null;
+}
+
+export interface TypographyBlockSettingsInput {
+  color?: string | null;
 }
 
 export interface TypographyBlockUpdateInput {
@@ -724,6 +766,7 @@ export interface TypographyBlockUpdateInput {
   variant?: TypographyVariant | null;
   color?: TypographyColor | null;
   align?: TypographyAlign | null;
+  settings?: TypographyBlockSettingsInput | null;
 }
 
 export interface UserInviteCreateInput {

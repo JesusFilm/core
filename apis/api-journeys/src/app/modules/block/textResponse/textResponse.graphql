@@ -1,4 +1,4 @@
-type TextResponseBlock implements Block @key(fields: "id") {
+type TextResponseBlock implements Block @shareable {
   id: ID! @shareable
   journeyId: ID! @shareable
   parentBlockId: ID @shareable
@@ -26,6 +26,7 @@ input TextResponseBlockCreateInput {
   parentBlockId: ID!
   label: String!
 }
+
 input TextResponseBlockUpdateInput {
   parentBlockId: ID
   label: String
@@ -37,6 +38,7 @@ input TextResponseBlockUpdateInput {
   type: TextResponseType
   integrationId: String
 }
+
 extend type Mutation {
   textResponseBlockCreate(
     input: TextResponseBlockCreateInput!

@@ -1,6 +1,7 @@
 enum ButtonVariant {
   text
   contained
+  outlined
 }
 
 enum ButtonColor {
@@ -16,7 +17,24 @@ enum ButtonSize {
   large
 }
 
-type ButtonBlock implements Block @key(fields: "id") {
+enum ButtonAlignment {
+  left
+  center
+  right
+  justify
+}
+
+input ButtonBlockSettingsInput {
+  alignment: ButtonAlignment
+  color: String
+}
+
+type ButtonBlockSettings @shareable {
+  alignment: ButtonAlignment @shareable
+  color: String @shareable
+}
+
+type ButtonBlock implements Block @shareable {
   id: ID! @shareable
   journeyId: ID! @shareable
   parentBlockId: ID @shareable
@@ -29,6 +47,7 @@ type ButtonBlock implements Block @key(fields: "id") {
   endIconId: ID @shareable
   action: Action
   submitEnabled: Boolean @shareable
+  settings: ButtonBlockSettings! @shareable
 }
 
 input ButtonBlockCreateInput {
@@ -40,6 +59,7 @@ input ButtonBlockCreateInput {
   color: ButtonColor
   size: ButtonSize
   submitEnabled: Boolean
+  settings: ButtonBlockSettingsInput
 }
 
 input ButtonBlockUpdateInput {
@@ -51,6 +71,7 @@ input ButtonBlockUpdateInput {
   startIconId: ID
   endIconId: ID
   submitEnabled: Boolean
+  settings: ButtonBlockSettingsInput
 }
 
 extend type Mutation {

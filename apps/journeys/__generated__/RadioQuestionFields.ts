@@ -12,4 +12,5 @@ export interface RadioQuestionFields {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
+  gridView: boolean | null;
 }

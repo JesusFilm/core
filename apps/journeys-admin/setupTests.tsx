@@ -9,6 +9,7 @@ import { mswServer } from './test/mswServer'
 import './test/i18n'
 
 configure({ asyncUtilTimeout: 2500 })
+;(globalThis as any).IS_REACT_ACT_ENVIRONMENT = true
 
 jest.mock('next/image', () => ({
   __esModule: true,

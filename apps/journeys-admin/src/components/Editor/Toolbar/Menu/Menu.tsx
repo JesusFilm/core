@@ -66,7 +66,7 @@ export function Menu({ user }: MenuProps): ReactElement {
         disabled={journey == null}
         data-testid="ToolbarMenuButton"
       >
-        <MoreIcon />
+        <MoreIcon data-testid="MoreIcon" />
       </IconButton>
       <MuiMenu
         id="edit-journey-actions"

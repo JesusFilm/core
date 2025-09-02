@@ -44,6 +44,9 @@
   "Create a new account or log in to use this template as yours.": "Create a new account or log in to use this template as yours.",
   "Login with my account": "Login with my account",
   "Create a new account": "Create a new account",
+  "Journey Translated": "Journey Translated",
+  "Journey Copied": "Journey Copied",
+  "Journey duplication failed": "Journey duplication failed",
   "Use This Template": "Use This Template",
   "Add": "Add",
   "Add Journey to Team": "Add Journey to Team",
@@ -87,8 +90,5 @@
   "Visit a Website": "Visit a Website",
   "Untitled": "Untitled",
   "Step {{number}}": "Step {{number}}",
-  "Journey duplication failed": "Journey duplication failed",
-  "Journey Copied": "Journey Copied",
-  "Journey Translated": "Journey Translated",
   "<0>Journey Templates</0><1>in</1><2>{{firstLanguage}}</2>_zero": "<0>Journey Templates</0><1>in</1><2>All Languages</2>"
 }

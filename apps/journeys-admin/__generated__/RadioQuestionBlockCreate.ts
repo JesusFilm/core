@@ -14,6 +14,13 @@ export interface RadioQuestionBlockCreate_radioQuestionBlockCreate {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
+  gridView: boolean | null;
+}
+
+export interface RadioQuestionBlockCreate_radioOption1_action_PhoneAction {
+  __typename: "PhoneAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
 }
 
 export interface RadioQuestionBlockCreate_radioOption1_action_NavigateToBlockAction {
@@ -37,7 +44,7 @@ export interface RadioQuestionBlockCreate_radioOption1_action_EmailAction {
   email: string;
 }
 
-export type RadioQuestionBlockCreate_radioOption1_action = RadioQuestionBlockCreate_radioOption1_action_NavigateToBlockAction | RadioQuestionBlockCreate_radioOption1_action_LinkAction | RadioQuestionBlockCreate_radioOption1_action_EmailAction;
+export type RadioQuestionBlockCreate_radioOption1_action = RadioQuestionBlockCreate_radioOption1_action_PhoneAction | RadioQuestionBlockCreate_radioOption1_action_NavigateToBlockAction | RadioQuestionBlockCreate_radioOption1_action_LinkAction | RadioQuestionBlockCreate_radioOption1_action_EmailAction;
 
 export interface RadioQuestionBlockCreate_radioOption1 {
   __typename: "RadioOptionBlock";
@@ -46,6 +53,18 @@ export interface RadioQuestionBlockCreate_radioOption1 {
   parentOrder: number | null;
   label: string;
   action: RadioQuestionBlockCreate_radioOption1_action | null;
+  /**
+   * pollOptionImageBlockId is present if a child block should be used as a poll option image.
+   *       This child block should not be rendered normally, instead it should be used
+   *       as a poll option image. Blocks are often of type ImageBlock
+   */
+  pollOptionImageBlockId: string | null;
+}
+
+export interface RadioQuestionBlockCreate_radioOption2_action_PhoneAction {
+  __typename: "PhoneAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
 }
 
 export interface RadioQuestionBlockCreate_radioOption2_action_NavigateToBlockAction {
@@ -69,7 +88,7 @@ export interface RadioQuestionBlockCreate_radioOption2_action_EmailAction {
   email: string;
 }
 
-export type RadioQuestionBlockCreate_radioOption2_action = RadioQuestionBlockCreate_radioOption2_action_NavigateToBlockAction | RadioQuestionBlockCreate_radioOption2_action_LinkAction | RadioQuestionBlockCreate_radioOption2_action_EmailAction;
+export type RadioQuestionBlockCreate_radioOption2_action = RadioQuestionBlockCreate_radioOption2_action_PhoneAction | RadioQuestionBlockCreate_radioOption2_action_NavigateToBlockAction | RadioQuestionBlockCreate_radioOption2_action_LinkAction | RadioQuestionBlockCreate_radioOption2_action_EmailAction;
 
 export interface RadioQuestionBlockCreate_radioOption2 {
   __typename: "RadioOptionBlock";
@@ -78,6 +97,12 @@ export interface RadioQuestionBlockCreate_radioOption2 {
   parentOrder: number | null;
   label: string;
   action: RadioQuestionBlockCreate_radioOption2_action | null;
+  /**
+   * pollOptionImageBlockId is present if a child block should be used as a poll option image.
+   *       This child block should not be rendered normally, instead it should be used
+   *       as a poll option image. Blocks are often of type ImageBlock
+   */
+  pollOptionImageBlockId: string | null;
 }
 
 export interface RadioQuestionBlockCreate {

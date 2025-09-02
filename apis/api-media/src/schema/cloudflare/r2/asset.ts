@@ -1,7 +1,12 @@
-import { PutObjectCommand, S3Client } from '@aws-sdk/client-s3'
+import {
+  DeleteObjectCommand,
+  PutObjectCommand,
+  S3Client
+} from '@aws-sdk/client-s3'
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner'
 
-import { prisma } from '../../../lib/prisma'
+import { prisma } from '@core/prisma/media/client'
+
 import { builder } from '../../builder'
 
 import { CloudflareR2CreateInput } from './inputs/cloudflareR2Create'
@@ -41,10 +46,27 @@ export async function getPresignedUrl(
   )
 }
 
+export async function deleteR2File(fileName: string): Promise<void> {
+  if (process.env.CLOUDFLARE_R2_BUCKET == null)
+    throw new Error('Missing CLOUDFLARE_R2_BUCKET')
+
+  const client = getClient()
+  await client.send(
+    new DeleteObjectCommand({
+      Bucket: process.env.CLOUDFLARE_R2_BUCKET,
+      Key: fileName
+    })
+  )
+}
+
 builder.prismaObject('CloudflareR2', {
   fields: (t) => ({
     id: t.exposeID('id', { nullable: false }),
-    contentLength: t.exposeInt('contentLength', { nullable: false }),
+    contentLength: t.field({
+      type: 'BigInt',
+      nullable: false,
+      resolve: (parent) => BigInt(parent.contentLength)
+    }),
     contentType: t.exposeString('contentType', { nullable: false }),
     fileName: t.exposeString('fileName', { nullable: false }),
     originalFilename: t.exposeString('originalFilename'),
@@ -74,6 +96,12 @@ builder.mutationFields((t) => ({
     },
     resolve: async (query, _parent, { input }, { user }) => {
       if (user == null) throw new Error('User not found')
+
+      // Validate contentLength is non-negative
+      if (input.contentLength < 0) {
+        throw new Error('Content length must be non-negative')
+      }
+
       const uploadUrl = await getPresignedUrl(input.fileName, input.contentType)
       return await prisma.cloudflareR2.create({
         ...query,

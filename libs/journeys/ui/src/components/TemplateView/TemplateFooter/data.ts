@@ -60,7 +60,8 @@ export const journey: Journey = {
       coverBlockId: 'image1.id',
       themeMode: null,
       themeName: null,
-      fullscreen: false
+      fullscreen: false,
+      backdropBlur: null
     },
     {
       __typename: 'ButtonBlock',
@@ -79,7 +80,8 @@ export const journey: Journey = {
         parentBlockId: 'button1.id',
         gtmEventName: null,
         url: 'https://www.google.com/'
-      }
+      },
+      settings: null
     },
     {
       __typename: 'StepBlock',
@@ -114,7 +116,8 @@ export const journey: Journey = {
       coverBlockId: 'image2.id',
       themeMode: null,
       themeName: null,
-      fullscreen: false
+      fullscreen: false,
+      backdropBlur: null
     },
     {
       id: 'signup.id',
@@ -158,5 +161,6 @@ export const journey: Journey = {
   displayTitle: null,
   logoImageBlock: null,
   menuButtonIcon: null,
-  menuStepBlock: null
+  menuStepBlock: null,
+  journeyTheme: null
 }

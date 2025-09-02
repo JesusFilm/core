@@ -97,7 +97,8 @@ describe('Editor', () => {
     displayTitle: null,
     logoImageBlock: null,
     menuButtonIcon: null,
-    menuStepBlock: null
+    menuStepBlock: null,
+    journeyTheme: null
   }
 
   beforeEach(() => {
@@ -172,7 +173,8 @@ describe('Editor', () => {
           coverBlockId: null,
           themeMode: ThemeMode.light,
           themeName: ThemeName.base,
-          fullscreen: false
+          fullscreen: false,
+          backdropBlur: null
         },
         {
           __typename: 'TypographyBlock',
@@ -182,7 +184,11 @@ describe('Editor', () => {
           content: 'Test selected step',
           variant: null,
           color: null,
-          align: null
+          align: null,
+          settings: {
+            __typename: 'TypographyBlockSettings',
+            color: null
+          }
         }
       ]
     }

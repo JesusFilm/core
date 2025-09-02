@@ -1,8 +1,7 @@
 import ShortUniqueId from 'short-unique-id'
 
-import { Prisma } from '.prisma/api-analytics-client'
+import { Prisma, prisma } from '@core/prisma/analytics/client'
 
-import { prisma } from '../../lib/prisma'
 import { builder } from '../builder'
 
 const SiteCreateInput = builder.inputType('SiteCreateInput', {

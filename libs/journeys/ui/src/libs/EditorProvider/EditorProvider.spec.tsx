@@ -244,6 +244,7 @@ describe('EditorContext', () => {
           themeMode: null,
           themeName: null,
           fullscreen: false,
+          backdropBlur: null,
           children: []
         }
         const step: TreeBlock = {
@@ -287,6 +288,7 @@ describe('EditorContext', () => {
           themeMode: null,
           themeName: null,
           fullscreen: false,
+          backdropBlur: null,
           children: []
         }
         const step: TreeBlock = {
@@ -347,6 +349,7 @@ describe('EditorContext', () => {
           themeMode: null,
           themeName: null,
           fullscreen: false,
+          backdropBlur: null,
           children: []
         }
         const step: TreeBlock = {
@@ -485,9 +488,9 @@ describe('EditorContext', () => {
     })
 
     describe('SetStepsAction', () => {
-      it('should set steps', () => {
-        const step: TreeBlock = {
-          id: 'step0.id',
+      it('should select first step when no previous selection exists', () => {
+        const step1: TreeBlock = {
+          id: 'step1.id',
           __typename: 'StepBlock',
           parentBlockId: null,
           parentOrder: 0,
@@ -496,8 +499,13 @@ describe('EditorContext', () => {
           slug: null,
           children: []
         }
+        const step2: TreeBlock = { ...step1, id: 'step2.id', parentOrder: 1 }
         const state: EditorState = {
           steps: [],
+          selectedStep: undefined,
+          selectedStepId: undefined,
+          selectedBlock: undefined,
+          selectedBlockId: undefined,
           activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties,
           activeSlide: ActiveSlide.JourneyFlow,
           activeContent: ActiveContent.Canvas
@@ -505,19 +513,21 @@ describe('EditorContext', () => {
         expect(
           reducer(state, {
             type: 'SetStepsAction',
-            steps: [step]
+            steps: [step1, step2]
           })
         ).toEqual({
           ...state,
-          steps: [step],
-          selectedBlock: step,
-          selectedStep: step
+          steps: [step1, step2],
+          selectedStep: step1,
+          selectedStepId: step1.id,
+          selectedBlock: step1,
+          selectedBlockId: step1.id
         })
       })
 
-      it('should retain previously set steps and blocks', () => {
-        const block: TreeBlock = {
-          id: 'card0.id',
+      it('should maintain existing selections when found in new steps', () => {
+        const originalBlock: TreeBlock = {
+          id: 'original-block.id',
           __typename: 'CardBlock',
           parentBlockId: null,
           backgroundColor: null,
@@ -526,46 +536,149 @@ describe('EditorContext', () => {
           themeMode: null,
           themeName: null,
           fullscreen: false,
+          backdropBlur: null,
           children: []
         }
-        const updatedBlock: TreeBlock = {
-          ...block,
-          fullscreen: true
-        }
-        const step: TreeBlock = {
-          id: 'step0.id',
+        const originalStep: TreeBlock = {
+          id: 'original-step.id',
           __typename: 'StepBlock',
           parentBlockId: null,
           parentOrder: 0,
           locked: false,
           nextBlockId: null,
           slug: null,
-          children: [block]
+          children: [originalBlock]
         }
-        const updatedStep: TreeBlock = {
-          ...step,
-          children: [updatedBlock]
+        const newBlock: TreeBlock = { ...originalBlock, id: 'new-block.id' }
+        const newStep: TreeBlock = {
+          ...originalStep,
+          id: 'new-step.id',
+          parentOrder: 1,
+          children: [newBlock]
         }
         const state: EditorState = {
-          steps: [step],
+          steps: [originalStep],
+          selectedStep: originalStep,
+          selectedStepId: originalStep.id,
+          selectedBlock: originalBlock,
+          selectedBlockId: originalBlock.id,
           activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties,
           activeSlide: ActiveSlide.JourneyFlow,
-          selectedBlock: block,
-          selectedBlockId: block.id,
-          selectedStep: step,
-          selectedStepId: step.id,
           activeContent: ActiveContent.Canvas
         }
         expect(
           reducer(state, {
             type: 'SetStepsAction',
-            steps: [updatedStep]
+            steps: [originalStep, newStep]
           })
         ).toEqual({
           ...state,
-          steps: [updatedStep],
-          selectedBlock: updatedBlock,
-          selectedStep: updatedStep
+          steps: [originalStep, newStep],
+          selectedStep: originalStep,
+          selectedStepId: originalStep.id,
+          selectedBlock: originalBlock,
+          selectedBlockId: originalBlock.id
+        })
+      })
+
+      it('should fallback to first step when previous selection no longer exists', () => {
+        const step1: TreeBlock = {
+          id: 'step1.id',
+          __typename: 'StepBlock',
+          parentBlockId: null,
+          parentOrder: 0,
+          locked: false,
+          nextBlockId: null,
+          slug: null,
+          children: []
+        }
+        const step2: TreeBlock = { ...step1, id: 'step2.id', parentOrder: 1 }
+        const state: EditorState = {
+          steps: [],
+          selectedStepId: 'non-existent-id',
+          selectedStep: undefined,
+          selectedBlockId: 'non-existent-block-id',
+          selectedBlock: undefined,
+          activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties,
+          activeSlide: ActiveSlide.JourneyFlow,
+          activeContent: ActiveContent.Canvas
+        }
+        expect(
+          reducer(state, {
+            type: 'SetStepsAction',
+            steps: [step1, step2]
+          })
+        ).toEqual({
+          ...state,
+          steps: [step1, step2],
+          selectedStep: step1,
+          selectedStepId: step1.id,
+          selectedBlock: step1,
+          selectedBlockId: step1.id
+        })
+      })
+
+      it('should fallback block when step survives but block is deleted', () => {
+        const cardBlock: TreeBlock = {
+          id: 'card.id',
+          __typename: 'CardBlock',
+          parentBlockId: null,
+          backgroundColor: null,
+          coverBlockId: null,
+          parentOrder: 0,
+          themeMode: null,
+          themeName: null,
+          fullscreen: false,
+          backdropBlur: null,
+          children: []
+        }
+        const persistentStep: TreeBlock = {
+          id: 'persistent-step.id',
+          __typename: 'StepBlock',
+          parentBlockId: null,
+          parentOrder: 0,
+          locked: false,
+          nextBlockId: null,
+          slug: null,
+          children: [cardBlock]
+        }
+        const newStep: TreeBlock = {
+          id: 'new-step.id',
+          __typename: 'StepBlock',
+          parentBlockId: null,
+          parentOrder: 1,
+          locked: false,
+          nextBlockId: null,
+          slug: null,
+          children: []
+        }
+        // Updated version of persistent step without the nested card block
+        const updatedPersistentStep: TreeBlock = {
+          ...persistentStep,
+          children: []
+        }
+        const state: EditorState = {
+          steps: [persistentStep],
+          selectedStepId: 'persistent-step.id',
+          selectedStep: persistentStep,
+          selectedBlockId: 'card.id', // This block will no longer exist
+          selectedBlock: cardBlock,
+          activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties,
+          activeSlide: ActiveSlide.JourneyFlow,
+          activeContent: ActiveContent.Canvas
+        }
+        expect(
+          reducer(state, {
+            type: 'SetStepsAction',
+            steps: [updatedPersistentStep, newStep]
+          })
+        ).toEqual({
+          ...state,
+          steps: [updatedPersistentStep, newStep],
+          selectedStep: updatedPersistentStep,
+          selectedStepId: updatedPersistentStep.id,
+          selectedBlock: updatedPersistentStep, // Block falls back to first step
+          selectedBlockId: updatedPersistentStep.id
         })
       })
     })
@@ -582,6 +695,7 @@ describe('EditorContext', () => {
           themeMode: null,
           themeName: null,
           fullscreen: false,
+          backdropBlur: null,
           children: []
         }
         const step: TreeBlock = {
@@ -649,6 +763,7 @@ describe('EditorContext', () => {
           themeMode: null,
           themeName: null,
           fullscreen: false,
+          backdropBlur: null,
           children: []
         }
         const step: TreeBlock = {

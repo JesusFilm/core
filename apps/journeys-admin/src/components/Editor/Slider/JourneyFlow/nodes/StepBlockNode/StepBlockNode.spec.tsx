@@ -177,6 +177,7 @@ describe('StepBlockNode', () => {
           themeName: null,
           themeMode: null,
           fullscreen: false,
+          backdropBlur: null,
           children: [button, radioQuestion, signUp, video, textResponse]
         }
       ]

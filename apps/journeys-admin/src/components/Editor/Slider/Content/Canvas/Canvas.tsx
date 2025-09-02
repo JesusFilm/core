@@ -2,7 +2,7 @@ import { keyframes } from '@emotion/react'
 import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
 import { useRouter } from 'next/router'
-import { type ReactElement, useEffect, useRef, useState } from 'react'
+import { type ReactElement, useEffect, useMemo, useRef, useState } from 'react'
 import { CSSTransition, TransitionGroup } from 'react-transition-group'
 
 import { setBeaconPageViewed } from '@core/journeys/ui/beaconHooks'
@@ -139,6 +139,19 @@ export function Canvas(): ReactElement {
   const theme =
     selectedStep != null ? getStepTheme(selectedStep, journey) : null
 
+  const journeyTheme = journey?.journeyTheme
+  const fontFamilies = useMemo(() => {
+    if (journeyTheme == null) return
+
+    return {
+      headerFont: journeyTheme?.headerFont ?? '',
+      bodyFont: journeyTheme?.bodyFont ?? '',
+      labelFont: journeyTheme?.labelFont ?? ''
+    }
+  }, [journeyTheme])
+
+  const nodeRef = useRef(null)
+
   return (
     <Stack
       ref={containerRef}
@@ -216,10 +229,16 @@ export function Canvas(): ReactElement {
               dir={rtl ? 'rtl' : 'ltr'}
               // frameRef assists to see if user is copying text from typog blocks
               ref={frameRef}
+              fontFamilies={fontFamilies}
               scrolling="no"
             >
               {({ document }) => (
-                <ThemeProvider {...theme} rtl={rtl} locale={locale}>
+                <ThemeProvider
+                  {...theme}
+                  rtl={rtl}
+                  locale={locale}
+                  fontFamilies={fontFamilies}
+                >
                   <Hotkeys document={document} />
                   <TransitionGroup
                     component={Box}
@@ -245,11 +264,13 @@ export function Canvas(): ReactElement {
                     }}
                   >
                     <CSSTransition
+                      nodeRef={nodeRef}
                       key={selectedStep.id}
                       timeout={300}
                       classNames="card"
                     >
                       <Stack
+                        ref={nodeRef}
                         justifyContent="center"
                         sx={{
                           position: 'absolute',

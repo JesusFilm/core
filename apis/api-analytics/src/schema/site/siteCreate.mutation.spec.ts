@@ -1,6 +1,5 @@
-import { graphql } from 'gql.tada'
-
-import { Prisma } from '.prisma/api-analytics-client'
+import { Prisma, sites } from '@core/prisma/analytics/client'
+import { graphql } from '@core/shared/gql'
 
 import { getAuthenticatedClient } from '../../../test/client'
 import { prismaMock } from '../../../test/prismaMock'
@@ -71,7 +70,7 @@ describe('siteCreateMutation', () => {
           slug: 'test-slug'
         }
       ]
-    }
+    } as unknown as sites
     prismaMock.sites.create.mockResolvedValue(site)
     prismaMock.sites.findUniqueOrThrow.mockResolvedValue(site)
     const data = await client({
@@ -179,7 +178,7 @@ describe('siteCreateMutation', () => {
           slug: 'test-slug'
         }
       ]
-    }
+    } as unknown as sites
     prismaMock.sites.create.mockResolvedValue(site)
     const data = await client({
       document: SITE_CREATE_MUTATION,
@@ -302,7 +301,7 @@ describe('siteCreateMutation', () => {
           slug: 'test-slug'
         }
       ]
-    }
+    } as unknown as sites
     prismaMock.sites.create.mockRejectedValue(
       new Prisma.PrismaClientKnownRequestError(
         'Unique constraint failed on the fields: (`domain`)',

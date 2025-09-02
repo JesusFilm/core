@@ -1,9 +1,10 @@
 import { sendGTMEvent } from '@next/third-parties/google'
-import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 import { v4 as uuidv4 } from 'uuid'
 
 import { Icon } from '@core/shared/ui/icons/Icon'
+
+import { Button } from '../../../../Button'
 
 interface BibleQuotesCarouselHeaderProps {
   bibleQuotesTitle: string
@@ -18,8 +19,6 @@ export function BibleQuotesCarouselHeader({
   shareDataTitle,
   contentId
 }: BibleQuotesCarouselHeaderProps): ReactElement {
-  const { t } = useTranslation('apps-watch')
-
   const handleShare = async (): Promise<void> => {
     const shareUrl = new URL(window.location.href)
     shareUrl.searchParams.append('utm_source', 'share')
@@ -55,7 +54,7 @@ export function BibleQuotesCarouselHeader({
             {bibleQuotesTitle}
           </h3>
         </div>
-        <button
+        <Button
           onClick={handleShare}
           aria-label="Share Bible quotes"
           tabIndex={0}
@@ -74,7 +73,7 @@ export function BibleQuotesCarouselHeader({
             }}
           />
           <span>{shareButtonText}</span>
-        </button>
+        </Button>
       </div>
     </div>
   )

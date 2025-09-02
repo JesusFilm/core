@@ -1,5 +1,5 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { act, renderHook, waitFor } from '@testing-library/react'
+import { renderHook, waitFor } from '@testing-library/react'
 
 import { GetCustomDomains_customDomains as CustomDomain } from '../../../__generated__/GetCustomDomains'
 
@@ -58,9 +58,7 @@ describe('useCustomDomainsQuery', () => {
       }
     )
 
-    await act(
-      async () => await waitFor(() => expect(mockResult).toHaveBeenCalled())
-    )
+    await waitFor(() => expect(mockResult).toHaveBeenCalled())
     expect(result.current).toBe('example.com')
   })
 
@@ -100,9 +98,7 @@ describe('useCustomDomainsQuery', () => {
       }
     )
 
-    await act(
-      async () => await waitFor(() => expect(mockResult).toHaveBeenCalled())
-    )
+    await waitFor(() => expect(mockResult).toHaveBeenCalled())
     expect(result.current).toBeUndefined()
   })
 })

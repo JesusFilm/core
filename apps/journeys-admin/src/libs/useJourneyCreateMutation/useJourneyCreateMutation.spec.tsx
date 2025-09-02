@@ -76,15 +76,27 @@ const data = {
   },
   headlineTypographyBlockCreate: {
     id: 'headlineTypographyId',
-    __typename: 'TypographyBlock'
+    __typename: 'TypographyBlock',
+    settings: {
+      __typename: 'TypographyBlockSettings',
+      color: null
+    }
   },
   bodyTypographyBlockCreate: {
     id: 'bodyTypographyId',
-    __typename: 'TypographyBlock'
+    __typename: 'TypographyBlock',
+    settings: {
+      __typename: 'TypographyBlockSettings',
+      color: null
+    }
   },
   captionTypographyBlockCreate: {
     id: 'captionTypographyId',
-    __typename: 'TypographyBlock'
+    __typename: 'TypographyBlock',
+    settings: {
+      __typename: 'TypographyBlockSettings',
+      color: null
+    }
   }
 }
 
@@ -123,29 +135,30 @@ describe('useJourneyCreateMutation', () => {
     })
 
     await act(async () => {
-      await waitFor(async () => {
-        expect(await result.current.createJourney()).toMatchObject(
-          data.journeyCreate
-        )
-      })
-      await waitFor(async () => {
-        expect(cache.extract()?.ROOT_QUERY?.adminJourneys).toEqual([
-          { __ref: 'Journey:createdJourneyId' }
-        ])
-      })
+      const created = await result.current.createJourney()
+      expect(created).toMatchObject(data.journeyCreate)
     })
+    await waitFor(() =>
+      expect(cache.extract()?.ROOT_QUERY?.adminJourneys).toEqual([
+        { __ref: 'Journey:createdJourneyId' }
+      ])
+    )
   })
 
   it('returns a function which returns undefined if error', async () => {
+    mockUuidv4.mockReturnValueOnce(variables.journeyId)
+    mockUuidv4.mockReturnValueOnce(variables.stepId)
+    mockUuidv4.mockReturnValueOnce(variables.cardId)
+    mockUuidv4.mockReturnValueOnce(variables.imageId)
+
     const { result } = renderHook(() => useJourneyCreateMutation(), {
       wrapper: ({ children }) => (
         <MockedProvider
-          addTypename={false}
           mocks={[
             {
               request: {
                 query: CREATE_JOURNEY,
-                variables: { id: undefined }
+                variables
               },
               result: { data: {} }
             }
@@ -157,36 +170,18 @@ describe('useJourneyCreateMutation', () => {
     })
 
     await act(async () => {
-      await waitFor(async () => {
-        expect(await result.current.createJourney()).toBeUndefined()
-      })
+      const created = await result.current.createJourney()
+      expect(created).toBeUndefined()
     })
   })
 
   it('returns a loading state', async () => {
     const { result } = renderHook(() => useJourneyCreateMutation(), {
       wrapper: ({ children }) => (
-        <MockedProvider
-          addTypename={false}
-          mocks={[
-            {
-              request: {
-                query: CREATE_JOURNEY,
-                variables: { id: undefined }
-              },
-              result: { data: {} }
-            }
-          ]}
-        >
-          {children}
-        </MockedProvider>
+        <MockedProvider mocks={[]}>{children}</MockedProvider>
       )
     })
 
-    await act(async () => {
-      await waitFor(async () => {
-        expect(await result.current.loading).toBe(false)
-      })
-    })
+    await waitFor(() => expect(result.current.loading).toBe(false))
   })
 })

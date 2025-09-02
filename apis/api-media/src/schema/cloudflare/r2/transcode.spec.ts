@@ -1,5 +1,6 @@
-import { graphql } from 'gql.tada'
 import { ExecutionResult } from 'graphql'
+
+import { graphql } from '@core/shared/gql'
 
 import { getClient } from '../../../../test/client'
 import { prismaMock } from '../../../../test/prismaMock'
@@ -139,7 +140,7 @@ describe('cloudflare/r2/transcode', () => {
           publicUrl: 'https://assets.jesusfilm.org/input.mp4',
           userId: 'userId',
           contentType: 'video/mp4',
-          contentLength: 1000,
+          contentLength: BigInt(1000),
           createdAt: new Date(),
           updatedAt: new Date(),
           videoId: 'videoId',

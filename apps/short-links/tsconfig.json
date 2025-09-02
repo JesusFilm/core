@@ -12,17 +12,12 @@
     "isolatedModules": true,
     "incremental": true,
     "tsBuildInfoFile": "../../.cache/short-links/tsc/.tsbuildinfo",
+    "types": ["jest", "node"],
     "plugins": [
       {
         "name": "next"
-      },
-      {
-        "name": "gql.tada/ts-plugin",
-        "schema": "../../apis/api-gateway/schema.graphql",
-        "tadaOutputLocation": "./apps/short-links/src/__generated__/graphql-env.d.ts"
       }
-    ],
-    "types": ["jest", "node"]
+    ]
   },
   "include": [
     "**/*.ts",

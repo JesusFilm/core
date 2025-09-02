@@ -1,9 +1,10 @@
 module "prod" {
-  source            = "../../modules/aws"
-  certificate_arn   = data.aws_acm_certificate.acm_central_jesusfilm_org.arn
-  env               = "prod"
-  cidr              = "10.10.0.0/16"
-  internal_url_name = "service.internal"
+  source                       = "../../modules/aws"
+  certificate_arn              = data.aws_acm_certificate.acm_central_jesusfilm_org.arn
+  env                          = "prod"
+  cidr                         = "10.10.0.0/16"
+  internal_url_name            = "service.internal"
+  datadog_forwarder_lambda_arn = var.datadog_forwarder_lambda_arn
 }
 
 locals {
@@ -42,8 +43,13 @@ locals {
 }
 
 module "api-gateway" {
-  source           = "../../../apis/api-gateway/infrastructure"
-  ecs_config       = local.public_ecs_config
+  source = "../../../apis/api-gateway/infrastructure"
+  ecs_config = merge(local.public_ecs_config, {
+    alb_target_group = merge(local.alb_target_group, {
+      health_check_path = "/readiness"
+      health_check_port = "4000"
+    })
+  })
   doppler_token    = data.aws_ssm_parameter.doppler_api_gateway_prod_token.value
   alb_listener_arn = module.prod.public_alb.alb_listener.arn
   alb_dns_name     = module.prod.public_alb.dns_name
@@ -123,6 +129,7 @@ module "arclight" {
   alb_listener_arn = module.prod.public_alb.alb_listener.arn
   alb_dns_name     = module.prod.public_alb.dns_name
   host_name        = "core.arclight.org"
+  host_names       = ["arclight.org", "*.arclight.org", "arc.gt", "*.arc.gt"]
 }
 
 module "bastion" {
@@ -132,7 +139,7 @@ module "bastion" {
   dns_name           = "bastion.central.jesusfilm.org"
   subnet_id          = module.prod.vpc.public_subnets[0]
   zone_id            = data.aws_route53_zone.route53_central_jesusfilm_org.zone_id
-  security_group_ids = [module.prod.public_bastion_security_group_id]
+  security_group_ids = [module.prod.public_bastion_security_group_id, "sg-0134831ac8ca8c963", "sg-0fc432a3d89fc39fc"]
   instance_type      = "t3.medium"
 }
 

@@ -1,11 +1,15 @@
-import { useRouter } from 'next/router'
+import { useMutation } from '@apollo/client'
 import { useTranslation } from 'next-i18next'
+import { useSnackbar } from 'notistack'
 import { ReactElement, useState } from 'react'
 
-import { setBeaconPageViewed } from '@core/journeys/ui/beaconHooks'
 import { CopyToTeamDialog } from '@core/journeys/ui/CopyToTeamDialog'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
-import { useJourneyDuplicateAndTranslate } from '@core/journeys/ui/useJourneyDuplicateAndTranslate'
+import { useTeam } from '@core/journeys/ui/TeamProvider'
+import { useJourneyAiTranslateSubscription } from '@core/journeys/ui/useJourneyAiTranslateSubscription'
+import { useJourneyDuplicateMutation } from '@core/journeys/ui/useJourneyDuplicateMutation'
+import { UPDATE_LAST_ACTIVE_TEAM_ID } from '@core/journeys/ui/useUpdateLastActiveTeamIdMutation'
+import { UpdateLastActiveTeamId } from '@core/journeys/ui/useUpdateLastActiveTeamIdMutation/__generated__/UpdateLastActiveTeamId'
 import CopyToIcon from '@core/shared/ui/icons/CopyTo'
 
 import { GetAdminJourneys_journeys as Journey } from '../../../../__generated__/GetAdminJourneys'
@@ -30,9 +34,9 @@ interface JourneyLanguage {
  * This component:
  * - Renders a menu item that triggers a journey copy dialog
  * - Handles the journey duplication process with optional translation
- * - Integrates with the router for URL parameter management
- * - Tracks page views through beacon analytics
  * - Supports both direct journey props and context-based journey data
+ * - Uses subscription-based approach for real-time translation updates
+ * - Shows real-time progress updates during the translation process
  *
  * @param {Object} props - The component props
  * @param {string} [props.id] - Optional unique identifier for the journey to be copied
@@ -48,23 +52,74 @@ export function CopyToTeamMenuItem({
   handleKeepMounted,
   journey
 }: CopyToTeamMenuItemProps): ReactElement {
-  const router = useRouter()
   const [duplicateTeamDialogOpen, setDuplicateTeamDialogOpen] =
     useState<boolean>(false)
+  const [journeyDuplicate] = useJourneyDuplicateMutation()
+  const { enqueueSnackbar } = useSnackbar()
   const { t } = useTranslation('apps-journeys-admin')
+  const { query, setActiveTeam } = useTeam()
+  const teams = query?.data?.teams ?? []
+  const [updateLastActiveTeamId, { client }] =
+    useMutation<UpdateLastActiveTeamId>(UPDATE_LAST_ACTIVE_TEAM_ID)
+  const [loading, setLoading] = useState(false)
+  const [translationVariables, setTranslationVariables] = useState<
+    | {
+        journeyId: string
+        name: string
+        journeyLanguageName: string
+        textLanguageId: string
+        textLanguageName: string
+      }
+    | undefined
+  >(undefined)
+  const [selectedTeamId, setSelectedTeamId] = useState<string | null>(null)
   const { journey: journeyFromContext } = useJourney()
   const journeyData = journey ?? journeyFromContext
 
-  const { duplicateAndTranslate, loading } = useJourneyDuplicateAndTranslate({
-    journeyId: journeyData?.id,
-    journeyTitle: journeyData?.title ?? '',
-    journeyLanguageName:
-      journeyData?.language.name.find(({ primary }) => primary)?.value ?? '',
-    onSuccess: () => {
-      setDuplicateTeamDialogOpen(false)
+  const updateTeamState = (teamId: string): void => {
+    setActiveTeam(teams.find((team) => team.id === teamId) ?? null)
+    void updateLastActiveTeamId({
+      variables: {
+        input: {
+          lastActiveTeamId: teamId
+        }
+      },
+      onCompleted() {
+        void client.refetchQueries({ include: ['GetAdminJourneys'] })
+      }
+    })
+  }
+
+  // Set up the subscription for translation
+  const { data: translationData } = useJourneyAiTranslateSubscription({
+    variables: translationVariables,
+    skip: !translationVariables,
+    onComplete: () => {
+      enqueueSnackbar(t('Journey Translated'), {
+        variant: 'success',
+        preventDuplicate: true
+      })
+      setLoading(false)
+      setTranslationVariables(undefined) // Reset to stop subscription
+
+      // Update team state when translation completes
+      if (selectedTeamId) {
+        updateTeamState(selectedTeamId)
+      }
+      handleCloseMenu() // Close menu when translation completes
+      setDuplicateTeamDialogOpen(false) // Close dialog when translation completes
+      setSelectedTeamId(null) // Reset selected team
     },
-    onError: () => {
-      setDuplicateTeamDialogOpen(false)
+    onError(error) {
+      enqueueSnackbar(error.message, {
+        variant: 'error',
+        preventDuplicate: true
+      })
+      setLoading(false)
+      setTranslationVariables(undefined)
+      handleCloseMenu() // Close menu on translation error
+      setDuplicateTeamDialogOpen(false) // Close dialog on translation error
+      setSelectedTeamId(null) // Reset selected team
     }
   })
 
@@ -75,20 +130,58 @@ export function CopyToTeamMenuItem({
   ): Promise<void> => {
     if (id == null || journeyData == null) return
 
-    await duplicateAndTranslate({
-      teamId,
-      selectedLanguage,
-      shouldTranslate: showTranslation
-    })
-  }
+    setLoading(true)
 
-  function setRoute(param: string): void {
-    void router.push({ query: { ...router.query, param } }, undefined, {
-      shallow: true
-    })
-    router.events.on('routeChangeComplete', () => {
-      setBeaconPageViewed(param)
-    })
+    try {
+      const { data: duplicateData } = await journeyDuplicate({
+        variables: {
+          id,
+          teamId
+        }
+      })
+
+      if (duplicateData?.journeyDuplicate?.id) {
+        if (selectedLanguage == null || !showTranslation) {
+          setLoading(false)
+          enqueueSnackbar(t('Journey Copied'), {
+            variant: 'success',
+            preventDuplicate: true
+          })
+          updateTeamState(teamId) // Update team state immediately for non-translation scenarios
+          handleCloseMenu()
+          setDuplicateTeamDialogOpen(false)
+          return
+        }
+
+        // Store the team ID for later team state update when translation completes
+        setSelectedTeamId(teamId)
+
+        // Start the translation subscription
+        setTranslationVariables({
+          journeyId: duplicateData.journeyDuplicate.id,
+          name: journeyData.title,
+          journeyLanguageName:
+            journeyData.language.name.find(({ primary }) => !primary)?.value ??
+            '',
+          textLanguageId: selectedLanguage.id,
+          textLanguageName:
+            selectedLanguage.nativeName ?? selectedLanguage.localName ?? ''
+        })
+
+        // Don't close menu or dialog yet - wait for translation to complete
+      } else {
+        throw new Error('Journey duplication failed')
+      }
+    } catch (error) {
+      setLoading(false)
+      setTranslationVariables(undefined)
+      enqueueSnackbar(t('Journey duplication failed'), {
+        variant: 'error',
+        preventDuplicate: true
+      })
+      handleCloseMenu()
+      setDuplicateTeamDialogOpen(false)
+    }
   }
 
   return (
@@ -99,7 +192,6 @@ export function CopyToTeamMenuItem({
         onClick={() => {
           handleKeepMounted?.()
           handleCloseMenu()
-          setRoute('copy-journey')
           setDuplicateTeamDialogOpen(true)
         }}
         testId="Copy"
@@ -113,6 +205,13 @@ export function CopyToTeamMenuItem({
           setDuplicateTeamDialogOpen(false)
         }}
         submitAction={handleDuplicateJourney}
+        translationProgress={{
+          progress:
+            translationData?.journeyAiTranslateCreateSubscription.progress ?? 0,
+          message:
+            translationData?.journeyAiTranslateCreateSubscription.message ?? ''
+        }}
+        isTranslating={translationVariables != null}
       />
     </>
   )

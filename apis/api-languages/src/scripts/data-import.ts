@@ -5,7 +5,9 @@ import { Readable } from 'stream'
 import { pipeline } from 'stream/promises'
 import { createGunzip } from 'zlib'
 
-import { prisma } from '../lib/prisma'
+import { PrismaClient } from '.prisma/api-languages-client'
+
+const prisma = new PrismaClient()
 
 const GZIPPED_BACKUP_FILE_NAME = 'languages-backup.sql.gz'
 const BACKUP_FILE_NAME = 'languages-backup.sql'
