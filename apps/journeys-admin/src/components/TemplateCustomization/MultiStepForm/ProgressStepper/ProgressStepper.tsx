@@ -33,9 +33,8 @@ export function ProgressStepper({
           backgroundColor: isCompleted
             ? 'primary.main'
             : isCurrentStep
-              ? '#C52D3A35'
+              ? '#C52D3A35' // Hardcoded hex color to support alpha value
               : 'white',
-          // opacity: isCurrentStep && !isLastScreen ? 0.6 : 1,
           border: '2px solid',
           borderColor: isCompleted
             ? 'primary.main'
@@ -95,7 +94,6 @@ export function ProgressStepper({
         connector={<ProgressStepperConnector />}
         sx={{
           '& .MuiStep-root': {
-            // flex: 1,
             padding: '0 6px'
           },
           '& .MuiStepLabel-root': {
