@@ -1,35 +1,13 @@
 import { render, screen } from '@testing-library/react'
-import { ThemeProvider } from '@mui/material/styles'
-import { createTheme } from '@mui/material/styles'
 
 import { ProgressStepper } from './ProgressStepper'
-
-// Create a basic theme for testing
-const theme = createTheme({
-  palette: {
-    primary: {
-      main: '#C52D3A'
-    },
-    grey: {
-      300: '#E0E0E0'
-    }
-  }
-})
-
-const renderWithTheme = (component: React.ReactElement) => {
-  return render(
-    <ThemeProvider theme={theme}>
-      {component}
-    </ThemeProvider>
-  )
-}
 
 describe('ProgressStepper', () => {
   it('should render checkmark icon for completed steps and not render for incomplete steps', () => {
     const activeStep = 2
     const totalSteps = 4
 
-    renderWithTheme(
+    render(
       <ProgressStepper activeStep={activeStep} totalSteps={totalSteps} />
     )
 
@@ -47,7 +25,7 @@ describe('ProgressStepper', () => {
     const activeStep = 2
     const totalSteps = 2
 
-    renderWithTheme(
+    render(
       <ProgressStepper activeStep={activeStep} totalSteps={totalSteps} />
     )
 
@@ -59,7 +37,7 @@ describe('ProgressStepper', () => {
     const activeStep = 0
     const totalSteps = 3
 
-    renderWithTheme(
+    render(
       <ProgressStepper activeStep={activeStep} totalSteps={totalSteps} />
     )
 
