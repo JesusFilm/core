@@ -1,0 +1,101 @@
+{
+  "name": "api-languages",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apis/api-languages/src",
+  "projectType": "application",
+  "tags": [],
+  "targets": {
+    "build": {
+      "executor": "@nx/webpack:webpack",
+      "outputs": ["{options.outputPath}"],
+      "defaultConfiguration": "development",
+      "options": {
+        "outputPath": "dist/apps/api-languages",
+        "main": "apis/api-languages/src/index.ts",
+        "tsConfig": "apis/api-languages/tsconfig.app.json",
+        "compiler": "tsc",
+        "target": "node",
+        "webpackConfig": "apis/api-languages/webpack.config.js"
+      },
+      "configurations": {
+        "production": {
+          "generatePackageJson": true,
+          "optimization": true,
+          "extractLicenses": true,
+          "inspect": false
+        }
+      }
+    },
+    "serve": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "nx _serve api-languages | npx pino-pretty --config .pino-prettyrc.js"
+      }
+    },
+    "_serve": {
+      "executor": "@nx/js:node",
+      "options": {
+        "buildTarget": "api-languages:build",
+        "inspect": false
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "cache": true,
+        "cacheLocation": ".cache/api-languages/eslint",
+        "cacheStrategy": "content"
+      }
+    },
+    "test": {
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/apis/api-languages"],
+      "options": {
+        "jestConfig": "apis/api-languages/jest.config.ts"
+      }
+    },
+    "generate-graphql": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "GENERATE_SCHEMA=true npx ts-node -P apis/api-languages/tsconfig.app.json -r tsconfig-paths/register apis/api-languages/src/schema/index.ts"
+      }
+    },
+    "subgraph-check": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npx hive schema:check apis/api-languages/schema.graphql --registry.accessToken $HIVE_TOKEN --github --service api-languages"
+      }
+    },
+    "fetch-secrets": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "DOPPLER_TOKEN=$DOPPLER_API_LANGUAGES_TOKEN doppler secrets download --no-file --format=env-no-quotes --project api-languages > apis/api-languages/.env"
+      }
+    },
+    "type-check": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npx tsc -b apis/api-languages/tsconfig.json"
+      }
+    },
+    "codecov": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "codecov -f coverage/apis/api-languages/cobertura-coverage.xml -F apps.api-languages"
+      }
+    },
+    "data-export": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npm run ts-node apis/api-languages/src/workers/cli.ts data-export"
+      }
+    },
+    "data-import": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npm run ts-node apis/api-languages/src/scripts/data-import.ts"
+      }
+    }
+  }
+}

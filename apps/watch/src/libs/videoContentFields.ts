@@ -18,11 +18,23 @@ export const VIDEO_CONTENT_FIELDS = gql`
     }
     studyQuestions(languageId: $languageId, primary: true) {
       value
+      primary
+    }
+    bibleCitations {
+      bibleBook {
+        name {
+          value
+        }
+      }
+      chapterStart
+      chapterEnd
+      verseStart
+      verseEnd
     }
     title(languageId: $languageId, primary: true) {
       value
     }
-    variant(languageId: $languageId) {
+    variant {
       id
       duration
       hls
@@ -38,6 +50,7 @@ export const VIDEO_CONTENT_FIELDS = gql`
           value
           primary
         }
+        bcp47
       }
       slug
       subtitleCount

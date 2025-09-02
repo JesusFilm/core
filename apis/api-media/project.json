@@ -1,0 +1,177 @@
+{
+  "name": "api-media",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apis/api-media/src",
+  "projectType": "application",
+  "tags": [],
+  "targets": {
+    "build": {
+      "executor": "@nx/webpack:webpack",
+      "outputs": ["{options.outputPath}"],
+      "defaultConfiguration": "development",
+      "options": {
+        "outputPath": "dist/apps/api-media",
+        "main": "apis/api-media/src/index.ts",
+        "tsConfig": "apis/api-media/tsconfig.app.json",
+        "compiler": "tsc",
+        "target": "node",
+        "webpackConfig": "apis/api-media/webpack.config.js"
+      },
+      "configurations": {
+        "production": {
+          "generatePackageJson": true,
+          "optimization": true,
+          "extractLicenses": true,
+          "inspect": false
+        }
+      }
+    },
+    "_serve": {
+      "executor": "@nx/js:node",
+      "options": {
+        "buildTarget": "api-media:build",
+        "inspect": false
+      }
+    },
+    "serve": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "nx _serve api-media | npx pino-pretty --config .pino-prettyrc.js"
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "cache": true,
+        "cacheLocation": ".cache/api-media/eslint",
+        "cacheStrategy": "content"
+      }
+    },
+    "test": {
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/apis/api-media"],
+      "options": {
+        "jestConfig": "apis/api-media/jest.config.ts"
+      }
+    },
+    "generate-graphql": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "GENERATE_SCHEMA=true npx ts-node -P apis/api-media/tsconfig.app.json -r tsconfig-paths/register apis/api-media/src/schema/index.ts"
+      }
+    },
+    "subgraph-check": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npx hive schema:check apis/api-media/schema.graphql --registry.accessToken $HIVE_TOKEN --github --service api-media"
+      }
+    },
+    "fetch-secrets": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "DOPPLER_TOKEN=$DOPPLER_API_MEDIA_TOKEN doppler secrets download --no-file --format=env-no-quotes --project api-media > apis/api-media/.env"
+      }
+    },
+    "type-check": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npx tsc -b apis/api-media/tsconfig.json"
+      }
+    },
+    "codecov": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "codecov -f coverage/apis/api-media/cobertura-coverage.xml -F apps.api-media"
+      }
+    },
+    "queue-video-children": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npm run ts-node apis/api-media/src/workers/cli.ts video-children"
+      }
+    },
+    "queue-crowdin": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npm run ts-node apis/api-media/src/workers/cli.ts crowdin"
+      }
+    },
+    "queue-blocklist": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npm run ts-node apis/api-media/src/workers/cli.ts blocklist"
+      }
+    },
+    "queue-seed": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npm run ts-node apis/api-media/src/workers/cli.ts seed"
+      }
+    },
+    "export-language-slugs": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          "npm run ts-node apis/api-media/src/lib/exportExistingLanguageSlugs.ts",
+          "npx prettier apis/api-languages/src/__generated__/languageSlugs.ts --write"
+        ],
+        "parallel": false
+      }
+    },
+    "data-export": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npm run ts-node apis/api-media/src/workers/cli.ts data-export"
+      }
+    },
+    "data-import": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npm run ts-node apis/api-media/src/scripts/data-import.ts"
+      }
+    },
+    "subtitle-migrate-r2": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npm run ts-node apis/api-media/src/scripts/subtitle-migrate-r2.ts"
+      }
+    },
+    "download-migrate-r2": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npm run ts-node apis/api-media/src/scripts/download-migrate-r2.ts"
+      }
+    },
+    "copy-distro-downloads": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npm run ts-node apis/api-media/src/scripts/copy-distro-downloads.ts"
+      }
+    },
+    "update-arcgt-urls": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npm run ts-node apis/api-media/src/scripts/update-arcgt-urls.ts"
+      }
+    },
+    "mux-videos": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npm run ts-node apis/api-media/src/scripts/mux-videos.ts"
+      }
+    },
+    "populate-crowdin-ids": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npm run ts-node apis/api-media/src/workers/cli.ts populate-crowdin-ids"
+      }
+    },
+    "prisma-seed": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": ["npm run ts-node apis/api-media/db/seed.ts"]
+      }
+    }
+  }
+}

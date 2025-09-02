@@ -1,0 +1,78 @@
+enum TypographyVariant {
+  h1
+  h2
+  h3
+  h4
+  h5
+  h6
+  subtitle1
+  subtitle2
+  body1
+  body2
+  caption
+  overline
+}
+
+enum TypographyColor {
+  primary
+  secondary
+  error
+}
+
+enum TypographyAlign {
+  left
+  center
+  right
+}
+
+input TypographyBlockSettingsInput {
+  color: String
+}
+
+type TypographyBlockSettings @shareable {
+  color: String @shareable
+}
+
+type TypographyBlock implements Block @shareable {
+  id: ID! @shareable
+  journeyId: ID! @shareable
+  parentBlockId: ID @shareable
+  parentOrder: Int @shareable
+  content: String! @shareable
+  variant: TypographyVariant @shareable
+  color: TypographyColor @shareable
+  align: TypographyAlign @shareable
+  settings: TypographyBlockSettings! @shareable
+}
+
+input TypographyBlockCreateInput {
+  id: ID
+  journeyId: ID!
+  parentBlockId: ID!
+  content: String!
+  variant: TypographyVariant
+  color: TypographyColor
+  align: TypographyAlign
+  settings: TypographyBlockSettingsInput
+}
+
+input TypographyBlockUpdateInput {
+  parentBlockId: ID
+  content: String
+  variant: TypographyVariant
+  color: TypographyColor
+  align: TypographyAlign
+  settings: TypographyBlockSettingsInput
+}
+
+extend type Mutation {
+  typographyBlockCreate(input: TypographyBlockCreateInput!): TypographyBlock!
+  typographyBlockUpdate(
+    id: ID!
+    input: TypographyBlockUpdateInput!
+    """
+    drop this parameter after merging teams
+    """
+    journeyId: ID
+  ): TypographyBlock!
+}

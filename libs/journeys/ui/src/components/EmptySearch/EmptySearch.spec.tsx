@@ -14,7 +14,7 @@ describe('EmptySearch', () => {
     )
 
     expect(screen.getByText('Sorry, no results')).toHaveStyle({
-      color: '#EF3340'
+      color: '#CB333B'
     })
     expect(
       screen.getByText('Try removing or changing something from your request')

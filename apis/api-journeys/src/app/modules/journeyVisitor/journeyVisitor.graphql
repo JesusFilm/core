@@ -1,0 +1,135 @@
+type JourneyVisitor @key(fields: "visitorId journeyId") @shareable {
+  visitorId: ID!
+  journeyId: ID!
+  """
+  The time when the visitor created their first event on a journey connected
+  to the requested team.
+  """
+  createdAt: DateTime!
+  """
+  Duration between createdAt and lastStepViewedAt in seconds
+  """
+  duration: Int
+  """
+  The last time the visitor called the ButtonClickEvent mutation where the url
+  is in the format of a recognized chat platform.
+  """
+  lastChatStartedAt: DateTime
+  """
+  The last message platform the visitor called the ButtonClickEvent where the
+  url is in the format of a recognized chat platform
+  """
+  lastChatPlatform: MessagePlatform
+  """
+  The country code of the visitor as poulated by visitor ip address detected in
+  the JourneyViewEventCreate mutation. This field country code is converted
+  from an IP address by the @maxmind/geoip2-node library. If this field is empty
+  it is likely that the JourneyViewEventCreate mutation was not called by the
+  visitor or that the country was not able to be determined based on the
+  visitor IP address.
+  """
+  countryCode: String
+  """
+  Message platform the visitor wishes to be connected to us on as populated by
+  VisitorUpdate mutation or ChatOpenEventCreate mutation.
+  """
+  messagePlatform: MessagePlatform
+  """
+  ID of the visitor as set by VisitorUpdate mutation. This could be a phone
+  number, user id or other unique identifier provided by the message platform.
+  """
+  notes: String
+  """
+  The last time the visitor called StepViewEvent mutation. It is populated when
+  the visitor is first created, and is updated by all event creation mutations.
+  """
+  lastStepViewedAt: DateTime
+  """
+  The label of a link action button of the last time the visitor clicked a
+  link action button. Populated by ButtonClickEvent
+  """
+  lastLinkAction: String
+  """
+  The response of the last text response block the visitor filled out,
+  populated by TextResponseSubmission mutation
+  """
+  lastTextResponse: String
+  """
+  The question of the last radio option the visitor filled out,
+  populated by RadioQuestionSubmission mutation
+  """
+  lastRadioQuestion: String
+  """
+  The selected option  of the last radio option the visitor filled out,
+  populated by RadioQuestionSubmission mutation
+  """
+  lastRadioOptionSubmission: String
+  events: [Event!]!
+  visitor: Visitor!
+}
+
+type JourneyVisitorEdge @shareable {
+  """
+  A cursor for use in pagination.
+  """
+  cursor: String!
+  """
+  The item at the end of the edge.
+  """
+  node: JourneyVisitor!
+}
+
+type JourneyVisitorsConnection @shareable {
+  """
+  A list of edges.
+  """
+  edges: [JourneyVisitorEdge!]!
+  """
+  Information to aid in pagination.
+  """
+  pageInfo: PageInfo!
+}
+
+input JourneyVisitorFilter {
+  journeyId: String!
+  hasChatStarted: Boolean
+  hasPollAnswers: Boolean
+  hasTextResponse: Boolean
+  hasIcon: Boolean
+  hideInactive: Boolean
+  countryCode: String
+}
+
+enum JourneyVisitorSort {
+  date
+  duration
+  activity
+}
+
+extend type Query {
+  """
+  Get a list of Visitor Information by Journey
+  """
+  journeyVisitorsConnection(
+    """
+    Returns the elements in the list that match the specified filter.
+    """
+    filter: JourneyVisitorFilter!
+    """
+    Returns the first n elements from the list.
+    """
+    first: Int
+    """
+    Returns the elements in the list that come after the specified cursor.
+    """
+    after: String
+    """
+    Specifies the sort field for the list.
+    """
+    sort: JourneyVisitorSort
+  ): JourneyVisitorsConnection!
+  """
+  Get a JourneyVisitor count by JourneyVisitorFilter
+  """
+  journeyVisitorCount(filter: JourneyVisitorFilter!): Int!
+}

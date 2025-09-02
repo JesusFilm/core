@@ -19,7 +19,9 @@ const SUPPORTED_LOCALES = [
   'ru', // Russian
   'tr', // Turkish
   'zh', // Chinese
-  'zh-Hans-CN' // Chinese, Simplified
+  'zh-Hans-CN', // Chinese, Simplified
+  'de', // German
+  'ne' // Nepali
 ]
 
 interface LanguagePriority {

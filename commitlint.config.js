@@ -1,1 +1,3 @@
-module.exports = { extends: ['@vidavidorra/commitlint-config'] }
+module.exports = {
+  extends: ['@vidavidorra/commitlint-config']
+}

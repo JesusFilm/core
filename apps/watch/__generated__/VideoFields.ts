@@ -9,41 +9,61 @@ import { VideoBlockSource, VideoBlockObjectFit } from "./globalTypes";
 // GraphQL fragment: VideoFields
 // ====================================================
 
-export interface VideoFields_video_title {
+export interface VideoFields_mediaVideo_Video_title {
   __typename: "VideoTitle";
   value: string;
 }
 
-export interface VideoFields_video_images {
+export interface VideoFields_mediaVideo_Video_images {
   __typename: "CloudflareImage";
   mobileCinematicHigh: string | null;
 }
 
-export interface VideoFields_video_variant {
+export interface VideoFields_mediaVideo_Video_variant {
   __typename: "VideoVariant";
   id: string;
   hls: string | null;
 }
 
-export interface VideoFields_video_variantLanguages_name {
+export interface VideoFields_mediaVideo_Video_variantLanguages_name {
   __typename: "LanguageName";
   value: string;
   primary: boolean;
 }
 
-export interface VideoFields_video_variantLanguages {
+export interface VideoFields_mediaVideo_Video_variantLanguages {
   __typename: "Language";
   id: string;
-  name: VideoFields_video_variantLanguages_name[];
+  name: VideoFields_mediaVideo_Video_variantLanguages_name[];
 }
 
-export interface VideoFields_video {
+export interface VideoFields_mediaVideo_Video {
   __typename: "Video";
   id: string;
-  title: VideoFields_video_title[];
-  images: VideoFields_video_images[];
-  variant: VideoFields_video_variant | null;
-  variantLanguages: VideoFields_video_variantLanguages[];
+  title: VideoFields_mediaVideo_Video_title[];
+  images: VideoFields_mediaVideo_Video_images[];
+  variant: VideoFields_mediaVideo_Video_variant | null;
+  variantLanguages: VideoFields_mediaVideo_Video_variantLanguages[];
+}
+
+export interface VideoFields_mediaVideo_MuxVideo {
+  __typename: "MuxVideo";
+  id: string;
+  assetId: string | null;
+  playbackId: string | null;
+}
+
+export interface VideoFields_mediaVideo_YouTube {
+  __typename: "YouTube";
+  id: string;
+}
+
+export type VideoFields_mediaVideo = VideoFields_mediaVideo_Video | VideoFields_mediaVideo_MuxVideo | VideoFields_mediaVideo_YouTube;
+
+export interface VideoFields_action_PhoneAction {
+  __typename: "PhoneAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
 }
 
 export interface VideoFields_action_NavigateToBlockAction {
@@ -67,7 +87,7 @@ export interface VideoFields_action_EmailAction {
   email: string;
 }
 
-export type VideoFields_action = VideoFields_action_NavigateToBlockAction | VideoFields_action_LinkAction | VideoFields_action_EmailAction;
+export type VideoFields_action = VideoFields_action_PhoneAction | VideoFields_action_NavigateToBlockAction | VideoFields_action_LinkAction | VideoFields_action_EmailAction;
 
 export interface VideoFields {
   __typename: "VideoBlock";
@@ -137,11 +157,7 @@ export interface VideoFields {
    * how the video should display within the VideoBlock
    */
   objectFit: VideoBlockObjectFit | null;
-  /**
-   * internal source videos: video is only populated when videoID and
-   * videoVariantLanguageId are present
-   */
-  video: VideoFields_video | null;
+  mediaVideo: VideoFields_mediaVideo | null;
   /**
    * action that should be performed when the video ends
    */

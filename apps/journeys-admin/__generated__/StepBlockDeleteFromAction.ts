@@ -10,7 +10,7 @@ import { BlockUpdateActionInput } from "./globalTypes";
 // ====================================================
 
 export interface StepBlockDeleteFromAction_blockDelete_ImageBlock {
-  __typename: "ImageBlock" | "ButtonBlock" | "CardBlock" | "IconBlock" | "RadioOptionBlock" | "RadioQuestionBlock" | "SignUpBlock" | "TextResponseBlock" | "TypographyBlock" | "VideoBlock" | "GridContainerBlock" | "GridItemBlock" | "VideoTriggerBlock";
+  __typename: "ImageBlock" | "ButtonBlock" | "CardBlock" | "IconBlock" | "RadioOptionBlock" | "RadioQuestionBlock" | "SignUpBlock" | "SpacerBlock" | "TextResponseBlock" | "TypographyBlock" | "VideoBlock" | "GridContainerBlock" | "GridItemBlock" | "VideoTriggerBlock";
   id: string;
   parentOrder: number | null;
 }
@@ -29,12 +29,12 @@ export interface StepBlockDeleteFromAction_blockDelete_StepBlock {
 export type StepBlockDeleteFromAction_blockDelete = StepBlockDeleteFromAction_blockDelete_ImageBlock | StepBlockDeleteFromAction_blockDelete_StepBlock;
 
 export interface StepBlockDeleteFromAction_blockUpdateAction_parentBlock {
-  __typename: "ImageBlock" | "StepBlock" | "ButtonBlock" | "CardBlock" | "IconBlock" | "RadioOptionBlock" | "RadioQuestionBlock" | "SignUpBlock" | "TextResponseBlock" | "TypographyBlock" | "VideoBlock" | "GridContainerBlock" | "GridItemBlock" | "VideoTriggerBlock";
+  __typename: "ImageBlock" | "StepBlock" | "ButtonBlock" | "CardBlock" | "IconBlock" | "RadioOptionBlock" | "RadioQuestionBlock" | "SignUpBlock" | "SpacerBlock" | "TextResponseBlock" | "TypographyBlock" | "VideoBlock" | "GridContainerBlock" | "GridItemBlock" | "VideoTriggerBlock";
   id: string;
 }
 
 export interface StepBlockDeleteFromAction_blockUpdateAction {
-  __typename: "NavigateToBlockAction" | "LinkAction" | "EmailAction";
+  __typename: "NavigateToBlockAction" | "LinkAction" | "EmailAction" | "PhoneAction";
   parentBlockId: string;
   parentBlock: StepBlockDeleteFromAction_blockUpdateAction_parentBlock;
   gtmEventName: string | null;

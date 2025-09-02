@@ -1,0 +1,89 @@
+{
+  "name": "api-analytics",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apis/api-analytics/src",
+  "projectType": "application",
+  "tags": [],
+  "targets": {
+    "build": {
+      "executor": "@nx/webpack:webpack",
+      "outputs": ["{options.outputPath}"],
+      "defaultConfiguration": "development",
+      "options": {
+        "outputPath": "dist/apps/api-analytics",
+        "main": "apis/api-analytics/src/index.ts",
+        "tsConfig": "apis/api-analytics/tsconfig.app.json",
+        "compiler": "tsc",
+        "target": "node",
+        "webpackConfig": "apis/api-analytics/webpack.config.js"
+      },
+      "configurations": {
+        "production": {
+          "generatePackageJson": true,
+          "optimization": true,
+          "extractLicenses": true,
+          "inspect": false
+        }
+      }
+    },
+    "serve": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "nx _serve api-analytics | npx pino-pretty --config .pino-prettyrc.js"
+      }
+    },
+    "_serve": {
+      "executor": "@nx/js:node",
+      "options": {
+        "buildTarget": "api-analytics:build",
+        "inspect": false
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "cache": true,
+        "cacheLocation": ".cache/api-analytics/eslint",
+        "cacheStrategy": "content"
+      }
+    },
+    "test": {
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/apis/api-analytics"],
+      "options": {
+        "jestConfig": "apis/api-analytics/jest.config.ts"
+      }
+    },
+    "generate-graphql": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "GENERATE_SCHEMA=true npx ts-node -P apis/api-analytics/tsconfig.app.json -r tsconfig-paths/register apis/api-analytics/src/schema/index.ts"
+      }
+    },
+    "subgraph-check": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npx hive schema:check apis/api-analytics/schema.graphql --registry.accessToken $HIVE_TOKEN --github --service api-analytics"
+      }
+    },
+    "fetch-secrets": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "DOPPLER_TOKEN=$DOPPLER_API_ANALYTICS_TOKEN doppler secrets download --no-file --format=env-no-quotes --project api-analytics > apis/api-analytics/.env"
+      }
+    },
+    "type-check": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npx tsc -b apis/api-analytics/tsconfig.json"
+      }
+    },
+    "codecov": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "codecov -f coverage/apis/api-analytics/cobertura-coverage.xml -F apps.api-analytics"
+      }
+    }
+  }
+}

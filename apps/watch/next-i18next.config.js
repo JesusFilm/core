@@ -1,4 +1,5 @@
 const isBrowser = typeof window !== 'undefined'
+
 let localePath
 if (isBrowser) {
   // browser
@@ -17,9 +18,34 @@ if (isBrowser) {
 const i18nConfig = {
   i18n: {
     defaultLocale: 'en',
-    locales: ['en']
+    locales: [
+      'en', // English
+      'es', // Spanish
+      'fr', // French
+      'id', // Indonesian
+      'th', // Thai
+      'ja', // Japanese
+      'ko', // Korean
+      'ru', // Russian
+      'tr', // Turkish
+      'zh', // Chinese
+      'zh-Hans-CN' // Chinese, Simplified
+    ]
   },
-  localePath
+  localePath,
+  fallbackLng: {
+    default: ['en'],
+    es: ['es-ES'],
+    fr: ['fr-FR'],
+    id: ['id-ID'],
+    th: ['th-TH'],
+    ja: ['ja-JP'],
+    ko: ['ko-KR'],
+    ru: ['ru-RU'],
+    tr: ['tr-TR'],
+    zh: ['zh-Hans-CN']
+  },
+  react: { useSuspense: false }
 }
 
 module.exports = i18nConfig

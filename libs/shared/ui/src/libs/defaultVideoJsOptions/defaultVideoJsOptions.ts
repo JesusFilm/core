@@ -1,6 +1,7 @@
 // note: all video.js players import these options, so take care with what is added here
 
 export const defaultVideoJsOptions = {
+  errorDisplay: false,
   enableSmoothSeeking: true,
   experimentalSvgIcons: true,
   html5: {
@@ -8,15 +9,38 @@ export const defaultVideoJsOptions = {
       limitRenditionByPlayerDimensions: false,
       useBandwidthFromLocalStorage: true,
       useNetworkInformationApi: true,
-      bandwidth: 1e9, // used to set initial bandwidth before calculation for abr video
+      useDevicePixelRatio: true,
+      // allows vhs to be used in Safari - will not work for IOS
+      overrideNative: true
+    },
+    // disable native audio and video tracks to force hls-supported browsers to use vjs
+    nativeAudioTracks: false,
+    nativeVideoTracks: false,
+    hls: {
+      limitRenditionByPlayerDimensions: false,
+      useBandwidthFromLocalStorage: true,
+      useNetworkInformationApi: true,
+      useDevicePixelRatio: true
+    }
+  }
+}
+
+export const defaultBackgroundVideoJsOptions = {
+  errorDisplay: false,
+  enableSmoothSeeking: true,
+  experimentalSvgIcons: true,
+  html5: {
+    vhs: {
+      limitRenditionByPlayerDimensions: false,
+      useBandwidthFromLocalStorage: true,
+      useNetworkInformationApi: true,
       useDevicePixelRatio: true
     },
     hls: {
       limitRenditionByPlayerDimensions: false,
       useBandwidthFromLocalStorage: true,
       useNetworkInformationApi: true,
-      useDevicePixelRatio: true,
-      bandwidth: 1e9 // used to set initial bandwidth before calculation for abr video
+      useDevicePixelRatio: true
     }
   }
 }

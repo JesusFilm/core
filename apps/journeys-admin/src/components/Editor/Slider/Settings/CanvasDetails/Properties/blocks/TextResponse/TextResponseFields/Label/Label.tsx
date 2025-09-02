@@ -1,7 +1,6 @@
 import { gql, useMutation } from '@apollo/client'
 import Box from '@mui/material/Box'
 import TextField from '@mui/material/TextField'
-import {} from 'formik'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, useEffect, useState } from 'react'
 import { v4 as uuidv4 } from 'uuid'
@@ -16,6 +15,9 @@ import {
   TextResponseLabelUpdateVariables
 } from '../../../../../../../../../../../__generated__/TextResponseLabelUpdate'
 
+/**
+ * GraphQL mutation for updating the label text in a TextResponse block.
+ */
 export const TEXT_RESPONSE_LABEL_UPDATE = gql`
   mutation TextResponseLabelUpdate($id: ID!, $label: String!) {
     textResponseBlockUpdate(id: $id, input: { label: $label }) {
@@ -25,6 +27,12 @@ export const TEXT_RESPONSE_LABEL_UPDATE = gql`
   }
 `
 
+/**
+ * A component that renders a text field for editing the label text of a TextResponse block.
+ * Manages state updates and command history for undo/redo functionality.
+ *
+ * @returns {ReactElement} The Label component.
+ */
 export function Label(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const [textResponseLabelUpdate] = useMutation<
@@ -59,6 +67,7 @@ export function Label(): ReactElement {
 
   function handleSubmit(value: string): void {
     if (selectedBlock == null) return
+
     add({
       id: commandInput.id,
       parameters: {
@@ -115,9 +124,13 @@ export function Label(): ReactElement {
         name="label"
         variant="filled"
         label={t('Label')}
-        placeholder={t('Your answer here')}
+        placeholder={t('Your label here')}
         fullWidth
-        inputProps={{ maxLength: 250 }}
+        slotProps={{
+          htmlInput: {
+            maxLength: 250
+          }
+        }}
         value={value}
         onFocus={resetCommandInput}
         onChange={(e) => {

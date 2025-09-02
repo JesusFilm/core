@@ -48,6 +48,7 @@ import { COVER_BLOCK_RESTORE } from '../../../../../../../../../../libs/useCover
 import { ThemeProvider } from '../../../../../../../../../ThemeProvider'
 import { CommandRedoItem } from '../../../../../../../../Toolbar/Items/CommandRedoItem'
 import { CommandUndoItem } from '../../../../../../../../Toolbar/Items/CommandUndoItem'
+import { GET_VIDEO_VARIANT_LANGUAGES } from '../../../../../../Drawer/VideoBlockEditor/Source/SourceFromLocal/SourceFromLocal'
 import { videoItems } from '../../../../../../Drawer/VideoLibrary/data'
 import { GET_VIDEO } from '../../../../../../Drawer/VideoLibrary/VideoFromLocal/LocalDetails/LocalDetails'
 
@@ -66,6 +67,32 @@ jest.mock('uuid', () => ({
 const mockUuidv4 = uuidv4 as jest.MockedFunction<typeof uuidv4>
 
 jest.mock('react-instantsearch')
+
+// Silence video.js in JSDOM and avoid player init errors
+jest.mock('video.js', () => {
+  const mockPlayer = {
+    src: jest.fn(),
+    dispose: jest.fn(),
+    on: jest.fn(),
+    ready: jest.fn((cb?: () => void) => (cb?.(), undefined)),
+    controls: jest.fn(),
+    paused: jest.fn(),
+    play: jest.fn(),
+    pause: jest.fn(),
+    error: jest.fn(),
+    currentTime: jest.fn(),
+    aspectRatio: jest.fn(),
+    autoresize: jest.fn(),
+    preload: jest.fn(),
+    muted: jest.fn(),
+    volume: jest.fn(),
+    poster: jest.fn()
+  }
+  const videojs = jest.fn(() => mockPlayer)
+  ;(videojs as any).getPlayers = () => ({})
+  ;(videojs as any).log = { warn: jest.fn(), error: jest.fn() }
+  return videojs
+})
 
 const mockUseSearchBox = useSearchBox as jest.MockedFunction<
   typeof useSearchBox
@@ -89,6 +116,7 @@ const card: TreeBlock<CardBlock> = {
   themeMode: null,
   themeName: null,
   fullscreen: false,
+  backdropBlur: null,
   children: []
 }
 
@@ -111,7 +139,7 @@ const video: TreeBlock<VideoBlock> = {
   duration: 144,
   objectFit: null,
   image: null,
-  video: {
+  mediaVideo: {
     __typename: 'Video',
     id: '2_0-FallingPlates',
     title: [
@@ -171,6 +199,7 @@ const getVideoMock: MockedResponse<GetVideo, GetVideoVariables> = {
         variantLanguages: [
           {
             __typename: 'Language',
+            slug: 'english',
             id: '529',
             name: [
               {
@@ -178,6 +207,85 @@ const getVideoMock: MockedResponse<GetVideo, GetVideoVariables> = {
                 primary: true,
                 __typename: 'LanguageName'
               }
+            ]
+          }
+        ]
+      }
+    }
+  }
+}
+
+const getExistingCoverVideoMock: MockedResponse<GetVideo, GetVideoVariables> = {
+  request: {
+    query: GET_VIDEO,
+    variables: {
+      id: '2_0-FallingPlates',
+      languageId: '529'
+    }
+  },
+  result: {
+    data: {
+      video: {
+        __typename: 'Video',
+        id: '2_0-FallingPlates',
+        images: [],
+        primaryLanguageId: '529',
+        title: [
+          {
+            primary: true,
+            value: '#FallingPlates',
+            __typename: 'VideoTitle'
+          }
+        ],
+        description: [
+          {
+            primary: true,
+            value: 'Falling Plates description',
+            __typename: 'VideoDescription'
+          }
+        ],
+        variant: {
+          id: '2_0-FallingPlates-529',
+          duration: 144,
+          hls: 'https://arc.gt/zbrvj',
+          __typename: 'VideoVariant'
+        },
+        variantLanguages: [
+          {
+            __typename: 'Language',
+            slug: 'english',
+            id: '529',
+            name: [
+              {
+                value: 'English',
+                primary: true,
+                __typename: 'LanguageName'
+              }
+            ]
+          }
+        ]
+      }
+    }
+  }
+}
+
+const getVariantLanguagesMock: MockedResponse<any> = {
+  request: {
+    query: GET_VIDEO_VARIANT_LANGUAGES,
+    variables: { id: '2_0-FallingPlates' }
+  },
+  result: {
+    data: {
+      video: {
+        __typename: 'Video',
+        id: '2_0-FallingPlates',
+        variant: { __typename: 'VideoVariant', id: '2_0-FallingPlates-529' },
+        variantLanguages: [
+          {
+            __typename: 'Language',
+            id: '529',
+            name: [
+              { __typename: 'LanguageName', value: 'English', primary: true }
             ]
           }
         ]
@@ -318,6 +426,8 @@ describe('BackgroundMediaVideo', () => {
         cache={cache}
         mocks={[
           { ...getVideoMock, result: getVideoResult },
+          getVariantLanguagesMock,
+          getVariantLanguagesMock,
           coverVideoBlockCreateMock,
           coverBlockDeleteMock,
           coverBlockRestoreMock
@@ -380,6 +490,7 @@ describe('BackgroundMediaVideo', () => {
     }
 
     it('updates video cover block', async () => {
+      const getVideoResult = jest.fn().mockReturnValue(getVideoMock.result)
       const response: CoverVideoBlockUpdate = {
         videoBlockUpdate: {
           ...video
@@ -396,10 +507,10 @@ describe('BackgroundMediaVideo', () => {
             input: {
               videoId: 'videoId',
               videoVariantLanguageId: '529',
-              duration: 0,
+              duration: 144,
               source: VideoBlockSource.internal,
               startAt: 0,
-              endAt: 0
+              endAt: 144
             }
           }
         },
@@ -419,7 +530,10 @@ describe('BackgroundMediaVideo', () => {
       render(
         <MockedProvider
           mocks={[
-            getVideoMock,
+            { ...getExistingCoverVideoMock },
+            { ...getVideoMock, result: getVideoResult },
+            getVariantLanguagesMock,
+            getVariantLanguagesMock,
             {
               ...coverVideoBlockUpdateMock,
               result: updateResult
@@ -476,6 +590,7 @@ describe('BackgroundMediaVideo', () => {
       )
       fireEvent.click(screen.getByRole('button', { name: 'Change Video' }))
       fireEvent.click(screen.getByText('title1'))
+      await waitFor(() => expect(getVideoResult).toHaveBeenCalled())
       fireEvent.click(screen.getAllByRole('button', { name: 'Select' })[0])
       await waitFor(() => expect(updateResult).toHaveBeenCalled())
       fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
@@ -500,6 +615,9 @@ describe('BackgroundMediaVideo', () => {
         <MockedProvider
           cache={cache}
           mocks={[
+            getExistingCoverVideoMock,
+            getVariantLanguagesMock,
+            getVariantLanguagesMock,
             coverBlockDeleteMock,
             coverBlockRestoreMock,
             coverBlockDeleteMock

@@ -112,7 +112,13 @@ export function Button({
                   justifyContent: 'space-between'
                 }}
               >
-                <Stack direction="row" gap={4} ml={3}>
+                <Stack
+                  direction="row"
+                  gap={4}
+                  ml={3}
+                  mr={3}
+                  alignItems="center"
+                >
                   {icon}
                   <Typography>{t(value)}</Typography>
                 </Stack>

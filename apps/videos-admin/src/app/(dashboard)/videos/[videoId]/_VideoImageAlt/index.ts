@@ -1,0 +1,1 @@
+export { VideoImageAlt } from './VideoImageAlt'

@@ -1,6 +1,5 @@
 import Box from '@mui/material/Box'
 import capitalize from 'lodash/capitalize'
-import lowerCase from 'lodash/lowerCase'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, useEffect } from 'react'
 
@@ -18,10 +17,19 @@ import { Color } from './Color'
 import { Variant } from './Variant'
 
 export function Typography(block: TreeBlock<TypographyBlock>): ReactElement {
-  const { id, align, color, variant } = block
+  const { id, align, color, settings } = block
   const { t } = useTranslation('apps-journeys-admin')
-
   const { dispatch } = useEditor()
+
+  // Returns the effective color for display, prioritizing a hex color from settings,
+  // then falling back to the legacy enum color, and finally a default if both are missing.
+  const getEffectiveColor = () => {
+    if (settings?.color) return settings.color
+    if (color) return color
+    return '#FEFEFE'
+  }
+
+  const effectiveColor = getEffectiveColor()
 
   useEffect(() => {
     dispatch({
@@ -31,37 +39,47 @@ export function Typography(block: TreeBlock<TypographyBlock>): ReactElement {
   }, [dispatch, id])
 
   return (
-    <Box data-testid="TypographyProperties">
-      <Accordion
-        id={`${id}-typography-variant`}
-        icon={<Type2Icon />}
-        name={t('Text Variant')}
-        value={t(
-          capitalize(
-            lowerCase(variant?.toString() ?? 'body2').replace('h', 'header')
-          )
-        )}
+    <>
+      <Box
+        data-testid="TypographyProperties"
+        sx={{
+          display: 'flex',
+          flexDirection: 'column',
+          height: '100%'
+        }}
       >
-        <Variant />
-      </Accordion>
+        <Box>
+          <Accordion
+            id={`${id}-typography-variant`}
+            icon={<Type2Icon />}
+            name={t('Text Variant')}
+          >
+            <Variant />
+          </Accordion>
 
-      <Accordion
-        id={`${id}-typography-color`}
-        icon={<ColorDisplayIcon color={color} />}
-        name={t('Color')}
-        value={capitalize(color?.toString() ?? t('Primary'))}
-      >
-        <Color />
-      </Accordion>
+          <Accordion
+            id={`${id}-typography-color`}
+            icon={<ColorDisplayIcon color={effectiveColor} />}
+            name={t('Color')}
+            value={
+              effectiveColor?.toString().startsWith('#')
+                ? effectiveColor.toString().toUpperCase()
+                : capitalize(effectiveColor?.toString() ?? ' ')
+            }
+          >
+            <Color />
+          </Accordion>
 
-      <Accordion
-        id={`${id}-typography-alignment`}
-        icon={<AlignLeftIcon />}
-        name={t('Text Alignment')}
-        value={capitalize(align?.toString() ?? t('Left'))}
-      >
-        <Align />
-      </Accordion>
-    </Box>
+          <Accordion
+            id={`${id}-typography-alignment`}
+            icon={<AlignLeftIcon />}
+            name={t('Text Alignment')}
+            value={capitalize(align?.toString() ?? t('Left'))}
+          >
+            <Align />
+          </Accordion>
+        </Box>
+      </Box>
+    </>
   )
 }

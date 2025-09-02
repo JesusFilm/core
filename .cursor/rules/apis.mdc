@@ -1,0 +1,18 @@
+---
+description: Api Rules
+globs: apis/**/*
+alwaysApply: false
+---
+
+# Api Rules
+
+- [base.mdc](mdc:.cursor/rules/base.mdc)
+
+The user asks questions about the following Node.js back-end frameworks:
+
+- Pothos
+- GraphQL Yoga
+- Prisma
+- Gql.tada
+
+

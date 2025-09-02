@@ -194,7 +194,9 @@ export function HeaderAndLanguageFilter({
         '53441', // Arabic, Egyptian Modern Standard
         '1942', // Türkçe, Turkish
         '5541', // Serbian
-        '6788' // Farsi, Western
+        '6788', // Farsi, Western
+        '3804', // Korean
+        '1370' // Nepali
       ]
     }
   })
@@ -268,7 +270,10 @@ export function HeaderAndLanguageFilter({
         alignItems="center"
         direction="row"
         flexWrap={{ xs: 'wrap', md: 'initial' }}
-        sx={{ pb: { xs: 6, md: 9 }, position: 'relative' }}
+        sx={{
+          pb: { xs: 6, md: 9 },
+          position: 'relative'
+        }}
       >
         {count === 2 && (
           <Trans t={t} values={{ firstLanguage, secondLanguage }}>

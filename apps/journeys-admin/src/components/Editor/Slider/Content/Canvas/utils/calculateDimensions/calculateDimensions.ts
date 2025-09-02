@@ -1,17 +1,16 @@
 import { RefObject } from 'react'
 
-export const CARD_WIDTH = 375
-export const CARD_HEIGHT = 670
+import { EDIT_TOOLBAR_HEIGHT } from '../../../../../constants'
 
-export function calculateScale(ref: RefObject<HTMLDivElement>): number {
+export const CARD_WIDTH = 324
+export const CARD_HEIGHT = 674
+
+export function calculateScale(ref: RefObject<HTMLDivElement | null>): number {
   const current = ref.current
   if (current == null) return 0
 
-  // Initially, the ref's clientWidth returns 0 because no width is specified
-  // which is done intentionally for the swiper
-  if (current.clientWidth === 0) return 1
-
-  const clientHeight = current.clientHeight / CARD_HEIGHT
+  const clientHeight =
+    current.clientHeight / (CARD_HEIGHT + EDIT_TOOLBAR_HEIGHT)
   return Math.min(clientHeight, 1)
 }
 

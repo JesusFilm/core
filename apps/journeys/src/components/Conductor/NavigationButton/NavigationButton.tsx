@@ -90,9 +90,9 @@ export function NavigationButton({
   // Handle fade navigation after 3 seconds inactive
   useEffect(() => {
     const isVideoOnlyBlock =
-      activeBlock?.children.length > 0 &&
-      activeBlock?.children[0].children.length === 1 &&
-      activeBlock?.children[0].children[0].__typename === 'VideoBlock'
+      (activeBlock?.children?.length ?? 0) > 0 &&
+      activeBlock?.children?.[0]?.children?.length === 1 &&
+      activeBlock?.children?.[0]?.children?.[0]?.__typename === 'VideoBlock'
 
     if (showNavigation && !isVideoOnlyBlock) {
       setTimeout(() => {
@@ -104,7 +104,6 @@ export function NavigationButton({
   // should always be called with nextActiveBlock()
   // should match with other handleNextNavigationEventCreate functions
   // places used:
-  // libs/journeys/ui/src/components/Card/Card.tsx
   // journeys/src/components/Conductor/NavigationButton/NavigationButton.tsx
   // journeys/src/components/Conductor/SwipeNavigation/SwipeNavigation.tsx
   // journeys/src/components/Conductor/HotkeyNavigation/HotkeyNavigation.tsx

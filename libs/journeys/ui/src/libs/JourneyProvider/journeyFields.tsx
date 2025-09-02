@@ -29,6 +29,7 @@ export const JOURNEY_FIELDS = gql`
       }
     }
     createdAt
+    updatedAt
     featuredAt
     publishedAt
     themeName
@@ -98,6 +99,12 @@ export const JOURNEY_FIELDS = gql`
     menuButtonIcon
     menuStepBlock {
       ...StepFields
+    }
+    journeyTheme {
+      id
+      headerFont
+      bodyFont
+      labelFont
     }
   }
 `

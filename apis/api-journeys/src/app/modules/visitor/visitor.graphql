@@ -1,0 +1,284 @@
+type Browser @shareable {
+  name: String
+  version: String
+}
+
+enum DeviceType {
+  console
+  mobile
+  tablet
+  smarttv
+  wearable
+  embedded
+}
+
+type Device @shareable {
+  model: String
+  type: DeviceType
+  vendor: String
+}
+
+type OperatingSystem @shareable {
+  name: String
+  version: String
+}
+
+"""
+These types are a subset provided by the @types/ua-parser-js library.
+"""
+type UserAgent @shareable {
+  browser: Browser!
+  device: Device!
+  os: OperatingSystem!
+}
+
+"""
+The status of a visitor according to team members interacting with the
+visitor admin interface. This enum should map to an emoji when displayed
+(names here match Apple's emoji name)
+"""
+enum VisitorStatus {
+  star
+  prohibited
+  checkMarkSymbol
+  thumbsUp
+  thumbsDown
+  partyPopper
+  warning
+  robotFace
+  redExclamationMark
+  redQuestionMark
+}
+
+"""
+A visitor with attributes connected to a team.
+"""
+type Visitor @key(fields: "id") @shareable {
+  id: ID!
+  """
+  The time when the visitor created their first event on a journey connected
+  to the requested team.
+  """
+  createdAt: DateTime!
+  """
+  Duration between createdAt and lastStepViewedAt in seconds
+  """
+  duration: Int
+  """
+  The last time the visitor called the ButtonClickEvent mutation where the url
+  is in the format of a recognized chat platform.
+  """
+  lastChatStartedAt: DateTime
+  """
+  The last message platform the visitor called the ButtonClickEvent where the
+  url is in the format of a recognized chat platform
+  """
+  lastChatPlatform: MessagePlatform
+  """
+  The user agent of the visitor as poulated by the visitor's user-agent string
+  detected in the JourneyViewEventCreate mutation. This field is enriched
+  by data from the ua-parser-js library. If this field is empty it is likely
+  that the JourneyViewEventCreate mutation was not called by the visitor.
+  """
+  userAgent: UserAgent
+  """
+  The country code of the visitor as poulated by visitor ip address detected in
+  the JourneyViewEventCreate mutation. This field country code is converted
+  from an IP address by the @maxmind/geoip2-node library. If this field is empty
+  it is likely that the JourneyViewEventCreate mutation was not called by the
+  visitor or that the country was not able to be determined based on the
+  visitor IP address.
+  """
+  countryCode: String
+  """
+  The name of the visitor as populated by VisitorUpdate mutation or
+  SignUpEventSubmissionEventCreate mutation.
+  """
+  name: String
+  """
+  The email address of the visitor as populated by VisitorUpdate mutation or
+  SignUpEventSubmissionEventCreate mutation.
+  """
+  email: String
+  """
+  Status of the visitor as populated by VisitorUpdate mutation.
+  """
+  status: VisitorStatus
+  """
+  Message platform the visitor wishes to be connected to us on as populated by
+  VisitorUpdate mutation or ChatOpenEventCreate mutation.
+  """
+  messagePlatform: MessagePlatform
+  """
+  ID of the visitor as set by VisitorUpdate mutation. This could be a phone
+  number, user id or other unique identifier provided by the message platform.
+  """
+  messagePlatformId: String
+  """
+  Private notes of the visitor as set by VisitorUpdate mutation.
+  """
+  notes: String
+  """
+  The last time the visitor called StepViewEvent mutation. It is populated when
+  the visitor is first created, and is updated by all event creation mutations.
+  """
+  lastStepViewedAt: DateTime
+  """
+  The label of a link action button of the last time the visitor clicked a
+  link action button. Populated by ButtonClickEvent
+  """
+  lastLinkAction: String
+  """
+  The response of the last text response block the visitor filled out,
+  populated by TextResponseSubmission mutation
+  """
+  lastTextResponse: String
+  """
+  The question of the last radio option the visitor filled out,
+  populated by RadioQuestionSubmission mutation
+  """
+  lastRadioQuestion: String
+  """
+  The selected option  of the last radio option the visitor filled out,
+  populated by RadioQuestionSubmission mutation
+  """
+  lastRadioOptionSubmission: String
+  """
+  The url visitor was referred from
+  """
+  referrer: String
+  events: [Event!]!
+}
+
+"""
+An edge in a connection.
+"""
+type VisitorEdge @shareable {
+  """
+  A cursor for use in pagination.
+  """
+  cursor: String!
+  """
+  The item at the end of the edge.
+  """
+  node: Visitor!
+}
+
+"""
+Information about pagination in a connection.
+"""
+type PageInfo @shareable {
+  """
+  When paginating forwards, are there more items?
+  """
+  hasNextPage: Boolean!
+  """
+  When paginating backwards, are there more items?
+  """
+  hasPreviousPage: Boolean!
+  """
+  When paginating backwards, the cursor to continue.
+  """
+  startCursor: String
+  """
+  When paginating forwards, the cursor to continue.
+  """
+  endCursor: String
+}
+
+"""
+A list of visitors connected with a team.
+"""
+type VisitorsConnection @shareable {
+  """
+  A list of edges.
+  """
+  edges: [VisitorEdge!]!
+  """
+  Information to aid in pagination.
+  """
+  pageInfo: PageInfo!
+}
+
+extend type Query {
+  """
+  A list of visitors that are connected with a specific team.
+  """
+  visitorsConnection(
+    """
+    Returns the visitor items related to a specific team.
+    """
+    teamId: String
+    """
+    Returns the first n elements from the list.
+    """
+    first: Int
+    """
+    Returns the elements in the list that come after the specified cursor.
+    """
+    after: String
+  ): VisitorsConnection!
+  """
+  Get a single visitor
+  """
+  visitor(id: ID!): Visitor!
+}
+
+"""
+A list of fields to update a visitor when calling the visitorUpdate mutation
+"""
+input VisitorUpdateInput {
+  """
+  The email address of the visitor (will prevent
+  SignUpEventSubmissionEventCreate mutation from updating this field
+  automatically)
+  """
+  email: String
+  """
+  ID of the visitor. This could be a phone number, user id or other unique
+  identifier provided by the message platform.
+  """
+  messagePlatformId: String
+  """
+  Message platform the visitor wishes to be connected to us on (will prevent
+  ChatOpenEventCreate mutation from updating this field automatically)
+  """
+  messagePlatform: MessagePlatform
+  """
+  The name of the visitor (will prevent SignUpEventSubmissionEventCreate
+  mutation from updating this field automatically)
+  """
+  name: String
+  """
+  Private notes relating to the visitor. This information is never made public
+  and only accessible by team members.
+  """
+  notes: String
+  """
+  Status of the visitor.
+  """
+  status: VisitorStatus
+  """
+  The country code of the visitor as poulated by visitor ip address detected
+  """
+  countryCode: String
+  """
+  The referring url of the visitor
+  """
+  referrer: String
+  """
+  The phone number of the visitor
+  """
+  phone: String
+}
+
+extend type Mutation {
+  """
+  Update a visitor
+  """
+  visitorUpdate(id: ID!, input: VisitorUpdateInput!): Visitor!
+  """
+  Allow current user to update specific allowable fields of their visitor record
+  """
+  visitorUpdateForCurrentUser(input: VisitorUpdateInput!): Visitor!
+}

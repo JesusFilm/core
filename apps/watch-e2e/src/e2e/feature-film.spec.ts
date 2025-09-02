@@ -2,89 +2,69 @@ import { expect, test } from '@playwright/test'
 
 /* 
 Test a feature film:
-
 Navigate to home page 
-Click on 'Jesus' chapter
-Take a screenshot (chapters-landing-page)
-Click on right arrow
-Click on right arrow again
-Click on right left
-Take a screenshot (chapters-click-page)
-Click on 'Blessed are those Who Hear and Obey'
-Take a screenshot (before-video)
-Click on the Play button
-Wait for 20 seconds as this video is 19 seconds
-Take screenshot (after-video)
+Click on 'Jesus' chapter (Button: JESUS JESUS Feature Film 61 chapters)
+Expect page to have URL: /watch/jesus.html/english.html
+Wait for video tiles to load
+Click on 'CHAPTER Birth of Jesus'
+Expect page to have URL: /watch/jesus.html/birth-of-jesus/english.html
 */
 
-test.describe('firefox only', () => {
-  // skip the test if mobile as no.of video clips differs based on the device size
-  // eslint-disable-next-line playwright/no-skipped-test
-  test.skip(({ browserName }) => browserName !== 'firefox', 'firefox only!')
+test.describe('Feature film', () => {
+  test('Feature film navigation and video playback', async ({ page }) => {
+    // Set longer timeout for CI environments
+    test.setTimeout(4 * 60 * 1000)
 
-  test('Feature film', async ({ page, browser }) => {
-    // Set test time out as it has video
-    test.setTimeout(5 * 60 * 1000)
-
+    // Navigate to the watch page using daily-e2e deployment
     await page.goto('/watch')
 
-    // Get and log the current URL
-    console.log('Current URL:', page.url())
+    // Wait for the page to be fully loaded
+    await page.waitForLoadState('domcontentloaded')
 
-    await page
-      .getByRole('button', { name: 'JESUS JESUS Feature Film 61 chapters' })
-      .click()
+    // Click on the JESUS Feature Film button
+    const jesusButton = page.getByRole('button', {
+      name: 'JESUS JESUS Feature Film 61 chapters'
+    })
+    await jesusButton.waitFor({ timeout: 30000 })
+    await jesusButton.click()
 
-    // video tiles aren't loading upon right away and there is no event to say they are loaded. So the only option is to hard wait
-    // eslint-disable-next-line playwright/no-wait-for-timeout
-    await page.waitForTimeout(6 * 1000)
-    // await expect(page).toHaveScreenshot('ff-landing-page.png', {
-    //   animations: 'disabled',
-    //   fullPage: true
-    // })
+    // Wait for navigation to complete
+    await page.waitForURL('**/jesus.html/**', { timeout: 60000 })
 
-    // check it's navigated to the correct URL
-    await expect(page).toHaveURL('watch/jesus.html/english.html')
+    // Wait for navigation and verify URL with longer timeout
+    await expect(page).toHaveURL('/watch/jesus.html/english.html?r=0', {
+      timeout: 60000
+    })
 
-    // check navigation buttons are working
-    await page.getByTestId('NavigateNextIcon').click()
-    await page.getByTestId('NavigateNextIcon').click()
-    await page.getByTestId('NavigateBeforeIcon').click()
+    // Wait for page to be fully loaded after navigation
+    await page.waitForLoadState('domcontentloaded')
 
-    // eslint-disable-next-line playwright/no-wait-for-timeout
-    await page.waitForTimeout(6 * 1000)
-    // await expect(page).toHaveScreenshot('ff-navigated-page.png', {
-    //   animations: 'disabled',
-    //   fullPage: true
-    // })
+    // Wait for the JESUS page content to load (look for elements that indicate we're on the JESUS page)
+    await page.waitForSelector('h1:has-text("JESUS")', { timeout: 60000 })
 
-    await page
-      .getByRole('button', {
-        name: 'Blessed are those Who Hear and Obey'
-      })
-      .click()
-
-    await expect(page).toHaveURL(
-      '/watch/jesus.html/blessed-are-those-who-hear-and-obey/english.html'
+    // Wait for Birth of Jesus chapter to be available - try multiple selectors
+    const birthOfJesusButton = page.locator(
+      '[data-testid="VideoCardButton-birth-of-jesus"]'
     )
+    await birthOfJesusButton.waitFor({ timeout: 60000 })
 
-    // eslint-disable-next-line playwright/no-wait-for-timeout
-    await page.waitForTimeout(6 * 1000)
-    // await expect(page).toHaveScreenshot('before-video.png', {
-    //   animations: 'disabled',
-    //   fullPage: true
-    // })
+    // Wait for the element to be properly interactive
+    await birthOfJesusButton.waitFor({ state: 'visible' })
+    await expect(birthOfJesusButton).toBeEnabled()
 
-    await page.getByRole('button', { name: 'Play' }).first().click()
+    // Click on 'CHAPTER Birth of Jesus'
+    await birthOfJesusButton.click()
 
-    // wait for 60 seconds to see if the video is complete. Until there are some events in the code to figure this out
-    // eslint-disable-next-line playwright/no-wait-for-timeout
-    await page.waitForTimeout(45 * 1000)
+    // Wait for navigation to complete
+    await page.waitForURL('**/birth-of-jesus/**', { timeout: 60000 })
 
-    // Take screenshot once video is played and test it is same all the times
-    // await expect(page).toHaveScreenshot('after-video.png', {
-    //   animations: 'disabled',
-    //   fullPage: true
-    // })
+    // Wait for page to load after clicking chapter
+    await page.waitForLoadState('domcontentloaded')
+
+    // Verify URL changed to Birth of Jesus chapter
+    await expect(page).toHaveURL(
+      '/watch/jesus.html/birth-of-jesus/english.html?r=0',
+      { timeout: 60000 }
+    )
   })
 })

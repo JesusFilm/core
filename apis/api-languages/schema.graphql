@@ -1,0 +1,133 @@
+extend schema
+  @link(url: "https://specs.apollo.dev/federation/v2.6", import: ["@extends", "@external", "@key"])
+
+type AudioPreview
+  @key(fields: "languageId")
+{
+  languageId: ID!
+  language: Language!
+  value: String!
+  duration: Int!
+  size: Int!
+  bitrate: Int!
+  codec: String!
+}
+
+type Continent {
+  id: ID!
+  name(languageId: ID, primary: Boolean): [ContinentName!]!
+  countries: [Country!]!
+}
+
+type ContinentName {
+  value: String!
+  primary: Boolean!
+  language: Language!
+}
+
+type Country
+  @key(fields: "id")
+{
+  id: ID!
+  population: Int
+  latitude: Float
+  longitude: Float
+  flagPngSrc: String
+  flagWebpSrc: String
+  languages: [Language!]!
+  name(languageId: ID, primary: Boolean): [CountryName!]!
+  continent: Continent!
+  countryLanguages: [CountryLanguage!]!
+  languageCount: Int!
+  languageHavingMediaCount: Int!
+}
+
+type CountryLanguage {
+  id: ID!
+  language: Language!
+  country: Country!
+  speakers: Int!
+  displaySpeakers: Int
+  primary: Boolean!
+  suggested: Boolean!
+  order: Int
+}
+
+type CountryName {
+  value: String!
+  primary: Boolean!
+  language: Language!
+}
+
+type Language
+  @key(fields: "id")
+{
+  id: ID!
+  bcp47: String
+  iso3: String
+  slug: String
+  name(languageId: ID, primary: Boolean): [LanguageName!]!
+  countryLanguages: [CountryLanguage!]!
+  audioPreview: AudioPreview
+}
+
+enum LanguageIdType {
+  databaseId
+  bcp47
+}
+
+type LanguageName {
+  value: String!
+  primary: Boolean!
+  language: Language!
+}
+
+enum LanguageRole {
+  publisher
+}
+
+input LanguagesFilter {
+  ids: [ID!]
+  bcp47: [String!]
+  iso3: [String!]
+}
+
+type Mutation {
+  audioPreviewCreate(input: MutationAudioPreviewCreateInput!): AudioPreview!
+  audioPreviewUpdate(input: MutationAudioPreviewUpdateInput!): AudioPreview!
+  audioPreviewDelete(languageId: ID!): AudioPreview!
+}
+
+input MutationAudioPreviewCreateInput {
+  languageId: ID!
+  value: String!
+  duration: Int!
+  size: Int!
+  bitrate: Int!
+  codec: String!
+}
+
+input MutationAudioPreviewUpdateInput {
+  languageId: ID!
+  value: String
+  duration: Int
+  size: Int
+  bitrate: Int
+  codec: String
+}
+
+type Query {
+  language(id: ID!, idType: LanguageIdType = databaseId): Language
+  languages(offset: Int, limit: Int, where: LanguagesFilter, term: String): [Language!]!
+  languagesCount(where: LanguagesFilter, term: String): Int!
+  country(id: ID!): Country
+  countries(term: String, ids: [ID!]): [Country!]!
+}
+
+type User
+  @key(fields: "id")
+  @extends
+{
+  id: ID! @external
+  languageUserRoles: [LanguageRole!]!
+}

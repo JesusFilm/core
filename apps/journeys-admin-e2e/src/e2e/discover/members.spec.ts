@@ -18,7 +18,7 @@ test.describe('Verify Add member', () => {
     await register.registerNewAccount() // registering new user account
     userEmail = await register.getUserEmailId() // storing the registered user email id
     await teamsPage.createNewTeamAndVerifyCreatedTeam() // create new team and verify the created team
-    console.log('userName : ' + userEmail)
+    console.log(`userName : ${userEmail}`)
     await page.close()
   })
 

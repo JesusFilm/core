@@ -104,7 +104,7 @@ export const getStaticProps: GetStaticProps<HostJourneyPageProps> = async (
         hostname: context.params?.hostname?.toString() ?? '',
         host: context.params?.host?.toString() ?? '',
         ...(await serverSideTranslations(
-          context.locale ?? 'en',
+          locale ?? 'en',
           ['apps-journeys', 'libs-journeys-ui'],
           i18nConfig
         )),

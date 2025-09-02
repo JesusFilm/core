@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { ImageBlockCreateInput, TypographyBlockCreateInput, ButtonBlockCreateInput, ButtonBlockUpdateInput, IconBlockCreateInput, CardBlockUpdateInput, TypographyAlign, TypographyColor, TypographyVariant, ButtonVariant, ButtonColor, ButtonSize, IconName, IconSize, IconColor, ThemeMode, ThemeName } from "./globalTypes";
+import { ImageBlockCreateInput, TypographyBlockCreateInput, ButtonBlockCreateInput, ButtonBlockUpdateInput, IconBlockCreateInput, CardBlockUpdateInput, TypographyAlign, TypographyColor, TypographyVariant, ButtonVariant, ButtonColor, ButtonSize, ButtonAlignment, IconName, IconSize, IconColor, ThemeMode, ThemeName } from "./globalTypes";
 
 // ====================================================
 // GraphQL mutation operation: CardCtaCreate
@@ -28,6 +28,14 @@ export interface CardCtaCreate_image {
   focalLeft: number | null;
 }
 
+export interface CardCtaCreate_subtitle_settings {
+  __typename: "TypographyBlockSettings";
+  /**
+   * Color of the typography
+   */
+  color: string | null;
+}
+
 export interface CardCtaCreate_subtitle {
   __typename: "TypographyBlock";
   id: string;
@@ -37,6 +45,15 @@ export interface CardCtaCreate_subtitle {
   color: TypographyColor | null;
   content: string;
   variant: TypographyVariant | null;
+  settings: CardCtaCreate_subtitle_settings | null;
+}
+
+export interface CardCtaCreate_title_settings {
+  __typename: "TypographyBlockSettings";
+  /**
+   * Color of the typography
+   */
+  color: string | null;
 }
 
 export interface CardCtaCreate_title {
@@ -48,6 +65,13 @@ export interface CardCtaCreate_title {
   color: TypographyColor | null;
   content: string;
   variant: TypographyVariant | null;
+  settings: CardCtaCreate_title_settings | null;
+}
+
+export interface CardCtaCreate_button1_action_PhoneAction {
+  __typename: "PhoneAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
 }
 
 export interface CardCtaCreate_button1_action_NavigateToBlockAction {
@@ -71,7 +95,15 @@ export interface CardCtaCreate_button1_action_EmailAction {
   email: string;
 }
 
-export type CardCtaCreate_button1_action = CardCtaCreate_button1_action_NavigateToBlockAction | CardCtaCreate_button1_action_LinkAction | CardCtaCreate_button1_action_EmailAction;
+export type CardCtaCreate_button1_action = CardCtaCreate_button1_action_PhoneAction | CardCtaCreate_button1_action_NavigateToBlockAction | CardCtaCreate_button1_action_LinkAction | CardCtaCreate_button1_action_EmailAction;
+
+export interface CardCtaCreate_button1_settings {
+  __typename: "ButtonBlockSettings";
+  /**
+   * Alignment of the button
+   */
+  alignment: ButtonAlignment | null;
+}
 
 export interface CardCtaCreate_button1 {
   __typename: "ButtonBlock";
@@ -84,7 +116,9 @@ export interface CardCtaCreate_button1 {
   size: ButtonSize | null;
   startIconId: string | null;
   endIconId: string | null;
+  submitEnabled: boolean | null;
   action: CardCtaCreate_button1_action | null;
+  settings: CardCtaCreate_button1_settings | null;
 }
 
 export interface CardCtaCreate_startIcon1 {
@@ -105,6 +139,12 @@ export interface CardCtaCreate_endIcon1 {
   iconName: IconName | null;
   iconSize: IconSize | null;
   iconColor: IconColor | null;
+}
+
+export interface CardCtaCreate_button1Update_action_PhoneAction {
+  __typename: "PhoneAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
 }
 
 export interface CardCtaCreate_button1Update_action_NavigateToBlockAction {
@@ -128,7 +168,15 @@ export interface CardCtaCreate_button1Update_action_EmailAction {
   email: string;
 }
 
-export type CardCtaCreate_button1Update_action = CardCtaCreate_button1Update_action_NavigateToBlockAction | CardCtaCreate_button1Update_action_LinkAction | CardCtaCreate_button1Update_action_EmailAction;
+export type CardCtaCreate_button1Update_action = CardCtaCreate_button1Update_action_PhoneAction | CardCtaCreate_button1Update_action_NavigateToBlockAction | CardCtaCreate_button1Update_action_LinkAction | CardCtaCreate_button1Update_action_EmailAction;
+
+export interface CardCtaCreate_button1Update_settings {
+  __typename: "ButtonBlockSettings";
+  /**
+   * Alignment of the button
+   */
+  alignment: ButtonAlignment | null;
+}
 
 export interface CardCtaCreate_button1Update {
   __typename: "ButtonBlock";
@@ -141,7 +189,15 @@ export interface CardCtaCreate_button1Update {
   size: ButtonSize | null;
   startIconId: string | null;
   endIconId: string | null;
+  submitEnabled: boolean | null;
   action: CardCtaCreate_button1Update_action | null;
+  settings: CardCtaCreate_button1Update_settings | null;
+}
+
+export interface CardCtaCreate_button2_action_PhoneAction {
+  __typename: "PhoneAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
 }
 
 export interface CardCtaCreate_button2_action_NavigateToBlockAction {
@@ -165,7 +221,15 @@ export interface CardCtaCreate_button2_action_EmailAction {
   email: string;
 }
 
-export type CardCtaCreate_button2_action = CardCtaCreate_button2_action_NavigateToBlockAction | CardCtaCreate_button2_action_LinkAction | CardCtaCreate_button2_action_EmailAction;
+export type CardCtaCreate_button2_action = CardCtaCreate_button2_action_PhoneAction | CardCtaCreate_button2_action_NavigateToBlockAction | CardCtaCreate_button2_action_LinkAction | CardCtaCreate_button2_action_EmailAction;
+
+export interface CardCtaCreate_button2_settings {
+  __typename: "ButtonBlockSettings";
+  /**
+   * Alignment of the button
+   */
+  alignment: ButtonAlignment | null;
+}
 
 export interface CardCtaCreate_button2 {
   __typename: "ButtonBlock";
@@ -178,7 +242,9 @@ export interface CardCtaCreate_button2 {
   size: ButtonSize | null;
   startIconId: string | null;
   endIconId: string | null;
+  submitEnabled: boolean | null;
   action: CardCtaCreate_button2_action | null;
+  settings: CardCtaCreate_button2_settings | null;
 }
 
 export interface CardCtaCreate_startIcon2 {
@@ -199,6 +265,12 @@ export interface CardCtaCreate_endIcon2 {
   iconName: IconName | null;
   iconSize: IconSize | null;
   iconColor: IconColor | null;
+}
+
+export interface CardCtaCreate_button2Update_action_PhoneAction {
+  __typename: "PhoneAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
 }
 
 export interface CardCtaCreate_button2Update_action_NavigateToBlockAction {
@@ -222,7 +294,15 @@ export interface CardCtaCreate_button2Update_action_EmailAction {
   email: string;
 }
 
-export type CardCtaCreate_button2Update_action = CardCtaCreate_button2Update_action_NavigateToBlockAction | CardCtaCreate_button2Update_action_LinkAction | CardCtaCreate_button2Update_action_EmailAction;
+export type CardCtaCreate_button2Update_action = CardCtaCreate_button2Update_action_PhoneAction | CardCtaCreate_button2Update_action_NavigateToBlockAction | CardCtaCreate_button2Update_action_LinkAction | CardCtaCreate_button2Update_action_EmailAction;
+
+export interface CardCtaCreate_button2Update_settings {
+  __typename: "ButtonBlockSettings";
+  /**
+   * Alignment of the button
+   */
+  alignment: ButtonAlignment | null;
+}
 
 export interface CardCtaCreate_button2Update {
   __typename: "ButtonBlock";
@@ -235,7 +315,15 @@ export interface CardCtaCreate_button2Update {
   size: ButtonSize | null;
   startIconId: string | null;
   endIconId: string | null;
+  submitEnabled: boolean | null;
   action: CardCtaCreate_button2Update_action | null;
+  settings: CardCtaCreate_button2Update_settings | null;
+}
+
+export interface CardCtaCreate_button3_action_PhoneAction {
+  __typename: "PhoneAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
 }
 
 export interface CardCtaCreate_button3_action_NavigateToBlockAction {
@@ -259,7 +347,15 @@ export interface CardCtaCreate_button3_action_EmailAction {
   email: string;
 }
 
-export type CardCtaCreate_button3_action = CardCtaCreate_button3_action_NavigateToBlockAction | CardCtaCreate_button3_action_LinkAction | CardCtaCreate_button3_action_EmailAction;
+export type CardCtaCreate_button3_action = CardCtaCreate_button3_action_PhoneAction | CardCtaCreate_button3_action_NavigateToBlockAction | CardCtaCreate_button3_action_LinkAction | CardCtaCreate_button3_action_EmailAction;
+
+export interface CardCtaCreate_button3_settings {
+  __typename: "ButtonBlockSettings";
+  /**
+   * Alignment of the button
+   */
+  alignment: ButtonAlignment | null;
+}
 
 export interface CardCtaCreate_button3 {
   __typename: "ButtonBlock";
@@ -272,7 +368,9 @@ export interface CardCtaCreate_button3 {
   size: ButtonSize | null;
   startIconId: string | null;
   endIconId: string | null;
+  submitEnabled: boolean | null;
   action: CardCtaCreate_button3_action | null;
+  settings: CardCtaCreate_button3_settings | null;
 }
 
 export interface CardCtaCreate_startIcon3 {
@@ -293,6 +391,12 @@ export interface CardCtaCreate_endIcon3 {
   iconName: IconName | null;
   iconSize: IconSize | null;
   iconColor: IconColor | null;
+}
+
+export interface CardCtaCreate_button3Update_action_PhoneAction {
+  __typename: "PhoneAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
 }
 
 export interface CardCtaCreate_button3Update_action_NavigateToBlockAction {
@@ -316,7 +420,15 @@ export interface CardCtaCreate_button3Update_action_EmailAction {
   email: string;
 }
 
-export type CardCtaCreate_button3Update_action = CardCtaCreate_button3Update_action_NavigateToBlockAction | CardCtaCreate_button3Update_action_LinkAction | CardCtaCreate_button3Update_action_EmailAction;
+export type CardCtaCreate_button3Update_action = CardCtaCreate_button3Update_action_PhoneAction | CardCtaCreate_button3Update_action_NavigateToBlockAction | CardCtaCreate_button3Update_action_LinkAction | CardCtaCreate_button3Update_action_EmailAction;
+
+export interface CardCtaCreate_button3Update_settings {
+  __typename: "ButtonBlockSettings";
+  /**
+   * Alignment of the button
+   */
+  alignment: ButtonAlignment | null;
+}
 
 export interface CardCtaCreate_button3Update {
   __typename: "ButtonBlock";
@@ -329,7 +441,9 @@ export interface CardCtaCreate_button3Update {
   size: ButtonSize | null;
   startIconId: string | null;
   endIconId: string | null;
+  submitEnabled: boolean | null;
   action: CardCtaCreate_button3Update_action | null;
+  settings: CardCtaCreate_button3Update_settings | null;
 }
 
 export interface CardCtaCreate_cardBlockUpdate {
@@ -341,6 +455,10 @@ export interface CardCtaCreate_cardBlockUpdate {
    * backgroundColor should be a HEX color value e.g #FFFFFF for white.
    */
   backgroundColor: string | null;
+  /**
+   * backdropBlur should be a number representing blur amount in pixels e.g 20.
+   */
+  backdropBlur: number | null;
   /**
    * coverBlockId is present if a child block should be used as a cover.
    * This child block should not be rendered normally, instead it should be used

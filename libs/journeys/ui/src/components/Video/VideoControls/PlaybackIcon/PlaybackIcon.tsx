@@ -7,7 +7,7 @@ import IconButton from '@mui/material/IconButton'
 import Stack from '@mui/material/Stack'
 import { ReactNode } from 'react'
 
-import { PlaybackState } from '../utils/playbackReducer'
+import { PlaybackState } from '../../utils/playbackReducer'
 
 interface PlaybackIconProps {
   state: PlaybackState

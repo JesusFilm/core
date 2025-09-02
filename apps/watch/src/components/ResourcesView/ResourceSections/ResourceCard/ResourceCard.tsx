@@ -75,96 +75,96 @@ export function ResourceCard({
         }
       }}
     >
-      <NextLink href={item?.link ?? ''} passHref legacyBehavior>
-        <Box
-          component="a"
-          tabIndex={-1}
-          data-testid="ResourceCardLink"
+      <Box
+        component={NextLink}
+        href={item?.link ?? ''}
+        tabIndex={-1}
+        data-testid="ResourceCardLink"
+        sx={{
+          height: 'inherit',
+          color: 'inherit',
+          textDecoration: 'none'
+        }}
+        onClick={(event) => {
+          event.stopPropagation()
+          sendEvent('click', hit, 'Resource Clicked')
+        }}
+        locale={false}
+      >
+        <Stack
+          justifyContent="center"
+          alignItems="center"
           sx={{
-            height: 'inherit',
-            color: 'inherit',
-            textDecoration: 'none'
-          }}
-          onClick={(event) => {
-            event.stopPropagation()
-            sendEvent('click', hit, 'Resource Clicked')
+            position: 'relative',
+            maxHeight: 160,
+            aspectRatio: 2,
+            overflow: 'hidden',
+            borderRadius: 2,
+            backgroundColor: 'background.default'
           }}
         >
-          <Stack
-            justifyContent="center"
-            alignItems="center"
+          {imageUrl != null ? (
+            <Image
+              rel={priority ? 'preload' : undefined}
+              priority={priority}
+              className="MuiImageBackground-root"
+              // needed to render appropriate image file size for better LCP score see: https://nextjs.org/docs/pages/api-reference/components/image#sizes
+              sizes={`(max-width: ${
+                theme.breakpoints.values.md - 0.5
+              }px) 130px, (max-width: ${
+                theme.breakpoints.values.xl - 0.5
+              }px) 180px, 280px`}
+              src={imageUrl}
+              alt={item?.title ?? ''}
+              fill
+              style={{ objectFit: 'cover' }}
+            />
+          ) : (
+            <InsertPhotoRoundedIcon className="MuiImageBackground-root" />
+          )}
+        </Stack>
+        <Stack sx={{ px: 0, py: 3 }}>
+          <Typography variant="subtitle2">{item?.title ?? ''}</Typography>
+          <Box
             sx={{
-              position: 'relative',
-              maxHeight: 160,
-              aspectRatio: 2,
+              display: { xs: 'none', md: '-webkit-box' },
+              height: 86,
               overflow: 'hidden',
-              borderRadius: 2,
-              backgroundColor: 'background.default'
+              textOverflow: 'ellipsis',
+              WebkitBoxOrient: 'vertical',
+              WebkitLineClamp: 3
             }}
           >
-            {imageUrl != null ? (
-              <Image
-                rel={priority ? 'preload' : undefined}
-                priority={priority}
-                className="MuiImageBackground-root"
-                // needed to render appropriate image file size for better LCP score see: https://nextjs.org/docs/pages/api-reference/components/image#sizes
-                sizes={`(max-width: ${
-                  theme.breakpoints.values.md - 0.5
-                }px) 130px, (max-width: ${
-                  theme.breakpoints.values.xl - 0.5
-                }px) 180px, 280px`}
-                src={imageUrl}
-                alt={item?.title ?? ''}
-                fill
-                style={{ objectFit: 'cover' }}
-              />
-            ) : (
-              <InsertPhotoRoundedIcon className="MuiImageBackground-root" />
-            )}
-          </Stack>
-          <Stack sx={{ px: 0, py: 3 }}>
-            <Typography variant="subtitle2">{item?.title ?? ''}</Typography>
-            <Box
+            <Typography
+              variant="body1"
               sx={{
-                display: { xs: 'none', md: '-webkit-box' },
-                height: '66px',
-                overflow: 'hidden',
-                textOverflow: 'ellipsis',
-                WebkitBoxOrient: 'vertical',
-                WebkitLineClamp: 3
+                py: 1
               }}
             >
-              <Typography
-                variant="body1"
-                sx={{
-                  my: 1
-                }}
-              >
-                {item?.description ?? ''}
-              </Typography>
-            </Box>
-            <Box
+              {item?.description ?? ''}
+            </Typography>
+          </Box>
+          <Box
+            sx={{
+              display: { xs: '-webkit-box', md: 'none' },
+              height: '63px',
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+              WebkitBoxOrient: 'vertical',
+              WebkitLineClamp: 3
+            }}
+          >
+            <Typography
+              variant="body2"
               sx={{
-                display: { xs: '-webkit-box', md: 'none' },
-                height: '63px',
-                overflow: 'hidden',
-                textOverflow: 'ellipsis',
-                WebkitBoxOrient: 'vertical',
-                WebkitLineClamp: 3
+                py: 1
               }}
             >
-              <Typography
-                variant="body2"
-                sx={{
-                  my: 1
-                }}
-              >
-                {item?.description ?? ''}
-              </Typography>
-            </Box>
-          </Stack>
-        </Box>
-      </NextLink>
+              {item?.description ?? ''}
+            </Typography>
+          </Box>
+        </Stack>
+      </Box>
     </Card>
   )
 }

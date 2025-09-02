@@ -4,7 +4,7 @@ import { CSSProperties, ReactElement, useEffect, useRef } from 'react'
 import videojs from 'video.js'
 import Player from 'video.js/dist/types/player'
 
-import { defaultVideoJsOptions } from '@core/shared/ui/defaultVideoJsOptions'
+import { defaultBackgroundVideoJsOptions } from '@core/shared/ui/defaultVideoJsOptions'
 
 import {
   VideoBlockObjectFit,
@@ -26,7 +26,7 @@ const StyledVideo = styled('video')(() => ({}))
 export function BackgroundVideo({
   source,
   children,
-  video,
+  mediaVideo,
   videoId,
   startAt,
   endAt,
@@ -34,14 +34,14 @@ export function BackgroundVideo({
   setLoading
 }: BackgroundVideoProps): ReactElement {
   const videoRef = useRef<HTMLVideoElement>(null)
-  const playerRef = useRef<Player>()
+  const playerRef = useRef<Player | null>(null)
   const isYouTube = source === VideoBlockSource.youTube
 
   // Initiate Video
   useEffect(() => {
     if (videoRef.current != null) {
       playerRef.current = videojs(videoRef.current, {
-        ...defaultVideoJsOptions,
+        ...defaultBackgroundVideoJsOptions,
         autoplay: true,
         controls: false,
         controlBar: false,
@@ -93,8 +93,29 @@ export function BackgroundVideo({
           player?.pause()
         }
       })
+
+      player.ready(() => {
+        if (
+          mediaVideo?.__typename === 'MuxVideo' &&
+          mediaVideo?.playbackId != null
+        ) {
+          player.src({
+            src: `https://stream.mux.com/${mediaVideo.playbackId}.m3u8`,
+            type: 'application/x-mpegURL'
+          })
+        }
+        if (
+          mediaVideo?.__typename === 'Video' &&
+          mediaVideo?.variant?.hls != null
+        ) {
+          player.src({
+            src: mediaVideo.variant.hls,
+            type: 'application/x-mpegURL'
+          })
+        }
+      })
     }
-  }, [playerRef, startAt, endAt, source, video, videoId, setLoading])
+  }, [playerRef, startAt, endAt, source, mediaVideo, videoId, setLoading])
 
   useEffect(() => {
     if (videoRef.current != null) videoRef.current.pause()
@@ -151,22 +172,14 @@ export function BackgroundVideo({
           },
           '> .vjs-loading-spinner': {
             zIndex: 1,
-            display: isYouTube ? 'none' : 'block'
+            display: isYouTube ? 'none' : 'flex'
           },
           pointerEvents: 'none'
         }}
       >
-        {source === VideoBlockSource.cloudflare && videoId != null && (
-          <source
-            src={`https://customer-${
-              process.env.NEXT_PUBLIC_CLOUDFLARE_STREAM_CUSTOMER_CODE ?? ''
-            }.cloudflarestream.com/${videoId ?? ''}/manifest/video.m3u8`}
-            type="application/x-mpegURL"
-          />
-        )}
-        {source === VideoBlockSource.internal &&
-          video?.variant?.hls != null && (
-            <source src={video.variant.hls} type="application/x-mpegURL" />
+        {mediaVideo?.__typename === 'Video' &&
+          mediaVideo?.variant?.hls != null && (
+            <source src={mediaVideo.variant.hls} type="application/x-mpegURL" />
           )}
         {source === VideoBlockSource.youTube && videoId != null && (
           <source
@@ -176,6 +189,13 @@ export function BackgroundVideo({
             type="video/youtube"
           />
         )}
+        {mediaVideo?.__typename === 'MuxVideo' &&
+          mediaVideo?.playbackId != null && (
+            <source
+              src={`https://stream.mux.com/${mediaVideo.playbackId}.m3u8`}
+              type="application/x-mpegURL"
+            />
+          )}
       </StyledVideo>
     </Box>
   )

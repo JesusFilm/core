@@ -77,6 +77,7 @@ export function MenuActionButton(): ReactElement {
       themeMode: ThemeMode.dark,
       themeName: ThemeName.base,
       fullscreen: false,
+      backdropBlur: null,
       coverBlockId: null,
       backgroundColor: null,
       parentOrder: 0
@@ -90,7 +91,11 @@ export function MenuActionButton(): ReactElement {
       color: null,
       content: t('Menu'),
       variant: TypographyVariant.h1,
-      align: TypographyAlign.center
+      align: TypographyAlign.center,
+      settings: {
+        __typename: 'TypographyBlockSettings',
+        color: null
+      }
     } satisfies TypographyBlock
 
     const subHeading = {
@@ -101,7 +106,11 @@ export function MenuActionButton(): ReactElement {
       color: null,
       content: t('Helping people discover Jesus.'),
       variant: TypographyVariant.subtitle2,
-      align: TypographyAlign.center
+      align: TypographyAlign.center,
+      settings: {
+        __typename: 'TypographyBlockSettings',
+        color: null
+      }
     } satisfies TypographyBlock
 
     const button1 = {
@@ -115,7 +124,9 @@ export function MenuActionButton(): ReactElement {
       size: ButtonSize.large,
       startIconId: null,
       endIconId: null,
-      action: null
+      submitEnabled: null,
+      action: null,
+      settings: null
     } satisfies ButtonBlock
 
     const button2 = {
@@ -129,7 +140,9 @@ export function MenuActionButton(): ReactElement {
       size: ButtonSize.large,
       startIconId: null,
       endIconId: null,
-      action: null
+      submitEnabled: null,
+      action: null,
+      settings: null
     } satisfies ButtonBlock
 
     const button3 = {
@@ -143,7 +156,9 @@ export function MenuActionButton(): ReactElement {
       size: ButtonSize.large,
       startIconId: null,
       endIconId: null,
-      action: null
+      submitEnabled: null,
+      action: null,
+      settings: null
     } satisfies ButtonBlock
 
     const createdBlocks = [

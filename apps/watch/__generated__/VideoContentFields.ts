@@ -32,6 +32,26 @@ export interface VideoContentFields_description {
 export interface VideoContentFields_studyQuestions {
   __typename: "VideoStudyQuestion";
   value: string;
+  primary: boolean;
+}
+
+export interface VideoContentFields_bibleCitations_bibleBook_name {
+  __typename: "BibleBookName";
+  value: string;
+}
+
+export interface VideoContentFields_bibleCitations_bibleBook {
+  __typename: "BibleBook";
+  name: VideoContentFields_bibleCitations_bibleBook_name[];
+}
+
+export interface VideoContentFields_bibleCitations {
+  __typename: "BibleCitation";
+  bibleBook: VideoContentFields_bibleCitations_bibleBook;
+  chapterStart: number;
+  chapterEnd: number | null;
+  verseStart: number | null;
+  verseEnd: number | null;
 }
 
 export interface VideoContentFields_title {
@@ -56,6 +76,7 @@ export interface VideoContentFields_variant_language {
   __typename: "Language";
   id: string;
   name: VideoContentFields_variant_language_name[];
+  bcp47: string | null;
 }
 
 export interface VideoContentFields_variant {
@@ -82,6 +103,7 @@ export interface VideoContentFields {
   snippet: VideoContentFields_snippet[];
   description: VideoContentFields_description[];
   studyQuestions: VideoContentFields_studyQuestions[];
+  bibleCitations: VideoContentFields_bibleCitations[];
   title: VideoContentFields_title[];
   variant: VideoContentFields_variant | null;
   variantLanguagesCount: number;
@@ -90,7 +112,7 @@ export interface VideoContentFields {
    */
   slug: string;
   /**
-   * the number value of the amount of children on a video
+   * The number of published child videos associated with this video
    */
   childrenCount: number;
 }

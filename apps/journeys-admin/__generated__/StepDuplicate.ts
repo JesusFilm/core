@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { BlockDuplicateIdMap, ButtonVariant, ButtonColor, ButtonSize, ThemeMode, ThemeName, IconName, IconSize, IconColor, TextResponseType, TypographyAlign, TypographyColor, TypographyVariant, VideoBlockSource, VideoBlockObjectFit } from "./globalTypes";
+import { BlockDuplicateIdMap, ButtonVariant, ButtonColor, ButtonSize, ButtonAlignment, ThemeMode, ThemeName, IconName, IconSize, IconColor, TextResponseType, TypographyAlign, TypographyColor, TypographyVariant, VideoBlockSource, VideoBlockObjectFit } from "./globalTypes";
 
 // ====================================================
 // GraphQL mutation operation: StepDuplicate
@@ -14,6 +14,12 @@ export interface StepDuplicate_blockDuplicate_GridContainerBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
+}
+
+export interface StepDuplicate_blockDuplicate_ButtonBlock_action_PhoneAction {
+  __typename: "PhoneAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
 }
 
 export interface StepDuplicate_blockDuplicate_ButtonBlock_action_NavigateToBlockAction {
@@ -37,7 +43,15 @@ export interface StepDuplicate_blockDuplicate_ButtonBlock_action_EmailAction {
   email: string;
 }
 
-export type StepDuplicate_blockDuplicate_ButtonBlock_action = StepDuplicate_blockDuplicate_ButtonBlock_action_NavigateToBlockAction | StepDuplicate_blockDuplicate_ButtonBlock_action_LinkAction | StepDuplicate_blockDuplicate_ButtonBlock_action_EmailAction;
+export type StepDuplicate_blockDuplicate_ButtonBlock_action = StepDuplicate_blockDuplicate_ButtonBlock_action_PhoneAction | StepDuplicate_blockDuplicate_ButtonBlock_action_NavigateToBlockAction | StepDuplicate_blockDuplicate_ButtonBlock_action_LinkAction | StepDuplicate_blockDuplicate_ButtonBlock_action_EmailAction;
+
+export interface StepDuplicate_blockDuplicate_ButtonBlock_settings {
+  __typename: "ButtonBlockSettings";
+  /**
+   * Alignment of the button
+   */
+  alignment: ButtonAlignment | null;
+}
 
 export interface StepDuplicate_blockDuplicate_ButtonBlock {
   __typename: "ButtonBlock";
@@ -50,7 +64,9 @@ export interface StepDuplicate_blockDuplicate_ButtonBlock {
   size: ButtonSize | null;
   startIconId: string | null;
   endIconId: string | null;
+  submitEnabled: boolean | null;
   action: StepDuplicate_blockDuplicate_ButtonBlock_action | null;
+  settings: StepDuplicate_blockDuplicate_ButtonBlock_settings | null;
 }
 
 export interface StepDuplicate_blockDuplicate_CardBlock {
@@ -62,6 +78,10 @@ export interface StepDuplicate_blockDuplicate_CardBlock {
    * backgroundColor should be a HEX color value e.g #FFFFFF for white.
    */
   backgroundColor: string | null;
+  /**
+   * backdropBlur should be a number representing blur amount in pixels e.g 20.
+   */
+  backdropBlur: number | null;
   /**
    * coverBlockId is present if a child block should be used as a cover.
    * This child block should not be rendered normally, instead it should be used
@@ -115,6 +135,12 @@ export interface StepDuplicate_blockDuplicate_ImageBlock {
   focalLeft: number | null;
 }
 
+export interface StepDuplicate_blockDuplicate_RadioOptionBlock_action_PhoneAction {
+  __typename: "PhoneAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+}
+
 export interface StepDuplicate_blockDuplicate_RadioOptionBlock_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
   parentBlockId: string;
@@ -136,7 +162,7 @@ export interface StepDuplicate_blockDuplicate_RadioOptionBlock_action_EmailActio
   email: string;
 }
 
-export type StepDuplicate_blockDuplicate_RadioOptionBlock_action = StepDuplicate_blockDuplicate_RadioOptionBlock_action_NavigateToBlockAction | StepDuplicate_blockDuplicate_RadioOptionBlock_action_LinkAction | StepDuplicate_blockDuplicate_RadioOptionBlock_action_EmailAction;
+export type StepDuplicate_blockDuplicate_RadioOptionBlock_action = StepDuplicate_blockDuplicate_RadioOptionBlock_action_PhoneAction | StepDuplicate_blockDuplicate_RadioOptionBlock_action_NavigateToBlockAction | StepDuplicate_blockDuplicate_RadioOptionBlock_action_LinkAction | StepDuplicate_blockDuplicate_RadioOptionBlock_action_EmailAction;
 
 export interface StepDuplicate_blockDuplicate_RadioOptionBlock {
   __typename: "RadioOptionBlock";
@@ -145,6 +171,12 @@ export interface StepDuplicate_blockDuplicate_RadioOptionBlock {
   parentOrder: number | null;
   label: string;
   action: StepDuplicate_blockDuplicate_RadioOptionBlock_action | null;
+  /**
+   * pollOptionImageBlockId is present if a child block should be used as a poll option image.
+   *       This child block should not be rendered normally, instead it should be used
+   *       as a poll option image. Blocks are often of type ImageBlock
+   */
+  pollOptionImageBlockId: string | null;
 }
 
 export interface StepDuplicate_blockDuplicate_RadioQuestionBlock {
@@ -152,6 +184,13 @@ export interface StepDuplicate_blockDuplicate_RadioQuestionBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
+  gridView: boolean | null;
+}
+
+export interface StepDuplicate_blockDuplicate_SignUpBlock_action_PhoneAction {
+  __typename: "PhoneAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
 }
 
 export interface StepDuplicate_blockDuplicate_SignUpBlock_action_NavigateToBlockAction {
@@ -175,7 +214,7 @@ export interface StepDuplicate_blockDuplicate_SignUpBlock_action_EmailAction {
   email: string;
 }
 
-export type StepDuplicate_blockDuplicate_SignUpBlock_action = StepDuplicate_blockDuplicate_SignUpBlock_action_NavigateToBlockAction | StepDuplicate_blockDuplicate_SignUpBlock_action_LinkAction | StepDuplicate_blockDuplicate_SignUpBlock_action_EmailAction;
+export type StepDuplicate_blockDuplicate_SignUpBlock_action = StepDuplicate_blockDuplicate_SignUpBlock_action_PhoneAction | StepDuplicate_blockDuplicate_SignUpBlock_action_NavigateToBlockAction | StepDuplicate_blockDuplicate_SignUpBlock_action_LinkAction | StepDuplicate_blockDuplicate_SignUpBlock_action_EmailAction;
 
 export interface StepDuplicate_blockDuplicate_SignUpBlock {
   __typename: "SignUpBlock";
@@ -185,6 +224,14 @@ export interface StepDuplicate_blockDuplicate_SignUpBlock {
   submitLabel: string | null;
   submitIconId: string | null;
   action: StepDuplicate_blockDuplicate_SignUpBlock_action | null;
+}
+
+export interface StepDuplicate_blockDuplicate_SpacerBlock {
+  __typename: "SpacerBlock";
+  id: string;
+  parentBlockId: string | null;
+  parentOrder: number | null;
+  spacing: number | null;
 }
 
 export interface StepDuplicate_blockDuplicate_StepBlock {
@@ -227,12 +274,22 @@ export interface StepDuplicate_blockDuplicate_TextResponseBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
+  required: boolean | null;
   label: string;
+  placeholder: string | null;
   hint: string | null;
   minRows: number | null;
   type: TextResponseType | null;
   routeId: string | null;
   integrationId: string | null;
+}
+
+export interface StepDuplicate_blockDuplicate_TypographyBlock_settings {
+  __typename: "TypographyBlockSettings";
+  /**
+   * Color of the typography
+   */
+  color: string | null;
 }
 
 export interface StepDuplicate_blockDuplicate_TypographyBlock {
@@ -244,43 +301,64 @@ export interface StepDuplicate_blockDuplicate_TypographyBlock {
   color: TypographyColor | null;
   content: string;
   variant: TypographyVariant | null;
+  settings: StepDuplicate_blockDuplicate_TypographyBlock_settings | null;
 }
 
-export interface StepDuplicate_blockDuplicate_VideoBlock_video_title {
+export interface StepDuplicate_blockDuplicate_VideoBlock_mediaVideo_Video_title {
   __typename: "VideoTitle";
   value: string;
 }
 
-export interface StepDuplicate_blockDuplicate_VideoBlock_video_images {
+export interface StepDuplicate_blockDuplicate_VideoBlock_mediaVideo_Video_images {
   __typename: "CloudflareImage";
   mobileCinematicHigh: string | null;
 }
 
-export interface StepDuplicate_blockDuplicate_VideoBlock_video_variant {
+export interface StepDuplicate_blockDuplicate_VideoBlock_mediaVideo_Video_variant {
   __typename: "VideoVariant";
   id: string;
   hls: string | null;
 }
 
-export interface StepDuplicate_blockDuplicate_VideoBlock_video_variantLanguages_name {
+export interface StepDuplicate_blockDuplicate_VideoBlock_mediaVideo_Video_variantLanguages_name {
   __typename: "LanguageName";
   value: string;
   primary: boolean;
 }
 
-export interface StepDuplicate_blockDuplicate_VideoBlock_video_variantLanguages {
+export interface StepDuplicate_blockDuplicate_VideoBlock_mediaVideo_Video_variantLanguages {
   __typename: "Language";
   id: string;
-  name: StepDuplicate_blockDuplicate_VideoBlock_video_variantLanguages_name[];
+  name: StepDuplicate_blockDuplicate_VideoBlock_mediaVideo_Video_variantLanguages_name[];
 }
 
-export interface StepDuplicate_blockDuplicate_VideoBlock_video {
+export interface StepDuplicate_blockDuplicate_VideoBlock_mediaVideo_Video {
   __typename: "Video";
   id: string;
-  title: StepDuplicate_blockDuplicate_VideoBlock_video_title[];
-  images: StepDuplicate_blockDuplicate_VideoBlock_video_images[];
-  variant: StepDuplicate_blockDuplicate_VideoBlock_video_variant | null;
-  variantLanguages: StepDuplicate_blockDuplicate_VideoBlock_video_variantLanguages[];
+  title: StepDuplicate_blockDuplicate_VideoBlock_mediaVideo_Video_title[];
+  images: StepDuplicate_blockDuplicate_VideoBlock_mediaVideo_Video_images[];
+  variant: StepDuplicate_blockDuplicate_VideoBlock_mediaVideo_Video_variant | null;
+  variantLanguages: StepDuplicate_blockDuplicate_VideoBlock_mediaVideo_Video_variantLanguages[];
+}
+
+export interface StepDuplicate_blockDuplicate_VideoBlock_mediaVideo_MuxVideo {
+  __typename: "MuxVideo";
+  id: string;
+  assetId: string | null;
+  playbackId: string | null;
+}
+
+export interface StepDuplicate_blockDuplicate_VideoBlock_mediaVideo_YouTube {
+  __typename: "YouTube";
+  id: string;
+}
+
+export type StepDuplicate_blockDuplicate_VideoBlock_mediaVideo = StepDuplicate_blockDuplicate_VideoBlock_mediaVideo_Video | StepDuplicate_blockDuplicate_VideoBlock_mediaVideo_MuxVideo | StepDuplicate_blockDuplicate_VideoBlock_mediaVideo_YouTube;
+
+export interface StepDuplicate_blockDuplicate_VideoBlock_action_PhoneAction {
+  __typename: "PhoneAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
 }
 
 export interface StepDuplicate_blockDuplicate_VideoBlock_action_NavigateToBlockAction {
@@ -304,7 +382,7 @@ export interface StepDuplicate_blockDuplicate_VideoBlock_action_EmailAction {
   email: string;
 }
 
-export type StepDuplicate_blockDuplicate_VideoBlock_action = StepDuplicate_blockDuplicate_VideoBlock_action_NavigateToBlockAction | StepDuplicate_blockDuplicate_VideoBlock_action_LinkAction | StepDuplicate_blockDuplicate_VideoBlock_action_EmailAction;
+export type StepDuplicate_blockDuplicate_VideoBlock_action = StepDuplicate_blockDuplicate_VideoBlock_action_PhoneAction | StepDuplicate_blockDuplicate_VideoBlock_action_NavigateToBlockAction | StepDuplicate_blockDuplicate_VideoBlock_action_LinkAction | StepDuplicate_blockDuplicate_VideoBlock_action_EmailAction;
 
 export interface StepDuplicate_blockDuplicate_VideoBlock {
   __typename: "VideoBlock";
@@ -374,15 +452,17 @@ export interface StepDuplicate_blockDuplicate_VideoBlock {
    * how the video should display within the VideoBlock
    */
   objectFit: VideoBlockObjectFit | null;
-  /**
-   * internal source videos: video is only populated when videoID and
-   * videoVariantLanguageId are present
-   */
-  video: StepDuplicate_blockDuplicate_VideoBlock_video | null;
+  mediaVideo: StepDuplicate_blockDuplicate_VideoBlock_mediaVideo | null;
   /**
    * action that should be performed when the video ends
    */
   action: StepDuplicate_blockDuplicate_VideoBlock_action | null;
+}
+
+export interface StepDuplicate_blockDuplicate_VideoTriggerBlock_triggerAction_PhoneAction {
+  __typename: "PhoneAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
 }
 
 export interface StepDuplicate_blockDuplicate_VideoTriggerBlock_triggerAction_NavigateToBlockAction {
@@ -406,7 +486,7 @@ export interface StepDuplicate_blockDuplicate_VideoTriggerBlock_triggerAction_Em
   email: string;
 }
 
-export type StepDuplicate_blockDuplicate_VideoTriggerBlock_triggerAction = StepDuplicate_blockDuplicate_VideoTriggerBlock_triggerAction_NavigateToBlockAction | StepDuplicate_blockDuplicate_VideoTriggerBlock_triggerAction_LinkAction | StepDuplicate_blockDuplicate_VideoTriggerBlock_triggerAction_EmailAction;
+export type StepDuplicate_blockDuplicate_VideoTriggerBlock_triggerAction = StepDuplicate_blockDuplicate_VideoTriggerBlock_triggerAction_PhoneAction | StepDuplicate_blockDuplicate_VideoTriggerBlock_triggerAction_NavigateToBlockAction | StepDuplicate_blockDuplicate_VideoTriggerBlock_triggerAction_LinkAction | StepDuplicate_blockDuplicate_VideoTriggerBlock_triggerAction_EmailAction;
 
 export interface StepDuplicate_blockDuplicate_VideoTriggerBlock {
   __typename: "VideoTriggerBlock";
@@ -421,7 +501,7 @@ export interface StepDuplicate_blockDuplicate_VideoTriggerBlock {
   triggerAction: StepDuplicate_blockDuplicate_VideoTriggerBlock_triggerAction;
 }
 
-export type StepDuplicate_blockDuplicate = StepDuplicate_blockDuplicate_GridContainerBlock | StepDuplicate_blockDuplicate_ButtonBlock | StepDuplicate_blockDuplicate_CardBlock | StepDuplicate_blockDuplicate_IconBlock | StepDuplicate_blockDuplicate_ImageBlock | StepDuplicate_blockDuplicate_RadioOptionBlock | StepDuplicate_blockDuplicate_RadioQuestionBlock | StepDuplicate_blockDuplicate_SignUpBlock | StepDuplicate_blockDuplicate_StepBlock | StepDuplicate_blockDuplicate_TextResponseBlock | StepDuplicate_blockDuplicate_TypographyBlock | StepDuplicate_blockDuplicate_VideoBlock | StepDuplicate_blockDuplicate_VideoTriggerBlock;
+export type StepDuplicate_blockDuplicate = StepDuplicate_blockDuplicate_GridContainerBlock | StepDuplicate_blockDuplicate_ButtonBlock | StepDuplicate_blockDuplicate_CardBlock | StepDuplicate_blockDuplicate_IconBlock | StepDuplicate_blockDuplicate_ImageBlock | StepDuplicate_blockDuplicate_RadioOptionBlock | StepDuplicate_blockDuplicate_RadioQuestionBlock | StepDuplicate_blockDuplicate_SignUpBlock | StepDuplicate_blockDuplicate_SpacerBlock | StepDuplicate_blockDuplicate_StepBlock | StepDuplicate_blockDuplicate_TextResponseBlock | StepDuplicate_blockDuplicate_TypographyBlock | StepDuplicate_blockDuplicate_VideoBlock | StepDuplicate_blockDuplicate_VideoTriggerBlock;
 
 export interface StepDuplicate {
   /**

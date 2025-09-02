@@ -1,0 +1,16 @@
+name: Task push build
+on:
+  push:
+    branches:
+      - main
+jobs:
+  media-transcoder:
+    uses: JesusFilm/core/.github/workflows/task-deploy-worker.yml@main
+    with:
+      name: media-transcoder
+      env: prod
+      branch: ${{ github.ref_name }}
+    secrets:
+      AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
+      JFP_AWS_ACCESS_KEY_ID: ${{ secrets.JFP_AWS_ACCESS_KEY_ID }}
+      JFP_AWS_SECRET_ACCESS_KEY: ${{ secrets.JFP_AWS_SECRET_ACCESS_KEY }}

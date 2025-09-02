@@ -1,0 +1,1 @@
+export { QuizModal } from './QuizModal'

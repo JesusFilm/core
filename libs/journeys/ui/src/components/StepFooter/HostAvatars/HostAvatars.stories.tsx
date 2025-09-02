@@ -44,6 +44,7 @@ const journey: Journey = {
   description: 'my cool journey',
   status: JourneyStatus.draft,
   createdAt: '2021-11-19T12:34:56.647Z',
+  updatedAt: '2021-11-19T12:34:56.647Z',
   publishedAt: null,
   blocks: [],
   primaryImageBlock: null,
@@ -72,7 +73,8 @@ const journey: Journey = {
   displayTitle: null,
   logoImageBlock: null,
   menuButtonIcon: null,
-  menuStepBlock: null
+  menuStepBlock: null,
+  journeyTheme: null
 }
 
 const Template: StoryObj<ComponentProps<typeof HostAvatars>> = {

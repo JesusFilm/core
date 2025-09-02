@@ -120,7 +120,7 @@ export function SearchbarDropdown({
 
 const StyledBox = styled(Box)(({ theme }) => ({
   borderRadius: 32,
-  padding: `0 ${theme.spacing(1)}`,
+  padding: `3px 6px 0 8px`,
   marginLeft: theme.spacing(3),
   border: `2px solid ${theme.palette.secondary.main}${
     theme.palette.mode === 'dark' ? '2E' : '1A'
@@ -150,8 +150,13 @@ function LocalTabsHeader({
 
   return (
     <div className="tab-label">
-      <Box display="flex" flexDirection="row" alignItems="center">
-        <span>{label}</span>
+      <Box
+        display="flex"
+        flexDirection="row"
+        alignItems="center"
+        justifyContent="center"
+      >
+        <Box sx={{ lineHeight: 1 }}>{label}</Box>
         {displayedCount != null && <StyledBox>{displayedCount}</StyledBox>}
       </Box>
     </div>

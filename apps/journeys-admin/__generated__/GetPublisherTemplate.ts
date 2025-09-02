@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { JourneyStatus, ThemeName, ThemeMode, ButtonVariant, ButtonColor, ButtonSize, IconName, IconSize, IconColor, TextResponseType, TypographyAlign, TypographyColor, TypographyVariant, VideoBlockSource, VideoBlockObjectFit, UserJourneyRole, MessagePlatform, JourneyMenuButtonIcon } from "./globalTypes";
+import { JourneyStatus, ThemeName, ThemeMode, ButtonVariant, ButtonColor, ButtonSize, ButtonAlignment, IconName, IconSize, IconColor, TextResponseType, TypographyAlign, TypographyColor, TypographyVariant, VideoBlockSource, VideoBlockObjectFit, UserJourneyRole, MessagePlatform, JourneyMenuButtonIcon } from "./globalTypes";
 
 // ====================================================
 // GraphQL query operation: GetPublisherTemplate
@@ -30,6 +30,12 @@ export interface GetPublisherTemplate_publisherTemplate_blocks_GridContainerBloc
   parentOrder: number | null;
 }
 
+export interface GetPublisherTemplate_publisherTemplate_blocks_ButtonBlock_action_PhoneAction {
+  __typename: "PhoneAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+}
+
 export interface GetPublisherTemplate_publisherTemplate_blocks_ButtonBlock_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
   parentBlockId: string;
@@ -51,7 +57,15 @@ export interface GetPublisherTemplate_publisherTemplate_blocks_ButtonBlock_actio
   email: string;
 }
 
-export type GetPublisherTemplate_publisherTemplate_blocks_ButtonBlock_action = GetPublisherTemplate_publisherTemplate_blocks_ButtonBlock_action_NavigateToBlockAction | GetPublisherTemplate_publisherTemplate_blocks_ButtonBlock_action_LinkAction | GetPublisherTemplate_publisherTemplate_blocks_ButtonBlock_action_EmailAction;
+export type GetPublisherTemplate_publisherTemplate_blocks_ButtonBlock_action = GetPublisherTemplate_publisherTemplate_blocks_ButtonBlock_action_PhoneAction | GetPublisherTemplate_publisherTemplate_blocks_ButtonBlock_action_NavigateToBlockAction | GetPublisherTemplate_publisherTemplate_blocks_ButtonBlock_action_LinkAction | GetPublisherTemplate_publisherTemplate_blocks_ButtonBlock_action_EmailAction;
+
+export interface GetPublisherTemplate_publisherTemplate_blocks_ButtonBlock_settings {
+  __typename: "ButtonBlockSettings";
+  /**
+   * Alignment of the button
+   */
+  alignment: ButtonAlignment | null;
+}
 
 export interface GetPublisherTemplate_publisherTemplate_blocks_ButtonBlock {
   __typename: "ButtonBlock";
@@ -64,7 +78,9 @@ export interface GetPublisherTemplate_publisherTemplate_blocks_ButtonBlock {
   size: ButtonSize | null;
   startIconId: string | null;
   endIconId: string | null;
+  submitEnabled: boolean | null;
   action: GetPublisherTemplate_publisherTemplate_blocks_ButtonBlock_action | null;
+  settings: GetPublisherTemplate_publisherTemplate_blocks_ButtonBlock_settings | null;
 }
 
 export interface GetPublisherTemplate_publisherTemplate_blocks_CardBlock {
@@ -76,6 +92,10 @@ export interface GetPublisherTemplate_publisherTemplate_blocks_CardBlock {
    * backgroundColor should be a HEX color value e.g #FFFFFF for white.
    */
   backgroundColor: string | null;
+  /**
+   * backdropBlur should be a number representing blur amount in pixels e.g 20.
+   */
+  backdropBlur: number | null;
   /**
    * coverBlockId is present if a child block should be used as a cover.
    * This child block should not be rendered normally, instead it should be used
@@ -129,6 +149,12 @@ export interface GetPublisherTemplate_publisherTemplate_blocks_ImageBlock {
   focalLeft: number | null;
 }
 
+export interface GetPublisherTemplate_publisherTemplate_blocks_RadioOptionBlock_action_PhoneAction {
+  __typename: "PhoneAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+}
+
 export interface GetPublisherTemplate_publisherTemplate_blocks_RadioOptionBlock_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
   parentBlockId: string;
@@ -150,7 +176,7 @@ export interface GetPublisherTemplate_publisherTemplate_blocks_RadioOptionBlock_
   email: string;
 }
 
-export type GetPublisherTemplate_publisherTemplate_blocks_RadioOptionBlock_action = GetPublisherTemplate_publisherTemplate_blocks_RadioOptionBlock_action_NavigateToBlockAction | GetPublisherTemplate_publisherTemplate_blocks_RadioOptionBlock_action_LinkAction | GetPublisherTemplate_publisherTemplate_blocks_RadioOptionBlock_action_EmailAction;
+export type GetPublisherTemplate_publisherTemplate_blocks_RadioOptionBlock_action = GetPublisherTemplate_publisherTemplate_blocks_RadioOptionBlock_action_PhoneAction | GetPublisherTemplate_publisherTemplate_blocks_RadioOptionBlock_action_NavigateToBlockAction | GetPublisherTemplate_publisherTemplate_blocks_RadioOptionBlock_action_LinkAction | GetPublisherTemplate_publisherTemplate_blocks_RadioOptionBlock_action_EmailAction;
 
 export interface GetPublisherTemplate_publisherTemplate_blocks_RadioOptionBlock {
   __typename: "RadioOptionBlock";
@@ -159,6 +185,12 @@ export interface GetPublisherTemplate_publisherTemplate_blocks_RadioOptionBlock 
   parentOrder: number | null;
   label: string;
   action: GetPublisherTemplate_publisherTemplate_blocks_RadioOptionBlock_action | null;
+  /**
+   * pollOptionImageBlockId is present if a child block should be used as a poll option image.
+   *       This child block should not be rendered normally, instead it should be used
+   *       as a poll option image. Blocks are often of type ImageBlock
+   */
+  pollOptionImageBlockId: string | null;
 }
 
 export interface GetPublisherTemplate_publisherTemplate_blocks_RadioQuestionBlock {
@@ -166,6 +198,13 @@ export interface GetPublisherTemplate_publisherTemplate_blocks_RadioQuestionBloc
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
+  gridView: boolean | null;
+}
+
+export interface GetPublisherTemplate_publisherTemplate_blocks_SignUpBlock_action_PhoneAction {
+  __typename: "PhoneAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
 }
 
 export interface GetPublisherTemplate_publisherTemplate_blocks_SignUpBlock_action_NavigateToBlockAction {
@@ -189,7 +228,7 @@ export interface GetPublisherTemplate_publisherTemplate_blocks_SignUpBlock_actio
   email: string;
 }
 
-export type GetPublisherTemplate_publisherTemplate_blocks_SignUpBlock_action = GetPublisherTemplate_publisherTemplate_blocks_SignUpBlock_action_NavigateToBlockAction | GetPublisherTemplate_publisherTemplate_blocks_SignUpBlock_action_LinkAction | GetPublisherTemplate_publisherTemplate_blocks_SignUpBlock_action_EmailAction;
+export type GetPublisherTemplate_publisherTemplate_blocks_SignUpBlock_action = GetPublisherTemplate_publisherTemplate_blocks_SignUpBlock_action_PhoneAction | GetPublisherTemplate_publisherTemplate_blocks_SignUpBlock_action_NavigateToBlockAction | GetPublisherTemplate_publisherTemplate_blocks_SignUpBlock_action_LinkAction | GetPublisherTemplate_publisherTemplate_blocks_SignUpBlock_action_EmailAction;
 
 export interface GetPublisherTemplate_publisherTemplate_blocks_SignUpBlock {
   __typename: "SignUpBlock";
@@ -199,6 +238,14 @@ export interface GetPublisherTemplate_publisherTemplate_blocks_SignUpBlock {
   submitLabel: string | null;
   submitIconId: string | null;
   action: GetPublisherTemplate_publisherTemplate_blocks_SignUpBlock_action | null;
+}
+
+export interface GetPublisherTemplate_publisherTemplate_blocks_SpacerBlock {
+  __typename: "SpacerBlock";
+  id: string;
+  parentBlockId: string | null;
+  parentOrder: number | null;
+  spacing: number | null;
 }
 
 export interface GetPublisherTemplate_publisherTemplate_blocks_StepBlock {
@@ -231,12 +278,22 @@ export interface GetPublisherTemplate_publisherTemplate_blocks_TextResponseBlock
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
+  required: boolean | null;
   label: string;
+  placeholder: string | null;
   hint: string | null;
   minRows: number | null;
   type: TextResponseType | null;
   routeId: string | null;
   integrationId: string | null;
+}
+
+export interface GetPublisherTemplate_publisherTemplate_blocks_TypographyBlock_settings {
+  __typename: "TypographyBlockSettings";
+  /**
+   * Color of the typography
+   */
+  color: string | null;
 }
 
 export interface GetPublisherTemplate_publisherTemplate_blocks_TypographyBlock {
@@ -248,43 +305,64 @@ export interface GetPublisherTemplate_publisherTemplate_blocks_TypographyBlock {
   color: TypographyColor | null;
   content: string;
   variant: TypographyVariant | null;
+  settings: GetPublisherTemplate_publisherTemplate_blocks_TypographyBlock_settings | null;
 }
 
-export interface GetPublisherTemplate_publisherTemplate_blocks_VideoBlock_video_title {
+export interface GetPublisherTemplate_publisherTemplate_blocks_VideoBlock_mediaVideo_Video_title {
   __typename: "VideoTitle";
   value: string;
 }
 
-export interface GetPublisherTemplate_publisherTemplate_blocks_VideoBlock_video_images {
+export interface GetPublisherTemplate_publisherTemplate_blocks_VideoBlock_mediaVideo_Video_images {
   __typename: "CloudflareImage";
   mobileCinematicHigh: string | null;
 }
 
-export interface GetPublisherTemplate_publisherTemplate_blocks_VideoBlock_video_variant {
+export interface GetPublisherTemplate_publisherTemplate_blocks_VideoBlock_mediaVideo_Video_variant {
   __typename: "VideoVariant";
   id: string;
   hls: string | null;
 }
 
-export interface GetPublisherTemplate_publisherTemplate_blocks_VideoBlock_video_variantLanguages_name {
+export interface GetPublisherTemplate_publisherTemplate_blocks_VideoBlock_mediaVideo_Video_variantLanguages_name {
   __typename: "LanguageName";
   value: string;
   primary: boolean;
 }
 
-export interface GetPublisherTemplate_publisherTemplate_blocks_VideoBlock_video_variantLanguages {
+export interface GetPublisherTemplate_publisherTemplate_blocks_VideoBlock_mediaVideo_Video_variantLanguages {
   __typename: "Language";
   id: string;
-  name: GetPublisherTemplate_publisherTemplate_blocks_VideoBlock_video_variantLanguages_name[];
+  name: GetPublisherTemplate_publisherTemplate_blocks_VideoBlock_mediaVideo_Video_variantLanguages_name[];
 }
 
-export interface GetPublisherTemplate_publisherTemplate_blocks_VideoBlock_video {
+export interface GetPublisherTemplate_publisherTemplate_blocks_VideoBlock_mediaVideo_Video {
   __typename: "Video";
   id: string;
-  title: GetPublisherTemplate_publisherTemplate_blocks_VideoBlock_video_title[];
-  images: GetPublisherTemplate_publisherTemplate_blocks_VideoBlock_video_images[];
-  variant: GetPublisherTemplate_publisherTemplate_blocks_VideoBlock_video_variant | null;
-  variantLanguages: GetPublisherTemplate_publisherTemplate_blocks_VideoBlock_video_variantLanguages[];
+  title: GetPublisherTemplate_publisherTemplate_blocks_VideoBlock_mediaVideo_Video_title[];
+  images: GetPublisherTemplate_publisherTemplate_blocks_VideoBlock_mediaVideo_Video_images[];
+  variant: GetPublisherTemplate_publisherTemplate_blocks_VideoBlock_mediaVideo_Video_variant | null;
+  variantLanguages: GetPublisherTemplate_publisherTemplate_blocks_VideoBlock_mediaVideo_Video_variantLanguages[];
+}
+
+export interface GetPublisherTemplate_publisherTemplate_blocks_VideoBlock_mediaVideo_MuxVideo {
+  __typename: "MuxVideo";
+  id: string;
+  assetId: string | null;
+  playbackId: string | null;
+}
+
+export interface GetPublisherTemplate_publisherTemplate_blocks_VideoBlock_mediaVideo_YouTube {
+  __typename: "YouTube";
+  id: string;
+}
+
+export type GetPublisherTemplate_publisherTemplate_blocks_VideoBlock_mediaVideo = GetPublisherTemplate_publisherTemplate_blocks_VideoBlock_mediaVideo_Video | GetPublisherTemplate_publisherTemplate_blocks_VideoBlock_mediaVideo_MuxVideo | GetPublisherTemplate_publisherTemplate_blocks_VideoBlock_mediaVideo_YouTube;
+
+export interface GetPublisherTemplate_publisherTemplate_blocks_VideoBlock_action_PhoneAction {
+  __typename: "PhoneAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
 }
 
 export interface GetPublisherTemplate_publisherTemplate_blocks_VideoBlock_action_NavigateToBlockAction {
@@ -308,7 +386,7 @@ export interface GetPublisherTemplate_publisherTemplate_blocks_VideoBlock_action
   email: string;
 }
 
-export type GetPublisherTemplate_publisherTemplate_blocks_VideoBlock_action = GetPublisherTemplate_publisherTemplate_blocks_VideoBlock_action_NavigateToBlockAction | GetPublisherTemplate_publisherTemplate_blocks_VideoBlock_action_LinkAction | GetPublisherTemplate_publisherTemplate_blocks_VideoBlock_action_EmailAction;
+export type GetPublisherTemplate_publisherTemplate_blocks_VideoBlock_action = GetPublisherTemplate_publisherTemplate_blocks_VideoBlock_action_PhoneAction | GetPublisherTemplate_publisherTemplate_blocks_VideoBlock_action_NavigateToBlockAction | GetPublisherTemplate_publisherTemplate_blocks_VideoBlock_action_LinkAction | GetPublisherTemplate_publisherTemplate_blocks_VideoBlock_action_EmailAction;
 
 export interface GetPublisherTemplate_publisherTemplate_blocks_VideoBlock {
   __typename: "VideoBlock";
@@ -378,15 +456,17 @@ export interface GetPublisherTemplate_publisherTemplate_blocks_VideoBlock {
    * how the video should display within the VideoBlock
    */
   objectFit: VideoBlockObjectFit | null;
-  /**
-   * internal source videos: video is only populated when videoID and
-   * videoVariantLanguageId are present
-   */
-  video: GetPublisherTemplate_publisherTemplate_blocks_VideoBlock_video | null;
+  mediaVideo: GetPublisherTemplate_publisherTemplate_blocks_VideoBlock_mediaVideo | null;
   /**
    * action that should be performed when the video ends
    */
   action: GetPublisherTemplate_publisherTemplate_blocks_VideoBlock_action | null;
+}
+
+export interface GetPublisherTemplate_publisherTemplate_blocks_VideoTriggerBlock_triggerAction_PhoneAction {
+  __typename: "PhoneAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
 }
 
 export interface GetPublisherTemplate_publisherTemplate_blocks_VideoTriggerBlock_triggerAction_NavigateToBlockAction {
@@ -410,7 +490,7 @@ export interface GetPublisherTemplate_publisherTemplate_blocks_VideoTriggerBlock
   email: string;
 }
 
-export type GetPublisherTemplate_publisherTemplate_blocks_VideoTriggerBlock_triggerAction = GetPublisherTemplate_publisherTemplate_blocks_VideoTriggerBlock_triggerAction_NavigateToBlockAction | GetPublisherTemplate_publisherTemplate_blocks_VideoTriggerBlock_triggerAction_LinkAction | GetPublisherTemplate_publisherTemplate_blocks_VideoTriggerBlock_triggerAction_EmailAction;
+export type GetPublisherTemplate_publisherTemplate_blocks_VideoTriggerBlock_triggerAction = GetPublisherTemplate_publisherTemplate_blocks_VideoTriggerBlock_triggerAction_PhoneAction | GetPublisherTemplate_publisherTemplate_blocks_VideoTriggerBlock_triggerAction_NavigateToBlockAction | GetPublisherTemplate_publisherTemplate_blocks_VideoTriggerBlock_triggerAction_LinkAction | GetPublisherTemplate_publisherTemplate_blocks_VideoTriggerBlock_triggerAction_EmailAction;
 
 export interface GetPublisherTemplate_publisherTemplate_blocks_VideoTriggerBlock {
   __typename: "VideoTriggerBlock";
@@ -425,7 +505,7 @@ export interface GetPublisherTemplate_publisherTemplate_blocks_VideoTriggerBlock
   triggerAction: GetPublisherTemplate_publisherTemplate_blocks_VideoTriggerBlock_triggerAction;
 }
 
-export type GetPublisherTemplate_publisherTemplate_blocks = GetPublisherTemplate_publisherTemplate_blocks_GridContainerBlock | GetPublisherTemplate_publisherTemplate_blocks_ButtonBlock | GetPublisherTemplate_publisherTemplate_blocks_CardBlock | GetPublisherTemplate_publisherTemplate_blocks_IconBlock | GetPublisherTemplate_publisherTemplate_blocks_ImageBlock | GetPublisherTemplate_publisherTemplate_blocks_RadioOptionBlock | GetPublisherTemplate_publisherTemplate_blocks_RadioQuestionBlock | GetPublisherTemplate_publisherTemplate_blocks_SignUpBlock | GetPublisherTemplate_publisherTemplate_blocks_StepBlock | GetPublisherTemplate_publisherTemplate_blocks_TextResponseBlock | GetPublisherTemplate_publisherTemplate_blocks_TypographyBlock | GetPublisherTemplate_publisherTemplate_blocks_VideoBlock | GetPublisherTemplate_publisherTemplate_blocks_VideoTriggerBlock;
+export type GetPublisherTemplate_publisherTemplate_blocks = GetPublisherTemplate_publisherTemplate_blocks_GridContainerBlock | GetPublisherTemplate_publisherTemplate_blocks_ButtonBlock | GetPublisherTemplate_publisherTemplate_blocks_CardBlock | GetPublisherTemplate_publisherTemplate_blocks_IconBlock | GetPublisherTemplate_publisherTemplate_blocks_ImageBlock | GetPublisherTemplate_publisherTemplate_blocks_RadioOptionBlock | GetPublisherTemplate_publisherTemplate_blocks_RadioQuestionBlock | GetPublisherTemplate_publisherTemplate_blocks_SignUpBlock | GetPublisherTemplate_publisherTemplate_blocks_SpacerBlock | GetPublisherTemplate_publisherTemplate_blocks_StepBlock | GetPublisherTemplate_publisherTemplate_blocks_TextResponseBlock | GetPublisherTemplate_publisherTemplate_blocks_TypographyBlock | GetPublisherTemplate_publisherTemplate_blocks_VideoBlock | GetPublisherTemplate_publisherTemplate_blocks_VideoTriggerBlock;
 
 export interface GetPublisherTemplate_publisherTemplate_primaryImageBlock {
   __typename: "ImageBlock";
@@ -571,6 +651,14 @@ export interface GetPublisherTemplate_publisherTemplate_menuStepBlock {
   slug: string | null;
 }
 
+export interface GetPublisherTemplate_publisherTemplate_journeyTheme {
+  __typename: "JourneyTheme";
+  id: string;
+  headerFont: string | null;
+  bodyFont: string | null;
+  labelFont: string | null;
+}
+
 export interface GetPublisherTemplate_publisherTemplate {
   __typename: "Journey";
   id: string;
@@ -583,6 +671,7 @@ export interface GetPublisherTemplate_publisherTemplate {
   status: JourneyStatus;
   language: GetPublisherTemplate_publisherTemplate_language;
   createdAt: any;
+  updatedAt: any;
   featuredAt: any | null;
   publishedAt: any | null;
   themeName: ThemeName;
@@ -614,6 +703,7 @@ export interface GetPublisherTemplate_publisherTemplate {
   logoImageBlock: GetPublisherTemplate_publisherTemplate_logoImageBlock | null;
   menuButtonIcon: JourneyMenuButtonIcon | null;
   menuStepBlock: GetPublisherTemplate_publisherTemplate_menuStepBlock | null;
+  journeyTheme: GetPublisherTemplate_publisherTemplate_journeyTheme | null;
 }
 
 export interface GetPublisherTemplate {

@@ -1,10 +1,10 @@
 {
-  "Deploy Quickly": "Deploy Quickly",
-  "Our Continuous Integration & Continuous Delivery pipeline lets you deliver code changes more frequently and reliably.": "Our Continuous Integration & Continuous Delivery pipeline lets you deliver code changes more frequently and reliably.",
-  "Common Environment": "Common Environment",
-  "We run on Docker. This means every developer shares the same environment that closely mimics production making collaboration simple.": "We run on Docker. This means every developer shares the same environment that closely mimics production making collaboration simple.",
-  "Powered by Typescript": "Powered by Typescript",
-  "TypeScript is a strongly typed programming language that builds on JavaScript, giving you better tooling at any scale.": "TypeScript is a strongly typed programming language that builds on JavaScript, giving you better tooling at any scale.",
-  "Core Development Kit Documentation": "Core Development Kit Documentation",
-  "Welcome - 5min ": "Welcome - 5min "
+  "Deploy Quickly": "快速部署",
+  "Our Continuous Integration & Continuous Delivery pipeline lets you deliver code changes more frequently and reliably.": "我們的持續整合與持續交付管道可讓您更頻繁、可靠地交付程式碼變更。",
+  "Common Environment": "共同環境",
+  "We run on Docker. This means every developer shares the same environment that closely mimics production making collaboration simple.": "我們使用 Docker。這意味著每個開發人員都能共享相同的環境，這與生產環境非常接近，讓協作變得簡單。",
+  "Powered by Typescript": "由 Typescript 提供",
+  "TypeScript is a strongly typed programming language that builds on JavaScript, giving you better tooling at any scale.": "TypeScript 是建立在 JavaScript 之上的強式類型程式語言，讓您在任何規模下都能使用更好的工具。",
+  "Core Development Kit Documentation": "核心開發套件文件",
+  "Welcome - 5min ": "歡迎 - 5 分鐘 "
 }

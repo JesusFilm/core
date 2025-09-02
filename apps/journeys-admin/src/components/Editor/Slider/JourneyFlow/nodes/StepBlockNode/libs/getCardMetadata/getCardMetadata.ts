@@ -1,5 +1,9 @@
 import { TreeBlock } from '@core/journeys/ui/block'
 import { isActionBlock } from '@core/journeys/ui/isActionBlock'
+import {
+  VideoFields_mediaVideo_Video,
+  VideoFields_mediaVideo_Video_variantLanguages
+} from '@core/journeys/ui/Video/__generated__/VideoFields'
 import { secondsToTimeFormat } from '@core/shared/ui/timeFormat'
 
 import {
@@ -8,7 +12,6 @@ import {
   BlockFields_VideoBlock as VideoBlock
 } from '../../../../../../../../../__generated__/BlockFields'
 import { VideoBlockSource } from '../../../../../../../../../__generated__/globalTypes'
-import { VideoFields_video_variantLanguages } from '../../../../../../../../../__generated__/VideoFields'
 import { getBackgroundImage } from '../getBackgroundImage'
 import { getCardHeadings } from '../getCardHeadings'
 import { getPriorityBlock } from '../getPriorityBlock'
@@ -26,7 +29,7 @@ interface CardMetadata {
 
 function getVideoVariantLanguage(
   selectedLanguageId,
-  languages?: VideoFields_video_variantLanguages[]
+  languages?: VideoFields_mediaVideo_Video_variantLanguages[]
 ): string | undefined {
   if (languages == null) return
 
@@ -47,10 +50,11 @@ function getVideoDescription(videoBlock: VideoBlock): string {
     {
       [VideoBlockSource.internal]: getVideoVariantLanguage(
         videoBlock.videoVariantLanguageId,
-        videoBlock.video?.variantLanguages
+        (videoBlock.mediaVideo as VideoFields_mediaVideo_Video)
+          ?.variantLanguages
       ),
       [VideoBlockSource.youTube]: 'YouTube Media',
-      [VideoBlockSource.cloudflare]: 'Uploaded Media'
+      [VideoBlockSource.mux]: 'Uploaded Media'
     }[videoBlock.source] ?? 'Internal Media'
   )
 }
@@ -71,7 +75,9 @@ export function getCardMetadata(
 
   if (priorityBlock?.__typename === 'VideoBlock') {
     const title =
-      priorityBlock.video?.title?.[0]?.value ?? priorityBlock.title ?? undefined
+      priorityBlock.mediaVideo?.__typename === 'Video'
+        ? priorityBlock.mediaVideo?.title?.[0]?.value
+        : (priorityBlock.title ?? undefined)
     const subtitle =
       priorityBlock.startAt !== null && priorityBlock.endAt !== null
         ? `${secondsToTimeFormat(priorityBlock.startAt, {
@@ -95,9 +101,9 @@ export function getCardMetadata(
     const bgImage =
       // Use posterBlockId image or default poster image on video
       posterBlockImage ??
-      priorityBlock?.video?.images[0]?.mobileCinematicHigh ??
-      priorityBlock.image ??
-      undefined
+      (priorityBlock?.mediaVideo?.__typename === 'Video'
+        ? (priorityBlock?.mediaVideo?.images[0]?.mobileCinematicHigh as string)
+        : (priorityBlock.image ?? undefined))
 
     return {
       description,

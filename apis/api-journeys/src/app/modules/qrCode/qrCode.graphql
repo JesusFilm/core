@@ -1,0 +1,53 @@
+extend type ShortLink @key(fields: "id") {
+  id: ID! @external
+}
+
+type QrCode @shareable {
+  id: ID!
+  """
+  Team where the Qr Code belongs to
+  """
+  team: Team
+  """
+  Journey where the Qr Code was created from
+  """
+  journey: Journey
+  """
+  ShortLink that handles the redirection
+  """
+  shortLink: ShortLink!
+  color: String
+  backgroundColor: String
+  toJourneyId: String
+}
+
+input QrCodesFilter {
+  journeyId: ID
+  teamId: ID
+}
+
+extend type Query {
+  qrCode(id: ID!): QrCode!
+  qrCodes(where: QrCodesFilter!): [QrCode!]!
+}
+
+input QrCodeCreateInput {
+  teamId: ID!
+  journeyId: ID!
+}
+
+input QrCodeUpdateInput {
+  """
+  journey url where the QR code redirects to, will be parsed and
+  stored as ids
+  """
+  to: String
+  color: String
+  backgroundColor: String
+}
+
+extend type Mutation {
+  qrCodeCreate(input: QrCodeCreateInput!): QrCode!
+  qrCodeUpdate(id: ID!, input: QrCodeUpdateInput!): QrCode!
+  qrCodeDelete(id: ID!): QrCode!
+}

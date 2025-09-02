@@ -22,6 +22,7 @@ import { OuterElement, OuterElementContext } from './OuterElement'
 export interface Language {
   id: string
   name: Translation[]
+  slug: string | null
 }
 
 export interface Translation {
@@ -33,17 +34,21 @@ export interface LanguageOption {
   id: string
   localName?: string
   nativeName?: string
+  slug?: string | null
 }
 
 export interface LanguageAutocompleteProps {
   onChange: (value?: LanguageOption) => void
   value?: LanguageOption
   languages?: Language[]
-  loading: boolean
+  loading?: boolean
+  disabled?: boolean
   helperText?: string
   renderInput?: (params: AutocompleteRenderInputParams) => ReactNode
   renderOption?: (params: HTMLAttributes<HTMLLIElement>) => ReactNode
   popper?: Omit<PopperProps, 'open'>
+  error?: boolean
+  disableSort?: boolean
 }
 
 export function LanguageAutocomplete({
@@ -51,36 +56,51 @@ export function LanguageAutocomplete({
   value,
   languages,
   loading,
+  disabled = false,
   renderInput,
   renderOption,
   helperText,
-  popper
+  popper,
+  error,
+  disableSort = false
 }: LanguageAutocompleteProps): ReactElement {
   const options = useMemo(() => {
-    return (
-      languages?.map(({ id, name }) => {
-        const localLanguageName = name.find(({ primary }) => !primary)?.value
-        const nativeLanguageName = name.find(({ primary }) => primary)?.value
+    if (!languages) return []
 
-        return {
-          id,
-          localName: localLanguageName,
-          nativeName: nativeLanguageName
-        }
-      }) ?? []
-    )
+    const validOptions: LanguageOption[] = []
+
+    for (const language of languages) {
+      // Skip languages with empty or null name arrays
+      if (!language.name || language.name.length === 0) {
+        continue
+      }
+
+      const { id, name, slug, ...rest } = language
+      const localLanguageName = name.find(({ primary }) => !primary)?.value
+      const nativeLanguageName = name.find(({ primary }) => primary)?.value
+
+      validOptions.push({
+        id,
+        localName: localLanguageName,
+        nativeName: nativeLanguageName,
+        slug,
+        ...rest // Preserve additional properties like __type
+      })
+    }
+
+    return validOptions
   }, [languages])
 
   const sortedOptions = useMemo(() => {
-    if (options.length > 0) {
+    if (options.length > 0 && !disableSort) {
       return options.sort((a, b) => {
         return (a.localName ?? a.nativeName ?? '').localeCompare(
           b.localName ?? b.nativeName ?? ''
         )
       })
     }
-    return []
-  }, [options])
+    return options
+  }, [options, disableSort])
 
   const defaultRenderInput = (
     params: AutocompleteRenderInputParams
@@ -91,6 +111,7 @@ export function LanguageAutocomplete({
       placeholder="Search Language"
       variant="filled"
       helperText={helperText}
+      error={error}
       InputProps={{
         ...params.InputProps,
         sx: { paddingBottom: 2 },
@@ -150,16 +171,19 @@ export function LanguageAutocomplete({
   return (
     <Autocomplete
       disableClearable
+      data-testid="LanguageAutocomplete"
       value={value}
       isOptionEqualToValue={(option, value) => option.id === value.id}
       getOptionLabel={({ localName, nativeName }) =>
         localName ?? nativeName ?? ''
       }
-      onChange={(_event, option) => {
+      onChange={(e, option) => {
+        e.stopPropagation()
         handleChange(option)
       }}
       options={sortedOptions}
       loading={loading}
+      disabled={disabled}
       disablePortal={process.env.NODE_ENV === 'test'}
       renderInput={renderInput != null ? renderInput : defaultRenderInput}
       renderOption={(props, option, state) => {
@@ -170,6 +194,14 @@ export function LanguageAutocomplete({
       }}
       slotProps={{
         popper
+      }}
+      sx={{
+        '& .MuiInputBase-root': {
+          '& .MuiInputBase-input::placeholder': {
+            color: error ? 'error.main' : 'text.secondary',
+            opacity: 1
+          }
+        }
       }}
     />
   )

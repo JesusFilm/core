@@ -7,6 +7,7 @@ import { IMAGE_FIELDS } from '../../components/Image/imageFields'
 import { RADIO_OPTION_FIELDS } from '../../components/RadioOption/radioOptionFields'
 import { RADIO_QUESTION_FIELDS } from '../../components/RadioQuestion/radioQuestionFields'
 import { SIGN_UP_FIELDS } from '../../components/SignUp/signUpFields'
+import { SPACER_FIELDS } from '../../components/Spacer/spacerFields'
 import { STEP_FIELDS } from '../../components/Step/stepFields'
 import { TEXT_RESPONSE_FIELDS } from '../../components/TextResponse/textResponseFields'
 import { TYPOGRAPHY_FIELDS } from '../../components/Typography/typographyFields'
@@ -22,6 +23,7 @@ export const BLOCK_FIELDS = gql`
   ${RADIO_QUESTION_FIELDS}
   ${SIGN_UP_FIELDS}
   ${STEP_FIELDS}
+  ${SPACER_FIELDS}
   ${TEXT_RESPONSE_FIELDS}
   ${TYPOGRAPHY_FIELDS}
   ${VIDEO_FIELDS}
@@ -50,6 +52,9 @@ export const BLOCK_FIELDS = gql`
     }
     ... on SignUpBlock {
       ...SignUpFields
+    }
+    ... on SpacerBlock {
+      ...SpacerFields
     }
     ... on StepBlock {
       ...StepFields

@@ -66,6 +66,7 @@ export interface GetAdminJourneys_journeys {
   createdAt: any;
   publishedAt: any | null;
   trashedAt: any | null;
+  updatedAt: any;
   description: string | null;
   slug: string;
   themeName: ThemeName;

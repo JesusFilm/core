@@ -1,5 +1,4 @@
 import Chip from '@mui/material/Chip'
-import { useTranslations } from 'next-intl'
 import { ReactElement } from 'react'
 
 interface PublishedChipProps {
@@ -7,11 +6,10 @@ interface PublishedChipProps {
 }
 
 export function PublishedChip({ published }: PublishedChipProps): ReactElement {
-  const t = useTranslations()
-
   return (
     <Chip
-      label={published ? t('Published') : t('Unpublished')}
+      data-testid="PublishedChip"
+      label={published ? 'Published' : 'Draft'}
       color={published ? 'success' : 'warning'}
     />
   )

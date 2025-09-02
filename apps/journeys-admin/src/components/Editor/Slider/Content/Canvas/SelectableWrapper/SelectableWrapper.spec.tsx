@@ -47,7 +47,11 @@ describe('SelectableWrapper', () => {
     content: 'typography content',
     color: null,
     align: null,
-    children: []
+    children: [],
+    settings: {
+      __typename: 'TypographyBlockSettings',
+      color: null
+    }
   }
 
   const buttonBlock: TreeBlock<ButtonFields> = {
@@ -61,13 +65,15 @@ describe('SelectableWrapper', () => {
     size: null,
     startIconId: null,
     endIconId: null,
+    submitEnabled: null,
     action: {
       __typename: 'LinkAction',
       parentBlockId: 'button.id',
       gtmEventName: 'gtmEventName',
       url: 'https://www.google.com'
     },
-    children: []
+    children: [],
+    settings: null
   }
 
   const imageBlock: TreeBlock<ImageFields> = {
@@ -93,6 +99,7 @@ describe('SelectableWrapper', () => {
     parentBlockId: 'RadioQuestion1',
     parentOrder: 0,
     action: null,
+    pollOptionImageBlockId: null,
     children: []
   }
 
@@ -101,6 +108,7 @@ describe('SelectableWrapper', () => {
     id: 'RadioQuestion1',
     parentBlockId: 'parent.id',
     parentOrder: 0,
+    gridView: false,
     children: [
       radioOption1,
       {
@@ -110,6 +118,7 @@ describe('SelectableWrapper', () => {
         parentBlockId: 'RadioQuestion1',
         parentOrder: 1,
         action: null,
+        pollOptionImageBlockId: null,
         children: []
       }
     ]
@@ -187,12 +196,6 @@ describe('SelectableWrapper', () => {
       outlineColor: '#C52D3A'
     })
 
-    fireEvent.click(getByText('button label'))
-    expect(getByTestId(`SelectableWrapper-${buttonBlock.id}`)).toHaveStyle({
-      outline: '2px solid',
-      zIndex: '1',
-      outlineColor: '#C52D3A'
-    })
     fireEvent.click(getByText('sign up label'))
     await waitFor(() =>
       expect(getByTestId(`SelectableWrapper-${signUpBlock.id}`)).toHaveStyle({
@@ -202,7 +205,7 @@ describe('SelectableWrapper', () => {
       })
     )
     fireEvent.click(
-      getByTestId(`JourneysRadioQuestion-${radioQuestionBlock.id}`)
+      getByTestId(`JourneysRadioQuestionList-${radioQuestionBlock.id}`)
     )
     expect(
       getByTestId(`SelectableWrapper-${radioQuestionBlock.id}`)

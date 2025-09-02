@@ -7,12 +7,14 @@ import type { TreeBlock } from '../../../libs/block'
 import { useJourney } from '../../../libs/JourneyProvider'
 import { ImageFields } from '../../Image/__generated__/ImageFields'
 import { OverlayContent } from '../OverlayContent'
+import { applyDefaultAlpha } from '../utils/colorOpacityUtils'
 
 interface ExpandedCoverProps {
   children: ReactNode
   imageBlock?: TreeBlock<ImageFields>
   backgroundColor?: string
   backgroundBlur?: string
+  backdropBlur?: number
   hasFullscreenVideo?: boolean
 }
 
@@ -21,9 +23,10 @@ export function ExpandedCover({
   imageBlock,
   backgroundColor,
   backgroundBlur,
+  backdropBlur,
   hasFullscreenVideo = false
 }: ExpandedCoverProps): ReactElement {
-  const { variant } = useJourney()
+  const { journey, variant } = useJourney()
   const enableVerticalScroll = {
     overflowY: 'scroll',
     // Hide on Firefox https://caniuse.com/?search=scrollbar-width
@@ -37,7 +40,7 @@ export function ExpandedCover({
   const background =
     backgroundColor != null
       ? imageBlock?.src != null
-        ? `${backgroundColor}4d`
+        ? applyDefaultAlpha(backgroundColor)
         : backgroundColor
       : 'unset'
 
@@ -49,18 +52,24 @@ export function ExpandedCover({
           data-testid="CardExpandedImageCover"
           src={imageBlock.src ?? backgroundBlur}
           alt={imageBlock.alt}
+          loading="eager"
           placeholder="blur"
           blurDataURL={backgroundBlur}
           layout="fill"
           objectFit="cover"
+          objectPosition={`${imageBlock.focalLeft}% ${imageBlock.focalTop}%`}
+          sx={{
+            transform: `scale(${(imageBlock.scale ?? 100) / 100})`,
+            transformOrigin: `${imageBlock.focalLeft}% ${imageBlock.focalTop}%`
+          }}
         />
       )}
       <Stack
         data-testid="CardExpandedCover"
         sx={{
           height: '100%',
-          WebkitBackdropFilter: 'blur(20px)',
-          backdropFilter: 'blur(20px)',
+          WebkitBackdropFilter: `blur(${backdropBlur ?? 20}px)`,
+          backdropFilter: `blur(${backdropBlur ?? 20}px)`,
           background,
           borderRadius: 'inherit',
           overflow: 'hidden',
@@ -72,7 +81,7 @@ export function ExpandedCover({
           justifyContent="center"
           sx={{
             flexGrow: 1,
-            pt: { xs: 10, sm: 8 },
+            pt: journey?.website === true ? 0 : { xs: 10, sm: 8 },
             ...enableVerticalScroll
           }}
         >
@@ -83,8 +92,8 @@ export function ExpandedCover({
               width: {
                 xs:
                   variant === 'default'
-                    ? 'calc(100% - 48px - env(safe-area-inset-left) - env(safe-area-inset-right))'
-                    : 'calc(100% - 48px)',
+                    ? 'calc(100% - 32px - env(safe-area-inset-left) - env(safe-area-inset-right))'
+                    : 'calc(100% - 32px)',
                 sm: 360,
                 md: 500
               }

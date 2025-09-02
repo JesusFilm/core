@@ -22,11 +22,13 @@ describe('TextResponse', () => {
     parentBlockId: null,
     parentOrder: null,
     label: 'default label',
+    placeholder: null,
     hint: null,
     minRows: null,
     integrationId: null,
     type: null,
     routeId: null,
+    required: null,
     children: []
   }
 
@@ -36,11 +38,13 @@ describe('TextResponse', () => {
     parentBlockId: null,
     parentOrder: null,
     label: 'complete label',
+    placeholder: null,
     hint: 'hint text',
     minRows: 2,
     integrationId: null,
     type: null,
     routeId: null,
+    required: null,
     children: [
       {
         id: 'icon.id',
@@ -65,7 +69,7 @@ describe('TextResponse', () => {
     )
 
     expect(
-      getByRole('button', { name: 'Text Input default label' })
+      getByRole('button', { name: 'Response Field default label' })
     ).toBeInTheDocument()
   })
 

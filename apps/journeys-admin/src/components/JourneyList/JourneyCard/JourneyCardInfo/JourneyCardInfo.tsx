@@ -1,10 +1,5 @@
-import Skeleton from '@mui/material/Skeleton'
 import Stack from '@mui/material/Stack'
-import Typography from '@mui/material/Typography'
-import { Trans, useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
-
-import Globe1Icon from '@core/shared/ui/icons/Globe1'
 
 import {
   GetAdminJourneys_journeys as Journey,
@@ -12,6 +7,8 @@ import {
 } from '../../../../../__generated__/GetAdminJourneys'
 import { UserJourneyRole } from '../../../../../__generated__/globalTypes'
 import { AccessAvatars } from '../../../AccessAvatars'
+import { AnalyticsItem } from '../../../Editor/Toolbar/Items/AnalyticsItem'
+import { ResponsesItem } from '../../../Editor/Toolbar/Items/ResponsesItem'
 import { JourneyCardVariant } from '../journeyCardVariant'
 
 interface JourneyCardInfoProps {
@@ -23,8 +20,6 @@ export function JourneyCardInfo({
   journey,
   variant
 }: JourneyCardInfoProps): ReactElement {
-  const { t } = useTranslation('apps-journeys-admin')
-
   let inviteRequested: UserJourney[] | undefined
   if (
     variant === JourneyCardVariant.actionRequired &&
@@ -34,60 +29,25 @@ export function JourneyCardInfo({
       (uj) => uj.role === UserJourneyRole.inviteRequested
     )
   }
-  const usersRequestingAccess =
-    inviteRequested != null
-      ? inviteRequested.length === 1
-        ? t('1 user')
-        : t('{{ numberOfUsers }} users', {
-            numberOfUsers: inviteRequested.length
-          })
-      : ''
 
   return (
     <Stack
       direction="row"
+      justifyContent="space-between"
       alignItems="center"
-      spacing={4}
       flexGrow={1}
-      sx={{ width: '95%' }}
+      sx={{ width: '100%' }}
       data-testid="JourneyCardInfo"
     >
+      <Stack flexDirection="row" gap={1} sx={{ mt: 1 }}>
+        <AnalyticsItem variant="icon-button" fromJourneyList={true} />
+        <ResponsesItem variant="icon-button" fromJourneyList={true} />
+      </Stack>
       <AccessAvatars
         journeyId={journey.id}
         userJourneys={inviteRequested ?? journey.userJourneys ?? undefined}
+        size="xsmall"
       />
-      {variant === JourneyCardVariant.actionRequired ? (
-        <>
-          {inviteRequested != null ? (
-            <Stack direction="row" sx={{ width: '70%' }}>
-              <Trans t={t} usersRequestingAccess={usersRequestingAccess}>
-                <Typography
-                  variant="body2"
-                  sx={{
-                    color: 'warning.main',
-                    fontWeight: 700,
-                    minWidth: '56px'
-                  }}
-                >
-                  {usersRequestingAccess}
-                </Typography>
-                <Typography variant="body2" noWrap>
-                  requested editing rights for your journey
-                </Typography>
-              </Trans>
-            </Stack>
-          ) : (
-            <Skeleton variant="text" width={60} />
-          )}
-        </>
-      ) : (
-        <Stack direction="row" alignItems="center" spacing={1.5}>
-          <Globe1Icon sx={{ fontSize: 13 }} />
-          <Typography variant="caption">
-            {journey.language.name.find(({ primary }) => primary)?.value}
-          </Typography>
-        </Stack>
-      )}
     </Stack>
   )
 }

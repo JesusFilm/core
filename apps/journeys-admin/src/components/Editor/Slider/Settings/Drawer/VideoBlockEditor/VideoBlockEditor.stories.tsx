@@ -45,6 +45,7 @@ const card: TreeBlock<CardBlock> = {
   themeMode: ThemeMode.light,
   themeName: null,
   fullscreen: true,
+  backdropBlur: null,
   children: []
 }
 
@@ -67,7 +68,7 @@ const videoInternal: TreeBlock<VideoBlock> = {
   duration: null,
   image: null,
   objectFit: null,
-  video: {
+  mediaVideo: {
     __typename: 'Video',
     id: '2_0-FallingPlates',
     title: [
@@ -129,7 +130,10 @@ const videoYouTube: TreeBlock<VideoBlock> = {
   parentOrder: 0,
   action: null,
   source: VideoBlockSource.youTube,
-  video: null,
+  mediaVideo: {
+    __typename: 'YouTube',
+    id: 'videoId'
+  },
   objectFit: null,
   posterBlockId: 'poster1.id',
   children: []

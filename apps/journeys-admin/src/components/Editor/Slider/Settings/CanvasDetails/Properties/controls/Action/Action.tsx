@@ -20,7 +20,7 @@ import { useActionCommand } from '../../../../../../utils/useActionCommand'
 import { EmailAction } from './EmailAction'
 import { LinkAction } from './LinkAction'
 import { NavigateToBlockAction } from './NavigateToBlockAction'
-import { ActionValue, actions } from './utils/actions'
+import { ActionValue, actions, getAction } from './utils/actions'
 
 export function Action(): ReactElement {
   const {
@@ -35,13 +35,25 @@ export function Action(): ReactElement {
     | TreeBlock<SignUpBlock>
     | TreeBlock<VideoBlock>
     | undefined
-  const labels = actions(t)
   const [action, setAction] = useState<ActionValue>(
-    selectedBlock?.action?.__typename ?? 'None'
+    getAction(t, selectedBlock?.action?.__typename).value
   )
 
+  const isSubmitButton =
+    selectedBlock?.__typename === 'ButtonBlock' &&
+    selectedBlock.submitEnabled === true
+
+  const labels = actions(t)
+
+  const filteredLabels = isSubmitButton
+    ? labels.filter(
+        (action) =>
+          action.value !== 'LinkAction' && action.value !== 'EmailAction'
+      )
+    : labels
+
   useEffect(() => {
-    setAction(selectedBlock?.action?.__typename ?? 'None')
+    setAction(getAction(t, selectedBlock?.action?.__typename).value)
   }, [selectedBlock?.action?.__typename])
 
   function removeAction(): void {
@@ -78,7 +90,7 @@ export function Action(): ReactElement {
             value={action}
             IconComponent={ChevronDownIcon}
           >
-            {labels.map((action) => {
+            {filteredLabels.map((action) => {
               return (
                 <MenuItem
                   key={`button-action-${action.value}`}
@@ -90,8 +102,8 @@ export function Action(): ReactElement {
             })}
           </Select>
         </FormControl>
-        {action === 'LinkAction' && <LinkAction />}
-        {action === 'EmailAction' && <EmailAction />}
+        {!isSubmitButton && action === 'LinkAction' && <LinkAction />}
+        {!isSubmitButton && action === 'EmailAction' && <EmailAction />}
         {action === 'NavigateToBlockAction' && <NavigateToBlockAction />}
       </Stack>
     </>

@@ -1,0 +1,54 @@
+type TextResponseBlock implements Block @shareable {
+  id: ID! @shareable
+  journeyId: ID! @shareable
+  parentBlockId: ID @shareable
+  parentOrder: Int @shareable
+  label: String! @shareable
+  placeholder: String @shareable
+  required: Boolean @shareable
+  hint: String @shareable
+  minRows: Int @shareable
+  type: TextResponseType @shareable
+  routeId: String @shareable
+  integrationId: String @shareable
+}
+
+enum TextResponseType {
+  freeForm
+  name
+  email
+  phone
+}
+
+input TextResponseBlockCreateInput {
+  id: ID
+  journeyId: ID!
+  parentBlockId: ID!
+  label: String!
+}
+
+input TextResponseBlockUpdateInput {
+  parentBlockId: ID
+  label: String
+  placeholder: String
+  required: Boolean
+  hint: String
+  minRows: Int
+  routeId: String
+  type: TextResponseType
+  integrationId: String
+}
+
+extend type Mutation {
+  textResponseBlockCreate(
+    input: TextResponseBlockCreateInput!
+  ): TextResponseBlock!
+  textResponseBlockUpdate(
+    id: ID!
+    input: TextResponseBlockUpdateInput!
+    """
+    drop this parameter after merging teams
+    """
+    journeyId: ID
+  ): TextResponseBlock
+}

@@ -39,8 +39,10 @@ const block: TreeBlock<ButtonBlock> = {
   size: null,
   startIconId: null,
   endIconId: null,
+  submitEnabled: null,
   action: null,
-  children: []
+  children: [],
+  settings: null
 }
 
 const Template: StoryObj<ComponentProps<typeof Button>> = {
@@ -75,6 +77,7 @@ export const Filled: StoryObj<typeof Button> = {
       size: ButtonSize.large,
       startIconId: 'icon1',
       endIconId: 'icon2',
+      submitEnabled: null,
       action: {
         __typename: 'NavigateToBlockAction',
         parentBlockId: 'button1.id',
@@ -102,7 +105,8 @@ export const Filled: StoryObj<typeof Button> = {
           iconSize: IconSize.lg,
           children: []
         }
-      ]
+      ],
+      settings: null
     }
     return (
       <EditorProvider initialState={{ selectedBlock: block }}>

@@ -10,6 +10,7 @@ import { ReactElement, ReactNode, useEffect, useRef, useState } from 'react'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 
 import { useCustomDomainsQuery } from '../../../../../../libs/useCustomDomainsQuery'
+import { Tooltip } from '../../../../../Tooltip'
 
 interface MessageBubbleProps {
   height?: number
@@ -25,7 +26,7 @@ export function MessageBubble({
   direction = 'left',
   children
 }: MessageBubbleProps): ReactElement {
-  const ref = useRef<HTMLDivElement>()
+  const ref = useRef<HTMLDivElement | null>(null)
   const [clientHeight, setClientHeight] = useState(ref?.current?.clientHeight)
   useEffect(() => {
     setClientHeight(ref?.current?.clientHeight)
@@ -93,76 +94,85 @@ export function Message(): ReactElement {
           textAlign="center"
           sx={{ fontSize: 16 }}
         >
-          {t('Messaging App View')}
+          {t('Message View')}
         </Typography>
         <Stack alignItems="center">
           <MessageBubble width={252} height={54} direction="left" />
           {journey != null && (
             <MessageBubble width={315} direction="right">
               <Stack direction="column" sx={{ p: 1 }}>
-                <Stack direction="row" gap={2}>
-                  {journey?.primaryImageBlock?.src == null ? (
-                    <Box
-                      width={78}
-                      height={78}
-                      data-testid="social-preview-message-empty"
-                      bgcolor="rgba(0, 0, 0, 0.1)"
-                      borderRadius="6px"
-                    />
-                  ) : (
-                    <Image
-                      src={journey.primaryImageBlock.src}
-                      alt={journey.primaryImageBlock.alt ?? ''}
-                      width="78"
-                      height="78"
-                      style={{
-                        borderRadius: '5px',
-                        maxWidth: '100%',
-                        objectFit: 'cover'
-                      }}
-                    />
-                  )}
+                <Stack direction="row" gap={2} alignItems="center">
+                  <Tooltip title={t('Social Image')}>
+                    {journey?.primaryImageBlock?.src == null ? (
+                      <Box
+                        width={78}
+                        height={78}
+                        data-testid="social-preview-message-empty"
+                        bgcolor="rgba(0, 0, 0, 0.1)"
+                        borderRadius="6px"
+                      />
+                    ) : (
+                      <Image
+                        src={journey.primaryImageBlock.src}
+                        alt={journey.primaryImageBlock.alt ?? ''}
+                        width="78"
+                        height="78"
+                        style={{
+                          borderRadius: '5px',
+                          maxWidth: '100%',
+                          objectFit: 'cover'
+                        }}
+                      />
+                    )}
+                  </Tooltip>
                   <Stack
                     width={164}
                     flexGrow={1}
-                    justifyContent="center"
                     gap={1.5}
+                    data-testid="SecondaryText"
                   >
-                    {isEmpty(journey?.seoTitle?.trim()) ? (
-                      <Box
-                        width={205}
-                        height={15}
-                        bgcolor="#EFEFEF"
-                        borderRadius="5px"
-                      />
-                    ) : (
-                      <Typography
-                        variant="body1"
-                        fontWeight={600}
-                        fontSize={12}
-                        lineHeight="15px"
-                        noWrap
-                      >
-                        {journey.seoTitle}
-                      </Typography>
-                    )}
-                    {isEmpty(journey?.seoDescription?.trim()) ? (
-                      <Box
-                        width={144}
-                        height={15}
-                        bgcolor="#EFEFEF"
-                        borderRadius="5px"
-                      />
-                    ) : (
-                      <Typography
-                        variant="body2"
-                        fontSize={8}
-                        lineHeight="15px"
-                        sx={{ wordBreak: 'break-word' }}
-                      >
-                        {journey.seoDescription}
-                      </Typography>
-                    )}
+                    <Tooltip title={t('Headline')}>
+                      {isEmpty(journey?.seoTitle?.trim()) ? (
+                        <Box
+                          width={205}
+                          height={15}
+                          bgcolor="#EFEFEF"
+                          borderRadius="5px"
+                          data-testid="HeadlineSkeleton"
+                        />
+                      ) : (
+                        <Typography
+                          variant="body1"
+                          fontWeight={600}
+                          fontSize={12}
+                          lineHeight="15px"
+                          noWrap
+                        >
+                          {journey.seoTitle}
+                        </Typography>
+                      )}
+                    </Tooltip>
+
+                    <Tooltip title={t('Secondary Text')}>
+                      {isEmpty(journey?.seoDescription?.trim()) ? (
+                        <Box
+                          width={144}
+                          height={15}
+                          bgcolor="#EFEFEF"
+                          borderRadius="5px"
+                          data-testid="SecondaryTextSkeleton"
+                        />
+                      ) : (
+                        <Typography
+                          variant="body2"
+                          fontSize={8}
+                          lineHeight="15px"
+                          sx={{ wordBreak: 'break-word' }}
+                        >
+                          {journey.seoDescription}
+                        </Typography>
+                      )}
+                    </Tooltip>
                   </Stack>
                 </Stack>
                 <Box>

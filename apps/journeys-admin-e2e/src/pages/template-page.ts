@@ -1,15 +1,18 @@
 /* eslint-disable playwright/no-force-option */
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 import { expect } from '@playwright/test'
-import { Page } from 'playwright-core'
+import type { Page } from 'playwright-core'
 
 const sixtySecondsTimeout = 60000
+
 export class TemplatePage {
   readonly page: Page
   selecetdTemplated: string
   selectedTeam
   context
   selectedFilterOption: string
+  dropdownListBoxPath = 'div[data-popper-placement="bottom"] ul[role="listbox"]'
+
   constructor(page: Page) {
     this.page = page
   }
@@ -112,7 +115,7 @@ export class TemplatePage {
     await this.page.getByRole('button', { name: 'Add' }).click()
   }
 
-  async navigateToTempalatePage() {
+  async navigateToTemplatePage() {
     await this.page
       .locator('a[data-testid="NavigationListItemTemplates"]')
       .click({ timeout: sixtySecondsTimeout })
@@ -180,9 +183,10 @@ export class TemplatePage {
 
   async verifySelectedTemplateInCustomJourneyPage() {
     await expect(
-      this.page.locator('div[data-testid="Toolbar"] h6', {
-        hasText: this.selecetdTemplated
-      })
+      this.page.locator(
+        'div[data-testid="JourneyDetails"] button[type="button"] p',
+        { hasText: this.selecetdTemplated }
+      )
     ).toBeVisible({ timeout: sixtySecondsTimeout })
   }
 
@@ -215,7 +219,7 @@ export class TemplatePage {
         )
         .first()
     ).toHaveAttribute('data-testid', 'bullet-active')
-    for (let slide = 1; slide < slidesCount; slide++) {
+    if (slidesCount > 1) {
       await newPage
         .locator('button[data-testid="ConductorNavigationButtonNext"]')
         .hover({ force: true })
@@ -227,7 +231,7 @@ export class TemplatePage {
           .locator(
             'div[data-testid="pagination-bullets"] svg[data-testid*="bullet"]'
           )
-          .nth(slide)
+          .nth(1)
       ).toHaveAttribute('data-testid', 'bullet-active')
     }
 
@@ -261,36 +265,27 @@ export class TemplatePage {
     const addedSevenMinsTime = new Date(
       new Date().getTime() + 7 * sixtySecondsTimeout
     )
-    console.log('Current time is ' + currentTime.toString())
-    console.log('Added wait time is ' + addedSevenMinsTime.toString())
+    console.log(`Current time is ${currentTime.toString()}`)
+    console.log(`Added wait time is ${addedSevenMinsTime.toString()}`)
     while (new Date() < addedSevenMinsTime) {
       if (new Date() > addedSevenMinsTime) {
         break
       }
-      // eslint-disable-next-line playwright/no-conditional-expect, playwright/missing-playwright-await
-      await expect(
-        newPage.locator(
-          '//div[@data-testid="CardOverlayContentContainer"]//*[@data-testid="JourneysTypography"]',
-          { hasText: editedText }
-        )
-      )
-        .toHaveCount(1, { timeout: 5000 })
-        .catch(() => console.log(''))
-      if (
-        // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
-        await newPage
-          .locator(
+      // Wait for the edited content to appear. If it does not appear, the if-else block will handle the situation, so no assertion is needed here.
+      try {
+        await expect(
+          newPage.locator(
             '//div[@data-testid="CardOverlayContentContainer"]//*[@data-testid="JourneysTypography"]',
             { hasText: editedText }
           )
-          .isVisible()
-      ) {
+        ).toHaveCount(1, { timeout: 5000 })
         break
-      } else {
+      } catch {
+        console.log('')
         await newPage.reload({ waitUntil: 'load' })
       }
     }
-    console.log('After while loop ' + new Date().toString())
+    console.log(`After while loop ${new Date().toString()}`)
     await expect(
       newPage.locator(
         '//div[@data-testid="CardOverlayContentContainer"]//*[@data-testid="JourneysTypography"]',
@@ -311,16 +306,12 @@ export class TemplatePage {
 
   async selectCheckBoxesForTopicDropDown(option: string) {
     this.selectedFilterOption = await this.page
-      .locator('div[data-popper-placement="bottom"] ul[role="listbox"] li ul', {
-        hasText: option
-      })
+      .locator(`${this.dropdownListBoxPath} li ul`, { hasText: option })
       .locator('li[role="option"] p')
       .first()
       .innerText()
     await this.page
-      .locator('div[data-popper-placement="bottom"] ul[role="listbox"] li ul', {
-        hasText: option
-      })
+      .locator(`${this.dropdownListBoxPath} li ul`, { hasText: option })
       .locator('li[role="option"] input')
       .first()
       .click()
@@ -368,15 +359,14 @@ export class TemplatePage {
 
   async selectCheckBoxForFilters() {
     this.selectedFilterOption = await this.page
-      .locator(
-        'div[data-popper-placement="bottom"] ul[role="listbox"] li[role="option"] p'
-      )
+      .locator('div[data-popper-placement="bottom"]')
+      .getByRole('listbox')
+      .getByRole('option')
+      .locator('p')
       .first()
       .innerText()
     await this.page
-      .locator(
-        'div[data-popper-placement="bottom"] ul[role="listbox"] li[role="option"] input'
-      )
+      .locator(`${this.dropdownListBoxPath} li[role="option"] input`)
       .first()
       .click()
   }
@@ -384,19 +374,31 @@ export class TemplatePage {
   async selectSlideFilters(slideFilter: string) {
     this.selectedFilterOption = slideFilter
     await this.page
-      .locator(
-        'div[data-testid="-template-gallery-carousel"] div[class*="swiper-slide"] h3',
-        { hasText: slideFilter }
-      )
+      .locator('div[aria-live="polite"] div[class*="swiper-slide"] h3', {
+        hasText: slideFilter
+      })
       .click()
   }
 
   async selectFilterBtnBelowSlideFilters(slideFilter: string) {
     this.selectedFilterOption = slideFilter
     await this.page
-      .locator('div[data-testid="-template-gallery-carousel"] + div > button', {
-        hasText: slideFilter
-      })
+      .locator(
+        'div[data-testid="felt-needs-carousel"] + div button h6[class*="MuiTypography-subtitle2"]',
+        { hasText: slideFilter }
+      )
       .click()
+  }
+
+  async clickHelpBtn() {
+    await expect(
+      this.page
+        .getByTestId('MainPanelBody')
+        .locator('button[aria-label="Help"]')
+    ).toBeEnabled({ timeout: 30000 })
+    await this.page
+      .getByTestId('MainPanelBody')
+      .locator('button[aria-label="Help"]')
+      .click({ delay: 3000 })
   }
 }

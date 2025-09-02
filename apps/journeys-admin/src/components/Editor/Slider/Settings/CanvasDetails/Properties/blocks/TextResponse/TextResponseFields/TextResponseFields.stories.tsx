@@ -52,7 +52,9 @@ export const Complete = {
   ...Template,
   args: {
     block: {
+      required: true,
       label: 'Label limit 1234',
+      placeholder: 'Placeholder text here',
       hint: 'Hint limit 12345678910',
       minRows: 4
     }

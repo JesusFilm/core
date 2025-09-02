@@ -373,7 +373,8 @@ export const inputsCustomizations: Components<Theme> = {
   MuiInputBase: {
     styleOverrides: {
       root: {
-        border: 'none'
+        border: 'none',
+        padding: '4px 12px'
       },
       input: {
         '&::placeholder': {
@@ -392,14 +393,13 @@ export const inputsCustomizations: Components<Theme> = {
         padding: '8px 12px',
         color: theme.palette.text.primary,
         borderRadius: theme.shape.borderRadius,
-        border: `1px solid ${theme.palette.divider}`,
+        borderColor: theme.palette.divider,
         backgroundColor: theme.palette.background.default,
         transition: 'border 120ms ease-in',
         '&:hover': {
           borderColor: grey[400]
         },
         [`&.${outlinedInputClasses.focused}`]: {
-          outline: `3px solid ${alpha(brand[500], 0.5)}`,
           borderColor: brand[400]
         },
         ...theme.applyStyles('dark', {
@@ -421,14 +421,11 @@ export const inputsCustomizations: Components<Theme> = {
               size: 'medium'
             },
             style: {
-              height: '2.5rem'
+              height: '3rem'
             }
           }
         ]
-      }),
-      notchedOutline: {
-        border: 'none'
-      }
+      })
     }
   },
   MuiInputAdornment: {

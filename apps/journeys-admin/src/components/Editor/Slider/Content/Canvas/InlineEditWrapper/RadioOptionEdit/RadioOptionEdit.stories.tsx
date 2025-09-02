@@ -30,6 +30,7 @@ const option1: TreeBlock<RadioOptionFields> = {
   parentBlockId: 'RadioQuestion1',
   parentOrder: 0,
   action: null,
+  pollOptionImageBlockId: null,
   children: []
 }
 
@@ -38,6 +39,7 @@ const block: TreeBlock<RadioQuestionFields> = {
   id: 'RadioQuestion1',
   parentBlockId: 'RadioQuestion1',
   parentOrder: 0,
+  gridView: false,
   children: [
     option1,
     {
@@ -47,6 +49,7 @@ const block: TreeBlock<RadioQuestionFields> = {
       parentBlockId: 'RadioQuestion1',
       parentOrder: 1,
       action: null,
+      pollOptionImageBlockId: null,
       children: []
     }
   ]
@@ -72,6 +75,7 @@ const steps: Array<TreeBlock<StepBlock>> = [
         themeMode: null,
         themeName: null,
         fullscreen: false,
+        backdropBlur: null,
         children: [
           {
             id: 'image0.id',
@@ -97,7 +101,11 @@ const steps: Array<TreeBlock<StepBlock>> = [
             color: null,
             content: 'Question',
             variant: TypographyVariant.h3,
-            children: []
+            children: [],
+            settings: {
+              __typename: 'TypographyBlockSettings',
+              color: null
+            }
           },
           {
             id: 'typographyBlockId2',
@@ -108,7 +116,11 @@ const steps: Array<TreeBlock<StepBlock>> = [
             color: null,
             content: 'Description',
             variant: TypographyVariant.body2,
-            children: []
+            children: [],
+            settings: {
+              __typename: 'TypographyBlockSettings',
+              color: null
+            }
           },
           block
         ]

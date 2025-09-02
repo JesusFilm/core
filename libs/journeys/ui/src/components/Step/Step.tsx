@@ -67,13 +67,17 @@ export function Step({
         }
       })
       if (journey != null) {
+        const search =
+          window.location.search === '' || window.location.search == null
+            ? ''
+            : `/${window.location.search}`
         const key = keyify({
           stepId: input.blockId,
           event: 'pageview',
           blockId: input.blockId
         })
         plausible('pageview', {
-          u: `${window.location.origin}/${journey.id}/${blockId}`,
+          u: `${window.location.origin}/${journey.id}/${blockId}${search}`,
           props: {
             ...input,
             key,

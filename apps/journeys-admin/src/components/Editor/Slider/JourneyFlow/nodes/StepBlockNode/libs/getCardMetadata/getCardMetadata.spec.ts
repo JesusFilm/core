@@ -24,7 +24,11 @@ const typography: TreeBlock<TypographyBlock> = {
   color: null,
   content: 'title content',
   variant: TypographyVariant.h1,
-  children: []
+  children: [],
+  settings: {
+    __typename: 'TypographyBlockSettings',
+    color: null
+  }
 }
 
 const button1: TreeBlock<ButtonBlock> = {
@@ -38,8 +42,10 @@ const button1: TreeBlock<ButtonBlock> = {
   size: null,
   startIconId: null,
   endIconId: null,
+  submitEnabled: null,
   action: null,
-  children: []
+  children: [],
+  settings: null
 }
 
 const image: TreeBlock<ImageBlock> = {
@@ -77,7 +83,7 @@ const video: TreeBlock<VideoBlock> = {
   duration: null,
   image: null,
   objectFit: null,
-  video: {
+  mediaVideo: {
     __typename: 'Video' as const,
     id: '2_0-FallingPlates',
     title: [
@@ -121,6 +127,7 @@ const radioQuestionBlock: TreeBlock<RadioQuestionBlock> = {
   id: 'RadioQuestion1',
   parentBlockId: 'parent.id',
   parentOrder: 3,
+  gridView: false,
   children: [
     {
       __typename: 'RadioOptionBlock',
@@ -129,6 +136,7 @@ const radioQuestionBlock: TreeBlock<RadioQuestionBlock> = {
       parentBlockId: 'RadioQuestion1',
       parentOrder: 0,
       action: null,
+      pollOptionImageBlockId: null,
       children: []
     },
     {
@@ -138,6 +146,7 @@ const radioQuestionBlock: TreeBlock<RadioQuestionBlock> = {
       parentBlockId: 'RadioQuestion1',
       parentOrder: 1,
       action: null,
+      pollOptionImageBlockId: null,
       children: []
     }
   ]
@@ -153,6 +162,7 @@ const card: TreeBlock<CardBlock> = {
   themeMode: null,
   themeName: null,
   fullscreen: false,
+  backdropBlur: null,
   children: [image, typography, button1, radioQuestionBlock]
 }
 

@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 import { expect } from '@playwright/test'
-import { Page } from 'playwright-core'
+import type { Page } from 'playwright-core'
 
 import testData from '../utils/testData.json'
 
@@ -19,6 +19,7 @@ export class Publisher {
   genreFilter: string
   collectionsFilter: string
   uploadedImgSrc
+  dropdownListBoxPath = 'div[data-popper-placement="bottom"] ul[role="listbox"]'
   async verifyTemplateMovedToArchivedTab() {
     await this.getExistingTemplateName()
     await this.clickThreeDotOfTemple()
@@ -116,6 +117,24 @@ export class Publisher {
     await this.addFilterBelowCategoryTab(filter)
     await this.clickCloseDropDownIconToFilter(filter)
   }
+  async setTemplateCategoriesInTemplateSettingPopup(
+    filter: string,
+    filterOption: string[]
+  ) {
+    await this.clickOpenDropDownIconToFilter(filter)
+    for (const option of filterOption) {
+      await this.selectFilterOptionFromList(option)
+    }
+    await this.clickCloseDropDownIconToFilter(filter)
+  }
+
+  async selectFilterOptionFromList(filterOption: string) {
+    await this.page
+      .locator('div[role="presentation"] ul[role="listbox"] li', {
+        hasText: filterOption
+      })
+      .click()
+  }
 
   async getExistingTemplateName() {
     await expect(
@@ -145,9 +164,7 @@ export class Publisher {
   async clickThreeDotOfTemple() {
     await this.page
       .locator(
-        "//h6[text()='" +
-          this.templateName +
-          "']//ancestor::a/following-sibling::div//button[@id='journey-actions']"
+        `//h6[text()='${this.templateName}']//ancestor::a/following-sibling::div//button[@id='journey-actions']`
       )
       .first()
       .click()
@@ -516,14 +533,13 @@ export class Publisher {
   }
 
   async setFilterBelowCategoryTab(filter: string) {
-    const selectedFilter = await this.page
-      .locator('div[role="presentation"] ul[role="listbox"] li')
+    const listOptionPath = this.page
+      .locator('div[role="presentation"].MuiPopper-root')
+      .getByRole('listbox')
+      .getByRole('option')
       .first()
-      .innerText()
-    await this.page
-      .locator('div[role="presentation"] ul[role="listbox"] li')
-      .first()
-      .click()
+    const selectedFilter = await listOptionPath.innerText()
+    await listOptionPath.click()
     switch (filter) {
       case 'Topics': {
         this.topicFilter = selectedFilter
@@ -590,6 +606,9 @@ export class Publisher {
       })
       .locator('button[aria-label="Close"]')
       .click()
+    await expect(
+      this.page.locator('div[role="presentation"] ul[role="listbox"] li')
+    ).toHaveCount(0)
   }
 
   async clickTabInTemplateSettingPopup(tabName: string) {
@@ -638,9 +657,7 @@ export class Publisher {
       }
     }
     await this.page
-      .locator('div[data-popper-placement="bottom"] ul[role="listbox"] li ul', {
-        hasText: option
-      })
+      .locator(`${this.dropdownListBoxPath}  li ul`, { hasText: option })
       .locator('li[role="option"]', { hasText: selectedFilter })
       .first()
       .click()
@@ -746,10 +763,9 @@ export class Publisher {
       }
     }
     await this.page
-      .locator(
-        'div[data-popper-placement="bottom"] ul[role="listbox"] li[role="option"] p',
-        { hasText: selectedFilter }
-      )
+      .locator(`${this.dropdownListBoxPath} li[role="option"] p`, {
+        hasText: selectedFilter
+      })
       .click()
   }
 
@@ -770,7 +786,7 @@ export class Publisher {
   async clickImageUploadPlusIcon() {
     await this.page
       .locator('div[role="dialog"] div[data-testid="ImageBlockHeader"] button')
-      // eslint-disable-next-line playwright/no-force-option
+      // eslint-disable-next-line
       .click({ force: true })
   }
 
@@ -802,8 +818,18 @@ export class Publisher {
       this.page.locator(
         'div[role="dialog"] div[id*="about-tabpanel"] div[data-testid="ImageBlockHeader"] img'
       )
-    ).not.toHaveAttribute('src', this.uploadedImgSrc as string, {
-      timeout: 30000
-    })
+    ).not.toHaveAttribute('src', this.uploadedImgSrc, { timeout: 30000 })
+  }
+
+  async clickHelpBtn() {
+    await expect(
+      this.page
+        .getByTestId('MainPanelHeader')
+        .locator('button[aria-label="Help"]')
+    ).toBeEnabled({ timeout: 30000 })
+    await this.page
+      .getByTestId('MainPanelHeader')
+      .locator('button[aria-label="Help"]')
+      .click({ delay: 3000 })
   }
 }

@@ -64,6 +64,7 @@ const journey: Journey = {
   description: 'my cool journey',
   status: JourneyStatus.draft,
   createdAt: '2021-11-19T12:34:56.647Z',
+  updatedAt: '2021-11-19T12:34:56.647Z',
   publishedAt: null,
   blocks: [] as TreeBlock[],
   primaryImageBlock: null,
@@ -84,7 +85,8 @@ const journey: Journey = {
   displayTitle: null,
   logoImageBlock: null,
   menuButtonIcon: null,
-  menuStepBlock: null
+  menuStepBlock: null,
+  journeyTheme: null
 }
 
 const card: TreeBlock<CardBlock> = {
@@ -97,6 +99,7 @@ const card: TreeBlock<CardBlock> = {
   themeMode: ThemeMode.light,
   themeName: null,
   fullscreen: true,
+  backdropBlur: null,
   children: []
 }
 
@@ -119,7 +122,7 @@ const video: TreeBlock<VideoBlock> = {
   duration: null,
   image: null,
   objectFit: null,
-  video: {
+  mediaVideo: {
     __typename: 'Video',
     id: '2_0-FallingPlates',
     title: [

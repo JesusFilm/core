@@ -22,24 +22,34 @@ export const VIDEO_FIELDS = gql`
     image
     duration
     objectFit
-    video {
-      id
-      title(primary: true) {
-        value
-      }
-      images(aspectRatio: banner) {
-        mobileCinematicHigh
-      }
-      variant {
+    mediaVideo {
+      ... on Video {
         id
-        hls
-      }
-      variantLanguages {
-        id
-        name {
+        title(primary: true) {
           value
-          primary
         }
+        images(aspectRatio: banner) {
+          mobileCinematicHigh
+        }
+        variant {
+          id
+          hls
+        }
+        variantLanguages {
+          id
+          name {
+            value
+            primary
+          }
+        }
+      }
+      ... on MuxVideo {
+        id
+        assetId
+        playbackId
+      }
+      ... on YouTube {
+        id
       }
     }
     action {

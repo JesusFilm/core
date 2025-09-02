@@ -33,6 +33,10 @@ describe('YouTubeDetails', () => {
       'https://www.youtube.com/watch?v=jQaeIJOA6J0'
     )
     expect(sourceTag?.getAttribute('type')).toBe('video/youtube')
+    const imageTag = videoPlayer.querySelector('.vjs-poster > picture > img')
+    expect(imageTag?.getAttribute('src')).toBe(
+      'https://i.ytimg.com/vi/jQaeIJOA6J0/default.jpg'
+    )
   })
 
   it('should call onSelect on select click', async () => {

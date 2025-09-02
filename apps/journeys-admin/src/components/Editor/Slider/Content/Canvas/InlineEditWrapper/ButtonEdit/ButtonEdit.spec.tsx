@@ -31,8 +31,10 @@ describe('ButtonEdit', () => {
     size: null,
     startIconId: null,
     endIconId: null,
+    submitEnabled: null,
     action: null,
-    children: []
+    children: [],
+    settings: null
   }
 
   const mockLabelUpdate1 = {

@@ -1,0 +1,105 @@
+{
+  "name": "api-journeys-modern",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apis/api-journeys-modern/src",
+  "projectType": "application",
+  "tags": [],
+  "targets": {
+    "build": {
+      "executor": "@nx/webpack:webpack",
+      "outputs": ["{options.outputPath}"],
+      "defaultConfiguration": "development",
+      "options": {
+        "outputPath": "dist/apps/api-journeys-modern",
+        "main": "apis/api-journeys-modern/src/index.ts",
+        "tsConfig": "apis/api-journeys-modern/tsconfig.app.json",
+        "compiler": "tsc",
+        "target": "node",
+        "webpackConfig": "apis/api-journeys-modern/webpack.config.js"
+      },
+      "configurations": {
+        "production": {
+          "generatePackageJson": true,
+          "optimization": true,
+          "extractLicenses": true,
+          "inspect": false
+        }
+      }
+    },
+    "serve": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "nx _serve api-journeys-modern | npx pino-pretty --config .pino-prettyrc.js"
+      }
+    },
+    "_serve": {
+      "executor": "@nx/js:node",
+      "options": {
+        "buildTarget": "api-journeys-modern:build",
+        "inspect": false
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "cache": true,
+        "cacheLocation": ".cache/api-journeys-modern/eslint",
+        "cacheStrategy": "content"
+      }
+    },
+    "test": {
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/apis/api-journeys-modern"],
+      "options": {
+        "jestConfig": "apis/api-journeys-modern/jest.config.ts"
+      }
+    },
+    "generate-graphql": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "GENERATE_SCHEMA=true npx ts-node -P apis/api-journeys-modern/tsconfig.app.json -r tsconfig-paths/register apis/api-journeys-modern/src/schema/index.ts"
+      }
+    },
+    "subgraph-check": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npx hive schema:check apis/api-journeys-modern/schema.graphql --registry.accessToken $HIVE_TOKEN --github --service api-journeys-modern"
+      }
+    },
+    "fetch-secrets": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "DOPPLER_TOKEN=$DOPPLER_API_JOURNEYS_TOKEN doppler secrets download --no-file --format=env-no-quotes --project api-journeys > apis/api-journeys-modern/.env"
+      }
+    },
+    "type-check": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npx tsc -b apis/api-journeys-modern/tsconfig.json"
+      }
+    },
+    "codecov": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "codecov -f coverage/apis/api-journeys-modern/cobertura-coverage.xml -F apps.api-journeys-modern"
+      }
+    },
+    "email": {
+      "executor": "nx:run-commands",
+      "options": {
+        "parallel": false,
+        "commands": [
+          "if lsof -Pi :4601 -sTCP:LISTEN -t>/dev/null; then\nkill -9 $(lsof -Pi :4601 -sTCP:LISTEN -t)\nfi",
+          "email dev --dir apis/api-journeys-modern/src/emails/templates --port 4601"
+        ]
+      }
+    },
+    "update-shortlinks": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npx ts-node -P apis/api-journeys-modern/tsconfig.app.json apis/api-journeys-modern/src/workers/cli.ts shortlink-updater"
+      }
+    }
+  }
+}

@@ -56,6 +56,7 @@ describe('CardVideo', () => {
     themeMode: null,
     themeName: null,
     fullscreen: false,
+    backdropBlur: null,
     children: []
   }
   const step: TreeBlock = {
@@ -100,7 +101,7 @@ describe('CardVideo', () => {
             image: null,
             duration: null,
             objectFit: null,
-            video: null,
+            mediaVideo: null,
             action: null
           }
         ]
@@ -150,7 +151,7 @@ describe('CardVideo', () => {
           image: null,
           duration: null,
           objectFit: null,
-          video: null,
+          mediaVideo: null,
           action: null
         }
       }
@@ -189,7 +190,7 @@ describe('CardVideo', () => {
             image: null,
             duration: null,
             objectFit: null,
-            video: null,
+            mediaVideo: null,
             action: null
           }
         ]

@@ -1,14 +1,18 @@
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
-import { expect } from '@playwright/test'
-import dayjs from 'dayjs'
-import { Page } from 'playwright-core'
+import fs from 'fs'
+import path from 'path'
 
+import { expect } from '@playwright/test'
+import type { Page } from 'playwright-core'
+
+import { generateRandomNumber } from '../framework/helpers'
 import testData from '../utils/testData.json'
 
 let journeyName = ''
-let randomNumber = ''
 const thirtySecondsTimeout = 30000
 const sixtySecondsTimeout = 60000
+// eslint-disable-next-line no-undef
+const downloadFolderPath = path.join(__dirname, '../utils/download/')
 
 export class JourneyPage {
   existingJourneyName = ''
@@ -17,30 +21,56 @@ export class JourneyPage {
   context
   journeyCardFrame =
     'div[data-testid="EditorCanvas"] div[data-testid="CanvasContainer"] iframe'
-
+  downloadedQrFile: string
+  journeyNamePath =
+    'div[data-testid *="JourneyCard"] div.MuiCardContent-root h6.MuiTypography-root'
   constructor(page: Page) {
     this.page = page
-    randomNumber =
-      dayjs().format('DDMMYY-hhmmss') +
-      Math.floor(Math.random() * (100 - 999 + 1) + 999)
-    journeyName = testData.journey.firstJourneyName + randomNumber
   }
 
+  async setNewJourneyName() {
+    journeyName = testData.journey.firstJourneyName + generateRandomNumber(3)
+  }
+  async verifyJourneyTitleGotUpdated() {
+    await expect(
+      this.page.locator(
+        'button[aria-label="Click to edit"] p.MuiTypography-root',
+        { hasText: journeyName }
+      )
+    ).toBeVisible({ timeout: thirtySecondsTimeout })
+  }
   async createAndVerifyCustomJourney() {
     await this.enterJourneysTypography()
     await this.clickDoneBtn()
     await this.clickThreeDotBtnOfCustomJourney()
-    await this.clickJourneyDetailsInThreeDotOptions()
+    await this.clickEditDetailsInThreeDotOptions()
     await this.enterTitle()
     await this.clickSaveBtn()
+    await this.verifyJourneyTitleGotUpdated()
     await this.backIcon()
     await this.verifyCreatedCustomJourneyInActiveList()
   }
-
+  async createANewCustomJourney() {
+    await this.enterJourneysTypography()
+    await this.clickDoneBtn()
+    await this.clickThreeDotBtnOfCustomJourney()
+    await this.clickEditDetailsInThreeDotOptions()
+    await this.enterTitle()
+    await this.clickSaveBtn()
+    await this.verifyJourneyTitleGotUpdated()
+  }
+  async createAndVerifyTemplateFromNewJourney() {
+    await this.clickThreeDotBtnOfCustomJourney()
+    await this.clickCreateTempleteOrTemplateSettingsOption('Create Template')
+    await this.backIcon()
+    await this.verifyCreatedCustomJourneyInActiveList()
+    await this.navigateToPublisherPage()
+    await this.verifyCreatedJourneyInTemplateList()
+  }
   async createAndVerifyTemplate() {
     await this.clickOnTheCreatedCustomJourney()
     await this.clickThreeDotBtnOfCustomJourney()
-    await this.clickTheCreateTempleteOption()
+    await this.clickCreateTempleteOrTemplateSettingsOption('Create Template')
     await this.backIcon()
     await this.navigateToPublisherPage()
     await this.verifyCreatedJourneyInTemplateList()
@@ -183,9 +213,10 @@ export class JourneyPage {
     await this.enterJourneysTypographyForTemplate()
     await this.clickDoneBtn()
     await this.clickThreeDotBtnOfCustomJourney()
-    await this.clickJourneyDetailsInThreeDotOptions()
+    await this.clickEditDetailsInThreeDotOptions()
     await this.enterTitle()
     await this.clickSaveBtn()
+    await this.verifyJourneyTitleGotUpdated()
     await this.backIcon()
     await this.verifyCreatedCustomJourneyInActiveList()
   }
@@ -209,31 +240,37 @@ export class JourneyPage {
   }
 
   async clickCreateCustomJourney(): Promise<void> {
+    const createJourneyLoaderPath = this.page.locator(
+      'div[data-testid="JourneysAdminImageThumbnail"] span[class*="MuiCircularProgress"]'
+    )
+    await this.page.waitForLoadState('load')
     await expect(
       this.page.locator(
         'div[data-testid="JourneysAdminContainedIconButton"] button'
       )
-    ).toBeVisible({ timeout: sixtySecondsTimeout })
-    await expect(
-      this.page.locator(
-        'div[data-testid="JourneysAdminImageThumbnail"] span[class*="MuiCircularProgress"]'
-      )
-    ).toBeHidden({ timeout: sixtySecondsTimeout })
+    ).toBeVisible({ timeout: 150000 })
+    await expect(createJourneyLoaderPath).toBeHidden({ timeout: 18000 })
     await this.page
       .locator('div[data-testid="JourneysAdminContainedIconButton"] button')
       .click()
-    await expect(
-      this.page.locator(
-        'div[data-testid="JourneysAdminImageThumbnail"] span[class*="MuiCircularProgress"]'
-      )
-    ).toBeHidden({ timeout: sixtySecondsTimeout })
+    try {
+      await expect(createJourneyLoaderPath, 'Ignore if not found').toBeVisible({
+        timeout: 5000
+      })
+    } catch {
+      // Ignore if not found
+    }
+    await expect(createJourneyLoaderPath).toBeHidden({
+      timeout: sixtySecondsTimeout
+    })
+    //await this.page.waitForLoadState('networkidle')
   }
 
   async setJourneyName(journey: string) {
     journeyName =
       (journey === 'firstJourneyName'
         ? testData.journey.firstJourneyName
-        : testData.journey.secondJourneyName) + randomNumber
+        : testData.journey.secondJourneyName) + generateRandomNumber(3)
   }
 
   async enterJourneysTypography(): Promise<void> {
@@ -255,16 +292,15 @@ export class JourneyPage {
           .isVisible()
       ) {
         break
-      } else {
-        await this.page
-          .frameLocator(this.journeyCardFrame)
-          .first()
-          .locator(
-            'div[data-testid="CardWrapper"] div[data-testid*="SelectableWrapper"] h3[data-testid="JourneysTypography"]'
-          )
-          .first()
-          .click({ timeout: sixtySecondsTimeout, delay: 1000 })
       }
+      await this.page
+        .frameLocator(this.journeyCardFrame)
+        .first()
+        .locator(
+          'div[data-testid="CardWrapper"] div[data-testid*="SelectableWrapper"] h3[data-testid="JourneysTypography"]'
+        )
+        .first()
+        .click({ timeout: sixtySecondsTimeout, delay: 1000 })
     }
     await this.page
       .frameLocator(this.journeyCardFrame)
@@ -288,7 +324,7 @@ export class JourneyPage {
     await this.page.locator('button#edit-journey-actions').click()
   }
 
-  async clickJourneyDetailsInThreeDotOptions() {
+  async clickEditDetailsInThreeDotOptions() {
     await this.page
       .locator(
         'ul[aria-labelledby="edit-journey-actions"] li[role="menuitem"]',
@@ -298,6 +334,7 @@ export class JourneyPage {
   }
 
   async enterTitle() {
+    await this.setNewJourneyName()
     await this.page.locator('input#title').click({ delay: 2000 })
     await this.page.locator('input#title').clear()
     await this.page.locator('input#title').fill(journeyName)
@@ -306,7 +343,7 @@ export class JourneyPage {
   async clickSaveBtn() {
     await this.page
       .locator('div[role="dialog"] button', { hasText: 'Save' })
-      .click()
+      .click({ delay: 3000 })
   }
 
   async backIcon() {
@@ -315,18 +352,15 @@ export class JourneyPage {
 
   async verifyCreatedCustomJourneyInActiveList() {
     await expect(
-      this.page.locator('span[data-testid="new-journey-badge"] div').first()
-    ).toBeVisible({ timeout: thirtySecondsTimeout })
-    await expect(
-      this.page.locator('span[data-testid="new-journey-badge"] div', {
+      this.page.locator(this.journeyNamePath, {
         hasText: journeyName
       })
-    ).toBeVisible()
+    ).toBeVisible({ timeout: thirtySecondsTimeout })
   }
 
   async clickOnTheCreatedCustomJourney() {
     await this.page
-      .locator('span[data-testid="new-journey-badge"] div', {
+      .locator(this.journeyNamePath, {
         hasText: journeyName
       })
       .click()
@@ -335,14 +369,32 @@ export class JourneyPage {
     ).toBeVisible({ timeout: sixtySecondsTimeout })
   }
 
-  async clickTheCreateTempleteOption() {
+  async clickCreateTempleteOrTemplateSettingsOption(
+    optionName = 'Create Template'
+  ) {
     await this.page
       .locator(
         'ul[aria-labelledby="edit-journey-actions"] li[role="menuitem"]',
-        { hasText: 'Create Template' }
+        { hasText: optionName }
       )
-      .click({ delay: 1000 })
-    await this.page.waitForURL('**/publisher/**')
+      .click({ delay: 3000 })
+    // verifying that the 'Create Template' option is disappeared, if not once again clicking on that option
+    try {
+      await expect(
+        this.page.locator(
+          'ul[aria-labelledby="edit-journey-actions"] li[role="menuitem"]',
+          { hasText: 'Create Template' }
+        )
+      ).toBeHidden({ timeout: sixtySecondsTimeout })
+    } catch {
+      await this.page
+        .locator(
+          'ul[aria-labelledby="edit-journey-actions"] li[role="menuitem"]',
+          { hasText: 'Create Template' }
+        )
+        .click({ delay: 3000 })
+    }
+    await this.page.waitForURL('**/publisher/**', { timeout: 60000 })
   }
 
   async verifyCreatedJourneyInTemplateList() {
@@ -359,9 +411,7 @@ export class JourneyPage {
   async clickThreeDotOfCreatedNewTemple() {
     await this.page
       .locator(
-        "//h6[text()='" +
-          journeyName +
-          "']//ancestor::a/following-sibling::div//button[@id='journey-actions']"
+        `//h6[text()='${journeyName}']//ancestor::a/following-sibling::div//button[@id='journey-actions']`
       )
       .click()
   }
@@ -430,13 +480,13 @@ export class JourneyPage {
   }
 
   async clickThreeDotOfCreatedNewJourney() {
-    await this.page
-      .locator(
-        "//div[text()='" +
-          journeyName +
-          "']//ancestor::a/following-sibling::div//button[@id='journey-actions']"
-      )
-      .click()
+    const threeDotBtnPath = this.page
+      .locator('div[aria-label="journey-card"]', { hasText: journeyName })
+      .first()
+      .locator('[data-testid="JourneyCardMenuButton"]')
+      .first()
+    await expect(threeDotBtnPath).toBeVisible({ timeout: thirtySecondsTimeout })
+    await threeDotBtnPath.click()
   }
 
   async clickTheRestore() {
@@ -450,7 +500,7 @@ export class JourneyPage {
   async verifyCreatedNewJourneyMovedToTrashTabOrNot() {
     await expect(
       this.page.locator(
-        'div[id*="trashed-status-panel-tabpanel"] span[data-testid="new-journey-badge"] div',
+        `div[id*="trashed-status-panel-tabpanel"] ${this.journeyNamePath}`,
         { hasText: journeyName }
       )
     ).toBeVisible()
@@ -474,7 +524,7 @@ export class JourneyPage {
   async verifyCreatedNewJourneyMovedToActiveTabOrNot() {
     await expect(
       this.page.locator(
-        'div[id*="active-status-panel-tabpanel"] span[data-testid="new-journey-badge"] div',
+        `div[id*="active-status-panel-tabpanel"] ${this.journeyNamePath}`,
         { hasText: journeyName }
       )
     ).toBeVisible()
@@ -503,7 +553,7 @@ export class JourneyPage {
 
   async clickThreeDotOfExistingJourney() {
     this.existingJourneyName = await this.page
-      .locator('span[data-testid="new-journey-badge"] div', {
+      .locator(this.journeyNamePath, {
         hasNotText: 'Untitled Journey'
       })
       .first()
@@ -513,7 +563,7 @@ export class JourneyPage {
         hasNotText: 'Untitled Journey'
       })
       .first()
-      .locator('button#journey-actions')
+      .locator('[data-testid="JourneyCardMenuButton"]')
       .first()
       .click()
   }
@@ -525,7 +575,7 @@ export class JourneyPage {
   async verifyJourneyMovedToArchiveOrNot() {
     await expect(
       this.page.locator(
-        'div[aria-labelledby*="archived-status-panel-tab"] span[data-testid="new-journey-badge"]',
+        `div[aria-labelledby*="archived-status-panel-tab"] ${this.journeyNamePath}`,
         { hasText: journeyName }
       )
     ).toBeVisible()
@@ -534,7 +584,7 @@ export class JourneyPage {
   async verifyJourneyDeletedForeverInTrashTab() {
     await expect(
       this.page.locator(
-        'div[id*="trashed-status-panel-tabpanel"] span[data-testid="new-journey-badge"] div',
+        `div[id*="trashed-status-panel-tabpanel"] ${this.journeyNamePath}`,
         { hasText: journeyName }
       )
     ).toHaveCount(0)
@@ -549,7 +599,7 @@ export class JourneyPage {
   async clickThreeDotBesideSortByOption() {
     await this.page
       .locator(
-        'div[aria-label="journey status tabs"] button svg[data-testid="MoreIcon"]'
+        'div[aria-label="journey status tabs"] button[data-testid="JourneyListMenuButton"]'
       )
       .click()
   }
@@ -566,13 +616,13 @@ export class JourneyPage {
     await expect(
       this.page
         .locator(
-          'div[id*="active-status-panel-tabpanel"] span[data-testid="new-journey-badge"] div'
+          `div[id*="active-status-panel-tabpanel"] ${this.journeyNamePath}`
         )
         .first()
     ).toBeVisible()
     this.journeyList = await this.page
       .locator(
-        'div[id*="active-status-panel-tabpanel"] span[data-testid="new-journey-badge"] div'
+        `div[id*="active-status-panel-tabpanel"] ${this.journeyNamePath}`
       )
       .allInnerTexts()
   }
@@ -586,7 +636,7 @@ export class JourneyPage {
   }
 
   async getCurrentUrl() {
-    console.log('current Url is ' + this.page.url())
+    console.log(`current Url is ${this.page.url()}`)
   }
 
   async verifyAllJourneyMovedToArchivedTab() {
@@ -594,13 +644,13 @@ export class JourneyPage {
     await expect(
       this.page
         .locator(
-          'div[aria-labelledby*="archived-status-panel-tab"] span[data-testid="new-journey-badge"] div'
+          `div[aria-labelledby*="archived-status-panel-tab"] ${this.journeyNamePath}`
         )
         .first()
     ).toBeVisible({ timeout: thirtySecondsTimeout })
     const archiveTabJournetList = await this.page
       .locator(
-        'div[aria-labelledby*="archived-status-panel-tab"] span[data-testid="new-journey-badge"] div'
+        `div[aria-labelledby*="archived-status-panel-tab"] ${this.journeyNamePath}`
       )
       .allInnerTexts()
     for (let journey = 0; journey < this.journeyList.length; journey++) {
@@ -623,13 +673,13 @@ export class JourneyPage {
     await expect(
       this.page
         .locator(
-          'div[aria-labelledby*="archived-status-panel-tab"] span[data-testid="new-journey-badge"] div'
+          `div[aria-labelledby*="archived-status-panel-tab"] ${this.journeyNamePath}`
         )
         .first()
     ).toBeVisible()
     this.journeyList = await this.page
       .locator(
-        'div[aria-labelledby*="archived-status-panel-tab"] span[data-testid="new-journey-badge"] div'
+        `div[aria-labelledby*="archived-status-panel-tab"] ${this.journeyNamePath}`
       )
       .allInnerTexts()
   }
@@ -639,13 +689,13 @@ export class JourneyPage {
     await expect(
       this.page
         .locator(
-          'div[aria-labelledby*="trashed-status-panel-tab"] span[data-testid="new-journey-badge"] div'
+          `div[aria-labelledby*="trashed-status-panel-tab"] ${this.journeyNamePath}`
         )
         .first()
     ).toBeVisible({ timeout: thirtySecondsTimeout })
     const TrashTabJournetList = await this.page
       .locator(
-        'div[aria-labelledby*="trashed-status-panel-tab"] span[data-testid="new-journey-badge"] div'
+        `div[aria-labelledby*="trashed-status-panel-tab"] ${this.journeyNamePath}`
       )
       .allInnerTexts()
     for (let journey = 0; journey < this.journeyList.length; journey++) {
@@ -660,13 +710,13 @@ export class JourneyPage {
     await expect(
       this.page
         .locator(
-          'div[aria-labelledby*="trashed-status-panel-tab"] span[data-testid="new-journey-badge"] div'
+          `div[aria-labelledby*="trashed-status-panel-tab"] ${this.journeyNamePath}`
         )
         .first()
     ).toBeVisible()
     this.journeyList = await this.page
       .locator(
-        'div[aria-labelledby*="trashed-status-panel-tab"] span[data-testid="new-journey-badge"] div'
+        `div[aria-labelledby*="trashed-status-panel-tab"] ${this.journeyNamePath}`
       )
       .allInnerTexts()
   }
@@ -676,13 +726,13 @@ export class JourneyPage {
     await expect(
       this.page
         .locator(
-          'div[id*="active-status-panel-tabpanel"] span[data-testid="new-journey-badge"] div'
+          `div[id*="active-status-panel-tabpanel"] ${this.journeyNamePath}`
         )
         .first()
     ).toBeVisible({ timeout: thirtySecondsTimeout })
     const activeTabJournetList = await this.page
       .locator(
-        'div[id*="active-status-panel-tabpanel"] span[data-testid="new-journey-badge"] div'
+        `div[id*="active-status-panel-tabpanel"] ${this.journeyNamePath}`
       )
       .allInnerTexts()
     for (let journey = 0; journey < this.journeyList.length; journey++) {
@@ -697,7 +747,7 @@ export class JourneyPage {
     await expect(
       this.page
         .locator(
-          'div[aria-labelledby*="trashed-status-panel-tab"] span[data-testid="new-journey-badge"] div'
+          `div[aria-labelledby*="trashed-status-panel-tab"] ${this.journeyNamePath}`
         )
         .first()
     ).toHaveCount(0)
@@ -760,7 +810,7 @@ export class JourneyPage {
           )
         }
       )
-      .locator('span[data-testid="new-journey-badge"] div')
+      .locator(this.journeyNamePath)
       .allInnerTexts()
     const journeyExpectedList = await this.page
       .locator(
@@ -771,7 +821,7 @@ export class JourneyPage {
           )
         }
       )
-      .locator('span[data-testid="new-journey-badge"] div')
+      .locator(this.journeyNamePath)
       .allInnerTexts()
     await this.sortTheListToAscendingOrder(journeyList, journeyExpectedList)
   }
@@ -780,8 +830,9 @@ export class JourneyPage {
     list: string[],
     expectedSortedList: string[]
   ) {
-    // eslint-disable-next-line @typescript-eslint/unbound-method
-    list.map((str) => str.toLowerCase()).sort(Intl.Collator().compare)
+    list
+      .map((str) => str.toLowerCase())
+      .sort((a, b) => Intl.Collator().compare(a, b))
     expect(list.join().trim() === expectedSortedList.join().trim()).toBeTruthy()
   }
 
@@ -795,7 +846,7 @@ export class JourneyPage {
           )
         }
       )
-      .locator('span[data-testid="new-journey-badge"] div')
+      .locator(this.journeyNamePath)
       .count()
     if (journeyListCount !== 0) {
       const journeyList = await this.page
@@ -807,7 +858,7 @@ export class JourneyPage {
             )
           }
         )
-        .locator('span[data-testid="new-journey-badge"] div')
+        .locator(this.journeyNamePath)
         .allInnerTexts()
       const journeyExpectedList = await this.page
         .locator(
@@ -818,7 +869,7 @@ export class JourneyPage {
             )
           }
         )
-        .locator('span[data-testid="new-journey-badge"] div')
+        .locator(this.journeyNamePath)
         .allInnerTexts()
       await this.sortTheListToAscendingOrder(journeyList, journeyExpectedList)
     } else {
@@ -931,8 +982,7 @@ export class JourneyPage {
 
   async clickPreviewBtnInCustomJourneyPage() {
     await this.page
-      .getByTestId('PreviewItem')
-      .getByRole('link', { name: 'Preview' })
+      .locator('div[data-testid="PreviewItem"] a[aria-label="Preview"]')
       .click()
   }
 
@@ -982,7 +1032,7 @@ export class JourneyPage {
 
   async selectExistingJourney() {
     this.existingJourneyName = await this.page
-      .locator('span[data-testid="new-journey-badge"] div', {
+      .locator(this.journeyNamePath, {
         hasNotText: 'Untitled Journey'
       })
       .first()
@@ -1021,6 +1071,7 @@ export class JourneyPage {
   }
 
   async clickOnJourneyCard() {
+    await this.page.waitForLoadState('load')
     await this.page
       .frameLocator(this.journeyCardFrame)
       .first()
@@ -1066,14 +1117,13 @@ export class JourneyPage {
           .isVisible()
       ) {
         break
-      } else {
-        await this.page
-          .frameLocator(this.journeyCardFrame)
-          .first()
-          .locator(typographyPath)
-          .first()
-          .click({ timeout: sixtySecondsTimeout, delay: 1000 })
       }
+      await this.page
+        .frameLocator(this.journeyCardFrame)
+        .first()
+        .locator(typographyPath)
+        .first()
+        .click({ timeout: sixtySecondsTimeout, delay: 1000 })
     }
     await this.page
       .frameLocator(this.journeyCardFrame)
@@ -1087,5 +1137,140 @@ export class JourneyPage {
       .locator(textareaPath)
       .first()
       .fill(journeyName)
+  }
+
+  async clickShareButtonInJourneyPage() {
+    await this.page
+      .locator('div[data-testid="ShareItem"]')
+      .getByRole('button', { name: 'Share' })
+      .click()
+  }
+
+  async clickCopyIconInShareDialog() {
+    await this.page
+      .locator('div.MuiDialogContent-root button[aria-label="Copy"]')
+      .click()
+  }
+
+  async clickButtonInShareDialog(buttonName: string) {
+    //Edit URL, Embed Journey,  QR Code, Generate Code, Download PNG
+    await this.page
+      .locator('div.MuiDialogContent-root')
+      .getByRole('button', { name: buttonName })
+      .click()
+  }
+  async UpdateUrlSlug() {
+    const slugNameToInclude = 'edited-slug'
+    const slugField_path = this.page.locator(
+      'div.MuiDialogContent-root input#slug'
+    )
+    await slugField_path.pressSequentially(slugNameToInclude, { delay: 200 })
+    await expect(slugField_path).toHaveValue(new RegExp(slugNameToInclude))
+    return slugNameToInclude
+  }
+  async clickDialogActionBtnsInShareDialog(buttonName: string) {
+    //Copy Code, Save, Cancel
+    await this.page
+      .locator('div.MuiDialogActions-root')
+      .getByRole('button', { name: buttonName })
+      .click()
+  }
+  async verifyUpdatedUrlSlugIsLoaded(linkToCheck: string) {
+    const copiedLinkPage = await this.context.newPage()
+    const clipBoardText = await this.page.evaluate(
+      'navigator.clipboard.readText()'
+    )
+    await copiedLinkPage.goto(clipBoardText)
+    await copiedLinkPage.waitForLoadState()
+    const tabName: string = await copiedLinkPage.title()
+    expect(tabName.includes(this.existingJourneyName)).toBeTruthy()
+    const loadedLink: string = copiedLinkPage.url()
+    expect(loadedLink).toStrictEqual(linkToCheck)
+  }
+
+  async getUrlfromShareDialogPopup() {
+    return await this.page
+      .locator('div.MuiDialogContent-root input:not(#slug)')
+      .inputValue()
+  }
+  async validateUrlInEmbedCodeFieldAndReturnEmbedCode() {
+    const embedUrlFieldValue = await this.page
+      .locator('div.MuiDialogContent-root textarea#embed-url')
+      .inputValue()
+    return embedUrlFieldValue
+  }
+  async validateCopiedValues(actualValue: string) {
+    const clipBoardText = await this.page.evaluate(
+      'navigator.clipboard.readText()'
+    )
+    expect(actualValue).toStrictEqual(clipBoardText)
+  }
+  async validateCopiedValueContainsExpectedValue(actualValue: string) {
+    const clipBoardText = await this.page.evaluate(
+      'navigator.clipboard.readText()'
+    )
+    expect(clipBoardText).toContain(actualValue)
+  }
+  async editUrlAndSave() {
+    await this.clickButtonInShareDialog('Edit URL')
+    const updatedSlugName = await this.UpdateUrlSlug()
+    await this.clickDialogActionBtnsInShareDialog('Save')
+    await this.validateUrlUpdatedUrl(updatedSlugName)
+    const updatedUrlSlug = await this.getUrlfromShareDialogPopup()
+    return updatedUrlSlug
+  }
+  async validateUrlUpdatedUrl(valueToCheck: string) {
+    await expect(
+      this.page.locator('div.MuiDialogContent-root input:not(#slug)')
+    ).toHaveValue(new RegExp(valueToCheck))
+  }
+
+  async validateQRCodeGenerated() {
+    await expect(
+      this.page.locator('div.MuiDialogContent-root canvas#qr-code-download')
+    ).toBeVisible()
+  }
+  async clickDownloadDropDownAndSelectCopyShortLink() {
+    await this.page
+      .locator(
+        'div.MuiDialogContent-root button[data-testid="DownloadDropdown"]'
+      )
+      .click()
+    await this.page
+      .locator('div.MuiDialogContent-root div[role="tooltip"]')
+      .getByRole('menuitem', { name: 'Copy Short Link' })
+      .click()
+  }
+  async downloadQRCodeAsPng() {
+    const qrDownload = this.page.waitForEvent('download', { timeout: 60000 })
+    await this.clickButtonInShareDialog('Download PNG')
+    const downloadFile = await qrDownload
+    this.downloadedQrFile = downloadFile.suggestedFilename()
+
+    if (!fs.existsSync(downloadFolderPath)) {
+      fs.mkdirSync(downloadFolderPath)
+    }
+
+    await downloadFile.saveAs(
+      path.join(downloadFolderPath, this.downloadedQrFile)
+    )
+  }
+  async validateDownloadedQrPngFile() {
+    const isFileExist = fs.existsSync(
+      path.join(downloadFolderPath, this.downloadedQrFile)
+    )
+    expect(isFileExist && this.downloadedQrFile.includes('.png'), {
+      message: `Downloaded QR COde png file(${this.downloadedQrFile}) should be exist`
+    }).toBeTruthy()
+  }
+  async clickCloseIconForQrCodeDialog() {
+    await this.page
+      .locator('div.MuiDialog-paper button[data-testid="dialog-close-button"]')
+      .click()
+  }
+  async validateUrlFieldInShareDialog(expectedValue: string) {
+    await expect(
+      this.page.locator('div.MuiDialogContent-root input')
+    ).toHaveValue(new RegExp(expectedValue))
   }
 }

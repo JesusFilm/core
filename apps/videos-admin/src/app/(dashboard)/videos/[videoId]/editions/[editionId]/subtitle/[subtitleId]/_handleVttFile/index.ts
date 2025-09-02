@@ -1,0 +1,1 @@
+export { handleVttFile } from './handleVttFile'

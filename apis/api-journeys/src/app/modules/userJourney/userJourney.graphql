@@ -1,0 +1,47 @@
+enum UserJourneyRole {
+  inviteRequested
+  editor
+  owner
+}
+
+extend type Journey {
+  userJourneys: [UserJourney!]
+}
+
+type UserJourney @key(fields: "id") @shareable {
+  id: ID!
+  userId: ID!
+  journeyId: ID!
+  role: UserJourneyRole!
+  user: User
+  """
+  Date time of when the journey was first opened
+  """
+  openedAt: DateTime
+}
+extend type User @key(fields: "id") {
+  id: ID! @external
+}
+
+enum IdType {
+  databaseId
+  slug
+}
+
+extend type Mutation {
+  userJourneyApprove(id: ID!): UserJourney!
+  userJourneyPromote(id: ID!): UserJourney!
+  userJourneyRemove(id: ID!): UserJourney!
+  """
+  Removes all userJourneys associated with a journeyId
+  """
+  userJourneyRemoveAll(id: ID!): [UserJourney!]!
+  userJourneyRequest(
+    journeyId: ID!
+    """
+    drop this parameter after merging teams
+    """
+    idType: IdType
+  ): UserJourney!
+  userJourneyOpen(id: ID!): UserJourney
+}

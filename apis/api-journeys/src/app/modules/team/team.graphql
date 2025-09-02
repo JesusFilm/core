@@ -1,0 +1,31 @@
+type Team @key(fields: "id") @shareable {
+  id: ID!
+  title: String!
+  publicTitle: String
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  userTeams: [UserTeam!]!
+  customDomains: [CustomDomain!]!
+  integrations: [Integration!]!
+  qrCodes: [QrCode!]!
+}
+
+extend type Query {
+  teams: [Team!]!
+  team(id: ID!): Team!
+}
+
+input TeamCreateInput {
+  title: String!
+  publicTitle: String
+}
+
+input TeamUpdateInput {
+  title: String!
+  publicTitle: String
+}
+
+extend type Mutation {
+  teamCreate(input: TeamCreateInput): Team!
+  teamUpdate(id: ID!, input: TeamUpdateInput): Team!
+}

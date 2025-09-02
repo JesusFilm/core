@@ -35,7 +35,7 @@ const video: TreeBlock<VideoBlock> = {
   duration: null,
   image: null,
   objectFit: null,
-  video: {
+  mediaVideo: {
     __typename: 'Video',
     id: '2_0-FallingPlates',
     title: [
@@ -103,6 +103,7 @@ const journey: Journey = {
   description: 'my cool journey',
   status: JourneyStatus.draft,
   createdAt: '2021-11-19T12:34:56.647Z',
+  updatedAt: '2021-11-19T12:34:56.647Z',
   publishedAt: null,
   blocks: [],
   primaryImageBlock: null,
@@ -123,7 +124,8 @@ const journey: Journey = {
   displayTitle: null,
   logoImageBlock: null,
   menuButtonIcon: null,
-  menuStepBlock: null
+  menuStepBlock: null,
+  journeyTheme: null
 }
 
 const response = [{ ...image, parentOrder: 0 }]
@@ -140,6 +142,13 @@ describe('blockDeleteUpdate', () => {
         ],
         id: journey.id,
         __typename: 'Journey'
+      },
+      'CardBlock:cardId': {
+        __typename: 'CardBlock',
+        id: 'cardId',
+        parentBlockId: 'step1.id',
+        parentOrder: 0,
+        children: []
       },
       'VideoBlock:videoId': { ...video },
       'ImageBlock:imageId': { ...image }
@@ -186,6 +195,24 @@ describe('blockDeleteUpdate', () => {
         ],
         id: journey.id,
         __typename: 'Journey'
+      },
+      'StepBlock:step1.id': {
+        __typename: 'StepBlock',
+        id: 'step1.id',
+        locked: false,
+        nextBlockId: null,
+        parentBlockId: null,
+        parentOrder: 0,
+        children: []
+      },
+      'StepBlock:step2.id': {
+        __typename: 'StepBlock',
+        id: 'step2.id',
+        locked: false,
+        nextBlockId: null,
+        parentBlockId: null,
+        parentOrder: 1,
+        children: []
       }
     })
     blockDeleteUpdate(step1, response, cache, journey.id)

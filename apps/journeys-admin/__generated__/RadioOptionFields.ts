@@ -7,6 +7,12 @@
 // GraphQL fragment: RadioOptionFields
 // ====================================================
 
+export interface RadioOptionFields_action_PhoneAction {
+  __typename: "PhoneAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+}
+
 export interface RadioOptionFields_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
   parentBlockId: string;
@@ -28,7 +34,7 @@ export interface RadioOptionFields_action_EmailAction {
   email: string;
 }
 
-export type RadioOptionFields_action = RadioOptionFields_action_NavigateToBlockAction | RadioOptionFields_action_LinkAction | RadioOptionFields_action_EmailAction;
+export type RadioOptionFields_action = RadioOptionFields_action_PhoneAction | RadioOptionFields_action_NavigateToBlockAction | RadioOptionFields_action_LinkAction | RadioOptionFields_action_EmailAction;
 
 export interface RadioOptionFields {
   __typename: "RadioOptionBlock";
@@ -37,4 +43,10 @@ export interface RadioOptionFields {
   parentOrder: number | null;
   label: string;
   action: RadioOptionFields_action | null;
+  /**
+   * pollOptionImageBlockId is present if a child block should be used as a poll option image.
+   *       This child block should not be rendered normally, instead it should be used
+   *       as a poll option image. Blocks are often of type ImageBlock
+   */
+  pollOptionImageBlockId: string | null;
 }

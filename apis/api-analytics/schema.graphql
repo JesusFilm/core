@@ -1,0 +1,50 @@
+extend schema
+  @link(url: "https://specs.apollo.dev/federation/v2.6", import: ["@shareable"])
+
+interface BaseError {
+  message: String
+}
+
+type Error implements BaseError
+  @shareable
+{
+  message: String
+}
+
+type Mutation {
+  siteCreate(input: SiteCreateInput!): MutationSiteCreateResult!
+}
+
+union MutationSiteCreateResult = Error | MutationSiteCreateSuccess
+
+type MutationSiteCreateSuccess {
+  data: Site!
+}
+
+type Site {
+  id: String!
+  domain: String!
+  memberships: [SiteMembership!]!
+  sharedLinks: [SiteSharedLink!]!
+  goals: [SiteGoal!]!
+}
+
+input SiteCreateInput {
+  domain: String!
+  goals: [String!]
+}
+
+type SiteGoal {
+  id: String!
+  eventName: String
+}
+
+type SiteMembership {
+  id: String!
+  role: String!
+}
+
+type SiteSharedLink {
+  id: String!
+  slug: String!
+}

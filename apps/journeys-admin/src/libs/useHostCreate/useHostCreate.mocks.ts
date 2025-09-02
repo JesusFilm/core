@@ -1,10 +1,12 @@
-import { JourneyFields as Journey } from '@core/journeys/ui/JourneyProvider/__generated__/JourneyFields'
-
-import { GetAllTeamHosts_hosts as Host } from '../../../__generated__/GetAllTeamHosts'
+import {
+  JourneyFields_host as Host,
+  JourneyFields as Journey
+} from '@core/journeys/ui/JourneyProvider/__generated__/JourneyFields'
 
 export const defaultHost: Host = {
   id: 'hostId',
   __typename: 'Host',
+  teamId: 'team.id',
   title: 'Cru International',
   location: 'Florida, USA',
   src1: 'imageSrc1',
@@ -16,5 +18,5 @@ export const journey = {
   id: 'journeyId',
   seoTitle: 'My awesome journey',
   host: defaultHost,
-  team: { id: 'teamId' }
+  team: { id: 'team.id' }
 } as unknown as Journey

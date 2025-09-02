@@ -1,0 +1,52 @@
+name = "jf-proxy-dev"
+compatibility_date = "2024-01-01"
+compatibility_flags = ["nodejs_compat"]
+main = "src/index.ts"
+
+[vars]
+WATCH_PROXY_DEST = "localhost:4300"
+WATCH_MODERN_PROXY_DEST = "localhost:4800"
+WATCH_MODERN_PROXY_PATHS = ["^/watch/modern$", "^/watch/modern/", "^/watch/modern-test$"]
+
+[env.stage]
+name = "jf-proxy-stage"
+logpush = true
+routes = [
+  { pattern = "develop.jesusfilm.org/watch*", zone_name = "jesusfilm.org" },
+  { pattern = "develop.jesusfilm.org/journeys*", zone_name = "jesusfilm.org" },
+  { pattern = "develop.jesusfilm.org/resources", zone_name = "jesusfilm.org" },
+  { pattern = "develop.jesusfilm.org/resources/", zone_name = "jesusfilm.org" },
+  { pattern = "develop.jesusfilm.org/bin/*", zone_name = "jesusfilm.org" },
+  { pattern = "develop.jesusfilm.org/api/*", zone_name = "jesusfilm.org" },
+  { pattern = "develop.jesusfilm.org/_next/*", zone_name = "jesusfilm.org" }
+]
+
+[env.stage.vars]
+WATCH_PROXY_DEST = "c89a34d4-4b06-4219-ad8b-c7289106424d.jesusfilm.org"
+WATCH_MODERN_PROXY_DEST = "59e40060-a429-4e4d-a11f-59b9d8b5d57e.jesusfilm.org"
+WATCH_MODERN_PROXY_PATHS = ["^/watch/modern$", "^/watch/modern/", "^/watch/modern-test$"]
+
+[env.stage.observability.logs]
+enabled = true
+
+[env.prod]
+name = "jf-proxy-prod"
+logpush = true
+routes = [
+  { pattern = "www.jesusfilm.org/watch*", zone_name = "jesusfilm.org" },
+  { pattern = "www.jesusfilm.org/journeys*", zone_name = "jesusfilm.org" },
+  { pattern = "www.jesusfilm.org/resources", zone_name = "jesusfilm.org" },
+  { pattern = "www.jesusfilm.org/resources/", zone_name = "jesusfilm.org" },
+  { pattern = "www.jesusfilm.org/bin/*", zone_name = "jesusfilm.org" },
+  { pattern = "www.jesusfilm.org/api/*", zone_name = "jesusfilm.org" },
+  { pattern = "www.jesusfilm.org/_next/*", zone_name = "jesusfilm.org" }
+]
+
+[env.prod.vars]
+WATCH_PROXY_DEST = "1ee8fdb1-3cb5-40fd-9258-35d589917b4a.jesusfilm.org"
+WATCH_MODERN_PROXY_DEST = "add676d7-6625-40c5-b9af-ffce74da8884.jesusfilm.org"
+WATCH_MODERN_PROXY_PATHS = ["^/watch/modern$", "^/watch/modern/", "^/watch/modern-test$"]
+
+[env.prod.observability.logs]
+enabled = true
+

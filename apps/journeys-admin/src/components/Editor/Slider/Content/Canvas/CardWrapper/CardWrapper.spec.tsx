@@ -38,6 +38,7 @@ describe('CardWrapper', () => {
       themeMode: null,
       themeName: null,
       fullscreen: false,
+      backdropBlur: null,
       children: [
         {
           id: 'video5.id',
@@ -53,7 +54,7 @@ describe('CardWrapper', () => {
           description: null,
           duration: null,
           image: null,
-          video: null,
+          mediaVideo: null,
           startAt: null,
           endAt: null,
           posterBlockId: 'image5.id',
@@ -125,13 +126,14 @@ describe('CardWrapper', () => {
             duration: null,
             objectFit: null,
             image: null,
-            video: null,
+            mediaVideo: null,
             videoId: null,
             videoVariantLanguageId: '529'
           }
         ],
         coverBlockId: 'video5.id',
         fullscreen: false,
+        backdropBlur: null,
         id: 'card5.id',
         parentBlockId: 'step5.id',
         parentOrder: 0,
@@ -139,7 +141,7 @@ describe('CardWrapper', () => {
         themeName: null,
         wrappers: {}
       },
-      {}
+      undefined
     )
   })
 
@@ -154,6 +156,7 @@ describe('CardWrapper', () => {
       themeMode: null,
       themeName: null,
       fullscreen: false,
+      backdropBlur: null,
       children: [
         {
           id: 'video5.id',
@@ -169,7 +172,7 @@ describe('CardWrapper', () => {
           description: null,
           duration: null,
           image: null,
-          video: null,
+          mediaVideo: null,
           startAt: null,
           endAt: null,
           posterBlockId: 'image5.id',
@@ -241,13 +244,14 @@ describe('CardWrapper', () => {
             objectFit: null,
             duration: null,
             image: null,
-            video: null,
+            mediaVideo: null,
             videoId: null,
             videoVariantLanguageId: '529'
           }
         ],
         coverBlockId: 'video5.id',
         fullscreen: false,
+        backdropBlur: null,
         id: 'card5.id',
         parentBlockId: 'step5.id',
         parentOrder: 0,
@@ -255,7 +259,7 @@ describe('CardWrapper', () => {
         themeName: null,
         wrappers: {}
       },
-      {}
+      undefined
     )
   })
 
@@ -270,6 +274,7 @@ describe('CardWrapper', () => {
       themeMode: null,
       themeName: null,
       fullscreen: false,
+      backdropBlur: null,
       children: []
     }
     const step: TreeBlock = {
@@ -311,6 +316,7 @@ describe('CardWrapper', () => {
         themeMode: null,
         themeName: null,
         fullscreen: false,
+        backdropBlur: null,
         children: []
       }
       const step: TreeBlock = {
@@ -347,6 +353,7 @@ describe('CardWrapper', () => {
         themeMode: null,
         themeName: null,
         fullscreen: false,
+        backdropBlur: null,
         children: [
           {
             id: 'imageId',

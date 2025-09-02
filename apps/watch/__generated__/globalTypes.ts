@@ -11,6 +11,14 @@ export enum ButtonAction {
   EmailAction = "EmailAction",
   LinkAction = "LinkAction",
   NavigateToBlockAction = "NavigateToBlockAction",
+  PhoneAction = "PhoneAction",
+}
+
+export enum ButtonAlignment {
+  center = "center",
+  justify = "justify",
+  left = "left",
+  right = "right",
 }
 
 export enum ButtonColor {
@@ -28,6 +36,7 @@ export enum ButtonSize {
 
 export enum ButtonVariant {
   contained = "contained",
+  outlined = "outlined",
   text = "text",
 }
 
@@ -151,6 +160,7 @@ export enum TextResponseType {
   email = "email",
   freeForm = "freeForm",
   name = "name",
+  phone = "phone",
 }
 
 export enum ThemeMode {
@@ -209,6 +219,7 @@ export enum VideoBlockObjectFit {
 export enum VideoBlockSource {
   cloudflare = "cloudflare",
   internal = "internal",
+  mux = "mux",
   youTube = "youTube",
 }
 
@@ -224,8 +235,16 @@ export enum VideoLabel {
 }
 
 export enum VideoVariantDownloadQuality {
+  distroHigh = "distroHigh",
+  distroLow = "distroLow",
+  distroSd = "distroSd",
+  fhd = "fhd",
   high = "high",
+  highest = "highest",
   low = "low",
+  qhd = "qhd",
+  sd = "sd",
+  uhd = "uhd",
 }
 
 export interface ButtonClickEventCreateInput {
@@ -270,6 +289,8 @@ export interface JourneysQueryOptions {
 
 export interface LanguagesFilter {
   ids?: string[] | null;
+  bcp47?: string[] | null;
+  iso3?: string[] | null;
 }
 
 export interface RadioQuestionSubmissionEventCreateInput {
@@ -389,6 +410,8 @@ export interface VideosFilter {
   labels?: VideoLabel[] | null;
   ids?: string[] | null;
   subtitleLanguageIds?: string[] | null;
+  published?: boolean | null;
+  locked?: boolean | null;
 }
 
 //==============================================================

@@ -52,7 +52,7 @@ const video: TreeBlock<VideoBlock> = {
   duration: null,
   image: null,
   objectFit: null,
-  video: {
+  mediaVideo: {
     __typename: 'Video',
     id: '2_0-FallingPlates',
     title: [
@@ -121,6 +121,7 @@ describe('VideoOptions', () => {
           variantLanguages: [
             {
               __typename: 'Language',
+              slug: 'english',
               id: '529',
               name: [
                 {

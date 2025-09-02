@@ -1,0 +1,83 @@
+interface Block {
+  id: ID!
+  journeyId: ID!
+  parentBlockId: ID
+  parentOrder: Int
+}
+
+extend type Journey {
+  blocks: [Block!] @shareable
+}
+
+input BlocksFilter {
+  journeyIds: [ID!]
+  typenames: [String!]
+}
+
+input BlockDuplicateIdMap {
+  oldId: ID!
+  newId: ID!
+}
+
+extend type Query {
+  blocks(where: BlocksFilter): [Block!]!
+  block(id: ID!): Block!
+}
+
+extend type Mutation {
+  """
+  blockDelete returns the updated sibling blocks on successful delete
+  """
+  blockDelete(
+    id: ID!
+    """
+    drop this parameter after merging teams
+    """
+    journeyId: ID
+    """
+    drop this parameter after merging teams
+    """
+    parentBlockId: ID
+  ): [Block!]!
+  """
+  blockDuplicate returns the updated block, it's children and sibling blocks on successful duplicate
+  """
+  blockDuplicate(
+    id: ID!
+    """
+    parentOrder defines the position to add the duplicated block. Negative values defines the position from the end of the array. Positions greater than the length of the array or null parentOrder will add duplicate at end of the array.
+    """
+    parentOrder: Int
+    """
+    idMap is used to set custom ids for the duplicated block and it's descendants.
+    """
+    idMap: [BlockDuplicateIdMap!]
+    """
+    drop this parameter after merging teams
+    """
+    journeyId: ID
+    """
+    x is used to position a step block block horizontally in the journey flow diagram on
+    the editor.
+    """
+    x: Int
+    """
+    y is used to position a step block block vertically in the journey flow diagram on
+    the editor.
+    """
+    y: Int
+  ): [Block!]!
+  blockOrderUpdate(
+    id: ID!
+    parentOrder: Int!
+    """
+    drop this parameter after merging teams
+    """
+    journeyId: ID
+  ): [Block!]!
+
+  """
+  blockRestore is used for redo/undo
+  """
+  blockRestore(id: ID!): [Block!]!
+}

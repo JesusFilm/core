@@ -29,7 +29,8 @@ const nextConfig = {
         hostname: `customer-${
           process.env.NEXT_PUBLIC_CLOUDFLARE_STREAM_CUSTOMER_CODE ?? ''
         }.cloudflarestream.com`
-      }
+      },
+      { protocol: 'https', hostname: 'image.mux.com' }
     ]
   },
   async redirects() {
@@ -89,16 +90,24 @@ const nextConfig = {
     // handled by github actions
     ignoreDuringBuilds: process.env.CI === 'true'
   },
-  transpilePackages: ['shared-ui', 'shared-ui-dynamic'],
+  transpilePackages: [
+    'shared-ui',
+    'shared-ui-dynamic',
+    '@mui/x-data-grid',
+    '@mui/x-date-pickers',
+    '@mui/x-tree-view',
+    '@mui/x-charts'
+  ],
+  outputFileTracingExcludes: {
+    '*': [
+      'node_modules/@swc/core-linux-x64-gnu',
+      'node_modules/@swc/core-linux-x64-musl',
+      'node_modules/esbuild-linux-64/bin'
+    ]
+  },
   experimental: {
-    outputFileTracingExcludes: {
-      '*': [
-        'node_modules/@swc/core-linux-x64-gnu',
-        'node_modules/@swc/core-linux-x64-musl',
-        'node_modules/esbuild-linux-64/bin'
-      ]
-    },
-    fallbackNodePolyfills: false
+    fallbackNodePolyfills: false,
+    reactCompiler: true
   }
 }
 const plugins = [withNx]

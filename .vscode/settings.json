@@ -90,5 +90,15 @@
   "prettier.prettierPath": "./node_modules/prettier",
   "remote.localPortHost": "allInterfaces",
   "typescript.tsdk": "node_modules/typescript/lib",
-  "typescript.enablePromptUseWorkspaceTsdk": true
+  "typescript.enablePromptUseWorkspaceTsdk": true,
+  "files.watcherExclude": {
+    "**/.git/objects/**": true,
+    "**/.git/subtree-cache/**": true,
+    "**/node_modules/*/**": true,
+    "**/coverage/*/**": true,
+    "**/.cache/*/**": true
+  },
+  "tailwindCSS.experimental.classRegex": [
+    ["className\\s*:\\s*['\"]([^'\"]*)['\"]"]
+  ]
 }

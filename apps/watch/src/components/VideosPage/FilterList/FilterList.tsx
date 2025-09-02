@@ -16,64 +16,9 @@ import { SubmitListener } from '@core/shared/ui/SubmitListener'
 
 import type { GetLanguages } from '../../../../__generated__/GetLanguages'
 import { useAlgoliaRouter } from '../../../libs/algolia/useAlgoliaRouter'
+import { SUBTITLE_LANGUAGE_IDS } from '../../../libs/localeMapping/subtitleLanguageIds'
 
 import { LanguagesFilter } from './LanguagesFilter'
-
-const subtitleLanguageIds = [
-  '411',
-  '448',
-  '483',
-  '494',
-  '496',
-  '529',
-  '531',
-  '584',
-  '1106',
-  '1109',
-  '1112',
-  '1269',
-  '1341',
-  '1942',
-  '1964',
-  '3804',
-  '3887',
-  '3934',
-  '3964',
-  '3974',
-  '4415',
-  '4432',
-  '4601',
-  '4820',
-  '4823',
-  '5541',
-  '5545',
-  '5546',
-  '5563',
-  '6464',
-  '6788',
-  '7083',
-  '7698',
-  '16639',
-  '20601',
-  '20770',
-  '21028',
-  '21046',
-  '21064',
-  '21753',
-  '21754',
-  '22500',
-  '22658',
-  '23178',
-  '53299',
-  '53424',
-  '139081',
-  '139089',
-  '140126',
-  '184497',
-  '184498',
-  '184506',
-  '184528'
-]
 
 interface FilterListProps {
   languagesData?: GetLanguages
@@ -96,7 +41,7 @@ export function FilterList({
   })
 
   const subtitleLanguages = languagesData?.languages.filter((language) =>
-    subtitleLanguageIds.includes(language.id)
+    SUBTITLE_LANGUAGE_IDS.includes(language.id)
   )
 
   const languagesMap = useMemo(
@@ -155,7 +100,7 @@ export function FilterList({
           <Stack spacing={2}>
             <Stack direction="row" spacing={2}>
               <VolumeUpIcon />
-              <Typography>{t('Languages')}</Typography>
+              <Typography variant="h6">{t('Languages')}</Typography>
             </Stack>
             <LanguagesFilter
               onChange={handleLanguageChange(setFieldValue)}
@@ -167,7 +112,7 @@ export function FilterList({
           <Stack spacing={2}>
             <Stack direction="row" spacing={2}>
               <SubtitlesIcon />
-              <Typography>{t('Subtitles')}</Typography>
+              <Typography variant="h6">{t('Subtitles')}</Typography>
             </Stack>
             <LanguagesFilter
               onChange={handleSubtitleChange(setFieldValue)}
@@ -180,7 +125,7 @@ export function FilterList({
           <Stack spacing={2}>
             <Stack direction="row" spacing={2}>
               <TitleIcon />
-              <Typography>{t('Title')}</Typography>
+              <Typography variant="h6">{t('Title')}</Typography>
             </Stack>
             <TextField
               value={title}

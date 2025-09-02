@@ -1,0 +1,114 @@
+interface Action {
+  parentBlockId: ID!
+  parentBlock: Block!
+  gtmEventName: String
+}
+
+type NavigateToBlockAction implements Action @shareable {
+  parentBlockId: ID!
+  parentBlock: Block!
+  gtmEventName: String
+  blockId: String!
+}
+
+type LinkAction implements Action @shareable {
+  parentBlockId: ID!
+  parentBlock: Block!
+  gtmEventName: String
+  url: String!
+  target: String
+  customizable: Boolean
+  parentStepId: String
+}
+
+type EmailAction implements Action @shareable {
+  parentBlockId: ID!
+  parentBlock: Block!
+  gtmEventName: String
+  email: String!
+  customizable: Boolean
+  parentStepId: String
+}
+
+type PhoneAction implements Action @shareable {
+  parentBlockId: ID!
+  parentBlock: Block!
+  gtmEventName: String
+  phone: String!
+}
+input NavigateToBlockActionInput {
+  gtmEventName: String
+  blockId: String!
+}
+
+input LinkActionInput {
+  gtmEventName: String
+  url: String!
+  target: String
+  customizable: Boolean
+  parentStepId: String
+}
+
+input EmailActionInput {
+  gtmEventName: String
+  email: String!
+  customizable: Boolean
+  parentStepId: String
+}
+
+input BlockUpdateActionInput {
+  gtmEventName: String
+  email: String
+  url: String
+  target: String
+  blockId: String
+  phone: String
+}
+
+input PhoneActionInput {
+  gtmEventName: String
+  phone: String!
+}
+
+extend type Mutation {
+  blockDeleteAction(
+    id: ID!
+    """
+    drop this parameter after merging teams
+    """
+    journeyId: ID
+  ): Block!
+  blockUpdateNavigateToBlockAction(
+    id: ID!
+    input: NavigateToBlockActionInput!
+    """
+    drop this parameter after merging teams
+    """
+    journeyId: ID
+  ): NavigateToBlockAction!
+  blockUpdateLinkAction(
+    id: ID!
+    input: LinkActionInput!
+    """
+    drop this parameter after merging teams
+    """
+    journeyId: ID
+  ): LinkAction!
+  blockUpdateEmailAction(
+    id: ID!
+    input: EmailActionInput!
+    """
+    drop this parameter after merging teams
+    """
+    journeyId: ID
+  ): EmailAction!
+  blockUpdatePhoneAction(
+    id: ID!
+    input: PhoneActionInput!
+    """
+    drop this parameter after merging teams
+    """
+    journeyId: ID
+  ): PhoneAction!
+  blockUpdateAction(id: ID!, input: BlockUpdateActionInput): Action!
+}

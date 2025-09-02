@@ -11,6 +11,14 @@ export enum ButtonAction {
   EmailAction = "EmailAction",
   LinkAction = "LinkAction",
   NavigateToBlockAction = "NavigateToBlockAction",
+  PhoneAction = "PhoneAction",
+}
+
+export enum ButtonAlignment {
+  center = "center",
+  justify = "justify",
+  left = "left",
+  right = "right",
 }
 
 export enum ButtonColor {
@@ -28,7 +36,27 @@ export enum ButtonSize {
 
 export enum ButtonVariant {
   contained = "contained",
+  outlined = "outlined",
   text = "text",
+}
+
+export enum EventType {
+  ButtonClickEvent = "ButtonClickEvent",
+  ChatOpenEvent = "ChatOpenEvent",
+  JourneyViewEvent = "JourneyViewEvent",
+  RadioQuestionSubmissionEvent = "RadioQuestionSubmissionEvent",
+  SignUpSubmissionEvent = "SignUpSubmissionEvent",
+  StepNextEvent = "StepNextEvent",
+  StepPreviousEvent = "StepPreviousEvent",
+  StepViewEvent = "StepViewEvent",
+  TextResponseSubmissionEvent = "TextResponseSubmissionEvent",
+  VideoCollapseEvent = "VideoCollapseEvent",
+  VideoCompleteEvent = "VideoCompleteEvent",
+  VideoExpandEvent = "VideoExpandEvent",
+  VideoPauseEvent = "VideoPauseEvent",
+  VideoPlayEvent = "VideoPlayEvent",
+  VideoProgressEvent = "VideoProgressEvent",
+  VideoStartEvent = "VideoStartEvent",
 }
 
 export enum IconColor {
@@ -175,6 +203,7 @@ export enum TextResponseType {
   email = "email",
   freeForm = "freeForm",
   name = "name",
+  phone = "phone",
 }
 
 export enum ThemeMode {
@@ -233,6 +262,7 @@ export enum VideoBlockObjectFit {
 export enum VideoBlockSource {
   cloudflare = "cloudflare",
   internal = "internal",
+  mux = "mux",
   youTube = "youTube",
 }
 
@@ -265,6 +295,7 @@ export interface BlockUpdateActionInput {
   url?: string | null;
   target?: string | null;
   blockId?: string | null;
+  phone?: string | null;
 }
 
 export interface ButtonBlockCreateInput {
@@ -275,6 +306,13 @@ export interface ButtonBlockCreateInput {
   variant?: ButtonVariant | null;
   color?: ButtonColor | null;
   size?: ButtonSize | null;
+  submitEnabled?: boolean | null;
+  settings?: ButtonBlockSettingsInput | null;
+}
+
+export interface ButtonBlockSettingsInput {
+  alignment?: ButtonAlignment | null;
+  color?: string | null;
 }
 
 export interface ButtonBlockUpdateInput {
@@ -285,6 +323,8 @@ export interface ButtonBlockUpdateInput {
   size?: ButtonSize | null;
   startIconId?: string | null;
   endIconId?: string | null;
+  submitEnabled?: boolean | null;
+  settings?: ButtonBlockSettingsInput | null;
 }
 
 export interface ButtonClickEventCreateInput {
@@ -302,6 +342,7 @@ export interface CardBlockCreateInput {
   journeyId: string;
   parentBlockId: string;
   backgroundColor?: string | null;
+  backdropBlur?: number | null;
   fullscreen?: boolean | null;
   themeMode?: ThemeMode | null;
   themeName?: ThemeName | null;
@@ -311,6 +352,7 @@ export interface CardBlockUpdateInput {
   parentBlockId?: string | null;
   coverBlockId?: string | null;
   backgroundColor?: string | null;
+  backdropBlur?: number | null;
   fullscreen?: boolean | null;
   themeMode?: ThemeMode | null;
   themeName?: ThemeName | null;
@@ -353,6 +395,8 @@ export interface CustomDomainUpdateInput {
 export interface EmailActionInput {
   gtmEventName?: string | null;
   email: string;
+  customizable?: boolean | null;
+  parentStepId?: string | null;
 }
 
 export interface HostCreateInput {
@@ -428,6 +472,19 @@ export interface JourneyCollectionUpdateInput {
   journeyIds?: string[] | null;
 }
 
+export interface JourneyEventsExportLogInput {
+  journeyId: string;
+  eventsFilter: EventType[];
+  dateRangeStart?: any | null;
+  dateRangeEnd?: any | null;
+}
+
+export interface JourneyEventsFilter {
+  typenames?: string[] | null;
+  periodRangeStart?: any | null;
+  periodRangeEnd?: any | null;
+}
+
 export interface JourneyNotificationUpdateInput {
   journeyId: string;
   visitorInteractionEmail: boolean;
@@ -442,6 +499,19 @@ export interface JourneyProfileUpdateInput {
 
 export interface JourneyTemplateInput {
   template?: boolean | null;
+}
+
+export interface JourneyThemeCreateInput {
+  journeyId: string;
+  headerFont?: string | null;
+  bodyFont?: string | null;
+  labelFont?: string | null;
+}
+
+export interface JourneyThemeUpdateInput {
+  headerFont?: string | null;
+  bodyFont?: string | null;
+  labelFont?: string | null;
 }
 
 export interface JourneyUpdateInput {
@@ -473,6 +543,8 @@ export interface JourneyUpdateInput {
   menuButtonIcon?: JourneyMenuButtonIcon | null;
   menuStepBlockId?: string | null;
   logoImageBlockId?: string | null;
+  socialNodeX?: number | null;
+  socialNodeY?: number | null;
 }
 
 export interface JourneyVisitorFilter {
@@ -509,16 +581,30 @@ export interface JourneysQueryOptions {
 
 export interface LanguagesFilter {
   ids?: string[] | null;
+  bcp47?: string[] | null;
+  iso3?: string[] | null;
 }
 
 export interface LinkActionInput {
   gtmEventName?: string | null;
   url: string;
   target?: string | null;
+  customizable?: boolean | null;
+  parentStepId?: string | null;
 }
 
 export interface MeInput {
   redirect?: string | null;
+}
+
+export interface QrCodeCreateInput {
+  teamId: string;
+  journeyId: string;
+}
+
+export interface QrCodesFilter {
+  journeyId?: string | null;
+  teamId?: string | null;
 }
 
 export interface RadioOptionBlockCreateInput {
@@ -531,6 +617,7 @@ export interface RadioOptionBlockCreateInput {
 export interface RadioOptionBlockUpdateInput {
   parentBlockId?: string | null;
   label?: string | null;
+  pollOptionImageBlockId?: string | null;
 }
 
 export interface RadioQuestionBlockCreateInput {
@@ -567,6 +654,13 @@ export interface SignUpSubmissionEventCreateInput {
   stepId?: string | null;
   name: string;
   email: string;
+}
+
+export interface SpacerBlockCreateInput {
+  id?: string | null;
+  journeyId: string;
+  parentBlockId: string;
+  spacing?: number | null;
 }
 
 export interface StepBlockCreateInput {
@@ -634,6 +728,8 @@ export interface TextResponseBlockCreateInput {
 export interface TextResponseBlockUpdateInput {
   parentBlockId?: string | null;
   label?: string | null;
+  placeholder?: string | null;
+  required?: boolean | null;
   hint?: string | null;
   minRows?: number | null;
   routeId?: string | null;
@@ -657,6 +753,11 @@ export interface TypographyBlockCreateInput {
   variant?: TypographyVariant | null;
   color?: TypographyColor | null;
   align?: TypographyAlign | null;
+  settings?: TypographyBlockSettingsInput | null;
+}
+
+export interface TypographyBlockSettingsInput {
+  color?: string | null;
 }
 
 export interface TypographyBlockUpdateInput {
@@ -665,6 +766,7 @@ export interface TypographyBlockUpdateInput {
   variant?: TypographyVariant | null;
   color?: TypographyColor | null;
   align?: TypographyAlign | null;
+  settings?: TypographyBlockSettingsInput | null;
 }
 
 export interface UserInviteCreateInput {
@@ -792,6 +894,7 @@ export interface VisitorUpdateInput {
   status?: VisitorStatus | null;
   countryCode?: string | null;
   referrer?: string | null;
+  phone?: string | null;
 }
 
 //==============================================================

@@ -19,6 +19,10 @@ import {
 
 import { ActiveJourneyList } from '.'
 
+jest.mock('@core/journeys/ui/useNavigationState', () => ({
+  useNavigationState: jest.fn(() => false)
+}))
+
 jest.mock('next/router', () => ({
   __esModule: true,
   useRouter: jest.fn(() => ({ query: { tab: 'active' } }))
@@ -110,7 +114,7 @@ describe('ActiveJourneyList', () => {
     }
 
     it('should archive all journeys', async () => {
-      const { getByText } = render(
+      const { getByText, getByRole } = render(
         <MockedProvider
           mocks={[activeJourneysMock, archiveJourneysMock, noJourneysMock]}
         >
@@ -127,7 +131,7 @@ describe('ActiveJourneyList', () => {
       await waitFor(() =>
         expect(getByText('Default Journey Heading')).toBeInTheDocument()
       )
-      fireEvent.click(getByText('Archive'))
+      fireEvent.click(getByRole('button', { name: 'Archive' }))
       await waitFor(() => expect(result).toHaveBeenCalled())
     })
 
@@ -190,7 +194,7 @@ describe('ActiveJourneyList', () => {
     })
 
     it('should trash all journeys', async () => {
-      const { getByText } = render(
+      const { getByText, getByRole } = render(
         <MockedProvider
           mocks={[activeJourneysMock, trashJourneysMock, noJourneysMock]}
         >
@@ -207,12 +211,12 @@ describe('ActiveJourneyList', () => {
       await waitFor(() =>
         expect(getByText('Default Journey Heading')).toBeInTheDocument()
       )
-      fireEvent.click(getByText('Trash'))
+      fireEvent.click(getByRole('button', { name: 'Trash' }))
       await waitFor(() => expect(result).toHaveBeenCalled())
     })
 
     it('should show error', async () => {
-      const { getByText } = render(
+      const { getByText, getByRole } = render(
         <MockedProvider
           mocks={[
             activeJourneysMock,
@@ -234,7 +238,7 @@ describe('ActiveJourneyList', () => {
       await waitFor(() =>
         expect(getByText('Default Journey Heading')).toBeInTheDocument()
       )
-      fireEvent.click(getByText('Trash'))
+      fireEvent.click(getByRole('button', { name: 'Trash' }))
       await waitFor(() => expect(getByText('error')).toBeInTheDocument())
     })
   })

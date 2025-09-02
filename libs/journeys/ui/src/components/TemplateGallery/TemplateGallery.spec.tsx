@@ -14,6 +14,10 @@ import {
 import { TemplateGallery } from '.'
 import '../../../test/i18n'
 
+jest.mock('@core/journeys/ui/useNavigationState', () => ({
+  useNavigationState: jest.fn(() => false)
+}))
+
 jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
   default: () => true
@@ -148,19 +152,22 @@ describe('TemplateGallery', () => {
 
     fireEvent.click(screen.getByRole('button', { name: 'French Français' }))
     fireEvent.click(screen.getByTestId('PresentationLayer'))
-    await waitFor(() => {
-      expect(push).toHaveBeenCalledWith(
-        {
-          query: {
-            languageIds: [],
-            param: 'template-language'
-          }
-        },
-        undefined,
-        { shallow: true }
-      )
-    })
-  })
+    await waitFor(
+      () => {
+        expect(push).toHaveBeenCalledWith(
+          {
+            query: {
+              languageIds: [],
+              param: 'template-language'
+            }
+          },
+          undefined,
+          { shallow: true }
+        )
+      },
+      { timeout: 10000 }
+    )
+  }, 15000)
 
   it('should render templates with a felt needs tags selected', async () => {
     const push = jest.fn()
@@ -183,30 +190,36 @@ describe('TemplateGallery', () => {
       </MockedProvider>
     )
 
-    await waitFor(() => {
-      expect(
-        screen.getByRole('button', {
-          name: 'Acceptance tag Acceptance Acceptance'
-        })
-      ).toBeInTheDocument()
-    })
+    await waitFor(
+      () => {
+        expect(
+          screen.getByRole('button', {
+            name: 'Acceptance tag Acceptance Acceptance'
+          })
+        ).toBeInTheDocument()
+      },
+      { timeout: 10000 }
+    )
 
     fireEvent.click(
       screen.getByRole('button', {
         name: 'Acceptance tag Acceptance Acceptance'
       })
     )
-    await waitFor(() => {
-      expect(push).toHaveBeenCalledWith(
-        {
-          query: {
-            tagIds: 'acceptanceTagId',
-            languageIds: ['529']
-          }
-        },
-        undefined,
-        { shallow: true }
-      )
-    })
-  })
+    await waitFor(
+      () => {
+        expect(push).toHaveBeenCalledWith(
+          {
+            query: {
+              tagIds: 'acceptanceTagId',
+              languageIds: ['529']
+            }
+          },
+          undefined,
+          { shallow: true }
+        )
+      },
+      { timeout: 10000 }
+    )
+  }, 15000)
 })

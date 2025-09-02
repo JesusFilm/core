@@ -1,0 +1,1 @@
+export { VariantVideo } from './VariantVideo'

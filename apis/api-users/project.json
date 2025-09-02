@@ -1,0 +1,110 @@
+{
+  "name": "api-users",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apis/api-users/src",
+  "projectType": "application",
+  "tags": [],
+  "targets": {
+    "build": {
+      "executor": "@nx/webpack:webpack",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/apps/api-users",
+        "main": "apis/api-users/src/index.ts",
+        "tsConfig": "apis/api-users/tsconfig.app.json",
+        "compiler": "tsc",
+        "target": "node",
+        "webpackConfig": "apis/api-users/webpack.config.js"
+      },
+      "configurations": {
+        "production": {
+          "generatePackageJson": true,
+          "optimization": true,
+          "extractLicenses": true,
+          "inspect": false
+        }
+      }
+    },
+    "_serve": {
+      "executor": "@nx/js:node",
+      "options": {
+        "buildTarget": "api-users:build",
+        "inspect": false
+      }
+    },
+    "serve": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "nx _serve api-users | npx pino-pretty --config .pino-prettyrc.js"
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "cache": true,
+        "cacheLocation": ".cache/api-users/eslint",
+        "cacheStrategy": "content"
+      }
+    },
+    "test": {
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/apis/api-users"],
+      "options": {
+        "jestConfig": "apis/api-users/jest.config.ts"
+      }
+    },
+    "generate-graphql": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "GENERATE_SCHEMA=true npx ts-node -P apis/api-users/tsconfig.app.json -r tsconfig-paths/register apis/api-users/src/schema/index.ts"
+      }
+    },
+    "subgraph-check": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npx hive schema:check apis/api-users/schema.graphql --registry.accessToken $HIVE_TOKEN --github --service api-users"
+      }
+    },
+    "fetch-secrets": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "DOPPLER_TOKEN=$DOPPLER_API_USERS_TOKEN doppler secrets download --no-file --format=env-no-quotes --project api-users > apis/api-users/.env"
+      }
+    },
+    "type-check": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npx tsc -b apis/api-users/tsconfig.json"
+      }
+    },
+    "codecov": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "codecov -f coverage/apis/api-users/cobertura-coverage.xml -F apps.api-users"
+      }
+    },
+    "email": {
+      "executor": "nx:run-commands",
+      "options": {
+        "parallel": false,
+        "commands": [
+          "if lsof -Pi :4601 -sTCP:LISTEN -t>/dev/null; then\nkill -9 $(lsof -Pi :4601 -sTCP:LISTEN -t)\nfi",
+          "email dev --dir apis/api-users/src/emails/templates --port 4601"
+        ]
+      }
+    },
+    "demo": {
+      "executor": "@nx/storybook:storybook",
+      "options": {
+        "port": 4400,
+        "configDir": ".storybook"
+      },
+      "configurations": {
+        "ci": {
+          "quiet": true
+        }
+      }
+    }
+  }
+}

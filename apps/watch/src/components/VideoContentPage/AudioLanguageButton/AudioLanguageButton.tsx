@@ -14,15 +14,15 @@ import { ThemeMode, ThemeName } from '@core/shared/ui/themes'
 
 import { useVideo } from '../../../libs/videoContext'
 
-const DynamicAudioLanguageDialog = dynamic<{
+const DynamicLanguageSwitchDialog = dynamic<{
   open: boolean
-  onClose: () => void
+  handleClose: () => void
 }>(
   async () =>
     await import(
-      /* webpackChunkName: "AudioLanguageDialog" */
-      '../../AudioLanguageDialog'
-    ).then((mod) => mod.AudioLanguageDialog)
+      /* webpackChunkName: "LanguageSwitchDialog" */
+      '../../LanguageSwitchDialog/LanguageSwitchDialog'
+    ).then((mod) => mod.LanguageSwitchDialog)
 )
 
 interface AudioLanguageButtonProps {
@@ -34,8 +34,10 @@ export function AudioLanguageButton({
 }: AudioLanguageButtonProps): ReactElement {
   const { t } = useTranslation('apps-watch')
   const { variant, variantLanguagesCount } = useVideo()
-  const [openAudioLanguageDialog, setOpenAudioLanguageDialog] = useState(false)
-  const [loadAudioLanguageDialog, setLoadAudioLanguageDialog] = useState(false)
+  const [openLanguageSwitchDialog, setOpenLanguageSwitchDialog] =
+    useState(false)
+  const [loadLanguageSwitchDialog, setLoadLanguageSwitchDialog] =
+    useState(false)
 
   const nativeName = variant?.language?.name.find(
     ({ primary }) => !primary
@@ -45,8 +47,8 @@ export function AudioLanguageButton({
   )?.value
 
   function handleClick(): void {
-    setOpenAudioLanguageDialog(true)
-    setLoadAudioLanguageDialog(true)
+    setOpenLanguageSwitchDialog(true)
+    setLoadLanguageSwitchDialog(true)
   }
 
   return (
@@ -63,6 +65,8 @@ export function AudioLanguageButton({
             justifyContent: 'flex-end',
             width: 'inherit',
             color: 'background.paper',
+            px: 0,
+            py: 1,
             '&:hover': {
               backgroundColor: 'transparent'
             }
@@ -100,10 +104,10 @@ export function AudioLanguageButton({
           <LanguageOutlined sx={{ color: '#ffffff' }} />
         </IconButton>
       )}
-      {loadAudioLanguageDialog && (
-        <DynamicAudioLanguageDialog
-          open={openAudioLanguageDialog}
-          onClose={() => setOpenAudioLanguageDialog(false)}
+      {loadLanguageSwitchDialog && (
+        <DynamicLanguageSwitchDialog
+          open={openLanguageSwitchDialog}
+          handleClose={() => setOpenLanguageSwitchDialog(false)}
         />
       )}
     </ThemeProvider>

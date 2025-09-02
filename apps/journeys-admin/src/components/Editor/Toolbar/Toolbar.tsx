@@ -28,6 +28,7 @@ import {
   useEditor
 } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
+import { useNavigationState } from '@core/journeys/ui/useNavigationState'
 import { useFlags } from '@core/shared/ui/FlagsProvider'
 import GridEmptyIcon from '@core/shared/ui/icons/GridEmpty'
 
@@ -90,6 +91,7 @@ export function Toolbar({ user }: ToolbarProps): ReactElement {
   } = useEditor()
   const { editorAnalytics } = useFlags()
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
+  const isNavigating = useNavigationState()
 
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
   const [dialogOpen, setDialogOpen] = useState<boolean | null>(null)
@@ -174,27 +176,33 @@ export function Toolbar({ user }: ToolbarProps): ReactElement {
         flexShrink: 0
       }}
     >
-      <NextLink href="/" passHref legacyBehavior>
-        <IconButton data-testid="NextStepsLogo" disableRipple>
-          <Image
-            src={logo}
-            alt="Next Steps"
-            height={32}
-            width={32}
-            style={{
-              maxWidth: '100%',
-              height: 'auto'
-            }}
-          />
+      <IconButton
+        component={NextLink}
+        href="/"
+        data-testid="NextStepsLogo"
+        disableRipple
+      >
+        <Image
+          src={logo}
+          alt="Next Steps"
+          height={32}
+          width={32}
+          style={{
+            maxWidth: '100%',
+            height: 'auto'
+          }}
+        />
+      </IconButton>
+      <Tooltip title="See all journeys" placement="bottom" arrow>
+        <IconButton
+          component={NextLink}
+          href="/"
+          data-testid="ToolbarBackButton"
+          disabled={isNavigating}
+        >
+          <FormatListBulletedIcon />
         </IconButton>
-      </NextLink>
-      <NextLink href="/" passHref legacyBehavior>
-        <Tooltip title="See all journeys" placement="bottom" arrow>
-          <IconButton data-testid="ToolbarBackButton">
-            <FormatListBulletedIcon />
-          </IconButton>
-        </Tooltip>
-      </NextLink>
+      </Tooltip>
       <Stack
         gap={2}
         direction="row"
@@ -238,7 +246,7 @@ export function Toolbar({ user }: ToolbarProps): ReactElement {
               height={50}
               justifyContent="center"
               alignItems="center"
-              sx={{ display: { xs: 'none', sm: 'flex' } }}
+              sx={{ display: { xs: 'none', sm: 'flex' }, overflow: 'hidden' }}
             >
               {journey?.primaryImageBlock?.src == null ? (
                 <GridEmptyIcon color="secondary" />

@@ -1,0 +1,66 @@
+type CustomDomain @shareable {
+  id: ID!
+  team: Team!
+  name: String!
+  apexName: String!
+  journeyCollection: JourneyCollection
+  routeAllTeamJourneys: Boolean!
+}
+
+type CustomDomainCheck @shareable {
+  """
+  Is the domain correctly configured in the DNS?
+  If false, A Record and CNAME Record should be added by the user.
+  """
+  configured: Boolean!
+  """
+  Does the domain belong to the team?
+  If false, verification and verificationResponse will be populated.
+  """
+  verified: Boolean!
+  """
+  Verification records to be added to the DNS to confirm ownership.
+  """
+  verification: [CustomDomainVerification!]
+  """
+  Reasoning as to why verification is required.
+  """
+  verificationResponse: CustomDomainVerificationResponse
+}
+
+input CustomDomainCreateInput {
+  id: ID
+  teamId: String!
+  name: String!
+  journeyCollectionId: ID
+  routeAllTeamJourneys: Boolean
+}
+
+input CustomDomainUpdateInput {
+  journeyCollectionId: ID
+  routeAllTeamJourneys: Boolean
+}
+
+type CustomDomainVerification @shareable {
+  type: String!
+  domain: String!
+  value: String!
+  reason: String!
+}
+
+type CustomDomainVerificationResponse @shareable {
+  code: String!
+  message: String!
+}
+
+extend type Mutation {
+  customDomainCreate(input: CustomDomainCreateInput!): CustomDomain!
+  customDomainUpdate(id: ID!, input: CustomDomainUpdateInput!): CustomDomain!
+  customDomainDelete(id: ID!): CustomDomain!
+  customDomainCheck(id: ID!): CustomDomainCheck!
+}
+
+extend type Query {
+  customDomain(id: ID!): CustomDomain!
+  customDomains(teamId: ID!): [CustomDomain!]!
+}

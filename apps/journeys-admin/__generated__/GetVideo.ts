@@ -40,6 +40,7 @@ export interface GetVideo_video_variantLanguages_name {
 export interface GetVideo_video_variantLanguages {
   __typename: "Language";
   id: string;
+  slug: string | null;
   name: GetVideo_video_variantLanguages_name[];
 }
 

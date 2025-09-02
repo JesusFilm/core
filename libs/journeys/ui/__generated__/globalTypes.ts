@@ -11,6 +11,14 @@ export enum ButtonAction {
   EmailAction = "EmailAction",
   LinkAction = "LinkAction",
   NavigateToBlockAction = "NavigateToBlockAction",
+  PhoneAction = "PhoneAction",
+}
+
+export enum ButtonAlignment {
+  center = "center",
+  justify = "justify",
+  left = "left",
+  right = "right",
 }
 
 export enum ButtonColor {
@@ -28,6 +36,7 @@ export enum ButtonSize {
 
 export enum ButtonVariant {
   contained = "contained",
+  outlined = "outlined",
   text = "text",
 }
 
@@ -151,6 +160,7 @@ export enum TextResponseType {
   email = "email",
   freeForm = "freeForm",
   name = "name",
+  phone = "phone",
 }
 
 export enum ThemeMode {
@@ -209,6 +219,7 @@ export enum VideoBlockObjectFit {
 export enum VideoBlockSource {
   cloudflare = "cloudflare",
   internal = "internal",
+  mux = "mux",
   youTube = "youTube",
 }
 
@@ -254,6 +265,8 @@ export interface JourneysQueryOptions {
 
 export interface LanguagesFilter {
   ids?: string[] | null;
+  bcp47?: string[] | null;
+  iso3?: string[] | null;
 }
 
 export interface RadioQuestionSubmissionEventCreateInput {

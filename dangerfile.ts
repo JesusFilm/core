@@ -1,5 +1,3 @@
-import { readFile } from 'node:fs/promises'
-import { join } from 'node:path'
 import lint from '@commitlint/lint'
 import load from '@commitlint/load'
 import {
@@ -49,47 +47,10 @@ export default async () => {
     })
     markdown(`> (pr title - ${danger.github.pr.title}): \n${errors}`)
   }
-  // check PR has description and is different from template
-
-  const pullRequestTemplate = await readFile(
-    join(__dirname, '/.github/pull_request_template.md'),
-    'utf8'
-  )
-  if (
-    danger.github.pr.body.length < 10 ||
-    danger.github.pr.body.replace(/\r\n/g, '\n') === pullRequestTemplate
-  ) {
-    fail(
-      'This pull request needs a description (that differs from the template).'
-    )
-  }
 
   // check PR has assignee
   if (danger.github.pr.assignee === null) {
     fail('Please assign someone to merge this PR.')
-  }
-
-  // check PR has type label
-  if (
-    !danger.github.issue.labels.some((label) => label.name.includes('type:'))
-  ) {
-    fail('Please add type label to this PR.')
-  }
-
-  // check PR has priority label
-  if (
-    !danger.github.issue.labels.some((label) =>
-      label.name.includes('priority:')
-    )
-  ) {
-    fail('Please add priority label to this PR.')
-  }
-
-  // check PR has effort label
-  if (
-    !danger.github.issue.labels.some((label) => label.name.includes('effort:'))
-  ) {
-    fail('Please add effort label to this PR.')
   }
 
   // pull PR data from GitHub API
@@ -97,12 +58,6 @@ export default async () => {
     ...danger.github.thisPR,
     pull_number: danger.github.thisPR.number
   })
-
-  // check PR has milestone
-  // ignore dependabot
-  if (currentPR.data.milestone === null && !isDependabot) {
-    fail('Please add milestone to this PR.')
-  }
 
   // pull reviews for PR from GitHub API
   const reviews = await danger.github.api.pulls.listReviews({

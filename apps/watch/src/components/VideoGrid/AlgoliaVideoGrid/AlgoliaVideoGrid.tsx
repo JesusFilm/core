@@ -1,4 +1,4 @@
-import type { ReactElement } from 'react'
+import type { MouseEvent, ReactElement } from 'react'
 
 import { useAlgoliaVideos } from '@core/journeys/ui/algolia/useAlgoliaVideos'
 
@@ -8,14 +8,28 @@ import {
 } from '../../../libs/algolia/transformAlgoliaVideos'
 import { VideoGrid, VideoGridProps } from '../VideoGrid'
 
-export function AlgoliaVideoGrid(props: VideoGridProps): ReactElement {
+export function AlgoliaVideoGrid({
+  languageId,
+  ...props
+}: VideoGridProps & { languageId?: string | undefined }): ReactElement {
   const {
     items: algoliaVideos,
     showMore,
     isLastPage,
     loading,
-    noResults
-  } = useAlgoliaVideos<CoreVideo>({ transformItems })
+    noResults,
+    sendEvent
+  } = useAlgoliaVideos<CoreVideo>({ transformItems, languageId })
+
+  const handleClick =
+    (videoId?: string) =>
+    (event: MouseEvent): void => {
+      event.stopPropagation()
+      if (videoId == null) return
+      const item = algoliaVideos.filter((item) => item.id === videoId)
+      sendEvent('click', item, 'Video Clicked')
+    }
+
   return (
     <VideoGrid
       videos={algoliaVideos}
@@ -23,6 +37,7 @@ export function AlgoliaVideoGrid(props: VideoGridProps): ReactElement {
       showMore={showMore}
       hasNextPage={!isLastPage}
       hasNoResults={noResults}
+      onCardClick={handleClick}
       {...props}
     />
   )

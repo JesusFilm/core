@@ -1,0 +1,25 @@
+type JourneyProfile @key(fields: "id") @shareable {
+  id: ID!
+  userId: ID!
+  acceptedTermsAt: DateTime
+  lastActiveTeamId: String
+  journeyFlowBackButtonClicked: Boolean
+  plausibleJourneyFlowViewed: Boolean
+  plausibleDashboardViewed: Boolean
+}
+
+extend type Query {
+  getJourneyProfile: JourneyProfile
+}
+
+input JourneyProfileUpdateInput {
+  lastActiveTeamId: String
+  journeyFlowBackButtonClicked: Boolean
+  plausibleJourneyFlowViewed: Boolean
+  plausibleDashboardViewed: Boolean
+}
+
+extend type Mutation {
+  journeyProfileCreate: JourneyProfile!
+  journeyProfileUpdate(input: JourneyProfileUpdateInput!): JourneyProfile!
+}

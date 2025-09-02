@@ -1,0 +1,220 @@
+extend type Video @key(fields: "id primaryLanguageId") @shareable {
+  id: ID! @external
+  primaryLanguageId: ID! @external
+}
+
+enum VideoBlockSource {
+  internal
+  youTube
+  cloudflare
+  mux
+}
+
+enum VideoBlockObjectFit {
+  """
+  The video is scaled to maintain its aspect ratio while filling the
+   entire VideoBlock. If the video's aspect ratio does not match the
+   aspect ratio of the VideoBlock, then the video will be clipped to fit.
+  """
+  fill
+  """
+  The video is scaled to maintain its aspect ratio while fitting within the
+   VideoBlock. The entire video is made to fill the VideoBlock, while
+   preserving its aspect ratio, so the video will be "letterboxed" if its
+   aspect ratio does not match the aspect ratio of the VideoBlock.
+  """
+  fit
+  """
+  12.5% of either side of the video is discarded (this has the effect of
+   converting a 16:9 aspect ratio to 4:3). The remaining video is scaled to
+   maintain its new aspect ratio while fitting within the VideoBlock.  The
+   remaining video is made to fill the VideoBlock, while preserving its new
+   aspect ratio, so the video will be "letterboxed" if its new aspect ratio
+   does not match the aspect ratio of the VideoBlock.
+  """
+  zoomed
+}
+
+type VideoBlock implements Block @key(fields: "id") @shareable {
+  id: ID! @shareable
+  journeyId: ID! @shareable
+  parentBlockId: ID @shareable
+  parentOrder: Int @shareable
+  """
+  startAt dictates at which point of time the video should start playing
+  """
+  startAt: Int @shareable
+  """
+  endAt dictates at which point of time the video should end
+  """
+  endAt: Int @shareable
+  muted: Boolean @shareable
+  autoplay: Boolean @shareable
+  """
+  posterBlockId is present if a child block should be used as a poster.
+  This child block should not be rendered normally, instead it should be used
+  as the video poster. PosterBlock should be of type ImageBlock.
+  """
+  posterBlockId: ID @shareable
+  fullsize: Boolean @shareable
+  """
+  internal source videos: video is only populated when videoID and
+  videoVariantLanguageId are present
+  """
+  video: Video @deprecated(reason: "use mediaVideo union instead")
+  """
+  internal source videos: videoId and videoVariantLanguageId both need to be set
+  to select a video.
+  For other sources only videoId needs to be set.
+  """
+  videoId: ID @shareable
+  """
+  internal source videos: videoId and videoVariantLanguageId both need to be set
+  to select a video.
+  For other sources only videoId needs to be set.
+  """
+  videoVariantLanguageId: ID @shareable
+  """
+  internal source: videoId, videoVariantLanguageId, and video present
+  youTube source: videoId, title, description, and duration present
+  """
+  source: VideoBlockSource! @shareable
+  """
+  internal source videos: this field is not populated and instead only present
+  in the video field.
+  For other sources this is automatically populated.
+  """
+  title: String @shareable
+  """
+  internal source videos: this field is not populated and instead only present
+  in the video field
+  For other sources this is automatically populated.
+  """
+  description: String @shareable
+  """
+  internal source videos: this field is not populated and instead only present
+  in the video field
+  For other sources this is automatically populated.
+  """
+  image: String @shareable
+  """
+  internal source videos: this field is not populated and instead only present
+  in the video field
+  For other sources this is automatically populated.
+  duration in seconds.
+  """
+  duration: Int @shareable
+  """
+  action that should be performed when the video ends
+  """
+  action: Action
+  """
+  how the video should display within the VideoBlock
+  """
+  objectFit: VideoBlockObjectFit @shareable
+}
+
+input VideoBlockCreateInput {
+  id: ID
+  journeyId: ID!
+  parentBlockId: ID!
+  """
+  startAt dictates at which point of time the video should start playing
+  """
+  startAt: Int
+  """
+  endAt dictates at which point of time the video should end
+  """
+  endAt: Int
+  duration: Int
+  description: String
+  muted: Boolean
+  autoplay: Boolean
+  """
+  internal source videos: videoId and videoVariantLanguageId both need to be set
+  to select a video.
+  For other sources only videoId needs to be set.
+  """
+  videoId: ID
+  """
+  internal source videos: videoId and videoVariantLanguageId both need to be set
+  to select a video.
+  For other sources only videoId needs to be set.
+  """
+  videoVariantLanguageId: ID
+  """
+  internal source: videoId and videoVariantLanguageId required
+  youTube source: videoId required
+  """
+  source: VideoBlockSource
+  """
+  posterBlockId is present if a child block should be used as a poster.
+  This child block should not be rendered normally, instead it should be used
+  as the video poster. PosterBlock should be of type ImageBlock.
+  """
+  posterBlockId: ID
+  fullsize: Boolean
+  """
+  True if the coverBlockId in a parent block should be set to this block's id.
+  """
+  isCover: Boolean
+  """
+  how the video should display within the VideoBlock
+  """
+  objectFit: VideoBlockObjectFit
+}
+
+input VideoBlockUpdateInput {
+  """
+  startAt dictates at which point of time the video should start playing
+  """
+  startAt: Int
+  """
+  endAt dictates at which point of time the video should end
+  """
+  endAt: Int
+  muted: Boolean
+  autoplay: Boolean
+  duration: Int
+
+  """
+  internal source videos: videoId and videoVariantLanguageId both need to be set
+  to select a video.
+  For other sources only videoId needs to be set.
+  """
+  videoId: ID
+  """
+  internal source videos: videoId and videoVariantLanguageId both need to be set
+  to select a video.
+  For other sources only videoId needs to be set.
+  """
+  videoVariantLanguageId: ID
+  """
+  internal source: videoId and videoVariantLanguageId required
+  youTube source: videoId required
+  """
+  source: VideoBlockSource
+  """
+  posterBlockId is present if a child block should be used as a poster.
+  This child block should not be rendered normally, instead it should be used
+  as the video poster. PosterBlock should be of type ImageBlock.
+  """
+  posterBlockId: ID
+  fullsize: Boolean
+  """
+  how the video should display within the VideoBlock
+  """
+  objectFit: VideoBlockObjectFit
+}
+
+extend type Mutation {
+  videoBlockCreate(input: VideoBlockCreateInput!): VideoBlock!
+  videoBlockUpdate(
+    id: ID!
+    input: VideoBlockUpdateInput!
+    """
+    drop this parameter after merging teams
+    """
+    journeyId: ID
+  ): VideoBlock!
+}

@@ -1,7 +1,6 @@
 import { SupportedColorScheme, useColorScheme } from '@mui/material/styles'
 import { ColorSchemeContextValue } from '@mui/system/cssVars'
 import { fireEvent, render, screen } from '@testing-library/react'
-import { NextIntlClientProvider } from 'next-intl'
 
 import { ToggleColorMode } from './ToggleColorMode'
 
@@ -21,11 +20,7 @@ describe('ToggleColorMode', () => {
       mode: 'light',
       setMode
     } as unknown as ColorSchemeContextValue<SupportedColorScheme>)
-    render(
-      <NextIntlClientProvider locale="en">
-        <ToggleColorMode />
-      </NextIntlClientProvider>
-    )
+    render(<ToggleColorMode />)
 
     fireEvent.click(screen.getByTestId('ToggleColorModeDark'))
     expect(setMode).toHaveBeenCalledWith('dark')

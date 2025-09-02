@@ -37,6 +37,7 @@ const getLanguagesMock: MockedResponse<GetLanguages, GetLanguagesVariables> = {
       languages: [
         {
           __typename: 'Language',
+          slug: 'english',
           id: '529',
           name: [
             {
@@ -105,10 +106,8 @@ export const Ellipsis = {
     }
   },
   decorators: [
-    (Story: StoryFn<typeof JourneyDetails>) => (
-      <Box width={400}>
-        <Story />
-      </Box>
+    (Story: StoryFn<typeof JourneyDetails>, context) => (
+      <Box width={400}>{Story(context.args, context)}</Box>
     )
   ]
 }

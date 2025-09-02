@@ -3,6 +3,7 @@
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "apps/journeys",
   "projectType": "application",
+  "tags": ["doppler_config:stg_dev"],
   "implicitDependencies": ["locales"],
   "targets": {
     "build": {
@@ -192,6 +193,5 @@
         "command": "codecov -f coverage/apps/journeys/cobertura-coverage.xml -F apps.journeys"
       }
     }
-  },
-  "tags": ["doppler_config:stg_dev"]
+  }
 }

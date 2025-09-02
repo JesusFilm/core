@@ -1,7 +1,6 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { AppRouterInstance } from 'next/dist/shared/lib/app-router-context.shared-runtime'
 import { useRouter } from 'next/navigation'
-import { NextIntlClientProvider } from 'next-intl'
 
 import { useLogout } from '../../libs/useLogout'
 
@@ -23,11 +22,7 @@ describe('OptionsMenu', () => {
   it('should handle logout', async () => {
     const mockHandleLogOut = jest.fn()
     mockUseLogout.mockReturnValue(mockHandleLogOut)
-    render(
-      <NextIntlClientProvider locale="en">
-        <OptionsMenu />
-      </NextIntlClientProvider>
-    )
+    render(<OptionsMenu />)
 
     fireEvent.click(screen.getByRole('button'))
     await waitFor(() =>
@@ -39,11 +34,7 @@ describe('OptionsMenu', () => {
   it('should handle gettings click', async () => {
     const push = jest.fn()
     mockRouter.mockReturnValue({ push } as unknown as AppRouterInstance)
-    render(
-      <NextIntlClientProvider locale="en">
-        <OptionsMenu />
-      </NextIntlClientProvider>
-    )
+    render(<OptionsMenu />)
 
     fireEvent.click(screen.getByRole('button'))
     await waitFor(() =>

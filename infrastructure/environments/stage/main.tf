@@ -1,9 +1,10 @@
 module "stage" {
-  source            = "../../modules/aws"
-  env               = "stage"
-  cidr              = "10.11.0.0/16"
-  internal_url_name = "stage.internal"
-  certificate_arn   = aws_acm_certificate.stage.arn
+  source                       = "../../modules/aws"
+  env                          = "stage"
+  cidr                         = "10.11.0.0/16"
+  internal_url_name            = "stage.internal"
+  certificate_arn              = aws_acm_certificate.stage.arn
+  datadog_forwarder_lambda_arn = var.datadog_forwarder_lambda_arn
 }
 
 module "route53_stage_central_jesusfilm_org" {
@@ -72,8 +73,13 @@ locals {
 }
 
 module "api-gateway-stage" {
-  source           = "../../../apps/api-gateway/infrastructure"
-  ecs_config       = local.public_ecs_config
+  source = "../../../apis/api-gateway/infrastructure"
+  ecs_config = merge(local.public_ecs_config, {
+    alb_target_group = merge(local.alb_target_group, {
+      health_check_path = "/readiness"
+      health_check_port = "4000"
+    })
+  })
   env              = "stage"
   doppler_token    = data.aws_ssm_parameter.doppler_api_gateway_stage_token.value
   alb_listener_arn = module.stage.public_alb.alb_listener.arn
@@ -81,7 +87,7 @@ module "api-gateway-stage" {
 }
 
 module "api-analytics" {
-  source                = "../../../apps/api-analytics/infrastructure"
+  source                = "../../../apis/api-analytics/infrastructure"
   ecs_config            = local.internal_ecs_config
   env                   = "stage"
   doppler_token         = data.aws_ssm_parameter.doppler_api_analytics_stage_token.value
@@ -94,7 +100,7 @@ module "api-analytics" {
 }
 
 module "api-journeys" {
-  source        = "../../../apps/api-journeys/infrastructure"
+  source        = "../../../apis/api-journeys/infrastructure"
   ecs_config    = local.internal_ecs_config
   env           = "stage"
   doppler_token = data.aws_ssm_parameter.doppler_api_journeys_stage_token.value
@@ -105,7 +111,7 @@ module "api-journeys" {
 }
 
 module "api-journeys-modern" {
-  source        = "../../../apps/api-journeys-modern/infrastructure"
+  source        = "../../../apis/api-journeys-modern/infrastructure"
   ecs_config    = local.internal_ecs_config
   env           = "stage"
   doppler_token = data.aws_ssm_parameter.doppler_api_journeys_stage_token.value
@@ -116,7 +122,7 @@ module "api-journeys-modern" {
 }
 
 module "api-languages" {
-  source        = "../../../apps/api-languages/infrastructure"
+  source        = "../../../apis/api-languages/infrastructure"
   ecs_config    = local.internal_ecs_config
   env           = "stage"
   doppler_token = data.aws_ssm_parameter.doppler_api_languages_stage_token.value
@@ -127,7 +133,7 @@ module "api-languages" {
 }
 
 module "api-users" {
-  source        = "../../../apps/api-users/infrastructure"
+  source        = "../../../apis/api-users/infrastructure"
   ecs_config    = local.internal_ecs_config
   env           = "stage"
   doppler_token = data.aws_ssm_parameter.doppler_api_users_stage_token.value
@@ -138,7 +144,7 @@ module "api-users" {
 }
 
 module "api-media" {
-  source        = "../../../apps/api-media/infrastructure"
+  source        = "../../../apis/api-media/infrastructure"
   ecs_config    = local.internal_ecs_config
   env           = "stage"
   doppler_token = data.aws_ssm_parameter.doppler_api_media_stage_token.value
@@ -148,6 +154,22 @@ module "api-media" {
   }
 }
 
+module "arclight" {
+  source = "../../../apps/arclight/infrastructure"
+  ecs_config = merge(local.public_ecs_config, {
+    alb_target_group = merge(local.alb_target_group, {
+      health_check_path = "/"
+      health_check_port = "3000"
+    })
+  })
+  doppler_token    = data.aws_ssm_parameter.doppler_arclight_stage_token.value
+  alb_listener_arn = module.stage.public_alb.alb_listener.arn
+  alb_dns_name     = module.stage.public_alb.dns_name
+  host_name        = "core-stage.arclight.org"
+  host_names       = ["*.arclight.org", "*.arc.gt"] // handle any arclight or arc.gt subdomain passed to stage alb
+  env              = "stage"
+}
+
 module "bastion" {
   source             = "../../modules/aws/ec2-bastion"
   name               = "bastion"
@@ -155,7 +177,7 @@ module "bastion" {
   dns_name           = "bastion.stage.central.jesusfilm.org"
   subnet_id          = module.stage.vpc.public_subnets[0]
   zone_id            = data.aws_route53_zone.route53_stage_central_jesusfilm_org.zone_id
-  security_group_ids = [module.stage.public_bastion_security_group_id]
+  security_group_ids = [module.stage.public_bastion_security_group_id, "sg-0d3fe6651aeda358e"]
 }
 
 
@@ -229,4 +251,11 @@ module "eks" {
   subnet_ids_2a      = ["subnet-03bd7850c8bbe2ce9", "subnet-01f4e86883462b5ce"]
   subnet_ids_2b      = ["subnet-0a609b33cdac65789", "subnet-09cbfc19be5214a8b"]
   subnet_ids_2c      = ["subnet-062de12e3e3639eff", "subnet-0c394639d255c3261"]
+}
+
+module "media-transcoder" {
+  source                  = "../../../apis/media-transcoder/infrastructure"
+  env                     = "stage"
+  doppler_token           = data.aws_ssm_parameter.doppler_media_transcoder_stage_token.value
+  task_execution_role_arn = data.aws_iam_role.ecs_task_execution_role.arn
 }

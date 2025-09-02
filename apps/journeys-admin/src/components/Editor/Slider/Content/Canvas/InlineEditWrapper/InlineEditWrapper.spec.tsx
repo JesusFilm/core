@@ -35,7 +35,11 @@ describe('InlineEditWrapper', () => {
     content: 'test content',
     color: null,
     align: null,
-    children: []
+    children: [],
+    settings: {
+      __typename: 'TypographyBlockSettings',
+      color: null
+    }
   }
 
   const step = (block: TreeBlock): TreeBlock<StepFields> => {
@@ -109,11 +113,13 @@ describe('InlineEditWrapper', () => {
       size: null,
       startIconId: null,
       endIconId: null,
+      submitEnabled: null,
       action: null,
-      children: []
+      children: [],
+      settings: null
     }
 
-    const { getByDisplayValue, getByText, getByTestId } = render(
+    const { getByDisplayValue, getByText } = render(
       <MockedProvider>
         <SnackbarProvider>
           <EditorProvider
@@ -133,11 +139,6 @@ describe('InlineEditWrapper', () => {
 
     fireEvent.click(getByText('test label'))
     fireEvent.click(getByText('test label'))
-    expect(getByTestId(`SelectableWrapper-${block.id}`)).toHaveStyle({
-      outline: '2px solid',
-      outlineColor: '#C52D3A',
-      zIndex: '1'
-    })
 
     const input = getByDisplayValue('test label')
     expect(input).toBeInTheDocument()
@@ -192,6 +193,7 @@ describe('InlineEditWrapper', () => {
       id: 'radioOption.id',
       label: 'option',
       action: null,
+      pollOptionImageBlockId: null,
       children: []
     }
 
@@ -200,6 +202,7 @@ describe('InlineEditWrapper', () => {
       parentBlockId: 'card.id',
       parentOrder: 0,
       id: 'radioQuestion.id',
+      gridView: false,
       children: [option]
     }
 

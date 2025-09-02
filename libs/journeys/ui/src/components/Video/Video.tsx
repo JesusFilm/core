@@ -2,6 +2,7 @@ import VideocamRounded from '@mui/icons-material/VideocamRounded'
 import Box from '@mui/material/Box'
 import Paper from '@mui/material/Paper'
 import { ThemeProvider, styled, useTheme } from '@mui/material/styles'
+import get from 'lodash/get'
 import {
   CSSProperties,
   ReactElement,
@@ -11,7 +12,6 @@ import {
   useState
 } from 'react'
 import { use100vh } from 'react-div-100vh'
-import Player from 'video.js/dist/types/player'
 
 import { NextImage } from '@core/shared/ui/NextImage'
 
@@ -34,6 +34,7 @@ import { VideoTriggerFields } from '../VideoTrigger/__generated__/VideoTriggerFi
 
 import { VideoFields } from './__generated__/VideoFields'
 import { InitAndPlay } from './InitAndPlay'
+import VideoJsPlayer from './utils/videoJsTypes'
 import { VideoControls } from './VideoControls'
 
 import 'videojs-youtube'
@@ -61,7 +62,7 @@ const StyledVideoGradient = styled(Box)`
 
 export function Video({
   id: blockId,
-  video,
+  mediaVideo,
   source,
   videoId,
   image,
@@ -73,14 +74,15 @@ export function Video({
   posterBlockId,
   children,
   action,
-  objectFit
+  objectFit,
+  videoVariantLanguageId
 }: TreeBlock<VideoFields>): ReactElement {
   const theme = useTheme()
   const hundredVh = use100vh()
 
   const videoRef = useRef<HTMLVideoElement>(null)
   const [loading, setLoading] = useState(true)
-  const [player, setPlayer] = useState<Player>()
+  const [player, setPlayer] = useState<VideoJsPlayer>()
   const [showPoster, setShowPoster] = useState(true)
   const [activeStep, setActiveStep] = useState(false)
 
@@ -90,8 +92,9 @@ export function Video({
     state: { selectedBlock }
   } = useEditor()
 
-  const eventVideoTitle = video?.title[0].value ?? title
-  const eventVideoId = video?.id ?? videoId
+  const eventVideoTitle =
+    mediaVideo?.__typename == 'Video' ? mediaVideo?.title[0].value : title
+  const eventVideoId = get(mediaVideo, 'id') ?? videoId
 
   // Setup poster image
   const posterBlock = children.find(
@@ -99,8 +102,8 @@ export function Video({
   ) as TreeBlock<ImageFields> | undefined
 
   const videoImage =
-    source === VideoBlockSource.internal
-      ? video?.images[0]?.mobileCinematicHigh
+    mediaVideo?.__typename == 'Video'
+      ? mediaVideo?.images[0]?.mobileCinematicHigh
       : image
 
   const blurBackground = useMemo(() => {
@@ -146,7 +149,13 @@ export function Video({
   const showVideoImage =
     (variant === 'admin' && source === VideoBlockSource.youTube) ||
     source === VideoBlockSource.internal ||
-    source === VideoBlockSource.cloudflare
+    source === VideoBlockSource.mux
+
+  const effectiveStartAt = startAt ?? 0
+  const effectiveEndAt = endAt ?? 10000
+  // Mux video clipping handles timestamps internally, so videos must start at 0 to avoid extra clipping
+  const videoControlsStartAt =
+    mediaVideo?.__typename === 'MuxVideo' ? 0 : effectiveStartAt
 
   useEffect(() => {
     setActiveStep(isActiveBlockOrDescendant(blockId))
@@ -187,8 +196,8 @@ export function Video({
         selectedBlock={selectedBlock}
         blockId={blockId}
         muted={muted}
-        startAt={startAt}
-        endAt={endAt}
+        startAt={videoControlsStartAt}
+        endAt={effectiveEndAt}
         autoplay={autoplay}
         posterBlock={posterBlock}
         setLoading={setLoading}
@@ -196,6 +205,9 @@ export function Video({
         setVideoEndTime={setVideoEndTime}
         source={source}
         activeStep={activeStep}
+        title={title}
+        mediaVideo={mediaVideo}
+        videoVariantLanguageId={videoVariantLanguageId}
       />
       {activeStep &&
         player != null &&
@@ -207,7 +219,7 @@ export function Video({
             videoTitle={eventVideoTitle}
             source={source}
             videoId={eventVideoId}
-            startAt={startAt}
+            startAt={videoControlsStartAt}
             endAt={videoEndTime}
             action={action}
           />
@@ -251,30 +263,25 @@ export function Video({
                 }
               }}
             >
-              {source === VideoBlockSource.cloudflare && videoId != null && (
-                <source
-                  src={`https://customer-${
-                    process.env.NEXT_PUBLIC_CLOUDFLARE_STREAM_CUSTOMER_CODE ??
-                    ''
-                  }.cloudflarestream.com/${
-                    videoId ?? ''
-                  }/manifest/video.m3u8?clientBandwidthHint=10`}
-                  type="application/x-mpegURL"
-                />
-              )}
-              {source === VideoBlockSource.internal &&
-                video?.variant?.hls != null && (
+              {mediaVideo?.__typename == 'Video' &&
+                mediaVideo?.variant?.hls != null && (
                   <source
-                    src={video.variant.hls}
+                    src={mediaVideo.variant.hls}
                     type="application/x-mpegURL"
                   />
                 )}
               {source === VideoBlockSource.youTube && (
                 <source
                   src={`https://www.youtube.com/embed/${videoId}?start=${
-                    startAt ?? 0
-                  }&end=${endAt ?? 0}`}
+                    effectiveStartAt
+                  }&end=${effectiveEndAt}`}
                   type="video/youtube"
+                />
+              )}
+              {mediaVideo?.__typename === 'MuxVideo' && (
+                <source
+                  src={`https://stream.mux.com/${mediaVideo.playbackId}.m3u8?asset_start_time=${effectiveStartAt}&asset_end_time=${effectiveEndAt}`}
+                  type="application/x-mpegURL"
                 />
               )}
             </StyledVideo>
@@ -283,7 +290,7 @@ export function Video({
             <ThemeProvider theme={{ ...theme, direction: 'ltr' }}>
               <VideoControls
                 player={player}
-                startAt={startAt ?? 0}
+                startAt={videoControlsStartAt}
                 endAt={videoEndTime}
                 isYoutube={source === VideoBlockSource.youTube}
                 loading={loading}
@@ -317,7 +324,8 @@ export function Video({
               zIndex: 1,
               outline:
                 selectedBlock?.id === blockId ? '2px solid #C52D3A' : 'none',
-              outlineOffset: '-3px'
+              outlineOffset: '-3px',
+              borderRadius: '24px'
             }}
             elevation={0}
             variant="outlined"

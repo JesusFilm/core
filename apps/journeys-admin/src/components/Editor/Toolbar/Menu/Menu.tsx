@@ -66,7 +66,7 @@ export function Menu({ user }: MenuProps): ReactElement {
         disabled={journey == null}
         data-testid="ToolbarMenuButton"
       >
-        <MoreIcon />
+        <MoreIcon data-testid="MoreIcon" />
       </IconButton>
       <MuiMenu
         id="edit-journey-actions"
@@ -99,7 +99,11 @@ export function Menu({ user }: MenuProps): ReactElement {
         {!mdUp && (
           <>
             <StrategyItem variant="menu-item" closeMenu={handleCloseMenu} />
-            <ShareItem variant="menu-item" closeMenu={handleCloseMenu} />
+            <ShareItem
+              variant="menu-item"
+              journey={journey}
+              handleCloseMenu={handleCloseMenu}
+            />
           </>
         )}
         {journey != null && mdUp && <Divider data-testid="menu-divider" />}

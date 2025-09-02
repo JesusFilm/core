@@ -35,7 +35,7 @@ const block: TreeBlock<VideoFields> = {
   duration: null,
   image: null,
   objectFit: null,
-  video: {
+  mediaVideo: {
     __typename: 'Video',
     id: '2_0-FallingPlates',
     title: [
@@ -104,7 +104,11 @@ describe('Video', () => {
           {...{
             ...block,
             source: VideoBlockSource.youTube,
-            videoId: 'videoId'
+            videoId: 'videoId',
+            mediaVideo: {
+              __typename: 'YouTube',
+              id: 'videoId'
+            }
           }}
         />
       </MockedProvider>
@@ -113,19 +117,26 @@ describe('Video', () => {
       .getByTestId('JourneysVideo-video0.id')
       .querySelector('.vjs-tech source')
     expect(sourceTag?.getAttribute('src')).toBe(
-      'https://www.youtube.com/embed/videoId?start=10&end=0'
+      'https://www.youtube.com/embed/videoId?start=10&end=10000'
     )
     expect(sourceTag?.getAttribute('type')).toBe('video/youtube')
   })
 
-  it('should render cloudflare video', () => {
+  it('should render mux video', () => {
     render(
       <MockedProvider>
         <Video
           {...{
             ...block,
-            source: VideoBlockSource.cloudflare,
-            videoId: 'videoId'
+            source: VideoBlockSource.mux,
+            videoId: 'videoId',
+            startAt: null,
+            mediaVideo: {
+              __typename: 'MuxVideo',
+              id: 'videoId',
+              assetId: 'videoId',
+              playbackId: 'videoId'
+            }
           }}
         />
       </MockedProvider>
@@ -134,7 +145,37 @@ describe('Video', () => {
       .getByTestId('JourneysVideo-video0.id')
       .querySelector('.vjs-tech source')
     expect(sourceTag?.getAttribute('src')).toBe(
-      'https://customer-.cloudflarestream.com/videoId/manifest/video.m3u8?clientBandwidthHint=10'
+      `https://stream.mux.com/videoId.m3u8?asset_start_time=${0}&asset_end_time=${10000}`
+    )
+    expect(sourceTag?.getAttribute('type')).toBe('application/x-mpegURL')
+  })
+
+  it('should render mux video with startAt and endAt', () => {
+    const endAt = 50
+
+    render(
+      <MockedProvider>
+        <Video
+          {...{
+            ...block,
+            source: VideoBlockSource.mux,
+            videoId: 'videoId',
+            endAt,
+            mediaVideo: {
+              __typename: 'MuxVideo',
+              id: 'videoId',
+              assetId: 'videoId',
+              playbackId: 'videoId'
+            }
+          }}
+        />
+      </MockedProvider>
+    )
+    const sourceTag = screen
+      .getByTestId('JourneysVideo-video0.id')
+      .querySelector('.vjs-tech source')
+    expect(sourceTag?.getAttribute('src')).toBe(
+      `https://stream.mux.com/videoId.m3u8?asset_start_time=${block.startAt}&asset_end_time=${endAt}`
     )
     expect(sourceTag?.getAttribute('type')).toBe('application/x-mpegURL')
   })
@@ -225,6 +266,7 @@ describe.skip('Admin Video', () => {
               themeMode: null,
               themeName: null,
               fullscreen: false,
+              backdropBlur: null,
               children: [block]
             }
           }}

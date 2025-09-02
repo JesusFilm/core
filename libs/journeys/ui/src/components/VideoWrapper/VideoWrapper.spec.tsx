@@ -27,7 +27,7 @@ describe('VideoWrapper', () => {
       description: null,
       duration: null,
       image: null,
-      video: null,
+      mediaVideo: null,
       startAt: null,
       endAt: null,
       posterBlockId: 'image5.id',
@@ -93,11 +93,11 @@ describe('VideoWrapper', () => {
         duration: null,
         image: null,
         objectFit: null,
-        video: null,
+        mediaVideo: null,
         videoId: null,
         videoVariantLanguageId: '529'
       },
-      {}
+      undefined
     )
   })
 
@@ -116,7 +116,7 @@ describe('VideoWrapper', () => {
       description: null,
       duration: null,
       image: null,
-      video: null,
+      mediaVideo: null,
       startAt: null,
       endAt: null,
       posterBlockId: 'image5.id',
@@ -182,11 +182,11 @@ describe('VideoWrapper', () => {
         duration: null,
         image: null,
         objectFit: null,
-        video: null,
+        mediaVideo: null,
         videoId: null,
         videoVariantLanguageId: '529'
       },
-      {}
+      undefined
     )
   })
 })

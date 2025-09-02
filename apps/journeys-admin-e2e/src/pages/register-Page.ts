@@ -1,14 +1,14 @@
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 import { expect } from '@playwright/test'
 import dayjs from 'dayjs'
-import { Page } from 'playwright-core'
+import type { Page } from 'playwright-core'
 
 import { getOTP, getPassword } from '../framework/helpers'
 import testData from '../utils/testData.json'
 
 let randomNumber = ''
 const thirtySecondsTimeout = 30000
-const sixtySecondsTimeout = 60000
+const seventySecondsTimeout = 70000
 
 export class Register {
   readonly page: Page
@@ -35,18 +35,12 @@ export class Register {
     await this.verifyPageNavigatedBeforeStartPage()
     await this.clickIAgreeBtn()
     await this.clickNextBtn()
-    await this.clickNextBtn()
-    // disable while formium is broken
-    // await this.verifyPageNavigatedFewQuestionsPage()
-    // await this.clickNextBtnInFewQuestionPage()
-    await this.entetTeamName()
-    await this.clickCreateBtn()
     await this.waitUntilDiscoverPageLoaded()
     await this.waitUntilTheToestMsgDisappear()
   }
 
   async enterUserName() {
-    this.userEmail = 'playwright' + randomNumber + '@example.com'
+    this.userEmail = `playwright${randomNumber}@example.com`
     await this.page.locator('input#username').fill(this.userEmail)
   }
 
@@ -80,26 +74,24 @@ export class Register {
         'div[data-testid="JourneysAdminOnboardingPageWrapper"]',
         { hasText: 'Verify Your Email' }
       )
-    ).toBeVisible({ timeout: thirtySecondsTimeout })
+    ).toBeVisible({ timeout: 30000 })
   }
 
   async enterOTP(otp) {
     await this.page
       .locator(
-        'form[data-testid="EmailInviteForm"] div[class*="MuiAccordionSummary"]'
+        'form[data-testid="EmailInviteForm"] [data-testid="VerifyCodeAccordionSummary"]'
       )
       .first()
       .click()
     await expect(
       this.page
         .locator(
-          'form[data-testid="EmailInviteForm"] div[class*="MuiAccordionSummary"]'
+          'form[data-testid="EmailInviteForm"] [data-testid="VerifyCodeAccordionSummary"]'
         )
         .first()
     ).toHaveAttribute('aria-expanded', 'true')
-    await this.page
-      .locator('div[role="region"]  input[name="token"]')
-      .fill(otp as string)
+    await this.page.locator('div[role="region"]  input[name="token"]').fill(otp)
   }
 
   async clickValidateEmailBtn() {
@@ -114,7 +106,7 @@ export class Register {
         'div[data-testid="JourneysAdminOnboardingPageWrapper"]',
         { hasText: 'Terms and Conditions' }
       )
-    ).toBeVisible({ timeout: sixtySecondsTimeout })
+    ).toBeVisible({ timeout: 60000 })
   }
 
   async clickIAgreeBtn() {
@@ -123,14 +115,29 @@ export class Register {
 
   async clickNextBtn() {
     await this.page
-      .locator('button[data-testid="TermsAndConditionsNextButton"]')
-      .click()
+      .locator('button[type="button"]', { hasText: 'Next' })
+      .click({ delay: 2000 })
+  }
+
+  async verifyPageNavigatedFewQuestionsPage() {
+    await expect(
+      this.page.locator(
+        'div[data-testid="JourneysAdminOnboardingPageWrapper"]',
+        { hasText: 'User Insights' }
+      )
+    ).toBeVisible({ timeout: 50000 })
+  }
+
+  async clickNextBtnInFewQuestionPage() {
+    await this.page
+      .locator('button[type="submit"]', { hasText: 'Next' })
+      .click({ delay: 3000 })
   }
 
   async entetTeamName() {
     await this.page
       .locator('input#title')
-      .fill(testData.teams.teamName + randomNumber)
+      .fill(testData.teams.teamName + randomNumber, { timeout: 60000 })
   }
 
   async clickCreateBtn() {
@@ -145,7 +152,7 @@ export class Register {
         'div[data-testid="JourneysAdminOnboardingPageWrapper"] span',
         { hasText: 'Invite Teammates' }
       )
-    ).toBeVisible({ timeout: sixtySecondsTimeout })
+    ).toBeVisible({ timeout: 50000 })
   }
 
   async clickSkipBtn() {
@@ -155,20 +162,114 @@ export class Register {
   }
 
   async waitUntilDiscoverPageLoaded() {
-    await expect(
-      this.page.locator(
-        'div[data-testid="JourneysAdminContainedIconButton"] button'
+    // Wait for page navigation to complete
+    await this.page.waitForLoadState('domcontentloaded', { timeout: 30000 })
+
+    // Try multiple selectors for different MUI versions and component structures
+    const selectors = [
+      // Primary data-testid selectors
+      'div[data-testid="JourneysAdminContainedIconButton"]',
+      '[data-testid="JourneysAdminContainedIconButton"]',
+
+      // With nested elements
+      'div[data-testid="JourneysAdminContainedIconButton"] button',
+      '[data-testid="JourneysAdminContainedIconButton"] button',
+      'div[data-testid="JourneysAdminContainedIconButton"] [role="button"]',
+
+      // CardActionArea based (MUI Card structure)
+      'div[data-testid="JourneysAdminContainedIconButton"] .MuiCardActionArea-root',
+      '[data-testid="JourneysAdminContainedIconButton"] .MuiButtonBase-root',
+
+      // Fallback to any clickable element with the testid
+      '[data-testid*="ContainedIconButton"]',
+      'div[data-testid*="ContainedIconButton"]'
+    ]
+
+    let found = false
+    for (const selector of selectors) {
+      try {
+        await expect(this.page.locator(selector)).toBeVisible({
+          timeout: 3000
+        })
+        found = true
+        break
+      } catch (error) {
+        continue
+      }
+    }
+
+    if (!found) {
+      // Get all elements with data-testid for debugging
+      const allTestIds = await this.page.$$eval(
+        '[data-testid]',
+        (elements) => elements.length
       )
-    ).toBeVisible({ timeout: sixtySecondsTimeout })
+
+      throw new Error(
+        `ContainedIconButton not found. Found ${allTestIds} elements with data-testid on the page`
+      )
+    }
   }
 
   async waitUntilTheToestMsgDisappear() {
     await expect(this.page.locator('div#notistack-snackbar')).toHaveCount(0, {
-      timeout: thirtySecondsTimeout
+      timeout: 30000
     })
+  }
+
+  async verifyMoreJourneyHerePopup() {
+    // waiting for 'More journeys here' appear if it is don't, we doesn't need to assert the script
+    const moreJourneysLocator = this.page.locator(
+      'div[class*="MuiPopover-paper"] h6',
+      {
+        hasText: 'More journeys here'
+      }
+    )
+
+    try {
+      await expect(moreJourneysLocator).toBeVisible({ timeout: 5000 })
+      const dismissButtonLocator = this.page.locator(
+        'div[class*="MuiPopover-paper"] button',
+        {
+          hasText: 'Dismiss'
+        }
+      )
+      await dismissButtonLocator.click()
+    } catch {
+      console.log('More journeys here is not appear')
+    }
   }
 
   async getUserEmailId() {
     return this.userEmail
+  }
+
+  async clickNextBtnOfTermsAndConditions() {
+    await this.page
+      .locator('button[data-testid="TermsAndConditionsNextButton"]')
+      .click()
+  }
+
+  async retryCreateYourWorkSpacePage() {
+    // clicking on 'Next' button twice if the Create Your Workspace page doesn't appears
+    try {
+      await expect(
+        this.page.locator(
+          'div[data-testid="JourneysAdminOnboardingPageWrapper"] h2',
+          { hasText: 'Create Your Workspace' }
+        )
+      ).toBeVisible({ timeout: 10000 })
+    } catch {
+      await this.clickNextBtnOfTermsAndConditions()
+    }
+  }
+
+  async verifyCreateYourWorkspacePage() {
+    await expect(
+      this.page.locator(
+        'div[data-testid="JourneysAdminOnboardingPageWrapper"] h2',
+        { hasText: 'Create Your Workspace' }
+      )
+    ).toBeVisible({ timeout: 10000 })
   }
 }

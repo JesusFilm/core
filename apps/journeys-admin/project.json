@@ -3,6 +3,7 @@
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "apps/journeys-admin",
   "projectType": "application",
+  "tags": ["doppler_config:stg_dev"],
   "implicitDependencies": ["locales"],
   "targets": {
     "build": {
@@ -204,6 +205,5 @@
         "parallel": false
       }
     }
-  },
-  "tags": ["doppler_config:stg_dev"]
+  }
 }

@@ -54,6 +54,7 @@ const defaultTemplate: Journey = {
   publishedAt: '2023-08-14T04:24:24.392Z',
   createdAt: '2023-08-14T04:24:24.392Z',
   featuredAt: '2023-08-14T04:24:24.392Z',
+  updatedAt: '2023-08-14T04:24:24.392Z',
   status: JourneyStatus.published,
   seoTitle: null,
   seoDescription: null,
@@ -292,7 +293,9 @@ export const getLanguagesMock: MockedResponse<GetLanguages> = {
           '53441',
           '1942',
           '5541',
-          '6788'
+          '6788',
+          '3804',
+          '1370'
         ]
       }
     }
@@ -303,6 +306,7 @@ export const getLanguagesMock: MockedResponse<GetLanguages> = {
         {
           __typename: 'Language',
           id: '529',
+          slug: 'english',
           name: [
             {
               value: 'English',
@@ -314,6 +318,7 @@ export const getLanguagesMock: MockedResponse<GetLanguages> = {
         {
           id: '496',
           __typename: 'Language',
+          slug: 'french',
           name: [
             {
               value: 'Français',
@@ -330,6 +335,7 @@ export const getLanguagesMock: MockedResponse<GetLanguages> = {
         {
           id: '1106',
           __typename: 'Language',
+          slug: 'german-standard',
           name: [
             {
               value: 'Deutsch',

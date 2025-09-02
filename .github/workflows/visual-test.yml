@@ -1,38 +1,42 @@
 name: Visual Test
 on:
   push:
-    branches: [main, feature/*]
-  pull_request:
-    branches: [main, feature/*]
-    types: [labeled, synchronize]
-  merge_group:
-    branches: [main]
-concurrency:
-  group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
-  cancel-in-progress: true
+    branches: [never]
+  # push:
+  #   branches: [main, feature/*]
+  # pull_request:
+  #   branches: [main, feature/*]
+  #   types: [labeled, synchronize]
+  # merge_group:
+  #   branches: [main]
 jobs:
   visual-test:
-    runs-on: ubuntu-latest
+    runs-on: blacksmith-2vcpu-ubuntu-2204
     strategy:
       matrix:
-        node-version: [20]
+        node-version: [22]
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
       - name: Check branch up to date with base
         run: ./tools/scripts/check-git-diff.sh
-      - uses: actions/setup-node@v4
+      - uses: useblacksmith/setup-node@v5
         with:
           node-version: ${{ matrix.node-version }}
-          cache: 'npm'
-      - name: Cache Node Modules
-        id: cache-node-modules
-        uses: actions/cache@v4
+      - name: Get Node Version
+        id: node-version
+        run: echo "version=$(node -v)" >> $GITHUB_OUTPUT
+      - name: Mount NPM Cache
+        uses: useblacksmith/stickydisk@v1
         with:
-          path: node_modules
-          key: node-modules-${{ matrix.node-version }}-${{ hashFiles('package-lock.json') }}
-          restore-keys: node-modules-${{ matrix.node-version }}-
+          key: ${{ github.repository }}-${{ steps.node-version.outputs.version }}-npm-cache
+          path: ~/.npm
+      - name: Mount node_modules
+        uses: useblacksmith/stickydisk@v1
+        with:
+          key: ${{ github.repository }}-${{ steps.node-version.outputs.version }}-node-modules
+          path: ./node_modules
       - name: NPM Install
         run: npm install --silent
       - uses: nrwl/nx-set-shas@v4

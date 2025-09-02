@@ -1,0 +1,137 @@
+{
+  "name": "short-links",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/short-links",
+  "projectType": "application",
+  "targets": {
+    "build": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          "cp -r libs/locales apps/short-links/public",
+          "nx _build short-links"
+        ],
+        "parallel": false
+      },
+      "configurations": {
+        "production": {
+          "commands": [
+            "cp -r libs/locales apps/short-links/public",
+            "CI=true nx _build short-links --prod"
+          ]
+        }
+      }
+    },
+    "_build": {
+      "executor": "@nx/next:build",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/apps/short-links"
+      },
+      "configurations": {
+        "production": {}
+      }
+    },
+    "deploy": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          "VERCEL_PROJECT_ID=$SHORT_LINKS_VERCEL_PROJECT_ID npx vercel pull --environment=preview --token=$VERCEL_TOKEN",
+          "echo \"VERCEL_ENV=\\\"$NEXT_PUBLIC_VERCEL_ENV\\\"\" >> .vercel/.env.preview.local",
+          "echo \"VERCEL_GIT_COMMIT_SHA=\\\"$NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA\\\"\" >> .vercel/.env.preview.local",
+          "npx vercel build",
+          "VERCEL_PROJECT_ID=$SHORT_LINKS_VERCEL_PROJECT_ID npx vercel deploy --prebuilt --token=$VERCEL_TOKEN --archive=tgz > apps/short-links/.vercel-url"
+        ],
+        "parallel": false
+      },
+      "configurations": {
+        "production": {
+          "commands": [
+            "VERCEL_PROJECT_ID=$SHORT_LINKS_VERCEL_PROJECT_ID npx vercel pull --environment=production --token=$VERCEL_TOKEN",
+            "echo \"VERCEL_ENV=\\\"$NEXT_PUBLIC_VERCEL_ENV\\\"\" >> .vercel/.env.production.local",
+            "echo \"VERCEL_GIT_COMMIT_SHA=\\\"$NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA\\\"\" >> .vercel/.env.production.local",
+            "npx vercel build --prod",
+            "VERCEL_PROJECT_ID=$SHORT_LINKS_VERCEL_PROJECT_ID npx vercel deploy --prebuilt --prod --token=$VERCEL_TOKEN --archive=tgz > apps/short-links/.vercel-url"
+          ]
+        }
+      }
+    },
+    "upload-sourcemaps": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          "npx @datadog/datadog-ci sourcemaps upload dist/apps/short-links/.next/static --service=short-links --release-version=$GIT_COMMIT_SHA --minified-path-prefix=/_next/static/"
+        ],
+        "parallel": false
+      }
+    },
+    "vercel-alias": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          "npx vercel alias set $(cat apps/short-links/.vercel-url) short-links-$PR_NUMBER-jesusfilm.vercel.app --token=$VERCEL_TOKEN --scope=jesusfilm",
+          "echo \"https://short-links-$PR_NUMBER-jesusfilm.vercel.app\" > apps/short-links/.vercel-url"
+        ],
+        "parallel": false
+      }
+    },
+    "serve": {
+      "executor": "@nx/next:server",
+      "defaultConfiguration": "development",
+      "options": {
+        "buildTarget": "short-links:_build",
+        "dev": true,
+        "port": 4700
+      },
+      "configurations": {
+        "development": {
+          "buildTarget": "short-links:_build:development",
+          "dev": true
+        },
+        "production": {
+          "buildTarget": "short-links:_build:production",
+          "dev": false
+        }
+      }
+    },
+    "export": {
+      "executor": "@nx/next:export",
+      "options": {
+        "buildTarget": "short-links:build:production"
+      }
+    },
+    "test": {
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
+      "options": {
+        "jestConfig": "apps/short-links/jest.config.ts"
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "cache": true,
+        "cacheLocation": ".cache/short-links/eslint",
+        "cacheStrategy": "content"
+      }
+    },
+    "type-check": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npx tsc -b apps/short-links/tsconfig.json"
+      }
+    },
+    "fetch-secrets": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          {
+            "command": "DOPPLER_TOKEN=$DOPPLER_SHORT_LINKS_TOKEN doppler secrets download --no-file --format=env-no-quotes --project short-links > apps/short-links/.env"
+          }
+        ]
+      }
+    }
+  },
+  "tags": []
+}

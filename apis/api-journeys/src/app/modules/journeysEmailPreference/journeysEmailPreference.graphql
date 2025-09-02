@@ -1,0 +1,21 @@
+type JourneysEmailPreference @shareable {
+  email: String!
+  unsubscribeAll: Boolean!
+  accountNotifications: Boolean!
+}
+
+input JourneysEmailPreferenceUpdateInput {
+  email: String!
+  preference: String!
+  value: Boolean!
+}
+
+extend type Mutation {
+  updateJourneysEmailPreference(
+    input: JourneysEmailPreferenceUpdateInput!
+  ): JourneysEmailPreference
+}
+
+extend type Query {
+  journeysEmailPreference(email: String!): JourneysEmailPreference
+}

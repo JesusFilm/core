@@ -14,37 +14,48 @@ const LanguagesFilterStory: Meta<typeof LanguagesFilter> = {
 
 const languages = [
   {
+    __typename: 'Language',
     id: '529',
+    slug: 'english',
     name: [
       {
         value: 'English',
-        primary: true
+        primary: true,
+        __typename: 'LanguageName'
       }
     ]
   },
   {
     id: '496',
+    __typename: 'Language',
+    slug: 'french',
     name: [
       {
         value: 'Français',
-        primary: true
+        primary: true,
+        __typename: 'LanguageName'
       },
       {
         value: 'French',
-        primary: false
+        primary: false,
+        __typename: 'LanguageName'
       }
     ]
   },
   {
     id: '1106',
+    __typename: 'Language',
+    slug: 'german-standard',
     name: [
       {
         value: 'Deutsch',
-        primary: true
+        primary: true,
+        __typename: 'LanguageName'
       },
       {
         value: 'German, Standard',
-        primary: false
+        primary: false,
+        __typename: 'LanguageName'
       }
     ]
   }

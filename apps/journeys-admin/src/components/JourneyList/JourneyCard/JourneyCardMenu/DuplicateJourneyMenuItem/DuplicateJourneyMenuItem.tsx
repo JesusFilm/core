@@ -1,4 +1,3 @@
-import { FetchResult } from '@apollo/client'
 import CircularProgress from '@mui/material/CircularProgress'
 import { useRouter } from 'next/router'
 import { useTranslation } from 'next-i18next'
@@ -11,7 +10,6 @@ import { useTeam } from '@core/journeys/ui/TeamProvider'
 import { useJourneyDuplicateMutation } from '@core/journeys/ui/useJourneyDuplicateMutation'
 import CopyLeftIcon from '@core/shared/ui/icons/CopyLeft'
 
-import { JourneyDuplicate } from '../../../../../../__generated__/JourneyDuplicate'
 import { MenuItem } from '../../../../MenuItem'
 
 interface DuplicateJourneyMenuItemProps {
@@ -23,31 +21,32 @@ export function DuplicateJourneyMenuItem({
   id,
   handleCloseMenu
 }: DuplicateJourneyMenuItemProps): ReactElement {
-  const router = useRouter()
-  const [journeyDuplicate, { loading }] = useJourneyDuplicateMutation()
   const { t } = useTranslation('apps-journeys-admin')
-  const [open, setOpen] = useState<boolean>(false)
-  const { enqueueSnackbar } = useSnackbar()
+  const router = useRouter()
   const { activeTeam } = useTeam()
+  const { enqueueSnackbar } = useSnackbar()
 
-  const handleDuplicateJourney = async (teamId?: string): Promise<void> => {
+  const [open, setOpen] = useState(false)
+  const [loading, setLoading] = useState(false)
+
+  const [journeyDuplicate] = useJourneyDuplicateMutation()
+
+  async function handleDuplicateJourney(teamId?: string): Promise<void> {
     if (id == null) return
-    let data: FetchResult<JourneyDuplicate> | undefined
-    if (teamId != null) {
-      data = await journeyDuplicate({
-        variables: {
-          id,
-          teamId
-        }
-      })
-    }
-    if (activeTeam?.id != null) {
-      data = await journeyDuplicate({
-        variables: { id, teamId: activeTeam.id }
-      })
-    }
-    if (data != null) {
-      handleCloseMenu()
+    setLoading(true)
+    try {
+      if (teamId != null) {
+        await journeyDuplicate({
+          variables: {
+            id,
+            teamId
+          }
+        })
+      } else if (activeTeam?.id != null) {
+        await journeyDuplicate({
+          variables: { id, teamId: activeTeam.id }
+        })
+      }
       enqueueSnackbar(
         activeTeam?.id != null ? t('Journey Duplicated') : t('Journey Copied'),
         {
@@ -55,6 +54,14 @@ export function DuplicateJourneyMenuItem({
           preventDuplicate: true
         }
       )
+      handleCloseMenu()
+    } catch (error) {
+      enqueueSnackbar(t('Failed to duplicate journey'), {
+        variant: 'error',
+        preventDuplicate: true
+      })
+    } finally {
+      setLoading(false)
     }
   }
 
@@ -71,6 +78,7 @@ export function DuplicateJourneyMenuItem({
     <>
       <MenuItem
         label={t('Duplicate')}
+        disabled={loading}
         icon={
           loading ? (
             <CircularProgress

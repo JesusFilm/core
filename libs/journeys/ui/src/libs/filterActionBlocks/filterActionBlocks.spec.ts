@@ -29,8 +29,10 @@ const button: TreeBlock<ButtonBlock> = {
   size: null,
   startIconId: null,
   endIconId: null,
+  submitEnabled: null,
   action: buttonAction,
-  children: []
+  children: [],
+  settings: null
 }
 
 const RadioOption1: TreeBlock<RadioOptionFields> = {
@@ -40,6 +42,7 @@ const RadioOption1: TreeBlock<RadioOptionFields> = {
   parentBlockId: 'RadioQuestion1',
   parentOrder: 0,
   action: null,
+  pollOptionImageBlockId: null,
   children: []
 }
 
@@ -50,6 +53,7 @@ const RadioOption2: TreeBlock<RadioOptionFields> = {
   parentBlockId: 'RadioQuestion1',
   parentOrder: 1,
   action: null,
+  pollOptionImageBlockId: null,
   children: []
 }
 
@@ -58,6 +62,7 @@ const radioQuestionBlock: TreeBlock<RadioQuestionFields> = {
   id: 'RadioQuestion1',
   parentBlockId: 'RadioQuestion1',
   parentOrder: 0,
+  gridView: false,
   children: [RadioOption1, RadioOption2]
 }
 
@@ -87,6 +92,7 @@ const card: TreeBlock<CardBlock> = {
   themeMode: null,
   themeName: null,
   fullscreen: false,
+  backdropBlur: null,
   children: [image, button, radioQuestionBlock]
 }
 

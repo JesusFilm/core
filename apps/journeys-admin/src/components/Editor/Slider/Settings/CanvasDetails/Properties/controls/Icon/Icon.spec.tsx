@@ -42,8 +42,10 @@ describe('Icon', () => {
     size: null,
     startIconId: null,
     endIconId: null,
+    submitEnabled: null,
     action: null,
-    children: [icon]
+    children: [icon],
+    settings: null
   }
 
   it('shows toggle options if there is a icon', () => {
@@ -161,7 +163,7 @@ describe('Icon', () => {
       </MockedProvider>
     )
     fireEvent.mouseDown(getByRole('combobox', { name: 'icon-name' }))
-    fireEvent.click(getByRole('option', { name: 'Select an icon...' }))
+    fireEvent.click(getByRole('option', { name: 'None' }))
     await waitFor(() => expect(result).toHaveBeenCalled())
   })
 

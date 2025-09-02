@@ -1,4 +1,4 @@
-import algoliasearch, { SearchClient } from 'algoliasearch'
+import { SearchClient, algoliasearch } from 'algoliasearch'
 import { ReactElement, ReactNode, createContext, useContext } from 'react'
 
 const searchClient = algoliasearch(

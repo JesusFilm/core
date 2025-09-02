@@ -83,7 +83,7 @@ export function SelectableWrapper({
           top: 0,
           left: 0,
           outlineOffset: '-3px',
-          borderRadius: '20px',
+          borderRadius: '24px',
           my: '0px !important',
           '&:first-child': {
             '& > *': { zIndex: -1 }
@@ -124,22 +124,18 @@ export function SelectableWrapper({
             ? 'MuiButtonGroup-root MuiButtonGroup-grouped MuiButtonGroup-groupedVertical'
             : ''
         }
-        sx={{
-          '&:first-child': {
-            '& > *': { mt: '0px' }
-          },
-          '&:last-child': {
-            '& > *': { mb: '0px' }
-          },
-          borderRadius,
-          outline: '2px solid ',
-          outlineColor:
-            selectedBlock?.id === block.id ? '#C52D3A' : 'transparent',
-          transition: (theme) => theme.transitions.create('outline-color'),
-          outlineOffset: '5px',
-          zIndex: selectedBlock?.id === block.id ? 1 : 0,
-          ...videoOutlineStyles
-        }}
+        {...(block.__typename !== 'ButtonBlock' && {
+          sx: {
+            borderRadius,
+            outline: '2px solid',
+            outlineColor:
+              selectedBlock?.id === block.id ? '#C52D3A' : 'transparent',
+            outlineOffset: '5px',
+            transition: (theme) => theme.transitions.create('outline-color'),
+            zIndex: selectedBlock?.id === block.id ? 1 : 0,
+            ...videoOutlineStyles
+          }
+        })}
         // if changing the event handlers or their functions, please check RadioOptionBlock events are being propogated properly i.e - can be re-ordered
         onClickCapture={handleSelectBlock}
         onClick={blockNonSelectionEvents}

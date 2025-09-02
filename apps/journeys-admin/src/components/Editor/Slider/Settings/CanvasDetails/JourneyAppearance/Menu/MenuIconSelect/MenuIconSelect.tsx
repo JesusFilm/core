@@ -1,4 +1,5 @@
 import Box from '@mui/material/Box'
+import CardActionArea from '@mui/material/CardActionArea'
 import MenuItem from '@mui/material/MenuItem'
 import Select, { SelectChangeEvent } from '@mui/material/Select'
 import Stack from '@mui/material/Stack'
@@ -61,6 +62,25 @@ const Icons: IconOptions = [
   }
 ]
 
+const getIconTestId = (
+  iconValue: JourneyMenuButtonIcon
+): string | undefined => {
+  switch (iconValue) {
+    case JourneyMenuButtonIcon.chevronDown:
+      return 'ChevronDownIcon'
+    case JourneyMenuButtonIcon.home4:
+      return 'Home4Icon'
+    case JourneyMenuButtonIcon.home3:
+      return 'Home3Icon'
+    case JourneyMenuButtonIcon.menu1:
+      return 'Menu1Icon'
+    case JourneyMenuButtonIcon.more:
+      return 'MoreIcon'
+    default:
+      return undefined
+  }
+}
+
 export function MenuIconSelect(): ReactElement {
   const { journey } = useJourney()
   const { add } = useCommand()
@@ -108,65 +128,78 @@ export function MenuIconSelect(): ReactElement {
   return (
     <Stack
       direction="row"
-      sx={{ justifyContent: 'space-between', alignItems: 'center' }}
+      sx={{
+        justifyContent: 'space-between',
+        alignItems: 'center'
+      }}
       data-testid="MenuIconSelect"
     >
       <Typography variant="subtitle2" sx={{ color: 'secondary.light' }}>
         {t('Select Icon')}
       </Typography>
-      <Select
-        value={journey?.menuButtonIcon ?? ''}
-        onChange={handleChange}
-        displayEmpty
-        autoWidth
-        IconComponent={ChevronDown}
-        sx={{
-          width: 'min-content',
-          borderRadius: 2,
-          '& .MuiSelect-icon': {
-            color: 'primary.main',
-            mr: 1.5
-          }
-        }}
-        inputProps={{
-          sx: {
-            py: 2,
-            pl: 2,
-            mr: 4
-          }
-        }}
-      >
-        <MenuItem value="" key="empty">
-          <Box
-            sx={{
-              height: 56,
-              width: 56,
-              borderRadius: 2,
-              boxSizing: 'border-box',
-              border: ({ palette }) =>
-                `3px dashed ${palette.background.default}`,
-              display: 'grid',
-              placeItems: 'center'
-            }}
-          />
-        </MenuItem>
-        {Icons.map(({ Icon, value }) => (
-          <MenuItem value={value} key={value}>
+      <CardActionArea sx={{ width: 112 }}>
+        <Select
+          value={journey?.menuButtonIcon ?? ''}
+          onChange={handleChange}
+          displayEmpty
+          IconComponent={ChevronDown}
+          sx={{
+            width: '100%',
+            borderRadius: 2,
+            '& .MuiSelect-icon': {
+              color: 'primary.main',
+              mr: 1.5
+            },
+            '&.MuiOutlinedInput-root': {
+              '& fieldset': {
+                borderColor: 'divider'
+              },
+              '&:hover fieldset': {
+                borderColor: 'divider'
+              },
+              '&:hover.Mui-focused fieldset': {
+                borderColor: 'primary.main'
+              }
+            }
+          }}
+          inputProps={{
+            sx: {
+              py: 2,
+              pl: 2
+            }
+          }}
+        >
+          <MenuItem value="" key="empty">
             <Box
               sx={{
                 height: 56,
                 width: 56,
                 borderRadius: 2,
-                background: ({ palette }) => palette.background.default,
+                border: ({ palette }) =>
+                  `3px dashed ${palette.background.default}`,
                 display: 'grid',
                 placeItems: 'center'
               }}
-            >
-              <Icon />
-            </Box>
+            />
           </MenuItem>
-        ))}
-      </Select>
+          {Icons.map(({ Icon, value }) => (
+            <MenuItem value={value} key={value}>
+              <Box
+                sx={{
+                  height: 56,
+                  width: 56,
+                  borderRadius: 2,
+                  border: ({ palette }) => palette.background.default,
+                  display: 'grid',
+                  placeItems: 'center'
+                }}
+              >
+                <Icon data-testid={getIconTestId(value)} />
+              </Box>
+            </MenuItem>
+          ))}
+        </Select>
+      </CardActionArea>
     </Stack>
   )
 }

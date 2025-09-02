@@ -1,8 +1,8 @@
-import { gql, useQuery } from '@apollo/client'
+import { useQuery } from '@apollo/client'
 import SubtitlesOutlined from '@mui/icons-material/SubtitlesOutlined'
 import CircularProgress from '@mui/material/CircularProgress'
 import TextField from '@mui/material/TextField'
-import { ComponentProps, ReactElement, useState } from 'react'
+import { ComponentProps, ReactElement, memo, useState } from 'react'
 import Player from 'video.js/dist/types/player'
 
 import { Dialog } from '@core/shared/ui/Dialog'
@@ -15,33 +15,14 @@ import { ThemeMode, ThemeName } from '@core/shared/ui/themes'
 
 import { GetSubtitles } from '../../../__generated__/GetSubtitles'
 import { useVideo } from '../../libs/videoContext'
-
-export const GET_SUBTITLES = gql`
-  query GetSubtitles($id: ID!) {
-    video(id: $id, idType: slug) {
-      variant {
-        subtitle {
-          language {
-            name {
-              value
-              primary
-            }
-            bcp47
-            id
-          }
-          value
-        }
-      }
-    }
-  }
-`
+import { GET_SUBTITLES } from '../../libs/watchContext/useSubtitleUpdate/useSubtitleUpdate'
 
 export interface SubtitleDialogProps
   extends Pick<ComponentProps<typeof Dialog>, 'open' | 'onClose'> {
   player: Player & { textTracks?: () => TextTrackList }
 }
 
-export function SubtitleDialog({
+export const SubtitleDialog = memo(function SubtitleDialog({
   open,
   onClose,
   player
@@ -126,9 +107,7 @@ export function SubtitleDialog({
               hiddenLabel
               placeholder="Search Language"
               label="Language"
-              helperText={`${
-                String(variant?.subtitleCount) ?? 0
-              } Languages Available`}
+              helperText={`${variant?.subtitleCount ?? 0} Languages Available`}
               sx={{
                 '> .MuiOutlinedInput-root': {
                   borderRadius: 2
@@ -151,4 +130,4 @@ export function SubtitleDialog({
       </Dialog>
     </ThemeProvider>
   )
-}
+})

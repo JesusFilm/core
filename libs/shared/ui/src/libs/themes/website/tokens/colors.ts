@@ -13,7 +13,7 @@ export const websiteColorsLight: Required<Pick<ThemeOptions, 'palette'>> = {
     mode: 'light',
     background: { default: palette[0] },
     primary: {
-      main: '#EF3340',
+      main: '#CB333B',
       light: '#F8485E',
       dark: '#A4343A',
       contrastText: palette[0]

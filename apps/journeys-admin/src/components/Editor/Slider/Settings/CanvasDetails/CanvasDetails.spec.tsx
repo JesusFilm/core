@@ -37,8 +37,10 @@ describe('CanvasDetails', () => {
     size: ButtonSize.medium,
     startIconId: null,
     endIconId: null,
+    submitEnabled: null,
     action: null,
-    children: []
+    children: [],
+    settings: null
   }
 
   const mockStep: TreeBlock<StepBlock> = {

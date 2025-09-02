@@ -1,0 +1,55 @@
+{
+  "name": "short-links-e2e",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/short-links-e2e/src",
+  "projectType": "application",
+  "targets": {
+    "e2e": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": ["playwright test"],
+        "cwd": "apps/short-links-e2e"
+      }
+    },
+    "update-snapshots": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": ["playwright test --update-snapshots"],
+        "cwd": "apps/short-links-e2e"
+      }
+    },
+    "debug": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          "PWDEBUG=1 xvfb-run playwright test --project=chromium --timeout=0"
+        ],
+        "cwd": "apps/short-links-e2e"
+      }
+    },
+    "show-report": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": ["playwright show-report"],
+        "cwd": "apps/short-links-e2e"
+      }
+    },
+    "type-check": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npx tsc -b apps/short-links-e2e/tsconfig.json"
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "cache": true,
+        "cacheLocation": ".cache/short-links-e2e/eslint",
+        "cacheStrategy": "content"
+      }
+    }
+  },
+  "tags": [],
+  "implicitDependencies": ["short-links"]
+}

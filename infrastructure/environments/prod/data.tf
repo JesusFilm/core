@@ -10,6 +10,14 @@ data "aws_route53_zone" "route53_central_jesusfilm_org" {
   name = "central.jesusfilm.org"
 }
 
+data "aws_acm_certificate" "acm_arclight_org" {
+  domain = "arclight.org"
+}
+
+data "aws_acm_certificate" "acm_arc_gt" {
+  domain = "arc.gt"
+}
+
 data "aws_iam_role" "ecs_task_execution_role" {
   name = "jfp-ecs-task-execution-role"
 }
@@ -38,6 +46,10 @@ data "aws_ssm_parameter" "doppler_api_media_prod_token" {
   name = "/terraform/prd/DOPPLER_API_MEDIA_PROD_TOKEN"
 }
 
+data "aws_ssm_parameter" "doppler_arclight_prod_token" {
+  name = "/terraform/prd/DOPPLER_ARCLIGHT_PROD_TOKEN"
+}
+
 data "aws_ssm_parameter" "cloudflared_prod_token" {
   name = "/terraform/prd/CLOUDFLARED_PROD_TOKEN"
 }
@@ -48,4 +60,8 @@ data "aws_ssm_parameter" "doppler_journeys_admin_prod_token" {
 
 data "aws_ssm_parameter" "doppler_core_prod_token" {
   name = "/terraform/prd/DOPPLER_CORE_PROD_TOKEN"
+}
+
+data "aws_ssm_parameter" "doppler_media_transcoder_prod_token" {
+  name = "/terraform/prd/DOPPLER_MEDIA_TRANSCODER_PROD_TOKEN"
 }

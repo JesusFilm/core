@@ -32,8 +32,10 @@ const block: TreeBlock<TextResponseBlock> = {
   parentBlockId: null,
   parentOrder: null,
   label: '',
+  placeholder: null,
   hint: null,
   minRows: null,
+  required: null,
   integrationId: null,
   type: null,
   routeId: null,
@@ -68,8 +70,10 @@ export const Complete = {
     parentBlockId: null,
     parentOrder: null,
     label: 'complete label',
+    placeholder: 'placeholder text',
     hint: 'hint text',
     minRows: 2,
+    required: true,
     children: []
   }
 }

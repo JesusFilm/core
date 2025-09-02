@@ -82,7 +82,7 @@ describe('VideoCard', () => {
       )
       expect(getByRole('link')).toHaveAttribute(
         'href',
-        `/watch/${videoId}.html/${languageId}.html`
+        `/watch/${videoId}.html/${languageId}.html?r=0`
       )
     })
 
@@ -96,7 +96,7 @@ describe('VideoCard', () => {
       )
       expect(getByRole('link')).toHaveAttribute(
         'href',
-        `/watch/container.html/${videos[0].variant?.slug as string}.html`
+        `/watch/container.html/${videos[0].variant?.slug as string}.html?r=0`
       )
     })
 
@@ -113,7 +113,7 @@ describe('VideoCard', () => {
       )
       expect(getByRole('link')).toHaveAttribute(
         'href',
-        `/watch/${videoId}.html/${languageId}.html`
+        `/watch/${videoId}.html/${languageId}.html?r=0`
       )
     })
 
@@ -130,7 +130,7 @@ describe('VideoCard', () => {
       )
       expect(getByRole('link')).toHaveAttribute(
         'href',
-        `/watch/${videoId}.html/${languageId}.html`
+        `/watch/${videoId}.html/${languageId}.html?r=0`
       )
     })
 
@@ -176,7 +176,7 @@ describe('VideoCard', () => {
       )
       expect(getByText('LUMO')).toBeInTheDocument()
       expect(getByText('Collection')).toHaveStyle('color: #FF9E00')
-      expect(getByText('4 items')).toBeInTheDocument()
+      expect(getByText('5 items')).toBeInTheDocument()
     })
 
     it('displays short film', () => {
@@ -185,7 +185,7 @@ describe('VideoCard', () => {
       )
       expect(getByText('Chosen Witness')).toBeInTheDocument()
       expect(getByText('Short Film')).toHaveStyle('color: #FF9E00')
-      expect(getByText('9:26')).toBeInTheDocument()
+      expect(getByText('9:25')).toBeInTheDocument()
     })
 
     it('displays playing now', () => {

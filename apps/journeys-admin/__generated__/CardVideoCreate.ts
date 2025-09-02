@@ -9,41 +9,61 @@ import { VideoBlockCreateInput, VideoBlockSource, VideoBlockObjectFit } from "./
 // GraphQL mutation operation: CardVideoCreate
 // ====================================================
 
-export interface CardVideoCreate_video_video_title {
+export interface CardVideoCreate_video_mediaVideo_Video_title {
   __typename: "VideoTitle";
   value: string;
 }
 
-export interface CardVideoCreate_video_video_images {
+export interface CardVideoCreate_video_mediaVideo_Video_images {
   __typename: "CloudflareImage";
   mobileCinematicHigh: string | null;
 }
 
-export interface CardVideoCreate_video_video_variant {
+export interface CardVideoCreate_video_mediaVideo_Video_variant {
   __typename: "VideoVariant";
   id: string;
   hls: string | null;
 }
 
-export interface CardVideoCreate_video_video_variantLanguages_name {
+export interface CardVideoCreate_video_mediaVideo_Video_variantLanguages_name {
   __typename: "LanguageName";
   value: string;
   primary: boolean;
 }
 
-export interface CardVideoCreate_video_video_variantLanguages {
+export interface CardVideoCreate_video_mediaVideo_Video_variantLanguages {
   __typename: "Language";
   id: string;
-  name: CardVideoCreate_video_video_variantLanguages_name[];
+  name: CardVideoCreate_video_mediaVideo_Video_variantLanguages_name[];
 }
 
-export interface CardVideoCreate_video_video {
+export interface CardVideoCreate_video_mediaVideo_Video {
   __typename: "Video";
   id: string;
-  title: CardVideoCreate_video_video_title[];
-  images: CardVideoCreate_video_video_images[];
-  variant: CardVideoCreate_video_video_variant | null;
-  variantLanguages: CardVideoCreate_video_video_variantLanguages[];
+  title: CardVideoCreate_video_mediaVideo_Video_title[];
+  images: CardVideoCreate_video_mediaVideo_Video_images[];
+  variant: CardVideoCreate_video_mediaVideo_Video_variant | null;
+  variantLanguages: CardVideoCreate_video_mediaVideo_Video_variantLanguages[];
+}
+
+export interface CardVideoCreate_video_mediaVideo_MuxVideo {
+  __typename: "MuxVideo";
+  id: string;
+  assetId: string | null;
+  playbackId: string | null;
+}
+
+export interface CardVideoCreate_video_mediaVideo_YouTube {
+  __typename: "YouTube";
+  id: string;
+}
+
+export type CardVideoCreate_video_mediaVideo = CardVideoCreate_video_mediaVideo_Video | CardVideoCreate_video_mediaVideo_MuxVideo | CardVideoCreate_video_mediaVideo_YouTube;
+
+export interface CardVideoCreate_video_action_PhoneAction {
+  __typename: "PhoneAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
 }
 
 export interface CardVideoCreate_video_action_NavigateToBlockAction {
@@ -67,7 +87,7 @@ export interface CardVideoCreate_video_action_EmailAction {
   email: string;
 }
 
-export type CardVideoCreate_video_action = CardVideoCreate_video_action_NavigateToBlockAction | CardVideoCreate_video_action_LinkAction | CardVideoCreate_video_action_EmailAction;
+export type CardVideoCreate_video_action = CardVideoCreate_video_action_PhoneAction | CardVideoCreate_video_action_NavigateToBlockAction | CardVideoCreate_video_action_LinkAction | CardVideoCreate_video_action_EmailAction;
 
 export interface CardVideoCreate_video {
   __typename: "VideoBlock";
@@ -137,11 +157,7 @@ export interface CardVideoCreate_video {
    * how the video should display within the VideoBlock
    */
   objectFit: VideoBlockObjectFit | null;
-  /**
-   * internal source videos: video is only populated when videoID and
-   * videoVariantLanguageId are present
-   */
-  video: CardVideoCreate_video_video | null;
+  mediaVideo: CardVideoCreate_video_mediaVideo | null;
   /**
    * action that should be performed when the video ends
    */

@@ -71,6 +71,7 @@ function JourneyReportsPage({ flags, plausibleDashboardViewed }): ReactElement {
   const [open, setOpen] = useState(plausibleDashboardViewed !== true)
 
   const journeyId = router.query.journeyId as string
+  const from = router.query.from
 
   return (
     <>
@@ -78,7 +79,7 @@ function JourneyReportsPage({ flags, plausibleDashboardViewed }): ReactElement {
       <PageWrapper
         title={t('Journey Analytics')}
         user={user}
-        backHref={`/journeys/${journeyId}`}
+        backHref={from === 'journey-list' ? '/' : `/journeys/${journeyId}`}
         mainHeaderChildren={
           <Stack
             direction="row"

@@ -35,6 +35,7 @@ const filled: TreeBlock<ButtonFields> = {
   buttonVariant: null,
   startIconId: 'icon1',
   endIconId: 'icon2',
+  submitEnabled: null,
   action: null,
   children: [
     {
@@ -57,7 +58,8 @@ const filled: TreeBlock<ButtonFields> = {
       iconSize: null,
       children: []
     }
-  ]
+  ],
+  settings: null
 }
 
 const contained: TreeBlock<ButtonFields> = {
@@ -71,8 +73,10 @@ const contained: TreeBlock<ButtonFields> = {
   buttonVariant: null,
   startIconId: null,
   endIconId: null,
+  submitEnabled: null,
   action: null,
-  children: []
+  children: [],
+  settings: null
 }
 
 const text: TreeBlock<ButtonFields> = {
@@ -86,8 +90,10 @@ const text: TreeBlock<ButtonFields> = {
   buttonVariant: ButtonVariant.text,
   startIconId: null,
   endIconId: null,
+  submitEnabled: null,
   action: null,
-  children: []
+  children: [],
+  settings: null
 }
 
 const steps: Array<TreeBlock<StepBlock>> = [
@@ -110,6 +116,7 @@ const steps: Array<TreeBlock<StepBlock>> = [
         themeMode: null,
         themeName: null,
         fullscreen: false,
+        backdropBlur: null,
         children: [
           {
             id: 'image0.id',

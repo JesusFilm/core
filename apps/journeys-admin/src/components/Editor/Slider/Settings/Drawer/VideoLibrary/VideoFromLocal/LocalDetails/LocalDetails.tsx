@@ -48,6 +48,7 @@ export const GET_VIDEO = gql`
       }
       variantLanguages {
         id
+        slug
         name {
           value
           primary
@@ -71,7 +72,7 @@ export function LocalDetails({
   onSelect
 }: Pick<VideoDetailsProps, 'open' | 'id' | 'onSelect'>): ReactElement {
   const videoRef = useRef<HTMLVideoElement>(null)
-  const playerRef = useRef<Player>()
+  const playerRef = useRef<Player | null>(null)
   const [playing, setPlaying] = useState(false)
   const [openLanguage, setOpenLanguage] = useState(false)
   const [selectedLanguage, setSelectedLanguage] =
@@ -253,6 +254,7 @@ export function LocalDetails({
           onClick={handleSelect}
           size="small"
           sx={{ backgroundColor: 'secondary.dark' }}
+          disabled={loading}
         >
           {t('Select')}
         </Button>

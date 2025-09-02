@@ -1,0 +1,127 @@
+{
+  "name": "api-journeys",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apis/api-journeys/src",
+  "projectType": "application",
+  "tags": [],
+  "targets": {
+    "build": {
+      "executor": "@nx/webpack:webpack",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/apps/api-journeys",
+        "main": "apis/api-journeys/src/main.ts",
+        "tsConfig": "apis/api-journeys/tsconfig.app.json",
+        "assets": [
+          "apis/api-journeys/src/assets",
+          {
+            "glob": "**/*.graphql",
+            "input": "apis/api-journeys/src/app/",
+            "output": "./assets"
+          },
+          {
+            "glob": "**/*.graphql",
+            "input": "libs/nest/common/src/lib/TranslationModule/",
+            "output": "./assets"
+          }
+        ],
+        "compiler": "tsc",
+        "target": "node",
+        "webpackConfig": "apis/api-journeys/webpack.config.js"
+      },
+      "configurations": {
+        "production": {
+          "generatePackageJson": true,
+          "optimization": true,
+          "extractLicenses": true,
+          "inspect": false,
+          "fileReplacements": [
+            {
+              "replace": "apis/api-journeys/src/environments/environment.ts",
+              "with": "apis/api-journeys/src/environments/environment.prod.ts"
+            }
+          ]
+        }
+      }
+    },
+    "serve": {
+      "executor": "@nx/js:node",
+      "options": {
+        "buildTarget": "api-journeys:build",
+        "inspect": false
+      }
+    },
+    "watcher": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npm run ts-node tools/scripts/generate-typings.ts api-journeys --transpileOnly"
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "cache": true,
+        "cacheLocation": ".cache/api-journeys/eslint",
+        "cacheStrategy": "content"
+      }
+    },
+    "test": {
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/apis/api-journeys"],
+      "options": {
+        "jestConfig": "apis/api-journeys/jest.config.ts",
+        "fileReplacements": [
+          {
+            "replace": "apis/api-journeys/src/environments/environment.ts",
+            "with": "apis/api-journeys/src/environments/environment.testing.ts"
+          }
+        ]
+      }
+    },
+    "codegen": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "graphql-codegen --config apis/api-journeys/codegen.ts"
+      },
+      "cache": true,
+      "inputs": ["{projectRoot}/schema.graphql"]
+    },
+    "generate-graphql": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npx -y @apollo/rover@0.23.0 subgraph introspect http://localhost:4001/graphql > apis/api-journeys/schema.graphql"
+      }
+    },
+    "subgraph-check": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npx hive schema:check apis/api-journeys/schema.graphql --registry.accessToken $HIVE_TOKEN --github --service api-journeys"
+      }
+    },
+    "fetch-secrets": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "DOPPLER_TOKEN=$DOPPLER_API_JOURNEYS_TOKEN doppler secrets download --no-file --format=env-no-quotes --project api-journeys > apis/api-journeys/.env"
+      }
+    },
+    "type-check": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npx tsc -b apis/api-journeys/tsconfig.json"
+      }
+    },
+    "codecov": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "codecov -f coverage/apis/api-journeys/cobertura-coverage.xml -F apps.api-journeys"
+      }
+    },
+    "prisma-seed": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": ["npm run ts-node apis/api-journeys/db/seed.ts"]
+      }
+    }
+  }
+}

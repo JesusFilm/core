@@ -34,6 +34,7 @@ export function OnboardingTemplateCard({
             width: '100%',
             height: 'inherit'
           }}
+          data-testid="OnboardingTemplateCard"
         >
           <Stack
             sx={{

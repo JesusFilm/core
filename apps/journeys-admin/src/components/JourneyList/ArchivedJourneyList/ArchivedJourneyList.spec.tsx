@@ -10,7 +10,7 @@ import {
 import { JourneyStatus } from '../../../../__generated__/globalTypes'
 import { GET_ADMIN_JOURNEYS } from '../../../libs/useAdminJourneysQuery/useAdminJourneysQuery'
 import { ThemeProvider } from '../../ThemeProvider'
-import { defaultJourney, oldJourney } from '../journeyListData'
+import { defaultJourney, fakeDate, oldJourney } from '../journeyListData'
 import { SortOrder } from '../JourneySort'
 
 import {
@@ -19,6 +19,10 @@ import {
 } from './ArchivedJourneyList'
 
 import { ArchivedJourneyList } from '.'
+
+jest.mock('@core/journeys/ui/useNavigationState', () => ({
+  useNavigationState: jest.fn(() => false)
+}))
 
 jest.mock('next/router', () => ({
   __esModule: true,
@@ -62,7 +66,20 @@ const noJourneysMock: MockedResponse<
 }
 
 describe('ArchivedJourneyList', () => {
-  it('should render journeys in descending createdAt date by default', async () => {
+  beforeEach(() => {
+    jest.clearAllMocks()
+  })
+
+  beforeAll(() => {
+    jest.useFakeTimers()
+    jest.setSystemTime(new Date(fakeDate))
+  })
+
+  afterAll(() => {
+    jest.useRealTimers()
+  })
+
+  it('should render journeys in descending updatedAt date by default', async () => {
     const { getAllByLabelText } = render(
       <MockedProvider mocks={[archivedJourneysMock]}>
         <ThemeProvider>
@@ -75,11 +92,11 @@ describe('ArchivedJourneyList', () => {
 
     await waitFor(() =>
       expect(getAllByLabelText('journey-card')[0].textContent).toContain(
-        'January 1'
+        '11 months ago'
       )
     )
     expect(getAllByLabelText('journey-card')[1].textContent).toContain(
-      'November 19, 2020'
+      '1 year ago'
     )
   })
 
@@ -117,11 +134,11 @@ describe('ArchivedJourneyList', () => {
 
     await waitFor(() =>
       expect(getAllByLabelText('journey-card')[0].textContent).toContain(
-        'a lower case titleJanuary 1, 2021English'
+        'a lower case titleEnglish•11 months ago00'
       )
     )
     expect(getAllByLabelText('journey-card')[1].textContent).toContain(
-      'An Old Journey HeadingNovember 19, 2020 - Journey created before the current year should also show the year in the dateEnglish'
+      'An Old Journey HeadingEnglish•1 year ago00'
     )
   })
 
@@ -236,7 +253,7 @@ describe('ArchivedJourneyList', () => {
     })
 
     it('should trash all journeys', async () => {
-      const { getByText } = render(
+      const { getByText, getByRole } = render(
         <MockedProvider
           mocks={[archivedJourneysMock, trashJourneysMock, noJourneysMock]}
         >
@@ -253,12 +270,12 @@ describe('ArchivedJourneyList', () => {
       await waitFor(() =>
         expect(getByText('Default Journey Heading')).toBeInTheDocument()
       )
-      fireEvent.click(getByText('Trash'))
+      fireEvent.click(getByRole('button', { name: 'Trash' }))
       await waitFor(() => expect(result).toHaveBeenCalled())
     })
 
     it('should show error', async () => {
-      const { getByText } = render(
+      const { getByText, getByRole } = render(
         <MockedProvider
           mocks={[
             archivedJourneysMock,
@@ -280,7 +297,7 @@ describe('ArchivedJourneyList', () => {
       await waitFor(() =>
         expect(getByText('Default Journey Heading')).toBeInTheDocument()
       )
-      fireEvent.click(getByText('Trash'))
+      fireEvent.click(getByRole('button', { name: 'Trash' }))
       await waitFor(() => expect(getByText('error')).toBeInTheDocument())
     })
   })

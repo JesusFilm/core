@@ -31,6 +31,7 @@ describe('Color', () => {
     size: null,
     startIconId: null,
     endIconId: null,
+    submitEnabled: null,
     action: null,
     children: [
       {
@@ -43,7 +44,8 @@ describe('Color', () => {
         iconColor: null,
         children: []
       }
-    ]
+    ],
+    settings: null
   }
 
   const mockIconColorUpdate1 = {

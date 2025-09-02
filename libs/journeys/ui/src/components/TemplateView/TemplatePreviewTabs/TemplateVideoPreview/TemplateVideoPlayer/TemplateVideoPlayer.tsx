@@ -4,9 +4,11 @@ import videojs from 'video.js'
 import Player from 'video.js/dist/types/player'
 
 import { VideoBlockSource } from '../../../../../../__generated__/globalTypes'
+import { VideoFields_mediaVideo } from '../../../../Video/__generated__/VideoFields'
 
 export interface TemplateVideoPlayerProps {
   id?: string | null
+  mediaVideo?: VideoFields_mediaVideo | null
   source?: VideoBlockSource
   poster?: string
   startAt: number
@@ -18,7 +20,8 @@ export function TemplateVideoPlayer({
   source,
   poster,
   startAt = 0,
-  endAt
+  endAt,
+  mediaVideo
 }: TemplateVideoPlayerProps): ReactElement {
   const videoRef = useRef<HTMLVideoElement>(null)
   const [player, setPlayer] = useState<Player>()
@@ -27,6 +30,7 @@ export function TemplateVideoPlayer({
     if (videoRef.current != null) {
       setPlayer(
         videojs(videoRef.current, {
+          errorDisplay: false,
           autoplay: true,
           controls: true,
           bigPlayButton: false,
@@ -96,14 +100,6 @@ export function TemplateVideoPlayer({
         playsInline
         style={{ height: '100%' }}
       >
-        {source === VideoBlockSource.cloudflare && id != null && (
-          <source
-            src={`https://customer-${
-              process.env.NEXT_PUBLIC_CLOUDFLARE_STREAM_CUSTOMER_CODE ?? ''
-            }.cloudflarestream.com/${id}/manifest/video.m3u8`}
-            type="application/x-mpegURL"
-          />
-        )}
         {source === VideoBlockSource.internal && id != null && (
           <source src={id} type="application/x-mpegURL" />
         )}
@@ -113,6 +109,13 @@ export function TemplateVideoPlayer({
             type="video/youtube"
           />
         )}
+        {mediaVideo?.__typename === 'MuxVideo' &&
+          mediaVideo?.playbackId != null && (
+            <source
+              src={`https://stream.mux.com/${mediaVideo.playbackId}.m3u8`}
+              type="application/x-mpegURL"
+            />
+          )}
       </video>
     </Box>
   )

@@ -34,7 +34,8 @@ yarn-error.log
 testem.log
 /typings
 **/public/locales
-apps/api-gateway/router
+**/apps/watch-modern/src/i18n/locales/**/*
+apis/api-gateway/router
 /**/tsconfig.tsbuildinfo
 .history/
 /.cache
@@ -46,6 +47,7 @@ Thumbs.db
 # local .env files
 .env
 .env*local
+.dev.vars
 
 # nx generated files
 migrations.json
@@ -76,11 +78,17 @@ terraform.tfstate.backup
 # ignore old locale files
 /libs/locales/**/*_old.json
 
-# ignore app router locale files
-/apps/**/src/locales
-
 .nx/cache
 .nx/workspace-data
 
 # react-email
 .react-email
+
+.cursor/rules/*.dev.mdc
+
+# ignore exports
+/exports/*
+/imports/*
+
+# node sea
+sea-prep.blob

@@ -1,4 +1,4 @@
-import Grid from '@mui/material/Grid'
+import Grid from '@mui/material/GridLegacy'
 import { useTranslation } from 'next-i18next'
 import type { ReactElement } from 'react'
 
@@ -14,7 +14,7 @@ import { Drawer } from '../../Drawer'
 import { NewButtonButton } from './NewButtonButton'
 import { NewImageButton } from './NewImageButton'
 import { NewRadioQuestionButton } from './NewRadioQuestionButton'
-import { NewSignUpButton } from './NewSignUpButton'
+import { NewSpacerButton } from './NewSpacerButton'
 import { NewTextResponseButton } from './NewTextResponseButton'
 import { NewTypographyButton } from './NewTypographyButton'
 import { NewVideoButton } from './NewVideoButton'
@@ -59,10 +59,10 @@ export function AddBlock(): ReactElement {
           <NewTextResponseButton />
         </Grid>
         <Grid item xs={6} md={12}>
-          <NewSignUpButton />
+          <NewButtonButton />
         </Grid>
         <Grid item xs={6} md={12}>
-          <NewButtonButton />
+          <NewSpacerButton />
         </Grid>
       </Grid>
     </Drawer>
