@@ -3,7 +3,6 @@ import { OpenAPIHono, createRoute, z } from '@hono/zod-openapi'
 import { ResultOf, graphql } from '@core/shared/gql'
 
 import { getApolloClient } from '../../../../../lib/apolloClient'
-import { getDownloadSize } from '../../../../../lib/downloadHelpers'
 import { mediaComponentSchema } from '../../mediaComponent.schema'
 
 const GET_VIDEO_CHILDREN = graphql(`
@@ -324,16 +323,12 @@ mediaComponentLinksWithId.openapi(route, async (c) => {
                   containsCount: childrenCount,
                   isDownloadable: variant?.downloadable ?? false,
                   downloadSizes: {
-                    approximateSmallDownloadSizeInBytes: getDownloadSize(
-                      variant?.downloads,
-                      'low',
-                      apiKey
-                    ),
-                    approximateLargeDownloadSizeInBytes: getDownloadSize(
-                      variant?.downloads,
-                      'high',
-                      apiKey
-                    )
+                    approximateSmallDownloadSizeInBytes:
+                      variant?.downloads.find((d) => d.quality === 'low')
+                        ?.size ?? 0,
+                    approximateLargeDownloadSizeInBytes:
+                      variant?.downloads.find((d) => d.quality === 'high')
+                        ?.size ?? 0
                   },
                   bibleCitations: bibleCitations.map((citation) => ({
                     osisBibleBook: citation.osisId,
@@ -414,16 +409,12 @@ mediaComponentLinksWithId.openapi(route, async (c) => {
                         containsCount: childrenCount,
                         isDownloadable: variant?.downloadable ?? false,
                         downloadSizes: {
-                          approximateSmallDownloadSizeInBytes: getDownloadSize(
-                            variant?.downloads,
-                            'low',
-                            apiKey
-                          ),
-                          approximateLargeDownloadSizeInBytes: getDownloadSize(
-                            variant?.downloads,
-                            'high',
-                            apiKey
-                          )
+                          approximateSmallDownloadSizeInBytes:
+                            variant?.downloads.find((d) => d.quality === 'low')
+                              ?.size ?? 0,
+                          approximateLargeDownloadSizeInBytes:
+                            variant?.downloads.find((d) => d.quality === 'high')
+                              ?.size ?? 0
                         },
                         bibleCitations: bibleCitations.map((citation) => ({
                           osisBibleBook: citation.osisId,
