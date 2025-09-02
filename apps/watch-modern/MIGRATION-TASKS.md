@@ -1,6 +1,6 @@
 # Migration Plan: Move Watch Home Page to Watch‑Modern (MUI → shadcn/ui + Tailwind)
 
-Status: Planned
+Status: In Progress
 Owner: Watch‑Modern Frontend
 Scope: Migrate the Watch home page UI/UX and data wiring from `apps/watch` (Pages Router + MUI) to `apps/watch-modern` (App Router + shadcn/ui + Tailwind). Strictly eliminate all `@mui/*` usage in watch‑modern.
 
@@ -119,33 +119,39 @@ Concrete Task Checklist
 - [ ] Verify root index renders.
 
 2. shadcn/ui + Tailwind
-- [ ] Initialize shadcn/ui and generate base primitives (Button, Input, Label, Select/Combobox, Card, Skeleton, Alert, Sheet/Dialog).
-- [ ] Create `src/components/ui/container.tsx` with responsive widths.
-- [ ] Extend Tailwind theme tokens for colors/spacing used on the page.
+- [x] Initialize shadcn/ui scaffolding (components.json, `src/lib/utils.ts`).
+- [x] Generate required primitives for Home page only (Button, Card, Skeleton).
+- [ ] Add additional primitives later only if used by Home.
+- [x] Create `src/components/ui/container.tsx` with responsive widths.
+- [x] Extend Tailwind theme tokens for colors/spacing used on the page.
+- [x] Add demo page under `src/app/modern-test` to validate styles.
 
 3. Route & Providers
-- [ ] Create `src/app/watch/layout.tsx` with Apollo + InstantSearch providers (Next‑Intl already at root).
-- [ ] Create `src/app/watch/page.tsx` skeleton with hero + shells wired, no MUI.
-- [ ] Implement SSR server state for InstantSearch (App Router compatible) and pass to client provider.
+ - [x] Create `src/app/watch/layout.tsx` skeleton (no providers yet).
+ - [x] Add Apollo + InstantSearch providers in `src/app/watch/layout.tsx` (Next‑Intl already at root).
+ - [x] Create `src/app/watch/page.tsx` skeleton.
+ - [x] Wire hero + section shells in `src/app/watch/page.tsx` (no MUI).
+ - [x] Implement SSR server state for InstantSearch (App Router compatible) and pass to client provider.
 
 4. Rewrites (no MUI)
-- [ ] `HomeHero` in `src/components/watch/home/HomeHero.tsx` (Tailwind + semantic HTML).
-- [ ] `HeroOverlay` in `src/components/watch/home/HeroOverlay.tsx` (Tailwind gradients + grain).
-- [ ] `WatchHomePage` shell in `src/components/watch/home/WatchHomePage.tsx` (layout + sections).
-- [ ] `SeeAllVideos` in `src/components/watch/home/SeeAllVideos.tsx` (shadcn Button).
-- [ ] `VideoGrid` in `src/components/watch/home/VideoGrid.tsx` (InstantSearch widgets + Tailwind).
+ - [x] `HomeHero` in `src/components/watch/home/HomeHero.tsx` (Tailwind + semantic HTML).
+ - [x] `HeroOverlay` in `src/components/watch/home/HeroOverlay.tsx` (Tailwind gradients + grain).
+ - [x] `WatchHomePage` shell in `src/components/watch/home/WatchHomePage.tsx` (layout + sections).
+ - [x] `SeeAllVideos` in `src/components/watch/home/SeeAllVideos.tsx` (shadcn Button).
+ - [x] `VideoGrid` in `src/components/watch/home/VideoGrid.tsx` (InstantSearch widgets + Tailwind).
 
 5. i18n
-- [ ] Add translation keys used by hero/about/CTA into `src/i18n/locales/<locale>/apps-watch-modern.json`.
-- [ ] Update page/components to use `next-intl` hooks.
+ - [x] Add translation keys used by CTA (`RootIndexPage.ctaSeeAllVideos`) across locales.
+ - [x] Update page/components to use `next-intl` hooks (hero, metadata, CTA).
 
 6. Tests
 - [ ] Jest + RTL unit tests for each component.
-- [ ] Route integration test to ensure providers mount and render content.
+- [x] Route integration test to ensure providers mount and render content.
+- [x] Unit test for VideoGrid with mocked search client.
 
 7. QA & Cleanup
 - [ ] Manual visual parity check versus original page.
-- [ ] ESLint rule to forbid `@mui/*` in watch‑modern; run lint and fix.
+ - [x] ESLint rule to forbid `@mui/*` in watch‑modern; run lint and fix.
 - [ ] Verify bundle size and performance.
 
 —
@@ -231,5 +237,5 @@ Notes
 
 ---
 
-**Last Updated**: 2025-01-28  
-**Next Review**: After Phase 2 completion
+**Last Updated**: 2025-08-28  
+**Next Review**: After Phase 3 provider wiring

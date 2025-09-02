@@ -1,0 +1,19 @@
+
+> nx run watch-modern:serve:development --port 4801
+
+ [31m[1m⨯[22m[39m Failed to start server
+Error: listen EADDRINUSE: address already in use 0.0.0.0:4801
+    at <unknown> (Error: listen EADDRINUSE: address already in use 0.0.0.0:4801) {
+  code: [32m'EADDRINUSE'[39m,
+  errno: [33m-98[39m,
+  syscall: [32m'listen'[39m,
+  address: [32m'0.0.0.0'[39m,
+  port: [33m4801[39m
+}
+[?25h
+
+
+
+ NX   Successfully ran target serve for project watch-modern
+
+

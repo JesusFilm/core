@@ -198,6 +198,35 @@ export function ComponentName({
 }
 ```
 
+## Dev Server
+
+- Purpose: Quickly run or reuse the Watch‑Modern Next.js dev server.
+- Default port: `4800` (from `apps/watch-modern/project.json`).
+
+### Check & Reuse (preferred)
+
+- Check listener on `4800`: `lsof -nP -iTCP:4800 -sTCP:LISTEN || ss -ltnp | grep :4800`
+- If a process is listening, reuse it and open: `http://localhost:4800`
+- Quick verify: `curl -I http://localhost:4800` (expect 200/3xx)
+
+### Start New Process
+
+- Env file: ensure `apps/watch-modern/.env` contains `NEXT_PUBLIC_CLOUDFLARE_STREAM_CUSTOMER_CODE`.
+  - Fetch real secrets (optional): `DOPPLER_WATCH_MODERN_TOKEN=... nx run watch-modern:fetch-secrets`
+- Foreground: `nx run watch-modern:serve --port 4800`
+- Background: `nohup nx run watch-modern:serve --port 4800 > watch-modern-dev.log 2>&1 & echo $!`
+
+### Stop / Logs
+
+- Stop by PID: `kill <PID>`
+- Stop by pattern: `pkill -f "nx run watch-modern:serve --port 4800"`
+- Background logs: `tail -f watch-modern-dev.log`
+
+### Port Busy
+
+- If `4800` is in use by something else, either free it or use another port:
+  - Alt port: `nx run watch-modern:serve --port 4801`
+
 ## Documentation Guidelines
 
 ### Documentation Structure

@@ -5,7 +5,8 @@
   "RootIndexPage": {
     "pageTitle": "Смотреть",
     "title": "Бесплатная библиотека <underline>потокового</underline> видео Евангелия.",
-    "description": "Смотрите, узнавайте и распространяйте Евангелие на более чем 2000 языках мира."
+    "description": "Смотрите, узнавайте и распространяйте Евангелие на более чем 2000 языках мира.",
+    "ctaSeeAllVideos": "See All Videos"
   },
   "DatadogErrorBoundary": {
     "somethingWentWrong": "Что-то пошло не так",

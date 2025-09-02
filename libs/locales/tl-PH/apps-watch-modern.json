@@ -5,7 +5,8 @@
   "RootIndexPage": {
     "pageTitle": "Watch",
     "title": "Free Gospel Video <underline>Streaming</underline> Library.",
-    "description": "Watch, learn and share the gospel in over 2000 languages"
+    "description": "Watch, learn and share the gospel in over 2000 languages",
+    "ctaSeeAllVideos": "See All Videos"
   },
   "DatadogErrorBoundary": {
     "somethingWentWrong": "Something went wrong",

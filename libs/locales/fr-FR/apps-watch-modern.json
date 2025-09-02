@@ -5,7 +5,8 @@
   "RootIndexPage": {
     "pageTitle": "Regarde",
     "title": "Bibliothèque de vidéos évangéliques gratuites <underline>en streaming</underline>.",
-    "description": "Regarde, apprends et partage l'évangile dans plus de 2000 langues."
+    "description": "Regarde, apprends et partage l'évangile dans plus de 2000 langues.",
+    "ctaSeeAllVideos": "See All Videos"
   },
   "ModernTestPage": {
     "pageTitle": "Test Modern",

@@ -5,7 +5,8 @@
   "RootIndexPage": {
     "pageTitle": "Menonton",
     "title": "Perpustakaan <underline>Streaming</underline> Video Injil Gratis.",
-    "description": "Saksikan, pelajari, dan bagikan Injil dalam lebih dari 2000 bahasa"
+    "description": "Saksikan, pelajari, dan bagikan Injil dalam lebih dari 2000 bahasa",
+    "ctaSeeAllVideos": "See All Videos"
   },
   "DatadogErrorBoundary": {
     "somethingWentWrong": "Ada yang tidak beres",

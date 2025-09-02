@@ -5,7 +5,8 @@
   "RootIndexPage": {
     "pageTitle": "시계",
     "title": "무료 복음 동영상 <underline>스트리밍</underline> 라이브러리.",
-    "description": "2000개 이상의 언어로 시청하고, 배우고, 복음을 나누세요."
+    "description": "2000개 이상의 언어로 시청하고, 배우고, 복음을 나누세요.",
+    "ctaSeeAllVideos": "See All Videos"
   },
   "DatadogErrorBoundary": {
     "somethingWentWrong": "문제가 발생했습니다.",

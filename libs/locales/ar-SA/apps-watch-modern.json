@@ -5,7 +5,8 @@
   "RootIndexPage": {
     "pageTitle": "مشاهدة",
     "title": "مكتبة <underline>بث</underline> فيديو الإنجيل المجانية.",
-    "description": "شاهد وتعلم وشارك الإنجيل بأكثر من 2000 لغة"
+    "description": "شاهد وتعلم وشارك الإنجيل بأكثر من 2000 لغة",
+    "ctaSeeAllVideos": "See All Videos"
   },
   "DatadogErrorBoundary": {
     "somethingWentWrong": "حدث خطأ ما",

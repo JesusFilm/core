@@ -5,7 +5,8 @@
   "RootIndexPage": {
     "pageTitle": "İzle",
     "title": "Ücretsiz Gospel Video <underline>Akış</underline> Kütüphanesi.",
-    "description": "2000'den fazla dilde müjdeyi izleyin, öğrenin ve paylaşın"
+    "description": "2000'den fazla dilde müjdeyi izleyin, öğrenin ve paylaşın",
+    "ctaSeeAllVideos": "See All Videos"
   },
   "DatadogErrorBoundary": {
     "somethingWentWrong": "Bir şeyler ters gitti",

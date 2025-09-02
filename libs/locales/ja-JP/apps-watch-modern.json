@@ -5,7 +5,8 @@
   "RootIndexPage": {
     "pageTitle": "見る",
     "title": "無料<underline>ゴスペル・ビデオ・ストリーミング・ライブラリー</underline>。",
-    "description": "2000以上の言語で福音を見る、学ぶ、伝える"
+    "description": "2000以上の言語で福音を見る、学ぶ、伝える",
+    "ctaSeeAllVideos": "See All Videos"
   },
   "DatadogErrorBoundary": {
     "somethingWentWrong": "何かが間違っていた",

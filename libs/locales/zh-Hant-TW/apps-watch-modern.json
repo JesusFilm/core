@@ -5,7 +5,8 @@
   "RootIndexPage": {
     "pageTitle": "觀賞",
     "title": "免費福音視訊<underline>串流</underline>圖書館。",
-    "description": "使用超過 2000 種語言觀看、學習和分享福音"
+    "description": "使用超過 2000 種語言觀看、學習和分享福音",
+    "ctaSeeAllVideos": "See All Videos"
   },
   "DatadogErrorBoundary": {
     "somethingWentWrong": "出了問題",

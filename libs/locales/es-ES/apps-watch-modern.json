@@ -5,7 +5,8 @@
   "RootIndexPage": {
     "pageTitle": "Mira",
     "title": "Biblioteca <underline>de</underline> vídeos evangélicos gratuitos.",
-    "description": "Mira, aprende y comparte el Evangelio en más de 2000 idiomas"
+    "description": "Mira, aprende y comparte el Evangelio en más de 2000 idiomas",
+    "ctaSeeAllVideos": "See All Videos"
   },
   "DatadogErrorBoundary": {
     "somethingWentWrong": "Algo salió mal",

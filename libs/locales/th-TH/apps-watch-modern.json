@@ -5,7 +5,8 @@
   "RootIndexPage": {
     "pageTitle": "Watch",
     "title": "ห้องสมุดวิดีโอ<underline>สตรีมมิ่ง</underline>พระกิตติคุณฟรี",
-    "description": "ดู ศึกษา และแบ่งปันพระคริสต์ในภาษากว่า 2000 ภาษา"
+    "description": "ดู ศึกษา และแบ่งปันพระคริสต์ในภาษากว่า 2000 ภาษา",
+    "ctaSeeAllVideos": "See All Videos"
   },
   "DatadogErrorBoundary": {
     "somethingWentWrong": "เกิดข้อผิดพลาด",

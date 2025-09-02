@@ -5,7 +5,8 @@
   "RootIndexPage": {
     "pageTitle": "观看",
     "title": "免费福音<underline>视频流</underline>图书馆",
-    "description": "用 2000 多种语言观看、学习和分享福音"
+    "description": "用 2000 多种语言观看、学习和分享福音",
+    "ctaSeeAllVideos": "See All Videos"
   },
   "DatadogErrorBoundary": {
     "somethingWentWrong": "出了问题",

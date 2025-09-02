@@ -100,5 +100,26 @@
   },
   "tailwindCSS.experimental.classRegex": [
     ["className\\s*:\\s*['\"]([^'\"]*)['\"]"]
-  ]
+  ],
+  "workbench.colorCustomizations": {
+    "activityBar.activeBackground": "#656253",
+    "activityBar.background": "#656253",
+    "activityBar.foreground": "#e7e7e7",
+    "activityBar.inactiveForeground": "#e7e7e799",
+    "activityBarBadge.background": "#38a795",
+    "activityBarBadge.foreground": "#15202b",
+    "commandCenter.border": "#e7e7e799",
+    "sash.hoverBorder": "#656253",
+    "statusBar.background": "#49473c",
+    "statusBar.foreground": "#e7e7e7",
+    "statusBarItem.hoverBackground": "#656253",
+    "statusBarItem.remoteBackground": "#49473c",
+    "statusBarItem.remoteForeground": "#e7e7e7",
+    "titleBar.activeBackground": "#49473c",
+    "titleBar.activeForeground": "#e7e7e7",
+    "titleBar.inactiveBackground": "#49473c99",
+    "titleBar.inactiveForeground": "#e7e7e799"
+  },
+  "peacock.remoteColor": "#49473C",
+  "nxConsole.generateAiAgentRules": true
 }

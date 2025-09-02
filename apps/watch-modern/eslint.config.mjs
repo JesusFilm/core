@@ -38,7 +38,18 @@ export default [
     files: ['**/*.ts', '**/*.tsx'],
     rules: {
       'no-void': ['error', { allowAsStatement: true }],
-      '@typescript-eslint/no-misused-promises': 'off'
+      '@typescript-eslint/no-misused-promises': 'off',
+      'no-restricted-imports': [
+        'error',
+        {
+          patterns: [
+            {
+              group: ['@mui/*'],
+              message: 'MUI is not allowed in watch-modern. Use shadcn/ui + Tailwind.'
+            }
+          ]
+        }
+      ]
     },
     languageOptions: {
       parserOptions: { project: ['apps/watch-modern/tsconfig.*?.json'] }

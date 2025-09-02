@@ -5,7 +5,8 @@
   "RootIndexPage": {
     "pageTitle": "Watch",
     "title": "Thư viện <underline>video</underline> Phúc Âm miễn phí.",
-    "description": "Watch, learn and share the gospel in over 2000 languages"
+    "description": "Watch, learn and share the gospel in over 2000 languages",
+    "ctaSeeAllVideos": "See All Videos"
   },
   "DatadogErrorBoundary": {
     "somethingWentWrong": "Có sự cố xảy ra",
