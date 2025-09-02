@@ -1,5 +1,5 @@
 import { renderHook, waitFor } from '@testing-library/react'
-import { HttpResponse, http } from 'msw'
+import { HttpResponse, delay, http } from 'msw'
 import { ReactElement } from 'react'
 // eslint-disable-next-line no-restricted-imports
 import { I18nextProvider } from 'react-i18next'
@@ -26,7 +26,8 @@ describe('useLanguages', () => {
   describe('loading state', () => {
     it('should return loading state when API is loading', async () => {
       server.use(
-        http.get('/api/languages', () => {
+        http.get('/api/languages', async () => {
+          await delay(50)
           return HttpResponse.json([])
         })
       )

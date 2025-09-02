@@ -48,28 +48,31 @@ export function SubtitlesSelect({
     if (isLoading) return t('Loading...')
 
     if (videoSubtitleLanguageIds == null)
-      return t('{{value}} languages', { value: languages.length })
+      return t('Available in {{count}} languages.', { count: languages.length })
 
     const available = videoSubtitleLanguageIds.length
     if (
       selectedOption != null &&
       videoSubtitleLanguageIds.find((id) => id === selectedOption.id) == null
     ) {
-      return t(
-        'Subtitles are not available in {{value}}. Available in {{available}} languages.',
-        {
-          available,
-          value: selectedOption.displayName
-        }
-      )
+      return [
+        t('Subtitles are not available in {{language}}.', {
+          language: selectedOption.displayName
+        }),
+        t('Available in {{count}} languages.', {
+          count: available
+        })
+      ].join(' ')
     } else {
-      return t('Subtitles are available in {{available}} languages.', {
-        available
+      return t('Available in {{count}} languages.', {
+        count: available
       })
     }
   }, [isLoading, t, videoSubtitleLanguageIds, selectedOption])
 
-  function handleSubtitleLanguageChange(_, language: Language): void {
+  function handleSubtitleLanguageChange(_, language: Language | null): void {
+    if (language == null) return
+
     updateSubtitleLanguage(language)
   }
   function handleSubtitlesOnChange(event: ChangeEvent<HTMLInputElement>): void {
@@ -100,7 +103,7 @@ export function SubtitlesSelect({
           <Autocomplete
             disableClearable
             // this is a workaround to keep the autocomplete controlled
-            value={selectedOption as Language | undefined}
+            value={selectedOption as unknown as Language | undefined}
             options={options}
             groupBy={
               videoSubtitleLanguageIds == null
@@ -141,6 +144,7 @@ export function SubtitlesSelect({
               <TextField
                 {...params}
                 hiddenLabel
+                id="subtitles-select"
                 variant="filled"
                 helperText={helperText}
               />

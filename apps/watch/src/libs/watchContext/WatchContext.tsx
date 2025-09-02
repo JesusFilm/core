@@ -64,7 +64,6 @@ interface SetVideoAudioLanguageIdsAction {
 
 /**
  * Action to set available subtitle languages for the current video
- * Also automatically determines if subtitles should be enabled based on availability
  */
 interface SetVideoSubtitleLanguageIdsAction {
   type: 'SetVideoSubtitleLanguageIds'

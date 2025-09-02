@@ -140,4 +140,36 @@ describe('useSubtitleUpdate', () => {
       }
     }
   })
+
+  it('should disable all subtitle tracks when subtitle language is not found', async () => {
+    const { result } = renderHook(() => useSubtitleUpdate(), {
+      wrapper: ({ children }) => (
+        <MockedProvider mocks={[getSubtitlesMock]} addTypename={false}>
+          <VideoProvider value={{ content: mockVideoContent }}>
+            {children}
+          </VideoProvider>
+        </MockedProvider>
+      )
+    })
+
+    await result.current.subtitleUpdate({
+      player: mockPlayer,
+      subtitleLanguageId: 'non-existent-id',
+      subtitleOn: true
+    })
+
+    // Should disable all tracks when subtitle language is not found
+    const tracks = mockPlayer.textTracks?.()
+    if (tracks) {
+      for (let i = 0; i < tracks.length; i++) {
+        const track = tracks[i]
+        if (track.kind === 'subtitles') {
+          expect(track.mode).toBe('disabled')
+        }
+      }
+    }
+
+    // Should not call addRemoteTextTrack when subtitle language is not found
+    expect(mockPlayer.addRemoteTextTrack).not.toHaveBeenCalled()
+  })
 })

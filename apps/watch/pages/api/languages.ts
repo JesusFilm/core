@@ -88,15 +88,15 @@ export default async function handler(
           const name = language.name
             .filter((name) => name.value !== '')
             .map((name) => `${name.language.id}:${name.value}`)
+          if (name.length === 0 && nativeName == null) return
+
           const languageIdAndSlug = `${language.id}:${language.slug ?? ''}${
             nativeName ? `:${nativeName}` : ''
           }`
 
-          if (name.length === 0 && nativeName == null) return
-
           return [languageIdAndSlug, ...name] as LanguageTuple
         })
-        .filter((language) => language != null)
+        .filter((language): language is LanguageTuple => language != null)
       try {
         await redis.setex(cacheKey, CACHE_TTL, languages)
       } catch (error) {

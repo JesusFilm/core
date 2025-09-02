@@ -101,7 +101,9 @@ describe('AudioTrackSelect', () => {
       )
 
       await waitFor(() => {
-        expect(screen.getByText('3 languages')).toBeInTheDocument()
+        expect(
+          screen.getByText('Available in 3 languages.')
+        ).toBeInTheDocument()
       })
     })
 
@@ -138,7 +140,7 @@ describe('AudioTrackSelect', () => {
 
       await waitFor(() => {
         expect(
-          screen.getByText('This video is available in 2 languages.')
+          screen.getByText('Available in 2 languages.')
         ).toBeInTheDocument()
       })
     })

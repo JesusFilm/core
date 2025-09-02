@@ -9,7 +9,6 @@ import { useInstantSearch } from 'react-instantsearch'
 
 import { type Language, useLanguages } from '../../../libs/useLanguages'
 import { useLanguageActions } from '../../../libs/watchContext'
-import { createFilterOptions } from '@mui/material/Autocomplete'
 import { filterOptions } from '../utils/filterOptions'
 
 function useSafeInstantSearch() {
@@ -53,28 +52,31 @@ export function AudioTrackSelect({
     if (isLoading) return t('Loading...')
 
     if (videoAudioLanguageIds == null)
-      return t('{{value}} languages', { value: languages.length })
+      return t('Available in {{count}} languages.', { count: languages.length })
 
     const available = videoAudioLanguageIds.length
     if (
       selectedOption != null &&
       videoAudioLanguageIds.find((id) => id === selectedOption.id) == null
     ) {
-      return t(
-        'This video is not available in {{value}}. Available in {{available}} languages.',
-        {
-          available,
-          value: selectedOption.displayName
-        }
-      )
+      return [
+        t('This video is not available in {{language}}.', {
+          language: selectedOption.displayName
+        }),
+        t('Available in {{count}} languages.', {
+          count: available
+        })
+      ].join(' ')
     } else {
-      return t('This video is available in {{available}} languages.', {
-        available
+      return t('Available in {{count}} languages.', {
+        count: available
       })
     }
   }, [isLoading, t, videoAudioLanguageIds, selectedOption])
 
-  function handleChange(_, language: Language): void {
+  function handleChange(_, language: Language | null): void {
+    if (language == null) return
+
     let reload = instantSearch == null
     if (reload) {
       const found = videoAudioLanguageIds?.find((id) => id === language.id)
@@ -117,7 +119,7 @@ export function AudioTrackSelect({
           <Autocomplete
             disableClearable
             // this is a workaround to keep the autocomplete controlled
-            value={selectedOption as Language | undefined}
+            value={selectedOption as unknown as Language | undefined}
             options={options}
             groupBy={
               videoAudioLanguageIds == null
@@ -157,6 +159,7 @@ export function AudioTrackSelect({
             renderInput={(params) => (
               <TextField
                 {...params}
+                id="audio-select"
                 hiddenLabel
                 variant="filled"
                 helperText={helperText}

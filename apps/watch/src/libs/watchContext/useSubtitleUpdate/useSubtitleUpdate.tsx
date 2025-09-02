@@ -63,7 +63,16 @@ export function useSubtitleUpdate() {
         (subtitle) => subtitle.language.id === subtitleLanguageId
       )
 
-      if (selected == null) return
+      if (selected == null) {
+        // Disable all subtitle tracks when subtitle language is not found
+        for (let i = 0; i < tracks.length; i++) {
+          const track = tracks[i]
+          if (track.kind === 'subtitles') {
+            track.mode = 'disabled'
+          }
+        }
+        return
+      }
 
       player.addRemoteTextTrack(
         {

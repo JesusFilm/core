@@ -1,8 +1,7 @@
+import type { FC, PropsWithChildren } from 'react'
 import { SWRConfig } from 'swr'
 
-export const TestSWRConfig: React.FC<React.PropsWithChildren> = ({
-  children
-}) => (
+export const TestSWRConfig: FC<PropsWithChildren> = ({ children }) => (
   <SWRConfig
     value={{
       provider: () => new Map(), // isolate cache

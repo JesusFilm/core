@@ -88,7 +88,9 @@ describe('SubtitlesSelect', () => {
       )
 
       await waitFor(() => {
-        expect(screen.getByText('3 languages')).toBeInTheDocument()
+        expect(
+          screen.getByText('Available in 3 languages.')
+        ).toBeInTheDocument()
       })
     })
 
@@ -125,7 +127,7 @@ describe('SubtitlesSelect', () => {
 
       await waitFor(() => {
         expect(
-          screen.getByText('Subtitles are available in 2 languages.')
+          screen.getByText('Available in 2 languages.')
         ).toBeInTheDocument()
       })
     })
