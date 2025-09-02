@@ -1,7 +1,6 @@
 import { keyframes } from '@emotion/react'
 import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
-import dynamic from 'next/dynamic'
 import { useRouter } from 'next/router'
 import { type ReactElement, useEffect, useMemo, useRef, useState } from 'react'
 import { CSSTransition, TransitionGroup } from 'react-transition-group'
@@ -21,7 +20,7 @@ import { StepFooter } from '@core/journeys/ui/StepFooter'
 import { StepHeader } from '@core/journeys/ui/StepHeader'
 import { VideoWrapper } from '@core/journeys/ui/VideoWrapper'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
-import { FontFamilies, ThemeMode, ThemeName } from '@core/shared/ui/themes'
+import { ThemeMode, ThemeName } from '@core/shared/ui/themes'
 
 import { Hotkeys } from '../../../Hotkeys'
 
@@ -151,6 +150,8 @@ export function Canvas(): ReactElement {
     }
   }, [journeyTheme])
 
+  const nodeRef = useRef(null)
+
   return (
     <Stack
       ref={containerRef}
@@ -263,11 +264,13 @@ export function Canvas(): ReactElement {
                     }}
                   >
                     <CSSTransition
+                      nodeRef={nodeRef}
                       key={selectedStep.id}
                       timeout={300}
                       classNames="card"
                     >
                       <Stack
+                        ref={nodeRef}
                         justifyContent="center"
                         sx={{
                           position: 'absolute',

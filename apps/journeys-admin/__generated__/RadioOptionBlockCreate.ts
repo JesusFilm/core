@@ -9,6 +9,12 @@ import { RadioOptionBlockCreateInput, ButtonVariant, ButtonColor, ButtonSize, Bu
 // GraphQL mutation operation: RadioOptionBlockCreate
 // ====================================================
 
+export interface RadioOptionBlockCreate_radioOptionBlockCreate_action_PhoneAction {
+  __typename: "PhoneAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+}
+
 export interface RadioOptionBlockCreate_radioOptionBlockCreate_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
   parentBlockId: string;
@@ -30,7 +36,7 @@ export interface RadioOptionBlockCreate_radioOptionBlockCreate_action_EmailActio
   email: string;
 }
 
-export type RadioOptionBlockCreate_radioOptionBlockCreate_action = RadioOptionBlockCreate_radioOptionBlockCreate_action_NavigateToBlockAction | RadioOptionBlockCreate_radioOptionBlockCreate_action_LinkAction | RadioOptionBlockCreate_radioOptionBlockCreate_action_EmailAction;
+export type RadioOptionBlockCreate_radioOptionBlockCreate_action = RadioOptionBlockCreate_radioOptionBlockCreate_action_PhoneAction | RadioOptionBlockCreate_radioOptionBlockCreate_action_NavigateToBlockAction | RadioOptionBlockCreate_radioOptionBlockCreate_action_LinkAction | RadioOptionBlockCreate_radioOptionBlockCreate_action_EmailAction;
 
 export interface RadioOptionBlockCreate_radioOptionBlockCreate {
   __typename: "RadioOptionBlock";
@@ -40,11 +46,11 @@ export interface RadioOptionBlockCreate_radioOptionBlockCreate {
   parentOrder: number | null;
   action: RadioOptionBlockCreate_radioOptionBlockCreate_action | null;
   /**
-   * pollOptionImageId is present if a child block should be used as a poll option image.
-   * This child block should not be rendered normally, instead it should be used
-   * as a poll option image. Blocks are often of type ImageBlock
+   * pollOptionImageBlockId is present if a child block should be used as a poll option image.
+   *       This child block should not be rendered normally, instead it should be used
+   *       as a poll option image. Blocks are often of type ImageBlock
    */
-  pollOptionImageId: string | null;
+  pollOptionImageBlockId: string | null;
 }
 
 export interface RadioOptionBlockCreate {

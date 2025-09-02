@@ -41,6 +41,11 @@ type BibleCitation {
   video: Video!
 }
 
+"""
+The `BigInt` scalar type represents non-fractional signed whole numeric values.
+"""
+scalar BigInt
+
 type CloudflareImage {
   id: ID!
   uploadUrl: String
@@ -57,7 +62,7 @@ type CloudflareImage {
 
 type CloudflareR2 {
   id: ID!
-  contentLength: Int!
+  contentLength: BigInt!
   contentType: String!
   fileName: String!
   originalFilename: String
@@ -72,7 +77,7 @@ input CloudflareR2CreateInput {
   id: String
 
   """the size of the file that is being uploaded"""
-  contentLength: Int!
+  contentLength: BigInt!
 
   """the type of file that is being uploaded. e.g. image or video/mp4"""
   contentType: String!
@@ -189,6 +194,7 @@ type Mutation {
   bibleCitationUpdate(input: MutationBibleCitationUpdateInput!): BibleCitation
   bibleCitationDelete(id: ID!): Boolean
   createKeyword(value: String!, languageId: String!): Keyword!
+  createMuxVideoAndQueueUpload(videoId: ID!, edition: String!, languageId: ID!, version: Int!, r2PublicUrl: String!, originalFilename: String!, durationMs: Int!, duration: Int!, width: Int!, height: Int!, downloadable: Boolean = true, maxResolution: MaxResolutionTier = fhd): MuxVideo!
   createMuxVideoUploadByFile(name: String!, userGenerated: Boolean, downloadable: Boolean = false, maxResolution: MaxResolutionTier = fhd): MuxVideo!
   createMuxVideoUploadByUrl(url: String!, userGenerated: Boolean, downloadable: Boolean = false, maxResolution: MaxResolutionTier = fhd): MuxVideo!
   enableMuxDownload(id: ID!, resolution: String): MuxVideo
@@ -215,6 +221,12 @@ type Mutation {
 
   """delete an existing short link"""
   shortLinkDelete(id: String!): MutationShortLinkDeleteResult!
+  videoSubtitleCreate(input: VideoSubtitleCreateInput!): VideoSubtitle!
+  videoSubtitleUpdate(input: VideoSubtitleUpdateInput!): VideoSubtitle!
+  videoSubtitleDelete(id: ID!): VideoSubtitle!
+  videoVariantDownloadCreate(input: VideoVariantDownloadCreateInput!): VideoVariantDownload!
+  videoVariantDownloadUpdate(input: VideoVariantDownloadUpdateInput!): VideoVariantDownload!
+  videoVariantDownloadDelete(id: ID!): VideoVariantDownload!
   videoVariantCreate(input: VideoVariantCreateInput!): VideoVariant!
   videoVariantUpdate(input: VideoVariantUpdateInput!): VideoVariant!
   videoVariantDelete(id: ID!): VideoVariant!
@@ -233,9 +245,6 @@ type Mutation {
   videoStudyQuestionCreate(input: VideoStudyQuestionCreateInput!): VideoStudyQuestion!
   videoStudyQuestionUpdate(input: VideoStudyQuestionUpdateInput!): VideoStudyQuestion!
   videoStudyQuestionDelete(id: ID!): VideoStudyQuestion!
-  videoSubtitleCreate(input: VideoSubtitleCreateInput!): VideoSubtitle!
-  videoSubtitleUpdate(input: VideoSubtitleUpdateInput!): VideoSubtitle!
-  videoSubtitleDelete(id: ID!): VideoSubtitle!
   videoTitleCreate(input: VideoTranslationCreateInput!): VideoTitle!
   videoTitleUpdate(input: VideoTranslationUpdateInput!): VideoTitle!
   videoTitleDelete(id: ID!): VideoTitle!
@@ -245,9 +254,6 @@ type Mutation {
   videoEditionCreate(input: VideoEditionCreateInput!): VideoEdition!
   videoEditionUpdate(input: VideoEditionUpdateInput!): VideoEdition!
   videoEditionDelete(id: ID!): VideoEdition!
-  videoVariantDownloadCreate(input: VideoVariantDownloadCreateInput!): VideoVariantDownload!
-  videoVariantDownloadUpdate(input: VideoVariantDownloadUpdateInput!): VideoVariantDownload!
-  videoVariantDownloadDelete(id: ID!): VideoVariantDownload!
 }
 
 input MutationBibleCitationCreateInput {
@@ -305,7 +311,7 @@ input MutationShortLinkCreateInput {
   bitrate: Int
 }
 
-union MutationShortLinkCreateResult = ZodError | NotUniqueError | MutationShortLinkCreateSuccess
+union MutationShortLinkCreateResult = NotUniqueError | ZodError | MutationShortLinkCreateSuccess
 
 type MutationShortLinkCreateSuccess {
   data: ShortLink!
@@ -327,7 +333,7 @@ input MutationShortLinkDomainCreateInput {
   services: [Service!]
 }
 
-union MutationShortLinkDomainCreateResult = ZodError | NotUniqueError | MutationShortLinkDomainCreateSuccess
+union MutationShortLinkDomainCreateResult = NotUniqueError | ZodError | MutationShortLinkDomainCreateSuccess
 
 type MutationShortLinkDomainCreateSuccess {
   data: ShortLinkDomain!
@@ -837,19 +843,19 @@ type Video
   """slug is a permanent link to the video."""
   slug: String!
   noIndex: Boolean
-  children: [Video!]!
 
-  """the number value of the amount of children on a video"""
+  """The number of published child videos associated with this video"""
   childrenCount: Int!
-  parents: [Video!]!
   variantLanguagesWithSlug(input: VideoVariantFilter): [LanguageWithSlug!]!
   variants(input: VideoVariantFilter): [VideoVariant!]!
   subtitles(languageId: ID, primary: Boolean, edition: String): [VideoSubtitle!]!
-  variant(languageId: ID): VideoVariant
+  variant(languageId: ID, input: VideoVariantFilter): VideoVariant @deprecated(reason: "Use variants instead")
   images(aspectRatio: ImageAspectRatio): [CloudflareImage!]!
   restrictDownloadPlatforms: [Platform!]!
   restrictViewPlatforms: [Platform!]!
   publishedAt: Date
+  children: [Video!]!
+  parents: [Video!]!
 }
 
 enum VideoBlockSource {
@@ -875,6 +881,7 @@ type VideoDescription {
   value: String!
   primary: Boolean!
   language: Language!
+  crowdInId: String
 }
 
 type VideoEdition {
@@ -939,6 +946,7 @@ type VideoStudyQuestion {
   primary: Boolean!
   order: Int!
   language: Language!
+  crowdInId: String
 }
 
 input VideoStudyQuestionCreateInput {
@@ -1019,6 +1027,7 @@ type VideoTitle {
   value: String!
   primary: Boolean!
   language: Language!
+  crowdInId: String
 }
 
 input VideoTranslationCreateInput {

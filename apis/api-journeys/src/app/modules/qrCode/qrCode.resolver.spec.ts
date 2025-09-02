@@ -2,8 +2,8 @@ import { Test, TestingModule } from '@nestjs/testing'
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
 import { v4 as uuidv4 } from 'uuid'
 
-import { QrCode, UserTeamRole } from '.prisma/api-journeys-client'
 import { CaslAuthModule } from '@core/nest/common/CaslAuthModule'
+import { QrCode, UserTeamRole } from '@core/prisma/journeys/client'
 
 import { MutationShortLinkCreateSuccess } from '../../../__generated__/graphql'
 import { AppAbility, AppCaslFactory } from '../../lib/casl/caslFactory'

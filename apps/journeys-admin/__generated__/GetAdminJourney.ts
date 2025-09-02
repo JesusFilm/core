@@ -30,6 +30,12 @@ export interface GetAdminJourney_journey_blocks_GridContainerBlock {
   parentOrder: number | null;
 }
 
+export interface GetAdminJourney_journey_blocks_ButtonBlock_action_PhoneAction {
+  __typename: "PhoneAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+}
+
 export interface GetAdminJourney_journey_blocks_ButtonBlock_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
   parentBlockId: string;
@@ -51,7 +57,7 @@ export interface GetAdminJourney_journey_blocks_ButtonBlock_action_EmailAction {
   email: string;
 }
 
-export type GetAdminJourney_journey_blocks_ButtonBlock_action = GetAdminJourney_journey_blocks_ButtonBlock_action_NavigateToBlockAction | GetAdminJourney_journey_blocks_ButtonBlock_action_LinkAction | GetAdminJourney_journey_blocks_ButtonBlock_action_EmailAction;
+export type GetAdminJourney_journey_blocks_ButtonBlock_action = GetAdminJourney_journey_blocks_ButtonBlock_action_PhoneAction | GetAdminJourney_journey_blocks_ButtonBlock_action_NavigateToBlockAction | GetAdminJourney_journey_blocks_ButtonBlock_action_LinkAction | GetAdminJourney_journey_blocks_ButtonBlock_action_EmailAction;
 
 export interface GetAdminJourney_journey_blocks_ButtonBlock_settings {
   __typename: "ButtonBlockSettings";
@@ -143,6 +149,12 @@ export interface GetAdminJourney_journey_blocks_ImageBlock {
   focalLeft: number | null;
 }
 
+export interface GetAdminJourney_journey_blocks_RadioOptionBlock_action_PhoneAction {
+  __typename: "PhoneAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+}
+
 export interface GetAdminJourney_journey_blocks_RadioOptionBlock_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
   parentBlockId: string;
@@ -164,7 +176,7 @@ export interface GetAdminJourney_journey_blocks_RadioOptionBlock_action_EmailAct
   email: string;
 }
 
-export type GetAdminJourney_journey_blocks_RadioOptionBlock_action = GetAdminJourney_journey_blocks_RadioOptionBlock_action_NavigateToBlockAction | GetAdminJourney_journey_blocks_RadioOptionBlock_action_LinkAction | GetAdminJourney_journey_blocks_RadioOptionBlock_action_EmailAction;
+export type GetAdminJourney_journey_blocks_RadioOptionBlock_action = GetAdminJourney_journey_blocks_RadioOptionBlock_action_PhoneAction | GetAdminJourney_journey_blocks_RadioOptionBlock_action_NavigateToBlockAction | GetAdminJourney_journey_blocks_RadioOptionBlock_action_LinkAction | GetAdminJourney_journey_blocks_RadioOptionBlock_action_EmailAction;
 
 export interface GetAdminJourney_journey_blocks_RadioOptionBlock {
   __typename: "RadioOptionBlock";
@@ -174,11 +186,11 @@ export interface GetAdminJourney_journey_blocks_RadioOptionBlock {
   label: string;
   action: GetAdminJourney_journey_blocks_RadioOptionBlock_action | null;
   /**
-   * pollOptionImageId is present if a child block should be used as a poll option image.
-   * This child block should not be rendered normally, instead it should be used
-   * as a poll option image. Blocks are often of type ImageBlock
+   * pollOptionImageBlockId is present if a child block should be used as a poll option image.
+   *       This child block should not be rendered normally, instead it should be used
+   *       as a poll option image. Blocks are often of type ImageBlock
    */
-  pollOptionImageId: string | null;
+  pollOptionImageBlockId: string | null;
 }
 
 export interface GetAdminJourney_journey_blocks_RadioQuestionBlock {
@@ -187,6 +199,12 @@ export interface GetAdminJourney_journey_blocks_RadioQuestionBlock {
   parentBlockId: string | null;
   parentOrder: number | null;
   gridView: boolean | null;
+}
+
+export interface GetAdminJourney_journey_blocks_SignUpBlock_action_PhoneAction {
+  __typename: "PhoneAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
 }
 
 export interface GetAdminJourney_journey_blocks_SignUpBlock_action_NavigateToBlockAction {
@@ -210,7 +228,7 @@ export interface GetAdminJourney_journey_blocks_SignUpBlock_action_EmailAction {
   email: string;
 }
 
-export type GetAdminJourney_journey_blocks_SignUpBlock_action = GetAdminJourney_journey_blocks_SignUpBlock_action_NavigateToBlockAction | GetAdminJourney_journey_blocks_SignUpBlock_action_LinkAction | GetAdminJourney_journey_blocks_SignUpBlock_action_EmailAction;
+export type GetAdminJourney_journey_blocks_SignUpBlock_action = GetAdminJourney_journey_blocks_SignUpBlock_action_PhoneAction | GetAdminJourney_journey_blocks_SignUpBlock_action_NavigateToBlockAction | GetAdminJourney_journey_blocks_SignUpBlock_action_LinkAction | GetAdminJourney_journey_blocks_SignUpBlock_action_EmailAction;
 
 export interface GetAdminJourney_journey_blocks_SignUpBlock {
   __typename: "SignUpBlock";
@@ -341,6 +359,12 @@ export interface GetAdminJourney_journey_blocks_VideoBlock_mediaVideo_YouTube {
 
 export type GetAdminJourney_journey_blocks_VideoBlock_mediaVideo = GetAdminJourney_journey_blocks_VideoBlock_mediaVideo_Video | GetAdminJourney_journey_blocks_VideoBlock_mediaVideo_MuxVideo | GetAdminJourney_journey_blocks_VideoBlock_mediaVideo_YouTube;
 
+export interface GetAdminJourney_journey_blocks_VideoBlock_action_PhoneAction {
+  __typename: "PhoneAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+}
+
 export interface GetAdminJourney_journey_blocks_VideoBlock_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
   parentBlockId: string;
@@ -362,7 +386,7 @@ export interface GetAdminJourney_journey_blocks_VideoBlock_action_EmailAction {
   email: string;
 }
 
-export type GetAdminJourney_journey_blocks_VideoBlock_action = GetAdminJourney_journey_blocks_VideoBlock_action_NavigateToBlockAction | GetAdminJourney_journey_blocks_VideoBlock_action_LinkAction | GetAdminJourney_journey_blocks_VideoBlock_action_EmailAction;
+export type GetAdminJourney_journey_blocks_VideoBlock_action = GetAdminJourney_journey_blocks_VideoBlock_action_PhoneAction | GetAdminJourney_journey_blocks_VideoBlock_action_NavigateToBlockAction | GetAdminJourney_journey_blocks_VideoBlock_action_LinkAction | GetAdminJourney_journey_blocks_VideoBlock_action_EmailAction;
 
 export interface GetAdminJourney_journey_blocks_VideoBlock {
   __typename: "VideoBlock";
@@ -439,6 +463,12 @@ export interface GetAdminJourney_journey_blocks_VideoBlock {
   action: GetAdminJourney_journey_blocks_VideoBlock_action | null;
 }
 
+export interface GetAdminJourney_journey_blocks_VideoTriggerBlock_triggerAction_PhoneAction {
+  __typename: "PhoneAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+}
+
 export interface GetAdminJourney_journey_blocks_VideoTriggerBlock_triggerAction_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
   parentBlockId: string;
@@ -460,7 +490,7 @@ export interface GetAdminJourney_journey_blocks_VideoTriggerBlock_triggerAction_
   email: string;
 }
 
-export type GetAdminJourney_journey_blocks_VideoTriggerBlock_triggerAction = GetAdminJourney_journey_blocks_VideoTriggerBlock_triggerAction_NavigateToBlockAction | GetAdminJourney_journey_blocks_VideoTriggerBlock_triggerAction_LinkAction | GetAdminJourney_journey_blocks_VideoTriggerBlock_triggerAction_EmailAction;
+export type GetAdminJourney_journey_blocks_VideoTriggerBlock_triggerAction = GetAdminJourney_journey_blocks_VideoTriggerBlock_triggerAction_PhoneAction | GetAdminJourney_journey_blocks_VideoTriggerBlock_triggerAction_NavigateToBlockAction | GetAdminJourney_journey_blocks_VideoTriggerBlock_triggerAction_LinkAction | GetAdminJourney_journey_blocks_VideoTriggerBlock_triggerAction_EmailAction;
 
 export interface GetAdminJourney_journey_blocks_VideoTriggerBlock {
   __typename: "VideoTriggerBlock";

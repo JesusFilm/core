@@ -1,7 +1,7 @@
 import { nanoid } from 'nanoid'
 import { v4 as uuidv4 } from 'uuid'
 
-import { Prisma, ShortLink, ShortLinkDomain } from '.prisma/api-media-client'
+import { Prisma, ShortLink, ShortLinkDomain } from '@core/prisma/media/client'
 import { graphql } from '@core/shared/gql'
 
 import { getClient } from '../../../test/client'
@@ -11,7 +11,6 @@ jest.mock('nanoid')
 jest.mock('uuid')
 
 const nanoidMock = nanoid as jest.MockedFunction<typeof nanoid>
-const uuidMock = uuidv4 as jest.MockedFunction<typeof uuidv4>
 
 describe('shortLink', () => {
   const client = getClient()

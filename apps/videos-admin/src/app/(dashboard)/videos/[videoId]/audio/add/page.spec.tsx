@@ -1,8 +1,7 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { act, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { SnackbarProvider } from 'notistack'
-import { act } from 'react'
 
 import { useLanguagesQuery } from '@core/journeys/ui/useLanguagesQuery'
 
@@ -268,16 +267,9 @@ describe('AddAudioLanguageDialog', () => {
       })
     })
 
-    // Select Max Resolution
-    await act(async () => {
-      fireEvent.change(screen.getAllByTestId('mui-select')[1], {
-        target: { value: 'fhd' }
-      })
-    })
-
     // Select Status
     await act(async () => {
-      fireEvent.change(screen.getAllByTestId('mui-select')[2], {
+      fireEvent.change(screen.getAllByTestId('mui-select')[1], {
         target: { value: 'published' }
       })
     })

@@ -1,8 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
 
-import { Action, Block, Journey } from '.prisma/api-journeys-client'
 import { CaslAuthModule } from '@core/nest/common/CaslAuthModule'
+import { Action, Block, Journey } from '@core/prisma/journeys/client'
 
 import { LinkActionInput, UserTeamRole } from '../../../__generated__/graphql'
 import { AppAbility, AppCaslFactory } from '../../../lib/casl/caslFactory'
@@ -25,6 +25,9 @@ describe('LinkActionResolver', () => {
     journeyId: null,
     target: null,
     email: null,
+    phone: null,
+    customizable: null,
+    parentStepId: null,
     updatedAt: new Date()
   }
   const journey = {

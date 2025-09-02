@@ -1,4 +1,4 @@
-import { ApolloProvider, NormalizedCacheObject, gql } from '@apollo/client'
+import { ApolloProvider, NormalizedCacheObject } from '@apollo/client'
 import type { GetStaticProps } from 'next'
 import { useTranslation } from 'next-i18next'
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
@@ -24,17 +24,7 @@ import {
 import { getCookie } from '../../src/libs/cookieHandler'
 import { getFlags } from '../../src/libs/getFlags'
 import { getLanguageIdFromLocale } from '../../src/libs/getLanguageIdFromLocale'
-import { VIDEO_CHILD_FIELDS } from '../../src/libs/videoChildFields'
 import { WatchProvider } from '../../src/libs/watchContext/WatchContext'
-
-export const GET_HOME_VIDEOS = gql`
-  ${VIDEO_CHILD_FIELDS}
-  query GetHomeVideos($ids: [ID!]!, $languageId: ID) {
-    videos(where: { ids: $ids }) {
-      ...VideoChildFields
-    }
-  }
-`
 
 interface HomePageProps {
   initialApolloState?: NormalizedCacheObject

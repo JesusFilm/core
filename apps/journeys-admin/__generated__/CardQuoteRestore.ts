@@ -16,6 +16,12 @@ export interface CardQuoteRestore_image_GridContainerBlock {
   parentOrder: number | null;
 }
 
+export interface CardQuoteRestore_image_ButtonBlock_action_PhoneAction {
+  __typename: "PhoneAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+}
+
 export interface CardQuoteRestore_image_ButtonBlock_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
   parentBlockId: string;
@@ -37,7 +43,7 @@ export interface CardQuoteRestore_image_ButtonBlock_action_EmailAction {
   email: string;
 }
 
-export type CardQuoteRestore_image_ButtonBlock_action = CardQuoteRestore_image_ButtonBlock_action_NavigateToBlockAction | CardQuoteRestore_image_ButtonBlock_action_LinkAction | CardQuoteRestore_image_ButtonBlock_action_EmailAction;
+export type CardQuoteRestore_image_ButtonBlock_action = CardQuoteRestore_image_ButtonBlock_action_PhoneAction | CardQuoteRestore_image_ButtonBlock_action_NavigateToBlockAction | CardQuoteRestore_image_ButtonBlock_action_LinkAction | CardQuoteRestore_image_ButtonBlock_action_EmailAction;
 
 export interface CardQuoteRestore_image_ButtonBlock_settings {
   __typename: "ButtonBlockSettings";
@@ -129,6 +135,12 @@ export interface CardQuoteRestore_image_ImageBlock {
   focalLeft: number | null;
 }
 
+export interface CardQuoteRestore_image_RadioOptionBlock_action_PhoneAction {
+  __typename: "PhoneAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+}
+
 export interface CardQuoteRestore_image_RadioOptionBlock_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
   parentBlockId: string;
@@ -150,7 +162,7 @@ export interface CardQuoteRestore_image_RadioOptionBlock_action_EmailAction {
   email: string;
 }
 
-export type CardQuoteRestore_image_RadioOptionBlock_action = CardQuoteRestore_image_RadioOptionBlock_action_NavigateToBlockAction | CardQuoteRestore_image_RadioOptionBlock_action_LinkAction | CardQuoteRestore_image_RadioOptionBlock_action_EmailAction;
+export type CardQuoteRestore_image_RadioOptionBlock_action = CardQuoteRestore_image_RadioOptionBlock_action_PhoneAction | CardQuoteRestore_image_RadioOptionBlock_action_NavigateToBlockAction | CardQuoteRestore_image_RadioOptionBlock_action_LinkAction | CardQuoteRestore_image_RadioOptionBlock_action_EmailAction;
 
 export interface CardQuoteRestore_image_RadioOptionBlock {
   __typename: "RadioOptionBlock";
@@ -160,11 +172,11 @@ export interface CardQuoteRestore_image_RadioOptionBlock {
   label: string;
   action: CardQuoteRestore_image_RadioOptionBlock_action | null;
   /**
-   * pollOptionImageId is present if a child block should be used as a poll option image.
-   * This child block should not be rendered normally, instead it should be used
-   * as a poll option image. Blocks are often of type ImageBlock
+   * pollOptionImageBlockId is present if a child block should be used as a poll option image.
+   *       This child block should not be rendered normally, instead it should be used
+   *       as a poll option image. Blocks are often of type ImageBlock
    */
-  pollOptionImageId: string | null;
+  pollOptionImageBlockId: string | null;
 }
 
 export interface CardQuoteRestore_image_RadioQuestionBlock {
@@ -173,6 +185,12 @@ export interface CardQuoteRestore_image_RadioQuestionBlock {
   parentBlockId: string | null;
   parentOrder: number | null;
   gridView: boolean | null;
+}
+
+export interface CardQuoteRestore_image_SignUpBlock_action_PhoneAction {
+  __typename: "PhoneAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
 }
 
 export interface CardQuoteRestore_image_SignUpBlock_action_NavigateToBlockAction {
@@ -196,7 +214,7 @@ export interface CardQuoteRestore_image_SignUpBlock_action_EmailAction {
   email: string;
 }
 
-export type CardQuoteRestore_image_SignUpBlock_action = CardQuoteRestore_image_SignUpBlock_action_NavigateToBlockAction | CardQuoteRestore_image_SignUpBlock_action_LinkAction | CardQuoteRestore_image_SignUpBlock_action_EmailAction;
+export type CardQuoteRestore_image_SignUpBlock_action = CardQuoteRestore_image_SignUpBlock_action_PhoneAction | CardQuoteRestore_image_SignUpBlock_action_NavigateToBlockAction | CardQuoteRestore_image_SignUpBlock_action_LinkAction | CardQuoteRestore_image_SignUpBlock_action_EmailAction;
 
 export interface CardQuoteRestore_image_SignUpBlock {
   __typename: "SignUpBlock";
@@ -327,6 +345,12 @@ export interface CardQuoteRestore_image_VideoBlock_mediaVideo_YouTube {
 
 export type CardQuoteRestore_image_VideoBlock_mediaVideo = CardQuoteRestore_image_VideoBlock_mediaVideo_Video | CardQuoteRestore_image_VideoBlock_mediaVideo_MuxVideo | CardQuoteRestore_image_VideoBlock_mediaVideo_YouTube;
 
+export interface CardQuoteRestore_image_VideoBlock_action_PhoneAction {
+  __typename: "PhoneAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+}
+
 export interface CardQuoteRestore_image_VideoBlock_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
   parentBlockId: string;
@@ -348,7 +372,7 @@ export interface CardQuoteRestore_image_VideoBlock_action_EmailAction {
   email: string;
 }
 
-export type CardQuoteRestore_image_VideoBlock_action = CardQuoteRestore_image_VideoBlock_action_NavigateToBlockAction | CardQuoteRestore_image_VideoBlock_action_LinkAction | CardQuoteRestore_image_VideoBlock_action_EmailAction;
+export type CardQuoteRestore_image_VideoBlock_action = CardQuoteRestore_image_VideoBlock_action_PhoneAction | CardQuoteRestore_image_VideoBlock_action_NavigateToBlockAction | CardQuoteRestore_image_VideoBlock_action_LinkAction | CardQuoteRestore_image_VideoBlock_action_EmailAction;
 
 export interface CardQuoteRestore_image_VideoBlock {
   __typename: "VideoBlock";
@@ -425,6 +449,12 @@ export interface CardQuoteRestore_image_VideoBlock {
   action: CardQuoteRestore_image_VideoBlock_action | null;
 }
 
+export interface CardQuoteRestore_image_VideoTriggerBlock_triggerAction_PhoneAction {
+  __typename: "PhoneAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+}
+
 export interface CardQuoteRestore_image_VideoTriggerBlock_triggerAction_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
   parentBlockId: string;
@@ -446,7 +476,7 @@ export interface CardQuoteRestore_image_VideoTriggerBlock_triggerAction_EmailAct
   email: string;
 }
 
-export type CardQuoteRestore_image_VideoTriggerBlock_triggerAction = CardQuoteRestore_image_VideoTriggerBlock_triggerAction_NavigateToBlockAction | CardQuoteRestore_image_VideoTriggerBlock_triggerAction_LinkAction | CardQuoteRestore_image_VideoTriggerBlock_triggerAction_EmailAction;
+export type CardQuoteRestore_image_VideoTriggerBlock_triggerAction = CardQuoteRestore_image_VideoTriggerBlock_triggerAction_PhoneAction | CardQuoteRestore_image_VideoTriggerBlock_triggerAction_NavigateToBlockAction | CardQuoteRestore_image_VideoTriggerBlock_triggerAction_LinkAction | CardQuoteRestore_image_VideoTriggerBlock_triggerAction_EmailAction;
 
 export interface CardQuoteRestore_image_VideoTriggerBlock {
   __typename: "VideoTriggerBlock";
@@ -470,6 +500,12 @@ export interface CardQuoteRestore_subtitle_GridContainerBlock {
   parentOrder: number | null;
 }
 
+export interface CardQuoteRestore_subtitle_ButtonBlock_action_PhoneAction {
+  __typename: "PhoneAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+}
+
 export interface CardQuoteRestore_subtitle_ButtonBlock_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
   parentBlockId: string;
@@ -491,7 +527,7 @@ export interface CardQuoteRestore_subtitle_ButtonBlock_action_EmailAction {
   email: string;
 }
 
-export type CardQuoteRestore_subtitle_ButtonBlock_action = CardQuoteRestore_subtitle_ButtonBlock_action_NavigateToBlockAction | CardQuoteRestore_subtitle_ButtonBlock_action_LinkAction | CardQuoteRestore_subtitle_ButtonBlock_action_EmailAction;
+export type CardQuoteRestore_subtitle_ButtonBlock_action = CardQuoteRestore_subtitle_ButtonBlock_action_PhoneAction | CardQuoteRestore_subtitle_ButtonBlock_action_NavigateToBlockAction | CardQuoteRestore_subtitle_ButtonBlock_action_LinkAction | CardQuoteRestore_subtitle_ButtonBlock_action_EmailAction;
 
 export interface CardQuoteRestore_subtitle_ButtonBlock_settings {
   __typename: "ButtonBlockSettings";
@@ -583,6 +619,12 @@ export interface CardQuoteRestore_subtitle_ImageBlock {
   focalLeft: number | null;
 }
 
+export interface CardQuoteRestore_subtitle_RadioOptionBlock_action_PhoneAction {
+  __typename: "PhoneAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+}
+
 export interface CardQuoteRestore_subtitle_RadioOptionBlock_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
   parentBlockId: string;
@@ -604,7 +646,7 @@ export interface CardQuoteRestore_subtitle_RadioOptionBlock_action_EmailAction {
   email: string;
 }
 
-export type CardQuoteRestore_subtitle_RadioOptionBlock_action = CardQuoteRestore_subtitle_RadioOptionBlock_action_NavigateToBlockAction | CardQuoteRestore_subtitle_RadioOptionBlock_action_LinkAction | CardQuoteRestore_subtitle_RadioOptionBlock_action_EmailAction;
+export type CardQuoteRestore_subtitle_RadioOptionBlock_action = CardQuoteRestore_subtitle_RadioOptionBlock_action_PhoneAction | CardQuoteRestore_subtitle_RadioOptionBlock_action_NavigateToBlockAction | CardQuoteRestore_subtitle_RadioOptionBlock_action_LinkAction | CardQuoteRestore_subtitle_RadioOptionBlock_action_EmailAction;
 
 export interface CardQuoteRestore_subtitle_RadioOptionBlock {
   __typename: "RadioOptionBlock";
@@ -614,11 +656,11 @@ export interface CardQuoteRestore_subtitle_RadioOptionBlock {
   label: string;
   action: CardQuoteRestore_subtitle_RadioOptionBlock_action | null;
   /**
-   * pollOptionImageId is present if a child block should be used as a poll option image.
-   * This child block should not be rendered normally, instead it should be used
-   * as a poll option image. Blocks are often of type ImageBlock
+   * pollOptionImageBlockId is present if a child block should be used as a poll option image.
+   *       This child block should not be rendered normally, instead it should be used
+   *       as a poll option image. Blocks are often of type ImageBlock
    */
-  pollOptionImageId: string | null;
+  pollOptionImageBlockId: string | null;
 }
 
 export interface CardQuoteRestore_subtitle_RadioQuestionBlock {
@@ -627,6 +669,12 @@ export interface CardQuoteRestore_subtitle_RadioQuestionBlock {
   parentBlockId: string | null;
   parentOrder: number | null;
   gridView: boolean | null;
+}
+
+export interface CardQuoteRestore_subtitle_SignUpBlock_action_PhoneAction {
+  __typename: "PhoneAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
 }
 
 export interface CardQuoteRestore_subtitle_SignUpBlock_action_NavigateToBlockAction {
@@ -650,7 +698,7 @@ export interface CardQuoteRestore_subtitle_SignUpBlock_action_EmailAction {
   email: string;
 }
 
-export type CardQuoteRestore_subtitle_SignUpBlock_action = CardQuoteRestore_subtitle_SignUpBlock_action_NavigateToBlockAction | CardQuoteRestore_subtitle_SignUpBlock_action_LinkAction | CardQuoteRestore_subtitle_SignUpBlock_action_EmailAction;
+export type CardQuoteRestore_subtitle_SignUpBlock_action = CardQuoteRestore_subtitle_SignUpBlock_action_PhoneAction | CardQuoteRestore_subtitle_SignUpBlock_action_NavigateToBlockAction | CardQuoteRestore_subtitle_SignUpBlock_action_LinkAction | CardQuoteRestore_subtitle_SignUpBlock_action_EmailAction;
 
 export interface CardQuoteRestore_subtitle_SignUpBlock {
   __typename: "SignUpBlock";
@@ -781,6 +829,12 @@ export interface CardQuoteRestore_subtitle_VideoBlock_mediaVideo_YouTube {
 
 export type CardQuoteRestore_subtitle_VideoBlock_mediaVideo = CardQuoteRestore_subtitle_VideoBlock_mediaVideo_Video | CardQuoteRestore_subtitle_VideoBlock_mediaVideo_MuxVideo | CardQuoteRestore_subtitle_VideoBlock_mediaVideo_YouTube;
 
+export interface CardQuoteRestore_subtitle_VideoBlock_action_PhoneAction {
+  __typename: "PhoneAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+}
+
 export interface CardQuoteRestore_subtitle_VideoBlock_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
   parentBlockId: string;
@@ -802,7 +856,7 @@ export interface CardQuoteRestore_subtitle_VideoBlock_action_EmailAction {
   email: string;
 }
 
-export type CardQuoteRestore_subtitle_VideoBlock_action = CardQuoteRestore_subtitle_VideoBlock_action_NavigateToBlockAction | CardQuoteRestore_subtitle_VideoBlock_action_LinkAction | CardQuoteRestore_subtitle_VideoBlock_action_EmailAction;
+export type CardQuoteRestore_subtitle_VideoBlock_action = CardQuoteRestore_subtitle_VideoBlock_action_PhoneAction | CardQuoteRestore_subtitle_VideoBlock_action_NavigateToBlockAction | CardQuoteRestore_subtitle_VideoBlock_action_LinkAction | CardQuoteRestore_subtitle_VideoBlock_action_EmailAction;
 
 export interface CardQuoteRestore_subtitle_VideoBlock {
   __typename: "VideoBlock";
@@ -879,6 +933,12 @@ export interface CardQuoteRestore_subtitle_VideoBlock {
   action: CardQuoteRestore_subtitle_VideoBlock_action | null;
 }
 
+export interface CardQuoteRestore_subtitle_VideoTriggerBlock_triggerAction_PhoneAction {
+  __typename: "PhoneAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+}
+
 export interface CardQuoteRestore_subtitle_VideoTriggerBlock_triggerAction_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
   parentBlockId: string;
@@ -900,7 +960,7 @@ export interface CardQuoteRestore_subtitle_VideoTriggerBlock_triggerAction_Email
   email: string;
 }
 
-export type CardQuoteRestore_subtitle_VideoTriggerBlock_triggerAction = CardQuoteRestore_subtitle_VideoTriggerBlock_triggerAction_NavigateToBlockAction | CardQuoteRestore_subtitle_VideoTriggerBlock_triggerAction_LinkAction | CardQuoteRestore_subtitle_VideoTriggerBlock_triggerAction_EmailAction;
+export type CardQuoteRestore_subtitle_VideoTriggerBlock_triggerAction = CardQuoteRestore_subtitle_VideoTriggerBlock_triggerAction_PhoneAction | CardQuoteRestore_subtitle_VideoTriggerBlock_triggerAction_NavigateToBlockAction | CardQuoteRestore_subtitle_VideoTriggerBlock_triggerAction_LinkAction | CardQuoteRestore_subtitle_VideoTriggerBlock_triggerAction_EmailAction;
 
 export interface CardQuoteRestore_subtitle_VideoTriggerBlock {
   __typename: "VideoTriggerBlock";
@@ -924,6 +984,12 @@ export interface CardQuoteRestore_title_GridContainerBlock {
   parentOrder: number | null;
 }
 
+export interface CardQuoteRestore_title_ButtonBlock_action_PhoneAction {
+  __typename: "PhoneAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+}
+
 export interface CardQuoteRestore_title_ButtonBlock_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
   parentBlockId: string;
@@ -945,7 +1011,7 @@ export interface CardQuoteRestore_title_ButtonBlock_action_EmailAction {
   email: string;
 }
 
-export type CardQuoteRestore_title_ButtonBlock_action = CardQuoteRestore_title_ButtonBlock_action_NavigateToBlockAction | CardQuoteRestore_title_ButtonBlock_action_LinkAction | CardQuoteRestore_title_ButtonBlock_action_EmailAction;
+export type CardQuoteRestore_title_ButtonBlock_action = CardQuoteRestore_title_ButtonBlock_action_PhoneAction | CardQuoteRestore_title_ButtonBlock_action_NavigateToBlockAction | CardQuoteRestore_title_ButtonBlock_action_LinkAction | CardQuoteRestore_title_ButtonBlock_action_EmailAction;
 
 export interface CardQuoteRestore_title_ButtonBlock_settings {
   __typename: "ButtonBlockSettings";
@@ -1037,6 +1103,12 @@ export interface CardQuoteRestore_title_ImageBlock {
   focalLeft: number | null;
 }
 
+export interface CardQuoteRestore_title_RadioOptionBlock_action_PhoneAction {
+  __typename: "PhoneAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+}
+
 export interface CardQuoteRestore_title_RadioOptionBlock_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
   parentBlockId: string;
@@ -1058,7 +1130,7 @@ export interface CardQuoteRestore_title_RadioOptionBlock_action_EmailAction {
   email: string;
 }
 
-export type CardQuoteRestore_title_RadioOptionBlock_action = CardQuoteRestore_title_RadioOptionBlock_action_NavigateToBlockAction | CardQuoteRestore_title_RadioOptionBlock_action_LinkAction | CardQuoteRestore_title_RadioOptionBlock_action_EmailAction;
+export type CardQuoteRestore_title_RadioOptionBlock_action = CardQuoteRestore_title_RadioOptionBlock_action_PhoneAction | CardQuoteRestore_title_RadioOptionBlock_action_NavigateToBlockAction | CardQuoteRestore_title_RadioOptionBlock_action_LinkAction | CardQuoteRestore_title_RadioOptionBlock_action_EmailAction;
 
 export interface CardQuoteRestore_title_RadioOptionBlock {
   __typename: "RadioOptionBlock";
@@ -1068,11 +1140,11 @@ export interface CardQuoteRestore_title_RadioOptionBlock {
   label: string;
   action: CardQuoteRestore_title_RadioOptionBlock_action | null;
   /**
-   * pollOptionImageId is present if a child block should be used as a poll option image.
-   * This child block should not be rendered normally, instead it should be used
-   * as a poll option image. Blocks are often of type ImageBlock
+   * pollOptionImageBlockId is present if a child block should be used as a poll option image.
+   *       This child block should not be rendered normally, instead it should be used
+   *       as a poll option image. Blocks are often of type ImageBlock
    */
-  pollOptionImageId: string | null;
+  pollOptionImageBlockId: string | null;
 }
 
 export interface CardQuoteRestore_title_RadioQuestionBlock {
@@ -1081,6 +1153,12 @@ export interface CardQuoteRestore_title_RadioQuestionBlock {
   parentBlockId: string | null;
   parentOrder: number | null;
   gridView: boolean | null;
+}
+
+export interface CardQuoteRestore_title_SignUpBlock_action_PhoneAction {
+  __typename: "PhoneAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
 }
 
 export interface CardQuoteRestore_title_SignUpBlock_action_NavigateToBlockAction {
@@ -1104,7 +1182,7 @@ export interface CardQuoteRestore_title_SignUpBlock_action_EmailAction {
   email: string;
 }
 
-export type CardQuoteRestore_title_SignUpBlock_action = CardQuoteRestore_title_SignUpBlock_action_NavigateToBlockAction | CardQuoteRestore_title_SignUpBlock_action_LinkAction | CardQuoteRestore_title_SignUpBlock_action_EmailAction;
+export type CardQuoteRestore_title_SignUpBlock_action = CardQuoteRestore_title_SignUpBlock_action_PhoneAction | CardQuoteRestore_title_SignUpBlock_action_NavigateToBlockAction | CardQuoteRestore_title_SignUpBlock_action_LinkAction | CardQuoteRestore_title_SignUpBlock_action_EmailAction;
 
 export interface CardQuoteRestore_title_SignUpBlock {
   __typename: "SignUpBlock";
@@ -1235,6 +1313,12 @@ export interface CardQuoteRestore_title_VideoBlock_mediaVideo_YouTube {
 
 export type CardQuoteRestore_title_VideoBlock_mediaVideo = CardQuoteRestore_title_VideoBlock_mediaVideo_Video | CardQuoteRestore_title_VideoBlock_mediaVideo_MuxVideo | CardQuoteRestore_title_VideoBlock_mediaVideo_YouTube;
 
+export interface CardQuoteRestore_title_VideoBlock_action_PhoneAction {
+  __typename: "PhoneAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+}
+
 export interface CardQuoteRestore_title_VideoBlock_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
   parentBlockId: string;
@@ -1256,7 +1340,7 @@ export interface CardQuoteRestore_title_VideoBlock_action_EmailAction {
   email: string;
 }
 
-export type CardQuoteRestore_title_VideoBlock_action = CardQuoteRestore_title_VideoBlock_action_NavigateToBlockAction | CardQuoteRestore_title_VideoBlock_action_LinkAction | CardQuoteRestore_title_VideoBlock_action_EmailAction;
+export type CardQuoteRestore_title_VideoBlock_action = CardQuoteRestore_title_VideoBlock_action_PhoneAction | CardQuoteRestore_title_VideoBlock_action_NavigateToBlockAction | CardQuoteRestore_title_VideoBlock_action_LinkAction | CardQuoteRestore_title_VideoBlock_action_EmailAction;
 
 export interface CardQuoteRestore_title_VideoBlock {
   __typename: "VideoBlock";
@@ -1333,6 +1417,12 @@ export interface CardQuoteRestore_title_VideoBlock {
   action: CardQuoteRestore_title_VideoBlock_action | null;
 }
 
+export interface CardQuoteRestore_title_VideoTriggerBlock_triggerAction_PhoneAction {
+  __typename: "PhoneAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+}
+
 export interface CardQuoteRestore_title_VideoTriggerBlock_triggerAction_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
   parentBlockId: string;
@@ -1354,7 +1444,7 @@ export interface CardQuoteRestore_title_VideoTriggerBlock_triggerAction_EmailAct
   email: string;
 }
 
-export type CardQuoteRestore_title_VideoTriggerBlock_triggerAction = CardQuoteRestore_title_VideoTriggerBlock_triggerAction_NavigateToBlockAction | CardQuoteRestore_title_VideoTriggerBlock_triggerAction_LinkAction | CardQuoteRestore_title_VideoTriggerBlock_triggerAction_EmailAction;
+export type CardQuoteRestore_title_VideoTriggerBlock_triggerAction = CardQuoteRestore_title_VideoTriggerBlock_triggerAction_PhoneAction | CardQuoteRestore_title_VideoTriggerBlock_triggerAction_NavigateToBlockAction | CardQuoteRestore_title_VideoTriggerBlock_triggerAction_LinkAction | CardQuoteRestore_title_VideoTriggerBlock_triggerAction_EmailAction;
 
 export interface CardQuoteRestore_title_VideoTriggerBlock {
   __typename: "VideoTriggerBlock";
@@ -1378,6 +1468,12 @@ export interface CardQuoteRestore_body_GridContainerBlock {
   parentOrder: number | null;
 }
 
+export interface CardQuoteRestore_body_ButtonBlock_action_PhoneAction {
+  __typename: "PhoneAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+}
+
 export interface CardQuoteRestore_body_ButtonBlock_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
   parentBlockId: string;
@@ -1399,7 +1495,7 @@ export interface CardQuoteRestore_body_ButtonBlock_action_EmailAction {
   email: string;
 }
 
-export type CardQuoteRestore_body_ButtonBlock_action = CardQuoteRestore_body_ButtonBlock_action_NavigateToBlockAction | CardQuoteRestore_body_ButtonBlock_action_LinkAction | CardQuoteRestore_body_ButtonBlock_action_EmailAction;
+export type CardQuoteRestore_body_ButtonBlock_action = CardQuoteRestore_body_ButtonBlock_action_PhoneAction | CardQuoteRestore_body_ButtonBlock_action_NavigateToBlockAction | CardQuoteRestore_body_ButtonBlock_action_LinkAction | CardQuoteRestore_body_ButtonBlock_action_EmailAction;
 
 export interface CardQuoteRestore_body_ButtonBlock_settings {
   __typename: "ButtonBlockSettings";
@@ -1491,6 +1587,12 @@ export interface CardQuoteRestore_body_ImageBlock {
   focalLeft: number | null;
 }
 
+export interface CardQuoteRestore_body_RadioOptionBlock_action_PhoneAction {
+  __typename: "PhoneAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+}
+
 export interface CardQuoteRestore_body_RadioOptionBlock_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
   parentBlockId: string;
@@ -1512,7 +1614,7 @@ export interface CardQuoteRestore_body_RadioOptionBlock_action_EmailAction {
   email: string;
 }
 
-export type CardQuoteRestore_body_RadioOptionBlock_action = CardQuoteRestore_body_RadioOptionBlock_action_NavigateToBlockAction | CardQuoteRestore_body_RadioOptionBlock_action_LinkAction | CardQuoteRestore_body_RadioOptionBlock_action_EmailAction;
+export type CardQuoteRestore_body_RadioOptionBlock_action = CardQuoteRestore_body_RadioOptionBlock_action_PhoneAction | CardQuoteRestore_body_RadioOptionBlock_action_NavigateToBlockAction | CardQuoteRestore_body_RadioOptionBlock_action_LinkAction | CardQuoteRestore_body_RadioOptionBlock_action_EmailAction;
 
 export interface CardQuoteRestore_body_RadioOptionBlock {
   __typename: "RadioOptionBlock";
@@ -1522,11 +1624,11 @@ export interface CardQuoteRestore_body_RadioOptionBlock {
   label: string;
   action: CardQuoteRestore_body_RadioOptionBlock_action | null;
   /**
-   * pollOptionImageId is present if a child block should be used as a poll option image.
-   * This child block should not be rendered normally, instead it should be used
-   * as a poll option image. Blocks are often of type ImageBlock
+   * pollOptionImageBlockId is present if a child block should be used as a poll option image.
+   *       This child block should not be rendered normally, instead it should be used
+   *       as a poll option image. Blocks are often of type ImageBlock
    */
-  pollOptionImageId: string | null;
+  pollOptionImageBlockId: string | null;
 }
 
 export interface CardQuoteRestore_body_RadioQuestionBlock {
@@ -1535,6 +1637,12 @@ export interface CardQuoteRestore_body_RadioQuestionBlock {
   parentBlockId: string | null;
   parentOrder: number | null;
   gridView: boolean | null;
+}
+
+export interface CardQuoteRestore_body_SignUpBlock_action_PhoneAction {
+  __typename: "PhoneAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
 }
 
 export interface CardQuoteRestore_body_SignUpBlock_action_NavigateToBlockAction {
@@ -1558,7 +1666,7 @@ export interface CardQuoteRestore_body_SignUpBlock_action_EmailAction {
   email: string;
 }
 
-export type CardQuoteRestore_body_SignUpBlock_action = CardQuoteRestore_body_SignUpBlock_action_NavigateToBlockAction | CardQuoteRestore_body_SignUpBlock_action_LinkAction | CardQuoteRestore_body_SignUpBlock_action_EmailAction;
+export type CardQuoteRestore_body_SignUpBlock_action = CardQuoteRestore_body_SignUpBlock_action_PhoneAction | CardQuoteRestore_body_SignUpBlock_action_NavigateToBlockAction | CardQuoteRestore_body_SignUpBlock_action_LinkAction | CardQuoteRestore_body_SignUpBlock_action_EmailAction;
 
 export interface CardQuoteRestore_body_SignUpBlock {
   __typename: "SignUpBlock";
@@ -1689,6 +1797,12 @@ export interface CardQuoteRestore_body_VideoBlock_mediaVideo_YouTube {
 
 export type CardQuoteRestore_body_VideoBlock_mediaVideo = CardQuoteRestore_body_VideoBlock_mediaVideo_Video | CardQuoteRestore_body_VideoBlock_mediaVideo_MuxVideo | CardQuoteRestore_body_VideoBlock_mediaVideo_YouTube;
 
+export interface CardQuoteRestore_body_VideoBlock_action_PhoneAction {
+  __typename: "PhoneAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+}
+
 export interface CardQuoteRestore_body_VideoBlock_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
   parentBlockId: string;
@@ -1710,7 +1824,7 @@ export interface CardQuoteRestore_body_VideoBlock_action_EmailAction {
   email: string;
 }
 
-export type CardQuoteRestore_body_VideoBlock_action = CardQuoteRestore_body_VideoBlock_action_NavigateToBlockAction | CardQuoteRestore_body_VideoBlock_action_LinkAction | CardQuoteRestore_body_VideoBlock_action_EmailAction;
+export type CardQuoteRestore_body_VideoBlock_action = CardQuoteRestore_body_VideoBlock_action_PhoneAction | CardQuoteRestore_body_VideoBlock_action_NavigateToBlockAction | CardQuoteRestore_body_VideoBlock_action_LinkAction | CardQuoteRestore_body_VideoBlock_action_EmailAction;
 
 export interface CardQuoteRestore_body_VideoBlock {
   __typename: "VideoBlock";
@@ -1787,6 +1901,12 @@ export interface CardQuoteRestore_body_VideoBlock {
   action: CardQuoteRestore_body_VideoBlock_action | null;
 }
 
+export interface CardQuoteRestore_body_VideoTriggerBlock_triggerAction_PhoneAction {
+  __typename: "PhoneAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+}
+
 export interface CardQuoteRestore_body_VideoTriggerBlock_triggerAction_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
   parentBlockId: string;
@@ -1808,7 +1928,7 @@ export interface CardQuoteRestore_body_VideoTriggerBlock_triggerAction_EmailActi
   email: string;
 }
 
-export type CardQuoteRestore_body_VideoTriggerBlock_triggerAction = CardQuoteRestore_body_VideoTriggerBlock_triggerAction_NavigateToBlockAction | CardQuoteRestore_body_VideoTriggerBlock_triggerAction_LinkAction | CardQuoteRestore_body_VideoTriggerBlock_triggerAction_EmailAction;
+export type CardQuoteRestore_body_VideoTriggerBlock_triggerAction = CardQuoteRestore_body_VideoTriggerBlock_triggerAction_PhoneAction | CardQuoteRestore_body_VideoTriggerBlock_triggerAction_NavigateToBlockAction | CardQuoteRestore_body_VideoTriggerBlock_triggerAction_LinkAction | CardQuoteRestore_body_VideoTriggerBlock_triggerAction_EmailAction;
 
 export interface CardQuoteRestore_body_VideoTriggerBlock {
   __typename: "VideoTriggerBlock";

@@ -5,6 +5,7 @@ import SchemaBuilder from '@pothos/core'
 import DirectivesPlugin from '@pothos/plugin-directives'
 import FederationPlugin from '@pothos/plugin-federation'
 import pluginName from '@pothos/plugin-prisma'
+import RelayPlugin from '@pothos/plugin-relay'
 import ScopeAuthPlugin from '@pothos/plugin-scope-auth'
 import TracingPlugin, { isRootField } from '@pothos/plugin-tracing'
 import WithInputPlugin from '@pothos/plugin-with-input'
@@ -16,12 +17,10 @@ import {
 } from 'graphql-scalars'
 import { GraphQLJSONObject } from 'graphql-type-json'
 
-import { Prisma, Role } from '.prisma/api-journeys-modern-client'
+import type PrismaTypes from '@core/prisma/journeys/__generated__/pothos-types'
+import { Prisma, Role, prisma } from '@core/prisma/journeys/client'
 import { User } from '@core/yoga/firebaseClient'
 import { InteropContext } from '@core/yoga/interop'
-
-import type PrismaTypes from '../__generated__/pothos-types'
-import { prisma } from '../lib/prisma'
 
 interface BaseContext {
   type: string
@@ -75,6 +74,7 @@ export const builder = new SchemaBuilder<{
     TracingPlugin,
     ScopeAuthPlugin,
     PrismaPlugin,
+    RelayPlugin,
     WithInputPlugin,
     DirectivesPlugin,
     FederationPlugin

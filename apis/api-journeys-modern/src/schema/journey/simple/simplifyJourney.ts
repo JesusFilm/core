@@ -1,4 +1,4 @@
-import type { Prisma } from '.prisma/api-journeys-modern-client'
+import type { Prisma } from '@core/prisma/journeys/client'
 import {
   JourneySimple,
   JourneySimpleCard
@@ -23,8 +23,37 @@ export function simplifyJourney(
       (block) => block.parentBlockId === cardBlock.id
     )
 
+    // --- VIDEO BLOCK HANDLING ---
+    const videoBlock = childBlocks.find(
+      (block) => block.typename === 'VideoBlock' && block.source === 'youTube'
+    )
+    if (videoBlock) {
+      const card: JourneySimpleCard = {
+        id: `card-${index + 1}`,
+        x: stepBlock.x ?? 0,
+        y: stepBlock.y ?? 0,
+        video: {
+          url: `https://youtube.com/watch?v=${videoBlock.videoId}`,
+          startAt: videoBlock.startAt ?? undefined,
+          endAt: videoBlock.endAt ?? undefined
+        }
+      }
+      if (stepBlock.nextBlockId) {
+        const nextStepBlockIndex = stepBlocks.findIndex(
+          (s) => s.id === stepBlock.nextBlockId
+        )
+        if (nextStepBlockIndex >= 0) {
+          card.defaultNextCard = `card-${nextStepBlockIndex + 1}`
+        }
+      }
+      return card
+    }
+
+    // --- NON-VIDEO CARDS (existing logic) ---
     const card: JourneySimpleCard = {
-      id: `card-${index + 1}`
+      id: `card-${index + 1}`,
+      x: stepBlock.x ?? 0,
+      y: stepBlock.y ?? 0
     }
 
     const headingBlock = childBlocks.find(

@@ -3,7 +3,7 @@
  * Provides helper functions for translation operations on journey blocks
  */
 
-import { Block, PrismaClient } from '.prisma/api-journeys-modern-client'
+import { Block, PrismaClient } from '@core/prisma/journeys/client'
 
 /**
  * Interface for translation updates for a block

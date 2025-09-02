@@ -6,16 +6,15 @@ import {
   GetLanguagesSlug,
   GetLanguagesSlugVariables
 } from '../../../__generated__/GetLanguagesSlug'
+import { GET_LANGUAGES_SLUG } from '../../libs/useLanguagesSlugQuery'
 import { VideoProvider } from '../../libs/videoContext'
 import { WatchProvider } from '../../libs/watchContext'
 import { TestWatchState } from '../../libs/watchContext/TestWatchState'
-import { GET_LANGUAGES_SLUG } from '../AudioLanguageDialog/AudioLanguageDialog'
 import { videos } from '../Videos/__generated__/testData'
 
 import { NewVideoContentPage } from './NewVideoContentPage'
 
 const initialWatchState = {
-  siteLanguage: 'en',
   audioLanguage: '529',
   subtitleLanguage: '529',
   subtitleOn: true,
@@ -216,7 +215,7 @@ describe('NewContentPage', () => {
       </MockedProvider>
     )
     expect(
-      screen.getByText('videoAudioLanguages: 0 audio languages')
+      screen.getByText('videoAudioLanguagesIdsAndSlugs: 0 audio languages')
     ).toBeInTheDocument()
 
     await waitFor(() => {
@@ -224,7 +223,7 @@ describe('NewContentPage', () => {
     })
 
     expect(
-      screen.getByText('videoAudioLanguages: 1 audio languages')
+      screen.getByText('videoAudioLanguagesIdsAndSlugs: 1 audio languages')
     ).toBeInTheDocument()
   })
 })

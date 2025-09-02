@@ -6,11 +6,11 @@ import {
   ThemeName,
   UserJourneyRole,
   UserTeamRole,
-  Visitor
-} from '.prisma/api-journeys-modern-client'
+  Visitor,
+  prisma
+} from '@core/prisma/journeys/client'
 
 import { prismaMock } from '../../../../test/prismaMock'
-import { prisma } from '../../../lib/prisma'
 
 import { fetchEmailDetails } from './fetchEmailDetails'
 import { JourneyWithTeamAndUserJourney } from './prisma.types'
@@ -128,7 +128,8 @@ describe('fetchEmailDetails', () => {
     menuStepBlockId: null,
     socialNodeX: null,
     socialNodeY: null,
-    fromTemplateId: null
+    fromTemplateId: null,
+    journeyCustomizationDescription: null
   }
 
   const event: Event = {

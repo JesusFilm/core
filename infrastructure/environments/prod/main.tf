@@ -1,9 +1,10 @@
 module "prod" {
-  source            = "../../modules/aws"
-  certificate_arn   = data.aws_acm_certificate.acm_central_jesusfilm_org.arn
-  env               = "prod"
-  cidr              = "10.10.0.0/16"
-  internal_url_name = "service.internal"
+  source                       = "../../modules/aws"
+  certificate_arn              = data.aws_acm_certificate.acm_central_jesusfilm_org.arn
+  env                          = "prod"
+  cidr                         = "10.10.0.0/16"
+  internal_url_name            = "service.internal"
+  datadog_forwarder_lambda_arn = var.datadog_forwarder_lambda_arn
 }
 
 locals {
@@ -42,8 +43,13 @@ locals {
 }
 
 module "api-gateway" {
-  source           = "../../../apis/api-gateway/infrastructure"
-  ecs_config       = local.public_ecs_config
+  source = "../../../apis/api-gateway/infrastructure"
+  ecs_config = merge(local.public_ecs_config, {
+    alb_target_group = merge(local.alb_target_group, {
+      health_check_path = "/readiness"
+      health_check_port = "4000"
+    })
+  })
   doppler_token    = data.aws_ssm_parameter.doppler_api_gateway_prod_token.value
   alb_listener_arn = module.prod.public_alb.alb_listener.arn
   alb_dns_name     = module.prod.public_alb.dns_name

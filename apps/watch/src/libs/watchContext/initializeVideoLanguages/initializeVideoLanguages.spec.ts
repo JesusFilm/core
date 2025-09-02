@@ -18,33 +18,12 @@ describe('initializeVideoLanguages', () => {
   it('should dispatch SetVideoAudioLanguages action with provided audio languages', () => {
     const mockAudioLanguages = [
       {
-        language: {
-          id: '529',
-          slug: 'english',
-          name: [
-            { primary: true, value: 'English', __typename: 'LanguageName' }
-          ],
-          __typename: 'Language'
-        },
-        slug: 'english',
-        __typename: 'LanguageWithSlug'
+        id: '529',
+        slug: 'english'
       }
-    ] as any
+    ]
 
-    const mockSubtitleLanguages = [
-      {
-        language: {
-          id: '529',
-          bcp47: 'en',
-          name: [
-            { primary: true, value: 'English', __typename: 'LanguageName' }
-          ],
-          __typename: 'Language'
-        },
-        value: 'English subtitles',
-        __typename: 'VideoSubtitle'
-      }
-    ] as any
+    const mockSubtitleLanguages = ['529']
 
     initializeVideoLanguages(
       mockDispatch,
@@ -57,40 +36,19 @@ describe('initializeVideoLanguages', () => {
     // Check first call - SetVideoAudioLanguages
     expect(mockDispatch).toHaveBeenNthCalledWith(1, {
       type: 'SetVideoAudioLanguages',
-      videoAudioLanguages: mockAudioLanguages
+      videoAudioLanguagesIdsAndSlugs: mockAudioLanguages
     })
   })
 
   it('should dispatch SetVideoSubtitleLanguages action with provided subtitle languages', () => {
     const mockAudioLanguages = [
       {
-        language: {
-          id: '529',
-          slug: 'english',
-          name: [
-            { primary: true, value: 'English', __typename: 'LanguageName' }
-          ],
-          __typename: 'Language'
-        },
-        slug: 'english',
-        __typename: 'LanguageWithSlug'
+        id: '529',
+        slug: 'english'
       }
-    ] as any
+    ]
 
-    const mockSubtitleLanguages = [
-      {
-        language: {
-          id: '529',
-          bcp47: 'en',
-          name: [
-            { primary: true, value: 'English', __typename: 'LanguageName' }
-          ],
-          __typename: 'Language'
-        },
-        value: 'English subtitles',
-        __typename: 'VideoSubtitle'
-      }
-    ] as any
+    const mockSubtitleLanguages = ['529']
 
     initializeVideoLanguages(
       mockDispatch,
@@ -103,40 +61,19 @@ describe('initializeVideoLanguages', () => {
     // Check second call - SetVideoSubtitleLanguages
     expect(mockDispatch).toHaveBeenNthCalledWith(2, {
       type: 'SetVideoSubtitleLanguages',
-      videoSubtitleLanguages: mockSubtitleLanguages
+      videoSubtitleLanguageIds: mockSubtitleLanguages
     })
   })
 
   it('should call actions in correct order, audio first, then subtitle', () => {
     const mockAudioLanguages = [
       {
-        language: {
-          id: '529',
-          slug: 'english',
-          name: [
-            { primary: true, value: 'English', __typename: 'LanguageName' }
-          ],
-          __typename: 'Language'
-        },
-        slug: 'english',
-        __typename: 'LanguageWithSlug'
+        id: '529',
+        slug: 'english'
       }
-    ] as any
+    ]
 
-    const mockSubtitleLanguages = [
-      {
-        language: {
-          id: '529',
-          bcp47: 'en',
-          name: [
-            { primary: true, value: 'English', __typename: 'LanguageName' }
-          ],
-          __typename: 'Language'
-        },
-        value: 'English subtitles',
-        __typename: 'VideoSubtitle'
-      }
-    ] as any
+    const mockSubtitleLanguages = ['529']
 
     initializeVideoLanguages(
       mockDispatch,
@@ -149,30 +86,17 @@ describe('initializeVideoLanguages', () => {
     // Verify order: SetVideoAudioLanguages first, then SetVideoSubtitleLanguages
     expect(mockDispatch).toHaveBeenNthCalledWith(1, {
       type: 'SetVideoAudioLanguages',
-      videoAudioLanguages: mockAudioLanguages
+      videoAudioLanguagesIdsAndSlugs: mockAudioLanguages
     })
 
     expect(mockDispatch).toHaveBeenNthCalledWith(2, {
       type: 'SetVideoSubtitleLanguages',
-      videoSubtitleLanguages: mockSubtitleLanguages
+      videoSubtitleLanguageIds: mockSubtitleLanguages
     })
   })
 
   it('should handle empty audio languages array', () => {
-    const mockSubtitleLanguages = [
-      {
-        language: {
-          id: '529',
-          bcp47: 'en',
-          name: [
-            { primary: true, value: 'English', __typename: 'LanguageName' }
-          ],
-          __typename: 'Language'
-        },
-        value: 'English subtitles',
-        __typename: 'VideoSubtitle'
-      }
-    ] as any
+    const mockSubtitleLanguages = ['529']
 
     initializeVideoLanguages(mockDispatch, [], mockSubtitleLanguages)
 
@@ -180,30 +104,22 @@ describe('initializeVideoLanguages', () => {
 
     expect(mockDispatch).toHaveBeenNthCalledWith(1, {
       type: 'SetVideoAudioLanguages',
-      videoAudioLanguages: []
+      videoAudioLanguagesIdsAndSlugs: []
     })
 
     expect(mockDispatch).toHaveBeenNthCalledWith(2, {
       type: 'SetVideoSubtitleLanguages',
-      videoSubtitleLanguages: mockSubtitleLanguages
+      videoSubtitleLanguageIds: mockSubtitleLanguages
     })
   })
 
   it('should handle empty subtitle languages array', () => {
     const mockAudioLanguages = [
       {
-        language: {
-          id: '529',
-          slug: 'english',
-          name: [
-            { primary: true, value: 'English', __typename: 'LanguageName' }
-          ],
-          __typename: 'Language'
-        },
-        slug: 'english',
-        __typename: 'LanguageWithSlug'
+        id: '529',
+        slug: 'english'
       }
-    ] as any
+    ]
 
     initializeVideoLanguages(mockDispatch, mockAudioLanguages, [])
 
@@ -211,12 +127,12 @@ describe('initializeVideoLanguages', () => {
 
     expect(mockDispatch).toHaveBeenNthCalledWith(1, {
       type: 'SetVideoAudioLanguages',
-      videoAudioLanguages: mockAudioLanguages
+      videoAudioLanguagesIdsAndSlugs: mockAudioLanguages
     })
 
     expect(mockDispatch).toHaveBeenNthCalledWith(2, {
       type: 'SetVideoSubtitleLanguages',
-      videoSubtitleLanguages: []
+      videoSubtitleLanguageIds: []
     })
   })
 
@@ -227,78 +143,53 @@ describe('initializeVideoLanguages', () => {
 
     expect(mockDispatch).toHaveBeenNthCalledWith(1, {
       type: 'SetVideoAudioLanguages',
-      videoAudioLanguages: []
+      videoAudioLanguagesIdsAndSlugs: []
     })
 
     expect(mockDispatch).toHaveBeenNthCalledWith(2, {
       type: 'SetVideoSubtitleLanguages',
-      videoSubtitleLanguages: []
+      videoSubtitleLanguageIds: []
     })
   })
 
   it('should handle undefined audio languages by converting to empty array', () => {
-    const mockSubtitleLanguages = [
-      {
-        language: {
-          id: '529',
-          bcp47: 'en',
-          name: [
-            { primary: true, value: 'English', __typename: 'LanguageName' }
-          ],
-          __typename: 'Language'
-        },
-        value: 'English subtitles',
-        __typename: 'VideoSubtitle'
-      }
-    ] as any
+    const mockSubtitleLanguages = ['529']
 
-    initializeVideoLanguages(
-      mockDispatch,
-      undefined as any,
-      mockSubtitleLanguages
-    )
+    initializeVideoLanguages(mockDispatch, [], mockSubtitleLanguages)
 
     expect(mockDispatch).toHaveBeenCalledTimes(2)
 
     expect(mockDispatch).toHaveBeenNthCalledWith(1, {
       type: 'SetVideoAudioLanguages',
-      videoAudioLanguages: []
+      videoAudioLanguagesIdsAndSlugs: []
     })
 
     expect(mockDispatch).toHaveBeenNthCalledWith(2, {
       type: 'SetVideoSubtitleLanguages',
-      videoSubtitleLanguages: mockSubtitleLanguages
+      videoSubtitleLanguageIds: mockSubtitleLanguages
     })
   })
 
   it('should handle undefined subtitle languages by converting to empty array', () => {
     const mockAudioLanguages = [
       {
-        language: {
-          id: '529',
-          slug: 'english',
-          name: [
-            { primary: true, value: 'English', __typename: 'LanguageName' }
-          ],
-          __typename: 'Language'
-        },
-        slug: 'english',
-        __typename: 'LanguageWithSlug'
+        id: '529',
+        slug: 'english'
       }
-    ] as any
+    ]
 
-    initializeVideoLanguages(mockDispatch, mockAudioLanguages, undefined as any)
+    initializeVideoLanguages(mockDispatch, mockAudioLanguages, [])
 
     expect(mockDispatch).toHaveBeenCalledTimes(2)
 
     expect(mockDispatch).toHaveBeenNthCalledWith(1, {
       type: 'SetVideoAudioLanguages',
-      videoAudioLanguages: mockAudioLanguages
+      videoAudioLanguagesIdsAndSlugs: mockAudioLanguages
     })
 
     expect(mockDispatch).toHaveBeenNthCalledWith(2, {
       type: 'SetVideoSubtitleLanguages',
-      videoSubtitleLanguages: []
+      videoSubtitleLanguageIds: []
     })
   })
 })
