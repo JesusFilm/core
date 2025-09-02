@@ -18,7 +18,7 @@ import {
 } from 'next-firebase-auth'
 import { useTranslation } from 'next-i18next'
 import { NextSeo } from 'next-seo'
-import { ReactElement, useState } from 'react'
+import { ReactElement, useEffect, useState } from 'react'
 import { number, object } from 'yup'
 
 import { useTeam } from '@core/journeys/ui/TeamProvider'
@@ -54,7 +54,8 @@ function ValidateEmail({
   const router = useRouter()
   const client = useApolloClient()
   const user = useUser()
-  const email = user.email ?? ''
+  const email = user?.email
+  const isAnonymous = user?.email == null
   const { setActiveTeam } = useTeam()
   const [error, setError] = useState<GraphQLError | ApolloError | null>(
     initialError
@@ -76,6 +77,13 @@ function ValidateEmail({
   )
 
   useHandleNewAccountRedirect()
+
+  // if user is anonymous i.e, does not have an email - sign them out so they can go to sign-in page
+  useEffect(() => {
+    if (isAnonymous) {
+      user?.signOut()
+    }
+  }, [user, isAnonymous])
 
   const validationSchema = object().shape({
     token: number().min(100000).max(999999).required(t('Required'))

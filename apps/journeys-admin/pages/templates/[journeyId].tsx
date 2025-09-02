@@ -42,6 +42,7 @@ function TemplateDetailsPage(): ReactElement {
   }, [user.id, query, activeTeam, refetch])
 
   const userSignedIn = user?.id != null
+  const isAnonymous = user?.email == null
 
   return (
     <>
@@ -60,7 +61,7 @@ function TemplateDetailsPage(): ReactElement {
           user={user}
           backHref="/templates"
           mainBodyPadding={false}
-          showMainHeader={userSignedIn}
+          showMainHeader={userSignedIn || !isAnonymous}
           mainHeaderChildren={
             <Stack
               direction="row"
@@ -83,8 +84,8 @@ function TemplateDetailsPage(): ReactElement {
               />
             </Stack>
           }
-          showAppHeader={userSignedIn}
-          showNavBar={userSignedIn}
+          showAppHeader={userSignedIn && !isAnonymous}
+          showNavBar={userSignedIn && !isAnonymous}
           background="background.paper"
         >
           <Box
@@ -92,7 +93,7 @@ function TemplateDetailsPage(): ReactElement {
               position: 'absolute',
               right: 16,
               top: 8,
-              display: userSignedIn ? 'none' : 'block'
+              display: userSignedIn && !isAnonymous ? 'none' : 'block'
             }}
           >
             <HelpScoutBeacon
@@ -125,7 +126,8 @@ export const getServerSideProps: GetStaticProps = withUserTokenSSR()(async ({
   const { redirect, apolloClient, translations } = await initAndAuthApp({
     user,
     locale,
-    resolvedUrl
+    resolvedUrl,
+    allowAnonymous: true
   })
 
   if (params?.journeyId == null) {

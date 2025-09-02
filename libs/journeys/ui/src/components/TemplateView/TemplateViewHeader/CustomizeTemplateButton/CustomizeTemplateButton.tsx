@@ -3,7 +3,6 @@ import { useTranslation } from 'next-i18next'
 import { useRouter } from 'next/router'
 import { ReactElement } from 'react'
 import { useUser } from 'next-firebase-auth'
-import { firebaseClient } from '../../../../libs/firebaseClient'
 import { getAuth, signInAnonymously } from 'firebase/auth'
 
 interface CustomizeTemplateButtonProps {
@@ -23,7 +22,7 @@ export function CustomizeTemplateButton({
     if (isSignedIn) {
       router.push(`/templates/${journeyId ?? ''}/customize`)
     } else {
-      const auth = getAuth(firebaseClient)
+      const auth = getAuth()
       signInAnonymously(auth)
       await router.push(`/templates/${journeyId ?? ''}/customize?redirect=true`)
     }

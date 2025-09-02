@@ -48,6 +48,7 @@ export function NavigationDrawer({
 }: NavigationDrawerProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const [tooltip, setTooltip] = useState<string | undefined>()
+  const isAnonymous = user?.email == null
 
   function handleClose(): void {
     onClose?.(open !== true)
@@ -171,7 +172,7 @@ export function NavigationDrawer({
             primaryTypographyProps={{ style: { whiteSpace: 'nowrap' } }}
           />
         </ListItemButton>
-        {user?.id != null && (
+        {user?.id != null && !isAnonymous && (
           <NoSsr>
             <Suspense>
               <UserNavigation

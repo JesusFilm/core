@@ -18,6 +18,9 @@ import ArrowRightIcon from '@core/shared/ui/icons/ArrowRight'
 import { JourneyCustomizeTeamSelect } from './JourneyCustomizeTeamSelect'
 import { LanguageScreenCardPreview } from './LanguageScreenCardPreview'
 import { useTeamCreateMutation } from '../../../../../libs/useTeamCreateMutation'
+import { useLazyQuery } from '@apollo/client'
+import { GET_ME } from '../../../../PageWrapper/NavigationDrawer/UserNavigation'
+import { GetMe } from '../../../../../../__generated__/GetMe'
 
 interface LanguageScreenProps {
   handleNext: () => void
@@ -32,12 +35,11 @@ export function LanguageScreen({
   const [loading, setLoading] = useState(false)
   const { enqueueSnackbar } = useSnackbar()
 
-  console.log('user', user)
-
   const { journey } = useJourney()
   const isSignedIn = user?.email != null
   const { query } = useTeam()
   const [teamCreate] = useTeamCreateMutation()
+  const [getMe] = useLazyQuery<GetMe>(GET_ME)
 
   const validationSchema = object({
     teamSelect: string().required()
@@ -89,6 +91,7 @@ export function LanguageScreen({
       setLoading(false)
       return
     }
+    await getMe()
     const { data: teamCreateData } = await teamCreate({
       variables: {
         input: {
@@ -121,9 +124,11 @@ export function LanguageScreen({
       </Typography>
       <LanguageScreenCardPreview />
 
-      <Typography variant="body1" color="text.secondary" align="center">
-        {t('Select a team')}
-      </Typography>
+      {isSignedIn && (
+        <Typography variant="body1" color="text.secondary" align="center">
+          {t('Select a team')}
+        </Typography>
+      )}
       {isSignedIn && (
         <Formik
           initialValues={initialValues}

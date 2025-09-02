@@ -47,7 +47,7 @@ export const getServerSideProps = withUserTokenSSR()(async ({
     user,
     locale,
     resolvedUrl,
-    makeAccountOnAnonymous: true
+    allowAnonymous: true
   })
 
   const journeyId = params?.journeyId

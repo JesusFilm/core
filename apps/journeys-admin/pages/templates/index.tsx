@@ -43,6 +43,7 @@ function TemplateIndexPage(): ReactElement {
   }, [user.id, query])
 
   const userSignedIn = user?.id != null
+  const isAnonymous = user?.email == null
 
   return (
     <>
@@ -52,8 +53,8 @@ function TemplateIndexPage(): ReactElement {
         user={user}
         mainBodyPadding={false}
         showMainHeader={false}
-        showAppHeader={userSignedIn}
-        showNavBar={userSignedIn}
+        showAppHeader={userSignedIn && !isAnonymous}
+        showNavBar={userSignedIn && !isAnonymous}
         fadeInNavBar
         background="background.paper"
       >
@@ -62,7 +63,10 @@ function TemplateIndexPage(): ReactElement {
             position: 'absolute',
             right: 16,
             top: 8,
-            display: { xs: userSignedIn ? 'none' : 'block', md: 'block' }
+            display: {
+              xs: userSignedIn && !isAnonymous ? 'none' : 'block',
+              md: 'block'
+            }
           }}
         >
           <HelpScoutBeacon
@@ -87,7 +91,8 @@ function TemplateIndexPage(): ReactElement {
 
 export const getStaticProps: GetStaticProps = async ({ locale }) => {
   const { apolloClient, translations } = await initAndAuthApp({
-    locale
+    locale,
+    allowAnonymous: true
   })
 
   await Promise.all([
