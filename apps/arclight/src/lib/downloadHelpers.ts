@@ -5,15 +5,25 @@
 
 interface Download {
   quality: string
-  url?: string
-  size?: number
-  height?: number
-  width?: number
-  bitrate?: number
+  url: string
+  size: number
+  height: number
+  width: number
+  bitrate: number
 }
 
 const SPECIAL_API_KEY = '607f41540b2ca6.32427244'
 
+export function normalizeDownloads(downloads: Download[]): Download[] {
+  return downloads.map((d) => ({
+    quality: d.quality,
+    url: d.url ?? '',
+    size: d.size ?? 0,
+    height: d.height ?? 0,
+    width: d.width ?? 0,
+    bitrate: d.bitrate ?? 0
+  }))
+}
 /**
  * Maps standard quality to distro quality variants
  */
@@ -53,13 +63,14 @@ export function findDownloadWithFallback(
 
 /**
  * Helper function to get the best download size for a quality
- * Returns distro quality size if available for special API key, otherwise standard quality
+ * Don't need distro because they don't use low and high download sizes
  */
 export function getDownloadSize(
   downloads: Download[] | null | undefined,
-  standardQuality: string,
-  apiKey?: string
+  standardQuality: string
 ): number {
-  const download = findDownloadWithFallback(downloads, standardQuality, apiKey)
-  return download?.size ?? 0
+  if (!downloads) return 0
+
+  const standardDownload = downloads.find((d) => d.quality === standardQuality)
+  return standardDownload?.size ?? 0
 }
