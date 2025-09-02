@@ -65,26 +65,20 @@ const DownloadUrlSchema = z.object({
 })
 type DownloadUrlSchema = z.infer<typeof DownloadUrlSchema>
 
-const StreamingUrlSchema = z.object({
-  dash: z.array(
-    z.object({
-      url: z.string(),
-      videoBitrate: z.number()
-    })
-  ),
-  hls: z.array(
-    z.object({
-      url: z.string(),
-      videoBitrate: z.number()
-    })
-  ),
-  http: z.array(
-    z.object({
-      url: z.string(),
-      videoBitrate: z.number()
-    })
-  )
+const StreamSchema = z.object({
+  url: z.string(),
+  videoBitrate: z.number(),
+  videoContainer: z.string().optional()
 })
+type StreamSchema = z.infer<typeof StreamSchema>
+
+const StreamingUrlSchema = z.object({
+  dash: z.array(StreamSchema).optional(),
+  m3u8: z.array(StreamSchema).optional(),
+  hls: z.array(StreamSchema).optional(),
+  http: z.array(StreamSchema).optional()
+})
+
 type StreamingUrlSchema = z.infer<typeof StreamingUrlSchema>
 
 const ResponseSchema = z.object({
@@ -384,7 +378,7 @@ mediaComponentLanguage.openapi(route, async (c) => {
       webEmbedSharePlayer = getWebEmbedSharePlayer(variant.id, apiSessionId)
     }
 
-    const buildSubtitleUrls = (subtitles: Subtitle[]) => {
+    const buildSubtitleUrls = (subtitles: Subtitle[]): SubtitleSchema => {
       const subtitleUrls: SubtitleSchema = {
         vtt: [],
         srt: []
@@ -397,21 +391,23 @@ mediaComponentLanguage.openapi(route, async (c) => {
           (!subtitle.edition && !variant.edition)
       )
 
-      editionSubtitles.forEach((subtitle: Subtitle) => {
+      for (const subtitle of editionSubtitles) {
         const languageInfo = languageMap.get(subtitle.languageId)
+        if (!languageInfo || !languageInfo.name[0] || !languageInfo.bcp47)
+          continue
         subtitleUrls.vtt.push({
           languageId: Number(subtitle.languageId),
-          languageName: languageInfo?.name[0]?.value ?? '',
-          languageTag: languageInfo?.bcp47 ?? '',
+          languageName: languageInfo.name[0].value,
+          languageTag: languageInfo.bcp47,
           url: subtitle.vttSrc ?? ''
         })
         subtitleUrls.srt.push({
           languageId: Number(subtitle.languageId),
-          languageName: languageInfo?.name[0]?.value ?? '',
-          languageTag: languageInfo?.bcp47 ?? '',
+          languageName: languageInfo.name[0].value,
+          languageTag: languageInfo.bcp47,
           url: subtitle.srtSrc ?? ''
         })
-      })
+      }
       return subtitleUrls
     }
 
@@ -419,7 +415,7 @@ mediaComponentLanguage.openapi(route, async (c) => {
       platform: string,
       variant: Variant,
       normalizedDownloads: NormalizedDownload[]
-    ) => {
+    ): StreamingUrlSchema => {
       if (!variant.hls && !variant.dash) return {}
 
       const downloadLow = findDownloadWithFallback(
@@ -449,32 +445,32 @@ mediaComponentLanguage.openapi(route, async (c) => {
               {
                 videoBitrate: downloadLow?.bitrate ?? 0,
                 videoContainer: 'MP4',
-                url: downloadLow?.url
+                url: downloadLow?.url ?? ''
               },
               {
                 videoBitrate: downloadSd?.bitrate ?? 0,
                 videoContainer: 'MP4',
-                url: downloadSd?.url
+                url: downloadSd?.url ?? ''
               },
               {
                 videoBitrate: downloadSd?.bitrate ?? 0,
                 videoContainer: 'MP4',
-                url: downloadSd?.url
+                url: downloadSd?.url ?? ''
               },
               {
                 videoBitrate: downloadSd?.bitrate ?? 0,
                 videoContainer: 'MP4',
-                url: downloadSd?.url
+                url: downloadSd?.url ?? ''
               },
               {
                 videoBitrate: downloadSd?.bitrate ?? 0,
                 videoContainer: 'MP4',
-                url: downloadSd?.url
+                url: downloadSd?.url ?? ''
               },
               {
                 videoBitrate: downloadHigh?.bitrate ?? 0,
                 videoContainer: 'MP4',
-                url: downloadHigh?.url
+                url: downloadHigh?.url ?? ''
               }
             ]
           }
