@@ -31,18 +31,61 @@ const ParamsSchema = z.object({
 })
 
 const SubtitleSchema = z.object({
-  languageId: z.number(),
-  languageName: z.string(),
-  languageTag: z.string(),
-  url: z.string()
+  vtt: z.array(
+    z.object({
+      languageId: z.number(),
+      languageName: z.string(),
+      languageTag: z.string(),
+      url: z.string()
+    })
+  ),
+  srt: z.array(
+    z.object({
+      languageId: z.number(),
+      languageName: z.string(),
+      languageTag: z.string(),
+      url: z.string()
+    })
+  )
 })
+type SubtitleSchema = z.infer<typeof SubtitleSchema>
 
-const DownloadUrlSchema = z.object({
+const DownloadSchema = z.object({
   url: z.string(),
   height: z.number(),
   width: z.number(),
-  sizeInBytes: z.number()
+  sizeInBytes: z.number(),
+  bitrate: z.number()
 })
+export type DownloadSchema = z.infer<typeof DownloadSchema>
+
+const DownloadUrlSchema = z.object({
+  low: DownloadSchema.optional(),
+  high: DownloadSchema.optional()
+})
+type DownloadUrlSchema = z.infer<typeof DownloadUrlSchema>
+
+const StreamingUrlSchema = z.object({
+  dash: z.array(
+    z.object({
+      url: z.string(),
+      videoBitrate: z.number()
+    })
+  ),
+  hls: z.array(
+    z.object({
+      url: z.string(),
+      videoBitrate: z.number()
+    })
+  ),
+  http: z.array(
+    z.object({
+      url: z.string(),
+      videoBitrate: z.number()
+    })
+  )
+})
+type StreamingUrlSchema = z.infer<typeof StreamingUrlSchema>
 
 const ResponseSchema = z.object({
   mediaComponentId: z.string(),
@@ -51,15 +94,9 @@ const ResponseSchema = z.object({
   apiSessionId: z.string(),
   platform: z.string(),
   lengthInMilliseconds: z.number(),
-  subtitleUrls: z.object({
-    vtt: z.array(SubtitleSchema),
-    srt: z.array(SubtitleSchema)
-  }),
-  downloadUrls: z.object({
-    low: DownloadUrlSchema,
-    high: DownloadUrlSchema
-  }),
-  streamingUrls: z.record(z.string(), z.string()),
+  subtitleUrls: SubtitleSchema,
+  downloadUrls: DownloadUrlSchema,
+  streamingUrls: StreamingUrlSchema,
   shareUrl: z.string(),
   socialMediaUrls: z.record(z.string(), z.string()),
   _embedded: z.object({
@@ -164,7 +201,6 @@ mediaComponentLanguage.openapi(route, async (c) => {
           }
         },
         subtitles: {
-          where: { languageId: languageId },
           select: {
             languageId: true,
             vttSrc: true,
@@ -203,7 +239,6 @@ mediaComponentLanguage.openapi(route, async (c) => {
                 }
               },
               subtitles: {
-                where: { languageId: languageId },
                 select: {
                   languageId: true,
                   vttSrc: true,
@@ -239,6 +274,40 @@ mediaComponentLanguage.openapi(route, async (c) => {
       }
     }
 
+    const subtitleLanguageIds = video.subtitles?.map((s) => s.languageId)
+
+    const languageQuery = {
+      where: {
+        id: { in: subtitleLanguageIds }
+      },
+      select: {
+        id: true,
+        bcp47: true,
+        name: {
+          where: {
+            languageId: { equals: '529' }
+          },
+          select: {
+            value: true
+          }
+        }
+      }
+    }
+
+    let languages
+    if (subtitleLanguageIds?.length > 0) {
+      try {
+        languages = await languagesPrisma.language.findMany(languageQuery)
+      } catch (error) {
+        console.error(`Database error fetching languages:`, error)
+        throw error
+      }
+    }
+
+    const languageMap = languages
+      ? new Map(languages.map((lang) => [lang.id, lang]))
+      : new Map()
+
     const variant = video.variants[0]
     type Variant = typeof variant
     const downloads = variant.downloads
@@ -246,55 +315,37 @@ mediaComponentLanguage.openapi(route, async (c) => {
     const subtitles = video.subtitles
     type Subtitle = (typeof subtitles)[0]
 
-    type DownloadUrls = {
-      low?: {
-        url: string | undefined
-        height: number
-        width: number
-        sizeInBytes: number | undefined
-        bitrate?: number | undefined
-      }
-      sd?: {
-        url: string | undefined
-        height: number
-        width: number
-        sizeInBytes: number | undefined
-        bitrate?: number | undefined
-      }
-      high?: {
-        url: string | undefined
-        height: number
-        width: number
-        sizeInBytes: number | undefined
-        bitrate?: number | undefined
-      }
+    type NormalizedDownload = {
+      quality: string
+      url: string
+      size: number
+      height: number
+      width: number
+      bitrate: number
     }
-
-    const buildDownloadUrls = (
-      downloads: Download[],
-      apiKey?: string
-    ): DownloadUrls => {
-      if (!downloads || downloads.length === 0)
-        return { low: undefined, high: undefined, sd: undefined }
-
-      const normalizedDownloads = downloads.map((d) => ({
-        quality: d.quality,
+    const normalizeDownloads = (
+      downloads: Download[]
+    ): NormalizedDownload[] => {
+      return downloads.map((d) => ({
+        quality: d.quality ?? '',
         url: d.url,
         size: d.size ?? 0,
         height: d.height ?? 0,
         width: d.width ?? 0,
         bitrate: d.bitrate ?? 0
       }))
+    }
+
+    const buildDownloadUrls = (
+      normalizedDownloads: NormalizedDownload[],
+      apiKey?: string
+    ): DownloadUrlSchema => {
+      if (!normalizedDownloads || normalizedDownloads.length === 0)
+        return { low: undefined, high: undefined }
 
       const downloadLow = findDownloadWithFallback(
         normalizedDownloads,
         'low',
-        apiKey
-      )
-
-      const downloadSd = findDownloadWithFallback(
-        normalizedDownloads,
-        'sd',
         apiKey
       )
 
@@ -314,15 +365,6 @@ mediaComponentLanguage.openapi(route, async (c) => {
               bitrate: downloadLow.bitrate
             }
           : undefined,
-        sd: downloadSd
-          ? {
-              url: downloadSd.url,
-              height: downloadSd.height || 360,
-              width: downloadSd.width || 640,
-              sizeInBytes: downloadSd.size,
-              bitrate: downloadSd.bitrate
-            }
-          : undefined,
         high: downloadHigh
           ? {
               url: downloadHigh.url,
@@ -335,8 +377,6 @@ mediaComponentLanguage.openapi(route, async (c) => {
       }
     }
 
-    const downloadUrls = buildDownloadUrls(downloads, apiKey)
-
     let webEmbedPlayer = ''
     let webEmbedSharePlayer = ''
     if (platform === 'web') {
@@ -344,86 +384,61 @@ mediaComponentLanguage.openapi(route, async (c) => {
       webEmbedSharePlayer = getWebEmbedSharePlayer(variant.id, apiSessionId)
     }
 
-    let languages: Array<{
-      id: string
-      bcp47: string | null
-      name: Array<{ value: string }>
-    }> = []
-    if (video.subtitles?.length > 0) {
-      try {
-        languages = await languagesPrisma.language.findMany({
-          where: {
-            id: { in: [languageId] }
-          },
-          select: {
-            id: true,
-            bcp47: true,
-            name: {
-              where: {
-                languageId: { equals: '529' }
-              },
-              select: {
-                value: true
-              }
-            }
-          }
-        })
-      } catch (error) {
-        console.error(`Database error fetching languages:`, error)
-        throw error
+    const buildSubtitleUrls = (subtitles: Subtitle[]) => {
+      const subtitleUrls: SubtitleSchema = {
+        vtt: [],
+        srt: []
       }
-    }
+      if (subtitles?.length === 0) return subtitleUrls
 
-    const languageMap = new Map(languages.map((lang) => [lang.id, lang]))
-
-    const createSubtitleWithLanguageInfo = (
-      subtitle: Subtitle,
-      urlField: 'vttSrc' | 'srtSrc'
-    ) => {
-      const language = languageMap.get(subtitle.languageId)
-      return {
-        languageId: Number(subtitle.languageId),
-        languageName: language?.name[0]?.value ?? '',
-        languageTag: language?.bcp47 ?? '',
-        url: subtitle[urlField],
-        edition: subtitle.edition
-      }
-    }
-
-    const subtitleConfig = {
-      android: { vtt: 'vttSrc', srt: 'srtSrc' },
-      ios: { vtt: 'vttSrc' },
-      web: { vtt: 'vttSrc' }
-    } as const
-
-    let subtitleUrls = {}
-    if (video.subtitles?.length > 0) {
-      const config = subtitleConfig[platform as keyof typeof subtitleConfig]
-      subtitleUrls = Object.entries(config).reduce(
-        (acc, [format, urlField]) => {
-          acc[format] =
-            video.subtitles
-              ?.filter(
-                (subtitle: Subtitle) =>
-                  subtitle.edition === variant.edition ||
-                  (!subtitle.edition && !variant.edition)
-              )
-              ?.map((subtitle: Subtitle) =>
-                createSubtitleWithLanguageInfo(subtitle, urlField)
-              )
-              ?.filter((s) => Boolean(s.url)) ?? []
-          return acc
-        },
-        {} as Record<string, any[]>
+      const editionSubtitles = subtitles.filter(
+        (subtitle: Subtitle) =>
+          subtitle.edition === variant.edition ||
+          (!subtitle.edition && !variant.edition)
       )
+
+      editionSubtitles.forEach((subtitle: Subtitle) => {
+        const languageInfo = languageMap.get(subtitle.languageId)
+        subtitleUrls.vtt.push({
+          languageId: Number(subtitle.languageId),
+          languageName: languageInfo?.name[0]?.value ?? '',
+          languageTag: languageInfo?.bcp47 ?? '',
+          url: subtitle.vttSrc ?? ''
+        })
+        subtitleUrls.srt.push({
+          languageId: Number(subtitle.languageId),
+          languageName: languageInfo?.name[0]?.value ?? '',
+          languageTag: languageInfo?.bcp47 ?? '',
+          url: subtitle.srtSrc ?? ''
+        })
+      })
+      return subtitleUrls
     }
 
-    const getStreamingUrls = (
+    const buildStreamingUrls = (
       platform: string,
       variant: Variant,
-      dlUrls: DownloadUrls
+      normalizedDownloads: NormalizedDownload[]
     ) => {
       if (!variant.hls && !variant.dash) return {}
+
+      const downloadLow = findDownloadWithFallback(
+        normalizedDownloads,
+        'low',
+        apiKey
+      )
+
+      const downloadSd = findDownloadWithFallback(
+        normalizedDownloads,
+        'sd',
+        apiKey
+      )
+
+      const downloadHigh = findDownloadWithFallback(
+        normalizedDownloads,
+        'high',
+        apiKey
+      )
 
       switch (platform) {
         case 'android':
@@ -432,34 +447,34 @@ mediaComponentLanguage.openapi(route, async (c) => {
             hls: variant.hls ? [{ videoBitrate: 0, url: variant.hls }] : [],
             http: [
               {
-                videoBitrate: dlUrls.low?.bitrate ?? 0,
+                videoBitrate: downloadLow?.bitrate ?? 0,
                 videoContainer: 'MP4',
-                url: dlUrls.low?.url
+                url: downloadLow?.url
               },
               {
-                videoBitrate: dlUrls.sd?.bitrate ?? 0,
+                videoBitrate: downloadSd?.bitrate ?? 0,
                 videoContainer: 'MP4',
-                url: dlUrls.sd?.url
+                url: downloadSd?.url
               },
               {
-                videoBitrate: dlUrls.sd?.bitrate ?? 0,
+                videoBitrate: downloadSd?.bitrate ?? 0,
                 videoContainer: 'MP4',
-                url: dlUrls.sd?.url
+                url: downloadSd?.url
               },
               {
-                videoBitrate: dlUrls.sd?.bitrate ?? 0,
+                videoBitrate: downloadSd?.bitrate ?? 0,
                 videoContainer: 'MP4',
-                url: dlUrls.sd?.url
+                url: downloadSd?.url
               },
               {
-                videoBitrate: dlUrls.sd?.bitrate ?? 0,
+                videoBitrate: downloadSd?.bitrate ?? 0,
                 videoContainer: 'MP4',
-                url: dlUrls.sd?.url
+                url: downloadSd?.url
               },
               {
-                videoBitrate: dlUrls.high?.bitrate ?? 0,
+                videoBitrate: downloadHigh?.bitrate ?? 0,
                 videoContainer: 'MP4',
-                url: dlUrls.high?.url
+                url: downloadHigh?.url
               }
             ]
           }
@@ -481,7 +496,7 @@ mediaComponentLanguage.openapi(route, async (c) => {
       }
     }
 
-    const streamingUrls = getStreamingUrls(platform, variant, downloadUrls)
+    const normalizedDownloads = normalizeDownloads(downloads)
 
     return {
       data: {
@@ -491,9 +506,13 @@ mediaComponentLanguage.openapi(route, async (c) => {
         apiSessionId,
         platform,
         lengthInMilliseconds: variant.lengthInMilliseconds ?? 0,
-        subtitleUrls,
-        downloadUrls,
-        streamingUrls,
+        subtitleUrls: buildSubtitleUrls(subtitles),
+        downloadUrls: buildDownloadUrls(normalizedDownloads, apiKey),
+        streamingUrls: buildStreamingUrls(
+          platform,
+          variant,
+          normalizedDownloads
+        ),
         shareUrl:
           variant.share ??
           `https://arc.gt/s/${variant.id}/${variant.languageId}`,
@@ -519,30 +538,25 @@ mediaComponentLanguage.openapi(route, async (c) => {
           video.children.length > 0 && {
             _embedded: {
               contains: video.children.map((child: any) => {
-                const childVariant = child.variants?.[0] // Should only be one for the specific languageId
-                const childDownloadUrls = childVariant
-                  ? buildDownloadUrls(childVariant.downloads, apiKey)
-                  : { low: undefined, high: undefined }
-
+                const childVariant = child.variants?.[0]
+                const childNormalizedDownloads = normalizeDownloads(
+                  childVariant.downloads
+                )
                 return {
                   mediaComponentId: child.id,
                   languageId: Number(languageId),
                   refId: `${child.id}_${languageId}-${child.label}`,
                   apiSessionId,
                   lengthInMilliseconds: childVariant?.lengthInMilliseconds ?? 0,
-                  subtitleUrls: {
-                    vtt: child.subtitles?.map((subtitle: any) =>
-                      createSubtitleWithLanguageInfo(subtitle, 'vttSrc')
-                    ),
-                    srt: child.subtitles?.map((subtitle: any) =>
-                      createSubtitleWithLanguageInfo(subtitle, 'srtSrc')
-                    )
-                  },
-                  downloadUrls: childDownloadUrls,
-                  streamingUrls: getStreamingUrls(
+                  subtitleUrls: buildSubtitleUrls(child.subtitles),
+                  downloadUrls: buildDownloadUrls(
+                    childNormalizedDownloads,
+                    apiKey
+                  ),
+                  streamingUrls: buildStreamingUrls(
                     platform,
                     childVariant,
-                    childDownloadUrls
+                    childNormalizedDownloads
                   ),
                   shareUrl:
                     childVariant?.share ??
