@@ -142,6 +142,14 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
     """
     journeyId: ID
   ): EmailAction! @join__field(graph: API_JOURNEYS) 
+  blockUpdatePhoneAction(
+    id: ID!
+    input: PhoneActionInput!
+    """
+    drop this parameter after merging teams
+    """
+    journeyId: ID
+  ): PhoneAction! @join__field(graph: API_JOURNEYS) 
   blockUpdateAction(id: ID!, input: BlockUpdateActionInput) : Action! @join__field(graph: API_JOURNEYS) 
   """
   blockDelete returns the updated sibling blocks on successful delete
@@ -432,6 +440,20 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   bibleCitationUpdate(input: MutationBibleCitationUpdateInput!) : BibleCitation @join__field(graph: API_MEDIA) 
   bibleCitationDelete(id: ID!) : Boolean @join__field(graph: API_MEDIA) 
   createKeyword(value: String!, languageId: String!) : Keyword! @join__field(graph: API_MEDIA) 
+  createMuxVideoAndQueueUpload(
+    videoId: ID!
+    edition: String!
+    languageId: ID!
+    version: Int!
+    r2PublicUrl: String!
+    originalFilename: String!
+    durationMs: Int!
+    duration: Int!
+    width: Int!
+    height: Int!
+    downloadable: Boolean = true
+    maxResolution: MaxResolutionTier = fhd
+  ): MuxVideo! @join__field(graph: API_MEDIA) 
   createMuxVideoUploadByFile(
     name: String!
     userGenerated: Boolean
@@ -559,6 +581,13 @@ type EmailAction implements Action @join__type(graph: API_JOURNEYS)  @join__type
   email: String!
   customizable: Boolean
   parentStepId: String
+}
+
+type PhoneAction implements Action @join__type(graph: API_JOURNEYS)  @join__implements(graph: API_JOURNEYS, interface: "Action")  {
+  parentBlockId: ID!
+  parentBlock: Block!
+  gtmEventName: String
+  phone: String!
 }
 
 type Journey @join__type(graph: API_JOURNEYS, key: "id")  @join__type(graph: API_JOURNEYS_MODERN, key: "id")  {
@@ -3211,6 +3240,7 @@ enum ButtonAction @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURN
   NavigateToBlockAction @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN) 
   LinkAction @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN) 
   EmailAction @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  PhoneAction @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN) 
 }
 
 enum IntegrationType @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
@@ -3434,6 +3464,12 @@ input BlockUpdateActionInput @join__type(graph: API_JOURNEYS)  {
   url: String
   target: String
   blockId: String
+  phone: String
+}
+
+input PhoneActionInput @join__type(graph: API_JOURNEYS)  {
+  gtmEventName: String
+  phone: String!
 }
 
 input BlocksFilter @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {

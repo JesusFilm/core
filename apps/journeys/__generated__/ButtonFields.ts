@@ -9,6 +9,12 @@ import { ButtonVariant, ButtonColor, ButtonSize, ButtonAlignment } from "./globa
 // GraphQL fragment: ButtonFields
 // ====================================================
 
+export interface ButtonFields_action_PhoneAction {
+  __typename: "PhoneAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+}
+
 export interface ButtonFields_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
   parentBlockId: string;
@@ -34,7 +40,7 @@ export interface ButtonFields_action_EmailAction {
   parentStepId: string | null;
 }
 
-export type ButtonFields_action = ButtonFields_action_NavigateToBlockAction | ButtonFields_action_LinkAction | ButtonFields_action_EmailAction;
+export type ButtonFields_action = ButtonFields_action_PhoneAction | ButtonFields_action_NavigateToBlockAction | ButtonFields_action_LinkAction | ButtonFields_action_EmailAction;
 
 export interface ButtonFields_settings {
   __typename: "ButtonBlockSettings";

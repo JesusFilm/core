@@ -508,6 +508,8 @@ describe('RadioOptionImage', () => {
         <MockedProvider
           mocks={[
             listUnsplashCollectionPhotosMock,
+            // The Unsplash collection query is triggered multiple times during interactions
+            listUnsplashCollectionPhotosMock,
             createCloudflareUploadByUrlMock,
             {
               ...radioOptionImageUpdateMock,
@@ -591,6 +593,8 @@ describe('RadioOptionImage', () => {
       render(
         <MockedProvider
           mocks={[
+            listUnsplashCollectionPhotosMock,
+            // Provide an extra mock as the query may fire twice
             listUnsplashCollectionPhotosMock,
             createCloudflareUploadByUrlMock,
             {
@@ -695,6 +699,8 @@ describe('RadioOptionImage', () => {
       render(
         <MockedProvider
           mocks={[
+            listUnsplashCollectionPhotosMock,
+            // Provide an extra mock as the query may fire multiple times
             listUnsplashCollectionPhotosMock,
             createCloudflareUploadByUrlMock,
             {
@@ -816,7 +822,12 @@ describe('RadioOptionImage', () => {
       render(
         <MockedProvider
           cache={cache}
-          mocks={[radioOptionImageDeleteMock, radioOptionImageRestoreMock]}
+          mocks={[
+            listUnsplashCollectionPhotosMock,
+            listUnsplashCollectionPhotosMock,
+            radioOptionImageDeleteMock,
+            radioOptionImageRestoreMock
+          ]}
         >
           <JourneyProvider value={{ journey, variant: 'admin' }}>
             <SnackbarProvider>
@@ -869,6 +880,8 @@ describe('RadioOptionImage', () => {
         <MockedProvider
           cache={cache}
           mocks={[
+            listUnsplashCollectionPhotosMock,
+            listUnsplashCollectionPhotosMock,
             radioOptionImageDeleteMock,
             radioOptionImageRestoreMock,
             radioOptionImageDeleteMock

@@ -72,35 +72,29 @@ export function HeaderTabButtons(): ReactElement {
         }}
       >
         {headerItems.map(({ label, icon, href }) => (
-          <NextLink
+          <Button
+            data-testid={`${label}Button`}
+            color="inherit"
+            component={NextLink}
             href={href}
-            passHref
-            legacyBehavior
             key={label}
-            locale={false}
+            sx={{
+              flexGrow: 1,
+              textAlign: 'center',
+              borderRadius: '40px !important',
+              border: '2px solid',
+              borderColor:
+                (router?.pathname?.startsWith(href) ?? false)
+                  ? (theme) => theme.palette.primary.main
+                  : 'transparent',
+              py: { sm: 1 },
+              px: { sm: 2 },
+              fontSize: { sm: '0.875rem', md: '1rem' }
+            }}
+            startIcon={icon}
           >
-            <Button
-              data-testid={`${label}Button`}
-              component="a"
-              color="inherit"
-              sx={{
-                flexGrow: 1,
-                textAlign: 'center',
-                borderRadius: '40px !important',
-                border: '2px solid',
-                borderColor:
-                  (router?.pathname?.startsWith(href) ?? false)
-                    ? (theme) => theme.palette.primary.main
-                    : 'transparent',
-                py: { sm: 1 },
-                px: { sm: 2 },
-                fontSize: { sm: '0.875rem', md: '1rem' }
-              }}
-              startIcon={icon}
-            >
-              {label}
-            </Button>
-          </NextLink>
+            {label}
+          </Button>
         ))}
       </Box>
       <Box
@@ -148,32 +142,28 @@ export function HeaderTabButtons(): ReactElement {
         slotProps={{ paper: { style: { width: anchorEl?.clientWidth } } }}
       >
         {headerItems.map(({ label, icon, href }) => (
-          <NextLink
-            href={href}
-            passHref
-            legacyBehavior
+          <MenuItem
             key={label}
+            component={NextLink}
+            href={href}
             locale={false}
+            onClick={handleCloseMenu}
+            selected={router?.pathname?.startsWith(href)}
           >
-            <MenuItem
-              onClick={handleCloseMenu}
-              selected={router?.pathname?.startsWith(href)}
-            >
-              <Stack direction="row" alignItems="center" width="100%" px={2.5}>
-                <ListItemIcon>{icon}</ListItemIcon>
-                <ListItemText
-                  primary={label}
-                  primaryTypographyProps={{
-                    variant: 'h6',
-                    sx: {
-                      textAlign: 'center'
-                    }
-                  }}
-                />
-                <Box sx={{ width: 30 }} />
-              </Stack>
-            </MenuItem>
-          </NextLink>
+            <Stack direction="row" alignItems="center" width="100%" px={2.5}>
+              <ListItemIcon>{icon}</ListItemIcon>
+              <ListItemText
+                primary={label}
+                primaryTypographyProps={{
+                  variant: 'h6',
+                  sx: {
+                    textAlign: 'center'
+                  }
+                }}
+              />
+              <Box sx={{ width: 30 }} />
+            </Stack>
+          </MenuItem>
         ))}
       </MuiMenu>
     </>

@@ -9,6 +9,24 @@ import {
 
 import { CommandUndoItem } from './CommandUndoItem'
 
+jest.mock('@core/shared/ui/icons/FlipLeft', () => ({
+  __esModule: true,
+  default: () => null
+}))
+
+jest.mock('../Item/Item', () => ({
+  __esModule: true,
+  Item: ({ label, onClick, ButtonProps }: any) => (
+    <button
+      aria-label={label}
+      onClick={onClick}
+      disabled={ButtonProps?.disabled}
+    >
+      {label}
+    </button>
+  )
+}))
+
 describe('Hotkeys', () => {
   it('should undo command when undo button is clicked', async () => {
     const command0: Command = {

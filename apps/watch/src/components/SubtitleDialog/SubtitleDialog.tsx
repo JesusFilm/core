@@ -1,4 +1,4 @@
-import { gql, useQuery } from '@apollo/client'
+import { useQuery } from '@apollo/client'
 import SubtitlesOutlined from '@mui/icons-material/SubtitlesOutlined'
 import CircularProgress from '@mui/material/CircularProgress'
 import TextField from '@mui/material/TextField'
@@ -15,26 +15,7 @@ import { ThemeMode, ThemeName } from '@core/shared/ui/themes'
 
 import { GetSubtitles } from '../../../__generated__/GetSubtitles'
 import { useVideo } from '../../libs/videoContext'
-
-export const GET_SUBTITLES = gql`
-  query GetSubtitles($id: ID!) {
-    video(id: $id, idType: slug) {
-      variant {
-        subtitle {
-          language {
-            name {
-              value
-              primary
-            }
-            bcp47
-            id
-          }
-          value
-        }
-      }
-    }
-  }
-`
+import { GET_SUBTITLES } from '../../libs/watchContext/useSubtitleUpdate/useSubtitleUpdate'
 
 export interface SubtitleDialogProps
   extends Pick<ComponentProps<typeof Dialog>, 'open' | 'onClose'> {
