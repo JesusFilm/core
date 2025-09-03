@@ -28,12 +28,13 @@ export function VideoCard({
 
   return (
     <NextLink
-      href={href}
+      href={{ pathname: href, query: { r: 0 } }}
       scroll={false}
       className="block no-underline text-inherit"
       style={{ pointerEvents: video != null ? 'auto' : 'none' }}
       aria-label="VideoCard"
       data-testid={video != null ? `VideoCard-${video.id}` : 'VideoCard'}
+      locale={false}
     >
       <div className="flex flex-col gap-6">
         <button

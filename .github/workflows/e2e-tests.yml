@@ -77,17 +77,17 @@ jobs:
       - name: Mount NPM Cache
         uses: useblacksmith/stickydisk@v1
         with:
-          key: ${{ github.repository }}-${{ steps.node-version.outputs.version }}-npm-cache-${{ matrix.app }}
+          key: ${{ github.repository }}-${{ steps.node-version.outputs.version }}-npm-cache
           path: ~/.npm
       - name: Mount node_modules
         uses: useblacksmith/stickydisk@v1
         with:
-          key: ${{ github.repository }}-${{ steps.node-version.outputs.version }}-node-modules-${{ matrix.app }}
+          key: ${{ github.repository }}-${{ steps.node-version.outputs.version }}-node-modules
           path: ./node_modules
       - name: Mount playwright cache
         uses: useblacksmith/stickydisk@v1
         with:
-          key: ${{ github.repository }}-playwright-cache-${{ matrix.app }}
+          key: ${{ github.repository }}-playwright-cache
           path: ~/.cache/ms-playwright
       - name: NPM Install
         run: npm install --silent
@@ -142,7 +142,7 @@ jobs:
       - name: Install Playwright Browsers
         run: npx playwright install --with-deps
       - name: Run Playwright tests
-        run: npx nx run ${{ matrix.app }}-e2e:e2e
+        run: npx nx run ${{ matrix.app == 'journeys-admin' && 'journeys-admin-e2e:e2e-full' || format('{0}-e2e:e2e', matrix.app) }}
         env:
           DEPLOYMENT_URL: ${{ steps.deployment-url.outputs.deployment-url }}
           PLAYWRIGHT_EMAIL: ${{ secrets.PLAYWRIGHT_EMAIL }}
@@ -202,7 +202,7 @@ jobs:
           fi
           echo "DEPLOYMENT_URL=${{ inputs.TargetAppUrl }}" >> $GITHUB_ENV
       - name: Run Playwright tests
-        run: npx nx run ${{ matrix.test-suite }}:e2e
+        run: npx nx run ${{ matrix.test-suite == 'journeys-admin-e2e' && 'journeys-admin-e2e:e2e-full' || format('{0}:e2e', matrix.test-suite) }}
         env:
           DEPLOYMENT_URL: ${{ env.DEPLOYMENT_URL }}
           PLAYWRIGHT_EMAIL: ${{ secrets.PLAYWRIGHT_EMAIL }}

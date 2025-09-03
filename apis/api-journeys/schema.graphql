@@ -87,6 +87,16 @@ type EmailAction implements Action
   parentStepId: String
 }
 
+type PhoneAction implements Action
+  @shareable
+{
+  parentBlockId: ID!
+  parentBlock: Block!
+  gtmEventName: String
+  phone: String!
+  countryCode: String!
+}
+
 input NavigateToBlockActionInput {
   gtmEventName: String
   blockId: String!
@@ -113,6 +123,14 @@ input BlockUpdateActionInput {
   url: String
   target: String
   blockId: String
+  phone: String
+  countryCode: String
+}
+
+input PhoneActionInput {
+  gtmEventName: String
+  phone: String!
+  countryCode: String!
 }
 
 type Mutation {
@@ -143,6 +161,13 @@ type Mutation {
     """drop this parameter after merging teams"""
     journeyId: ID
   ): EmailAction!
+  blockUpdatePhoneAction(
+    id: ID!
+    input: PhoneActionInput!
+
+    """drop this parameter after merging teams"""
+    journeyId: ID
+  ): PhoneAction!
   blockUpdateAction(id: ID!, input: BlockUpdateActionInput): Action!
 
   """blockDelete returns the updated sibling blocks on successful delete"""
@@ -1527,6 +1552,7 @@ enum ButtonAction {
   NavigateToBlockAction
   LinkAction
   EmailAction
+  PhoneAction
 }
 
 input ButtonClickEventCreateInput {

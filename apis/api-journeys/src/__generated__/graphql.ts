@@ -107,8 +107,10 @@ export type BlockDuplicateIdMap = {
 
 export type BlockUpdateActionInput = {
   blockId?: InputMaybe<Scalars['String']['input']>;
+  countryCode?: InputMaybe<Scalars['String']['input']>;
   email?: InputMaybe<Scalars['String']['input']>;
   gtmEventName?: InputMaybe<Scalars['String']['input']>;
+  phone?: InputMaybe<Scalars['String']['input']>;
   target?: InputMaybe<Scalars['String']['input']>;
   url?: InputMaybe<Scalars['String']['input']>;
 };
@@ -127,7 +129,8 @@ export type Browser = {
 export enum ButtonAction {
   EmailAction = 'EmailAction',
   LinkAction = 'LinkAction',
-  NavigateToBlockAction = 'NavigateToBlockAction'
+  NavigateToBlockAction = 'NavigateToBlockAction',
+  PhoneAction = 'PhoneAction'
 }
 
 export enum ButtonAlignment {
@@ -1472,6 +1475,7 @@ export type Mutation = {
   blockUpdateEmailAction: EmailAction;
   blockUpdateLinkAction: LinkAction;
   blockUpdateNavigateToBlockAction: NavigateToBlockAction;
+  blockUpdatePhoneAction: PhoneAction;
   buttonBlockCreate: ButtonBlock;
   buttonBlockUpdate?: Maybe<ButtonBlock>;
   buttonClickEventCreate: ButtonClickEvent;
@@ -1492,6 +1496,7 @@ export type Mutation = {
   createImageBySegmindPrompt: CloudflareImage;
   createJourneyEventsExportLog: JourneyEventsExportLog;
   createKeyword: Keyword;
+  createMuxVideoAndQueueUpload: MuxVideo;
   createMuxVideoUploadByFile: MuxVideo;
   createMuxVideoUploadByUrl: MuxVideo;
   createVerificationRequest?: Maybe<Scalars['Boolean']['output']>;
@@ -1750,6 +1755,13 @@ export type MutationBlockUpdateNavigateToBlockActionArgs = {
 };
 
 
+export type MutationBlockUpdatePhoneActionArgs = {
+  id: Scalars['ID']['input'];
+  input: PhoneActionInput;
+  journeyId?: InputMaybe<Scalars['ID']['input']>;
+};
+
+
 export type MutationButtonBlockCreateArgs = {
   input: ButtonBlockCreateInput;
 };
@@ -1848,6 +1860,22 @@ export type MutationCreateJourneyEventsExportLogArgs = {
 export type MutationCreateKeywordArgs = {
   languageId: Scalars['String']['input'];
   value: Scalars['String']['input'];
+};
+
+
+export type MutationCreateMuxVideoAndQueueUploadArgs = {
+  downloadable?: InputMaybe<Scalars['Boolean']['input']>;
+  duration: Scalars['Int']['input'];
+  durationMs: Scalars['Int']['input'];
+  edition: Scalars['String']['input'];
+  height: Scalars['Int']['input'];
+  languageId: Scalars['ID']['input'];
+  maxResolution?: InputMaybe<MaxResolutionTier>;
+  originalFilename: Scalars['String']['input'];
+  r2PublicUrl: Scalars['String']['input'];
+  version: Scalars['Int']['input'];
+  videoId: Scalars['ID']['input'];
+  width: Scalars['Int']['input'];
 };
 
 
@@ -2827,6 +2855,21 @@ export type PageInfo = {
   hasPreviousPage: Scalars['Boolean']['output'];
   /** When paginating backwards, the cursor to continue. */
   startCursor?: Maybe<Scalars['String']['output']>;
+};
+
+export type PhoneAction = Action & {
+  __typename?: 'PhoneAction';
+  countryCode: Scalars['String']['output'];
+  gtmEventName?: Maybe<Scalars['String']['output']>;
+  parentBlock: Block;
+  parentBlockId: Scalars['ID']['output'];
+  phone: Scalars['String']['output'];
+};
+
+export type PhoneActionInput = {
+  countryCode: Scalars['String']['input'];
+  gtmEventName?: InputMaybe<Scalars['String']['input']>;
+  phone: Scalars['String']['input'];
 };
 
 export enum Platform {

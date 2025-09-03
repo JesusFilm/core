@@ -11,6 +11,7 @@ export enum ButtonAction {
   EmailAction = "EmailAction",
   LinkAction = "LinkAction",
   NavigateToBlockAction = "NavigateToBlockAction",
+  PhoneAction = "PhoneAction",
 }
 
 export enum ButtonAlignment {
@@ -294,6 +295,8 @@ export interface BlockUpdateActionInput {
   url?: string | null;
   target?: string | null;
   blockId?: string | null;
+  phone?: string | null;
+  countryCode?: string | null;
 }
 
 export interface ButtonBlockCreateInput {

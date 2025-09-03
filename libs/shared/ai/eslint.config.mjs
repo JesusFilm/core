@@ -1,12 +1,8 @@
-import baseConfig from '../../../eslint.config.mjs'
+import commonConfig from '../../shared/eslint/common.mjs'
 
 export default [
-  ...baseConfig,
+  ...commonConfig,
   {
-    ignores: [
-      'libs/shared/ai/eslint.config.js',
-      'libs/shared/ai/jest.config.ts',
-      'libs/shared/ai/apollo.config.js'
-    ]
+    ignores: ['libs/shared/ai/jest.config.ts']
   }
 ]

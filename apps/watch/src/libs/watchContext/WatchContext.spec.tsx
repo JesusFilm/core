@@ -14,7 +14,6 @@ import {
 describe('WatchContext', () => {
   describe('reducer', () => {
     const defaultState: WatchState = {
-      siteLanguage: 'en',
       audioLanguage: '529',
       subtitleLanguage: '529',
       subtitleOn: false
@@ -24,7 +23,6 @@ describe('WatchContext', () => {
       it('should update only provided preference fields', () => {
         const action: WatchAction = {
           type: 'SetLanguagePreferences',
-          siteLanguage: 'es',
           audioLanguage: '496'
         }
 
@@ -32,7 +30,6 @@ describe('WatchContext', () => {
 
         expect(result).toEqual({
           ...defaultState,
-          siteLanguage: 'es',
           audioLanguage: '496'
         })
       })
@@ -91,61 +88,47 @@ describe('WatchContext', () => {
 
     describe('SetVideoAudioLanguages', () => {
       it('should set video audio languages and select matching currentAudioLanguage', () => {
-        const mockVideoAudioLanguages = [
+        const mockVideoAudioLanguageIdAndSlugs = [
           {
-            language: {
-              id: '529',
-              bcp47: 'en',
-              __typename: 'Language',
-              slug: 'english',
-              name: [
-                { primary: true, value: 'English', __typename: 'LanguageName' }
-              ]
-            },
-            slug: 'english',
-            __typename: 'LanguageWithSlug'
+            id: '529',
+            slug: 'english'
           }
-        ] as any
+        ]
 
         const action: WatchAction = {
           type: 'SetVideoAudioLanguages',
-          videoAudioLanguages: mockVideoAudioLanguages
+          videoAudioLanguagesIdsAndSlugs: mockVideoAudioLanguageIdAndSlugs
         }
 
         const result = reducer(defaultState, action)
 
-        expect(result.videoAudioLanguages).toEqual(mockVideoAudioLanguages)
-        expect(result.currentAudioLanguage).toEqual(mockVideoAudioLanguages[0])
+        expect(result.videoAudioLanguagesIdsAndSlugs).toEqual(
+          mockVideoAudioLanguageIdAndSlugs
+        )
+        expect(result.currentAudioLanguage).toEqual(
+          mockVideoAudioLanguageIdAndSlugs[0]
+        )
       })
 
       it('should set currentAudioLanguage to undefined when no match found', () => {
-        const stateWithDifferentLanguage = {
+        const stateWithDifferentAudioLanguage = {
           ...defaultState,
           audioLanguage: '999'
         }
 
-        const mockVideoAudioLanguages = [
+        const mockVideoAudioLanguageIdAndSlugs = [
           {
-            language: {
-              id: '529',
-              bcp47: 'en',
-              __typename: 'Language',
-              slug: 'english',
-              name: [
-                { primary: true, value: 'English', __typename: 'LanguageName' }
-              ]
-            },
-            slug: 'english',
-            __typename: 'LanguageWithSlug'
+            id: '529',
+            slug: 'english'
           }
-        ] as any
+        ]
 
         const action: WatchAction = {
           type: 'SetVideoAudioLanguages',
-          videoAudioLanguages: mockVideoAudioLanguages
+          videoAudioLanguagesIdsAndSlugs: mockVideoAudioLanguageIdAndSlugs
         }
 
-        const result = reducer(stateWithDifferentLanguage, action)
+        const result = reducer(stateWithDifferentAudioLanguage, action)
 
         expect(result.currentAudioLanguage).toBeUndefined()
       })
@@ -153,47 +136,35 @@ describe('WatchContext', () => {
 
     describe('SetVideoSubtitleLanguages', () => {
       it('should set video subtitle languages and enable subtitles when language matches', () => {
-        const mockVideoSubtitleLanguages = [
-          {
-            language: { id: '529', bcp47: 'en' },
-            value: 'English subtitles',
-            __typename: 'VideoSubtitle'
-          }
-        ] as any
+        const mockVideoSubtitleLanguageIds = ['529']
 
         const action: WatchAction = {
           type: 'SetVideoSubtitleLanguages',
-          videoSubtitleLanguages: mockVideoSubtitleLanguages
+          videoSubtitleLanguageIds: mockVideoSubtitleLanguageIds
         }
 
         const result = reducer(defaultState, action)
 
-        expect(result.videoSubtitleLanguages).toEqual(
-          mockVideoSubtitleLanguages
+        expect(result.videoSubtitleLanguageIds).toEqual(
+          mockVideoSubtitleLanguageIds
         )
         expect(result.autoSubtitle).toBe(true)
       })
 
       it('should disable subtitles when language does not match', () => {
-        const stateWithDifferentLanguage = {
+        const stateWithDifferentSubtitleLanguage = {
           ...defaultState,
           subtitleLanguage: '999'
         }
 
-        const mockVideoSubtitleLanguages = [
-          {
-            language: { id: '529', bcp47: 'en' },
-            value: 'English subtitles',
-            __typename: 'VideoSubtitle'
-          }
-        ] as any
+        const mockVideoSubtitleLanguageIds = ['529']
 
         const action: WatchAction = {
           type: 'SetVideoSubtitleLanguages',
-          videoSubtitleLanguages: mockVideoSubtitleLanguages
+          videoSubtitleLanguageIds: mockVideoSubtitleLanguageIds
         }
 
-        const result = reducer(stateWithDifferentLanguage, action)
+        const result = reducer(stateWithDifferentSubtitleLanguage, action)
 
         expect(result.autoSubtitle).toBe(undefined)
       })
@@ -203,29 +174,22 @@ describe('WatchContext', () => {
           ...defaultState,
           audioLanguage: '529',
           currentAudioLanguage: {
-            language: { id: '529', bcp47: 'en' },
-            slug: 'english',
-            __typename: 'LanguageWithSlug'
-          } as any
+            id: '529',
+            slug: 'english'
+          }
         }
 
-        const mockVideoSubtitleLanguages = [
-          {
-            language: { id: '529', bcp47: 'en' },
-            value: 'English subtitles',
-            __typename: 'VideoSubtitle'
-          }
-        ] as any
+        const mockVideoSubtitleLanguageIds = ['529']
 
         const action: WatchAction = {
           type: 'SetVideoSubtitleLanguages',
-          videoSubtitleLanguages: mockVideoSubtitleLanguages
+          videoSubtitleLanguageIds: mockVideoSubtitleLanguageIds
         }
 
         const result = reducer(stateWithMatchingAudioLanguage, action)
 
-        expect(result.videoSubtitleLanguages).toEqual(
-          mockVideoSubtitleLanguages
+        expect(result.videoSubtitleLanguageIds).toEqual(
+          mockVideoSubtitleLanguageIds
         )
         expect(result.autoSubtitle).toBeUndefined()
       })
@@ -236,29 +200,22 @@ describe('WatchContext', () => {
           audioLanguage: '496',
           subtitleLanguage: '529',
           currentAudioLanguage: {
-            language: { id: '999', bcp47: 'fr' },
-            slug: 'french',
-            __typename: 'LanguageWithSlug'
-          } as any
+            id: '999',
+            slug: 'french'
+          }
         }
 
-        const mockVideoSubtitleLanguages = [
-          {
-            language: { id: '529', bcp47: 'en' },
-            value: 'English subtitles',
-            __typename: 'VideoSubtitle'
-          }
-        ] as any
+        const mockVideoSubtitleLanguageIds = ['529']
 
         const action: WatchAction = {
           type: 'SetVideoSubtitleLanguages',
-          videoSubtitleLanguages: mockVideoSubtitleLanguages
+          videoSubtitleLanguageIds: mockVideoSubtitleLanguageIds
         }
 
         const result = reducer(stateWithNonMatchingAudioLanguage, action)
 
-        expect(result.videoSubtitleLanguages).toEqual(
-          mockVideoSubtitleLanguages
+        expect(result.videoSubtitleLanguageIds).toEqual(
+          mockVideoSubtitleLanguageIds
         )
         expect(result.autoSubtitle).toBe(true)
       })
@@ -269,29 +226,22 @@ describe('WatchContext', () => {
           audioLanguage: '496',
           subtitleLanguage: '999',
           currentAudioLanguage: {
-            language: { id: '777', bcp47: 'fr' },
-            slug: 'french',
-            __typename: 'LanguageWithSlug'
-          } as any
+            id: '777',
+            slug: 'french'
+          }
         }
 
-        const mockVideoSubtitleLanguages = [
-          {
-            language: { id: '529', bcp47: 'en' },
-            value: 'English subtitles',
-            __typename: 'VideoSubtitle'
-          }
-        ] as any
+        const mockVideoSubtitleLanguageIds = ['529']
 
         const action: WatchAction = {
           type: 'SetVideoSubtitleLanguages',
-          videoSubtitleLanguages: mockVideoSubtitleLanguages
+          videoSubtitleLanguageIds: mockVideoSubtitleLanguageIds
         }
 
         const result = reducer(stateWithNonMatchingAudioLanguage, action)
 
-        expect(result.videoSubtitleLanguages).toEqual(
-          mockVideoSubtitleLanguages
+        expect(result.videoSubtitleLanguageIds).toEqual(
+          mockVideoSubtitleLanguageIds
         )
         expect(result.autoSubtitle).toBe(undefined)
       })
@@ -304,23 +254,17 @@ describe('WatchContext', () => {
           currentAudioLanguage: undefined
         }
 
-        const mockVideoSubtitleLanguages = [
-          {
-            language: { id: '529', bcp47: 'en' },
-            value: 'English subtitles',
-            __typename: 'VideoSubtitle'
-          }
-        ] as any
+        const mockVideoSubtitleLanguageIds = ['529']
 
         const action: WatchAction = {
           type: 'SetVideoSubtitleLanguages',
-          videoSubtitleLanguages: mockVideoSubtitleLanguages
+          videoSubtitleLanguageIds: mockVideoSubtitleLanguageIds
         }
 
         const result = reducer(stateWithUndefinedCurrentAudioLanguage, action)
 
-        expect(result.videoSubtitleLanguages).toEqual(
-          mockVideoSubtitleLanguages
+        expect(result.videoSubtitleLanguageIds).toEqual(
+          mockVideoSubtitleLanguageIds
         )
         expect(result.autoSubtitle).toBe(true)
       })
@@ -381,58 +325,6 @@ describe('WatchContext', () => {
       })
     })
 
-    describe('UpdateSiteLanguage', () => {
-      it('should update site language with cascading to audio and subtitle languages', () => {
-        const mockLanguages = [
-          {
-            id: '529',
-            bcp47: 'en',
-            slug: 'english',
-            name: [{ primary: true, value: 'English' }],
-            __typename: 'Language' as const
-          },
-          {
-            id: '496',
-            bcp47: 'es',
-            slug: 'spanish',
-            name: [{ primary: true, value: 'Spanish' }],
-            __typename: 'Language' as const
-          }
-        ]
-
-        const stateWithLanguages = {
-          ...defaultState,
-          allLanguages: mockLanguages
-        } as WatchState
-
-        const action: WatchAction = {
-          type: 'UpdateSiteLanguage',
-          language: 'es'
-        }
-
-        const result = reducer(stateWithLanguages, action)
-
-        expect(result.siteLanguage).toBe('es')
-        expect(result.audioLanguage).toBe('496')
-        expect(result.subtitleLanguage).toBe('496')
-        expect(result.loading).toBe(true)
-      })
-
-      it('should preserve existing language values when no matching language found', () => {
-        const action: WatchAction = {
-          type: 'UpdateSiteLanguage',
-          language: 'fr'
-        }
-
-        const result = reducer(defaultState, action)
-
-        expect(result.siteLanguage).toBe('fr')
-        expect(result.audioLanguage).toBe(defaultState.audioLanguage)
-        expect(result.subtitleLanguage).toBe(defaultState.subtitleLanguage)
-        expect(result.loading).toBe(true)
-      })
-    })
-
     describe('UpdateAudioLanguage', () => {
       it('should update audio language and cascade to subtitle language', () => {
         const action: WatchAction = {
@@ -444,7 +336,6 @@ describe('WatchContext', () => {
 
         expect(result.audioLanguage).toBe('496')
         expect(result.subtitleLanguage).toBe('496')
-        expect(result.loading).toBe(true)
       })
     })
 
@@ -495,7 +386,6 @@ describe('WatchContext', () => {
 
   describe('WatchProvider', () => {
     const defaultInitialState: WatchInitialState = {
-      siteLanguage: 'en',
       audioLanguage: '529',
       subtitleLanguage: '529',
       subtitleOn: false
@@ -515,11 +405,10 @@ describe('WatchContext', () => {
       })
 
       expect(result.current.state).toEqual({
-        siteLanguage: 'en',
         audioLanguage: '529',
         autoSubtitle: undefined,
-        videoSubtitleLanguages: [],
-        videoAudioLanguages: [],
+        videoSubtitleLanguageIds: [],
+        videoAudioLanguagesIdsAndSlugs: [],
         currentAudioLanguage: undefined,
         subtitleLanguage: '529',
         subtitleOn: false,
@@ -531,42 +420,18 @@ describe('WatchContext', () => {
       const initialStateWithExtras: WatchInitialState = {
         ...defaultInitialState,
         videoId: 'test-video',
-        videoSubtitleLanguages: [
+        videoSubtitleLanguageIds: ['529'],
+        videoAudioLanguagesIdsAndSlugs: [
           {
-            language: { id: '529', bcp47: 'en' },
-            value: 'English subtitles',
-            __typename: 'VideoSubtitle'
+            id: '529',
+            slug: 'english'
           }
-        ] as any,
-        videoAudioLanguages: [
-          {
-            language: {
-              id: '529',
-              bcp47: 'en',
-              __typename: 'Language',
-              slug: 'english',
-              name: [
-                { primary: true, value: 'English', __typename: 'LanguageName' }
-              ]
-            },
-            slug: 'english',
-            __typename: 'LanguageWithSlug'
-          }
-        ] as any
+        ]
       }
 
       const expectedCurrentAudioLanguage = {
-        language: {
-          id: '529',
-          bcp47: 'en',
-          __typename: 'Language',
-          slug: 'english',
-          name: [
-            { primary: true, value: 'English', __typename: 'LanguageName' }
-          ]
-        },
-        slug: 'english',
-        __typename: 'LanguageWithSlug'
+        id: '529',
+        slug: 'english'
       }
 
       const wrapper = ({ children }: { children: ReactNode }): ReactNode => (
@@ -582,20 +447,13 @@ describe('WatchContext', () => {
       })
 
       expect(result.current.state).toEqual({
-        siteLanguage: 'en',
         audioLanguage: '529',
         subtitleLanguage: '529',
         subtitleOn: false,
         loading: false,
         videoId: 'test-video',
-        videoSubtitleLanguages: [
-          {
-            language: { id: '529', bcp47: 'en' },
-            value: 'English subtitles',
-            __typename: 'VideoSubtitle'
-          }
-        ],
-        videoAudioLanguages: [expectedCurrentAudioLanguage],
+        videoSubtitleLanguageIds: ['529'],
+        videoAudioLanguagesIdsAndSlugs: [expectedCurrentAudioLanguage],
         currentAudioLanguage: expectedCurrentAudioLanguage
       })
     })
@@ -606,42 +464,18 @@ describe('WatchContext', () => {
         videoId: 'test-video',
         audioLanguage: '999', // does NOT match the videoAudioLanguages below
         subtitleLanguage: '529', // matches the videoSubtitleLanguages below
-        videoSubtitleLanguages: [
+        videoSubtitleLanguageIds: ['529'],
+        videoAudioLanguagesIdsAndSlugs: [
           {
-            language: { id: '529', bcp47: 'en' },
-            value: 'English subtitles',
-            __typename: 'VideoSubtitle'
+            id: '529',
+            slug: 'english'
           }
-        ] as any,
-        videoAudioLanguages: [
-          {
-            language: {
-              id: '529',
-              bcp47: 'en',
-              __typename: 'Language',
-              slug: 'english',
-              name: [
-                { primary: true, value: 'English', __typename: 'LanguageName' }
-              ]
-            },
-            slug: 'english',
-            __typename: 'LanguageWithSlug'
-          }
-        ] as any
+        ]
       }
 
       const expectedCurrentAudioLanguage = {
-        language: {
-          id: '529',
-          bcp47: 'en',
-          __typename: 'Language',
-          slug: 'english',
-          name: [
-            { primary: true, value: 'English', __typename: 'LanguageName' }
-          ]
-        },
-        slug: 'english',
-        __typename: 'LanguageWithSlug'
+        id: '529',
+        slug: 'english'
       }
 
       const wrapper = ({ children }: { children: ReactNode }): ReactNode => (
@@ -657,21 +491,14 @@ describe('WatchContext', () => {
       })
 
       expect(result.current.state).toEqual({
-        siteLanguage: 'en',
         audioLanguage: '999',
         subtitleLanguage: '529',
         subtitleOn: false,
         autoSubtitle: true,
         loading: false,
         videoId: 'test-video',
-        videoSubtitleLanguages: [
-          {
-            language: { id: '529', bcp47: 'en' },
-            value: 'English subtitles',
-            __typename: 'VideoSubtitle'
-          }
-        ],
-        videoAudioLanguages: [expectedCurrentAudioLanguage],
+        videoSubtitleLanguageIds: ['529'],
+        videoAudioLanguagesIdsAndSlugs: [expectedCurrentAudioLanguage],
         currentAudioLanguage: undefined
       })
 

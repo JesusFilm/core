@@ -25,6 +25,8 @@ describe('LinkActionResolver', () => {
     journeyId: null,
     target: null,
     email: null,
+    phone: null,
+    countryCode: null,
     customizable: null,
     parentStepId: null,
     updatedAt: new Date()
