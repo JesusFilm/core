@@ -192,21 +192,22 @@ async function migrateDownloadsToR2(): Promise<void> {
   const badUrls = await loadBadUrls()
 
   for (const quality of [
-    VideoVariantDownloadQuality.high,
-    VideoVariantDownloadQuality.distroHigh,
-    VideoVariantDownloadQuality.sd,
-    VideoVariantDownloadQuality.distroSd,
+    // VideoVariantDownloadQuality.high,
+    // VideoVariantDownloadQuality.distroHigh
+    // VideoVariantDownloadQuality.sd,
+    // VideoVariantDownloadQuality.distroSd
     VideoVariantDownloadQuality.low,
     VideoVariantDownloadQuality.distroLow
   ]) {
     const getWhere = () => ({
       where: {
-        videoVariantId: {
-          // not: {
-          startsWith: '1\\_',
-          contains: '-jf'
-          // }
-        },
+        // videoVariantId: {
+        //   //   // not: {
+        //   startsWith: '1\\_',
+        //   contains: 'jf61'
+        //   //   // }
+        // },
+        height: { lt: 300 },
         assetId: null,
         AND: [
           { url: { not: '' } },
@@ -400,34 +401,65 @@ async function migrateDownloadsToR2(): Promise<void> {
           })
         }
 
-        if (quality === VideoVariantDownloadQuality.high) {
-          await prisma.videoVariantDownload.updateMany({
-            where: {
-              videoVariantId: download.videoVariantId,
-              quality: VideoVariantDownloadQuality.distroHigh
-            },
-            data: updateData
-          })
-        }
+        // if (quality === VideoVariantDownloadQuality.high) {
+        //   const distroHigh = await prisma.videoVariantDownload.findFirst({
+        //     where: {
+        //       videoVariantId: download.videoVariantId,
+        //       quality: VideoVariantDownloadQuality.distroHigh
+        //     },
+        //     select: {
+        //       id: true,
+        //       url: true
+        //     }
+        //   })
+        //   if (distroHigh != null) {
+        //     await prisma.videoVariantDownload.updateMany({
+        //       where: { url: distroHigh.url },
+        //       data: updateData
+        //     })
+        //   }
+        // }
 
-        if (quality === VideoVariantDownloadQuality.sd) {
-          await prisma.videoVariantDownload.updateMany({
-            where: {
-              videoVariantId: download.videoVariantId,
-              quality: VideoVariantDownloadQuality.distroSd
-            },
-            data: updateData
-          })
-        }
+        // if (quality === VideoVariantDownloadQuality.sd) {
+        //   const distroSd = await prisma.videoVariantDownload.findFirst({
+        //     where: {
+        //       videoVariantId: download.videoVariantId,
+        //       quality: VideoVariantDownloadQuality.distroSd
+        //     },
+        //     select: {
+        //       id: true,
+        //       url: true
+        //     }
+        //   })
+        //   if (distroSd != null) {
+        //     await prisma.videoVariantDownload.updateMany({
+        //       where: {
+        //         url: distroSd.url
+        //       },
+        //       data: updateData
+        //     })
+        //   }
+        // }
 
         if (quality === VideoVariantDownloadQuality.low) {
-          await prisma.videoVariantDownload.updateMany({
+          const distroLow = await prisma.videoVariantDownload.findFirst({
             where: {
               videoVariantId: download.videoVariantId,
               quality: VideoVariantDownloadQuality.distroLow
             },
-            data: updateData
+            select: {
+              id: true,
+              url: true
+            }
           })
+          if (distroLow != null) {
+            await prisma.videoVariantDownload.updateMany({
+              where: {
+                url: distroLow.url
+              },
+              data: updateData
+            })
+          }
         }
 
         console.info('Successfully processed download')

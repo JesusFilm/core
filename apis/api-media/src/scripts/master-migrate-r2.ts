@@ -104,6 +104,7 @@ async function migrateMastersToR2(): Promise<void> {
 
   let variant = await prisma.videoVariant.findFirst({
     where: {
+      id: { not: { startsWith: '1\\_' } },
       assetId: null,
       masterUrl: { not: null }
     }
@@ -167,6 +168,7 @@ async function migrateMastersToR2(): Promise<void> {
 
     variant = await prisma.videoVariant.findFirst({
       where: {
+        id: { not: { startsWith: '1\\_' } },
         assetId: null,
         masterUrl: { not: null }
       }
