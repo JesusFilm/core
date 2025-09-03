@@ -365,6 +365,9 @@ importers:
       graphql:
         specifier: ^16.8.1
         version: 16.10.0
+      graphql-request:
+        specifier: ^6.1.0
+        version: 6.1.0(encoding@0.1.13)(graphql@16.10.0)
       graphql-scalars:
         specifier: ^1.23.0
         version: 1.24.2(graphql@16.10.0)
