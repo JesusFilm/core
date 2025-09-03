@@ -106,8 +106,7 @@ export function PageWrapper({
             sx={{
               ...(backgroundOverride != null
                 ? { background: backgroundOverride }
-                : { backgroundColor: background ?? 'background.default' }
-              ),
+                : { backgroundColor: background ?? 'background.default' }),
               width: '100%',
               pt: { xs: toolbar.height, md: 0 },
               pb: {

@@ -1,5 +1,10 @@
 import { useRouter } from 'next/router'
-import { AuthAction, useUser, withUser, withUserTokenSSR } from 'next-firebase-auth'
+import {
+  AuthAction,
+  useUser,
+  withUser,
+  withUserTokenSSR
+} from 'next-firebase-auth'
 import { useTranslation } from 'next-i18next'
 import { NextSeo } from 'next-seo'
 
@@ -31,7 +36,7 @@ function CustomizePage() {
         user={user}
         showMainHeader={false}
         mainBodyPadding={false}
-        backgroundOverride='linear-gradient(to bottom, #1f2c430f, #2568994d)'
+        backgroundOverride="linear-gradient(to bottom, #1f2c430f, #2568994d)"
       >
         <JourneyProvider
           value={{
