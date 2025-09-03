@@ -1,20 +1,6 @@
-import { ResultOf, graphql } from '@core/shared/gql'
+import { prisma as languagesPrisma } from '@core/prisma/languages/client'
 
-import { getApolloClient } from './apolloClient'
 import { generateCacheKey, getWithStaleCache } from './cache'
-
-const GET_LANGUAGE_ID_FROM_BCP47 = graphql(`
-  query GetLanguageIdFromBCP47($bcp47: ID!) {
-    language(id: $bcp47, idType: bcp47) {
-      id
-    }
-  }
-`)
-
-interface LanguageIds {
-  metadataLanguageId: string
-  fallbackLanguageId: string
-}
 
 // Support legacy locale tags
 const LANGUAGE_MAPPINGS = new Map<string, string>([
@@ -53,19 +39,19 @@ function matchLocales(metadataLanguageTags: string[]): string | undefined {
 async function fetchLanguageId(languageTag: string): Promise<string> {
   const cacheKey = generateCacheKey(['bcp47', languageTag])
   return await getWithStaleCache(cacheKey, async () => {
-    const { data } = await getApolloClient().query<
-      ResultOf<typeof GET_LANGUAGE_ID_FROM_BCP47>
-    >({
-      query: GET_LANGUAGE_ID_FROM_BCP47,
-      variables: { bcp47: languageTag }
+    const language = await languagesPrisma.language.findFirst({
+      where: { bcp47: languageTag }
     })
-    return data.language?.id ?? ''
+    return language?.id ?? ''
   })
 }
 
+/**
+ * @deprecated: use getLanguageDetailsFromTags instead
+ */
 export async function getLanguageIdsFromTags(
   metadataLanguageTags: string[]
-): Promise<LanguageIds> {
+): Promise<{ metadataLanguageId: string; fallbackLanguageId: string }> {
   const DEFAULT_LANGUAGE_ID = '529'
   let metadataLanguageId = DEFAULT_LANGUAGE_ID
   const fallbackLanguageId = DEFAULT_LANGUAGE_ID
@@ -87,4 +73,54 @@ export async function getLanguageIdsFromTags(
   }
 
   return { metadataLanguageId, fallbackLanguageId }
+}
+
+export async function getLanguageDetailsFromTags(
+  metadataLanguageTags: string[]
+): Promise<{
+  metadataLanguageIds: string[]
+  metadataLanguageDetails: Array<{
+    languageId: string
+    languageName: string
+    languageTag: string
+  }>
+}> {
+  if (metadataLanguageTags.length === 0) {
+    return {
+      metadataLanguageIds: [],
+      metadataLanguageDetails: []
+    }
+  }
+
+  const metadataLanguageTag = metadataLanguageTags[0]
+  const metadataLanguage = await languagesPrisma.language.findFirst({
+    where: { bcp47: metadataLanguageTag }
+  })
+  const metadataLanguageId = metadataLanguage?.id ?? null
+
+  const fallbackLanguage = await languagesPrisma.language.findFirst({
+    where: { bcp47: metadataLanguageTags[1] ?? 'en' }
+  })
+  const fallbackLanguageId = fallbackLanguage?.id ?? null
+
+  const languageIds = [metadataLanguageId, fallbackLanguageId].filter(Boolean)
+  const languageDetails = await languagesPrisma.language.findMany({
+    where: {
+      id: { in: languageIds }
+    },
+    select: {
+      id: true,
+      name: true,
+      bcp47: true
+    }
+  })
+
+  return {
+    metadataLanguageIds: languageIds,
+    metadataLanguageDetails: languageDetails.map((lang) => ({
+      languageId: lang.id,
+      languageName: lang.name,
+      languageTag: lang.bcp47
+    }))
+  }
 }
