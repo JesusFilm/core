@@ -1,10 +1,10 @@
+import NextLink from 'next/link'
 import { useMemo } from 'react'
 
 import { Language, useLanguages } from '../../../../libs/useLanguages'
 import { useVideo } from '../../../../libs/videoContext'
 import { useWatch } from '../../../../libs/watchContext'
 import { SelectContent } from '../../../Select'
-import NextLink from 'next/link'
 
 export function AudioLanguageSelectContent() {
   const { variant } = useVideo()

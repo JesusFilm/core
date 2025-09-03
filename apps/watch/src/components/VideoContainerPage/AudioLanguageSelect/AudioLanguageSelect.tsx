@@ -6,9 +6,9 @@ import { useTranslation } from 'next-i18next'
 import { ReactElement, useMemo, useState } from 'react'
 
 import { useLanguages } from '../../../libs/useLanguages'
+import { useVideo } from '../../../libs/videoContext'
 import { useWatch } from '../../../libs/watchContext'
 import { Select, SelectTrigger, SelectValue } from '../../Select'
-import { useVideo } from '../../../libs/videoContext'
 
 const DynamicAudioLanguageSelectContent = dynamic(
   async () =>
