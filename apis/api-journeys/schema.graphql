@@ -94,6 +94,7 @@ type PhoneAction implements Action
   parentBlock: Block!
   gtmEventName: String
   phone: String!
+  countryCode: String!
 }
 
 input NavigateToBlockActionInput {
@@ -123,11 +124,13 @@ input BlockUpdateActionInput {
   target: String
   blockId: String
   phone: String
+  countryCode: String
 }
 
 input PhoneActionInput {
   gtmEventName: String
   phone: String!
+  countryCode: String!
 }
 
 type Mutation {
