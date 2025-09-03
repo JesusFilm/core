@@ -3,13 +3,13 @@ import Divider from '@mui/material/Divider'
 import ListItem from '@mui/material/ListItem'
 import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next'
-import { ListChildComponentProps } from 'react-window'
+import type { RowComponentProps } from 'react-window'
 
-export const renderOption = (props: ListChildComponentProps) => {
-  const { data, index, style } = props
+export const renderOption = (props: RowComponentProps<{ rows: any[] }>) => {
+  const { rows, index, style } = props
   const { t } = useTranslation()
-  const item = data[index][1]
-  const { key, ...optionProps } = data[index][0]
+  const item = rows[index][1]
+  const { key, ...optionProps } = rows[index][0]
 
   // Handle header items
   if (item?.__type === 'header' || item?.type === 'header') {

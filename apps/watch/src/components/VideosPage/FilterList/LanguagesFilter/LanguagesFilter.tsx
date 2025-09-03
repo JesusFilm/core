@@ -5,17 +5,17 @@ import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
 import { ReactElement, ReactNode } from 'react'
-import { ListChildComponentProps } from 'react-window'
+import type { RowComponentProps } from 'react-window'
 
 import {
   LanguageAutocomplete,
   LanguageAutocompleteProps
 } from '@core/shared/ui/LanguageAutocomplete'
 
-export function Option(props: ListChildComponentProps): ReactNode {
-  const { data, index, style } = props
-  const { id, localName, nativeName } = data[index][1]
-  const { key, ...optionProps } = data[index][0]
+export function Option(props: RowComponentProps<{ rows: any[] }>): ReactNode {
+  const { rows, index, style } = props
+  const { id, localName, nativeName } = rows[index][1]
+  const { key, ...optionProps } = rows[index][0]
 
   return (
     <ListItem

@@ -14,10 +14,9 @@ import {
   forwardRef,
   useMemo
 } from 'react'
-import { FixedSizeList as List } from 'react-window'
+import { List } from 'react-window'
 
 import { defaultRenderOption } from './defaultRenderOption'
-import { OuterElement, OuterElementContext } from './OuterElement'
 
 export interface Language {
   id: string
@@ -150,20 +149,22 @@ export function LanguageAutocomplete({
     const itemCount = itemData.length
     const itemSize = 45
     return (
-      <Box ref={ref}>
-        <OuterElementContext.Provider value={other}>
-          <List
-            itemData={itemData}
-            outerElementType={OuterElement}
-            height={Math.min(itemCount * itemSize + 10, smUp ? 400 : 200)}
-            width="100%"
-            itemSize={itemSize}
-            overscanCount={5}
-            itemCount={itemCount}
-          >
-            {renderOption != null ? renderOption : defaultRenderOption}
-          </List>
-        </OuterElementContext.Provider>
+      <Box ref={ref} {...other}>
+        <List
+          rowComponent={
+            renderOption != null
+              ? (renderOption as any)
+              : (defaultRenderOption as any)
+          }
+          rowCount={itemCount}
+          rowHeight={itemSize}
+          rowProps={{ rows: itemData }}
+          overscanCount={5}
+          style={{
+            height: Math.min(itemCount * itemSize + 10, smUp ? 400 : 200),
+            width: '100%'
+          }}
+        />
       </Box>
     )
   })
