@@ -97,7 +97,7 @@ export const getStaticProps: GetStaticProps<HomeLanguagePageProps> = async ({
   const mapping = LANGUAGE_MAPPINGS[key]
   const serverState = await getServerState(
     <HomeLanguagePage
-      languageEnglishName={mapping.nativeName}
+      languageEnglishName={mapping.englishName}
       languageId={mapping.languageId}
     />,
     {
@@ -112,7 +112,7 @@ export const getStaticProps: GetStaticProps<HomeLanguagePageProps> = async ({
     props: {
       flags: await getFlags(),
       serverState,
-      languageEnglishName: mapping.nativeName,
+      languageEnglishName: mapping.englishName,
       languageId: mapping.languageId,
       initialApolloState: apolloClient.cache.extract(),
       ...(await serverSideTranslations(
