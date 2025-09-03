@@ -34,13 +34,14 @@ jobs:
         with:
           key: ${{ github.repository }}-pnpm-store
           path: ~/.pnpm-store
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
       - uses: useblacksmith/setup-node@v5
         with:
           node-version: ${{ matrix.node-version }}
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
+
       - name: Install dependencies
-        run: pnpm install --silent
+        run: pnpm install
       - name: Danger JS
         run: pnpm exec danger ci --failOnErrors
         env:
