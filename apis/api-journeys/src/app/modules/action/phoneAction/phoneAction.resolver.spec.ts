@@ -52,7 +52,7 @@ describe('PhoneActionResolver', () => {
   }
   const input: PhoneActionInput = {
     gtmEventName: 'gtmEventName',
-    phone: 'edmondshen@gmail.com',
+    phone: '+1234567890',
     countryCode: 'US'
   }
 
