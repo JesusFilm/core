@@ -33,7 +33,7 @@
   "Loading...": "Loading...",
   "Available in {{count}} languages._one": "Available in {{count}} language.",
   "Available in {{count}} languages._other": "Available in {{count}} languages.",
-  "This video is not available in {{language}}.": "This video is not available in {{language}}.",
+  "This content is not available in {{language}}.": "This content is not available in {{language}}.",
   "Language": "Language",
   "Available Languages": "Available Languages",
   "Other Languages": "Other Languages",

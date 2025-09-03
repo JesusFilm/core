@@ -60,7 +60,7 @@ export function AudioTrackSelect({
       videoAudioLanguageIds.find((id) => id === selectedOption.id) == null
     ) {
       return [
-        t('This video is not available in {{language}}.', {
+        t('This content is not available in {{language}}.', {
           language: selectedOption.displayName
         }),
         t('Available in {{count}} languages.', {
@@ -151,11 +151,12 @@ export function AudioTrackSelect({
                   }}
                 >
                   <Typography variant="body1">{option.displayName}</Typography>
-                  {option.nativeName && (
-                    <Typography variant="body2" color="text.secondary">
-                      {option.nativeName.value}
-                    </Typography>
-                  )}
+                  {option.nativeName &&
+                    option.nativeName.value !== option.displayName && (
+                      <Typography variant="body2" color="text.secondary">
+                        {option.nativeName.value}
+                      </Typography>
+                    )}
                 </Box>
               )
             }}

@@ -161,7 +161,7 @@ describe('AudioTrackSelect', () => {
       await waitFor(() => {
         expect(
           screen.getByText(
-            'This video is not available in English. Available in 2 languages.'
+            'This content is not available in English. Available in 2 languages.'
           )
         ).toBeInTheDocument()
       })
