@@ -75,6 +75,41 @@ This document captures common issues, solutions, and lessons learned during Watc
 - **Framework**: React Testing Library with comprehensive RTL tests
 - **Coverage**: Component rendering, user interactions, accessibility
 - **Mocking**: Proper mocking of Next.js navigation and internationalization
+- **Browser Testing**: Playwright-based end-to-end testing suite
+- **ARM64 Compatibility**: Firefox-based testing optimized for ARM64 architecture
+
+#### **Browser Testing Infrastructure**
+- **Location**: `apps/watch-modern-e2e/`
+- **Purpose**: Automated browser testing for search functionality and UI validation
+- **Technology**: Playwright with Firefox browser (ARM64 compatible)
+- **Features**: Search testing, responsive design validation, performance monitoring, Nx workspace integration
+- **Documentation**: Complete setup and usage guides available in e2e testing directory
+
+#### **Browser Testing Commands**
+```bash
+# Run all e2e tests
+cd /workspaces && nx run watch-modern-e2e:e2e
+
+# Run search tests only
+cd /workspaces && npx playwright test apps/watch-modern-e2e/src/e2e/search/ --project=firefox
+
+# Run with visual debugging
+cd /workspaces && nx run watch-modern-e2e:debug
+
+# View test reports
+cd /workspaces && npx playwright show-report
+```
+
+#### **Browser Testing Learnings**
+- **ARM64 Compatibility**: Chrome installation fails on ARM64, use Firefox instead
+- **System Dependencies**: Install Playwright system dependencies with `npx playwright install-deps`
+- **Headless Mode**: Use headless mode for CI/CD, visible mode for debugging
+- **Screenshot Capture**: Automatic screenshots for visual verification and debugging
+- **Performance Monitoring**: Track search response times and loading performance
+- **Nx Integration**: E2e tests work better when integrated with Nx workspace patterns
+- **Test Organization**: Group related tests in feature-specific directories under `src/e2e/`
+- **Selector Strategy**: Use semantic selectors that work across different environments
+- **CI/CD Ready**: Tests designed for headless execution in CI/CD pipelines
 
 #### **Accessibility**
 - **Pattern**: Proper ARIA labels and semantic HTML
@@ -127,6 +162,67 @@ This document captures common issues, solutions, and lessons learned during Watc
 - **Logo Link**: Updated logo to link to local `/watch` route instead of external JesusFilm domain
 - **Local Navigation**: Ensures users stay within the application when clicking the logo
 - **Consistent Routing**: Maintains proper navigation patterns within the Next.js application
+
+### Browser Testing Issues & Solutions
+
+#### **Playwright Installation Issues**
+- **Issue**: `npx playwright install` fails on ARM64 architecture
+- **Solution**: Use `npx playwright install firefox` for ARM64 compatibility
+- **Prevention**: Always specify browser when installing on ARM64 systems
+- **Alternative**: Use `npx playwright install-deps` to install system dependencies first
+
+#### **Browser Launch Failures**
+- **Issue**: Browser fails to launch with "executable not found" error
+- **Solution**: Ensure Firefox is installed and Playwright browsers are downloaded
+- **Command**: `npx playwright install firefox` followed by test execution
+- **Prevention**: Always run browser installation before executing tests
+
+#### **App Not Running Errors**
+- **Issue**: Tests fail because watch-modern app is not running on localhost:4800
+- **Solution**: Start the development server before running browser tests
+- **Command**: `cd /workspaces && nx run watch-modern:serve --port 4800`
+- **Prevention**: Always check app status before running e2e tests
+
+#### **Search Results Not Appearing**
+- **Issue**: Search tests pass but no results are displayed in browser
+- **Solution**: Verify Algolia environment variables are properly loaded
+- **Check**: Ensure `.env` file contains correct `NEXT_PUBLIC_ALGOLIA_*` variables
+- **Prevention**: Run environment variable validation before browser testing
+
+#### **Performance Test Timeouts**
+- **Issue**: Performance tests timeout due to slow response times
+- **Solution**: Increase timeout values in test configuration
+- **Location**: Modify `playwright.config.ts` in `apps/watch-modern-e2e/`
+- **Prevention**: Adjust timeouts based on network conditions and system performance
+
+#### **Screenshot Capture Issues**
+- **Issue**: Screenshots fail to save or have incorrect paths
+- **Solution**: Ensure write permissions in the e2e testing directory
+- **Check**: Verify Playwright has permission to write to the test-results directory
+- **Prevention**: Run tests with proper permissions and from the correct workspace directory
+
+#### **Responsive Design Testing**
+- **Issue**: Viewport changes don't work as expected
+- **Solution**: Use `page.setViewportSize()` method in Playwright
+- **Pattern**: Test mobile (375x667), tablet (768x1024), desktop (1920x1080)
+- **Prevention**: Always test responsive behavior across multiple viewport sizes
+
+#### **Nx E2E Test Integration Issues**
+- **Issue**: Tests fail when not run from the correct workspace directory
+- **Solution**: Always run e2e tests from `/workspaces/` (workspace root)
+- **Command**: `cd /workspaces && nx run watch-modern-e2e:e2e`
+- **Prevention**: Use Nx commands instead of direct Playwright commands for consistency
+
+#### **Test Organization Migration**
+- **Issue**: Tests created in wrong location or with inconsistent structure
+- **Solution**: Follow established Nx e2e patterns in `apps/watch-modern-e2e/src/e2e/`
+- **Pattern**: Group tests by feature in subdirectories (e.g., `search/`, `video/`, `user/`)
+- **Prevention**: Review existing test structure before adding new tests
+
+#### **Memory and Resource Issues**
+- **Issue**: Browser tests consume excessive memory or fail on resource-constrained systems
+- **Solution**: Use headless mode and limit concurrent browser instances
+- **Prevention**: Close browser instances properly and use `browser.close()` in cleanup
 
 #### **Video Collection Implementation (Slice 2)**
 - **Client Component Pattern**: Used `'use client'` directive for interactive components with event handlers

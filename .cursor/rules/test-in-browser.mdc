@@ -1,0 +1,42 @@
+---
+description: Test new features or bugs in browser using Playwright MCP
+globs: 
+  - "**/*.{js,jsx,ts,tsx,vue,svelte}"
+  - "**/testing/**"
+  - "**/*test*"
+  - "**/*spec*"
+alwaysApply: true
+---
+
+# Browser Testing with Playwright MCP
+
+When implementing new features or investigating bugs, always test in a real browser environment using Playwright MCP to simulate authentic human user interactions.
+
+## Core Testing Requirements
+
+### 1. Real User Simulation
+- Use actual mouse clicks, keyboard input, and scroll behaviors
+- Test with realistic timing delays between actions
+- Simulate different user interaction patterns (power users vs casual users)
+- Include edge cases like rapid clicking, incomplete form submissions, or navigation interruptions
+
+### 2. Cross-Device Testing
+- Test on multiple viewport sizes (mobile, tablet, desktop)
+- Verify touch interactions work on mobile viewports
+- Test keyboard navigation and accessibility features
+- Ensure responsive design works across breakpoints
+
+### 3. Feature-Specific Testing Patterns
+
+#### For New Features:
+- Test the complete user flow from entry point to completion
+- Verify all interactive elements respond correctly
+- Test error states and edge cases
+- Validate loading states and transitions
+- Ensure feature works with existing functionality
+
+#### For Bug Investigation:
+- Reproduce the exact steps that cause the bug
+- Test variations of the problematic flow
+- Verify the fix doesn't break related functionality
+- Test with different data states (empty, populated, edge cases)

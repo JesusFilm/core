@@ -2,7 +2,6 @@ import type { ReactElement } from 'react'
 
 import { AboutSection } from './About'
 import { HomeHero } from './HomeHero'
-import { SeeAllVideos } from './SeeAllVideos'
 import { VideoGrid } from './VideoGrid'
 
 export default function WatchHomePage(): ReactElement {
@@ -10,12 +9,10 @@ export default function WatchHomePage(): ReactElement {
     <>
       {/* Hero with overlay */}
       <HomeHero />
-      {/* CTA to jump to videos */}
-      <SeeAllVideos />
+      {/* Search + Grid (directly below hero, no CTA section) */}
+      <VideoGrid />
       {/* About block */}
       <AboutSection />
-      {/* Search + Grid */}
-      <VideoGrid />
     </>
   )
 }

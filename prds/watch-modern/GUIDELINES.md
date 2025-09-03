@@ -23,6 +23,44 @@ This document outlines the coding standards, best practices, and development gui
 - **Jest** - Test framework and assertions
 - **@testing-library/user-event** - User interaction testing
 - **@testing-library/jest-dom** - Custom Jest matchers
+- **Playwright** - Browser testing and end-to-end testing (ARM64 optimized)
+- **watch-modern-e2e** - Comprehensive e2e testing suite integrated with Nx workspace
+
+#### Browser Testing Infrastructure
+
+**Location**: `apps/watch-modern-e2e/`
+
+**Purpose**: Automated browser testing suite optimized for ARM64 architecture and integrated with Nx workspace patterns.
+
+**Key Features**:
+- Firefox-based testing (ARM64 compatible)
+- Comprehensive search functionality testing
+- Responsive design validation across viewports
+- Performance monitoring and benchmarking
+- Automated screenshot capture for visual verification
+- JSON reports with detailed test results
+- Nx workspace integration with proper project configuration
+
+**Documentation**:
+- [Browser Testing Guide](../../apps/watch-modern-e2e/README.md)
+- [Search Tests](../../apps/watch-modern-e2e/src/e2e/search/)
+- [Grid Layout Tests](../../apps/watch-modern-e2e/src/e2e/search/grid-layout.spec.ts)
+- [Performance Tests](../../apps/watch-modern-e2e/src/e2e/search/performance.spec.ts)
+
+**Quick Start Commands**:
+```bash
+# Run all e2e tests
+cd /workspaces && nx run watch-modern-e2e:e2e
+
+# Run search tests only
+cd /workspaces && npx playwright test apps/watch-modern-e2e/src/e2e/search/ --project=firefox
+
+# Run with debug mode
+cd /workspaces && nx run watch-modern-e2e:debug
+
+# View test reports
+cd /workspaces && npx playwright show-report
+```
 
 ## Critical Design Constraints
 
@@ -128,6 +166,36 @@ This document outlines the coding standards, best practices, and development gui
 - Group related tests with `describe` blocks
 - Use `beforeEach` for common setup, `afterEach` for cleanup
 
+#### Browser Testing Integration
+
+**Browser Testing Workflow**:
+1. **Component Tests**: Write RTL tests for component functionality
+2. **Browser Tests**: Run e2e tests to validate end-to-end functionality
+3. **Integration Tests**: Verify component integration in real browser environment
+4. **Performance Tests**: Monitor response times and UI performance
+
+**Browser Test Categories**:
+- **Search Functionality**: Test search input, results display, pagination
+- **Responsive Design**: Validate across desktop, tablet, mobile viewports
+- **Performance**: Monitor response times and loading performance
+- **Accessibility**: Verify keyboard navigation and screen reader support
+- **Edge Cases**: Test empty states, error conditions, and unusual inputs
+
+**Browser Test Commands**:
+```bash
+# Run all e2e tests
+cd /workspaces && nx run watch-modern-e2e:e2e
+
+# Run specific test suites
+cd /workspaces && npx playwright test apps/watch-modern-e2e/src/e2e/search/ --project=firefox
+
+# Run with visual debugging
+cd /workspaces && nx run watch-modern-e2e:debug
+
+# View detailed test reports
+cd /workspaces && npx playwright show-report
+```
+
 #### Example TDD Workflow
 
 ```typescript
@@ -146,6 +214,182 @@ export function MyComponent({ text }: { text: string }) {
 
 // 3. REFACTOR: Improve while maintaining tests
 ```
+
+### Testing Instructions for New Features
+
+#### **CRITICAL REQUIREMENT**: Every new feature MUST have comprehensive tests
+
+#### Feature Testing Workflow
+
+**1. Plan Tests Before Implementation**
+```typescript
+// Create test file FIRST: ComponentName.spec.tsx
+describe('NewFeatureComponent', () => {
+  // Plan all test cases before writing any implementation
+  it('should render correctly')
+  it('should handle user interactions')
+  it('should work across all screen sizes')
+  it('should be accessible')
+  it('should handle error states')
+})
+```
+
+**2. Component-Level Testing (RTL)**
+- **File Location**: `src/components/ComponentName.spec.tsx`
+- **Framework**: React Testing Library + Jest
+- **Coverage**: 80% minimum for new code
+
+**Required Test Cases for Every Component:**
+```typescript
+describe('ComponentName', () => {
+  // ✅ Rendering Tests
+  it('should render without crashing')
+  it('should render with default props')
+  it('should render with custom props')
+
+  // ✅ Interaction Tests
+  it('should handle click events')
+  it('should handle keyboard navigation')
+  it('should handle form submissions')
+
+  // ✅ Accessibility Tests
+  it('should have proper ARIA labels')
+  it('should support keyboard navigation')
+  it('should have proper focus management')
+
+  // ✅ Responsive Tests
+  it('should hide on mobile when specified')
+  it('should show on desktop when specified')
+  it('should adapt layout for different screen sizes')
+
+  // ✅ Error State Tests
+  it('should handle loading states')
+  it('should display error messages appropriately')
+  it('should recover from error states')
+})
+```
+
+**3. Browser-Level Testing (Playwright E2E)**
+- **File Location**: `apps/watch-modern-e2e/src/e2e/feature-name/`
+- **Framework**: Playwright with Firefox
+- **Coverage**: Critical user journeys and integration points
+
+**Required E2E Test Cases:**
+```typescript
+test.describe('New Feature E2E', () => {
+  test.beforeEach(async ({ page }) => {
+    await page.goto('/feature-route')
+  })
+
+  // ✅ Critical User Journey Tests
+  test('should complete full user workflow')
+  test('should handle network failures gracefully')
+  test('should work on mobile devices')
+  test('should work on slow connections')
+
+  // ✅ Integration Tests
+  test('should integrate with existing features')
+  test('should update related components')
+  test('should maintain data consistency')
+})
+```
+
+#### Feature Testing Checklist
+
+**Pre-Implementation:**
+- [ ] Create component test file (`ComponentName.spec.tsx`)
+- [ ] Create e2e test file (`apps/watch-modern-e2e/src/e2e/feature/`)
+- [ ] Plan all test scenarios and edge cases
+- [ ] Define success criteria for each test
+
+**During Implementation:**
+- [ ] Write tests first (Red phase)
+- [ ] Implement minimal code to pass tests (Green phase)
+- [ ] Run tests after each change
+- [ ] Fix any failing tests immediately
+
+**Post-Implementation:**
+- [ ] All component tests pass (80%+ coverage)
+- [ ] All e2e tests pass on Firefox
+- [ ] Tests work across different viewports
+- [ ] Accessibility requirements met
+- [ ] Performance benchmarks met
+
+### Bug Testing Instructions
+
+#### **CRITICAL REQUIREMENT**: Every identified bug MUST have a test case
+
+#### Bug Testing Workflow
+
+**1. Reproduce the Bug**
+```typescript
+// Create test that reproduces the bug FIRST
+test('should reproduce bug: [BUG-123] component crashes on invalid input', async ({ page }) => {
+  // Steps to reproduce the bug
+  await page.goto('/buggy-page')
+  await page.fill('input', 'invalid-input')
+
+  // This test should FAIL initially (reproducing the bug)
+  await expect(page.locator('.error-message')).toBeVisible()
+})
+```
+
+**2. Fix the Bug**
+```typescript
+// Implement the fix
+export function BuggyComponent({ input }: Props) {
+  // Add validation/fix logic
+  if (!isValidInput(input)) {
+    return <ErrorMessage message="Invalid input" />
+  }
+  return <ValidComponent input={input} />
+}
+```
+
+**3. Verify the Fix**
+```typescript
+// Test should now PASS
+test('should handle invalid input gracefully', async ({ page }) => {
+  await page.goto('/buggy-page')
+  await page.fill('input', 'invalid-input')
+
+  // Verify fix works
+  await expect(page.locator('.error-message')).toBeVisible()
+  await expect(page.locator('.component')).not.toBeVisible()
+})
+```
+
+**4. Add Regression Tests**
+```typescript
+// Add comprehensive tests to prevent future regressions
+describe('BuggyComponent Regression Tests', () => {
+  it('should handle null input')
+  it('should handle undefined input')
+  it('should handle empty string input')
+  it('should handle special characters')
+  it('should handle very long input')
+  it('should handle numeric input')
+})
+```
+
+#### Bug Testing Checklist
+
+**Before Fix:**
+- [ ] Create test that reproduces the bug
+- [ ] Verify test fails (confirms bug exists)
+- [ ] Document bug behavior and expected fix
+
+**During Fix:**
+- [ ] Implement minimal fix
+- [ ] Test passes after fix
+- [ ] No existing tests break
+- [ ] Code follows established patterns
+
+**After Fix:**
+- [ ] Add comprehensive regression tests
+- [ ] Test across all supported browsers/devices
+- [ ] Update documentation if needed
+- [ ] Verify performance impact is minimal
 
 ## Component Patterns
 
@@ -402,7 +646,12 @@ When fixing compilation errors, maintain these principles:
 
 ## References
 
+- **[TESTING.md](./TESTING.md)** - Comprehensive testing guide for all features and bugs
 - **[LEARNINGS.md](./LEARNINGS.md)** - Troubleshooting guide and lessons learned from development sessions
+- **[Browser Testing Suite](../../apps/watch-modern-e2e/README.md)** - Complete browser testing infrastructure
+- **[Search Tests](../../apps/watch-modern-e2e/src/e2e/search/)** - Detailed search functionality tests
+- **[Grid Layout Tests](../../apps/watch-modern-e2e/src/e2e/search/grid-layout.spec.ts)** - Responsive design validation
+- **[Performance Tests](../../apps/watch-modern-e2e/src/e2e/search/performance.spec.ts)** - Performance monitoring tests
 
 ---
 

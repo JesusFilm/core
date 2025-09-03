@@ -10,23 +10,33 @@ export async function HomeHero() {
 
   return (
     <section className="relative isolate">
-      <div className="relative h-[50svh] min-h-[420px] w-full overflow-hidden bg-neutral-950">
-        <Image
+      <div className="relative h-[60vh] min-h-[500px] w-full overflow-hidden bg-neutral-950">
+                <Image
           src="/watch/hero.jpg"
-          alt=""
-          fill
-          priority
-          className="object-cover opacity-70"
-        />
+          alt="Jesus Film Project"
+        fill
+        priority
+        className="object-cover"
+      />
         <HeroOverlay />
       </div>
 
-      <Container className="relative -mt-24 z-20">
-        <div className="max-w-3xl">
-          <h1 className="mb-4 text-4xl font-extrabold tracking-tight text-white md:text-5xl">
-            <span dangerouslySetInnerHTML={{ __html: t('title') }} />
-          </h1>
-          <p className="text-lg text-muted-foreground md:text-xl">{t('description')}</p>
+      <Container className="relative -mt-16 z-20">
+        <div className="max-w-7xl">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
+            <div>
+              <h1 className="mb-6 text-5xl font-extrabold tracking-tight text-white md:text-6xl lg:text-7xl">
+                {t('freeGospelVideo')}{' '}
+                <span className="underline decoration-white decoration-2 underline-offset-4">
+                  {t('streaming')}
+                </span>{' '}
+                {t('library')}
+              </h1>
+            </div>
+            <div className="flex items-center">
+              <h2 className="text-xl font-semibold text-white/90 md:text-2xl leading-relaxed">{t('description')}</h2>
+            </div>
+          </div>
         </div>
       </Container>
     </section>

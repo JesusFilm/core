@@ -19,13 +19,19 @@ cp -R <exported-mockup> prds/watch-modern/<feature>/intake/ui/
 | **RETRO** (`prompts/04-RETRO-agent.md`) | Scans `LEARNINGS.md`, proposes global rule/template improvements. | Accept/reject proposals. |
 
 > **Design lock:** Builder must preserve every Tailwind class; snapshot tests fail if UI drifts.
+>
+> **Testing:** Use the comprehensive browser testing suite for end-to-end validation:
+> ```bash
+> cd /workspaces && nx run watch-modern-e2e:e2e
+> ```
 
 ---
 
 ## 3. Progress & docs
 
-- **Spec & status:** `prds/watch-modern/<feature>/spec/` (`slices.md` shows progress).  
+- **Spec & status:** `prds/watch-modern/<feature>/spec/` (`slices.md` shows progress).
 - **Knowledge log:** `apps/watch-modern/LEARNINGS.md` (auto‑updated each slice).
+- **Browser Testing Suite:** `apps/watch-modern-e2e/` (comprehensive end-to-end testing).
 
 ---
 

@@ -40,7 +40,7 @@ describe('/watch route integration', () => {
       </ApolloClientProvider>
     )
 
-    expect(screen.getByRole('link', { name: /see all videos/i })).toBeInTheDocument()
-    expect(screen.getByPlaceholderText(/search videos/i)).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /see all videos/i })).toBeInTheDocument()
+    expect(screen.getByPlaceholderText(/search videos, films, and series/i)).toBeInTheDocument()
   })
 })

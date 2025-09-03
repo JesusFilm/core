@@ -4,9 +4,13 @@
   },
   "RootIndexPage": {
     "pageTitle": "Watch",
-    "title": "Free Gospel Video <underline>Streaming</underline> Library.",
+    "freeGospelVideo": "Free Gospel Video",
+    "streaming": "Streaming",
+    "library": "Library.",
     "description": "Watch, learn and share the gospel in over 2000 languages",
-    "ctaSeeAllVideos": "See All Videos"
+    "ctaSeeAllVideos": "See All Videos",
+    "pageTitleAbout": "About Our Project",
+    "descriptionAbout": "With 70% of the world not being able to speak English, there is a huge opportunity for the gospel to spread to unreached places. We have a vision to make it easier to watch, download and share Christian videos with people in their native heart language."
   },
   "ModernTestPage": {
     "pageTitle": "Modern Test",

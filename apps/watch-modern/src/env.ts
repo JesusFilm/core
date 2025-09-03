@@ -45,6 +45,9 @@ export const env = createEnv({
    * `NEXT_PUBLIC_`.
    */
   client: {
+    NEXT_PUBLIC_ALGOLIA_APP_ID: z.string(),
+    NEXT_PUBLIC_ALGOLIA_API_KEY: z.string(),
+    NEXT_PUBLIC_ALGOLIA_INDEX: z.string(),
     NEXT_PUBLIC_CLOUDFLARE_STREAM_CUSTOMER_CODE: z.string(),
     NEXT_PUBLIC_DATADOG_APPLICATION_ID: z.string().optional(),
     NEXT_PUBLIC_DATADOG_CLIENT_TOKEN: z.string().optional(),
@@ -70,6 +73,9 @@ export const env = createEnv({
   runtimeEnv: {
     ANALYZE: process.env['ANALYZE'],
     CI: process.env['CI'],
+    NEXT_PUBLIC_ALGOLIA_APP_ID: process.env['NEXT_PUBLIC_ALGOLIA_APP_ID'],
+    NEXT_PUBLIC_ALGOLIA_API_KEY: process.env['NEXT_PUBLIC_ALGOLIA_API_KEY'],
+    NEXT_PUBLIC_ALGOLIA_INDEX: process.env['NEXT_PUBLIC_ALGOLIA_INDEX'],
     NEXT_PUBLIC_CLOUDFLARE_STREAM_CUSTOMER_CODE:
       process.env['NEXT_PUBLIC_CLOUDFLARE_STREAM_CUSTOMER_CODE'],
     NEXT_PUBLIC_DATADOG_APPLICATION_ID:

@@ -10,6 +10,6 @@ describe('SeeAllVideos', () => {
   it('renders CTA with label', () => {
     render(<SeeAllVideos />)
 
-    expect(screen.getByRole('link', { name: /see all videos/i })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /see all videos/i })).toBeInTheDocument()
   })
 })

@@ -92,3 +92,6 @@ terraform.tfstate.backup
 
 # node sea
 sea-prep.blob
+
+.cursor/rules/nx-rules.mdc
+.github/instructions/nx.instructions.md

@@ -6,12 +6,22 @@ export async function AboutSection() {
   const t = await getTranslations('RootIndexPage')
 
   return (
-    <section className="py-12">
+    <section
+      className="py-16 mt-8"
+      aria-labelledby="about-heading"
+    >
       <Container>
-        <div className="flex flex-col gap-4">
-          <div className="h-1 w-16 bg-primary" />
-          <h2 className="text-2xl font-bold tracking-tight">{t('pageTitle')}</h2>
-          <p className="max-w-3xl text-muted-foreground">{t('description')}</p>
+        <div className="flex flex-col gap-6">
+          <div className="h-1 w-20 bg-primary" aria-hidden="true" />
+          <h2
+            id="about-heading"
+            className="text-3xl font-extrabold tracking-tight md:text-4xl"
+          >
+            {t('pageTitleAbout')}
+          </h2>
+          <p className="max-w-4xl text-lg leading-relaxed text-muted-foreground md:text-xl">
+            {t('descriptionAbout')}
+          </p>
         </div>
       </Container>
     </section>

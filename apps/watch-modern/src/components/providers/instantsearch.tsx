@@ -14,5 +14,15 @@ export function InstantSearchProviders({ children }: InstantSearchProvidersProps
 
   const searchClient = algoliasearch(appId, apiKey)
 
-  return <InstantSearch searchClient={searchClient} indexName={indexName}>{children}</InstantSearch>
+  return (
+    <InstantSearch
+      searchClient={searchClient}
+      indexName={indexName}
+      future={{
+        preserveSharedStateOnUnmount: true
+      }}
+    >
+      {children}
+    </InstantSearch>
+  )
 }
