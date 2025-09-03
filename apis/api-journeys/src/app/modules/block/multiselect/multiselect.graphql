@@ -1,0 +1,9 @@
+type MultiselectBlock implements Block @shareable {
+  id: ID!
+  journeyId: ID!
+  parentBlockId: ID!
+  parentOrder: Int!
+  showSelection: Boolean!
+  selectionLimit: Int
+  showProgress: Boolean!
+}

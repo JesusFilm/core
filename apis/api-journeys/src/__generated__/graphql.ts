@@ -1455,6 +1455,27 @@ export enum MessagePlatform {
   WhatsApp = 'whatsApp'
 }
 
+export type MultiselectBlock = Block & {
+  __typename?: 'MultiselectBlock';
+  id: Scalars['ID']['output'];
+  journeyId: Scalars['ID']['output'];
+  parentBlockId: Scalars['ID']['output'];
+  parentOrder: Scalars['Int']['output'];
+  selectionLimit?: Maybe<Scalars['Int']['output']>;
+  showProgress: Scalars['Boolean']['output'];
+  showSelection: Scalars['Boolean']['output'];
+};
+
+export type MultiselectOptionBlock = Block & {
+  __typename?: 'MultiselectOptionBlock';
+  id: Scalars['ID']['output'];
+  journeyId: Scalars['ID']['output'];
+  parentBlockId: Scalars['ID']['output'];
+  parentOrder: Scalars['Int']['output'];
+  text: Scalars['String']['output'];
+  totalClicks: Scalars['Int']['output'];
+};
+
 export type Mutation = {
   __typename?: 'Mutation';
   audioPreviewCreate: AudioPreview;
