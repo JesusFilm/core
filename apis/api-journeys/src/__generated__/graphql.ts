@@ -107,6 +107,7 @@ export type BlockDuplicateIdMap = {
 
 export type BlockUpdateActionInput = {
   blockId?: InputMaybe<Scalars['String']['input']>;
+  countryCode?: InputMaybe<Scalars['String']['input']>;
   email?: InputMaybe<Scalars['String']['input']>;
   gtmEventName?: InputMaybe<Scalars['String']['input']>;
   phone?: InputMaybe<Scalars['String']['input']>;
@@ -2858,6 +2859,7 @@ export type PageInfo = {
 
 export type PhoneAction = Action & {
   __typename?: 'PhoneAction';
+  countryCode: Scalars['String']['output'];
   gtmEventName?: Maybe<Scalars['String']['output']>;
   parentBlock: Block;
   parentBlockId: Scalars['ID']['output'];
@@ -2865,6 +2867,7 @@ export type PhoneAction = Action & {
 };
 
 export type PhoneActionInput = {
+  countryCode: Scalars['String']['input'];
   gtmEventName?: InputMaybe<Scalars['String']['input']>;
   phone: Scalars['String']['input'];
 };
