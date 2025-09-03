@@ -164,6 +164,9 @@ importers:
       '@next/bundle-analyzer':
         specifier: ^13.5.6
         version: 13.5.11
+      '@next/eslint-plugin-next':
+        specifier: ^15.5.2
+        version: 15.5.2
       '@next/third-parties':
         specifier: ^15.1.7
         version: 15.4.6(next@15.2.4(@babel/core@7.28.0)(@opentelemetry/api@1.9.0)(@playwright/test@1.54.2)(babel-plugin-macros@3.1.0)(babel-plugin-react-compiler@19.1.0-rc.2)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(sass@1.85.1))(react@19.0.0)
@@ -6374,6 +6377,9 @@ packages:
 
   '@next/eslint-plugin-next@15.4.6':
     resolution: {integrity: sha512-2NOu3ln+BTcpnbIDuxx6MNq+pRrCyey4WSXGaJIyt0D2TYicHeO9QrUENNjcf673n3B1s7hsiV5xBYRCK1Q8kA==}
+
+  '@next/eslint-plugin-next@15.5.2':
+    resolution: {integrity: sha512-lkLrRVxcftuOsJNhWatf1P2hNVfh98k/omQHrCEPPriUypR6RcS13IvLdIrEvkm9AH2Nu2YpR5vLqBuy6twH3Q==}
 
   '@next/swc-darwin-arm64@14.2.24':
     resolution: {integrity: sha512-7Tdi13aojnAZGpapVU6meVSpNzgrFwZ8joDcNS8cJVNuP3zqqrLqeory9Xec5TJZR/stsGJdfwo8KeyloT3+rQ==}
@@ -29821,6 +29827,10 @@ snapshots:
   '@next/env@15.2.4': {}
 
   '@next/eslint-plugin-next@15.4.6':
+    dependencies:
+      fast-glob: 3.3.1
+
+  '@next/eslint-plugin-next@15.5.2':
     dependencies:
       fast-glob: 3.3.1
 
