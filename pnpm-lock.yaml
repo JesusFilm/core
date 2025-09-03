@@ -89,6 +89,9 @@ importers:
       '@graphql-tools/executor':
         specifier: 1.4.9
         version: 1.4.9(graphql@16.10.0)
+      '@graphql-typed-document-node/core':
+        specifier: ^3.2.0
+        version: 3.2.0(graphql@16.10.0)
       '@graphql-yoga/plugin-graphql-sse':
         specifier: ^3.13.6
         version: 3.13.6(graphql-yoga@5.15.1(graphql@16.10.0))(graphql@16.10.0)
@@ -428,6 +431,9 @@ importers:
       next-seo:
         specifier: ^6.4.0
         version: 6.6.0(next@15.2.4(@babel/core@7.28.0)(@opentelemetry/api@1.9.0)(@playwright/test@1.54.2)(babel-plugin-macros@3.1.0)(babel-plugin-react-compiler@19.1.0-rc.2)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(sass@1.85.1))(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
+      node-fetch:
+        specifier: ^2.7.0
+        version: 2.7.0(encoding@0.1.13)
       nodemailer:
         specifier: ^6.9.9
         version: 6.10.1
@@ -561,8 +567,8 @@ importers:
         specifier: ^0.12.4
         version: 0.12.5
       uuid:
-        specifier: ^11.1.0
-        version: 11.1.0
+        specifier: ^10.0.0
+        version: 10.0.0
       vercel:
         specifier: ^46.0.0
         version: 46.0.4(@swc/core@1.5.29(@swc/helpers@0.5.17))(encoding@0.1.13)(rollup@4.34.8)
@@ -20913,6 +20919,10 @@ packages:
   utils-merge@1.0.1:
     resolution: {integrity: sha512-pMZTvIkT1d+TFGvDOqodOclx0QWkkgi6Tdoa8gC8ffGAAqz9pzPTZWAybbsHHoED/ztMtkv/VoYTYyShUn81hA==}
     engines: {node: '>= 0.4.0'}
+
+  uuid@10.0.0:
+    resolution: {integrity: sha512-8XkAphELsDnEGrDxUOHB3RGvXz6TeuYSGEZBOjtTtPm2lwhGBjLgOzLHB63IUWfBpNucQjND6d3AOudO+H3RWQ==}
+    hasBin: true
 
   uuid@11.1.0:
     resolution: {integrity: sha512-0/A9rDy9P7cJ+8w1c9WD9V//9Wj15Ce2MPz8Ri6032usz+NfePxx5AcN3bN+r6ZL6jEo066/yNYB3tn4pQEx+A==}
@@ -48240,6 +48250,8 @@ snapshots:
   utility-types@3.11.0: {}
 
   utils-merge@1.0.1: {}
+
+  uuid@10.0.0: {}
 
   uuid@11.1.0: {}
 
