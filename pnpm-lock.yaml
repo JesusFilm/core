@@ -560,6 +560,9 @@ importers:
       util:
         specifier: ^0.12.4
         version: 0.12.5
+      uuid:
+        specifier: ^11.1.0
+        version: 11.1.0
       vercel:
         specifier: ^46.0.0
         version: 46.0.4(@swc/core@1.5.29(@swc/helpers@0.5.17))(encoding@0.1.13)(rollup@4.34.8)
