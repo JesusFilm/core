@@ -25,15 +25,14 @@ const LANGUAGE_MAPPINGS = new Map<string, string>([
   ['th-TH', 'th']
 ])
 
-function matchLocales(metadataLanguageTags: string[]): string | undefined {
-  const exactMatch = metadataLanguageTags.find((tag) =>
-    LANGUAGE_MAPPINGS.has(tag)
-  )
+function matchLocales(metadataLanguageTag: string): string | undefined {
+  const exactMatch = LANGUAGE_MAPPINGS.has(metadataLanguageTag)
+
   if (exactMatch) {
-    return LANGUAGE_MAPPINGS.get(exactMatch)
+    return LANGUAGE_MAPPINGS.get(metadataLanguageTag)
   }
 
-  return metadataLanguageTags.find((tag) => tag.startsWith('en-'))
+  return metadataLanguageTag.startsWith('en-') ? 'en' : undefined
 }
 
 async function fetchLanguageId(languageTag: string): Promise<string> {
@@ -64,7 +63,7 @@ export async function getLanguageIdsFromTags(
   }
 
   const metadataLanguageTag =
-    matchLocales(metadataLanguageTags) ?? metadataLanguageTags[0]
+    matchLocales(metadataLanguageTags[0]) ?? metadataLanguageTags[0]
 
   metadataLanguageId = await fetchLanguageId(metadataLanguageTag)
 
@@ -77,25 +76,14 @@ export async function getLanguageIdsFromTags(
 
 export async function getLanguageDetailsFromTags(
   metadataLanguageTags: string[]
-): Promise<{
-  metadataLanguageIds: string[]
-  metadataLanguageDetails: Array<{
-    languageId: string
-    languageName: string
-    languageTag: string
-  }>
-}> {
+): Promise<Array<{ id: string; bcp47: string | null }>> {
   if (metadataLanguageTags.length === 0) {
-    return {
-      metadataLanguageIds: [],
-      metadataLanguageDetails: []
-    }
+    return []
   }
 
-  // Get all needed languages in a single query
   const neededBcp47Tags = [
-    metadataLanguageTags[0], // primary language
-    metadataLanguageTags[1] ?? 'en' // fallback language
+    matchLocales(metadataLanguageTags[0]) ?? metadataLanguageTags[0],
+    metadataLanguageTags[1] ?? 'en'
   ].filter(Boolean)
 
   const languages = await languagesPrisma.language.findMany({
@@ -104,28 +92,8 @@ export async function getLanguageDetailsFromTags(
     },
     select: {
       id: true,
-      name: true,
       bcp47: true
     }
   })
-
-  // Create lookup maps
-  const languageById = new Map(languages.map((lang) => [lang.id, lang]))
-  const languageByBcp47 = new Map(languages.map((lang) => [lang.bcp47, lang]))
-
-  const metadataLanguageId =
-    languageByBcp47.get(metadataLanguageTags[0])?.id ?? null
-  const fallbackLanguageId =
-    languageByBcp47.get(metadataLanguageTags[1] ?? 'en')?.id ?? null
-
-  const languageIds = [metadataLanguageId, fallbackLanguageId].filter(Boolean)
-
-  return {
-    metadataLanguageIds: languageIds,
-    metadataLanguageDetails: languages.map((lang) => ({
-      languageId: lang.id,
-      languageName: lang.name,
-      languageTag: lang.bcp47
-    }))
-  }
+  return languages
 }

@@ -132,8 +132,10 @@ mediaComponents.openapi(route, async (c) => {
     c.req.query('ids')?.split(',').filter(Boolean).length === 0
       ? undefined
       : c.req.query('ids')?.split(',').filter(Boolean)
-  const metadataLanguageTags =
-    c.req.query('metadataLanguageTags')?.split(',').filter(Boolean) ?? []
+  const metadataLanguageTags = c.req
+    .query('metadataLanguageTags')
+    ?.split(',')
+    .filter(Boolean) ?? ['en']
   const apiSessionId = c.req.query('apiSessionId') ?? '6622f10d2260a8.05128925'
 
   const cacheKey = generateCacheKey([
@@ -148,13 +150,13 @@ mediaComponents.openapi(route, async (c) => {
   ])
 
   const response = await getWithStaleCache(cacheKey, async () => {
-    const { metadataLanguageIds, metadataLanguageDetails } =
+    const metadataLanguages =
       await getLanguageDetailsFromTags(metadataLanguageTags)
+    const metadataLanguageIds = metadataLanguages.map((lang) => lang.id)
 
     let videos
     let totalCount = 0
     try {
-      // Use a single Prisma transaction to reduce connection overhead
       const result = await mediaPrisma.$transaction(async (tx) => {
         const videosResult = await tx.video.findMany({
           select: {
@@ -235,9 +237,29 @@ mediaComponents.openapi(route, async (c) => {
             ...(subTypes ? { label: { in: subTypes as VideoLabel[] } } : {}),
             ...(metadataLanguageTags.length > 0
               ? {
-                  subtitles: {
-                    some: { languageId: { in: metadataLanguageIds } }
-                  }
+                  OR: [
+                    {
+                      title: {
+                        some: {
+                          languageId: { in: metadataLanguageIds }
+                        }
+                      }
+                    },
+                    {
+                      description: {
+                        some: {
+                          languageId: { in: metadataLanguageIds }
+                        }
+                      }
+                    },
+                    {
+                      studyQuestions: {
+                        some: {
+                          languageId: { in: metadataLanguageIds }
+                        }
+                      }
+                    }
+                  ]
                 }
               : {})
           }
@@ -252,9 +274,29 @@ mediaComponents.openapi(route, async (c) => {
             ...(subTypes ? { label: { in: subTypes as VideoLabel[] } } : {}),
             ...(metadataLanguageTags.length > 0
               ? {
-                  subtitles: {
-                    some: { languageId: { in: metadataLanguageIds } }
-                  }
+                  OR: [
+                    {
+                      title: {
+                        some: {
+                          languageId: { in: metadataLanguageIds }
+                        }
+                      }
+                    },
+                    {
+                      description: {
+                        some: {
+                          languageId: { in: metadataLanguageIds }
+                        }
+                      }
+                    },
+                    {
+                      studyQuestions: {
+                        some: {
+                          languageId: { in: metadataLanguageIds }
+                        }
+                      }
+                    }
+                  ]
                 }
               : {})
           }
@@ -293,8 +335,6 @@ mediaComponents.openapi(route, async (c) => {
       throw error
     }
 
-    const total = videos.length
-
     const queryObject = {
       ...c.req.query(),
       page: page.toString(),
@@ -302,7 +342,7 @@ mediaComponents.openapi(route, async (c) => {
     }
 
     const lastPage =
-      Math.ceil(total / limit) === 0 ? 1 : Math.ceil(total / limit)
+      Math.ceil(totalCount / limit) === 0 ? 1 : Math.ceil(totalCount / limit)
 
     const mediaComponents = videos.map((video) => {
       const hdImage = video.images.find((img) => img.aspectRatio === 'hd')
@@ -315,6 +355,27 @@ mediaComponents.openapi(route, async (c) => {
         video.label === 'collection' || video.label === 'series'
           ? false
           : (variant?.downloadable ?? false)
+
+      const getPreferredContent = (
+        contentArray: Array<{ value: string; languageId: string }>
+      ) => {
+        if (!contentArray || contentArray.length === 0) return ''
+
+        const firstRequestedLanguage = metadataLanguages[0]
+        if (firstRequestedLanguage) {
+          const firstLanguageContent = contentArray.find(
+            (item) => item.languageId === firstRequestedLanguage.id
+          )
+          if (firstLanguageContent) {
+            return firstLanguageContent.value
+          }
+        }
+        const availableContent = contentArray.find((item) =>
+          metadataLanguages.some((lang) => lang.id === item.languageId)
+        )
+        return availableContent?.value ?? ''
+      }
+
       return {
         mediaComponentId: video.id,
         componentType: variant?.hls != null ? 'content' : 'container',
@@ -356,17 +417,21 @@ mediaComponents.openapi(route, async (c) => {
           verseEnd: citation.verseEnd === -1 ? null : citation.verseEnd
         })),
         primaryLanguageId: Number(video.primaryLanguageId),
-        title: video.title[0]?.value ?? '',
-        shortDescription: video.snippet[0]?.value ?? '',
-        longDescription: video.description[0]?.value ?? '',
+        title: getPreferredContent(video.title),
+        shortDescription: getPreferredContent(video.snippet),
+        longDescription: getPreferredContent(video.description),
         studyQuestions:
           video.studyQuestions.length > 0
-            ? video.studyQuestions.map((question) => question.value)
+            ? video.studyQuestions
+                .filter((item) =>
+                  metadataLanguages.some((lang) => lang.id === item.languageId)
+                )
+                .map((item) => item.value)
             : [],
         metadataLanguageTag:
-          metadataLanguageDetails.find(
-            (detail) => detail.languageId === video.title[0]?.languageId
-          )?.languageTag ?? 'en',
+          metadataLanguages.find(
+            (lang) => lang.id === video.title[0]?.languageId
+          )?.bcp47 ?? 'en',
         ...(expand.includes('languageIds')
           ? {
               languageIds: video.availableLanguages.map((languageId) =>
