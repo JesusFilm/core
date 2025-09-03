@@ -5,9 +5,8 @@ import { User } from '@core/prisma/users/client'
 import { auth } from '@core/yoga/firebaseClient'
 
 import { prismaMock } from '../../../test/prismaMock'
-import { Context } from '../builder'
 
-import { findOrFetchUser } from './findOrFetchUser'
+import { CtxCurrentUser, findOrFetchUser } from './findOrFetchUser'
 import { user } from './user.mock'
 import { verifyUser } from './verifyUser'
 
@@ -28,14 +27,13 @@ jest.mock('@core/yoga/firebaseClient', () => ({
 jest.mock('./verifyUser', () => ({
   verifyUser: jest.fn()
 }))
-const mockContext: Extract<Context, { type: 'authenticated' }> = {
-  type: 'authenticated',
-  currentUser: {
-    id: 'userId',
-    email: 'amin@email.com',
-    firstName: 'Amin',
-    emailVerified: false
-  }
+const mockCtxCurrentUser: CtxCurrentUser = {
+  id: 'userId',
+  email: 'amin@email.com',
+  firstName: 'Amin',
+  lastName: 'One',
+  imageUrl: 'https://bit.ly/3Gth4',
+  emailVerified: false
 }
 
 describe('findOrFetchUser', () => {
@@ -45,7 +43,12 @@ describe('findOrFetchUser', () => {
 
   it('should find existing user', async () => {
     prismaMock.user.findUnique.mockResolvedValueOnce(user)
-    const data = await findOrFetchUser({}, 'userId', undefined, mockContext)
+    const data = await findOrFetchUser(
+      {},
+      'userId',
+      undefined,
+      mockCtxCurrentUser
+    )
     expect(data).toEqual(user)
     expect(prismaMock.user.findUnique).toHaveBeenCalledWith({
       where: { userId: 'userId' }
@@ -58,7 +61,12 @@ describe('findOrFetchUser', () => {
       emailVerified: null
     } as unknown as typeof user)
     prismaMock.user.update.mockResolvedValueOnce(user)
-    const data = await findOrFetchUser({}, 'userId', undefined, mockContext)
+    const data = await findOrFetchUser(
+      {},
+      'userId',
+      undefined,
+      mockCtxCurrentUser
+    )
     expect(data).toEqual(user)
     expect(prismaMock.user.update).toHaveBeenCalledWith({
       where: { id: 'userId' },
@@ -69,7 +77,12 @@ describe('findOrFetchUser', () => {
   it('should create new user', async () => {
     prismaMock.user.findUnique.mockResolvedValueOnce(null)
     prismaMock.user.create.mockResolvedValueOnce(user)
-    const data = await findOrFetchUser({}, 'userId', undefined, mockContext)
+    const data = await findOrFetchUser(
+      {},
+      'userId',
+      undefined,
+      mockCtxCurrentUser
+    )
     expect(data).toEqual(user)
     expect(prismaMock.user.create).toHaveBeenCalledWith({
       data: {
@@ -96,7 +109,12 @@ describe('findOrFetchUser', () => {
 
     prismaMock.user.findUnique.mockResolvedValueOnce(userWithoutEmail)
     prismaMock.user.update.mockResolvedValueOnce(user)
-    const data = await findOrFetchUser({}, 'userId', undefined, mockContext)
+    const data = await findOrFetchUser(
+      {},
+      'userId',
+      undefined,
+      mockCtxCurrentUser
+    )
     expect(data).toEqual(user)
     expect(verifyUser).toHaveBeenCalledWith(
       'userId',
@@ -112,11 +130,8 @@ describe('findOrFetchUser', () => {
     ) as unknown as User
 
     const contextWithoutEmail = {
-      ...mockContext,
-      currentUser: {
-        ...mockContext.currentUser,
-        email: null
-      }
+      ...mockCtxCurrentUser,
+      email: null
     }
 
     prismaMock.user.findUnique.mockResolvedValueOnce(userWithoutEmail)
@@ -150,9 +165,7 @@ describe('findOrFetchUser', () => {
       'emailVerified'
     ) as unknown as User
 
-    const mockPublicContext: Extract<Context, { type: 'public' }> = {
-      type: 'public'
-    }
+    const mockPublicContext = undefined
 
     prismaMock.user.findUnique.mockResolvedValueOnce(null)
     prismaMock.user.create.mockResolvedValueOnce(userWithoutEmail)

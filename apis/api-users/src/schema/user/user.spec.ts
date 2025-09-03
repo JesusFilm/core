@@ -88,8 +88,12 @@ describe('api-users', () => {
         'testUserId',
         undefined,
         expect.objectContaining({
-          type: 'authenticated',
-          currentUser: expect.any(Object)
+          id: 'testUserId',
+          firstName: 'Test',
+          lastName: 'User',
+          email: 'test@example.com',
+          emailVerified: true,
+          imageUrl: null
         })
       )
       expect(data).toHaveProperty(

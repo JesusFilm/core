@@ -61,7 +61,7 @@ builder.queryFields((t) => ({
         query,
         ctx.currentUser.id,
         input?.redirect ?? undefined,
-        ctx
+        ctx?.currentUser
       )
     }
   }),
