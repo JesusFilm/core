@@ -154,109 +154,117 @@ mediaComponents.openapi(route, async (c) => {
     let videos
     let totalCount = 0
     try {
-      videos = await mediaPrisma.video.findMany({
-        select: {
-          id: true,
-          label: true,
-          primaryLanguageId: true,
-          images: true,
-          title: {
-            select: {
-              value: true,
-              languageId: true
-            },
-            where: {
-              languageId: { in: metadataLanguageIds }
-            }
-          },
-          description: {
-            select: {
-              value: true,
-              languageId: true
-            },
-            where: {
-              languageId: { in: metadataLanguageIds }
-            }
-          },
-          snippet: {
-            select: {
-              value: true,
-              languageId: true
-            },
-            where: {
-              languageId: { in: metadataLanguageIds }
-            }
-          },
-          studyQuestions: {
-            select: {
-              value: true,
-              languageId: true
-            },
-            where: {
-              languageId: { in: metadataLanguageIds }
-            }
-          },
-          bibleCitation: {
-            select: {
-              osisId: true,
-              chapterStart: true,
-              verseStart: true,
-              chapterEnd: true,
-              verseEnd: true
-            }
-          },
-          children: true,
-          availableLanguages: true,
-          variants: {
-            select: {
-              hls: true,
-              lengthInMilliseconds: true,
-              languageId: true,
-              downloadable: true,
-              downloads: {
-                select: {
-                  quality: true,
-                  size: true
-                }
+      // Use a single Prisma transaction to reduce connection overhead
+      const result = await mediaPrisma.$transaction(async (tx) => {
+        const videosResult = await tx.video.findMany({
+          select: {
+            id: true,
+            label: true,
+            primaryLanguageId: true,
+            images: true,
+            title: {
+              select: {
+                value: true,
+                languageId: true
+              },
+              where: {
+                languageId: { in: metadataLanguageIds }
               }
             },
-            take: 1
+            description: {
+              select: {
+                value: true,
+                languageId: true
+              },
+              where: {
+                languageId: { in: metadataLanguageIds }
+              }
+            },
+            snippet: {
+              select: {
+                value: true,
+                languageId: true
+              },
+              where: {
+                languageId: { in: metadataLanguageIds }
+              }
+            },
+            studyQuestions: {
+              select: {
+                value: true,
+                languageId: true
+              },
+              where: {
+                languageId: { in: metadataLanguageIds }
+              }
+            },
+            bibleCitation: {
+              select: {
+                osisId: true,
+                chapterStart: true,
+                verseStart: true,
+                chapterEnd: true,
+                verseEnd: true
+              }
+            },
+            children: true,
+            availableLanguages: true,
+            variants: {
+              select: {
+                hls: true,
+                lengthInMilliseconds: true,
+                languageId: true,
+                downloadable: true,
+                downloads: {
+                  select: {
+                    quality: true,
+                    size: true
+                  }
+                }
+              },
+              take: 1
+            }
+          },
+          skip: offset,
+          take: limit,
+          where: {
+            ...(ids ? { id: { in: ids } } : {}),
+            ...(languageIds
+              ? { availableLanguages: { hasSome: languageIds } }
+              : {}),
+            ...(subTypes ? { label: { in: subTypes as VideoLabel[] } } : {}),
+            ...(metadataLanguageTags.length > 0
+              ? {
+                  subtitles: {
+                    some: { languageId: { in: metadataLanguageIds } }
+                  }
+                }
+              : {})
           }
-        },
-        skip: offset,
-        take: limit,
-        where: {
-          ...(ids ? { id: { in: ids } } : {}),
-          ...(languageIds
-            ? { availableLanguages: { hasSome: languageIds } }
-            : {}),
-          ...(subTypes ? { label: { in: subTypes as VideoLabel[] } } : {}),
-          ...(metadataLanguageTags.length > 0
-            ? {
-                subtitles: {
-                  some: { languageId: { in: metadataLanguageIds } }
+        })
+
+        const totalCountResult = await tx.video.count({
+          where: {
+            ...(ids ? { id: { in: ids } } : {}),
+            ...(languageIds
+              ? { availableLanguages: { hasSome: languageIds } }
+              : {}),
+            ...(subTypes ? { label: { in: subTypes as VideoLabel[] } } : {}),
+            ...(metadataLanguageTags.length > 0
+              ? {
+                  subtitles: {
+                    some: { languageId: { in: metadataLanguageIds } }
+                  }
                 }
-              }
-            : {})
-        }
+              : {})
+          }
+        })
+
+        return { videos: videosResult, totalCount: totalCountResult }
       })
 
-      totalCount = await mediaPrisma.video.count({
-        where: {
-          ...(ids ? { id: { in: ids } } : {}),
-          ...(languageIds
-            ? { availableLanguages: { hasSome: languageIds } }
-            : {}),
-          ...(subTypes ? { label: { in: subTypes as VideoLabel[] } } : {}),
-          ...(metadataLanguageTags.length > 0
-            ? {
-                subtitles: {
-                  some: { languageId: { in: metadataLanguageIds } }
-                }
-              }
-            : {})
-        }
-      })
+      videos = result.videos
+      totalCount = result.totalCount
     } catch (error) {
       if (error instanceof Error && error.message.includes('not found')) {
         return {

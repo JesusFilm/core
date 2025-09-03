@@ -92,21 +92,15 @@ export async function getLanguageDetailsFromTags(
     }
   }
 
-  const metadataLanguageTag = metadataLanguageTags[0]
-  const metadataLanguage = await languagesPrisma.language.findFirst({
-    where: { bcp47: metadataLanguageTag }
-  })
-  const metadataLanguageId = metadataLanguage?.id ?? null
+  // Get all needed languages in a single query
+  const neededBcp47Tags = [
+    metadataLanguageTags[0], // primary language
+    metadataLanguageTags[1] ?? 'en' // fallback language
+  ].filter(Boolean)
 
-  const fallbackLanguage = await languagesPrisma.language.findFirst({
-    where: { bcp47: metadataLanguageTags[1] ?? 'en' }
-  })
-  const fallbackLanguageId = fallbackLanguage?.id ?? null
-
-  const languageIds = [metadataLanguageId, fallbackLanguageId].filter(Boolean)
-  const languageDetails = await languagesPrisma.language.findMany({
+  const languages = await languagesPrisma.language.findMany({
     where: {
-      id: { in: languageIds }
+      bcp47: { in: neededBcp47Tags }
     },
     select: {
       id: true,
@@ -115,9 +109,20 @@ export async function getLanguageDetailsFromTags(
     }
   })
 
+  // Create lookup maps
+  const languageById = new Map(languages.map((lang) => [lang.id, lang]))
+  const languageByBcp47 = new Map(languages.map((lang) => [lang.bcp47, lang]))
+
+  const metadataLanguageId =
+    languageByBcp47.get(metadataLanguageTags[0])?.id ?? null
+  const fallbackLanguageId =
+    languageByBcp47.get(metadataLanguageTags[1] ?? 'en')?.id ?? null
+
+  const languageIds = [metadataLanguageId, fallbackLanguageId].filter(Boolean)
+
   return {
     metadataLanguageIds: languageIds,
-    metadataLanguageDetails: languageDetails.map((lang) => ({
+    metadataLanguageDetails: languages.map((lang) => ({
       languageId: lang.id,
       languageName: lang.name,
       languageTag: lang.bcp47
