@@ -88,12 +88,15 @@ export function SubtitlesSelect({
         >
           {t('Subtitles')}
         </label>
-        <span
-          className="text-sm text-gray-400"
-          data-testid="SubtitlesSelectNativeName"
-        >
-          {selectedOption?.nativeName?.value}
-        </span>
+        {selectedOption?.nativeName &&
+          selectedOption?.nativeName.value !== selectedOption?.displayName && (
+            <span
+              className="text-sm text-gray-400"
+              data-testid="SubtitlesSelectNativeName"
+            >
+              {selectedOption?.nativeName.value}
+            </span>
+          )}
       </div>
       <div className="relative mt-1 flex items-start gap-2">
         <div className="pt-4">

@@ -8,6 +8,7 @@ import { ReactElement, useMemo, useState } from 'react'
 import { useLanguages } from '../../../libs/useLanguages'
 import { useWatch } from '../../../libs/watchContext'
 import { Select, SelectTrigger, SelectValue } from '../../Select'
+import { useVideo } from '../../../libs/videoContext'
 
 const DynamicAudioLanguageSelectContent = dynamic(
   async () =>
@@ -21,18 +22,19 @@ export function AudioLanguageSelect(): ReactElement {
   const { t } = useTranslation('apps-watch')
 
   const {
-    state: { audioLanguageId, videoAudioLanguageIds }
+    state: { videoAudioLanguageIds }
   } = useWatch()
   const [open, setOpen] = useState<boolean | null>(null)
   const { languages } = useLanguages()
+  const { variant } = useVideo()
   const language = useMemo(
-    () => languages.find(({ id }) => id === audioLanguageId),
-    [languages, audioLanguageId]
+    () => languages.find(({ id }) => id === variant?.language?.id),
+    [languages, variant]
   )
 
   return (
     <Select
-      value={audioLanguageId}
+      value={language?.id}
       data-testid="AudioLanguageSelect"
       onOpenChange={(open) => {
         setOpen(open)

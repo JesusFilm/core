@@ -259,6 +259,34 @@ describe('useLanguages', () => {
       expect(frenchLanguage?.displayName).toBe('Français')
     })
 
+    it('should use native name before english name when current language name is not available', async () => {
+      const mockData = [['496:french:Français', '529:French']]
+
+      server.use(
+        http.get('/api/languages', () => {
+          return HttpResponse.json(mockData)
+        })
+      )
+
+      const wrapper = await createI18nWrapper('es')
+      const { result } = renderHook(() => useLanguages(), { wrapper })
+
+      await waitFor(() => {
+        expect(result.current.languages).toHaveLength(1)
+      })
+
+      const frenchLanguage = result.current.languages.find(
+        (lang) => lang.id === '496'
+      )
+      expect(frenchLanguage?.name).toBeUndefined()
+      expect(frenchLanguage?.nativeName).toEqual({
+        id: '496',
+        primary: true,
+        value: 'Français'
+      })
+      expect(frenchLanguage?.displayName).toBe('Français')
+    })
+
     it('should use English name as fallback', async () => {
       const mockData = [['496:french:Français', '529:French', '21028:Francés']]
 

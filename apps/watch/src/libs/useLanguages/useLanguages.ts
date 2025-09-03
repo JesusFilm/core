@@ -84,7 +84,7 @@ export function useLanguages(): { languages: Language[]; isLoading: boolean } {
         englishName,
         nativeName,
         displayName:
-          name?.value ?? englishName?.value ?? nativeName?.value ?? id
+          name?.value ?? nativeName?.value ?? englishName?.value ?? id
       }
     })
     setLanguages(

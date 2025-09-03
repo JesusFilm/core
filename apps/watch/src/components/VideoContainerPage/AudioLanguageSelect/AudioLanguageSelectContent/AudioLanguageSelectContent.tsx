@@ -4,6 +4,7 @@ import { Language, useLanguages } from '../../../../libs/useLanguages'
 import { useVideo } from '../../../../libs/videoContext'
 import { useWatch } from '../../../../libs/watchContext'
 import { SelectContent } from '../../../Select'
+import NextLink from 'next/link'
 
 export function AudioLanguageSelectContent() {
   const { variant } = useVideo()
@@ -18,13 +19,13 @@ export function AudioLanguageSelectContent() {
   )
 
   return (
-    <SelectContent className="bg-white border border-gray-200 shadow-lg">
+    <SelectContent className="bg-white border border-gray-200 shadow-lg z-[9999]">
       {filteredLanguages?.map((option: Language) => (
-        <a
+        <NextLink
           key={option.id}
           href={`/watch${
             variant?.slug != null ? `/${variant.slug.split('/')[0]}.html/` : '/'
-          }${option.slug}.html`}
+          }${option.slug}.html?r=0`}
           className={`
             block
             hover:bg-gray-100
@@ -39,23 +40,24 @@ export function AudioLanguageSelectContent() {
           role="option"
           aria-label={option.displayName}
         >
-          <div className="flex items-center gap-1">
+          <div className="flex items-center gap-1 justify-between w-full">
             <span
               className="text-sm text-black font-sans"
               data-testid="AudioLanguageSelectDisplayLanguageName"
             >
               {option.displayName}
             </span>
-            {option.nativeName?.value && (
-              <span
-                className="text-xs text-gray-600 font-sans"
-                data-testid="AudioLanguageSelectNativeLanguageName"
-              >
-                ({option.nativeName?.value})
-              </span>
-            )}
+            {option.nativeName &&
+              option.nativeName.value !== option.displayName && (
+                <span
+                  className="text-xs text-gray-600 font-sans"
+                  data-testid="AudioLanguageSelectNativeLanguageName"
+                >
+                  {option.nativeName.value}
+                </span>
+              )}
           </div>
-        </a>
+        </NextLink>
       ))}
     </SelectContent>
   )

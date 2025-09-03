@@ -97,7 +97,6 @@ describe('AudioLanguageSelect', () => {
         <VideoProvider value={defaultProps}>
           <WatchProvider
             initialState={{
-              audioLanguageId: '529',
               videoAudioLanguageIds: ['529', '496']
             }}
           >
@@ -115,7 +114,7 @@ describe('AudioLanguageSelect', () => {
     await userEvent.click(screen.getByTestId('AudioLanguageSelectTrigger'))
     await waitFor(() => {
       expect(screen.getByRole('option', { name: 'French' })).toHaveTextContent(
-        'French(Français)'
+        'FrenchFrançais'
       )
     })
   })

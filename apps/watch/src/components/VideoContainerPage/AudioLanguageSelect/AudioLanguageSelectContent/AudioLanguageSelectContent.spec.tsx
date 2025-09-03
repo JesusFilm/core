@@ -1,5 +1,5 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { render, screen, waitFor } from '@testing-library/react'
+import { render, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 
 import { useLanguages } from '../../../../libs/useLanguages'
@@ -79,7 +79,12 @@ describe('AudioLanguageSelectContent', () => {
     useLanguagesMock.mockReturnValue({
       isLoading: false,
       languages: [
-        { id: '529', slug: 'english', displayName: 'English' },
+        {
+          id: '529',
+          slug: 'english',
+          displayName: 'English',
+          nativeName: { id: '529', value: 'English', primary: true }
+        },
         {
           id: '496',
           slug: 'french',
@@ -119,12 +124,36 @@ describe('AudioLanguageSelectContent', () => {
 
     await waitFor(() => {
       const [english, french, spanish] = screen.getAllByRole('option')
-      expect(english).toHaveAttribute('href', '/watch/jesus.html/english.html')
-      expect(english).toHaveTextContent('English')
-      expect(french).toHaveAttribute('href', '/watch/jesus.html/french.html')
-      expect(french).toHaveTextContent('French(Français)')
-      expect(spanish).toHaveAttribute('href', '/watch/jesus.html/spanish.html')
-      expect(spanish).toHaveTextContent('Spanish(Español)')
+      expect(english).toHaveAttribute(
+        'href',
+        '/watch/jesus.html/english.html?r=0'
+      )
+      expect(
+        within(english).queryByTestId('AudioLanguageSelectNativeLanguageName')
+      ).not.toBeInTheDocument()
+      expect(
+        within(english).getByTestId('AudioLanguageSelectDisplayLanguageName')
+      ).toHaveTextContent('English')
+      expect(french).toHaveAttribute(
+        'href',
+        '/watch/jesus.html/french.html?r=0'
+      )
+      expect(
+        within(french).getByTestId('AudioLanguageSelectNativeLanguageName')
+      ).toHaveTextContent('Français')
+      expect(
+        within(french).getByTestId('AudioLanguageSelectDisplayLanguageName')
+      ).toHaveTextContent('French')
+      expect(spanish).toHaveAttribute(
+        'href',
+        '/watch/jesus.html/spanish.html?r=0'
+      )
+      expect(
+        within(spanish).getByTestId('AudioLanguageSelectNativeLanguageName')
+      ).toHaveTextContent('Español')
+      expect(
+        within(spanish).getByTestId('AudioLanguageSelectDisplayLanguageName')
+      ).toHaveTextContent('Spanish')
     })
   })
 })

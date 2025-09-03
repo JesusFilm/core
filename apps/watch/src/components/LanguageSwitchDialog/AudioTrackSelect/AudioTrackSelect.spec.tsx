@@ -57,7 +57,8 @@ describe('AudioTrackSelect', () => {
           slug: 'english',
           displayName: 'English',
           name: { id: '529', value: 'English', primary: true },
-          englishName: { id: '529', value: 'English', primary: true }
+          englishName: { id: '529', value: 'English', primary: true },
+          nativeName: { id: '529', value: 'English', primary: true }
         },
         french,
         {
@@ -164,6 +165,44 @@ describe('AudioTrackSelect', () => {
           )
         ).toBeInTheDocument()
       })
+    })
+  })
+
+  describe('native name', () => {
+    it('should display native name when audioLanguageId matches a language', async () => {
+      render(
+        <MockedProvider mocks={[]} addTypename={false}>
+          <WatchProvider>
+            <AudioTrackSelect audioLanguageId="496" />
+          </WatchProvider>
+        </MockedProvider>
+      )
+
+      await waitFor(() => {
+        expect(screen.getByRole('combobox')).toHaveValue('French')
+      })
+
+      expect(
+        screen.getByTestId('AudioTrackSelectNativeName')
+      ).toHaveTextContent('Français')
+    })
+
+    it('should not display native name when it matches the display name', async () => {
+      render(
+        <MockedProvider mocks={[]} addTypename={false}>
+          <WatchProvider>
+            <AudioTrackSelect audioLanguageId="529" />
+          </WatchProvider>
+        </MockedProvider>
+      )
+
+      await waitFor(() => {
+        expect(screen.getByRole('combobox')).toHaveValue('English')
+      })
+
+      expect(
+        screen.queryByTestId('AudioTrackSelectNativeName')
+      ).not.toBeInTheDocument()
     })
   })
 
