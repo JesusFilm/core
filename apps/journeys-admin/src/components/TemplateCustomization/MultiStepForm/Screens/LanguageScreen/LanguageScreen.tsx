@@ -37,7 +37,7 @@ export function LanguageScreen({
 
   const { journey } = useJourney()
   const isSignedIn = user?.email != null
-  const { query } = useTeam()
+  const { query, activeTeam } = useTeam()
   const [teamCreate] = useTeamCreateMutation()
   const [getMe] = useLazyQuery<GetMe>(GET_ME)
 
@@ -46,10 +46,14 @@ export function LanguageScreen({
   })
 
   const initialValues = {
-    teamSelect: query?.data?.getJourneyProfile?.lastActiveTeamId ?? ''
+    teamSelect:
+      query?.data?.getJourneyProfile?.lastActiveTeamId ??
+      query?.data?.teams[0]?.id ??
+      ''
   }
 
   const [journeyDuplicate] = useJourneyDuplicateMutation()
+  const hasTeams = query?.data?.teams?.length ?? 0 > 0
 
   async function handleSignedInSubmit(values: FormikValues) {
     setLoading(true)
@@ -85,34 +89,66 @@ export function LanguageScreen({
     }
   }
 
-  async function handleSignedOutSubmit() {
+  async function handleSignedOutSubmit(values?: FormikValues) {
     setLoading(true)
     if (journey == null) {
       setLoading(false)
       return
     }
     await getMe()
-    const { data: teamCreateData } = await teamCreate({
-      variables: {
-        input: {
-          title: 'My Team'
+    if (values?.teamSelect == null) {
+      const { data: teamCreateData } = await teamCreate({
+        variables: {
+          input: {
+            title: 'My Team'
+          }
         }
+      })
+      if (teamCreateData?.teamCreate == null) {
+        enqueueSnackbar(
+          t('Failed to create team, please refresh the page and try again'),
+          {
+            variant: 'error'
+          }
+        )
+        setLoading(false)
+        return
       }
-    })
-    if (teamCreateData?.teamCreate == null) {
-      enqueueSnackbar(
-        t('Failed to create team, please refresh the page and try again'),
-        {
-          variant: 'error'
-        }
-      )
-      setLoading(false)
-      return
+
+      const { data: duplicateData } = await journeyDuplicate({
+        variables: { id: journey.id, teamId: teamCreateData.teamCreate.id }
+      })
+      if (duplicateData?.journeyDuplicate == null) {
+        enqueueSnackbar(
+          t(
+            'Failed to duplicate journey to team, please refresh the page and try again'
+          ),
+          {
+            variant: 'error'
+          }
+        )
+        setLoading(false)
+
+        return
+      }
+    } else {
+      const { data: duplicateData } = await journeyDuplicate({
+        variables: { id: journey.id, teamId: values.teamSelect }
+      })
+      if (duplicateData?.journeyDuplicate == null) {
+        enqueueSnackbar(
+          t(
+            'Failed to duplicate journey to team, please refresh the page and try again'
+          ),
+          {
+            variant: 'error'
+          }
+        )
+        setLoading(false)
+        return
+      }
     }
 
-    const { data: duplicateData } = await journeyDuplicate({
-      variables: { id: journey.id, teamId: teamCreateData.teamCreate.id }
-    })
     handleNext()
     setLoading(false)
   }
@@ -129,12 +165,42 @@ export function LanguageScreen({
           {t('Select a team')}
         </Typography>
       )}
-      {isSignedIn && (
+      {isSignedIn && hasTeams && (
         <Formik
           initialValues={initialValues}
           validationSchema={validationSchema}
           enableReinitialize
           onSubmit={handleSignedInSubmit}
+        >
+          {({ handleSubmit }) => (
+            <Form>
+              <FormControl sx={{ alignSelf: 'center' }}>
+                <JourneyCustomizeTeamSelect />
+                <Button
+                  data-testid="LanguageScreenSubmitButton"
+                  disabled={loading}
+                  variant="contained"
+                  color="secondary"
+                  onClick={() => handleSubmit()}
+                  sx={{
+                    width: { xs: '100%', sm: 300 },
+                    alignSelf: 'center',
+                    mt: 4
+                  }}
+                >
+                  <ArrowRightIcon />
+                </Button>
+              </FormControl>
+            </Form>
+          )}
+        </Formik>
+      )}
+      {!isSignedIn && hasTeams && (
+        <Formik
+          initialValues={initialValues}
+          validationSchema={validationSchema}
+          enableReinitialize
+          onSubmit={handleSignedOutSubmit}
         >
           {({ handleSubmit }) => (
             <Form>

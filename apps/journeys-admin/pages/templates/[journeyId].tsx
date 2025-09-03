@@ -61,7 +61,7 @@ function TemplateDetailsPage(): ReactElement {
           user={user}
           backHref="/templates"
           mainBodyPadding={false}
-          showMainHeader={userSignedIn || !isAnonymous}
+          showMainHeader={userSignedIn && !isAnonymous}
           mainHeaderChildren={
             <Stack
               direction="row"
