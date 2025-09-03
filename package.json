@@ -195,7 +195,7 @@
     "react-simple-timefield": "^3.3.1",
     "react-swipeable": "^7.0.1",
     "react-use-downloader": "^1.2.10",
-    "react-window": "^1.8.10",
+    "react-window": "^2.0.0",
     "reactflow": "^11.11.4",
     "reflect-metadata": "^0.1.13",
     "rtl-detect": "^1.1.2",
