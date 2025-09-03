@@ -4,7 +4,7 @@ import Button from '@mui/material/Button'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next'
-import { ReactElement, useCallback, useState } from 'react'
+import { ReactElement, useCallback, useEffect, useState } from 'react'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import ArrowRightIcon from '@core/shared/ui/icons/ArrowRight'
@@ -92,16 +92,16 @@ const renderEditableText = (
             const parent = e.currentTarget.parentElement
             const editables =
               parent != null
-                ? (Array.from(
+                ? Array.from(
                     parent.querySelectorAll('[contenteditable="true"]')
-                  ))
+                  )
                 : []
             const index = editables.indexOf(e.currentTarget as HTMLElement)
             const nextIndex = e.shiftKey ? index - 1 : index + 1
             const nextEl = editables[nextIndex]
             if (nextEl != null) {
               e.preventDefault()
-              nextEl.focus()
+              ;(nextEl as HTMLElement).focus()
             }
           }
         }}
@@ -138,11 +138,32 @@ export function TextScreen({ handleNext }: TextScreenProps): ReactElement {
     JourneyCustomizationField[]
   >(journey?.journeyCustomizationFields ?? [])
 
-  const handleValueChange = useCallback((key: string, value: string) => {
-    setReplacementItems((prev) =>
-      prev.map((item) => (item.key === key ? { ...item, value } : item))
-    )
-  }, [])
+  useEffect(() => {
+    if (journey?.journeyCustomizationFields != null) {
+      setReplacementItems(journey.journeyCustomizationFields)
+    }
+  }, [journey?.journeyCustomizationFields])
+
+  const handleValueChange = useCallback(
+    (key: string, value: string) => {
+      setReplacementItems((prev) =>
+        prev.map((item) => {
+          if (item.key !== key) return item
+
+          if (value.trim() === '') {
+            // Find value of original key-value pair to revert token to original value
+            const originalItem = journey?.journeyCustomizationFields?.find(
+              (o) => o.key === key
+            )
+            if (originalItem) return { ...item, value: originalItem.value }
+          }
+
+          return { ...item, value }
+        })
+      )
+    },
+    [journey?.journeyCustomizationFields]
+  )
 
   async function handleSubmit(): Promise<void> {
     if (!journey) return
