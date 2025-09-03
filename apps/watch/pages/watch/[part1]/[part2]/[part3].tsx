@@ -3,9 +3,7 @@ import { GetStaticPaths, GetStaticProps } from 'next'
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
 import { SnackbarProvider } from 'notistack'
 import { ReactElement } from 'react'
-import { InstantSearch } from 'react-instantsearch'
 
-import { useInstantSearchClient } from '@core/journeys/ui/algolia/InstantSearchProvider'
 import { graphql } from '@core/shared/gql'
 
 import {
@@ -77,8 +75,6 @@ export default function Part3Page({
   videoAudioLanguageIds
 }: Part3PageProps): ReactElement {
   const audioLanguageId = content.variant?.language.id ?? '529'
-  const searchClient = useInstantSearchClient()
-  const indexName = process.env.NEXT_PUBLIC_ALGOLIA_INDEX ?? ''
 
   const initialWatchState: WatchState = {
     audioLanguageId: getCookie('AUDIO_LANGUAGE') ?? audioLanguageId,
@@ -89,17 +85,15 @@ export default function Part3Page({
   }
 
   return (
-    <InstantSearch searchClient={searchClient} indexName={indexName} insights>
-      <SnackbarProvider>
-        <WatchProvider initialState={initialWatchState}>
-          <PlayerProvider>
-            <VideoProvider value={{ content, container }}>
-              <NewVideoContentPage />
-            </VideoProvider>
-          </PlayerProvider>
-        </WatchProvider>
-      </SnackbarProvider>
-    </InstantSearch>
+    <SnackbarProvider>
+      <WatchProvider initialState={initialWatchState}>
+        <PlayerProvider>
+          <VideoProvider value={{ content, container }}>
+            <NewVideoContentPage />
+          </VideoProvider>
+        </PlayerProvider>
+      </WatchProvider>
+    </SnackbarProvider>
   )
 }
 
