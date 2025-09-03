@@ -163,23 +163,22 @@ jobs:
         test-suite: ${{ fromJSON(format('["{0}"]', inputs.TargetTests)) }}
     steps:
       - uses: actions/checkout@v4
-      - uses: useblacksmith/setup-node@v5
-        with:
-          node-version: 22
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
-      - name: Cache pnpm store
-        uses: useblacksmith/stickydisk@v1
         with:
-          key: ${{ github.repository }}-pnpm-store-${{ matrix.test-suite }}
-          path: ~/.pnpm-store
+          run_install: false
+      - uses: useblacksmith/setup-node@v5
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --silent
       - name: Mount playwright cache
         uses: useblacksmith/stickydisk@v1
         with:
           key: ${{ github.repository }}-playwright-cache-${{ matrix.test-suite }}
           path: ~/.cache/ms-playwright
-      - name: Install dependencies
-        run: pnpm install --silent
       - name: Install Playwright Browsers
         run: pnpm exec playwright install --with-deps
       - name: Set deployment URL for single test run

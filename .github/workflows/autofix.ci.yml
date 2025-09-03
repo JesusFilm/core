@@ -22,23 +22,21 @@ jobs:
       - name: Fetch other branches
         if: ${{ github.event_name == 'pull_request' }}
         run: git fetch --no-tags --prune --depth=5 origin $GITHUB_BASE_REF
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          run_install: false
       - uses: useblacksmith/setup-node@v5
         with:
           node-version: ${{ matrix.node-version }}
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
-      - name: Cache pnpm store
-        uses: useblacksmith/stickydisk@v1
-        with:
-          key: ${{ github.repository }}-pnpm-store
-          path: ~/.pnpm-store
+          cache: 'pnpm'
+      - name: Install dependencies
+        run: pnpm install --silent
       - name: Mount lint cache
         uses: useblacksmith/stickydisk@v1
         with:
           key: ${{ github.repository }}-lint
           path: ./.cache
-      - name: Install dependencies
-        run: pnpm install --silent
       - name: generate prisma imports
         uses: mansagroup/nrwl-nx-action@v3
         with:
