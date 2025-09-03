@@ -9,42 +9,31 @@ on:
     branches: [main]
 jobs:
   lint:
-    runs-on: blacksmith-2vcpu-ubuntu-2204
+    permissions:
+      contents: write
+    runs-on: ubuntu-latest
     strategy:
       matrix:
         node-version: [22]
     env:
       NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
+      NPM_CONFIG_FAST: true
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
+      - name: Start NX Agent run
+        run: npx nx-cloud start-ci-run --distribute-on="3 linux-medium-js" --stop-agents-after="subgraph-check"
       - name: Fetch other branches
         if: ${{ github.event_name == 'pull_request' }}
         run: git fetch --no-tags --prune --depth=5 origin $GITHUB_BASE_REF
-      - uses: useblacksmith/setup-node@v5
+      - uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
-      - name: Get Node Version
-        id: node-version
-        run: echo "version=$(node -v)" >> $GITHUB_OUTPUT
-      - name: Mount NPM Cache
-        uses: useblacksmith/stickydisk@v1
-        with:
-          key: ${{ github.repository }}-${{ steps.node-version.outputs.version }}-npm-cache
-          path: ~/.npm
-      - name: Mount node_modules
-        uses: useblacksmith/stickydisk@v1
-        with:
-          key: ${{ github.repository }}-${{ steps.node-version.outputs.version }}-node-modules
-          path: ./node_modules
-      - name: Mount lint cache
-        uses: useblacksmith/stickydisk@v1
-        with:
-          key: ${{ github.repository }}-lint
-          path: ./.cache
+          cache: 'npm'
+          cache-dependency-path: package-lock.json
       - name: NPM Install
-        run: npm install --silent
+        run: npm ci --no-audit --no-fund --prefer-offline --silent
       - name: generate prisma imports
         uses: mansagroup/nrwl-nx-action@v3
         with:
