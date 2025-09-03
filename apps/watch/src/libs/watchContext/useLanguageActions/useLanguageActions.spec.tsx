@@ -3,7 +3,7 @@ import mockRouter from 'next-router-mock'
 import { ReactNode } from 'react'
 
 import { setCookie } from '../../cookieHandler'
-import { WatchProvider, WatchState, useWatch } from '../WatchContext'
+import { WatchProvider, WatchState } from '../WatchContext'
 
 import { useLanguageActions } from './useLanguageActions'
 
