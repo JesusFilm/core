@@ -92,7 +92,7 @@ describe('findOrFetchUser', () => {
     const userWithoutEmail = omit(
       { ...user, email: null },
       'emailVerified'
-    ) as User
+    ) as unknown as User
 
     prismaMock.user.findUnique.mockResolvedValueOnce(userWithoutEmail)
     prismaMock.user.update.mockResolvedValueOnce(user)
@@ -109,7 +109,7 @@ describe('findOrFetchUser', () => {
     const userWithoutEmail = omit(
       { ...user, email: null },
       'emailVerified'
-    ) as User
+    ) as unknown as User
 
     const contextWithoutEmail = {
       ...mockContext,
@@ -148,7 +148,7 @@ describe('findOrFetchUser', () => {
     const userWithoutEmail = omit(
       { ...user, email: null },
       'emailVerified'
-    ) as User
+    ) as unknown as User
 
     const mockPublicContext: Extract<Context, { type: 'public' }> = {
       type: 'public'
