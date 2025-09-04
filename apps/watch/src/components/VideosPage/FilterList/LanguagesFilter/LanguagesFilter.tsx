@@ -11,6 +11,7 @@ import {
   LanguageAutocomplete,
   LanguageAutocompleteProps
 } from '@core/shared/ui/LanguageAutocomplete'
+import { ResizeObserverPolyfill } from '@core/shared/ui/ResizeObserverPolyfill'
 
 export function Option(props: RowComponentProps<{ rows: any[] }>): ReactNode {
   const { rows, index, style } = props
@@ -67,10 +68,13 @@ export function LanguagesFilter(
   )
 
   return (
-    <LanguageAutocomplete
-      {...props}
-      renderInput={Input}
-      renderOption={Option}
-    />
+    <>
+      <ResizeObserverPolyfill />
+      <LanguageAutocomplete
+        {...props}
+        renderInput={Input}
+        renderOption={Option}
+      />
+    </>
   )
 }

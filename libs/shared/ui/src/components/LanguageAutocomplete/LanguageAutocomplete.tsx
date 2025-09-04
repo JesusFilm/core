@@ -15,6 +15,7 @@ import {
   useMemo
 } from 'react'
 import { List } from 'react-window'
+import { ResizeObserverPolyfill } from '../ResizeObserverPolyfill'
 
 import { defaultRenderOption } from './defaultRenderOption'
 
@@ -150,6 +151,7 @@ export function LanguageAutocomplete({
     const itemSize = 45
     return (
       <Box ref={ref} {...other}>
+        <ResizeObserverPolyfill />
         <List
           rowComponent={
             renderOption != null
@@ -170,40 +172,43 @@ export function LanguageAutocomplete({
   })
 
   return (
-    <Autocomplete
-      disableClearable
-      data-testid="LanguageAutocomplete"
-      value={value}
-      isOptionEqualToValue={(option, value) => option.id === value.id}
-      getOptionLabel={({ localName, nativeName }) =>
-        localName ?? nativeName ?? ''
-      }
-      onChange={(e, option) => {
-        e.stopPropagation()
-        handleChange(option)
-      }}
-      options={sortedOptions}
-      loading={loading}
-      disabled={disabled}
-      disablePortal={process.env.NODE_ENV === 'test'}
-      renderInput={renderInput != null ? renderInput : defaultRenderInput}
-      renderOption={(props, option, state) => {
-        return [props, option, state.index] as React.ReactNode
-      }}
-      slots={{
-        listbox: ListboxComponent
-      }}
-      slotProps={{
-        popper
-      }}
-      sx={{
-        '& .MuiInputBase-root': {
-          '& .MuiInputBase-input::placeholder': {
-            color: error ? 'error.main' : 'text.secondary',
-            opacity: 1
-          }
+    <>
+      <ResizeObserverPolyfill />
+      <Autocomplete
+        disableClearable
+        data-testid="LanguageAutocomplete"
+        value={value}
+        isOptionEqualToValue={(option, value) => option.id === value.id}
+        getOptionLabel={({ localName, nativeName }) =>
+          localName ?? nativeName ?? ''
         }
-      }}
-    />
+        onChange={(e, option) => {
+          e.stopPropagation()
+          handleChange(option)
+        }}
+        options={sortedOptions}
+        loading={loading}
+        disabled={disabled}
+        disablePortal={process.env.NODE_ENV === 'test'}
+        renderInput={renderInput != null ? renderInput : defaultRenderInput}
+        renderOption={(props, option, state) => {
+          return [props, option, state.index] as React.ReactNode
+        }}
+        slots={{
+          listbox: ListboxComponent
+        }}
+        slotProps={{
+          popper
+        }}
+        sx={{
+          '& .MuiInputBase-root': {
+            '& .MuiInputBase-input::placeholder': {
+              color: error ? 'error.main' : 'text.secondary',
+              opacity: 1
+            }
+          }
+        }}
+      />
+    </>
   )
 }

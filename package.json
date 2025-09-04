@@ -198,6 +198,7 @@
     "react-window": "^2.0.0",
     "reactflow": "^11.11.4",
     "reflect-metadata": "^0.1.13",
+    "resize-observer-polyfill": "^1.5.1",
     "rtl-detect": "^1.1.2",
     "rxjs": "^7.1.0",
     "sharp": "^0.33.0",
