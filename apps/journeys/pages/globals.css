@@ -1,6 +1,7 @@
 @import 'tailwindcss';
 
 @import '../../../libs/journeys/ui/src/globals.css';
+@import '../src/app/globals.css';
 
 @layer components {
   @import 'swiper/css';

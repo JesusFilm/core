@@ -1,7 +1,5 @@
 import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome'
-import Card from '@mui/material/Card'
 import Fab from '@mui/material/Fab'
-import Grow from '@mui/material/Grow'
 import { ReactElement, useState } from 'react'
 import { AiChat } from '../AiChat'
 
@@ -20,26 +18,18 @@ export function AiChatButton(): ReactElement {
         data-testid="AiEditButton"
         sx={{
           position: 'fixed',
-          bottom: 32,
-          left: 72
+          bottom: 16,
+          left: 16,
+          zIndex: 1200
         }}
       >
         <AutoAwesomeIcon />
       </Fab>
-      <Grow in={open} style={{ transformOrigin: 'bottom left' }}>
-        <Card
-          sx={{
-            position: 'fixed',
-            left: 72,
-            bottom: 100,
-            borderRadius: 4,
-            zIndex: 1200,
-            width: 600
-          }}
-        >
+      {open && (
+        <div className="fixed bottom-20 left-4 right-4 h-[600px] z-[1100] bg-black rounded-xl shadow-lg border border-gray-200 md:w-[400px] md:right-auto">
           <AiChat />
-        </Card>
-      </Grow>
+        </div>
+      )}
     </>
   )
 }
