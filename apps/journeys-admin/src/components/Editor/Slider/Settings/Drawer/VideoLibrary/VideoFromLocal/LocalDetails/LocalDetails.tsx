@@ -83,10 +83,10 @@ export function LocalDetails({
   } = useEditor()
 
   const videoBlock = selectedBlock as VideoBlock
-  const isPreselected = videoBlock?.videoId === id
-  const languageId = isPreselected
-    ? (videoBlock?.videoVariantLanguageId ?? DEFAULT_LANGUAGE_ID)
-    : DEFAULT_LANGUAGE_ID
+  const languageId =
+    videoBlock?.videoId === id
+      ? (videoBlock?.videoVariantLanguageId ?? DEFAULT_LANGUAGE_ID)
+      : DEFAULT_LANGUAGE_ID
 
   const [loadVideo, { data, loading }] = useLazyQuery<GetVideo>(GET_VIDEO, {
     variables: { id, languageId }
@@ -254,7 +254,7 @@ export function LocalDetails({
           onClick={handleSelect}
           size="small"
           sx={{ backgroundColor: 'secondary.dark' }}
-          disabled={loading && !isPreselected}
+          disabled={loading}
         >
           {t('Select')}
         </Button>

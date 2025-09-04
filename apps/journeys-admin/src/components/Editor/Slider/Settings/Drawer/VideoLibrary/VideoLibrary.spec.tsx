@@ -14,7 +14,6 @@ import {
 import { VideoBlockSource } from '../../../../../../../__generated__/globalTypes'
 
 import { videoItems } from './data'
-import { GET_VIDEO } from './VideoFromLocal/LocalDetails/LocalDetails'
 
 import { VideoLibrary } from '.'
 
@@ -154,61 +153,14 @@ describe('VideoLibrary', () => {
   it('when video selected calls onSelect', async () => {
     const onSelect = jest.fn()
     const onClose = jest.fn()
-    const mocks = [
-      {
-        request: {
-          query: GET_VIDEO,
-          variables: { id: 'videoId', languageId: '529' }
-        },
-        result: {
-          data: {
-            video: {
-              id: 'videoId',
-              primaryLanguageId: '529',
-              images: [],
-              title: [
-                { primary: true, value: 'title1', __typename: 'Language' }
-              ],
-              description: [
-                { primary: true, value: 'desc', __typename: 'Language' }
-              ],
-              variant: {
-                id: 'v1',
-                duration: 0,
-                hls: '',
-                __typename: 'VideoVariant'
-              },
-              variantLanguages: [
-                {
-                  __typename: 'Language',
-                  id: '529',
-                  name: [
-                    {
-                      value: 'English',
-                      primary: true,
-                      __typename: 'LanguageName'
-                    }
-                  ]
-                }
-              ],
-              __typename: 'Video'
-            }
-          }
-        }
-      }
-    ]
     render(
-      <MockedProvider mocks={mocks}>
+      <MockedProvider>
         <VideoLibrary open onSelect={onSelect} onClose={onClose} />
       </MockedProvider>
     )
     await waitFor(() => expect(screen.getByText('title1')).toBeInTheDocument())
     await waitFor(() =>
       fireEvent.click(screen.getByTestId('VideoListItem-videoId'))
-    )
-    // wait for Select button to be enabled after data load
-    await waitFor(() =>
-      expect(screen.getByRole('button', { name: 'Select' })).toBeEnabled()
     )
     fireEvent.click(screen.getByRole('button', { name: 'Select' }))
     expect(onSelect).toHaveBeenCalledWith({

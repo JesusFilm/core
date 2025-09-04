@@ -2,13 +2,27 @@ import { OpenAPIHono, createRoute, z } from '@hono/zod-openapi'
 import { HTTPException } from 'hono/http-exception'
 import { handle } from 'hono/vercel'
 
-import { ResultOf } from '@core/shared/gql'
+import { ResultOf, graphql } from '@core/shared/gql'
 
 import { getApolloClient } from '../../lib/apolloClient'
 import { getBrightcoveUrl } from '../../lib/brightcove'
 import { getClientIp, setCorsHeaders } from '../../lib/redirectUtils'
 
-import { GET_SHORT_LINK_QUERY } from './getShortLinkQuery'
+export const GET_SHORT_LINK_QUERY = graphql(`
+  query GetShortLinkQuery($hostname: String!, $pathname: String!) {
+    shortLink: shortLinkByPath(hostname: $hostname, pathname: $pathname) {
+      __typename
+      ... on QueryShortLinkByPathSuccess {
+        data {
+          to
+          redirectType
+          brightcoveId
+          bitrate
+        }
+      }
+    }
+  }
+`)
 
 const app = new OpenAPIHono().basePath('/')
 
