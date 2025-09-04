@@ -14,6 +14,8 @@ ENV CLOUDFLARE_R2_ENDPOINT=$CLOUDFLARE_R2_ENDPOINT
 ENV CLOUDFLARE_R2_ACCESS_KEY_ID=$CLOUDFLARE_R2_ACCESS_KEY_ID
 ENV CLOUDFLARE_R2_SECRET=$CLOUDFLARE_R2_SECRET
 ENV CLOUDFLARE_R2_BUCKET=$CLOUDFLARE_R2_BUCKET
+ENV PNPM_HOME="/usr/local/share/pnpm"
+ENV PATH="$PNPM_HOME:$PATH"
 
 RUN apk upgrade --update-cache --available && \
     apk add g++ make python3 py3-pip curl-dev ffmpeg && \
@@ -22,11 +24,9 @@ RUN apk upgrade --update-cache --available && \
 WORKDIR /app
 COPY ./dist/apis/media-transcoder .
 COPY ./pnpm-lock.yaml .
+COPY ./pnpm-workspace.yaml .
 
-# dependencies that nestjs needs
 RUN corepack enable && corepack prepare pnpm --activate
-ENV PNPM_HOME="/usr/local/share/pnpm"
-ENV PATH="$PNPM_HOME:$PATH"
 RUN pnpm install --prod --force --silent
 
 CMD node ./main.js
