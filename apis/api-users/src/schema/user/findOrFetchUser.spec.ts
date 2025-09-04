@@ -10,20 +10,6 @@ import { CtxCurrentUser, findOrFetchUser } from './findOrFetchUser'
 import { user } from './user.mock'
 import { verifyUser } from './verifyUser'
 
-jest.mock('@core/yoga/firebaseClient', () => ({
-  auth: {
-    getUser: jest.fn().mockReturnValue({
-      id: '1',
-      userId: '1',
-      createdAt: new Date('2021-01-01T00:00:00.000Z'),
-      displayName: 'Amin One',
-      email: 'amin@email.com',
-      photoURL: 'https://bit.ly/3Gth4',
-      emailVerified: false
-    })
-  }
-}))
-
 jest.mock('./verifyUser', () => ({
   verifyUser: jest.fn()
 }))
@@ -147,19 +133,6 @@ describe('findOrFetchUser', () => {
   })
 
   it('should not send verification email to user after anonymous user creation', async () => {
-    jest.spyOn(auth, 'getUser').mockImplementationOnce(
-      async () =>
-        await Promise.resolve({
-          id: '1',
-          userId: '1',
-          createdAt: new Date('2021-01-01T00:00:00.000Z'),
-          displayName: 'Amin One',
-          email: null,
-          photoURL: 'https://bit.ly/3Gth4',
-          emailVerified: false
-        } as unknown as UserRecord)
-    )
-
     const userWithoutEmail = omit(
       { ...user, email: null },
       'emailVerified'

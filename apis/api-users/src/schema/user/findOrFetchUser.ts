@@ -55,34 +55,12 @@ export async function findOrFetchUser(
   if (existingUser != null && existingUser.emailVerified != null)
     return existingUser
 
-  const {
-    displayName,
-    email,
-    emailVerified,
-    photoURL: imageUrl
-  } = await auth.getUser(userId)
-
-  // Extract firstName and lastName from displayName with better fallbacks
-  let firstName = ''
-  let lastName = ''
-
-  if (displayName?.trim()) {
-    const nameParts = displayName
-      .trim()
-      .split(' ')
-      .filter((part) => part.length > 0)
-    if (nameParts.length === 1) {
-      // Single name - use as firstName
-      firstName = nameParts[0]
-    } else if (nameParts.length > 1) {
-      // Multiple parts - first parts as firstName, last part as lastName
-      firstName = nameParts.slice(0, -1).join(' ')
-      lastName = nameParts[nameParts.length - 1]
-    }
-  }
+  // create new user using JWT payload
+  let firstName = ctxCurrentUser?.firstName
+  let lastName = ctxCurrentUser?.lastName
 
   // Ensure firstName is never empty for database constraint
-  if (!firstName.trim()) {
+  if (!firstName?.trim()) {
     firstName = 'Unknown User'
   }
 
@@ -90,9 +68,9 @@ export async function findOrFetchUser(
     userId,
     firstName,
     lastName,
-    email,
-    imageUrl,
-    emailVerified
+    email: ctxCurrentUser?.email,
+    imageUrl: ctxCurrentUser?.imageUrl,
+    emailVerified: ctxCurrentUser?.emailVerified
   }
 
   let user: User | null = null
@@ -118,7 +96,11 @@ export async function findOrFetchUser(
     } while (user == null && retry < 3)
   }
   // after user create so it is only sent once
-  if (email != null && userCreated && !emailVerified)
-    await verifyUser(userId, email, redirect)
+  if (
+    ctxCurrentUser?.email != null &&
+    userCreated &&
+    !ctxCurrentUser?.emailVerified
+  )
+    await verifyUser(userId, ctxCurrentUser?.email, redirect)
   return user
 }
