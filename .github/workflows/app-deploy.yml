@@ -312,8 +312,6 @@ jobs:
             github-ref-name: stage
           - app: short-links
             github-ref-name: stage
-    env:
-      ENABLE_EXPERIMENTAL_COREPACK: 1
     runs-on: blacksmith-2vcpu-ubuntu-2204
     permissions:
       deployments: write
