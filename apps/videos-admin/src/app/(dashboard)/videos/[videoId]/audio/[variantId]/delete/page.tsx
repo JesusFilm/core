@@ -2,15 +2,19 @@
 
 import { useMutation, useSuspenseQuery } from '@apollo/client'
 import { useRouter } from 'next/navigation'
-import { useSnackbar } from 'notistack'
-import { ReactElement } from 'react'
+import { enqueueSnackbar } from 'notistack'
 
 import { graphql } from '@core/shared/gql'
 import { Dialog } from '@core/shared/ui/Dialog'
 
 import { DEFAULT_VIDEO_LANGUAGE_ID } from '../../../../constants'
 
-// Intentionally avoid explicit PageProps typing to satisfy Next.js constraints
+type DeleteAudioParams = {
+  params: {
+    videoId: string
+    variantId: string
+  }
+}
 
 const GET_ADMIN_VIDEO_VARIANT_DELETE = graphql(`
   query GetAdminVideoVariant($id: ID!, $languageId: ID) {
@@ -33,10 +37,10 @@ const DELETE_VIDEO_VARIANT = graphql(`
   }
 `)
 
-export default function DeleteAudio(props: unknown): ReactElement {
-  const { videoId, variantId } = (props as { params: { videoId: string; variantId: string } }).params
+export default function DeleteAudio({
+  params: { videoId, variantId }
+}: DeleteAudioParams) {
   const router = useRouter()
-  const { enqueueSnackbar } = useSnackbar()
   const { data } = useSuspenseQuery(GET_ADMIN_VIDEO_VARIANT_DELETE, {
     variables: { id: variantId, languageId: DEFAULT_VIDEO_LANGUAGE_ID }
   })
