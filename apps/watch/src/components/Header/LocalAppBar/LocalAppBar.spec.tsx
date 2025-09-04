@@ -1,6 +1,8 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, screen } from '@testing-library/react'
 
+import { WatchProvider } from '../../../libs/watchContext'
+
 import { LocalAppBar } from './LocalAppBar'
 
 describe('LocalAppBar', () => {
@@ -86,7 +88,9 @@ describe('LocalAppBar', () => {
   it('should open the language switcher dialog when language selector is clicked', async () => {
     render(
       <MockedProvider>
-        <LocalAppBar onMenuClick={mockOnMenuClick} showLanguageSwitcher />
+        <WatchProvider>
+          <LocalAppBar onMenuClick={mockOnMenuClick} showLanguageSwitcher />
+        </WatchProvider>
       </MockedProvider>
     )
 
