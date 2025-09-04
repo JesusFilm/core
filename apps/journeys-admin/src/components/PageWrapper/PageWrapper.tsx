@@ -104,7 +104,7 @@ export function PageWrapper({
             flexGrow={1}
             direction={{ xs: 'column', md: 'row' }}
             sx={{
-              ...(backgroundColor != null && { backgroundColor }),
+              backgroundColor: backgroundColor ?? 'background.default',
               ...(background != null && { background }),
               width: '100%',
               pt: { xs: toolbar.height, md: 0 },
