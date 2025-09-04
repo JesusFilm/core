@@ -21,9 +21,10 @@ RUN apk upgrade --update-cache --available && \
 
 WORKDIR /app
 COPY ./dist/apis/media-transcoder .
-COPY ./package-lock.json .
+COPY ./pnpm-lock.yaml .
 
 # dependencies that nestjs needs
-RUN npm install --production
+RUN corepack enable && corepack prepare pnpm --activate
+RUN pnpm install --prod --frozen-lockfile
 
 CMD node ./main.js

@@ -8,11 +8,12 @@ ENV VERCEL=true
 
 WORKDIR /app
 COPY ./dist/apps/journeys-admin .
-COPY ./package-lock.json .
+COPY ./pnpm-lock.yaml .
 
 # dependencies
-RUN npm i -g next
-RUN npm i --omit=dev --force --silent
-RUN npm i sharp pino dd-trace next-logger --force --silent
+RUN corepack enable && corepack prepare pnpm --activate
+RUN pnpm add -g next
+RUN pnpm install --prod --frozen-lockfile --force --silent
+RUN pnpm add sharp pino dd-trace next-logger --force --silent
 
-CMD NODE_OPTIONS='-r next-logger' npm start
+CMD NODE_OPTIONS='-r next-logger' pnpm start
