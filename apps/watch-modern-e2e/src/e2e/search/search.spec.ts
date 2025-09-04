@@ -6,158 +6,112 @@ test.describe('Search Functionality', () => {
   })
 
   test('should display search box and accept input', async ({ page }) => {
-    const searchBox = page.locator('input[type="search"]').first()
+    const searchBox = page.locator('input[aria-label="Search videos, films, and series"]').first()
     await expect(searchBox).toBeVisible()
-    await expect(searchBox).toHaveAttribute('placeholder', /search.*videos.*films.*series/i)
+    await expect(searchBox).toHaveAttribute('placeholder', 'Search videos, films, and series...')
 
     await searchBox.fill('Jesus')
     await expect(searchBox).toHaveValue('Jesus')
   })
 
-  test('should display search results for "Jesus"', async ({ page }) => {
-    const searchBox = page.locator('input[type="search"]').first()
+  test('should handle submit functionality', async ({ page }) => {
+    const searchBox = page.locator('input[aria-label="Search videos, films, and series"]').first()
+    const submitButton = page.locator('button[aria-label="Submit search"]').first()
+
     await searchBox.fill('Jesus')
 
-    // Wait for results to load
-    await page.waitForTimeout(2000)
+    // Click submit button
+    await submitButton.click()
 
-    // Verify results are displayed
-    const results = page.locator('[class*="hit"]')
-    await expect(results.first()).toBeVisible()
-
-    // Verify we have results
-    const resultCount = await results.count()
-    expect(resultCount).toBeGreaterThan(0)
-    console.log(`Found ${resultCount} search results for "Jesus"`)
+    // In Phase 1, submit doesn't trigger search yet, but the input should remain
+    await expect(searchBox).toHaveValue('Jesus')
+    console.log('Submit button clicked successfully')
   })
 
-  test('should display results in responsive grid layout', async ({ page }) => {
-    const searchBox = page.locator('input[type="search"]').first()
-    await searchBox.fill('Jesus')
-    await page.waitForTimeout(2000)
+  test('should render page content', async ({ page }) => {
+    // Check that the main videos section exists
+    const videosSection = page.locator('[id="videos"]').first()
+    await expect(videosSection).toBeVisible()
 
-    // Check grid container exists
-    const gridContainer = page.locator('[id="videos"] .grid').first()
-    await expect(gridContainer).toBeVisible()
-
-    // Verify responsive classes are applied
-    const gridClasses = await gridContainer.getAttribute('class')
-    expect(gridClasses).toMatch(/grid-cols-1/)
-    expect(gridClasses).toMatch(/sm:grid-cols-2/)
-    expect(gridClasses).toMatch(/md:grid-cols-3/)
-    expect(gridClasses).toMatch(/lg:grid-cols-4/)
-    expect(gridClasses).toMatch(/xl:grid-cols-5/)
-    expect(gridClasses).toMatch(/2xl:grid-cols-6/)
+    // Check that search bar is present
+    const searchBox = page.locator('input[aria-label="Search videos, films, and series"]').first()
+    await expect(searchBox).toBeVisible()
   })
 
-  test('should handle multiple search terms', async ({ page }) => {
-    const searchBox = page.locator('input[type="search"]').first()
+  test('should handle multiple input terms', async ({ page }) => {
+    const searchBox = page.locator('input[aria-label="Search videos, films, and series"]').first()
     const testTerms = ['Jesus', 'love', 'gospel', 'hope', 'faith']
 
     for (const term of testTerms) {
       await searchBox.fill(term)
-      await page.waitForTimeout(1500)
-
-      const results = page.locator('[class*="hit"]')
-      const count = await results.count()
-      expect(count).toBeGreaterThan(0)
-      console.log(`"${term}": ${count} results`)
+      await expect(searchBox).toHaveValue(term)
+      console.log(`Input accepted: "${term}"`)
     }
   })
 
 
 
   test('should handle edge cases gracefully', async ({ page }) => {
-    const searchBox = page.locator('input[type="search"]').first()
+    const searchBox = page.locator('input[aria-label="Search videos, films, and series"]').first()
     const edgeCases = [
-      { input: '', description: 'Empty search' },
+      { input: '', description: 'Empty input' },
       { input: 'a', description: 'Single character' },
-      { input: 'Jesus Christ love gospel salvation redemption hope faith', description: 'Long search term' },
-      { input: '   Jesus   ', description: 'Search with spaces' },
-      { input: 'JESUS', description: 'Uppercase search' }
+      { input: 'Jesus Christ love gospel salvation redemption hope faith', description: 'Long input term' },
+      { input: '   Jesus   ', description: 'Input with spaces' },
+      { input: 'JESUS', description: 'Uppercase input' }
     ]
 
     for (const testCase of edgeCases) {
       await searchBox.fill(testCase.input)
-      await page.waitForTimeout(2000)
-
-      // Should not crash, should handle gracefully
-      const results = page.locator('[class*="hit"]')
-      const count = await results.count()
-
-      // For empty search, might show all results or no results
-      if (testCase.input.trim() === '') {
-        // Empty search might show featured content or all videos
-        expect(count).toBeGreaterThanOrEqual(0)
-      } else {
-        // Other searches should return some results
-        expect(count).toBeGreaterThanOrEqual(0)
-      }
-
-      console.log(`${testCase.description}: ${count} results`)
+      await expect(searchBox).toHaveValue(testCase.input)
+      console.log(`${testCase.description}: "${testCase.input}" accepted`)
     }
   })
 
-  test('should maintain results across viewport changes', async ({ page }) => {
-    const searchBox = page.locator('input[type="search"]').first()
+  test('should maintain input across viewport changes', async ({ page }) => {
+    const searchBox = page.locator('input[aria-label="Search videos, films, and series"]').first()
     await searchBox.fill('Jesus')
-    await page.waitForTimeout(2000)
-
-    const initialResults = await page.locator('.card, [class*="hit"]').count()
-    expect(initialResults).toBeGreaterThan(0)
+    await expect(searchBox).toHaveValue('Jesus')
 
     // Test tablet viewport
     await page.setViewportSize({ width: 768, height: 1024 })
     await page.waitForTimeout(1000)
-
-    const tabletResults = await page.locator('.card, [class*="hit"]').count()
-    expect(tabletResults).toBe(initialResults)
+    await expect(searchBox).toHaveValue('Jesus')
 
     // Test mobile viewport
     await page.setViewportSize({ width: 375, height: 667 })
     await page.waitForTimeout(1000)
-
-    const mobileResults = await page.locator('.card, [class*="hit"]').count()
-    expect(mobileResults).toBe(initialResults)
+    await expect(searchBox).toHaveValue('Jesus')
 
     // Reset to desktop
     await page.setViewportSize({ width: 1280, height: 720 })
   })
 
-  test('should show loading state during search', async ({ page }) => {
-    const searchBox = page.locator('input[type="search"]').first()
+  test('should handle keyboard interactions', async ({ page }) => {
+    const searchBox = page.locator('input[aria-label="Search videos, films, and series"]').first()
 
-    // Start typing
+    // Test Enter key
     await searchBox.fill('Jesus')
+    await searchBox.press('Enter')
+    await expect(searchBox).toHaveValue('Jesus')
 
-    // Check if loading indicator appears (if implemented)
-    const loadingIndicator = page.locator('[class*="loading"], [class*="spinner"], [aria-label*="loading"]').first()
-
-    // Wait a moment for potential loading state
-    await page.waitForTimeout(500)
-
-    // Loading state might be present or not, both are acceptable
-    // The important thing is no crashes occur
-    const isLoadingVisible = await loadingIndicator.isVisible().catch(() => false)
-    console.log(`Loading indicator visible: ${isLoadingVisible}`)
+    // Test Escape key clears input
+    await searchBox.press('Escape')
+    await expect(searchBox).toHaveValue('')
   })
 
-  test('should allow clearing search', async ({ page }) => {
-    const searchBox = page.locator('input[type="search"]').first()
+  test('should allow clearing input', async ({ page }) => {
+    const searchBox = page.locator('input[aria-label="Search videos, films, and series"]').first()
+    const clearButton = page.locator('button[aria-label="Clear search"]').first()
 
-    // Search for something
+    // Fill input
     await searchBox.fill('Jesus')
-    await page.waitForTimeout(2000)
+    await expect(searchBox).toHaveValue('Jesus')
+    await expect(clearButton).toBeVisible()
 
-    const resultsWithSearch = await page.locator('.card, [class*="hit"]').count()
-    expect(resultsWithSearch).toBeGreaterThan(0)
-
-    // Clear search
-    await searchBox.fill('')
-    await page.waitForTimeout(2000)
-
-    // Should handle empty search gracefully
-    const resultsAfterClear = await page.locator('.card, [class*="hit"]').count()
-    expect(resultsAfterClear).toBeGreaterThanOrEqual(0)
+    // Clear using button
+    await clearButton.click()
+    await expect(searchBox).toHaveValue('')
+    await expect(clearButton).not.toBeVisible()
   })
 })

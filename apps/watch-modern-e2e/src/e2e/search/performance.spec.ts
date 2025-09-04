@@ -6,7 +6,7 @@ test.describe('Search Performance', () => {
   })
 
   test('should respond quickly to search input', async ({ page }) => {
-    const searchBox = page.locator('input[type="search"]').first()
+    const searchBox = page.locator('input[aria-label="Search videos, films, and series"]').first()
 
     const searchTerms = ['Jesus', 'love', 'gospel', 'hope', 'faith']
     const results: { [key: string]: { duration: number; resultCount: number } } = {}
@@ -53,7 +53,7 @@ test.describe('Search Performance', () => {
   })
 
   test('should handle rapid search changes', async ({ page }) => {
-    const searchBox = page.locator('input[type="search"]').first()
+    const searchBox = page.locator('input[aria-label="Search videos, films, and series"]').first()
 
     const rapidSearches = ['J', 'Je', 'Jes', 'Jesu', 'Jesus']
 
@@ -74,7 +74,7 @@ test.describe('Search Performance', () => {
   })
 
   test('should maintain performance across multiple searches', async ({ page }) => {
-    const searchBox = page.locator('input[type="search"]').first()
+    const searchBox = page.locator('input[aria-label="Search videos, films, and series"]').first()
 
     const searchTerms = ['Jesus', 'love', 'gospel', 'hope', 'faith', 'salvation']
     const performanceMetrics: number[] = []
@@ -114,7 +114,7 @@ test.describe('Search Performance', () => {
   })
 
   test('should not have memory leaks during repeated searches', async ({ page }) => {
-    const searchBox = page.locator('input[type="search"]').first()
+    const searchBox = page.locator('input[aria-label="Search videos, films, and series"]').first()
 
     const searchTerms = ['Jesus', 'love', 'gospel', 'hope', 'faith']
 
@@ -140,7 +140,7 @@ test.describe('Search Performance', () => {
   })
 
   test('should handle concurrent user actions', async ({ page }) => {
-    const searchBox = page.locator('input[type="search"]').first()
+    const searchBox = page.locator('input[aria-label="Search videos, films, and series"]').first()
 
     // Simulate rapid typing
     const searchText = 'Jesus Christ'

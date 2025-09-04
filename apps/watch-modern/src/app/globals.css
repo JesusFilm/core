@@ -73,3 +73,29 @@
     color: hsl(var(--foreground));
   }
 }
+
+/* Utility classes for hiding scrollbars */
+@layer utilities {
+  .scrollbar-hide {
+    /* Firefox */
+    scrollbar-width: none;
+
+    /* Safari and Chrome */
+    &::-webkit-scrollbar {
+      display: none;
+    }
+
+    /* Internet Explorer and Edge */
+    -ms-overflow-style: none;
+  }
+
+  /* Alternative approach using Tailwind arbitrary values */
+  .scrollbar-none {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+
+  .scrollbar-none::-webkit-scrollbar {
+    display: none;
+  }
+}

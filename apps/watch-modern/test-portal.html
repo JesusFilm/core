@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portal Test</title>
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <style>
+        .portal-content {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            z-index: 1000;
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+        const { createPortal } = ReactDOM;
+
+        // Portal component test
+        function Portal({ children }) {
+            const [container, setContainer] = useState(null);
+
+            useEffect(() => {
+                const portalContainer = document.createElement('div');
+                document.body.appendChild(portalContainer);
+                setContainer(portalContainer);
+
+                return () => {
+                    if (portalContainer && portalContainer.parentNode) {
+                        portalContainer.parentNode.removeChild(portalContainer);
+                    }
+                };
+            }, []);
+
+            if (!container) return null;
+
+            return createPortal(children, container);
+        }
+
+        // Test component for positioned portal
+        function PositionedPortalTest() {
+            const [showPortal, setShowPortal] = useState(false);
+            const anchorRef = React.useRef(null);
+
+            return (
+                <div style={{ padding: '20px' }}>
+                    <h1>Positioned Portal Test</h1>
+                    <p>This tests the portal positioning relative to an anchor element.</p>
+
+                    <div
+                        ref={anchorRef}
+                        style={{
+                            width: '300px',
+                            margin: '20px auto',
+                            padding: '15px',
+                            background: '#f8f9fa',
+                            border: '2px solid #007bff',
+                            borderRadius: '4px',
+                            textAlign: 'center'
+                        }}
+                    >
+                        Anchor Element (300px wide)
+                        <br />
+                        <button
+                            onClick={() => setShowPortal(!showPortal)}
+                            style={{
+                                marginTop: '10px',
+                                padding: '8px 16px',
+                                background: '#007bff',
+                                color: 'white',
+                                border: 'none',
+                                borderRadius: '4px',
+                                cursor: 'pointer'
+                            }}
+                        >
+                            {showPortal ? 'Hide' : 'Show'} Portal
+                        </button>
+                    </div>
+
+                    {showPortal && (
+                        <Portal anchorRef={anchorRef}>
+                            <div style={{
+                                background: 'rgba(0, 123, 255, 0.9)',
+                                color: 'white',
+                                padding: '15px',
+                                borderRadius: '8px',
+                                boxShadow: '0 4px 12px rgba(0,0,0,0.3)',
+                                marginTop: '8px',
+                                maxWidth: '100%'
+                            }}>
+                                <h3>Positioned Portal Content</h3>
+                                <p>This portal should be positioned below and aligned with the anchor element.</p>
+                                <p>The width should match the anchor element (300px).</p>
+                                <p>If the portal appears correctly positioned, the fix is working!</p>
+                                <button
+                                    onClick={() => setShowPortal(false)}
+                                    style={{
+                                        marginTop: '10px',
+                                        padding: '5px 10px',
+                                        background: '#dc3545',
+                                        color: 'white',
+                                        border: 'none',
+                                        borderRadius: '4px',
+                                        cursor: 'pointer'
+                                    }}
+                                >
+                                    Close Portal
+                                </button>
+                            </div>
+                        </Portal>
+                    )}
+                </div>
+            );
+        }
+
+        function TestApp() {
+            return <PositionedPortalTest />;
+        }
+
+        ReactDOM.render(<TestApp />, document.getElementById('root'));
+    </script>
+</body>
+</html>

@@ -1,7 +1,6 @@
 "use client"
 
 import type { Hit as AlgoliaHit } from 'instantsearch.js'
-import { Search, X } from 'lucide-react'
 import { Hits, useInstantSearch, usePagination, useSearchBox } from 'react-instantsearch'
 import { Card } from '@/components/ui/card'
 import { Container } from '@/components/ui/container'
@@ -17,7 +16,9 @@ import {
 import { MediaCard, type MediaCardProps } from './MediaCard'
 import { Skeleton } from '@/components/ui/skeleton'
 import { AspectRatio } from '@/components/ui/aspect-ratio'
-import { memo, useMemo, useCallback } from 'react'
+import { memo, useMemo, useCallback, useState } from 'react'
+import { cn } from '@/lib/utils'
+import { SearchBar } from '@/components/watch/search/SearchBar'
 
 type AlgoliaVideo = AlgoliaHit<{
   videoId: string
@@ -41,6 +42,8 @@ type AlgoliaVideo = AlgoliaHit<{
  * Transforms AlgoliaVideo to MediaCard props
  */
 function transformToMediaCardProps(hit: AlgoliaVideo): MediaCardProps {
+  console.log('🔍 transformToMediaCardProps called for hit:', hit?.objectID || 'unknown')
+
   // Get title from titlesWithLanguages or fallback to titles
   let title = ''
   if (hit.titlesWithLanguages && hit.titlesWithLanguages.length > 0) {
@@ -48,6 +51,7 @@ function transformToMediaCardProps(hit: AlgoliaVideo): MediaCardProps {
   } else if (hit.titles && hit.titles.length > 0) {
     title = hit.titles[0] || ''
   }
+  console.log('🔍 Title extracted:', title)
 
   // Map label to videoType
   let videoType: string
@@ -64,6 +68,7 @@ function transformToMediaCardProps(hit: AlgoliaVideo): MediaCardProps {
     default:
       videoType = 'Documentary'
   }
+  console.log('🔍 Video type mapped to:', videoType)
 
   // Map videoType to MediaKind
   let kind: MediaCardProps['kind'] = 'episode' // default
@@ -81,7 +86,7 @@ function transformToMediaCardProps(hit: AlgoliaVideo): MediaCardProps {
       kind = 'episode' // fallback
       break
   }
-
+  console.log('🔍 Media kind determined as:', kind)
 
   // Create count label for collections/series
   let countLabel: string | undefined = undefined
@@ -92,14 +97,16 @@ function transformToMediaCardProps(hit: AlgoliaVideo): MediaCardProps {
       countLabel = `${hit.childrenCount} chapters`
     }
   }
+  console.log('🔍 Count label:', countLabel)
 
   // Convert duration from seconds to MM:SS format for display
   let durationSeconds: number | undefined
   if (hit.duration) {
     durationSeconds = hit.duration
   }
+  console.log('🔍 Duration seconds:', durationSeconds)
 
-  return {
+  const result = {
     href: `/watch/${hit.slug}`,
     title,
     kind,
@@ -107,140 +114,99 @@ function transformToMediaCardProps(hit: AlgoliaVideo): MediaCardProps {
     durationSeconds,
     imageUrl: hit.image
   }
+  console.log('🔍 transformToMediaCardProps result:', result)
+
+  return result
 }
 
-const SearchBoxWithLoading = memo(function SearchBoxWithLoading() {
-  console.log('🔍 SearchBoxWithLoading: Component rendering')
-
+// New SearchBar container - Phase 3 implementation with suggestions
+const SearchBarContainer = memo(function SearchBarContainer({
+  isSuggestionsOpen,
+  onSuggestionsOpenChange
+}: {
+  isSuggestionsOpen: boolean
+  onSuggestionsOpenChange: (open: boolean) => void
+}) {
   const { status } = useInstantSearch()
-  const { query, refine, clear } = useSearchBox()
+  const { query, refine } = useSearchBox()
 
-  // Memoize derived values to prevent unnecessary re-renders
-  const isSearching = useMemo(() => status === 'loading' || status === 'stalled', [status])
-  const hasQuery = useMemo(() => Boolean(query && query.trim().length > 0), [query])
+  // Memoize loading state
+  const isLoading = useMemo(() => {
+    console.log('🔍 InstantSearch status changed to:', status)
+    return status === 'loading' || status === 'stalled'
+  }, [status])
 
-  console.log('🔍 SearchBoxWithLoading: State values:', {
-    status,
-    query,
-    isSearching,
-    hasQuery,
-    clearFunctionType: typeof clear,
-    clearFunctionExists: !!clear
-  })
+  // Handle search submission - Phase 3: Update grid directly
+  const handleSubmit = useCallback((value: string) => {
+    console.log('🔍 VideoGrid handleSubmit called with value:', value)
+    console.log('🔍 Current query:', query)
 
-  // Update query as user types (controlled input)
-  const onChange = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      refine(e.currentTarget.value)
-    },
-    [refine]
-  )
+    // Only refine if value actually changed from current query
+    // Note: We no longer handle clearing from non-empty to empty here
+    // since clear button now handles this locally
+    const shouldRefine = value !== query
+    console.log('🔍 Should refine?', shouldRefine)
 
-  // Memoize the clear handler to prevent recreation on each render
-  const handleClear = useCallback((e: React.MouseEvent<HTMLButtonElement>) => {
-    console.log('🔍 Clear button clicked (input X button)')
-    console.log('🔍 Event details:', {
-      type: e.type,
-      target: e.target,
-      currentTarget: e.currentTarget
-    })
-    console.log('🔍 Before preventDefault and stopPropagation')
-
-    e.preventDefault()
-    e.stopPropagation()
-
-    console.log('🔍 After preventDefault and stopPropagation')
-    console.log('🔍 About to call clear() function')
-    console.log('🔍 Current query before clear:', query)
-
-    try {
-      // Use refine('') to guarantee the input value updates immediately
-      refine('')
-      // Call clear as well to reset any auxiliary state managed by the connector
-      clear()
-      console.log('🔍 Clear function called successfully')
-    } catch (error) {
-      console.error('🔍 Error calling clear function:', error)
+    if (shouldRefine) {
+      console.log('🔍 Calling refine with:', value)
+      refine(value)
+      console.log('🔍 Refine call completed')
+    } else {
+      console.log('🔍 Skipping refine - value same as current query')
     }
 
-    console.log('🔍 Clear button click handler finished')
-  }, [clear, refine])
+    console.log('🔍 Closing suggestions')
+    onSuggestionsOpenChange(false)
+    console.log('🔍 handleSubmit completed')
+  }, [refine, onSuggestionsOpenChange, query])
+
+  // Handle focus - Phase 3: Will show popular suggestions
+  const handleFocus = useCallback(() => {
+    onSuggestionsOpenChange(true)
+    // Phase 3: Suggestions are now handled by SearchBar component
+  }, [onSuggestionsOpenChange])
+
+  // Handle suggestions close
+  const handleSuggestionsClose = useCallback(() => {
+    onSuggestionsOpenChange(false)
+  }, [onSuggestionsOpenChange])
 
   return (
-    <div className="relative max-w-3xl mx-auto" role="search">
-      <input
-        type="text"
-        value={query}
-        onChange={onChange}
-        className="h-16 w-full rounded-xl border border-gray-300 bg-white pl-14 pr-16 py-5 text-lg text-gray-900 placeholder:text-gray-500 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-0 transition-colors shadow-sm hover:shadow-md"
-        placeholder="Search videos, films, and series..."
-        aria-label="Search videos"
-      />
-      {/* Search icon on the left */}
-      <div className="absolute left-5 top-[22px] text-gray-400" aria-hidden="true">
-        <Search className="h-6 w-6" />
-      </div>
-
-      {/* Clear button on the right (when there's a query) */}
-      {hasQuery && !isSearching && (
-        <button
-          onClick={handleClear}
-          className="absolute right-5 top-[22px] text-gray-400 hover:text-gray-600 transition-colors focus:outline-none focus:text-gray-600 z-10"
-          aria-label="Clear search"
-          type="button"
-        >
-          <X className="h-6 w-6" />
-        </button>
-      )}
-
-      {/* Loading spinner on the right (when searching) */}
-      {isSearching && (
-        <div className="absolute right-5 top-[22px]" aria-hidden="true">
-          <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-500"></div>
-        </div>
-      )}
-    </div>
+    <SearchBar
+      initialValue={query || ''}
+      onSubmit={handleSubmit}
+      onFocus={handleFocus}
+      onSuggestionsClose={handleSuggestionsClose}
+      loading={isLoading}
+      placeholder="Search videos, films, and series..."
+      isSuggestionsOpen={isSuggestionsOpen}
+    />
   )
 })
 
-const EmptyState = memo(function EmptyState() {
-  console.log('🔍 EmptyState: Component rendering')
-
+const EmptyState = memo(function EmptyState({ isSuggestionsOpen }: { isSuggestionsOpen?: boolean }) {
   const { clear } = useSearchBox()
-
-  console.log('🔍 EmptyState: useSearchBox hook called, clear function details:', {
-    clearFunctionType: typeof clear,
-    clearFunctionExists: !!clear
-  })
 
   // Memoize the clear handler to prevent recreation on each render
   const handleEmptyStateClear = useCallback((e: React.MouseEvent<HTMLButtonElement>) => {
-    console.log('🔍 Clear Search button clicked (empty state button)')
-    console.log('🔍 Event details:', {
-      type: e.type,
-      target: e.target,
-      currentTarget: e.currentTarget
-    })
-    console.log('🔍 Before preventDefault and stopPropagation')
-
     e.preventDefault()
     e.stopPropagation()
 
-    console.log('🔍 After preventDefault and stopPropagation')
-    console.log('🔍 About to call clear() function from EmptyState')
-
     try {
       clear()
-      console.log('🔍 Clear function from EmptyState called successfully')
     } catch (error) {
-      console.error('🔍 Error calling clear function from EmptyState:', error)
+      console.error('Error calling clear function:', error)
     }
-
-    console.log('🔍 Clear Search button click handler finished')
   }, [clear])
 
   return (
-    <div className="col-span-full flex flex-col items-center justify-center py-16 text-center">
+    <div
+      className={cn(
+        "col-span-full flex flex-col items-center justify-center py-16 text-center",
+        isSuggestionsOpen && "pointer-events-none aria-hidden"
+      )}
+      aria-hidden={isSuggestionsOpen}
+    >
       <div className="mb-4 text-6xl">🔍</div>
       <h3 className="text-xl font-semibold text-foreground mb-2">No videos found</h3>
       <p className="text-muted-foreground max-w-md">
@@ -249,7 +215,11 @@ const EmptyState = memo(function EmptyState() {
       <div className="mt-6">
         <button
           onClick={handleEmptyStateClear}
-          className="px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background transition-colors"
+          disabled={isSuggestionsOpen}
+          className={cn(
+            "px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background transition-colors",
+            isSuggestionsOpen && "pointer-events-none opacity-50"
+          )}
           aria-label="Clear search and show all videos"
         >
           Clear Search
@@ -412,12 +382,14 @@ function NewGridSkeleton() {
  * New Hit component using MediaCard for the redesigned grid
  */
 function NewHit({ hit }: { hit: AlgoliaVideo }) {
+  console.log('🔍 NewHit rendering hit:', hit?.objectID || 'unknown', 'title:', hit?.titles?.[0] || 'unknown')
   const mediaCardProps = transformToMediaCardProps(hit)
+  console.log('🔍 NewHit mediaCardProps:', mediaCardProps)
   return <MediaCard {...mediaCardProps} />
 }
 
 export const VideoGrid = memo(function VideoGrid() {
-  console.log('🔍 VideoGrid: Main component rendering')
+  const [isSuggestionsOpen, setIsSuggestionsOpen] = useState(false)
 
   return (
     <section
@@ -428,10 +400,10 @@ export const VideoGrid = memo(function VideoGrid() {
       <Container>
         <div className="mb-8">
           <h2 id="videos-heading" className="sr-only">Video Library</h2>
-          <SearchBoxWithLoading />
+          <SearchBarContainer isSuggestionsOpen={isSuggestionsOpen} onSuggestionsOpenChange={setIsSuggestionsOpen} />
         </div>
 
-        <NewHitsGridWithEmptyState />
+        <NewHitsGridWithEmptyState isSuggestionsOpen={isSuggestionsOpen} />
 
         <div className="mt-8">
           <ShadcnPagination />
@@ -445,6 +417,7 @@ export const VideoGrid = memo(function VideoGrid() {
  * Custom Hits component for the 4-column grid design (max 4 items per row)
  */
 function NewHitsGrid() {
+  console.log('🔍 NewHitsGrid rendering')
   return (
     <Hits
       hitComponent={NewHitWrapper}
@@ -460,6 +433,7 @@ function NewHitsGrid() {
  * Wrapper component to handle hit rendering
  */
 function NewHitWrapper({ hit }: { hit: AlgoliaVideo }) {
+  console.log('🔍 NewHitWrapper rendering hit:', hit?.objectID || 'unknown')
   return (
     <div className="col-span-4 sm:col-span-2 lg:col-span-1">
       <NewHit hit={hit} />
@@ -470,43 +444,42 @@ function NewHitWrapper({ hit }: { hit: AlgoliaVideo }) {
 /**
  * Hits grid with empty state and loading skeleton for new design
  */
-const NewHitsGridWithEmptyState = memo(function NewHitsGridWithEmptyState() {
-  console.log('🔍 NewHitsGridWithEmptyState: Component rendering')
-
+const NewHitsGridWithEmptyState = memo(function NewHitsGridWithEmptyState({ isSuggestionsOpen }: { isSuggestionsOpen: boolean }) {
   const { results, status } = useInstantSearch()
   const { query } = useSearchBox()
 
   // Memoize derived values to prevent unnecessary re-renders
-  const isLoading = useMemo(() => status === 'loading' || status === 'stalled', [status])
-  const isEmptyQuery = useMemo(() => !query || query.trim() === '', [query])
-  const shouldShowEmptyState = useMemo(() => {
-    if (isEmptyQuery) return true
-    return results && typeof results.nbHits === 'number' && results.nbHits === 0
-  }, [results, isEmptyQuery])
+  const isLoading = useMemo(() => {
+    console.log('🔍 NewHitsGridWithEmptyState - status:', status)
+    return status === 'loading' || status === 'stalled'
+  }, [status])
 
-  console.log('🔍 NewHitsGridWithEmptyState: State values:', {
-    status,
-    isLoading,
-    nbHits: results?.nbHits,
-    hasResults: !!results,
-    resultsType: typeof results,
-    resultsKeys: results ? Object.keys(results) : null,
-    shouldShowEmptyState,
-    isEmptyQuery
-  })
+  const isEmptyQuery = useMemo(() => {
+    const empty = !query || query.trim() === ''
+    console.log('🔍 NewHitsGridWithEmptyState - query:', query, 'isEmptyQuery:', empty)
+    return empty
+  }, [query])
+
+  const shouldShowEmptyState = useMemo(() => {
+    console.log('🔍 NewHitsGridWithEmptyState - results:', results)
+    if (isEmptyQuery) {
+      console.log('🔍 Showing empty state because query is empty')
+      return true
+    }
+    const hasNoHits = results && typeof results.nbHits === 'number' && results.nbHits === 0
+    console.log('🔍 Has no hits:', hasNoHits, 'nbHits:', results?.nbHits)
+    return hasNoHits
+  }, [results, isEmptyQuery])
 
   // Show skeleton during loading
   if (isLoading && !isEmptyQuery) {
-    console.log('🔍 NewHitsGridWithEmptyState: Showing skeleton (loading)')
     return <NewGridSkeleton />
   }
 
   // Show empty state when no results
   if (shouldShowEmptyState) {
-    console.log('🔍 NewHitsGridWithEmptyState: Showing empty state (no results)')
-    return <EmptyState />
+    return <EmptyState isSuggestionsOpen={isSuggestionsOpen} />
   }
 
-  console.log('🔍 NewHitsGridWithEmptyState: Showing results grid')
   return <NewHitsGrid />
 })
