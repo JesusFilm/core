@@ -31,7 +31,7 @@ jobs:
           cache: 'pnpm'
 
       - name: Install dependencies
-        run: pnpm install --silent
+        run: pnpm install --frozen-lockfile --silent
       - uses: nrwl/nx-set-shas@v4
       - id: set-matrix
         name: set matrix app to affected array
@@ -97,7 +97,7 @@ jobs:
           node-version: ${{ matrix.node-version }}
           cache: 'pnpm'
       - name: Install dependencies
-        run: pnpm install --silent
+        run: pnpm install --frozen-lockfile --silent
       - uses: nrwl/nx-set-shas@v4
       - name: vercel deployment
         env:
@@ -257,7 +257,7 @@ jobs:
           cache: 'pnpm'
 
       - name: Install dependencies
-        run: pnpm install --silent
+        run: pnpm install --frozen-lockfile --silent
       - name: Mount playwright cache
         uses: useblacksmith/stickydisk@v1
         with:
@@ -338,7 +338,7 @@ jobs:
           cache: 'pnpm'
 
       - name: Install dependencies
-        run: pnpm install --silent
+        run: pnpm install --frozen-lockfile --silent
       - uses: nrwl/nx-set-shas@v4
       - name: vercel deployment
         env:

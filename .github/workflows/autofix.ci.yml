@@ -31,7 +31,7 @@ jobs:
           node-version: ${{ matrix.node-version }}
           cache: 'pnpm'
       - name: Install dependencies
-        run: pnpm install --silent
+        run: pnpm install --frozen-lockfile --silent
       - name: Mount lint cache
         uses: useblacksmith/stickydisk@v1
         with:
