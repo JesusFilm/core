@@ -1,7 +1,3 @@
-ENV PNPM_HOME="/usr/local/share/pnpm"
-ENV PATH="$PNPM_HOME:$PATH"
-RUN apk add --no-cache curl && \
-    curl -fsSL https://get.pnpm.io/install.sh | sh -s -- --bin-dir $PNPM_HOME --version 10
 FROM node:22-alpine3.20
 
 EXPOSE 4002
@@ -17,9 +13,9 @@ RUN apk upgrade --update-cache --available && \
 WORKDIR /app
 COPY ./dist/apps/api-users .
 COPY ./pnpm-lock.yaml .
+RUN corepack enable && corepack prepare pnpm --activate
 COPY ./libs/prisma/users/db ./prisma
 
-RUN echo "Using pnpm via installer above; corepack disabled"
 RUN pnpm install --prod --frozen-lockfile
 RUN pnpm add @prisma/client@6.5.0 --prod
 RUN pnpm add -D prisma@6.5.0

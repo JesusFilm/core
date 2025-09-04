@@ -24,10 +24,7 @@ COPY ./dist/apis/media-transcoder .
 COPY ./pnpm-lock.yaml .
 
 # dependencies that nestjs needs
-ENV PNPM_HOME="/usr/local/share/pnpm"
-ENV PATH="$PNPM_HOME:$PATH"
-RUN apk add --no-cache curl && \
-    curl -fsSL https://get.pnpm.io/install.sh | sh -s -- --bin-dir $PNPM_HOME --version 10
+RUN corepack enable && corepack prepare pnpm --activate
 RUN pnpm install --prod --frozen-lockfile
 
 CMD node ./main.js

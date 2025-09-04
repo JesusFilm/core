@@ -20,8 +20,7 @@ export default async () => {
   if (packageChanged && !lockfileChanged) {
     const message =
       'Changes were made to package.json, but not to pnpm-lock.yaml'
-    const idea =
-      'Perhaps you need to run `curl -fsSL https://get.pnpm.io/install.sh | sh -` then `pnpm install`?'
+    const idea = 'Perhaps you need to run `pnpm install`?'
     warn(`${message} - <i>${idea}</i>`)
   }
 

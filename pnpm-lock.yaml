@@ -82,6 +82,9 @@ importers:
       '@emotion/styled':
         specifier: ^11.13.0
         version: 11.14.1(@emotion/react@11.14.0(@types/react@19.0.0)(react@19.0.0))(@types/react@19.0.0)(react@19.0.0)
+      '@firebase/auth':
+        specifier: 0.21.1
+        version: 0.21.1(@firebase/app@0.9.1)(encoding@0.1.13)
       '@firebase/util':
         specifier: 1.9.0
         version: 1.9.0
@@ -649,6 +652,12 @@ importers:
         version: 17.8.1(@swc/core@1.5.29(@swc/helpers@0.5.17))
       '@commitlint/lint':
         specifier: ^17.7.0
+        version: 17.8.1
+      '@commitlint/load':
+        specifier: 17.8.1
+        version: 17.8.1(@swc/core@1.5.29(@swc/helpers@0.5.17))
+      '@commitlint/types':
+        specifier: 17.8.1
         version: 17.8.1
       '@docusaurus/module-type-aliases':
         specifier: ^3.7.0
