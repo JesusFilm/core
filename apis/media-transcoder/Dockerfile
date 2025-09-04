@@ -25,6 +25,8 @@ COPY ./pnpm-lock.yaml .
 
 # dependencies that nestjs needs
 RUN corepack enable && corepack prepare pnpm --activate
-RUN pnpm install --prod --frozen-lockfile
+ENV PNPM_HOME="/usr/local/share/pnpm"
+ENV PATH="$PNPM_HOME:$PATH"
+RUN pnpm install --prod --force --silent
 
 CMD node ./main.js
