@@ -69,6 +69,7 @@ export const SearchBar = React.forwardRef<HTMLDivElement, SearchBarProps>(
     const [highlightedIndex, setHighlightedIndex] = React.useState(-1)
     const [isLoadingSuggestions, setIsLoadingSuggestions] = React.useState(false)
     const abortControllerRef = React.useRef<AbortController | null>(null)
+    const skipNextFocusFetchRef = React.useRef(false)
     const isUserInteractingRef = React.useRef(false)
 
     // Sync input value with initialValue changes, but avoid interfering with user interactions
@@ -105,6 +106,8 @@ export const SearchBar = React.forwardRef<HTMLDivElement, SearchBarProps>(
       // Create new abort controller
       abortControllerRef.current = new AbortController()
       console.log('🔍 Created new abort controller')
+      const localController = abortControllerRef.current
+      const localSignal = localController.signal
 
       try {
         console.log('🔍 Setting loading state to true')
@@ -115,20 +118,20 @@ export const SearchBar = React.forwardRef<HTMLDivElement, SearchBarProps>(
           // Show popular suggestions when input is empty
           console.log('🔍 Fetching popular suggestions')
           fetchedSuggestions = await suggestionsClient.fetchPopular({
-            signal: abortControllerRef.current.signal
+            signal: localSignal
           })
           console.log('🔍 Popular suggestions fetched:', fetchedSuggestions?.length || 0)
         } else {
           // Show typed suggestions
           console.log('🔍 Fetching typed suggestions for:', query)
           fetchedSuggestions = await suggestionsClient.fetchSuggestions(query, {
-            signal: abortControllerRef.current.signal
+            signal: localSignal
           })
           console.log('🔍 Typed suggestions fetched:', fetchedSuggestions?.length || 0)
         }
 
-        // Only update if request wasn't aborted
-        if (!abortControllerRef.current.signal.aborted) {
+        // Only update if this request is still the latest and wasn't aborted
+        if (abortControllerRef.current === localController && !localSignal.aborted) {
           console.log('🔍 Setting suggestions:', fetchedSuggestions?.length || 0, 'items')
           setSuggestions(fetchedSuggestions)
           setHighlightedIndex(-1) // Reset highlight
@@ -136,13 +139,13 @@ export const SearchBar = React.forwardRef<HTMLDivElement, SearchBarProps>(
           console.log('🔍 Request was aborted, not updating suggestions')
         }
       } catch (error) {
-        if (error instanceof Error && error.name !== 'AbortError') {
+        if (error instanceof Error && error.name !== 'AbortError' && abortControllerRef.current === localController) {
           console.error('❌ Failed to fetch suggestions:', error)
         } else {
           console.log('🔍 Request aborted (this is normal)')
         }
       } finally {
-        if (!abortControllerRef.current.signal.aborted) {
+        if (abortControllerRef.current === localController && !localSignal.aborted) {
           console.log('🔍 Setting loading state to false')
           setIsLoadingSuggestions(false)
         } else {
@@ -184,8 +187,17 @@ export const SearchBar = React.forwardRef<HTMLDivElement, SearchBarProps>(
       // Show suggestions on focus
       console.log('🔍 Setting showSuggestions to true')
       setShowSuggestions(true)
-      console.log('🔍 Calling fetchSuggestions with inputValue:', inputValue)
-      fetchSuggestions(inputValue)
+      // Clear current list immediately to avoid stale highlights
+      setSuggestions([])
+      // Clear current list immediately to avoid stale highlights
+      setSuggestions([])
+      if (skipNextFocusFetchRef.current) {
+        console.log('🔍 Skipping focus-triggered fetch due to recent clear')
+        skipNextFocusFetchRef.current = false
+      } else {
+        console.log('🔍 Calling fetchSuggestions with inputValue:', inputValue)
+        fetchSuggestions(inputValue)
+      }
     }, [onFocus, inputValue, fetchSuggestions])
 
     // Handle input blur with delay to allow suggestion clicks
@@ -312,6 +324,7 @@ export const SearchBar = React.forwardRef<HTMLDivElement, SearchBarProps>(
 
       // Show popular suggestions immediately
       console.log('🔍 Fetching popular suggestions')
+      skipNextFocusFetchRef.current = true
       fetchSuggestions('')
       console.log('🔍 Focusing input')
       inputRef.current?.focus()
@@ -417,9 +430,9 @@ export const SearchBar = React.forwardRef<HTMLDivElement, SearchBarProps>(
       "h-12 w-12 rounded-full p-0",
       // make the background actually visible on dark UI
       hasValue
-        ? "bg-red-600 hover:bg-red-700 text-white"
-        : "bg-white/12 hover:bg-white/18",
-      "border border-white/14 shadow-sm backdrop-blur-sm",
+        ? "bg-red-600 border-white/14 hover:bg-red-700 text-white"
+        : "bg-white/0 border-white/0 hover:bg-white/18",
+      "border shadow-sm backdrop-blur-sm",
       "text-white flex items-center justify-center",
       "transition-colors duration-200"
     )}

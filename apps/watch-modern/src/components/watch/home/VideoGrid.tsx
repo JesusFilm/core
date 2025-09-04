@@ -144,7 +144,7 @@ const SearchBarContainer = memo(function SearchBarContainer({
     // Only refine if value actually changed from current query
     // Note: We no longer handle clearing from non-empty to empty here
     // since clear button now handles this locally
-    const shouldRefine = value !== query
+    const shouldRefine = (value || '').trim() !== (query || '').trim()
     console.log('🔍 Should refine?', shouldRefine)
 
     if (shouldRefine) {
@@ -460,26 +460,40 @@ const NewHitsGridWithEmptyState = memo(function NewHitsGridWithEmptyState({ isSu
     return empty
   }, [query])
 
-  const shouldShowEmptyState = useMemo(() => {
-    console.log('🔍 NewHitsGridWithEmptyState - results:', results)
-    if (isEmptyQuery) {
-      console.log('🔍 Showing empty state because query is empty')
-      return true
-    }
-    const hasNoHits = results && typeof results.nbHits === 'number' && results.nbHits === 0
-    console.log('🔍 Has no hits:', hasNoHits, 'nbHits:', results?.nbHits)
-    return hasNoHits
-  }, [results, isEmptyQuery])
+  const hasNoHits = useMemo(() => {
+    const none = !!results && typeof results.nbHits === 'number' && results.nbHits === 0
+    console.log('🔍 Has no hits:', none, 'nbHits:', results?.nbHits)
+    return none
+  }, [results])
 
-  // Show skeleton during loading
-  if (isLoading && !isEmptyQuery) {
-    return <NewGridSkeleton />
-  }
+  const shouldShowEmptyState = isEmptyQuery || hasNoHits
 
-  // Show empty state when no results
-  if (shouldShowEmptyState) {
-    return <EmptyState isSuggestionsOpen={isSuggestionsOpen} />
-  }
+  // Keep Hits mounted to avoid re-search loops; use CSS to hide/overlay
+  return (
+    <div className="relative">
+      {/* Skeleton overlay while loading (only when there is a non-empty query) */}
+      {isLoading && !isEmptyQuery && (
+        <div className="absolute inset-0 z-10" data-testid="grid-skeleton-overlay">
+          <NewGridSkeleton />
+        </div>
+      )}
 
-  return <NewHitsGrid />
+      {/* Always-mounted hits grid; hidden during loading to prevent flicker */}
+      <div
+        data-testid="hits-grid-container"
+        className={cn(
+          (isLoading && !isEmptyQuery) && 'opacity-0 pointer-events-none select-none'
+        )}
+      >
+        <NewHitsGrid />
+      </div>
+
+      {/* Empty state overlay; keep hits mounted behind it */}
+      {shouldShowEmptyState && (
+        <div className="absolute inset-0 z-20" data-testid="grid-empty-overlay">
+          <EmptyState isSuggestionsOpen={isSuggestionsOpen} />
+        </div>
+      )}
+    </div>
+  )
 })

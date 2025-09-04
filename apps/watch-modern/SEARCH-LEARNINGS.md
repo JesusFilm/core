@@ -61,3 +61,40 @@
 - Consider `algoliasearch/lite` to reduce client bundle size.
 - If we later wire the header overlay search, connect it to the same `useSearchBox()` state for consistency.
 
+---
+
+## 2025-09 — Suggestions + Grid Stability (No re-mount loops)
+
+Context: When suggestions and the grid were shown together, the grid kept flipping between `loading` and `idle` with repeated mount logs for the hit components.
+
+Key Learnings
+- Keep `<Hits />` mounted. Mount/unmount of `<Hits />` triggers an Algolia search, which, paired with conditional rendering, can cause a `loading → idle → loading` loop.
+- Use overlays for state presentation:
+  - Show a skeleton as an absolute overlay while `status === 'loading'` and the query isn’t empty.
+  - Show an empty state overlay for `nbHits === 0` or empty query.
+  - Keep the hits container in the DOM, but fade/disable it while overlays are visible.
+
+Implementation
+- File: `apps/watch-modern/src/components/watch/home/VideoGrid.tsx`
+  - `NewHitsGridWithEmptyState` always renders the hits grid (`data-testid="hits-grid-container"`).
+  - Skeleton overlay: `data-testid="grid-skeleton-overlay"`.
+  - Empty overlay: `data-testid="grid-empty-overlay"`.
+
+Race conditions and stale suggestions
+- Clearing the input while a typed suggestions request is in-flight can cause the older response to override the newer “popular” results.
+- Guard pattern we use in `SearchBar.tsx`:
+  - Create a fresh `AbortController` for every fetch and keep a local reference.
+  - Pass that `signal` into the suggestions client.
+  - After awaiting the response, only update state if `abortControllerRef.current === localController` and `!localSignal.aborted`.
+  - Also clear the suggestions list immediately on clear to avoid flashing old highlights.
+  - File: `apps/watch-modern/src/components/watch/search/SearchBar.tsx` (fetchSuggestions + clear handler).
+
+SearchBar behavior
+- Input is fully controlled and decoupled from InstantSearch while typing.
+- `Enter`/submit or selecting a suggestion triggers `refine` (via parent container).
+- Clear (`X`) sets input to empty and shows “Popular searches” via a zero‑query suggestions fetch; the grid doesn’t change until submit.
+
+Tests added (Playwright)
+- `apps/watch-modern-e2e/src/e2e/search/suggestions-popup.spec.ts` validates:
+  - Clears to “Popular searches” with no highlights from previous query.
+  - Skeleton overlays while loading but hits remain mounted.
