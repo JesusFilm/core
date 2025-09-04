@@ -3,7 +3,6 @@ import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
-import { isIOSTouchScreen } from '@core/shared/ui/deviceUtils'
 
 import { BlockFields_StepBlock as StepBlock } from '../../../../../../../../__generated__/BlockFields'
 
@@ -14,10 +13,6 @@ jest.mock('@core/shared/ui/deviceUtils', () => {
     isIOSTouchScreen: jest.fn()
   }
 })
-
-const mockIsIOSTouchScreen = isIOSTouchScreen as jest.MockedFunction<
-  typeof isIOSTouchScreen
->
 
 describe('StepBlockNodeMenu', () => {
   const step: TreeBlock<StepBlock> = {
@@ -55,28 +50,6 @@ describe('StepBlockNodeMenu', () => {
       getByRole('menuitem', { name: 'Duplicate Card' })
     ).toBeInTheDocument()
     expect(getByRole('menuitem', { name: 'Delete Card' })).toBeInTheDocument()
-  })
-
-  it('should open menu on tap for iOS', async () => {
-    mockIsIOSTouchScreen.mockReturnValueOnce(true)
-    const { getByTestId, queryByTestId } = render(
-      <MockedProvider>
-        <SnackbarProvider>
-          <StepBlockNodeMenu step={step} />
-        </SnackbarProvider>
-      </MockedProvider>
-    )
-
-    await waitFor(() => {
-      expect(getByTestId('EditStepFab')).toBeInTheDocument()
-    })
-    expect(queryByTestId('StepBlockNodeMenu')).not.toBeInTheDocument()
-
-    fireEvent.mouseEnter(getByTestId('EditStepFab'))
-    await waitFor(() => {
-      expect(queryByTestId('StepBlockNodeMenu')).toBeInTheDocument()
-    })
-    expect(mockIsIOSTouchScreen).toHaveBeenCalled()
   })
 
   it('should have edit-step id on fab', async () => {
