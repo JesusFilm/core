@@ -1,7 +1,5 @@
 import { Prisma, User, prisma } from '@core/prisma/users/client'
 
-import { Context } from '../builder'
-
 import { verifyUser } from './verifyUser'
 
 export interface CurrentUserFromCtx {
