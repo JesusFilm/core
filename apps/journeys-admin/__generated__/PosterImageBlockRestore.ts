@@ -7,8 +7,8 @@
 // GraphQL mutation operation: PosterImageBlockRestore
 // ====================================================
 
-export interface PosterImageBlockRestore_blockRestore_StepBlock {
-  __typename: "StepBlock" | "ButtonBlock" | "CardBlock" | "IconBlock" | "RadioOptionBlock" | "RadioQuestionBlock" | "SignUpBlock" | "SpacerBlock" | "TextResponseBlock" | "TypographyBlock" | "VideoBlock" | "GridContainerBlock" | "GridItemBlock" | "VideoTriggerBlock";
+export interface PosterImageBlockRestore_blockRestore_ButtonBlock {
+  __typename: "ButtonBlock" | "CardBlock" | "GridContainerBlock" | "GridItemBlock" | "IconBlock" | "RadioOptionBlock" | "RadioQuestionBlock" | "SignUpBlock" | "SpacerBlock" | "StepBlock" | "TextResponseBlock" | "TypographyBlock" | "VideoBlock" | "VideoTriggerBlock";
   id: string;
 }
 
@@ -31,7 +31,7 @@ export interface PosterImageBlockRestore_blockRestore_ImageBlock {
   focalLeft: number | null;
 }
 
-export type PosterImageBlockRestore_blockRestore = PosterImageBlockRestore_blockRestore_StepBlock | PosterImageBlockRestore_blockRestore_ImageBlock;
+export type PosterImageBlockRestore_blockRestore = PosterImageBlockRestore_blockRestore_ButtonBlock | PosterImageBlockRestore_blockRestore_ImageBlock;
 
 export interface PosterImageBlockRestore_videoBlockUpdate {
   __typename: "VideoBlock";
