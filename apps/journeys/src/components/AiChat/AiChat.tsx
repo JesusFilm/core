@@ -1,7 +1,7 @@
 import { DefaultChatTransport } from 'ai'
 import { useChat } from '@ai-sdk/react'
 import { useEffect, useState } from 'react'
-import { Suggestion, SuggestionsRequest, SuggestionsResponse } from '../../types/suggestions'
+import { Suggestion, SuggestionsRequest } from '../../types/suggestions'
 import { useBlocks } from '@core/journeys/ui/block'
 import { extractTypographyContent } from '../../utils/contextExtraction'
 
@@ -54,8 +54,8 @@ export function AiChat({ open }: AiChatProps) {
 
         if (!response.ok) throw new Error('Failed to fetch suggestions')
 
-        const data: SuggestionsResponse = await response.json()
-        const suggestionsWithIds = data.suggestions.map((text: string, index: number) => ({
+        const suggestions: string[] = await response.json()
+        const suggestionsWithIds = suggestions.map((text: string, index: number) => ({
           id: `suggestion-${index}`,
           text
         }))
