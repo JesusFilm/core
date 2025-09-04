@@ -98,7 +98,7 @@
     "update-shortlinks": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "pnpm ts-node -P apis/api-journeys-modern/tsconfig.app.json apis/api-journeys-modern/src/workers/cli.ts shortlink-updater"
+        "command": "pnpm exec ts-node -P apis/api-journeys-modern/tsconfig.app.json apis/api-journeys-modern/src/workers/cli.ts shortlink-updater"
       }
     }
   }

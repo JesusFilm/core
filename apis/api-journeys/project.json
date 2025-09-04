@@ -54,7 +54,7 @@
     "watcher": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "pnpm ts-node tools/scripts/generate-typings.ts api-journeys --transpileOnly"
+        "command": "pnpm exec ts-node tools/scripts/generate-typings.ts api-journeys --transpileOnly"
       }
     },
     "lint": {
@@ -120,7 +120,7 @@
     "prisma-seed": {
       "executor": "nx:run-commands",
       "options": {
-        "commands": ["pnpm ts-node apis/api-journeys/db/seed.ts"]
+        "commands": ["pnpm exec ts-node apis/api-journeys/db/seed.ts"]
       }
     }
   }

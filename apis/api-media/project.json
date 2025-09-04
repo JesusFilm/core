@@ -88,32 +88,32 @@
     "queue-video-children": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "pnpm ts-node apis/api-media/src/workers/cli.ts video-children"
+        "command": "pnpm exec ts-node apis/api-media/src/workers/cli.ts video-children"
       }
     },
     "queue-crowdin": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "pnpm ts-node apis/api-media/src/workers/cli.ts crowdin"
+        "command": "pnpm exec ts-node apis/api-media/src/workers/cli.ts crowdin"
       }
     },
     "queue-blocklist": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "pnpm ts-node apis/api-media/src/workers/cli.ts blocklist"
+        "command": "pnpm exec ts-node-node apis/api-media/src/workers/cli.ts blocklist"
       }
     },
     "queue-seed": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "pnpm ts-node apis/api-media/src/workers/cli.ts seed"
+        "command": "pnpm exec ts-node apis/api-media/src/workers/cli.ts seed"
       }
     },
     "export-language-slugs": {
       "executor": "nx:run-commands",
       "options": {
         "commands": [
-          "pnpm ts-node apis/api-media/src/lib/exportExistingLanguageSlugs.ts",
+          "pnpm exec ts-node apis/api-media/src/lib/exportExistingLanguageSlugs.ts",
           "pnpm exec prettier apis/api-languages/src/__generated__/languageSlugs.ts --write"
         ],
         "parallel": false
@@ -122,55 +122,55 @@
     "data-export": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "pnpm ts-node apis/api-media/src/workers/cli.ts data-export"
+        "command": "pnpm exec ts-node apis/api-media/src/workers/cli.ts data-export"
       }
     },
     "data-import": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "pnpm ts-node apis/api-media/src/scripts/data-import.ts"
+        "command": "pnpm exec ts-node apis/api-media/src/scripts/data-import.ts"
       }
     },
     "subtitle-migrate-r2": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "pnpm ts-node apis/api-media/src/scripts/subtitle-migrate-r2.ts"
+        "command": "pnpm exec ts-node apis/api-media/src/scripts/subtitle-migrate-r2.ts"
       }
     },
     "download-migrate-r2": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "pnpm ts-node apis/api-media/src/scripts/download-migrate-r2.ts"
+        "command": "pnpm exec ts-node apis/api-media/src/scripts/download-migrate-r2.ts"
       }
     },
     "copy-distro-downloads": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "pnpm ts-node apis/api-media/src/scripts/copy-distro-downloads.ts"
+        "command": "pnpm exec ts-node apis/api-media/src/scripts/copy-distro-downloads.ts"
       }
     },
     "update-arcgt-urls": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "pnpm ts-node apis/api-media/src/scripts/update-arcgt-urls.ts"
+        "command": "pnpm exec ts-node apis/api-media/src/scripts/update-arcgt-urls.ts"
       }
     },
     "mux-videos": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "pnpm ts-node apis/api-media/src/scripts/mux-videos.ts"
+        "command": "pnpm exec ts-node apis/api-media/src/scripts/mux-videos.ts"
       }
     },
     "populate-crowdin-ids": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "pnpm ts-node apis/api-media/src/workers/cli.ts populate-crowdin-ids"
+        "command": "pnpm exec ts-node apis/api-media/src/workers/cli.ts populate-crowdin-ids"
       }
     },
     "prisma-seed": {
       "executor": "nx:run-commands",
       "options": {
-        "commands": ["pnpm ts-node apis/api-media/db/seed.ts"]
+        "commands": ["pnpm exec ts-node apis/api-media/db/seed.ts"]
       }
     }
   }
