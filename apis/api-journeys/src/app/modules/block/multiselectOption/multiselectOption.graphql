@@ -4,5 +4,4 @@ type MultiselectOptionBlock implements Block @shareable {
   parentBlockId: ID!
   parentOrder: Int!
   label: String!
-  totalClicks: Int!
 }

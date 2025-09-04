@@ -1,4 +1,3 @@
-import { ActionInterface } from '../../action/action'
 import { builder } from '../../builder'
 import { Block } from '../block'
 
@@ -11,17 +10,6 @@ export const MultiselectOptionBlock = builder.prismaObject('Block', {
     label: t.string({
       nullable: false,
       resolve: (block) => block.label ?? ''
-    }),
-    totalClicks: t.int({
-      nullable: false,
-      select: {
-        _count: {
-          select: {
-            action: true
-          }
-        }
-      },
-      resolve: (block) => block._count.action
     })
   })
 })
