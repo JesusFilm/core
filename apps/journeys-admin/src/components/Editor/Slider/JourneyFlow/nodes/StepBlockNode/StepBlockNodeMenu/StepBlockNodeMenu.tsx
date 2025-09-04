@@ -4,7 +4,6 @@ import Zoom from '@mui/material/Zoom'
 import { MouseEvent, ReactElement, useState } from 'react'
 
 import { TreeBlock } from '@core/journeys/ui/block'
-import { isIOSTouchScreen } from '@core/shared/ui/deviceUtils'
 import EllipsisIcon from '@core/shared/ui/icons/Ellipsis'
 
 import { BlockFields_StepBlock as StepBlock } from '../../../../../../../../__generated__/BlockFields'
