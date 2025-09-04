@@ -35,7 +35,6 @@ function CustomizePage() {
       <PageWrapper
         user={user}
         showMainHeader={false}
-        mainBodyPadding={false}
         background="linear-gradient(to bottom, #1f2c430f, #2568994d)"
       >
         <JourneyProvider
