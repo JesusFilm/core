@@ -16,7 +16,9 @@ COPY ./pnpm-lock.yaml .
 COPY ./libs/prisma/languages/db ./prisma
 
 RUN corepack enable && corepack prepare pnpm --activate
-RUN pnpm install --prod --frozen-lockfile
+ENV PNPM_HOME="/usr/local/share/pnpm"
+ENV PATH="$PNPM_HOME:$PATH"
+RUN pnpm install --prod --force --silent
 RUN pnpm add @prisma/client@6.5.0 --prod
 RUN pnpm add -D prisma@6.5.0
 RUN pnpm exec prisma generate --generator client --schema ./prisma/schema.prisma
