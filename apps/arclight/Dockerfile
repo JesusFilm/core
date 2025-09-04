@@ -16,7 +16,7 @@ COPY ./pnpm-workspace.yaml .
 # dependencies
 RUN mkdir -p $PNPM_HOME && corepack enable && corepack prepare pnpm --activate
 RUN pnpm add -g next
-RUN pnpm install --prod --force --silent
-RUN pnpm add sharp pino dd-trace next-logger --force --silent
+RUN pnpm install --prod 
+RUN pnpm add sharp pino dd-trace next-logger
 
 CMD NODE_OPTIONS='-r next-logger' pnpm start
