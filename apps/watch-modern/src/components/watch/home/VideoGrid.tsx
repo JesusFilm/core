@@ -1,12 +1,23 @@
 "use client"
 
 import type { Hit as AlgoliaHit } from 'instantsearch.js'
-import { Hits, Pagination, SearchBox, useInstantSearch, useSearchBox } from 'react-instantsearch'
+import { Search, X } from 'lucide-react'
+import { Hits, useInstantSearch, usePagination, useSearchBox } from 'react-instantsearch'
 import { Card } from '@/components/ui/card'
 import { Container } from '@/components/ui/container'
+import {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from '@/components/ui/pagination'
 import { MediaCard, type MediaCardProps } from './MediaCard'
 import { Skeleton } from '@/components/ui/skeleton'
 import { AspectRatio } from '@/components/ui/aspect-ratio'
+import { memo, useMemo, useCallback } from 'react'
 
 type AlgoliaVideo = AlgoliaHit<{
   videoId: string
@@ -98,30 +109,135 @@ function transformToMediaCardProps(hit: AlgoliaVideo): MediaCardProps {
   }
 }
 
-function SearchBoxWithLoading() {
+const SearchBoxWithLoading = memo(function SearchBoxWithLoading() {
+  console.log('🔍 SearchBoxWithLoading: Component rendering')
+
   const { status } = useInstantSearch()
-  const isSearching = status === 'loading' || status === 'stalled'
+  const { query, refine, clear } = useSearchBox()
+
+  // Memoize derived values to prevent unnecessary re-renders
+  const isSearching = useMemo(() => status === 'loading' || status === 'stalled', [status])
+  const hasQuery = useMemo(() => Boolean(query && query.trim().length > 0), [query])
+
+  console.log('🔍 SearchBoxWithLoading: State values:', {
+    status,
+    query,
+    isSearching,
+    hasQuery,
+    clearFunctionType: typeof clear,
+    clearFunctionExists: !!clear
+  })
+
+  // Update query as user types (controlled input)
+  const onChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      refine(e.currentTarget.value)
+    },
+    [refine]
+  )
+
+  // Memoize the clear handler to prevent recreation on each render
+  const handleClear = useCallback((e: React.MouseEvent<HTMLButtonElement>) => {
+    console.log('🔍 Clear button clicked (input X button)')
+    console.log('🔍 Event details:', {
+      type: e.type,
+      target: e.target,
+      currentTarget: e.currentTarget
+    })
+    console.log('🔍 Before preventDefault and stopPropagation')
+
+    e.preventDefault()
+    e.stopPropagation()
+
+    console.log('🔍 After preventDefault and stopPropagation')
+    console.log('🔍 About to call clear() function')
+    console.log('🔍 Current query before clear:', query)
+
+    try {
+      // Use refine('') to guarantee the input value updates immediately
+      refine('')
+      // Call clear as well to reset any auxiliary state managed by the connector
+      clear()
+      console.log('🔍 Clear function called successfully')
+    } catch (error) {
+      console.error('🔍 Error calling clear function:', error)
+    }
+
+    console.log('🔍 Clear button click handler finished')
+  }, [clear, refine])
 
   return (
-    <div className="relative max-w-2xl mx-auto">
-      <SearchBox
-        classNames={{
-          root: 'w-full',
-          input: 'h-14 w-full rounded-lg border border-gray-300 bg-white px-6 py-4 text-base text-gray-900 placeholder:text-gray-500 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-0 transition-colors shadow-sm hover:shadow-md'
-        }}
+    <div className="relative max-w-3xl mx-auto" role="search">
+      <input
+        type="text"
+        value={query}
+        onChange={onChange}
+        className="h-16 w-full rounded-xl border border-gray-300 bg-white pl-14 pr-16 py-5 text-lg text-gray-900 placeholder:text-gray-500 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-0 transition-colors shadow-sm hover:shadow-md"
         placeholder="Search videos, films, and series..."
+        aria-label="Search videos"
       />
+      {/* Search icon on the left */}
+      <div className="absolute left-5 top-[22px] text-gray-400" aria-hidden="true">
+        <Search className="h-6 w-6" />
+      </div>
+
+      {/* Clear button on the right (when there's a query) */}
+      {hasQuery && !isSearching && (
+        <button
+          onClick={handleClear}
+          className="absolute right-5 top-[22px] text-gray-400 hover:text-gray-600 transition-colors focus:outline-none focus:text-gray-600 z-10"
+          aria-label="Clear search"
+          type="button"
+        >
+          <X className="h-6 w-6" />
+        </button>
+      )}
+
+      {/* Loading spinner on the right (when searching) */}
       {isSearching && (
-        <div className="absolute right-4 top-1/2 -translate-y-1/2" aria-hidden="true">
-          <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-blue-500"></div>
+        <div className="absolute right-5 top-[22px]" aria-hidden="true">
+          <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-500"></div>
         </div>
       )}
     </div>
   )
-}
+})
 
-function EmptyState() {
+const EmptyState = memo(function EmptyState() {
+  console.log('🔍 EmptyState: Component rendering')
+
   const { clear } = useSearchBox()
+
+  console.log('🔍 EmptyState: useSearchBox hook called, clear function details:', {
+    clearFunctionType: typeof clear,
+    clearFunctionExists: !!clear
+  })
+
+  // Memoize the clear handler to prevent recreation on each render
+  const handleEmptyStateClear = useCallback((e: React.MouseEvent<HTMLButtonElement>) => {
+    console.log('🔍 Clear Search button clicked (empty state button)')
+    console.log('🔍 Event details:', {
+      type: e.type,
+      target: e.target,
+      currentTarget: e.currentTarget
+    })
+    console.log('🔍 Before preventDefault and stopPropagation')
+
+    e.preventDefault()
+    e.stopPropagation()
+
+    console.log('🔍 After preventDefault and stopPropagation')
+    console.log('🔍 About to call clear() function from EmptyState')
+
+    try {
+      clear()
+      console.log('🔍 Clear function from EmptyState called successfully')
+    } catch (error) {
+      console.error('🔍 Error calling clear function from EmptyState:', error)
+    }
+
+    console.log('🔍 Clear Search button click handler finished')
+  }, [clear])
 
   return (
     <div className="col-span-full flex flex-col items-center justify-center py-16 text-center">
@@ -132,9 +248,7 @@ function EmptyState() {
       </p>
       <div className="mt-6">
         <button
-          onClick={() => {
-            clear()
-          }}
+          onClick={handleEmptyStateClear}
           className="px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background transition-colors"
           aria-label="Clear search and show all videos"
         >
@@ -142,6 +256,118 @@ function EmptyState() {
         </button>
       </div>
     </div>
+  )
+})
+
+/**
+ * Custom pagination component using shadcn pagination with InstantSearch
+ */
+function ShadcnPagination() {
+  const { currentRefinement, nbPages, refine } = usePagination()
+
+  if (nbPages <= 1) {
+    return null
+  }
+
+  const handlePageChange = (page: number) => {
+    refine(page)
+  }
+
+  const renderPageNumbers = () => {
+    const pages = []
+    const currentPage = currentRefinement
+    const totalPages = nbPages
+
+    // Always show first page
+    if (currentPage > 2) {
+      pages.push(
+        <PaginationItem key={0}>
+          <PaginationLink
+            size="lg"
+            onClick={() => handlePageChange(0)}
+            isActive={currentPage === 0}
+            className="px-4 py-3 text-lg font-light min-w-[3rem] h-12"
+          >
+            1
+          </PaginationLink>
+        </PaginationItem>
+      )
+      if (currentPage > 3) {
+        pages.push(
+          <PaginationItem key="ellipsis-start">
+            <PaginationEllipsis className="h-12 w-12" />
+          </PaginationItem>
+        )
+      }
+    }
+
+    // Show pages around current page
+    const startPage = Math.max(0, currentPage - 1)
+    const endPage = Math.min(totalPages - 1, currentPage + 1)
+
+    for (let i = startPage; i <= endPage; i++) {
+      pages.push(
+        <PaginationItem key={i}>
+          <PaginationLink
+            size="lg"
+            onClick={() => handlePageChange(i)}
+            isActive={currentPage === i}
+            className="px-4 py-3 text-lg font-light min-w-[3rem] h-12"
+          >
+            {i + 1}
+          </PaginationLink>
+        </PaginationItem>
+      )
+    }
+
+    // Always show last page
+    if (currentPage < totalPages - 3) {
+      if (currentPage < totalPages - 4) {
+        pages.push(
+          <PaginationItem key="ellipsis-end">
+            <PaginationEllipsis className="h-12 w-12" />
+          </PaginationItem>
+        )
+      }
+      pages.push(
+        <PaginationItem key={totalPages - 1}>
+          <PaginationLink
+            size="lg"
+            onClick={() => handlePageChange(totalPages - 1)}
+            isActive={currentPage === totalPages - 1}
+            className="px-4 py-3 text-lg font-light min-w-[3rem] h-12"
+          >
+            {totalPages}
+          </PaginationLink>
+        </PaginationItem>
+      )
+    }
+
+    return pages
+  }
+
+  return (
+    <Pagination className="scale-150 origin-center">
+      <PaginationContent className="gap-3">
+        <PaginationItem>
+          <PaginationPrevious
+            size="lg"
+            onClick={() => currentRefinement > 0 && handlePageChange(currentRefinement - 1)}
+            className={`px-6 py-3 text-lg font-light ${currentRefinement === 0 ? 'pointer-events-none opacity-50' : 'cursor-pointer hover:bg-primary/10'}`}
+          />
+        </PaginationItem>
+
+        {renderPageNumbers()}
+
+        <PaginationItem>
+          <PaginationNext
+            size="lg"
+            onClick={() => currentRefinement < nbPages - 1 && handlePageChange(currentRefinement + 1)}
+            className={`px-6 py-3 text-lg font-light ${currentRefinement >= nbPages - 1 ? 'pointer-events-none opacity-50' : 'cursor-pointer hover:bg-primary/10'}`}
+          />
+        </PaginationItem>
+      </PaginationContent>
+    </Pagination>
   )
 }
 
@@ -190,7 +416,9 @@ function NewHit({ hit }: { hit: AlgoliaVideo }) {
   return <MediaCard {...mediaCardProps} />
 }
 
-export function VideoGrid() {
+export const VideoGrid = memo(function VideoGrid() {
+  console.log('🔍 VideoGrid: Main component rendering')
+
   return (
     <section
       id="videos"
@@ -205,18 +433,13 @@ export function VideoGrid() {
 
         <NewHitsGridWithEmptyState />
 
-        <div className="mt-8 flex justify-center">
-          <Pagination
-            classNames={{
-              root: 'flex items-center gap-2',
-              selectedItem: 'font-semibold'
-            }}
-          />
+        <div className="mt-8">
+          <ShadcnPagination />
         </div>
       </Container>
     </section>
   )
-}
+})
 
 /**
  * Custom Hits component for the 4-column grid design (max 4 items per row)
@@ -247,21 +470,43 @@ function NewHitWrapper({ hit }: { hit: AlgoliaVideo }) {
 /**
  * Hits grid with empty state and loading skeleton for new design
  */
-function NewHitsGridWithEmptyState() {
+const NewHitsGridWithEmptyState = memo(function NewHitsGridWithEmptyState() {
+  console.log('🔍 NewHitsGridWithEmptyState: Component rendering')
+
   const { results, status } = useInstantSearch()
-  const isLoading = status === 'loading' || status === 'stalled'
+  const { query } = useSearchBox()
+
+  // Memoize derived values to prevent unnecessary re-renders
+  const isLoading = useMemo(() => status === 'loading' || status === 'stalled', [status])
+  const isEmptyQuery = useMemo(() => !query || query.trim() === '', [query])
+  const shouldShowEmptyState = useMemo(() => {
+    if (isEmptyQuery) return true
+    return results && typeof results.nbHits === 'number' && results.nbHits === 0
+  }, [results, isEmptyQuery])
+
+  console.log('🔍 NewHitsGridWithEmptyState: State values:', {
+    status,
+    isLoading,
+    nbHits: results?.nbHits,
+    hasResults: !!results,
+    resultsType: typeof results,
+    resultsKeys: results ? Object.keys(results) : null,
+    shouldShowEmptyState,
+    isEmptyQuery
+  })
 
   // Show skeleton during loading
-  if (isLoading) {
+  if (isLoading && !isEmptyQuery) {
+    console.log('🔍 NewHitsGridWithEmptyState: Showing skeleton (loading)')
     return <NewGridSkeleton />
   }
 
   // Show empty state when no results
-  if (results && results.nbHits === 0) {
+  if (shouldShowEmptyState) {
+    console.log('🔍 NewHitsGridWithEmptyState: Showing empty state (no results)')
     return <EmptyState />
   }
 
+  console.log('🔍 NewHitsGridWithEmptyState: Showing results grid')
   return <NewHitsGrid />
-}
-
-
+})
