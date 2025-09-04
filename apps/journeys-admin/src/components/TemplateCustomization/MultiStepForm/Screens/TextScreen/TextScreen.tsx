@@ -11,6 +11,7 @@ import ArrowRightIcon from '@core/shared/ui/icons/ArrowRight'
 
 import { GetJourney_journey_journeyCustomizationFields as JourneyCustomizationField } from '../../../../../../__generated__/GetJourney'
 import { JourneyCustomizationFieldUpdate } from '../../../../../../__generated__/JourneyCustomizationFieldUpdate'
+import { fontWeight } from '@mui/system'
 
 export const JOURNEY_CUSTOMIZATION_FIELD_UPDATE = gql`
   mutation JourneyCustomizationFieldUpdate(
@@ -66,18 +67,19 @@ const renderEditableText = (
         suppressContentEditableWarning
         tabIndex={0}
         style={{
-          backgroundColor: '#42a5f5',
-          color: '#ffffff',
+          backgroundColor: '#1E81DB20',
+          color: '#1E81DB',
           border: 'none',
-          borderRadius: '20px',
-          padding: '2px 12px',
+          borderRadius: '4px',
+          padding: '0px 2px',
           minWidth: '20px',
           maxWidth: '100%',
           display: 'inline-block',
           wordWrap: 'break-word',
           wordBreak: 'break-word',
           overflowWrap: 'break-word',
-          marginBottom: '4px'
+          marginBottom: '4px',
+          fontWeight: 'bold'
         }}
         onBlur={(e) => {
           const newValue = e.currentTarget.textContent || ''
@@ -93,15 +95,15 @@ const renderEditableText = (
             const editables =
               parent != null
                 ? Array.from(
-                    parent.querySelectorAll('[contenteditable="true"]')
-                  )
+                  parent.querySelectorAll('[contenteditable="true"]')
+                )
                 : []
             const index = editables.indexOf(e.currentTarget as HTMLElement)
             const nextIndex = e.shiftKey ? index - 1 : index + 1
             const nextEl = editables[nextIndex]
             if (nextEl != null) {
               e.preventDefault()
-              ;(nextEl as HTMLElement).focus()
+                ; (nextEl as HTMLElement).focus()
             }
           }
         }}
@@ -192,23 +194,27 @@ export function TextScreen({ handleNext }: TextScreenProps): ReactElement {
     <Stack
       alignItems="center"
       sx={{ px: { xs: 2, md: 8 }, maxWidth: '1000px', width: '100%' }}
-      gap={6}
+      gap={2}
     >
-      <Typography variant="h6" color="text.secondary">
-        {t(
-          "Here's a script of this invitation. Change the blue areas and it will be customized for you."
-        )}
-      </Typography>
+      <Stack alignItems="center" sx={{ pb: 5 }}>
+        <Typography variant="h4" component="h1" gutterBottom>
+          {t('Text')}
+        </Typography>
+        <Typography variant="h6" color="text.secondary">
+          {t("Fill out the blue fields and we'll customise the content with your information.")}
+        </Typography>
+      </Stack>
       <Box
         sx={{
-          border: '3px solid',
-          borderColor: 'divider',
+          border: '2px solid',
+          borderColor: '#CCCCCC',
           borderRadius: 3,
           p: 3,
           minHeight: 200,
           width: '100%',
           whiteSpace: 'pre-wrap'
         }}
+        style={{ color: '#000000' }}
       >
         {renderEditableText(
           journey?.journeyCustomizationDescription ?? '',
@@ -222,10 +228,16 @@ export function TextScreen({ handleNext }: TextScreenProps): ReactElement {
         onClick={handleSubmit}
         loading={isSubmitting}
         aria-label={t('Save and continue')}
-        sx={{ width: '300px', alignSelf: 'center', mt: 4 }}
+        sx={{
+          alignSelf: 'center',
+          mt: 4,
+          borderRadius: '8px',
+          py: '12px'
+        }}
+        endIcon={<ArrowRightIcon />}
       >
-        <ArrowRightIcon />
+        <Typography variant="body1" sx={{ fontWeight: 'bold' }}>{t('Next Step')}</Typography>
       </Button>
-    </Stack>
+    </Stack >
   )
 }
