@@ -138,7 +138,7 @@
     "cache-manager": "^6.4.1",
     "class-variance-authority": "^0.7.1",
     "cloudflare": "^4.0.0",
-    "clsx": "^2.1.1",
+    "clsx": "2.1.1",
     "commander": "^13.1.0",
     "cors": "^2.8.5",
     "cross-fetch": "^4.0.0",
