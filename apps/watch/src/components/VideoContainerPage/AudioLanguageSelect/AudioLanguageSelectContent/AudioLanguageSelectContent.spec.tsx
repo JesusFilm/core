@@ -1,97 +1,27 @@
-import { MockedProvider, MockedResponse } from '@apollo/client/testing'
-import { fireEvent, render, waitFor } from '@testing-library/react'
+import { MockedProvider } from '@apollo/client/testing'
+import { render, screen, waitFor, within } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 
-import { GetLanguagesSlug } from '../../../../../__generated__/GetLanguagesSlug'
-import { GET_LANGUAGES_SLUG } from '../../../../libs/useLanguagesSlugQuery'
-import { VideoProvider } from '../../../../libs/videoContext'
+import { useLanguages } from '../../../../libs/useLanguages'
+import { VideoPageProps, VideoProvider } from '../../../../libs/videoContext'
+import { WatchProvider } from '../../../../libs/watchContext'
 import { Select, SelectTrigger } from '../../../Select'
 import { videos } from '../../../Videos/__generated__/testData'
 
 import { AudioLanguageSelectContent } from './AudioLanguageSelectContent'
 
+jest.mock('../../../../libs/useLanguages', () => ({
+  useLanguages: jest.fn()
+}))
+
+const useLanguagesMock = useLanguages as jest.MockedFunction<
+  typeof useLanguages
+>
+
 describe('AudioLanguageSelectContent', () => {
   const mockVideo = videos[0]
-  const mockContainer = videos.find(({ id }) => id === 'LUMOCollection')
-
-  const getLanguagesSlugMock: MockedResponse<GetLanguagesSlug> = {
-    request: {
-      query: GET_LANGUAGES_SLUG,
-      variables: {
-        id: mockVideo.id
-      }
-    },
-    result: {
-      data: {
-        video: {
-          __typename: 'Video',
-          variantLanguagesWithSlug: [
-            {
-              __typename: 'LanguageWithSlug',
-              slug: 'jesus/english',
-              language: {
-                id: '529',
-                slug: 'english',
-                __typename: 'Language',
-                name: [
-                  {
-                    value: 'English',
-                    primary: true,
-                    __typename: 'LanguageName'
-                  }
-                ]
-              }
-            },
-            {
-              __typename: 'LanguageWithSlug',
-              slug: 'jesus/spanish',
-              language: {
-                id: '496',
-                slug: 'spanish',
-                __typename: 'Language',
-                name: [
-                  {
-                    value: 'Spanish',
-                    primary: false,
-                    __typename: 'LanguageName'
-                  },
-                  {
-                    value: 'Español',
-                    primary: true,
-                    __typename: 'LanguageName'
-                  }
-                ]
-              }
-            },
-            {
-              __typename: 'LanguageWithSlug',
-              slug: 'jesus/french',
-              language: {
-                id: '497',
-                slug: 'french',
-                __typename: 'Language',
-                name: [
-                  {
-                    value: 'French',
-                    primary: false,
-                    __typename: 'LanguageName'
-                  },
-                  {
-                    value: 'Français',
-                    primary: true,
-                    __typename: 'LanguageName'
-                  }
-                ]
-              }
-            }
-          ]
-        }
-      }
-    }
-  }
-
-  const defaultProps = {
-    content: mockVideo,
-    container: mockContainer
+  const defaultProps: VideoPageProps = {
+    content: mockVideo
   }
 
   const originalPointerEvent = window.PointerEvent
@@ -146,221 +76,84 @@ describe('AudioLanguageSelectContent', () => {
   })
 
   it('should render language options with correct links', async () => {
-    const result = jest.fn().mockReturnValue({ ...getLanguagesSlugMock.result })
-
-    const { getAllByRole, getByTestId } = render(
-      <MockedProvider mocks={[{ ...getLanguagesSlugMock, result }]}>
-        <VideoProvider value={defaultProps}>
-          <Select>
-            <SelectTrigger data-testid="TestSelectTrigger">
-              {'Test Select Trigger'}
-            </SelectTrigger>
-            <AudioLanguageSelectContent />
-          </Select>
-        </VideoProvider>
-      </MockedProvider>
-    )
-
-    fireEvent.click(getByTestId('TestSelectTrigger'))
-
-    await waitFor(() => {
-      expect(result).toHaveBeenCalled()
-    })
-
-    await waitFor(() => {
-      const languageLinks = getAllByRole('link')
-      expect(languageLinks).toHaveLength(3)
-      expect(languageLinks[0]).toHaveAttribute(
-        'href',
-        '/watch/lumo/jesus/english'
-      )
-
-      expect(languageLinks[1]).toHaveAttribute(
-        'href',
-        '/watch/lumo/jesus/spanish'
-      )
-
-      expect(languageLinks[2]).toHaveAttribute(
-        'href',
-        '/watch/lumo/jesus/french'
-      )
-    })
-  })
-
-  it('should show english primary label name  as non primary language name', async () => {
-    const englishMock = {
-      ...getLanguagesSlugMock,
-      result: {
-        data: {
-          video: {
-            variantLanguagesWithSlug: [
-              {
-                __typename: 'LanguageWithSlug',
-                slug: 'jesus/english',
-                language: {
-                  id: '529',
-                  slug: 'english',
-                  __typename: 'Language',
-                  name: [
-                    {
-                      value: 'English',
-                      primary: true,
-                      __typename: 'LanguageName'
-                    }
-                  ]
-                }
-              }
-            ]
-          }
+    useLanguagesMock.mockReturnValue({
+      isLoading: false,
+      languages: [
+        {
+          id: '529',
+          slug: 'english',
+          displayName: 'English',
+          nativeName: { id: '529', value: 'English', primary: true }
+        },
+        {
+          id: '496',
+          slug: 'french',
+          displayName: 'French',
+          nativeName: { id: '496', value: 'Français', primary: true }
+        },
+        {
+          id: '21028',
+          slug: 'spanish',
+          displayName: 'Spanish',
+          nativeName: { id: '21028', value: 'Español', primary: true }
         }
-      }
-    }
-
-    const result = jest.fn().mockReturnValue({ ...englishMock.result })
-
-    const { getByTestId } = render(
-      <MockedProvider mocks={[{ ...englishMock, result }]}>
+      ]
+    })
+    render(
+      <MockedProvider mocks={[]}>
         <VideoProvider value={defaultProps}>
-          <Select>
-            <SelectTrigger data-testid="TestSelectTrigger">
-              {'Test Select Trigger'}
-            </SelectTrigger>
-            <AudioLanguageSelectContent />
-          </Select>
+          <WatchProvider
+            initialState={{ videoAudioLanguageIds: ['529', '496', '21028'] }}
+          >
+            <Select>
+              <SelectTrigger data-testid="TestSelectTrigger">
+                {'Test Select Trigger'}
+              </SelectTrigger>
+              <AudioLanguageSelectContent />
+            </Select>
+          </WatchProvider>
         </VideoProvider>
       </MockedProvider>
     )
 
-    fireEvent.click(getByTestId('TestSelectTrigger'))
+    await userEvent.click(screen.getByTestId('TestSelectTrigger'))
 
     await waitFor(() => {
-      expect(result).toHaveBeenCalled()
+      expect(screen.getAllByRole('option')).toHaveLength(3)
     })
 
     await waitFor(() => {
+      const [english, french, spanish] = screen.getAllByRole('option')
+      expect(english).toHaveAttribute(
+        'href',
+        '/watch/jesus.html/english.html?r=0'
+      )
       expect(
-        getByTestId('AudioLanguageSelectNonPrimaryLanguageName')
+        within(english).queryByTestId('AudioLanguageSelectNativeLanguageName')
+      ).not.toBeInTheDocument()
+      expect(
+        within(english).getByTestId('AudioLanguageSelectDisplayLanguageName')
       ).toHaveTextContent('English')
-    })
-  })
-
-  it('should handle non-English languages with both names', async () => {
-    const spanishMock = {
-      ...getLanguagesSlugMock,
-      result: {
-        data: {
-          video: {
-            variantLanguagesWithSlug: [
-              {
-                __typename: 'LanguageWithSlug',
-                slug: 'jesus/spanish',
-                language: {
-                  id: '496',
-                  slug: 'spanish',
-                  __typename: 'Language',
-                  name: [
-                    {
-                      value: 'Spanish',
-                      primary: false,
-                      __typename: 'LanguageName'
-                    },
-                    {
-                      value: 'Español',
-                      primary: true,
-                      __typename: 'LanguageName'
-                    }
-                  ]
-                }
-              }
-            ]
-          }
-        }
-      }
-    }
-
-    const result = jest.fn().mockReturnValue({ ...spanishMock.result })
-
-    const { getByTestId } = render(
-      <MockedProvider mocks={[{ ...spanishMock, result }]}>
-        <VideoProvider value={defaultProps}>
-          <Select>
-            <SelectTrigger data-testid="TestSelectTrigger">
-              {'Test Select Trigger'}
-            </SelectTrigger>
-            <AudioLanguageSelectContent />
-          </Select>
-        </VideoProvider>
-      </MockedProvider>
-    )
-    fireEvent.click(getByTestId('TestSelectTrigger'))
-
-    await waitFor(() => {
-      expect(result).toHaveBeenCalled()
-    })
-
-    await waitFor(() => {
+      expect(french).toHaveAttribute(
+        'href',
+        '/watch/jesus.html/french.html?r=0'
+      )
       expect(
-        getByTestId('AudioLanguageSelectNonPrimaryLanguageName')
+        within(french).getByTestId('AudioLanguageSelectNativeLanguageName')
+      ).toHaveTextContent('Français')
+      expect(
+        within(french).getByTestId('AudioLanguageSelectDisplayLanguageName')
+      ).toHaveTextContent('French')
+      expect(spanish).toHaveAttribute(
+        'href',
+        '/watch/jesus.html/spanish.html?r=0'
+      )
+      expect(
+        within(spanish).getByTestId('AudioLanguageSelectNativeLanguageName')
+      ).toHaveTextContent('Español')
+      expect(
+        within(spanish).getByTestId('AudioLanguageSelectDisplayLanguageName')
       ).toHaveTextContent('Spanish')
-      expect(
-        getByTestId('AudioLanguageSelectPrimaryLanguageName')
-      ).toHaveTextContent('(Español)')
-    })
-  })
-
-  it('should handle missing language slug', async () => {
-    const noSlugMock = {
-      ...getLanguagesSlugMock,
-      result: {
-        data: {
-          video: {
-            variantLanguagesWithSlug: [
-              {
-                __typename: 'LanguageWithSlug',
-                slug: null,
-                language: {
-                  id: '529',
-                  slug: 'english',
-                  __typename: 'Language',
-                  name: [
-                    {
-                      value: 'English',
-                      primary: true,
-                      __typename: 'LanguageName'
-                    }
-                  ]
-                }
-              }
-            ]
-          }
-        }
-      }
-    }
-
-    const result = jest.fn().mockReturnValue({ ...noSlugMock.result })
-
-    const { getAllByRole, getByTestId } = render(
-      <MockedProvider mocks={[{ ...noSlugMock, result }]}>
-        <VideoProvider value={defaultProps}>
-          <Select>
-            <SelectTrigger data-testid="TestSelectTrigger">
-              {'Test Select Trigger'}
-            </SelectTrigger>
-            <AudioLanguageSelectContent />
-          </Select>
-        </VideoProvider>
-      </MockedProvider>
-    )
-
-    fireEvent.click(getByTestId('TestSelectTrigger'))
-
-    await waitFor(() => {
-      expect(result).toHaveBeenCalled()
-    })
-
-    await waitFor(() => {
-      const languageLinks = getAllByRole('link')
-      expect(languageLinks[0]).toHaveAttribute('href', '#')
     })
   })
 })

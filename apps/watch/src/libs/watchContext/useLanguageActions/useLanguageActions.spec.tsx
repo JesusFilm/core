@@ -1,9 +1,9 @@
 import { renderHook } from '@testing-library/react'
-import { NextRouter } from 'next/router'
+import mockRouter from 'next-router-mock'
 import { ReactNode } from 'react'
 
 import { setCookie } from '../../cookieHandler'
-import { WatchInitialState, WatchProvider } from '../WatchContext'
+import { WatchProvider, WatchState } from '../WatchContext'
 
 import { useLanguageActions } from './useLanguageActions'
 
@@ -15,35 +15,11 @@ jest.mock('../../cookieHandler', () => ({
 const mockSetCookie = setCookie as jest.MockedFunction<typeof setCookie>
 
 describe('useLanguageActions', () => {
-  const mockPush = jest.fn()
-  const mockRouter = {
-    push: mockPush,
-    asPath: '/test/page.html'
-  } as unknown as NextRouter
-
-  const defaultInitialState: WatchInitialState = {
-    audioLanguage: '529',
-    subtitleLanguage: '529',
+  const defaultInitialState: WatchState = {
+    audioLanguageId: '529',
+    subtitleLanguageId: '529',
     subtitleOn: false
   }
-
-  const mockAllLanguages = [
-    {
-      id: '529',
-      slug: 'english',
-      name: [{ primary: true, value: 'English' }]
-    },
-    {
-      id: '530',
-      slug: 'spanish',
-      name: [{ primary: true, value: 'Spanish' }]
-    },
-    {
-      id: '531',
-      slug: 'french',
-      name: [{ primary: true, value: 'French' }]
-    }
-  ]
 
   beforeEach(() => {
     jest.clearAllMocks()
@@ -52,87 +28,47 @@ describe('useLanguageActions', () => {
   describe('updateAudioLanguage', () => {
     it('should set audio and subtitle language cookies', () => {
       const wrapper = ({ children }: { children: ReactNode }) => (
-        <WatchProvider
-          initialState={
-            {
-              ...defaultInitialState,
-              router: mockRouter
-            } as unknown as WatchInitialState
-          }
-        >
-          {children}
-        </WatchProvider>
+        <WatchProvider>{children}</WatchProvider>
       )
 
       const { result } = renderHook(() => useLanguageActions(), { wrapper })
 
-      result.current.updateAudioLanguage(mockAllLanguages[1]) // Spanish language object
+      result.current.updateAudioLanguage({ id: '496', slug: 'french' }, false)
 
-      expect(mockSetCookie).toHaveBeenCalledWith('AUDIO_LANGUAGE', '530')
-      expect(mockSetCookie).toHaveBeenCalledWith('SUBTITLE_LANGUAGE', '530')
-      expect(mockPush).toHaveBeenCalledWith({
-        pathname: '/test/spanish.html',
-        query: undefined
+      expect(mockSetCookie).toHaveBeenCalledWith('AUDIO_LANGUAGE', '496')
+      expect(mockSetCookie).toHaveBeenCalledWith('SUBTITLE_LANGUAGE', '496')
+    })
+
+    it('should trigger router navigation when language has slug', async () => {
+      await mockRouter.push('/jesus.html/english.html')
+      const wrapper = ({ children }: { children: ReactNode }) => (
+        <WatchProvider>{children}</WatchProvider>
+      )
+
+      const { result } = renderHook(() => useLanguageActions(), { wrapper })
+
+      result.current.updateAudioLanguage({ id: '496', slug: 'french' })
+
+      expect(mockRouter).toMatchObject({
+        pathname: '/jesus.html/french.html',
+        query: {}
       })
     })
 
-    it('should trigger router navigation when language has slug', () => {
+    it('should not trigger router navigation when reload is false', async () => {
+      await mockRouter.push('/jesus.html/english.html')
       const wrapper = ({ children }: { children: ReactNode }) => (
-        <WatchProvider
-          initialState={
-            {
-              ...defaultInitialState,
-              router: mockRouter
-            } as unknown as WatchInitialState
-          }
-        >
-          {children}
-        </WatchProvider>
+        <WatchProvider>{children}</WatchProvider>
       )
 
       const { result } = renderHook(() => useLanguageActions(), { wrapper })
 
-      result.current.updateAudioLanguage(mockAllLanguages[1]) // Spanish language object
+      result.current.updateAudioLanguage({ id: '496', slug: 'french' }, false)
 
-      expect(mockPush).toHaveBeenCalledWith({
-        pathname: '/test/spanish.html',
-        query: undefined
+      expect(mockRouter).toMatchObject({
+        pathname: '/jesus.html/english.html',
+        query: {}
       })
-    })
-
-    it('should not trigger navigation when router is not available', () => {
-      const wrapper = ({ children }: { children: ReactNode }) => (
-        <WatchProvider initialState={defaultInitialState}>
-          {children}
-        </WatchProvider>
-      )
-
-      const { result } = renderHook(() => useLanguageActions(), { wrapper })
-
-      result.current.updateAudioLanguage(mockAllLanguages[1]) // Spanish language object
-
-      expect(mockPush).not.toHaveBeenCalled()
-    })
-
-    it('should not trigger navigation when reload is false', () => {
-      const wrapper = ({ children }: { children: ReactNode }) => (
-        <WatchProvider
-          initialState={
-            {
-              ...defaultInitialState,
-              router: mockRouter
-            } as unknown as WatchInitialState
-          }
-        >
-          {children}
-        </WatchProvider>
-      )
-
-      const { result } = renderHook(() => useLanguageActions(), { wrapper })
-
-      result.current.updateAudioLanguage(mockAllLanguages[1], false) // Spanish language object
-
-      expect(mockPush).not.toHaveBeenCalled()
     })
   })
 
@@ -144,7 +80,7 @@ describe('useLanguageActions', () => {
             {
               ...defaultInitialState,
               router: mockRouter
-            } as unknown as WatchInitialState
+            } as unknown as WatchState
           }
         >
           {children}
@@ -153,7 +89,7 @@ describe('useLanguageActions', () => {
 
       const { result } = renderHook(() => useLanguageActions(), { wrapper })
 
-      result.current.updateSubtitleLanguage('531')
+      result.current.updateSubtitleLanguage({ id: '531' })
 
       expect(mockSetCookie).toHaveBeenCalledWith('SUBTITLE_LANGUAGE', '531')
       expect(mockSetCookie).toHaveBeenCalledTimes(1)
@@ -168,7 +104,7 @@ describe('useLanguageActions', () => {
             {
               ...defaultInitialState,
               router: mockRouter
-            } as unknown as WatchInitialState
+            } as unknown as WatchState
           }
         >
           {children}
@@ -193,33 +129,6 @@ describe('useLanguageActions', () => {
       result.current.updateSubtitlesOn(false)
 
       expect(mockSetCookie).toHaveBeenCalledWith('SUBTITLES_ON', 'false')
-    })
-  })
-
-  describe('memoization', () => {
-    it('should memoize functions correctly', () => {
-      const wrapper = ({ children }: { children: ReactNode }) => (
-        <WatchProvider initialState={defaultInitialState}>
-          {children}
-        </WatchProvider>
-      )
-
-      const { result, rerender } = renderHook(() => useLanguageActions(), {
-        wrapper
-      })
-
-      const firstUpdateAudioLanguage = result.current.updateAudioLanguage
-      const firstUpdateSubtitleLanguage = result.current.updateSubtitleLanguage
-      const firstUpdateSubtitlesOn = result.current.updateSubtitlesOn
-
-      // Rerender with same dependencies
-      rerender()
-
-      expect(result.current.updateAudioLanguage).toBe(firstUpdateAudioLanguage)
-      expect(result.current.updateSubtitleLanguage).toBe(
-        firstUpdateSubtitleLanguage
-      )
-      expect(result.current.updateSubtitlesOn).toBe(firstUpdateSubtitlesOn)
     })
   })
 })

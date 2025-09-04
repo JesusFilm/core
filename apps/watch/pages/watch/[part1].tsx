@@ -1,6 +1,5 @@
 import { ApolloProvider, NormalizedCacheObject } from '@apollo/client'
 import type { GetStaticPaths, GetStaticProps } from 'next'
-import { useTranslation } from 'next-i18next'
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
 import type { ReactElement } from 'react'
 import { renderToString } from 'react-dom/server'
@@ -24,7 +23,10 @@ import {
 import { getCookie } from '../../src/libs/cookieHandler'
 import { getFlags } from '../../src/libs/getFlags'
 import { LANGUAGE_MAPPINGS } from '../../src/libs/localeMapping'
-import { WatchProvider } from '../../src/libs/watchContext/WatchContext'
+import {
+  WatchProvider,
+  WatchState
+} from '../../src/libs/watchContext/WatchContext'
 
 interface HomeLanguagePageProps {
   initialApolloState?: NormalizedCacheObject
@@ -42,16 +44,13 @@ function HomeLanguagePage({
   const client = useApolloClient({
     initialState: initialApolloState
   })
-  const { i18n } = useTranslation()
-
   const searchClient = useInstantSearchClient()
   const indexName = process.env.NEXT_PUBLIC_ALGOLIA_INDEX ?? ''
 
-  const initialWatchState = {
-    siteLanguage: i18n?.language ?? 'en',
-    audioLanguage: getCookie('AUDIO_LANGUAGE') ?? languageId,
-    subtitleLanguage: getCookie('SUBTITLE_LANGUAGE') ?? languageId,
-    subtitleOn: (getCookie('SUBTITLES_ON') ?? '').toLowerCase() === 'true'
+  const initialWatchState: WatchState = {
+    audioLanguageId: getCookie('AUDIO_LANGUAGE') ?? languageId,
+    subtitleLanguageId: getCookie('SUBTITLE_LANGUAGE') ?? languageId,
+    subtitleOn: getCookie('SUBTITLES_ON') === 'true'
   }
 
   return (
@@ -98,7 +97,7 @@ export const getStaticProps: GetStaticProps<HomeLanguagePageProps> = async ({
   const mapping = LANGUAGE_MAPPINGS[key]
   const serverState = await getServerState(
     <HomeLanguagePage
-      languageEnglishName={mapping.nativeName}
+      languageEnglishName={mapping.englishName}
       languageId={mapping.languageId}
     />,
     {
@@ -113,7 +112,7 @@ export const getStaticProps: GetStaticProps<HomeLanguagePageProps> = async ({
     props: {
       flags: await getFlags(),
       serverState,
-      languageEnglishName: mapping.nativeName,
+      languageEnglishName: mapping.englishName,
       languageId: mapping.languageId,
       initialApolloState: apolloClient.cache.extract(),
       ...(await serverSideTranslations(
