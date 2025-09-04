@@ -38,14 +38,19 @@ export function NewVideoContentHeader({
             data-testid="VideoHeading"
           >
             <div className="flex flex-row items-center space-x-4">
-              <NextLink
-                href={`/watch/${container.variant?.slug as string}`}
-                locale={false}
-              >
-                <a className="uppercase text-sm tracking-wider text-primary no-underline">
+              {container.variant?.slug != null ? (
+                <NextLink
+                  href={`/watch/${container.variant.slug}`}
+                  locale={false}
+                  className="uppercase text-sm tracking-wider text-primary no-underline"
+                >
                   {last(container.title)?.value}
-                </a>
-              </NextLink>
+                </NextLink>
+              ) : (
+                <span className="uppercase text-sm tracking-wider text-primary no-underline">
+                  {last(container.title)?.value}
+                </span>
+              )}
               <p className="uppercase text-sm tracking-wider text-[#bbbcbc]  hidden xl:block font-bold">
                 •
               </p>
@@ -57,21 +62,32 @@ export function NewVideoContentHeader({
                     {t('Clip ')}
                     {activeVideoIndex}
                     {t(' of ')}
-                    {container.childrenCount}
+                    {videos.length != 0
+                      ? videos.length
+                      : container.childrenCount}
                   </>
                 )}
               </p>
             </div>
-            <NextLink
-              href={`/watch/${container.variant?.slug as string}`}
-              locale={false}
-            >
+            {container.variant?.slug != null ? (
+              <NextLink
+                href={`/watch/${container.variant.slug}`}
+                locale={false}
+                passHref
+              >
+                <button className="border border-[#bbbcbc] rounded-md px-2 py-1 text-sm text-[#bbbcbc] hidden xl:block cursor-pointer font-bold">
+                  {container.label === VideoLabel.featureFilm
+                    ? 'Watch Full Film'
+                    : 'See All'}
+                </button>
+              </NextLink>
+            ) : (
               <button className="border border-[#bbbcbc] rounded-md px-2 py-1 text-sm text-[#bbbcbc] hidden xl:block cursor-pointer font-bold">
                 {container.label === VideoLabel.featureFilm
                   ? 'Watch Full Film'
                   : 'See All'}
               </button>
-            </NextLink>
+            )}
             <p
               data-testid="container-progress-short"
               className="uppercase text-xs tracking-wider text-[#bbbcbc] block xl:hidden"

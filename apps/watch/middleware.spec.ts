@@ -603,6 +603,90 @@ describe('middleware', () => {
     })
   })
 
+  describe('automatic audio language redirect without cookie', () => {
+    it('should redirect using browser language when no AUDIO_LANGUAGE cookie present', async () => {
+      mockRedisExists.mockResolvedValue(1)
+      mockRedisHget.mockResolvedValue('french')
+
+      const req = createMockRequest('/watch/jesus.html/english.html', {
+        headers: { 'accept-language': 'fr-FR,fr;q=0.9' }
+      })
+
+      const result = await middleware(req)
+
+      expect(result).toBeInstanceOf(NextResponse)
+      expect(result?.status).toBe(307)
+      expect(result?.headers.get('location')).toContain(
+        '/watch/jesus.html/french.html'
+      )
+    })
+
+    it('should redirect using geolocation when no browser language', async () => {
+      mockRedisExists.mockResolvedValue(1)
+      mockRedisHget.mockResolvedValue('french')
+
+      const req = createMockRequest('/watch/jesus.html/english.html', {
+        headers: { 'cf-ipcountry': 'FR' }
+      })
+
+      const result = await middleware(req)
+
+      expect(result).toBeInstanceOf(NextResponse)
+      expect(result?.status).toBe(307)
+      expect(result?.headers.get('location')).toContain(
+        '/watch/jesus.html/french.html'
+      )
+    })
+
+    it('should prioritize browser language over geolocation', async () => {
+      mockRedisExists.mockResolvedValue(1)
+      mockRedisHget.mockResolvedValue('spanish')
+
+      const req = createMockRequest('/watch/jesus.html/english.html', {
+        headers: {
+          'accept-language': 'es-ES,es;q=0.9',
+          'cf-ipcountry': 'FR'
+        }
+      })
+
+      const result = await middleware(req)
+
+      expect(result?.status).toBe(307)
+      expect(result?.headers.get('location')).toContain(
+        '/watch/jesus.html/spanish.html'
+      )
+    })
+
+    it('should not redirect when neither browser language nor geolocation are supported', async () => {
+      const req = createMockRequest('/watch/jesus.html/english.html', {
+        headers: {
+          'accept-language': 'xx-XX',
+          'cf-ipcountry': 'XX'
+        }
+      })
+
+      const result = await middleware(req)
+
+      expect(result?.status).toBe(200)
+    })
+
+    it('should work with 4-segment paths', async () => {
+      mockRedisExists.mockResolvedValue(1)
+      mockRedisHget.mockResolvedValue('spanish')
+
+      const req = createMockRequest('/watch/movies/jesus.html/english.html', {
+        headers: { 'accept-language': 'es-ES,es;q=0.9' }
+      })
+
+      const result = await middleware(req)
+
+      expect(result?.status).toBe(307)
+      expect(result?.headers.get('location')).toContain(
+        '/watch/movies/jesus.html/spanish.html'
+      )
+    })
+  })
+
   describe('middleware configuration', () => {
     it('should have correct matcher configuration', () => {
       // This tests that the middleware config is properly exported

@@ -22,13 +22,13 @@ export function BottomAppBar({
     backgroundImage:
       'linear-gradient(rgb(255 255 255 / 60%), rgb(255 255 255 / 26%))',
     backdropFilter: 'blur(20px) brightness(1.1)',
-    '-webkit-backdrop-filter': 'blur(20px) brightness(1.1)'
+    WebkitBackdropFilter: 'blur(20px) brightness(1.1)'
   }
 
   const darkStyles = {
     backgroundImage: 'linear-gradient(rgb(0 0 0 / 60%), rgb(0 0 0 / 26%))',
     backdropFilter: 'blur(20px) brightness(0.9)',
-    '-webkit-backdrop-filter': 'blur(20px) brightness(0.9)'
+    WebkitBackdropFilter: 'blur(20px) brightness(0.9)'
   }
   const appBarStyles = lightTheme ? lightStyles : darkStyles
 

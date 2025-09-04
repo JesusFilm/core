@@ -7,7 +7,6 @@ import type { ReactElement } from 'react'
 import i18nConfig from '../../../../next-i18next.config'
 import { CollectionsPage } from '../../../../src/components/CollectionsPage/languages/ru'
 import { getFlags } from '../../../../src/libs/getFlags'
-import { LanguageProvider } from '../../../../src/libs/languageContext/LanguageContext'
 
 export default function EasterPage(): ReactElement {
   return (
@@ -49,9 +48,7 @@ export default function EasterPage(): ReactElement {
         }}
       />
       <SnackbarProvider>
-        <LanguageProvider>
-          <CollectionsPage />
-        </LanguageProvider>
+        <CollectionsPage />
       </SnackbarProvider>
     </>
   )

@@ -4,7 +4,6 @@ import axios from 'axios'
 import { I18nextProvider } from 'react-i18next'
 
 import { makeI18n } from '../../../../../test/i18n'
-import { WatchProvider } from '../../../../libs/watchContext'
 
 import { BibleCitationCard } from './BibleCitationCard'
 
@@ -67,18 +66,10 @@ describe('BibleCitationCard', () => {
     mockAxiosGet.mockResolvedValue({ data: mockScriptureResponse })
 
     render(
-      <WatchProvider
-        initialState={{
-          audioLanguage: 'en',
-          subtitleLanguage: 'en',
-          subtitleOn: false
-        }}
-      >
-        <BibleCitationCard
-          citation={mockCitation}
-          imageUrl="https://example.com/image.jpg"
-        />
-      </WatchProvider>
+      <BibleCitationCard
+        citation={mockCitation}
+        imageUrl="https://example.com/image.jpg"
+      />
     )
 
     expect(screen.getByText('John 3:16')).toBeInTheDocument()
@@ -89,18 +80,10 @@ describe('BibleCitationCard', () => {
     mockAxiosGet.mockResolvedValue({ data: mockScriptureResponse })
 
     render(
-      <WatchProvider
-        initialState={{
-          audioLanguage: 'en',
-          subtitleLanguage: 'en',
-          subtitleOn: false
-        }}
-      >
-        <BibleCitationCard
-          citation={mockCitation}
-          imageUrl="https://example.com/image.jpg"
-        />
-      </WatchProvider>
+      <BibleCitationCard
+        citation={mockCitation}
+        imageUrl="https://example.com/image.jpg"
+      />
     )
 
     await waitFor(() => {
@@ -114,18 +97,10 @@ describe('BibleCitationCard', () => {
     mockAxiosGet.mockResolvedValue({ data: mockScriptureResponse })
 
     render(
-      <WatchProvider
-        initialState={{
-          audioLanguage: 'en',
-          subtitleLanguage: 'en',
-          subtitleOn: false
-        }}
-      >
-        <BibleCitationCard
-          citation={mockCitation}
-          imageUrl="https://example.com/image.jpg"
-        />
-      </WatchProvider>
+      <BibleCitationCard
+        citation={mockCitation}
+        imageUrl="https://example.com/image.jpg"
+      />
     )
 
     await waitFor(() => {
@@ -137,18 +112,10 @@ describe('BibleCitationCard', () => {
     mockAxiosGet.mockRejectedValue(new Error('Network error'))
 
     render(
-      <WatchProvider
-        initialState={{
-          audioLanguage: 'en',
-          subtitleLanguage: 'en',
-          subtitleOn: false
-        }}
-      >
-        <BibleCitationCard
-          citation={mockCitation}
-          imageUrl="https://example.com/image.jpg"
-        />
-      </WatchProvider>
+      <BibleCitationCard
+        citation={mockCitation}
+        imageUrl="https://example.com/image.jpg"
+      />
     )
     // Should still render citation reference
     expect(screen.getByText('John 3:16')).toBeInTheDocument()
@@ -158,18 +125,10 @@ describe('BibleCitationCard', () => {
     mockAxiosGet.mockResolvedValue({ data: mockScriptureResponse })
 
     render(
-      <WatchProvider
-        initialState={{
-          audioLanguage: 'en',
-          subtitleLanguage: 'en',
-          subtitleOn: false
-        }}
-      >
-        <BibleCitationCard
-          citation={mockCitationWithEndVerse}
-          imageUrl="https://example.com/image.jpg"
-        />
-      </WatchProvider>
+      <BibleCitationCard
+        citation={mockCitationWithEndVerse}
+        imageUrl="https://example.com/image.jpg"
+      />
     )
 
     await waitFor(() => {
@@ -191,18 +150,10 @@ describe('BibleCitationCard', () => {
     mockAxiosGet.mockResolvedValue({ data: mockScriptureResponse })
 
     render(
-      <WatchProvider
-        initialState={{
-          audioLanguage: 'en',
-          subtitleLanguage: 'en',
-          subtitleOn: false
-        }}
-      >
-        <BibleCitationCard
-          citation={mockCitation}
-          imageUrl="https://example.com/image.jpg"
-        />
-      </WatchProvider>
+      <BibleCitationCard
+        citation={mockCitation}
+        imageUrl="https://example.com/image.jpg"
+      />
     )
 
     await waitFor(() => {
@@ -214,18 +165,10 @@ describe('BibleCitationCard', () => {
     mockAxiosGet.mockResolvedValue({ data: mockScriptureResponse })
 
     render(
-      <WatchProvider
-        initialState={{
-          audioLanguage: 'en',
-          subtitleLanguage: 'en',
-          subtitleOn: false
-        }}
-      >
-        <BibleCitationCard
-          citation={mockCitationWithEndVerse}
-          imageUrl="https://example.com/image.jpg"
-        />
-      </WatchProvider>
+      <BibleCitationCard
+        citation={mockCitationWithEndVerse}
+        imageUrl="https://example.com/image.jpg"
+      />
     )
 
     await waitFor(() => {
@@ -240,18 +183,10 @@ describe('BibleCitationCard', () => {
     mockAxiosGet.mockResolvedValue({ data: mockScriptureResponse })
 
     render(
-      <WatchProvider
-        initialState={{
-          audioLanguage: 'en',
-          subtitleLanguage: 'en',
-          subtitleOn: false
-        }}
-      >
-        <BibleCitationCard
-          citation={mockCitationWithEndVerse}
-          imageUrl="https://example.com/image.jpg"
-        />
-      </WatchProvider>
+      <BibleCitationCard
+        citation={mockCitationWithEndVerse}
+        imageUrl="https://example.com/image.jpg"
+      />
     )
     expect(screen.getByText('Matthew 5-7:3-12')).toBeInTheDocument()
   })
@@ -260,18 +195,10 @@ describe('BibleCitationCard', () => {
     mockAxiosGet.mockResolvedValue({ data: mockScriptureResponse })
 
     render(
-      <WatchProvider
-        initialState={{
-          audioLanguage: 'en',
-          subtitleLanguage: 'en',
-          subtitleOn: false
-        }}
-      >
-        <BibleCitationCard
-          citation={mockCitation}
-          imageUrl="https://example.com/image.jpg"
-        />
-      </WatchProvider>
+      <BibleCitationCard
+        citation={mockCitation}
+        imageUrl="https://example.com/image.jpg"
+      />
     )
 
     expect(screen.getByText('John 3:16')).toBeInTheDocument()
@@ -282,18 +209,10 @@ describe('BibleCitationCard', () => {
       mockAxiosGet.mockResolvedValue({ data: mockScriptureResponse })
 
       render(
-        <WatchProvider
-          initialState={{
-            audioLanguage: 'en',
-            subtitleLanguage: 'en',
-            subtitleOn: false
-          }}
-        >
-          <BibleCitationCard
-            citation={mockCitationWithEndVerse}
-            imageUrl="https://example.com/image.jpg"
-          />
-        </WatchProvider>
+        <BibleCitationCard
+          citation={mockCitationWithEndVerse}
+          imageUrl="https://example.com/image.jpg"
+        />
       )
 
       await waitFor(() => {
@@ -314,18 +233,10 @@ describe('BibleCitationCard', () => {
 
       render(
         <I18nextProvider i18n={i18n}>
-          <WatchProvider
-            initialState={{
-              audioLanguage: 'en',
-              subtitleLanguage: 'en',
-              subtitleOn: false
-            }}
-          >
-            <BibleCitationCard
-              citation={mockCitationWithEndVerse}
-              imageUrl="https://example.com/image.jpg"
-            />
-          </WatchProvider>
+          <BibleCitationCard
+            citation={mockCitationWithEndVerse}
+            imageUrl="https://example.com/image.jpg"
+          />
         </I18nextProvider>
       )
 
@@ -347,18 +258,10 @@ describe('BibleCitationCard', () => {
 
       render(
         <I18nextProvider i18n={i18n}>
-          <WatchProvider
-            initialState={{
-              audioLanguage: 'en',
-              subtitleLanguage: 'en',
-              subtitleOn: false
-            }}
-          >
-            <BibleCitationCard
-              citation={mockCitationWithEndVerse}
-              imageUrl="https://example.com/image.jpg"
-            />
-          </WatchProvider>
+          <BibleCitationCard
+            citation={mockCitationWithEndVerse}
+            imageUrl="https://example.com/image.jpg"
+          />
         </I18nextProvider>
       )
 
@@ -380,18 +283,10 @@ describe('BibleCitationCard', () => {
 
       render(
         <I18nextProvider i18n={i18n}>
-          <WatchProvider
-            initialState={{
-              audioLanguage: 'en',
-              subtitleLanguage: 'en',
-              subtitleOn: false
-            }}
-          >
-            <BibleCitationCard
-              citation={mockCitationWithEndVerse}
-              imageUrl="https://example.com/image.jpg"
-            />
-          </WatchProvider>
+          <BibleCitationCard
+            citation={mockCitationWithEndVerse}
+            imageUrl="https://example.com/image.jpg"
+          />
         </I18nextProvider>
       )
 
@@ -413,18 +308,10 @@ describe('BibleCitationCard', () => {
 
       render(
         <I18nextProvider i18n={i18n}>
-          <WatchProvider
-            initialState={{
-              audioLanguage: 'en',
-              subtitleLanguage: 'en',
-              subtitleOn: false
-            }}
-          >
-            <BibleCitationCard
-              citation={mockCitationWithEndVerse}
-              imageUrl="https://example.com/image.jpg"
-            />
-          </WatchProvider>
+          <BibleCitationCard
+            citation={mockCitationWithEndVerse}
+            imageUrl="https://example.com/image.jpg"
+          />
         </I18nextProvider>
       )
 
@@ -446,18 +333,10 @@ describe('BibleCitationCard', () => {
 
       render(
         <I18nextProvider i18n={i18n}>
-          <WatchProvider
-            initialState={{
-              audioLanguage: 'en',
-              subtitleLanguage: 'en',
-              subtitleOn: false
-            }}
-          >
-            <BibleCitationCard
-              citation={mockCitationWithEndVerse}
-              imageUrl="https://example.com/image.jpg"
-            />
-          </WatchProvider>
+          <BibleCitationCard
+            citation={mockCitationWithEndVerse}
+            imageUrl="https://example.com/image.jpg"
+          />
         </I18nextProvider>
       )
 
@@ -479,18 +358,10 @@ describe('BibleCitationCard', () => {
 
       render(
         <I18nextProvider i18n={i18n}>
-          <WatchProvider
-            initialState={{
-              audioLanguage: 'en',
-              subtitleLanguage: 'en',
-              subtitleOn: false
-            }}
-          >
-            <BibleCitationCard
-              citation={mockCitationWithEndVerse}
-              imageUrl="https://example.com/image.jpg"
-            />
-          </WatchProvider>
+          <BibleCitationCard
+            citation={mockCitationWithEndVerse}
+            imageUrl="https://example.com/image.jpg"
+          />
         </I18nextProvider>
       )
 
@@ -512,18 +383,10 @@ describe('BibleCitationCard', () => {
 
       render(
         <I18nextProvider i18n={i18n}>
-          <WatchProvider
-            initialState={{
-              audioLanguage: 'en',
-              subtitleLanguage: 'en',
-              subtitleOn: false
-            }}
-          >
-            <BibleCitationCard
-              citation={mockCitationWithEndVerse}
-              imageUrl="https://example.com/image.jpg"
-            />
-          </WatchProvider>
+          <BibleCitationCard
+            citation={mockCitationWithEndVerse}
+            imageUrl="https://example.com/image.jpg"
+          />
         </I18nextProvider>
       )
 
@@ -545,18 +408,10 @@ describe('BibleCitationCard', () => {
 
       render(
         <I18nextProvider i18n={i18n}>
-          <WatchProvider
-            initialState={{
-              audioLanguage: 'en',
-              subtitleLanguage: 'en',
-              subtitleOn: false
-            }}
-          >
-            <BibleCitationCard
-              citation={mockCitationWithEndVerse}
-              imageUrl="https://example.com/image.jpg"
-            />
-          </WatchProvider>
+          <BibleCitationCard
+            citation={mockCitationWithEndVerse}
+            imageUrl="https://example.com/image.jpg"
+          />
         </I18nextProvider>
       )
 
@@ -578,18 +433,10 @@ describe('BibleCitationCard', () => {
 
       render(
         <I18nextProvider i18n={i18n}>
-          <WatchProvider
-            initialState={{
-              audioLanguage: 'en',
-              subtitleLanguage: 'en',
-              subtitleOn: false
-            }}
-          >
-            <BibleCitationCard
-              citation={mockCitationWithEndVerse}
-              imageUrl="https://example.com/image.jpg"
-            />
-          </WatchProvider>
+          <BibleCitationCard
+            citation={mockCitationWithEndVerse}
+            imageUrl="https://example.com/image.jpg"
+          />
         </I18nextProvider>
       )
 
@@ -611,18 +458,10 @@ describe('BibleCitationCard', () => {
 
       render(
         <I18nextProvider i18n={i18n}>
-          <WatchProvider
-            initialState={{
-              audioLanguage: 'en',
-              subtitleLanguage: 'en',
-              subtitleOn: false
-            }}
-          >
-            <BibleCitationCard
-              citation={mockCitationWithEndVerse}
-              imageUrl="https://example.com/image.jpg"
-            />
-          </WatchProvider>
+          <BibleCitationCard
+            citation={mockCitationWithEndVerse}
+            imageUrl="https://example.com/image.jpg"
+          />
         </I18nextProvider>
       )
 

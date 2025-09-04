@@ -1,9 +1,16 @@
-import { useCallback } from 'react'
-
-import { LanguageOption } from '@core/shared/ui/LanguageAutocomplete'
+import { useRouter } from 'next/router'
 
 import { setCookie } from '../../cookieHandler'
 import { useWatch } from '../WatchContext'
+
+interface UseLanguageActionsHook {
+  updateAudioLanguage: (
+    language: { id: string; slug: string },
+    reload?: boolean
+  ) => void
+  updateSubtitleLanguage: (language: { id: string }) => void
+  updateSubtitlesOn: (subtitleOn: boolean) => void
+}
 
 /**
  * Hook that provides action dispatchers with side effects
@@ -16,54 +23,53 @@ import { useWatch } from '../WatchContext'
  * function LanguageSelector() {
  *   const { updateAudioLanguage } = useLanguageActions()
  *
- *   const handleLanguageChange = (language: LanguageOption) => {
+ *   const handleLanguageChange = (language: Language) => {
  *     updateAudioLanguage(language) // Handles state + cookies + reload
  *   }
  * }
  * ```
  */
-export function useLanguageActions() {
-  const { state, dispatch } = useWatch()
+export function useLanguageActions(): UseLanguageActionsHook {
+  const { dispatch } = useWatch()
+  const router = useRouter()
 
-  const updateAudioLanguage = useCallback(
-    (language: LanguageOption, reload: boolean = true) => {
-      dispatch({ type: 'UpdateAudioLanguage', languageId: language.id })
-      setCookie('AUDIO_LANGUAGE', language.id)
-      setCookie('SUBTITLE_LANGUAGE', language.id)
+  function updateAudioLanguage(
+    language: { id: string; slug: string },
+    reload: boolean = true
+  ) {
+    dispatch({
+      type: 'SetLanguagePreferences',
+      audioLanguageId: language.id
+    })
+    setCookie('AUDIO_LANGUAGE', language.id)
+    updateSubtitleLanguage(language)
 
-      if (state.router && reload && language.slug != null) {
-        const { asPath } = state.router
-        const [pathname, query] = asPath.split('?')
-        const segments = pathname.split('/')
-        segments[segments.length - 1] = `${language.slug}.html`
-        const newPath = segments.join('/')
-        void state.router.push({
-          pathname: newPath,
-          query
-        })
-      }
-    },
-    [state.router, dispatch]
-  )
+    if (reload) {
+      const [pathname, query] = router.asPath.split('?')
+      const segments = pathname.split('/')
+      segments[segments.length - 1] = `${language.slug}.html`
+      const newPath = segments.join('/')
+      void router.push({
+        pathname: newPath,
+        query
+      })
+    }
+  }
 
-  const updateSubtitleLanguage = useCallback(
-    (languageId: string) => {
-      dispatch({ type: 'UpdateSubtitleLanguage', languageId })
-      setCookie('SUBTITLE_LANGUAGE', languageId)
-    },
-    [dispatch]
-  )
+  function updateSubtitleLanguage(language: { id: string }) {
+    dispatch({
+      type: 'SetLanguagePreferences',
+      subtitleLanguageId: language.id
+    })
+    setCookie('SUBTITLE_LANGUAGE', language.id)
+  }
 
-  const updateSubtitlesOn = useCallback(
-    (enabled: boolean) => {
-      dispatch({ type: 'UpdateSubtitlesOn', enabled })
-      setCookie('SUBTITLES_ON', enabled.toString())
-    },
-    [dispatch]
-  )
+  function updateSubtitlesOn(subtitleOn: boolean) {
+    dispatch({ type: 'SetLanguagePreferences', subtitleOn })
+    setCookie('SUBTITLES_ON', subtitleOn.toString())
+  }
 
   return {
-    dispatch,
     updateAudioLanguage,
     updateSubtitleLanguage,
     updateSubtitlesOn

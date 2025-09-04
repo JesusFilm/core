@@ -1,1 +1,0 @@
-export { renderInput } from './renderInput'

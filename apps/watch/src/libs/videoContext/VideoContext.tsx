@@ -2,7 +2,7 @@ import { ReactElement, ReactNode, createContext, useContext } from 'react'
 
 import { VideoContentFields } from '../../../__generated__/VideoContentFields'
 
-interface VideoPageProps {
+export interface VideoPageProps {
   content: VideoContentFields
   container?: VideoContentFields
 }
