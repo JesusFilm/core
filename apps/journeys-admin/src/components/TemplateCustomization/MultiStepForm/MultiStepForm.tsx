@@ -60,15 +60,15 @@ export function MultiStepForm(): ReactElement {
         <NextLink href={link} passHref legacyBehavior>
           <Button
             variant="text"
-            color='primary'
+            color="primary"
             endIcon={<ChevronRight />}
-            sx={{ 
-              alignSelf: 'flex-end', 
-              mt: '24px', 
+            sx={{
+              alignSelf: 'flex-end',
+              mt: '24px',
               mr: '18px',
               fontWeight: 'bold',
-              "& .MuiButton-endIcon": {
-                marginLeft: "0px"
+              '& .MuiButton-endIcon': {
+                marginLeft: '0px'
               }
             }}
             disabled={journey?.id == null}
