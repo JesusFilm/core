@@ -33,7 +33,9 @@
         "outputPath": "dist/apps/journeys-admin"
       },
       "configurations": {
-        "production": {}
+        "production": {
+          "generatePackageJson": true
+        }
       }
     },
     "deploy": {
