@@ -4,14 +4,14 @@ import { User } from '@core/prisma/users/client'
 
 import { prismaMock } from '../../../test/prismaMock'
 
-import { CtxCurrentUser, findOrFetchUser } from './findOrFetchUser'
+import { CurrentUserFromCtx, findOrFetchUser } from './findOrFetchUser'
 import { user } from './user.mock'
 import { verifyUser } from './verifyUser'
 
 jest.mock('./verifyUser', () => ({
   verifyUser: jest.fn()
 }))
-const mockCtxCurrentUser: CtxCurrentUser = {
+const mockCtxCurrentUser: CurrentUserFromCtx = {
   id: 'userId',
   email: 'amin@email.com',
   firstName: 'Amin',

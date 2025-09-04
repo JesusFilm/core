@@ -4,16 +4,20 @@ import { Context } from '../builder'
 
 import { verifyUser } from './verifyUser'
 
-export type CtxCurrentUser = Extract<
-  Context,
-  { type: 'authenticated' }
->['currentUser']
+export interface CurrentUserFromCtx {
+  id: string
+  firstName: string
+  lastName?: string
+  email?: string | null
+  imageUrl?: string | null
+  emailVerified: boolean
+}
 
 export async function findOrFetchUser(
   query: { select?: Prisma.UserSelect; include?: undefined },
   userId: string,
   redirect: string | undefined = undefined,
-  ctxCurrentUser?: CtxCurrentUser
+  ctxCurrentUser?: CurrentUserFromCtx
 ): Promise<User | null> {
   const existingUser = await prisma.user.findUnique({
     ...query,
