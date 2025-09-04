@@ -39,7 +39,7 @@ interface PageWrapperProps {
   user?: User
   initialState?: Partial<PageState>
   background?: string
-  backgroundOverride?: string
+  backgroundColor?: string
 }
 
 export function PageWrapper({
@@ -60,7 +60,7 @@ export function PageWrapper({
   user,
   initialState,
   background,
-  backgroundOverride
+  backgroundColor
 }: PageWrapperProps): ReactElement {
   const [open, setOpen] = useState<boolean>(false)
   const theme = useTheme()
@@ -104,9 +104,8 @@ export function PageWrapper({
             flexGrow={1}
             direction={{ xs: 'column', md: 'row' }}
             sx={{
-              ...(backgroundOverride != null
-                ? { background: backgroundOverride }
-                : { backgroundColor: background ?? 'background.default' }),
+              ...(backgroundColor != null && { backgroundColor }),
+              ...(background != null && { background }),
               width: '100%',
               pt: { xs: toolbar.height, md: 0 },
               pb: {

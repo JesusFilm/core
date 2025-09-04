@@ -36,7 +36,7 @@ function CustomizePage() {
         user={user}
         showMainHeader={false}
         mainBodyPadding={false}
-        backgroundOverride="linear-gradient(to bottom, #1f2c430f, #2568994d)"
+        background="linear-gradient(to bottom, #1f2c430f, #2568994d)"
       >
         <JourneyProvider
           value={{

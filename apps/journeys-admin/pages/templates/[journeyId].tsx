@@ -85,7 +85,7 @@ function TemplateDetailsPage(): ReactElement {
           }
           showAppHeader={userSignedIn}
           showNavBar={userSignedIn}
-          background="background.paper"
+          backgroundColor="background.paper"
         >
           <Box
             sx={{
