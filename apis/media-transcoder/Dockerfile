@@ -23,10 +23,8 @@ RUN apk upgrade --update-cache --available && \
 
 WORKDIR /app
 COPY ./dist/apis/media-transcoder .
-COPY ./pnpm-lock.yaml .
-COPY ./pnpm-workspace.yaml .
 
 RUN corepack enable && corepack prepare pnpm --activate
-RUN pnpm install --prod --force --silent
+RUN pnpm install --prod --silent
 
 CMD node ./main.js

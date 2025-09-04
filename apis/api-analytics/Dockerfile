@@ -14,13 +14,11 @@ RUN apk upgrade --update-cache --available && \
 
 WORKDIR /app
 COPY ./dist/apps/api-analytics .
-COPY ./pnpm-lock.yaml .
-COPY ./pnpm-workspace.yaml .
 COPY ./libs/prisma/analytics/db ./prisma
 
 RUN corepack enable && corepack prepare pnpm --activate
-RUN pnpm install --prod --force --silent
-RUN pnpm add @prisma/client@6.5.0 --prod
+RUN pnpm install --prod --silent
+RUN pnpm add @prisma/client@6.5.0
 RUN pnpm add -D prisma@6.5.0
 RUN pnpm exec prisma generate --generator client --schema ./prisma/schema.prisma
 
