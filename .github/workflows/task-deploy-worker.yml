@@ -55,7 +55,7 @@ jobs:
 
       - name: Get affected apps
         run: |
-          echo "apps=$(pnpm ts-node tools/scripts/affected-apps.ts --projects apis/*)" >> $GITHUB_OUTPUT
+          echo "apps=$(pnpm exec ts-node tools/scripts/affected-apps.ts --projects apis/*)" >> $GITHUB_OUTPUT
           cat $GITHUB_OUTPUT
         id: affected-apps
 
