@@ -4,7 +4,7 @@ import { ReactNode } from 'react'
 
 import { videos } from '../../components/Videos/__generated__/testData'
 
-import { GET_VIDEO_CHILDREN , useVideoChildren } from './useVideoChildren'
+import { GET_VIDEO_CHILDREN, useVideoChildren } from './useVideoChildren'
 
 const mockData = {
   video: {
