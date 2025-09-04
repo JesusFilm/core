@@ -17,6 +17,8 @@ export function AiChatButton(): ReactElement {
       <Fab
         color="primary"
         onClick={handleClick}
+        aria-label={open ? 'Close AI chat' : 'Open AI chat'}
+        tabIndex={0}
         data-testid="AiEditButton"
         sx={{
           position: 'fixed',
@@ -37,7 +39,7 @@ export function AiChatButton(): ReactElement {
             width: 600
           }}
         >
-          <AiChat />
+          <AiChat open={open} />
         </Card>
       </Grow>
     </>
