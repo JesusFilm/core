@@ -57,7 +57,7 @@ export async function findOrFetchUser(
 
   // create new user using JWT payload
   let firstName = ctxCurrentUser?.firstName
-  let lastName = ctxCurrentUser?.lastName
+  const lastName = ctxCurrentUser?.lastName
 
   // Ensure firstName is never empty for database constraint
   if (!firstName?.trim()) {
