@@ -10,6 +10,9 @@ RUN if [ "$USER_GID" != "1000" ] || [ "$USER_UID" != "1000" ]; then groupmod --g
 
 FROM base as final
 
+# Enable corepack at build time so container startup only needs to prepare pnpm
+RUN corepack enable
+
 # https://www.postgresql.org/download/linux/debian/
 # required to install postgresql-client-13
 RUN sh -c 'echo "deb [signed-by=/usr/share/keyrings/postgresql-archive.keyring.gpg] https://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list'
@@ -44,8 +47,6 @@ WORKDIR /home/node
 RUN curl https://raw.githubusercontent.com/nektos/act/master/install.sh | bash
 RUN mv bin/act /usr/bin/
 RUN rm -rf bin
-
-RUN export PNPM_HOME="$HOME/.pnpm" && export PATH="$PNPM_HOME:$PATH"
 
 RUN mkdir /home/node/.doppler \
     && chown -R node /home/node/.doppler
