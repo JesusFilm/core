@@ -1,8 +1,6 @@
-import { UserRecord } from 'firebase-admin/auth'
 import omit from 'lodash/omit'
 
 import { User } from '@core/prisma/users/client'
-import { auth } from '@core/yoga/firebaseClient'
 
 import { prismaMock } from '../../../test/prismaMock'
 
