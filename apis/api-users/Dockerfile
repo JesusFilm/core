@@ -13,11 +13,12 @@ RUN apk upgrade --update-cache --available && \
 WORKDIR /app
 COPY ./dist/apps/api-users .
 COPY ./pnpm-lock.yaml .
-RUN corepack enable && corepack prepare pnpm --activate
+COPY ./pnpm-workspace.yaml .
 COPY ./libs/prisma/users/db ./prisma
 
 ENV PNPM_HOME="/usr/local/share/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
+RUN corepack enable && corepack prepare pnpm --activate
 RUN pnpm install --prod --force --silent
 RUN pnpm add @prisma/client@6.5.0 --prod
 RUN pnpm add -D prisma@6.5.0
