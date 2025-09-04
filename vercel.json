@@ -2,5 +2,5 @@
   "git": {
     "deploymentEnabled": false
   },
-  "installCommand": "corepack enable && corepack prepare pnpm@10.15.0 --activate && pnpm install --frozen-lockfile"
+  "installCommand": "corepack enable && corepack prepare pnpm --activate && pnpm install --frozen-lockfile"
 }

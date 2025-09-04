@@ -23,9 +23,7 @@ psql -c "CREATE USER \"test-user\" WITH PASSWORD 'test-password' CREATEDB;" || e
 
 # install pnpm (no corepack)(leaving paths until everyone is on pnpm)
 echo "Installing pnpm..."
-export PNPM_HOME="$HOME/.pnpm"
-export PATH="$PNPM_HOME:$PATH"
-curl -fsSL https://get.pnpm.io/install.sh | sh -s -- --version 10
+corepack enable && corepack prepare pnpm --activate
 
 # install global CLIs
 echo "Installing global CLIs..."
