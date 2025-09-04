@@ -111,7 +111,7 @@
     "generate-test-data": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "NEXT_PUBLIC_GATEWAY_URL=http://127.0.0.1:4000 pnpm ts-node apps/watch/src/components/Videos/testData.generator.ts"
+        "command": "NEXT_PUBLIC_GATEWAY_URL=http://127.0.0.1:4000 pnpm exec ts-node apps/watch/src/components/Videos/testData.generator.ts"
       }
     },
     "export": {

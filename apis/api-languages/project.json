@@ -88,13 +88,13 @@
     "data-export": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "pnpm ts-node apis/api-languages/src/workers/cli.ts data-export"
+        "command": "pnpm exec ts-node apis/api-languages/src/workers/cli.ts data-export"
       }
     },
     "data-import": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "pnpm ts-node apis/api-languages/src/scripts/data-import.ts"
+        "command": "pnpm exec ts-node apis/api-languages/src/scripts/data-import.ts"
       }
     }
   }

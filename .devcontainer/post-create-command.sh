@@ -21,7 +21,7 @@ echo "Database is ready!"
 echo "Creating test user in database..."
 psql -c "CREATE USER \"test-user\" WITH PASSWORD 'test-password' CREATEDB;" || echo "User test-user might already exist"
 
-# install pnpm (no corepack)(leaving paths until everyone is on pnpm)
+# install pnpm
 echo "Installing pnpm..."
 corepack enable && corepack prepare pnpm --activate
 
