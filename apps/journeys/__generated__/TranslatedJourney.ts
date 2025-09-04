@@ -7,8 +7,8 @@
 // GraphQL fragment: TranslatedJourney
 // ====================================================
 
-export interface TranslatedJourney_blocks_ImageBlock {
-  __typename: "ImageBlock" | "StepBlock" | "CardBlock" | "IconBlock" | "RadioQuestionBlock" | "SignUpBlock" | "SpacerBlock" | "VideoBlock" | "GridContainerBlock" | "GridItemBlock" | "VideoTriggerBlock";
+export interface TranslatedJourney_blocks_CardBlock {
+  __typename: "CardBlock" | "GridContainerBlock" | "GridItemBlock" | "IconBlock" | "ImageBlock" | "RadioQuestionBlock" | "SignUpBlock" | "SpacerBlock" | "StepBlock" | "VideoBlock" | "VideoTriggerBlock";
   id: string;
 }
 
@@ -37,7 +37,7 @@ export interface TranslatedJourney_blocks_TextResponseBlock {
   placeholder: string | null;
 }
 
-export type TranslatedJourney_blocks = TranslatedJourney_blocks_ImageBlock | TranslatedJourney_blocks_TypographyBlock | TranslatedJourney_blocks_ButtonBlock | TranslatedJourney_blocks_RadioOptionBlock | TranslatedJourney_blocks_TextResponseBlock;
+export type TranslatedJourney_blocks = TranslatedJourney_blocks_CardBlock | TranslatedJourney_blocks_TypographyBlock | TranslatedJourney_blocks_ButtonBlock | TranslatedJourney_blocks_RadioOptionBlock | TranslatedJourney_blocks_TextResponseBlock;
 
 export interface TranslatedJourney {
   __typename: "Journey";

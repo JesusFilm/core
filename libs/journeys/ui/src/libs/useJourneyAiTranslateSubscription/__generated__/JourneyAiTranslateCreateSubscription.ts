@@ -7,8 +7,8 @@
 // GraphQL subscription operation: JourneyAiTranslateCreateSubscription
 // ====================================================
 
-export interface JourneyAiTranslateCreateSubscription_journeyAiTranslateCreateSubscription_journey_blocks_ImageBlock {
-  __typename: "ImageBlock" | "StepBlock" | "CardBlock" | "IconBlock" | "RadioQuestionBlock" | "SignUpBlock" | "SpacerBlock" | "VideoBlock" | "GridContainerBlock" | "GridItemBlock" | "VideoTriggerBlock";
+export interface JourneyAiTranslateCreateSubscription_journeyAiTranslateCreateSubscription_journey_blocks_CardBlock {
+  __typename: "CardBlock" | "GridContainerBlock" | "GridItemBlock" | "IconBlock" | "ImageBlock" | "RadioQuestionBlock" | "SignUpBlock" | "SpacerBlock" | "StepBlock" | "VideoBlock" | "VideoTriggerBlock";
   id: string;
 }
 
@@ -37,7 +37,7 @@ export interface JourneyAiTranslateCreateSubscription_journeyAiTranslateCreateSu
   placeholder: string | null;
 }
 
-export type JourneyAiTranslateCreateSubscription_journeyAiTranslateCreateSubscription_journey_blocks = JourneyAiTranslateCreateSubscription_journeyAiTranslateCreateSubscription_journey_blocks_ImageBlock | JourneyAiTranslateCreateSubscription_journeyAiTranslateCreateSubscription_journey_blocks_TypographyBlock | JourneyAiTranslateCreateSubscription_journeyAiTranslateCreateSubscription_journey_blocks_ButtonBlock | JourneyAiTranslateCreateSubscription_journeyAiTranslateCreateSubscription_journey_blocks_RadioOptionBlock | JourneyAiTranslateCreateSubscription_journeyAiTranslateCreateSubscription_journey_blocks_TextResponseBlock;
+export type JourneyAiTranslateCreateSubscription_journeyAiTranslateCreateSubscription_journey_blocks = JourneyAiTranslateCreateSubscription_journeyAiTranslateCreateSubscription_journey_blocks_CardBlock | JourneyAiTranslateCreateSubscription_journeyAiTranslateCreateSubscription_journey_blocks_TypographyBlock | JourneyAiTranslateCreateSubscription_journeyAiTranslateCreateSubscription_journey_blocks_ButtonBlock | JourneyAiTranslateCreateSubscription_journeyAiTranslateCreateSubscription_journey_blocks_RadioOptionBlock | JourneyAiTranslateCreateSubscription_journeyAiTranslateCreateSubscription_journey_blocks_TextResponseBlock;
 
 export interface JourneyAiTranslateCreateSubscription_journeyAiTranslateCreateSubscription_journey {
   __typename: "Journey";

@@ -7,8 +7,8 @@
 // GraphQL mutation operation: StepBlockDeleteFromSocialPreview
 // ====================================================
 
-export interface StepBlockDeleteFromSocialPreview_blockDelete_ImageBlock {
-  __typename: "ImageBlock" | "ButtonBlock" | "CardBlock" | "IconBlock" | "RadioOptionBlock" | "RadioQuestionBlock" | "SignUpBlock" | "SpacerBlock" | "TextResponseBlock" | "TypographyBlock" | "VideoBlock" | "GridContainerBlock" | "GridItemBlock" | "VideoTriggerBlock";
+export interface StepBlockDeleteFromSocialPreview_blockDelete_ButtonBlock {
+  __typename: "ButtonBlock" | "CardBlock" | "GridContainerBlock" | "GridItemBlock" | "IconBlock" | "ImageBlock" | "RadioOptionBlock" | "RadioQuestionBlock" | "SignUpBlock" | "SpacerBlock" | "TextResponseBlock" | "TypographyBlock" | "VideoBlock" | "VideoTriggerBlock";
   id: string;
   parentOrder: number | null;
 }
@@ -24,10 +24,10 @@ export interface StepBlockDeleteFromSocialPreview_blockDelete_StepBlock {
   nextBlockId: string | null;
 }
 
-export type StepBlockDeleteFromSocialPreview_blockDelete = StepBlockDeleteFromSocialPreview_blockDelete_ImageBlock | StepBlockDeleteFromSocialPreview_blockDelete_StepBlock;
+export type StepBlockDeleteFromSocialPreview_blockDelete = StepBlockDeleteFromSocialPreview_blockDelete_ButtonBlock | StepBlockDeleteFromSocialPreview_blockDelete_StepBlock;
 
 export interface StepBlockDeleteFromSocialPreview_blockOrderUpdate {
-  __typename: "ImageBlock" | "StepBlock" | "ButtonBlock" | "CardBlock" | "IconBlock" | "RadioOptionBlock" | "RadioQuestionBlock" | "SignUpBlock" | "SpacerBlock" | "TextResponseBlock" | "TypographyBlock" | "VideoBlock" | "GridContainerBlock" | "GridItemBlock" | "VideoTriggerBlock";
+  __typename: "ButtonBlock" | "CardBlock" | "GridContainerBlock" | "GridItemBlock" | "IconBlock" | "ImageBlock" | "RadioOptionBlock" | "RadioQuestionBlock" | "SignUpBlock" | "SpacerBlock" | "StepBlock" | "TextResponseBlock" | "TypographyBlock" | "VideoBlock" | "VideoTriggerBlock";
   id: string;
   parentOrder: number | null;
 }
