@@ -60,8 +60,6 @@
     "@emotion/react": "^11.13.3",
     "@emotion/server": "^11.11.0",
     "@emotion/styled": "^11.13.0",
-    "@firebase/auth": "0.21.1",
-    "@firebase/util": "1.9.0",
     "@graphql-hive/gateway": "^1.0.7",
     "@graphql-tools/executor": "1.4.9",
     "@graphql-typed-document-node/core": "^3.2.0",
