@@ -62,7 +62,9 @@ export function NewVideoContentHeader({
                     {t('Clip ')}
                     {activeVideoIndex}
                     {t(' of ')}
-                    {container.childrenCount}
+                    {videos.length != 0
+                      ? videos.length
+                      : container.childrenCount}
                   </>
                 )}
               </p>

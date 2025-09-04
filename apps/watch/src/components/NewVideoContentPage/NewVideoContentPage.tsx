@@ -47,14 +47,9 @@ export function NewVideoContentPage(): ReactElement {
 
   const variantSlug = container?.variant?.slug ?? variant?.slug
   const watchUrl = getWatchUrl(container?.slug, label, variant?.slug)
-
   const { children, loading } = useVideoChildren(
     variantSlug,
     variant?.language.bcp47 ?? 'en'
-  )
-  const filteredChildren = useMemo(
-    () => children.filter((video) => video.variant !== null),
-    [children]
   )
 
   const makeDefaultQuestion = (value: string): StudyQuestions => ({
@@ -170,12 +165,11 @@ export function NewVideoContentPage(): ReactElement {
         isFullscreen={isFullscreen}
       >
         <ContentPageBlurFilter>
-          <NewVideoContentHeader loading={loading} videos={filteredChildren} />
+          <NewVideoContentHeader loading={loading} videos={children} />
           {((container?.childrenCount ?? 0) > 0 || childrenCount > 0) &&
-            (filteredChildren.length === children.length ||
-              filteredChildren.length > 0) && (
+            (children.length === children.length || children.length > 0) && (
               <VideoCarousel
-                videos={filteredChildren}
+                videos={children}
                 containerSlug={container?.slug ?? videoSlug}
                 activeVideoId={id}
                 loading={loading}
