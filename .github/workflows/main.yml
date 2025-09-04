@@ -33,7 +33,7 @@ jobs:
           node-version: ${{ matrix.node-version }}
           cache: 'pnpm'
       - name: Install dependencies
-        run: pnpm install --silent
+        run: pnpm install --frozen-lockfile --silent
       - name: generate prisma imports
         uses: mansagroup/nrwl-nx-action@v3
         with:
@@ -92,7 +92,7 @@ jobs:
           node-version: ${{ matrix.node-version }}
           cache: 'pnpm'
       - name: Install dependencies
-        run: pnpm install --silent
+        run: pnpm install --frozen-lockfile --silent
       - name: generate prisma imports
         uses: mansagroup/nrwl-nx-action@v3
         with:

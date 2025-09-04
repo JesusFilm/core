@@ -30,7 +30,7 @@ jobs:
           node-version: ${{ matrix.node-version }}
           cache: 'pnpm'
       - name: Install dependencies
-        run: pnpm install --silent
+        run: pnpm install --frozen-lockfile --silent
       - uses: nrwl/nx-set-shas@v4
       - name: nx Install
         run: pnpm add -g nx --silent

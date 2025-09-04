@@ -63,7 +63,7 @@ jobs:
           node-version: ${{ matrix.node-version }}
           cache: 'pnpm'
       - name: Install dependencies
-        run: pnpm install --silent
+        run: pnpm install --frozen-lockfile --silent
       - name: Prisma Generate
         uses: mansagroup/nrwl-nx-action@v3
         with:

@@ -77,7 +77,7 @@ jobs:
           node-version: 22
           cache: 'pnpm'
       - name: Install dependencies
-        run: pnpm install --silent
+        run: pnpm install --frozen-lockfile --silent
       - name: Mount playwright cache
         uses: useblacksmith/stickydisk@v1
         with:
@@ -171,7 +171,7 @@ jobs:
           cache: 'pnpm'
 
       - name: Install dependencies
-        run: pnpm install --silent
+        run: pnpm install --frozen-lockfile --silent
       - name: Mount playwright cache
         uses: useblacksmith/stickydisk@v1
         with:
