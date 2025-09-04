@@ -22,7 +22,7 @@ export async function HomeHero() {
       </div>
 
       <Container className="relative -mt-16 z-20">
-        <div className="max-w-7xl">
+        <div>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
             <div>
               <h1 className="mb-6 text-5xl font-extrabold tracking-tight text-white md:text-6xl lg:text-7xl">

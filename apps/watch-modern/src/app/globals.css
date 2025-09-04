@@ -1,54 +1,72 @@
 @import "tailwindcss";
+@plugin "tailwindcss-animate";
 
+/* Design tokens used by shadcn/ui components */
 @layer base {
   :root {
-    --background: 13 11 11; /* #131111 - deep black */
+    /* dark UI with your intended palette (fixed invalid HSLs) */
+    --background: 0 0% 7%;            /* ~#131111 */
     --foreground: 0 0% 100%;
-    --card: 39 39 42; /* #27272a - dark gray */
+
+    --card: 240 5% 15%;               /* ~#27272a */
     --card-foreground: 0 0% 100%;
-    --popover: 39 39 42; /* #27272a - dark gray */
+
+    --popover: 240 5% 15%;
     --popover-foreground: 0 0% 100%;
-    --primary: 0 78% 43%; /* #CB333B - crimson red */
+
+    --primary: 0 78% 43%;             /* #CB333B */
     --primary-foreground: 0 0% 100%;
-    --secondary: 39 39 42; /* #27272a - dark gray */
+
+    --secondary: 240 5% 15%;
     --secondary-foreground: 0 0% 100%;
-    --muted: 39 39 42; /* #27272a - dark gray */
+
+    --muted: 240 5% 15%;
     --muted-foreground: 0 0% 85%;
-    --accent: 0 78% 43%; /* #CB333B - crimson red */
+
+    --accent: 0 78% 43%;
     --accent-foreground: 0 0% 100%;
+
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 40% 98%;
-    --border: 39 39 42; /* #27272a - dark gray */
-    --input: 39 39 42; /* #27272a - dark gray */
-    --ring: 0 78% 43%; /* #CB333B - crimson red */
+
+    --border: 240 5% 15%;
+    --input: 240 5% 15%;
+    --ring: 0 78% 43%;
+
     --radius: 0.5rem;
   }
 
   .dark {
     --background: 222.2 84% 4.9%;
     --foreground: 210 40% 98%;
+
     --card: 222.2 84% 4.9%;
     --card-foreground: 210 40% 98%;
+
     --popover: 222.2 84% 4.9%;
     --popover-foreground: 210 40% 98%;
+
     --primary: 210 40% 98%;
     --primary-foreground: 222.2 47.4% 11.2%;
+
     --secondary: 222.2 47.4% 11.2%;
     --secondary-foreground: 210 40% 98%;
+
     --muted: 217.2 32.6% 17.5%;
     --muted-foreground: 215 20.2% 65.1%;
+
     --accent: 217.2 32.6% 17.5%;
     --accent-foreground: 210 40% 98%;
+
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 210 40% 98%;
+
     --border: 217.2 32.6% 17.5%;
     --input: 217.2 32.6% 17.5%;
     --ring: 222.2 84% 4.9%;
   }
 
-  * {
-    border-color: hsl(var(--border));
-  }
+  * { border-color: hsl(var(--border)); }
 
   body {
     background-color: hsl(var(--background));

@@ -196,6 +196,10 @@ cd /workspaces && nx run watch-modern-e2e:debug
 cd /workspaces && npx playwright show-report
 ```
 
+## Adding shadcn/ui Components
+
+- Follow `prds/watch-modern/ADD-COMPONENTS.md` for the exact CLI command and PRD updates required when introducing new UI components to the app.
+
 #### Example TDD Workflow
 
 ```typescript

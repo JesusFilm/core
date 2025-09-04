@@ -6,6 +6,13 @@
         "-y",
         "nx-mcp@latest"
       ]
+    },
+    "playwright-mcp": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "playwright-mcp@latest"
+      ]
     }
   }
 }

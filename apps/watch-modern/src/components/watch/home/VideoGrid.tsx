@@ -1,11 +1,12 @@
 "use client"
 
 import type { Hit as AlgoliaHit } from 'instantsearch.js'
-import { Highlight, Hits, Pagination, SearchBox, useInstantSearch, useSearchBox } from 'react-instantsearch'
-
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Hits, Pagination, SearchBox, useInstantSearch, useSearchBox } from 'react-instantsearch'
+import { Card } from '@/components/ui/card'
 import { Container } from '@/components/ui/container'
+import { MediaCard, type MediaCardProps } from './MediaCard'
 import { Skeleton } from '@/components/ui/skeleton'
+import { AspectRatio } from '@/components/ui/aspect-ratio'
 
 type AlgoliaVideo = AlgoliaHit<{
   videoId: string
@@ -25,32 +26,20 @@ type AlgoliaVideo = AlgoliaHit<{
   objectID: string
 }>
 
-type VideoHit = AlgoliaHit<{
-  title: string
-  description?: string
-  image?: string
-  videoType?: 'Feature Film' | 'Chapter' | 'Collection' | 'Documentary'
-  duration?: string
-  chapterCount?: number
-}>
-
-function transformAlgoliaVideo(hit: AlgoliaVideo): VideoHit {
+/**
+ * Transforms AlgoliaVideo to MediaCard props
+ */
+function transformToMediaCardProps(hit: AlgoliaVideo): MediaCardProps {
   // Get title from titlesWithLanguages or fallback to titles
   let title = ''
   if (hit.titlesWithLanguages && hit.titlesWithLanguages.length > 0) {
-    title = hit.titlesWithLanguages[0].value
+    title = hit.titlesWithLanguages[0]?.value || ''
   } else if (hit.titles && hit.titles.length > 0) {
-    title = hit.titles[0]
+    title = hit.titles[0] || ''
   }
 
-  // Get description
-  const description = hit.description && hit.description.length > 0 ? hit.description[0] : ''
-
-  // Convert duration from seconds to MM:SS format
-  const duration = hit.duration ? `${Math.floor(hit.duration / 60)}:${(hit.duration % 60).toString().padStart(2, '0')}` : undefined
-
   // Map label to videoType
-  let videoType: VideoHit['videoType']
+  let videoType: string
   switch (hit.label) {
     case 'featureFilm':
       videoType = 'Feature Film'
@@ -65,14 +54,47 @@ function transformAlgoliaVideo(hit: AlgoliaVideo): VideoHit {
       videoType = 'Documentary'
   }
 
+  // Map videoType to MediaKind
+  let kind: MediaCardProps['kind'] = 'episode' // default
+  switch (videoType) {
+    case 'Feature Film':
+      kind = 'feature-film'
+      break
+    case 'Chapter':
+      kind = 'chapter'
+      break
+    case 'Collection':
+      kind = 'collection'
+      break
+    case 'Documentary':
+      kind = 'episode' // fallback
+      break
+  }
+
+
+  // Create count label for collections/series
+  let countLabel: string | undefined = undefined
+  if (hit.childrenCount && hit.childrenCount > 1) {
+    if (kind === 'collection') {
+      countLabel = `${hit.childrenCount} items`
+    } else {
+      countLabel = `${hit.childrenCount} chapters`
+    }
+  }
+
+  // Convert duration from seconds to MM:SS format for display
+  let durationSeconds: number | undefined
+  if (hit.duration) {
+    durationSeconds = hit.duration
+  }
+
   return {
-    ...hit,
+    href: `/watch/${hit.slug}`,
     title,
-    description,
-    image: hit.image,
-    videoType,
-    duration,
-    chapterCount: hit.childrenCount > 1 ? hit.childrenCount : undefined
+    kind,
+    countLabel,
+    durationSeconds,
+    imageUrl: hit.image
   }
 }
 
@@ -123,80 +145,49 @@ function EmptyState() {
   )
 }
 
+/**
+ * Skeleton component for individual video cards
+ */
 function VideoCardSkeleton() {
   return (
-    <Card>
-      <div className="aspect-video">
-        <Skeleton className="h-full w-full" />
+    <Card className="rounded-xl overflow-hidden border-0 shadow-none">
+      <div className="relative shadow-[0_8px_32px_rgba(0,0,0,0.4)] rounded-xl overflow-hidden focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 border border-white/10">
+        <AspectRatio ratio={16/9}>
+          <Skeleton className="h-full w-full" />
+        </AspectRatio>
       </div>
-      <CardHeader className="pb-2">
+
+      {/* Type label and title skeleton below thumbnail */}
+      <div className="py-4">
+        <Skeleton className="h-4 w-20 mb-1" />
+        <Skeleton className="h-6 w-full mb-1" />
         <Skeleton className="h-6 w-3/4" />
-      </CardHeader>
-      <CardContent className="pt-0">
-        <div className="space-y-2">
-          <Skeleton className="h-4 w-full" />
-          <Skeleton className="h-4 w-2/3" />
-        </div>
-      </CardContent>
+      </div>
     </Card>
   )
 }
 
-function Hit({ hit }: { hit: AlgoliaVideo }) {
-  const videoHit = transformAlgoliaVideo(hit)
+/**
+ * Skeleton grid for the 4-column layout (max 4 items per row)
+ */
+function NewGridSkeleton() {
   return (
-    <Card className="group overflow-hidden transition-all duration-300 hover:shadow-lg hover:shadow-primary/20 hover:scale-[1.02] focus-within:ring-2 focus-within:ring-primary focus-within:ring-offset-2 focus-within:ring-offset-background">
-      <div className="relative aspect-video overflow-hidden bg-muted">
-        {videoHit.image ? (
-          <img
-            src={videoHit.image}
-            alt={videoHit.title}
-            className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
-          />
-        ) : (
-          <div className="flex h-full w-full items-center justify-center bg-muted">
-            <div className="text-center text-muted-foreground">
-              <div className="mb-2 text-4xl">🎬</div>
-              <div className="text-sm">Video</div>
-            </div>
-          </div>
-        )}
-
-        {/* Video type indicator */}
-        {videoHit.videoType && (
-          <div className="absolute top-2 left-2 rounded bg-primary px-2 py-1 text-xs font-semibold text-primary-foreground">
-            {videoHit.videoType}
-          </div>
-        )}
-
-        {/* Duration */}
-        {videoHit.duration && (
-          <div className="absolute bottom-2 right-2 rounded bg-black/70 px-2 py-1 text-xs text-white">
-            {videoHit.duration}
-          </div>
-        )}
-      </div>
-
-      <CardHeader className="pb-2">
-        <CardTitle className="line-clamp-2 text-lg font-semibold leading-tight">
-          <Highlight attribute="titles" hit={hit} />
-        </CardTitle>
-      </CardHeader>
-
-      <CardContent className="pt-0">
-        <p className="line-clamp-3 text-sm text-muted-foreground">
-          <Highlight attribute="description" hit={hit} />
-        </p>
-
-        {/* Chapter count */}
-        {videoHit.chapterCount && videoHit.chapterCount > 1 && (
-          <div className="mt-2 text-xs text-muted-foreground">
-            {videoHit.chapterCount} chapters
-          </div>
-        )}
-      </CardContent>
-    </Card>
+    <div className="grid grid-cols-4 gap-4 md:gap-5 lg:gap-6">
+      {Array.from({ length: 12 }).map((_, i) => (
+        <div key={i} className="col-span-4 sm:col-span-2 lg:col-span-1">
+          <VideoCardSkeleton />
+        </div>
+      ))}
+    </div>
   )
+}
+
+/**
+ * New Hit component using MediaCard for the redesigned grid
+ */
+function NewHit({ hit }: { hit: AlgoliaVideo }) {
+  const mediaCardProps = transformToMediaCardProps(hit)
+  return <MediaCard {...mediaCardProps} />
 }
 
 export function VideoGrid() {
@@ -212,16 +203,7 @@ export function VideoGrid() {
           <SearchBoxWithLoading />
         </div>
 
-
-          <Hits
-            hitComponent={Hit}
-            classNames={{
-              list: 'contents grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6',
-              item: 'w-full'
-            }}
-            emptyComponent={() => <EmptyState />}
-          />
-
+        <NewHitsGridWithEmptyState />
 
         <div className="mt-8 flex justify-center">
           <Pagination
@@ -235,3 +217,51 @@ export function VideoGrid() {
     </section>
   )
 }
+
+/**
+ * Custom Hits component for the 4-column grid design (max 4 items per row)
+ */
+function NewHitsGrid() {
+  return (
+    <Hits
+      hitComponent={NewHitWrapper}
+      classNames={{
+        list: 'grid grid-cols-4 gap-4 md:gap-5 lg:gap-6',
+        item: 'w-full'
+      }}
+    />
+  )
+}
+
+/**
+ * Wrapper component to handle hit rendering
+ */
+function NewHitWrapper({ hit }: { hit: AlgoliaVideo }) {
+  return (
+    <div className="col-span-4 sm:col-span-2 lg:col-span-1">
+      <NewHit hit={hit} />
+    </div>
+  )
+}
+
+/**
+ * Hits grid with empty state and loading skeleton for new design
+ */
+function NewHitsGridWithEmptyState() {
+  const { results, status } = useInstantSearch()
+  const isLoading = status === 'loading' || status === 'stalled'
+
+  // Show skeleton during loading
+  if (isLoading) {
+    return <NewGridSkeleton />
+  }
+
+  // Show empty state when no results
+  if (results && results.nbHits === 0) {
+    return <EmptyState />
+  }
+
+  return <NewHitsGrid />
+}
+
+
