@@ -17,6 +17,7 @@ import { SubmitListener } from '@core/shared/ui/SubmitListener'
 import type { GetLanguages } from '../../../../__generated__/GetLanguages'
 import { useAlgoliaRouter } from '../../../libs/algolia/useAlgoliaRouter'
 import { SUBTITLE_LANGUAGE_IDS } from '../../../libs/localeMapping/subtitleLanguageIds'
+import { ResizeObserverPolyfill } from '@core/shared/ui/ResizeObserverPolyfill'
 
 import { LanguagesFilter } from './LanguagesFilter'
 
@@ -94,56 +95,59 @@ export function FilterList({
   }
 
   return (
-    <Formik initialValues={initialValues} onSubmit={noop} enableReinitialize>
-      {({ values, setFieldValue, handleBlur }) => (
-        <Stack data-testid="FilterList" gap={4}>
-          <Stack spacing={2}>
-            <Stack direction="row" spacing={2}>
-              <VolumeUpIcon />
-              <Typography variant="h6">{t('Languages')}</Typography>
+    <>
+      <ResizeObserverPolyfill />
+      <Formik initialValues={initialValues} onSubmit={noop} enableReinitialize>
+        {({ values, setFieldValue, handleBlur }) => (
+          <Stack data-testid="FilterList" gap={4}>
+            <Stack spacing={2}>
+              <Stack direction="row" spacing={2}>
+                <VolumeUpIcon />
+                <Typography variant="h6">{t('Languages')}</Typography>
+              </Stack>
+              <LanguagesFilter
+                onChange={handleLanguageChange(setFieldValue)}
+                value={values.language}
+                languages={languagesData?.languages}
+                loading={languagesLoading}
+              />
             </Stack>
-            <LanguagesFilter
-              onChange={handleLanguageChange(setFieldValue)}
-              value={values.language}
-              languages={languagesData?.languages}
-              loading={languagesLoading}
-            />
-          </Stack>
-          <Stack spacing={2}>
-            <Stack direction="row" spacing={2}>
-              <SubtitlesIcon />
-              <Typography variant="h6">{t('Subtitles')}</Typography>
+            <Stack spacing={2}>
+              <Stack direction="row" spacing={2}>
+                <SubtitlesIcon />
+                <Typography variant="h6">{t('Subtitles')}</Typography>
+              </Stack>
+              <LanguagesFilter
+                onChange={handleSubtitleChange(setFieldValue)}
+                value={values.subtitleLanguage}
+                languages={subtitleLanguages}
+                loading={languagesLoading}
+                helperText={`${subtitleLanguages?.length ?? 53} languages`}
+              />
             </Stack>
-            <LanguagesFilter
-              onChange={handleSubtitleChange(setFieldValue)}
-              value={values.subtitleLanguage}
-              languages={subtitleLanguages}
-              loading={languagesLoading}
-              helperText={`${subtitleLanguages?.length ?? 53} languages`}
-            />
-          </Stack>
-          <Stack spacing={2}>
-            <Stack direction="row" spacing={2}>
-              <TitleIcon />
-              <Typography variant="h6">{t('Title')}</Typography>
+            <Stack spacing={2}>
+              <Stack direction="row" spacing={2}>
+                <TitleIcon />
+                <Typography variant="h6">{t('Title')}</Typography>
+              </Stack>
+              <TextField
+                value={title}
+                name="title"
+                type="search"
+                onChange={(e) => {
+                  handleTitleChange(e.target.value)
+                }}
+                onBlur={handleBlur}
+                label="Search Titles"
+                variant="outlined"
+                helperText="724+ titles"
+                fullWidth
+              />
             </Stack>
-            <TextField
-              value={title}
-              name="title"
-              type="search"
-              onChange={(e) => {
-                handleTitleChange(e.target.value)
-              }}
-              onBlur={handleBlur}
-              label="Search Titles"
-              variant="outlined"
-              helperText="724+ titles"
-              fullWidth
-            />
+            <SubmitListener />
           </Stack>
-          <SubmitListener />
-        </Stack>
-      )}
-    </Formik>
+        )}
+      </Formik>
+    </>
   )
 }
