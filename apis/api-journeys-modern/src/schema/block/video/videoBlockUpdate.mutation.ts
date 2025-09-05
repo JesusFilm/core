@@ -48,7 +48,7 @@ builder.mutationField('videoBlockUpdate', (t) =>
           context.user
         )
       ) {
-        throw new GraphQLError('user is not allowed to update block', {
+        throw new GraphQLError('user is not allowed to update video block', {
           extensions: { code: 'FORBIDDEN' }
         })
       }

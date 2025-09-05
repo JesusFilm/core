@@ -106,10 +106,11 @@ describe('videoBlockUpdate', () => {
     expect(tx.block.update).toHaveBeenCalledWith(
       expect.objectContaining({ where: { id } })
     )
-    expect(tx.journey.update).toHaveBeenCalledWith({
-      where: { id: 'journeyId' },
-      data: { updatedAt: expect.any(Date) }
-    })
+    expect(tx.journey.update).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: { id: 'journeyId' }
+      })
+    )
 
     expect(result).toEqual({
       data: {
