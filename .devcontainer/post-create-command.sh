@@ -23,8 +23,8 @@ psql -c "CREATE USER \"test-user\" WITH PASSWORD 'test-password' CREATEDB;" || e
 
 # install pnpm
 echo "Installing pnpm..."
-ENV PNPM_HOME="~/.local/share/pnpm"
-ENV PATH="$PNPM_HOME:$PATH"
+PNPM_HOME="$HOME/.local/share/pnpm"
+PATH="$PNPM_HOME:$PATH"
 corepack enable && corepack prepare pnpm --activate
 
 # install global CLIs
