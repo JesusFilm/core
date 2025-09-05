@@ -3,7 +3,6 @@ import Button from '@mui/material/Button'
 import Container from '@mui/material/Container'
 import NextLink from 'next/link'
 import Stack from '@mui/material/Stack'
-import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, useState } from 'react'
 
@@ -52,8 +51,12 @@ export function MultiStepForm(): ReactElement {
       maxWidth="sm"
       sx={{
         width: '100%',
+        height: '100%',
+        maxHeight: { xs: '100%', sm: '852px' },
         backgroundColor: 'background.paper',
-        borderRadius: { xs: '0px', md: '16px' }
+        borderRadius: { xs: '0px', md: '16px' },
+        mt: { xs: 0, sm: 6 },
+        mb: { xs: 0, sm: 6 }
       }}
     >
       <Stack gap={12} data-testid="MultiStepForm">
@@ -64,8 +67,8 @@ export function MultiStepForm(): ReactElement {
             endIcon={<ChevronRight />}
             sx={{
               alignSelf: 'flex-end',
-              mt: '24px',
-              mr: '18px',
+              mt: '14px',
+              mr: '4px',
               fontWeight: 'bold',
               '& .MuiButton-endIcon': {
                 marginLeft: '0px'
@@ -82,7 +85,7 @@ export function MultiStepForm(): ReactElement {
           totalSteps={screens.length}
         />
 
-        <Box sx={{ alignSelf: 'center', width: '100%', px: 3 }}>
+        <Box sx={{ alignSelf: 'center', width: '100%', px: '14px', pb: '24px' }}>
           {renderScreen(activeScreen, handleNext)}
         </Box>
 
