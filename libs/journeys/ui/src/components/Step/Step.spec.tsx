@@ -107,6 +107,8 @@ const journey: Journey = {
   logoImageBlock: null,
   menuButtonIcon: null,
   menuStepBlock: null,
+  socialNodeX: null,
+  socialNodeY: null,
   journeyTheme: null
 }
 
