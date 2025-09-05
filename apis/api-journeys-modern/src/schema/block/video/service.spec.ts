@@ -1,9 +1,9 @@
 import {
-  videoBlockYouTubeSchema,
+  fetchFieldsFromMux,
+  fetchFieldsFromYouTube,
   videoBlockInternalSchema,
   videoBlockMuxSchema,
-  fetchFieldsFromMux,
-  fetchFieldsFromYouTube
+  videoBlockYouTubeSchema
 } from './service'
 
 // Mock @apollo/client used by fetchFieldsFromMux
@@ -43,12 +43,17 @@ describe('video service', () => {
 
     it('validates internal schema with nullish fields', () => {
       expect(() =>
-        videoBlockInternalSchema.parse({ videoId: null, videoVariantLanguageId: undefined })
+        videoBlockInternalSchema.parse({
+          videoId: null,
+          videoVariantLanguageId: undefined
+        })
       ).not.toThrow()
     })
 
     it('validates mux schema with non-empty id and fails for empty', () => {
-      expect(() => videoBlockMuxSchema.parse({ videoId: 'mux123' })).not.toThrow()
+      expect(() =>
+        videoBlockMuxSchema.parse({ videoId: 'mux123' })
+      ).not.toThrow()
       expect(() => videoBlockMuxSchema.parse({ videoId: '' })).toThrow()
     })
   })
@@ -64,7 +69,9 @@ describe('video service', () => {
 
     it('returns only title when playbackId is null', async () => {
       mockQuery.mockResolvedValue({
-        data: { getMuxVideo: { id: 'mux-id', name: 'Mux Title', playbackId: null } }
+        data: {
+          getMuxVideo: { id: 'mux-id', name: 'Mux Title', playbackId: null }
+        }
       })
 
       await expect(fetchFieldsFromMux('mux-id')).resolves.toEqual({
@@ -140,5 +147,3 @@ describe('video service', () => {
     })
   })
 })
-
-
