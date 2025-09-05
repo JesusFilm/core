@@ -5,7 +5,7 @@ set -e
 echo "Starting post-create setup..."
 
 
-cd /workspaces
+cd /workspaces/core
 
 # Wait for database to be ready
 echo "Waiting for database to be ready..."
