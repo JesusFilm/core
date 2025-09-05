@@ -193,7 +193,7 @@ export function Toolbar({ user }: ToolbarProps): ReactElement {
           }}
         />
       </IconButton>
-      <Tooltip title="See all journeys" placement="bottom" arrow>
+      <Tooltip title={t("See all journeys")} placement="bottom" arrow>
         <IconButton
           component={NextLink}
           href="/"
@@ -276,7 +276,7 @@ export function Toolbar({ user }: ToolbarProps): ReactElement {
               }}
             >
               <Tooltip
-                title="Click to edit"
+                title={t("Click to edit")}
                 placement="bottom"
                 arrow
                 PopperProps={{
