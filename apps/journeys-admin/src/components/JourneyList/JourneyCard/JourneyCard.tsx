@@ -205,7 +205,7 @@ export function JourneyCard({
               <Image
                 data-testid="JourneyCardNoImage"
                 src={logoGray}
-                alt={t("No Image")}
+                alt={t('No Image')}
                 width={50}
                 height={50}
                 style={{
