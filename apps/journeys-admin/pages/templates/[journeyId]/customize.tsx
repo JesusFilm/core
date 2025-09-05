@@ -47,7 +47,7 @@ export const getServerSideProps = withUserTokenSSR()(async ({
     user,
     locale,
     resolvedUrl,
-    makeAccountOnAnonymous: true
+    allowAnonymous: true
   })
 
   const journeyId = params?.journeyId
@@ -89,7 +89,4 @@ export const getServerSideProps = withUserTokenSSR()(async ({
   }
 })
 
-export default withUser({
-  // TODO: remove this after anon user is implemented
-  whenUnauthedBeforeInit: AuthAction.REDIRECT_TO_LOGIN
-})(CustomizePage)
+export default withUser()(CustomizePage)

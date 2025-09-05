@@ -1,6 +1,4 @@
 import { ApolloClient, NormalizedCacheObject, gql } from '@apollo/client'
-import { getApp } from 'firebase/app'
-import { getAuth, signInAnonymously } from 'firebase/auth'
 import { Redirect } from 'next'
 import { User } from 'next-firebase-auth'
 import { SSRConfig } from 'next-i18next'
@@ -18,7 +16,7 @@ interface InitAndAuthAppProps {
   user?: User
   locale: string | undefined
   resolvedUrl?: string
-  makeAccountOnAnonymous?: boolean
+  allowAnonymous?: boolean
 }
 
 interface InitAndAuth {
@@ -45,12 +43,8 @@ export async function initAndAuthApp({
   user,
   locale,
   resolvedUrl,
-  makeAccountOnAnonymous = false
+  allowAnonymous = false
 }: InitAndAuthAppProps): Promise<InitAndAuth> {
-  if (user == null && makeAccountOnAnonymous) {
-    await signInAnonymously(getAuth(getApp()))
-  }
-
   const ldUser =
     user?.id != null
       ? {
@@ -100,7 +94,7 @@ export async function initAndAuthApp({
   }
 
   const redirect =
-    resolvedUrl != null
+    resolvedUrl != null && allowAnonymous === false
       ? await checkConditionalRedirect({
           apolloClient,
           resolvedUrl,
@@ -108,7 +102,10 @@ export async function initAndAuthApp({
         })
       : undefined
 
-  if (!(redirect?.destination.startsWith('/users/verify') ?? false))
+  if (
+    !(redirect?.destination.startsWith('/users/verify') ?? false) &&
+    user?.email != null
+  )
     await apolloClient.mutate<AcceptAllInvites>({
       mutation: ACCEPT_ALL_INVITES
     })

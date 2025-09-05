@@ -23,5 +23,5 @@ export function useGetValueFromJourneyCustomizationString(
         journey?.journeyCustomizationFields ?? []
       ) ?? ''
     )
-  }, [label, variant, journey?.journeyCustomizationFields])
+  }, [label, variant, journey?.journeyCustomizationFields, journey?.template])
 }
