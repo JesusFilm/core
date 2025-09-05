@@ -1,5 +1,8 @@
+import omit from 'lodash/omit'
+
 import { Action, Block, Prisma, prisma } from '@core/prisma/journeys/client'
 
+export const OMITTED_BLOCK_FIELDS = ['__typename', 'journeyId', 'isCover']
 export type BlockWithAction = Block & { action: Action | null }
 
 export async function getSiblingsInternal(

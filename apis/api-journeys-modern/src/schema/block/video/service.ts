@@ -34,7 +34,7 @@ export interface YoutubeVideosData {
   }>
 }
 
-const GET_MUX_VIDEO_QUERY = graphql`
+const GET_MUX_VIDEO_QUERY = graphql(`
   query GetMuxVideo($id: ID!) {
     getMuxVideo(id: $id) {
       id
@@ -43,11 +43,19 @@ const GET_MUX_VIDEO_QUERY = graphql`
       duration
     }
   }
-`
+`)
 
-export async function fetchFieldsFromMux(
-  videoId: string
-): Promise<Pick<VideoBlock, 'title' | 'image' | 'duration' | 'endAt'>> {
+export async function fetchFieldsFromMux(videoId: string): Promise<
+  | {
+      title: string | null
+    }
+  | {
+      title: string | null
+      image: string
+      duration: number
+      endAt: number
+    }
+> {
   const httpLink = createHttpLink({
     uri: process.env.GATEWAY_URL,
     headers: {
@@ -60,10 +68,7 @@ export async function fetchFieldsFromMux(
     cache: new InMemoryCache()
   })
 
-  const { data } = await apollo.query<
-    GetMuxVideoQuery,
-    GetMuxVideoQueryVariables
-  >({
+  const { data } = await apollo.query({
     query: GET_MUX_VIDEO_QUERY,
     variables: { id: videoId }
   })
@@ -87,9 +92,12 @@ export async function fetchFieldsFromMux(
   }
 }
 
-export async function fetchFieldsFromYouTube(
-  videoId: string
-): Promise<Pick<VideoBlock, 'title' | 'description' | 'image' | 'duration'>> {
+export async function fetchFieldsFromYouTube(videoId: string): Promise<{
+  title: string
+  description: string
+  image: string
+  duration: number
+}> {
   const query = new URLSearchParams({
     part: 'snippet,contentDetails',
     key: process.env.FIREBASE_API_KEY ?? '',
