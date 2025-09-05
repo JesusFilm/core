@@ -6,7 +6,7 @@ import {
   ConversationContent,
   ConversationScrollButton
 } from '../Conversation'
-import { Message, MessageContent } from '../Message'
+import { Message as MessageComponent, MessageContent } from '../Message'
 import { Response } from '../Response'
 import { Action, Actions } from '../Actions'
 import { CopyIcon, Loader, RefreshCcwIcon } from 'lucide-react'
@@ -37,10 +37,10 @@ export function AiChat() {
   }
 
   return (
-    <div className="h-full">
+    <div className="h-full bg-background rounded-lg">
       <div className="flex flex-col h-full p-4">
-        <Conversation className="h-full overflow-hidden">
-          <ConversationContent className="overflow-y-auto h-full">
+        <Conversation className="flex-1 bg-background-paper rounded-lg border border-secondary-light">
+          <ConversationContent className="h-full">
             {messages.map((message) => (
               <div key={message.id}>
                 {message.parts.map((part, i) => {
@@ -48,11 +48,11 @@ export function AiChat() {
                     case 'text':
                       return (
                         <Fragment key={`${message.id}-${i}`}>
-                          <Message from={message.role}>
+                          <MessageComponent from={message.role}>
                             <MessageContent>
                               <div>{part.text}</div>
                             </MessageContent>
-                          </Message>
+                          </MessageComponent>
                           {message.role === 'assistant' &&
                             i === messages.length - 1 && (
                               <Actions className="mt-2">
@@ -95,16 +95,26 @@ export function AiChat() {
                 })}
               </div>
             ))}
-            {status === 'submitted' && <Loader />}
+            {status === 'submitted' && (
+              <div className="flex justify-center p-4">
+                <Loader className="text-muted-foreground animate-spin" />
+              </div>
+            )}
           </ConversationContent>
           <ConversationScrollButton />
         </Conversation>
-        <PromptInput onSubmit={handleSubmit} className="mt-4">
+        <PromptInput
+          onSubmit={handleSubmit}
+          className="mt-4 bg-background-paper border border-secondary-light rounded-lg"
+        >
           <PromptInputTextarea
+            className="text-text-primary"
+            placeholder="Ask me anything you don't understand."
             onChange={(e) => setInput(e.target.value)}
             value={input}
           />
           <PromptInputToolbar>
+            <div></div>
             <PromptInputSubmit disabled={!input} status={status} />
           </PromptInputToolbar>
         </PromptInput>

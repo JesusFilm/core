@@ -26,7 +26,7 @@ export function AiChatButton(): ReactElement {
         <AutoAwesomeIcon />
       </Fab>
       {open && (
-        <div className="fixed bottom-20 left-4 right-4 h-[600px] z-[1100] bg-black rounded-xl shadow-lg border border-gray-200 md:w-[400px] md:right-auto">
+        <div className="fixed bottom-20 left-4 right-4 h-[600px] z-[1300] rounded-xl shadow-lg border border-gray-200 md:w-[400px] md:right-auto">
           <AiChat />
         </div>
       )}
