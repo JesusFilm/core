@@ -1,0 +1,1 @@
+export { extractTypographyContent } from './contextExtraction'

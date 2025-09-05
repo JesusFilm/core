@@ -1,6 +1,13 @@
 import { DefaultChatTransport } from 'ai'
 import { useChat } from '@ai-sdk/react'
-import { Fragment, useState } from 'react'
+import { useEffect, Fragment, useState } from 'react'
+import { Suggestion, SuggestionsRequest } from '../../types/suggestions'
+import { useBlocks } from '@core/journeys/ui/block'
+import { extractTypographyContent } from '../../utils/contextExtraction'
+
+type AiChatProps = {
+  open: boolean
+}
 import {
   Conversation,
   ConversationContent,
@@ -18,13 +25,81 @@ import {
 } from '../PromptInput'
 import { Suggestion, Suggestions } from '../Suggestion'
 
-export function AiChat() {
+export function AiChat({ open }: AiChatProps) {
   const { messages, sendMessage, status, regenerate } = useChat({
     transport: new DefaultChatTransport({
       api: '/api/chat'
     })
   })
   const [input, setInput] = useState('')
+  const [suggestions, setSuggestions] = useState<Suggestion[]>([])
+  const [suggestionsLoading, setSuggestionsLoading] = useState(false)
+  const [suggestionsError, setSuggestionsError] = useState<string | null>(null)
+  const { treeBlocks, blockHistory } = useBlocks()
+
+  // Fetch suggestions when the chat opens
+  useEffect(() => {
+    if (!open) return
+    const activeBlock = blockHistory.at(-1)
+    if (!activeBlock) {
+      console.log('No blocks found for suggestions')
+      setSuggestions([])
+      return
+    }
+
+    let isCancelled = false
+
+    const fetchSuggestions = async () => {
+      setSuggestionsLoading(true)
+      setSuggestionsError(null)
+
+      try {
+        const contextText = extractTypographyContent(activeBlock)
+        if (!contextText) {
+          console.log('No suggestions generated')
+          setSuggestions([])
+          return
+        }
+
+        const requestBody: SuggestionsRequest = { contextText }
+        const response = await fetch('/api/chat/suggestions', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(requestBody)
+        })
+
+        if (!response.ok) throw new Error('Failed to fetch suggestions')
+
+        const suggestions: string[] = await response.json()
+        const suggestionsWithIds = suggestions.map(
+          (text: string, index: number) => ({
+            id: `suggestion-${index}`,
+            text
+          })
+        )
+        if (!isCancelled) setSuggestions(suggestionsWithIds)
+      } catch (error) {
+        if (isCancelled) return
+        console.error('Error fetching suggestions:', error)
+        setSuggestionsError('Failed to load suggestions')
+        setSuggestions([])
+      } finally {
+        if (!isCancelled) setSuggestionsLoading(false)
+      }
+    }
+
+    fetchSuggestions()
+    return () => {
+      isCancelled = true
+    }
+  }, [open, treeBlocks])
+
+  // Prototype visibility
+  useEffect(() => {
+    suggestions.forEach((element) => {
+      console.log('Suggestion: ', element.text)
+    })
+  }, [suggestions])
 
   const suggestions = [
     'Can you explain how to play tennis?',
