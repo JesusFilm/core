@@ -16,6 +16,7 @@ import {
   PromptInputTextarea,
   PromptInputToolbar
 } from '../PromptInput'
+import { Suggestion, Suggestions } from '../Suggestion'
 
 export function AiChat() {
   const { messages, sendMessage, status, regenerate } = useChat({
@@ -25,12 +26,22 @@ export function AiChat() {
   })
   const [input, setInput] = useState('')
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const suggestions = [
+    'Can you explain how to play tennis?',
+    'What is the weather in Tokyo?',
+    'How do I make a really good fish taco?'
+  ]
+
+  function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     if (input.trim()) {
       sendMessage({ text: input })
       setInput('')
     }
+  }
+
+  function handleSuggestionClick(suggestion: string) {
+    sendMessage({ text: suggestion })
   }
 
   return (
@@ -85,9 +96,18 @@ export function AiChat() {
           </ConversationContent>
           <ConversationScrollButton />
         </Conversation>
+        <Suggestions>
+          {suggestions.map((suggestion) => (
+            <Suggestion
+              key={suggestion}
+              onClick={handleSuggestionClick}
+              suggestion={suggestion}
+            />
+          ))}
+        </Suggestions>
         <PromptInput
           onSubmit={handleSubmit}
-          className="mt-4 bg-background-paper border border-secondary-light rounded-lg"
+          className="mt-4 w-full bg-background-paper border border-secondary-light rounded-lg"
         >
           <PromptInputTextarea
             className="text-text-primary"

@@ -2,47 +2,104 @@
 @plugin "tailwindcss-animate";
 
 @theme {
-  /* Light Mode Colors */
-  --color-primary: #007bff;
+  /* Light Mode Colors - AI SDK Style */
+  --color-primary: #2563eb;
   --color-primary-foreground: #ffffff;
   --color-secondary: #f8f9fa;
-  --color-secondary-foreground: #212529;
-  --color-foreground: #212529;
+  --color-secondary-foreground: #000000;
+  --color-foreground: #000000;
   --color-background: #ffffff;
   --color-accent: #f1f3f4;
-  --color-accent-foreground: #212529;
+  --color-accent-foreground: #000000;
   --color-muted: #f8f9fa;
-  --color-muted-foreground: #6c757d;
-  --color-destructive: #dc3545;
+  --color-muted-foreground: #6b7280;
+  --color-destructive: #ef4444;
   --color-destructive-foreground: #ffffff;
-  --color-input: #e9ecef;
-  --color-ring: #007bff;
-  --color-border: #e9ecef;
-  --color-error: #b62d1c;
-  --color-text-primary: #212529;
-  --color-text-secondary: #6c757d;
-  --color-text-disabled: #6c757d;
+  --color-input: #ffffff;
+  --color-ring: #000000;
+  --color-border: #e5e7eb;
+  --color-error: #ef4444;
+  --color-text-primary: #000000;
+  --color-text-secondary: #6b7280;
+  --color-text-disabled: #9ca3af;
   --color-background-paper: #ffffff;
 
-  /* Dark Mode Colors */
-  --color-dark-primary: #007bff;
+  /* Dark Mode Colors - AI SDK Style */
+  --color-dark-primary: #3b82f6;
   --color-dark-primary-foreground: #ffffff;
-  --color-dark-secondary: #343a40;
+  --color-dark-secondary: #1f2937;
   --color-dark-secondary-foreground: #ffffff;
   --color-dark-foreground: #ffffff;
-  --color-dark-background: #212529;
-  --color-dark-accent: #495057;
+  --color-dark-background: #000000;
+  --color-dark-accent: #374151;
   --color-dark-accent-foreground: #ffffff;
-  --color-dark-muted: #343a40;
-  --color-dark-muted-foreground: #adb5bd;
-  --color-dark-destructive: #dc3545;
+  --color-dark-muted: #1f2937;
+  --color-dark-muted-foreground: #9ca3af;
+  --color-dark-destructive: #ef4444;
   --color-dark-destructive-foreground: #ffffff;
-  --color-dark-input: #495057;
-  --color-dark-ring: #007bff;
-  --color-dark-border: #495057;
-  --color-dark-error: #ff6b58;
+  --color-dark-input: #1f2937;
+  --color-dark-ring: #ffffff;
+  --color-dark-border: #374151;
+  --color-dark-error: #ef4444;
   --color-dark-text-primary: #ffffff;
-  --color-dark-text-secondary: #adb5bd;
-  --color-dark-text-disabled: #6c757d;
-  --color-dark-background-paper: #343a40;
+  --color-dark-text-secondary: #9ca3af;
+  --color-dark-text-disabled: #6b7280;
+  --color-dark-background-paper: #1f2937;
+
+  /* Suggestion Colors - AI SDK Style */
+  --color-suggestion-bg: #f8f9fa;
+  --color-suggestion-text: #6b7280;
+  --color-suggestion-border: #e5e7eb;
+  --color-suggestion-hover-bg: #f1f3f4;
+  --color-suggestion-hover-text: #000000;
+
+  /* Dark Mode Suggestion Colors - AI SDK Style */
+  --color-dark-suggestion-bg: #1f2937;
+  --color-dark-suggestion-text: #9ca3af;
+  --color-dark-suggestion-border: #374151;
+  --color-dark-suggestion-hover-bg: #374151;
+  --color-dark-suggestion-hover-text: #ffffff;
+}
+
+/* Suggestion Button Styles */
+.suggestion-button {
+  background-color: var(--color-suggestion-bg);
+  color: var(--color-suggestion-text);
+  border: 1px solid var(--color-suggestion-border);
+  border-radius: 9999px; /* pill shape */
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: all 0.2s ease-in-out;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  white-space: nowrap;
+  outline: none;
+}
+
+.suggestion-button:hover {
+  background-color: var(--color-suggestion-hover-bg);
+  color: var(--color-suggestion-hover-text);
+}
+
+.suggestion-button:focus-visible {
+  outline: 2px solid var(--color-ring);
+  outline-offset: 2px;
+}
+
+/* Dark mode suggestion button */
+@media (prefers-color-scheme: dark) {
+  .suggestion-button {
+    background-color: var(--color-dark-suggestion-bg);
+    color: var(--color-dark-suggestion-text);
+    border-color: var(--color-dark-suggestion-border);
+  }
+
+  .suggestion-button:hover {
+    background-color: var(--color-dark-suggestion-hover-bg);
+    color: var(--color-dark-suggestion-hover-text);
+  }
 }
