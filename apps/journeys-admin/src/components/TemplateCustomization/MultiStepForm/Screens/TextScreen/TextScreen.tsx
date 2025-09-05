@@ -3,6 +3,8 @@ import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
+import { useTheme } from '@mui/material/styles'
+import useMediaQuery from '@mui/material/useMediaQuery'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, useCallback, useEffect, useState } from 'react'
 
@@ -71,15 +73,15 @@ const renderEditableText = (
           color: '#1E81DB',
           border: 'none',
           borderRadius: '4px',
-          padding: '0px 2px',
-          minWidth: '20px',
-          maxWidth: '100%',
-          display: 'inline-block',
+          padding: '0px 3px',
+          display: 'inline',
+          boxDecorationBreak: 'clone',
+          WebkitBoxDecorationBreak: 'clone',
           wordWrap: 'break-word',
           wordBreak: 'break-word',
           overflowWrap: 'break-word',
-          marginBottom: '4px',
-          fontWeight: 'bold'
+          fontWeight: 'bold',
+          lineHeight: 1.4
         }}
         onBlur={(e) => {
           const newValue = e.currentTarget.textContent || ''
@@ -132,6 +134,8 @@ interface TextScreenProps {
 export function TextScreen({ handleNext }: TextScreenProps): ReactElement {
   const { t } = useTranslation()
   const { journey } = useJourney()
+  const theme = useTheme()
+  const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'))
   const [journeyCustomizationFieldUpdate, { loading: isSubmitting }] =
     useMutation<JourneyCustomizationFieldUpdate>(
       JOURNEY_CUSTOMIZATION_FIELD_UPDATE
@@ -193,14 +197,20 @@ export function TextScreen({ handleNext }: TextScreenProps): ReactElement {
   return (
     <Stack
       alignItems="center"
-      sx={{ px: { xs: 2, md: 8 }, maxWidth: '1000px', width: '100%' }}
-      gap={2}
+      justifyContent="center"
+      gap={{ xs: 0, sm: 2 }}
+      sx={{
+        px: { xs: '20px', md: 8 },
+        maxWidth: '1000px',
+        width: '100%',
+        mx: 'auto'
+      }}
     >
-      <Stack alignItems="center" sx={{ pb: 5 }}>
+      <Stack alignItems="center" sx={{ pb: 3 }}>
         <Typography variant="h4" component="h1" gutterBottom>
           {t('Text')}
         </Typography>
-        <Typography variant="h6" color="text.secondary">
+        <Typography variant={isSmallScreen ? "body2" : "h6"} color="text.secondary" align="center">
           {t("Fill out the blue fields and we'll customise the content with your information.")}
         </Typography>
       </Stack>
@@ -209,12 +219,12 @@ export function TextScreen({ handleNext }: TextScreenProps): ReactElement {
           border: '2px solid',
           borderColor: '#CCCCCC',
           borderRadius: 3,
-          p: 3,
+          p: { xs: '16px', sm: '20px' },
           minHeight: 200,
           width: '100%',
           whiteSpace: 'pre-wrap'
         }}
-        style={{ color: '#000000' }}
+        style={{ color: '#000000', fontSize: isSmallScreen ? '16px' : '18px' }}
       >
         {renderEditableText(
           journey?.journeyCustomizationDescription ?? '',
@@ -229,14 +239,18 @@ export function TextScreen({ handleNext }: TextScreenProps): ReactElement {
         loading={isSubmitting}
         aria-label={t('Save and continue')}
         sx={{
+          width: { xs: '136px', sm: '128px' },
+          height: { xs: '40px', sm: '46px' },
           alignSelf: 'center',
           mt: 4,
           borderRadius: '8px',
           py: '12px'
         }}
-        endIcon={<ArrowRightIcon />}
       >
-        <Typography variant="body1" sx={{ fontWeight: 'bold' }}>{t('Next Step')}</Typography>
+        <Stack direction="row" alignItems="center" gap={1}>
+          {!isSmallScreen && (<Typography sx={{ fontWeight: 'bold' }}>{t('Next Step')}</Typography>)}
+          <ArrowRightIcon sx={{ fontSize: { xs: '24px', sm: '16px' } }} />
+        </Stack>
       </Button>
     </Stack >
   )
