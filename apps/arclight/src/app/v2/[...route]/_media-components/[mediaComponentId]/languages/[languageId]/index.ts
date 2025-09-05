@@ -44,7 +44,7 @@ const GET_VIDEO_VARIANT = graphql(`
         id
         label
         primaryLanguageId
-        variant {
+        variants(languageId: $languageId) {
           hls
           share
           lengthInMilliseconds
@@ -56,6 +56,9 @@ const GET_VIDEO_VARIANT = graphql(`
             size
             bitrate
             url
+          }
+          language {
+            id
           }
           subtitle {
             language {
@@ -392,77 +395,80 @@ mediaComponentLanguage.openapi(route, async (c) => {
     ...(expand.includes('contains') &&
       video.children && {
         _embedded: {
-          contains: video.children.map((child) => ({
-            mediaComponentId: child.id,
-            languageId: Number(languageId),
-            refId: `${child.id}_${languageId}-${child.label}`,
-            apiSessionId,
-            lengthInMilliseconds: child.variant?.lengthInMilliseconds ?? 0,
-            subtitleUrls: {
-              vtt:
-                child.variant?.subtitle?.map((subtitle) => ({
-                  languageId: Number(subtitle.language?.id),
-                  languageName: subtitle.language?.name[0].value,
-                  languageTag: subtitle.language?.bcp47,
-                  url: subtitle.vttSrc
-                })) ?? []
-            },
-            downloadUrls: {
-              low: (() => {
-                const lowDownload = findDownloadWithFallback(
-                  child.variant?.downloads,
-                  'low',
-                  apiKey
-                )
-                return (
-                  lowDownload && {
-                    url: lowDownload.url,
-                    height: lowDownload.height || 240,
-                    width: lowDownload.width || 426,
-                    sizeInBytes: lowDownload.size || 0
+          contains: video.children.map((child) => {
+            const variant = child.variants?.[0]
+            return {
+              mediaComponentId: child.id,
+              languageId: Number(languageId),
+              refId: `${child.id}_${languageId}-${child.label}`,
+              apiSessionId,
+              lengthInMilliseconds: variant?.lengthInMilliseconds ?? 0,
+              subtitleUrls: {
+                vtt:
+                  variant?.subtitle?.map((subtitle) => ({
+                    languageId: Number(subtitle.language?.id),
+                    languageName: subtitle.language?.name[0].value,
+                    languageTag: subtitle.language?.bcp47,
+                    url: subtitle.vttSrc
+                  })) ?? []
+              },
+              downloadUrls: {
+                low: (() => {
+                  const lowDownload = findDownloadWithFallback(
+                    variant?.downloads,
+                    'low',
+                    apiKey
+                  )
+                  return (
+                    lowDownload && {
+                      url: lowDownload.url,
+                      height: lowDownload.height || 240,
+                      width: lowDownload.width || 426,
+                      sizeInBytes: lowDownload.size || 0
+                    }
+                  )
+                })(),
+                high: (() => {
+                  const highDownload = findDownloadWithFallback(
+                    variant?.downloads,
+                    'high',
+                    apiKey
+                  )
+                  return (
+                    highDownload && {
+                      url: highDownload.url,
+                      height: highDownload.height || 720,
+                      width: highDownload.width || 1280,
+                      sizeInBytes: highDownload.size || 0
+                    }
+                  )
+                })()
+              },
+              streamingUrls: {
+                m3u8: [
+                  {
+                    videoBitrate: 0,
+                    videoContainer: 'M2TS',
+                    url: variant?.hls ?? ''
                   }
-                )
-              })(),
-              high: (() => {
-                const highDownload = findDownloadWithFallback(
-                  child.variant?.downloads,
-                  'high',
-                  apiKey
-                )
-                return (
-                  highDownload && {
-                    url: highDownload.url,
-                    height: highDownload.height || 720,
-                    width: highDownload.width || 1280,
-                    sizeInBytes: highDownload.size || 0
-                  }
-                )
-              })()
-            },
-            streamingUrls: {
-              m3u8: [
-                {
-                  videoBitrate: 0,
-                  videoContainer: 'M2TS',
-                  url: child.variant?.hls ?? ''
+                ],
+                http: []
+              },
+              shareUrl: variant?.share ?? '',
+              socialMediaUrls: {},
+              _links: {
+                self: {
+                  href: `http://api.arclight.org/v2/media-components/${child.id}/languages/${languageId}?apiKey=${apiKey}`
+                },
+                mediaComponent: {
+                  href: `http://api.arclight.org/v2/media-components/${child.id}?apiKey=${apiKey}`
+                },
+                mediaLanguage: {
+                  href: `http://api.arclight.org/v2/media-languages/${languageId}?apiKey=${apiKey}`
                 }
-              ],
-              http: []
-            },
-            shareUrl: child.variant?.share ?? '',
-            socialMediaUrls: {},
-            _links: {
-              self: {
-                href: `http://api.arclight.org/v2/media-components/${child.id}/languages/${languageId}?apiKey=${apiKey}`
-              },
-              mediaComponent: {
-                href: `http://api.arclight.org/v2/media-components/${child.id}?apiKey=${apiKey}`
-              },
-              mediaLanguage: {
-                href: `http://api.arclight.org/v2/media-languages/${languageId}?apiKey=${apiKey}`
               }
             }
-          }))
+          })
         }
       })
   }
