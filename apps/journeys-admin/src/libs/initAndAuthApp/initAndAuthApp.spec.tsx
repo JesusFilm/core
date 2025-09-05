@@ -108,6 +108,18 @@ describe('initAndAuthApp', () => {
     })
   })
 
+  it('should not call accept all invites when user does not have an email i.e is a guest user', async () => {
+    const result = await initAndAuthApp({
+      user: { ...mockUser, email: null },
+      locale: 'en',
+      resolvedUrl: '/templates'
+    })
+
+    expect(apolloClient.mutate).not.toHaveBeenCalledWith({
+      mutation: ACCEPT_ALL_INVITES
+    })
+  })
+
   it('should return with apolloClient, flags, redirect, and translations when anonymous user', async () => {
     const result = await initAndAuthApp({
       user: {
@@ -233,14 +245,14 @@ describe('initAndAuthApp', () => {
     })
   })
 
-  // it('should call signInAnonymously when makeAccountOnAnonymous is true and user is undefined', async () => {
-  //   await initAndAuthApp({
-  //     user: undefined,
-  //     locale: 'en',
-  //     resolvedUrl: '/templates',
-  //     makeAccountOnAnonymous: true
-  //   })
+  it('should not call checkConditionalRedirectMock when allowAnonymous is true', async () => {
+    await initAndAuthApp({
+      user: undefined,
+      locale: 'en',
+      resolvedUrl: '/templates',
+      allowAnonymous: true
+    })
 
-  //   expect(signInAnonymouslyMock).toHaveBeenCalledWith({})
-  // })
+    expect(checkConditionalRedirectMock).not.toHaveBeenCalled()
+  })
 })

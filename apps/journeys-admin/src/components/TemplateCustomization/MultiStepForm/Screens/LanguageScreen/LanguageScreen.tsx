@@ -37,7 +37,7 @@ export function LanguageScreen({
 
   const { journey } = useJourney()
   const isSignedIn = user?.email != null
-  const { query, activeTeam } = useTeam()
+  const { query } = useTeam()
   const [teamCreate] = useTeamCreateMutation()
   const [getMe] = useLazyQuery<GetMe>(GET_ME)
 
@@ -53,7 +53,7 @@ export function LanguageScreen({
   }
 
   const [journeyDuplicate] = useJourneyDuplicateMutation()
-  const hasTeams = query?.data?.teams?.length ?? 0 > 0
+  const hasTeams = (query?.data?.teams?.length ?? 0) > 0
 
   async function handleSignedInSubmit(values: FormikValues) {
     setLoading(true)
@@ -159,7 +159,6 @@ export function LanguageScreen({
         {t('Lets get started!')}
       </Typography>
       <LanguageScreenCardPreview />
-
       {isSignedIn && (
         <Typography variant="body1" color="text.secondary" align="center">
           {t('Select a team')}
@@ -204,30 +203,27 @@ export function LanguageScreen({
         >
           {({ handleSubmit }) => (
             <Form>
-              <FormControl sx={{ alignSelf: 'center' }}>
-                <JourneyCustomizeTeamSelect />
-                <Button
-                  data-testid="LanguageScreenSubmitButton"
-                  disabled={loading}
-                  variant="contained"
-                  color="secondary"
-                  onClick={() => handleSubmit()}
-                  sx={{
-                    width: { xs: '100%', sm: 300 },
-                    alignSelf: 'center',
-                    mt: 4
-                  }}
-                >
-                  <ArrowRightIcon />
-                </Button>
-              </FormControl>
+              <Button
+                data-testid="LanguageScreenSubmitButtonGuestWithTeam"
+                disabled={loading}
+                variant="contained"
+                color="secondary"
+                onClick={() => handleSubmit()}
+                sx={{
+                  width: { xs: '100%', sm: 300 },
+                  alignSelf: 'center',
+                  mt: 4
+                }}
+              >
+                <ArrowRightIcon />
+              </Button>
             </Form>
           )}
         </Formik>
       )}
-      {!isSignedIn && (
+      {!isSignedIn && !hasTeams && (
         <Button
-          data-testid="LanguageScreenSubmitButton"
+          data-testid="LanguageScreenSubmitButtonGuest"
           disabled={loading}
           variant="contained"
           color="secondary"

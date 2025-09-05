@@ -55,7 +55,7 @@ function ValidateEmail({
   const client = useApolloClient()
   const user = useUser()
   const email = user?.email
-  const isAnonymous = user?.email == null
+  const isAnonymous = email == null
   const { setActiveTeam } = useTeam()
   const [error, setError] = useState<GraphQLError | ApolloError | null>(
     initialError
