@@ -30,10 +30,6 @@
   // Use 'postCreateCommand' to run commands after the container is created.
   "postCreateCommand": "/workspaces/core/.devcontainer/post-create-command.sh",
   "postStartCommand": "/workspaces/core/.devcontainer/post-start-command.sh",
-  "containerEnv": {
-    "PNPM_HOME": "/home/node/.local/share/pnpm",
-    "PATH": "/home/node/.local/share/pnpm:${containerEnv:PATH}"
-  },
 
   // Comment out connect as root instead. More info: https://aka.ms/vscode-remote/containers/non-root.
   "remoteUser": "node",
