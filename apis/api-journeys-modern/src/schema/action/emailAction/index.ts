@@ -1,2 +1,2 @@
 import './emailAction'
-import './inputs'
+import './blockUpdateEmailAction.mutation'
