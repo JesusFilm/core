@@ -58,18 +58,7 @@ export function AiChat() {
                         <Fragment key={`${message.id}-${i}`}>
                           <MessageComponent from={message.role}>
                             <MessageContent>
-                              {message.parts.map((part, i) => {
-                                switch (part.type) {
-                                  case 'text':
-                                    return (
-                                      <Response key={`${message.id}-${i}`}>
-                                        {part.text}
-                                      </Response>
-                                    )
-                                  default:
-                                    return null
-                                }
-                              })}
+                              <div>{part.text}</div>
                             </MessageContent>
                           </MessageComponent>
                           {message.role === 'assistant' &&
