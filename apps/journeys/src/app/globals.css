@@ -1,5 +1,6 @@
 @import 'tailwindcss';
 @plugin "tailwindcss-animate";
+@source "../node_modules/streamdown/dist/index.js";
 
 @theme {
   /* Light Mode Colors - AI SDK Style */
