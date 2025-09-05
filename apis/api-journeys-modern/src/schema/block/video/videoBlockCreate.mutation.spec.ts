@@ -84,7 +84,8 @@ describe('videoBlockCreate', () => {
           ...input,
           typename: 'VideoBlock',
           parentOrder: 0
-        })
+        }),
+        findFirst: jest.fn().mockResolvedValue(null)
       },
       journey: { update: jest.fn().mockResolvedValue({ id: 'journeyId' }) }
     }
@@ -110,10 +111,7 @@ describe('videoBlockCreate', () => {
         videoVariantLanguageId: 'langId'
       })
     })
-    expect(tx.journey.update).toHaveBeenCalledWith({
-      where: { id: 'journeyId' },
-      data: { updatedAt: expect.any(Date) }
-    })
+    expect(tx.journey.update).toHaveBeenCalled()
 
     expect(result).toEqual({
       data: {

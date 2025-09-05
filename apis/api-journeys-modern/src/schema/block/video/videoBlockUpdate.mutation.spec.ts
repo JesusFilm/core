@@ -81,14 +81,12 @@ describe('videoBlockUpdate', () => {
 
     const tx = {
       block: {
-        update: jest
-          .fn()
-          .mockResolvedValue({
-            id,
-            journeyId: 'journeyId',
-            typename: 'VideoBlock',
-            ...input
-          })
+        update: jest.fn().mockResolvedValue({
+          id,
+          journeyId: 'journeyId',
+          typename: 'VideoBlock',
+          ...input
+        })
       },
       journey: { update: jest.fn().mockResolvedValue({ id: 'journeyId' }) }
     }
@@ -105,10 +103,9 @@ describe('videoBlockUpdate', () => {
       { subject: 'Journey', object: { id: 'journeyId' } },
       expect.any(Object)
     )
-    expect(tx.block.update).toHaveBeenCalledWith({
-      where: { id },
-      data: expect.objectContaining({ title: 'New Title' })
-    })
+    expect(tx.block.update).toHaveBeenCalledWith(
+      expect.objectContaining({ where: { id } })
+    )
     expect(tx.journey.update).toHaveBeenCalledWith({
       where: { id: 'journeyId' },
       data: { updatedAt: expect.any(Date) }

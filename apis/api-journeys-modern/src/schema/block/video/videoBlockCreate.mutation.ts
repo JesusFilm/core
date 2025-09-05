@@ -1,5 +1,5 @@
 import { GraphQLError } from 'graphql'
-import { v4 as uuidv4 } from 'uuid'
+import omit from 'lodash/omit'
 
 import { prisma } from '@core/prisma/journeys/client'
 
@@ -8,11 +8,22 @@ import {
   ability,
   subject as abilitySubject
 } from '../../../lib/auth/ability'
-import { fetchJourneyWithAclIncludes } from '../../../lib/auth/fetchJourneyWithAclIncludes'
 import { builder } from '../../builder'
-import { getNextParentOrder } from '../getNextParentOrder'
+import { INCLUDE_JOURNEY_ACL } from '../../journey/journey.acl'
+import {
+  getSiblingsInternal,
+  removeBlockAndChildren,
+  setJourneyUpdatedAt
+} from '../service'
 
 import { VideoBlockCreateInput } from './inputs'
+import {
+  fetchFieldsFromMux,
+  fetchFieldsFromYouTube,
+  videoBlockInternalSchema,
+  videoBlockMuxSchema,
+  videoBlockYouTubeSchema
+} from './service'
 import { VideoBlock } from './video'
 
 builder.mutationField('videoBlockCreate', (t) =>
@@ -26,67 +37,123 @@ builder.mutationField('videoBlockCreate', (t) =>
       input: t.arg({ type: VideoBlockCreateInput, required: true })
     },
     resolve: async (_parent, args, context) => {
-      const { input } = args
+      const { input: initialInput } = args
+      let input = { ...initialInput, source: initialInput.source ?? 'internal' }
 
-      const journey = await fetchJourneyWithAclIncludes(input.journeyId)
-      if (!journey) {
-        throw new GraphQLError('journey not found', {
-          extensions: { code: 'NOT_FOUND' }
+      // Check permissions using ACL
+
+      if (input.videoId == null) {
+        throw new GraphQLError('videoId is required', {
+          extensions: { code: 'BAD_USER_INPUT' }
         })
       }
 
-      // Check permissions using ACL
-      if (
-        !ability(
-          Action.Update,
-          abilitySubject('Journey', journey),
-          context.user
-        )
-      ) {
-        throw new GraphQLError('user is not allowed to create video block', {
-          extensions: { code: 'FORBIDDEN' }
-        })
+      switch (input.source) {
+        case 'youTube':
+          videoBlockYouTubeSchema.parse({ videoId: input.videoId })
+          input = {
+            ...input,
+            ...(await fetchFieldsFromYouTube(input.videoId)),
+            objectFit: null
+          }
+          break
+        case 'mux':
+          videoBlockMuxSchema.parse({ videoId: input.videoId })
+          input = {
+            ...input,
+            ...(await fetchFieldsFromMux(input.videoId)),
+            objectFit: null
+          }
+          break
+        case 'internal':
+          videoBlockInternalSchema.parse({ videoId: input.videoId })
+          break
       }
 
       return await prisma.$transaction(async (tx) => {
-        const parentOrder = await getNextParentOrder(
-          input.journeyId,
-          input.parentBlockId
-        )
-
-        const blockData = {
-          id: input.id ?? uuidv4(),
-          journeyId: input.journeyId,
-          typename: 'VideoBlock',
-          parentBlockId: input.parentBlockId,
-          parentOrder,
-          videoId: input.videoId,
-          videoVariantLanguageId: input.videoVariantLanguageId,
-          source: input.source ?? 'internal',
-          title: input.title,
-          description: input.description,
-          image: input.image,
-          duration: input.duration,
-          objectFit: input.objectFit,
-          startAt: input.startAt,
-          endAt: input.endAt,
-          muted: input.muted ?? false,
-          autoplay: input.autoplay ?? false,
-          fullsize: input.fullsize ?? false,
-          posterBlockId: input.posterBlockId
+        // Handle cover assignment
+        if (input.isCover === true) {
+          // Ensure parent exists and remove existing cover block if present
+          const parent = await tx.block.findUnique({
+            where: { id: input.parentBlockId },
+            select: { coverBlock: true }
+          })
+          if (!parent) {
+            throw new GraphQLError('parent block not found', {
+              extensions: { code: 'NOT_FOUND' }
+            })
+          }
+          if (parent.coverBlock != null) {
+            await removeBlockAndChildren(parent.coverBlock)
+          }
         }
 
-        const videoBlock = await tx.block.create({
-          data: blockData
+        const block = await tx.block.create({
+          data: {
+            ...omit(
+              input,
+              'parentBlockId',
+              'journeyId',
+              'posterBlockId',
+              'isCover'
+            ),
+            id: input.id ?? undefined,
+            typename: 'VideoBlock',
+            journey: { connect: { id: input.journeyId } },
+            parentBlock: { connect: { id: input.parentBlockId } },
+            posterBlock:
+              input.posterBlockId != null
+                ? { connect: { id: input.posterBlockId } }
+                : undefined,
+            parentOrder:
+              input.isCover === true
+                ? null
+                : (
+                    await getSiblingsInternal(
+                      input.journeyId,
+                      input.parentBlockId,
+                      tx
+                    )
+                  ).length,
+            coverBlockParent:
+              input.isCover === true && input.parentBlockId != null
+                ? { connect: { id: input.parentBlockId } }
+                : undefined
+          },
+          include: {
+            action: true,
+            ...INCLUDE_JOURNEY_ACL
+          }
         })
+        await setJourneyUpdatedAt(tx, block)
+        if (
+          !ability(
+            Action.Update,
+            abilitySubject('Journey', block.journey),
+            context.user
+          )
+        ) {
+          throw new GraphQLError('user is not allowed to create block', {
+            extensions: { code: 'FORBIDDEN' }
+          })
+        }
 
-        // Update journey timestamp
-        await tx.journey.update({
-          where: { id: input.journeyId },
-          data: { updatedAt: new Date() }
+        // Duplicate guard: only one VideoBlock per parent
+        const existingVideoOnParent = await tx.block.findFirst({
+          where: {
+            parentBlockId: input.parentBlockId,
+            typename: 'VideoBlock',
+            id: { not: block.id },
+            deletedAt: null
+          }
         })
-
-        return videoBlock
+        if (existingVideoOnParent != null) {
+          throw new GraphQLError(
+            'Parent block already has an existing video block',
+            { extensions: { code: 'BAD_USER_INPUT' } }
+          )
+        }
+        return block
       })
     }
   })

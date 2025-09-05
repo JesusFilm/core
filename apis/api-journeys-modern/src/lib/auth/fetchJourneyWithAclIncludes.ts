@@ -1,7 +1,9 @@
+import { GraphQLError } from 'graphql'
+
 import { prisma } from '@core/prisma/journeys/client'
 
 export async function fetchJourneyWithAclIncludes(journeyId: string) {
-  return await prisma.journey.findUnique({
+  const journey = await prisma.journey.findUnique({
     where: { id: journeyId },
     include: {
       userJourneys: true,
@@ -10,4 +12,10 @@ export async function fetchJourneyWithAclIncludes(journeyId: string) {
       }
     }
   })
+  if (!journey) {
+    throw new GraphQLError('journey not found', {
+      extensions: { code: 'NOT_FOUND' }
+    })
+  }
+  return journey
 }

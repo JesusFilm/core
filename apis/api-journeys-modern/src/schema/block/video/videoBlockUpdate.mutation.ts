@@ -1,7 +1,5 @@
 import { GraphQLError } from 'graphql'
 
-import { prisma } from '@core/prisma/journeys/client'
-
 import {
   Action,
   ability,
@@ -9,8 +7,16 @@ import {
 } from '../../../lib/auth/ability'
 import { fetchBlockWithJourneyAcl } from '../../../lib/auth/fetchBlockWithJourneyAcl'
 import { builder } from '../../builder'
+import { update } from '../service'
 
 import { VideoBlockUpdateInput } from './inputs'
+import {
+  fetchFieldsFromMux,
+  fetchFieldsFromYouTube,
+  videoBlockInternalSchema,
+  videoBlockMuxSchema,
+  videoBlockYouTubeSchema
+} from './service'
 import { VideoBlock } from './video'
 
 builder.mutationField('videoBlockUpdate', (t) =>
@@ -30,58 +36,69 @@ builder.mutationField('videoBlockUpdate', (t) =>
       })
     },
     resolve: async (_parent, args, context) => {
-      const { id, input } = args
+      const { id, input: initialInput } = args
 
-      const blockWithJourney = await fetchBlockWithJourneyAcl(id)
+      const block = await fetchBlockWithJourneyAcl(id)
 
       // Check permissions using ACL
       if (
         !ability(
           Action.Update,
-          abilitySubject('Journey', blockWithJourney.journey),
+          abilitySubject('Journey', block.journey),
           context.user
         )
       ) {
-        throw new GraphQLError('user is not allowed to update video block', {
+        throw new GraphQLError('user is not allowed to update block', {
           extensions: { code: 'FORBIDDEN' }
         })
       }
 
-      return await prisma.$transaction(async (tx) => {
-        const updateData: any = {}
+      let input = { ...initialInput }
 
-        if (input.parentBlockId !== undefined)
-          updateData.parentBlockId = input.parentBlockId
-        if (input.videoId !== undefined) updateData.videoId = input.videoId
-        if (input.videoVariantLanguageId !== undefined)
-          updateData.videoVariantLanguageId = input.videoVariantLanguageId
-        if (input.posterBlockId !== undefined)
-          updateData.posterBlockId = input.posterBlockId
-        if (input.title !== undefined) updateData.title = input.title
-        if (input.description !== undefined)
-          updateData.description = input.description
-        if (input.image !== undefined) updateData.image = input.image
-        if (input.duration !== undefined) updateData.duration = input.duration
-        if (input.objectFit !== undefined)
-          updateData.objectFit = input.objectFit
-        if (input.startAt !== undefined) updateData.startAt = input.startAt
-        if (input.endAt !== undefined) updateData.endAt = input.endAt
-        if (input.muted !== undefined) updateData.muted = input.muted
-        if (input.autoplay !== undefined) updateData.autoplay = input.autoplay
-        if (input.fullsize !== undefined) updateData.fullsize = input.fullsize
+      switch (initialInput.source ?? block.source) {
+        case 'youTube':
+          videoBlockYouTubeSchema.parse({
+            ...block,
+            ...input
+          })
+          if (input.videoId != null) {
+            input = {
+              ...input,
+              ...(await fetchFieldsFromYouTube(input.videoId))
+            }
+          }
+          break
+        case 'internal':
+          videoBlockInternalSchema.parse({
+            ...block,
+            ...input
+          })
+          input = {
+            duration: null,
+            ...input,
+            ...{
+              title: null,
+              description: null,
+              image: null
+            }
+          }
+          break
+        case 'mux':
+          videoBlockMuxSchema.parse({
+            ...block,
+            ...input
+          })
+          if (input.videoId != null) {
+            input = {
+              ...input,
+              ...(await fetchFieldsFromMux(input.videoId))
+            }
+          }
+          break
+      }
 
-        const updatedBlock = await tx.block.update({
-          where: { id },
-          data: updateData
-        })
-
-        // Update journey timestamp
-        await tx.journey.update({
-          where: { id: blockWithJourney.journeyId },
-          data: { updatedAt: new Date() }
-        })
-
-        return updatedBlock
+      return await update(id, {
+        ...input
       })
     }
   })
