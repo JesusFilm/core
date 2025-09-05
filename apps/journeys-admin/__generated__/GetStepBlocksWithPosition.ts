@@ -7,8 +7,8 @@
 // GraphQL query operation: GetStepBlocksWithPosition
 // ====================================================
 
-export interface GetStepBlocksWithPosition_blocks_ButtonBlock {
-  __typename: "ButtonBlock" | "CardBlock" | "GridContainerBlock" | "GridItemBlock" | "IconBlock" | "ImageBlock" | "RadioOptionBlock" | "RadioQuestionBlock" | "SignUpBlock" | "SpacerBlock" | "TextResponseBlock" | "TypographyBlock" | "VideoBlock" | "VideoTriggerBlock";
+export interface GetStepBlocksWithPosition_blocks_ImageBlock {
+  __typename: "ImageBlock" | "ButtonBlock" | "CardBlock" | "IconBlock" | "RadioOptionBlock" | "RadioQuestionBlock" | "SignUpBlock" | "SpacerBlock" | "TextResponseBlock" | "TypographyBlock" | "VideoBlock" | "GridContainerBlock" | "GridItemBlock" | "VideoTriggerBlock";
 }
 
 export interface GetStepBlocksWithPosition_blocks_StepBlock {
@@ -26,7 +26,7 @@ export interface GetStepBlocksWithPosition_blocks_StepBlock {
   y: number | null;
 }
 
-export type GetStepBlocksWithPosition_blocks = GetStepBlocksWithPosition_blocks_ButtonBlock | GetStepBlocksWithPosition_blocks_StepBlock;
+export type GetStepBlocksWithPosition_blocks = GetStepBlocksWithPosition_blocks_ImageBlock | GetStepBlocksWithPosition_blocks_StepBlock;
 
 export interface GetStepBlocksWithPosition {
   blocks: GetStepBlocksWithPosition_blocks[];

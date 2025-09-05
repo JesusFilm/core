@@ -51,7 +51,7 @@
             "command": "rm -rf libs/journeys/ui/__generated__"
           },
           {
-            "command": "pnpm dlx apollo client:codegen --config libs/journeys/ui/apollo.config.js --target typescript  --globalTypesFile=libs/journeys/ui/__generated__/globalTypes.ts"
+            "command": "npx apollo client:codegen --config libs/journeys/ui/apollo.config.js --target typescript  --globalTypesFile=libs/journeys/ui/__generated__/globalTypes.ts"
           }
         ]
       }

@@ -165,7 +165,7 @@
             "command": "rm -rf apps/watch/__generated__"
           },
           {
-            "command": "pnpm dlx apollo client:codegen --config apps/watch/apollo.config.js --target typescript --outputFlat apps/watch/__generated__"
+            "command": "npx apollo client:codegen --config apps/watch/apollo.config.js --target typescript --outputFlat apps/watch/__generated__"
           }
         ]
       }
