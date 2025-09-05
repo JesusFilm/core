@@ -149,4 +149,37 @@ describe('findOrFetchUser', () => {
     expect(data).toEqual(userWithoutEmail)
     expect(verifyUser).not.toHaveBeenCalled()
   })
+
+  it('should update user with email and send verification email when context user has email but existing user has no email and emailVerified is false', async () => {
+    const userWithoutEmail = {
+      ...user,
+      email: null,
+      emailVerified: false
+    } as unknown as User
+
+    prismaMock.user.findUnique.mockResolvedValueOnce(userWithoutEmail)
+    prismaMock.user.update.mockResolvedValueOnce(user)
+    const data = await findOrFetchUser(
+      {},
+      'userId',
+      undefined,
+      mockCtxCurrentUser
+    )
+    expect(data).toEqual(user)
+    expect(prismaMock.user.update).toHaveBeenCalledWith({
+      where: { id: 'userId' },
+      data: {
+        email: 'amin@email.com',
+        firstName: 'Amin',
+        lastName: 'One',
+        imageUrl: 'https://bit.ly/3Gth4',
+        emailVerified: false
+      }
+    })
+    expect(verifyUser).toHaveBeenCalledWith(
+      'userId',
+      'amin@email.com',
+      undefined
+    )
+  })
 })
