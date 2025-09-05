@@ -3,7 +3,6 @@ services:
     image: mcr.microsoft.com/devcontainers/typescript-node:20
     volumes:
       - core-workspace:/workspaces
-      - core-node-modules:/workspaces/core/node_modules
       - core-node-user:/home/node
     entrypoint: ['/bin/bash', '-lc']
     command:
