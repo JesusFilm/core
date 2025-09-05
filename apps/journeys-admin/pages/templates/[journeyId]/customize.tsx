@@ -1,5 +1,10 @@
 import { useRouter } from 'next/router'
-import { AuthAction, withUser, withUserTokenSSR } from 'next-firebase-auth'
+import {
+  AuthAction,
+  useUser,
+  withUser,
+  withUserTokenSSR
+} from 'next-firebase-auth'
 import { useTranslation } from 'next-i18next'
 import { NextSeo } from 'next-seo'
 
@@ -12,11 +17,13 @@ import {
 } from '../../../__generated__/GetJourney'
 import { IdType } from '../../../__generated__/globalTypes'
 import { MultiStepForm } from '../../../src/components/TemplateCustomization/MultiStepForm'
+import { PageWrapper } from '../../../src/components/PageWrapper'
 import { initAndAuthApp } from '../../../src/libs/initAndAuthApp'
 
 function CustomizePage() {
   const router = useRouter()
   const { t } = useTranslation('apps-journeys-admin')
+  const user = useUser()
   const { data } = useJourneyQuery({
     id: router.query.journeyId as string,
     idType: IdType.databaseId
@@ -25,14 +32,21 @@ function CustomizePage() {
   return (
     <>
       <NextSeo title={t('Customize Template')} />
-      <JourneyProvider
-        value={{
-          journey: data?.journey,
-          variant: 'default'
-        }}
+      <PageWrapper
+        user={user}
+        showMainHeader={false}
+        mainBodyPadding={false}
+        background="linear-gradient(to bottom, #1f2c430f, #2568994d)"
       >
-        <MultiStepForm />
-      </JourneyProvider>
+        <JourneyProvider
+          value={{
+            journey: data?.journey,
+            variant: 'default'
+          }}
+        >
+          <MultiStepForm />
+        </JourneyProvider>
+      </PageWrapper>
     </>
   )
 }
