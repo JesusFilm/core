@@ -154,7 +154,7 @@
     "formik": "^2.4.4",
     "fscreen": "^1.2.0",
     "gql.tada": "^1.8.6",
-    "graphql": "^16.8.1",
+    "graphql": "16.10.0",
     "graphql-request": "^6.1.0",
     "graphql-scalars": "^1.23.0",
     "graphql-sse": "2.5.4",
