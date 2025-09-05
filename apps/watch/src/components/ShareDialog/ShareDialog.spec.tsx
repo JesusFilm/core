@@ -1,4 +1,5 @@
 import { fireEvent, render, waitFor } from '@testing-library/react'
+import mockRouter from 'next-router-mock'
 import { SnackbarProvider } from 'notistack'
 
 import { VideoContentFields } from '../../../__generated__/VideoContentFields'
@@ -6,7 +7,6 @@ import { VideoProvider } from '../../libs/videoContext'
 import { videos } from '../Videos/__generated__/testData'
 
 import { ShareDialog } from './ShareDialog'
-import mockRouter from 'next-router-mock'
 
 const onClose = jest.fn()
 const originalEnv = process.env
