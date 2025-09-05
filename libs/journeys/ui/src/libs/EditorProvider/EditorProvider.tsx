@@ -85,8 +85,7 @@ export interface EditorState {
    */
   selectedStep?: TreeBlock<StepBlock>
   /**
-   * hoveredStep indicates which step is currently hovered over by the Canvas and
-   * the JourneyFlow.
+   * hoveredStep indicates which step is currently hovered over by the JourneyFlow.
    */
   hoveredStep?: TreeBlock<StepBlock>
   /**
@@ -187,9 +186,10 @@ export type EditorAction =
   | SetStepsAction
   | SetShowAnalyticsAction
   | SetAnalyticsAction
+  | SetHoveredStepAction
   | SetEditorFocusAction
   | SetSelectedStepByIdAction
-  | SetHoveredStepAction
+
 export const reducer = (
   state: EditorState,
   action: EditorAction

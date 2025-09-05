@@ -47,13 +47,13 @@ export function StepBlockNode({
       ? HandleVariant.Disabled
       : HandleVariant.Shown
 
-  const handleMouseEnter = () => {
+  function handleMouseEnter() {
     dispatch({
       type: 'SetHoveredStepAction',
       hoveredStep: step
     })
   }
-  const handleMouseLeave = () => {
+  function handleMouseLeave() {
     dispatch({
       type: 'SetHoveredStepAction',
       hoveredStep: undefined
