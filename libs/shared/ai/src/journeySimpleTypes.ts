@@ -87,23 +87,58 @@ export const journeySimpleImageSchema = z.object({
 export type JourneySimpleImage = z.infer<typeof journeySimpleImageSchema>
 
 // --- Video Schema ---
-export const journeySimpleVideoSchema = z.object({
-  url: z.string().describe('The YouTube video URL.'),
-  startAt: z
-    .number()
-    .int()
-    .nonnegative()
-    .optional()
-    .describe('Start time in seconds. If not provided, defaults to 0.'),
-  endAt: z
-    .number()
-    .int()
-    .positive()
-    .optional()
-    .describe(
-      'End time in seconds. If not provided, defaults to the video duration.'
-    )
-})
+export const journeySimpleVideoSchema = z
+  .object({
+    src: z
+      .string()
+      .min(1, 'src must be a non-empty string')
+      .describe('The YouTube video URL or internal video ID.'),
+    source: z
+      .enum(['youTube', 'internal'])
+      .describe('The type of video source.'),
+    subtitleId: z
+      .string()
+      .optional()
+      .describe(
+        'Subtitle ID for internal videos only. Not supported for YouTube videos. Defaults to "529" if not provided.'
+      ),
+    summary: z
+      .string()
+      .optional()
+      .describe(
+        'A summary of the section of the video. Used as context for the next logical and relevant next card.'
+      ),
+    questions: z
+      .array(z.string())
+      .optional()
+      .describe(
+        'An array of reflective questions to ask the user after the video. Used as context for the next logical and relevant next card.'
+      ),
+    startAt: z
+      .number()
+      .int()
+      .nonnegative()
+      .optional()
+      .describe('Start time in seconds. If not provided, defaults to 0.'),
+    endAt: z
+      .number()
+      .int()
+      .positive()
+      .optional()
+      .describe(
+        'End time in seconds. If not provided, defaults to the video duration.'
+      )
+  })
+  .superRefine((data, ctx) => {
+    // subtitleId should only be provided for internal videos
+    if (data.source === 'youTube' && data.subtitleId !== undefined) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message:
+          'subtitleId should not be provided for YouTube videos. It is only supported for internal videos.'
+      })
+    }
+  })
 export type JourneySimpleVideo = z.infer<typeof journeySimpleVideoSchema>
 
 // --- Video Update Schema (with stricter validation) ---
@@ -152,7 +187,7 @@ export const journeySimpleCardSchema = z.object({
   video: journeySimpleVideoSchema
     .optional()
     .describe(
-      'Video segment for this card, if present. If present, only "id", "video", and (optionally) "defaultNextCard" should be set on this card. All other content fields (heading, text, button, poll, image, backgroundImage, etc.) must be omitted.'
+      'Video segment for this card, if present. If present, only "id", "x", "y", "video", and (optionally) "defaultNextCard" should be set on this card. All other content fields (heading, text, button, poll, image, backgroundImage, etc.) must be omitted.'
     ),
   defaultNextCard: z
     .string()

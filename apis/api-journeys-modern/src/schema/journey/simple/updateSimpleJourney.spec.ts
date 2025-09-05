@@ -165,7 +165,8 @@ describe('updateSimpleJourney', () => {
           x: 0,
           y: 0,
           video: {
-            url: 'https://youtube.com/watch?v=dQw4w9WgXcQ',
+            src: 'https://youtube.com/watch?v=dQw4w9WgXcQ',
+            source: 'youTube',
             startAt: 30,
             endAt: 120
           },
@@ -204,7 +205,8 @@ describe('updateSimpleJourney', () => {
           x: 0,
           y: 0,
           video: {
-            url: 'https://youtube.com/watch?v=dQw4w9WgXcQ'
+            src: 'https://youtube.com/watch?v=dQw4w9WgXcQ',
+            source: 'youTube'
             // No startAt/endAt provided
           },
           defaultNextCard: 'card-2'
@@ -251,7 +253,7 @@ describe('updateSimpleJourney', () => {
             id: 'video-card-1',
             x: 0,
             y: 0,
-            video: { url },
+            video: { src: url, source: 'youTube' },
             defaultNextCard: 'card-2'
           },
           {
@@ -286,7 +288,8 @@ describe('updateSimpleJourney', () => {
           x: 0,
           y: 0,
           video: {
-            url: 'https://vimeo.com/123456789' // Not YouTube
+            src: 'https://vimeo.com/123456789', // Not YouTube
+            source: 'youTube' // Should fail YouTube ID extraction
           },
           defaultNextCard: 'card-2'
         },
@@ -321,7 +324,8 @@ describe('updateSimpleJourney', () => {
           x: 0,
           y: 0,
           video: {
-            url: 'https://youtube.com/watch?v=dQw4w9WgXcQ'
+            src: 'https://youtube.com/watch?v=dQw4w9WgXcQ',
+            source: 'youTube'
           },
           defaultNextCard: 'card-2'
         },
@@ -339,6 +343,92 @@ describe('updateSimpleJourney', () => {
     )
   })
 
+  it('throws error when video is missing source property', async () => {
+    const videoJourney: JourneySimpleUpdate = {
+      title: 'Invalid Video Journey',
+      description: 'A journey with video missing source',
+      cards: [
+        {
+          id: 'video-card-1',
+          x: 0,
+          y: 0,
+          video: {
+            src: 'https://youtube.com/watch?v=dQw4w9WgXcQ'
+            // Missing source property
+          } as any,
+          defaultNextCard: 'card-2'
+        },
+        {
+          id: 'card-2',
+          x: 0,
+          y: 400,
+          button: { text: 'End', url: 'https://example.com' }
+        }
+      ]
+    }
+
+    await expect(updateSimpleJourney(journeyId, videoJourney)).rejects.toThrow(
+      'Video source and src is required'
+    )
+  })
+
+  it('throws error when video is missing src property', async () => {
+    const videoJourney: JourneySimpleUpdate = {
+      title: 'Invalid Video Journey',
+      description: 'A journey with video missing src',
+      cards: [
+        {
+          id: 'video-card-1',
+          x: 0,
+          y: 0,
+          video: {
+            source: 'youTube'
+            // Missing src property
+          } as any,
+          defaultNextCard: 'card-2'
+        },
+        {
+          id: 'card-2',
+          x: 0,
+          y: 400,
+          button: { text: 'End', url: 'https://example.com' }
+        }
+      ]
+    }
+
+    await expect(updateSimpleJourney(journeyId, videoJourney)).rejects.toThrow(
+      'Video source and src is required'
+    )
+  })
+
+  it('throws error when video is missing both source and src properties', async () => {
+    const videoJourney: JourneySimpleUpdate = {
+      title: 'Invalid Video Journey',
+      description: 'A journey with video missing both source and src',
+      cards: [
+        {
+          id: 'video-card-1',
+          x: 0,
+          y: 0,
+          video: {
+            // Missing both source and src properties
+          } as any,
+          defaultNextCard: 'card-2'
+        },
+        {
+          id: 'card-2',
+          x: 0,
+          y: 400,
+          button: { text: 'End', url: 'https://example.com' }
+        }
+      ]
+    }
+
+    await expect(updateSimpleJourney(journeyId, videoJourney)).rejects.toThrow(
+      'Video source and src is required'
+    )
+  })
+
   it('creates video block with navigation action when defaultNextCard is provided', async () => {
     const videoJourney: JourneySimpleUpdate = {
       title: 'Video Journey',
@@ -349,7 +439,8 @@ describe('updateSimpleJourney', () => {
           x: 0,
           y: 0,
           video: {
-            url: 'https://youtube.com/watch?v=dQw4w9WgXcQ',
+            src: 'https://youtube.com/watch?v=dQw4w9WgXcQ',
+            source: 'youTube',
             startAt: 0,
             endAt: 60
           },
@@ -384,7 +475,8 @@ describe('updateSimpleJourney', () => {
           x: 0,
           y: 0,
           video: {
-            url: 'https://youtube.com/watch?v=dQw4w9WgXcQ'
+            src: 'https://youtube.com/watch?v=dQw4w9WgXcQ',
+            source: 'youTube'
           },
           defaultNextCard: 'card-2'
         },
@@ -446,7 +538,10 @@ describe('updateSimpleJourney', () => {
             id: 'video-card',
             x: 0,
             y: 0,
-            video: { url: 'https://youtube.com/watch?v=dQw4w9WgXcQ' }, // Use valid video ID
+            video: {
+              src: 'https://youtube.com/watch?v=dQw4w9WgXcQ',
+              source: 'youTube'
+            }, // Use valid video ID
             defaultNextCard: 'end-card'
           },
           {
@@ -468,6 +563,382 @@ describe('updateSimpleJourney', () => {
       )
       expect(videoCalls[0][0].data.endAt).toBe(expected)
     }
+  })
+
+  // Internal Video Tests (Mode 2)
+  describe('internal video processing', () => {
+    it('creates VideoBlock for internal video with direct videoId assignment', async () => {
+      const internalVideoJourney: JourneySimpleUpdate = {
+        title: 'Internal Video Journey',
+        description: 'A journey with internal video',
+        cards: [
+          {
+            id: 'internal-video-card-1',
+            x: 0,
+            y: 0,
+            video: {
+              src: 'internal-video-123',
+              source: 'internal',
+              startAt: 10,
+              endAt: 60
+            },
+            defaultNextCard: 'card-2'
+          },
+          {
+            id: 'card-2',
+            x: 0,
+            y: 400,
+            button: { text: 'End', url: 'https://example.com' }
+          }
+        ]
+      }
+
+      await updateSimpleJourney(journeyId, internalVideoJourney)
+
+      const videoCalls = txMock.block.create.mock.calls.filter(
+        ([data]: [any]) => data.data.typename === 'VideoBlock'
+      )
+      expect(videoCalls.length).toBe(1)
+
+      const videoBlockData = videoCalls[0][0].data
+      expect(videoBlockData.source).toBe('internal')
+      expect(videoBlockData.videoId).toBe('internal-video-123') // Direct assignment
+      expect(videoBlockData.startAt).toBe(10)
+      expect(videoBlockData.endAt).toBe(60)
+    })
+
+    it('creates VideoBlock for internal video with default timing (no duration fetching)', async () => {
+      const internalVideoJourney: JourneySimpleUpdate = {
+        title: 'Internal Video Journey',
+        description: 'A journey with internal video',
+        cards: [
+          {
+            id: 'internal-video-card-1',
+            x: 0,
+            y: 0,
+            video: {
+              src: 'internal-video-456',
+              source: 'internal'
+              // No startAt/endAt provided
+            },
+            defaultNextCard: 'card-2'
+          },
+          {
+            id: 'card-2',
+            x: 0,
+            y: 400,
+            button: { text: 'End', url: 'https://example.com' }
+          }
+        ]
+      }
+
+      await updateSimpleJourney(journeyId, internalVideoJourney)
+
+      // Should NOT call YouTube API for internal videos
+      expect(mockFetch).not.toHaveBeenCalled()
+
+      const videoCalls = txMock.block.create.mock.calls.filter(
+        ([data]: [any]) => data.data.typename === 'VideoBlock'
+      )
+      const videoBlockData = videoCalls[0][0].data
+      expect(videoBlockData.source).toBe('internal')
+      expect(videoBlockData.videoId).toBe('internal-video-456')
+      expect(videoBlockData.startAt).toBe(0) // Default startAt
+      expect(videoBlockData.endAt).toBeUndefined() // No duration fetching for internal videos
+    })
+
+    it('creates VideoBlock for internal video with custom subtitleId', async () => {
+      const internalVideoJourney: JourneySimpleUpdate = {
+        title: 'Internal Video Journey',
+        description: 'A journey with internal video and custom subtitle',
+        cards: [
+          {
+            id: 'internal-video-card-1',
+            x: 0,
+            y: 0,
+            video: {
+              src: 'internal-video-123',
+              source: 'internal',
+              subtitleId: 'custom-subtitle-456',
+              startAt: 10,
+              endAt: 60
+            },
+            defaultNextCard: 'card-2'
+          },
+          {
+            id: 'card-2',
+            x: 0,
+            y: 400,
+            button: { text: 'End', url: 'https://example.com' }
+          }
+        ]
+      }
+
+      await updateSimpleJourney(journeyId, internalVideoJourney)
+
+      const videoCalls = txMock.block.create.mock.calls.filter(
+        ([data]: [any]) => data.data.typename === 'VideoBlock'
+      )
+      expect(videoCalls.length).toBe(1)
+
+      const videoBlockData = videoCalls[0][0].data
+      expect(videoBlockData.source).toBe('internal')
+      expect(videoBlockData.videoId).toBe('internal-video-123')
+      expect(videoBlockData.videoVariantLanguageId).toBe('custom-subtitle-456')
+      expect(videoBlockData.startAt).toBe(10)
+      expect(videoBlockData.endAt).toBe(60)
+    })
+
+    it('creates video block with navigation action for internal video when defaultNextCard is provided', async () => {
+      const internalVideoJourney: JourneySimpleUpdate = {
+        title: 'Internal Video Journey',
+        description: 'A journey with internal video',
+        cards: [
+          {
+            id: 'internal-video-card-1',
+            x: 0,
+            y: 0,
+            video: {
+              src: 'internal-video-789',
+              source: 'internal',
+              startAt: 0,
+              endAt: 60
+            },
+            defaultNextCard: 'card-2'
+          },
+          {
+            id: 'card-2',
+            x: 0,
+            y: 400,
+            button: { text: 'End', url: 'https://example.com' }
+          }
+        ]
+      }
+
+      await updateSimpleJourney(journeyId, internalVideoJourney)
+
+      const videoCalls = txMock.block.create.mock.calls.filter(
+        ([data]: [any]) => data.data.typename === 'VideoBlock'
+      )
+      const videoBlockData = videoCalls[0][0].data
+      expect(videoBlockData.action).toBeDefined()
+      expect(videoBlockData.action.create.blockId).toBeDefined()
+    })
+
+    it('creates VideoBlock for internal video without subtitleId (defaults to 529)', async () => {
+      const internalVideoJourney: JourneySimpleUpdate = {
+        title: 'Internal Video Journey',
+        description: 'A journey with internal video without subtitle',
+        cards: [
+          {
+            id: 'internal-video-card-1',
+            x: 0,
+            y: 0,
+            video: {
+              src: 'internal-video-789',
+              source: 'internal',
+              startAt: 0,
+              endAt: 60
+            }
+          }
+        ]
+      }
+
+      await updateSimpleJourney(journeyId, internalVideoJourney)
+
+      const videoCalls = txMock.block.create.mock.calls.filter(
+        ([data]: [any]) => data.data.typename === 'VideoBlock'
+      )
+      expect(videoCalls.length).toBe(1)
+
+      const videoBlockData = videoCalls[0][0].data
+      expect(videoBlockData.videoVariantLanguageId).toBe('529')
+      expect(videoBlockData.source).toBe('internal')
+      expect(videoBlockData.videoId).toBe('internal-video-789')
+      expect(videoBlockData.startAt).toBe(0)
+      expect(videoBlockData.endAt).toBe(60)
+    })
+
+    it('creates VideoBlock for YouTube video with null videoVariantLanguageId (unchanged behavior)', async () => {
+      const youtubeVideoJourney: JourneySimpleUpdate = {
+        title: 'YouTube Video Journey',
+        description: 'A journey with YouTube video',
+        cards: [
+          {
+            id: 'youtube-video-card-1',
+            x: 0,
+            y: 0,
+            video: {
+              src: 'https://youtube.com/watch?v=dQw4w9WgXcQ',
+              source: 'youTube',
+              startAt: 30,
+              endAt: 90
+            }
+          }
+        ]
+      }
+
+      await updateSimpleJourney(journeyId, youtubeVideoJourney)
+
+      const videoCalls = txMock.block.create.mock.calls.filter(
+        ([data]: [any]) => data.data.typename === 'VideoBlock'
+      )
+      expect(videoCalls.length).toBe(1)
+
+      const videoBlockData = videoCalls[0][0].data
+      expect(videoBlockData.videoVariantLanguageId).toBeNull()
+      expect(videoBlockData.source).toBe('youTube')
+      expect(videoBlockData.videoId).toBe('dQw4w9WgXcQ')
+      expect(videoBlockData.startAt).toBe(30)
+      expect(videoBlockData.endAt).toBe(90)
+    })
+
+    it('throws error for internal video with empty string subtitleId', async () => {
+      const internalVideoJourney: JourneySimpleUpdate = {
+        title: 'Internal Video Journey',
+        description: 'A journey with internal video and empty subtitleId',
+        cards: [
+          {
+            id: 'internal-video-card-1',
+            x: 0,
+            y: 0,
+            video: {
+              src: 'internal-video-789',
+              source: 'internal',
+              subtitleId: '',
+              startAt: 0,
+              endAt: 60
+            }
+          }
+        ]
+      }
+
+      await expect(
+        updateSimpleJourney(journeyId, internalVideoJourney)
+      ).rejects.toThrow(
+        'subtitleId must be a non-empty string when provided for internal videos'
+      )
+    })
+
+    it('throws error for internal video with whitespace-only subtitleId', async () => {
+      const internalVideoJourney: JourneySimpleUpdate = {
+        title: 'Internal Video Journey',
+        description: 'A journey with internal video and whitespace subtitleId',
+        cards: [
+          {
+            id: 'internal-video-card-1',
+            x: 0,
+            y: 0,
+            video: {
+              src: 'internal-video-789',
+              source: 'internal',
+              subtitleId: '   ',
+              startAt: 0,
+              endAt: 60
+            }
+          }
+        ]
+      }
+
+      await expect(
+        updateSimpleJourney(journeyId, internalVideoJourney)
+      ).rejects.toThrow(
+        'subtitleId must be a non-empty string when provided for internal videos'
+      )
+    })
+
+    it('handles internal video with null subtitleId (treats as undefined)', async () => {
+      const internalVideoJourney: JourneySimpleUpdate = {
+        title: 'Internal Video Journey',
+        description: 'A journey with internal video and null subtitleId',
+        cards: [
+          {
+            id: 'internal-video-card-1',
+            x: 0,
+            y: 0,
+            video: {
+              src: 'internal-video-789',
+              source: 'internal',
+              subtitleId: null as any,
+              startAt: 0,
+              endAt: 60
+            }
+          }
+        ]
+      }
+
+      await updateSimpleJourney(journeyId, internalVideoJourney)
+
+      const videoCalls = txMock.block.create.mock.calls.filter(
+        ([data]: [any]) => data.data.typename === 'VideoBlock'
+      )
+      expect(videoCalls.length).toBe(1)
+
+      const videoBlockData = videoCalls[0][0].data
+      expect(videoBlockData.videoVariantLanguageId).toBe('529')
+      expect(videoBlockData.source).toBe('internal')
+    })
+
+    it('handles mixed YouTube and internal videos in same journey', async () => {
+      const mixedVideoJourney: JourneySimpleUpdate = {
+        title: 'Mixed Video Journey',
+        description: 'A journey with both YouTube and internal videos',
+        cards: [
+          {
+            id: 'youtube-card',
+            x: 0,
+            y: 0,
+            video: {
+              src: 'https://youtube.com/watch?v=dQw4w9WgXcQ',
+              source: 'youTube'
+            },
+            defaultNextCard: 'internal-card'
+          },
+          {
+            id: 'internal-card',
+            x: 0,
+            y: 200,
+            video: {
+              src: 'internal-video-mixed',
+              source: 'internal'
+            },
+            defaultNextCard: 'end-card'
+          },
+          {
+            id: 'end-card',
+            x: 0,
+            y: 400,
+            button: { text: 'End', url: 'https://example.com' }
+          }
+        ]
+      }
+
+      await updateSimpleJourney(journeyId, mixedVideoJourney)
+
+      // Should call YouTube API only once (for YouTube video)
+      expect(mockFetch).toHaveBeenCalledTimes(1)
+
+      const videoCalls = txMock.block.create.mock.calls.filter(
+        ([data]: [any]) => data.data.typename === 'VideoBlock'
+      )
+      expect(videoCalls.length).toBe(2)
+
+      // Check YouTube video
+      const youtubeVideo = videoCalls.find(
+        ([data]: [any]) => data.data.source === 'youTube'
+      )
+      expect(youtubeVideo).toBeDefined()
+      expect(youtubeVideo![0].data.videoId).toBe('dQw4w9WgXcQ')
+      expect(youtubeVideo![0].data.endAt).toBe(225) // From mocked API response
+
+      // Check internal video
+      const internalVideo = videoCalls.find(
+        ([data]: [any]) => data.data.source === 'internal'
+      )
+      expect(internalVideo).toBeDefined()
+      expect(internalVideo![0].data.videoId).toBe('internal-video-mixed')
+      expect(internalVideo![0].data.endAt).toBeUndefined() // No duration fetching
+    })
   })
 
   it('handles missing optional fields gracefully', async () => {
