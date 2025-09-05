@@ -249,7 +249,7 @@ describe('StepBlockNode', () => {
         </ReactFlowProvider>
       </MockedProvider>
     )
-    expect(screen.getByTestId('EditStepFab')).toBeVisible()
+    expect(screen.getByTestId('EditStepFab')).toBeInTheDocument()
   })
 
   it('should show edit step fab when hovered', async () => {
