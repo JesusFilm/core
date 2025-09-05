@@ -1,13 +1,10 @@
 import { DefaultChatTransport } from 'ai'
 import { useChat } from '@ai-sdk/react'
 import { useEffect, Fragment, useState } from 'react'
-import { Suggestion, SuggestionsRequest } from '../../types/suggestions'
+import { SuggestionsRequest } from '../../types/suggestions'
 import { useBlocks } from '@core/journeys/ui/block'
 import { extractTypographyContent } from '../../utils/contextExtraction'
 
-type AiChatProps = {
-  open: boolean
-}
 import {
   Conversation,
   ConversationContent,
@@ -25,6 +22,10 @@ import {
 } from '../PromptInput'
 import { Suggestion, Suggestions } from '../Suggestion'
 
+interface AiChatProps {
+  open: boolean
+}
+
 export function AiChat({ open }: AiChatProps) {
   const { messages, sendMessage, status, regenerate } = useChat({
     transport: new DefaultChatTransport({
@@ -32,7 +33,7 @@ export function AiChat({ open }: AiChatProps) {
     })
   })
   const [input, setInput] = useState('')
-  const [suggestions, setSuggestions] = useState<Suggestion[]>([])
+  const [suggestions, setSuggestions] = useState<string[]>()
   const [suggestionsLoading, setSuggestionsLoading] = useState(false)
   const [suggestionsError, setSuggestionsError] = useState<string | null>(null)
   const { treeBlocks, blockHistory } = useBlocks()
@@ -71,13 +72,8 @@ export function AiChat({ open }: AiChatProps) {
         if (!response.ok) throw new Error('Failed to fetch suggestions')
 
         const suggestions: string[] = await response.json()
-        const suggestionsWithIds = suggestions.map(
-          (text: string, index: number) => ({
-            id: `suggestion-${index}`,
-            text
-          })
-        )
-        if (!isCancelled) setSuggestions(suggestionsWithIds)
+
+        if (!isCancelled) setSuggestions(suggestions)
       } catch (error) {
         if (isCancelled) return
         console.error('Error fetching suggestions:', error)
@@ -96,16 +92,10 @@ export function AiChat({ open }: AiChatProps) {
 
   // Prototype visibility
   useEffect(() => {
-    suggestions.forEach((element) => {
-      console.log('Suggestion: ', element.text)
+    suggestions?.forEach((element) => {
+      console.log('Suggestion: ', element)
     })
   }, [suggestions])
-
-  const suggestions = [
-    'Can you explain how to play tennis?',
-    'What is the weather in Tokyo?',
-    'How do I make a really good fish taco?'
-  ]
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
@@ -172,7 +162,7 @@ export function AiChat({ open }: AiChatProps) {
           <ConversationScrollButton />
         </Conversation>
         <Suggestions>
-          {suggestions.map((suggestion) => (
+          {suggestions?.map((suggestion) => (
             <Suggestion
               key={suggestion}
               onClick={handleSuggestionClick}
