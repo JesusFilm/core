@@ -102,7 +102,9 @@ describe('ChatButtons', () => {
     logoImageBlock: null,
     menuButtonIcon: null,
     menuStepBlock: null,
-    journeyTheme: null
+    journeyTheme: null,
+    journeyCustomizationDescription: null,
+    journeyCustomizationFields: []
   }
 
   const result = jest.fn(() => ({

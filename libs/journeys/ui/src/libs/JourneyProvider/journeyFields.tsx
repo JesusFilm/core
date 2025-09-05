@@ -106,5 +106,13 @@ export const JOURNEY_FIELDS = gql`
       bodyFont
       labelFont
     }
+    journeyCustomizationDescription
+    journeyCustomizationFields {
+      id
+      journeyId
+      key
+      value
+      defaultValue
+    }
   }
 `
