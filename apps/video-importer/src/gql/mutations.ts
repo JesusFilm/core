@@ -12,9 +12,35 @@ export const CREATE_CLOUDFLARE_R2_ASSET = graphql(`
   }
 `)
 
-export const CREATE_MUX_VIDEO = graphql(`
-  mutation CreateMuxVideoUploadByUrl($url: String!, $userGenerated: Boolean) {
-    createMuxVideoUploadByUrl(url: $url, userGenerated: $userGenerated) {
+export const CREATE_MUX_VIDEO_AND_QUEUE_UPLOAD = graphql(`
+  mutation CreateMuxVideoAndQueueUpload(
+    $videoId: ID!
+    $edition: String!
+    $languageId: ID!
+    $version: Int!
+    $r2PublicUrl: String!
+    $originalFilename: String!
+    $durationMs: Int!
+    $duration: Int!
+    $width: Int!
+    $height: Int!
+    $downloadable: Boolean
+    $maxResolution: MaxResolutionTier
+  ) {
+    createMuxVideoAndQueueUpload(
+      videoId: $videoId
+      edition: $edition
+      languageId: $languageId
+      version: $version
+      r2PublicUrl: $r2PublicUrl
+      originalFilename: $originalFilename
+      durationMs: $durationMs
+      duration: $duration
+      width: $width
+      height: $height
+      downloadable: $downloadable
+      maxResolution: $maxResolution
+    ) {
       id
       assetId
       playbackId
