@@ -48,6 +48,7 @@ export const cardBlock = {
   themeMode: null,
   themeName: null,
   fullscreen: false,
+  backdropBlur: null,
   children: []
 } as unknown as TreeBlock<CardBlock>
 
@@ -77,7 +78,11 @@ const selectedBlock: TreeBlock<TypographyBlock> = {
   variant: TypographyVariant.h1,
   color: TypographyColor.primary,
   align: TypographyAlign.center,
-  children: []
+  children: [],
+  settings: {
+    __typename: 'TypographyBlockSettings',
+    color: null
+  }
 }
 const block1: TreeBlock<TypographyBlock> = {
   ...selectedBlock,
@@ -109,6 +114,7 @@ const selectedStep: TreeBlock<StepBlock> = {
       themeMode: null,
       themeName: null,
       fullscreen: false,
+      backdropBlur: null,
       children: [selectedBlock, block1, block2]
     }
   ]
@@ -141,7 +147,8 @@ export const restoreStepMock: MockedResponse<
           backgroundColor: null,
           themeMode: null,
           themeName: null,
-          fullscreen: false
+          fullscreen: false,
+          backdropBlur: null
         },
         selectedBlock,
         block1,

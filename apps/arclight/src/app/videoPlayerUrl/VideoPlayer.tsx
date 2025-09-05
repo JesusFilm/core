@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useRef } from 'react'
+import { ReactElement, useEffect, useRef } from 'react'
 import videojs from 'video.js'
 
 import { MuxMetadata } from '@core/shared/ui/muxMetadataType'
@@ -32,7 +32,7 @@ export function VideoPlayer({
   startTime = 0,
   endTime,
   subtitles
-}: VideoPlayerProps): JSX.Element {
+}: VideoPlayerProps): ReactElement {
   const playerRef = useRef<HTMLVideoElement>(null)
   const playerInstanceRef = useRef<any>(null)
 
@@ -50,6 +50,7 @@ export function VideoPlayer({
 
       // Configure videojs options
       const vjsOptions = {
+        errorDisplay: false,
         enableSmoothSeeking: true,
         experimentalSvgIcons: true,
         preload: 'auto',
@@ -255,7 +256,6 @@ export function VideoPlayer({
       // When video metadata is loaded, apply our custom offset
       vjsPlayer.on('loadedmetadata', () => {
         const duration = vjsPlayer.duration() || 0
-        console.log('Video duration:', duration)
 
         // Only apply offset if we have a valid start or end time
         if (startTime > 0 || (endTime && endTime < duration && endTime > 0)) {

@@ -1,13 +1,13 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
 
+import { CaslAuthModule } from '@core/nest/common/CaslAuthModule'
 import {
   Journey,
   JourneyTheme,
   UserJourneyRole,
   UserTeamRole
-} from '.prisma/api-journeys-client'
-import { CaslAuthModule } from '@core/nest/common/CaslAuthModule'
+} from '@core/prisma/journeys/client'
 
 import {
   JourneyThemeCreateInput,
@@ -27,9 +27,9 @@ describe('JourneyThemeResolver', () => {
     id: 'journeyThemeId',
     journeyId: 'journeyId',
     userId: 'userId',
-    primaryFont: 'Arial',
-    secondaryFont: 'Roboto',
-    accentFont: 'Montserrat',
+    headerFont: 'Arial',
+    bodyFont: 'Roboto',
+    labelFont: 'Montserrat',
     createdAt: new Date('2023-01-01T00:00:00Z'),
     updatedAt: new Date('2023-01-01T00:00:00Z')
   }
@@ -76,7 +76,8 @@ describe('JourneyThemeResolver', () => {
     menuStepBlockId: null,
     socialNodeX: null,
     socialNodeY: null,
-    fromTemplateId: null
+    fromTemplateId: null,
+    journeyCustomizationDescription: null
   }
 
   const journeyWithUserTeam = {
@@ -141,9 +142,9 @@ describe('JourneyThemeResolver', () => {
     it('should create a journey theme', async () => {
       const input: JourneyThemeCreateInput = {
         journeyId: 'journeyId',
-        primaryFont: 'Arial',
-        secondaryFont: 'Roboto',
-        accentFont: 'Montserrat'
+        headerFont: 'Arial',
+        bodyFont: 'Roboto',
+        labelFont: 'Montserrat'
       }
 
       prismaService.journey.findUnique.mockResolvedValueOnce(
@@ -171,9 +172,9 @@ describe('JourneyThemeResolver', () => {
     it('should throw an error if journey not found', async () => {
       const input: JourneyThemeCreateInput = {
         journeyId: 'journeyId',
-        primaryFont: 'Arial',
-        secondaryFont: 'Roboto',
-        accentFont: 'Montserrat'
+        headerFont: 'Arial',
+        bodyFont: 'Roboto',
+        labelFont: 'Montserrat'
       }
 
       prismaService.journey.findUnique.mockResolvedValueOnce(null)
@@ -186,9 +187,9 @@ describe('JourneyThemeResolver', () => {
     it('should throw an error if user is not allowed to create journey theme', async () => {
       const input: JourneyThemeCreateInput = {
         journeyId: 'journeyId',
-        primaryFont: 'Arial',
-        secondaryFont: 'Roboto',
-        accentFont: 'Montserrat'
+        headerFont: 'Arial',
+        bodyFont: 'Roboto',
+        labelFont: 'Montserrat'
       }
 
       const unauthorizedJourney = {
@@ -209,9 +210,9 @@ describe('JourneyThemeResolver', () => {
     it('should throw an error if journey already has a theme', async () => {
       const input: JourneyThemeCreateInput = {
         journeyId: 'journeyId',
-        primaryFont: 'Arial',
-        secondaryFont: 'Roboto',
-        accentFont: 'Montserrat'
+        headerFont: 'Arial',
+        bodyFont: 'Roboto',
+        labelFont: 'Montserrat'
       }
 
       prismaService.journey.findUnique.mockResolvedValueOnce(
@@ -233,16 +234,16 @@ describe('JourneyThemeResolver', () => {
   describe('journeyThemeUpdate', () => {
     it('should update a journey theme', async () => {
       const input: JourneyThemeUpdateInput = {
-        primaryFont: 'Helvetica',
-        secondaryFont: 'Times New Roman',
-        accentFont: 'Nunito'
+        headerFont: 'Helvetica',
+        bodyFont: 'Times New Roman',
+        labelFont: 'Nunito'
       }
 
       const updatedJourneyTheme = {
         ...journeyTheme,
-        primaryFont: 'Helvetica',
-        secondaryFont: 'Times New Roman',
-        accentFont: 'Nunito'
+        headerFont: 'Helvetica',
+        bodyFont: 'Times New Roman',
+        labelFont: 'Nunito'
       }
 
       const mockJourneyThemeWithJourney = {
@@ -264,18 +265,18 @@ describe('JourneyThemeResolver', () => {
       expect(prismaService.journeyTheme.update).toHaveBeenCalledWith({
         where: { id: 'journeyThemeId' },
         data: {
-          primaryFont: 'Helvetica',
-          secondaryFont: 'Times New Roman',
-          accentFont: 'Nunito'
+          headerFont: 'Helvetica',
+          bodyFont: 'Times New Roman',
+          labelFont: 'Nunito'
         }
       })
     })
 
     it('should throw an error if journey theme not found', async () => {
       const input: JourneyThemeUpdateInput = {
-        primaryFont: 'Helvetica',
-        secondaryFont: 'Times New Roman',
-        accentFont: 'Courier'
+        headerFont: 'Helvetica',
+        bodyFont: 'Times New Roman',
+        labelFont: 'Courier'
       }
 
       prismaService.journeyTheme.findUnique.mockResolvedValue(null)
@@ -287,9 +288,9 @@ describe('JourneyThemeResolver', () => {
 
     it('should throw an error if user is not allowed to update journey theme', async () => {
       const input: JourneyThemeUpdateInput = {
-        primaryFont: 'Helvetica',
-        secondaryFont: 'Times New Roman',
-        accentFont: 'Courier'
+        headerFont: 'Helvetica',
+        bodyFont: 'Times New Roman',
+        labelFont: 'Courier'
       }
 
       const unauthorizedJourneyTheme = {

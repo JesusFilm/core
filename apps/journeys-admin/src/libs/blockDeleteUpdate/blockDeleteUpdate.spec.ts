@@ -126,7 +126,8 @@ const journey: Journey = {
   menuButtonIcon: null,
   menuStepBlock: null,
   socialNodeX: null,
-  socialNodeY: null
+  socialNodeY: null,
+  journeyTheme: null
 }
 
 const response = [{ ...image, parentOrder: 0 }]
@@ -143,6 +144,13 @@ describe('blockDeleteUpdate', () => {
         ],
         id: journey.id,
         __typename: 'Journey'
+      },
+      'CardBlock:cardId': {
+        __typename: 'CardBlock',
+        id: 'cardId',
+        parentBlockId: 'step1.id',
+        parentOrder: 0,
+        children: []
       },
       'VideoBlock:videoId': { ...video },
       'ImageBlock:imageId': { ...image }
@@ -189,6 +197,24 @@ describe('blockDeleteUpdate', () => {
         ],
         id: journey.id,
         __typename: 'Journey'
+      },
+      'StepBlock:step1.id': {
+        __typename: 'StepBlock',
+        id: 'step1.id',
+        locked: false,
+        nextBlockId: null,
+        parentBlockId: null,
+        parentOrder: 0,
+        children: []
+      },
+      'StepBlock:step2.id': {
+        __typename: 'StepBlock',
+        id: 'step2.id',
+        locked: false,
+        nextBlockId: null,
+        parentBlockId: null,
+        parentOrder: 1,
+        children: []
       }
     })
     blockDeleteUpdate(step1, response, cache, journey.id)

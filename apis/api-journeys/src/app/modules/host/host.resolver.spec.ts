@@ -1,8 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
 
-import { Host, Journey, UserTeamRole } from '.prisma/api-journeys-client'
 import { CaslAuthModule } from '@core/nest/common/CaslAuthModule'
+import { Host, Journey, UserTeamRole } from '@core/prisma/journeys/client'
 
 import {
   JourneyStatus,
@@ -261,7 +261,8 @@ describe('HostResolver', () => {
       menuStepBlockId: null,
       socialNodeX: null,
       socialNodeY: null,
-      fromTemplateId: null
+      fromTemplateId: null,
+      journeyCustomizationDescription: null
     }
 
     it('deletes an existing host', async () => {

@@ -1,0 +1,17 @@
+{
+  "Metadata": {
+    "pageTitle": "{title} | Proyek Film Yesus"
+  },
+  "RootIndexPage": {
+    "pageTitle": "Menonton",
+    "title": "Perpustakaan <underline>Streaming</underline> Video Injil Gratis.",
+    "description": "Saksikan, pelajari, dan bagikan Injil dalam lebih dari 2000 bahasa"
+  },
+  "DatadogErrorBoundary": {
+    "somethingWentWrong": "Ada yang tidak beres",
+    "anErrorOccurred": "Terjadi kesalahan saat memuat halaman ini. Silakan coba refresh.",
+    "errorDetails": "Detail kesalahan",
+    "tryAgain": "Coba lagi",
+    "unknownError": "Kesalahan yang tidak diketahui"
+  }
+}

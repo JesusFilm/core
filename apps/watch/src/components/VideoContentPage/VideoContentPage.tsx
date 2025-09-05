@@ -1,6 +1,8 @@
 import Box from '@mui/material/Box'
 import Container from '@mui/material/Container'
 import Stack from '@mui/material/Stack'
+import last from 'lodash/last'
+import { useRouter } from 'next/router'
 import { NextSeo } from 'next-seo'
 import { ReactElement, useState } from 'react'
 
@@ -22,6 +24,7 @@ import 'video.js/dist/video-js.css'
 
 // Usually FeatureFilm, ShortFilm, Episode or Segment Videos
 export function VideoContentPage(): ReactElement {
+  const router = useRouter()
   const {
     title,
     snippet,
@@ -35,36 +38,37 @@ export function VideoContentPage(): ReactElement {
     childrenCount
   } = useVideo()
   const { loading, children } = useVideoChildren(
-    container?.variant?.slug ?? variant?.slug
+    container?.variant?.slug ?? variant?.slug,
+    router.locale
   )
+
   const [hasPlayed, setHasPlayed] = useState(false)
   const [openShare, setOpenShare] = useState(false)
   const [openDownload, setOpenDownload] = useState(false)
 
   const ogSlug = getSlug(container?.slug, label, variant?.slug)
-  const realChildren = children.filter((video) => video.variant !== null)
 
   return (
     <>
       <NextSeo
-        title={title[0].value}
-        description={snippet[0].value ?? undefined}
+        title={last(title)?.value}
+        description={last(snippet)?.value ?? undefined}
         openGraph={{
           type: 'website',
-          title: title[0].value,
+          title: last(title)?.value,
           url: `${
             process.env.NEXT_PUBLIC_WATCH_URL ??
             'https://watch-jesusfilm.vercel.app'
           }${ogSlug}`,
-          description: snippet[0].value ?? undefined,
+          description: last(snippet)?.value ?? undefined,
           images:
-            images[0]?.mobileCinematicHigh != null
+            last(images)?.mobileCinematicHigh != null
               ? [
                   {
-                    url: images[0].mobileCinematicHigh,
+                    url: last(images)?.mobileCinematicHigh ?? '',
                     width: 1080,
                     height: 600,
-                    alt: imageAlt[0].value,
+                    alt: last(imageAlt)?.value ?? '',
                     type: 'image/jpeg'
                   }
                 ]
@@ -82,6 +86,7 @@ export function VideoContentPage(): ReactElement {
       />
       <PageWrapper
         hideHeader
+        showLanguageSwitcher
         hero={
           <>
             <VideoHero
@@ -103,17 +108,17 @@ export function VideoContentPage(): ReactElement {
               <VideoHeading
                 loading={loading}
                 hasPlayed={hasPlayed}
-                videos={realChildren}
+                videos={children}
                 onShareClick={() => setOpenShare(true)}
                 onDownloadClick={() => setOpenDownload(true)}
               />
               {((container?.childrenCount ?? 0) > 0 || childrenCount > 0) &&
-                (realChildren.length === children.length ||
-                  realChildren.length > 0) && (
+                (children.length === children.length ||
+                  children.length > 0) && (
                   <Box pb={4}>
                     <VideoCarousel
                       loading={loading}
-                      videos={realChildren}
+                      videos={children}
                       containerSlug={container?.slug ?? slug}
                       activeVideoId={id}
                     />

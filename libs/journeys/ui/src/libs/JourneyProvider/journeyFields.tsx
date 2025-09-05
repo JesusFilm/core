@@ -102,5 +102,11 @@ export const JOURNEY_FIELDS = gql`
     }
     socialNodeX
     socialNodeY
+    journeyTheme {
+      id
+      headerFont
+      bodyFont
+      labelFont
+    }
   }
 `

@@ -4,6 +4,8 @@ import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
 import omit from 'lodash/omit'
 import { v4 as uuidv4 } from 'uuid'
 
+import { CaslAuthModule } from '@core/nest/common/CaslAuthModule'
+import { getPowerBiEmbed } from '@core/nest/powerBi/getPowerBiEmbed'
 import {
   Action,
   Block,
@@ -20,9 +22,7 @@ import {
   UserJourney,
   UserJourneyRole,
   UserTeamRole
-} from '.prisma/api-journeys-client'
-import { CaslAuthModule } from '@core/nest/common/CaslAuthModule'
-import { getPowerBiEmbed } from '@core/nest/powerBi/getPowerBiEmbed'
+} from '@core/prisma/journeys/client'
 
 import {
   IdType,
@@ -107,7 +107,8 @@ describe('JourneyResolver', () => {
     menuStepBlockId: null,
     socialNodeX: null,
     socialNodeY: null,
-    fromTemplateId: null
+    fromTemplateId: null,
+    journeyCustomizationDescription: null
   }
   const journeyWithUserTeam = {
     ...journey,
@@ -1109,9 +1110,13 @@ describe('JourneyResolver', () => {
         url: null,
         target: null,
         email: null,
+        phone: null,
+        countryCode: null,
         updatedAt: new Date(),
         parentBlockId: 'stepId',
-        blockId: 'nextStepId'
+        blockId: 'nextStepId',
+        customizable: null,
+        parentStepId: null
       }
     }
     const duplicatedButton = {
@@ -1175,11 +1180,26 @@ describe('JourneyResolver', () => {
       journeyId: 'duplicateJourneyId'
     }
 
+    const mockCustomizationFields = [
+      {
+        id: 'field-1',
+        journeyId: 'journeyId',
+        key: 'church_name',
+        value: 'Some Church Name',
+        defaultValue: 'Some Church Name'
+      }
+    ]
+
+    const journeyWithUserTeamAndCustomizationFields = {
+      ...journeyWithUserTeam,
+      journeyCustomizationFields: mockCustomizationFields
+    }
+
     beforeEach(() => {
       mockUuidv4.mockReturnValueOnce('duplicateJourneyId')
       prismaService.journey.findUnique
         // lookup existing journey to duplicate and authorize
-        .mockResolvedValueOnce(journeyWithUserTeam)
+        .mockResolvedValueOnce(journeyWithUserTeamAndCustomizationFields)
         // lookup duplicate journey once created and authorize
         .mockResolvedValueOnce(journeyWithUserTeam)
       // find existing duplicate journeys
@@ -1265,7 +1285,10 @@ describe('JourneyResolver', () => {
           journeyId: 'journeyId'
         }
       ]
-      const journeyWithTags = { ...journeyWithUserTeam, journeyTags }
+      const journeyWithTags = {
+        ...journeyWithUserTeamAndCustomizationFields,
+        journeyTags
+      }
       prismaService.journey.findUnique
         .mockReset()
         // lookup journey to duplicate and authorize
@@ -1382,7 +1405,7 @@ describe('JourneyResolver', () => {
             'action'
           ]),
           journey: { connect: { id: 'duplicateJourneyId' } },
-          classNames: { self: '' }
+          settings: {}
         },
         {
           ...omit(duplicatedButton, [
@@ -1394,7 +1417,7 @@ describe('JourneyResolver', () => {
             'action'
           ]),
           journey: { connect: { id: 'duplicateJourneyId' } },
-          classNames: { self: '' }
+          settings: {}
         },
         {
           ...omit(duplicatedNextStep, [
@@ -1406,7 +1429,7 @@ describe('JourneyResolver', () => {
             'action'
           ]),
           journey: { connect: { id: 'duplicateJourneyId' } },
-          classNames: { self: '' }
+          settings: {}
         }
       ])
     })
@@ -1461,7 +1484,7 @@ describe('JourneyResolver', () => {
         .mockReset()
         // lookup existing journey to duplicate and authorize
         .mockResolvedValueOnce({
-          ...journeyWithUserTeam,
+          ...journeyWithUserTeamAndCustomizationFields,
           primaryImageBlockId: primaryImage.id
         })
         // lookup duplicate journey once created and authorize
@@ -1499,7 +1522,7 @@ describe('JourneyResolver', () => {
             'action'
           ]),
           journey: { connect: { id: 'duplicateJourneyId' } },
-          classNames: { self: '' }
+          settings: {}
         },
         {
           ...omit(duplicatedButton, [
@@ -1511,7 +1534,7 @@ describe('JourneyResolver', () => {
             'action'
           ]),
           journey: { connect: { id: 'duplicateJourneyId' } },
-          classNames: { self: '' }
+          settings: {}
         },
         {
           ...omit(duplicatedNextStep, [
@@ -1523,7 +1546,7 @@ describe('JourneyResolver', () => {
             'action'
           ]),
           journey: { connect: { id: 'duplicateJourneyId' } },
-          classNames: { self: '' }
+          settings: {}
         },
         {
           ...omit(duplicatedPrimaryImage, [
@@ -1535,7 +1558,7 @@ describe('JourneyResolver', () => {
             'action'
           ]),
           journey: { connect: { id: 'duplicateJourneyId' } },
-          classNames: { self: '' }
+          settings: {}
         }
       ])
     })
@@ -1545,7 +1568,7 @@ describe('JourneyResolver', () => {
         .mockReset()
         // lookup existing journey to duplicate and authorize
         .mockResolvedValueOnce({
-          ...journeyWithUserTeam,
+          ...journeyWithUserTeamAndCustomizationFields,
           logoImageBlockId: logoImage.id
         })
         // lookup duplicate journey once created and authorize
@@ -1583,7 +1606,7 @@ describe('JourneyResolver', () => {
             'action'
           ]),
           journey: { connect: { id: 'duplicateJourneyId' } },
-          classNames: { self: '' }
+          settings: {}
         },
         {
           ...omit(duplicatedButton, [
@@ -1595,7 +1618,7 @@ describe('JourneyResolver', () => {
             'action'
           ]),
           journey: { connect: { id: 'duplicateJourneyId' } },
-          classNames: { self: '' }
+          settings: {}
         },
         {
           ...omit(duplicatedNextStep, [
@@ -1607,7 +1630,7 @@ describe('JourneyResolver', () => {
             'action'
           ]),
           journey: { connect: { id: 'duplicateJourneyId' } },
-          classNames: { self: '' }
+          settings: {}
         },
         {
           ...omit(duplicatedLogoImage, [
@@ -1619,7 +1642,7 @@ describe('JourneyResolver', () => {
             'action'
           ]),
           journey: { connect: { id: 'duplicateJourneyId' } },
-          classNames: { self: '' }
+          settings: {}
         }
       ])
     })
@@ -1629,7 +1652,7 @@ describe('JourneyResolver', () => {
         .mockReset()
         // lookup existing journey to duplicate and authorize
         .mockResolvedValueOnce({
-          ...journeyWithUserTeam,
+          ...journeyWithUserTeamAndCustomizationFields,
           menuStepBlockId: menuStep.id
         })
         // lookup duplicate journey once created and authorize
@@ -1673,7 +1696,7 @@ describe('JourneyResolver', () => {
             'action'
           ]),
           journey: { connect: { id: 'duplicateJourneyId' } },
-          classNames: { self: '' }
+          settings: {}
         },
         {
           ...omit(duplicatedButton, [
@@ -1685,7 +1708,7 @@ describe('JourneyResolver', () => {
             'action'
           ]),
           journey: { connect: { id: 'duplicateJourneyId' } },
-          classNames: { self: '' }
+          settings: {}
         },
         {
           ...omit(duplicatedNextStep, [
@@ -1697,7 +1720,7 @@ describe('JourneyResolver', () => {
             'action'
           ]),
           journey: { connect: { id: 'duplicateJourneyId' } },
-          classNames: { self: '' }
+          settings: {}
         },
         {
           ...omit(duplicatedMenuStep, [
@@ -1709,12 +1732,12 @@ describe('JourneyResolver', () => {
             'action'
           ]),
           journey: { connect: { id: 'duplicateJourneyId' } },
-          classNames: { self: '' }
+          settings: {}
         }
       ])
     })
 
-    it('should duplicate actions', async () => {
+    it('should duplicate actions with customizable=false and parentStepId=null', async () => {
       mockUuidv4.mockReturnValueOnce(duplicatedStep.id)
       mockUuidv4.mockReturnValueOnce(duplicatedNextStep.id)
       mockUuidv4.mockReturnValueOnce(duplicatedButton.id)
@@ -1739,9 +1762,36 @@ describe('JourneyResolver', () => {
       expect(prismaService.action.create).toHaveBeenCalledWith({
         data: {
           ...duplicatedButton.action,
+          customizable: false,
+          parentStepId: null,
           blockId: duplicatedNextStep.id,
           parentBlockId: duplicatedButton.id
         }
+      })
+    })
+
+    it('should duplicate customization fields', async () => {
+      mockUuidv4.mockReturnValueOnce(duplicatedStep.id)
+      mockUuidv4.mockReturnValueOnce('duplicateFieldId')
+      prismaService.journey.findUnique
+        .mockReset()
+        // lookup existing journey to duplicate and authorize
+        .mockResolvedValueOnce({
+          ...journeyWithUserTeamAndCustomizationFields,
+          menuStepBlockId: menuStep.id
+        })
+        // lookup duplicate journey once created and authorize
+        .mockResolvedValueOnce(journeyWithUserTeam)
+
+      await resolver.journeyDuplicate(ability, 'journeyId', 'userId', 'teamId')
+      expect(
+        prismaService.journeyCustomizationField.createMany
+      ).toHaveBeenCalledWith({
+        data: mockCustomizationFields.map((field) => ({
+          ...field,
+          id: 'duplicateFieldId',
+          journeyId: 'duplicateJourneyId'
+        }))
       })
     })
 
@@ -1773,7 +1823,7 @@ describe('JourneyResolver', () => {
     it('throws error if duplicate journey not authorized', async () => {
       prismaService.journey.findUnique
         .mockReset()
-        .mockResolvedValueOnce(journeyWithUserTeam)
+        .mockResolvedValueOnce(journeyWithUserTeamAndCustomizationFields)
         .mockResolvedValueOnce(journey)
       await expect(
         resolver.journeyDuplicate(ability, 'journeyId', 'userId', 'teamId')
@@ -1783,7 +1833,7 @@ describe('JourneyResolver', () => {
     it('throws error if duplicate journey not found', async () => {
       prismaService.journey.findUnique
         .mockReset()
-        .mockResolvedValueOnce(journeyWithUserTeam)
+        .mockResolvedValueOnce(journeyWithUserTeamAndCustomizationFields)
         .mockResolvedValueOnce(null)
       await expect(
         resolver.journeyDuplicate(ability, 'journeyId', 'userId', 'teamId')
@@ -2661,6 +2711,39 @@ describe('JourneyResolver', () => {
       expect(
         await resolver.plausibleToken(ability, journeyNoAbility)
       ).toBeNull()
+    })
+  })
+
+  describe('journeyCustomizationFields', () => {
+    it('returns journey customization fields', async () => {
+      const mockJourneyCustomizationField = {
+        id: 'field-id',
+        journeyId: 'journeyId',
+        key: 'name',
+        value: 'John Doe',
+        defaultValue: 'John Doe'
+      }
+      prismaService.journeyCustomizationField.findMany.mockResolvedValueOnce([
+        mockJourneyCustomizationField
+      ])
+      expect(await resolver.journeyCustomizationFields(journey)).toEqual([
+        mockJourneyCustomizationField
+      ])
+      expect(
+        prismaService.journeyCustomizationField.findMany
+      ).toHaveBeenCalledWith({
+        where: { journeyId: 'journeyId' }
+      })
+    })
+
+    it('returns empty array when no customization fields exist', async () => {
+      prismaService.journeyCustomizationField.findMany.mockResolvedValueOnce([])
+      expect(await resolver.journeyCustomizationFields(journey)).toEqual([])
+      expect(
+        prismaService.journeyCustomizationField.findMany
+      ).toHaveBeenCalledWith({
+        where: { journeyId: 'journeyId' }
+      })
     })
   })
 })

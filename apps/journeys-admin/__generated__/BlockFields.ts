@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { ButtonVariant, ButtonColor, ButtonSize, ThemeMode, ThemeName, IconName, IconSize, IconColor, TextResponseType, TypographyAlign, TypographyColor, TypographyVariant, VideoBlockSource, VideoBlockObjectFit } from "./globalTypes";
+import { ButtonVariant, ButtonColor, ButtonSize, ButtonAlignment, ThemeMode, ThemeName, IconName, IconSize, IconColor, TextResponseType, TypographyAlign, TypographyColor, TypographyVariant, VideoBlockSource, VideoBlockObjectFit } from "./globalTypes";
 
 // ====================================================
 // GraphQL fragment: BlockFields
@@ -14,6 +14,12 @@ export interface BlockFields_GridContainerBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
+}
+
+export interface BlockFields_ButtonBlock_action_PhoneAction {
+  __typename: "PhoneAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
 }
 
 export interface BlockFields_ButtonBlock_action_NavigateToBlockAction {
@@ -37,7 +43,15 @@ export interface BlockFields_ButtonBlock_action_EmailAction {
   email: string;
 }
 
-export type BlockFields_ButtonBlock_action = BlockFields_ButtonBlock_action_NavigateToBlockAction | BlockFields_ButtonBlock_action_LinkAction | BlockFields_ButtonBlock_action_EmailAction;
+export type BlockFields_ButtonBlock_action = BlockFields_ButtonBlock_action_PhoneAction | BlockFields_ButtonBlock_action_NavigateToBlockAction | BlockFields_ButtonBlock_action_LinkAction | BlockFields_ButtonBlock_action_EmailAction;
+
+export interface BlockFields_ButtonBlock_settings {
+  __typename: "ButtonBlockSettings";
+  /**
+   * Alignment of the button
+   */
+  alignment: ButtonAlignment | null;
+}
 
 export interface BlockFields_ButtonBlock {
   __typename: "ButtonBlock";
@@ -52,6 +66,7 @@ export interface BlockFields_ButtonBlock {
   endIconId: string | null;
   submitEnabled: boolean | null;
   action: BlockFields_ButtonBlock_action | null;
+  settings: BlockFields_ButtonBlock_settings | null;
 }
 
 export interface BlockFields_CardBlock {
@@ -63,6 +78,10 @@ export interface BlockFields_CardBlock {
    * backgroundColor should be a HEX color value e.g #FFFFFF for white.
    */
   backgroundColor: string | null;
+  /**
+   * backdropBlur should be a number representing blur amount in pixels e.g 20.
+   */
+  backdropBlur: number | null;
   /**
    * coverBlockId is present if a child block should be used as a cover.
    * This child block should not be rendered normally, instead it should be used
@@ -116,6 +135,12 @@ export interface BlockFields_ImageBlock {
   focalLeft: number | null;
 }
 
+export interface BlockFields_RadioOptionBlock_action_PhoneAction {
+  __typename: "PhoneAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+}
+
 export interface BlockFields_RadioOptionBlock_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
   parentBlockId: string;
@@ -137,7 +162,7 @@ export interface BlockFields_RadioOptionBlock_action_EmailAction {
   email: string;
 }
 
-export type BlockFields_RadioOptionBlock_action = BlockFields_RadioOptionBlock_action_NavigateToBlockAction | BlockFields_RadioOptionBlock_action_LinkAction | BlockFields_RadioOptionBlock_action_EmailAction;
+export type BlockFields_RadioOptionBlock_action = BlockFields_RadioOptionBlock_action_PhoneAction | BlockFields_RadioOptionBlock_action_NavigateToBlockAction | BlockFields_RadioOptionBlock_action_LinkAction | BlockFields_RadioOptionBlock_action_EmailAction;
 
 export interface BlockFields_RadioOptionBlock {
   __typename: "RadioOptionBlock";
@@ -146,6 +171,12 @@ export interface BlockFields_RadioOptionBlock {
   parentOrder: number | null;
   label: string;
   action: BlockFields_RadioOptionBlock_action | null;
+  /**
+   * pollOptionImageBlockId is present if a child block should be used as a poll option image.
+   *       This child block should not be rendered normally, instead it should be used
+   *       as a poll option image. Blocks are often of type ImageBlock
+   */
+  pollOptionImageBlockId: string | null;
 }
 
 export interface BlockFields_RadioQuestionBlock {
@@ -153,6 +184,13 @@ export interface BlockFields_RadioQuestionBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
+  gridView: boolean | null;
+}
+
+export interface BlockFields_SignUpBlock_action_PhoneAction {
+  __typename: "PhoneAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
 }
 
 export interface BlockFields_SignUpBlock_action_NavigateToBlockAction {
@@ -176,7 +214,7 @@ export interface BlockFields_SignUpBlock_action_EmailAction {
   email: string;
 }
 
-export type BlockFields_SignUpBlock_action = BlockFields_SignUpBlock_action_NavigateToBlockAction | BlockFields_SignUpBlock_action_LinkAction | BlockFields_SignUpBlock_action_EmailAction;
+export type BlockFields_SignUpBlock_action = BlockFields_SignUpBlock_action_PhoneAction | BlockFields_SignUpBlock_action_NavigateToBlockAction | BlockFields_SignUpBlock_action_LinkAction | BlockFields_SignUpBlock_action_EmailAction;
 
 export interface BlockFields_SignUpBlock {
   __typename: "SignUpBlock";
@@ -236,6 +274,14 @@ export interface BlockFields_TextResponseBlock {
   integrationId: string | null;
 }
 
+export interface BlockFields_TypographyBlock_settings {
+  __typename: "TypographyBlockSettings";
+  /**
+   * Color of the typography
+   */
+  color: string | null;
+}
+
 export interface BlockFields_TypographyBlock {
   __typename: "TypographyBlock";
   id: string;
@@ -245,6 +291,7 @@ export interface BlockFields_TypographyBlock {
   color: TypographyColor | null;
   content: string;
   variant: TypographyVariant | null;
+  settings: BlockFields_TypographyBlock_settings | null;
 }
 
 export interface BlockFields_VideoBlock_mediaVideo_Video_title {
@@ -298,6 +345,12 @@ export interface BlockFields_VideoBlock_mediaVideo_YouTube {
 
 export type BlockFields_VideoBlock_mediaVideo = BlockFields_VideoBlock_mediaVideo_Video | BlockFields_VideoBlock_mediaVideo_MuxVideo | BlockFields_VideoBlock_mediaVideo_YouTube;
 
+export interface BlockFields_VideoBlock_action_PhoneAction {
+  __typename: "PhoneAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+}
+
 export interface BlockFields_VideoBlock_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
   parentBlockId: string;
@@ -319,7 +372,7 @@ export interface BlockFields_VideoBlock_action_EmailAction {
   email: string;
 }
 
-export type BlockFields_VideoBlock_action = BlockFields_VideoBlock_action_NavigateToBlockAction | BlockFields_VideoBlock_action_LinkAction | BlockFields_VideoBlock_action_EmailAction;
+export type BlockFields_VideoBlock_action = BlockFields_VideoBlock_action_PhoneAction | BlockFields_VideoBlock_action_NavigateToBlockAction | BlockFields_VideoBlock_action_LinkAction | BlockFields_VideoBlock_action_EmailAction;
 
 export interface BlockFields_VideoBlock {
   __typename: "VideoBlock";
@@ -396,6 +449,12 @@ export interface BlockFields_VideoBlock {
   action: BlockFields_VideoBlock_action | null;
 }
 
+export interface BlockFields_VideoTriggerBlock_triggerAction_PhoneAction {
+  __typename: "PhoneAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+}
+
 export interface BlockFields_VideoTriggerBlock_triggerAction_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
   parentBlockId: string;
@@ -417,7 +476,7 @@ export interface BlockFields_VideoTriggerBlock_triggerAction_EmailAction {
   email: string;
 }
 
-export type BlockFields_VideoTriggerBlock_triggerAction = BlockFields_VideoTriggerBlock_triggerAction_NavigateToBlockAction | BlockFields_VideoTriggerBlock_triggerAction_LinkAction | BlockFields_VideoTriggerBlock_triggerAction_EmailAction;
+export type BlockFields_VideoTriggerBlock_triggerAction = BlockFields_VideoTriggerBlock_triggerAction_PhoneAction | BlockFields_VideoTriggerBlock_triggerAction_NavigateToBlockAction | BlockFields_VideoTriggerBlock_triggerAction_LinkAction | BlockFields_VideoTriggerBlock_triggerAction_EmailAction;
 
 export interface BlockFields_VideoTriggerBlock {
   __typename: "VideoTriggerBlock";

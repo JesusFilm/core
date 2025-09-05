@@ -26,10 +26,15 @@ on:
         required: true
       AWS_NETWORK_CONFIG:
         required: true
+      NX_CLOUD_ACCESS_TOKEN:
+        required: true
+permissions:
+  contents: read
+  checks: write
 
 jobs:
   build-and-deploy:
-    environment: Production
+    environment: ${{ inputs.env }}
     env:
       HIVE_TOKEN: ${{ secrets.HIVE_TOKEN }}
       ENV_SUFFIX: ${{ inputs.branch }}
@@ -37,6 +42,7 @@ jobs:
       ECS_SERVICE: ${{ inputs.name}}-${{ inputs.env }}-service
       ECR_REPOSITORY: jfp-${{ inputs.name }}-${{ inputs.env }}
       IMAGE_TAG: ${{ github.sha }}
+      NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
     runs-on: blacksmith-2vcpu-ubuntu-2204
     strategy:
       matrix:
@@ -47,7 +53,9 @@ jobs:
         with:
           fetch-depth: 0
       - uses: nrwl/nx-set-shas@v4
-      - uses: useblacksmith/setup-node@v5
+
+      - name: Setup Node.js
+        uses: useblacksmith/setup-node@v5
         with:
           node-version: ${{ matrix.node-version }}
 
@@ -67,33 +75,14 @@ jobs:
           path: ./node_modules
       - name: NPM Install
         run: npm install --silent
-
-      - name: nx Install
-        run: npm install -g nx --silent
-
-      - name: Get affected apps
-        run: |
-          echo "apps=$(npx ts-node tools/scripts/affected-apps.ts --projects apis/api-*)" >> $GITHUB_OUTPUT
-          cat $GITHUB_OUTPUT
-        id: affected-apps
-
-      - name: Has Prisma
-        id: has_prisma
-        uses: andstor/file-existence-action@v3
-        with:
-          files: 'apis/${{inputs.name}}/db/schema.prisma'
-
-      - name: Prisma Migrate
-        if: steps.has_prisma.outputs.files_exists == 'true' && contains(steps.affected-apps.outputs.apps, inputs.name)
+      - name: Prisma Generate
         uses: mansagroup/nrwl-nx-action@v3
         with:
           targets: prisma-generate
-          projects: ${{ inputs.name }}
-          parallel: 1
+          all: true
         env:
           DISABLE_ERD: true
       - name: Build ${{ inputs.name }}
-        if: contains(steps.affected-apps.outputs.apps, inputs.name)
         uses: mansagroup/nrwl-nx-action@v3
         with:
           targets: build
@@ -109,16 +98,13 @@ jobs:
           aws-region: ${{ secrets.AWS_DEFAULT_REGION }}
 
       - name: Login to Amazon ECR
-        if: contains(steps.affected-apps.outputs.apps, inputs.name)
         id: login-ecr-ecs
         uses: aws-actions/amazon-ecr-login@v2
 
       - name: Set up Docker Buildx
-        if: contains(steps.affected-apps.outputs.apps, inputs.name)
         uses: docker/setup-buildx-action@v3
 
       - name: Build and push Docker image to Amazon ECR
-        if: contains(steps.affected-apps.outputs.apps, inputs.name)
         id: build-image-ecs
         uses: useblacksmith/build-push-action@v1
         with:
@@ -132,12 +118,10 @@ jobs:
             SERVICE_VERSION=${{ env.IMAGE_TAG }}
 
       - name: Set image output
-        if: contains(steps.affected-apps.outputs.apps, inputs.name)
         run: |
           echo "image=${{ steps.login-ecr-ecs.outputs.registry }}/${{ env.ECR_REPOSITORY }}:${{ env.IMAGE_TAG }}" >> $GITHUB_OUTPUT
 
       - name: Restart task definition
-        if: contains(steps.affected-apps.outputs.apps, inputs.name)
         run: |
           aws ecs update-service --force-new-deployment --service $ECS_SERVICE --cluster $ECS_CLUSTER
 

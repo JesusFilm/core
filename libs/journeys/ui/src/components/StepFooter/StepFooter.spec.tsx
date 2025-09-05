@@ -74,7 +74,8 @@ describe('StepFooter', () => {
     menuButtonIcon: null,
     menuStepBlock: null,
     socialNodeX: null,
-    socialNodeY: null
+    socialNodeY: null,
+    journeyTheme: null
   }
 
   it('should render custom styles', () => {

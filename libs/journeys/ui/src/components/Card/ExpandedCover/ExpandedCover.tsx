@@ -7,12 +7,14 @@ import type { TreeBlock } from '../../../libs/block'
 import { useJourney } from '../../../libs/JourneyProvider'
 import { ImageFields } from '../../Image/__generated__/ImageFields'
 import { OverlayContent } from '../OverlayContent'
+import { applyDefaultAlpha } from '../utils/colorOpacityUtils'
 
 interface ExpandedCoverProps {
   children: ReactNode
   imageBlock?: TreeBlock<ImageFields>
   backgroundColor?: string
   backgroundBlur?: string
+  backdropBlur?: number
   hasFullscreenVideo?: boolean
 }
 
@@ -21,6 +23,7 @@ export function ExpandedCover({
   imageBlock,
   backgroundColor,
   backgroundBlur,
+  backdropBlur,
   hasFullscreenVideo = false
 }: ExpandedCoverProps): ReactElement {
   const { journey, variant } = useJourney()
@@ -37,7 +40,7 @@ export function ExpandedCover({
   const background =
     backgroundColor != null
       ? imageBlock?.src != null
-        ? `${backgroundColor}4d`
+        ? applyDefaultAlpha(backgroundColor)
         : backgroundColor
       : 'unset'
 
@@ -65,8 +68,8 @@ export function ExpandedCover({
         data-testid="CardExpandedCover"
         sx={{
           height: '100%',
-          WebkitBackdropFilter: 'blur(20px)',
-          backdropFilter: 'blur(20px)',
+          WebkitBackdropFilter: `blur(${backdropBlur ?? 20}px)`,
+          backdropFilter: `blur(${backdropBlur ?? 20}px)`,
           background,
           borderRadius: 'inherit',
           overflow: 'hidden',

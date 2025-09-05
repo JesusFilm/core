@@ -98,7 +98,8 @@ const journey: Journey = {
   menuButtonIcon: null,
   menuStepBlock: null,
   socialNodeX: null,
-  socialNodeY: null
+  socialNodeY: null,
+  journeyTheme: null
 }
 
 const Template: StoryObj<typeof EmbeddedPreview> = {

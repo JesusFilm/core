@@ -2,9 +2,9 @@ import { Injectable } from '@nestjs/common'
 import omit from 'lodash/omit'
 import { v4 as uuidv4 } from 'uuid'
 
-import { Action, Block, Prisma } from '.prisma/api-journeys-client'
 import { FromPostgresql } from '@core/nest/decorators/FromPostgresql'
 import { ToPostgresql } from '@core/nest/decorators/ToPostgresql'
+import { Action, Block, Prisma } from '@core/prisma/journeys/client'
 
 import { BlockDuplicateIdMap } from '../../__generated__/graphql'
 import { PrismaService } from '../../lib/prisma.service'
@@ -140,17 +140,20 @@ export class BlockService {
       duplicateBlockId,
       idMap
     )
+
     await this.saveAll(
       blockAndChildrenData.map((block) => ({
+        // if updating the omit, also do the same in journey.resolver.ts journeyDuplicate uses this saveAll function.
         ...omit(block, [
           'parentBlockId',
           'posterBlockId',
           'coverBlockId',
           'nextBlockId',
           'action',
-          'slug'
+          'slug',
+          'pollOptionImageBlockId'
         ]),
-        classNames: block.classNames ?? { self: '' },
+        settings: block.settings ?? {},
         journey: {
           connect: { id: block.journeyId }
         }
@@ -158,11 +161,13 @@ export class BlockService {
     )
     const duplicateBlockAndChildren = await Promise.all(
       blockAndChildrenData.map(async (newBlock) => {
+        // if updating references, also do the same in journey.resolver.ts journeyDuplicate uses this saveAll function.
         if (
           newBlock.parentBlockId != null ||
           newBlock.posterBlockId != null ||
           newBlock.coverBlockId != null ||
           newBlock.nextBlockId != null ||
+          newBlock.pollOptionImageBlockId != null ||
           newBlock.action != null
         ) {
           const isActionEmpty = Object.keys(newBlock.action ?? {}).length === 0
@@ -171,9 +176,17 @@ export class BlockService {
             posterBlockId: newBlock.posterBlockId ?? undefined,
             coverBlockId: newBlock.coverBlockId ?? undefined,
             nextBlockId: newBlock.nextBlockId ?? undefined,
+            pollOptionImageBlockId:
+              newBlock.pollOptionImageBlockId ?? undefined,
             action:
               !isActionEmpty && newBlock.action != null
-                ? { create: newBlock.action }
+                ? {
+                    create: {
+                      ...newBlock.action,
+                      customizable: false,
+                      parentStepId: null
+                    }
+                  }
                 : undefined
           }
           if (newBlock.typename === 'StepBlock') {

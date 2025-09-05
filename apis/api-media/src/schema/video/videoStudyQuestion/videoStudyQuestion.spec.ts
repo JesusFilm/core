@@ -1,4 +1,4 @@
-import { graphql } from 'gql.tada'
+import { graphql } from '@core/shared/gql'
 
 import { getClient } from '../../../../test/client'
 import { prismaMock } from '../../../../test/prismaMock'
@@ -43,6 +43,7 @@ describe('videoStudyQuestion', () => {
         prismaMock.$transaction.mockImplementation(
           async (callback) => await callback(prismaMock)
         )
+        ;(updateOrderCreate as jest.Mock).mockResolvedValue(undefined)
         prismaMock.userMediaRole.findUnique.mockResolvedValue({
           id: 'userId',
           userId: 'userId',
@@ -58,6 +59,15 @@ describe('videoStudyQuestion', () => {
           order: 1
         })
         prismaMock.videoStudyQuestion.create.mockResolvedValue({
+          id: 'id',
+          videoId: 'videoId',
+          value: 'value',
+          primary: true,
+          languageId: 'languageId',
+          crowdInId: 'crowdInId',
+          order: 1
+        })
+        prismaMock.videoStudyQuestion.update.mockResolvedValue({
           id: 'id',
           videoId: 'videoId',
           value: 'value',
@@ -202,7 +212,7 @@ describe('videoStudyQuestion', () => {
         expect(result).toHaveProperty('data', null)
       })
 
-      it('should throw if videoId not found', async () => {
+      it('should throw if referenced video not found', async () => {
         prismaMock.$transaction.mockImplementation(
           async (callback) => await callback(prismaMock)
         )
@@ -213,13 +223,14 @@ describe('videoStudyQuestion', () => {
         })
         prismaMock.videoStudyQuestion.findUnique.mockResolvedValue({
           id: 'id',
-          videoId: null,
+          videoId: 'videoId',
           value: 'value',
           primary: true,
           languageId: 'languageId',
           crowdInId: 'crowdInId',
           order: 1
         })
+        prismaMock.video.findUnique.mockResolvedValue(null)
         const result = await authClient({
           document: UPDATE_VIDEO_STUDY_QUESTION_MUTATION,
           variables: {

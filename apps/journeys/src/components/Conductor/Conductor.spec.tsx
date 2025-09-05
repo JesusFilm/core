@@ -156,6 +156,7 @@ describe('Conductor', () => {
     menuStepBlock: null,
     socialNodeX: null,
     socialNodeY: null
+    journeyTheme: null
   }
 
   it('should create a journeyViewEvent', async () => {

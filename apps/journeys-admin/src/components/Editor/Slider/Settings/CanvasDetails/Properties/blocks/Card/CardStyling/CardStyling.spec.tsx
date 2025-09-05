@@ -35,6 +35,7 @@ const initialBlock: TreeBlock<CardBlock> = {
   themeMode: null,
   themeName: null,
   fullscreen: false,
+  backdropBlur: null,
   children: []
 }
 
@@ -86,7 +87,8 @@ const journey: Journey = {
   menuButtonIcon: null,
   menuStepBlock: null,
   socialNodeX: null,
-  socialNodeY: null
+  socialNodeY: null,
+  journeyTheme: null
 }
 
 describe('CardStyling', () => {
@@ -114,6 +116,7 @@ describe('CardStyling', () => {
       themeMode: ThemeMode.dark,
       themeName: null,
       fullscreen: false,
+      backdropBlur: null,
       children: []
     }
     render(
@@ -142,6 +145,7 @@ describe('CardStyling', () => {
       themeMode: ThemeMode.dark,
       themeName: null,
       fullscreen: false,
+      backdropBlur: null,
       children: []
     }
     const step: TreeBlock<StepBlock> = {
@@ -180,6 +184,7 @@ describe('CardStyling', () => {
       themeMode: ThemeMode.light,
       themeName: null,
       fullscreen: false,
+      backdropBlur: null,
       children: []
     }
     render(

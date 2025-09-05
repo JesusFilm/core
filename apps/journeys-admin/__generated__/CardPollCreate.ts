@@ -28,6 +28,14 @@ export interface CardPollCreate_image {
   focalLeft: number | null;
 }
 
+export interface CardPollCreate_subtitle_settings {
+  __typename: "TypographyBlockSettings";
+  /**
+   * Color of the typography
+   */
+  color: string | null;
+}
+
 export interface CardPollCreate_subtitle {
   __typename: "TypographyBlock";
   id: string;
@@ -37,6 +45,15 @@ export interface CardPollCreate_subtitle {
   color: TypographyColor | null;
   content: string;
   variant: TypographyVariant | null;
+  settings: CardPollCreate_subtitle_settings | null;
+}
+
+export interface CardPollCreate_title_settings {
+  __typename: "TypographyBlockSettings";
+  /**
+   * Color of the typography
+   */
+  color: string | null;
 }
 
 export interface CardPollCreate_title {
@@ -48,6 +65,7 @@ export interface CardPollCreate_title {
   color: TypographyColor | null;
   content: string;
   variant: TypographyVariant | null;
+  settings: CardPollCreate_title_settings | null;
 }
 
 export interface CardPollCreate_radioQuestion {
@@ -55,6 +73,13 @@ export interface CardPollCreate_radioQuestion {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
+  gridView: boolean | null;
+}
+
+export interface CardPollCreate_radioOption1_action_PhoneAction {
+  __typename: "PhoneAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
 }
 
 export interface CardPollCreate_radioOption1_action_NavigateToBlockAction {
@@ -78,7 +103,7 @@ export interface CardPollCreate_radioOption1_action_EmailAction {
   email: string;
 }
 
-export type CardPollCreate_radioOption1_action = CardPollCreate_radioOption1_action_NavigateToBlockAction | CardPollCreate_radioOption1_action_LinkAction | CardPollCreate_radioOption1_action_EmailAction;
+export type CardPollCreate_radioOption1_action = CardPollCreate_radioOption1_action_PhoneAction | CardPollCreate_radioOption1_action_NavigateToBlockAction | CardPollCreate_radioOption1_action_LinkAction | CardPollCreate_radioOption1_action_EmailAction;
 
 export interface CardPollCreate_radioOption1 {
   __typename: "RadioOptionBlock";
@@ -87,6 +112,18 @@ export interface CardPollCreate_radioOption1 {
   parentOrder: number | null;
   label: string;
   action: CardPollCreate_radioOption1_action | null;
+  /**
+   * pollOptionImageBlockId is present if a child block should be used as a poll option image.
+   *       This child block should not be rendered normally, instead it should be used
+   *       as a poll option image. Blocks are often of type ImageBlock
+   */
+  pollOptionImageBlockId: string | null;
+}
+
+export interface CardPollCreate_radioOption2_action_PhoneAction {
+  __typename: "PhoneAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
 }
 
 export interface CardPollCreate_radioOption2_action_NavigateToBlockAction {
@@ -110,7 +147,7 @@ export interface CardPollCreate_radioOption2_action_EmailAction {
   email: string;
 }
 
-export type CardPollCreate_radioOption2_action = CardPollCreate_radioOption2_action_NavigateToBlockAction | CardPollCreate_radioOption2_action_LinkAction | CardPollCreate_radioOption2_action_EmailAction;
+export type CardPollCreate_radioOption2_action = CardPollCreate_radioOption2_action_PhoneAction | CardPollCreate_radioOption2_action_NavigateToBlockAction | CardPollCreate_radioOption2_action_LinkAction | CardPollCreate_radioOption2_action_EmailAction;
 
 export interface CardPollCreate_radioOption2 {
   __typename: "RadioOptionBlock";
@@ -119,6 +156,18 @@ export interface CardPollCreate_radioOption2 {
   parentOrder: number | null;
   label: string;
   action: CardPollCreate_radioOption2_action | null;
+  /**
+   * pollOptionImageBlockId is present if a child block should be used as a poll option image.
+   *       This child block should not be rendered normally, instead it should be used
+   *       as a poll option image. Blocks are often of type ImageBlock
+   */
+  pollOptionImageBlockId: string | null;
+}
+
+export interface CardPollCreate_radioOption3_action_PhoneAction {
+  __typename: "PhoneAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
 }
 
 export interface CardPollCreate_radioOption3_action_NavigateToBlockAction {
@@ -142,7 +191,7 @@ export interface CardPollCreate_radioOption3_action_EmailAction {
   email: string;
 }
 
-export type CardPollCreate_radioOption3_action = CardPollCreate_radioOption3_action_NavigateToBlockAction | CardPollCreate_radioOption3_action_LinkAction | CardPollCreate_radioOption3_action_EmailAction;
+export type CardPollCreate_radioOption3_action = CardPollCreate_radioOption3_action_PhoneAction | CardPollCreate_radioOption3_action_NavigateToBlockAction | CardPollCreate_radioOption3_action_LinkAction | CardPollCreate_radioOption3_action_EmailAction;
 
 export interface CardPollCreate_radioOption3 {
   __typename: "RadioOptionBlock";
@@ -151,6 +200,18 @@ export interface CardPollCreate_radioOption3 {
   parentOrder: number | null;
   label: string;
   action: CardPollCreate_radioOption3_action | null;
+  /**
+   * pollOptionImageBlockId is present if a child block should be used as a poll option image.
+   *       This child block should not be rendered normally, instead it should be used
+   *       as a poll option image. Blocks are often of type ImageBlock
+   */
+  pollOptionImageBlockId: string | null;
+}
+
+export interface CardPollCreate_radioOption4_action_PhoneAction {
+  __typename: "PhoneAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
 }
 
 export interface CardPollCreate_radioOption4_action_NavigateToBlockAction {
@@ -174,7 +235,7 @@ export interface CardPollCreate_radioOption4_action_EmailAction {
   email: string;
 }
 
-export type CardPollCreate_radioOption4_action = CardPollCreate_radioOption4_action_NavigateToBlockAction | CardPollCreate_radioOption4_action_LinkAction | CardPollCreate_radioOption4_action_EmailAction;
+export type CardPollCreate_radioOption4_action = CardPollCreate_radioOption4_action_PhoneAction | CardPollCreate_radioOption4_action_NavigateToBlockAction | CardPollCreate_radioOption4_action_LinkAction | CardPollCreate_radioOption4_action_EmailAction;
 
 export interface CardPollCreate_radioOption4 {
   __typename: "RadioOptionBlock";
@@ -183,6 +244,20 @@ export interface CardPollCreate_radioOption4 {
   parentOrder: number | null;
   label: string;
   action: CardPollCreate_radioOption4_action | null;
+  /**
+   * pollOptionImageBlockId is present if a child block should be used as a poll option image.
+   *       This child block should not be rendered normally, instead it should be used
+   *       as a poll option image. Blocks are often of type ImageBlock
+   */
+  pollOptionImageBlockId: string | null;
+}
+
+export interface CardPollCreate_body_settings {
+  __typename: "TypographyBlockSettings";
+  /**
+   * Color of the typography
+   */
+  color: string | null;
 }
 
 export interface CardPollCreate_body {
@@ -194,6 +269,7 @@ export interface CardPollCreate_body {
   color: TypographyColor | null;
   content: string;
   variant: TypographyVariant | null;
+  settings: CardPollCreate_body_settings | null;
 }
 
 export interface CardPollCreate_cardBlockUpdate {
@@ -205,6 +281,10 @@ export interface CardPollCreate_cardBlockUpdate {
    * backgroundColor should be a HEX color value e.g #FFFFFF for white.
    */
   backgroundColor: string | null;
+  /**
+   * backdropBlur should be a number representing blur amount in pixels e.g 20.
+   */
+  backdropBlur: number | null;
   /**
    * coverBlockId is present if a child block should be used as a cover.
    * This child block should not be rendered normally, instead it should be used

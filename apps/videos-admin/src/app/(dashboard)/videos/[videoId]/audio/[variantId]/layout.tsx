@@ -4,6 +4,7 @@ import { useMutation, useSuspenseQuery } from '@apollo/client'
 import DeleteIcon from '@mui/icons-material/Delete'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
+import CircularProgress from '@mui/material/CircularProgress'
 import FormControl from '@mui/material/FormControl'
 import IconButton from '@mui/material/IconButton'
 import Paper from '@mui/material/Paper'
@@ -18,12 +19,12 @@ import TableRow from '@mui/material/TableRow'
 import Typography from '@mui/material/Typography'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { Form, Formik, FormikProps, FormikValues } from 'formik'
-import { graphql } from 'gql.tada'
 import { usePathname, useRouter } from 'next/navigation'
 import { useSnackbar } from 'notistack'
 import { ReactElement, ReactNode, useEffect, useState } from 'react'
 import { object, string } from 'yup'
 
+import { graphql } from '@core/shared/gql'
 import { Dialog } from '@core/shared/ui/Dialog'
 
 import { CancelButton } from '../../../../../../components/CancelButton'
@@ -74,13 +75,8 @@ const UPDATE_ADMIN_VIDEO_VARIANT = graphql(`
   mutation UpdateAdminVideoVariant($input: VideoVariantUpdateInput!) {
     videoVariantUpdate(input: $input) {
       id
+      published
     }
-  }
-`)
-
-const UPDATE_DOWNLOAD_SIZES_FROM_MUX = graphql(`
-  mutation UpdateDownloadSizesFromMux($videoVariantId: ID!) {
-    updateVideoVariantDownloadSizesFromMux(videoVariantId: $videoVariantId)
   }
 `)
 
@@ -101,29 +97,9 @@ export default function VariantDialog({
     variables: { id: variantId, languageId: DEFAULT_VIDEO_LANGUAGE_ID }
   })
 
-  const [updateAdminVideoVariant] = useMutation(UPDATE_ADMIN_VIDEO_VARIANT)
-  const [updateDownloadSizesFromMux] = useMutation(
-    UPDATE_DOWNLOAD_SIZES_FROM_MUX
+  const [updateAdminVideoVariant, { loading: mutationLoading }] = useMutation(
+    UPDATE_ADMIN_VIDEO_VARIANT
   )
-
-  const handleUpdateSizes = async (): Promise<void> => {
-    try {
-      await updateDownloadSizesFromMux({
-        variables: { videoVariantId: variantId }
-      })
-      await refetch()
-      enqueueSnackbar('Download sizes updated successfully', {
-        variant: 'success'
-      })
-    } catch (error) {
-      enqueueSnackbar(
-        'Failed to update sizes. Mux may not have generated download files yet - please try again in a few minutes.',
-        {
-          variant: 'warning'
-        }
-      )
-    }
-  }
 
   const handleSubmit = async (
     values: FormikValues,
@@ -136,6 +112,9 @@ export default function VariantDialog({
       onCompleted: () => {
         enqueueSnackbar('Variant updated', { variant: 'success' })
         resetForm({ values })
+        router.push(`/videos/${videoId}/audio`, {
+          scroll: false
+        })
       },
       onError: () => {
         enqueueSnackbar('Error updating variant', { variant: 'error' })
@@ -227,15 +206,23 @@ export default function VariantDialog({
                       </FormControl>
                     </Stack>
                     <Stack direction="row" spacing={1}>
-                      <CancelButton show={dirty} handleCancel={resetForm} />
+                      <CancelButton
+                        show={dirty && !mutationLoading}
+                        handleCancel={resetForm}
+                      />
                       <Button
                         variant="contained"
                         size="small"
                         color="info"
                         type="submit"
-                        disabled={!dirty}
+                        disabled={!dirty || mutationLoading}
+                        startIcon={
+                          mutationLoading ? (
+                            <CircularProgress size={16} color="inherit" />
+                          ) : undefined
+                        }
                       >
-                        Save
+                        {mutationLoading ? 'Saving...' : 'Save'}
                       </Button>
                     </Stack>
                   </Stack>
@@ -266,15 +253,6 @@ export default function VariantDialog({
                     >
                       Add Download
                     </Button>
-                    {data.videoVariant.downloads.some((d) => d.size === 0) && (
-                      <Button
-                        variant="outlined"
-                        color="secondary"
-                        onClick={handleUpdateSizes}
-                      >
-                        Update Sizes from Mux
-                      </Button>
-                    )}
                   </Stack>
 
                   {data.videoVariant.downloads.length === 0 ? (

@@ -1,10 +1,11 @@
-import { gql, useLazyQuery } from '@apollo/client'
-import { useEffect } from 'react'
+import { gql, useQuery } from '@apollo/client'
+import { useMemo } from 'react'
 
 import {
   GetVideoChildren,
   GetVideoChildren_video_children
 } from '../../../__generated__/GetVideoChildren'
+import { getLanguageIdFromLocale } from '../getLanguageIdFromLocale'
 import { VIDEO_CHILD_FIELDS } from '../videoChildFields'
 
 export const GET_VIDEO_CHILDREN = gql`
@@ -19,23 +20,28 @@ export const GET_VIDEO_CHILDREN = gql`
   }
 `
 
-export function useVideoChildren(slug?: string): {
+export function useVideoChildren(
+  slug?: string,
+  locale?: string
+): {
   loading: boolean
   children: GetVideoChildren_video_children[]
 } {
-  const [getVideoChildren, { loading, data }] =
-    useLazyQuery<GetVideoChildren>(GET_VIDEO_CHILDREN)
+  const { loading, data } = useQuery<GetVideoChildren>(GET_VIDEO_CHILDREN, {
+    skip: slug == null,
+    variables: { id: slug!, languageId: getLanguageIdFromLocale(locale) },
+    // variant children are not cached properly
+    fetchPolicy: 'no-cache'
+  })
 
-  useEffect(() => {
-    if (slug != null) {
-      void getVideoChildren({
-        variables: { id: slug }
-      })
-    }
-  }, [getVideoChildren, slug])
+  const children = useMemo(() => {
+    return data?.video?.children != null
+      ? data.video.children.filter((child) => child.variant != null)
+      : []
+  }, [data])
 
   return {
     loading,
-    children: data?.video?.children != null ? data.video.children : []
+    children
   }
 }

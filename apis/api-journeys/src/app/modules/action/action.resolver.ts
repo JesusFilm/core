@@ -5,9 +5,9 @@ import { GraphQLError } from 'graphql'
 import get from 'lodash/get'
 import { z } from 'zod'
 
-import { Action, Block } from '.prisma/api-journeys-client'
 import { CaslAbility } from '@core/nest/common/CaslAuthModule'
 import { FromPostgresql } from '@core/nest/decorators/FromPostgresql'
+import { Action, Block } from '@core/prisma/journeys/client'
 
 import { BlockUpdateActionInput } from '../../__generated__/graphql'
 import { AppAbility, Action as CaslAction } from '../../lib/casl/caslFactory'
@@ -29,6 +29,12 @@ const emailActionInputSchema = z.object({
   email: z.string().email()
 })
 
+const phoneActionInputSchema = z.object({
+  gtmEventName: z.string().nullable(),
+  phone: z.string(),
+  countryCode: z.string()
+})
+
 const navigateToBlockActionInputSchema = z.object({
   gtmEventName: z.string().nullable(),
   blockId: z.string()
@@ -45,6 +51,7 @@ export class ActionResolver {
   __resolveType(obj: Action): string {
     if (get(obj, 'blockId') != null) return 'NavigateToBlockAction'
     if (get(obj, 'email') != null) return 'EmailAction'
+    if (get(obj, 'phone') != null) return 'PhoneAction'
     return 'LinkAction'
   }
 
@@ -102,12 +109,17 @@ export class ActionResolver {
       linkActionInputSchema.safeParse(input)
     const { success: isEmail, data: emailInput } =
       emailActionInputSchema.safeParse(input)
+    const { success: isPhone, data: phoneInput } =
+      phoneActionInputSchema.safeParse(input)
     const { success: isNavigateToBlock, data: navigateToBlockInput } =
       navigateToBlockActionInputSchema.safeParse(input)
 
-    const numberOfValidInputs = [isLink, isEmail, isNavigateToBlock].filter(
-      Boolean
-    ).length
+    const numberOfValidInputs = [
+      isLink,
+      isEmail,
+      isPhone,
+      isNavigateToBlock
+    ].filter(Boolean).length
 
     if (numberOfValidInputs > 1)
       throw new GraphQLError('invalid combination of inputs provided', {
@@ -141,6 +153,9 @@ export class ActionResolver {
 
     if (isEmail)
       return await this.actionService.emailActionUpdate(id, block, emailInput)
+
+    if (isPhone)
+      return await this.actionService.phoneActionUpdate(id, block, phoneInput)
 
     if (isNavigateToBlock)
       return await this.actionService.navigateToBlockActionUpdate(

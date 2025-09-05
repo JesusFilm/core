@@ -1,12 +1,4 @@
-input ImageBlockClassNamesInput {
-  self: String!
-}
-
-type ImageBlockClassNames {
-  self: String! @shareable
-}
-
-type ImageBlock implements Block @key(fields: "id") {
+type ImageBlock implements Block @shareable {
   id: ID! @shareable
   journeyId: ID! @shareable
   parentBlockId: ID @shareable
@@ -23,10 +15,6 @@ type ImageBlock implements Block @key(fields: "id") {
   scale: Int @shareable
   focalTop: Int @shareable
   focalLeft: Int @shareable
-  """
-  classNames is an object of tailwind class names for the block
-  """
-  classNames: ImageBlockClassNames! @shareable
 }
 
 input ImageBlockCreateInput {
@@ -52,7 +40,6 @@ input ImageBlockCreateInput {
   scale: Int
   focalTop: Int
   focalLeft: Int
-  classNames: ImageBlockClassNamesInput
 }
 
 input ImageBlockUpdateInput {
@@ -68,7 +55,6 @@ input ImageBlockUpdateInput {
   scale: Int
   focalTop: Int
   focalLeft: Int
-  classNames: ImageBlockClassNamesInput
 }
 
 extend type Mutation {

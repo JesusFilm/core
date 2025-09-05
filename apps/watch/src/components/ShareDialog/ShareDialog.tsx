@@ -8,6 +8,7 @@ import Tab from '@mui/material/Tab'
 import Tabs from '@mui/material/Tabs'
 import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
+import last from 'lodash/last'
 import Image from 'next/image'
 import { useRouter } from 'next/router'
 import { useTranslation } from 'next-i18next'
@@ -41,18 +42,16 @@ export function ShareDialog({
 
   const shareDescription =
     description != null && description.length > 0
-      ? description[0].value
+      ? last(description)?.value
       : snippet != null && snippet.length > 0
-        ? snippet[0].value
+        ? last(snippet)?.value
         : ''
 
-  const shareLink =
-    router?.query != null
-      ? `${
-          process.env.NEXT_PUBLIC_WATCH_URL ??
-          'https://watch-jesusfilm.vercel.app'
-        }/${Object.values(router?.query).join('/')}`.trim()
-      : ''
+  const sharePath = router?.asPath.split('?')[0].replace('/watch', '')
+  const shareLink = `${
+    process.env.NEXT_PUBLIC_WATCH_URL ??
+    'https://watch-jesusfilm.vercel.app/watch'
+  }${sharePath}`
 
   const handleShareLinkClick = async (): Promise<void> => {
     await navigator.clipboard.writeText(shareLink)
@@ -103,7 +102,7 @@ export function ShareDialog({
     <Dialog
       {...dialogProps}
       dialogTitle={{
-        title: 'Share this video',
+        title: t('Share this video'),
         closeButton: true
       }}
       divider
@@ -134,10 +133,10 @@ export function ShareDialog({
           )}
           <Stack sx={{ maxWidth: { sm: '272px' } }}>
             <Typography variant="subtitle2" sx={{ mb: 1 }}>
-              {title[0].value}
+              {last(title)?.value}
             </Typography>
             <Typography>
-              {`${shareDescription.split(' ').slice(0, 18).join(' ')}...`}
+              {`${shareDescription?.split(' ').slice(0, 18).join(' ')}...`}
             </Typography>
           </Stack>
         </Stack>
@@ -171,8 +170,8 @@ export function ShareDialog({
                   variant="fullWidth"
                   aria-label="share and embed"
                 >
-                  <Tab label="Share Link" {...tabA11yProps('share', 0)} />
-                  <Tab label="Embed Code" {...tabA11yProps('embed', 1)} />
+                  <Tab label={t('Share Link')} {...tabA11yProps('share', 0)} />
+                  <Tab label={t('Embed Code')} {...tabA11yProps('embed', 1)} />
                 </Tabs>
               </Box>
               <TabPanel name="share" value={value} index={0} sx={{ mt: 4 }}>

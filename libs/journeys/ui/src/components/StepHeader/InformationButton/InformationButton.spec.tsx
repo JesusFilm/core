@@ -85,7 +85,8 @@ describe('InformationButton', () => {
     menuButtonIcon: null,
     menuStepBlock: null,
     socialNodeX: null,
-    socialNodeY: null
+    socialNodeY: null,
+    journeyTheme: null
   }
 
   it('should have report contact button', () => {

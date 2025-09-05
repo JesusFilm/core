@@ -3,9 +3,9 @@ import { UseGuards } from '@nestjs/common'
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql'
 import { GraphQLError } from 'graphql'
 
-import { JourneyTheme } from '.prisma/api-journeys-client'
 import { CaslAbility } from '@core/nest/common/CaslAuthModule'
 import { CurrentUserId } from '@core/nest/decorators/CurrentUserId'
+import { JourneyTheme } from '@core/prisma/journeys/client'
 
 import {
   JourneyThemeCreateInput,
@@ -79,9 +79,9 @@ export class JourneyThemeResolver {
         data: {
           journeyId: input.journeyId,
           userId,
-          primaryFont: input.primaryFont ?? null,
-          secondaryFont: input.secondaryFont ?? null,
-          accentFont: input.accentFont ?? null
+          headerFont: input.headerFont ?? null,
+          bodyFont: input.bodyFont ?? null,
+          labelFont: input.labelFont ?? null
         }
       })
     })
@@ -121,9 +121,9 @@ export class JourneyThemeResolver {
     return await this.prismaService.journeyTheme.update({
       where: { id },
       data: {
-        primaryFont: input.primaryFont ?? undefined,
-        secondaryFont: input.secondaryFont ?? undefined,
-        accentFont: input.accentFont ?? undefined
+        headerFont: input.headerFont ?? undefined,
+        bodyFont: input.bodyFont ?? undefined,
+        labelFont: input.labelFont ?? undefined
       }
     })
   }

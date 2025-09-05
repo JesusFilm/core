@@ -57,6 +57,7 @@ const card: TreeBlock = {
   themeMode: null,
   themeName: null,
   fullscreen: false,
+  backdropBlur: null,
   children: []
 }
 const step: TreeBlock = {
@@ -97,7 +98,10 @@ const cardQuoteCreateMock: MockedResponse<
         content: 'The Bible Says:',
         variant: TypographyVariant.h6,
         align: null,
-        color: null
+        color: null,
+        settings: {
+          color: null
+        }
       },
       titleInput: {
         id: 'titleId',
@@ -107,7 +111,10 @@ const cardQuoteCreateMock: MockedResponse<
           'Blessed are the peacemakers, for they shall be called sons of God.',
         variant: TypographyVariant.h3,
         align: null,
-        color: null
+        color: null,
+        settings: {
+          color: null
+        }
       },
       bodyInput: {
         id: 'bodyId',
@@ -116,7 +123,10 @@ const cardQuoteCreateMock: MockedResponse<
         content: '– Jesus Christ',
         variant: TypographyVariant.body1,
         align: null,
-        color: TypographyColor.secondary
+        color: TypographyColor.secondary,
+        settings: {
+          color: null
+        }
       },
       cardId: 'cardId',
       cardInput: {
@@ -148,6 +158,10 @@ const cardQuoteCreateMock: MockedResponse<
         color: null,
         content: 'The Bible Says:',
         variant: TypographyVariant.h6,
+        settings: {
+          __typename: 'TypographyBlockSettings',
+          color: null
+        },
         __typename: 'TypographyBlock'
       },
       title: {
@@ -159,6 +173,10 @@ const cardQuoteCreateMock: MockedResponse<
         content:
           'Blessed are the peacemakers, for they shall be called sons of God.',
         variant: TypographyVariant.h3,
+        settings: {
+          __typename: 'TypographyBlockSettings',
+          color: null
+        },
         __typename: 'TypographyBlock'
       },
       body: {
@@ -169,6 +187,10 @@ const cardQuoteCreateMock: MockedResponse<
         color: TypographyColor.secondary,
         content: '– Jesus Christ',
         variant: TypographyVariant.body1,
+        settings: {
+          __typename: 'TypographyBlockSettings',
+          color: null
+        },
         __typename: 'TypographyBlock'
       },
       cardBlockUpdate: {
@@ -180,6 +202,7 @@ const cardQuoteCreateMock: MockedResponse<
         themeMode: null,
         themeName: null,
         fullscreen: false,
+        backdropBlur: null,
         __typename: 'CardBlock'
       }
     }

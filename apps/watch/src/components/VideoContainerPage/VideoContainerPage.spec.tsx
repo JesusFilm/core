@@ -10,15 +10,6 @@ import { videos } from '../Videos/__generated__/testData'
 
 import { VideoContainerPage } from '.'
 
-jest.mock('next/router', () => ({
-  __esModule: true,
-  useRouter: () => {
-    return {
-      query: {}
-    }
-  }
-}))
-
 jest.mock('react-instantsearch')
 jest.mock('@core/journeys/ui/algolia/useAlgoliaVideos')
 
@@ -37,6 +28,19 @@ describe('VideoContainerPage', () => {
       sendEvent: jest.fn()
     })
     jest.clearAllMocks()
+  })
+
+  it('should show language switcher', () => {
+    render(
+      <MockedProvider>
+        <SnackbarProvider>
+          <VideoProvider value={{ content: videos[0] }}>
+            <VideoContainerPage />
+          </VideoProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+    expect(screen.getByTestId('LanguageRoundedIcon')).toBeInTheDocument()
   })
 
   it('should render ContainerHero', () => {
@@ -86,7 +90,7 @@ describe('VideoContainerPage', () => {
     const { getByRole } = render(
       <MockedProvider mocks={[getVideoChildrenMock]}>
         <SnackbarProvider>
-          <VideoProvider value={{ content: videos[0] }}>
+          <VideoProvider value={{ content: videos[5] }}>
             <VideoContainerPage />
           </VideoProvider>
         </SnackbarProvider>

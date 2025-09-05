@@ -75,6 +75,7 @@ const stepAndCardBlockCreateMock: MockedResponse<
         themeMode: null,
         themeName: null,
         fullscreen: false,
+        backdropBlur: null,
         __typename: 'CardBlock'
       }
     }
@@ -144,7 +145,8 @@ const defaultJourney: Journey = {
   menuButtonIcon: null,
   menuStepBlock: null,
   socialNodeX: null,
-  socialNodeY: null
+  socialNodeY: null,
+  journeyTheme: null
 }
 
 const blankSeoJourney: Journey = {

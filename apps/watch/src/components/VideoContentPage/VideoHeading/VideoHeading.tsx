@@ -6,6 +6,7 @@ import Link from '@mui/material/Link'
 import Skeleton from '@mui/material/Skeleton'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
+import last from 'lodash/last'
 import NextLink from 'next/link'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, useMemo } from 'react'
@@ -50,7 +51,7 @@ export function VideoHeading({
               alignItems="center"
             >
               <Typography variant="h5" color="text.primary">
-                {title[0].value}
+                {last(title)?.value}
               </Typography>
               <Stack
                 direction="row"
@@ -75,15 +76,15 @@ export function VideoHeading({
               <Stack direction="row" alignItems="center" spacing={2}>
                 <NextLink
                   href={`/watch/${container.variant?.slug as string}`}
-                  passHref
-                  legacyBehavior
+                  locale={false}
                 >
                   <Link
+                    component="a"
                     variant="overline1"
                     color="primary"
                     sx={{ textDecoration: 'none' }}
                   >
-                    {container.title[0].value}
+                    {last(container.title)?.value}
                   </Link>
                 </NextLink>
                 <Typography
@@ -112,18 +113,18 @@ export function VideoHeading({
               </Stack>
               <NextLink
                 href={`/watch/${container.variant?.slug as string}`}
-                passHref
-                legacyBehavior
+                locale={false}
               >
                 <Button
+                  component="a"
                   variant="outlined"
                   size="small"
                   color="secondary"
                   sx={{ display: { xs: 'none', xl: 'block' } }}
                 >
                   {container.label === VideoLabel.featureFilm
-                    ? 'Watch Full Film'
-                    : 'See All'}
+                    ? t('Watch Full Film')
+                    : t('See All')}
                 </Button>
               </NextLink>
               <Typography

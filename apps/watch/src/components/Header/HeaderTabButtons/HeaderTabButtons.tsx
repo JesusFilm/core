@@ -25,12 +25,20 @@ export function HeaderTabButtons(): ReactElement {
 
   const headerItems = compact([
     strategies
-      ? { label: t('Resources'), icon: <TerminalIcon />, href: '/resources' }
+      ? {
+          label: t('Resources', { lng: 'en' }),
+          icon: <TerminalIcon />,
+          href: '/resources'
+        }
       : undefined,
     journeys
-      ? { label: t('Journeys'), icon: <JourneysIcon />, href: '/journeys' }
+      ? {
+          label: t('Journeys', { lng: 'en' }),
+          icon: <JourneysIcon />,
+          href: '/journeys'
+        }
       : undefined,
-    { label: t('Videos'), icon: <Play1Icon />, href: '/watch' }
+    { label: t('Videos', { lng: 'en' }), icon: <Play1Icon />, href: '/watch' }
   ])
 
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
@@ -64,29 +72,30 @@ export function HeaderTabButtons(): ReactElement {
         }}
       >
         {headerItems.map(({ label, icon, href }) => (
-          <NextLink href={href} passHref legacyBehavior key={label}>
-            <Button
-              data-testid={`${label}Button`}
-              component="a"
-              color="inherit"
-              sx={{
-                flexGrow: 1,
-                textAlign: 'center',
-                borderRadius: '40px !important',
-                border: '2px solid',
-                borderColor:
-                  (router?.pathname?.startsWith(href) ?? false)
-                    ? (theme) => theme.palette.primary.main
-                    : 'transparent',
-                py: { sm: 1 },
-                px: { sm: 2 },
-                fontSize: { sm: '0.875rem', md: '1rem' }
-              }}
-              startIcon={icon}
-            >
-              {label}
-            </Button>
-          </NextLink>
+          <Button
+            data-testid={`${label}Button`}
+            color="inherit"
+            component={NextLink}
+            href={href}
+            key={label}
+            sx={{
+              flexGrow: 1,
+              textAlign: 'center',
+              borderRadius: '40px !important',
+              border: '2px solid',
+              borderColor:
+                (router?.pathname?.startsWith(href) ?? false)
+                  ? (theme) => theme.palette.primary.main
+                  : 'transparent',
+              py: { sm: 1 },
+              px: { sm: 2 },
+              fontSize: { sm: '0.875rem', md: '1rem' }
+            }}
+            startIcon={icon}
+            locale={false}
+          >
+            {label}
+          </Button>
         ))}
       </Box>
       <Box
@@ -134,26 +143,28 @@ export function HeaderTabButtons(): ReactElement {
         slotProps={{ paper: { style: { width: anchorEl?.clientWidth } } }}
       >
         {headerItems.map(({ label, icon, href }) => (
-          <NextLink href={href} passHref legacyBehavior key={label}>
-            <MenuItem
-              onClick={handleCloseMenu}
-              selected={router?.pathname?.startsWith(href)}
-            >
-              <Stack direction="row" alignItems="center" width="100%" px={2.5}>
-                <ListItemIcon>{icon}</ListItemIcon>
-                <ListItemText
-                  primary={t(label)}
-                  primaryTypographyProps={{
-                    variant: 'h6',
-                    sx: {
-                      textAlign: 'center'
-                    }
-                  }}
-                />
-                <Box sx={{ width: 30 }} />
-              </Stack>
-            </MenuItem>
-          </NextLink>
+          <MenuItem
+            key={label}
+            component={NextLink}
+            href={href}
+            locale={false}
+            onClick={handleCloseMenu}
+            selected={router?.pathname?.startsWith(href)}
+          >
+            <Stack direction="row" alignItems="center" width="100%" px={2.5}>
+              <ListItemIcon>{icon}</ListItemIcon>
+              <ListItemText
+                primary={label}
+                primaryTypographyProps={{
+                  variant: 'h6',
+                  sx: {
+                    textAlign: 'center'
+                  }
+                }}
+              />
+              <Box sx={{ width: 30 }} />
+            </Stack>
+          </MenuItem>
         ))}
       </MuiMenu>
     </>

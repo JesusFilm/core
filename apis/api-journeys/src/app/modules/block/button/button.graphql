@@ -17,15 +17,24 @@ enum ButtonSize {
   large
 }
 
-input ButtonBlockClassNamesInput {
-  self: String!
+enum ButtonAlignment {
+  left
+  center
+  right
+  justify
 }
 
-type ButtonBlockClassNames {
-  self: String! @shareable
+input ButtonBlockSettingsInput {
+  alignment: ButtonAlignment
+  color: String
 }
 
-type ButtonBlock implements Block @key(fields: "id") {
+type ButtonBlockSettings @shareable {
+  alignment: ButtonAlignment @shareable
+  color: String @shareable
+}
+
+type ButtonBlock implements Block @shareable {
   id: ID! @shareable
   journeyId: ID! @shareable
   parentBlockId: ID @shareable
@@ -38,10 +47,7 @@ type ButtonBlock implements Block @key(fields: "id") {
   endIconId: ID @shareable
   action: Action
   submitEnabled: Boolean @shareable
-  """
-  classNames is an object of tailwind class names for the block
-  """
-  classNames: ButtonBlockClassNames! @shareable
+  settings: ButtonBlockSettings! @shareable
 }
 
 input ButtonBlockCreateInput {
@@ -53,7 +59,7 @@ input ButtonBlockCreateInput {
   color: ButtonColor
   size: ButtonSize
   submitEnabled: Boolean
-  classNames: ButtonBlockClassNamesInput
+  settings: ButtonBlockSettingsInput
 }
 
 input ButtonBlockUpdateInput {
@@ -65,7 +71,7 @@ input ButtonBlockUpdateInput {
   startIconId: ID
   endIconId: ID
   submitEnabled: Boolean
-  classNames: ButtonBlockClassNamesInput
+  settings: ButtonBlockSettingsInput
 }
 
 extend type Mutation {

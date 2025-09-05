@@ -1,5 +1,4 @@
 import { sendGTMEvent } from '@next/third-parties/google'
-import { useTranslation } from 'next-i18next'
 import { ReactElement, useState } from 'react'
 import { v4 as uuidv4 } from 'uuid'
 
@@ -17,7 +16,6 @@ interface QuestionsProps {
   questions: QuestionData[]
   questionsTitle?: string
   askButtonText?: string
-  onOpenDialog?: () => void
   contentId: string
 }
 
@@ -25,11 +23,9 @@ export const Questions = ({
   questions,
   questionsTitle = 'Related questions',
   askButtonText = 'Ask yours',
-  onOpenDialog,
   contentId
 }: QuestionsProps): ReactElement => {
   const [openQuestion, setOpenQuestion] = useState<number | null>(null)
-  const { t } = useTranslation('apps-watch')
 
   const handleQuestionToggle = (id: number): void => {
     setOpenQuestion(openQuestion === id ? null : id)

@@ -4,28 +4,39 @@ interface Action {
   gtmEventName: String
 }
 
-type NavigateToBlockAction implements Action {
+type NavigateToBlockAction implements Action @shareable {
   parentBlockId: ID!
   parentBlock: Block!
   gtmEventName: String
   blockId: String!
 }
 
-type LinkAction implements Action {
+type LinkAction implements Action @shareable {
   parentBlockId: ID!
   parentBlock: Block!
   gtmEventName: String
   url: String!
   target: String
+  customizable: Boolean
+  parentStepId: String
 }
 
-type EmailAction implements Action {
+type EmailAction implements Action @shareable {
   parentBlockId: ID!
   parentBlock: Block!
   gtmEventName: String
   email: String!
+  customizable: Boolean
+  parentStepId: String
 }
 
+type PhoneAction implements Action @shareable {
+  parentBlockId: ID!
+  parentBlock: Block!
+  gtmEventName: String
+  phone: String!
+  countryCode: String!
+}
 input NavigateToBlockActionInput {
   gtmEventName: String
   blockId: String!
@@ -35,11 +46,15 @@ input LinkActionInput {
   gtmEventName: String
   url: String!
   target: String
+  customizable: Boolean
+  parentStepId: String
 }
 
 input EmailActionInput {
   gtmEventName: String
   email: String!
+  customizable: Boolean
+  parentStepId: String
 }
 
 input BlockUpdateActionInput {
@@ -48,6 +63,14 @@ input BlockUpdateActionInput {
   url: String
   target: String
   blockId: String
+  phone: String
+  countryCode: String
+}
+
+input PhoneActionInput {
+  gtmEventName: String
+  phone: String!
+  countryCode: String!
 }
 
 extend type Mutation {
@@ -82,5 +105,13 @@ extend type Mutation {
     """
     journeyId: ID
   ): EmailAction!
+  blockUpdatePhoneAction(
+    id: ID!
+    input: PhoneActionInput!
+    """
+    drop this parameter after merging teams
+    """
+    journeyId: ID
+  ): PhoneAction!
   blockUpdateAction(id: ID!, input: BlockUpdateActionInput): Action!
 }

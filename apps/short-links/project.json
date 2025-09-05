@@ -131,12 +131,6 @@
           }
         ]
       }
-    },
-    "codegen": {
-      "executor": "nx:run-commands",
-      "options": {
-        "command": "gql.tada generate output --tsconfig apps/short-links/tsconfig.json"
-      }
     }
   },
   "tags": []

@@ -5,11 +5,12 @@ import Button from '@mui/material/Button'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { Form, Formik } from 'formik'
-import { ResultOf, VariablesOf, graphql } from 'gql.tada'
 import { useRouter } from 'next/navigation'
 import { useSnackbar } from 'notistack'
-import { ReactElement, useMemo } from 'react'
+import { ReactElement, useMemo, useState } from 'react'
 import { InferType, mixed, object, string } from 'yup'
+
+import { ResultOf, VariablesOf, graphql } from '@core/shared/gql'
 
 import { FormSelectField } from '../../../../components/FormSelectField'
 import { FormTextField } from '../../../../components/FormTextField'
@@ -39,6 +40,9 @@ export const GET_PARENT_VIDEO_LABEL = graphql(`
     adminVideo(id: $videoId) {
       id
       label
+      origin {
+        id
+      }
     }
   }
 `)
@@ -61,6 +65,18 @@ export const CREATE_EDITION = graphql(`
   }
 `)
 
+export const CREATE_VIDEO_VARIANT = graphql(`
+  mutation CreateVideoVariant($input: VideoVariantCreateInput!) {
+    videoVariantCreate(input: $input) {
+      id
+      language {
+        id
+      }
+      slug
+    }
+  }
+`)
+
 export type CreateVideoVariables = VariablesOf<typeof CREATE_VIDEO>
 export type CreateVideo = ResultOf<typeof CREATE_VIDEO>
 
@@ -74,6 +90,8 @@ export function VideoCreateForm({
   onCreateSuccess
 }: VideoCreateFormProps): ReactElement {
   const { enqueueSnackbar } = useSnackbar()
+  const [isSubmitting, setIsSubmitting] = useState(false)
+
   const validationSchema = object().shape({
     id: string().trim().required('ID is required'),
     slug: string().trim().required('Slug is required'),
@@ -95,22 +113,47 @@ export function VideoCreateForm({
 
   const [createVideo] = useMutation(CREATE_VIDEO)
   const [createEdition] = useMutation(CREATE_EDITION)
+  const [createVideoVariant] = useMutation(CREATE_VIDEO_VARIANT)
 
-  // Determine the suggested child label based on parent label
-  const suggestedLabel = useMemo(() => {
-    if (!parentId || !parentData?.adminVideo?.label) return undefined
+  // Determine valid child labels and suggested label based on parent label
+  const { validChildLabels, suggestedLabel } = useMemo(() => {
+    if (!parentId || !parentData?.adminVideo?.label) {
+      return { validChildLabels: videoLabels, suggestedLabel: undefined }
+    }
 
     const parentLabel = parentData.adminVideo.label
 
     switch (parentLabel) {
       case 'collection':
-        return VideoLabel.episode
+        return {
+          validChildLabels: videoLabels.filter((vl) =>
+            ['episode', 'featureFilm', 'shortFilm', 'series'].includes(vl.value)
+          ),
+          suggestedLabel: VideoLabel.episode
+        }
       case 'featureFilm':
-        return VideoLabel.segment
+        return {
+          validChildLabels: videoLabels.filter((vl) =>
+            ['segment', 'trailer', 'behindTheScenes'].includes(vl.value)
+          ),
+          suggestedLabel: VideoLabel.segment
+        }
       case 'series':
-        return VideoLabel.episode
+        return {
+          validChildLabels: videoLabels.filter((vl) =>
+            ['episode', 'trailer', 'behindTheScenes'].includes(vl.value)
+          ),
+          suggestedLabel: VideoLabel.episode
+        }
+      case 'episode':
+        return {
+          validChildLabels: videoLabels.filter((vl) =>
+            ['segment', 'trailer', 'behindTheScenes'].includes(vl.value)
+          ),
+          suggestedLabel: VideoLabel.segment
+        }
       default:
-        return undefined
+        return { validChildLabels: videoLabels, suggestedLabel: undefined }
     }
   }, [parentId, parentData])
 
@@ -125,6 +168,10 @@ export function VideoCreateForm({
   }, [originsData])
 
   const handleSubmit = async (values: InferType<typeof validationSchema>) => {
+    if (isSubmitting) return
+
+    setIsSubmitting(true)
+
     await createVideo({
       variables: {
         input: {
@@ -150,34 +197,108 @@ export function VideoCreateForm({
       onCompleted: async (data) => {
         const videoId = data.videoCreate.id
 
-        await createEdition({
-          variables: {
-            input: {
-              videoId,
-              name: 'base'
+        try {
+          await createEdition({
+            variables: {
+              input: {
+                videoId,
+                name: 'base'
+              }
             }
-          },
-          onCompleted: () => {
-            enqueueSnackbar('Successfully created video.', {
-              variant: 'success'
-            })
+          })
 
-            if (onCreateSuccess != null) {
-              onCreateSuccess(videoId)
-            } else {
-              router.push(`/videos/${videoId}`)
+          // Create null video variant for series and collections with language 529 (English)
+          // Currently required for the video to be visible in the frontend
+          if (values.label === 'series' || values.label === 'collection') {
+            try {
+              const variantId = `529_${videoId}`
+              const slug = `${values.slug}/english`
+
+              await createVideoVariant({
+                variables: {
+                  input: {
+                    id: variantId,
+                    videoId,
+                    edition: 'base',
+                    languageId: '529',
+                    slug,
+                    downloadable: false,
+                    published: false
+                  }
+                }
+              })
+            } catch (variantError) {
+              console.warn(
+                'Failed to create null video variant for collection or series:',
+                variantError
+              )
             }
-          },
-          onError: () => {
-            enqueueSnackbar('Failed to create video edition.', {
-              variant: 'error'
-            })
           }
-        })
+
+          enqueueSnackbar('Successfully created video.', {
+            variant: 'success'
+          })
+
+          if (onCreateSuccess != null) {
+            await onCreateSuccess(videoId)
+          } else {
+            router.push(`/videos/${videoId}`)
+          }
+        } catch (error) {
+          enqueueSnackbar('Failed to create video edition.', {
+            variant: 'error'
+          })
+        } finally {
+          setIsSubmitting(false)
+        }
       },
-      onError: () => {
-        // TODO: proper error handling for specific errors
-        enqueueSnackbar('Something went wrong.', { variant: 'error' })
+      onError: (error) => {
+        // Handle specific error messages
+        let errorMessage = 'Something went wrong.'
+
+        // Check for GraphQL errors in both direct GraphQL errors and network errors
+        const directErrors = error.graphQLErrors || []
+        const networkErrors =
+          error.networkError &&
+          typeof error.networkError === 'object' &&
+          'graphQLErrors' in error.networkError &&
+          Array.isArray(error.networkError.graphQLErrors)
+            ? error.networkError.graphQLErrors
+            : []
+
+        const graphQLErrors =
+          directErrors.length > 0 ? directErrors : networkErrors
+
+        if (graphQLErrors.length > 0) {
+          const graphQLError = graphQLErrors[0]
+
+          // Check for NotUniqueError
+          if (graphQLError.extensions?.code === 'NOT_UNIQUE_ERROR') {
+            const location = graphQLError.extensions?.location
+            if (Array.isArray(location) && location.length > 0) {
+              const errorLocation = location[0]
+              if (errorLocation.path?.includes('slug')) {
+                errorMessage =
+                  'This slug is already in use. Please choose a different slug.'
+              } else if (errorLocation.path?.includes('id')) {
+                errorMessage =
+                  'This ID is already in use. Please choose a different ID.'
+              } else {
+                errorMessage =
+                  'This video already exists with the same information.'
+              }
+            } else {
+              errorMessage =
+                graphQLError.message || 'This information is already in use.'
+            }
+          } else {
+            // Use the GraphQL error message if available
+            errorMessage = graphQLError.message || errorMessage
+          }
+        }
+
+        enqueueSnackbar(errorMessage, { variant: 'error' })
+        setIsSubmitting(false)
       }
     })
   }
@@ -186,22 +307,7 @@ export function VideoCreateForm({
     id: '',
     slug: '',
     label: suggestedLabel || ('' as VideoLabel),
-    originId: ''
-  }
-
-  // Get explanatory text for the suggested label
-  const getSuggestedLabelExplanation = (): string => {
-    if (!suggestedLabel) return ''
-
-    const parentLabel = parentData?.adminVideo?.label
-    const suggestedLabelName = videoLabels.find(
-      (vl) => vl.value === suggestedLabel
-    )?.label
-    const parentLabelName = videoLabels.find(
-      (vl) => vl.value === parentLabel
-    )?.label
-
-    return `Based on the parent ${parentLabelName}, we've suggested ${suggestedLabelName}`
+    originId: parentData?.adminVideo?.origin?.id || ''
   }
 
   return (
@@ -220,18 +326,26 @@ export function VideoCreateForm({
             fullWidth
             disabled={originsLoading}
           />
-          <FormTextField name="id" label="ID" fullWidth />
-          <FormTextField name="slug" label="Slug" fullWidth />
+          <FormTextField
+            name="id"
+            label="ID"
+            placeholder="eg. 1_jf_0_0"
+            fullWidth
+          />
+          <FormTextField
+            name="slug"
+            label="Slug"
+            placeholder="eg. jesus-walks-on-water"
+            fullWidth
+          />
           <FormSelectField
             name="label"
             label="Label"
-            options={videoLabels}
+            options={validChildLabels}
             fullWidth
           />
-          {suggestedLabel && (
-            <Typography variant="caption" color="text.secondary">
-              {getSuggestedLabelExplanation()}
-            </Typography>
+          {parentId && (
+            <Typography variant="caption" color="text.secondary"></Typography>
           )}
           {parentId && (
             <Typography variant="caption" color="text.secondary">
@@ -248,8 +362,16 @@ export function VideoCreateForm({
             >
               <Typography>Cancel</Typography>
             </Button>
-            <Button variant="contained" type="submit" fullWidth>
-              <Typography>Create</Typography>
+            <Button
+              variant="contained"
+              type="submit"
+              fullWidth
+              sx={{
+                opacity: isSubmitting ? 0.7 : 1,
+                pointerEvents: isSubmitting ? 'none' : 'auto'
+              }}
+            >
+              <Typography>{isSubmitting ? 'Creating...' : 'Create'}</Typography>
             </Button>
           </Stack>
         </Stack>
