@@ -1,4 +1,5 @@
 import { gql, useMutation } from '@apollo/client'
+import { useTranslation } from 'next-i18next'
 import { v4 as uuidv4 } from 'uuid'
 
 import { useTeam } from '@core/journeys/ui/TeamProvider'
@@ -116,6 +117,7 @@ export function useJourneyCreateMutation(): {
   createJourney: () => Promise<Journey | undefined>
   loading: boolean
 } {
+  const { t } = useTranslation('apps-journeys-admin')
   const [createJourney, { loading }] =
     useMutation<CreateJourney>(CREATE_JOURNEY)
   const { activeTeam } = useTeam()
@@ -130,16 +132,16 @@ export function useJourneyCreateMutation(): {
         const { data } = await createJourney({
           variables: {
             journeyId,
-            title: 'Untitled Journey',
+            title: t('Untitled Journey'),
             description:
-              'Use journey description for notes about the audience, topic, traffic source, etc. Only you and other editors can see it.',
+              t('Use journey description for notes about the audience, topic, traffic source, etc. Only you and other editors can see it.'),
             stepId,
             cardId,
             imageId,
-            alt: 'two hot air balloons in the sky',
-            headlineTypographyContent: 'The Journey Is On',
-            bodyTypographyContent: '"Go, and lead the people on their way..."',
-            captionTypographyContent: 'Deutoronomy 10:11',
+            alt: t('two hot air balloons in the sky'),
+            headlineTypographyContent: t('The Journey Is On'),
+            bodyTypographyContent: t('"Go, and lead the people on their way..."'),
+            captionTypographyContent: t('Deutoronomy 10:11'),
             teamId: activeTeam?.id
           },
           update(cache, { data }) {
