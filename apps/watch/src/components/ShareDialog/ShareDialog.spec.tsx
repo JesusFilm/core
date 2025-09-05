@@ -6,18 +6,10 @@ import { VideoProvider } from '../../libs/videoContext'
 import { videos } from '../Videos/__generated__/testData'
 
 import { ShareDialog } from './ShareDialog'
+import mockRouter from 'next-router-mock'
 
 const onClose = jest.fn()
 const originalEnv = process.env
-
-jest.mock('next/router', () => ({
-  __esModule: true,
-  useRouter() {
-    return {
-      query: { part1: 'the-story-of-jesus-for-children' }
-    }
-  }
-}))
 
 const video: VideoContentFields = {
   ...videos[0],
@@ -75,6 +67,9 @@ describe('ShareDialog', () => {
   })
 
   it('only shows share link on playlist video', () => {
+    mockRouter.push(
+      '/watch/the-story-of-jesus-for-children.html/english.html?r=0'
+    )
     const { getByRole, queryAllByRole } = render(
       <SnackbarProvider>
         <VideoProvider
@@ -90,8 +85,8 @@ describe('ShareDialog', () => {
       </SnackbarProvider>
     )
     const link = `${
-      process.env.NEXT_PUBLIC_WATCH_URL as string
-    }/the-story-of-jesus-for-children`
+      process.env.NEXT_PUBLIC_WATCH_URL
+    }/the-story-of-jesus-for-children.html/english.html`
     expect(getByRole('textbox')).toHaveValue(link)
     expect(getByRole('button', { name: 'Copy Link' })).toBeInTheDocument()
     expect(queryAllByRole('tab')).toHaveLength(0)
@@ -112,9 +107,12 @@ describe('ShareDialog', () => {
     })
 
     it('should share video to facebook', () => {
+      mockRouter.push(
+        '/watch/the-story-of-jesus-for-children.html/english.html?r=0'
+      )
       const facebookUrl = `https://www.facebook.com/sharer/sharer.php?u=${
-        process.env.NEXT_PUBLIC_WATCH_URL as string
-      }/the-story-of-jesus-for-children`
+        process.env.NEXT_PUBLIC_WATCH_URL
+      }/the-story-of-jesus-for-children.html/english.html`
 
       const { getByRole } = render(
         <SnackbarProvider>
@@ -135,9 +133,12 @@ describe('ShareDialog', () => {
     })
 
     it('should share video to twitter', () => {
+      mockRouter.push(
+        '/watch/the-story-of-jesus-for-children.html/english.html?r=0'
+      )
       const facebookUrl = `https://twitter.com/intent/tweet?url=${
-        process.env.NEXT_PUBLIC_WATCH_URL as string
-      }/the-story-of-jesus-for-children`
+        process.env.NEXT_PUBLIC_WATCH_URL
+      }/the-story-of-jesus-for-children.html/english.html`
 
       const { getByRole } = render(
         <SnackbarProvider>
@@ -173,7 +174,10 @@ describe('ShareDialog', () => {
     })
 
     it('should share video to facebook', () => {
-      const facebookUrl = `https://www.facebook.com/sharer/sharer.php?u=https://watch-jesusfilm.vercel.app/the-story-of-jesus-for-children`
+      mockRouter.push(
+        '/watch/the-story-of-jesus-for-children.html/english.html?r=0'
+      )
+      const facebookUrl = `https://www.facebook.com/sharer/sharer.php?u=https://watch-jesusfilm.vercel.app/watch/the-story-of-jesus-for-children.html/english.html`
 
       const { getByRole } = render(
         <SnackbarProvider>
@@ -194,7 +198,10 @@ describe('ShareDialog', () => {
     })
 
     it('should share video to twitter', () => {
-      const facebookUrl = `https://twitter.com/intent/tweet?url=https://watch-jesusfilm.vercel.app/the-story-of-jesus-for-children`
+      mockRouter.push(
+        '/watch/the-story-of-jesus-for-children.html/english.html?r=0'
+      )
+      const facebookUrl = `https://twitter.com/intent/tweet?url=https://watch-jesusfilm.vercel.app/watch/the-story-of-jesus-for-children.html/english.html`
 
       const { getByRole } = render(
         <SnackbarProvider>
@@ -232,14 +239,12 @@ describe('ShareDialog', () => {
     })
 
     it('should copy share link', async () => {
-      jest.resetModules()
-      process.env = {
-        ...originalEnv,
-        NEXT_PUBLIC_WATCH_URL: undefined
-      }
-
-      const link =
-        'https://watch-jesusfilm.vercel.app/the-story-of-jesus-for-children'
+      mockRouter.push(
+        '/watch/the-story-of-jesus-for-children.html/english.html?r=0'
+      )
+      const link = `${
+        process.env.NEXT_PUBLIC_WATCH_URL
+      }/the-story-of-jesus-for-children.html/english.html`
       const { getByRole, getByText } = render(
         <SnackbarProvider>
           <VideoProvider value={{ content: video }}>
