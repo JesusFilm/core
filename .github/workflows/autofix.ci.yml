@@ -45,7 +45,7 @@ jobs:
         env:
           DISABLE_ERD: true
       - name: Install apollo and graphql for codegen
-        run: pnpm add -g apollo graphql
+        run: npm i -g apollo graphql # npm because apollo is deprecated and conflicts with graphql
       - name: Codegen
         uses: mansagroup/nrwl-nx-action@v3
         with:
