@@ -7,8 +7,8 @@
 // GraphQL mutation operation: BlockDelete
 // ====================================================
 
-export interface BlockDelete_blockDelete_ButtonBlock {
-  __typename: "ButtonBlock" | "CardBlock" | "GridContainerBlock" | "GridItemBlock" | "IconBlock" | "ImageBlock" | "RadioOptionBlock" | "RadioQuestionBlock" | "SignUpBlock" | "SpacerBlock" | "TextResponseBlock" | "TypographyBlock" | "VideoBlock" | "VideoTriggerBlock";
+export interface BlockDelete_blockDelete_ImageBlock {
+  __typename: "ImageBlock" | "ButtonBlock" | "CardBlock" | "IconBlock" | "RadioOptionBlock" | "RadioQuestionBlock" | "SignUpBlock" | "SpacerBlock" | "TextResponseBlock" | "TypographyBlock" | "VideoBlock" | "GridContainerBlock" | "GridItemBlock" | "VideoTriggerBlock";
   id: string;
   parentOrder: number | null;
 }
@@ -24,7 +24,7 @@ export interface BlockDelete_blockDelete_StepBlock {
   nextBlockId: string | null;
 }
 
-export type BlockDelete_blockDelete = BlockDelete_blockDelete_ButtonBlock | BlockDelete_blockDelete_StepBlock;
+export type BlockDelete_blockDelete = BlockDelete_blockDelete_ImageBlock | BlockDelete_blockDelete_StepBlock;
 
 export interface BlockDelete {
   /**

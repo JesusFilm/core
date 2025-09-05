@@ -49,13 +49,15 @@ export const GET_VIDEO_CONTENT_PART_3 = gql`
 `
 
 export const GET_VIDEO_LANGUAGES = graphql(`
-  query GetVideoLanguages($id: ID!) {
+  query GetVideoLanguages($id: ID!, $languageId: ID) {
     video(id: $id, idType: databaseId) {
       audioLanguages: variantLanguages {
         id
       }
-      subtitleLanguages: subtitles {
-        id: languageId
+      variant(languageId: $languageId) {
+        subtitleLanguages: subtitle {
+          languageId
+        }
       }
     }
   }
@@ -133,22 +135,22 @@ export const getStaticProps: GetStaticProps<Part3PageProps> = async (
         )}/${slugMap[languageId]}.html`
       }
     }
-
   const client = createApolloClient()
+  const languageIdFromLocale = getLanguageIdFromLocale(context.locale)
   try {
     const [{ data: containerData }, { data: contentData }] = await Promise.all([
       client.query<GetVideoContainerPart2, GetVideoContainerPart2Variables>({
         query: GET_VIDEO_CONTAINER_PART_2,
         variables: {
           containerId: `${containerId}/${languageId}`,
-          languageId: getLanguageIdFromLocale(context.locale)
+          languageId: languageIdFromLocale
         }
       }),
       client.query<GetVideoContentPart3, GetVideoContentPart3Variables>({
         query: GET_VIDEO_CONTENT_PART_3,
         variables: {
           contentId: `${contentId}/${languageId}`,
-          languageId: getLanguageIdFromLocale(context.locale)
+          languageId: languageIdFromLocale
         }
       })
     ])
@@ -165,11 +167,15 @@ export const getStaticProps: GetStaticProps<Part3PageProps> = async (
       const { data } = await client.query({
         query: GET_VIDEO_LANGUAGES,
         variables: {
-          id: contentData.content.id
+          id: contentData.content.id,
+          languageId: languageIdFromLocale
         }
       })
       audioIds = data?.video?.audioLanguages?.map(({ id }) => id) ?? []
-      subtitleIds = data?.video?.subtitleLanguages?.map(({ id }) => id) ?? []
+      subtitleIds =
+        data?.video?.variant?.subtitleLanguages?.map(
+          ({ languageId }) => languageId
+        ) ?? []
     }
 
     return {

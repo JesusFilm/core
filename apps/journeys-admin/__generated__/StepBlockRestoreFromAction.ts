@@ -504,7 +504,7 @@ export interface StepBlockRestoreFromAction_blockRestore_VideoTriggerBlock {
 export type StepBlockRestoreFromAction_blockRestore = StepBlockRestoreFromAction_blockRestore_GridContainerBlock | StepBlockRestoreFromAction_blockRestore_ButtonBlock | StepBlockRestoreFromAction_blockRestore_CardBlock | StepBlockRestoreFromAction_blockRestore_IconBlock | StepBlockRestoreFromAction_blockRestore_ImageBlock | StepBlockRestoreFromAction_blockRestore_RadioOptionBlock | StepBlockRestoreFromAction_blockRestore_RadioQuestionBlock | StepBlockRestoreFromAction_blockRestore_SignUpBlock | StepBlockRestoreFromAction_blockRestore_SpacerBlock | StepBlockRestoreFromAction_blockRestore_StepBlock | StepBlockRestoreFromAction_blockRestore_TextResponseBlock | StepBlockRestoreFromAction_blockRestore_TypographyBlock | StepBlockRestoreFromAction_blockRestore_VideoBlock | StepBlockRestoreFromAction_blockRestore_VideoTriggerBlock;
 
 export interface StepBlockRestoreFromAction_blockUpdateAction_parentBlock {
-  __typename: "ButtonBlock" | "CardBlock" | "GridContainerBlock" | "GridItemBlock" | "IconBlock" | "ImageBlock" | "RadioOptionBlock" | "RadioQuestionBlock" | "SignUpBlock" | "SpacerBlock" | "StepBlock" | "TextResponseBlock" | "TypographyBlock" | "VideoBlock" | "VideoTriggerBlock";
+  __typename: "ImageBlock" | "StepBlock" | "ButtonBlock" | "CardBlock" | "IconBlock" | "RadioOptionBlock" | "RadioQuestionBlock" | "SignUpBlock" | "SpacerBlock" | "TextResponseBlock" | "TypographyBlock" | "VideoBlock" | "GridContainerBlock" | "GridItemBlock" | "VideoTriggerBlock";
   id: string;
 }
 

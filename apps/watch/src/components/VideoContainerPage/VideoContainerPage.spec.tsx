@@ -10,15 +10,6 @@ import { videos } from '../Videos/__generated__/testData'
 
 import { VideoContainerPage } from '.'
 
-jest.mock('next/router', () => ({
-  __esModule: true,
-  useRouter: () => {
-    return {
-      query: {}
-    }
-  }
-}))
-
 jest.mock('react-instantsearch')
 jest.mock('@core/journeys/ui/algolia/useAlgoliaVideos')
 

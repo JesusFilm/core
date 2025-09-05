@@ -166,7 +166,7 @@
             "command": "rm -rf apps/journeys-admin/__generated__"
           },
           {
-            "command": "pnpm dlx apollo client:codegen --config apps/journeys-admin/apollo.config.js --target typescript --outputFlat apps/journeys-admin/__generated__"
+            "command": "npx apollo client:codegen --config apps/journeys-admin/apollo.config.js --target typescript --outputFlat apps/journeys-admin/__generated__"
           }
         ]
       }
