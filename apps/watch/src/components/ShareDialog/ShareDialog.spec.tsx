@@ -66,8 +66,8 @@ describe('ShareDialog', () => {
     expect(onClose).toHaveBeenCalled()
   })
 
-  it('only shows share link on playlist video', () => {
-    mockRouter.push(
+  it('only shows share link on playlist video', async () => {
+    await mockRouter.push(
       '/watch/the-story-of-jesus-for-children.html/english.html?r=0'
     )
     const { getByRole, queryAllByRole } = render(
@@ -106,8 +106,8 @@ describe('ShareDialog', () => {
       process.env = originalEnv
     })
 
-    it('should share video to facebook', () => {
-      mockRouter.push(
+    it('should share video to facebook', async () => {
+      await mockRouter.push(
         '/watch/the-story-of-jesus-for-children.html/english.html?r=0'
       )
       const facebookUrl = `https://www.facebook.com/sharer/sharer.php?u=${
@@ -132,11 +132,11 @@ describe('ShareDialog', () => {
       )
     })
 
-    it('should share video to twitter', () => {
-      mockRouter.push(
+    it('should share video to twitter', async () => {
+      await mockRouter.push(
         '/watch/the-story-of-jesus-for-children.html/english.html?r=0'
       )
-      const facebookUrl = `https://twitter.com/intent/tweet?url=${
+      const twitterUrl = `https://twitter.com/intent/tweet?url=${
         process.env.NEXT_PUBLIC_WATCH_URL
       }/the-story-of-jesus-for-children.html/english.html`
 
@@ -150,7 +150,7 @@ describe('ShareDialog', () => {
 
       expect(getByRole('link', { name: 'Share to Twitter' })).toHaveAttribute(
         'href',
-        facebookUrl
+        twitterUrl
       )
       expect(getByRole('link', { name: 'Share to Twitter' })).toHaveAttribute(
         'target',
@@ -173,8 +173,8 @@ describe('ShareDialog', () => {
       process.env = originalEnv
     })
 
-    it('should share video to facebook', () => {
-      mockRouter.push(
+    it('should share video to facebook', async () => {
+      await mockRouter.push(
         '/watch/the-story-of-jesus-for-children.html/english.html?r=0'
       )
       const facebookUrl = `https://www.facebook.com/sharer/sharer.php?u=https://watch-jesusfilm.vercel.app/watch/the-story-of-jesus-for-children.html/english.html`
@@ -197,11 +197,11 @@ describe('ShareDialog', () => {
       )
     })
 
-    it('should share video to twitter', () => {
-      mockRouter.push(
+    it('should share video to twitter', async () => {
+      await mockRouter.push(
         '/watch/the-story-of-jesus-for-children.html/english.html?r=0'
       )
-      const facebookUrl = `https://twitter.com/intent/tweet?url=https://watch-jesusfilm.vercel.app/watch/the-story-of-jesus-for-children.html/english.html`
+      const twitterUrl = `https://twitter.com/intent/tweet?url=https://watch-jesusfilm.vercel.app/watch/the-story-of-jesus-for-children.html/english.html`
 
       const { getByRole } = render(
         <SnackbarProvider>
@@ -213,7 +213,7 @@ describe('ShareDialog', () => {
 
       expect(getByRole('link', { name: 'Share to Twitter' })).toHaveAttribute(
         'href',
-        facebookUrl
+        twitterUrl
       )
       expect(getByRole('link', { name: 'Share to Twitter' })).toHaveAttribute(
         'target',
@@ -239,7 +239,7 @@ describe('ShareDialog', () => {
     })
 
     it('should copy share link', async () => {
-      mockRouter.push(
+      await mockRouter.push(
         '/watch/the-story-of-jesus-for-children.html/english.html?r=0'
       )
       const link = `${
