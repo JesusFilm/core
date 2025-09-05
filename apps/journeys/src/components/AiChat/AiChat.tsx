@@ -10,14 +10,11 @@ import { Message as MessageComponent, MessageContent } from '../Message'
 import { Response } from '../Response'
 import { Action, Actions } from '../Actions'
 import { CopyIcon, Loader, RefreshCcwIcon } from 'lucide-react'
-import { Reasoning, ReasoningContent, ReasoningTrigger } from '../Reasoning'
 import {
   PromptInput,
-  PromptInputButton,
   PromptInputSubmit,
   PromptInputTextarea,
-  PromptInputToolbar,
-  PromptInputTools
+  PromptInputToolbar
 } from '../PromptInput'
 
 export function AiChat() {
@@ -54,7 +51,7 @@ export function AiChat() {
                             </MessageContent>
                           </MessageComponent>
                           {message.role === 'assistant' &&
-                            i === messages.length - 1 && (
+                            message.id === messages.at(-1)?.id && (
                               <Actions className="mt-2">
                                 <Action
                                   onClick={() => regenerate()}
@@ -73,21 +70,6 @@ export function AiChat() {
                               </Actions>
                             )}
                         </Fragment>
-                      )
-                    case 'reasoning':
-                      return (
-                        <Reasoning
-                          key={`${message.id}-${i}`}
-                          className="w-full"
-                          isStreaming={
-                            status === 'streaming' &&
-                            i === message.parts.length - 1 &&
-                            message.id === messages.at(-1)?.id
-                          }
-                        >
-                          <ReasoningTrigger />
-                          <ReasoningContent>{part.text}</ReasoningContent>
-                        </Reasoning>
                       )
                     default:
                       return null
