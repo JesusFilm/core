@@ -76,7 +76,7 @@ export function Button({
         id={`${id}-button-color`}
         icon={<ColorDisplayIcon color={buttonColor} />}
         name={t('Color')}
-        value={t(capitalize(buttonColor?.toString() ?? ButtonColor.primary))}
+        value={capitalize(buttonColor?.toString() ?? ButtonColor.primary)}
       >
         <Color />
       </Accordion>
@@ -85,7 +85,7 @@ export function Button({
         id={`${id}-button-size`}
         icon={<SpaceHorizontalIcon />}
         name={t('Button Size')}
-        value={t(capitalize(size?.toString() ?? ButtonSize.medium))}
+        value={capitalize(size?.toString() ?? ButtonSize.medium)}
       >
         <Size />
       </Accordion>
@@ -105,9 +105,7 @@ export function Button({
         id={`${id}-button-variant`}
         icon={<TransformIcon />}
         name={t('Variant')}
-        value={t(
-          capitalize(buttonVariant?.toString() ?? ButtonVariant.contained)
-        )}
+        value={capitalize(buttonVariant?.toString() ?? ButtonVariant.contained)}
       >
         <Variant />
       </Accordion>
@@ -118,7 +116,7 @@ export function Button({
         name={t('Leading Icon')}
         value={
           icons.find(({ value }) => value === startIcon?.iconName)?.label ??
-          t('None')
+          'None'
         }
       >
         <Icon id={startIcon?.id} />
@@ -130,7 +128,7 @@ export function Button({
         name={t('Trailing Icon')}
         value={
           icons.find(({ value }) => value === endIcon?.iconName)?.label ??
-          t('None')
+          'None'
         }
       >
         <Icon id={endIcon?.id} />
