@@ -2,6 +2,7 @@ import Stack from '@mui/material/Stack'
 import ToggleButton from '@mui/material/ToggleButton'
 import MuiToggleButtonGroup from '@mui/material/ToggleButtonGroup'
 import Typography from '@mui/material/Typography'
+import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 
 interface ToggleButtonGroupProps<T = string | number> {
@@ -25,6 +26,8 @@ export function ToggleButtonGroup({
   testId,
   children
 }: ToggleButtonGroupProps): ReactElement {
+  const { t } = useTranslation('apps-journeys-admin')
+
   function handleChange(_event, value: string | number): void {
     onChange(value)
   }
@@ -36,7 +39,7 @@ export function ToggleButtonGroup({
     >
       {label != null ? (
         <Typography variant="subtitle2" sx={{ pb: 4 }}>
-          {label}
+          {t(label)}
         </Typography>
       ) : null}
       <MuiToggleButtonGroup
@@ -73,7 +76,7 @@ export function ToggleButtonGroup({
           >
             {icon != null && <Stack sx={{ ml: 1, mr: 2 }}>{icon}</Stack>}
             {typeof label === 'string' ? (
-              <Typography variant="subtitle2">{label}</Typography>
+              <Typography variant="subtitle2">{t(label)}</Typography>
             ) : (
               label
             )}
