@@ -86,7 +86,7 @@ enum join__Graph {
 """
 A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the `date-time` format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar.
 """
-scalar DateTime @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN) 
+scalar DateTime @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  @join__type(graph: API_MEDIA) 
 
 """
 The `JSONObject` scalar type represents JSON objects as specified by [ECMA-404](http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf).
@@ -468,6 +468,12 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   ): MuxVideo! @join__field(graph: API_MEDIA) 
   enableMuxDownload(id: ID!, resolution: String) : MuxVideo @join__field(graph: API_MEDIA) 
   deleteMuxVideo(id: ID!, userGenerated: Boolean) : Boolean! @join__field(graph: API_MEDIA) 
+  playlistCreate(input: PlaylistCreateInput!) : MutationPlaylistCreateResult @join__field(graph: API_MEDIA) 
+  playlistUpdate(id: ID!, input: PlaylistUpdateInput!) : MutationPlaylistUpdateResult @join__field(graph: API_MEDIA) 
+  playlistDelete(id: ID!) : MutationPlaylistDeleteResult @join__field(graph: API_MEDIA) 
+  playlistItemAdd(playlistId: ID!, videoVariantId: ID!) : MutationPlaylistItemAddResult @join__field(graph: API_MEDIA) 
+  playlistItemRemove(playlistId: ID!, itemId: ID!) : MutationPlaylistItemRemoveResult @join__field(graph: API_MEDIA) 
+  playlistItemsReorder(playlistId: ID!, itemIds: [ID!]!) : MutationPlaylistItemsReorderResult @join__field(graph: API_MEDIA) 
   """
   Create a new short link domain that can be used for short links (this domain must have a CNAME record pointing to the short link service)
   """
@@ -806,6 +812,8 @@ type Query @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS)  
   getMyMuxVideos(offset: Int, limit: Int) : [MuxVideo!]! @join__field(graph: API_MEDIA) 
   getMyMuxVideo(id: ID!, userGenerated: Boolean) : MuxVideo! @join__field(graph: API_MEDIA) 
   getMuxVideo(id: ID!, userGenerated: Boolean) : MuxVideo @join__field(graph: API_MEDIA) 
+  playlists: [Playlist!] @join__field(graph: API_MEDIA) 
+  playlist(id: ID!, idType: IdType! = databaseId) : QueryPlaylistResult @join__field(graph: API_MEDIA) 
   """
   List of short link domains that can be used for short links
   """
@@ -2554,6 +2562,30 @@ type LanguageWithSlug @join__type(graph: API_MEDIA)  {
   slug: String!
 }
 
+type MutationPlaylistCreateSuccess @join__type(graph: API_MEDIA)  {
+  data: Playlist!
+}
+
+type MutationPlaylistDeleteSuccess @join__type(graph: API_MEDIA)  {
+  data: Playlist!
+}
+
+type MutationPlaylistItemAddSuccess @join__type(graph: API_MEDIA)  {
+  data: PlaylistItem!
+}
+
+type MutationPlaylistItemRemoveSuccess @join__type(graph: API_MEDIA)  {
+  data: [PlaylistItem!]!
+}
+
+type MutationPlaylistItemsReorderSuccess @join__type(graph: API_MEDIA)  {
+  data: [PlaylistItem!]!
+}
+
+type MutationPlaylistUpdateSuccess @join__type(graph: API_MEDIA)  {
+  data: Playlist!
+}
+
 type MutationShortLinkCreateSuccess @join__type(graph: API_MEDIA)  {
   data: ShortLink!
 }
@@ -2614,6 +2646,32 @@ type NotUniqueErrorLocation @join__type(graph: API_MEDIA)  {
   The value that was provided at the path
   """
   value: String
+}
+
+type Playlist @join__type(graph: API_MEDIA)  {
+  id: ID
+  name: String!
+  note: String
+  noteUpdatedAt: DateTime
+  noteSharedAt: DateTime
+  sharedAt: DateTime
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  slug: String!
+  owner: User
+  items: [PlaylistItem!]
+}
+
+type PlaylistItem @join__type(graph: API_MEDIA)  {
+  id: ID
+  order: Int!
+  createdAt: Date!
+  videoVariant: VideoVariant
+  playlist: Playlist
+}
+
+type QueryPlaylistSuccess @join__type(graph: API_MEDIA)  {
+  data: Playlist!
 }
 
 type QueryShortLinkByPathSuccess @join__type(graph: API_MEDIA)  {
@@ -2982,6 +3040,18 @@ union MutationSiteCreateResult @join__type(graph: API_ANALYTICS)  @join__unionMe
 
 union MediaVideo @join__type(graph: API_JOURNEYS_MODERN)  @join__unionMember(graph: API_JOURNEYS_MODERN, member: "MuxVideo")  @join__unionMember(graph: API_JOURNEYS_MODERN, member: "Video")  @join__unionMember(graph: API_JOURNEYS_MODERN, member: "YouTube")  = MuxVideo | Video | YouTube
 
+union MutationPlaylistCreateResult @join__type(graph: API_MEDIA)  @join__unionMember(graph: API_MEDIA, member: "ZodError")  @join__unionMember(graph: API_MEDIA, member: "MutationPlaylistCreateSuccess")  = ZodError | MutationPlaylistCreateSuccess
+
+union MutationPlaylistDeleteResult @join__type(graph: API_MEDIA)  @join__unionMember(graph: API_MEDIA, member: "NotFoundError")  @join__unionMember(graph: API_MEDIA, member: "MutationPlaylistDeleteSuccess")  = NotFoundError | MutationPlaylistDeleteSuccess
+
+union MutationPlaylistItemAddResult @join__type(graph: API_MEDIA)  @join__unionMember(graph: API_MEDIA, member: "NotFoundError")  @join__unionMember(graph: API_MEDIA, member: "MutationPlaylistItemAddSuccess")  = NotFoundError | MutationPlaylistItemAddSuccess
+
+union MutationPlaylistItemRemoveResult @join__type(graph: API_MEDIA)  @join__unionMember(graph: API_MEDIA, member: "NotFoundError")  @join__unionMember(graph: API_MEDIA, member: "MutationPlaylistItemRemoveSuccess")  = NotFoundError | MutationPlaylistItemRemoveSuccess
+
+union MutationPlaylistItemsReorderResult @join__type(graph: API_MEDIA)  @join__unionMember(graph: API_MEDIA, member: "NotFoundError")  @join__unionMember(graph: API_MEDIA, member: "MutationPlaylistItemsReorderSuccess")  = NotFoundError | MutationPlaylistItemsReorderSuccess
+
+union MutationPlaylistUpdateResult @join__type(graph: API_MEDIA)  @join__unionMember(graph: API_MEDIA, member: "ZodError")  @join__unionMember(graph: API_MEDIA, member: "NotFoundError")  @join__unionMember(graph: API_MEDIA, member: "MutationPlaylistUpdateSuccess")  = ZodError | NotFoundError | MutationPlaylistUpdateSuccess
+
 union MutationShortLinkCreateResult @join__type(graph: API_MEDIA)  @join__unionMember(graph: API_MEDIA, member: "NotUniqueError")  @join__unionMember(graph: API_MEDIA, member: "ZodError")  @join__unionMember(graph: API_MEDIA, member: "MutationShortLinkCreateSuccess")  = NotUniqueError | ZodError | MutationShortLinkCreateSuccess
 
 union MutationShortLinkDeleteResult @join__type(graph: API_MEDIA)  @join__unionMember(graph: API_MEDIA, member: "NotFoundError")  @join__unionMember(graph: API_MEDIA, member: "MutationShortLinkDeleteSuccess")  = NotFoundError | MutationShortLinkDeleteSuccess
@@ -2993,6 +3063,8 @@ union MutationShortLinkDomainDeleteResult @join__type(graph: API_MEDIA)  @join__
 union MutationShortLinkDomainUpdateResult @join__type(graph: API_MEDIA)  @join__unionMember(graph: API_MEDIA, member: "NotFoundError")  @join__unionMember(graph: API_MEDIA, member: "MutationShortLinkDomainUpdateSuccess")  = NotFoundError | MutationShortLinkDomainUpdateSuccess
 
 union MutationShortLinkUpdateResult @join__type(graph: API_MEDIA)  @join__unionMember(graph: API_MEDIA, member: "ZodError")  @join__unionMember(graph: API_MEDIA, member: "NotFoundError")  @join__unionMember(graph: API_MEDIA, member: "MutationShortLinkUpdateSuccess")  = ZodError | NotFoundError | MutationShortLinkUpdateSuccess
+
+union QueryPlaylistResult @join__type(graph: API_MEDIA)  @join__unionMember(graph: API_MEDIA, member: "NotFoundError")  @join__unionMember(graph: API_MEDIA, member: "QueryPlaylistSuccess")  = NotFoundError | QueryPlaylistSuccess
 
 union QueryShortLinkByPathResult @join__type(graph: API_MEDIA)  @join__unionMember(graph: API_MEDIA, member: "NotFoundError")  @join__unionMember(graph: API_MEDIA, member: "QueryShortLinkByPathSuccess")  = NotFoundError | QueryShortLinkByPathSuccess
 
@@ -4738,6 +4810,22 @@ input MutationVideoOriginUpdateInput @join__type(graph: API_MEDIA)  {
   id: ID!
   name: String
   description: String
+}
+
+input PlaylistCreateInput @join__type(graph: API_MEDIA)  {
+  id: ID
+  name: String!
+  note: String
+  noteSharedAt: DateTime
+  sharedAt: DateTime
+  slug: String
+}
+
+input PlaylistUpdateInput @join__type(graph: API_MEDIA)  {
+  name: String
+  note: String
+  noteSharedAt: DateTime
+  sharedAt: DateTime
 }
 
 input TranscodeVideoInput @join__type(graph: API_MEDIA)  {
