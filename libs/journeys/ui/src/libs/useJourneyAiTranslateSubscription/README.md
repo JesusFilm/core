@@ -93,7 +93,6 @@ function AdvancedComponent() {
 ### What Gets Updated
 
 1. **Journey Object**:
-
    - `title` - Translated journey title
    - `description` - Translated journey description
    - `languageId` - New target language ID
