@@ -138,4 +138,11 @@ export const NavigateToBlockAction = {
   }
 }
 
+export const PhoneAction = {
+  ...Template,
+  args: {
+    selectedBlock: steps[1].children[0].children[5]
+  }
+}
+
 export default ActionStory

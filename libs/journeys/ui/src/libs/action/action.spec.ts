@@ -52,6 +52,25 @@ describe('action', () => {
       )
     })
 
+    it('should handle PhoneAction', () => {
+      Object.defineProperty(window, 'location', {
+        value: {
+          ...window.location,
+          href: ''
+        },
+        writable: true
+      })
+
+      handleAction(router, {
+        __typename: 'PhoneAction',
+        parentBlockId: 'parent-id',
+        gtmEventName: null,
+        phone: '+1234567890',
+        countryCode: 'US'
+      })
+      expect(window.location.href).toBe('tel:+1234567890')
+    })
+
     it('should handle external LinkAction', () => {
       window.open = jest.fn()
 
