@@ -45,7 +45,11 @@ const DynamicLanguageSwitchDialog = dynamic<{
     await import(
       /* webpackChunkName: "LanguageSwitchDialog" */
       '../../../../LanguageSwitchDialog'
-    ).then((mod) => mod.LanguageSwitchDialog)
+    ).then((mod) => mod.LanguageSwitchDialog),
+  {
+    ssr: false,
+    loading: () => <Box role="dialog" aria-label="Language Settings" />
+  }
 )
 
 interface VideoControlProps {
@@ -658,16 +662,12 @@ export function VideoControls({
                     color="secondary.contrastText"
                     sx={{ display: 'flex', gap: 1, zIndex: 2 }}
                   >
-                    <span>
-                      <p className="font-sans">{currentTime ?? '0:00'}</p>
-                    </span>
+                    <span className="font-sans">{currentTime ?? '0:00'}</span>
                     <span>/</span>
                     {duration === '0:00' ? (
                       <Skeleton width={27} sx={{ bgcolor: 'grey.800' }} />
                     ) : (
-                      <span>
-                        <p className="font-sans">{duration}</p>
-                      </span>
+                      <span className="font-sans">{duration}</span>
                     )}
                   </Typography>
                 )}
