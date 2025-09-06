@@ -7,6 +7,24 @@
     "title": "무료 복음 동영상 <underline>스트리밍</underline> 라이브러리.",
     "description": "2000개 이상의 언어로 시청하고, 배우고, 복음을 나누세요."
   },
+  "ModernTestPage": {
+    "pageTitle": "최신 테스트",
+    "title": "최신 테스트 페이지",
+    "description": "최신 시계 애플리케이션의 테스트 페이지입니다. 새로운 라우팅 및 프록시 기능을 보여줍니다.",
+    "feature1": {
+      "title": "현대 건축",
+      "description": "최적의 성능과 개발자 경험을 위해 Next.js 앱 라우터와 최신 React 패턴으로 구축되었습니다."
+    },
+    "feature2": {
+      "title": "인텔리전트 라우팅",
+      "description": "트래픽을 적절한 백엔드 서비스로 지능적으로 라우팅하는 고급 프록시 라우팅."
+    },
+    "feature3": {
+      "title": "반응형 디자인",
+      "description": "모든 기기와 화면 크기에서 원활하게 작동하는 완전 반응형 디자인."
+    },
+    "footer": "이 페이지는 지능형 프록시 라우팅을 통해 최신 시계 애플리케이션에서 제공됩니다."
+  },
   "DatadogErrorBoundary": {
     "somethingWentWrong": "문제가 발생했습니다.",
     "anErrorOccurred": "이 페이지를 로드하는 동안 오류가 발생했습니다. 새로 고침해 주세요.",
