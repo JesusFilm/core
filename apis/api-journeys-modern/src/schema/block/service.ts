@@ -38,26 +38,30 @@ export async function getSiblingsInternal(
 }
 
 export async function removeBlockAndChildren(
-  block: Block
+  block: Block,
+  tx?: Prisma.TransactionClient
 ): Promise<BlockWithAction[]> {
-  return await prisma.$transaction(async (tx) => {
+  const run = async (client: Prisma.TransactionClient) => {
     const currentTime = new Date().toISOString()
-    const updatedBlock = await tx.block.update({
+    const updatedBlock = await client.block.update({
       where: { id: block.id },
       data: { deletedAt: currentTime }
     })
-    await tx.journey.update({
+    await client.journey.update({
       where: {
         id: updatedBlock.journeyId
       },
       data: { updatedAt: currentTime }
     })
     const result = await reorderSiblings(
-      await getSiblingsInternal(block.journeyId, block.parentBlockId, tx),
-      tx
+      await getSiblingsInternal(block.journeyId, block.parentBlockId, client),
+      client
     )
     return result
-  })
+  }
+
+  if (tx != null) return await run(tx)
+  return await prisma.$transaction(async (trx) => await run(trx))
 }
 
 async function reorderSiblings(

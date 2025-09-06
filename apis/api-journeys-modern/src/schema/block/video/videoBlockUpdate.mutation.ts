@@ -74,13 +74,11 @@ builder.mutationField('videoBlockUpdate', (t) =>
             ...input
           })
           input = {
-            duration: null,
             ...input,
-            ...{
-              title: null,
-              description: null,
-              image: null
-            }
+            title: null,
+            description: null,
+            image: null,
+            duration: null
           }
           break
         case 'mux':

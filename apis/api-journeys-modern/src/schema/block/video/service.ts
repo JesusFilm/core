@@ -1,7 +1,8 @@
 import { ApolloClient, InMemoryCache, createHttpLink } from '@apollo/client'
-import { graphql } from 'gql.tada'
 import { GraphQLError } from 'graphql'
 import { z } from 'zod'
+
+import { graphql } from '@core/shared/gql'
 
 export const videoBlockYouTubeSchema = z.object({
   videoId: z

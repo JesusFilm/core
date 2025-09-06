@@ -3,7 +3,7 @@ import { GraphQLError } from 'graphql'
 import { prisma } from '@core/prisma/journeys/client'
 
 export async function fetchBlockWithJourneyAcl(blockId: string) {
-  const block = await prisma.block.findUnique({
+  const block = await prisma.block.findFirst({
     where: { id: blockId, deletedAt: null },
     include: {
       action: true,

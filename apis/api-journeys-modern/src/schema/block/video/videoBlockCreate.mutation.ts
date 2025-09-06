@@ -8,8 +8,8 @@ import {
   ability,
   subject as abilitySubject
 } from '../../../lib/auth/ability'
+import { fetchJourneyWithAclIncludes } from '../../../lib/auth/fetchJourneyWithAclIncludes'
 import { builder } from '../../builder'
-import { INCLUDE_JOURNEY_ACL } from '../../journey/journey.acl'
 import {
   getSiblingsInternal,
   removeBlockAndChildren,
@@ -41,28 +41,40 @@ builder.mutationField('videoBlockCreate', (t) =>
       let input = { ...initialInput, source: initialInput.source ?? 'internal' }
 
       // Check permissions using ACL
-
-      if (input.videoId == null) {
-        throw new GraphQLError('videoId is required', {
-          extensions: { code: 'BAD_USER_INPUT' }
+      const journey = await fetchJourneyWithAclIncludes(input.journeyId)
+      if (
+        !ability(
+          Action.Update,
+          abilitySubject('Journey', journey),
+          context.user
+        )
+      ) {
+        throw new GraphQLError('user is not allowed to create block', {
+          extensions: { code: 'FORBIDDEN' }
         })
       }
 
       switch (input.source) {
         case 'youTube':
           videoBlockYouTubeSchema.parse({ videoId: input.videoId })
-          input = {
-            ...input,
-            ...(await fetchFieldsFromYouTube(input.videoId)),
-            objectFit: null
+          {
+            const videoId = input.videoId as string
+            input = {
+              ...input,
+              ...(await fetchFieldsFromYouTube(videoId)),
+              objectFit: null
+            }
           }
           break
         case 'mux':
           videoBlockMuxSchema.parse({ videoId: input.videoId })
-          input = {
-            ...input,
-            ...(await fetchFieldsFromMux(input.videoId)),
-            objectFit: null
+          {
+            const videoId = input.videoId as string
+            input = {
+              ...input,
+              ...(await fetchFieldsFromMux(videoId)),
+              objectFit: null
+            }
           }
           break
         case 'internal':
@@ -84,7 +96,7 @@ builder.mutationField('videoBlockCreate', (t) =>
             })
           }
           if (parent.coverBlock != null) {
-            await removeBlockAndChildren(parent.coverBlock)
+            await removeBlockAndChildren(parent.coverBlock, tx)
           }
         }
 
@@ -121,22 +133,10 @@ builder.mutationField('videoBlockCreate', (t) =>
                 : undefined
           },
           include: {
-            action: true,
-            ...INCLUDE_JOURNEY_ACL
+            action: true
           }
         })
         await setJourneyUpdatedAt(tx, block)
-        if (
-          !ability(
-            Action.Update,
-            abilitySubject('Journey', block.journey),
-            context.user
-          )
-        ) {
-          throw new GraphQLError('user is not allowed to create block', {
-            extensions: { code: 'FORBIDDEN' }
-          })
-        }
 
         // Duplicate guard: only one VideoBlock per parent
         const existingVideoOnParent = await tx.block.findFirst({

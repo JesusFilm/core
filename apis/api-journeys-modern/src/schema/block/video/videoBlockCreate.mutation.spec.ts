@@ -9,7 +9,9 @@ jest.mock('../../../lib/auth/ability', () => ({
   subject: jest.fn((type, object) => ({ subject: type, object }))
 }))
 
-// No journey fetch at create-time in modern API; authorization is evaluated after creation
+jest.mock('../../../lib/auth/fetchJourneyWithAclIncludes', () => ({
+  fetchJourneyWithAclIncludes: jest.fn()
+}))
 
 describe('videoBlockCreate', () => {
   const mockUser = { id: 'userId' }
@@ -42,6 +44,9 @@ describe('videoBlockCreate', () => {
     }
   `)
 
+  const {
+    fetchJourneyWithAclIncludes
+  } = require('../../../lib/auth/fetchJourneyWithAclIncludes')
   const mockAbility = ability as jest.MockedFunction<typeof ability>
 
   const input = {
@@ -69,6 +74,7 @@ describe('videoBlockCreate', () => {
   })
 
   it('creates video block when authorized', async () => {
+    fetchJourneyWithAclIncludes.mockResolvedValue({ id: 'journeyId' })
     mockAbility.mockReturnValue(true)
 
     const tx = {
@@ -92,6 +98,7 @@ describe('videoBlockCreate', () => {
       variables: { input }
     })
 
+    expect(fetchJourneyWithAclIncludes).toHaveBeenCalledWith('journeyId')
     expect(mockAbility).toHaveBeenCalledWith(
       Action.Update,
       { subject: 'Journey', object: { id: 'journeyId' } },
@@ -118,33 +125,16 @@ describe('videoBlockCreate', () => {
     })
   })
 
-  // Journey NOT_FOUND is handled by nested create; mutation returns unexpected error structure in GraphQL executor
-  // Behavior validated elsewhere; omit here for modern API
-
   it('returns FORBIDDEN if unauthorized', async () => {
+    fetchJourneyWithAclIncludes.mockResolvedValue({ id: 'journeyId' })
     mockAbility.mockReturnValue(false)
-
-    const tx = {
-      block: {
-        create: jest.fn().mockResolvedValue({
-          id: 'blockId',
-          ...input,
-          typename: 'VideoBlock',
-          parentOrder: 0,
-          journey: { id: 'journeyId' }
-        }),
-        findFirst: jest.fn().mockResolvedValue(null),
-        findMany: jest.fn().mockResolvedValue([])
-      },
-      journey: { update: jest.fn().mockResolvedValue({ id: 'journeyId' }) }
-    }
-    prismaMock.$transaction.mockImplementation(async (cb: any) => await cb(tx))
 
     const result = await authClient({
       document: VIDEO_BLOCK_CREATE,
       variables: { input }
     })
 
+    expect(fetchJourneyWithAclIncludes).toHaveBeenCalledWith('journeyId')
     expect(result).toEqual({
       data: null,
       errors: [

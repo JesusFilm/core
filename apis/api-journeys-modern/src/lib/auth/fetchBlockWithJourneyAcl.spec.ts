@@ -17,11 +17,11 @@ describe('fetchBlockWithJourneyAcl', () => {
       journey: { id: 'journeyId', userJourneys: [], team: { userTeams: [] } }
     } as any
 
-    prismaMock.block.findUnique.mockResolvedValue(block)
+    prismaMock.block.findFirst.mockResolvedValue(block)
 
     const result = await fetchBlockWithJourneyAcl(blockId)
 
-    expect(prismaMock.block.findUnique).toHaveBeenCalledWith({
+    expect(prismaMock.block.findFirst).toHaveBeenCalledWith({
       where: { id: blockId, deletedAt: null },
       include: {
         action: true,
@@ -38,7 +38,7 @@ describe('fetchBlockWithJourneyAcl', () => {
   })
 
   it('throws NOT_FOUND error when block missing', async () => {
-    prismaMock.block.findUnique.mockResolvedValue(null)
+    prismaMock.block.findFirst.mockResolvedValue(null)
 
     await expect(fetchBlockWithJourneyAcl(blockId)).rejects.toThrow(
       'block not found'
