@@ -9,8 +9,8 @@ import { v4 as uuidv4 } from 'uuid'
 import { graphql } from '@core/shared/gql'
 
 import { getExtension } from '../(dashboard)/videos/[videoId]/audio/add/_utils/getExtension'
-import { useCreateR2AssetMutation } from '../../libs/useCreateR2Asset/useCreateR2Asset'
 import { refreshToken } from '../../app/api'
+import { useCreateR2AssetMutation } from '../../libs/useCreateR2Asset/useCreateR2Asset'
 
 export const CREATE_MUX_VIDEO_UPLOAD_BY_URL = graphql(`
   mutation CreateMuxVideoUploadByUrl(
@@ -341,7 +341,7 @@ export function UploadVideoVariantProvider({
 
       // Keep session alive every 45s while uploading large files
       const keepAliveInterval = setInterval(() => {
-        void refreshToken().catch(() => {})
+        void refreshToken().catch(() => undefined)
       }, 45000)
 
       try {
