@@ -10,6 +10,7 @@ import { graphql } from '@core/shared/gql'
 
 import { getExtension } from '../(dashboard)/videos/[videoId]/audio/add/_utils/getExtension'
 import { useCreateR2AssetMutation } from '../../libs/useCreateR2Asset/useCreateR2Asset'
+import { refreshToken } from '../../app/api'
 
 export const CREATE_MUX_VIDEO_UPLOAD_BY_URL = graphql(`
   mutation CreateMuxVideoUploadByUrl(
@@ -335,18 +336,31 @@ export function UploadVideoVariantProvider({
         return
       }
 
-      // Upload to R2 with progress tracking
-      await axios.put(r2Response.data.cloudflareR2Create.uploadUrl, file, {
-        headers: {
-          'Content-Type': file.type
-        },
-        onUploadProgress: (progressEvent) => {
-          const percentCompleted = Math.round(
-            (progressEvent.loaded * 100) / (progressEvent.total ?? 100)
-          )
-          dispatch({ type: 'SET_PROGRESS', progress: percentCompleted })
-        }
-      })
+      // Upload to R2 with progress tracking and periodic auth keep-alive
+      const abortController = new AbortController()
+
+      // Keep session alive every 45s while uploading large files
+      const keepAliveInterval = setInterval(() => {
+        void refreshToken().catch(() => {})
+      }, 45000)
+
+      try {
+        await axios.put(r2Response.data.cloudflareR2Create.uploadUrl, file, {
+          headers: {
+            'Content-Type': file.type
+          },
+          signal: abortController.signal as unknown as AbortSignal,
+          onUploadProgress: (progressEvent) => {
+            const percentCompleted = Math.round(
+              (progressEvent.loaded * 100) / (progressEvent.total ?? 100)
+            )
+            dispatch({ type: 'SET_PROGRESS', progress: percentCompleted })
+          }
+        })
+      } finally {
+        clearInterval(keepAliveInterval)
+        abortController.abort()
+      }
 
       // Create Mux video
       const muxResponse = await createMuxVideo({
