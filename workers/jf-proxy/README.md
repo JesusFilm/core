@@ -132,7 +132,6 @@ The worker handles several types of errors:
 The worker is automatically deployed using GitHub Actions:
 
 - **Staging Environment**:
-
   - Triggered by: Pushes to the `stage` branch
   - Deploys to: `develop.jesusfilm.org`
   - Configuration: Uses staging environment variables
