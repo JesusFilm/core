@@ -16,9 +16,9 @@ import {
 import { MediaCard, type MediaCardProps } from './MediaCard'
 import { Skeleton } from '@/components/ui/skeleton'
 import { AspectRatio } from '@/components/ui/aspect-ratio'
-import { memo, useMemo, useCallback, useState } from 'react'
+import { memo, useMemo, useCallback } from 'react'
 import { cn } from '@/lib/utils'
-import { SearchBar } from '@/components/watch/search/SearchBar'
+// Search controls are rendered in SearchHeader
 
 type AlgoliaVideo = AlgoliaHit<{
   videoId: string
@@ -119,72 +119,9 @@ function transformToMediaCardProps(hit: AlgoliaVideo): MediaCardProps {
   return result
 }
 
-// New SearchBar container - Phase 3 implementation with suggestions
-const SearchBarContainer = memo(function SearchBarContainer({
-  isSuggestionsOpen,
-  onSuggestionsOpenChange
-}: {
-  isSuggestionsOpen: boolean
-  onSuggestionsOpenChange: (open: boolean) => void
-}) {
-  const { status } = useInstantSearch()
-  const { query, refine } = useSearchBox()
+// SearchBar moved to SearchHeader
 
-  // Memoize loading state
-  const isLoading = useMemo(() => {
-    console.log('🔍 InstantSearch status changed to:', status)
-    return status === 'loading' || status === 'stalled'
-  }, [status])
-
-  // Handle search submission - Phase 3: Update grid directly
-  const handleSubmit = useCallback((value: string) => {
-    console.log('🔍 VideoGrid handleSubmit called with value:', value)
-    console.log('🔍 Current query:', query)
-
-    // Only refine if value actually changed from current query
-    // Note: We no longer handle clearing from non-empty to empty here
-    // since clear button now handles this locally
-    const shouldRefine = (value || '').trim() !== (query || '').trim()
-    console.log('🔍 Should refine?', shouldRefine)
-
-    if (shouldRefine) {
-      console.log('🔍 Calling refine with:', value)
-      refine(value)
-      console.log('🔍 Refine call completed')
-    } else {
-      console.log('🔍 Skipping refine - value same as current query')
-    }
-
-    console.log('🔍 Closing suggestions')
-    onSuggestionsOpenChange(false)
-    console.log('🔍 handleSubmit completed')
-  }, [refine, onSuggestionsOpenChange, query])
-
-  // Handle focus - Phase 3: Will show popular suggestions
-  const handleFocus = useCallback(() => {
-    onSuggestionsOpenChange(true)
-    // Phase 3: Suggestions are now handled by SearchBar component
-  }, [onSuggestionsOpenChange])
-
-  // Handle suggestions close
-  const handleSuggestionsClose = useCallback(() => {
-    onSuggestionsOpenChange(false)
-  }, [onSuggestionsOpenChange])
-
-  return (
-    <SearchBar
-      initialValue={query || ''}
-      onSubmit={handleSubmit}
-      onFocus={handleFocus}
-      onSuggestionsClose={handleSuggestionsClose}
-      loading={isLoading}
-      placeholder="Search videos, films, and series..."
-      isSuggestionsOpen={isSuggestionsOpen}
-    />
-  )
-})
-
-const EmptyState = memo(function EmptyState({ isSuggestionsOpen }: { isSuggestionsOpen?: boolean }) {
+const EmptyState = memo(function EmptyState() {
   const { clear } = useSearchBox()
 
   // Memoize the clear handler to prevent recreation on each render
@@ -203,9 +140,9 @@ const EmptyState = memo(function EmptyState({ isSuggestionsOpen }: { isSuggestio
     <div
       className={cn(
         "col-span-full flex flex-col items-center justify-center py-16 text-center",
-        isSuggestionsOpen && "pointer-events-none aria-hidden"
+        ""
       )}
-      aria-hidden={isSuggestionsOpen}
+      aria-hidden={false}
     >
       <div className="mb-4 text-6xl">🔍</div>
       <h3 className="text-xl font-semibold text-foreground mb-2">No videos found</h3>
@@ -215,10 +152,10 @@ const EmptyState = memo(function EmptyState({ isSuggestionsOpen }: { isSuggestio
       <div className="mt-6">
         <button
           onClick={handleEmptyStateClear}
-          disabled={isSuggestionsOpen}
+          disabled={false}
           className={cn(
-            "px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background transition-colors",
-            isSuggestionsOpen && "pointer-events-none opacity-50"
+            "px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background transition-colors cursor-pointer",
+            ""
           )}
           aria-label="Clear search and show all videos"
         >
@@ -253,10 +190,10 @@ function ShadcnPagination() {
       pages.push(
         <PaginationItem key={0}>
           <PaginationLink
-            size="lg"
+            size="default"
             onClick={() => handlePageChange(0)}
             isActive={currentPage === 0}
-            className="px-4 py-3 text-lg font-light min-w-[3rem] h-12"
+            className={`px-3 py-2 text-base font-light min-w-[2.5rem] h-10 ${currentPage === 0 ? 'bg-red-600 text-white' : ''}`}
           >
             1
           </PaginationLink>
@@ -265,7 +202,7 @@ function ShadcnPagination() {
       if (currentPage > 3) {
         pages.push(
           <PaginationItem key="ellipsis-start">
-            <PaginationEllipsis className="h-12 w-12" />
+            <PaginationEllipsis className="h-10 w-10" />
           </PaginationItem>
         )
       }
@@ -279,10 +216,10 @@ function ShadcnPagination() {
       pages.push(
         <PaginationItem key={i}>
           <PaginationLink
-            size="lg"
+            size="default"
             onClick={() => handlePageChange(i)}
             isActive={currentPage === i}
-            className="px-4 py-3 text-lg font-light min-w-[3rem] h-12"
+            className={`px-3 py-2 text-base font-light min-w-[2.5rem] h-10 ${currentPage === i ? 'bg-red-600 text-white' : ''}`}
           >
             {i + 1}
           </PaginationLink>
@@ -295,17 +232,17 @@ function ShadcnPagination() {
       if (currentPage < totalPages - 4) {
         pages.push(
           <PaginationItem key="ellipsis-end">
-            <PaginationEllipsis className="h-12 w-12" />
+            <PaginationEllipsis className="h-10 w-10" />
           </PaginationItem>
         )
       }
       pages.push(
         <PaginationItem key={totalPages - 1}>
           <PaginationLink
-            size="lg"
+            size="default"
             onClick={() => handlePageChange(totalPages - 1)}
             isActive={currentPage === totalPages - 1}
-            className="px-4 py-3 text-lg font-light min-w-[3rem] h-12"
+            className={`px-3 py-2 text-base font-light min-w-[2.5rem] h-10 ${currentPage === totalPages - 1 ? 'bg-red-600 text-white' : ''}`}
           >
             {totalPages}
           </PaginationLink>
@@ -317,13 +254,13 @@ function ShadcnPagination() {
   }
 
   return (
-    <Pagination className="scale-150 origin-center">
-      <PaginationContent className="gap-3">
+    <Pagination className="scale-125 origin-center">
+      <PaginationContent className="gap-2">
         <PaginationItem>
           <PaginationPrevious
-            size="lg"
+            size="default"
             onClick={() => currentRefinement > 0 && handlePageChange(currentRefinement - 1)}
-            className={`px-6 py-3 text-lg font-light ${currentRefinement === 0 ? 'pointer-events-none opacity-50' : 'cursor-pointer hover:bg-primary/10'}`}
+            className={`px-4 py-2 text-base font-light ${currentRefinement === 0 ? 'pointer-events-none opacity-50' : 'cursor-pointer hover:bg-primary/10'}`}
           />
         </PaginationItem>
 
@@ -331,9 +268,9 @@ function ShadcnPagination() {
 
         <PaginationItem>
           <PaginationNext
-            size="lg"
+            size="default"
             onClick={() => currentRefinement < nbPages - 1 && handlePageChange(currentRefinement + 1)}
-            className={`px-6 py-3 text-lg font-light ${currentRefinement >= nbPages - 1 ? 'pointer-events-none opacity-50' : 'cursor-pointer hover:bg-primary/10'}`}
+            className={`px-4 py-2 text-base font-light ${currentRefinement >= nbPages - 1 ? 'pointer-events-none opacity-50' : 'cursor-pointer hover:bg-primary/10'}`}
           />
         </PaginationItem>
       </PaginationContent>
@@ -389,8 +326,6 @@ function NewHit({ hit }: { hit: AlgoliaVideo }) {
 }
 
 export const VideoGrid = memo(function VideoGrid() {
-  const [isSuggestionsOpen, setIsSuggestionsOpen] = useState(false)
-
   return (
     <section
       id="videos"
@@ -398,12 +333,9 @@ export const VideoGrid = memo(function VideoGrid() {
       aria-labelledby="videos-heading"
     >
       <Container>
-        <div className="mb-8">
-          <h2 id="videos-heading" className="sr-only">Video Library</h2>
-          <SearchBarContainer isSuggestionsOpen={isSuggestionsOpen} onSuggestionsOpenChange={setIsSuggestionsOpen} />
-        </div>
+        <h2 id="videos-heading" className="sr-only">Video Library</h2>
 
-        <NewHitsGridWithEmptyState isSuggestionsOpen={isSuggestionsOpen} />
+        <NewHitsGridWithEmptyState />
 
         <div className="mt-8">
           <ShadcnPagination />
@@ -444,7 +376,7 @@ function NewHitWrapper({ hit }: { hit: AlgoliaVideo }) {
 /**
  * Hits grid with empty state and loading skeleton for new design
  */
-const NewHitsGridWithEmptyState = memo(function NewHitsGridWithEmptyState({ isSuggestionsOpen }: { isSuggestionsOpen: boolean }) {
+const NewHitsGridWithEmptyState = memo(function NewHitsGridWithEmptyState() {
   const { results, status } = useInstantSearch()
   const { query } = useSearchBox()
 
@@ -491,7 +423,7 @@ const NewHitsGridWithEmptyState = memo(function NewHitsGridWithEmptyState({ isSu
       {/* Empty state overlay; keep hits mounted behind it */}
       {shouldShowEmptyState && (
         <div className="absolute inset-0 z-20" data-testid="grid-empty-overlay">
-          <EmptyState isSuggestionsOpen={isSuggestionsOpen} />
+          <EmptyState />
         </div>
       )}
     </div>

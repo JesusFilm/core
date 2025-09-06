@@ -2,8 +2,10 @@
 
 ## Get existing design working
 
-- [ ] Fix algolia search
-- [ ] Fix algolia grid
+- [+] Fix algolia search
+- [+] Fix algolia grid
+- [ ] New search mode
+- [ ] New search filtering panel
 - [ ] Fix logo
 - [ ] Make header trasnparent
 - [ ] Fix typography

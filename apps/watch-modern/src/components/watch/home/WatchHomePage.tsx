@@ -2,15 +2,13 @@ import type { ReactElement } from 'react'
 
 import { AboutSection } from './About'
 import { HomeHero } from './HomeHero'
-import { VideoGrid } from './VideoGrid'
 
 export default function WatchHomePage(): ReactElement {
   return (
     <>
       {/* Hero with overlay */}
       <HomeHero />
-      {/* Search + Grid (directly below hero, no CTA section) */}
-      <VideoGrid />
+      {/* Grid removed from page; shown in overlay via Header */}
       {/* About block */}
       <AboutSection />
     </>

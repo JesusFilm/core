@@ -3,6 +3,7 @@ import type { ReactElement } from 'react'
 
 import { ApolloClientProvider } from '@/components/providers/apollo'
 import { InstantSearchProviders } from '@/components/providers/instantsearch'
+import { Header } from '@/components/Header'
 import WatchHomePage from '@/components/watch/home/WatchHomePage'
 
 export const generateMetadata = async () => {
@@ -16,6 +17,7 @@ export default async function WatchRootPage(): Promise<ReactElement> {
     <main>
       <ApolloClientProvider>
         <InstantSearchProviders>
+          <Header />
           <WatchHomePage />
         </InstantSearchProviders>
       </ApolloClientProvider>

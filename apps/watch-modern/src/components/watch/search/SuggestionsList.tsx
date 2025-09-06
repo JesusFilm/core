@@ -248,7 +248,7 @@ export const SuggestionsList = React.forwardRef<HTMLDivElement, SuggestionsListP
       return null
     }
 
-    return (
+  return (
       <Portal anchorRef={anchorRef}>
         <div
           ref={ref}
@@ -266,6 +266,10 @@ export const SuggestionsList = React.forwardRef<HTMLDivElement, SuggestionsListP
             "duration-200 ease-out",
             className
           )}
+          // Prevent the search input from blurring when interacting with
+          // the suggestions panel so click selection remains reliable.
+          onMouseDown={(e) => e.preventDefault()}
+          onTouchStart={(e) => e.preventDefault()}
           {...props}
         >
         {/* Header for popular suggestions */}
@@ -304,7 +308,16 @@ export const SuggestionsList = React.forwardRef<HTMLDivElement, SuggestionsListP
                 "transition-colors duration-150 ease-in-out"
               )}
               onMouseEnter={() => handleMouseEnter(index)}
-              onClick={() => handleClick(suggestion)}
+              // Select on mousedown/touchstart to avoid losing the event
+              // due to the input's blur closing the panel.
+              onMouseDown={(e) => {
+                e.preventDefault()
+                handleClick(suggestion)
+              }}
+              onTouchStart={(e) => {
+                e.preventDefault()
+                handleClick(suggestion)
+              }}
             >
               {/* Search icon for each suggestion */}
               <Search className="h-4 w-4 text-muted-foreground flex-shrink-0" />

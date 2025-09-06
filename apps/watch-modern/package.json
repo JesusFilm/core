@@ -1,4 +1,7 @@
 {
   "name": "@workspace/watch-modern",
-  "private": true
+  "private": true,
+  "devDependencies": {
+    "shadcn": "^3.2.1"
+  }
 }

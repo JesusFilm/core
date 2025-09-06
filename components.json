@@ -9,12 +9,9 @@
     "baseColor": "zinc",
     "cssVariables": true
   },
-  "iconLibrary": "radix",
+  "iconLibrary": "lucide",
   "aliases": {
     "components": "@/components",
     "utils": "@/lib/utils"
-  },
-  "registries": {
-    "@shadcn": "https://ui.shadcn.com/r/styles/{style}/{name}.json"
   }
 }

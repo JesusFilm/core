@@ -5,8 +5,9 @@ import { Search, X } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 import { SuggestionsList } from "./SuggestionsList"
-import { suggestionsClient } from "./suggestionsClient"
+import { suggestionsClient, setSuggestionsAlgoliaClient } from "./suggestionsClient"
 import type { SuggestionItem } from "./types"
+import { useOptionalAlgoliaClient } from '@/components/providers/instantsearch'
 
 export interface SearchBarProps {
   /** Initial search value (optional) */
@@ -15,8 +16,14 @@ export interface SearchBarProps {
   onSubmit: (value: string) => void
   /** Called when the input receives focus */
   onFocus?: () => void
+  /** Called when the input loses focus */
+  onBlur?: () => void
   /** Called when suggestions are closed */
   onSuggestionsClose?: () => void
+  /** Called whenever the input value changes */
+  onValueChange?: (value: string) => void
+  /** Called specifically when the input is cleared */
+  onClear?: () => void
   /** Whether the search is currently loading */
   loading?: boolean
   /** Placeholder text for the input */
@@ -25,6 +32,8 @@ export interface SearchBarProps {
   className?: string
   /** Whether suggestions are currently open */
   isSuggestionsOpen?: boolean
+  /** Force the input to display this value when it changes */
+  forceValue?: string
 }
 
 /**
@@ -53,24 +62,32 @@ export const SearchBar = React.forwardRef<HTMLDivElement, SearchBarProps>(
     initialValue = '',
     onSubmit,
     onFocus,
+    onBlur,
     onSuggestionsClose,
+    onValueChange,
+    onClear,
     loading = false,
     placeholder = "Search...",
     className,
     isSuggestionsOpen = false,
+    forceValue,
     ...props
   }, ref) => {
+    const algoliaCtx = useOptionalAlgoliaClient()
     const inputRef = React.useRef<HTMLInputElement>(null)
     const containerRef = React.useRef<HTMLDivElement>(null)
     const [inputValue, setInputValue] = React.useState(initialValue)
-    const [isFocused, setIsFocused] = React.useState(false)
     const [suggestions, setSuggestions] = React.useState<SuggestionItem[]>([])
     const [showSuggestions, setShowSuggestions] = React.useState(false)
     const [highlightedIndex, setHighlightedIndex] = React.useState(-1)
-    const [isLoadingSuggestions, setIsLoadingSuggestions] = React.useState(false)
     const abortControllerRef = React.useRef<AbortController | null>(null)
     const skipNextFocusFetchRef = React.useRef(false)
     const isUserInteractingRef = React.useRef(false)
+
+    // Ensure suggestionsClient uses the shared Algolia client from InstantSearchProviders
+    React.useEffect(() => {
+      if (algoliaCtx?.searchClient) setSuggestionsAlgoliaClient(algoliaCtx.searchClient)
+    }, [algoliaCtx?.searchClient])
 
     // Sync input value with initialValue changes, but avoid interfering with user interactions
     React.useEffect(() => {
@@ -80,6 +97,10 @@ export const SearchBar = React.forwardRef<HTMLDivElement, SearchBarProps>(
       if (!isUserInteractingRef.current && initialValue !== inputValue) {
         console.log('🔍 Syncing inputValue with initialValue:', initialValue)
         setInputValue(initialValue)
+        // Inform parent so overlay can reflect initial value state
+        try {
+          onValueChange?.(initialValue)
+        } catch {}
 
         // If initialValue is empty (cleared externally), also clear suggestions
         if (!initialValue || initialValue.trim() === '') {
@@ -92,6 +113,15 @@ export const SearchBar = React.forwardRef<HTMLDivElement, SearchBarProps>(
         console.log('🔍 Skipping sync - user is interacting or values are the same')
       }
     }, [initialValue]) // Removed inputValue from dependencies to prevent infinite loop
+
+    // Force sync from external value (e.g., clicking a Popular Search pill)
+    React.useEffect(() => {
+      if (typeof forceValue === 'undefined') return
+      if (forceValue !== inputValue) {
+        setInputValue(forceValue)
+        onValueChange?.(forceValue)
+      }
+    }, [forceValue])
 
     // Fetch suggestions based on current value
     const fetchSuggestions = React.useCallback(async (query: string) => {
@@ -111,24 +141,24 @@ export const SearchBar = React.forwardRef<HTMLDivElement, SearchBarProps>(
 
       try {
         console.log('🔍 Setting loading state to true')
-        setIsLoadingSuggestions(true)
 
-        let fetchedSuggestions: SuggestionItem[]
-        if (query.trim().length === 0) {
-          // Show popular suggestions when input is empty
-          console.log('🔍 Fetching popular suggestions')
-          fetchedSuggestions = await suggestionsClient.fetchPopular({
-            signal: localSignal
-          })
-          console.log('🔍 Popular suggestions fetched:', fetchedSuggestions?.length || 0)
-        } else {
-          // Show typed suggestions
-          console.log('🔍 Fetching typed suggestions for:', query)
-          fetchedSuggestions = await suggestionsClient.fetchSuggestions(query, {
-            signal: localSignal
-          })
-          console.log('🔍 Typed suggestions fetched:', fetchedSuggestions?.length || 0)
+        // Do not show popular suggestions in dropdown; only show typed suggestions
+        const trimmed = query.trim()
+        if (trimmed.length === 0) {
+          if (abortControllerRef.current === localController && !localSignal.aborted) {
+            console.log('🔍 Empty query: clearing suggestions list')
+            setSuggestions([])
+            setHighlightedIndex(-1)
+          }
+          return
         }
+
+        // Show typed suggestions
+        console.log('🔍 Fetching typed suggestions for:', trimmed)
+        const fetchedSuggestions: SuggestionItem[] = await suggestionsClient.fetchSuggestions(trimmed, {
+          signal: localSignal
+        })
+        console.log('🔍 Typed suggestions fetched:', fetchedSuggestions?.length || 0)
 
         // Only update if this request is still the latest and wasn't aborted
         if (abortControllerRef.current === localController && !localSignal.aborted) {
@@ -147,12 +177,11 @@ export const SearchBar = React.forwardRef<HTMLDivElement, SearchBarProps>(
       } finally {
         if (abortControllerRef.current === localController && !localSignal.aborted) {
           console.log('🔍 Setting loading state to false')
-          setIsLoadingSuggestions(false)
         } else {
           console.log('🔍 Not setting loading to false because request was aborted')
         }
       }
-    }, [])
+    }, [onValueChange, onClear])
 
     // Handle input change
     const handleInputChange = React.useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
@@ -161,6 +190,7 @@ export const SearchBar = React.forwardRef<HTMLDivElement, SearchBarProps>(
       isUserInteractingRef.current = true
       console.log('🔍 Setting inputValue to:', newValue)
       setInputValue(newValue)
+      onValueChange?.(newValue)
 
       // Fetch suggestions for the new value
       if (showSuggestions) {
@@ -180,8 +210,6 @@ export const SearchBar = React.forwardRef<HTMLDivElement, SearchBarProps>(
     // Handle input focus
     const handleFocus = React.useCallback(() => {
       console.log('🔍 handleFocus called')
-      console.log('🔍 Setting isFocused to true')
-      setIsFocused(true)
       onFocus?.()
 
       // Show suggestions on focus
@@ -195,19 +223,24 @@ export const SearchBar = React.forwardRef<HTMLDivElement, SearchBarProps>(
         console.log('🔍 Skipping focus-triggered fetch due to recent clear')
         skipNextFocusFetchRef.current = false
       } else {
-        console.log('🔍 Calling fetchSuggestions with inputValue:', inputValue)
-        fetchSuggestions(inputValue)
+        // Only fetch typed suggestions; do not fetch popular on empty input
+        if (inputValue.trim().length > 0) {
+          console.log('🔍 Calling fetchSuggestions with inputValue:', inputValue)
+          fetchSuggestions(inputValue)
+        } else {
+          console.log('🔍 Input is empty on focus; not fetching suggestions')
+        }
       }
     }, [onFocus, inputValue, fetchSuggestions])
 
     // Handle input blur with delay to allow suggestion clicks
     const handleBlur = React.useCallback(() => {
       console.log('🔍 handleBlur called')
+      // Notify parent immediately that input lost focus
+      onBlur?.()
       // Delay blur to allow suggestion clicks
       setTimeout(() => {
         console.log('🔍 Blur timeout triggered - closing suggestions')
-        console.log('🔍 Setting isFocused to false')
-        setIsFocused(false)
         console.log('🔍 Setting showSuggestions to false')
         setShowSuggestions(false)
         console.log('🔍 Clearing suggestions array')
@@ -217,7 +250,7 @@ export const SearchBar = React.forwardRef<HTMLDivElement, SearchBarProps>(
         console.log('🔍 Calling onSuggestionsClose')
         onSuggestionsClose?.()
       }, 150)
-    }, [onSuggestionsClose])
+    }, [onSuggestionsClose, onBlur])
 
     // Handle key down events
     const handleKeyDown = React.useCallback((e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -244,10 +277,14 @@ export const SearchBar = React.forwardRef<HTMLDivElement, SearchBarProps>(
           setShowSuggestions(false)
           setSuggestions([])
           setHighlightedIndex(-1)
+          // Notify parent so overlays can close too
+          onSuggestionsClose?.()
         } else {
           console.log('🔍 Clearing input and blurring')
           // Clear input and blur
           setInputValue('')
+          onValueChange?.('')
+          onClear?.()
           inputRef.current?.blur()
         }
       } else if (e.key === 'ArrowDown' && showSuggestions && suggestions.length > 0) {
@@ -270,6 +307,7 @@ export const SearchBar = React.forwardRef<HTMLDivElement, SearchBarProps>(
       console.log('🔍 handleSuggestionSelect called with suggestion:', suggestion)
       isUserInteractingRef.current = true
       setInputValue(suggestion.text)
+      onValueChange?.(suggestion.text)
       console.log('🔍 Setting input value to:', suggestion.text)
       console.log('🔍 Calling onSubmit with:', suggestion.text)
       onSubmit(suggestion.text)
@@ -303,18 +341,23 @@ export const SearchBar = React.forwardRef<HTMLDivElement, SearchBarProps>(
     // Handle submit button click
     const handleSubmit = React.useCallback(() => {
       console.log('🔍 handleSubmit called with inputValue:', inputValue)
+      onValueChange?.(inputValue)
       onSubmit(inputValue)
     }, [inputValue, onSubmit])
 
     // Handle clear button click - Phase 2B: Clear and show popular suggestions
     const handleClear = React.useCallback(() => {
       console.log('🔍 handleClear called')
-      // Clear the input locally without triggering refine('')
-      // The InstantSearch wrapper will handle empty queries automatically
+      // Clear the input locally and blur the field per UX requirement
       console.log('🔍 Clearing input value')
       setInputValue('')
-      console.log('🔍 Setting showSuggestions to true')
-      setShowSuggestions(true)
+      onValueChange?.('')
+      onClear?.()
+
+      // Close any suggestions and reset state
+      setShowSuggestions(false)
+      setSuggestions([])
+      setHighlightedIndex(-1)
 
       // Cancel any in-flight requests
       if (abortControllerRef.current) {
@@ -322,13 +365,9 @@ export const SearchBar = React.forwardRef<HTMLDivElement, SearchBarProps>(
         abortControllerRef.current.abort()
       }
 
-      // Show popular suggestions immediately
-      console.log('🔍 Fetching popular suggestions')
-      skipNextFocusFetchRef.current = true
-      fetchSuggestions('')
-      console.log('🔍 Focusing input')
-      inputRef.current?.focus()
-    }, [fetchSuggestions])
+      console.log('🔍 Blurring input after clear')
+      inputRef.current?.blur()
+    }, [])
 
     const hasValue = inputValue.trim().length > 0
     const isPopular = inputValue.trim().length === 0
@@ -370,15 +409,13 @@ export const SearchBar = React.forwardRef<HTMLDivElement, SearchBarProps>(
             placeholder={placeholder}
             className={cn(
               // Base styles - rounded pill with dark theme
-              "w-full h-16 rounded-full border-2 bg-card text-foreground",
-              "pl-5 pr-32 py-5 text-lg placeholder:text-muted-foreground",
+              "w-full h-12 rounded-full border-2 bg-card text-foreground",
+              "pl-3 pr-24 py-3 text-sm placeholder:text-muted-foreground",
               "transition-all duration-200 ease-in-out",
-              "focus:outline-none focus:ring-2 focus:ring-ring focus:border-ring",
-              "hover:border-muted-foreground/50",
-              // Dynamic border color based on focus state
-              isFocused
-                ? "border-ring"
-                : "border-border"
+              "focus:outline-none focus:ring-0 focus:border-white",
+              "hover:border-white/30",
+              // Light border color
+              "border-white/20"
             )}
             aria-label="Search videos, films, and series"
             aria-describedby="search-help"
@@ -388,7 +425,7 @@ export const SearchBar = React.forwardRef<HTMLDivElement, SearchBarProps>(
         </div>
 
         {/* Right side buttons container */}
-        <div className="absolute right-3 top-1/2 -translate-y-1/2  flex items-center gap-2">
+        <div className="absolute right-2 top-1/2 -translate-y-1/2  flex items-center gap-1">
           {/* Clear button - only show when there's a value */}
           {hasValue && !loading && (
             <Button
@@ -398,24 +435,24 @@ export const SearchBar = React.forwardRef<HTMLDivElement, SearchBarProps>(
               onClick={handleClear}
               data-testid="clear-button"
               className={cn(
-                "h-10 w-10 rounded-full text-white/80",
+                "h-7 w-7 rounded-full text-white/80",
                 "hover:text-white hover:bg-white/20",
                 "focus:ring-2 focus:ring-white/50 focus:ring-offset-0",
                 "z-10 relative"
               )}
               aria-label="Clear search"
             >
-              <X className="h-4 w-4" />
+              <X className="h-2.5 w-2.5" />
             </Button>
           )}
 
           {/* Loading spinner - show when loading */}
           {loading && (
             <div
-              className="h-10 w-10 flex items-center justify-center text-muted-foreground"
+              className="h-7 w-7 flex items-center justify-center text-muted-foreground"
               aria-hidden="true"
             >
-              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-current"></div>
+              <div className="animate-spin rounded-full h-2.5 w-2.5 border-b-2 border-current"></div>
             </div>
           )}
 
@@ -427,18 +464,18 @@ export const SearchBar = React.forwardRef<HTMLDivElement, SearchBarProps>(
     variant="default"
     // absolute so it sits on top of the pill and keeps its own bg
     className={cn(
-      "h-12 w-12 rounded-full p-0",
+      "h-8 w-8 rounded-full p-0",
       // make the background actually visible on dark UI
       hasValue
         ? "bg-red-600 border-white/14 hover:bg-red-700 text-white"
-        : "bg-white/0 border-white/0 hover:bg-white/18",
-      "border shadow-sm backdrop-blur-sm",
+        : "bg-white/0 border-white/0 hover:bg-red-700",
+      "border shadow-sm ",
       "text-white flex items-center justify-center",
       "transition-colors duration-200"
     )}
     aria-label="Submit search"
   >
-    <Search className="!h-6 !w-6" strokeWidth={2.25} />
+    <Search className="!h-4 !w-4" strokeWidth={2.25} />
   </Button>
         </div>
 
@@ -463,7 +500,7 @@ export const SearchBar = React.forwardRef<HTMLDivElement, SearchBarProps>(
             onHighlightChange={handleSuggestionHighlightChange}
             onClose={handleSuggestionsClose}
             isPopular={isPopular}
-            anchorRef={containerRef}
+            anchorRef={containerRef as React.RefObject<HTMLElement>}
           />
         )}
       </div>

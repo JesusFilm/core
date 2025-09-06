@@ -27,6 +27,13 @@ const SUGGESTIONS_CONFIG = {
  */
 let algoliaSuggestionsClient: ReturnType<typeof algoliasearch> | null = null
 
+/**
+ * Allow external injection of a shared Algolia client (from InstantSearchProviders)
+ */
+export function setSuggestionsAlgoliaClient(client: ReturnType<typeof algoliasearch>): void {
+  algoliaSuggestionsClient = client
+}
+
 function getAlgoliaClient() {
   if (!algoliaSuggestionsClient) {
     // Check if Algolia credentials are available
