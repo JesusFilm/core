@@ -1,6 +1,8 @@
+import { useTheme } from '@mui/material/styles'
 import { ReactElement, useRef } from 'react'
 import { A11y, FreeMode, Mousewheel, Navigation } from 'swiper/modules'
 import { Swiper, SwiperSlide } from 'swiper/react'
+import { SwiperOptions } from 'swiper/types'
 
 import { VideoChildFields } from '../../../../__generated__/VideoChildFields'
 import { Skeleton } from '../../Skeleton'
@@ -21,8 +23,35 @@ export function VideoCarousel({
   activeVideoId,
   loading = false
 }: VideoCarouselProps): ReactElement {
+  const { breakpoints } = useTheme()
   const nextRef = useRef<HTMLDivElement>(null)
   const prevRef = useRef<HTMLDivElement>(null)
+  const swiperBreakpoints: SwiperOptions['breakpoints'] = {
+    [breakpoints.values.xs]: {
+      slidesPerGroup: 2,
+      slidesPerView: 2.4
+    },
+    [breakpoints.values.sm]: {
+      slidesPerGroup: 3,
+      slidesPerView: 3.4
+    },
+    [breakpoints.values.md]: {
+      slidesPerGroup: 4,
+      slidesPerView: 4.4
+    },
+    [breakpoints.values.lg]: {
+      slidesPerGroup: 5,
+      slidesPerView: 5.4
+    },
+    [breakpoints.values.xl]: {
+      slidesPerGroup: 6,
+      slidesPerView: 6.4
+    },
+    [breakpoints.values.xxl]: {
+      slidesPerGroup: 7,
+      slidesPerView: 7.4
+    }
+  }
 
   return (
     <div data-testid="VideoCarousel" className="my-7 relative">
@@ -45,6 +74,7 @@ export function VideoCarousel({
           nextEl: nextRef.current,
           prevEl: prevRef.current
         }}
+        breakpoints={swiperBreakpoints}
       >
         {!loading
           ? videos.map((video) => (
