@@ -1,5 +1,5 @@
 import TextField from '@mui/material/TextField'
-import { Meta, StoryObj } from '@storybook/react'
+import { Meta, StoryObj } from '@storybook/nextjs'
 import { Form, Formik } from 'formik'
 import { ComponentProps } from 'react'
 

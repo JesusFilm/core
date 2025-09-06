@@ -1,6 +1,6 @@
 import Paper from '@mui/material/Paper'
 import Stack from '@mui/material/Stack'
-import { Meta, StoryObj } from '@storybook/react'
+import { Meta, StoryObj } from '@storybook/nextjs'
 
 import { simpleComponentConfig } from '@core/shared/ui/storybook'
 
