@@ -30,7 +30,19 @@ export function AiChat({ open }: AiChatProps) {
   const { messages, sendMessage, status, regenerate } = useChat({
     transport: new DefaultChatTransport({
       api: '/api/chat'
-    })
+    }),
+    messages: [
+      {
+        id: "1",
+        role: "assistant",
+        parts: [
+          {
+            type: "text",
+            text: "Hi, how can I help you?"
+          }
+        ]
+      }
+    ]
   })
   const [input, setInput] = useState('')
   const [suggestions, setSuggestions] = useState<string[]>()
