@@ -1,7 +1,12 @@
 "use client"
 
 import type { Hit as AlgoliaHit } from 'instantsearch.js'
+import { memo, useCallback, useMemo } from 'react'
 import { Hits, useInstantSearch, usePagination, useSearchBox } from 'react-instantsearch'
+
+import { MediaCard, type MediaCardProps } from './MediaCard'
+
+import { AspectRatio } from '@/components/ui/aspect-ratio'
 import { Card } from '@/components/ui/card'
 import { Container } from '@/components/ui/container'
 import {
@@ -13,10 +18,7 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from '@/components/ui/pagination'
-import { MediaCard, type MediaCardProps } from './MediaCard'
 import { Skeleton } from '@/components/ui/skeleton'
-import { AspectRatio } from '@/components/ui/aspect-ratio'
-import { memo, useMemo, useCallback } from 'react'
 import { cn } from '@/lib/utils'
 // Search controls are rendered in SearchHeader
 
@@ -398,7 +400,7 @@ const NewHitsGridWithEmptyState = memo(function NewHitsGridWithEmptyState() {
     return none
   }, [results])
 
-  const shouldShowEmptyState = isEmptyQuery || hasNoHits
+  const shouldShowEmptyState = hasNoHits && !isEmptyQuery
 
   // Keep Hits mounted to avoid re-search loops; use CSS to hide/overlay
   return (

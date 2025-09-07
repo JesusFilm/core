@@ -1,14 +1,16 @@
 "use client"
 
-import * as React from 'react'
 import { Search as SearchIcon, Zap } from 'lucide-react'
-import { Container } from '@/components/ui/container'
-import { Button } from '@/components/ui/button'
-import { cn } from '@/lib/utils'
-import { suggestionsClient, setSuggestionsAlgoliaClient } from './suggestionsClient'
-import type { SuggestionItem } from './types'
-import { useOptionalAlgoliaClient } from '@/components/providers/instantsearch'
+import * as React from 'react'
 import { useSearchBox } from 'react-instantsearch'
+
+import { setSuggestionsAlgoliaClient, suggestionsClient } from './suggestionsClient'
+import type { SuggestionItem } from './types'
+
+import { useOptionalAlgoliaClient } from '@/components/providers/instantsearch'
+import { Button } from '@/components/ui/button'
+import { Container } from '@/components/ui/container'
+import { cn } from '@/lib/utils'
 
 export function PopularSearches() {
   const algoliaCtx = useOptionalAlgoliaClient()
@@ -53,11 +55,17 @@ export function PopularSearches() {
   const handleClick = React.useCallback((text: string) => {
     // Submit query via InstantSearch
     refine(text)
+
     // Keep overlay open and reflect value by refocusing the header input
     try {
       const input = document.querySelector<HTMLInputElement>('input[data-testid="search-input"]')
       // Focus on next tick to avoid interfering with the click blur
-      if (input) requestAnimationFrame(() => input.focus())
+      if (input) {
+        // Small delay to ensure refine has completed
+        setTimeout(() => {
+          input.focus()
+        }, 10)
+      }
     } catch {}
   }, [refine])
 

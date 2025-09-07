@@ -5,15 +5,15 @@
  * Matches the visual design of https://www.jesusfilm.org/watch
  */
 
+import { Play } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
-import { Play } from 'lucide-react'
 
-import { Card } from '@/components/ui/card'
 import { AspectRatio } from '@/components/ui/aspect-ratio'
-import { cn } from '@/lib/utils'
+import { Card } from '@/components/ui/card'
 import type { MediaKind } from '@/lib/media-utils'
-import { kindToLabel, kindToColor, formatDuration } from '@/lib/media-utils'
+import { formatDuration, kindToColor, kindToLabel } from '@/lib/media-utils'
+import { cn } from '@/lib/utils'
 
 /**
  * Props for the MediaCard component
@@ -91,7 +91,7 @@ export function MediaCard({
                   {hasDuration && (
                     <>
                       <Play className="w-3 h-3 fill-current" />
-                      {formatDuration(durationSeconds!)}
+                      {formatDuration(durationSeconds)}
                     </>
                   )}
                   {hasCountLabel && !hasDuration && countLabel}

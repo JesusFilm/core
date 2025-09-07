@@ -1,10 +1,12 @@
 "use client"
 
+import { Search, TrendingUp } from "lucide-react"
 import * as React from "react"
 import { createPortal } from "react-dom"
-import { Search, TrendingUp } from "lucide-react"
-import { cn } from "@/lib/utils"
+
 import type { SuggestionItem } from "./types"
+
+import { cn } from "@/lib/utils"
 
 // Portal component for proper layering with positioning
 const Portal = ({
@@ -31,7 +33,7 @@ const Portal = ({
     if (!anchorRef?.current || typeof window === 'undefined') return
 
     const updatePosition = () => {
-      const rect = anchorRef.current!.getBoundingClientRect()
+      const rect = anchorRef.current.getBoundingClientRect()
       setPosition({
         top: rect.bottom + window.scrollY,
         left: rect.left + window.scrollX,

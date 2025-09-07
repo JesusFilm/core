@@ -1,10 +1,11 @@
 "use client"
 
 import { memo, useCallback, useMemo, useState } from 'react'
-import { Container } from '@/components/ui/container'
-import { SearchBar } from '@/components/watch/search/SearchBar'
-import { LanguageFilter } from '@/components/watch/search/LanguageFilter'
 import { useInstantSearch, useSearchBox } from 'react-instantsearch'
+
+import { Container } from '@/components/ui/container'
+import { LanguageFilter } from '@/components/watch/search/LanguageFilter'
+import { SearchBar } from '@/components/watch/search/SearchBar'
 
 // Reusable search controls rendered below the site header
 export const SearchHeader = memo(function SearchHeader() {

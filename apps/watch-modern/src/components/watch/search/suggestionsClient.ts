@@ -1,9 +1,11 @@
 "use client"
 
 import { algoliasearch } from 'algoliasearch'
-import type { SuggestionsClient, SuggestionItem, FetchSuggestionsOptions, FetchPopularOptions, CachedSuggestions } from './types'
-import { env } from '@/env'
+
+import type { CachedSuggestions, FetchPopularOptions, FetchSuggestionsOptions, SuggestionItem, SuggestionsClient } from './types'
+
 import trendingSearches from '@/data/trending-searches.json'
+import { env } from '@/env'
 
 /**
  * Configuration for the suggestions client

@@ -1,13 +1,15 @@
 "use client"
 
-import * as React from "react"
 import { Search, X } from "lucide-react"
+import * as React from "react"
+
+import { setSuggestionsAlgoliaClient, suggestionsClient } from "./suggestionsClient"
+import { SuggestionsList } from "./SuggestionsList"
+import type { SuggestionItem } from "./types"
+
+import { useOptionalAlgoliaClient } from '@/components/providers/instantsearch'
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
-import { SuggestionsList } from "./SuggestionsList"
-import { suggestionsClient, setSuggestionsAlgoliaClient } from "./suggestionsClient"
-import type { SuggestionItem } from "./types"
-import { useOptionalAlgoliaClient } from '@/components/providers/instantsearch'
 
 export interface SearchBarProps {
   /** Initial search value (optional) */
@@ -80,9 +82,10 @@ export const SearchBar = React.forwardRef<HTMLDivElement, SearchBarProps>(
     const [suggestions, setSuggestions] = React.useState<SuggestionItem[]>([])
     const [showSuggestions, setShowSuggestions] = React.useState(false)
     const [highlightedIndex, setHighlightedIndex] = React.useState(-1)
-    const abortControllerRef = React.useRef<AbortController | null>(null)
-    const skipNextFocusFetchRef = React.useRef(false)
-    const isUserInteractingRef = React.useRef(false)
+  const abortControllerRef = React.useRef<AbortController | null>(null)
+  const skipNextFocusFetchRef = React.useRef(false)
+  const isUserInteractingRef = React.useRef(false)
+
 
     // Ensure suggestionsClient uses the shared Algolia client from InstantSearchProviders
     React.useEffect(() => {
@@ -91,62 +94,53 @@ export const SearchBar = React.forwardRef<HTMLDivElement, SearchBarProps>(
 
     // Sync input value with initialValue changes, but avoid interfering with user interactions
     React.useEffect(() => {
-      console.log('🔍 useEffect triggered - initialValue:', initialValue, 'inputValue:', inputValue, 'isUserInteracting:', isUserInteractingRef.current)
-
       // Don't override input value if user is actively interacting
       if (!isUserInteractingRef.current && initialValue !== inputValue) {
-        console.log('🔍 Syncing inputValue with initialValue:', initialValue)
         setInputValue(initialValue)
         // Inform parent so overlay can reflect initial value state
-        try {
-          onValueChange?.(initialValue)
-        } catch {}
+        onValueChange?.(initialValue)
 
         // If initialValue is empty (cleared externally), also clear suggestions
         if (!initialValue || initialValue.trim() === '') {
-          console.log('🔍 initialValue is empty, clearing suggestions')
-          setShowSuggestions(true)
+          setShowSuggestions(false)
           setSuggestions([])
           setHighlightedIndex(-1)
         }
-      } else {
-        console.log('🔍 Skipping sync - user is interacting or values are the same')
       }
-    }, [initialValue]) // Removed inputValue from dependencies to prevent infinite loop
+    }, [initialValue, inputValue, onValueChange])
 
     // Force sync from external value (e.g., clicking a Popular Search pill)
     React.useEffect(() => {
-      if (typeof forceValue === 'undefined') return
-      if (forceValue !== inputValue) {
+      if (typeof forceValue === 'undefined') {
+        return
+      }
+
+      // Only force sync if we're not currently interacting (to avoid conflicts with direct clearing)
+      const shouldForceSync = forceValue !== inputValue && !isUserInteractingRef.current
+
+      if (shouldForceSync) {
         setInputValue(forceValue)
         onValueChange?.(forceValue)
       }
-    }, [forceValue])
+    }, [forceValue, inputValue, onValueChange])
 
     // Fetch suggestions based on current value
     const fetchSuggestions = React.useCallback(async (query: string) => {
-      console.log('🔍 fetchSuggestions called with query:', query)
-
       // Cancel previous request
       if (abortControllerRef.current) {
-        console.log('🔍 Aborting previous request')
         abortControllerRef.current.abort()
       }
 
       // Create new abort controller
       abortControllerRef.current = new AbortController()
-      console.log('🔍 Created new abort controller')
       const localController = abortControllerRef.current
       const localSignal = localController.signal
 
       try {
-        console.log('🔍 Setting loading state to true')
-
         // Do not show popular suggestions in dropdown; only show typed suggestions
         const trimmed = query.trim()
         if (trimmed.length === 0) {
           if (abortControllerRef.current === localController && !localSignal.aborted) {
-            console.log('🔍 Empty query: clearing suggestions list')
             setSuggestions([])
             setHighlightedIndex(-1)
           }
@@ -154,31 +148,18 @@ export const SearchBar = React.forwardRef<HTMLDivElement, SearchBarProps>(
         }
 
         // Show typed suggestions
-        console.log('🔍 Fetching typed suggestions for:', trimmed)
         const fetchedSuggestions: SuggestionItem[] = await suggestionsClient.fetchSuggestions(trimmed, {
           signal: localSignal
         })
-        console.log('🔍 Typed suggestions fetched:', fetchedSuggestions?.length || 0)
 
         // Only update if this request is still the latest and wasn't aborted
         if (abortControllerRef.current === localController && !localSignal.aborted) {
-          console.log('🔍 Setting suggestions:', fetchedSuggestions?.length || 0, 'items')
           setSuggestions(fetchedSuggestions)
           setHighlightedIndex(-1) // Reset highlight
-        } else {
-          console.log('🔍 Request was aborted, not updating suggestions')
         }
       } catch (error) {
         if (error instanceof Error && error.name !== 'AbortError' && abortControllerRef.current === localController) {
-          console.error('❌ Failed to fetch suggestions:', error)
-        } else {
-          console.log('🔍 Request aborted (this is normal)')
-        }
-      } finally {
-        if (abortControllerRef.current === localController && !localSignal.aborted) {
-          console.log('🔍 Setting loading state to false')
-        } else {
-          console.log('🔍 Not setting loading to false because request was aborted')
+          console.error('Failed to fetch suggestions:', error)
         }
       }
     }, [onValueChange, onClear])
@@ -186,93 +167,66 @@ export const SearchBar = React.forwardRef<HTMLDivElement, SearchBarProps>(
     // Handle input change
     const handleInputChange = React.useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
       const newValue = e.target.value
-      console.log('🔍 handleInputChange called with newValue:', newValue)
       isUserInteractingRef.current = true
-      console.log('🔍 Setting inputValue to:', newValue)
       setInputValue(newValue)
       onValueChange?.(newValue)
 
       // Fetch suggestions for the new value
       if (showSuggestions) {
-        console.log('🔍 showSuggestions is true, calling fetchSuggestions')
         fetchSuggestions(newValue)
-      } else {
-        console.log('🔍 showSuggestions is false, skipping fetchSuggestions')
       }
 
       // Reset interaction flag after a short delay
       setTimeout(() => {
-        console.log('🔍 Resetting user interaction flag')
         isUserInteractingRef.current = false
       }, 100)
     }, [showSuggestions, fetchSuggestions])
 
     // Handle input focus
     const handleFocus = React.useCallback(() => {
-      console.log('🔍 handleFocus called')
       onFocus?.()
 
       // Show suggestions on focus
-      console.log('🔍 Setting showSuggestions to true')
       setShowSuggestions(true)
       // Clear current list immediately to avoid stale highlights
       setSuggestions([])
-      // Clear current list immediately to avoid stale highlights
-      setSuggestions([])
       if (skipNextFocusFetchRef.current) {
-        console.log('🔍 Skipping focus-triggered fetch due to recent clear')
         skipNextFocusFetchRef.current = false
       } else {
         // Only fetch typed suggestions; do not fetch popular on empty input
         if (inputValue.trim().length > 0) {
-          console.log('🔍 Calling fetchSuggestions with inputValue:', inputValue)
           fetchSuggestions(inputValue)
-        } else {
-          console.log('🔍 Input is empty on focus; not fetching suggestions')
         }
       }
     }, [onFocus, inputValue, fetchSuggestions])
 
     // Handle input blur with delay to allow suggestion clicks
     const handleBlur = React.useCallback(() => {
-      console.log('🔍 handleBlur called')
       // Notify parent immediately that input lost focus
       onBlur?.()
       // Delay blur to allow suggestion clicks
       setTimeout(() => {
-        console.log('🔍 Blur timeout triggered - closing suggestions')
-        console.log('🔍 Setting showSuggestions to false')
         setShowSuggestions(false)
-        console.log('🔍 Clearing suggestions array')
         setSuggestions([])
-        console.log('🔍 Resetting highlightedIndex to -1')
         setHighlightedIndex(-1)
-        console.log('🔍 Calling onSuggestionsClose')
         onSuggestionsClose?.()
       }, 150)
     }, [onSuggestionsClose, onBlur])
 
     // Handle key down events
     const handleKeyDown = React.useCallback((e: React.KeyboardEvent<HTMLInputElement>) => {
-      console.log('🔍 handleKeyDown called with key:', e.key)
-
       if (e.key === 'Enter') {
-        console.log('🔍 Enter key pressed')
         e.preventDefault()
         if (showSuggestions && suggestions[highlightedIndex]) {
-          console.log('🔍 Selecting highlighted suggestion at index:', highlightedIndex)
           // Select highlighted suggestion
           handleSuggestionSelect(suggestions[highlightedIndex])
         } else {
-          console.log('🔍 No highlighted suggestion, submitting input value:', inputValue)
           // Submit current input value
           onSubmit(inputValue)
         }
       } else if (e.key === 'Escape') {
-        console.log('🔍 Escape key pressed')
         e.preventDefault()
         if (showSuggestions) {
-          console.log('🔍 Closing suggestions')
           // Close suggestions
           setShowSuggestions(false)
           setSuggestions([])
@@ -280,7 +234,6 @@ export const SearchBar = React.forwardRef<HTMLDivElement, SearchBarProps>(
           // Notify parent so overlays can close too
           onSuggestionsClose?.()
         } else {
-          console.log('🔍 Clearing input and blurring')
           // Clear input and blur
           setInputValue('')
           onValueChange?.('')
@@ -288,39 +241,29 @@ export const SearchBar = React.forwardRef<HTMLDivElement, SearchBarProps>(
           inputRef.current?.blur()
         }
       } else if (e.key === 'ArrowDown' && showSuggestions && suggestions.length > 0) {
-        console.log('🔍 ArrowDown key pressed')
         e.preventDefault()
         const nextIndex = highlightedIndex < suggestions.length - 1 ? highlightedIndex + 1 : 0
-        console.log('🔍 Moving highlight to index:', nextIndex)
         setHighlightedIndex(nextIndex)
       } else if (e.key === 'ArrowUp' && showSuggestions && suggestions.length > 0) {
-        console.log('🔍 ArrowUp key pressed')
         e.preventDefault()
         const prevIndex = highlightedIndex > 0 ? highlightedIndex - 1 : suggestions.length - 1
-        console.log('🔍 Moving highlight to index:', prevIndex)
         setHighlightedIndex(prevIndex)
       }
     }, [inputValue, onSubmit, showSuggestions, suggestions, highlightedIndex])
 
     // Handle suggestion selection
     const handleSuggestionSelect = React.useCallback((suggestion: SuggestionItem) => {
-      console.log('🔍 handleSuggestionSelect called with suggestion:', suggestion)
       isUserInteractingRef.current = true
       setInputValue(suggestion.text)
       onValueChange?.(suggestion.text)
-      console.log('🔍 Setting input value to:', suggestion.text)
-      console.log('🔍 Calling onSubmit with:', suggestion.text)
       onSubmit(suggestion.text)
-      console.log('🔍 Closing suggestions')
       setShowSuggestions(false)
       setSuggestions([])
       setHighlightedIndex(-1)
-      console.log('🔍 Blurring input')
       inputRef.current?.blur()
 
       // Reset interaction flag after submit completes
       setTimeout(() => {
-        console.log('🔍 Resetting interaction flag')
         isUserInteractingRef.current = false
       }, 200)
     }, [onSubmit])
@@ -340,37 +283,53 @@ export const SearchBar = React.forwardRef<HTMLDivElement, SearchBarProps>(
 
     // Handle submit button click
     const handleSubmit = React.useCallback(() => {
-      console.log('🔍 handleSubmit called with inputValue:', inputValue)
       onValueChange?.(inputValue)
       onSubmit(inputValue)
     }, [inputValue, onSubmit])
 
-    // Handle clear button click - Phase 2B: Clear and show popular suggestions
+    // Handle clear button click - Directly clear input and notify parent
     const handleClear = React.useCallback(() => {
-      console.log('🔍 handleClear called')
-      // Clear the input locally and blur the field per UX requirement
-      console.log('🔍 Clearing input value')
-      setInputValue('')
-      onValueChange?.('')
-      onClear?.()
+      // Prevent multiple rapid clicks
+      if (isUserInteractingRef.current) {
+        return
+      }
 
-      // Close any suggestions and reset state
+      // Mark as interacting to prevent race conditions
+      isUserInteractingRef.current = true
+
+      // Clear the input value immediately
+      const newValue = ''
+      setInputValue(newValue)
+
+      // Notify parent about the value change immediately
+      onValueChange?.(newValue)
+
+      // Close suggestions and reset state synchronously
       setShowSuggestions(false)
       setSuggestions([])
       setHighlightedIndex(-1)
 
       // Cancel any in-flight requests
       if (abortControllerRef.current) {
-        console.log('🔍 Aborting in-flight request')
         abortControllerRef.current.abort()
+        abortControllerRef.current = null
       }
 
-      console.log('🔍 Blurring input after clear')
+      // Reset interaction flag after a brief delay
+      setTimeout(() => {
+        isUserInteractingRef.current = false
+      }, 100)
+
+      // Notify parent that clear happened
+      onClear?.()
+
+      // Blur input immediately for better UX
       inputRef.current?.blur()
-    }, [])
+    }, [onClear, onValueChange])
 
     const hasValue = inputValue.trim().length > 0
     const isPopular = inputValue.trim().length === 0
+
 
     return (
       <div
@@ -433,6 +392,9 @@ export const SearchBar = React.forwardRef<HTMLDivElement, SearchBarProps>(
               variant="ghost"
               size="icon"
               onClick={handleClear}
+              onMouseDown={(e) => {
+                e.preventDefault() // Prevent input blur
+              }}
               data-testid="clear-button"
               className={cn(
                 "h-7 w-7 rounded-full text-white/80",

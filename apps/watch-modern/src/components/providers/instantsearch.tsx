@@ -2,8 +2,8 @@
 
 import { algoliasearch } from 'algoliasearch'
 import type { ReactNode } from 'react'
-import { InstantSearch } from 'react-instantsearch'
 import { createContext, useContext, useMemo } from 'react'
+import { InstantSearch } from 'react-instantsearch'
 
 export type InstantSearchProvidersProps = { children: ReactNode }
 
