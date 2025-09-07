@@ -148,6 +148,7 @@
     "graphql": "^16.8.1",
     "graphql-scalars": "^1.23.0",
     "graphql-yoga": "^5.3.1",
+    "hls.js": "^1.6.11",
     "hono": "^4.7.1",
     "i18next": "^23.16.8",
     "i18next-resources-to-backend": "^1.2.1",

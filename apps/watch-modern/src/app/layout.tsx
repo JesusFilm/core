@@ -1,6 +1,7 @@
 import { NextIntlClientProvider } from 'next-intl'
 import { getLocale } from 'next-intl/server'
 import { getLangDir } from 'rtl-detect'
+import { GoogleTagManager } from '@next/third-parties/google'
 
 import DatadogErrorBoundary from '@/components/Datadog/ErrorBoundary'
 import DatadogInit from '@/components/Datadog/Init'
@@ -19,6 +20,9 @@ export default async function RootLayout({
     <html lang={locale} dir={direction}>
       <body>
         <DatadogInit />
+        {process.env.NEXT_PUBLIC_GTM_ID && (
+          <GoogleTagManager gtmId={process.env.NEXT_PUBLIC_GTM_ID} />
+        )}
         <NextIntlClientProvider>
           <DatadogErrorBoundary>
             {children}

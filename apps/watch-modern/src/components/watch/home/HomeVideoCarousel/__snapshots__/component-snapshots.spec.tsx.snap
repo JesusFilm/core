@@ -1,0 +1,194 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Component Snapshots ArrowNav matches snapshot 1`] = `
+<button
+  aria-label="Previous video"
+  class="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 cursor-pointer [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 hover:text-accent-foreground absolute left-4 top-1/2 -translate-y-1/2 z-20 h-12 w-12 rounded-full bg-black/20 backdrop-blur-sm text-white hover:bg-black/40 transition-all duration-200 hover:scale-110 focus:ring-2 focus:ring-white/50"
+>
+  <svg
+    aria-hidden="true"
+    class="h-6 w-6"
+    fill="none"
+    stroke="currentColor"
+    viewBox="0 0 24 24"
+  >
+    <path
+      d="M15 19l-7-7 7-7"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      stroke-width="2"
+    />
+  </svg>
+</button>
+`;
+
+exports[`Component Snapshots Bullets matches snapshot 1`] = `
+<div
+  class="absolute bottom-6 left-1/2 -translate-x-1/2 z-20 flex items-center gap-3"
+>
+  <div
+    class="flex gap-2"
+  >
+    <button
+      aria-current="true"
+      aria-label="Go to slide 1 of 2"
+      class="relative h-3 w-3 rounded-full transition-all duration-300 bg-white scale-125"
+    >
+      <svg
+        aria-hidden="true"
+        class="absolute inset-0 w-full h-full -rotate-90"
+        data-testid="progress-ring-0"
+        viewBox="0 0 36 36"
+      >
+        <path
+          d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+          fill="none"
+          stroke="rgba(255,255,255,0.2)"
+          stroke-dasharray="100, 100"
+          stroke-width="3"
+        />
+        <path
+          d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+          fill="none"
+          stroke="white"
+          stroke-dasharray="50, 100"
+          stroke-linecap="round"
+          stroke-width="3"
+        />
+      </svg>
+    </button>
+    <button
+      aria-current="false"
+      aria-label="Go to slide 2 of 2"
+      class="relative h-3 w-3 rounded-full transition-all duration-300 bg-white/40 hover:bg-white/60"
+    />
+  </div>
+  <button
+    aria-label="Pause carousel"
+    class="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 cursor-pointer [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 hover:text-accent-foreground h-8 w-8 rounded-full bg-black/20 backdrop-blur-sm text-white hover:bg-black/40 transition-all duration-200 ml-4"
+  >
+    <svg
+      aria-hidden="true"
+      class="h-4 w-4"
+      fill="currentColor"
+      viewBox="0 0 20 20"
+    >
+      <path
+        clip-rule="evenodd"
+        d="M6 4a1 1 0 00-1 1v10a1 1 0 001 1h1a1 1 0 001-1V5a1 1 0 00-1-1H6zM12 4a1 1 0 00-1 1v10a1 1 0 001 1h1a1 1 0 001-1V5a1 1 0 00-1-1h-1z"
+        fill-rule="evenodd"
+      />
+    </svg>
+  </button>
+</div>
+`;
+
+exports[`Component Snapshots MuteToggle matches snapshot when muted 1`] = `
+<button
+  aria-label="Unmute video"
+  aria-pressed="false"
+  class="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 cursor-pointer [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 hover:text-accent-foreground absolute bottom-6 right-6 z-20 h-10 w-10 rounded-full bg-black/20 backdrop-blur-sm text-white hover:bg-black/40 transition-all duration-200 hover:scale-110 focus:ring-2 focus:ring-white/50"
+>
+  <svg
+    aria-hidden="true"
+    class="h-5 w-5"
+    fill="none"
+    stroke="currentColor"
+    viewBox="0 0 24 24"
+  >
+    <path
+      clip-rule="evenodd"
+      d="M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      stroke-width="2"
+    />
+    <path
+      d="M17 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      stroke-width="2"
+    />
+  </svg>
+</button>
+`;
+
+exports[`Component Snapshots MuteToggle matches snapshot when unmuted 1`] = `
+<button
+  aria-label="Mute video"
+  aria-pressed="true"
+  class="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 cursor-pointer [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 hover:text-accent-foreground absolute bottom-6 right-6 z-20 h-10 w-10 rounded-full bg-black/20 backdrop-blur-sm text-white hover:bg-black/40 transition-all duration-200 hover:scale-110 focus:ring-2 focus:ring-white/50"
+>
+  <svg
+    aria-hidden="true"
+    class="h-5 w-5"
+    fill="none"
+    stroke="currentColor"
+    viewBox="0 0 24 24"
+  >
+    <path
+      d="M15.536 8.464a5 5 0 010 7.072M18.364 5.636a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      stroke-width="2"
+    />
+  </svg>
+</button>
+`;
+
+exports[`Component Snapshots OverlayMeta matches snapshot 1`] = `
+<div
+  class="absolute inset-0 flex flex-col justify-end p-6 md:p-8 lg:p-12"
+>
+  <div
+    class="max-w-2xl space-y-4"
+  >
+    <div
+      class="inline-flex items-center rounded-full bg-white/10 backdrop-blur-sm px-3 py-1 text-sm font-medium text-white"
+    >
+      Film
+    </div>
+    <h1
+      class="text-2xl md:text-3xl lg:text-4xl font-bold text-white leading-tight"
+    >
+      Test Movie Title
+    </h1>
+    <p
+      class="text-lg md:text-xl text-white/90 leading-relaxed line-clamp-3"
+    >
+      This is a test description for the video content.
+    </p>
+    <div
+      class="flex flex-col sm:flex-row sm:items-center gap-4 pt-2"
+    >
+      <div
+        class="text-white/70 text-sm"
+      >
+        Available in 
+        12
+         language
+        s
+      </div>
+      <a
+        class="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 cursor-pointer [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 shadow h-10 bg-white text-black hover:bg-white/90 font-semibold px-8 py-3 rounded-full transition-all duration-200 hover:scale-105 flex items-center gap-2"
+        data-testid="link"
+        href="https://www.jesusfilm.org/watch/test-movie-slug"
+      >
+        <svg
+          aria-hidden="true"
+          class="w-5 h-5"
+          fill="currentColor"
+          viewBox="0 0 20 20"
+        >
+          <path
+            clip-rule="evenodd"
+            d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z"
+            fill-rule="evenodd"
+          />
+        </svg>
+        Watch Now
+      </a>
+    </div>
+  </div>
+</div>
+`;

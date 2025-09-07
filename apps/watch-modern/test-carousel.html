@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Carousel Timer Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background: #1a1a1a;
+            color: white;
+        }
+        .carousel-test {
+            border: 2px solid #333;
+            padding: 20px;
+            border-radius: 8px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        .status {
+            margin: 10px 0;
+            padding: 10px;
+            background: #333;
+            border-radius: 4px;
+        }
+        .active { color: #4ade80; }
+        .transitions { margin-top: 20px; }
+        .transition-state {
+            padding: 5px 10px;
+            background: #444;
+            border-radius: 4px;
+            display: inline-block;
+            margin: 5px;
+        }
+        .transition-state.gradient { background: #f59e0b; color: black; }
+        .transition-state.fade { background: #ef4444; color: white; }
+        button {
+            padding: 10px 20px;
+            margin: 10px 5px;
+            cursor: pointer;
+            background: #3b82f6;
+            color: white;
+            border: none;
+            border-radius: 4px;
+        }
+        button:hover { background: #2563eb; }
+    </style>
+</head>
+<body>
+    <div class="carousel-test">
+        <h1>Video Carousel Timer Test</h1>
+        
+        <div class="status">
+            <h3>Current State:</h3>
+            <p>Active Index: <span id="activeIndex" class="active">0</span></p>
+            <p>Progress: <span id="progress" class="active">0.0</span>s / 15s</p>
+            <p>Transition State: <span id="transitionState" class="active">normal</span></p>
+            <p>Playing: <span id="isPlaying" class="active">true</span></p>
+        </div>
+
+        <div class="transitions">
+            <h3>Transition Timeline:</h3>
+            <div id="timeline"></div>
+        </div>
+
+        <!-- Mixed Style Progress Indicators Demo -->
+        <div style="margin-top: 30px;">
+            <h3>Mixed Style Progress Indicators:</h3>
+            <div style="display: flex; gap: 15px; justify-content: center; align-items: center; padding: 20px; background: rgba(0,0,0,0.3); border-radius: 12px;">
+                <div id="progress-indicators"></div>
+            </div>
+        </div>
+
+        <div style="margin-top: 20px;">
+            <button onclick="togglePlayPause()">Play/Pause</button>
+            <button onclick="goToNext()">Next</button>
+            <button onclick="goToPrev()">Previous</button>
+            <button onclick="reset()">Reset</button>
+        </div>
+
+        <div style="margin-top: 20px;">
+            <h3>Log:</h3>
+            <div id="log" style="background: #222; padding: 10px; border-radius: 4px; max-height: 200px; overflow-y: auto;">
+                <div>Timer started</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Simulating the carousel timer logic
+        let activeIndex = 0;
+        let progress = 0;
+        let isPlaying = true;
+        let transitionState = 'normal';
+        let timerInterval = null;
+        let progressInterval = null;
+        const totalSlides = 5;
+
+        function addLog(message) {
+            const log = document.getElementById('log');
+            const entry = document.createElement('div');
+            const time = new Date().toLocaleTimeString();
+            entry.textContent = `[${time}] ${message}`;
+            log.appendChild(entry);
+            log.scrollTop = log.scrollHeight;
+        }
+
+        function updateDisplay() {
+            document.getElementById('activeIndex').textContent = activeIndex;
+            document.getElementById('progress').textContent = progress.toFixed(1);
+            document.getElementById('transitionState').textContent = transitionState;
+            document.getElementById('isPlaying').textContent = isPlaying;
+
+            // Update transition timeline
+            const timeline = document.getElementById('timeline');
+            timeline.innerHTML = '';
+            if (progress < 14.2) {
+                timeline.innerHTML = '<span class="transition-state">Normal playback</span>';
+            } else if (progress >= 14.2 && progress < 14.7) {
+                timeline.innerHTML = '<span class="transition-state gradient">Gradient emphasis (14.2s)</span>';
+            } else if (progress >= 14.7 && progress < 15) {
+                timeline.innerHTML = '<span class="transition-state fade">Fade transition (14.7s)</span>';
+            } else {
+                timeline.innerHTML = '<span class="transition-state">Advancing to next...</span>';
+            }
+
+            // Update circular progress indicators
+            updateProgressIndicators();
+        }
+
+        function updateProgressIndicators() {
+            const container = document.getElementById('progress-indicators');
+            const progressPercent = Math.min((progress / 15) * 100, 100);
+            
+            let html = '';
+            for (let i = 0; i < totalSlides; i++) {
+                const isActive = i === activeIndex;
+                const isCompleted = i < activeIndex;
+                
+                if (isActive) {
+                    // Active slide: horizontal progress bar
+                    html += `
+                        <div style="
+                            position: relative; 
+                            width: 54px; 
+                            height: 8px; 
+                            cursor: pointer; 
+                            transition: all 0.3s; 
+                            border-radius: 4px;
+                        " onclick="goToSlide(${i})">
+                            <!-- Background bar -->
+                            <div style="
+                                position: absolute;
+                                inset: 0;
+                                background: rgba(255,255,255,0.3);
+                                border-radius: 9999px;
+                                transition: all 0.3s;
+                            "></div>
+                            
+                            <!-- Progress fill -->
+                            <div style="
+                                position: absolute;
+                                top: 0;
+                                left: 0;
+                                height: 100%;
+                                width: ${progressPercent}%;
+                                background: white;
+                                border-radius: 9999px;
+                                transition: width 0.075s ease-linear;
+                                box-shadow: 0 0 6px rgba(255,255,255,0.7);
+                                min-width: ${progressPercent > 0 ? '8px' : '0px'};
+                            "></div>
+                        </div>
+                    `;
+                } else {
+                    // Inactive slides: plain circles
+                    html += `
+                        <div style="
+                            position: relative; 
+                            width: 10px; 
+                            height: 10px; 
+                            cursor: pointer; 
+                            transition: all 0.3s; 
+                            opacity: 0.6;
+                            transform: scale(0.9);
+                        " onclick="goToSlide(${i})" onmouseover="this.style.opacity='0.8'; this.style.transform='scale(1)'" onmouseout="this.style.opacity='0.6'; this.style.transform='scale(0.9)'">
+                            <!-- Plain circle -->
+                            <div style="
+                                position: absolute;
+                                inset: 0;
+                                background: ${isCompleted ? 'rgba(255,255,255,0.7)' : 'rgba(255,255,255,0.4)'};
+                                border-radius: 50%;
+                                transition: all 0.3s;
+                            "></div>
+                        </div>
+                    `;
+                }
+            }
+            container.innerHTML = html;
+        }
+
+        function goToSlide(index) {
+            activeIndex = index;
+            addLog(`Manual navigation to slide ${activeIndex}`);
+            if (isPlaying) {
+                startTimer();
+            }
+            updateDisplay();
+        }
+
+        function startTimer() {
+            // Clear existing timers
+            if (timerInterval) clearTimeout(timerInterval);
+            if (progressInterval) clearInterval(progressInterval);
+
+            progress = 0;
+            transitionState = 'normal';
+            addLog(`Starting timer for slide ${activeIndex}`);
+
+            // Progress update every 100ms
+            progressInterval = setInterval(() => {
+                progress += 0.1;
+
+                // Handle transition states based on time
+                if (progress >= 14.2 && progress < 14.7) {
+                    if (transitionState !== 'gradient') {
+                        transitionState = 'gradient';
+                        addLog('Transition state: gradient emphasis');
+                    }
+                } else if (progress >= 14.7 && progress < 15) {
+                    if (transitionState !== 'fade') {
+                        transitionState = 'fade';
+                        addLog('Transition state: fade');
+                    }
+                } else if (progress >= 15) {
+                    transitionState = 'normal';
+                    progress = 15;
+                }
+
+                updateDisplay();
+
+                if (progress >= 15) {
+                    clearInterval(progressInterval);
+                }
+            }, 100);
+
+            // Auto-advance after 15 seconds
+            timerInterval = setTimeout(() => {
+                if (isPlaying) {
+                    addLog(`Auto-advancing from slide ${activeIndex} to ${(activeIndex + 1) % totalSlides}`);
+                    activeIndex = (activeIndex + 1) % totalSlides;
+                    transitionState = 'normal';
+                    updateDisplay();
+                    startTimer(); // Start timer for next slide
+                }
+            }, 15000);
+        }
+
+        function togglePlayPause() {
+            isPlaying = !isPlaying;
+            addLog(isPlaying ? 'Resumed playback' : 'Paused playback');
+            if (isPlaying) {
+                startTimer();
+            } else {
+                if (timerInterval) clearTimeout(timerInterval);
+                if (progressInterval) clearInterval(progressInterval);
+            }
+            updateDisplay();
+        }
+
+        function goToNext() {
+            activeIndex = (activeIndex + 1) % totalSlides;
+            addLog(`Manual advance to slide ${activeIndex}`);
+            if (isPlaying) {
+                startTimer();
+            }
+            updateDisplay();
+        }
+
+        function goToPrev() {
+            activeIndex = activeIndex === 0 ? totalSlides - 1 : activeIndex - 1;
+            addLog(`Manual back to slide ${activeIndex}`);
+            if (isPlaying) {
+                startTimer();
+            }
+            updateDisplay();
+        }
+
+        function reset() {
+            activeIndex = 0;
+            progress = 0;
+            isPlaying = true;
+            transitionState = 'normal';
+            addLog('Reset carousel');
+            startTimer();
+            updateDisplay();
+        }
+
+        // Start the timer on load
+        startTimer();
+        updateDisplay();
+    </script>
+</body>
+</html>
