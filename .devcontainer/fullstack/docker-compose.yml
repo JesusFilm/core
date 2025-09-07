@@ -1,0 +1,159 @@
+services:
+  bootstrap:
+    image: mcr.microsoft.com/devcontainers/typescript-node:20
+    volumes:
+      - core-workspace:/workspaces
+      - core-node-user:/home/node
+    entrypoint: ['/bin/bash', '-lc']
+    command:
+      - |
+        LOGFILE=/workspaces/bootstrap.log
+        touch $LOGFILE
+        exec > >(tee -a "$LOGFILE") 2>&1
+        set -euxo pipefail
+        echo "=== Starting bootstrap at $(date) ==="
+
+        mkdir -p /workspaces/core
+        cd /workspaces/core
+
+        # trust the path for Git (avoids 'dubious ownership')
+        git config --global --add safe.directory /workspaces/core
+
+        # --- quick "already done?" guard ---
+        if git rev-parse --is-inside-work-tree >/dev/null 2>&1 \
+          && [ "$(git remote get-url origin 2>/dev/null || echo '')" = "https://github.com/JesusFilm/core.git" ] \
+          && git ls-remote --exit-code origin main >/dev/null 2>&1; then
+          echo "Repo already bootstrapped; skipping clone/sync."
+          exit 0
+        fi
+        # -----------------------------------
+
+        # fresh init with 'main' as the initial branch (no 'master')
+        if ! git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
+          [ -d .git ] && rm -rf .git
+          git init -b main
+        fi
+
+        if git remote get-url origin >/dev/null 2>&1; then
+          git remote set-url origin https://github.com/JesusFilm/core.git
+        else
+          git remote add origin https://github.com/JesusFilm/core.git
+        fi
+
+        git fetch --depth 1 origin main
+        git checkout -B main origin/main
+        git reset --hard origin/main
+
+        chown -R 1000:1000 /workspaces
+        echo "BOOTSTRAP_OK at $(date)"
+        exit 0
+  app:
+    build:
+      context: .
+      target: final
+      dockerfile: Dockerfile
+      args:
+        VARIANT: 20
+        USER_UID: 1000
+        USER_GID: 1000
+    volumes:
+      - core-workspace:/workspaces
+      - core-node-user:/home/node
+    # Overrides default command so things don't shut down after the process ends.
+    command: sleep infinity
+    # Uncomment the next line to use a non-root user for all processes.
+    # user: node
+    # Use "forwardPorts" in **devcontainer.json** to forward an app port locally.
+    # (Adding the "ports" property to this file will not forward from a Codespace.)
+    environment:
+      KUBECONFIG: /workspaces/core/.kube/config
+      PGHOST: db
+      PGPASSWORD: postgres
+      PGUSER: postgres
+      PGDATABASE: postgres
+      PUPPETEER_EXECUTABLE_PATH: /usr/bin/chromium
+      PUPPETEER_SKIP_CHROMIUM_DOWNLOAD: true
+    extra_hosts:
+      - 'host.docker.internal:host-gateway'
+    depends_on:
+      bootstrap:
+        condition: service_completed_successfully
+  db:
+    image: postgres:13
+    restart: unless-stopped
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_DB: postgres
+    ports:
+      - 5432:5432
+  redis:
+    image: redis:latest
+    restart: unless-stopped
+    expose:
+      - 6379
+    ports:
+      - 6379:6379
+    command:
+      [
+        'redis-server',
+        '--appendonly',
+        'no',
+        '--maxmemory',
+        '500mb',
+        '--maxmemory-policy',
+        'noeviction'
+      ]
+    volumes:
+      - redis-data:/data
+  serverless-redis-http:
+    image: hiett/serverless-redis-http:latest
+    restart: unless-stopped
+    depends_on:
+      - redis
+    ports:
+      - 8079:80
+    environment:
+      SRH_MODE: env
+      SRH_TOKEN: example_token
+      SRH_CONNECTION_STRING: redis://redis:6379
+  maildev:
+    image: 'maildev/maildev:latest'
+    restart: unless-stopped
+    ports:
+      - 1080:1080
+      - 1025:1025
+  clickhouse:
+    image: clickhouse/clickhouse-server:23.3.7.5-alpine
+    restart: always
+    volumes:
+      - event-data:/var/lib/clickhouse
+      - event-logs:/var/log/clickhouse-server
+    ulimits:
+      nofile:
+        soft: 262144
+        hard: 262144
+  plausible:
+    image: ghcr.io/plausible/community-edition:v2.1.1
+    restart: always
+    command: sh -c "sleep 10 && /entrypoint.sh db createdb && /entrypoint.sh db migrate && /entrypoint.sh run"
+    depends_on:
+      - db
+      - clickhouse
+    ports:
+      - 8000:8000
+    environment:
+      BASE_URL: http://localhost:8000
+      SECRET_KEY_BASE: LG7O7gVu6xg82I3mx/txm0VeTapsBOBl2Fb40+jgfL+OlKBsOOtwYQUus8Hm51mJ
+      TOTP_VAULT_KEY: GDaE8fBhEKJUveTDKv1DFPXIqf6EjVtcNwdUiy2i/MA=
+      DATABASE_URL: postgres://postgres:postgres@db:5432/plausible_db
+      CLICKHOUSE_DATABASE_URL: http://clickhouse:8123/plausible_events_db
+volumes:
+  core-node-user:
+  core-workspace:
+  postgres-data:
+  redis-data:
+  event-data:
+  event-logs:
