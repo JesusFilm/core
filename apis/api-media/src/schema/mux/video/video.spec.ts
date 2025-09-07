@@ -347,7 +347,6 @@ describe('mux/video', () => {
       })
 
       it('should handle queue errors gracefully', async () => {
-        const { getVideo } = jest.requireMock('./service')
         const consoleSpy = jest.spyOn(console, 'error').mockImplementation()
 
         prismaMock.userMediaRole.findUnique.mockResolvedValue({
@@ -459,7 +458,7 @@ describe('mux/video', () => {
           downloadable: false,
           updatedAt: new Date()
         })
-        const data = await client({
+        const data = await authClient({
           document: GET_MUX_VIDEO,
           variables: {
             id: 'videoId',
