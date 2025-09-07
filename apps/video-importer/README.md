@@ -40,6 +40,7 @@ Before you can use the Video Importer binary, make sure you have the following:
 
 - **Format:** `.mp4` only
 - **Naming Convention:**
+
   ```
   <videoId>---<edition>---<languageId>[---extra].mp4
   ```
@@ -51,6 +52,7 @@ Before you can use the Video Importer binary, make sure you have the following:
 
 - **Formats:** `.srt` or `.vtt` only
 - **Naming Convention:**
+
   ```
   <videoId>---<edition>---<languageId>[---extra].srt
   <videoId>---<edition>---<languageId>[---extra].vtt
@@ -62,6 +64,7 @@ Before you can use the Video Importer binary, make sure you have the following:
 
 - **Format:** `.aac` only
 - **Naming Convention:**
+
   ```
   <languageId>.aac
   ```
