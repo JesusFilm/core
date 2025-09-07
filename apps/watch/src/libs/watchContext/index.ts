@@ -2,8 +2,7 @@ export {
   WatchProvider,
   useWatch,
   reducer,
-  type WatchInitialState,
-  type WatchAction,
-  type WatchState
+  type WatchState,
+  type WatchAction
 } from './WatchContext'
 export { useLanguageActions } from './useLanguageActions'
