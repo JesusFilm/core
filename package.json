@@ -377,7 +377,7 @@
     "playwright-lighthouse": "^2.2.2",
     "postcss": "^8.5.3",
     "postject": "^1.0.0-alpha.6",
-    "prettier": "3.5.3",
+    "prettier": "3.6.2",
     "prisma": "^6.0.0",
     "prisma-erd-generator": "^2.0.0",
     "react-refresh": "^0.17.0",
