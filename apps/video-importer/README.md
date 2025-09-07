@@ -43,6 +43,7 @@ Before you can use the Video Importer binary, make sure you have the following:
   ```
   <videoId>---<edition>---<languageId>[---extra].mp4
   ```
+
   - Example: `1_jf-0-0---ot---529.mp4`
   - Example: `1_jf-0-0---jl---496---VersionNumber.mp4`
 
@@ -54,6 +55,7 @@ Before you can use the Video Importer binary, make sure you have the following:
   <videoId>---<edition>---<languageId>[---extra].srt
   <videoId>---<edition>---<languageId>[---extra].vtt
   ```
+
   - Example: `1_jf-0-0---ot---529.srt`
 
 ### Audio Preview Files
@@ -63,6 +65,7 @@ Before you can use the Video Importer binary, make sure you have the following:
   ```
   <languageId>.aac
   ```
+
   - Example: `529.aac`
 
 ---
@@ -70,12 +73,10 @@ Before you can use the Video Importer binary, make sure you have the following:
 ## Typical Workflow
 
 1. **Prepare Your Files**
-
    - Place all your video, subtitle, and audio preview files in a single folder.
    - Ensure all files follow the naming conventions and use the correct file extensions.
 
 2. **Run the Executable**
-
    - Open a terminal in the folder containing the binary or specify the folder with your files.
    - Run the binary:
      ```sh
