@@ -68,7 +68,9 @@ describe('playlist', () => {
           },
           orderBy: { updatedAt: 'desc' },
           include: {
-            items: true
+            items: {
+              orderBy: { order: 'asc' }
+            }
           }
         })
         expect(data).toHaveProperty('data.playlists', [
