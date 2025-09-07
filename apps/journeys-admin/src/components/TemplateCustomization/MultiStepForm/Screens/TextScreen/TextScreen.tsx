@@ -139,9 +139,10 @@ export function TextScreen({ handleNext }: TextScreenProps): ReactElement {
   >(journey?.journeyCustomizationFields ?? [])
 
   useEffect(() => {
-    if (journey?.journeyCustomizationFields != null) {
+    if (journey == null) handleNext()
+
+    if (journey?.journeyCustomizationFields != null)
       setReplacementItems(journey.journeyCustomizationFields)
-    }
   }, [journey?.journeyCustomizationFields])
 
   const handleValueChange = useCallback(

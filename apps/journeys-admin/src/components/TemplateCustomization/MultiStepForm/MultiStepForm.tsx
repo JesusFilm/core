@@ -14,20 +14,22 @@ import { useJourney } from '@core/journeys/ui/JourneyProvider'
 
 // NOTE: login is a dialog -> regular sign up path (that can show the image/title from journey) -> redirects back current step (URL parameter)
 // NOTE: share is a dialog
-const screens = ['language', 'text', 'links', 'social', 'done']
+const screens = ['language', 'text', 'links', 'social', 'done'] as const
 
-function renderScreen(screen: number, handleNext: () => void): ReactElement {
+export type Screen = (typeof screens)[number]
+
+function renderScreen(screen: Screen, handleNext: () => void): ReactElement {
   switch (screen) {
-    case 0:
+    case 'language':
       return <LanguageScreen handleNext={handleNext} />
-    case 1:
+    case 'text':
       return <TextScreen handleNext={handleNext} />
-    case 2:
+    case 'links':
       return <LinksScreen handleNext={handleNext} />
     // TODO: uncomment this when we have the social screen
     // case 3:
     //   return <SocialScreen handleNext={handleNext} />
-    case 3:
+    case 'done':
       return <DoneScreen />
     default:
       return <></>
@@ -37,11 +39,11 @@ function renderScreen(screen: number, handleNext: () => void): ReactElement {
 export function MultiStepForm(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { journey } = useJourney()
-  const [activeScreen, setActiveScreen] = useState(0)
+  const [activeScreen, setActiveScreen] = useState<Screen>('language')
 
   async function handleNext(): Promise<void> {
-    if (activeScreen !== screens.length - 1) {
-      setActiveScreen(activeScreen + 1)
+    if (activeScreen !== screens[screens.length - 1]) {
+      setActiveScreen(screens[screens.indexOf(activeScreen) + 1])
     }
   }
 
@@ -70,7 +72,7 @@ export function MultiStepForm(): ReactElement {
         </NextLink>
 
         <ProgressStepper
-          activeStep={activeScreen}
+          activeStep={screens.indexOf(activeScreen)}
           totalSteps={screens.length}
         />
 
@@ -83,8 +85,8 @@ export function MultiStepForm(): ReactElement {
           variant="contained"
           color="primary"
           onClick={() => {
-            if (activeScreen > 0) {
-              setActiveScreen(activeScreen - 1)
+            if (screens.indexOf(activeScreen) > 0) {
+              setActiveScreen(screens[screens.indexOf(activeScreen) - 1])
             }
           }}
           sx={{ width: '300px', alignSelf: 'center' }}
