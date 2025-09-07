@@ -1,17 +1,15 @@
 #!/bin/bash
+
 set -e
 
 echo "Starting post-create setup..."
+
 
 cd /workspaces/core
 
 # install pnpm
 echo "Installing pnpm..."
 corepack enable && corepack prepare pnpm --activate
-
-# install global CLIs
-echo "Installing global CLIs..."
-npm i -g nx foreman apollo graphql
 
 # install all dependencies
 echo "Installing project dependencies..."

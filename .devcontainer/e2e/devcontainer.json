@@ -24,7 +24,7 @@
   "forwardPorts": [9747],
 
   // Use 'postCreateCommand' to run commands after the container is created.
-  "postCreateCommand": "/workspaces/core/.devcontainer/post-create-command.sh",
+  "postCreateCommand": "/workspaces/core/.devcontainer/e2e/post-create-command.sh",
   "postStartCommand": "/workspaces/core/.devcontainer/post-start-command.sh",
 
   // Comment out connect as root instead. More info: https://aka.ms/vscode-remote/containers/non-root.

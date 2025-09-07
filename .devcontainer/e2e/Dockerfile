@@ -13,6 +13,11 @@ FROM base as final
 # Enable corepack at build time so container startup only needs to prepare pnpm
 RUN corepack enable
 
+# https://www.postgresql.org/download/linux/debian/
+# required to install postgresql-client-13
+RUN sh -c 'echo "deb [signed-by=/usr/share/keyrings/postgresql-archive.keyring.gpg] https://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list'
+RUN wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | gpg --dearmor | tee /usr/share/keyrings/postgresql-archive.keyring.gpg
+
 # doppler
 RUN curl -sLf --retry 3 --tlsv1.2 --proto "=https" 'https://packages.doppler.com/public/cli/gpg.DE2A7741A397C129.key' | apt-key add -
 RUN echo "deb https://packages.doppler.com/public/cli/deb/debian any-version main" | tee /etc/apt/sources.list.d/doppler-cli.list
@@ -26,13 +31,22 @@ RUN echo 'Acquire::http::Pipeline-Depth 0;' > /etc/apt/apt.conf.d/99fixbadproxy 
 # Install additional OS packages.
 RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
     && apt-get -y install --no-install-recommends gnupg2 libpixman-1-dev libcairo2-dev \
-    libpango1.0-dev apt-transport-https ca-certificates curl \
+    libpango1.0-dev chromium apt-transport-https ca-certificates curl \
     gnupg doppler
+
+# [Optional] Uncomment if you want to install an additional version of node using nvm
+# ARG EXTRA_NODE_VERSION=20
+# RUN su node -c "source /usr/local/share/nvm/nvm.sh && nvm install ${EXTRA_NODE_VERSION}"
 
 # install global node modules
 RUN su node -c "npm install -g npm@latest"
 
 WORKDIR /home/node
+
+# install github action runner
+RUN curl https://raw.githubusercontent.com/nektos/act/master/install.sh | bash
+RUN mv bin/act /usr/bin/
+RUN rm -rf bin
 
 RUN mkdir /home/node/.doppler \
     && chown -R node /home/node/.doppler

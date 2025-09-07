@@ -35,7 +35,7 @@ pnpm install
 
 # update plausible db (with error handling)
 echo "Setting up Plausible database..."
-if ! psql -h db -U postgres -d plausible_db < .devcontainer/plausible.sql; then
+if ! psql -h db -U postgres -d plausible_db < .devcontainer/fullstack/plausible.sql; then
   echo "❌ Plausible DB bootstrap failed" >&2
   exit 1
 fi
