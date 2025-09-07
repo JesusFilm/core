@@ -296,6 +296,7 @@ export interface BlockUpdateActionInput {
   target?: string | null;
   blockId?: string | null;
   phone?: string | null;
+  countryCode?: string | null;
 }
 
 export interface ButtonBlockCreateInput {

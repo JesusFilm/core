@@ -1,1 +1,1 @@
-export { VideoProvider, useVideo } from './VideoContext'
+export { VideoProvider, useVideo, type VideoPageProps } from './VideoContext'
