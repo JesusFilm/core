@@ -3807,13 +3807,13 @@ export type ShortLinkDomainCheck = {
   /** Is the domain correctly configured in the DNS? If false, A Record and CNAME Record should be added by the user. */
   configured: Scalars['Boolean']['output'];
   /** Verification records to be added to the DNS to confirm ownership. */
-  verification: Array<ShortLinkDomainVerfication>;
+  verification: Array<ShortLinkDomainVerification>;
   /** Does the domain belong to the short link application? If false, verification will be populated. */
   verified: Scalars['Boolean']['output'];
 };
 
-export type ShortLinkDomainVerfication = {
-  __typename?: 'ShortLinkDomainVerfication';
+export type ShortLinkDomainVerification = {
+  __typename?: 'ShortLinkDomainVerification';
   /** Domain name */
   domain: Scalars['String']['output'];
   /** Reason for the verification */

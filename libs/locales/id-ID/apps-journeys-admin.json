@@ -729,7 +729,7 @@
   "DNS Config": "Konfigurasi DNS",
   "Valid Configuration": "Konfigurasi yang Valid",
   "Invalid Configuration": "Konfigurasi Tidak Valid",
-  "Pending Verfication": "Verifikasi Tertunda",
+  "Pending Verification": "Verifikasi Tertunda",
   "Loading": "Memuat",
   "Domain {{ customDomainName }} was added to a different team. Please complete verification to add it to this team instead.": "Domain {{ customDomainName }} telah ditambahkan ke tim yang berbeda. Silakan selesaikan verifikasi untuk menambahkannya ke tim ini.",
   "Domain name is a required field": "Nama domain adalah bidang yang wajib diisi",

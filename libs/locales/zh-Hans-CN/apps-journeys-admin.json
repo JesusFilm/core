@@ -729,7 +729,7 @@
   "DNS Config": "DNS 配置",
   "Valid Configuration": "有效配置",
   "Invalid Configuration": "配置无效",
-  "Pending Verfication": "待核查",
+  "Pending Verification": "待核查",
   "Loading": "加载中",
   "Domain {{ customDomainName }} was added to a different team. Please complete verification to add it to this team instead.": "Domain {{ customDomainName }} 已被添加到其他团队。请完成验证，将其添加到此团队中。",
   "Domain name is a required field": "域名为必填字段",

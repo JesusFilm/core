@@ -729,7 +729,7 @@
   "DNS Config": "DNS Yapılandırması",
   "Valid Configuration": "Geçerli Yapılandırma",
   "Invalid Configuration": "Geçersiz Yapılandırma",
-  "Pending Verfication": "Doğrulama Bekleniyor",
+  "Pending Verification": "Doğrulama Bekleniyor",
   "Loading": "Yükleniyor",
   "Domain {{ customDomainName }} was added to a different team. Please complete verification to add it to this team instead.": "Domain {{ customDomainName }} farklı bir takıma eklendi. Lütfen bunun yerine bu ekibe eklemek için doğrulamayı tamamlayın.",
   "Domain name is a required field": "Alan adı gerekli bir alandır",

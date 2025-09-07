@@ -133,7 +133,7 @@ export function DNSConfigSection({
             {!data.customDomainCheck.verified && (
               <>
                 <Typography variant="body2" sx={{ color: 'warning.main' }}>
-                  {t('Pending Verfication')}
+                  {t('Pending Verification')}
                 </Typography>
                 <AlertCircleIcon
                   sx={{

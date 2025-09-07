@@ -729,7 +729,7 @@
   "DNS Config": "DNS कन्फिगरेसन",
   "Valid Configuration": "मान्य कन्फिगरेसन",
   "Invalid Configuration": "अवैध कन्फिगरेसन",
-  "Pending Verfication": "विचाराधीन प्रमाणीकरण",
+  "Pending Verification": "विचाराधीन प्रमाणीकरण",
   "Loading": "लोड हुँदै",
   "Domain {{ customDomainName }} was added to a different team. Please complete verification to add it to this team instead.": "डोमेन {{ customDomainName }} फरक टोलीमा थपियो। कृपया यो टोलीमा थप्न प्रमाणीकरण पूरा गर्नुहोस्।",
   "Domain name is a required field": "डोमेन नाम एक आवश्यक क्षेत्र हो।",

@@ -1,6 +1,6 @@
 import { builder } from '../../../builder'
 
-interface ShortLinkDomainVerficationType {
+interface ShortLinkDomainVerificationType {
   type: string
   domain: string
   value: string
@@ -10,11 +10,11 @@ interface ShortLinkDomainVerficationType {
 export interface ShortLinkDomainCheckType {
   configured: boolean
   verified: boolean
-  verification: ShortLinkDomainVerficationType[]
+  verification: ShortLinkDomainVerificationType[]
 }
 
 const ShortLinkDomainVerificationRef = builder
-  .objectRef<ShortLinkDomainVerficationType>('ShortLinkDomainVerfication')
+  .objectRef<ShortLinkDomainVerificationType>('ShortLinkDomainVerification')
   .implement({
     fields: (t) => ({
       type: t.exposeString('type', {

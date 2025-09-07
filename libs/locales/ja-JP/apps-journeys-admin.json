@@ -729,7 +729,7 @@
   "DNS Config": "DNSコンフィグ",
   "Valid Configuration": "有効な構成",
   "Invalid Configuration": "無効な設定",
-  "Pending Verfication": "検証中",
+  "Pending Verification": "検証中",
   "Loading": "ローディング",
   "Domain {{ customDomainName }} was added to a different team. Please complete verification to add it to this team instead.": "Domain {{ customDomainName }} は別のチームに追加されました。代わりにこのチームに追加するには、検証を完了してください。",
   "Domain name is a required field": "ドメイン名は必須項目です。",
