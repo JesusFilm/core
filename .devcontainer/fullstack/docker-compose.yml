@@ -51,7 +51,7 @@ services:
     build:
       context: .
       target: final
-      dockerfile: Dockerfile
+      dockerfile: ../Dockerfile
       args:
         VARIANT: 20
         USER_UID: 1000
