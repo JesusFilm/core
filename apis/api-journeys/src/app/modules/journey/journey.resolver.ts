@@ -695,7 +695,7 @@ export class JourneyResolver {
             await this.prismaService.action.create({
               data: {
                 ...block.action,
-                customizable: block.action.customizable ?? false, // Dynamically set customizable field
+                customizable: block?.action?.customizable ?? false, 
                 parentStepId: null,
                 parentBlockId: block.id
               }
