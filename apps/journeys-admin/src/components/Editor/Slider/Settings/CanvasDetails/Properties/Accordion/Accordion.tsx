@@ -92,7 +92,9 @@ export function Accordion({
                 <Typography variant="caption" color="text.secondary" noWrap>
                   {name}
                 </Typography>
-                <Typography noWrap>{value !== '' ? t(value) : t('None')}</Typography>
+                <Typography noWrap>
+                  {value !== '' ? t(value) : t('None')}
+                </Typography>
               </>
             ) : (
               <Typography variant="body1" noWrap>

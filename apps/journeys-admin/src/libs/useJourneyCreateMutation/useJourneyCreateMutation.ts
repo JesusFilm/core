@@ -133,14 +133,17 @@ export function useJourneyCreateMutation(): {
           variables: {
             journeyId,
             title: t('Untitled Journey'),
-            description:
-              t('Use journey description for notes about the audience, topic, traffic source, etc. Only you and other editors can see it.'),
+            description: t(
+              'Use journey description for notes about the audience, topic, traffic source, etc. Only you and other editors can see it.'
+            ),
             stepId,
             cardId,
             imageId,
             alt: t('two hot air balloons in the sky'),
             headlineTypographyContent: t('The Journey Is On'),
-            bodyTypographyContent: t('"Go, and lead the people on their way..."'),
+            bodyTypographyContent: t(
+              '"Go, and lead the people on their way..."'
+            ),
             captionTypographyContent: t('Deutoronomy 10:11'),
             teamId: activeTeam?.id
           },
