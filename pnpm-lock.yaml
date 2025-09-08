@@ -569,6 +569,9 @@ importers:
       react-swipeable:
         specifier: ^7.0.1
         version: 7.0.2(react@19.0.0)
+      react-transition-group:
+        specifier: ^4.4.5
+        version: 4.4.5(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
       react-use-downloader:
         specifier: ^1.2.10
         version: 1.2.10(react@19.0.0)
