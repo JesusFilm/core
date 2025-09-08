@@ -64,6 +64,8 @@ describe('playlistItem', () => {
                 videoVariant {
                   id
                 }
+                createdAt
+                updatedAt
               }
             }
             ... on NotFoundError {
@@ -122,7 +124,9 @@ describe('playlistItem', () => {
             id: 'playlistItemId',
             order: 1,
             playlist: { id: 'playlistId' },
-            videoVariant: { id: 'videoVariantId' }
+            videoVariant: { id: 'videoVariantId' },
+            createdAt: new Date('2023-01-01').toISOString(),
+            updatedAt: new Date('2023-01-01').toISOString()
           }
         })
       })
@@ -165,7 +169,9 @@ describe('playlistItem', () => {
             id: 'playlistItemId',
             order: 6,
             playlist: { id: 'playlistId' },
-            videoVariant: { id: 'videoVariantId' }
+            videoVariant: { id: 'videoVariantId' },
+            createdAt: new Date('2023-01-01').toISOString(),
+            updatedAt: new Date('2023-01-01').toISOString()
           }
         })
       })

@@ -35,7 +35,7 @@ async function generateUniqueSlug(): Promise<string> {
 
 export const Playlist = builder.prismaObject('Playlist', {
   fields: (t) => ({
-    id: t.exposeID('id'),
+    id: t.exposeID('id', { nullable: false }),
     name: t.expose('name', { type: 'String', nullable: false }),
     note: t.expose('note', { type: 'String', nullable: true }),
     noteUpdatedAt: t.expose('noteUpdatedAt', {
@@ -51,10 +51,12 @@ export const Playlist = builder.prismaObject('Playlist', {
     updatedAt: t.expose('updatedAt', { type: 'DateTime', nullable: false }),
     slug: t.expose('slug', { type: 'String', nullable: false }),
     owner: t.field({
+      nullable: false,
       type: UserRef,
       resolve: async (parent) => ({ id: parent.ownerId })
     }),
     items: t.relation('items', {
+      nullable: false,
       query: {
         orderBy: { order: 'asc' }
       }
