@@ -617,7 +617,7 @@ export class JourneyResolver {
                     role: UserJourneyRole.owner
                   }
                 },
-                guestJourney
+                guestJourney: guestJourney ?? null
               }
             })
 

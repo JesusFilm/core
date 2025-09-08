@@ -108,7 +108,8 @@ describe('JourneyResolver', () => {
     socialNodeX: null,
     socialNodeY: null,
     fromTemplateId: null,
-    journeyCustomizationDescription: null
+    journeyCustomizationDescription: null,
+    guestJourney: null
   }
   const journeyWithUserTeam = {
     ...journey,
