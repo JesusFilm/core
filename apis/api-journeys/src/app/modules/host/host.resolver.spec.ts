@@ -262,7 +262,8 @@ describe('HostResolver', () => {
       socialNodeX: null,
       socialNodeY: null,
       fromTemplateId: null,
-      journeyCustomizationDescription: null
+      journeyCustomizationDescription: null,
+      guestJourney: null
     }
 
     it('deletes an existing host', async () => {
