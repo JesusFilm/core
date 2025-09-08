@@ -24,7 +24,8 @@ export async function mailChimpSyncUser(user: User): Promise<void> {
           FNAME: user.firstName,
           LNAME: user.lastName
         }
-      }
+      },
+      { skipMergeValidation: true }
     )
   } catch (error) {
     if (

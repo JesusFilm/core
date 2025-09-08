@@ -63,7 +63,8 @@ describe('mailChimpSyncUser', () => {
           FNAME: 'John',
           LNAME: 'Doe'
         }
-      }
+      },
+      { skipMergeValidation: true }
     )
   })
 
@@ -179,7 +180,8 @@ describe('mailChimpSyncUser', () => {
           FNAME: null,
           LNAME: null
         }
-      }
+      },
+      { skipMergeValidation: true }
     )
   })
 
@@ -204,7 +206,8 @@ describe('mailChimpSyncUser', () => {
           FNAME: undefined,
           LNAME: undefined
         }
-      }
+      },
+      { skipMergeValidation: true }
     )
   })
 })
