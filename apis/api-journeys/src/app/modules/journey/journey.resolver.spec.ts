@@ -1770,7 +1770,7 @@ describe('JourneyResolver', () => {
       })
     })
 
-    it('should duplicate actions with customizable=true if original action has customizable=true', async () => {
+    it('should duplicate customizable actions on journey duplicate', async () => {
       const customizableDuplicatedButton = {
         ...duplicatedButton,
         action: {
