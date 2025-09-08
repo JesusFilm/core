@@ -17,6 +17,10 @@ import ArrowRightIcon from '@core/shared/ui/icons/ArrowRight'
 
 import { JourneyCustomizeTeamSelect } from './JourneyCustomizeTeamSelect'
 import { LanguageScreenCardPreview } from './LanguageScreenCardPreview'
+import { useTeamCreateMutation } from '../../../../../libs/useTeamCreateMutation'
+import { useLazyQuery } from '@apollo/client'
+import { GET_ME } from '../../../../PageWrapper/NavigationDrawer/UserNavigation'
+import { GetMe } from '../../../../../../__generated__/GetMe'
 
 interface LanguageScreenProps {
   handleNext: () => void
@@ -32,21 +36,26 @@ export function LanguageScreen({
   const { enqueueSnackbar } = useSnackbar()
 
   const { journey } = useJourney()
-  //If the user is not authenticated, useUser will return a User instance with a null id https://github.com/gladly-team/next-firebase-auth?tab=readme-ov-file#useuser
-  const isSignedIn = user?.id != null
+  const isSignedIn = user?.email != null
   const { query } = useTeam()
+  const [teamCreate] = useTeamCreateMutation()
+  const [getMe] = useLazyQuery<GetMe>(GET_ME)
 
   const validationSchema = object({
     teamSelect: string().required()
   })
 
   const initialValues = {
-    teamSelect: query?.data?.getJourneyProfile?.lastActiveTeamId ?? ''
+    teamSelect:
+      query?.data?.getJourneyProfile?.lastActiveTeamId ??
+      query?.data?.teams[0]?.id ??
+      ''
   }
 
   const [journeyDuplicate] = useJourneyDuplicateMutation()
+  const hasTeams = (query?.data?.teams?.length ?? 0) > 0
 
-  async function handleSubmit(values: FormikValues) {
+  async function handleSignedInSubmit(values: FormikValues) {
     setLoading(true)
     if (journey == null) {
       setLoading(false)
@@ -80,28 +89,122 @@ export function LanguageScreen({
     }
   }
 
+  async function handleSignedOutSubmit(values?: FormikValues) {
+    setLoading(true)
+    if (journey == null) {
+      setLoading(false)
+      return
+    }
+    await getMe()
+    if (values?.teamSelect == null) {
+      const { data: teamCreateData } = await teamCreate({
+        variables: {
+          input: {
+            title: 'My Team'
+          }
+        }
+      })
+      if (teamCreateData?.teamCreate == null) {
+        enqueueSnackbar(
+          t('Failed to create team, please refresh the page and try again'),
+          {
+            variant: 'error'
+          }
+        )
+        setLoading(false)
+        return
+      }
+
+      const { data: duplicateData } = await journeyDuplicate({
+        variables: { id: journey.id, teamId: teamCreateData.teamCreate.id }
+      })
+      if (duplicateData?.journeyDuplicate == null) {
+        enqueueSnackbar(
+          t(
+            'Failed to duplicate journey to team, please refresh the page and try again'
+          ),
+          {
+            variant: 'error'
+          }
+        )
+        setLoading(false)
+
+        return
+      }
+    } else {
+      const { data: duplicateData } = await journeyDuplicate({
+        variables: { id: journey.id, teamId: values.teamSelect }
+      })
+      if (duplicateData?.journeyDuplicate == null) {
+        enqueueSnackbar(
+          t(
+            'Failed to duplicate journey to team, please refresh the page and try again'
+          ),
+          {
+            variant: 'error'
+          }
+        )
+        setLoading(false)
+        return
+      }
+    }
+
+    handleNext()
+    setLoading(false)
+  }
+
   return (
     <Stack justifyContent="center" alignItems="center" gap={4}>
       <Typography variant="h4" component="h1" gutterBottom>
         {t('Lets get started!')}
       </Typography>
       <LanguageScreenCardPreview />
-
-      <Typography variant="body1" color="text.secondary" align="center">
-        {t('Select a team')}
-      </Typography>
-      <Formik
-        initialValues={initialValues}
-        validationSchema={validationSchema}
-        enableReinitialize
-        onSubmit={handleSubmit}
-      >
-        {({ handleSubmit }) => (
-          <Form>
-            <FormControl sx={{ alignSelf: 'center' }}>
-              {isSignedIn && <JourneyCustomizeTeamSelect />}
+      {isSignedIn && (
+        <Typography variant="body1" color="text.secondary" align="center">
+          {t('Select a team')}
+        </Typography>
+      )}
+      {isSignedIn && hasTeams && (
+        <Formik
+          initialValues={initialValues}
+          validationSchema={validationSchema}
+          enableReinitialize
+          onSubmit={handleSignedInSubmit}
+        >
+          {({ handleSubmit }) => (
+            <Form>
+              <FormControl sx={{ alignSelf: 'center' }}>
+                <JourneyCustomizeTeamSelect />
+                <Button
+                  data-testid="LanguageScreenSubmitButton"
+                  disabled={loading}
+                  variant="contained"
+                  color="secondary"
+                  onClick={() => handleSubmit()}
+                  sx={{
+                    width: { xs: '100%', sm: 300 },
+                    alignSelf: 'center',
+                    mt: 4
+                  }}
+                >
+                  <ArrowRightIcon />
+                </Button>
+              </FormControl>
+            </Form>
+          )}
+        </Formik>
+      )}
+      {!isSignedIn && hasTeams && (
+        <Formik
+          initialValues={initialValues}
+          validationSchema={validationSchema}
+          enableReinitialize
+          onSubmit={handleSignedOutSubmit}
+        >
+          {({ handleSubmit }) => (
+            <Form>
               <Button
-                data-testid="LanguageScreenSubmitButton"
+                data-testid="LanguageScreenSubmitButtonGuestWithTeam"
                 disabled={loading}
                 variant="contained"
                 color="secondary"
@@ -114,10 +217,26 @@ export function LanguageScreen({
               >
                 <ArrowRightIcon />
               </Button>
-            </FormControl>
-          </Form>
-        )}
-      </Formik>
+            </Form>
+          )}
+        </Formik>
+      )}
+      {!isSignedIn && !hasTeams && (
+        <Button
+          data-testid="LanguageScreenSubmitButtonGuest"
+          disabled={loading}
+          variant="contained"
+          color="secondary"
+          onClick={() => handleSignedOutSubmit()}
+          sx={{
+            width: { xs: '100%', sm: 300 },
+            alignSelf: 'center',
+            mt: 4
+          }}
+        >
+          <ArrowRightIcon />
+        </Button>
+      )}
     </Stack>
   )
 }

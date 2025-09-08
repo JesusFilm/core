@@ -75,7 +75,7 @@ export function LanguageScreenCardPreview(): ReactElement {
   )
 
   return (
-    <Box>
+    <Box data-testid="LanguageScreenCardPreview">
       <Box
         sx={{
           position: 'relative',
