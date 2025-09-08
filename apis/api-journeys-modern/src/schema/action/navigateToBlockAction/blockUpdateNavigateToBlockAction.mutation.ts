@@ -1,5 +1,4 @@
 import { GraphQLError } from 'graphql'
-
 import omit from 'lodash/omit'
 
 import { Prisma, prisma } from '@core/prisma/journeys/client'
