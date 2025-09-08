@@ -1,3 +1,5 @@
+import fs from 'fs'
+import { mkdir, readFile, writeFile } from 'fs/promises'
 import path from 'path'
 
 import {
@@ -102,11 +104,37 @@ async function uploadToR2FromUrl(
 async function migrateMastersToR2(): Promise<void> {
   console.info('Starting master migration to R2')
 
+  const BAD_URLS_PATH = path.resolve('.cache/api-media/bad-master-urls.json')
+  async function loadBadUrls(): Promise<Set<string>> {
+    try {
+      const data = await readFile(BAD_URLS_PATH, 'utf-8')
+      const arr: unknown = JSON.parse(data)
+      if (Array.isArray(arr))
+        return new Set(arr.filter((x) => typeof x === 'string'))
+      return new Set()
+    } catch {
+      return new Set()
+    }
+  }
+  async function saveBadUrls(badSet: Set<string>): Promise<void> {
+    const dir = path.dirname(BAD_URLS_PATH)
+    if (!fs.existsSync(dir)) await mkdir(dir, { recursive: true })
+    const arr = Array.from(badSet)
+    arr.sort()
+    await writeFile(BAD_URLS_PATH, JSON.stringify(arr, null, 2), 'utf-8')
+  }
+
+  const badUrls = await loadBadUrls()
+
   let variant = await prisma.videoVariant.findFirst({
     where: {
       id: { not: { startsWith: '1\\_' } },
       assetId: null,
-      masterUrl: { not: null }
+      masterUrl: { not: null },
+      AND: [
+        { masterUrl: { notIn: Array.from(badUrls) } },
+        { masterUrl: { not: '' } }
+      ]
     }
   })
 
@@ -164,13 +192,21 @@ async function migrateMastersToR2(): Promise<void> {
         { error, variantId: variant.id },
         `Error processing master: ${variant.id}`
       )
+      if (variant.masterUrl != null && variant.masterUrl !== '') {
+        badUrls.add(variant.masterUrl)
+        await saveBadUrls(badUrls)
+      }
     }
 
     variant = await prisma.videoVariant.findFirst({
       where: {
         id: { not: { startsWith: '1\\_' } },
         assetId: null,
-        masterUrl: { not: null }
+        masterUrl: { not: null },
+        AND: [
+          { masterUrl: { notIn: Array.from(badUrls) } },
+          { masterUrl: { not: '' } }
+        ]
       }
     })
   }
