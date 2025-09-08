@@ -569,6 +569,9 @@ importers:
       react-swipeable:
         specifier: ^7.0.1
         version: 7.0.2(react@19.0.0)
+      react-transition-group:
+        specifier: ^4.4.5
+        version: 4.4.5(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
       react-use-downloader:
         specifier: ^1.2.10
         version: 1.2.10(react@19.0.0)
@@ -641,6 +644,9 @@ importers:
       uuid:
         specifier: ^10.0.0
         version: 10.0.0
+      vaul:
+        specifier: ^1.1.2
+        version: 1.1.2(@types/react-dom@19.0.0)(@types/react@19.0.0)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
       vercel:
         specifier: ^46.0.0
         version: 46.0.4(@swc/core@1.5.29(@swc/helpers@0.5.17))(encoding@0.1.13)(rollup@4.34.8)
@@ -21589,6 +21595,12 @@ packages:
     resolution: {integrity: sha512-BNGbWLfd0eUPabhkXUVm0j8uuvREyTh5ovRa/dyow/BqAbZJyC+5fU+IzQOzmAKzYqYRAISoRhdQr3eIZ/PXqg==}
     engines: {node: '>= 0.8'}
 
+  vaul@1.1.2:
+    resolution: {integrity: sha512-ZFkClGpWyI2WUQjdLJ/BaGuV6AVQiJ3uELGk3OYtP+B6yCO7Cmn9vPFXVJkRaGkOJu3m8bQMgtyzNHixULceQA==}
+    peerDependencies:
+      react: ^16.8 || ^17.0 || ^18.0 || ^19.0.0 || ^19.0.0-rc
+      react-dom: ^16.8 || ^17.0 || ^18.0 || ^19.0.0 || ^19.0.0-rc
+
   vercel@46.0.4:
     resolution: {integrity: sha512-t2Y+FlHPjzmA2qguWMP+TQ2CLocz67+UGRQve6OiWHiYpRsHH6HFUNMs7y3U3qsjCV8cg6J7ApRa+7oEDGeRVw==}
     engines: {node: '>= 18'}
@@ -34260,7 +34272,7 @@ snapshots:
   '@types/react-router@5.1.20':
     dependencies:
       '@types/history': 4.7.11
-      '@types/react': 19.1.0
+      '@types/react': 19.0.0
 
   '@types/react-transition-group@4.4.12(@types/react@19.0.0)':
     dependencies:
@@ -49400,6 +49412,15 @@ snapshots:
   varint@6.0.0: {}
 
   vary@1.1.2: {}
+
+  vaul@1.1.2(@types/react-dom@19.0.0)(@types/react@19.0.0)(react-dom@19.0.0(react@19.0.0))(react@19.0.0):
+    dependencies:
+      '@radix-ui/react-dialog': 1.1.15(@types/react-dom@19.0.0)(@types/react@19.0.0)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
+      react: 19.0.0
+      react-dom: 19.0.0(react@19.0.0)
+    transitivePeerDependencies:
+      - '@types/react'
+      - '@types/react-dom'
 
   vercel@46.0.4(@swc/core@1.5.29(@swc/helpers@0.5.17))(encoding@0.1.13)(rollup@4.34.8):
     dependencies:
