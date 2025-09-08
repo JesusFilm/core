@@ -182,8 +182,6 @@ enum MediaRole {
 }
 
 type Mutation {
-  """Transcode an asset. Returns the bullmq job ID."""
-  transcodeAsset(input: TranscodeVideoInput!): String
   createCloudflareUploadByFile(input: ImageInput): CloudflareImage!
   createCloudflareUploadByUrl(url: String!, input: ImageInput): CloudflareImage!
   createCloudflareImageFromPrompt(prompt: String!, input: ImageInput): CloudflareImage!
@@ -193,6 +191,9 @@ type Mutation {
   """The endpoint to upload a file to Cloudflare R2"""
   cloudflareR2Create(input: CloudflareR2CreateInput!): CloudflareR2!
   cloudflareR2Delete(id: ID!): CloudflareR2!
+
+  """Transcode an asset. Returns the bullmq job ID."""
+  transcodeAsset(input: TranscodeVideoInput!): String
   createImageBySegmindPrompt(prompt: String!, model: SegmindModel!): CloudflareImage! @deprecated(reason: "use createCloudflareImageFromPrompt")
   triggerUnsplashDownload(url: String!): Boolean!
   bibleCitationCreate(input: MutationBibleCitationCreateInput!): BibleCitation
@@ -511,7 +512,7 @@ enum Platform {
 }
 
 type Playlist {
-  id: ID
+  id: ID!
   name: String!
   note: String
   noteUpdatedAt: DateTime
@@ -520,8 +521,8 @@ type Playlist {
   createdAt: DateTime!
   updatedAt: DateTime!
   slug: String!
-  owner: User
-  items: [PlaylistItem!]
+  owner: User!
+  items: [PlaylistItem!]!
 }
 
 input PlaylistCreateInput {
@@ -534,11 +535,11 @@ input PlaylistCreateInput {
 }
 
 type PlaylistItem {
-  id: ID
+  id: ID!
   order: Int!
   createdAt: Date!
-  videoVariant: VideoVariant
-  playlist: Playlist
+  videoVariant: VideoVariant!
+  playlist: Playlist!
 }
 
 input PlaylistUpdateInput {
@@ -549,9 +550,9 @@ input PlaylistUpdateInput {
 }
 
 type Query {
-  getTranscodeAssetProgress(jobId: String!): Int
   getMyCloudflareImages(offset: Int, limit: Int): [CloudflareImage!]!
   getMyCloudflareImage(id: ID!): CloudflareImage!
+  getTranscodeAssetProgress(jobId: String!): Int
   listUnsplashCollectionPhotos(collectionId: String!, page: Int, perPage: Int, orientation: UnsplashPhotoOrientation): [UnsplashPhoto!]!
   searchUnsplashPhotos(query: String!, page: Int, perPage: Int, orderBy: UnsplashOrderBy, collections: [String!], contentFilter: UnsplashContentFilter, color: UnsplashColor, orientation: UnsplashPhotoOrientation): UnsplashQueryResponse!
   bibleBooks: [BibleBook!]!
@@ -1177,6 +1178,7 @@ type VideoVariant {
 
   """version control for master video file"""
   version: Int!
+  video: Video
 }
 
 input VideoVariantCreateInput {
