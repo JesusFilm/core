@@ -1,26 +1,24 @@
-import { useChat } from '@ai-sdk/react'
 import { DefaultChatTransport } from 'ai'
-import { CopyIcon, Loader, RefreshCcwIcon } from 'lucide-react'
-import { Fragment, useEffect, useState } from 'react'
-
-import { useBlocks } from '@core/journeys/ui/block'
-
+import { useChat } from '@ai-sdk/react'
+import { useEffect, Fragment, useState } from 'react'
 import { SuggestionsRequest } from '../../types/suggestions'
+import { useBlocks } from '@core/journeys/ui/block'
 import { extractTypographyContent } from '../../utils/contextExtraction'
-import { Action, Actions } from '../Actions'
+
 import {
   Conversation,
   ConversationContent,
   ConversationScrollButton
 } from '../Conversation'
-import { Message, MessageContent } from '../Message'
+import { Message as MessageComponent, MessageContent } from '../Message'
+import { Action, Actions } from '../Actions'
+import { CopyIcon, Loader, RefreshCcwIcon } from 'lucide-react'
 import {
   PromptInput,
   PromptInputSubmit,
   PromptInputTextarea,
   PromptInputToolbar
 } from '../PromptInput'
-import { Response } from '../Response'
 import { Suggestion, Suggestions } from '../Suggestion'
 
 interface AiChatProps {
@@ -39,7 +37,7 @@ export function AiChat({ open }: AiChatProps) {
         parts: [
           {
             type: 'text',
-            text: 'Hi, how can I help you?'
+            text: "Hi there, how can I help?"
           }
         ]
       }
@@ -49,6 +47,7 @@ export function AiChat({ open }: AiChatProps) {
   const [suggestions, setSuggestions] = useState<string[]>()
   const [suggestionsLoading, setSuggestionsLoading] = useState(false)
   const [suggestionsError, setSuggestionsError] = useState<string | null>(null)
+  const [showFollowUpMessage, setShowFollowUpMessage] = useState(false)
   const { treeBlocks, blockHistory } = useBlocks()
 
   // Fetch suggestions when the chat opens
@@ -86,7 +85,10 @@ export function AiChat({ open }: AiChatProps) {
 
         const suggestions: string[] = await response.json()
 
-        if (!isCancelled) setSuggestions(suggestions)
+        if (!isCancelled) {
+          setSuggestions(suggestions)
+          // setShowFollowUpMessage(true)
+        }
       } catch (error) {
         if (isCancelled) return
         console.error('Error fetching suggestions:', error)
@@ -102,6 +104,14 @@ export function AiChat({ open }: AiChatProps) {
       isCancelled = true
     }
   }, [open, treeBlocks])
+
+  // Add follow-up message when suggestions are ready
+  useEffect(() => {
+    // if (showFollowUpMessage && suggestions && suggestions.length > 0) {
+    //   sendMessage({ text: 'See suggestions below, thanks for waiting!' })
+    //   setShowFollowUpMessage(false)
+    // }
+  }, [showFollowUpMessage, suggestions, sendMessage])
 
   // Prototype visibility
   useEffect(() => {
@@ -134,18 +144,11 @@ export function AiChat({ open }: AiChatProps) {
                     case 'text':
                       return (
                         <Fragment key={`${message.id}-${i}`}>
-                          <Message from={message.role}>
+                          <MessageComponent from={message.role}>
                             <MessageContent>
-                              {message.parts.map((part, i) => {
-                                switch (part.type) {
-                                  case 'text': // we don't use any reasoning or tool calls in this example
-                                    return <Response>{part.text}</Response>
-                                  default:
-                                    return null
-                                }
-                              })}
+                              <div>{part.text}</div>
                             </MessageContent>
-                          </Message>
+                          </MessageComponent>
                           {message.role === 'assistant' &&
                             message.id === messages.at(-1)?.id && (
                               <Actions className="mt-2">
@@ -182,6 +185,15 @@ export function AiChat({ open }: AiChatProps) {
           <ConversationScrollButton />
         </Conversation>
         <Suggestions>
+          {suggestionsLoading && (
+            <div className="flex items-center gap-2 px-4 py-2 text-muted-foreground">
+              <Loader className="size-4 animate-spin" />
+              <span>Loading suggestions, please hold...</span>
+            </div>
+          )}
+          {suggestionsError && (
+            <div className="px-4 py-2 text-destructive">{suggestionsError}</div>
+          )}
           {suggestions?.map((suggestion) => (
             <Suggestion
               key={suggestion}
