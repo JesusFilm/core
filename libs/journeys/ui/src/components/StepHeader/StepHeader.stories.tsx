@@ -75,7 +75,9 @@ const defaultJourney: Journey = {
   logoImageBlock: null,
   menuButtonIcon: null,
   menuStepBlock: null,
-  journeyTheme: null
+  journeyTheme: null,
+  journeyCustomizationDescription: null,
+  journeyCustomizationFields: []
 }
 
 const step1: TreeBlock<StepBlock> = {

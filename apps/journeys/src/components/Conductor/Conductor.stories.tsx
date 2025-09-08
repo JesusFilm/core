@@ -97,7 +97,9 @@ const defaultJourney: Journey = {
   logoImageBlock: null,
   menuButtonIcon: null,
   menuStepBlock: null,
-  journeyTheme: null
+  journeyTheme: null,
+  journeyCustomizationDescription: null,
+  journeyCustomizationFields: []
 }
 
 type Story = StoryObj<ComponentProps<typeof Conductor> & { journey?: Journey }>
