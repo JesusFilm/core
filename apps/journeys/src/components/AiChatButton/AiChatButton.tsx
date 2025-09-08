@@ -1,24 +1,25 @@
 import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome'
 import CloseIcon from '@mui/icons-material/Close'
 import Fab from '@mui/material/Fab'
+import { useTranslation } from 'next-i18next'
 import { ReactElement, useEffect, useRef, useState } from 'react'
 
 import { useBlocks } from '@core/journeys/ui/block'
 
 import { AiChat } from '../AiChat'
+import { Button } from '../Button'
 import {
   Drawer,
   DrawerClose,
   DrawerContent,
   DrawerDescription,
-  DrawerFooter,
   DrawerHeader,
   DrawerTitle,
   DrawerTrigger
 } from '../Drawer'
-import { Button } from '../Button'
 
 export function AiChatButton(): ReactElement {
+  const { t } = useTranslation('apps-journeys')
   const [open, setOpen] = useState<boolean>(false)
   const { blockHistory } = useBlocks()
 
@@ -71,8 +72,8 @@ export function AiChatButton(): ReactElement {
               <CloseIcon />
             </Button>
           </DrawerClose>
-          <DrawerTitle>Journey Assistant</DrawerTitle>
-          <DrawerDescription>You ask I answer.</DrawerDescription>
+          <DrawerTitle>{t('Journey Assistant')}</DrawerTitle>
+          <DrawerDescription>{t('You ask I answer.')}</DrawerDescription>
         </DrawerHeader>
         <AiChat open={open} />
       </DrawerContent>
