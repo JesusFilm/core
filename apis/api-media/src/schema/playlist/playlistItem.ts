@@ -5,11 +5,12 @@ import { NotFoundError } from '../error/NotFoundError'
 
 export const PlaylistItem = builder.prismaObject('PlaylistItem', {
   fields: (t) => ({
-    id: t.exposeID('id'),
+    id: t.exposeID('id', { nullable: false }),
     order: t.expose('order', { type: 'Int', nullable: false }),
-    createdAt: t.expose('createdAt', { type: 'Date', nullable: false }),
-    videoVariant: t.relation('videoVariant'),
-    playlist: t.relation('playlist')
+    createdAt: t.expose('createdAt', { type: 'DateTime', nullable: false }),
+    updatedAt: t.expose('updatedAt', { type: 'DateTime', nullable: false }),
+    videoVariant: t.relation('videoVariant', { nullable: false }),
+    playlist: t.relation('playlist', { nullable: false })
   })
 })
 

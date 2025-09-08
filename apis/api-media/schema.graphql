@@ -537,7 +537,8 @@ input PlaylistCreateInput {
 type PlaylistItem {
   id: ID!
   order: Int!
-  createdAt: Date!
+  createdAt: DateTime!
+  updatedAt: DateTime!
   videoVariant: VideoVariant!
   playlist: Playlist!
 }
