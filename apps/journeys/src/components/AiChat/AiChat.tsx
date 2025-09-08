@@ -10,7 +10,7 @@ import {
   ConversationContent,
   ConversationScrollButton
 } from '../Conversation'
-import { Message as MessageComponent, MessageContent } from '../Message'
+import { Message, MessageContent } from '../Message'
 import { Response } from '../Response'
 import { Action, Actions } from '../Actions'
 import { CopyIcon, Loader, RefreshCcwIcon } from 'lucide-react'
@@ -33,12 +33,12 @@ export function AiChat({ open }: AiChatProps) {
     }),
     messages: [
       {
-        id: "1",
-        role: "assistant",
+        id: '1',
+        role: 'assistant',
         parts: [
           {
-            type: "text",
-            text: "Hi, how can I help you?"
+            type: 'text',
+            text: 'Hi, how can I help you?'
           }
         ]
       }
@@ -133,11 +133,18 @@ export function AiChat({ open }: AiChatProps) {
                     case 'text':
                       return (
                         <Fragment key={`${message.id}-${i}`}>
-                          <MessageComponent from={message.role}>
+                          <Message from={message.role}>
                             <MessageContent>
-                              <div>{part.text}</div>
+                              {message.parts.map((part, i) => {
+                                switch (part.type) {
+                                  case 'text': // we don't use any reasoning or tool calls in this example
+                                    return <Response>{part.text}</Response>
+                                  default:
+                                    return null
+                                }
+                              })}
                             </MessageContent>
-                          </MessageComponent>
+                          </Message>
                           {message.role === 'assistant' &&
                             message.id === messages.at(-1)?.id && (
                               <Actions className="mt-2">
