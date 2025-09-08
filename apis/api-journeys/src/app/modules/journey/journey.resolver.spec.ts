@@ -1778,13 +1778,13 @@ describe('JourneyResolver', () => {
           customizable: true
         }
       }
-      
+
       blockService.getDuplicateChildren.mockResolvedValue([
         duplicatedStep,
         customizableDuplicatedButton,
         duplicatedNextStep
       ])
-      
+
       mockUuidv4.mockReturnValueOnce(duplicatedStep.id)
       mockUuidv4.mockReturnValueOnce(duplicatedNextStep.id)
       mockUuidv4.mockReturnValueOnce(duplicatedButton.id)
