@@ -437,9 +437,10 @@ export function JourneyFlow(): ReactElement {
         handleStepSelection(step.id)
         return
       }
-    } else {
+    } else if (node.type === 'SocialPreview') {
       prevX = journey?.socialNodeX
       prevY = journey?.socialNodeY
+      if (isClickOrTouch(event.timeStamp)) return
     }
 
     const x = Math.trunc(node.position.x)

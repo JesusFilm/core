@@ -16,12 +16,12 @@ import {
   useEditor
 } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
+import { isIOSTouchScreen } from '@core/shared/ui/deviceUtils'
 
 import { Tooltip } from '../../../../../Tooltip'
 import { getReactflowTooltipOffset } from '../../../../../Tooltip/utils/getReactflowTooltipOffset'
 import { useUpdateEdge } from '../../libs/useUpdateEdge'
 import { BaseNode, HandleVariant } from '../BaseNode'
-import { isIOSTouchScreen } from '@core/shared/ui/deviceUtils'
 
 const TOOLTIP_DURATION = 1500
 
