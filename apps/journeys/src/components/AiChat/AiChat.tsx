@@ -123,9 +123,9 @@ export function AiChat({ open }: AiChatProps) {
   }
 
   return (
-    <div className="h-full bg-background rounded-lg">
+    <div className="bg-background rounded-lg" style={{ height: '60vh' }}>
       <div className="flex flex-col h-full p-4">
-        <Conversation className="flex-1 bg-background-paper rounded-lg border border-secondary-light">
+        <Conversation className="flex-1 bg-background-paper rounded-lg border border-secondary-light min-h-0">
           <ConversationContent className="h-full">
             {messages.map((message) => (
               <div key={message.id}>
