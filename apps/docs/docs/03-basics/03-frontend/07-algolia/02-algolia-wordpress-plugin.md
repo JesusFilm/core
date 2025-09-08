@@ -14,17 +14,14 @@ The [WP Search with Algolia plugin](https://wordpress.org/plugins/wp-search-with
 ### Plugin Installation and Configuration
 
 1. **Plugin Activation**
-
    - Locate the Algolia plugin in WordPress dashboard
    - If not visible, verify it's enabled in the plugins page
 
 2. **Basic Configuration**
-
    - Navigate to the Algolia Settings page
    - Follow the provided instructions to establish WordPress-Algolia connection
 
 3. **Search Configuration**
-
    - Go to the Search Page settings
    - Select 'Do not use Algolia' option
    - _Important: This prevents WordPress from using Algolia as its search engine, as we're only using it for data transfer to Core_
