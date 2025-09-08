@@ -1,6 +1,5 @@
 import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome'
 import CloseIcon from '@mui/icons-material/Close'
-import Fab from '@mui/material/Fab'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, useEffect, useRef, useState } from 'react'
 
@@ -44,22 +43,18 @@ export function AiChatButton(): ReactElement {
 
   return (
     <Drawer>
-      <DrawerTrigger>
-        <Fab
-          color="primary"
+      <DrawerTrigger asChild>
+        <Button
+          variant="default"
+          size="icon"
           onClick={handleClick}
           aria-label={open ? 'Close AI chat' : 'Open AI chat'}
           tabIndex={0}
-          data-testid="AiEditButton"
-          sx={{
-            position: 'fixed',
-            bottom: 16,
-            left: 16,
-            zIndex: 1200
-          }}
+          data-testid="AiChatButton"
+          className="fixed bottom-4 left-4 z-1 bg-background text-foreground rounded-full size-14 hover:bg-background/80"
         >
           <AutoAwesomeIcon />
-        </Fab>
+        </Button>
       </DrawerTrigger>
       <DrawerContent>
         <DrawerHeader>

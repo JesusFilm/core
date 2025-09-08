@@ -25,6 +25,7 @@ import { DynamicCardList } from './DynamicCardList'
 import { HotkeyNavigation } from './HotkeyNavigation'
 import { NavigationButton } from './NavigationButton'
 import { SwipeNavigation } from './SwipeNavigation'
+import { AiChatButton } from '../AiChatButton'
 
 export const JOURNEY_VIEW_EVENT_CREATE = gql`
   mutation JourneyViewEventCreate($input: JourneyViewEventCreateInput!) {
@@ -46,7 +47,8 @@ interface ConductorProps {
 }
 
 export function Conductor({ blocks }: ConductorProps): ReactElement {
-  const { setTreeBlocks, blockHistory, showHeaderFooter } = useBlocks()
+  const { setTreeBlocks, blockHistory, showHeaderFooter, treeBlocks } =
+    useBlocks()
   const theme = useTheme()
   const { journey, variant } = useJourney()
   const { locale, rtl } = getJourneyRTL(journey)
@@ -76,6 +78,8 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
   const [journeyVisitorUpdate] = useMutation<VisitorUpdateInput>(
     JOURNEY_VISITOR_UPDATE
   )
+
+  console.log('treeBlocks', treeBlocks)
 
   useEffect(() => {
     if ((variant === 'default' || variant === 'embed') && journey != null) {
@@ -149,6 +153,15 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
   }
 
   const stepTheme = getStepTheme(activeBlock, journey)
+
+  function isInIframe(): boolean {
+    try {
+      return window.self !== window.top
+    } catch (e) {
+      // If there's a cross-origin error, we're likely in an iframe
+      return true
+    }
+  }
 
   return (
     <HotkeysProvider>
@@ -225,6 +238,7 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
             </Stack>
           </Box>
         </Stack>
+        {!isInIframe() && <AiChatButton />}
       </ThemeProvider>
     </HotkeysProvider>
   )
