@@ -5,7 +5,7 @@ set -e
 echo "Starting post-create setup..."
 
 
-cd /workspaces
+cd /workspaces/core
 
 # Wait for database to be ready
 echo "Waiting for database to be ready..."
@@ -21,25 +21,17 @@ echo "Database is ready!"
 echo "Creating test user in database..."
 psql -c "CREATE USER \"test-user\" WITH PASSWORD 'test-password' CREATEDB;" || echo "User test-user might already exist"
 
-# install Nx CLI tool
-echo "Installing Nx CLI..."
-npm install -g nx
+# install pnpm
+echo "Installing pnpm..."
+corepack enable && corepack prepare pnpm --activate
 
-# install Nest CLI tool
-echo "Installing NestJS CLI..."
-npm install -g @nestjs/cli@^8.1.5
-
-# install Foreman CLI tool
-echo "Installing Foreman CLI..."
-npm install -g foreman
-
-# install Apollo CLI tool for codegen
-echo "Installing Apollo CLI..."
-npm install -g apollo graphql
+# install global CLIs
+echo "Installing global CLIs..."
+npm i -g nx @nestjs/cli@^8.1.5 foreman apollo graphql
 
 # install all dependencies
 echo "Installing project dependencies..."
-npm i
+pnpm install
 
 # update plausible db (with error handling)
 echo "Setting up Plausible database..."

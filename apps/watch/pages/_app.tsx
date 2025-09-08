@@ -12,6 +12,7 @@ import { DefaultSeo } from 'next-seo'
 import { type ReactElement, useEffect } from 'react'
 
 import { InstantSearchProvider } from '@core/journeys/ui/algolia/InstantSearchProvider'
+import { createEmotionCache } from '@core/shared/ui/createEmotionCache'
 import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 import { ThemeMode, ThemeName } from '@core/shared/ui/themes'
@@ -69,7 +70,7 @@ type WatchAppProps = NextJsAppProps<{
 function WatchApp({
   Component,
   pageProps,
-  emotionCache
+  emotionCache = createEmotionCache({})
 }: WatchAppProps): ReactElement {
   useEffect(() => {
     // Remove the server-side injected CSS.
