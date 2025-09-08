@@ -8,7 +8,9 @@ export const MultiselectBlockCreateInput = builder.inputType(
       journeyId: t.id({ required: true }),
       parentBlockId: t.id({ required: true }),
       label: t.string({ required: true }),
-      submitText: t.string({ required: true })
+      submitLabel: t.string({ required: true }),
+      min: t.int({ required: false }),
+      max: t.int({ required: false })
     })
   }
 )
