@@ -52,7 +52,11 @@ describe('blockUpdatePhoneAction mutation', () => {
         document: MUTATION,
         variables: {
           id: actionableBlock.id,
-          input: { gtmEventName: null, phone: '+15551234567' }
+          input: {
+            gtmEventName: null,
+            phone: '+15551234567',
+            countryCode: 'US'
+          }
         }
       })
 
@@ -61,11 +65,13 @@ describe('blockUpdatePhoneAction mutation', () => {
         create: {
           parentBlockId: '1',
           gtmEventName: null,
-          phone: '+15551234567'
+          phone: '+15551234567',
+          countryCode: 'US'
         },
         update: {
           gtmEventName: null,
-          phone: '+15551234567'
+          phone: '+15551234567',
+          countryCode: 'US'
         },
         include: { parentBlock: true }
       })
@@ -90,7 +96,11 @@ describe('blockUpdatePhoneAction mutation', () => {
         document: MUTATION,
         variables: {
           id: 'missing',
-          input: { gtmEventName: null, phone: '+15551234567' }
+          input: {
+            gtmEventName: null,
+            phone: '+15551234567',
+            countryCode: 'US'
+          }
         }
       })
 
@@ -111,7 +121,11 @@ describe('blockUpdatePhoneAction mutation', () => {
         document: MUTATION,
         variables: {
           id: noAccessBlock.id,
-          input: { gtmEventName: null, phone: '+15551234567' }
+          input: {
+            gtmEventName: null,
+            phone: '+15551234567',
+            countryCode: 'US'
+          }
         }
       })
 
@@ -133,7 +147,11 @@ describe('blockUpdatePhoneAction mutation', () => {
         document: MUTATION,
         variables: {
           id: wrongBlock.id,
-          input: { gtmEventName: null, phone: '+15551234567' }
+          input: {
+            gtmEventName: null,
+            phone: '+15551234567',
+            countryCode: 'US'
+          }
         }
       })
 
@@ -154,7 +172,11 @@ describe('blockUpdatePhoneAction mutation', () => {
         document: MUTATION,
         variables: {
           id: actionableBlock.id,
-          input: { gtmEventName: null, phone: 'not a phone number' }
+          input: {
+            gtmEventName: null,
+            phone: 'not a phone number',
+            countryCode: 'US'
+          }
         }
       })
 
