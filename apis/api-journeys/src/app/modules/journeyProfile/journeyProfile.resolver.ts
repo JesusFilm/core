@@ -47,10 +47,22 @@ export class JourneyProfileResolver {
         }
       })
 
-      await this.profileCreateQueue.add('profile-create', {
-        createdProfile,
-        user
-      })
+      await this.profileCreateQueue.add(
+        'profile-create',
+        {
+          createdProfile,
+          user
+        },
+        {
+          jobId: user.id,
+          removeOnComplete: {
+            age: 24 * 3600 // keep up to 24 hours
+          },
+          removeOnFail: {
+            age: 24 * 3600 // keep up to 24 hours
+          }
+        }
+      )
 
       return createdProfile
     }
