@@ -36,22 +36,22 @@
       "executor": "nx:run-commands",
       "options": {
         "commands": [
-          "VERCEL_PROJECT_ID=$WATCH_MODERN_VERCEL_PROJECT_ID npx vercel pull --environment=preview --token=$VERCEL_TOKEN",
+          "VERCEL_PROJECT_ID=$WATCH_MODERN_VERCEL_PROJECT_ID pnpm exec vercel pull --environment=preview --token=$VERCEL_TOKEN",
           "echo \"VERCEL_ENV=\\\"$NEXT_PUBLIC_VERCEL_ENV\\\"\" >> .vercel/.env.preview.local",
           "echo \"VERCEL_GIT_COMMIT_SHA=\\\"$NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA\\\"\" >> .vercel/.env.preview.local",
-          "npx vercel build",
-          "VERCEL_PROJECT_ID=$WATCH_MODERN_VERCEL_PROJECT_ID npx vercel deploy --prebuilt --token=$VERCEL_TOKEN --archive=tgz > apps/watch-modern/.vercel-url"
+          "pnpm exec vercel build",
+          "VERCEL_PROJECT_ID=$WATCH_MODERN_VERCEL_PROJECT_ID pnpm exec vercel deploy --prebuilt --token=$VERCEL_TOKEN --archive=tgz > apps/watch-modern/.vercel-url"
         ],
         "parallel": false
       },
       "configurations": {
         "production": {
           "commands": [
-            "VERCEL_PROJECT_ID=$WATCH_MODERN_VERCEL_PROJECT_ID npx vercel pull --environment=production --token=$VERCEL_TOKEN",
+            "VERCEL_PROJECT_ID=$WATCH_MODERN_VERCEL_PROJECT_ID pnpm exec vercel pull --environment=production --token=$VERCEL_TOKEN",
             "echo \"VERCEL_ENV=\\\"$NEXT_PUBLIC_VERCEL_ENV\\\"\" >> .vercel/.env.production.local",
             "echo \"VERCEL_GIT_COMMIT_SHA=\\\"$NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA\\\"\" >> .vercel/.env.production.local",
-            "npx vercel build --prod",
-            "VERCEL_PROJECT_ID=$WATCH_MODERN_VERCEL_PROJECT_ID npx vercel deploy --prebuilt --prod --token=$VERCEL_TOKEN --archive=tgz > apps/watch-modern/.vercel-url"
+            "pnpm exec vercel build --prod",
+            "VERCEL_PROJECT_ID=$WATCH_MODERN_VERCEL_PROJECT_ID pnpm exec vercel deploy --prebuilt --prod --token=$VERCEL_TOKEN --archive=tgz > apps/watch-modern/.vercel-url"
           ]
         }
       }
@@ -60,7 +60,7 @@
       "executor": "nx:run-commands",
       "options": {
         "commands": [
-          "npx @datadog/datadog-ci sourcemaps upload dist/apps/watch-modern/.next/static --service=watch-modern --release-version=$GIT_COMMIT_SHA --minified-path-prefix=/_next/static/"
+          "pnpm dlx @datadog/datadog-ci sourcemaps upload dist/apps/watch-modern/.next/static --service=watch-modern --release-version=$GIT_COMMIT_SHA --minified-path-prefix=/_next/static/"
         ],
         "parallel": false
       }
@@ -69,7 +69,7 @@
       "executor": "nx:run-commands",
       "options": {
         "commands": [
-          "npx vercel alias set $(cat apps/watch-modern/.vercel-url) watch-modern-$PR_NUMBER-jesusfilm.vercel.app --token=$VERCEL_TOKEN --scope=jesusfilm",
+          "pnpm exec vercel alias set $(cat apps/watch-modern/.vercel-url) watch-modern-$PR_NUMBER-jesusfilm.vercel.app --token=$VERCEL_TOKEN --scope=jesusfilm",
           "echo \"https://watch-modern-$PR_NUMBER-jesusfilm.vercel.app\" > apps/watch-modern/.vercel-url"
         ],
         "parallel": false
@@ -134,7 +134,7 @@
     "type-check": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "npx tsc -b apps/watch-modern/tsconfig.json"
+        "command": "pnpm exec tsc -b apps/watch-modern/tsconfig.json"
       }
     },
     "demo": {

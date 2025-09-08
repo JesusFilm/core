@@ -17,7 +17,7 @@
     "type-check": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "npx tsc -b libs/shared/ui-dynamic/tsconfig.json"
+        "command": "pnpm exec tsc -b libs/shared/ui-dynamic/tsconfig.json"
       }
     },
     "test": {
