@@ -570,7 +570,8 @@ model Block {
   logoImageBlockParent       Journey?             @relation("LogoImageBlock")
   slug                       String?
   showSelection              Boolean?
-  selectionLimit             Int?
+  min                        Int?
+  max                        Int?
   showProgress               Boolean?
   settings                   Json                 @default("{ }") // block settings
 

@@ -7,16 +7,26 @@ export const MultiselectBlock = builder.prismaObject('Block', {
   isTypeOf: (obj: any) => obj.typename === 'MultiselectBlock',
   shareable: true,
   fields: (t) => ({
-    selectMin: t.int({
+    min: t.int({
+      select: {
+        min: true
+      },
       nullable: true,
-      resolve: (block) => block.selectionLimit ?? null
+      resolve: (block) => block.min ?? null
     }),
-    selectMax: t.int({
+    max: t.int({
+      select: {
+        max: true
+      },
       nullable: true,
-      resolve: (block) => block.selectionLimit ?? null
+      resolve: (block) => block.max ?? null
     }),
-    submitText: t.exposeString('submitText', {
-      nullable: false
+    submitLabel: t.string({
+      select: {
+        submitLabel: true
+      },
+      nullable: false,
+      resolve: ({ submitLabel }) => submitLabel ?? ''
     })
   })
 })

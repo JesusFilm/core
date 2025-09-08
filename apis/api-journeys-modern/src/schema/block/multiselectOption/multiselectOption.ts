@@ -8,6 +8,9 @@ export const MultiselectOptionBlock = builder.prismaObject('Block', {
   shareable: true,
   fields: (t) => ({
     label: t.string({
+      select: {
+        label: true
+      },
       nullable: false,
       resolve: (block) => block.label ?? ''
     })
