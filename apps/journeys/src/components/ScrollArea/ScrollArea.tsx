@@ -1,5 +1,6 @@
 'use client'
 
+// eslint-disable-next-line import/no-namespace
 import * as ScrollAreaPrimitive from '@radix-ui/react-scroll-area'
 
 import { cn } from '../../lib/utils'

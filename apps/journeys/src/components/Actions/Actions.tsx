@@ -1,5 +1,8 @@
 'use client'
 
+import { ComponentProps } from 'react'
+
+import { cn } from '../../lib/utils'
 import { Button } from '../Button'
 import {
   Tooltip,
@@ -7,8 +10,6 @@ import {
   TooltipProvider,
   TooltipTrigger
 } from '../Tooltip'
-import { cn } from '../../lib/utils'
-import type { ComponentProps } from 'react'
 
 export type ActionsProps = ComponentProps<'div'>
 

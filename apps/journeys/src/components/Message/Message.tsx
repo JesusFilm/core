@@ -1,7 +1,8 @@
-import { Avatar, AvatarFallback, AvatarImage } from '../Avatar'
-import { cn } from '../../lib/utils'
 import type { UIMessage } from 'ai'
 import type { ComponentProps, HTMLAttributes } from 'react'
+
+import { cn } from '../../lib/utils'
+import { Avatar, AvatarFallback, AvatarImage } from '../Avatar'
 
 export type MessageProps = HTMLAttributes<HTMLDivElement> & {
   from: UIMessage['role']
