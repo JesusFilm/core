@@ -469,7 +469,8 @@ export const VideoVariant = builder.prismaObject('VideoVariant', {
     version: t.withAuth({ isPublisher: true }).exposeInt('version', {
       nullable: false,
       description: 'version control for master video file'
-    })
+    }),
+    video: t.relation('video')
   })
 })
 

@@ -124,6 +124,9 @@ describe('videoVariant', () => {
           muxVideo {
             id
           }
+          video {
+            id
+          }
         }
       }
     `)
