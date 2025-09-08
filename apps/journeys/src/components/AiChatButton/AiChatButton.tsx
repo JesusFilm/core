@@ -1,10 +1,20 @@
 import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome'
+import CloseIcon from '@mui/icons-material/Close'
 import Fab from '@mui/material/Fab'
-import Grow from '@mui/material/Grow'
 import { ReactElement, useEffect, useRef, useState } from 'react'
 import { useBlocks } from '@core/journeys/ui/block'
 import { AiChat } from '../AiChat'
-import { Popover, PopoverContent, PopoverTrigger } from '../Popover'
+import {
+  Drawer,
+  DrawerClose,
+  DrawerContent,
+  DrawerDescription,
+  DrawerFooter,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerTrigger
+} from '../Drawer'
+import { Button } from '../Button'
 
 export function AiChatButton(): ReactElement {
   const [open, setOpen] = useState<boolean>(false)
@@ -30,8 +40,8 @@ export function AiChatButton(): ReactElement {
   }, [activeBlockId, open])
 
   return (
-    <Popover modal>
-      <PopoverTrigger asChild>
+    <Drawer>
+      <DrawerTrigger>
         <Fab
           color="primary"
           onClick={handleClick}
@@ -47,14 +57,23 @@ export function AiChatButton(): ReactElement {
         >
           <AutoAwesomeIcon />
         </Fab>
-      </PopoverTrigger>
-      <PopoverContent
-        className="bg-background h-[calc(90vh)] sm:h-[800px] w-screen"
-        align="start"
-        sideOffset={10}
-      >
+      </DrawerTrigger>
+      <DrawerContent>
+        <DrawerHeader>
+          <DrawerClose>
+            <Button
+              variant="destructive"
+              className="absolute top-4 right-4"
+              aria-label="Close AI chat"
+            >
+              <CloseIcon />
+            </Button>
+          </DrawerClose>
+          <DrawerTitle>Journey Assistant</DrawerTitle>
+          <DrawerDescription>You ask I answer.</DrawerDescription>
+        </DrawerHeader>
         <AiChat open={open} />
-      </PopoverContent>
-    </Popover>
+      </DrawerContent>
+    </Drawer>
   )
 }

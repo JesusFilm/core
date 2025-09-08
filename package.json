@@ -246,6 +246,7 @@
     "unsplash-js": "^7.0.19",
     "use-stick-to-bottom": "^1.1.1",
     "util": "^0.12.4",
+    "vaul": "^1.1.2",
     "uuid": "^10.0.0",
     "vercel": "^46.0.0",
     "video.js": "^8.17.4",
