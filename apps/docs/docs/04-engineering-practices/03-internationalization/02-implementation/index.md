@@ -30,12 +30,10 @@ language-SCRIPT-REGION
 **ISO Standards Used:**
 
 - **ISO 639-1**: Two-letter language codes
-
   - Example: 'en' for English, 'zh' for Chinese
   - Identifies the base language
 
 - **ISO 15924**: Four-letter script codes
-
   - Example: 'Hans' for Simplified Chinese, 'Arab' for Arabic
   - Identifies how the language is written
 
@@ -52,7 +50,6 @@ language-SCRIPT-REGION
 [Crowdin](https://support.crowdin.com/github-integration/) is our translation management platform that automates the translation process. Here's how it works:
 
 1. **Source Upload**:
-
    - Developer merges changes containing English text into production
    - Changes in `locales/en` directory trigger Crowdin
    - Crowdin extracts new or modified text for translation
@@ -150,7 +147,6 @@ For languages that have multiple variants (e.g., Chinese with Simplified and Tra
 **Setup Steps:**
 
 1. First, in Crowdin:
-
    - Go to Language Mapping settings
    - Add custom codes for each variant
    - Example for Chinese:
