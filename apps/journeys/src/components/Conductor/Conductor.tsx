@@ -20,12 +20,12 @@ import { FontFamilies, ThemeName } from '@core/shared/ui/themes'
 import { VisitorUpdateInput } from '../../../__generated__/globalTypes'
 import { JourneyViewEventCreate } from '../../../__generated__/JourneyViewEventCreate'
 import { StepFields } from '../../../__generated__/StepFields'
+import { AiChatButton } from '../AiChatButton'
 
 import { DynamicCardList } from './DynamicCardList'
 import { HotkeyNavigation } from './HotkeyNavigation'
 import { NavigationButton } from './NavigationButton'
 import { SwipeNavigation } from './SwipeNavigation'
-import { AiChatButton } from '../AiChatButton'
 
 export const JOURNEY_VIEW_EVENT_CREATE = gql`
   mutation JourneyViewEventCreate($input: JourneyViewEventCreateInput!) {
