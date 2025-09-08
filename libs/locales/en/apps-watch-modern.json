@@ -25,6 +25,14 @@
     },
     "footer": "This page is served by the modern watch application through intelligent proxy routing."
   },
+  "PlaylistPage": {
+    "pageTitle": "Playlist",
+    "title": "Playlist Page",
+    "description": "This is a test page for the modern watch application. It demonstrates the new routing and proxy functionality."
+  },
+  "NotFoundPage": {
+    "title": "404 - Page Not Found"
+  },
   "DatadogErrorBoundary": {
     "somethingWentWrong": "Something went wrong",
     "anErrorOccurred": "An error occurred while loading this page. Please try refreshing.",

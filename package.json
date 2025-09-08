@@ -317,6 +317,7 @@
     "@types/stylis": "^4.2.0",
     "@types/ua-parser-js": "^0.7.37",
     "@types/uuid": "^10.0.0",
+    "@types/video.js": "^7.3.58",
     "@types/webfontloader": "^1.6.38",
     "@typescript-eslint/eslint-plugin": "^8.26.0",
     "@typescript-eslint/parser": "^8.26.0",

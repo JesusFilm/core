@@ -60,7 +60,8 @@ export const env = createEnv({
         'ap2.datadoghq.com'
       ])
       .default('datadoghq.com'),
-    NEXT_PUBLIC_DATADOG_VERSION: z.string().optional()
+    NEXT_PUBLIC_DATADOG_VERSION: z.string().optional(),
+    NEXT_PUBLIC_GATEWAY_URL: z.string()
   },
 
   /**
@@ -101,7 +102,8 @@ export const env = createEnv({
       process.env['VERCEL_GIT_COMMIT_AUTHOR_LOGIN'],
     VERCEL_GIT_COMMIT_AUTHOR_NAME: process.env['VERCEL_GIT_COMMIT_AUTHOR_NAME'],
     VERCEL_GIT_PREVIOUS_SHA: process.env['VERCEL_GIT_PREVIOUS_SHA'],
-    VERCEL_GIT_PULL_REQUEST_ID: process.env['VERCEL_GIT_PULL_REQUEST_ID']
+    VERCEL_GIT_PULL_REQUEST_ID: process.env['VERCEL_GIT_PULL_REQUEST_ID'],
+    NEXT_PUBLIC_GATEWAY_URL: process.env['NEXT_PUBLIC_GATEWAY_URL']
   },
   /**
    * Run `build` or `dev` with `SKIP_ENV_VALIDATION` to skip env validation. This is especially

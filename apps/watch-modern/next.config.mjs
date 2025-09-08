@@ -71,6 +71,7 @@ const nextConfig = {
     ignoreDuringBuilds: env.CI
   },
   basePath: '/watch',
+  // eslint-disable-next-line @typescript-eslint/require-await
   async redirects() {
     return [
       {
