@@ -1,5 +1,6 @@
 'use client'
 
+// eslint-disable-next-line import/no-namespace
 import * as CollapsiblePrimitive from '@radix-ui/react-collapsible'
 
 function Collapsible({

@@ -1,6 +1,6 @@
 'use client'
 
-import * as React from 'react'
+// eslint-disable-next-line import/no-namespace
 import * as TooltipPrimitive from '@radix-ui/react-tooltip'
 
 import { cn } from '../../lib/utils'

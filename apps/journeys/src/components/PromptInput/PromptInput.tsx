@@ -1,5 +1,15 @@
 'use client'
 
+import type { ChatStatus } from 'ai'
+import { Loader2Icon, SendIcon, SquareIcon, XIcon } from 'lucide-react'
+import type {
+  ComponentProps,
+  HTMLAttributes,
+  KeyboardEventHandler
+} from 'react'
+import { Children } from 'react'
+
+import { cn } from '../../lib/utils'
 import { Button } from '../Button'
 import {
   Select,
@@ -9,15 +19,6 @@ import {
   SelectValue
 } from '../Select'
 import { Textarea } from '../Textarea'
-import { cn } from '../../lib/utils'
-import type { ChatStatus } from 'ai'
-import { Loader2Icon, SendIcon, SquareIcon, XIcon } from 'lucide-react'
-import type {
-  ComponentProps,
-  HTMLAttributes,
-  KeyboardEventHandler
-} from 'react'
-import { Children } from 'react'
 
 export type PromptInputProps = HTMLAttributes<HTMLFormElement>
 

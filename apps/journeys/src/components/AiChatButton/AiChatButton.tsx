@@ -2,7 +2,9 @@ import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome'
 import CloseIcon from '@mui/icons-material/Close'
 import Fab from '@mui/material/Fab'
 import { ReactElement, useEffect, useRef, useState } from 'react'
+
 import { useBlocks } from '@core/journeys/ui/block'
+
 import { AiChat } from '../AiChat'
 import {
   Drawer,
