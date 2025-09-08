@@ -162,13 +162,11 @@ The script requires the following environment variables:
 The script will:
 
 1. **Import Mux Videos**: Create Mux assets for video variants that don't have them yet
-
    - Processes variants with masterHeight > 720p or originId != '1'
    - Creates Mux assets with appropriate resolution tiers (1080p, 1440p, 2160p)
    - Links the created assets to video variants
 
 2. **Update HLS URLs**: Update streaming URLs for variants with Mux videos
-
    - Finds variants with Mux videos but non-Mux HLS URLs
    - Updates HLS URLs to use Mux streaming endpoints
    - Updates playback IDs in the database
