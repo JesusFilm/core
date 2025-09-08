@@ -54,7 +54,7 @@
     "watcher": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "npm run ts-node tools/scripts/generate-typings.ts api-journeys --transpileOnly"
+        "command": "pnpm exec ts-node tools/scripts/generate-typings.ts api-journeys --transpileOnly"
       }
     },
     "lint": {
@@ -90,13 +90,13 @@
     "generate-graphql": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "npx -y @apollo/rover@0.23.0 subgraph introspect http://localhost:4001/graphql > apis/api-journeys/schema.graphql"
+        "command": "pnpm dlx @apollo/rover@0.23.0 subgraph introspect http://localhost:4001/graphql > apis/api-journeys/schema.graphql"
       }
     },
     "subgraph-check": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "npx hive schema:check apis/api-journeys/schema.graphql --registry.accessToken $HIVE_TOKEN --github --service api-journeys"
+        "command": "pnpm exec hive schema:check apis/api-journeys/schema.graphql --registry.accessToken $HIVE_TOKEN --github --service api-journeys"
       }
     },
     "fetch-secrets": {
@@ -108,7 +108,7 @@
     "type-check": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "npx tsc -b apis/api-journeys/tsconfig.json"
+        "command": "pnpm exec tsc -b apis/api-journeys/tsconfig.json"
       }
     },
     "codecov": {
@@ -120,7 +120,7 @@
     "prisma-seed": {
       "executor": "nx:run-commands",
       "options": {
-        "commands": ["npm run ts-node apis/api-journeys/db/seed.ts"]
+        "commands": ["pnpm exec ts-node apis/api-journeys/db/seed.ts"]
       }
     }
   }
