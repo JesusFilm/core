@@ -63,17 +63,22 @@ describe('blockUpdatePhoneAction mutation', () => {
       expect(prismaMock.action.upsert).toHaveBeenCalledWith({
         where: { parentBlockId: '1' },
         create: {
-          parentBlockId: '1',
           gtmEventName: null,
           phone: '+15551234567',
-          countryCode: 'US'
+          countryCode: 'US',
+          parentBlock: { connect: { id: '1' } }
         },
         update: {
-          gtmEventName: null,
+          url: null,
+          target: null,
+          email: null,
           phone: '+15551234567',
-          countryCode: 'US'
+          countryCode: 'US',
+          journey: { disconnect: true },
+          block: { disconnect: true },
+          gtmEventName: null
         },
-        include: { parentBlock: true }
+        include: { parentBlock: { include: { action: true } } }
       })
 
       expect(result).toEqual({

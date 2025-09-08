@@ -1,6 +1,8 @@
 import { GraphQLError } from 'graphql'
 
-import { prisma } from '@core/prisma/journeys/client'
+import omit from 'lodash/omit'
+
+import { Prisma, prisma } from '@core/prisma/journeys/client'
 
 import { Action, ability, subject } from '../../../lib/auth/ability'
 import { builder } from '../../builder'
@@ -8,6 +10,15 @@ import { canBlockHaveAction } from '../canBlockHaveAction'
 
 import { NavigateToBlockActionInput } from './inputs'
 import { NavigateToBlockActionRef } from './navigateToBlockAction'
+
+const ACTION_UPDATE_RESET: Prisma.ActionUpdateInput = {
+  url: null,
+  target: null,
+  email: null,
+  phone: null,
+  journey: { disconnect: true },
+  block: { disconnect: true }
+}
 
 builder.mutationField('blockUpdateNavigateToBlockAction', (t) =>
   t.withAuth({ isAuthenticated: true }).field({
@@ -61,15 +72,27 @@ builder.mutationField('blockUpdateNavigateToBlockAction', (t) =>
         )
       }
 
+      // Validate input
+      if (input.blockId == null) {
+        throw new GraphQLError('no valid inputs provided', {
+          extensions: { code: 'BAD_USER_INPUT' }
+        })
+      }
+
       // Create or update the action
       const action = await prisma.action.upsert({
         where: { parentBlockId: id },
         create: {
-          parentBlockId: id,
-          ...input
+          ...omit(input, 'blockId'),
+          parentBlock: { connect: { id: block.id } },
+          block: { connect: { id: input.blockId } }
         },
-        update: input,
-        include: { parentBlock: true }
+        update: {
+          ...ACTION_UPDATE_RESET,
+          ...omit(input, 'blockId'),
+          block: { connect: { id: input.blockId } }
+        },
+        include: { parentBlock: { include: { action: true } } }
       })
 
       return action
