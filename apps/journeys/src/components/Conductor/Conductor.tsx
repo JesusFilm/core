@@ -47,8 +47,7 @@ interface ConductorProps {
 }
 
 export function Conductor({ blocks }: ConductorProps): ReactElement {
-  const { setTreeBlocks, blockHistory, showHeaderFooter, treeBlocks } =
-    useBlocks()
+  const { setTreeBlocks, blockHistory, showHeaderFooter } = useBlocks()
   const theme = useTheme()
   const { journey, variant } = useJourney()
   const { locale, rtl } = getJourneyRTL(journey)
@@ -78,8 +77,6 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
   const [journeyVisitorUpdate] = useMutation<VisitorUpdateInput>(
     JOURNEY_VISITOR_UPDATE
   )
-
-  console.log('treeBlocks', treeBlocks)
 
   useEffect(() => {
     if ((variant === 'default' || variant === 'embed') && journey != null) {
