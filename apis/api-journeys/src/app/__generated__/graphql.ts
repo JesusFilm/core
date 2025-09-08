@@ -1138,7 +1138,7 @@ export abstract class IMutation {
 
     abstract journeyCreate(input: JourneyCreateInput, teamId: string): Journey | Promise<Journey>;
 
-    abstract journeyDuplicate(id: string, teamId: string): Journey | Promise<Journey>;
+    abstract journeyDuplicate(id: string, teamId: string, guestJourney?: Nullable<boolean>): Journey | Promise<Journey>;
 
     abstract journeyUpdate(id: string, input: JourneyUpdateInput): Journey | Promise<Journey>;
 
@@ -1272,6 +1272,7 @@ export class Journey {
     socialNodeX?: Nullable<number>;
     socialNodeY?: Nullable<number>;
     fromTemplateId?: Nullable<string>;
+    guestJourney?: Nullable<boolean>;
     journeyCustomizationDescription?: Nullable<string>;
     journeyCustomizationFields: JourneyCustomizationField[];
     journeyTheme?: Nullable<JourneyTheme>;

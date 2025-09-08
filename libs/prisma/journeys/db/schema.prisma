@@ -408,6 +408,7 @@ model Journey {
   journeyVisitors                 JourneyVisitor[]
   journeyCollectionJourneys       JourneyCollectionJourneys[]
   journeyNotifications            JourneyNotification[]
+  guestJourney                    Boolean?
   website                         Boolean?                    @default(false)
   showShareButton                 Boolean?                    @default(false)
   showLikeButton                  Boolean?                    @default(false)

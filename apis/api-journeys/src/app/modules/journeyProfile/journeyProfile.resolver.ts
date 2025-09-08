@@ -1,21 +1,24 @@
+import { InjectQueue } from '@nestjs/bullmq'
 import { UseGuards } from '@nestjs/common'
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql'
+import { Queue } from 'bullmq'
 
 import { User } from '@core/nest/common/firebaseClient'
 import { CurrentUser } from '@core/nest/decorators/CurrentUser'
 import { CurrentUserId } from '@core/nest/decorators/CurrentUserId'
 import { JourneyProfile } from '@core/prisma/journeys/client'
+import { ProfileCreateJob } from '@core/yoga/profileCreate/types'
 
 import { JourneyProfileUpdateInput } from '../../__generated__/graphql'
 import { AppCaslGuard } from '../../lib/casl/caslGuard'
 import { PrismaService } from '../../lib/prisma.service'
-import { MailChimpService } from '../mailChimp/mailChimp.service'
 
 @Resolver('JourneyProfile')
 export class JourneyProfileResolver {
   constructor(
-    private readonly prismaService: PrismaService,
-    private readonly mailChimpService: MailChimpService
+    @InjectQueue('api-journeys-profile-create')
+    private readonly profileCreateQueue: Queue<ProfileCreateJob>,
+    private readonly prismaService: PrismaService
   ) {}
 
   @Query()
@@ -44,7 +47,11 @@ export class JourneyProfileResolver {
         }
       })
 
-      await this.mailChimpService.syncUser(user)
+      await this.profileCreateQueue.add('profile-create', {
+        createdProfile,
+        user
+      })
+
       return createdProfile
     }
 

@@ -456,7 +456,8 @@ export class JourneyResolver {
     @CaslAbility() ability: AppAbility,
     @Args('id') id: string,
     @CurrentUserId() userId: string,
-    @Args('teamId') teamId: string
+    @Args('teamId') teamId: string,
+    @Args('guestJourney') guestJourney?: boolean
   ): Promise<Journey | undefined> {
     const journey = await this.prismaService.journey.findUnique({
       where: { id },
@@ -615,7 +616,8 @@ export class JourneyResolver {
                     userId,
                     role: UserJourneyRole.owner
                   }
-                }
+                },
+                guestJourney
               }
             })
 
