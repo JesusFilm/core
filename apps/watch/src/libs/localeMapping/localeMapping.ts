@@ -200,6 +200,14 @@ export const LANGUAGE_MAPPINGS: Record<string, LocaleMapping> = {
       'MY' // Malaysia
     ],
     languageId: '21754'
+  },
+  'tl': {
+    locale: 'tl',
+    localName: 'Tagalog',
+    nativeName: 'Filipino',
+    languageSlugs: ['tagalog.html'],
+    geoLocations: ['PH'],
+    languageId: '12551'
   }
 }
 
