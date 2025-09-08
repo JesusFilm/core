@@ -2681,10 +2681,10 @@ type ShortLinkDomainCheck @join__type(graph: API_MEDIA)  {
   """
   Verification records to be added to the DNS to confirm ownership.
   """
-  verification: [ShortLinkDomainVerification!]!
+  verification: [ShortLinkDomainVerfication!]!
 }
 
-type ShortLinkDomainVerification @join__type(graph: API_MEDIA)  {
+type ShortLinkDomainVerfication @join__type(graph: API_MEDIA)  {
   """
   Type of verification
   """

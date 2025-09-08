@@ -729,7 +729,7 @@
   "DNS Config": "Настройка DNS",
   "Valid Configuration": "Правильная конфигурация",
   "Invalid Configuration": "Неверная конфигурация",
-  "Pending Verification": "Ожидание проверки",
+  "Pending Verfication": "Ожидание проверки",
   "Loading": "Загрузка",
   "Domain {{ customDomainName }} was added to a different team. Please complete verification to add it to this team instead.": "Домен {{ customDomainName }} был добавлен в другую команду. Пройди верификацию, чтобы добавить его в эту команду.",
   "Domain name is a required field": "Доменное имя - обязательное поле",

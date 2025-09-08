@@ -729,7 +729,7 @@
   "DNS Config": "การกำหนดค่า DNS",
   "Valid Configuration": "การกำหนดค่า DNS ที่ถูกต้อง",
   "Invalid Configuration": "การกำหนดค่า DNS ไม่ถูกต้อง",
-  "Pending Verification": "การรอการตรวจสอบ",
+  "Pending Verfication": "การรอการตรวจสอบ",
   "Loading": "กำลังโหลด",
   "Domain {{ customDomainName }} was added to a different team. Please complete verification to add it to this team instead.": "โดเมน {{ customDomainName }} ถูกเพิ่มในทีมอื่น ๆ โปรดทำการตรวจสอบเพื่อเพิ่มในทีมนี้แทน",
   "Domain name is a required field": "จำเป็นต้องกรอกชื่อโดเมน",

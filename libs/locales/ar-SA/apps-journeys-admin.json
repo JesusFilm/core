@@ -729,7 +729,7 @@
   "DNS Config": "تكوين نظام أسماء النطاقات",
   "Valid Configuration": "التهيئة الصالحة",
   "Invalid Configuration": "تكوين غير صالح",
-  "Pending Verification": "في انتظار التحقق",
+  "Pending Verfication": "في انتظار التحقق",
   "Loading": "التحميل",
   "Domain {{ customDomainName }} was added to a different team. Please complete verification to add it to this team instead.": "تمت إضافة المجال {{ customDomainName }} إلى فريق مختلف. يرجى إكمال التحقق لإضافته إلى هذا الفريق بدلاً من ذلك.",
   "Domain name is a required field": "اسم النطاق هو حقل مطلوب",

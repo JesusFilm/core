@@ -648,10 +648,10 @@ type ShortLinkDomainCheck {
   verified: Boolean!
 
   """Verification records to be added to the DNS to confirm ownership."""
-  verification: [ShortLinkDomainVerification!]!
+  verification: [ShortLinkDomainVerfication!]!
 }
 
-type ShortLinkDomainVerification {
+type ShortLinkDomainVerfication {
   """Type of verification"""
   type: String!
 

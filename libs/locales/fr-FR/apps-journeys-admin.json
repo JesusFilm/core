@@ -729,7 +729,7 @@
   "DNS Config": "Config DNS",
   "Valid Configuration": "Configuration valide",
   "Invalid Configuration": "Configuration non valide",
-  "Pending Verification": "En attente de vérification",
+  "Pending Verfication": "En attente de vérification",
   "Loading": "Chargement",
   "Domain {{ customDomainName }} was added to a different team. Please complete verification to add it to this team instead.": "Le domaine {{ customDomainName }} a été ajouté à une autre équipe. Complète la vérification pour l'ajouter à cette équipe à la place.",
   "Domain name is a required field": "Le nom de domaine est un champ obligatoire",

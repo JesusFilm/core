@@ -745,7 +745,7 @@
   "DNS Config": "DNS 구성",
   "Valid Configuration": "유효한 구성",
   "Invalid Configuration": "잘못된 구성",
-  "Pending Verification": "보류 중인 인증",
+  "Pending Verfication": "보류 중인 인증",
   "Loading": "로드 중",
   "Domain {{ customDomainName }} was added to a different team. Please complete verification to add it to this team instead.": "도메인 {{ customDomainName }} 님이 다른 팀에 추가되었습니다. 대신 이 팀에 추가하려면 인증을 완료하세요.",
   "Domain name is a required field": "도메인 이름은 필수 필드입니다.",
