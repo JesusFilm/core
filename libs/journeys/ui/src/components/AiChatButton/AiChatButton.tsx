@@ -5,7 +5,7 @@ import { ReactElement, useEffect, useRef, useState } from 'react'
 
 import { useBlocks } from '../../libs/block'
 import { AiChat } from '../AiChat'
-import { Button } from '../Button'
+import { Button } from '../SimpleButton'
 import {
   Drawer,
   DrawerClose,
