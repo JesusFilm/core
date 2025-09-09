@@ -26,3 +26,5 @@ onlyBuiltDependencies:
   - vue-demi
   - workerd
   - yarn
+packages:
+  - 'apps/*'

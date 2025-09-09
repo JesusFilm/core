@@ -1,0 +1,29 @@
+{
+  "name": "portable",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/portable/src",
+  "projectType": "application",
+  "tags": [],
+  "targets": {
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": ["apps/portable/**/*.{ts,tsx,js,jsx}"]
+      }
+    },
+    "start": {
+      "executor": "@nx/expo:start",
+      "options": {
+        "port": 8081
+      }
+    },
+    "build": {
+      "executor": "@nx/expo:build",
+      "options": {
+        "platform": "all",
+        "profile": "production"
+      }
+    }
+  }
+}

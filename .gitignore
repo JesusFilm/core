@@ -2,11 +2,13 @@
 
 # compiled output
 /dist
+dist/
 /tmp
 /out-tsc
 
 # dependencies
 /node_modules
+node_modules/
 
 # IDEs and editors
 /.idea
@@ -92,3 +94,16 @@ terraform.tfstate.backup
 
 # node sea
 sea-prep.blob
+
+# Expo
+.expo/
+.yarn/
+*.jks
+*.p8
+*.p12
+*.key
+*.mobileprovision
+*.orig.*
+web-build/
+cache/
+
