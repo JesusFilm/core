@@ -93,7 +93,7 @@ export function Accordion({
                   {name}
                 </Typography>
                 <Typography noWrap>
-                  {value !== '' ? t(value) : t('None')}
+                  {value !== '' ? value : t('None')}
                 </Typography>
               </>
             ) : (
