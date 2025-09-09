@@ -151,15 +151,6 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
 
   const stepTheme = getStepTheme(activeBlock, journey)
 
-  function isInIframe(): boolean {
-    try {
-      return window.self !== window.top
-    } catch {
-      // If there's a cross-origin error, we're likely in an iframe
-      return true
-    }
-  }
-
   return (
     <HotkeysProvider>
       <HotkeyNavigation rtl={rtl} />
@@ -235,7 +226,6 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
             </Stack>
           </Box>
         </Stack>
-        {!isInIframe() && <AiChatButton />}
       </ThemeProvider>
     </HotkeysProvider>
   )
