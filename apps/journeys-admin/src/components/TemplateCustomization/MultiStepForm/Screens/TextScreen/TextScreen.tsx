@@ -1,4 +1,4 @@
-import { ApolloError, gql, useMutation } from '@apollo/client'
+import { gql, useMutation } from '@apollo/client'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Stack from '@mui/material/Stack'
@@ -13,7 +13,6 @@ import ArrowRightIcon from '@core/shared/ui/icons/ArrowRight'
 
 import { GetJourney_journey_journeyCustomizationFields as JourneyCustomizationField } from '../../../../../../__generated__/GetJourney'
 import { JourneyCustomizationFieldUpdate } from '../../../../../../__generated__/JourneyCustomizationFieldUpdate'
-import { fontWeight } from '@mui/system'
 
 export const JOURNEY_CUSTOMIZATION_FIELD_UPDATE = gql`
   mutation JourneyCustomizationFieldUpdate(
@@ -32,7 +31,8 @@ export const JOURNEY_CUSTOMIZATION_FIELD_UPDATE = gql`
 const renderEditableText = (
   text: string | null | undefined,
   replacementItems: JourneyCustomizationField[],
-  onValueChange: (key: string, value: string) => void
+  onValueChange: (key: string, value: string) => void,
+  isSmallScreen: boolean
 ): ReactElement[] => {
   const parts: ReactElement[] = []
   let lastIndex = 0
@@ -80,7 +80,7 @@ const renderEditableText = (
           wordWrap: 'break-word',
           wordBreak: 'break-word',
           overflowWrap: 'break-word',
-          fontWeight: 'bold',
+          fontWeight: isSmallScreen ? 400 : 700,
           lineHeight: 1.4
         }}
         onBlur={(e) => {
@@ -197,20 +197,26 @@ export function TextScreen({ handleNext }: TextScreenProps): ReactElement {
   return (
     <Stack
       alignItems="center"
-      justifyContent="center"
       gap={{ xs: 0, sm: 2 }}
       sx={{
-        px: { xs: '20px', md: 8 },
+        px: { xs: 2, md: 8 },
         maxWidth: '1000px',
-        width: '100%',
-        mx: 'auto'
+        width: '100%'
       }}
     >
-      <Stack alignItems="center" sx={{ pb: 3 }}>
-        <Typography variant="h4" component="h1" gutterBottom>
+      <Stack alignItems="center" sx={{ pb: 4 }}>
+        <Typography variant="h4" component="h1" fontSize={isSmallScreen ? '20px' : '24px'} gutterBottom sx={{ mb: { xs: 0, sm: 2 } }}>
           {t('Text')}
         </Typography>
-        <Typography variant={isSmallScreen ? "body2" : "h6"} color="text.secondary" align="center">
+        <Typography
+          variant={isSmallScreen ? "body2" : "h6"}
+          fontSize={isSmallScreen ? '14px' : '16px'}
+          color="text.secondary"
+          align='center'
+          sx={{
+            maxWidth: { xs: '100%', sm: '75%' }
+          }}
+        >
           {t("Fill out the blue fields and we'll customise the content with your information.")}
         </Typography>
       </Stack>
@@ -229,7 +235,8 @@ export function TextScreen({ handleNext }: TextScreenProps): ReactElement {
         {renderEditableText(
           journey?.journeyCustomizationDescription ?? '',
           replacementItems,
-          handleValueChange
+          handleValueChange,
+          isSmallScreen
         )}
       </Box>
       <Button
@@ -240,9 +247,9 @@ export function TextScreen({ handleNext }: TextScreenProps): ReactElement {
         aria-label={t('Save and continue')}
         sx={{
           width: { xs: '136px', sm: '128px' },
-          height: { xs: '40px', sm: '46px' },
+          height: { xs: '40px', sm: '42px' },
           alignSelf: 'center',
-          mt: 4,
+          mt: { xs: 6, sm: 4 },
           borderRadius: '8px',
           py: '12px'
         }}
