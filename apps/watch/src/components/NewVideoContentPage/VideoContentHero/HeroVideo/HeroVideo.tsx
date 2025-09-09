@@ -25,7 +25,7 @@ export function HeroVideo({ isFullscreen }: HeroVideoProps): ReactElement {
     state: { mute }
   } = usePlayer()
   const {
-    state: { subtitleLanguage, subtitleOn, autoSubtitle }
+    state: { subtitleLanguageId, subtitleOn }
   } = useWatch()
   const [playerReady, setPlayerReady] = useState(false)
 
@@ -114,13 +114,13 @@ export function HeroVideo({ isFullscreen }: HeroVideoProps): ReactElement {
   useEffect(() => {
     const player = playerRef.current
     if (player == null) return
+
     void subtitleUpdate({
       player,
-      subtitleLanguage,
-      subtitleOn,
-      autoSubtitle
+      subtitleLanguageId,
+      subtitleOn: mute || subtitleOn
     })
-  }, [playerRef, subtitleLanguage, subtitleOn, autoSubtitle])
+  }, [playerRef, subtitleLanguageId, subtitleOn, variant, mute])
 
   return (
     <div

@@ -107,22 +107,30 @@ function getBrowserLanguage(req: NextRequest): string {
   return getPreferredLanguage(sortedLanguages) ?? DEFAULT_LOCALE
 }
 
-function getLocale(req: NextRequest): string {
+interface GetLocaleOptions {
+  ignoreLocaleFromPath?: boolean
+}
+
+function getLocale(
+  req: NextRequest,
+  options?: GetLocaleOptions
+): string | undefined {
   // Priority 1: Cookie
   // const cookieLocale = req.cookies.get('NEXT_LOCALE')?.value?.split('---')[1]
   // if (cookieLocale != null) return cookieLocale
 
   // Priority 2: URL Path
   const pathLocale = getLocaleFromPath(req.nextUrl.pathname)
-  if (pathLocale != null) return pathLocale
+  if (pathLocale != null && !options?.ignoreLocaleFromPath) return pathLocale
 
   // Priority 3: Browser Language
   const browserLocale = getBrowserLanguage(req)
-  if (browserLocale !== DEFAULT_LOCALE) return browserLocale
+  if (browserLocale != null && browserLocale !== DEFAULT_LOCALE)
+    return browserLocale
 
   // Priority 4: Geolocation (only check if no other locale found)
   const geoLocale = getLocaleFromGeoHeaders(req)
-  return geoLocale ?? DEFAULT_LOCALE
+  if (geoLocale != null && geoLocale !== DEFAULT_LOCALE) return geoLocale
 }
 
 export const AUDIO_LANGUAGE_REDIRECT_CACHE_SCHEMA_VERSION = `2025-08-25`
@@ -142,9 +150,14 @@ async function audioLanguageRedirect(
       .map((part) => part.split('.').at(0))
 
     // Check if user has an AUDIO_LANGUAGE cookie
-    const audioLanguageId = req.cookies
+    let audioLanguageId = req.cookies
       .get('AUDIO_LANGUAGE')
       ?.value?.split('---')[1]
+
+    if (audioLanguageId == null) {
+      const locale = getLocale(req, { ignoreLocaleFromPath: true })
+      if (locale != null) audioLanguageId = LANGUAGE_MAPPINGS[locale].languageId
+    }
 
     if (audioLanguageId) {
       const redis = redisClient()
@@ -218,7 +231,7 @@ export const config = {
 }
 
 export async function middleware(req: NextRequest): Promise<NextResponse> {
-  const locale = getLocale(req)
+  const locale = getLocale(req) ?? DEFAULT_LOCALE
   const rewriteUrl = req.nextUrl.clone()
   const pathname = req.nextUrl.pathname
 
