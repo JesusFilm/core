@@ -1,50 +1,32 @@
-import compact from 'lodash/compact'
+import NextLink from 'next/link'
+import { useMemo } from 'react'
 
-import { GetLanguagesSlug_video_variantLanguagesWithSlug_language as Language } from '../../../../../__generated__/GetLanguagesSlug'
-import { useLanguagesSlugQuery } from '../../../../libs/useLanguagesSlugQuery'
+import { Language, useLanguages } from '../../../../libs/useLanguages'
 import { useVideo } from '../../../../libs/videoContext'
+import { useWatch } from '../../../../libs/watchContext'
 import { SelectContent } from '../../../Select'
 
 export function AudioLanguageSelectContent() {
-  const { id, container } = useVideo()
+  const { variant } = useVideo()
+  const {
+    state: { videoAudioLanguageIds }
+  } = useWatch()
+  const { languages } = useLanguages()
 
-  const { data } = useLanguagesSlugQuery({
-    variables: {
-      id
-    }
-  })
-  const languages = compact(
-    data?.video?.variantLanguagesWithSlug?.map(({ language }) => language)
+  const filteredLanguages = useMemo(
+    () => languages.filter(({ id }) => videoAudioLanguageIds?.includes(id)),
+    [languages, videoAudioLanguageIds]
   )
 
-  function getNonPrimaryLanguageName(language: Language): string | undefined {
-    // 529 (English) does not have a non-primary language name
-    if (language.id === '529')
-      return language.name.find(({ primary }) => primary)?.value
-    return language.name.find(({ primary }) => !primary)?.value
-  }
-
-  function getLanguageHref(languageId: string): string {
-    const languageSlug = data?.video?.variantLanguagesWithSlug?.find(
-      (languages) => languages.language?.id === languageId
-    )?.slug
-
-    if (languageSlug != null) {
-      return `/watch${
-        container?.slug != null ? `/${container.slug}/` : '/'
-      }${languageSlug}`
-    }
-    return '#'
-  }
   return (
-    <SelectContent className="bg-white border border-gray-200 shadow-lg">
-      {languages?.map((language: Language) => {
-        const href = getLanguageHref(language.id)
-        return (
-          <a
-            key={language.id}
-            href={href}
-            className={`
+    <SelectContent className="bg-white border border-gray-200 shadow-lg z-[9999]">
+      {filteredLanguages?.map((option: Language) => (
+        <NextLink
+          key={option.id}
+          href={`/watch${
+            variant?.slug != null ? `/${variant.slug.split('/')[0]}.html/` : '/'
+          }${option.slug}.html?r=0`}
+          className={`
             block
             hover:bg-gray-100
             focus:bg-gray-100
@@ -55,26 +37,28 @@ export function AudioLanguageSelectContent() {
             p-2
             rounded
           `}
-          >
-            <div className="flex items-center gap-1">
-              <span
-                className="text-sm text-black font-sans"
-                data-testid="AudioLanguageSelectNonPrimaryLanguageName"
-              >
-                {getNonPrimaryLanguageName(language)}
-              </span>
-              {language.name.find(({ primary }) => primary)?.value && (
+          role="option"
+          aria-label={option.displayName}
+        >
+          <div className="flex items-center gap-1 justify-between w-full">
+            <span
+              className="text-sm text-black font-sans"
+              data-testid="AudioLanguageSelectDisplayLanguageName"
+            >
+              {option.displayName}
+            </span>
+            {option.nativeName &&
+              option.nativeName.value !== option.displayName && (
                 <span
                   className="text-xs text-gray-600 font-sans"
-                  data-testid="AudioLanguageSelectPrimaryLanguageName"
+                  data-testid="AudioLanguageSelectNativeLanguageName"
                 >
-                  ({language.name.find(({ primary }) => primary)?.value})
+                  {option.nativeName.value}
                 </span>
               )}
-            </div>
-          </a>
-        )
-      })}
+          </div>
+        </NextLink>
+      ))}
     </SelectContent>
   )
 }

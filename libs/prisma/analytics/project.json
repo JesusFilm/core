@@ -25,7 +25,7 @@
       "options": {
         "parallel": false,
         "commands": [
-          "npx prisma generate --schema libs/prisma/analytics/db/schema.prisma"
+          "pnpm exec prisma generate --schema libs/prisma/analytics/db/schema.prisma"
         ]
       }
     },
@@ -33,7 +33,7 @@
       "executor": "nx:run-commands",
       "options": {
         "commands": [
-          "npx prisma db pull --schema libs/prisma/analytics/db/schema.prisma"
+          "pnpm exec prisma db pull --schema libs/prisma/analytics/db/schema.prisma"
         ]
       }
     },
@@ -41,7 +41,7 @@
       "executor": "nx:run-commands",
       "options": {
         "commands": [
-          "npx prisma studio --schema libs/prisma/analytics/db/schema.prisma"
+          "pnpm exec prisma studio --schema libs/prisma/analytics/db/schema.prisma"
         ]
       }
     },
@@ -49,7 +49,7 @@
       "executor": "nx:run-commands",
       "options": {
         "commands": [
-          "npx prisma validate --schema libs/prisma/analytics/db/schema.prisma"
+          "pnpm exec prisma validate --schema libs/prisma/analytics/db/schema.prisma"
         ]
       }
     },
@@ -57,14 +57,14 @@
       "executor": "nx:run-commands",
       "options": {
         "commands": [
-          "tools/scripts/env-validator.sh --DOPPLER_CONFIG=dev --PG_DATABASE_URL_ANALYTICS=postgresql://postgres:postgres@db:5432/analytics?schema=public \"npx prisma migrate reset --schema libs/prisma/analytics/db/schema.prisma --force\""
+          "tools/scripts/env-validator.sh --DOPPLER_CONFIG=dev --PG_DATABASE_URL_ANALYTICS=postgresql://postgres:postgres@db:5432/analytics?schema=public \"pnpm exec prisma migrate reset --schema libs/prisma/analytics/db/schema.prisma --force\""
         ]
       }
     },
     "type-check": {
       "executor": "nx:run-commands",
       "options": {
-        "commands": ["npx tsc -b libs/prisma/analytics/tsconfig.json"]
+        "commands": ["pnpm exec tsc -b libs/prisma/analytics/tsconfig.json"]
       }
     }
   }

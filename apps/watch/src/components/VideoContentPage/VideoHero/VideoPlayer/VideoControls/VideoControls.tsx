@@ -28,10 +28,9 @@ import Player from 'video.js/dist/types/player'
 import { isMobile } from '@core/shared/ui/deviceUtils'
 import { secondsToTimeFormat } from '@core/shared/ui/timeFormat'
 
-import { setCookie } from '../../../../../libs/cookieHandler'
 import { usePlayer } from '../../../../../libs/playerContext'
 import { useVideo } from '../../../../../libs/videoContext'
-import { useWatch } from '../../../../../libs/watchContext'
+import { useLanguageActions } from '../../../../../libs/watchContext'
 import { HeroOverlay } from '../../../../HeroOverlay/HeroOverlay'
 import { AudioLanguageButton } from '../../../AudioLanguageButton'
 import { VideoTitle } from '../VideoTitle'
@@ -46,7 +45,11 @@ const DynamicLanguageSwitchDialog = dynamic<{
     await import(
       /* webpackChunkName: "LanguageSwitchDialog" */
       '../../../../LanguageSwitchDialog'
-    ).then((mod) => mod.LanguageSwitchDialog)
+    ).then((mod) => mod.LanguageSwitchDialog),
+  {
+    ssr: false,
+    loading: () => <Box role="dialog" aria-label="Language Settings" />
+  }
 )
 
 interface VideoControlProps {
@@ -100,7 +103,7 @@ export function VideoControls({
   const [openLanguageSwitchDialog, setOpenLanguageSwitchDialog] =
     useState<boolean>()
 
-  const { dispatch: dispatchWatch } = useWatch()
+  const { updateSubtitlesOn } = useLanguageActions()
   const { id, title, variant, images, imageAlt } = useVideo()
   const visible = !play || active || loading
 
@@ -195,7 +198,7 @@ export function VideoControls({
         title[0].value,
         variant?.language?.name.find(({ primary }) => !primary)?.value ??
           variant?.language?.name[0]?.value,
-        Math.round(player.currentTime() ?? 0),
+        Math.round(player?.currentTime() ?? 0),
         Math.round((progress / durationSeconds) * 100)
       )
       const [, ...rest] = progressPercentNotYetEmitted
@@ -220,7 +223,7 @@ export function VideoControls({
       volume: (player.volume() ?? 1) * 100
     })
     player.on('play', () => {
-      if ((player.currentTime() ?? 0) < 0.02) {
+      if ((player?.currentTime() ?? 0) < 0.02) {
         eventToDataLayer(
           'video_start',
           id,
@@ -228,9 +231,9 @@ export function VideoControls({
           title[0].value,
           variant?.language?.name.find(({ primary }) => !primary)?.value ??
             variant?.language?.name[0]?.value,
-          Math.round(player.currentTime() ?? 0),
+          Math.round(player?.currentTime() ?? 0),
           Math.round(
-            ((player.currentTime() ?? 0) / (player.duration() ?? 1)) * 100
+            ((player?.currentTime() ?? 0) / (player.duration() ?? 1)) * 100
           )
         )
       } else {
@@ -241,9 +244,9 @@ export function VideoControls({
           title[0].value,
           variant?.language?.name.find(({ primary }) => !primary)?.value ??
             variant?.language?.name[0]?.value,
-          Math.round(player.currentTime() ?? 0),
+          Math.round(player?.currentTime() ?? 0),
           Math.round(
-            ((player.currentTime() ?? 0) / (player.duration() ?? 1)) * 100
+            ((player?.currentTime() ?? 0) / (player.duration() ?? 1)) * 100
           )
         )
       }
@@ -253,7 +256,7 @@ export function VideoControls({
       })
     })
     player.on('pause', () => {
-      if ((player.currentTime() ?? 0) > 0.02) {
+      if ((player?.currentTime() ?? 0) > 0.02) {
         eventToDataLayer(
           'video_pause',
           id,
@@ -261,9 +264,9 @@ export function VideoControls({
           title[0].value,
           variant?.language?.name.find(({ primary }) => !primary)?.value ??
             variant?.language?.name[0]?.value,
-          Math.round(player.currentTime() ?? 0),
+          Math.round(player?.currentTime() ?? 0),
           Math.round(
-            ((player.currentTime() ?? 0) / (player.duration() ?? 1)) * 100
+            ((player?.currentTime() ?? 0) / (player.duration() ?? 1)) * 100
           )
         )
       }
@@ -275,13 +278,13 @@ export function VideoControls({
     player.on('timeupdate', () => {
       dispatchPlayer({
         type: 'SetCurrentTime',
-        currentTime: secondsToTimeFormat(player.currentTime() ?? 0, {
+        currentTime: secondsToTimeFormat(player?.currentTime() ?? 0, {
           trimZeroes: true
         })
       })
       dispatchPlayer({
         type: 'SetProgress',
-        progress: Math.round(player.currentTime() ?? 0)
+        progress: Math.round(player?.currentTime() ?? 0)
       })
     })
     player.on('volumechange', () => {
@@ -333,9 +336,9 @@ export function VideoControls({
         title[0].value,
         variant?.language?.name.find(({ primary }) => !primary)?.value ??
           variant?.language?.name[0]?.value,
-        Math.round(player.currentTime() ?? 0),
+        Math.round(player?.currentTime() ?? 0),
         Math.round(
-          ((player.currentTime() ?? 0) / (player.duration() ?? 1)) * 100
+          ((player?.currentTime() ?? 0) / (player.duration() ?? 1)) * 100
         )
       )
     })
@@ -360,9 +363,9 @@ export function VideoControls({
           title[0].value,
           variant?.language?.name.find(({ primary }) => !primary)?.value ??
             variant?.language?.name[0]?.value,
-          Math.round(player.currentTime() ?? 0),
+          Math.round(player?.currentTime() ?? 0),
           Math.round(
-            ((player.currentTime() ?? 0) / (player.duration() ?? 1)) * 100
+            ((player?.currentTime() ?? 0) / (player.duration() ?? 1)) * 100
           )
         )
       } else {
@@ -373,9 +376,9 @@ export function VideoControls({
           title[0].value,
           variant?.language?.name.find(({ primary }) => !primary)?.value ??
             variant?.language?.name[0]?.value,
-          Math.round(player.currentTime() ?? 0),
+          Math.round(player?.currentTime() ?? 0),
           Math.round(
-            ((player.currentTime() ?? 0) / (player.duration() ?? 1)) * 100
+            ((player?.currentTime() ?? 0) / (player.duration() ?? 1)) * 100
           )
         )
       }
@@ -469,11 +472,7 @@ export function VideoControls({
 
   function handleClick(): void {
     // Set subtitles on when opening language dialog
-    dispatchWatch({
-      type: 'UpdateSubtitlesOn',
-      enabled: true
-    })
-    setCookie('SUBTITLES_ON', 'true')
+    updateSubtitlesOn(true)
 
     setOpenLanguageSwitchDialog(true)
   }
@@ -663,16 +662,12 @@ export function VideoControls({
                     color="secondary.contrastText"
                     sx={{ display: 'flex', gap: 1, zIndex: 2 }}
                   >
-                    <span>
-                      <p className="font-sans">{currentTime ?? '0:00'}</p>
-                    </span>
+                    <span className="font-sans">{currentTime ?? '0:00'}</span>
                     <span>/</span>
                     {duration === '0:00' ? (
                       <Skeleton width={27} sx={{ bgcolor: 'grey.800' }} />
                     ) : (
-                      <span>
-                        <p className="font-sans">{duration}</p>
-                      </span>
+                      <span className="font-sans">{duration}</span>
                     )}
                   </Typography>
                 )}

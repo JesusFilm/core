@@ -588,6 +588,7 @@ type PhoneAction implements Action @join__type(graph: API_JOURNEYS)  @join__impl
   parentBlock: Block!
   gtmEventName: String
   phone: String!
+  countryCode: String!
 }
 
 type Journey @join__type(graph: API_JOURNEYS, key: "id")  @join__type(graph: API_JOURNEYS_MODERN, key: "id")  {
@@ -3465,11 +3466,13 @@ input BlockUpdateActionInput @join__type(graph: API_JOURNEYS)  {
   target: String
   blockId: String
   phone: String
+  countryCode: String
 }
 
 input PhoneActionInput @join__type(graph: API_JOURNEYS)  {
   gtmEventName: String
   phone: String!
+  countryCode: String!
 }
 
 input BlocksFilter @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {

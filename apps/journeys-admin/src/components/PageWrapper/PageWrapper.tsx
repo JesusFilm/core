@@ -39,6 +39,7 @@ interface PageWrapperProps {
   user?: User
   initialState?: Partial<PageState>
   background?: string
+  backgroundColor?: string
 }
 
 export function PageWrapper({
@@ -58,7 +59,8 @@ export function PageWrapper({
   customSidePanel,
   user,
   initialState,
-  background
+  background,
+  backgroundColor
 }: PageWrapperProps): ReactElement {
   const [open, setOpen] = useState<boolean>(false)
   const theme = useTheme()
@@ -102,7 +104,8 @@ export function PageWrapper({
             flexGrow={1}
             direction={{ xs: 'column', md: 'row' }}
             sx={{
-              backgroundColor: background ?? 'background.default',
+              backgroundColor: backgroundColor ?? 'background.default',
+              ...(background != null && { background }),
               width: '100%',
               pt: { xs: toolbar.height, md: 0 },
               pb: {
