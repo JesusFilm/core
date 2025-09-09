@@ -48,6 +48,14 @@ describe('multiselectOptionBlockCreate', () => {
   beforeEach(() => {
     jest.clearAllMocks()
     prismaMock.block.findMany.mockResolvedValue([] as any)
+    prismaMock.block.findUnique.mockResolvedValue({
+      id: 'blockId',
+      typename: 'MultiselectOptionBlock',
+      parentOrder: 0,
+      journeyId: 'journeyId',
+      parentBlockId: 'parentId',
+      label: input.label
+    } as any)
   })
 
   it('creates multiselect option block when authorized', async () => {

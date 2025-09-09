@@ -51,6 +51,17 @@ describe('multiselectBlockCreate', () => {
   beforeEach(() => {
     jest.clearAllMocks()
     prismaMock.block.findMany.mockResolvedValue([] as any)
+    // Prevent Pothos Prisma plugin from attempting to call unmocked prisma methods
+    prismaMock.block.findUnique.mockResolvedValue({
+      id: 'blockId',
+      typename: 'MultiselectBlock',
+      parentOrder: 0,
+      journeyId: 'journeyId',
+      parentBlockId: 'parentId',
+      min: input.min,
+      max: input.max,
+      submitLabel: input.submitLabel
+    } as any)
   })
 
   it('creates multiselect block when authorized', async () => {

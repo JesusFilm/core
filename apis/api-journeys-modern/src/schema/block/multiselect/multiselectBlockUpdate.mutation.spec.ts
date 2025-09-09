@@ -54,6 +54,15 @@ describe('multiselectBlockUpdate', () => {
   beforeEach(() => {
     jest.clearAllMocks()
     prismaMock.block.findMany.mockResolvedValue([] as any)
+    prismaMock.block.findUnique.mockResolvedValue({
+      id,
+      typename: 'MultiselectBlock',
+      journeyId: 'journeyId',
+      parentBlockId: input.parentBlockId,
+      min: input.min,
+      max: input.max,
+      submitLabel: input.submitLabel
+    } as any)
   })
 
   it('updates multiselect block when authorized', async () => {
