@@ -52,9 +52,9 @@ export function MultiStepForm(): ReactElement {
       sx={{
         width: '100%',
         height: '100%',
-        maxHeight: { xs: '100%', sm: '852px' },
+        maxHeight: { xs: '100%', sm: '900px' },
         backgroundColor: 'background.paper',
-        borderRadius: { xs: '0px', md: '16px' },
+        borderRadius: { xs: '0px', sm: '16px' },
         mt: { xs: 0, sm: 6 },
         mb: { xs: 0, sm: 6 }
       }}

@@ -12,7 +12,7 @@ describe('useTemplateJourneyLanguages', () => {
     const result = jest.fn().mockReturnValue(mockJourneys.result)
 
     const { result: hookResult } = renderHook(
-      () => useTemplateJourneyLanguages(mockVariables),
+      () => useTemplateJourneyLanguages({ variables: mockVariables }),
       {
         wrapper: ({ children }) => (
           <MockedProvider
@@ -37,6 +37,11 @@ describe('useTemplateJourneyLanguages', () => {
     )
 
     expect(hookResult.current.languages).toHaveLength(3)
+    expect(hookResult.current.languagesJourneyMap).toEqual({
+      'language-1': 'journey-1',
+      'language-2': 'journey-2',
+      'language-3': 'journey-3'
+    })
     expect(hookResult.current.languages[0]).toEqual({
       __typename: 'Language',
       id: 'language-1',
