@@ -21,7 +21,7 @@ import {
 
 jest.mock('next-firebase-auth', () => ({
   __esModule: true,
-  useUser: () => ({ id: 'user-id' })
+  useUser: () => ({ id: 'user-id', email: 'urim@thumim.example.io' })
 }))
 
 jest.mock('next/router', () => ({
