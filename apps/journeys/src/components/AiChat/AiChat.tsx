@@ -1,7 +1,6 @@
 import { useChat } from '@ai-sdk/react'
 import { DefaultChatTransport } from 'ai'
 import { CopyIcon, Loader, RefreshCcwIcon } from 'lucide-react'
-import { useTranslation } from 'next-i18next'
 import { Fragment, useEffect, useState } from 'react'
 
 import { TreeBlock, useBlocks } from '@core/journeys/ui/block'
@@ -49,11 +48,16 @@ export function AiChat({ open }: AiChatProps) {
   })
   const [input, setInput] = useState('')
   const [suggestions, setSuggestions] = useState<string[]>()
+  const [suggestionsLoading, setSuggestionsLoading] = useState(false)
+  const [suggestionsError, setSuggestionsError] = useState<string | null>(null)
   const { blockHistory } = useBlocks()
 
   const activeBlock = blockHistory.at(-1)
 
   async function fetchSuggestions() {
+    setSuggestionsLoading(true)
+    setSuggestionsError(null)
+
     try {
       const contextText = extractTypographyContent(activeBlock as TreeBlock)
       if (contextText === '') {
@@ -69,32 +73,31 @@ export function AiChat({ open }: AiChatProps) {
 
       if (!response.ok) throw new Error('Failed to fetch suggestions')
 
-        if (!isCancelled) {
-          setSuggestions(suggestions)
-        }
-      } catch (error) {
-        if (isCancelled) return
-        console.error('Error fetching suggestions:', error)
-        setSuggestionsError(t('Failed to load suggestions'))
-        setSuggestions([])
-      } finally {
-        if (!isCancelled) setSuggestionsLoading(false)
-      }
-    }
       const suggestions: string[] = await response.json()
 
       setSuggestions(suggestions)
     } catch (error) {
       console.error('Error fetching suggestions:', error)
+      setSuggestionsError(t('Failed to load suggestions'))
       setSuggestions([])
+    } finally {
+      setSuggestionsLoading(false)
     }
   }
 
+  // Fetch suggestions when the chat opens
   useEffect(() => {
     if (!open) return
 
     void fetchSuggestions()
   }, [open])
+
+  // Prototype visibility
+  useEffect(() => {
+    suggestions?.forEach((element) => {
+      console.log('Suggestion: ', element)
+    })
+  }, [suggestions])
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
