@@ -85,6 +85,13 @@ export function AiChat({ open }: AiChatProps) {
     }
   }
 
+  // Fetch suggestions when the chat opens
+  useEffect(() => {
+    if (!open) return
+
+    void fetchSuggestions()
+  }, [open])
+
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     if (input.trim()) {
@@ -92,13 +99,6 @@ export function AiChat({ open }: AiChatProps) {
       setInput('')
     }
   }
-
-  // Fetch suggestions when the chat opens
-  useEffect(() => {
-    if (!open) return
-
-    void fetchSuggestions()
-  }, [open])
 
   function handleSuggestionClick(suggestion: string) {
     void sendMessage({ text: suggestion })
