@@ -29,7 +29,7 @@ export function GridVariant({
   addOption,
   blockId
 }: GridVariantProps): ReactElement {
-  const { t } = useTranslation('apps-journeys-admin')
+  const { t } = useTranslation('apps-journeys-ui')
 
   return (
     <StyledGridRadioQuestion
