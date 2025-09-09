@@ -20,6 +20,7 @@ import { ChatButtons } from './ChatButtons'
 import { FooterButtonList } from './FooterButtonList'
 import { HostAvatars } from './HostAvatars'
 import { HostTitleLocation } from './HostTitleLocation'
+import { AiChatButton } from '../AiChatButton'
 
 interface StepFooterProps {
   onFooterClick?: () => void
@@ -140,11 +141,10 @@ export function StepFooter({
             </Stack>
           )}
 
-          {chat && (
-            <Box>
-              <ChatButtons />
-            </Box>
-          )}
+          <Box>
+            {chat && <ChatButtons />}
+            <AiChatButton />
+          </Box>
         </Stack>
       </Stack>
     </Box>
