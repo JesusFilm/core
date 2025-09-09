@@ -40,7 +40,6 @@ jest.mock('./service', () => ({
 }))
 
 describe('cloudflareImage', () => {
-  const client = getClient()
   const authClient = getClient({
     headers: {
       authorization: 'token'
@@ -84,7 +83,7 @@ describe('cloudflareImage', () => {
             videoId: null
           }
         ])
-        const result = await client({
+        const result = await authClient({
           document: GET_MY_CLOUDFLARE_IMAGES_QUERY
         })
         expect(result).toEqual({
@@ -129,7 +128,7 @@ describe('cloudflareImage', () => {
             videoId: null
           }
         ])
-        const result = await client({
+        const result = await authClient({
           document: GET_MY_CLOUDFLARE_IMAGES_QUERY,
           variables: {
             offset: 0,
@@ -193,7 +192,7 @@ describe('cloudflareImage', () => {
           aspectRatio: null,
           videoId: null
         })
-        const result = await client({
+        const result = await authClient({
           document: GET_MY_CLOUDFLARE_IMAGE_QUERY
         })
         expect(result).toEqual({
@@ -243,7 +242,7 @@ describe('cloudflareImage', () => {
           aspectRatio: ImageAspectRatio.hd,
           videoId: 'videoId'
         })
-        const result = await client({
+        const result = await authClient({
           document: CREATE_CLOUDFLARE_UPLOAD_BY_FILE_MUTATION,
           variables: {
             input: {
@@ -299,7 +298,7 @@ describe('cloudflareImage', () => {
           aspectRatio: ImageAspectRatio.banner,
           videoId: 'videoId'
         })
-        const result = await client({
+        const result = await authClient({
           document: CREATE_CLOUDFLARE_UPLOAD_BY_URL_MUTATION,
           variables: {
             url: 'testUrl',
@@ -356,7 +355,7 @@ describe('cloudflareImage', () => {
           aspectRatio: ImageAspectRatio.hd,
           videoId: 'videoId'
         })
-        const result = await client({
+        const result = await authClient({
           document: CREATE_CLOUDFLARE_IMAGE_FROM_PROMPT_MUTATION,
           variables: {
             prompt: 'test prompt',
@@ -425,7 +424,7 @@ describe('cloudflareImage', () => {
         prismaMock.cloudflareImage.findUniqueOrThrow.mockResolvedValue({
           userId: 'testUserId'
         } as unknown as CloudflareImage)
-        const result = await client({
+        const result = await authClient({
           document: DELETE_CLOUDFLARE_IMAGE_MUTATION
         })
         expect(mockDeleteImage).toHaveBeenCalledWith('testId')
@@ -456,7 +455,7 @@ describe('cloudflareImage', () => {
       `)
 
       it('should return true', async () => {
-        const result = await client({
+        const result = await authClient({
           document: CLOUDFLARE_UPLOAD_COMPLETE_MUTATION
         })
         expect(result).toEqual({
