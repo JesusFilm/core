@@ -191,8 +191,6 @@ export function AiChat({ open }: AiChatProps) {
             placeholder={t("Ask me anything you don't understand.")}
             onChange={(e) => setInput(e.target.value)}
             value={input}
-            minHeight={48}
-            maxHeight={96}
           />
           <PromptInputToolbar>
             <div></div>
