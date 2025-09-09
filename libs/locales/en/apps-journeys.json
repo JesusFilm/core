@@ -1,9 +1,19 @@
 {
+  "404": "404",
+  "500": "500",
+  "%s | Next Steps": "%s | Next Steps",
+  "Next Steps": "Next Steps",
+  "This Journey is not available.": "This Journey is not available.",
+  "Oops! Something went wrong.": "Oops! Something went wrong.",
+  "<0>This page has been created to test the embed code.<1>If youve found this page in error click the button below.</1></0>": "<0>This page has been created to test the embed code.<1>If youve found this page in error click the button below.</1></0>",
+  "Get me out of here!": "Get me out of here!",
+  "Terms & Conditions": "Terms & Conditions",
+  "Privacy Policy": "Privacy Policy",
+  "NextSteps © {{year}}": "NextSteps © {{year}}",
   "Failed to load suggestions": "Failed to load suggestions",
   "Retry": "Retry",
   "Copy": "Copy",
   "Loading suggestions, please hold...": "Loading suggestions, please hold...",
   "Ask me anything you don't understand.": "Ask me anything you don't understand.",
-  "Journey Assistant": "Journey Assistant",
-  "You ask I answer.": "You ask I answer."
+  "Journey Assistant": "Journey Assistant"
 }
