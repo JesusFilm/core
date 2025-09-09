@@ -1,4 +1,4 @@
-import type { TreeBlock } from '@core/journeys/ui/block'
+import { TreeBlock } from '../../../libs/block'
 
 /**
  * Extracts text content from TypographyBlock nodes in the journey tree
