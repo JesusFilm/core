@@ -7,6 +7,7 @@ import { ReactElement, useEffect } from 'react'
 import { HotkeysProvider } from 'react-hotkeys-hook'
 import { v4 as uuidv4 } from 'uuid'
 
+import { AiChatButton } from '@core/journeys/ui/AiChatButton'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { blockHistoryVar, useBlocks } from '@core/journeys/ui/block'
 import { getStepTheme } from '@core/journeys/ui/getStepTheme'
@@ -20,7 +21,6 @@ import { FontFamilies, ThemeName } from '@core/shared/ui/themes'
 import { VisitorUpdateInput } from '../../../__generated__/globalTypes'
 import { JourneyViewEventCreate } from '../../../__generated__/JourneyViewEventCreate'
 import { StepFields } from '../../../__generated__/StepFields'
-import { AiChatButton } from '@core/journeys/ui/AiChatButton'
 
 import { DynamicCardList } from './DynamicCardList'
 import { HotkeyNavigation } from './HotkeyNavigation'
@@ -154,7 +154,7 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
   function isInIframe(): boolean {
     try {
       return window.self !== window.top
-    } catch (e) {
+    } catch {
       // If there's a cross-origin error, we're likely in an iframe
       return true
     }
