@@ -298,11 +298,13 @@ export class BlockUpdateActionInput {
     target?: Nullable<string>;
     blockId?: Nullable<string>;
     phone?: Nullable<string>;
+    countryCode?: Nullable<string>;
 }
 
 export class PhoneActionInput {
     gtmEventName?: Nullable<string>;
     phone: string;
+    countryCode: string;
 }
 
 export class BlocksFilter {
@@ -741,6 +743,7 @@ export class JourneysFilter {
     languageIds?: Nullable<string[]>;
     limit?: Nullable<number>;
     orderByRecent?: Nullable<boolean>;
+    fromTemplateId?: Nullable<string>;
 }
 
 export class JourneysQueryOptions {
@@ -1000,6 +1003,7 @@ export class PhoneAction implements Action {
     parentBlock: Block;
     gtmEventName?: Nullable<string>;
     phone: string;
+    countryCode: string;
 }
 
 export abstract class IMutation {

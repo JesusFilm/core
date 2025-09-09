@@ -107,6 +107,7 @@ export type BlockDuplicateIdMap = {
 
 export type BlockUpdateActionInput = {
   blockId?: InputMaybe<Scalars['String']['input']>;
+  countryCode?: InputMaybe<Scalars['String']['input']>;
   email?: InputMaybe<Scalars['String']['input']>;
   gtmEventName?: InputMaybe<Scalars['String']['input']>;
   phone?: InputMaybe<Scalars['String']['input']>;
@@ -1295,6 +1296,7 @@ export type JourneysEmailPreferenceUpdateInput = {
 
 export type JourneysFilter = {
   featured?: InputMaybe<Scalars['Boolean']['input']>;
+  fromTemplateId?: InputMaybe<Scalars['ID']['input']>;
   ids?: InputMaybe<Array<Scalars['ID']['input']>>;
   languageIds?: InputMaybe<Array<Scalars['ID']['input']>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
@@ -1495,6 +1497,7 @@ export type Mutation = {
   createImageBySegmindPrompt: CloudflareImage;
   createJourneyEventsExportLog: JourneyEventsExportLog;
   createKeyword: Keyword;
+  createMuxVideoAndQueueUpload: MuxVideo;
   createMuxVideoUploadByFile: MuxVideo;
   createMuxVideoUploadByUrl: MuxVideo;
   createVerificationRequest?: Maybe<Scalars['Boolean']['output']>;
@@ -1858,6 +1861,22 @@ export type MutationCreateJourneyEventsExportLogArgs = {
 export type MutationCreateKeywordArgs = {
   languageId: Scalars['String']['input'];
   value: Scalars['String']['input'];
+};
+
+
+export type MutationCreateMuxVideoAndQueueUploadArgs = {
+  downloadable?: InputMaybe<Scalars['Boolean']['input']>;
+  duration: Scalars['Int']['input'];
+  durationMs: Scalars['Int']['input'];
+  edition: Scalars['String']['input'];
+  height: Scalars['Int']['input'];
+  languageId: Scalars['ID']['input'];
+  maxResolution?: InputMaybe<MaxResolutionTier>;
+  originalFilename: Scalars['String']['input'];
+  r2PublicUrl: Scalars['String']['input'];
+  version: Scalars['Int']['input'];
+  videoId: Scalars['ID']['input'];
+  width: Scalars['Int']['input'];
 };
 
 
@@ -2841,6 +2860,7 @@ export type PageInfo = {
 
 export type PhoneAction = Action & {
   __typename?: 'PhoneAction';
+  countryCode: Scalars['String']['output'];
   gtmEventName?: Maybe<Scalars['String']['output']>;
   parentBlock: Block;
   parentBlockId: Scalars['ID']['output'];
@@ -2848,6 +2868,7 @@ export type PhoneAction = Action & {
 };
 
 export type PhoneActionInput = {
+  countryCode: Scalars['String']['input'];
   gtmEventName?: InputMaybe<Scalars['String']['input']>;
   phone: Scalars['String']['input'];
 };

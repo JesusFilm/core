@@ -1,6 +1,5 @@
-import { ApolloProvider, NormalizedCacheObject, gql } from '@apollo/client'
+import { ApolloProvider, NormalizedCacheObject } from '@apollo/client'
 import type { GetStaticPaths, GetStaticProps } from 'next'
-import { useTranslation } from 'next-i18next'
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
 import type { ReactElement } from 'react'
 import { renderToString } from 'react-dom/server'
@@ -23,18 +22,11 @@ import {
 } from '../../src/libs/apolloClient'
 import { getCookie } from '../../src/libs/cookieHandler'
 import { getFlags } from '../../src/libs/getFlags'
-import { LANGUAGE_MAPPINGS, LocaleMapping } from '../../src/libs/localeMapping'
-import { VIDEO_CHILD_FIELDS } from '../../src/libs/videoChildFields'
-import { WatchProvider } from '../../src/libs/watchContext/WatchContext'
-
-export const GET_HOME_VIDEOS_FOR_LANGUAGE = gql`
-  ${VIDEO_CHILD_FIELDS}
-  query GetHomeVideosForLanguage($ids: [ID!]!, $languageId: ID) {
-    videos(where: { ids: $ids }) {
-      ...VideoChildFields
-    }
-  }
-`
+import { LANGUAGE_MAPPINGS } from '../../src/libs/localeMapping'
+import {
+  WatchProvider,
+  WatchState
+} from '../../src/libs/watchContext/WatchContext'
 
 interface HomeLanguagePageProps {
   initialApolloState?: NormalizedCacheObject
@@ -52,16 +44,13 @@ function HomeLanguagePage({
   const client = useApolloClient({
     initialState: initialApolloState
   })
-  const { i18n } = useTranslation()
-
   const searchClient = useInstantSearchClient()
   const indexName = process.env.NEXT_PUBLIC_ALGOLIA_INDEX ?? ''
 
-  const initialWatchState = {
-    siteLanguage: i18n?.language ?? 'en',
-    audioLanguage: getCookie('AUDIO_LANGUAGE') ?? languageId,
-    subtitleLanguage: getCookie('SUBTITLE_LANGUAGE') ?? languageId,
-    subtitleOn: (getCookie('SUBTITLES_ON') ?? 'false') === 'true'
+  const initialWatchState: WatchState = {
+    audioLanguageId: getCookie('AUDIO_LANGUAGE') ?? languageId,
+    subtitleLanguageId: getCookie('SUBTITLE_LANGUAGE') ?? languageId,
+    subtitleOn: getCookie('SUBTITLES_ON') === 'true'
   }
 
   return (
@@ -99,10 +88,16 @@ export const getStaticProps: GetStaticProps<HomeLanguagePageProps> = async ({
       params!.part1 as string
     )
   })
-  const mapping = LANGUAGE_MAPPINGS[key!]
+  if (key == null) {
+    return {
+      notFound: true,
+      revalidate: 60
+    }
+  }
+  const mapping = LANGUAGE_MAPPINGS[key]
   const serverState = await getServerState(
     <HomeLanguagePage
-      languageEnglishName={mapping.nativeName}
+      languageEnglishName={mapping.englishName}
       languageId={mapping.languageId}
     />,
     {
@@ -117,7 +112,7 @@ export const getStaticProps: GetStaticProps<HomeLanguagePageProps> = async ({
     props: {
       flags: await getFlags(),
       serverState,
-      languageEnglishName: mapping.nativeName,
+      languageEnglishName: mapping.englishName,
       languageId: mapping.languageId,
       initialApolloState: apolloClient.cache.extract(),
       ...(await serverSideTranslations(

@@ -1504,7 +1504,7 @@ describe('video', () => {
         roles: ['publisher']
       })
 
-      const data = await client({
+      const data = await authClient({
         document: ADMIN_VIDEOS_QUERY,
         variables: {
           languageId: '987'
@@ -1759,7 +1759,7 @@ describe('video', () => {
         userId: 'userId',
         roles: ['publisher']
       })
-      const data = await client({
+      const data = await authClient({
         document: ADMIN_VIDEO_QUERY,
         variables: {
           id: 'slug',

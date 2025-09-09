@@ -4,12 +4,10 @@ import Stack from '@mui/material/Stack'
 import last from 'lodash/last'
 import { useRouter } from 'next/router'
 import { NextSeo } from 'next-seo'
-import { ReactElement, useEffect, useState } from 'react'
+import { ReactElement, useState } from 'react'
 
 import { useVideoChildren } from '../../libs/useVideoChildren'
 import { useVideo } from '../../libs/videoContext'
-import { audioLanguageRedirect } from '../../libs/watchContext/audioLanguageRedirect'
-import { useLanguagesSlugQuery } from '../../libs/useLanguagesSlugQuery'
 import { DownloadDialog } from '../DownloadDialog'
 import { PageWrapper } from '../PageWrapper'
 import { ShareButton } from '../ShareButton'
@@ -44,29 +42,11 @@ export function VideoContentPage(): ReactElement {
     router.locale
   )
 
-  const { loading: languageVariantsLoading, data: languageVariantsData } =
-    useLanguagesSlugQuery({
-      variables: {
-        id
-      }
-    })
-
   const [hasPlayed, setHasPlayed] = useState(false)
   const [openShare, setOpenShare] = useState(false)
   const [openDownload, setOpenDownload] = useState(false)
 
-  // Handle locale checking and redirect
-  useEffect(() => {
-    void audioLanguageRedirect({
-      languageVariantsLoading,
-      languageVariantsData,
-      router,
-      containerSlug: container?.slug
-    })
-  }, [languageVariantsLoading, languageVariantsData, router, container?.slug])
-
   const ogSlug = getSlug(container?.slug, label, variant?.slug)
-  const realChildren = children.filter((video) => video.variant !== null)
 
   return (
     <>
@@ -128,17 +108,17 @@ export function VideoContentPage(): ReactElement {
               <VideoHeading
                 loading={loading}
                 hasPlayed={hasPlayed}
-                videos={realChildren}
+                videos={children}
                 onShareClick={() => setOpenShare(true)}
                 onDownloadClick={() => setOpenDownload(true)}
               />
               {((container?.childrenCount ?? 0) > 0 || childrenCount > 0) &&
-                (realChildren.length === children.length ||
-                  realChildren.length > 0) && (
+                (children.length === children.length ||
+                  children.length > 0) && (
                   <Box pb={4}>
                     <VideoCarousel
                       loading={loading}
-                      videos={realChildren}
+                      videos={children}
                       containerSlug={container?.slug ?? slug}
                       activeVideoId={id}
                     />

@@ -124,6 +124,9 @@ describe('videoVariant', () => {
           muxVideo {
             id
           }
+          video {
+            id
+          }
         }
       }
     `)
@@ -218,11 +221,7 @@ describe('videoVariant', () => {
         },
         include: {
           downloads: true,
-          video: {
-            select: {
-              restrictDownloadPlatforms: true
-            }
-          },
+          video: true,
           videoEdition: {
             include: {
               _count: {
@@ -276,7 +275,10 @@ describe('videoVariant', () => {
           subtitleCount: 123,
           slug: 'videoSlug',
           published: true,
-          muxVideo: null
+          muxVideo: null,
+          video: {
+            id: 'videoId'
+          }
         }
       ])
     })
@@ -354,11 +356,7 @@ describe('videoVariant', () => {
         },
         include: {
           downloads: true,
-          video: {
-            select: {
-              restrictDownloadPlatforms: true
-            }
-          },
+          video: true,
           videoEdition: {
             include: {
               _count: {
@@ -391,7 +389,10 @@ describe('videoVariant', () => {
           subtitleCount: 0,
           slug: 'videoSlug',
           published: true,
-          muxVideo: null
+          muxVideo: null,
+          video: {
+            id: 'videoId'
+          }
         }
       ])
     })
@@ -490,11 +491,7 @@ describe('videoVariant', () => {
         },
         include: {
           downloads: true,
-          video: {
-            select: {
-              restrictDownloadPlatforms: true
-            }
-          },
+          video: true,
           videoEdition: {
             include: {
               _count: {
@@ -547,7 +544,10 @@ describe('videoVariant', () => {
           subtitleCount: 123,
           slug: 'videoSlug',
           published: false,
-          muxVideo: null
+          muxVideo: null,
+          video: {
+            id: 'videoId'
+          }
         }
       ])
     })
@@ -872,7 +872,7 @@ describe('videoVariant', () => {
 
       it('should continue even if cache reset function throws', async () => {
         // Mock cache reset function to throw error
-        mockedVideoVariantCacheReset.mockImplementation((id) => {
+        mockedVideoVariantCacheReset.mockImplementation(() => {
           throw new Error('Cache reset failed')
         })
 
@@ -1042,10 +1042,10 @@ describe('videoVariant', () => {
 
       it('should continue even if cache reset functions throw', async () => {
         // Mock cache reset functions to throw errors
-        mockedVideoVariantCacheReset.mockImplementation((id) => {
+        mockedVideoVariantCacheReset.mockImplementation(() => {
           throw new Error('Cache reset failed')
         })
-        mockedVideoCacheReset.mockImplementation((id) => {
+        mockedVideoCacheReset.mockImplementation(() => {
           throw new Error('Cache reset failed')
         })
 

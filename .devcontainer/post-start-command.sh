@@ -1,0 +1,1 @@
+corepack enable && corepack prepare pnpm --activate

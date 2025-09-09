@@ -30,5 +30,9 @@ describe('VideoCard', () => {
     const card = screen.getByTestId(`CarouselItem-${videos[0].slug}`)
     expect(card).toHaveAttribute('tabIndex', '0')
     expect(card).toHaveAttribute('aria-label', `Navigate to ${videos[0].slug}`)
+    expect(screen.getByRole('link')).toHaveAttribute(
+      'href',
+      `/watch/${videos[0].slug}.html/english.html?r=0`
+    )
   })
 })

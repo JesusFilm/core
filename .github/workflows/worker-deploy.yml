@@ -20,30 +20,23 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          run_install: false
       - uses: useblacksmith/setup-node@v5
         with:
           node-version: ${{ matrix.node-version }}
-      - name: Get Node Version
-        id: node-version
-        run: echo "version=$(node -v)" >> $GITHUB_OUTPUT
-      - name: Mount NPM Cache
-        uses: useblacksmith/stickydisk@v1
-        with:
-          key: ${{ github.repository }}-${{ steps.node-version.outputs.version }}-npm-cache
-          path: ~/.npm
-      - name: Mount node_modules
-        uses: useblacksmith/stickydisk@v1
-        with:
-          key: ${{ github.repository }}-${{ steps.node-version.outputs.version }}-node-modules
-          path: ./node_modules
-      - name: NPM Install
-        run: npm install --silent
+          cache: 'pnpm'
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile --silent
       - uses: nrwl/nx-set-shas@v4
       - id: set-matrix
         name: set matrix worker to affected array
         run: |
-          echo "matrix=$(npx ts-node tools/scripts/deploy-apps.ts --projects workers/*)" >> $GITHUB_OUTPUT
-          cat $GITHUB_OUTPUT
+          matrix=$(pnpm -s exec ts-node tools/scripts/deploy-apps.ts --projects workers/*)
+          echo "matrix=${matrix}" >> "$GITHUB_OUTPUT"
+          cat "$GITHUB_OUTPUT"
 
   deploy-stage:
     name: Deploy Stage
@@ -63,30 +56,22 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          run_install: false
       - uses: useblacksmith/setup-node@v5
         with:
           node-version: ${{ matrix.node-version }}
-      - name: Get Node Version
-        id: node-version
-        run: echo "version=$(node -v)" >> $GITHUB_OUTPUT
-      - name: Mount NPM Cache
-        uses: useblacksmith/stickydisk@v1
-        with:
-          key: ${{ github.repository }}-${{ steps.node-version.outputs.version }}-npm-cache
-          path: ~/.npm
-      - name: Mount node_modules
-        uses: useblacksmith/stickydisk@v1
-        with:
-          key: ${{ github.repository }}-${{ steps.node-version.outputs.version }}-node-modules
-          path: ./node_modules
-      - name: NPM Install
-        run: npm install --silent
+          cache: 'pnpm'
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile --silent
       - uses: nrwl/nx-set-shas@v4
       - name: worker deployment
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           GIT_COMMIT_SHA: ${{ github.sha }}
-        run: npx nx run-many --target=deploy --projects=${{ matrix.app }}
+        run: pnpm exec nx run-many --target=deploy --projects=${{ matrix.app }}
 
   deploy-production:
     name: Deploy Production
@@ -106,27 +91,19 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          run_install: false
       - uses: useblacksmith/setup-node@v5
         with:
           node-version: ${{ matrix.node-version }}
-      - name: Get Node Version
-        id: node-version
-        run: echo "version=$(node -v)" >> $GITHUB_OUTPUT
-      - name: Mount NPM Cache
-        uses: useblacksmith/stickydisk@v1
-        with:
-          key: ${{ github.repository }}-${{ steps.node-version.outputs.version }}-npm-cache
-          path: ~/.npm
-      - name: Mount node_modules
-        uses: useblacksmith/stickydisk@v1
-        with:
-          key: ${{ github.repository }}-${{ steps.node-version.outputs.version }}-node-modules
-          path: ./node_modules
-      - name: NPM Install
-        run: npm install --silent
+          cache: 'pnpm'
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile --silent
       - uses: nrwl/nx-set-shas@v4
       - name: worker deployment
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           GIT_COMMIT_SHA: ${{ github.sha }}
-        run: npx nx run-many --target=deploy --projects=${{ matrix.app }} --prod
+        run: pnpm exec nx run-many --target=deploy --projects=${{ matrix.app }} --prod
