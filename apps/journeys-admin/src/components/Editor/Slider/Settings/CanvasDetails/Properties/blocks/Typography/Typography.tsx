@@ -74,7 +74,7 @@ export function Typography(block: TreeBlock<TypographyBlock>): ReactElement {
             id={`${id}-typography-alignment`}
             icon={<AlignLeftIcon />}
             name={t('Text Alignment')}
-            value={align != null ? capitalize(align.toString()) : 'Left'}
+            value={capitalize(align?.toString() ?? t('Left'))}
           >
             <Align />
           </Accordion>

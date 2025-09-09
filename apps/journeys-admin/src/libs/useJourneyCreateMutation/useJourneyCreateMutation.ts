@@ -144,7 +144,7 @@ export function useJourneyCreateMutation(): {
             bodyTypographyContent: t(
               '"Go, and lead the people on their way..."'
             ),
-            captionTypographyContent: t('Deutoronomy 10:11'),
+            captionTypographyContent: t('Deuteronomy 10:11'),
             teamId: activeTeam?.id
           },
           update(cache, { data }) {
