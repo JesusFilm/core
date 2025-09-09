@@ -265,6 +265,8 @@ export class JourneyResolver {
     }
     if (where?.languageIds != null)
       filter.languageId = { in: where?.languageIds }
+    if (where?.fromTemplateId != null)
+      filter.fromTemplateId = where.fromTemplateId
 
     if (OR.length > 0) filter.OR = OR
 
