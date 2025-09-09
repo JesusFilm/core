@@ -569,10 +569,8 @@ model Block {
   menuStepBlockParent        Journey?             @relation("MenuStepBlock")
   logoImageBlockParent       Journey?             @relation("LogoImageBlock")
   slug                       String?
-  showSelection              Boolean?
   min                        Int?
   max                        Int?
-  showProgress               Boolean?
   settings                   Json                 @default("{ }") // block settings
 
   @@unique([slug, journeyId])
