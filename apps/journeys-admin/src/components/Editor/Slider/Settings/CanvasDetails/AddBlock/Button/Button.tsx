@@ -55,11 +55,11 @@ export function Button({
       <StyledTooltip
         title={
           <Typography variant="caption" lineHeight="12px" sx={{ my: 1.25 }}>
-            {t(
+            {
               disabled && value === 'Video'
-                ? 'Video Block cannot be placed on top of Blocks or Background Video/Image'
-                : 'Click to add'
-            )}
+                ? t('Video Block cannot be placed on top of Blocks or Background Video/Image')
+                : t('Click to add')
+            }
           </Typography>
         }
         placement="top"
