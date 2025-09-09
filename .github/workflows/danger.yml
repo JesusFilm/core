@@ -19,7 +19,7 @@ jobs:
   danger:
     runs-on: blacksmith-2vcpu-ubuntu-2204
     env:
-      PNPM_STORE_PATH: ~/.pnpm-store
+      PNPM_STORE_PATH: $HOME/.pnpm-store
     permissions:
       contents: write
       pull-requests: write
@@ -42,7 +42,9 @@ jobs:
         uses: useblacksmith/stickydisk@v1
         with:
           key: ${{ github.repository }}-pnpm-store-${{ runner.os }}
-          path: ~/.pnpm-store
+          path: $HOME/.pnpm-store
+      - name: Configure pnpm store-dir
+        run: pnpm config set store-dir $HOME/.pnpm-store
       - name: Install dependencies
         run: pnpm install --frozen-lockfile --silent
       - name: Danger JS

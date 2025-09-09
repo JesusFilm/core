@@ -15,7 +15,7 @@ jobs:
       matrix:
         node-version: [22]
     env:
-      PNPM_STORE_PATH: ~/.pnpm-store
+      PNPM_STORE_PATH: $HOME/.pnpm-store
     outputs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
     steps:
@@ -33,7 +33,9 @@ jobs:
         uses: useblacksmith/stickydisk@v1
         with:
           key: ${{ github.repository }}-pnpm-store-${{ runner.os }}
-          path: ~/.pnpm-store
+          path: $HOME/.pnpm-store
+      - name: Configure pnpm store-dir
+        run: pnpm config set store-dir $HOME/.pnpm-store
       - name: Install dependencies
         run: pnpm install --frozen-lockfile --silent
       - uses: nrwl/nx-set-shas@v4
@@ -59,7 +61,7 @@ jobs:
         node-version: [22]
     runs-on: blacksmith-2vcpu-ubuntu-2204
     env:
-      PNPM_STORE_PATH: ~/.pnpm-store
+      PNPM_STORE_PATH: $HOME/.pnpm-store
     steps:
       - uses: actions/checkout@v4
         with:
@@ -75,7 +77,9 @@ jobs:
         uses: useblacksmith/stickydisk@v1
         with:
           key: ${{ github.repository }}-pnpm-store-${{ runner.os }}
-          path: ~/.pnpm-store
+          path: $HOME/.pnpm-store
+      - name: Configure pnpm store-dir
+        run: pnpm config set store-dir $HOME/.pnpm-store
       - name: Install dependencies
         run: pnpm install --frozen-lockfile --silent
       - uses: nrwl/nx-set-shas@v4
@@ -100,7 +104,7 @@ jobs:
         node-version: [22]
     runs-on: blacksmith-2vcpu-ubuntu-2204
     env:
-      PNPM_STORE_PATH: ~/.pnpm-store
+      PNPM_STORE_PATH: $HOME/.pnpm-store
     steps:
       - uses: actions/checkout@v4
         with:
@@ -116,7 +120,9 @@ jobs:
         uses: useblacksmith/stickydisk@v1
         with:
           key: ${{ github.repository }}-pnpm-store-${{ runner.os }}
-          path: ~/.pnpm-store
+          path: $HOME/.pnpm-store
+      - name: Configure pnpm store-dir
+        run: pnpm config set store-dir $HOME/.pnpm-store
       - name: Install dependencies
         run: pnpm install --frozen-lockfile --silent
       - uses: nrwl/nx-set-shas@v4

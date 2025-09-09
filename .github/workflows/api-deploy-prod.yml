@@ -14,7 +14,7 @@ jobs:
         node-version: [22]
     env:
       NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
-      PNPM_STORE_PATH: ~/.pnpm-store
+      PNPM_STORE_PATH: $HOME/.pnpm-store
     outputs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
     steps:
@@ -32,7 +32,9 @@ jobs:
         uses: useblacksmith/stickydisk@v1
         with:
           key: ${{ github.repository }}-pnpm-store-${{ runner.os }}
-          path: ~/.pnpm-store
+          path: $HOME/.pnpm-store
+      - name: Configure pnpm store-dir
+        run: pnpm config set store-dir $HOME/.pnpm-store
       - name: Install dependencies
         run: pnpm install --frozen-lockfile --silent
       - uses: nrwl/nx-set-shas@v4

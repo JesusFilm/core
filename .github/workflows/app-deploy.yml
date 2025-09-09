@@ -16,7 +16,7 @@ jobs:
       matrix:
         node-version: [22]
     env:
-      PNPM_STORE_PATH: ~/.pnpm-store
+      PNPM_STORE_PATH: $HOME/.pnpm-store
     outputs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
     steps:
@@ -34,7 +34,10 @@ jobs:
         uses: useblacksmith/stickydisk@v1
         with:
           key: ${{ github.repository }}-pnpm-store-${{ runner.os }}
-          path: ~/.pnpm-store
+          path: $HOME/.pnpm-store
+
+      - name: Configure pnpm store-dir
+        run: pnpm config set store-dir $HOME/.pnpm-store
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile --silent
@@ -78,6 +81,7 @@ jobs:
     runs-on: blacksmith-2vcpu-ubuntu-2204
     env:
       NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
+      PNPM_STORE_PATH: $HOME/.pnpm-store
     outputs:
       url: ${{ steps.deployment-url.outputs.deployment-url }}
     permissions:
@@ -105,7 +109,9 @@ jobs:
         uses: useblacksmith/stickydisk@v1
         with:
           key: ${{ github.repository }}-pnpm-store-${{ runner.os }}
-          path: ~/.pnpm-store
+          path: $HOME/.pnpm-store
+      - name: Configure pnpm store-dir
+        run: pnpm config set store-dir $HOME/.pnpm-store
       - name: Install dependencies
         run: pnpm install --frozen-lockfile --silent
       - uses: nrwl/nx-set-shas@v4
@@ -249,7 +255,7 @@ jobs:
     runs-on: blacksmith-4vcpu-ubuntu-2204
     env:
       NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
-      PNPM_STORE_PATH: ~/.pnpm-store
+      PNPM_STORE_PATH: $HOME/.pnpm-store
     strategy:
       fail-fast: false
       matrix:
@@ -269,7 +275,9 @@ jobs:
         uses: useblacksmith/stickydisk@v1
         with:
           key: ${{ github.repository }}-pnpm-store-${{ runner.os }}
-          path: ~/.pnpm-store
+          path: $HOME/.pnpm-store
+      - name: Configure pnpm store-dir
+        run: pnpm config set store-dir $HOME/.pnpm-store
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile --silent
@@ -332,7 +340,7 @@ jobs:
       deployments: write
       contents: write
     env:
-      PNPM_STORE_PATH: ~/.pnpm-store
+      PNPM_STORE_PATH: $HOME/.pnpm-store
     outputs:
       url: ${{ steps.deployment-url.outputs.deployment-url }}
     steps:
@@ -356,7 +364,10 @@ jobs:
         uses: useblacksmith/stickydisk@v1
         with:
           key: ${{ github.repository }}-pnpm-store-${{ runner.os }}
-          path: ~/.pnpm-store
+          path: $HOME/.pnpm-store
+
+      - name: Configure pnpm store-dir
+        run: pnpm config set store-dir $HOME/.pnpm-store
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile --silent
