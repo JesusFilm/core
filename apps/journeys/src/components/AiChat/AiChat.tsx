@@ -10,7 +10,7 @@ import {
   ConversationContent,
   ConversationScrollButton
 } from '../Conversation'
-import { Message as MessageComponent, MessageContent } from '../Message'
+import { Message, MessageContent } from '../Message'
 import { Action, Actions } from '../Actions'
 import { CopyIcon, Loader, RefreshCcwIcon } from 'lucide-react'
 import {
@@ -19,6 +19,7 @@ import {
   PromptInputTextarea,
   PromptInputToolbar
 } from '../PromptInput'
+import { Response } from '../Response'
 import { Suggestion, Suggestions } from '../Suggestion'
 
 interface AiChatProps {
@@ -37,7 +38,7 @@ export function AiChat({ open }: AiChatProps) {
         parts: [
           {
             type: 'text',
-            text: "Hi there, how can I help?"
+            text: 'Hi, how can I help you?'
           }
         ]
       }
@@ -47,7 +48,6 @@ export function AiChat({ open }: AiChatProps) {
   const [suggestions, setSuggestions] = useState<string[]>()
   const [suggestionsLoading, setSuggestionsLoading] = useState(false)
   const [suggestionsError, setSuggestionsError] = useState<string | null>(null)
-  const [showFollowUpMessage, setShowFollowUpMessage] = useState(false)
   const { treeBlocks, blockHistory } = useBlocks()
 
   // Fetch suggestions when the chat opens
@@ -87,7 +87,6 @@ export function AiChat({ open }: AiChatProps) {
 
         if (!isCancelled) {
           setSuggestions(suggestions)
-          // setShowFollowUpMessage(true)
         }
       } catch (error) {
         if (isCancelled) return
@@ -104,14 +103,6 @@ export function AiChat({ open }: AiChatProps) {
       isCancelled = true
     }
   }, [open, treeBlocks])
-
-  // Add follow-up message when suggestions are ready
-  useEffect(() => {
-    // if (showFollowUpMessage && suggestions && suggestions.length > 0) {
-    //   sendMessage({ text: 'See suggestions below, thanks for waiting!' })
-    //   setShowFollowUpMessage(false)
-    // }
-  }, [showFollowUpMessage, suggestions, sendMessage])
 
   // Prototype visibility
   useEffect(() => {
@@ -144,11 +135,18 @@ export function AiChat({ open }: AiChatProps) {
                     case 'text':
                       return (
                         <Fragment key={`${message.id}-${i}`}>
-                          <MessageComponent from={message.role}>
+                          <Message from={message.role}>
                             <MessageContent>
-                              <div>{part.text}</div>
+                              {message.parts.map((part, i) => {
+                                switch (part.type) {
+                                  case 'text': // we don't use any reasoning or tool calls in this example
+                                    return <Response>{part.text}</Response>
+                                  default:
+                                    return null
+                                }
+                              })}
                             </MessageContent>
-                          </MessageComponent>
+                          </Message>
                           {message.role === 'assistant' &&
                             message.id === messages.at(-1)?.id && (
                               <Actions className="mt-2">
