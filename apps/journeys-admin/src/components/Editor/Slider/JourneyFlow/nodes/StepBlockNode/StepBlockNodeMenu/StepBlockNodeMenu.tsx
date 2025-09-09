@@ -58,7 +58,6 @@ export function StepBlockNodeMenu({
           }}
           onClick={(e) => {
             handleClick(e)
-            console.log('handleClick')
           }}
           sx={{
             position: 'absolute',
