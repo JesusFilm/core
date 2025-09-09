@@ -22,29 +22,21 @@ jobs:
       - name: Fetch other branches
         if: ${{ github.event_name == 'pull_request' }}
         run: git fetch --no-tags --prune --depth=5 origin $GITHUB_BASE_REF
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          run_install: false
       - uses: useblacksmith/setup-node@v5
         with:
           node-version: ${{ matrix.node-version }}
-      - name: Get Node Version
-        id: node-version
-        run: echo "version=$(node -v)" >> $GITHUB_OUTPUT
-      - name: Mount NPM Cache
-        uses: useblacksmith/stickydisk@v1
-        with:
-          key: ${{ github.repository }}-${{ steps.node-version.outputs.version }}-npm-cache
-          path: ~/.npm
-      - name: Mount node_modules
-        uses: useblacksmith/stickydisk@v1
-        with:
-          key: ${{ github.repository }}-${{ steps.node-version.outputs.version }}-node-modules
-          path: ./node_modules
+          cache: 'pnpm'
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile --silent
       - name: Mount lint cache
         uses: useblacksmith/stickydisk@v1
         with:
           key: ${{ github.repository }}-lint
           path: ./.cache
-      - name: NPM Install
-        run: npm install --silent
       - name: generate prisma imports
         uses: mansagroup/nrwl-nx-action@v3
         with:
@@ -52,15 +44,15 @@ jobs:
           all: true
         env:
           DISABLE_ERD: true
-      - name: NPM apollo and graphql for codegen
-        run: npm i -g apollo graphql
+      - name: Install apollo and graphql for codegen
+        run: npm i -g apollo graphql # npm because apollo is deprecated and conflicts with graphql
       - name: Codegen
         uses: mansagroup/nrwl-nx-action@v3
         with:
           targets: codegen
           all: true
       - name: Run Prettier
-        run: npm run prettier:fix --check '!./.cache'
+        run: pnpm run prettier:fix --check '!./.cache'
       - name: Run ESLint
         uses: mansagroup/nrwl-nx-action@v3
         with:
@@ -82,7 +74,7 @@ jobs:
           HIVE_TOKEN: ${{ secrets.HIVE_PROD_READ_ONLY_TOKEN }}
       - name: lint branch name
         if: ${{ github.event_name == 'pull_request' }}
-        run: npx validate-branch-name -t $GITHUB_HEAD_REF
+        run: pnpm exec validate-branch-name -t $GITHUB_HEAD_REF
       - uses: autofix-ci/action@635ffb0c9798bd160680f18fd73371e355b85f27
         with:
           commit-message: 'fix: lint issues'
