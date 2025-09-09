@@ -29,5 +29,25 @@ jest.mock('@ai-sdk/react', () => ({
   }))
 }))
 
+// Mock use-stick-to-bottom package
+jest.mock('use-stick-to-bottom', () => ({
+  StickToBottom: ({ children }: { children: React.ReactNode }) => children,
+  useStickToBottomContext: () => ({
+    isStuck: false,
+    stickToBottom: jest.fn(),
+    unstickFromBottom: jest.fn()
+  })
+}))
+
+// Mock streamdown package
+jest.mock('streamdown', () => ({
+  Streamdown: ({ children }: { children: React.ReactNode }) => children
+}))
+
+// Mock react-markdown package
+jest.mock('react-markdown', () => ({
+  default: ({ children }: { children: React.ReactNode }) => children
+}))
+
 if (process.env.CI === 'true')
   jest.retryTimes(3, { logErrorsBeforeRetry: true })
