@@ -4,32 +4,24 @@ import { CopyIcon, Loader, RefreshCcwIcon } from 'lucide-react'
 import { useTranslation } from 'next-i18next'
 import { Fragment, useEffect, useState } from 'react'
 
-import { extractTypographyContent } from './utils/contextExtraction'
-import {
-  Action,
-  Actions
-} from '../../../../../../apps/journeys/src/components/Actions'
+import { TreeBlock, useBlocks } from '../../libs/block'
+import { Action, Actions } from '../Actions'
 import {
   Conversation,
   ConversationContent,
   ConversationScrollButton
-} from '../../../../../../apps/journeys/src/components/Conversation'
-import {
-  Message,
-  MessageContent
-} from '../../../../../../apps/journeys/src/components/Message'
+} from '../Conversation'
+import { Message, MessageContent } from '../Message'
 import {
   PromptInput,
   PromptInputSubmit,
   PromptInputTextarea,
   PromptInputToolbar
-} from '../../../../../../apps/journeys/src/components/PromptInput'
-import { Response } from '../../../../../../apps/journeys/src/components/Response'
-import {
-  Suggestion,
-  Suggestions
-} from '../../../../../../apps/journeys/src/components/Suggestion'
-import { TreeBlock, useBlocks } from '../../libs/block'
+} from '../PromptInput'
+import { Response } from '../Response'
+import { Suggestion, Suggestions } from '../Suggestion'
+
+import { extractTypographyContent } from './utils/contextExtraction'
 
 interface AiChatProps {
   open: boolean

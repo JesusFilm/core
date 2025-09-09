@@ -17,12 +17,12 @@ import { JourneyFields_chatButtons as ChatButton } from '../../../libs/JourneyPr
 import { MessageChatIcon } from '../../../libs/MessageChatIcon'
 import { JourneyPlausibleEvents, keyify } from '../../../libs/plausibleHelpers'
 import { getJourneyRTL } from '../../../libs/rtl'
+import { AiChatButton } from '../../AiChatButton'
 
 import {
   ChatButtonEventCreate,
   ChatButtonEventCreateVariables
 } from './__generated__/ChatButtonEventCreate'
-import { AiChatButton } from '../../AiChatButton'
 
 export const CHAT_BUTTON_EVENT_CREATE = gql`
   mutation ChatButtonEventCreate($input: ChatOpenEventCreateInput!) {
