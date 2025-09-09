@@ -21,7 +21,7 @@ export const Default: StoryObj<typeof Accordion> = {
           id="custom-id"
           icon={<PaletteIcon />}
           name="Style"
-          value="Dark"
+          value=t("Dark")
         >
           test
         </Accordion>
