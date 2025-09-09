@@ -85,7 +85,6 @@ export function AiChat({ open }: AiChatProps) {
     }
   }
 
-  // Fetch suggestions when the chat opens
   useEffect(() => {
     if (!open) return
 
