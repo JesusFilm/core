@@ -10,8 +10,10 @@
   "Terms & Conditions": "Terms & Conditions",
   "Privacy Policy": "Privacy Policy",
   "NextSteps © {{year}}": "NextSteps © {{year}}",
+  "Failed to load suggestions": "Failed to load suggestions",
   "Retry": "Retry",
   "Copy": "Copy",
-  "Journey Assistant": "Journey Assistant",
-  "You ask I answer.": "You ask I answer."
+  "Loading suggestions, please hold...": "Loading suggestions, please hold...",
+  "Ask me anything you don't understand.": "Ask me anything you don't understand.",
+  "Journey Assistant": "Journey Assistant"
 }

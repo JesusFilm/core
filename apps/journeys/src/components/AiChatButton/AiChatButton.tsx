@@ -56,11 +56,12 @@ export function AiChatButton(): ReactElement {
           <AutoAwesomeIcon />
         </Button>
       </DrawerTrigger>
-      <DrawerContent>
+      <DrawerContent className="flex flex-col h-[90vh] max-h-[80vh]">
         <DrawerHeader>
           <DrawerClose>
             <Button
               variant="destructive"
+              size="icon"
               className="absolute top-4 right-4"
               aria-label="Close AI chat"
             >
@@ -68,9 +69,10 @@ export function AiChatButton(): ReactElement {
             </Button>
           </DrawerClose>
           <DrawerTitle>{t('Journey Assistant')}</DrawerTitle>
-          <DrawerDescription>{t('You ask I answer.')}</DrawerDescription>
         </DrawerHeader>
-        <AiChat open={open} />
+        <div className="flex-1 min-h-0">
+          <AiChat open={open} />
+        </div>
       </DrawerContent>
     </Drawer>
   )
