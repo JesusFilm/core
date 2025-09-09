@@ -743,6 +743,7 @@ export class JourneysFilter {
     languageIds?: Nullable<string[]>;
     limit?: Nullable<number>;
     orderByRecent?: Nullable<boolean>;
+    fromTemplateId?: Nullable<string>;
 }
 
 export class JourneysQueryOptions {
