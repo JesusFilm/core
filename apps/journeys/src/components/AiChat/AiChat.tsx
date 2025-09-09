@@ -1,11 +1,11 @@
 import { useChat } from '@ai-sdk/react'
 import { DefaultChatTransport } from 'ai'
 import { CopyIcon, Loader, RefreshCcwIcon } from 'lucide-react'
+import { useTranslation } from 'next-i18next'
 import { Fragment, useEffect, useState } from 'react'
 
-import { useBlocks } from '@core/journeys/ui/block'
+import { TreeBlock, useBlocks } from '@core/journeys/ui/block'
 
-import { SuggestionsRequest } from '../../types/suggestions'
 import { extractTypographyContent } from '../../utils/contextExtraction'
 import { Action, Actions } from '../Actions'
 import {
@@ -49,44 +49,25 @@ export function AiChat({ open }: AiChatProps) {
   })
   const [input, setInput] = useState('')
   const [suggestions, setSuggestions] = useState<string[]>()
-  const [suggestionsLoading, setSuggestionsLoading] = useState(false)
-  const [suggestionsError, setSuggestionsError] = useState<string | null>(null)
-  const { treeBlocks, blockHistory } = useBlocks()
+  const { blockHistory } = useBlocks()
 
-  // Fetch suggestions when the chat opens
-  useEffect(() => {
-    if (!open) return
-    const activeBlock = blockHistory.at(-1)
-    if (!activeBlock) {
-      console.log('No blocks found for suggestions')
-      setSuggestions([])
-      return
-    }
+  const activeBlock = blockHistory.at(-1)
 
-    let isCancelled = false
+  async function fetchSuggestions() {
+    try {
+      const contextText = extractTypographyContent(activeBlock as TreeBlock)
+      if (contextText === '') {
+        setSuggestions([])
+        return
+      }
 
-    const fetchSuggestions = async () => {
-      setSuggestionsLoading(true)
-      setSuggestionsError(null)
+      const response = await fetch('/api/chat/suggestions', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ contextText })
+      })
 
-      try {
-        const contextText = extractTypographyContent(activeBlock)
-        if (!contextText) {
-          console.log('No suggestions generated')
-          setSuggestions([])
-          return
-        }
-
-        const requestBody: SuggestionsRequest = { contextText }
-        const response = await fetch('/api/chat/suggestions', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(requestBody)
-        })
-
-        if (!response.ok) throw new Error('Failed to fetch suggestions')
-
-        const suggestions: string[] = await response.json()
+      if (!response.ok) throw new Error('Failed to fetch suggestions')
 
         if (!isCancelled) {
           setSuggestions(suggestions)
@@ -100,30 +81,31 @@ export function AiChat({ open }: AiChatProps) {
         if (!isCancelled) setSuggestionsLoading(false)
       }
     }
+      const suggestions: string[] = await response.json()
 
-    fetchSuggestions()
-    return () => {
-      isCancelled = true
+      setSuggestions(suggestions)
+    } catch (error) {
+      console.error('Error fetching suggestions:', error)
+      setSuggestions([])
     }
-  }, [open, treeBlocks])
+  }
 
-  // Prototype visibility
   useEffect(() => {
-    suggestions?.forEach((element) => {
-      console.log('Suggestion: ', element)
-    })
-  }, [suggestions])
+    if (!open) return
+
+    void fetchSuggestions()
+  }, [open])
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     if (input.trim()) {
-      sendMessage({ text: input })
+      void sendMessage({ text: input })
       setInput('')
     }
   }
 
   function handleSuggestionClick(suggestion: string) {
-    sendMessage({ text: suggestion })
+    void sendMessage({ text: suggestion })
   }
 
   return (
@@ -155,7 +137,8 @@ export function AiChat({ open }: AiChatProps) {
                               <Actions className="mt-2">
                                 <Action
                                   onClick={() => regenerate()}
-                                  label="Retry"
+                                  label={t('Retry')}
+                                  tooltip={t('Retry')}
                                 >
                                   <RefreshCcwIcon className="size-3" />
                                 </Action>
@@ -163,7 +146,8 @@ export function AiChat({ open }: AiChatProps) {
                                   onClick={() =>
                                     navigator.clipboard.writeText(part.text)
                                   }
-                                  label="Copy"
+                                  label={t('Copy')}
+                                  tooltip={t('Copy')}
                                 >
                                   <CopyIcon className="size-3" />
                                 </Action>
