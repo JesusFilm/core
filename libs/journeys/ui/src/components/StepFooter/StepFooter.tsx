@@ -21,7 +21,6 @@ import { ChatButtons } from './ChatButtons'
 import { FooterButtonList } from './FooterButtonList'
 import { HostAvatars } from './HostAvatars'
 import { HostTitleLocation } from './HostTitleLocation'
-import { AiChatButton } from '../AiChatButton'
 
 interface StepFooterProps {
   onFooterClick?: () => void
