@@ -6,11 +6,10 @@ import Stack from '@mui/material/Stack'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, useState } from 'react'
 
-import ArrowRightIcon from '@core/shared/ui/icons/ArrowRight'
-
 import { ProgressStepper } from './ProgressStepper'
 import { DoneScreen, LanguageScreen, LinksScreen, TextScreen } from './Screens'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
+import ChevronRight from '@core/shared/ui/icons/ChevronRight'
 
 // NOTE: login is a dialog -> regular sign up path (that can show the image/title from journey) -> redirects back current step (URL parameter)
 // NOTE: share is a dialog
@@ -49,20 +48,32 @@ export function MultiStepForm(): ReactElement {
 
   return (
     <Container
-      maxWidth="lg"
+      maxWidth="sm"
       sx={{
-        height: '100%',
         width: '100%',
-        backgroundColor: 'background.paper'
+        height: '100%',
+        maxHeight: { xs: '100%', sm: '852px' },
+        backgroundColor: 'background.paper',
+        borderRadius: { xs: '0px', md: '16px' },
+        mt: { xs: 0, sm: 6 },
+        mb: { xs: 0, sm: 6 }
       }}
     >
       <Stack gap={12} data-testid="MultiStepForm">
         <NextLink href={link} passHref legacyBehavior>
           <Button
             variant="text"
-            color="secondary"
-            endIcon={<ArrowRightIcon />}
-            sx={{ alignSelf: 'flex-end' }}
+            color="primary"
+            endIcon={<ChevronRight />}
+            sx={{
+              alignSelf: 'flex-end',
+              mt: '14px',
+              mr: '4px',
+              fontWeight: 'bold',
+              '& .MuiButton-endIcon': {
+                marginLeft: '0px'
+              }
+            }}
             disabled={journey?.id == null}
           >
             {t('Edit Manually')}
@@ -74,7 +85,9 @@ export function MultiStepForm(): ReactElement {
           totalSteps={screens.length}
         />
 
-        <Box sx={{ alignSelf: 'center', width: '100%' }}>
+        <Box
+          sx={{ alignSelf: 'center', width: '100%', px: '14px', pb: '24px' }}
+        >
           {renderScreen(activeScreen, handleNext)}
         </Box>
 
