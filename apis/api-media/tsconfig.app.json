@@ -18,5 +18,5 @@
     "**/__mocks/*.ts",
     "**/test/*.ts"
   ],
-  "include": ["**/*.{ts,tsx}"]
+  "include": ["**/*.ts"]
 }
