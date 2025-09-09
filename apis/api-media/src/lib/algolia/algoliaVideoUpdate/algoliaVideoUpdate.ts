@@ -180,9 +180,6 @@ export async function updateVideoInAlgolia(
 
     const published = video.variants[0]?.published ?? false
 
-    const restrictViewArclight =
-      video.restrictViewPlatforms.includes('arclight')
-
     const transformedVideo = {
       objectID: video.id,
       mediaComponentId: video.id,
@@ -195,7 +192,7 @@ export async function updateVideoInAlgolia(
       studyQuestions: Object.values(studyQuestionsByLanguage),
       keywords: video.keywords.map((keyword) => keyword.value),
       isDownloadable,
-      restrictViewArclight,
+      restrictViewPlatforms: video.restrictViewPlatforms,
       downloadSizes: isDownloadable
         ? {
             approximateSmallDownloadSizeInBytes:

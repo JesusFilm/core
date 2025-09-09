@@ -54,26 +54,6 @@ export async function updateVideoVariantInAlgolia(
       return
     }
 
-    if (!videoVariant.published) {
-      logger?.warn(
-        `video variant ${videoVariantId} is not published, skipping update`
-      )
-      return
-    }
-
-    if (videoVariant.video?.restrictViewPlatforms.includes('watch')) {
-      logger?.warn(
-        `video variant ${videoVariantId} is restricted from view on watch, skipping update and removing from algolia`
-      )
-
-      await client.deleteObject({
-        indexName: videoVariantsIndex,
-        objectID: videoVariantId
-      })
-
-      return
-    }
-
     const cfImage = videoVariant.video?.images.find(
       ({ aspectRatio }) => aspectRatio === 'banner'
     )
@@ -111,6 +91,20 @@ export async function updateVideoVariantInAlgolia(
         videoVariant.video?.imageAlt.find((alt) => alt.languageId === '529')
           ?.value ?? '',
       childrenCount: videoVariant.video?.childIds.length,
+      videoPublished:
+        videoVariant.video?.published === undefined ||
+        videoVariant.video?.published === null
+          ? true
+          : videoVariant.video?.published,
+      published:
+        videoVariant.published === undefined || videoVariant.published === null
+          ? true
+          : videoVariant.published,
+      restrictViewPlatforms:
+        videoVariant.video?.restrictViewPlatforms === undefined ||
+        videoVariant.video?.restrictViewPlatforms === null
+          ? []
+          : videoVariant.video?.restrictViewPlatforms,
       manualRanking: videoVariant.languageId === '529' ? 0 : 1
     }
 
