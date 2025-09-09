@@ -32,11 +32,13 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
-      - name: Mount pnpm store (stickydisk)
-        uses: useblacksmith/stickydisk@v1
+      - name: Cache pnpm store
+        uses: actions/cache@v4
         with:
-          key: ${{ github.repository }}-pnpm-store-${{ runner.os }}
           path: $HOME/.pnpm-store
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
       - name: Configure pnpm store-dir
         run: pnpm config set store-dir $HOME/.pnpm-store
       - name: Install dependencies
@@ -98,11 +100,13 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
-      - name: Mount pnpm store (stickydisk)
-        uses: useblacksmith/stickydisk@v1
+      - name: Cache pnpm store
+        uses: actions/cache@v4
         with:
-          key: ${{ github.repository }}-pnpm-store-${{ runner.os }}
           path: $HOME/.pnpm-store
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
       - name: Configure pnpm store-dir
         run: pnpm config set store-dir $HOME/.pnpm-store
       - name: Install dependencies
