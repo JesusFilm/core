@@ -19,22 +19,6 @@ import { JourneyCustomizeTeamSelect } from './JourneyCustomizeTeamSelect'
 import { LanguageScreenCardPreview } from './LanguageScreenCardPreview'
 import { gql, useQuery } from '@apollo/client'
 
-const GET_JOURNEYS_FROM_TEMPLATE_ID = gql`
-  query GetJourneysFromTemplateId($where: JourneysFilter) {
-    journeys(where: $where) {
-      id
-      language {
-        id
-        slug
-        name {
-          primary
-          value
-        }
-      }
-    }
-  }
-`
-
 interface LanguageScreenProps {
   handleNext: () => void
 }
