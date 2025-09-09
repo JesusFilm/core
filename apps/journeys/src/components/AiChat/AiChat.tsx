@@ -93,6 +93,13 @@ export function AiChat({ open }: AiChatProps) {
     }
   }
 
+  // Fetch suggestions when the chat opens
+  useEffect(() => {
+    if (!open) return
+
+    void fetchSuggestions()
+  }, [open])
+
   function handleSuggestionClick(suggestion: string) {
     void sendMessage({ text: suggestion })
   }
