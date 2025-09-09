@@ -3,6 +3,9 @@ import { initReactI18next } from 'react-i18next'
 import LanguageDetector from 'i18next-browser-languagedetector'
 import { resources } from './resources'
 
+// Polyfill for Intl.PluralRules in React Native
+import '@formatjs/intl-pluralrules/polyfill'
+
 i18n
   .use(LanguageDetector)
   .use(initReactI18next)

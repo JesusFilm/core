@@ -1,15 +1,16 @@
-import { useRoute } from '@react-navigation/native'
-import { VideoView, useVideoPlayer } from 'expo-video'
-import React, { useRef, useState } from 'react'
+import { useRoute, useFocusEffect } from '@react-navigation/native'
+import React, { useRef, useState, useCallback } from 'react'
 import {
   ScrollView,
   Text,
   TouchableOpacity,
   View,
-  useWindowDimensions
+  useWindowDimensions,
+  StatusBar
 } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { useTranslation } from 'react-i18next'
+import CustomVideoPlayer from '../components/CustomVideoPlayer'
 
 interface VideoScreenProps {
   navigation: any
@@ -23,13 +24,26 @@ export default function VideoScreen({ navigation }: VideoScreenProps) {
     videoSlug: string
     languageSlug: string
   }
+  const [isFullscreen, setIsFullscreen] = useState(false)
 
-  const [isPlaying, setIsPlaying] = useState(false)
-  const [currentTime, setCurrentTime] = useState(0)
-  const [duration, setDuration] = useState(0)
+  // Hide navigation bar when screen is focused
+  useFocusEffect(
+    useCallback(() => {
+      navigation.setOptions({
+        headerShown: false
+      })
 
-  // Calculate responsive video dimensions
-  const videoHeight = Math.min(screenWidth * (9 / 16), screenHeight * 0.4) // Max 40% of screen height
+      // Show status bar
+      StatusBar.setHidden(false, 'fade')
+
+      return () => {
+        // Restore navigation bar when leaving screen
+        navigation.setOptions({
+          headerShown: true
+        })
+      }
+    }, [navigation])
+  )
 
   // Mock video data - in a real app, this would come from GraphQL
   const videoData = {
@@ -78,158 +92,131 @@ export default function VideoScreen({ navigation }: VideoScreenProps) {
     videoData[videoSlug as keyof typeof videoData] ||
     videoData['intro-react-native']
 
-  // Create video player with the new expo-video API
-  const player = useVideoPlayer(video.hlsUrl, (player: any) => {
-    player.loop = false
-    player.muted = false
-  })
-
-  const formatTime = (milliseconds: number) => {
-    const minutes = Math.floor(milliseconds / 60000)
-    const seconds = Math.floor((milliseconds % 60000) / 1000)
-    return `${minutes}:${seconds.toString().padStart(2, '0')}`
+  const handleBackPress = () => {
+    navigation.goBack()
   }
 
-  const handlePlayPause = () => {
-    if (isPlaying) {
-      player.pause()
-    } else {
-      player.play()
-    }
-  }
-
-  const handleSeek = (position: number) => {
-    // Note: Seek functionality may need to be implemented differently
-    // depending on the expo-video API version
-    console.log('Seek to:', position)
+  const handleFullscreenChange = (fullscreen: boolean) => {
+    setIsFullscreen(fullscreen)
   }
 
   return (
     <SafeAreaView className="flex-1 bg-black">
-      {/* Video Player */}
-      <View
-        className="bg-black"
+      {/* Custom Video Player */}
+      <CustomVideoPlayer
+        videoUrl={video.hlsUrl}
+        onBackPress={handleBackPress}
+        onFullscreenChange={handleFullscreenChange}
         style={{
           width: screenWidth,
-          height: videoHeight,
-          aspectRatio: 16 / 9
+          height: Math.min(screenWidth * (9 / 16), screenHeight * 0.4)
         }}
-      >
-        <VideoView
-          player={player}
-          style={{
-            width: '100%',
-            height: '100%'
-          }}
-          allowsFullscreen
-          allowsPictureInPicture
-          showsTimecodes
-          requiresLinearPlayback={false}
-        />
-      </View>
+      />
 
-      {/* Video Info */}
-      <ScrollView
-        className="flex-1 bg-white"
-        showsVerticalScrollIndicator={true}
-        contentContainerStyle={{ paddingBottom: 20 }}
-      >
-        <View className="px-4 py-6">
-          <Text className="text-2xl font-bold text-gray-900 mb-2">
-            {video.title}
-          </Text>
-
-          <View className="flex-row items-center mb-4">
-            <View className="bg-gray-100 rounded-full px-3 py-1 mr-2">
-              <Text className="text-gray-700 text-sm font-medium">
-                {video.duration}
-              </Text>
-            </View>
-            <View className="bg-gray-100 rounded-full px-3 py-1 mr-2">
-              <Text className="text-gray-700 text-sm font-medium">
-                {video.language}
-              </Text>
-            </View>
-            <View className="bg-gray-100 rounded-full px-3 py-1">
-              <Text className="text-gray-700 text-sm font-medium">
-                {video.category}
-              </Text>
-            </View>
-          </View>
-
-          <Text className="text-gray-700 text-base mb-6 leading-6">
-            {video.description}
-          </Text>
-
-          {/* Tags */}
-          <View className="mb-6">
-            <Text className="text-lg font-semibold text-gray-800 mb-3">
-              {t('video.tags')}
+      {/* Video Info - Only show when not in fullscreen */}
+      {!isFullscreen && (
+        <ScrollView
+          className="flex-1 bg-white"
+          showsVerticalScrollIndicator={true}
+          contentContainerStyle={{ paddingBottom: 20 }}
+        >
+          <View className="px-4 py-6">
+            <Text className="text-2xl font-bold text-gray-900 mb-2">
+              {video.title}
             </Text>
-            <View className="flex-row flex-wrap">
-              {video.tags.map((tag, index) => (
-                <View
-                  key={index}
-                  className="bg-blue-100 rounded-full px-3 py-1 mr-2 mb-2"
-                >
-                  <Text className="text-blue-800 text-sm font-medium">
-                    {tag}
+
+            <View className="flex-row items-center mb-4">
+              <View className="bg-gray-100 rounded-full px-3 py-1 mr-2">
+                <Text className="text-gray-700 text-sm font-medium">
+                  {video.duration}
+                </Text>
+              </View>
+              <View className="bg-gray-100 rounded-full px-3 py-1 mr-2">
+                <Text className="text-gray-700 text-sm font-medium">
+                  {video.language}
+                </Text>
+              </View>
+              <View className="bg-gray-100 rounded-full px-3 py-1">
+                <Text className="text-gray-700 text-sm font-medium">
+                  {video.category}
+                </Text>
+              </View>
+            </View>
+
+            <Text className="text-gray-700 text-base mb-6 leading-6">
+              {video.description}
+            </Text>
+
+            {/* Tags */}
+            <View className="mb-6">
+              <Text className="text-lg font-semibold text-gray-800 mb-3">
+                {t('video.tags')}
+              </Text>
+              <View className="flex-row flex-wrap">
+                {video.tags.map((tag, index) => (
+                  <View
+                    key={index}
+                    className="bg-blue-100 rounded-full px-3 py-1 mr-2 mb-2"
+                  >
+                    <Text className="text-blue-800 text-sm font-medium">
+                      {tag}
+                    </Text>
+                  </View>
+                ))}
+              </View>
+            </View>
+
+            {/* Video Controls Info */}
+            <View className="bg-gray-50 rounded-lg p-4 mb-6">
+              <Text className="text-lg font-semibold text-gray-800 mb-2">
+                {t('video.videoControls')}
+              </Text>
+              <Text className="text-gray-600 text-sm mb-2">
+                • {t('video.tapToShowControls')}
+              </Text>
+              <Text className="text-gray-600 text-sm mb-2">
+                • {t('video.nativeControls')}
+              </Text>
+              <Text className="text-gray-600 text-sm">
+                • {t('video.hlsSupport')}
+              </Text>
+            </View>
+
+            {/* Related Videos */}
+            <View className="mb-6">
+              <Text className="text-lg font-semibold text-gray-800 mb-4">
+                {t('video.relatedVideos')}
+              </Text>
+              <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+                <TouchableOpacity className="bg-gray-100 rounded-lg p-4 mr-4 w-64">
+                  <Text className="text-gray-900 font-medium mb-2">
+                    React Native Navigation
                   </Text>
-                </View>
-              ))}
+                  <Text className="text-gray-600 text-sm">
+                    Learn navigation patterns
+                  </Text>
+                </TouchableOpacity>
+                <TouchableOpacity className="bg-gray-100 rounded-lg p-4 mr-4 w-64">
+                  <Text className="text-gray-900 font-medium mb-2">
+                    State Management
+                  </Text>
+                  <Text className="text-gray-600 text-sm">
+                    Redux and Context API
+                  </Text>
+                </TouchableOpacity>
+                <TouchableOpacity className="bg-gray-100 rounded-lg p-4 mr-4 w-64">
+                  <Text className="text-gray-900 font-medium mb-2">
+                    Testing React Native
+                  </Text>
+                  <Text className="text-gray-600 text-sm">
+                    Unit and integration tests
+                  </Text>
+                </TouchableOpacity>
+              </ScrollView>
             </View>
           </View>
-
-          {/* Video Controls Info */}
-          <View className="bg-gray-50 rounded-lg p-4 mb-6">
-            <Text className="text-lg font-semibold text-gray-800 mb-2">
-              {t('video.videoControls')}
-            </Text>
-            <Text className="text-gray-600 text-sm mb-2">
-              • {t('video.tapToShowControls')}
-            </Text>
-            <Text className="text-gray-600 text-sm mb-2">
-              • {t('video.nativeControls')}
-            </Text>
-            <Text className="text-gray-600 text-sm">
-              • {t('video.hlsSupport')}
-            </Text>
-          </View>
-
-          {/* Related Videos */}
-          <View className="mb-6">
-            <Text className="text-lg font-semibold text-gray-800 mb-4">
-              {t('video.relatedVideos')}
-            </Text>
-            <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-              <TouchableOpacity className="bg-gray-100 rounded-lg p-4 mr-4 w-64">
-                <Text className="text-gray-900 font-medium mb-2">
-                  React Native Navigation
-                </Text>
-                <Text className="text-gray-600 text-sm">
-                  Learn navigation patterns
-                </Text>
-              </TouchableOpacity>
-              <TouchableOpacity className="bg-gray-100 rounded-lg p-4 mr-4 w-64">
-                <Text className="text-gray-900 font-medium mb-2">
-                  State Management
-                </Text>
-                <Text className="text-gray-600 text-sm">
-                  Redux and Context API
-                </Text>
-              </TouchableOpacity>
-              <TouchableOpacity className="bg-gray-100 rounded-lg p-4 mr-4 w-64">
-                <Text className="text-gray-900 font-medium mb-2">
-                  Testing React Native
-                </Text>
-                <Text className="text-gray-600 text-sm">
-                  Unit and integration tests
-                </Text>
-              </TouchableOpacity>
-            </ScrollView>
-          </View>
-        </View>
-      </ScrollView>
+        </ScrollView>
+      )}
     </SafeAreaView>
   )
 }

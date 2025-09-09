@@ -15,7 +15,7 @@
     "start": {
       "executor": "@nx/expo:start",
       "options": {
-        "port": 8081
+        "port": 19000
       }
     },
     "build": {
