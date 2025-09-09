@@ -6,7 +6,6 @@ import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 import { ThemeMode, ThemeName } from '@core/shared/ui/themes'
 
 import { GetJourney_journey as Journey } from '../../../__generated__/GetJourney'
-import { AiChatButton } from '../AiChatButton'
 
 interface JourneyPageWrapperProps {
   journey: Journey
@@ -58,7 +57,6 @@ export function JourneyPageWrapper({
           fontFamilies={fontFamilies}
         >
           {children}
-          <AiChatButton />
         </ThemeProvider>
       </JourneyProvider>
     </PlausibleProvider>
