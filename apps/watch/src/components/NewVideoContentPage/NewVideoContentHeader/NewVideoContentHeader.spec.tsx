@@ -62,7 +62,7 @@ describe('NewVideoContentHeader', () => {
     expect(
       screen.getByRole('button', { name: 'Watch Full Film' })
     ).toBeInTheDocument()
-    expect(screen.getByText('Clip 20 of 61')).toBeInTheDocument()
+    expect(screen.getByText('Clip 20 of 20')).toBeInTheDocument()
     expect(screen.getByTestId('container-progress-short')).toHaveTextContent(
       '20/61'
     )
@@ -80,7 +80,7 @@ describe('NewVideoContentHeader', () => {
       '/watch/lumo'
     )
     expect(screen.getByRole('button', { name: 'See All' })).toBeInTheDocument()
-    expect(screen.getByText('Clip 3 of 4')).toBeInTheDocument()
+    expect(screen.getByText('Clip 3 of 20')).toBeInTheDocument()
     expect(screen.getByTestId('container-progress-short')).toHaveTextContent(
       '3/4'
     )

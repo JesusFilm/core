@@ -106,7 +106,6 @@ const nextConfig = {
     ]
   },
   experimental: {
-    fallbackNodePolyfills: false,
     reactCompiler: true
   }
 }

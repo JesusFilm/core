@@ -92,6 +92,7 @@ export function HeaderTabButtons(): ReactElement {
               fontSize: { sm: '0.875rem', md: '1rem' }
             }}
             startIcon={icon}
+            locale={false}
           >
             {label}
           </Button>
