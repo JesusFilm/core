@@ -42,8 +42,8 @@ export async function POST(req: NextRequest) {
     const suggestionsText = text.trim()
     const suggestions = suggestionsText
       .split('\n')
-      .map(line => line.trim())
-      .filter(line => line.length > 0 && !line.startsWith('Suggestions:'))
+      .map((line) => line.trim())
+      .filter((line) => line.length > 0 && !line.startsWith('Suggestions:'))
 
     return NextResponse.json(suggestions)
   } catch (error) {
