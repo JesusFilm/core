@@ -33,7 +33,7 @@ export function ProgressStepper({
           backgroundColor: isCompleted
             ? 'primary.main'
             : isCurrentStep
-              ? '#C52D3A35' // Hardcoded hex color to support alpha value
+              ? '#C52D3A35'
               : 'white',
           border: '2px solid',
           borderColor: isCompleted
