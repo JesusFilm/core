@@ -43,6 +43,7 @@ jobs:
       ECR_REPOSITORY: jfp-${{ inputs.name }}-${{ inputs.env }}
       IMAGE_TAG: ${{ github.sha }}
       NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
+      PNPM_STORE_PATH: ~/.pnpm-store
     runs-on: blacksmith-2vcpu-ubuntu-2204
     strategy:
       matrix:
@@ -61,7 +62,12 @@ jobs:
       - uses: useblacksmith/setup-node@v5
         with:
           node-version: ${{ matrix.node-version }}
-          cache: 'pnpm'
+          cache: 'none'
+      - name: Mount pnpm store (stickydisk)
+        uses: useblacksmith/stickydisk@v1
+        with:
+          key: ${{ github.repository }}-pnpm-store-${{ runner.os }}
+          path: ~/.pnpm-store
       - name: Install dependencies
         run: pnpm install --frozen-lockfile --silent
       - name: Prisma Generate

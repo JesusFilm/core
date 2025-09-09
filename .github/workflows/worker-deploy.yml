@@ -14,6 +14,8 @@ jobs:
     strategy:
       matrix:
         node-version: [22]
+    env:
+      PNPM_STORE_PATH: ~/.pnpm-store
     outputs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
     steps:
@@ -27,7 +29,12 @@ jobs:
       - uses: useblacksmith/setup-node@v5
         with:
           node-version: ${{ matrix.node-version }}
-          cache: 'pnpm'
+          cache: 'none'
+      - name: Mount pnpm store (stickydisk)
+        uses: useblacksmith/stickydisk@v1
+        with:
+          key: ${{ github.repository }}-pnpm-store-${{ runner.os }}
+          path: ~/.pnpm-store
       - name: Install dependencies
         run: pnpm install --frozen-lockfile --silent
       - uses: nrwl/nx-set-shas@v4
@@ -52,6 +59,8 @@ jobs:
         github-ref-name: ['${{ github.ref_name }}']
         node-version: [22]
     runs-on: blacksmith-2vcpu-ubuntu-2204
+    env:
+      PNPM_STORE_PATH: ~/.pnpm-store
     steps:
       - uses: actions/checkout@v4
         with:
@@ -63,7 +72,12 @@ jobs:
       - uses: useblacksmith/setup-node@v5
         with:
           node-version: ${{ matrix.node-version }}
-          cache: 'pnpm'
+          cache: 'none'
+      - name: Mount pnpm store (stickydisk)
+        uses: useblacksmith/stickydisk@v1
+        with:
+          key: ${{ github.repository }}-pnpm-store-${{ runner.os }}
+          path: ~/.pnpm-store
       - name: Install dependencies
         run: pnpm install --frozen-lockfile --silent
       - uses: nrwl/nx-set-shas@v4
@@ -87,6 +101,8 @@ jobs:
         github-ref-name: ['${{ github.ref_name }}']
         node-version: [22]
     runs-on: blacksmith-2vcpu-ubuntu-2204
+    env:
+      PNPM_STORE_PATH: ~/.pnpm-store
     steps:
       - uses: actions/checkout@v4
         with:
@@ -98,7 +114,12 @@ jobs:
       - uses: useblacksmith/setup-node@v5
         with:
           node-version: ${{ matrix.node-version }}
-          cache: 'pnpm'
+          cache: 'none'
+      - name: Mount pnpm store (stickydisk)
+        uses: useblacksmith/stickydisk@v1
+        with:
+          key: ${{ github.repository }}-pnpm-store-${{ runner.os }}
+          path: ~/.pnpm-store
       - name: Install dependencies
         run: pnpm install --frozen-lockfile --silent
       - uses: nrwl/nx-set-shas@v4

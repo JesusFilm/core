@@ -36,6 +36,8 @@ jobs:
   deploy-and-test:
     if: inputs.TargetTests == 'all-e2e' || github.event_name == 'schedule'
     runs-on: blacksmith-4vcpu-ubuntu-2204
+    env:
+      PNPM_STORE_PATH: ~/.pnpm-store
     strategy:
       fail-fast: false
       matrix:
@@ -75,7 +77,12 @@ jobs:
       - uses: useblacksmith/setup-node@v5
         with:
           node-version: 22
-          cache: 'pnpm'
+          cache: 'none'
+      - name: Mount pnpm store (stickydisk)
+        uses: useblacksmith/stickydisk@v1
+        with:
+          key: ${{ github.repository }}-pnpm-store-${{ runner.os }}
+          path: ~/.pnpm-store
       - name: Install dependencies
         run: pnpm install --frozen-lockfile --silent
       - name: Mount playwright cache
@@ -159,6 +166,9 @@ jobs:
     strategy:
       matrix:
         test-suite: ${{ fromJSON(format('["{0}"]', inputs.TargetTests)) }}
+        node-version: [22]
+    env:
+      PNPM_STORE_PATH: ~/.pnpm-store
     steps:
       - uses: actions/checkout@v4
       - name: Setup pnpm
@@ -168,7 +178,12 @@ jobs:
       - uses: useblacksmith/setup-node@v5
         with:
           node-version: ${{ matrix.node-version }}
-          cache: 'pnpm'
+          cache: 'none'
+      - name: Mount pnpm store (stickydisk)
+        uses: useblacksmith/stickydisk@v1
+        with:
+          key: ${{ github.repository }}-pnpm-store-${{ runner.os }}
+          path: ~/.pnpm-store
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile --silent
