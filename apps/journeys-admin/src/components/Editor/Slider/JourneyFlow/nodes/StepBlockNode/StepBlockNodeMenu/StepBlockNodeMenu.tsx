@@ -56,7 +56,9 @@ export function StepBlockNodeMenu({
           onMouseEnter={(e) => {
             if (isIOSTouchScreen()) handleClick(e)
           }}
-          onClick={handleClick}
+          onClick={(e) => {
+            handleClick(e)
+          }}
           sx={{
             position: 'absolute',
             top: -14,
