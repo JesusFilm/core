@@ -85,20 +85,6 @@ export function AiChat({ open }: AiChatProps) {
     }
   }
 
-  // Fetch suggestions when the chat opens
-  useEffect(() => {
-    if (!open) return
-
-    void fetchSuggestions()
-  }, [open])
-
-  // Prototype visibility
-  useEffect(() => {
-    suggestions?.forEach((element) => {
-      console.log('Suggestion: ', element)
-    })
-  }, [suggestions])
-
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     if (input.trim()) {
