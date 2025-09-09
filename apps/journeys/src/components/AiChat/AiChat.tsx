@@ -1,6 +1,7 @@
 import { useChat } from '@ai-sdk/react'
 import { DefaultChatTransport } from 'ai'
 import { CopyIcon, Loader, RefreshCcwIcon } from 'lucide-react'
+import { useTranslation } from 'next-i18next'
 import { Fragment, useEffect, useState } from 'react'
 
 import { TreeBlock, useBlocks } from '@core/journeys/ui/block'
@@ -21,7 +22,6 @@ import {
 } from '../PromptInput'
 import { Response } from '../Response'
 import { Suggestion, Suggestions } from '../Suggestion'
-import { useTranslation } from 'next-i18next'
 
 interface AiChatProps {
   open: boolean
