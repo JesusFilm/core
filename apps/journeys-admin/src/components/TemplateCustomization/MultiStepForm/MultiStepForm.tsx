@@ -59,7 +59,7 @@ export function MultiStepForm(): ReactElement {
         mb: { xs: 0, sm: 6 }
       }}
     >
-      <Stack gap={12} data-testid="MultiStepForm">
+      <Stack gap={{ xs: 3, sm: 4 }} data-testid="MultiStepForm">
         <NextLink href={link} passHref legacyBehavior>
           <Button
             variant="text"
@@ -86,7 +86,12 @@ export function MultiStepForm(): ReactElement {
         />
 
         <Box
-          sx={{ alignSelf: 'center', width: '100%', px: '14px', pb: '24px' }}
+          sx={{
+            alignSelf: 'center',
+            width: '100%',
+            px: '14px',
+            py: { xs: '10px', sm: '24px' }
+          }}
         >
           {renderScreen(activeScreen, handleNext)}
         </Box>
