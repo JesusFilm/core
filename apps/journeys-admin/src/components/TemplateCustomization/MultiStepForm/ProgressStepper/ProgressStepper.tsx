@@ -46,11 +46,7 @@ export function ProgressStepper({
           justifyContent: 'center'
         }}
       >
-        {isCompleted && (
-          <Check
-            sx={{ fontSize: 24, color: 'white' }}
-          />
-        )}
+        {isCompleted && <Check sx={{ fontSize: 24, color: 'white' }} />}
       </Box>
     )
   }

@@ -7,9 +7,7 @@ describe('ProgressStepper', () => {
     const activeStep = 2
     const totalSteps = 4
 
-    render(
-      <ProgressStepper activeStep={activeStep} totalSteps={totalSteps} />
-    )
+    render(<ProgressStepper activeStep={activeStep} totalSteps={totalSteps} />)
 
     const progressStepper = screen.getByTestId('progress-stepper')
     expect(progressStepper).toBeInTheDocument()
@@ -25,9 +23,7 @@ describe('ProgressStepper', () => {
     const activeStep = 2
     const totalSteps = 2
 
-    render(
-      <ProgressStepper activeStep={activeStep} totalSteps={totalSteps} />
-    )
+    render(<ProgressStepper activeStep={activeStep} totalSteps={totalSteps} />)
 
     const checkIcons = screen.getAllByTestId('CheckIcon')
     expect(checkIcons).toHaveLength(totalSteps)
@@ -37,9 +33,7 @@ describe('ProgressStepper', () => {
     const activeStep = 0
     const totalSteps = 3
 
-    render(
-      <ProgressStepper activeStep={activeStep} totalSteps={totalSteps} />
-    )
+    render(<ProgressStepper activeStep={activeStep} totalSteps={totalSteps} />)
 
     const checkIcons = screen.queryAllByTestId('CheckIcon')
     expect(checkIcons).toHaveLength(activeStep)
