@@ -1,18 +1,19 @@
-import { DefaultChatTransport } from 'ai'
 import { useChat } from '@ai-sdk/react'
-import { useEffect, Fragment, useState } from 'react'
-import { SuggestionsRequest } from '../../types/suggestions'
-import { useBlocks } from '@core/journeys/ui/block'
-import { extractTypographyContent } from '../../utils/contextExtraction'
+import { DefaultChatTransport } from 'ai'
+import { CopyIcon, Loader, RefreshCcwIcon } from 'lucide-react'
+import { Fragment, useEffect, useState } from 'react'
 
+import { useBlocks } from '@core/journeys/ui/block'
+
+import { SuggestionsRequest } from '../../types/suggestions'
+import { extractTypographyContent } from '../../utils/contextExtraction'
+import { Action, Actions } from '../Actions'
 import {
   Conversation,
   ConversationContent,
   ConversationScrollButton
 } from '../Conversation'
 import { Message, MessageContent } from '../Message'
-import { Action, Actions } from '../Actions'
-import { CopyIcon, Loader, RefreshCcwIcon } from 'lucide-react'
 import {
   PromptInput,
   PromptInputSubmit,
