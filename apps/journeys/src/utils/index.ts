@@ -1,1 +1,1 @@
-export { extractTypographyContent } from './contextExtraction'
+export { extractBlockContext, extractTypographyContent, type BlockContext } from './contextExtraction'

@@ -6,7 +6,7 @@ import { Fragment, useEffect, useState } from 'react'
 
 import { TreeBlock, useBlocks } from '@core/journeys/ui/block'
 
-import { extractTypographyContent } from '../../utils/contextExtraction'
+import { extractBlockContext } from '../../utils/contextExtraction'
 import { Action, Actions } from '../Actions'
 import {
   Conversation,
@@ -59,8 +59,8 @@ export function AiChat({ open }: AiChatProps) {
     setSuggestionsError(null)
 
     try {
-      const contextText = extractTypographyContent(activeBlock as TreeBlock)
-      if (contextText === '') {
+      const contextText = extractBlockContext(activeBlock as TreeBlock)
+      if (contextText?.textContent === '') {
         setSuggestions([])
         return
       }
