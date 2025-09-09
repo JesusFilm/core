@@ -91,7 +91,10 @@ function VideosPage({
           insights
           routing={nextRouter}
         >
-          <Configure ruleContexts={['all_videos_page']} />
+          <Configure
+            ruleContexts={['all_videos_page']}
+            filters="restrictViewPlatforms:-watch AND published:true AND videoPublished:true"
+          />
           <Videos />
         </InstantSearch>
       </ApolloProvider>

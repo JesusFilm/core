@@ -30,6 +30,8 @@ export interface AlgoliaVideo extends Hit<BaseHit> {
   imageAlt: string
   childrenCount: number
   objectID: string
+  published: boolean
+  restrictViewPlatforms: string[]
 }
 
 export function transformItemsDefault(items: AlgoliaVideo[]): Video[] {
