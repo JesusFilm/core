@@ -6,22 +6,31 @@ import { Fragment, useEffect, useState } from 'react'
 
 import { TreeBlock, useBlocks } from '@core/journeys/ui/block'
 
-import { extractTypographyContent } from '../../utils/contextExtraction'
-import { Action, Actions } from '../Actions'
+import { extractTypographyContent } from './utils/contextExtraction'
+import {
+  Action,
+  Actions
+} from '../../../../../../apps/journeys/src/components/Actions'
 import {
   Conversation,
   ConversationContent,
   ConversationScrollButton
-} from '../Conversation'
-import { Message, MessageContent } from '../Message'
+} from '../../../../../../apps/journeys/src/components/Conversation'
+import {
+  Message,
+  MessageContent
+} from '../../../../../../apps/journeys/src/components/Message'
 import {
   PromptInput,
   PromptInputSubmit,
   PromptInputTextarea,
   PromptInputToolbar
-} from '../PromptInput'
-import { Response } from '../Response'
-import { Suggestion, Suggestions } from '../Suggestion'
+} from '../../../../../../apps/journeys/src/components/PromptInput'
+import { Response } from '../../../../../../apps/journeys/src/components/Response'
+import {
+  Suggestion,
+  Suggestions
+} from '../../../../../../apps/journeys/src/components/Suggestion'
 
 interface AiChatProps {
   open: boolean

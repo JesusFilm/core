@@ -5,7 +5,7 @@ import { ReactElement, useEffect, useRef, useState } from 'react'
 
 import { useBlocks } from '@core/journeys/ui/block'
 
-import { AiChat } from '../../../../../../apps/journeys/src/components/AiChat'
+import { AiChat } from '../AiChat'
 import { Button } from '../../../../../../apps/journeys/src/components/Button'
 import {
   Drawer,
