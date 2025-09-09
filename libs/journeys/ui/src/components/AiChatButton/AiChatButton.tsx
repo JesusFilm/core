@@ -5,7 +5,6 @@ import { ReactElement, useEffect, useRef, useState } from 'react'
 
 import { useBlocks } from '../../libs/block'
 import { AiChat } from '../AiChat'
-import { Button } from '../SimpleButton'
 import {
   Drawer,
   DrawerClose,
@@ -15,6 +14,7 @@ import {
   DrawerTitle,
   DrawerTrigger
 } from '../Drawer'
+import { Button } from '../SimpleButton'
 
 export function AiChatButton(): ReactElement {
   const { t } = useTranslation('apps-journeys')
