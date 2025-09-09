@@ -22,12 +22,14 @@ import {
 } from '../PromptInput'
 import { Response } from '../Response'
 import { Suggestion, Suggestions } from '../Suggestion'
+import { useTranslation } from 'next-i18next'
 
 interface AiChatProps {
   open: boolean
 }
 
 export function AiChat({ open }: AiChatProps) {
+  const { t } = useTranslation('apps-journeys')
   const { messages, sendMessage, status, regenerate } = useChat({
     transport: new DefaultChatTransport({
       api: '/api/chat'
@@ -92,7 +94,7 @@ export function AiChat({ open }: AiChatProps) {
       } catch (error) {
         if (isCancelled) return
         console.error('Error fetching suggestions:', error)
-        setSuggestionsError('Failed to load suggestions')
+        setSuggestionsError(t('Failed to load suggestions'))
         setSuggestions([])
       } finally {
         if (!isCancelled) setSuggestionsLoading(false)
@@ -187,7 +189,7 @@ export function AiChat({ open }: AiChatProps) {
           {suggestionsLoading && (
             <div className="flex items-center gap-2 px-4 py-2 text-muted-foreground">
               <Loader className="size-4 animate-spin" />
-              <span>Loading suggestions, please hold...</span>
+              <span>{t('Loading suggestions, please hold...')}</span>
             </div>
           )}
           {suggestionsError && (
@@ -207,7 +209,7 @@ export function AiChat({ open }: AiChatProps) {
         >
           <PromptInputTextarea
             className="text-text-primary"
-            placeholder="Ask me anything you don't understand."
+            placeholder={t("Ask me anything you don't understand.")}
             onChange={(e) => setInput(e.target.value)}
             value={input}
           />
