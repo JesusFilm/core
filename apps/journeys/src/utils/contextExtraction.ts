@@ -1,14 +1,5 @@
 import type { TreeBlock } from '@core/journeys/ui/block'
 
-interface TypographyBlock {
-  __typename: 'TypographyBlock'
-  id: string
-  content: string
-  parentBlockId: string | null
-  parentOrder: number | null
-  children: TreeBlock[]
-}
-
 /**
  * Extracts text content from TypographyBlock nodes in the journey tree
  * @param treeBlocks - Array of tree blocks from useBlocks hook
@@ -19,43 +10,35 @@ export function extractTypographyContent(
   treeBlock: TreeBlock,
   maxLength: number = 1000
 ): string {
-  if (!treeBlock) {
-    return ''
-  }
+  if (!treeBlock) return ''
 
   const extractContent = (blocks: TreeBlock[]): string[] => {
-    const contents: string[] = []
-    
-    for (const block of blocks) {
-      if (block.__typename === 'TypographyBlock') {
-        const typographyBlock = block as TypographyBlock
-        if (typographyBlock.content && typographyBlock.content.trim()) {
-          contents.push(typographyBlock.content.trim())
-        }
-      }
-      
-      // Recursively process children
-      if (block.children && block.children.length > 0) {
-        contents.push(...extractContent(block.children))
-      }
-    }
-    
-    return contents
+    return blocks.flatMap((block) => {
+      const typographyContent =
+        block.__typename === 'TypographyBlock' ? block.content.trim() : ''
+
+      const childrenContent = block.children?.length
+        ? extractContent(block.children)
+        : []
+
+      return typographyContent
+        ? [typographyContent, ...childrenContent]
+        : childrenContent
+    })
   }
 
-  const allContents = extractContent([treeBlock])
-  const combinedContent = allContents.join(' ').trim()
-  
-  // Limit content length to prevent excessive context
+  const combinedContent = extractContent([treeBlock]).join(' ').trim()
+
+  // Early return if content is within limit
   if (combinedContent.length <= maxLength) {
     return combinedContent
   }
-  
-  // Truncate to maxLength while trying to keep complete words
+
+  // Truncate to maxLength while preserving word boundaries
   const truncated = combinedContent.substring(0, maxLength)
   const lastSpaceIndex = truncated.lastIndexOf(' ')
-  
-  return lastSpaceIndex > 0 
-    ? truncated.substring(0, lastSpaceIndex) + '...'
-    : truncated + '...'
+
+  return lastSpaceIndex > 0
+    ? `${truncated.substring(0, lastSpaceIndex)}...`
+    : `${truncated}...`
 }
