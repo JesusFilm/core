@@ -10,7 +10,7 @@ import { ButtonVariant, ButtonColor, ButtonSize, ButtonAlignment, ThemeMode, The
 // ====================================================
 
 export interface TextResponseWithButtonRestore_textResponse_GridContainerBlock {
-  __typename: "GridContainerBlock" | "GridItemBlock";
+  __typename: "GridContainerBlock" | "GridItemBlock" | "MultiselectBlock" | "MultiselectOptionBlock";
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
@@ -494,7 +494,7 @@ export interface TextResponseWithButtonRestore_textResponse_VideoTriggerBlock {
 export type TextResponseWithButtonRestore_textResponse = TextResponseWithButtonRestore_textResponse_GridContainerBlock | TextResponseWithButtonRestore_textResponse_ButtonBlock | TextResponseWithButtonRestore_textResponse_CardBlock | TextResponseWithButtonRestore_textResponse_IconBlock | TextResponseWithButtonRestore_textResponse_ImageBlock | TextResponseWithButtonRestore_textResponse_RadioOptionBlock | TextResponseWithButtonRestore_textResponse_RadioQuestionBlock | TextResponseWithButtonRestore_textResponse_SignUpBlock | TextResponseWithButtonRestore_textResponse_SpacerBlock | TextResponseWithButtonRestore_textResponse_StepBlock | TextResponseWithButtonRestore_textResponse_TextResponseBlock | TextResponseWithButtonRestore_textResponse_TypographyBlock | TextResponseWithButtonRestore_textResponse_VideoBlock | TextResponseWithButtonRestore_textResponse_VideoTriggerBlock;
 
 export interface TextResponseWithButtonRestore_button_GridContainerBlock {
-  __typename: "GridContainerBlock" | "GridItemBlock";
+  __typename: "GridContainerBlock" | "GridItemBlock" | "MultiselectBlock" | "MultiselectOptionBlock";
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
@@ -978,7 +978,7 @@ export interface TextResponseWithButtonRestore_button_VideoTriggerBlock {
 export type TextResponseWithButtonRestore_button = TextResponseWithButtonRestore_button_GridContainerBlock | TextResponseWithButtonRestore_button_ButtonBlock | TextResponseWithButtonRestore_button_CardBlock | TextResponseWithButtonRestore_button_IconBlock | TextResponseWithButtonRestore_button_ImageBlock | TextResponseWithButtonRestore_button_RadioOptionBlock | TextResponseWithButtonRestore_button_RadioQuestionBlock | TextResponseWithButtonRestore_button_SignUpBlock | TextResponseWithButtonRestore_button_SpacerBlock | TextResponseWithButtonRestore_button_StepBlock | TextResponseWithButtonRestore_button_TextResponseBlock | TextResponseWithButtonRestore_button_TypographyBlock | TextResponseWithButtonRestore_button_VideoBlock | TextResponseWithButtonRestore_button_VideoTriggerBlock;
 
 export interface TextResponseWithButtonRestore_startIcon_GridContainerBlock {
-  __typename: "GridContainerBlock" | "GridItemBlock";
+  __typename: "GridContainerBlock" | "GridItemBlock" | "MultiselectBlock" | "MultiselectOptionBlock";
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
@@ -1462,7 +1462,7 @@ export interface TextResponseWithButtonRestore_startIcon_VideoTriggerBlock {
 export type TextResponseWithButtonRestore_startIcon = TextResponseWithButtonRestore_startIcon_GridContainerBlock | TextResponseWithButtonRestore_startIcon_ButtonBlock | TextResponseWithButtonRestore_startIcon_CardBlock | TextResponseWithButtonRestore_startIcon_IconBlock | TextResponseWithButtonRestore_startIcon_ImageBlock | TextResponseWithButtonRestore_startIcon_RadioOptionBlock | TextResponseWithButtonRestore_startIcon_RadioQuestionBlock | TextResponseWithButtonRestore_startIcon_SignUpBlock | TextResponseWithButtonRestore_startIcon_SpacerBlock | TextResponseWithButtonRestore_startIcon_StepBlock | TextResponseWithButtonRestore_startIcon_TextResponseBlock | TextResponseWithButtonRestore_startIcon_TypographyBlock | TextResponseWithButtonRestore_startIcon_VideoBlock | TextResponseWithButtonRestore_startIcon_VideoTriggerBlock;
 
 export interface TextResponseWithButtonRestore_endIcon_GridContainerBlock {
-  __typename: "GridContainerBlock" | "GridItemBlock";
+  __typename: "GridContainerBlock" | "GridItemBlock" | "MultiselectBlock" | "MultiselectOptionBlock";
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;

@@ -24,7 +24,7 @@ export interface GetAdminJourneyWithPlausibleToken_journey_language {
 }
 
 export interface GetAdminJourneyWithPlausibleToken_journey_blocks_GridContainerBlock {
-  __typename: "GridContainerBlock" | "GridItemBlock";
+  __typename: "GridContainerBlock" | "GridItemBlock" | "MultiselectBlock" | "MultiselectOptionBlock";
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;

@@ -10,7 +10,7 @@ import { StepBlockUpdateInput, ButtonVariant, ButtonColor, ButtonSize, ButtonAli
 // ====================================================
 
 export interface StepBlockRestoreFromStep_blockRestore_GridContainerBlock {
-  __typename: "GridContainerBlock" | "GridItemBlock";
+  __typename: "GridContainerBlock" | "GridItemBlock" | "MultiselectBlock" | "MultiselectOptionBlock";
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;

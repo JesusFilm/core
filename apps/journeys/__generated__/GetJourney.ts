@@ -24,7 +24,7 @@ export interface GetJourney_journey_language {
 }
 
 export interface GetJourney_journey_blocks_GridContainerBlock {
-  __typename: "GridContainerBlock" | "GridItemBlock";
+  __typename: "GridContainerBlock" | "GridItemBlock" | "MultiselectBlock" | "MultiselectOptionBlock";
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;

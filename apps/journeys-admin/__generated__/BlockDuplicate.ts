@@ -10,7 +10,7 @@ import { BlockDuplicateIdMap, ButtonVariant, ButtonColor, ButtonSize, ButtonAlig
 // ====================================================
 
 export interface BlockDuplicate_blockDuplicate_GridContainerBlock {
-  __typename: "GridContainerBlock" | "GridItemBlock";
+  __typename: "GridContainerBlock" | "GridItemBlock" | "MultiselectBlock" | "MultiselectOptionBlock";
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;

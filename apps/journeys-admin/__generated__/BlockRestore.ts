@@ -10,7 +10,7 @@ import { ButtonVariant, ButtonColor, ButtonSize, ButtonAlignment, ThemeMode, The
 // ====================================================
 
 export interface BlockRestore_blockRestore_GridContainerBlock {
-  __typename: "GridContainerBlock" | "GridItemBlock";
+  __typename: "GridContainerBlock" | "GridItemBlock" | "MultiselectBlock" | "MultiselectOptionBlock";
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
