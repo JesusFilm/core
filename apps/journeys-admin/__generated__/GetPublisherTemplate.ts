@@ -735,6 +735,7 @@ export interface GetPublisherTemplate_publisherTemplate {
   journeyTheme: GetPublisherTemplate_publisherTemplate_journeyTheme | null;
   journeyCustomizationDescription: string | null;
   journeyCustomizationFields: GetPublisherTemplate_publisherTemplate_journeyCustomizationFields[];
+  fromTemplateId: string | null;
 }
 
 export interface GetPublisherTemplate {

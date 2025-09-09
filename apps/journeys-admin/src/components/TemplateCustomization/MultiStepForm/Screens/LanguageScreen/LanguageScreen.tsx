@@ -17,6 +17,23 @@ import ArrowRightIcon from '@core/shared/ui/icons/ArrowRight'
 
 import { JourneyCustomizeTeamSelect } from './JourneyCustomizeTeamSelect'
 import { LanguageScreenCardPreview } from './LanguageScreenCardPreview'
+import { gql, useQuery } from '@apollo/client'
+
+const GET_JOURNEYS_FROM_TEMPLATE_ID = gql`
+  query GetJourneysFromTemplateId($where: JourneysFilter) {
+    journeys(where: $where) {
+      id
+      language {
+        id
+        slug
+        name {
+          primary
+          value
+        }
+      }
+    }
+  }
+`
 
 interface LanguageScreenProps {
   handleNext: () => void
@@ -33,7 +50,7 @@ export function LanguageScreen({
 
   const { journey } = useJourney()
   //If the user is not authenticated, useUser will return a User instance with a null id https://github.com/gladly-team/next-firebase-auth?tab=readme-ov-file#useuser
-  const isSignedIn = user?.id != null
+  const isSignedIn = user?.email != null && user?.id != null
   const { query } = useTeam()
 
   const validationSchema = object({

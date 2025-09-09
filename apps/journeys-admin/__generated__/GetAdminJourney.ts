@@ -735,6 +735,7 @@ export interface GetAdminJourney_journey {
   journeyTheme: GetAdminJourney_journey_journeyTheme | null;
   journeyCustomizationDescription: string | null;
   journeyCustomizationFields: GetAdminJourney_journey_journeyCustomizationFields[];
+  fromTemplateId: string | null;
 }
 
 export interface GetAdminJourney {
