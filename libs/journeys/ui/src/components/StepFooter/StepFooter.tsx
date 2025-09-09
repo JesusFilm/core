@@ -21,6 +21,7 @@ import { ChatButtons } from './ChatButtons'
 import { FooterButtonList } from './FooterButtonList'
 import { HostAvatars } from './HostAvatars'
 import { HostTitleLocation } from './HostTitleLocation'
+import { AiChatButton } from '../AiChatButton'
 
 interface StepFooterProps {
   onFooterClick?: () => void
@@ -43,6 +44,14 @@ export function StepFooter({
   const combinedFooter = hasCombinedFooter({ journey, variant })
 
   const isWebsite = journey?.website === true
+
+  function isInIframe(): boolean {
+    try {
+      return window.self !== window.top
+    } catch {
+      return true
+    }
+  }
 
   return (
     <Box
@@ -143,7 +152,7 @@ export function StepFooter({
 
           <Box>
             {chat && <ChatButtons />}
-            <AiChatButton />
+            {!isInIframe() && <AiChatButton />}
           </Box>
         </Stack>
       </Stack>
