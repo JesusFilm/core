@@ -22,6 +22,7 @@ import {
   ChatButtonEventCreate,
   ChatButtonEventCreateVariables
 } from './__generated__/ChatButtonEventCreate'
+import { AiChatButton } from '../../AiChatButton'
 
 export const CHAT_BUTTON_EVENT_CREATE = gql`
   mutation ChatButtonEventCreate($input: ChatOpenEventCreateInput!) {
@@ -139,6 +140,7 @@ export function ChatButtons(): ReactElement {
           />
         </IconButton>
       ))}
+      <AiChatButton />
       {showDefault && (
         <IconButton
           key="default"

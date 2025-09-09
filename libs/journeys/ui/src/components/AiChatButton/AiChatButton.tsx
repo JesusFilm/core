@@ -5,8 +5,8 @@ import { ReactElement, useEffect, useRef, useState } from 'react'
 
 import { useBlocks } from '@core/journeys/ui/block'
 
-import { AiChat } from '../AiChat'
-import { Button } from '../Button'
+import { AiChat } from '../../../../../../apps/journeys/src/components/AiChat'
+import { Button } from '../../../../../../apps/journeys/src/components/Button'
 import {
   Drawer,
   DrawerClose,
@@ -15,7 +15,7 @@ import {
   DrawerHeader,
   DrawerTitle,
   DrawerTrigger
-} from '../Drawer'
+} from '../../../../../../apps/journeys/src/components/Drawer'
 
 export function AiChatButton(): ReactElement {
   const { t } = useTranslation('apps-journeys')
@@ -51,7 +51,7 @@ export function AiChatButton(): ReactElement {
           aria-label={open ? 'Close AI chat' : 'Open AI chat'}
           tabIndex={0}
           data-testid="AiChatButton"
-          className="fixed bottom-4 left-4 z-1 bg-background text-foreground rounded-full size-14 hover:bg-background/80"
+          className="z-1 bg-background text-foreground rounded-full size-11 hover:bg-background/80"
         >
           <AutoAwesomeIcon />
         </Button>

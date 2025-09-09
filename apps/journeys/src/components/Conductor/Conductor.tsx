@@ -20,7 +20,7 @@ import { FontFamilies, ThemeName } from '@core/shared/ui/themes'
 import { VisitorUpdateInput } from '../../../__generated__/globalTypes'
 import { JourneyViewEventCreate } from '../../../__generated__/JourneyViewEventCreate'
 import { StepFields } from '../../../__generated__/StepFields'
-import { AiChatButton } from '../AiChatButton'
+import { AiChatButton } from '@core/journeys/ui/AiChatButton'
 
 import { DynamicCardList } from './DynamicCardList'
 import { HotkeyNavigation } from './HotkeyNavigation'
