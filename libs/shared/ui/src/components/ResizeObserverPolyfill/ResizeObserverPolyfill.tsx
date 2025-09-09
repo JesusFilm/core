@@ -7,7 +7,9 @@ export function useResizeObserverPolyfill(): void {
     if (typeof window === 'undefined') return
     if ((window as any).ResizeObserver != null) return
 
-    void import('resize-observer-polyfill').then((mod) => {
+    void import(
+      /* webpackChunkName: "resize-observer-polyfill" */ 'resize-observer-polyfill'
+    ).then((mod) => {
       ;(window as any).ResizeObserver = mod.default
     })
   }, [])

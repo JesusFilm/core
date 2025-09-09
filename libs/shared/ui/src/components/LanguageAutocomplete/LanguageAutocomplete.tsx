@@ -15,6 +15,7 @@ import {
   useMemo
 } from 'react'
 import { List } from 'react-window'
+
 import { ResizeObserverPolyfill } from '../ResizeObserverPolyfill'
 
 import { defaultRenderOption } from './defaultRenderOption'
