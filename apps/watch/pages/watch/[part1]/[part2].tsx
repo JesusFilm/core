@@ -36,13 +36,15 @@ export const GET_VIDEO_CONTENT = gql`
 `
 
 const GET_VIDEO_LANGUAGES = graphql(`
-  query GetVideoLanguages($id: ID!) {
+  query GetVideoLanguages($id: ID!, $languageId: ID) {
     video(id: $id, idType: databaseId) {
       audioLanguages: variantLanguages {
         id
       }
-      subtitleLanguages: subtitles {
-        id: languageId
+      variant(languageId: $languageId) {
+        subtitleLanguages: subtitle {
+          languageId
+        }
       }
     }
   }
@@ -132,6 +134,7 @@ export const getStaticProps: GetStaticProps<Part2PageProps> = async (
     }
 
   const client = createApolloClient()
+  const languageIdFromLocale = getLanguageIdFromLocale(context.locale)
   try {
     const { data: contentData } = await client.query<
       GetVideoContent,
@@ -140,7 +143,7 @@ export const getStaticProps: GetStaticProps<Part2PageProps> = async (
       query: GET_VIDEO_CONTENT,
       variables: {
         id: `${contentId}/${languageId}`,
-        languageId: getLanguageIdFromLocale(context.locale)
+        languageId: languageIdFromLocale
       }
     })
     if (contentData.content == null) {
@@ -156,11 +159,15 @@ export const getStaticProps: GetStaticProps<Part2PageProps> = async (
       const { data } = await client.query({
         query: GET_VIDEO_LANGUAGES,
         variables: {
-          id: contentData.content.id
+          id: contentData.content.id,
+          languageId: languageIdFromLocale
         }
       })
       audioIds = data?.video?.audioLanguages?.map(({ id }) => id) ?? []
-      subtitleIds = data?.video?.subtitleLanguages?.map(({ id }) => id) ?? []
+      subtitleIds =
+        data?.video?.variant?.subtitleLanguages?.map(
+          ({ languageId }) => languageId
+        ) ?? []
     }
 
     return {
