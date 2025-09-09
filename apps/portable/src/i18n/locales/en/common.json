@@ -1,0 +1,81 @@
+{
+  "navigation": {
+    "browse": "Browse",
+    "search": "Search",
+    "playlist": "Playlist",
+    "settings": "Settings"
+  },
+  "screens": {
+    "playlist": "Playlist",
+    "video": "Video"
+  },
+  "common": {
+    "loading": "Loading...",
+    "error": "An error occurred",
+    "retry": "Retry",
+    "save": "Save",
+    "cancel": "Cancel",
+    "ok": "OK",
+    "yes": "Yes",
+    "no": "No",
+    "back": "Back"
+  },
+  "settings": {
+    "title": "Settings",
+    "language": "Language",
+    "theme": "Theme",
+    "notifications": "Notifications",
+    "privacy": "Privacy",
+    "about": "About"
+  },
+  "video": {
+    "play": "Play",
+    "pause": "Pause",
+    "fullscreen": "Fullscreen",
+    "volume": "Volume",
+    "quality": "Quality",
+    "speed": "Playback Speed",
+    "tags": "Tags",
+    "relatedVideos": "Related Videos",
+    "videoControls": "Video Controls",
+    "tapToShowControls": "Tap the video to show/hide controls",
+    "nativeControls": "Use the native video controls for playback",
+    "hlsSupport": "Supports HLS streaming for adaptive quality"
+  },
+  "playlist": {
+    "create": "Create Playlist",
+    "addVideo": "Add Video",
+    "removeVideo": "Remove Video",
+    "share": "Share Playlist",
+    "empty": "No videos in this playlist",
+    "videos": "videos"
+  },
+  "search": {
+    "placeholder": "Search videos...",
+    "results": "Search Results",
+    "noResults": "No results found",
+    "filters": "Filters",
+    "title": "Search",
+    "popularSearches": "Popular Searches",
+    "recentSearches": "Recent Searches",
+    "searchResultsFor": "Search Results for",
+    "video": "Video",
+    "playlist": "Playlist"
+  },
+  "browse": {
+    "title": "Browse Library",
+    "featuredPlaylists": "Featured Playlists",
+    "recentVideos": "Recent Videos",
+    "categories": "Categories",
+    "featuredSeries": "Featured Series",
+    "featuredSeriesDesc": "Explore our curated content",
+    "tutorials": "Tutorials",
+    "tutorialsDesc": "Learn something new",
+    "documentaries": "Documentaries",
+    "documentariesDesc": "Educational content",
+    "programming": "Programming",
+    "design": "Design",
+    "business": "Business",
+    "science": "Science"
+  }
+}

@@ -7,12 +7,14 @@ import {
   View
 } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
+import { useTranslation } from 'react-i18next'
 
 interface SearchScreenProps {
   navigation: any
 }
 
 export default function SearchScreen({ navigation }: SearchScreenProps) {
+  const { t } = useTranslation('common')
   const [searchQuery, setSearchQuery] = useState('')
   const [searchResults, setSearchResults] = useState([
     {
@@ -64,17 +66,13 @@ export default function SearchScreen({ navigation }: SearchScreenProps) {
 
   const handleResultPress = (result: any) => {
     if (result.type === 'video') {
-      navigation.navigate('Playlist', {
-        screen: 'VideoDetail',
-        params: {
-          videoSlug: result.videoSlug,
-          languageSlug: result.languageSlug
-        }
+      navigation.navigate('VideoDetail', {
+        videoSlug: result.videoSlug,
+        languageSlug: result.languageSlug
       })
     } else if (result.type === 'playlist') {
-      navigation.navigate('Playlist', {
-        screen: 'PlaylistDetail',
-        params: { playlistSlug: result.playlistSlug }
+      navigation.navigate('PlaylistDetail', {
+        playlistSlug: result.playlistSlug
       })
     }
   }
@@ -91,13 +89,15 @@ export default function SearchScreen({ navigation }: SearchScreenProps) {
   return (
     <SafeAreaView className="flex-1 bg-white">
       <View className="px-4 py-6">
-        <Text className="text-3xl font-bold text-gray-900 mb-6">Search</Text>
+        <Text className="text-3xl font-bold text-gray-900 mb-6">
+          {t('search.title')}
+        </Text>
 
         {/* Search Input */}
         <View className="mb-6">
           <TextInput
             className="bg-gray-100 rounded-lg px-4 py-3 text-gray-900 text-lg"
-            placeholder="Search videos, playlists..."
+            placeholder={t('search.placeholder')}
             value={searchQuery}
             onChangeText={handleSearch}
             autoFocus
@@ -109,7 +109,7 @@ export default function SearchScreen({ navigation }: SearchScreenProps) {
             {/* Popular Searches */}
             <View className="mb-8">
               <Text className="text-xl font-semibold text-gray-800 mb-4">
-                Popular Searches
+                {t('search.popularSearches')}
               </Text>
               <View className="flex-row flex-wrap">
                 {popularSearches.map((term, index) => (
@@ -127,7 +127,7 @@ export default function SearchScreen({ navigation }: SearchScreenProps) {
             {/* Recent Searches */}
             <View className="mb-8">
               <Text className="text-xl font-semibold text-gray-800 mb-4">
-                Recent Searches
+                {t('search.recentSearches')}
               </Text>
               <View className="space-y-2">
                 <TouchableOpacity
@@ -159,7 +159,7 @@ export default function SearchScreen({ navigation }: SearchScreenProps) {
           <ScrollView showsVerticalScrollIndicator={false}>
             <View className="mb-4">
               <Text className="text-lg font-semibold text-gray-800">
-                Search Results for "{searchQuery}"
+                {t('search.searchResultsFor')} "{searchQuery}"
               </Text>
             </View>
 
@@ -193,7 +193,9 @@ export default function SearchScreen({ navigation }: SearchScreenProps) {
                                 : 'text-green-800'
                             }`}
                           >
-                            {result.type === 'video' ? 'Video' : 'Playlist'}
+                            {result.type === 'video'
+                              ? t('search.video')
+                              : t('search.playlist')}
                           </Text>
                         </View>
                       </View>

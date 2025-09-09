@@ -1,38 +1,35 @@
 import React from 'react'
 import { ScrollView, Text, TouchableOpacity, View } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
+import { useTranslation } from 'react-i18next'
 
 interface BrowseScreenProps {
   navigation: any
 }
 
 export default function BrowseScreen({ navigation }: BrowseScreenProps) {
+  const { t } = useTranslation('common')
+
   const handlePlaylistPress = (playlistSlug: string) => {
-    navigation.navigate('Playlist', {
-      screen: 'PlaylistDetail',
-      params: { playlistSlug }
-    })
+    navigation.navigate('PlaylistDetail', { playlistSlug })
   }
 
   const handleVideoPress = (videoSlug: string, languageSlug: string) => {
-    navigation.navigate('Playlist', {
-      screen: 'VideoDetail',
-      params: { videoSlug, languageSlug }
-    })
+    navigation.navigate('VideoDetail', { videoSlug, languageSlug })
   }
 
   return (
     <SafeAreaView className="flex-1 bg-white">
       <View className="px-4 py-6">
         <Text className="text-3xl font-bold text-gray-900 mb-6">
-          Browse Library
+          {t('browse.title')}
         </Text>
 
         <ScrollView showsVerticalScrollIndicator={false}>
           {/* Featured Playlists */}
           <View className="mb-8">
             <Text className="text-xl font-semibold text-gray-800 mb-4">
-              Featured Playlists
+              {t('browse.featuredPlaylists')}
             </Text>
             <ScrollView horizontal showsHorizontalScrollIndicator={false}>
               <TouchableOpacity
@@ -40,10 +37,10 @@ export default function BrowseScreen({ navigation }: BrowseScreenProps) {
                 onPress={() => handlePlaylistPress('featured-series')}
               >
                 <Text className="text-white text-lg font-semibold mb-2">
-                  Featured Series
+                  {t('browse.featuredSeries')}
                 </Text>
                 <Text className="text-blue-100 text-sm">
-                  Explore our curated content
+                  {t('browse.featuredSeriesDesc')}
                 </Text>
               </TouchableOpacity>
 
@@ -52,10 +49,10 @@ export default function BrowseScreen({ navigation }: BrowseScreenProps) {
                 onPress={() => handlePlaylistPress('tutorials')}
               >
                 <Text className="text-white text-lg font-semibold mb-2">
-                  Tutorials
+                  {t('browse.tutorials')}
                 </Text>
                 <Text className="text-green-100 text-sm">
-                  Learn something new
+                  {t('browse.tutorialsDesc')}
                 </Text>
               </TouchableOpacity>
 
@@ -64,10 +61,10 @@ export default function BrowseScreen({ navigation }: BrowseScreenProps) {
                 onPress={() => handlePlaylistPress('documentaries')}
               >
                 <Text className="text-white text-lg font-semibold mb-2">
-                  Documentaries
+                  {t('browse.documentaries')}
                 </Text>
                 <Text className="text-purple-100 text-sm">
-                  Educational content
+                  {t('browse.documentariesDesc')}
                 </Text>
               </TouchableOpacity>
             </ScrollView>
@@ -76,7 +73,7 @@ export default function BrowseScreen({ navigation }: BrowseScreenProps) {
           {/* Recent Videos */}
           <View className="mb-8">
             <Text className="text-xl font-semibold text-gray-800 mb-4">
-              Recent Videos
+              {t('browse.recentVideos')}
             </Text>
             <View className="space-y-4">
               <TouchableOpacity
@@ -120,20 +117,28 @@ export default function BrowseScreen({ navigation }: BrowseScreenProps) {
           {/* Categories */}
           <View className="mb-8">
             <Text className="text-xl font-semibold text-gray-800 mb-4">
-              Categories
+              {t('browse.categories')}
             </Text>
             <View className="flex-row flex-wrap">
               <TouchableOpacity className="bg-blue-100 rounded-full px-4 py-2 mr-2 mb-2">
-                <Text className="text-blue-800 font-medium">Programming</Text>
+                <Text className="text-blue-800 font-medium">
+                  {t('browse.programming')}
+                </Text>
               </TouchableOpacity>
               <TouchableOpacity className="bg-green-100 rounded-full px-4 py-2 mr-2 mb-2">
-                <Text className="text-green-800 font-medium">Design</Text>
+                <Text className="text-green-800 font-medium">
+                  {t('browse.design')}
+                </Text>
               </TouchableOpacity>
               <TouchableOpacity className="bg-purple-100 rounded-full px-4 py-2 mr-2 mb-2">
-                <Text className="text-purple-800 font-medium">Business</Text>
+                <Text className="text-purple-800 font-medium">
+                  {t('browse.business')}
+                </Text>
               </TouchableOpacity>
               <TouchableOpacity className="bg-yellow-100 rounded-full px-4 py-2 mr-2 mb-2">
-                <Text className="text-yellow-800 font-medium">Science</Text>
+                <Text className="text-yellow-800 font-medium">
+                  {t('browse.science')}
+                </Text>
               </TouchableOpacity>
             </View>
           </View>

@@ -2,21 +2,22 @@ import { useRoute } from '@react-navigation/native'
 import { VideoView, useVideoPlayer } from 'expo-video'
 import React, { useRef, useState } from 'react'
 import {
-  Dimensions,
   ScrollView,
   Text,
   TouchableOpacity,
-  View
+  View,
+  useWindowDimensions
 } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
+import { useTranslation } from 'react-i18next'
 
 interface VideoScreenProps {
   navigation: any
 }
 
-const { width: screenWidth } = Dimensions.get('window')
-
 export default function VideoScreen({ navigation }: VideoScreenProps) {
+  const { t } = useTranslation('common')
+  const { width: screenWidth, height: screenHeight } = useWindowDimensions()
   const route = useRoute()
   const { videoSlug, languageSlug } = route.params as {
     videoSlug: string
@@ -26,6 +27,9 @@ export default function VideoScreen({ navigation }: VideoScreenProps) {
   const [isPlaying, setIsPlaying] = useState(false)
   const [currentTime, setCurrentTime] = useState(0)
   const [duration, setDuration] = useState(0)
+
+  // Calculate responsive video dimensions
+  const videoHeight = Math.min(screenWidth * (9 / 16), screenHeight * 0.4) // Max 40% of screen height
 
   // Mock video data - in a real app, this would come from GraphQL
   const videoData = {
@@ -103,10 +107,20 @@ export default function VideoScreen({ navigation }: VideoScreenProps) {
   return (
     <SafeAreaView className="flex-1 bg-black">
       {/* Video Player */}
-      <View className="bg-black">
+      <View
+        className="bg-black"
+        style={{
+          width: screenWidth,
+          height: videoHeight,
+          aspectRatio: 16 / 9
+        }}
+      >
         <VideoView
           player={player}
-          style={{ width: screenWidth, height: (screenWidth * 9) / 16 }}
+          style={{
+            width: '100%',
+            height: '100%'
+          }}
           allowsFullscreen
           allowsPictureInPicture
           showsTimecodes
@@ -115,7 +129,11 @@ export default function VideoScreen({ navigation }: VideoScreenProps) {
       </View>
 
       {/* Video Info */}
-      <ScrollView className="flex-1 bg-white">
+      <ScrollView
+        className="flex-1 bg-white"
+        showsVerticalScrollIndicator={true}
+        contentContainerStyle={{ paddingBottom: 20 }}
+      >
         <View className="px-4 py-6">
           <Text className="text-2xl font-bold text-gray-900 mb-2">
             {video.title}
@@ -146,7 +164,7 @@ export default function VideoScreen({ navigation }: VideoScreenProps) {
           {/* Tags */}
           <View className="mb-6">
             <Text className="text-lg font-semibold text-gray-800 mb-3">
-              Tags
+              {t('video.tags')}
             </Text>
             <View className="flex-row flex-wrap">
               {video.tags.map((tag, index) => (
@@ -165,23 +183,23 @@ export default function VideoScreen({ navigation }: VideoScreenProps) {
           {/* Video Controls Info */}
           <View className="bg-gray-50 rounded-lg p-4 mb-6">
             <Text className="text-lg font-semibold text-gray-800 mb-2">
-              Video Controls
+              {t('video.videoControls')}
             </Text>
             <Text className="text-gray-600 text-sm mb-2">
-              • Tap the video to show/hide controls
+              • {t('video.tapToShowControls')}
             </Text>
             <Text className="text-gray-600 text-sm mb-2">
-              • Use the native video controls for playback
+              • {t('video.nativeControls')}
             </Text>
             <Text className="text-gray-600 text-sm">
-              • Supports HLS streaming for adaptive quality
+              • {t('video.hlsSupport')}
             </Text>
           </View>
 
           {/* Related Videos */}
           <View className="mb-6">
             <Text className="text-lg font-semibold text-gray-800 mb-4">
-              Related Videos
+              {t('video.relatedVideos')}
             </Text>
             <ScrollView horizontal showsHorizontalScrollIndicator={false}>
               <TouchableOpacity className="bg-gray-100 rounded-lg p-4 mr-4 w-64">

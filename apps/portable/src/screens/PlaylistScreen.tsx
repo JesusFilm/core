@@ -1,13 +1,15 @@
-import { useRoute } from '@react-navigation/native'
+import { useNavigation, useRoute } from '@react-navigation/native'
 import React from 'react'
 import { Image, ScrollView, Text, TouchableOpacity, View } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
+import { useTranslation } from 'react-i18next'
 
 interface PlaylistScreenProps {
   navigation: any
 }
 
 export default function PlaylistScreen({ navigation }: PlaylistScreenProps) {
+  const { t } = useTranslation('common')
   const route = useRoute()
   const { playlistSlug } = route.params as { playlistSlug: string }
 
@@ -109,7 +111,10 @@ export default function PlaylistScreen({ navigation }: PlaylistScreenProps) {
 
   return (
     <SafeAreaView className="flex-1 bg-white">
-      <ScrollView showsVerticalScrollIndicator={false}>
+      <ScrollView
+        showsVerticalScrollIndicator={true}
+        contentContainerStyle={{ paddingBottom: 20 }}
+      >
         {/* Playlist Header */}
         <View className="px-4 py-6">
           <View className="bg-gray-100 rounded-lg p-6 mb-6">
@@ -120,7 +125,7 @@ export default function PlaylistScreen({ navigation }: PlaylistScreenProps) {
               {playlist.description}
             </Text>
             <Text className="text-gray-500 text-sm">
-              {playlist.videos.length} videos
+              {playlist.videos.length} {t('playlist.videos')}
             </Text>
           </View>
 
@@ -158,7 +163,7 @@ export default function PlaylistScreen({ navigation }: PlaylistScreenProps) {
                       </View>
                       <View className="bg-gray-200 rounded-full px-2 py-1">
                         <Text className="text-gray-700 text-xs font-medium">
-                          Video
+                          {t('search.video')}
                         </Text>
                       </View>
                     </View>

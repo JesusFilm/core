@@ -1,0 +1,81 @@
+{
+  "navigation": {
+    "browse": "Explorar",
+    "search": "Buscar",
+    "playlist": "Lista de reproducción",
+    "settings": "Configuración"
+  },
+  "screens": {
+    "playlist": "Lista de reproducción",
+    "video": "Video"
+  },
+  "common": {
+    "loading": "Cargando...",
+    "error": "Ocurrió un error",
+    "retry": "Reintentar",
+    "save": "Guardar",
+    "cancel": "Cancelar",
+    "ok": "OK",
+    "yes": "Sí",
+    "no": "No",
+    "back": "Atrás"
+  },
+  "settings": {
+    "title": "Configuración",
+    "language": "Idioma",
+    "theme": "Tema",
+    "notifications": "Notificaciones",
+    "privacy": "Privacidad",
+    "about": "Acerca de"
+  },
+  "video": {
+    "play": "Reproducir",
+    "pause": "Pausar",
+    "fullscreen": "Pantalla completa",
+    "volume": "Volumen",
+    "quality": "Calidad",
+    "speed": "Velocidad de reproducción",
+    "tags": "Etiquetas",
+    "relatedVideos": "Videos Relacionados",
+    "videoControls": "Controles de Video",
+    "tapToShowControls": "Toca el video para mostrar/ocultar controles",
+    "nativeControls": "Usa los controles nativos del video para reproducción",
+    "hlsSupport": "Soporta streaming HLS para calidad adaptativa"
+  },
+  "playlist": {
+    "create": "Crear Lista",
+    "addVideo": "Agregar Video",
+    "removeVideo": "Eliminar Video",
+    "share": "Compartir Lista",
+    "empty": "No hay videos en esta lista",
+    "videos": "videos"
+  },
+  "search": {
+    "placeholder": "Buscar videos...",
+    "results": "Resultados de búsqueda",
+    "noResults": "No se encontraron resultados",
+    "filters": "Filtros",
+    "title": "Buscar",
+    "popularSearches": "Búsquedas Populares",
+    "recentSearches": "Búsquedas Recientes",
+    "searchResultsFor": "Resultados de búsqueda para",
+    "video": "Video",
+    "playlist": "Lista de reproducción"
+  },
+  "browse": {
+    "title": "Explorar Biblioteca",
+    "featuredPlaylists": "Listas Destacadas",
+    "recentVideos": "Videos Recientes",
+    "categories": "Categorías",
+    "featuredSeries": "Series Destacadas",
+    "featuredSeriesDesc": "Explora nuestro contenido curado",
+    "tutorials": "Tutoriales",
+    "tutorialsDesc": "Aprende algo nuevo",
+    "documentaries": "Documentales",
+    "documentariesDesc": "Contenido educativo",
+    "programming": "Programación",
+    "design": "Diseño",
+    "business": "Negocios",
+    "science": "Ciencia"
+  }
+}

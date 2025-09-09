@@ -1,12 +1,16 @@
 import React from 'react'
 import { ScrollView, Switch, Text, TouchableOpacity, View } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
+import { useTranslation } from 'react-i18next'
+
+import { LanguageSwitcher } from '../components/LanguageSwitcher'
 
 interface SettingsScreenProps {
   navigation: any
 }
 
 export default function SettingsScreen({ navigation }: SettingsScreenProps) {
+  const { t } = useTranslation('common')
   const [notificationsEnabled, setNotificationsEnabled] = React.useState(true)
   const [autoDownloadEnabled, setAutoDownloadEnabled] = React.useState(false)
   const [darkModeEnabled, setDarkModeEnabled] = React.useState(false)
@@ -108,9 +112,15 @@ export default function SettingsScreen({ navigation }: SettingsScreenProps) {
   return (
     <SafeAreaView className="flex-1 bg-white">
       <View className="px-4 py-6">
-        <Text className="text-3xl font-bold text-gray-900 mb-6">Settings</Text>
+        <Text className="text-3xl font-bold text-gray-900 mb-6">
+          {t('settings.title')}
+        </Text>
 
         <ScrollView showsVerticalScrollIndicator={false}>
+          {/* Language Switcher */}
+          <View className="mb-8">
+            <LanguageSwitcher />
+          </View>
           {settingsSections.map((section, sectionIndex) => (
             <View key={sectionIndex} className="mb-8">
               <Text className="text-lg font-semibold text-gray-800 mb-4">
@@ -126,8 +136,8 @@ export default function SettingsScreen({ navigation }: SettingsScreenProps) {
                         ? 'border-b border-gray-200'
                         : ''
                     }`}
-                    onPress={item.onPress}
-                    disabled={item.type === 'switch'}
+                    onPress={'onPress' in item ? item.onPress : () => {}}
+                    disabled={'type' in item && item.type === 'switch'}
                   >
                     <View className="flex-row items-center justify-between">
                       <View className="flex-1">
@@ -139,12 +149,18 @@ export default function SettingsScreen({ navigation }: SettingsScreenProps) {
                         </Text>
                       </View>
 
-                      {item.type === 'switch' ? (
+                      {'type' in item && item.type === 'switch' ? (
                         <Switch
-                          value={item.value}
-                          onValueChange={item.onToggle}
+                          value={'value' in item ? item.value : false}
+                          onValueChange={
+                            'onToggle' in item ? item.onToggle : () => {}
+                          }
                           trackColor={{ false: '#e5e7eb', true: '#3b82f6' }}
-                          thumbColor={item.value ? '#ffffff' : '#ffffff'}
+                          thumbColor={
+                            'value' in item && item.value
+                              ? '#ffffff'
+                              : '#ffffff'
+                          }
                         />
                       ) : (
                         <Text className="text-gray-400 text-lg">›</Text>
