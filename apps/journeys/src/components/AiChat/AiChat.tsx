@@ -21,12 +21,14 @@ import {
 } from '../PromptInput'
 import { Response } from '../Response'
 import { Suggestion, Suggestions } from '../Suggestion'
+import { useTranslation } from 'next-i18next'
 
 interface AiChatProps {
   open: boolean
 }
 
 export function AiChat({ open }: AiChatProps) {
+  const { t } = useTranslation('apps-journeys')
   const { messages, sendMessage, status, regenerate } = useChat({
     transport: new DefaultChatTransport({
       api: '/api/chat'
@@ -122,7 +124,8 @@ export function AiChat({ open }: AiChatProps) {
                               <Actions className="mt-2">
                                 <Action
                                   onClick={() => regenerate()}
-                                  label="Retry"
+                                  label={t('Retry')}
+                                  tooltip={t('Retry')}
                                 >
                                   <RefreshCcwIcon className="size-3" />
                                 </Action>
@@ -130,7 +133,8 @@ export function AiChat({ open }: AiChatProps) {
                                   onClick={() =>
                                     navigator.clipboard.writeText(part.text)
                                   }
-                                  label="Copy"
+                                  label={t('Copy')}
+                                  tooltip={t('Copy')}
                                 >
                                   <CopyIcon className="size-3" />
                                 </Action>
@@ -172,6 +176,7 @@ export function AiChat({ open }: AiChatProps) {
             value={input}
           />
           <PromptInputToolbar>
+            <div></div>
             <PromptInputSubmit disabled={!input} status={status} />
           </PromptInputToolbar>
         </PromptInput>
