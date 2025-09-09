@@ -48,11 +48,16 @@ export function AiChat({ open }: AiChatProps) {
   })
   const [input, setInput] = useState('')
   const [suggestions, setSuggestions] = useState<string[]>()
+  const [suggestionsLoading, setSuggestionsLoading] = useState(false)
+  const [suggestionsError, setSuggestionsError] = useState<string | null>(null)
   const { blockHistory } = useBlocks()
 
   const activeBlock = blockHistory.at(-1)
 
   async function fetchSuggestions() {
+    setSuggestionsLoading(true)
+    setSuggestionsError(null)
+
     try {
       const contextText = extractTypographyContent(activeBlock as TreeBlock)
       if (contextText === '') {
@@ -73,7 +78,10 @@ export function AiChat({ open }: AiChatProps) {
       setSuggestions(suggestions)
     } catch (error) {
       console.error('Error fetching suggestions:', error)
+      setSuggestionsError(t('Failed to load suggestions'))
       setSuggestions([])
+    } finally {
+      setSuggestionsLoading(false)
     }
   }
 
@@ -157,6 +165,15 @@ export function AiChat({ open }: AiChatProps) {
           <ConversationScrollButton />
         </Conversation>
         <Suggestions>
+          {suggestionsLoading && (
+            <div className="flex items-center gap-2 px-4 py-2 text-muted-foreground">
+              <Loader className="size-4 animate-spin" />
+              <span>{t('Loading suggestions, please hold...')}</span>
+            </div>
+          )}
+          {suggestionsError && (
+            <div className="px-4 py-2 text-destructive">{suggestionsError}</div>
+          )}
           {suggestions?.map((suggestion) => (
             <Suggestion
               key={suggestion}
@@ -171,7 +188,7 @@ export function AiChat({ open }: AiChatProps) {
         >
           <PromptInputTextarea
             className="text-text-primary"
-            placeholder="Ask me anything you don't understand."
+            placeholder={t("Ask me anything you don't understand.")}
             onChange={(e) => setInput(e.target.value)}
             value={input}
           />
