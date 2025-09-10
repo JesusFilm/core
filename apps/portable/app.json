@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "Portable",
+    "name": "Jesus Film Project",
     "slug": "portable",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -14,7 +14,7 @@
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
-        "backgroundColor": "#ffffff"
+        "backgroundColor": "#c01010"
       },
       "edgeToEdgeEnabled": true
     },
@@ -29,11 +29,12 @@
           "image": "./assets/images/splash-icon.png",
           "imageWidth": 200,
           "resizeMode": "contain",
-          "backgroundColor": "#ffffff"
+          "backgroundColor": "#c01010"
         }
       ],
       "expo-sqlite",
-      "expo-video"
+      "expo-video",
+      "expo-localization"
     ]
   }
 }

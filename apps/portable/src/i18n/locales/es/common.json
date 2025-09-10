@@ -7,7 +7,11 @@
   },
   "screens": {
     "playlist": "Lista de reproducción",
-    "video": "Video"
+    "video": "Video",
+    "settings": "Configuración",
+    "search": "Buscar",
+    "browse": "Explorar",
+    "template": "{{name}} | Jesus Film Project"
   },
   "common": {
     "loading": "Cargando...",

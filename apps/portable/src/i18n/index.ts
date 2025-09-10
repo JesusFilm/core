@@ -1,27 +1,27 @@
+import 'intl-pluralrules'
 import i18n from 'i18next'
 import { initReactI18next } from 'react-i18next'
-import LanguageDetector from 'i18next-browser-languagedetector'
 import { resources } from './resources'
+import { getBestMatchingLocale } from './localeUtils'
 
-// Polyfill for Intl.PluralRules in React Native
-import '@formatjs/intl-pluralrules/polyfill'
+// Get the best matching locale for the device
+const deviceLocale = getBestMatchingLocale()
 
-i18n
-  .use(LanguageDetector)
-  .use(initReactI18next)
-  .init({
-    resources,
-    fallbackLng: 'en',
-    debug: __DEV__,
+i18n.use(initReactI18next).init({
+  resources,
+  fallbackLng: 'en',
+  debug: __DEV__,
+  lng: deviceLocale,
 
-    interpolation: {
-      escapeValue: false // React already escapes values
-    },
-
-    detection: {
-      order: ['asyncStorage', 'navigator', 'htmlTag'],
-      caches: ['asyncStorage']
-    }
-  })
+  interpolation: {
+    escapeValue: false
+  },
+  react: {
+    useSuspense: false
+  },
+  supportedLngs: ['en', 'es', 'fr'],
+  load: 'languageOnly',
+  cleanCode: true
+})
 
 export default i18n

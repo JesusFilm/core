@@ -1,4 +1,3 @@
-import { ApolloProvider } from '@apollo/client'
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
 import { NavigationContainer } from '@react-navigation/native'
 import { createStackNavigator } from '@react-navigation/stack'
@@ -6,7 +5,6 @@ import React from 'react'
 import { Text, TouchableOpacity } from 'react-native'
 import { useTranslation } from 'react-i18next'
 
-import { apolloClient } from '../lib/apollo-client'
 import BrowseScreen from '../screens/BrowseScreen'
 import PlaylistScreen from '../screens/PlaylistScreen'
 import SearchScreen from '../screens/SearchScreen'
@@ -34,21 +32,21 @@ function TabNavigator() {
       }}
     >
       <Tab.Screen
-        name="Browse"
+        name={t('screens.template', { name: t('screens.browse') })}
         component={BrowseScreen}
         options={{
           tabBarLabel: t('navigation.browse')
         }}
       />
       <Tab.Screen
-        name="Search"
+        name={t('screens.template', { name: t('screens.search') })}
         component={SearchScreen}
         options={{
           tabBarLabel: t('navigation.search')
         }}
       />
       <Tab.Screen
-        name="Settings"
+        name={t('screens.template', { name: t('screens.settings') })}
         component={SettingsScreen}
         options={{
           tabBarLabel: t('navigation.settings')
@@ -73,7 +71,7 @@ function RootStack() {
         name="PlaylistDetail"
         component={PlaylistScreen}
         options={({ navigation }) => ({
-          title: t('screens.playlist'),
+          title: t('screens.template', { name: t('screens.playlist') }),
           headerShown: true,
           headerLeft: () => (
             <TouchableOpacity
@@ -98,7 +96,7 @@ function RootStack() {
         name="VideoDetail"
         component={VideoScreen}
         options={({ navigation }) => ({
-          title: t('screens.video'),
+          title: t('screens.template', { name: t('screens.video') }),
           headerShown: true,
           headerLeft: () => (
             <TouchableOpacity
@@ -144,10 +142,8 @@ const linking = {
 
 export default function AppNavigator() {
   return (
-    <ApolloProvider client={apolloClient}>
-      <NavigationContainer linking={linking}>
-        <RootStack />
-      </NavigationContainer>
-    </ApolloProvider>
+    <NavigationContainer linking={linking}>
+      <RootStack />
+    </NavigationContainer>
   )
 }

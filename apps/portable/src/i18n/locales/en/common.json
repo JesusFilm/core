@@ -6,8 +6,12 @@
     "settings": "Settings"
   },
   "screens": {
+    "browse": "Browse",
     "playlist": "Playlist",
-    "video": "Video"
+    "video": "Video",
+    "settings": "Settings",
+    "search": "Search",
+    "template": "{{name}} | Jesus Film Project"
   },
   "common": {
     "loading": "Loading...",
