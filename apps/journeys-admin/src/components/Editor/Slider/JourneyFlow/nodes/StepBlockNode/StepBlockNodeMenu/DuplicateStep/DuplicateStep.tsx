@@ -211,7 +211,7 @@ export function DuplicateStep({
       label={t('Duplicate Card')}
       icon={<CopyLeftIcon color="inherit" />}
       disabled={disabled ?? step == null}
-      onMouseUp={handleDuplicateStep}
+      onClick={handleDuplicateStep}
       testId="DuplicateStep"
     />
   )
