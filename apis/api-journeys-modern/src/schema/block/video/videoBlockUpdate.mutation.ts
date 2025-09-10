@@ -21,6 +21,9 @@ import { VideoBlock } from './video'
 
 builder.mutationField('videoBlockUpdate', (t) =>
   t.withAuth({ isAuthenticated: true }).field({
+    override: {
+      from: 'api-journeys'
+    },
     type: VideoBlock,
     nullable: false,
     args: {
