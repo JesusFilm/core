@@ -193,6 +193,16 @@ describe('multiselectBlockUpdate', () => {
   })
 
   it('treats missing max as null on write', async () => {
+    const {
+      fetchBlockWithJourneyAcl
+    } = require('../../../lib/auth/fetchBlockWithJourneyAcl')
+    fetchBlockWithJourneyAcl.mockResolvedValue({
+      id,
+      journeyId: 'journeyId',
+      journey: { id: 'journeyId' }
+    })
+    mockAbility.mockReturnValue(true)
+
     const tx = {
       block: {
         update: jest.fn().mockResolvedValue({
@@ -217,7 +227,11 @@ describe('multiselectBlockUpdate', () => {
     expect(tx.block.update).toHaveBeenCalledWith(
       expect.objectContaining({ data: expect.objectContaining({ max: null }) })
     )
-    expect(result.data?.multiselectBlockUpdate?.max).toBeNull()
+    expect(result).toEqual({
+      data: {
+        multiselectBlockUpdate: expect.objectContaining({ max: null })
+      }
+    })
   })
 
   it('nullifies min/max when equal to child count on update', async () => {
@@ -265,7 +279,13 @@ describe('multiselectBlockUpdate', () => {
         data: expect.objectContaining({ min: null, max: null })
       })
     )
-    expect(result.data?.multiselectBlockUpdate?.min).toBeNull()
-    expect(result.data?.multiselectBlockUpdate?.max).toBeNull()
+    expect(result).toEqual({
+      data: {
+        multiselectBlockUpdate: expect.objectContaining({
+          min: null,
+          max: null
+        })
+      }
+    })
   })
 })

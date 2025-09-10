@@ -49,7 +49,13 @@ builder.mutationField('multiselectBlockUpdate', (t) =>
         })
       }
 
+      // Treat omitted max as null explicitly when key is not present or undefined
+      if (!('max' in input) || (input as any).max === undefined) {
+        ;(input as any).max = null
+      }
+
       // If provided min/max equal the number of child MultiselectOptionBlock, set them to null
+      // Only apply when there is at least one option (count > 0)
       if (input.min != null || input.max != null) {
         const optionCount = await prisma.block.count({
           where: {
@@ -58,8 +64,10 @@ builder.mutationField('multiselectBlockUpdate', (t) =>
             deletedAt: null
           }
         })
-        if (input.min != null && input.min === optionCount) input.min = null
-        if (input.max != null && input.max >= optionCount) input.max = null
+        if (optionCount > 0) {
+          if (input.min != null && input.min === optionCount) input.min = null
+          if (input.max != null && input.max === optionCount) input.max = null
+        }
       }
 
       const block = await fetchBlockWithJourneyAcl(id)
