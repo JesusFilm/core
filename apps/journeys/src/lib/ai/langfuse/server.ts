@@ -5,5 +5,5 @@ export const langfuseEnvironment =
   process.env.DD_ENV ??
   process.env.NODE_ENV ??
   'development'
-  
+
 export const langfuseClient = new LangfuseClient()
