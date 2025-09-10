@@ -37,7 +37,7 @@ export function VideoFromLocal({
         {query === '' && (
           <Box sx={{ pb: 4, px: 6 }}>
             <Typography variant="overline" color="primary">
-              {'Jesus Film Library'} {/* This should not be translated as it is a corporate name, same as YouTube. */ }
+              {'Jesus Film Library'}
             </Typography>
             <Typography variant="h6">{t('Featured Videos')}</Typography>
           </Box>
