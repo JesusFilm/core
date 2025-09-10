@@ -104,11 +104,16 @@ export function DownloadDialog({
     return url.toString()
   }
 
+  type Download = (typeof downloads)[number] & {
+    quality: keyof typeof qualityEnumToOrder
+  }
+
+  const filteredDownloads = downloads.filter(({ quality }) =>
+    Object.keys(qualityEnumToOrder).includes(quality)
+  ) as Download[]
+
   const initialValues = {
-    file:
-      downloads.filter(({ quality }) =>
-        Object.keys(qualityEnumToOrder).includes(quality)
-      )[0]?.url ?? '',
+    file: filteredDownloads[0]?.url ?? '',
     terms: false
   }
 
@@ -205,22 +210,17 @@ export function DownloadDialog({
                 disabled={values.file === ''}
                 select
               >
-                {downloads
+                {filteredDownloads
                   .sort((a, b) => {
                     return (
                       qualityEnumToOrder[a.quality] -
                       qualityEnumToOrder[b.quality]
                     )
                   })
-                  .filter(({ quality }) =>
-                    Object.keys(qualityEnumToOrder).includes(quality)
-                  )
                   .map((download) => (
                     <MenuItem key={download.quality} value={download.url}>
-                      {getQualityLabel(
-                        download.quality as keyof typeof qualityEnumToOrder
-                      )}{' '}
-                      ({formatBytes(download.size)})
+                      {getQualityLabel(download.quality)} (
+                      {formatBytes(download.size)})
                     </MenuItem>
                   ))}
               </TextField>
