@@ -2,7 +2,7 @@ import { useTranslation } from 'next-i18next'
 import { useEffect, useState } from 'react'
 import useSWR from 'swr'
 
-import { getLanguageIdFromLocale } from '../getLanguageIdFromLocale'
+import { transformData } from './util/transformData'
 
 const fetcher = (url: string) => fetch(url).then((res) => res.json())
 
@@ -33,62 +33,10 @@ export function useLanguages(): { languages: Language[]; isLoading: boolean } {
   useEffect(() => {
     if (!data || !i18n.language) return
 
-    const currentLanguageId = getLanguageIdFromLocale(i18n.language)
-
-    const newLanguages = data.map((language) => {
-      const [languageIdSlugNative, ...names] = language
-      const [id, slug, native] = languageIdSlugNative.split(':')
-      const transformedNames: {
-        id: string
-        primary: boolean
-        value: string
-      }[] = names.map((returnedName) => {
-        const [id, nameValue] = returnedName.split(':')
-        return {
-          id,
-          primary: false,
-          value: nameValue
-        }
-      })
-      const name =
-        transformedNames.find((name) => name.id === currentLanguageId) ??
-        (native != null && id === currentLanguageId
-          ? {
-              id,
-              primary: true,
-              value: native
-            }
-          : undefined)
-      const englishName =
-        transformedNames.find((name) => name.id == '529') ??
-        (native != null && id === '529'
-          ? {
-              id,
-              primary: true,
-              value: native
-            }
-          : undefined)
-      const nativeName =
-        native != null && id !== currentLanguageId
-          ? {
-              id,
-              primary: true,
-              value: native
-            }
-          : undefined
-
-      return {
-        id,
-        slug,
-        name,
-        englishName,
-        nativeName,
-        displayName:
-          name?.value ?? nativeName?.value ?? englishName?.value ?? id
-      }
-    })
     setLanguages(
-      newLanguages.sort((a, b) => a.displayName.localeCompare(b.displayName))
+      transformData(data, i18n.language).sort((a, b) =>
+        a.displayName.localeCompare(b.displayName)
+      )
     )
   }, [data, i18n])
 

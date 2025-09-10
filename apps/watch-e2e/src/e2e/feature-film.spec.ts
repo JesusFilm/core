@@ -32,7 +32,7 @@ test.describe('Feature film', () => {
     await page.waitForURL('**/jesus.html/**', { timeout: 60000 })
 
     // Wait for navigation and verify URL with longer timeout
-    await expect(page).toHaveURL('/watch/jesus.html/english.html?r=0', {
+    await expect(page).toHaveURL('/watch/jesus.html/english.html', {
       timeout: 60000
     })
 
@@ -63,7 +63,7 @@ test.describe('Feature film', () => {
 
     // Verify URL changed to Birth of Jesus chapter
     await expect(page).toHaveURL(
-      '/watch/jesus.html/birth-of-jesus/english.html?r=0',
+      '/watch/jesus.html/birth-of-jesus/english.html',
       { timeout: 60000 }
     )
   })

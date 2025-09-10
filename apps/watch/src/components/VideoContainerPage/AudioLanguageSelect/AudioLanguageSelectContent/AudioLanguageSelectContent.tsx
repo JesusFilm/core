@@ -25,7 +25,7 @@ export function AudioLanguageSelectContent() {
           key={option.id}
           href={`/watch${
             variant?.slug != null ? `/${variant.slug.split('/')[0]}.html/` : '/'
-          }${option.slug}.html?r=0`}
+          }${option.slug}.html`}
           className={`
             block
             hover:bg-gray-100

@@ -32,7 +32,7 @@ describe('VideoCard', () => {
     expect(card).toHaveAttribute('aria-label', `Navigate to ${videos[0].slug}`)
     expect(screen.getByRole('link')).toHaveAttribute(
       'href',
-      `/watch/${videos[0].slug}.html/english.html?r=0`
+      `/watch/${videos[0].slug}.html/english.html`
     )
   })
 })

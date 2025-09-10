@@ -62,7 +62,12 @@ export const CREATE_JOURNEY = gql`
       id
     }
     cardBlockCreate(
-      input: { id: $cardId, parentBlockId: $stepId, journeyId: $journeyId }
+      input: {
+        id: $cardId
+        parentBlockId: $stepId
+        journeyId: $journeyId
+        themeMode: dark
+      }
     ) {
       id
     }

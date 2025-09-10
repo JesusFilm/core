@@ -53,7 +53,7 @@ const DynamicLanguageSwitchDialog = dynamic<{
 )
 
 interface VideoControlProps {
-  player: Player
+  player?: Player
   onVisibleChanged?: (active: boolean) => void
 }
 
@@ -132,7 +132,7 @@ export function VideoControls({
       let retryTimeout: NodeJS.Timeout | undefined
 
       const updateDuration = (state: string): void => {
-        const playerDuration = player.duration()
+        const playerDuration = player?.duration()
 
         if (
           playerDuration != null &&
@@ -173,7 +173,7 @@ export function VideoControls({
       // Only add fallback listeners if variant duration is not available
       const events = ['durationchange', 'loadedmetadata', 'canplay']
       events.forEach((event) => {
-        player.on(event, () => updateDuration(event))
+        player?.on(event, () => updateDuration(event))
       })
 
       updateDuration('initial')
@@ -183,7 +183,7 @@ export function VideoControls({
           clearTimeout(retryTimeout)
         }
         events.forEach((event) => {
-          player.off(event, updateDuration)
+          player?.off(event, updateDuration)
         })
       }
     }
@@ -220,9 +220,9 @@ export function VideoControls({
   useEffect(() => {
     dispatchPlayer({
       type: 'SetVolume',
-      volume: (player.volume() ?? 1) * 100
+      volume: (player?.volume() ?? 1) * 100
     })
-    player.on('play', () => {
+    player?.on('play', () => {
       if ((player?.currentTime() ?? 0) < 0.02) {
         eventToDataLayer(
           'video_start',
@@ -233,7 +233,7 @@ export function VideoControls({
             variant?.language?.name[0]?.value,
           Math.round(player?.currentTime() ?? 0),
           Math.round(
-            ((player?.currentTime() ?? 0) / (player.duration() ?? 1)) * 100
+            ((player?.currentTime() ?? 0) / (player?.duration() ?? 1)) * 100
           )
         )
       } else {
@@ -246,7 +246,7 @@ export function VideoControls({
             variant?.language?.name[0]?.value,
           Math.round(player?.currentTime() ?? 0),
           Math.round(
-            ((player?.currentTime() ?? 0) / (player.duration() ?? 1)) * 100
+            ((player?.currentTime() ?? 0) / (player?.duration() ?? 1)) * 100
           )
         )
       }
@@ -255,7 +255,7 @@ export function VideoControls({
         play: true
       })
     })
-    player.on('pause', () => {
+    player?.on('pause', () => {
       if ((player?.currentTime() ?? 0) > 0.02) {
         eventToDataLayer(
           'video_pause',
@@ -266,7 +266,7 @@ export function VideoControls({
             variant?.language?.name[0]?.value,
           Math.round(player?.currentTime() ?? 0),
           Math.round(
-            ((player?.currentTime() ?? 0) / (player.duration() ?? 1)) * 100
+            ((player?.currentTime() ?? 0) / (player?.duration() ?? 1)) * 100
           )
         )
       }
@@ -275,7 +275,7 @@ export function VideoControls({
         play: false
       })
     })
-    player.on('timeupdate', () => {
+    player?.on('timeupdate', () => {
       dispatchPlayer({
         type: 'SetCurrentTime',
         currentTime: secondsToTimeFormat(player?.currentTime() ?? 0, {
@@ -287,48 +287,48 @@ export function VideoControls({
         progress: Math.round(player?.currentTime() ?? 0)
       })
     })
-    player.on('volumechange', () => {
+    player?.on('volumechange', () => {
       dispatchPlayer({
         type: 'SetMute',
-        mute: player.muted() ?? false
+        mute: player?.muted() ?? false
       })
       dispatchPlayer({
         type: 'SetVolume',
-        volume: (player.volume() ?? 1) * 100
+        volume: (player?.volume() ?? 1) * 100
       })
     })
-    player.on('fullscreenchange', () => {
+    player?.on('fullscreenchange', () => {
       dispatchPlayer({
         type: 'SetFullscreen',
-        fullscreen: player.isFullscreen() ?? false
+        fullscreen: player?.isFullscreen() ?? false
       })
     })
-    player.on('useractive', () =>
+    player?.on('useractive', () =>
       dispatchPlayer({
         type: 'SetActive',
         active: true
       })
     )
-    player.on('userinactive', () =>
+    player?.on('userinactive', () =>
       dispatchPlayer({
         type: 'SetActive',
         active: false
       })
     )
-    player.on('waiting', () =>
+    player?.on('waiting', () =>
       dispatchPlayer({
         type: 'SetLoading',
         loading: true
       })
     )
-    player.on('playing', () => {
+    player?.on('playing', () => {
       setInitialLoadComplete(true)
       dispatchPlayer({
         type: 'SetLoading',
         loading: false
       })
     })
-    player.on('ended', () => {
+    player?.on('ended', () => {
       eventToDataLayer(
         'video_ended',
         id,
@@ -338,17 +338,17 @@ export function VideoControls({
           variant?.language?.name[0]?.value,
         Math.round(player?.currentTime() ?? 0),
         Math.round(
-          ((player?.currentTime() ?? 0) / (player.duration() ?? 1)) * 100
+          ((player?.currentTime() ?? 0) / (player?.duration() ?? 1)) * 100
         )
       )
     })
-    player.on('canplay', () =>
+    player?.on('canplay', () =>
       dispatchPlayer({
         type: 'SetLoading',
         loading: false
       })
     )
-    player.on('canplaythrough', () =>
+    player?.on('canplaythrough', () =>
       dispatchPlayer({
         type: 'SetLoading',
         loading: false
@@ -365,7 +365,7 @@ export function VideoControls({
             variant?.language?.name[0]?.value,
           Math.round(player?.currentTime() ?? 0),
           Math.round(
-            ((player?.currentTime() ?? 0) / (player.duration() ?? 1)) * 100
+            ((player?.currentTime() ?? 0) / (player?.duration() ?? 1)) * 100
           )
         )
       } else {
@@ -378,7 +378,7 @@ export function VideoControls({
             variant?.language?.name[0]?.value,
           Math.round(player?.currentTime() ?? 0),
           Math.round(
-            ((player?.currentTime() ?? 0) / (player.duration() ?? 1)) * 100
+            ((player?.currentTime() ?? 0) / (player?.duration() ?? 1)) * 100
           )
         )
       }
@@ -391,9 +391,9 @@ export function VideoControls({
 
   function handlePlay(): void {
     if (!play) {
-      void player.play()
+      void player?.play()
     } else {
-      void player.pause()
+      void player?.pause()
     }
   }
 
@@ -406,7 +406,7 @@ export function VideoControls({
       })
     } else {
       if (isMobile()) {
-        void player.requestFullscreen()
+        void player?.requestFullscreen()
         dispatchPlayer({
           type: 'SetFullscreen',
           fullscreen: true
@@ -427,12 +427,12 @@ export function VideoControls({
         type: 'SetProgress',
         progress: value
       })
-      player.currentTime(value)
+      player?.currentTime(value)
     }
   }
 
   function handleMute(): void {
-    player.muted(!mute)
+    player?.muted(!mute)
     dispatchPlayer({
       type: 'SetMute',
       mute: !mute
@@ -446,7 +446,7 @@ export function VideoControls({
         type: 'SetVolume',
         volume: value
       })
-      player.volume(value / 100)
+      player?.volume(value / 100)
     }
   }
 
@@ -494,7 +494,7 @@ export function VideoControls({
       onClick={getClickHandler(handlePlay, () => {
         void handleFullscreen()
       })}
-      onMouseMove={() => player.userActive(true)}
+      onMouseMove={() => player?.userActive(true)}
       data-testid="VideoControls"
     >
       {!loading ? (
