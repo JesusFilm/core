@@ -9,7 +9,6 @@ import {
   Drawer,
   DrawerClose,
   DrawerContent,
-  DrawerDescription,
   DrawerHeader,
   DrawerTitle,
   DrawerTrigger
@@ -50,7 +49,7 @@ export function AiChatButton(): ReactElement {
           aria-label={open ? 'Close AI chat' : 'Open AI chat'}
           tabIndex={0}
           data-testid="AiChatButton"
-          className="z-1 bg-background text-foreground rounded-full size-11 hover:bg-background/80"
+          className="fixed z-1 bg-background text-foreground rounded-full size-11 hover:bg-background/80"
         >
           <AutoAwesomeIcon />
         </Button>
