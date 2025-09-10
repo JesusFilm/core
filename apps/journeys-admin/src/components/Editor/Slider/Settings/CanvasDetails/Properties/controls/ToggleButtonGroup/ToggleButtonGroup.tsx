@@ -25,7 +25,6 @@ export function ToggleButtonGroup({
   testId,
   children
 }: ToggleButtonGroupProps): ReactElement {
-
   function handleChange(_event, value: string | number): void {
     onChange(value)
   }
