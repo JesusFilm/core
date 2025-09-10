@@ -1182,6 +1182,7 @@ type RadioOptionBlock implements Block
         as a poll option image. Blocks are often of type ImageBlock
   """
   pollOptionImageBlockId: ID
+  action: Action
 }
 
 input RadioOptionBlockCreateInput {
@@ -1252,6 +1253,7 @@ type SignUpBlock implements Block
   parentOrder: Int
   submitIconId: ID
   submitLabel: String
+  action: Action
 }
 
 input SignUpBlockCreateInput {
