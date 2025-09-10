@@ -5,12 +5,7 @@ import { prisma } from '@core/prisma/media/client'
 import { getAlgoliaClient } from '../algoliaClient'
 import { getLanguages } from '../languages'
 
-type Translation = {
-  languageId: string
-  value: string
-}
-
-function sortByEnglishFirst(a: Translation): number {
+function sortByEnglishFirst(a: { languageId: string }): number {
   if (a.languageId === '529') return -1
   return 0
 }
@@ -91,20 +86,11 @@ export async function updateVideoVariantInAlgolia(
         videoVariant.video?.imageAlt.find((alt) => alt.languageId === '529')
           ?.value ?? '',
       childrenCount: videoVariant.video?.childIds.length,
-      videoPublished:
-        videoVariant.video?.published === undefined ||
-        videoVariant.video?.published === null
-          ? true
-          : videoVariant.video?.published,
-      published:
-        videoVariant.published === undefined || videoVariant.published === null
-          ? true
-          : videoVariant.published,
+      videoPublished: videoVariant.video?.published ?? false,     
+        published: videoVariant.published ?? true,
       restrictViewPlatforms:
-        videoVariant.video?.restrictViewPlatforms === undefined ||
-        videoVariant.video?.restrictViewPlatforms === null
-          ? []
-          : videoVariant.video?.restrictViewPlatforms,
+        videoVariant.video?.restrictViewPlatforms ?? []
+          ,
       manualRanking: videoVariant.languageId === '529' ? 0 : 1
     }
 
