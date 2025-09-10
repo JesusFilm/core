@@ -28,6 +28,7 @@ export const mockJourneys: MockedResponse<
         {
           __typename: 'Journey' as const,
           id: 'journey-1',
+          fromTemplateId: 'template-123',
           language: {
             __typename: 'Language' as const,
             id: 'language-1',
@@ -44,6 +45,7 @@ export const mockJourneys: MockedResponse<
         {
           __typename: 'Journey' as const,
           id: 'journey-2',
+          fromTemplateId: 'template-123',
           language: {
             __typename: 'Language' as const,
             id: 'language-2',
@@ -60,6 +62,7 @@ export const mockJourneys: MockedResponse<
         {
           __typename: 'Journey' as const,
           id: 'journey-3',
+          fromTemplateId: 'template-123',
           language: {
             __typename: 'Language' as const,
             id: 'language-3',
