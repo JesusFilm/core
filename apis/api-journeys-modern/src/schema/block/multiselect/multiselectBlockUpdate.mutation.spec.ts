@@ -142,6 +142,8 @@ describe('multiselectBlockUpdate', () => {
   })
 
   it('fails when min is negative', async () => {
+    // ensure option count is numeric so validation runs before permission check
+    prismaMock.block.count.mockResolvedValue(3 as any)
     const result = await authClient({
       document: MULTISELECT_BLOCK_UPDATE,
       variables: { id, input: { min: -1 } }
@@ -151,7 +153,7 @@ describe('multiselectBlockUpdate', () => {
       data: null,
       errors: [
         expect.objectContaining({
-          message: 'min must be greater than or equal to 0',
+          message: 'min must be greater than or equal to the number of options',
           extensions: expect.objectContaining({ code: 'BAD_USER_INPUT' })
         })
       ]
