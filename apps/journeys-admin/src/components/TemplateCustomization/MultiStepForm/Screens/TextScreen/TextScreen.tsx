@@ -3,8 +3,6 @@ import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
-import { useTheme } from '@mui/material/styles'
-import useMediaQuery from '@mui/material/useMediaQuery'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, useCallback, useEffect, useState } from 'react'
 
@@ -27,12 +25,14 @@ export const JOURNEY_CUSTOMIZATION_FIELD_UPDATE = gql`
   }
 `
 
+const BUTTON_NEXT_STEP_WIDTH = '150px'
+const BUTTON_NEXT_STEP_HEIGHT = '42px'
+
 // Function to render text with editable spans for replaceable parts
 const renderEditableText = (
   text: string | null | undefined,
   replacementItems: JourneyCustomizationField[],
-  onValueChange: (key: string, value: string) => void,
-  isSmallScreen: boolean
+  onValueChange: (key: string, value: string) => void
 ): ReactElement[] => {
   const parts: ReactElement[] = []
   let lastIndex = 0
@@ -80,7 +80,7 @@ const renderEditableText = (
           wordWrap: 'break-word',
           wordBreak: 'break-word',
           overflowWrap: 'break-word',
-          fontWeight: isSmallScreen ? 400 : 700,
+          fontWeight: 'bold',
           lineHeight: 1.6
         }}
         onBlur={(e) => {
@@ -97,15 +97,15 @@ const renderEditableText = (
             const editables =
               parent != null
                 ? Array.from(
-                    parent.querySelectorAll('[contenteditable="true"]')
-                  )
+                  parent.querySelectorAll('[contenteditable="true"]')
+                )
                 : []
             const index = editables.indexOf(e.currentTarget as HTMLElement)
             const nextIndex = e.shiftKey ? index - 1 : index + 1
             const nextEl = editables[nextIndex]
             if (nextEl != null) {
               e.preventDefault()
-              ;(nextEl as HTMLElement).focus()
+                ; (nextEl as HTMLElement).focus()
             }
           }
         }}
@@ -134,8 +134,6 @@ interface TextScreenProps {
 export function TextScreen({ handleNext }: TextScreenProps): ReactElement {
   const { t } = useTranslation()
   const { journey } = useJourney()
-  const theme = useTheme()
-  const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'))
   const [journeyCustomizationFieldUpdate, { loading: isSubmitting }] =
     useMutation<JourneyCustomizationFieldUpdate>(
       JOURNEY_CUSTOMIZATION_FIELD_UPDATE
@@ -200,27 +198,26 @@ export function TextScreen({ handleNext }: TextScreenProps): ReactElement {
       gap={{ xs: 0, sm: 2 }}
       sx={{
         px: { xs: 2, md: 8 },
-        maxWidth: '1000px',
         width: '100%'
       }}
     >
       <Stack alignItems="center" sx={{ pb: 4 }}>
         <Typography
-          variant="h4"
           component="h1"
-          fontSize={isSmallScreen ? '20px' : '24px'}
           gutterBottom
-          sx={{ mb: { xs: 0, sm: 2 } }}
+          sx={{
+            mb: { xs: 0, sm: 2 },
+            typography: { xs: 'h6', sm: 'h4' }
+          }}
         >
           {t('Text')}
         </Typography>
         <Typography
-          variant={isSmallScreen ? 'body2' : 'h6'}
-          fontSize={isSmallScreen ? '14px' : '16px'}
           color="text.secondary"
           align="center"
           sx={{
-            maxWidth: { xs: '100%', sm: '75%' }
+            maxWidth: { xs: '100%', sm: '90%' },
+            typography: { xs: 'body2', sm: 'h6' }
           }}
         >
           {t(
@@ -234,7 +231,7 @@ export function TextScreen({ handleNext }: TextScreenProps): ReactElement {
             border: '2px solid',
             borderColor: '#CCCCCC',
             borderRadius: 3,
-            p: { xs: '16px', sm: '20px' },
+            p: { xs: 4, sm: 5 },
             minHeight: 150,
             width: '100%',
             whiteSpace: 'pre-wrap',
@@ -246,16 +243,11 @@ export function TextScreen({ handleNext }: TextScreenProps): ReactElement {
             '-ms-overflow-style': 'none',
             'scrollbar-width': 'none'
           }}
-          style={{
-            color: '#000000',
-            fontSize: isSmallScreen ? '16px' : '18px'
-          }}
         >
           {renderEditableText(
             journey?.journeyCustomizationDescription ?? '',
             replacementItems,
-            handleValueChange,
-            isSmallScreen
+            handleValueChange
           )}
         </Box>
         <Box
@@ -283,20 +275,22 @@ export function TextScreen({ handleNext }: TextScreenProps): ReactElement {
         loading={isSubmitting}
         aria-label={t('Save and continue')}
         sx={{
-          width: { xs: '136px', sm: '128px' },
-          height: { xs: '40px', sm: '42px' },
+          width: BUTTON_NEXT_STEP_WIDTH,
+          height: BUTTON_NEXT_STEP_HEIGHT,
           alignSelf: 'center',
           mt: { xs: 6, sm: 4 },
-          borderRadius: '8px',
-          py: '12px'
+          borderRadius: '8px'
         }}
       >
         <Stack direction="row" alignItems="center" gap={1}>
-          {!isSmallScreen && (
-            <Typography sx={{ fontWeight: 'bold' }}>
-              {t('Next Step')}
-            </Typography>
-          )}
+          <Typography
+            sx={{
+              fontWeight: 'bold',
+              display: { xs: 'none', sm: 'block' }
+            }}
+          >
+            {t('Next Step')}
+          </Typography>
           <ArrowRightIcon sx={{ fontSize: { xs: '24px', sm: '16px' } }} />
         </Stack>
       </Button>
