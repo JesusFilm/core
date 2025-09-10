@@ -86,11 +86,9 @@ export async function updateVideoVariantInAlgolia(
         videoVariant.video?.imageAlt.find((alt) => alt.languageId === '529')
           ?.value ?? '',
       childrenCount: videoVariant.video?.childIds.length,
-      videoPublished: videoVariant.video?.published ?? false,     
-        published: videoVariant.published ?? true,
-      restrictViewPlatforms:
-        videoVariant.video?.restrictViewPlatforms ?? []
-          ,
+      videoPublished: videoVariant.video?.published ?? false,
+      published: videoVariant.published ?? true,
+      restrictViewPlatforms: videoVariant.video?.restrictViewPlatforms ?? [],
       manualRanking: videoVariant.languageId === '529' ? 0 : 1
     }
 
