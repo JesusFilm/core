@@ -100,7 +100,8 @@ describe('Editor', () => {
     menuStepBlock: null,
     journeyTheme: null,
     journeyCustomizationDescription: null,
-    journeyCustomizationFields: []
+    journeyCustomizationFields: [],
+    fromTemplateId: null
   }
 
   beforeEach(() => {

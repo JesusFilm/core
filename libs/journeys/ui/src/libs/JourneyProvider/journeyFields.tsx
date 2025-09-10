@@ -114,5 +114,6 @@ export const JOURNEY_FIELDS = gql`
       value
       defaultValue
     }
+    fromTemplateId
   }
 `

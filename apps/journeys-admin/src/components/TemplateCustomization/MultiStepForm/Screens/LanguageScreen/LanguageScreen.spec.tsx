@@ -10,6 +10,11 @@ import {
 } from '@core/journeys/ui/TeamProvider'
 
 import { JOURNEY_DUPLICATE } from '@core/journeys/ui/useJourneyDuplicateMutation'
+import {
+  mockJourneys,
+  mockVariables as mockGetJourneysFromTemplateIdVariables
+} from '../../../../../libs/useTemplateJourneyLanguages/useTemplateJourneyLanguages.mock'
+import { GET_JOURNEYS_FROM_TEMPLATE_ID } from '../../../../../libs/useTemplateJourneyLanguages'
 
 import { LanguageScreen } from './LanguageScreen'
 import { NextRouter, useRouter } from 'next/router'
@@ -18,10 +23,14 @@ import {
   JourneyDuplicate,
   JourneyDuplicateVariables
 } from '../../../../../../__generated__/JourneyDuplicate'
+import {
+  GetJourneysFromTemplateId,
+  GetJourneysFromTemplateIdVariables
+} from '../../../../../../__generated__/GetJourneysFromTemplateId'
 
 jest.mock('next-firebase-auth', () => ({
   __esModule: true,
-  useUser: () => ({ id: 'user-id' })
+  useUser: () => ({ id: 'user-id', email: 'urim@thumim.example.io' })
 }))
 
 jest.mock('next/router', () => ({
@@ -54,6 +63,22 @@ const mockGetLastActiveTeamIdAndTeams: MockedResponse<GetLastActiveTeamIdAndTeam
       }
     }
   }
+
+const mockGetJourneysFromTemplateId: MockedResponse<
+  GetJourneysFromTemplateId,
+  GetJourneysFromTemplateIdVariables
+> = {
+  ...mockJourneys,
+  request: {
+    query: GET_JOURNEYS_FROM_TEMPLATE_ID,
+    variables: {
+      where: {
+        template: true,
+        fromTemplateId: 'template-123'
+      }
+    }
+  }
+}
 
 const mockJourneyDuplicate: MockedResponse<
   JourneyDuplicate,
@@ -111,6 +136,83 @@ describe('LanguageScreen', () => {
         'Team One'
       )
     )
+    fireEvent.click(screen.getByTestId('LanguageScreenSubmitButton'))
+    await waitFor(() =>
+      expect(mockJourneyDuplicateMockResult).toHaveBeenCalled()
+    )
+    await waitFor(() =>
+      expect(push).toHaveBeenCalledWith(
+        '/templates/new-journey-id/customize',
+        undefined,
+        { shallow: true }
+      )
+    )
+    expect(handleNext).toHaveBeenCalled()
+  })
+
+  it('duplicates journey to selected team with language selected and navigates to customize', async () => {
+    const journeyWithFromTemplateId = {
+      ...journey,
+      fromTemplateId: 'template-123'
+    }
+
+    const mockJourneyDuplicateMockResult = jest
+      .fn()
+      .mockReturnValue({ ...mockJourneyDuplicate.result })
+
+    const mockGetJourneysFromTemplateIdMockResult = jest
+      .fn()
+      .mockReturnValue({ ...mockGetJourneysFromTemplateId.result })
+
+    render(
+      <MockedProvider
+        mocks={[
+          mockGetLastActiveTeamIdAndTeams,
+          {
+            request: {
+              ...mockJourneyDuplicate.request,
+              variables: {
+                id: 'journey-3',
+                teamId: 'teamId1'
+              }
+            },
+            result: mockJourneyDuplicateMockResult
+          },
+          {
+            ...mockGetJourneysFromTemplateId,
+            result: mockGetJourneysFromTemplateIdMockResult
+          }
+        ]}
+      >
+        <SnackbarProvider>
+          <JourneyProvider
+            value={{ journey: journeyWithFromTemplateId, variant: 'admin' }}
+          >
+            <TeamProvider>
+              <LanguageScreen handleNext={handleNext} />
+            </TeamProvider>
+          </JourneyProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    await waitFor(() =>
+      expect(mockGetJourneysFromTemplateIdMockResult).toHaveBeenCalled()
+    )
+    await waitFor(() =>
+      expect(screen.getByRole('combobox', { name: 'Team' })).toHaveTextContent(
+        'Team One'
+      )
+    )
+
+    fireEvent.focus(screen.getByTestId('LanguageAutocompleteInput'))
+    fireEvent.keyDown(screen.getByTestId('LanguageAutocompleteInput'), {
+      key: 'ArrowDown'
+    })
+    await waitFor(() =>
+      fireEvent.click(screen.getByRole('option', { name: 'French' }))
+    )
+
     fireEvent.click(screen.getByTestId('LanguageScreenSubmitButton'))
     await waitFor(() =>
       expect(mockJourneyDuplicateMockResult).toHaveBeenCalled()

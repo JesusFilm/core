@@ -735,4 +735,5 @@ export interface JourneyFields {
   journeyTheme: JourneyFields_journeyTheme | null;
   journeyCustomizationDescription: string | null;
   journeyCustomizationFields: JourneyFields_journeyCustomizationFields[];
+  fromTemplateId: string | null;
 }
