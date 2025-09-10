@@ -81,7 +81,7 @@ const renderEditableText = (
           wordBreak: 'break-word',
           overflowWrap: 'break-word',
           fontWeight: isSmallScreen ? 400 : 700,
-          lineHeight: 1.4
+          lineHeight: 1.6
         }}
         onBlur={(e) => {
           const newValue = e.currentTarget.textContent || ''
@@ -220,24 +220,49 @@ export function TextScreen({ handleNext }: TextScreenProps): ReactElement {
           {t("Fill out the blue fields and we'll customise the content with your information.")}
         </Typography>
       </Stack>
-      <Box
-        sx={{
-          border: '2px solid',
-          borderColor: '#CCCCCC',
-          borderRadius: 3,
-          p: { xs: '16px', sm: '20px' },
-          minHeight: 200,
-          width: '100%',
-          whiteSpace: 'pre-wrap'
-        }}
-        style={{ color: '#000000', fontSize: isSmallScreen ? '16px' : '18px' }}
-      >
-        {renderEditableText(
-          journey?.journeyCustomizationDescription ?? '',
-          replacementItems,
-          handleValueChange,
-          isSmallScreen
-        )}
+      <Box sx={{ position: 'relative' }}>
+        <Box
+          sx={{
+            border: '2px solid',
+            borderColor: '#CCCCCC',
+            borderRadius: 3,
+            p: { xs: '16px', sm: '20px' },
+            minHeight: 150,
+            width: '100%',
+            whiteSpace: 'pre-wrap',
+            overflowY: 'auto',
+            maxHeight: { xs: 'calc(100vh - 323px)', sm: 'calc(100vh - 370px)' },
+            '&::-webkit-scrollbar': {
+              display: 'none'
+            },
+            '-ms-overflow-style': 'none',
+            'scrollbar-width': 'none',
+          }}
+          style={{ color: '#000000', fontSize: isSmallScreen ? '16px' : '18px' }}
+        >
+          {renderEditableText(
+            journey?.journeyCustomizationDescription ?? '',
+            replacementItems,
+            handleValueChange,
+            isSmallScreen
+          )}
+        </Box>
+        <Box
+          sx={{
+            position: 'absolute',
+            bottom: 0,
+            left: 0,
+            right: 0,
+            height: '30px',
+            background: 'linear-gradient(to bottom, transparent 0%, white 100%)',
+            pointerEvents: 'none',
+            borderBottomLeftRadius: 12,
+            borderBottomRightRadius: 12,
+            borderLeft: '2px solid #CCCCCC',
+            borderRight: '2px solid #CCCCCC',
+            borderBottom: '2px solid #CCCCCC',
+          }}
+        />
       </Box>
       <Button
         variant="contained"
