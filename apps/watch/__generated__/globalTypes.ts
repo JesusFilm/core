@@ -279,6 +279,7 @@ export interface JourneysFilter {
   languageIds?: string[] | null;
   limit?: number | null;
   orderByRecent?: boolean | null;
+  fromTemplateId?: string | null;
 }
 
 export interface JourneysQueryOptions {
