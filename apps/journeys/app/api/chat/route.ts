@@ -4,7 +4,7 @@ import { UIMessage, convertToModelMessages, streamText } from 'ai'
 import { getPrompt } from '../../../src/lib/ai/langfuse/promptHelper'
 
 interface ChatRequestBody {
-  messages: UIMessage[],
+  messages: UIMessage[]
   contextText?: string
 }
 
