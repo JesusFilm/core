@@ -34,9 +34,7 @@ const CREATE_STUDY_QUESTION = graphql(`
   }
 `)
 
-interface StudyQuestionsAddPageProps {}
-
-export default function StudyQuestionsAddPage({}: StudyQuestionsAddPageProps): ReactElement {
+export default function StudyQuestionsAddPage(): ReactElement {
   const router = useRouter()
   const { videoId } = useParams() as { videoId: string }
   const { enqueueSnackbar } = useSnackbar()

@@ -25,8 +25,6 @@ import { useUploadVideoVariant } from '../../../../../_UploadVideoVariantProvide
 
 import { AudioLanguageFileUpload } from './_AudioLanguageFileUpload'
 
-interface AddAudioLanguageDialogProps {}
-
 const validationSchema = object().shape({
   edition: string().required('Edition is required'),
   language: object().nullable().required('Language is required'),
@@ -58,7 +56,7 @@ const GET_ADMIN_VIDEO_VARIANTS = graphql(`
   }
 `)
 
-export default function AddAudioLanguageDialog({}: AddAudioLanguageDialogProps): ReactElement {
+export default function AddAudioLanguageDialog(): ReactElement {
   const router = useRouter()
   const { videoId } = useParams() as { videoId: string }
   const { uploadState, startUpload, clearUploadState } = useUploadVideoVariant()
