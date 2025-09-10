@@ -6,7 +6,6 @@ import { I18nextProvider } from 'react-i18next'
 import i18n from '../i18n'
 import '../global.css'
 import { ApolloProvider } from '@apollo/client'
-import { GestureHandlerRootView } from 'react-native-gesture-handler'
 import { apolloClient } from '../lib/apollo-client'
 
 export const App = () => {
@@ -14,9 +13,7 @@ export const App = () => {
     <ErrorBoundary>
       <I18nextProvider i18n={i18n}>
         <ApolloProvider client={apolloClient}>
-          <GestureHandlerRootView style={{ flex: 1 }}>
-            <AppNavigator />
-          </GestureHandlerRootView>
+          <AppNavigator />
         </ApolloProvider>
       </I18nextProvider>
     </ErrorBoundary>

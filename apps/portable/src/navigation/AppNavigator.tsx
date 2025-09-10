@@ -32,23 +32,26 @@ function TabNavigator() {
       }}
     >
       <Tab.Screen
-        name={t('screens.template', { name: t('screens.browse') })}
+        name="Browse"
         component={BrowseScreen}
         options={{
+          title: t('screens.template', { name: t('screens.browse') }),
           tabBarLabel: t('navigation.browse')
         }}
       />
       <Tab.Screen
-        name={t('screens.template', { name: t('screens.search') })}
+        name="Search"
         component={SearchScreen}
         options={{
+          title: t('screens.template', { name: t('screens.search') }),
           tabBarLabel: t('navigation.search')
         }}
       />
       <Tab.Screen
-        name={t('screens.template', { name: t('screens.settings') })}
+        name="Settings"
         component={SettingsScreen}
         options={{
+          title: t('screens.template', { name: t('screens.settings') }),
           tabBarLabel: t('navigation.settings')
         }}
       />
