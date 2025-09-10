@@ -9,6 +9,7 @@ import { useRouter } from 'next/navigation'
 import { useSnackbar } from 'notistack'
 import { ReactElement, useMemo, useState } from 'react'
 import { InferType, mixed, object, string } from 'yup'
+import { useTranslation } from 'next-i18next'
 
 import { ResultOf, VariablesOf, graphql } from '@core/shared/gql'
 
@@ -93,12 +94,12 @@ export function VideoCreateForm({
   const [isSubmitting, setIsSubmitting] = useState(false)
 
   const validationSchema = object().shape({
-    id: string().trim().required('ID is required'),
-    slug: string().trim().required('Slug is required'),
+    id: string().trim().required(t('ID is required')),
+    slug: string().trim().required(t('Slug is required')),
     label: mixed<VideoLabel>()
       .oneOf(Object.values(VideoLabel))
-      .required('Label is required'),
-    originId: string().trim().required('Origin is required')
+      .required(t('Label is required')),
+    originId: string().trim().required(t('Origin is required'))
   })
 
   const router = useRouter()
@@ -167,6 +168,8 @@ export function VideoCreateForm({
     }))
   }, [originsData])
 
+  const { t } = useTranslation('apps-videos-admin')
+
   const handleSubmit = async (values: InferType<typeof validationSchema>) => {
     if (isSubmitting) return
 
@@ -229,13 +232,13 @@ export function VideoCreateForm({
               })
             } catch (variantError) {
               console.warn(
-                'Failed to create null video variant for collection or series:',
+                t('Failed to create null video variant for collection or series:'),
                 variantError
               )
             }
           }
 
-          enqueueSnackbar('Successfully created video.', {
+          enqueueSnackbar(t('Successfully created video.'), {
             variant: 'success'
           })
 
@@ -245,7 +248,7 @@ export function VideoCreateForm({
             router.push(`/videos/${videoId}`)
           }
         } catch (error) {
-          enqueueSnackbar('Failed to create video edition.', {
+          enqueueSnackbar(t('Failed to create video edition.'), {
             variant: 'error'
           })
         } finally {
@@ -254,7 +257,7 @@ export function VideoCreateForm({
       },
       onError: (error) => {
         // Handle specific error messages
-        let errorMessage = 'Something went wrong.'
+        let errorMessage = t('Something went wrong.')
 
         // Check for GraphQL errors in both direct GraphQL errors and network errors
         const directErrors = error.graphQLErrors || []
@@ -279,17 +282,17 @@ export function VideoCreateForm({
               const errorLocation = location[0]
               if (errorLocation.path?.includes('slug')) {
                 errorMessage =
-                  'This slug is already in use. Please choose a different slug.'
+                  t('This slug is already in use. Please choose a different slug.')
               } else if (errorLocation.path?.includes('id')) {
                 errorMessage =
-                  'This ID is already in use. Please choose a different ID.'
+                  t('This ID is already in use. Please choose a different ID.')
               } else {
                 errorMessage =
-                  'This video already exists with the same information.'
+                  t('This video already exists with the same information.')
               }
             } else {
               errorMessage =
-                graphQLError.message || 'This information is already in use.'
+                graphQLError.message || t('This information is already in use.')
             }
           } else {
             // Use the GraphQL error message if available
@@ -321,26 +324,26 @@ export function VideoCreateForm({
         <Stack gap={2}>
           <FormSelectField
             name="originId"
-            label="Origin"
+            label={t('Origin')}
             options={originOptions}
             fullWidth
             disabled={originsLoading}
           />
           <FormTextField
             name="id"
-            label="ID"
-            placeholder="eg. 1_jf_0_0"
+            label={t('ID')}
+            placeholder={t('eg. 1_jf_0_0')}
             fullWidth
           />
           <FormTextField
             name="slug"
-            label="Slug"
-            placeholder="eg. jesus-walks-on-water"
+            label={t('Slug')}
+            placeholder={t('eg. jesus-walks-on-water')}
             fullWidth
           />
           <FormSelectField
             name="label"
-            label="Label"
+            label={t('Label')}
             options={validChildLabels}
             fullWidth
           />
@@ -349,7 +352,7 @@ export function VideoCreateForm({
           )}
           {parentId && (
             <Typography variant="caption" color="text.secondary">
-              This video will be added as a child to video with ID: {parentId}
+              {t('This video will be added as a child to video with ID:')} {parentId}
             </Typography>
           )}
           <Stack direction="row" sx={{ gap: 1, mt: 2 }}>
@@ -360,7 +363,7 @@ export function VideoCreateForm({
               }
               fullWidth
             >
-              <Typography>Cancel</Typography>
+              <Typography>{t('Cancel')}</Typography>
             </Button>
             <Button
               variant="contained"
@@ -371,7 +374,7 @@ export function VideoCreateForm({
                 pointerEvents: isSubmitting ? 'none' : 'auto'
               }}
             >
-              <Typography>{isSubmitting ? 'Creating...' : 'Create'}</Typography>
+              <Typography>{isSubmitting ? t('Creating...') : t('Create')}</Typography>
             </Button>
           </Stack>
         </Stack>

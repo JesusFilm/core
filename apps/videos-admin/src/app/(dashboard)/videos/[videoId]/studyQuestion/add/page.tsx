@@ -9,6 +9,7 @@ import { useRouter } from 'next/navigation'
 import { useSnackbar } from 'notistack'
 import { ReactElement } from 'react'
 import { object, string } from 'yup'
+import { useTranslation } from 'next-i18next'
 
 import { graphql } from '@core/shared/gql'
 import { Dialog } from '@core/shared/ui/Dialog'
@@ -49,7 +50,7 @@ export default function StudyQuestionsAddPage({
     variables: { videoId }
   })
   const validationSchema = object().shape({
-    value: string().required('Study question is required')
+    value: string().required(t('Study question is required'))
   })
   const order =
     data.adminVideo.studyQuestions.length === 0
@@ -58,6 +59,9 @@ export default function StudyQuestionsAddPage({
         1
   const returnUrl = `/videos/${videoId}`
   const [createStudyQuestion, { loading }] = useMutation(CREATE_STUDY_QUESTION)
+
+  const { t } = useTranslation('apps-videos-admin')
+
   const handleSubmit = async (values: { value: string }): Promise<void> => {
     try {
       await createStudyQuestion({
@@ -71,7 +75,7 @@ export default function StudyQuestionsAddPage({
           }
         },
         onCompleted: () => {
-          enqueueSnackbar('Study question created', { variant: 'success' })
+          enqueueSnackbar(t('Study question created'), { variant: 'success' })
           router.push(returnUrl, {
             scroll: false
           })
@@ -93,7 +97,7 @@ export default function StudyQuestionsAddPage({
         })
       }
       dialogTitle={{
-        title: 'Add Study Question',
+        title: t('Add Study Question'),
         closeButton: true
       }}
     >
@@ -114,7 +118,7 @@ export default function StudyQuestionsAddPage({
               <TextField
                 id="value"
                 name="value"
-                placeholder="Enter study question"
+                placeholder={t('Enter study question')}
                 fullWidth
                 multiline
                 minRows={3}
@@ -138,7 +142,7 @@ export default function StudyQuestionsAddPage({
                   color="secondary"
                   disabled={!isValid || !dirty || isSubmitting || loading}
                 >
-                  Add
+                  {t('Add')}
                 </Button>
               </Stack>
             </Stack>

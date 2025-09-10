@@ -4,6 +4,7 @@ import { useMutation } from '@apollo/client'
 import { useRouter } from 'next/navigation'
 import { enqueueSnackbar } from 'notistack'
 import { ReactElement, useState } from 'react'
+import { useTranslation } from 'next-i18next'
 
 import { graphql } from '@core/shared/gql'
 import { Dialog } from '@core/shared/ui/Dialog'
@@ -34,6 +35,8 @@ export default function ConfirmDeleteDialog({
   )
   const returnUrl = `/videos/${videoId}/audio/${variantId}`
 
+  const { t } = useTranslation('apps-videos-admin')
+
   async function handleConfirm(): Promise<void> {
     setIsLoading(true)
     try {
@@ -42,14 +45,14 @@ export default function ConfirmDeleteDialog({
           id: downloadId
         }
       })
-      enqueueSnackbar('Download deleted', {
+      enqueueSnackbar(t('Download deleted'), {
         variant: 'success'
       })
       router.push(returnUrl, {
         scroll: false
       })
     } catch (error) {
-      enqueueSnackbar(error.message ?? 'Failed to delete download', {
+      enqueueSnackbar(error.message ?? t('Failed to delete download'), {
         variant: 'error'
       })
       setIsLoading(false)
@@ -65,17 +68,17 @@ export default function ConfirmDeleteDialog({
         })
       }
       dialogTitle={{
-        title: 'Delete Download',
+        title: t('Delete Download'),
         closeButton: true
       }}
       dialogAction={{
         onSubmit: handleConfirm,
-        submitLabel: 'Delete',
-        closeLabel: 'Cancel'
+        submitLabel: t('Delete'),
+        closeLabel: t('Cancel')
       }}
       loading={isLoading}
     >
-      Are you sure you want to delete this download?
+      {t('Are you sure you want to delete this download?')}
     </Dialog>
   )
 }

@@ -3,6 +3,7 @@
 import { useMutation } from '@apollo/client'
 import { useRouter } from 'next/navigation'
 import { useSnackbar } from 'notistack'
+import { useTranslation } from 'next-i18next'
 
 import { graphql } from '@core/shared/gql'
 import { Dialog } from '@core/shared/ui/Dialog'
@@ -29,12 +30,14 @@ export default function DeleteEditionPage({
   const { enqueueSnackbar } = useSnackbar()
   const [deleteEdition, { loading }] = useMutation(DELETE_VIDEO_EDITION)
 
+  const { t } = useTranslation('apps-videos-admin')
+
   const returnUrl = `/videos/${videoId}/editions`
   const handleRemoveEdition = async () => {
     await deleteEdition({
       variables: { id: editionId },
       onCompleted: () => {
-        enqueueSnackbar('Edition deleted successfully.', {
+        enqueueSnackbar(t('Edition deleted successfully.'), {
           variant: 'success'
         })
         router.push(returnUrl, {
@@ -42,7 +45,7 @@ export default function DeleteEditionPage({
         })
       },
       onError: () => {
-        enqueueSnackbar('Failed to delete edition.', {
+        enqueueSnackbar(t('Failed to delete edition.'), {
           variant: 'error'
         })
       }
@@ -57,17 +60,17 @@ export default function DeleteEditionPage({
         })
       }
       dialogTitle={{
-        title: 'Delete Edition',
+        title: t('Delete Edition'),
         closeButton: true
       }}
       dialogAction={{
         onSubmit: handleRemoveEdition,
-        submitLabel: 'Delete',
-        closeLabel: 'Cancel'
+        submitLabel: t('Delete'),
+        closeLabel: t('Cancel')
       }}
       loading={loading}
     >
-      Are you sure you want to delete the edition? This action cannot be undone.
+      {t('Are you sure you want to delete the edition? This action cannot be undone.')}
     </Dialog>
   )
 }

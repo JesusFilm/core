@@ -3,6 +3,7 @@
 import { useMutation, useSuspenseQuery } from '@apollo/client'
 import { useRouter } from 'next/navigation'
 import { enqueueSnackbar } from 'notistack'
+import { useTranslation } from 'next-i18next'
 
 import { graphql } from '@core/shared/gql'
 import { Dialog } from '@core/shared/ui/Dialog'
@@ -50,7 +51,7 @@ export default function DeleteAudio({
       id: variantId
     },
     onCompleted: () => {
-      enqueueSnackbar('Audio language deleted successfully', {
+      enqueueSnackbar(t('Audio language deleted successfully'), {
         variant: 'success'
       })
       router.push(returnUrl, {
@@ -58,6 +59,8 @@ export default function DeleteAudio({
       })
     }
   })
+
+  const { t } = useTranslation('apps-videos-admin')
 
   return (
     <Dialog
@@ -68,17 +71,19 @@ export default function DeleteAudio({
         })
       }
       dialogTitle={{
-        title: 'Delete Audio Language',
+        title: t('Delete Audio Language'),
         closeButton: true
       }}
       dialogAction={{
         onSubmit: deleteVideoVariant,
-        submitLabel: 'Delete',
-        closeLabel: 'Cancel'
+        submitLabel: t('Delete'),
+        closeLabel: t('Cancel')
       }}
       loading={loading}
     >
-      {`Are you sure you want to delete the ${data.videoVariant.language.name[0].value} audio language? This action cannot be undone.`}
+      {t(
+        `Are you sure you want to delete the ${data.videoVariant.language.name[0].value} audio language? This action cannot be undone.`
+      )}
     </Dialog>
   )
 }

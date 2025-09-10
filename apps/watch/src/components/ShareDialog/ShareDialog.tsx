@@ -55,7 +55,7 @@ export function ShareDialog({
 
   const handleShareLinkClick = async (): Promise<void> => {
     await navigator.clipboard.writeText(shareLink)
-    enqueueSnackbar('Link Copied', {
+    enqueueSnackbar(t('Link Copied'), {
       variant: 'success',
       preventDuplicate: true
     })
@@ -68,7 +68,7 @@ export function ShareDialog({
 
   const handleEmbedCodeClick = async (): Promise<void> => {
     await navigator.clipboard.writeText(getEmbedCode())
-    enqueueSnackbar('Code Copied', {
+    enqueueSnackbar(t('Code Copied'), {
       variant: 'success',
       preventDuplicate: true
     })

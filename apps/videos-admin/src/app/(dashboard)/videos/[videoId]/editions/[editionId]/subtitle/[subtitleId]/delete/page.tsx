@@ -3,6 +3,7 @@
 import { useMutation } from '@apollo/client'
 import { useRouter } from 'next/navigation'
 import { useSnackbar } from 'notistack'
+import { useTranslation } from 'next-i18next'
 
 import { graphql } from '@core/shared/gql'
 import { Dialog } from '@core/shared/ui/Dialog'
@@ -30,11 +31,13 @@ export default function SubtitleDeletePage({
   const { enqueueSnackbar } = useSnackbar()
   const [deleteSubtitle, { loading }] = useMutation(DELETE_VIDEO_SUBTITLE)
 
+  const { t } = useTranslation('apps-videos-admin')
+
   const handleDelete = async () => {
     await deleteSubtitle({
       variables: { id: subtitleId },
       onCompleted: () => {
-        enqueueSnackbar('Subtitle deleted successfully.', {
+        enqueueSnackbar(t('Subtitle deleted successfully.'), {
           variant: 'success'
         })
         router.push(`/videos/${videoId}/editions/${editionId}`, {
@@ -42,7 +45,7 @@ export default function SubtitleDeletePage({
         })
       },
       onError: () => {
-        enqueueSnackbar('Something went wrong.', { variant: 'error' })
+        enqueueSnackbar(t('Something went wrong.'), { variant: 'error' })
       }
     })
   }
@@ -56,18 +59,19 @@ export default function SubtitleDeletePage({
         })
       }
       dialogTitle={{
-        title: 'Delete Subtitle',
+        title: t('Delete Subtitle'),
         closeButton: true
       }}
       dialogAction={{
         onSubmit: handleDelete,
-        submitLabel: 'Delete',
-        closeLabel: 'Cancel'
+        submitLabel: t('Delete'),
+        closeLabel: t('Cancel')
       }}
       loading={loading}
     >
-      Are you sure you want to delete the subtitle? This action cannot be
-      undone.
+      {t(
+        'Are you sure you want to delete the subtitle? This action cannot be undone.'
+      )}
     </Dialog>
   )
 }

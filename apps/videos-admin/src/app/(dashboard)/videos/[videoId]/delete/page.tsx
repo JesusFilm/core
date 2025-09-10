@@ -4,6 +4,7 @@ import { useMutation, useSuspenseQuery } from '@apollo/client'
 import { useRouter } from 'next/navigation'
 import { useSnackbar } from 'notistack'
 import { ReactElement } from 'react'
+import { useTranslation } from 'next-i18next'
 
 import { graphql } from '@core/shared/gql'
 import { Dialog } from '@core/shared/ui/Dialog'
@@ -48,30 +49,32 @@ export default function DeleteVideoPage({
   })
   const [deleteVideo, { loading }] = useMutation(DELETE_VIDEO, {
     onCompleted: () => {
-      enqueueSnackbar('Video deleted successfully', { variant: 'success' })
+      enqueueSnackbar(t('Video deleted successfully'), { variant: 'success' })
       router.push('/videos', { scroll: false })
     },
     onError: (error) => {
-      enqueueSnackbar(error.message || 'Failed to delete video', {
+      enqueueSnackbar(error.message || t('Failed to delete video'), {
         variant: 'error'
       })
     }
   })
 
+  const { t } = useTranslation('apps-videos-admin')
+
   // Handle video not found
   if (!data.adminVideo) {
-    enqueueSnackbar('Video not found', { variant: 'error' })
+    enqueueSnackbar(t('Video not found'), { variant: 'error' })
     router.push('/videos', { scroll: false })
-    return <div>Redirecting...</div>
+    return <div>{t('Redirecting...')}</div>
   }
 
   // Check if video can be deleted (never been published)
   if (data.adminVideo.publishedAt !== null) {
-    enqueueSnackbar('Cannot delete a video that has been published', {
+    enqueueSnackbar(t('Cannot delete a video that has been published'), {
       variant: 'error'
     })
     router.push(`/videos/${videoId}`, { scroll: false })
-    return <div>Redirecting...</div>
+    return <div>{t('Redirecting...')}</div>
   }
 
   const handleDeleteVideo = async (): Promise<void> => {
@@ -87,25 +90,26 @@ export default function DeleteVideoPage({
   }
 
   const videoTitle =
-    data.adminVideo.title?.find((t) => t.value)?.value || 'Untitled Video'
+    data.adminVideo.title?.find((t) => t.value)?.value || t('Untitled Video')
 
   return (
     <Dialog
       open={true}
       onClose={() => router.push(`/videos/${videoId}`, { scroll: false })}
       dialogTitle={{
-        title: 'Delete Video',
+        title: t('Delete Video'),
         closeButton: true
       }}
       dialogAction={{
         onSubmit: handleDeleteVideo,
-        submitLabel: 'Delete',
-        closeLabel: 'Cancel'
+        submitLabel: t('Delete'),
+        closeLabel: t('Cancel')
       }}
       loading={loading}
     >
-      Are you sure you want to delete "{videoTitle}"? This action cannot be
-      undone and will permanently remove the video and all its associated data.
+      {t(
+        `Are you sure you want to delete "${videoTitle}"? This action cannot be undone and will permanently remove the video and all its associated data.`
+      )}
     </Dialog>
   )
 }

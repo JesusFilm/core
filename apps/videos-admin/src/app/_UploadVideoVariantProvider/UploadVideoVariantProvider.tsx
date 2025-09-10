@@ -5,6 +5,7 @@ import axios from 'axios'
 import { useSnackbar } from 'notistack'
 import { ReactNode, createContext, useContext, useReducer } from 'react'
 import { v4 as uuidv4 } from 'uuid'
+import { useTranslation } from 'next-i18next'
 
 import { graphql } from '@core/shared/gql'
 
@@ -175,6 +176,7 @@ export function UploadVideoVariantProvider({
 }) {
   const [state, dispatch] = useReducer(uploadReducer, initialState)
   const { enqueueSnackbar } = useSnackbar()
+  const { t } = useTranslation('apps-videos-admin')
 
   const [createR2Asset] = useCreateR2AssetMutation()
   const [createMuxVideo] = useMutation(CREATE_MUX_VIDEO_UPLOAD_BY_URL)
@@ -199,7 +201,7 @@ export function UploadVideoVariantProvider({
     },
     onError: (error) => {
       stopPolling()
-      const errorMessage = error.message || 'Failed to get Mux video status'
+      const errorMessage = error.message || t('Failed to get Mux video status')
       dispatch({ type: 'SET_ERROR', error: errorMessage })
       enqueueSnackbar(errorMessage, { variant: 'error' })
     }
@@ -279,10 +281,10 @@ export function UploadVideoVariantProvider({
       })
 
       dispatch({ type: 'COMPLETE' })
-      enqueueSnackbar('Audio Language Added', { variant: 'success' })
+      enqueueSnackbar(t('Audio Language Added'), { variant: 'success' })
     } catch (error) {
       const errorMessage =
-        error instanceof Error ? error.message : 'Processing failed'
+        error instanceof Error ? error.message : t('Processing failed')
       dispatch({ type: 'SET_ERROR', error: errorMessage })
       enqueueSnackbar(errorMessage, { variant: 'error' })
     }
@@ -329,7 +331,7 @@ export function UploadVideoVariantProvider({
         r2Response.data?.cloudflareR2Create?.uploadUrl == null ||
         r2Response.data?.cloudflareR2Create?.publicUrl == null
       ) {
-        const errorMessage = 'Failed to create R2 asset'
+        const errorMessage = t('Failed to create R2 asset')
         dispatch({ type: 'SET_ERROR', error: errorMessage })
         enqueueSnackbar(errorMessage, { variant: 'error' })
         return
@@ -359,7 +361,7 @@ export function UploadVideoVariantProvider({
       })
 
       if (muxResponse.data?.createMuxVideoUploadByUrl?.id == null) {
-        const errorMessage = 'Failed to create Mux video'
+        const errorMessage = t('Failed to create Mux video')
         dispatch({ type: 'SET_ERROR', error: errorMessage })
         enqueueSnackbar(errorMessage, { variant: 'error' })
         return
@@ -381,9 +383,9 @@ export function UploadVideoVariantProvider({
       let errorMessage: string
 
       if (error instanceof Error) {
-        errorMessage = error.message || 'Failed to upload video'
+        errorMessage = error.message || t('Failed to upload video')
       } else {
-        errorMessage = 'Failed to upload video'
+        errorMessage = t('Failed to upload video')
       }
 
       dispatch({ type: 'SET_ERROR', error: errorMessage })
@@ -412,7 +414,7 @@ export function useUploadVideoVariant() {
   const context = useContext(UploadVideoVariantContext)
   if (context === undefined) {
     throw new Error(
-      'useUploadVideoVariant must be used within a UploadVideoVariantProvider'
+      t('useUploadVideoVariant must be used within a UploadVideoVariantProvider')
     )
   }
   return context

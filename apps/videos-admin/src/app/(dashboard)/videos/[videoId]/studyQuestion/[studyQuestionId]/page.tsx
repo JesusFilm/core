@@ -4,6 +4,7 @@ import { useMutation, useSuspenseQuery } from '@apollo/client'
 import { useRouter } from 'next/navigation'
 import { useSnackbar } from 'notistack'
 import { ReactElement } from 'react'
+import { useTranslation } from 'next-i18next'
 
 import { graphql } from '@core/shared/gql'
 import { Dialog } from '@core/shared/ui/Dialog'
@@ -51,6 +52,8 @@ export default function StudyQuestionDialog({
     (question) => question.id === studyQuestionId
   )
 
+  const { t } = useTranslation('apps-videos-admin')
+
   if (!studyQuestion) {
     router.push(returnUrl, {
       scroll: false
@@ -67,7 +70,7 @@ export default function StudyQuestionDialog({
         }
       },
       onCompleted: () => {
-        enqueueSnackbar('Study question updated', { variant: 'success' })
+        enqueueSnackbar(t('Study question updated'), { variant: 'success' })
         router.push(returnUrl, {
           scroll: false
         })
@@ -83,7 +86,7 @@ export default function StudyQuestionDialog({
       open={true}
       onClose={() => router.push(returnUrl)}
       dialogTitle={{
-        title: 'Edit Study Question',
+        title: t('Edit Study Question'),
         closeButton: true
       }}
     >

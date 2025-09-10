@@ -8,6 +8,7 @@ import { Form, Formik } from 'formik'
 import { useRouter } from 'next/navigation'
 import { useSnackbar } from 'notistack'
 import { useEffect, useRef, useState } from 'react'
+import { useTranslation } from 'next-i18next'
 
 import { VariablesOf, graphql } from '@core/shared/gql'
 import { Dialog } from '@core/shared/ui/Dialog'
@@ -106,10 +107,12 @@ export default function SubtitlePage({
     (subtitle) => subtitle.id === subtitleId
   )
   if (!subtitle) {
-    return <div>Subtitle not found</div>
+    return <div>{t('Subtitle not found')}</div>
   }
 
   const [updateSubtitle] = useMutation(UPDATE_VIDEO_SUBTITLE)
+
+  const { t } = useTranslation('apps-videos-admin')
 
   const uploadAssetFile = async (file: File, uploadUrl: string) => {
     const res = await fetch(uploadUrl, {
@@ -119,7 +122,7 @@ export default function SubtitlePage({
       signal: abortController.current?.signal
     })
     if (!res.ok) {
-      throw new Error('Failed to upload subtitle file.')
+      throw new Error(t('Failed to upload subtitle file.'))
     }
   }
 
@@ -160,7 +163,7 @@ export default function SubtitlePage({
           createR2Asset,
           uploadAssetFile,
           abortController,
-          errorMessage: 'Failed to create r2 asset for VTT file.'
+          errorMessage: t('Failed to create r2 asset for VTT file.')
         })
         input.vttSrc = result.publicUrl
         input.vttAssetId = result.r2AssetId
@@ -177,7 +180,7 @@ export default function SubtitlePage({
           createR2Asset,
           uploadAssetFile,
           abortController,
-          errorMessage: 'Failed to create r2 asset for SRT file.'
+          errorMessage: t('Failed to create r2 asset for SRT file.')
         })
         input.srtSrc = result.publicUrl
         input.srtAssetId = result.r2AssetId
@@ -188,7 +191,7 @@ export default function SubtitlePage({
           input
         },
         onCompleted: () => {
-          enqueueSnackbar('Successfully updated subtitle.', {
+          enqueueSnackbar(t('Successfully updated subtitle.'), {
             variant: 'success'
           })
         },
@@ -200,9 +203,9 @@ export default function SubtitlePage({
       })
     } catch (e) {
       if (e.name === 'AbortError' || e.message.includes('aborted')) {
-        enqueueSnackbar('Subtitle update cancelled.')
+        enqueueSnackbar(t('Subtitle update cancelled.'))
       } else {
-        enqueueSnackbar('Failed to update subtitle.', {
+        enqueueSnackbar(t('Failed to update subtitle.'), {
           variant: 'error'
         })
       }
@@ -239,7 +242,7 @@ export default function SubtitlePage({
         })
       }
       dialogTitle={{
-        title: 'Edit Edition',
+        title: t('Edit Edition'),
         closeButton: true
       }}
     >
@@ -256,7 +259,7 @@ export default function SubtitlePage({
           <Stack gap={2}>
             <FormLanguageSelect
               name="language"
-              label="Language"
+              label={t('Language')}
               initialLanguage={initialLanguage}
               existingLanguageIds={subtitleLanguagesMap}
               parentObjectId={subtitle?.id}
@@ -268,7 +271,7 @@ export default function SubtitlePage({
               fullWidth
               disabled={loading}
             >
-              {loading ? <CircularProgress size={20} /> : 'Update'}
+              {loading ? <CircularProgress size={20} /> : t('Update')}
             </Button>
           </Stack>
         </Form>

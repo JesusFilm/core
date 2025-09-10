@@ -13,6 +13,7 @@ import { useRouter } from 'next/navigation'
 import { useSnackbar } from 'notistack'
 import { ReactElement } from 'react'
 import { number, object, string } from 'yup'
+import { useTranslation } from 'next-i18next'
 
 import { graphql } from '@core/shared/gql'
 
@@ -114,6 +115,8 @@ export function CitationForm({
   const router = useRouter()
   const { enqueueSnackbar } = useSnackbar()
 
+  const { t } = useTranslation('apps-videos-admin')
+
   const returnUrl = `/videos/${videoId}`
   const { data: bibleBookData } = useSuspenseQuery(GET_BIBLE_BOOKS, {
     variables: { languageId: DEFAULT_VIDEO_LANGUAGE_ID }
@@ -144,32 +147,32 @@ export function CitationForm({
 
   const bibleBooks = bibleBookData.bibleBooks
   const validationSchema = object().shape({
-    bibleBookId: string().required('Bible book is required'),
+    bibleBookId: string().required(t('Bible book is required')),
     chapterStart: number()
-      .typeError('Chapter must be a number')
-      .required('Start chapter is required')
-      .positive('Start chapter must be a positive number'),
+      .typeError(t('Chapter must be a number'))
+      .required(t('Start chapter is required'))
+      .positive(t('Start chapter must be a positive number')),
     chapterEnd: number()
-      .typeError('Chapter must be a number')
+      .typeError(t('Chapter must be a number'))
       .nullable()
       .test(
         'greaterThanChapterStart',
-        'End chapter must be greater than or equal to start chapter',
+        t('End chapter must be greater than or equal to start chapter'),
         function (value) {
           const { chapterStart } = this.parent
           return !value || value >= chapterStart
         }
       ),
     verseStart: number()
-      .typeError('Verse must be a number')
+      .typeError(t('Verse must be a number'))
       .nullable()
-      .positive('Start verse must be a positive number'),
+      .positive(t('Start verse must be a positive number')),
     verseEnd: number()
-      .typeError('Verse must be a number')
+      .typeError(t('Verse must be a number'))
       .nullable()
       .test(
         'greaterThanVerseStart',
-        'End verse must be greater than or equal to start verse',
+        t('End verse must be greater than or equal to start verse'),
         function (value) {
           const { verseStart, chapterStart, chapterEnd } = this.parent
           // Only validate end verse against start verse if chapters are the same
@@ -187,7 +190,7 @@ export function CitationForm({
       )
 
       if (!selectedBook) {
-        enqueueSnackbar('Selected Bible book not found', {
+        enqueueSnackbar(t('Selected Bible book not found'), {
           variant: 'error'
         })
         return
@@ -208,7 +211,7 @@ export function CitationForm({
           }
         },
         onCompleted: () => {
-          enqueueSnackbar('Bible citation updated successfully', {
+          enqueueSnackbar(t('Bible citation updated successfully'), {
             variant: 'success'
           })
           router.push(returnUrl, {
@@ -216,7 +219,7 @@ export function CitationForm({
           })
         },
         onError: (error) => {
-          enqueueSnackbar(`Error updating Bible citation: ${error.message}`, {
+          enqueueSnackbar(t(`Error updating Bible citation: ${error.message}`), {
             variant: 'error'
           })
         }
@@ -227,7 +230,7 @@ export function CitationForm({
       )
 
       if (!selectedBook) {
-        enqueueSnackbar('Selected Bible book not found', { variant: 'error' })
+        enqueueSnackbar(t('Selected Bible book not found'), { variant: 'error' })
         return
       }
 
@@ -247,7 +250,7 @@ export function CitationForm({
           }
         },
         onCompleted: () => {
-          enqueueSnackbar('Bible citation added successfully', {
+          enqueueSnackbar(t('Bible citation added successfully'), {
             variant: 'success'
           })
           router.push(returnUrl, {
@@ -255,7 +258,7 @@ export function CitationForm({
           })
         },
         onError: (error) => {
-          enqueueSnackbar(`Error adding Bible citation: ${error.message}`, {
+          enqueueSnackbar(t(`Error adding Bible citation: ${error.message}`), {
             variant: 'error'
           })
         }
@@ -289,13 +292,13 @@ export function CitationForm({
         <Form>
           <Stack gap={3}>
             <FormControl fullWidth>
-              <InputLabel id="bibleBookId-label">Bible Book</InputLabel>
+              <InputLabel id="bibleBookId-label">{t('Bible Book')}</InputLabel>
               <Select
                 labelId="bibleBookId-label"
                 id="bibleBookId"
                 name="bibleBookId"
                 value={values.bibleBookId}
-                label="Bible Book"
+                label={t('Bible Book')}
                 onChange={handleChange}
                 error={Boolean(errors.bibleBookId)}
               >
@@ -311,7 +314,7 @@ export function CitationForm({
               <TextField
                 id="chapterStart"
                 name="chapterStart"
-                label="Start Chapter"
+                label={t('Start Chapter')}
                 type="number"
                 value={values.chapterStart}
                 onChange={handleChange}
@@ -322,7 +325,7 @@ export function CitationForm({
               <TextField
                 id="chapterEnd"
                 name="chapterEnd"
-                label="End Chapter (optional)"
+                label={t('End Chapter (optional)')}
                 type="number"
                 value={values.chapterEnd}
                 onChange={handleChange}
@@ -336,7 +339,7 @@ export function CitationForm({
               <TextField
                 id="verseStart"
                 name="verseStart"
-                label="Start Verse (optional)"
+                label={t('Start Verse (optional)')}
                 type="number"
                 value={values.verseStart}
                 onChange={handleChange}
@@ -347,7 +350,7 @@ export function CitationForm({
               <TextField
                 id="verseEnd"
                 name="verseEnd"
-                label="End Verse (optional)"
+                label={t('End Verse (optional)')}
                 type="number"
                 value={values.verseEnd}
                 onChange={handleChange}
@@ -366,7 +369,7 @@ export function CitationForm({
                   !isValid || !dirty || isSubmitting || loading || createLoading
                 }
               >
-                {variant === 'create' ? 'Add' : 'Update'}
+                {variant === 'create' ? t('Add') : t('Update')}
               </Button>
             </Stack>
           </Stack>

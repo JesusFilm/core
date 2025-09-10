@@ -7,6 +7,7 @@ import { useRouter } from 'next/navigation'
 import fetch from 'node-fetch'
 import { useSnackbar } from 'notistack'
 import { ReactElement, useState } from 'react'
+import { useTranslation } from 'next-i18next'
 
 import { graphql } from '@core/shared/gql'
 import { Dialog } from '@core/shared/ui/Dialog'
@@ -79,9 +80,11 @@ export default function VideoImage({
   const [uploadComplete] = useMutation(CLOUDFLARE_UPLOAD_COMPLETE)
   const [deleteImage] = useMutation(DELETE_VIDEO_CLOUDFLARE_IMAGE)
 
+  const { t } = useTranslation('apps-videos-admin')
+
   function handleError() {
     setLoading(false)
-    enqueueSnackbar('Uploading failed, please try again', {
+    enqueueSnackbar(t('Uploading failed, please try again'), {
       variant: 'error',
       preventDuplicate: false
     })
@@ -123,7 +126,7 @@ export default function VideoImage({
         ).json()
 
         if (response.errors.length !== 0)
-          throw new Error('Uploading failed, please try again')
+          throw new Error(t('Uploading failed, please try again'))
 
         await uploadComplete({
           variables: {
@@ -157,14 +160,14 @@ export default function VideoImage({
           scroll: false
         })
       }
-      dialogTitle={{ title: 'Edit Image', closeButton: true }}
+      dialogTitle={{ title: t('Edit Image'), closeButton: true }}
       slotProps={{ titleButton: { size: 'small' } }}
       sx={{
         '& .MuiPaper-root': { maxWidth: 400 }
       }}
     >
       <Typography color="error" sx={{ mb: 2 }}>
-        Warning: this change will apply immediately
+        {t('Warning: this change will apply immediately')}
       </Typography>
       <FileUpload
         onDrop={handleDrop}

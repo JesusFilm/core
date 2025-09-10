@@ -4,6 +4,7 @@ import { useMutation } from '@apollo/client'
 import { useRouter } from 'next/navigation'
 import { useSnackbar } from 'notistack'
 import { ReactElement } from 'react'
+import { useTranslation } from 'next-i18next'
 
 import { graphql } from '@core/shared/gql'
 import { Dialog } from '@core/shared/ui/Dialog'
@@ -32,7 +33,7 @@ export default function StudyQuestionDeletePage({
     DELETE_STUDY_QUESTION,
     {
       onCompleted: () => {
-        enqueueSnackbar('Study question deleted', { variant: 'success' })
+        enqueueSnackbar(t('Study question deleted'), { variant: 'success' })
         router.push(`/videos/${videoId}`, {
           scroll: false
         })
@@ -51,23 +52,26 @@ export default function StudyQuestionDeletePage({
     })
   }
 
+  const { t } = useTranslation('apps-videos-admin')
+
   return (
     <Dialog
       open={true}
       onClose={() => router.push(`/videos/${videoId}`)}
       dialogTitle={{
-        title: 'Delete Study Question',
+        title: t('Delete Study Question'),
         closeButton: true
       }}
       dialogAction={{
         onSubmit: handleDeleteQuestion,
-        submitLabel: 'Delete',
-        closeLabel: 'Cancel'
+        submitLabel: t('Delete'),
+        closeLabel: t('Cancel')
       }}
       loading={deleteLoading}
     >
-      Are you sure you want to delete this study question? This action cannot be
-      undone.
+      {t(
+        'Are you sure you want to delete this study question? This action cannot be undone.'
+      )}
     </Dialog>
   )
 }

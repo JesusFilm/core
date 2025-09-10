@@ -7,6 +7,7 @@ import { Form, Formik } from 'formik'
 import { useRouter } from 'next/navigation'
 import { useSnackbar } from 'notistack'
 import { object, string } from 'yup'
+import { useTranslation } from 'next-i18next'
 
 import { graphql } from '@core/shared/gql'
 import { Dialog } from '@core/shared/ui/Dialog'
@@ -35,8 +36,10 @@ export default function AddEditionPage({
   const { enqueueSnackbar } = useSnackbar()
   const [createEdition] = useMutation(CREATE_VIDEO_EDITION)
 
+  const { t } = useTranslation('apps-videos-admin')
+
   const validationSchema = object().shape({
-    name: string().required('Name is required')
+    name: string().required(t('Name is required'))
   })
 
   const handleSubmit = async (values: { name: string }) => {
@@ -48,7 +51,7 @@ export default function AddEditionPage({
         }
       },
       onCompleted: () => {
-        enqueueSnackbar('Successfully created edition.', {
+        enqueueSnackbar(t('Successfully created edition.'), {
           variant: 'success'
         })
         router.push(`/videos/${videoId}/editions`, {
@@ -56,7 +59,7 @@ export default function AddEditionPage({
         })
       },
       onError: () => {
-        enqueueSnackbar('Failed to create edition.', { variant: 'error' })
+        enqueueSnackbar(t('Failed to create edition.'), { variant: 'error' })
       }
     })
   }
@@ -71,7 +74,7 @@ export default function AddEditionPage({
         })
       }
       dialogTitle={{
-        title: 'Add Edition',
+        title: t('Add Edition'),
         closeButton: true
       }}
       testId="add-edition-dialog"
@@ -83,9 +86,9 @@ export default function AddEditionPage({
       >
         <Form data-testid="EditionForm">
           <Stack gap={2}>
-            <FormTextField name="name" label="Name" fullWidth sx={{ mt: 1 }} />
+            <FormTextField name="name" label={t('Name')} fullWidth sx={{ mt: 1 }} />
             <Button variant="contained" type="submit" fullWidth>
-              Create
+              {t('Create')}
             </Button>
           </Stack>
         </Form>

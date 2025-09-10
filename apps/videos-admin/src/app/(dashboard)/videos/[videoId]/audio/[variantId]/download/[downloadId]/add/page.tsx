@@ -15,6 +15,7 @@ import { useRouter } from 'next/navigation'
 import { enqueueSnackbar } from 'notistack'
 import { ReactElement, useEffect, useState } from 'react'
 import { object, string } from 'yup'
+import { useTranslation } from 'next-i18next'
 
 import { graphql } from '@core/shared/gql'
 import { Dialog } from '@core/shared/ui/Dialog'
@@ -114,6 +115,7 @@ export default function AddVideoVariantDownloadDialog({
     null
   )
   const [enableMuxDownload] = useMutation(ENABLE_MUX_DOWNLOAD)
+  const { t } = useTranslation('apps-journeys-admin')
 
   const { data } = useSuspenseQuery(GET_ADMIN_VIDEO_VARIANT, {
     variables: { id: variantId }
@@ -137,7 +139,7 @@ export default function AddVideoVariantDownloadDialog({
     }
     video.onerror = function () {
       cleanup()
-      enqueueSnackbar('Failed to load video', {
+      enqueueSnackbar(t('Failed to load video'), {
         variant: 'error'
       })
     }
@@ -183,7 +185,7 @@ export default function AddVideoVariantDownloadDialog({
         setTranscodeJobId(transcodeData.transcodeAsset)
       }
     } catch (_error) {
-      enqueueSnackbar('Failed to start transcoding', {
+      enqueueSnackbar(t('Failed to start transcoding'), {
         variant: 'error'
       })
       setIsTranscoding(false)
@@ -201,10 +203,10 @@ export default function AddVideoVariantDownloadDialog({
 
   const validationSchema = object({
     quality: string()
-      .required('Quality is required')
+      .required(t('Quality is required'))
       .test(
         'unique-quality',
-        'A download with this quality already exists',
+        t('A download with this quality already exists'),
         (value) => {
           // For generate options, validate the base quality they'll create
           if (value.startsWith('generate-')) {
@@ -236,7 +238,7 @@ export default function AddVideoVariantDownloadDialog({
     // Accept any value for file for generate options
     file: string().when('quality', {
       is: (val: string) => !val.startsWith('generate-') && val !== 'auto',
-      then: (schema) => schema.required('File is required'),
+      then: (schema) => schema.required(t('File is required')),
       otherwise: (schema) => schema.nullable().optional()
     })
   })
@@ -256,7 +258,7 @@ export default function AddVideoVariantDownloadDialog({
           : data.videoVariant.asset?.id
 
       if (assetId == null) {
-        enqueueSnackbar('Asset not available for transcoding', {
+        enqueueSnackbar(t('Asset not available for transcoding'), {
           variant: 'error'
         })
         setIsLoading(false)
@@ -343,21 +345,21 @@ export default function AddVideoVariantDownloadDialog({
             }
           })
           enqueueSnackbar(
-            'Downloads created. The download sizes will be automatically updated when they become available.',
+            t('Downloads created. The download sizes will be automatically updated when they become available.'),
             { variant: 'success' }
           )
 
           router.push(returnUrl, { scroll: false })
         } catch (error) {
           enqueueSnackbar(
-            error.message ?? 'Failed to create downloads from Mux',
+            error.message ?? t('Failed to create downloads from Mux'),
             {
               variant: 'error'
             }
           )
         }
       } else {
-        enqueueSnackbar('Mux asset unavailable', { variant: 'error' })
+        enqueueSnackbar(t('Mux asset unavailable'), { variant: 'error' })
       }
       setIsLoading(false)
       return
@@ -365,7 +367,7 @@ export default function AddVideoVariantDownloadDialog({
 
     // Handle regular file upload
     if (uploadedFile == null || videoDimensions == null || videoId == null) {
-      enqueueSnackbar('Please upload a valid video file', { variant: 'error' })
+      enqueueSnackbar(t('Please upload a valid video file'), { variant: 'error' })
       setIsLoading(false)
       return
     }
@@ -384,7 +386,7 @@ export default function AddVideoVariantDownloadDialog({
         }
       })
       const uploadUrl = r2Asset.data?.cloudflareR2Create?.uploadUrl
-      if (uploadUrl == null) throw new Error('Upload URL is null')
+      if (uploadUrl == null) throw new Error(t('Upload URL is null'))
       await uploadAssetFile(uploadedFile, uploadUrl)
       const publicUrl = r2Asset.data?.cloudflareR2Create?.publicUrl
 
@@ -403,11 +405,11 @@ export default function AddVideoVariantDownloadDialog({
             }
           }
         })
-        enqueueSnackbar('Download created', { variant: 'success' })
+        enqueueSnackbar(t('Download created'), { variant: 'success' })
         router.push(returnUrl, { scroll: false })
       }
     } catch (error) {
-      enqueueSnackbar(error.message ?? 'Failed to create download', {
+      enqueueSnackbar(error.message ?? t('Failed to create download'), {
         variant: 'error'
       })
     } finally {
@@ -428,7 +430,7 @@ export default function AddVideoVariantDownloadDialog({
           // If progress is 100%, stop polling
           if (transcodeData.getTranscodeAssetProgress === 100) {
             setIsTranscoding(false)
-            enqueueSnackbar('Download created successfully', {
+            enqueueSnackbar(t('Download created successfully'), {
               variant: 'success'
             })
 
@@ -437,7 +439,7 @@ export default function AddVideoVariantDownloadDialog({
           }
         }
       } catch (_error) {
-        enqueueSnackbar('Failed to transcode', {
+        enqueueSnackbar(t('Failed to transcode'), {
           variant: 'error'
         })
         setIsTranscoding(false)
@@ -453,7 +455,7 @@ export default function AddVideoVariantDownloadDialog({
   }
 
   const getButtonText = (quality: string): string => {
-    return isGenerateOption(quality) ? 'Generate' : 'Add'
+    return isGenerateOption(quality) ? t('Generate') : t('Add')
   }
 
   return (
@@ -482,7 +484,7 @@ export default function AddVideoVariantDownloadDialog({
             })
           }
           dialogTitle={{
-            title: 'Add Download',
+            title: t('Add Download'),
             closeButton: true
           }}
           dialogAction={{
@@ -503,7 +505,7 @@ export default function AddVideoVariantDownloadDialog({
               }
             },
             submitLabel: getButtonText(values.quality),
-            closeLabel: 'Cancel'
+            closeLabel: t('Cancel')
           }}
           loading={isLoading || isSubmitting}
         >
@@ -514,12 +516,12 @@ export default function AddVideoVariantDownloadDialog({
                 margin="normal"
                 error={touched.quality && Boolean(errors.quality)}
               >
-                <InputLabel id="quality-label">Quality</InputLabel>
+                <InputLabel id="quality-label">{t('Quality')}</InputLabel>
                 <Select
                   name="quality"
                   value={values.quality}
                   labelId="quality-label"
-                  label="Quality"
+                  label={t('Quality')}
                   error={touched.quality && Boolean(errors.quality)}
                   onChange={handleChange}
                 >
@@ -527,14 +529,14 @@ export default function AddVideoVariantDownloadDialog({
                     value="auto"
                     disabled={!data.videoVariant.muxVideo?.playbackId}
                   >
-                    Auto generate from Mux{' '}
+                    {t('Auto generate from Mux')}{' '}
                     {!data.videoVariant.muxVideo?.playbackId
-                      ? ' (Mux asset unavailable)'
+                      ? t(' (Mux asset unavailable)')
                       : ''}
                   </MenuItem>
-                  <MenuItem value="high">Upload high 720p (2500kbps)</MenuItem>
-                  <MenuItem value="sd">Upload SD 360p (1000kbps)</MenuItem>
-                  <MenuItem value="low">Upload low 270p (500kbps)</MenuItem>
+                  <MenuItem value="high">{t('Upload high 720p (2500kbps)')}</MenuItem>
+                  <MenuItem value="sd">{t('Upload SD 360p (1000kbps)')}</MenuItem>
+                  <MenuItem value="low">{t('Upload low 270p (500kbps)')}</MenuItem>
                   {/* <MenuItem
                     value="generate-high"
                     disabled={!data.videoVariant.asset?.id}
@@ -621,17 +623,16 @@ export default function AddVideoVariantDownloadDialog({
                 <>
                   {values.quality === 'auto' ? (
                     <Typography variant="body2" color="text.secondary">
-                      This will generate high (720p), SD (360p) and low (270p)
-                      quality downloads from Mux.
+                      {t('This will generate high (720p), SD (360p) and low (270p) quality downloads from Mux.')}
                     </Typography>
                   ) : (
                     data.videoVariant.asset?.id && (
                       <Typography variant="body2" color="text.secondary">
-                        This will generate a{' '}
+                        {t('This will generate a')}{' '}
                         {values.quality === 'generate-high'
-                          ? 'high quality (720p, 2500kbps)'
-                          : 'low quality (270p, 500kbps)'}{' '}
-                        download from the existing asset.
+                          ? t('high quality (720p, 2500kbps)')
+                          : t('low quality (270p, 500kbps)')}{' '}
+                        {t('download from the existing asset.')}
                       </Typography>
                     )
                   )}
@@ -645,11 +646,11 @@ export default function AddVideoVariantDownloadDialog({
                     color="text.secondary"
                     gutterBottom
                   >
-                    Transcoding{' '}
+                    {t('Transcoding')}{' '}
                     {values.quality === 'generate-high'
-                      ? 'to 720p (2500kbps)'
-                      : 'to 270p (500kbps)'}
-                    ...
+                      ? t('to 720p (2500kbps)')
+                      : t('to 270p (500kbps)')}
+                    {t('...')}
                   </Typography>
                   <LinearProgress
                     variant="determinate"

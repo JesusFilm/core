@@ -10,6 +10,7 @@ import { Form, Formik } from 'formik'
 import { useRouter } from 'next/navigation'
 import { useSnackbar } from 'notistack'
 import { object, string } from 'yup'
+import { useTranslation } from 'next-i18next'
 
 import { graphql } from '@core/shared/gql'
 import { Dialog } from '@core/shared/ui/Dialog'
@@ -67,8 +68,10 @@ export default function EditEditionPage({
 
   const [updateEdition] = useMutation(UPDATE_VIDEO_EDITION)
 
+  const { t } = useTranslation('apps-videos-admin')
+
   const validationSchema = object().shape({
-    name: string().required('Name is required')
+    name: string().required(t('Name is required'))
   })
 
   const handleSubmit = async (values: { name: string }) => {
@@ -80,7 +83,7 @@ export default function EditEditionPage({
         }
       },
       onCompleted: () => {
-        enqueueSnackbar('Edition updated successfully.', {
+        enqueueSnackbar(t('Edition updated successfully.'), {
           variant: 'success'
         })
         router.push(`/videos/${videoId}/editions`, {
@@ -88,7 +91,7 @@ export default function EditEditionPage({
         })
       },
       onError: () => {
-        enqueueSnackbar('Something went wrong.', { variant: 'error' })
+        enqueueSnackbar(t('Something went wrong.'), { variant: 'error' })
       }
     })
   }
@@ -103,7 +106,7 @@ export default function EditEditionPage({
         })
       }
       dialogTitle={{
-        title: 'Edit Edition',
+        title: t('Edit Edition'),
         closeButton: true
       }}
     >
@@ -118,7 +121,7 @@ export default function EditEditionPage({
               <TextField
                 id="name"
                 name="name"
-                label="Name"
+                label={t('Name')}
                 fullWidth
                 value={values.name}
                 variant="outlined"
@@ -138,9 +141,9 @@ export default function EditEditionPage({
         )}
       </Formik>
       <Section
-        title="Subtitles"
+        title={t('Subtitles')}
         action={{
-          label: 'New Subtitle',
+          label: t('New Subtitle'),
           onClick: () =>
             router.push(
               `/videos/${videoId}/editions/${editionId}/subtitle/add`,
@@ -168,7 +171,7 @@ export default function EditEditionPage({
                 ({ primary }) => !primary
               )?.value
               const displayName =
-                nonPrimaryName || primaryName || 'Unknown Language'
+                nonPrimaryName || primaryName || t('Unknown Language')
               const shouldShowSecondaryName =
                 nonPrimaryName && primaryName && nonPrimaryName !== primaryName
 
@@ -193,7 +196,7 @@ export default function EditEditionPage({
                   key={subtitle.id}
                   role="button"
                   tabIndex={0}
-                  aria-label={`Edit ${displayName} subtitle`}
+                  aria-label={t(`Edit ${displayName} subtitle`)}
                   sx={{
                     p: 1,
                     border: '1px solid',
@@ -254,7 +257,7 @@ export default function EditEditionPage({
                   </Stack>
                   <Stack direction="row" alignItems="center" gap={1}>
                     {subtitle.primary && (
-                      <Chip label="Primary" color="success" variant="filled" />
+                      <Chip label={t('Primary')} color="success" variant="filled" />
                     )}
                   </Stack>
                 </Box>
@@ -263,7 +266,7 @@ export default function EditEditionPage({
           </Box>
         ) : (
           <Box sx={{ display: 'grid', placeItems: 'center', height: 200 }}>
-            <Typography>No subtitles</Typography>
+            <Typography>{t('No subtitles')}</Typography>
           </Box>
         )}
       </Section>

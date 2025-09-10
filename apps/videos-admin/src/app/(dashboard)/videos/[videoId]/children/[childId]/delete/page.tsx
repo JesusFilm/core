@@ -3,6 +3,7 @@
 import { useMutation, useSuspenseQuery } from '@apollo/client'
 import { useRouter } from 'next/navigation'
 import { enqueueSnackbar } from 'notistack'
+import { useTranslation } from 'next-i18next'
 
 import { graphql } from '@core/shared/gql'
 import { Dialog } from '@core/shared/ui/Dialog'
@@ -58,6 +59,8 @@ export default function DeleteChild({
   const returnUrl = `/videos/${videoId}/children`
   const [removeVideoChild, { loading }] = useMutation(REMOVE_VIDEO_CHILD)
 
+  const { t } = useTranslation('apps-videos-admin')
+
   const handleRemoveChild = async (): Promise<void> => {
     // Remove child by updating the childIds array without the removed child
     const updatedChildIds = data.adminVideo.children
@@ -72,7 +75,7 @@ export default function DeleteChild({
         }
       },
       onCompleted: () => {
-        enqueueSnackbar('Successfully removed child video.', {
+        enqueueSnackbar(t('Successfully removed child video.'), {
           variant: 'success'
         })
         router.push(returnUrl, {
@@ -80,7 +83,7 @@ export default function DeleteChild({
         })
       },
       onError: () => {
-        enqueueSnackbar('Failed to remove child video.', {
+        enqueueSnackbar(t('Failed to remove child video.'), {
           variant: 'error'
         })
       }
@@ -95,17 +98,19 @@ export default function DeleteChild({
         })
       }
       dialogTitle={{
-        title: 'Remove Child Video',
+        title: t('Remove Child Video'),
         closeButton: true
       }}
       dialogAction={{
         onSubmit: handleRemoveChild,
-        submitLabel: 'Remove',
-        closeLabel: 'Cancel'
+        submitLabel: t('Remove'),
+        closeLabel: t('Cancel')
       }}
       loading={loading}
     >
-      {`Are you sure you want to remove the video child? This will not delete the child, but will remove it from the parent association. This action cannot be undone.`}
+      {t(
+        `Are you sure you want to remove the video child? This will not delete the child, but will remove it from the parent association. This action cannot be undone.`
+      )}
     </Dialog>
   )
 }

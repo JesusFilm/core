@@ -8,6 +8,7 @@ import { Form, Formik } from 'formik'
 import { useRouter } from 'next/navigation'
 import { useSnackbar } from 'notistack'
 import { ReactElement, useEffect, useRef, useState } from 'react'
+import { useTranslation } from 'next-i18next'
 
 import { VariablesOf, graphql } from '@core/shared/gql'
 import { Dialog } from '@core/shared/ui/Dialog'
@@ -85,6 +86,8 @@ export default function SubtitleCreate({
   const [createR2Asset] = useCreateR2AssetMutation()
   const [createVideoSubtitle] = useMutation(CREATE_VIDEO_SUBTITLE)
 
+  const { t } = useTranslation('apps-videos-admin')
+
   const returnUrl = `/videos/${videoId}/editions/${editionId}`
 
   const handleSubmit = async (values: {
@@ -142,7 +145,7 @@ export default function SubtitleCreate({
         })
 
         if (result.data?.cloudflareR2Create?.uploadUrl == null) {
-          throw new Error('Failed to create r2 asset for VTT file.')
+          throw new Error(t('Failed to create r2 asset for VTT file.'))
         }
 
         const uploadUrl = result.data.cloudflareR2Create.uploadUrl
@@ -182,7 +185,7 @@ export default function SubtitleCreate({
         })
 
         if (result.data?.cloudflareR2Create?.uploadUrl == null) {
-          throw new Error('Failed to create r2 asset for SRT file.')
+          throw new Error(t('Failed to create r2 asset for SRT file.'))
         }
 
         const uploadUrl = result.data.cloudflareR2Create.uploadUrl
@@ -200,7 +203,7 @@ export default function SubtitleCreate({
           input
         },
         onCompleted: () => {
-          enqueueSnackbar('Successfully created subtitle.', {
+          enqueueSnackbar(t('Successfully created subtitle.'), {
             variant: 'success'
           })
           router.push(returnUrl, {
@@ -215,9 +218,9 @@ export default function SubtitleCreate({
       })
     } catch (e) {
       if (e.name === 'AbortError' || e.message.includes('aborted')) {
-        enqueueSnackbar('Subtitle create cancelled.')
+        enqueueSnackbar(t('Subtitle create cancelled.'))
       } else {
-        enqueueSnackbar('Failed to create subtitle.', {
+        enqueueSnackbar(t('Failed to create subtitle.'), {
           variant: 'error'
         })
       }
@@ -252,7 +255,7 @@ export default function SubtitleCreate({
         })
       }
       dialogTitle={{
-        title: 'Add Subtitle',
+        title: t('Add Subtitle'),
         closeButton: true
       }}
       testId="add-subtitle-dialog"
@@ -266,7 +269,7 @@ export default function SubtitleCreate({
           <Stack gap={2}>
             <FormLanguageSelect
               name="language"
-              label="Language"
+              label={t('Language')}
               initialLanguage={initialLanguage}
               existingLanguageIds={subtitleLanguagesMap}
             />
@@ -277,7 +280,7 @@ export default function SubtitleCreate({
               fullWidth
               disabled={loading}
             >
-              {loading ? <CircularProgress size={20} /> : 'Upload'}
+              {loading ? <CircularProgress size={20} /> : t('Upload')}
             </Button>
           </Stack>
         </Form>
