@@ -2,10 +2,7 @@ import { google } from '@ai-sdk/google'
 import { generateText } from 'ai'
 import { NextRequest, NextResponse } from 'next/server'
 
-import {
-  langfuseClient,
-  langfuseEnvironment
-} from '../../../../src/lib/ai/langfuse/server'
+import { getPrompt } from '../../../../src/lib/ai/langfuse/promptHelper'
 import { SuggestionsRequest } from '../../../../src/types/suggestions'
 
 export async function POST(req: NextRequest) {
@@ -19,13 +16,11 @@ export async function POST(req: NextRequest) {
       )
     }
 
-    const prompt = await langfuseClient.prompt.get('Suggestion-Prompt', {
-      label: langfuseEnvironment
-    })
+    const prompt = await getPrompt('Suggestion-Prompt', { contextText: contextText })
 
     const { text } = await generateText({
       model: google('gemini-2.5-flash'),
-      prompt: prompt.compile({ contextText: contextText })
+      prompt: prompt
     })
 
     // Parse the response to extract suggestions
