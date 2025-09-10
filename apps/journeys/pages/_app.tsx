@@ -21,7 +21,6 @@ import { useApollo } from '../src/libs/apolloClient'
 import { firebaseClient } from '../src/libs/firebaseClient'
 
 import './globals.css'
-import 'katex/dist/katex.min.css'
 
 type JourneysAppProps = NextJsAppProps<{ journey?: Journey }> & {
   pageProps: SSRConfig
