@@ -62,7 +62,7 @@ function HomePage({
           >
             <Configure
               ruleContexts={['home_page']}
-              filters="restrictViewPlatforms:-watch AND published:true AND videoPublished:true"
+              filters="NOT restrictViewPlatforms:watch AND published:true AND videoPublished:true"
             />
             <VideoHomePage languageId={localLanguageId} />
           </InstantSearch>

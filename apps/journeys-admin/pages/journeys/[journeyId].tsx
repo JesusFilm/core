@@ -90,7 +90,7 @@ function JourneyEditPage({ status }): ReactElement {
     >
       <Configure
         ruleContexts={['home_page']}
-        filters="restrictViewPlatforms:-journeys AND published:true AND videoPublished:true AND (label:episode OR label:featureFilm OR label:segment OR label:shortFilm)"
+        filters="NOT restrictViewPlatforms:journeys AND published:true AND videoPublished:true AND (label:episode OR label:featureFilm OR label:segment OR label:shortFilm)"
         hitsPerPage={5}
       />
       <NextSeo
