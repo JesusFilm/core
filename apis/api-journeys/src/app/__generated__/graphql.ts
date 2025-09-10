@@ -519,39 +519,6 @@ export class TypographyBlockUpdateInput {
     settings?: Nullable<TypographyBlockSettingsInput>;
 }
 
-export class VideoBlockCreateInput {
-    id?: Nullable<string>;
-    journeyId: string;
-    parentBlockId: string;
-    startAt?: Nullable<number>;
-    endAt?: Nullable<number>;
-    duration?: Nullable<number>;
-    description?: Nullable<string>;
-    muted?: Nullable<boolean>;
-    autoplay?: Nullable<boolean>;
-    videoId?: Nullable<string>;
-    videoVariantLanguageId?: Nullable<string>;
-    source?: Nullable<VideoBlockSource>;
-    posterBlockId?: Nullable<string>;
-    fullsize?: Nullable<boolean>;
-    isCover?: Nullable<boolean>;
-    objectFit?: Nullable<VideoBlockObjectFit>;
-}
-
-export class VideoBlockUpdateInput {
-    startAt?: Nullable<number>;
-    endAt?: Nullable<number>;
-    muted?: Nullable<boolean>;
-    autoplay?: Nullable<boolean>;
-    duration?: Nullable<number>;
-    videoId?: Nullable<string>;
-    videoVariantLanguageId?: Nullable<string>;
-    source?: Nullable<VideoBlockSource>;
-    posterBlockId?: Nullable<string>;
-    fullsize?: Nullable<boolean>;
-    objectFit?: Nullable<VideoBlockObjectFit>;
-}
-
 export class ChatButtonCreateInput {
     link?: Nullable<string>;
     platform?: Nullable<MessagePlatform>;
@@ -1074,10 +1041,6 @@ export abstract class IMutation {
     abstract typographyBlockCreate(input: TypographyBlockCreateInput): TypographyBlock | Promise<TypographyBlock>;
 
     abstract typographyBlockUpdate(id: string, input: TypographyBlockUpdateInput, journeyId?: Nullable<string>): TypographyBlock | Promise<TypographyBlock>;
-
-    abstract videoBlockCreate(input: VideoBlockCreateInput): VideoBlock | Promise<VideoBlock>;
-
-    abstract videoBlockUpdate(id: string, input: VideoBlockUpdateInput, journeyId?: Nullable<string>): VideoBlock | Promise<VideoBlock>;
 
     abstract chatButtonCreate(journeyId: string, input?: Nullable<ChatButtonCreateInput>): ChatButton | Promise<ChatButton>;
 

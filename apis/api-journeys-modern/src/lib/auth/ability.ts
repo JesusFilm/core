@@ -40,8 +40,8 @@ export function ability(
 
 export function subject(
   subject: SubjectKey,
-  object: SubjectObjectTypes[SubjectKey]
-): { subject: SubjectKey; object: SubjectObjectTypes[SubjectKey] } {
+  object: Partial<SubjectObjectTypes[SubjectKey]>
+): { subject: SubjectKey; object: Partial<SubjectObjectTypes[SubjectKey]> } {
   return { subject, object }
 }
 
