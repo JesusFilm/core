@@ -8,7 +8,7 @@ import '../global.css'
 import { ApolloProvider } from '@apollo/client'
 import { apolloClient } from '../lib/apollo-client'
 
-export const App = () => {
+export function App() {
   return (
     <ErrorBoundary>
       <I18nextProvider i18n={i18n}>
