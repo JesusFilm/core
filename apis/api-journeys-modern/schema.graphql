@@ -1025,6 +1025,7 @@ type MultiselectBlock implements Block
   journeyId: ID!
   parentBlockId: ID
   parentOrder: Int
+  label: String!
   min: Int
   max: Int
   submitLabel: String!
