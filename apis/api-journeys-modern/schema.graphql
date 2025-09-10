@@ -933,6 +933,7 @@ input JourneysFilter {
   languageIds: [ID!]
   limit: Int
   orderByRecent: Boolean
+  fromTemplateId: ID
 }
 
 input JourneysQueryOptions {
@@ -1029,6 +1030,14 @@ enum MessagePlatform {
 }
 
 type Mutation {
+  videoBlockCreate(input: VideoBlockCreateInput!): VideoBlock! @override(from: "api-journeys")
+  videoBlockUpdate(
+    id: ID!
+    input: VideoBlockUpdateInput!
+
+    """drop this parameter after merging teams"""
+    journeyId: ID
+  ): VideoBlock! @override(from: "api-journeys")
   blockDeleteAction(id: ID!, journeyId: ID): Block! @override(from: "api-journeys")
   blockUpdateAction(id: ID!, input: BlockUpdateActionInput!): Action! @override(from: "api-journeys")
   blockUpdateEmailAction(id: ID!, input: EmailActionInput!, journeyId: ID): EmailAction! @override(from: "api-journeys")
