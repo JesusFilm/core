@@ -7,8 +7,8 @@ import { Fragment, useEffect, useState } from 'react'
 import { TreeBlock, useBlocks } from '@core/journeys/ui/block'
 
 import {
-  extractBlockContext,
-  type BlockContext
+  type BlockContext,
+  extractBlockContext
 } from '../../utils/contextExtraction'
 import { Action, Actions } from '../Actions'
 import {
