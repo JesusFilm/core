@@ -107,7 +107,7 @@ export class TeamsPage {
   async selectLastTeam() {
     await this.page
       .locator('ul[role="listbox"] li[role="option"]', {
-        hasNotText: 'Shared With Me'
+        hasNotText: t('Shared With Me')
       })
       .last()
       .click()

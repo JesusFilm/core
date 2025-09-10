@@ -554,13 +554,13 @@ export class JourneyPage {
   async clickThreeDotOfExistingJourney() {
     this.existingJourneyName = await this.page
       .locator(this.journeyNamePath, {
-        hasNotText: 'Untitled Journey'
+        hasNotText: t('Untitled Journey')
       })
       .first()
       .innerText()
     await this.page
       .locator('div[aria-label="journey-card"]', {
-        hasNotText: 'Untitled Journey'
+        hasNotText: t('Untitled Journey')
       })
       .first()
       .locator('[data-testid="JourneyCardMenuButton"]')
@@ -1033,13 +1033,13 @@ export class JourneyPage {
   async selectExistingJourney() {
     this.existingJourneyName = await this.page
       .locator(this.journeyNamePath, {
-        hasNotText: 'Untitled Journey'
+        hasNotText: t('Untitled Journey')
       })
       .first()
       .innerText()
     await this.page
       .locator('div[aria-label="journey-card"]', {
-        hasNotText: 'Untitled Journey'
+        hasNotText: t('Untitled Journey')
       })
       .first()
       .click()
