@@ -1446,6 +1446,7 @@ export class MultiselectBlock implements Block {
     journeyId: string;
     parentBlockId: string;
     parentOrder: number;
+    label: string;
     submitLabel: string;
     max?: Nullable<number>;
     min?: Nullable<number>;
