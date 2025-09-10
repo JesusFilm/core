@@ -36,7 +36,7 @@ export const Basic = {
     dialogTitle: { title: 'Simple Dialog' },
     dialogAction: {
       onSubmit: noop,
-      submitLabel: 'Ok'
+      submitLabel: t('Ok')
     },
     children: <Typography>This is the content</Typography>
   }
@@ -51,7 +51,7 @@ export const Loading = {
     dialogTitle: { title: 'Simple Dialog' },
     dialogAction: {
       onSubmit: noop,
-      submitLabel: 'Ok'
+      submitLabel: t('Ok')
     },
     children: <Typography>This is the content</Typography>
   }
@@ -167,13 +167,13 @@ export const ExcessText = {
     open: true,
     onClose: noop,
     dialogTitle: {
-      title: 'Excess text',
+      title: t('Excess text'),
       closeButton: true
     },
     dialogAction: {
       onSubmit: noop,
-      submitLabel: 'Accept',
-      closeLabel: 'Cancel'
+      submitLabel: t('Accept'),
+      closeLabel: t('Cancel')
     },
     divider: true,
     children: (

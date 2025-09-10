@@ -111,12 +111,12 @@ export const Complete = {
   ...Template,
   args: {
     ...Default.args,
-    hint: 'Optional Hint text',
+    hint: t('Optional Hint text'),
     minRows: 4,
-    label: 'Custom label',
-    placeholder: 'Placeholder text',
+    label: t('Custom label'),
+    placeholder: t('Placeholder text'),
     submitIconId: 'icon',
-    submitLabel: 'Custom label',
+    submitLabel: t('Custom label'),
     children: [
       {
         id: 'icon',
@@ -136,12 +136,12 @@ export const Required = {
   ...Template,
   args: {
     ...Default.args,
-    hint: 'Optional Hint text',
+    hint: t('Optional Hint text'),
     minRows: 4,
-    label: 'Custom label',
-    placeholder: 'Placeholder text',
+    label: t('Custom label'),
+    placeholder: t('Placeholder text'),
     submitIconId: 'icon',
-    submitLabel: 'Custom label',
+    submitLabel: t('Custom label'),
     required: true,
     children: [
       {
@@ -162,12 +162,12 @@ export const RequiredValidation = {
   ...Template,
   args: {
     ...Default.args,
-    hint: 'Optional Hint text',
+    hint: t('Optional Hint text'),
     minRows: 4,
     label: 'Custom label',
-    placeholder: 'Placeholder text',
+    placeholder: t('Placeholder text'),
     submitIconId: 'icon',
-    submitLabel: 'Custom label',
+    submitLabel: t('Custom label'),
     required: true,
     children: [
       {
@@ -194,12 +194,12 @@ export const EmailValidation = {
   ...Template,
   args: {
     ...Default.args,
-    hint: 'Optional Hint text',
+    hint: t('Optional Hint text'),
     minRows: 4,
-    label: 'Custom label',
-    placeholder: 'Placeholder text',
+    label: t('Custom label'),
+    placeholder: t('Placeholder text'),
     submitIconId: 'icon',
-    submitLabel: 'Custom label',
+    submitLabel: t('Custom label'),
     required: true,
     type: TextResponseType.email,
     children: [
