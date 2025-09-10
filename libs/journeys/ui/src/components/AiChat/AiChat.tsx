@@ -4,7 +4,9 @@ import { CopyIcon, Loader, RefreshCcwIcon } from 'lucide-react'
 import { useTranslation } from 'next-i18next'
 import { Fragment, useEffect, useState } from 'react'
 
-import { TreeBlock, useBlocks } from '../../libs/block'
+import { TreeBlock, useBlocks } from '@core/journeys/ui/block'
+
+import { extractBlockContext } from '../../utils/contextExtraction'
 import { Action, Actions } from '../Actions'
 import {
   Conversation,
@@ -59,7 +61,7 @@ export function AiChat({ open }: AiChatProps) {
     setSuggestionsError(null)
 
     try {
-      const contextText = extractTypographyContent(activeBlock as TreeBlock)
+      const contextText = extractBlockContext(activeBlock as TreeBlock)
       if (contextText === '') {
         setSuggestions([])
         return
