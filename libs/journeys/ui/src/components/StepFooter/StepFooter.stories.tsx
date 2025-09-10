@@ -80,7 +80,8 @@ const journey: Journey = {
   menuStepBlock: null,
   journeyTheme: null,
   journeyCustomizationDescription: null,
-  journeyCustomizationFields: []
+  journeyCustomizationFields: [],
+  fromTemplateId: null
 }
 
 const rtlLanguage = {

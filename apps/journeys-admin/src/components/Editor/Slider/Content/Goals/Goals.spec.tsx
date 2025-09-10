@@ -169,7 +169,8 @@ describe('Goals', () => {
     menuStepBlock: null,
     journeyTheme: null,
     journeyCustomizationDescription: null,
-    journeyCustomizationFields: []
+    journeyCustomizationFields: [],
+    fromTemplateId: null
   }
 
   it('should render placeholder', () => {

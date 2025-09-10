@@ -17,6 +17,8 @@ import ArrowRightIcon from '@core/shared/ui/icons/ArrowRight'
 
 import { JourneyCustomizeTeamSelect } from './JourneyCustomizeTeamSelect'
 import { LanguageScreenCardPreview } from './LanguageScreenCardPreview'
+import { useTemplateJourneyLanguages } from '../../../../../libs/useTemplateJourneyLanguages'
+import { LanguageAutocomplete } from '@core/shared/ui/LanguageAutocomplete'
 
 interface LanguageScreenProps {
   handleNext: () => void
@@ -33,15 +35,27 @@ export function LanguageScreen({
 
   const { journey } = useJourney()
   //If the user is not authenticated, useUser will return a User instance with a null id https://github.com/gladly-team/next-firebase-auth?tab=readme-ov-file#useuser
-  const isSignedIn = user?.id != null
+  const isSignedIn = user?.email != null && user?.id != null
   const { query } = useTeam()
+
+  const { languages, languagesJourneyMap } = useTemplateJourneyLanguages({
+    variables: {
+      where: { fromTemplateId: journey?.fromTemplateId, template: true }
+    },
+    skip: journey?.fromTemplateId == null
+  })
 
   const validationSchema = object({
     teamSelect: string().required()
   })
 
   const initialValues = {
-    teamSelect: query?.data?.getJourneyProfile?.lastActiveTeamId ?? ''
+    teamSelect: query?.data?.getJourneyProfile?.lastActiveTeamId ?? '',
+    languageSelect: {
+      id: journey?.language?.id,
+      localName: journey?.language?.name.find((name) => name.primary)?.value,
+      nativeName: journey?.language?.name.find((name) => !name.primary)?.value
+    }
   }
 
   const [journeyDuplicate] = useJourneyDuplicateMutation()
@@ -54,8 +68,12 @@ export function LanguageScreen({
     }
     if (isSignedIn) {
       const { teamSelect: teamId } = values
+      const {
+        languageSelect: { id: languageId }
+      } = values
+      const journeyId = languagesJourneyMap?.[languageId] ?? journey.id
       const { data: duplicateData } = await journeyDuplicate({
-        variables: { id: journey.id, teamId }
+        variables: { id: journeyId, teamId }
       })
       if (duplicateData?.journeyDuplicate == null) {
         enqueueSnackbar(
@@ -86,20 +104,41 @@ export function LanguageScreen({
         {t('Lets get started!')}
       </Typography>
       <LanguageScreenCardPreview />
-
-      <Typography variant="body1" color="text.secondary" align="center">
-        {t('Select a team')}
-      </Typography>
       <Formik
         initialValues={initialValues}
         validationSchema={validationSchema}
         enableReinitialize
         onSubmit={handleSubmit}
       >
-        {({ handleSubmit }) => (
+        {({ handleSubmit, setFieldValue, values }) => (
           <Form>
             <FormControl sx={{ alignSelf: 'center' }}>
-              {isSignedIn && <JourneyCustomizeTeamSelect />}
+              <Stack gap={4}>
+                <Typography
+                  variant="body1"
+                  color="text.secondary"
+                  align="center"
+                >
+                  {t('Select a language')}
+                </Typography>
+                <LanguageAutocomplete
+                  value={values.languageSelect}
+                  languages={languages.map((language) => ({
+                    id: language.id,
+                    name: language.name,
+                    slug: language.slug
+                  }))}
+                  onChange={(value) => setFieldValue('languageSelect', value)}
+                />
+                <Typography
+                  variant="body1"
+                  color="text.secondary"
+                  align="center"
+                >
+                  {t('Select a team')}
+                </Typography>
+                {isSignedIn && <JourneyCustomizeTeamSelect />}
+              </Stack>
               <Button
                 data-testid="LanguageScreenSubmitButton"
                 disabled={loading}
@@ -109,7 +148,7 @@ export function LanguageScreen({
                 sx={{
                   width: { xs: '100%', sm: 300 },
                   alignSelf: 'center',
-                  mt: 4
+                  mt: 6
                 }}
               >
                 <ArrowRightIcon />

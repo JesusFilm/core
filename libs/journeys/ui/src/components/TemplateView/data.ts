@@ -112,7 +112,8 @@ export const defaultJourney: Journey = {
   menuStepBlock: null,
   journeyTheme: null,
   journeyCustomizationDescription: null,
-  journeyCustomizationFields: []
+  journeyCustomizationFields: [],
+  fromTemplateId: null
 }
 
 export const publishedJourney: Journey = {

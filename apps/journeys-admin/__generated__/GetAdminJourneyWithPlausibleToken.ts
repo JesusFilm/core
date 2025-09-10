@@ -735,6 +735,7 @@ export interface GetAdminJourneyWithPlausibleToken_journey {
   journeyTheme: GetAdminJourneyWithPlausibleToken_journey_journeyTheme | null;
   journeyCustomizationDescription: string | null;
   journeyCustomizationFields: GetAdminJourneyWithPlausibleToken_journey_journeyCustomizationFields[];
+  fromTemplateId: string | null;
   /**
    * used in a plausible share link to embed report
    */

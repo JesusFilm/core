@@ -5,7 +5,6 @@ import { LinksForm } from './LinksForm'
 import { JourneyLink } from '../../../../utils/getJourneyLinks/getJourneyLinks'
 
 describe('LinksForm', () => {
-  // eslint-disable-next-line jest/valid-title
   it('should render links with labels, fields and open buttons', () => {
     const links: JourneyLink[] = [
       {
@@ -61,8 +60,7 @@ describe('LinksForm', () => {
     expect(within(chatGroup).getByRole('textbox')).toBeInTheDocument()
   })
 
-  // eslint-disable-next-line jest/valid-title
-  it('should update value on change', () => {
+  it('should update value on change and add https:// protocol automatically', () => {
     const links: JourneyLink[] = [
       {
         id: 'url-1',
@@ -74,10 +72,11 @@ describe('LinksForm', () => {
       }
     ]
 
+    const setFieldValue = jest.fn()
     render(
       <Formik initialValues={{ 'url-1': '' }} onSubmit={jest.fn()}>
         {(formik) => (
-          <FormikProvider value={formik}>
+          <FormikProvider value={{ ...formik, setFieldValue }}>
             <LinksForm links={links} />
           </FormikProvider>
         )}
@@ -88,7 +87,7 @@ describe('LinksForm', () => {
       'textbox'
     ) as HTMLInputElement
     fireEvent.change(input, { target: { value: 'example.com' } })
-    expect(input.value).toBe('example.com')
+    expect(setFieldValue).toHaveBeenCalledWith('url-1', 'https://example.com')
   })
 
   it('should open normalized http(s) link', () => {
@@ -162,8 +161,76 @@ describe('LinksForm', () => {
     openSpy.mockRestore()
   })
 
-  // eslint-disable-next-line jest/valid-title
-  it('calls formik handleChange when input changes', () => {
+  it('should open email that already has mailto: protocol', () => {
+    const links: JourneyLink[] = [
+      {
+        id: 'email-1',
+        linkType: 'email',
+        url: '',
+        label: 'Email Link',
+        parentStepId: null,
+        customizable: null
+      }
+    ]
+    const openSpy = jest.spyOn(window, 'open').mockImplementation(jest.fn())
+
+    render(
+      <Formik
+        initialValues={{ 'email-1': 'mailto:test@example.com' }}
+        onSubmit={jest.fn()}
+      >
+        {(formik) => (
+          <FormikProvider value={formik}>
+            <LinksForm links={links} />
+          </FormikProvider>
+        )}
+      </Formik>
+    )
+
+    fireEvent.click(
+      screen.getByRole('button', { name: 'Open link in new tab' })
+    )
+    expect(openSpy).toHaveBeenCalledWith(
+      'mailto:test@example.com',
+      '_blank',
+      'noopener,noreferrer'
+    )
+    openSpy.mockRestore()
+  })
+
+  it('should open chat buttons link with https:// protocol', () => {
+    const links: JourneyLink[] = [
+      {
+        id: 'chat-1',
+        linkType: 'chatButtons',
+        url: '',
+        label: 'Chat Link'
+      }
+    ]
+    const openSpy = jest.spyOn(window, 'open').mockImplementation(jest.fn())
+
+    render(
+      <Formik initialValues={{ 'chat-1': 'wa.me/123' }} onSubmit={jest.fn()}>
+        {(formik) => (
+          <FormikProvider value={formik}>
+            <LinksForm links={links} />
+          </FormikProvider>
+        )}
+      </Formik>
+    )
+
+    fireEvent.click(
+      screen.getByRole('button', { name: 'Open link in new tab' })
+    )
+    expect(openSpy).toHaveBeenCalledWith(
+      'https://wa.me/123',
+      '_blank',
+      'noopener,noreferrer'
+    )
+    openSpy.mockRestore()
+  })
+
+  it('calls formik setFieldValue when input changes', () => {
     const links: JourneyLink[] = [
       {
         id: 'url-1',
@@ -175,11 +242,11 @@ describe('LinksForm', () => {
       }
     ]
 
-    const handleChange = jest.fn()
+    const setFieldValue = jest.fn()
     render(
       <Formik initialValues={{ 'url-1': '' }} onSubmit={jest.fn()}>
         {(formik) => (
-          <FormikProvider value={{ ...formik, handleChange }}>
+          <FormikProvider value={{ ...formik, setFieldValue }}>
             <LinksForm links={links} />
           </FormikProvider>
         )}
@@ -190,6 +257,6 @@ describe('LinksForm', () => {
       'textbox'
     ) as HTMLInputElement
     fireEvent.change(input, { target: { value: 'example.com' } })
-    expect(handleChange).toHaveBeenCalled()
+    expect(setFieldValue).toHaveBeenCalledWith('url-1', 'https://example.com')
   })
 })

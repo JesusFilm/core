@@ -20,6 +20,7 @@ export function JourneyCustomizeTeamSelect(): ReactElement {
   return (
     <FormControl sx={{ alignSelf: 'center' }}>
       <Select
+        variant="filled"
         name="teamSelect"
         value={values.teamSelect}
         onChange={(e) => {
@@ -30,13 +31,13 @@ export function JourneyCustomizeTeamSelect(): ReactElement {
           setActiveTeam(selected ?? null)
         }}
         displayEmpty
-        inputProps={{ 'aria-label': 'Team' }}
+        inputProps={{ 'aria-label': 'Team', sx: { py: 4 } }}
         renderValue={(selected) => {
           const team = teams.find((t) => t.id === selected)
           const label = team?.title ?? team?.publicTitle ?? ''
           return (
             <Typography
-              variant="h6"
+              variant="body1"
               noWrap
               sx={{
                 maxWidth: '100%',
@@ -49,20 +50,7 @@ export function JourneyCustomizeTeamSelect(): ReactElement {
           )
         }}
         sx={{
-          width: 300,
-          borderRadius: 99,
-          bgcolor: 'secondary.light',
-          color: 'text.primary',
-          '& .MuiOutlinedInput-notchedOutline': { border: 'none' },
-          '& .MuiSelect-select': {
-            py: 2,
-            px: 6,
-            display: 'flex',
-            alignItems: 'center',
-            overflow: 'hidden',
-            textOverflow: 'ellipsis',
-            whiteSpace: 'nowrap'
-          }
+          width: 300
         }}
       >
         {sortBy(teams, 'title').map((team) => (
@@ -75,9 +63,7 @@ export function JourneyCustomizeTeamSelect(): ReactElement {
               wordWrap: 'break-word'
             }}
           >
-            <Typography variant="h6">
-              {team.title ?? team.publicTitle}
-            </Typography>
+            {team.title ?? team.publicTitle}
           </MenuItem>
         ))}
       </Select>

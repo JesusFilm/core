@@ -106,6 +106,7 @@ export function LanguageAutocomplete({
     params: AutocompleteRenderInputParams
   ): ReactNode => (
     <TextField
+      data-testid="LanguageAutocompleteInput"
       {...params}
       hiddenLabel
       placeholder="Search Language"
