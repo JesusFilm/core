@@ -10,9 +10,14 @@ ENV VERCEL=true
 ENV PNPM_HOME="/usr/local/share/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
 
-RUN apk upgrade --update-cache --available && \
-    apk add g++ make python3 py3-pip curl-dev postgresql-client && \
-    rm -rf /var/cache/apk/*
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+      build-essential \
+      python3 \
+      python3-pip \
+      libcurl4-openssl-dev \
+      postgresql-client && \
+    rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
 COPY ./dist/apps/arclight .
@@ -28,7 +33,5 @@ RUN pnpm add -D prisma@6.5.0
 RUN pnpm exec prisma generate --generator client --schema ./prisma-media/schema.prisma
 RUN pnpm exec prisma generate --generator client --schema ./prisma-languages/schema.prisma
 
-CMD pnpm exec prisma migrate deploy --schema ./prisma-media/schema.prisma && \
-    pnpm exec prisma migrate deploy --schema ./prisma-languages/schema.prisma && \
-    NODE_OPTIONS='-r next-logger' pnpm start
+CMD ["sh","-lc","pnpm exec prisma migrate deploy --schema ./prisma-media/schema.prisma && pnpm exec prisma migrate deploy --schema ./prisma-languages/schema.prisma && NODE_OPTIONS='-r next-logger' pnpm start"]
 
