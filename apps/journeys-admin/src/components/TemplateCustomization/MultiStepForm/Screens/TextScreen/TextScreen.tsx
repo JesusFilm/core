@@ -97,15 +97,15 @@ const renderEditableText = (
             const editables =
               parent != null
                 ? Array.from(
-                  parent.querySelectorAll('[contenteditable="true"]')
-                )
+                    parent.querySelectorAll('[contenteditable="true"]')
+                  )
                 : []
             const index = editables.indexOf(e.currentTarget as HTMLElement)
             const nextIndex = e.shiftKey ? index - 1 : index + 1
             const nextEl = editables[nextIndex]
             if (nextEl != null) {
               e.preventDefault()
-                ; (nextEl as HTMLElement).focus()
+              ;(nextEl as HTMLElement).focus()
             }
           }
         }}
@@ -205,19 +205,27 @@ export function TextScreen({ handleNext }: TextScreenProps): ReactElement {
       }}
     >
       <Stack alignItems="center" sx={{ pb: 4 }}>
-        <Typography variant="h4" component="h1" fontSize={isSmallScreen ? '20px' : '24px'} gutterBottom sx={{ mb: { xs: 0, sm: 2 } }}>
+        <Typography
+          variant="h4"
+          component="h1"
+          fontSize={isSmallScreen ? '20px' : '24px'}
+          gutterBottom
+          sx={{ mb: { xs: 0, sm: 2 } }}
+        >
           {t('Text')}
         </Typography>
         <Typography
-          variant={isSmallScreen ? "body2" : "h6"}
+          variant={isSmallScreen ? 'body2' : 'h6'}
           fontSize={isSmallScreen ? '14px' : '16px'}
           color="text.secondary"
-          align='center'
+          align="center"
           sx={{
             maxWidth: { xs: '100%', sm: '75%' }
           }}
         >
-          {t("Fill out the blue fields and we'll customise the content with your information.")}
+          {t(
+            "Fill out the blue fields and we'll customise the content with your information."
+          )}
         </Typography>
       </Stack>
       <Box sx={{ position: 'relative' }}>
@@ -236,9 +244,12 @@ export function TextScreen({ handleNext }: TextScreenProps): ReactElement {
               display: 'none'
             },
             '-ms-overflow-style': 'none',
-            'scrollbar-width': 'none',
+            'scrollbar-width': 'none'
           }}
-          style={{ color: '#000000', fontSize: isSmallScreen ? '16px' : '18px' }}
+          style={{
+            color: '#000000',
+            fontSize: isSmallScreen ? '16px' : '18px'
+          }}
         >
           {renderEditableText(
             journey?.journeyCustomizationDescription ?? '',
@@ -254,13 +265,14 @@ export function TextScreen({ handleNext }: TextScreenProps): ReactElement {
             left: 0,
             right: 0,
             height: '30px',
-            background: 'linear-gradient(to bottom, transparent 0%, white 100%)',
+            background:
+              'linear-gradient(to bottom, transparent 0%, white 100%)',
             pointerEvents: 'none',
             borderBottomLeftRadius: 12,
             borderBottomRightRadius: 12,
             borderLeft: '2px solid #CCCCCC',
             borderRight: '2px solid #CCCCCC',
-            borderBottom: '2px solid #CCCCCC',
+            borderBottom: '2px solid #CCCCCC'
           }}
         />
       </Box>
@@ -280,10 +292,14 @@ export function TextScreen({ handleNext }: TextScreenProps): ReactElement {
         }}
       >
         <Stack direction="row" alignItems="center" gap={1}>
-          {!isSmallScreen && (<Typography sx={{ fontWeight: 'bold' }}>{t('Next Step')}</Typography>)}
+          {!isSmallScreen && (
+            <Typography sx={{ fontWeight: 'bold' }}>
+              {t('Next Step')}
+            </Typography>
+          )}
           <ArrowRightIcon sx={{ fontSize: { xs: '24px', sm: '16px' } }} />
         </Stack>
       </Button>
-    </Stack >
+    </Stack>
   )
 }
