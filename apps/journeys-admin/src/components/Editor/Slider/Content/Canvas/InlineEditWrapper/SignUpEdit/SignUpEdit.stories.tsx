@@ -26,7 +26,7 @@ const selectedBlock: TreeBlock<SignUpFields> = {
   __typename: 'SignUpBlock',
   parentBlockId: 'card0.id',
   parentOrder: 1,
-  submitLabel: 'Submit',
+  submitLabel: t('Submit'),
   submitIconId: null,
   action: null,
   children: []
