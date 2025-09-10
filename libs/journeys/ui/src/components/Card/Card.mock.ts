@@ -1,4 +1,5 @@
 import { MockedResponse } from '@apollo/client/testing'
+import { useTranslation } from 'next-i18next'
 
 import {
   ButtonColor,
@@ -28,6 +29,8 @@ import { VideoFields } from '../Video/__generated__/VideoFields'
 import { StepNextEventCreate } from './__generated__/StepNextEventCreate'
 import { StepPreviousEventCreate } from './__generated__/StepPreviousEventCreate'
 import { STEP_NEXT_EVENT_CREATE, STEP_PREVIOUS_EVENT_CREATE } from './Card'
+
+const { t } = useTranslation('apps-journeys-ui')
 
 // Mock events
 export const leftSide = { clientX: 0 }
@@ -156,9 +159,9 @@ export const textResponseBlock: TreeBlock<TextResponseBlock> = {
   parentBlockId: null,
   parentOrder: 0,
   children: [],
-  label: 'Text Response',
-  placeholder: 'Enter your text',
-  hint: 'This is a hint',
+  label: t('Text Response'),
+  placeholder: t('Enter your text'),
+  hint: t('This is a hint'),
   minRows: 1,
   type: TextResponseType.freeForm,
   routeId: null,

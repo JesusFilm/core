@@ -3,8 +3,11 @@ import { Meta, StoryObj } from '@storybook/react'
 import noop from 'lodash/noop'
 
 import { journeyUiConfig } from '../../libs/journeyUiConfig'
+import { useTranslation } from 'next-i18next'
 
 import { TranslationDialogWrapper } from './TranslationDialogWrapper'
+
+const { t } = useTranslation('apps-journeys-ui')
 
 const TranslationDialogWrapperStory: Meta<typeof TranslationDialogWrapper> = {
   ...journeyUiConfig,
@@ -58,9 +61,9 @@ export const WithCustomSubmitLabel = {
     open: true,
     onClose: noop,
     onTranslate: noop,
-    title: 'Copy Journey',
+    title: t('Copy Journey'),
     loading: false,
-    submitLabel: 'Copy',
+    submitLabel: t('Copy'),
     divider: false,
     children: <Typography>Custom submit label content</Typography>
   }

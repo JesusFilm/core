@@ -4,6 +4,7 @@ import { screen, userEvent } from '@storybook/test'
 import { SnackbarProvider } from 'notistack'
 import { ComponentProps, ReactElement } from 'react'
 
+import { useTranslation } from 'next-i18next'
 import { IconName, TypographyVariant } from '../../../__generated__/globalTypes'
 import { ApolloLoadingProvider } from '../../../test/ApolloLoadingProvider'
 import { JourneyProvider } from '../../libs/JourneyProvider'
@@ -13,6 +14,8 @@ import { StoryCard } from '../StoryCard'
 import { Typography } from '../Typography'
 
 import { SIGN_UP_SUBMISSION_EVENT_CREATE, SignUp } from './SignUp'
+
+const { t } = useTranslation('apps-journeys-ui')
 
 const Demo: Meta<typeof SignUp> = {
   ...journeyUiConfig,
@@ -110,7 +113,7 @@ export const Complete = {
   args: {
     ...Default.args,
     submitIconId: 'icon',
-    submitLabel: 'Custom label',
+    submitLabel: t('Custom label'),
     children: [
       {
         id: 'icon',
