@@ -1,14 +1,5 @@
 import type { TreeBlock } from '@core/journeys/ui/block'
 
-export interface BlockContext {
-  id: string
-  type: string
-  parentOrder: number | null
-  parentBlockId: string | null
-  textContent: string
-  children: BlockContext[]
-}
-
 function formatText(prefix: string, part: string): string {
   if (!part) {
     return ''
