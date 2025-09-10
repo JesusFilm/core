@@ -110,4 +110,25 @@ describe('ContentHeader', () => {
       expect(screen.getByLabelText('Language Settings')).toBeInTheDocument()
     )
   })
+
+  it('should have the correct href when languageSlug is provided', () => {
+    render(
+      <VideoProvider value={{ content: videos[0] }}>
+        <ContentHeader languageSlug="french" />
+      </VideoProvider>
+    )
+    expect(screen.getByRole('link')).toHaveAttribute(
+      'href',
+      '/watch/french.html'
+    )
+  })
+
+  it('should not change the href when languageSlug is english', () => {
+    render(
+      <VideoProvider value={{ content: videos[0] }}>
+        <ContentHeader languageSlug="english" />
+      </VideoProvider>
+    )
+    expect(screen.getByRole('link')).toHaveAttribute('href', '/watch')
+  })
 })
