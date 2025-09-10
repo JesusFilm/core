@@ -1,44 +1,74 @@
 import type { TreeBlock } from '@core/journeys/ui/block'
 
+function formatText(prefix: string, part: string): string {
+  if (!part) {
+    return ''
+  }
+  const partText = part.trim()
+  if (!partText) {
+    return ''
+  }
+  return `${prefix} ${partText}`
+}
+
+function formatTextResponseBlockParts(
+  label: string | null | undefined,
+  placeholder: string | null | undefined,
+  hint: string | null | undefined
+): string[] {
+  return [
+    formatText('Label:', label ?? ''),
+    formatText('Placeholder:', placeholder ?? ''),
+    formatText('Hint:', hint ?? '')
+  ].filter(Boolean) // removes empty strings
+}
+
+const extractAllText = (block: TreeBlock): string[] => {
+  let textContent = ''
+
+  switch (block.__typename) {
+    case 'TypographyBlock':
+      textContent = formatText('[Typography]', block.content)
+      break
+    case 'ButtonBlock':
+      textContent = formatText('[Button]', block.label)
+      break
+    case 'TextResponseBlock': {
+      const parts: string[] = formatTextResponseBlockParts(
+        block.label,
+        block.placeholder,
+        block.hint
+      )
+      textContent =
+        parts.length > 0 ? formatText('[TextInput]', parts.join(' | ')) : ''
+      break
+    }
+    case 'RadioOptionBlock':
+      textContent = formatText('[RadioOption]', block.label)
+      break
+    default:
+      textContent = ''
+  }
+
+  const texts = textContent ? [textContent] : []
+
+  // Collect children's text recursively
+  const childrenTexts = block.children?.flatMap(extractAllText) || []
+
+  return [...texts, ...childrenTexts]
+}
+
 /**
- * Extracts text content from TypographyBlock nodes in the journey tree
- * @param treeBlocks - Array of tree blocks from useBlocks hook
- * @param maxLength - Maximum length of extracted context (default: 1000 characters)
- * @returns Concatenated text content from TypographyBlock nodes
+ * Extracts text content from all relevant block types in the journey tree
+ * @param treeBlock - Tree block from useBlocks hook
+ * @returns Structured block context with text content from all relevant block types
  */
-export function extractTypographyContent(
-  treeBlock: TreeBlock,
-  maxLength: number = 1000
-): string {
-  if (!treeBlock) return ''
-
-  const extractContent = (blocks: TreeBlock[]): string[] => {
-    return blocks.flatMap((block) => {
-      const typographyContent =
-        block.__typename === 'TypographyBlock' ? block.content.trim() : ''
-
-      const childrenContent = block.children?.length
-        ? extractContent(block.children)
-        : []
-
-      return typographyContent
-        ? [typographyContent, ...childrenContent]
-        : childrenContent
-    })
+export function extractBlockContext(treeBlock: TreeBlock): string {
+  if (!treeBlock) {
+    return ''
   }
 
-  const combinedContent = extractContent([treeBlock]).join(' ').trim()
-
-  // Early return if content is within limit
-  if (combinedContent.length <= maxLength) {
-    return combinedContent
-  }
-
-  // Truncate to maxLength while preserving word boundaries
-  const truncated = combinedContent.substring(0, maxLength)
-  const lastSpaceIndex = truncated.lastIndexOf(' ')
-
-  return lastSpaceIndex > 0
-    ? `${truncated.substring(0, lastSpaceIndex)}...`
-    : `${truncated}...`
+  const allTexts = extractAllText(treeBlock)
+  const contextText = allTexts.join(' | ').trim()
+  return contextText
 }
