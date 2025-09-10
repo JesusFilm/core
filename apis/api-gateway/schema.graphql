@@ -1001,7 +1001,7 @@ type RadioOptionBlock implements Block @join__type(graph: API_JOURNEYS)  @join__
   parentBlockId: ID
   parentOrder: Int
   label: String!
-  action: Action @join__field(graph: API_JOURNEYS) 
+  action: Action
   """
   pollOptionImageBlockId is present if a child block should be used as a poll option image.
         This child block should not be rendered normally, instead it should be used
@@ -1023,7 +1023,7 @@ type SignUpBlock implements Block @join__type(graph: API_JOURNEYS)  @join__type(
   journeyId: ID!
   parentBlockId: ID
   parentOrder: Int
-  action: Action @join__field(graph: API_JOURNEYS) 
+  action: Action
   submitIconId: ID
   submitLabel: String
 }
