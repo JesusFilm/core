@@ -16,7 +16,9 @@ export async function POST(req: NextRequest) {
       )
     }
 
-    const prompt = await getPrompt('Suggestion-Prompt', { contextText: contextText })
+    const prompt = await getPrompt('Suggestion-Prompt', {
+      contextText: contextText
+    })
 
     const { text } = await generateText({
       model: google('gemini-2.5-flash'),
