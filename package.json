@@ -189,6 +189,7 @@
     "notistack": "^3.0.1",
     "pino": "^9.3.2",
     "pino-http": "^10.0.0",
+    "powerbi-client": "^2.23.1",
     "powerbi-client-react": "^2.0.0",
     "prism-react-renderer": "^2.0.0",
     "prop-types": "^15.8.1",
