@@ -4,10 +4,15 @@ import { ProgressStepper } from './ProgressStepper'
 
 describe('ProgressStepper', () => {
   it('should render checkmark icon for completed steps and not render for incomplete steps', () => {
-    const activeStep = 2
+    const activeStepNumber = 2
     const totalSteps = 4
 
-    render(<ProgressStepper activeStep={activeStep} totalSteps={totalSteps} />)
+    render(
+      <ProgressStepper
+        activeStepNumber={activeStepNumber}
+        totalSteps={totalSteps}
+      />
+    )
 
     const progressStepper = screen.getByTestId('progress-stepper')
     expect(progressStepper).toBeInTheDocument()
@@ -16,26 +21,36 @@ describe('ProgressStepper', () => {
     expect(steps).toHaveLength(totalSteps)
 
     const checkIcons = screen.getAllByTestId('CheckIcon')
-    expect(checkIcons).toHaveLength(activeStep)
+    expect(checkIcons).toHaveLength(activeStepNumber)
   })
 
   it('should render checkmark for all steps when on the last step', () => {
-    const activeStep = 2
+    const activeStepNumber = 2
     const totalSteps = 2
 
-    render(<ProgressStepper activeStep={activeStep} totalSteps={totalSteps} />)
+    render(
+      <ProgressStepper
+        activeStepNumber={activeStepNumber}
+        totalSteps={totalSteps}
+      />
+    )
 
     const checkIcons = screen.getAllByTestId('CheckIcon')
     expect(checkIcons).toHaveLength(totalSteps)
   })
 
   it('should not render any checkmarks when on the first step', () => {
-    const activeStep = 0
+    const activeStepNumber = 0
     const totalSteps = 3
 
-    render(<ProgressStepper activeStep={activeStep} totalSteps={totalSteps} />)
+    render(
+      <ProgressStepper
+        activeStepNumber={activeStepNumber}
+        totalSteps={totalSteps}
+      />
+    )
 
     const checkIcons = screen.queryAllByTestId('CheckIcon')
-    expect(checkIcons).toHaveLength(activeStep)
+    expect(checkIcons).toHaveLength(activeStepNumber)
   })
 })

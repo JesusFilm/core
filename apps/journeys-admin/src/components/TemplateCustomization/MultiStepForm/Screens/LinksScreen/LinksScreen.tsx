@@ -25,12 +25,17 @@ import { getJourneyLinks } from '../../../utils/getJourneyLinks'
 
 import { CardsPreview } from './CardsPreview'
 import { LinksForm } from './LinksForm'
+import { CustomizationScreens } from '../../MultiStepForm'
 
 interface LinksScreenProps {
   handleNext: () => void
+  handleScreenNavigation: (screen: CustomizationScreens) => void
 }
 
-export function LinksScreen({ handleNext }: LinksScreenProps): ReactElement {
+export function LinksScreen({
+  handleNext,
+  handleScreenNavigation
+}: LinksScreenProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const [journeyChatButtonUpdate, { loading: chatLoading }] =
     useMutation<JourneyChatButtonUpdate>(JOURNEY_CHAT_BUTTON_UPDATE)

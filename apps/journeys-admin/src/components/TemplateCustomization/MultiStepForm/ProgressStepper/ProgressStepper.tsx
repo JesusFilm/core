@@ -7,12 +7,12 @@ import Check from '@core/shared/ui/icons/Check'
 import { ReactElement } from 'react'
 
 interface ProgressStepperProps {
-  activeStep: number
+  activeStepNumber: number
   totalSteps: number
 }
 
 export function ProgressStepper({
-  activeStep,
+  activeStepNumber,
   totalSteps
 }: ProgressStepperProps): ReactElement {
   // Create steps array based on totalSteps
@@ -20,9 +20,9 @@ export function ProgressStepper({
 
   const ProgressStepperIcon = ({ icon }: StepIconProps): ReactElement => {
     const stepIndex = Number(icon) - 1
-    const isLastScreen = activeStep === totalSteps - 1
-    const isCurrentStep = stepIndex === activeStep
-    const isCompleted = stepIndex < activeStep || isLastScreen
+    const isLastScreen = activeStepNumber === totalSteps - 1
+    const isCurrentStep = stepIndex === activeStepNumber
+    const isCompleted = stepIndex < activeStepNumber || isLastScreen
 
     return (
       <Box
@@ -86,7 +86,7 @@ export function ProgressStepper({
       data-testid="progress-stepper"
     >
       <Stepper
-        activeStep={activeStep}
+        activeStep={activeStepNumber}
         connector={<ProgressStepperConnector />}
         sx={{
           '& .MuiStep-root': {
@@ -107,8 +107,8 @@ export function ProgressStepper({
               }}
             >
               <ProgressStepperIcon
-                active={step < activeStep}
-                completed={step < activeStep}
+                active={step < activeStepNumber}
+                completed={step < activeStepNumber}
                 icon={step + 1}
               />
             </Box>

@@ -19,13 +19,16 @@ import { JourneyCustomizeTeamSelect } from './JourneyCustomizeTeamSelect'
 import { LanguageScreenCardPreview } from './LanguageScreenCardPreview'
 import { useTemplateJourneyLanguages } from '../../../../../libs/useTemplateJourneyLanguages'
 import { LanguageAutocomplete } from '@core/shared/ui/LanguageAutocomplete'
+import { CustomizationScreens } from '../../MultiStepForm'
 
 interface LanguageScreenProps {
   handleNext: () => void
+  handleScreenNavigation: (screen: CustomizationScreens) => void
 }
 
 export function LanguageScreen({
-  handleNext
+  handleNext,
+  handleScreenNavigation
 }: LanguageScreenProps): ReactElement {
   const { t } = useTranslation('journeys-ui')
   const user = useUser()

@@ -97,6 +97,7 @@ const mockJourneyDuplicate: MockedResponse<
 
 describe('LanguageScreen', () => {
   const handleNext = jest.fn()
+  const handleScreenNavigation = jest.fn()
 
   let push: jest.Mock
   beforeEach(() => {
@@ -124,7 +125,10 @@ describe('LanguageScreen', () => {
         <SnackbarProvider>
           <JourneyProvider value={{ journey, variant: 'admin' }}>
             <TeamProvider>
-              <LanguageScreen handleNext={handleNext} />
+              <LanguageScreen
+                handleNext={handleNext}
+                handleScreenNavigation={handleScreenNavigation}
+              />
             </TeamProvider>
           </JourneyProvider>
         </SnackbarProvider>
@@ -189,7 +193,10 @@ describe('LanguageScreen', () => {
             value={{ journey: journeyWithFromTemplateId, variant: 'admin' }}
           >
             <TeamProvider>
-              <LanguageScreen handleNext={handleNext} />
+              <LanguageScreen
+                handleNext={handleNext}
+                handleScreenNavigation={handleScreenNavigation}
+              />
             </TeamProvider>
           </JourneyProvider>
         </SnackbarProvider>
@@ -243,7 +250,10 @@ describe('LanguageScreen', () => {
         <SnackbarProvider>
           <JourneyProvider value={{ journey, variant: 'admin' }}>
             <TeamProvider>
-              <LanguageScreen handleNext={handleNext} />
+              <LanguageScreen
+                handleNext={handleNext}
+                handleScreenNavigation={handleScreenNavigation}
+              />
             </TeamProvider>
           </JourneyProvider>
         </SnackbarProvider>
