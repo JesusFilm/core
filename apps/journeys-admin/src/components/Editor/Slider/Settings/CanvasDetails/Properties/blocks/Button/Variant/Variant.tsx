@@ -66,17 +66,19 @@ export function Variant(): ReactElement {
     })
   }
 
+  const { t } = useTranslation('apps-journeys-admin')
+
   const options = [
     {
-      value: ButtonVariant.contained,
+      value: t(ButtonVariant.contained),
       label: t('Contained')
     },
     {
-      value: ButtonVariant.outlined,
+      value: t(ButtonVariant.outlined),
       label: t('Outlined')
     },
     {
-      value: ButtonVariant.text,
+      value: t(ButtonVariant.text),
       label: t('Text')
     }
   ]

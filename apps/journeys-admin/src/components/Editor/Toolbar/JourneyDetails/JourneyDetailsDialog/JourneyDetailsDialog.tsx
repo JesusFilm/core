@@ -54,6 +54,7 @@ export function JourneyDetailsDialog({
   const titleSchema = object().shape({
     title: string().required(t('Required'))
   })
+  const { t } = useTranslation('apps-journeys-admin')
   const journeyLanguage: JourneyLanguage | undefined =
     journeyData != null
       ? {
@@ -113,7 +114,7 @@ export function JourneyDetailsDialog({
           }
         }
         if (error instanceof Error) {
-          enqueueSnackbar(error.message, {
+          enqueueSnackbar(error.message || t('Journey details update failed'), {
             variant: 'error',
             preventDuplicate: true
           })

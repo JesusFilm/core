@@ -4,6 +4,7 @@ import { Meta, StoryObj } from '@storybook/react'
 import { userEvent, waitFor, within } from '@storybook/test'
 import { ComponentPropsWithoutRef } from 'react'
 import { Background, ReactFlow } from 'reactflow'
+import { useTranslation } from 'next-i18next'
 import 'reactflow/dist/style.css'
 
 import {
@@ -461,6 +462,7 @@ const typographyNode = {
 }
 
 const textResponseNode = {
+  const { t } = useTranslation('apps-journeys-admin')
   id: 'd9d8295b-8e4d-4b63-bf0c-97661e6341d8',
   type: 'StepBlock',
   data: {
@@ -488,10 +490,10 @@ const textResponseNode = {
             id: 'fe591706-9c98-4baa-9a61-073b868f5b66',
             parentBlockId: '270c0860-b412-45ef-baea-917a33bea9c4',
             parentOrder: 0,
-            label: 'Your answer here',
+            label: t('Your answer here'),
             hint: null,
             minRows: null,
-            submitLabel: 'Submit',
+            submitLabel: t('Submit'),
             submitIconId: '1c2e123f-9cb0-43c2-9744-3acc48814e43',
             action: null,
             children: [
@@ -536,10 +538,10 @@ const textResponseNode = {
                 id: 'fe591706-9c98-4baa-9a61-073b868f5b66',
                 parentBlockId: '270c0860-b412-45ef-baea-917a33bea9c4',
                 parentOrder: 0,
-                label: 'Your answer here',
+                label: t('Your answer here'),
                 hint: null,
                 minRows: null,
-                submitLabel: 'Submit',
+                submitLabel: t('Submit'),
                 submitIconId: '1c2e123f-9cb0-43c2-9744-3acc48814e43',
                 action: null,
                 children: [
@@ -592,7 +594,7 @@ const buttonNode = {
             id: 'ea567b51-8d59-4f9d-851f-43fb79092e09',
             parentBlockId: '2a027e7c-0cf5-4fbf-bf12-14eff3e50771',
             parentOrder: 0,
-            label: 'Click me',
+            label: t('Click me'),
             buttonVariant: 'contained',
             buttonColor: 'primary',
             size: 'medium',
@@ -651,7 +653,7 @@ const buttonNode = {
                 id: 'ea567b51-8d59-4f9d-851f-43fb79092e09',
                 parentBlockId: '2a027e7c-0cf5-4fbf-bf12-14eff3e50771',
                 parentOrder: 0,
-                label: 'Click me',
+                label: t('Click me'),
                 buttonVariant: 'contained',
                 buttonColor: 'primary',
                 size: 'medium',
@@ -718,7 +720,7 @@ const signUpNode = {
             id: 'cc858273-4a2c-415f-9390-a3394d701d42',
             parentBlockId: 'd3623b54-cfd0-48a6-b632-5e07c9aa6d38',
             parentOrder: 0,
-            submitLabel: 'Submit',
+            submitLabel: t('Submit'),
             submitIconId: '9ecf034c-032f-43b0-9375-d563a6e80672',
             action: null,
             children: [
@@ -763,7 +765,7 @@ const signUpNode = {
                 id: 'cc858273-4a2c-415f-9390-a3394d701d42',
                 parentBlockId: 'd3623b54-cfd0-48a6-b632-5e07c9aa6d38',
                 parentOrder: 0,
-                submitLabel: 'Submit',
+                submitLabel: t('Submit'),
                 submitIconId: '9ecf034c-032f-43b0-9375-d563a6e80672',
                 action: null,
                 children: [

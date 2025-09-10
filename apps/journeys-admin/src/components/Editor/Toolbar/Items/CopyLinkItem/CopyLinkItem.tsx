@@ -21,6 +21,7 @@ export function CopyLinkItem({
   const { enqueueSnackbar } = useSnackbar()
   const { journey } = useJourney()
   const { hostname } = useCustomDomainsQuery({
+  const { t } = useTranslation('apps-journeys-admin')
     variables: { teamId: journey?.team?.id ?? '' },
     skip: journey?.team?.id == null
   })
@@ -36,7 +37,7 @@ export function CopyLinkItem({
       }/${journey.slug}`
     )
     onClose?.()
-    enqueueSnackbar('Link Copied', {
+    enqueueSnackbar(t('Link Copied'), {
       variant: 'success',
       preventDuplicate: true
     })

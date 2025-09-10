@@ -2,6 +2,7 @@ import { Meta, StoryObj } from '@storybook/react'
 import { fn } from '@storybook/test'
 import { ComponentProps } from 'react'
 
+import { useTranslation } from 'next-i18next'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { simpleComponentConfig } from '@core/shared/ui/storybook'
@@ -56,13 +57,14 @@ export const Default = {
 }
 
 export const Filled: StoryObj<typeof SignUp> = {
+  const { t } = useTranslation('apps-journeys-admin')
   render: () => {
     const block: TreeBlock<SignUpBlock> = {
       id: 'signup.id',
       __typename: 'SignUpBlock',
       parentBlockId: 'step1.id',
       parentOrder: 0,
-      submitLabel: 'Sign Up',
+      submitLabel: t('Sign Up'),
       action: {
         __typename: 'LinkAction',
         parentBlockId: 'signup.id',

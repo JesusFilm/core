@@ -95,6 +95,8 @@ export function CardLayout({
     ? 'false'
     : cardBlock?.fullscreen.toString()
 
+  const { t } = useTranslation('apps-journeys-admin')
+
   return (
     <>
       <Box>
@@ -126,7 +128,7 @@ export function CardLayout({
             >
               <Image
                 src={cardLayoutExpanded}
-                alt="Expanded"
+                alt={t("Expanded")}
                 width={89}
                 height={137}
                 style={{
@@ -144,7 +146,7 @@ export function CardLayout({
           >
             <Image
               src={cardLayoutContained}
-              alt="Contained"
+              alt={t('Contained')}
               width={89}
               height={137}
               style={{
