@@ -50,6 +50,9 @@ describe('StepBlockNodeMenu', () => {
       getByRole('menuitem', { name: 'Duplicate Card' })
     ).toBeInTheDocument()
     expect(getByRole('menuitem', { name: 'Delete Card' })).toBeInTheDocument()
+
+    // fab should disappear when menu is opened
+    expect(getByTestId('EditStepFab')).not.toBeVisible()
   })
 
   it('should have edit-step id on fab', async () => {
