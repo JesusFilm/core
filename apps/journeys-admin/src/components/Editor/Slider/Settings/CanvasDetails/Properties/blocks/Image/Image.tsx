@@ -37,9 +37,7 @@ export function Image(block: TreeBlock<ImageBlock>): ReactElement {
         icon={<Image3Icon />}
         name={t('Image Source')}
         value={
-          block?.alt === 'Default Image Icon'
-            ? t('Default Image Icon')
-            : ''
+          block?.alt === 'Default Image Icon' ? t('Default Image Icon') : ''
         }
       >
         <ImageOptions />
