@@ -14,9 +14,7 @@ export interface BlockContext {
  * @param treeBlock - Tree block from useBlocks hook
  * @returns Structured block context with text content from all relevant block types
  */
-export function extractBlockContext(
-  treeBlock: TreeBlock,
-): BlockContext {
+export function extractBlockContext(treeBlock: TreeBlock): BlockContext {
   if (!treeBlock) {
     return {
       id: '',
