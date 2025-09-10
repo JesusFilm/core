@@ -33,27 +33,6 @@ builder.mutationField('multiselectBlockUpdate', (t) =>
 
       // Validation: min/max non-negative and min <= max when both provided
       const { min, max } = input as { min?: number | null; max?: number | null }
-      if (min != null && min < 0) {
-        throw new GraphQLError('min must be greater than or equal to 0', {
-          extensions: { code: 'BAD_USER_INPUT' }
-        })
-      }
-      if (max != null && max < 0) {
-        throw new GraphQLError('max must be greater than or equal to 0', {
-          extensions: { code: 'BAD_USER_INPUT' }
-        })
-      }
-      if (min != null && max != null && min > max) {
-        throw new GraphQLError('min must be less than or equal to max', {
-          extensions: { code: 'BAD_USER_INPUT' }
-        })
-      }
-
-      // Treat omitted max as null explicitly when key is not present or undefined
-      if (!('max' in input) || (input as any).max === undefined) {
-        ;(input as any).max = null
-      }
-
       // If provided min/max equal the number of child MultiselectOptionBlock, set them to null
       // Only apply when there is at least one option (count > 0)
       if (input.min != null || input.max != null) {
@@ -64,9 +43,27 @@ builder.mutationField('multiselectBlockUpdate', (t) =>
             deletedAt: null
           }
         })
+        if (min != null && min < optionCount) {
+          throw new GraphQLError(
+            'min must be greater than or equal to the number of options',
+            {
+              extensions: { code: 'BAD_USER_INPUT' }
+            }
+          )
+        }
+        if (max != null && max < 0) {
+          throw new GraphQLError('max must be greater than or equal to 0', {
+            extensions: { code: 'BAD_USER_INPUT' }
+          })
+        }
+        if (min != null && max != null && min > max) {
+          throw new GraphQLError('min must be less than or equal to max', {
+            extensions: { code: 'BAD_USER_INPUT' }
+          })
+        }
         if (optionCount > 0) {
-          if (input.min != null && input.min === optionCount) input.min = null
-          if (input.max != null && input.max === optionCount) input.max = null
+          if (min != null && min === optionCount) input.min = null
+          if (max != null && max === optionCount) input.max = null
         }
       }
 

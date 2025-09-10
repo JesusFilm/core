@@ -192,7 +192,7 @@ describe('multiselectBlockUpdate', () => {
     })
   })
 
-  it('treats missing max as null on write', async () => {
+  it('preserves existing max when omitted in input', async () => {
     const {
       fetchBlockWithJourneyAcl
     } = require('../../../lib/auth/fetchBlockWithJourneyAcl')
@@ -205,15 +205,16 @@ describe('multiselectBlockUpdate', () => {
 
     const tx = {
       block: {
-        update: jest.fn().mockResolvedValue({
+        update: jest.fn().mockImplementation(async (args) => ({
           id,
           typename: 'MultiselectBlock',
           journeyId: 'journeyId',
           parentBlockId: 'parentId',
+          // existing max from DB should be preserved; we simulate it remains 5
           min: 0,
-          max: null,
+          max: 5,
           submitLabel: 'Submit'
-        })
+        }))
       },
       journey: { update: jest.fn().mockResolvedValue({ id: 'journeyId' }) }
     }
@@ -224,12 +225,15 @@ describe('multiselectBlockUpdate', () => {
       variables: { id, input: { min: 0 } }
     })
 
+    // ensure we didn't send max in the update payload when omitted
     expect(tx.block.update).toHaveBeenCalledWith(
-      expect.objectContaining({ data: expect.objectContaining({ max: null }) })
+      expect.objectContaining({
+        data: expect.not.objectContaining({ max: expect.anything() })
+      })
     )
     expect(result).toEqual({
       data: {
-        multiselectBlockUpdate: expect.objectContaining({ max: null })
+        multiselectBlockUpdate: expect.objectContaining({ max: 5 })
       }
     })
   })
