@@ -31,8 +31,8 @@ export async function POST(req: NextRequest) {
     This is Suggestion C
 
     CONTEXT OVERVIEW:
-    Context received will show in text form what the view will see on a card.
-    All text elements on the card is extracted, sepearted by a '|' and labeled
+    Context received will show in text form what the viewer will see on a journey.
+    All text elements on the journey is extracted, sepearted by a '|' and labeled
     with the type of ui element they are extracted from.
 
     The elements are:
