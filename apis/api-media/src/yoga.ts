@@ -31,7 +31,11 @@ export const yoga = createYoga<
   logging: logger,
   context: async ({ request, params }) => {
     const payload = get(params, 'extensions.jwt.payload')
-    const user = getUserFromPayload(payload, logger)
+    const user =
+      process.env.NODE_ENV !== 'test' ||
+      request.headers.get('authorization') != null
+        ? getUserFromPayload(payload, logger)
+        : null
     const clientName = request.headers.get('x-graphql-client-name') ?? undefined
 
     if (user != null)

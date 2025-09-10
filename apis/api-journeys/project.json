@@ -90,7 +90,7 @@
     "generate-graphql": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "pnpm dlx @apollo/rover@0.23.0 subgraph introspect http://localhost:4001/graphql > apis/api-journeys/schema.graphql"
+        "command": "rover subgraph introspect http://localhost:4001/graphql > apis/api-journeys/schema.graphql"
       }
     },
     "subgraph-check": {
