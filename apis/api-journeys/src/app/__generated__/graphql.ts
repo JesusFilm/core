@@ -1446,9 +1446,10 @@ export class MultiselectBlock implements Block {
     journeyId: string;
     parentBlockId: string;
     parentOrder: number;
-    showSelection: boolean;
-    selectionLimit?: Nullable<number>;
-    showProgress: boolean;
+    submitLabel: string;
+    max?: Nullable<number>;
+    min?: Nullable<number>;
+    action?: Nullable<Action>;
 }
 
 export class MultiselectOptionBlock implements Block {
@@ -1458,7 +1459,6 @@ export class MultiselectOptionBlock implements Block {
     parentBlockId: string;
     parentOrder: number;
     label: string;
-    totalClicks: number;
 }
 
 export class RadioOptionBlock implements Block {

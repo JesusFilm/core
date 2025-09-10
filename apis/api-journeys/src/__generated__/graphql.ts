@@ -1576,6 +1576,12 @@ export type Mutation = {
   journeysRestore?: Maybe<Array<Maybe<Journey>>>;
   /** Sets journeys statuses to trashed */
   journeysTrash?: Maybe<Array<Maybe<Journey>>>;
+  playlistCreate?: Maybe<MutationPlaylistCreateResult>;
+  playlistDelete?: Maybe<MutationPlaylistDeleteResult>;
+  playlistItemAdd?: Maybe<MutationPlaylistItemAddResult>;
+  playlistItemRemove?: Maybe<MutationPlaylistItemRemoveResult>;
+  playlistItemsReorder?: Maybe<MutationPlaylistItemsReorderResult>;
+  playlistUpdate?: Maybe<MutationPlaylistUpdateResult>;
   qrCodeCreate: QrCode;
   qrCodeDelete: QrCode;
   qrCodeUpdate: QrCode;
@@ -2149,6 +2155,40 @@ export type MutationJourneysTrashArgs = {
 };
 
 
+export type MutationPlaylistCreateArgs = {
+  input: PlaylistCreateInput;
+};
+
+
+export type MutationPlaylistDeleteArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type MutationPlaylistItemAddArgs = {
+  playlistId: Scalars['ID']['input'];
+  videoVariantId: Scalars['ID']['input'];
+};
+
+
+export type MutationPlaylistItemRemoveArgs = {
+  itemId: Scalars['ID']['input'];
+  playlistId: Scalars['ID']['input'];
+};
+
+
+export type MutationPlaylistItemsReorderArgs = {
+  itemIds: Array<Scalars['ID']['input']>;
+  playlistId: Scalars['ID']['input'];
+};
+
+
+export type MutationPlaylistUpdateArgs = {
+  id: Scalars['ID']['input'];
+  input: PlaylistUpdateInput;
+};
+
+
 export type MutationQrCodeCreateArgs = {
   input: QrCodeCreateInput;
 };
@@ -2691,6 +2731,48 @@ export type MutationJourneyLanguageAiDetectInput = {
   textLanguageName: Scalars['String']['input'];
 };
 
+export type MutationPlaylistCreateResult = MutationPlaylistCreateSuccess | ZodError;
+
+export type MutationPlaylistCreateSuccess = {
+  __typename?: 'MutationPlaylistCreateSuccess';
+  data: Playlist;
+};
+
+export type MutationPlaylistDeleteResult = MutationPlaylistDeleteSuccess | NotFoundError;
+
+export type MutationPlaylistDeleteSuccess = {
+  __typename?: 'MutationPlaylistDeleteSuccess';
+  data: Playlist;
+};
+
+export type MutationPlaylistItemAddResult = MutationPlaylistItemAddSuccess | NotFoundError;
+
+export type MutationPlaylistItemAddSuccess = {
+  __typename?: 'MutationPlaylistItemAddSuccess';
+  data: PlaylistItem;
+};
+
+export type MutationPlaylistItemRemoveResult = MutationPlaylistItemRemoveSuccess | NotFoundError;
+
+export type MutationPlaylistItemRemoveSuccess = {
+  __typename?: 'MutationPlaylistItemRemoveSuccess';
+  data: Array<PlaylistItem>;
+};
+
+export type MutationPlaylistItemsReorderResult = MutationPlaylistItemsReorderSuccess | NotFoundError;
+
+export type MutationPlaylistItemsReorderSuccess = {
+  __typename?: 'MutationPlaylistItemsReorderSuccess';
+  data: Array<PlaylistItem>;
+};
+
+export type MutationPlaylistUpdateResult = MutationPlaylistUpdateSuccess | NotFoundError | ZodError;
+
+export type MutationPlaylistUpdateSuccess = {
+  __typename?: 'MutationPlaylistUpdateSuccess';
+  data: Playlist;
+};
+
 export type MutationShortLinkCreateInput = {
   /** bitrate of the video variant download */
   bitrate?: InputMaybe<Scalars['Int']['input']>;
@@ -3070,6 +3152,47 @@ export type PlausibleStatsTimeseriesFilter = {
   period?: InputMaybe<Scalars['String']['input']>;
 };
 
+export type Playlist = {
+  __typename?: 'Playlist';
+  createdAt: Scalars['DateTime']['output'];
+  id: Scalars['ID']['output'];
+  items: Array<PlaylistItem>;
+  name: Scalars['String']['output'];
+  note?: Maybe<Scalars['String']['output']>;
+  noteSharedAt?: Maybe<Scalars['DateTime']['output']>;
+  noteUpdatedAt?: Maybe<Scalars['DateTime']['output']>;
+  owner: User;
+  sharedAt?: Maybe<Scalars['DateTime']['output']>;
+  slug: Scalars['String']['output'];
+  updatedAt: Scalars['DateTime']['output'];
+};
+
+export type PlaylistCreateInput = {
+  id?: InputMaybe<Scalars['ID']['input']>;
+  name: Scalars['String']['input'];
+  note?: InputMaybe<Scalars['String']['input']>;
+  noteSharedAt?: InputMaybe<Scalars['DateTime']['input']>;
+  sharedAt?: InputMaybe<Scalars['DateTime']['input']>;
+  slug?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type PlaylistItem = {
+  __typename?: 'PlaylistItem';
+  createdAt: Scalars['DateTime']['output'];
+  id: Scalars['ID']['output'];
+  order: Scalars['Int']['output'];
+  playlist: Playlist;
+  updatedAt: Scalars['DateTime']['output'];
+  videoVariant: VideoVariant;
+};
+
+export type PlaylistUpdateInput = {
+  name?: InputMaybe<Scalars['String']['input']>;
+  note?: InputMaybe<Scalars['String']['input']>;
+  noteSharedAt?: InputMaybe<Scalars['DateTime']['input']>;
+  sharedAt?: InputMaybe<Scalars['DateTime']['input']>;
+};
+
 export type PowerBiEmbed = {
   __typename?: 'PowerBiEmbed';
   /** The embed token */
@@ -3201,6 +3324,8 @@ export type Query = {
   me?: Maybe<User>;
   node?: Maybe<Node>;
   nodes: Array<Maybe<Node>>;
+  playlist?: Maybe<QueryPlaylistResult>;
+  playlists?: Maybe<Array<Playlist>>;
   qrCode: QrCode;
   qrCodes: Array<QrCode>;
   searchUnsplashPhotos: UnsplashQueryResponse;
@@ -3501,6 +3626,12 @@ export type QueryNodesArgs = {
 };
 
 
+export type QueryPlaylistArgs = {
+  id: Scalars['ID']['input'];
+  idType?: IdType;
+};
+
+
 export type QueryQrCodeArgs = {
   id: Scalars['ID']['input'];
 };
@@ -3641,6 +3772,13 @@ export type QueryVisitorsConnectionArgs = {
   after?: InputMaybe<Scalars['String']['input']>;
   first?: InputMaybe<Scalars['Int']['input']>;
   teamId?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type QueryPlaylistResult = NotFoundError | QueryPlaylistSuccess;
+
+export type QueryPlaylistSuccess = {
+  __typename?: 'QueryPlaylistSuccess';
+  data: Playlist;
 };
 
 export type QueryShortLinkByPathResult = NotFoundError | QueryShortLinkByPathSuccess;
@@ -5305,6 +5443,7 @@ export type VideoVariant = {
   subtitleCount: Scalars['Int']['output'];
   /** version control for master video file */
   version: Scalars['Int']['output'];
+  video?: Maybe<Video>;
   videoEdition: VideoEdition;
   videoId?: Maybe<Scalars['ID']['output']>;
 };

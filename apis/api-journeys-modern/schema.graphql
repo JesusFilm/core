@@ -1025,9 +1025,27 @@ type MultiselectBlock implements Block
   journeyId: ID!
   parentBlockId: ID
   parentOrder: Int
-  showSelection: Boolean!
-  selectionLimit: Int
-  showProgress: Boolean!
+  min: Int
+  max: Int
+  submitLabel: String!
+}
+
+input MultiselectBlockCreateInput {
+  id: ID
+  journeyId: ID!
+  parentBlockId: ID!
+  label: String!
+  submitLabel: String!
+  min: Int
+  max: Int
+}
+
+input MultiselectBlockUpdateInput {
+  parentBlockId: ID
+  label: String
+  submitLabel: String
+  min: Int
+  max: Int
 }
 
 type MultiselectOptionBlock implements Block
@@ -1038,10 +1056,37 @@ type MultiselectOptionBlock implements Block
   parentBlockId: ID
   parentOrder: Int
   label: String!
-  totalClicks: Int!
+}
+
+input MultiselectOptionBlockCreateInput {
+  id: ID
+  journeyId: ID!
+  parentBlockId: ID!
+  label: String!
+}
+
+input MultiselectOptionBlockUpdateInput {
+  parentBlockId: ID
+  label: String
 }
 
 type Mutation {
+  multiselectBlockCreate(input: MultiselectBlockCreateInput!): MultiselectBlock!
+  multiselectBlockUpdate(
+    id: ID!
+    input: MultiselectBlockUpdateInput!
+
+    """drop this parameter after merging teams"""
+    journeyId: ID
+  ): MultiselectBlock!
+  multiselectOptionBlockCreate(input: MultiselectOptionBlockCreateInput!): MultiselectOptionBlock!
+  multiselectOptionBlockUpdate(
+    id: ID!
+    input: MultiselectOptionBlockUpdateInput!
+
+    """drop this parameter after merging teams"""
+    journeyId: ID
+  ): MultiselectOptionBlock!
   videoBlockCreate(input: VideoBlockCreateInput!): VideoBlock! @override(from: "api-journeys")
   videoBlockUpdate(
     id: ID!
