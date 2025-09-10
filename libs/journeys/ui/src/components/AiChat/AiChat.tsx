@@ -4,9 +4,7 @@ import { CopyIcon, Loader, RefreshCcwIcon } from 'lucide-react'
 import { useTranslation } from 'next-i18next'
 import { Fragment, useEffect, useState } from 'react'
 
-import { TreeBlock, useBlocks } from '@core/journeys/ui/block'
-
-import { extractBlockContext } from '../../utils/contextExtraction'
+import { TreeBlock, useBlocks } from '../../libs/block'
 import { Action, Actions } from '../Actions'
 import {
   Conversation,
@@ -23,7 +21,7 @@ import {
 import { Response } from '../Response'
 import { Suggestion, Suggestions } from '../Suggestion'
 
-import { extractTypographyContent } from './utils/contextExtraction'
+import { extractBlockContext } from './utils/contextExtraction'
 
 interface AiChatProps {
   open: boolean
