@@ -82,7 +82,7 @@ export class CardLevelActionPage {
       .frameLocator(this.journeyCardFrame)
       .first()
       .locator(
-        'p[data-testid="JourneysTypography"] textarea[placeholder="Add your text here..."]'
+        'p[data-testid="JourneysTypography"] textarea[placeholder=t("Add your text here...")]'
       )
       .first()
       .clear()
@@ -90,7 +90,7 @@ export class CardLevelActionPage {
       .frameLocator(this.journeyCardFrame)
       .first()
       .locator(
-        'p[data-testid="JourneysTypography"] textarea[placeholder="Add your text here..."]'
+        'p[data-testid="JourneysTypography"] textarea[placeholder=t("Add your text here...")]'
       )
       .first()
       .fill(this.journeyName)
@@ -131,7 +131,7 @@ export class CardLevelActionPage {
     await this.page
       .frameLocator(this.journeyCardFrame)
       .locator(
-        'div[data-testid*="SelectableWrapper"] textarea[placeholder*="Add your text here"]'
+        'div[data-testid*="SelectableWrapper"] textarea[placeholder*=t("Add your text here")]'
       )
       .fill(this.renameJourmeyName)
   }
