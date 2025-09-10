@@ -7,7 +7,7 @@ import { useTranslation } from 'next-i18next'
 import { ReactElement, useState } from 'react'
 
 import { ProgressStepper } from './ProgressStepper'
-import { DoneScreen, LanguageScreen, LinksScreen, TextScreen } from './Screens'
+import { DoneScreen, LanguageScreen, LinksScreen, TextScreen, SocialScreen } from './Screens'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import ChevronRight from '@core/shared/ui/icons/ChevronRight'
 
@@ -25,10 +25,9 @@ function renderScreen(screen: number, handleNext: () => void): ReactElement {
       return <TextScreen handleNext={handleNext} />
     case 2:
       return <LinksScreen handleNext={handleNext} />
-    // TODO: uncomment this when we have the social screen
-    // case 3:
-    //   return <SocialScreen handleNext={handleNext} />
     case 3:
+      return <SocialScreen handleNext={handleNext} />
+    case 4:
       return <DoneScreen />
     default:
       return <></>
