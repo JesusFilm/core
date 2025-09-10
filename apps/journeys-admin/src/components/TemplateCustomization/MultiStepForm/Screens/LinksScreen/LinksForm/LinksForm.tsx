@@ -40,7 +40,7 @@ export function LinksForm({ links }: LinksFormProps): ReactElement {
   function handleLinkChange(e: React.ChangeEvent<HTMLInputElement>): void {
     const { name, value } = e.target
     const url = /^\w+:\/\//.test(value) ? value : `https://${value}`
-    setFieldValue(name, url)
+    void setFieldValue(name, url)
   }
 
   return (
