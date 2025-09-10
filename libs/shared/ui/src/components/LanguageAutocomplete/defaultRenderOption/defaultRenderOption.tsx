@@ -9,7 +9,9 @@ export function defaultRenderOption(
 ): ReactNode {
   const { rows, index, style } = props
   const { id, localName, nativeName } = rows[index][1]
-  const { key, ...optionProps } = rows[index][0]
+  const { key, ownerState, ariaAttributes, ...optionProps } = rows[
+    index
+  ][0] as any
 
   return (
     <ListItem

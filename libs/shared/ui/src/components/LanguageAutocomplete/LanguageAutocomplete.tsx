@@ -14,11 +14,10 @@ import {
   forwardRef,
   useMemo
 } from 'react'
-import { List } from 'react-window'
-
 import { ResizeObserverPolyfill } from '../ResizeObserverPolyfill'
 
 import { defaultRenderOption } from './defaultRenderOption'
+import { List } from 'react-window'
 
 export interface Language {
   id: string
