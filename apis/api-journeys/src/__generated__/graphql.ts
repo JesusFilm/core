@@ -1296,7 +1296,6 @@ export type JourneysEmailPreferenceUpdateInput = {
 
 export type JourneysFilter = {
   featured?: InputMaybe<Scalars['Boolean']['input']>;
-  fromTemplateId?: InputMaybe<Scalars['ID']['input']>;
   ids?: InputMaybe<Array<Scalars['ID']['input']>>;
   languageIds?: InputMaybe<Array<Scalars['ID']['input']>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
@@ -4881,41 +4880,21 @@ export type VideoBlockCreateInput = {
   autoplay?: InputMaybe<Scalars['Boolean']['input']>;
   description?: InputMaybe<Scalars['String']['input']>;
   duration?: InputMaybe<Scalars['Int']['input']>;
-  /** endAt dictates at which point of time the video should end */
   endAt?: InputMaybe<Scalars['Int']['input']>;
   fullsize?: InputMaybe<Scalars['Boolean']['input']>;
   id?: InputMaybe<Scalars['ID']['input']>;
+  image?: InputMaybe<Scalars['String']['input']>;
   /** True if the coverBlockId in a parent block should be set to this block's id. */
   isCover?: InputMaybe<Scalars['Boolean']['input']>;
   journeyId: Scalars['ID']['input'];
   muted?: InputMaybe<Scalars['Boolean']['input']>;
-  /** how the video should display within the VideoBlock */
   objectFit?: InputMaybe<VideoBlockObjectFit>;
   parentBlockId: Scalars['ID']['input'];
-  /**
-   * posterBlockId is present if a child block should be used as a poster.
-   * This child block should not be rendered normally, instead it should be used
-   * as the video poster. PosterBlock should be of type ImageBlock.
-   */
   posterBlockId?: InputMaybe<Scalars['ID']['input']>;
-  /**
-   * internal source: videoId and videoVariantLanguageId required
-   * youTube source: videoId required
-   */
   source?: InputMaybe<VideoBlockSource>;
-  /** startAt dictates at which point of time the video should start playing */
   startAt?: InputMaybe<Scalars['Int']['input']>;
-  /**
-   * internal source videos: videoId and videoVariantLanguageId both need to be set
-   * to select a video.
-   * For other sources only videoId needs to be set.
-   */
+  title?: InputMaybe<Scalars['String']['input']>;
   videoId?: InputMaybe<Scalars['ID']['input']>;
-  /**
-   * internal source videos: videoId and videoVariantLanguageId both need to be set
-   * to select a video.
-   * For other sources only videoId needs to be set.
-   */
   videoVariantLanguageId?: InputMaybe<Scalars['ID']['input']>;
 };
 
@@ -4953,37 +4932,23 @@ export enum VideoBlockSource {
 
 export type VideoBlockUpdateInput = {
   autoplay?: InputMaybe<Scalars['Boolean']['input']>;
+  description?: InputMaybe<Scalars['String']['input']>;
   duration?: InputMaybe<Scalars['Int']['input']>;
-  /** endAt dictates at which point of time the video should end */
   endAt?: InputMaybe<Scalars['Int']['input']>;
   fullsize?: InputMaybe<Scalars['Boolean']['input']>;
+  image?: InputMaybe<Scalars['String']['input']>;
   muted?: InputMaybe<Scalars['Boolean']['input']>;
-  /** how the video should display within the VideoBlock */
   objectFit?: InputMaybe<VideoBlockObjectFit>;
-  /**
-   * posterBlockId is present if a child block should be used as a poster.
-   * This child block should not be rendered normally, instead it should be used
-   * as the video poster. PosterBlock should be of type ImageBlock.
-   */
+  parentBlockId?: InputMaybe<Scalars['ID']['input']>;
   posterBlockId?: InputMaybe<Scalars['ID']['input']>;
   /**
    * internal source: videoId and videoVariantLanguageId required
-   * youTube source: videoId required
+   *   youTube source: videoId required
    */
   source?: InputMaybe<VideoBlockSource>;
-  /** startAt dictates at which point of time the video should start playing */
   startAt?: InputMaybe<Scalars['Int']['input']>;
-  /**
-   * internal source videos: videoId and videoVariantLanguageId both need to be set
-   * to select a video.
-   * For other sources only videoId needs to be set.
-   */
+  title?: InputMaybe<Scalars['String']['input']>;
   videoId?: InputMaybe<Scalars['ID']['input']>;
-  /**
-   * internal source videos: videoId and videoVariantLanguageId both need to be set
-   * to select a video.
-   * For other sources only videoId needs to be set.
-   */
   videoVariantLanguageId?: InputMaybe<Scalars['ID']['input']>;
 };
 
@@ -5767,13 +5732,6 @@ export enum Link__Purpose {
   Security = 'SECURITY'
 }
 
-export type GetMuxVideoQueryVariables = Exact<{
-  id: Scalars['ID']['input'];
-}>;
-
-
-export type GetMuxVideoQuery = { __typename?: 'Query', getMuxVideo?: { __typename?: 'MuxVideo', id: string, name?: string | null, playbackId?: string | null, duration?: number | null } | null };
-
 export type GetLanguagesQueryVariables = Exact<{
   languageId: Scalars['ID']['input'];
 }>;
@@ -5817,7 +5775,6 @@ export type ShortLinkDeleteMutationVariables = Exact<{
 export type ShortLinkDeleteMutation = { __typename?: 'Mutation', shortLinkDelete: { __typename?: 'MutationShortLinkDeleteSuccess', data: { __typename?: 'ShortLink', id: string } } | { __typename?: 'NotFoundError', message?: string | null } };
 
 
-export const GetMuxVideoDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetMuxVideo"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"getMuxVideo"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"playbackId"}},{"kind":"Field","name":{"kind":"Name","value":"duration"}}]}}]}}]} as unknown as DocumentNode<GetMuxVideoQuery, GetMuxVideoQueryVariables>;
 export const GetLanguagesDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetLanguages"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"languageId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"language"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"languageId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"bcp47"}},{"kind":"Field","name":{"kind":"Name","value":"id"}}]}}]}}]} as unknown as DocumentNode<GetLanguagesQuery, GetLanguagesQueryVariables>;
 export const SiteCreateDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"SiteCreate"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"SiteCreateInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"siteCreate"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Error"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"message"}},{"kind":"Field","name":{"kind":"Name","value":"__typename"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"MutationSiteCreateSuccess"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"data"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"domain"}},{"kind":"Field","name":{"kind":"Name","value":"__typename"}},{"kind":"Field","name":{"kind":"Name","value":"memberships"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"role"}},{"kind":"Field","name":{"kind":"Name","value":"__typename"}}]}},{"kind":"Field","name":{"kind":"Name","value":"goals"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"eventName"}},{"kind":"Field","name":{"kind":"Name","value":"__typename"}}]}},{"kind":"Field","name":{"kind":"Name","value":"sharedLinks"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"slug"}},{"kind":"Field","name":{"kind":"Name","value":"__typename"}}]}}]}}]}}]}}]}}]} as unknown as DocumentNode<SiteCreateMutation, SiteCreateMutationVariables>;
 export const GetShortLinkDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetShortLink"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"shortLink"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"NotFoundError"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"message"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"QueryShortLinkSuccess"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"data"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"pathname"}},{"kind":"Field","name":{"kind":"Name","value":"to"}},{"kind":"Field","name":{"kind":"Name","value":"domain"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"hostname"}}]}}]}}]}}]}}]}}]} as unknown as DocumentNode<GetShortLinkQuery, GetShortLinkQueryVariables>;

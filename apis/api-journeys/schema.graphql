@@ -299,14 +299,6 @@ type Mutation {
     """drop this parameter after merging teams"""
     journeyId: ID
   ): TypographyBlock!
-  videoBlockCreate(input: VideoBlockCreateInput!): VideoBlock!
-  videoBlockUpdate(
-    id: ID!
-    input: VideoBlockUpdateInput!
-
-    """drop this parameter after merging teams"""
-    journeyId: ID
-  ): VideoBlock!
   chatButtonCreate(journeyId: ID!, input: ChatButtonCreateInput): ChatButton!
   chatButtonUpdate(id: ID!, journeyId: ID!, input: ChatButtonUpdateInput!): ChatButton!
   chatButtonRemove(id: ID!): ChatButton!
@@ -1376,100 +1368,6 @@ type VideoBlock implements Block
 
   """how the video should display within the VideoBlock"""
   objectFit: VideoBlockObjectFit @shareable
-}
-
-input VideoBlockCreateInput {
-  id: ID
-  journeyId: ID!
-  parentBlockId: ID!
-
-  """startAt dictates at which point of time the video should start playing"""
-  startAt: Int
-
-  """endAt dictates at which point of time the video should end"""
-  endAt: Int
-  duration: Int
-  description: String
-  muted: Boolean
-  autoplay: Boolean
-
-  """
-  internal source videos: videoId and videoVariantLanguageId both need to be set
-  to select a video.
-  For other sources only videoId needs to be set.
-  """
-  videoId: ID
-
-  """
-  internal source videos: videoId and videoVariantLanguageId both need to be set
-  to select a video.
-  For other sources only videoId needs to be set.
-  """
-  videoVariantLanguageId: ID
-
-  """
-  internal source: videoId and videoVariantLanguageId required
-  youTube source: videoId required
-  """
-  source: VideoBlockSource
-
-  """
-  posterBlockId is present if a child block should be used as a poster.
-  This child block should not be rendered normally, instead it should be used
-  as the video poster. PosterBlock should be of type ImageBlock.
-  """
-  posterBlockId: ID
-  fullsize: Boolean
-
-  """
-  True if the coverBlockId in a parent block should be set to this block's id.
-  """
-  isCover: Boolean
-
-  """how the video should display within the VideoBlock"""
-  objectFit: VideoBlockObjectFit
-}
-
-input VideoBlockUpdateInput {
-  """startAt dictates at which point of time the video should start playing"""
-  startAt: Int
-
-  """endAt dictates at which point of time the video should end"""
-  endAt: Int
-  muted: Boolean
-  autoplay: Boolean
-  duration: Int
-
-  """
-  internal source videos: videoId and videoVariantLanguageId both need to be set
-  to select a video.
-  For other sources only videoId needs to be set.
-  """
-  videoId: ID
-
-  """
-  internal source videos: videoId and videoVariantLanguageId both need to be set
-  to select a video.
-  For other sources only videoId needs to be set.
-  """
-  videoVariantLanguageId: ID
-
-  """
-  internal source: videoId and videoVariantLanguageId required
-  youTube source: videoId required
-  """
-  source: VideoBlockSource
-
-  """
-  posterBlockId is present if a child block should be used as a poster.
-  This child block should not be rendered normally, instead it should be used
-  as the video poster. PosterBlock should be of type ImageBlock.
-  """
-  posterBlockId: ID
-  fullsize: Boolean
-
-  """how the video should display within the VideoBlock"""
-  objectFit: VideoBlockObjectFit
 }
 
 """
