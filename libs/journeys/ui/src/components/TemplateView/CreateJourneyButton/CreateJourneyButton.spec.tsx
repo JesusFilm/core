@@ -88,7 +88,8 @@ const journey: Journey = {
   menuStepBlock: null,
   journeyTheme: null,
   journeyCustomizationDescription: null,
-  journeyCustomizationFields: []
+  journeyCustomizationFields: [],
+  fromTemplateId: null
 }
 
 const teamResult = jest.fn(() => ({

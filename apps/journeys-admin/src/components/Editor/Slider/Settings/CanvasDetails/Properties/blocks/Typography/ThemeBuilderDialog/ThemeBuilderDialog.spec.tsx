@@ -76,7 +76,8 @@ describe('ThemeBuilderDialog', () => {
       labelFont: FontFamily.Nunito
     },
     journeyCustomizationDescription: null,
-    journeyCustomizationFields: []
+    journeyCustomizationFields: [],
+    fromTemplateId: null
   }
 
   const mockJourneyWithoutTheme: JourneyFields = {

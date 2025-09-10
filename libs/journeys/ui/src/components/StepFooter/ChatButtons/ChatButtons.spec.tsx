@@ -104,7 +104,8 @@ describe('ChatButtons', () => {
     menuStepBlock: null,
     journeyTheme: null,
     journeyCustomizationDescription: null,
-    journeyCustomizationFields: []
+    journeyCustomizationFields: [],
+    fromTemplateId: null
   }
 
   const result = jest.fn(() => ({
