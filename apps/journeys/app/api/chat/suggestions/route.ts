@@ -30,6 +30,17 @@ export async function POST(req: NextRequest) {
     This is Suggestion B
     This is Suggestion C
 
+    CONTEXT OVERVIEW:
+    Context received will show in text form what the view will see on a card.
+    All text elements on the card is extracted, sepearted by a '|' and labeled
+    with the type of ui element they are extracted from.
+
+    The elements are:
+    - [Typography] - Text content and headings
+    - [Button] - Interactive button labels and actions
+    - [TextInput] - Form field labels, placeholders, and hints
+    - [RadioOption] - Radio button choice options
+
     CONTEXT: 
     ${contextText}`
 

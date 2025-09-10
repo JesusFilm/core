@@ -1,26 +1,21 @@
 import type { TreeBlock } from '@core/journeys/ui/block'
 
-/**
- * Interface for block context extraction return type
- */
 export interface BlockContext {
   id: string
   type: string
   parentOrder: number | null
   parentBlockId: string | null
-  textContent: string | { label: string; placeholder?: string; hint?: string } | null
+  textContent: string
   children: BlockContext[]
 }
 
 /**
  * Extracts text content from all relevant block types in the journey tree
  * @param treeBlock - Tree block from useBlocks hook
- * @param maxLength - Maximum length of extracted context (default: 1000 characters)
  * @returns Structured block context with text content from all relevant block types
  */
 export function extractBlockContext(
   treeBlock: TreeBlock,
-  maxLength: number = 1000
 ): BlockContext {
   if (!treeBlock) {
     return {
@@ -28,39 +23,43 @@ export function extractBlockContext(
       type: '',
       parentOrder: null,
       parentBlockId: null,
-      textContent: null,
+      textContent: '',
       children: []
     }
   }
 
   const extractBlockContent = (block: TreeBlock): BlockContext => {
-    let textContent: string | { label: string; placeholder?: string; hint?: string } | null = null
+    let textContent = ''
 
     // Extract text content based on block type
     switch (block.__typename) {
       case 'TypographyBlock':
-        textContent = block.content?.trim() || null
+        textContent = block.content?.trim()
+          ? `[Typography] ${block.content.trim()}`
+          : ''
         break
       case 'ButtonBlock':
-        textContent = block.label?.trim() || null
+        textContent = block.label?.trim()
+          ? `[Button] ${block.label.trim()}`
+          : ''
         break
-      case 'TextResponseBlock':
-        if (block.label || block.placeholder || block.hint) {
-          textContent = {
-            label: block.label?.trim() || '',
-            ...(block.placeholder && { placeholder: block.placeholder.trim() }),
-            ...(block.hint && { hint: block.hint.trim() })
-          }
-        }
+      case 'TextResponseBlock': {
+        // Concatenate label, placeholder, and hint into a single string with separators
+        const parts: string[] = []
+        if (block.label?.trim()) parts.push(`Label: ${block.label.trim()}`)
+        if (block.placeholder?.trim())
+          parts.push(`Placeholder: ${block.placeholder.trim()}`)
+        if (block.hint?.trim()) parts.push(`Hint: ${block.hint.trim()}`)
+        textContent = parts.length > 0 ? `[TextInput] ${parts.join(' | ')}` : ''
         break
+      }
       case 'RadioOptionBlock':
-        textContent = block.label?.trim() || null
-        break
-      case 'SignUpBlock':
-        textContent = block.submitLabel?.trim() || null
+        textContent = block.label?.trim()
+          ? `[RadioOption] ${block.label.trim()}`
+          : ''
         break
       default:
-        textContent = null
+        textContent = ''
     }
 
     // Process children recursively
@@ -77,45 +76,4 @@ export function extractBlockContext(
   }
 
   return extractBlockContent(treeBlock)
-}
-
-/**
- * Legacy function for backward compatibility
- * @deprecated Use extractBlockContext instead
- */
-export function extractTypographyContent(
-  treeBlock: TreeBlock,
-  maxLength: number = 1000
-): string {
-  if (!treeBlock) return ''
-
-  const extractContent = (blocks: TreeBlock[]): string[] => {
-    return blocks.flatMap((block) => {
-      const typographyContent =
-        block.__typename === 'TypographyBlock' ? block.content.trim() : ''
-
-      const childrenContent = block.children?.length
-        ? extractContent(block.children)
-        : []
-
-      return typographyContent
-        ? [typographyContent, ...childrenContent]
-        : childrenContent
-    })
-  }
-
-  const combinedContent = extractContent([treeBlock]).join(' ').trim()
-
-  // Early return if content is within limit
-  if (combinedContent.length <= maxLength) {
-    return combinedContent
-  }
-
-  // Truncate to maxLength while preserving word boundaries
-  const truncated = combinedContent.substring(0, maxLength)
-  const lastSpaceIndex = truncated.lastIndexOf(' ')
-
-  return lastSpaceIndex > 0
-    ? `${truncated.substring(0, lastSpaceIndex)}...`
-    : `${truncated}...`
 }
