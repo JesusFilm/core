@@ -1,18 +1,13 @@
 'use client'
 
-import { useRouter } from 'next/navigation'
+import { useParams, useRouter } from 'next/navigation'
 import { ReactElement } from 'react'
 
-interface StudyQuestionsPageProps {
-  params: {
-    videoId: string
-  }
-}
+interface StudyQuestionsPageProps {}
 
-export default function StudyQuestionsPage({
-  params: { videoId }
-}: StudyQuestionsPageProps): ReactElement {
+export default function StudyQuestionsPage({}: StudyQuestionsPageProps): ReactElement {
   const router = useRouter()
+  const { videoId } = useParams() as { videoId: string }
   router.push(`/videos/${videoId}`)
   return <></>
 }

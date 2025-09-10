@@ -1,18 +1,13 @@
 'use client'
 
-import { useRouter } from 'next/navigation'
+import { useParams, useRouter } from 'next/navigation'
 import { ReactElement } from 'react'
 
-interface VideoImageProps {
-  params: {
-    videoId: string
-  }
-}
+interface VideoImageProps {}
 
-export default function VideoImage({
-  params: { videoId }
-}: VideoImageProps): ReactElement {
+export default function VideoImage({}: VideoImageProps): ReactElement {
   const router = useRouter()
+  const { videoId } = useParams() as { videoId: string }
   router.push(`/videos/${videoId}`)
   return <></>
 }

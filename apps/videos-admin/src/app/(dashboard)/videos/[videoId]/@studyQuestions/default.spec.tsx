@@ -104,7 +104,8 @@ jest.mock('next/navigation', () => ({
   useRouter: () => ({
     push: jest.fn()
   }),
-  usePathname: () => '/videos/video-123/studyQuestions'
+  usePathname: () => '/videos/video-123/studyQuestions',
+  useParams: () => ({ videoId: 'video-123' })
 }))
 
 // Mock notistack
@@ -160,13 +161,7 @@ describe('StudyQuestionsList', () => {
   })
 
   it('renders the study questions list with all questions', () => {
-    render(
-      <StudyQuestionsList
-        params={{
-          videoId: mockVideoId
-        }}
-      />
-    )
+    render(<StudyQuestionsList />)
 
     // Check section title
     expect(screen.getByTestId('section-title')).toHaveTextContent(
@@ -210,13 +205,7 @@ describe('StudyQuestionsList', () => {
       refetch: mockRefetch
     })
 
-    render(
-      <StudyQuestionsList
-        params={{
-          videoId: mockVideoId
-        }}
-      />
-    )
+    render(<StudyQuestionsList />)
 
     // Check fallback message
     expect(screen.getByTestId('section-fallback')).toHaveTextContent(
@@ -228,13 +217,7 @@ describe('StudyQuestionsList', () => {
   })
 
   it('navigates to add study question page when add button is clicked', () => {
-    render(
-      <StudyQuestionsList
-        params={{
-          videoId: mockVideoId
-        }}
-      />
-    )
+    render(<StudyQuestionsList />)
 
     // Click add button
     fireEvent.click(screen.getByTestId('mock-button'))
@@ -247,13 +230,7 @@ describe('StudyQuestionsList', () => {
   })
 
   it('navigates to edit study question page when edit button is clicked', () => {
-    render(
-      <StudyQuestionsList
-        params={{
-          videoId: mockVideoId
-        }}
-      />
-    )
+    render(<StudyQuestionsList />)
 
     // Click edit button for the first question
     fireEvent.click(screen.getByTestId('edit-button-q1'))

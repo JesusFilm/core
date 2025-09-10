@@ -1,23 +1,18 @@
 'use client'
 
 import CircularProgress from '@mui/material/CircularProgress'
-import { useRouter } from 'next/navigation'
+import { useParams, useRouter } from 'next/navigation'
 import { ReactElement, Suspense } from 'react'
 
 import { Dialog } from '@core/shared/ui/Dialog'
 
 import { CitationForm } from '../_CitationForm/CitationForm'
 
-interface AddBibleCitationProps {
-  params: {
-    videoId: string
-  }
-}
+interface AddBibleCitationProps {}
 
-export default function AddBibleCitation({
-  params: { videoId }
-}: AddBibleCitationProps): ReactElement {
+export default function AddBibleCitation({}: AddBibleCitationProps): ReactElement {
   const router = useRouter()
+  const { videoId } = useParams() as { videoId: string }
   return (
     <Dialog
       open={true}

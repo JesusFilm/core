@@ -3,7 +3,7 @@
 import { useMutation, useQuery } from '@apollo/client'
 import { DragEndEvent } from '@dnd-kit/core'
 import { arrayMove } from '@dnd-kit/sortable'
-import { usePathname, useRouter } from 'next/navigation'
+import { useParams, usePathname, useRouter } from 'next/navigation'
 import { useSnackbar } from 'notistack'
 import { ReactNode, useEffect, useState } from 'react'
 
@@ -51,17 +51,12 @@ const GET_ADMIN_VIDEO_CHILDREN = graphql(`
 `)
 
 interface ChildrenLayoutProps {
-  params: {
-    videoId: string
-  }
   children: ReactNode
 }
 
-export default function ChildrenLayout({
-  params: { videoId },
-  children
-}: ChildrenLayoutProps) {
+export default function ChildrenLayout({ children }: ChildrenLayoutProps) {
   const router = useRouter()
+  const { videoId } = useParams() as { videoId: string }
   const { enqueueSnackbar } = useSnackbar()
   const pathname = usePathname()
   const [reloadOnPathChange, setReloadOnPathChange] = useState(false)
