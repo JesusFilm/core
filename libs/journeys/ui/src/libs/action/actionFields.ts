@@ -13,5 +13,9 @@ export const ACTION_FIELDS = gql`
     ... on EmailAction {
       email
     }
+    ... on PhoneAction {
+      phone
+      countryCode
+    }
   }
 `
