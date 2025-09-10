@@ -20,6 +20,11 @@ const nextConfig = {
     // handled by github actions
     ignoreDuringBuilds: process.env.CI === 'true'
   },
+  // Ensure Prisma engines and generated clients are included in the serverless output
+  // so the runtime can locate the correct query engine (e.g., rhel-openssl-3.0.x)
+  outputFileTracingIncludes: {
+    '*': ['node_modules/.prisma/**', 'node_modules/@prisma/client/**']
+  },
   outputFileTracingExcludes: {
     '*': [
       'node_modules/@swc/core-linux-x64-gnu',
