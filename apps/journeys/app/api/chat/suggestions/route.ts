@@ -16,7 +16,7 @@ export async function POST(req: NextRequest) {
       )
     }
 
-    const prompt = await getPrompt('Suggestion-Prompt', {
+    const prompt = await getPrompt('Suggestions-Prompt', {
       contextText: contextText
     })
 
