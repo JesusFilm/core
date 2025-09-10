@@ -57,7 +57,8 @@ export function MultiStepForm(): ReactElement {
         backgroundColor: 'background.paper',
         borderRadius: { xs: '0px', sm: '16px' },
         mt: { xs: 0, sm: 6 },
-        mb: { xs: 0, sm: 6 }
+        mb: { xs: 0, sm: 6 },
+        py: 10
       }}
     >
       <Stack gap={{ xs: 3, sm: 4 }} data-testid="MultiStepForm">
@@ -68,7 +69,6 @@ export function MultiStepForm(): ReactElement {
             endIcon={<ChevronRight />}
             sx={{
               alignSelf: 'flex-end',
-              mt: '14px',
               mr: '4px',
               fontWeight: 'bold',
               '& .MuiButton-endIcon': {
