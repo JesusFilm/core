@@ -142,8 +142,13 @@ describe('multiselectBlockUpdate', () => {
   })
 
   it('fails when min is negative', async () => {
-    // ensure option count is numeric so validation runs before permission check
-    prismaMock.block.count.mockResolvedValue(3 as any)
+    // authorize so validation runs
+    fetchBlockWithJourneyAcl.mockResolvedValue({
+      id,
+      journeyId: 'journeyId',
+      journey: { id: 'journeyId' }
+    })
+    mockAbility.mockReturnValue(true)
     const result = await authClient({
       document: MULTISELECT_BLOCK_UPDATE,
       variables: { id, input: { min: -1 } }
@@ -153,7 +158,7 @@ describe('multiselectBlockUpdate', () => {
       data: null,
       errors: [
         expect.objectContaining({
-          message: 'min must be greater than or equal to the number of options',
+          message: 'min must be greater than or equal to 0',
           extensions: expect.objectContaining({ code: 'BAD_USER_INPUT' })
         })
       ]
@@ -161,6 +166,13 @@ describe('multiselectBlockUpdate', () => {
   })
 
   it('fails when max is negative', async () => {
+    // authorize so validation runs
+    fetchBlockWithJourneyAcl.mockResolvedValue({
+      id,
+      journeyId: 'journeyId',
+      journey: { id: 'journeyId' }
+    })
+    mockAbility.mockReturnValue(true)
     const result = await authClient({
       document: MULTISELECT_BLOCK_UPDATE,
       variables: { id, input: { max: -2 } }
@@ -178,6 +190,13 @@ describe('multiselectBlockUpdate', () => {
   })
 
   it('fails when min is greater than max', async () => {
+    // authorize so validation runs
+    fetchBlockWithJourneyAcl.mockResolvedValue({
+      id,
+      journeyId: 'journeyId',
+      journey: { id: 'journeyId' }
+    })
+    mockAbility.mockReturnValue(true)
     const result = await authClient({
       document: MULTISELECT_BLOCK_UPDATE,
       variables: { id, input: { min: 5, max: 3 } }
