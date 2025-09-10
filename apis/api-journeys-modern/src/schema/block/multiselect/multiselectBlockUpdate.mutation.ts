@@ -31,8 +31,6 @@ builder.mutationField('multiselectBlockUpdate', (t) =>
       const { id, input: initialInput } = args
       const input = { ...initialInput }
 
-      // (moved validation post-ACL below)
-
       const block = await fetchBlockWithJourneyAcl(id)
 
       // Check permissions using ACL
