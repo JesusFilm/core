@@ -5,9 +5,13 @@ import { prisma } from '@core/prisma/media/client'
 import { getAlgoliaClient } from '../algoliaClient'
 import { getLanguages } from '../languages'
 
-function sortByEnglishFirst(a: { languageId: string }): number {
-  if (a.languageId === '529') return -1
-  return 0
+function sortByEnglishFirst(
+  a: { languageId?: string },
+  b: { languageId?: string }
+): number {
+  const aIsEn = a?.languageId === '529'
+  const bIsEn = b?.languageId === '529'
+  return aIsEn === bIsEn ? 0 : aIsEn ? -1 : 1
 }
 
 export async function updateVideoVariantInAlgolia(
@@ -58,8 +62,13 @@ export async function updateVideoVariantInAlgolia(
         process.env.CLOUDFLARE_IMAGE_ACCOUNT ?? 'testAccount'
       }/${cfImage.id}/f=jpg,w=1280,h=600,q=95`
 
-    const sortedTitles =
-      videoVariant.video?.title.sort(sortByEnglishFirst) ?? []
+    const sortedTitles = [...(videoVariant.video?.title ?? [])].sort(
+      sortByEnglishFirst
+    )
+
+    const sortedDescription = [...(videoVariant.video?.description ?? [])].sort(
+      sortByEnglishFirst
+    )
 
     const transformedVideo = {
       objectID: videoVariant.id,
@@ -69,9 +78,7 @@ export async function updateVideoVariantInAlgolia(
         value: title?.value ?? '',
         languageId: title?.languageId ?? ''
       })),
-      description: videoVariant.video?.description
-        ?.sort(sortByEnglishFirst)
-        .map((description) => description?.value),
+      description: sortedDescription.map((d) => d?.value),
       duration: videoVariant.duration,
       languageId: videoVariant.languageId,
       languageEnglishName: languages[videoVariant.languageId]?.english,
