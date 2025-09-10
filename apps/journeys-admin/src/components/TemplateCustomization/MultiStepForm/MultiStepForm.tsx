@@ -11,6 +11,8 @@ import { DoneScreen, LanguageScreen, LinksScreen, TextScreen } from './Screens'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import ChevronRight from '@core/shared/ui/icons/ChevronRight'
 
+export const MULTI_STEP_FORM_MIN_HEIGHT = 900
+
 // NOTE: login is a dialog -> regular sign up path (that can show the image/title from journey) -> redirects back current step (URL parameter)
 // NOTE: share is a dialog
 const screens = ['language', 'text', 'links', 'social', 'done']
@@ -51,8 +53,7 @@ export function MultiStepForm(): ReactElement {
       maxWidth="sm"
       sx={{
         width: '100%',
-        height: '100%',
-        maxHeight: { xs: '100%', sm: '900px' },
+        minHeight: { xs: '100%', sm: MULTI_STEP_FORM_MIN_HEIGHT },
         backgroundColor: 'background.paper',
         borderRadius: { xs: '0px', sm: '16px' },
         mt: { xs: 0, sm: 6 },
