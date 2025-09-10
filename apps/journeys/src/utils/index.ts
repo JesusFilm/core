@@ -1,1 +1,1 @@
-export { extractBlockContext, type BlockContext } from './contextExtraction'
+export { extractBlockContext } from './contextExtraction'
