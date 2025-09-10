@@ -59,10 +59,10 @@ export function AiChat({ open }: AiChatProps) {
     setSuggestionsLoading(true)
     setSuggestionsError(null)
 
-    try {      
-      const contextText = extractBlockContext(activeBlock as TreeBlock)      
+    try {
+      const contextText = extractBlockContext(activeBlock as TreeBlock)
       if (contextText === '') {
-        setSuggestions([])        
+        setSuggestions([])
         return
       }
 
@@ -96,9 +96,12 @@ export function AiChat({ open }: AiChatProps) {
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     if (input.trim()) {
-       void sendMessage({ text: input }, {
-        body: {contextText}
-       })      
+      void sendMessage(
+        { text: input },
+        {
+          body: { contextText }
+        }
+      )
       setInput('')
     }
   }
