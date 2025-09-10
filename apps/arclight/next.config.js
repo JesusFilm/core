@@ -23,7 +23,12 @@ const nextConfig = {
   // Ensure Prisma engines and generated clients are included in the serverless output
   // so the runtime can locate the correct query engine (e.g., rhel-openssl-3.0.x)
   outputFileTracingIncludes: {
-    '*': ['node_modules/.prisma/**', 'node_modules/@prisma/client/**']
+    '*': [
+      'node_modules/.prisma/**',
+      'node_modules/@prisma/client/**',
+      '../../node_modules/.prisma/**',
+      '../../node_modules/@prisma/client/**'
+    ]
   },
   outputFileTracingExcludes: {
     '*': [
