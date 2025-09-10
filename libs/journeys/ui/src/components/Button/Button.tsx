@@ -344,8 +344,8 @@ export function Button({
           {editableLabel != null
             ? editableLabel
             : label !== ''
-              ? t(label)
-              : t(fallbackLabel)}
+              ? label
+              : fallbackLabel}
         </Typography>
       </MuiButton>
     </Box>
