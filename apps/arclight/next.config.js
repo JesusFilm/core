@@ -20,14 +20,16 @@ const nextConfig = {
     // handled by github actions
     ignoreDuringBuilds: process.env.CI === 'true'
   },
-  // Ensure Prisma engines and generated clients are included in the serverless output
-  // so the runtime can locate the correct query engine (e.g., rhel-openssl-3.0.x)
+  // Ensure Prisma generated clients and ONLY the required rhel engine are included
+  // Keep this list minimal to avoid hitting Vercel's 250MB unzipped function limit
   outputFileTracingIncludes: {
     '*': [
-      'node_modules/.prisma/**',
-      'node_modules/@prisma/client/**',
-      '../../node_modules/.prisma/**',
-      '../../node_modules/@prisma/client/**'
+      // Generated Prisma clients used by Arclight
+      'node_modules/.prisma/api-media-client/**',
+      'node_modules/.prisma/api-languages-client/**',
+      // Node-API engine for AWS Lambda (Amazon Linux, OpenSSL 3)
+      'node_modules/.prisma/client/libquery_engine-rhel-openssl-3.0.x.so.node',
+      '../../node_modules/.prisma/client/libquery_engine-rhel-openssl-3.0.x.so.node'
     ]
   },
   outputFileTracingExcludes: {
