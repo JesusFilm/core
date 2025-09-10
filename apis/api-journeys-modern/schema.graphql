@@ -1,5 +1,5 @@
 extend schema
-  @link(url: "https://specs.apollo.dev/federation/v2.6", import: ["@extends", "@external", "@key", "@override", "@shareable"])
+  @link(url: "https://specs.apollo.dev/federation/v2.6", import: ["@extends", "@external", "@key", "@shareable"])
 
 interface Action {
   parentBlockId: ID!
@@ -1019,14 +1019,14 @@ enum MessagePlatform {
 }
 
 type Mutation {
-  videoBlockCreate(input: VideoBlockCreateInput!): VideoBlock! @override(from: "api-journeys")
+  videoBlockCreate(input: VideoBlockCreateInput!): VideoBlock!
   videoBlockUpdate(
     id: ID!
     input: VideoBlockUpdateInput!
 
     """drop this parameter after merging teams"""
     journeyId: ID
-  ): VideoBlock! @override(from: "api-journeys")
+  ): VideoBlock!
   journeySimpleUpdate(id: ID!, journey: Json!): Json
   journeyAiTranslateCreate(input: JourneyAiTranslateInput!): Journey!
   createJourneyEventsExportLog(input: JourneyEventsExportLogInput!): JourneyEventsExportLog!
