@@ -6,7 +6,7 @@ import FormControl from '@mui/material/FormControl'
 import InputLabel from '@mui/material/InputLabel'
 import MenuItem from '@mui/material/MenuItem'
 import Select from '@mui/material/Select'
-import { useRouter } from 'next/navigation'
+import { useParams, useRouter } from 'next/navigation'
 import { useSnackbar } from 'notistack'
 import { ReactElement, useState } from 'react'
 
@@ -42,16 +42,11 @@ const UPDATE_VIDEO_CHILDREN_ORDER = graphql(`
 
 type AddMethod = 'new' | 'existing' | 'existingById'
 
-interface AddChildrenProps {
-  params: {
-    videoId: string
-  }
-}
+interface AddChildrenProps {}
 
-export default function AddChildren({
-  params: { videoId }
-}: AddChildrenProps): ReactElement {
+export default function AddChildren({}: AddChildrenProps): ReactElement {
   const router = useRouter()
+  const { videoId } = useParams() as { videoId: string }
   const { enqueueSnackbar } = useSnackbar()
   const [addMethod, setAddMethod] = useState<AddMethod>('new')
 
