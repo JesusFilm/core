@@ -147,7 +147,7 @@ describe('algoliaVideoVariantUpdate', () => {
       'Record test-variant-id is now available in index test-video-variants'
     )
   })
-  
+
   it('should handle video variant with non-English language', async () => {
     prismaMock.videoVariant.findUnique.mockResolvedValueOnce({
       id: 'test-variant-zh',
