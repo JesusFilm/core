@@ -116,7 +116,9 @@ describe('multiselectBlockCreate', () => {
           id: 'blockId',
           journeyId: 'journeyId',
           parentBlockId: 'parentId',
-          submitLabel: input.submitLabel
+          submitLabel: input.submitLabel,
+          min: input.min,
+          max: input.max
         })
       }
     })
@@ -140,5 +142,172 @@ describe('multiselectBlockCreate', () => {
         })
       ]
     })
+  })
+
+  it('fails when min is negative', async () => {
+    const result = await authClient({
+      document: MULTISELECT_BLOCK_CREATE,
+      variables: {
+        input: {
+          ...input,
+          min: -1
+        }
+      }
+    })
+
+    expect(result).toEqual({
+      data: null,
+      errors: [
+        expect.objectContaining({
+          message: 'min must be greater than or equal to 0',
+          extensions: expect.objectContaining({ code: 'BAD_USER_INPUT' })
+        })
+      ]
+    })
+  })
+
+  it('fails when max is negative', async () => {
+    const result = await authClient({
+      document: MULTISELECT_BLOCK_CREATE,
+      variables: {
+        input: {
+          ...input,
+          max: -2
+        }
+      }
+    })
+
+    expect(result).toEqual({
+      data: null,
+      errors: [
+        expect.objectContaining({
+          message: 'max must be greater than or equal to 0',
+          extensions: expect.objectContaining({ code: 'BAD_USER_INPUT' })
+        })
+      ]
+    })
+  })
+
+  it('fails when min is greater than max', async () => {
+    const result = await authClient({
+      document: MULTISELECT_BLOCK_CREATE,
+      variables: {
+        input: {
+          ...input,
+          min: 5,
+          max: 3
+        }
+      }
+    })
+
+    expect(result).toEqual({
+      data: null,
+      errors: [
+        expect.objectContaining({
+          message: 'min must be less than or equal to max',
+          extensions: expect.objectContaining({ code: 'BAD_USER_INPUT' })
+        })
+      ]
+    })
+  })
+
+  it('treats missing max as null on write', async () => {
+    const tx = {
+      block: {
+        create: jest.fn().mockImplementation(async (args) => ({
+          id: 'blockId',
+          typename: 'MultiselectBlock',
+          parentOrder: 0,
+          journeyId: 'journeyId',
+          parentBlockId: 'parentId',
+          min: 0,
+          max: null,
+          submitLabel: 'Submit',
+          journey: { id: 'journeyId' }
+        })),
+        findFirst: jest.fn().mockResolvedValue(null),
+        findMany: jest.fn().mockResolvedValue([])
+      },
+      journey: { update: jest.fn().mockResolvedValue({ id: 'journeyId' }) }
+    }
+
+    const {
+      fetchJourneyWithAclIncludes
+    } = require('../../../lib/auth/fetchJourneyWithAclIncludes')
+    fetchJourneyWithAclIncludes.mockResolvedValue({ id: 'journeyId' })
+    mockAbility.mockReturnValue(true)
+    prismaMock.$transaction.mockImplementation(async (cb: any) => await cb(tx))
+
+    const minimalInput = {
+      journeyId: 'journeyId',
+      parentBlockId: 'parentId',
+      label: 'Question label',
+      submitLabel: 'Submit',
+      min: 0
+      // max omitted on purpose
+    }
+
+    const result = await authClient({
+      document: MULTISELECT_BLOCK_CREATE,
+      variables: { input: minimalInput }
+    })
+
+    expect(tx.block.create).toHaveBeenCalledWith(
+      expect.objectContaining({
+        data: expect.objectContaining({
+          max: null
+        })
+      })
+    )
+    expect(result.data?.multiselectBlockCreate?.max).toBeNull()
+  })
+
+  it('nullifies min/max when equal to child count (0 on create)', async () => {
+    const tx = {
+      block: {
+        create: jest.fn().mockResolvedValue({
+          id: 'blockId',
+          typename: 'MultiselectBlock',
+          parentOrder: 0,
+          journeyId: 'journeyId',
+          parentBlockId: 'parentId',
+          min: null,
+          max: null,
+          submitLabel: 'Submit',
+          journey: { id: 'journeyId' }
+        }),
+        findFirst: jest.fn().mockResolvedValue(null),
+        findMany: jest.fn().mockResolvedValue([])
+      },
+      journey: { update: jest.fn().mockResolvedValue({ id: 'journeyId' }) }
+    }
+    const {
+      fetchJourneyWithAclIncludes
+    } = require('../../../lib/auth/fetchJourneyWithAclIncludes')
+    fetchJourneyWithAclIncludes.mockResolvedValue({ id: 'journeyId' })
+    mockAbility.mockReturnValue(true)
+    prismaMock.$transaction.mockImplementation(async (cb: any) => await cb(tx))
+
+    const result = await authClient({
+      document: MULTISELECT_BLOCK_CREATE,
+      variables: {
+        input: {
+          journeyId: 'journeyId',
+          parentBlockId: 'parentId',
+          label: 'Question label',
+          submitLabel: 'Submit',
+          min: 0,
+          max: 0
+        }
+      }
+    })
+
+    expect(tx.block.create).toHaveBeenCalledWith(
+      expect.objectContaining({
+        data: expect.objectContaining({ min: null, max: null })
+      })
+    )
+    expect(result.data?.multiselectBlockCreate?.min).toBeNull()
+    expect(result.data?.multiselectBlockCreate?.max).toBeNull()
   })
 })

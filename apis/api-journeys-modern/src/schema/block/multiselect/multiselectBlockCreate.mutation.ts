@@ -26,6 +26,24 @@ builder.mutationField('multiselectBlockCreate', (t) =>
       const { input: initialInput } = args
       const input = { ...initialInput }
 
+      // Validation: min/max non-negative and min <= max when both provided
+      const { min, max } = input
+      if (min != null && min < 0) {
+        throw new GraphQLError('min must be greater than or equal to 0', {
+          extensions: { code: 'BAD_USER_INPUT' }
+        })
+      }
+      if (max != null && max < 0) {
+        throw new GraphQLError('max must be greater than or equal to 0', {
+          extensions: { code: 'BAD_USER_INPUT' }
+        })
+      }
+      if (min != null && max != null && min > max) {
+        throw new GraphQLError('min must be less than or equal to max', {
+          extensions: { code: 'BAD_USER_INPUT' }
+        })
+      }
+
       // Check permissions using ACL
       const journey = await fetchJourneyWithAclIncludes(input.journeyId)
       if (

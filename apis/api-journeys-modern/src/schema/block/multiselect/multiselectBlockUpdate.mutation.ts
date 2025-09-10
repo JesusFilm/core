@@ -1,5 +1,7 @@
 import { GraphQLError } from 'graphql'
 
+import { prisma } from '@core/prisma/journeys/client'
+
 import {
   Action,
   ability,
@@ -26,7 +28,39 @@ builder.mutationField('multiselectBlockUpdate', (t) =>
       })
     },
     resolve: async (_parent, args, context) => {
-      const { id, input } = args
+      const { id, input: initialInput } = args
+      const input = { ...initialInput }
+
+      // Validation: min/max non-negative and min <= max when both provided
+      const { min, max } = input as { min?: number | null; max?: number | null }
+      if (min != null && min < 0) {
+        throw new GraphQLError('min must be greater than or equal to 0', {
+          extensions: { code: 'BAD_USER_INPUT' }
+        })
+      }
+      if (max != null && max < 0) {
+        throw new GraphQLError('max must be greater than or equal to 0', {
+          extensions: { code: 'BAD_USER_INPUT' }
+        })
+      }
+      if (min != null && max != null && min > max) {
+        throw new GraphQLError('min must be less than or equal to max', {
+          extensions: { code: 'BAD_USER_INPUT' }
+        })
+      }
+
+      // If provided min/max equal the number of child MultiselectOptionBlock, set them to null
+      if (input.min != null || input.max != null) {
+        const optionCount = await prisma.block.count({
+          where: {
+            parentBlockId: id,
+            typename: 'MultiselectOptionBlock',
+            deletedAt: null
+          }
+        })
+        if (input.min != null && input.min === optionCount) input.min = null
+        if (input.max != null && input.max >= optionCount) input.max = null
+      }
 
       const block = await fetchBlockWithJourneyAcl(id)
 
