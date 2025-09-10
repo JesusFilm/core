@@ -62,18 +62,7 @@ export function AiChat({ open }: AiChatProps) {
     setSuggestionsError(null)
 
     try {
-      const blockContext = extractBlockContext(activeBlock as TreeBlock)
-
-      // Extract all text content from the block context tree
-      const extractAllText = (context: BlockContext): string[] => {
-        const texts = context.textContent ? [context.textContent] : []
-        const childrenTexts = context.children.flatMap(extractAllText)
-        return [...texts, ...childrenTexts]
-      }
-
-      const allTexts = extractAllText(blockContext)
-      const contextText = allTexts.join(' | ').trim()
-
+      const contextText = extractBlockContext(activeBlock as TreeBlock)
       if (contextText === '') {
         setSuggestions([])
         return

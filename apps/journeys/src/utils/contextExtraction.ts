@@ -9,71 +9,75 @@ export interface BlockContext {
   children: BlockContext[]
 }
 
+function formatText(prefix: string, part: string): string {
+  if (!part) {
+    return ''
+  }
+  const partText = part.trim()
+  if (!partText) {
+    return ''
+  }
+  return `${prefix} ${partText}`
+}
+
+function formatTextResponseBlockParts(
+  label: string | null | undefined,
+  placeholder: string | null | undefined,
+  hint: string | null | undefined
+): string[] {
+  return [
+    formatText('Label:', label ?? ''),
+    formatText('Placeholder:', placeholder ?? ''),
+    formatText('Hint:', hint ?? '')
+  ].filter(Boolean) // removes empty strings
+}
+
+const extractAllText = (block: TreeBlock): string[] => {
+  let textContent = ''
+
+  switch (block.__typename) {
+    case 'TypographyBlock':
+      textContent = formatText('[Typography]', block.content)
+      break
+    case 'ButtonBlock':
+      textContent = formatText('[Button]', block.label)
+      break
+    case 'TextResponseBlock': {
+      const parts: string[] = formatTextResponseBlockParts(
+        block.label,
+        block.placeholder,
+        block.hint
+      )
+      textContent =
+        parts.length > 0 ? formatText('[TextInput]', parts.join(' | ')) : ''
+      break
+    }
+    case 'RadioOptionBlock':
+      textContent = formatText('[RadioOption]', block.label)
+      break
+    default:
+      textContent = ''
+  }
+
+  const texts = textContent ? [textContent] : []
+
+  // Collect children's text recursively
+  const childrenTexts = block.children?.flatMap(extractAllText) || []
+
+  return [...texts, ...childrenTexts]
+}
+
 /**
  * Extracts text content from all relevant block types in the journey tree
  * @param treeBlock - Tree block from useBlocks hook
  * @returns Structured block context with text content from all relevant block types
  */
-export function extractBlockContext(
-  treeBlock: TreeBlock,
-): BlockContext {
+export function extractBlockContext(treeBlock: TreeBlock): string {
   if (!treeBlock) {
-    return {
-      id: '',
-      type: '',
-      parentOrder: null,
-      parentBlockId: null,
-      textContent: '',
-      children: []
-    }
+    return ''
   }
 
-  const extractBlockContent = (block: TreeBlock): BlockContext => {
-    let textContent = ''
-
-    // Extract text content based on block type
-    switch (block.__typename) {
-      case 'TypographyBlock':
-        textContent = block.content?.trim()
-          ? `[Typography] ${block.content.trim()}`
-          : ''
-        break
-      case 'ButtonBlock':
-        textContent = block.label?.trim()
-          ? `[Button] ${block.label.trim()}`
-          : ''
-        break
-      case 'TextResponseBlock': {
-        // Concatenate label, placeholder, and hint into a single string with separators
-        const parts: string[] = []
-        if (block.label?.trim()) parts.push(`Label: ${block.label.trim()}`)
-        if (block.placeholder?.trim())
-          parts.push(`Placeholder: ${block.placeholder.trim()}`)
-        if (block.hint?.trim()) parts.push(`Hint: ${block.hint.trim()}`)
-        textContent = parts.length > 0 ? `[TextInput] ${parts.join(' | ')}` : ''
-        break
-      }
-      case 'RadioOptionBlock':
-        textContent = block.label?.trim()
-          ? `[RadioOption] ${block.label.trim()}`
-          : ''
-        break
-      default:
-        textContent = ''
-    }
-
-    // Process children recursively
-    const children = block.children?.map(extractBlockContent) || []
-
-    return {
-      id: block.id,
-      type: block.__typename,
-      parentOrder: block.parentOrder,
-      parentBlockId: block.parentBlockId,
-      textContent,
-      children
-    }
-  }
-
-  return extractBlockContent(treeBlock)
+  const allTexts = extractAllText(treeBlock)
+  const contextText = allTexts.join(' | ').trim()
+  return contextText
 }
