@@ -61,6 +61,7 @@ export function SocialScreen({ handleNext }: SocialScreenProps): ReactElement {
         color="secondary"
         onClick={handleNext}
         endIcon={<ArrowRightIcon />}
+        data-testid="DoneButton"
         sx={{
           width: BUTTON_NEXT_STEP_WIDTH,
           height: BUTTON_NEXT_STEP_HEIGHT,
