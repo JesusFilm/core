@@ -99,12 +99,6 @@ export const GET_STEP_BLOCKS_WITH_POSITION = gql`
 `
 
 export function JourneyFlow(): ReactElement {
-  const renderCountRef = useRef(0)
-  renderCountRef.current += 1
-  console.log(`🔄 JourneyFlow COMPONENT RENDER #${renderCountRef.current}`, {
-    timestamp: new Date().toISOString()
-  })
-
   const router = useRouter()
   const { editorAnalytics } = useFlags()
   const theme = useTheme()
