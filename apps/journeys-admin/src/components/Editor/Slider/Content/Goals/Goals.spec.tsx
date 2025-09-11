@@ -167,10 +167,12 @@ describe('Goals', () => {
     logoImageBlock: null,
     menuButtonIcon: null,
     menuStepBlock: null,
-    journeyTheme: null,
     journeyCustomizationDescription: null,
     journeyCustomizationFields: [],
-    fromTemplateId: null
+    fromTemplateId: null,
+    socialNodeX: null,
+    socialNodeY: null,
+    journeyTheme: null
   }
 
   it('should render placeholder', () => {

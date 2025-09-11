@@ -69,7 +69,9 @@ describe('HostAvatars', () => {
     journeyTheme: null,
     journeyCustomizationDescription: null,
     journeyCustomizationFields: [],
-    fromTemplateId: null
+    fromTemplateId: null,
+    socialNodeX: null,
+    socialNodeY: null
   }
 
   it('renders both avatars if both images are set', () => {
