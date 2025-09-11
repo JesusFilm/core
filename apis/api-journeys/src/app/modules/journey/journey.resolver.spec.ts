@@ -108,7 +108,8 @@ describe('JourneyResolver', () => {
     socialNodeX: null,
     socialNodeY: null,
     fromTemplateId: null,
-    journeyCustomizationDescription: null
+    journeyCustomizationDescription: null,
+    guestJourney: null
   }
   const journeyWithUserTeam = {
     ...journey,
@@ -1286,7 +1287,54 @@ describe('JourneyResolver', () => {
               role: UserJourneyRole.owner
             }
           },
-          journeyTags: undefined
+          journeyTags: undefined,
+          guestJourney: null
+        }
+      })
+    })
+
+    it('duplicates your journey with guestJourney set to true', async () => {
+      await resolver.journeyDuplicate(
+        ability,
+        'journeyId',
+        'userId',
+        'teamId',
+        true
+      )
+      expect(prismaService.journey.create).toHaveBeenCalledWith({
+        data: {
+          ...omit(journey, [
+            'parentBlockId',
+            'nextBlockId',
+            'hostId',
+            'primaryImageBlockId',
+            'creatorImageBlockId',
+            'creatorDescription',
+            'publishedAt',
+            'teamId',
+            'createdAt',
+            'strategySlug',
+            'logoImageBlockId',
+            'menuStepBlockId'
+          ]),
+          id: 'duplicateJourneyId',
+          status: JourneyStatus.published,
+          publishedAt: new Date(),
+          slug: `${journey.title}-copy`,
+          title: `${journey.title} copy`,
+          template: false,
+          featuredAt: null,
+          team: {
+            connect: { id: 'teamId' }
+          },
+          userJourneys: {
+            create: {
+              userId: 'userId',
+              role: UserJourneyRole.owner
+            }
+          },
+          journeyTags: undefined,
+          guestJourney: true
         }
       })
     })
