@@ -26,10 +26,7 @@ const nextConfig = {
     '*': [
       // Generated Prisma clients used by Arclight
       'node_modules/.prisma/api-media-client/**',
-      'node_modules/.prisma/api-languages-client/**',
-      // Node-API engine for AWS Lambda (Amazon Linux, OpenSSL 3)
-      'node_modules/.prisma/client/libquery_engine-rhel-openssl-3.0.x.so.node',
-      '../../node_modules/.prisma/client/libquery_engine-rhel-openssl-3.0.x.so.node'
+      'node_modules/.prisma/api-languages-client/**'
     ]
   },
   outputFileTracingExcludes: {
