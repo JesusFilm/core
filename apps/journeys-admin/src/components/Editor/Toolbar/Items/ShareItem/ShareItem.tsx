@@ -2,19 +2,16 @@ import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import CircularProgress from '@mui/material/CircularProgress'
 import Stack from '@mui/material/Stack'
-import Typography from '@mui/material/Typography'
 import dynamic from 'next/dynamic'
 import { useRouter } from 'next/router'
 import { useTranslation } from 'next-i18next'
+import { useSnackbar } from 'notistack'
 import { ComponentProps, MouseEvent, ReactElement, useState } from 'react'
 
 import { setBeaconPageViewed } from '@core/journeys/ui/beaconHooks'
 import { CopyTextField } from '@core/shared/ui/CopyTextField'
 import { Dialog } from '@core/shared/ui/Dialog'
-import Code1Icon from '@core/shared/ui/icons/Code1'
-import Edit2Icon from '@core/shared/ui/icons/Edit2'
 import ShareIcon from '@core/shared/ui/icons/Share'
-import TransformIcon from '@core/shared/ui/icons/Transform'
 
 import { GetJourneyForSharing_journey as JourneyFromLazyQuery } from '../../../../../../__generated__/GetJourneyForSharing'
 import { JourneyFields as JourneyFromContext } from '../../../../../../__generated__/JourneyFields'
@@ -72,6 +69,7 @@ export function ShareItem({
   handleKeepMounted
 }: ShareItemProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
+  const { enqueueSnackbar } = useSnackbar()
 
   const { hostname } = useCustomDomainsQuery({
     variables: { teamId: journey?.team?.id ?? '' },
@@ -82,6 +80,22 @@ export function ShareItem({
   const [showEmbedDialog, setShowEmbedDialog] = useState<boolean | null>(null)
   const [showQrCodeDialog, setShowQrCodeDialog] = useState<boolean | null>(null)
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
+
+  const journeyUrl = journey?.slug != null
+    ? `${hostname != null
+      ? `https://${hostname}`
+      : (process.env.NEXT_PUBLIC_JOURNEYS_URL ??
+        'https://your.nextstep.is')
+    }/${journey?.slug}`
+    : undefined
+
+  const handleCopyClick = async (): Promise<void> => {
+    await navigator.clipboard.writeText(journeyUrl ?? '')
+    enqueueSnackbar('Link copied', {
+      variant: 'success',
+      preventDuplicate: true
+    })
+  }
 
   function handleShowMenu(event: MouseEvent<HTMLElement>): void {
     setAnchorEl(event.currentTarget)
@@ -111,6 +125,8 @@ export function ShareItem({
         onClose={() => {
           setAnchorEl(null)
         }}
+        dialogTitle={{ title: t('Share'), closeButton: true }}
+        sx={{ minWidth: 350 }}
       >
         {journey == null ? (
           <Box
@@ -122,58 +138,97 @@ export function ShareItem({
             <CircularProgress />
           </Box>
         ) : (
-          <Stack direction="column" spacing={4}>
-            <Typography variant="subtitle2" gutterBottom>
-              {t('Share This Journey')}
-            </Typography>
+          <Stack
+            direction="column"
+            spacing={{ xs: 4, sm: 8 }}
+            sx={{ mt: { xs: 0, sm: 2 } }}
+          >
             <CopyTextField
-              value={
-                journey?.slug != null
-                  ? `${
-                      hostname != null
-                        ? `https://${hostname}`
-                        : (process.env.NEXT_PUBLIC_JOURNEYS_URL ??
-                          'https://your.nextstep.is')
-                    }/${journey?.slug}`
-                  : undefined
-              }
+              value={journeyUrl}
+              onCopyClick={handleCopyClick}
             />
-            <Stack direction="row" spacing={6}>
+            <Button
+              onClick={handleCopyClick}
+              disabled={journey == null}
+              size="medium"
+              sx={{
+                display: { xs: 'flex', sm: 'none' },
+                backgroundColor: 'black',
+                color: 'white',
+                '&:hover': {
+                  backgroundColor: 'secondary.dark'
+                },
+                '&:disabled': {
+                  backgroundColor: 'secondary.dark',
+                  color: 'divider'
+                },
+                width: '100%',
+                height: '48px',
+                gap: 1
+              }}
+            >
+              {t('Copy Link')}
+            </Button>
+            <Stack
+              direction="row"
+              spacing={{ xs: 2, sm: 4 }}
+              sx={{ width: '100%', height: 42 }}
+            >
               <Button
                 onClick={() => {
                   setShowSlugDialog(true)
                   setRoute('edit-url')
                 }}
-                size="small"
-                startIcon={<Edit2Icon />}
+                size="medium"
                 disabled={journey == null}
                 style={{ whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}
-              >
-                {t('Edit URL')}
-              </Button>
-              <Button
-                onClick={() => {
-                  setShowEmbedDialog(true)
-                  setRoute('embed-journey')
+                sx={{
+                  flex: 1,
+                  border: '1.5px solid',
+                  borderRadius: 2,
+                  color: 'secondary.dark'
                 }}
-                size="small"
-                startIcon={<Code1Icon />}
-                disabled={journey == null}
-                style={{ whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}
               >
-                {t('Embed Journey')}
+                {t('Edit Link')}
               </Button>
               <Button
                 onClick={() => {
                   setShowQrCodeDialog(true)
                   setRoute('qr-code')
                 }}
-                size="small"
-                startIcon={<TransformIcon />}
+                size="medium"
                 disabled={journey == null}
                 style={{ whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}
+                sx={{
+                  flex: 1,
+                  border: '1.5px solid',
+                  borderRadius: 2,
+                  color: 'secondary.dark'
+                }}
               >
                 {t('QR Code')}
+              </Button>
+              <Button
+                onClick={() => {
+                  setShowEmbedDialog(true)
+                  setRoute('embed-journey')
+                }}
+                size="medium"
+                disabled={journey == null}
+                style={{ whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}
+                sx={{
+                  flex: 1,
+                  border: '1.5px solid',
+                  borderRadius: 2,
+                  color: 'secondary.dark'
+                }}
+              >
+                <Box sx={{ display: { xs: 'block', sm: 'none' } }}>
+                  {t('Embed')}
+                </Box>
+                <Box sx={{ display: { xs: 'none', sm: 'block' } }}>
+                  {t('Embed Journey')}
+                </Box>
               </Button>
             </Stack>
           </Stack>

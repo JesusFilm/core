@@ -1,10 +1,11 @@
 import ContentCopyRoundedIcon from '@mui/icons-material/ContentCopyRounded'
-import IconButton from '@mui/material/IconButton'
+import Button from '@mui/material/Button'
 import InputAdornment from '@mui/material/InputAdornment'
 import TextField from '@mui/material/TextField'
 import { SxProps } from '@mui/system/styleFunctionSx'
 import { useSnackbar } from 'notistack'
 import { ReactElement, useRef } from 'react'
+import { useTranslation } from 'react-i18next'
 
 export interface CopyTextFieldProps {
   label?: string
@@ -12,25 +13,18 @@ export interface CopyTextFieldProps {
   helperText?: string
   messageText?: string
   sx?: SxProps
+  onCopyClick?: () => Promise<void>
 }
 
 export function CopyTextField({
   label,
   value,
   helperText,
-  messageText,
-  sx = {}
+  sx = {},
+  onCopyClick
 }: CopyTextFieldProps): ReactElement {
-  const { enqueueSnackbar } = useSnackbar()
+  const { t } = useTranslation('apps-journeys-admin')
   const inputRef = useRef<HTMLInputElement>(null)
-
-  const handleCopyClick = async (): Promise<void> => {
-    await navigator.clipboard.writeText(value ?? '')
-    enqueueSnackbar(messageText ?? 'Link copied', {
-      variant: 'success',
-      preventDuplicate: true
-    })
-  }
 
   const handleFocus = (): void => inputRef.current?.select()
 
@@ -47,13 +41,28 @@ export function CopyTextField({
       InputProps={{
         endAdornment: (
           <InputAdornment position="end">
-            <IconButton
-              onClick={handleCopyClick}
+            <Button
+              onClick={onCopyClick}
               aria-label="Copy"
               disabled={value == null}
+              sx={{
+                backgroundColor: 'black',
+                color: 'white',
+                '&:hover': {
+                  backgroundColor: 'secondary.dark'
+                },
+                '&:disabled': {
+                  backgroundColor: 'secondary.dark',
+                  color: 'divider'
+                },
+                width: '90px',
+                height: '48px',
+                display: { xs: 'none', sm: 'flex' }
+              }}
             >
-              <ContentCopyRoundedIcon />
-            </IconButton>
+              <ContentCopyRoundedIcon sx={{ mr: 1 }} />
+              {t('Copy')}
+            </Button>
           </InputAdornment>
         ),
         readOnly: true
