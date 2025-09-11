@@ -8,7 +8,6 @@ import { getCustomizeFlowConfig } from './getCustomizeFlowConfig'
 const t = ((key: string) => key) as unknown as TFunction
 
 describe('getCustomizeFlowConfig', () => {
-
   it('should return language, social, and done screens when journey has no customization capabilities', () => {
     const journey = {
       journeyCustomizationDescription: null,
