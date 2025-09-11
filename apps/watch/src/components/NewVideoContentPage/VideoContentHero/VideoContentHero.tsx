@@ -37,6 +37,8 @@ export function VideoContentHero({
       fscreen.removeEventListener('fullscreenchange', fullscreenchange)
   }, [setIsFullscreen])
 
+  const languageSlug = variant?.slug?.split('/')[1]
+
   return (
     <div
       className={`${
@@ -44,7 +46,7 @@ export function VideoContentHero({
       } w-full flex items-end relative bg-[#131111] z-[1] transition-all duration-300 ease-out`}
       data-testid="ContentHero"
     >
-      <ContentHeader />
+      <ContentHeader languageSlug={languageSlug?.replace('.html', '')} />
       <HeroVideo isFullscreen={isFullscreen} key={variant?.hls} />
       <div
         data-testid="ContainerHeroTitleContainer"

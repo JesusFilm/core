@@ -204,6 +204,11 @@ export function DuplicateStep({
         handleClick?.()
       }
     })
+
+    dispatch({
+      type: 'SetHoveredStepAction',
+      hoveredStep: undefined
+    })
   }
 
   return (
