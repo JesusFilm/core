@@ -23,7 +23,8 @@ jest.mock('@apollo/client', () => ({
 jest.mock('next/navigation', () => ({
   useRouter: jest.fn(() => ({
     push: jest.fn()
-  }))
+  })),
+  useParams: () => ({ videoId: 'video-123' })
 }))
 
 // Mock Dialog component
@@ -107,11 +108,7 @@ describe('AddEditionPage', () => {
   const renderComponent = () =>
     render(
       <SnackbarProvider>
-        <AddEditionPage
-          params={{
-            videoId: mockVideoId
-          }}
-        />
+        <AddEditionPage />
       </SnackbarProvider>
     )
 
