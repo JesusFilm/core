@@ -7,7 +7,7 @@ import Button from '@mui/material/Button'
 import Divider from '@mui/material/Divider'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
-import { useRouter, useSelectedLayoutSegment } from 'next/navigation'
+import { useParams, useRouter, useSelectedLayoutSegment } from 'next/navigation'
 import { ReactNode } from 'react'
 
 import { graphql } from '@core/shared/gql'
@@ -46,17 +46,14 @@ const GET_TAB_DATA = graphql(`
 interface VideoViewLayoutProps {
   children: ReactNode
   studyQuestions: ReactNode
-  params: {
-    videoId: string
-  }
 }
 
 export default function VideoViewLayout({
   children,
-  studyQuestions,
-  params: { videoId }
+  studyQuestions
 }: VideoViewLayoutProps): ReactNode {
   const router = useRouter()
+  const { videoId } = useParams() as { videoId: string }
   // keep metadata visible when modal is open
   const availableTabs = ['metadata', 'audio', 'children', 'editions']
   const segment = useSelectedLayoutSegment() ?? 'metadata'

@@ -4,7 +4,7 @@ import { useQuery } from '@apollo/client'
 import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
-import { usePathname, useRouter } from 'next/navigation'
+import { useParams, usePathname, useRouter } from 'next/navigation'
 import { ReactNode, useEffect, useState } from 'react'
 
 import { graphql } from '@core/shared/gql'
@@ -14,9 +14,6 @@ import { ActionButton } from '../../../../../components/ActionButton'
 import { Section } from '../../../../../components/Section'
 
 interface EditionsPageProps {
-  params: {
-    videoId: string
-  }
   children: ReactNode
 }
 
@@ -35,11 +32,9 @@ const GET_EDITIONS = graphql(`
   }
 `)
 
-export default function EditionsPage({
-  params: { videoId },
-  children
-}: EditionsPageProps) {
+export default function EditionsPage({ children }: EditionsPageProps) {
   const router = useRouter()
+  const { videoId } = useParams() as { videoId: string }
   const pathname = usePathname()
   const [reloadOnPathChange, setReloadOnPathChange] = useState(false)
   const { data, refetch } = useQuery(GET_EDITIONS, {
@@ -74,6 +69,7 @@ export default function EditionsPage({
           >
             {data?.adminVideo.videoEditions.map((edition) => (
               <Box
+                key={edition.id}
                 sx={{
                   border: '1px solid',
                   borderColor: 'divider',
