@@ -14,17 +14,26 @@ interface VideoCardProps {
   video: VideoChildFields
   containerSlug?: string
   active: boolean
+  onVideoSelect?: (videoId: string) => void
 }
 
 export function VideoCard({
   video,
   containerSlug,
-  active
+  active,
+  onVideoSelect
 }: VideoCardProps): ReactElement {
   const { t } = useTranslation('apps-watch')
   const { label } = getLabelDetails(t, video.label)
   const href = getWatchUrl(containerSlug, video.label, video.variant?.slug)
   const [isHovered, setIsHovered] = useState(false)
+
+  const handleVideoSelect = (e: React.MouseEvent) => {
+    if (onVideoSelect) {
+      e.preventDefault()
+      onVideoSelect(video.id)
+    }
+  }
 
   return (
     <NextLink
@@ -35,6 +44,7 @@ export function VideoCard({
       aria-label="VideoCard"
       data-testid={video != null ? `VideoCard-${video.id}` : 'VideoCard'}
       locale={false}
+      onClick={handleVideoSelect}
     >
       <div className="flex flex-col gap-6">
         <button

@@ -59,15 +59,29 @@
 /* 1. Base layer - lowest specificity */
 @layer base {
   /* Global resets, element defaults */
+  body {
+    background-color: #131111!important;
+  }
 }
 
 /* 2. Components layer - medium specificity */
 @layer components {
   /* Reusable component patterns */
+  
 }
 
 /* 3. Utilities layer - highest specificity */
 @layer utilities {
+  .preview-video {
+    height: 50svh;
+    max-width: 100%;
+  }
+
+  .fullscreen-video {
+    height: 100svh;
+    max-width: 100%;
+  }
+  
   .animate-mesh-gradient {
     animation: mesh-gradient 6s ease-in-out infinite;
   }

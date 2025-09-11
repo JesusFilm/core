@@ -15,13 +15,15 @@ interface VideoCarouselProps {
   containerSlug?: string
   activeVideoId?: string
   loading?: boolean
+  onVideoSelect?: (videoId: string) => void
 }
 
 export function VideoCarousel({
   videos,
   containerSlug,
   activeVideoId,
-  loading = false
+  loading = false,
+  onVideoSelect
 }: VideoCarouselProps): ReactElement {
   const { breakpoints } = useTheme()
   const nextRef = useRef<HTMLDivElement>(null)
@@ -88,6 +90,7 @@ export function VideoCarousel({
                   containerSlug={containerSlug}
                   video={video}
                   active={activeVideoId === video.id}
+                  onVideoSelect={onVideoSelect}
                 />
               </SwiperSlide>
             ))

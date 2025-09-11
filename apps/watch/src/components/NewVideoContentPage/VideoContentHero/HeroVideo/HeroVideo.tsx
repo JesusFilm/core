@@ -14,12 +14,14 @@ import { useVideo } from '../../../../libs/videoContext'
 import { useWatch } from '../../../../libs/watchContext'
 import { useSubtitleUpdate } from '../../../../libs/watchContext/useSubtitleUpdate'
 import { VideoControls } from '../../../VideoContentPage/VideoHero/VideoPlayer/VideoControls'
+import clsx from 'clsx'
 
 interface HeroVideoProps {
   isFullscreen: boolean
+  isPreview?: boolean
 }
 
-export function HeroVideo({ isFullscreen }: HeroVideoProps): ReactElement {
+export function HeroVideo({ isFullscreen, isPreview }: HeroVideoProps): ReactElement {
   const { variant, ...video } = useVideo()
   const {
     state: { mute }
@@ -124,13 +126,14 @@ export function HeroVideo({ isFullscreen }: HeroVideoProps): ReactElement {
 
   return (
     <div
-      className={`fixed top-0 left-0 right-0 mx-auto z-0 vjs-hide-loading-spinners 
-        [body[style*='padding-right']_&]:right-[15px]
-        ${
-          isFullscreen
-            ? 'h-full max-w-full'
-            : 'h-[90%] md:h-[80%] max-w-[1920px]'
-        }`}
+      className={clsx(
+        'fixed top-0 left-0 right-0 mx-auto z-0 vjs-hide-loading-spinners [body[style*=\'padding-right\']_&]:right-[15px]',
+        {
+          'fullscreen-video': isFullscreen,
+          'preview-video': !isFullscreen && isPreview,
+          'h-[90%] md:h-[80%] max-w-[1920px]': !isFullscreen && !isPreview
+        }
+      )}
       data-testid="ContentHeroVideoContainer"
     >
       {variant?.hls && (

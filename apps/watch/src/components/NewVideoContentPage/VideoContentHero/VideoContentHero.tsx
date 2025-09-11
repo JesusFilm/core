@@ -5,13 +5,16 @@ import { useVideo } from '../../../libs/videoContext'
 
 import { ContentHeader } from './ContentHeader'
 import { HeroVideo } from './HeroVideo'
+import clsx from 'clsx'
 
 export function VideoContentHero({
   isFullscreen = false,
-  setIsFullscreen
+  setIsFullscreen,
+  isPreview = false
 }: {
   isFullscreen?: boolean
   setIsFullscreen?: (isFullscreen: boolean) => void
+  isPreview?: boolean
 }): ReactElement {
   const { variant } = useVideo()
   /**
@@ -41,13 +44,18 @@ export function VideoContentHero({
 
   return (
     <div
-      className={`${
-        isFullscreen ? 'h-[100svh]' : 'h-[90svh] md:h-[80svh]'
-      } w-full flex items-end relative bg-[#131111] z-[1] transition-all duration-300 ease-out`}
+      className={clsx(
+        'w-full flex items-end relative bg-[#131111] z-[1] transition-all duration-300 ease-out',
+        {
+          'fullscreen-video': isFullscreen,
+          'preview-video': !isFullscreen && isPreview,
+          'h-[90svh] md:h-[80svh]': !isFullscreen && !isPreview
+        }
+      )}
       data-testid="ContentHero"
     >
       <ContentHeader languageSlug={languageSlug?.replace('.html', '')} />
-      <HeroVideo isFullscreen={isFullscreen} key={variant?.hls} />
+      <HeroVideo isFullscreen={isFullscreen} isPreview={isPreview} key={variant?.hls} />
       <div
         data-testid="ContainerHeroTitleContainer"
         className="w-full relative flex flex-col sm:flex-row max-w-[1920px] mx-auto pb-4"
