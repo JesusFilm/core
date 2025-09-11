@@ -11,7 +11,7 @@ import ArrowRightIcon from '@core/shared/ui/icons/ArrowRight'
 
 import { GetJourney_journey_journeyCustomizationFields as JourneyCustomizationField } from '../../../../../../__generated__/GetJourney'
 import { JourneyCustomizationFieldUpdate } from '../../../../../../__generated__/JourneyCustomizationFieldUpdate'
-import { CustomizationScreens } from '../../MultiStepForm'
+import { CustomizationScreen } from '../../../utils/getCustomizeFlowConfig'
 
 export const JOURNEY_CUSTOMIZATION_FIELD_UPDATE = gql`
   mutation JourneyCustomizationFieldUpdate(
@@ -130,7 +130,7 @@ const renderEditableText = (
 
 interface TextScreenProps {
   handleNext: () => void
-  handleScreenNavigation: (screen: CustomizationScreens) => void
+  handleScreenNavigation: (screen: CustomizationScreen) => void
 }
 
 export function TextScreen({

@@ -6,14 +6,13 @@ import { ReactElement } from 'react'
 
 import ArrowRightIcon from '@core/shared/ui/icons/ArrowRight'
 import Box from '@mui/material/Box'
-import { ImageEdit } from '../../../../Editor/Slider/Settings/Drawer/ImageEdit'
 import { TitleEdit } from '../../../../Editor/Slider/Settings/SocialDetails/TitleEdit'
 import { DescriptionEdit } from '../../../../Editor/Slider/Settings/SocialDetails/DescriptionEdit'
-import { CustomizationScreens } from '../../MultiStepForm'
+import { CustomizationScreen } from '../../../utils/getCustomizeFlowConfig'
 
 interface SocialScreenProps {
   handleNext: () => void
-  handleScreenNavigation: (screen: CustomizationScreens) => void
+  handleScreenNavigation: (screen: CustomizationScreen) => void
 }
 
 const BUTTON_NEXT_STEP_WIDTH = '150px'

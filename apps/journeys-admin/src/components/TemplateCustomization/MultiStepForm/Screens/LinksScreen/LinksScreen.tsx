@@ -21,20 +21,22 @@ import { JourneyChatButtonUpdate } from '../../../../../../__generated__/Journey
 import { useBlockActionEmailUpdateMutation } from '../../../../../libs/useBlockActionEmailUpdateMutation'
 import { useBlockActionLinkUpdateMutation } from '../../../../../libs/useBlockActionLinkUpdateMutation'
 import { JOURNEY_CHAT_BUTTON_UPDATE } from '../../../../Editor/Slider/Settings/CanvasDetails/JourneyAppearance/Chat/ChatOption/Details/Details'
-import { getJourneyLinks } from '../../../utils/getJourneyLinks'
+import { JourneyLink } from '../../../utils/getJourneyLinks'
 
 import { CardsPreview } from './CardsPreview'
 import { LinksForm } from './LinksForm'
-import { CustomizationScreens } from '../../MultiStepForm'
+import { CustomizationScreen } from '../../../utils/getCustomizeFlowConfig'
 
 interface LinksScreenProps {
   handleNext: () => void
-  handleScreenNavigation: (screen: CustomizationScreens) => void
+  handleScreenNavigation: (screen: CustomizationScreen) => void
+  links: JourneyLink[]
 }
 
 export function LinksScreen({
   handleNext,
-  handleScreenNavigation
+  handleScreenNavigation,
+  links
 }: LinksScreenProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const [journeyChatButtonUpdate, { loading: chatLoading }] =
@@ -45,7 +47,6 @@ export function LinksScreen({
     useBlockActionEmailUpdateMutation()
 
   const { journey } = useJourney()
-  const links = getJourneyLinks(t, journey)
   const treeBlocks = transformer(journey?.blocks ?? []).filter((block) =>
     links.some(
       (link) =>

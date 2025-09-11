@@ -19,11 +19,11 @@ import { JourneyCustomizeTeamSelect } from './JourneyCustomizeTeamSelect'
 import { LanguageScreenCardPreview } from './LanguageScreenCardPreview'
 import { useTemplateJourneyLanguages } from '../../../../../libs/useTemplateJourneyLanguages'
 import { LanguageAutocomplete } from '@core/shared/ui/LanguageAutocomplete'
-import { CustomizationScreens } from '../../MultiStepForm'
+import { CustomizationScreen } from '../../../utils/getCustomizeFlowConfig'
 
 interface LanguageScreenProps {
   handleNext: () => void
-  handleScreenNavigation: (screen: CustomizationScreens) => void
+  handleScreenNavigation: (screen: CustomizationScreen) => void
 }
 
 export function LanguageScreen({
