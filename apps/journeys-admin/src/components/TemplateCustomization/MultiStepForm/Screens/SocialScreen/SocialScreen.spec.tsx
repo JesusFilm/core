@@ -14,6 +14,7 @@ import { SocialScreen } from './SocialScreen'
 
 describe('SocialScreen Integration Tests', () => {
     const handleNext = jest.fn()
+    const handleScreenNavigation = jest.fn()
 
     const baseJourney = {
         ...journey,
@@ -24,6 +25,8 @@ describe('SocialScreen Integration Tests', () => {
 
     beforeEach(() => {
         jest.clearAllMocks()
+        handleNext.mockClear()
+        handleScreenNavigation.mockClear()
     })
 
     const renderSocialScreen = (
@@ -32,7 +35,7 @@ describe('SocialScreen Integration Tests', () => {
         return render(
             <MockedProvider mocks={mocks}>
                 <JourneyProvider value={{ journey: baseJourney as any, variant: 'admin' }}>
-                    <SocialScreen handleNext={handleNext} />
+                    <SocialScreen handleNext={handleNext} handleScreenNavigation={handleScreenNavigation} />
                 </JourneyProvider>
             </MockedProvider>
         )
