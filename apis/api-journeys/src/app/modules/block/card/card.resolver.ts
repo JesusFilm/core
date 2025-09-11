@@ -95,4 +95,9 @@ export class CardBlockResolver {
 
     return false
   }
+
+  @ResolveField()
+  showAI(@Parent() card: Block): boolean | null {
+    return (card as any).showAI ?? null
+  }
 }
