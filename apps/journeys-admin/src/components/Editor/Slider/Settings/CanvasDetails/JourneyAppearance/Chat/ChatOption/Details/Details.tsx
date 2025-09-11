@@ -195,7 +195,7 @@ export function Details({
     },
     {
       value: MessagePlatform.messageSquare,
-      label: t('Message Sqaure'),
+      label: t('Message Square'),
       icon: <MessageSquare />
     },
     {
