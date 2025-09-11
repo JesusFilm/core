@@ -9,15 +9,20 @@ import Box from '@mui/material/Box'
 import { ImageEdit } from '../../../../Editor/Slider/Settings/Drawer/ImageEdit'
 import { TitleEdit } from '../../../../Editor/Slider/Settings/SocialDetails/TitleEdit'
 import { DescriptionEdit } from '../../../../Editor/Slider/Settings/SocialDetails/DescriptionEdit'
+import { CustomizationScreens } from '../../MultiStepForm'
 
 interface SocialScreenProps {
   handleNext: () => void
+  handleScreenNavigation: (screen: CustomizationScreens) => void
 }
 
 const BUTTON_NEXT_STEP_WIDTH = '150px'
 const BUTTON_NEXT_STEP_HEIGHT = '42px'
 
-export function SocialScreen({ handleNext }: SocialScreenProps): ReactElement {
+export function SocialScreen({ 
+  handleNext, 
+  handleScreenNavigation 
+}: SocialScreenProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
 
   return (

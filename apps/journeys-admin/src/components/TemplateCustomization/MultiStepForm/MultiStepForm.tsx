@@ -20,8 +20,7 @@ const screens = [
   'language',
   'text',
   'links',
-  // TODO: uncomment this when we have the social screen
-  // 'social',
+  'social',
   'done'
 ] as const
 
@@ -52,14 +51,13 @@ function renderScreen(
           handleScreenNavigation={handleScreenNavigation}
         />
       )
-    // TODO: uncomment this when we have the social screen
-    // case 'social':
-    //   return (
-    //     <SocialScreen
-    //       handleNext={handleNext}
-    //       handleScreenNavigation={handleScreenNavigation}
-    //     />
-    //   )
+    case 'social':
+      return (
+        <SocialScreen
+          handleNext={handleNext}
+          handleScreenNavigation={handleScreenNavigation}
+        />
+      )
     case 'done':
       return <DoneScreen handleScreenNavigation={handleScreenNavigation} />
     default:
