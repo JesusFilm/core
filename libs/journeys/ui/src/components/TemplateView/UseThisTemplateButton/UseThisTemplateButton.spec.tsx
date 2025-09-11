@@ -1,11 +1,7 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { type NextRouter, useRouter } from 'next/router'
 
-import {
-  JourneyStatus,
-  ThemeMode,
-  ThemeName
-} from '../../../../__generated__/globalTypes'
+import { JourneyStatus } from '../../../../__generated__/globalTypes'
 import { JourneyProvider } from '../../../libs/JourneyProvider'
 import { journey as mockJourney } from '../../../libs/JourneyProvider/JourneyProvider.mock'
 import type { JourneyFields as Journey } from '../../../libs/JourneyProvider/__generated__/JourneyFields'
@@ -106,16 +102,9 @@ describe('UseThisTemplateButton', () => {
     })
 
     it('should show loading state while navigating', async () => {
-      // Mock a slow navigation
-      const slowPush = jest
-        .fn()
-        .mockImplementation(
-          () => new Promise((resolve) => setTimeout(resolve, 100))
-        )
-
       mockUseRouter.mockReturnValue({
         prefetch,
-        push: slowPush,
+        push,
         query: { createNew: false }
       } as unknown as NextRouter)
 
@@ -127,9 +116,15 @@ describe('UseThisTemplateButton', () => {
 
       fireEvent.click(screen.getByRole('button', { name: 'Use This Template' }))
 
-      // Should show loading spinner
       await waitFor(() => {
         expect(screen.getByRole('progressbar')).toBeInTheDocument()
+      })
+      await waitFor(() => {
+        expect(push).toHaveBeenCalledWith(
+          '/templates/journeyId/customize',
+          undefined,
+          { shallow: true }
+        )
       })
     })
   })
