@@ -8,11 +8,11 @@ import dynamic from 'next/dynamic'
 import NextImage from 'next/image'
 import { useRouter } from 'next/router'
 import { useTranslation } from 'next-i18next'
-import { ReactElement, useState } from 'react'
+import { ReactElement } from 'react'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import GridEmptyIcon from '@core/shared/ui/icons/GridEmpty'
-import { CustomizationScreens } from '../../MultiStepForm'
+import { CustomizationScreen } from '../../../utils/getCustomizeFlowConfig'
 
 const ShareDrawer = dynamic(
   async () =>
@@ -23,7 +23,7 @@ const ShareDrawer = dynamic(
 )
 
 interface DoneScreenProps {
-  handleScreenNavigation?: (screen: CustomizationScreens) => void
+  handleScreenNavigation?: (screen: CustomizationScreen) => void
 }
 
 export function DoneScreen({
