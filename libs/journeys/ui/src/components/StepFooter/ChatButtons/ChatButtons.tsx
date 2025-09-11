@@ -17,6 +17,7 @@ import { JourneyFields_chatButtons as ChatButton } from '../../../libs/JourneyPr
 import { MessageChatIcon } from '../../../libs/MessageChatIcon'
 import { JourneyPlausibleEvents, keyify } from '../../../libs/plausibleHelpers'
 import { getJourneyRTL } from '../../../libs/rtl'
+import { AiChatButton } from '../../AiChatButton/AiChatButton'
 
 import {
   ChatButtonEventCreate,
@@ -105,6 +106,14 @@ export function ChatButtons(): ReactElement {
     }
   }
 
+  function isInIframe(): boolean {
+    try {
+      return window.self !== window.top
+    } catch {
+      return true
+    }
+  }
+
   return (
     <Stack
       data-testid="StepFooterChatButtons"
@@ -155,6 +164,7 @@ export function ChatButtons(): ReactElement {
           <Plus2 sx={{ color: (theme) => theme.palette.grey[700] }} />
         </IconButton>
       )}
+      {!isInIframe() && <AiChatButton />}
     </Stack>
   )
 }

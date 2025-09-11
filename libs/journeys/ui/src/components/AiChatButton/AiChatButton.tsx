@@ -3,19 +3,17 @@ import CloseIcon from '@mui/icons-material/Close'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, useEffect, useRef, useState } from 'react'
 
-import { useBlocks } from '@core/journeys/ui/block'
-
+import { useBlocks } from '../../libs/block'
 import { AiChat } from '../AiChat'
-import { Button } from '../Button'
 import {
   Drawer,
   DrawerClose,
   DrawerContent,
-  DrawerDescription,
   DrawerHeader,
   DrawerTitle,
   DrawerTrigger
 } from '../Drawer'
+import { Button } from '../SimpleButton'
 
 export function AiChatButton(): ReactElement {
   const { t } = useTranslation('apps-journeys')
@@ -46,13 +44,13 @@ export function AiChatButton(): ReactElement {
       <DrawerTrigger asChild>
         <Button
           variant="default"
-          size="icon"
           onClick={handleClick}
           aria-label={open ? 'Close AI chat' : 'Open AI chat'}
           tabIndex={0}
           data-testid="AiChatButton"
-          className="fixed bottom-4 left-4 z-1 bg-background text-foreground rounded-full size-14 hover:bg-background/80"
+          className="z-1 bg-background text-foreground rounded-full size-11 hover:bg-background/80 w-[140px] h-[30px]"
         >
+          <h3 className="text-md font-bold">{t('Chat Now')}</h3>
           <AutoAwesomeIcon />
         </Button>
       </DrawerTrigger>
