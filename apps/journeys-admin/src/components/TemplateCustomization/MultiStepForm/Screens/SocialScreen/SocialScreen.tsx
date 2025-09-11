@@ -57,7 +57,6 @@ export function SocialScreen({
           px: { xs: 5, sm: 10 },
           width: '100%'
         }}>
-        <ImageEdit />
         <TitleEdit />
         <DescriptionEdit />
       </Box>

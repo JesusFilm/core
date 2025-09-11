@@ -42,6 +42,14 @@ jest.mock('./Screens', () => ({
       </button>
     </div>
   ),
+  SocialScreen: ({ handleNext }: { handleNext: () => void }) => (
+    <div data-testid="social-screen">
+      <h2>Social Screen</h2>
+      <button onClick={handleNext} data-testid="social-next">
+        Next
+      </button>
+    </div>
+  ),
   DoneScreen: ({
     handleScreenNavigation
   }: {
@@ -85,8 +93,13 @@ describe('MultiStepForm', () => {
     expect(screen.getByTestId('links-screen')).toBeInTheDocument()
     fireEvent.click(screen.getByTestId('links-next'))
 
-    // DoneScreen
+    // SocialScreen
     expect(screen.getByTestId('progress-stepper-step-3')).toBeInTheDocument()
+    expect(screen.getByTestId('social-screen')).toBeInTheDocument()
+    fireEvent.click(screen.getByTestId('social-next'))
+
+    // DoneScreen
+    expect(screen.getByTestId('progress-stepper-step-4')).toBeInTheDocument()
     expect(screen.getByTestId('done-screen')).toBeInTheDocument()
   })
 
