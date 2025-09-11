@@ -8,6 +8,7 @@ import { TreeBlock, useBlocks } from '@core/journeys/ui/block'
 
 import { extractBlockContext } from '../../utils/contextExtraction'
 import { Action, Actions } from '../Actions'
+import { Button } from '../Button'
 import {
   Conversation,
   ConversationContent,
@@ -22,7 +23,6 @@ import {
 } from '../PromptInput'
 import { Response } from '../Response'
 import { Suggestion, Suggestions } from '../Suggestion'
-import { Button } from '../Button'
 
 interface AiChatProps {
   open: boolean
