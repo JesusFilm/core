@@ -12,6 +12,7 @@ import { ReactElement, useState } from 'react'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import GridEmptyIcon from '@core/shared/ui/icons/GridEmpty'
+import { CustomizationScreens } from '../../MultiStepForm'
 
 const ShareDrawer = dynamic(
   async () =>
@@ -21,7 +22,13 @@ const ShareDrawer = dynamic(
   { ssr: false }
 )
 
-export function DoneScreen(): ReactElement {
+interface DoneScreenProps {
+  handleScreenNavigation?: (screen: CustomizationScreens) => void
+}
+
+export function DoneScreen({
+  handleScreenNavigation
+}: DoneScreenProps): ReactElement {
   // TODO: Add share drawer back in
   // const [openShareDrawer, setOpenShareDrawer] = useState<boolean | null>(null)
 

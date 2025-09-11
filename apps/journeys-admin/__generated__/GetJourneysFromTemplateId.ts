@@ -25,6 +25,7 @@ export interface GetJourneysFromTemplateId_journeys_language {
 export interface GetJourneysFromTemplateId_journeys {
   __typename: "Journey";
   id: string;
+  fromTemplateId: string | null;
   language: GetJourneysFromTemplateId_journeys_language;
 }
 

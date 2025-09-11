@@ -1,4 +1,4 @@
-import { render, screen, fireEvent } from '@testing-library/react'
+import { render, screen, fireEvent, waitFor } from '@testing-library/react'
 
 import { MultiStepForm } from './MultiStepForm'
 import { JourneyFields as Journey } from '../../../../__generated__/JourneyFields'
@@ -42,7 +42,11 @@ jest.mock('./Screens', () => ({
       </button>
     </div>
   ),
-  DoneScreen: () => (
+  DoneScreen: ({
+    handleScreenNavigation
+  }: {
+    handleScreenNavigation: (screen: string) => void
+  }) => (
     <div data-testid="done-screen">
       <h2>Done Screen</h2>
     </div>
@@ -62,7 +66,7 @@ describe('MultiStepForm', () => {
     jest.clearAllMocks()
   })
 
-  it('should render screens', () => {
+  it('should render screens', async () => {
     render(<MultiStepForm />)
     expect(screen.getByTestId('MultiStepForm')).toBeInTheDocument()
 
