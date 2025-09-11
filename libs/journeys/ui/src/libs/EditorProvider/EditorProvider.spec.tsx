@@ -841,6 +841,46 @@ describe('EditorContext', () => {
         })
       })
     })
+
+    describe('SetHoveredStepAction', () => {
+      it('should set hovered step', () => {
+        const block: TreeBlock = {
+          id: 'card0.id',
+          __typename: 'CardBlock',
+          parentBlockId: null,
+          backgroundColor: null,
+          coverBlockId: null,
+          parentOrder: 0,
+          themeMode: null,
+          themeName: null,
+          fullscreen: false,
+          backdropBlur: null,
+          children: []
+        }
+        const step: TreeBlock = {
+          id: 'step0.id',
+          __typename: 'StepBlock',
+          parentBlockId: null,
+          parentOrder: 0,
+          locked: false,
+          nextBlockId: null,
+          slug: null,
+          children: [block]
+        }
+        const state: EditorState = {
+          steps: [step],
+          activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties,
+          activeSlide: ActiveSlide.JourneyFlow,
+          activeContent: ActiveContent.Canvas
+        }
+        expect(
+          reducer(state, {
+            type: 'SetHoveredStepAction',
+            hoveredStep: step
+          })
+        ).toEqual({ ...state, hoveredStep: step })
+      })
+    })
   })
 
   describe('EditorProvider', () => {

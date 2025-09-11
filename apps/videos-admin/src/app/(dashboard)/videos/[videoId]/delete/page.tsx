@@ -10,8 +10,6 @@ import { Dialog } from '@core/shared/ui/Dialog'
 
 import { DEFAULT_VIDEO_LANGUAGE_ID } from '../../constants'
 
-interface DeleteVideoPageProps {}
-
 const GET_VIDEO_FOR_DELETE = graphql(`
   query GetVideoForDelete($id: ID!, $languageId: ID!) {
     adminVideo(id: $id) {
@@ -34,7 +32,7 @@ const DELETE_VIDEO = graphql(`
   }
 `)
 
-export default function DeleteVideoPage({}: DeleteVideoPageProps): ReactElement {
+export default function DeleteVideoPage(): ReactElement {
   const router = useRouter()
   const { videoId } = useParams() as { videoId: string }
   const { enqueueSnackbar } = useSnackbar()

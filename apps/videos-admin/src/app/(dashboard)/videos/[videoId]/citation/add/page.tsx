@@ -8,9 +8,7 @@ import { Dialog } from '@core/shared/ui/Dialog'
 
 import { CitationForm } from '../_CitationForm/CitationForm'
 
-interface AddBibleCitationProps {}
-
-export default function AddBibleCitation({}: AddBibleCitationProps): ReactElement {
+export default function AddBibleCitation(): ReactElement {
   const router = useRouter()
   const { videoId } = useParams() as { videoId: string }
   return (

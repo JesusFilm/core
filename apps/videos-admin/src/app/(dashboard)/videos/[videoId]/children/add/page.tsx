@@ -42,9 +42,7 @@ const UPDATE_VIDEO_CHILDREN_ORDER = graphql(`
 
 type AddMethod = 'new' | 'existing' | 'existingById'
 
-interface AddChildrenProps {}
-
-export default function AddChildren({}: AddChildrenProps): ReactElement {
+export default function AddChildren(): ReactElement {
   const router = useRouter()
   const { videoId } = useParams() as { videoId: string }
   const { enqueueSnackbar } = useSnackbar()

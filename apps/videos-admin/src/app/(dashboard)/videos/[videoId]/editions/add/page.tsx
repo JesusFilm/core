@@ -22,9 +22,7 @@ const CREATE_VIDEO_EDITION = graphql(`
   }
 `)
 
-interface AddEditionPageProps {}
-
-export default function AddEditionPage({}: AddEditionPageProps) {
+export default function AddEditionPage() {
   const router = useRouter()
   const { videoId } = useParams() as { videoId: string }
   const { enqueueSnackbar } = useSnackbar()

@@ -243,13 +243,7 @@ describe('StudyQuestionsList', () => {
   })
 
   it('navigates to delete study question page when delete button is clicked', () => {
-    render(
-      <StudyQuestionsList
-        params={{
-          videoId: mockVideoId
-        }}
-      />
-    )
+    render(<StudyQuestionsList />)
 
     // Click delete button for the second question
     fireEvent.click(screen.getByTestId('delete-button-q2'))

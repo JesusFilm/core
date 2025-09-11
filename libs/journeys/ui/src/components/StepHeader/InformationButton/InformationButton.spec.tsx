@@ -84,6 +84,8 @@ describe('InformationButton', () => {
     logoImageBlock: null,
     menuButtonIcon: null,
     menuStepBlock: null,
+    socialNodeX: null,
+    socialNodeY: null,
     journeyTheme: null
   }
 
