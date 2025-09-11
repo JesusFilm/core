@@ -1,5 +1,5 @@
 extend schema
-  @link(url: "https://specs.apollo.dev/federation/v2.6", import: ["@extends", "@external", "@key", "@shareable"])
+  @link(url: "https://specs.apollo.dev/federation/v2.6", import: ["@extends", "@external", "@key", "@override", "@shareable"])
 
 interface Action {
   parentBlockId: ID!
@@ -923,6 +923,7 @@ input JourneysFilter {
   languageIds: [ID!]
   limit: Int
   orderByRecent: Boolean
+  fromTemplateId: ID
 }
 
 input JourneysQueryOptions {
@@ -1019,6 +1020,14 @@ enum MessagePlatform {
 }
 
 type Mutation {
+  videoBlockCreate(input: VideoBlockCreateInput!): VideoBlock! @override(from: "api-journeys")
+  videoBlockUpdate(
+    id: ID!
+    input: VideoBlockUpdateInput!
+
+    """drop this parameter after merging teams"""
+    journeyId: ID
+  ): VideoBlock! @override(from: "api-journeys")
   journeySimpleUpdate(id: ID!, journey: Json!): Json
   journeyAiTranslateCreate(input: JourneyAiTranslateInput!): Journey!
   createJourneyEventsExportLog(input: JourneyEventsExportLogInput!): JourneyEventsExportLog!
@@ -1173,6 +1182,7 @@ type RadioOptionBlock implements Block
         as a poll option image. Blocks are often of type ImageBlock
   """
   pollOptionImageBlockId: ID
+  action: Action
 }
 
 input RadioOptionBlockCreateInput {
@@ -1243,6 +1253,7 @@ type SignUpBlock implements Block
   parentOrder: Int
   submitIconId: ID
   submitLabel: String
+  action: Action
 }
 
 input SignUpBlockCreateInput {
