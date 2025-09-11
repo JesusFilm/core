@@ -21,7 +21,7 @@ import {
 import { Response } from '../Response'
 import { Suggestion, Suggestions } from '../Suggestion'
 
-import { extractTypographyContent } from './utils/contextExtraction'
+import { extractBlockContext } from './utils/contextExtraction'
 
 interface AiChatProps {
   open: boolean
@@ -51,6 +51,7 @@ export function AiChat({ open }: AiChatProps) {
   const [suggestionsLoading, setSuggestionsLoading] = useState(false)
   const [suggestionsError, setSuggestionsError] = useState<string | null>(null)
   const { blockHistory } = useBlocks()
+  const [contextText, setContextText] = useState<string>('')
 
   const activeBlock = blockHistory.at(-1)
 
@@ -59,7 +60,7 @@ export function AiChat({ open }: AiChatProps) {
     setSuggestionsError(null)
 
     try {
-      const contextText = extractTypographyContent(activeBlock as TreeBlock)
+      const contextText = extractBlockContext(activeBlock as TreeBlock)
       if (contextText === '') {
         setSuggestions([])
         return
@@ -76,6 +77,7 @@ export function AiChat({ open }: AiChatProps) {
       const suggestions: string[] = await response.json()
 
       setSuggestions(suggestions)
+      setContextText(contextText)
     } catch (error) {
       console.error('Error fetching suggestions:', error)
       setSuggestionsError(t('Failed to load suggestions'))
@@ -94,7 +96,12 @@ export function AiChat({ open }: AiChatProps) {
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     if (input.trim()) {
-      void sendMessage({ text: input })
+      void sendMessage(
+        { text: input },
+        {
+          body: { contextText }
+        }
+      )
       setInput('')
     }
   }

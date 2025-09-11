@@ -2,6 +2,7 @@ import { google } from '@ai-sdk/google'
 import { generateText } from 'ai'
 import { NextRequest, NextResponse } from 'next/server'
 
+import { getPrompt } from '../../../../src/lib/ai/langfuse/promptHelper'
 import { SuggestionsRequest } from '../../../../src/types/suggestions'
 
 export async function POST(req: NextRequest) {
@@ -15,23 +16,9 @@ export async function POST(req: NextRequest) {
       )
     }
 
-    const prompt = `
-    PROMPT:
-    Given the following journey context generate 2-3 concise suggestion.
-    Suggestion should resemble what a viewer might ask based on the journey context they are seeing. 
-    The suggestions should be relevant to the content but not duplicate what's already visible. 
-    Format as a simple list.
-    Limit each suggestion to a max of 12 words.
-    
-    EXAMPLE OUTPUT:
-
-    Suggestions:
-    This is Suggestion A
-    This is Suggestion B
-    This is Suggestion C
-
-    CONTEXT: 
-    ${contextText}`
+    const prompt = await getPrompt('Suggestions-Prompt', {
+      contextText: contextText
+    })
 
     const { text } = await generateText({
       model: google('gemini-2.5-flash'),

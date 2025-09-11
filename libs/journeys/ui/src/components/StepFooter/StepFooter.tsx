@@ -6,7 +6,6 @@ import { ReactElement } from 'react'
 
 import { useJourney } from '../../libs/JourneyProvider'
 import { getJourneyRTL } from '../../libs/rtl'
-import { AiChatButton } from '../AiChatButton'
 import {
   getFooterMobileHeight,
   getTitle,
@@ -43,14 +42,6 @@ export function StepFooter({
   const combinedFooter = hasCombinedFooter({ journey, variant })
 
   const isWebsite = journey?.website === true
-
-  function isInIframe(): boolean {
-    try {
-      return window.self !== window.top
-    } catch {
-      return true
-    }
-  }
 
   return (
     <Box
