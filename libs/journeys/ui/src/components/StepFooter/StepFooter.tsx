@@ -149,10 +149,7 @@ export function StepFooter({
             </Stack>
           )}
 
-          <Box>
-            {chat && <ChatButtons />}
-            {!isInIframe() && <AiChatButton />}
-          </Box>
+          <Box>{chat && <ChatButtons />}</Box>
         </Stack>
       </Stack>
     </Box>

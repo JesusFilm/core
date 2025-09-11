@@ -45,13 +45,13 @@ export function AiChatButton(): ReactElement {
       <DrawerTrigger asChild>
         <Button
           variant="default"
-          size="icon"
           onClick={handleClick}
           aria-label={open ? 'Close AI chat' : 'Open AI chat'}
           tabIndex={0}
           data-testid="AiChatButton"
-          className="z-1 bg-background text-foreground rounded-full size-11 hover:bg-background/80"
+          className="z-1 bg-background text-foreground rounded-full size-11 hover:bg-background/80 w-[140px] h-[30px]"
         >
+          <h3 className="text-md font-bold">{t('Chat Now')}</h3>
           <AutoAwesomeIcon />
         </Button>
       </DrawerTrigger>
