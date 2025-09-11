@@ -19,9 +19,9 @@ interface SocialScreenProps {
 const BUTTON_NEXT_STEP_WIDTH = '150px'
 const BUTTON_NEXT_STEP_HEIGHT = '42px'
 
-export function SocialScreen({ 
-  handleNext, 
-  handleScreenNavigation 
+export function SocialScreen({
+  handleNext,
+  handleScreenNavigation
 }: SocialScreenProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
 
@@ -33,11 +33,7 @@ export function SocialScreen({
         px: { xs: 5, sm: 20 }
       }}
     >
-      <Typography
-        variant="h4"
-        component="h1"
-        gutterBottom
-      >
+      <Typography variant="h4" component="h1" gutterBottom>
         {t('Almost There!')}
       </Typography>
       <Typography
@@ -48,7 +44,9 @@ export function SocialScreen({
           typography: { xs: 'body2', sm: 'h6' }
         }}
       >
-        {t('Here’s how your invitation will appear when shared on social media. You can update it if you’d like.')}
+        {t(
+          'Here’s how your invitation will appear when shared on social media. You can update it if you’d like.'
+        )}
       </Typography>
       <Box
         data-testid="SocialShareAppearance"
@@ -56,7 +54,8 @@ export function SocialScreen({
           py: 5,
           px: { xs: 5, sm: 10 },
           width: '100%'
-        }}>
+        }}
+      >
         <TitleEdit />
         <DescriptionEdit />
       </Box>

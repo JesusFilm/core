@@ -13,196 +13,210 @@ import type { JourneySeoDescriptionUpdate } from '../../../../../../__generated_
 import { SocialScreen } from './SocialScreen'
 
 describe('SocialScreen Integration Tests', () => {
-    const handleNext = jest.fn()
-    const handleScreenNavigation = jest.fn()
+  const handleNext = jest.fn()
+  const handleScreenNavigation = jest.fn()
 
-    const baseJourney = {
-        ...journey,
-        id: 'test-journey-id',
-        seoTitle: 'Initial SEO Title',
-        seoDescription: 'Initial SEO Description'
+  const baseJourney = {
+    ...journey,
+    id: 'test-journey-id',
+    seoTitle: 'Initial SEO Title',
+    seoDescription: 'Initial SEO Description'
+  }
+
+  beforeEach(() => {
+    jest.clearAllMocks()
+    handleNext.mockClear()
+    handleScreenNavigation.mockClear()
+  })
+
+  const renderSocialScreen = (
+    mocks: MockedResponse[] = []
+  ): ReturnType<typeof render> => {
+    return render(
+      <MockedProvider mocks={mocks}>
+        <JourneyProvider
+          value={{ journey: baseJourney as any, variant: 'admin' }}
+        >
+          <SocialScreen
+            handleNext={handleNext}
+            handleScreenNavigation={handleScreenNavigation}
+          />
+        </JourneyProvider>
+      </MockedProvider>
+    )
+  }
+
+  it('should render the SocialScreen with TitleEdit and DescriptionEdit components', () => {
+    renderSocialScreen()
+    expect(screen.getByTestId('TitleEdit')).toBeInTheDocument()
+    expect(screen.getByTestId('DescriptionEdit')).toBeInTheDocument()
+    expect(screen.getByTestId('DoneButton')).toBeInTheDocument()
+  })
+
+  it('should update SEO title and make correct network call', async () => {
+    const result = jest.fn(() => ({
+      data: {
+        journeyUpdate: {
+          __typename: 'Journey',
+          id: 'test-journey-id',
+          seoTitle: 'Updated Title for Social Media'
+        }
+      }
+    }))
+
+    const titleUpdateMock = {
+      request: {
+        query: JOURNEY_SEO_TITLE_UPDATE,
+        variables: {
+          id: 'test-journey-id',
+          input: {
+            seoTitle: 'Updated Title for Social Media'
+          }
+        }
+      },
+      result
     }
 
-    beforeEach(() => {
-        jest.clearAllMocks()
-        handleNext.mockClear()
-        handleScreenNavigation.mockClear()
-    })
+    renderSocialScreen([titleUpdateMock])
+    const titleInput = screen.getByLabelText('Headline')
 
-    const renderSocialScreen = (
-        mocks: MockedResponse[] = []
-    ): ReturnType<typeof render> => {
-        return render(
-            <MockedProvider mocks={mocks}>
-                <JourneyProvider value={{ journey: baseJourney as any, variant: 'admin' }}>
-                    <SocialScreen handleNext={handleNext} handleScreenNavigation={handleScreenNavigation} />
-                </JourneyProvider>
-            </MockedProvider>
-        )
+    fireEvent.change(titleInput, {
+      target: { value: 'Updated Title for Social Media' }
+    })
+    fireEvent.blur(titleInput)
+
+    await waitFor(() => expect(result).toHaveBeenCalled())
+
+    expect(titleInput).toHaveValue('Updated Title for Social Media')
+  })
+
+  it('should update SEO description and make correct network call', async () => {
+    const result = jest.fn(() => ({
+      data: {
+        journeyUpdate: {
+          __typename: 'Journey',
+          id: 'test-journey-id',
+          seoDescription:
+            'Updated description for social sharing that explains the journey content'
+        }
+      }
+    }))
+
+    const descriptionUpdateMock = {
+      request: {
+        query: JOURNEY_SEO_DESCRIPTION_UPDATE,
+        variables: {
+          id: 'test-journey-id',
+          input: {
+            seoDescription:
+              'Updated description for social sharing that explains the journey content'
+          }
+        }
+      },
+      result
     }
 
-    it('should render the SocialScreen with TitleEdit and DescriptionEdit components', () => {
-        renderSocialScreen()
-        expect(screen.getByTestId('TitleEdit')).toBeInTheDocument()
-        expect(screen.getByTestId('DescriptionEdit')).toBeInTheDocument()
-        expect(screen.getByTestId('DoneButton')).toBeInTheDocument()
+    renderSocialScreen([descriptionUpdateMock])
+    const descriptionInput = screen.getByLabelText('Secondary Text')
+
+    fireEvent.change(descriptionInput, {
+      target: {
+        value:
+          'Updated description for social sharing that explains the journey content'
+      }
     })
+    fireEvent.blur(descriptionInput)
 
-    it('should update SEO title and make correct network call', async () => {
-        const result = jest.fn(() => ({
-            data: {
-                journeyUpdate: {
-                    __typename: 'Journey',
-                    id: 'test-journey-id',
-                    seoTitle: 'Updated Title for Social Media'
-                }
-            }
-        }))
+    await waitFor(() => expect(result).toHaveBeenCalled())
 
-        const titleUpdateMock = {
-            request: {
-                query: JOURNEY_SEO_TITLE_UPDATE,
-                variables: {
-                    id: 'test-journey-id',
-                    input: {
-                        seoTitle: 'Updated Title for Social Media'
-                    }
-                }
-            },
-            result
+    expect(descriptionInput).toHaveValue(
+      'Updated description for social sharing that explains the journey content'
+    )
+  })
+
+  it('should update both title and description, then call handleNext when Done button is clicked', async () => {
+    const titleResult = jest.fn(() => ({
+      data: {
+        journeyUpdate: {
+          __typename: 'Journey',
+          id: 'test-journey-id',
+          seoTitle: 'Final Title'
         }
+      }
+    }))
 
-        renderSocialScreen([titleUpdateMock])
-        const titleInput = screen.getByLabelText('Headline')
-
-        fireEvent.change(titleInput, {
-            target: { value: 'Updated Title for Social Media' }
-        })
-        fireEvent.blur(titleInput)
-
-        await waitFor(() => expect(result).toHaveBeenCalled())
-
-        expect(titleInput).toHaveValue('Updated Title for Social Media')
-    })
-
-    it('should update SEO description and make correct network call', async () => {
-        const result = jest.fn(() => ({
-            data: {
-                journeyUpdate: {
-                    __typename: 'Journey',
-                    id: 'test-journey-id',
-                    seoDescription: 'Updated description for social sharing that explains the journey content'
-                }
-            }
-        }))
-
-        const descriptionUpdateMock = {
-            request: {
-                query: JOURNEY_SEO_DESCRIPTION_UPDATE,
-                variables: {
-                    id: 'test-journey-id',
-                    input: {
-                        seoDescription: 'Updated description for social sharing that explains the journey content'
-                    }
-                }
-            },
-            result
+    const descriptionResult = jest.fn(() => ({
+      data: {
+        journeyUpdate: {
+          __typename: 'Journey',
+          id: 'test-journey-id',
+          seoDescription: 'Final description for social media'
         }
+      }
+    }))
 
-        renderSocialScreen([descriptionUpdateMock])
-        const descriptionInput = screen.getByLabelText('Secondary Text')
-
-        fireEvent.change(descriptionInput, {
-            target: { value: 'Updated description for social sharing that explains the journey content' }
-        })
-        fireEvent.blur(descriptionInput)
-
-        await waitFor(() => expect(result).toHaveBeenCalled())
-
-        expect(descriptionInput).toHaveValue('Updated description for social sharing that explains the journey content')
-    })
-
-    it('should update both title and description, then call handleNext when Done button is clicked', async () => {
-        const titleResult = jest.fn(() => ({
-            data: {
-                journeyUpdate: {
-                    __typename: 'Journey',
-                    id: 'test-journey-id',
-                    seoTitle: 'Final Title'
-                }
-            }
-        }))
-
-        const descriptionResult = jest.fn(() => ({
-            data: {
-                journeyUpdate: {
-                    __typename: 'Journey',
-                    id: 'test-journey-id',
-                    seoDescription: 'Final description for social media'
-                }
-            }
-        }))
-
-        const titleUpdateMock = {
-            request: {
-                query: JOURNEY_SEO_TITLE_UPDATE,
-                variables: {
-                    id: 'test-journey-id',
-                    input: {
-                        seoTitle: 'Final Title'
-                    }
-                }
-            },
-            result: titleResult
+    const titleUpdateMock = {
+      request: {
+        query: JOURNEY_SEO_TITLE_UPDATE,
+        variables: {
+          id: 'test-journey-id',
+          input: {
+            seoTitle: 'Final Title'
+          }
         }
+      },
+      result: titleResult
+    }
 
-        const descriptionUpdateMock = {
-            request: {
-                query: JOURNEY_SEO_DESCRIPTION_UPDATE,
-                variables: {
-                    id: 'test-journey-id',
-                    input: {
-                        seoDescription: 'Final description for social media'
-                    }
-                }
-            },
-            result: descriptionResult
+    const descriptionUpdateMock = {
+      request: {
+        query: JOURNEY_SEO_DESCRIPTION_UPDATE,
+        variables: {
+          id: 'test-journey-id',
+          input: {
+            seoDescription: 'Final description for social media'
+          }
         }
+      },
+      result: descriptionResult
+    }
 
-        renderSocialScreen([titleUpdateMock, descriptionUpdateMock])
+    renderSocialScreen([titleUpdateMock, descriptionUpdateMock])
 
-        const titleInput = screen.getByLabelText('Headline')
-        fireEvent.change(titleInput, { target: { value: 'Final Title' } })
-        fireEvent.blur(titleInput)
-        const descriptionInput = screen.getByLabelText('Secondary Text')
-        fireEvent.change(descriptionInput, { target: { value: 'Final description for social media' } })
-        fireEvent.blur(descriptionInput)
-
-        await waitFor(() => expect(titleResult).toHaveBeenCalled())
-        await waitFor(() => expect(descriptionResult).toHaveBeenCalled())
-
-        const doneButton = screen.getByRole('button', { name: 'Done' })
-        fireEvent.click(doneButton)
-
-        expect(handleNext).toHaveBeenCalledTimes(1)
+    const titleInput = screen.getByLabelText('Headline')
+    fireEvent.change(titleInput, { target: { value: 'Final Title' } })
+    fireEvent.blur(titleInput)
+    const descriptionInput = screen.getByLabelText('Secondary Text')
+    fireEvent.change(descriptionInput, {
+      target: { value: 'Final description for social media' }
     })
+    fireEvent.blur(descriptionInput)
 
-    it('should call handleNext when Done button is clicked without any changes', () => {
-        renderSocialScreen()
+    await waitFor(() => expect(titleResult).toHaveBeenCalled())
+    await waitFor(() => expect(descriptionResult).toHaveBeenCalled())
 
-        const doneButton = screen.getByRole('button', { name: 'Done' })
-        fireEvent.click(doneButton)
+    const doneButton = screen.getByRole('button', { name: 'Done' })
+    fireEvent.click(doneButton)
 
-        expect(handleNext).toHaveBeenCalledTimes(1)
-    })
+    expect(handleNext).toHaveBeenCalledTimes(1)
+  })
 
-    it('should render with correct initial values from journey context', () => {
-        renderSocialScreen()
+  it('should call handleNext when Done button is clicked without any changes', () => {
+    renderSocialScreen()
 
-        const titleInput = screen.getByLabelText('Headline')
-        const descriptionInput = screen.getByLabelText('Secondary Text')
+    const doneButton = screen.getByRole('button', { name: 'Done' })
+    fireEvent.click(doneButton)
 
-        expect(titleInput).toHaveValue('Initial SEO Title')
-        expect(descriptionInput).toHaveValue('Initial SEO Description')
-    })
+    expect(handleNext).toHaveBeenCalledTimes(1)
+  })
+
+  it('should render with correct initial values from journey context', () => {
+    renderSocialScreen()
+
+    const titleInput = screen.getByLabelText('Headline')
+    const descriptionInput = screen.getByLabelText('Secondary Text')
+
+    expect(titleInput).toHaveValue('Initial SEO Title')
+    expect(descriptionInput).toHaveValue('Initial SEO Description')
+  })
 })
