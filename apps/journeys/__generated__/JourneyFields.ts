@@ -659,6 +659,15 @@ export interface JourneyFields_journeyTheme {
   labelFont: string | null;
 }
 
+export interface JourneyFields_journeyCustomizationFields {
+  __typename: "JourneyCustomizationField";
+  id: string;
+  journeyId: string;
+  key: string;
+  value: string | null;
+  defaultValue: string | null;
+}
+
 export interface JourneyFields {
   __typename: "Journey";
   id: string;
@@ -703,5 +712,10 @@ export interface JourneyFields {
   logoImageBlock: JourneyFields_logoImageBlock | null;
   menuButtonIcon: JourneyMenuButtonIcon | null;
   menuStepBlock: JourneyFields_menuStepBlock | null;
+  socialNodeX: number | null;
+  socialNodeY: number | null;
   journeyTheme: JourneyFields_journeyTheme | null;
+  journeyCustomizationDescription: string | null;
+  journeyCustomizationFields: JourneyFields_journeyCustomizationFields[];
+  fromTemplateId: string | null;
 }

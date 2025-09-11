@@ -659,6 +659,15 @@ export interface GetPublisherTemplate_publisherTemplate_journeyTheme {
   labelFont: string | null;
 }
 
+export interface GetPublisherTemplate_publisherTemplate_journeyCustomizationFields {
+  __typename: "JourneyCustomizationField";
+  id: string;
+  journeyId: string;
+  key: string;
+  value: string | null;
+  defaultValue: string | null;
+}
+
 export interface GetPublisherTemplate_publisherTemplate {
   __typename: "Journey";
   id: string;
@@ -703,7 +712,12 @@ export interface GetPublisherTemplate_publisherTemplate {
   logoImageBlock: GetPublisherTemplate_publisherTemplate_logoImageBlock | null;
   menuButtonIcon: JourneyMenuButtonIcon | null;
   menuStepBlock: GetPublisherTemplate_publisherTemplate_menuStepBlock | null;
+  socialNodeX: number | null;
+  socialNodeY: number | null;
   journeyTheme: GetPublisherTemplate_publisherTemplate_journeyTheme | null;
+  journeyCustomizationDescription: string | null;
+  journeyCustomizationFields: GetPublisherTemplate_publisherTemplate_journeyCustomizationFields[];
+  fromTemplateId: string | null;
 }
 
 export interface GetPublisherTemplate {
