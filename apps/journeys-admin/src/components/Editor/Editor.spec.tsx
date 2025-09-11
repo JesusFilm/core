@@ -101,7 +101,9 @@ describe('Editor', () => {
     journeyTheme: null,
     journeyCustomizationDescription: null,
     journeyCustomizationFields: [],
-    fromTemplateId: null
+    fromTemplateId: null,
+    socialNodeX: null,
+    socialNodeY: null
   }
 
   beforeEach(() => {
