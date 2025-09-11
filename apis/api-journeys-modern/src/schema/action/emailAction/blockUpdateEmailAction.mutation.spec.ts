@@ -71,8 +71,7 @@ describe('blockUpdateEmailAction mutation', () => {
           journey: { disconnect: true },
           block: { disconnect: true },
           gtmEventName: null
-        },
-        include: { parentBlock: { include: { action: true } } }
+        }
       })
 
       expect(result).toEqual({

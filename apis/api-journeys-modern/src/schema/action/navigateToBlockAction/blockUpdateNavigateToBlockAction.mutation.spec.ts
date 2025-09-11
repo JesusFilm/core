@@ -76,8 +76,7 @@ describe('blockUpdateNavigateToBlockAction mutation', () => {
           journey: { disconnect: true },
           block: { connect: { id: 'child-block' } },
           gtmEventName: null
-        },
-        include: { parentBlock: { include: { action: true } } }
+        }
       })
 
       expect(result).toEqual({

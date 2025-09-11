@@ -90,8 +90,7 @@ builder.mutationField('blockUpdateNavigateToBlockAction', (t) =>
           ...ACTION_UPDATE_RESET,
           ...omit(input, 'blockId'),
           block: { connect: { id: input.blockId } }
-        },
-        include: { parentBlock: { include: { action: true } } }
+        }
       })
 
       return action

@@ -89,8 +89,7 @@ describe('blockUpdateAction mutation', () => {
           block: { disconnect: true },
           phone: '+1555123456',
           countryCode: 'US'
-        }),
-        include: { parentBlock: { include: { action: true } } }
+        })
       })
 
       expect(result).toEqual({
@@ -143,8 +142,7 @@ describe('blockUpdateAction mutation', () => {
           phone: null,
           journey: { disconnect: true },
           block: { connect: { id: 'blockId' } }
-        }),
-        include: { parentBlock: { include: { action: true } } }
+        })
       })
 
       expect(result).toEqual({
@@ -192,8 +190,7 @@ describe('blockUpdateAction mutation', () => {
           phone: null,
           journey: { disconnect: true },
           block: { disconnect: true }
-        }),
-        include: { parentBlock: { include: { action: true } } }
+        })
       })
 
       expect(result).toEqual({
@@ -240,8 +237,7 @@ describe('blockUpdateAction mutation', () => {
           phone: null,
           journey: { disconnect: true },
           block: { disconnect: true }
-        }),
-        include: { parentBlock: { include: { action: true } } }
+        })
       })
 
       expect(result).toEqual({

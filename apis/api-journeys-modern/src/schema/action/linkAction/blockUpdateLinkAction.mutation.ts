@@ -77,8 +77,7 @@ builder.mutationField('blockUpdateLinkAction', (t) =>
         update: {
           ...ACTION_UPDATE_RESET,
           ...input
-        },
-        include: { parentBlock: { include: { action: true } } }
+        }
       })
 
       return action
