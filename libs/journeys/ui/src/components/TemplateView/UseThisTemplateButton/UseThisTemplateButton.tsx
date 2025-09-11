@@ -1,11 +1,11 @@
 import Button from '@mui/material/Button'
+import CircularProgress from '@mui/material/CircularProgress'
 import { useRouter } from 'next/router'
 import { useTranslation } from 'next-i18next'
 import { type ReactElement, useEffect, useState } from 'react'
 
 import { useJourney } from '../../../libs/JourneyProvider'
 import { AccountCheckDialog } from '../AccountCheckDialog'
-import CircularProgress from '@mui/material/CircularProgress'
 
 interface UseThisTemplateButtonProps {
   signedIn?: boolean

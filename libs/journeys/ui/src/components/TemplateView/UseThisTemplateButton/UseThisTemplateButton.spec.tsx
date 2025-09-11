@@ -3,8 +3,8 @@ import { type NextRouter, useRouter } from 'next/router'
 
 import { JourneyStatus } from '../../../../__generated__/globalTypes'
 import { JourneyProvider } from '../../../libs/JourneyProvider'
-import { journey as mockJourney } from '../../../libs/JourneyProvider/JourneyProvider.mock'
 import type { JourneyFields as Journey } from '../../../libs/JourneyProvider/__generated__/JourneyFields'
+import { journey as mockJourney } from '../../../libs/JourneyProvider/JourneyProvider.mock'
 
 import { UseThisTemplateButton } from './UseThisTemplateButton'
 
