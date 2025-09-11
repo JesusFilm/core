@@ -22,6 +22,7 @@ import {
 } from '../PromptInput'
 import { Response } from '../Response'
 import { Suggestion, Suggestions } from '../Suggestion'
+import { Button } from '../Button'
 
 interface AiChatProps {
   open: boolean
@@ -32,19 +33,7 @@ export function AiChat({ open }: AiChatProps) {
   const { messages, sendMessage, status, regenerate } = useChat({
     transport: new DefaultChatTransport({
       api: '/api/chat'
-    }),
-    messages: [
-      {
-        id: '1',
-        role: 'assistant',
-        parts: [
-          {
-            type: 'text',
-            text: 'Hi, how can I help you?'
-          }
-        ]
-      }
-    ]
+    })
   })
   const [input, setInput] = useState('')
   const [suggestions, setSuggestions] = useState<string[]>()
@@ -87,12 +76,6 @@ export function AiChat({ open }: AiChatProps) {
     }
   }
 
-  useEffect(() => {
-    if (!open) return
-
-    void fetchSuggestions()
-  }, [open])
-
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     if (input.trim()) {
@@ -114,6 +97,16 @@ export function AiChat({ open }: AiChatProps) {
     <div className="flex flex-col h-full p-2">
       <Conversation className="flex-1 min-h-0 overflow-hidden">
         <ConversationContent className="h-full overflow-y-auto">
+          {messages.length === 0 && !suggestionsLoading && !suggestions && (
+            <div className="flex justify-center p-4">
+              <Button
+                onClick={fetchSuggestions}
+                className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-medium px-6 py-3 rounded-full shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105"
+              >
+                {t('Generate Suggestions')}
+              </Button>
+            </div>
+          )}
           {messages.map((message) => (
             <div key={message.id}>
               {message.parts.map((part, i) => {
