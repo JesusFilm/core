@@ -48,7 +48,7 @@ export function LinksScreen({
 
   const { journey } = useJourney()
   const treeBlocks = transformer(journey?.blocks ?? []).filter((block) =>
-    links.some(
+    links?.some(
       (link) =>
         (link.linkType === 'url' || link.linkType === 'email') &&
         link.parentStepId === block.id
