@@ -44,7 +44,7 @@
           "echo \"VERCEL_GIT_COMMIT_SHA=\\\"$NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA\\\"\" >> .vercel/.env.preview.local",
           "echo \"PRISMA_LOCATION_MEDIA=\\\"$PRISMA_LOCATION_MEDIA\\\"\" >> .vercel/.env.preview.local",
           "echo \"PRISMA_LOCATION_LANGUAGES=\\\"$PRISMA_LOCATION_LANGUAGES\\\"\" >> .vercel/.env.preview.local",
-          "nx run-many -t prisma-generate --all --binary-target=rhel-openssl-3.0.x",
+          "nx run-many -t prisma-generate --all",
           "pnpm exec vercel build",
           "VERCEL_PROJECT_ID=$ARCLIGHT_VERCEL_PROJECT_ID pnpm exec vercel deploy --prebuilt --token=$VERCEL_TOKEN --archive=tgz > apps/arclight/.vercel-url"
         ],
@@ -58,7 +58,7 @@
             "echo \"VERCEL_GIT_COMMIT_SHA=\\\"$NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA\\\"\" >> .vercel/.env.production.local",
             "echo \"PRISMA_LOCATION_MEDIA=\\\"$PRISMA_LOCATION_MEDIA\\\"\" >> .vercel/.env.production.local",
             "echo \"PRISMA_LOCATION_LANGUAGES=\\\"$PRISMA_LOCATION_LANGUAGES\\\"\" >> .vercel/.env.production.local",
-            "nx run-many -t prisma-generate --all --binary-target=rhel-openssl-3.0.x",
+            "nx run-many -t prisma-generate --all",
             "pnpm exec vercel build --prod",
             "VERCEL_PROJECT_ID=$ARCLIGHT_VERCEL_PROJECT_ID pnpm exec vercel deploy --prebuilt --prod --token=$VERCEL_TOKEN --archive=tgz > apps/arclight/.vercel-url"
           ]
