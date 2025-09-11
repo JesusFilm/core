@@ -7,7 +7,13 @@ import { useTranslation } from 'next-i18next'
 import { ReactElement, useState } from 'react'
 
 import { ProgressStepper } from './ProgressStepper'
-import { DoneScreen, LanguageScreen, LinksScreen, TextScreen } from './Screens'
+import {
+  DoneScreen,
+  LanguageScreen,
+  LinksScreen,
+  TextScreen,
+  SocialScreen
+} from './Screens'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import ChevronRight from '@core/shared/ui/icons/ChevronRight'
 
@@ -16,14 +22,7 @@ export type CustomizationScreens = (typeof screens)[number]
 
 // NOTE: login is a dialog -> regular sign up path (that can show the image/title from journey) -> redirects back current step (URL parameter)
 // NOTE: share is a dialog
-const screens = [
-  'language',
-  'text',
-  'links',
-  // TODO: uncomment this when we have the social screen
-  // 'social',
-  'done'
-] as const
+const screens = ['language', 'text', 'links', 'social', 'done'] as const
 
 function renderScreen(
   screen: CustomizationScreens,
@@ -52,14 +51,13 @@ function renderScreen(
           handleScreenNavigation={handleScreenNavigation}
         />
       )
-    // TODO: uncomment this when we have the social screen
-    // case 'social':
-    //   return (
-    //     <SocialScreen
-    //       handleNext={handleNext}
-    //       handleScreenNavigation={handleScreenNavigation}
-    //     />
-    //   )
+    case 'social':
+      return (
+        <SocialScreen
+          handleNext={handleNext}
+          handleScreenNavigation={handleScreenNavigation}
+        />
+      )
     case 'done':
       return <DoneScreen handleScreenNavigation={handleScreenNavigation} />
     default:
