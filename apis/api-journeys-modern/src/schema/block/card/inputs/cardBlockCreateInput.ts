@@ -14,6 +14,7 @@ export const CardBlockCreateInput = builder.inputType('CardBlockCreateInput', {
     }),
     fullscreen: t.boolean({ required: false }),
     themeMode: t.field({ type: ThemeMode, required: false }),
-    themeName: t.field({ type: ThemeName, required: false })
+    themeName: t.field({ type: ThemeName, required: false }),
+    showAI: t.boolean({ required: false })
   })
 })

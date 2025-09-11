@@ -277,6 +277,11 @@ export type CardBlock = Block & {
   parentBlockId?: Maybe<Scalars['ID']['output']>;
   parentOrder?: Maybe<Scalars['Int']['output']>;
   /**
+   * showAI controls whether the AI feature is enabled for this card.
+   * null or false = feature is off, true = feature is on
+   */
+  showAI?: Maybe<Scalars['Boolean']['output']>;
+  /**
    * themeMode can override journey themeMode. If nothing is set then use
    * themeMode from journey
    */
@@ -295,6 +300,7 @@ export type CardBlockCreateInput = {
   id?: InputMaybe<Scalars['ID']['input']>;
   journeyId: Scalars['ID']['input'];
   parentBlockId: Scalars['ID']['input'];
+  showAI?: InputMaybe<Scalars['Boolean']['input']>;
   themeMode?: InputMaybe<ThemeMode>;
   themeName?: InputMaybe<ThemeName>;
 };
@@ -305,6 +311,7 @@ export type CardBlockUpdateInput = {
   coverBlockId?: InputMaybe<Scalars['ID']['input']>;
   fullscreen?: InputMaybe<Scalars['Boolean']['input']>;
   parentBlockId?: InputMaybe<Scalars['ID']['input']>;
+  showAI?: InputMaybe<Scalars['Boolean']['input']>;
   themeMode?: InputMaybe<ThemeMode>;
   themeName?: InputMaybe<ThemeName>;
 };

@@ -720,6 +720,12 @@ type CardBlock implements Block
   themeName from journey
   """
   themeName: ThemeName @shareable
+
+  """
+  showAI controls whether the AI feature is enabled for this card.
+  null or false = feature is off, true = feature is on
+  """
+  showAI: Boolean @shareable
 }
 
 input CardBlockCreateInput {
@@ -731,6 +737,7 @@ input CardBlockCreateInput {
   fullscreen: Boolean
   themeMode: ThemeMode
   themeName: ThemeName
+  showAI: Boolean
 }
 
 input CardBlockUpdateInput {
@@ -741,6 +748,7 @@ input CardBlockUpdateInput {
   fullscreen: Boolean
   themeMode: ThemeMode
   themeName: ThemeName
+  showAI: Boolean
 }
 
 enum GridDirection {

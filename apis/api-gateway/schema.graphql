@@ -943,6 +943,11 @@ type CardBlock implements Block @join__type(graph: API_JOURNEYS)  @join__type(gr
   themeName from journey
   """
   themeName: ThemeName
+  """
+  showAI controls whether the AI feature is enabled for this card.
+  null or false = feature is off, true = feature is on
+  """
+  showAI: Boolean
 }
 
 type GridContainerBlock implements Block @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  @join__implements(graph: API_JOURNEYS, interface: "Block")  @join__implements(graph: API_JOURNEYS_MODERN, interface: "Block")  {
@@ -3597,6 +3602,7 @@ input CardBlockCreateInput @join__type(graph: API_JOURNEYS)  @join__type(graph: 
   fullscreen: Boolean
   themeMode: ThemeMode
   themeName: ThemeName
+  showAI: Boolean
 }
 
 input CardBlockUpdateInput @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
@@ -3607,6 +3613,7 @@ input CardBlockUpdateInput @join__type(graph: API_JOURNEYS)  @join__type(graph: 
   fullscreen: Boolean
   themeMode: ThemeMode
   themeName: ThemeName
+  showAI: Boolean
 }
 
 input IconBlockCreateInput @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {

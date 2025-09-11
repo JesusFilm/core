@@ -569,6 +569,7 @@ model Block {
   menuStepBlockParent        Journey?             @relation("MenuStepBlock")
   logoImageBlockParent       Journey?             @relation("LogoImageBlock")
   slug                       String?
+  showAI                     Boolean?
   settings                   Json                 @default("{ }") // block settings
 
   @@unique([slug, journeyId])
