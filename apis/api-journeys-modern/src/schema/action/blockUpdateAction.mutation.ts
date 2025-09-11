@@ -140,8 +140,7 @@ builder.mutationField('blockUpdateAction', (t) =>
           update: {
             ...ACTION_UPDATE_RESET,
             ...emailInput
-          },
-          include: { parentBlock: { include: { action: true } } }
+          }
         })
       }
 
@@ -173,8 +172,7 @@ builder.mutationField('blockUpdateAction', (t) =>
           update: {
             ...ACTION_UPDATE_RESET,
             ...inputWithBlockConnection
-          },
-          include: { parentBlock: { include: { action: true } } }
+          }
         })
       }
 
@@ -188,8 +186,7 @@ builder.mutationField('blockUpdateAction', (t) =>
           update: {
             ...ACTION_UPDATE_RESET,
             ...linkInput
-          },
-          include: { parentBlock: { include: { action: true } } }
+          }
         })
 
       if (isPhone) {
@@ -202,8 +199,7 @@ builder.mutationField('blockUpdateAction', (t) =>
           update: {
             ...ACTION_UPDATE_RESET,
             ...phoneInput
-          },
-          include: { parentBlock: { include: { action: true } } }
+          }
         })
       }
 
