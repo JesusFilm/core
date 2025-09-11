@@ -479,6 +479,9 @@ importers:
       prism-react-renderer:
         specifier: ^2.0.0
         version: 2.4.1(react@19.0.0)
+      prisma:
+        specifier: ^6.0.0
+        version: 6.5.0(typescript@5.9.2)
       prop-types:
         specifier: ^15.8.1
         version: 15.8.1
@@ -1041,9 +1044,6 @@ importers:
       prettier:
         specifier: 3.6.2
         version: 3.6.2
-      prisma:
-        specifier: ^6.0.0
-        version: 6.5.0(typescript@5.9.2)
       prisma-erd-generator:
         specifier: ^2.0.0
         version: 2.0.4(@prisma/client@6.5.0(prisma@6.5.0(typescript@5.9.2))(typescript@5.9.2))(puppeteer@23.7.0(typescript@5.9.2))(ts-node@10.9.2(@swc/core@1.5.29(@swc/helpers@0.5.17))(@types/node@22.17.2)(typescript@5.9.2))(typescript@5.9.2)(vue-class-component@7.2.6(vue@3.5.13(typescript@5.9.2)))
