@@ -116,7 +116,7 @@ export const icons = [
   },
   {
     value: IconName.RadioButtonUncheckedRounded,
-    label: t('Radio Button Uncheked'),
+    label: t('Radio Button Unchecked'),
     display: <RadioButtonUncheckedRounded />
   },
   {
