@@ -4,8 +4,8 @@ import IconButton from '@mui/material/IconButton'
 import InputAdornment from '@mui/material/InputAdornment'
 import TextField from '@mui/material/TextField'
 import { SxProps } from '@mui/system/styleFunctionSx'
+import { useTranslation } from 'next-i18next'
 import { ReactElement, useRef } from 'react'
-import { useTranslation } from 'react-i18next'
 
 export interface CopyTextFieldProps {
   label?: string
