@@ -1,5 +1,6 @@
 import ContentCopyRoundedIcon from '@mui/icons-material/ContentCopyRounded'
 import Button from '@mui/material/Button'
+import IconButton from '@mui/material/IconButton'
 import InputAdornment from '@mui/material/InputAdornment'
 import TextField from '@mui/material/TextField'
 import { SxProps } from '@mui/system/styleFunctionSx'
@@ -13,6 +14,7 @@ export interface CopyTextFieldProps {
   messageText?: string
   sx?: SxProps
   onCopyClick?: () => Promise<void>
+  buttonVariant: 'icon' | 'button'
 }
 
 export function CopyTextField({
@@ -20,7 +22,8 @@ export function CopyTextField({
   value,
   helperText,
   sx = {},
-  onCopyClick
+  onCopyClick,
+  buttonVariant = 'icon'
 }: CopyTextFieldProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const inputRef = useRef<HTMLInputElement>(null)
@@ -40,28 +43,34 @@ export function CopyTextField({
       InputProps={{
         endAdornment: (
           <InputAdornment position="end">
-            <Button
-              onClick={onCopyClick}
-              aria-label="Copy"
-              disabled={value == null}
-              sx={{
-                backgroundColor: 'black',
-                color: 'white',
-                '&:hover': {
-                  backgroundColor: 'secondary.dark'
-                },
-                '&:disabled': {
-                  backgroundColor: 'secondary.dark',
-                  color: 'divider'
-                },
-                width: '90px',
-                height: '48px',
-                display: { xs: 'none', sm: 'flex' }
-              }}
-            >
-              <ContentCopyRoundedIcon sx={{ mr: 1 }} />
-              {t('Copy')}
-            </Button>
+            {buttonVariant === 'icon' ? (
+              <IconButton onClick={onCopyClick} aria-label="Copy">
+                <ContentCopyRoundedIcon />
+              </IconButton>
+            ) : (
+              <Button
+                onClick={onCopyClick}
+                aria-label="Copy"
+                disabled={value == null}
+                sx={{
+                  backgroundColor: 'black',
+                  color: 'white',
+                  '&:hover': {
+                    backgroundColor: 'secondary.dark'
+                  },
+                  '&:disabled': {
+                    backgroundColor: 'secondary.dark',
+                    color: 'divider'
+                  },
+                  width: '90px',
+                  height: '48px',
+                  display: { xs: 'none', sm: 'flex' }
+                }}
+              >
+                <ContentCopyRoundedIcon sx={{ mr: 1 }} />
+                {t('Copy')}
+              </Button>
+            )}
           </InputAdornment>
         ),
         readOnly: true

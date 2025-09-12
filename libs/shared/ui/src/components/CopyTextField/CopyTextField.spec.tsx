@@ -25,7 +25,7 @@ describe('CopyTextField', () => {
     })
 
     const { getByRole } = render(
-      <CopyTextField value={link} onCopyClick={mockOnCopyClick} />
+      <CopyTextField value={link} onCopyClick={mockOnCopyClick} buttonVariant="button" />
     )
     expect(getByRole('textbox')).toHaveValue(link)
     fireEvent.click(getByRole('button', { name: 'Copy' }))
@@ -36,7 +36,7 @@ describe('CopyTextField', () => {
   it('selects all text when input focused', () => {
     const link = 'http://localhost/journeys/journeySlug'
     const { getByRole } = render(
-      <CopyTextField value={link} />
+      <CopyTextField value={link} buttonVariant="button" />
     )
     fireEvent.focus(getByRole('textbox'))
     const input = getByRole('textbox') as HTMLInputElement
@@ -53,6 +53,7 @@ describe('CopyTextField', () => {
         helperText="this is custom helper text"
         messageText="Custom link copied"
         onCopyClick={mockOnCopyClick}
+        buttonVariant="button"
       />
     )
     expect(getByRole('textbox', { name: 'Journey URL' })).toHaveValue(
@@ -72,10 +73,35 @@ describe('CopyTextField', () => {
             backgroundColor: 'rgb (255, 255, 255)'
           }
         }}
+        buttonVariant="button"
       />
     )
     expect(getByRole('textbox')).toHaveStyle(
       'background-color: rgb (255, 255, 255)'
     )
+  })
+
+  it('renders icon button when buttonVariant is "icon"', () => {
+    const { getByRole, queryByText } = render(
+      <CopyTextField value="test value" buttonVariant="icon" />
+    )
+
+    const button = getByRole('button', { name: 'Copy' })
+    expect(button).toBeInTheDocument()
+    expect(queryByText('Copy')).not.toBeInTheDocument()
+    expect(button.tagName).toBe('BUTTON')
+    expect(button).toHaveClass('MuiIconButton-root')
+  })
+
+  it('renders regular button when buttonVariant is "button"', () => {
+    const { getByRole, getByText } = render(
+      <CopyTextField value="test value" buttonVariant="button" />
+    )
+
+    const button = getByRole('button', { name: 'Copy' })
+    expect(button).toBeInTheDocument()
+    expect(getByText('Copy')).toBeInTheDocument()
+    expect(button.tagName).toBe('BUTTON')
+    expect(button).toHaveClass('MuiButton-root')
   })
 })

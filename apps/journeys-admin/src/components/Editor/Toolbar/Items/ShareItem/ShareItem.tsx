@@ -146,6 +146,7 @@ export function ShareItem({
             <CopyTextField
               value={journeyUrl}
               onCopyClick={handleCopyClick}
+              buttonVariant="button"
             />
             <Button
               onClick={handleCopyClick}
