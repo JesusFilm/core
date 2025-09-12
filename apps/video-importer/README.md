@@ -116,7 +116,6 @@ The video importer automatically tracks the processing status of your files to a
 ### File Renaming Behavior
 
 - **Successful files** are renamed with `.completed` extension
-
   - `video.mp4` → `video.mp4.completed`
   - `subtitle.srt` → `subtitle.srt.completed`
   - `audio.aac` → `audio.aac.completed`
