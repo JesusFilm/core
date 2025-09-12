@@ -14,7 +14,7 @@ export interface CopyTextFieldProps {
   messageText?: string
   sx?: SxProps
   onCopyClick?: () => Promise<void>
-  buttonVariant: 'icon' | 'button'
+  buttonVariant?: 'icon' | 'button'
 }
 
 export function CopyTextField({
