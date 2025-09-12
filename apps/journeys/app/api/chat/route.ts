@@ -2,7 +2,6 @@ import { createOpenAICompatible } from '@ai-sdk/openai-compatible'
 import {
   getActiveTraceId,
   observe,
-  startActiveObservation,
   updateActiveObservation,
   updateActiveTrace
 } from '@langfuse/tracing'
@@ -13,6 +12,8 @@ import { after } from 'next/server'
 import { flush } from '../../../src/instrumentation'
 import { getPrompt } from '../../../src/lib/ai/langfuse/promptHelper'
 
+export const runtime = 'nodejs'
+
 interface ChatRequestBody {
   messages: UIMessage[]
   contextText?: string
@@ -20,9 +21,7 @@ interface ChatRequestBody {
 
 export const handler = async (req: Request) => {
   const { messages, contextText }: ChatRequestBody = await req.json()
-  // capture once, while context is active
-  const activeSpan = trace.getActiveSpan()
-  // Set session id and user id on active trace
+
   const inputText = messages[messages.length - 1].parts.find(
     (part) => part.type === 'text'
   )?.text
@@ -48,6 +47,9 @@ export const handler = async (req: Request) => {
     model: apologist('openai/gpt/4o'),
     messages: convertToModelMessages(messages),
     system: systemPrompt,
+    experimental_telemetry: {
+      isEnabled: true
+    },
     onFinish: (result) => {
       const latestText = Array.isArray((result as any).content)
         ? [...((result as any).content as Array<any>)]
@@ -57,21 +59,30 @@ export const handler = async (req: Request) => {
 
       updateActiveObservation({ output: latestText }, { asType: 'generation' })
       updateActiveTrace({ output: latestText })
-      activeSpan?.end()
+
+      // End the active span
+      trace.getActiveSpan()?.end()
     }
   })
 
-  // Schedule flush after request is finished
-  after(async () => await flush())
+  after(async () => {
+    try {
+      // Small delay to ensure span processing is complete
+      await new Promise((resolve) => setTimeout(resolve, 100))
+      await flush()
+    } catch (error) {
+      console.warn('[journeys] Chat flush error:', error.message)
+    }
+  })
 
   return result.toUIMessageStreamResponse({
-    // generateMessageId: () => getActiveTraceId(),
+    generateMessageId: () => getActiveTraceId() ?? crypto.randomUUID(),
     sendSources: true,
     sendReasoning: true
   })
 }
 
 export const POST = observe(handler, {
-  name: 'handle-chatbot-message',
-  endOnExit: false // end after stream has finished
+  name: 'handle-chat-message',
+  endOnExit: false // Important for streaming responses
 })
