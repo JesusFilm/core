@@ -135,7 +135,8 @@ export function TemplateSettingsDialog({
         variables: {
           journeyId: journey.id,
           string: values.journeyCustomizationDescription
-        }
+        },
+        refetchQueries: ['GetJourney']
       })
       if (Boolean(journey.featuredAt) !== values.featured)
         await journeyFeature({
@@ -160,10 +161,13 @@ export function TemplateSettingsDialog({
         }
       }
       if (error instanceof Error) {
-        enqueueSnackbar(error.message, {
-          variant: 'error',
-          preventDuplicate: true
-        })
+        enqueueSnackbar(
+          'Something went wrong, please reload the page and try again',
+          {
+            variant: 'error',
+            preventDuplicate: true
+          }
+        )
       }
     }
   }
