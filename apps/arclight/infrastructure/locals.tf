@@ -11,7 +11,12 @@ locals {
     "REDIS_URL",
     "REDIS_PORT",
     "BC_ACCOUNT_ID",
-    "BC_POLICY_KEY"
+    "BC_POLICY_KEY",
+    "PG_DATABASE_URL_MEDIA",
+    "PG_DATABASE_URL_LANGUAGES",
+    "PRISMA_LOCATION_LANGUAGES",
+    "PRISMA_LOCATION_MEDIA",
+    "CLOUDFLARE_IMAGE_ACCOUNT"
   ]
   service_config = {
     name           = "arclight"
