@@ -1,13 +1,13 @@
 {
   "404": "404",
   "500": "500",
-  "%s | Next Steps": "%s | Next Steps",
-  "Next Steps": "Next Steps",
-  "This Journey is not available.": "This Journey is not available.",
-  "Oops! Something went wrong.": "Oops! Something went wrong.",
-  "<0>This page has been created to test the embed code.<1>If youve found this page in error click the button below.</1></0>": "<0>This page has been created to test the embed code.<1>If youve found this page in error click the button below.</1></0>",
-  "Get me out of here!": "Get me out of here!",
-  "Terms & Conditions": "Terms & Conditions",
-  "Privacy Policy": "Privacy Policy",
-  "NextSteps © {{year}}": "NextSteps © {{year}}"
+  "%s | Next Steps": "%s | Langkah Seterusnya",
+  "Next Steps": "Langkah Seterusnya",
+  "This Journey is not available.": "Perjalanan ini tidak tersedia.",
+  "Oops! Something went wrong.": "Aduh! Sesuatu telah berlaku.",
+  "<0>This page has been created to test the embed code.<1>If youve found this page in error click the button below.</1></0>": "<0>Halaman ini telah dibuat untuk menguji kod benam.<1>Jika anda tersilap menemui halaman ini, klik butang di bawah.</1></0>",
+  "Get me out of here!": "Bawa saya keluar dari sini!",
+  "Terms & Conditions": "Terma & Syarat",
+  "Privacy Policy": "Dasar Privasi",
+  "NextSteps © {{year}}": "Langkah Seterusnya © {{year}}"
 }
