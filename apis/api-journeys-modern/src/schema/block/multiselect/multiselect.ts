@@ -16,6 +16,9 @@ export const MultiselectBlock = builder.prismaObject('Block', {
     submitLabel: t.string({
       nullable: false,
       resolve: ({ submitLabel }) => submitLabel ?? ''
+    }),
+    action: t.relation('action', {
+      nullable: true
     })
   })
 })

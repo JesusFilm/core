@@ -1040,6 +1040,7 @@ type MultiselectBlock implements Block
   min: Int
   max: Int
   submitLabel: String!
+  action: Action
 }
 
 input MultiselectBlockCreateInput {
@@ -1048,8 +1049,6 @@ input MultiselectBlockCreateInput {
   parentBlockId: ID!
   label: String!
   submitLabel: String!
-  min: Int
-  max: Int
 }
 
 input MultiselectBlockUpdateInput {
