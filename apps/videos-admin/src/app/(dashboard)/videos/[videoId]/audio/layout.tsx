@@ -11,7 +11,7 @@ import List from '@mui/material/List'
 import ListItem from '@mui/material/ListItem'
 import ListItemText from '@mui/material/ListItemText'
 import Typography from '@mui/material/Typography'
-import { usePathname, useRouter } from 'next/navigation'
+import { useParams, usePathname, useRouter } from 'next/navigation'
 import { useCallback, useEffect, useState } from 'react'
 
 import { graphql } from '@core/shared/gql'
@@ -42,15 +42,14 @@ const GET_ADMIN_VIDEO_VARIANTS = graphql(`
 `)
 
 export default function ClientLayout({
-  children,
-  params: { videoId }
+  children
 }: {
   children: React.ReactNode
-  params: { videoId: string }
 }) {
   const router = useRouter()
   const pathname = usePathname()
   const [reloadOnPathChange, setReloadOnPathChange] = useState(false)
+  const { videoId } = useParams() as { videoId: string }
 
   const { data, loading, refetch } = useQuery(GET_ADMIN_VIDEO_VARIANTS, {
     variables: { id: videoId, languageId: DEFAULT_VIDEO_LANGUAGE_ID }

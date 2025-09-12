@@ -90,7 +90,6 @@ export function AddUserSection({
           aria-controls={menuOpen ? 'menu' : undefined}
           sx={{
             borderRadius: '16px',
-            width: '124px',
             height: '32px',
             color: 'secondary.dark',
             borderWidth: '1px',

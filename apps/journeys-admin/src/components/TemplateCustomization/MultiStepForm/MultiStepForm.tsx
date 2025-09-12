@@ -4,31 +4,31 @@ import Container from '@mui/material/Container'
 import NextLink from 'next/link'
 import Stack from '@mui/material/Stack'
 import { useTranslation } from 'next-i18next'
-import { ReactElement, useState } from 'react'
+import { ReactElement, useState, useMemo } from 'react'
 
 import { ProgressStepper } from './ProgressStepper'
-import { DoneScreen, LanguageScreen, LinksScreen, TextScreen } from './Screens'
+import {
+  DoneScreen,
+  LanguageScreen,
+  LinksScreen,
+  TextScreen,
+  SocialScreen
+} from './Screens'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import ChevronRight from '@core/shared/ui/icons/ChevronRight'
+import {
+  getCustomizeFlowConfig,
+  CustomizationScreen
+} from '../utils/getCustomizeFlowConfig'
+import { JourneyLink } from '../utils/getJourneyLinks'
 
 export const MULTI_STEP_FORM_MIN_HEIGHT = 900
-export type CustomizationScreens = (typeof screens)[number]
-
-// NOTE: login is a dialog -> regular sign up path (that can show the image/title from journey) -> redirects back current step (URL parameter)
-// NOTE: share is a dialog
-const screens = [
-  'language',
-  'text',
-  'links',
-  // TODO: uncomment this when we have the social screen
-  // 'social',
-  'done'
-] as const
 
 function renderScreen(
-  screen: CustomizationScreens,
+  screen: CustomizationScreen,
   handleNext: () => void,
-  handleScreenNavigation: (screen: CustomizationScreens) => void
+  handleScreenNavigation: (screen: CustomizationScreen) => void,
+  links: JourneyLink[] = []
 ): ReactElement {
   switch (screen) {
     case 'language':
@@ -50,16 +50,16 @@ function renderScreen(
         <LinksScreen
           handleNext={handleNext}
           handleScreenNavigation={handleScreenNavigation}
+          links={links}
         />
       )
-    // TODO: uncomment this when we have the social screen
-    // case 'social':
-    //   return (
-    //     <SocialScreen
-    //       handleNext={handleNext}
-    //       handleScreenNavigation={handleScreenNavigation}
-    //     />
-    //   )
+    case 'social':
+      return (
+        <SocialScreen
+          handleNext={handleNext}
+          handleScreenNavigation={handleScreenNavigation}
+        />
+      )
     case 'done':
       return <DoneScreen handleScreenNavigation={handleScreenNavigation} />
     default:
@@ -70,8 +70,14 @@ function renderScreen(
 export function MultiStepForm(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { journey } = useJourney()
+
+  const { screens, links, totalSteps } = useMemo(
+    () => getCustomizeFlowConfig(journey, t),
+    []
+  )
+
   const [activeScreen, setActiveScreen] =
-    useState<CustomizationScreens>('language')
+    useState<CustomizationScreen>('language')
 
   async function handleNext(): Promise<void> {
     if (activeScreen !== screens[screens.length - 1]) {
@@ -80,7 +86,7 @@ export function MultiStepForm(): ReactElement {
   }
 
   async function handleScreenNavigation(
-    screen: CustomizationScreens
+    screen: CustomizationScreen
   ): Promise<void> {
     setActiveScreen(screen)
   }
@@ -122,7 +128,7 @@ export function MultiStepForm(): ReactElement {
 
         <ProgressStepper
           activeStepNumber={screens.indexOf(activeScreen)}
-          totalSteps={screens.length}
+          totalSteps={totalSteps}
         />
 
         <Box
@@ -133,7 +139,12 @@ export function MultiStepForm(): ReactElement {
             py: { xs: '10px', sm: '24px' }
           }}
         >
-          {renderScreen(activeScreen, handleNext, handleScreenNavigation)}
+          {renderScreen(
+            activeScreen,
+            handleNext,
+            handleScreenNavigation,
+            links
+          )}
         </Box>
 
         {/* TODO: delete back button. This is only here for the dev's to use */}

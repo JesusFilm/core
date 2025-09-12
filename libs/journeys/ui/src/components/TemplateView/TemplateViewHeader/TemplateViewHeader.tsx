@@ -7,13 +7,12 @@ import { User } from 'next-firebase-auth'
 import { ReactElement } from 'react'
 
 import { useJourney } from '../../../libs/JourneyProvider'
-import { CreateJourneyButton } from '../CreateJourneyButton'
 
 import { PreviewTemplateButton } from './PreviewTemplateButton'
 import { SocialImage } from './SocialImage'
 import { TemplateCreatorDetails } from './TemplateCreatorDetails/TemplateCreatorDetails'
 import { TemplateEditButton } from './TemplateEditButton/TemplateEditButton'
-import { CustomizeTemplateButton } from './CustomizeTemplateButton/CustomizeTemplateButton'
+import { UseThisTemplateButton } from '../UseThisTemplateButton'
 
 interface TemplateViewHeaderProps {
   isPublisher: boolean | undefined
@@ -150,9 +149,8 @@ export function TemplateViewHeader({
               marginTop: 'auto'
             }}
           >
-            <CreateJourneyButton signedIn={authUser?.id != null} />
+            <UseThisTemplateButton signedIn={authUser?.id != null} />
             <PreviewTemplateButton slug={journey?.slug} />
-            <CustomizeTemplateButton journeyId={journey?.id} />
             {journey != null && isPublisher === true && (
               <TemplateEditButton journeyId={journey.id} />
             )}
@@ -160,7 +158,7 @@ export function TemplateViewHeader({
         </Stack>
       </Stack>
       <Box sx={{ display: { xs: 'flex', sm: 'none' }, pt: 6 }} gap={2}>
-        <CreateJourneyButton signedIn={authUser?.id != null} />
+        <UseThisTemplateButton signedIn={authUser?.id != null} />
         <PreviewTemplateButton slug={journey?.slug} />
         {journey != null && isPublisher === true && (
           <TemplateEditButton journeyId={journey.id} />

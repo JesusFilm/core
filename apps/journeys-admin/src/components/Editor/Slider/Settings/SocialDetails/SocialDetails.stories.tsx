@@ -79,7 +79,9 @@ const journey: Journey = {
   journeyTheme: null,
   journeyCustomizationDescription: null,
   journeyCustomizationFields: [],
-  fromTemplateId: null
+  fromTemplateId: null,
+  socialNodeX: null,
+  socialNodeY: null
 }
 
 const image: ImageBlock = {

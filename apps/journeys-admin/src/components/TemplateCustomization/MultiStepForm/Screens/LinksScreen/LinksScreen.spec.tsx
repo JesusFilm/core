@@ -29,6 +29,7 @@ import {
   JourneyChatButtonUpdateVariables
 } from '../../../../../../__generated__/JourneyChatButtonUpdate'
 import { MessagePlatform } from '../../../../../../__generated__/globalTypes'
+import { JourneyLink } from '../../../utils/getJourneyLinks'
 
 describe('LinksScreen', () => {
   const journey = {
@@ -67,6 +68,15 @@ describe('LinksScreen', () => {
     ]
   } as unknown as Journey
 
+  const mockLinks: JourneyLink[] = [
+    {
+      id: 'chat-1',
+      linkType: 'chatButtons',
+      url: 'https://wa.me/123',
+      label: 'Chat: whatsApp'
+    }
+  ]
+
   it('renders placeholder and chat link form from journey', async () => {
     await act(async () => {
       render(
@@ -75,6 +85,7 @@ describe('LinksScreen', () => {
             <LinksScreen
               handleNext={jest.fn()}
               handleScreenNavigation={jest.fn()}
+              links={mockLinks}
             />
           </JourneyProvider>
         </MockedProvider>
@@ -100,6 +111,7 @@ describe('LinksScreen', () => {
             <LinksScreen
               handleNext={handleNext}
               handleScreenNavigation={jest.fn()}
+              links={mockLinks}
             />
           </JourneyProvider>
         </MockedProvider>
@@ -125,6 +137,7 @@ describe('LinksScreen', () => {
             <LinksScreen
               handleNext={handleNext}
               handleScreenNavigation={jest.fn()}
+              links={mockLinks}
             />
           </JourneyProvider>
         </MockedProvider>
@@ -188,6 +201,31 @@ describe('LinksScreen', () => {
         }
       ]
     } as unknown as Journey
+
+    const mockLinksWithMultipleTypes: JourneyLink[] = [
+      {
+        id: 'btn-url',
+        linkType: 'url',
+        url: 'https://example.com',
+        label: 'Primary',
+        parentStepId: 'step-1',
+        customizable: true
+      },
+      {
+        id: 'btn-email',
+        linkType: 'email',
+        url: 'user@example.com',
+        label: 'Email Link',
+        parentStepId: 'step-1',
+        customizable: true
+      },
+      {
+        id: 'chat-1',
+        linkType: 'chatButtons',
+        url: 'https://wa.me/123',
+        label: 'Chat: whatsApp'
+      }
+    ]
 
     const linkUpdateMock: MockedResponse<
       BlockActionLinkUpdate,
@@ -285,6 +323,7 @@ describe('LinksScreen', () => {
             <LinksScreen
               handleNext={handleNext}
               handleScreenNavigation={jest.fn()}
+              links={mockLinksWithMultipleTypes}
             />
           </JourneyProvider>
         </MockedProvider>
