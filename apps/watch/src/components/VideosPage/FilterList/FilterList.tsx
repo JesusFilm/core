@@ -12,12 +12,12 @@ import { type ReactElement, useMemo, useState } from 'react'
 import { useMenu, useSearchBox } from 'react-instantsearch'
 
 import type { LanguageOption } from '@core/shared/ui/LanguageAutocomplete'
+import { ResizeObserverPolyfill } from '@core/shared/ui/ResizeObserverPolyfill'
 import { SubmitListener } from '@core/shared/ui/SubmitListener'
 
 import type { GetLanguages } from '../../../../__generated__/GetLanguages'
 import { useAlgoliaRouter } from '../../../libs/algolia/useAlgoliaRouter'
 import { SUBTITLE_LANGUAGE_IDS } from '../../../libs/localeMapping/subtitleLanguageIds'
-import { ResizeObserverPolyfill } from '@core/shared/ui/ResizeObserverPolyfill'
 
 import { LanguagesFilter } from './LanguagesFilter'
 
