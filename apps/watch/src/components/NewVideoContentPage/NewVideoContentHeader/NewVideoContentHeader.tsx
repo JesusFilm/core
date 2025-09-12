@@ -28,7 +28,7 @@ export function NewVideoContentHeader({
 
   return (
     <div
-      className="flex pt-7 z-2 px-4 sm:px-6 md:px-8 lg:px-10 xl:px-12 max-w-[1920px] w-full mx-auto relative"
+      className="flex z-2 py-6 px-4 sm:px-6 md:px-8 lg:px-10 xl:px-12 max-w-[1920px] w-full mx-auto relative"
       data-testid="NewVideoContentHeader"
     >
       {container != null && (
@@ -54,7 +54,7 @@ export function NewVideoContentHeader({
               <p className="uppercase text-sm tracking-wider text-[#bbbcbc]  hidden xl:block font-bold">
                 •
               </p>
-              <p className="uppercase text-sm tracking-wider text-[#bbbcbc]  hidden xl:block">
+              <div className="uppercase text-sm tracking-wider text-[#bbbcbc]  hidden xl:block">
                 {loading === true ? (
                   <Skeleton width={100} height={20} />
                 ) : (
@@ -67,7 +67,7 @@ export function NewVideoContentHeader({
                       : container.childrenCount}
                   </>
                 )}
-              </p>
+              </div>
             </div>
             {container.variant?.slug != null ? (
               <NextLink
@@ -88,7 +88,7 @@ export function NewVideoContentHeader({
                   : 'See All'}
               </button>
             )}
-            <p
+            <div
               data-testid="container-progress-short"
               className="uppercase text-xs tracking-wider text-[#bbbcbc] block xl:hidden"
             >
@@ -99,7 +99,7 @@ export function NewVideoContentHeader({
                   {activeVideoIndex}/{container.childrenCount}
                 </>
               )}
-            </p>
+            </div>
           </div>
         </div>
       )}

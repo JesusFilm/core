@@ -8,6 +8,7 @@ import {
 import { getLanguageIdFromLocale } from '../../../../libs/getLanguageIdFromLocale'
 import { VIDEO_CONTENT_FIELDS } from '../../../../libs/videoContentFields'
 
+//TODO: check if this is the correct way to use gql
 export const GET_FEATURED_VIDEOS = gql`
   ${VIDEO_CONTENT_FIELDS}
   query GetFeaturedVideos($languageId: ID) {
@@ -20,9 +21,7 @@ export const GET_FEATURED_VIDEOS = gql`
   }
 `
 
-export function useFeaturedVideos(
-  locale?: string
-): {
+export function useFeaturedVideos(locale?: string): {
   loading: boolean
   videos: GetVideoChildren_video_children[]
 } {

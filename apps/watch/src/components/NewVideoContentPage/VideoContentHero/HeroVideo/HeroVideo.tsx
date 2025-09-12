@@ -17,11 +17,10 @@ import { VideoControls } from '../../../VideoContentPage/VideoHero/VideoPlayer/V
 import clsx from 'clsx'
 
 interface HeroVideoProps {
-  isFullscreen: boolean
   isPreview?: boolean
 }
 
-export function HeroVideo({ isFullscreen, isPreview }: HeroVideoProps): ReactElement {
+export function HeroVideo({ isPreview = false }: HeroVideoProps): ReactElement {
   const { variant, ...video } = useVideo()
   const {
     state: { mute }
@@ -77,7 +76,7 @@ export function HeroVideo({ isFullscreen, isPreview }: HeroVideoProps): ReactEle
       ...defaultVideoJsOptions,
       autoplay: true,
       controls: false,
-      loop: true,
+      loop: !isPreview,
       muted: mute,
       fluid: false,
       fill: true,
@@ -127,34 +126,37 @@ export function HeroVideo({ isFullscreen, isPreview }: HeroVideoProps): ReactEle
   return (
     <div
       className={clsx(
-        'fixed top-0 left-0 right-0 mx-auto z-0 vjs-hide-loading-spinners [body[style*=\'padding-right\']_&]:right-[15px]',
+        "fixed top-0 left-0 right-0 mx-auto z-0 vjs-hide-loading-spinners [body[style*='padding-right']_&]:right-[15px]",
         {
-          'fullscreen-video': isFullscreen,
-          'preview-video': !isFullscreen && isPreview,
-          'h-[90%] md:h-[80%] max-w-[1920px]': !isFullscreen && !isPreview
+          'preview-video': isPreview,
+          'h-[90%] md:h-[80%] max-w-[1920px]': !isPreview
         }
       )}
       data-testid="ContentHeroVideoContainer"
     >
-      {variant?.hls && (
-        <video
-          key={variant.hls}
-          data-testid="ContentHeroVideo"
-          ref={videoRef}
-          className="vjs [&_.vjs-tech]:object-contain [&_.vjs-tech]:md:object-cover"
-          style={{
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            width: '100%',
-            height: '100%'
-          }}
-          playsInline
-        />
-      )}
-      {playerRef.current != null && playerReady && (
-        <VideoControls player={playerRef.current} />
-      )}
+      <>
+        {variant?.hls && (
+          <video
+            key={variant.hls}
+            data-testid="ContentHeroVideo"
+            ref={videoRef}
+            className="vjs [&_.vjs-tech]:object-contain [&_.vjs-tech]:md:object-cover"
+            style={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              width: '100%',
+              height: '100%'
+            }}
+            playsInline
+          />
+        )}
+        {playerRef.current != null && playerReady && (
+          <>
+            <VideoControls player={playerRef.current} isPreview={isPreview} />
+          </>
+        )}
+      </>
     </div>
   )
 }

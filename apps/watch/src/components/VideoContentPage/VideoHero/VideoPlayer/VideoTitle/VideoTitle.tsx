@@ -1,9 +1,13 @@
 import PlayArrowRounded from '@mui/icons-material/PlayArrowRounded'
 import VolumeOff from '@mui/icons-material/VolumeOff'
+import VolumeUpOutlined from '@mui/icons-material/VolumeUpOutlined'
 import { useTranslation } from 'next-i18next'
+import NextLink from 'next/link'
 import { ReactElement } from 'react'
 
 import { usePlayer } from '../../../../../libs/playerContext'
+import { useVideo } from '../../../../../libs/videoContext'
+import { getWatchUrl } from '../../../../../libs/utils/getWatchUrl'
 
 interface VideoTitleProps {
   videoTitle: string
@@ -11,19 +15,32 @@ interface VideoTitleProps {
   variant?: 'play' | 'unmute'
   style?: React.CSSProperties
   showButton: boolean
+  isPreview?: boolean
+  videoLabel?: string
+  videoDescription?: string
+  containerSlug?: string
+  onMuteToggle?: () => void
+  collectionTitle?: string
 }
 
 export function VideoTitle({
   videoTitle,
   onClick,
   variant = 'play',
-  showButton
+  showButton,
+  isPreview = false,
+  videoLabel,
+  videoDescription,
+  containerSlug,
+  onMuteToggle,
+  collectionTitle
 }: VideoTitleProps): ReactElement {
   const { t } = useTranslation('apps-watch')
+  const { label, variant: videoVariant } = useVideo()
   const {
     state: { play, active, loading, mute, volume }
   } = usePlayer()
-  const visible = !play || active || loading
+  const visible = isPreview || !play || active || loading
 
   const show =
     (mute || volume === 0) && variant === 'unmute'
@@ -32,47 +49,84 @@ export function VideoTitle({
         ? true
         : false
 
+  const watchNowHref = getWatchUrl(containerSlug, label, videoVariant?.slug)
+
   return (
     <div
       className={`
-        pb-4 
-        gap-4 
-        w-full z-[2] flex flex-col 
+        pb-8
+        gap-1
+        w-full flex flex-col relative
         transition-opacity duration-[225ms]
         ${visible ? 'opacity-100' : 'opacity-0'}
         ${visible ? 'delay-0' : 'delay-[2000ms]'}
       `}
       style={{ transitionTimingFunction: 'ease-out' }}
     >
+      {videoLabel && (
+        <div className="inverted-effect text-xs uppercase tracking-widest text-[#CB333B] font-sans font-bold mb-0">
+          {videoLabel}
+        </div>
+      )}
       <h2
         className="
-          font-bold text-white opacity-90 mix-blend-screen 
-          flex-grow mb-1 text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-sans
-        "
+          inverted-effect font-bold text-black
+          flex-grow mb-0 text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-sans
+         "
       >
-        {videoTitle}
+        {videoTitle.replace(/^\d+\.\s*/, '')}
       </h2>
-      <div
-        className={`overflow-hidden transition-all duration-500 ease-in-out ${
-          show ? 'max-h-30' : 'max-h-0'
-        }`}
-      >
+      {collectionTitle && (
+        <div className="inverted-effect text-black text-xl md:text-2xl font-sans font-medium opacity-80 mt-2">
+          {collectionTitle}
+        </div>
+      )}
+      {videoDescription && (
+        <p className="inverted-effect text-black text-md leading-relaxed font-sans max-w-3xl mb-2">
+          {videoDescription}
+        </p>
+      )}
+      {showButton && show && !isPreview && (
         <button
           id="play-button-lg"
           onClick={(e) => onClick?.(e)}
-          className="z-2 flex min-w-[220px] items-center justify-center gap-2  
-        bg-[#CB333B] p-4 text-2xl font-medium leading-loose 
-        tracking-wide text-white shadow-md transition-colors
-        hover:bg-[#A4343A] font-sans  rounded-[8px] cursor-pointer
-        "
-          style={{ display: showButton ? 'flex' : 'none' }}
+          className="inline-flex items-center justify-center gap-2 px-6 py-3
+            bg-[#CB333B] text-lg font-medium text-stone-100
+            rounded-full shadow-md transition-colors duration-200
+            hover:bg-[#A4343A] font-sans cursor-pointer self-start"
         >
-          {variant === 'play' && <PlayArrowRounded fontSize="large" />}
-          {variant === 'unmute' && <VolumeOff fontSize="large" />}
+          {variant === 'play' && <PlayArrowRounded fontSize="medium" />}
+          {variant === 'unmute' && <VolumeOff fontSize="medium" />}
           {variant === 'play' && t('Play')}
           {variant === 'unmute' && t('Play with sound')}
         </button>
-      </div>
+      )}
+      {isPreview && (
+        <NextLink
+          href={watchNowHref}
+          scroll={false}
+          locale={false}
+          id="watch-now-button"
+          className="inline-flex items-center justify-center gap-2 px-6 py-3
+            bg-[#CB333B] text-lg font-medium text-stone-100
+            rounded-full shadow-md transition-colors duration-200
+            hover:bg-[#A4343A] font-sans cursor-pointer self-start no-underline"
+        >
+          <PlayArrowRounded fontSize="medium" />
+          Watch Now
+        </NextLink>
+      )}
+      {isPreview && onMuteToggle && (
+        <button
+          onClick={(e) => {
+            e.stopPropagation()
+            onMuteToggle()
+          }}
+          className="absolute cursor-pointer bottom-7 right-0 scale-125 inverted-effect text-black p-2 rounded-full hover:bg-white/20 transition-colors duration-200"
+        >
+          {mute || volume === 0 ? <VolumeOff /> : <VolumeUpOutlined />}
+        </button>
+      )}
     </div>
   )
 }

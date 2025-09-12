@@ -1,5 +1,4 @@
-import fscreen from 'fscreen'
-import { ReactElement, useEffect } from 'react'
+import { ReactElement } from 'react'
 
 import { useVideo } from '../../../libs/videoContext'
 
@@ -8,37 +7,11 @@ import { HeroVideo } from './HeroVideo'
 import clsx from 'clsx'
 
 export function VideoContentHero({
-  isFullscreen = false,
-  setIsFullscreen,
   isPreview = false
 }: {
-  isFullscreen?: boolean
-  setIsFullscreen?: (isFullscreen: boolean) => void
   isPreview?: boolean
 }): ReactElement {
   const { variant } = useVideo()
-  /**
-   * Effect to handle fullscreen changes.
-   * Adds and removes event listeners for fullscreen state changes.
-   */
-  useEffect(() => {
-    /**
-     * Handler for fullscreen change events.
-     * Updates component state and scrolls to top when entering fullscreen.
-     */
-    function fullscreenchange(): void {
-      const isFullscreen = fscreen.fullscreenElement != null
-      setIsFullscreen?.(isFullscreen)
-      if (isFullscreen) {
-        window.scrollTo({ top: 0, behavior: 'smooth' })
-      }
-    }
-
-    fscreen.addEventListener('fullscreenchange', fullscreenchange)
-
-    return () =>
-      fscreen.removeEventListener('fullscreenchange', fullscreenchange)
-  }, [setIsFullscreen])
 
   const languageSlug = variant?.slug?.split('/')[1]
 
@@ -47,15 +20,17 @@ export function VideoContentHero({
       className={clsx(
         'w-full flex items-end relative bg-[#131111] z-[1] transition-all duration-300 ease-out',
         {
-          'fullscreen-video': isFullscreen,
-          'preview-video': !isFullscreen && isPreview,
-          'h-[90svh] md:h-[80svh]': !isFullscreen && !isPreview
+          'preview-video': isPreview,
+          'h-[90svh] md:h-[80svh]': !isPreview
         }
       )}
       data-testid="ContentHero"
     >
-      <ContentHeader languageSlug={languageSlug?.replace('.html', '')} />
-      <HeroVideo isFullscreen={isFullscreen} isPreview={isPreview} key={variant?.hls} />
+      <ContentHeader
+        languageSlug={languageSlug?.replace('.html', '')}
+        isPersistent={isPreview}
+      />
+      <HeroVideo isPreview={isPreview} key={variant?.hls} />
       <div
         data-testid="ContainerHeroTitleContainer"
         className="w-full relative flex flex-col sm:flex-row max-w-[1920px] mx-auto pb-4"

@@ -60,14 +60,17 @@
 @layer base {
   /* Global resets, element defaults */
   body {
-    background-color: #131111!important;
+    background-color: #131111 !important;
   }
 }
 
 /* 2. Components layer - medium specificity */
 @layer components {
   /* Reusable component patterns */
-  
+  .inverted-effect {
+    filter: invert(1) brightness(1);
+    mix-blend-mode: exclusion;
+  }
 }
 
 /* 3. Utilities layer - highest specificity */
@@ -75,13 +78,14 @@
   .preview-video {
     height: 50svh;
     max-width: 100%;
+    min-height: 500px;
   }
 
   .fullscreen-video {
     height: 100svh;
     max-width: 100%;
   }
-  
+
   .animate-mesh-gradient {
     animation: mesh-gradient 6s ease-in-out infinite;
   }
@@ -102,6 +106,10 @@
   }
 
   .responsive-container {
+    max-width: 1920px;
+    width: 100%;
+    margin-left: auto;
+    margin-right: auto;
     padding-left: 1.5rem;
     padding-right: 1.5rem;
 
@@ -145,6 +153,10 @@
 
   .padded-l {
     @apply pl-4 sm:pl-6 md:pl-8 lg:pl-10 xl:pl-12 2xl:pl-20;
+  }
+
+  .padded-r {
+    @apply pr-4 sm:pr-6 md:pr-8 lg:pr-10 xl:pr-12 2xl:pr-20;
   }
 
   .section-divider {

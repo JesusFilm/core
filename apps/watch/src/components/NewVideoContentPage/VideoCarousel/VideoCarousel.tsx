@@ -56,7 +56,7 @@ export function VideoCarousel({
   }
 
   return (
-    <div data-testid="VideoCarousel" className="my-7 relative">
+    <div data-testid="VideoCarousel" className="relative">
       <Swiper
         data-testid="VideoCarouselSwiper"
         modules={[Mousewheel, FreeMode, A11y, Navigation]}
@@ -70,7 +70,7 @@ export function VideoCarousel({
         draggable
         watchOverflow
         spaceBetween={20}
-        slidesOffsetBefore={28}
+        // slidesOffsetBefore={28}
         slidesOffsetAfter={28}
         navigation={{
           nextEl: nextRef.current,
@@ -79,10 +79,10 @@ export function VideoCarousel({
         breakpoints={swiperBreakpoints}
       >
         {!loading
-          ? videos.map((video) => (
+          ? videos.map((video, index) => (
               <SwiperSlide
                 key={video.id}
-                className="max-w-[200px]"
+                className={`max-w-[200px] ${index === 0 ? 'padded-l' : ''}`}
                 data-testid={`CarouselSlide-${video.id}`}
               >
                 <VideoCard
