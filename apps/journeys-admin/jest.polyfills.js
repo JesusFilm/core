@@ -34,7 +34,10 @@ Object.defineProperties(globalThis, {
 // Provide a minimal Page Visibility API polyfill for environments
 // where JSDOM may not expose these properties consistently.
 try {
-  const doc = globalThis && typeof globalThis.document !== 'undefined' ? globalThis.document : undefined
+  const doc =
+    globalThis && typeof globalThis.document !== 'undefined'
+      ? globalThis.document
+      : undefined
   if (doc != null) {
     /**
      * @param {Record<string, unknown>} target
