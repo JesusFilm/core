@@ -142,11 +142,12 @@ jest.mock('@mui/material/Button', () => {
   }
 })
 
-// Mock useRouter
+// Mock next/navigation
 jest.mock('next/navigation', () => ({
   useRouter: () => ({
     push: jest.fn()
-  })
+  }),
+  useParams: () => ({ videoId: 'video-123' })
 }))
 
 // Mock providers and hooks
@@ -211,7 +212,7 @@ describe('AddAudioLanguageDialog', () => {
     render(
       <SnackbarProvider>
         <MockedProvider>
-          <AddAudioLanguageDialog params={{ videoId: mockVideoId }} />
+          <AddAudioLanguageDialog />
         </MockedProvider>
       </SnackbarProvider>
     )
@@ -233,7 +234,7 @@ describe('AddAudioLanguageDialog', () => {
     render(
       <SnackbarProvider>
         <MockedProvider>
-          <AddAudioLanguageDialog params={{ videoId: mockVideoId }} />
+          <AddAudioLanguageDialog />
         </MockedProvider>
       </SnackbarProvider>
     )
@@ -250,7 +251,7 @@ describe('AddAudioLanguageDialog', () => {
     render(
       <SnackbarProvider>
         <MockedProvider>
-          <AddAudioLanguageDialog params={{ videoId: mockVideoId }} />
+          <AddAudioLanguageDialog />
         </MockedProvider>
       </SnackbarProvider>
     )
@@ -297,7 +298,7 @@ describe('AddAudioLanguageDialog', () => {
     render(
       <SnackbarProvider>
         <MockedProvider>
-          <AddAudioLanguageDialog params={{ videoId: mockVideoId }} />
+          <AddAudioLanguageDialog />
         </MockedProvider>
       </SnackbarProvider>
     )
@@ -340,7 +341,7 @@ describe('AddAudioLanguageDialog', () => {
     render(
       <SnackbarProvider>
         <MockedProvider>
-          <AddAudioLanguageDialog params={{ videoId: mockVideoId }} />
+          <AddAudioLanguageDialog />
         </MockedProvider>
       </SnackbarProvider>
     )
@@ -369,7 +370,7 @@ describe('AddAudioLanguageDialog', () => {
     render(
       <SnackbarProvider>
         <MockedProvider>
-          <AddAudioLanguageDialog params={{ videoId: mockVideoId }} />
+          <AddAudioLanguageDialog />
         </MockedProvider>
       </SnackbarProvider>
     )
@@ -391,7 +392,7 @@ describe('AddAudioLanguageDialog', () => {
     render(
       <SnackbarProvider>
         <MockedProvider>
-          <AddAudioLanguageDialog params={{ videoId: mockVideoId }} />
+          <AddAudioLanguageDialog />
         </MockedProvider>
       </SnackbarProvider>
     )
@@ -427,7 +428,7 @@ describe('AddAudioLanguageDialog', () => {
     render(
       <SnackbarProvider>
         <MockedProvider>
-          <AddAudioLanguageDialog params={{ videoId: mockVideoId }} />
+          <AddAudioLanguageDialog />
         </MockedProvider>
       </SnackbarProvider>
     )

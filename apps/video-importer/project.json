@@ -14,7 +14,7 @@
     "run": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "npx ts-node apps/video-importer/src/video-importer.ts --folder apps/video-importer/test-videos"
+        "command": "pnpm exec ts-node apps/video-importer/src/video-importer.ts --folder apps/video-importer/test-videos"
       }
     },
     "bundle": {
@@ -26,7 +26,15 @@
     "package": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "nx run video-importer:bundle && cd apps/video-importer && ./build-scripts/build-cross-platform.sh && cd ../.. && npx shx cp apps/video-importer/README.md dist/apps/video-importer-executable/README.md"
+        "commands": [
+          "nx run video-importer:bundle",
+          {
+            "command": "./build-scripts/build-cross-platform.sh",
+            "cwd": "apps/video-importer"
+          },
+          "pnpm exec shx cp apps/video-importer/README.md dist/apps/video-importer-executable/README.md"
+        ],
+        "parallel": false
       }
     },
     "fetch-secrets": {
@@ -51,7 +59,7 @@
     "type-check": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "npx tsc -b apps/video-importer/tsconfig.json"
+        "command": "pnpm exec tsc -b apps/video-importer/tsconfig.json"
       }
     }
   },

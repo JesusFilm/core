@@ -2,9 +2,10 @@ import AddRounded from '@mui/icons-material/AddRounded'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Grid from '@mui/material/GridLegacy'
+import Paper from '@mui/material/Paper'
+import Typography from '@mui/material/Typography'
+import { useTranslation } from 'next-i18next'
 import type { ComponentProps, MouseEvent, ReactElement } from 'react'
-
-import { EmptySearch } from '@core/journeys/ui/EmptySearch'
 
 import type { VideoChildFields } from '../../../__generated__/VideoChildFields'
 import { VideoCard } from '../VideoCard'
@@ -32,6 +33,8 @@ export function VideoGrid({
   hasNoResults = false,
   onCardClick
 }: VideoGridProps): ReactElement {
+  const { t } = useTranslation('apps-watch')
+
   return (
     <Grid
       container
@@ -80,7 +83,27 @@ export function VideoGrid({
       )}
       {!loading && hasNoResults && (
         <Grid item xs={12} justifyContent="center" alignItems="center">
-          <EmptySearch />
+          <Paper
+            elevation={0}
+            variant="outlined"
+            sx={{
+              borderRadius: 4,
+              width: '100%',
+              padding: 8
+            }}
+          >
+            <Typography
+              variant="h6"
+              sx={{
+                color: 'primary.main'
+              }}
+            >
+              {t('Sorry, no results')}
+            </Typography>
+            <Typography variant="body1" sx={{ mt: 2 }}>
+              {t('Try removing or changing something from your request')}
+            </Typography>
+          </Paper>
         </Grid>
       )}
       {showLoadMore && !hasNoResults && (
