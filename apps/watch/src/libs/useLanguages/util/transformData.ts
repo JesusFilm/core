@@ -55,7 +55,7 @@ export function transformData(data: unknown, locale: string): Language[] {
       name,
       englishName,
       nativeName,
-      displayName: name?.value ?? nativeName?.value ?? englishName?.value ?? id
+      displayName: englishName?.value ?? nativeName?.value ?? id
     }
   })
 }

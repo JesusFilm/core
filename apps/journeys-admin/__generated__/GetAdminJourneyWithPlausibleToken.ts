@@ -732,6 +732,8 @@ export interface GetAdminJourneyWithPlausibleToken_journey {
   logoImageBlock: GetAdminJourneyWithPlausibleToken_journey_logoImageBlock | null;
   menuButtonIcon: JourneyMenuButtonIcon | null;
   menuStepBlock: GetAdminJourneyWithPlausibleToken_journey_menuStepBlock | null;
+  socialNodeX: number | null;
+  socialNodeY: number | null;
   journeyTheme: GetAdminJourneyWithPlausibleToken_journey_journeyTheme | null;
   journeyCustomizationDescription: string | null;
   journeyCustomizationFields: GetAdminJourneyWithPlausibleToken_journey_journeyCustomizationFields[];

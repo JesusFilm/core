@@ -97,79 +97,200 @@ type PhoneAction implements Action
   countryCode: String!
 }
 
-input NavigateToBlockActionInput {
-  gtmEventName: String
-  blockId: String!
+interface Block {
+  id: ID!
+  journeyId: ID!
+  parentBlockId: ID
+  parentOrder: Int
 }
 
-input LinkActionInput {
-  gtmEventName: String
-  url: String!
-  target: String
-  customizable: Boolean
-  parentStepId: String
+type Journey
+  @key(fields: "id")
+  @shareable
+{
+  blocks: [Block!] @shareable
+  primaryImageBlock: ImageBlock
+  creatorImageBlock: ImageBlock
+  logoImageBlock: ImageBlock
+  menuStepBlock: StepBlock
+  chatButtons: [ChatButton!]!
+  id: ID!
+
+  """private title for creators"""
+  title: String! @shareable
+  language: Language! @shareable
+  languageId: String! @shareable
+  themeMode: ThemeMode!
+  themeName: ThemeName!
+  description: String @shareable
+  creatorDescription: String
+  slug: String! @shareable
+  archivedAt: DateTime
+  deletedAt: DateTime
+  publishedAt: DateTime
+  trashedAt: DateTime
+  featuredAt: DateTime
+  updatedAt: DateTime! @shareable
+  createdAt: DateTime! @shareable
+  status: JourneyStatus! @shareable
+
+  """title for seo and sharing"""
+  seoTitle: String
+  seoDescription: String
+  template: Boolean
+  host: Host
+  team: Team
+  strategySlug: String
+  tags: [Tag!]!
+  journeyCollections: [JourneyCollection!]!
+
+  """used in a plausible share link to embed report"""
+  plausibleToken: String
+  website: Boolean
+  showShareButton: Boolean
+  showLikeButton: Boolean
+  showDislikeButton: Boolean
+
+  """public title for viewers"""
+  displayTitle: String
+  showHosts: Boolean
+  showChatButtons: Boolean
+  showReactionButtons: Boolean
+  showLogo: Boolean
+  showMenu: Boolean
+  showDisplayTitle: Boolean
+  menuButtonIcon: JourneyMenuButtonIcon
+  socialNodeX: Int
+  socialNodeY: Int
+  fromTemplateId: String
+  journeyCustomizationDescription: String
+  journeyCustomizationFields: [JourneyCustomizationField!]!
+  journeyTheme: JourneyTheme
+  userJourneys: [UserJourney!]
 }
 
-input EmailActionInput {
-  gtmEventName: String
-  email: String!
-  customizable: Boolean
-  parentStepId: String
+input BlocksFilter {
+  journeyIds: [ID!]
+  typenames: [String!]
 }
 
-input BlockUpdateActionInput {
-  gtmEventName: String
-  email: String
-  url: String
-  target: String
-  blockId: String
-  phone: String
-  countryCode: String
+input BlockDuplicateIdMap {
+  oldId: ID!
+  newId: ID!
 }
 
-input PhoneActionInput {
-  gtmEventName: String
-  phone: String!
-  countryCode: String!
+type Query {
+  _entities(representations: [_Any!]!): [_Entity]!
+  _service: _Service!
+}
+
+extend type Query {
+  blocks(where: BlocksFilter): [Block!]!
+  block(id: ID!): Block!
+  customDomain(id: ID!): CustomDomain!
+  customDomains(teamId: ID!): [CustomDomain!]!
+  hosts(teamId: ID!): [Host!]!
+  integrations(teamId: ID!): [Integration!]!
+
+  """
+  returns all journeys that match the provided filters
+  If no team id is provided and template is not true then only returns journeys
+  where the user is not a member of a team but is an editor or owner of the
+  journey
+  """
+  adminJourneys(
+    status: [JourneyStatus!]
+    template: Boolean
+    teamId: ID
+
+    """Use Last Active Team Id from JourneyProfile (if null will error)"""
+    useLastActiveTeamId: Boolean
+  ): [Journey!]!
+  adminJourneysReport(reportType: JourneysReportType!): PowerBiEmbed
+  adminJourney(id: ID!, idType: IdType): Journey!
+  journeys(where: JourneysFilter, options: JourneysQueryOptions): [Journey!]!
+  journey(id: ID!, idType: IdType, options: JourneysQueryOptions): Journey!
+  journeyCollection(id: ID!): JourneyCollection!
+  journeyCollections(teamId: ID!): [JourneyCollection]!
+  journeyEventsConnection(journeyId: ID!, filter: JourneyEventsFilter, first: Int, after: String): JourneyEventsConnection!
+  journeyEventsCount(journeyId: ID!, filter: JourneyEventsFilter): Int!
+  getJourneyProfile: JourneyProfile
+  journeyTheme(journeyId: ID!): JourneyTheme
+
+  """Get a list of Visitor Information by Journey"""
+  journeyVisitorsConnection(
+    """Returns the elements in the list that match the specified filter."""
+    filter: JourneyVisitorFilter!
+
+    """Returns the first n elements from the list."""
+    first: Int
+
+    """Returns the elements in the list that come after the specified cursor."""
+    after: String
+
+    """Specifies the sort field for the list."""
+    sort: JourneyVisitorSort
+  ): JourneyVisitorsConnection!
+
+  """Get a JourneyVisitor count by JourneyVisitorFilter"""
+  journeyVisitorCount(filter: JourneyVisitorFilter!): Int!
+  journeysEmailPreference(email: String!): JourneysEmailPreference
+  journeysPlausibleStatsRealtimeVisitors(id: ID!, idType: IdType): Int!
+  journeysPlausibleStatsAggregate(where: PlausibleStatsAggregateFilter!, id: ID!, idType: IdType): PlausibleStatsAggregateResponse!
+
+  """
+  This endpoint allows you to break down your stats by some property.
+  If you are familiar with SQL family databases, this endpoint corresponds to
+  running `GROUP BY` on a certain property in your stats, then ordering by the
+  count.
+  Check out the [properties](https://plausible.io/docs/stats-api#properties)
+  section for a reference of all the properties you can use in this query.
+  This endpoint can be used to fetch data for `Top sources`, `Top pages`,
+  `Top countries` and similar reports.
+  Currently, it is only possible to break down on one property at a time.
+  Using a list of properties with one query is not supported. So if you want
+  a breakdown by both `event:page` and `visit:source` for example, you would
+  have to make multiple queries (break down on one property and filter on
+  another) and then manually/programmatically group the results together in one
+  report. This also applies for breaking down by time periods. To get a daily
+  breakdown for every page, you would have to break down on `event:page` and
+  make multiple queries for each date.
+  """
+  journeysPlausibleStatsBreakdown(where: PlausibleStatsBreakdownFilter!, id: ID!, idType: IdType): [PlausibleStatsResponse!]!
+
+  """
+  This endpoint provides timeseries data over a certain time period.
+  If you are familiar with the Plausible dashboard, this endpoint
+  corresponds to the main visitor graph.
+  """
+  journeysPlausibleStatsTimeseries(where: PlausibleStatsTimeseriesFilter!, id: ID!, idType: IdType): [PlausibleStatsResponse!]!
+  qrCode(id: ID!): QrCode!
+  qrCodes(where: QrCodesFilter!): [QrCode!]!
+  teams: [Team!]!
+  team(id: ID!): Team!
+  userInvites(journeyId: ID!): [UserInvite!]
+  getUserRole: UserRole
+  userTeams(teamId: ID!, where: UserTeamFilterInput): [UserTeam!]!
+  userTeam(id: ID!): UserTeam!
+  userTeamInvites(teamId: ID!): [UserTeamInvite!]!
+
+  """A list of visitors that are connected with a specific team."""
+  visitorsConnection(
+    """Returns the visitor items related to a specific team."""
+    teamId: String
+
+    """Returns the first n elements from the list."""
+    first: Int
+
+    """Returns the elements in the list that come after the specified cursor."""
+    after: String
+  ): VisitorsConnection!
+
+  """Get a single visitor"""
+  visitor(id: ID!): Visitor!
 }
 
 type Mutation {
-  blockDeleteAction(
-    id: ID!
-
-    """drop this parameter after merging teams"""
-    journeyId: ID
-  ): Block!
-  blockUpdateNavigateToBlockAction(
-    id: ID!
-    input: NavigateToBlockActionInput!
-
-    """drop this parameter after merging teams"""
-    journeyId: ID
-  ): NavigateToBlockAction!
-  blockUpdateLinkAction(
-    id: ID!
-    input: LinkActionInput!
-
-    """drop this parameter after merging teams"""
-    journeyId: ID
-  ): LinkAction!
-  blockUpdateEmailAction(
-    id: ID!
-    input: EmailActionInput!
-
-    """drop this parameter after merging teams"""
-    journeyId: ID
-  ): EmailAction!
-  blockUpdatePhoneAction(
-    id: ID!
-    input: PhoneActionInput!
-
-    """drop this parameter after merging teams"""
-    journeyId: ID
-  ): PhoneAction!
-  blockUpdateAction(id: ID!, input: BlockUpdateActionInput): Action!
-
   """blockDelete returns the updated sibling blocks on successful delete"""
   blockDelete(
     id: ID!
@@ -404,199 +525,6 @@ type Mutation {
   Allow current user to update specific allowable fields of their visitor record
   """
   visitorUpdateForCurrentUser(input: VisitorUpdateInput!): Visitor!
-}
-
-interface Block {
-  id: ID!
-  journeyId: ID!
-  parentBlockId: ID
-  parentOrder: Int
-}
-
-type Journey
-  @key(fields: "id")
-  @shareable
-{
-  blocks: [Block!] @shareable
-  primaryImageBlock: ImageBlock
-  creatorImageBlock: ImageBlock
-  logoImageBlock: ImageBlock
-  menuStepBlock: StepBlock
-  chatButtons: [ChatButton!]!
-  id: ID!
-
-  """private title for creators"""
-  title: String! @shareable
-  language: Language! @shareable
-  languageId: String! @shareable
-  themeMode: ThemeMode!
-  themeName: ThemeName!
-  description: String @shareable
-  creatorDescription: String
-  slug: String! @shareable
-  archivedAt: DateTime
-  deletedAt: DateTime
-  publishedAt: DateTime
-  trashedAt: DateTime
-  featuredAt: DateTime
-  updatedAt: DateTime! @shareable
-  createdAt: DateTime! @shareable
-  status: JourneyStatus! @shareable
-
-  """title for seo and sharing"""
-  seoTitle: String
-  seoDescription: String
-  template: Boolean
-  host: Host
-  team: Team
-  strategySlug: String
-  tags: [Tag!]!
-  journeyCollections: [JourneyCollection!]!
-
-  """used in a plausible share link to embed report"""
-  plausibleToken: String
-  website: Boolean
-  showShareButton: Boolean
-  showLikeButton: Boolean
-  showDislikeButton: Boolean
-
-  """public title for viewers"""
-  displayTitle: String
-  showHosts: Boolean
-  showChatButtons: Boolean
-  showReactionButtons: Boolean
-  showLogo: Boolean
-  showMenu: Boolean
-  showDisplayTitle: Boolean
-  menuButtonIcon: JourneyMenuButtonIcon
-  socialNodeX: Int
-  socialNodeY: Int
-  fromTemplateId: String
-  journeyCustomizationDescription: String
-  journeyCustomizationFields: [JourneyCustomizationField!]!
-  journeyTheme: JourneyTheme
-  userJourneys: [UserJourney!]
-}
-
-input BlocksFilter {
-  journeyIds: [ID!]
-  typenames: [String!]
-}
-
-input BlockDuplicateIdMap {
-  oldId: ID!
-  newId: ID!
-}
-
-type Query {
-  _entities(representations: [_Any!]!): [_Entity]!
-  _service: _Service!
-}
-
-extend type Query {
-  blocks(where: BlocksFilter): [Block!]!
-  block(id: ID!): Block!
-  customDomain(id: ID!): CustomDomain!
-  customDomains(teamId: ID!): [CustomDomain!]!
-  hosts(teamId: ID!): [Host!]!
-  integrations(teamId: ID!): [Integration!]!
-
-  """
-  returns all journeys that match the provided filters
-  If no team id is provided and template is not true then only returns journeys
-  where the user is not a member of a team but is an editor or owner of the
-  journey
-  """
-  adminJourneys(
-    status: [JourneyStatus!]
-    template: Boolean
-    teamId: ID
-
-    """Use Last Active Team Id from JourneyProfile (if null will error)"""
-    useLastActiveTeamId: Boolean
-  ): [Journey!]!
-  adminJourneysReport(reportType: JourneysReportType!): PowerBiEmbed
-  adminJourney(id: ID!, idType: IdType): Journey!
-  journeys(where: JourneysFilter, options: JourneysQueryOptions): [Journey!]!
-  journey(id: ID!, idType: IdType, options: JourneysQueryOptions): Journey!
-  journeyCollection(id: ID!): JourneyCollection!
-  journeyCollections(teamId: ID!): [JourneyCollection]!
-  journeyEventsConnection(journeyId: ID!, filter: JourneyEventsFilter, first: Int, after: String): JourneyEventsConnection!
-  journeyEventsCount(journeyId: ID!, filter: JourneyEventsFilter): Int!
-  getJourneyProfile: JourneyProfile
-  journeyTheme(journeyId: ID!): JourneyTheme
-
-  """Get a list of Visitor Information by Journey"""
-  journeyVisitorsConnection(
-    """Returns the elements in the list that match the specified filter."""
-    filter: JourneyVisitorFilter!
-
-    """Returns the first n elements from the list."""
-    first: Int
-
-    """Returns the elements in the list that come after the specified cursor."""
-    after: String
-
-    """Specifies the sort field for the list."""
-    sort: JourneyVisitorSort
-  ): JourneyVisitorsConnection!
-
-  """Get a JourneyVisitor count by JourneyVisitorFilter"""
-  journeyVisitorCount(filter: JourneyVisitorFilter!): Int!
-  journeysEmailPreference(email: String!): JourneysEmailPreference
-  journeysPlausibleStatsRealtimeVisitors(id: ID!, idType: IdType): Int!
-  journeysPlausibleStatsAggregate(where: PlausibleStatsAggregateFilter!, id: ID!, idType: IdType): PlausibleStatsAggregateResponse!
-
-  """
-  This endpoint allows you to break down your stats by some property.
-  If you are familiar with SQL family databases, this endpoint corresponds to
-  running `GROUP BY` on a certain property in your stats, then ordering by the
-  count.
-  Check out the [properties](https://plausible.io/docs/stats-api#properties)
-  section for a reference of all the properties you can use in this query.
-  This endpoint can be used to fetch data for `Top sources`, `Top pages`,
-  `Top countries` and similar reports.
-  Currently, it is only possible to break down on one property at a time.
-  Using a list of properties with one query is not supported. So if you want
-  a breakdown by both `event:page` and `visit:source` for example, you would
-  have to make multiple queries (break down on one property and filter on
-  another) and then manually/programmatically group the results together in one
-  report. This also applies for breaking down by time periods. To get a daily
-  breakdown for every page, you would have to break down on `event:page` and
-  make multiple queries for each date.
-  """
-  journeysPlausibleStatsBreakdown(where: PlausibleStatsBreakdownFilter!, id: ID!, idType: IdType): [PlausibleStatsResponse!]!
-
-  """
-  This endpoint provides timeseries data over a certain time period.
-  If you are familiar with the Plausible dashboard, this endpoint
-  corresponds to the main visitor graph.
-  """
-  journeysPlausibleStatsTimeseries(where: PlausibleStatsTimeseriesFilter!, id: ID!, idType: IdType): [PlausibleStatsResponse!]!
-  qrCode(id: ID!): QrCode!
-  qrCodes(where: QrCodesFilter!): [QrCode!]!
-  teams: [Team!]!
-  team(id: ID!): Team!
-  userInvites(journeyId: ID!): [UserInvite!]
-  getUserRole: UserRole
-  userTeams(teamId: ID!, where: UserTeamFilterInput): [UserTeam!]!
-  userTeam(id: ID!): UserTeam!
-  userTeamInvites(teamId: ID!): [UserTeamInvite!]!
-
-  """A list of visitors that are connected with a specific team."""
-  visitorsConnection(
-    """Returns the visitor items related to a specific team."""
-    teamId: String
-
-    """Returns the first n elements from the list."""
-    first: Int
-
-    """Returns the elements in the list that come after the specified cursor."""
-    after: String
-  ): VisitorsConnection!
-
-  """Get a single visitor"""
-  visitor(id: ID!): Visitor!
 }
 
 enum ButtonVariant {

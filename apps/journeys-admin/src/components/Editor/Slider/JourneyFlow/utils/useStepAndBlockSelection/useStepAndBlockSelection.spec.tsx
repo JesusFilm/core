@@ -2,7 +2,7 @@ import { MockedProvider } from '@apollo/client/testing'
 import { act, renderHook, screen } from '@testing-library/react'
 
 import { TreeBlock } from '@core/journeys/ui/block/TreeBlock'
-import { EditorProvider } from '@core/journeys/ui/EditorProvider'
+import { ActiveContent, EditorProvider } from '@core/journeys/ui/EditorProvider'
 
 import { BlockFields_StepBlock as StepBlock } from '../../../../../../../__generated__/BlockFields'
 import { TestEditorState } from '../../../../../../libs/TestEditorState'
@@ -92,11 +92,42 @@ describe('useStepAndBlockSelection', () => {
     })
     expect(screen.getByText('selectedStep: step1.id')).toBeInTheDocument()
     expect(screen.getByText('selectedBlock: step2.id')).toBeInTheDocument()
-    expect(screen.queryByText('selectedAttributeId: ')).not.toBeInTheDocument()
+    expect(screen.getByText('selectedAttributeId:')).toBeInTheDocument()
 
     act(() => result.current(step1.id))
     expect(
       screen.queryByText('selectedAttributeId: step1.id-next-block')
     ).not.toBeInTheDocument()
+  })
+
+  it('should switch activeContent to canvas when step is already selected and activecontent is social', () => {
+    const { result } = renderHook(() => useStepAndBlockSelection(), {
+      wrapper: ({ children }) => (
+        <MockedProvider>
+          <EditorProvider
+            initialState={{
+              steps: [step1, step2],
+              selectedStep: step1,
+              selectedBlock: step2,
+              activeContent: ActiveContent.Social
+            }}
+          >
+            <TestEditorState />
+            {children}
+          </EditorProvider>
+        </MockedProvider>
+      )
+    })
+    expect(screen.getByText('activeContent: social')).toBeInTheDocument()
+    expect(screen.getByText('selectedStep: step1.id')).toBeInTheDocument()
+    expect(screen.getByText('selectedBlock: step2.id')).toBeInTheDocument()
+    expect(screen.getByText('selectedAttributeId:')).toBeInTheDocument()
+
+    act(() => result.current(step1.id))
+    // Should switch activeContent to canvas, preserving selectedStep, selectedBlock and selectedAttributeId
+    expect(screen.getByText('activeContent: canvas')).toBeInTheDocument()
+    expect(screen.getByText('selectedStep: step1.id')).toBeInTheDocument()
+    expect(screen.getByText('selectedBlock: step2.id')).toBeInTheDocument()
+    expect(screen.getByText('selectedAttributeId:')).toBeInTheDocument()
   })
 })

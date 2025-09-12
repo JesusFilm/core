@@ -293,10 +293,10 @@ export interface BlockUpdateActionInput {
   gtmEventName?: string | null;
   email?: string | null;
   url?: string | null;
-  target?: string | null;
-  blockId?: string | null;
   phone?: string | null;
   countryCode?: string | null;
+  target?: string | null;
+  blockId?: string | null;
 }
 
 export interface ButtonBlockCreateInput {

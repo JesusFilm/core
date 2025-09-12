@@ -194,7 +194,7 @@ describe('useLanguages', () => {
   })
 
   describe('language name resolution', () => {
-    it('should prioritize name in current language', async () => {
+    it('should prioritize name in english language', async () => {
       const mockData = [
         ['496:french:Français', '529:French', '21028:Francés'],
         ['529:english:English', '496:Anglais', '21028:Inglés'],
@@ -222,12 +222,12 @@ describe('useLanguages', () => {
         primary: false,
         value: 'Anglais'
       })
-      expect(englishLanguage?.displayName).toBe('Anglais')
+      expect(englishLanguage?.displayName).toBe('English')
 
       expect(result.current.languages.map((lang) => lang.displayName)).toEqual([
-        'Anglais',
-        'Español',
-        'Français'
+        'English',
+        'French',
+        'Spanish'
       ])
     })
 
@@ -259,7 +259,7 @@ describe('useLanguages', () => {
       expect(frenchLanguage?.displayName).toBe('Français')
     })
 
-    it('should use native name before english name when current language name is not available', async () => {
+    it('should use english name before native name when current language name is not available', async () => {
       const mockData = [['496:french:Français', '529:French']]
 
       server.use(
@@ -284,7 +284,7 @@ describe('useLanguages', () => {
         primary: true,
         value: 'Français'
       })
-      expect(frenchLanguage?.displayName).toBe('Français')
+      expect(frenchLanguage?.displayName).toBe('French')
     })
 
     it('should use English name as fallback', async () => {
