@@ -30,3 +30,31 @@ Object.defineProperties(globalThis, {
   Request: { value: Request },
   Response: { value: Response }
 })
+
+// Provide a minimal Page Visibility API polyfill for environments
+// where JSDOM may not expose these properties consistently.
+try {
+  const doc = globalThis && typeof globalThis.document !== 'undefined' ? globalThis.document : undefined
+  if (doc != null) {
+    /**
+     * @param {Record<string, unknown>} target
+     * @param {string} property
+     * @param {unknown} value
+     */
+    const defineIfMissing = (target, property, value) => {
+      if (typeof target[property] !== 'undefined') return
+      Object.defineProperty(target, property, {
+        configurable: true,
+        enumerable: false,
+        writable: true,
+        value
+      })
+    }
+
+    defineIfMissing(doc, 'visibilityState', 'visible')
+    defineIfMissing(doc, 'hidden', false)
+    defineIfMissing(doc, 'onvisibilitychange', null)
+  }
+} catch {
+  // no-op: best-effort polyfill only for test environment
+}
