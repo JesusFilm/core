@@ -1,0 +1,32 @@
+{
+  "version": "1.0.0",
+  "playlistSequence": [
+    ["1_jf-0-0"],
+    ["JFP-Featured"],
+    ["8_NBC"],
+    [
+      "GOJohnCollection",
+      "GOLukeCollection",
+      "GOMarkCollection",
+      "GOMattCollection"
+    ],
+    ["7_Origins", "Nua", "7_0-nur", "2_ElCamWaySJEN"],
+    ["MAG1"],
+    ["11_Sermon", "11_Shema", "11_ReadBible", "11_Advent"],
+    ["2_Acts-0-0"],
+    ["2_GOJ-0-0"],
+    ["CS1"],
+    ["9_0-TheSavior"],
+    ["9_CreationtoChrist"],
+    ["2_FileZero-0-0"],
+    ["10_DarkroomFaith"]
+  ],
+  "settings": {
+    "prefetchCount": 7,
+    "recentlyPlayedBuffer": 15,
+    "cycleOnComplete": true,
+    "weightedRandomization": true,
+    "fallbackStrategy": "skipToNext",
+    "language": "english"
+  }
+}

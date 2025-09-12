@@ -29,7 +29,7 @@ import Image from 'next/image'
 import { PlayerProvider } from '../../libs/playerContext'
 import { VideoProvider } from '../../libs/videoContext'
 import { WatchProvider } from '../../libs/watchContext'
-import { useFeaturedVideos } from '../VideoHero/libs/useFeaturedVideos'
+import { useCarouselVideos } from '../VideoHero/libs/useCarouselVideos'
 import { VideoContentHero } from '../NewVideoContentPage/VideoContentHero/VideoContentHero'
 import { VideoCarousel } from '../NewVideoContentPage/VideoCarousel/VideoCarousel'
 import { usePlayer } from '../../libs/playerContext'
@@ -46,19 +46,38 @@ function WatchHomePageContent({
   useAlgoliaRouter()
 
   const [activeVideoId, setActiveVideoId] = useState<string | undefined>()
-  const { videos, loading } = useFeaturedVideos()
+  const {
+    currentVideo,
+    nextVideos,
+    loading,
+    moveToNext,
+    moveToPrevious,
+    currentPoolIndex
+  } = useCarouselVideos('529') // Use language ID 529 for now
   const [autoProgressEnabled, setAutoProgressEnabled] = useState(true)
+
+  // Create videos array from carousel data and map to VideoChildFields format
+  const videos = currentVideo
+    ? [currentVideo, ...nextVideos].map((video) => ({
+        ...video,
+        // Ensure the data structure matches what VideoCard expects
+        title: video.title || [{ value: video.videoTitle || video.slug }],
+        images: video.images || [],
+        imageAlt: video.imageAlt || [{ value: video.videoTitle || video.slug }],
+        label: video.label || video.videoLabel || 'video'
+      }))
+    : []
 
   const { state: playerState } = usePlayer()
   const [lastProgress, setLastProgress] = useState(0)
   const [isProgressing, setIsProgressing] = useState(false)
 
-  // Set the first video as active by default
+  // Set the current video as active
   useEffect(() => {
-    if (videos.length > 0 && !activeVideoId) {
-      setActiveVideoId(videos[0].id)
+    if (currentVideo && currentVideo.id !== activeVideoId) {
+      setActiveVideoId(currentVideo.id)
     }
-  }, [videos, activeVideoId])
+  }, [currentVideo, activeVideoId])
 
   // Reset progress tracking when video changes
   useEffect(() => {
@@ -71,19 +90,17 @@ function WatchHomePageContent({
 
   // Auto-progress to next video function
   const progressToNextVideo = useCallback(() => {
-    if (!autoProgressEnabled || videos.length <= 1 || isProgressing) return
+    if (!autoProgressEnabled || isProgressing) return
 
     setIsProgressing(true)
-    const currentIndex = videos.findIndex((video) => video.id === activeVideoId)
-    const nextIndex = (currentIndex + 1) % videos.length
-    setActiveVideoId(videos[nextIndex].id)
+    moveToNext() // Use the carousel's moveToNext function
     setLastProgress(0) // Reset progress tracking for new video
 
     // Allow progression again after a short delay
     setTimeout(() => {
       setIsProgressing(false)
     }, 2000)
-  }, [videos, activeVideoId, autoProgressEnabled, isProgressing])
+  }, [moveToNext, autoProgressEnabled, isProgressing])
 
   // Effect to detect video end and progress immediately
   useEffect(() => {
@@ -95,8 +112,7 @@ function WatchHomePageContent({
   }, [playerState.progress, lastProgress, progressToNextVideo, isProgressing])
 
   // Get the active video for playback
-  const activeVideo =
-    videos.find((video) => video.id === activeVideoId) || videos[0]
+  const activeVideo = currentVideo || videos[0]
 
   const indexName = process.env.NEXT_PUBLIC_ALGOLIA_INDEX ?? ''
 
@@ -113,6 +129,8 @@ function WatchHomePageContent({
               activeVideoId={activeVideoId}
               loading={loading}
               onVideoSelect={(videoId: string) => {
+                // For now, just update the local activeVideoId
+                // The carousel manages its own sequence
                 setActiveVideoId(videoId)
                 setIsProgressing(false)
               }}

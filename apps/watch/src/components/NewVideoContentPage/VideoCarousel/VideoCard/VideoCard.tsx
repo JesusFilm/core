@@ -6,6 +6,8 @@ import { ReactElement, useState } from 'react'
 
 import Play3 from '@core/shared/ui/icons/Play3'
 
+import { LazyImage } from './LazyImage'
+
 import { VideoChildFields } from '../../../../../__generated__/VideoChildFields'
 import { getLabelDetails } from '../../../../libs/utils/getLabelDetails/getLabelDetails'
 import { getWatchUrl } from '../../../../libs/utils/getWatchUrl'
@@ -54,12 +56,16 @@ function CardContent({
           onMouseEnter={onMouseEnter}
           onMouseLeave={onMouseLeave}
         >
-          {/* Image Layer */}
+          {/* Image Layer with Lazy Loading */}
           <div className="absolute left-0 right-0 top-0 bottom-0 rounded-lg overflow-hidden">
             <Image
               fill
-              src={video.images[0].mobileCinematicHigh ?? ''}
-              alt={video.imageAlt[0].value}
+              src={
+                video.images?.[0]?.mobileCinematicHigh ??
+                'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTI4MCIgaGVpZ2h0PSI2MDAiIHZpZXdCb3g9IjAgMCAxMjgwIDYwMCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjEyODAiIGhlaWdodD0iNjAwIiBmaWxsPSIjMzMzMzMzIi8+Cjwvc3ZnPgo='
+              }
+              alt={video.imageAlt?.[0]?.value ?? video.slug}
+              priority={active}
               style={{
                 width: '100%',
                 objectFit: 'cover',

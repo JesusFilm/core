@@ -125,25 +125,6 @@ export function VideoControls({
   const containerSlug = container?.slug ?? slug
   const collectionTitle = last(container?.title)?.value
 
-  // Debug logging
-  console.log('Video Debug Data:', {
-    id,
-    videoTitle,
-    videoLabel,
-    videoDescription,
-    containerSlug,
-    collectionTitle,
-    container: container
-      ? {
-          id: container.id,
-          slug: container.slug,
-          title: container.title,
-          label: container.label
-        }
-      : null,
-    fullContainer: container
-  })
-
   useEffect(() => {
     onVisibleChanged?.(!play || active || loading)
   }, [play, active, loading, onVisibleChanged])
