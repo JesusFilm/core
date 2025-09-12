@@ -126,16 +126,19 @@ async function migrateMastersToR2(): Promise<void> {
 
   const badUrls = await loadBadUrls()
 
+  const where = {
+    // id: { not: { startsWith: '1\\_' } },
+    assetId: null,
+    masterUrl: { not: null },
+    masterHeight: 1080,
+    AND: [
+      { masterUrl: { notIn: Array.from(badUrls) } },
+      { masterUrl: { not: '' } }
+    ]
+  }
+
   let variant = await prisma.videoVariant.findFirst({
-    where: {
-      id: { not: { startsWith: '1\\_' } },
-      assetId: null,
-      masterUrl: { not: null },
-      AND: [
-        { masterUrl: { notIn: Array.from(badUrls) } },
-        { masterUrl: { not: '' } }
-      ]
-    }
+    where
   })
 
   while (variant != null) {
@@ -199,15 +202,7 @@ async function migrateMastersToR2(): Promise<void> {
     }
 
     variant = await prisma.videoVariant.findFirst({
-      where: {
-        id: { not: { startsWith: '1\\_' } },
-        assetId: null,
-        masterUrl: { not: null },
-        AND: [
-          { masterUrl: { notIn: Array.from(badUrls) } },
-          { masterUrl: { not: '' } }
-        ]
-      }
+      where
     })
   }
 
