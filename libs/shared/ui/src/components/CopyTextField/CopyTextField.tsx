@@ -43,11 +43,12 @@ export function CopyTextField({
       InputProps={{
         endAdornment: (
           <InputAdornment position="end">
-            {buttonVariant === 'icon' ? (
+            {buttonVariant === 'icon' && (
               <IconButton onClick={onCopyClick} aria-label="Copy">
                 <ContentCopyRoundedIcon />
               </IconButton>
-            ) : (
+            )}
+            {buttonVariant === 'button' && (
               <Button
                 onClick={onCopyClick}
                 aria-label="Copy"
