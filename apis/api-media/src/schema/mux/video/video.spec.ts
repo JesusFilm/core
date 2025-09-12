@@ -273,11 +273,21 @@ describe('mux/video', () => {
         const { queue } = jest.requireMock(
           '../../../workers/processVideoDownloads/queue'
         )
-        expect(queue.add).toHaveBeenCalledWith('process-video-downloads', {
-          videoId: 'videoId',
-          assetId: 'assetId',
-          isUserGenerated: false
-        })
+        expect(queue.add).toHaveBeenCalledWith(
+          'process-video-downloads',
+          {
+            videoId: 'videoId',
+            assetId: 'assetId',
+            isUserGenerated: false
+          },
+          {
+            jobId: 'download:videoId',
+            attempts: 3,
+            backoff: { type: 'exponential', delay: 1000 },
+            removeOnComplete: true,
+            removeOnFail: { age: 432000, count: 50 }
+          }
+        )
         expect(data).toHaveProperty('data.getMyMuxVideo.readyToStream', true)
       })
 
@@ -337,7 +347,6 @@ describe('mux/video', () => {
       })
 
       it('should handle queue errors gracefully', async () => {
-        const { getVideo } = jest.requireMock('./service')
         const consoleSpy = jest.spyOn(console, 'error').mockImplementation()
 
         prismaMock.userMediaRole.findUnique.mockResolvedValue({
@@ -390,11 +399,21 @@ describe('mux/video', () => {
           }
         })
 
-        expect(queue.add).toHaveBeenCalledWith('process-video-downloads', {
-          videoId: 'videoId',
-          assetId: 'assetId',
-          isUserGenerated: false
-        })
+        expect(queue.add).toHaveBeenCalledWith(
+          'process-video-downloads',
+          {
+            videoId: 'videoId',
+            assetId: 'assetId',
+            isUserGenerated: false
+          },
+          {
+            jobId: 'download:videoId',
+            attempts: 3,
+            backoff: { type: 'exponential', delay: 1000 },
+            removeOnComplete: true,
+            removeOnFail: { age: 432000, count: 50 }
+          }
+        )
         expect(consoleSpy).toHaveBeenCalledWith(
           'Failed to queue video downloads processing:',
           expect.any(Error)
@@ -439,7 +458,7 @@ describe('mux/video', () => {
           downloadable: false,
           updatedAt: new Date()
         })
-        const data = await client({
+        const data = await authClient({
           document: GET_MUX_VIDEO,
           variables: {
             id: 'videoId',

@@ -10,6 +10,9 @@ import { canBlockHaveAction } from './canBlockHaveAction'
 
 builder.mutationField('blockDeleteAction', (t) =>
   t.withAuth({ isAuthenticated: true }).field({
+    override: {
+      from: 'api-journeys'
+    },
     type: Block,
     args: {
       id: t.arg.id({ required: true }),

@@ -86,7 +86,7 @@ enum join__Graph {
 """
 A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the `date-time` format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar.
 """
-scalar DateTime @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN) 
+scalar DateTime @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  @join__type(graph: API_MEDIA) 
 
 """
 The `JSONObject` scalar type represents JSON objects as specified by [ECMA-404](http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf).
@@ -254,15 +254,6 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
     """
     journeyId: ID
   ): TypographyBlock! @join__field(graph: API_JOURNEYS) 
-  videoBlockCreate(input: VideoBlockCreateInput!) : VideoBlock! @join__field(graph: API_JOURNEYS) 
-  videoBlockUpdate(
-    id: ID!
-    input: VideoBlockUpdateInput!
-    """
-    drop this parameter after merging teams
-    """
-    journeyId: ID
-  ): VideoBlock! @join__field(graph: API_JOURNEYS) 
   chatButtonCreate(journeyId: ID!, input: ChatButtonCreateInput) : ChatButton! @join__field(graph: API_JOURNEYS) 
   chatButtonUpdate(id: ID!, journeyId: ID!, input: ChatButtonUpdateInput!) : ChatButton! @join__field(graph: API_JOURNEYS) 
   chatButtonRemove(id: ID!) : ChatButton! @join__field(graph: API_JOURNEYS) 
@@ -376,12 +367,21 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   Allow current user to update specific allowable fields of their visitor record
   """
   visitorUpdateForCurrentUser(input: VisitorUpdateInput!) : Visitor! @join__field(graph: API_JOURNEYS) 
-  blockDeleteAction(id: ID!, journeyId: ID) : Block! @join__field(graph: API_JOURNEYS_MODERN) 
-  blockUpdateAction(id: ID!, input: BlockUpdateActionInput!) : Action! @join__field(graph: API_JOURNEYS_MODERN) 
-  blockUpdateEmailAction(id: ID!, input: EmailActionInput!, journeyId: ID) : EmailAction! @join__field(graph: API_JOURNEYS_MODERN) 
-  blockUpdateLinkAction(id: ID!, input: LinkActionInput!, journeyId: ID) : LinkAction! @join__field(graph: API_JOURNEYS_MODERN) 
-  blockUpdateNavigateToBlockAction(id: ID!, input: NavigateToBlockActionInput!, journeyId: ID) : NavigateToBlockAction! @join__field(graph: API_JOURNEYS_MODERN) 
-  blockUpdatePhoneAction(id: ID!, input: PhoneActionInput!, journeyId: ID) : PhoneAction! @join__field(graph: API_JOURNEYS_MODERN) 
+  videoBlockCreate(input: VideoBlockCreateInput!) : VideoBlock! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
+  videoBlockUpdate(
+    id: ID!
+    input: VideoBlockUpdateInput!
+    """
+    drop this parameter after merging teams
+    """
+    journeyId: ID
+  ): VideoBlock! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
+  blockDeleteAction(id: ID!, journeyId: ID) : Block! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
+  blockUpdateAction(id: ID!, input: BlockUpdateActionInput!) : Action! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
+  blockUpdateEmailAction(id: ID!, input: EmailActionInput!, journeyId: ID) : EmailAction! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
+  blockUpdateLinkAction(id: ID!, input: LinkActionInput!, journeyId: ID) : LinkAction! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
+  blockUpdateNavigateToBlockAction(id: ID!, input: NavigateToBlockActionInput!, journeyId: ID) : NavigateToBlockAction! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
+  blockUpdatePhoneAction(id: ID!, input: PhoneActionInput!, journeyId: ID) : PhoneAction! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
   journeySimpleUpdate(id: ID!, journey: Json!) : Json @join__field(graph: API_JOURNEYS_MODERN) 
   journeyAiTranslateCreate(input: JourneyAiTranslateInput!) : Journey! @join__field(graph: API_JOURNEYS_MODERN) 
   createJourneyEventsExportLog(input: JourneyEventsExportLogInput!) : JourneyEventsExportLog! @join__field(graph: API_JOURNEYS_MODERN) 
@@ -409,6 +409,20 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   bibleCitationUpdate(input: MutationBibleCitationUpdateInput!) : BibleCitation @join__field(graph: API_MEDIA) 
   bibleCitationDelete(id: ID!) : Boolean @join__field(graph: API_MEDIA) 
   createKeyword(value: String!, languageId: String!) : Keyword! @join__field(graph: API_MEDIA) 
+  createMuxVideoAndQueueUpload(
+    videoId: ID!
+    edition: String!
+    languageId: ID!
+    version: Int!
+    r2PublicUrl: String!
+    originalFilename: String!
+    durationMs: Int!
+    duration: Int!
+    width: Int!
+    height: Int!
+    downloadable: Boolean = true
+    maxResolution: MaxResolutionTier = fhd
+  ): MuxVideo! @join__field(graph: API_MEDIA) 
   createMuxVideoUploadByFile(
     name: String!
     userGenerated: Boolean
@@ -423,6 +437,12 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   ): MuxVideo! @join__field(graph: API_MEDIA) 
   enableMuxDownload(id: ID!, resolution: String) : MuxVideo @join__field(graph: API_MEDIA) 
   deleteMuxVideo(id: ID!, userGenerated: Boolean) : Boolean! @join__field(graph: API_MEDIA) 
+  playlistCreate(input: PlaylistCreateInput!) : MutationPlaylistCreateResult @join__field(graph: API_MEDIA) 
+  playlistUpdate(id: ID!, input: PlaylistUpdateInput!) : MutationPlaylistUpdateResult @join__field(graph: API_MEDIA) 
+  playlistDelete(id: ID!) : MutationPlaylistDeleteResult @join__field(graph: API_MEDIA) 
+  playlistItemAdd(playlistId: ID!, videoVariantId: ID!) : MutationPlaylistItemAddResult @join__field(graph: API_MEDIA) 
+  playlistItemRemove(playlistId: ID!, itemId: ID!) : MutationPlaylistItemRemoveResult @join__field(graph: API_MEDIA) 
+  playlistItemsReorder(playlistId: ID!, itemIds: [ID!]!) : MutationPlaylistItemsReorderResult @join__field(graph: API_MEDIA) 
   """
   Create a new short link domain that can be used for short links (this domain must have a CNAME record pointing to the short link service)
   """
@@ -543,6 +563,7 @@ type PhoneAction implements Action @join__type(graph: API_JOURNEYS)  @join__type
   parentBlock: Block!
   gtmEventName: String
   phone: String!
+  countryCode: String!
 }
 
 type Journey @join__type(graph: API_JOURNEYS, key: "id")  @join__type(graph: API_JOURNEYS_MODERN, key: "id")  {
@@ -760,6 +781,8 @@ type Query @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS)  
   getMyMuxVideos(offset: Int, limit: Int) : [MuxVideo!]! @join__field(graph: API_MEDIA) 
   getMyMuxVideo(id: ID!, userGenerated: Boolean) : MuxVideo! @join__field(graph: API_MEDIA) 
   getMuxVideo(id: ID!, userGenerated: Boolean) : MuxVideo @join__field(graph: API_MEDIA) 
+  playlists: [Playlist!] @join__field(graph: API_MEDIA) 
+  playlist(id: ID!, idType: IdType! = databaseId) : QueryPlaylistResult @join__field(graph: API_MEDIA) 
   """
   List of short link domains that can be used for short links
   """
@@ -2508,6 +2531,30 @@ type LanguageWithSlug @join__type(graph: API_MEDIA)  {
   slug: String!
 }
 
+type MutationPlaylistCreateSuccess @join__type(graph: API_MEDIA)  {
+  data: Playlist!
+}
+
+type MutationPlaylistDeleteSuccess @join__type(graph: API_MEDIA)  {
+  data: Playlist!
+}
+
+type MutationPlaylistItemAddSuccess @join__type(graph: API_MEDIA)  {
+  data: PlaylistItem!
+}
+
+type MutationPlaylistItemRemoveSuccess @join__type(graph: API_MEDIA)  {
+  data: [PlaylistItem!]!
+}
+
+type MutationPlaylistItemsReorderSuccess @join__type(graph: API_MEDIA)  {
+  data: [PlaylistItem!]!
+}
+
+type MutationPlaylistUpdateSuccess @join__type(graph: API_MEDIA)  {
+  data: Playlist!
+}
+
 type MutationShortLinkCreateSuccess @join__type(graph: API_MEDIA)  {
   data: ShortLink!
 }
@@ -2568,6 +2615,33 @@ type NotUniqueErrorLocation @join__type(graph: API_MEDIA)  {
   The value that was provided at the path
   """
   value: String
+}
+
+type Playlist @join__type(graph: API_MEDIA)  {
+  id: ID!
+  name: String!
+  note: String
+  noteUpdatedAt: DateTime
+  noteSharedAt: DateTime
+  sharedAt: DateTime
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  slug: String!
+  owner: User!
+  items: [PlaylistItem!]!
+}
+
+type PlaylistItem @join__type(graph: API_MEDIA)  {
+  id: ID!
+  order: Int!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  videoVariant: VideoVariant!
+  playlist: Playlist!
+}
+
+type QueryPlaylistSuccess @join__type(graph: API_MEDIA)  {
+  data: Playlist!
 }
 
 type QueryShortLinkByPathSuccess @join__type(graph: API_MEDIA)  {
@@ -2861,6 +2935,7 @@ type VideoVariant @join__type(graph: API_MEDIA)  {
   version control for master video file
   """
   version: Int!
+  video: Video
 }
 
 type VideoVariantDownload @join__type(graph: API_MEDIA)  {
@@ -2936,6 +3011,18 @@ union MutationSiteCreateResult @join__type(graph: API_ANALYTICS)  @join__unionMe
 
 union MediaVideo @join__type(graph: API_JOURNEYS_MODERN)  @join__unionMember(graph: API_JOURNEYS_MODERN, member: "MuxVideo")  @join__unionMember(graph: API_JOURNEYS_MODERN, member: "Video")  @join__unionMember(graph: API_JOURNEYS_MODERN, member: "YouTube")  = MuxVideo | Video | YouTube
 
+union MutationPlaylistCreateResult @join__type(graph: API_MEDIA)  @join__unionMember(graph: API_MEDIA, member: "ZodError")  @join__unionMember(graph: API_MEDIA, member: "MutationPlaylistCreateSuccess")  = ZodError | MutationPlaylistCreateSuccess
+
+union MutationPlaylistDeleteResult @join__type(graph: API_MEDIA)  @join__unionMember(graph: API_MEDIA, member: "NotFoundError")  @join__unionMember(graph: API_MEDIA, member: "MutationPlaylistDeleteSuccess")  = NotFoundError | MutationPlaylistDeleteSuccess
+
+union MutationPlaylistItemAddResult @join__type(graph: API_MEDIA)  @join__unionMember(graph: API_MEDIA, member: "NotFoundError")  @join__unionMember(graph: API_MEDIA, member: "MutationPlaylistItemAddSuccess")  = NotFoundError | MutationPlaylistItemAddSuccess
+
+union MutationPlaylistItemRemoveResult @join__type(graph: API_MEDIA)  @join__unionMember(graph: API_MEDIA, member: "NotFoundError")  @join__unionMember(graph: API_MEDIA, member: "MutationPlaylistItemRemoveSuccess")  = NotFoundError | MutationPlaylistItemRemoveSuccess
+
+union MutationPlaylistItemsReorderResult @join__type(graph: API_MEDIA)  @join__unionMember(graph: API_MEDIA, member: "NotFoundError")  @join__unionMember(graph: API_MEDIA, member: "MutationPlaylistItemsReorderSuccess")  = NotFoundError | MutationPlaylistItemsReorderSuccess
+
+union MutationPlaylistUpdateResult @join__type(graph: API_MEDIA)  @join__unionMember(graph: API_MEDIA, member: "ZodError")  @join__unionMember(graph: API_MEDIA, member: "NotFoundError")  @join__unionMember(graph: API_MEDIA, member: "MutationPlaylistUpdateSuccess")  = ZodError | NotFoundError | MutationPlaylistUpdateSuccess
+
 union MutationShortLinkCreateResult @join__type(graph: API_MEDIA)  @join__unionMember(graph: API_MEDIA, member: "NotUniqueError")  @join__unionMember(graph: API_MEDIA, member: "ZodError")  @join__unionMember(graph: API_MEDIA, member: "MutationShortLinkCreateSuccess")  = NotUniqueError | ZodError | MutationShortLinkCreateSuccess
 
 union MutationShortLinkDeleteResult @join__type(graph: API_MEDIA)  @join__unionMember(graph: API_MEDIA, member: "NotFoundError")  @join__unionMember(graph: API_MEDIA, member: "MutationShortLinkDeleteSuccess")  = NotFoundError | MutationShortLinkDeleteSuccess
@@ -2947,6 +3034,8 @@ union MutationShortLinkDomainDeleteResult @join__type(graph: API_MEDIA)  @join__
 union MutationShortLinkDomainUpdateResult @join__type(graph: API_MEDIA)  @join__unionMember(graph: API_MEDIA, member: "NotFoundError")  @join__unionMember(graph: API_MEDIA, member: "MutationShortLinkDomainUpdateSuccess")  = NotFoundError | MutationShortLinkDomainUpdateSuccess
 
 union MutationShortLinkUpdateResult @join__type(graph: API_MEDIA)  @join__unionMember(graph: API_MEDIA, member: "ZodError")  @join__unionMember(graph: API_MEDIA, member: "NotFoundError")  @join__unionMember(graph: API_MEDIA, member: "MutationShortLinkUpdateSuccess")  = ZodError | NotFoundError | MutationShortLinkUpdateSuccess
+
+union QueryPlaylistResult @join__type(graph: API_MEDIA)  @join__unionMember(graph: API_MEDIA, member: "NotFoundError")  @join__unionMember(graph: API_MEDIA, member: "QueryPlaylistSuccess")  = NotFoundError | QueryPlaylistSuccess
 
 union QueryShortLinkByPathResult @join__type(graph: API_MEDIA)  @join__unionMember(graph: API_MEDIA, member: "NotFoundError")  @join__unionMember(graph: API_MEDIA, member: "QueryShortLinkByPathSuccess")  = NotFoundError | QueryShortLinkByPathSuccess
 
@@ -3643,98 +3732,6 @@ input TypographyBlockUpdateInput @join__type(graph: API_JOURNEYS)  @join__type(g
   settings: TypographyBlockSettingsInput
 }
 
-input VideoBlockCreateInput @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
-  id: ID
-  journeyId: ID!
-  parentBlockId: ID!
-  """
-  startAt dictates at which point of time the video should start playing
-  """
-  startAt: Int
-  """
-  endAt dictates at which point of time the video should end
-  """
-  endAt: Int
-  duration: Int
-  description: String
-  muted: Boolean
-  autoplay: Boolean
-  """
-  internal source videos: videoId and videoVariantLanguageId both need to be set
-  to select a video.
-  For other sources only videoId needs to be set.
-  """
-  videoId: ID
-  """
-  internal source videos: videoId and videoVariantLanguageId both need to be set
-  to select a video.
-  For other sources only videoId needs to be set.
-  """
-  videoVariantLanguageId: ID
-  """
-  internal source: videoId and videoVariantLanguageId required
-  youTube source: videoId required
-  """
-  source: VideoBlockSource
-  """
-  posterBlockId is present if a child block should be used as a poster.
-  This child block should not be rendered normally, instead it should be used
-  as the video poster. PosterBlock should be of type ImageBlock.
-  """
-  posterBlockId: ID
-  fullsize: Boolean
-  """
-  True if the coverBlockId in a parent block should be set to this block's id.
-  """
-  isCover: Boolean
-  """
-  how the video should display within the VideoBlock
-  """
-  objectFit: VideoBlockObjectFit
-}
-
-input VideoBlockUpdateInput @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
-  """
-  startAt dictates at which point of time the video should start playing
-  """
-  startAt: Int
-  """
-  endAt dictates at which point of time the video should end
-  """
-  endAt: Int
-  muted: Boolean
-  autoplay: Boolean
-  duration: Int
-  """
-  internal source videos: videoId and videoVariantLanguageId both need to be set
-  to select a video.
-  For other sources only videoId needs to be set.
-  """
-  videoId: ID
-  """
-  internal source videos: videoId and videoVariantLanguageId both need to be set
-  to select a video.
-  For other sources only videoId needs to be set.
-  """
-  videoVariantLanguageId: ID
-  """
-  internal source: videoId and videoVariantLanguageId required
-  youTube source: videoId required
-  """
-  source: VideoBlockSource
-  """
-  posterBlockId is present if a child block should be used as a poster.
-  This child block should not be rendered normally, instead it should be used
-  as the video poster. PosterBlock should be of type ImageBlock.
-  """
-  posterBlockId: ID
-  fullsize: Boolean
-  """
-  how the video should display within the VideoBlock
-  """
-  objectFit: VideoBlockObjectFit
-}
-
 input ChatButtonCreateInput @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
   link: String
   platform: MessagePlatform
@@ -4150,6 +4147,7 @@ input JourneysFilter @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JO
   languageIds: [ID!]
   limit: Int
   orderByRecent: Boolean
+  fromTemplateId: ID
 }
 
 input JourneysQueryOptions @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
@@ -4479,6 +4477,7 @@ input BlockUpdateActionInput @join__type(graph: API_JOURNEYS_MODERN)  {
   email: String
   url: String
   phone: String
+  countryCode: String
   target: String
   blockId: String
 }
@@ -4529,6 +4528,53 @@ input NavigateToBlockActionInput @join__type(graph: API_JOURNEYS_MODERN)  {
 input PhoneActionInput @join__type(graph: API_JOURNEYS_MODERN)  {
   gtmEventName: String
   phone: String!
+  countryCode: String!
+}
+
+input VideoBlockCreateInput @join__type(graph: API_JOURNEYS_MODERN)  {
+  id: ID
+  journeyId: ID!
+  parentBlockId: ID!
+  videoId: ID
+  videoVariantLanguageId: ID
+  source: VideoBlockSource
+  """
+  True if the coverBlockId in a parent block should be set to this block's id.
+  """
+  isCover: Boolean
+  title: String
+  description: String
+  image: String
+  duration: Int
+  objectFit: VideoBlockObjectFit
+  startAt: Int
+  endAt: Int
+  muted: Boolean
+  autoplay: Boolean
+  fullsize: Boolean
+  posterBlockId: ID
+}
+
+input VideoBlockUpdateInput @join__type(graph: API_JOURNEYS_MODERN)  {
+  parentBlockId: ID
+  videoId: ID
+  videoVariantLanguageId: ID
+  posterBlockId: ID
+  title: String
+  description: String
+  image: String
+  duration: Int
+  objectFit: VideoBlockObjectFit
+  startAt: Int
+  endAt: Int
+  muted: Boolean
+  autoplay: Boolean
+  fullsize: Boolean
+  """
+  internal source: videoId and videoVariantLanguageId required
+    youTube source: videoId required
+  """
+  source: VideoBlockSource
 }
 
 input LanguagesFilter @join__type(graph: API_LANGUAGES)  {
@@ -4690,6 +4736,22 @@ input MutationVideoOriginUpdateInput @join__type(graph: API_MEDIA)  {
   id: ID!
   name: String
   description: String
+}
+
+input PlaylistCreateInput @join__type(graph: API_MEDIA)  {
+  id: ID
+  name: String!
+  note: String
+  noteSharedAt: DateTime
+  sharedAt: DateTime
+  slug: String
+}
+
+input PlaylistUpdateInput @join__type(graph: API_MEDIA)  {
+  name: String
+  note: String
+  noteSharedAt: DateTime
+  sharedAt: DateTime
 }
 
 input TranscodeVideoInput @join__type(graph: API_MEDIA)  {

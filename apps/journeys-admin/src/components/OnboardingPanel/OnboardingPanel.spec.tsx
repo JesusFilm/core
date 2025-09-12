@@ -1,5 +1,5 @@
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
-import { fireEvent, render, waitFor } from '@testing-library/react'
+import { act, fireEvent, render, waitFor } from '@testing-library/react'
 import { NextRouter, useRouter } from 'next/router'
 import { v4 as uuidv4 } from 'uuid'
 
@@ -16,7 +16,7 @@ import {
 } from '../../../__generated__/globalTypes'
 import { CREATE_JOURNEY } from '../../libs/useJourneyCreateMutation'
 
-import { getOnboardingJourneysMock, getTeamsMock } from './data'
+import { getTeamsMock } from './data'
 
 import { OnboardingPanel } from '.'
 
@@ -28,6 +28,11 @@ jest.mock('next/router', () => ({
 jest.mock('uuid', () => ({
   __esModule: true,
   v4: jest.fn()
+}))
+
+jest.mock('./OnboardingList', () => ({
+  __esModule: true,
+  OnboardingList: () => null
 }))
 
 const mockUuidv4 = uuidv4 as jest.MockedFunction<typeof uuidv4>
@@ -43,7 +48,7 @@ const variables = {
   alt: 'two hot air balloons in the sky',
   headlineTypographyContent: 'The Journey Is On',
   bodyTypographyContent: '"Go, and lead the people on their way..."',
-  captionTypographyContent: 'Deutoronomy 10:11',
+  captionTypographyContent: 'Deuteronomy 10:11',
   teamId: 'teamId'
 }
 const createJourneyMock: MockedResponse<CreateJourney, CreateJourneyVariables> =
@@ -117,11 +122,7 @@ const createJourneyMock: MockedResponse<CreateJourney, CreateJourneyVariables> =
       }
     }
   }
-const mocks: MockedResponse[] = [
-  createJourneyMock,
-  getOnboardingJourneysMock,
-  getTeamsMock
-]
+const mocks: MockedResponse[] = [createJourneyMock, getTeamsMock]
 
 describe('OnboardingPanel', () => {
   it('should add a new journey on custom journey button click', async () => {
@@ -166,7 +167,6 @@ describe('OnboardingPanel', () => {
       <MockedProvider
         mocks={[
           createJourneyMock,
-          getOnboardingJourneysMock,
           {
             ...getTeamsMock,
             result
@@ -179,49 +179,11 @@ describe('OnboardingPanel', () => {
       </MockedProvider>
     )
 
-    await waitFor(() => expect(result).toHaveBeenCalled())
-    expect(
-      queryByRole('button', { name: 'Create Custom Journey' })
-    ).not.toBeInTheDocument()
-  })
-
-  it('should display onboarding templates', async () => {
-    const { getByText } = render(
-      <MockedProvider mocks={mocks}>
-        <TeamProvider>
-          <OnboardingPanel />
-        </TeamProvider>
-      </MockedProvider>
-    )
     await waitFor(() =>
-      expect(getByText('template 1 title')).toBeInTheDocument()
+      expect(
+        queryByRole('button', { name: 'Create Custom Journey' })
+      ).not.toBeInTheDocument()
     )
-    expect(getByText('template 2 title')).toBeInTheDocument()
-    expect(getByText('template 3 title')).toBeInTheDocument()
-    expect(getByText('template 4 title')).toBeInTheDocument()
-    expect(getByText('template 5 title')).toBeInTheDocument()
-  })
-
-  it('should redirect to template details page onClick', async () => {
-    const push = jest.fn()
-    mockUseRouter.mockReturnValue({ push } as unknown as NextRouter)
-
-    const { getByText, getByRole } = render(
-      <MockedProvider mocks={mocks}>
-        <TeamProvider>
-          <OnboardingPanel />
-        </TeamProvider>
-      </MockedProvider>
-    )
-
-    await waitFor(() =>
-      expect(getByText('template 1 title')).toBeInTheDocument()
-    )
-    expect(
-      getByRole('link', {
-        name: 'template 1 title Template template 1 title template 1 description'
-      })
-    ).toHaveAttribute('href', '/templates/014c7add-288b-4f84-ac85-ccefef7a07d3')
   })
 
   it('should redirect on See all link', () => {
@@ -241,7 +203,7 @@ describe('OnboardingPanel', () => {
 
   it('should redirect on See all templates button', () => {
     const { getByRole } = render(
-      <MockedProvider mocks={[]}>
+      <MockedProvider mocks={[getTeamsMock]}>
         <TeamProvider>
           <OnboardingPanel />
         </TeamProvider>

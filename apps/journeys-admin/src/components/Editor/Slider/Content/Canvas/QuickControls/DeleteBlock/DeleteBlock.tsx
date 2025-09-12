@@ -74,6 +74,9 @@ export function DeleteBlock({
           onMouseUp={
             blockType === 'Card' ? handleOpenDialog : handleDeleteBlock
           }
+          sx={{
+            p: 1
+          }}
         >
           <Trash2Icon />
         </IconButton>
@@ -84,9 +87,7 @@ export function DeleteBlock({
           })}
           icon={<Trash2Icon />}
           disabled={disableAction}
-          onMouseUp={
-            blockType === 'Card' ? handleOpenDialog : handleDeleteBlock
-          }
+          onClick={blockType === 'Card' ? handleOpenDialog : handleDeleteBlock}
         />
       )}
     </>

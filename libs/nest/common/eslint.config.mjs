@@ -1,12 +1,3 @@
-import baseConfig from '../../../eslint.config.mjs'
+import commonConfig from '../../shared/eslint/common.mjs'
 
-export default [
-  ...baseConfig,
-  { ignores: ['libs/nest/common/eslint.config.js'] },
-  {
-    files: ['**/*.ts', '**/*.tsx'],
-    languageOptions: {
-      parserOptions: { project: ['libs/nest/common/tsconfig.*?.json'] }
-    }
-  }
-]
+export default commonConfig

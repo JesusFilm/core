@@ -35,4 +35,5 @@ type PhoneAction implements Action @shareable {
   parentBlock: Block!
   gtmEventName: String
   phone: String!
+  countryCode: String!
 }

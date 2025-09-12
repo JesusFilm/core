@@ -87,44 +87,47 @@ function getBrowserLanguage(req: NextRequest): string {
   return getPreferredLanguage(sortedLanguages) ?? DEFAULT_LOCALE
 }
 
-function getLocale(req: NextRequest): string {
+interface GetLocaleOptions {
+  ignoreLocaleFromPath?: boolean
+}
+
+function getLocale(
+  req: NextRequest,
+  options?: GetLocaleOptions
+): string | undefined {
   // Priority 1: Cookie
-  // const cookieLocale = req.cookies.get('NEXT_LOCALE')?.value?.split('---')[1]
-  // if (cookieLocale != null) return cookieLocale
+  const cookieLocale = req.cookies.get('NEXT_LOCALE')?.value?.split('---')[1]
+  if (cookieLocale != null) return cookieLocale
 
   // Priority 2: URL Path
   const pathLocale = getLocaleFromPath(req.nextUrl.pathname)
-  if (pathLocale != null) return pathLocale
+  if (pathLocale != null && !options?.ignoreLocaleFromPath) return pathLocale
 
   // Priority 3: Browser Language
   const browserLocale = getBrowserLanguage(req)
-  if (browserLocale !== DEFAULT_LOCALE) return browserLocale
+  if (browserLocale != null && browserLocale !== DEFAULT_LOCALE)
+    return browserLocale
 
   // Priority 4: Geolocation (only check if no other locale found)
   const geoLocale = getLocaleFromGeoHeaders(req)
-  return geoLocale ?? DEFAULT_LOCALE
+  if (geoLocale != null && geoLocale !== DEFAULT_LOCALE) return geoLocale
 }
 
-export function middleware(req: NextRequest): NextResponse | undefined {
-  const isNextInternal = req.nextUrl.pathname.startsWith('/_next')
-  const isApi = req.nextUrl.pathname.includes('/api/')
-  const isWatchRoute = req.nextUrl.pathname.startsWith('/watch')
-  const isAsset = req.nextUrl.pathname.includes('/assets/')
+export const config = {
+  matcher: ['/watch/((?!assets).*)', '/watch']
+}
 
-  if (isNextInternal || isApi || !isWatchRoute || isAsset) return
+export async function middleware(req: NextRequest): Promise<NextResponse> {
+  const locale = getLocale(req) ?? DEFAULT_LOCALE
+  const rewriteUrl = req.nextUrl.clone()
+  const pathname = req.nextUrl.pathname
 
-  const locale = getLocale(req)
-
+  if (pathname === '/watch' && locale !== DEFAULT_LOCALE) {
+    rewriteUrl.pathname = `/watch/${LANGUAGE_MAPPINGS[locale].languageSlugs[0]}`
+    return NextResponse.redirect(rewriteUrl, 302)
+  }
   if (locale !== DEFAULT_LOCALE) {
-    const rewriteUrl = req.nextUrl.clone()
-    const [pathname, query] = req.nextUrl.pathname.split('?')
-
-    if (pathname === '/watch') {
-      rewriteUrl.pathname = `/watch/${LANGUAGE_MAPPINGS[locale].languageSlugs[0]}${query ? `?${query}` : ''}`
-      return NextResponse.redirect(rewriteUrl, 302)
-    } else {
-      rewriteUrl.pathname = `/${locale}${pathname}${query ? `?${query}` : ''}`
-    }
+    rewriteUrl.pathname = `/${locale}${pathname}`
 
     return NextResponse.rewrite(rewriteUrl)
   }

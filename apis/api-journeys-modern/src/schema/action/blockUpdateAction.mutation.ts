@@ -34,7 +34,8 @@ const navigateToBlockActionInputSchema = z.object({
 
 const phoneActionInputSchema = z.object({
   gtmEventName: z.string().nullish(),
-  phone: z.string().regex(/^\+?[1-9]\d{1,14}$/)
+  phone: z.string().regex(/^\+[1-9]\d{1,14}$/),
+  countryCode: z.string()
 })
 
 const ACTION_UPDATE_RESET: Prisma.ActionUpdateInput = {
@@ -57,6 +58,9 @@ async function findParentStepBlock(id?: string): Promise<Block | undefined> {
 
 builder.mutationField('blockUpdateAction', (t) =>
   t.withAuth({ isAuthenticated: true }).field({
+    override: {
+      from: 'api-journeys'
+    },
     type: ActionInterface,
     args: {
       id: t.arg.id({ required: true }),
@@ -136,8 +140,7 @@ builder.mutationField('blockUpdateAction', (t) =>
           update: {
             ...ACTION_UPDATE_RESET,
             ...emailInput
-          },
-          include: { parentBlock: { include: { action: true } } }
+          }
         })
       }
 
@@ -169,8 +172,7 @@ builder.mutationField('blockUpdateAction', (t) =>
           update: {
             ...ACTION_UPDATE_RESET,
             ...inputWithBlockConnection
-          },
-          include: { parentBlock: { include: { action: true } } }
+          }
         })
       }
 
@@ -184,8 +186,7 @@ builder.mutationField('blockUpdateAction', (t) =>
           update: {
             ...ACTION_UPDATE_RESET,
             ...linkInput
-          },
-          include: { parentBlock: { include: { action: true } } }
+          }
         })
 
       if (isPhone) {
@@ -198,8 +199,7 @@ builder.mutationField('blockUpdateAction', (t) =>
           update: {
             ...ACTION_UPDATE_RESET,
             ...phoneInput
-          },
-          include: { parentBlock: { include: { action: true } } }
+          }
         })
       }
 

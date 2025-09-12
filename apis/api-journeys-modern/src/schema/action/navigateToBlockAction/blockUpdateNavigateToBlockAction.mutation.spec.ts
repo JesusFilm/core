@@ -64,15 +64,19 @@ describe('blockUpdateNavigateToBlockAction mutation', () => {
       expect(prismaMock.action.upsert).toHaveBeenCalledWith({
         where: { parentBlockId: '1' },
         create: {
-          parentBlockId: '1',
           gtmEventName: null,
-          blockId: 'child-block'
+          parentBlock: { connect: { id: '1' } },
+          block: { connect: { id: 'child-block' } }
         },
         update: {
-          gtmEventName: null,
-          blockId: 'child-block'
-        },
-        include: { parentBlock: true }
+          url: null,
+          target: null,
+          email: null,
+          phone: null,
+          journey: { disconnect: true },
+          block: { connect: { id: 'child-block' } },
+          gtmEventName: null
+        }
       })
 
       expect(result).toEqual({
