@@ -438,7 +438,8 @@ export function useCarouselVideos(locale?: string): UseCarouselVideosReturn {
     effectivePoolIndex,
     findNextAvailablePool,
     loadVideoFromPool,
-    loadingQueue.size
+    loadingQueue.size,
+    config.settings.prefetchCount
   ])
 
   // Process current video from query result
