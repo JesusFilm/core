@@ -23,8 +23,8 @@ export interface GetJourney_journey_language {
   name: GetJourney_journey_language_name[];
 }
 
-export interface GetJourney_journey_blocks_GridContainerBlock {
-  __typename: "GridContainerBlock" | "GridItemBlock" | "MultiselectBlock" | "MultiselectOptionBlock";
+export interface GetJourney_journey_blocks_MultiselectBlock {
+  __typename: "MultiselectBlock" | "MultiselectOptionBlock" | "GridContainerBlock" | "GridItemBlock";
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
@@ -505,7 +505,7 @@ export interface GetJourney_journey_blocks_VideoTriggerBlock {
   triggerAction: GetJourney_journey_blocks_VideoTriggerBlock_triggerAction;
 }
 
-export type GetJourney_journey_blocks = GetJourney_journey_blocks_GridContainerBlock | GetJourney_journey_blocks_ButtonBlock | GetJourney_journey_blocks_CardBlock | GetJourney_journey_blocks_IconBlock | GetJourney_journey_blocks_ImageBlock | GetJourney_journey_blocks_RadioOptionBlock | GetJourney_journey_blocks_RadioQuestionBlock | GetJourney_journey_blocks_SignUpBlock | GetJourney_journey_blocks_SpacerBlock | GetJourney_journey_blocks_StepBlock | GetJourney_journey_blocks_TextResponseBlock | GetJourney_journey_blocks_TypographyBlock | GetJourney_journey_blocks_VideoBlock | GetJourney_journey_blocks_VideoTriggerBlock;
+export type GetJourney_journey_blocks = GetJourney_journey_blocks_MultiselectBlock | GetJourney_journey_blocks_ButtonBlock | GetJourney_journey_blocks_CardBlock | GetJourney_journey_blocks_IconBlock | GetJourney_journey_blocks_ImageBlock | GetJourney_journey_blocks_RadioOptionBlock | GetJourney_journey_blocks_RadioQuestionBlock | GetJourney_journey_blocks_SignUpBlock | GetJourney_journey_blocks_SpacerBlock | GetJourney_journey_blocks_StepBlock | GetJourney_journey_blocks_TextResponseBlock | GetJourney_journey_blocks_TypographyBlock | GetJourney_journey_blocks_VideoBlock | GetJourney_journey_blocks_VideoTriggerBlock;
 
 export interface GetJourney_journey_primaryImageBlock {
   __typename: "ImageBlock";

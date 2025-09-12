@@ -23,8 +23,8 @@ export interface GetAdminJourney_journey_language {
   name: GetAdminJourney_journey_language_name[];
 }
 
-export interface GetAdminJourney_journey_blocks_GridContainerBlock {
-  __typename: "GridContainerBlock" | "GridItemBlock" | "MultiselectBlock" | "MultiselectOptionBlock";
+export interface GetAdminJourney_journey_blocks_MultiselectBlock {
+  __typename: "MultiselectBlock" | "MultiselectOptionBlock" | "GridContainerBlock" | "GridItemBlock";
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
@@ -505,7 +505,7 @@ export interface GetAdminJourney_journey_blocks_VideoTriggerBlock {
   triggerAction: GetAdminJourney_journey_blocks_VideoTriggerBlock_triggerAction;
 }
 
-export type GetAdminJourney_journey_blocks = GetAdminJourney_journey_blocks_GridContainerBlock | GetAdminJourney_journey_blocks_ButtonBlock | GetAdminJourney_journey_blocks_CardBlock | GetAdminJourney_journey_blocks_IconBlock | GetAdminJourney_journey_blocks_ImageBlock | GetAdminJourney_journey_blocks_RadioOptionBlock | GetAdminJourney_journey_blocks_RadioQuestionBlock | GetAdminJourney_journey_blocks_SignUpBlock | GetAdminJourney_journey_blocks_SpacerBlock | GetAdminJourney_journey_blocks_StepBlock | GetAdminJourney_journey_blocks_TextResponseBlock | GetAdminJourney_journey_blocks_TypographyBlock | GetAdminJourney_journey_blocks_VideoBlock | GetAdminJourney_journey_blocks_VideoTriggerBlock;
+export type GetAdminJourney_journey_blocks = GetAdminJourney_journey_blocks_MultiselectBlock | GetAdminJourney_journey_blocks_ButtonBlock | GetAdminJourney_journey_blocks_CardBlock | GetAdminJourney_journey_blocks_IconBlock | GetAdminJourney_journey_blocks_ImageBlock | GetAdminJourney_journey_blocks_RadioOptionBlock | GetAdminJourney_journey_blocks_RadioQuestionBlock | GetAdminJourney_journey_blocks_SignUpBlock | GetAdminJourney_journey_blocks_SpacerBlock | GetAdminJourney_journey_blocks_StepBlock | GetAdminJourney_journey_blocks_TextResponseBlock | GetAdminJourney_journey_blocks_TypographyBlock | GetAdminJourney_journey_blocks_VideoBlock | GetAdminJourney_journey_blocks_VideoTriggerBlock;
 
 export interface GetAdminJourney_journey_primaryImageBlock {
   __typename: "ImageBlock";

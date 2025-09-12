@@ -9,8 +9,8 @@ import { JourneyUpdateInput, ButtonVariant, ButtonColor, ButtonSize, ButtonAlign
 // GraphQL mutation operation: MenuBlockRestore
 // ====================================================
 
-export interface MenuBlockRestore_stepRestore_GridContainerBlock {
-  __typename: "GridContainerBlock" | "GridItemBlock" | "MultiselectBlock" | "MultiselectOptionBlock";
+export interface MenuBlockRestore_stepRestore_MultiselectBlock {
+  __typename: "MultiselectBlock" | "MultiselectOptionBlock" | "GridContainerBlock" | "GridItemBlock";
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
@@ -501,7 +501,7 @@ export interface MenuBlockRestore_stepRestore_VideoTriggerBlock {
   triggerAction: MenuBlockRestore_stepRestore_VideoTriggerBlock_triggerAction;
 }
 
-export type MenuBlockRestore_stepRestore = MenuBlockRestore_stepRestore_GridContainerBlock | MenuBlockRestore_stepRestore_ButtonBlock | MenuBlockRestore_stepRestore_CardBlock | MenuBlockRestore_stepRestore_IconBlock | MenuBlockRestore_stepRestore_ImageBlock | MenuBlockRestore_stepRestore_RadioOptionBlock | MenuBlockRestore_stepRestore_RadioQuestionBlock | MenuBlockRestore_stepRestore_SignUpBlock | MenuBlockRestore_stepRestore_SpacerBlock | MenuBlockRestore_stepRestore_StepBlock | MenuBlockRestore_stepRestore_TextResponseBlock | MenuBlockRestore_stepRestore_TypographyBlock | MenuBlockRestore_stepRestore_VideoBlock | MenuBlockRestore_stepRestore_VideoTriggerBlock;
+export type MenuBlockRestore_stepRestore = MenuBlockRestore_stepRestore_MultiselectBlock | MenuBlockRestore_stepRestore_ButtonBlock | MenuBlockRestore_stepRestore_CardBlock | MenuBlockRestore_stepRestore_IconBlock | MenuBlockRestore_stepRestore_ImageBlock | MenuBlockRestore_stepRestore_RadioOptionBlock | MenuBlockRestore_stepRestore_RadioQuestionBlock | MenuBlockRestore_stepRestore_SignUpBlock | MenuBlockRestore_stepRestore_SpacerBlock | MenuBlockRestore_stepRestore_StepBlock | MenuBlockRestore_stepRestore_TextResponseBlock | MenuBlockRestore_stepRestore_TypographyBlock | MenuBlockRestore_stepRestore_VideoBlock | MenuBlockRestore_stepRestore_VideoTriggerBlock;
 
 export interface MenuBlockRestore_journeyUpdate_menuStepBlock {
   __typename: "StepBlock";

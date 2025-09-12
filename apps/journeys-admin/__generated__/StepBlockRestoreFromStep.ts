@@ -9,8 +9,8 @@ import { StepBlockUpdateInput, ButtonVariant, ButtonColor, ButtonSize, ButtonAli
 // GraphQL mutation operation: StepBlockRestoreFromStep
 // ====================================================
 
-export interface StepBlockRestoreFromStep_blockRestore_GridContainerBlock {
-  __typename: "GridContainerBlock" | "GridItemBlock" | "MultiselectBlock" | "MultiselectOptionBlock";
+export interface StepBlockRestoreFromStep_blockRestore_MultiselectBlock {
+  __typename: "MultiselectBlock" | "MultiselectOptionBlock" | "GridContainerBlock" | "GridItemBlock";
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
@@ -501,7 +501,7 @@ export interface StepBlockRestoreFromStep_blockRestore_VideoTriggerBlock {
   triggerAction: StepBlockRestoreFromStep_blockRestore_VideoTriggerBlock_triggerAction;
 }
 
-export type StepBlockRestoreFromStep_blockRestore = StepBlockRestoreFromStep_blockRestore_GridContainerBlock | StepBlockRestoreFromStep_blockRestore_ButtonBlock | StepBlockRestoreFromStep_blockRestore_CardBlock | StepBlockRestoreFromStep_blockRestore_IconBlock | StepBlockRestoreFromStep_blockRestore_ImageBlock | StepBlockRestoreFromStep_blockRestore_RadioOptionBlock | StepBlockRestoreFromStep_blockRestore_RadioQuestionBlock | StepBlockRestoreFromStep_blockRestore_SignUpBlock | StepBlockRestoreFromStep_blockRestore_SpacerBlock | StepBlockRestoreFromStep_blockRestore_StepBlock | StepBlockRestoreFromStep_blockRestore_TextResponseBlock | StepBlockRestoreFromStep_blockRestore_TypographyBlock | StepBlockRestoreFromStep_blockRestore_VideoBlock | StepBlockRestoreFromStep_blockRestore_VideoTriggerBlock;
+export type StepBlockRestoreFromStep_blockRestore = StepBlockRestoreFromStep_blockRestore_MultiselectBlock | StepBlockRestoreFromStep_blockRestore_ButtonBlock | StepBlockRestoreFromStep_blockRestore_CardBlock | StepBlockRestoreFromStep_blockRestore_IconBlock | StepBlockRestoreFromStep_blockRestore_ImageBlock | StepBlockRestoreFromStep_blockRestore_RadioOptionBlock | StepBlockRestoreFromStep_blockRestore_RadioQuestionBlock | StepBlockRestoreFromStep_blockRestore_SignUpBlock | StepBlockRestoreFromStep_blockRestore_SpacerBlock | StepBlockRestoreFromStep_blockRestore_StepBlock | StepBlockRestoreFromStep_blockRestore_TextResponseBlock | StepBlockRestoreFromStep_blockRestore_TypographyBlock | StepBlockRestoreFromStep_blockRestore_VideoBlock | StepBlockRestoreFromStep_blockRestore_VideoTriggerBlock;
 
 export interface StepBlockRestoreFromStep_stepBlockUpdate {
   __typename: "StepBlock";

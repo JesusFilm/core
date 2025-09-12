@@ -9,8 +9,8 @@ import { BlockDuplicateIdMap, ButtonVariant, ButtonColor, ButtonSize, ButtonAlig
 // GraphQL mutation operation: StepDuplicate
 // ====================================================
 
-export interface StepDuplicate_blockDuplicate_GridContainerBlock {
-  __typename: "GridContainerBlock" | "GridItemBlock" | "MultiselectBlock" | "MultiselectOptionBlock";
+export interface StepDuplicate_blockDuplicate_MultiselectBlock {
+  __typename: "MultiselectBlock" | "MultiselectOptionBlock" | "GridContainerBlock" | "GridItemBlock";
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
@@ -501,7 +501,7 @@ export interface StepDuplicate_blockDuplicate_VideoTriggerBlock {
   triggerAction: StepDuplicate_blockDuplicate_VideoTriggerBlock_triggerAction;
 }
 
-export type StepDuplicate_blockDuplicate = StepDuplicate_blockDuplicate_GridContainerBlock | StepDuplicate_blockDuplicate_ButtonBlock | StepDuplicate_blockDuplicate_CardBlock | StepDuplicate_blockDuplicate_IconBlock | StepDuplicate_blockDuplicate_ImageBlock | StepDuplicate_blockDuplicate_RadioOptionBlock | StepDuplicate_blockDuplicate_RadioQuestionBlock | StepDuplicate_blockDuplicate_SignUpBlock | StepDuplicate_blockDuplicate_SpacerBlock | StepDuplicate_blockDuplicate_StepBlock | StepDuplicate_blockDuplicate_TextResponseBlock | StepDuplicate_blockDuplicate_TypographyBlock | StepDuplicate_blockDuplicate_VideoBlock | StepDuplicate_blockDuplicate_VideoTriggerBlock;
+export type StepDuplicate_blockDuplicate = StepDuplicate_blockDuplicate_MultiselectBlock | StepDuplicate_blockDuplicate_ButtonBlock | StepDuplicate_blockDuplicate_CardBlock | StepDuplicate_blockDuplicate_IconBlock | StepDuplicate_blockDuplicate_ImageBlock | StepDuplicate_blockDuplicate_RadioOptionBlock | StepDuplicate_blockDuplicate_RadioQuestionBlock | StepDuplicate_blockDuplicate_SignUpBlock | StepDuplicate_blockDuplicate_SpacerBlock | StepDuplicate_blockDuplicate_StepBlock | StepDuplicate_blockDuplicate_TextResponseBlock | StepDuplicate_blockDuplicate_TypographyBlock | StepDuplicate_blockDuplicate_VideoBlock | StepDuplicate_blockDuplicate_VideoTriggerBlock;
 
 export interface StepDuplicate {
   /**

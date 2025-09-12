@@ -9,8 +9,8 @@ import { ButtonVariant, ButtonColor, ButtonSize, ButtonAlignment, ThemeMode, The
 // GraphQL fragment: BlockFields
 // ====================================================
 
-export interface BlockFields_GridContainerBlock {
-  __typename: "GridContainerBlock" | "GridItemBlock" | "MultiselectBlock" | "MultiselectOptionBlock";
+export interface BlockFields_MultiselectBlock {
+  __typename: "MultiselectBlock" | "MultiselectOptionBlock" | "GridContainerBlock" | "GridItemBlock";
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
@@ -491,4 +491,4 @@ export interface BlockFields_VideoTriggerBlock {
   triggerAction: BlockFields_VideoTriggerBlock_triggerAction;
 }
 
-export type BlockFields = BlockFields_GridContainerBlock | BlockFields_ButtonBlock | BlockFields_CardBlock | BlockFields_IconBlock | BlockFields_ImageBlock | BlockFields_RadioOptionBlock | BlockFields_RadioQuestionBlock | BlockFields_SignUpBlock | BlockFields_SpacerBlock | BlockFields_StepBlock | BlockFields_TextResponseBlock | BlockFields_TypographyBlock | BlockFields_VideoBlock | BlockFields_VideoTriggerBlock;
+export type BlockFields = BlockFields_MultiselectBlock | BlockFields_ButtonBlock | BlockFields_CardBlock | BlockFields_IconBlock | BlockFields_ImageBlock | BlockFields_RadioOptionBlock | BlockFields_RadioQuestionBlock | BlockFields_SignUpBlock | BlockFields_SpacerBlock | BlockFields_StepBlock | BlockFields_TextResponseBlock | BlockFields_TypographyBlock | BlockFields_VideoBlock | BlockFields_VideoTriggerBlock;

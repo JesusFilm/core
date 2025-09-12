@@ -10,7 +10,7 @@ import { VideoBlockSource, VideoBlockObjectFit } from "./globalTypes";
 // ====================================================
 
 export interface CardVideoRestore_video_ImageBlock {
-  __typename: "ImageBlock" | "StepBlock" | "ButtonBlock" | "CardBlock" | "IconBlock" | "RadioOptionBlock" | "RadioQuestionBlock" | "SignUpBlock" | "SpacerBlock" | "TextResponseBlock" | "TypographyBlock" | "GridContainerBlock" | "GridItemBlock" | "MultiselectBlock" | "MultiselectOptionBlock" | "VideoTriggerBlock";
+  __typename: "ImageBlock" | "StepBlock" | "ButtonBlock" | "CardBlock" | "IconBlock" | "RadioOptionBlock" | "RadioQuestionBlock" | "SignUpBlock" | "SpacerBlock" | "TextResponseBlock" | "TypographyBlock" | "MultiselectBlock" | "MultiselectOptionBlock" | "GridContainerBlock" | "GridItemBlock" | "VideoTriggerBlock";
 }
 
 export interface CardVideoRestore_video_VideoBlock_mediaVideo_Video_title {

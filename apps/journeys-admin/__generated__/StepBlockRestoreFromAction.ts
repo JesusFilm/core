@@ -9,8 +9,8 @@ import { BlockUpdateActionInput, ButtonVariant, ButtonColor, ButtonSize, ButtonA
 // GraphQL mutation operation: StepBlockRestoreFromAction
 // ====================================================
 
-export interface StepBlockRestoreFromAction_blockRestore_GridContainerBlock {
-  __typename: "GridContainerBlock" | "GridItemBlock" | "MultiselectBlock" | "MultiselectOptionBlock";
+export interface StepBlockRestoreFromAction_blockRestore_MultiselectBlock {
+  __typename: "MultiselectBlock" | "MultiselectOptionBlock" | "GridContainerBlock" | "GridItemBlock";
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
@@ -501,10 +501,10 @@ export interface StepBlockRestoreFromAction_blockRestore_VideoTriggerBlock {
   triggerAction: StepBlockRestoreFromAction_blockRestore_VideoTriggerBlock_triggerAction;
 }
 
-export type StepBlockRestoreFromAction_blockRestore = StepBlockRestoreFromAction_blockRestore_GridContainerBlock | StepBlockRestoreFromAction_blockRestore_ButtonBlock | StepBlockRestoreFromAction_blockRestore_CardBlock | StepBlockRestoreFromAction_blockRestore_IconBlock | StepBlockRestoreFromAction_blockRestore_ImageBlock | StepBlockRestoreFromAction_blockRestore_RadioOptionBlock | StepBlockRestoreFromAction_blockRestore_RadioQuestionBlock | StepBlockRestoreFromAction_blockRestore_SignUpBlock | StepBlockRestoreFromAction_blockRestore_SpacerBlock | StepBlockRestoreFromAction_blockRestore_StepBlock | StepBlockRestoreFromAction_blockRestore_TextResponseBlock | StepBlockRestoreFromAction_blockRestore_TypographyBlock | StepBlockRestoreFromAction_blockRestore_VideoBlock | StepBlockRestoreFromAction_blockRestore_VideoTriggerBlock;
+export type StepBlockRestoreFromAction_blockRestore = StepBlockRestoreFromAction_blockRestore_MultiselectBlock | StepBlockRestoreFromAction_blockRestore_ButtonBlock | StepBlockRestoreFromAction_blockRestore_CardBlock | StepBlockRestoreFromAction_blockRestore_IconBlock | StepBlockRestoreFromAction_blockRestore_ImageBlock | StepBlockRestoreFromAction_blockRestore_RadioOptionBlock | StepBlockRestoreFromAction_blockRestore_RadioQuestionBlock | StepBlockRestoreFromAction_blockRestore_SignUpBlock | StepBlockRestoreFromAction_blockRestore_SpacerBlock | StepBlockRestoreFromAction_blockRestore_StepBlock | StepBlockRestoreFromAction_blockRestore_TextResponseBlock | StepBlockRestoreFromAction_blockRestore_TypographyBlock | StepBlockRestoreFromAction_blockRestore_VideoBlock | StepBlockRestoreFromAction_blockRestore_VideoTriggerBlock;
 
 export interface StepBlockRestoreFromAction_blockUpdateAction_parentBlock {
-  __typename: "ImageBlock" | "StepBlock" | "ButtonBlock" | "CardBlock" | "IconBlock" | "RadioOptionBlock" | "RadioQuestionBlock" | "SignUpBlock" | "SpacerBlock" | "TextResponseBlock" | "TypographyBlock" | "VideoBlock" | "GridContainerBlock" | "GridItemBlock" | "MultiselectBlock" | "MultiselectOptionBlock" | "VideoTriggerBlock";
+  __typename: "ImageBlock" | "StepBlock" | "ButtonBlock" | "CardBlock" | "IconBlock" | "RadioOptionBlock" | "RadioQuestionBlock" | "SignUpBlock" | "SpacerBlock" | "TextResponseBlock" | "TypographyBlock" | "MultiselectBlock" | "MultiselectOptionBlock" | "VideoBlock" | "GridContainerBlock" | "GridItemBlock" | "VideoTriggerBlock";
   id: string;
 }
 
