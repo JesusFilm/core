@@ -136,7 +136,7 @@ export function TemplateSettingsDialog({
           journeyId: journey.id,
           string: values.journeyCustomizationDescription
         },
-        refetchQueries: ['GetJourney']
+        refetchQueries: ['GetPublisherTemplate']
       })
       if (Boolean(journey.featuredAt) !== values.featured)
         await journeyFeature({
