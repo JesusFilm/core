@@ -81,13 +81,15 @@ export function ShareItem({
   const [showQrCodeDialog, setShowQrCodeDialog] = useState<boolean | null>(null)
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
 
-  const journeyUrl = journey?.slug != null
-    ? `${hostname != null
-      ? `https://${hostname}`
-      : (process.env.NEXT_PUBLIC_JOURNEYS_URL ??
-        'https://your.nextstep.is')
-    }/${journey?.slug}`
-    : undefined
+  const journeyUrl =
+    journey?.slug != null
+      ? `${
+          hostname != null
+            ? `https://${hostname}`
+            : (process.env.NEXT_PUBLIC_JOURNEYS_URL ??
+              'https://your.nextstep.is')
+        }/${journey?.slug}`
+      : undefined
 
   const handleCopyClick = async (): Promise<void> => {
     await navigator.clipboard.writeText(journeyUrl ?? '')

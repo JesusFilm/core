@@ -153,7 +153,9 @@ describe('ShareItem', () => {
       )
     })
 
-    expect(screen.getByRole('dialog', { name: 'Edit Link' })).toBeInTheDocument()
+    expect(
+      screen.getByRole('dialog', { name: 'Edit Link' })
+    ).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'Save' })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'Cancel' })).toBeInTheDocument()
     fireEvent.click(screen.getByRole('button', { name: 'Cancel' }))

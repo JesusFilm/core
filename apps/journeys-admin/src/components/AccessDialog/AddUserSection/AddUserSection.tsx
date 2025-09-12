@@ -42,12 +42,14 @@ export function AddUserSection({
     setAnchorEl(null)
   }
 
-  const inviteLink = typeof window !== 'undefined'
-    ? `${window.location.host.endsWith('.chromatic.com')
-      ? 'https://admin.nextstep.is'
-      : window.location.origin
-    }/journeys/${journeyId}`
-    : undefined
+  const inviteLink =
+    typeof window !== 'undefined'
+      ? `${
+          window.location.host.endsWith('.chromatic.com')
+            ? 'https://admin.nextstep.is'
+            : window.location.origin
+        }/journeys/${journeyId}`
+      : undefined
 
   const handleCopyClick = async (): Promise<void> => {
     await navigator.clipboard.writeText(inviteLink ?? '')

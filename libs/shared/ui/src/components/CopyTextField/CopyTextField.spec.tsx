@@ -25,7 +25,11 @@ describe('CopyTextField', () => {
     })
 
     const { getByRole } = render(
-      <CopyTextField value={link} onCopyClick={mockOnCopyClick} buttonVariant="button" />
+      <CopyTextField
+        value={link}
+        onCopyClick={mockOnCopyClick}
+        buttonVariant="button"
+      />
     )
     expect(getByRole('textbox')).toHaveValue(link)
     fireEvent.click(getByRole('button', { name: 'Copy' }))
