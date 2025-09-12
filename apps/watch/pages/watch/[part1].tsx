@@ -49,7 +49,7 @@ function HomeLanguagePage({
   const indexName = process.env.NEXT_PUBLIC_ALGOLIA_INDEX ?? ''
 
   const initialWatchState: WatchState = {
-    audioLanguageId: getCookie('AUDIO_LANGUAGE') ?? languageId,
+    audioLanguageId: languageId,
     subtitleLanguageId: getCookie('SUBTITLE_LANGUAGE') ?? languageId,
     subtitleOn: getCookie('SUBTITLES_ON') === 'true'
   }
