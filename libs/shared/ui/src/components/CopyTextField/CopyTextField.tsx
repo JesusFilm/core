@@ -3,7 +3,6 @@ import Button from '@mui/material/Button'
 import InputAdornment from '@mui/material/InputAdornment'
 import TextField from '@mui/material/TextField'
 import { SxProps } from '@mui/system/styleFunctionSx'
-import { useSnackbar } from 'notistack'
 import { ReactElement, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 

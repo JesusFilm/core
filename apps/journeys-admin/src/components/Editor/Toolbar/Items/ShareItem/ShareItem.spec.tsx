@@ -143,7 +143,7 @@ describe('ShareItem', () => {
     )
     fireEvent.click(screen.getByRole('button', { name: 'Share' }))
     expect(screen.getByRole('dialog')).toBeInTheDocument()
-    fireEvent.click(screen.getByRole('button', { name: 'Edit URL' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Edit Link' }))
 
     await waitFor(() => {
       expect(push).toHaveBeenCalledWith(
@@ -153,18 +153,18 @@ describe('ShareItem', () => {
       )
     })
 
-    expect(screen.getByRole('dialog', { name: 'Edit URL' })).toBeInTheDocument()
+    expect(screen.getByRole('dialog', { name: 'Edit Link' })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'Save' })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'Cancel' })).toBeInTheDocument()
     fireEvent.click(screen.getByRole('button', { name: 'Cancel' }))
 
     await waitFor(() => {
       expect(
-        screen.getByRole('button', { name: 'Edit URL' })
+        screen.getByRole('button', { name: 'Edit Link' })
       ).toBeInTheDocument()
     })
     expect(
-      screen.getByRole('button', { name: 'Embed Journey' })
+      screen.getByRole('button', { name: 'Embed Embed Journey' }) // Two buttons ("Embed" and "Embed Journey") are used for mobile/desktop
     ).toBeInTheDocument()
   })
 
@@ -187,7 +187,7 @@ describe('ShareItem', () => {
     )
     fireEvent.click(screen.getByRole('button', { name: 'Share' }))
     expect(screen.getByRole('dialog')).toBeInTheDocument()
-    fireEvent.click(screen.getByRole('button', { name: 'Embed Journey' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Embed Embed Journey' }))
     await waitFor(() => {
       expect(push).toHaveBeenCalledWith(
         { query: { param: 'embed-journey' } },
@@ -206,11 +206,11 @@ describe('ShareItem', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Cancel' }))
     await waitFor(() => {
       expect(
-        screen.getByRole('button', { name: 'Edit URL' })
+        screen.getByRole('button', { name: 'Edit Link' })
       ).toBeInTheDocument()
     })
     expect(
-      screen.getByRole('button', { name: 'Embed Journey' })
+      screen.getByRole('button', { name: 'Embed Embed Journey' })
     ).toBeInTheDocument()
   })
 
@@ -263,7 +263,7 @@ describe('ShareItem', () => {
         'QR Code'
       )
     )
-    fireEvent.click(screen.getByTestId('dialog-close-button'))
+    fireEvent.click(screen.getAllByTestId('dialog-close-button')[1])
     await waitFor(() =>
       expect(
         screen.getByRole('button', { name: 'QR Code' })
@@ -297,6 +297,9 @@ describe('ShareItem', () => {
       expect(navigator.clipboard.writeText).toHaveBeenCalledWith(
         'https://default.domain.com/default'
       )
+    })
+    await waitFor(() => {
+      expect(screen.getByText('Link copied')).toBeInTheDocument()
     })
   })
 
@@ -378,6 +381,9 @@ describe('ShareItem', () => {
       expect(navigator.clipboard.writeText).toHaveBeenCalledWith(
         'https://custom.domain.com/default'
       )
+    })
+    await waitFor(() => {
+      expect(screen.getByText('Link copied')).toBeInTheDocument()
     })
   })
 })

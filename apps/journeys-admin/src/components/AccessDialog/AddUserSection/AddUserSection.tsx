@@ -3,6 +3,7 @@ import Menu from '@mui/material/Menu'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next'
+import { useSnackbar } from 'notistack'
 import { MouseEvent, ReactElement, useState } from 'react'
 
 import { CopyTextField } from '@core/shared/ui/CopyTextField'
@@ -25,6 +26,7 @@ export function AddUserSection({
   journeyId
 }: AddUserSectionProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
+  const { enqueueSnackbar } = useSnackbar()
   const [selectedInviteMethod, setSelectedInviteMethod] = useState('Email')
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
   const menuOpen = Boolean(anchorEl)
@@ -38,6 +40,21 @@ export function AddUserSection({
   }
   const handleClose = (): void => {
     setAnchorEl(null)
+  }
+
+  const inviteLink = typeof window !== 'undefined'
+    ? `${window.location.host.endsWith('.chromatic.com')
+      ? 'https://admin.nextstep.is'
+      : window.location.origin
+    }/journeys/${journeyId}`
+    : undefined
+
+  const handleCopyClick = async (): Promise<void> => {
+    await navigator.clipboard.writeText(inviteLink ?? '')
+    enqueueSnackbar(t('Editor invite link copied'), {
+      variant: 'success',
+      preventDuplicate: true
+    })
   }
 
   return (
@@ -110,16 +127,8 @@ export function AddUserSection({
         <EmailInviteForm users={users} journeyId={journeyId} />
       ) : (
         <CopyTextField
-          value={
-            typeof window !== 'undefined'
-              ? `${
-                  window.location.host.endsWith('.chromatic.com')
-                    ? 'https://admin.nextstep.is'
-                    : window.location.origin
-                }/journeys/${journeyId}`
-              : undefined
-          }
-          messageText={t('Editor invite link copied')}
+          value={inviteLink}
+          onCopyClick={handleCopyClick}
           helperText={t('Users invited by link will request approval.')}
         />
       )}
