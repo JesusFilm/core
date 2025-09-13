@@ -659,6 +659,15 @@ export interface JourneyFields_journeyTheme {
   labelFont: string | null;
 }
 
+export interface JourneyFields_journeyCustomizationFields {
+  __typename: "JourneyCustomizationField";
+  id: string;
+  journeyId: string;
+  key: string;
+  value: string | null;
+  defaultValue: string | null;
+}
+
 export interface JourneyFields {
   __typename: "Journey";
   id: string;
@@ -706,4 +715,7 @@ export interface JourneyFields {
   socialNodeX: number | null;
   socialNodeY: number | null;
   journeyTheme: JourneyFields_journeyTheme | null;
+  journeyCustomizationDescription: string | null;
+  journeyCustomizationFields: JourneyFields_journeyCustomizationFields[];
+  fromTemplateId: string | null;
 }

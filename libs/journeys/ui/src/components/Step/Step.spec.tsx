@@ -109,7 +109,10 @@ const journey: Journey = {
   menuStepBlock: null,
   socialNodeX: null,
   socialNodeY: null,
-  journeyTheme: null
+  journeyTheme: null,
+  journeyCustomizationDescription: null,
+  journeyCustomizationFields: [],
+  fromTemplateId: null
 }
 
 const block: TreeBlock<StepFields> = {

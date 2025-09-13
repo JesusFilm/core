@@ -96,7 +96,10 @@ const journey: Journey = {
   menuStepBlock: null,
   socialNodeX: null,
   socialNodeY: null,
-  journeyTheme: null
+  journeyTheme: null,
+  journeyCustomizationDescription: null,
+  journeyCustomizationFields: [],
+  fromTemplateId: null
 }
 
 const mockUuidv4 = uuidv4 as jest.MockedFunction<typeof uuidv4>

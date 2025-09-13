@@ -15,6 +15,7 @@ import { blockActionNavigateToBlockUpdateMock } from '../../../../../../../../..
 import { CommandUndoItem } from '../../../../../../../Toolbar/Items/CommandUndoItem'
 
 import { LinkAction } from '.'
+import { StepFields as StepBlock } from '../../../../../../../../../../__generated__/StepFields'
 
 jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
@@ -38,16 +39,23 @@ describe('LinkAction', () => {
       parentBlockId: 'button2.id',
       __typename: 'LinkAction',
       gtmEventName: 'gtmEventName',
-      url: 'https://www.google.com'
+      url: 'https://www.google.com',
+      customizable: false,
+      parentStepId: null
     },
     children: [],
     settings: null
   }
 
+  const selectedStep = {
+    __typename: 'StepBlock',
+    id: 'step.id'
+  } as unknown as TreeBlock<StepBlock>
+
   it('displays the action url', async () => {
     render(
       <MockedProvider>
-        <EditorProvider initialState={{ selectedBlock }}>
+        <EditorProvider initialState={{ selectedBlock, selectedStep }}>
           <LinkAction />
         </EditorProvider>
       </MockedProvider>
@@ -61,7 +69,7 @@ describe('LinkAction', () => {
     const result = jest.fn().mockReturnValue(blockActionLinkUpdateMock.result)
     render(
       <MockedProvider mocks={[{ ...blockActionLinkUpdateMock, result }]}>
-        <EditorProvider initialState={{ selectedBlock }}>
+        <EditorProvider initialState={{ selectedBlock, selectedStep }}>
           <LinkAction />
         </EditorProvider>
       </MockedProvider>
@@ -97,7 +105,7 @@ describe('LinkAction', () => {
     const result = jest.fn().mockReturnValue(blockActionLinkUpdateMock.result)
     render(
       <MockedProvider mocks={[{ ...blockActionLinkUpdateMock, result }]}>
-        <EditorProvider initialState={{ selectedBlock }}>
+        <EditorProvider initialState={{ selectedBlock, selectedStep }}>
           <LinkAction />
         </EditorProvider>
       </MockedProvider>
@@ -118,7 +126,9 @@ describe('LinkAction', () => {
         blockUpdateLinkAction: {
           parentBlockId: selectedBlock.id,
           gtmEventName: 'gtmEventName',
-          url: 'viber://'
+          url: 'viber://',
+          customizable: false,
+          parentStepId: 'step.id'
         }
       }
     }))
@@ -132,7 +142,9 @@ describe('LinkAction', () => {
               variables: {
                 id: selectedBlock.id,
                 input: {
-                  url: 'viber://'
+                  url: 'viber://',
+                  customizable: false,
+                  parentStepId: 'step.id'
                 }
               }
             },
@@ -140,7 +152,7 @@ describe('LinkAction', () => {
           }
         ]}
       >
-        <EditorProvider initialState={{ selectedBlock }}>
+        <EditorProvider initialState={{ selectedBlock, selectedStep }}>
           <LinkAction />
         </EditorProvider>
       </MockedProvider>
@@ -176,7 +188,7 @@ describe('LinkAction', () => {
     const result = jest.fn().mockReturnValue(blockActionLinkUpdateMock.result)
     render(
       <MockedProvider mocks={[{ ...blockActionLinkUpdateMock, result }]}>
-        <EditorProvider initialState={{ selectedBlock }}>
+        <EditorProvider initialState={{ selectedBlock, selectedStep }}>
           <LinkAction />
         </EditorProvider>
       </MockedProvider>
@@ -214,7 +226,8 @@ describe('LinkAction', () => {
                 gtmEventName: 'gtmEventName',
                 blockId: 'step2.id'
               }
-            }
+            },
+            selectedStep
           }}
         >
           <LinkAction />

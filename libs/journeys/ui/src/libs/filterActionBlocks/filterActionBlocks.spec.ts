@@ -15,7 +15,9 @@ const buttonAction: ButtonBlockAction = {
   __typename: 'LinkAction',
   parentBlockId: 'button',
   gtmEventName: 'click',
-  url: 'https://m.me/some-user'
+  url: 'https://m.me/some-user',
+  customizable: null,
+  parentStepId: null
 }
 
 const button: TreeBlock<ButtonBlock> = {
