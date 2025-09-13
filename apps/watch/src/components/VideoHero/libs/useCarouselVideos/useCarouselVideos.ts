@@ -99,12 +99,11 @@ export function useCarouselVideos(locale?: string): UseCarouselVideosReturn {
 
       // Clear localStorage played videos to reset exhaustion
       try {
-        localStorage.removeItem('jfp-played-videos')
+        localStorage.removeItem('carousel-played-ids')
         console.log('✅ CLEARED PERSISTENT PLAYED VIDEOS')
       } catch (e) {
         console.warn('Failed to clear persistent played videos:', e)
       }
-
       // Reset session played videos
       if (typeof window !== 'undefined' && (window as any).__sessionPlayedIds) {
         ;(window as any).__sessionPlayedIds = new Set()
