@@ -49,7 +49,7 @@ export function HeroVideo({ isPreview = false }: HeroVideoProps): ReactElement {
   }, [])
 
   useEffect(() => {
-    window.addEventListener('scroll', pauseVideoOnScrollAway)
+    window.addEventListener('scroll', pauseVideoOnScrollAway, { passive: true })
     return () => window.removeEventListener('scroll', pauseVideoOnScrollAway)
   }, [pauseVideoOnScrollAway])
 

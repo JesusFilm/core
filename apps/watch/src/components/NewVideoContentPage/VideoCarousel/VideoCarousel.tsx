@@ -30,6 +30,8 @@ export function VideoCarousel({
   onVideoSelect,
   onSlideChange
 }: VideoCarouselProps): ReactElement {
+  const mode =
+    onVideoSelect && onSlideChange ? 'inlinePlayback' : 'externalPlayback'
   const { breakpoints } = useTheme()
   const nextRef = useRef<HTMLDivElement>(null)
   const prevRef = useRef<HTMLDivElement>(null)
@@ -88,15 +90,17 @@ export function VideoCarousel({
     onVideoSelect?.(videoId)
   }
 
-  // Always be at the end when videos change
+  // Always be at the end when videos change (only in inline playback mode)
   useEffect(() => {
-    if (swiperRef.current && videos.length > 0) {
+    if (mode === 'inlinePlayback' && swiperRef.current && videos.length > 0) {
       swiperRef.current.slideTo(videos.length - 1, 0)
     }
   }, [videos.length])
 
-  // Check every 15 seconds and scroll to end if not already there
+  // Check every 15 seconds and scroll to end if not already there (only in inline playback mode)
   useEffect(() => {
+    if (mode !== 'inlinePlayback') return
+
     const interval = setInterval(() => {
       if (swiperRef.current && videos.length > 0) {
         const lastSlideIndex = videos.length - 1
@@ -164,9 +168,11 @@ export function VideoCarousel({
               const currentVideoIndex = videos.findIndex(
                 (v) => v.id === activeVideoId
               )
-              // Make slides after the current video transparent
+              // Make slides after the current video transparent (only in inline playback mode)
               const isAfterCurrentVideo =
-                currentVideoIndex >= 0 && index > currentVideoIndex
+                mode === 'inlinePlayback' &&
+                currentVideoIndex >= 0 &&
+                index > currentVideoIndex
 
               return (
                 <SwiperSlide

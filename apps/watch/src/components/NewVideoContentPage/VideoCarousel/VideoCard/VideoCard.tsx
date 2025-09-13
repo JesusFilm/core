@@ -29,6 +29,7 @@ interface CardContentProps {
   onMouseLeave: () => void
   label: string
   playerProgress: number
+  interactive?: boolean
 }
 
 function CardContent({
@@ -38,26 +39,34 @@ function CardContent({
   onMouseEnter,
   onMouseLeave,
   label,
-  playerProgress
+  playerProgress,
+  interactive = false
 }: CardContentProps): ReactElement {
   // Compute safe image src and alt with proper guards
   const imageSrc = video.images?.[0]?.mobileCinematicHigh
   const imageAlt = video.imageAlt?.[0]?.value ?? ''
 
+  const ContainerElement = interactive ? 'button' : 'div'
+  const ContentElement = interactive ? 'div' : 'div'
+
   return (
     <div className="flex flex-col gap-6">
-      <button
+      <ContainerElement
         data-testid={`VideoCardButton-${video.slug}`}
-        name={last(video.title)?.value}
-        disabled={video == null}
+        {...(interactive && {
+          name: last(video.title)?.value,
+          disabled: video == null
+        })}
         className="rounded-lg w-full relative text-left border-none bg-transparent p-0 cursor-pointer disabled:cursor-default"
       >
-        <div
+        <ContentElement
           className="relative max-w-[200px] h-60 flex flex-col justify-end w-full rounded-xl cursor-pointer bg-black"
-          tabIndex={0}
-          role="button"
+          {...(interactive && {
+            tabIndex: 0,
+            role: 'button',
+            'aria-label': `Navigate to ${video.slug}`
+          })}
           data-testid={`CarouselItem-${video.slug}`}
-          aria-label={`Navigate to ${video.slug}`}
           onMouseEnter={onMouseEnter}
           onMouseLeave={onMouseLeave}
         >
@@ -99,7 +108,7 @@ function CardContent({
           )}
 
           {/* Play Button with Fade */}
-          <button
+          <div
             className={`absolute top-1/2 right-1/2 transform translate-x-1/2 -translate-y-1/2 w-20 h-20 flex items-center justify-center text-white bg-red-500 bg-opacity-50 rounded-full transition-all duration-300 cursor-pointer z-2 ${
               !active && isHovered ? 'opacity-100' : 'opacity-0'
             }`}
@@ -108,7 +117,7 @@ function CardContent({
             }}
           >
             <Play3 className="text-6xl" />
-          </button>
+          </div>
 
           {/* Content */}
           <div className="p-4 font-sans z-1">
@@ -130,8 +139,8 @@ function CardContent({
               {last(video.title)?.value}
             </h3>
           </div>
-        </div>
-      </button>
+        </ContentElement>
+      </ContainerElement>
     </div>
   )
 }
@@ -165,15 +174,14 @@ export function VideoCard({
       onMouseLeave={() => setIsHovered(false)}
       label={label}
       playerProgress={playerState.progress}
+      interactive={!!onVideoSelect}
     />
   )
 
   const commonProps = {
-    className: `block no-underline text-inherit ${
-      video != null ? 'pointer-events-auto' : 'pointer-events-none'
-    } ${transparent ? 'opacity-70' : ''}`,
-    'aria-label': 'VideoCard',
-    'data-testid': video != null ? `VideoCard-${video.id}` : 'VideoCard'
+    className: `block no-underline text-inherit ${transparent ? 'opacity-70' : ''}`,
+    'aria-label': last(video.title)?.value ?? `Video ${video.slug}`,
+    'data-testid': `VideoCard-${video.id}`
   }
 
   // Home page: render with click handler

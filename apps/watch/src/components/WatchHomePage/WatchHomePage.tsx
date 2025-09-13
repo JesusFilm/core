@@ -73,6 +73,7 @@ function WatchHomePageContent({
   const { state: playerState } = usePlayer()
   const [lastProgress, setLastProgress] = useState(0)
   const [isProgressing, setIsProgressing] = useState(false)
+  const resetRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   // Set the current video as active
   useEffect(() => {
@@ -84,8 +85,8 @@ function WatchHomePageContent({
   // Reset progress tracking when video changes
   useEffect(() => {
     setLastProgress(0)
-    // Add a delay before allowing progression again to ensure player state is reset
-    setTimeout(() => {
+    if (resetRef.current != null) clearTimeout(resetRef.current)
+    resetRef.current = setTimeout(() => {
       setIsProgressing(false)
     }, 500)
   }, [activeVideoId])
@@ -101,7 +102,8 @@ function WatchHomePageContent({
     setLastProgress(0) // Reset progress tracking for new video
 
     // Allow progression again after a short delay
-    setTimeout(() => {
+    if (resetRef.current != null) clearTimeout(resetRef.current)
+    resetRef.current = setTimeout(() => {
       setIsProgressing(false)
     }, 2000)
   }, [moveToNext, autoProgressEnabled, isProgressing, videos.length])
@@ -138,13 +140,11 @@ function WatchHomePageContent({
                   setIsProgressing(false)
                   // Note: activeVideoId will be automatically updated by the currentVideo sync effect
                 } else {
-                  console.warn('Failed to jump to video:', videoId)
                 }
               }}
               onSlideChange={(activeIndex: number) => {
                 // Note: Slide changes in the carousel don't directly affect video playback
                 // Video playback is controlled by the useCarouselVideos hook
-                console.log('Carousel slide changed to index:', activeIndex)
               }}
             />
           </div>

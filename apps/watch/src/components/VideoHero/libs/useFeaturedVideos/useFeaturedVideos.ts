@@ -26,14 +26,13 @@ export function useFeaturedVideos(locale?: string): {
 } {
   const { loading, data } = useQuery<GetVideoChildren>(GET_FEATURED_VIDEOS, {
     variables: { languageId: getLanguageIdFromLocale(locale) },
-    // variant children are not cached properly
-    fetchPolicy: 'no-cache'
+    // Use cache-and-network for better UX - field policy for Video.children should be configured in Apollo Client
+    fetchPolicy: 'cache-and-network'
   })
 
   const videos = useMemo(() => {
-    return data?.video?.children != null
-      ? data.video.children.filter((child) => child.variant != null)
-      : []
+    if (data?.video?.children == null) return []
+    return data.video.children.filter((child) => child.variant != null)
   }, [data])
 
   return {

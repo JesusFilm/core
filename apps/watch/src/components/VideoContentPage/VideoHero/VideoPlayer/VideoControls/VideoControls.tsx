@@ -789,6 +789,7 @@ export function VideoControls({
                     <IconButton
                       onClick={handleFullscreen}
                       data-testid="FullscreenButton"
+                      aria-pressed={fullscreen}
                     >
                       {fullscreen ? (
                         <FullscreenExitOutlined />

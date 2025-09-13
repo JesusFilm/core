@@ -30,6 +30,7 @@ export function ContentHeader({
       <NextLink
         href={`/watch${languageSlug != null && languageSlug !== 'english' ? `/${languageSlug}.html` : ''}`}
         locale={false}
+        aria-label="Go to Watch home"
       >
         <Image
           src="/watch/assets/jesusfilm-sign.svg"

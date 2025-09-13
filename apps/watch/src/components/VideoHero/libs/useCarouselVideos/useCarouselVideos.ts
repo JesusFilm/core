@@ -67,13 +67,6 @@ export function useCarouselVideos(locale?: string): UseCarouselVideosReturn {
   const [currentIndex, setCurrentIndex] = useState(() => {
     const sessionState = loadCurrentVideoSession()
     if (sessionState) {
-      console.log('🔄 RESTORED VIDEO SESSION:', {
-        videoId: sessionState.videoId,
-        videoTitle: sessionState.videoTitle,
-        poolIndex: sessionState.poolIndex,
-        poolId: sessionState.poolId,
-        savedAt: new Date(sessionState.timestamp).toLocaleTimeString()
-      })
       return 0 // Start at beginning, we'll restore the actual video when we load it
     }
     return 0
@@ -92,22 +85,13 @@ export function useCarouselVideos(locale?: string): UseCarouselVideosReturn {
   useEffect(() => {
     const shouldReset = videos.length > 0 && videos.length % 50 === 0
     if (shouldReset) {
-      console.log(
-        '🔄 RESETTING POOL EXHAUSTION for infinite cycling at video count:',
-        videos.length
-      )
-
       // Clear localStorage played videos to reset exhaustion
       try {
         localStorage.removeItem('carousel-played-ids')
-        console.log('✅ CLEARED PERSISTENT PLAYED VIDEOS')
-      } catch (e) {
-        console.warn('Failed to clear persistent played videos:', e)
-      }
+      } catch (e) {}
       // Reset session played videos
       if (typeof window !== 'undefined' && (window as any).__sessionPlayedIds) {
         ;(window as any).__sessionPlayedIds = new Set()
-        console.log('✅ CLEARED SESSION PLAYED VIDEOS')
       }
     }
   }, [videos.length])
@@ -134,32 +118,8 @@ export function useCarouselVideos(locale?: string): UseCarouselVideosReturn {
       fetchPolicy: 'cache-first',
       nextFetchPolicy: 'cache-first',
       errorPolicy: 'all',
-      onCompleted: (data) => {
-        console.log('📊 PLAYLIST SEQUENCE GraphQL Response:', {
-          query: 'GET_COLLECTION_COUNTS',
-          requestedIds: allCollectionIds,
-          languageId,
-          responseData: data,
-          collectionsFound: data?.videos?.length || 0,
-          collections:
-            data?.videos?.map((video: any) => ({
-              id: video.id,
-              childrenCount: video.childrenCount,
-              title: video.title?.value,
-              label: video.label
-            })) || []
-        })
-      },
-      onError: (error) => {
-        console.error('❌ PLAYLIST SEQUENCE GraphQL Error:', {
-          query: 'GET_COLLECTION_COUNTS',
-          requestedIds: allCollectionIds,
-          languageId,
-          error: error.message,
-          graphQLErrors: error.graphQLErrors,
-          networkError: error.networkError
-        })
-      }
+      onCompleted: (data) => {},
+      onError: (error) => {}
     }
   )
 
@@ -169,27 +129,8 @@ export function useCarouselVideos(locale?: string): UseCarouselVideosReturn {
     fetchPolicy: 'cache-first',
     nextFetchPolicy: 'cache-first',
     errorPolicy: 'all',
-    onCompleted: (data) => {
-      console.log('🎬 SHORT FILMS GraphQL Response:', {
-        query: 'GET_SHORT_FILMS',
-        languageId,
-        responseData: data,
-        shortFilmsFound: data?.videos?.length || 0,
-        shortFilms:
-          data?.videos?.slice(0, 3).map((video: any) => ({
-            id: video.id,
-            title: video.title?.[0]?.value,
-            label: video.label
-          })) || []
-      })
-    },
-    onError: (error) => {
-      console.error('❌ SHORT FILMS GraphQL Error:', {
-        query: 'GET_SHORT_FILMS',
-        languageId,
-        error: error.message
-      })
-    }
+    onCompleted: (data) => {},
+    onError: (error) => {}
   })
 
   // Find next available pool - skip exhausted ones
@@ -197,14 +138,6 @@ export function useCarouselVideos(locale?: string): UseCarouselVideosReturn {
     (startIndex: number): { pool: string[]; index: number } | null => {
       const sequenceLength = config.playlistSequence.length
       const maxAttempts = (sequenceLength + 1) * 3 // Try more cycles for infinite loading
-
-      console.log('🔍 POOL SEARCH START:', {
-        startIndex,
-        sequenceLength,
-        maxAttempts,
-        totalCollections: countsData?.videos?.length || 0,
-        shortFilmsCount: shortFilmsData?.videos?.length || 0
-      })
 
       for (let i = 0; i < maxAttempts; i++) {
         const testIndex = startIndex + i
@@ -218,25 +151,12 @@ export function useCarouselVideos(locale?: string): UseCarouselVideosReturn {
           testPool = config.playlistSequence[positionInCycle]
         }
 
-        console.log(`🔎 TESTING POOL ${i + 1}/${maxAttempts}:`, {
-          testIndex,
-          positionInCycle,
-          poolId: testPool[0],
-          poolIds: testPool
-        })
-
         // Check if this pool is exhausted
         if (testPool[0] === 'shortFilms') {
           const shortFilmsCount = shortFilmsData?.videos?.length || 0
           const exhausted = isPoolExhausted('shortFilms', shortFilmsCount)
-          console.log('📽️ SHORT FILMS CHECK:', {
-            shortFilmsCount,
-            exhausted,
-            available: shortFilmsCount > 0 && !exhausted
-          })
 
           if (shortFilmsCount > 0 && !exhausted) {
-            console.log('✅ FOUND AVAILABLE POOL: shortFilms')
             return { pool: testPool, index: testIndex }
           }
         } else {
@@ -255,28 +175,14 @@ export function useCarouselVideos(locale?: string): UseCarouselVideosReturn {
             }
           })
 
-          console.log('📚 COLLECTION POOL CHECK:', {
-            poolId: testPool[0],
-            testIndex,
-            positionInCycle,
-            collections: poolStatus,
-            alreadyUsedInVideos: videos.filter((v) =>
-              testPool.includes(v.poolId || '')
-            ).length,
-            totalFromThisPool: videos.filter((v) => v.poolId === testPool[0])
-              .length
-          })
-
           const hasAvailable = poolStatus.some((status) => status.available)
 
           if (hasAvailable) {
-            console.log('✅ FOUND AVAILABLE POOL:', testPool[0])
             return { pool: testPool, index: testIndex }
           }
         }
       }
 
-      console.log('❌ NO AVAILABLE POOLS FOUND after', maxAttempts, 'attempts')
       return null
     },
     [config.playlistSequence, countsData, shortFilmsData]
@@ -337,35 +243,8 @@ export function useCarouselVideos(locale?: string): UseCarouselVideosReturn {
         : 'cache-first',
       nextFetchPolicy: 'cache-first',
       errorPolicy: 'all',
-      onCompleted: (data) => {
-        if (currentPool[0] !== 'shortFilms') {
-          console.log('📺 CURRENT VIDEO GraphQL Response:', {
-            query: 'GET_ONE_CHILD_BY_INDEX',
-            parentId: currentPool[0],
-            languageId,
-            responseData: data,
-            childrenFound: data?.video?.children?.length || 0,
-            children:
-              data?.video?.children?.slice(0, 3).map((child: any) => ({
-                id: child.id,
-                title: child.title?.[0]?.value,
-                slug: child.slug
-              })) || []
-          })
-        }
-      },
-      onError: (error) => {
-        console.error('❌ CURRENT VIDEO GraphQL Error:', {
-          query:
-            currentPool[0] === 'shortFilms'
-              ? 'GET_SHORT_FILMS'
-              : 'GET_ONE_CHILD_BY_INDEX',
-          parentId:
-            currentPool[0] !== 'shortFilms' ? currentPool[0] : undefined,
-          languageId,
-          error: error.message
-        })
-      }
+      onCompleted: (data) => {},
+      onError: (error) => {}
     }
   )
 
@@ -403,20 +282,6 @@ export function useCarouselVideos(locale?: string): UseCarouselVideosReturn {
             }
           })
 
-          // Only log once per request (avoid React Strict Mode double logging)
-          if (!window.__loggedRequests) window.__loggedRequests = new Set()
-          const logKey = `queue-${collectionId}-${data?.video?.children?.length}`
-          if (!window.__loggedRequests.has(logKey)) {
-            window.__loggedRequests.add(logKey)
-            console.log('🔄 QUEUE VIDEO GraphQL Response:', {
-              query: 'GET_ONE_CHILD_BY_INDEX (lazy)',
-              parentId: collectionId,
-              languageId,
-              responseData: data,
-              childrenFound: data?.video?.children?.length || 0
-            })
-          }
-
           if (data?.video?.children?.length > 0) {
             const offset = getDeterministicOffset(
               collectionId,
@@ -428,12 +293,7 @@ export function useCarouselVideos(locale?: string): UseCarouselVideosReturn {
             )
             return data.video.children[offset] || null
           }
-        } catch (err) {
-          console.warn(
-            `Failed to load video from collection ${collectionId}:`,
-            err
-          )
-        }
+        } catch (err) {}
       }
 
       return null
@@ -452,21 +312,10 @@ export function useCarouselVideos(locale?: string): UseCarouselVideosReturn {
       ? initialPrefetchTarget
       : playbackPrefetchTarget
 
-    console.log('🚀 LOAD NEXT VIDEO CALLED:', {
-      loadingQueueSize: loadingQueue.size,
-      videosLength: videos.length,
-      currentIndex,
-      videosAhead,
-      isInitialLoad,
-      prefetchTarget
-    })
-
     if (loadingQueue.size >= 1) {
-      console.log('❌ LOAD BLOCKED: Already loading video')
       return // Only load one at a time
     }
     if (videosAhead >= prefetchTarget) {
-      console.log('❌ LOAD BLOCKED: Enough videos ahead')
       return // Max videos ahead based on new logic
     }
 
@@ -494,13 +343,6 @@ export function useCarouselVideos(locale?: string): UseCarouselVideosReturn {
         (poolId) => recentPoolCounts[poolId] >= 3
       )
       if (mostUsedPool) {
-        console.log('🔄 DETECTED POOL OVERUSE, SKIPPING AHEAD:', {
-          poolId: mostUsedPool,
-          count: recentPoolCounts[mostUsedPool],
-          recentPoolCounts,
-          originalSearchStart: searchStartIndex,
-          newSearchStart: searchStartIndex + 10 // Skip ahead more aggressively
-        })
         searchStartIndex += 10 // Skip ahead more to avoid cycling back to overused pools
       }
     } else {
@@ -510,26 +352,10 @@ export function useCarouselVideos(locale?: string): UseCarouselVideosReturn {
 
     // Get next available pool in infinite sequence (allows cycling)
     const nextPool = findNextAvailablePool(searchStartIndex)
-    console.log('🔍 POOL SEARCH RESULT:', {
-      searchStartIndex,
-      foundPool: nextPool ? nextPool.pool[0] : null,
-      foundPoolIndex: nextPool ? nextPool.index : null
-    })
 
     if (!nextPool) {
-      console.warn(`❌ NO MORE POOLS AVAILABLE after index ${searchStartIndex}`)
       return
     }
-
-    console.log('🔄 LOADING NEXT VIDEO:', {
-      videoPosition: nextVideoPosition,
-      searchStartIndex,
-      foundPool: nextPool.pool[0],
-      foundPoolIndex: nextPool.index,
-      currentIndex,
-      totalVideos: videos.length,
-      videosPoolIndexes: videos.map((v) => v.poolIndex || 'unknown')
-    })
 
     setLoadingQueue((prev) => new Set(prev).add(nextVideoPosition))
 
@@ -551,28 +377,8 @@ export function useCarouselVideos(locale?: string): UseCarouselVideosReturn {
           )
 
           if (hasDuplicate) {
-            console.warn(`🚫 PREVENTING DUPLICATE:`, {
-              videoId: videoWithPool.id,
-              poolIndex: videoWithPool.poolIndex,
-              poolId: videoWithPool.poolId,
-              reason: 'video ID already exists',
-              existingVideoIds: prev.slice(-5).map((v) => v.id), // Show last 5 for context
-              poolCounts: prev.reduce(
-                (acc, video) => {
-                  const poolId = video.poolId || 'unknown'
-                  acc[poolId] = (acc[poolId] || 0) + 1
-                  return acc
-                },
-                {} as Record<string, number>
-              )
-            })
-
             // If we hit a duplicate, we might be stuck in a small pool
             // Mark this pool as temporarily exhausted to force trying other pools
-            console.log(
-              `🔄 MARKING POOL AS TEMPORARILY EXHAUSTED:`,
-              videoWithPool.poolId
-            )
             if (videoWithPool.poolId) {
               markPoolVideoPlayed(videoWithPool.poolId, videoWithPool.id)
             }
@@ -580,22 +386,10 @@ export function useCarouselVideos(locale?: string): UseCarouselVideosReturn {
             return prev
           }
 
-          console.log(`✅ ADDED NEW VIDEO:`, {
-            videoId: videoWithPool.id,
-            title: videoWithPool.title[0]?.value,
-            poolId: videoWithPool.poolId,
-            poolIndex: videoWithPool.poolIndex,
-            totalVideos: prev.length + 1
-          })
-
           return [...prev, videoWithPool]
         })
       }
     } catch (err) {
-      console.warn(
-        `Failed to load video at position ${nextVideoPosition}:`,
-        err
-      )
     } finally {
       setLoadingQueue((prev) => {
         const newSet = new Set(prev)
@@ -690,14 +484,6 @@ export function useCarouselVideos(locale?: string): UseCarouselVideosReturn {
         currentVideo.poolIndex || 0,
         poolId
       )
-
-      console.log('💾 SAVED VIDEO SESSION:', {
-        videoId: currentVideo.id,
-        videoTitle,
-        poolIndex: currentVideo.poolIndex,
-        poolId,
-        currentIndex
-      })
     }
   }, [videos, currentIndex])
 
@@ -729,25 +515,6 @@ export function useCarouselVideos(locale?: string): UseCarouselVideosReturn {
       videos.length > 0 &&
       videosAhead < prefetchTarget &&
       loadingQueue.size === 0
-
-    console.log('🔄 VIDEO LOADING CONDITIONS:', {
-      totalVideos: videos.length,
-      currentIndex,
-      videosAhead,
-      isInitialLoad,
-      prefetchTarget,
-      loadingQueueSize: loadingQueue.size,
-      shouldLoad,
-      reason: !shouldLoad
-        ? videos.length === 0
-          ? 'no videos yet'
-          : videosAhead >= prefetchTarget
-            ? 'enough videos ahead'
-            : loadingQueue.size > 0
-              ? 'already loading'
-              : 'unknown'
-        : 'will load next video'
-    })
 
     if (shouldLoad) {
       loadNextVideo()
