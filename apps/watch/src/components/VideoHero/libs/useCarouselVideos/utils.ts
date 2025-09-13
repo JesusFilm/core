@@ -3,7 +3,7 @@ import playlistConfig from '../../../../../config/video-playlist.json'
 export interface PlaylistConfig {
   version: string
   playlistSequence: string[][]
-  settings: {
+  settings?: {
     recentlyPlayedBuffer: number
     cycleOnComplete: boolean
     weightedRandomization: boolean
@@ -12,8 +12,22 @@ export interface PlaylistConfig {
   }
 }
 
+const defaultSettings = {
+  recentlyPlayedBuffer: 10,
+  cycleOnComplete: true,
+  weightedRandomization: false,
+  fallbackStrategy: 'random',
+  language: 'en'
+}
+
 export const getPlaylistConfig = (): PlaylistConfig => {
-  return playlistConfig as PlaylistConfig
+  const config = playlistConfig as Omit<PlaylistConfig, 'settings'> & {
+    settings?: PlaylistConfig['settings']
+  }
+  return {
+    ...config,
+    settings: config.settings || defaultSettings
+  }
 }
 
 export const getDeterministicOffset = (
@@ -45,15 +59,6 @@ export const getDeterministicOffset = (
       seedString += `-prog${progressionFactor}`
     }
   }
-
-  console.log('🎲 GENERATING DETERMINISTIC OFFSET:', {
-    collectionId,
-    childrenCount,
-    cycleContext,
-    seedString,
-    seed: simpleHash(seedString),
-    offset: simpleHash(seedString) % childrenCount
-  })
 
   const seed = simpleHash(seedString)
   return seed % childrenCount
@@ -175,18 +180,8 @@ export const isPoolExhausted = (
     const poolPlayedVideos: string[] = JSON.parse(poolPlayedVideosJson)
     const uniqueVideosPlayed = new Set(poolPlayedVideos).size
 
-    console.log('🔍 POOL EXHAUSTION CHECK:', {
-      poolId,
-      childrenCount,
-      uniqueVideosPlayed,
-      totalPlayedVideoIds: poolPlayedVideos.length,
-      isExhausted: uniqueVideosPlayed >= childrenCount,
-      playedVideoIds: poolPlayedVideos.slice(-5) // Show last 5 for debugging
-    })
-
     return uniqueVideosPlayed >= childrenCount
   } catch (error) {
-    console.warn('Failed to parse pool played videos:', error)
     return false
   }
 }
@@ -214,22 +209,8 @@ export const markPoolVideoPlayed = (poolId: string, videoId?: string): void => {
     if (!poolPlayedVideos.includes(videoId)) {
       poolPlayedVideos.push(videoId)
       sessionStorage.setItem(poolVideosKey, JSON.stringify(poolPlayedVideos))
-
-      console.log('✅ MARKED POOL VIDEO PLAYED:', {
-        poolId,
-        videoId,
-        totalUniqueVideos: new Set(poolPlayedVideos).size,
-        allPlayedVideoIds: poolPlayedVideos
-      })
-    } else {
-      console.log('ℹ️ VIDEO ALREADY MARKED FOR POOL:', {
-        poolId,
-        videoId,
-        existingCount: new Set(poolPlayedVideos).size
-      })
     }
   } catch (error) {
-    console.warn('Failed to mark pool video played:', error)
     // Fall back to old method
     const poolKey = `pool-${poolId}`
     const poolPlayedKey = `${poolKey}-played`
@@ -289,7 +270,6 @@ export const loadCurrentVideoSession = (): SessionVideoState | null => {
 
     return sessionState
   } catch (error) {
-    console.warn('Failed to load current video session:', error)
     sessionStorage.removeItem('carousel-current-video')
     return null
   }

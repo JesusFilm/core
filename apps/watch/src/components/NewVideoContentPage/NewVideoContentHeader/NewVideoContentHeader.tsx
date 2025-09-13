@@ -16,7 +16,7 @@ interface VideoContentHeaderProps {
 export function NewVideoContentHeader({
   loading,
   videos = []
-}: VideoContentHeaderProps): ReactElement {
+}: VideoContentHeaderProps): ReactElement | null {
   const { t } = useTranslation('apps-watch')
   const { id, container } = useVideo()
 
@@ -62,33 +62,26 @@ export function NewVideoContentHeader({
               {loading === true ? (
                 <Skeleton width={100} height={20} />
               ) : (
-                <>
-                  {t('Clip ')}
-                  {activeVideoIndex}
-                  {t(' of ')}
-                  {videos.length != 0 ? videos.length : container.childrenCount}
-                </>
+                t('Clip {{current}} of {{total}}', {
+                  current: activeVideoIndex,
+                  total:
+                    videos.length !== 0
+                      ? videos.length
+                      : container.childrenCount
+                })
               )}
             </div>
           </div>
-          {container.variant?.slug != null ? (
+          {container.variant?.slug != null && (
             <NextLink
               href={`/watch/${container.variant.slug}`}
               locale={false}
-              passHref
+              className="border border-[#bbbcbc] rounded-md px-2 py-1 text-sm text-[#bbbcbc] hidden xl:block cursor-pointer font-bold"
             >
-              <button className="border border-[#bbbcbc] rounded-md px-2 py-1 text-sm text-[#bbbcbc] hidden xl:block cursor-pointer font-bold">
-                {container.label === VideoLabel.featureFilm
-                  ? 'Watch Full Film'
-                  : 'See All'}
-              </button>
-            </NextLink>
-          ) : (
-            <button className="border border-[#bbbcbc] rounded-md px-2 py-1 text-sm text-[#bbbcbc] hidden xl:block cursor-pointer font-bold">
               {container.label === VideoLabel.featureFilm
                 ? 'Watch Full Film'
                 : 'See All'}
-            </button>
+            </NextLink>
           )}
           <div
             data-testid="container-progress-short"

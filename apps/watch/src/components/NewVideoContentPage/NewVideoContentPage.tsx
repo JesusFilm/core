@@ -153,12 +153,7 @@ export function NewVideoContentPage(): ReactElement {
         }}
       />
       <PageWrapper
-        hero={
-          <VideoContentHero
-            isFullscreen={isFullscreen}
-            setIsFullscreen={setIsFullscreen}
-          />
-        }
+        hero={<VideoContentHero />}
         headerThemeMode={ThemeMode.dark}
         hideHeader
         hideFooter

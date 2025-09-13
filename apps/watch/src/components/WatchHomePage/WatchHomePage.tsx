@@ -20,6 +20,8 @@ import { ThemeMode, ThemeName } from '@core/shared/ui/themes'
 import { useAlgoliaRouter } from '../../libs/algolia/useAlgoliaRouter'
 import { PageWrapper } from '../PageWrapper'
 import { AlgoliaVideoGrid } from '../VideoGrid/AlgoliaVideoGrid'
+import { VideoLabel } from '../../../__generated__/globalTypes'
+import { VideoContentFields } from '../../../__generated__/VideoContentFields'
 
 import { HomeHero } from './HomeHero'
 import { SeeAllVideos } from './SeeAllVideos'
@@ -59,12 +61,39 @@ function WatchHomePageContent({
 
   // Map videos to ensure data structure matches what VideoCard expects
   const carouselVideos = videos.map((video) => ({
-    ...video,
-    // Ensure the data structure matches what VideoCard expects
-    title: video.title || [{ value: video.videoTitle || video.slug }],
-    images: video.images || [],
-    imageAlt: video.imageAlt || [{ value: video.videoTitle || video.slug }],
-    label: video.label || video.videoLabel || 'video'
+    __typename: 'Video' as const,
+    id: video.id,
+    slug: video.slug,
+    childrenCount: video.childrenCount,
+    title: (video.title || [{ value: video.slug }]).map((t) => ({
+      __typename: 'VideoTitle' as const,
+      value: t.value
+    })),
+    images: (video.images || []).map((img) => ({
+      __typename: 'CloudflareImage' as const,
+      mobileCinematicHigh: img.mobileCinematicHigh
+    })),
+    imageAlt: (
+      video.imageAlt || [{ value: video.title?.[0]?.value || video.slug }]
+    ).map((alt) => ({
+      __typename: 'VideoImageAlt' as const,
+      value: alt.value
+    })),
+    snippet: [{ __typename: 'VideoSnippet' as const, value: '' }],
+    label:
+      video.label &&
+      Object.values(VideoLabel).includes(video.label as VideoLabel)
+        ? (video.label as VideoLabel)
+        : VideoLabel.shortFilm,
+    variant: video.variant
+      ? {
+          __typename: 'VideoVariant' as const,
+          id: video.variant.id,
+          duration: video.variant.duration,
+          hls: video.variant.hls,
+          slug: video.variant.slug
+        }
+      : null
   }))
 
   // Get current video from videos array using currentIndex
@@ -118,109 +147,165 @@ function WatchHomePageContent({
   }, [playerState.progress, lastProgress, progressToNextVideo, isProgressing])
 
   // Get the active video for playback (current video from carousel)
-  const activeVideo = currentVideo
+  // Transform CarouselVideo to VideoContentFields for VideoProvider
+  const activeVideo: VideoContentFields | null = currentVideo
+    ? {
+        __typename: 'Video' as const,
+        id: currentVideo.id,
+        slug: currentVideo.slug,
+        label:
+          currentVideo.label &&
+          Object.values(VideoLabel).includes(currentVideo.label as VideoLabel)
+            ? (currentVideo.label as VideoLabel)
+            : VideoLabel.shortFilm,
+        title: currentVideo.title.map((t) => ({
+          __typename: 'VideoTitle' as const,
+          value: t.value
+        })),
+        images: currentVideo.images.map((img) => ({
+          __typename: 'CloudflareImage' as const,
+          mobileCinematicHigh: img.mobileCinematicHigh
+        })),
+        imageAlt: currentVideo.imageAlt.map((alt) => ({
+          __typename: 'VideoImageAlt' as const,
+          value: alt.value
+        })),
+        snippet: [{ __typename: 'VideoSnippet' as const, value: '' }],
+        description: [{ __typename: 'VideoDescription' as const, value: '' }],
+        studyQuestions: [],
+        bibleCitations: [],
+        variant: currentVideo.variant
+          ? {
+              __typename: 'VideoVariant' as const,
+              id: currentVideo.variant.id,
+              duration: currentVideo.variant.duration,
+              hls: currentVideo.variant.hls,
+              downloadable: false,
+              downloads: [],
+              language: {
+                __typename: 'Language' as const,
+                id: '529',
+                name: [
+                  {
+                    __typename: 'LanguageName' as const,
+                    value: 'English',
+                    primary: true
+                  }
+                ],
+                bcp47: 'en'
+              },
+              slug: currentVideo.variant.slug,
+              subtitleCount: 0
+            }
+          : null,
+        variantLanguagesCount: 1,
+        childrenCount: currentVideo.childrenCount
+      }
+    : null
 
   const indexName = process.env.NEXT_PUBLIC_ALGOLIA_INDEX ?? ''
 
   return (
     <div>
-      <VideoProvider value={{ content: activeVideo }}>
-        <VideoContentHero isPreview={true} />
+      {activeVideo && (
+        <VideoProvider value={{ content: activeVideo }}>
+          <VideoContentHero isPreview={true} />
+        </VideoProvider>
+      )}
 
-        <ContentPageBlurFilter>
-          <div className="pt-4">
-            <VideoCarousel
-              videos={carouselVideos}
-              activeVideoId={activeVideoId}
-              loading={loading}
-              onVideoSelect={(videoId: string) => {
-                // Jump to the selected video in the carousel system
-                const success = jumpToVideo(videoId)
-                if (success) {
-                  setIsProgressing(false)
-                  // Note: activeVideoId will be automatically updated by the currentVideo sync effect
-                } else {
-                }
-              }}
-              onSlideChange={(activeIndex: number) => {
-                // Note: Slide changes in the carousel don't directly affect video playback
-                // Video playback is controlled by the useCarouselVideos hook
-              }}
-            />
-          </div>
-          <div
-            data-testid="WatchHomePage"
-            className="flex flex-col py-20 z-10 responsive-container"
+      <ContentPageBlurFilter>
+        <div className="pt-4">
+          <VideoCarousel
+            videos={carouselVideos}
+            activeVideoId={activeVideoId}
+            loading={loading}
+            onVideoSelect={(videoId: string) => {
+              // Jump to the selected video in the carousel system
+              const success = jumpToVideo(videoId)
+              if (success) {
+                setIsProgressing(false)
+                // Note: activeVideoId will be automatically updated by the currentVideo sync effect
+              } else {
+              }
+            }}
+            onSlideChange={(activeIndex: number) => {
+              // Note: Slide changes in the carousel don't directly affect video playback
+              // Video playback is controlled by the useCarouselVideos hook
+            }}
+          />
+        </div>
+        <div
+          data-testid="WatchHomePage"
+          className="flex flex-col py-20 z-10 responsive-container"
+        >
+          <ThemeProvider
+            themeName={ThemeName.website}
+            themeMode={ThemeMode.dark}
+            nested
           >
-            <ThemeProvider
-              themeName={ThemeName.website}
-              themeMode={ThemeMode.dark}
-              nested
+            <Index indexName={indexName}>
+              <Box sx={{ pb: 10 }}>
+                <SearchBarProvider>
+                  <SearchBar showDropdown showLanguageButton />
+                </SearchBarProvider>
+              </Box>
+              <AlgoliaVideoGrid variant="contained" languageId={languageId} />
+            </Index>
+            <SeeAllVideos />
+            <Box
+              sx={{
+                display: 'flex',
+                width: '100%',
+                alignItems: 'center',
+                position: 'relative',
+                py: { xs: 10, lg: 20 }
+              }}
             >
-              <Index indexName={indexName}>
-                <Box sx={{ pb: 10 }}>
-                  <SearchBarProvider>
-                    <SearchBar showDropdown showLanguageButton />
-                  </SearchBarProvider>
-                </Box>
-                <AlgoliaVideoGrid variant="contained" languageId={languageId} />
-              </Index>
-              <SeeAllVideos />
-              <Box
-                sx={{
-                  display: 'flex',
-                  width: '100%',
-                  alignItems: 'center',
-                  position: 'relative',
-                  py: { xs: 10, lg: 20 }
-                }}
-              >
-                <Stack spacing={10}>
-                  <Typography variant="h3" component="h2" color="text.primary">
-                    {t('About Our Project')}
-                  </Typography>
-                  <Stack direction="row" spacing={4}>
-                    <Box
-                      sx={{
-                        backgroundColor: 'primary.main',
-                        height: 'inherit',
-                        width: { xs: 38, lg: 14 }
-                      }}
-                    />
-                    <Typography
-                      variant="subtitle2"
-                      component="h3"
-                      sx={{ opacity: 0.85 }}
-                      color="text.primary"
-                    >
-                      {t(
-                        'With 70% of the world not being able to speak English, there ' +
-                          'is a huge opportunity for the gospel to spread to unreached ' +
-                          'places. We have a vision to make it easier to watch, ' +
-                          'download and share Christian videos with people in their ' +
-                          'native heart language.'
-                      )}
-                    </Typography>
-                  </Stack>
+              <Stack spacing={10}>
+                <Typography variant="h3" component="h2" color="text.primary">
+                  {t('About Our Project')}
+                </Typography>
+                <Stack direction="row" spacing={4}>
+                  <Box
+                    sx={{
+                      backgroundColor: 'primary.main',
+                      height: 'inherit',
+                      width: { xs: 38, lg: 14 }
+                    }}
+                  />
                   <Typography
-                    variant="subtitle1"
+                    variant="subtitle2"
                     component="h3"
-                    sx={{ opacity: 0.8 }}
+                    sx={{ opacity: 0.85 }}
                     color="text.primary"
                   >
                     {t(
-                      'Jesus Film Project is a Christian ministry with a vision to ' +
-                        'reach the world with the gospel of Jesus Christ through ' +
-                        'evangelistic videos. Watch from over 2000 languages on any ' +
-                        'device and share it with others.'
+                      'With 70% of the world not being able to speak English, there ' +
+                        'is a huge opportunity for the gospel to spread to unreached ' +
+                        'places. We have a vision to make it easier to watch, ' +
+                        'download and share Christian videos with people in their ' +
+                        'native heart language.'
                     )}
                   </Typography>
                 </Stack>
-              </Box>
-            </ThemeProvider>
-          </div>
-        </ContentPageBlurFilter>
-      </VideoProvider>
+                <Typography
+                  variant="subtitle1"
+                  component="h3"
+                  sx={{ opacity: 0.8 }}
+                  color="text.primary"
+                >
+                  {t(
+                    'Jesus Film Project is a Christian ministry with a vision to ' +
+                      'reach the world with the gospel of Jesus Christ through ' +
+                      'evangelistic videos. Watch from over 2000 languages on any ' +
+                      'device and share it with others.'
+                  )}
+                </Typography>
+              </Stack>
+            </Box>
+          </ThemeProvider>
+        </div>
+      </ContentPageBlurFilter>
     </div>
   )
 }
