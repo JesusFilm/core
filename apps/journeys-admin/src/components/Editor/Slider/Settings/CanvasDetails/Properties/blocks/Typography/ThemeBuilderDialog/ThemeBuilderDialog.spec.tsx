@@ -74,6 +74,8 @@ describe('ThemeBuilderDialog', () => {
     logoImageBlock: null,
     menuButtonIcon: null,
     menuStepBlock: null,
+    socialNodeX: null,
+    socialNodeY: null,
     journeyTheme: {
       __typename: 'JourneyTheme',
       id: 'theme-id',

@@ -293,10 +293,10 @@ export interface BlockUpdateActionInput {
   gtmEventName?: string | null;
   email?: string | null;
   url?: string | null;
-  target?: string | null;
-  blockId?: string | null;
   phone?: string | null;
   countryCode?: string | null;
+  target?: string | null;
+  blockId?: string | null;
 }
 
 export interface ButtonBlockCreateInput {
@@ -572,6 +572,7 @@ export interface JourneysFilter {
   languageIds?: string[] | null;
   limit?: number | null;
   orderByRecent?: boolean | null;
+  fromTemplateId?: string | null;
 }
 
 export interface JourneysQueryOptions {

@@ -11,7 +11,7 @@ import Select from '@mui/material/Select'
 import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
 import { Form, Formik, FormikProps, FormikValues } from 'formik'
-import { useRouter } from 'next/navigation'
+import { useParams, useRouter } from 'next/navigation'
 import { ReactElement, useRef } from 'react'
 import { mixed, object, string } from 'yup'
 
@@ -24,12 +24,6 @@ import { videoStatuses } from '../../../../../../constants'
 import { useUploadVideoVariant } from '../../../../../_UploadVideoVariantProvider'
 
 import { AudioLanguageFileUpload } from './_AudioLanguageFileUpload'
-
-interface AddAudioLanguageDialogProps {
-  params: {
-    videoId: string
-  }
-}
 
 const validationSchema = object().shape({
   edition: string().required('Edition is required'),
@@ -62,10 +56,9 @@ const GET_ADMIN_VIDEO_VARIANTS = graphql(`
   }
 `)
 
-export default function AddAudioLanguageDialog({
-  params: { videoId }
-}: AddAudioLanguageDialogProps): ReactElement {
+export default function AddAudioLanguageDialog(): ReactElement {
   const router = useRouter()
+  const { videoId } = useParams() as { videoId: string }
   const { uploadState, startUpload, clearUploadState } = useUploadVideoVariant()
 
   const formikRef = useRef<FormikProps<FormikValues>>(null)
