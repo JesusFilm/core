@@ -18,9 +18,15 @@ import clsx from 'clsx'
 
 interface HeroVideoProps {
   isPreview?: boolean
+  collapsed?: boolean
+  onMuteToggle?: (isMuted: boolean) => void
 }
 
-export function HeroVideo({ isPreview = false }: HeroVideoProps): ReactElement {
+export function HeroVideo({
+  isPreview = false,
+  collapsed = true,
+  onMuteToggle
+}: HeroVideoProps): ReactElement {
   const { variant, ...video } = useVideo()
   const {
     state: { mute }
@@ -128,8 +134,8 @@ export function HeroVideo({ isPreview = false }: HeroVideoProps): ReactElement {
       className={clsx(
         "fixed top-0 left-0 right-0 mx-auto z-0 vjs-hide-loading-spinners [body[style*='padding-right']_&]:right-[15px]",
         {
-          'preview-video': isPreview,
-          'h-[90%] md:h-[80%] max-w-[1920px]': !isPreview
+          'preview-video': isPreview && collapsed,
+          'h-[90%] md:h-[80%] max-w-[1920px]': !isPreview || !collapsed
         }
       )}
       data-testid="ContentHeroVideoContainer"
@@ -151,9 +157,29 @@ export function HeroVideo({ isPreview = false }: HeroVideoProps): ReactElement {
             playsInline
           />
         )}
+        {collapsed && (
+          <div
+            className="absolute inset-0 z-1 pointer-events-none"
+            style={{
+              backdropFilter: 'brightness(.6) saturate(.7) sepia(.3)',
+              // backdropFilter: 'brightness(.6) blur(40px)'
+              // maskImage:
+              //   'linear-gradient(0deg, rgba(2,0,36,1) 46%, rgba(2,0,36,1) 53%, rgba(0,0,0,0) 100%)'
+
+              backgroundImage: 'url(/watch/assets/overlay.svg)',
+              backgroundSize: '1600px auto'
+            }}
+          >
+            {/*<img src="/watch/assets/overlay.svg" alt="" className="bg-repeat" />*/}
+          </div>
+        )}
         {playerRef.current != null && playerReady && (
           <>
-            <VideoControls player={playerRef.current} isPreview={isPreview} />
+            <VideoControls
+              player={playerRef.current}
+              isPreview={isPreview}
+              onMuteToggle={onMuteToggle}
+            />
           </>
         )}
       </>

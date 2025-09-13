@@ -109,7 +109,7 @@ export function VideoCarousel({
     }, 15000)
 
     return () => clearInterval(interval)
-  }, [])
+  }, [videos.length])
 
   // Handle keyboard navigation
   const handleKeyDown = (event: React.KeyboardEvent) => {

@@ -1,6 +1,7 @@
-import { ReactElement } from 'react'
+import { ReactElement, useState } from 'react'
 
 import { useVideo } from '../../../libs/videoContext'
+import { usePlayer } from '../../../libs/playerContext'
 
 import { ContentHeader } from './ContentHeader'
 import { HeroVideo } from './HeroVideo'
@@ -12,16 +13,24 @@ export function VideoContentHero({
   isPreview?: boolean
 }): ReactElement {
   const { variant } = useVideo()
+  const {
+    state: { mute }
+  } = usePlayer()
+  const [collapsed, setCollapsed] = useState(true)
 
   const languageSlug = variant?.slug?.split('/')[1]
+
+  const handleMuteToggle = (isMuted: boolean): void => {
+    setCollapsed(isMuted)
+  }
 
   return (
     <div
       className={clsx(
         'w-full flex items-end relative bg-[#131111] z-[1] transition-all duration-300 ease-out',
         {
-          'preview-video': isPreview,
-          'h-[90svh] md:h-[80svh]': !isPreview
+          'preview-video': isPreview && collapsed,
+          'h-[90svh] md:h-[80svh]': !isPreview || !collapsed
         }
       )}
       data-testid="ContentHero"
@@ -30,10 +39,15 @@ export function VideoContentHero({
         languageSlug={languageSlug?.replace('.html', '')}
         isPersistent={isPreview}
       />
-      <HeroVideo isPreview={isPreview} key={variant?.hls} />
+      <HeroVideo
+        isPreview={isPreview}
+        collapsed={collapsed}
+        onMuteToggle={handleMuteToggle}
+        key={variant?.hls}
+      />
       <div
         data-testid="ContainerHeroTitleContainer"
-        className="w-full relative flex flex-col sm:flex-row max-w-[1920px] mx-auto pb-4"
+        className="w-full relative z-2 flex flex-col sm:flex-row max-w-[1920px] mx-auto pb-4"
       >
         <div
           className="absolute top-0 left-0 right-0 h-full w-full pointer-events-none block md:hidden"

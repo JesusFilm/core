@@ -56,6 +56,7 @@ interface VideoControlProps {
   player?: Player
   onVisibleChanged?: (active: boolean) => void
   isPreview?: boolean
+  onMuteToggle?: (isMuted: boolean) => void
 }
 
 function evtToDataLayer(
@@ -83,7 +84,8 @@ const eventToDataLayer = debounce(evtToDataLayer, 500)
 export function VideoControls({
   player,
   onVisibleChanged,
-  isPreview = false
+  isPreview = false,
+  onMuteToggle
 }: VideoControlProps): ReactElement {
   const [initialLoadComplete, setInitialLoadComplete] = useState(false)
   const {
@@ -450,11 +452,15 @@ export function VideoControls({
   }
 
   function handleMute(): void {
-    player?.muted(!mute)
+    const newMuteState = !mute
+    player?.muted(newMuteState)
     dispatchPlayer({
       type: 'SetMute',
-      mute: !mute
+      mute: newMuteState
     })
+    if (onMuteToggle) {
+      onMuteToggle(newMuteState)
+    }
   }
 
   function handleVolume(_event: Event, value: number | number[]): void {
@@ -506,7 +512,8 @@ export function VideoControls({
         cursor: visible ? undefined : 'none',
         display: 'flex',
         flexDirection: 'column',
-        justifyContent: 'flex-end'
+        justifyContent: 'flex-end',
+        zIndex: 2
       }}
       onClick={getClickHandler(handlePlay, () => {
         void handleFullscreen()
@@ -525,7 +532,9 @@ export function VideoControls({
             videoDescription={videoDescription}
             containerSlug={containerSlug}
             collectionTitle={collectionTitle}
-            onMuteToggle={handleMute}
+            onMuteToggle={() => {
+              handleMute()
+            }}
             onClick={(e) => {
               e.stopPropagation()
               handleVideoTitleClick({
@@ -573,7 +582,9 @@ export function VideoControls({
               videoDescription={videoDescription}
               containerSlug={containerSlug}
               collectionTitle={collectionTitle}
-              onMuteToggle={handleMute}
+              onMuteToggle={() => {
+                handleMute()
+              }}
               onClick={(e) => {
                 e.stopPropagation()
                 handleVideoTitleClick({

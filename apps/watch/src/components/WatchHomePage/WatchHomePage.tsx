@@ -230,11 +230,9 @@ function WatchHomePageContent({
 
   return (
     <div>
-      {activeVideo && (
-        <VideoProvider value={{ content: activeVideo }}>
-          <VideoContentHero isPreview={true} />
-        </VideoProvider>
-      )}
+      <VideoProvider value={{ content: activeVideo }}>
+        <VideoContentHero isPreview={true} />
+      </VideoProvider>
 
       <ContentPageBlurFilter>
         <div className="pt-4">
