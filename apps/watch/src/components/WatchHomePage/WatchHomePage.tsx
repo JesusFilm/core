@@ -3,7 +3,13 @@ import Container from '@mui/material/Container'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next'
-import { type ReactElement } from 'react'
+import {
+  type ReactElement,
+  useCallback,
+  useEffect,
+  useRef,
+  useState
+} from 'react'
 import { Index } from 'react-instantsearch'
 
 import { SearchBarProvider } from '@core/journeys/ui/algolia/SearchBarProvider'
@@ -14,39 +20,229 @@ import { ThemeMode, ThemeName } from '@core/shared/ui/themes'
 import { useAlgoliaRouter } from '../../libs/algolia/useAlgoliaRouter'
 import { PageWrapper } from '../PageWrapper'
 import { AlgoliaVideoGrid } from '../VideoGrid/AlgoliaVideoGrid'
+import { VideoLabel } from '../../../__generated__/globalTypes'
+import { VideoContentFields } from '../../../__generated__/VideoContentFields'
 
 import { HomeHero } from './HomeHero'
 import { SeeAllVideos } from './SeeAllVideos'
+import { ContentPageBlurFilter } from '../NewVideoContentPage/ContentPageBlurFilter'
+import NextLink from 'next/link'
+import Image from 'next/image'
+import { PlayerProvider } from '../../libs/playerContext'
+import { VideoProvider } from '../../libs/videoContext'
+import { WatchProvider } from '../../libs/watchContext'
+import { useCarouselVideos } from '../VideoHero/libs/useCarouselVideos'
+import { VideoContentHero } from '../NewVideoContentPage/VideoContentHero/VideoContentHero'
+import { VideoCarousel } from '../NewVideoContentPage/VideoCarousel/VideoCarousel'
+import { usePlayer } from '../../libs/playerContext'
 
 interface WatchHomePageProps {
   languageId?: string | undefined
 }
 
-export function WatchHomePage({
+// Inner component that uses player context
+function WatchHomePageContent({
   languageId
 }: WatchHomePageProps): ReactElement {
   const { t } = useTranslation('apps-watch')
   useAlgoliaRouter()
 
+  const [activeVideoId, setActiveVideoId] = useState<string | undefined>()
+  const {
+    videos,
+    currentIndex,
+    loading,
+    moveToNext,
+    moveToPrevious,
+    jumpToVideo,
+    currentPoolIndex
+  } = useCarouselVideos('529') // Use language ID 529 for now
+  const [autoProgressEnabled, setAutoProgressEnabled] = useState(true)
+
+  // Map videos to ensure data structure matches what VideoCard expects
+  const carouselVideos = videos.map((video) => ({
+    __typename: 'Video' as const,
+    id: video.id,
+    slug: video.slug,
+    childrenCount: video.childrenCount,
+    title: (video.title || [{ value: video.slug }]).map((t) => ({
+      __typename: 'VideoTitle' as const,
+      value: t.value
+    })),
+    images: (video.images || []).map((img) => ({
+      __typename: 'CloudflareImage' as const,
+      mobileCinematicHigh: img.mobileCinematicHigh
+    })),
+    imageAlt: (
+      video.imageAlt || [{ value: video.title?.[0]?.value || video.slug }]
+    ).map((alt) => ({
+      __typename: 'VideoImageAlt' as const,
+      value: alt.value
+    })),
+    snippet: [{ __typename: 'VideoSnippet' as const, value: '' }],
+    label:
+      video.label &&
+      Object.values(VideoLabel).includes(video.label as VideoLabel)
+        ? (video.label as VideoLabel)
+        : VideoLabel.shortFilm,
+    variant: video.variant
+      ? {
+          __typename: 'VideoVariant' as const,
+          id: video.variant.id,
+          duration: video.variant.duration,
+          hls: video.variant.hls,
+          slug: video.variant.slug
+        }
+      : null
+  }))
+
+  // Get current video from videos array using currentIndex
+  const currentVideo = videos[currentIndex] || null
+
+  const { state: playerState } = usePlayer()
+  const [lastProgress, setLastProgress] = useState(0)
+  const [isProgressing, setIsProgressing] = useState(false)
+  const resetRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+
+  // Set the current video as active
+  useEffect(() => {
+    if (currentVideo && currentVideo.id !== activeVideoId) {
+      setActiveVideoId(currentVideo.id)
+    }
+  }, [currentVideo, activeVideoId])
+
+  // Reset progress tracking when video changes
+  useEffect(() => {
+    setLastProgress(0)
+    if (resetRef.current != null) clearTimeout(resetRef.current)
+    resetRef.current = setTimeout(() => {
+      setIsProgressing(false)
+    }, 500)
+  }, [activeVideoId])
+
+  // Auto-progress to next video function
+  const progressToNextVideo = useCallback(() => {
+    if (!autoProgressEnabled || isProgressing || !videos.length) return
+
+    setIsProgressing(true)
+
+    // Use moveToNext from useCarouselVideos hook
+    moveToNext()
+    setLastProgress(0) // Reset progress tracking for new video
+
+    // Allow progression again after a short delay
+    if (resetRef.current != null) clearTimeout(resetRef.current)
+    resetRef.current = setTimeout(() => {
+      setIsProgressing(false)
+    }, 2000)
+  }, [moveToNext, autoProgressEnabled, isProgressing, videos.length])
+
+  // Effect to detect video end and progress immediately
+  useEffect(() => {
+    // Check if video has ended (progress >= 95%)
+    if (playerState.progress >= 95 && lastProgress < 95 && !isProgressing) {
+      progressToNextVideo()
+    }
+    setLastProgress(playerState.progress)
+  }, [playerState.progress, lastProgress, progressToNextVideo, isProgressing])
+
+  // Get the active video for playback (current video from carousel)
+  // Transform CarouselVideo to VideoContentFields for VideoProvider
+  const activeVideo: VideoContentFields | null = currentVideo
+    ? {
+        __typename: 'Video' as const,
+        id: currentVideo.id,
+        slug: currentVideo.slug,
+        label:
+          currentVideo.label &&
+          Object.values(VideoLabel).includes(currentVideo.label as VideoLabel)
+            ? (currentVideo.label as VideoLabel)
+            : VideoLabel.shortFilm,
+        title: currentVideo.title.map((t) => ({
+          __typename: 'VideoTitle' as const,
+          value: t.value
+        })),
+        images: currentVideo.images.map((img) => ({
+          __typename: 'CloudflareImage' as const,
+          mobileCinematicHigh: img.mobileCinematicHigh
+        })),
+        imageAlt: currentVideo.imageAlt.map((alt) => ({
+          __typename: 'VideoImageAlt' as const,
+          value: alt.value
+        })),
+        snippet: [{ __typename: 'VideoSnippet' as const, value: '' }],
+        description: [{ __typename: 'VideoDescription' as const, value: '' }],
+        studyQuestions: [],
+        bibleCitations: [],
+        variant: currentVideo.variant
+          ? {
+              __typename: 'VideoVariant' as const,
+              id: currentVideo.variant.id,
+              duration: currentVideo.variant.duration,
+              hls: currentVideo.variant.hls,
+              downloadable: false,
+              downloads: [],
+              language: {
+                __typename: 'Language' as const,
+                id: '529',
+                name: [
+                  {
+                    __typename: 'LanguageName' as const,
+                    value: 'English',
+                    primary: true
+                  }
+                ],
+                bcp47: 'en'
+              },
+              slug: currentVideo.variant.slug,
+              subtitleCount: 0
+            }
+          : null,
+        variantLanguagesCount: 1,
+        childrenCount: currentVideo.childrenCount
+      }
+    : null
+
   const indexName = process.env.NEXT_PUBLIC_ALGOLIA_INDEX ?? ''
 
   return (
-    <PageWrapper
-      hero={<HomeHero />}
-      headerThemeMode={ThemeMode.dark}
-      hideHeaderSpacer
-      showLanguageSwitcher
-    >
-      <ThemeProvider
-        themeName={ThemeName.website}
-        themeMode={ThemeMode.dark}
-        nested
-      >
-        <Box
-          sx={{ backgroundColor: 'background.default' }}
+    <div>
+      {activeVideo && (
+        <VideoProvider value={{ content: activeVideo }}>
+          <VideoContentHero isPreview={true} />
+        </VideoProvider>
+      )}
+
+      <ContentPageBlurFilter>
+        <div className="pt-4">
+          <VideoCarousel
+            videos={carouselVideos}
+            activeVideoId={activeVideoId}
+            loading={loading}
+            onVideoSelect={(videoId: string) => {
+              // Jump to the selected video in the carousel system
+              const success = jumpToVideo(videoId)
+              if (success) {
+                setIsProgressing(false)
+                // Note: activeVideoId will be automatically updated by the currentVideo sync effect
+              } else {
+              }
+            }}
+            onSlideChange={(activeIndex: number) => {
+              // Note: Slide changes in the carousel don't directly affect video playback
+              // Video playback is controlled by the useCarouselVideos hook
+            }}
+          />
+        </div>
+        <div
           data-testid="WatchHomePage"
+          className="flex flex-col py-20 z-10 responsive-container"
         >
-          <Container maxWidth="xxl" sx={{ paddingY: '4rem' }}>
+          <ThemeProvider
+            themeName={ThemeName.website}
+            themeMode={ThemeMode.dark}
+            nested
+          >
             <Index indexName={indexName}>
               <Box sx={{ pb: 10 }}>
                 <SearchBarProvider>
@@ -107,9 +303,22 @@ export function WatchHomePage({
                 </Typography>
               </Stack>
             </Box>
-          </Container>
-        </Box>
-      </ThemeProvider>
-    </PageWrapper>
+          </ThemeProvider>
+        </div>
+      </ContentPageBlurFilter>
+    </div>
+  )
+}
+
+// Main component with providers
+export function WatchHomePage({
+  languageId
+}: WatchHomePageProps): ReactElement {
+  return (
+    <PlayerProvider>
+      <WatchProvider>
+        <WatchHomePageContent languageId={languageId} />
+      </WatchProvider>
+    </PlayerProvider>
   )
 }

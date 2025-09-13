@@ -14,12 +14,13 @@ import { useVideo } from '../../../../libs/videoContext'
 import { useWatch } from '../../../../libs/watchContext'
 import { useSubtitleUpdate } from '../../../../libs/watchContext/useSubtitleUpdate'
 import { VideoControls } from '../../../VideoContentPage/VideoHero/VideoPlayer/VideoControls'
+import clsx from 'clsx'
 
 interface HeroVideoProps {
-  isFullscreen: boolean
+  isPreview?: boolean
 }
 
-export function HeroVideo({ isFullscreen }: HeroVideoProps): ReactElement {
+export function HeroVideo({ isPreview = false }: HeroVideoProps): ReactElement {
   const { variant, ...video } = useVideo()
   const {
     state: { mute }
@@ -48,7 +49,7 @@ export function HeroVideo({ isFullscreen }: HeroVideoProps): ReactElement {
   }, [])
 
   useEffect(() => {
-    window.addEventListener('scroll', pauseVideoOnScrollAway)
+    window.addEventListener('scroll', pauseVideoOnScrollAway, { passive: true })
     return () => window.removeEventListener('scroll', pauseVideoOnScrollAway)
   }, [pauseVideoOnScrollAway])
 
@@ -75,7 +76,7 @@ export function HeroVideo({ isFullscreen }: HeroVideoProps): ReactElement {
       ...defaultVideoJsOptions,
       autoplay: true,
       controls: false,
-      loop: true,
+      loop: !isPreview,
       muted: mute,
       fluid: false,
       fill: true,
@@ -124,34 +125,38 @@ export function HeroVideo({ isFullscreen }: HeroVideoProps): ReactElement {
 
   return (
     <div
-      className={`fixed top-0 left-0 right-0 mx-auto z-0 vjs-hide-loading-spinners 
-        [body[style*='padding-right']_&]:right-[15px]
-        ${
-          isFullscreen
-            ? 'h-full max-w-full'
-            : 'h-[90%] md:h-[80%] max-w-[1920px]'
-        }`}
+      className={clsx(
+        "fixed top-0 left-0 right-0 mx-auto z-0 vjs-hide-loading-spinners [body[style*='padding-right']_&]:right-[15px]",
+        {
+          'preview-video': isPreview,
+          'h-[90%] md:h-[80%] max-w-[1920px]': !isPreview
+        }
+      )}
       data-testid="ContentHeroVideoContainer"
     >
-      {variant?.hls && (
-        <video
-          key={variant.hls}
-          data-testid="ContentHeroVideo"
-          ref={videoRef}
-          className="vjs [&_.vjs-tech]:object-contain [&_.vjs-tech]:md:object-cover"
-          style={{
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            width: '100%',
-            height: '100%'
-          }}
-          playsInline
-        />
-      )}
-      {playerRef.current != null && playerReady && (
-        <VideoControls player={playerRef.current} />
-      )}
+      <>
+        {variant?.hls && (
+          <video
+            key={variant.hls}
+            data-testid="ContentHeroVideo"
+            ref={videoRef}
+            className="vjs [&_.vjs-tech]:object-contain [&_.vjs-tech]:md:object-cover"
+            style={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              width: '100%',
+              height: '100%'
+            }}
+            playsInline
+          />
+        )}
+        {playerRef.current != null && playerReady && (
+          <>
+            <VideoControls player={playerRef.current} isPreview={isPreview} />
+          </>
+        )}
+      </>
     </div>
   )
 }
