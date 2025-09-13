@@ -179,7 +179,15 @@ export function VideoCard({
       <div
         {...commonProps}
         className={`${commonProps.className} cursor-pointer`}
+        role="button"
+        tabIndex={0}
         onClick={handleVideoSelect}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault()
+            handleVideoSelect(e as unknown as React.MouseEvent)
+          }
+        }}
       >
         {cardContent}
       </div>
