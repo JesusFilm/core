@@ -19,6 +19,16 @@ input BlockDuplicateIdMap {
   newId: ID!
 }
 
+input BlockUpdateActionInput {
+  gtmEventName: String
+  email: String
+  url: String
+  phone: String
+  countryCode: String
+  target: String
+  blockId: String
+}
+
 input BlocksFilter {
   journeyIds: [ID!]
   typenames: [String!]
@@ -923,6 +933,7 @@ input JourneysFilter {
   languageIds: [ID!]
   limit: Int
   orderByRecent: Boolean
+  fromTemplateId: ID
 }
 
 input JourneysQueryOptions {
@@ -1027,6 +1038,12 @@ type Mutation {
     """drop this parameter after merging teams"""
     journeyId: ID
   ): VideoBlock! @override(from: "api-journeys")
+  blockDeleteAction(id: ID!, journeyId: ID): Block! @override(from: "api-journeys")
+  blockUpdateAction(id: ID!, input: BlockUpdateActionInput!): Action! @override(from: "api-journeys")
+  blockUpdateEmailAction(id: ID!, input: EmailActionInput!, journeyId: ID): EmailAction! @override(from: "api-journeys")
+  blockUpdateLinkAction(id: ID!, input: LinkActionInput!, journeyId: ID): LinkAction! @override(from: "api-journeys")
+  blockUpdateNavigateToBlockAction(id: ID!, input: NavigateToBlockActionInput!, journeyId: ID): NavigateToBlockAction! @override(from: "api-journeys")
+  blockUpdatePhoneAction(id: ID!, input: PhoneActionInput!, journeyId: ID): PhoneAction! @override(from: "api-journeys")
   journeySimpleUpdate(id: ID!, journey: Json!): Json
   journeyAiTranslateCreate(input: JourneyAiTranslateInput!): Journey!
   createJourneyEventsExportLog(input: JourneyEventsExportLogInput!): JourneyEventsExportLog!
@@ -1059,6 +1076,11 @@ type NavigateToBlockAction implements Action
   blockId: String!
 }
 
+input NavigateToBlockActionInput {
+  gtmEventName: String
+  blockId: String!
+}
+
 interface Node {
   id: ID!
 }
@@ -1068,6 +1090,22 @@ type OperatingSystem
 {
   name: String
   version: String
+}
+
+type PhoneAction implements Action
+  @shareable
+{
+  parentBlockId: ID!
+  gtmEventName: String
+  parentBlock: Block!
+  phone: String!
+  countryCode: String!
+}
+
+input PhoneActionInput {
+  gtmEventName: String
+  phone: String!
+  countryCode: String!
 }
 
 input PlausibleStatsAggregateFilter {
@@ -1181,6 +1219,7 @@ type RadioOptionBlock implements Block
         as a poll option image. Blocks are often of type ImageBlock
   """
   pollOptionImageBlockId: ID
+  action: Action
 }
 
 input RadioOptionBlockCreateInput {
@@ -1251,6 +1290,7 @@ type SignUpBlock implements Block
   parentOrder: Int
   submitIconId: ID
   submitLabel: String
+  action: Action
 }
 
 input SignUpBlockCreateInput {

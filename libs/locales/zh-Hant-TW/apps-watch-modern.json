@@ -7,6 +7,24 @@
     "title": "免費福音視訊<underline>串流</underline>圖書館。",
     "description": "使用超過 2000 種語言觀看、學習和分享福音"
   },
+  "ModernTestPage": {
+    "pageTitle": "現代測試",
+    "title": "現代測試頁面",
+    "description": "這是現代手表應用程式的測試頁面。它展示了新的路由和代理功能。",
+    "feature1": {
+      "title": "現代建築",
+      "description": "採用 Next.js App Router 與現代 React 模式打造，提供最佳效能與開發人員體驗。"
+    },
+    "feature2": {
+      "title": "智慧型路由",
+      "description": "先進的代理路由，可智慧地將流量導向適當的後端服務。"
+    },
+    "feature3": {
+      "title": "回應式設計",
+      "description": "完全回應式設計，可在所有裝置和螢幕尺寸上無縫運作。"
+    },
+    "footer": "此網頁由現代手表應用程式透過智慧型代理路由提供。"
+  },
   "DatadogErrorBoundary": {
     "somethingWentWrong": "出了問題",
     "anErrorOccurred": "載入此頁面時發生錯誤。請嘗試刷新。",
