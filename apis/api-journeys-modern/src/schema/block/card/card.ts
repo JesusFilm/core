@@ -49,6 +49,11 @@ themeMode from journey`,
       description: `themeName can override journey themeName. If nothing is set then use
 themeName from journey`,
       resolve: (block) => block.themeName as PrismaThemeName | null
+    }),
+    showAI: t.exposeBoolean('showAI', {
+      nullable: true,
+      description: `showAI controls whether the AI feature is enabled for this card.
+null or false = feature is off, true = feature is on`
     })
   })
 })

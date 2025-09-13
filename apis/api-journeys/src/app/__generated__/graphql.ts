@@ -319,6 +319,7 @@ export class CardBlockCreateInput {
     fullscreen?: Nullable<boolean>;
     themeMode?: Nullable<ThemeMode>;
     themeName?: Nullable<ThemeName>;
+    showAI?: Nullable<boolean>;
 }
 
 export class CardBlockUpdateInput {
@@ -329,6 +330,7 @@ export class CardBlockUpdateInput {
     fullscreen?: Nullable<boolean>;
     themeMode?: Nullable<ThemeMode>;
     themeName?: Nullable<ThemeName>;
+    showAI?: Nullable<boolean>;
 }
 
 export class IconBlockCreateInput {
@@ -1303,6 +1305,7 @@ export class CardBlock implements Block {
     fullscreen: boolean;
     themeMode?: Nullable<ThemeMode>;
     themeName?: Nullable<ThemeName>;
+    showAI?: Nullable<boolean>;
 }
 
 export class GridContainerBlock implements Block {

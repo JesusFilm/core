@@ -347,6 +347,7 @@ export interface CardBlockCreateInput {
   fullscreen?: boolean | null;
   themeMode?: ThemeMode | null;
   themeName?: ThemeName | null;
+  showAI?: boolean | null;
 }
 
 export interface CardBlockUpdateInput {
@@ -357,6 +358,7 @@ export interface CardBlockUpdateInput {
   fullscreen?: boolean | null;
   themeMode?: ThemeMode | null;
   themeName?: ThemeName | null;
+  showAI?: boolean | null;
 }
 
 export interface ChatButtonCreateInput {
