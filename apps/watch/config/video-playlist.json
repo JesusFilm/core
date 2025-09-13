@@ -1,5 +1,6 @@
 {
   "version": "1.0.0",
+  "_comment": "All IDs in playlistSequence are archlight database IDs, not slugs",
   "playlistSequence": [
     ["1_jf-0-0"],
     ["JFP-Featured"],
@@ -20,12 +21,5 @@
     ["9_CreationtoChrist"],
     ["2_FileZero-0-0"],
     ["10_DarkroomFaith"]
-  ],
-  "settings": {
-    "recentlyPlayedBuffer": 15,
-    "cycleOnComplete": true,
-    "weightedRandomization": true,
-    "fallbackStrategy": "skipToNext",
-    "language": "english"
-  }
+  ]
 }

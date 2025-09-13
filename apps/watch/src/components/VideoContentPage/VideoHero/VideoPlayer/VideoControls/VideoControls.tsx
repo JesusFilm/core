@@ -653,6 +653,7 @@ export function VideoControls({
                   gap={5}
                   justifyContent={{ xs: 'space-between', md: 'none' }}
                   alignItems="center"
+                  className="responsive-container"
                 >
                   <IconButton
                     id={play ? 'pause-button' : 'play-button'}
