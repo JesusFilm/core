@@ -40,6 +40,10 @@ function CardContent({
   label,
   playerProgress
 }: CardContentProps): ReactElement {
+  // Compute safe image src and alt with proper guards
+  const imageSrc = video.images?.[0]?.mobileCinematicHigh
+  const imageAlt = video.imageAlt?.[0]?.value ?? ''
+
   return (
     <div className="flex flex-col gap-6">
       <button
@@ -57,25 +61,24 @@ function CardContent({
           onMouseEnter={onMouseEnter}
           onMouseLeave={onMouseLeave}
         >
-          {/* Image Layer with Lazy Loading */}
+          {/* Image Layer with Lazy Loading - Only render when imageSrc is available */}
           <div className="absolute left-0 right-0 top-0 bottom-0 rounded-lg overflow-hidden">
-            <Image
-              fill
-              src={
-                video.images?.[0]?.mobileCinematicHigh ??
-                'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTI4MCIgaGVpZ2h0PSI2MDAiIHZpZXdCb3g9IjAgMCAxMjgwIDYwMCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjEyODAiIGhlaWdodD0iNjAwIiBmaWxsPSIjMzMzMzMzIi8+Cjwvc3ZnPgo='
-              }
-              alt={video.imageAlt?.[0]?.value ?? video.slug}
-              priority={active}
-              style={{
-                width: '100%',
-                objectFit: 'cover',
-                maskImage:
-                  'linear-gradient(to bottom, rgba(0,0,0,1) 50%, transparent 100%)',
-                maskSize: 'cover',
-                pointerEvents: 'none'
-              }}
-            />
+            {imageSrc && (
+              <Image
+                fill
+                src={imageSrc}
+                alt={imageAlt}
+                priority={active}
+                style={{
+                  width: '100%',
+                  objectFit: 'cover',
+                  maskImage:
+                    'linear-gradient(to bottom, rgba(0,0,0,1) 50%, transparent 100%)',
+                  maskSize: 'cover',
+                  pointerEvents: 'none'
+                }}
+              />
+            )}
           </div>
 
           {/* Active/Hover Border Layer */}

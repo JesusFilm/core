@@ -79,6 +79,10 @@ export function VideoCard({
   )
   const href = getSlug(containerSlug, video?.label, video?.variant?.slug)
 
+  // Compute safe image src and alt with proper guards
+  const imageSrc = last(video?.images)?.mobileCinematicHigh
+  const imageAlt = last(video?.imageAlt)?.value ?? ''
+
   return (
     <Link
       component={NextLink}
@@ -119,10 +123,10 @@ export function VideoCard({
               transition: (theme) => theme.transitions.create('transform')
             }}
           >
-            {last(video?.images)?.mobileCinematicHigh != null ? (
+            {imageSrc ? (
               <Image
-                src={last(video?.images)?.mobileCinematicHigh ?? ''}
-                alt={last(video?.imageAlt)?.value ?? ''}
+                src={imageSrc}
+                alt={imageAlt}
                 fill
                 sizes="100vw"
                 style={{

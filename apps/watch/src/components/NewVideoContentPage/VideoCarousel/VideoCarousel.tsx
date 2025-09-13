@@ -108,8 +108,32 @@ export function VideoCarousel({
     return () => clearInterval(interval)
   }, [])
 
+  // Handle keyboard navigation
+  const handleKeyDown = (event: React.KeyboardEvent) => {
+    if (!swiperRef.current) return
+
+    switch (event.key) {
+      case 'ArrowLeft':
+        event.preventDefault()
+        swiperRef.current.slidePrev()
+        break
+      case 'ArrowRight':
+        event.preventDefault()
+        swiperRef.current.slideNext()
+        break
+    }
+  }
+
   return (
-    <div data-testid="VideoCarousel" className="relative">
+    <div
+      data-testid="VideoCarousel"
+      className="relative"
+      role="region"
+      aria-roledescription="carousel"
+      aria-label="Video carousel"
+      tabIndex={0}
+      onKeyDown={handleKeyDown}
+    >
       <Swiper
         data-testid="VideoCarouselSwiper"
         modules={[Virtual, Mousewheel, FreeMode, A11y, Navigation]}
