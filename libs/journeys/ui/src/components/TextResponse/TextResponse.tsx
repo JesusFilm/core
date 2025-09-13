@@ -6,7 +6,7 @@ import Typography from '@mui/material/Typography'
 import { SxProps } from '@mui/system/styleFunctionSx'
 import { useFormikContext } from 'formik'
 import { useTranslation } from 'next-i18next'
-import { ReactElement, useEffect, useState } from 'react'
+import { ReactElement, useEffect, useMemo, useState } from 'react'
 
 import { TextResponseType } from '../../../__generated__/globalTypes'
 import type { TreeBlock } from '../../libs/block'
@@ -14,6 +14,8 @@ import { useEditor } from '../../libs/EditorProvider'
 import { TextField } from '../TextField'
 
 import { TextResponseFields } from './__generated__/TextResponseFields'
+import { useJourney } from '../../libs/JourneyProvider'
+import { getTextResponseValues } from './utils/getTextResponseValues'
 
 /**
  * GraphQL mutation for creating a text response submission event.
@@ -69,14 +71,33 @@ export const TextResponse = ({
     state: { selectedBlock }
   } = useEditor()
 
+  const { journey, variant } = useJourney()
+
   const formikValue = formikContext?.values?.[blockId] ?? ''
   const isSubmitting = formikContext?.isSubmitting ?? false
   const handleChange = formikContext?.handleChange
   const handleBlur = formikContext?.handleBlur
 
   const currentValue = formikValue ?? value
+
+  const {
+    label: resolvedLabel,
+    placeholder: resolvedPlaceholder,
+    hint: resolvedHint
+  } = useMemo(
+    () =>
+      getTextResponseValues(
+        { label, placeholder, hint },
+        journey?.journeyCustomizationFields ?? [],
+        variant ?? 'default'
+      ),
+    [label, placeholder, hint, journey?.journeyCustomizationFields, variant]
+  )
+
   const trimmedPlaceholder =
-    placeholder != null ? placeholder.trim().replace(/\s+/g, ' ') : ''
+    resolvedPlaceholder != null
+      ? resolvedPlaceholder.trim().replace(/\s+/g, ' ')
+      : ''
 
   useEffect(() => {
     if (formikContext != null && formikValue !== value) {
@@ -113,7 +134,7 @@ export const TextResponse = ({
             fontFamily: theme.typography.button.fontFamily
           }}
         >
-          {label.trim() === '' ? t('Label') : label}
+          {resolvedLabel.trim() === '' ? t('Label') : resolvedLabel}
           {(required ?? false) ? '*' : ''}
         </Typography>
         <TextField
@@ -121,7 +142,7 @@ export const TextResponse = ({
           name={blockId}
           placeholder={trimmedPlaceholder}
           value={currentValue}
-          helperText={hint != null ? hint : ''}
+          helperText={resolvedHint != null ? resolvedHint : ''}
           multiline
           disabled={isSubmitting}
           minRows={minRows ?? 1}

@@ -62,7 +62,9 @@ const block: TreeBlock<SignUpFields> = {
     __typename: 'LinkAction',
     parentBlockId: 'signUp0.id',
     gtmEventName: 'signUp',
-    url: '#'
+    url: '#',
+    customizable: false,
+    parentStepId: null
   },
   children: []
 }
@@ -234,7 +236,9 @@ describe('SignUp', () => {
           __typename: 'LinkAction',
           parentBlockId: 'signUp0.id',
           gtmEventName: 'signUp',
-          url: '#'
+          url: '#',
+          customizable: false,
+          parentStepId: null
         },
         undefined
       )

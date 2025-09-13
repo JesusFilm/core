@@ -102,4 +102,8 @@ describe('AboutTabPanel', () => {
     expect(queryByText('Strategy')).not.toBeInTheDocument()
     expect(getByTestId('strategy-iframe')).toBeInTheDocument()
   })
+
+  it('should render Customize Template text area', () => {
+    // TODO TEST: renders text area
+  })
 })

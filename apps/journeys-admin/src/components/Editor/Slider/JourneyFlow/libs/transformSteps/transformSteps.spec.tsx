@@ -345,7 +345,9 @@ describe('transformSteps', () => {
                   __typename: 'LinkAction',
                   parentBlockId: 'button1.id',
                   gtmEventName: null,
-                  url: 'https://example.com'
+                  url: 'https://example.com',
+                  customizable: false,
+                  parentStepId: null
                 },
                 children: [],
                 settings: null
@@ -366,7 +368,9 @@ describe('transformSteps', () => {
                   __typename: 'EmailAction',
                   parentBlockId: 'button2.id',
                   gtmEventName: null,
-                  email: 'example@email.com'
+                  email: 'example@email.com',
+                  customizable: false,
+                  parentStepId: null
                 },
                 children: [],
                 settings: null

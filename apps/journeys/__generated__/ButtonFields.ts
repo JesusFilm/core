@@ -27,6 +27,8 @@ export interface ButtonFields_action_LinkAction {
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export interface ButtonFields_action_EmailAction {
@@ -34,6 +36,8 @@ export interface ButtonFields_action_EmailAction {
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export type ButtonFields_action = ButtonFields_action_PhoneAction | ButtonFields_action_NavigateToBlockAction | ButtonFields_action_LinkAction | ButtonFields_action_EmailAction;
