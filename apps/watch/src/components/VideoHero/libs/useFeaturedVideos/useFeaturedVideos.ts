@@ -4,10 +4,9 @@ import { useMemo } from 'react'
 import {
   GetVideoChildren,
   GetVideoChildren_video_children
-} from '../../../../../../../apps/watch/__generated__/GetVideoChildren'
+} from '../../../../../__generated__/GetVideoChildren'
 import { getLanguageIdFromLocale } from '../../../../libs/getLanguageIdFromLocale'
 import { VIDEO_CONTENT_FIELDS } from '../../../../libs/videoContentFields'
-
 //TODO: check if this is the correct way to use gql
 export const GET_FEATURED_VIDEOS = gql`
   ${VIDEO_CONTENT_FIELDS}
