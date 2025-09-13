@@ -521,53 +521,6 @@ export function useCarouselVideos(locale?: string): UseCarouselVideosReturn {
     }
   }, [videos.length, currentIndex, loadingQueue.size, loadNextVideo])
 
-  // Debug infinite playlist state
-  useEffect(() => {
-    if (videos.length === 0) return
-
-    const pastVideos = videos.slice(0, currentIndex).reverse() // Past videos in reverse order (most recent first)
-    const currentVideo = videos[currentIndex] || null
-    const futureVideos = videos.slice(currentIndex + 1)
-
-    console.log('🎬 INFINITE PLAYLIST DEBUG:', {
-      totalVideos: videos.length,
-      currentIndex,
-      pastVideos: pastVideos.map((video, index) => ({
-        position: -(index + 1), // Negative positions for past videos
-        id: video.id,
-        title: video.title[0]?.value,
-        poolIndex: video.poolIndex || 'unknown',
-        poolId: video.poolId || 'unknown'
-      })),
-      currentVideo: currentVideo
-        ? {
-            position: 0,
-            id: currentVideo.id,
-            title: currentVideo.title[0]?.value,
-            poolIndex: currentVideo.poolIndex || 'unknown',
-            poolId: currentVideo.poolId || 'unknown'
-          }
-        : null,
-      futureVideos: futureVideos.map((video, index) => ({
-        position: index + 1, // Positive positions for future videos
-        id: video.id,
-        title: video.title[0]?.value,
-        poolIndex: video.poolIndex || 'unknown',
-        poolId: video.poolId || 'unknown'
-      })),
-      carouselVideos: videos.map((video, index) => ({
-        carouselPosition: index,
-        id: video.id,
-        title: video.title[0]?.value,
-        poolIndex: video.poolIndex || 'unknown',
-        poolId: video.poolId || 'unknown',
-        isCurrentlyPlaying: index === currentIndex
-      })),
-      loading: loadingQueue.size > 0,
-      loadingPositions: Array.from(loadingQueue)
-    })
-  }, [videos, currentIndex, loadingQueue])
-
   const moveToNext = useCallback(() => {
     if (currentIndex < videos.length - 1) {
       // Move to next video in the array
@@ -582,23 +535,10 @@ export function useCarouselVideos(locale?: string): UseCarouselVideosReturn {
         addToSessionPlayedIds(nextVideo.id)
         addToPersistentPlayedIds(nextVideo.id)
         markPoolVideoPlayed(nextVideo.poolId || 'unknown', nextVideo.id)
-
-        console.log('➡️ MOVED TO NEXT VIDEO:', {
-          newIndex: currentIndex + 1,
-          videoId: nextVideo.id,
-          title: nextVideo.title[0]?.value,
-          poolIndex: nextVideo.poolIndex,
-          totalVideos: videos.length
-        })
       }
     } else if (videos.length > 0) {
       // At the end, fallback to incrementing pool index to load more videos
       setPoolIndex((prev) => prev + 1)
-      console.log('📈 REACHED END, INCREMENTING POOL INDEX:', {
-        currentIndex,
-        videosLength: videos.length,
-        newPoolIndex: poolIndex + 1
-      })
     }
   }, [currentIndex, videos, poolIndex])
 
@@ -611,18 +551,9 @@ export function useCarouselVideos(locale?: string): UseCarouselVideosReturn {
       if (previousVideo) {
         // Update pool index to match previous video
         setPoolIndex(previousVideo.poolIndex || 0)
-
-        console.log('⬅️ MOVED TO PREVIOUS VIDEO:', {
-          newIndex: currentIndex - 1,
-          videoId: previousVideo.id,
-          title: previousVideo.title[0]?.value,
-          poolIndex: previousVideo.poolIndex,
-          totalVideos: videos.length
-        })
       }
     } else {
       // Already at the beginning, can't go back further
-      console.log('🚫 ALREADY AT BEGINNING:', { currentIndex })
     }
   }, [currentIndex, videos])
 
@@ -631,7 +562,6 @@ export function useCarouselVideos(locale?: string): UseCarouselVideosReturn {
       // Find video in the videos array
       const videoIndex = videos.findIndex((video) => video.id === videoId)
       if (videoIndex === -1) {
-        console.warn('Video not found in videos array:', videoId)
         return false
       }
 
@@ -650,15 +580,6 @@ export function useCarouselVideos(locale?: string): UseCarouselVideosReturn {
       addToSessionPlayedIds(targetVideo.id)
       addToPersistentPlayedIds(targetVideo.id)
       markPoolVideoPlayed(targetVideo.poolId || 'unknown', targetVideo.id)
-
-      console.log('🎯 JUMPED TO VIDEO:', {
-        videoId: targetVideo.id,
-        title: targetVideo.title[0]?.value,
-        poolIndex: targetVideo.poolIndex,
-        oldIndex: currentIndex,
-        newIndex: videoIndex,
-        totalVideos: videos.length
-      })
 
       return true
     },
