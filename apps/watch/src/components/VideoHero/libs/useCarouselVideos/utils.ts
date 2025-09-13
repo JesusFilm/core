@@ -63,6 +63,10 @@ export const getRandomFromMultipleCollections = (
   collections: { id: string; childrenCount: number }[],
   periodKey: string
 ): { collectionId: string; childIndex: number } => {
+  if (collections.length === 0) {
+    return { collectionId: '', childIndex: 0 }
+  }
+
   const totalCount = collections.reduce(
     (sum, col) => sum + col.childrenCount,
     0
