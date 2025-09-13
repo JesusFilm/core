@@ -1,10 +1,10 @@
 {
-  "Deploy Quickly": "Deploy Quickly",
-  "Our Continuous Integration & Continuous Delivery pipeline lets you deliver code changes more frequently and reliably.": "Our Continuous Integration & Continuous Delivery pipeline lets you deliver code changes more frequently and reliably.",
-  "Common Environment": "Common Environment",
-  "We run on Docker. This means every developer shares the same environment that closely mimics production making collaboration simple.": "We run on Docker. This means every developer shares the same environment that closely mimics production making collaboration simple.",
-  "Powered by Typescript": "Powered by Typescript",
-  "TypeScript is a strongly typed programming language that builds on JavaScript, giving you better tooling at any scale.": "TypeScript is a strongly typed programming language that builds on JavaScript, giving you better tooling at any scale.",
-  "Core Development Kit Documentation": "Core Development Kit Documentation",
-  "Welcome - 5min ": "Welcome - 5min "
+  "Deploy Quickly": "Implante rapidamente",
+  "Our Continuous Integration & Continuous Delivery pipeline lets you deliver code changes more frequently and reliably.": "Nosso pipeline de Integração Contínua e Entrega Contínua permite que você entregue alterações de código com mais frequência e confiabilidade.",
+  "Common Environment": "Ambiente Comum",
+  "We run on Docker. This means every developer shares the same environment that closely mimics production making collaboration simple.": "Trabalhamos com Docker. Isso significa que todos os desenvolvedores compartilham o mesmo ambiente que imita de perto a produção, simplificando a colaboração.",
+  "Powered by Typescript": "Desenvolvido por Typescript",
+  "TypeScript is a strongly typed programming language that builds on JavaScript, giving you better tooling at any scale.": "TypeScript é uma linguagem de programação fortemente tipada que se baseia em JavaScript, oferecendo melhores ferramentas em qualquer escala.",
+  "Core Development Kit Documentation": "Documentação do Kit de Desenvolvimento Principal",
+  "Welcome - 5min ": "Bem-vindo - 5min "
 }
