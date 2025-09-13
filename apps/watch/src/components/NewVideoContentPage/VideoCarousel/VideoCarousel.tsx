@@ -100,7 +100,6 @@ export function VideoCarousel({
   // Check every 15 seconds and scroll to end if not already there (only in inline playback mode)
   useEffect(() => {
     if (mode !== 'inlinePlayback') return
-
     const interval = setInterval(() => {
       if (swiperRef.current && videos.length > 0) {
         const lastSlideIndex = videos.length - 1

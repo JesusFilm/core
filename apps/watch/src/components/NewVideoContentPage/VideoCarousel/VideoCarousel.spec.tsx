@@ -14,22 +14,25 @@ jest.mock('swiper/modules', () => ({
   Virtual: jest.fn()
 }))
 
+let mockSlideTo: jest.Mock
+
 jest.mock('swiper/react', () => ({
-  Swiper: ({ children, onSwiper, ...props }: any) => {
+  Swiper: ({ children, onSwiper, className, ...props }: any) => {
     const mockSwiper = {
-      slideTo: jest.fn(),
+      slideTo: mockSlideTo,
       slidePrev: jest.fn(),
       slideNext: jest.fn()
     }
+    // Call onSwiper synchronously
     if (onSwiper) onSwiper(mockSwiper)
     return (
-      <div data-testid="VideoCarouselSwiper" {...props}>
+      <div data-testid="VideoCarouselSwiper" className={className}>
         {children}
       </div>
     )
   },
-  SwiperSlide: ({ children, virtualIndex, ...props }: any) => (
-    <div data-testid={`swiper-slide-${virtualIndex}`} {...props}>
+  SwiperSlide: ({ children, virtualIndex, className, ...props }: any) => (
+    <div data-testid={`swiper-slide-${virtualIndex}`} className={className}>
       {children}
     </div>
   )
@@ -43,6 +46,7 @@ const mockUseTheme = useTheme as jest.MockedFunction<typeof useTheme>
 
 describe('VideoCarousel', () => {
   beforeEach(() => {
+    mockSlideTo = jest.fn()
     mockUseTheme.mockReturnValue({
       breakpoints: {
         values: {
@@ -100,5 +104,25 @@ describe('VideoCarousel', () => {
 
     // Swiper navigation would be tested in integration
     expect(carousel).toBeInTheDocument()
+  })
+
+  it('auto-scrolls to last slide every 15 seconds in inlinePlayback mode', async () => {
+    jest.useFakeTimers()
+
+    // Pass onVideoSelect and onSlideChange to trigger inlinePlayback mode
+    render(
+      <VideoCarousel
+        videos={videos.slice(0, 3)}
+        onVideoSelect={jest.fn()}
+        onSlideChange={jest.fn()}
+      />
+    )
+
+    // Fast forward 15 seconds
+    jest.advanceTimersByTime(15000)
+
+    expect(mockSlideTo).toHaveBeenCalledWith(2, 1800)
+
+    jest.useRealTimers()
   })
 })
