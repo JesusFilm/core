@@ -173,6 +173,14 @@ export const LANGUAGE_MAPPINGS: Record<string, LocaleMapping> = {
     ],
     languageId: '1942'
   },
+  tl: {
+    locale: 'tl',
+    nativeName: 'Wikang Tagalog',
+    englishName: 'Tagalog',
+    languageSlugs: ['tagalog.html'],
+    geoLocations: ['PH'],
+    languageId: '12551'
+  },
   zh: {
     locale: 'zh',
     nativeName: '繁體中文',
