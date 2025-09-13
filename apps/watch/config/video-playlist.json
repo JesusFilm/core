@@ -22,7 +22,6 @@
     ["10_DarkroomFaith"]
   ],
   "settings": {
-    "prefetchCount": 7,
     "recentlyPlayedBuffer": 15,
     "cycleOnComplete": true,
     "weightedRandomization": true,

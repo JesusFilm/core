@@ -177,7 +177,7 @@ export function NewVideoContentPage(): ReactElement {
             )}
           <div
             data-testid="ContentPageContent"
-            className="flex flex-col gap-20 py-20 z-10 px-4 sm:px-6 md:px-8 lg:px-10 xl:px-12 max-w-[1920px] w-full mx-auto"
+            className="flex flex-col gap-20 py-20 z-10 responsive-container"
           >
             <div className="grid grid-cols-1 xl:grid-cols-[3fr_2fr] z-10 gap-20">
               <ContentMetadata

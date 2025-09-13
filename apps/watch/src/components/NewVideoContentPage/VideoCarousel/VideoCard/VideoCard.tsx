@@ -17,6 +17,7 @@ interface VideoCardProps {
   video: VideoChildFields
   containerSlug?: string
   active: boolean
+  transparent?: boolean
   onVideoSelect?: (videoId: string) => void
 }
 
@@ -136,6 +137,7 @@ export function VideoCard({
   video,
   containerSlug,
   active,
+  transparent = false,
   onVideoSelect
 }: VideoCardProps): ReactElement {
   const { t } = useTranslation('apps-watch')
@@ -164,10 +166,9 @@ export function VideoCard({
   )
 
   const commonProps = {
-    className: 'block no-underline text-inherit',
-    style: {
-      pointerEvents: video != null ? 'auto' : 'none'
-    } as React.CSSProperties,
+    className: `block no-underline text-inherit ${
+      video != null ? 'pointer-events-auto' : 'pointer-events-none'
+    } ${transparent ? 'opacity-70' : ''}`,
     'aria-label': 'VideoCard',
     'data-testid': video != null ? `VideoCard-${video.id}` : 'VideoCard'
   }

@@ -47,26 +47,28 @@ function WatchHomePageContent({
 
   const [activeVideoId, setActiveVideoId] = useState<string | undefined>()
   const {
-    currentVideo,
-    nextVideos,
+    videos,
+    currentIndex,
     loading,
     moveToNext,
     moveToPrevious,
+    jumpToVideo,
     currentPoolIndex
   } = useCarouselVideos('529') // Use language ID 529 for now
   const [autoProgressEnabled, setAutoProgressEnabled] = useState(true)
 
-  // Create videos array from carousel data and map to VideoChildFields format
-  const videos = currentVideo
-    ? [currentVideo, ...nextVideos].map((video) => ({
-        ...video,
-        // Ensure the data structure matches what VideoCard expects
-        title: video.title || [{ value: video.videoTitle || video.slug }],
-        images: video.images || [],
-        imageAlt: video.imageAlt || [{ value: video.videoTitle || video.slug }],
-        label: video.label || video.videoLabel || 'video'
-      }))
-    : []
+  // Map videos to ensure data structure matches what VideoCard expects
+  const carouselVideos = videos.map((video) => ({
+    ...video,
+    // Ensure the data structure matches what VideoCard expects
+    title: video.title || [{ value: video.videoTitle || video.slug }],
+    images: video.images || [],
+    imageAlt: video.imageAlt || [{ value: video.videoTitle || video.slug }],
+    label: video.label || video.videoLabel || 'video'
+  }))
+
+  // Get current video from videos array using currentIndex
+  const currentVideo = videos[currentIndex] || null
 
   const { state: playerState } = usePlayer()
   const [lastProgress, setLastProgress] = useState(0)
@@ -90,17 +92,19 @@ function WatchHomePageContent({
 
   // Auto-progress to next video function
   const progressToNextVideo = useCallback(() => {
-    if (!autoProgressEnabled || isProgressing) return
+    if (!autoProgressEnabled || isProgressing || !videos.length) return
 
     setIsProgressing(true)
-    moveToNext() // Use the carousel's moveToNext function
+
+    // Use moveToNext from useCarouselVideos hook
+    moveToNext()
     setLastProgress(0) // Reset progress tracking for new video
 
     // Allow progression again after a short delay
     setTimeout(() => {
       setIsProgressing(false)
     }, 2000)
-  }, [moveToNext, autoProgressEnabled, isProgressing])
+  }, [moveToNext, autoProgressEnabled, isProgressing, videos.length])
 
   // Effect to detect video end and progress immediately
   useEffect(() => {
@@ -111,8 +115,8 @@ function WatchHomePageContent({
     setLastProgress(playerState.progress)
   }, [playerState.progress, lastProgress, progressToNextVideo, isProgressing])
 
-  // Get the active video for playback
-  const activeVideo = currentVideo || videos[0]
+  // Get the active video for playback (current video from carousel)
+  const activeVideo = currentVideo
 
   const indexName = process.env.NEXT_PUBLIC_ALGOLIA_INDEX ?? ''
 
@@ -124,21 +128,29 @@ function WatchHomePageContent({
         <ContentPageBlurFilter>
           <div className="pt-4">
             <VideoCarousel
-              videos={videos}
-              // containerSlug={activeVideo.slug}
+              videos={carouselVideos}
               activeVideoId={activeVideoId}
               loading={loading}
               onVideoSelect={(videoId: string) => {
-                // For now, just update the local activeVideoId
-                // The carousel manages its own sequence
-                setActiveVideoId(videoId)
-                setIsProgressing(false)
+                // Jump to the selected video in the carousel system
+                const success = jumpToVideo(videoId)
+                if (success) {
+                  setIsProgressing(false)
+                  // Note: activeVideoId will be automatically updated by the currentVideo sync effect
+                } else {
+                  console.warn('Failed to jump to video:', videoId)
+                }
+              }}
+              onSlideChange={(activeIndex: number) => {
+                // Note: Slide changes in the carousel don't directly affect video playback
+                // Video playback is controlled by the useCarouselVideos hook
+                console.log('Carousel slide changed to index:', activeIndex)
               }}
             />
           </div>
           <div
             data-testid="WatchHomePage"
-            className="flex flex-col py-20 z-10 px-4 sm:px-6 md:px-8 lg:px-10 xl:px-12 max-w-[1920px] w-full mx-auto"
+            className="flex flex-col py-20 z-10 responsive-container"
           >
             <ThemeProvider
               themeName={ThemeName.website}

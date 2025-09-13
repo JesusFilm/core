@@ -28,7 +28,7 @@ export function NewVideoContentHeader({
 
   return (
     <div
-      className="flex z-2 py-6 px-4 sm:px-6 md:px-8 lg:px-10 xl:px-12 max-w-[1920px] w-full mx-auto relative"
+      className="flex z-2 py-6 responsive-container relative"
       data-testid="NewVideoContentHeader"
     >
       {container != null && (

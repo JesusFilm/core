@@ -4,7 +4,6 @@ export interface PlaylistConfig {
   version: string
   playlistSequence: string[][]
   settings: {
-    prefetchCount: number
     recentlyPlayedBuffer: number
     cycleOnComplete: boolean
     weightedRandomization: boolean
@@ -19,7 +18,8 @@ export const getPlaylistConfig = (): PlaylistConfig => {
 
 export const getDeterministicOffset = (
   collectionId: string,
-  childrenCount: number
+  childrenCount: number,
+  cycleContext?: { poolIndex?: number; totalVideosLoaded?: number }
 ): number => {
   if (childrenCount === 0) return 0
 
@@ -28,8 +28,34 @@ export const getDeterministicOffset = (
   const today = new Date().toLocaleDateString('en-CA', {
     timeZone: businessTimezone
   }) // YYYY-MM-DD format
-  const periodKey = today
-  const seed = simpleHash(periodKey + collectionId)
+
+  // Include cycle context to get different videos on subsequent visits
+  let seedString = today + collectionId
+
+  if (cycleContext) {
+    // Add pool index to vary selection when cycling through the same collection
+    if (cycleContext.poolIndex !== undefined) {
+      const cycleNumber = Math.floor(cycleContext.poolIndex / 15) // Rough cycle through playlist (15 pools)
+      seedString += `-cycle${cycleNumber}`
+    }
+
+    // Add total videos loaded to ensure progression even within the same cycle
+    if (cycleContext.totalVideosLoaded !== undefined) {
+      const progressionFactor = Math.floor(cycleContext.totalVideosLoaded / 10) // Change every 10 videos
+      seedString += `-prog${progressionFactor}`
+    }
+  }
+
+  console.log('🎲 GENERATING DETERMINISTIC OFFSET:', {
+    collectionId,
+    childrenCount,
+    cycleContext,
+    seedString,
+    seed: simpleHash(seedString),
+    offset: simpleHash(seedString) % childrenCount
+  })
+
+  const seed = simpleHash(seedString)
   return seed % childrenCount
 }
 
@@ -137,29 +163,137 @@ export const isPoolExhausted = (
 ): boolean => {
   if (typeof window === 'undefined') return false
 
-  const sessionPlayed = getSessionPlayedIds()
-  const poolKey = `pool-${poolId}`
+  // Get unique video IDs played from this specific pool
+  const poolVideosKey = `pool-${poolId}-videos`
+  const poolPlayedVideosJson = sessionStorage.getItem(poolVideosKey) || '[]'
 
-  // Get videos played from this specific pool in this session
-  const poolPlayedKey = `${poolKey}-played`
-  const poolPlayedCount = parseInt(
-    sessionStorage.getItem(poolPlayedKey) || '0',
-    10
-  )
+  try {
+    const poolPlayedVideos: string[] = JSON.parse(poolPlayedVideosJson)
+    const uniqueVideosPlayed = new Set(poolPlayedVideos).size
 
-  return poolPlayedCount >= childrenCount
+    console.log('🔍 POOL EXHAUSTION CHECK:', {
+      poolId,
+      childrenCount,
+      uniqueVideosPlayed,
+      totalPlayedVideoIds: poolPlayedVideos.length,
+      isExhausted: uniqueVideosPlayed >= childrenCount,
+      playedVideoIds: poolPlayedVideos.slice(-5) // Show last 5 for debugging
+    })
+
+    return uniqueVideosPlayed >= childrenCount
+  } catch (error) {
+    console.warn('Failed to parse pool played videos:', error)
+    return false
+  }
 }
 
-export const markPoolVideoPlayed = (poolId: string): void => {
+export const markPoolVideoPlayed = (poolId: string, videoId?: string): void => {
   if (typeof window === 'undefined') return
 
-  const poolKey = `pool-${poolId}`
-  const poolPlayedKey = `${poolKey}-played`
-  const current = parseInt(sessionStorage.getItem(poolPlayedKey) || '0', 10)
+  // If no videoId provided, fall back to the old counter method for backward compatibility
+  if (!videoId) {
+    const poolKey = `pool-${poolId}`
+    const poolPlayedKey = `${poolKey}-played`
+    const current = parseInt(sessionStorage.getItem(poolPlayedKey) || '0', 10)
+    sessionStorage.setItem(poolPlayedKey, (current + 1).toString())
+    return
+  }
 
-  sessionStorage.setItem(poolPlayedKey, (current + 1).toString())
+  // Track specific video IDs played from this pool
+  const poolVideosKey = `pool-${poolId}-videos`
+  const poolPlayedVideosJson = sessionStorage.getItem(poolVideosKey) || '[]'
+
+  try {
+    const poolPlayedVideos: string[] = JSON.parse(poolPlayedVideosJson)
+
+    // Add this video ID if it's not already tracked
+    if (!poolPlayedVideos.includes(videoId)) {
+      poolPlayedVideos.push(videoId)
+      sessionStorage.setItem(poolVideosKey, JSON.stringify(poolPlayedVideos))
+
+      console.log('✅ MARKED POOL VIDEO PLAYED:', {
+        poolId,
+        videoId,
+        totalUniqueVideos: new Set(poolPlayedVideos).size,
+        allPlayedVideoIds: poolPlayedVideos
+      })
+    } else {
+      console.log('ℹ️ VIDEO ALREADY MARKED FOR POOL:', {
+        poolId,
+        videoId,
+        existingCount: new Set(poolPlayedVideos).size
+      })
+    }
+  } catch (error) {
+    console.warn('Failed to mark pool video played:', error)
+    // Fall back to old method
+    const poolKey = `pool-${poolId}`
+    const poolPlayedKey = `${poolKey}-played`
+    const current = parseInt(sessionStorage.getItem(poolPlayedKey) || '0', 10)
+    sessionStorage.setItem(poolPlayedKey, (current + 1).toString())
+  }
 }
 
 export const getPoolKey = (pool: string[]): string => {
   return pool.sort().join('|')
+}
+
+// Session video state management
+interface SessionVideoState {
+  videoId: string
+  videoSlug: string
+  videoTitle: string
+  poolIndex: number
+  poolId: string
+  timestamp: number
+}
+
+export const saveCurrentVideoSession = (
+  videoId: string,
+  videoSlug: string,
+  videoTitle: string,
+  poolIndex: number,
+  poolId: string
+): void => {
+  if (typeof window === 'undefined') return
+
+  const sessionState: SessionVideoState = {
+    videoId,
+    videoSlug,
+    videoTitle,
+    poolIndex,
+    poolId,
+    timestamp: Date.now()
+  }
+
+  sessionStorage.setItem('carousel-current-video', JSON.stringify(sessionState))
+}
+
+export const loadCurrentVideoSession = (): SessionVideoState | null => {
+  if (typeof window === 'undefined') return null
+
+  try {
+    const stored = sessionStorage.getItem('carousel-current-video')
+    if (!stored) return null
+
+    const sessionState: SessionVideoState = JSON.parse(stored)
+
+    // Check if session is less than 24 hours old
+    const hoursAgo = (Date.now() - sessionState.timestamp) / (1000 * 60 * 60)
+    if (hoursAgo > 24) {
+      sessionStorage.removeItem('carousel-current-video')
+      return null
+    }
+
+    return sessionState
+  } catch (error) {
+    console.warn('Failed to load current video session:', error)
+    sessionStorage.removeItem('carousel-current-video')
+    return null
+  }
+}
+
+export const clearCurrentVideoSession = (): void => {
+  if (typeof window === 'undefined') return
+  sessionStorage.removeItem('carousel-current-video')
 }
