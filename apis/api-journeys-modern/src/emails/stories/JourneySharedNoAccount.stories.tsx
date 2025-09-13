@@ -1,4 +1,4 @@
-import { Meta, StoryObj } from '@storybook/react'
+import { Meta, StoryObj } from '@storybook/nextjs'
 
 import { JourneyWithTeamAndUserJourney } from '../../workers/email/service/prisma.types'
 import { JourneySharedNoAccountEmail } from '../templates/JourneyShared/JourneySharedNoAccount'

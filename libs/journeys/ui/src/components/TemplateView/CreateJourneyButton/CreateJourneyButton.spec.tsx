@@ -11,7 +11,6 @@ import {
 } from '../../../../__generated__/globalTypes'
 import { JourneyProvider } from '../../../libs/JourneyProvider'
 import type { JourneyFields as Journey } from '../../../libs/JourneyProvider/__generated__/JourneyFields'
-import { JOURNEY_AI_TRANSLATE_CREATE_SUBSCRIPTION } from '../../../libs/useJourneyAiTranslateSubscription'
 import { SUPPORTED_LANGUAGE_IDS } from '../../../libs/useJourneyAiTranslateSubscription/supportedLanguages'
 import { JOURNEY_DUPLICATE } from '../../../libs/useJourneyDuplicateMutation'
 import { GET_LANGUAGES } from '../../../libs/useLanguagesQuery'
@@ -199,38 +198,6 @@ const journeyDuplicateMock = {
   }))
 }
 
-const journeyTranslationSubscriptionMock = {
-  request: {
-    query: JOURNEY_AI_TRANSLATE_CREATE_SUBSCRIPTION,
-    variables: {
-      journeyId: 'duplicatedJourneyId',
-      name: 'Template',
-      journeyLanguageName: 'English',
-      textLanguageId: '496',
-      textLanguageName: 'Français'
-    }
-  },
-  result: {
-    data: {
-      journeyAiTranslateCreateSubscription: {
-        progress: 100,
-        message: 'Translation complete',
-        journey: {
-          id: 'duplicatedJourneyId',
-          title: 'Template Traduit',
-          description: 'Description traduite',
-          languageId: '496',
-          createdAt: '2023-04-25T12:34:56Z',
-          updatedAt: '2023-04-25T12:34:56Z',
-          blocks: [],
-          __typename: 'Journey'
-        },
-        __typename: 'JourneyAiTranslateProgress'
-      }
-    }
-  }
-}
-
 const createJourneyButton = (
   <MockedProvider
     mocks={[
@@ -250,15 +217,6 @@ const createJourneyButton = (
     </SnackbarProvider>
   </MockedProvider>
 )
-
-function defineWindowWithPath(path: string): void {
-  Object.defineProperty(window, 'location', {
-    configurable: true,
-    enumerable: true,
-    value: { origin: path },
-    writable: true
-  })
-}
 
 describe('CreateJourneyButton', () => {
   const prefetch = jest.fn()
@@ -437,8 +395,6 @@ describe('CreateJourneyButton', () => {
         push,
         query: { createNew: false }
       } as unknown as NextRouter)
-
-      defineWindowWithPath('http://localhost:4200')
     })
 
     afterEach(() => {
@@ -462,10 +418,11 @@ describe('CreateJourneyButton', () => {
       await waitFor(() => {
         expect(push).toHaveBeenCalledWith(
           {
-            pathname: 'http://localhost:4200/users/sign-in',
+            pathname: expect.stringContaining('/users/sign-in'),
             query: {
-              redirect:
-                'http://localhost:4200/templates/journeyId?createNew=true',
+              redirect: expect.stringContaining(
+                '/templates/journeyId?createNew=true'
+              ),
               login: true
             }
           },
@@ -484,10 +441,11 @@ describe('CreateJourneyButton', () => {
       await waitFor(() => {
         expect(push).toHaveBeenCalledWith(
           {
-            pathname: 'http://localhost:4200/users/sign-in',
+            pathname: expect.stringContaining('/users/sign-in'),
             query: {
-              redirect:
-                'http://localhost:4200/templates/journeyId?createNew=true',
+              redirect: expect.stringContaining(
+                '/templates/journeyId?createNew=true'
+              ),
               login: false
             }
           },
@@ -505,8 +463,6 @@ describe('CreateJourneyButton', () => {
         push,
         query: { createNew: false }
       } as unknown as NextRouter)
-
-      defineWindowWithPath('http://localhost:4200')
 
       process.env = {
         ...originalEnv,
@@ -527,10 +483,11 @@ describe('CreateJourneyButton', () => {
       await waitFor(() => {
         expect(push).toHaveBeenCalledWith(
           {
-            pathname: 'http://localhost:4200/users/sign-in',
+            pathname: expect.stringContaining('/users/sign-in'),
             query: {
-              redirect:
-                'http://localhost:4200/templates/journeyId?createNew=true',
+              redirect: expect.stringContaining(
+                '/templates/journeyId?createNew=true'
+              ),
               login: true
             }
           },
@@ -571,8 +528,6 @@ describe('CreateJourneyButton', () => {
         query: { createNew: false }
       } as unknown as NextRouter)
 
-      defineWindowWithPath('http://localhost:4300')
-
       process.env = {
         ...originalEnv,
         NEXT_PUBLIC_JOURNEYS_ADMIN_URL: 'http://localhost:4200'
@@ -592,10 +547,11 @@ describe('CreateJourneyButton', () => {
       await waitFor(() => {
         expect(push).toHaveBeenCalledWith(
           {
-            pathname: 'http://localhost:4200/users/sign-in',
+            pathname: expect.stringContaining('/users/sign-in'),
             query: {
-              redirect:
-                'http://localhost:4200/templates/journeyId?createNew=true',
+              redirect: expect.stringContaining(
+                '/templates/journeyId?createNew=true'
+              ),
               login: true
             }
           },

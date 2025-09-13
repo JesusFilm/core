@@ -25,7 +25,7 @@ describe('TemplateCreatorDetails', () => {
     )
 
     expect(getByTestId('TemplateCreatorDetails')).toHaveStyle(
-      'background-color: red'
+      'background-color: rgb(255, 0, 0)'
     )
   })
 })
