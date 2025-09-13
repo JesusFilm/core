@@ -77,9 +77,8 @@
 /* 3. Utilities layer - highest specificity */
 @layer utilities {
   .preview-video {
-    height: 50svh;
+    height: clamp(320px, 50svh, 900px);
     max-width: 100%;
-    min-height: 500px;
   }
 
   .fullscreen-video {
