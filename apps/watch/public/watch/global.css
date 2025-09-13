@@ -85,9 +85,13 @@
 
   .fullscreen-video {
     height: 100vh;
-    height: 100svh;
-    height: 100dvh;
     max-width: 100%;
+  }
+  @supports (height: 100svh) {
+    .fullscreen-video { height: 100svh; }
+  }
+  @supports (height: 100dvh) {
+    .fullscreen-video { height: 100dvh; }
   }
 
   .animate-mesh-gradient {
