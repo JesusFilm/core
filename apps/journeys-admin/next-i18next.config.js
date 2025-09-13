@@ -30,7 +30,8 @@ const i18nConfig = {
       'zh', // Chinese
       'zh-Hans-CN', // Chinese, Simplified
       'de', // German
-      'ne' // Nepali
+      'ne', // Nepali
+      'ms' // Malay
     ],
     localeDetection: false
   },
@@ -46,7 +47,8 @@ const i18nConfig = {
     tr: ['tr-TR'],
     zh: ['zh-Hans-CN'],
     de: ['de-DE'],
-    ne: ['ne-NP']
+    ne: ['ne-NP'],
+    ms: ['ms-MY']
   },
   localePath,
   react: { useSuspense: false }
