@@ -234,9 +234,7 @@ export const markPoolVideoPlayed = (poolId: string, videoId?: string): void => {
   }
 }
 
-export const getPoolKey = (pool: string[]): string => {
-  return pool.sort().join('|')
-}
+export const getPoolKey = (pool: string[]): string => [...pool].sort().join('|')
 
 // Session video state management
 interface SessionVideoState {
