@@ -123,6 +123,7 @@ export function VideoTitle({
             onMuteToggle()
           }}
           className="absolute cursor-pointer bottom-7 right-0 scale-125 inverted-effect text-black p-2 rounded-full hover:bg-white/20 transition-colors duration-200"
+          aria-label={mute || volume === 0 ? t('Unmute') : t('Mute')}
         >
           {mute || volume === 0 ? <VolumeOff /> : <VolumeUpOutlined />}
         </button>
