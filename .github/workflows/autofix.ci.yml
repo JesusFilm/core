@@ -9,16 +9,21 @@ on:
     branches: [main]
 jobs:
   lint:
-    runs-on: blacksmith-2vcpu-ubuntu-2204
+    permissions:
+      contents: write
+    runs-on: ubuntu-latest
     strategy:
       matrix:
         node-version: [22]
     env:
       NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
+      NPM_CONFIG_FAST: true
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
+      - name: Start NX Agent run
+        run: npx nx-cloud start-ci-run --distribute-on="3 linux-medium-js" --stop-agents-after="subgraph-check"
       - name: Fetch other branches
         if: ${{ github.event_name == 'pull_request' }}
         run: git fetch --no-tags --prune --depth=5 origin $GITHUB_BASE_REF
@@ -26,17 +31,20 @@ jobs:
         uses: pnpm/action-setup@v4
         with:
           run_install: false
-      - uses: useblacksmith/setup-node@v5
+      - uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
           cache: 'pnpm'
       - name: Install dependencies
         run: pnpm install --frozen-lockfile --silent
-      - name: Mount lint cache
-        uses: useblacksmith/stickydisk@v1
+      - name: Cache lint artifacts
+        uses: actions/cache@v4
         with:
-          key: ${{ github.repository }}-lint
           path: ./.cache
+          key: ${{ github.repository }}-lint
+          restore-keys: |
+            ${{ github.repository }}-
+            lint-
       - name: generate prisma imports
         uses: mansagroup/nrwl-nx-action@v3
         with:
