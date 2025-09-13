@@ -1,6 +1,6 @@
 import NavigateBeforeIcon from '@mui/icons-material/NavigateBefore'
 import NavigateNextIcon from '@mui/icons-material/NavigateNext'
-import Stack from '@mui/material/Stack'
+import ButtonBase from '@mui/material/ButtonBase'
 import { alpha } from '@mui/material/styles'
 import { ReactElement, forwardRef } from 'react'
 
@@ -9,19 +9,23 @@ interface NavButtonProps {
   disabled?: boolean
 }
 
-export const NavButton = forwardRef<HTMLDivElement, NavButtonProps>(
+export const NavButton = forwardRef<HTMLButtonElement, NavButtonProps>(
   function NavButton({ variant, disabled = false }, ref): ReactElement {
     return (
-      <Stack
+      <ButtonBase
         ref={ref}
-        justifyContent="center"
-        alignItems="center"
+        type="button"
+        disabled={disabled}
+        aria-label={variant === 'prev' ? 'Previous slide' : 'Next slide'}
         sx={{
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
           position: 'absolute',
           zIndex: 1,
           color: 'primary.contrastText',
           opacity: { xs: 0, xl: disabled ? 0 : 1 },
-          cursor: disabled ? 'none' : 'pointer',
+          cursor: disabled ? 'not-allowed' : 'pointer',
           pointerEvents: disabled ? 'none' : undefined,
           '&.swiper-button-disabled': {
             opacity: 0,
@@ -50,7 +54,7 @@ export const NavButton = forwardRef<HTMLDivElement, NavButtonProps>(
         ) : (
           <NavigateNextIcon data-testid="NavigateNextIcon" fontSize="large" />
         )}
-      </Stack>
+      </ButtonBase>
     )
   }
 )
