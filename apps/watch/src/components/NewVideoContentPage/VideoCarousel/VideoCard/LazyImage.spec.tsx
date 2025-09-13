@@ -1,22 +1,27 @@
 import { render, screen, waitFor } from '@testing-library/react'
+import type { ImgHTMLAttributes } from 'react'
 
 import { LazyImage } from './LazyImage'
 
 // Mock Next.js Image component
-jest.mock('next/image', () => {
-  return function MockImage(props: any) {
+jest.mock('next/image', () => ({
+  __esModule: true,
+  default: function MockImage(props: ImgHTMLAttributes<HTMLImageElement>) {
     return <img data-testid="next-image" {...props} />
   }
-})
+}))
 
 // Mock IntersectionObserver
+const originalIntersectionObserver = window.IntersectionObserver
 const mockIntersectionObserver = jest.fn()
 mockIntersectionObserver.mockReturnValue({
   observe: jest.fn(),
   unobserve: jest.fn(),
   disconnect: jest.fn()
 })
-window.IntersectionObserver = mockIntersectionObserver
+;(
+  window as unknown as { IntersectionObserver: typeof mockIntersectionObserver }
+).IntersectionObserver = mockIntersectionObserver
 
 describe('LazyImage', () => {
   const defaultProps = {
@@ -26,6 +31,10 @@ describe('LazyImage', () => {
 
   beforeEach(() => {
     jest.clearAllMocks()
+  })
+
+  afterAll(() => {
+    window.IntersectionObserver = originalIntersectionObserver
   })
 
   it('renders image immediately when priority is true', () => {

@@ -1,7 +1,7 @@
 import { render, fireEvent, screen } from '@testing-library/react'
 
-import { usePlayer } from '../../../../../libs/playerContext'
-import { videos } from '../../../../Videos/__generated__/testData'
+import { usePlayer } from '../../../../libs/playerContext'
+import { videos } from '../../../Videos/__generated__/testData'
 
 import { VideoCard } from './VideoCard'
 
@@ -11,15 +11,15 @@ jest.mock('next/image', () => {
   }
 })
 
-jest.mock('../../../../../libs/playerContext', () => ({
+jest.mock('../../../../libs/playerContext', () => ({
   usePlayer: jest.fn()
 }))
 
-jest.mock('../../../../../libs/utils/getLabelDetails/getLabelDetails', () => ({
+jest.mock('../../../../libs/utils/getLabelDetails/getLabelDetails', () => ({
   getLabelDetails: () => ({ label: 'Chapter' })
 }))
 
-jest.mock('../../../../../libs/utils/getWatchUrl', () => ({
+jest.mock('../../../../libs/utils/getWatchUrl', () => ({
   getWatchUrl: () => '/watch/test-video'
 }))
 

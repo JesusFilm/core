@@ -7,6 +7,7 @@ import {
   type ReactElement,
   useCallback,
   useEffect,
+  useMemo,
   useRef,
   useState
 } from 'react'
@@ -148,60 +149,82 @@ function WatchHomePageContent({
 
   // Get the active video for playback (current video from carousel)
   // Transform CarouselVideo to VideoContentFields for VideoProvider
-  const activeVideo: VideoContentFields | null = currentVideo
-    ? {
-        __typename: 'Video' as const,
-        id: currentVideo.id,
-        slug: currentVideo.slug,
-        label:
-          currentVideo.label &&
-          Object.values(VideoLabel).includes(currentVideo.label as VideoLabel)
-            ? (currentVideo.label as VideoLabel)
-            : VideoLabel.shortFilm,
-        title: currentVideo.title.map((t) => ({
-          __typename: 'VideoTitle' as const,
-          value: t.value
-        })),
-        images: currentVideo.images.map((img) => ({
-          __typename: 'CloudflareImage' as const,
-          mobileCinematicHigh: img.mobileCinematicHigh
-        })),
-        imageAlt: currentVideo.imageAlt.map((alt) => ({
-          __typename: 'VideoImageAlt' as const,
-          value: alt.value
-        })),
-        snippet: [{ __typename: 'VideoSnippet' as const, value: '' }],
-        description: [{ __typename: 'VideoDescription' as const, value: '' }],
-        studyQuestions: [],
-        bibleCitations: [],
-        variant: currentVideo.variant
-          ? {
-              __typename: 'VideoVariant' as const,
-              id: currentVideo.variant.id,
-              duration: currentVideo.variant.duration,
-              hls: currentVideo.variant.hls,
-              downloadable: false,
-              downloads: [],
-              language: {
-                __typename: 'Language' as const,
-                id: '529',
-                name: [
-                  {
-                    __typename: 'LanguageName' as const,
-                    value: 'English',
-                    primary: true
-                  }
-                ],
-                bcp47: 'en'
-              },
-              slug: currentVideo.variant.slug,
-              subtitleCount: 0
-            }
-          : null,
-        variantLanguagesCount: 1,
-        childrenCount: currentVideo.childrenCount
-      }
-    : null
+  const activeVideo: VideoContentFields | null = useMemo(() => {
+    if (!currentVideo) {
+      return null
+    }
+
+    const title = (currentVideo.title ?? []).map((t) => ({
+      __typename: 'VideoTitle' as const,
+      value: t.value
+    }))
+
+    const images = (currentVideo.images ?? []).map((img) => ({
+      __typename: 'CloudflareImage' as const,
+      mobileCinematicHigh: img.mobileCinematicHigh
+    }))
+
+    const imageAlt = (currentVideo.imageAlt ?? []).map((alt) => ({
+      __typename: 'VideoImageAlt' as const,
+      value: alt.value
+    }))
+
+    const snippet = []
+    const description = []
+    const studyQuestions = []
+    const bibleCitations = []
+
+    const variant =
+      currentVideo.variant &&
+      currentVideo.variant.id &&
+      currentVideo.variant.duration !== undefined &&
+      currentVideo.variant.hls &&
+      currentVideo.variant.slug
+        ? {
+            __typename: 'VideoVariant' as const,
+            id: currentVideo.variant.id,
+            duration: currentVideo.variant.duration,
+            hls: currentVideo.variant.hls,
+            downloadable: false,
+            downloads: [],
+            language: {
+              __typename: 'Language' as const,
+              id: '529',
+              name: [
+                {
+                  __typename: 'LanguageName' as const,
+                  value: 'English',
+                  primary: true
+                }
+              ],
+              bcp47: 'en'
+            },
+            slug: currentVideo.variant.slug,
+            subtitleCount: 0
+          }
+        : null
+
+    return {
+      __typename: 'Video' as const,
+      id: currentVideo.id,
+      slug: currentVideo.slug,
+      label:
+        currentVideo.label &&
+        Object.values(VideoLabel).includes(currentVideo.label as VideoLabel)
+          ? (currentVideo.label as VideoLabel)
+          : VideoLabel.shortFilm,
+      title,
+      images,
+      imageAlt,
+      snippet,
+      description,
+      studyQuestions,
+      bibleCitations,
+      variant,
+      variantLanguagesCount: 1,
+      childrenCount: currentVideo.childrenCount ?? 0
+    }
+  }, [currentVideo])
 
   const indexName = process.env.NEXT_PUBLIC_ALGOLIA_INDEX ?? ''
 

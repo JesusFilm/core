@@ -1,5 +1,6 @@
 import { renderHook, act } from '@testing-library/react'
 import { MockedProvider } from '@apollo/client/testing'
+import type { ReactNode } from 'react'
 
 import { useCarouselVideos } from './useCarouselVideos'
 import { GET_COLLECTION_COUNTS, GET_SHORT_FILMS } from './queries'
@@ -71,7 +72,7 @@ const mocks = [
 ]
 
 describe('useCarouselVideos', () => {
-  const wrapper = ({ children }: { children: React.ReactNode }) => (
+  const wrapper = ({ children }: { children: ReactNode }) => (
     <MockedProvider mocks={mocks} addTypename={false}>
       {children}
     </MockedProvider>

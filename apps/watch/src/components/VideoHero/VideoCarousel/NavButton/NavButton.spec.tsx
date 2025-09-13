@@ -1,12 +1,13 @@
 import { render, screen } from '@testing-library/react'
 import { ThemeProvider, createTheme } from '@mui/material/styles'
+import type { ReactElement } from 'react'
 
 import { NavButton } from './NavButton'
 
 const theme = createTheme()
 
 describe('NavButton', () => {
-  const renderWithTheme = (component: React.ReactElement) => {
+  const renderWithTheme = (component: ReactElement) => {
     return render(<ThemeProvider theme={theme}>{component}</ThemeProvider>)
   }
 

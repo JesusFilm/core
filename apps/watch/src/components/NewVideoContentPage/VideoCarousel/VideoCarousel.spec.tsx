@@ -1,7 +1,7 @@
 import { render, screen, fireEvent } from '@testing-library/react'
 import { useTheme } from '@mui/material/styles'
 
-import { videos } from '../../../Videos/__generated__/testData'
+import { videos } from '../../Videos/__generated__/testData'
 
 import { VideoCarousel } from './VideoCarousel'
 
