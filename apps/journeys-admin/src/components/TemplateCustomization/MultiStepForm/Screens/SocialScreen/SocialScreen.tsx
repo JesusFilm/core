@@ -8,7 +8,7 @@ import ArrowRightIcon from '@core/shared/ui/icons/ArrowRight'
 import { TitleEdit } from '../../../../Editor/Slider/Settings/SocialDetails/TitleEdit'
 import { DescriptionEdit } from '../../../../Editor/Slider/Settings/SocialDetails/DescriptionEdit'
 import { CustomizationScreen } from '../../../utils/getCustomizeFlowConfig'
-import { SocialImage } from '@core/journeys/ui/TemplateView/TemplateViewHeader/SocialImage'
+import { SocialScreenSocialImage } from './SocialScreenSocialImage'
 
 interface SocialScreenProps {
   handleNext: () => void
@@ -56,7 +56,7 @@ export function SocialScreen({
           px: { xs: 5, sm: 10 }
         }}
       >
-        <SocialImage />
+        <SocialScreenSocialImage />
         <TitleEdit />
         <DescriptionEdit />
       </Stack>

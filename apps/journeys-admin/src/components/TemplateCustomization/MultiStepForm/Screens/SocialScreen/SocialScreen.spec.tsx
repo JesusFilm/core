@@ -48,7 +48,7 @@ describe('SocialScreen', () => {
 
   it('should render the SocialScreen with title, social image and description', () => {
     renderSocialScreen()
-    expect(screen.getByTestId('SocialImage')).toBeInTheDocument()
+    expect(screen.getByTestId('SocialScreenSocialImage')).toBeInTheDocument()
     expect(screen.getByTestId('TitleEdit')).toBeInTheDocument()
     expect(screen.getByTestId('DescriptionEdit')).toBeInTheDocument()
     expect(screen.getByTestId('DoneButton')).toBeInTheDocument()
