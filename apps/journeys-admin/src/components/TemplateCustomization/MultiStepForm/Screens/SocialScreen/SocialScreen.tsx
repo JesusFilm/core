@@ -5,10 +5,10 @@ import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 
 import ArrowRightIcon from '@core/shared/ui/icons/ArrowRight'
-import Box from '@mui/material/Box'
 import { TitleEdit } from '../../../../Editor/Slider/Settings/SocialDetails/TitleEdit'
 import { DescriptionEdit } from '../../../../Editor/Slider/Settings/SocialDetails/DescriptionEdit'
 import { CustomizationScreen } from '../../../utils/getCustomizeFlowConfig'
+import { SocialScreenSocialImage } from './SocialScreenSocialImage'
 
 interface SocialScreenProps {
   handleNext: () => void
@@ -27,7 +27,6 @@ export function SocialScreen({
   return (
     <Stack
       alignItems="center"
-      gap={0}
       sx={{
         px: { xs: 5, sm: 20 }
       }}
@@ -47,17 +46,20 @@ export function SocialScreen({
           'Here’s how your invitation will appear when shared on social media. You can update it if you’d like.'
         )}
       </Typography>
-      <Box
+      <Stack
+        alignItems="center"
+        gap={6}
         data-testid="SocialShareAppearance"
         sx={{
+          width: '100%',
           py: 5,
-          px: { xs: 5, sm: 10 },
-          width: '100%'
+          px: { xs: 5, sm: 10 }
         }}
       >
+        <SocialScreenSocialImage />
         <TitleEdit />
         <DescriptionEdit />
-      </Box>
+      </Stack>
       <Button
         variant="contained"
         color="secondary"
@@ -68,7 +70,6 @@ export function SocialScreen({
           width: BUTTON_NEXT_STEP_WIDTH,
           height: BUTTON_NEXT_STEP_HEIGHT,
           alignSelf: 'center',
-          mt: -4,
           borderRadius: '8px'
         }}
       >
