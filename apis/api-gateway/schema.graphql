@@ -563,6 +563,10 @@ type SiteSharedLink @join__type(graph: API_ANALYTICS)  {
   slug: String!
 }
 
+type AssistantSettings @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
+  showAssistant: Boolean @join__field(graph: API_JOURNEYS, type: "Boolean")  @join__field(graph: API_JOURNEYS_MODERN, type: "Boolean!") 
+}
+
 type NavigateToBlockAction implements Action @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  @join__implements(graph: API_JOURNEYS, interface: "Action")  @join__implements(graph: API_JOURNEYS_MODERN, interface: "Action")  {
   parentBlockId: ID!
   parentBlock: Block!
@@ -605,6 +609,7 @@ type Journey @join__type(graph: API_JOURNEYS, key: "id")  @join__type(graph: API
   logoImageBlock: ImageBlock
   menuStepBlock: StepBlock
   chatButtons: [ChatButton!]!
+  assistantSettings: AssistantSettings!
   """
   private title for creators
   """

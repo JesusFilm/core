@@ -433,6 +433,7 @@ model Journey {
   journeyTheme                    JourneyTheme?
   journeyCustomizationDescription String?
   journeyCustomizationFields      JourneyCustomizationField[]
+  assistantSettings               Json?
 
   @@index(title)
 }
