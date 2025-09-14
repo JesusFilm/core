@@ -12,7 +12,7 @@ import type { JourneySeoDescriptionUpdate } from '../../../../../../__generated_
 
 import { SocialScreen } from './SocialScreen'
 
-describe('SocialScreen Integration Tests', () => {
+describe('SocialScreen', () => {
   const handleNext = jest.fn()
   const handleScreenNavigation = jest.fn()
 
@@ -46,8 +46,9 @@ describe('SocialScreen Integration Tests', () => {
     )
   }
 
-  it('should render the SocialScreen with TitleEdit and DescriptionEdit components', () => {
+  it('should render the SocialScreen with title, social image and description', () => {
     renderSocialScreen()
+    expect(screen.getByTestId('SocialImage')).toBeInTheDocument()
     expect(screen.getByTestId('TitleEdit')).toBeInTheDocument()
     expect(screen.getByTestId('DescriptionEdit')).toBeInTheDocument()
     expect(screen.getByTestId('DoneButton')).toBeInTheDocument()
