@@ -85,11 +85,12 @@ export function ShareItem({
 
   const journeyUrl =
     journey?.slug != null
-      ? `${hostname != null
-        ? `https://${hostname}`
-        : (process.env.NEXT_PUBLIC_JOURNEYS_URL ??
-          'https://your.nextstep.is')
-      }/${journey?.slug}`
+      ? `${
+          hostname != null
+            ? `https://${hostname}`
+            : (process.env.NEXT_PUBLIC_JOURNEYS_URL ??
+              'https://your.nextstep.is')
+        }/${journey?.slug}`
       : undefined
 
   const handleCopyClick = async (): Promise<void> => {

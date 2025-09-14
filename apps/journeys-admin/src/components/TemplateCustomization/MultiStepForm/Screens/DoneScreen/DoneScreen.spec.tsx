@@ -9,7 +9,10 @@ import { GET_CUSTOM_DOMAINS } from '../../../../../libs/useCustomDomainsQuery/us
 import { GET_JOURNEY_FOR_SHARING } from '../../../../../libs/useJourneyForShareLazyQuery/useJourneyForShareLazyQuery'
 import { DoneScreen } from './DoneScreen'
 import { BlockFields_ImageBlock as ImageBlock } from '../../../../../../__generated__/BlockFields'
-import { ThemeMode, ThemeName } from '../../../../../../__generated__/globalTypes'
+import {
+  ThemeMode,
+  ThemeName
+} from '../../../../../../__generated__/globalTypes'
 
 jest.mock('next/router', () => ({
   __esModule: true,
@@ -114,7 +117,9 @@ describe('DoneScreen', () => {
       </MockedProvider>
     )
 
-    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent("It's Ready!")
+    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent(
+      "It's Ready!"
+    )
   })
 
   it('renders journey preview card with title and description', () => {
@@ -183,7 +188,9 @@ describe('DoneScreen', () => {
 
     render(
       <MockedProvider mocks={[getCustomDomainsMock]}>
-        <JourneyProvider value={{ journey: journeyWithImage, variant: 'admin' }}>
+        <JourneyProvider
+          value={{ journey: journeyWithImage, variant: 'admin' }}
+        >
           <DoneScreen />
         </JourneyProvider>
       </MockedProvider>
@@ -264,7 +271,9 @@ describe('DoneScreen', () => {
 
     render(
       <MockedProvider mocks={[getCustomDomainsMock]}>
-        <JourneyProvider value={{ journey: journeyWithoutId, variant: 'admin' }}>
+        <JourneyProvider
+          value={{ journey: journeyWithoutId, variant: 'admin' }}
+        >
           <DoneScreen />
         </JourneyProvider>
       </MockedProvider>
@@ -292,7 +301,9 @@ describe('DoneScreen', () => {
     render(
       <SnackbarProvider>
         <MockedProvider mocks={[getCustomDomainsMock, journeyForSharingMock]}>
-          <JourneyProvider value={{ journey: journeyWithTeam, variant: 'admin' }}>
+          <JourneyProvider
+            value={{ journey: journeyWithTeam, variant: 'admin' }}
+          >
             <DoneScreen />
           </JourneyProvider>
         </MockedProvider>
@@ -310,7 +321,9 @@ describe('DoneScreen', () => {
     const dialog = screen.getByRole('dialog')
     expect(dialog).toHaveTextContent('Share')
 
-    expect(screen.getByRole('button', { name: 'Edit Link' })).toBeInTheDocument()
+    expect(
+      screen.getByRole('button', { name: 'Edit Link' })
+    ).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'QR Code' })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: /Embed/ })).toBeInTheDocument()
   })

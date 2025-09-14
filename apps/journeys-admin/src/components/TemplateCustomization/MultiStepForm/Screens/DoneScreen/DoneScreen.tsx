@@ -28,7 +28,6 @@ interface DoneScreenProps {
 export function DoneScreen({
   handleScreenNavigation
 }: DoneScreenProps): ReactElement {
-
   const { t } = useTranslation('apps-journeys-admin')
   const { journey } = useJourney()
   const router = useRouter()
@@ -50,7 +49,7 @@ export function DoneScreen({
             typography: { xs: 'h6', sm: 'h4' }
           }}
         >
-          {t('It\'s Ready!')}
+          {t("It's Ready!")}
         </Typography>
         <Typography
           color="text.secondary"
@@ -61,7 +60,7 @@ export function DoneScreen({
           }}
         >
           {t(
-            "If you’re happy with it, preview and share now. Want to update images or videos? Keep customising."
+            'If you’re happy with it, preview and share now. Want to update images or videos? Keep customising.'
           )}
         </Typography>
         <Box
@@ -91,7 +90,7 @@ export function DoneScreen({
                 fill
                 objectFit="cover"
                 style={{
-                  borderRadius: "8px",
+                  borderRadius: '8px',
                   padding: 3
                 }}
               />
@@ -100,11 +99,7 @@ export function DoneScreen({
             )}
           </Stack>
           <Stack gap={2} sx={{ mt: { xs: 8, sm: 4 } }}>
-            <Typography
-              variant="subtitle1"
-              fontWeight={600}
-              noWrap
-            >
+            <Typography variant="subtitle1" fontWeight={600} noWrap>
               {journey?.seoTitle ?? journey?.displayTitle ?? ''}
             </Typography>
             <Typography
@@ -139,16 +134,18 @@ export function DoneScreen({
             sx={{
               borderRadius: 3,
               backgroundColor: 'secondary.main',
-              height: '41px',
+              height: '41px'
             }}
           >
             <Typography fontWeight="bold">{t('Preview in New Tab')}</Typography>
           </Button>
 
-          <Box sx={{
-            width: '100%',
-            '& button': { width: '100% !important' }
-          }}>
+          <Box
+            sx={{
+              width: '100%',
+              '& button': { width: '100% !important' }
+            }}
+          >
             <ShareItem
               variant="button"
               journey={journey}
@@ -165,13 +162,12 @@ export function DoneScreen({
               borderRadius: 3,
               backgroundColor: 'secondary.main',
               height: '41px'
-
             }}
           >
             <Typography fontWeight="bold">{t('Keep Editing')}</Typography>
           </Button>
         </Stack>
-      </Stack >
+      </Stack>
     </>
   )
 }
