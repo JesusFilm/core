@@ -230,7 +230,7 @@ export function TextScreen({
           )}
         </Typography>
       </Stack>
-      <Box sx={{ position: 'relative' }}>
+      <Box sx={{ position: 'relative', width: '100%' }}>
         <Box
           sx={{
             border: '2px solid',
