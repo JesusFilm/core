@@ -103,7 +103,4 @@ export const getServerSideProps = withUserTokenSSR()(async ({
   }
 })
 
-export default withUser({
-  // TODO: remove this after anon user is implemented
-  whenUnauthedBeforeInit: AuthAction.REDIRECT_TO_LOGIN
-})(CustomizePage)
+export default withUser()(CustomizePage)

@@ -67,7 +67,7 @@ export function DescriptionEdit(): ReactElement {
           onSubmit={noop}
         >
           {({ values, touched, errors, handleChange, handleBlur }) => (
-            <Form>
+            <Form style={{ width: '100%' }}>
               <TextField
                 id="seoDescription"
                 name="seoDescription"
@@ -91,9 +91,6 @@ export function DescriptionEdit(): ReactElement {
                   handleBlur(e)
                   if (errors.seoDescription == null) void handleSubmit(e)
                 }}
-                sx={{
-                  pb: 6
-                }}
                 data-testid="DescriptionEdit"
               />
             </Form>
@@ -106,9 +103,6 @@ export function DescriptionEdit(): ReactElement {
           fullWidth
           disabled
           helperText={t('Recommended length: up to 18 words')}
-          sx={{
-            pb: 6
-          }}
           data-testid="DescriptionEdit"
         />
       )}
