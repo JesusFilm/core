@@ -49,6 +49,7 @@ interface ShareItemProps {
   journey?: JourneyFromContext | JourneyFromLazyQuery
   handleCloseMenu?: () => void
   handleKeepMounted?: () => void
+  buttonVariant?: 'startAdorned' | 'noAdornment'
 }
 
 /**
@@ -66,7 +67,8 @@ export function ShareItem({
   variant,
   journey,
   handleCloseMenu,
-  handleKeepMounted
+  handleKeepMounted,
+  buttonVariant = 'startAdorned'
 }: ShareItemProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { enqueueSnackbar } = useSnackbar()
@@ -83,12 +85,11 @@ export function ShareItem({
 
   const journeyUrl =
     journey?.slug != null
-      ? `${
-          hostname != null
-            ? `https://${hostname}`
-            : (process.env.NEXT_PUBLIC_JOURNEYS_URL ??
-              'https://your.nextstep.is')
-        }/${journey?.slug}`
+      ? `${hostname != null
+        ? `https://${hostname}`
+        : (process.env.NEXT_PUBLIC_JOURNEYS_URL ??
+          'https://your.nextstep.is')
+      }/${journey?.slug}`
       : undefined
 
   const handleCopyClick = async (): Promise<void> => {
@@ -118,9 +119,9 @@ export function ShareItem({
       <Item
         variant={variant}
         label={t('Share')}
-        icon={<ShareIcon />}
         onClick={handleShowMenu}
         ButtonProps={{ variant: 'contained' }}
+        icon={buttonVariant === 'startAdorned' ? <ShareIcon /> : undefined}
       />
       <Dialog
         open={Boolean(anchorEl)}

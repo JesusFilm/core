@@ -1,5 +1,3 @@
-import EditIcon from '@mui/icons-material/Edit'
-import OpenInNewIcon from '@mui/icons-material/OpenInNew'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Stack from '@mui/material/Stack'
@@ -13,6 +11,7 @@ import { ReactElement } from 'react'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import GridEmptyIcon from '@core/shared/ui/icons/GridEmpty'
 import { CustomizationScreen } from '../../../utils/getCustomizeFlowConfig'
+import { ShareItem } from '../../../../Editor/Toolbar/Items/ShareItem'
 
 const ShareDrawer = dynamic(
   async () =>
@@ -29,8 +28,6 @@ interface DoneScreenProps {
 export function DoneScreen({
   handleScreenNavigation
 }: DoneScreenProps): ReactElement {
-  // TODO: Add share drawer back in
-  // const [openShareDrawer, setOpenShareDrawer] = useState<boolean | null>(null)
 
   const { t } = useTranslation('apps-journeys-admin')
   const { journey } = useJourney()
@@ -38,32 +35,39 @@ export function DoneScreen({
   const journeyPath = `/api/preview?slug=${journey?.slug}`
   const href = journey?.slug != null ? journeyPath : undefined
 
-  // TODO: Add share drawer back in
-  // needed to preload the drawer chunk to preserve first-open animations
-  // only run on hover events
-  // function handlePreloadShareDrawer(): void {
-  //   setOpenShareDrawer(false)
-  // }
-
-  // TODO: Add share drawer back in
-  // function handleShare(): void {
-  //   setOpenShareDrawer(true)
-  // }
-
   function handleContinueEditing(): void {
     if (journey?.id != null) void router.push(`/journeys/${journey.id}`)
   }
 
   return (
     <>
-      <Stack alignItems="center" gap={4} sx={{ pb: 4 }}>
-        <Typography variant="h4" component="h1">
-          {t('Ready!')}
+      <Stack alignItems="center" sx={{ pb: 4, px: 4 }}>
+        <Typography
+          component="h1"
+          gutterBottom
+          sx={{
+            mb: { xs: 0, sm: 2 },
+            typography: { xs: 'h6', sm: 'h4' }
+          }}
+        >
+          {t('It\'s Ready!')}
         </Typography>
-
+        <Typography
+          color="text.secondary"
+          align="center"
+          sx={{
+            maxWidth: { xs: '100%', sm: '90%' },
+            typography: { xs: 'body2', sm: 'h6' }
+          }}
+        >
+          {t(
+            "If you’re happy with it, preview and share now. Want to update images or videos? Keep customising."
+          )}
+        </Typography>
         <Box
           sx={{
-            width: { xs: 300 },
+            width: 300,
+            height: 300,
             borderRadius: 2,
             bgcolor: 'background.paper',
             boxShadow: 3,
@@ -75,10 +79,9 @@ export function DoneScreen({
             justifyContent="center"
             alignItems="center"
             sx={{
-              height: 160,
+              height: { xs: 185, sm: 210 },
               position: 'relative',
-              overflow: 'hidden',
-              backgroundColor: 'background.default'
+              overflow: 'hidden'
             }}
           >
             {journey?.primaryImageBlock?.src != null ? (
@@ -88,31 +91,44 @@ export function DoneScreen({
                 fill
                 objectFit="cover"
                 style={{
-                  borderRadius: 2
+                  borderRadius: "8px",
+                  padding: 3
                 }}
               />
             ) : (
               <GridEmptyIcon fontSize="large" />
             )}
           </Stack>
-          <Typography variant="subtitle1" fontWeight={600} noWrap>
-            {journey?.seoTitle ?? journey?.displayTitle ?? ''}
-          </Typography>
-          <Typography
-            variant="caption"
-            color="text.secondary"
-            sx={{
-              display: '-webkit-box',
-              WebkitLineClamp: 2,
-              WebkitBoxOrient: 'vertical',
-              overflow: 'hidden'
-            }}
-          >
-            {journey?.seoDescription ?? ''}
-          </Typography>
+          <Stack gap={2} sx={{ mt: { xs: 8, sm: 4 } }}>
+            <Typography
+              variant="subtitle1"
+              fontWeight={600}
+              noWrap
+            >
+              {journey?.seoTitle ?? journey?.displayTitle ?? ''}
+            </Typography>
+            <Typography
+              variant="caption"
+              color="text.secondary"
+              sx={{
+                display: '-webkit-box',
+                WebkitLineClamp: 2,
+                WebkitBoxOrient: 'vertical',
+                overflow: 'hidden'
+              }}
+            >
+              {journey?.seoDescription ?? ''}
+            </Typography>
+          </Stack>
         </Box>
 
-        <Stack gap={4} sx={{ width: { xs: '100%', sm: 300 }, mt: 6 }}>
+        <Stack
+          gap={4}
+          sx={{
+            width: { xs: '100%', sm: 300 },
+            mt: 6
+          }}
+        >
           <Button
             data-testid="DoneScreenPreviewButton"
             fullWidth
@@ -120,54 +136,42 @@ export function DoneScreen({
             href={href}
             component={href != null ? 'a' : 'button'}
             target={href != null ? '_blank' : undefined}
-            startIcon={<OpenInNewIcon />}
             sx={{
               borderRadius: 3,
-              backgroundColor: 'secondary.main'
+              backgroundColor: 'secondary.main',
+              height: '41px',
             }}
           >
-            <Typography variant="h6">{t('Preview in new tab')}</Typography>
+            <Typography fontWeight="bold">{t('Preview in New Tab')}</Typography>
           </Button>
 
-          {/* TODO: Add share drawer back in */}
-          {/* <Button
-            fullWidth
-            variant="contained"
-            onClick={handleShare}
-            onMouseEnter={handlePreloadShareDrawer}
-            onFocus={handlePreloadShareDrawer}
-            onTouchStart={handlePreloadShareDrawer}
-            startIcon={<ShareIcon />}
-            sx={{
-              borderRadius: 3,
-              backgroundColor: 'secondary.main'
-            }}
-          >
-            <Typography variant="h6">{t('Share')}</Typography>
-          </Button> */}
+          <Box sx={{
+            width: '100%',
+            '& button': { width: '100% !important' }
+          }}>
+            <ShareItem
+              variant="button"
+              journey={journey}
+              buttonVariant="noAdornment"
+            />
+          </Box>
 
           <Button
             data-testid="DoneScreenContinueEditingButton"
             fullWidth
             variant="contained"
             onClick={handleContinueEditing}
-            startIcon={<EditIcon />}
             sx={{
               borderRadius: 3,
-              backgroundColor: 'secondary.main'
+              backgroundColor: 'secondary.main',
+              height: '41px'
+
             }}
           >
-            <Typography variant="h6">{t('Continue Editing')}</Typography>
+            <Typography fontWeight="bold">{t('Keep Editing')}</Typography>
           </Button>
         </Stack>
-      </Stack>
-      {/* TODO: Add share drawer back in */}
-      {/* {openShareDrawer != null && (
-        <ShareDrawer
-          open={openShareDrawer}
-          onClose={() => setOpenShareDrawer(false)}
-        />
-      )} */}
+      </Stack >
     </>
   )
 }

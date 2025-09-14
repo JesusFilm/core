@@ -388,4 +388,62 @@ describe('ShareItem', () => {
       expect(screen.getByText('Link copied')).toBeInTheDocument()
     })
   })
+
+  describe('buttonVariant prop', () => {
+    beforeEach(() => {
+      mockedUseRouter.mockReturnValue({
+        query: { param: null },
+        push,
+        events: { on }
+      } as unknown as NextRouter)
+    })
+
+    it('should render ShareIcon when buttonVariant is startAdorned', () => {
+      render(
+        <SnackbarProvider>
+          <MockedProvider mocks={[journeyForSharingMock]}>
+            <JourneyProvider
+              value={{ journey: defaultJourney, variant: 'admin' }}
+            >
+              <ShareItem
+                variant="button"
+                journey={defaultJourney}
+                buttonVariant="startAdorned"
+              />
+            </JourneyProvider>
+          </MockedProvider>
+        </SnackbarProvider>
+      )
+
+      const shareButton = screen.getByRole('button', { name: 'Share' })
+      expect(shareButton).toBeInTheDocument()
+
+      const shareIcon = shareButton.querySelector('svg')
+      expect(shareIcon).toBeInTheDocument()
+    })
+
+    it('should not render ShareIcon when buttonVariant is noAdornment', () => {
+      render(
+        <SnackbarProvider>
+          <MockedProvider mocks={[journeyForSharingMock]}>
+            <JourneyProvider
+              value={{ journey: defaultJourney, variant: 'admin' }}
+            >
+              <ShareItem
+                variant="button"
+                journey={defaultJourney}
+                buttonVariant="noAdornment"
+              />
+            </JourneyProvider>
+          </MockedProvider>
+        </SnackbarProvider>
+      )
+
+      const shareButton = screen.getByRole('button', { name: 'Share' })
+      expect(shareButton).toBeInTheDocument()
+
+      const shareIcon = shareButton.querySelector('svg')
+      expect(shareIcon).not.toBeInTheDocument()
+    })
+  })
 })
