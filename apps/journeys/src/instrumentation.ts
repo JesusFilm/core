@@ -1,4 +1,8 @@
 import { LangfuseSpanProcessor } from '@langfuse/otel'
+import {
+  ConsoleSpanExporter,
+  SimpleSpanProcessor
+} from '@opentelemetry/sdk-trace-base'
 import { NodeTracerProvider } from '@opentelemetry/sdk-trace-node'
 
 export function register() {
@@ -21,7 +25,13 @@ export function register() {
         baseUrl: langfuseBaseUrl
       })
 
-      const spanProcessors = [langfuseSpanProcessor]
+      const spanProcessors = [
+        langfuseSpanProcessor,
+        // Show console spans in development for debugging
+        ...(process.env.NODE_ENV !== 'production'
+          ? [new SimpleSpanProcessor(new ConsoleSpanExporter())]
+          : [])
+      ]
 
       // Same approach as working reference
       const tracerProvider = new NodeTracerProvider({
