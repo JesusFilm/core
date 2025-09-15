@@ -9,7 +9,7 @@ describe('findMessagePlatform', () => {
     parentBlockId: 'button.id',
     gtmEventName: 'click',
     url: 'https://google.com',
-    customizable: false,
+    customizable: null,
     parentStepId: null
   }
 

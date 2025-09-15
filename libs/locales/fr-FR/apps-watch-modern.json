@@ -8,22 +8,22 @@
     "description": "Regarde, apprends et partage l'évangile dans plus de 2000 langues."
   },
   "ModernTestPage": {
-    "pageTitle": "Test Modern",
-    "title": "Page de test modern",
-    "description": "Cette page est servie par l'application moderne de watch via une routage intelligent.",
+    "pageTitle": "Test moderne",
+    "title": "Page de test moderne",
+    "description": "Il s'agit d'une page de test pour l'application de veille moderne. Elle démontre les nouvelles fonctionnalités de routage et de proxy.",
     "feature1": {
       "title": "Architecture moderne",
-      "description": "Construit avec Next.js App Router et des modèles React modernes pour une performance optimale et une expérience de développement."
+      "description": "Construit avec Next.js App Router et les modèles modernes de React pour des performances optimales et une expérience de développeur."
     },
     "feature2": {
       "title": "Routage intelligent",
-      "description": "Un routage intelligent qui dirige le trafic vers le backend approprié."
+      "description": "Routage proxy avancé qui dirige intelligemment le trafic vers les services dorsaux appropriés."
     },
     "feature3": {
-      "title": "Design responsive",
-      "description": "Un design responsive qui fonctionne parfaitement sur tous les appareils et tailles d'écran."
+      "title": "Conception adaptée",
+      "description": "Conception entièrement responsive qui fonctionne de manière transparente sur tous les appareils et toutes les tailles d'écran."
     },
-    "footer": "Cette page est servie par l'application moderne de watch via une routage intelligent."
+    "footer": "Cette page est servie par l'application de veille moderne par le biais d'un routage proxy intelligent."
   },
   "DatadogErrorBoundary": {
     "somethingWentWrong": "Quelque chose a mal tourné",

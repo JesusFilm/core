@@ -717,6 +717,7 @@ export interface GetJourney_journey {
   journeyTheme: GetJourney_journey_journeyTheme | null;
   journeyCustomizationDescription: string | null;
   journeyCustomizationFields: GetJourney_journey_journeyCustomizationFields[];
+  fromTemplateId: string | null;
 }
 
 export interface GetJourney {
