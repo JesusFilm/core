@@ -1831,6 +1831,44 @@ describe('JourneyResolver', () => {
       })
     })
 
+    it('should handle parentStepId mapping for actions', async () => {
+      const buttonWithParentStep: Block & { action: Action } = {
+        ...button,
+        action: {
+          ...button.action,
+          parentStepId: step.id
+        }
+      }
+      const duplicatedButtonWithParentStep = {
+        ...buttonWithParentStep,
+        id: 'duplicateButtonId',
+        journeyId: 'duplicateJourneyId'
+      }
+
+      blockService.getDuplicateChildren.mockResolvedValue([
+        duplicatedStep,
+        duplicatedButtonWithParentStep,
+        duplicatedNextStep
+      ])
+
+      mockUuidv4.mockReturnValueOnce(duplicatedStep.id)
+      mockUuidv4.mockReturnValueOnce(duplicatedNextStep.id)
+      mockUuidv4.mockReturnValueOnce(duplicatedButton.id)
+
+      prismaService.block.findMany
+        .mockReset()
+        .mockResolvedValueOnce([step, nextStep])
+      await resolver.journeyDuplicate(ability, 'journeyId', 'userId', 'teamId')
+      expect(prismaService.action.create).toHaveBeenCalledWith({
+        data: {
+          ...duplicatedButtonWithParentStep.action,
+          customizable: false,
+          parentStepId: duplicatedStep.id,
+          parentBlockId: duplicatedButton.id
+        }
+      })
+    })
+
     it('should duplicate customization fields', async () => {
       mockUuidv4.mockReturnValueOnce(duplicatedStep.id)
       mockUuidv4.mockReturnValueOnce('duplicateFieldId')

@@ -69,7 +69,7 @@ export function CustomizeTemplate(): ReactElement {
   }
 
   return (
-    <Box>
+    <Box data-testid="CustomizeTemplateSection">
       <Stack
         direction="row"
         alignItems="center"

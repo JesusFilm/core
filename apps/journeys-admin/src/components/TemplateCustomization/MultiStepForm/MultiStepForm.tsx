@@ -20,15 +20,13 @@ import {
   getCustomizeFlowConfig,
   CustomizationScreen
 } from '../utils/getCustomizeFlowConfig'
-import { JourneyLink } from '../utils/getJourneyLinks'
 
 export const MULTI_STEP_FORM_MIN_HEIGHT = 900
 
 function renderScreen(
   screen: CustomizationScreen,
   handleNext: () => void,
-  handleScreenNavigation: (screen: CustomizationScreen) => void,
-  links: JourneyLink[] = []
+  handleScreenNavigation: (screen: CustomizationScreen) => void
 ): ReactElement {
   switch (screen) {
     case 'language':
@@ -50,7 +48,6 @@ function renderScreen(
         <LinksScreen
           handleNext={handleNext}
           handleScreenNavigation={handleScreenNavigation}
-          links={links}
         />
       )
     case 'social':
@@ -139,12 +136,7 @@ export function MultiStepForm(): ReactElement {
             py: { xs: '10px', sm: '24px' }
           }}
         >
-          {renderScreen(
-            activeScreen,
-            handleNext,
-            handleScreenNavigation,
-            links
-          )}
+          {renderScreen(activeScreen, handleNext, handleScreenNavigation)}
         </Box>
 
         {/* TODO: delete back button. This is only here for the dev's to use */}

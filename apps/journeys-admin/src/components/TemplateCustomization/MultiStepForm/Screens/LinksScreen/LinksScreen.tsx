@@ -4,7 +4,7 @@ import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { Formik, FormikHelpers, FormikProvider } from 'formik'
 import { useTranslation } from 'next-i18next'
-import { ReactElement } from 'react'
+import { ReactElement, useMemo } from 'react'
 import { object, string } from 'yup'
 
 import { TreeBlock } from '@core/journeys/ui/block'
@@ -21,7 +21,7 @@ import { JourneyChatButtonUpdate } from '../../../../../../__generated__/Journey
 import { useBlockActionEmailUpdateMutation } from '../../../../../libs/useBlockActionEmailUpdateMutation'
 import { useBlockActionLinkUpdateMutation } from '../../../../../libs/useBlockActionLinkUpdateMutation'
 import { JOURNEY_CHAT_BUTTON_UPDATE } from '../../../../Editor/Slider/Settings/CanvasDetails/JourneyAppearance/Chat/ChatOption/Details/Details'
-import { JourneyLink } from '../../../utils/getJourneyLinks'
+import { getJourneyLinks } from '../../../utils/getJourneyLinks'
 
 import { CardsPreview } from './CardsPreview'
 import { LinksForm } from './LinksForm'
@@ -30,7 +30,6 @@ import { CustomizationScreen } from '../../../utils/getCustomizeFlowConfig'
 interface LinksScreenProps {
   handleNext: () => void
   handleScreenNavigation: (screen: CustomizationScreen) => void
-  links: JourneyLink[]
 }
 
 const BUTTON_NEXT_STEP_WIDTH = '150px'
@@ -38,10 +37,11 @@ const BUTTON_NEXT_STEP_HEIGHT = '42px'
 
 export function LinksScreen({
   handleNext,
-  handleScreenNavigation,
-  links
+  handleScreenNavigation
 }: LinksScreenProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
+  const { journey } = useJourney()
+  const links = useMemo(() => getJourneyLinks(t, journey), [journey])
   const [journeyChatButtonUpdate, { loading: chatLoading }] =
     useMutation<JourneyChatButtonUpdate>(JOURNEY_CHAT_BUTTON_UPDATE)
   const [updateLinkAction, { loading: linkLoading }] =
@@ -49,7 +49,6 @@ export function LinksScreen({
   const [updateEmailAction, { loading: emailLoading }] =
     useBlockActionEmailUpdateMutation()
 
-  const { journey } = useJourney()
   const treeBlocks = transformer(journey?.blocks ?? []).filter((block) =>
     links?.some(
       (link) =>

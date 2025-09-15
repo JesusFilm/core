@@ -85,7 +85,6 @@ describe('LinksScreen', () => {
             <LinksScreen
               handleNext={jest.fn()}
               handleScreenNavigation={jest.fn()}
-              links={mockLinks}
             />
           </JourneyProvider>
         </MockedProvider>
@@ -110,7 +109,6 @@ describe('LinksScreen', () => {
             <LinksScreen
               handleNext={handleNext}
               handleScreenNavigation={jest.fn()}
-              links={mockLinks}
             />
           </JourneyProvider>
         </MockedProvider>
@@ -136,7 +134,6 @@ describe('LinksScreen', () => {
             <LinksScreen
               handleNext={handleNext}
               handleScreenNavigation={jest.fn()}
-              links={mockLinks}
             />
           </JourneyProvider>
         </MockedProvider>
@@ -322,7 +319,6 @@ describe('LinksScreen', () => {
             <LinksScreen
               handleNext={handleNext}
               handleScreenNavigation={jest.fn()}
-              links={mockLinksWithMultipleTypes}
             />
           </JourneyProvider>
         </MockedProvider>

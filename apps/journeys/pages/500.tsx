@@ -101,7 +101,7 @@ export function Custom500(): ReactElement {
         parentBlockId: '500-button-id',
         url: '/',
         __typename: 'LinkAction',
-        customizable: false,
+        customizable: null,
         parentStepId: null
       },
       settings: null
