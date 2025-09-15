@@ -69,7 +69,7 @@ builder.mutationField('blockUpdateAction', (t) =>
     nullable: false,
     resolve: async (_parent, args, context) => {
       const { id, input } = args
-      const user = { ...context.user, roles: context.currentRoles }
+      const user = context.user
 
       const { success: isLink, data: linkInput } =
         linkActionInputSchema.safeParse(input)
