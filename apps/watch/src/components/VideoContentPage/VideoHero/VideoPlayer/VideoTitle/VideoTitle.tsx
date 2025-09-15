@@ -109,7 +109,7 @@ export function VideoTitle({
           scroll={false}
           locale={false}
           id="watch-now-button"
-          className="inline-flex items-center justify-center gap-2 px-6 py-3
+          className="inline-flex z-1 items-center justify-center gap-2 px-6 py-3
             bg-[#CB333B] text-lg font-medium text-stone-100
             rounded-full shadow-md transition-colors duration-200
             hover:bg-[#A4343A] font-sans cursor-pointer self-start no-underline
@@ -125,7 +125,7 @@ export function VideoTitle({
             e.stopPropagation()
             onMuteToggle()
           }}
-          className="absolute cursor-pointer bottom-7 right-0 scale-125 inverted-effect text-black p-2 rounded-full hover:bg-white/20 transition-colors duration-200"
+          className="absolute z-0 cursor-pointer bottom-7 right-0 scale-125 text-stone-50 p-2 rounded-full hover:bg-white/20 transition-colors duration-200 mute-preview-toggle"
           aria-label={mute || volume === 0 ? t('Unmute') : t('Mute')}
         >
           {mute || volume === 0 ? <VolumeOff /> : <VolumeUpOutlined />}
