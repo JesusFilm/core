@@ -27,6 +27,7 @@ const i18nConfig = {
       'ja', // Japanese
       'ko', // Korean
       'ru', // Russian
+      'tl', // Tagalog
       'tr', // Turkish
       'zh', // Chinese
       'zh-Hans-CN' // Chinese, Simplified
@@ -42,6 +43,7 @@ const i18nConfig = {
     ja: ['ja-JP'],
     ko: ['ko-KR'],
     ru: ['ru-RU'],
+    tl: ['tl-PH'],
     tr: ['tr-TR'],
     zh: ['zh-Hans-CN']
   },

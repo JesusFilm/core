@@ -54,7 +54,7 @@ const blocks: Blocks[] = [
       parentBlockId: '84d742c8-9905-4b77-8987-99c08c04cde3',
       gtmEventName: null,
       url: 'https://www.google.com/',
-      customizable: false,
+      customizable: null,
       parentStepId: null
     },
     settings: null
@@ -76,7 +76,7 @@ const blocks: Blocks[] = [
       parentBlockId: 'button2.id',
       gtmEventName: null,
       url: 'https://m.me/some_user',
-      customizable: false,
+      customizable: null,
       parentStepId: null
     },
     settings: null
@@ -98,7 +98,7 @@ const blocks: Blocks[] = [
       parentBlockId: '84d742c8-9905-4b77-8987-99c08c04cde3',
       gtmEventName: null,
       url: 'https://www.bible.com/',
-      customizable: false,
+      customizable: null,
       parentStepId: null
     },
     settings: null

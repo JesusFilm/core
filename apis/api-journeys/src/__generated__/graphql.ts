@@ -1737,7 +1737,7 @@ export type MutationBlockRestoreArgs = {
 
 export type MutationBlockUpdateActionArgs = {
   id: Scalars['ID']['input'];
-  input?: InputMaybe<BlockUpdateActionInput>;
+  input: BlockUpdateActionInput;
 };
 
 

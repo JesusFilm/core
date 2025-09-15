@@ -324,7 +324,7 @@ describe('Button', () => {
       parentBlockId: 'button',
       gtmEventName: null,
       url: 'https://test.com/some-site',
-      customizable: false,
+      customizable: null,
       parentStepId: null
     }
 
@@ -339,7 +339,7 @@ describe('Button', () => {
           __typename: 'ButtonClickEvent',
           id: 'uuid',
           action: action.__typename,
-          actionValue: action.url
+          actionValue: action.__typename === 'LinkAction' ? action.url : ''
         }
       }
     }))
@@ -358,7 +358,8 @@ describe('Button', () => {
                   label: 'stepName',
                   value: buttonWithAction.label,
                   action: action.__typename,
-                  actionValue: action.url
+                  actionValue:
+                    action.__typename === 'LinkAction' ? action.url : ''
                 }
               }
             },
@@ -482,7 +483,7 @@ describe('Button', () => {
       parentBlockId: 'button',
       gtmEventName: 'click',
       url: 'https://bible.com',
-      customizable: false,
+      customizable: null,
       parentStepId: null
     }
 
@@ -508,7 +509,8 @@ describe('Button', () => {
                   label: 'stepName',
                   value: buttonBlock.label,
                   action: action.__typename,
-                  actionValue: action.url
+                  actionValue:
+                    action.__typename === 'LinkAction' ? action.url : ''
                 }
               }
             },
@@ -518,7 +520,8 @@ describe('Button', () => {
                   __typename: 'ButtonClickEvent',
                   id: 'uuid',
                   action: action.__typename,
-                  actionValue: action.url
+                  actionValue:
+                    action.__typename === 'LinkAction' ? action.url : ''
                 }
               }
             }
@@ -554,7 +557,7 @@ describe('Button', () => {
       parentBlockId: 'button',
       gtmEventName: 'click',
       url: 'https://m.me/some-user',
-      customizable: false,
+      customizable: null,
       parentStepId: null
     }
 

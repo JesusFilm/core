@@ -104,6 +104,24 @@ describe('AboutTabPanel', () => {
   })
 
   it('should render Customize Template text area', () => {
-    // TODO TEST: renders text area
+    const { getByTestId } = render(
+      <MockedProvider>
+        <FormikProvider
+          value={
+            {
+              values: {
+                creatorDescription: '',
+                strategySlug:
+                  'https://www.canva.com/design/DAF9QMJYu1Y/XmioFIQOATVa-lXCEYucmg/view'
+              }
+            } as unknown as FormikContextType<TemplateSettingsFormValues>
+          }
+        >
+          <AboutTabPanel />
+        </FormikProvider>
+      </MockedProvider>
+    )
+
+    expect(getByTestId('CustomizeTemplateSection')).toBeInTheDocument()
   })
 })
