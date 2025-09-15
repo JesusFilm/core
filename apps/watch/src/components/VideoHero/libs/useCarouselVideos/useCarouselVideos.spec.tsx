@@ -2,26 +2,43 @@ import { renderHook, act } from '@testing-library/react'
 import { MockedProvider } from '@apollo/client/testing'
 import type { ReactNode } from 'react'
 
-import { useCarouselVideos } from './useCarouselVideos'
-import { GET_COLLECTION_COUNTS, GET_SHORT_FILMS } from './queries'
-
-// Mock utils
 jest.mock('./utils', () => ({
-  getPlaylistConfig: () => ({
-    playlistSequence: [['collection1'], ['collection2']]
-  }),
-  getDeterministicOffset: () => 0,
-  getRandomFromMultipleCollections: () => 'collection1',
+  getPlaylistConfig: jest.fn(),
+  getDeterministicOffset: jest.fn(),
+  getRandomFromMultipleCollections: jest.fn(),
   addToSessionPlayedIds: jest.fn(),
   addToPersistentPlayedIds: jest.fn(),
-  isVideoAlreadyPlayed: () => false,
-  isPoolExhausted: () => false,
+  isVideoAlreadyPlayed: jest.fn(),
+  isPoolExhausted: jest.fn(),
   markPoolVideoPlayed: jest.fn(),
-  getPoolKey: () => 'pool-key',
+  getPoolKey: jest.fn(),
   saveCurrentVideoSession: jest.fn(),
-  loadCurrentVideoSession: () => null,
+  loadCurrentVideoSession: jest.fn(),
   clearCurrentVideoSession: jest.fn()
 }))
+
+import { useCarouselVideos } from './useCarouselVideos'
+import {
+  GET_COLLECTION_COUNTS,
+  GET_SHORT_FILMS
+} from './queries'
+
+const {
+  getPlaylistConfig: mockGetPlaylistConfig,
+  getDeterministicOffset: mockGetDeterministicOffset,
+  getRandomFromMultipleCollections: mockGetRandomFromMultipleCollections,
+  addToSessionPlayedIds: mockAddToSessionPlayedIds,
+  addToPersistentPlayedIds: mockAddToPersistentPlayedIds,
+  isVideoAlreadyPlayed: mockIsVideoAlreadyPlayed,
+  isPoolExhausted: mockIsPoolExhausted,
+  markPoolVideoPlayed: mockMarkPoolVideoPlayed,
+  getPoolKey: mockGetPoolKey,
+  saveCurrentVideoSession: mockSaveCurrentVideoSession,
+  loadCurrentVideoSession: mockLoadCurrentVideoSession,
+  clearCurrentVideoSession: mockClearCurrentVideoSession
+} = jest.requireMock('./utils') as jest.Mocked<
+  typeof import('./utils')
+>
 
 jest.mock('../../../../libs/getLanguageIdFromLocale', () => ({
   getLanguageIdFromLocale: () => '529'
@@ -33,17 +50,28 @@ const mockVideo = {
   title: [{ value: 'Test Video 1' }],
   images: [{ mobileCinematicHigh: 'test-image.jpg' }],
   imageAlt: [{ value: 'Test Image' }],
+  snippet: [{ value: 'Test snippet' }],
+  description: [{ value: 'Test description' }],
   label: 'segment',
   variant: {
     id: 'variant-1',
     duration: 120,
     hls: 'test.m3u8',
-    slug: 'test-video-1/english'
+    slug: 'test-video-1/english',
+    downloadable: false,
+    downloads: [],
+    language: {
+      id: '529',
+      name: [{ value: 'English', primary: true }],
+      bcp47: 'en'
+    },
+    subtitleCount: 0
   },
-  childrenCount: 0
+  childrenCount: 0,
+  variantLanguagesCount: 1
 }
 
-const mocks = [
+const defaultMocks = [
   {
     request: {
       query: GET_COLLECTION_COUNTS,
@@ -52,8 +80,24 @@ const mocks = [
     result: {
       data: {
         videos: [
-          { id: 'collection1', childrenCount: 5 },
-          { id: 'collection2', childrenCount: 3 }
+          {
+            id: 'collection1',
+            childrenCount: 5,
+            slug: 'collection1',
+            label: 'collection',
+            title: [{ value: 'Collection 1' }],
+            primaryLanguageId: '529',
+            publishedAt: '2024-01-01T00:00:00Z'
+          },
+          {
+            id: 'collection2',
+            childrenCount: 3,
+            slug: 'collection2',
+            label: 'collection',
+            title: [{ value: 'Collection 2' }],
+            primaryLanguageId: '529',
+            publishedAt: '2024-01-01T00:00:00Z'
+          }
         ]
       }
     }
@@ -72,18 +116,35 @@ const mocks = [
 ]
 
 describe('useCarouselVideos', () => {
+  const createDefaultConfig = () => ({
+    playlistSequence: [['collection1'], ['collection2']],
+    blacklistedVideoIds: []
+  })
+  let apolloMocks = [...defaultMocks]
+
   const wrapper = ({ children }: { children: ReactNode }) => (
-    <MockedProvider mocks={mocks} addTypename={false}>
+    <MockedProvider mocks={apolloMocks} addTypename={false}>
       {children}
     </MockedProvider>
   )
 
   beforeEach(() => {
+    jest.clearAllMocks()
     // Clear localStorage and sessionStorage
     if (typeof window !== 'undefined') {
       localStorage.clear()
       sessionStorage.clear()
     }
+
+    mockGetPlaylistConfig.mockReturnValue(createDefaultConfig())
+    mockGetDeterministicOffset.mockReturnValue(0)
+    mockGetRandomFromMultipleCollections.mockReturnValue({
+      collectionId: 'collection1',
+      childIndex: 0
+    })
+    mockIsVideoAlreadyPlayed.mockReturnValue(false)
+    mockIsPoolExhausted.mockReturnValue(false)
+    apolloMocks = [...defaultMocks]
   })
 
   it('returns initial loading state', () => {
@@ -150,4 +211,5 @@ describe('useCarouselVideos', () => {
 
     expect(result.current.error).toBeNull()
   })
+
 })

@@ -18,7 +18,8 @@ import {
   getPoolKey,
   saveCurrentVideoSession,
   loadCurrentVideoSession,
-  clearCurrentVideoSession
+  clearCurrentVideoSession,
+  filterOutBlacklistedVideos
 } from './utils'
 
 export interface CarouselVideo {
@@ -79,6 +80,10 @@ export function useCarouselVideos(locale?: string): UseCarouselVideosReturn {
   const [error, setError] = useState<Error | null>(null)
 
   const config = getPlaylistConfig()
+  const blacklistedVideoIds = useMemo(
+    () => new Set(config.blacklistedVideoIds),
+    [config.blacklistedVideoIds]
+  )
   const languageId = getLanguageIdFromLocale(locale)
 
   // Reset pool exhaustion every 50 videos to ensure infinite cycling
@@ -236,7 +241,10 @@ export function useCarouselVideos(locale?: string): UseCarouselVideosReturn {
         })
 
         const children = data?.video?.children || []
-        const videoChildren = children.filter((c: any) => c.variant)
+        const videoChildren = filterOutBlacklistedVideos(
+          children.filter((c: any) => c.variant),
+          blacklistedVideoIds
+        )
         if (videoChildren.length > 0) {
           const offset = getDeterministicOffset(
             collectionId,
@@ -272,7 +280,8 @@ export function useCarouselVideos(locale?: string): UseCarouselVideosReturn {
       languageId,
       poolIndex,
       videos.length,
-      getRandomFromMultipleCollections
+      getRandomFromMultipleCollections,
+      blacklistedVideoIds
     ]
   )
 
@@ -286,7 +295,10 @@ export function useCarouselVideos(locale?: string): UseCarouselVideosReturn {
 
       if (pool[0] === 'shortFilms') {
         // Handle short films
-        const shortFilms = shortFilmsData?.videos || []
+        const shortFilms = filterOutBlacklistedVideos(
+          shortFilmsData?.videos || [],
+          blacklistedVideoIds
+        )
         if (shortFilms.length > 0) {
           const offset = getDeterministicOffset(
             'shortFilms',
@@ -337,7 +349,8 @@ export function useCarouselVideos(locale?: string): UseCarouselVideosReturn {
       countsData,
       findVideoInCollection,
       getRandomFromMultipleCollections,
-      languageId
+      languageId,
+      blacklistedVideoIds
     ]
   )
 
