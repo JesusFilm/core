@@ -1,17 +1,22 @@
 import { TreeBlock } from '@core/journeys/ui/block'
+import { defaultJourney } from '@core/journeys/ui/TemplateView/data'
+import { GetJourney_journey as Journey } from '@core/journeys/ui/useJourneyQuery/__generated__/GetJourney'
 
 import { BlockFields_StepBlock as StepBlock } from '../../../../../../../__generated__/BlockFields'
 
-import {
-  defaultEdgeProps,
-  hiddenEdge,
-  hiddenNode,
-  socialNode
-} from './transformSteps'
+import { defaultEdgeProps, hiddenEdge, hiddenNode } from './transformSteps'
 
 import { transformSteps } from '.'
 
 describe('transformSteps', () => {
+  const socialNode = {
+    id: 'SocialPreview',
+    type: 'SocialPreview',
+    data: {},
+    position: { x: -240, y: -46 },
+    draggable: true
+  }
+
   it('should handle multiple steps without navigation actions', () => {
     const steps = [
       {
@@ -52,7 +57,7 @@ describe('transformSteps', () => {
       'step3.id': { x: 0, y: 20 }
     }
 
-    const { nodes, edges } = transformSteps(steps, positions)
+    const { nodes, edges } = transformSteps(steps, positions, defaultJourney)
 
     expect(nodes).toEqual([
       socialNode,
@@ -104,12 +109,12 @@ describe('transformSteps', () => {
   })
 
   it('should handle empty steps and positions', () => {
-    const { nodes, edges } = transformSteps([], {})
+    const { nodes, edges } = transformSteps([], {}, defaultJourney)
 
     expect(nodes).toEqual([
       {
         data: {},
-        draggable: false,
+        draggable: true,
         id: 'SocialPreview',
         position: {
           x: -240,
@@ -186,7 +191,7 @@ describe('transformSteps', () => {
       'step1.id': { x: 0, y: 0 },
       'step2.id': { x: 0, y: 10 }
     }
-    const { nodes, edges } = transformSteps(steps, positions)
+    const { nodes, edges } = transformSteps(steps, positions, defaultJourney)
 
     expect(nodes).toEqual([
       socialNode,
@@ -276,7 +281,7 @@ describe('transformSteps', () => {
     const positions = {
       'step1.id': { x: 0, y: 0 }
     }
-    const { nodes, edges } = transformSteps(steps, positions)
+    const { nodes, edges } = transformSteps(steps, positions, defaultJourney)
 
     expect(nodes).toEqual([
       socialNode,
@@ -340,7 +345,9 @@ describe('transformSteps', () => {
                   __typename: 'LinkAction',
                   parentBlockId: 'button1.id',
                   gtmEventName: null,
-                  url: 'https://example.com'
+                  url: 'https://example.com',
+                  customizable: false,
+                  parentStepId: null
                 },
                 children: [],
                 settings: null
@@ -361,7 +368,9 @@ describe('transformSteps', () => {
                   __typename: 'EmailAction',
                   parentBlockId: 'button2.id',
                   gtmEventName: null,
-                  email: 'example@email.com'
+                  email: 'example@email.com',
+                  customizable: false,
+                  parentStepId: null
                 },
                 children: [],
                 settings: null
@@ -375,7 +384,7 @@ describe('transformSteps', () => {
     const positions = {
       'step1.id': { x: 0, y: 0 }
     }
-    const { nodes, edges } = transformSteps(steps, positions)
+    const { nodes, edges } = transformSteps(steps, positions, defaultJourney)
 
     expect(nodes).toEqual([
       socialNode,
@@ -428,6 +437,29 @@ describe('transformSteps', () => {
         target: 'step1.id',
         type: 'Start'
       }
+    ])
+  })
+
+  it('should have social node position match social node fields from journey', () => {
+    const journey: Journey = {
+      ...defaultJourney,
+      socialNodeX: 50,
+      socialNodeY: 100
+    }
+    const { nodes } = transformSteps([], {}, journey)
+
+    expect(nodes).toEqual([
+      {
+        data: {},
+        draggable: true,
+        id: 'SocialPreview',
+        position: {
+          x: 50,
+          y: 100
+        },
+        type: 'SocialPreview'
+      },
+      hiddenNode
     ])
   })
 })

@@ -42,6 +42,8 @@ export interface TextResponseWithButtonCreate_button_action_LinkAction {
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export interface TextResponseWithButtonCreate_button_action_EmailAction {
@@ -49,6 +51,8 @@ export interface TextResponseWithButtonCreate_button_action_EmailAction {
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export type TextResponseWithButtonCreate_button_action = TextResponseWithButtonCreate_button_action_PhoneAction | TextResponseWithButtonCreate_button_action_NavigateToBlockAction | TextResponseWithButtonCreate_button_action_LinkAction | TextResponseWithButtonCreate_button_action_EmailAction;
@@ -115,6 +119,8 @@ export interface TextResponseWithButtonCreate_buttonUpdate_action_LinkAction {
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export interface TextResponseWithButtonCreate_buttonUpdate_action_EmailAction {
@@ -122,6 +128,8 @@ export interface TextResponseWithButtonCreate_buttonUpdate_action_EmailAction {
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export type TextResponseWithButtonCreate_buttonUpdate_action = TextResponseWithButtonCreate_buttonUpdate_action_PhoneAction | TextResponseWithButtonCreate_buttonUpdate_action_NavigateToBlockAction | TextResponseWithButtonCreate_buttonUpdate_action_LinkAction | TextResponseWithButtonCreate_buttonUpdate_action_EmailAction;

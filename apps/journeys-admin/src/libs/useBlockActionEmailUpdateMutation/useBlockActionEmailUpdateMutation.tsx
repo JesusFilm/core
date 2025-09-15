@@ -18,6 +18,8 @@ export const BLOCK_ACTION_EMAIL_UPDATE = gql`
       parentBlockId
       gtmEventName
       email
+      customizable
+      parentStepId
     }
   }
 `
@@ -31,6 +33,8 @@ export function useBlockActionEmailUpdateMutation(
   (
     block: Pick<BlockFields, 'id' | '__typename'>,
     url: string,
+    customizable: boolean | null,
+    parentStepId: string | null,
     options?: MutationFunctionOptions<
       BlockActionEmailUpdate,
       BlockActionEmailUpdateVariables
@@ -46,6 +50,8 @@ export function useBlockActionEmailUpdateMutation(
   async function wrappedBlockActionEmailUpdate(
     block: Pick<BlockFields, 'id' | '__typename'>,
     email: string,
+    customizable: boolean | null,
+    parentStepId: string | null,
     options?: MutationFunctionOptions<
       BlockActionEmailUpdate,
       BlockActionEmailUpdateVariables
@@ -55,14 +61,16 @@ export function useBlockActionEmailUpdateMutation(
       ...options,
       variables: {
         id: block.id,
-        input: { email }
+        input: { email, customizable, parentStepId }
       },
       optimisticResponse: {
         blockUpdateEmailAction: {
           __typename: 'EmailAction',
           parentBlockId: block.id,
           gtmEventName: '',
-          email
+          email,
+          customizable,
+          parentStepId
         }
       },
       update(cache, { data }) {
