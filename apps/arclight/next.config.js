@@ -20,6 +20,15 @@ const nextConfig = {
     // handled by github actions
     ignoreDuringBuilds: process.env.CI === 'true'
   },
+  // Ensure Prisma generated clients and ONLY the required rhel engine are included
+  // Keep this list minimal to avoid hitting Vercel's 250MB unzipped function limit
+  outputFileTracingIncludes: {
+    '*': [
+      // Generated Prisma clients used by Arclight
+      'node_modules/.prisma/api-media-client/**',
+      'node_modules/.prisma/api-languages-client/**'
+    ]
+  },
   outputFileTracingExcludes: {
     '*': [
       'node_modules/@swc/core-linux-x64-gnu',
