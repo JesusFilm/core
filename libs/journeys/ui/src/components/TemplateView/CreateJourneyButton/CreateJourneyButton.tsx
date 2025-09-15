@@ -172,9 +172,9 @@ export function CreateJourneyButton({
   )
 
   const handleCheckSignIn = (): void => {
-    if (signedIn && setOpenTeamDialog !== undefined && canOpenTeamDialog) {
+    if (signedIn && canOpenTeamDialog) {
       canOpenTeamDialog = false // Prevent other instances from opening dialog
-      setOpenTeamDialog(true)
+      if (setOpenTeamDialog !== undefined) setOpenTeamDialog(true)
     } else if (signedIn && !canOpenTeamDialog) {
       // Dialog is already open from another instance, do nothing
     } else {
@@ -207,19 +207,18 @@ export function CreateJourneyButton({
     // Prevent closing during translation
     if (loading || translationVariables != null) return
 
-    if (setOpenTeamDialog !== undefined) {
-      setOpenTeamDialog(false)
-      canOpenTeamDialog = true
-      const { createNew, ...queryWithoutCreateNew } = router.query
-      void router.replace(
-        {
-          pathname: router.pathname,
-          query: queryWithoutCreateNew
-        },
-        undefined,
-        { shallow: true }
-      )
-    }
+    if (setOpenTeamDialog !== undefined) setOpenTeamDialog(false)
+    canOpenTeamDialog = true
+    const { createNew, ...queryWithoutCreateNew } = router.query
+
+    void router.replace(
+      {
+        pathname: router.pathname,
+        query: queryWithoutCreateNew
+      },
+      undefined,
+      { shallow: true }
+    )
   }
 
   useEffect(() => {
@@ -230,11 +229,10 @@ export function CreateJourneyButton({
     if (
       router.query.createNew === 'true' &&
       signedIn &&
-      setOpenTeamDialog !== undefined &&
       canOpenTeamDialog
     ) {
       canOpenTeamDialog = false // Prevent other instances from opening dialog
-      setOpenTeamDialog(true)
+      if (setOpenTeamDialog !== undefined) setOpenTeamDialog(true)
     }
   }, [signedIn, router, setOpenTeamDialog])
 
