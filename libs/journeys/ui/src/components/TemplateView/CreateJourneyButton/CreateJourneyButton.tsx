@@ -250,7 +250,7 @@ export function CreateJourneyButton({
       <AccountCheckDialog
         open={openAccountDialog}
         handleSignIn={handleSignIn}
-        onClose={() => {setOpenAccountDialog(false)}}
+        onClose={() => setOpenAccountDialog(false)}
       />
       {openTeamDialog != null && (
         <DynamicCopyToTeamDialog
