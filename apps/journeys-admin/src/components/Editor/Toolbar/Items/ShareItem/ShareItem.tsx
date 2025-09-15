@@ -49,6 +49,7 @@ interface ShareItemProps {
   journey?: JourneyFromContext | JourneyFromLazyQuery
   handleCloseMenu?: () => void
   handleKeepMounted?: () => void
+  buttonVariant?: 'icon' | 'default'
 }
 
 /**
@@ -66,7 +67,8 @@ export function ShareItem({
   variant,
   journey,
   handleCloseMenu,
-  handleKeepMounted
+  handleKeepMounted,
+  buttonVariant = 'icon'
 }: ShareItemProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { enqueueSnackbar } = useSnackbar()
@@ -118,9 +120,9 @@ export function ShareItem({
       <Item
         variant={variant}
         label={t('Share')}
-        icon={<ShareIcon />}
         onClick={handleShowMenu}
         ButtonProps={{ variant: 'contained' }}
+        icon={buttonVariant === 'icon' ? <ShareIcon /> : undefined}
       />
       <Dialog
         open={Boolean(anchorEl)}

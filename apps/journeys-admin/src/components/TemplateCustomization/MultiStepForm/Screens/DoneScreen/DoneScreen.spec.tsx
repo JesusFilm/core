@@ -1,10 +1,18 @@
+import { MockedProvider } from '@apollo/client/testing'
 import { render, screen, fireEvent, waitFor } from '@testing-library/react'
 import { useRouter, NextRouter } from 'next/router'
+import { SnackbarProvider } from 'notistack'
 import { journey } from '@core/journeys/ui/JourneyProvider/JourneyProvider.mock'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+import { GET_CUSTOM_DOMAINS } from '../../../../../libs/useCustomDomainsQuery/useCustomDomainsQuery'
+import { GET_JOURNEY_FOR_SHARING } from '../../../../../libs/useJourneyForShareLazyQuery/useJourneyForShareLazyQuery'
 import { DoneScreen } from './DoneScreen'
 import { BlockFields_ImageBlock as ImageBlock } from '../../../../../../__generated__/BlockFields'
+import {
+  ThemeMode,
+  ThemeName
+} from '../../../../../../__generated__/globalTypes'
 
 jest.mock('next/router', () => ({
   __esModule: true,
@@ -22,28 +30,105 @@ jest.mock('react-i18next', () => ({
 
 const mockUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
 
+const getCustomDomainsMock = {
+  request: {
+    query: GET_CUSTOM_DOMAINS,
+    variables: { teamId: 'teamId' }
+  },
+  result: {
+    data: {
+      customDomains: [
+        {
+          __typename: 'CustomDomain',
+          id: 'customDomainId',
+          name: 'custom.domain.com',
+          apexName: 'custom.domain.com',
+          journeyCollection: null
+        }
+      ]
+    }
+  }
+}
+
+const journeyForSharingMock = {
+  request: {
+    query: GET_JOURNEY_FOR_SHARING,
+    variables: { id: 'journeyId' }
+  },
+  result: {
+    data: {
+      journey: {
+        __typename: 'Journey',
+        id: 'journeyId',
+        slug: 'default',
+        language: {
+          __typename: 'Language',
+          id: '529',
+          bcp47: 'en',
+          iso3: 'eng',
+          name: [
+            {
+              __typename: 'LanguageName',
+              value: 'English',
+              primary: true
+            }
+          ]
+        },
+        themeName: ThemeName.base,
+        themeMode: ThemeMode.light,
+        team: {
+          __typename: 'Team',
+          id: 'teamId',
+          customDomains: [
+            {
+              __typename: 'CustomDomain',
+              name: 'custom.domain.com'
+            }
+          ]
+        }
+      }
+    }
+  }
+}
+
 describe('DoneScreen', () => {
   let push: jest.Mock
+  let writeTextSpy: jest.SpyInstance
 
   beforeEach(() => {
     jest.clearAllMocks()
     push = jest.fn()
 
+    if (!navigator.clipboard) {
+      Object.assign(navigator, { clipboard: { writeText: jest.fn() } })
+    }
+
+    writeTextSpy = jest
+      .spyOn(navigator.clipboard, 'writeText')
+      .mockImplementation(jest.fn())
+
     mockUseRouter.mockReturnValue({
       push,
-      query: { redirect: null }
+      query: { redirect: null },
+      events: { on: jest.fn() }
     } as unknown as NextRouter)
+  })
+
+  afterEach(() => {
+    writeTextSpy.mockRestore()
   })
 
   it('renders the completion message', () => {
     render(
-      <JourneyProvider value={{ journey, variant: 'admin' }}>
-        <DoneScreen />
-      </JourneyProvider>
+      <MockedProvider mocks={[getCustomDomainsMock]}>
+        <JourneyProvider value={{ journey, variant: 'admin' }}>
+          <DoneScreen />
+        </JourneyProvider>
+      </MockedProvider>
     )
 
-    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent(
-      'Ready!'
+    expect(screen.getAllByRole('heading', { level: 1 })[0]).toHaveTextContent(
+      "It's Ready!"
     )
   })
 
@@ -56,11 +141,13 @@ describe('DoneScreen', () => {
     }
 
     render(
-      <JourneyProvider
-        value={{ journey: journeyWithContent, variant: 'admin' }}
-      >
-        <DoneScreen />
-      </JourneyProvider>
+      <MockedProvider mocks={[getCustomDomainsMock]}>
+        <JourneyProvider
+          value={{ journey: journeyWithContent, variant: 'admin' }}
+        >
+          <DoneScreen />
+        </JourneyProvider>
+      </MockedProvider>
     )
 
     expect(screen.getByText('Test Journey Title')).toBeInTheDocument()
@@ -78,11 +165,13 @@ describe('DoneScreen', () => {
     }
 
     render(
-      <JourneyProvider
-        value={{ journey: journeyWithoutImage, variant: 'admin' }}
-      >
-        <DoneScreen />
-      </JourneyProvider>
+      <MockedProvider mocks={[getCustomDomainsMock]}>
+        <JourneyProvider
+          value={{ journey: journeyWithoutImage, variant: 'admin' }}
+        >
+          <DoneScreen />
+        </JourneyProvider>
+      </MockedProvider>
     )
 
     expect(screen.getByTestId('GridEmptyIcon')).toBeInTheDocument()
@@ -108,9 +197,13 @@ describe('DoneScreen', () => {
     }
 
     render(
-      <JourneyProvider value={{ journey: journeyWithImage, variant: 'admin' }}>
-        <DoneScreen />
-      </JourneyProvider>
+      <MockedProvider mocks={[getCustomDomainsMock]}>
+        <JourneyProvider
+          value={{ journey: journeyWithImage, variant: 'admin' }}
+        >
+          <DoneScreen />
+        </JourneyProvider>
+      </MockedProvider>
     )
 
     await waitFor(() => {
@@ -122,15 +215,18 @@ describe('DoneScreen', () => {
 
   it('renders all action buttons', () => {
     render(
-      <JourneyProvider value={{ journey, variant: 'admin' }}>
-        <DoneScreen />
-      </JourneyProvider>
+      <MockedProvider mocks={[getCustomDomainsMock]}>
+        <JourneyProvider value={{ journey, variant: 'admin' }}>
+          <DoneScreen />
+        </JourneyProvider>
+      </MockedProvider>
     )
 
     expect(screen.getByTestId('DoneScreenPreviewButton')).toBeInTheDocument()
     expect(
       screen.getByTestId('DoneScreenContinueEditingButton')
     ).toBeInTheDocument()
+    expect(screen.getByTestId('ShareItem')).toBeInTheDocument()
   })
 
   it('renders preview button as link when journey has slug', () => {
@@ -140,9 +236,11 @@ describe('DoneScreen', () => {
     }
 
     render(
-      <JourneyProvider value={{ journey: journeyWithSlug, variant: 'admin' }}>
-        <DoneScreen />
-      </JourneyProvider>
+      <MockedProvider mocks={[getCustomDomainsMock]}>
+        <JourneyProvider value={{ journey: journeyWithSlug, variant: 'admin' }}>
+          <DoneScreen />
+        </JourneyProvider>
+      </MockedProvider>
     )
 
     const previewButton = screen.getByTestId('DoneScreenPreviewButton')
@@ -160,13 +258,15 @@ describe('DoneScreen', () => {
     }
 
     render(
-      <JourneyProvider value={{ journey: journeyWithId, variant: 'admin' }}>
-        <DoneScreen />
-      </JourneyProvider>
+      <MockedProvider mocks={[getCustomDomainsMock]}>
+        <JourneyProvider value={{ journey: journeyWithId, variant: 'admin' }}>
+          <DoneScreen />
+        </JourneyProvider>
+      </MockedProvider>
     )
 
     const continueEditingButton = screen.getByRole('button', {
-      name: 'Continue Editing'
+      name: 'Keep Editing'
     })
     fireEvent.click(continueEditingButton)
 
@@ -180,16 +280,77 @@ describe('DoneScreen', () => {
     } as any
 
     render(
-      <JourneyProvider value={{ journey: journeyWithoutId, variant: 'admin' }}>
-        <DoneScreen />
-      </JourneyProvider>
+      <MockedProvider mocks={[getCustomDomainsMock]}>
+        <JourneyProvider
+          value={{ journey: journeyWithoutId, variant: 'admin' }}
+        >
+          <DoneScreen />
+        </JourneyProvider>
+      </MockedProvider>
     )
 
     const continueEditingButton = screen.getByRole('button', {
-      name: 'Continue Editing'
+      name: 'Keep Editing'
     })
     fireEvent.click(continueEditingButton)
 
     expect(push).not.toHaveBeenCalled()
+  })
+
+  it('opens the share dialog when clicked', async () => {
+    const journeyWithTeam = {
+      ...journey,
+      team: {
+        __typename: 'Team' as const,
+        id: 'teamId',
+        title: 'Test Team',
+        publicTitle: 'Test Team Public'
+      }
+    }
+
+    render(
+      <SnackbarProvider>
+        <MockedProvider mocks={[getCustomDomainsMock, journeyForSharingMock]}>
+          <JourneyProvider
+            value={{ journey: journeyWithTeam, variant: 'admin' }}
+          >
+            <DoneScreen />
+          </JourneyProvider>
+        </MockedProvider>
+      </SnackbarProvider>
+    )
+
+    const shareButton = screen.getByRole('button', { name: 'Share' })
+    expect(shareButton).toBeInTheDocument()
+    fireEvent.click(shareButton)
+
+    await waitFor(() => {
+      expect(screen.getByRole('dialog')).toBeInTheDocument()
+    })
+
+    const dialog = screen.getByRole('dialog')
+    expect(dialog).toHaveTextContent('Share')
+
+    expect(
+      screen.getByRole('button', { name: 'Edit Link' })
+    ).toBeInTheDocument()
+
+    const copyButton = screen.getByRole('button', { name: 'Copy' })
+    expect(copyButton).toBeInTheDocument()
+
+    const urlTextField = screen.getByRole('textbox')
+    expect(urlTextField).toBeInTheDocument()
+    expect(urlTextField).toHaveValue('https://custom.domain.com/my-journey')
+
+    fireEvent.click(copyButton)
+    await waitFor(() => {
+      expect(writeTextSpy).toHaveBeenCalledWith(
+        'https://custom.domain.com/my-journey'
+      )
+    })
+
+    await waitFor(() => {
+      expect(screen.getByText('Link copied')).toBeInTheDocument()
+    })
   })
 })
