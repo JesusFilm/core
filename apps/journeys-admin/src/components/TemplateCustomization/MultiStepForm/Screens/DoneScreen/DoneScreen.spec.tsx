@@ -125,7 +125,7 @@ describe('DoneScreen', () => {
       </MockedProvider>
     )
 
-    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent(
+    expect(screen.getAllByRole('heading', { level: 1 })[0]).toHaveTextContent(
       "It's Ready!"
     )
   })
