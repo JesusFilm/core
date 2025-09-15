@@ -74,6 +74,8 @@ export function LinksForm({ links }: LinksFormProps): ReactElement {
               <TextField
                 id={fieldName}
                 name={fieldName}
+                variant='filled'
+                hiddenLabel
                 fullWidth
                 type={link.linkType === 'email' ? 'email' : 'text'}
                 value={values?.[fieldName] ?? ''}

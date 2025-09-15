@@ -33,6 +33,9 @@ interface LinksScreenProps {
   links: JourneyLink[]
 }
 
+const BUTTON_NEXT_STEP_WIDTH = '150px'
+const BUTTON_NEXT_STEP_HEIGHT = '42px'
+
 export function LinksScreen({
   handleNext,
   handleScreenNavigation,
@@ -119,17 +122,17 @@ export function LinksScreen({
 
       return link.linkType === 'email'
         ? updateEmailAction(
-            blockRef,
-            newValueRaw,
-            link.customizable ?? null,
-            link.parentStepId ?? null
-          )
+          blockRef,
+          newValueRaw,
+          link.customizable ?? null,
+          link.parentStepId ?? null
+        )
         : updateLinkAction(
-            blockRef,
-            newValueRaw,
-            link.customizable ?? null,
-            link.parentStepId ?? null
-          )
+          blockRef,
+          newValueRaw,
+          link.customizable ?? null,
+          link.parentStepId ?? null
+        )
     })
 
     await Promise.allSettled(updatePromises)
@@ -139,16 +142,57 @@ export function LinksScreen({
   return (
     <Stack
       alignItems="center"
-      sx={{ px: { xs: 2, md: 8 }, maxWidth: '1000px' }}
       gap={6}
+      sx={{
+        px: { xs: 2, sm: 18 },
+        width: '100%'
+      }}
     >
+      <Stack alignItems="center" sx={{ pb: 1 }}>
+        <Typography
+          component="h1"
+          variant="h4"
+          display={{ xs: 'none', sm: 'block' }}
+          gutterBottom
+          sx={{
+            mb: { xs: 0, sm: 2 }
+          }}
+        >
+          {t('Links')}
+        </Typography>
+        <Typography
+          component="h1"
+          variant="h6"
+          display={{ xs: 'block', sm: 'none' }}
+          gutterBottom
+          sx={{
+            mb: { xs: 0, sm: 2 }
+          }}
+        >
+          {t('Links')}
+        </Typography>
+        <Typography
+          variant="h6"
+          display={{ xs: 'none', sm: 'block' }}
+          color="text.secondary"
+          align="center"
+        >
+          {t(
+            "This invite contains buttons linking to external sites. Check them and update the links below."
+          )}
+        </Typography>
+        <Typography
+          variant="body2"
+          display={{ xs: 'block', sm: 'none' }}
+          color="text.secondary"
+          align="center"
+        >
+          {t(
+            "This invite contains buttons linking to external sites. Check them and update the links below."
+          )}
+        </Typography>
+      </Stack>
       <CardsPreview steps={treeBlocks} />
-      <Typography variant="h6" color="text.secondary">
-        {t('This invite has buttons leading to external links')}
-      </Typography>
-      <Typography variant="h6" color="text.secondary">
-        {t('Check them and change them here')}
-      </Typography>
       <Formik
         enableReinitialize
         initialValues={links.reduce<Record<string, string>>((acc, link) => {
@@ -180,16 +224,31 @@ export function LinksScreen({
               color="secondary"
               type="submit"
               form="linksForm"
-              sx={{ width: '300px', alignSelf: 'center', mt: 4 }}
-              endIcon={<ArrowRightIcon />}
               loading={
                 formik.isSubmitting ||
                 chatLoading ||
                 linkLoading ||
                 emailLoading
               }
+              aria-label={t('Replace the links')}
+              sx={{
+                width: BUTTON_NEXT_STEP_WIDTH,
+                height: BUTTON_NEXT_STEP_HEIGHT,
+                alignSelf: 'center',
+                borderRadius: '8px'
+              }}
             >
-              {t('Replace the links')}
+              <Stack direction="row" alignItems="center" gap={1}>
+                <Typography
+                  sx={{
+                    fontWeight: 'bold',
+                    display: { xs: 'none', sm: 'block' }
+                  }}
+                >
+                  {t('Next Step')}
+                </Typography>
+                <ArrowRightIcon />
+              </Stack>
             </Button>
           </FormikProvider>
         )}

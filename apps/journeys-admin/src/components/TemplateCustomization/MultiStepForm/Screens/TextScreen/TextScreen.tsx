@@ -98,15 +98,15 @@ const renderEditableText = (
             const editables =
               parent != null
                 ? Array.from(
-                    parent.querySelectorAll('[contenteditable="true"]')
-                  )
+                  parent.querySelectorAll('[contenteditable="true"]')
+                )
                 : []
             const index = editables.indexOf(e.currentTarget as HTMLElement)
             const nextIndex = e.shiftKey ? index - 1 : index + 1
             const nextEl = editables[nextIndex]
             if (nextEl != null) {
               e.preventDefault()
-              ;(nextEl as HTMLElement).focus()
+                ; (nextEl as HTMLElement).focus()
             }
           }
         }}
@@ -296,7 +296,7 @@ export function TextScreen({
           >
             {t('Next Step')}
           </Typography>
-          <ArrowRightIcon sx={{ fontSize: { xs: '24px', sm: '16px' } }} />
+          <ArrowRightIcon />
         </Stack>
       </Button>
     </Stack>
