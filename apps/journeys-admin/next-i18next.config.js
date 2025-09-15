@@ -50,7 +50,7 @@ const i18nConfig = {
     de: ['de-DE'],
     ne: ['ne-NP'],
     ms: ['ms-MY'],
-    pt: ['pt-PT']
+    pt: ['pt-BR']
   },
   localePath,
   react: { useSuspense: false }
