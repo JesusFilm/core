@@ -7,6 +7,24 @@
     "title": "Ücretsiz Gospel Video <underline>Akış</underline> Kütüphanesi.",
     "description": "2000'den fazla dilde müjdeyi izleyin, öğrenin ve paylaşın"
   },
+  "ModernTestPage": {
+    "pageTitle": "Modern Test",
+    "title": "Modern Test Sayfası",
+    "description": "Bu, modern saat uygulaması için bir test sayfasıdır. Yeni yönlendirme ve proxy işlevselliğini göstermektedir.",
+    "feature1": {
+      "title": "Modern Mimari",
+      "description": "Optimum performans ve geliştirici deneyimi için Next.js App Router ve modern React kalıpları ile oluşturulmuştur."
+    },
+    "feature2": {
+      "title": "Akıllı Yönlendirme",
+      "description": "Trafiği uygun arka uç hizmetlerine akıllıca yönlendiren gelişmiş proxy yönlendirme."
+    },
+    "feature3": {
+      "title": "Duyarlı Tasarım",
+      "description": "Tüm cihazlarda ve ekran boyutlarında sorunsuz çalışan tamamen duyarlı tasarım."
+    },
+    "footer": "Bu sayfa, akıllı proxy yönlendirme yoluyla modern saat uygulaması tarafından sunulur."
+  },
   "DatadogErrorBoundary": {
     "somethingWentWrong": "Bir şeyler ters gitti",
     "anErrorOccurred": "Bu sayfa yüklenirken bir hata oluştu. Lütfen yenilemeyi deneyin.",

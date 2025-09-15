@@ -46,7 +46,8 @@ jest.mock('@core/shared/ui/Dialog', () => ({
 jest.mock('next/navigation', () => ({
   useRouter: () => ({
     push: jest.fn()
-  })
+  }),
+  useParams: () => ({ videoId: 'video-123' })
 }))
 
 // Mock notistack
@@ -104,7 +105,7 @@ describe('DeleteVideoPage', () => {
     })
 
     it('renders the delete video dialog with confirmation message', () => {
-      render(<DeleteVideoPage params={{ videoId: mockVideoId }} />)
+      render(<DeleteVideoPage />)
 
       // Check dialog title
       expect(screen.getByTestId('dialog-title')).toHaveTextContent(
@@ -122,7 +123,7 @@ describe('DeleteVideoPage', () => {
     })
 
     it('navigates back when cancel button is clicked', () => {
-      render(<DeleteVideoPage params={{ videoId: mockVideoId }} />)
+      render(<DeleteVideoPage />)
 
       // Click cancel button
       fireEvent.click(screen.getByTestId('close-button'))
@@ -134,7 +135,7 @@ describe('DeleteVideoPage', () => {
     })
 
     it('calls delete mutation when delete button is clicked', () => {
-      render(<DeleteVideoPage params={{ videoId: mockVideoId }} />)
+      render(<DeleteVideoPage />)
 
       // Click delete button
       fireEvent.click(screen.getByTestId('submit-button'))
@@ -149,7 +150,7 @@ describe('DeleteVideoPage', () => {
         .spyOn(require('@apollo/client'), 'useMutation')
         .mockReturnValue([mockDeleteMutation, { loading: true }])
 
-      render(<DeleteVideoPage params={{ videoId: mockVideoId }} />)
+      render(<DeleteVideoPage />)
 
       // Check that the delete button is disabled
       expect(screen.getByTestId('submit-button')).toBeDisabled()
@@ -174,7 +175,7 @@ describe('DeleteVideoPage', () => {
     })
 
     it('shows error message and redirects for published video', () => {
-      render(<DeleteVideoPage params={{ videoId: mockVideoId }} />)
+      render(<DeleteVideoPage />)
 
       // Should show error message
       expect(mockEnqueueSnackbar).toHaveBeenCalledWith(
@@ -207,7 +208,7 @@ describe('DeleteVideoPage', () => {
     })
 
     it('shows error message and redirects for previously published video', () => {
-      render(<DeleteVideoPage params={{ videoId: mockVideoId }} />)
+      render(<DeleteVideoPage />)
 
       // Should show error message
       expect(mockEnqueueSnackbar).toHaveBeenCalledWith(
@@ -235,7 +236,7 @@ describe('DeleteVideoPage', () => {
     })
 
     it('shows error message and redirects when video not found', () => {
-      render(<DeleteVideoPage params={{ videoId: mockVideoId }} />)
+      render(<DeleteVideoPage />)
 
       // Should show error message
       expect(mockEnqueueSnackbar).toHaveBeenCalledWith('Video not found', {

@@ -114,43 +114,6 @@ type Error implements BaseError @join__type(graph: API_ANALYTICS)  @join__type(g
 
 type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  @join__type(graph: API_LANGUAGES)  @join__type(graph: API_MEDIA)  @join__type(graph: API_USERS)  {
   siteCreate(input: SiteCreateInput!) : MutationSiteCreateResult! @join__field(graph: API_ANALYTICS) 
-  blockDeleteAction(id: ID!, """
-  drop this parameter after merging teams
-  """
-  journeyId: ID) : Block! @join__field(graph: API_JOURNEYS) 
-  blockUpdateNavigateToBlockAction(
-    id: ID!
-    input: NavigateToBlockActionInput!
-    """
-    drop this parameter after merging teams
-    """
-    journeyId: ID
-  ): NavigateToBlockAction! @join__field(graph: API_JOURNEYS) 
-  blockUpdateLinkAction(
-    id: ID!
-    input: LinkActionInput!
-    """
-    drop this parameter after merging teams
-    """
-    journeyId: ID
-  ): LinkAction! @join__field(graph: API_JOURNEYS) 
-  blockUpdateEmailAction(
-    id: ID!
-    input: EmailActionInput!
-    """
-    drop this parameter after merging teams
-    """
-    journeyId: ID
-  ): EmailAction! @join__field(graph: API_JOURNEYS) 
-  blockUpdatePhoneAction(
-    id: ID!
-    input: PhoneActionInput!
-    """
-    drop this parameter after merging teams
-    """
-    journeyId: ID
-  ): PhoneAction! @join__field(graph: API_JOURNEYS) 
-  blockUpdateAction(id: ID!, input: BlockUpdateActionInput) : Action! @join__field(graph: API_JOURNEYS) 
   """
   blockDelete returns the updated sibling blocks on successful delete
   """
@@ -291,15 +254,6 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
     """
     journeyId: ID
   ): TypographyBlock! @join__field(graph: API_JOURNEYS) 
-  videoBlockCreate(input: VideoBlockCreateInput!) : VideoBlock! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
-  videoBlockUpdate(
-    id: ID!
-    input: VideoBlockUpdateInput!
-    """
-    drop this parameter after merging teams
-    """
-    journeyId: ID
-  ): VideoBlock! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
   chatButtonCreate(journeyId: ID!, input: ChatButtonCreateInput) : ChatButton! @join__field(graph: API_JOURNEYS) 
   chatButtonUpdate(id: ID!, journeyId: ID!, input: ChatButtonUpdateInput!) : ChatButton! @join__field(graph: API_JOURNEYS) 
   chatButtonRemove(id: ID!) : ChatButton! @join__field(graph: API_JOURNEYS) 
@@ -413,6 +367,21 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   Allow current user to update specific allowable fields of their visitor record
   """
   visitorUpdateForCurrentUser(input: VisitorUpdateInput!) : Visitor! @join__field(graph: API_JOURNEYS) 
+  videoBlockCreate(input: VideoBlockCreateInput!) : VideoBlock! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
+  videoBlockUpdate(
+    id: ID!
+    input: VideoBlockUpdateInput!
+    """
+    drop this parameter after merging teams
+    """
+    journeyId: ID
+  ): VideoBlock! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
+  blockDeleteAction(id: ID!, journeyId: ID) : Block! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
+  blockUpdateAction(id: ID!, input: BlockUpdateActionInput!) : Action! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
+  blockUpdateEmailAction(id: ID!, input: EmailActionInput!, journeyId: ID) : EmailAction! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
+  blockUpdateLinkAction(id: ID!, input: LinkActionInput!, journeyId: ID) : LinkAction! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
+  blockUpdateNavigateToBlockAction(id: ID!, input: NavigateToBlockActionInput!, journeyId: ID) : NavigateToBlockAction! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
+  blockUpdatePhoneAction(id: ID!, input: PhoneActionInput!, journeyId: ID) : PhoneAction! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
   journeySimpleUpdate(id: ID!, journey: Json!) : Json @join__field(graph: API_JOURNEYS_MODERN) 
   journeyAiTranslateCreate(input: JourneyAiTranslateInput!) : Journey! @join__field(graph: API_JOURNEYS_MODERN) 
   createJourneyEventsExportLog(input: JourneyEventsExportLogInput!) : JourneyEventsExportLog! @join__field(graph: API_JOURNEYS_MODERN) 
@@ -420,6 +389,10 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   audioPreviewCreate(input: MutationAudioPreviewCreateInput!) : AudioPreview! @join__field(graph: API_LANGUAGES) 
   audioPreviewUpdate(input: MutationAudioPreviewUpdateInput!) : AudioPreview! @join__field(graph: API_LANGUAGES) 
   audioPreviewDelete(languageId: ID!) : AudioPreview! @join__field(graph: API_LANGUAGES) 
+  """
+  Transcode an asset. Returns the bullmq job ID.
+  """
+  transcodeAsset(input: TranscodeVideoInput!) : String @join__field(graph: API_MEDIA) 
   createCloudflareUploadByFile(input: ImageInput) : CloudflareImage! @join__field(graph: API_MEDIA) 
   createCloudflareUploadByUrl(url: String!, input: ImageInput) : CloudflareImage! @join__field(graph: API_MEDIA) 
   createCloudflareImageFromPrompt(prompt: String!, input: ImageInput) : CloudflareImage! @join__field(graph: API_MEDIA) 
@@ -430,10 +403,6 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   """
   cloudflareR2Create(input: CloudflareR2CreateInput!) : CloudflareR2! @join__field(graph: API_MEDIA) 
   cloudflareR2Delete(id: ID!) : CloudflareR2! @join__field(graph: API_MEDIA) 
-  """
-  Transcode an asset. Returns the bullmq job ID.
-  """
-  transcodeAsset(input: TranscodeVideoInput!) : String @join__field(graph: API_MEDIA) 
   createImageBySegmindPrompt(prompt: String!, model: SegmindModel!) : CloudflareImage! @join__field(graph: API_MEDIA)  @deprecated(reason: "use createCloudflareImageFromPrompt") 
   triggerUnsplashDownload(url: String!) : Boolean! @join__field(graph: API_MEDIA) 
   bibleCitationCreate(input: MutationBibleCitationCreateInput!) : BibleCitation @join__field(graph: API_MEDIA) 
@@ -589,7 +558,7 @@ type EmailAction implements Action @join__type(graph: API_JOURNEYS)  @join__type
   parentStepId: String
 }
 
-type PhoneAction implements Action @join__type(graph: API_JOURNEYS)  @join__implements(graph: API_JOURNEYS, interface: "Action")  {
+type PhoneAction implements Action @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  @join__implements(graph: API_JOURNEYS, interface: "Action")  @join__implements(graph: API_JOURNEYS_MODERN, interface: "Action")  {
   parentBlockId: ID!
   parentBlock: Block!
   gtmEventName: String
@@ -786,9 +755,9 @@ type Query @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS)  
   languagesCount(where: LanguagesFilter, term: String) : Int! @join__field(graph: API_LANGUAGES) 
   country(id: ID!) : Country @join__field(graph: API_LANGUAGES) 
   countries(term: String, ids: [ID!]) : [Country!]! @join__field(graph: API_LANGUAGES) 
+  getTranscodeAssetProgress(jobId: String!) : Int @join__field(graph: API_MEDIA) 
   getMyCloudflareImages(offset: Int, limit: Int) : [CloudflareImage!]! @join__field(graph: API_MEDIA) 
   getMyCloudflareImage(id: ID!) : CloudflareImage! @join__field(graph: API_MEDIA) 
-  getTranscodeAssetProgress(jobId: String!) : Int @join__field(graph: API_MEDIA) 
   listUnsplashCollectionPhotos(
     collectionId: String!
     page: Int
@@ -1001,7 +970,7 @@ type RadioOptionBlock implements Block @join__type(graph: API_JOURNEYS)  @join__
   parentBlockId: ID
   parentOrder: Int
   label: String!
-  action: Action @join__field(graph: API_JOURNEYS) 
+  action: Action
   """
   pollOptionImageBlockId is present if a child block should be used as a poll option image.
         This child block should not be rendered normally, instead it should be used
@@ -1023,7 +992,7 @@ type SignUpBlock implements Block @join__type(graph: API_JOURNEYS)  @join__type(
   journeyId: ID!
   parentBlockId: ID
   parentOrder: Int
-  action: Action @join__field(graph: API_JOURNEYS) 
+  action: Action
   submitIconId: ID
   submitLabel: String
 }
@@ -3083,11 +3052,6 @@ enum ThemeName @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS
   base @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN) 
 }
 
-enum IdType @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  @join__type(graph: API_MEDIA)  {
-  databaseId @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN)  @join__enumValue(graph: API_MEDIA) 
-  slug @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN)  @join__enumValue(graph: API_MEDIA) 
-}
-
 enum JourneyStatus @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
   archived @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN) 
   deleted @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN) 
@@ -3112,6 +3076,11 @@ enum JourneysReportType @join__type(graph: API_JOURNEYS)  @join__type(graph: API
   multipleSummary @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN) 
   singleFull @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN) 
   singleSummary @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN) 
+}
+
+enum IdType @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  @join__type(graph: API_MEDIA)  {
+  databaseId @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN)  @join__enumValue(graph: API_MEDIA) 
+  slug @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN)  @join__enumValue(graph: API_MEDIA) 
 }
 
 enum JourneyVisitorSort @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
@@ -3513,42 +3482,6 @@ input SiteCreateInput @join__type(graph: API_ANALYTICS)  {
   goals: [String!]
 }
 
-input NavigateToBlockActionInput @join__type(graph: API_JOURNEYS)  {
-  gtmEventName: String
-  blockId: String!
-}
-
-input LinkActionInput @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
-  gtmEventName: String
-  url: String!
-  target: String
-  customizable: Boolean
-  parentStepId: String
-}
-
-input EmailActionInput @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
-  gtmEventName: String
-  email: String!
-  customizable: Boolean
-  parentStepId: String
-}
-
-input BlockUpdateActionInput @join__type(graph: API_JOURNEYS)  {
-  gtmEventName: String
-  email: String
-  url: String
-  target: String
-  blockId: String
-  phone: String
-  countryCode: String
-}
-
-input PhoneActionInput @join__type(graph: API_JOURNEYS)  {
-  gtmEventName: String
-  phone: String!
-  countryCode: String!
-}
-
 input BlocksFilter @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
   journeyIds: [ID!]
   typenames: [String!]
@@ -3797,98 +3730,6 @@ input TypographyBlockUpdateInput @join__type(graph: API_JOURNEYS)  @join__type(g
   color: TypographyColor
   align: TypographyAlign
   settings: TypographyBlockSettingsInput
-}
-
-input VideoBlockCreateInput @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
-  id: ID
-  journeyId: ID!
-  parentBlockId: ID!
-  """
-  startAt dictates at which point of time the video should start playing
-  """
-  startAt: Int
-  """
-  endAt dictates at which point of time the video should end
-  """
-  endAt: Int
-  duration: Int
-  description: String
-  muted: Boolean
-  autoplay: Boolean
-  """
-  internal source videos: videoId and videoVariantLanguageId both need to be set
-  to select a video.
-  For other sources only videoId needs to be set.
-  """
-  videoId: ID
-  """
-  internal source videos: videoId and videoVariantLanguageId both need to be set
-  to select a video.
-  For other sources only videoId needs to be set.
-  """
-  videoVariantLanguageId: ID
-  """
-  internal source: videoId and videoVariantLanguageId required
-  youTube source: videoId required
-  """
-  source: VideoBlockSource
-  """
-  posterBlockId is present if a child block should be used as a poster.
-  This child block should not be rendered normally, instead it should be used
-  as the video poster. PosterBlock should be of type ImageBlock.
-  """
-  posterBlockId: ID
-  fullsize: Boolean
-  """
-  True if the coverBlockId in a parent block should be set to this block's id.
-  """
-  isCover: Boolean
-  """
-  how the video should display within the VideoBlock
-  """
-  objectFit: VideoBlockObjectFit
-}
-
-input VideoBlockUpdateInput @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
-  """
-  startAt dictates at which point of time the video should start playing
-  """
-  startAt: Int
-  """
-  endAt dictates at which point of time the video should end
-  """
-  endAt: Int
-  muted: Boolean
-  autoplay: Boolean
-  duration: Int
-  """
-  internal source videos: videoId and videoVariantLanguageId both need to be set
-  to select a video.
-  For other sources only videoId needs to be set.
-  """
-  videoId: ID
-  """
-  internal source videos: videoId and videoVariantLanguageId both need to be set
-  to select a video.
-  For other sources only videoId needs to be set.
-  """
-  videoVariantLanguageId: ID
-  """
-  internal source: videoId and videoVariantLanguageId required
-  youTube source: videoId required
-  """
-  source: VideoBlockSource
-  """
-  posterBlockId is present if a child block should be used as a poster.
-  This child block should not be rendered normally, instead it should be used
-  as the video poster. PosterBlock should be of type ImageBlock.
-  """
-  posterBlockId: ID
-  fullsize: Boolean
-  """
-  how the video should display within the VideoBlock
-  """
-  objectFit: VideoBlockObjectFit
 }
 
 input ChatButtonCreateInput @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
@@ -4631,6 +4472,23 @@ input VisitorUpdateInput @join__type(graph: API_JOURNEYS)  @join__type(graph: AP
   phone: String
 }
 
+input BlockUpdateActionInput @join__type(graph: API_JOURNEYS_MODERN)  {
+  gtmEventName: String
+  email: String
+  url: String
+  phone: String
+  countryCode: String
+  target: String
+  blockId: String
+}
+
+input EmailActionInput @join__type(graph: API_JOURNEYS_MODERN)  {
+  gtmEventName: String
+  email: String!
+  customizable: Boolean
+  parentStepId: String
+}
+
 input JourneyAiTranslateInput @join__type(graph: API_JOURNEYS_MODERN)  {
   journeyId: ID!
   name: String!
@@ -4646,12 +4504,77 @@ input JourneyEventsExportLogInput @join__type(graph: API_JOURNEYS_MODERN)  {
   dateRangeEnd: DateTimeISO
 }
 
+input LinkActionInput @join__type(graph: API_JOURNEYS_MODERN)  {
+  gtmEventName: String
+  url: String!
+  target: String
+  customizable: Boolean
+  parentStepId: String
+}
+
 input MutationJourneyLanguageAiDetectInput @join__type(graph: API_JOURNEYS_MODERN)  {
   journeyId: ID!
   name: String!
   journeyLanguageName: String!
   textLanguageId: ID!
   textLanguageName: String!
+}
+
+input NavigateToBlockActionInput @join__type(graph: API_JOURNEYS_MODERN)  {
+  gtmEventName: String
+  blockId: String!
+}
+
+input PhoneActionInput @join__type(graph: API_JOURNEYS_MODERN)  {
+  gtmEventName: String
+  phone: String!
+  countryCode: String!
+}
+
+input VideoBlockCreateInput @join__type(graph: API_JOURNEYS_MODERN)  {
+  id: ID
+  journeyId: ID!
+  parentBlockId: ID!
+  videoId: ID
+  videoVariantLanguageId: ID
+  source: VideoBlockSource
+  """
+  True if the coverBlockId in a parent block should be set to this block's id.
+  """
+  isCover: Boolean
+  title: String
+  description: String
+  image: String
+  duration: Int
+  objectFit: VideoBlockObjectFit
+  startAt: Int
+  endAt: Int
+  muted: Boolean
+  autoplay: Boolean
+  fullsize: Boolean
+  posterBlockId: ID
+}
+
+input VideoBlockUpdateInput @join__type(graph: API_JOURNEYS_MODERN)  {
+  parentBlockId: ID
+  videoId: ID
+  videoVariantLanguageId: ID
+  posterBlockId: ID
+  title: String
+  description: String
+  image: String
+  duration: Int
+  objectFit: VideoBlockObjectFit
+  startAt: Int
+  endAt: Int
+  muted: Boolean
+  autoplay: Boolean
+  fullsize: Boolean
+  """
+  internal source: videoId and videoVariantLanguageId required
+    youTube source: videoId required
+  """
+  source: VideoBlockSource
 }
 
 input LanguagesFilter @join__type(graph: API_LANGUAGES)  {
