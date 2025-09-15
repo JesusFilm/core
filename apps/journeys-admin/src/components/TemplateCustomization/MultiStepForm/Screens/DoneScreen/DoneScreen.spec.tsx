@@ -103,7 +103,9 @@ describe('DoneScreen', () => {
       Object.assign(navigator, { clipboard: { writeText: jest.fn() } })
     }
 
-    writeTextSpy = jest.spyOn(navigator.clipboard, 'writeText').mockImplementation(jest.fn())
+    writeTextSpy = jest
+      .spyOn(navigator.clipboard, 'writeText')
+      .mockImplementation(jest.fn())
 
     mockUseRouter.mockReturnValue({
       push,
@@ -342,7 +344,9 @@ describe('DoneScreen', () => {
 
     fireEvent.click(copyButton)
     await waitFor(() => {
-      expect(writeTextSpy).toHaveBeenCalledWith('https://custom.domain.com/my-journey')
+      expect(writeTextSpy).toHaveBeenCalledWith(
+        'https://custom.domain.com/my-journey'
+      )
     })
 
     await waitFor(() => {
