@@ -102,6 +102,16 @@
     }
   }
 
+  .mute-preview-toggle:before {
+    position: absolute;
+    content: '';
+    cursor: pointer;
+    bottom: -20px;
+    right: -100vw;
+    top: -100vh;
+    left: -100vw;
+  }
+
   .animate-mesh-gradient {
     animation: mesh-gradient 6s ease-in-out infinite;
   }

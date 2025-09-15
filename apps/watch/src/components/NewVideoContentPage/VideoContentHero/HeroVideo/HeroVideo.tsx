@@ -29,7 +29,8 @@ export function HeroVideo({
 }: HeroVideoProps): ReactElement {
   const { variant, ...video } = useVideo()
   const {
-    state: { mute }
+    state: { mute },
+    dispatch: dispatchPlayer
   } = usePlayer()
   const {
     state: { subtitleLanguageId, subtitleOn }
@@ -118,6 +119,17 @@ export function HeroVideo({
 
   const { subtitleUpdate } = useSubtitleUpdate()
 
+  const handlePreviewClick = useCallback(
+    (e: React.MouseEvent<HTMLVideoElement>) => {
+      e.stopPropagation()
+      const newMuteState = !mute
+      playerRef.current?.muted(newMuteState)
+      dispatchPlayer({ type: 'SetMute', mute: newMuteState })
+      onMuteToggle?.(newMuteState)
+    },
+    [mute, dispatchPlayer, onMuteToggle]
+  )
+
   useEffect(() => {
     const player = playerRef.current
     if (player == null) return
@@ -146,7 +158,10 @@ export function HeroVideo({
             key={variant.hls}
             data-testid="ContentHeroVideo"
             ref={videoRef}
-            className="vjs [&_.vjs-tech]:object-contain [&_.vjs-tech]:md:object-cover"
+            className={clsx(
+              'vjs [&_.vjs-tech]:object-contain [&_.vjs-tech]:md:object-cover',
+              { 'cursor-pointer': isPreview }
+            )}
             style={{
               position: 'absolute',
               top: 0,
@@ -155,6 +170,7 @@ export function HeroVideo({
               height: '100%'
             }}
             playsInline
+            onClick={isPreview ? handlePreviewClick : undefined}
           />
         )}
         {collapsed && (
