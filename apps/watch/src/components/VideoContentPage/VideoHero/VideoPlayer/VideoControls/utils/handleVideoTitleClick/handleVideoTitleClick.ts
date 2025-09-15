@@ -8,6 +8,7 @@ interface HandleVideoTitleClickProps {
   mute: boolean
   volume: number
   play: boolean
+  onMuteToggle?: (isMuted: boolean) => void
 }
 
 export function handleVideoTitleClick({
@@ -15,7 +16,8 @@ export function handleVideoTitleClick({
   dispatch,
   mute,
   volume,
-  play
+  play,
+  onMuteToggle
 }: HandleVideoTitleClickProps): void {
   if (player == null) return
   if (mute) {
@@ -35,4 +37,5 @@ export function handleVideoTitleClick({
   if (!play) {
     void player.play()
   }
+  onMuteToggle?.(false)
 }

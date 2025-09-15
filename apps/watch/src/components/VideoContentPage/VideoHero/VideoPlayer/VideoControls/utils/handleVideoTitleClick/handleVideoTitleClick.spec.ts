@@ -11,6 +11,7 @@ describe('handleVideoTitleClick', () => {
     volume: jest.fn(),
     play: jest.fn()
   } as unknown as Player
+  const onMuteToggle = jest.fn()
 
   afterEach(() => {
     jest.clearAllMocks()
@@ -36,13 +37,15 @@ describe('handleVideoTitleClick', () => {
       dispatch,
       mute: true,
       volume: 0,
-      play: false
+      play: false,
+      onMuteToggle
     })
     expect(player.muted).toHaveBeenCalledWith(false)
     expect(dispatch).toHaveBeenCalledWith({ type: 'SetMute', mute: false })
     expect(dispatch).toHaveBeenCalledWith({ type: 'SetVolume', volume: 100 })
     expect(player.volume).toHaveBeenCalledWith(1)
     expect(player.play).toHaveBeenCalled()
+    expect(onMuteToggle).toHaveBeenCalledWith(false)
   })
 
   it('should increase volume and play if volume is 0 and not playing', () => {

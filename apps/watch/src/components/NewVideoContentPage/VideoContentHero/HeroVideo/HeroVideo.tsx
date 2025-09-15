@@ -14,6 +14,7 @@ import { useVideo } from '../../../../libs/videoContext'
 import { useWatch } from '../../../../libs/watchContext'
 import { useSubtitleUpdate } from '../../../../libs/watchContext/useSubtitleUpdate'
 import { VideoControls } from '../../../VideoContentPage/VideoHero/VideoPlayer/VideoControls'
+import { handleVideoTitleClick } from '../../../VideoContentPage/VideoHero/VideoPlayer/VideoControls/utils/handleVideoTitleClick'
 import clsx from 'clsx'
 
 interface HeroVideoProps {
@@ -29,7 +30,8 @@ export function HeroVideo({
 }: HeroVideoProps): ReactElement {
   const { variant, ...video } = useVideo()
   const {
-    state: { mute }
+    state: { mute, volume, play, active, loading },
+    dispatch: dispatchPlayer
   } = usePlayer()
   const {
     state: { subtitleLanguageId, subtitleOn }
@@ -129,6 +131,37 @@ export function HeroVideo({
     })
   }, [playerRef, subtitleLanguageId, subtitleOn, variant, mute])
 
+  const clickable = (mute || volume === 0) && play && !active && !loading
+
+  const handleVideoClick = useCallback(
+    (
+      e:
+        | React.MouseEvent<HTMLVideoElement>
+        | React.KeyboardEvent<HTMLVideoElement>
+    ) => {
+      e.stopPropagation()
+      handleVideoTitleClick({
+        player: playerRef.current ?? undefined,
+        dispatch: dispatchPlayer,
+        mute,
+        volume,
+        play,
+        onMuteToggle
+      })
+    },
+    [dispatchPlayer, mute, volume, play, onMuteToggle]
+  )
+
+  const handleKeyDown = useCallback(
+    (e: React.KeyboardEvent<HTMLVideoElement>) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault()
+        handleVideoClick(e)
+      }
+    },
+    [handleVideoClick]
+  )
+
   return (
     <div
       className={clsx(
@@ -146,7 +179,10 @@ export function HeroVideo({
             key={variant.hls}
             data-testid="ContentHeroVideo"
             ref={videoRef}
-            className="vjs [&_.vjs-tech]:object-contain [&_.vjs-tech]:md:object-cover"
+            className={clsx(
+              'vjs [&_.vjs-tech]:object-contain [&_.vjs-tech]:md:object-cover',
+              { 'cursor-pointer': clickable }
+            )}
             style={{
               position: 'absolute',
               top: 0,
@@ -155,6 +191,11 @@ export function HeroVideo({
               height: '100%'
             }}
             playsInline
+            onClick={clickable ? handleVideoClick : undefined}
+            onKeyDown={clickable ? handleKeyDown : undefined}
+            tabIndex={clickable ? 0 : undefined}
+            role={clickable ? 'button' : undefined}
+            aria-label={clickable ? 'Unmute video' : undefined}
           />
         )}
         {collapsed && (
