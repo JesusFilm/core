@@ -222,30 +222,58 @@ export function useCarouselVideos(locale?: string): UseCarouselVideosReturn {
     }
   }, [poolIndex, config.playlistSequence, countsData, findNextAvailablePool])
 
-  // Get video for current pool
-  const { data: currentVideoData, loading: currentVideoLoading } = useQuery(
-    currentPool[0] === 'shortFilms' ? GET_SHORT_FILMS : GET_ONE_CHILD_BY_INDEX,
-    {
-      variables:
-        currentPool[0] === 'shortFilms'
-          ? { languageId }
-          : {
-              parentId: currentPool[0],
-              languageId
-            },
-      skip:
-        !countsData || currentPool[0] === 'shortFilms'
-          ? !shortFilmsData
-          : false,
-      // Use cache-and-network for Featured collection, cache-first for others
-      fetchPolicy: currentPool.includes('20_Featured')
-        ? 'cache-and-network'
-        : 'cache-first',
-      nextFetchPolicy: 'cache-first',
-      errorPolicy: 'all',
-      onCompleted: (data) => {},
-      onError: (error) => {}
-    }
+  // Helper to recursively find a playable video within a collection tree
+  const findVideoInCollection = useCallback(
+    async (
+      collectionId: string,
+      depth = 0
+    ): Promise<CarouselVideo | null> => {
+      if (depth > 3) return null
+
+      try {
+        const { data } = await fetchCollectionVideo({
+          variables: { parentId: collectionId, languageId }
+        })
+
+        const children = data?.video?.children || []
+        const videoChildren = children.filter((c: any) => c.variant)
+        if (videoChildren.length > 0) {
+          const offset = getDeterministicOffset(
+            collectionId,
+            videoChildren.length,
+            {
+              poolIndex,
+              totalVideosLoaded: videos.length
+            }
+          )
+          return videoChildren[offset] || null
+        }
+
+        const collectionChildren = children.filter(
+          (c: any) => !c.variant && c.childrenCount > 0
+        )
+
+        if (collectionChildren.length > 0) {
+          const { collectionId: nextId } = getRandomFromMultipleCollections(
+            collectionChildren.map((c: any) => ({
+              id: c.id,
+              childrenCount: c.childrenCount
+            })),
+            collectionId + depth
+          )
+          return findVideoInCollection(nextId, depth + 1)
+        }
+      } catch (err) {}
+
+      return null
+    },
+    [
+      fetchCollectionVideo,
+      languageId,
+      poolIndex,
+      videos.length,
+      getRandomFromMultipleCollections
+    ]
   )
 
   // Load video from a specific pool
@@ -271,34 +299,46 @@ export function useCarouselVideos(locale?: string): UseCarouselVideosReturn {
           return shortFilms[offset] || null
         }
       } else {
-        // Handle regular collection
-        const collectionId = pool[0]
-
-        try {
-          const { data } = await fetchCollectionVideo({
-            variables: {
-              parentId: collectionId,
-              languageId
+        // Handle regular collections (including nested)
+        const availableCollections = pool
+          .map((collectionId) => {
+            const collection = countsData?.videos?.find(
+              (n: any) => n.id === collectionId
+            )
+            const childrenCount = collection?.childrenCount || 0
+            const exhausted = isPoolExhausted(collectionId, childrenCount)
+            return {
+              id: collectionId,
+              childrenCount,
+              exhausted
             }
           })
+          .filter((c) => c.childrenCount > 0 && !c.exhausted)
 
-          if (data?.video?.children?.length > 0) {
-            const offset = getDeterministicOffset(
-              collectionId,
-              data.video.children.length,
-              {
-                poolIndex: poolResult.index,
-                totalVideosLoaded: videos.length
-              }
-            )
-            return data.video.children[offset] || null
-          }
-        } catch (err) {}
+        if (availableCollections.length === 0) return null
+
+        const { collectionId } = getRandomFromMultipleCollections(
+          availableCollections,
+          `pool-${index}`
+        )
+
+        const video = await findVideoInCollection(collectionId)
+        if (!video) {
+          // mark attempt to avoid infinite retries
+          markPoolVideoPlayed(collectionId)
+        }
+        return video
       }
 
       return null
     },
-    [shortFilmsData, fetchCollectionVideo, languageId]
+    [
+      shortFilmsData,
+      countsData,
+      findVideoInCollection,
+      getRandomFromMultipleCollections,
+      languageId
+    ]
   )
 
   // Progressive video loading for infinite playlist
@@ -369,6 +409,8 @@ export function useCarouselVideos(locale?: string): UseCarouselVideosReturn {
           poolId: nextPool.pool[0]
         }
 
+        const isFirst = videos.length === 0
+
         // Check for duplicates before adding to videos array
         setVideos((prev) => {
           // Check if we already have this video ID (allow same pool index for cycling)
@@ -388,6 +430,12 @@ export function useCarouselVideos(locale?: string): UseCarouselVideosReturn {
 
           return [...prev, videoWithPool]
         })
+
+        if (isFirst) {
+          addToSessionPlayedIds(videoWithPool.id)
+          addToPersistentPlayedIds(videoWithPool.id)
+          markPoolVideoPlayed(videoWithPool.poolId || 'unknown', videoWithPool.id)
+        }
       }
     } catch (err) {
     } finally {
@@ -406,69 +454,6 @@ export function useCarouselVideos(locale?: string): UseCarouselVideosReturn {
     loadingQueue.size
   ])
 
-  // Process current video from query result and add to videos array if not already present
-  useEffect(() => {
-    if (!currentVideoData) return
-    if (videos.length > 0) return // Already have videos loaded
-
-    let video: CarouselVideo | null = null
-
-    if (currentPool[0] === 'shortFilms') {
-      // Handle short films with deterministic daily selection
-      const shortFilms = shortFilmsData?.videos || []
-      if (shortFilms.length > 0) {
-        const offset = getDeterministicOffset('shortFilms', shortFilms.length, {
-          poolIndex: effectivePoolIndex,
-          totalVideosLoaded: videos.length
-        })
-        video = shortFilms[offset]
-
-        if (video) {
-          markPoolVideoPlayed('shortFilms', video.id)
-        }
-      }
-    } else if (currentVideoData.video?.children?.[0]) {
-      // Handle regular collection video
-      const children = currentVideoData.video.children
-      const collectionId = currentPool[0]
-      const childrenCount = children.length
-
-      if (childrenCount > 0) {
-        const offset = getDeterministicOffset(collectionId, childrenCount, {
-          poolIndex: effectivePoolIndex,
-          totalVideosLoaded: videos.length
-        })
-        video = children[offset]
-
-        if (video) {
-          // Mark video played for the specific collection
-          markPoolVideoPlayed(collectionId, video.id)
-        }
-      }
-    }
-
-    if (video) {
-      const videoWithPool = {
-        ...video,
-        poolIndex: effectivePoolIndex,
-        poolId: currentPool[0]
-      }
-
-      // Add first video to the array
-      setVideos([videoWithPool])
-      setCurrentIndex(0)
-
-      // Track as played
-      addToSessionPlayedIds(video.id)
-      addToPersistentPlayedIds(video.id)
-    }
-  }, [
-    currentVideoData,
-    currentPool,
-    shortFilmsData,
-    effectivePoolIndex,
-    videos.length
-  ])
 
   // Save current video session whenever current video changes
   useEffect(() => {
@@ -494,6 +479,12 @@ export function useCarouselVideos(locale?: string): UseCarouselVideosReturn {
       // Only clear on explicit user action or expiry
     }
   }, [])
+
+  // Load first video when data is ready
+  useEffect(() => {
+    if (!countsData || videos.length > 0) return
+    loadNextVideo()
+  }, [countsData, videos.length, loadNextVideo])
 
   // Start progressive loading after first video is set
   useEffect(() => {
@@ -586,7 +577,7 @@ export function useCarouselVideos(locale?: string): UseCarouselVideosReturn {
     [videos, currentIndex]
   )
 
-  const loading = countsLoading || currentVideoLoading
+  const loading = countsLoading
 
   return {
     loading,
