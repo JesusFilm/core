@@ -10,7 +10,7 @@ import { NextRequest, after } from 'next/server'
 
 import { langfuseSpanProcessor } from '../../../instrumentation'
 import { getPrompt } from '../../../src/lib/ai/langfuse/promptHelper'
-import { langfuseEnvironment } from '../../../src/lib/ai/langfuse/server'
+import { langfuseClient } from '../../../src/lib/ai/langfuse/server'
 
 const handler = async (req: NextRequest) => {
   const { messages, contextText, sessionId, journeyId, userId } =
@@ -49,7 +49,7 @@ const handler = async (req: NextRequest) => {
     experimental_telemetry: {
       isEnabled: true
     },
-    onFinish: ({ text }) => {
+    onFinish: async ({ text }) => {
       updateActiveObservation({
         output: text
       })
@@ -59,6 +59,8 @@ const handler = async (req: NextRequest) => {
 
       // End span manually after stream has finished
       trace.getActiveSpan()?.end()
+
+      await langfuseSpanProcessor.forceFlush()
     }
   })
 
