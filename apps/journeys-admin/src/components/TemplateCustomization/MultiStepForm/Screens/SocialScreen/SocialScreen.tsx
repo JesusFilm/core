@@ -9,14 +9,12 @@ import { TitleEdit } from '../../../../Editor/Slider/Settings/SocialDetails/Titl
 import { DescriptionEdit } from '../../../../Editor/Slider/Settings/SocialDetails/DescriptionEdit'
 import { CustomizationScreen } from '../../../utils/getCustomizeFlowConfig'
 import { SocialScreenSocialImage } from './SocialScreenSocialImage'
+import { sharedStyles } from '../../../utils/sharedStyles/sharedStyles'
 
 interface SocialScreenProps {
   handleNext: () => void
   handleScreenNavigation: (screen: CustomizationScreen) => void
 }
-
-const BUTTON_NEXT_STEP_WIDTH = '150px'
-const BUTTON_NEXT_STEP_HEIGHT = '42px'
 
 export function SocialScreen({
   handleNext,
@@ -77,9 +75,8 @@ export function SocialScreen({
         endIcon={<ArrowRightIcon />}
         data-testid="DoneButton"
         sx={{
-          width: BUTTON_NEXT_STEP_WIDTH,
-          height: BUTTON_NEXT_STEP_HEIGHT,
-          alignSelf: 'center',
+          width: sharedStyles.button.nextStep.width,
+          height: sharedStyles.button.nextStep.height,
           borderRadius: '8px'
         }}
       >

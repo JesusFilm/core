@@ -26,14 +26,12 @@ import { getJourneyLinks } from '../../../utils/getJourneyLinks'
 import { CardsPreview } from './CardsPreview'
 import { LinksForm } from './LinksForm'
 import { CustomizationScreen } from '../../../utils/getCustomizeFlowConfig'
+import { sharedStyles } from '../../../utils/sharedStyles/sharedStyles'
 
 interface LinksScreenProps {
   handleNext: () => void
   handleScreenNavigation: (screen: CustomizationScreen) => void
 }
-
-const BUTTON_NEXT_STEP_WIDTH = '150px'
-const BUTTON_NEXT_STEP_HEIGHT = '42px'
 
 export function LinksScreen({
   handleNext,
@@ -149,7 +147,6 @@ export function LinksScreen({
     >
       <Stack alignItems="center" sx={{ pb: 1 }}>
         <Typography
-          component="h1"
           variant="h4"
           display={{ xs: 'none', sm: 'block' }}
           gutterBottom
@@ -160,7 +157,6 @@ export function LinksScreen({
           {t('Links')}
         </Typography>
         <Typography
-          component="h1"
           variant="h6"
           display={{ xs: 'block', sm: 'none' }}
           gutterBottom
@@ -231,8 +227,8 @@ export function LinksScreen({
               }
               aria-label={t('Replace the links')}
               sx={{
-                width: BUTTON_NEXT_STEP_WIDTH,
-                height: BUTTON_NEXT_STEP_HEIGHT,
+                width: sharedStyles.button.nextStep.width,
+                height: sharedStyles.button.nextStep.height,
                 alignSelf: 'center',
                 borderRadius: '8px'
               }}

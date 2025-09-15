@@ -12,6 +12,7 @@ import ArrowRightIcon from '@core/shared/ui/icons/ArrowRight'
 import { GetJourney_journey_journeyCustomizationFields as JourneyCustomizationField } from '../../../../../../__generated__/GetJourney'
 import { JourneyCustomizationFieldUpdate } from '../../../../../../__generated__/JourneyCustomizationFieldUpdate'
 import { CustomizationScreen } from '../../../utils/getCustomizeFlowConfig'
+import { sharedStyles } from '../../../utils/sharedStyles/sharedStyles'
 
 export const JOURNEY_CUSTOMIZATION_FIELD_UPDATE = gql`
   mutation JourneyCustomizationFieldUpdate(
@@ -25,9 +26,6 @@ export const JOURNEY_CUSTOMIZATION_FIELD_UPDATE = gql`
     }
   }
 `
-
-const BUTTON_NEXT_STEP_WIDTH = '150px'
-const BUTTON_NEXT_STEP_HEIGHT = '42px'
 
 // Function to render text with editable spans for replaceable parts
 const renderEditableText = (
@@ -98,15 +96,15 @@ const renderEditableText = (
             const editables =
               parent != null
                 ? Array.from(
-                    parent.querySelectorAll('[contenteditable="true"]')
-                  )
+                  parent.querySelectorAll('[contenteditable="true"]')
+                )
                 : []
             const index = editables.indexOf(e.currentTarget as HTMLElement)
             const nextIndex = e.shiftKey ? index - 1 : index + 1
             const nextEl = editables[nextIndex]
             if (nextEl != null) {
               e.preventDefault()
-              ;(nextEl as HTMLElement).focus()
+                ; (nextEl as HTMLElement).focus()
             }
           }
         }}
@@ -306,8 +304,8 @@ export function TextScreen({
         loading={isSubmitting}
         aria-label={t('Save and continue')}
         sx={{
-          width: BUTTON_NEXT_STEP_WIDTH,
-          height: BUTTON_NEXT_STEP_HEIGHT,
+          width: sharedStyles.button.nextStep.width,
+          height: sharedStyles.button.nextStep.height,
           alignSelf: 'center',
           mt: { xs: 6, sm: 4 },
           borderRadius: '8px'
