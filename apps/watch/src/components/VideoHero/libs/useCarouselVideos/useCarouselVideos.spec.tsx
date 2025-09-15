@@ -23,6 +23,12 @@ jest.mock('./utils', () => ({
   clearCurrentVideoSession: jest.fn()
 }))
 
+jest.mock('./insertMux', () => ({
+  mergeMuxInserts: jest.fn((videos: any[]) =>
+    videos.map((video) => ({ source: 'video', id: video.id, video }))
+  )
+}))
+
 jest.mock('../../../../libs/getLanguageIdFromLocale', () => ({
   getLanguageIdFromLocale: () => '529'
 }))
@@ -92,6 +98,7 @@ describe('useCarouselVideos', () => {
     })
 
     expect(result.current.loading).toBe(true)
+    expect(result.current.slides).toEqual([])
     expect(result.current.videos).toEqual([])
     expect(result.current.currentIndex).toBe(0)
   })

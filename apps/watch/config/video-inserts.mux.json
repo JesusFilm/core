@@ -1,0 +1,37 @@
+{
+  "version": "1.0.0",
+  "inserts": [
+    {
+      "id": "welcome-start",
+      "enabled": true,
+      "source": "mux",
+      "playbackIds": [
+        "J3WBxqGgXxi01201FYmW0202ayeL7PGXfuuXR02nvjQCE7bI",
+        "R2ILwLVZJ9015NMx00cEP7Dk99As6T2EYWkJhUa4PC6RI"
+      ],
+      "overlay": {
+        "label": "Today’s Pick",
+        "title": "Morning Nature Background",
+        "collection": "Daily Inspirations",
+        "description": "A calm intro before your playlist."
+      },
+      "trigger": { "type": "sequence-start" }
+    },
+    {
+      "id": "after-three",
+      "enabled": false,
+      "source": "mux",
+      "playbackIds": [
+        "xZ123exampleafter3",
+        "yZ123exampleafter3"
+      ],
+      "overlay": {
+        "label": "Staff Pick",
+        "title": "Encouraging Moment",
+        "collection": "Highlights",
+        "description": "Pause to reflect with this moment from our archives."
+      },
+      "trigger": { "type": "after-count", "count": 3 }
+    }
+  ]
+}
