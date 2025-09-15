@@ -2,13 +2,13 @@ import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { Meta, StoryObj } from '@storybook/react'
 import { screen, userEvent, waitFor } from '@storybook/test'
 
+import { JourneyFields as Journey } from '@core/journeys/ui/JourneyProvider/__generated__/JourneyFields'
 import {
   blocks,
   blocksWithStepBlockPosition
 } from '@core/journeys/ui/TemplateView/data'
 import { journeysAdminConfig } from '@core/shared/ui/storybook'
 
-import { GetJourney_journey as Journey } from '../../../__generated__/GetJourney'
 import { GetStepBlocksWithPosition } from '../../../__generated__/GetStepBlocksWithPosition'
 import {
   JourneyStatus,
@@ -84,7 +84,12 @@ const journey: Journey = {
   logoImageBlock: null,
   menuButtonIcon: null,
   menuStepBlock: null,
-  journeyTheme: null
+  journeyTheme: null,
+  journeyCustomizationDescription: null,
+  journeyCustomizationFields: [],
+  fromTemplateId: null,
+  socialNodeX: null,
+  socialNodeY: null
 }
 
 const mockGetStepBlocksWithPosition: MockedResponse<GetStepBlocksWithPosition> =
