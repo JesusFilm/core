@@ -25,6 +25,8 @@ export interface RadioOptionFields_action_LinkAction {
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export interface RadioOptionFields_action_EmailAction {
@@ -32,6 +34,8 @@ export interface RadioOptionFields_action_EmailAction {
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export type RadioOptionFields_action = RadioOptionFields_action_PhoneAction | RadioOptionFields_action_NavigateToBlockAction | RadioOptionFields_action_LinkAction | RadioOptionFields_action_EmailAction;

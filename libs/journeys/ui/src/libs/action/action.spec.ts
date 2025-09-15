@@ -44,7 +44,9 @@ describe('action', () => {
         __typename: 'EmailAction',
         parentBlockId: 'parent-id',
         gtmEventName: null,
-        email: 'edmondshen@gmail.com'
+        email: 'edmondshen@gmail.com',
+        customizable: false,
+        parentStepId: null
       })
       expect(window.open).toHaveBeenCalledWith(
         'mailto:edmondshen@gmail.com',
@@ -59,7 +61,9 @@ describe('action', () => {
         __typename: 'LinkAction',
         parentBlockId: 'parent-id',
         gtmEventName: null,
-        url: 'http://www.google.com'
+        url: 'http://www.google.com',
+        customizable: false,
+        parentStepId: null
       })
       expect(window.open).toHaveBeenCalledWith(
         'http://www.google.com',
@@ -72,7 +76,9 @@ describe('action', () => {
         __typename: 'LinkAction',
         parentBlockId: 'parent-id',
         gtmEventName: null,
-        url: 'fact-or-fiction'
+        url: 'fact-or-fiction',
+        customizable: false,
+        parentStepId: null
       })
       expect(router.push).toHaveBeenCalledWith('fact-or-fiction')
     })
@@ -84,7 +90,9 @@ describe('action', () => {
         __typename: 'LinkAction',
         parentBlockId: 'parent-id',
         gtmEventName: null,
-        url: 'https://your.nextstep.is/fact-or-fiction'
+        url: 'https://your.nextstep.is/fact-or-fiction',
+        customizable: false,
+        parentStepId: null
       })
       expect(router.push).toHaveBeenCalledWith(
         'https://your.nextstep.is/fact-or-fiction'
@@ -98,7 +106,9 @@ describe('action', () => {
         __typename: 'LinkAction',
         parentBlockId: 'parent-id',
         gtmEventName: null,
-        url: ''
+        url: '',
+        customizable: false,
+        parentStepId: null
       })
       expect(window.open).not.toHaveBeenCalled()
       expect(router.push).not.toHaveBeenCalled()

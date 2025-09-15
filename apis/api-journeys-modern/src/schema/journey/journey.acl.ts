@@ -55,6 +55,9 @@ export function journeyAcl(
       return true
     }
 
+    // Publishers can update any template
+    if (action === Action.Update && journey.template === true) return true
+
     // Publishers can manage templates
     if (action === Action.Manage && journey.template === true) {
       return true
