@@ -226,11 +226,7 @@ export function CreateJourneyButton({
       // Prefetch the dashboard page
       void router.prefetch('/users/sign-in')
     }
-    if (
-      router.query.createNew === 'true' &&
-      signedIn &&
-      canOpenTeamDialog
-    ) {
+    if (router.query.createNew === 'true' && signedIn && canOpenTeamDialog) {
       canOpenTeamDialog = false // Prevent other instances from opening dialog
       if (setOpenTeamDialog !== undefined) setOpenTeamDialog(true)
     }
