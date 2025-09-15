@@ -98,15 +98,15 @@ const renderEditableText = (
             const editables =
               parent != null
                 ? Array.from(
-                    parent.querySelectorAll('[contenteditable="true"]')
-                  )
+                  parent.querySelectorAll('[contenteditable="true"]')
+                )
                 : []
             const index = editables.indexOf(e.currentTarget as HTMLElement)
             const nextIndex = e.shiftKey ? index - 1 : index + 1
             const nextEl = editables[nextIndex]
             if (nextEl != null) {
               e.preventDefault()
-              ;(nextEl as HTMLElement).focus()
+                ; (nextEl as HTMLElement).focus()
             }
           }
         }}
@@ -209,20 +209,46 @@ export function TextScreen({
       <Stack alignItems="center" sx={{ pb: 4 }}>
         <Typography
           component="h1"
+          variant="h4"
+          display={{ xs: 'none', sm: 'block' }}
           gutterBottom
           sx={{
-            mb: { xs: 0, sm: 2 },
-            typography: { xs: 'h6', sm: 'h4' }
+            mb: { xs: 0, sm: 2 }
           }}
         >
           {t('Text')}
         </Typography>
         <Typography
+          component="h1"
+          variant="h6"
+          display={{ xs: 'block', sm: 'none' }}
+          gutterBottom
+          sx={{
+            mb: { xs: 0, sm: 2 }
+          }}
+        >
+          {t('Text')}
+        </Typography>
+        <Typography
+          variant="h6"
+          display={{ xs: 'none', sm: 'block' }}
           color="text.secondary"
           align="center"
           sx={{
-            maxWidth: { xs: '100%', sm: '90%' },
-            typography: { xs: 'body2', sm: 'h6' }
+            maxWidth: { xs: '100%', sm: '90%' }
+          }}
+        >
+          {t(
+            "Fill out the blue fields and we'll customise the content with your information."
+          )}
+        </Typography>
+        <Typography
+          variant="body2"
+          display={{ xs: 'block', sm: 'none' }}
+          color="text.secondary"
+          align="center"
+          sx={{
+            maxWidth: { xs: '100%', sm: '90%' }
           }}
         >
           {t(

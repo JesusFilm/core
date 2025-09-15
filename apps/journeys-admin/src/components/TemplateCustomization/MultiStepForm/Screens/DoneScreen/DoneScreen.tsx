@@ -39,135 +39,155 @@ export function DoneScreen({
   }
 
   return (
-    <>
-      <Stack alignItems="center" sx={{ pb: 4, px: 4 }}>
-        <Typography
-          component="h1"
-          gutterBottom
+    <Stack alignItems="center" sx={{ pb: 4, px: 4 }}>
+      <Typography
+        component="h1"
+        variant="h4"
+        gutterBottom
+        display={{ xs: 'none', sm: 'block' }}
+        sx={{ mb: { xs: 0, sm: 2 } }}
+      >
+        {t("It's Ready!")}
+      </Typography>
+      <Typography
+        component="h1"
+        variant="h6"
+        display={{ xs: 'block', sm: 'none' }}
+        gutterBottom
+        sx={{ mb: { xs: 0, sm: 2 } }}
+      >
+        {t("It's Ready!")}
+      </Typography>
+      <Typography
+        color="text.secondary"
+        align="center"
+        variant="h6"
+        display={{ xs: 'none', sm: 'block' }}
+        sx={{
+          maxWidth: { xs: '100%', sm: '90%' }
+        }}
+      >
+        {t(
+          'If you’re happy with it, preview and share now. Want to update images or videos? Keep customising.'
+        )}
+      </Typography>
+      <Typography
+        color="text.secondary"
+        align="center"
+        variant="body2"
+        display={{ xs: 'block', sm: 'none' }}
+        sx={{
+          maxWidth: { xs: '100%', sm: '90%' }
+        }}
+      >
+        {t(
+          'If you’re happy with it, preview and share now. Want to update images or videos? Keep customising.'
+        )}
+      </Typography>
+      <Box
+        sx={{
+          width: 300,
+          height: 300,
+          borderRadius: 2,
+          bgcolor: 'background.paper',
+          boxShadow: 3,
+          p: 2,
+          mt: 6
+        }}
+      >
+        <Stack
+          justifyContent="center"
+          alignItems="center"
           sx={{
-            mb: { xs: 0, sm: 2 },
-            typography: { xs: 'h6', sm: 'h4' }
+            height: { xs: 185, sm: 210 },
+            position: 'relative',
+            overflow: 'hidden'
           }}
         >
-          {t("It's Ready!")}
-        </Typography>
-        <Typography
-          color="text.secondary"
-          align="center"
-          sx={{
-            maxWidth: { xs: '100%', sm: '90%' },
-            typography: { xs: 'body2', sm: 'h6' }
-          }}
-        >
-          {t(
-            'If you’re happy with it, preview and share now. Want to update images or videos? Keep customising.'
+          {journey?.primaryImageBlock?.src != null ? (
+            <NextImage
+              src={journey?.primaryImageBlock?.src ?? ''}
+              alt={journey?.primaryImageBlock.alt ?? ''}
+              fill
+              objectFit="cover"
+              style={{
+                borderRadius: '8px',
+                padding: 3
+              }}
+            />
+          ) : (
+            <GridEmptyIcon fontSize="large" />
           )}
-        </Typography>
-        <Box
-          sx={{
-            width: 300,
-            height: 300,
-            borderRadius: 2,
-            bgcolor: 'background.paper',
-            boxShadow: 3,
-            p: 2,
-            mt: 6
-          }}
-        >
-          <Stack
-            justifyContent="center"
-            alignItems="center"
+        </Stack>
+        <Stack gap={2} sx={{ mt: { xs: 8, sm: 4 } }}>
+          <Typography variant="subtitle1" noWrap>
+            {journey?.seoTitle ?? journey?.displayTitle ?? ''}
+          </Typography>
+          <Typography
+            variant="caption"
+            color="text.secondary"
             sx={{
-              height: { xs: 185, sm: 210 },
-              position: 'relative',
+              display: '-webkit-box',
+              WebkitLineClamp: 2,
+              WebkitBoxOrient: 'vertical',
               overflow: 'hidden'
             }}
           >
-            {journey?.primaryImageBlock?.src != null ? (
-              <NextImage
-                src={journey?.primaryImageBlock?.src ?? ''}
-                alt={journey?.primaryImageBlock.alt ?? ''}
-                fill
-                objectFit="cover"
-                style={{
-                  borderRadius: '8px',
-                  padding: 3
-                }}
-              />
-            ) : (
-              <GridEmptyIcon fontSize="large" />
-            )}
-          </Stack>
-          <Stack gap={2} sx={{ mt: { xs: 8, sm: 4 } }}>
-            <Typography variant="subtitle1" fontWeight={600} noWrap>
-              {journey?.seoTitle ?? journey?.displayTitle ?? ''}
-            </Typography>
-            <Typography
-              variant="caption"
-              color="text.secondary"
-              sx={{
-                display: '-webkit-box',
-                WebkitLineClamp: 2,
-                WebkitBoxOrient: 'vertical',
-                overflow: 'hidden'
-              }}
-            >
-              {journey?.seoDescription ?? ''}
-            </Typography>
-          </Stack>
-        </Box>
+            {journey?.seoDescription ?? ''}
+          </Typography>
+        </Stack>
+      </Box>
 
-        <Stack
-          gap={4}
+      <Stack
+        gap={4}
+        sx={{
+          width: { xs: '100%', sm: 300 },
+          mt: 6
+        }}
+      >
+        <Button
+          data-testid="DoneScreenPreviewButton"
+          fullWidth
+          variant="contained"
+          href={href}
+          component={href != null ? 'a' : 'button'}
+          target={href != null ? '_blank' : undefined}
           sx={{
-            width: { xs: '100%', sm: 300 },
-            mt: 6
+            borderRadius: 3,
+            backgroundColor: 'secondary.main',
+            height: '41px'
           }}
         >
-          <Button
-            data-testid="DoneScreenPreviewButton"
-            fullWidth
-            variant="contained"
-            href={href}
-            component={href != null ? 'a' : 'button'}
-            target={href != null ? '_blank' : undefined}
-            sx={{
-              borderRadius: 3,
-              backgroundColor: 'secondary.main',
-              height: '41px'
-            }}
-          >
-            <Typography fontWeight="bold">{t('Preview in New Tab')}</Typography>
-          </Button>
+          <Typography variant="subtitle2">{t('Preview in New Tab')}</Typography>
+        </Button>
 
-          <Box
-            sx={{
-              width: '100%',
-              '& button': { width: '100% !important' }
-            }}
-          >
-            <ShareItem
-              variant="button"
-              journey={journey}
-              buttonVariant="noAdornment"
-            />
-          </Box>
+        <Box
+          sx={{
+            width: '100%',
+            '& button': { width: '100% !important' }
+          }}
+        >
+          <ShareItem
+            variant="button"
+            journey={journey}
+            buttonVariant="default"
+          />
+        </Box>
 
-          <Button
-            data-testid="DoneScreenContinueEditingButton"
-            fullWidth
-            variant="contained"
-            onClick={handleContinueEditing}
-            sx={{
-              borderRadius: 3,
-              backgroundColor: 'secondary.main',
-              height: '41px'
-            }}
-          >
-            <Typography fontWeight="bold">{t('Keep Editing')}</Typography>
-          </Button>
-        </Stack>
+        <Button
+          data-testid="DoneScreenContinueEditingButton"
+          fullWidth
+          variant="contained"
+          onClick={handleContinueEditing}
+          sx={{
+            borderRadius: 3,
+            backgroundColor: 'secondary.main',
+            height: '41px'
+          }}
+        >
+          <Typography variant="subtitle2">{t('Keep Editing')}</Typography>
+        </Button>
       </Stack>
-    </>
+    </Stack>
   )
 }

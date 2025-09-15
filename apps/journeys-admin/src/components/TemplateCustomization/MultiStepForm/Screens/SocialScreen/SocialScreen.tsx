@@ -35,12 +35,22 @@ export function SocialScreen({
         {t('Almost There!')}
       </Typography>
       <Typography
-        variant="body1"
+        variant="h6"
         color="text.secondary"
         align="center"
         sx={{
-          typography: { xs: 'body2', sm: 'h6' }
+          display: { xs: 'none', sm: 'block' }
         }}
+      >
+        {t(
+          'Here’s how your invitation will appear when shared on social media. You can update it if you’d like.'
+        )}
+      </Typography>
+      <Typography
+        variant="body2"
+        color="text.secondary"
+        align="center"
+        display={{ xs: 'block', sm: 'none' }}
       >
         {t(
           'Here’s how your invitation will appear when shared on social media. You can update it if you’d like.'

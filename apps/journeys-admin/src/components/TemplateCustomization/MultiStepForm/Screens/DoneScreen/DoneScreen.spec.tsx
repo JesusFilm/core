@@ -91,21 +91,29 @@ const journeyForSharingMock = {
   }
 }
 
-// Mock clipboard for ShareItem tests
-Object.assign(navigator, { clipboard: { writeText: jest.fn() } })
-
 describe('DoneScreen', () => {
   let push: jest.Mock
+  let writeTextSpy: jest.SpyInstance
 
   beforeEach(() => {
     jest.clearAllMocks()
     push = jest.fn()
+
+    if (!navigator.clipboard) {
+      Object.assign(navigator, { clipboard: { writeText: jest.fn() } })
+    }
+
+    writeTextSpy = jest.spyOn(navigator.clipboard, 'writeText').mockImplementation(jest.fn())
 
     mockUseRouter.mockReturnValue({
       push,
       query: { redirect: null },
       events: { on: jest.fn() }
     } as unknown as NextRouter)
+  })
+
+  afterEach(() => {
+    writeTextSpy.mockRestore()
   })
 
   it('renders the completion message', () => {
@@ -287,7 +295,7 @@ describe('DoneScreen', () => {
     expect(push).not.toHaveBeenCalled()
   })
 
-  it('opens the Share dialog when ShareItem is clicked', async () => {
+  it('opens the share dialog when clicked', async () => {
     const journeyWithTeam = {
       ...journey,
       team: {
@@ -324,7 +332,21 @@ describe('DoneScreen', () => {
     expect(
       screen.getByRole('button', { name: 'Edit Link' })
     ).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: 'QR Code' })).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: /Embed/ })).toBeInTheDocument()
+
+    const copyButton = screen.getByRole('button', { name: 'Copy' })
+    expect(copyButton).toBeInTheDocument()
+
+    const urlTextField = screen.getByRole('textbox')
+    expect(urlTextField).toBeInTheDocument()
+    expect(urlTextField).toHaveValue('https://custom.domain.com/my-journey')
+
+    fireEvent.click(copyButton)
+    await waitFor(() => {
+      expect(writeTextSpy).toHaveBeenCalledWith('https://custom.domain.com/my-journey')
+    })
+
+    await waitFor(() => {
+      expect(screen.getByText('Link copied')).toBeInTheDocument()
+    })
   })
 })
