@@ -614,6 +614,9 @@ type Journey
   showLogo: Boolean
   showMenu: Boolean
   showDisplayTitle: Boolean
+
+  """ai related"""
+  showAssistant: Boolean
   menuButtonIcon: JourneyMenuButtonIcon
   socialNodeX: Int
   socialNodeY: Int
@@ -848,6 +851,7 @@ input JourneyUpdateInput {
   showLogo: Boolean
   showMenu: Boolean
   showDisplayTitle: Boolean
+  showAssistant: Boolean
   menuButtonIcon: JourneyMenuButtonIcon
   menuStepBlockId: ID
   logoImageBlockId: ID

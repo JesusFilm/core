@@ -724,6 +724,7 @@ export class JourneyUpdateInput {
     logoImageBlockId?: Nullable<string>;
     socialNodeX?: Nullable<number>;
     socialNodeY?: Nullable<number>;
+    showAssistant?: Nullable<boolean>;
 }
 
 export class JourneyTemplateInput {
@@ -986,6 +987,7 @@ export class Journey {
     socialNodeX?: Nullable<number>;
     socialNodeY?: Nullable<number>;
     fromTemplateId?: Nullable<string>;
+    showAssistant?: Nullable<boolean>;
     journeyCustomizationDescription?: Nullable<string>;
     journeyCustomizationFields: JourneyCustomizationField[];
     journeyTheme?: Nullable<JourneyTheme>;

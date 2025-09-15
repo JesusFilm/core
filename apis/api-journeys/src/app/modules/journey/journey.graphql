@@ -71,6 +71,10 @@ type Journey @key(fields: "id") @shareable {
   socialNodeX: Int
   socialNodeY: Int
   fromTemplateId: String
+  """
+  ai related
+  """
+  showAssistant: Boolean
 }
 
 enum IdType {
@@ -217,6 +221,7 @@ input JourneyUpdateInput {
   logoImageBlockId: ID
   socialNodeX: Int
   socialNodeY: Int
+  showAssistant: Boolean
 }
 
 extend type UserJourney {
