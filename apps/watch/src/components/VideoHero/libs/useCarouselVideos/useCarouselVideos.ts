@@ -20,6 +20,8 @@ import {
   loadCurrentVideoSession,
   clearCurrentVideoSession
 } from './utils'
+import { mergeMuxInserts } from './insertMux'
+import type { VideoCarouselSlide } from '../../../../types/inserts'
 
 export interface CarouselVideo {
   id: string
@@ -52,6 +54,7 @@ export interface QueuedVideo extends CarouselVideo {
 
 export interface UseCarouselVideosReturn {
   loading: boolean
+  slides: VideoCarouselSlide[]
   videos: CarouselVideo[] // All videos in natural sequence order
   currentIndex: number
   error: Error | null
@@ -578,9 +581,11 @@ export function useCarouselVideos(locale?: string): UseCarouselVideosReturn {
   )
 
   const loading = countsLoading
+  const slides = useMemo(() => mergeMuxInserts(videos), [videos])
 
   return {
     loading,
+    slides,
     videos,
     currentIndex,
     error,
