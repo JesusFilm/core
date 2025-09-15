@@ -21,7 +21,7 @@ import { JourneyChatButtonUpdate } from '../../../../../../__generated__/Journey
 import { useBlockActionEmailUpdateMutation } from '../../../../../libs/useBlockActionEmailUpdateMutation'
 import { useBlockActionLinkUpdateMutation } from '../../../../../libs/useBlockActionLinkUpdateMutation'
 import { JOURNEY_CHAT_BUTTON_UPDATE } from '../../../../Editor/Slider/Settings/CanvasDetails/JourneyAppearance/Chat/ChatOption/Details/Details'
-import { JourneyLink, getJourneyLinks } from '../../../utils/getJourneyLinks'
+import { getJourneyLinks } from '../../../utils/getJourneyLinks'
 
 import { CardsPreview } from './CardsPreview'
 import { LinksForm } from './LinksForm'
