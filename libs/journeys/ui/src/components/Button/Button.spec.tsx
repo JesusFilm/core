@@ -308,7 +308,9 @@ describe('Button', () => {
       __typename: 'LinkAction',
       parentBlockId: 'button',
       gtmEventName: null,
-      url: 'https://test.com/some-site'
+      url: 'https://test.com/some-site',
+      customizable: null,
+      parentStepId: null
     }
 
     const buttonWithAction = {
@@ -322,7 +324,7 @@ describe('Button', () => {
           __typename: 'ButtonClickEvent',
           id: 'uuid',
           action: action.__typename,
-          actionValue: action.url
+          actionValue: action.__typename === 'LinkAction' ? action.url : ''
         }
       }
     }))
@@ -341,7 +343,8 @@ describe('Button', () => {
                   label: 'stepName',
                   value: buttonWithAction.label,
                   action: action.__typename,
-                  actionValue: action.url
+                  actionValue:
+                    action.__typename === 'LinkAction' ? action.url : ''
                 }
               }
             },
@@ -464,7 +467,9 @@ describe('Button', () => {
       __typename: 'LinkAction',
       parentBlockId: 'button',
       gtmEventName: 'click',
-      url: 'https://bible.com'
+      url: 'https://bible.com',
+      customizable: null,
+      parentStepId: null
     }
 
     const buttonBlock = {
@@ -489,7 +494,8 @@ describe('Button', () => {
                   label: 'stepName',
                   value: buttonBlock.label,
                   action: action.__typename,
-                  actionValue: action.url
+                  actionValue:
+                    action.__typename === 'LinkAction' ? action.url : ''
                 }
               }
             },
@@ -499,7 +505,8 @@ describe('Button', () => {
                   __typename: 'ButtonClickEvent',
                   id: 'uuid',
                   action: action.__typename,
-                  actionValue: action.url
+                  actionValue:
+                    action.__typename === 'LinkAction' ? action.url : ''
                 }
               }
             }
@@ -534,7 +541,9 @@ describe('Button', () => {
       __typename: 'LinkAction',
       parentBlockId: 'button',
       gtmEventName: 'click',
-      url: 'https://m.me/some-user'
+      url: 'https://m.me/some-user',
+      customizable: null,
+      parentStepId: null
     }
 
     const buttonBlock = {

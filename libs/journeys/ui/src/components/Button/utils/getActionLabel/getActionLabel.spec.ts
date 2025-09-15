@@ -79,7 +79,9 @@ describe('getActionLabel', () => {
       __typename: 'LinkAction',
       parentBlockId: 'parentBlock.id',
       gtmEventName: 'click',
-      url: 'https://test.com/some-address'
+      url: 'https://test.com/some-address',
+      customizable: null,
+      parentStepId: null
     }
 
     const result = getActionLabel(action)
