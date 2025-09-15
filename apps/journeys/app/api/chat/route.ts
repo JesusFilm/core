@@ -60,7 +60,18 @@ const handler = async (req: NextRequest) => {
       // End span manually after stream has finished
       trace.getActiveSpan()?.end()
 
-      await langfuseSpanProcessor.forceFlush()
+      // Multiple flush strategies for maximum reliability
+      try {
+        // Strategy 1: Flush span processor
+        await langfuseSpanProcessor.forceFlush()
+
+        // Strategy 2: Flush Langfuse client directly
+        await langfuseClient.flush()
+
+        console.log('✅ Langfuse traces flushed successfully')
+      } catch (error) {
+        console.error('❌ Failed to flush Langfuse traces:', error)
+      }
     }
   })
 
