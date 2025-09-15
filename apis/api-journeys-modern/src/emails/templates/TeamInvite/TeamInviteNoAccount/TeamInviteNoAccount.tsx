@@ -24,7 +24,7 @@ import { User } from '@core/yoga/firebaseClient'
 interface TeamInviteNoAccountProps {
   teamName: string
   inviteLink: string
-  sender: Omit<User, 'id' | 'emailVerified'>
+  sender: Omit<User, 'emailVerified'>
   story?: boolean
   recipientEmail: string
 }
@@ -113,6 +113,7 @@ TeamInviteNoAccountEmail.PreviewProps = {
   teamName: 'JFP Sol Team',
   inviteLink: 'https://admin.nextstep.is/',
   sender: {
+    id: 'sender-id',
     firstName: 'Joe',
     email: 'joeRon@example.com',
     lastName: 'Ron-Imo',

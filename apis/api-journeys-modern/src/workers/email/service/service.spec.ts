@@ -54,8 +54,10 @@ const teamInviteJob: Job<TeamInviteJob, unknown, string> = {
     } as unknown as Team,
     email: 'abc@example.com',
     sender: {
+      id: 'senderId',
       firstName: 'Joe',
       lastName: 'Ron-Imo',
+      email: 'sender@example.com',
       imageUrl: undefined
     }
   }
@@ -83,11 +85,12 @@ const teamInviteAccepted: Job<TeamInviteAccepted, unknown, string> = {
       ]
     },
     sender: {
+      id: 'senderId',
       firstName: 'Joe',
       lastName: 'Ron-Imo',
+      email: 'sender@example.com',
       imageUrl: undefined
-    },
-    url: 'http://example.com/'
+    }
   }
 } as unknown as Job<TeamInviteAccepted, unknown, string>
 
@@ -228,17 +231,38 @@ describe('EmailConsumer', () => {
 
   describe('teamInviteEmail', () => {
     it('should send an email if user exists', async () => {
-      jest.spyOn(ApolloClient.prototype, 'query').mockImplementationOnce(
-        async () =>
-          await Promise.resolve({
-            data: {
-              user: {
-                id: 'userid',
-                email: 'jsmith@exmaple.com'
+      jest
+        .spyOn(ApolloClient.prototype, 'query')
+        .mockImplementation(async (options) => {
+          // Mock for fetchSenderData call
+          if (options.variables?.userId === 'senderId') {
+            return await Promise.resolve({
+              data: {
+                user: {
+                  id: 'senderId',
+                  email: 'sender@example.com',
+                  firstName: 'Joe',
+                  lastName: 'Ron-Imo',
+                  imageUrl: undefined
+                }
               }
-            }
-          } as unknown as ApolloQueryResult<unknown>)
-      )
+            } as unknown as ApolloQueryResult<unknown>)
+          }
+          // Mock for userByEmail call
+          if (options.variables?.email === 'abc@example.com') {
+            return await Promise.resolve({
+              data: {
+                userByEmail: {
+                  id: 'userid',
+                  email: 'abc@example.com',
+                  firstName: 'John',
+                  imageUrl: undefined
+                }
+              }
+            } as unknown as ApolloQueryResult<unknown>)
+          }
+          throw new Error('Unexpected query')
+        })
       await service(teamInviteJob)
       expect(sendEmail).toHaveBeenCalled()
       expect(args).toEqual({
@@ -250,14 +274,33 @@ describe('EmailConsumer', () => {
     })
 
     it('should send an email if user does not exist', async () => {
-      jest.spyOn(ApolloClient.prototype, 'query').mockImplementationOnce(
-        async () =>
-          await Promise.resolve({
-            data: {
-              user: undefined
-            }
-          } as unknown as ApolloQueryResult<unknown>)
-      )
+      jest
+        .spyOn(ApolloClient.prototype, 'query')
+        .mockImplementation(async (options) => {
+          // Mock for fetchSenderData call
+          if (options.variables?.userId === 'senderId') {
+            return await Promise.resolve({
+              data: {
+                user: {
+                  id: 'senderId',
+                  email: 'sender@example.com',
+                  firstName: 'Joe',
+                  lastName: 'Ron-Imo',
+                  imageUrl: undefined
+                }
+              }
+            } as unknown as ApolloQueryResult<unknown>)
+          }
+          // Mock for userByEmail call - user doesn't exist
+          if (options.variables?.email === 'abc@example.com') {
+            return await Promise.resolve({
+              data: {
+                userByEmail: undefined
+              }
+            } as unknown as ApolloQueryResult<unknown>)
+          }
+          throw new Error('Unexpected query')
+        })
       await service(teamInviteJob)
       expect(sendEmail).toHaveBeenCalled()
       expect(args).toEqual({
@@ -270,10 +313,85 @@ describe('EmailConsumer', () => {
 
     it('should not send email if user preference is false', async () => {
       prismaMock.journeysEmailPreference.findFirst.mockResolvedValueOnce({
-        email: 'jsmith@exmaple.com',
+        email: 'abc@example.com',
         unsubscribeAll: false,
         accountNotifications: false
       })
+
+      jest
+        .spyOn(ApolloClient.prototype, 'query')
+        .mockImplementation(async (options) => {
+          // Mock for fetchSenderData call
+          if (options.variables?.userId === 'senderId') {
+            return await Promise.resolve({
+              data: {
+                user: {
+                  id: 'senderId',
+                  email: 'sender@example.com',
+                  firstName: 'Joe',
+                  lastName: 'Ron-Imo',
+                  imageUrl: undefined
+                }
+              }
+            } as unknown as ApolloQueryResult<unknown>)
+          }
+          // Mock for userByEmail call
+          if (options.variables?.email === 'abc@example.com') {
+            return await Promise.resolve({
+              data: {
+                userByEmail: {
+                  id: 'userid',
+                  email: 'abc@example.com',
+                  firstName: 'John',
+                  imageUrl: undefined
+                }
+              }
+            } as unknown as ApolloQueryResult<unknown>)
+          }
+          throw new Error('Unexpected query')
+        })
+
+      await service(teamInviteJob)
+      expect(sendEmail).not.toHaveBeenCalled()
+    })
+
+    it('should not send email if sender has no email address', async () => {
+      jest
+        .spyOn(ApolloClient.prototype, 'query')
+        .mockImplementation(async (options) => {
+          // Mock for fetchSenderData call
+          if (options.variables?.userId === 'senderId') {
+            return await Promise.resolve({
+              data: {
+                user: {
+                  id: 'senderId',
+                  email: null,
+                  firstName: 'Joe',
+                  lastName: 'Ron-Imo',
+                  imageUrl: undefined
+                }
+              }
+            } as unknown as ApolloQueryResult<unknown>)
+          }
+          throw new Error('Unexpected query')
+        })
+
+      await service(teamInviteJob)
+      expect(sendEmail).not.toHaveBeenCalled()
+    })
+
+    it('should not send email if sender cannot be fetched', async () => {
+      jest
+        .spyOn(ApolloClient.prototype, 'query')
+        .mockImplementation(async (options) => {
+          // Mock for fetchSenderData call
+          if (options.variables?.userId === 'senderId') {
+            return await Promise.resolve({
+              data: { user: null }
+            } as unknown as ApolloQueryResult<unknown>)
+          }
+          throw new Error('Unexpected query')
+        })
 
       await service(teamInviteJob)
       expect(sendEmail).not.toHaveBeenCalled()
@@ -282,17 +400,42 @@ describe('EmailConsumer', () => {
 
   describe('teamInviteAcceptedEmail', () => {
     it('should send an email', async () => {
-      jest.spyOn(ApolloClient.prototype, 'query').mockImplementation(
-        async () =>
-          await Promise.resolve({
-            data: {
-              user: {
-                id: 'userid',
-                email: 'jsmith@exmaple.com'
+      jest
+        .spyOn(ApolloClient.prototype, 'query')
+        .mockImplementation(async (options) => {
+          // Mock for fetchSenderData call
+          if (options.variables?.userId === 'senderId') {
+            return await Promise.resolve({
+              data: {
+                user: {
+                  id: 'senderId',
+                  email: 'sender@example.com',
+                  firstName: 'Joe',
+                  lastName: 'Ron-Imo',
+                  imageUrl: undefined
+                }
               }
-            }
-          } as unknown as ApolloQueryResult<unknown>)
-      )
+            } as unknown as ApolloQueryResult<unknown>)
+          }
+          // Mock for recipient user calls (for both managers)
+          if (
+            options.variables?.userId === 'userId' ||
+            options.variables?.userId === 'userId2'
+          ) {
+            return await Promise.resolve({
+              data: {
+                user: {
+                  id: options.variables?.userId,
+                  email: 'jsmith@exmaple.com',
+                  firstName: 'John',
+                  lastName: 'Smith',
+                  imageUrl: undefined
+                }
+              }
+            } as unknown as ApolloQueryResult<unknown>)
+          }
+          throw new Error('Unexpected query')
+        })
       await service(teamInviteAccepted)
       expect(sendEmail).toHaveBeenCalledTimes(2)
       expect(args).toEqual({
@@ -310,17 +453,116 @@ describe('EmailConsumer', () => {
         accountNotifications: false
       })
 
-      jest.spyOn(ApolloClient.prototype, 'query').mockImplementationOnce(
-        async () =>
-          await Promise.resolve({
-            data: {
-              user: {
-                id: 'userid',
-                email: 'jsmith@exmaple.com'
+      jest
+        .spyOn(ApolloClient.prototype, 'query')
+        .mockImplementation(async (options) => {
+          // Mock for fetchSenderData call
+          if (options.variables?.userId === 'senderId') {
+            return await Promise.resolve({
+              data: {
+                user: {
+                  id: 'senderId',
+                  email: 'sender@example.com',
+                  firstName: 'Joe',
+                  lastName: 'Ron-Imo',
+                  imageUrl: undefined
+                }
               }
-            }
-          } as unknown as ApolloQueryResult<unknown>)
-      )
+            } as unknown as ApolloQueryResult<unknown>)
+          }
+          // Mock for recipient user calls (for both managers)
+          if (
+            options.variables?.userId === 'userId' ||
+            options.variables?.userId === 'userId2'
+          ) {
+            return await Promise.resolve({
+              data: {
+                user: {
+                  id: options.variables?.userId,
+                  email: 'jsmith@exmaple.com',
+                  firstName: 'John',
+                  lastName: 'Smith',
+                  imageUrl: undefined
+                }
+              }
+            } as unknown as ApolloQueryResult<unknown>)
+          }
+          throw new Error('Unexpected query')
+        })
+      await service(teamInviteAccepted)
+      expect(sendEmail).not.toHaveBeenCalled()
+    })
+
+    it('should not send email if sender has no email address', async () => {
+      jest
+        .spyOn(ApolloClient.prototype, 'query')
+        .mockImplementation(async (options) => {
+          // Mock for recipient user calls (for both managers)
+          if (
+            options.variables?.userId === 'userId' ||
+            options.variables?.userId === 'userId2'
+          ) {
+            return await Promise.resolve({
+              data: {
+                user: {
+                  id: options.variables?.userId,
+                  email: 'jsmith@exmaple.com',
+                  firstName: 'John',
+                  lastName: 'Smith',
+                  imageUrl: undefined
+                }
+              }
+            } as unknown as ApolloQueryResult<unknown>)
+          }
+          // Mock for fetchSenderData call - sender has no email
+          if (options.variables?.userId === 'senderId') {
+            return await Promise.resolve({
+              data: {
+                user: {
+                  id: 'senderId',
+                  email: null,
+                  firstName: 'Joe',
+                  lastName: 'Ron-Imo',
+                  imageUrl: undefined
+                }
+              }
+            } as unknown as ApolloQueryResult<unknown>)
+          }
+          throw new Error('Unexpected query')
+        })
+      await service(teamInviteAccepted)
+      expect(sendEmail).not.toHaveBeenCalled()
+    })
+
+    it('should not send email if sender cannot be fetched', async () => {
+      jest
+        .spyOn(ApolloClient.prototype, 'query')
+        .mockImplementation(async (options) => {
+          // Mock for recipient user calls (for both managers)
+          if (
+            options.variables?.userId === 'userId' ||
+            options.variables?.userId === 'userId2'
+          ) {
+            return await Promise.resolve({
+              data: {
+                user: {
+                  id: options.variables?.userId,
+                  email: 'jsmith@exmaple.com',
+                  firstName: 'John',
+                  lastName: 'Smith',
+                  imageUrl: undefined
+                }
+              }
+            } as unknown as ApolloQueryResult<unknown>)
+          }
+          // Mock for fetchSenderData call - sender cannot be fetched
+          if (options.variables?.userId === 'senderId') {
+            return await Promise.resolve({
+              data: { user: null }
+            } as unknown as ApolloQueryResult<unknown>)
+          }
+          throw new Error('Unexpected query')
+        })
       await service(teamInviteAccepted)
       expect(sendEmail).not.toHaveBeenCalled()
     })
