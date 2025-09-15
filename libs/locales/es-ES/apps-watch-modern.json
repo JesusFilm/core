@@ -7,6 +7,24 @@
     "title": "Biblioteca <underline>de</underline> vídeos evangélicos gratuitos.",
     "description": "Mira, aprende y comparte el Evangelio en más de 2000 idiomas"
   },
+  "ModernTestPage": {
+    "pageTitle": "Prueba moderna",
+    "title": "Página de prueba moderna",
+    "description": "Esta es una página de prueba de la aplicación reloj moderno. Demuestra la nueva funcionalidad de enrutamiento y proxy.",
+    "feature1": {
+      "title": "Arquitectura moderna",
+      "description": "Construido con Next.js App Router y modernos patrones React para un rendimiento y una experiencia del desarrollador óptimos."
+    },
+    "feature2": {
+      "title": "Enrutamiento inteligente",
+      "description": "Enrutamiento proxy avanzado que dirige inteligentemente el tráfico a los servicios backend adecuados."
+    },
+    "feature3": {
+      "title": "Diseño receptivo",
+      "description": "Diseño totalmente adaptable que funciona a la perfección en todos los dispositivos y tamaños de pantalla."
+    },
+    "footer": "Esta página es servida por la aplicación reloj moderno a través de un enrutamiento proxy inteligente."
+  },
   "DatadogErrorBoundary": {
     "somethingWentWrong": "Algo salió mal",
     "anErrorOccurred": "Se ha producido un error al cargar esta página. Intenta actualizarla.",

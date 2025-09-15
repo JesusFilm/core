@@ -148,7 +148,7 @@ export const action: LinkAction = {
   parentBlockId: 'button',
   gtmEventName: null,
   url: 'https://test.com/some-site',
-  customizable: false,
+  customizable: null,
   parentStepId: null
 }
 
