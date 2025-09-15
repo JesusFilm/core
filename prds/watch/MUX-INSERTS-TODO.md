@@ -1,6 +1,5 @@
 # Project Plan: Background Video Inserts using MUX Playback IDs
 
-Status: PLANNING ONLY. Do not implement until [ ] Approval is checked.  
 Router: Next.js App Router.  
 Secrets: None required (no MUX API calls).  
 Rollout: Always-on (no feature flag).
