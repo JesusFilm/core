@@ -41,7 +41,7 @@ function CustomizePage() {
         <JourneyProvider
           value={{
             journey: data?.journey,
-            variant: 'default'
+            variant: 'customize'
           }}
         >
           <MultiStepForm />
