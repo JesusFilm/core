@@ -40,6 +40,12 @@ scalar DateTime
 
 scalar Json
 
+type AssistantSettings
+  @shareable
+{
+  showAssistant: Boolean
+}
+
 enum ThemeMode {
   dark
   light
@@ -115,6 +121,8 @@ type Journey
   menuStepBlock: StepBlock
   chatButtons: [ChatButton!]!
   id: ID!
+
+  assistantSettings: AssistantSettings! @shareable
 
   """private title for creators"""
   title: String! @shareable

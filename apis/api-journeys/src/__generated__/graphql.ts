@@ -41,6 +41,11 @@ export type ArclightApiKey = {
   key: Scalars['String']['output'];
 };
 
+export type AssistantSettings = {
+  __typename?: 'AssistantSettings';
+  showAssistant?: Maybe<Scalars['Boolean']['output']>;
+};
+
 export type AudioPreview = {
   __typename?: 'AudioPreview';
   bitrate: Scalars['Int']['output'];
@@ -841,6 +846,7 @@ export enum IntegrationType {
 export type Journey = {
   __typename?: 'Journey';
   archivedAt?: Maybe<Scalars['DateTime']['output']>;
+  assistantSettings: AssistantSettings;
   blocks?: Maybe<Array<Block>>;
   chatButtons: Array<ChatButton>;
   createdAt: Scalars['DateTime']['output'];
