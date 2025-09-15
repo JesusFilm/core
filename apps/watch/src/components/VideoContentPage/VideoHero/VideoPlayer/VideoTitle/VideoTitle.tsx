@@ -77,12 +77,12 @@ export function VideoTitle({
       >
         {videoTitle.replace(/^\d+\.\s*/, '')}
       </h2>
-      {collectionTitle && (
+      {collectionTitle && isPreview && (
         <div className="inverted-effect text-black text-xl md:text-2xl font-sans font-medium opacity-80 mt-2 animate-fade-in-up animation-delay-300 text-shadow-xs">
           {collectionTitle}
         </div>
       )}
-      {videoDescription && (
+      {videoDescription && isPreview && (
         <p className=" text-stone-300 text-md leading-relaxed font-sans max-w-3xl mb-2 animate-fade-in-up animation-delay-400 line-clamp-3 text-shadow-xs">
           {videoDescription}
         </p>
