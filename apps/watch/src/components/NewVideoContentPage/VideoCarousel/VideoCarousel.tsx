@@ -1,9 +1,8 @@
 import { useTheme } from '@mui/material/styles'
-import { ReactElement, useRef, useMemo, useEffect } from 'react'
+import { ReactElement, useEffect, useMemo, useRef, useState } from 'react'
 import { A11y, FreeMode, Mousewheel, Navigation, Virtual } from 'swiper/modules'
 import { Swiper, SwiperSlide } from 'swiper/react'
-import { SwiperOptions } from 'swiper/types'
-import { Swiper as SwiperType } from 'swiper/types'
+import { SwiperOptions, Swiper as SwiperType } from 'swiper/types'
 
 import { VideoChildFields } from '../../../../__generated__/VideoChildFields'
 import { Skeleton } from '../../Skeleton'
@@ -21,6 +20,7 @@ interface VideoCarouselProps {
 }
 
 const SKELETON_COUNT = 11
+const VIDEO_CARD_ENTER_DURATION_MS = 450 // Keep in sync with CSS animation duration
 
 export function VideoCarousel({
   videos,
@@ -36,6 +36,12 @@ export function VideoCarousel({
   const nextRef = useRef<HTMLDivElement>(null)
   const prevRef = useRef<HTMLDivElement>(null)
   const swiperRef = useRef<SwiperType | null>(null)
+  const previousVideoIdsRef = useRef<string[]>([])
+  const animationTimeoutsRef = useRef<Map<string, number>>(new Map())
+  const hasInitializedRef = useRef(false)
+  const [animatedVideoIds, setAnimatedVideoIds] = useState<Set<string>>(
+    () => new Set()
+  )
 
   const swiperBreakpoints: SwiperOptions['breakpoints'] = useMemo(
     () => ({
@@ -111,6 +117,61 @@ export function VideoCarousel({
     return () => clearInterval(interval)
   }, [videos.length])
 
+  useEffect(() => {
+    const currentVideoIds = videos.map((video) => video.id)
+
+    if (!hasInitializedRef.current) {
+      previousVideoIdsRef.current = currentVideoIds
+      hasInitializedRef.current = true
+      return
+    }
+
+    const previousVideoIdSet = new Set(previousVideoIdsRef.current)
+    previousVideoIdsRef.current = currentVideoIds
+
+    const newlyAddedVideoIds = currentVideoIds.filter(
+      (videoId) => !previousVideoIdSet.has(videoId)
+    )
+
+    if (newlyAddedVideoIds.length === 0) return
+
+    setAnimatedVideoIds((prevAnimatedVideoIds) => {
+      const updatedAnimatedVideoIds = new Set(prevAnimatedVideoIds)
+      newlyAddedVideoIds.forEach((videoId) =>
+        updatedAnimatedVideoIds.add(videoId)
+      )
+      return updatedAnimatedVideoIds
+    })
+
+    newlyAddedVideoIds.forEach((videoId) => {
+      const existingTimeoutId = animationTimeoutsRef.current.get(videoId)
+      if (existingTimeoutId != null) {
+        window.clearTimeout(existingTimeoutId)
+      }
+
+      const timeoutId = window.setTimeout(() => {
+        animationTimeoutsRef.current.delete(videoId)
+        setAnimatedVideoIds((prevAnimatedVideoIds) => {
+          if (!prevAnimatedVideoIds.has(videoId)) return prevAnimatedVideoIds
+          const updatedAnimatedVideoIds = new Set(prevAnimatedVideoIds)
+          updatedAnimatedVideoIds.delete(videoId)
+          return updatedAnimatedVideoIds
+        })
+      }, VIDEO_CARD_ENTER_DURATION_MS)
+
+      animationTimeoutsRef.current.set(videoId, timeoutId)
+    })
+  }, [videos])
+
+  useEffect(() => {
+    return () => {
+      animationTimeoutsRef.current.forEach((timeoutId) =>
+        window.clearTimeout(timeoutId)
+      )
+      animationTimeoutsRef.current.clear()
+    }
+  }, [])
+
   // Handle keyboard navigation
   const handleKeyDown = (event: React.KeyboardEvent) => {
     if (!swiperRef.current) return
@@ -172,6 +233,7 @@ export function VideoCarousel({
                 mode === 'inlinePlayback' &&
                 currentVideoIndex >= 0 &&
                 index > currentVideoIndex
+              const shouldAnimate = animatedVideoIds.has(video.id)
 
               return (
                 <SwiperSlide
@@ -185,6 +247,7 @@ export function VideoCarousel({
                     video={video}
                     active={activeVideoId === video.id}
                     transparent={isAfterCurrentVideo}
+                    isNew={shouldAnimate}
                     onVideoSelect={handleVideoSelect}
                   />
                 </SwiperSlide>

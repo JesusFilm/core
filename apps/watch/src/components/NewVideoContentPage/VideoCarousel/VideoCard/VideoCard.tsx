@@ -6,18 +6,17 @@ import { ReactElement, useState } from 'react'
 
 import Play3 from '@core/shared/ui/icons/Play3'
 
-import { LazyImage } from './LazyImage'
-
 import { VideoChildFields } from '../../../../../__generated__/VideoChildFields'
+import { usePlayer } from '../../../../libs/playerContext'
 import { getLabelDetails } from '../../../../libs/utils/getLabelDetails/getLabelDetails'
 import { getWatchUrl } from '../../../../libs/utils/getWatchUrl'
-import { usePlayer } from '../../../../libs/playerContext'
 
 interface VideoCardProps {
   video: VideoChildFields
   containerSlug?: string
   active: boolean
   transparent?: boolean
+  isNew?: boolean
   onVideoSelect?: (videoId: string) => void
 }
 
@@ -148,6 +147,7 @@ export function VideoCard({
   containerSlug,
   active,
   transparent = false,
+  isNew = false,
   onVideoSelect
 }: VideoCardProps): ReactElement {
   const { t } = useTranslation('apps-watch')
@@ -177,7 +177,9 @@ export function VideoCard({
   )
 
   const commonProps = {
-    className: `block beveled no-underline text-inherit ${transparent ? 'opacity-70' : ''}`,
+    className: `block beveled no-underline text-inherit ${transparent ? 'opacity-70' : ''} ${
+      isNew ? 'animate-video-card-enter' : ''
+    }`,
     'aria-label': last(video.title)?.value ?? `Video ${video.slug}`,
     'data-testid': `VideoCard-${video.id}`
   }

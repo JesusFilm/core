@@ -136,6 +136,33 @@
     opacity: 0;
   }
 
+  @keyframes video-card-enter {
+    0% {
+      transform: translate3d(120%, 0, 0);
+      opacity: 0;
+    }
+
+    100% {
+      transform: translate3d(0, 0, 0);
+      opacity: 1;
+    }
+  }
+
+  .animate-video-card-enter {
+    /* Keep duration in sync with VIDEO_CARD_ENTER_DURATION_MS in VideoCarousel.tsx */
+    animation: video-card-enter var(--video-card-enter-duration, 0.45s)
+      var(--video-card-enter-easing, cubic-bezier(0.16, 1, 0.3, 1)) forwards;
+    will-change: transform, opacity;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .animate-video-card-enter {
+      animation: none !important;
+      transform: none !important;
+      opacity: 1 !important;
+    }
+  }
+
   .animation-delay-100 {
     animation-delay: 0.1s;
   }
