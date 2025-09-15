@@ -388,4 +388,52 @@ describe('ShareItem', () => {
       expect(screen.getByText('Link copied')).toBeInTheDocument()
     })
   })
+
+  it('should render ShareIcon when buttonVariant is icon', () => {
+    render(
+      <SnackbarProvider>
+        <MockedProvider mocks={[journeyForSharingMock]}>
+          <JourneyProvider
+            value={{ journey: defaultJourney, variant: 'admin' }}
+          >
+            <ShareItem
+              variant="button"
+              journey={defaultJourney}
+              buttonVariant="icon"
+            />
+          </JourneyProvider>
+        </MockedProvider>
+      </SnackbarProvider>
+    )
+
+    const shareButton = screen.getByRole('button', { name: 'Share' })
+    expect(shareButton).toBeInTheDocument()
+
+    const shareIcon = shareButton.querySelector('svg')
+    expect(shareIcon).toBeInTheDocument()
+  })
+
+  it('should not render ShareIcon when buttonVariant is default', () => {
+    render(
+      <SnackbarProvider>
+        <MockedProvider mocks={[journeyForSharingMock]}>
+          <JourneyProvider
+            value={{ journey: defaultJourney, variant: 'admin' }}
+          >
+            <ShareItem
+              variant="button"
+              journey={defaultJourney}
+              buttonVariant="default"
+            />
+          </JourneyProvider>
+        </MockedProvider>
+      </SnackbarProvider>
+    )
+
+    const shareButton = screen.getByRole('button', { name: 'Share' })
+    expect(shareButton).toBeInTheDocument()
+
+    const shareIcon = shareButton.querySelector('svg')
+    expect(shareIcon).not.toBeInTheDocument()
+  })
 })
