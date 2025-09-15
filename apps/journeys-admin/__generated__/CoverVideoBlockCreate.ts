@@ -78,6 +78,8 @@ export interface CoverVideoBlockCreate_videoBlockCreate_action_LinkAction {
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export interface CoverVideoBlockCreate_videoBlockCreate_action_EmailAction {
@@ -85,6 +87,8 @@ export interface CoverVideoBlockCreate_videoBlockCreate_action_EmailAction {
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export type CoverVideoBlockCreate_videoBlockCreate_action = CoverVideoBlockCreate_videoBlockCreate_action_PhoneAction | CoverVideoBlockCreate_videoBlockCreate_action_NavigateToBlockAction | CoverVideoBlockCreate_videoBlockCreate_action_LinkAction | CoverVideoBlockCreate_videoBlockCreate_action_EmailAction;
