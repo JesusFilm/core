@@ -1,1 +1,4 @@
-export { updateVideoInAlgolia, updateVideoPublishedStatus } from './algoliaVideoUpdate'
+export {
+  updateVideoInAlgolia,
+  updateVideoPublishedStatus
+} from './algoliaVideoUpdate'

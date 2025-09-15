@@ -234,9 +234,11 @@ export async function updateVideoPublishedStatus(
   try {
     const client = await getAlgoliaClient(logger)
     const videoVariantsIndex = process.env.ALGOLIA_INDEX_VIDEO_VARIANTS ?? ''
-  
+
     if (client == null || !videoVariantsIndex) {
-      logger?.warn('algolia client or index not found, skipping video published status update')
+      logger?.warn(
+        'algolia client or index not found, skipping video published status update'
+      )
       return
     }
 
@@ -246,7 +248,7 @@ export async function updateVideoPublishedStatus(
     })
 
     if (allVariants.length > 0) {
-      const variantUpdates = allVariants.map(variant => ({
+      const variantUpdates = allVariants.map((variant) => ({
         objectID: variant.id,
         videoPublished: publishedStatus
       }))
@@ -262,6 +264,9 @@ export async function updateVideoPublishedStatus(
       )
     }
   } catch (error) {
-    logger?.error(error, `failed to update video published status for video ${videoId}`)
+    logger?.error(
+      error,
+      `failed to update video published status for video ${videoId}`
+    )
   }
 }

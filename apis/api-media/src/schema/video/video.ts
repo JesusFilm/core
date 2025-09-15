@@ -9,7 +9,10 @@ import {
   prisma
 } from '@core/prisma/media/client'
 
-import { updateVideoInAlgolia, updateVideoPublishedStatus } from '../../lib/algolia/algoliaVideoUpdate'
+import {
+  updateVideoInAlgolia,
+  updateVideoPublishedStatus
+} from '../../lib/algolia/algoliaVideoUpdate'
 import { videoCacheReset } from '../../lib/videoCacheReset'
 import { builder } from '../builder'
 import { ImageAspectRatio } from '../cloudflare/image/enums'
