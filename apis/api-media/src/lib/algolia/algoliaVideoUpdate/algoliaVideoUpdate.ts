@@ -26,6 +26,7 @@ export async function updateVideoInAlgolia(
         label: true,
         primaryLanguageId: true,
         childIds: true,
+        published: true,
         title: {
           select: {
             value: true,
@@ -73,7 +74,7 @@ export async function updateVideoInAlgolia(
         restrictViewPlatforms: true,
         variants: {
           select: {
-            published: true,
+            id: true,
             hls: true,
             lengthInMilliseconds: true,
             downloadable: true,
@@ -178,8 +179,6 @@ export async function updateVideoInAlgolia(
         : null
     }
 
-    const published = video.variants[0]?.published ?? false
-
     const transformedVideo = {
       objectID: video.id,
       mediaComponentId: video.id,
@@ -209,7 +208,7 @@ export async function updateVideoInAlgolia(
       bibleCitations,
       containsCount: video.childIds?.length ?? 0,
       imageUrls,
-      published
+      published: video.published ?? false
     }
 
     const result = await client.saveObjects({
@@ -224,5 +223,45 @@ export async function updateVideoInAlgolia(
     logger?.info(`Record ${video.id} is now available in index ${videosIndex}`)
   } catch (error) {
     logger?.error(error, `failed to update video ${videoId} in algolia`)
+  }
+}
+
+export async function updateVideoPublishedStatus(
+  videoId: string,
+  publishedStatus: boolean,
+  logger?: Logger
+): Promise<void> {
+  try {
+    const client = await getAlgoliaClient(logger)
+    const videoVariantsIndex = process.env.ALGOLIA_INDEX_VIDEO_VARIANTS ?? ''
+  
+    if (client == null || !videoVariantsIndex) {
+      logger?.warn('algolia client or index not found, skipping video published status update')
+      return
+    }
+
+    const allVariants = await prisma.videoVariant.findMany({
+      where: { videoId },
+      select: { id: true }
+    })
+
+    if (allVariants.length > 0) {
+      const variantUpdates = allVariants.map(variant => ({
+        objectID: variant.id,
+        videoPublished: publishedStatus
+      }))
+
+      await client.partialUpdateObjects({
+        indexName: videoVariantsIndex,
+        objects: variantUpdates,
+        waitForTasks: true
+      })
+
+      logger?.info(
+        `Updated ${allVariants.length} video variants to set videoPublished=${publishedStatus} for video ${videoId}`
+      )
+    }
+  } catch (error) {
+    logger?.error(error, `failed to update video published status for video ${videoId}`)
   }
 }

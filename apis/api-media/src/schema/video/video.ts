@@ -9,7 +9,7 @@ import {
   prisma
 } from '@core/prisma/media/client'
 
-import { updateVideoInAlgolia } from '../../lib/algolia/algoliaVideoUpdate'
+import { updateVideoInAlgolia, updateVideoPublishedStatus } from '../../lib/algolia/algoliaVideoUpdate'
 import { videoCacheReset } from '../../lib/videoCacheReset'
 import { builder } from '../builder'
 import { ImageAspectRatio } from '../cloudflare/image/enums'
@@ -785,6 +785,12 @@ builder.mutationFields((t) => ({
           } catch (error) {
             console.error('Parent variant video update error:', error)
           }
+        }
+        // Update variants' videoPublished status in Algolia when published status changes
+        try {
+          await updateVideoPublishedStatus(input.id, isNowPublished ?? false)
+        } catch (error) {
+          console.error('Video variants Algolia update error:', error)
         }
       }
 
