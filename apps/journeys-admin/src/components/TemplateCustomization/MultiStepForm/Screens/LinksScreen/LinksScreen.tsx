@@ -122,17 +122,17 @@ export function LinksScreen({
 
       return link.linkType === 'email'
         ? updateEmailAction(
-            blockRef,
-            newValueRaw,
-            link.customizable ?? null,
-            link.parentStepId ?? null
-          )
+          blockRef,
+          newValueRaw,
+          link.customizable ?? null,
+          link.parentStepId ?? null
+        )
         : updateLinkAction(
-            blockRef,
-            newValueRaw,
-            link.customizable ?? null,
-            link.parentStepId ?? null
-          )
+          blockRef,
+          newValueRaw,
+          link.customizable ?? null,
+          link.parentStepId ?? null
+        )
     })
 
     await Promise.allSettled(updatePromises)

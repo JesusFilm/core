@@ -51,7 +51,6 @@ const IFRAME_SCALE = CONTAINER_WIDTH / FRAME_WIDTH
 const CONTAINER_HEIGHT = Math.round(FRAME_HEIGHT * IFRAME_SCALE)
 
 // Spacing and offsets
-const CARD_MARGIN_RIGHT = 7
 const EDGE_FADE_PX = 16
 
 function CardsPreviewItem({ step }: CardsPreviewItemProps): ReactElement {
@@ -140,7 +139,6 @@ export function CardsPreview({ steps }: CardsPreviewProps): ReactElement {
           data-testid="CardsPreviewSkeleton"
           sx={{
             minWidth: CONTAINER_WIDTH,
-            mr: CARD_MARGIN_RIGHT,
             height: CONTAINER_HEIGHT,
             borderRadius: 2
           }}
@@ -163,6 +161,7 @@ export function CardsPreview({ steps }: CardsPreviewProps): ReactElement {
       observer
       observeParents
       sx={{
+        pr: 2,
         overflow: 'hidden',
         zIndex: 2,
         height: CONTAINER_HEIGHT + 15,
@@ -177,7 +176,6 @@ export function CardsPreview({ steps }: CardsPreviewProps): ReactElement {
           key={step.id}
           sx={{
             zIndex: 2,
-            mr: CARD_MARGIN_RIGHT,
             width: 'unset !important'
           }}
         >
@@ -199,7 +197,6 @@ export function CardsPreview({ steps }: CardsPreviewProps): ReactElement {
             gap={2}
             sx={{
               width: CONTAINER_WIDTH,
-              mr: CARD_MARGIN_RIGHT,
               height: CONTAINER_HEIGHT,
               borderRadius: 2,
               backgroundColor: 'secondary.main',
@@ -223,7 +220,6 @@ export function CardsPreview({ steps }: CardsPreviewProps): ReactElement {
               left: 10,
               zIndex: -1,
               minWidth: CONTAINER_WIDTH,
-              mr: CARD_MARGIN_RIGHT,
               height: CONTAINER_HEIGHT,
               borderRadius: 2,
               backgroundColor: 'secondary.light'
@@ -236,7 +232,6 @@ export function CardsPreview({ steps }: CardsPreviewProps): ReactElement {
               top: 11,
               zIndex: -2,
               minWidth: CONTAINER_WIDTH,
-              mr: CARD_MARGIN_RIGHT,
               height: CONTAINER_HEIGHT,
               borderRadius: 2,
               backgroundColor: 'divider'
