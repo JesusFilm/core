@@ -698,7 +698,10 @@ export class JourneyResolver {
               data: {
                 ...block.action,
                 customizable: block?.action?.customizable ?? false,
-                parentStepId: null,
+                parentStepId:
+                  block.action.parentStepId != null
+                    ? (duplicateStepIds.get(block.action.parentStepId) ?? null)
+                    : null,
                 parentBlockId: block.id
               }
             })
