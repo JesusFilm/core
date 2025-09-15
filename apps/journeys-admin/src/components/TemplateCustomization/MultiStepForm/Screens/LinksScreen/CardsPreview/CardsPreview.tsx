@@ -157,7 +157,7 @@ export function CardsPreview({ steps }: CardsPreviewProps): ReactElement {
       }}
       freeMode
       watchOverflow
-      centeredSlides={slidesToRender.length < 2}
+      centerInsufficientSlides
       slidesPerView="auto"
       spaceBetween={12}
       slidesOffsetBefore={EDGE_FADE_PX}
