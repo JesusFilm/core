@@ -202,7 +202,7 @@ describe('CustomizeTemplate', () => {
     )
 
     const textbox = screen.getByRole('textbox') as HTMLTextAreaElement
-    textbox.setSelectionRange(1, 1)
+    ;(textbox as HTMLTextAreaElement).setSelectionRange(1, 1)
     fireEvent.keyDown(textbox, { key: 'Tab' })
 
     const emSpace = '\u2003'

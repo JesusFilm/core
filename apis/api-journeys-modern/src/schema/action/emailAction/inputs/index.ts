@@ -1,1 +1,1 @@
-import './emailActionInput'
+export { EmailActionInput } from './emailActionInput'

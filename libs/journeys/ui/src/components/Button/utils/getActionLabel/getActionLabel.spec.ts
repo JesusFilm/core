@@ -80,7 +80,7 @@ describe('getActionLabel', () => {
       parentBlockId: 'parentBlock.id',
       gtmEventName: 'click',
       url: 'https://test.com/some-address',
-      customizable: false,
+      customizable: null,
       parentStepId: null
     }
 
