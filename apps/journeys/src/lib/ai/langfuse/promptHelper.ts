@@ -22,13 +22,8 @@ export async function getPrompt(
     return ''
   }
 
-  const tracedGetPrompt = observe(
-    langfuseClient.prompt.get.bind(langfuseClient.prompt),
-    { name: 'get-langfuse-prompt' }
-  )
-
   try {
-    const prompt = await tracedGetPrompt(promptName, undefined, {
+    const prompt = await langfuseClient.prompt.get(promptName, {
       label: langfuseEnvironment,
       cacheTtlSeconds: ['development', 'preview'].includes(langfuseEnvironment)
         ? 0
