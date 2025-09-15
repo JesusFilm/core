@@ -1,3 +1,5 @@
+import { observe } from '@langfuse/tracing'
+
 import { langfuseClient, langfuseEnvironment } from './server'
 
 /**
@@ -20,9 +22,17 @@ export async function getPrompt(
     return ''
   }
 
+  const tracedGetPrompt = observe(
+    langfuseClient.prompt.get.bind(langfuseClient.prompt),
+    { name: 'get-langfuse-prompt' }
+  )
+
   try {
-    const prompt = await langfuseClient.prompt.get(promptName, {
-      label: langfuseEnvironment
+    const prompt = await tracedGetPrompt(promptName, undefined, {
+      label: langfuseEnvironment,
+      cacheTtlSeconds: ['development', 'preview'].includes(langfuseEnvironment)
+        ? 0
+        : 60
     })
 
     return prompt.compile(promptVariables)
