@@ -6,11 +6,11 @@ import {
   TypographyVariant
 } from '../../../__generated__/globalTypes'
 import type { TreeBlock } from '../../libs/block'
+import { JourneyProvider } from '../../libs/JourneyProvider'
+import { JourneyFields as Journey } from '../../libs/JourneyProvider/__generated__/JourneyFields'
 
 import { TypographyFields } from './__generated__/TypographyFields'
 import { Typography } from './Typography'
-import { JourneyProvider } from '../../libs/JourneyProvider'
-import { JourneyFields as Journey } from '../../libs/JourneyProvider/__generated__/JourneyFields'
 
 const block: TreeBlock<TypographyFields> = {
   __typename: 'TypographyBlock',

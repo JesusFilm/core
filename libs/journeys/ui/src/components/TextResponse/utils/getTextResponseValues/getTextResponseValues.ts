@@ -1,7 +1,6 @@
 import { JourneyFields_journeyCustomizationFields as JourneyCustomizationField } from '../../../../libs/JourneyProvider/__generated__/JourneyFields'
+import { JourneyProviderContext } from '../../../../libs/JourneyProvider/JourneyProvider'
 import { resolveJourneyCustomizationString } from '../../../../libs/resolveJourneyCustomizationString'
-
-export type TextResponseVariant = 'default' | 'admin' | 'embed'
 
 export interface TextResponseStrings {
   label: string
@@ -12,7 +11,7 @@ export interface TextResponseStrings {
 export function getTextResponseValues(
   textResponseStrings: TextResponseStrings,
   journeyCustomizationFields: JourneyCustomizationField[],
-  variant: TextResponseVariant
+  variant: JourneyProviderContext['variant']
 ): TextResponseStrings {
   if (variant === 'admin') {
     return textResponseStrings
