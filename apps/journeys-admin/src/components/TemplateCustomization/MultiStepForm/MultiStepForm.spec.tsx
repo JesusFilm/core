@@ -36,16 +36,9 @@ jest.mock('./Screens', () => ({
       </button>
     </div>
   ),
-  LinksScreen: ({
-    handleNext,
-    links
-  }: {
-    handleNext: () => void
-    links: any[]
-  }) => (
+  LinksScreen: ({ handleNext }: { handleNext: () => void }) => (
     <div data-testid="links-screen">
       <h2>Links Screen</h2>
-      <div data-testid="links-count">{links.length} links</div>
       <button onClick={handleNext} data-testid="links-next">
         Next
       </button>
@@ -125,7 +118,6 @@ describe('MultiStepForm', () => {
     // LinksScreen
     expect(screen.getByTestId('progress-stepper-step-2')).toBeInTheDocument()
     expect(screen.getByTestId('links-screen')).toBeInTheDocument()
-    expect(screen.getByTestId('links-count')).toHaveTextContent('1 links')
     fireEvent.click(screen.getByTestId('links-next'))
 
     // SocialScreen
@@ -275,7 +267,6 @@ describe('MultiStepForm', () => {
 
     // LinksScreen
     expect(screen.getByTestId('links-screen')).toBeInTheDocument()
-    expect(screen.getByTestId('links-count')).toHaveTextContent('1 links')
     fireEvent.click(screen.getByTestId('links-next'))
 
     // SocialScreen
