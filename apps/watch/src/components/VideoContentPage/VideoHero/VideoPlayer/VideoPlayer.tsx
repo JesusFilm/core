@@ -51,7 +51,6 @@ export function VideoPlayer({
             hotkeys: true,
             doubleClick: true
           },
-          responsive: true,
           plugins: {
             mux: {
               debug: false,

@@ -78,8 +78,12 @@
 
 /* 3. Utilities layer - highest specificity */
 @layer utilities {
+  .preview-video .vjs-tech {
+    object-fit: cover;
+  }
+
   .preview-video {
-    height: clamp(320px, 50svh, 900px);
+    height: clamp(500px, 50svh, 900px);
     max-width: 100%;
   }
 
@@ -88,10 +92,14 @@
     max-width: 100%;
   }
   @supports (height: 100svh) {
-    .fullscreen-video { height: 100svh; }
+    .fullscreen-video {
+      height: 100svh;
+    }
   }
   @supports (height: 100dvh) {
-    .fullscreen-video { height: 100dvh; }
+    .fullscreen-video {
+      height: 100dvh;
+    }
   }
 
   .animate-mesh-gradient {
@@ -100,6 +108,42 @@
 
   .animate-mesh-gradient-fast {
     animation: mesh-gradient 5s ease-in-out infinite;
+  }
+
+  @keyframes fade-in-up {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .animate-fade-in-up {
+    animation: fade-in-up 0.6s ease-out forwards;
+    opacity: 0;
+  }
+
+  .animation-delay-100 {
+    animation-delay: 0.1s;
+  }
+
+  .animation-delay-200 {
+    animation-delay: 0.2s;
+  }
+
+  .animation-delay-300 {
+    animation-delay: 0.3s;
+  }
+
+  .animation-delay-400 {
+    animation-delay: 0.4s;
+  }
+
+  .animation-delay-500 {
+    animation-delay: 0.5s;
   }
 
   /* Video.js utility classes */
@@ -133,7 +177,8 @@
       border-radius: var(--radius-lg);
       z-index: 99;
       pointer-events: none;
-      mix-blend-mode: screen;
+      mix-blend-mode: soft-light;
+      border: 1px solid #ffffff80;
     }
   }
 

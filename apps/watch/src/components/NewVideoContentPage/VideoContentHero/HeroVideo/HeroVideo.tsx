@@ -159,19 +159,13 @@ export function HeroVideo({
         )}
         {collapsed && (
           <div
-            className="absolute inset-0 z-1 pointer-events-none"
+            className="absolute inset-0 z-1 pointer-events-none opacity-70"
             style={{
-              backdropFilter: 'brightness(.6) saturate(.7) sepia(.3)',
-              // backdropFilter: 'brightness(.6) blur(40px)'
-              // maskImage:
-              //   'linear-gradient(0deg, rgba(2,0,36,1) 46%, rgba(2,0,36,1) 53%, rgba(0,0,0,0) 100%)'
-
+              backdropFilter: 'brightness(.4) saturate(.6) sepia(.4)',
               backgroundImage: 'url(/watch/assets/overlay.svg)',
               backgroundSize: '1600px auto'
             }}
-          >
-            {/*<img src="/watch/assets/overlay.svg" alt="" className="bg-repeat" />*/}
-          </div>
+          />
         )}
         {playerRef.current != null && playerReady && (
           <>

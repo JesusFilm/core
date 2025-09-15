@@ -57,7 +57,7 @@ function CardContent({
           name: last(video.title)?.value,
           disabled: video == null
         })}
-        className="rounded-lg w-full relative text-left border-none bg-transparent p-0 cursor-pointer disabled:cursor-default"
+        className="beveled rounded-lg w-full relative text-left border-none bg-transparent p-0 cursor-pointer disabled:cursor-default"
       >
         <ContentElement
           className="relative max-w-[200px] h-60 flex flex-col justify-end w-full rounded-xl cursor-pointer bg-black"
@@ -81,8 +81,6 @@ function CardContent({
                 style={{
                   width: '100%',
                   objectFit: 'cover',
-                  maskImage:
-                    'linear-gradient(to bottom, rgba(0,0,0,1) 50%, transparent 100%)',
                   maskSize: 'cover',
                   pointerEvents: 'none'
                 }}
@@ -122,13 +120,13 @@ function CardContent({
           {/* Content */}
           <div className="p-4 font-sans z-1">
             <span
-              className="text-stone-100/60 font-apercu text-xs font-bold tracking-widest uppercase"
+              className="text-stone-100/80 text-xs font-bold tracking-widest uppercase"
               data-testid="CarouselItemCategory"
             >
               {label}
             </span>
             <h3
-              className="font-apercu text-base font-bold leading-tight opacity-70 overflow-hidden"
+              className="font-bold text-base text-stone-50 leading-tight overflow-hidden text-shadow-xs"
               style={{
                 display: '-webkit-box',
                 WebkitLineClamp: 3,
@@ -179,7 +177,7 @@ export function VideoCard({
   )
 
   const commonProps = {
-    className: `block no-underline text-inherit ${transparent ? 'opacity-70' : ''}`,
+    className: `block beveled no-underline text-inherit ${transparent ? 'opacity-70' : ''}`,
     'aria-label': last(video.title)?.value ?? `Video ${video.slug}`,
     'data-testid': `VideoCard-${video.id}`
   }

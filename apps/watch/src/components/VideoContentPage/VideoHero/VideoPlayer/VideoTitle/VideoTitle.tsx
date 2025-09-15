@@ -64,25 +64,26 @@ export function VideoTitle({
       style={{ transitionTimingFunction: 'ease-out' }}
     >
       {videoLabel && (
-        <div className="inverted-effect text-xs uppercase tracking-widest text-[#CB333B] font-sans font-bold mb-0">
+        <div className="text-sm uppercase tracking-widest text-[#CB333B] font-sans font-bold mb-0 animate-fade-in-up animation-delay-100">
           {videoLabel}
         </div>
       )}
       <h2
         className="
-          inverted-effect font-bold text-black
+          font-bold text-stone-50 text-shadow-xs
           flex-grow mb-0 text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-sans
+          animate-fade-in-up animation-delay-200
          "
       >
         {videoTitle.replace(/^\d+\.\s*/, '')}
       </h2>
       {collectionTitle && (
-        <div className="inverted-effect text-black text-xl md:text-2xl font-sans font-medium opacity-80 mt-2">
+        <div className="inverted-effect text-black text-xl md:text-2xl font-sans font-medium opacity-80 mt-2 animate-fade-in-up animation-delay-300 text-shadow-xs">
           {collectionTitle}
         </div>
       )}
       {videoDescription && (
-        <p className="inverted-effect text-black text-md leading-relaxed font-sans max-w-3xl mb-2">
+        <p className=" text-stone-300 text-md leading-relaxed font-sans max-w-3xl mb-2 animate-fade-in-up animation-delay-400 line-clamp-3 text-shadow-xs">
           {videoDescription}
         </p>
       )}
@@ -93,7 +94,8 @@ export function VideoTitle({
           className="inline-flex items-center justify-center gap-2 px-6 py-3
             bg-[#CB333B] text-lg font-medium text-stone-100
             rounded-full shadow-md transition-colors duration-200
-            hover:bg-[#A4343A] font-sans cursor-pointer self-start"
+            hover:bg-[#A4343A] font-sans cursor-pointer self-start
+            animate-fade-in-up animation-delay-500"
         >
           {variant === 'play' && <PlayArrowRounded fontSize="medium" />}
           {variant === 'unmute' && <VolumeOff fontSize="medium" />}
@@ -110,7 +112,8 @@ export function VideoTitle({
           className="inline-flex items-center justify-center gap-2 px-6 py-3
             bg-[#CB333B] text-lg font-medium text-stone-100
             rounded-full shadow-md transition-colors duration-200
-            hover:bg-[#A4343A] font-sans cursor-pointer self-start no-underline"
+            hover:bg-[#A4343A] font-sans cursor-pointer self-start no-underline
+            animate-fade-in-up animation-delay-500"
         >
           <PlayArrowRounded fontSize="medium" />
           Watch Now

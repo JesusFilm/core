@@ -170,7 +170,10 @@ function WatchHomePageContent({
     }))
 
     const snippet = []
-    const description = []
+    const description = (currentVideo.description ?? []).map((desc) => ({
+      __typename: 'VideoDescription' as const,
+      value: desc.value
+    }))
     const studyQuestions = []
     const bibleCitations = []
 
