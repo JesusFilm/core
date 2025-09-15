@@ -14,7 +14,6 @@ import { useVideo } from '../../../../libs/videoContext'
 import { useWatch } from '../../../../libs/watchContext'
 import { useSubtitleUpdate } from '../../../../libs/watchContext/useSubtitleUpdate'
 import { VideoControls } from '../../../VideoContentPage/VideoHero/VideoPlayer/VideoControls'
-import { handleVideoTitleClick } from '../../../VideoContentPage/VideoHero/VideoPlayer/VideoControls/utils/handleVideoTitleClick'
 import clsx from 'clsx'
 
 interface HeroVideoProps {
@@ -30,7 +29,7 @@ export function HeroVideo({
 }: HeroVideoProps): ReactElement {
   const { variant, ...video } = useVideo()
   const {
-    state: { mute, volume, play, active, loading },
+    state: { mute },
     dispatch: dispatchPlayer
   } = usePlayer()
   const {
@@ -120,6 +119,17 @@ export function HeroVideo({
 
   const { subtitleUpdate } = useSubtitleUpdate()
 
+  const handlePreviewClick = useCallback(
+    (e: React.MouseEvent<HTMLVideoElement>) => {
+      e.stopPropagation()
+      const newMuteState = !mute
+      playerRef.current?.muted(newMuteState)
+      dispatchPlayer({ type: 'SetMute', mute: newMuteState })
+      onMuteToggle?.(newMuteState)
+    },
+    [mute, dispatchPlayer, onMuteToggle]
+  )
+
   useEffect(() => {
     const player = playerRef.current
     if (player == null) return
@@ -130,37 +140,6 @@ export function HeroVideo({
       subtitleOn: mute || subtitleOn
     })
   }, [playerRef, subtitleLanguageId, subtitleOn, variant, mute])
-
-  const clickable = (mute || volume === 0) && play && !active && !loading
-
-  const handleVideoClick = useCallback(
-    (
-      e:
-        | React.MouseEvent<HTMLVideoElement>
-        | React.KeyboardEvent<HTMLVideoElement>
-    ) => {
-      e.stopPropagation()
-      handleVideoTitleClick({
-        player: playerRef.current ?? undefined,
-        dispatch: dispatchPlayer,
-        mute,
-        volume,
-        play,
-        onMuteToggle
-      })
-    },
-    [dispatchPlayer, mute, volume, play, onMuteToggle]
-  )
-
-  const handleKeyDown = useCallback(
-    (e: React.KeyboardEvent<HTMLVideoElement>) => {
-      if (e.key === 'Enter' || e.key === ' ') {
-        e.preventDefault()
-        handleVideoClick(e)
-      }
-    },
-    [handleVideoClick]
-  )
 
   return (
     <div
@@ -181,7 +160,7 @@ export function HeroVideo({
             ref={videoRef}
             className={clsx(
               'vjs [&_.vjs-tech]:object-contain [&_.vjs-tech]:md:object-cover',
-              { 'cursor-pointer': clickable }
+              { 'cursor-pointer': isPreview }
             )}
             style={{
               position: 'absolute',
@@ -191,11 +170,7 @@ export function HeroVideo({
               height: '100%'
             }}
             playsInline
-            onClick={clickable ? handleVideoClick : undefined}
-            onKeyDown={clickable ? handleKeyDown : undefined}
-            tabIndex={clickable ? 0 : undefined}
-            role={clickable ? 'button' : undefined}
-            aria-label={clickable ? 'Unmute video' : undefined}
+            onClick={isPreview ? handlePreviewClick : undefined}
           />
         )}
         {collapsed && (

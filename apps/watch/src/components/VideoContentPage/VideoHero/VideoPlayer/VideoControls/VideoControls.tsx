@@ -542,8 +542,7 @@ export function VideoControls({
                 dispatch: dispatchPlayer,
                 mute,
                 volume,
-                play,
-                onMuteToggle
+                play
               })
             }}
           />
@@ -593,8 +592,7 @@ export function VideoControls({
                   dispatch: dispatchPlayer,
                   mute,
                   volume,
-                  play,
-                  onMuteToggle
+                  play
                 })
               }}
             />
