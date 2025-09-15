@@ -150,6 +150,11 @@ function read(journey: Partial<Journey>, user: User): boolean {
 
 // team managers/members and journeys owners/editors can update the journey
 function update(journey: Partial<Journey>, user: User): boolean {
+  // Publishers can update any template
+  if (user.roles?.includes('publisher') === true && journey.template === true) {
+    return true
+  }
+
   const userJourney = journey?.userJourneys?.find(
     (userJourney) => userJourney.userId === user.id
   )
