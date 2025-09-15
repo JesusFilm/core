@@ -1,8 +1,2 @@
-export const sharedStyles = {
-  button: {
-    nextStep: {
-      width: '150px',
-      height: '42px'
-    }
-  }
-}
+export const BUTTON_NEXT_STEP_WIDTH = '150px'
+export const BUTTON_NEXT_STEP_HEIGHT = '42px'

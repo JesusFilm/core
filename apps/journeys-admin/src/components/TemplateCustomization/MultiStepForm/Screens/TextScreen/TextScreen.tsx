@@ -12,7 +12,7 @@ import ArrowRightIcon from '@core/shared/ui/icons/ArrowRight'
 import { GetJourney_journey_journeyCustomizationFields as JourneyCustomizationField } from '../../../../../../__generated__/GetJourney'
 import { JourneyCustomizationFieldUpdate } from '../../../../../../__generated__/JourneyCustomizationFieldUpdate'
 import { CustomizationScreen } from '../../../utils/getCustomizeFlowConfig'
-import { sharedStyles } from '../../../utils/sharedStyles/sharedStyles'
+import { BUTTON_NEXT_STEP_WIDTH, BUTTON_NEXT_STEP_HEIGHT } from '../../../utils/sharedStyles/sharedStyles'
 
 export const JOURNEY_CUSTOMIZATION_FIELD_UPDATE = gql`
   mutation JourneyCustomizationFieldUpdate(
@@ -304,8 +304,8 @@ export function TextScreen({
         loading={isSubmitting}
         aria-label={t('Save and continue')}
         sx={{
-          width: sharedStyles.button.nextStep.width,
-          height: sharedStyles.button.nextStep.height,
+          width: BUTTON_NEXT_STEP_WIDTH,
+          height: BUTTON_NEXT_STEP_HEIGHT,
           alignSelf: 'center',
           mt: { xs: 6, sm: 4 },
           borderRadius: '8px'

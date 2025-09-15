@@ -26,7 +26,7 @@ import { getJourneyLinks } from '../../../utils/getJourneyLinks'
 import { CardsPreview } from './CardsPreview'
 import { LinksForm } from './LinksForm'
 import { CustomizationScreen } from '../../../utils/getCustomizeFlowConfig'
-import { sharedStyles } from '../../../utils/sharedStyles/sharedStyles'
+import { BUTTON_NEXT_STEP_WIDTH, BUTTON_NEXT_STEP_HEIGHT } from '../../../utils/sharedStyles/sharedStyles'
 
 interface LinksScreenProps {
   handleNext: () => void
@@ -227,8 +227,8 @@ export function LinksScreen({
               }
               aria-label={t('Replace the links')}
               sx={{
-                width: sharedStyles.button.nextStep.width,
-                height: sharedStyles.button.nextStep.height,
+                width: BUTTON_NEXT_STEP_WIDTH,
+                height: BUTTON_NEXT_STEP_HEIGHT,
                 alignSelf: 'center',
                 borderRadius: '8px'
               }}

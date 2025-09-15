@@ -9,7 +9,7 @@ import { TitleEdit } from '../../../../Editor/Slider/Settings/SocialDetails/Titl
 import { DescriptionEdit } from '../../../../Editor/Slider/Settings/SocialDetails/DescriptionEdit'
 import { CustomizationScreen } from '../../../utils/getCustomizeFlowConfig'
 import { SocialScreenSocialImage } from './SocialScreenSocialImage'
-import { sharedStyles } from '../../../utils/sharedStyles/sharedStyles'
+import { BUTTON_NEXT_STEP_WIDTH, BUTTON_NEXT_STEP_HEIGHT } from '../../../utils/sharedStyles/sharedStyles'
 
 interface SocialScreenProps {
   handleNext: () => void
@@ -75,8 +75,8 @@ export function SocialScreen({
         endIcon={<ArrowRightIcon />}
         data-testid="DoneButton"
         sx={{
-          width: sharedStyles.button.nextStep.width,
-          height: sharedStyles.button.nextStep.height,
+          width: BUTTON_NEXT_STEP_WIDTH,
+          height: BUTTON_NEXT_STEP_HEIGHT,
           borderRadius: '8px'
         }}
       >
