@@ -46,16 +46,17 @@ export type JourneyWithTeamAndUserJourney = Prisma.JourneyGetPayload<{
 }>
 
 type OmittedUser = Omit<User, 'id' | 'emailVerified'>
+type SenderUser = Omit<User, 'emailVerified'>
 
 export interface TeamInviteAccepted {
   team: TeamWithUserTeam
-  sender: OmittedUser
+  sender: SenderUser
 }
 
 export interface TeamInviteJob {
   team: Team
   email: string
-  sender: OmittedUser
+  sender: SenderUser
 }
 
 export interface TeamRemoved {
