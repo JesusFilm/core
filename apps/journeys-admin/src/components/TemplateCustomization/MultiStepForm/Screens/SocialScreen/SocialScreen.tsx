@@ -9,7 +9,10 @@ import { TitleEdit } from '../../../../Editor/Slider/Settings/SocialDetails/Titl
 import { DescriptionEdit } from '../../../../Editor/Slider/Settings/SocialDetails/DescriptionEdit'
 import { CustomizationScreen } from '../../../utils/getCustomizeFlowConfig'
 import { SocialScreenSocialImage } from './SocialScreenSocialImage'
-import { BUTTON_NEXT_STEP_WIDTH, BUTTON_NEXT_STEP_HEIGHT } from '../../../utils/sharedStyles'
+import {
+  BUTTON_NEXT_STEP_WIDTH,
+  BUTTON_NEXT_STEP_HEIGHT
+} from '../../../utils/sharedStyles'
 
 interface SocialScreenProps {
   handleNext: () => void
