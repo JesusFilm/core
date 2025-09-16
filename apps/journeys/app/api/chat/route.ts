@@ -5,19 +5,57 @@ import {
   updateActiveTrace
 } from '@langfuse/tracing'
 import { trace } from '@opentelemetry/api'
-import { convertToModelMessages, streamText } from 'ai'
+import { ModelMessage, UIMessage, convertToModelMessages, streamText } from 'ai'
 import { NextRequest, after } from 'next/server'
+
+import { InteractionType } from '@core/journeys/ui/AiChat/InteractionStarter'
 
 import { langfuseSpanProcessor } from '../../../instrumentation'
 import { getPrompt } from '../../../src/lib/ai/langfuse/promptHelper'
 
-const handler = async (req: NextRequest) => {
-  const { messages, contextText, sessionId, journeyId, userId } =
-    await req.json()
+function getPromptType(interactionType?: InteractionType): string {
+  switch (interactionType) {
+    case 'explain':
+      return 'explain-prompt'
+    case 'reflect':
+      return 'reflect-prompt'
+    default:
+      return 'Chat-Prompt'
+  }
+}
 
-  const inputText = messages[messages.length - 1].parts.find(
-    (part) => part.type === 'text'
-  )?.text
+interface ChatRequest {
+  messages: UIMessage[]
+  contextText?: string
+  sessionId?: string
+  journeyId?: string
+  userId?: string
+  interactionType?: InteractionType
+}
+
+const handler = async (req: NextRequest) => {
+  const {
+    messages,
+    contextText,
+    sessionId,
+    journeyId,
+    userId,
+    interactionType
+  }: ChatRequest = await req.json()
+
+  const modelMessages: ModelMessage[] = convertToModelMessages(messages)
+
+  const userMessages = modelMessages.filter(
+    (message) => message.role === 'user'
+  )
+
+  const lastUserMessage = userMessages[userMessages.length - 1]
+
+  const inputText =
+    typeof lastUserMessage?.content === 'string' ? lastUserMessage.content : ''
+
+  console.log('lastUserMessage', lastUserMessage)
+  console.log('inputText', inputText)
 
   updateActiveObservation({
     input: inputText
@@ -39,11 +77,13 @@ const handler = async (req: NextRequest) => {
     baseURL: process.env.APOLOGIST_API_URL ?? ''
   })
 
-  const systemPrompt = await getPrompt('Chat-Prompt', { contextText })
+  const systemPrompt = await getPrompt(getPromptType(interactionType), {
+    contextText
+  })
 
   const result = streamText({
     model: apologist('openai/gpt/4o'),
-    messages: convertToModelMessages(messages),
+    messages: modelMessages,
     system: systemPrompt,
     experimental_telemetry: {
       isEnabled: true

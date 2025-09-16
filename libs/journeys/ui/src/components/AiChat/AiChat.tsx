@@ -26,6 +26,8 @@ import { Response } from '../Response'
 import { Suggestion, Suggestions } from '../Suggestion'
 
 import { extractBlockContext } from './utils/contextExtraction'
+import { InteractionStarter } from './InteractionStarter'
+import { InteractionType } from './InteractionStarter'
 
 interface AiChatProps {
   open: boolean
@@ -52,19 +54,7 @@ export function AiChat({ open }: AiChatProps) {
   const { messages, sendMessage, status, regenerate, id } = useChat({
     transport: new DefaultChatTransport({
       api: '/api/chat'
-    }),
-    messages: [
-      {
-        id: '1',
-        role: 'assistant',
-        parts: [
-          {
-            type: 'text',
-            text: 'Hi, how can I help you?'
-          }
-        ]
-      }
-    ]
+    })
   })
 
   const activeBlock = blockHistory.at(-1)
@@ -127,7 +117,7 @@ export function AiChat({ open }: AiChatProps) {
     }
   }
 
-  function handleSuggestionClick(suggestion: string) {
+  function handleSuggestionClick(suggestion: string, type?: InteractionType) {
     void sendMessage(
       { text: suggestion },
       {
@@ -137,7 +127,8 @@ export function AiChat({ open }: AiChatProps) {
           sessionId: sessionId.current,
           traceId: traceId.current,
           journeyId: journey?.id,
-          userId: user?.uid
+          userId: user?.uid,
+          interactionType: type
         }
       }
     )
@@ -147,6 +138,9 @@ export function AiChat({ open }: AiChatProps) {
     <div className="flex flex-col h-full p-2">
       <Conversation className="flex-1 min-h-0 overflow-hidden">
         <ConversationContent className="h-full overflow-y-auto">
+          {messages.length === 0 && (
+            <InteractionStarter handleClick={handleSuggestionClick} />
+          )}
           {messages.map((message) => (
             <div key={message.id}>
               {message.parts.map((part, i) => {
@@ -166,6 +160,7 @@ export function AiChat({ open }: AiChatProps) {
                             })}
                           </MessageContent>
                         </Message>
+                        nx
                         {message.role === 'assistant' &&
                           message.id === messages.at(-1)?.id && (
                             <Actions className="mt-2">
@@ -217,7 +212,7 @@ export function AiChat({ open }: AiChatProps) {
           {suggestions?.map((suggestion) => (
             <Suggestion
               key={suggestion}
-              onClick={handleSuggestionClick}
+              onClick={(suggestion) => handleSuggestionClick(suggestion)}
               suggestion={suggestion}
             />
           ))}
