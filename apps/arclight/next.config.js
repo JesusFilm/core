@@ -29,9 +29,8 @@ const nextConfig = {
       // Generated Prisma clients used by Arclight
       'node_modules/.prisma/api-media-client/**',
       'node_modules/.prisma/api-languages-client/**',
-      // Prisma engines + default client location (required for rhel-openssl-3.0.x)
-      'node_modules/.prisma/client/**',
-      'node_modules/@prisma/engines/**'
+      // Default Prisma client location (required for rhel-openssl-3.0.x)
+      'node_modules/.prisma/client/**'
     ]
   },
   outputFileTracingExcludes: {
