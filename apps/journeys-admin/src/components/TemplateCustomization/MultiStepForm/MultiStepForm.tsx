@@ -68,7 +68,7 @@ export function MultiStepForm(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { journey } = useJourney()
 
-  const { screens, links, totalSteps } = useMemo(
+  const { screens, totalSteps } = useMemo(
     () => getCustomizeFlowConfig(journey, t),
     []
   )
@@ -122,11 +122,12 @@ export function MultiStepForm(): ReactElement {
             {t('Edit Manually')}
           </Button>
         </NextLink>
-
-        <ProgressStepper
-          activeStepNumber={screens.indexOf(activeScreen)}
-          totalSteps={totalSteps}
-        />
+        {totalSteps > 3 && (
+          <ProgressStepper
+            activeStepNumber={screens.indexOf(activeScreen)}
+            totalSteps={totalSteps}
+          />
+        )}
 
         <Box
           sx={{

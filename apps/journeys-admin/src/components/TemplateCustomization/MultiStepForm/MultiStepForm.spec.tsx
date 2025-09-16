@@ -189,6 +189,25 @@ describe('MultiStepForm', () => {
     expect(screen.queryByTestId('links-screen')).not.toBeInTheDocument()
   })
 
+  it('should not render progress stepper when journey has no customization capabilities', async () => {
+    const journeyWithNoCapabilities = {
+      ...journey,
+      journeyCustomizationDescription: null,
+      journeyCustomizationFields: [],
+      chatButtons: [],
+      blocks: []
+    } as unknown as Journey
+
+    render(
+      <JourneyProvider value={{ journey: journeyWithNoCapabilities }}>
+        <MultiStepForm />
+      </JourneyProvider>
+    )
+    expect(screen.getByTestId('MultiStepForm')).toBeInTheDocument()
+    expect(screen.queryByTestId('progress-stepper-step-0')).not.toBeInTheDocument()
+    expect(screen.queryByTestId('progress-stepper-step-1')).not.toBeInTheDocument()
+  })
+
   it('should render only text screen when journey has editable text but no links', async () => {
     const journeyWithTextOnly = {
       ...journey,
