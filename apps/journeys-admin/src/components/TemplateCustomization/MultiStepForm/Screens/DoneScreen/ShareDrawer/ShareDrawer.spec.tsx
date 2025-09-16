@@ -58,16 +58,14 @@ describe('ShareDrawer', () => {
   })
 
   it('displays display title when seoTitle is not available', () => {
-    const journeyWithDisplayTitle = {
+    const journeyWithTitle = {
       ...journey,
       seoTitle: null,
-      displayTitle: 'Display Title'
+      title: 'Display Title'
     }
 
     render(
-      <JourneyProvider
-        value={{ journey: journeyWithDisplayTitle, variant: 'admin' }}
-      >
+      <JourneyProvider value={{ journey: journeyWithTitle, variant: 'admin' }}>
         <ShareDrawer open={true} onClose={mockOnClose} />
       </JourneyProvider>
     )
