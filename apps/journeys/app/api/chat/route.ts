@@ -6,7 +6,7 @@ import {
 } from '@langfuse/tracing'
 import { trace } from '@opentelemetry/api'
 import { convertToModelMessages, streamText } from 'ai'
-import { NextRequest } from 'next/server'
+import { NextRequest, after } from 'next/server'
 
 import { langfuseSpanProcessor } from '../../../instrumentation'
 import { getPrompt } from '../../../src/lib/ai/langfuse/promptHelper'
@@ -48,7 +48,7 @@ const handler = async (req: NextRequest) => {
     experimental_telemetry: {
       isEnabled: true
     },
-    onFinish: async ({ text }) => {
+    onFinish: ({ text }) => {
       console.log('text', text)
       updateActiveObservation({
         output: text
@@ -59,12 +59,11 @@ const handler = async (req: NextRequest) => {
 
       // End span manually after stream has finished
       trace.getActiveSpan()?.end()
-
-      await langfuseSpanProcessor.forceFlush()
     }
   })
 
   // Important in serverless environments: schedule flush after request is finished
+  after(async () => await langfuseSpanProcessor.forceFlush())
 
   return result.toUIMessageStreamResponse()
 }
