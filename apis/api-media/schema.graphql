@@ -207,7 +207,7 @@ type Mutation {
   playlistCreate(input: PlaylistCreateInput!): MutationPlaylistCreateResult
   playlistUpdate(id: ID!, input: PlaylistUpdateInput!): MutationPlaylistUpdateResult
   playlistDelete(id: ID!): MutationPlaylistDeleteResult
-  playlistItemAdd(playlistId: ID!, videoVariantId: ID!): MutationPlaylistItemAddResult
+  playlistItemAdd(id: ID, playlistId: ID!, videoVariantId: ID!): MutationPlaylistItemAddResult
   playlistItemRemove(playlistId: ID!, itemId: ID!): MutationPlaylistItemRemoveResult
   playlistItemsReorder(playlistId: ID!, itemIds: [ID!]!): MutationPlaylistItemsReorderResult
 
@@ -535,7 +535,7 @@ input PlaylistCreateInput {
 
 type PlaylistItem {
   id: ID!
-  order: Int!
+  order: Int
   createdAt: DateTime!
   updatedAt: DateTime!
   videoVariant: VideoVariant!
