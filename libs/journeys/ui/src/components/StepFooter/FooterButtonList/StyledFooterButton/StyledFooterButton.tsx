@@ -3,7 +3,9 @@ import { Theme, styled } from '@mui/material/styles'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { ReactElement, ReactNode } from 'react'
 
-const StyledButton = styled(Button)<ButtonProps & { clicked: boolean }>(
+const StyledButton = styled(Button, {
+  shouldForwardProp: (prop) => prop !== 'clicked'
+})<ButtonProps & { clicked: boolean }>(
   ({ theme, clicked }) => ({
     minWidth: 46,
     minHeight: 30,

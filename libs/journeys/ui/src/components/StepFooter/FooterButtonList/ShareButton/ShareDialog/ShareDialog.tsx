@@ -11,7 +11,9 @@ import FacebookLogo from '@core/shared/ui/icons/FacebookLogo'
 import LinkAngled from '@core/shared/ui/icons/LinkAngled'
 import TwitterLogo from '@core/shared/ui/icons/TwitterLogo'
 
-const StyledIconButton = styled(IconButton)<
+const StyledIconButton = styled(IconButton, {
+  shouldForwardProp: (prop) => !['href', 'target', 'rel'].includes(prop)
+})<
   IconButtonProps & { href?: string; target?: string; rel?: string }
 >(({ theme }) => ({
   width: '40px',
