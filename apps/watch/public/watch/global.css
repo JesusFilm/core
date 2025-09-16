@@ -1,23 +1,47 @@
 @import 'tailwindcss';
-@import 'tw-animate-css';
 
 @theme {
   --font-sans:
     'Montserrat', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji',
     'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
 
-  /* Light Mode Colors */
-  --color-primary: #cb333b;
+  /* Tailwind v4 color definitions */
+  --color-background: hsl(225 6% 13%);
+  --color-foreground: hsl(240 10% 96%);
+  --color-card: hsl(225 6% 13%);
+  --color-card-foreground: hsl(240 10% 96%);
+  --color-popover: hsl(225 6% 13%);
+  --color-popover-foreground: hsl(240 10% 96%);
+  --color-primary: hsl(355 59% 50%);
+  --color-primary-foreground: hsl(355 100% 97%);
+  --color-secondary: hsl(227 25% 33%);
+  --color-secondary-foreground: hsl(235 100% 97%);
+  --color-muted: hsl(0 0% 100% / 0.08);
+  --color-muted-foreground: hsl(226 16% 69%);
+  --color-accent: hsl(227 41% 62%);
+  --color-accent-foreground: hsl(225 56% 11%);
+  --color-destructive: hsl(355 79% 59%);
+  --color-destructive-foreground: hsl(355 100% 97%);
+  --color-border: hsl(225 18% 20%);
+  --color-input: hsl(225 18% 20%);
+  --color-ring: hsl(227 41% 62%);
+
+  /* Border radius tokens */
+  --radius-xs: 0.375rem;
+  --radius-sm: 0.5rem;
+  --radius-md: 0.75rem;
+  --radius-lg: 1rem;
+  --radius: var(--radius-md);
+
+  /* Legacy color variables for existing components */
   --color-primary-light: #f8485e;
   --color-primary-dark: #a4343a;
-  --color-secondary: #424a66;
   --color-secondary-light: #7283be;
   --color-secondary-dark: #353c55;
   --color-error: #ef3340;
   --color-text-primary: #252424;
   --color-text-secondary: #4d4d4d;
   --color-text-disabled: #aaacbb;
-  --color-background: oklch(0.145 0 0);
   --color-background-paper: #ffffff;
 
   /* Dark Mode Colors */
@@ -31,6 +55,12 @@
   --color-dark-text-disabled: #4d4d4d;
   --color-dark-background: #131111;
   --color-dark-background-paper: #303030;
+
+  --radius-xs: 0.375rem;
+  --radius-sm: 0.5rem;
+  --radius-md: 0.75rem;
+  --radius-lg: 1rem;
+  --radius: var(--radius-md);
 
   @keyframes mesh-gradient {
     0% {
@@ -59,9 +89,21 @@
 /* 1. Base layer - lowest specificity */
 @layer base {
   /* Global resets, element defaults */
+  *,
+  ::before,
+  ::after {
+    border-color: var(--color-border);
+  }
+
   body {
-    background-color: var(--color-dark-background) !important;
+    background-color: var(--color-background) !important;
+    color: var(--color-foreground) !important;
+    font-family: var(--font-sans) !important;
     color-scheme: dark; /* optional, improves form controls/scrollbars */
+  }
+
+  html {
+    font-family: var(--font-sans);
   }
 }
 
