@@ -6,8 +6,8 @@ import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next'
 import { FocusEvent, ReactElement, RefObject, useMemo } from 'react'
 
-import { AlgoliaVideoGrid } from '../../VideoGrid/AlgoliaVideoGrid'
-import { VideoGrid } from '../../VideoGrid/VideoGrid'
+import { AlgoliaVideoGrid } from '../../../VideoGrid/AlgoliaVideoGrid'
+import { VideoGrid } from '../../../VideoGrid/VideoGrid'
 
 import { LanguageFilter } from './LanguageFilter'
 
@@ -55,11 +55,11 @@ export function SearchOverlay({
         position: 'fixed',
         left: 0,
         right: 0,
-        top: { xs: 100, lg: 159 },
+        top: { xs: 100, lg: 200 },
         bottom: 0,
         backgroundColor: 'rgba(6, 10, 25, 0.82)',
         backdropFilter: 'blur(26px)',
-        zIndex: (theme) => theme.zIndex.appBar - 1,
+        zIndex: 90,
         overflowY: 'auto',
         opacity: open ? 1 : 0,
         pointerEvents: open ? 'auto' : 'none',

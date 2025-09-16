@@ -3,7 +3,6 @@ import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next'
 import {
-  type FocusEvent,
   type ReactElement,
   useCallback,
   useEffect,
@@ -11,27 +10,23 @@ import {
   useRef,
   useState
 } from 'react'
-import { Index, useSearchBox } from 'react-instantsearch'
+import { Index } from 'react-instantsearch'
 
-import { SearchBarProvider } from '@core/journeys/ui/algolia/SearchBarProvider'
-import { SearchBar } from '@core/journeys/ui/SearchBar'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 import { ThemeMode, ThemeName } from '@core/shared/ui/themes'
 
 import { VideoLabel } from '../../../__generated__/globalTypes'
 import { VideoContentFields } from '../../../__generated__/VideoContentFields'
-
 import { useAlgoliaRouter } from '../../libs/algolia/useAlgoliaRouter'
 import { PlayerProvider, usePlayer } from '../../libs/playerContext'
 import { VideoProvider } from '../../libs/videoContext'
 import { WatchProvider } from '../../libs/watchContext'
-
 import { Header } from '../Header'
 import { ContentPageBlurFilter } from '../NewVideoContentPage/ContentPageBlurFilter'
-import { VideoContentHero } from '../NewVideoContentPage/VideoContentHero/VideoContentHero'
 import { VideoCarousel } from '../NewVideoContentPage/VideoCarousel/VideoCarousel'
+import { VideoContentHero } from '../NewVideoContentPage/VideoContentHero/VideoContentHero'
 import { useCarouselVideos } from '../VideoHero/libs/useCarouselVideos'
-import { SearchOverlay } from './SearchOverlay/SearchOverlay'
+
 import { SeeAllVideos } from './SeeAllVideos'
 
 interface WatchHomePageProps {
@@ -54,66 +49,6 @@ function WatchHomePageBody({
 }: WatchHomePageProps): ReactElement {
   const { t } = useTranslation('apps-watch')
   useAlgoliaRouter()
-
-  const { query, refine } = useSearchBox()
-  const [isSearchActive, setIsSearchActive] = useState(false)
-  const overlayRef = useRef<HTMLDivElement | null>(null)
-  const searchInputRef = useRef<HTMLInputElement | null>(null)
-
-  const trimmedQuery = query.trim()
-
-  const handleSearchFocus = useCallback(() => {
-    setIsSearchActive(true)
-  }, [])
-
-  const handleSearchBlur = useCallback(
-    (event: FocusEvent<HTMLInputElement>) => {
-      const nextTarget = event.relatedTarget as Node | null
-      if (nextTarget != null && overlayRef.current?.contains(nextTarget)) return
-      setIsSearchActive(false)
-    },
-    [overlayRef]
-  )
-
-  const handleOverlayBlur = useCallback(
-    (event: FocusEvent<HTMLDivElement>) => {
-      const nextTarget = event.relatedTarget as Node | null
-      if (nextTarget != null && (overlayRef.current?.contains(nextTarget) ?? false))
-        return
-      if (nextTarget === searchInputRef.current) return
-      setIsSearchActive(false)
-    },
-    [overlayRef, searchInputRef]
-  )
-
-  const handleQuickSelect = useCallback(
-    (value: string) => {
-      refine(value)
-      setIsSearchActive(true)
-      requestAnimationFrame(() => {
-        searchInputRef.current?.focus()
-      })
-    },
-    [refine, searchInputRef]
-  )
-
-  useEffect(() => {
-    if (!isSearchActive) return
-
-    function handleKeyDown(event: KeyboardEvent): void {
-      if (event.key === 'Escape') {
-        event.preventDefault()
-        setIsSearchActive(false)
-        searchInputRef.current?.blur()
-      }
-    }
-
-    document.addEventListener('keydown', handleKeyDown)
-
-    return () => {
-      document.removeEventListener('keydown', handleKeyDown)
-    }
-  }, [isSearchActive, searchInputRef])
 
   const [activeVideoId, setActiveVideoId] = useState<string | undefined>()
   const {
@@ -306,18 +241,6 @@ function WatchHomePageBody({
     }
   }, [currentVideo])
 
-  const searchBar = (
-    <SearchBarProvider>
-      <SearchBar
-        showDropdown
-        showLanguageButton
-        onFocus={handleSearchFocus}
-        onBlur={handleSearchBlur}
-        props={{ inputRef: searchInputRef }}
-      />
-    </SearchBarProvider>
-  )
-
   return (
     <div>
       <Header
@@ -325,18 +248,9 @@ function WatchHomePageBody({
         hideBottomAppBar
         hideSpacer
         showLanguageSwitcher
-        searchComponent={searchBar}
-      />
-      <SearchOverlay
-        open={isSearchActive}
-        hasQuery={trimmedQuery.length > 0}
-        onBlur={handleOverlayBlur}
-        onSelectQuickValue={handleQuickSelect}
-        containerRef={overlayRef}
-        languageId={languageId}
       />
       <VideoProvider value={{ content: activeVideo }}>
-        <VideoContentHero isPreview={true} />
+        <VideoContentHero isPreview={true} languageId={languageId} />
       </VideoProvider>
 
       <ContentPageBlurFilter>

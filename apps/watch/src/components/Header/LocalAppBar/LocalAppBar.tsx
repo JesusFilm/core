@@ -7,7 +7,7 @@ import Stack from '@mui/material/Stack'
 import dynamic from 'next/dynamic'
 import Image from 'next/image'
 import NextLink from 'next/link'
-import { MouseEventHandler, ReactElement, ReactNode, useState } from 'react'
+import { MouseEventHandler, ReactElement, useState } from 'react'
 
 import logo from '../assets/logo.svg'
 
@@ -25,7 +25,6 @@ interface LocalAppBarProps extends AppBarProps {
   hideSpacer?: boolean
   menuOpen?: boolean
   showLanguageSwitcher?: boolean
-  searchComponent?: ReactNode
 }
 
 export function LocalAppBar({
@@ -33,7 +32,6 @@ export function LocalAppBar({
   hideSpacer = false,
   menuOpen = false,
   showLanguageSwitcher = false,
-  searchComponent,
   ...props
 }: LocalAppBarProps): ReactElement {
   const [openLanguagesDialog, setOpenLanguagesDialog] = useState<
@@ -62,11 +60,10 @@ export function LocalAppBar({
     >
       <Container maxWidth="xxl" disableGutters sx={{ px: 8 }}>
         <Stack
-          direction={{ xs: 'column', md: 'row' }}
-          justifyContent={{ xs: 'flex-start', md: 'space-between' }}
-          alignItems={{ xs: 'stretch', md: 'center' }}
+          direction="row"
+          justifyContent="space-between"
+          alignItems="center"
           flexGrow={1}
-          spacing={{ xs: 6, md: 8 }}
         >
           <Box
             component={NextLink}
@@ -87,32 +84,11 @@ export function LocalAppBar({
                   cursor: 'pointer',
                   maxWidth: '100%',
                   height: 'auto',
-                  width: 'auto'
-                }}
-              />
-            </Box>
-          {searchComponent != null && (
-            <Box
-              data-testid="HeaderSearch"
-              sx={{
-                flexGrow: 1,
-                width: { xs: '100%', md: 'auto' },
-                maxWidth: { md: 'min(720px, 100%)' }
+                width: 'auto'
               }}
-            >
-              {searchComponent}
-            </Box>
-          )}
-          <Box
-            data-testid="MenuBox"
-            sx={{
-              display: 'flex',
-              justifyContent: 'flex-end',
-              alignItems: 'center',
-              gap: 4,
-              width: { xs: '100%', md: 'auto' }
-            }}
-          >
+            />
+          </Box>
+          <Box data-testid="MenuBox">
             {showLanguageSwitcher && (
               <>
                 <IconButton

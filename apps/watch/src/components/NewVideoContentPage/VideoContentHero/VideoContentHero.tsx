@@ -1,17 +1,21 @@
+import clsx from 'clsx'
 import { ReactElement, useState } from 'react'
 
-import { useVideo } from '../../../libs/videoContext'
 import { usePlayer } from '../../../libs/playerContext'
+import { useVideo } from '../../../libs/videoContext'
 
 import { ContentHeader } from './ContentHeader'
 import { HeroVideo } from './HeroVideo'
-import clsx from 'clsx'
+
+interface VideoContentHeroProps {
+  isPreview?: boolean
+  languageId?: string
+}
 
 export function VideoContentHero({
-  isPreview = false
-}: {
-  isPreview?: boolean
-}): ReactElement {
+  isPreview = false,
+  languageId
+}: VideoContentHeroProps): ReactElement {
   const { variant } = useVideo()
   const {
     state: { mute }
@@ -38,6 +42,7 @@ export function VideoContentHero({
       <ContentHeader
         languageSlug={languageSlug?.replace('.html', '')}
         isPersistent={isPreview}
+        languageId={languageId}
       />
       <HeroVideo
         isPreview={isPreview}
