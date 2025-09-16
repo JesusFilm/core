@@ -45,7 +45,7 @@ export function OverlayContent({
   const topBottomMarginsOnContent: SxProps = !hasFullscreenVideo
     ? {
         '& > *': {
-          '&:first-child': { mt: { xs: 8, sm: 5, lg: 12 } },
+          '&:first-of-type': { mt: { xs: 8, sm: 5, lg: 12 } },
           '&:last-child': { mb: { xs: 6, lg: 12 } }
         }
       }
@@ -81,7 +81,7 @@ export function OverlayContent({
       ? {
           mb: 0,
           '& > *': {
-            '&:first-child': { mt: hasHeader ? 20 : 6 },
+            '&:first-of-type': { mt: hasHeader ? 20 : 6 },
             '&:last-child': { mb: 20 }
           }
         }

@@ -24,7 +24,7 @@ export const StoryCard = ({
         overflow: 'auto',
         borderRadius: (theme) => theme.spacing(4),
         '& > *': {
-          '&:first-child': { mt: 0 },
+          '&:first-of-type': { mt: 0 },
           '&:last-child': { mb: 0 }
         }
       }}
