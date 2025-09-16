@@ -10,6 +10,15 @@ import { TemplateSettingsFormValues } from '../../useTemplateSettingsForm'
 
 import { CustomizeTemplate } from './CustomizeTemplate'
 
+function isTextEditableElement(
+  element: Element
+): element is HTMLInputElement | HTMLTextAreaElement {
+  return (
+    element instanceof HTMLInputElement ||
+    element instanceof HTMLTextAreaElement
+  )
+}
+
 describe('CustomizeTemplate', () => {
   it('renders heading and refresh button', () => {
     const journey = defaultJourney as Journey
@@ -201,11 +210,11 @@ describe('CustomizeTemplate', () => {
       </MockedProvider>
     )
 
-    const textbox = screen.getByRole('textbox') as
-      | HTMLInputElement
-      | HTMLTextAreaElement
-    textbox.setSelectionRange(1, 1)
-    fireEvent.keyDown(textbox, { key: 'Tab' })
+    const textbox = screen.getByRole('textbox')
+    if (isTextEditableElement(textbox)) {
+      textbox.setSelectionRange(1, 1)
+      fireEvent.keyDown(textbox, { key: 'Tab' })
+    }
 
     const emSpace = '\u2003'
     expect(setFieldValue).toHaveBeenCalledWith(
