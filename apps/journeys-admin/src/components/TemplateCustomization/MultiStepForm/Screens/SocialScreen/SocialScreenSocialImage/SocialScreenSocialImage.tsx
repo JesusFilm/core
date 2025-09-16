@@ -10,6 +10,8 @@ import Edit2Icon from '@core/shared/ui/icons/Edit2'
 import { styled } from '@mui/material/styles'
 import IconButton from '@mui/material/IconButton'
 import { useCloudflareUploadByFileMutation } from '../../../../../../libs/useCloudflareUploadByFileMutation'
+import { gql } from 'graphql-tag'
+import { IMAGE_FIELDS } from '@core/journeys/ui/Image/imageFields'
 
 interface SocialScreenSocialImage {
   hasCreatorDescription?: boolean
@@ -31,6 +33,18 @@ const StyledInput = styled('input')({
   whiteSpace: 'nowrap',
   width: 1
 })
+
+export const JOURNEY_SOCIAL_IMAGE_UPDATE = gql`
+  ${IMAGE_FIELDS}
+  mutation JourneySocialImageUpdate($id: ID!, $input: JourneyUpdateInput!) {
+    journeyUpdate(id: $id, input: $input) {
+      id
+      primaryImageBlock {
+        ...ImageFields
+      }
+    }
+  }
+`
 
 export function SocialScreenSocialImage({
   hasCreatorDescription = false
