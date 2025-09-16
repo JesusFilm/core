@@ -1,56 +1,53 @@
-import fscreen from 'fscreen'
-import { ReactElement, useEffect } from 'react'
+import { ReactElement, useState } from 'react'
 
 import { useVideo } from '../../../libs/videoContext'
+import { usePlayer } from '../../../libs/playerContext'
 
 import { ContentHeader } from './ContentHeader'
 import { HeroVideo } from './HeroVideo'
+import clsx from 'clsx'
 
 export function VideoContentHero({
-  isFullscreen = false,
-  setIsFullscreen
+  isPreview = false
 }: {
-  isFullscreen?: boolean
-  setIsFullscreen?: (isFullscreen: boolean) => void
+  isPreview?: boolean
 }): ReactElement {
   const { variant } = useVideo()
-  /**
-   * Effect to handle fullscreen changes.
-   * Adds and removes event listeners for fullscreen state changes.
-   */
-  useEffect(() => {
-    /**
-     * Handler for fullscreen change events.
-     * Updates component state and scrolls to top when entering fullscreen.
-     */
-    function fullscreenchange(): void {
-      const isFullscreen = fscreen.fullscreenElement != null
-      setIsFullscreen?.(isFullscreen)
-      if (isFullscreen) {
-        window.scrollTo({ top: 0, behavior: 'smooth' })
-      }
-    }
-
-    fscreen.addEventListener('fullscreenchange', fullscreenchange)
-
-    return () =>
-      fscreen.removeEventListener('fullscreenchange', fullscreenchange)
-  }, [setIsFullscreen])
+  const {
+    state: { mute }
+  } = usePlayer()
+  const [collapsed, setCollapsed] = useState(true)
 
   const languageSlug = variant?.slug?.split('/')[1]
 
+  const handleMuteToggle = (isMuted: boolean): void => {
+    setCollapsed(isMuted)
+  }
+
   return (
     <div
-      className={`${
-        isFullscreen ? 'h-[100svh]' : 'h-[90svh] md:h-[80svh]'
-      } w-full flex items-end relative bg-[#131111] z-[1] transition-all duration-300 ease-out`}
+      className={clsx(
+        'w-full flex items-end relative bg-[#131111] z-[1] transition-all duration-300 ease-out',
+        {
+          'preview-video': isPreview && collapsed,
+          'h-[90svh] md:h-[80svh]': !isPreview || !collapsed
+        }
+      )}
       data-testid="ContentHero"
     >
-      <ContentHeader languageSlug={languageSlug?.replace('.html', '')} />
-      <HeroVideo isFullscreen={isFullscreen} key={variant?.hls} />
+      <ContentHeader
+        languageSlug={languageSlug?.replace('.html', '')}
+        isPersistent={isPreview}
+      />
+      <HeroVideo
+        isPreview={isPreview}
+        collapsed={collapsed}
+        onMuteToggle={handleMuteToggle}
+        key={variant?.hls}
+      />
       <div
         data-testid="ContainerHeroTitleContainer"
-        className="w-full relative flex flex-col sm:flex-row max-w-[1920px] mx-auto pb-4"
+        className="w-full relative z-2 flex flex-col sm:flex-row max-w-[1920px] mx-auto pb-4"
       >
         <div
           className="absolute top-0 left-0 right-0 h-full w-full pointer-events-none block md:hidden"

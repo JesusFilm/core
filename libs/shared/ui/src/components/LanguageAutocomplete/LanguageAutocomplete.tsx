@@ -14,7 +14,7 @@ import {
   forwardRef,
   useMemo
 } from 'react'
-import { List } from 'react-window'
+import { FixedSizeList as List } from 'react-window'
 
 import { ResizeObserverPolyfill } from '../ResizeObserverPolyfill'
 
@@ -154,15 +154,17 @@ export function LanguageAutocomplete({
       <Box ref={ref} {...other}>
         <ResizeObserverPolyfill />
         <List
-          rowComponent={
+          children={
             renderOption != null
               ? (renderOption as any)
               : (defaultRenderOption as any)
           }
-          rowCount={itemCount}
-          rowHeight={itemSize}
-          rowProps={{ rows: itemData }}
+          itemCount={itemCount}
+          itemSize={itemSize}
+          itemData={{ rows: itemData }}
           overscanCount={5}
+          height={Math.min(itemCount * itemSize + 10, smUp ? 400 : 200)}
+          width="100%"
           style={{
             height: Math.min(itemCount * itemSize + 10, smUp ? 400 : 200),
             width: '100%'

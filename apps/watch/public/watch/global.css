@@ -59,21 +59,101 @@
 /* 1. Base layer - lowest specificity */
 @layer base {
   /* Global resets, element defaults */
+  body {
+    background-color: var(--color-dark-background) !important;
+    color-scheme: dark; /* optional, improves form controls/scrollbars */
+  }
 }
 
 /* 2. Components layer - medium specificity */
 @layer components {
   /* Reusable component patterns */
+  .inverted-effect {
+    position: relative;
+    filter: invert(1) brightness(1);
+    mix-blend-mode: exclusion;
+    isolation: isolate;
+  }
 }
 
 /* 3. Utilities layer - highest specificity */
 @layer utilities {
+  .preview-video .vjs-tech {
+    object-fit: cover;
+  }
+
+  .preview-video {
+    height: clamp(500px, 50svh, 900px);
+    max-width: 100%;
+  }
+
+  .fullscreen-video {
+    height: 100vh;
+    max-width: 100%;
+  }
+  @supports (height: 100svh) {
+    .fullscreen-video {
+      height: 100svh;
+    }
+  }
+  @supports (height: 100dvh) {
+    .fullscreen-video {
+      height: 100dvh;
+    }
+  }
+
+  .mute-preview-toggle:before {
+    position: absolute;
+    content: '';
+    cursor: pointer;
+    bottom: -20px;
+    right: -100vw;
+    top: -100vh;
+    left: -100vw;
+  }
+
   .animate-mesh-gradient {
     animation: mesh-gradient 6s ease-in-out infinite;
   }
 
   .animate-mesh-gradient-fast {
     animation: mesh-gradient 5s ease-in-out infinite;
+  }
+
+  @keyframes fade-in-up {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .animate-fade-in-up {
+    animation: fade-in-up 0.6s ease-out forwards;
+    opacity: 0;
+  }
+
+  .animation-delay-100 {
+    animation-delay: 0.1s;
+  }
+
+  .animation-delay-200 {
+    animation-delay: 0.2s;
+  }
+
+  .animation-delay-300 {
+    animation-delay: 0.3s;
+  }
+
+  .animation-delay-400 {
+    animation-delay: 0.4s;
+  }
+
+  .animation-delay-500 {
+    animation-delay: 0.5s;
   }
 
   /* Video.js utility classes */
@@ -88,20 +168,11 @@
   }
 
   .responsive-container {
-    padding-left: 1.5rem;
-    padding-right: 1.5rem;
-
-    @media (min-width: 1280px) {
-      /* xl breakpoint */
-      padding-left: 3rem;
-      padding-right: 3rem;
-    }
-
-    @media (min-width: 1536px) {
-      /* 2xl breakpoint */
-      padding-left: 5rem;
-      padding-right: 5rem;
-    }
+    max-width: 1920px;
+    width: 100%;
+    margin-left: auto;
+    margin-right: auto;
+    @apply px-4 sm:px-6 md:px-8 lg:px-10 xl:px-12 2xl:px-20;
   }
 
   .beveled {
@@ -116,7 +187,8 @@
       border-radius: var(--radius-lg);
       z-index: 99;
       pointer-events: none;
-      mix-blend-mode: screen;
+      mix-blend-mode: soft-light;
+      border: 1px solid #ffffff80;
     }
   }
 
@@ -131,6 +203,10 @@
 
   .padded-l {
     @apply pl-4 sm:pl-6 md:pl-8 lg:pl-10 xl:pl-12 2xl:pl-20;
+  }
+
+  .padded-r {
+    @apply pr-4 sm:pr-6 md:pr-8 lg:pr-10 xl:pr-12 2xl:pr-20;
   }
 
   .section-divider {

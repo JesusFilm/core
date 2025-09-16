@@ -9,7 +9,7 @@ export function ContentPageBlurFilter({
 }: ContentPageBlurFilterProps): ReactElement {
   return (
     <div
-      className="bg-[#131111] text-white relative font-sans"
+      className="text-white relative font-sans"
       data-testid="ContentPage"
       style={{ minHeight: '100svh' }}
     >
@@ -19,7 +19,7 @@ export function ContentPageBlurFilter({
         style={{ backdropFilter: 'brightness(.6) blur(40px)' }}
       />
       <div
-        className="max-w-[1920px] mx-auto overflow-hidden"
+        className="max-w-[1920px] mx-auto overflow-hidden relative z-10"
         data-testid="ContentPageContainer"
         style={{ marginTop: '-100vh' }}
       >
