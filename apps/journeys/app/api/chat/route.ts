@@ -48,7 +48,7 @@ const handler = async (req: NextRequest) => {
     experimental_telemetry: {
       isEnabled: true
     },
-    onFinish: ({ text }) => {
+    onFinish: async ({ text }) => {
       console.log('text', text)
       updateActiveObservation({
         output: text
@@ -59,11 +59,12 @@ const handler = async (req: NextRequest) => {
 
       // End span manually after stream has finished
       trace.getActiveSpan()?.end()
+
+      await langfuseSpanProcessor.forceFlush()
     }
   })
 
   // Important in serverless environments: schedule flush after request is finished
-  after(async () => await langfuseSpanProcessor.forceFlush())
 
   return result.toUIMessageStreamResponse()
 }
