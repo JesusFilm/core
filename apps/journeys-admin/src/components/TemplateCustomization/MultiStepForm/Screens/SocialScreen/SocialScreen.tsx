@@ -9,14 +9,15 @@ import { TitleEdit } from '../../../../Editor/Slider/Settings/SocialDetails/Titl
 import { DescriptionEdit } from '../../../../Editor/Slider/Settings/SocialDetails/DescriptionEdit'
 import { CustomizationScreen } from '../../../utils/getCustomizeFlowConfig'
 import { SocialScreenSocialImage } from './SocialScreenSocialImage'
+import {
+  BUTTON_NEXT_STEP_WIDTH,
+  BUTTON_NEXT_STEP_HEIGHT
+} from '../../../utils/sharedStyles'
 
 interface SocialScreenProps {
   handleNext: () => void
   handleScreenNavigation: (screen: CustomizationScreen) => void
 }
-
-const BUTTON_NEXT_STEP_WIDTH = '150px'
-const BUTTON_NEXT_STEP_HEIGHT = '42px'
 
 export function SocialScreen({
   handleNext,
@@ -79,7 +80,6 @@ export function SocialScreen({
         sx={{
           width: BUTTON_NEXT_STEP_WIDTH,
           height: BUTTON_NEXT_STEP_HEIGHT,
-          alignSelf: 'center',
           borderRadius: '8px'
         }}
       >

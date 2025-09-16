@@ -66,7 +66,7 @@ export function ShareDrawer({ open, onClose }: ShareDrawerProps): ReactElement {
             )}
           </Stack>
           <Typography variant="subtitle1" fontWeight={600} noWrap>
-            {journey?.seoTitle ?? journey?.displayTitle ?? ''}
+            {journey?.seoTitle ?? journey?.title ?? ''}
           </Typography>
           <Typography
             variant="caption"
@@ -78,7 +78,7 @@ export function ShareDrawer({ open, onClose }: ShareDrawerProps): ReactElement {
               overflow: 'hidden'
             }}
           >
-            {journey?.seoDescription ?? ''}
+            {journey?.seoDescription ?? journey?.description ?? ''}
           </Typography>
         </Box>
 

@@ -137,7 +137,7 @@ describe('DoneScreen', () => {
       ...journey,
       seoTitle: 'Test Journey Title',
       seoDescription: 'This is a test journey description for testing purposes',
-      displayTitle: 'Display Title'
+      title: 'Display Title'
     }
 
     render(

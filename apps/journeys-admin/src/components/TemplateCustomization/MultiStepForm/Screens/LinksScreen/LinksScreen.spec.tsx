@@ -92,10 +92,9 @@ describe('LinksScreen', () => {
     })
 
     expect(
-      screen.getByText('This invite has buttons leading to external links')
-    ).toBeInTheDocument()
-    expect(
-      screen.getByText('Check them and change them here')
+      screen.getAllByText(
+        'This invite contains buttons linking to external sites. Check them and update the links below.'
+      )[0]
     ).toBeInTheDocument()
     expect(screen.getByTestId('CardsPreviewPlaceholder')).toBeInTheDocument()
     expect(screen.getByText('Chat: whatsApp')).toBeInTheDocument()

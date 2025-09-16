@@ -12,6 +12,10 @@ import ArrowRightIcon from '@core/shared/ui/icons/ArrowRight'
 import { GetJourney_journey_journeyCustomizationFields as JourneyCustomizationField } from '../../../../../../__generated__/GetJourney'
 import { JourneyCustomizationFieldUpdate } from '../../../../../../__generated__/JourneyCustomizationFieldUpdate'
 import { CustomizationScreen } from '../../../utils/getCustomizeFlowConfig'
+import {
+  BUTTON_NEXT_STEP_WIDTH,
+  BUTTON_NEXT_STEP_HEIGHT
+} from '../../../utils/sharedStyles'
 
 export const JOURNEY_CUSTOMIZATION_FIELD_UPDATE = gql`
   mutation JourneyCustomizationFieldUpdate(
@@ -25,9 +29,6 @@ export const JOURNEY_CUSTOMIZATION_FIELD_UPDATE = gql`
     }
   }
 `
-
-const BUTTON_NEXT_STEP_WIDTH = '150px'
-const BUTTON_NEXT_STEP_HEIGHT = '42px'
 
 // Function to render text with editable spans for replaceable parts
 const renderEditableText = (
@@ -322,7 +323,7 @@ export function TextScreen({
           >
             {t('Next Step')}
           </Typography>
-          <ArrowRightIcon sx={{ fontSize: { xs: '24px', sm: '16px' } }} />
+          <ArrowRightIcon />
         </Stack>
       </Button>
     </Stack>
