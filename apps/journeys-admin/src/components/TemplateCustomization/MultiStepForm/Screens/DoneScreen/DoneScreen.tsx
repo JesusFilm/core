@@ -17,7 +17,9 @@ interface DoneScreenProps {
   handleScreenNavigation?: (screen: CustomizationScreen) => void
 }
 
-export function DoneScreen({}: DoneScreenProps): ReactElement {
+export function DoneScreen({
+  handleScreenNavigation
+}: DoneScreenProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { journey } = useJourney()
   const router = useRouter()
