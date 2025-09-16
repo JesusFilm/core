@@ -65,6 +65,8 @@ export function LanguageScreen({
 
   const [journeyDuplicate] = useJourneyDuplicateMutation()
 
+  const FORM_SM_BREAKPOINT_WIDTH = '390px'
+
   async function handleSubmit(values: FormikValues) {
     setLoading(true)
     if (journey == null) {
@@ -107,7 +109,7 @@ export function LanguageScreen({
     <Stack
       alignItems="center"
       gap={4}
-      sx={{ px: { xs: 0, sm: 16 } }}
+      sx={{ px: { xs: 0, sm: 20 } }}
     >
       <Stack alignItems="center" sx={{ pb: { xs: 0, sm: 3 } }}>
         <Typography
@@ -127,10 +129,8 @@ export function LanguageScreen({
         </Typography>
         <Typography
           variant="h6"
-          display={{ xs: 'none', sm: 'block' }}
           color="text.secondary"
           align="center"
-          sx={{ maxWidth: '90%' }}
         >
           {t('A few quick edits and your template will be ready to share.')}
         </Typography>
@@ -138,16 +138,8 @@ export function LanguageScreen({
       <SocialImage />
       <Typography
         variant="h6"
-        display={{ xs: 'none', sm: 'block' }}
         gutterBottom
-        sx={{ mb: 2 }}
-      >
-        {journey?.title ?? ''}
-      </Typography>
-      <Typography
-        variant="body1"
-        display={{ xs: 'block', sm: 'none' }}
-        gutterBottom
+        sx={{ mb: { xs: 0, sm: 2 } }}
       >
         {journey?.title ?? ''}
       </Typography>
@@ -159,7 +151,7 @@ export function LanguageScreen({
       >
         {({ handleSubmit, setFieldValue, values }) => (
           <Form style={{ width: '100%' }}>
-            <FormControl sx={{ width: { xs: '100%', sm: '390px' }, alignSelf: 'center' }} >
+            <FormControl sx={{ width: { xs: '100%', sm: FORM_SM_BREAKPOINT_WIDTH }, alignSelf: 'center' }} >
               <Stack gap={2}>
                 <Typography variant="h6" display={{ xs: 'none', sm: 'block' }}>
                   {t('Select a language')}

@@ -337,7 +337,7 @@ describe('LanguageScreen', () => {
 
     expect(screen.getAllByText("Let's get started!")).toHaveLength(2)
     expect(screen.getByText('A few quick edits and your template will be ready to share.')).toBeInTheDocument()
-    expect(screen.getAllByText(journey.title)).toHaveLength(2)
+    expect(screen.getAllByText(journey.title)).toHaveLength(1)
     expect(screen.getByTestId('SocialImage')).toBeInTheDocument()
 
     expect(screen.getAllByText('Select a language')).toHaveLength(2)
