@@ -1,11 +1,15 @@
 import Skeleton from '@mui/material/Skeleton'
 import Stack from '@mui/material/Stack'
-import { ReactElement } from 'react'
+import { ReactElement, useState } from 'react'
 
 import GridEmptyIcon from '@core/shared/ui/icons/GridEmpty'
 import { NextImage } from '@core/shared/ui/NextImage'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
+import Edit2Icon from '@core/shared/ui/icons/Edit2'
+import { styled } from '@mui/material/styles'
+import IconButton from '@mui/material/IconButton'
+import { useCloudflareUploadByFileMutation } from '../../../../../../libs/useCloudflareUploadByFileMutation'
 
 interface SocialScreenSocialImage {
   hasCreatorDescription?: boolean
@@ -16,10 +20,24 @@ const WIDE_ASPECT_RATIO = {
   height: { xs: 139, sm: 194 }
 }
 
+const StyledInput = styled('input')({
+  clip: 'rect(0 0 0 0)',
+  clipPath: 'inset(50%)',
+  height: 1,
+  overflow: 'hidden',
+  position: 'absolute',
+  bottom: 0,
+  left: 0,
+  whiteSpace: 'nowrap',
+  width: 1
+})
+
 export function SocialScreenSocialImage({
   hasCreatorDescription = false
 }: SocialScreenSocialImage): ReactElement {
   const { journey } = useJourney()
+  const [loading, setLoading] = useState(false)
+  const [createCloudflareUploadByFile] = useCloudflareUploadByFileMutation()
 
   return (
     <Stack
@@ -43,15 +61,39 @@ export function SocialScreenSocialImage({
       data-testid="SocialScreenSocialImage"
     >
       {journey?.primaryImageBlock?.src != null ? (
-        <NextImage
-          src={journey.primaryImageBlock.src}
-          alt={journey?.primaryImageBlock.alt}
-          placeholder="blur"
-          blurDataURL={journey?.primaryImageBlock.blurhash}
-          layout="fill"
-          objectFit="cover"
-          priority
-        />
+        <>
+          <NextImage
+            src={journey.primaryImageBlock.src}
+            alt={journey?.primaryImageBlock.alt}
+            placeholder="blur"
+            blurDataURL={journey?.primaryImageBlock.blurhash}
+            layout="fill"
+            objectFit="cover"
+            priority
+          />
+          <IconButton
+            component="label"
+            sx={{
+              position: 'absolute',
+              bottom: 10,
+              right: 10,
+              color: 'secondary.dark',
+              backgroundColor: 'background.default',
+              borderRadius: 999,
+              '&:hover': {
+                backgroundColor: 'divider'
+              }
+            }}
+          >
+            <Edit2Icon />
+            <StyledInput
+              onChange={(event) => console.log(event.target.files)}
+              data-testid="SocialScreenSocialImageInput"
+              type="file"
+              accept="image/*"
+            />
+          </IconButton>
+        </>
       ) : journey != null ? (
         <GridEmptyIcon fontSize="large" />
       ) : (
