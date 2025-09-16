@@ -488,7 +488,10 @@ describe('playlistItem', () => {
           }
         })
         expect(prismaMock.playlistItem.updateMany).toHaveBeenCalledWith({
-          where: { playlistId: 'playlistId' },
+          where: {
+            playlistId: 'playlistId',
+            id: { in: ['item1', 'item2', 'item3'] }
+          },
           data: { order: null }
         })
         expect(prismaMock.playlistItem.update).toHaveBeenCalledWith({
