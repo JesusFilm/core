@@ -49,7 +49,6 @@ const handler = async (req: NextRequest) => {
       isEnabled: true
     },
     onFinish: ({ text }) => {
-      console.log('text', text)
       updateActiveObservation({
         output: text
       })
