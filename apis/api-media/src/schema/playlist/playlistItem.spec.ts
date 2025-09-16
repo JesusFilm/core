@@ -49,8 +49,13 @@ describe('playlistItem', () => {
   describe('mutations', () => {
     describe('playlistItemAdd', () => {
       const ADD_ITEM_MUTATION = graphql(`
-        mutation AddPlaylistItem($playlistId: ID!, $videoVariantId: ID!) {
+        mutation AddPlaylistItem(
+          $id: ID
+          $playlistId: ID!
+          $videoVariantId: ID!
+        ) {
           playlistItemAdd(
+            id: $id
             playlistId: $playlistId
             videoVariantId: $videoVariantId
           ) {
@@ -92,6 +97,7 @@ describe('playlistItem', () => {
         const data = await authClient({
           document: ADD_ITEM_MUTATION,
           variables: {
+            id: 'playlistItemId',
             playlistId: 'playlistId',
             videoVariantId: 'videoVariantId'
           }
@@ -110,6 +116,7 @@ describe('playlistItem', () => {
         })
         expect(prismaMock.playlistItem.create).toHaveBeenCalledWith({
           data: {
+            id: 'playlistItemId',
             playlistId: 'playlistId',
             videoVariantId: 'videoVariantId',
             order: 0
@@ -132,8 +139,8 @@ describe('playlistItem', () => {
       })
 
       it('should add item with correct order when items exist', async () => {
-        const existingItem = { ...mockPlaylistItem, order: 5 }
-        const newItem = { ...mockPlaylistItem, order: 6 }
+        const existingItem = { ...mockPlaylistItem, order: 0 }
+        const newItem = { ...mockPlaylistItem, order: 1 }
 
         prismaMock.playlist.findUnique.mockResolvedValueOnce(mockPlaylist)
         prismaMock.videoVariant.findUnique.mockResolvedValueOnce({
@@ -157,7 +164,7 @@ describe('playlistItem', () => {
           data: {
             playlistId: 'playlistId',
             videoVariantId: 'videoVariantId',
-            order: 6
+            order: 1
           },
           include: {
             playlist: true,
@@ -167,7 +174,7 @@ describe('playlistItem', () => {
         expect(data).toHaveProperty('data.playlistItemAdd', {
           data: {
             id: 'playlistItemId',
-            order: 6,
+            order: 1,
             playlist: { id: 'playlistId' },
             videoVariant: { id: 'videoVariantId' },
             createdAt: new Date('2023-01-01').toISOString(),
@@ -252,7 +259,7 @@ describe('playlistItem', () => {
         const remainingItems = [
           {
             id: 'item1',
-            order: 1,
+            order: 0,
             createdAt: new Date(),
             updatedAt: new Date(),
             playlistId: 'playlistId',
@@ -260,7 +267,7 @@ describe('playlistItem', () => {
           },
           {
             id: 'item2',
-            order: 2,
+            order: 1,
             createdAt: new Date(),
             updatedAt: new Date(),
             playlistId: 'playlistId',
@@ -268,7 +275,7 @@ describe('playlistItem', () => {
           },
           {
             id: 'item3',
-            order: 3,
+            order: 2,
             createdAt: new Date(),
             updatedAt: new Date(),
             playlistId: 'playlistId',
@@ -312,11 +319,23 @@ describe('playlistItem', () => {
           orderBy: { order: 'asc' },
           select: { id: true }
         })
+        expect(prismaMock.playlistItem.update).toHaveBeenCalledWith({
+          where: { id: 'item1' },
+          data: { order: 0 }
+        })
+        expect(prismaMock.playlistItem.update).toHaveBeenCalledWith({
+          where: { id: 'item2' },
+          data: { order: 1 }
+        })
+        expect(prismaMock.playlistItem.update).toHaveBeenCalledWith({
+          where: { id: 'item3' },
+          data: { order: 2 }
+        })
         expect(data).toHaveProperty('data.playlistItemRemove', {
           data: [
-            expect.objectContaining({ id: 'item1', order: 1 }),
-            expect.objectContaining({ id: 'item2', order: 2 }),
-            expect.objectContaining({ id: 'item3', order: 3 })
+            expect.objectContaining({ id: 'item1', order: 0 }),
+            expect.objectContaining({ id: 'item2', order: 1 }),
+            expect.objectContaining({ id: 'item3', order: 2 })
           ]
         })
       })
@@ -417,7 +436,7 @@ describe('playlistItem', () => {
         const reorderedItems = [
           {
             id: 'item1',
-            order: 1,
+            order: 0,
             createdAt: new Date(),
             updatedAt: new Date(),
             playlistId: 'playlistId',
@@ -425,7 +444,7 @@ describe('playlistItem', () => {
           },
           {
             id: 'item2',
-            order: 2,
+            order: 1,
             createdAt: new Date(),
             updatedAt: new Date(),
             playlistId: 'playlistId',
@@ -433,7 +452,7 @@ describe('playlistItem', () => {
           },
           {
             id: 'item3',
-            order: 3,
+            order: 2,
             createdAt: new Date(),
             updatedAt: new Date(),
             playlistId: 'playlistId',
@@ -468,11 +487,27 @@ describe('playlistItem', () => {
             playlistId: 'playlistId'
           }
         })
+        expect(prismaMock.playlistItem.updateMany).toHaveBeenCalledWith({
+          where: { playlistId: 'playlistId' },
+          data: { order: null }
+        })
+        expect(prismaMock.playlistItem.update).toHaveBeenCalledWith({
+          where: { id: 'item1' },
+          data: { order: 0 }
+        })
+        expect(prismaMock.playlistItem.update).toHaveBeenCalledWith({
+          where: { id: 'item2' },
+          data: { order: 1 }
+        })
+        expect(prismaMock.playlistItem.update).toHaveBeenCalledWith({
+          where: { id: 'item3' },
+          data: { order: 2 }
+        })
         expect(data).toHaveProperty('data.playlistItemsReorder', {
           data: [
-            expect.objectContaining({ id: 'item1', order: 1 }),
-            expect.objectContaining({ id: 'item2', order: 2 }),
-            expect.objectContaining({ id: 'item3', order: 3 })
+            expect.objectContaining({ id: 'item1', order: 0 }),
+            expect.objectContaining({ id: 'item2', order: 1 }),
+            expect.objectContaining({ id: 'item3', order: 2 })
           ]
         })
       })

@@ -440,7 +440,7 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   playlistCreate(input: PlaylistCreateInput!) : MutationPlaylistCreateResult @join__field(graph: API_MEDIA) 
   playlistUpdate(id: ID!, input: PlaylistUpdateInput!) : MutationPlaylistUpdateResult @join__field(graph: API_MEDIA) 
   playlistDelete(id: ID!) : MutationPlaylistDeleteResult @join__field(graph: API_MEDIA) 
-  playlistItemAdd(playlistId: ID!, videoVariantId: ID!) : MutationPlaylistItemAddResult @join__field(graph: API_MEDIA) 
+  playlistItemAdd(id: ID, playlistId: ID!, videoVariantId: ID!) : MutationPlaylistItemAddResult @join__field(graph: API_MEDIA) 
   playlistItemRemove(playlistId: ID!, itemId: ID!) : MutationPlaylistItemRemoveResult @join__field(graph: API_MEDIA) 
   playlistItemsReorder(playlistId: ID!, itemIds: [ID!]!) : MutationPlaylistItemsReorderResult @join__field(graph: API_MEDIA) 
   """
@@ -2633,7 +2633,7 @@ type Playlist @join__type(graph: API_MEDIA)  {
 
 type PlaylistItem @join__type(graph: API_MEDIA)  {
   id: ID!
-  order: Int!
+  order: Int
   createdAt: DateTime!
   updatedAt: DateTime!
   videoVariant: VideoVariant!
