@@ -277,4 +277,112 @@ describe('LanguageScreen', () => {
       ).toBeInTheDocument()
     )
   })
+
+  it('renders the correct social media image', async () => {
+    const journeyWithImage = {
+      ...journey,
+      primaryImageBlock: {
+        id: 'image1.id',
+        __typename: 'ImageBlock' as const,
+        parentBlockId: null,
+        parentOrder: 0,
+        src: 'https://images.unsplash.com/photo-1508363778367-af363f107cbb?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&dl=chester-wade-hLP7lVm4KUE-unsplash.jpg&w=1920',
+        alt: 'journey social image',
+        width: 1920,
+        height: 1080,
+        blurhash: 'L9AS}j^-0dVC4Tq[=~PATeXSV?aL',
+        scale: null,
+        focalLeft: 50,
+        focalTop: 50
+      }
+    }
+
+    render(
+      <MockedProvider mocks={[mockGetLastActiveTeamIdAndTeams]}>
+        <SnackbarProvider>
+          <JourneyProvider
+            value={{ journey: journeyWithImage, variant: 'admin' }}
+          >
+            <TeamProvider>
+              <LanguageScreen
+                handleNext={handleNext}
+                handleScreenNavigation={handleScreenNavigation}
+              />
+            </TeamProvider>
+          </JourneyProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    expect(screen.getByTestId('SocialImage')).toBeInTheDocument()
+    await waitFor(() => {
+      const img = screen.getByRole('img')
+      expect(img).toHaveAttribute('alt', 'journey social image')
+    })
+  })
+
+  it('renders all required components correctly', async () => {
+    render(
+      <MockedProvider mocks={[mockGetLastActiveTeamIdAndTeams]}>
+        <SnackbarProvider>
+          <JourneyProvider value={{ journey, variant: 'admin' }}>
+            <TeamProvider>
+              <LanguageScreen
+                handleNext={handleNext}
+                handleScreenNavigation={handleScreenNavigation}
+              />
+            </TeamProvider>
+          </JourneyProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    expect(screen.getAllByText("Let's get started!")).toHaveLength(2)
+    expect(
+      screen.getByText(
+        'A few quick edits and your template will be ready to share.'
+      )
+    ).toBeInTheDocument()
+    expect(screen.getAllByText(journey.title)).toHaveLength(1)
+    expect(screen.getByTestId('SocialImage')).toBeInTheDocument()
+
+    expect(screen.getAllByText('Select a language')).toHaveLength(2)
+    expect(screen.getByTestId('LanguageAutocompleteInput')).toBeInTheDocument()
+    expect(screen.getAllByText('Select a team')).toHaveLength(2)
+    await waitFor(() => {
+      expect(screen.getByRole('combobox', { name: 'Team' })).toBeInTheDocument()
+    })
+
+    expect(screen.getByTestId('LanguageScreenSubmitButton')).toBeInTheDocument()
+    expect(screen.getByTestId('LanguageScreenSubmitButton')).toHaveTextContent(
+      'Next Step'
+    )
+  })
+
+  it('renders skeleton when no journey image is provided', () => {
+    const journeyWithoutImage = {
+      ...journey,
+      primaryImageBlock: null
+    }
+
+    render(
+      <MockedProvider mocks={[mockGetLastActiveTeamIdAndTeams]}>
+        <SnackbarProvider>
+          <JourneyProvider
+            value={{ journey: journeyWithoutImage, variant: 'admin' }}
+          >
+            <TeamProvider>
+              <LanguageScreen
+                handleNext={handleNext}
+                handleScreenNavigation={handleScreenNavigation}
+              />
+            </TeamProvider>
+          </JourneyProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    expect(screen.getByTestId('SocialImage')).toBeInTheDocument()
+    expect(screen.getByTestId('GridEmptyIcon')).toBeInTheDocument()
+  })
 })

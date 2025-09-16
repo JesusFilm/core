@@ -20,6 +20,11 @@ import { LanguageScreenCardPreview } from './LanguageScreenCardPreview'
 import { useTemplateJourneyLanguages } from '../../../../../libs/useTemplateJourneyLanguages'
 import { LanguageAutocomplete } from '@core/shared/ui/LanguageAutocomplete'
 import { CustomizationScreen } from '../../../utils/getCustomizeFlowConfig'
+import { SocialImage } from '@core/journeys/ui/TemplateView/TemplateViewHeader/SocialImage'
+import {
+  BUTTON_NEXT_STEP_WIDTH,
+  BUTTON_NEXT_STEP_HEIGHT
+} from '../../../utils/sharedStyles'
 
 interface LanguageScreenProps {
   handleNext: () => void
@@ -63,6 +68,8 @@ export function LanguageScreen({
 
   const [journeyDuplicate] = useJourneyDuplicateMutation()
 
+  const FORM_SM_BREAKPOINT_WIDTH = '390px'
+
   async function handleSubmit(values: FormikValues) {
     setLoading(true)
     if (journey == null) {
@@ -102,11 +109,31 @@ export function LanguageScreen({
   }
 
   return (
-    <Stack justifyContent="center" alignItems="center" gap={4}>
-      <Typography variant="h4" component="h1" gutterBottom>
-        {t('Lets get started!')}
+    <Stack alignItems="center" gap={4} sx={{ px: { xs: 0, sm: 20 } }}>
+      <Stack alignItems="center" sx={{ pb: { xs: 0, sm: 3 } }}>
+        <Typography
+          variant="h4"
+          display={{ xs: 'none', sm: 'block' }}
+          gutterBottom
+          sx={{ mb: 2 }}
+        >
+          {t("Let's get started!")}
+        </Typography>
+        <Typography
+          variant="h6"
+          display={{ xs: 'block', sm: 'none' }}
+          gutterBottom
+        >
+          {t("Let's get started!")}
+        </Typography>
+        <Typography variant="h6" color="text.secondary" align="center">
+          {t('A few quick edits and your template will be ready to share.')}
+        </Typography>
+      </Stack>
+      <SocialImage />
+      <Typography variant="h6" gutterBottom sx={{ mb: { xs: 0, sm: 2 } }}>
+        {journey?.title ?? ''}
       </Typography>
-      <LanguageScreenCardPreview />
       <Formik
         initialValues={initialValues}
         validationSchema={validationSchema}
@@ -114,13 +141,20 @@ export function LanguageScreen({
         onSubmit={handleSubmit}
       >
         {({ handleSubmit, setFieldValue, values }) => (
-          <Form>
-            <FormControl sx={{ alignSelf: 'center' }}>
-              <Stack gap={4}>
+          <Form style={{ width: '100%' }}>
+            <FormControl
+              sx={{
+                width: { xs: '100%', sm: FORM_SM_BREAKPOINT_WIDTH },
+                alignSelf: 'center'
+              }}
+            >
+              <Stack gap={2}>
+                <Typography variant="h6" display={{ xs: 'none', sm: 'block' }}>
+                  {t('Select a language')}
+                </Typography>
                 <Typography
-                  variant="body1"
-                  color="text.secondary"
-                  align="center"
+                  variant="body2"
+                  display={{ xs: 'block', sm: 'none' }}
                 >
                   {t('Select a language')}
                 </Typography>
@@ -134,28 +168,49 @@ export function LanguageScreen({
                   onChange={(value) => setFieldValue('languageSelect', value)}
                 />
                 <Typography
-                  variant="body1"
-                  color="text.secondary"
-                  align="center"
+                  variant="h6"
+                  display={{ xs: 'none', sm: 'block' }}
+                  sx={{ mt: 4 }}
+                >
+                  {t('Select a team')}
+                </Typography>
+                <Typography
+                  variant="body2"
+                  display={{ xs: 'block', sm: 'none' }}
+                  sx={{ mt: 4 }}
                 >
                   {t('Select a team')}
                 </Typography>
                 {isSignedIn && <JourneyCustomizeTeamSelect />}
+                <Button
+                  variant="contained"
+                  color="secondary"
+                  disabled={loading}
+                  onClick={() => handleSubmit()}
+                  data-testid="LanguageScreenSubmitButton"
+                  sx={{
+                    width: BUTTON_NEXT_STEP_WIDTH,
+                    height: BUTTON_NEXT_STEP_HEIGHT,
+                    alignSelf: 'center',
+                    mt: { xs: 6, sm: 4 },
+                    borderRadius: '8px'
+                  }}
+                >
+                  <Stack direction="row" alignItems="center" gap={1}>
+                    <Typography
+                      sx={{
+                        fontWeight: 'bold',
+                        display: { xs: 'none', sm: 'block' }
+                      }}
+                    >
+                      {t('Next Step')}
+                    </Typography>
+                    <ArrowRightIcon
+                      sx={{ fontSize: { xs: '24px', sm: '16px' } }}
+                    />
+                  </Stack>
+                </Button>
               </Stack>
-              <Button
-                data-testid="LanguageScreenSubmitButton"
-                disabled={loading}
-                variant="contained"
-                color="secondary"
-                onClick={() => handleSubmit()}
-                sx={{
-                  width: { xs: '100%', sm: 300 },
-                  alignSelf: 'center',
-                  mt: 6
-                }}
-              >
-                <ArrowRightIcon />
-              </Button>
             </FormControl>
           </Form>
         )}

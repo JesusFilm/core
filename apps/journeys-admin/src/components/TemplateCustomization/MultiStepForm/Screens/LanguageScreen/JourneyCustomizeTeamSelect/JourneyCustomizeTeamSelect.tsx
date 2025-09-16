@@ -18,7 +18,7 @@ export function JourneyCustomizeTeamSelect(): ReactElement {
   const teams = query?.data?.teams ?? []
 
   return (
-    <FormControl sx={{ alignSelf: 'center' }}>
+    <FormControl>
       <Select
         variant="filled"
         name="teamSelect"
@@ -48,9 +48,6 @@ export function JourneyCustomizeTeamSelect(): ReactElement {
               {label}
             </Typography>
           )
-        }}
-        sx={{
-          width: 300
         }}
       >
         {sortBy(teams, 'title').map((team) => (
