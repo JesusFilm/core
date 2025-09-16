@@ -4,20 +4,20 @@ import { ComponentProps } from 'react'
 import { simpleComponentConfig } from '../../libs/simpleComponentConfig'
 import { StoryCard } from '../StoryCard'
 
-import { RadioOption } from '.'
+import { MultiselectOption } from '.'
 
-const Demo: Meta<typeof RadioOption> = {
+const Demo: Meta<typeof MultiselectOption> = {
   ...simpleComponentConfig,
-  component: RadioOption,
-  title: 'Journeys-Ui/RadioQuestion/RadioOption'
+  component: MultiselectOption,
+  title: 'Journeys-Ui/MultiselectQuestion/MultiselectOption'
 }
 
-type Story = StoryObj<ComponentProps<typeof RadioOption>>
+type Story = StoryObj<ComponentProps<typeof MultiselectOption>>
 
 const Template: Story = {
   render: ({ ...args }) => (
     <StoryCard>
-      <RadioOption {...args} />
+      <MultiselectOption {...args} />
     </StoryCard>
   )
 }
@@ -25,7 +25,7 @@ const Template: Story = {
 export const Default = {
   ...Template,
   args: {
-    id: 'NestedOptions',
+    id: 'Option1',
     label: 'Chat Privately',
     selected: false,
     disabled: false
@@ -36,7 +36,7 @@ export const Long = {
   ...Template,
   args: {
     ...Default.args,
-    id: 'NestedOptions2',
+    id: 'Option2',
     label:
       'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the '
   }
@@ -45,7 +45,7 @@ export const Long = {
 export const Selected = {
   ...Template,
   args: {
-    id: 'NestedOptions3',
+    id: 'Option3',
     label: 'Watch more videos about Jesus',
     selected: true,
     disabled: false
@@ -55,7 +55,7 @@ export const Selected = {
 export const Disabled = {
   ...Template,
   args: {
-    id: 'NestedOptions4',
+    id: 'Option4',
     label: 'Ask a question',
     selected: false,
     disabled: true

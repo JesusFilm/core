@@ -5,16 +5,16 @@ import { ComponentProps } from 'react'
 import { TypographyVariant } from '../../../__generated__/globalTypes'
 import type { TreeBlock } from '../../libs/block'
 import { simpleComponentConfig } from '../../libs/simpleComponentConfig'
-import { RadioOptionFields } from '../RadioOption/__generated__/RadioOptionFields'
+import { MultiselectOptionFields } from '../MultiselectOption/__generated__/MultiselectOptionFields'
 import { StoryCard } from '../StoryCard'
 import { Typography } from '../Typography'
 
-import { RADIO_QUESTION_SUBMISSION_EVENT_CREATE, RadioQuestion } from '.'
+import { MULTISELECT_SUBMISSION_EVENT_CREATE, MultiselectQuestion } from '.'
 
-const Demo: Meta<typeof RadioQuestion> = {
+const Demo: Meta<typeof MultiselectQuestion> = {
   ...simpleComponentConfig,
-  component: RadioQuestion,
-  title: 'Journeys-Ui/RadioQuestion',
+  component: MultiselectQuestion,
+  title: 'Journeys-Ui/MultiselectQuestion',
   parameters: {
     docs: {
       source: { type: 'code' }
@@ -38,80 +38,76 @@ const typographyProps: ComponentProps<typeof Typography> = {
   }
 }
 
-const children: Array<TreeBlock<RadioOptionFields>> = [
+const children: Array<TreeBlock<MultiselectOptionFields>> = [
   {
-    __typename: 'RadioOptionBlock',
+    __typename: 'MultiselectOptionBlock',
     label: 'Chat Privately',
-    id: 'RadioOption1',
-    parentBlockId: 'MoreQuestions',
+    id: 'Option1',
+    parentBlockId: 'Multiselect1',
     parentOrder: 0,
-    action: null,
-    pollOptionImageBlockId: null,
     children: []
   },
   {
-    __typename: 'RadioOptionBlock',
+    __typename: 'MultiselectOptionBlock',
     label: 'Get a bible',
-    id: 'RadioOption2',
-    parentBlockId: 'MoreQuestions',
+    id: 'Option2',
+    parentBlockId: 'Multiselect1',
     parentOrder: 1,
-    action: null,
-    pollOptionImageBlockId: null,
     children: []
   },
   {
-    __typename: 'RadioOptionBlock',
+    __typename: 'MultiselectOptionBlock',
     label: 'Watch more videos about Jesus',
-    id: 'RadioOption3',
-    parentBlockId: 'MoreQuestions',
+    id: 'Option3',
+    parentBlockId: 'Multiselect1',
     parentOrder: 2,
-    action: null,
-    pollOptionImageBlockId: null,
     children: []
   },
   {
-    __typename: 'RadioOptionBlock',
+    __typename: 'MultiselectOptionBlock',
     label: 'Ask a question',
-    id: 'RadioOption4',
-    parentBlockId: 'MoreQuestions',
+    id: 'Option4',
+    parentBlockId: 'Multiselect1',
     parentOrder: 3,
-    action: null,
-    pollOptionImageBlockId: null,
     children: []
   }
 ]
 
 const submitEventMock: MockedResponse = {
   request: {
-    query: RADIO_QUESTION_SUBMISSION_EVENT_CREATE,
+    query: MULTISELECT_SUBMISSION_EVENT_CREATE,
     variables: {
       input: {
         id: 'uuid',
-        blockId: 'RadioQuestion1',
-        radioOptionBlockId: 'RadioOption1'
+        blockId: 'Multiselect1',
+        values: ['Chat Privately']
       }
     }
   },
   result: {
     data: {
-      radioQuestionSubmissionEventCreate: {
+      multiselectSubmissionEventCreate: {
         id: 'uuid'
       }
     }
   }
 }
 
-type Story = StoryObj<typeof RadioQuestion>
+type Story = StoryObj<typeof MultiselectQuestion>
 
 const Template: Story = {
   render: ({ ...args }) => (
     <MockedProvider mocks={[submitEventMock]}>
       <StoryCard>
         <Typography {...typographyProps} />
-        <RadioQuestion {...args} uuid={() => 'uuid'} />
+        <MultiselectQuestion
+          {...args}
+          uuid={() => 'uuid'}
+          submitLabel="Submit"
+        />
         <Typography
           {...typographyProps}
-          content="RadioQuestion is just the button group above"
+          content="MultiselectQuestion is just the button group above"
           variant={TypographyVariant.body1}
           parentOrder={2}
         />
@@ -126,7 +122,10 @@ export const Default = {
     id: 'Default',
     children,
     parentOrder: 1,
-    parentBlockId: 'Step1'
+    parentBlockId: 'Step1',
+    min: 1,
+    max: 2,
+    submitLabel: 'Submit'
   }
 }
 

@@ -1,0 +1,45 @@
+input MultiselectSubmissionEventCreateInput {
+  """
+  ID should be unique Event UUID (Provided for optimistic mutation result matching)
+  """
+  id: ID
+  blockId: ID!
+  """
+  id of the parent stepBlock
+  """
+  stepId: ID
+  """
+  stepName of the parent stepBlock
+  """
+  label: String
+  """
+  labels of the selected options
+  """
+  values: [String!]!
+}
+
+type MultiselectSubmissionEvent implements Event @shareable {
+  id: ID!
+  """
+  ID of the journey that the multiselect block belongs to
+  """
+  journeyId: ID!
+  """
+  time event was created
+  """
+  createdAt: DateTime!
+  """
+  stepName of the parent stepBlock
+  """
+  label: String
+  """
+  labels of the selected options (array)
+  """
+  values: [String]
+}
+
+extend type Mutation {
+  multiselectSubmissionEventCreate(
+    input: MultiselectSubmissionEventCreateInput!
+  ): MultiselectSubmissionEvent!
+}

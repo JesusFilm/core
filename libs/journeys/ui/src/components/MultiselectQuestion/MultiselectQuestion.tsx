@@ -1,28 +1,22 @@
 import { gql, useMutation } from '@apollo/client'
 import { sendGTMEvent } from '@next/third-parties/google'
 import { useTranslation } from 'next-i18next'
-import { usePlausible } from 'next-plausible'
-import { ReactElement, useEffect, useState } from 'react'
+import { ReactElement, useEffect, useMemo, useState } from 'react'
 import { v4 as uuidv4 } from 'uuid'
 
-import { RadioQuestionSubmissionEventCreateInput } from '../../../__generated__/globalTypes'
 import type { TreeBlock } from '../../libs/block'
 import { isActiveBlockOrDescendant, useBlocks } from '../../libs/block'
 import { getStepHeading } from '../../libs/getStepHeading'
 import { useJourney } from '../../libs/JourneyProvider'
-import { JourneyPlausibleEvents, keyify } from '../../libs/plausibleHelpers'
+import { useRouter } from 'next/router'
+import { handleAction } from '../../libs/action'
+import { getNextStepSlug } from '../../libs/getNextStepSlug'
 // eslint-disable-next-line import/no-cycle
 import { BlockRenderer, WrappersProps } from '../BlockRenderer'
-import { RadioOption } from '../RadioOption'
-import { RadioOptionFields } from '../RadioOption/__generated__/RadioOptionFields'
-
-import { RadioQuestionFields } from './__generated__/RadioQuestionFields'
-import {
-  RadioQuestionSubmissionEventCreate,
-  RadioQuestionSubmissionEventCreateVariables
-} from './__generated__/RadioQuestionSubmissionEventCreate'
-import { ListVariant } from './ListVariant'
+import { MultiselectOption } from '../MultiselectOption/MultiselectOption'
+import { MULTISELECT_QUESTION_FIELDS } from './multiselectQuestionFields'
 import Box, { BoxProps } from '@mui/material/Box'
+import Button from '@mui/material/Button'
 import ButtonGroup from '@mui/material/ButtonGroup'
 import { SimplePaletteColorOptions, styled } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
@@ -31,12 +25,13 @@ import AddSquare4Icon from '@core/shared/ui/icons/AddSquare4'
 import { adminTheme } from '@core/shared/ui/themes/journeysAdmin/theme'
 
 import { getPollOptionBorderStyles } from './utils/getPollOptionBorderStyles'
-import { MultiselectOption } from '../MultiselectOption/MultiselectOption'
-export const RADIO_QUESTION_SUBMISSION_EVENT_CREATE = gql`
-  mutation RadioQuestionSubmissionEventCreate(
-    $input: RadioQuestionSubmissionEventCreateInput!
+import { ListVariant } from './ListVariant'
+
+export const MULTISELECT_SUBMISSION_EVENT_CREATE = gql`
+  mutation MultiselectSubmissionEventCreate(
+    $input: MultiselectSubmissionEventCreateInput!
   ) {
-    radioQuestionSubmissionEventCreate(input: $input) {
+    multiselectSubmissionEventCreate(input: $input) {
       id
     }
   }
@@ -69,34 +64,37 @@ const StyledListMultiselectQuestion = styled(Box)<BoxProps>(({ theme }) => ({
   }
 }))
 
-interface RadioQuestionProps extends TreeBlock<RadioQuestionFields> {
+interface MultiselectQuestionProps extends TreeBlock<any> {
   uuid?: () => string
   wrappers?: WrappersProps
   addOption?: () => void
 }
 
-export function RadioQuestion({
+export function MultiselectQuestion({
   id: blockId,
-  gridView,
   children,
+  label,
+  submitLabel,
+  min,
+  max,
+  action,
   uuid = uuidv4,
   wrappers,
   addOption
-}: RadioQuestionProps): ReactElement {
-  const [radioQuestionSubmissionEventCreate] = useMutation<
-    RadioQuestionSubmissionEventCreate,
-    RadioQuestionSubmissionEventCreateVariables
-  >(RADIO_QUESTION_SUBMISSION_EVENT_CREATE)
-  const plausible = usePlausible<JourneyPlausibleEvents>()
+}: MultiselectQuestionProps): ReactElement {
+  const [multiselectSubmissionEventCreate] = useMutation<any, any>(
+    MULTISELECT_SUBMISSION_EVENT_CREATE
+  )
   const { variant, journey } = useJourney()
-  const [selectedId, setSelectedId] = useState<string | null>(null)
+  const router = useRouter()
+  const [selectedIds, setSelectedIds] = useState<string[]>([])
   const { blockHistory, treeBlocks } = useBlocks()
   const { t } = useTranslation('libs-journeys-ui')
   const activeBlock = blockHistory[blockHistory.length - 1]
 
   useEffect(() => {
     // test via e2e: radio selection is cleared when going back to card that is no longer rendered
-    if (!isActiveBlockOrDescendant(blockId)) setSelectedId(null)
+    if (!isActiveBlockOrDescendant(blockId)) setSelectedIds([])
   }, [blockId, blockHistory])
 
   const heading =
@@ -104,83 +102,93 @@ export function RadioQuestion({
       ? getStepHeading(activeBlock.id, activeBlock.children, treeBlocks, t)
       : 'None'
 
-  const handleClick = (
-    radioOptionBlockId: string,
-    radioOptionLabel: string
-  ): void => {
-    if (variant === 'default' || variant === 'embed') {
-      const id = uuid()
-      const input: RadioQuestionSubmissionEventCreateInput = {
-        id,
-        blockId,
-        radioOptionBlockId,
-        stepId: activeBlock?.id,
-        label: heading,
-        value: radioOptionLabel
-      }
-      void radioQuestionSubmissionEventCreate({
-        variables: {
-          input
-        }
-      })
-      const radioOptionBlock = children.find(
-        (child) =>
-          child.id === radioOptionBlockId &&
-          child.__typename === 'RadioOptionBlock'
-      ) as TreeBlock<RadioOptionFields> | undefined
-      if (journey != null && radioOptionBlock != null) {
-        plausible('radioQuestionSubmit', {
-          u: `${window.location.origin}/${journey.id}/${input.stepId}`,
-          props: {
-            ...input,
-            key: keyify({
-              stepId: input.stepId ?? '',
-              event: 'radioQuestionSubmit',
-              blockId: radioOptionBlock.id,
-              target: radioOptionBlock.action
-            }),
-            simpleKey: keyify({
-              stepId: input.stepId ?? '',
-              event: 'radioQuestionSubmit',
-              blockId: radioOptionBlock.id
-            })
-          }
-        })
-      }
-      sendGTMEvent({
-        event: 'radio_question_submission',
-        eventId: id,
-        blockId,
-        radioOptionSelectedId: radioOptionBlockId,
-        radioOptionSelectedLabel: radioOptionLabel,
-        stepName: heading
-      })
-    }
-    setSelectedId(radioOptionBlockId)
+  function toggleSelect(optionId: string): void {
+    setSelectedIds((prev) => {
+      const isSelected = prev.includes(optionId)
+      if (isSelected) return prev.filter((id) => id !== optionId)
+      const limit = typeof max === 'number' ? max : undefined
+      if (limit != null && prev.length >= limit) return prev
+      return [...prev, optionId]
+    })
   }
 
-  const options = children?.map(
-    (option) =>
-      option.__typename === 'RadioOptionBlock' &&
-      (wrappers != null ? (
-        <BlockRenderer
-          block={{ ...option, gridView }}
-          wrappers={wrappers}
-          key={option.id}
-        />
-      ) : (
-        <MultiselectOption
-          {...option}
-          key={option.id}
-          selected={selectedId === option.id}
-          disabled={Boolean(selectedId)}
-          onClick={handleClick}
-          gridView={gridView}
-        />
-      ))
-  )
+  const selectedLabels = useMemo(() => {
+    return (
+      children
+        ?.filter((c: any) => c.__typename === 'MultiselectOptionBlock')
+        .filter((c: any) => selectedIds.includes(c.id))
+        .map((c: any) => c.label) ?? []
+    )
+  }, [children, selectedIds])
+
+  async function handleSubmit(): Promise<void> {
+    if (
+      (variant !== 'default' && variant !== 'embed') ||
+      selectedIds.length === 0
+    )
+      return
+    const id = uuid()
+    await multiselectSubmissionEventCreate({
+      variables: {
+        input: {
+          id,
+          blockId,
+          stepId: activeBlock?.id,
+          label: heading,
+          values: selectedLabels
+        }
+      }
+    })
+    sendGTMEvent({
+      event: 'multiselect_submission',
+      eventId: id,
+      blockId,
+      stepName: heading
+    })
+    // trigger action after submit
+    const nextStepSlug = getNextStepSlug(journey, action)
+    handleAction(router, action, nextStepSlug)
+  }
+
+  const options = children?.map((option: any) => {
+    if (option.__typename !== 'MultiselectOptionBlock') return false
+    const isSelected = selectedIds.includes(option.id)
+    const atMax = typeof max === 'number' && selectedIds.length >= max
+    const disabled = atMax && !isSelected
+    return wrappers != null ? (
+      <BlockRenderer
+        block={option as any}
+        wrappers={wrappers}
+        key={option.id}
+      />
+    ) : (
+      <MultiselectOption
+        {...(option as any)}
+        key={option.id}
+        selected={isSelected}
+        disabled={disabled}
+        onClick={() => toggleSelect(option.id)}
+      />
+    )
+  })
 
   return (
-    <ListVariant blockId={blockId} options={options} addOption={addOption} />
+    <>
+      <ListVariant blockId={blockId} options={options} addOption={addOption} />
+      <Box sx={{ mt: 2 }}>
+        <Button
+          variant="contained"
+          color="primary"
+          fullWidth
+          disabled={
+            selectedIds.length === 0 ||
+            (typeof min === 'number' && selectedIds.length < min)
+          }
+          onClick={handleSubmit}
+        >
+          {submitLabel ?? t('Submit')}
+        </Button>
+      </Box>
+    </>
   )
 }

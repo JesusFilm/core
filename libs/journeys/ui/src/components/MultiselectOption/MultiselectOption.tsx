@@ -1,12 +1,8 @@
-import { useRouter } from 'next/router'
 import { MouseEvent, ReactElement } from 'react'
-
-import { handleAction } from '../../libs/action'
 import type { TreeBlock } from '../../libs/block'
-import { getNextStepSlug } from '../../libs/getNextStepSlug'
 import { useJourney } from '../../libs/JourneyProvider'
 import Button, { ButtonProps } from '@mui/material/Button'
-import { MultiselectOptionFields } from './__generated__/MultiselectOptionFields'
+import { RadioOptionFields as MultiselectOptionFields } from './__generated__/RadioOptionFields'
 import { styled } from '@mui/material/styles'
 import { getPollOptionBorderStyles } from '../RadioQuestion/utils/getPollOptionBorderStyles'
 
@@ -114,13 +110,10 @@ export function MultiselectOption({
   children
 }: MultiselectOptionProps): ReactElement {
   const { journey } = useJourney()
-  const router = useRouter()
 
   const handleClick = (e: MouseEvent): void => {
     e.stopPropagation()
     onClick?.(id, label)
-    const nextStepSlug = getNextStepSlug(journey, action)
-    handleAction(router, action, nextStepSlug)
   }
 
   return (

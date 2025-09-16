@@ -7,6 +7,8 @@ import {
   BlockFields_ButtonBlock as ButtonBlock,
   BlockFields_CardBlock as CardBlock,
   BlockFields_ImageBlock as ImageBlock,
+  BlockFields_MultiselectOptionBlock as MultiselectOptionBlock,
+  BlockFields_MultiselectBlock as MultiselectBlock,
   BlockFields_RadioOptionBlock as RadioOptionBlock,
   BlockFields_RadioQuestionBlock as RadioQuestionBlock,
   BlockFields_SignUpBlock as SignUpBlock,
@@ -66,6 +68,25 @@ const DynamicImage = dynamic<TreeBlock<ImageBlock>>(
       /* webpackChunkName: "Image" */
       '../Image'
     ).then((mod) => mod.Image)
+)
+
+const DynamicMultiselectOption = dynamic<TreeBlock<MultiselectOptionBlock>>(
+  async () =>
+    await import(
+      /* webpackChunkName: "MultiselectOption" */
+      '../MultiselectOption'
+    ).then((mod) => mod.MultiselectOption)
+)
+
+const DynamicMultiselectQuestion = dynamic<
+  TreeBlock<MultiselectBlock> & { wrappers?: WrappersProps }
+>(
+  async () =>
+    // eslint-disable-next-line import/no-cycle
+    await import(
+      /* webpackChunkName: "MultiselectQuestion" */
+      '../MultiselectQuestion'
+    ).then((mod) => mod.MultiselectQuestion)
 )
 
 const DynamicRadioOption = dynamic<TreeBlock<RadioOptionBlock>>(
@@ -145,6 +166,10 @@ export function BlockRenderer({
   const ButtonWrapper = wrappers?.ButtonWrapper ?? DefaultWrapper
   const CardWrapper = wrappers?.CardWrapper ?? DefaultWrapper
   const ImageWrapper = wrappers?.ImageWrapper ?? DefaultWrapper
+  const MultiselectOptionWrapper =
+    wrappers?.RadioOptionWrapper ?? DefaultWrapper
+  const MultiselectQuestionWrapper =
+    wrappers?.RadioQuestionWrapper ?? DefaultWrapper
   const RadioOptionWrapper = wrappers?.RadioOptionWrapper ?? DefaultWrapper
   const RadioQuestionWrapper = wrappers?.RadioQuestionWrapper ?? DefaultWrapper
   const SignUpWrapper = wrappers?.SignUpWrapper ?? DefaultWrapper
@@ -185,6 +210,24 @@ export function BlockRenderer({
             <ImageWrapper block={block}>
               <DynamicImage {...block} alt={block.alt} />
             </ImageWrapper>
+          </Wrapper>
+        </DragItemWrapper>
+      )
+    case 'MultiselectOptionBlock':
+      return (
+        <Wrapper block={block}>
+          <MultiselectOptionWrapper block={block}>
+            <DynamicMultiselectOption {...block} />
+          </MultiselectOptionWrapper>
+        </Wrapper>
+      )
+    case 'MultiselectBlock':
+      return (
+        <DragItemWrapper block={block}>
+          <Wrapper block={block}>
+            <MultiselectQuestionWrapper block={block}>
+              <DynamicMultiselectQuestion {...block} wrappers={wrappers} />
+            </MultiselectQuestionWrapper>
           </Wrapper>
         </DragItemWrapper>
       )
