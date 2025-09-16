@@ -8,11 +8,18 @@ import { Swiper as SwiperType } from 'swiper/types'
 import { VideoChildFields } from '../../../../__generated__/VideoChildFields'
 import { Skeleton } from '../../Skeleton'
 import { NavButton } from '../../VideoCarousel/NavButton/NavButton'
+import { MuxVideoCard } from '../../VideoCard'
+import {
+  type VideoCarouselSlide,
+  isMuxSlide,
+  isVideoSlide
+} from '../../../types/inserts'
 
 import { VideoCard } from './VideoCard'
 
 interface VideoCarouselProps {
-  videos: VideoChildFields[]
+  videos?: VideoChildFields[]
+  slides?: VideoCarouselSlide[]
   containerSlug?: string
   activeVideoId?: string
   loading?: boolean
@@ -24,6 +31,7 @@ const SKELETON_COUNT = 11
 
 export function VideoCarousel({
   videos,
+  slides,
   containerSlug,
   activeVideoId,
   loading = false,
@@ -33,6 +41,17 @@ export function VideoCarousel({
   const mode =
     onVideoSelect && onSlideChange ? 'inlinePlayback' : 'externalPlayback'
   const { breakpoints } = useTheme()
+
+  const computedSlides = useMemo<VideoCarouselSlide[]>(() => {
+    if (slides != null) return slides
+    return (
+      videos?.map((video) => ({
+        source: 'video' as const,
+        id: video.id,
+        video
+      })) ?? []
+    )
+  }, [slides, videos])
   const nextRef = useRef<HTMLDivElement>(null)
   const prevRef = useRef<HTMLDivElement>(null)
   const swiperRef = useRef<SwiperType | null>(null)
@@ -83,7 +102,7 @@ export function VideoCarousel({
 
   // Handle video selection using Swiper's navigation
   const handleVideoSelect = (videoId: string) => {
-    const index = videos.findIndex((video) => video.id === videoId)
+    const index = computedSlides.findIndex((slide) => slide.id === videoId)
     if (index >= 0 && swiperRef.current) {
       swiperRef.current.slideTo(index)
     }
@@ -92,24 +111,28 @@ export function VideoCarousel({
 
   // Always be at the end when videos change (only in inline playback mode)
   useEffect(() => {
-    if (mode === 'inlinePlayback' && swiperRef.current && videos.length > 0) {
-      swiperRef.current.slideTo(videos.length - 1, 0)
+    if (
+      mode === 'inlinePlayback' &&
+      swiperRef.current &&
+      computedSlides.length > 0
+    ) {
+      swiperRef.current.slideTo(computedSlides.length - 1, 0)
     }
-  }, [videos.length])
+  }, [computedSlides.length])
 
   // Check every 15 seconds and scroll to end if not already there (only in inline playback mode)
   useEffect(() => {
     if (mode !== 'inlinePlayback') return
     const interval = setInterval(() => {
-      if (swiperRef.current && videos.length > 0) {
-        const lastSlideIndex = videos.length - 1
+      if (swiperRef.current && computedSlides.length > 0) {
+        const lastSlideIndex = computedSlides.length - 1
 
         swiperRef.current.slideTo(lastSlideIndex, 1800)
       }
     }, 15000)
 
     return () => clearInterval(interval)
-  }, [videos.length])
+  }, [computedSlides.length])
 
   // Handle keyboard navigation
   const handleKeyDown = (event: React.KeyboardEvent) => {
@@ -162,10 +185,10 @@ export function VideoCarousel({
       >
         {loading
           ? skeletons
-          : videos.map((video, index) => {
+          : computedSlides.map((slide, index) => {
               // Find the current video index
-              const currentVideoIndex = videos.findIndex(
-                (v) => v.id === activeVideoId
+              const currentVideoIndex = computedSlides.findIndex((s) =>
+                isVideoSlide(s) ? s.video.id === activeVideoId : false
               )
               // Make slides after the current video transparent (only in inline playback mode)
               const isAfterCurrentVideo =
@@ -175,18 +198,34 @@ export function VideoCarousel({
 
               return (
                 <SwiperSlide
-                  key={video.id}
+                  key={
+                    isMuxSlide(slide)
+                      ? `mux-${slide.id}-${slide.playbackIndex}`
+                      : `video-${slide.id}`
+                  }
                   virtualIndex={index}
                   className={`max-w-[200px] ${index === 0 ? 'padded-l' : ''}`}
-                  data-testid={`CarouselSlide-${video.id}`}
+                  data-testid={`CarouselSlide-${slide.id}`}
                 >
-                  <VideoCard
-                    containerSlug={containerSlug}
-                    video={video}
-                    active={activeVideoId === video.id}
-                    transparent={isAfterCurrentVideo}
-                    onVideoSelect={handleVideoSelect}
-                  />
+                  {isMuxSlide(slide) ? (
+                    <MuxVideoCard
+                      insert={slide}
+                      variant="contained"
+                      active={activeVideoId === slide.id}
+                      onClick={(videoId) => (event) => {
+                        event.preventDefault()
+                        handleVideoSelect(videoId || slide.id)
+                      }}
+                    />
+                  ) : (
+                    <VideoCard
+                      containerSlug={containerSlug}
+                      video={slide.video as VideoChildFields}
+                      active={activeVideoId === slide.id}
+                      transparent={isAfterCurrentVideo}
+                      onVideoSelect={handleVideoSelect}
+                    />
+                  )}
                 </SwiperSlide>
               )
             })}

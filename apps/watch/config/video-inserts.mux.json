@@ -6,8 +6,8 @@
       "enabled": true,
       "source": "mux",
       "playbackIds": [
-        "J3WBxqGgXxi01201FYmW0202ayeL7PGXfuuXR02nvjQCE7bI",
-        "R2ILwLVZJ9015NMx00cEP7Dk99As6T2EYWkJhUa4PC6RI"
+        "D4p01ELXmdsDM00J3O00d00fArV9q1DTFVFFCaxyax2B2nc",
+        "D4p01ELXmdsDM00J3O00d00fArV9q1DTFVFFCaxyax2B2nc"
       ],
       "overlay": {
         "label": "Today’s Pick",
@@ -21,10 +21,7 @@
       "id": "after-three",
       "enabled": false,
       "source": "mux",
-      "playbackIds": [
-        "xZ123exampleafter3",
-        "yZ123exampleafter3"
-      ],
+      "playbackIds": ["xZ123exampleafter3", "yZ123exampleafter3"],
       "overlay": {
         "label": "Staff Pick",
         "title": "Encouraging Moment",

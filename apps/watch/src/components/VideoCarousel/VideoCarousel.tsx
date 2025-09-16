@@ -22,6 +22,7 @@ interface VideoCarouselProps {
   loading?: boolean
   containerSlug?: string
   variant?: ComponentProps<typeof VideoCard>['variant']
+  onVideoSelect?: (videoId: string) => void
 }
 
 export function VideoCarousel({
@@ -30,7 +31,8 @@ export function VideoCarousel({
   videos,
   slides,
   containerSlug,
-  variant = 'expanded'
+  variant = 'expanded',
+  onVideoSelect
 }: VideoCarouselProps): ReactElement {
   const { breakpoints } = useTheme()
   const nextRef = useRef<HTMLDivElement>(null)
@@ -135,7 +137,15 @@ export function VideoCarousel({
               }
             >
               {isMuxSlide(slide) ? (
-                <MuxVideoCard insert={slide} variant={variant} />
+                <MuxVideoCard
+                  insert={slide}
+                  variant={variant}
+                  active={activeVideoId === slide.id}
+                  onClick={(videoId) => (event) => {
+                    event.preventDefault()
+                    onVideoSelect?.(videoId || slide.id)
+                  }}
+                />
               ) : (
                 <VideoCard
                   video={slide.video as VideoChildFields}
@@ -146,6 +156,10 @@ export function VideoCarousel({
                     isVideoSlide(slide) &&
                     (slide.video as VideoChildFields).id === activeVideoId
                   }
+                  onClick={(videoId) => (event) => {
+                    event.preventDefault()
+                    onVideoSelect?.(videoId || slide.id)
+                  }}
                 />
               )}
             </SwiperSlide>
