@@ -5,18 +5,14 @@ import { ReactElement } from 'react'
 import { usePlayer } from '../../../../libs/playerContext/PlayerContext'
 import { AudioLanguageButton } from '../../../VideoContentPage/AudioLanguageButton'
 
-import { HeaderSearch } from './HeaderSearch'
-
 interface ContentHeaderProps {
   languageSlug?: string
   isPersistent?: boolean
-  languageId?: string
 }
 
 export function ContentHeader({
   languageSlug,
-  isPersistent = false,
-  languageId
+  isPersistent = false
 }: ContentHeaderProps): ReactElement {
   const {
     state: { play, active, loading }
@@ -45,11 +41,6 @@ export function ContentHeader({
           className="max-w-[50px] lg:max-w-[70px]"
         />
       </NextLink>
-      {isPersistent && (
-        <div className="flex flex-1 justify-center px-4">
-          <HeaderSearch languageId={languageId} />
-        </div>
-      )}
       <AudioLanguageButton componentVariant="icon" />
     </div>
   )

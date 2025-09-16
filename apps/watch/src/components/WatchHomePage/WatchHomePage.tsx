@@ -23,6 +23,7 @@ import { VideoProvider } from '../../libs/videoContext'
 import { WatchProvider } from '../../libs/watchContext'
 import { Header } from '../Header'
 import { ContentPageBlurFilter } from '../NewVideoContentPage/ContentPageBlurFilter'
+import { SearchComponent } from '../SearchComponent'
 import { VideoCarousel } from '../NewVideoContentPage/VideoCarousel/VideoCarousel'
 import { VideoContentHero } from '../NewVideoContentPage/VideoContentHero/VideoContentHero'
 import { useCarouselVideos } from '../VideoHero/libs/useCarouselVideos'
@@ -49,6 +50,8 @@ function WatchHomePageBody({
 }: WatchHomePageProps): ReactElement {
   const { t } = useTranslation('apps-watch')
   useAlgoliaRouter()
+  
+  const indexName = process.env.NEXT_PUBLIC_ALGOLIA_INDEX ?? ''
 
   const [activeVideoId, setActiveVideoId] = useState<string | undefined>()
   const {
@@ -245,10 +248,14 @@ function WatchHomePageBody({
     <div>
       <Header
         themeMode={ThemeMode.dark}
+        hideTopAppBar
         hideBottomAppBar
         hideSpacer
         showLanguageSwitcher
       />
+      <Index indexName={indexName}>
+        <SearchComponent languageId={languageId} floating={true} />
+      </Index>
       <VideoProvider value={{ content: activeVideo }}>
         <VideoContentHero isPreview={true} languageId={languageId} />
       </VideoProvider>

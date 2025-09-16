@@ -42,7 +42,6 @@ export function VideoContentHero({
       <ContentHeader
         languageSlug={languageSlug?.replace('.html', '')}
         isPersistent={isPreview}
-        languageId={languageId}
       />
       <HeroVideo
         isPreview={isPreview}

@@ -106,7 +106,7 @@ export function VideoGrid({
           </Paper>
         </Grid>
       )}
-      {showLoadMore && !hasNoResults && (
+      {showLoadMore && !hasNoResults && hasNextPage && (
         <Grid item xs={12}>
           <Box sx={{ display: 'flex', justifyContent: 'center', py: 6 }}>
             <Button
@@ -114,15 +114,10 @@ export function VideoGrid({
               onClick={showMore}
               loading={loading}
               startIcon={<AddRounded />}
-              disabled={!hasNextPage}
               loadingPosition="start"
               size="medium"
             >
-              {loading
-                ? 'Loading...'
-                : hasNextPage
-                  ? 'Load More'
-                  : 'No More Videos'}
+              {loading ? 'Loading...' : 'Load More'}
             </Button>
           </Box>
         </Grid>
