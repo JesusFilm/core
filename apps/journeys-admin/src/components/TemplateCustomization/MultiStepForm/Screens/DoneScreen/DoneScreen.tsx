@@ -13,21 +13,11 @@ import GridEmptyIcon from '@core/shared/ui/icons/GridEmpty'
 import { CustomizationScreen } from '../../../utils/getCustomizeFlowConfig'
 import { ShareItem } from '../../../../Editor/Toolbar/Items/ShareItem'
 
-const ShareDrawer = dynamic(
-  async () =>
-    await import(
-      /* webpackChunkName: "TemplateCustomization/DoneScreen/ShareDrawer" */ './ShareDrawer'
-    ).then((mod) => mod.ShareDrawer),
-  { ssr: false }
-)
-
 interface DoneScreenProps {
   handleScreenNavigation?: (screen: CustomizationScreen) => void
 }
 
-export function DoneScreen({
-  handleScreenNavigation
-}: DoneScreenProps): ReactElement {
+export function DoneScreen({}: DoneScreenProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { journey } = useJourney()
   const router = useRouter()
@@ -121,7 +111,7 @@ export function DoneScreen({
         </Stack>
         <Stack gap={2} sx={{ mt: { xs: 8, sm: 4 } }}>
           <Typography variant="subtitle1" noWrap>
-            {journey?.seoTitle ?? journey?.displayTitle ?? ''}
+            {journey?.seoTitle ?? journey?.title ?? ''}
           </Typography>
           <Typography
             variant="caption"
@@ -133,7 +123,7 @@ export function DoneScreen({
               overflow: 'hidden'
             }}
           >
-            {journey?.seoDescription ?? ''}
+            {journey?.seoDescription ?? journey?.description ?? ''}
           </Typography>
         </Stack>
       </Box>
