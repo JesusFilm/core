@@ -106,14 +106,6 @@ export function ChatButtons(): ReactElement {
     }
   }
 
-  function isInIframe(): boolean {
-    try {
-      return window.self !== window.top
-    } catch {
-      return true
-    }
-  }
-
   return (
     <Stack
       data-testid="StepFooterChatButtons"
@@ -164,7 +156,7 @@ export function ChatButtons(): ReactElement {
           <Plus2 sx={{ color: (theme) => theme.palette.grey[700] }} />
         </IconButton>
       )}
-      {!isInIframe() && <AiChatButton />}
+      {variant !== 'embed' && <AiChatButton />}
     </Stack>
   )
 }

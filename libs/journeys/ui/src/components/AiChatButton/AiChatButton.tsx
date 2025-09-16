@@ -14,16 +14,22 @@ import {
   DrawerTrigger
 } from '../Drawer'
 import { Button } from '../SimpleButton'
+import { useJourney } from '../../libs/JourneyProvider'
 
 export function AiChatButton(): ReactElement {
   const { t } = useTranslation('apps-journeys')
+  const { variant } = useJourney()
   const [open, setOpen] = useState<boolean>(false)
   const { blockHistory } = useBlocks()
 
   const activeBlockId = blockHistory?.[blockHistory.length - 1]?.id
   const previousActiveBlockIdRef = useRef<string | undefined>(activeBlockId)
 
-  const handleClick = () => {
+  // Don't allow drawer to open if variant is admin or embed
+  const isDrawerDisabled = variant === 'admin' || variant === 'embed'
+
+  function handleClick() {
+    if (isDrawerDisabled) return
     setOpen(!open)
   }
 
@@ -40,12 +46,11 @@ export function AiChatButton(): ReactElement {
   }, [activeBlockId, open])
 
   return (
-    <Drawer>
-      <DrawerTrigger asChild>
+    <Drawer open={isDrawerDisabled ? false : open}>
+      <DrawerTrigger asChild onClick={handleClick}>
         <Button
           variant="default"
           size="icon"
-          onClick={handleClick}
           aria-label={open ? 'Close AI chat' : 'Open AI chat'}
           tabIndex={0}
           data-testid="AiChatButton"
