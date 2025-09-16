@@ -46,7 +46,7 @@ export function AiChatButton(): ReactElement {
   }, [activeBlockId, open])
 
   return (
-    <Drawer open={isDrawerDisabled ? false : open}>
+    <Drawer open={isDrawerDisabled ? false : open} onOpenChange={setOpen}>
       <DrawerTrigger asChild onClick={handleClick}>
         <Button
           variant="default"
