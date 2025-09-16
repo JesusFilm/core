@@ -54,9 +54,6 @@ const handler = async (req: NextRequest) => {
   const inputText =
     typeof lastUserMessage?.content === 'string' ? lastUserMessage.content : ''
 
-  console.log('lastUserMessage', lastUserMessage)
-  console.log('inputText', inputText)
-
   updateActiveObservation({
     input: inputText
   })
