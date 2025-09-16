@@ -1,5 +1,6 @@
 import '@testing-library/jest-dom'
 import { configure } from '@testing-library/react'
+import 'web-streams-polyfill/polyfill'
 
 configure({ asyncUtilTimeout: 2500 })
 
