@@ -12,7 +12,7 @@ import LinkAngled from '@core/shared/ui/icons/LinkAngled'
 import TwitterLogo from '@core/shared/ui/icons/TwitterLogo'
 
 const StyledIconButton = styled(IconButton, {
-  shouldForwardProp: (prop) => !['href', 'target', 'rel'].includes(prop)
+  shouldForwardProp: (prop) => !['href', 'target', 'rel'].includes(prop as string)
 })<
   IconButtonProps & { href?: string; target?: string; rel?: string }
 >(({ theme }) => ({
