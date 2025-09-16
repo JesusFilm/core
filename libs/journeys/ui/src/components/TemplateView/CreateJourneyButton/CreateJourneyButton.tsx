@@ -173,7 +173,8 @@ export function CreateJourneyButton({
   const handleSignIn = (login: boolean): void => {
     // Use env var if outside journeys-admin project
     const domain =
-      process.env.NEXT_PUBLIC_JOURNEYS_ADMIN_URL ?? window.location.origin
+      (process as any).env.NEXT_PUBLIC_JOURNEYS_ADMIN_URL ?? 
+      (typeof window !== 'undefined' ? window.location.origin : '')
     const url = `${domain}/templates/${journey?.id ?? ''}`
 
     void router.push(
