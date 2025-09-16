@@ -21,7 +21,10 @@ import { useTemplateJourneyLanguages } from '../../../../../libs/useTemplateJour
 import { LanguageAutocomplete } from '@core/shared/ui/LanguageAutocomplete'
 import { CustomizationScreen } from '../../../utils/getCustomizeFlowConfig'
 import { SocialImage } from '@core/journeys/ui/TemplateView/TemplateViewHeader/SocialImage'
-import { BUTTON_NEXT_STEP_WIDTH, BUTTON_NEXT_STEP_HEIGHT } from '../../../utils/sharedStyles'
+import {
+  BUTTON_NEXT_STEP_WIDTH,
+  BUTTON_NEXT_STEP_HEIGHT
+} from '../../../utils/sharedStyles'
 
 interface LanguageScreenProps {
   handleNext: () => void
@@ -106,11 +109,7 @@ export function LanguageScreen({
   }
 
   return (
-    <Stack
-      alignItems="center"
-      gap={4}
-      sx={{ px: { xs: 0, sm: 20 } }}
-    >
+    <Stack alignItems="center" gap={4} sx={{ px: { xs: 0, sm: 20 } }}>
       <Stack alignItems="center" sx={{ pb: { xs: 0, sm: 3 } }}>
         <Typography
           variant="h4"
@@ -127,20 +126,12 @@ export function LanguageScreen({
         >
           {t("Let's get started!")}
         </Typography>
-        <Typography
-          variant="h6"
-          color="text.secondary"
-          align="center"
-        >
+        <Typography variant="h6" color="text.secondary" align="center">
           {t('A few quick edits and your template will be ready to share.')}
         </Typography>
       </Stack>
       <SocialImage />
-      <Typography
-        variant="h6"
-        gutterBottom
-        sx={{ mb: { xs: 0, sm: 2 } }}
-      >
+      <Typography variant="h6" gutterBottom sx={{ mb: { xs: 0, sm: 2 } }}>
         {journey?.title ?? ''}
       </Typography>
       <Formik
@@ -151,12 +142,20 @@ export function LanguageScreen({
       >
         {({ handleSubmit, setFieldValue, values }) => (
           <Form style={{ width: '100%' }}>
-            <FormControl sx={{ width: { xs: '100%', sm: FORM_SM_BREAKPOINT_WIDTH }, alignSelf: 'center' }} >
+            <FormControl
+              sx={{
+                width: { xs: '100%', sm: FORM_SM_BREAKPOINT_WIDTH },
+                alignSelf: 'center'
+              }}
+            >
               <Stack gap={2}>
                 <Typography variant="h6" display={{ xs: 'none', sm: 'block' }}>
                   {t('Select a language')}
                 </Typography>
-                <Typography variant="body2" display={{ xs: 'block', sm: 'none' }}>
+                <Typography
+                  variant="body2"
+                  display={{ xs: 'block', sm: 'none' }}
+                >
                   {t('Select a language')}
                 </Typography>
                 <LanguageAutocomplete
@@ -168,10 +167,18 @@ export function LanguageScreen({
                   }))}
                   onChange={(value) => setFieldValue('languageSelect', value)}
                 />
-                <Typography variant="h6" display={{ xs: 'none', sm: 'block' }} sx={{ mt: 4 }}>
+                <Typography
+                  variant="h6"
+                  display={{ xs: 'none', sm: 'block' }}
+                  sx={{ mt: 4 }}
+                >
                   {t('Select a team')}
                 </Typography>
-                <Typography variant="body2" display={{ xs: 'block', sm: 'none' }} sx={{ mt: 4 }}>
+                <Typography
+                  variant="body2"
+                  display={{ xs: 'block', sm: 'none' }}
+                  sx={{ mt: 4 }}
+                >
                   {t('Select a team')}
                 </Typography>
                 {isSignedIn && <JourneyCustomizeTeamSelect />}
@@ -198,7 +205,9 @@ export function LanguageScreen({
                     >
                       {t('Next Step')}
                     </Typography>
-                    <ArrowRightIcon sx={{ fontSize: { xs: '24px', sm: '16px' } }} />
+                    <ArrowRightIcon
+                      sx={{ fontSize: { xs: '24px', sm: '16px' } }}
+                    />
                   </Stack>
                 </Button>
               </Stack>

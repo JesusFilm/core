@@ -41,28 +41,28 @@ jest.mock('next/router', () => ({
 const mockUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
 
 const mockGetLastActiveTeamIdAndTeams: MockedResponse<GetLastActiveTeamIdAndTeams> =
-{
-  request: { query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS },
-  result: {
-    data: {
-      getJourneyProfile: {
-        id: 'profile-id',
-        lastActiveTeamId: 'teamId1',
-        __typename: 'JourneyProfile'
-      },
-      teams: [
-        {
-          __typename: 'Team',
-          id: 'teamId1',
-          title: 'Team One',
-          publicTitle: 'Team 1',
-          userTeams: [],
-          customDomains: []
-        }
-      ]
+  {
+    request: { query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS },
+    result: {
+      data: {
+        getJourneyProfile: {
+          id: 'profile-id',
+          lastActiveTeamId: 'teamId1',
+          __typename: 'JourneyProfile'
+        },
+        teams: [
+          {
+            __typename: 'Team',
+            id: 'teamId1',
+            title: 'Team One',
+            publicTitle: 'Team 1',
+            userTeams: [],
+            customDomains: []
+          }
+        ]
+      }
     }
   }
-}
 
 const mockGetJourneysFromTemplateId: MockedResponse<
   GetJourneysFromTemplateId,
@@ -300,7 +300,9 @@ describe('LanguageScreen', () => {
     render(
       <MockedProvider mocks={[mockGetLastActiveTeamIdAndTeams]}>
         <SnackbarProvider>
-          <JourneyProvider value={{ journey: journeyWithImage, variant: 'admin' }}>
+          <JourneyProvider
+            value={{ journey: journeyWithImage, variant: 'admin' }}
+          >
             <TeamProvider>
               <LanguageScreen
                 handleNext={handleNext}
@@ -336,17 +338,25 @@ describe('LanguageScreen', () => {
     )
 
     expect(screen.getAllByText("Let's get started!")).toHaveLength(2)
-    expect(screen.getByText('A few quick edits and your template will be ready to share.')).toBeInTheDocument()
+    expect(
+      screen.getByText(
+        'A few quick edits and your template will be ready to share.'
+      )
+    ).toBeInTheDocument()
     expect(screen.getAllByText(journey.title)).toHaveLength(1)
     expect(screen.getByTestId('SocialImage')).toBeInTheDocument()
 
     expect(screen.getAllByText('Select a language')).toHaveLength(2)
     expect(screen.getByTestId('LanguageAutocompleteInput')).toBeInTheDocument()
     expect(screen.getAllByText('Select a team')).toHaveLength(2)
-    await waitFor(() => { expect(screen.getByRole('combobox', { name: 'Team' })).toBeInTheDocument() })
+    await waitFor(() => {
+      expect(screen.getByRole('combobox', { name: 'Team' })).toBeInTheDocument()
+    })
 
     expect(screen.getByTestId('LanguageScreenSubmitButton')).toBeInTheDocument()
-    expect(screen.getByTestId('LanguageScreenSubmitButton')).toHaveTextContent('Next Step')
+    expect(screen.getByTestId('LanguageScreenSubmitButton')).toHaveTextContent(
+      'Next Step'
+    )
   })
 
   it('renders skeleton when no journey image is provided', () => {
@@ -358,7 +368,9 @@ describe('LanguageScreen', () => {
     render(
       <MockedProvider mocks={[mockGetLastActiveTeamIdAndTeams]}>
         <SnackbarProvider>
-          <JourneyProvider value={{ journey: journeyWithoutImage, variant: 'admin' }}>
+          <JourneyProvider
+            value={{ journey: journeyWithoutImage, variant: 'admin' }}
+          >
             <TeamProvider>
               <LanguageScreen
                 handleNext={handleNext}
@@ -373,6 +385,4 @@ describe('LanguageScreen', () => {
     expect(screen.getByTestId('SocialImage')).toBeInTheDocument()
     expect(screen.getByTestId('GridEmptyIcon')).toBeInTheDocument()
   })
-
-
 })
