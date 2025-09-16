@@ -7,9 +7,7 @@ import { getAuth } from 'firebase/auth'
 
 import { TreeBlock, useBlocks } from '@core/journeys/ui/block'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
-import { firebaseClient } from '../../libs/firebaseClient'
 
-import { extractBlockContext } from '../../utils/contextExtraction'
 import { Action, Actions } from '../Actions'
 import {
   Conversation,
@@ -28,6 +26,7 @@ import { Suggestion, Suggestions } from '../Suggestion'
 
 import { extractBlockContext } from './utils/contextExtraction'
 import { v4 as uuidv4 } from 'uuid'
+import { firebaseClient } from '../../../../../../apps/journeys/src/libs/firebaseClient'
 
 interface AiChatProps {
   open: boolean
