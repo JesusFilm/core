@@ -6,8 +6,9 @@ import { CollectionIntroText } from '../../CollectionIntroText'
 import { CollectionsPageContent } from '../../CollectionsPageContent'
 import { CollectionsVideoContent } from '../../CollectionsVideoContent'
 import { CollectionVideoContentCarousel } from '../../CollectionVideoContentCarousel'
+import { CollectionShowcaseSection } from '../../CollectionShowcaseSection'
 import { ContainerHero } from '../../ContainerHero'
-import { OtherCollectionsCarousel } from '../../OtherCollectionsCarousel'
+import { collectionShowcaseSources } from '../../collectionShowcaseConfig'
 
 export function CollectionsPage(): ReactElement {
   const [mutePage, setMutePage] = useState(true)
@@ -184,45 +185,14 @@ export function CollectionsPage(): ReactElement {
             buttonText: 'Присоединиться к изучению Библии'
           }}
         />
-        <OtherCollectionsCarousel
+        <CollectionShowcaseSection
           id="other-collections"
-          collectionSubtitle="Библейская видеоколлекция"
-          collectionTitle="История Пасхи - ключевая часть большой картины"
-          watchButtonText="Смотреть"
-          missionHighlight="Наша миссия"
-          missionDescription="знакомить людей с Библией через фильмы и видео, которые верно воплощают Евангелия в жизнь. Визуально рассказывая историю Иисуса и Божьей любви к человечеству, мы делаем Писание более доступным, увлекательным и понятным."
-          movieUrls={[
-            {
-              imageUrl: 'https://cdn-std.droplr.net/files/acc_760170/cfER11',
-              altText: 'Постер фильма ИИСУС',
-              externalUrl:
-                'https://www.jesusfilm.org/watch/jesus.html/russian.html'
-            },
-            {
-              imageUrl: 'https://cdn-std.droplr.net/files/acc_760170/9wGrB0',
-              altText: 'Постер фильма Жизнь Иисуса',
-              externalUrl:
-                'https://www.jesusfilm.org/watch/life-of-jesus-gospel-of-john.html/russian.html'
-            },
-            {
-              imageUrl: 'https://cdn-std.droplr.net/files/acc_760170/zeoyJz',
-              altText: 'Постер фильма Евангелие от Матфея',
-              externalUrl:
-                'https://www.jesusfilm.org/watch/lumo-the-gospel-of-matthew.html/lumo-matthew-1-1-2-23/russian.html'
-            },
-            {
-              imageUrl: 'https://cdn-std.droplr.net/files/acc_760170/Ol9PXg',
-              altText: 'Постер фильма Евангелие от Марка',
-              externalUrl:
-                'https://www.jesusfilm.org/watch/lumo-the-gospel-of-mark.html/lumo-mark-1-1-45/russian.html'
-            },
-            {
-              imageUrl: 'https://cdn-std.droplr.net/files/acc_760170/cft9yz',
-              altText: 'Постер фильма Евангелие от Луки',
-              externalUrl:
-                'https://www.jesusfilm.org/watch/lumo-the-gospel-of-luke.html/lumo-luke-1-1-56/russian.html'
-            }
-          ]}
+          sources={collectionShowcaseSources}
+          primaryCollectionId="LUMOCollection"
+          subtitleOverride="Библейская видеоколлекция"
+          titleOverride="История Пасхи - ключевая часть большой картины"
+          descriptionOverride="<strong>Наша миссия</strong> знакомить людей с Библией через фильмы и видео, которые верно воплощают Евангелия в жизнь. Визуально рассказывая историю Иисуса и Божьей любви к человечеству, мы делаем Писание более доступным, увлекательным и понятным."
+          ctaLabelOverride="Смотреть"
         />
         <CollectionsVideoContent
           contentId="my-last-day/russian"
