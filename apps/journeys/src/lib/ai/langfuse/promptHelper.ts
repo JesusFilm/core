@@ -22,7 +22,10 @@ export async function getPrompt(
 
   try {
     const prompt = await langfuseClient.prompt.get(promptName, {
-      label: langfuseEnvironment
+      label: langfuseEnvironment,
+      cacheTtlSeconds: ['development', 'preview'].includes(langfuseEnvironment)
+        ? 0
+        : 60
     })
 
     return prompt.compile(promptVariables)
