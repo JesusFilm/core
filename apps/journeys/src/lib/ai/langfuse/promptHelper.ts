@@ -1,5 +1,3 @@
-import { observe } from '@langfuse/tracing'
-
 import { langfuseClient, langfuseEnvironment } from './server'
 
 /**
