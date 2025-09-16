@@ -26,7 +26,7 @@ import { getJourneyLinks } from '../../../utils/getJourneyLinks'
 import { CardsPreview } from './CardsPreview'
 import { LinksForm } from './LinksForm'
 import { CustomizationScreen } from '../../../utils/getCustomizeFlowConfig'
-import { BUTTON_NEXT_STEP_WIDTH, BUTTON_NEXT_STEP_HEIGHT } from '../../../utils/sharedStyles/sharedStyles'
+import { BUTTON_NEXT_STEP_WIDTH, BUTTON_NEXT_STEP_HEIGHT } from '../../../utils/sharedStyles'
 
 interface LinksScreenProps {
   handleNext: () => void

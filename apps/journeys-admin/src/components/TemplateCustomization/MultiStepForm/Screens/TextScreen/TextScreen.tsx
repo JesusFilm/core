@@ -12,7 +12,7 @@ import ArrowRightIcon from '@core/shared/ui/icons/ArrowRight'
 import { GetJourney_journey_journeyCustomizationFields as JourneyCustomizationField } from '../../../../../../__generated__/GetJourney'
 import { JourneyCustomizationFieldUpdate } from '../../../../../../__generated__/JourneyCustomizationFieldUpdate'
 import { CustomizationScreen } from '../../../utils/getCustomizeFlowConfig'
-import { BUTTON_NEXT_STEP_WIDTH, BUTTON_NEXT_STEP_HEIGHT } from '../../../utils/sharedStyles/sharedStyles'
+import { BUTTON_NEXT_STEP_WIDTH, BUTTON_NEXT_STEP_HEIGHT } from '../../../utils/sharedStyles'
 
 export const JOURNEY_CUSTOMIZATION_FIELD_UPDATE = gql`
   mutation JourneyCustomizationFieldUpdate(
