@@ -614,8 +614,6 @@ type Journey
   showLogo: Boolean
   showMenu: Boolean
   showDisplayTitle: Boolean
-
-  """ai related"""
   showAssistant: Boolean
   menuButtonIcon: JourneyMenuButtonIcon
   socialNodeX: Int

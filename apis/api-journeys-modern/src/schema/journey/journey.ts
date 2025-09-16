@@ -164,8 +164,7 @@ export const JourneyRef = builder.prismaObject('Journey', {
       nullable: true
     }),
     showAssistant: t.exposeBoolean('showAssistant', {
-      nullable: true,
-      description: 'ai related'
+      nullable: true
     }),
 
     // UI Configuration Fields
