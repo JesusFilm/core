@@ -2,9 +2,14 @@ import { useChat } from '@ai-sdk/react'
 import { DefaultChatTransport } from 'ai'
 import { CopyIcon, Loader, RefreshCcwIcon } from 'lucide-react'
 import { useTranslation } from 'next-i18next'
-import { Fragment, useEffect, useState } from 'react'
+import { Fragment, useEffect, useRef, useState } from 'react'
+import { getAuth } from 'firebase/auth'
 
-import { TreeBlock, useBlocks } from '../../libs/block'
+import { TreeBlock, useBlocks } from '@core/journeys/ui/block'
+import { useJourney } from '@core/journeys/ui/JourneyProvider'
+import { firebaseClient } from '../../libs/firebaseClient'
+
+import { extractBlockContext } from '../../utils/contextExtraction'
 import { Action, Actions } from '../Actions'
 import {
   Conversation,
@@ -22,6 +27,7 @@ import { Response } from '../Response'
 import { Suggestion, Suggestions } from '../Suggestion'
 
 import { extractBlockContext } from './utils/contextExtraction'
+import { v4 as uuidv4 } from 'uuid'
 
 interface AiChatProps {
   open: boolean
@@ -29,7 +35,23 @@ interface AiChatProps {
 
 export function AiChat({ open }: AiChatProps) {
   const { t } = useTranslation('apps-journeys')
-  const { messages, sendMessage, status, regenerate } = useChat({
+  const auth = getAuth(firebaseClient)
+  const user = auth.currentUser
+  const { journey } = useJourney()
+  const traceId = useRef<string | null>(null)
+  const sessionId = useRef<string | null>(null)
+  const [input, setInput] = useState('')
+  const [suggestions, setSuggestions] = useState<string[]>()
+  const [suggestionsLoading, setSuggestionsLoading] = useState(false)
+  const [suggestionsError, setSuggestionsError] = useState<string | null>(null)
+  const { blockHistory } = useBlocks()
+  const [contextText, setContextText] = useState<string>('')
+
+  useEffect(() => {
+    sessionId.current = uuidv4()
+  }, [])
+
+  const { messages, sendMessage, status, regenerate, id } = useChat({
     transport: new DefaultChatTransport({
       api: '/api/chat'
     }),
@@ -46,12 +68,6 @@ export function AiChat({ open }: AiChatProps) {
       }
     ]
   })
-  const [input, setInput] = useState('')
-  const [suggestions, setSuggestions] = useState<string[]>()
-  const [suggestionsLoading, setSuggestionsLoading] = useState(false)
-  const [suggestionsError, setSuggestionsError] = useState<string | null>(null)
-  const { blockHistory } = useBlocks()
-  const [contextText, setContextText] = useState<string>('')
 
   const activeBlock = blockHistory.at(-1)
 
@@ -99,7 +115,14 @@ export function AiChat({ open }: AiChatProps) {
       void sendMessage(
         { text: input },
         {
-          body: { contextText }
+          body: {
+            contextText,
+            chatId: id,
+            sessionId: sessionId.current,
+            traceId: traceId.current,
+            journeyId: journey?.id,
+            userId: user?.uid
+          }
         }
       )
       setInput('')
@@ -107,7 +130,19 @@ export function AiChat({ open }: AiChatProps) {
   }
 
   function handleSuggestionClick(suggestion: string) {
-    void sendMessage({ text: suggestion })
+    void sendMessage(
+      { text: suggestion },
+      {
+        body: {
+          contextText,
+          chatId: id,
+          sessionId: sessionId.current,
+          traceId: traceId.current,
+          journeyId: journey?.id,
+          userId: user?.uid
+        }
+      }
+    )
   }
 
   return (
