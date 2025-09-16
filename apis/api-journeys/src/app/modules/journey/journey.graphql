@@ -218,7 +218,6 @@ input JourneyUpdateInput {
   logoImageBlockId: ID
   socialNodeX: Int
   socialNodeY: Int
-  showAssistant: Boolean
 }
 
 extend type UserJourney {

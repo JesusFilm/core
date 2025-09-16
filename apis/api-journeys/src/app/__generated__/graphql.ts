@@ -724,7 +724,6 @@ export class JourneyUpdateInput {
     logoImageBlockId?: Nullable<string>;
     socialNodeX?: Nullable<number>;
     socialNodeY?: Nullable<number>;
-    showAssistant?: Nullable<boolean>;
 }
 
 export class JourneyTemplateInput {
