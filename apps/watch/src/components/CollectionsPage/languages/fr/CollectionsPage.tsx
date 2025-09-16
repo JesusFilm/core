@@ -6,8 +6,9 @@ import { CollectionIntroText } from '../../CollectionIntroText'
 import { CollectionsPageContent } from '../../CollectionsPageContent'
 import { CollectionsVideoContent } from '../../CollectionsVideoContent'
 import { CollectionVideoContentCarousel } from '../../CollectionVideoContentCarousel'
+import { CollectionShowcaseSection } from '../../CollectionShowcaseSection'
 import { ContainerHero } from '../../ContainerHero'
-import { OtherCollectionsCarousel } from '../../OtherCollectionsCarousel'
+import { collectionShowcaseSources } from '../../collectionShowcaseConfig'
 
 export function CollectionsPage(): ReactElement {
   const [mutePage, setMutePage] = useState(true)
@@ -196,51 +197,14 @@ export function CollectionsPage(): ReactElement {
             buttonText: 'Rejoindre Notre Étude Biblique'
           }}
         />
-        <OtherCollectionsCarousel
+        <CollectionShowcaseSection
           id="other-collections"
-          collectionSubtitle="Collection Bible Vidéo"
-          collectionTitle="L'histoire de Pâques fait partie d'un tableau plus grand"
-          watchButtonText="Regarder"
-          missionHighlight="Notre mission"
-          missionDescription="est de présenter la Bible aux gens à travers des films et des vidéos qui donnent fidèlement vie aux Évangiles. En racontant visuellement l'histoire de Jésus et de l'amour de Dieu pour l'humanité, nous rendons les Écritures plus accessibles, engageantes et faciles à comprendre."
-          movieUrls={[
-            {
-              imageUrl: 'https://cdn-std.droplr.net/files/acc_760170/cfER11',
-              altText: 'Affiche du Film JÉSUS',
-              externalUrl:
-                'https://www.jesusfilm.org/watch/jesus.html/french.html'
-            },
-            {
-              imageUrl: 'https://cdn-std.droplr.net/files/acc_760170/9wGrB0',
-              altText: 'Affiche du Film La Vie de Jésus',
-              externalUrl:
-                'https://www.jesusfilm.org/watch/life-of-jesus-gospel-of-john.html/french.html'
-            },
-            {
-              imageUrl: 'https://cdn-std.droplr.net/files/acc_760170/zeoyJz',
-              altText: 'Affiche du Film Évangile selon Matthieu',
-              externalUrl:
-                'https://www.jesusfilm.org/watch/lumo-the-gospel-of-matthew.html/lumo-matthew-1-1-2-23/french.html'
-            },
-            {
-              imageUrl: 'https://cdn-std.droplr.net/files/acc_760170/Ol9PXg',
-              altText: 'Affiche du Film Évangile selon Marc',
-              externalUrl:
-                'https://www.jesusfilm.org/watch/lumo-the-gospel-of-mark.html/lumo-mark-1-1-45/french.html'
-            },
-            {
-              imageUrl: 'https://cdn-std.droplr.net/files/acc_760170/cft9yz',
-              altText: 'Affiche du Film Évangile selon Luc',
-              externalUrl:
-                'https://www.jesusfilm.org/watch/lumo-the-gospel-of-luke.html/lumo-luke-1-1-56/french.html'
-            },
-            {
-              imageUrl: 'https://cdn-std.droplr.net/files/acc_760170/TxsUi3',
-              altText: 'Affiche du Film Évangile selon Jean',
-              externalUrl:
-                'https://www.jesusfilm.org/watch/lumo-the-gospel-of-john.html/lumo-john-1-1-34/french.html'
-            }
-          ]}
+          sources={collectionShowcaseSources}
+          primaryCollectionId="LUMOCollection"
+          subtitleOverride="Collection Bible Vidéo"
+          titleOverride="L'histoire de Pâques fait partie d'un tableau plus grand"
+          descriptionOverride="<strong>Notre mission</strong> est de présenter la Bible aux gens à travers des films et des vidéos qui donnent fidèlement vie aux Évangiles. En racontant visuellement l'histoire de Jésus et de l'amour de Dieu pour l'humanité, nous rendons les Écritures plus accessibles, engageantes et faciles à comprendre."
+          ctaLabelOverride="Regarder"
         />
         <CollectionsVideoContent
           contentId="my-last-day/french"

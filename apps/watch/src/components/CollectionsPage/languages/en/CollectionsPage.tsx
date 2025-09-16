@@ -10,8 +10,9 @@ import {
 import { CollectionsPageContent } from '../../CollectionsPageContent'
 import { CollectionsVideoContent } from '../../CollectionsVideoContent'
 import { CollectionVideoContentCarousel } from '../../CollectionVideoContentCarousel'
+import { CollectionShowcaseSection } from '../../CollectionShowcaseSection'
 import { ContainerHero } from '../../ContainerHero'
-import { OtherCollectionsCarousel } from '../../OtherCollectionsCarousel'
+import { collectionShowcaseSources } from '../../collectionShowcaseConfig'
 
 export function CollectionsPage(): ReactElement {
   const [mutePage, setMutePage] = useState(true)
@@ -235,51 +236,13 @@ Because the greatest celebration in human history is about far more than traditi
             buttonText: 'Join Our Bible study'
           }}
         />
-        <OtherCollectionsCarousel
+        <CollectionShowcaseSection
           id="other-collections"
-          collectionSubtitle="Video Bible Collection"
-          collectionTitle="The Easter story is a key part of a bigger picture"
-          watchButtonText="Watch"
-          missionHighlight="Our mission"
-          missionDescription="is to introduce people to the Bible through films and videos that faithfully bring the Gospels to life. By visually telling the story of Jesus and God's love for humanity, we make Scripture more accessible, engaging, and easy to understand."
-          movieUrls={[
-            {
-              imageUrl: 'https://cdn-std.droplr.net/files/acc_760170/cfER11',
-              altText: 'JESUS Film Movie Poster',
-              externalUrl:
-                'https://www.jesusfilm.org/watch/jesus.html/english.html'
-            },
-            {
-              imageUrl: 'https://cdn-std.droplr.net/files/acc_760170/9wGrB0',
-              altText: 'The Life of Jesus Movie Poster',
-              externalUrl:
-                'https://www.jesusfilm.org/watch/life-of-jesus-gospel-of-john.html/english.html'
-            },
-            {
-              imageUrl: 'https://cdn-std.droplr.net/files/acc_760170/zeoyJz',
-              altText: 'Gospel of Matthew Film Movie Poster',
-              externalUrl:
-                'https://www.jesusfilm.org/watch/lumo-the-gospel-of-matthew.html/lumo-matthew-1-1-2-23/english.html'
-            },
-            {
-              imageUrl: 'https://cdn-std.droplr.net/files/acc_760170/Ol9PXg',
-              altText: 'Gospel of Mark Film Movie Poster',
-              externalUrl:
-                'https://www.jesusfilm.org/watch/lumo-the-gospel-of-mark.html/lumo-mark-1-1-45/english.html'
-            },
-            {
-              imageUrl: 'https://cdn-std.droplr.net/files/acc_760170/cft9yz',
-              altText: 'Gospel of Luke Film Movie Poster',
-              externalUrl:
-                'https://www.jesusfilm.org/watch/lumo-the-gospel-of-luke.html/lumo-luke-1-1-56/english.html'
-            },
-            {
-              imageUrl: 'https://cdn-std.droplr.net/files/acc_760170/TxsUi3',
-              altText: 'Gospel of John Film Movie Poster',
-              externalUrl:
-                'https://www.jesusfilm.org/watch/lumo-the-gospel-of-john.html/lumo-john-1-1-34/english.html'
-            }
-          ]}
+          sources={collectionShowcaseSources}
+          primaryCollectionId="LUMOCollection"
+          subtitleOverride="Video Bible Collection"
+          titleOverride="The Easter story is a key part of a bigger picture"
+          descriptionOverride="<strong>Our mission</strong> is to introduce people to the Bible through films and videos that faithfully bring the Gospels to life. By visually telling the story of Jesus and God's love for humanity, we make Scripture more accessible, engaging, and easy to understand."
         />
         <CollectionsVideoContent
           contentId="my-last-day/english"

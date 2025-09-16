@@ -10,8 +10,9 @@ import {
 import { CollectionsPageContent } from '../../CollectionsPageContent'
 import { CollectionsVideoContent } from '../../CollectionsVideoContent'
 import { CollectionVideoContentCarousel } from '../../CollectionVideoContentCarousel'
+import { CollectionShowcaseSection } from '../../CollectionShowcaseSection'
 import { ContainerHero } from '../../ContainerHero'
-import { OtherCollectionsCarousel } from '../../OtherCollectionsCarousel'
+import { collectionShowcaseSources } from '../../collectionShowcaseConfig'
 
 export function CollectionsPage(): ReactElement {
   const [mutePage, setMutePage] = useState(true)
@@ -229,51 +230,14 @@ Porque a maior celebração na história da humanidade vai muito além das tradi
             buttonText: 'Participe do Nosso Estudo Bíblico'
           }}
         />
-        <OtherCollectionsCarousel
+        <CollectionShowcaseSection
           id="other-collections"
-          collectionSubtitle="Coleção de Vídeos Bíblicos"
-          collectionTitle="A história da Páscoa é parte fundamental de um quadro maior"
-          watchButtonText="Assistir"
-          missionHighlight="Nossa missão"
-          missionDescription="é apresentar pessoas à Bíblia através de filmes e vídeos que trazem os Evangelhos à vida fielmente. Ao contar visualmente a história de Jesus e do amor de Deus pela humanidade, tornamos as Escrituras mais acessíveis, envolventes e fáceis de entender."
-          movieUrls={[
-            {
-              imageUrl: 'https://cdn-std.droplr.net/files/acc_760170/cfER11',
-              altText: 'Cartaz do Filme JESUS',
-              externalUrl:
-                'https://www.jesusfilm.org/watch/jesus.html/portuguese-brazil.html'
-            },
-            {
-              imageUrl: 'https://cdn-std.droplr.net/files/acc_760170/9wGrB0',
-              altText: 'Cartaz do Filme JESUS',
-              externalUrl:
-                'https://www.jesusfilm.org/watch/jesus.html/portuguese-brazil.html'
-            },
-            {
-              imageUrl: 'https://cdn-std.droplr.net/files/acc_760170/zeoyJz',
-              altText: 'Cartaz do Filme Gênesis',
-              externalUrl:
-                'https://www.jesusfilm.org/watch/lumo-the-gospel-of-matthew.html/lumo-matthew-1-1-2-23/portuguese-brazil.html'
-            },
-            {
-              imageUrl: 'https://cdn-std.droplr.net/files/acc_760170/Ol9PXg',
-              altText: 'Cartaz do Filme Gênesis',
-              externalUrl:
-                'https://www.jesusfilm.org/watch/lumo-the-gospel-of-mark.html/lumo-mark-1-1-45/portuguese-brazil.html'
-            },
-            {
-              imageUrl: 'https://cdn-std.droplr.net/files/acc_760170/cft9yz',
-              altText: 'Cartaz do Filme Gênesis',
-              externalUrl:
-                'https://www.jesusfilm.org/watch/lumo-the-gospel-of-luke.html/lumo-luke-1-1-56/portuguese-brazil.html'
-            },
-            {
-              imageUrl: 'https://cdn-std.droplr.net/files/acc_760170/TxsUi3',
-              altText: 'Cartaz do Filme Gênesis',
-              externalUrl:
-                'https://www.jesusfilm.org/watch/lumo-the-gospel-of-john.html/lumo-john-1-1-34/portuguese-brazil.html'
-            }
-          ]}
+          sources={collectionShowcaseSources}
+          primaryCollectionId="LUMOCollection"
+          subtitleOverride="Coleção de Vídeos Bíblicos"
+          titleOverride="A história da Páscoa é parte fundamental de um quadro maior"
+          descriptionOverride="<strong>Nossa missão</strong> é apresentar pessoas à Bíblia através de filmes e vídeos que trazem os Evangelhos à vida fielmente. Ao contar visualmente a história de Jesus e do amor de Deus pela humanidade, tornamos as Escrituras mais acessíveis, envolventes e fáceis de entender."
+          ctaLabelOverride="Assistir"
         />
         <CollectionsVideoContent
           contentId="my-last-day/portuguese-brazil"

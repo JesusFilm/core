@@ -10,8 +10,9 @@ import {
 import { CollectionsPageContent } from '../../CollectionsPageContent'
 import { CollectionsVideoContent } from '../../CollectionsVideoContent'
 import { CollectionVideoContentCarousel } from '../../CollectionVideoContentCarousel'
+import { CollectionShowcaseSection } from '../../CollectionShowcaseSection'
 import { ContainerHero } from '../../ContainerHero'
-import { OtherCollectionsCarousel } from '../../OtherCollectionsCarousel'
+import { collectionShowcaseSources } from '../../collectionShowcaseConfig'
 
 export function CollectionsPage(): ReactElement {
   const [mutePage, setMutePage] = useState(true)
@@ -250,51 +251,14 @@ Porque la celebración más grande en la historia de la humanidad va mucho más 
             buttonText: 'Únete a nuestro estudio bíblico'
           }}
         />
-        <OtherCollectionsCarousel
+        <CollectionShowcaseSection
           id="other-collections"
-          collectionSubtitle="Colección de Videos Bíblicos"
-          collectionTitle="La historia de la Pascua es una parte clave de un cuadro más grande"
-          watchButtonText="Ver"
-          missionHighlight="Nuestra misión"
-          missionDescription="es presentar a las personas la Biblia a través de películas y videos que transmiten fielmente los Evangelios a la vida. Al contar visualmente la historia de Jesús y el amor de Dios por la humanidad, hacemos que las Escrituras sean más accesibles, atractivas y fáciles de entender."
-          movieUrls={[
-            {
-              imageUrl: 'https://cdn-std.droplr.net/files/acc_760170/cfER11',
-              altText: 'Póster de la Película JESÚS',
-              externalUrl:
-                'https://www.jesusfilm.org/watch/jesus.html/spanish-latin-american.html'
-            },
-            {
-              imageUrl: 'https://cdn-std.droplr.net/files/acc_760170/9wGrB0',
-              altText: 'Póster de la Película La Vida de Jesús',
-              externalUrl:
-                'https://www.jesusfilm.org/watch/life-of-jesus-gospel-of-john.html/spanish-latin-american.html'
-            },
-            {
-              imageUrl: 'https://cdn-std.droplr.net/files/acc_760170/zeoyJz',
-              altText: 'Póster de la Película del Evangelio de Mateo',
-              externalUrl:
-                'https://www.jesusfilm.org/watch/lumo-the-gospel-of-matthew.html/lumo-matthew-1-1-2-23/spanish-latin-american.html'
-            },
-            {
-              imageUrl: 'https://cdn-std.droplr.net/files/acc_760170/Ol9PXg',
-              altText: 'Póster de la Película del Evangelio de Marcos',
-              externalUrl:
-                'https://www.jesusfilm.org/watch/lumo-the-gospel-of-mark.html/lumo-mark-1-1-45/spanish-latin-american.html'
-            },
-            {
-              imageUrl: 'https://cdn-std.droplr.net/files/acc_760170/cft9yz',
-              altText: 'Póster de la Película del Evangelio de Lucas',
-              externalUrl:
-                'https://www.jesusfilm.org/watch/lumo-the-gospel-of-luke.html/lumo-luke-1-1-56/spanish-latin-american.html'
-            },
-            {
-              imageUrl: 'https://cdn-std.droplr.net/files/acc_760170/TxsUi3',
-              altText: 'Póster de la Película del Evangelio de Juan',
-              externalUrl:
-                'https://www.jesusfilm.org/watch/lumo-the-gospel-of-john.html/lumo-john-1-1-34/spanish-latin-american.html'
-            }
-          ]}
+          sources={collectionShowcaseSources}
+          primaryCollectionId="LUMOCollection"
+          subtitleOverride="Colección de Videos Bíblicos"
+          titleOverride="La historia de la Pascua es una parte clave de un cuadro más grande"
+          descriptionOverride="<strong>Nuestra misión</strong> es presentar a las personas la Biblia a través de películas y videos que transmiten fielmente los Evangelios a la vida. Al contar visualmente la historia de Jesús y el amor de Dios por la humanidad, hacemos que las Escrituras sean más accesibles, atractivas y fáciles de entender."
+          ctaLabelOverride="Ver"
         />
         <CollectionsVideoContent
           contentId="my-last-day/spanish-latin-american"
