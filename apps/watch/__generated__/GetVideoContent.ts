@@ -94,6 +94,33 @@ export interface GetVideoContent_content_variant {
   subtitleCount: number;
 }
 
+export interface GetVideoContent_content_parents_title {
+  __typename: "VideoTitle";
+  value: string;
+}
+
+export interface GetVideoContent_content_parents_variant {
+  __typename: "VideoVariant";
+  id: string;
+  /**
+   * slug is a permanent link to the video variant.
+   */
+  slug: string;
+}
+
+export interface GetVideoContent_content_parents {
+  __typename: "Video";
+  id: string;
+  label: VideoLabel;
+  /**
+   * slug is a permanent link to the video.
+   */
+  slug: string;
+  childrenCount: number;
+  title: GetVideoContent_content_parents_title[];
+  variant: GetVideoContent_content_parents_variant | null;
+}
+
 export interface GetVideoContent_content {
   __typename: "Video";
   id: string;
@@ -115,6 +142,7 @@ export interface GetVideoContent_content {
    * The number of published child videos associated with this video
    */
   childrenCount: number;
+  parents: GetVideoContent_content_parents[];
 }
 
 export interface GetVideoContent {

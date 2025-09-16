@@ -58,5 +58,18 @@ export const VIDEO_CONTENT_FIELDS = gql`
     variantLanguagesCount
     slug
     childrenCount
+    parents {
+      id
+      label
+      slug
+      childrenCount
+      title(languageId: $languageId, primary: true) {
+        value
+      }
+      variant(languageId: $languageId) {
+        id
+        slug
+      }
+    }
   }
 `

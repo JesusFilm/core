@@ -97,7 +97,8 @@ export const videos: VideoContentFields[] = [
     },
     variantLanguagesCount: 2206,
     slug: 'jesus',
-    childrenCount: 61
+    childrenCount: 61,
+    parents: []
   },
   {
     __typename: 'Video',
@@ -203,7 +204,8 @@ export const videos: VideoContentFields[] = [
     },
     variantLanguagesCount: 24,
     slug: 'life-of-jesus-gospel-of-john',
-    childrenCount: 49
+    childrenCount: 49,
+    parents: []
   },
   {
     __typename: 'Video',
@@ -299,7 +301,22 @@ export const videos: VideoContentFields[] = [
     },
     variantLanguagesCount: 2179,
     slug: 'jesus-calms-the-storm',
-    childrenCount: 0
+    childrenCount: 0,
+    parents: [
+      {
+        __typename: 'Video',
+        id: '1_jf-0-0',
+        label: VideoLabel.featureFilm,
+        slug: 'jesus',
+        childrenCount: 61,
+        title: [{ __typename: 'VideoTitle', value: 'JESUS' }],
+        variant: {
+          __typename: 'VideoVariant',
+          id: '1_529-jf-0-0',
+          slug: 'jesus/english'
+        }
+      }
+    ]
   },
   {
     __typename: 'Video',
@@ -427,7 +444,8 @@ export const videos: VideoContentFields[] = [
     },
     variantLanguagesCount: 232,
     slug: 'the-woman-with-the-issue-of-blood',
-    childrenCount: 0
+    childrenCount: 0,
+    parents: []
   },
   {
     __typename: 'Video',
@@ -495,7 +513,8 @@ export const videos: VideoContentFields[] = [
     },
     variantLanguagesCount: 233,
     slug: 'magdalena',
-    childrenCount: 46
+    childrenCount: 46,
+    parents: []
   },
   {
     __typename: 'Video',
@@ -544,7 +563,8 @@ export const videos: VideoContentFields[] = [
     },
     variantLanguagesCount: 232,
     slug: 'reflections-of-hope',
-    childrenCount: 7
+    childrenCount: 7,
+    parents: []
   },
   {
     __typename: 'Video',
@@ -648,7 +668,8 @@ export const videos: VideoContentFields[] = [
     },
     variantLanguagesCount: 3,
     slug: 'day-6-jesus-died-for-me',
-    childrenCount: 0
+    childrenCount: 0,
+    parents: []
   },
   {
     __typename: 'Video',
@@ -735,7 +756,8 @@ export const videos: VideoContentFields[] = [
     },
     variantLanguagesCount: 9,
     slug: 'book-of-acts',
-    childrenCount: 73
+    childrenCount: 73,
+    parents: []
   },
   {
     __typename: 'Video',
@@ -826,7 +848,8 @@ export const videos: VideoContentFields[] = [
     },
     variantLanguagesCount: 24,
     slug: 'wedding-in-cana',
-    childrenCount: 0
+    childrenCount: 0,
+    parents: []
   },
   {
     __typename: 'Video',
@@ -865,7 +888,8 @@ export const videos: VideoContentFields[] = [
     },
     variantLanguagesCount: 57,
     slug: 'lumo',
-    childrenCount: 5
+    childrenCount: 5,
+    parents: []
   },
   {
     __typename: 'Video',
@@ -976,7 +1000,8 @@ export const videos: VideoContentFields[] = [
     },
     variantLanguagesCount: 9,
     slug: 'peter-miraculous-escape-from-prison',
-    childrenCount: 0
+    childrenCount: 0,
+    parents: []
   },
   {
     __typename: 'Video',
@@ -1029,7 +1054,8 @@ export const videos: VideoContentFields[] = [
     },
     variantLanguagesCount: 3,
     slug: '8-days-with-jesus-who-is-jesus',
-    childrenCount: 8
+    childrenCount: 8,
+    parents: []
   },
   {
     __typename: 'Video',
@@ -1144,7 +1170,8 @@ export const videos: VideoContentFields[] = [
     },
     variantLanguagesCount: 49,
     slug: 'chosen-witness',
-    childrenCount: 0
+    childrenCount: 0,
+    parents: []
   },
   {
     __typename: 'Video',
@@ -1195,7 +1222,8 @@ export const videos: VideoContentFields[] = [
     },
     variantLanguagesCount: 55,
     slug: 'lumo-the-gospel-of-luke',
-    childrenCount: 26
+    childrenCount: 26,
+    parents: []
   },
   {
     __typename: 'Video',
@@ -1314,7 +1342,8 @@ export const videos: VideoContentFields[] = [
     },
     variantLanguagesCount: 191,
     slug: 'storyclubs-jesus-and-zacchaeus',
-    childrenCount: 0
+    childrenCount: 0,
+    parents: []
   },
   {
     __typename: 'Video',
@@ -1410,7 +1439,8 @@ export const videos: VideoContentFields[] = [
     },
     variantLanguagesCount: 2178,
     slug: 'birth-of-jesus',
-    childrenCount: 0
+    childrenCount: 0,
+    parents: []
   },
   {
     __typename: 'Video',
@@ -1502,7 +1532,8 @@ export const videos: VideoContentFields[] = [
     },
     variantLanguagesCount: 59,
     slug: 'fallingplates',
-    childrenCount: 0
+    childrenCount: 0,
+    parents: []
   },
   {
     __typename: 'Video',
@@ -1601,7 +1632,8 @@ export const videos: VideoContentFields[] = [
     },
     variantLanguagesCount: 9,
     slug: 'paul-and-silas-in-prison',
-    childrenCount: 0
+    childrenCount: 0,
+    parents: []
   },
   {
     __typename: 'Video',
@@ -1686,7 +1718,8 @@ export const videos: VideoContentFields[] = [
     },
     variantLanguagesCount: 286,
     slug: 'my-last-day',
-    childrenCount: 1
+    childrenCount: 1,
+    parents: []
   },
   {
     __typename: 'Video',
@@ -1810,6 +1843,7 @@ export const videos: VideoContentFields[] = [
     },
     variantLanguagesCount: 2173,
     slug: 'the-beginning',
-    childrenCount: 0
+    childrenCount: 0,
+    parents: []
   }
 ]
