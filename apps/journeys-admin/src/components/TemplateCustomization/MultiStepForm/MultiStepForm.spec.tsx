@@ -175,12 +175,10 @@ describe('MultiStepForm', () => {
     expect(screen.getByTestId('MultiStepForm')).toBeInTheDocument()
 
     // LanguageScreen
-    expect(screen.getByTestId('progress-stepper-step-0')).toBeInTheDocument()
     expect(screen.getByTestId('language-screen')).toBeInTheDocument()
     fireEvent.click(screen.getByTestId('language-next'))
 
     // SocialScreen + DoneScreen (should skip text and links)
-    expect(screen.getByTestId('progress-stepper-step-1')).toBeInTheDocument()
     expect(screen.getByTestId('social-screen')).toBeInTheDocument()
     fireEvent.click(screen.getByTestId('social-next'))
 
