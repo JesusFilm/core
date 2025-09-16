@@ -202,8 +202,12 @@ describe('MultiStepForm', () => {
       </JourneyProvider>
     )
     expect(screen.getByTestId('MultiStepForm')).toBeInTheDocument()
-    expect(screen.queryByTestId('progress-stepper-step-0')).not.toBeInTheDocument()
-    expect(screen.queryByTestId('progress-stepper-step-1')).not.toBeInTheDocument()
+    expect(
+      screen.queryByTestId('progress-stepper-step-0')
+    ).not.toBeInTheDocument()
+    expect(
+      screen.queryByTestId('progress-stepper-step-1')
+    ).not.toBeInTheDocument()
   })
 
   it('should render only text screen when journey has editable text but no links', async () => {
