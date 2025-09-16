@@ -389,6 +389,7 @@
     "source-map-loader": "^5.0.0",
     "storybook-addon-apollo-client": "^8.0.0",
     "tailwindcss": "^4.0.15",
+    "tailwindcss-animate": "^1.0.7",
     "terser-webpack-plugin": "^5.1.1",
     "ts-jest": "^29.1.1",
     "ts-node": "10.9.2",

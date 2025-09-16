@@ -5,7 +5,7 @@ import * as DialogPrimitive from '@radix-ui/react-dialog'
 import { XIcon } from 'lucide-react'
 import { useTranslation } from 'next-i18next'
 
-import { cn } from '../../libs/cn'
+import { cn } from '@watch/libs/cn'
 
 function Dialog({
   ...props
