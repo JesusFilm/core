@@ -5,7 +5,7 @@
   "tsx": true,
   "tailwind": {
     "config": "apps/watch/tailwind.config.ts",
-    "css": "apps/watch/public/watch/global.css",
+    "css": "apps/watch/styles/globals.css",
     "baseColor": "slate",
     "cssVariables": true
   },

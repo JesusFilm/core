@@ -1,14 +1,11 @@
-@config '../../tailwind.config.ts';
 @import 'tailwindcss';
-@plugin 'tailwindcss-animate';
-@import 'tw-animate-css';
 
 @theme {
   --font-sans:
     'Montserrat', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji',
     'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
 
-  /* shadcn/ui colors - defined in Tailwind v4 @theme format */
+  /* Tailwind v4 color definitions */
   --color-background: hsl(225 6% 13%);
   --color-foreground: hsl(240 10% 96%);
   --color-card: hsl(225 6% 13%);
@@ -100,8 +97,13 @@
 
   body {
     background-color: var(--color-background) !important;
-    color: var(--color-foreground);
+    color: var(--color-foreground) !important;
+    font-family: var(--font-sans) !important;
     color-scheme: dark; /* optional, improves form controls/scrollbars */
+  }
+
+  html {
+    font-family: var(--font-sans);
   }
 }
 
