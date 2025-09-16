@@ -4,7 +4,7 @@ import { useTheme } from '@mui/material/styles'
 import SwipeableDrawer from '@mui/material/SwipeableDrawer'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import useScrollTrigger from '@mui/material/useScrollTrigger'
-import { ReactElement, useState } from 'react'
+import { ReactElement, ReactNode, useState } from 'react'
 
 import { useFlags } from '@core/shared/ui/FlagsProvider'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
@@ -28,6 +28,7 @@ interface HeaderProps {
   /** Theme mode to apply to the header. */
   themeMode?: ThemeMode
   showLanguageSwitcher?: boolean
+  searchComponent?: ReactNode
 }
 
 /**
@@ -45,7 +46,8 @@ export function Header({
   hideBottomAppBar,
   hideSpacer,
   themeMode = ThemeMode.light,
-  showLanguageSwitcher = false
+  showLanguageSwitcher = false,
+  searchComponent
 }: HeaderProps): ReactElement {
   /** State to control the drawer open/closed state. */
   const [drawerOpen, setDrawerOpen] = useState(false)
@@ -82,6 +84,7 @@ export function Header({
               onMenuClick={() => setDrawerOpen((prev) => !prev)}
               menuOpen={drawerOpen}
               showLanguageSwitcher={showLanguageSwitcher}
+              searchComponent={searchComponent}
             />
           </Box>
         )}
