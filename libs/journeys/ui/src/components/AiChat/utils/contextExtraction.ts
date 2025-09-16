@@ -1,4 +1,4 @@
-import type { TreeBlock } from '@core/journeys/ui/block'
+import { TreeBlock } from '../../../libs/block'
 
 function formatText(prefix: string, part: string): string {
   if (!part) {
