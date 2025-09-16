@@ -1,6 +1,8 @@
 import Skeleton from '@mui/material/Skeleton'
 import Stack from '@mui/material/Stack'
 import { ReactElement, useState } from 'react'
+import type FormDataType from 'form-data'
+import fetch from 'node-fetch'
 
 import GridEmptyIcon from '@core/shared/ui/icons/GridEmpty'
 import { NextImage } from '@core/shared/ui/NextImage'
@@ -10,8 +12,12 @@ import Edit2Icon from '@core/shared/ui/icons/Edit2'
 import { styled } from '@mui/material/styles'
 import IconButton from '@mui/material/IconButton'
 import { useCloudflareUploadByFileMutation } from '../../../../../../libs/useCloudflareUploadByFileMutation'
-import { gql } from 'graphql-tag'
-import { IMAGE_FIELDS } from '@core/journeys/ui/Image/imageFields'
+
+import { useJourneyImageBlockUpdateMutation } from '../../../../../../libs/useJourneyImageBlockUpdateMutation'
+import { useJourneyImageBlockCreateMutation } from '../../../../../../libs/useJourneyImageBlockCreateMutation'
+import { useJourneyImageBlockAssociationUpdateMutation } from '../../../../../../libs/useJourneyImageBlockAssociationUpdateMutation'
+import { useSnackbar } from 'notistack'
+import { useTranslation } from 'next-i18next'
 
 interface SocialScreenSocialImage {
   hasCreatorDescription?: boolean
@@ -34,24 +40,81 @@ const StyledInput = styled('input')({
   width: 1
 })
 
-export const JOURNEY_SOCIAL_IMAGE_UPDATE = gql`
-  ${IMAGE_FIELDS}
-  mutation JourneySocialImageUpdate($id: ID!, $input: JourneyUpdateInput!) {
-    journeyUpdate(id: $id, input: $input) {
-      id
-      primaryImageBlock {
-        ...ImageFields
-      }
-    }
-  }
-`
-
 export function SocialScreenSocialImage({
   hasCreatorDescription = false
 }: SocialScreenSocialImage): ReactElement {
   const { journey } = useJourney()
-  const [loading, setLoading] = useState(false)
+  const { t } = useTranslation('apps-journeys-admin')
+  const [loading, setLoading] = useState<boolean>(false)
+  const { enqueueSnackbar } = useSnackbar()
+
   const [createCloudflareUploadByFile] = useCloudflareUploadByFileMutation()
+  const [journeyImageBlockAssociationUpdate] =
+    useJourneyImageBlockAssociationUpdateMutation()
+  const [journeyImageBlockUpdate] = useJourneyImageBlockUpdateMutation()
+  const [journeyImageBlockCreate] = useJourneyImageBlockCreateMutation()
+
+  async function handleImageChange(
+    file: File | null | undefined
+  ): Promise<void> {
+    if (journey == null || file == null) return
+    setLoading(true)
+
+    const { data } = await createCloudflareUploadByFile({})
+    if (data?.createCloudflareUploadByFile?.uploadUrl != null) {
+      const formData = new FormData()
+      formData.append('file', file)
+      try {
+        const response = await (
+          await fetch(data?.createCloudflareUploadByFile?.uploadUrl, {
+            method: 'POST',
+            body: formData as unknown as FormDataType
+          })
+        ).json()
+        const src = `https://imagedelivery.net/${
+          process.env.NEXT_PUBLIC_CLOUDFLARE_UPLOAD_KEY ?? ''
+        }/${response.result.id as string}/public`
+
+        if (journey?.primaryImageBlock != null) {
+          await journeyImageBlockUpdate({
+            variables: {
+              id: journey.primaryImageBlock.id,
+              journeyId: journey.id,
+              input: { src, alt: 'journey image' }
+            }
+          })
+        } else {
+          const { data: imageData } = await journeyImageBlockCreate({
+            variables: {
+              input: { journeyId: journey.id, src, alt: 'journey image' }
+            }
+          })
+          if (imageData?.imageBlockCreate != null) {
+            await journeyImageBlockAssociationUpdate({
+              variables: {
+                id: journey.id,
+                input: { primaryImageBlockId: imageData.imageBlockCreate.id }
+              }
+            })
+          }
+        }
+      } catch (error) {
+        enqueueSnackbar(
+          t('Failed to update social image, please try again later'),
+          {
+            variant: 'error',
+            preventDuplicate: true
+          }
+        )
+      } finally {
+        setLoading(false)
+        enqueueSnackbar(t('Social image updated'), {
+          variant: 'success',
+          preventDuplicate: true
+        })
+      }
+    }
+  }
 
   return (
     <Stack
@@ -101,7 +164,9 @@ export function SocialScreenSocialImage({
           >
             <Edit2Icon />
             <StyledInput
-              onChange={(event) => console.log(event.target.files)}
+              onChange={(event) =>
+                handleImageChange(event.target.files?.item(0))
+              }
               data-testid="SocialScreenSocialImageInput"
               type="file"
               accept="image/*"

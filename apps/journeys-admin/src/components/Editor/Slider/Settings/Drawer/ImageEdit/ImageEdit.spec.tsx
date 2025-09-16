@@ -10,11 +10,12 @@ import { GetJourney_journey as Journey } from '../../../../../../../__generated_
 import { createCloudflareUploadByUrlMock } from '../ImageBlockEditor/CustomImage/CustomUrl/data'
 import { listUnsplashCollectionPhotosMock } from '../ImageBlockEditor/UnsplashGallery/data'
 
+import { JOURNEY_IMAGE_BLOCK_ASSOCIATION_UPDATE } from '../../../../../../libs/useJourneyImageBlockAssociationUpdateMutation'
 import { JOURNEY_IMAGE_BLOCK_CREATE } from '../../../../../../libs/useJourneyImageBlockCreateMutation'
 import { JOURNEY_IMAGE_BLOCK_DELETE } from '../../../../../../libs/useJourneyImageBlockDeleteMutation'
 import { JOURNEY_IMAGE_BLOCK_UPDATE } from '../../../../../../libs/useJourneyImageBlockUpdateMutation'
 
-import { ImageEdit, JOURNEY_IMAGE_BLOCK_ASSOCIATION_UPDATE } from './ImageEdit'
+import { ImageEdit } from './ImageEdit'
 
 jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,

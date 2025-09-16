@@ -1,15 +1,11 @@
-import { gql, useMutation } from '@apollo/client'
 import dynamic from 'next/dynamic'
 import { ReactElement, useState } from 'react'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 
 import { ImageBlockUpdateInput } from '../../../../../../../__generated__/globalTypes'
-import {
-  JourneyImageBlockAssociationUpdate,
-  JourneyImageBlockAssociationUpdateVariables
-} from '../../../../../../../__generated__/JourneyImageBlockAssociationUpdate'
 import { blockDeleteUpdate } from '../../../../../../libs/blockDeleteUpdate/blockDeleteUpdate'
+import { useJourneyImageBlockAssociationUpdateMutation } from '../../../../../../libs/useJourneyImageBlockAssociationUpdateMutation'
 import { useJourneyImageBlockCreateMutation } from '../../../../../../libs/useJourneyImageBlockCreateMutation'
 import { useJourneyImageBlockDeleteMutation } from '../../../../../../libs/useJourneyImageBlockDeleteMutation'
 import { useJourneyImageBlockUpdateMutation } from '../../../../../../libs/useJourneyImageBlockUpdateMutation'
@@ -24,23 +20,6 @@ const ImageLibrary = dynamic(
     ).then((mod) => mod.ImageLibrary),
   { ssr: false }
 )
-
-export const JOURNEY_IMAGE_BLOCK_ASSOCIATION_UPDATE = gql`
-  mutation JourneyImageBlockAssociationUpdate(
-    $id: ID!
-    $input: JourneyUpdateInput!
-  ) {
-    journeyUpdate(id: $id, input: $input) {
-      id
-      primaryImageBlock {
-        id
-      }
-      creatorImageBlock {
-        id
-      }
-    }
-  }
-`
 
 interface ImageEditProps {
   size?: 'small' | 'large'
@@ -62,10 +41,8 @@ export function ImageEdit({
     journeyImageBlockUpdate,
     { loading: updateLoading, error: updateError }
   ] = useJourneyImageBlockUpdateMutation()
-  const [journeyImageBlockAssociationUpdate] = useMutation<
-    JourneyImageBlockAssociationUpdate,
-    JourneyImageBlockAssociationUpdateVariables
-  >(JOURNEY_IMAGE_BLOCK_ASSOCIATION_UPDATE)
+  const [journeyImageBlockAssociationUpdate] =
+    useJourneyImageBlockAssociationUpdateMutation()
   const { journey } = useJourney()
   const [open, setOpen] = useState<boolean | undefined>()
   const targetImageBlock =
