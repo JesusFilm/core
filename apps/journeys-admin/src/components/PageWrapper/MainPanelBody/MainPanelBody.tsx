@@ -38,7 +38,7 @@ export function MainPanelBody({
         // Hide scrollbar for Firefox
         scrollbarWidth: 'none',
         // Hide scrollbar for IE and Edge
-        '-ms-overflow-style': 'none'
+        msOverflowStyle: 'none'
       }}
       data-testid="MainPanelBody"
     >
