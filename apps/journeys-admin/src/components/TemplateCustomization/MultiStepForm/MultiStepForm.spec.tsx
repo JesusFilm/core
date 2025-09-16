@@ -120,14 +120,10 @@ describe('MultiStepForm', () => {
     expect(screen.getByTestId('links-screen')).toBeInTheDocument()
     fireEvent.click(screen.getByTestId('links-next'))
 
-    // SocialScreen
+    // SocialScreen + DoneScreen
     expect(screen.getByTestId('progress-stepper-step-3')).toBeInTheDocument()
     expect(screen.getByTestId('social-screen')).toBeInTheDocument()
     fireEvent.click(screen.getByTestId('social-next'))
-
-    // DoneScreen
-    expect(screen.getByTestId('progress-stepper-step-4')).toBeInTheDocument()
-    expect(screen.getByTestId('done-screen')).toBeInTheDocument()
   })
 
   it('should render edit manually button', () => {
@@ -183,14 +179,10 @@ describe('MultiStepForm', () => {
     expect(screen.getByTestId('language-screen')).toBeInTheDocument()
     fireEvent.click(screen.getByTestId('language-next'))
 
-    // SocialScreen (should skip text and links)
+    // SocialScreen + DoneScreen (should skip text and links)
     expect(screen.getByTestId('progress-stepper-step-1')).toBeInTheDocument()
     expect(screen.getByTestId('social-screen')).toBeInTheDocument()
     fireEvent.click(screen.getByTestId('social-next'))
-
-    // DoneScreen
-    expect(screen.getByTestId('progress-stepper-step-2')).toBeInTheDocument()
-    expect(screen.getByTestId('done-screen')).toBeInTheDocument()
 
     // Text and Links screens should not be present
     expect(screen.queryByTestId('text-screen')).not.toBeInTheDocument()
