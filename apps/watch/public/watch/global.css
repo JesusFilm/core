@@ -8,39 +8,40 @@
     'Montserrat', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji',
     'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
 
-  --color-background: #131111;
-  --color-foreground: #f4f4f8;
+  /* shadcn/ui colors - defined in Tailwind v4 @theme format */
+  --color-background: hsl(225 6% 13%);
+  --color-foreground: hsl(240 10% 96%);
+  --color-card: hsl(225 6% 13%);
+  --color-card-foreground: hsl(240 10% 96%);
+  --color-popover: hsl(225 6% 13%);
+  --color-popover-foreground: hsl(240 10% 96%);
+  --color-primary: hsl(355 59% 50%);
+  --color-primary-foreground: hsl(355 100% 97%);
+  --color-secondary: hsl(227 25% 33%);
+  --color-secondary-foreground: hsl(235 100% 97%);
+  --color-muted: hsl(0 0% 100% / 0.08);
+  --color-muted-foreground: hsl(226 16% 69%);
+  --color-accent: hsl(227 41% 62%);
+  --color-accent-foreground: hsl(225 56% 11%);
+  --color-destructive: hsl(355 79% 59%);
+  --color-destructive-foreground: hsl(355 100% 97%);
+  --color-border: hsl(225 18% 20%);
+  --color-input: hsl(225 18% 20%);
+  --color-ring: hsl(227 41% 62%);
 
-  --color-card: color-mix(in srgb, #131111 92%, white 8%);
-  --color-card-foreground: #f4f4f8;
+  /* Border radius tokens */
+  --radius-xs: 0.375rem;
+  --radius-sm: 0.5rem;
+  --radius-md: 0.75rem;
+  --radius-lg: 1rem;
+  --radius: var(--radius-md);
 
-  --color-popover: color-mix(in srgb, #131111 92%, white 8%);
-  --color-popover-foreground: #f4f4f8;
-
-  --color-primary: #cb333b;
-  --color-primary-foreground: #fff5f5;
+  /* Legacy color variables for existing components */
   --color-primary-light: #f8485e;
   --color-primary-dark: #a4343a;
-
-  --color-secondary: #424a66;
-  --color-secondary-foreground: #f3f4ff;
   --color-secondary-light: #7283be;
   --color-secondary-dark: #353c55;
-
-  --color-accent: #7283be;
-  --color-accent-foreground: #0c1426;
-
   --color-error: #ef3340;
-  --color-muted: rgba(255, 255, 255, 0.08);
-  --color-muted-foreground: #aeb4c9;
-
-  --color-destructive: #ef3340;
-  --color-destructive-foreground: #fff5f5;
-
-  --color-border: #232734;
-  --color-input: #232734;
-  --color-ring: #7283be;
-
   --color-text-primary: #252424;
   --color-text-secondary: #4d4d4d;
   --color-text-disabled: #aaacbb;

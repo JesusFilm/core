@@ -5,12 +5,7 @@ const config: Config = {
     './pages/**/*.{js,ts,jsx,tsx,mdx}',
     './src/**/*.{js,ts,jsx,tsx,mdx}',
     '../../libs/**/*.{js,ts,jsx,tsx,mdx}'
-  ],
-  darkMode: ['class'],
-  theme: {
-    extend: {}
-  },
-  plugins: []
+  ]
 }
 
 export default config
