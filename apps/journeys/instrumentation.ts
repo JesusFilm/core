@@ -17,8 +17,7 @@ const shouldExportSpan: ShouldExportSpan = ({ otelSpan }) => {
 }
 
 export const langfuseSpanProcessor = new LangfuseSpanProcessor({
-  shouldExportSpan,
-  flushAt: 1 // Flush each event immediately
+  shouldExportSpan
 })
 
 const tracerProvider = new NodeTracerProvider({

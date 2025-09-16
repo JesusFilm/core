@@ -6,7 +6,7 @@ import {
 } from '@langfuse/tracing'
 import { trace } from '@opentelemetry/api'
 import { convertToModelMessages, streamText } from 'ai'
-import { NextRequest, after } from 'next/server'
+import { NextRequest } from 'next/server'
 
 import { langfuseSpanProcessor } from '../../../instrumentation'
 import { getPrompt } from '../../../src/lib/ai/langfuse/promptHelper'
