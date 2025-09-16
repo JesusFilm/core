@@ -22,7 +22,8 @@ const SUPPORTED_LOCALES = [
   'zh-Hans-CN', // Chinese, Simplified
   'de', // German
   'ne', // Nepali
-  'ms' // Malay
+  'ms', // Malay
+  'pt' // Portuguese
 ]
 
 interface LanguagePriority {
