@@ -60,20 +60,36 @@ const nextConfig = {
       '.prisma/api-languages-client'
     ]
 
+    // Optionally source folder names from env, but normalize to paths under node_modules
+    /** @type {string[]} */
+    /** @type {string[]} */
+    const envClientFolders = []
+    /** @type {unknown} */
+    const mediaEnvUnknown = process.env.PRISMA_LOCATION_MEDIA
+    /** @type {unknown} */
+    const languagesEnvUnknown = process.env.PRISMA_LOCATION_LANGUAGES
+    /**
+     * @param {unknown} maybePath
+     * @returns {string | null}
+     */
+    const extractNodeModulesSubpath = (maybePath) => {
+      if (typeof maybePath !== 'string' || maybePath.length === 0) return null
+      const marker = 'node_modules/'
+      const idx = maybePath.lastIndexOf(marker)
+      if (idx === -1) return null
+      return maybePath.slice(idx + marker.length)
+    }
+    const mediaSub = extractNodeModulesSubpath(mediaEnvUnknown)
+    const languagesSub = extractNodeModulesSubpath(languagesEnvUnknown)
+    if (typeof mediaSub === 'string') envClientFolders.push(mediaSub)
+    if (typeof languagesSub === 'string') envClientFolders.push(languagesSub)
+    const effectiveClientFolders = Array.from(
+      new Set([...prismaClientFolders, ...envClientFolders])
+    )
+
     /** @type {import('copy-webpack-plugin').Pattern[]} */
-    const patterns = prismaClientFolders.flatMap((clientFolder) => [
-      // Prefer copying from the generated client folder if present
-      {
-        from: path.join(
-          process.cwd(),
-          'node_modules',
-          clientFolder,
-          engineFile
-        ),
-        to: path.join(clientFolder, engineFile),
-        noErrorOnMissing: true
-      },
-      // Fallback: copy from @prisma/engines into each client folder
+    const patterns = [
+      // Also place engine in Prisma's default lookup folder inside server output
       {
         from: path.join(
           process.cwd(),
@@ -82,10 +98,36 @@ const nextConfig = {
           'engines',
           engineFile
         ),
-        to: path.join(clientFolder, engineFile),
+        to: path.join('node_modules', '.prisma', 'client', engineFile),
         noErrorOnMissing: true
       }
-    ])
+    ].concat(
+      effectiveClientFolders.flatMap((clientFolder) => [
+        // Prefer copying from the generated client folder if present
+        {
+          from: path.join(
+            process.cwd(),
+            'node_modules',
+            clientFolder,
+            engineFile
+          ),
+          to: path.join('node_modules', clientFolder, engineFile),
+          noErrorOnMissing: true
+        },
+        // Fallback: copy from @prisma/engines into each client folder
+        {
+          from: path.join(
+            process.cwd(),
+            'node_modules',
+            '@prisma',
+            'engines',
+            engineFile
+          ),
+          to: path.join('node_modules', clientFolder, engineFile),
+          noErrorOnMissing: true
+        }
+      ])
+    )
 
     config.plugins = Array.isArray(config.plugins) ? config.plugins : []
     config.plugins.push(new CopyWebpackPlugin({ patterns }))
