@@ -4911,6 +4911,7 @@ input VideoVariantDownloadUpdateInput @join__type(graph: API_MEDIA)  {
 
 input VideoVariantFilter @join__type(graph: API_MEDIA)  {
   onlyPublished: Boolean = true
+  languageId: ID
 }
 
 input VideoVariantUpdateInput @join__type(graph: API_MEDIA)  {

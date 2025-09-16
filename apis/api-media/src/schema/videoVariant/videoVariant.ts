@@ -481,7 +481,7 @@ builder.queryFields((t) => ({
     args: {
       id: t.arg.id({ required: true })
     },
-    resolve: async (query, _parent, { id }, context) => {
+    resolve: async (query, _parent, { id }) => {
       const videoVariant = await prisma.videoVariant.findUnique({
         ...query,
         where: { id }
@@ -502,7 +502,8 @@ builder.queryFields((t) => ({
         ...query,
 
         where: {
-          published: input?.onlyPublished === false ? undefined : true
+          published: input?.onlyPublished === false ? undefined : true,
+          languageId: input?.languageId ?? undefined
         }
       })
   })
