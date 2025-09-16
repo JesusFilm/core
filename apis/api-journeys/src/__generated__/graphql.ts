@@ -870,6 +870,7 @@ export type Journey = {
   seoDescription?: Maybe<Scalars['String']['output']>;
   /** title for seo and sharing */
   seoTitle?: Maybe<Scalars['String']['output']>;
+  showAssistant?: Maybe<Scalars['Boolean']['output']>;
   showChatButtons?: Maybe<Scalars['Boolean']['output']>;
   showDislikeButton?: Maybe<Scalars['Boolean']['output']>;
   showDisplayTitle?: Maybe<Scalars['Boolean']['output']>;

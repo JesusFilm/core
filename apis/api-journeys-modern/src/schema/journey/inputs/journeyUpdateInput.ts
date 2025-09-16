@@ -32,6 +32,7 @@ export const JourneyUpdateInput = builder.inputType('JourneyUpdateInput', {
     showLogo: t.boolean({ required: false }),
     showMenu: t.boolean({ required: false }),
     showDisplayTitle: t.boolean({ required: false }),
+    showAssistant: t.boolean({ required: false }),
     menuButtonIcon: t.field({
       type: JourneyMenuButtonIcon,
       required: false

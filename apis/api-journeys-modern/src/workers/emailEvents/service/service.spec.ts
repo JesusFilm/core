@@ -139,7 +139,8 @@ const journey: JourneyWithTeamAndUserJourney = {
   socialNodeX: null,
   socialNodeY: null,
   fromTemplateId: null,
-  journeyCustomizationDescription: null
+  journeyCustomizationDescription: null,
+  showAssistant: null
 }
 
 const event: Event = {
