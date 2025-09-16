@@ -1257,6 +1257,7 @@ input VideoVariantDownloadUpdateInput {
 
 input VideoVariantFilter {
   onlyPublished: Boolean = true
+  languageId: ID
 }
 
 input VideoVariantUpdateInput {
