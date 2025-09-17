@@ -9,5 +9,6 @@ export {
   PromptInputModelSelectTrigger,
   PromptInputModelSelectContent,
   PromptInputModelSelectItem,
-  PromptInputModelSelectValue
+  PromptInputModelSelectValue,
+  PromptInputMessage
 } from './PromptInput'
