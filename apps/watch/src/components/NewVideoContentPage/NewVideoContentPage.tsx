@@ -23,6 +23,7 @@ import { DiscussionQuestions } from './DiscussionQuestions'
 import { NewVideoContentHeader } from './NewVideoContentHeader'
 import { VideoCarousel } from './VideoCarousel'
 import { VideoContentHero } from './VideoContentHero'
+import { VideoSubtitlesPanel } from './VideoSubtitlesPanel'
 
 export function NewVideoContentPage(): ReactElement {
   const { t } = useTranslation('apps-watch')
@@ -185,7 +186,10 @@ export function NewVideoContentPage(): ReactElement {
                 description={last(description)?.value ?? ''}
                 label={label}
               />
-              <DiscussionQuestions questions={questions} />
+              <div className="flex flex-col gap-10">
+                <DiscussionQuestions questions={questions} />
+                <VideoSubtitlesPanel />
+              </div>
             </div>
             <div className="z-10 flex flex-row gap-2 justify-between">
               <h3 className="text-sm xl:text-base 2xl:text-lg font-semibold tracking-wider uppercase text-red-100/70">

@@ -1,0 +1,1 @@
+export { VideoSubtitlesPanel } from './VideoSubtitlesPanel'

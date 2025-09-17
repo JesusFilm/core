@@ -4,50 +4,110 @@ import userEvent from '@testing-library/user-event'
 
 import { VideoProvider } from '../../libs/videoContext'
 import { WatchProvider } from '../../libs/watchContext'
+import { GET_SUBTITLES } from '../../libs/watchContext/useSubtitleUpdate/useSubtitleUpdate'
 import { videos } from '../Videos/__generated__/testData'
+
+jest.mock('./VideoContentHero', () => ({
+  __esModule: true,
+  VideoContentHero: () => {
+    const React = require('react')
+    return React.createElement(
+      'div',
+      { 'data-testid': 'ContentHero' },
+      React.createElement('div', { 'data-testid': 'ContentHeroVideoContainer' })
+    )
+  }
+}))
+
+jest.mock('../../libs/useVideoChildren', () => ({
+  useVideoChildren: () => ({ children: [], loading: false })
+}))
 
 import { NewVideoContentPage } from './NewVideoContentPage'
 
 const initialWatchState = {
-  audioLanguage: '529',
-  subtitleLanguage: '529',
-  subtitleOn: true,
-  autoSubtitle: false
+  audioLanguageId: '529',
+  subtitleLanguageId: '529',
+  subtitleOn: false
+}
+
+const subtitlesMock = {
+  request: {
+    query: GET_SUBTITLES,
+    variables: { id: 'jesus/english' }
+  },
+  result: {
+    data: {
+      video: {
+        variant: {
+          subtitle: [
+            {
+              language: {
+                id: '529',
+                bcp47: 'en',
+                name: [{ value: 'English' }]
+              },
+              value: 'https://example.com/subtitles/english.vtt'
+            }
+          ]
+        }
+      }
+    }
+  }
+}
+
+const subtitleResponse = `WEBVTT
+
+00:00:01.000 --> 00:00:04.000
+Test subtitle line
+`
+
+const originalFetch = global.fetch
+
+function renderPage(video = videos[0]) {
+  return render(
+    <MockedProvider mocks={[subtitlesMock]} addTypename={false}>
+      <VideoProvider value={{ content: video }}>
+        <WatchProvider initialState={initialWatchState}>
+          <NewVideoContentPage />
+        </WatchProvider>
+      </VideoProvider>
+    </MockedProvider>
+  )
 }
 
 describe('NewContentPage', () => {
+  beforeEach(() => {
+    global.fetch = jest
+      .fn()
+      .mockResolvedValue({
+        ok: true,
+        text: async () => subtitleResponse
+      }) as unknown as typeof fetch
+  })
+
+  afterEach(() => {
+    jest.clearAllMocks()
+    if (originalFetch != null) global.fetch = originalFetch
+  })
+
   it('should render', () => {
-    render(
-      <MockedProvider>
-        <VideoProvider value={{ content: videos[0] }}>
-          <WatchProvider initialState={initialWatchState}>
-            <NewVideoContentPage />
-          </WatchProvider>
-        </VideoProvider>
-      </MockedProvider>
-    )
+    renderPage()
 
     expect(screen.getByTestId('ContentHero')).toBeInTheDocument()
-    expect(screen.getByTestId('ContentHeader')).toBeInTheDocument()
+    expect(screen.getByTestId('NewVideoContentHeader')).toBeInTheDocument()
     expect(screen.getByTestId('ContentHeroVideoContainer')).toBeInTheDocument()
     expect(screen.getByTestId('VideoCarousel')).toBeInTheDocument()
     expect(screen.getByTestId('ContentMetadata')).toBeInTheDocument()
     expect(screen.getByTestId('ContentDiscussionQuestions')).toBeInTheDocument()
+    expect(screen.getByTestId('VideoSubtitlesPanel')).toBeInTheDocument()
     expect(screen.getByTestId('BibleCitations')).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'Share' })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'Download' })).toBeInTheDocument()
   })
 
   it('should render ShareDialog when button is clicked', async () => {
-    render(
-      <MockedProvider>
-        <VideoProvider value={{ content: videos[0] }}>
-          <WatchProvider initialState={initialWatchState}>
-            <NewVideoContentPage />
-          </WatchProvider>
-        </VideoProvider>
-      </MockedProvider>
-    )
+    renderPage()
     const user = userEvent.setup()
 
     await user.click(screen.getByRole('button', { name: 'Share' }))
@@ -56,15 +116,7 @@ describe('NewContentPage', () => {
   })
 
   it('should render DownloadDialog when button is clicked', async () => {
-    render(
-      <MockedProvider>
-        <VideoProvider value={{ content: videos[0] }}>
-          <WatchProvider initialState={initialWatchState}>
-            <NewVideoContentPage />
-          </WatchProvider>
-        </VideoProvider>
-      </MockedProvider>
-    )
+    renderPage()
     const user = userEvent.setup()
 
     await user.click(screen.getByRole('button', { name: 'Download' }))
@@ -103,15 +155,7 @@ describe('NewContentPage', () => {
   }
 
   it('should render bible citations', async () => {
-    render(
-      <MockedProvider>
-        <VideoProvider value={{ content: videoWithBibleCitations }}>
-          <WatchProvider initialState={initialWatchState}>
-            <NewVideoContentPage />
-          </WatchProvider>
-        </VideoProvider>
-      </MockedProvider>
-    )
+    renderPage(videoWithBibleCitations)
 
     await waitFor(() => {
       expect(screen.getByText('Genesis 1:1')).toBeInTheDocument()
@@ -120,15 +164,7 @@ describe('NewContentPage', () => {
   })
 
   it('should render free resource card', () => {
-    render(
-      <MockedProvider>
-        <VideoProvider value={{ content: videoWithBibleCitations }}>
-          <WatchProvider initialState={initialWatchState}>
-            <NewVideoContentPage />
-          </WatchProvider>
-        </VideoProvider>
-      </MockedProvider>
-    )
+    renderPage(videoWithBibleCitations)
     expect(screen.getByText('Free Resources')).toBeInTheDocument()
     expect(
       screen.getByText('Want to grow deep in your understanding of the Bible?')
@@ -141,15 +177,7 @@ describe('NewContentPage', () => {
   it('should open new tab when free resource button is clicked', async () => {
     const user = userEvent.setup()
     window.open = jest.fn()
-    render(
-      <MockedProvider>
-        <VideoProvider value={{ content: videoWithBibleCitations }}>
-          <WatchProvider initialState={initialWatchState}>
-            <NewVideoContentPage />
-          </WatchProvider>
-        </VideoProvider>
-      </MockedProvider>
-    )
+    renderPage(videoWithBibleCitations)
     const freeResourceButton = screen.getByRole('link', {
       name: 'Join Our Bible Study'
     })
