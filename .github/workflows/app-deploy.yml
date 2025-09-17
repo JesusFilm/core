@@ -46,10 +46,7 @@ jobs:
     needs: affected
     # if branch is not main or is a pull request
     if: |
-      needs.affected.outputs.has == 'true' &&
-      github.event_name != 'merge_group' && (
-        github.ref != 'refs/heads/main' || github.event_name == 'pull_request'
-      )
+      needs.affected.outputs.has == 'true' && needs.affected.outputs != ''
     strategy:
       fail-fast: false
       matrix:
@@ -103,6 +100,7 @@ jobs:
         run: pnpm install --frozen-lockfile --silent
       - uses: nrwl/nx-set-shas@v4
       - name: vercel deployment
+        if: ${{ matrix.app != '' }}
         env:
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
@@ -119,18 +117,20 @@ jobs:
         # use run-namy to avoid case where deploy command doesn't exist for a project
         run: pnpm exec nx run-many --target=deploy --projects=${{ matrix.app }}
       - name: upload sourcemaps to datadog
+        if: ${{ matrix.app != '' }}
         env:
           GIT_COMMIT_SHA: ${{ github.sha }}
           DATADOG_API_KEY: ${{ secrets.DATADOG_API_KEY }}
         run: pnpm exec nx run-many --target=upload-sourcemaps --projects=${{ matrix.app }}
       - name: vercel set alias
-        if: ${{ github.event_name == 'pull_request' }}
+        if: ${{ github.event_name == 'pull_request' && matrix.app != '' }}
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
           PR_NUMBER: ${{ github.event.number }}
         # use run-namy to avoid case where deploy command doesn't exist for a project
         run: pnpm exec nx run-many --target=vercel-alias --projects=${{ matrix.app }}
       - name: Generate GitHub deployment comment
+        if: ${{ matrix.app != '' }}
         id: deployment-url
         env:
           APP: ${{ matrix.app }}
@@ -143,13 +143,13 @@ jobs:
           echo "$body" >> $GITHUB_OUTPUT
           echo "$delimiter" >> $GITHUB_OUTPUT
       - uses: mshick/add-pr-comment@v2
-        if: ${{ github.event_name == 'pull_request' }}
+        if: ${{ github.event_name == 'pull_request' && matrix.app != '' }}
         name: add deployment comment to pull request
         with:
           message: ${{ steps.get-comment-body.outputs.body }}
           message-id: ${{ matrix.app }}
       - name: add deployment comment to commit
-        if: ${{ github.event_name != 'pull_request' }}
+        if: ${{ github.event_name != 'pull_request' && matrix.app != '' }}
         uses: peter-evans/commit-comment@v3
         with:
           body: ${{ steps.get-comment-body.outputs.body }}
@@ -162,10 +162,12 @@ jobs:
           environment-url: ${{ steps.deployment-url.outputs.deployment-url }}
           deployment-id: ${{ steps.deployment.outputs.deployment_id }}
       - name: Prepare E2E input file
+        if: ${{ matrix.app != '' }}
         run: |
           mkdir -p e2e-input
           echo "${{ steps.deployment-url.outputs.deployment-url }}" > e2e-input/${{ matrix.app }}.txt
       - name: Upload E2E input artifact
+        if: ${{ matrix.app != '' }}
         uses: actions/upload-artifact@v4
         with:
           name: e2e-input-${{ matrix.app }}
