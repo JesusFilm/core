@@ -24,6 +24,9 @@ export const ChatOpenEventRef = builder.prismaObject('Event', {
 
 builder.mutationField('chatOpenEventCreate', (t) =>
   t.withAuth({ isAuthenticated: true }).field({
+    override: {
+      from: 'api-journeys'
+    },
     type: ChatOpenEventRef,
     args: {
       input: t.arg({ type: ChatOpenEventCreateInput, required: true })

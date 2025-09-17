@@ -26,6 +26,9 @@ builder.prismaObject('JourneyEventsExportLog', {
 
 builder.mutationField('createJourneyEventsExportLog', (t) =>
   t.withAuth({ isAuthenticated: true }).prismaField({
+    override: {
+      from: 'api-journeys'
+    },
     type: 'JourneyEventsExportLog',
     nullable: false,
     args: {

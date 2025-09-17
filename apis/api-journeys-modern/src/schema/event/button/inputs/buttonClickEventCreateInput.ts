@@ -5,9 +5,9 @@ export const ButtonClickEventCreateInput = builder.inputType(
   'ButtonClickEventCreateInput',
   {
     fields: (t) => ({
-      id: t.string({ required: false }),
-      blockId: t.string({ required: true }),
-      stepId: t.string({ required: false }),
+      id: t.id({ required: false }),
+      blockId: t.id({ required: true }),
+      stepId: t.id({ required: false }),
       label: t.string({ required: false }),
       value: t.string({ required: false }),
       action: t.field({ type: ButtonActionEnum, required: false }),

@@ -105,7 +105,11 @@ function generateVisitorWhere(
 // Query Operations using Relay connections
 builder.queryField('journeyVisitorsConnection', (t) =>
   t.withAuth({ isAuthenticated: true }).prismaConnection({
+    override: {
+      from: 'api-journeys'
+    },
     type: JourneyVisitorRef,
+    nullable: false,
     cursor: 'id',
     args: {
       filter: t.arg({ type: JourneyVisitorFilter, required: true }),
@@ -165,6 +169,9 @@ builder.queryField('journeyVisitorsConnection', (t) =>
 
 builder.queryField('journeyVisitorCount', (t) =>
   t.withAuth({ isAuthenticated: true }).field({
+    override: {
+      from: 'api-journeys'
+    },
     type: 'Int',
     args: {
       filter: t.arg({ type: JourneyVisitorFilter, required: true })
@@ -213,6 +220,9 @@ builder.queryField('journeyVisitorCount', (t) =>
 // Add the missing visitor query
 builder.queryField('visitor', (t) =>
   t.withAuth({ isAuthenticated: true }).field({
+    override: {
+      from: 'api-journeys'
+    },
     type: VisitorRef,
     args: {
       id: t.arg.id({ required: true })
@@ -260,10 +270,14 @@ builder.queryField('visitor', (t) =>
 // Team-level visitor queries
 builder.queryField('visitorsConnection', (t) =>
   t.withAuth({ isAuthenticated: true }).prismaConnection({
+    override: {
+      from: 'api-journeys'
+    },
     type: VisitorRef,
     cursor: 'id',
+    nullable: false,
     args: {
-      teamId: t.arg.id({ required: false })
+      teamId: t.arg.string({ required: false })
     },
     resolve: async (query, _parent, args, context) => {
       const { teamId } = args
@@ -328,6 +342,9 @@ builder.queryField('visitorsConnection', (t) =>
 // Visitor Mutations
 builder.mutationField('visitorUpdate', (t) =>
   t.withAuth({ isAuthenticated: true }).field({
+    override: {
+      from: 'api-journeys'
+    },
     type: VisitorRef,
     args: {
       id: t.arg.id({ required: true }),
@@ -373,6 +390,9 @@ builder.mutationField('visitorUpdate', (t) =>
 
 builder.mutationField('visitorUpdateForCurrentUser', (t) =>
   t.withAuth({ isAuthenticated: true }).field({
+    override: {
+      from: 'api-journeys'
+    },
     type: VisitorRef,
     args: {
       input: t.arg({

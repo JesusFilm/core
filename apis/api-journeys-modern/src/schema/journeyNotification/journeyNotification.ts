@@ -34,6 +34,9 @@ function canManageJourneyNotification(
 // Mutation for updating journey notifications
 builder.mutationField('journeyNotificationUpdate', (t) =>
   t.withAuth({ isAuthenticated: true }).field({
+    override: {
+      from: 'api-journeys'
+    },
     type: JourneyNotificationRef,
     args: {
       input: t.arg({ type: JourneyNotificationUpdateInput, required: true })

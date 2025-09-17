@@ -31,6 +31,9 @@ export const JourneyViewEventRef = builder.prismaObject('Event', {
 
 builder.mutationField('journeyViewEventCreate', (t) =>
   t.field({
+    override: {
+      from: 'api-journeys'
+    },
     type: JourneyViewEventRef,
     args: {
       input: t.arg({ type: JourneyViewEventCreateInput, required: true })

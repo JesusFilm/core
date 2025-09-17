@@ -20,6 +20,9 @@ export const TextResponseSubmissionEventRef = builder.prismaObject('Event', {
 
 builder.mutationField('textResponseSubmissionEventCreate', (t) =>
   t.withAuth({ isAuthenticated: true }).field({
+    override: {
+      from: 'api-journeys'
+    },
     type: TextResponseSubmissionEventRef,
     args: {
       input: t.arg({

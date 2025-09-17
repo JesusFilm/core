@@ -7,6 +7,12 @@ import { prisma } from '@core/prisma/journeys/client'
 import { builder } from '../builder'
 import { IdType } from '../journey/enums/idType'
 
+import {
+  PlausibleStatsAggregateFilter,
+  PlausibleStatsBreakdownFilter,
+  PlausibleStatsTimeseriesFilter
+} from './inputs'
+
 interface PlausibleStatsAggregateValue {
   value: number
   change?: number | null
@@ -145,45 +151,6 @@ export const PlausibleStatsResponseRef = builder
     })
   })
 
-// Define input types
-const PlausibleStatsAggregateFilter = builder.inputType(
-  'PlausibleStatsAggregateFilter',
-  {
-    fields: (t) => ({
-      period: t.string({ required: false }),
-      date: t.string({ required: false }),
-      filters: t.string({ required: false }),
-      interval: t.string({ required: false })
-    })
-  }
-)
-
-const PlausibleStatsBreakdownFilter = builder.inputType(
-  'PlausibleStatsBreakdownFilter',
-  {
-    fields: (t) => ({
-      property: t.string({ required: true }),
-      period: t.string({ required: false }),
-      date: t.string({ required: false }),
-      limit: t.int({ required: false }),
-      page: t.int({ required: false }),
-      filters: t.string({ required: false })
-    })
-  }
-)
-
-const PlausibleStatsTimeseriesFilter = builder.inputType(
-  'PlausibleStatsTimeseriesFilter',
-  {
-    fields: (t) => ({
-      period: t.string({ required: false }),
-      date: t.string({ required: false }),
-      filters: t.string({ required: false }),
-      interval: t.string({ required: false })
-    })
-  }
-)
-
 // Helper functions to extract metrics from GraphQL info
 function getFieldNames(selections: ReadonlyArray<SelectionNode>): string[] {
   const fieldNames: string[] = []
@@ -277,6 +244,9 @@ async function getStatsTimeseries(
 // Queries
 builder.queryField('journeysPlausibleStatsRealtimeVisitors', (t) =>
   t.withAuth({ isAuthenticated: true }).int({
+    override: {
+      from: 'api-journeys'
+    },
     args: {
       id: t.arg.id({ required: true }),
       idType: t.arg({ type: IdType, required: false })
@@ -293,6 +263,9 @@ builder.queryField('journeysPlausibleStatsRealtimeVisitors', (t) =>
 
 builder.queryField('journeysPlausibleStatsAggregate', (t) =>
   t.withAuth({ isAuthenticated: true }).field({
+    override: {
+      from: 'api-journeys'
+    },
     type: PlausibleStatsAggregateResponseRef,
     args: {
       id: t.arg.id({ required: true }),
@@ -313,6 +286,9 @@ builder.queryField('journeysPlausibleStatsAggregate', (t) =>
 
 builder.queryField('journeysPlausibleStatsBreakdown', (t) =>
   t.withAuth({ isAuthenticated: true }).field({
+    override: {
+      from: 'api-journeys'
+    },
     type: [PlausibleStatsResponseRef],
     args: {
       id: t.arg.id({ required: true }),
@@ -333,6 +309,9 @@ builder.queryField('journeysPlausibleStatsBreakdown', (t) =>
 
 builder.queryField('journeysPlausibleStatsTimeseries', (t) =>
   t.withAuth({ isAuthenticated: true }).field({
+    override: {
+      from: 'api-journeys'
+    },
     type: [PlausibleStatsResponseRef],
     args: {
       id: t.arg.id({ required: true }),

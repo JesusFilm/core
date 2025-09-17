@@ -81,6 +81,9 @@ async function getNextParentOrder(journeyId: string, parentBlockId: string) {
 // SignUpBlock Mutations
 builder.mutationField('signUpBlockCreate', (t) =>
   t.withAuth({ isAuthenticated: true }).field({
+    override: {
+      from: 'api-journeys'
+    },
     type: SignUpBlock,
     nullable: false,
     args: {
@@ -142,6 +145,9 @@ builder.mutationField('signUpBlockCreate', (t) =>
 
 builder.mutationField('signUpBlockUpdate', (t) =>
   t.withAuth({ isAuthenticated: true }).field({
+    override: {
+      from: 'api-journeys'
+    },
     type: SignUpBlock,
     nullable: false,
     args: {

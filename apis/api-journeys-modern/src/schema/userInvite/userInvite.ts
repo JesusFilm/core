@@ -32,6 +32,9 @@ builder.asEntity(UserInviteRef, {
 // UserInvite queries
 builder.queryField('userInvites', (t) =>
   t.withAuth({ isAuthenticated: true }).field({
+    override: {
+      from: 'api-journeys'
+    },
     type: [UserInviteRef],
     args: {
       journeyId: t.arg.id({ required: true })
@@ -86,6 +89,9 @@ builder.queryField('userInvites', (t) =>
 // UserInvite mutations
 builder.mutationField('userInviteCreate', (t) =>
   t.withAuth({ isAuthenticated: true }).field({
+    override: {
+      from: 'api-journeys'
+    },
     type: UserInviteRef,
     nullable: true,
     args: {
@@ -156,6 +162,9 @@ builder.mutationField('userInviteCreate', (t) =>
 
 builder.mutationField('userInviteRemove', (t) =>
   t.withAuth({ isAuthenticated: true }).field({
+    override: {
+      from: 'api-journeys'
+    },
     type: UserInviteRef,
     args: {
       id: t.arg.id({ required: true }),
@@ -212,6 +221,9 @@ builder.mutationField('userInviteRemove', (t) =>
 
 builder.mutationField('userInviteAcceptAll', (t) =>
   t.withAuth({ isAuthenticated: true }).field({
+    override: {
+      from: 'api-journeys'
+    },
     type: [UserInviteRef],
     resolve: async (_parent, _args, context) => {
       const user = context.user

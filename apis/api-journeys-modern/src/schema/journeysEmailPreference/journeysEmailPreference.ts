@@ -29,6 +29,9 @@ export const JourneysEmailPreferenceRef = builder.prismaObject(
 // Query: journeysEmailPreference - Get email preference by email
 builder.queryField('journeysEmailPreference', (t) =>
   t.field({
+    override: {
+      from: 'api-journeys'
+    },
     type: JourneysEmailPreferenceRef,
     nullable: true,
     args: {
@@ -56,6 +59,9 @@ builder.queryField('journeysEmailPreference', (t) =>
 // Mutation: updateJourneysEmailPreference - Update or create email preference
 builder.mutationField('updateJourneysEmailPreference', (t) =>
   t.field({
+    override: {
+      from: 'api-journeys'
+    },
     type: JourneysEmailPreferenceRef,
     nullable: true,
     args: {

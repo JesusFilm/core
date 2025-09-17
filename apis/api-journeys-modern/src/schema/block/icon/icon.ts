@@ -90,6 +90,9 @@ async function getNextParentOrder(journeyId: string, parentBlockId: string) {
 // IconBlock Mutations
 builder.mutationField('iconBlockCreate', (t) =>
   t.withAuth({ isAuthenticated: true }).field({
+    override: {
+      from: 'api-journeys'
+    },
     type: IconBlock,
     nullable: false,
     args: {
@@ -153,6 +156,9 @@ builder.mutationField('iconBlockCreate', (t) =>
 
 builder.mutationField('iconBlockUpdate', (t) =>
   t.withAuth({ isAuthenticated: true }).field({
+    override: {
+      from: 'api-journeys'
+    },
     type: IconBlock,
     nullable: false,
     args: {

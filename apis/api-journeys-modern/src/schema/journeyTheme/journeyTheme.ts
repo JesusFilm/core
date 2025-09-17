@@ -26,6 +26,9 @@ export const JourneyThemeRef = builder.prismaObject('JourneyTheme', {
 // journeyTheme query - matches legacy API
 builder.queryField('journeyTheme', (t) =>
   t.field({
+    override: {
+      from: 'api-journeys'
+    },
     type: JourneyThemeRef,
     nullable: true,
     args: {
@@ -53,6 +56,9 @@ builder.queryField('journeyTheme', (t) =>
 // journeyThemeCreate mutation - matches legacy API
 builder.mutationField('journeyThemeCreate', (t) =>
   t.withAuth({ isAuthenticated: true }).field({
+    override: {
+      from: 'api-journeys'
+    },
     type: JourneyThemeRef,
     nullable: false,
     args: {
@@ -114,6 +120,9 @@ builder.mutationField('journeyThemeCreate', (t) =>
 // journeyThemeUpdate mutation - matches legacy API
 builder.mutationField('journeyThemeUpdate', (t) =>
   t.withAuth({ isAuthenticated: true }).field({
+    override: {
+      from: 'api-journeys'
+    },
     type: JourneyThemeRef,
     nullable: false,
     args: {
@@ -166,6 +175,9 @@ builder.mutationField('journeyThemeUpdate', (t) =>
 // journeyThemeDelete mutation - matches legacy API
 builder.mutationField('journeyThemeDelete', (t) =>
   t.withAuth({ isAuthenticated: true }).field({
+    override: {
+      from: 'api-journeys'
+    },
     type: JourneyThemeRef,
     nullable: false,
     args: {

@@ -370,6 +370,9 @@ async function getDuplicateChildren(
 // Core Journey Queries
 builder.queryField('journey', (t) =>
   t.field({
+    override: {
+      from: 'api-journeys'
+    },
     type: JourneyRef,
     nullable: true,
     args: {
@@ -429,6 +432,9 @@ builder.queryField('journey', (t) =>
 
 builder.queryField('journeys', (t) =>
   t.field({
+    override: {
+      from: 'api-journeys'
+    },
     type: [JourneyRef],
     nullable: false,
     args: {
@@ -515,6 +521,9 @@ builder.queryField('journeys', (t) =>
 
 builder.queryField('adminJourney', (t) =>
   t.withAuth({ isAuthenticated: true }).field({
+    override: {
+      from: 'api-journeys'
+    },
     type: JourneyRef,
     nullable: false,
     args: {
@@ -551,6 +560,9 @@ builder.queryField('adminJourney', (t) =>
 
 builder.queryField('adminJourneys', (t) =>
   t.withAuth({ isAuthenticated: true }).field({
+    override: {
+      from: 'api-journeys'
+    },
     type: [JourneyRef],
     nullable: false,
     args: {
@@ -625,6 +637,9 @@ builder.queryField('adminJourneys', (t) =>
 // Journey Mutations
 builder.mutationField('journeyCreate', (t) =>
   t.withAuth({ isAuthenticated: true }).field({
+    override: {
+      from: 'api-journeys'
+    },
     type: JourneyRef,
     nullable: false,
     args: {
@@ -748,6 +763,9 @@ builder.mutationField('journeyCreate', (t) =>
 
 builder.mutationField('journeyUpdate', (t) =>
   t.withAuth({ isAuthenticated: true }).field({
+    override: {
+      from: 'api-journeys'
+    },
     type: JourneyRef,
     nullable: false,
     args: {
@@ -882,6 +900,9 @@ builder.mutationField('journeyUpdate', (t) =>
 
 builder.mutationField('journeyDuplicate', (t) =>
   t.withAuth({ isAuthenticated: true }).field({
+    override: {
+      from: 'api-journeys'
+    },
     type: JourneyRef,
     nullable: false,
     args: {
@@ -1187,6 +1208,9 @@ builder.mutationField('journeyDuplicate', (t) =>
 
 builder.mutationField('journeyPublish', (t) =>
   t.withAuth({ isAuthenticated: true }).field({
+    override: {
+      from: 'api-journeys'
+    },
     type: JourneyRef,
     nullable: false,
     args: {
@@ -1228,6 +1252,9 @@ builder.mutationField('journeyPublish', (t) =>
 
 builder.mutationField('journeyFeature', (t) =>
   t.withAuth({ isAuthenticated: true }).field({
+    override: {
+      from: 'api-journeys'
+    },
     type: JourneyRef,
     nullable: false,
     args: {
@@ -1269,6 +1296,9 @@ builder.mutationField('journeyFeature', (t) =>
 
 builder.mutationField('journeysArchive', (t) =>
   t.withAuth({ isAuthenticated: true }).field({
+    override: {
+      from: 'api-journeys'
+    },
     type: [JourneyRef],
     nullable: false,
     args: {
@@ -1316,6 +1346,9 @@ builder.mutationField('journeysArchive', (t) =>
 
 builder.mutationField('journeysDelete', (t) =>
   t.withAuth({ isAuthenticated: true }).field({
+    override: {
+      from: 'api-journeys'
+    },
     type: [JourneyRef],
     nullable: false,
     args: {
@@ -1363,6 +1396,9 @@ builder.mutationField('journeysDelete', (t) =>
 
 builder.mutationField('journeysTrash', (t) =>
   t.withAuth({ isAuthenticated: true }).field({
+    override: {
+      from: 'api-journeys'
+    },
     type: [JourneyRef],
     nullable: false,
     args: {
@@ -1410,6 +1446,9 @@ builder.mutationField('journeysTrash', (t) =>
 
 builder.mutationField('journeysRestore', (t) =>
   t.withAuth({ isAuthenticated: true }).field({
+    override: {
+      from: 'api-journeys'
+    },
     type: [JourneyRef],
     nullable: false,
     args: {
@@ -1463,6 +1502,9 @@ builder.mutationField('journeysRestore', (t) =>
 
 builder.mutationField('journeyTemplate', (t) =>
   t.withAuth({ isAuthenticated: true }).field({
+    override: {
+      from: 'api-journeys'
+    },
     type: JourneyRef,
     nullable: false,
     args: {

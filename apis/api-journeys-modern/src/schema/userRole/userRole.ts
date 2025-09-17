@@ -44,6 +44,9 @@ async function getUserRoleById(userId: string): Promise<UserRole> {
 // getUserRole query
 builder.queryField('getUserRole', (t) =>
   t.withAuth({ isAuthenticated: true }).field({
+    override: {
+      from: 'api-journeys'
+    },
     type: UserRoleRef,
     nullable: true,
     resolve: async (_parent, _args, context) => {

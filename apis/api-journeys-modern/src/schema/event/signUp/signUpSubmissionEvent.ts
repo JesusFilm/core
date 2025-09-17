@@ -20,6 +20,9 @@ export const SignUpSubmissionEventRef = builder.prismaObject('Event', {
 
 builder.mutationField('signUpSubmissionEventCreate', (t) =>
   t.withAuth({ isAuthenticated: true }).field({
+    override: {
+      from: 'api-journeys'
+    },
     type: SignUpSubmissionEventRef,
     args: {
       input: t.arg({ type: SignUpSubmissionEventCreateInput, required: true })

@@ -83,6 +83,9 @@ async function getNextParentOrder(
 // Mutations
 builder.mutationField('radioOptionBlockCreate', (t) =>
   t.withAuth({ isAuthenticated: true }).field({
+    override: {
+      from: 'api-journeys'
+    },
     type: RadioOptionBlock,
     nullable: false,
     args: {
@@ -140,6 +143,9 @@ builder.mutationField('radioOptionBlockCreate', (t) =>
 
 builder.mutationField('radioOptionBlockUpdate', (t) =>
   t.withAuth({ isAuthenticated: true }).field({
+    override: {
+      from: 'api-journeys'
+    },
     type: RadioOptionBlock,
     nullable: false,
     args: {

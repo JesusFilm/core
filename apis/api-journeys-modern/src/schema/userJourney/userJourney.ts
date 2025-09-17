@@ -63,6 +63,9 @@ function canAccessUserJourney(
 // UserJourney mutations
 builder.mutationField('userJourneyRequest', (t) =>
   t.withAuth({ isAuthenticated: true }).field({
+    override: {
+      from: 'api-journeys'
+    },
     type: UserJourneyRef,
     args: {
       journeyId: t.arg.id({ required: true })
@@ -105,6 +108,9 @@ builder.mutationField('userJourneyRequest', (t) =>
 
 builder.mutationField('userJourneyApprove', (t) =>
   t.withAuth({ isAuthenticated: true }).field({
+    override: {
+      from: 'api-journeys'
+    },
     type: UserJourneyRef,
     args: {
       id: t.arg.id({ required: true })
@@ -144,6 +150,9 @@ builder.mutationField('userJourneyApprove', (t) =>
 
 builder.mutationField('userJourneyPromote', (t) =>
   t.withAuth({ isAuthenticated: true }).field({
+    override: {
+      from: 'api-journeys'
+    },
     type: UserJourneyRef,
     args: {
       id: t.arg.id({ required: true })
@@ -184,6 +193,9 @@ builder.mutationField('userJourneyPromote', (t) =>
 
 builder.mutationField('userJourneyRemove', (t) =>
   t.withAuth({ isAuthenticated: true }).field({
+    override: {
+      from: 'api-journeys'
+    },
     type: UserJourneyRef,
     args: {
       id: t.arg.id({ required: true })
@@ -212,6 +224,9 @@ builder.mutationField('userJourneyRemove', (t) =>
 
 builder.mutationField('userJourneyRemoveAll', (t) =>
   t.withAuth({ isAuthenticated: true }).field({
+    override: {
+      from: 'api-journeys'
+    },
     type: [UserJourneyRef],
     args: {
       id: t.arg.id({ required: true })
@@ -255,6 +270,9 @@ builder.mutationField('userJourneyRemoveAll', (t) =>
 
 builder.mutationField('userJourneyOpen', (t) =>
   t.withAuth({ isAuthenticated: true }).field({
+    override: {
+      from: 'api-journeys'
+    },
     type: UserJourneyRef,
     nullable: true,
     args: {

@@ -65,6 +65,9 @@ async function fetchBlockWithJourneyAcl(blockId: string) {
 // Core Block Queries
 builder.queryField('blocks', (t) =>
   t.field({
+    override: {
+      from: 'api-journeys'
+    },
     type: [Block],
     nullable: false,
     args: {
@@ -95,6 +98,9 @@ builder.queryField('blocks', (t) =>
 
 builder.queryField('block', (t) =>
   t.field({
+    override: {
+      from: 'api-journeys'
+    },
     type: Block,
     nullable: true,
     args: {
@@ -113,6 +119,9 @@ builder.queryField('block', (t) =>
 // Core Block Mutations
 builder.mutationField('blockDelete', (t) =>
   t.withAuth({ isAuthenticated: true }).field({
+    override: {
+      from: 'api-journeys'
+    },
     type: [Block],
     nullable: false,
     description:
@@ -185,6 +194,9 @@ builder.mutationField('blockDelete', (t) =>
 
 builder.mutationField('blockDuplicate', (t) =>
   t.withAuth({ isAuthenticated: true }).field({
+    override: {
+      from: 'api-journeys'
+    },
     type: [Block],
     nullable: false,
     description:
@@ -298,6 +310,9 @@ builder.mutationField('blockDuplicate', (t) =>
 
 builder.mutationField('blockOrderUpdate', (t) =>
   t.withAuth({ isAuthenticated: true }).field({
+    override: {
+      from: 'api-journeys'
+    },
     type: [Block],
     nullable: false,
     args: {
@@ -363,6 +378,9 @@ builder.mutationField('blockOrderUpdate', (t) =>
 
 builder.mutationField('blockRestore', (t) =>
   t.withAuth({ isAuthenticated: true }).field({
+    override: {
+      from: 'api-journeys'
+    },
     type: [Block],
     nullable: false,
     description: 'blockRestore is used for redo/undo',

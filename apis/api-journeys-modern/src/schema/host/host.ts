@@ -20,6 +20,9 @@ export const HostRef = builder.prismaObject('Host', {
 
 builder.queryField('hosts', (t) =>
   t.withAuth({ isAuthenticated: true }).field({
+    override: {
+      from: 'api-journeys'
+    },
     type: [HostRef],
     args: {
       teamId: t.arg({ type: 'ID', required: true })
@@ -52,6 +55,9 @@ builder.queryField('hosts', (t) =>
 
 builder.mutationField('hostCreate', (t) =>
   t.withAuth({ isAuthenticated: true }).field({
+    override: {
+      from: 'api-journeys'
+    },
     type: HostRef,
     args: {
       teamId: t.arg({ type: 'ID', required: true }),
@@ -89,6 +95,9 @@ builder.mutationField('hostCreate', (t) =>
 // Host Update Mutation
 builder.mutationField('hostUpdate', (t) =>
   t.withAuth({ isAuthenticated: true }).field({
+    override: {
+      from: 'api-journeys'
+    },
     type: HostRef,
     args: {
       id: t.arg({ type: 'ID', required: true }),
@@ -150,6 +159,9 @@ builder.mutationField('hostUpdate', (t) =>
 // Host Delete Mutation
 builder.mutationField('hostDelete', (t) =>
   t.withAuth({ isAuthenticated: true }).field({
+    override: {
+      from: 'api-journeys'
+    },
     type: HostRef,
     args: {
       id: t.arg({ type: 'ID', required: true }),

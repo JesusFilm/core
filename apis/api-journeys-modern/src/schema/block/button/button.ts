@@ -8,7 +8,6 @@ import {
   ability,
   subject as abilitySubject
 } from '../../../lib/auth/ability'
-import { ActionInterface } from '../../action/action'
 import { builder } from '../../builder'
 import { Block } from '../block'
 
@@ -149,6 +148,9 @@ async function getNextParentOrder(journeyId: string, parentBlockId: string) {
 // ButtonBlock Mutations
 builder.mutationField('buttonBlockCreate', (t) =>
   t.withAuth({ isAuthenticated: true }).field({
+    override: {
+      from: 'api-journeys'
+    },
     type: ButtonBlock,
     nullable: false,
     args: {
@@ -215,6 +217,9 @@ builder.mutationField('buttonBlockCreate', (t) =>
 
 builder.mutationField('buttonBlockUpdate', (t) =>
   t.withAuth({ isAuthenticated: true }).field({
+    override: {
+      from: 'api-journeys'
+    },
     type: ButtonBlock,
     nullable: false,
     args: {

@@ -34,6 +34,9 @@ function canAccessUserTeamInvite(
 // Query to list team invites
 builder.queryField('userTeamInvites', (t) =>
   t.prismaField({
+    override: {
+      from: 'api-journeys'
+    },
     type: [UserTeamInviteRef],
     args: {
       teamId: t.arg.id({ required: true })
@@ -78,6 +81,9 @@ builder.queryField('userTeamInvites', (t) =>
 // Mutation to create team invite
 builder.mutationField('userTeamInviteCreate', (t) =>
   t.prismaField({
+    override: {
+      from: 'api-journeys'
+    },
     type: UserTeamInviteRef,
     nullable: true,
     args: {
@@ -152,6 +158,9 @@ builder.mutationField('userTeamInviteCreate', (t) =>
 // Mutation to remove team invite
 builder.mutationField('userTeamInviteRemove', (t) =>
   t.prismaField({
+    override: {
+      from: 'api-journeys'
+    },
     type: UserTeamInviteRef,
     args: {
       id: t.arg.id({ required: true })
@@ -201,6 +210,9 @@ builder.mutationField('userTeamInviteRemove', (t) =>
 // Mutation to accept all pending team invites for current user
 builder.mutationField('userTeamInviteAcceptAll', (t) =>
   t.prismaField({
+    override: {
+      from: 'api-journeys'
+    },
     type: [UserTeamInviteRef],
     authScopes: { isAuthenticated: true },
     resolve: async (query, _root, _args, context) => {

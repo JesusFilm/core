@@ -103,6 +103,9 @@ async function getNextParentOrder(journeyId: string, parentBlockId: string) {
 // TextResponseBlock Mutations
 builder.mutationField('textResponseBlockCreate', (t) =>
   t.withAuth({ isAuthenticated: true }).field({
+    override: {
+      from: 'api-journeys'
+    },
     type: TextResponseBlock,
     nullable: false,
     args: {
@@ -167,6 +170,9 @@ builder.mutationField('textResponseBlockCreate', (t) =>
 
 builder.mutationField('textResponseBlockUpdate', (t) =>
   t.withAuth({ isAuthenticated: true }).field({
+    override: {
+      from: 'api-journeys'
+    },
     type: TextResponseBlock,
     nullable: false,
     args: {

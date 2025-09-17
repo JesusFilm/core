@@ -90,6 +90,9 @@ async function fetchBlockWithJourneyAcl(blockId: string) {
 // StepBlock Mutations
 builder.mutationField('stepBlockCreate', (t) =>
   t.withAuth({ isAuthenticated: true }).field({
+    override: {
+      from: 'api-journeys'
+    },
     type: StepBlock,
     nullable: false,
     args: {
@@ -157,6 +160,9 @@ builder.mutationField('stepBlockCreate', (t) =>
 
 builder.mutationField('stepBlockUpdate', (t) =>
   t.withAuth({ isAuthenticated: true }).field({
+    override: {
+      from: 'api-journeys'
+    },
     type: StepBlock,
     nullable: false,
     args: {
@@ -250,6 +256,9 @@ builder.mutationField('stepBlockUpdate', (t) =>
 
 builder.mutationField('stepBlockPositionUpdate', (t) =>
   t.withAuth({ isAuthenticated: true }).field({
+    override: {
+      from: 'api-journeys'
+    },
     type: [StepBlock],
     nullable: false,
     args: {

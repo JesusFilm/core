@@ -113,6 +113,9 @@ async function getNextParentOrder(journeyId: string, parentBlockId: string) {
 // CardBlock Mutations
 builder.mutationField('cardBlockCreate', (t) =>
   t.withAuth({ isAuthenticated: true }).field({
+    override: {
+      from: 'api-journeys'
+    },
     type: CardBlock,
     nullable: false,
     args: {
@@ -178,6 +181,9 @@ builder.mutationField('cardBlockCreate', (t) =>
 
 builder.mutationField('cardBlockUpdate', (t) =>
   t.withAuth({ isAuthenticated: true }).field({
+    override: {
+      from: 'api-journeys'
+    },
     type: CardBlock,
     nullable: false,
     args: {

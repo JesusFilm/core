@@ -83,6 +83,9 @@ export const IntegrationGrowthSpacesRef = builder.prismaObject('Integration', {
 
 builder.mutationField('integrationGrowthSpacesCreate', (t) =>
   t.withAuth({ isAuthenticated: true }).field({
+    override: {
+      from: 'api-journeys'
+    },
     type: IntegrationGrowthSpacesRef,
     args: {
       input: t.arg({ type: IntegrationGrowthSpacesCreateInput, required: true })
@@ -129,6 +132,9 @@ builder.mutationField('integrationGrowthSpacesCreate', (t) =>
 
 builder.mutationField('integrationGrowthSpacesUpdate', (t) =>
   t.withAuth({ isAuthenticated: true }).field({
+    override: {
+      from: 'api-journeys'
+    },
     type: IntegrationGrowthSpacesRef,
     args: {
       id: t.arg({ type: 'ID', required: true }),

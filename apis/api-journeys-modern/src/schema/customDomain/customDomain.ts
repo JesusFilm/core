@@ -7,6 +7,98 @@ import { builder } from '../builder'
 
 import { CustomDomainCreateInput, CustomDomainUpdateInput } from './inputs'
 
+// CustomDomainCheck and related types (shareable to match federated schema)
+interface CustomDomainVerificationType {
+  type: string
+  domain: string
+  value: string
+  reason: string
+}
+
+interface CustomDomainVerificationResponseType {
+  code: string
+  message: string
+}
+
+interface CustomDomainCheckType {
+  configured: boolean
+  verified: boolean
+  verification?: CustomDomainVerificationType[] | null
+  verificationResponse?: CustomDomainVerificationResponseType | null
+}
+
+const CustomDomainVerificationRef =
+  builder.objectRef<CustomDomainVerificationType>('CustomDomainVerification')
+
+builder.objectType(CustomDomainVerificationRef, {
+  shareable: true,
+  fields: (t) => ({
+    type: t.string({
+      nullable: false,
+      resolve: (obj) => obj.type
+    }),
+    domain: t.string({
+      nullable: false,
+      resolve: (obj) => obj.domain
+    }),
+    value: t.string({
+      nullable: false,
+      resolve: (obj) => obj.value
+    }),
+    reason: t.string({
+      nullable: false,
+      resolve: (obj) => obj.reason
+    })
+  })
+})
+
+const CustomDomainVerificationResponseRef =
+  builder.objectRef<CustomDomainVerificationResponseType>(
+    'CustomDomainVerificationResponse'
+  )
+
+builder.objectType(CustomDomainVerificationResponseRef, {
+  shareable: true,
+  fields: (t) => ({
+    code: t.string({
+      nullable: false,
+      resolve: (obj) => obj.code
+    }),
+    message: t.string({
+      nullable: false,
+      resolve: (obj) => obj.message
+    })
+  })
+})
+
+const CustomDomainCheckRef =
+  builder.objectRef<CustomDomainCheckType>('CustomDomainCheck')
+
+builder.objectType(CustomDomainCheckRef, {
+  shareable: true,
+  fields: (t) => ({
+    configured: t.boolean({
+      nullable: false,
+      resolve: (obj) => obj.configured
+    }),
+    verified: t.boolean({
+      nullable: false,
+      resolve: (obj) => obj.verified
+    }),
+    verification: t.field({
+      // In SDL: [CustomDomainVerification!] (nullable list, non-null elements)
+      type: [CustomDomainVerificationRef],
+      nullable: true,
+      resolve: (obj) => obj.verification ?? null
+    }),
+    verificationResponse: t.field({
+      type: CustomDomainVerificationResponseRef,
+      nullable: true,
+      resolve: (obj) => obj.verificationResponse ?? null
+    })
+  })
+})
+
 export const CustomDomainRef = builder.prismaObject('CustomDomain', {
   shareable: true,
   fields: (t) => ({
@@ -42,6 +134,9 @@ async function createDomain(name: string) {
 // Query: customDomain
 builder.queryField('customDomain', (t) =>
   t.withAuth({ isAuthenticated: true }).field({
+    override: {
+      from: 'api-journeys'
+    },
     type: CustomDomainRef,
     args: {
       id: t.arg({ type: 'ID', required: true })
@@ -95,6 +190,9 @@ builder.queryField('customDomain', (t) =>
 // Query: customDomains
 builder.queryField('customDomains', (t) =>
   t.withAuth({ isAuthenticated: true }).field({
+    override: {
+      from: 'api-journeys'
+    },
     type: [CustomDomainRef],
     args: {
       teamId: t.arg({ type: 'ID', required: true })
@@ -131,6 +229,9 @@ builder.queryField('customDomains', (t) =>
 // Mutation: customDomainCreate
 builder.mutationField('customDomainCreate', (t) =>
   t.withAuth({ isAuthenticated: true }).field({
+    override: {
+      from: 'api-journeys'
+    },
     type: CustomDomainRef,
     args: {
       input: t.arg({ type: CustomDomainCreateInput, required: true })
@@ -201,6 +302,9 @@ builder.mutationField('customDomainCreate', (t) =>
 // Mutation: customDomainUpdate
 builder.mutationField('customDomainUpdate', (t) =>
   t.withAuth({ isAuthenticated: true }).field({
+    override: {
+      from: 'api-journeys'
+    },
     type: CustomDomainRef,
     args: {
       id: t.arg({ type: 'ID', required: true }),
@@ -251,6 +355,9 @@ builder.mutationField('customDomainUpdate', (t) =>
 // Mutation: customDomainDelete
 builder.mutationField('customDomainDelete', (t) =>
   t.withAuth({ isAuthenticated: true }).field({
+    override: {
+      from: 'api-journeys'
+    },
     type: CustomDomainRef,
     args: {
       id: t.arg({ type: 'ID', required: true })
@@ -298,7 +405,11 @@ builder.mutationField('customDomainDelete', (t) =>
 // customDomainCheck returns a JSON response instead of complex object
 builder.mutationField('customDomainCheck', (t) =>
   t.withAuth({ isAuthenticated: true }).field({
-    type: 'Json',
+    override: {
+      from: 'api-journeys'
+    },
+    type: CustomDomainCheckRef,
+    nullable: false,
     args: {
       id: t.arg({ type: 'ID', required: true })
     },
@@ -333,14 +444,15 @@ builder.mutationField('customDomainCheck', (t) =>
         })
       }
 
-      // Return simplified check result
-      // In full implementation, this would call Vercel API
-      return {
+      // Return simplified check result (placeholder for Vercel integration)
+      const result: CustomDomainCheckType = {
         configured: true,
         verified: true,
         verification: [],
         verificationResponse: null
       }
+
+      return result
     }
   })
 )

@@ -22,6 +22,9 @@ export const ButtonClickEventRef = builder.prismaObject('Event', {
 
 builder.mutationField('buttonClickEventCreate', (t) =>
   t.withAuth({ isAuthenticated: true }).field({
+    override: {
+      from: 'api-journeys'
+    },
     type: ButtonClickEventRef,
     args: {
       input: t.arg({ type: ButtonClickEventCreateInput, required: true })

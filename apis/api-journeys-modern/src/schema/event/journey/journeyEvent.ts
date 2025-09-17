@@ -143,7 +143,11 @@ function generateWhere(
 // Query: journeyEventsConnection
 builder.queryField('journeyEventsConnection', (t) =>
   t.withAuth({ isAuthenticated: true }).prismaConnection({
+    override: {
+      from: 'api-journeys'
+    },
     type: JourneyEventRef,
+    nullable: false,
     cursor: 'id',
     args: {
       journeyId: t.arg({ type: 'ID', required: true }),
@@ -191,6 +195,9 @@ builder.queryField('journeyEventsConnection', (t) =>
 // Query: journeyEventsCount
 builder.queryField('journeyEventsCount', (t) =>
   t.withAuth({ isAuthenticated: true }).field({
+    override: {
+      from: 'api-journeys'
+    },
     type: 'Int',
     args: {
       journeyId: t.arg({ type: 'ID', required: true }),

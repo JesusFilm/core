@@ -19,6 +19,9 @@ export const ChatButtonRef = builder.prismaObject('ChatButton', {
 
 builder.mutationFields((t) => ({
   chatButtonCreate: t.withAuth({ isAuthenticated: true }).prismaField({
+    override: {
+      from: 'api-journeys'
+    },
     type: ChatButtonRef,
     args: {
       journeyId: t.arg({ type: 'ID', required: true }),
@@ -45,6 +48,9 @@ builder.mutationFields((t) => ({
     }
   }),
   chatButtonUpdate: t.withAuth({ isAuthenticated: true }).prismaField({
+    override: {
+      from: 'api-journeys'
+    },
     type: ChatButtonRef,
     args: {
       id: t.arg({ type: 'ID', required: true }),
@@ -60,6 +66,9 @@ builder.mutationFields((t) => ({
     }
   }),
   chatButtonRemove: t.withAuth({ isAuthenticated: true }).prismaField({
+    override: {
+      from: 'api-journeys'
+    },
     type: ChatButtonRef,
     args: { id: t.arg({ type: 'ID', required: true }) },
     resolve: async (query, _parent, { id }) => {

@@ -110,6 +110,9 @@ async function getNextParentOrder(
 // ImageBlock Mutations
 builder.mutationField('imageBlockCreate', (t) =>
   t.withAuth({ isAuthenticated: true }).field({
+    override: {
+      from: 'api-journeys'
+    },
     type: ImageBlock,
     nullable: false,
     args: {
@@ -187,6 +190,9 @@ builder.mutationField('imageBlockCreate', (t) =>
 
 builder.mutationField('imageBlockUpdate', (t) =>
   t.withAuth({ isAuthenticated: true }).field({
+    override: {
+      from: 'api-journeys'
+    },
     type: ImageBlock,
     nullable: false,
     args: {

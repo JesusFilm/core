@@ -125,9 +125,9 @@ type ButtonClickEvent implements Event
 }
 
 input ButtonClickEventCreateInput {
-  id: String
-  blockId: String!
-  stepId: String
+  id: ID
+  blockId: ID!
+  stepId: ID
   label: String
   value: String
   action: ButtonAction
@@ -264,6 +264,15 @@ type CustomDomain
   journeyCollection: JourneyCollection
 }
 
+type CustomDomainCheck
+  @shareable
+{
+  configured: Boolean!
+  verified: Boolean!
+  verification: [CustomDomainVerification!]
+  verificationResponse: CustomDomainVerificationResponse
+}
+
 input CustomDomainCreateInput {
   id: ID
   teamId: String!
@@ -275,6 +284,22 @@ input CustomDomainCreateInput {
 input CustomDomainUpdateInput {
   journeyCollectionId: ID
   routeAllTeamJourneys: Boolean
+}
+
+type CustomDomainVerification
+  @shareable
+{
+  type: String!
+  domain: String!
+  value: String!
+  reason: String!
+}
+
+type CustomDomainVerificationResponse
+  @shareable
+{
+  code: String!
+  message: String!
 }
 
 """
@@ -1049,7 +1074,7 @@ type Mutation {
 
     """drop this parameter after merging teams"""
     parentBlockId: ID
-  ): [Block!]!
+  ): [Block!]! @override(from: "api-journeys")
 
   """
   blockDuplicate returns the updated block, its children and sibling blocks on successful duplicate
@@ -1079,100 +1104,100 @@ type Mutation {
     y is used to position a step block block vertically in the journey flow diagram on the editor.
     """
     y: Int
-  ): [Block!]!
+  ): [Block!]! @override(from: "api-journeys")
   blockOrderUpdate(
     id: ID!
     parentOrder: Int!
 
     """drop this parameter after merging teams"""
     journeyId: ID
-  ): [Block!]!
+  ): [Block!]! @override(from: "api-journeys")
 
   """blockRestore is used for redo/undo"""
-  blockRestore(id: ID!): [Block!]!
-  buttonBlockCreate(input: ButtonBlockCreateInput!): ButtonBlock!
+  blockRestore(id: ID!): [Block!]! @override(from: "api-journeys")
+  buttonBlockCreate(input: ButtonBlockCreateInput!): ButtonBlock! @override(from: "api-journeys")
   buttonBlockUpdate(
     id: ID!
     input: ButtonBlockUpdateInput!
 
     """drop this parameter after merging teams"""
     journeyId: ID
-  ): ButtonBlock!
-  cardBlockCreate(input: CardBlockCreateInput!): CardBlock!
+  ): ButtonBlock! @override(from: "api-journeys")
+  cardBlockCreate(input: CardBlockCreateInput!): CardBlock! @override(from: "api-journeys")
   cardBlockUpdate(
     id: ID!
     input: CardBlockUpdateInput!
 
     """drop this parameter after merging teams"""
     journeyId: ID
-  ): CardBlock!
-  iconBlockCreate(input: IconBlockCreateInput!): IconBlock!
+  ): CardBlock! @override(from: "api-journeys")
+  iconBlockCreate(input: IconBlockCreateInput!): IconBlock! @override(from: "api-journeys")
   iconBlockUpdate(
     id: ID!
     input: IconBlockUpdateInput!
 
     """drop this parameter after merging teams"""
     journeyId: ID
-  ): IconBlock!
-  imageBlockCreate(input: ImageBlockCreateInput!): ImageBlock!
+  ): IconBlock! @override(from: "api-journeys")
+  imageBlockCreate(input: ImageBlockCreateInput!): ImageBlock! @override(from: "api-journeys")
   imageBlockUpdate(
     id: ID!
     input: ImageBlockUpdateInput!
 
     """drop this parameter after merging teams"""
     journeyId: ID
-  ): ImageBlock!
-  radioOptionBlockCreate(input: RadioOptionBlockCreateInput!): RadioOptionBlock!
+  ): ImageBlock! @override(from: "api-journeys")
+  radioOptionBlockCreate(input: RadioOptionBlockCreateInput!): RadioOptionBlock! @override(from: "api-journeys")
   radioOptionBlockUpdate(
     id: ID!
     input: RadioOptionBlockUpdateInput!
 
     """drop this parameter after merging teams"""
     journeyId: ID
-  ): RadioOptionBlock!
-  radioQuestionBlockCreate(input: RadioQuestionBlockCreateInput!): RadioQuestionBlock!
-  radioQuestionBlockUpdate(id: ID!, parentBlockId: ID!, gridView: Boolean): RadioQuestionBlock!
-  signUpBlockCreate(input: SignUpBlockCreateInput!): SignUpBlock!
+  ): RadioOptionBlock! @override(from: "api-journeys")
+  radioQuestionBlockCreate(input: RadioQuestionBlockCreateInput!): RadioQuestionBlock! @override(from: "api-journeys")
+  radioQuestionBlockUpdate(id: ID!, parentBlockId: ID!, gridView: Boolean): RadioQuestionBlock! @override(from: "api-journeys")
+  signUpBlockCreate(input: SignUpBlockCreateInput!): SignUpBlock! @override(from: "api-journeys")
   signUpBlockUpdate(
     id: ID!
     input: SignUpBlockUpdateInput!
 
     """drop this parameter after merging teams"""
     journeyId: ID
-  ): SignUpBlock!
-  spacerBlockCreate(input: SpacerBlockCreateInput!): SpacerBlock!
+  ): SignUpBlock! @override(from: "api-journeys")
+  spacerBlockCreate(input: SpacerBlockCreateInput!): SpacerBlock! @override(from: "api-journeys")
   spacerBlockUpdate(
     id: ID!
     input: SpacerBlockUpdateInput!
 
     """drop this parameter after merging teams"""
     journeyId: ID
-  ): SpacerBlock!
-  stepBlockCreate(input: StepBlockCreateInput!): StepBlock!
+  ): SpacerBlock! @override(from: "api-journeys")
+  stepBlockCreate(input: StepBlockCreateInput!): StepBlock! @override(from: "api-journeys")
   stepBlockUpdate(
     id: ID!
     input: StepBlockUpdateInput!
 
     """drop this parameter after merging teams"""
     journeyId: ID
-  ): StepBlock!
-  stepBlockPositionUpdate(input: [StepBlockPositionUpdateInput!]!): [StepBlock!]!
-  textResponseBlockCreate(input: TextResponseBlockCreateInput!): TextResponseBlock!
+  ): StepBlock! @override(from: "api-journeys")
+  stepBlockPositionUpdate(input: [StepBlockPositionUpdateInput!]!): [StepBlock!]! @override(from: "api-journeys")
+  textResponseBlockCreate(input: TextResponseBlockCreateInput!): TextResponseBlock! @override(from: "api-journeys")
   textResponseBlockUpdate(
     id: ID!
     input: TextResponseBlockUpdateInput!
 
     """drop this parameter after merging teams"""
     journeyId: ID
-  ): TextResponseBlock!
-  typographyBlockCreate(input: TypographyBlockCreateInput!): TypographyBlock!
+  ): TextResponseBlock! @override(from: "api-journeys")
+  typographyBlockCreate(input: TypographyBlockCreateInput!): TypographyBlock! @override(from: "api-journeys")
   typographyBlockUpdate(
     id: ID!
     input: TypographyBlockUpdateInput!
 
     """drop this parameter after merging teams"""
     journeyId: ID
-  ): TypographyBlock!
+  ): TypographyBlock! @override(from: "api-journeys")
   videoBlockCreate(input: VideoBlockCreateInput!): VideoBlock! @override(from: "api-journeys")
   videoBlockUpdate(
     id: ID!
@@ -1181,92 +1206,92 @@ type Mutation {
     """drop this parameter after merging teams"""
     journeyId: ID
   ): VideoBlock! @override(from: "api-journeys")
-  videoTriggerBlockCreate(input: VideoTriggerBlockCreateInput!): VideoTriggerBlock!
+  videoTriggerBlockCreate(input: VideoTriggerBlockCreateInput!): VideoTriggerBlock! @override(from: "api-journeys")
   videoTriggerBlockUpdate(
     id: ID!
     input: VideoTriggerBlockUpdateInput!
 
     """drop this parameter after merging teams"""
     journeyId: ID
-  ): VideoTriggerBlock!
+  ): VideoTriggerBlock! @override(from: "api-journeys")
   blockDeleteAction(id: ID!, journeyId: ID): Block! @override(from: "api-journeys")
   blockUpdateAction(id: ID!, input: BlockUpdateActionInput!): Action! @override(from: "api-journeys")
   blockUpdateEmailAction(id: ID!, input: EmailActionInput!, journeyId: ID): EmailAction! @override(from: "api-journeys")
   blockUpdateLinkAction(id: ID!, input: LinkActionInput!, journeyId: ID): LinkAction! @override(from: "api-journeys")
   blockUpdateNavigateToBlockAction(id: ID!, input: NavigateToBlockActionInput!, journeyId: ID): NavigateToBlockAction! @override(from: "api-journeys")
   blockUpdatePhoneAction(id: ID!, input: PhoneActionInput!, journeyId: ID): PhoneAction! @override(from: "api-journeys")
-  chatButtonCreate(journeyId: ID!, input: ChatButtonCreateInput!): ChatButton
-  chatButtonUpdate(id: ID!, journeyId: ID!, input: ChatButtonUpdateInput!): ChatButton
-  chatButtonRemove(id: ID!): ChatButton
-  customDomainCreate(input: CustomDomainCreateInput!): CustomDomain
-  customDomainUpdate(id: ID!, input: CustomDomainUpdateInput!): CustomDomain
-  customDomainDelete(id: ID!): CustomDomain
-  customDomainCheck(id: ID!): Json
-  buttonClickEventCreate(input: ButtonClickEventCreateInput!): ButtonClickEvent
-  chatOpenEventCreate(input: ChatOpenEventCreateInput!): ChatOpenEvent
-  journeyViewEventCreate(input: JourneyViewEventCreateInput!): JourneyViewEvent
-  stepViewEventCreate(input: StepViewEventCreateInput!): StepViewEvent
-  stepNextEventCreate(input: StepNextEventCreateInput!): StepNextEvent
-  stepPreviousEventCreate(input: StepPreviousEventCreateInput!): StepPreviousEvent
-  radioQuestionSubmissionEventCreate(input: RadioQuestionSubmissionEventCreateInput!): RadioQuestionSubmissionEvent
-  signUpSubmissionEventCreate(input: SignUpSubmissionEventCreateInput!): SignUpSubmissionEvent
-  textResponseSubmissionEventCreate(input: TextResponseSubmissionEventCreateInput!): TextResponseSubmissionEvent
-  videoStartEventCreate(input: VideoStartEventCreateInput!): VideoStartEvent
-  videoPlayEventCreate(input: VideoPlayEventCreateInput!): VideoPlayEvent
-  videoPauseEventCreate(input: VideoPauseEventCreateInput!): VideoPauseEvent
-  videoCompleteEventCreate(input: VideoCompleteEventCreateInput!): VideoCompleteEvent
-  videoExpandEventCreate(input: VideoExpandEventCreateInput!): VideoExpandEvent
-  videoCollapseEventCreate(input: VideoCollapseEventCreateInput!): VideoCollapseEvent
-  videoProgressEventCreate(input: VideoProgressEventCreateInput!): VideoProgressEvent
-  hostCreate(teamId: ID!, input: HostCreateInput!): Host
-  hostUpdate(id: ID!, teamId: ID!, input: HostUpdateInput): Host
-  hostDelete(id: ID!, teamId: ID!): Host
-  integrationDelete(id: ID!): Integration
-  journeyCreate(input: JourneyCreateInput!, teamId: ID!): Journey!
-  journeyUpdate(id: ID!, input: JourneyUpdateInput!): Journey!
-  journeyDuplicate(id: ID!, teamId: ID!): Journey!
-  journeyPublish(id: ID!): Journey!
-  journeyFeature(id: ID!, feature: Boolean!): Journey!
-  journeysArchive(ids: [ID!]!): [Journey!]!
-  journeysDelete(ids: [ID!]!): [Journey!]!
-  journeysTrash(ids: [ID!]!): [Journey!]!
-  journeysRestore(ids: [ID!]!): [Journey!]!
-  journeyTemplate(id: ID!, input: JourneyTemplateInput!): Journey!
+  chatButtonCreate(journeyId: ID!, input: ChatButtonCreateInput!): ChatButton @override(from: "api-journeys")
+  chatButtonUpdate(id: ID!, journeyId: ID!, input: ChatButtonUpdateInput!): ChatButton @override(from: "api-journeys")
+  chatButtonRemove(id: ID!): ChatButton @override(from: "api-journeys")
+  customDomainCreate(input: CustomDomainCreateInput!): CustomDomain @override(from: "api-journeys")
+  customDomainUpdate(id: ID!, input: CustomDomainUpdateInput!): CustomDomain @override(from: "api-journeys")
+  customDomainDelete(id: ID!): CustomDomain @override(from: "api-journeys")
+  customDomainCheck(id: ID!): CustomDomainCheck! @override(from: "api-journeys")
+  buttonClickEventCreate(input: ButtonClickEventCreateInput!): ButtonClickEvent @override(from: "api-journeys")
+  chatOpenEventCreate(input: ChatOpenEventCreateInput!): ChatOpenEvent @override(from: "api-journeys")
+  journeyViewEventCreate(input: JourneyViewEventCreateInput!): JourneyViewEvent @override(from: "api-journeys")
+  stepViewEventCreate(input: StepViewEventCreateInput!): StepViewEvent @override(from: "api-journeys")
+  stepNextEventCreate(input: StepNextEventCreateInput!): StepNextEvent @override(from: "api-journeys")
+  stepPreviousEventCreate(input: StepPreviousEventCreateInput!): StepPreviousEvent @override(from: "api-journeys")
+  radioQuestionSubmissionEventCreate(input: RadioQuestionSubmissionEventCreateInput!): RadioQuestionSubmissionEvent @override(from: "api-journeys")
+  signUpSubmissionEventCreate(input: SignUpSubmissionEventCreateInput!): SignUpSubmissionEvent @override(from: "api-journeys")
+  textResponseSubmissionEventCreate(input: TextResponseSubmissionEventCreateInput!): TextResponseSubmissionEvent @override(from: "api-journeys")
+  videoStartEventCreate(input: VideoStartEventCreateInput!): VideoStartEvent @override(from: "api-journeys")
+  videoPlayEventCreate(input: VideoPlayEventCreateInput!): VideoPlayEvent @override(from: "api-journeys")
+  videoPauseEventCreate(input: VideoPauseEventCreateInput!): VideoPauseEvent @override(from: "api-journeys")
+  videoCompleteEventCreate(input: VideoCompleteEventCreateInput!): VideoCompleteEvent @override(from: "api-journeys")
+  videoExpandEventCreate(input: VideoExpandEventCreateInput!): VideoExpandEvent @override(from: "api-journeys")
+  videoCollapseEventCreate(input: VideoCollapseEventCreateInput!): VideoCollapseEvent @override(from: "api-journeys")
+  videoProgressEventCreate(input: VideoProgressEventCreateInput!): VideoProgressEvent @override(from: "api-journeys")
+  hostCreate(teamId: ID!, input: HostCreateInput!): Host @override(from: "api-journeys")
+  hostUpdate(id: ID!, teamId: ID!, input: HostUpdateInput): Host @override(from: "api-journeys")
+  hostDelete(id: ID!, teamId: ID!): Host @override(from: "api-journeys")
+  integrationDelete(id: ID!): Integration @override(from: "api-journeys")
+  journeyCreate(input: JourneyCreateInput!, teamId: ID!): Journey! @override(from: "api-journeys")
+  journeyUpdate(id: ID!, input: JourneyUpdateInput!): Journey! @override(from: "api-journeys")
+  journeyDuplicate(id: ID!, teamId: ID!): Journey! @override(from: "api-journeys")
+  journeyPublish(id: ID!): Journey! @override(from: "api-journeys")
+  journeyFeature(id: ID!, feature: Boolean!): Journey! @override(from: "api-journeys")
+  journeysArchive(ids: [ID!]!): [Journey!]! @override(from: "api-journeys")
+  journeysDelete(ids: [ID!]!): [Journey!]! @override(from: "api-journeys")
+  journeysTrash(ids: [ID!]!): [Journey!]! @override(from: "api-journeys")
+  journeysRestore(ids: [ID!]!): [Journey!]! @override(from: "api-journeys")
+  journeyTemplate(id: ID!, input: JourneyTemplateInput!): Journey! @override(from: "api-journeys")
   journeySimpleUpdate(id: ID!, journey: Json!): Json
   journeyAiTranslateCreate(input: JourneyAiTranslateInput!): Journey!
-  journeyCollectionCreate(input: JourneyCollectionCreateInput!): JourneyCollection!
-  journeyCollectionUpdate(id: ID!, input: JourneyCollectionUpdateInput!): JourneyCollection!
-  journeyCollectionDelete(id: ID!): JourneyCollection!
-  createJourneyEventsExportLog(input: JourneyEventsExportLogInput!): JourneyEventsExportLog!
-  journeyProfileCreate: JourneyProfile!
-  journeyProfileUpdate(input: JourneyProfileUpdateInput!): JourneyProfile!
-  journeyThemeCreate(input: JourneyThemeCreateInput!): JourneyTheme!
-  journeyThemeUpdate(id: ID!, input: JourneyThemeUpdateInput!): JourneyTheme!
-  journeyThemeDelete(id: ID!): JourneyTheme!
-  updateJourneysEmailPreference(input: JourneysEmailPreferenceUpdateInput!): JourneysEmailPreference
-  journeyNotificationUpdate(input: JourneyNotificationUpdateInput!): JourneyNotification
+  journeyCollectionCreate(input: JourneyCollectionCreateInput!): JourneyCollection! @override(from: "api-journeys")
+  journeyCollectionUpdate(id: ID!, input: JourneyCollectionUpdateInput!): JourneyCollection! @override(from: "api-journeys")
+  journeyCollectionDelete(id: ID!): JourneyCollection! @override(from: "api-journeys")
+  createJourneyEventsExportLog(input: JourneyEventsExportLogInput!): JourneyEventsExportLog! @override(from: "api-journeys")
+  journeyProfileCreate: JourneyProfile! @override(from: "api-journeys")
+  journeyProfileUpdate(input: JourneyProfileUpdateInput!): JourneyProfile! @override(from: "api-journeys")
+  journeyThemeCreate(input: JourneyThemeCreateInput!): JourneyTheme! @override(from: "api-journeys")
+  journeyThemeUpdate(id: ID!, input: JourneyThemeUpdateInput!): JourneyTheme! @override(from: "api-journeys")
+  journeyThemeDelete(id: ID!): JourneyTheme! @override(from: "api-journeys")
+  updateJourneysEmailPreference(input: JourneysEmailPreferenceUpdateInput!): JourneysEmailPreference @override(from: "api-journeys")
+  journeyNotificationUpdate(input: JourneyNotificationUpdateInput!): JourneyNotification @override(from: "api-journeys")
   journeyLanguageAiDetect(input: MutationJourneyLanguageAiDetectInput!): Boolean!
-  qrCodeCreate(input: QrCodeCreateInput!): QrCode!
-  qrCodeUpdate(id: ID!, input: QrCodeUpdateInput!): QrCode!
-  qrCodeDelete(id: ID!): QrCode!
-  teamCreate(input: TeamCreateInput!): Team
-  teamUpdate(id: ID!, input: TeamUpdateInput!): Team
-  userInviteCreate(journeyId: ID!, input: UserInviteCreateInput!): UserInvite
-  userInviteRemove(id: ID!, journeyId: ID!): UserInvite
-  userInviteAcceptAll: [UserInvite!]
-  userJourneyRequest(journeyId: ID!): UserJourney
-  userJourneyApprove(id: ID!): UserJourney
-  userJourneyPromote(id: ID!): UserJourney
-  userJourneyRemove(id: ID!): UserJourney
-  userJourneyRemoveAll(id: ID!): [UserJourney!]
-  userJourneyOpen(id: ID!): UserJourney
-  userTeamUpdate(id: ID!, input: UserTeamUpdateInput!): UserTeam
-  userTeamDelete(id: ID!): UserTeam
-  userTeamInviteCreate(teamId: ID!, input: UserTeamInviteCreateInput!): UserTeamInvite
-  userTeamInviteRemove(id: ID!): UserTeamInvite
-  userTeamInviteAcceptAll: [UserTeamInvite!]
-  visitorUpdate(id: ID!, input: VisitorUpdateInput!): Visitor
-  visitorUpdateForCurrentUser(input: VisitorUpdateInput!): Visitor
+  qrCodeCreate(input: QrCodeCreateInput!): QrCode! @override(from: "api-journeys")
+  qrCodeUpdate(id: ID!, input: QrCodeUpdateInput!): QrCode! @override(from: "api-journeys")
+  qrCodeDelete(id: ID!): QrCode! @override(from: "api-journeys")
+  teamCreate(input: TeamCreateInput!): Team @override(from: "api-journeys")
+  teamUpdate(id: ID!, input: TeamUpdateInput!): Team @override(from: "api-journeys")
+  userInviteCreate(journeyId: ID!, input: UserInviteCreateInput!): UserInvite @override(from: "api-journeys")
+  userInviteRemove(id: ID!, journeyId: ID!): UserInvite @override(from: "api-journeys")
+  userInviteAcceptAll: [UserInvite!] @override(from: "api-journeys")
+  userJourneyRequest(journeyId: ID!): UserJourney @override(from: "api-journeys")
+  userJourneyApprove(id: ID!): UserJourney @override(from: "api-journeys")
+  userJourneyPromote(id: ID!): UserJourney @override(from: "api-journeys")
+  userJourneyRemove(id: ID!): UserJourney @override(from: "api-journeys")
+  userJourneyRemoveAll(id: ID!): [UserJourney!] @override(from: "api-journeys")
+  userJourneyOpen(id: ID!): UserJourney @override(from: "api-journeys")
+  userTeamUpdate(id: ID!, input: UserTeamUpdateInput!): UserTeam @override(from: "api-journeys")
+  userTeamDelete(id: ID!): UserTeam @override(from: "api-journeys")
+  userTeamInviteCreate(teamId: ID!, input: UserTeamInviteCreateInput!): UserTeamInvite @override(from: "api-journeys")
+  userTeamInviteRemove(id: ID!): UserTeamInvite @override(from: "api-journeys")
+  userTeamInviteAcceptAll: [UserTeamInvite!] @override(from: "api-journeys")
+  visitorUpdate(id: ID!, input: VisitorUpdateInput!): Visitor @override(from: "api-journeys")
+  visitorUpdateForCurrentUser(input: VisitorUpdateInput!): Visitor @override(from: "api-journeys")
 }
 
 input MutationJourneyLanguageAiDetectInput {
@@ -1427,43 +1452,43 @@ input QrCodesFilter {
 }
 
 type Query {
-  blocks(where: BlocksFilter): [Block!]!
-  block(id: ID!): Block
-  customDomain(id: ID!): CustomDomain
-  customDomains(teamId: ID!): [CustomDomain!]
+  blocks(where: BlocksFilter): [Block!]! @override(from: "api-journeys")
+  block(id: ID!): Block @override(from: "api-journeys")
+  customDomain(id: ID!): CustomDomain @override(from: "api-journeys")
+  customDomains(teamId: ID!): [CustomDomain!] @override(from: "api-journeys")
   node(id: ID!): Node
   nodes(ids: [ID!]!): [Node]!
-  journeyEventsConnection(journeyId: ID!, filter: JourneyEventsFilter, before: String, after: String, first: Int, last: Int): QueryJourneyEventsConnection
-  journeyEventsCount(journeyId: ID!, filter: JourneyEventsFilter): Int
-  hosts(teamId: ID!): [Host!]
-  integrations(teamId: ID!): [Integration!]
-  journey(id: ID!, idType: IdType, options: JourneysQueryOptions): Journey
-  journeys(where: JourneysFilter, options: JourneysQueryOptions): [Journey!]!
-  adminJourney(id: ID!, idType: IdType): Journey!
-  adminJourneys(status: [JourneyStatus!], template: Boolean, teamId: ID, useLastActiveTeamId: Boolean): [Journey!]!
+  journeyEventsConnection(journeyId: ID!, filter: JourneyEventsFilter, before: String, after: String, first: Int, last: Int): QueryJourneyEventsConnection! @override(from: "api-journeys")
+  journeyEventsCount(journeyId: ID!, filter: JourneyEventsFilter): Int @override(from: "api-journeys")
+  hosts(teamId: ID!): [Host!] @override(from: "api-journeys")
+  integrations(teamId: ID!): [Integration!] @override(from: "api-journeys")
+  journey(id: ID!, idType: IdType, options: JourneysQueryOptions): Journey @override(from: "api-journeys")
+  journeys(where: JourneysFilter, options: JourneysQueryOptions): [Journey!]! @override(from: "api-journeys")
+  adminJourney(id: ID!, idType: IdType): Journey! @override(from: "api-journeys")
+  adminJourneys(status: [JourneyStatus!], template: Boolean, teamId: ID, useLastActiveTeamId: Boolean): [Journey!]! @override(from: "api-journeys")
   journeySimpleGet(id: ID!): Json
-  journeyCollection(id: ID!): JourneyCollection!
-  journeyCollections(teamId: ID!): [JourneyCollection!]!
-  getJourneyProfile: JourneyProfile
-  journeyTheme(journeyId: ID!): JourneyTheme
-  journeysEmailPreference(email: String!): JourneysEmailPreference
-  journeysPlausibleStatsRealtimeVisitors(id: ID!, idType: IdType): Int
-  journeysPlausibleStatsAggregate(id: ID!, idType: IdType, where: PlausibleStatsAggregateFilter!): PlausibleStatsAggregateResponse
-  journeysPlausibleStatsBreakdown(id: ID!, idType: IdType, where: PlausibleStatsBreakdownFilter!): [PlausibleStatsResponse!]
-  journeysPlausibleStatsTimeseries(id: ID!, idType: IdType, where: PlausibleStatsTimeseriesFilter!): [PlausibleStatsResponse!]
-  qrCode(id: ID!): QrCode!
-  qrCodes(where: QrCodesFilter!): [QrCode!]!
-  teams: [Team!]
-  team(id: ID!): Team
-  userInvites(journeyId: ID!): [UserInvite!]
-  getUserRole: UserRole
-  userTeams(teamId: ID!, where: UserTeamFilterInput): [UserTeam!]
-  userTeam(id: ID!): UserTeam
-  userTeamInvites(teamId: ID!): [UserTeamInvite!]
-  journeyVisitorsConnection(filter: JourneyVisitorFilter!, sort: JourneyVisitorSort, before: String, after: String, first: Int, last: Int): QueryJourneyVisitorsConnection
-  journeyVisitorCount(filter: JourneyVisitorFilter!): Int
-  visitor(id: ID!): Visitor
-  visitorsConnection(teamId: ID, before: String, after: String, first: Int, last: Int): QueryVisitorsConnection
+  journeyCollection(id: ID!): JourneyCollection! @override(from: "api-journeys")
+  journeyCollections(teamId: ID!): [JourneyCollection!]! @override(from: "api-journeys")
+  getJourneyProfile: JourneyProfile @override(from: "api-journeys")
+  journeyTheme(journeyId: ID!): JourneyTheme @override(from: "api-journeys")
+  journeysEmailPreference(email: String!): JourneysEmailPreference @override(from: "api-journeys")
+  journeysPlausibleStatsRealtimeVisitors(id: ID!, idType: IdType): Int @override(from: "api-journeys")
+  journeysPlausibleStatsAggregate(id: ID!, idType: IdType, where: PlausibleStatsAggregateFilter!): PlausibleStatsAggregateResponse @override(from: "api-journeys")
+  journeysPlausibleStatsBreakdown(id: ID!, idType: IdType, where: PlausibleStatsBreakdownFilter!): [PlausibleStatsResponse!] @override(from: "api-journeys")
+  journeysPlausibleStatsTimeseries(id: ID!, idType: IdType, where: PlausibleStatsTimeseriesFilter!): [PlausibleStatsResponse!] @override(from: "api-journeys")
+  qrCode(id: ID!): QrCode! @override(from: "api-journeys")
+  qrCodes(where: QrCodesFilter!): [QrCode!]! @override(from: "api-journeys")
+  teams: [Team!] @override(from: "api-journeys")
+  team(id: ID!): Team @override(from: "api-journeys")
+  userInvites(journeyId: ID!): [UserInvite!] @override(from: "api-journeys")
+  getUserRole: UserRole @override(from: "api-journeys")
+  userTeams(teamId: ID!, where: UserTeamFilterInput): [UserTeam!] @override(from: "api-journeys")
+  userTeam(id: ID!): UserTeam @override(from: "api-journeys")
+  userTeamInvites(teamId: ID!): [UserTeamInvite!] @override(from: "api-journeys")
+  journeyVisitorsConnection(filter: JourneyVisitorFilter!, sort: JourneyVisitorSort, before: String, after: String, first: Int, last: Int): QueryJourneyVisitorsConnection! @override(from: "api-journeys")
+  journeyVisitorCount(filter: JourneyVisitorFilter!): Int @override(from: "api-journeys")
+  visitor(id: ID!): Visitor @override(from: "api-journeys")
+  visitorsConnection(teamId: String, before: String, after: String, first: Int, last: Int): QueryVisitorsConnection! @override(from: "api-journeys")
 }
 
 type QueryJourneyEventsConnection {

@@ -44,6 +44,9 @@ function canAccessTeam(
 // Queries
 builder.queryField('teams', (t) =>
   t.withAuth({ isAuthenticated: true }).field({
+    override: {
+      from: 'api-journeys'
+    },
     type: [TeamRef],
     resolve: async (_, __, context) => {
       const user = context.user
@@ -70,6 +73,9 @@ builder.queryField('teams', (t) =>
 
 builder.queryField('team', (t) =>
   t.withAuth({ isAuthenticated: true }).field({
+    override: {
+      from: 'api-journeys'
+    },
     type: TeamRef,
     args: {
       id: t.arg.id({ required: true })
@@ -98,6 +104,9 @@ builder.queryField('team', (t) =>
 // Mutations
 builder.mutationField('teamCreate', (t) =>
   t.withAuth({ isAuthenticated: true }).field({
+    override: {
+      from: 'api-journeys'
+    },
     type: TeamRef,
     args: {
       input: t.arg({ type: TeamCreateInput, required: true })
@@ -128,6 +137,9 @@ builder.mutationField('teamCreate', (t) =>
 
 builder.mutationField('teamUpdate', (t) =>
   t.withAuth({ isAuthenticated: true }).field({
+    override: {
+      from: 'api-journeys'
+    },
     type: TeamRef,
     args: {
       id: t.arg.id({ required: true }),

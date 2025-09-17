@@ -86,6 +86,9 @@ async function getNextParentOrder(journeyId: string, parentBlockId: string) {
 // VideoTriggerBlock Mutations
 builder.mutationField('videoTriggerBlockCreate', (t) =>
   t.withAuth({ isAuthenticated: true }).field({
+    override: {
+      from: 'api-journeys'
+    },
     type: VideoTriggerBlock,
     nullable: false,
     args: {
@@ -150,6 +153,9 @@ builder.mutationField('videoTriggerBlockCreate', (t) =>
 
 builder.mutationField('videoTriggerBlockUpdate', (t) =>
   t.withAuth({ isAuthenticated: true }).field({
+    override: {
+      from: 'api-journeys'
+    },
     type: VideoTriggerBlock,
     nullable: false,
     args: {

@@ -52,6 +52,9 @@ export const JourneyCollectionRef = builder.prismaObject('JourneyCollection', {
 // Query: Get single journey collection
 builder.queryField('journeyCollection', (t) =>
   t.withAuth({ isAuthenticated: true }).field({
+    override: {
+      from: 'api-journeys'
+    },
     type: JourneyCollectionRef,
     nullable: false,
     args: {
@@ -92,6 +95,9 @@ builder.queryField('journeyCollection', (t) =>
 // Query: Get journey collections by team
 builder.queryField('journeyCollections', (t) =>
   t.withAuth({ isAuthenticated: true }).field({
+    override: {
+      from: 'api-journeys'
+    },
     type: [JourneyCollectionRef],
     nullable: false,
     args: {
@@ -128,6 +134,9 @@ builder.queryField('journeyCollections', (t) =>
 // Mutation: Create journey collection
 builder.mutationField('journeyCollectionCreate', (t) =>
   t.withAuth({ isAuthenticated: true }).field({
+    override: {
+      from: 'api-journeys'
+    },
     type: JourneyCollectionRef,
     nullable: false,
     args: {
@@ -199,6 +208,9 @@ builder.mutationField('journeyCollectionCreate', (t) =>
 // Mutation: Update journey collection
 builder.mutationField('journeyCollectionUpdate', (t) =>
   t.withAuth({ isAuthenticated: true }).field({
+    override: {
+      from: 'api-journeys'
+    },
     type: JourneyCollectionRef,
     nullable: false,
     args: {
@@ -281,6 +293,9 @@ builder.mutationField('journeyCollectionUpdate', (t) =>
 // Mutation: Delete journey collection
 builder.mutationField('journeyCollectionDelete', (t) =>
   t.withAuth({ isAuthenticated: true }).field({
+    override: {
+      from: 'api-journeys'
+    },
     type: JourneyCollectionRef,
     nullable: false,
     args: {

@@ -16,6 +16,9 @@ export const IntegrationRef = builder.prismaInterface('Integration', {
 
 builder.queryField('integrations', (t) =>
   t.withAuth({ isAuthenticated: true }).field({
+    override: {
+      from: 'api-journeys'
+    },
     type: [IntegrationRef],
     args: {
       teamId: t.arg({ type: 'ID', required: true })
@@ -51,6 +54,9 @@ builder.queryField('integrations', (t) =>
 
 builder.mutationField('integrationDelete', (t) =>
   t.withAuth({ isAuthenticated: true }).field({
+    override: {
+      from: 'api-journeys'
+    },
     type: IntegrationRef,
     args: {
       id: t.arg({ type: 'ID', required: true })

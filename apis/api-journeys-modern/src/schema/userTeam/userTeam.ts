@@ -85,6 +85,9 @@ function canAccessUserTeam(action: string, userTeam: any, user: any): boolean {
 // Queries
 builder.queryField('userTeams', (t) =>
   t.withAuth({ isAuthenticated: true }).field({
+    override: {
+      from: 'api-journeys'
+    },
     type: [UserTeamRef],
     args: {
       teamId: t.arg.id({ required: true }),
@@ -130,6 +133,9 @@ builder.queryField('userTeams', (t) =>
 
 builder.queryField('userTeam', (t) =>
   t.withAuth({ isAuthenticated: true }).field({
+    override: {
+      from: 'api-journeys'
+    },
     type: UserTeamRef,
     args: {
       id: t.arg.id({ required: true })
@@ -158,6 +164,9 @@ builder.queryField('userTeam', (t) =>
 // Mutations
 builder.mutationField('userTeamUpdate', (t) =>
   t.withAuth({ isAuthenticated: true }).field({
+    override: {
+      from: 'api-journeys'
+    },
     type: UserTeamRef,
     args: {
       id: t.arg.id({ required: true }),
@@ -192,6 +201,9 @@ builder.mutationField('userTeamUpdate', (t) =>
 
 builder.mutationField('userTeamDelete', (t) =>
   t.withAuth({ isAuthenticated: true }).field({
+    override: {
+      from: 'api-journeys'
+    },
     type: UserTeamRef,
     args: {
       id: t.arg.id({ required: true })

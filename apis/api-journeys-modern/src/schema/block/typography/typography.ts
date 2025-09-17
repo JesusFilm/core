@@ -130,6 +130,9 @@ async function getNextParentOrder(journeyId: string, parentBlockId: string) {
 // TypographyBlock Mutations
 builder.mutationField('typographyBlockCreate', (t) =>
   t.withAuth({ isAuthenticated: true }).field({
+    override: {
+      from: 'api-journeys'
+    },
     type: TypographyBlock,
     nullable: false,
     args: {
@@ -198,6 +201,9 @@ builder.mutationField('typographyBlockCreate', (t) =>
 
 builder.mutationField('typographyBlockUpdate', (t) =>
   t.withAuth({ isAuthenticated: true }).field({
+    override: {
+      from: 'api-journeys'
+    },
     type: TypographyBlock,
     nullable: false,
     args: {

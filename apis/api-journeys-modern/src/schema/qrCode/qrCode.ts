@@ -56,6 +56,9 @@ const qrCodeService = new QrCodeService()
 
 builder.queryField('qrCode', (t) =>
   t.field({
+    override: {
+      from: 'api-journeys'
+    },
     type: QrCodeRef,
     nullable: false,
     args: {
@@ -79,6 +82,9 @@ builder.queryField('qrCode', (t) =>
 
 builder.queryField('qrCodes', (t) =>
   t.field({
+    override: {
+      from: 'api-journeys'
+    },
     type: [QrCodeRef],
     nullable: false,
     args: {
@@ -99,6 +105,9 @@ builder.queryField('qrCodes', (t) =>
 // Mutations
 builder.mutationField('qrCodeCreate', (t) =>
   t.withAuth({ isAuthenticated: true }).field({
+    override: {
+      from: 'api-journeys'
+    },
     type: QrCodeRef,
     nullable: false,
     args: {
@@ -158,6 +167,9 @@ builder.mutationField('qrCodeCreate', (t) =>
 
 builder.mutationField('qrCodeUpdate', (t) =>
   t.withAuth({ isAuthenticated: true }).field({
+    override: {
+      from: 'api-journeys'
+    },
     type: QrCodeRef,
     nullable: false,
     args: {
@@ -216,6 +228,9 @@ builder.mutationField('qrCodeUpdate', (t) =>
 
 builder.mutationField('qrCodeDelete', (t) =>
   t.withAuth({ isAuthenticated: true }).field({
+    override: {
+      from: 'api-journeys'
+    },
     type: QrCodeRef,
     nullable: false,
     args: {

@@ -75,6 +75,9 @@ async function getNextParentOrder(journeyId: string, parentBlockId: string) {
 // SpacerBlock Mutations
 builder.mutationField('spacerBlockCreate', (t) =>
   t.withAuth({ isAuthenticated: true }).field({
+    override: {
+      from: 'api-journeys'
+    },
     type: SpacerBlock,
     nullable: false,
     args: {
@@ -136,6 +139,9 @@ builder.mutationField('spacerBlockCreate', (t) =>
 
 builder.mutationField('spacerBlockUpdate', (t) =>
   t.withAuth({ isAuthenticated: true }).field({
+    override: {
+      from: 'api-journeys'
+    },
     type: SpacerBlock,
     nullable: false,
     args: {

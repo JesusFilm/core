@@ -3,32 +3,19 @@ import { v4 as uuidv4 } from 'uuid'
 import { prisma } from '@core/prisma/journeys/client'
 
 import { builder } from '../../builder'
-import { EventInterface } from '../event'
 import { validateBlockEvent } from '../utils'
 
-import { RadioQuestionSubmissionEventCreateInput } from './inputs'
+import { VideoProgressEventCreateInput } from './inputs/videoProgressEventCreateInput'
+import { VideoProgressEventRef } from './videoProgressEvent'
 
-export const RadioQuestionSubmissionEventRef = builder.prismaObject('Event', {
-  shareable: true,
-  interfaces: [EventInterface],
-  variant: 'RadioQuestionSubmissionEvent',
-  isTypeOf: (obj: any) => obj.typename === 'RadioQuestionSubmissionEvent',
-  fields: (t) => ({
-    // No unique fields for this event type
-  })
-})
-
-builder.mutationField('radioQuestionSubmissionEventCreate', (t) =>
+builder.mutationField('videoProgressEventCreate', (t) =>
   t.withAuth({ isAuthenticated: true }).field({
     override: {
       from: 'api-journeys'
     },
-    type: RadioQuestionSubmissionEventRef,
+    type: VideoProgressEventRef,
     args: {
-      input: t.arg({
-        type: RadioQuestionSubmissionEventCreateInput,
-        required: true
-      })
+      input: t.arg({ type: VideoProgressEventCreateInput, required: true })
     },
     resolve: async (_parent, args, context) => {
       const { input } = args
@@ -47,13 +34,14 @@ builder.mutationField('radioQuestionSubmissionEventCreate', (t) =>
       return await prisma.event.create({
         data: {
           id: input.id || uuidv4(),
-          typename: 'RadioQuestionSubmissionEvent',
+          typename: 'VideoProgressEvent',
           journeyId,
           blockId: input.blockId,
           stepId: input.stepId,
+          position: input.position,
           label: input.label,
-          value: input.value,
-          radioOptionBlockId: input.radioOptionBlockId,
+          source: input.value,
+          progress: input.progress,
           visitorId: visitor.id
         }
       })

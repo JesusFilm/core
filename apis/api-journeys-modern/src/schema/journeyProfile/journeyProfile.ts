@@ -39,6 +39,9 @@ builder.asEntity(JourneyProfileRef, {
 // getJourneyProfile query - matches legacy API
 builder.queryField('getJourneyProfile', (t) =>
   t.withAuth({ isAuthenticated: true }).field({
+    override: {
+      from: 'api-journeys'
+    },
     type: JourneyProfileRef,
     nullable: true,
     resolve: async (_parent, _args, context) => {
@@ -54,6 +57,9 @@ builder.queryField('getJourneyProfile', (t) =>
 // journeyProfileCreate mutation - matches legacy API
 builder.mutationField('journeyProfileCreate', (t) =>
   t.withAuth({ isAuthenticated: true }).field({
+    override: {
+      from: 'api-journeys'
+    },
     type: JourneyProfileRef,
     nullable: false,
     resolve: async (_parent, _args, context) => {
@@ -87,6 +93,9 @@ builder.mutationField('journeyProfileCreate', (t) =>
 // journeyProfileUpdate mutation - matches legacy API
 builder.mutationField('journeyProfileUpdate', (t) =>
   t.withAuth({ isAuthenticated: true }).field({
+    override: {
+      from: 'api-journeys'
+    },
     type: JourneyProfileRef,
     nullable: false,
     args: {

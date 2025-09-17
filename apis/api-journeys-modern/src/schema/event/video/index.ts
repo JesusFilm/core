@@ -5,14 +5,10 @@ import './videoCompleteEvent'
 import './videoExpandEvent'
 import './videoCollapseEvent'
 import './videoProgressEvent'
-import './inputs'
-
-export {
-  VideoStartEventRef,
-  VideoPlayEventRef,
-  VideoPauseEventRef,
-  VideoCompleteEventRef,
-  VideoExpandEventRef,
-  VideoCollapseEventRef,
-  VideoProgressEventRef
-} from './videoEvents'
+import './videoStartEventCreate.mutation'
+import './videoPlayEventCreate.mutation'
+import './videoPauseEventCreate.mutation'
+import './videoCompleteEventCreate.mutation'
+import './videoExpandEventCreate.mutation'
+import './videoCollapseEventCreate.mutation'
+import './videoProgressEventCreate.mutation'
