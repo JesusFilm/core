@@ -1,6 +1,7 @@
 {
   "version": "1.0.0",
   "_comment": "All IDs in playlistSequence are archlight database IDs, not slugs",
+  "blacklistedVideoIds": [],
   "playlistSequence": [
     ["1_jf-0-0"],
     ["JFP-Featured"],

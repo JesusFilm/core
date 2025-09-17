@@ -1,13 +1,13 @@
 import PlayArrowRounded from '@mui/icons-material/PlayArrowRounded'
 import VolumeOff from '@mui/icons-material/VolumeOff'
 import VolumeUpOutlined from '@mui/icons-material/VolumeUpOutlined'
-import { useTranslation } from 'next-i18next'
 import NextLink from 'next/link'
+import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 
 import { usePlayer } from '../../../../../libs/playerContext'
-import { useVideo } from '../../../../../libs/videoContext'
 import { getWatchUrl } from '../../../../../libs/utils/getWatchUrl'
+import { useVideo } from '../../../../../libs/videoContext'
 
 interface VideoTitleProps {
   videoTitle: string

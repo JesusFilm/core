@@ -40,7 +40,9 @@
         "libs/shared/ui/src/components/*",
         "libs/shared/ui/src/libs/*"
       ],
-      "@core/yoga/*": ["libs/yoga/src/*"]
+      "@core/yoga/*": ["libs/yoga/src/*"],
+      "@watch/*": ["apps/watch/src/*"],
+      "@ui/*": ["libs/ui/src/*"]
     }
   },
   "exclude": ["node_modules", "tmp"]

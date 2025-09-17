@@ -1,5 +1,5 @@
-import { render, screen } from '@testing-library/react'
 import { ThemeProvider, createTheme } from '@mui/material/styles'
+import { render, screen } from '@testing-library/react'
 import type { ReactElement } from 'react'
 
 import { NavButton } from './NavButton'

@@ -45,7 +45,7 @@ export const QuizButton = ({
           tabIndex={0}
         >
           <div className="flex justify-between items-center cursor-pointer p-4 xl:p-6">
-            <div className="absolute inset-0 bg-[url(./assets/overlay.svg)] bg-repeat mix-blend-multiply opacity-50"></div>
+            <div className="absolute inset-0 bg-[url(/assets/overlay.svg)] bg-repeat mix-blend-multiply opacity-50"></div>
             <div className="relative z-1 flex w-full items-center font-semibold leading-[1.2] md:text-xl xl:text-2xl">
               <span className="flex-none uppercase font-extrabold text-xs border-2 tracking-wider border-white rounded-lg px-2 py-1 mr-4">
                 {'Quiz'}

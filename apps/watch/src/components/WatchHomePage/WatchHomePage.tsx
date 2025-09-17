@@ -1,5 +1,4 @@
 import Box from '@mui/material/Box'
-import Container from '@mui/material/Container'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next'
@@ -13,40 +12,46 @@ import {
 } from 'react'
 import { Index } from 'react-instantsearch'
 
-import { SearchBarProvider } from '@core/journeys/ui/algolia/SearchBarProvider'
-import { SearchBar } from '@core/journeys/ui/SearchBar'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 import { ThemeMode, ThemeName } from '@core/shared/ui/themes'
 
-import { useAlgoliaRouter } from '../../libs/algolia/useAlgoliaRouter'
-import { PageWrapper } from '../PageWrapper'
-import { AlgoliaVideoGrid } from '../VideoGrid/AlgoliaVideoGrid'
 import { VideoLabel } from '../../../__generated__/globalTypes'
 import { VideoContentFields } from '../../../__generated__/VideoContentFields'
-
-import { HomeHero } from './HomeHero'
-import { SeeAllVideos } from './SeeAllVideos'
-import { ContentPageBlurFilter } from '../NewVideoContentPage/ContentPageBlurFilter'
-import NextLink from 'next/link'
-import Image from 'next/image'
-import { PlayerProvider } from '../../libs/playerContext'
+import { useAlgoliaRouter } from '../../libs/algolia/useAlgoliaRouter'
+import { PlayerProvider, usePlayer } from '../../libs/playerContext'
 import { VideoProvider } from '../../libs/videoContext'
 import { WatchProvider } from '../../libs/watchContext'
-import { useCarouselVideos } from '../VideoHero/libs/useCarouselVideos'
-import { VideoContentHero } from '../NewVideoContentPage/VideoContentHero/VideoContentHero'
+import { Header } from '../Header'
+import { ContentPageBlurFilter } from '../NewVideoContentPage/ContentPageBlurFilter'
 import { VideoCarousel } from '../NewVideoContentPage/VideoCarousel/VideoCarousel'
-import { usePlayer } from '../../libs/playerContext'
+import { VideoContentHero } from '../NewVideoContentPage/VideoContentHero/VideoContentHero'
+import { SearchComponent } from '../SearchComponent'
+import { useCarouselVideos } from '../VideoHero/libs/useCarouselVideos'
+
+import { SeeAllVideos } from './SeeAllVideos'
 
 interface WatchHomePageProps {
   languageId?: string | undefined
 }
 
+function WatchHomePageContent({ languageId }: WatchHomePageProps): ReactElement {
+  const indexName = process.env.NEXT_PUBLIC_ALGOLIA_INDEX ?? ''
+
+  return (
+    <Index indexName={indexName}>
+      <WatchHomePageBody languageId={languageId} />
+    </Index>
+  )
+}
+
 // Inner component that uses player context
-function WatchHomePageContent({
+function WatchHomePageBody({
   languageId
 }: WatchHomePageProps): ReactElement {
   const { t } = useTranslation('apps-watch')
   useAlgoliaRouter()
+  
+  const indexName = process.env.NEXT_PUBLIC_ALGOLIA_INDEX ?? ''
 
   const [activeVideoId, setActiveVideoId] = useState<string | undefined>()
   const {
@@ -54,11 +59,9 @@ function WatchHomePageContent({
     currentIndex,
     loading,
     moveToNext,
-    moveToPrevious,
-    jumpToVideo,
-    currentPoolIndex
+    jumpToVideo
   } = useCarouselVideos('529') // Use language ID 529 for now
-  const [autoProgressEnabled, setAutoProgressEnabled] = useState(true)
+  const [autoProgressEnabled] = useState(true)
 
   // Map videos to ensure data structure matches what VideoCard expects
   const carouselVideos = videos.map((video) => ({
@@ -149,9 +152,24 @@ function WatchHomePageContent({
 
   // Get the active video for playback (current video from carousel)
   // Transform CarouselVideo to VideoContentFields for VideoProvider
-  const activeVideo: VideoContentFields | null = useMemo(() => {
-    if (!currentVideo) {
-      return null
+  const activeVideo: VideoContentFields = useMemo(() => {
+    if (currentVideo == null) {
+      return {
+        __typename: 'Video',
+        id: '',
+        slug: '',
+        label: VideoLabel.shortFilm,
+        title: [],
+        images: [],
+        imageAlt: [],
+        snippet: [],
+        description: [],
+        studyQuestions: [],
+        bibleCitations: [],
+        variant: null,
+        variantLanguagesCount: 0,
+        childrenCount: 0
+      }
     }
 
     const title = (currentVideo.title ?? []).map((t) => ({
@@ -169,13 +187,10 @@ function WatchHomePageContent({
       value: alt.value
     }))
 
-    const snippet = []
-    const description = (currentVideo.description ?? []).map((desc) => ({
-      __typename: 'VideoDescription' as const,
-      value: desc.value
-    }))
-    const studyQuestions = []
-    const bibleCitations = []
+    const snippet: VideoContentFields['snippet'] = []
+    const description: VideoContentFields['description'] = []
+    const studyQuestions: VideoContentFields['studyQuestions'] = []
+    const bibleCitations: VideoContentFields['bibleCitations'] = []
 
     const variant =
       currentVideo.variant &&
@@ -229,12 +244,20 @@ function WatchHomePageContent({
     }
   }, [currentVideo])
 
-  const indexName = process.env.NEXT_PUBLIC_ALGOLIA_INDEX ?? ''
-
   return (
     <div>
+      <Header
+        themeMode={ThemeMode.dark}
+        hideTopAppBar
+        hideBottomAppBar
+        hideSpacer
+        showLanguageSwitcher
+      />
+      <Index indexName={indexName}>
+        <SearchComponent languageId={languageId} floating={true} />
+      </Index>
       <VideoProvider value={{ content: activeVideo }}>
-        <VideoContentHero isPreview={true} />
+        <VideoContentHero isPreview={true} languageId={languageId} />
       </VideoProvider>
 
       <ContentPageBlurFilter>
@@ -249,7 +272,6 @@ function WatchHomePageContent({
               if (success) {
                 setIsProgressing(false)
                 // Note: activeVideoId will be automatically updated by the currentVideo sync effect
-              } else {
               }
             }}
             onSlideChange={(activeIndex: number) => {
@@ -267,14 +289,6 @@ function WatchHomePageContent({
             themeMode={ThemeMode.dark}
             nested
           >
-            <Index indexName={indexName}>
-              <Box sx={{ pb: 10 }}>
-                <SearchBarProvider>
-                  <SearchBar showDropdown showLanguageButton />
-                </SearchBarProvider>
-              </Box>
-              <AlgoliaVideoGrid variant="contained" languageId={languageId} />
-            </Index>
             <SeeAllVideos />
             <Box
               sx={{

@@ -1,9 +1,8 @@
 import { useTheme } from '@mui/material/styles'
-import { ReactElement, useRef, useMemo, useEffect } from 'react'
+import { ReactElement, useEffect, useMemo, useRef } from 'react'
 import { A11y, FreeMode, Mousewheel, Navigation, Virtual } from 'swiper/modules'
 import { Swiper, SwiperSlide } from 'swiper/react'
-import { SwiperOptions } from 'swiper/types'
-import { Swiper as SwiperType } from 'swiper/types'
+import { SwiperOptions , Swiper as SwiperType } from 'swiper/types'
 
 import { VideoChildFields } from '../../../../__generated__/VideoChildFields'
 import { Skeleton } from '../../Skeleton'

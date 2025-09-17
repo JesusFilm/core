@@ -2,6 +2,7 @@ import playlistConfig from '../../../../../config/video-playlist.json'
 
 export interface PlaylistConfig {
   version: string
+  blacklistedVideoIds: string[]
   playlistSequence: string[][]
   settings?: {
     recentlyPlayedBuffer: number
@@ -10,6 +11,33 @@ export interface PlaylistConfig {
     fallbackStrategy: string
     language: string
   }
+}
+
+export const normalizeBlacklistedVideoIds = (value: unknown): string[] => {
+  if (!Array.isArray(value)) return []
+
+  return value.reduce<string[]>((ids, entry) => {
+    if (typeof entry !== 'string') return ids
+
+    const trimmed = entry.trim()
+
+    if (trimmed !== '') {
+      ids.push(trimmed)
+    }
+
+    return ids
+  }, [])
+}
+
+export const filterOutBlacklistedVideos = <T extends { id?: string }>(
+  videos: T[],
+  blacklist: Set<string>
+): T[] => {
+  if (!Array.isArray(videos) || blacklist.size === 0) return videos
+
+  return videos.filter(
+    (video) => typeof video?.id === 'string' && !blacklist.has(video.id)
+  )
 }
 
 const defaultSettings = {
@@ -21,12 +49,19 @@ const defaultSettings = {
 }
 
 export const getPlaylistConfig = (): PlaylistConfig => {
-  const config = playlistConfig as Omit<PlaylistConfig, 'settings'> & {
+  const config = playlistConfig as Omit<
+    PlaylistConfig,
+    'settings' | 'blacklistedVideoIds'
+  > & {
     settings?: PlaylistConfig['settings']
+    blacklistedVideoIds?: unknown
   }
   return {
     ...config,
-    settings: config.settings || defaultSettings
+    settings: config.settings || defaultSettings,
+    blacklistedVideoIds: normalizeBlacklistedVideoIds(
+      config.blacklistedVideoIds
+    )
   }
 }
 
