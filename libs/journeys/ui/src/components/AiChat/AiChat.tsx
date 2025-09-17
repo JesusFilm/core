@@ -150,8 +150,8 @@ export function AiChat({ open }: AiChatProps) {
 
   return (
     <div className="flex flex-col h-full">
-      <Conversation className="flex-1 min-h-0 overflow-hidden">
-        <ConversationContent className="h-full overflow-y-auto">
+      <Conversation className="h-full">
+        <ConversationContent>
           {messages.map((message) => (
             <div key={message.id}>
               {message.parts.map((part, i) => {
@@ -208,48 +208,48 @@ export function AiChat({ open }: AiChatProps) {
         </ConversationContent>
         <ConversationScrollButton />
       </Conversation>
-      <div className="flex-shrink-0 border-t border-border">
-        <Suggestions className="px-4 py-2">
-          {suggestionsLoading && (
-            <div className="flex items-center gap-2 px-4 py-2 text-muted-foreground">
-              <Loader className="size-4 animate-spin" />
-              <span>{t('Loading suggestions, please hold...')}</span>
-            </div>
-          )}
-          {suggestionsError && (
-            <div className="px-4 py-2 text-destructive">{suggestionsError}</div>
-          )}
-          {suggestions?.map((suggestion) => (
-            <Suggestion
-              key={suggestion}
-              onClick={handleSuggestionClick}
-              suggestion={suggestion}
+
+      <Suggestions className="px-4 py-2 border-t border-border">
+        {suggestionsLoading && (
+          <div className="flex items-center gap-2 px-4 py-2 text-muted-foreground">
+            <Loader className="size-4 animate-spin" />
+            <span>{t('Loading suggestions, please hold...')}</span>
+          </div>
+        )}
+        {suggestionsError && (
+          <div className="px-4 py-2 text-destructive">{suggestionsError}</div>
+        )}
+        {suggestions?.map((suggestion) => (
+          <Suggestion
+            key={suggestion}
+            onClick={handleSuggestionClick}
+            suggestion={suggestion}
+          />
+        ))}
+      </Suggestions>
+
+      <div className="px-4 pb-4">
+        <PromptInput
+          onSubmit={handleSubmit}
+          className="w-full bg-background-paper border-none rounded-xl bg-[#EFEFEF]"
+        >
+          <div className="flex flex-row items-center px-3 py-0.5">
+            <PromptInputTextarea
+              className="text-foreground flex-1 text-md p-0"
+              placeholder={t('Ask me anything')}
+              onChange={(e) => setInput(e.target.value)}
+              value={input}
             />
-          ))}
-        </Suggestions>
-        <div className="px-4 pb-4">
-          <PromptInput
-            onSubmit={handleSubmit}
-            className="w-full bg-background-paper border-none rounded-xl bg-[#EFEFEF]"
-          >
-            <div className="flex flex-row items-center px-3 py-0.5">
-              <PromptInputTextarea
-                className="text-foreground flex-1 text-md p-0"
-                placeholder={t('Ask me anything')}
-                onChange={(e) => setInput(e.target.value)}
-                value={input}
+            <div className="flex flex-row justify-end self-end">
+              <PromptInputSubmit
+                disabled={!input}
+                status={status}
+                className="bg-transparent hover:bg-transparent border-none shadow-none text-[#6D6D6D]"
+                children={<SendHorizonalIcon className="size-5" />}
               />
-              <div className="flex flex-row justify-end self-end">
-                <PromptInputSubmit
-                  disabled={!input}
-                  status={status}
-                  className="bg-transparent hover:bg-transparent border-none shadow-none text-[#6D6D6D]"
-                  children={<SendHorizonalIcon className="size-5" />}
-                />
-              </div>
             </div>
-          </PromptInput>
-        </div>
+          </div>
+        </PromptInput>
       </div>
     </div>
   )
