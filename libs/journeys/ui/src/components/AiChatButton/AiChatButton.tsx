@@ -9,6 +9,7 @@ import {
   Drawer,
   DrawerClose,
   DrawerContent,
+  DrawerDescription,
   DrawerHeader,
   DrawerTitle,
   DrawerTrigger
@@ -59,19 +60,23 @@ export function AiChatButton(): ReactElement {
           <AutoAwesomeIcon />
         </Button>
       </DrawerTrigger>
-      <DrawerContent className="flex flex-col h-[90vh] max-h-[80vh]">
+      <DrawerContent className="flex flex-col h-[90vh] max-h-[80vh] [&>div:first-child]:w-[90px] [&>div:first-child]:h-[6px]">
         <DrawerHeader>
           <DrawerClose>
             <Button
-              variant="destructive"
               size="icon"
-              className="absolute top-4 right-4"
+              className="absolute top-3 right-4 size-[24px] rounded-full bg-secondary-light"
               aria-label="Close AI chat"
             >
-              <CloseIcon />
+              <CloseIcon sx={{ fontSize: 18 }} />
             </Button>
           </DrawerClose>
-          <DrawerTitle>{t('Journey Assistant')}</DrawerTitle>
+          <div className="flex flex-col">
+            <DrawerDescription>{t('AI may make mistakes.')}</DrawerDescription>
+            <DrawerDescription>
+              {t('Please double-check important info.')}
+            </DrawerDescription>
+          </div>
         </DrawerHeader>
         <div className="flex-1 min-h-0">
           <AiChat open={open} />

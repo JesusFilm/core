@@ -144,7 +144,7 @@ export function AiChat({ open }: AiChatProps) {
   }
 
   return (
-    <div className="flex flex-col h-full p-2">
+    <div className="flex flex-col h-full">
       <Conversation className="flex-1 min-h-0 overflow-hidden">
         <ConversationContent className="h-full overflow-y-auto">
           {messages.map((message) => (
@@ -203,8 +203,8 @@ export function AiChat({ open }: AiChatProps) {
         </ConversationContent>
         <ConversationScrollButton />
       </Conversation>
-      <div className="flex-shrink-0">
-        <Suggestions className="p-4">
+      <div className="flex-shrink-0 border-t border-border">
+        <Suggestions className="px-4 py-2">
           {suggestionsLoading && (
             <div className="flex items-center gap-2 px-4 py-2 text-muted-foreground">
               <Loader className="size-4 animate-spin" />
@@ -227,7 +227,7 @@ export function AiChat({ open }: AiChatProps) {
           className="w-full bg-background-paper border border-secondary-light rounded-lg"
         >
           <PromptInputTextarea
-            className="text-text-primary flex-1 text-md "
+            className="text-foreground flex-1 text-md "
             placeholder={t("Ask me anything you don't understand.")}
             onChange={(e) => setInput(e.target.value)}
             value={input}
