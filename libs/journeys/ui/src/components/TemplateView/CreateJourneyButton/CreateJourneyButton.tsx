@@ -236,6 +236,13 @@ export function CreateJourneyButton({
     }
   }, [signedIn, router, setOpenTeamDialog])
 
+  // Cleanup effect to reset canOpenTeamDialog when component unmounts
+  useEffect(() => {
+    return () => {
+      canOpenTeamDialog = true
+    }
+  }, [])
+
   return (
     <>
       <Button
