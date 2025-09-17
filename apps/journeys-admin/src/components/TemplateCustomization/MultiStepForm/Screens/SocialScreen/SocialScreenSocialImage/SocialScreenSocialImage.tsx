@@ -18,6 +18,7 @@ import { useJourneyImageBlockCreateMutation } from '../../../../../../libs/useJo
 import { useJourneyImageBlockAssociationUpdateMutation } from '../../../../../../libs/useJourneyImageBlockAssociationUpdateMutation'
 import { useSnackbar } from 'notistack'
 import { useTranslation } from 'next-i18next'
+import CircularProgress from '@mui/material/CircularProgress'
 
 interface SocialScreenSocialImage {
   hasCreatorDescription?: boolean
@@ -137,17 +138,22 @@ export function SocialScreenSocialImage({
       }}
       data-testid="SocialScreenSocialImage"
     >
-      {journey?.primaryImageBlock?.src != null ? (
+      {journey != null && !loading && (
         <>
-          <NextImage
-            src={journey.primaryImageBlock.src}
-            alt={journey?.primaryImageBlock.alt}
-            placeholder="blur"
-            blurDataURL={journey?.primaryImageBlock.blurhash}
-            layout="fill"
-            objectFit="cover"
-            priority
-          />
+          {journey?.primaryImageBlock?.src != null && (
+            <NextImage
+              src={journey.primaryImageBlock.src}
+              alt={journey?.primaryImageBlock.alt}
+              placeholder="blur"
+              blurDataURL={journey?.primaryImageBlock.blurhash}
+              layout="fill"
+              objectFit="cover"
+              priority
+            />
+          )}
+          {journey?.primaryImageBlock?.src == null && !loading && (
+            <GridEmptyIcon fontSize="large" />
+          )}
           <IconButton
             component="label"
             sx={{
@@ -173,17 +179,32 @@ export function SocialScreenSocialImage({
             />
           </IconButton>
         </>
-      ) : journey != null ? (
-        <GridEmptyIcon fontSize="large" />
-      ) : (
-        <Skeleton
-          data-testid="SocialScreenSocialImageSkeleton"
-          variant="rectangular"
-          sx={{
-            width: '100%',
-            height: '100%'
-          }}
-        />
+      )}
+      {loading && (
+        <>
+          <Skeleton
+            data-testid="SocialScreenSocialImageSkeleton"
+            variant="rectangular"
+            sx={{
+              width: '100%',
+              height: '100%'
+            }}
+          />
+          {loading && (
+            <CircularProgress
+              data-testid="SocialScreenSocialImageCircularProgress"
+              size={30}
+              sx={{
+                position: 'absolute',
+                top: 0,
+                right: 0,
+                bottom: 0,
+                left: 0,
+                margin: 'auto'
+              }}
+            />
+          )}
+        </>
       )}
     </Stack>
   )
