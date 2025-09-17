@@ -2,6 +2,7 @@ import Box from '@mui/material/Box'
 import Container from '@mui/material/Container'
 import SwipeableDrawer from '@mui/material/SwipeableDrawer'
 import { ReactElement, useState } from 'react'
+
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 import { ThemeMode, ThemeName } from '@core/shared/ui/themes'
 

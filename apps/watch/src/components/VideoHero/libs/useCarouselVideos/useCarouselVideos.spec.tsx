@@ -1,9 +1,9 @@
-import { renderHook, act } from '@testing-library/react'
 import { MockedProvider } from '@apollo/client/testing'
+import { act, renderHook } from '@testing-library/react'
 import type { ReactNode } from 'react'
 
-import { useCarouselVideos } from './useCarouselVideos'
 import { GET_COLLECTION_COUNTS, GET_SHORT_FILMS } from './queries'
+import { useCarouselVideos } from './useCarouselVideos'
 
 // Mock utils
 jest.mock('./utils', () => ({

@@ -41,7 +41,7 @@ export function OtherCollectionsCarousel({
       className="relative bg-linear-to-tr from-blue-950/10  via-purple-950/10 to-[#91214A]/90 py-16 scroll-snap-start-always"
       data-testid="OtherCollectionsCarousel"
     >
-      <div className="absolute inset-0 bg-[url(./assets/overlay.svg)] bg-repeat mix-blend-multiply"></div>
+      <div className="absolute inset-0 bg-[url(/assets/overlay.svg)] bg-repeat mix-blend-multiply"></div>
       <div className="padded z-2 relative pb-6">
         <div className="flex items-center justify-between">
           <div className="flex items-start gap-4">

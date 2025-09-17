@@ -1,5 +1,5 @@
 import Image from 'next/image'
-import { ReactElement, useState, useRef, useEffect } from 'react'
+import { ReactElement, useEffect, useRef, useState } from 'react'
 
 interface LazyImageProps {
   src: string

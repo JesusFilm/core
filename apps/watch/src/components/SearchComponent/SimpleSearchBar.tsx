@@ -1,63 +1,18 @@
-import Box from '@mui/material/Box'
-import CircularProgress from '@mui/material/CircularProgress'
-import IconButton from '@mui/material/IconButton'
-import InputAdornment from '@mui/material/InputAdornment'
-import { styled } from '@mui/material/styles'
-import TextField, {
-  BaseTextFieldProps,
-  TextFieldProps
-} from '@mui/material/TextField'
 import { Formik } from 'formik'
 import { useTranslation } from 'next-i18next'
-import {
-  type FocusEvent,
-  type ReactElement,
-  useState
-} from 'react'
+import { type FocusEvent, type ReactElement, useState } from 'react'
 
 import Search1Icon from '@core/shared/ui/icons/Search1'
 import X1Icon from '@core/shared/ui/icons/X1'
 import { SubmitListener } from '@core/shared/ui/SubmitListener'
-
-interface StyledTextFieldProps extends BaseTextFieldProps {}
-
-const StyledTextField = styled(TextField)<StyledTextFieldProps>(({ theme }) => ({
-  '& .MuiOutlinedInput-root': {
-    background: 'rgba(255, 255, 255, 0.1)',
-    backdropFilter: 'blur(10px)',
-    borderRadius: 35,
-    transition: 'background 0.2s ease-in-out',
-    '&.Mui-focused': {
-      background: 'rgba(255, 255, 255, 0.8)'
-    },
-    '&.Mui-focused fieldset, fieldset': {
-      borderRadius: 35
-    },
-    fieldset: {
-      border: 'none'
-    },
-    input: {
-      transform: 'none',
-      color: 'white',
-      fontSize: '18px',
-      '&::placeholder': {
-        color: 'rgba(255, 255, 255, 0.7)'
-      }
-    },
-    '&.Mui-focused input': {
-      color: 'black'
-    },
-    '&.Mui-focused input::placeholder': {
-      color: 'rgba(0, 0, 0, 0.6)'
-    }
-  }
-}))
+import { Input } from '@ui/components/input'
+import { Button } from '@ui/components/button'
 
 interface SimpleSearchBarProps {
   loading?: boolean
   value?: string
   onSearch?: (query: string) => void
-  props?: TextFieldProps
+  props?: { inputRef?: React.RefObject<HTMLInputElement> }
   onFocus?: (event: FocusEvent<HTMLInputElement | HTMLTextAreaElement>) => void
   onBlur?: (event: FocusEvent<HTMLInputElement | HTMLTextAreaElement>) => void
 }
@@ -80,13 +35,7 @@ export function SimpleSearchBar({
   }
 
   return (
-    <Box
-      sx={{
-        borderRadius: 35,
-        p: 1
-      }}
-      data-testid="SearchBar"
-    >
+    <div className="rounded-[35px] p-1" data-testid="SearchBar">
       <Formik
         initialValues={{
           title: value
@@ -94,74 +43,84 @@ export function SimpleSearchBar({
         enableReinitialize
         onSubmit={handleSubmit}
       >
-        {({ values, handleChange, handleBlur: formikHandleBlur, setFieldValue }) => (
+        {({
+          values,
+          handleChange,
+          handleBlur: formikHandleBlur,
+          setFieldValue
+        }) => (
           <>
-            <StyledTextField
-              data-testid="SearchBarInput"
-              value={values.title}
-              name="title"
-              type="text"
-              placeholder={t('Search by topic, occasion, or audience ...')}
-              fullWidth
-              autoComplete="off"
-              onChange={(event) => {
-                // Only update the form value, don't trigger search
-                handleChange(event)
-              }}
-              onBlur={(event) => {
-                setIsFocused(false)
-                formikHandleBlur(event)
-                onBlur?.(event)
-              }}
-              onFocus={(event) => {
-                setIsFocused(true)
-                onFocus?.(event)
-              }}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter') {
-                  e.preventDefault()
-                  if (onSearch) {
-                    onSearch(values.title)
+            <div className="relative">
+              <div className="absolute left-4 top-1/2 -translate-y-1/2 z-10 flex items-center">
+                <Search1Icon
+                  className={`w-5 h-5 ${isFocused ? 'text-black' : 'text-white'}`}
+                />
+              </div>
+              <Input
+                ref={props?.inputRef}
+                data-testid="SearchBarInput"
+                value={values.title}
+                name="title"
+                type="text"
+                placeholder={t('Search by topic, occasion, or audience ...')}
+                autoComplete="off"
+                className={`
+                  w-full pl-12 pr-12 py-6 text-lg rounded-[35px] border-none
+                  bg-white/10 backdrop-blur-[10px] transition-all duration-200
+                  text-white placeholder:text-white/70 cursor-text hover:cursor-text focus:cursor-text
+                  focus:bg-white/80 focus:text-black focus:placeholder:text-black/60
+                  ${values.title.trim().length > 0 ? 'pr-12' : 'pr-4'}
+                `}
+                onChange={(event) => {
+                  // Only update the form value, don't trigger search
+                  handleChange(event)
+                }}
+                onBlur={(event) => {
+                  setIsFocused(false)
+                  formikHandleBlur(event)
+                  onBlur?.(event)
+                }}
+                onFocus={(event) => {
+                  setIsFocused(true)
+                  onFocus?.(event)
+                }}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    e.preventDefault()
+                    if (onSearch) {
+                      onSearch(values.title)
+                    }
                   }
-                }
-              }}
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <Search1Icon sx={{ color: isFocused ? 'black' : 'white' }} />
-                  </InputAdornment>
-                ),
-                endAdornment: values.title.trim().length > 0 ? (
-                  <InputAdornment position="end">
-                    {loading ? (
-                      <CircularProgress size={20} sx={{ color: isFocused ? 'black' : 'white' }} />
-                    ) : (
-                      <IconButton
-                        aria-label="clear search"
-                        onClick={() => {
-                          setFieldValue('title', '')
-                          if (onSearch) {
-                            onSearch('')
-                          }
-                        }}
-                        edge="end"
-                        size="small"
-                        sx={{ color: isFocused ? 'black' : 'white' }}
-                      >
-                        <X1Icon />
-                      </IconButton>
-                    )}
-                  </InputAdornment>
-                ) : (
-                  <></>
-                )
-              }}
-              {...props}
-            />
+                }}
+              />
+              {values.title.trim().length > 0 && (
+                <div className="absolute right-4 top-1/2 -translate-y-1/2 z-10 flex items-center cursor-pointer">
+                  {loading ? (
+                    <div
+                      className={`w-5 h-5 border-2 border-current border-t-transparent rounded-full animate-spin ${isFocused ? 'text-black' : 'text-white'}`}
+                    />
+                  ) : (
+                    <button
+                      type="button"
+                      aria-label="clear search"
+                      className={`w-6 h-6 p-0 cursor-pointer hover:opacity-70 flex items-center justify-center ${isFocused ? 'text-black' : 'text-white'}`}
+                      onClick={() => {
+                        setFieldValue('title', '')
+                        if (onSearch) {
+                          onSearch('')
+                        }
+                      }}
+                    >
+                      <X1Icon className="w-4 h-4" />
+                    </button>
+                  )}
+                </div>
+              )}
+            </div>
             <SubmitListener />
           </>
         )}
       </Formik>
-    </Box>
+    </div>
   )
 }

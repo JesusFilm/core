@@ -3,7 +3,7 @@
 import { Content, Header, Item, Root, Trigger } from '@radix-ui/react-accordion'
 import { ChevronDownIcon } from 'lucide-react'
 
-import { cn } from '@watch/libs/cn'
+import { cn } from '../../libs/cn/cn';
 
 function Accordion({ ...props }: React.ComponentProps<typeof Root>) {
   return <Root data-slot="accordion" {...props} />

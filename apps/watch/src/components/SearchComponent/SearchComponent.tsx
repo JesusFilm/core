@@ -1,44 +1,44 @@
-import Autocomplete from '@mui/material/Autocomplete'
 import Box from '@mui/material/Box'
-import Chip from '@mui/material/Chip'
-import Container from '@mui/material/Container'
-import Stack from '@mui/material/Stack'
-import TextField from '@mui/material/TextField'
-import Typography from '@mui/material/Typography'
-import InputAdornment from '@mui/material/InputAdornment'
-import Grid from '@mui/material/GridLegacy'
 import ButtonBase from '@mui/material/ButtonBase'
+import Container from '@mui/material/Container'
+import Grid from '@mui/material/GridLegacy'
+import Stack from '@mui/material/Stack'
 import { styled } from '@mui/material/styles'
+import Typography from '@mui/material/Typography'
 import { RefinementListItem } from 'instantsearch.js/es/connectors/refinement-list/connectRefinementList'
 import { useTranslation } from 'next-i18next'
 import {
   FocusEvent,
   ReactElement,
-  SyntheticEvent,
   useCallback,
   useEffect,
   useMemo,
   useRef,
   useState
 } from 'react'
-import { useRefinementList, useSearchBox } from 'react-instantsearch'
+import { useSearchBox } from 'react-instantsearch'
 
 import { SearchBarProvider } from '@core/journeys/ui/algolia/SearchBarProvider'
-import { languageRefinementProps } from '@core/journeys/ui/algolia/SearchBarProvider'
-import Globe1Icon from '@core/shared/ui/icons/Globe1'
 import Bible from '@core/shared/ui/icons/Bible'
 import Book from '@core/shared/ui/icons/Book'
 import Calendar1 from '@core/shared/ui/icons/Calendar1'
 import Play1 from '@core/shared/ui/icons/Play1'
 import Star2 from '@core/shared/ui/icons/Star2'
 import VideoOn from '@core/shared/ui/icons/VideoOn'
-import { useLanguages } from '../../libs/useLanguages'
 
-import { SimpleSearchBar } from './SimpleSearchBar'
-
+import { useTrendingSearches } from '../../hooks/useTrendingSearches'
 import { AlgoliaVideoGrid } from '../VideoGrid/AlgoliaVideoGrid'
 import { VideoGrid } from '../VideoGrid/VideoGrid'
-import { useTrendingSearches } from '../../hooks/useTrendingSearches'
+
+import { Badge } from '@ui/components/badge'
+import {
+  Dialog,
+  DialogContent,
+  DialogOverlay,
+  DialogPortal
+} from '@ui/components/dialog'
+import { LanguageSelector } from './LanguageSelector'
+import { SimpleSearchBar } from './SimpleSearchBar'
 
 interface SearchComponentProps {
   languageId?: string
@@ -53,6 +53,7 @@ interface SearchOverlayProps {
   onSelectQuickValue: (value: string) => void
   containerRef: React.RefObject<HTMLDivElement | null>
   languageId?: string
+  onClose: () => void
 }
 
 interface QuickListProps {
@@ -249,219 +250,6 @@ function CategoryGrid({
   )
 }
 
-// Enhanced language filter with dual-language display using useLanguages hook
-interface LanguageOption {
-  englishName: string
-  nativeName: string
-  value: string
-  isRefined: boolean
-  count?: number
-}
-
-function LanguageFilter(): JSX.Element {
-  const { t } = useTranslation('apps-watch')
-  const { items, refine } = useRefinementList(languageRefinementProps)
-  const { languages, isLoading: languagesLoading } = useLanguages()
-
-  const [inputValue, setInputValue] = useState('')
-
-  // Combine Algolia refinement data with full language information
-  const languageOptions = useMemo(() => {
-    if (languagesLoading || !languages.length) return []
-
-    // Create a map of language names to language data
-    const languageMap = new Map(
-      languages.map((lang) => [lang.englishName?.value, lang])
-    )
-
-    // Build options from refinement items, enriched with native names
-    const options = items.map((item): LanguageOption => {
-      const languageData = languageMap.get(item.label)
-      return {
-        englishName: item.label,
-        nativeName: languageData?.nativeName?.value || item.label,
-        value: item.value,
-        isRefined: item.isRefined,
-        count: item.count
-      }
-    })
-
-    return options.sort((a, b) => a.englishName.localeCompare(b.englishName))
-  }, [items, languages, languagesLoading])
-
-  const selectedItems = useMemo(
-    () => languageOptions.filter((item) => item.isRefined),
-    [languageOptions]
-  )
-
-  function toggleSelections(values: LanguageOption[]): void {
-    const selected = new Set(values.map((item) => item.value))
-    languageOptions.forEach((item) => {
-      const shouldSelect = selected.has(item.value)
-      if (item.isRefined !== shouldSelect) {
-        refine(item.value) // Use the refinement value
-      }
-    })
-  }
-
-  // Custom filter function to search both English and native names
-  const filterOptions = (
-    options: LanguageOption[],
-    { inputValue }: { inputValue: string }
-  ) => {
-    if (!inputValue) return options
-    const searchValue = inputValue.toLowerCase()
-    return options.filter(
-      (option) =>
-        option.englishName.toLowerCase().includes(searchValue) ||
-        option.nativeName.toLowerCase().includes(searchValue)
-    )
-  }
-
-  // Show loading state while languages are being fetched
-  if (languagesLoading) {
-    return (
-      <Box>
-        <Typography
-          variant="overline"
-          color="text.secondary"
-          sx={{ display: 'block', mb: 2, fontWeight: 600 }}
-        >
-          {t('Languages')}
-        </Typography>
-        <TextField
-          size="small"
-          placeholder={t('Loading languages...')}
-          disabled
-          InputProps={{
-            startAdornment: (
-              <InputAdornment position="start">
-                <Globe1Icon sx={{ color: 'text.secondary', fontSize: 20 }} />
-              </InputAdornment>
-            )
-          }}
-          sx={{
-            '& .MuiOutlinedInput-root': {
-              borderRadius: 2,
-              backgroundColor: 'background.paper'
-            }
-          }}
-        />
-      </Box>
-    )
-  }
-
-  return (
-    <Box>
-      <Typography
-        variant="overline"
-        color="text.secondary"
-        sx={{ display: 'block', mb: 2, fontWeight: 600 }}
-      >
-        {t('Languages')}
-      </Typography>
-      <Autocomplete
-        multiple
-        disablePortal
-        disableCloseOnSelect
-        options={languageOptions}
-        value={selectedItems}
-        onChange={(_, values) => {
-          toggleSelections(values)
-        }}
-        inputValue={inputValue}
-        onInputChange={(_event: SyntheticEvent, value: string) => {
-          setInputValue(value)
-        }}
-        getOptionLabel={(option) => option.englishName}
-        isOptionEqualToValue={(option, value) => option.value === value.value}
-        filterOptions={filterOptions}
-        filterSelectedOptions
-        size="small"
-        renderTags={(tagValue, getTagProps) =>
-          tagValue.map((option, index) => (
-            <Chip
-              {...getTagProps({ index })}
-              label={option.englishName}
-              size="small"
-              color="secondary"
-              key={option.value}
-              sx={{ borderRadius: 999, fontWeight: 500 }}
-            />
-          ))
-        }
-        renderOption={(props, option) => (
-          <Box
-            component="li"
-            {...props}
-            sx={{
-              display: 'flex !important',
-              flexDirection: 'column',
-              alignItems: 'flex-start !important',
-              py: 1.5,
-              px: 2
-            }}
-          >
-            <Typography variant="body2" fontWeight={500}>
-              {option.englishName}
-            </Typography>
-            {option.nativeName !== option.englishName && (
-              <Typography
-                variant="caption"
-                color="text.secondary"
-                sx={{ opacity: 0.7, fontSize: '0.75rem' }}
-              >
-                {option.nativeName}
-              </Typography>
-            )}
-          </Box>
-        )}
-        renderInput={(params) => (
-          <TextField
-            {...params}
-            placeholder={t('Search languages...')}
-            variant="outlined"
-            size="small"
-            InputProps={{
-              ...params.InputProps,
-              startAdornment: (
-                <InputAdornment position="start">
-                  <Globe1Icon sx={{ color: 'text.secondary', fontSize: 20 }} />
-                </InputAdornment>
-              )
-            }}
-            sx={{
-              '& .MuiOutlinedInput-root': {
-                borderRadius: 2,
-                backgroundColor: 'background.paper',
-                '&:hover .MuiOutlinedInput-notchedOutline': {
-                  borderColor: 'primary.main'
-                },
-                '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-                  borderColor: 'primary.main',
-                  borderWidth: 2
-                }
-              }
-            }}
-          />
-        )}
-        noOptionsText={
-          inputValue.length > 0
-            ? t('No languages found')
-            : t('No languages available')
-        }
-        sx={{
-          '& .MuiAutocomplete-listbox': {
-            '& .MuiAutocomplete-option': {
-              minHeight: 'auto'
-            }
-          }
-        }}
-      />
-    </Box>
-  )
-}
-
 function QuickList({
   title,
   items,
@@ -480,14 +268,13 @@ function QuickList({
         </Typography>
         <Stack direction="row" spacing={3} flexWrap="wrap" useFlexGap>
           {Array.from({ length: 6 }).map((_, index) => (
-            <Chip
+            <Badge
               key={index}
-              label="Loading..."
-              color="secondary"
-              variant="outlined"
-              disabled
-              sx={{ borderRadius: 999, fontWeight: 500, opacity: 0.5 }}
-            />
+              variant="outline"
+              className="opacity-50 cursor-not-allowed px-3 py-1 rounded-full font-medium"
+            >
+              Loading...
+            </Badge>
           ))}
         </Stack>
       </Box>
@@ -507,15 +294,15 @@ function QuickList({
       </Typography>
       <Stack direction="row" spacing={3} flexWrap="wrap" useFlexGap>
         {items.map((item) => (
-          <Chip
+          <Badge
             key={item}
-            label={item}
-            color="secondary"
-            variant="outlined"
+            variant="outline"
+            className="cursor-pointer hover:bg-accent hover:text-accent-foreground transition-colors px-3 py-1 rounded-full font-medium"
             onClick={() => onSelect(item)}
             onMouseDown={(event) => event.preventDefault()}
-            sx={{ borderRadius: 999, fontWeight: 500 }}
-          />
+          >
+            {item}
+          </Badge>
         ))}
       </Stack>
     </Box>
@@ -529,7 +316,8 @@ function SearchOverlay({
   onBlur,
   onSelectQuickValue,
   containerRef,
-  languageId
+  languageId,
+  onClose
 }: SearchOverlayProps): ReactElement {
   const { t } = useTranslation('apps-watch')
   const {
@@ -576,102 +364,112 @@ function SearchOverlay({
   }, [t])
 
   return (
-    <Box
-      ref={containerRef}
-      role="dialog"
-      aria-modal="false"
-      tabIndex={-1}
-      onBlur={onBlur}
-      sx={{
-        position: 'fixed',
-        left: 0,
-        right: 0,
-        top: { xs: 100, lg: 159 }, // Position below header (header height: xs: 100, lg: 159)
-        bottom: 0,
-        backgroundColor: 'rgba(6, 10, 25, 0.82)',
-        backdropFilter: 'blur(26px)',
-        zIndex: 99,
-        overflowY: 'auto',
-        overscrollBehavior: 'contain',
-        opacity: open ? 1 : 0,
-        pointerEvents: open ? 'auto' : 'none',
-        transition: 'opacity 0.2s ease-in-out'
-      }}
-      data-testid="SearchOverlay"
-    >
-      <Container
-        maxWidth="xxl"
-        sx={{
-          px: { xs: 4, md: 12 },
-          pt: { xs: 8, md: 12 },
-          pb: { xs: 10, md: 16 }
-        }}
-      >
-        {!hasQuery ? (
-          // Show category browse layout when no search query
-          <Stack spacing={{ xs: 6, md: 8 }}>
-            {/* Top row - Trending searches (50%) + Language filter (50%) */}
-            <Box
-              sx={{
-                display: 'flex',
-                flexDirection: { xs: 'column', md: 'row' },
-                gap: { xs: 4, md: 6 }
-              }}
-            >
-              <Box sx={{ flex: 1 }}>
-                <QuickList
-                  title={
-                    trendingError
-                      ? t('Popular Searches')
-                      : t('Trending Searches')
-                  }
-                  items={popularSearches}
-                  onSelect={onSelectQuickValue}
-                  isLoading={isTrendingLoading}
-                />
-              </Box>
-              <Box sx={{ flex: 1 }}>
-                <LanguageFilter />
-              </Box>
-            </Box>
+    <Dialog open={open} onOpenChange={(isOpen) => !isOpen && onClose()}>
+      <DialogPortal>
+        <DialogOverlay className="blured-bg" />
+        <DialogContent
+          ref={containerRef}
+          onBlur={onBlur}
+          onOpenAutoFocus={(e) => e.preventDefault()}
+          onCloseAutoFocus={(e) => e.preventDefault()}
+          className="
+            fixed inset-x-0 bottom-0 top-[100px] lg:top-[159px] max-w-none
+            overflow-y-auto overscroll-contain p-0 border-0
+            translate-x-0 translate-y-0 left-0
+          "
+          data-testid="SearchOverlay"
+        >
+          <Container
+            maxWidth="xxl"
+            sx={{
+              px: { xs: 4, md: 12 },
+              pt: { xs: 8, md: 12 },
+              pb: { xs: 10, md: 16 }
+            }}
+          >
+            {!hasQuery ? (
+              // Show category browse layout when no search query
+              <Stack spacing={{ xs: 6, md: 8 }}>
+                {/* Top row - Trending searches (50%) + Language filter (50%) */}
+                <Box
+                  sx={{
+                    display: 'flex',
+                    flexDirection: { xs: 'column', md: 'row' },
+                    gap: { xs: 4, md: 6 }
+                  }}
+                >
+                  <Box sx={{ flex: 1 }}>
+                    <QuickList
+                      title={
+                        trendingError
+                          ? t('Popular Searches')
+                          : t('Trending Searches')
+                      }
+                      items={popularSearches}
+                      onSelect={onSelectQuickValue}
+                      isLoading={isTrendingLoading}
+                    />
+                  </Box>
+                  <Box sx={{ flex: 1 }}>
+                    <Typography
+                      variant="overline"
+                      color="text.secondary"
+                      sx={{ display: 'block', mb: 3, fontWeight: 600 }}
+                    >
+                      {t('Search Filters')}
+                    </Typography>
+                    <LanguageSelector />
+                  </Box>
+                </Box>
 
-            {/* Bottom row - Category grid (full width) */}
-            <CategoryGrid onCategorySelect={onSelectQuickValue} />
-          </Stack>
-        ) : (
-          // Show search results layout when there's a query
-          <Stack spacing={{ xs: 4, md: 6 }}>
-            {/* Top row - Related searches + Language filter */}
-            <Box
-              sx={{
-                display: 'flex',
-                flexDirection: { xs: 'column', md: 'row' },
-                gap: { xs: 4, md: 6 }
-              }}
-            >
-              <Box sx={{ flex: 1 }}>
-                <QuickList
-                  title={t('Related Searches')}
-                  items={generateRelatedSearches(searchQuery)}
-                  onSelect={onSelectQuickValue}
-                  isLoading={false}
-                />
-              </Box>
-              <Box sx={{ width: { xs: '100%', md: '320px' }, flexShrink: 0 }}>
-                <LanguageFilter />
-              </Box>
-            </Box>
+                {/* Bottom row - Category grid (full width) */}
+                <CategoryGrid onCategorySelect={onSelectQuickValue} />
+              </Stack>
+            ) : (
+              // Show search results layout when there's a query
+              <Stack spacing={{ xs: 4, md: 6 }}>
+                {/* Top row - Related searches + Language filter */}
+                <Box
+                  sx={{
+                    display: 'flex',
+                    flexDirection: { xs: 'column', md: 'row' },
+                    gap: { xs: 4, md: 6 }
+                  }}
+                >
+                  <Box sx={{ flex: 1 }}>
+                    <QuickList
+                      title={t('Related Searches')}
+                      items={generateRelatedSearches(searchQuery)}
+                      onSelect={onSelectQuickValue}
+                      isLoading={false}
+                    />
+                  </Box>
+                  <Box
+                    sx={{ width: { xs: '100%', md: '320px' }, flexShrink: 0 }}
+                  >
+                    <Typography
+                      variant="overline"
+                      color="text.secondary"
+                      sx={{ display: 'block', mb: 3, fontWeight: 600 }}
+                    >
+                      {t('Search Filters')}
+                    </Typography>
+                    <LanguageSelector />
+                  </Box>
+                </Box>
 
-            {/* Search results - Full width */}
-            <AlgoliaVideoGrid
-              variant="contained"
-              languageId={languageId}
-              showLoadMore
-            />
-          </Stack>
-        )}
-      </Container>
-    </Box>
+                {/* Search results - Full width */}
+                <AlgoliaVideoGrid
+                  variant="contained"
+                  languageId={languageId}
+                  showLoadMore
+                />
+              </Stack>
+            )}
+          </Container>
+        </DialogContent>
+      </DialogPortal>
+    </Dialog>
   )
 }
 
@@ -697,21 +495,64 @@ export function SearchComponent({
     refine('')
   }, [])
 
+  // Focus search input when overlay opens
+  useEffect(() => {
+    if (isSearchActive && searchInputRef.current) {
+      // Multiple attempts to ensure focus works with Dialog
+      const focusInput = () => {
+        if (searchInputRef.current) {
+          searchInputRef.current.focus()
+          searchInputRef.current.click() // Ensure it's clickable
+        }
+      }
+
+      // Immediate focus
+      focusInput()
+
+      // Backup focus attempts
+      const timer1 = setTimeout(focusInput, 50)
+      const timer2 = setTimeout(focusInput, 150)
+      const timer3 = setTimeout(focusInput, 300)
+
+      return () => {
+        clearTimeout(timer1)
+        clearTimeout(timer2)
+        clearTimeout(timer3)
+      }
+    }
+  }, [isSearchActive])
+
   const handleSearchFocus = useCallback(() => {
     setIsSearchActive(true)
   }, [])
+
+  const handleCloseSearch = useCallback(() => {
+    // Clear search when overlay closes
+    setIsSearchActive(false)
+    setSearchValue('')
+    setSearchQuery('')
+    refine('')
+  }, [refine])
 
   const handleSearchBlur = useCallback(
     (event: FocusEvent<HTMLInputElement | HTMLTextAreaElement>) => {
       const nextTarget = event.relatedTarget as Node | null
       if (nextTarget != null && overlayRef.current?.contains(nextTarget)) return
-      // Clear search when overlay closes
-      setIsSearchActive(false)
-      setSearchValue('')
-      setSearchQuery('')
-      refine('')
+
+      // Check if focus moved to a Radix UI popover/portal element
+      if (
+        nextTarget &&
+        (nextTarget.closest('[data-radix-popover-content]') ||
+          nextTarget.closest('[role="combobox"]') ||
+          nextTarget.closest('[cmdk-root]') ||
+          nextTarget.closest('[data-slot="popover-content"]'))
+      ) {
+        return
+      }
+
+      handleCloseSearch()
     },
-    [refine]
+    [handleCloseSearch]
   )
 
   const handleOverlayBlur = useCallback(
@@ -723,13 +564,21 @@ export function SearchComponent({
       )
         return
       if (nextTarget === searchInputRef.current) return
-      // Clear search when overlay closes
-      setIsSearchActive(false)
-      setSearchValue('')
-      setSearchQuery('')
-      refine('')
+
+      // Check if focus moved to a Radix UI popover/portal element
+      if (
+        nextTarget &&
+        (nextTarget.closest('[data-radix-popover-content]') ||
+          nextTarget.closest('[role="combobox"]') ||
+          nextTarget.closest('[cmdk-root]') ||
+          nextTarget.closest('[data-slot="popover-content"]'))
+      ) {
+        return
+      }
+
+      handleCloseSearch()
     },
-    [refine]
+    [handleCloseSearch]
   )
 
   const handleSearch = useCallback(
@@ -761,11 +610,7 @@ export function SearchComponent({
     function handleKeyDown(event: KeyboardEvent): void {
       if (event.key === 'Escape') {
         event.preventDefault()
-        // Clear search when overlay closes with Escape
-        setIsSearchActive(false)
-        setSearchValue('')
-        setSearchQuery('')
-        refine('')
+        handleCloseSearch()
         searchInputRef.current?.blur()
       }
     }
@@ -775,7 +620,7 @@ export function SearchComponent({
     return () => {
       document.removeEventListener('keydown', handleKeyDown)
     }
-  }, [isSearchActive, refine])
+  }, [isSearchActive, handleCloseSearch])
 
   const searchFieldElement = (
     <div
@@ -825,6 +670,7 @@ export function SearchComponent({
           onSelectQuickValue={handleQuickSelect}
           containerRef={overlayRef}
           languageId={languageId}
+          onClose={handleCloseSearch}
         />
       </>
     </SearchBarProvider>
