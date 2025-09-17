@@ -38,6 +38,10 @@ jobs:
         name: set matrix app to affected array
         run: |
           matrix=$(pnpm -s exec ts-node tools/scripts/deploy-apps.ts --projects apps/*)
+          # trim all whitespace/newlines from matrix string
+          matrix="${matrix//$'\n'/}"
+          matrix=$(echo -n "$matrix" | tr -d '[:space:]')
+          if [ -z "$matrix" ]; then matrix="[]"; fi
           echo "matrix=${matrix}" >> "$GITHUB_OUTPUT"
           cat "$GITHUB_OUTPUT"
           if [ "${matrix}" != "[]" ] && [ -n "${matrix}" ]; then echo "has=true" >> "$GITHUB_OUTPUT"; else echo "has=false" >> "$GITHUB_OUTPUT"; fi
@@ -46,7 +50,7 @@ jobs:
     needs: affected
     # if branch is not main or is a pull request
     if: |
-      needs.affected.outputs.has == 'true' && needs.affected.outputs != ''
+      needs.affected.outputs.has == 'true'
     strategy:
       fail-fast: false
       matrix:
