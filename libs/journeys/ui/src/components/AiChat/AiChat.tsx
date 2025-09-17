@@ -1,7 +1,12 @@
 import { useChat } from '@ai-sdk/react'
 import { DefaultChatTransport } from 'ai'
 import { getAuth } from 'firebase/auth'
-import { CopyIcon, Loader, RefreshCcwIcon } from 'lucide-react'
+import {
+  CopyIcon,
+  Loader,
+  RefreshCcwIcon,
+  SendHorizonalIcon
+} from 'lucide-react'
 import { useTranslation } from 'next-i18next'
 import { Fragment, useEffect, useRef, useState } from 'react'
 import { v4 as uuidv4 } from 'uuid'
@@ -135,9 +140,9 @@ export function AiChat({ open }: AiChatProps) {
   }
 
   return (
-    <div className="flex flex-col h-full p-2">
-      <Conversation className="flex-1 min-h-0 overflow-hidden">
-        <ConversationContent className="h-full overflow-y-auto">
+    <div className="flex flex-col h-full min-h-0">
+      <Conversation className="h-full">
+        <ConversationContent>
           {messages.length === 0 && (
             <InteractionStarter handleClick={handleSuggestionClick} />
           )}
@@ -198,39 +203,47 @@ export function AiChat({ open }: AiChatProps) {
         </ConversationContent>
         <ConversationScrollButton />
       </Conversation>
-      <div className="flex-shrink-0">
-        <Suggestions className="p-4">
-          {suggestionsLoading && (
-            <div className="flex items-center gap-2 px-4 py-2 text-muted-foreground">
-              <Loader className="size-4 animate-spin" />
-              <span>{t('Loading suggestions, please hold...')}</span>
-            </div>
-          )}
-          {suggestionsError && (
-            <div className="px-4 py-2 text-destructive">{suggestionsError}</div>
-          )}
-          {suggestions?.map((suggestion) => (
-            <Suggestion
-              key={suggestion}
-              onClick={(suggestion) => handleSuggestionClick(suggestion)}
-              suggestion={suggestion}
-            />
-          ))}
-        </Suggestions>
+
+      <Suggestions className="px-4 py-2 border-t border-border">
+        {suggestionsLoading && (
+          <div className="flex items-center gap-2 px-4 py-2 text-muted-foreground">
+            <Loader className="size-4 animate-spin" />
+            <span>{t('Loading suggestions, please hold...')}</span>
+          </div>
+        )}
+        {suggestionsError && (
+          <div className="px-4 py-2 text-destructive">{suggestionsError}</div>
+        )}
+        {suggestions?.map((suggestion) => (
+          <Suggestion
+            key={suggestion}
+            onClick={(suggestion) => handleSuggestionClick(suggestion)}
+            suggestion={suggestion}
+          />
+        ))}
+      </Suggestions>
+
+      <div className="px-4 pb-4">
         <PromptInput
           onSubmit={handleSubmit}
-          className="w-full bg-background-paper border border-secondary-light rounded-lg"
+          className="w-full bg-background-paper border-none rounded-xl bg-[#EFEFEF]"
         >
-          <PromptInputTextarea
-            className="text-text-primary flex-1 text-md "
-            placeholder={t("Ask me anything you don't understand.")}
-            onChange={(e) => setInput(e.target.value)}
-            value={input}
-          />
-          <PromptInputToolbar>
-            <div></div>
-            <PromptInputSubmit disabled={!input} status={status} />
-          </PromptInputToolbar>
+          <div className="flex flex-row items-center px-3 py-0.5">
+            <PromptInputTextarea
+              className="text-foreground flex-1 text-md p-0"
+              placeholder={t('Ask me anything')}
+              onChange={(e) => setInput(e.target.value)}
+              value={input}
+            />
+            <div className="flex flex-row justify-end self-end">
+              <PromptInputSubmit
+                disabled={!input}
+                status={status}
+                className="bg-transparent hover:bg-transparent border-none shadow-none text-[#6D6D6D]"
+                children={<SendHorizonalIcon className="size-5" />}
+              />
+            </div>
+          </div>
         </PromptInput>
       </div>
     </div>
