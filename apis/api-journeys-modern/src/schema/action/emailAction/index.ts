@@ -1,4 +1,2 @@
 import './emailAction'
-import './inputs'
-
-export { EmailActionRef } from './emailAction'
+import './blockUpdateEmailAction.mutation'

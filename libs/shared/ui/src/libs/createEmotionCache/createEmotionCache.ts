@@ -1,5 +1,5 @@
 import { EmotionCache } from '@emotion/cache'
-import { createEmotionCache as createEmotionCacheNext } from '@mui/material-nextjs/v14-pagesRouter'
+import { createEmotionCache as createEmotionCacheNext } from '@mui/material-nextjs/v15-pagesRouter'
 import { prefixer } from 'stylis'
 import rtlPlugin from 'stylis-plugin-rtl'
 

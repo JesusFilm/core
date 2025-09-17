@@ -1,3 +1,2 @@
 import './navigateToBlockAction'
-
-export { NavigateToBlockActionRef } from './navigateToBlockAction'
+import './blockUpdateNavigateToBlockAction.mutation'

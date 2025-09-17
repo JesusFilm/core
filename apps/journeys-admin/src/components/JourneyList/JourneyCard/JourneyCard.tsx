@@ -115,140 +115,136 @@ export function JourneyCard({
             template={journey.template ?? false}
           />
         </Box>
-        <NextLink
-          href={`/journeys/${journey.id}`}
-          passHref
-          legacyBehavior
+        <CardActionArea
+          component={NextLink}
           prefetch={false}
+          href={`/journeys/${journey.id}`}
+          disabled={isNavigating}
+          sx={{
+            opacity: isNavigating ? 0.5 : 1,
+            flex: 1
+          }}
         >
-          <CardActionArea
-            disabled={isNavigating}
-            sx={{
-              opacity: isNavigating ? 0.5 : 1,
-              flex: 1
-            }}
-          >
-            {variant === JourneyCardVariant.new && (
-              <Box
-                sx={{
-                  position: 'absolute',
-                  top: { xs: 16, sm: 12 },
-                  left: { xs: 20, sm: 15 },
-                  zIndex: 1
-                }}
-              >
-                <Chip
-                  label={t('New')}
-                  size="small"
-                  data-testid="new-journey-badge"
-                  sx={{
-                    fontSize: 10,
-                    backgroundColor: 'warning.main',
-                    color: 'warning.contrastText',
-                    borderRadius: 11,
-                    height: 22,
-                    px: 0.5,
-                    border: 1.5,
-                    borderColor: '#eb5b3b'
-                  }}
-                />
-              </Box>
-            )}
+          {variant === JourneyCardVariant.new && (
             <Box
               sx={{
-                position: 'relative',
-                width: 'auto',
-                aspectRatio: {
-                  xs: '2',
-                  sm: '1.43'
-                },
-                mx: { xs: 3, sm: 1.75 },
-                mt: { xs: 3, sm: 1.75 },
-                borderRadius: '8px',
-                borderWidth: 1,
-                borderStyle: 'solid',
-                borderColor: 'rgba(0, 0, 0, 0.02)',
-                bgcolor: 'rgba(0, 0, 0, 0.06)',
-                overflow: 'hidden'
+                position: 'absolute',
+                top: { xs: 16, sm: 12 },
+                left: { xs: 20, sm: 15 },
+                zIndex: 1
               }}
             >
-              {journey.primaryImageBlock?.src != null ? (
-                <>
-                  {isImageLoading && (
-                    <Skeleton
-                      variant="rectangular"
-                      width="100%"
-                      height="100%"
-                      sx={{
-                        position: 'absolute',
-                        top: 0,
-                        left: 0,
-                        height: '100%',
-                        width: '100%'
-                      }}
-                    />
-                  )}
-                  <Image
-                    data-testid="JourneyCardImage"
-                    src={journey.primaryImageBlock.src}
-                    alt={journey.primaryImageBlock.alt ?? ''}
-                    fill
-                    style={{
-                      objectFit: 'cover'
+              <Chip
+                label={t('New')}
+                size="small"
+                data-testid="new-journey-badge"
+                sx={{
+                  fontSize: 10,
+                  backgroundColor: 'warning.main',
+                  color: 'warning.contrastText',
+                  borderRadius: 11,
+                  height: 22,
+                  px: 0.5,
+                  border: 1.5,
+                  borderColor: '#eb5b3b'
+                }}
+              />
+            </Box>
+          )}
+          <Box
+            sx={{
+              position: 'relative',
+              width: 'auto',
+              aspectRatio: {
+                xs: '2',
+                sm: '1.43'
+              },
+              mx: { xs: 3, sm: 1.75 },
+              mt: { xs: 3, sm: 1.75 },
+              borderRadius: '8px',
+              borderWidth: 1,
+              borderStyle: 'solid',
+              borderColor: 'rgba(0, 0, 0, 0.02)',
+              bgcolor: 'rgba(0, 0, 0, 0.06)',
+              overflow: 'hidden'
+            }}
+          >
+            {journey.primaryImageBlock?.src != null ? (
+              <>
+                {isImageLoading && (
+                  <Skeleton
+                    variant="rectangular"
+                    width="100%"
+                    height="100%"
+                    sx={{
+                      position: 'absolute',
+                      top: 0,
+                      left: 0,
+                      height: '100%',
+                      width: '100%'
                     }}
-                    sizes={`
+                  />
+                )}
+                <Image
+                  data-testid="JourneyCardImage"
+                  src={journey.primaryImageBlock.src}
+                  alt={journey.primaryImageBlock.alt ?? ''}
+                  fill
+                  style={{
+                    objectFit: 'cover'
+                  }}
+                  sizes={`
                       (max-width: ${theme.breakpoints.values.sm}px) calc(100vw - ${theme.spacing(6)})px,
                       (max-width: ${theme.breakpoints.values.md}px) calc(40vw - ${theme.spacing(6)})px,
                       calc(20vw - ${theme.spacing(6)})px
                     `}
-                    onLoadingComplete={() => setIsImageLoading(false)}
-                  />
-                </>
-              ) : (
-                <Image
-                  data-testid="JourneyCardNoImage"
-                  src={logoGray}
-                  alt="No Image"
-                  width={50}
-                  height={50}
-                  style={{
-                    objectFit: 'contain',
-                    position: 'absolute',
-                    top: '50%',
-                    left: '50%',
-                    transform: 'translate(-50%, -50%)'
-                  }}
+                  onLoadingComplete={() => setIsImageLoading(false)}
                 />
-              )}
-              <Box
-                aria-hidden
-                sx={{
+              </>
+            ) : (
+              <Image
+                data-testid="JourneyCardNoImage"
+                src={logoGray}
+                alt={t('No Image')}
+                width={50}
+                height={50}
+                style={{
+                  objectFit: 'contain',
                   position: 'absolute',
-                  top: 0,
-                  left: 0,
-                  width: '100%',
-                  height: '100%',
-                  bgcolor: 'rgba(0,0,0,0.3)',
-                  opacity: isCardHovered ? 1 : 0,
-                  transition: 'opacity 0.3s'
+                  top: '50%',
+                  left: '50%',
+                  transform: 'translate(-50%, -50%)'
                 }}
               />
-            </Box>
-            <CardContent
+            )}
+            <Box
+              aria-hidden
               sx={{
-                pl: { xs: 3, sm: 2.5 },
-                pr: 2,
-                pt: 1,
-                height: { xs: 139, sm: 137 }, // Fixed height to accommodate both one and two line titles
-                display: 'flex',
-                flexDirection: 'column',
-                justifyContent: 'flex-start'
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                width: '100%',
+                height: '100%',
+                bgcolor: 'rgba(0,0,0,0.3)',
+                opacity: isCardHovered ? 1 : 0,
+                transition: 'opacity 0.3s'
               }}
-            >
-              <JourneyCardText journey={journey} />
-            </CardContent>
-          </CardActionArea>
-        </NextLink>
+            />
+          </Box>
+          <CardContent
+            sx={{
+              pl: { xs: 3, sm: 2.5 },
+              pr: 2,
+              pt: 1,
+              height: { xs: 139, sm: 137 }, // Fixed height to accommodate both one and two line titles
+              display: 'flex',
+              flexDirection: 'column',
+              justifyContent: 'flex-start'
+            }}
+          >
+            <JourneyCardText journey={journey} />
+          </CardContent>
+        </CardActionArea>
         <Box
           sx={{
             position: 'absolute',

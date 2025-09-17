@@ -30,7 +30,6 @@ this is the number of seconds since the start of the video`,
       resolve: (block) => block.triggerStart ?? 0
     }),
     action: t.relation('action', {
-      type: ActionInterface,
       nullable: false,
       onNull: () => new GraphQLError('Action not found')
     })

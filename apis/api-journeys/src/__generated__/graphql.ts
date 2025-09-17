@@ -107,8 +107,10 @@ export type BlockDuplicateIdMap = {
 
 export type BlockUpdateActionInput = {
   blockId?: InputMaybe<Scalars['String']['input']>;
+  countryCode?: InputMaybe<Scalars['String']['input']>;
   email?: InputMaybe<Scalars['String']['input']>;
   gtmEventName?: InputMaybe<Scalars['String']['input']>;
+  phone?: InputMaybe<Scalars['String']['input']>;
   target?: InputMaybe<Scalars['String']['input']>;
   url?: InputMaybe<Scalars['String']['input']>;
 };
@@ -127,7 +129,8 @@ export type Browser = {
 export enum ButtonAction {
   EmailAction = 'EmailAction',
   LinkAction = 'LinkAction',
-  NavigateToBlockAction = 'NavigateToBlockAction'
+  NavigateToBlockAction = 'NavigateToBlockAction',
+  PhoneAction = 'PhoneAction'
 }
 
 export enum ButtonAlignment {
@@ -1154,6 +1157,7 @@ export type JourneysEmailPreferenceUpdateInput = {
 
 export type JourneysFilter = {
   featured?: InputMaybe<Scalars['Boolean']['input']>;
+  fromTemplateId?: InputMaybe<Scalars['ID']['input']>;
   ids?: InputMaybe<Array<Scalars['ID']['input']>>;
   languageIds?: InputMaybe<Array<Scalars['ID']['input']>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
@@ -1326,10 +1330,11 @@ export type Mutation = {
   blockOrderUpdate: Array<Block>;
   /** blockRestore is used for redo/undo */
   blockRestore: Array<Block>;
-  blockUpdateAction?: Maybe<Action>;
-  blockUpdateEmailAction?: Maybe<EmailAction>;
-  blockUpdateLinkAction?: Maybe<LinkAction>;
-  blockUpdateNavigateToBlockAction?: Maybe<NavigateToBlockAction>;
+  blockUpdateAction: Action;
+  blockUpdateEmailAction: EmailAction;
+  blockUpdateLinkAction: LinkAction;
+  blockUpdateNavigateToBlockAction: NavigateToBlockAction;
+  blockUpdatePhoneAction: PhoneAction;
   buttonBlockCreate: ButtonBlock;
   buttonBlockUpdate: ButtonBlock;
   buttonClickEventCreate?: Maybe<ButtonClickEvent>;
@@ -1350,6 +1355,7 @@ export type Mutation = {
   createImageBySegmindPrompt: CloudflareImage;
   createJourneyEventsExportLog: JourneyEventsExportLog;
   createKeyword: Keyword;
+  createMuxVideoAndQueueUpload: MuxVideo;
   createMuxVideoUploadByFile: MuxVideo;
   createMuxVideoUploadByUrl: MuxVideo;
   createVerificationRequest?: Maybe<Scalars['Boolean']['output']>;
@@ -1395,10 +1401,20 @@ export type Mutation = {
   journeyThemeUpdate: JourneyTheme;
   journeyUpdate: Journey;
   journeyViewEventCreate?: Maybe<JourneyViewEvent>;
-  journeysArchive: Array<Journey>;
-  journeysDelete: Array<Journey>;
-  journeysRestore: Array<Journey>;
-  journeysTrash: Array<Journey>;
+  /** Sets journeys statuses to archived */
+  journeysArchive?: Maybe<Array<Maybe<Journey>>>;
+  /** Sets journeys statuses to deleted */
+  journeysDelete?: Maybe<Array<Maybe<Journey>>>;
+  /** Sets journeys statuses to last active status */
+  journeysRestore?: Maybe<Array<Maybe<Journey>>>;
+  /** Sets journeys statuses to trashed */
+  journeysTrash?: Maybe<Array<Maybe<Journey>>>;
+  playlistCreate?: Maybe<MutationPlaylistCreateResult>;
+  playlistDelete?: Maybe<MutationPlaylistDeleteResult>;
+  playlistItemAdd?: Maybe<MutationPlaylistItemAddResult>;
+  playlistItemRemove?: Maybe<MutationPlaylistItemRemoveResult>;
+  playlistItemsReorder?: Maybe<MutationPlaylistItemsReorderResult>;
+  playlistUpdate?: Maybe<MutationPlaylistUpdateResult>;
   qrCodeCreate: QrCode;
   qrCodeDelete: QrCode;
   qrCodeUpdate: QrCode;
@@ -1599,6 +1615,13 @@ export type MutationBlockUpdateNavigateToBlockActionArgs = {
 };
 
 
+export type MutationBlockUpdatePhoneActionArgs = {
+  id: Scalars['ID']['input'];
+  input: PhoneActionInput;
+  journeyId?: InputMaybe<Scalars['ID']['input']>;
+};
+
+
 export type MutationButtonBlockCreateArgs = {
   input: ButtonBlockCreateInput;
 };
@@ -1697,6 +1720,22 @@ export type MutationCreateJourneyEventsExportLogArgs = {
 export type MutationCreateKeywordArgs = {
   languageId: Scalars['String']['input'];
   value: Scalars['String']['input'];
+};
+
+
+export type MutationCreateMuxVideoAndQueueUploadArgs = {
+  downloadable?: InputMaybe<Scalars['Boolean']['input']>;
+  duration: Scalars['Int']['input'];
+  durationMs: Scalars['Int']['input'];
+  edition: Scalars['String']['input'];
+  height: Scalars['Int']['input'];
+  languageId: Scalars['ID']['input'];
+  maxResolution?: InputMaybe<MaxResolutionTier>;
+  originalFilename: Scalars['String']['input'];
+  r2PublicUrl: Scalars['String']['input'];
+  version: Scalars['Int']['input'];
+  videoId: Scalars['ID']['input'];
+  width: Scalars['Int']['input'];
 };
 
 
@@ -1969,6 +2008,40 @@ export type MutationJourneysRestoreArgs = {
 
 export type MutationJourneysTrashArgs = {
   ids: Array<Scalars['ID']['input']>;
+};
+
+
+export type MutationPlaylistCreateArgs = {
+  input: PlaylistCreateInput;
+};
+
+
+export type MutationPlaylistDeleteArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type MutationPlaylistItemAddArgs = {
+  playlistId: Scalars['ID']['input'];
+  videoVariantId: Scalars['ID']['input'];
+};
+
+
+export type MutationPlaylistItemRemoveArgs = {
+  itemId: Scalars['ID']['input'];
+  playlistId: Scalars['ID']['input'];
+};
+
+
+export type MutationPlaylistItemsReorderArgs = {
+  itemIds: Array<Scalars['ID']['input']>;
+  playlistId: Scalars['ID']['input'];
+};
+
+
+export type MutationPlaylistUpdateArgs = {
+  id: Scalars['ID']['input'];
+  input: PlaylistUpdateInput;
 };
 
 
@@ -2526,6 +2599,48 @@ export type MutationJourneyLanguageAiDetectInput = {
   textLanguageName: Scalars['String']['input'];
 };
 
+export type MutationPlaylistCreateResult = MutationPlaylistCreateSuccess | ZodError;
+
+export type MutationPlaylistCreateSuccess = {
+  __typename?: 'MutationPlaylistCreateSuccess';
+  data: Playlist;
+};
+
+export type MutationPlaylistDeleteResult = MutationPlaylistDeleteSuccess | NotFoundError;
+
+export type MutationPlaylistDeleteSuccess = {
+  __typename?: 'MutationPlaylistDeleteSuccess';
+  data: Playlist;
+};
+
+export type MutationPlaylistItemAddResult = MutationPlaylistItemAddSuccess | NotFoundError;
+
+export type MutationPlaylistItemAddSuccess = {
+  __typename?: 'MutationPlaylistItemAddSuccess';
+  data: PlaylistItem;
+};
+
+export type MutationPlaylistItemRemoveResult = MutationPlaylistItemRemoveSuccess | NotFoundError;
+
+export type MutationPlaylistItemRemoveSuccess = {
+  __typename?: 'MutationPlaylistItemRemoveSuccess';
+  data: Array<PlaylistItem>;
+};
+
+export type MutationPlaylistItemsReorderResult = MutationPlaylistItemsReorderSuccess | NotFoundError;
+
+export type MutationPlaylistItemsReorderSuccess = {
+  __typename?: 'MutationPlaylistItemsReorderSuccess';
+  data: Array<PlaylistItem>;
+};
+
+export type MutationPlaylistUpdateResult = MutationPlaylistUpdateSuccess | NotFoundError | ZodError;
+
+export type MutationPlaylistUpdateSuccess = {
+  __typename?: 'MutationPlaylistUpdateSuccess';
+  data: Playlist;
+};
+
 export type MutationShortLinkCreateInput = {
   /** bitrate of the video variant download */
   bitrate?: InputMaybe<Scalars['Int']['input']>;
@@ -2709,6 +2824,21 @@ export type PageInfo = {
   startCursor?: Maybe<Scalars['String']['output']>;
 };
 
+export type PhoneAction = Action & {
+  __typename?: 'PhoneAction';
+  countryCode: Scalars['String']['output'];
+  gtmEventName?: Maybe<Scalars['String']['output']>;
+  parentBlock: Block;
+  parentBlockId: Scalars['ID']['output'];
+  phone: Scalars['String']['output'];
+};
+
+export type PhoneActionInput = {
+  countryCode: Scalars['String']['input'];
+  gtmEventName?: InputMaybe<Scalars['String']['input']>;
+  phone: Scalars['String']['input'];
+};
+
 export enum Platform {
   Arclight = 'arclight',
   Journeys = 'journeys',
@@ -2769,6 +2899,61 @@ export type PlausibleStatsTimeseriesFilter = {
   filters?: InputMaybe<Scalars['String']['input']>;
   interval?: InputMaybe<Scalars['String']['input']>;
   period?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type Playlist = {
+  __typename?: 'Playlist';
+  createdAt: Scalars['DateTime']['output'];
+  id: Scalars['ID']['output'];
+  items: Array<PlaylistItem>;
+  name: Scalars['String']['output'];
+  note?: Maybe<Scalars['String']['output']>;
+  noteSharedAt?: Maybe<Scalars['DateTime']['output']>;
+  noteUpdatedAt?: Maybe<Scalars['DateTime']['output']>;
+  owner: User;
+  sharedAt?: Maybe<Scalars['DateTime']['output']>;
+  slug: Scalars['String']['output'];
+  updatedAt: Scalars['DateTime']['output'];
+};
+
+export type PlaylistCreateInput = {
+  id?: InputMaybe<Scalars['ID']['input']>;
+  name: Scalars['String']['input'];
+  note?: InputMaybe<Scalars['String']['input']>;
+  noteSharedAt?: InputMaybe<Scalars['DateTime']['input']>;
+  sharedAt?: InputMaybe<Scalars['DateTime']['input']>;
+  slug?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type PlaylistItem = {
+  __typename?: 'PlaylistItem';
+  createdAt: Scalars['DateTime']['output'];
+  id: Scalars['ID']['output'];
+  order: Scalars['Int']['output'];
+  playlist: Playlist;
+  updatedAt: Scalars['DateTime']['output'];
+  videoVariant: VideoVariant;
+};
+
+export type PlaylistUpdateInput = {
+  name?: InputMaybe<Scalars['String']['input']>;
+  note?: InputMaybe<Scalars['String']['input']>;
+  noteSharedAt?: InputMaybe<Scalars['DateTime']['input']>;
+  sharedAt?: InputMaybe<Scalars['DateTime']['input']>;
+};
+
+export type PowerBiEmbed = {
+  __typename?: 'PowerBiEmbed';
+  /** The embed token */
+  accessToken: Scalars['String']['output'];
+  /** The embed URL of the report */
+  embedUrl: Scalars['String']['output'];
+  /** The date and time (UTC) of token expiration */
+  expiration: Scalars['String']['output'];
+  /** The report ID */
+  reportId: Scalars['String']['output'];
+  /** The name of the report */
+  reportName: Scalars['String']['output'];
 };
 
 export type QrCode = {
@@ -2855,6 +3040,8 @@ export type Query = {
   me?: Maybe<User>;
   node?: Maybe<Node>;
   nodes: Array<Maybe<Node>>;
+  playlist?: Maybe<QueryPlaylistResult>;
+  playlists?: Maybe<Array<Playlist>>;
   qrCode: QrCode;
   qrCodes: Array<QrCode>;
   searchUnsplashPhotos: UnsplashQueryResponse;
@@ -3157,6 +3344,12 @@ export type QueryNodesArgs = {
 };
 
 
+export type QueryPlaylistArgs = {
+  id: Scalars['ID']['input'];
+  idType?: IdType;
+};
+
+
 export type QueryQrCodeArgs = {
   id: Scalars['ID']['input'];
 };
@@ -3323,6 +3516,13 @@ export type QueryJourneyVisitorsConnectionEdge = {
   __typename?: 'QueryJourneyVisitorsConnectionEdge';
   cursor: Scalars['String']['output'];
   node?: Maybe<JourneyVisitor>;
+};
+
+export type QueryPlaylistResult = NotFoundError | QueryPlaylistSuccess;
+
+export type QueryPlaylistSuccess = {
+  __typename?: 'QueryPlaylistSuccess';
+  data: Playlist;
 };
 
 export type QueryShortLinkByPathResult = NotFoundError | QueryShortLinkByPathSuccess;
@@ -4341,6 +4541,7 @@ export type VideoBlockCreateInput = {
   endAt?: InputMaybe<Scalars['Int']['input']>;
   fullsize?: InputMaybe<Scalars['Boolean']['input']>;
   id?: InputMaybe<Scalars['ID']['input']>;
+  image?: InputMaybe<Scalars['String']['input']>;
   /** True if the coverBlockId in a parent block should be set to this block's id. */
   isCover?: InputMaybe<Scalars['Boolean']['input']>;
   journeyId: Scalars['ID']['input'];
@@ -4381,10 +4582,9 @@ export type VideoBlockUpdateInput = {
   posterBlockId?: InputMaybe<Scalars['ID']['input']>;
   /**
    * internal source: videoId and videoVariantLanguageId required
-   * youTube source: videoId required
+   *   youTube source: videoId required
    */
   source?: InputMaybe<VideoBlockSource>;
-  /** startAt dictates at which point of time the video should start playing */
   startAt?: InputMaybe<Scalars['Int']['input']>;
   title?: InputMaybe<Scalars['String']['input']>;
   videoId?: InputMaybe<Scalars['ID']['input']>;
@@ -4799,6 +4999,7 @@ export type VideoVariant = {
   subtitleCount: Scalars['Int']['output'];
   /** version control for master video file */
   version: Scalars['Int']['output'];
+  video?: Maybe<Video>;
   videoEdition: VideoEdition;
   videoId?: Maybe<Scalars['ID']['output']>;
 };
@@ -5019,13 +5220,6 @@ export enum Link__Purpose {
   Security = 'SECURITY'
 }
 
-export type GetMuxVideoQueryVariables = Exact<{
-  id: Scalars['ID']['input'];
-}>;
-
-
-export type GetMuxVideoQuery = { __typename?: 'Query', getMuxVideo?: { __typename?: 'MuxVideo', id: string, name?: string | null, playbackId?: string | null, duration?: number | null } | null };
-
 export type GetLanguagesQueryVariables = Exact<{
   languageId: Scalars['ID']['input'];
 }>;
@@ -5069,7 +5263,6 @@ export type ShortLinkDeleteMutationVariables = Exact<{
 export type ShortLinkDeleteMutation = { __typename?: 'Mutation', shortLinkDelete: { __typename?: 'MutationShortLinkDeleteSuccess', data: { __typename?: 'ShortLink', id?: string | null } } | { __typename?: 'NotFoundError', message?: string | null } };
 
 
-export const GetMuxVideoDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetMuxVideo"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"getMuxVideo"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"playbackId"}},{"kind":"Field","name":{"kind":"Name","value":"duration"}}]}}]}}]} as unknown as DocumentNode<GetMuxVideoQuery, GetMuxVideoQueryVariables>;
 export const GetLanguagesDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetLanguages"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"languageId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"language"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"languageId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"bcp47"}},{"kind":"Field","name":{"kind":"Name","value":"id"}}]}}]}}]} as unknown as DocumentNode<GetLanguagesQuery, GetLanguagesQueryVariables>;
 export const SiteCreateDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"SiteCreate"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"SiteCreateInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"siteCreate"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Error"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"message"}},{"kind":"Field","name":{"kind":"Name","value":"__typename"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"MutationSiteCreateSuccess"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"data"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"domain"}},{"kind":"Field","name":{"kind":"Name","value":"__typename"}},{"kind":"Field","name":{"kind":"Name","value":"memberships"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"role"}},{"kind":"Field","name":{"kind":"Name","value":"__typename"}}]}},{"kind":"Field","name":{"kind":"Name","value":"goals"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"eventName"}},{"kind":"Field","name":{"kind":"Name","value":"__typename"}}]}},{"kind":"Field","name":{"kind":"Name","value":"sharedLinks"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"slug"}},{"kind":"Field","name":{"kind":"Name","value":"__typename"}}]}}]}}]}}]}}]}}]} as unknown as DocumentNode<SiteCreateMutation, SiteCreateMutationVariables>;
 export const GetShortLinkDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetShortLink"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"shortLink"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"NotFoundError"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"message"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"QueryShortLinkSuccess"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"data"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"pathname"}},{"kind":"Field","name":{"kind":"Name","value":"to"}},{"kind":"Field","name":{"kind":"Name","value":"domain"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"hostname"}}]}}]}}]}}]}}]}}]} as unknown as DocumentNode<GetShortLinkQuery, GetShortLinkQueryVariables>;

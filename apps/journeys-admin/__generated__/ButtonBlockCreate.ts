@@ -9,6 +9,12 @@ import { ButtonBlockCreateInput, IconBlockCreateInput, ButtonBlockUpdateInput, B
 // GraphQL mutation operation: ButtonBlockCreate
 // ====================================================
 
+export interface ButtonBlockCreate_buttonBlockCreate_action_PhoneAction {
+  __typename: "PhoneAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+}
+
 export interface ButtonBlockCreate_buttonBlockCreate_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
   parentBlockId: string | null;
@@ -21,6 +27,8 @@ export interface ButtonBlockCreate_buttonBlockCreate_action_LinkAction {
   parentBlockId: string | null;
   gtmEventName: string | null;
   url: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export interface ButtonBlockCreate_buttonBlockCreate_action_EmailAction {
@@ -28,9 +36,11 @@ export interface ButtonBlockCreate_buttonBlockCreate_action_EmailAction {
   parentBlockId: string | null;
   gtmEventName: string | null;
   email: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
-export type ButtonBlockCreate_buttonBlockCreate_action = ButtonBlockCreate_buttonBlockCreate_action_NavigateToBlockAction | ButtonBlockCreate_buttonBlockCreate_action_LinkAction | ButtonBlockCreate_buttonBlockCreate_action_EmailAction;
+export type ButtonBlockCreate_buttonBlockCreate_action = ButtonBlockCreate_buttonBlockCreate_action_PhoneAction | ButtonBlockCreate_buttonBlockCreate_action_NavigateToBlockAction | ButtonBlockCreate_buttonBlockCreate_action_LinkAction | ButtonBlockCreate_buttonBlockCreate_action_EmailAction;
 
 export interface ButtonBlockCreate_buttonBlockCreate_settings {
   __typename: "ButtonBlockSettings";
@@ -73,6 +83,12 @@ export interface ButtonBlockCreate_endIcon {
   iconColor: IconColor | null;
 }
 
+export interface ButtonBlockCreate_buttonBlockUpdate_action_PhoneAction {
+  __typename: "PhoneAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+}
+
 export interface ButtonBlockCreate_buttonBlockUpdate_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
   parentBlockId: string | null;
@@ -85,6 +101,8 @@ export interface ButtonBlockCreate_buttonBlockUpdate_action_LinkAction {
   parentBlockId: string | null;
   gtmEventName: string | null;
   url: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export interface ButtonBlockCreate_buttonBlockUpdate_action_EmailAction {
@@ -92,9 +110,11 @@ export interface ButtonBlockCreate_buttonBlockUpdate_action_EmailAction {
   parentBlockId: string | null;
   gtmEventName: string | null;
   email: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
-export type ButtonBlockCreate_buttonBlockUpdate_action = ButtonBlockCreate_buttonBlockUpdate_action_NavigateToBlockAction | ButtonBlockCreate_buttonBlockUpdate_action_LinkAction | ButtonBlockCreate_buttonBlockUpdate_action_EmailAction;
+export type ButtonBlockCreate_buttonBlockUpdate_action = ButtonBlockCreate_buttonBlockUpdate_action_PhoneAction | ButtonBlockCreate_buttonBlockUpdate_action_NavigateToBlockAction | ButtonBlockCreate_buttonBlockUpdate_action_LinkAction | ButtonBlockCreate_buttonBlockUpdate_action_EmailAction;
 
 export interface ButtonBlockCreate_buttonBlockUpdate_settings {
   __typename: "ButtonBlockSettings";

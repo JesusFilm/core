@@ -1,728 +1,265 @@
-import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing'
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { useRouter } from 'next/router'
-import { useTranslation } from 'next-i18next'
 
-import { GetSubtitles } from '../../../../__generated__/GetSubtitles'
+import { useLanguages } from '../../../libs/useLanguages'
 import { WatchProvider } from '../../../libs/watchContext'
-import { TestWatchState } from '../../../libs/watchContext/TestWatchState'
-import { GET_SUBTITLES } from '../../SubtitleDialog/SubtitleDialog'
 
 import { SubtitlesSelect } from './SubtitlesSelect'
 
-// Mock only external libraries
-jest.mock('next/router', () => ({
-  useRouter: jest.fn()
+// Mock useLanguageActions hook specifically for testing onChange behavior
+const mockUpdateSubtitleLanguage = jest.fn()
+const mockUpdateSubtitlesOn = jest.fn()
+jest.mock('../../../libs/watchContext', () => ({
+  ...jest.requireActual('../../../libs/watchContext'),
+  useLanguageActions: () => ({
+    updateSubtitleLanguage: mockUpdateSubtitleLanguage,
+    updateSubtitlesOn: mockUpdateSubtitlesOn
+  })
 }))
 
-jest.mock('next-i18next', () => ({
-  useTranslation: jest.fn()
+jest.mock('../../../libs/useLanguages', () => ({
+  useLanguages: jest.fn()
 }))
 
-const useRouterMock = useRouter as jest.Mock
-const useTranslationMock = useTranslation as jest.Mock
-
-// Default mock data for reuse across tests
-const defaultInitialState = {
-  siteLanguage: 'en',
-  audioLanguage: '529',
-  subtitleLanguage: '529',
-  subtitleOn: true
-}
-
-const defaultGetSubtitlesMock: MockedResponse<GetSubtitles> = {
-  request: {
-    query: GET_SUBTITLES,
-    variables: { id: 'video123' }
-  },
-  result: {
-    data: {
-      video: {
-        __typename: 'Video',
-        variant: {
-          __typename: 'VideoVariant',
-          subtitle: [
-            {
-              __typename: 'VideoSubtitle',
-              language: {
-                __typename: 'Language',
-                id: '529',
-                bcp47: 'en',
-                name: [
-                  {
-                    __typename: 'LanguageName',
-                    value: 'English',
-                    primary: true
-                  },
-                  {
-                    __typename: 'LanguageName',
-                    value: 'English Native',
-                    primary: false
-                  }
-                ]
-              },
-              value: 'https://example.com/subtitles.vtt'
-            },
-            {
-              __typename: 'VideoSubtitle',
-              language: {
-                __typename: 'Language',
-                id: '22658',
-                bcp47: 'ar',
-                name: [
-                  {
-                    __typename: 'LanguageName',
-                    value: 'اللغة العربية',
-                    primary: true
-                  },
-                  {
-                    __typename: 'LanguageName',
-                    value: 'Arabic, Modern Standard',
-                    primary: false
-                  }
-                ]
-              },
-              value: 'https://example.com/arabic-subtitles.vtt'
-            }
-          ]
-        }
-      }
-    }
-  }
-}
+const useLanguagesMock = useLanguages as jest.MockedFunction<
+  typeof useLanguages
+>
 
 describe('SubtitlesSelect', () => {
-  const mockRouter = {
-    push: jest.fn(),
-    pathname: '/watch',
-    asPath: '/watch/video-slug/english',
-    query: {}
+  const french = {
+    id: '496',
+    slug: 'french',
+    displayName: 'French',
+    name: { id: '529', value: 'French', primary: false },
+    englishName: { id: '496', value: 'French', primary: false },
+    nativeName: { id: '496', value: 'Français', primary: true }
   }
 
-  const mockT = jest.fn((key: string) => key)
-
   beforeEach(() => {
-    useRouterMock.mockReturnValue(mockRouter)
-    useTranslationMock.mockReturnValue({ t: mockT })
     jest.clearAllMocks()
-  })
-
-  it('should render all components correctly', () => {
-    render(
-      <MockedProvider mocks={[defaultGetSubtitlesMock]} addTypename={false}>
-        <WatchProvider initialState={defaultInitialState}>
-          <SubtitlesSelect />
-        </WatchProvider>
-      </MockedProvider>
-    )
-
-    // Should render main elements
-    expect(screen.getByText('Subtitles')).toBeInTheDocument()
-    expect(screen.getByRole('combobox')).toBeInTheDocument()
-    expect(screen.getByLabelText('Show subtitles')).toBeInTheDocument()
-    expect(screen.getByRole('checkbox')).toBeInTheDocument()
-    expect(document.querySelector('svg')).toBeInTheDocument() // ClosedCaptionOffOutlinedIcon
-  })
-
-  it('should display native name when subtitleLanguage matches a language in allLanguages', () => {
-    const stateWithMatchingSubtitleLanguage = {
-      ...defaultInitialState,
-      subtitleLanguage: '529', // This will match the English language
-      allLanguages: [
+    useLanguagesMock.mockReturnValue({
+      languages: [
         {
-          __typename: 'Language' as const,
           id: '529',
           slug: 'english',
-          bcp47: 'en',
-          name: [
-            {
-              __typename: 'LanguageName' as const,
-              value: 'English',
-              primary: true
-            },
-            {
-              __typename: 'LanguageName' as const,
-              value: 'English Native',
-              primary: false
-            }
-          ]
-        }
-      ]
-    }
-
-    render(
-      <MockedProvider mocks={[defaultGetSubtitlesMock]} addTypename={false}>
-        <WatchProvider initialState={stateWithMatchingSubtitleLanguage}>
-          <SubtitlesSelect />
-        </WatchProvider>
-      </MockedProvider>
-    )
-
-    // Should display the local name (primary) in the autocomplete
-    expect(screen.getByDisplayValue('English')).toBeInTheDocument()
-  })
-
-  it('should handle when subtitleLanguage does not match any language in allLanguages', () => {
-    const stateWithNonMatchingSubtitleLanguage = {
-      ...defaultInitialState,
-      subtitleLanguage: 'nonexistent-id', // This won't match any language
-      allLanguages: [
-        {
-          __typename: 'Language' as const,
-          id: '529',
-          slug: 'english',
-          bcp47: 'en',
-          name: [
-            {
-              __typename: 'LanguageName' as const,
-              value: 'English',
-              primary: true
-            },
-            {
-              __typename: 'LanguageName' as const,
-              value: 'English Native',
-              primary: false
-            }
-          ]
-        }
-      ]
-    }
-
-    render(
-      <MockedProvider mocks={[defaultGetSubtitlesMock]} addTypename={false}>
-        <WatchProvider initialState={stateWithNonMatchingSubtitleLanguage}>
-          <SubtitlesSelect />
-        </WatchProvider>
-      </MockedProvider>
-    )
-
-    // Should render with empty value since no match is found
-    const combobox = screen.getByRole('combobox')
-    expect(combobox).toHaveValue('')
-  })
-
-  it('should handle when subtitleLanguage is empty string', () => {
-    const stateWithEmptySubtitleLanguage = {
-      ...defaultInitialState,
-      subtitleLanguage: '',
-      allLanguages: [
-        {
-          __typename: 'Language' as const,
-          id: '529',
-          slug: 'english',
-          bcp47: 'en',
-          name: [
-            {
-              __typename: 'LanguageName' as const,
-              value: 'English',
-              primary: true
-            }
-          ]
-        }
-      ]
-    }
-
-    render(
-      <MockedProvider mocks={[defaultGetSubtitlesMock]} addTypename={false}>
-        <WatchProvider initialState={stateWithEmptySubtitleLanguage}>
-          <SubtitlesSelect />
-        </WatchProvider>
-      </MockedProvider>
-    )
-
-    // Should render with empty value
-    const combobox = screen.getByRole('combobox')
-    expect(combobox).toHaveValue('')
-  })
-
-  it('should handle when allLanguages is undefined', () => {
-    const stateWithUndefinedAllLanguages = {
-      ...defaultInitialState,
-      subtitleLanguage: '529',
-      allLanguages: undefined
-    }
-
-    render(
-      <MockedProvider mocks={[defaultGetSubtitlesMock]} addTypename={false}>
-        <WatchProvider initialState={stateWithUndefinedAllLanguages}>
-          <SubtitlesSelect />
-        </WatchProvider>
-      </MockedProvider>
-    )
-
-    // Should render with empty value
-    const combobox = screen.getByRole('combobox')
-    expect(combobox).toHaveValue('')
-  })
-
-  it('should handle when language name entries are missing (native name)', () => {
-    const stateWithMissingNativeName = {
-      ...defaultInitialState,
-      subtitleLanguage: '529',
-      allLanguages: [
-        {
-          __typename: 'Language' as const,
-          id: '529',
-          slug: 'english',
-          bcp47: 'en',
-          name: [
-            {
-              __typename: 'LanguageName' as const,
-              value: 'English',
-              primary: true
-            }
-            // Missing non-primary (native) name
-          ]
-        }
-      ]
-    }
-
-    render(
-      <MockedProvider mocks={[defaultGetSubtitlesMock]} addTypename={false}>
-        <WatchProvider initialState={stateWithMissingNativeName}>
-          <SubtitlesSelect />
-        </WatchProvider>
-      </MockedProvider>
-    )
-
-    // Should still render the component, but the native name will be undefined
-    expect(screen.getByRole('combobox')).toBeInTheDocument()
-  })
-
-  it('should handle when language name entries are missing (primary name)', () => {
-    const stateWithMissingPrimaryName = {
-      ...defaultInitialState,
-      subtitleLanguage: '529',
-      allLanguages: [
-        {
-          __typename: 'Language' as const,
-          id: '529',
-          slug: 'english',
-          bcp47: 'en',
-          name: [
-            {
-              __typename: 'LanguageName' as const,
-              value: 'English Native',
-              primary: false
-            }
-            // Missing primary name
-          ]
-        }
-      ]
-    }
-
-    render(
-      <MockedProvider mocks={[defaultGetSubtitlesMock]} addTypename={false}>
-        <WatchProvider initialState={stateWithMissingPrimaryName}>
-          <SubtitlesSelect />
-        </WatchProvider>
-      </MockedProvider>
-    )
-
-    // Should still render the component
-    expect(screen.getByRole('combobox')).toBeInTheDocument()
-  })
-
-  it('should call updateSubtitleLanguage when handleChange is triggered', async () => {
-    const user = userEvent.setup()
-
-    const stateWithAllLanguages = {
-      ...defaultInitialState,
-      allLanguages: [
-        {
-          __typename: 'Language' as const,
-          id: '529',
-          slug: 'english',
-          bcp47: 'en',
-          name: [
-            {
-              __typename: 'LanguageName' as const,
-              value: 'English',
-              primary: true
-            }
-          ]
+          displayName: 'English',
+          name: { id: '529', value: 'English', primary: true },
+          englishName: { id: '529', value: 'English', primary: true },
+          nativeName: { id: '529', value: 'English', primary: true }
         },
+        french,
         {
-          __typename: 'Language' as const,
-          id: '22658',
-          slug: 'arabic',
-          bcp47: 'ar',
-          name: [
-            {
-              __typename: 'LanguageName' as const,
-              value: 'اللغة العربية',
-              primary: true
-            }
-          ]
-        }
-      ]
-    }
-
-    render(
-      <MockedProvider mocks={[defaultGetSubtitlesMock]} addTypename={false}>
-        <WatchProvider initialState={stateWithAllLanguages}>
-          <SubtitlesSelect />
-        </WatchProvider>
-      </MockedProvider>
-    )
-
-    const combobox = screen.getByRole('combobox')
-    await user.click(combobox)
-
-    // Wait for options to appear and click on Arabic option
-    await waitFor(() => {
-      expect(screen.getByText('اللغة العربية')).toBeInTheDocument()
-    })
-
-    await user.click(screen.getByText('اللغة العربية'))
-
-    // Verify that the selection was made (the input should show the selected value)
-    await waitFor(() => {
-      expect(screen.getByDisplayValue('اللغة العربية')).toBeInTheDocument()
-    })
-  })
-
-  it('should call updateSubtitlesOn when checkbox is toggled', async () => {
-    const user = userEvent.setup()
-
-    // Set up so audioLanguage matches videoAudioLanguages, so autoSubtitle is undefined
-    const stateWithSubtitlesOn = {
-      ...defaultInitialState,
-      subtitleOn: true,
-      autoSubtitle: null,
-      audioLanguage: '529',
-      subtitleLanguage: '529',
-      videoAudioLanguages: [
-        {
-          language: {
-            id: '529',
-            bcp47: 'en',
-            __typename: 'Language' as const,
-            slug: 'english',
-            name: [
-              {
-                primary: true,
-                value: 'English',
-                __typename: 'LanguageName' as const
-              }
-            ]
-          },
-          slug: 'english',
-          __typename: 'LanguageWithSlug' as const
+          id: '21028',
+          slug: 'spanish',
+          displayName: 'Spanish',
+          name: { id: '21028', value: 'Spanish', primary: false },
+          englishName: { id: '21028', value: 'Spanish', primary: false },
+          nativeName: { id: '21028', value: 'Español', primary: true }
         }
       ],
-      videoSubtitleLanguages: [
-        {
-          language: {
-            id: '529',
-            bcp47: 'en',
-            __typename: 'Language' as const,
-            name: [
-              {
-                primary: true,
-                value: 'English',
-                __typename: 'LanguageName' as const
-              }
-            ]
-          },
-          value: 'English subtitles',
-          __typename: 'VideoSubtitle' as const
-        }
-      ]
-    }
-
-    render(
-      <MockedProvider mocks={[defaultGetSubtitlesMock]} addTypename={false}>
-        <WatchProvider initialState={stateWithSubtitlesOn}>
-          <SubtitlesSelect />
-        </WatchProvider>
-      </MockedProvider>
-    )
-
-    const checkbox = screen.getByRole('checkbox')
-    await waitFor(() => {
-      expect(checkbox).toBeChecked()
+      isLoading: false
     })
-    // Test that the checkbox can be clicked (interaction works)
-    await user.click(checkbox)
-    // Since this is an integration test, the action is executed successfully
-    // if no errors are thrown during the click event
-    expect(checkbox).toBeInTheDocument()
   })
 
-  it('should respect autoSubtitle preference over subtitleOn', () => {
-    const stateWithAutoSubtitleDifferent = {
-      ...defaultInitialState,
-      subtitleOn: false,
-      autoSubtitle: true, // This should take precedence
-      allLanguages: [
-        {
-          __typename: 'Language' as const,
-          id: '529',
-          slug: 'english',
-          bcp47: 'en',
-          name: [
-            {
-              __typename: 'LanguageName' as const,
-              value: 'English',
-              primary: true
-            }
-          ]
-        }
-      ],
-      videoSubtitleLanguages: [
-        {
-          language: {
-            id: '529',
-            bcp47: 'en',
-            __typename: 'Language' as const,
-            name: [
-              {
-                primary: true,
-                value: 'English',
-                __typename: 'LanguageName' as const
-              }
-            ]
-          },
-          value: 'English subtitles',
-          __typename: 'VideoSubtitle' as const
-        }
-      ]
-    }
-
-    render(
-      <MockedProvider mocks={[defaultGetSubtitlesMock]} addTypename={false}>
-        <WatchProvider initialState={stateWithAutoSubtitleDifferent}>
-          <SubtitlesSelect />
-        </WatchProvider>
-      </MockedProvider>
-    )
-
-    const checkbox = screen.getByRole('checkbox')
-    expect(checkbox).toBeChecked() // Should be checked due to AutoSubtitle being true
-  })
-
-  it('should call GET_SUBTITLES query and apply the returned subtitle languages', async () => {
-    const stateWithVideoId = {
-      ...defaultInitialState,
-      videoId: 'video123',
-      videoVariantSlug: 'video123',
-      videoSubtitleLanguages: undefined,
-      allLanguages: [
-        {
-          __typename: 'Language' as const,
-          id: '529',
-          slug: 'english',
-          bcp47: 'en',
-          name: [
-            {
-              __typename: 'LanguageName' as const,
-              value: 'English',
-              primary: true
-            },
-            {
-              __typename: 'LanguageName' as const,
-              value: 'English Native',
-              primary: false
-            }
-          ]
-        },
-        {
-          __typename: 'Language' as const,
-          id: '22658',
-          slug: 'arabic',
-          bcp47: 'ar',
-          name: [
-            {
-              __typename: 'LanguageName' as const,
-              value: 'اللغة العربية',
-              primary: true
-            },
-            {
-              __typename: 'LanguageName' as const,
-              value: 'Arabic, Modern Standard',
-              primary: false
-            }
-          ]
-        }
-      ]
-    }
-
-    // Create a mock function to track if the query is called
-    const getSubtitlesResult = jest.fn(() => ({
-      data: {
-        video: {
-          __typename: 'Video' as const,
-          variant: {
-            __typename: 'VideoVariant' as const,
-            subtitle: [
-              {
-                __typename: 'VideoSubtitle' as const,
-                language: {
-                  __typename: 'Language' as const,
-                  id: '22658',
-                  bcp47: 'ar',
-                  name: [
-                    {
-                      __typename: 'LanguageName' as const,
-                      value: 'اللغة العربية',
-                      primary: true
-                    },
-                    {
-                      __typename: 'LanguageName' as const,
-                      value: 'Arabic, Modern Standard',
-                      primary: false
-                    }
-                  ]
-                },
-                value: 'https://example.com/arabic-subtitles.vtt'
-              }
-            ]
-          }
-        }
-      }
-    }))
-
-    const mockWithFunction: MockedResponse<GetSubtitles> = {
-      request: {
-        query: GET_SUBTITLES,
-        variables: { id: 'video123' }
-      },
-      result: getSubtitlesResult
-    }
-
-    render(
-      <MockedProvider mocks={[mockWithFunction]} addTypename={false}>
-        <WatchProvider initialState={stateWithVideoId}>
-          <SubtitlesSelect />
-        </WatchProvider>
-      </MockedProvider>
-    )
-
-    // Wait for the query to be called
-    await waitFor(() => {
-      expect(getSubtitlesResult).toHaveBeenCalled()
-    })
-
-    // Verify the component renders correctly after the query
-    expect(screen.getByRole('combobox')).toBeInTheDocument()
-    expect(screen.getByRole('checkbox')).toBeInTheDocument()
-  })
-
-  it('should not trigger GraphQL query when videoId is undefined', () => {
-    const stateWithoutVideoId = {
-      ...defaultInitialState,
-      videoId: undefined,
-      videoSubtitleLanguages: undefined
-    }
-
+  it('should display native name and display name when subtitleLanguageId matches a language', async () => {
     render(
       <MockedProvider mocks={[]} addTypename={false}>
-        <WatchProvider initialState={stateWithoutVideoId}>
-          <SubtitlesSelect />
+        <WatchProvider>
+          <SubtitlesSelect subtitleLanguageId="496" />
         </WatchProvider>
       </MockedProvider>
     )
-
-    // Should render without triggering GraphQL query
-    expect(screen.getByRole('combobox')).toBeInTheDocument()
-    expect(screen.getByRole('checkbox')).toBeInTheDocument()
+    await waitFor(() => {
+      expect(screen.getByTestId('SubtitlesSelectNativeName')).toHaveTextContent(
+        'Français'
+      )
+    })
+    expect(screen.getByRole('combobox')).toHaveValue('French')
   })
 
-  it('should not trigger GraphQL query when videoSubtitleLanguages already exists', () => {
-    const stateWithExistingSubtitleLanguages = {
-      ...defaultInitialState,
-      videoId: 'video123',
-      videoSubtitleLanguages: [
-        {
-          language: {
-            id: '529',
-            bcp47: 'en',
-            __typename: 'Language' as const,
-            name: [
-              {
-                primary: true,
-                value: 'English',
-                __typename: 'LanguageName' as const
-              }
-            ]
-          },
-          value: 'English subtitles',
-          __typename: 'VideoSubtitle' as const
-        }
-      ]
-    }
+  describe('helper text', () => {
+    it('should show helper text', async () => {
+      render(
+        <MockedProvider mocks={[]} addTypename={false}>
+          <WatchProvider>
+            <SubtitlesSelect subtitleLanguageId="529" />
+          </WatchProvider>
+        </MockedProvider>
+      )
 
-    render(
-      <MockedProvider mocks={[]} addTypename={false}>
-        <WatchProvider initialState={stateWithExistingSubtitleLanguages}>
-          <SubtitlesSelect />
-        </WatchProvider>
-      </MockedProvider>
-    )
+      await waitFor(() => {
+        expect(
+          screen.getByText('Available in 3 languages.')
+        ).toBeInTheDocument()
+      })
+    })
 
-    // Should render without triggering GraphQL query
-    expect(screen.getByRole('combobox')).toBeInTheDocument()
-    expect(screen.getByRole('checkbox')).toBeInTheDocument()
+    it('should show loading text when isLoading is true', async () => {
+      useLanguagesMock.mockReturnValue({
+        languages: [],
+        isLoading: true
+      })
+
+      render(
+        <MockedProvider mocks={[]} addTypename={false}>
+          <WatchProvider>
+            <SubtitlesSelect subtitleLanguageId="529" />
+          </WatchProvider>
+        </MockedProvider>
+      )
+
+      await waitFor(() => {
+        expect(screen.getByText('Loading...')).toBeInTheDocument()
+      })
+    })
+
+    it('should show available languages text when videoSubtitleLanguageIds is not null', async () => {
+      render(
+        <MockedProvider mocks={[]} addTypename={false}>
+          <WatchProvider>
+            <SubtitlesSelect
+              subtitleLanguageId="529"
+              videoSubtitleLanguageIds={['529', '496']}
+            />
+          </WatchProvider>
+        </MockedProvider>
+      )
+
+      await waitFor(() => {
+        expect(
+          screen.getByText('Available in 2 languages.')
+        ).toBeInTheDocument()
+      })
+    })
+
+    it('should show not available languages text when videoSubtitleLanguageIds is not null and subtitleLanguageId does not match', async () => {
+      render(
+        <MockedProvider mocks={[]} addTypename={false}>
+          <WatchProvider>
+            <SubtitlesSelect
+              subtitleLanguageId="529"
+              videoSubtitleLanguageIds={['496', '21028']}
+            />
+          </WatchProvider>
+        </MockedProvider>
+      )
+
+      await waitFor(() => {
+        expect(
+          screen.getByText(
+            'Subtitles are not available in English. Available in 2 languages.'
+          )
+        ).toBeInTheDocument()
+      })
+    })
   })
 
-  it('should update autoSubtitle in state when checkbox is toggled and autoSubtitle is not null', async () => {
-    const user = userEvent.setup()
-    const initialState = {
-      ...defaultInitialState,
-      subtitleOn: true,
-      autoSubtitle: true,
-      allLanguages: [
-        {
-          __typename: 'Language' as const,
-          id: '529',
-          slug: 'english',
-          bcp47: 'en',
-          name: [
-            {
-              __typename: 'LanguageName' as const,
-              value: 'English',
-              primary: true
-            }
-          ]
-        }
-      ],
-      videoSubtitleLanguages: [
-        {
-          language: {
-            id: '529',
-            bcp47: 'en',
-            __typename: 'Language' as const,
-            name: [
-              {
-                primary: true,
-                value: 'English',
-                __typename: 'LanguageName' as const
-              }
-            ]
-          },
-          value: 'English subtitles',
-          __typename: 'VideoSubtitle' as const
-        }
-      ]
-    }
+  describe('native name', () => {
+    it('should display native name when audioLanguageId matches a language', async () => {
+      render(
+        <MockedProvider mocks={[]} addTypename={false}>
+          <WatchProvider>
+            <SubtitlesSelect subtitleLanguageId="496" />
+          </WatchProvider>
+        </MockedProvider>
+      )
 
-    render(
-      <MockedProvider mocks={[defaultGetSubtitlesMock]} addTypename={false}>
-        <WatchProvider initialState={initialState}>
-          <SubtitlesSelect />
-          <TestWatchState />
-        </WatchProvider>
-      </MockedProvider>
-    )
+      await waitFor(() => {
+        expect(screen.getByRole('combobox')).toHaveValue('French')
+      })
 
-    expect(screen.getByText('autoSubtitle: true')).toBeInTheDocument()
-    const checkbox = screen.getByRole('checkbox')
-    expect(checkbox).toBeChecked()
+      expect(screen.getByTestId('SubtitlesSelectNativeName')).toHaveTextContent(
+        'Français'
+      )
+    })
 
-    await user.click(checkbox)
+    it('should not display native name when it matches the display name', async () => {
+      render(
+        <MockedProvider mocks={[]} addTypename={false}>
+          <WatchProvider>
+            <SubtitlesSelect subtitleLanguageId="529" />
+          </WatchProvider>
+        </MockedProvider>
+      )
 
-    expect(screen.getByText('autoSubtitle: false')).toBeInTheDocument()
+      await waitFor(() => {
+        expect(screen.getByRole('combobox')).toHaveValue('English')
+      })
+
+      expect(
+        screen.queryByTestId('SubtitlesSelectNativeName')
+      ).not.toBeInTheDocument()
+    })
+  })
+
+  describe('autocomplete', () => {
+    it('should show available languages text when videoSubtitleLanguageIds is not null', async () => {
+      render(
+        <MockedProvider mocks={[]} addTypename={false}>
+          <WatchProvider>
+            <SubtitlesSelect
+              subtitleLanguageId="529"
+              videoSubtitleLanguageIds={['529', '496']}
+            />
+          </WatchProvider>
+        </MockedProvider>
+      )
+
+      await userEvent.click(screen.getByRole('combobox'))
+
+      await waitFor(() => {
+        expect(screen.getByText('Available Languages')).toBeInTheDocument()
+        expect(screen.getByText('Other Languages')).toBeInTheDocument()
+      })
+      // available languages
+      expect(screen.getAllByRole('list')[0].children[0]).toHaveTextContent(
+        'English'
+      )
+      expect(screen.getAllByRole('list')[0].children[1]).toHaveTextContent(
+        'FrenchFrançais'
+      )
+      // other languages
+      expect(screen.getAllByRole('list')[1].children[0]).toHaveTextContent(
+        'SpanishEspañol'
+      )
+    })
+
+    it('should call updateSubtitleLanguage when a language is selected', async () => {
+      render(
+        <MockedProvider mocks={[]} addTypename={false}>
+          <WatchProvider>
+            <SubtitlesSelect subtitleLanguageId="529" />
+          </WatchProvider>
+        </MockedProvider>
+      )
+
+      await userEvent.click(screen.getByRole('combobox'))
+      await userEvent.click(
+        screen.getByRole('option', { name: 'French Français' })
+      )
+
+      await waitFor(() => {
+        expect(mockUpdateSubtitleLanguage).toHaveBeenCalledWith(french)
+      })
+    })
+  })
+
+  describe('checkbox', () => {
+    it('should call updateSubtitleOn when checkbox is changed', async () => {
+      render(
+        <MockedProvider mocks={[]} addTypename={false}>
+          <WatchProvider>
+            <SubtitlesSelect subtitleOn />
+          </WatchProvider>
+        </MockedProvider>
+      )
+
+      await userEvent.click(screen.getByRole('checkbox'))
+
+      await waitFor(() => {
+        expect(mockUpdateSubtitlesOn).toHaveBeenCalledWith(false)
+      })
+    })
   })
 })

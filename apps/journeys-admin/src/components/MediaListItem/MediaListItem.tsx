@@ -73,93 +73,93 @@ export function MediaListItem({
   }
 
   return (
-    <NextLink href={href ?? ''} passHref legacyBehavior prefetch={false}>
-      <ListItemButton
-        disabled={loading}
-        sx={{
-          ...faceOnButtonHoverFix,
-          borderBottom: '1px solid',
-          borderColor: 'divider',
-          px: 6
-        }}
-        data-testid="JourneysAdminMediaListItem"
-      >
-        <Stack direction="row" spacing={4} alignItems="center">
-          <Box
-            sx={{
-              width: 79,
-              height: 79,
-              position: 'relative',
-              flexShrink: 0,
-              overflow: 'hidden',
-              borderRadius: 2
-            }}
-          >
-            {loading === true ? (
-              <Skeleton variant="rectangular" height="100%" />
-            ) : image != null ? (
-              <NextImage
-                src={image}
-                alt={title}
-                layout="fill"
-                objectFit="cover"
-              />
-            ) : (
-              <Box
-                sx={{
-                  display: 'flex',
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  backgroundColor: 'background.default',
-                  height: '100%'
-                }}
-              >
-                <InsertPhotoRoundedIcon />
-              </Box>
-            )}
-          </Box>
-          <Stack flexGrow={1} sx={{ overflow: 'hidden' }}>
-            {(overline != null || loading === true) && (
-              <Typography
-                variant="overline"
-                color="secondary.light"
-                className="overflow-text"
-                sx={{ ...fadeOverflowText('overline'), mt: 2 }}
-              >
-                {loading === true ? <Skeleton width={82} /> : overline}
-              </Typography>
-            )}
-
-            <ListItemText
-              primary={
-                <Typography
-                  variant="subtitle2"
-                  className="overflow-text"
-                  sx={{ ...fadeOverflowText('subtitle2') }}
-                >
-                  {loading === true ? <Skeleton width={156} /> : title}
-                </Typography>
-              }
-              secondary={
-                (description != null || loading === true) && (
-                  <Typography
-                    variant="caption"
-                    color="secondary.light"
-                    className="overflow-text"
-                    sx={{
-                      ...fadeOverflowText('caption'),
-                      display: 'block'
-                    }}
-                  >
-                    {loading === true ? <Skeleton width={128} /> : description}
-                  </Typography>
-                )
-              }
-              sx={{ mt: 0 }}
+    <ListItemButton
+      LinkComponent={NextLink}
+      href={href ?? ''}
+      disabled={loading}
+      sx={{
+        ...faceOnButtonHoverFix,
+        borderBottom: '1px solid',
+        borderColor: 'divider',
+        px: 6
+      }}
+      data-testid="JourneysAdminMediaListItem"
+    >
+      <Stack direction="row" spacing={4} alignItems="center">
+        <Box
+          sx={{
+            width: 79,
+            height: 79,
+            position: 'relative',
+            flexShrink: 0,
+            overflow: 'hidden',
+            borderRadius: 2
+          }}
+        >
+          {loading === true ? (
+            <Skeleton variant="rectangular" height="100%" />
+          ) : image != null ? (
+            <NextImage
+              src={image}
+              alt={title}
+              layout="fill"
+              objectFit="cover"
             />
-          </Stack>
+          ) : (
+            <Box
+              sx={{
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                backgroundColor: 'background.default',
+                height: '100%'
+              }}
+            >
+              <InsertPhotoRoundedIcon />
+            </Box>
+          )}
+        </Box>
+        <Stack flexGrow={1} sx={{ overflow: 'hidden' }}>
+          {(overline != null || loading === true) && (
+            <Typography
+              variant="overline"
+              color="secondary.light"
+              className="overflow-text"
+              sx={{ ...fadeOverflowText('overline'), mt: 2 }}
+            >
+              {loading === true ? <Skeleton width={82} /> : overline}
+            </Typography>
+          )}
+
+          <ListItemText
+            primary={
+              <Typography
+                variant="subtitle2"
+                className="overflow-text"
+                sx={{ ...fadeOverflowText('subtitle2') }}
+              >
+                {loading === true ? <Skeleton width={156} /> : title}
+              </Typography>
+            }
+            secondary={
+              (description != null || loading === true) && (
+                <Typography
+                  variant="caption"
+                  color="secondary.light"
+                  className="overflow-text"
+                  sx={{
+                    ...fadeOverflowText('caption'),
+                    display: 'block'
+                  }}
+                >
+                  {loading === true ? <Skeleton width={128} /> : description}
+                </Typography>
+              )
+            }
+            sx={{ mt: 0 }}
+          />
         </Stack>
-      </ListItemButton>
-    </NextLink>
+      </Stack>
+    </ListItemButton>
   )
 }

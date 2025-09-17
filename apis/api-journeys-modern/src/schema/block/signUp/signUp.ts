@@ -24,6 +24,9 @@ export const SignUpBlock = builder.prismaObject('Block', {
     }),
     submitLabel: t.exposeString('submitLabel', {
       nullable: true
+    }),
+    action: t.relation('action', {
+      nullable: true
     })
   })
 })

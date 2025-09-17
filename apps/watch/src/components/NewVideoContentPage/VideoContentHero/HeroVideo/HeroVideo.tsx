@@ -12,7 +12,7 @@ import 'videojs-mux'
 import { usePlayer } from '../../../../libs/playerContext/PlayerContext'
 import { useVideo } from '../../../../libs/videoContext'
 import { useWatch } from '../../../../libs/watchContext'
-import { subtitleUpdate } from '../../../../libs/watchContext/subtitleUpdate'
+import { useSubtitleUpdate } from '../../../../libs/watchContext/useSubtitleUpdate'
 import { VideoControls } from '../../../VideoContentPage/VideoHero/VideoPlayer/VideoControls'
 
 interface HeroVideoProps {
@@ -25,12 +25,7 @@ export function HeroVideo({ isFullscreen }: HeroVideoProps): ReactElement {
     state: { mute }
   } = usePlayer()
   const {
-    state: {
-      subtitleLanguage,
-      subtitleOn,
-      autoSubtitle,
-      videoSubtitleLanguages
-    }
+    state: { subtitleLanguageId, subtitleOn }
   } = useWatch()
   const [playerReady, setPlayerReady] = useState(false)
 
@@ -114,24 +109,18 @@ export function HeroVideo({ isFullscreen }: HeroVideoProps): ReactElement {
     }
   }, [variant?.hls, title, variant?.id])
 
+  const { subtitleUpdate } = useSubtitleUpdate()
+
   useEffect(() => {
     const player = playerRef.current
     if (player == null) return
 
-    subtitleUpdate({
+    void subtitleUpdate({
       player,
-      videoSubtitleLanguages,
-      subtitleLanguage,
-      subtitleOn,
-      autoSubtitle
+      subtitleLanguageId,
+      subtitleOn: mute || subtitleOn
     })
-  }, [
-    playerRef,
-    videoSubtitleLanguages,
-    subtitleLanguage,
-    subtitleOn,
-    autoSubtitle
-  ])
+  }, [playerRef, subtitleLanguageId, subtitleOn, variant, mute])
 
   return (
     <div

@@ -21,30 +21,24 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          run_install: false
       - uses: useblacksmith/setup-node@v5
         with:
           node-version: ${{ matrix.node-version }}
-      - name: Get Node Version
-        id: node-version
-        run: echo "version=$(node -v)" >> $GITHUB_OUTPUT
-      - name: Mount NPM Cache
-        uses: useblacksmith/stickydisk@v1
-        with:
-          key: ${{ github.repository }}-${{ steps.node-version.outputs.version }}-npm-cache
-          path: ~/.npm
-      - name: Mount node_modules
-        uses: useblacksmith/stickydisk@v1
-        with:
-          key: ${{ github.repository }}-${{ steps.node-version.outputs.version }}-node-modules
-          path: ./node_modules
-      - name: NPM Install
-        run: npm install --silent
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile --silent
       - uses: nrwl/nx-set-shas@v4
       - id: set-matrix
         name: set matrix app to affected array
         run: |
-          echo "matrix=$(npx ts-node tools/scripts/deploy-apps.ts --projects apps/*)" >> $GITHUB_OUTPUT
-          cat $GITHUB_OUTPUT
+          matrix=$(pnpm -s exec ts-node tools/scripts/deploy-apps.ts --projects apps/*)
+          echo "matrix=${matrix}" >> "$GITHUB_OUTPUT"
+          cat "$GITHUB_OUTPUT"
   deploy-preview:
     name: Deploy Preview
     needs: affected
@@ -94,24 +88,16 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          run_install: false
       - uses: useblacksmith/setup-node@v5
         with:
           node-version: ${{ matrix.node-version }}
-      - name: Get Node Version
-        id: node-version
-        run: echo "version=$(node -v)" >> $GITHUB_OUTPUT
-      - name: Mount NPM Cache
-        uses: useblacksmith/stickydisk@v1
-        with:
-          key: ${{ github.repository }}-${{ steps.node-version.outputs.version }}-npm-cache
-          path: ~/.npm
-      - name: Mount node_modules
-        uses: useblacksmith/stickydisk@v1
-        with:
-          key: ${{ github.repository }}-${{ steps.node-version.outputs.version }}-node-modules
-          path: ./node_modules
-      - name: NPM Install
-        run: npm install --silent
+          cache: 'pnpm'
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile --silent
       - uses: nrwl/nx-set-shas@v4
       - name: vercel deployment
         env:
@@ -128,19 +114,19 @@ jobs:
           NEXT_PUBLIC_VERCEL_ENV: ${{ github.event_name == 'push' && github.ref == 'refs/heads/stage' && 'stage' || 'preview' }}
           NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA: ${{ github.sha }}
         # use run-namy to avoid case where deploy command doesn't exist for a project
-        run: npx nx run-many --target=deploy --projects=${{ matrix.app }}
+        run: pnpm exec nx run-many --target=deploy --projects=${{ matrix.app }}
       - name: upload sourcemaps to datadog
         env:
           GIT_COMMIT_SHA: ${{ github.sha }}
           DATADOG_API_KEY: ${{ secrets.DATADOG_API_KEY }}
-        run: npx nx run-many --target=upload-sourcemaps --projects=${{ matrix.app }}
+        run: pnpm exec nx run-many --target=upload-sourcemaps --projects=${{ matrix.app }}
       - name: vercel set alias
         if: ${{ github.event_name == 'pull_request' }}
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
           PR_NUMBER: ${{ github.event.number }}
         # use run-namy to avoid case where deploy command doesn't exist for a project
-        run: npx nx run-many --target=vercel-alias --projects=${{ matrix.app }}
+        run: pnpm exec nx run-many --target=vercel-alias --projects=${{ matrix.app }}
       - name: Generate GitHub deployment comment
         id: deployment-url
         env:
@@ -198,7 +184,7 @@ jobs:
   build-e2e-matrix:
     name: Build E2E Matrix
     needs: [affected, deploy-preview]
-    if: ${{ github.event_name != 'merge_group' && needs.deploy-preview.result == 'success' && !(github.event_name == 'push' && github.ref == 'refs/heads/stage') }}
+    if: ${{ github.event_name != 'merge_group' && needs.deploy-preview.result == 'success' && !(github.event_name == 'push' && github.ref == 'refs/heads/stage') && (github.event_name != 'pull_request' || !github.event.pull_request.draft) }}
     permissions:
       actions: read
       contents: read
@@ -247,7 +233,7 @@ jobs:
     name: Playwright E2E (${{ matrix.app }})
     needs: [build-e2e-matrix]
     # Only run if ALL deploy-preview matrix entries succeeded and we have URLs
-    if: ${{ github.event_name != 'merge_group' && needs.build-e2e-matrix.result == 'success' && needs.build-e2e-matrix.outputs.apps != '[]' && needs.build-e2e-matrix.outputs.apps != '' && !(github.event_name == 'push' && github.ref == 'refs/heads/stage') }}
+    if: ${{ github.event_name != 'merge_group' && needs.build-e2e-matrix.result == 'success' && needs.build-e2e-matrix.outputs.apps != '[]' && needs.build-e2e-matrix.outputs.apps != '' && !(github.event_name == 'push' && github.ref == 'refs/heads/stage') && (github.event_name != 'pull_request' || !github.event.pull_request.draft) }}
     permissions:
       contents: read
     runs-on: blacksmith-4vcpu-ubuntu-2204
@@ -261,32 +247,24 @@ jobs:
         include: ${{ fromJson(needs.build-e2e-matrix.outputs.include) }}
     steps:
       - uses: actions/checkout@v4
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          run_install: false
       - uses: useblacksmith/setup-node@v5
         with:
           node-version: ${{ matrix.node-version }}
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile --silent
       - name: Mount playwright cache
         uses: useblacksmith/stickydisk@v1
         with:
           key: ${{ github.repository }}-playwright-cache
           path: ~/.cache/ms-playwright
-      - name: Get Node Version
-        id: node-version
-        run: echo "version=$(node -v)" >> $GITHUB_OUTPUT
-      - name: Mount NPM Cache
-        uses: useblacksmith/stickydisk@v1
-        with:
-          key: ${{ github.repository }}-${{ steps.node-version.outputs.version }}-npm-cache
-          path: ~/.npm
-      - name: Mount node_modules
-        uses: useblacksmith/stickydisk@v1
-        with:
-          key: ${{ github.repository }}-${{ steps.node-version.outputs.version }}-node-modules
-          path: ./node_modules
-      - name: NPM Install
-        run: npm install --silent
-      - run: npx playwright install --with-deps
       - name: Run Playwright tests
-        run: npx nx run ${{ matrix.app }}-e2e:e2e
+        run: pnpm exec nx run ${{ matrix.app }}-e2e:e2e
         env:
           DEPLOYMENT_URL: ${{ matrix.url }}
           PLAYWRIGHT_USER: ${{ secrets.PLAYWRIGHT_USER }}
@@ -350,24 +328,17 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          run_install: false
       - uses: useblacksmith/setup-node@v5
         with:
           node-version: ${{ matrix.node-version }}
-      - name: Get Node Version
-        id: node-version
-        run: echo "version=$(node -v)" >> $GITHUB_OUTPUT
-      - name: Mount NPM Cache
-        uses: useblacksmith/stickydisk@v1
-        with:
-          key: ${{ github.repository }}-${{ steps.node-version.outputs.version }}-npm-cache
-          path: ~/.npm
-      - name: Mount node_modules
-        uses: useblacksmith/stickydisk@v1
-        with:
-          key: ${{ github.repository }}-${{ steps.node-version.outputs.version }}-node-modules
-          path: ./node_modules
-      - name: NPM Install
-        run: npm install --silent
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile --silent
       - uses: nrwl/nx-set-shas@v4
       - name: vercel deployment
         env:
@@ -384,12 +355,12 @@ jobs:
           NEXT_PUBLIC_VERCEL_ENV: prod
           NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA: ${{ github.sha }}
         # use run-namy to avoid case where deploy command doesn't exist for a project
-        run: npx nx run-many --target=deploy --projects=${{ matrix.app }} --prod
+        run: pnpm exec nx run-many --target=deploy --projects=${{ matrix.app }} --prod
       - name: upload sourcemaps to datadog
         env:
           GIT_COMMIT_SHA: ${{ github.sha }}
           DATADOG_API_KEY: ${{ secrets.DATADOG_API_KEY }}
-        run: npx nx run-many --target=upload-sourcemaps --projects=${{ matrix.app }}
+        run: pnpm exec nx run-many --target=upload-sourcemaps --projects=${{ matrix.app }}
       - name: Generate GitHub comment
         id: deployment-url
         env:

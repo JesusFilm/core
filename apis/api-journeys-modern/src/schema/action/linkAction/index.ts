@@ -1,3 +1,2 @@
 import './linkAction'
-
-export { LinkActionRef } from './linkAction'
+import './blockUpdateLinkAction.mutation'

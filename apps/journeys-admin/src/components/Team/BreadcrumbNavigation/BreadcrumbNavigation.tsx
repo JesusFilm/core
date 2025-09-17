@@ -66,15 +66,15 @@ export function BreadcrumbNavigation(): ReactElement {
         return (
           <Box key={index}>
             {item.path != null && !isLastItem ? (
-              <NextLink href={item.path} passHref legacyBehavior>
-                <Typography
-                  variant="h4"
-                  color="primary.main"
-                  sx={{ cursor: 'pointer' }}
-                >
-                  {item.label}
-                </Typography>
-              </NextLink>
+              <Typography
+                component={NextLink}
+                href={item.path}
+                variant="h4"
+                color="primary.main"
+                sx={{ cursor: 'pointer', textDecoration: 'none' }}
+              >
+                {item.label}
+              </Typography>
             ) : (
               <Typography
                 variant="h4"

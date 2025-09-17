@@ -20,20 +20,23 @@ export const ActionInterface = builder.prismaInterface('Action', {
     parentBlockId: t.exposeID('parentBlockId', { nullable: false }),
     gtmEventName: t.exposeString('gtmEventName', { nullable: true }),
     parentBlock: t.relation('parentBlock', {
-      nullable: false,
-      resolve: async (action: any) => {
-        if (!action.parentBlock) {
-          throw new GraphQLError('Parent block not found', {
-            extensions: { code: 'NOT_FOUND' }
-          })
-        }
-        return action.parentBlock
-      }
+      nullable: false
+
+      //   resolve: async (action: any) => {
+      //     console.log(action)
+      //     if (!action.parentBlock) {
+      //       throw new GraphQLError('Parent block not found', {
+      //         extensions: { code: 'NOT_FOUND' }
+      //       })
+      //     }
+      //     return action.parentBlock
+      //   }
     })
   }),
   resolveType: (action) => {
     if (action.blockId != null) return 'NavigateToBlockAction'
     if (action.email != null) return 'EmailAction'
+    if (action.phone != null) return 'PhoneAction'
     return 'LinkAction'
   }
 })

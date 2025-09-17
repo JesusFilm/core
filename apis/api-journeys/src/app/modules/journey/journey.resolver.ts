@@ -265,6 +265,8 @@ export class JourneyResolver {
     }
     if (where?.languageIds != null)
       filter.languageId = { in: where?.languageIds }
+    if (where?.fromTemplateId != null)
+      filter.fromTemplateId = where.fromTemplateId
 
     if (OR.length > 0) filter.OR = OR
 
@@ -695,8 +697,11 @@ export class JourneyResolver {
             await this.prismaService.action.create({
               data: {
                 ...block.action,
-                customizable: false,
-                parentStepId: null,
+                customizable: block?.action?.customizable ?? false,
+                parentStepId:
+                  block.action.parentStepId != null
+                    ? (duplicateStepIds.get(block.action.parentStepId) ?? null)
+                    : null,
                 parentBlockId: block.id
               }
             })

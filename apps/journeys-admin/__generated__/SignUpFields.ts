@@ -7,6 +7,12 @@
 // GraphQL fragment: SignUpFields
 // ====================================================
 
+export interface SignUpFields_action_PhoneAction {
+  __typename: "PhoneAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+}
+
 export interface SignUpFields_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
   parentBlockId: string | null;
@@ -19,6 +25,8 @@ export interface SignUpFields_action_LinkAction {
   parentBlockId: string | null;
   gtmEventName: string | null;
   url: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export interface SignUpFields_action_EmailAction {
@@ -26,9 +34,11 @@ export interface SignUpFields_action_EmailAction {
   parentBlockId: string | null;
   gtmEventName: string | null;
   email: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
-export type SignUpFields_action = SignUpFields_action_NavigateToBlockAction | SignUpFields_action_LinkAction | SignUpFields_action_EmailAction;
+export type SignUpFields_action = SignUpFields_action_PhoneAction | SignUpFields_action_NavigateToBlockAction | SignUpFields_action_LinkAction | SignUpFields_action_EmailAction;
 
 export interface SignUpFields {
   __typename: "SignUpBlock";
