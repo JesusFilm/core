@@ -118,6 +118,7 @@ export function DoneScreen({
           <Typography
             variant="caption"
             color="text.secondary"
+            noWrap
             sx={{
               display: '-webkit-box',
               WebkitLineClamp: 2,
