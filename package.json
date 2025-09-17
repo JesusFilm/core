@@ -192,7 +192,6 @@
     "pino-http": "^10.0.0",
     "powerbi-client": "^2.23.1",
     "powerbi-client-react": "^2.0.0",
-    "prisma": "^6.0.0",
     "prism-react-renderer": "^2.0.0",
     "prop-types": "^15.8.1",
     "qrcode.react": "^4.2.0",
@@ -246,7 +245,6 @@
     "zod": "^3.25.76"
   },
   "devDependencies": {
-    "@prisma/nextjs-monorepo-workaround-plugin": "^6.5.0",
     "@babel/core": "^7.22.15",
     "@babel/preset-env": "^7.22.15",
     "@babel/preset-typescript": "^7.22.15",
@@ -385,6 +383,7 @@
     "postcss": "^8.5.3",
     "postject": "^1.0.0-alpha.6",
     "prettier": "3.6.2",
+    "prisma": "^6.0.0",
     "prisma-erd-generator": "^2.0.0",
     "react-refresh": "^0.17.0",
     "source-map-loader": "^5.0.0",

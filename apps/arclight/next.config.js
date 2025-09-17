@@ -1,12 +1,6 @@
 // @ts-check
 
 const { composePlugins, withNx } = require('@nx/next')
-// Prisma Next.js monorepo workaround plugin (static require per docs)
-// eslint-disable-next-line @typescript-eslint/no-var-requires, @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
-const PrismaPlugin =
-  /** @type {new () => import('webpack').WebpackPluginInstance} */ (
-    require('@prisma/nextjs-monorepo-workaround-plugin').PrismaPlugin
-  )
 
 /**
  * @type {import('@nx/next/plugins/with-nx').WithNxOptions}
@@ -36,20 +30,6 @@ const nextConfig = {
   experimental: {
     fallbackNodePolyfills: false,
     reactCompiler: true
-  },
-  /**
-   * @param {import('webpack').Configuration} config
-   * @param {{ isServer: boolean }} ctx
-   * @returns {import('webpack').Configuration}
-   */
-  webpack: (config, ctx) => {
-    const { isServer } = ctx
-    if (!isServer) return config
-    config.plugins = Array.isArray(config.plugins) ? config.plugins : []
-    /** @type {import('webpack').WebpackPluginInstance} */
-    const prismaPlugin = new PrismaPlugin()
-    config.plugins.push(prismaPlugin)
-    return config
   }
 }
 
