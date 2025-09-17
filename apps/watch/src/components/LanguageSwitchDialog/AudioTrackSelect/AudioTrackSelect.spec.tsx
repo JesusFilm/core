@@ -221,21 +221,16 @@ describe('AudioTrackSelect', () => {
 
       await userEvent.click(screen.getByRole('combobox'))
 
-      await waitFor(() => {
-        expect(screen.getByText('Available Languages')).toBeInTheDocument()
-        expect(screen.getByText('Other Languages')).toBeInTheDocument()
-      })
-      // available languages
-      expect(screen.getAllByRole('list')[0].children[0]).toHaveTextContent(
-        'English'
-      )
-      expect(screen.getAllByRole('list')[0].children[1]).toHaveTextContent(
-        'FrenchFrançais'
-      )
+      expect(
+        screen.getByRole('option', { name: 'English' })
+      ).toBeInTheDocument()
+      expect(
+        screen.getByRole('option', { name: 'French Français' })
+      ).toBeInTheDocument()
       // other languages
-      expect(screen.getAllByRole('list')[1].children[0]).toHaveTextContent(
-        'SpanishEspañol'
-      )
+      expect(
+        screen.queryByRole('option', { name: 'Spanish Español' })
+      ).not.toBeInTheDocument()
     })
 
     it('should call updateAudioLanguage when a language is selected', async () => {

@@ -40,7 +40,7 @@ export function StepBlockNodeMenu({
 
   return (
     <>
-      <Zoom in={appear}>
+      <Zoom in={appear && !open}>
         <Fab
           variant="extended"
           className={className}

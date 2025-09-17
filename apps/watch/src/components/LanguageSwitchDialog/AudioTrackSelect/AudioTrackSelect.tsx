@@ -10,6 +10,7 @@ import { useInstantSearch } from 'react-instantsearch'
 import { type Language, useLanguages } from '../../../libs/useLanguages'
 import { useLanguageActions } from '../../../libs/watchContext'
 import { filterOptions } from '../utils/filterOptions'
+import { LANGUAGE_MAPPINGS } from '../../../libs/localeMapping'
 
 function useSafeInstantSearch() {
   try {
@@ -28,7 +29,7 @@ export function AudioTrackSelect({
   videoAudioLanguageIds,
   audioLanguageId
 }: AudioTrackSelectProps): ReactElement {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
   const { updateAudioLanguage } = useLanguageActions()
   const { languages, isLoading } = useLanguages()
   const instantSearch = useSafeInstantSearch()
@@ -42,9 +43,6 @@ export function AudioTrackSelect({
     return [
       ...languages.filter((language) =>
         videoAudioLanguageIds.includes(language.id)
-      ),
-      ...languages.filter(
-        (language) => !videoAudioLanguageIds.includes(language.id)
       )
     ]
   }, [languages, videoAudioLanguageIds])
@@ -83,6 +81,12 @@ export function AudioTrackSelect({
       reload = found != null
     }
     updateAudioLanguage(language, reload)
+    const languageLocale = Object.values(LANGUAGE_MAPPINGS).find(
+      (mapping) => mapping.languageId === language.id
+    )?.locale
+    if (languageLocale != null) {
+      i18n.changeLanguage(languageLocale)
+    }
 
     const languageEnglishName = language.englishName?.value
     if (instantSearch != null && languageEnglishName != null)
@@ -124,14 +128,6 @@ export function AudioTrackSelect({
             // this is a workaround to keep the autocomplete controlled
             value={selectedOption as unknown as Language | undefined}
             options={options}
-            groupBy={
-              videoAudioLanguageIds == null
-                ? undefined
-                : (option) =>
-                    videoAudioLanguageIds.includes(option.id)
-                      ? t('Available Languages')
-                      : t('Other Languages')
-            }
             filterOptions={filterOptions}
             onChange={handleChange}
             loading={isLoading}

@@ -870,6 +870,7 @@ export type Journey = {
   seoDescription?: Maybe<Scalars['String']['output']>;
   /** title for seo and sharing */
   seoTitle?: Maybe<Scalars['String']['output']>;
+  showAssistant?: Maybe<Scalars['Boolean']['output']>;
   showChatButtons?: Maybe<Scalars['Boolean']['output']>;
   showDislikeButton?: Maybe<Scalars['Boolean']['output']>;
   showDisplayTitle?: Maybe<Scalars['Boolean']['output']>;
@@ -1296,6 +1297,7 @@ export type JourneysEmailPreferenceUpdateInput = {
 
 export type JourneysFilter = {
   featured?: InputMaybe<Scalars['Boolean']['input']>;
+  fromTemplateId?: InputMaybe<Scalars['ID']['input']>;
   ids?: InputMaybe<Array<Scalars['ID']['input']>>;
   languageIds?: InputMaybe<Array<Scalars['ID']['input']>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
@@ -1736,7 +1738,7 @@ export type MutationBlockRestoreArgs = {
 
 export type MutationBlockUpdateActionArgs = {
   id: Scalars['ID']['input'];
-  input?: InputMaybe<BlockUpdateActionInput>;
+  input: BlockUpdateActionInput;
 };
 
 
