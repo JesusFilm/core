@@ -172,14 +172,15 @@ export function CreateJourneyButton({
   )
 
   const handleCheckSignIn = (): void => {
-    if (signedIn && canOpenTeamDialog) {
-      canOpenTeamDialog = false // Prevent other instances from opening dialog
-      if (setOpenTeamDialog !== undefined) setOpenTeamDialog(true)
-    } else if (signedIn && !canOpenTeamDialog) {
-      // Dialog is already open from another instance, do nothing
-    } else {
+    if (!signedIn) {
       setOpenAccountDialog(true)
+      return
     }
+
+    if (!canOpenTeamDialog) return // Dialog is already open from another instance, so do nothing
+
+    canOpenTeamDialog = false // Prevent other instances from opening dialog
+    setOpenTeamDialog(true)
   }
 
   const handleSignIn = (login: boolean): void => {
