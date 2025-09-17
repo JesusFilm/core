@@ -231,14 +231,11 @@ export function CreateJourneyButton({
       canOpenTeamDialog = false // Prevent other instances from opening dialog
       if (setOpenTeamDialog !== undefined) setOpenTeamDialog(true)
     }
-  }, [signedIn, router, setOpenTeamDialog])
-
-  // Cleanup effect to reset canOpenTeamDialog when component unmounts
-  useEffect(() => {
+    // Cleanup: release the lock if this component unmounts mid‑flow
     return () => {
       canOpenTeamDialog = true
     }
-  }, [])
+  }, [signedIn, router, setOpenTeamDialog])
 
   return (
     <>
