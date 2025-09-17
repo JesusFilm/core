@@ -7,11 +7,8 @@ import { type SxProps, styled } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 import NextLink from 'next/link'
 import type { MouseEvent, ReactElement } from 'react'
-import { useEffect, useRef, useState } from 'react'
 
 import type { CarouselMuxSlide } from '../../types/inserts'
-
-import { MuxVideoFallback } from './MuxVideoFallback'
 
 interface MuxVideoCardProps {
   insert: CarouselMuxSlide
@@ -53,118 +50,9 @@ export function MuxVideoCard({
   imageSx,
   onClick: handleClick
 }: MuxVideoCardProps): ReactElement {
-  const videoRef = useRef<HTMLVideoElement | null>(null)
-  const containerRef = useRef<HTMLDivElement | null>(null)
-  const [isIntersecting, setIsIntersecting] = useState(false)
-  const [isLoaded, setIsLoaded] = useState(false)
-  const [hasError, setHasError] = useState(false)
-  const [prefersReducedMotion, setPrefersReducedMotion] = useState(false)
-  const [userInitiatedPlay, setUserInitiatedPlay] = useState(false)
-
   const poster = insert.posterOverride ?? insert.urls.poster
   // For mux inserts, we'll use a placeholder href since they don't navigate to specific videos
   const href = '#'
-
-  useEffect(() => {
-    if (
-      typeof window === 'undefined' ||
-      typeof window.matchMedia !== 'function'
-    )
-      return
-
-    const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)')
-    const handleChange = () => setPrefersReducedMotion(mediaQuery.matches)
-
-    handleChange()
-
-    if (typeof mediaQuery.addEventListener === 'function') {
-      mediaQuery.addEventListener('change', handleChange)
-      return () => mediaQuery.removeEventListener('change', handleChange)
-    }
-
-    if (typeof mediaQuery.addListener === 'function') {
-      mediaQuery.addListener(handleChange)
-      return () => mediaQuery.removeListener(handleChange)
-    }
-  }, [])
-
-  useEffect(() => {
-    if (typeof window === 'undefined') return
-
-    const node = containerRef.current
-    if (node == null) return
-
-    if (typeof IntersectionObserver === 'undefined') {
-      setIsIntersecting(true)
-      return
-    }
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.target === node) {
-            setIsIntersecting(entry.isIntersecting)
-          }
-        })
-      },
-      { threshold: 0.6 }
-    )
-
-    observer.observe(node)
-
-    return () => {
-      observer.unobserve(node)
-      observer.disconnect()
-    }
-  }, [])
-
-  useEffect(() => {
-    const video = videoRef.current
-    if (video == null) return
-
-    if (hasError) {
-      video.pause()
-      return
-    }
-
-    if (prefersReducedMotion && !userInitiatedPlay) {
-      video.pause()
-      return
-    }
-
-    if (isIntersecting || userInitiatedPlay) {
-      video.muted = true
-      const playPromise = video.play()
-      if (playPromise != null) {
-        void playPromise.catch(() => {})
-      }
-    } else {
-      video.pause()
-    }
-  }, [hasError, isIntersecting, prefersReducedMotion, userInitiatedPlay])
-
-  useEffect(() => {
-    return () => {
-      const video = videoRef.current
-      video?.pause()
-    }
-  }, [])
-
-  if (hasError) {
-    return (
-      <MuxVideoFallback
-        overlay={insert.overlay}
-        variant={variant}
-        onVideoSelect={(videoId) =>
-          handleClick?.(videoId)?.(new MouseEvent('click') as any)
-        }
-        videoId={insert.id}
-      />
-    )
-  }
-
-  const showPoster =
-    !isLoaded || (prefersReducedMotion === true && userInitiatedPlay !== true)
 
   return (
     <Link
@@ -183,6 +71,8 @@ export function MuxVideoCard({
           sx={{
             overflow: 'hidden',
             aspectRatio: '16 / 9',
+            // White border when active (currently playing)
+            border: active ? '3px solid white' : 'none',
             '&:hover, &.Mui-focusVisible': {
               '& .MuiImageBackground-root': {
                 transform: 'scale(1.02)'
@@ -203,40 +93,14 @@ export function MuxVideoCard({
               background: 'rgba(0,0,0,0.5)',
               transition: (theme) => theme.transitions.create('transform')
             }}
-            ref={containerRef}
           >
+            {/* Static poster image - no video element */}
             <PosterLayer
               sx={{
-                opacity: showPoster ? 1 : 0,
+                opacity: 1,
                 backgroundImage: `url(${poster})`
               }}
             />
-            <video
-              ref={videoRef}
-              muted
-              loop
-              playsInline
-              preload="metadata"
-              poster={poster}
-              autoPlay={!prefersReducedMotion}
-              aria-hidden="true"
-              onCanPlay={() => setIsLoaded(true)}
-              onError={() => setHasError(true)}
-              style={{
-                width: '100%',
-                height: '100%',
-                objectFit: 'cover',
-                display: 'block'
-              }}
-            >
-              <source src={insert.urls.hls} type="application/x-mpegURL" />
-              {insert.urls.mp4?.medium != null && (
-                <source src={insert.urls.mp4.medium} type="video/mp4" />
-              )}
-              {insert.urls.mp4?.high != null && (
-                <source src={insert.urls.mp4.high} type="video/mp4" />
-              )}
-            </video>
           </Layer>
           {variant === 'contained' && (
             <Layer

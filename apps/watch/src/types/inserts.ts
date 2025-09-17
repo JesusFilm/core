@@ -22,6 +22,7 @@ export interface BaseInsertConfig {
   enabled: boolean
   overlay: InsertOverlay
   trigger: InsertTrigger
+  duration?: number
   posterOverride?: string
 }
 
@@ -61,6 +62,7 @@ export interface CarouselMuxSlide {
   playbackId: string
   playbackIndex: number
   urls: MuxPlaybackUrls
+  duration?: number
   posterOverride?: string
 }
 

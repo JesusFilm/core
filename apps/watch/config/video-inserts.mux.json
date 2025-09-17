@@ -9,26 +9,28 @@
         "D4p01ELXmdsDM00J3O00d00fArV9q1DTFVFFCaxyax2B2nc",
         "D4p01ELXmdsDM00J3O00d00fArV9q1DTFVFFCaxyax2B2nc"
       ],
+      "duration": 3,
       "overlay": {
-        "label": "Today’s Pick",
-        "title": "Morning Nature Background",
+        "label": "Daily Inspirations",
+        "title": "Today's Bible Moments. For You.",
         "collection": "Daily Inspirations",
-        "description": "A calm intro before your playlist."
+        "description": "A hand-picked playlist of inspiring videos, designed to encourage and uplift."
       },
       "trigger": { "type": "sequence-start" }
     },
     {
-      "id": "after-three",
-      "enabled": false,
+      "id": "second-insert",
+      "enabled": true,
       "source": "mux",
-      "playbackIds": ["xZ123exampleafter3", "yZ123exampleafter3"],
+      "playbackIds": ["D4p01ELXmdsDM00J3O00d00fArV9q1DTFVFFCaxyax2B2nc"],
+      "duration": 5,
       "overlay": {
         "label": "Staff Pick",
-        "title": "Encouraging Moment",
+        "title": "Second Mux Insert",
         "collection": "Highlights",
-        "description": "Pause to reflect with this moment from our archives."
+        "description": "Second insert to test duration progression."
       },
-      "trigger": { "type": "after-count", "count": 3 }
+      "trigger": { "type": "sequence-start" }
     }
   ]
 }

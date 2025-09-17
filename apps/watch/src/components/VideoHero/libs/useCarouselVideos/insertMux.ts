@@ -63,6 +63,7 @@ export function mergeMuxInserts(
     })
   })
 
+  console.log(`[DURATION] Final carousel: ${slides.length} slides total`)
   return slides
 }
 
@@ -92,9 +93,11 @@ function prepareSlide(
     playbackId: playbackId.playbackId,
     playbackIndex: playbackId.index,
     urls,
+    duration: insert.duration,
     posterOverride: insert.posterOverride
   }
 
+  console.log(`[DURATION] Created Mux slide: ${insert.id} with ${insert.duration}s duration`)
   cache.set(insert.id, slide)
 
   return slide

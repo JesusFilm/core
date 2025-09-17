@@ -22,24 +22,26 @@ const triggerSchema = z.discriminatedUnion('type', [
   })
 ])
 
-const muxInsertSchema = z
-  .object({
-    id: z.string().min(1, 'id is required'),
-    enabled: z.boolean().default(true),
-    source: z.literal('mux'),
-    playbackIds: z
-      .array(
-        z
-          .string()
-          .min(1, 'playbackIds must contain non-empty strings'),
-        { required_error: 'playbackIds are required' }
-      )
-      .min(1, 'playbackIds must include at least one ID'),
-    overlay: overlaySchema,
-    trigger: triggerSchema,
-    posterOverride: z.string().min(1).optional()
-  })
-  .strict()
+const muxInsertSchema = z.object({
+  id: z.string().min(1, 'id is required'),
+  enabled: z.boolean().default(true),
+  source: z.literal('mux'),
+  playbackIds: z
+    .array(
+      z
+        .string()
+        .min(1, 'playbackIds must contain non-empty strings'),
+      { required_error: 'playbackIds are required' }
+    )
+    .min(1, 'playbackIds must include at least one ID'),
+  duration: z
+    .number({ invalid_type_error: 'duration must be a number' })
+    .positive('duration must be positive')
+    .optional(),
+  overlay: overlaySchema,
+  trigger: triggerSchema,
+  posterOverride: z.string().min(1).optional()
+})
 
 export const insertMuxSchema = z
   .object({
