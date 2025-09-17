@@ -52,22 +52,32 @@ describe('blockUpdatePhoneAction mutation', () => {
         document: MUTATION,
         variables: {
           id: actionableBlock.id,
-          input: { gtmEventName: null, phone: '+15551234567' }
+          input: {
+            gtmEventName: null,
+            phone: '+15551234567',
+            countryCode: 'US'
+          }
         }
       })
 
       expect(prismaMock.action.upsert).toHaveBeenCalledWith({
         where: { parentBlockId: '1' },
         create: {
-          parentBlockId: '1',
           gtmEventName: null,
-          phone: '+15551234567'
+          phone: '+15551234567',
+          countryCode: 'US',
+          parentBlock: { connect: { id: '1' } }
         },
         update: {
-          gtmEventName: null,
-          phone: '+15551234567'
-        },
-        include: { parentBlock: true }
+          url: null,
+          target: null,
+          email: null,
+          phone: '+15551234567',
+          countryCode: 'US',
+          journey: { disconnect: true },
+          block: { disconnect: true },
+          gtmEventName: null
+        }
       })
 
       expect(result).toEqual({
@@ -90,7 +100,11 @@ describe('blockUpdatePhoneAction mutation', () => {
         document: MUTATION,
         variables: {
           id: 'missing',
-          input: { gtmEventName: null, phone: '+15551234567' }
+          input: {
+            gtmEventName: null,
+            phone: '+15551234567',
+            countryCode: 'US'
+          }
         }
       })
 
@@ -111,7 +125,11 @@ describe('blockUpdatePhoneAction mutation', () => {
         document: MUTATION,
         variables: {
           id: noAccessBlock.id,
-          input: { gtmEventName: null, phone: '+15551234567' }
+          input: {
+            gtmEventName: null,
+            phone: '+15551234567',
+            countryCode: 'US'
+          }
         }
       })
 
@@ -133,7 +151,11 @@ describe('blockUpdatePhoneAction mutation', () => {
         document: MUTATION,
         variables: {
           id: wrongBlock.id,
-          input: { gtmEventName: null, phone: '+15551234567' }
+          input: {
+            gtmEventName: null,
+            phone: '+15551234567',
+            countryCode: 'US'
+          }
         }
       })
 
@@ -154,7 +176,11 @@ describe('blockUpdatePhoneAction mutation', () => {
         document: MUTATION,
         variables: {
           id: actionableBlock.id,
-          input: { gtmEventName: null, phone: 'not a phone number' }
+          input: {
+            gtmEventName: null,
+            phone: 'not a phone number',
+            countryCode: 'US'
+          }
         }
       })
 

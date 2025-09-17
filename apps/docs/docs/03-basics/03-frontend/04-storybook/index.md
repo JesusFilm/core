@@ -117,7 +117,6 @@ Story<ComponentProps<typeof Component> & { newProperty: NewPropertyType }>
 ```
 
 6.  Components sometimes references data passed to it from a parent `Provider` component. Some providers we use pass down:
-
     - Themes (ThemeProvider)
     - Alert functionality (SnackbarProvider)
     - Feature flag configurations (FlagsProvider)

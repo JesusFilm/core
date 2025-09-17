@@ -28,6 +28,8 @@ export interface BlockFields_ButtonBlock_action_LinkAction {
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export interface BlockFields_ButtonBlock_action_EmailAction {
@@ -35,6 +37,8 @@ export interface BlockFields_ButtonBlock_action_EmailAction {
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export interface BlockFields_ButtonBlock_action_PhoneAction {
@@ -149,6 +153,8 @@ export interface BlockFields_RadioOptionBlock_action_LinkAction {
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export interface BlockFields_RadioOptionBlock_action_EmailAction {
@@ -156,6 +162,8 @@ export interface BlockFields_RadioOptionBlock_action_EmailAction {
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export interface BlockFields_RadioOptionBlock_action_PhoneAction {
@@ -203,6 +211,8 @@ export interface BlockFields_SignUpBlock_action_LinkAction {
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export interface BlockFields_SignUpBlock_action_EmailAction {
@@ -210,6 +220,8 @@ export interface BlockFields_SignUpBlock_action_EmailAction {
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export interface BlockFields_SignUpBlock_action_PhoneAction {
@@ -363,6 +375,8 @@ export interface BlockFields_VideoBlock_action_LinkAction {
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export interface BlockFields_VideoBlock_action_EmailAction {
@@ -370,6 +384,8 @@ export interface BlockFields_VideoBlock_action_EmailAction {
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export interface BlockFields_VideoBlock_action_PhoneAction {
@@ -469,6 +485,8 @@ export interface BlockFields_VideoTriggerBlock_triggerAction_LinkAction {
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export interface BlockFields_VideoTriggerBlock_triggerAction_EmailAction {
@@ -476,6 +494,8 @@ export interface BlockFields_VideoTriggerBlock_triggerAction_EmailAction {
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export interface BlockFields_VideoTriggerBlock_triggerAction_PhoneAction {

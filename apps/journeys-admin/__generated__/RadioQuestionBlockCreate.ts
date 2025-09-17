@@ -29,6 +29,8 @@ export interface RadioQuestionBlockCreate_radioOption1_action_LinkAction {
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export interface RadioQuestionBlockCreate_radioOption1_action_EmailAction {
@@ -36,6 +38,8 @@ export interface RadioQuestionBlockCreate_radioOption1_action_EmailAction {
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export interface RadioQuestionBlockCreate_radioOption1_action_PhoneAction {
@@ -75,6 +79,8 @@ export interface RadioQuestionBlockCreate_radioOption2_action_LinkAction {
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export interface RadioQuestionBlockCreate_radioOption2_action_EmailAction {
@@ -82,6 +88,8 @@ export interface RadioQuestionBlockCreate_radioOption2_action_EmailAction {
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export interface RadioQuestionBlockCreate_radioOption2_action_PhoneAction {

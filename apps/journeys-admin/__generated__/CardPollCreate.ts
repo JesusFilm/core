@@ -88,6 +88,8 @@ export interface CardPollCreate_radioOption1_action_LinkAction {
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export interface CardPollCreate_radioOption1_action_EmailAction {
@@ -95,6 +97,8 @@ export interface CardPollCreate_radioOption1_action_EmailAction {
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export interface CardPollCreate_radioOption1_action_PhoneAction {
@@ -134,6 +138,8 @@ export interface CardPollCreate_radioOption2_action_LinkAction {
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export interface CardPollCreate_radioOption2_action_EmailAction {
@@ -141,6 +147,8 @@ export interface CardPollCreate_radioOption2_action_EmailAction {
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export interface CardPollCreate_radioOption2_action_PhoneAction {
@@ -180,6 +188,8 @@ export interface CardPollCreate_radioOption3_action_LinkAction {
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export interface CardPollCreate_radioOption3_action_EmailAction {
@@ -187,6 +197,8 @@ export interface CardPollCreate_radioOption3_action_EmailAction {
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export interface CardPollCreate_radioOption3_action_PhoneAction {
@@ -226,6 +238,8 @@ export interface CardPollCreate_radioOption4_action_LinkAction {
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export interface CardPollCreate_radioOption4_action_EmailAction {
@@ -233,6 +247,8 @@ export interface CardPollCreate_radioOption4_action_EmailAction {
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export interface CardPollCreate_radioOption4_action_PhoneAction {

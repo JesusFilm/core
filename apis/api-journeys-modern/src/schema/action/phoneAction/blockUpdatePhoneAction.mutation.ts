@@ -1,6 +1,6 @@
 import { GraphQLError } from 'graphql'
 
-import { prisma } from '@core/prisma/journeys/client'
+import { Prisma, prisma } from '@core/prisma/journeys/client'
 
 import { Action, ability, subject } from '../../../lib/auth/ability'
 import { builder } from '../../builder'
@@ -11,6 +11,15 @@ import { PhoneActionInput } from './inputs'
 import { PhoneActionRef } from './phoneAction'
 
 const phoneRegex = /^\+[1-9]\d{1,14}$/
+
+const ACTION_UPDATE_RESET: Prisma.ActionUpdateInput = {
+  url: null,
+  target: null,
+  email: null,
+  phone: null,
+  journey: { disconnect: true },
+  block: { disconnect: true }
+}
 
 builder.mutationField('blockUpdatePhoneAction', (t) =>
   t.withAuth({ isAuthenticated: true }).field({
@@ -65,11 +74,13 @@ builder.mutationField('blockUpdatePhoneAction', (t) =>
       const action = await prisma.action.upsert({
         where: { parentBlockId: id },
         create: {
-          parentBlockId: id,
-          ...input
+          ...input,
+          parentBlock: { connect: { id: block.id } }
         },
-        update: input,
-        include: { parentBlock: true }
+        update: {
+          ...ACTION_UPDATE_RESET,
+          ...input
+        }
       })
 
       return action

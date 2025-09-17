@@ -68,13 +68,18 @@ describe('ThemeBuilderDialog', () => {
     logoImageBlock: null,
     menuButtonIcon: null,
     menuStepBlock: null,
+    socialNodeX: null,
+    socialNodeY: null,
     journeyTheme: {
       __typename: 'JourneyTheme',
       id: 'theme-id',
       headerFont: FontFamily.Montserrat,
       bodyFont: FontFamily.Inter,
       labelFont: FontFamily.Nunito
-    }
+    },
+    journeyCustomizationDescription: null,
+    journeyCustomizationFields: [],
+    fromTemplateId: null
   }
 
   const mockJourneyWithoutTheme: JourneyFields = {

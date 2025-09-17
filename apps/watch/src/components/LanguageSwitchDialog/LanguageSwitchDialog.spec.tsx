@@ -1,234 +1,194 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { HttpResponse, http } from 'msw'
-import { useRouter } from 'next/router'
-// eslint-disable-next-line no-restricted-imports
-import { I18nextProvider } from 'react-i18next'
-import { SWRConfig } from 'swr'
 
-import { makeI18n } from '../../../test/i18n'
-import { server } from '../../../test/mswServer'
-import { WatchInitialState, WatchProvider } from '../../libs/watchContext'
+import { useLanguages } from '../../libs/useLanguages'
+import { WatchProvider } from '../../libs/watchContext'
 
 import { LanguageSwitchDialog } from './LanguageSwitchDialog'
 
-// Mock external dependencies
-jest.mock('next/router', () => ({
-  useRouter: jest.fn()
+jest.mock('../../libs/useLanguages', () => ({
+  useLanguages: jest.fn()
 }))
-
-const mockRouter = {
-  push: jest.fn(),
-  replace: jest.fn(),
-  pathname: '/watch/video123',
-  query: { id: 'video123' },
-  asPath: '/watch/video123'
-}
-
-// Default watch context state
-const defaultWatchState: WatchInitialState = {
-  audioLanguage: '529',
-  subtitleLanguage: '529',
-  subtitleOn: false,
-  videoId: 'video123'
-}
-
-const TestSWRConfig: React.FC<React.PropsWithChildren> = ({ children }) => (
-  <SWRConfig
-    value={{
-      provider: () => new Map(), // isolate cache
-      dedupingInterval: 0, // simplify timing
-      revalidateOnFocus: false, // avoid focus-triggered refetch
-      revalidateOnReconnect: false,
-      refreshInterval: 0
-    }}
-  >
-    {children}
-  </SWRConfig>
-)
+const useLanguagesMock = useLanguages as jest.MockedFunction<
+  typeof useLanguages
+>
 
 describe('LanguageSwitchDialog', () => {
-  const mockHandleClose = jest.fn()
+  const french = {
+    id: '496',
+    slug: 'french',
+    displayName: 'French',
+    name: { id: '529', value: 'French', primary: false },
+    englishName: { id: '496', value: 'French', primary: false },
+    nativeName: { id: '496', value: 'Français', primary: true }
+  }
 
   beforeEach(() => {
     jest.clearAllMocks()
-    ;(useRouter as jest.Mock).mockReturnValue(mockRouter)
-  })
-
-  describe('basic rendering', () => {
-    it('should render dialog with all components', () => {
-      render(
-        <MockedProvider mocks={[]} addTypename={false}>
-          <WatchProvider initialState={defaultWatchState}>
-            <LanguageSwitchDialog open={true} handleClose={mockHandleClose} />
-          </WatchProvider>
-        </MockedProvider>,
+    useLanguagesMock.mockReturnValue({
+      languages: [
         {
-          wrapper: TestSWRConfig
-        }
-      )
-
-      expect(screen.getByRole('dialog')).toBeInTheDocument()
-      expect(screen.getByLabelText('Language Settings')).toBeInTheDocument()
-    })
-
-    it('should render close button with proper accessibility', () => {
-      render(
-        <MockedProvider mocks={[]} addTypename={false}>
-          <WatchProvider initialState={defaultWatchState}>
-            <LanguageSwitchDialog open={true} handleClose={mockHandleClose} />
-          </WatchProvider>
-        </MockedProvider>,
+          id: '529',
+          slug: 'english',
+          displayName: 'English',
+          name: { id: '529', value: 'English', primary: true },
+          englishName: { id: '529', value: 'English', primary: true },
+          nativeName: { id: '529', value: 'English', primary: true }
+        },
+        french,
         {
-          wrapper: TestSWRConfig
+          id: '21028',
+          slug: 'spanish',
+          displayName: 'Spanish',
+          name: { id: '21028', value: 'Spanish', primary: false },
+          englishName: { id: '21028', value: 'Spanish', primary: false },
+          nativeName: { id: '21028', value: 'Español', primary: true }
         }
-      )
-
-      const closeButton = screen.getByRole('button', { name: /close/i })
-      expect(closeButton).toBeInTheDocument()
-      expect(closeButton).toHaveAttribute('aria-label', 'Close dialog')
+      ],
+      isLoading: false
     })
   })
 
-  describe('user interactions', () => {
-    it('should call handleClose when close button is clicked', async () => {
-      const user = userEvent.setup()
-      render(
-        <MockedProvider mocks={[]} addTypename={false}>
-          <WatchProvider initialState={defaultWatchState}>
-            <LanguageSwitchDialog open={true} handleClose={mockHandleClose} />
-          </WatchProvider>
-        </MockedProvider>,
-        {
-          wrapper: TestSWRConfig
-        }
-      )
+  it('should render dialog with all components', () => {
+    render(
+      <MockedProvider mocks={[]} addTypename={false}>
+        <WatchProvider>
+          <LanguageSwitchDialog open />
+        </WatchProvider>
+      </MockedProvider>
+    )
 
-      const closeButton = screen.getByRole('button', { name: /close/i })
-      await user.click(closeButton)
-
-      expect(mockHandleClose).toHaveBeenCalled()
-    })
+    expect(screen.getByRole('dialog')).toBeInTheDocument()
+    expect(screen.getByLabelText('Language Settings')).toBeInTheDocument()
   })
 
-  describe('accessibility', () => {
-    it('should have proper ARIA attributes', () => {
-      render(
-        <MockedProvider mocks={[]} addTypename={false}>
-          <WatchProvider initialState={defaultWatchState}>
-            <LanguageSwitchDialog open={true} handleClose={mockHandleClose} />
-          </WatchProvider>
-        </MockedProvider>,
-        {
-          wrapper: TestSWRConfig
-        }
-      )
+  it('should hide dialog if open is false', () => {
+    render(
+      <MockedProvider mocks={[]} addTypename={false}>
+        <WatchProvider>
+          <LanguageSwitchDialog open={false} />
+        </WatchProvider>
+      </MockedProvider>
+    )
 
-      const dialog = screen.getByRole('dialog')
-      expect(dialog).toHaveAttribute('aria-modal', 'true')
-      expect(screen.getByLabelText('Language Settings')).toBeInTheDocument()
-    })
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
   })
 
-  describe('component structure', () => {
-    it('should render components in correct order', () => {
-      render(
-        <MockedProvider mocks={[]} addTypename={false}>
-          <WatchProvider initialState={defaultWatchState}>
-            <LanguageSwitchDialog open={true} handleClose={mockHandleClose} />
-          </WatchProvider>
-        </MockedProvider>,
-        {
-          wrapper: TestSWRConfig
-        }
-      )
+  it('should hide the dialog if open is not provided', () => {
+    render(
+      <MockedProvider mocks={[]} addTypename={false}>
+        <WatchProvider>
+          <LanguageSwitchDialog />
+        </WatchProvider>
+      </MockedProvider>
+    )
 
-      const dialog = screen.getByRole('dialog')
-
-      // Verify dialog contains the main content structure
-      expect(dialog).toBeInTheDocument()
-    })
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
   })
 
-  describe('language rendering', () => {
-    it('should call api/languages query and render in english', async () => {
-      server.use(
-        http.get('/api/languages', () =>
-          HttpResponse.json([
-            ['529:en:English', '639:Inglés', "496:l'anglais"],
-            ['639:es:Español', '529:Spanish', "496:l'espagnol"],
-            ['496:fr:Français', '529:French', '639:francés'],
-            ['134:ma:', '529:Maori']
-          ])
-        )
-      )
-      render(
-        <MockedProvider mocks={[]} addTypename={false}>
-          <WatchProvider initialState={defaultWatchState}>
-            <LanguageSwitchDialog open={true} handleClose={mockHandleClose} />
-          </WatchProvider>
-        </MockedProvider>,
-        {
-          wrapper: TestSWRConfig
-        }
-      )
+  it('should call handleClose when close button is clicked', async () => {
+    const mockHandleClose = jest.fn()
+    render(
+      <MockedProvider mocks={[]} addTypename={false}>
+        <WatchProvider>
+          <LanguageSwitchDialog open handleClose={mockHandleClose} />
+        </WatchProvider>
+      </MockedProvider>
+    )
 
-      await waitFor(() => {
-        expect(screen.getAllByRole('combobox')[0]).toBeInTheDocument()
-      })
+    const closeButton = screen.getByRole('button', { name: /close/i })
+    await userEvent.click(closeButton)
 
-      const audioTrackSelect = screen.getAllByRole('combobox')[0]
-      await userEvent.click(audioTrackSelect)
+    expect(mockHandleClose).toHaveBeenCalled()
+  })
 
-      await waitFor(() => {
-        const [english, french, maori, spanish] = screen.getAllByRole('option')
-        expect(english).toHaveTextContent('English')
-        expect(french).toHaveTextContent('FrenchFrançais')
-        expect(maori).toHaveTextContent('Maori')
-        expect(spanish).toHaveTextContent('SpanishEspañol')
-      })
+  it('should render audio track select', async () => {
+    render(
+      <MockedProvider mocks={[]} addTypename={false}>
+        <WatchProvider
+          initialState={{
+            audioLanguageId: '529',
+            videoAudioLanguageIds: ['529', '496']
+          }}
+        >
+          <LanguageSwitchDialog open />
+        </WatchProvider>
+      </MockedProvider>
+    )
+
+    await waitFor(() => {
+      expect(screen.getAllByRole('combobox')[0]).toBeInTheDocument()
     })
+    expect(screen.getAllByRole('combobox')[0]).toHaveValue('English')
 
-    it('should call api/languages query and render in french', async () => {
-      server.use(
-        http.get('/api/languages', () =>
-          HttpResponse.json([
-            ['529:en:English', '639:Inglés', "496:l'anglais"],
-            ['639:es:Español', '529:Spanish', "496:l'espagnol"],
-            ['496:fr:Français', '529:French', '639:francés'],
-            ['134:ma:Maori', '529:Maori']
-          ])
-        )
-      )
-      const i18n = await makeI18n('fr')
-      render(
-        <I18nextProvider i18n={i18n}>
-          <MockedProvider mocks={[]} addTypename={false}>
-            <WatchProvider initialState={defaultWatchState}>
-              <LanguageSwitchDialog open={true} handleClose={mockHandleClose} />
-            </WatchProvider>
-          </MockedProvider>
-        </I18nextProvider>,
-        {
-          wrapper: TestSWRConfig
-        }
-      )
+    const audioTrackSelect = screen.getAllByRole('combobox')[0]
+    await userEvent.click(audioTrackSelect)
+    // available languages
+    expect(screen.getByRole('option', { name: 'English' })).toBeInTheDocument()
+    expect(
+      screen.getByRole('option', { name: 'French Français' })
+    ).toBeInTheDocument()
+    // other languages
+    expect(
+      screen.queryByRole('option', { name: 'Spanish Español' })
+    ).not.toBeInTheDocument()
+  })
 
-      await waitFor(() => {
-        expect(screen.getAllByRole('combobox')[0]).toBeInTheDocument()
-      })
-
-      const audioTrackSelect = screen.getAllByRole('combobox')[0]
-      await userEvent.click(audioTrackSelect)
-
-      await waitFor(() => {
-        const [french, english, spanish, maori] = screen.getAllByRole('option')
-        expect(french).toHaveTextContent('Français')
-        expect(english).toHaveTextContent("l'anglaisEnglish")
-        expect(spanish).toHaveTextContent("l'espagnolEspañol")
-        expect(maori).toHaveTextContent('Maori')
-      })
+  it('should render subtitles select', async () => {
+    render(
+      <MockedProvider mocks={[]} addTypename={false}>
+        <WatchProvider
+          initialState={{
+            subtitleLanguageId: '529',
+            videoSubtitleLanguageIds: ['529', '496']
+          }}
+        >
+          <LanguageSwitchDialog open />
+        </WatchProvider>
+      </MockedProvider>
+    )
+    await waitFor(() => {
+      expect(screen.getAllByRole('combobox')[1]).toBeInTheDocument()
     })
+    expect(screen.getAllByRole('combobox')[1]).toHaveValue('English')
+
+    const subtitlesSelect = screen.getAllByRole('combobox')[1]
+    await userEvent.click(subtitlesSelect)
+    // available languages
+    expect(screen.getAllByRole('list')[0].children[0]).toHaveTextContent(
+      'English'
+    )
+    expect(screen.getAllByRole('list')[0].children[1]).toHaveTextContent(
+      'FrenchFrançais'
+    )
+    // other languages
+    expect(screen.getAllByRole('list')[1].children[0]).toHaveTextContent(
+      'SpanishEspañol'
+    )
+  })
+
+  it('should render subtitle checkbox checked if subtitleOn is true', async () => {
+    render(
+      <MockedProvider mocks={[]} addTypename={false}>
+        <WatchProvider initialState={{ subtitleOn: true }}>
+          <LanguageSwitchDialog open />
+        </WatchProvider>
+      </MockedProvider>
+    )
+
+    expect(screen.getByRole('checkbox')).toBeChecked()
+  })
+
+  it('should render subtitle checkbox unchecked if subtitleOn is false', async () => {
+    render(
+      <MockedProvider mocks={[]} addTypename={false}>
+        <WatchProvider initialState={{ subtitleOn: false }}>
+          <LanguageSwitchDialog open />
+        </WatchProvider>
+      </MockedProvider>
+    )
+
+    expect(screen.getByRole('checkbox')).not.toBeChecked()
   })
 })

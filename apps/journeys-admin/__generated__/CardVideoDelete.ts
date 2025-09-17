@@ -76,6 +76,8 @@ export interface CardVideoDelete_video_VideoBlock_action_LinkAction {
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export interface CardVideoDelete_video_VideoBlock_action_EmailAction {
@@ -83,6 +85,8 @@ export interface CardVideoDelete_video_VideoBlock_action_EmailAction {
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export interface CardVideoDelete_video_VideoBlock_action_PhoneAction {

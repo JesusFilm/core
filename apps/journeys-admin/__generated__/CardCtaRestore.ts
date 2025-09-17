@@ -28,6 +28,8 @@ export interface CardCtaRestore_imageRestore_ButtonBlock_action_LinkAction {
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export interface CardCtaRestore_imageRestore_ButtonBlock_action_EmailAction {
@@ -35,6 +37,8 @@ export interface CardCtaRestore_imageRestore_ButtonBlock_action_EmailAction {
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export interface CardCtaRestore_imageRestore_ButtonBlock_action_PhoneAction {
@@ -149,6 +153,8 @@ export interface CardCtaRestore_imageRestore_RadioOptionBlock_action_LinkAction 
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export interface CardCtaRestore_imageRestore_RadioOptionBlock_action_EmailAction {
@@ -156,6 +162,8 @@ export interface CardCtaRestore_imageRestore_RadioOptionBlock_action_EmailAction
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export interface CardCtaRestore_imageRestore_RadioOptionBlock_action_PhoneAction {
@@ -203,6 +211,8 @@ export interface CardCtaRestore_imageRestore_SignUpBlock_action_LinkAction {
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export interface CardCtaRestore_imageRestore_SignUpBlock_action_EmailAction {
@@ -210,6 +220,8 @@ export interface CardCtaRestore_imageRestore_SignUpBlock_action_EmailAction {
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export interface CardCtaRestore_imageRestore_SignUpBlock_action_PhoneAction {
@@ -363,6 +375,8 @@ export interface CardCtaRestore_imageRestore_VideoBlock_action_LinkAction {
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export interface CardCtaRestore_imageRestore_VideoBlock_action_EmailAction {
@@ -370,6 +384,8 @@ export interface CardCtaRestore_imageRestore_VideoBlock_action_EmailAction {
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export interface CardCtaRestore_imageRestore_VideoBlock_action_PhoneAction {
@@ -469,6 +485,8 @@ export interface CardCtaRestore_imageRestore_VideoTriggerBlock_triggerAction_Lin
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export interface CardCtaRestore_imageRestore_VideoTriggerBlock_triggerAction_EmailAction {
@@ -476,6 +494,8 @@ export interface CardCtaRestore_imageRestore_VideoTriggerBlock_triggerAction_Ema
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export interface CardCtaRestore_imageRestore_VideoTriggerBlock_triggerAction_PhoneAction {
@@ -522,6 +542,8 @@ export interface CardCtaRestore_subtitleRestore_ButtonBlock_action_LinkAction {
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export interface CardCtaRestore_subtitleRestore_ButtonBlock_action_EmailAction {
@@ -529,6 +551,8 @@ export interface CardCtaRestore_subtitleRestore_ButtonBlock_action_EmailAction {
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export interface CardCtaRestore_subtitleRestore_ButtonBlock_action_PhoneAction {
@@ -643,6 +667,8 @@ export interface CardCtaRestore_subtitleRestore_RadioOptionBlock_action_LinkActi
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export interface CardCtaRestore_subtitleRestore_RadioOptionBlock_action_EmailAction {
@@ -650,6 +676,8 @@ export interface CardCtaRestore_subtitleRestore_RadioOptionBlock_action_EmailAct
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export interface CardCtaRestore_subtitleRestore_RadioOptionBlock_action_PhoneAction {
@@ -697,6 +725,8 @@ export interface CardCtaRestore_subtitleRestore_SignUpBlock_action_LinkAction {
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export interface CardCtaRestore_subtitleRestore_SignUpBlock_action_EmailAction {
@@ -704,6 +734,8 @@ export interface CardCtaRestore_subtitleRestore_SignUpBlock_action_EmailAction {
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export interface CardCtaRestore_subtitleRestore_SignUpBlock_action_PhoneAction {
@@ -857,6 +889,8 @@ export interface CardCtaRestore_subtitleRestore_VideoBlock_action_LinkAction {
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export interface CardCtaRestore_subtitleRestore_VideoBlock_action_EmailAction {
@@ -864,6 +898,8 @@ export interface CardCtaRestore_subtitleRestore_VideoBlock_action_EmailAction {
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export interface CardCtaRestore_subtitleRestore_VideoBlock_action_PhoneAction {
@@ -963,6 +999,8 @@ export interface CardCtaRestore_subtitleRestore_VideoTriggerBlock_triggerAction_
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export interface CardCtaRestore_subtitleRestore_VideoTriggerBlock_triggerAction_EmailAction {
@@ -970,6 +1008,8 @@ export interface CardCtaRestore_subtitleRestore_VideoTriggerBlock_triggerAction_
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export interface CardCtaRestore_subtitleRestore_VideoTriggerBlock_triggerAction_PhoneAction {
@@ -1016,6 +1056,8 @@ export interface CardCtaRestore_titleRestore_ButtonBlock_action_LinkAction {
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export interface CardCtaRestore_titleRestore_ButtonBlock_action_EmailAction {
@@ -1023,6 +1065,8 @@ export interface CardCtaRestore_titleRestore_ButtonBlock_action_EmailAction {
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export interface CardCtaRestore_titleRestore_ButtonBlock_action_PhoneAction {
@@ -1137,6 +1181,8 @@ export interface CardCtaRestore_titleRestore_RadioOptionBlock_action_LinkAction 
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export interface CardCtaRestore_titleRestore_RadioOptionBlock_action_EmailAction {
@@ -1144,6 +1190,8 @@ export interface CardCtaRestore_titleRestore_RadioOptionBlock_action_EmailAction
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export interface CardCtaRestore_titleRestore_RadioOptionBlock_action_PhoneAction {
@@ -1191,6 +1239,8 @@ export interface CardCtaRestore_titleRestore_SignUpBlock_action_LinkAction {
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export interface CardCtaRestore_titleRestore_SignUpBlock_action_EmailAction {
@@ -1198,6 +1248,8 @@ export interface CardCtaRestore_titleRestore_SignUpBlock_action_EmailAction {
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export interface CardCtaRestore_titleRestore_SignUpBlock_action_PhoneAction {
@@ -1351,6 +1403,8 @@ export interface CardCtaRestore_titleRestore_VideoBlock_action_LinkAction {
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export interface CardCtaRestore_titleRestore_VideoBlock_action_EmailAction {
@@ -1358,6 +1412,8 @@ export interface CardCtaRestore_titleRestore_VideoBlock_action_EmailAction {
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export interface CardCtaRestore_titleRestore_VideoBlock_action_PhoneAction {
@@ -1457,6 +1513,8 @@ export interface CardCtaRestore_titleRestore_VideoTriggerBlock_triggerAction_Lin
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export interface CardCtaRestore_titleRestore_VideoTriggerBlock_triggerAction_EmailAction {
@@ -1464,6 +1522,8 @@ export interface CardCtaRestore_titleRestore_VideoTriggerBlock_triggerAction_Ema
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export interface CardCtaRestore_titleRestore_VideoTriggerBlock_triggerAction_PhoneAction {
@@ -1510,6 +1570,8 @@ export interface CardCtaRestore_button1Restore_ButtonBlock_action_LinkAction {
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export interface CardCtaRestore_button1Restore_ButtonBlock_action_EmailAction {
@@ -1517,6 +1579,8 @@ export interface CardCtaRestore_button1Restore_ButtonBlock_action_EmailAction {
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export interface CardCtaRestore_button1Restore_ButtonBlock_action_PhoneAction {
@@ -1631,6 +1695,8 @@ export interface CardCtaRestore_button1Restore_RadioOptionBlock_action_LinkActio
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export interface CardCtaRestore_button1Restore_RadioOptionBlock_action_EmailAction {
@@ -1638,6 +1704,8 @@ export interface CardCtaRestore_button1Restore_RadioOptionBlock_action_EmailActi
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export interface CardCtaRestore_button1Restore_RadioOptionBlock_action_PhoneAction {
@@ -1685,6 +1753,8 @@ export interface CardCtaRestore_button1Restore_SignUpBlock_action_LinkAction {
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export interface CardCtaRestore_button1Restore_SignUpBlock_action_EmailAction {
@@ -1692,6 +1762,8 @@ export interface CardCtaRestore_button1Restore_SignUpBlock_action_EmailAction {
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export interface CardCtaRestore_button1Restore_SignUpBlock_action_PhoneAction {
@@ -1845,6 +1917,8 @@ export interface CardCtaRestore_button1Restore_VideoBlock_action_LinkAction {
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export interface CardCtaRestore_button1Restore_VideoBlock_action_EmailAction {
@@ -1852,6 +1926,8 @@ export interface CardCtaRestore_button1Restore_VideoBlock_action_EmailAction {
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export interface CardCtaRestore_button1Restore_VideoBlock_action_PhoneAction {
@@ -1951,6 +2027,8 @@ export interface CardCtaRestore_button1Restore_VideoTriggerBlock_triggerAction_L
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export interface CardCtaRestore_button1Restore_VideoTriggerBlock_triggerAction_EmailAction {
@@ -1958,6 +2036,8 @@ export interface CardCtaRestore_button1Restore_VideoTriggerBlock_triggerAction_E
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export interface CardCtaRestore_button1Restore_VideoTriggerBlock_triggerAction_PhoneAction {
@@ -2004,6 +2084,8 @@ export interface CardCtaRestore_startIcon1Restore_ButtonBlock_action_LinkAction 
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export interface CardCtaRestore_startIcon1Restore_ButtonBlock_action_EmailAction {
@@ -2011,6 +2093,8 @@ export interface CardCtaRestore_startIcon1Restore_ButtonBlock_action_EmailAction
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export interface CardCtaRestore_startIcon1Restore_ButtonBlock_action_PhoneAction {
@@ -2125,6 +2209,8 @@ export interface CardCtaRestore_startIcon1Restore_RadioOptionBlock_action_LinkAc
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export interface CardCtaRestore_startIcon1Restore_RadioOptionBlock_action_EmailAction {
@@ -2132,6 +2218,8 @@ export interface CardCtaRestore_startIcon1Restore_RadioOptionBlock_action_EmailA
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export interface CardCtaRestore_startIcon1Restore_RadioOptionBlock_action_PhoneAction {
@@ -2179,6 +2267,8 @@ export interface CardCtaRestore_startIcon1Restore_SignUpBlock_action_LinkAction 
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export interface CardCtaRestore_startIcon1Restore_SignUpBlock_action_EmailAction {
@@ -2186,6 +2276,8 @@ export interface CardCtaRestore_startIcon1Restore_SignUpBlock_action_EmailAction
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export interface CardCtaRestore_startIcon1Restore_SignUpBlock_action_PhoneAction {
@@ -2339,6 +2431,8 @@ export interface CardCtaRestore_startIcon1Restore_VideoBlock_action_LinkAction {
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export interface CardCtaRestore_startIcon1Restore_VideoBlock_action_EmailAction {
@@ -2346,6 +2440,8 @@ export interface CardCtaRestore_startIcon1Restore_VideoBlock_action_EmailAction 
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export interface CardCtaRestore_startIcon1Restore_VideoBlock_action_PhoneAction {
@@ -2445,6 +2541,8 @@ export interface CardCtaRestore_startIcon1Restore_VideoTriggerBlock_triggerActio
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export interface CardCtaRestore_startIcon1Restore_VideoTriggerBlock_triggerAction_EmailAction {
@@ -2452,6 +2550,8 @@ export interface CardCtaRestore_startIcon1Restore_VideoTriggerBlock_triggerActio
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export interface CardCtaRestore_startIcon1Restore_VideoTriggerBlock_triggerAction_PhoneAction {
@@ -2498,6 +2598,8 @@ export interface CardCtaRestore_endIcon1Restore_ButtonBlock_action_LinkAction {
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export interface CardCtaRestore_endIcon1Restore_ButtonBlock_action_EmailAction {
@@ -2505,6 +2607,8 @@ export interface CardCtaRestore_endIcon1Restore_ButtonBlock_action_EmailAction {
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export interface CardCtaRestore_endIcon1Restore_ButtonBlock_action_PhoneAction {
@@ -2619,6 +2723,8 @@ export interface CardCtaRestore_endIcon1Restore_RadioOptionBlock_action_LinkActi
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export interface CardCtaRestore_endIcon1Restore_RadioOptionBlock_action_EmailAction {
@@ -2626,6 +2732,8 @@ export interface CardCtaRestore_endIcon1Restore_RadioOptionBlock_action_EmailAct
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export interface CardCtaRestore_endIcon1Restore_RadioOptionBlock_action_PhoneAction {
@@ -2673,6 +2781,8 @@ export interface CardCtaRestore_endIcon1Restore_SignUpBlock_action_LinkAction {
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export interface CardCtaRestore_endIcon1Restore_SignUpBlock_action_EmailAction {
@@ -2680,6 +2790,8 @@ export interface CardCtaRestore_endIcon1Restore_SignUpBlock_action_EmailAction {
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export interface CardCtaRestore_endIcon1Restore_SignUpBlock_action_PhoneAction {
@@ -2833,6 +2945,8 @@ export interface CardCtaRestore_endIcon1Restore_VideoBlock_action_LinkAction {
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export interface CardCtaRestore_endIcon1Restore_VideoBlock_action_EmailAction {
@@ -2840,6 +2954,8 @@ export interface CardCtaRestore_endIcon1Restore_VideoBlock_action_EmailAction {
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export interface CardCtaRestore_endIcon1Restore_VideoBlock_action_PhoneAction {
@@ -2939,6 +3055,8 @@ export interface CardCtaRestore_endIcon1Restore_VideoTriggerBlock_triggerAction_
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export interface CardCtaRestore_endIcon1Restore_VideoTriggerBlock_triggerAction_EmailAction {
@@ -2946,6 +3064,8 @@ export interface CardCtaRestore_endIcon1Restore_VideoTriggerBlock_triggerAction_
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export interface CardCtaRestore_endIcon1Restore_VideoTriggerBlock_triggerAction_PhoneAction {
@@ -2992,6 +3112,8 @@ export interface CardCtaRestore_button2Restore_ButtonBlock_action_LinkAction {
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export interface CardCtaRestore_button2Restore_ButtonBlock_action_EmailAction {
@@ -2999,6 +3121,8 @@ export interface CardCtaRestore_button2Restore_ButtonBlock_action_EmailAction {
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export interface CardCtaRestore_button2Restore_ButtonBlock_action_PhoneAction {
@@ -3113,6 +3237,8 @@ export interface CardCtaRestore_button2Restore_RadioOptionBlock_action_LinkActio
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export interface CardCtaRestore_button2Restore_RadioOptionBlock_action_EmailAction {
@@ -3120,6 +3246,8 @@ export interface CardCtaRestore_button2Restore_RadioOptionBlock_action_EmailActi
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export interface CardCtaRestore_button2Restore_RadioOptionBlock_action_PhoneAction {
@@ -3167,6 +3295,8 @@ export interface CardCtaRestore_button2Restore_SignUpBlock_action_LinkAction {
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export interface CardCtaRestore_button2Restore_SignUpBlock_action_EmailAction {
@@ -3174,6 +3304,8 @@ export interface CardCtaRestore_button2Restore_SignUpBlock_action_EmailAction {
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export interface CardCtaRestore_button2Restore_SignUpBlock_action_PhoneAction {
@@ -3327,6 +3459,8 @@ export interface CardCtaRestore_button2Restore_VideoBlock_action_LinkAction {
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export interface CardCtaRestore_button2Restore_VideoBlock_action_EmailAction {
@@ -3334,6 +3468,8 @@ export interface CardCtaRestore_button2Restore_VideoBlock_action_EmailAction {
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export interface CardCtaRestore_button2Restore_VideoBlock_action_PhoneAction {
@@ -3433,6 +3569,8 @@ export interface CardCtaRestore_button2Restore_VideoTriggerBlock_triggerAction_L
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export interface CardCtaRestore_button2Restore_VideoTriggerBlock_triggerAction_EmailAction {
@@ -3440,6 +3578,8 @@ export interface CardCtaRestore_button2Restore_VideoTriggerBlock_triggerAction_E
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export interface CardCtaRestore_button2Restore_VideoTriggerBlock_triggerAction_PhoneAction {
@@ -3486,6 +3626,8 @@ export interface CardCtaRestore_startIcon2Restore_ButtonBlock_action_LinkAction 
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export interface CardCtaRestore_startIcon2Restore_ButtonBlock_action_EmailAction {
@@ -3493,6 +3635,8 @@ export interface CardCtaRestore_startIcon2Restore_ButtonBlock_action_EmailAction
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export interface CardCtaRestore_startIcon2Restore_ButtonBlock_action_PhoneAction {
@@ -3607,6 +3751,8 @@ export interface CardCtaRestore_startIcon2Restore_RadioOptionBlock_action_LinkAc
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export interface CardCtaRestore_startIcon2Restore_RadioOptionBlock_action_EmailAction {
@@ -3614,6 +3760,8 @@ export interface CardCtaRestore_startIcon2Restore_RadioOptionBlock_action_EmailA
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export interface CardCtaRestore_startIcon2Restore_RadioOptionBlock_action_PhoneAction {
@@ -3661,6 +3809,8 @@ export interface CardCtaRestore_startIcon2Restore_SignUpBlock_action_LinkAction 
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export interface CardCtaRestore_startIcon2Restore_SignUpBlock_action_EmailAction {
@@ -3668,6 +3818,8 @@ export interface CardCtaRestore_startIcon2Restore_SignUpBlock_action_EmailAction
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export interface CardCtaRestore_startIcon2Restore_SignUpBlock_action_PhoneAction {
@@ -3821,6 +3973,8 @@ export interface CardCtaRestore_startIcon2Restore_VideoBlock_action_LinkAction {
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export interface CardCtaRestore_startIcon2Restore_VideoBlock_action_EmailAction {
@@ -3828,6 +3982,8 @@ export interface CardCtaRestore_startIcon2Restore_VideoBlock_action_EmailAction 
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export interface CardCtaRestore_startIcon2Restore_VideoBlock_action_PhoneAction {
@@ -3927,6 +4083,8 @@ export interface CardCtaRestore_startIcon2Restore_VideoTriggerBlock_triggerActio
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export interface CardCtaRestore_startIcon2Restore_VideoTriggerBlock_triggerAction_EmailAction {
@@ -3934,6 +4092,8 @@ export interface CardCtaRestore_startIcon2Restore_VideoTriggerBlock_triggerActio
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export interface CardCtaRestore_startIcon2Restore_VideoTriggerBlock_triggerAction_PhoneAction {
@@ -3980,6 +4140,8 @@ export interface CardCtaRestore_endIcon2Restore_ButtonBlock_action_LinkAction {
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export interface CardCtaRestore_endIcon2Restore_ButtonBlock_action_EmailAction {
@@ -3987,6 +4149,8 @@ export interface CardCtaRestore_endIcon2Restore_ButtonBlock_action_EmailAction {
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export interface CardCtaRestore_endIcon2Restore_ButtonBlock_action_PhoneAction {
@@ -4101,6 +4265,8 @@ export interface CardCtaRestore_endIcon2Restore_RadioOptionBlock_action_LinkActi
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export interface CardCtaRestore_endIcon2Restore_RadioOptionBlock_action_EmailAction {
@@ -4108,6 +4274,8 @@ export interface CardCtaRestore_endIcon2Restore_RadioOptionBlock_action_EmailAct
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export interface CardCtaRestore_endIcon2Restore_RadioOptionBlock_action_PhoneAction {
@@ -4155,6 +4323,8 @@ export interface CardCtaRestore_endIcon2Restore_SignUpBlock_action_LinkAction {
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export interface CardCtaRestore_endIcon2Restore_SignUpBlock_action_EmailAction {
@@ -4162,6 +4332,8 @@ export interface CardCtaRestore_endIcon2Restore_SignUpBlock_action_EmailAction {
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export interface CardCtaRestore_endIcon2Restore_SignUpBlock_action_PhoneAction {
@@ -4315,6 +4487,8 @@ export interface CardCtaRestore_endIcon2Restore_VideoBlock_action_LinkAction {
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export interface CardCtaRestore_endIcon2Restore_VideoBlock_action_EmailAction {
@@ -4322,6 +4496,8 @@ export interface CardCtaRestore_endIcon2Restore_VideoBlock_action_EmailAction {
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export interface CardCtaRestore_endIcon2Restore_VideoBlock_action_PhoneAction {
@@ -4421,6 +4597,8 @@ export interface CardCtaRestore_endIcon2Restore_VideoTriggerBlock_triggerAction_
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export interface CardCtaRestore_endIcon2Restore_VideoTriggerBlock_triggerAction_EmailAction {
@@ -4428,6 +4606,8 @@ export interface CardCtaRestore_endIcon2Restore_VideoTriggerBlock_triggerAction_
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export interface CardCtaRestore_endIcon2Restore_VideoTriggerBlock_triggerAction_PhoneAction {
@@ -4474,6 +4654,8 @@ export interface CardCtaRestore_button3Restore_ButtonBlock_action_LinkAction {
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export interface CardCtaRestore_button3Restore_ButtonBlock_action_EmailAction {
@@ -4481,6 +4663,8 @@ export interface CardCtaRestore_button3Restore_ButtonBlock_action_EmailAction {
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export interface CardCtaRestore_button3Restore_ButtonBlock_action_PhoneAction {
@@ -4595,6 +4779,8 @@ export interface CardCtaRestore_button3Restore_RadioOptionBlock_action_LinkActio
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export interface CardCtaRestore_button3Restore_RadioOptionBlock_action_EmailAction {
@@ -4602,6 +4788,8 @@ export interface CardCtaRestore_button3Restore_RadioOptionBlock_action_EmailActi
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export interface CardCtaRestore_button3Restore_RadioOptionBlock_action_PhoneAction {
@@ -4649,6 +4837,8 @@ export interface CardCtaRestore_button3Restore_SignUpBlock_action_LinkAction {
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export interface CardCtaRestore_button3Restore_SignUpBlock_action_EmailAction {
@@ -4656,6 +4846,8 @@ export interface CardCtaRestore_button3Restore_SignUpBlock_action_EmailAction {
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export interface CardCtaRestore_button3Restore_SignUpBlock_action_PhoneAction {
@@ -4809,6 +5001,8 @@ export interface CardCtaRestore_button3Restore_VideoBlock_action_LinkAction {
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export interface CardCtaRestore_button3Restore_VideoBlock_action_EmailAction {
@@ -4816,6 +5010,8 @@ export interface CardCtaRestore_button3Restore_VideoBlock_action_EmailAction {
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export interface CardCtaRestore_button3Restore_VideoBlock_action_PhoneAction {
@@ -4915,6 +5111,8 @@ export interface CardCtaRestore_button3Restore_VideoTriggerBlock_triggerAction_L
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export interface CardCtaRestore_button3Restore_VideoTriggerBlock_triggerAction_EmailAction {
@@ -4922,6 +5120,8 @@ export interface CardCtaRestore_button3Restore_VideoTriggerBlock_triggerAction_E
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export interface CardCtaRestore_button3Restore_VideoTriggerBlock_triggerAction_PhoneAction {
@@ -4968,6 +5168,8 @@ export interface CardCtaRestore_startIcon3Restore_ButtonBlock_action_LinkAction 
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export interface CardCtaRestore_startIcon3Restore_ButtonBlock_action_EmailAction {
@@ -4975,6 +5177,8 @@ export interface CardCtaRestore_startIcon3Restore_ButtonBlock_action_EmailAction
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export interface CardCtaRestore_startIcon3Restore_ButtonBlock_action_PhoneAction {
@@ -5089,6 +5293,8 @@ export interface CardCtaRestore_startIcon3Restore_RadioOptionBlock_action_LinkAc
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export interface CardCtaRestore_startIcon3Restore_RadioOptionBlock_action_EmailAction {
@@ -5096,6 +5302,8 @@ export interface CardCtaRestore_startIcon3Restore_RadioOptionBlock_action_EmailA
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export interface CardCtaRestore_startIcon3Restore_RadioOptionBlock_action_PhoneAction {
@@ -5143,6 +5351,8 @@ export interface CardCtaRestore_startIcon3Restore_SignUpBlock_action_LinkAction 
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export interface CardCtaRestore_startIcon3Restore_SignUpBlock_action_EmailAction {
@@ -5150,6 +5360,8 @@ export interface CardCtaRestore_startIcon3Restore_SignUpBlock_action_EmailAction
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export interface CardCtaRestore_startIcon3Restore_SignUpBlock_action_PhoneAction {
@@ -5303,6 +5515,8 @@ export interface CardCtaRestore_startIcon3Restore_VideoBlock_action_LinkAction {
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export interface CardCtaRestore_startIcon3Restore_VideoBlock_action_EmailAction {
@@ -5310,6 +5524,8 @@ export interface CardCtaRestore_startIcon3Restore_VideoBlock_action_EmailAction 
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export interface CardCtaRestore_startIcon3Restore_VideoBlock_action_PhoneAction {
@@ -5409,6 +5625,8 @@ export interface CardCtaRestore_startIcon3Restore_VideoTriggerBlock_triggerActio
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export interface CardCtaRestore_startIcon3Restore_VideoTriggerBlock_triggerAction_EmailAction {
@@ -5416,6 +5634,8 @@ export interface CardCtaRestore_startIcon3Restore_VideoTriggerBlock_triggerActio
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export interface CardCtaRestore_startIcon3Restore_VideoTriggerBlock_triggerAction_PhoneAction {
@@ -5462,6 +5682,8 @@ export interface CardCtaRestore_endIcon3Restore_ButtonBlock_action_LinkAction {
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export interface CardCtaRestore_endIcon3Restore_ButtonBlock_action_EmailAction {
@@ -5469,6 +5691,8 @@ export interface CardCtaRestore_endIcon3Restore_ButtonBlock_action_EmailAction {
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export interface CardCtaRestore_endIcon3Restore_ButtonBlock_action_PhoneAction {
@@ -5583,6 +5807,8 @@ export interface CardCtaRestore_endIcon3Restore_RadioOptionBlock_action_LinkActi
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export interface CardCtaRestore_endIcon3Restore_RadioOptionBlock_action_EmailAction {
@@ -5590,6 +5816,8 @@ export interface CardCtaRestore_endIcon3Restore_RadioOptionBlock_action_EmailAct
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export interface CardCtaRestore_endIcon3Restore_RadioOptionBlock_action_PhoneAction {
@@ -5637,6 +5865,8 @@ export interface CardCtaRestore_endIcon3Restore_SignUpBlock_action_LinkAction {
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export interface CardCtaRestore_endIcon3Restore_SignUpBlock_action_EmailAction {
@@ -5644,6 +5874,8 @@ export interface CardCtaRestore_endIcon3Restore_SignUpBlock_action_EmailAction {
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export interface CardCtaRestore_endIcon3Restore_SignUpBlock_action_PhoneAction {
@@ -5797,6 +6029,8 @@ export interface CardCtaRestore_endIcon3Restore_VideoBlock_action_LinkAction {
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export interface CardCtaRestore_endIcon3Restore_VideoBlock_action_EmailAction {
@@ -5804,6 +6038,8 @@ export interface CardCtaRestore_endIcon3Restore_VideoBlock_action_EmailAction {
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export interface CardCtaRestore_endIcon3Restore_VideoBlock_action_PhoneAction {
@@ -5903,6 +6139,8 @@ export interface CardCtaRestore_endIcon3Restore_VideoTriggerBlock_triggerAction_
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export interface CardCtaRestore_endIcon3Restore_VideoTriggerBlock_triggerAction_EmailAction {
@@ -5910,6 +6148,8 @@ export interface CardCtaRestore_endIcon3Restore_VideoTriggerBlock_triggerAction_
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export interface CardCtaRestore_endIcon3Restore_VideoTriggerBlock_triggerAction_PhoneAction {

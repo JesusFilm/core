@@ -14,16 +14,16 @@ export type LocaleMapping = {
   // Language ID for the locale
   languageId: string
   // Language name for the locale
-  localName: string
-  // Native language name for the locale
   nativeName: string
+  // English language name for the locale
+  englishName: string
 }
 
 export const LANGUAGE_MAPPINGS: Record<string, LocaleMapping> = {
   en: {
     locale: 'en',
-    localName: 'English',
     nativeName: 'English',
+    englishName: 'English',
     languageSlugs: ['english.html'],
     geoLocations: [
       'US', // United States
@@ -39,8 +39,8 @@ export const LANGUAGE_MAPPINGS: Record<string, LocaleMapping> = {
   },
   es: {
     locale: 'es',
-    localName: 'Español',
-    nativeName: 'Spanish',
+    nativeName: 'Español',
+    englishName: 'Spanish, Latin American',
     languageSlugs: ['spanish-latin-american.html', 'spanish-castilian.html'],
     geoLocations: [
       'ES', // Spain
@@ -69,8 +69,8 @@ export const LANGUAGE_MAPPINGS: Record<string, LocaleMapping> = {
   },
   fr: {
     locale: 'fr',
-    localName: 'Français',
-    nativeName: 'French',
+    nativeName: 'Français',
+    englishName: 'French',
     languageSlugs: ['french.html', 'french-african.html'],
     geoLocations: [
       'FR', // France
@@ -96,8 +96,8 @@ export const LANGUAGE_MAPPINGS: Record<string, LocaleMapping> = {
   },
   id: {
     locale: 'id',
-    localName: 'Bahasa Indonesia',
-    nativeName: 'Indonesian',
+    nativeName: 'Bahasa Indonesia',
+    englishName: 'Indonesian',
     languageSlugs: ['indonesian-yesus.html', 'indonesian-isa.html'],
     geoLocations: [
       'ID', // Indonesia
@@ -107,8 +107,8 @@ export const LANGUAGE_MAPPINGS: Record<string, LocaleMapping> = {
   },
   th: {
     locale: 'th',
-    localName: 'ไทย',
-    nativeName: 'Thai',
+    nativeName: 'ไทย',
+    englishName: 'Thai',
     languageSlugs: ['thai.html', 'thai-southern.html', 'thai-northern.html'],
     geoLocations: [
       'TH' // Thailand
@@ -117,8 +117,8 @@ export const LANGUAGE_MAPPINGS: Record<string, LocaleMapping> = {
   },
   ja: {
     locale: 'ja',
-    localName: '日本語',
-    nativeName: 'Japanese',
+    nativeName: '日本語',
+    englishName: 'Japanese',
     languageSlugs: ['japanese.html', 'japanese-sign-language.html'],
     geoLocations: [
       'JP' // Japan
@@ -127,8 +127,8 @@ export const LANGUAGE_MAPPINGS: Record<string, LocaleMapping> = {
   },
   ko: {
     locale: 'ko',
-    localName: '한국어',
-    nativeName: 'Korean',
+    nativeName: '한국어',
+    englishName: 'Korean',
     languageSlugs: [
       'korean.html',
       'korean-sign-language.html',
@@ -142,8 +142,8 @@ export const LANGUAGE_MAPPINGS: Record<string, LocaleMapping> = {
   },
   ru: {
     locale: 'ru',
-    localName: 'Русский',
-    nativeName: 'Russian',
+    nativeName: 'Русский',
+    englishName: 'Russian',
     languageSlugs: [
       'russian.html',
       'central-asian-russian.html',
@@ -164,8 +164,8 @@ export const LANGUAGE_MAPPINGS: Record<string, LocaleMapping> = {
   },
   tr: {
     locale: 'tr',
-    localName: 'Türkçe',
-    nativeName: 'Turkish',
+    nativeName: 'Türkçe',
+    englishName: 'Turkish',
     languageSlugs: ['turkish.html'],
     geoLocations: [
       'TR', // Turkey
@@ -173,10 +173,18 @@ export const LANGUAGE_MAPPINGS: Record<string, LocaleMapping> = {
     ],
     languageId: '1942'
   },
+  tl: {
+    locale: 'tl',
+    nativeName: 'Wikang Tagalog',
+    englishName: 'Tagalog',
+    languageSlugs: ['tagalog.html'],
+    geoLocations: ['PH'],
+    languageId: '12551'
+  },
   zh: {
     locale: 'zh',
-    localName: '繁體中文',
-    nativeName: 'Traditional Chinese',
+    nativeName: '繁體中文',
+    englishName: 'Traditional Chinese',
     languageSlugs: [
       'chinese-mandarin.html',
       'chinese-traditional.html',
@@ -191,8 +199,8 @@ export const LANGUAGE_MAPPINGS: Record<string, LocaleMapping> = {
   },
   'zh-Hans-CN': {
     locale: 'zh-Hans-CN',
-    localName: '中文',
-    nativeName: 'Simplified Chinese',
+    nativeName: '中文',
+    englishName: 'Simplified Chinese',
     languageSlugs: ['chinese-simplified.html'],
     geoLocations: [
       'CN', // China

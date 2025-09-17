@@ -21,6 +21,8 @@ export interface SignUpBlockCreate_signUpBlockCreate_action_LinkAction {
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export interface SignUpBlockCreate_signUpBlockCreate_action_EmailAction {
@@ -28,6 +30,8 @@ export interface SignUpBlockCreate_signUpBlockCreate_action_EmailAction {
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export interface SignUpBlockCreate_signUpBlockCreate_action_PhoneAction {
@@ -72,6 +76,8 @@ export interface SignUpBlockCreate_signUpBlockUpdate_action_LinkAction {
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export interface SignUpBlockCreate_signUpBlockUpdate_action_EmailAction {
@@ -79,6 +85,8 @@ export interface SignUpBlockCreate_signUpBlockUpdate_action_EmailAction {
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export interface SignUpBlockCreate_signUpBlockUpdate_action_PhoneAction {

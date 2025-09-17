@@ -28,6 +28,8 @@ export interface StepBlockRestoreFromAction_blockRestore_ButtonBlock_action_Link
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export interface StepBlockRestoreFromAction_blockRestore_ButtonBlock_action_EmailAction {
@@ -35,6 +37,8 @@ export interface StepBlockRestoreFromAction_blockRestore_ButtonBlock_action_Emai
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export interface StepBlockRestoreFromAction_blockRestore_ButtonBlock_action_PhoneAction {
@@ -149,6 +153,8 @@ export interface StepBlockRestoreFromAction_blockRestore_RadioOptionBlock_action
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export interface StepBlockRestoreFromAction_blockRestore_RadioOptionBlock_action_EmailAction {
@@ -156,6 +162,8 @@ export interface StepBlockRestoreFromAction_blockRestore_RadioOptionBlock_action
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export interface StepBlockRestoreFromAction_blockRestore_RadioOptionBlock_action_PhoneAction {
@@ -203,6 +211,8 @@ export interface StepBlockRestoreFromAction_blockRestore_SignUpBlock_action_Link
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export interface StepBlockRestoreFromAction_blockRestore_SignUpBlock_action_EmailAction {
@@ -210,6 +220,8 @@ export interface StepBlockRestoreFromAction_blockRestore_SignUpBlock_action_Emai
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export interface StepBlockRestoreFromAction_blockRestore_SignUpBlock_action_PhoneAction {
@@ -373,6 +385,8 @@ export interface StepBlockRestoreFromAction_blockRestore_VideoBlock_action_LinkA
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export interface StepBlockRestoreFromAction_blockRestore_VideoBlock_action_EmailAction {
@@ -380,6 +394,8 @@ export interface StepBlockRestoreFromAction_blockRestore_VideoBlock_action_Email
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export interface StepBlockRestoreFromAction_blockRestore_VideoBlock_action_PhoneAction {
@@ -479,6 +495,8 @@ export interface StepBlockRestoreFromAction_blockRestore_VideoTriggerBlock_trigg
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export interface StepBlockRestoreFromAction_blockRestore_VideoTriggerBlock_triggerAction_EmailAction {
@@ -486,6 +504,8 @@ export interface StepBlockRestoreFromAction_blockRestore_VideoTriggerBlock_trigg
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export interface StepBlockRestoreFromAction_blockRestore_VideoTriggerBlock_triggerAction_PhoneAction {
@@ -519,7 +539,7 @@ export interface StepBlockRestoreFromAction_blockUpdateAction_parentBlock {
 }
 
 export interface StepBlockRestoreFromAction_blockUpdateAction {
-  __typename: "NavigateToBlockAction" | "LinkAction" | "EmailAction" | "PhoneAction";
+  __typename: "EmailAction" | "LinkAction" | "NavigateToBlockAction" | "PhoneAction";
   parentBlockId: string;
   parentBlock: StepBlockRestoreFromAction_blockUpdateAction_parentBlock;
   gtmEventName: string | null;
