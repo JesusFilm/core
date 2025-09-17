@@ -29,6 +29,44 @@ jobs:
       DOPPLER_WATCH_ADMIN_TOKEN: ${{ secrets.DOPPLER_WATCH_ADMIN_TOKEN }}
       DOPPLER_GITHUB_SERVICE_TOKEN: ${{ secrets.DOPPLER_GITHUB_SERVICE_TOKEN }}
       DATADOG_API_KEY: ${{ secrets.DATADOG_API_KEY }}
+
+  e2e-arclight:
+    name: E2E Arclight (stage)
+    needs: [arclight]
+    runs-on: blacksmith-4vcpu-ubuntu-2204
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          run_install: false
+      - uses: useblacksmith/setup-node@v5
+        with:
+          node-version: 22
+          cache: 'pnpm'
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile --silent
+      - name: Install Playwright Browsers
+        run: pnpm exec playwright install --with-deps
+      - name: Run Playwright tests (Arclight stage)
+        run: pnpm exec nx run arclight-e2e:e2e
+        env:
+          DEPLOYMENT_URL: https://core-stage.arclight.org
+          PLAYWRIGHT_USER: ${{ secrets.PLAYWRIGHT_USER }}
+          PLAYWRIGHT_TEAM_NAME: ${{ secrets.PLAYWRIGHT_TEAM_NAME }}
+          EXAMPLE_EMAIL_TOKEN: ${{ secrets.EXAMPLE_EMAIL_TOKEN }}
+          PLAYWRIGHT_EMAIL: ${{ secrets.PLAYWRIGHT_EMAIL }}
+          PLAYWRIGHT_PASSWORD: ${{ secrets.PLAYWRIGHT_PASSWORD }}
+          PLAYWRIGHT_EMAIL2: ${{ secrets.PLAYWRIGHT_EMAIL2 }}
+          PLAYWRIGHT_PASSWORD2: ${{ secrets.PLAYWRIGHT_PASSWORD2 }}
+          PLAYWRIGHT_EMAIL3: ${{ secrets.PLAYWRIGHT_EMAIL3 }}
+          PLAYWRIGHT_PASSWORD3: ${{ secrets.PLAYWRIGHT_PASSWORD3 }}
+          PLAYWRIGHT_EMAIL4: ${{ secrets.PLAYWRIGHT_EMAIL4 }}
+          PLAYWRIGHT_PASSWORD4: ${{ secrets.PLAYWRIGHT_PASSWORD4 }}
+          PLAYWRIGHT_EMAIL5: ${{ secrets.PLAYWRIGHT_EMAIL5 }}
+          PLAYWRIGHT_PASSWORD5: ${{ secrets.PLAYWRIGHT_PASSWORD5 }}
   journeys-admin:
     uses: JesusFilm/core/.github/workflows/ecs-frontend-deploy-stage-worker.yml@stage
     with:
