@@ -170,9 +170,7 @@ export function SocialScreenSocialImage({
           >
             <Edit2Icon />
             <StyledInput
-              onChange={(event) =>
-                handleImageChange(event.target.files?.item(0))
-              }
+              onChange={(event) => handleImageChange(event.target.files?.[0])}
               data-testid="SocialScreenSocialImageInput"
               type="file"
               accept="image/*"
