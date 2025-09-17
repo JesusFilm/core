@@ -17,6 +17,7 @@ jobs:
         node-version: [22]
     outputs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
+      has: ${{ steps.set-matrix.outputs.has }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -39,13 +40,13 @@ jobs:
           matrix=$(pnpm -s exec ts-node tools/scripts/deploy-apps.ts --projects apps/*)
           echo "matrix=${matrix}" >> "$GITHUB_OUTPUT"
           cat "$GITHUB_OUTPUT"
+          if [ "${matrix}" != "[]" ] && [ -n "${matrix}" ]; then echo "has=true" >> "$GITHUB_OUTPUT"; else echo "has=false" >> "$GITHUB_OUTPUT"; fi
   deploy-preview:
     name: Deploy Preview
     needs: affected
     # if branch is not main or is a pull request
     if: |
-      needs.affected.outputs.matrix != '[]' &&
-      needs.affected.outputs.matrix != '' &&
+      needs.affected.outputs.has == 'true' &&
       github.event_name != 'merge_group' && (
         github.ref != 'refs/heads/main' || github.event_name == 'pull_request'
       )
