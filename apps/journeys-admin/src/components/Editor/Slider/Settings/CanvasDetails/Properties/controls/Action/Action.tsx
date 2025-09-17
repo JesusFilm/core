@@ -83,6 +83,7 @@ export function Action(): ReactElement {
 
   const isLink = !isSubmitButton && action === 'LinkAction'
   const isEmail = !isSubmitButton && action === 'EmailAction'
+  const isPhone = !isSubmitButton && action === 'PhoneAction'
 
   return (
     <>
@@ -109,13 +110,9 @@ export function Action(): ReactElement {
             })}
           </Select>
         </FormControl>
-        {/*
-        // {!isSubmitButton && action === 'LinkAction' && <LinkAction />}
-        // {!isSubmitButton && action === 'EmailAction' && <EmailAction />}
-        // {!isSubmitButton && action === 'PhoneAction' && <PhoneAction />}
-        */}
         {isLink && <LinkAction />}
         {isEmail && <EmailAction />}
+        {isPhone && <PhoneAction />}
         {action === 'NavigateToBlockAction' && <NavigateToBlockAction />}
         {(isLink || isEmail) && <CustomizationToggle />}
       </Stack>
