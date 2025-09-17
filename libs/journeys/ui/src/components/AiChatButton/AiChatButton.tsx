@@ -77,9 +77,7 @@ export function AiChatButton(): ReactElement {
             </DrawerDescription>
           </div>
         </DrawerHeader>
-        <div className="flex-1 min-h-0 h-full">
-          <AiChat open={open} />
-        </div>
+        <AiChat open={open} />
       </DrawerContent>
     </Drawer>
   )
