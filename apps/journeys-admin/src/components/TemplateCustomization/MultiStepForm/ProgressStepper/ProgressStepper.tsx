@@ -16,10 +16,10 @@ export function ProgressStepper({
   totalSteps
 }: ProgressStepperProps): ReactElement {
   // Create steps array based on totalSteps
-  const steps = Array.from({ length: totalSteps }, (_, index) => index)
+  const steps = Array.from({ length: totalSteps - 1 }, (_, index) => index)
 
   const ProgressStepperIcon = ({ icon }: StepIconProps): ReactElement => {
-    const stepIndex = Number(icon) - 1
+    const stepIndex = Number(icon)
     const isLastScreen = activeStepNumber === totalSteps - 1
     const isCurrentStep = stepIndex === activeStepNumber
     const isCompleted = stepIndex < activeStepNumber || isLastScreen
@@ -106,11 +106,7 @@ export function ProgressStepper({
                 justifyContent: 'center'
               }}
             >
-              <ProgressStepperIcon
-                active={step < activeStepNumber}
-                completed={step < activeStepNumber}
-                icon={step + 1}
-              />
+              <ProgressStepperIcon icon={step} />
             </Box>
           </Step>
         ))}

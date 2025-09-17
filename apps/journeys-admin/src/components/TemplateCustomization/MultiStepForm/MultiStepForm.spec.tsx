@@ -120,14 +120,10 @@ describe('MultiStepForm', () => {
     expect(screen.getByTestId('links-screen')).toBeInTheDocument()
     fireEvent.click(screen.getByTestId('links-next'))
 
-    // SocialScreen
+    // SocialScreen + DoneScreen
     expect(screen.getByTestId('progress-stepper-step-3')).toBeInTheDocument()
     expect(screen.getByTestId('social-screen')).toBeInTheDocument()
     fireEvent.click(screen.getByTestId('social-next'))
-
-    // DoneScreen
-    expect(screen.getByTestId('progress-stepper-step-4')).toBeInTheDocument()
-    expect(screen.getByTestId('done-screen')).toBeInTheDocument()
   })
 
   it('should render edit manually button', () => {
@@ -179,22 +175,39 @@ describe('MultiStepForm', () => {
     expect(screen.getByTestId('MultiStepForm')).toBeInTheDocument()
 
     // LanguageScreen
-    expect(screen.getByTestId('progress-stepper-step-0')).toBeInTheDocument()
     expect(screen.getByTestId('language-screen')).toBeInTheDocument()
     fireEvent.click(screen.getByTestId('language-next'))
 
-    // SocialScreen (should skip text and links)
-    expect(screen.getByTestId('progress-stepper-step-1')).toBeInTheDocument()
+    // SocialScreen + DoneScreen (should skip text and links)
     expect(screen.getByTestId('social-screen')).toBeInTheDocument()
     fireEvent.click(screen.getByTestId('social-next'))
-
-    // DoneScreen
-    expect(screen.getByTestId('progress-stepper-step-2')).toBeInTheDocument()
-    expect(screen.getByTestId('done-screen')).toBeInTheDocument()
 
     // Text and Links screens should not be present
     expect(screen.queryByTestId('text-screen')).not.toBeInTheDocument()
     expect(screen.queryByTestId('links-screen')).not.toBeInTheDocument()
+  })
+
+  it('should not render progress stepper when journey has no customization capabilities', async () => {
+    const journeyWithNoCapabilities = {
+      ...journey,
+      journeyCustomizationDescription: null,
+      journeyCustomizationFields: [],
+      chatButtons: [],
+      blocks: []
+    } as unknown as Journey
+
+    render(
+      <JourneyProvider value={{ journey: journeyWithNoCapabilities }}>
+        <MultiStepForm />
+      </JourneyProvider>
+    )
+    expect(screen.getByTestId('MultiStepForm')).toBeInTheDocument()
+    expect(
+      screen.queryByTestId('progress-stepper-step-0')
+    ).not.toBeInTheDocument()
+    expect(
+      screen.queryByTestId('progress-stepper-step-1')
+    ).not.toBeInTheDocument()
   })
 
   it('should render only text screen when journey has editable text but no links', async () => {
