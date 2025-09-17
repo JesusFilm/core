@@ -1,13 +1,18 @@
-import { google } from '@ai-sdk/google'
+import { createOpenAICompatible } from '@ai-sdk/openai-compatible'
 import { generateText } from 'ai'
 import { NextRequest, NextResponse } from 'next/server'
 
 import { getPrompt } from '../../../../src/lib/ai/langfuse/promptHelper'
-import { SuggestionsRequest } from '../../../../src/types/suggestions'
 
 export async function POST(req: NextRequest) {
+  const apologist = createOpenAICompatible({
+    name: 'apologist',
+    apiKey: process.env.APOLOGIST_API_KEY,
+    baseURL: `${process.env.APOLOGIST_API_URL}`
+  })
+
   try {
-    const { contextText }: SuggestionsRequest = await req.json()
+    const { contextText }: { contextText: string } = await req.json()
 
     if (!contextText || typeof contextText !== 'string') {
       return NextResponse.json(
@@ -21,7 +26,7 @@ export async function POST(req: NextRequest) {
     })
 
     const { text } = await generateText({
-      model: google('gemini-2.5-flash'),
+      model: apologist('openai/gpt/4o'),
       prompt: prompt
     })
 
