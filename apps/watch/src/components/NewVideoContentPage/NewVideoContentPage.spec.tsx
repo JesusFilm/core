@@ -7,6 +7,8 @@ import { WatchProvider } from '../../libs/watchContext'
 import { GET_SUBTITLES } from '../../libs/watchContext/useSubtitleUpdate/useSubtitleUpdate'
 import { videos } from '../Videos/__generated__/testData'
 
+import { NewVideoContentPage } from './NewVideoContentPage'
+
 jest.mock('./VideoContentHero', () => ({
   __esModule: true,
   VideoContentHero: () => {
@@ -22,8 +24,6 @@ jest.mock('./VideoContentHero', () => ({
 jest.mock('../../libs/useVideoChildren', () => ({
   useVideoChildren: () => ({ children: [], loading: false })
 }))
-
-import { NewVideoContentPage } from './NewVideoContentPage'
 
 const initialWatchState = {
   audioLanguageId: '529',
@@ -78,12 +78,10 @@ function renderPage(video = videos[0]) {
 
 describe('NewContentPage', () => {
   beforeEach(() => {
-    global.fetch = jest
-      .fn()
-      .mockResolvedValue({
-        ok: true,
-        text: async () => subtitleResponse
-      }) as unknown as typeof fetch
+    global.fetch = jest.fn().mockResolvedValue({
+      ok: true,
+      text: async () => subtitleResponse
+    }) as unknown as typeof fetch
   })
 
   afterEach(() => {

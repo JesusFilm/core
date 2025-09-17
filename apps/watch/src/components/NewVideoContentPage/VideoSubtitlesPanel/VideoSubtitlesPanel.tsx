@@ -25,9 +25,7 @@ type GetSubtitlesQuery = ResultOf<typeof GET_SUBTITLES>
 type GetSubtitlesVariables = VariablesOf<typeof GET_SUBTITLES>
 
 type SubtitleOption = NonNullable<
-  NonNullable<
-    NonNullable<GetSubtitlesQuery['video']>['variant']
-  >['subtitle']
+  NonNullable<NonNullable<GetSubtitlesQuery['video']>['variant']>['subtitle']
 >[number]
 
 function timeStringToSeconds(value: string): number {
@@ -64,7 +62,8 @@ function formatTimestamp(totalSeconds: number): string {
   const minutes = Math.floor((seconds % 3600) / 60)
   const remainingSeconds = seconds % 60
 
-  const paddedMinutes = hours > 0 ? String(minutes).padStart(2, '0') : String(minutes)
+  const paddedMinutes =
+    hours > 0 ? String(minutes).padStart(2, '0') : String(minutes)
   const paddedSeconds = String(remainingSeconds).padStart(2, '0')
 
   return hours > 0
@@ -110,7 +109,9 @@ function parseWebVtt(content: string): SubtitleCue[] {
     if (rawStart == null || rawEndWithSettings == null) return
 
     const start = timeStringToSeconds(rawStart)
-    const end = timeStringToSeconds(rawEndWithSettings.trim().split(/\s+/)[0] ?? '')
+    const end = timeStringToSeconds(
+      rawEndWithSettings.trim().split(/\s+/)[0] ?? ''
+    )
 
     if (!Number.isFinite(start) || !Number.isFinite(end)) return
 
@@ -158,14 +159,18 @@ export function VideoSubtitlesPanel(): ReactElement | null {
 
     return subtitles.filter(
       (subtitle): subtitle is SubtitleOption =>
-        subtitle?.language?.id != null && subtitle.value != null && subtitle.value !== ''
+        subtitle?.language?.id != null &&
+        subtitle.value != null &&
+        subtitle.value !== ''
     )
   }, [data])
 
   const [activeLanguageId, setActiveLanguageId] = useState<string | undefined>(
     subtitleLanguageId ?? undefined
   )
-  const [transcripts, setTranscripts] = useState<Record<string, SubtitleCue[]>>({})
+  const [transcripts, setTranscripts] = useState<Record<string, SubtitleCue[]>>(
+    {}
+  )
   const [loadingTranscript, setLoadingTranscript] = useState(false)
   const [transcriptError, setTranscriptError] = useState(false)
 
@@ -177,7 +182,9 @@ export function VideoSubtitlesPanel(): ReactElement | null {
 
     const contextLanguageAvailable =
       subtitleLanguageId != null &&
-      subtitleOptions.some((option) => option.language?.id === subtitleLanguageId)
+      subtitleOptions.some(
+        (option) => option.language?.id === subtitleLanguageId
+      )
 
     if (contextLanguageAvailable) {
       setActiveLanguageId((current) =>
@@ -199,8 +206,9 @@ export function VideoSubtitlesPanel(): ReactElement | null {
 
   const selectedSubtitle = useMemo(
     () =>
-      subtitleOptions.find((option) => option.language?.id === activeLanguageId) ??
-      subtitleOptions[0],
+      subtitleOptions.find(
+        (option) => option.language?.id === activeLanguageId
+      ) ?? subtitleOptions[0],
     [activeLanguageId, subtitleOptions]
   )
 
@@ -246,7 +254,8 @@ export function VideoSubtitlesPanel(): ReactElement | null {
   }, [selectedSubtitle, transcripts])
 
   const selectedLanguageName = selectedSubtitle?.language?.name?.[0]?.value
-  const cues = activeLanguageId != null ? transcripts[activeLanguageId] : undefined
+  const cues =
+    activeLanguageId != null ? transcripts[activeLanguageId] : undefined
   const isLoading = queryLoading || loadingTranscript
 
   return (
@@ -271,13 +280,20 @@ export function VideoSubtitlesPanel(): ReactElement | null {
               className="bg-white/10 border border-white/10 text-white font-semibold uppercase tracking-wider"
             >
               <SelectValue>
-                <span className="text-xs xl:text-sm">{selectedLanguageName ?? t('Subtitle language')}</span>
+                <span className="text-xs xl:text-sm">
+                  {selectedLanguageName ?? t('Subtitle language')}
+                </span>
               </SelectValue>
             </SelectTrigger>
             <SelectContent>
               {subtitleOptions.map((option) => (
-                <SelectItem key={option.language?.id ?? option.value} value={option.language?.id ?? ''}>
-                  {option.language?.name?.[0]?.value ?? option.language?.id ?? ''}
+                <SelectItem
+                  key={option.language?.id ?? option.value}
+                  value={option.language?.id ?? ''}
+                >
+                  {option.language?.name?.[0]?.value ??
+                    option.language?.id ??
+                    ''}
                 </SelectItem>
               ))}
             </SelectContent>
@@ -286,11 +302,15 @@ export function VideoSubtitlesPanel(): ReactElement | null {
       </div>
       <div className="rounded-3xl bg-white/5 p-6 backdrop-blur">
         {queryError || transcriptError ? (
-          <p className="text-sm text-red-100">{t('Unable to load subtitles.')}</p>
+          <p className="text-sm text-red-100">
+            {t('Unable to load subtitles.')}
+          </p>
         ) : isLoading ? (
           <p className="text-sm text-white/70">{t('Loading subtitles...')}</p>
         ) : subtitleOptions.length === 0 ? (
-          <p className="text-sm text-white/70">{t('No subtitles available for this video.')}</p>
+          <p className="text-sm text-white/70">
+            {t('No subtitles available for this video.')}
+          </p>
         ) : cues != null && cues.length > 0 ? (
           <ol
             className="flex max-h-96 flex-col gap-4 overflow-y-auto pr-2"
@@ -301,12 +321,16 @@ export function VideoSubtitlesPanel(): ReactElement | null {
                 <span className="min-w-[60px] text-xs font-semibold uppercase tracking-widest text-white/60">
                   {formatTimestamp(cue.start)}
                 </span>
-                <p className="text-sm leading-relaxed text-white/90">{cue.text}</p>
+                <p className="text-sm leading-relaxed text-white/90">
+                  {cue.text}
+                </p>
               </li>
             ))}
           </ol>
         ) : (
-          <p className="text-sm text-white/70">{t('No subtitles available for this language.')}</p>
+          <p className="text-sm text-white/70">
+            {t('No subtitles available for this language.')}
+          </p>
         )}
       </div>
     </section>

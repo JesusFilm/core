@@ -2,10 +2,10 @@ import { MockedProvider } from '@apollo/client/testing'
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 
-import { videos } from '../../Videos/__generated__/testData'
 import { VideoProvider } from '../../../libs/videoContext'
 import { WatchProvider } from '../../../libs/watchContext'
 import { GET_SUBTITLES } from '../../../libs/watchContext/useSubtitleUpdate/useSubtitleUpdate'
+import { videos } from '../../Videos/__generated__/testData'
 
 import { VideoSubtitlesPanel } from './VideoSubtitlesPanel'
 
@@ -101,7 +101,9 @@ function renderComponent(mocks = [englishSubtitleMock]) {
   return render(
     <MockedProvider mocks={mocks} addTypename={false}>
       <VideoProvider value={{ content: videos[0] }}>
-        <WatchProvider initialState={{ subtitleLanguageId: '529', subtitleOn: true }}>
+        <WatchProvider
+          initialState={{ subtitleLanguageId: '529', subtitleOn: true }}
+        >
           <VideoSubtitlesPanel />
         </WatchProvider>
       </VideoProvider>
@@ -122,12 +124,10 @@ describe('VideoSubtitlesPanel', () => {
       hasPointerCapture: jest.fn()
     })
 
-    global.fetch = jest
-      .fn()
-      .mockResolvedValue({
-        ok: true,
-        text: async () => englishSubtitleResponse
-      }) as unknown as typeof fetch
+    global.fetch = jest.fn().mockResolvedValue({
+      ok: true,
+      text: async () => englishSubtitleResponse
+    }) as unknown as typeof fetch
   })
 
   afterEach(() => {
@@ -146,7 +146,9 @@ describe('VideoSubtitlesPanel', () => {
 
     expect(screen.getByTestId('VideoSubtitlesPanel')).toBeInTheDocument()
 
-    await waitFor(() => expect(screen.getByText('Hello world')).toBeInTheDocument())
+    await waitFor(() =>
+      expect(screen.getByText('Hello world')).toBeInTheDocument()
+    )
     expect(screen.getByText('0:01')).toBeInTheDocument()
   })
 
@@ -157,7 +159,8 @@ describe('VideoSubtitlesPanel', () => {
       if (url.includes('spanish')) {
         return Promise.resolve({
           ok: true,
-          text: async () => `WEBVTT\n\n00:00:02.000 --> 00:00:05.000\nHola mundo\n`
+          text: async () =>
+            `WEBVTT\n\n00:00:02.000 --> 00:00:05.000\nHola mundo\n`
         })
       }
 
@@ -171,7 +174,9 @@ describe('VideoSubtitlesPanel', () => {
 
     renderComponent([multipleSubtitleMock])
 
-    await waitFor(() => expect(screen.getByText('Hello world')).toBeInTheDocument())
+    await waitFor(() =>
+      expect(screen.getByText('Hello world')).toBeInTheDocument()
+    )
 
     const user = userEvent.setup()
     await user.click(screen.getByTestId('SubtitleLanguageSelectTrigger'))
