@@ -205,24 +205,26 @@ export function AiChat({ open }: AiChatProps) {
         </ConversationContent>
         <ConversationScrollButton />
       </Conversation>
-      <Suggestions className="px-4 py-2 border-t border-border">
-        {suggestionsLoading && (
-          <div className="flex items-center gap-2 px-4 py-2 text-muted-foreground">
-            <Loader className="size-4 animate-spin" />
-            <span>{t('Loading suggestions, please hold...')}</span>
-          </div>
-        )}
-        {suggestionsError && (
-          <div className="px-4 py-2 text-destructive">{suggestionsError}</div>
-        )}
-        {suggestions?.map((suggestion) => (
-          <Suggestion
-            key={suggestion}
-            onClick={(suggestion) => handleSuggestionClick(suggestion)}
-            suggestion={suggestion}
-          />
-        ))}
-      </Suggestions>
+      <div className="border-t border-border">
+        <Suggestions className="px-4 py-2">
+          {suggestionsLoading && (
+            <div className="flex items-center gap-2 px-4 py-2 text-muted-foreground">
+              <Loader className="size-4 animate-spin" />
+              <span>{t('Loading suggestions, please hold...')}</span>
+            </div>
+          )}
+          {suggestionsError && (
+            <div className="px-4 py-2 text-destructive">{suggestionsError}</div>
+          )}
+          {suggestions?.map((suggestion) => (
+            <Suggestion
+              key={suggestion}
+              onClick={(suggestion) => handleSuggestionClick(suggestion)}
+              suggestion={suggestion}
+            />
+          ))}
+        </Suggestions>
+      </div>
       <div className="px-4 pb-4">
         <PromptInput
           onSubmit={handleSubmit}
