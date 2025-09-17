@@ -17,7 +17,6 @@ jobs:
         node-version: [22]
     outputs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
-      has: ${{ steps.set-matrix.outputs.has }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -38,19 +37,18 @@ jobs:
         name: set matrix app to affected array
         run: |
           matrix=$(pnpm -s exec ts-node tools/scripts/deploy-apps.ts --projects "apps/*:!apps/arclight")
-          # trim all whitespace/newlines from matrix string
-          matrix="${matrix//$'\n'/}"
-          matrix=$(echo -n "$matrix" | tr -d '[:space:]')
-          if [ -z "$matrix" ]; then matrix="[]"; fi
           echo "matrix=${matrix}" >> "$GITHUB_OUTPUT"
           cat "$GITHUB_OUTPUT"
-          if [ "${matrix}" != "[]" ] && [ -n "${matrix}" ]; then echo "has=true" >> "$GITHUB_OUTPUT"; else echo "has=false" >> "$GITHUB_OUTPUT"; fi
   deploy-preview:
     name: Deploy Preview
     needs: affected
     # if branch is not main or is a pull request
     if: |
-      needs.affected.outputs.has == 'true'
+      needs.affected.outputs.matrix != '[]' &&
+      needs.affected.outputs.matrix != '' &&
+      github.event_name != 'merge_group' && (
+        github.ref != 'refs/heads/main' || github.event_name == 'pull_request'
+      )
     strategy:
       fail-fast: false
       matrix:
@@ -59,8 +57,6 @@ jobs:
         github-event-name: ['${{ github.event_name }}']
         node-version: [22]
         exclude:
-          # disable arclight preview deployments (no Vercel DB access)
-          - app: arclight
           # handled by production job below
           - app: journeys
             github-ref-name: stage
@@ -104,7 +100,6 @@ jobs:
         run: pnpm install --frozen-lockfile --silent
       - uses: nrwl/nx-set-shas@v4
       - name: vercel deployment
-        if: ${{ matrix.app != '' }}
         env:
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
@@ -121,20 +116,18 @@ jobs:
         # use run-namy to avoid case where deploy command doesn't exist for a project
         run: pnpm exec nx run-many --target=deploy --projects=${{ matrix.app }}
       - name: upload sourcemaps to datadog
-        if: ${{ matrix.app != '' }}
         env:
           GIT_COMMIT_SHA: ${{ github.sha }}
           DATADOG_API_KEY: ${{ secrets.DATADOG_API_KEY }}
         run: pnpm exec nx run-many --target=upload-sourcemaps --projects=${{ matrix.app }}
       - name: vercel set alias
-        if: ${{ github.event_name == 'pull_request' && matrix.app != '' }}
+        if: ${{ github.event_name == 'pull_request' }}
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
           PR_NUMBER: ${{ github.event.number }}
         # use run-namy to avoid case where deploy command doesn't exist for a project
         run: pnpm exec nx run-many --target=vercel-alias --projects=${{ matrix.app }}
       - name: Generate GitHub deployment comment
-        if: ${{ matrix.app != '' }}
         id: deployment-url
         env:
           APP: ${{ matrix.app }}
@@ -147,13 +140,13 @@ jobs:
           echo "$body" >> $GITHUB_OUTPUT
           echo "$delimiter" >> $GITHUB_OUTPUT
       - uses: mshick/add-pr-comment@v2
-        if: ${{ github.event_name == 'pull_request' && matrix.app != '' }}
+        if: ${{ github.event_name == 'pull_request' }}
         name: add deployment comment to pull request
         with:
           message: ${{ steps.get-comment-body.outputs.body }}
           message-id: ${{ matrix.app }}
       - name: add deployment comment to commit
-        if: ${{ github.event_name != 'pull_request' && matrix.app != '' }}
+        if: ${{ github.event_name != 'pull_request' }}
         uses: peter-evans/commit-comment@v3
         with:
           body: ${{ steps.get-comment-body.outputs.body }}
@@ -166,12 +159,10 @@ jobs:
           environment-url: ${{ steps.deployment-url.outputs.deployment-url }}
           deployment-id: ${{ steps.deployment.outputs.deployment_id }}
       - name: Prepare E2E input file
-        if: ${{ matrix.app != '' }}
         run: |
           mkdir -p e2e-input
           echo "${{ steps.deployment-url.outputs.deployment-url }}" > e2e-input/${{ matrix.app }}.txt
       - name: Upload E2E input artifact
-        if: ${{ matrix.app != '' }}
         uses: actions/upload-artifact@v4
         with:
           name: e2e-input-${{ matrix.app }}
@@ -321,8 +312,6 @@ jobs:
             github-ref-name: stage
           - app: short-links
             github-ref-name: stage
-          - app: arclight
-            github-ref-name: stage
     runs-on: blacksmith-2vcpu-ubuntu-2204
     permissions:
       deployments: write
@@ -397,71 +386,3 @@ jobs:
           state: ${{ job.status }}
           environment-url: ${{ steps.deployment-url.outputs.deployment-url }}
           deployment-id: ${{ steps.deployment.outputs.deployment_id }}
-
-  e2e-arclight-stage:
-    name: E2E Arclight (stage)
-    needs: [affected, deploy-production]
-    if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/stage' && needs.affected.outputs.matrix != '[]' && needs.affected.outputs.matrix != '' }}
-    runs-on: blacksmith-4vcpu-ubuntu-2204
-    env:
-      NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          run_install: false
-      - uses: useblacksmith/setup-node@v5
-        with:
-          node-version: 22
-          cache: 'pnpm'
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile --silent
-      - name: Verify Arclight deployment URL
-        id: url
-        run: |
-          if [ ! -f apps/arclight/.vercel-url ]; then
-            echo "Arclight .vercel-url not found; skipping E2E" >&2
-            echo "skip=true" >> $GITHUB_OUTPUT
-            exit 0
-          fi
-          url=$(cat apps/arclight/.vercel-url)
-          if [ -z "$url" ]; then
-            echo "Arclight deployment URL empty; skipping E2E" >&2
-            echo "skip=true" >> $GITHUB_OUTPUT
-            exit 0
-          fi
-          echo "skip=false" >> $GITHUB_OUTPUT
-          echo "deployment-url=$url" >> $GITHUB_OUTPUT
-      - name: Install Playwright Browsers
-        if: steps.url.outputs.skip == 'false'
-        run: pnpm exec playwright install --with-deps
-      - name: Run Playwright tests (arclight)
-        if: steps.url.outputs.skip == 'false'
-        run: pnpm exec nx run arclight-e2e:e2e
-        env:
-          DEPLOYMENT_URL: ${{ steps.url.outputs.deployment-url }}
-          PLAYWRIGHT_USER: ${{ secrets.PLAYWRIGHT_USER }}
-          PLAYWRIGHT_TEAM_NAME: ${{ secrets.PLAYWRIGHT_TEAM_NAME }}
-          EXAMPLE_EMAIL_TOKEN: ${{ secrets.EXAMPLE_EMAIL_TOKEN }}
-          PLAYWRIGHT_EMAIL: ${{ secrets.PLAYWRIGHT_EMAIL }}
-          PLAYWRIGHT_PASSWORD: ${{ secrets.PLAYWRIGHT_PASSWORD }}
-          PLAYWRIGHT_EMAIL2: ${{ secrets.PLAYWRIGHT_EMAIL2 }}
-          PLAYWRIGHT_PASSWORD2: ${{ secrets.PLAYWRIGHT_PASSWORD2 }}
-          PLAYWRIGHT_EMAIL3: ${{ secrets.PLAYWRIGHT_EMAIL3 }}
-          PLAYWRIGHT_PASSWORD3: ${{ secrets.PLAYWRIGHT_PASSWORD3 }}
-          PLAYWRIGHT_EMAIL4: ${{ secrets.PLAYWRIGHT_EMAIL4 }}
-          PLAYWRIGHT_PASSWORD4: ${{ secrets.PLAYWRIGHT_PASSWORD4 }}
-          PLAYWRIGHT_EMAIL5: ${{ secrets.PLAYWRIGHT_EMAIL5 }}
-          PLAYWRIGHT_PASSWORD5: ${{ secrets.PLAYWRIGHT_PASSWORD5 }}
-      - uses: actions/upload-artifact@v4
-        if: steps.url.outputs.skip == 'false' && always()
-        with:
-          name: arclight-playwright-report
-          path: |
-            playwright-report/
-            apps/arclight-e2e/src/e2e/
-            test-results
-          retention-days: 30
