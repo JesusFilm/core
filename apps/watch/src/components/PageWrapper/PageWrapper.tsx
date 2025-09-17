@@ -10,6 +10,7 @@ import { ThemeMode, ThemeName } from '@core/shared/ui/themes'
 
 import { Footer } from '../Footer'
 import { Header } from '../Header'
+import { LocaleSuggestionBanner } from '../LocaleSuggestionBanner'
 
 interface PageWrapperProps {
   hero?: ReactNode
@@ -36,6 +37,7 @@ export function PageWrapper({
 }: PageWrapperProps): ReactElement {
   return (
     <Div100vh>
+      <LocaleSuggestionBanner />
       {hideHeader !== true && (
         <Header
           themeMode={headerThemeMode}

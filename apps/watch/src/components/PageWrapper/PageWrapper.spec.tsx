@@ -4,6 +4,10 @@ import { render, screen } from '@testing-library/react'
 
 import { PageWrapper } from '.'
 
+jest.mock('../LocaleSuggestionBanner', () => ({
+  LocaleSuggestionBanner: () => null
+}))
+
 describe('PageWrapper', () => {
   it('should render header and footer', () => {
     const { getByRole } = render(

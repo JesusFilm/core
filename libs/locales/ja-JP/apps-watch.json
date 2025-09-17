@@ -92,5 +92,9 @@
   "Short Film": "短編映画",
   "Behind The Scenes": "舞台裏",
   "Trailer": "予告編",
-  "Available in {{count}} languages._other": "{{count}} 。"
+  "Available in {{count}} languages._other": "{{count}} 。",
+  "localeSuggestion": {
+    "message": "We noticed your browser prefers {{localeName}}. Would you like to view the site in this language?",
+    "action": "Switch to {{localeName}}"
+  }
 }
