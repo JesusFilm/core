@@ -68,10 +68,8 @@ export function MultiStepForm(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { journey } = useJourney()
 
-  const { screens, links, totalSteps } = useMemo(
-    () => getCustomizeFlowConfig(journey, t),
-    []
-  )
+  const { screens, totalSteps, hasEditableText, hasCustomizableLinks } =
+    useMemo(() => getCustomizeFlowConfig(journey, t), [])
 
   const [activeScreen, setActiveScreen] =
     useState<CustomizationScreen>('language')
@@ -122,11 +120,12 @@ export function MultiStepForm(): ReactElement {
             {t('Edit Manually')}
           </Button>
         </NextLink>
-
-        <ProgressStepper
-          activeStepNumber={screens.indexOf(activeScreen)}
-          totalSteps={totalSteps}
-        />
+        {(hasEditableText || hasCustomizableLinks) && (
+          <ProgressStepper
+            activeStepNumber={screens.indexOf(activeScreen)}
+            totalSteps={totalSteps}
+          />
+        )}
 
         <Box
           sx={{
