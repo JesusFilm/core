@@ -5,7 +5,13 @@ import {
   updateActiveTrace
 } from '@langfuse/tracing'
 import { trace } from '@opentelemetry/api'
-import { ModelMessage, UIMessage, convertToModelMessages, streamText } from 'ai'
+import {
+  ModelMessage,
+  UIMessage,
+  type UserModelMessage,
+  convertToModelMessages,
+  streamText
+} from 'ai'
 import { NextRequest, after } from 'next/server'
 
 import { InteractionType } from '@core/journeys/ui/AiChat/InteractionStarter'
@@ -49,10 +55,17 @@ const handler = async (req: NextRequest) => {
     (message) => message.role === 'user'
   )
 
-  const lastUserMessage = userMessages[userMessages.length - 1]
+  const lastUserMessage: UserModelMessage =
+    userMessages[userMessages.length - 1]
+
+  const firstContent = lastUserMessage.content[0]
 
   const inputText =
-    typeof lastUserMessage?.content === 'string' ? lastUserMessage.content : ''
+    typeof firstContent === 'string'
+      ? firstContent
+      : 'type' in firstContent && firstContent.type === 'text'
+        ? firstContent.text
+        : '' // fallback for other content types
 
   updateActiveObservation({
     input: inputText
