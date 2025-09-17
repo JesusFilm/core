@@ -104,67 +104,80 @@ function generateVisitorWhere(
 
 // Query Operations using Relay connections
 builder.queryField('journeyVisitorsConnection', (t) =>
-  t.withAuth({ isAuthenticated: true }).prismaConnection({
-    override: {
-      from: 'api-journeys'
-    },
-    type: JourneyVisitorRef,
-    nullable: false,
-    cursor: 'id',
-    args: {
-      filter: t.arg({ type: JourneyVisitorFilter, required: true }),
-      sort: t.arg({ type: JourneyVisitorSort, required: false })
-    },
-    resolve: async (query, _parent, args, context) => {
-      const { filter, sort } = args
-      const user = context.user
-      const { journeyId } = filter
+  t.withAuth({ isAuthenticated: true }).prismaConnection(
+    {
+      override: {
+        from: 'api-journeys'
+      },
+      type: JourneyVisitorRef,
+      nullable: false,
+      cursor: 'id',
+      args: {
+        filter: t.arg({ type: JourneyVisitorFilter, required: true }),
+        sort: t.arg({ type: JourneyVisitorSort, required: false })
+      },
+      resolve: async (query, _parent, args, context) => {
+        const { filter, sort } = args
+        const user = context.user
+        const { journeyId } = filter
 
-      // Check if journey exists and get authorization info
-      const journey = await prisma.journey.findUnique({
-        where: { id: journeyId },
-        include: {
-          userJourneys: true,
-          team: { include: { userTeams: true } }
+        // Check if journey exists and get authorization info
+        const journey = await prisma.journey.findUnique({
+          where: { id: journeyId },
+          include: {
+            userJourneys: true,
+            team: { include: { userTeams: true } }
+          }
+        })
+
+        if (!journey) {
+          throw new GraphQLError('journey not found', {
+            extensions: { code: 'NOT_FOUND' }
+          })
         }
-      })
 
-      if (!journey) {
-        throw new GraphQLError('journey not found', {
-          extensions: { code: 'NOT_FOUND' }
+        // Check authorization - simplified for now
+        const isTeamMember = journey.team?.userTeams.some(
+          (ut) => ut.userId === user.id
+        )
+        const isJourneyOwner = journey.userJourneys.some(
+          (uj) => uj.userId === user.id
+        )
+
+        if (!isTeamMember && !isJourneyOwner) {
+          throw new GraphQLError(
+            'user is not allowed to read journey visitors',
+            {
+              extensions: { code: 'FORBIDDEN' }
+            }
+          )
+        }
+
+        // Build where clause and order by
+        const where = generateVisitorWhere(journeyId, filter)
+        const orderBy: Prisma.JourneyVisitorOrderByWithRelationInput =
+          sort === 'duration'
+            ? { duration: 'desc' }
+            : sort === 'activity'
+              ? { activityCount: 'desc' }
+              : { createdAt: 'desc' } // default: date
+
+        return await prisma.journeyVisitor.findMany({
+          ...query,
+          where,
+          orderBy
         })
       }
-
-      // Check authorization - simplified for now
-      const isTeamMember = journey.team?.userTeams.some(
-        (ut) => ut.userId === user.id
-      )
-      const isJourneyOwner = journey.userJourneys.some(
-        (uj) => uj.userId === user.id
-      )
-
-      if (!isTeamMember && !isJourneyOwner) {
-        throw new GraphQLError('user is not allowed to read journey visitors', {
-          extensions: { code: 'FORBIDDEN' }
-        })
-      }
-
-      // Build where clause and order by
-      const where = generateVisitorWhere(journeyId, filter)
-      const orderBy: Prisma.JourneyVisitorOrderByWithRelationInput =
-        sort === 'duration'
-          ? { duration: 'desc' }
-          : sort === 'activity'
-            ? { activityCount: 'desc' }
-            : { createdAt: 'desc' } // default: date
-
-      return await prisma.journeyVisitor.findMany({
-        ...query,
-        where,
-        orderBy
-      })
+    },
+    {
+      name: 'JourneyVisitorsConnection',
+      shareable: true
+    },
+    {
+      name: 'JourneyVisitorEdge',
+      shareable: true
     }
-  })
+  )
 )
 
 builder.queryField('journeyVisitorCount', (t) =>
@@ -269,74 +282,89 @@ builder.queryField('visitor', (t) =>
 
 // Team-level visitor queries
 builder.queryField('visitorsConnection', (t) =>
-  t.withAuth({ isAuthenticated: true }).prismaConnection({
-    override: {
-      from: 'api-journeys'
-    },
-    type: VisitorRef,
-    cursor: 'id',
-    nullable: false,
-    args: {
-      teamId: t.arg.string({ required: false })
-    },
-    resolve: async (query, _parent, args, context) => {
-      const { teamId } = args
-      const user = context.user
+  t.withAuth({ isAuthenticated: true }).prismaConnection(
+    {
+      override: {
+        from: 'api-journeys'
+      },
+      type: VisitorRef,
+      cursor: 'id',
+      nullable: false,
+      args: {
+        teamId: t.arg.string({ required: false })
+      },
+      resolve: async (query, _parent, args, context) => {
+        const { teamId } = args
+        const user = context.user
 
-      // If teamId is provided, check access to that specific team
-      if (teamId) {
-        const team = await prisma.team.findUnique({
-          where: { id: teamId },
-          include: { userTeams: true }
-        })
+        // If teamId is provided, check access to that specific team
+        if (teamId) {
+          const team = await prisma.team.findUnique({
+            where: { id: teamId },
+            include: { userTeams: true }
+          })
 
-        if (!team) {
-          throw new GraphQLError('team not found', {
-            extensions: { code: 'NOT_FOUND' }
+          if (!team) {
+            throw new GraphQLError('team not found', {
+              extensions: { code: 'NOT_FOUND' }
+            })
+          }
+
+          // Check authorization - user must be team member
+          const isTeamMember = team.userTeams.some(
+            (ut) => ut.userId === user.id
+          )
+          if (!isTeamMember) {
+            throw new GraphQLError(
+              'user is not allowed to read team visitors',
+              {
+                extensions: { code: 'FORBIDDEN' }
+              }
+            )
+          }
+
+          // Query visitors for the specific team
+          return await prisma.visitor.findMany({
+            ...query,
+            where: { teamId },
+            orderBy: { createdAt: 'desc' }
           })
         }
 
-        // Check authorization - user must be team member
-        const isTeamMember = team.userTeams.some((ut) => ut.userId === user.id)
-        if (!isTeamMember) {
-          throw new GraphQLError('user is not allowed to read team visitors', {
-            extensions: { code: 'FORBIDDEN' }
+        // If no teamId provided, return visitors from teams the user is a member of
+        const userTeams = await prisma.userTeam.findMany({
+          where: { userId: user.id },
+          select: { teamId: true }
+        })
+
+        const teamIds = userTeams.map((ut) => ut.teamId)
+
+        if (teamIds.length === 0) {
+          // User is not a member of any team
+          return await prisma.visitor.findMany({
+            ...query,
+            where: { teamId: { in: [] } }, // Return empty result
+            orderBy: { createdAt: 'desc' }
           })
         }
 
-        // Query visitors for the specific team
+        // Query visitors from all teams the user is a member of
         return await prisma.visitor.findMany({
           ...query,
-          where: { teamId },
+          where: { teamId: { in: teamIds } },
           orderBy: { createdAt: 'desc' }
         })
       }
-
-      // If no teamId provided, return visitors from teams the user is a member of
-      const userTeams = await prisma.userTeam.findMany({
-        where: { userId: user.id },
-        select: { teamId: true }
-      })
-
-      const teamIds = userTeams.map((ut) => ut.teamId)
-
-      if (teamIds.length === 0) {
-        // User is not a member of any team
-        return await prisma.visitor.findMany({
-          ...query,
-          where: { teamId: { in: [] } }, // Return empty result
-          orderBy: { createdAt: 'desc' }
-        })
-      }
-
-      // Query visitors from all teams the user is a member of
-      return await prisma.visitor.findMany({
-        ...query,
-        where: { teamId: { in: teamIds } },
-        orderBy: { createdAt: 'desc' }
-      })
+    },
+    {
+      name: 'VisitorsConnection',
+      shareable: true
+    },
+    {
+      name: 'VisitorEdge',
+      shareable: true
     }
-  })
+  )
 )
 
 // Visitor Mutations

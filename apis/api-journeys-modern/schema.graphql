@@ -748,6 +748,20 @@ type JourneyEvent implements Event & Node
   visitorPhone: String
 }
 
+type JourneyEventEdge
+  @shareable
+{
+  node: JourneyEvent
+  cursor: String!
+}
+
+type JourneyEventsConnection
+  @shareable
+{
+  pageInfo: PageInfo!
+  edges: [JourneyEventEdge]
+}
+
 type JourneyEventsExportLog {
   id: ID!
   createdAt: DateTimeISO!
@@ -930,6 +944,13 @@ type JourneyVisitor
   events: [Event!]!
 }
 
+type JourneyVisitorEdge
+  @shareable
+{
+  node: JourneyVisitor
+  cursor: String!
+}
+
 input JourneyVisitorFilter {
   journeyId: String!
   hasChatStarted: Boolean
@@ -944,6 +965,13 @@ enum JourneyVisitorSort {
   date
   duration
   activity
+}
+
+type JourneyVisitorsConnection
+  @shareable
+{
+  pageInfo: PageInfo!
+  edges: [JourneyVisitorEdge]
 }
 
 type JourneysEmailPreference
@@ -1458,7 +1486,7 @@ type Query {
   customDomains(teamId: ID!): [CustomDomain!] @override(from: "api-journeys")
   node(id: ID!): Node
   nodes(ids: [ID!]!): [Node]!
-  journeyEventsConnection(journeyId: ID!, filter: JourneyEventsFilter, before: String, after: String, first: Int, last: Int): QueryJourneyEventsConnection! @override(from: "api-journeys")
+  journeyEventsConnection(journeyId: ID!, filter: JourneyEventsFilter, before: String, after: String, first: Int, last: Int): JourneyEventsConnection! @override(from: "api-journeys")
   journeyEventsCount(journeyId: ID!, filter: JourneyEventsFilter): Int @override(from: "api-journeys")
   hosts(teamId: ID!): [Host!] @override(from: "api-journeys")
   integrations(teamId: ID!): [Integration!] @override(from: "api-journeys")
@@ -1485,40 +1513,10 @@ type Query {
   userTeams(teamId: ID!, where: UserTeamFilterInput): [UserTeam!] @override(from: "api-journeys")
   userTeam(id: ID!): UserTeam @override(from: "api-journeys")
   userTeamInvites(teamId: ID!): [UserTeamInvite!] @override(from: "api-journeys")
-  journeyVisitorsConnection(filter: JourneyVisitorFilter!, sort: JourneyVisitorSort, before: String, after: String, first: Int, last: Int): QueryJourneyVisitorsConnection! @override(from: "api-journeys")
+  journeyVisitorsConnection(filter: JourneyVisitorFilter!, sort: JourneyVisitorSort, before: String, after: String, first: Int, last: Int): JourneyVisitorsConnection! @override(from: "api-journeys")
   journeyVisitorCount(filter: JourneyVisitorFilter!): Int @override(from: "api-journeys")
   visitor(id: ID!): Visitor @override(from: "api-journeys")
-  visitorsConnection(teamId: String, before: String, after: String, first: Int, last: Int): QueryVisitorsConnection! @override(from: "api-journeys")
-}
-
-type QueryJourneyEventsConnection {
-  pageInfo: PageInfo!
-  edges: [QueryJourneyEventsConnectionEdge]
-}
-
-type QueryJourneyEventsConnectionEdge {
-  node: JourneyEvent
-  cursor: String!
-}
-
-type QueryJourneyVisitorsConnection {
-  pageInfo: PageInfo!
-  edges: [QueryJourneyVisitorsConnectionEdge]
-}
-
-type QueryJourneyVisitorsConnectionEdge {
-  node: JourneyVisitor
-  cursor: String!
-}
-
-type QueryVisitorsConnection {
-  pageInfo: PageInfo!
-  edges: [QueryVisitorsConnectionEdge]
-}
-
-type QueryVisitorsConnectionEdge {
-  node: Visitor
-  cursor: String!
+  visitorsConnection(teamId: String, before: String, after: String, first: Int, last: Int): VisitorsConnection! @override(from: "api-journeys")
 }
 
 type RadioOptionBlock implements Block
@@ -2381,6 +2379,13 @@ type Visitor
   events: [Event!]!
 }
 
+type VisitorEdge
+  @shareable
+{
+  node: Visitor
+  cursor: String!
+}
+
 enum VisitorStatus {
   star
   prohibited
@@ -2404,6 +2409,13 @@ input VisitorUpdateInput {
   countryCode: String
   referrer: String
   phone: String
+}
+
+type VisitorsConnection
+  @shareable
+{
+  pageInfo: PageInfo!
+  edges: [VisitorEdge]
 }
 
 type YouTube
