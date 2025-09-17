@@ -26,10 +26,10 @@ export function AiChatButton(): ReactElement {
   const previousActiveBlockIdRef = useRef<string | undefined>(activeBlockId)
 
   // Don't allow drawer to open if variant is admin or embed
-  const isDrawerDisabled = variant === 'admin' || variant === 'embed'
+  const invalidVariant = variant === 'admin' || variant === 'embed'
 
   function handleClick() {
-    if (isDrawerDisabled) return
+    if (invalidVariant) return
     setOpen(!open)
   }
 
@@ -47,8 +47,8 @@ export function AiChatButton(): ReactElement {
 
   return (
     <Drawer
-      repositionInputs={false} // important for iOS Chrome and iOS Firefox
-      open={isDrawerDisabled ? false : open}
+      repositionInputs={false} // important for keyboards on iOS Chrome and iOS Firefox
+      open={invalidVariant ? false : open}
       onOpenChange={setOpen}
     >
       <DrawerTrigger asChild onClick={handleClick}>

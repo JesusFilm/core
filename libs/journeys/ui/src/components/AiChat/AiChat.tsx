@@ -211,7 +211,6 @@ export function AiChat({ open }: AiChatProps) {
         </ConversationContent>
         <ConversationScrollButton />
       </Conversation>
-
       <Suggestions className="px-4 py-2 border-t border-border">
         {suggestionsLoading && (
           <div className="flex items-center gap-2 px-4 py-2 text-muted-foreground">
@@ -230,7 +229,6 @@ export function AiChat({ open }: AiChatProps) {
           />
         ))}
       </Suggestions>
-
       <div className="px-4 pb-4">
         <PromptInput
           onSubmit={handleSubmit}
