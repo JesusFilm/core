@@ -60,7 +60,7 @@ export function AiChatButton(): ReactElement {
           <AutoAwesomeIcon />
         </Button>
       </DrawerTrigger>
-      <DrawerContent className="flex flex-col h-[85vh] max-h-[85vh] data-[vaul-drawer-direction=bottom]:max-h-[85vh]">
+      <DrawerContent className="flex flex-col h-[85vh] data-[vaul-drawer-direction=bottom]:max-h-[85vh]">
         <DrawerHeader>
           <DrawerClose>
             <Button
