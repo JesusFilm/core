@@ -71,6 +71,7 @@ builder.mutationField('blockUpdateEmailAction', (t) =>
           extensions: { code: 'BAD_USER_INPUT' }
         })
       }
+
       // Validate input
       try {
         await emailSchema.parse({ email: input.email })
@@ -79,6 +80,7 @@ builder.mutationField('blockUpdateEmailAction', (t) =>
           extensions: { code: 'BAD_USER_INPUT' }
         })
       }
+
       // Create or update the action
       const action = await prisma.action.upsert({
         where: { parentBlockId: id },
