@@ -4,7 +4,46 @@ on:
     branches:
       - stage
 jobs:
+  affected:
+    name: Detect affected projects
+    runs-on: blacksmith-2vcpu-ubuntu-2204
+    outputs:
+      arclight: ${{ steps.set.outputs.arclight }}
+      journeys_admin: ${{ steps.set.outputs.journeys_admin }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          run_install: false
+      - uses: useblacksmith/setup-node@v5
+        with:
+          node-version: 22
+          cache: 'pnpm'
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile --silent
+      - uses: nrwl/nx-set-shas@v4
+      - id: set
+        name: compute if arclight is affected
+        run: |
+          set -euo pipefail
+          list=$(pnpm -s exec nx show projects --affected)
+          if echo "$list" | awk '{print $1}' | grep -xq 'arclight'; then
+            echo "arclight=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "arclight=false" >> "$GITHUB_OUTPUT"
+          fi
+          if echo "$list" | awk '{print $1}' | grep -xq 'journeys-admin'; then
+            echo "journeys_admin=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "journeys_admin=false" >> "$GITHUB_OUTPUT"
+          fi
+
   arclight:
+    needs: [affected]
+    if: ${{ needs.affected.outputs.arclight == 'true' }}
     uses: JesusFilm/core/.github/workflows/ecs-frontend-deploy-stage-worker.yml@stage
     with:
       name: arclight
@@ -32,7 +71,8 @@ jobs:
 
   e2e-arclight:
     name: E2E Arclight (stage)
-    needs: [arclight]
+    needs: [affected, arclight]
+    if: ${{ needs.affected.outputs.arclight == 'true' }}
     runs-on: blacksmith-4vcpu-ubuntu-2204
     steps:
       - uses: actions/checkout@v4
@@ -68,6 +108,8 @@ jobs:
           PLAYWRIGHT_EMAIL5: ${{ secrets.PLAYWRIGHT_EMAIL5 }}
           PLAYWRIGHT_PASSWORD5: ${{ secrets.PLAYWRIGHT_PASSWORD5 }}
   journeys-admin:
+    needs: [affected]
+    if: ${{ needs.affected.outputs.journeys_admin == 'true' }}
     uses: JesusFilm/core/.github/workflows/ecs-frontend-deploy-stage-worker.yml@stage
     with:
       name: journeys-admin
