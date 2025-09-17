@@ -1,4 +1,7 @@
-import { getPreferredLocaleFromLanguages, mapToSupportedLocale } from './usePreferredLocale'
+import {
+  getPreferredLocaleFromLanguages,
+  mapToSupportedLocale
+} from './usePreferredLocale'
 
 describe('mapToSupportedLocale', () => {
   it('returns an exact supported locale match', () => {
@@ -29,9 +32,9 @@ describe('mapToSupportedLocale', () => {
 
 describe('getPreferredLocaleFromLanguages', () => {
   it('returns the first supported locale', () => {
-    expect(
-      getPreferredLocaleFromLanguages(['de-DE', 'fr-FR', 'es-ES'])
-    ).toBe('fr')
+    expect(getPreferredLocaleFromLanguages(['de-DE', 'fr-FR', 'es-ES'])).toBe(
+      'fr'
+    )
   })
 
   it('returns undefined when no languages can be mapped', () => {
@@ -39,8 +42,8 @@ describe('getPreferredLocaleFromLanguages', () => {
   })
 
   it('prefers locales with available geo mappings', () => {
-    expect(
-      getPreferredLocaleFromLanguages(['zh-CN', 'zh-TW'])
-    ).toBe('zh-Hans-CN')
+    expect(getPreferredLocaleFromLanguages(['zh-CN', 'zh-TW'])).toBe(
+      'zh-Hans-CN'
+    )
   })
 })

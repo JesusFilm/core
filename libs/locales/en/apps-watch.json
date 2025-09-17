@@ -41,6 +41,8 @@
   "Available Languages": "Available Languages",
   "Other Languages": "Other Languages",
   "Show subtitles": "Show subtitles",
+  "localeSuggestion.message": "localeSuggestion.message",
+  "localeSuggestion.action": "localeSuggestion.action",
   "Read more...": "Read more...",
   "Related questions": "Related questions",
   "Ask a question": "Ask a question",
@@ -93,9 +95,5 @@
   "Series": "Series",
   "Short Film": "Short Film",
   "Behind The Scenes": "Behind The Scenes",
-  "Trailer": "Trailer",
-  "localeSuggestion": {
-    "message": "We noticed your browser prefers {{localeName}}. Would you like to view the site in this language?",
-    "action": "Switch to {{localeName}}"
-  }
+  "Trailer": "Trailer"
 }

@@ -21,7 +21,11 @@ function findLocaleByRegion(region: string, base?: string): MaybeLocale {
     }
 
     const mapping = LANGUAGE_MAPPINGS[locale]
-    if (mapping?.geoLocations.some((code) => code.toLowerCase() === normalizedRegion)) {
+    if (
+      mapping?.geoLocations.some(
+        (code) => code.toLowerCase() === normalizedRegion
+      )
+    ) {
       return locale
     }
   }
