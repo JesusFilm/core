@@ -37,7 +37,7 @@ jobs:
       - id: set-matrix
         name: set matrix app to affected array
         run: |
-          matrix=$(pnpm -s exec ts-node tools/scripts/deploy-apps.ts --projects apps/*)
+          matrix=$(pnpm -s exec ts-node tools/scripts/deploy-apps.ts --projects "apps/*:!apps/arclight")
           # trim all whitespace/newlines from matrix string
           matrix="${matrix//$'\n'/}"
           matrix=$(echo -n "$matrix" | tr -d '[:space:]')
