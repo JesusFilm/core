@@ -37,7 +37,7 @@ interface AiChatProps {
 }
 
 export function AiChat({ open }: AiChatProps) {
-  const { t } = useTranslation('apps-journeys')
+  const { t } = useTranslation('libs-journeys-ui')
   const auth = getAuth(firebaseClient)
   const user = auth.currentUser
   const { journey } = useJourney()

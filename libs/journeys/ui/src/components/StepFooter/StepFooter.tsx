@@ -139,7 +139,6 @@ export function StepFooter({
               </Box>
             </Stack>
           )}
-
           <Box>{chat && <ChatButtons />}</Box>
         </Stack>
       </Stack>

@@ -17,7 +17,7 @@ import { Button } from '../SimpleButton'
 import { useJourney } from '../../libs/JourneyProvider'
 
 export function AiChatButton(): ReactElement {
-  const { t } = useTranslation('apps-journeys')
+  const { t } = useTranslation('libs-journeys-ui')
   const { variant } = useJourney()
   const [open, setOpen] = useState<boolean>(false)
   const { blockHistory } = useBlocks()
