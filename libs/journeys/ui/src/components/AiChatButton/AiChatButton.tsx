@@ -11,7 +11,6 @@ import {
   DrawerContent,
   DrawerDescription,
   DrawerHeader,
-  DrawerTitle,
   DrawerTrigger
 } from '../Drawer'
 import { Button } from '../SimpleButton'

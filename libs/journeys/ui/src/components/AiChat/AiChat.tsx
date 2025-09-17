@@ -1,7 +1,12 @@
 import { useChat } from '@ai-sdk/react'
 import { DefaultChatTransport } from 'ai'
 import { getAuth } from 'firebase/auth'
-import { CopyIcon, Loader, RefreshCcwIcon } from 'lucide-react'
+import {
+  CopyIcon,
+  Loader,
+  RefreshCcwIcon,
+  SendHorizonalIcon
+} from 'lucide-react'
 import { useTranslation } from 'next-i18next'
 import { Fragment, useEffect, useRef, useState } from 'react'
 import { v4 as uuidv4 } from 'uuid'
@@ -222,21 +227,29 @@ export function AiChat({ open }: AiChatProps) {
             />
           ))}
         </Suggestions>
-        <PromptInput
-          onSubmit={handleSubmit}
-          className="w-full bg-background-paper border border-secondary-light rounded-lg"
-        >
-          <PromptInputTextarea
-            className="text-foreground flex-1 text-md "
-            placeholder={t("Ask me anything you don't understand.")}
-            onChange={(e) => setInput(e.target.value)}
-            value={input}
-          />
-          <PromptInputToolbar>
-            <div></div>
-            <PromptInputSubmit disabled={!input} status={status} />
-          </PromptInputToolbar>
-        </PromptInput>
+        <div className="px-4 pb-4">
+          <PromptInput
+            onSubmit={handleSubmit}
+            className="w-full bg-background-paper border-none rounded-xl bg-[#EFEFEF]"
+          >
+            <div className="flex flex-row items-center px-3 py-0.5">
+              <PromptInputTextarea
+                className="text-foreground flex-1 text-md p-0"
+                placeholder={t('Ask me anything')}
+                onChange={(e) => setInput(e.target.value)}
+                value={input}
+              />
+              <div className="flex flex-row justify-end self-end">
+                <PromptInputSubmit
+                  disabled={!input}
+                  status={status}
+                  className="bg-transparent hover:bg-transparent border-none shadow-none text-[#6D6D6D]"
+                  children={<SendHorizonalIcon className="size-5" />}
+                />
+              </div>
+            </div>
+          </PromptInput>
+        </div>
       </div>
     </div>
   )
