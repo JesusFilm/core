@@ -2,35 +2,37 @@
 @import 'tw-animate-css';
 
 @theme {
-  /* Light Mode Colors - AI SDK Style */
+  /* Light Mode Colors */
   --color-primary: #2563eb;
   --color-primary-foreground: #ffffff;
   --color-secondary: #f8f9fa;
+  --color-secondary-light: #6d6d7d;
   --color-secondary-foreground: #000000;
   --color-foreground: #000000;
   --color-background: #ffffff;
+  --color-background-paper: #ffffff;
   --color-accent: #f1f3f4;
   --color-accent-foreground: #000000;
-  --color-muted: #f8f9fa;
+  --color-muted: #d9d9d9;
   --color-muted-foreground: #6b7280;
   --color-destructive: #ef4444;
   --color-destructive-foreground: #ffffff;
   --color-input: #ffffff;
   --color-ring: #000000;
-  --color-border: #e5e7eb;
-  --color-error: #ef4444;
-  --color-text-primary: #000000;
-  --color-text-secondary: #6b7280;
-  --color-text-disabled: #9ca3af;
-  --color-background-paper: #ffffff;
+  --color-border: #d9d9d9;
+  --color-popover: #ffffff;
+  --color-popover-foreground: #000000;
+  --color-card: #ffffff;
+  --color-card-foreground: #000000;
 
-  /* Dark Mode Colors - AI SDK Style */
+  /* Dark Mode Colors */
   --color-dark-primary: #3b82f6;
   --color-dark-primary-foreground: #ffffff;
   --color-dark-secondary: #1f2937;
   --color-dark-secondary-foreground: #ffffff;
   --color-dark-foreground: #ffffff;
   --color-dark-background: #000000;
+  --color-dark-background-paper: #1f2937;
   --color-dark-accent: #374151;
   --color-dark-accent-foreground: #ffffff;
   --color-dark-muted: #1f2937;
@@ -40,20 +42,19 @@
   --color-dark-input: #1f2937;
   --color-dark-ring: #ffffff;
   --color-dark-border: #374151;
-  --color-dark-error: #ef4444;
-  --color-dark-text-primary: #ffffff;
-  --color-dark-text-secondary: #9ca3af;
-  --color-dark-text-disabled: #6b7280;
-  --color-dark-background-paper: #1f2937;
+  --color-dark-popover: #1f2937;
+  --color-dark-popover-foreground: #ffffff;
+  --color-dark-card: #1f2937;
+  --color-dark-card-foreground: #ffffff;
 
-  /* Suggestion Colors - AI SDK Style */
+  /* Suggestion Colors */
   --color-suggestion-bg: #f8f9fa;
   --color-suggestion-text: #6b7280;
   --color-suggestion-border: #e5e7eb;
   --color-suggestion-hover-bg: #f1f3f4;
   --color-suggestion-hover-text: #000000;
 
-  /* Dark Mode Suggestion Colors - AI SDK Style */
+  /* Dark Mode Suggestion Colors */
   --color-dark-suggestion-bg: #1f2937;
   --color-dark-suggestion-text: #9ca3af;
   --color-dark-suggestion-border: #374151;
