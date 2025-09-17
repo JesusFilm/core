@@ -67,7 +67,7 @@ export function TitleEdit(): ReactElement {
           onSubmit={noop}
         >
           {({ values, touched, errors, handleChange, handleBlur }) => (
-            <Form>
+            <Form style={{ width: '100%' }}>
               <TextField
                 id="seoTitle"
                 name="seoTitle"
@@ -88,9 +88,6 @@ export function TitleEdit(): ReactElement {
                   handleBlur(e)
                   if (errors.seoTitle == null) void handleSubmit(e)
                 }}
-                sx={{
-                  pb: 4
-                }}
                 data-testid="TitleEdit"
               />
             </Form>
@@ -103,9 +100,6 @@ export function TitleEdit(): ReactElement {
           fullWidth
           disabled
           helperText={t('Recommended length: 5 words')}
-          sx={{
-            pb: 4
-          }}
           data-testid="TitleEdit"
         />
       )}
