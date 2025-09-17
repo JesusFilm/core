@@ -168,7 +168,6 @@ export function AiChat({ open }: AiChatProps) {
                             })}
                           </MessageContent>
                         </Message>
-                        nx
                         {message.role === 'assistant' &&
                           message.id === messages.at(-1)?.id && (
                             <Actions className="mt-2">
