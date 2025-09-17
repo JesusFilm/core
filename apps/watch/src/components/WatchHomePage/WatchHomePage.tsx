@@ -37,7 +37,7 @@ import { VideoContentHero } from '../NewVideoContentPage/VideoContentHero/VideoC
 import { VideoCarousel } from '../NewVideoContentPage/VideoCarousel/VideoCarousel'
 import { usePlayer } from '../../libs/playerContext'
 import type { VideoCarouselSlide, CarouselMuxSlide } from '../../types/inserts'
-import { isMuxSlide } from '../../types/inserts'
+import { isMuxSlide, isVideoSlide } from '../../types/inserts'
 
 interface WatchHomePageProps {
   languageId?: string | undefined
@@ -53,16 +53,61 @@ function WatchHomePageContent({
   const [activeVideoId, setActiveVideoId] = useState<string | undefined>()
   const {
     videos,
-    slides,
+    slides: rawSlides,
     currentIndex,
     loading,
     moveToNext,
-    moveToPrevious,
     jumpToVideo,
     currentPoolIndex
   } = useCarouselVideos('529') // Use language ID 529 for now
+  const [displaySlides, setDisplaySlides] = useState<VideoCarouselSlide[]>(rawSlides)
   const [autoProgressEnabled, setAutoProgressEnabled] = useState(true)
   const [currentSlideId, setCurrentSlideId] = useState<string | null>(null)
+  useEffect(() => {
+    setDisplaySlides((prevSlides) => {
+      if (prevSlides === rawSlides) return prevSlides
+
+      const previousByKey = new Map(
+        prevSlides.map((slide) => [`${slide.source}:${slide.id}`, slide])
+      )
+
+      const nextSlides = rawSlides.map((slide) => {
+        const key = `${slide.source}:${slide.id}`
+        const previousSlide = previousByKey.get(key)
+
+        if (
+          previousSlide != null &&
+          isMuxSlide(slide) &&
+          isMuxSlide(previousSlide) &&
+          previousSlide.playbackId === slide.playbackId &&
+          previousSlide.playbackIndex === slide.playbackIndex
+        ) {
+          return previousSlide
+        }
+
+        if (
+          previousSlide != null &&
+          isVideoSlide(slide) &&
+          isVideoSlide(previousSlide) &&
+          previousSlide.video === slide.video
+        ) {
+          return previousSlide
+        }
+
+        return slide
+      })
+
+      const isSameLength = nextSlides.length === prevSlides.length
+      if (
+        isSameLength &&
+        nextSlides.every((slide, idx) => slide === prevSlides[idx])
+      ) {
+        return prevSlides
+      }
+
+      return nextSlides
+    })
+  }, [rawSlides])
 
   // Map videos to ensure data structure matches what VideoCard expects
   const carouselVideos = videos.map((video) => ({
@@ -108,16 +153,30 @@ function WatchHomePageContent({
   const currentSlide: VideoCarouselSlide | null = useMemo(() => {
     if (currentSlideId) {
       // If a specific slide is selected, find it
-      return slides.find((slide) => slide.id === currentSlideId) || null
+      return (
+        displaySlides.find((slide) => slide.id === currentSlideId) || null
+      )
     }
 
     // Default to the first slide (mux insert or first video)
-    if (slides.length > 0) {
-      return slides[0]
+    if (displaySlides.length > 0) {
+      return displaySlides[0]
     }
 
     return null
-  }, [currentSlideId, slides])
+  }, [currentSlideId, displaySlides])
+
+  const currentSlideIndex = useMemo(() => {
+    if (!currentSlide) return -1
+    return displaySlides.findIndex((slide) => slide.id === currentSlide.id)
+  }, [currentSlide, displaySlides])
+
+  const currentMuxInsert: CarouselMuxSlide | null = useMemo(() => {
+    if (currentSlide != null && isMuxSlide(currentSlide)) {
+      return currentSlide
+    }
+    return null
+  }, [currentSlide])
 
   const { state: playerState } = usePlayer()
   const [lastProgress, setLastProgress] = useState(0)
@@ -142,7 +201,7 @@ function WatchHomePageContent({
 
   // Auto-progress to next video function
   const progressToNextVideo = useCallback(() => {
-    if (!autoProgressEnabled || isProgressing || !slides.length) return
+    if (!autoProgressEnabled || isProgressing || !displaySlides.length) return
 
     setIsProgressing(true)
 
@@ -151,8 +210,8 @@ function WatchHomePageContent({
 
     // Update currentSlideId to sync the main video with the carousel
     const nextIndex = currentIndex + 1
-    if (nextIndex < slides.length) {
-      setCurrentSlideId(slides[nextIndex].id)
+    if (nextIndex < displaySlides.length) {
+      setCurrentSlideId(displaySlides[nextIndex].id)
     }
 
     setLastProgress(0) // Reset progress tracking for new video
@@ -166,9 +225,8 @@ function WatchHomePageContent({
     moveToNext,
     autoProgressEnabled,
     isProgressing,
-    slides.length,
-    currentIndex,
-    slides
+    displaySlides,
+    currentIndex
   ])
 
   // Effect to detect video end and progress immediately
@@ -189,7 +247,7 @@ function WatchHomePageContent({
 
     // Handle mux inserts
     if (isMuxSlide(currentSlide)) {
-      const muxSlide = currentSlide as CarouselMuxSlide
+      const muxSlide = currentSlide
       return {
         __typename: 'Video' as const,
         id: muxSlide.id,
@@ -332,21 +390,89 @@ function WatchHomePageContent({
 
   const indexName = process.env.NEXT_PUBLIC_ALGOLIA_INDEX ?? ''
 
+  const handleMuxInsertComplete = useCallback(() => {
+    if (!autoProgressEnabled || isProgressing || currentSlideIndex === -1) {
+      return
+    }
+
+    const nextIndex = currentSlideIndex + 1
+    const nextSlide = displaySlides[nextIndex]
+
+    console.log('[DURATION] Mux insert completed - progressing to next slide')
+
+    if (!nextSlide) {
+      console.log('[DURATION] No next slide available after mux insert')
+      return
+    }
+
+    console.log(
+      `[DURATION] Moving to slide ${nextIndex}/${displaySlides.length}: ${nextSlide.source}:${nextSlide.id}`
+    )
+
+    setIsProgressing(true)
+    setCurrentSlideId(nextSlide.id)
+
+    if (!isMuxSlide(nextSlide)) {
+      const jumped = jumpToVideo(nextSlide.id)
+      if (!jumped) {
+        console.warn(
+          `[DURATION] Failed to sync to video ${nextSlide.id}, falling back to next video`
+        )
+        moveToNext()
+      }
+    }
+
+    if (resetRef.current != null) clearTimeout(resetRef.current)
+    resetRef.current = setTimeout(() => {
+      setIsProgressing(false)
+    }, 500)
+  }, [
+    autoProgressEnabled,
+    currentSlideIndex,
+    isProgressing,
+    jumpToVideo,
+    moveToNext,
+    displaySlides
+  ])
+
+  useEffect(() => {
+    if (displaySlides.length === 0 || currentSlideIndex === -1) return
+
+    const slideType = currentSlide?.source ?? 'unknown'
+    const slideId = currentSlide?.id ?? 'none'
+
+    console.log(
+      `[DURATION] Current slide ${currentSlideIndex + 1}/${displaySlides.length}: ${slideType}:${slideId}`
+    )
+
+    if (currentMuxInsert) {
+      console.log(
+        `[DURATION] Active Mux insert: ${currentMuxInsert.id} (${currentMuxInsert.duration}s)`
+      )
+    }
+  }, [currentMuxInsert, currentSlide, currentSlideIndex, displaySlides.length])
+
   return (
     <div>
       <VideoProvider value={{ content: activeVideo }}>
-        <VideoContentHero isPreview={true} />
+        <VideoContentHero
+          isPreview={true}
+          currentMuxInsert={currentMuxInsert}
+          onMuxInsertComplete={handleMuxInsertComplete}
+        />
       </VideoProvider>
 
       <ContentPageBlurFilter>
         <div className="pt-4">
           <VideoCarousel
-            slides={slides}
+            slides={displaySlides}
             activeVideoId={activeVideoId}
             loading={loading}
             onVideoSelect={(videoId: string) => {
               // Check if this is a mux insert
-              const selectedSlide = slides.find((slide) => slide.id === videoId)
+              const selectedSlide = displaySlides.find(
+                (slide) => slide.id === videoId
+              )
               if (selectedSlide && isMuxSlide(selectedSlide)) {
                 // For mux inserts, set the current slide ID
                 setCurrentSlideId(videoId)
