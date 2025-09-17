@@ -39,9 +39,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        app:
-          [
-            'arclight',
+        app: [
+            # 'arclight', # disable arclight from daily preview E2E (no Vercel DB access)
             'docs',
             'journeys',
             'journeys-admin',
