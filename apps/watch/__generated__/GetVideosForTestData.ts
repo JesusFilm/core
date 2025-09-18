@@ -94,6 +94,33 @@ export interface GetVideosForTestData_videos_variant {
   subtitleCount: number;
 }
 
+export interface GetVideosForTestData_videos_parents_title {
+  __typename: "VideoTitle";
+  value: string;
+}
+
+export interface GetVideosForTestData_videos_parents_variant {
+  __typename: "VideoVariant";
+  id: string;
+  /**
+   * slug is a permanent link to the video variant.
+   */
+  slug: string;
+}
+
+export interface GetVideosForTestData_videos_parents {
+  __typename: "Video";
+  id: string;
+  label: VideoLabel;
+  /**
+   * slug is a permanent link to the video.
+   */
+  slug: string;
+  childrenCount: number;
+  title: GetVideosForTestData_videos_parents_title[];
+  variant: GetVideosForTestData_videos_parents_variant | null;
+}
+
 export interface GetVideosForTestData_videos {
   __typename: "Video";
   id: string;
@@ -115,6 +142,7 @@ export interface GetVideosForTestData_videos {
    * The number of published child videos associated with this video
    */
   childrenCount: number;
+  parents: GetVideosForTestData_videos_parents[];
 }
 
 export interface GetVideosForTestData {

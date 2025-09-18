@@ -1,14 +1,23 @@
 import { ReactElement, ReactNode, createContext, useContext } from 'react'
 
-import { VideoContentFields } from '../../../__generated__/VideoContentFields'
+import type {
+  VideoContentFields,
+  VideoContentFields_parents
+} from '../../../__generated__/VideoContentFields'
 
 export interface VideoPageProps {
-  content: VideoContentFields
-  container?: VideoContentFields
+  content: VideoContentFields | null
+  container?: VideoContentFields | VideoContentFields_parents
 }
 
 interface Context extends Omit<VideoContentFields, '__typename'> {
-  container?: VideoContentFields
+  container?: VideoContentFields | VideoContentFields_parents
+}
+
+function isVideoContentFields(
+  value?: VideoContentFields | VideoContentFields_parents
+): value is VideoContentFields {
+  return value != null && 'variantLanguagesCount' in value
 }
 
 const VideoContext = createContext<Context | undefined>(undefined)
@@ -32,9 +41,25 @@ export function VideoProvider({
   children,
   value
 }: VideoProviderProps): ReactElement {
+  const content =
+    value.content ??
+    (isVideoContentFields(value.container) ? value.container : undefined)
+
+  if (content == null) {
+    if (process.env.NODE_ENV !== 'test') {
+      console.error('VideoProvider missing video content', value)
+    }
+    return <></>
+  }
+
+  const fallbackContainer =
+    value.container ??
+    content.parents?.find((parent) => parent.variant?.slug != null) ??
+    content.parents?.[0]
+
   return (
     <VideoContext.Provider
-      value={{ ...value.content, container: value.container }}
+      value={{ ...content, container: fallbackContainer }}
     >
       {children}
     </VideoContext.Provider>
