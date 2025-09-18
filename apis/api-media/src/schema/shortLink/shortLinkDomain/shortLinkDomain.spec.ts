@@ -522,8 +522,8 @@ describe('shortLinkDomain', () => {
                 [
                   {
                     code: 'custom',
-                    message: 'hostname must be valid',
-                    path: ['input', 'hostname']
+                    path: ['input', 'hostname'],
+                    message: 'hostname must be valid'
                   }
                 ],
                 null,
