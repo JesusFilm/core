@@ -8,9 +8,6 @@ const config: Config = {
     'swiper/css': '<rootDir>/../__mocks__/swiper/css',
     'swiper/css/*': '<rootDir>/../__mocks__/swiper/css',
     'use-stick-to-bottom': '<rootDir>/../__mocks__/use-stick-to-bottom',
-    'video\\.js': '<rootDir>/../__mocks__/video.js',
-    'videojs-youtube': '<rootDir>/../__mocks__/videojs-youtube',
-    'videojs-mux': '<rootDir>/../__mocks__/videojs-mux',
     streamdown: '<rootDir>/../__mocks__/streamdown',
     'styled-jsx/style': '<rootDir>/../__mocks__/styled-jsx/style'
   },
@@ -20,7 +17,7 @@ const config: Config = {
     '^.+\\.mjs$': ['babel-jest', { presets: ['@nx/next/babel'] }]
   },
   transformIgnorePatterns: [
-    'node_modules/(?!(@ai-sdk|ai|use-stick-to-bottom|streamdown|video\\.js|videojs-youtube|videojs-mux|styled-jsx)/)'
+    'node_modules/(?!(@ai-sdk|ai|use-stick-to-bottom|streamdown|styled-jsx)/)'
   ],
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'mjs'],
   coverageDirectory: '../../coverage/apps/journeys',
