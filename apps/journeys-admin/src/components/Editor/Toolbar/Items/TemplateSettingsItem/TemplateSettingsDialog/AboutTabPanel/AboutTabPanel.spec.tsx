@@ -5,6 +5,7 @@ import { FormikContextType, FormikProvider } from 'formik'
 import { TemplateSettingsFormValues } from '../useTemplateSettingsForm'
 
 import { AboutTabPanel } from './AboutTabPanel'
+import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 
 jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
@@ -103,7 +104,7 @@ describe('AboutTabPanel', () => {
     expect(getByTestId('strategy-iframe')).toBeInTheDocument()
   })
 
-  it('should render Customize Template text area', () => {
+  it('should render Customize Template text area only if journeyCustomization flag is enabled', () => {
     const { getByTestId } = render(
       <MockedProvider>
         <FormikProvider
@@ -117,7 +118,9 @@ describe('AboutTabPanel', () => {
             } as unknown as FormikContextType<TemplateSettingsFormValues>
           }
         >
-          <AboutTabPanel />
+          <FlagsProvider flags={{ journeyCustomization: true }}>
+            <AboutTabPanel />
+          </FlagsProvider>
         </FormikProvider>
       </MockedProvider>
     )
