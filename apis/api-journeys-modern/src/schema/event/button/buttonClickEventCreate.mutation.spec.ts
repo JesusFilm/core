@@ -45,7 +45,7 @@ describe('buttonClickEventCreate', () => {
       actionValue: 'https://example.com'
     }
 
-    prismaMock.event.create.mockResolvedValue({
+    const createdEvent = {
       id: input.id,
       typename: 'ButtonClickEvent',
       journeyId: 'journeyId',
@@ -54,6 +54,24 @@ describe('buttonClickEventCreate', () => {
       action: input.action,
       actionValue: input.actionValue,
       createdAt: new Date()
+    } as any
+
+    prismaMock.event.create.mockResolvedValue(createdEvent)
+
+    // Pothos Prisma may try to batch-load via findMany or fallback to findUnique / findUniqueOrThrow
+    prismaMock.event.findMany.mockResolvedValue([createdEvent])
+    // Some versions will use findUniqueOrThrow when present
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    ;(prismaMock.event as any).findUniqueOrThrow?.mockResolvedValue?.(
+      createdEvent
+    )
+    prismaMock.event.findUnique.mockResolvedValue(createdEvent)
+
+    // Background updates (not asserted) should resolve
+    prismaMock.visitor.update.mockResolvedValue({ id: 'visitorId' } as any)
+    prismaMock.journeyVisitor.update.mockResolvedValue({
+      journeyId: 'journeyId',
+      visitorId: 'visitorId'
     } as any)
 
     const result = await authClient({
