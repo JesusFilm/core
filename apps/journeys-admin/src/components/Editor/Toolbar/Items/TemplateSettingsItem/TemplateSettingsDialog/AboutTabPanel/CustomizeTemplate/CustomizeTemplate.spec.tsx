@@ -201,7 +201,7 @@ describe('CustomizeTemplate', () => {
       </MockedProvider>
     )
 
-    const textbox = screen.getByRole('textbox')
+    const textbox = screen.getByRole('textbox') as HTMLTextAreaElement
     textbox.setSelectionRange(1, 1)
     fireEvent.keyDown(textbox, { key: 'Tab' })
 
