@@ -61,6 +61,7 @@ enum ContactActionType {
 }
 
 type NavigateToBlockAction implements Action
+  @key(fields: "parentBlockId")
   @shareable
 {
   parentBlockId: ID!
@@ -70,6 +71,7 @@ type NavigateToBlockAction implements Action
 }
 
 type LinkAction implements Action
+  @key(fields: "parentBlockId")
   @shareable
 {
   parentBlockId: ID!
@@ -82,6 +84,7 @@ type LinkAction implements Action
 }
 
 type EmailAction implements Action
+  @key(fields: "parentBlockId")
   @shareable
 {
   parentBlockId: ID!
@@ -93,6 +96,7 @@ type EmailAction implements Action
 }
 
 type PhoneAction implements Action
+  @key(fields: "parentBlockId")
   @shareable
 {
   parentBlockId: ID!
@@ -3262,4 +3266,4 @@ type _Service {
   sdl: String
 }
 
-union _Entity = Journey | JourneyProfile | JourneyVisitor | Language | ShortLink | Tag | Team | User | UserInvite | UserJourney | UserRole | UserTeam | Video | VideoBlock | Visitor
+union _Entity = EmailAction | Journey | JourneyProfile | JourneyVisitor | Language | LinkAction | NavigateToBlockAction | PhoneAction | ShortLink | Tag | Team | User | UserInvite | UserJourney | UserRole | UserTeam | Video | VideoBlock | Visitor
