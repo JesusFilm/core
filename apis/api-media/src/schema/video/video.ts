@@ -227,7 +227,8 @@ const Video = builder.prismaObject('Video', {
         input: t.arg({ type: VideoVariantFilter, required: false })
       },
       where: ({ input }) => ({
-        published: input?.onlyPublished === false ? undefined : true
+        published: input?.onlyPublished === false ? undefined : true,
+        languageId: input?.languageId ?? undefined
       })
     }),
     slug: t.string({
@@ -255,7 +256,8 @@ const Video = builder.prismaObject('Video', {
             slug: true
           },
           where: {
-            published: input?.onlyPublished === false ? undefined : true
+            published: input?.onlyPublished === false ? undefined : true,
+            languageId: input?.languageId ?? undefined
           }
         }
       }),
@@ -274,7 +276,8 @@ const Video = builder.prismaObject('Video', {
       select: ({ input }) => ({
         variants: {
           where: {
-            published: input?.onlyPublished === false ? undefined : true
+            published: input?.onlyPublished === false ? undefined : true,
+            languageId: input?.languageId ?? undefined
           }
         }
       }),
