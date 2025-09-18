@@ -238,11 +238,32 @@ describe('algoliaVideoUpdate', () => {
       indexName: 'test-videos',
       objects: [
         expect.objectContaining({
+          objectID: 'collection-id',
+          mediaComponentId: 'collection-id',
           componentType: 'container',
+          subType: 'collection',
           contentType: 'none',
+          lengthInMilliseconds: 0,
+          published: true,
+          restrictViewPlatforms: [],
+          titles: [
+            { value: 'Test Collection', languageId: '529', bcp47: 'en' }
+          ],
+          descriptions: [],
+          studyQuestions: [],
+          keywords: [],
           isDownloadable: false,
           downloadSizes: {},
-          published: false
+          primaryLanguageId: 529,
+          bibleCitations: [],
+          containsCount: 0,
+          imageUrls: {
+            thumbnail: null,
+            videoStill: null,
+            mobileCinematicHigh: null,
+            mobileCinematicLow: null,
+            mobileCinematicVeryLow: null
+          }
         })
       ],
       waitForTasks: true
