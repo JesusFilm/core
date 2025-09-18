@@ -23,13 +23,15 @@ export function InteractionStarter({ handleClick }: InteractionStarterProps) {
           onClick={() => handleClick(t('Explain this content'), 'explain')}
           className="bg-white border border-gray-300 text-gray-500 font-medium px-6 py-3 rounded-lg hover:bg-gray-50 transition-colors duration-200 flex items-center gap-2"
         >
-          💡 {t('Explain')}
+          {/* eslint-disable-next-line i18next/no-literal-string */}
+          <span>💡 {t('Explain')}</span>
         </Button>
         <Button
           onClick={() => handleClick(t('Help me reflect on this'), 'reflect')}
           className="bg-white border border-gray-300 text-gray-500 font-medium px-6 py-3 rounded-lg hover:bg-gray-50 transition-colors duration-200 flex items-center gap-2"
         >
-          ☁️ {t('Reflect')}
+          {/* eslint-disable-next-line i18next/no-literal-string */}
+          <span>☁️ {t('Reflect')}</span>
         </Button>
       </div>
     </div>

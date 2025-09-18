@@ -30,9 +30,8 @@ import type { PromptInputMessage } from '../PromptInput'
 import { Response } from '../Response'
 import { Suggestion, Suggestions } from '../Suggestion'
 
+import { InteractionStarter, type InteractionType } from './InteractionStarter'
 import { extractBlockContext } from './utils/contextExtraction'
-import { InteractionStarter } from './InteractionStarter'
-import { InteractionType } from './InteractionStarter'
 
 interface AiChatProps {
   open: boolean

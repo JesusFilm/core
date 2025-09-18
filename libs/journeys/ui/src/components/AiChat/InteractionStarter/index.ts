@@ -1,1 +1,1 @@
-export { InteractionStarter, InteractionType } from './InteractionStarter'
+export { InteractionStarter, type InteractionType } from './InteractionStarter'
