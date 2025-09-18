@@ -1,21 +1,5 @@
 'use client'
 
-import { Button } from '../SimpleButton'
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger
-} from '../DropdownMenu'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue
-} from '../Select'
-import { Textarea } from '../Textarea'
-import { cn } from '../../lib/utils'
 import type { ChatStatus, FileUIPart } from 'ai'
 import {
   ImageIcon,
@@ -31,13 +15,13 @@ import {
   type ChangeEventHandler,
   Children,
   type ComponentProps,
-  createContext,
   type FormEvent,
   type FormEventHandler,
   Fragment,
   type HTMLAttributes,
   type KeyboardEventHandler,
   type RefObject,
+  createContext,
   useCallback,
   useContext,
   useEffect,
@@ -46,6 +30,23 @@ import {
   useRef,
   useState
 } from 'react'
+
+import { cn } from '../../lib/utils'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger
+} from '../DropdownMenu'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue
+} from '../Select'
+import { Button } from '../SimpleButton'
+import { Textarea } from '../Textarea'
 
 type AttachmentsContext = {
   files: (FileUIPart & { id: string })[]

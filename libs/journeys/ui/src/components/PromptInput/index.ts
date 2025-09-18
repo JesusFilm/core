@@ -10,5 +10,5 @@ export {
   PromptInputModelSelectContent,
   PromptInputModelSelectItem,
   PromptInputModelSelectValue,
-  PromptInputMessage
+  type PromptInputMessage
 } from './PromptInput'
