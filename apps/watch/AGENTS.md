@@ -134,7 +134,7 @@ echo "✅ Page renders cleanly after $max_retries attempts"
 - `watch:build` – Production bundle.
 - `watch:codegen` – Regenerate GraphQL artifacts after query changes.
 - `watch:extract-translations` – Update locale JSON when strings move.
-- `watch:test-data` – See step 3 above for local fixtures.
+- `watch:generate-test-data` – See step 3 above for local fixtures.
 
 ## Quality gates & automated checks
 
