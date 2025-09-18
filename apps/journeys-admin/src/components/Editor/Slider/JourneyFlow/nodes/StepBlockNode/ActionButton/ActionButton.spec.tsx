@@ -18,6 +18,27 @@ import { mockReactFlow } from '../../../../../../../../test/mockReactFlow'
 
 import { ActionButton } from '.'
 
+const block = {
+  __typename: 'ButtonBlock',
+  id: 'button.id',
+  label: '{{ name }}'
+} as unknown as TreeBlock<ButtonBlock>
+
+const journey = {
+  id: 'journey.id',
+  template: true,
+  journeyCustomizationFields: [
+    {
+      __typename: 'JourneyCustomizationField',
+      id: '1',
+      journeyId: 'journey.id',
+      key: 'name',
+      value: 'Dank Dog',
+      defaultValue: 'Anonymous'
+    }
+  ]
+} as unknown as Journey
+
 describe('ActionButton', () => {
   beforeEach(() => {
     mockReactFlow()
@@ -267,31 +288,15 @@ describe('ActionButton', () => {
     expect(bar).toHaveStyle('flex-grow: 0.5')
   })
 
-  it('should resolve customization string when journey template is false', () => {
-    const block = {
-      __typename: 'ButtonBlock',
-      id: 'button.id',
-      label: '{{ name }}'
-    } as unknown as TreeBlock<ButtonBlock>
-
-    const journey = {
-      id: 'journey.id',
-      template: false,
-      journeyCustomizationFields: [
-        {
-          __typename: 'JourneyCustomizationField',
-          id: '1',
-          journeyId: 'journey.id',
-          key: 'name',
-          value: 'Dank Dog',
-          defaultValue: 'Anonymous'
-        }
-      ]
+  it('should render customized label when journey template is false', () => {
+    const nonTemplateJourney = {
+      ...journey,
+      template: false
     } as unknown as Journey
 
     render(
       <MockedProvider>
-        <JourneyProvider value={{ journey, variant: 'default' }}>
+        <JourneyProvider value={{ journey: nonTemplateJourney, variant: 'default' }}>
           <ReactFlowProvider>
             <ActionButton stepId="step.id" block={block} />
           </ReactFlowProvider>
@@ -303,28 +308,7 @@ describe('ActionButton', () => {
     expect(screen.queryByText('{{ name }}')).not.toBeInTheDocument()
   })
 
-  it('should not resolve customization string when journey template is true in admin variant', () => {
-    const block = {
-      __typename: 'ButtonBlock',
-      id: 'button.id',
-      label: '{{ name }}'
-    } as unknown as TreeBlock<ButtonBlock>
-
-    const journey = {
-      id: 'journey.id',
-      template: true,
-      journeyCustomizationFields: [
-        {
-          __typename: 'JourneyCustomizationField',
-          id: '1',
-          journeyId: 'journey.id',
-          key: 'name',
-          value: 'Dank Dog',
-          defaultValue: 'Anonymous'
-        }
-      ]
-    } as unknown as Journey
-
+  it('should render markdown format label when journey template is true in admin variant', () => {
     render(
       <MockedProvider>
         <JourneyProvider value={{ journey, variant: 'admin' }}>
