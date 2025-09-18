@@ -3,8 +3,8 @@ import { fireEvent, render, screen } from '@testing-library/react'
 import { FormikContextType, FormikProvider } from 'formik'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
-import { defaultJourney } from '@core/journeys/ui/TemplateView/data'
 import { JourneyFields as Journey } from '@core/journeys/ui/JourneyProvider/__generated__/JourneyFields'
+import { defaultJourney } from '@core/journeys/ui/TemplateView/data'
 
 import { TemplateSettingsFormValues } from '../../useTemplateSettingsForm'
 
@@ -201,7 +201,7 @@ describe('CustomizeTemplate', () => {
       </MockedProvider>
     )
 
-    const textbox = screen.getByRole('textbox') as HTMLTextAreaElement
+    const textbox = screen.getByRole('textbox')
     ;(textbox as HTMLTextAreaElement).setSelectionRange(1, 1)
     fireEvent.keyDown(textbox, { key: 'Tab' })
 
