@@ -4,8 +4,11 @@ import { ReactElement, ReactNode } from 'react'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 import { ThemeMode, ThemeName } from '@core/shared/ui/themes'
+import { JourneyAiContextProvider } from '@core/journeys/ui/JourneyAiContextProvider'
+import { useJourneyAiContextGenerator } from '@core/journeys/ui/useJourneyAiContextGenerator'
 
 import { GetJourney_journey as Journey } from '../../../__generated__/GetJourney'
+import { useBlocks } from '@core/journeys/ui/block'
 
 interface JourneyPageWrapperProps {
   journey: Journey
@@ -37,6 +40,10 @@ export function JourneyPageWrapper({
     labelFont: journey.journeyTheme?.labelFont ?? ''
   }
 
+  const { treeBlocks } = useBlocks()
+  const { aiContextData, isLoading, error } =
+    useJourneyAiContextGenerator(treeBlocks)
+
   return (
     <PlausibleProvider
       enabled
@@ -56,7 +63,9 @@ export function JourneyPageWrapper({
           locale={locale}
           fontFamilies={fontFamilies}
         >
-          {children}
+          <JourneyAiContextProvider value={aiContextData}>
+            {children}
+          </JourneyAiContextProvider>
         </ThemeProvider>
       </JourneyProvider>
     </PlausibleProvider>

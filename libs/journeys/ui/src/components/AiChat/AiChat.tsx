@@ -11,9 +11,10 @@ import { useTranslation } from 'next-i18next'
 import { Fragment, useEffect, useRef, useState } from 'react'
 import { v4 as uuidv4 } from 'uuid'
 
-import { TreeBlock, useBlocks } from '../../libs/block'
+import { useBlocks } from '../../libs/block'
 import { firebaseClient } from '../../libs/firebaseClient'
 import { useJourney } from '../../libs/JourneyProvider'
+import { useJourneyAiContext } from '../../libs/JourneyAiContextProvider'
 import { Action, Actions } from '../Actions'
 import {
   Conversation,
@@ -30,8 +31,6 @@ import type { PromptInputMessage } from '../PromptInput/PromptInput'
 import { Response } from '../Response'
 import { Suggestion, Suggestions } from '../Suggestion'
 
-import { extractBlockContext } from './utils/contextExtraction'
-
 interface AiChatProps {
   open: boolean
 }
@@ -41,6 +40,7 @@ export function AiChat({ open }: AiChatProps) {
   const auth = getAuth(firebaseClient)
   const user = auth.currentUser
   const { journey } = useJourney()
+  const aiContextData = useJourneyAiContext()
   const traceId = useRef<string | null>(null)
   const sessionId = useRef<string | null>(null)
   const [input, setInput] = useState('')
@@ -49,6 +49,7 @@ export function AiChat({ open }: AiChatProps) {
   const [suggestionsError, setSuggestionsError] = useState<string | null>(null)
   const { blockHistory } = useBlocks()
   const [contextText, setContextText] = useState<string>('')
+  const [contextLanguage, setContextLanguage] = useState<string>('')
 
   useEffect(() => {
     sessionId.current = uuidv4()
@@ -74,29 +75,26 @@ export function AiChat({ open }: AiChatProps) {
 
   const activeBlock = blockHistory.at(-1)
 
-  async function fetchSuggestions() {
+  async function setContexts() {
     setSuggestionsLoading(true)
     setSuggestionsError(null)
 
     try {
-      const contextText = extractBlockContext(activeBlock as TreeBlock)
-      if (contextText === '') {
+      // Find context data for the active block from the provider
+      const activeBlockContext = aiContextData.find(
+        (context) => context.blockId === activeBlock?.id
+      )
+      if (
+        !activeBlockContext?.contextText ||
+        activeBlockContext.contextText === ''
+      ) {
         setSuggestions([])
         return
       }
 
-      const response = await fetch('/api/chat/suggestions', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ contextText })
-      })
-
-      if (!response.ok) throw new Error('Failed to fetch suggestions')
-
-      const suggestions: string[] = await response.json()
-
-      setSuggestions(suggestions)
-      setContextText(contextText)
+      setSuggestions(activeBlockContext.suggestions)
+      setContextText(activeBlockContext.contextText)
+      setContextLanguage(activeBlockContext.language || 'english')
     } catch (error) {
       console.error('Error fetching suggestions:', error)
       setSuggestionsError(t('Failed to load suggestions'))
@@ -108,8 +106,8 @@ export function AiChat({ open }: AiChatProps) {
 
   useEffect(() => {
     if (!open) return
-
-    void fetchSuggestions()
+    
+    void setContexts()
   }, [open])
 
   function handleSubmit(
@@ -123,6 +121,7 @@ export function AiChat({ open }: AiChatProps) {
         {
           body: {
             contextText,
+            language: contextLanguage,
             chatId: id,
             sessionId: sessionId.current,
             traceId: traceId.current,
@@ -141,6 +140,7 @@ export function AiChat({ open }: AiChatProps) {
       {
         body: {
           contextText,
+          language: contextLanguage,
           chatId: id,
           sessionId: sessionId.current,
           traceId: traceId.current,

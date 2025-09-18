@@ -12,7 +12,7 @@ import { langfuseSpanProcessor } from '../../../instrumentation'
 import { getPrompt } from '../../../src/lib/ai/langfuse/promptHelper'
 
 const handler = async (req: NextRequest) => {
-  const { messages, contextText, sessionId, journeyId, userId } =
+  const { messages, contextText, language, sessionId, journeyId, userId } =
     await req.json()
 
   const inputText = messages[messages.length - 1].parts.find(
@@ -29,7 +29,8 @@ const handler = async (req: NextRequest) => {
     userId: userId,
     input: inputText,
     metadata: {
-      journeyId: journeyId
+      journeyId: journeyId,
+      language
     }
   })
 
@@ -39,7 +40,7 @@ const handler = async (req: NextRequest) => {
     baseURL: process.env.APOLOGIST_API_URL ?? ''
   })
 
-  const systemPrompt = await getPrompt('Chat-Prompt', { contextText })
+  const systemPrompt = await getPrompt('Chat-Prompt', { contextText, language })
 
   const result = streamText({
     model: apologist('openai/gpt/4o'),
