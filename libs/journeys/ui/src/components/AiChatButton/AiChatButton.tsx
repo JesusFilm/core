@@ -4,6 +4,7 @@ import { useTranslation } from 'next-i18next'
 import { ReactElement, useEffect, useRef, useState } from 'react'
 
 import { useBlocks } from '../../libs/block'
+import { useJourney } from '../../libs/JourneyProvider'
 import { AiChat } from '../AiChat'
 import {
   Drawer,
@@ -14,10 +15,9 @@ import {
   DrawerTrigger
 } from '../Drawer'
 import { Button } from '../SimpleButton'
-import { useJourney } from '../../libs/JourneyProvider'
 
 export function AiChatButton(): ReactElement {
-  const { t } = useTranslation('apps-journeys')
+  const { t } = useTranslation('libs-journeys-ui')
   const { variant } = useJourney()
   const [open, setOpen] = useState<boolean>(false)
   const { blockHistory } = useBlocks()
@@ -26,10 +26,10 @@ export function AiChatButton(): ReactElement {
   const previousActiveBlockIdRef = useRef<string | undefined>(activeBlockId)
 
   // Don't allow drawer to open if variant is admin or embed
-  const isDrawerDisabled = variant === 'admin' || variant === 'embed'
+  const invalidVariant = variant === 'admin' || variant === 'embed'
 
   function handleClick() {
-    if (isDrawerDisabled) return
+    if (invalidVariant) return
     setOpen(!open)
   }
 
@@ -46,7 +46,11 @@ export function AiChatButton(): ReactElement {
   }, [activeBlockId, open])
 
   return (
-    <Drawer open={isDrawerDisabled ? false : open} onOpenChange={setOpen}>
+    <Drawer
+      repositionInputs={false} // important for keyboards on iOS Chrome and iOS Firefox
+      open={invalidVariant ? false : open}
+      onOpenChange={setOpen}
+    >
       <DrawerTrigger asChild onClick={handleClick}>
         <Button
           variant="default"
@@ -59,7 +63,7 @@ export function AiChatButton(): ReactElement {
           <AutoAwesomeIcon />
         </Button>
       </DrawerTrigger>
-      <DrawerContent className="flex flex-col h-[85vh] data-[vaul-drawer-direction=bottom]:max-h-[85vh] data-[vaul-drawer-direction=bottom]:rounded-t-4xl">
+      <DrawerContent className="flex flex-col h-[85dvh] data-[vaul-drawer-direction=bottom]:max-h-[85dvh] data-[vaul-drawer-direction=bottom]:rounded-t-4xl">
         <DrawerHeader>
           <DrawerClose>
             <Button

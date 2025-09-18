@@ -24,9 +24,9 @@ import { Message, MessageContent } from '../Message'
 import {
   PromptInput,
   PromptInputSubmit,
-  PromptInputTextarea,
-  PromptInputToolbar
+  PromptInputTextarea
 } from '../PromptInput'
+import type { PromptInputMessage } from '../PromptInput/PromptInput'
 import { Response } from '../Response'
 import { Suggestion, Suggestions } from '../Suggestion'
 
@@ -37,7 +37,7 @@ interface AiChatProps {
 }
 
 export function AiChat({ open }: AiChatProps) {
-  const { t } = useTranslation('apps-journeys')
+  const { t } = useTranslation('libs-journeys-ui')
   const auth = getAuth(firebaseClient)
   const user = auth.currentUser
   const { journey } = useJourney()
@@ -112,11 +112,14 @@ export function AiChat({ open }: AiChatProps) {
     void fetchSuggestions()
   }, [open])
 
-  function handleSubmit(e: React.FormEvent) {
+  function handleSubmit(
+    message: PromptInputMessage,
+    e: React.FormEvent<HTMLFormElement>
+  ) {
     e.preventDefault()
-    if (input.trim()) {
+    if (message.text?.trim()) {
       void sendMessage(
-        { text: input },
+        { text: message.text },
         {
           body: {
             contextText,
@@ -208,46 +211,44 @@ export function AiChat({ open }: AiChatProps) {
         </ConversationContent>
         <ConversationScrollButton />
       </Conversation>
-
-      <Suggestions className="px-4 py-2 border-t border-border">
-        {suggestionsLoading && (
-          <div className="flex items-center gap-2 px-4 py-2 text-muted-foreground">
-            <Loader className="size-4 animate-spin" />
-            <span>{t('Loading suggestions, please hold...')}</span>
-          </div>
-        )}
-        {suggestionsError && (
-          <div className="px-4 py-2 text-destructive">{suggestionsError}</div>
-        )}
-        {suggestions?.map((suggestion) => (
-          <Suggestion
-            key={suggestion}
-            onClick={handleSuggestionClick}
-            suggestion={suggestion}
-          />
-        ))}
-      </Suggestions>
-
+      <div className="border-t border-border">
+        <Suggestions className="px-4 py-2">
+          {suggestionsLoading && (
+            <div className="flex items-center gap-2 px-4 py-2 text-muted-foreground">
+              <Loader className="size-4 animate-spin" />
+              <span>{t('Loading suggestions, please hold...')}</span>
+            </div>
+          )}
+          {suggestionsError && (
+            <div className="px-4 py-2 text-destructive">{suggestionsError}</div>
+          )}
+          {suggestions?.map((suggestion) => (
+            <Suggestion
+              key={suggestion}
+              onClick={handleSuggestionClick}
+              suggestion={suggestion}
+            />
+          ))}
+        </Suggestions>
+      </div>
       <div className="px-4 pb-4">
         <PromptInput
           onSubmit={handleSubmit}
-          className="w-full bg-background-paper border-none rounded-xl bg-[#EFEFEF]"
+          className="w-full bg-background-paper border-none rounded-xl bg-[#EFEFEF] p-0 flex flex-row"
         >
-          <div className="flex flex-row items-center px-3 py-0.5">
-            <PromptInputTextarea
-              className="text-foreground flex-1 text-md p-0"
-              placeholder={t('Ask me anything')}
-              onChange={(e) => setInput(e.target.value)}
-              value={input}
+          <PromptInputTextarea
+            className="text-foreground"
+            placeholder={t('Ask me anything')}
+            onChange={(e) => setInput(e.target.value)}
+            value={input}
+          />
+          <div className="flex flex-row justify-end self-end">
+            <PromptInputSubmit
+              disabled={!input}
+              status={status}
+              className="bg-transparent hover:bg-transparent border-none shadow-none text-[#6D6D6D]"
+              children={<SendHorizonalIcon className="size-5" />}
             />
-            <div className="flex flex-row justify-end self-end">
-              <PromptInputSubmit
-                disabled={!input}
-                status={status}
-                className="bg-transparent hover:bg-transparent border-none shadow-none text-[#6D6D6D]"
-                children={<SendHorizonalIcon className="size-5" />}
-              />
-            </div>
           </div>
         </PromptInput>
       </div>
