@@ -29,8 +29,12 @@ export function getCardHeadings(
   }
 
   const [title, subtitle] = sortBy(flattenedChildren, getTypographyOrder)
-  const resolvedTitle = useGetValueFromJourneyCustomizationString(title?.content)
-  const resolvedSubtitle = useGetValueFromJourneyCustomizationString(subtitle?.content)
-  
+  const resolvedTitle = useGetValueFromJourneyCustomizationString(
+    title?.content
+  )
+  const resolvedSubtitle = useGetValueFromJourneyCustomizationString(
+    subtitle?.content
+  )
+
   return [resolvedTitle, resolvedSubtitle]
 }
