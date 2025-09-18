@@ -12,7 +12,8 @@ import {
   hasChatWidget,
   hasCombinedFooter,
   hasHostAvatar,
-  hasHostDetails
+  hasHostDetails,
+  hasAiChatButton
 } from '../Card/utils/getFooterElements'
 import { InformationButton } from '../StepHeader/InformationButton'
 
@@ -20,6 +21,7 @@ import { ChatButtons } from './ChatButtons'
 import { FooterButtonList } from './FooterButtonList'
 import { HostAvatars } from './HostAvatars'
 import { HostTitleLocation } from './HostTitleLocation'
+import { AiChatButton } from '../AiChatButton'
 
 interface StepFooterProps {
   onFooterClick?: () => void
@@ -37,6 +39,7 @@ export function StepFooter({
   const hostDetails = hasHostDetails({ journey })
   const chat = hasChatWidget({ journey, variant })
   const title = getTitle({ journey })
+  const aiChat = hasAiChatButton({ journey, variant })
 
   const footerMobileHeight = getFooterMobileHeight({ journey, variant })
   const combinedFooter = hasCombinedFooter({ journey, variant })
@@ -139,7 +142,7 @@ export function StepFooter({
               </Box>
             </Stack>
           )}
-          <Box>{chat && <ChatButtons />}</Box>
+          <Box>{chat ? <ChatButtons /> : aiChat ? <AiChatButton /> : null}</Box>
         </Stack>
       </Stack>
     </Box>
