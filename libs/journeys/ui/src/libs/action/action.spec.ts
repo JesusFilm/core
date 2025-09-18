@@ -55,7 +55,7 @@ describe('action', () => {
       )
     })
 
-    it('should handle PhoneAction', () => {
+    it('should handle PhoneAction call', () => {
       Object.defineProperty(window, 'location', {
         value: {
           ...window.location,
@@ -73,6 +73,26 @@ describe('action', () => {
         contactAction: ContactActionType.call
       })
       expect(window.location.href).toBe('tel:+1234567890')
+    })
+
+    it('should handle PhoneAction text', () => {
+      Object.defineProperty(window, 'location', {
+        value: {
+          ...window.location,
+          href: ''
+        },
+        writable: true
+      })
+
+      handleAction(router, {
+        __typename: 'PhoneAction',
+        parentBlockId: 'parent-id',
+        gtmEventName: null,
+        phone: '+1234567890',
+        countryCode: 'US',
+        contactAction: ContactActionType.text
+      })
+      expect(window.location.href).toBe('sms:+1234567890')
     })
 
     it('should handle external LinkAction', () => {
