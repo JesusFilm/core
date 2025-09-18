@@ -14,6 +14,7 @@ import { useVideo } from '../../../../libs/videoContext'
 import { useWatch } from '../../../../libs/watchContext'
 import { useSubtitleUpdate } from '../../../../libs/watchContext/useSubtitleUpdate'
 import { VideoControls } from '../../../VideoContentPage/VideoHero/VideoPlayer/VideoControls'
+import { HeroSubtitleOverlay } from './HeroSubtitleOverlay'
 import type { CarouselMuxSlide } from '../../../../types/inserts'
 import clsx from 'clsx'
 
@@ -147,6 +148,9 @@ export function HeroVideo({
 
   const { subtitleUpdate } = useSubtitleUpdate()
 
+  const effectiveSubtitleLanguageId =
+    subtitleLanguageId ?? variant?.language.id ?? null
+
   const handlePreviewClick = useCallback(
     (e: React.MouseEvent<HTMLVideoElement>) => {
       e.stopPropagation()
@@ -164,10 +168,23 @@ export function HeroVideo({
 
     void subtitleUpdate({
       player,
-      subtitleLanguageId,
+      subtitleLanguageId: effectiveSubtitleLanguageId,
       subtitleOn: mute || subtitleOn
     })
-  }, [playerRef, subtitleLanguageId, subtitleOn, variant, mute])
+  }, [
+    playerRef,
+    effectiveSubtitleLanguageId,
+    subtitleOn,
+    variant,
+    mute,
+    subtitleUpdate
+  ])
+
+  const shouldShowOverlay = playerReady && (mute || subtitleOn)
+  console.log('shouldShowOverlay', shouldShowOverlay)
+  console.log('playerReady', playerReady)
+  console.log('mute', mute)
+  console.log('subtitleOn', subtitleOn)
 
   return (
     <div
@@ -211,6 +228,11 @@ export function HeroVideo({
             }}
           />
         )}
+        <HeroSubtitleOverlay
+          player={playerRef.current}
+          subtitleLanguageId={effectiveSubtitleLanguageId}
+          visible={shouldShowOverlay}
+        />
         {playerRef.current != null && playerReady && (
           <>
             <VideoControls
