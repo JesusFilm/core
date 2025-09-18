@@ -66,6 +66,7 @@ Run these before opening a PR. If a command fails due to pre-existing issues, en
 - Tailwind utilities should stay semantically grouped—Prettier sorts the lists, but ensure responsive and state variants remain readable.
 - Meet high visual polish: consistent typography, deliberate spacing, and tasteful Tailwind-driven animations inspired by Apple TV+, Airbnb, YouTube, Vimeo, and Netflix.
 - Build accessible experiences (aria attributes, keyboard support, focus states) as part of every component.
+- When calling `t(...)`, inline the human-readable copy with interpolation placeholders (e.g., `t('Switch to {{localeName}}', { localeName: localeDetails.nativeName })`) instead of referencing stored translation keys like `t('localeSuggestion.action', ...)`.
 
 ## Architecture & refactoring agreements
 
