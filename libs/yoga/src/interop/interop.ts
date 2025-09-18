@@ -23,7 +23,7 @@ export function getInteropContext({
 
   const ipAddress = z
     .string()
-    .ip({
+    .ipv4({
       message: `Invalid IP address (${normalizedIpAddress})`
     })
     .parse(normalizedIpAddress)

@@ -186,9 +186,11 @@ Return in this format:
 
         const analysisResult = await generateObject({
           model: google('gemini-2.0-flash'),
-          system: preSystemPrompt,
-          prompt: combinedPrompt,
-          schema: JourneyAnalysisSchema as any
+          messages: [
+            { role: 'system', content: preSystemPrompt },
+            { role: 'user', content: combinedPrompt }
+          ],
+          schema: JourneyAnalysisSchema
         })
 
         if (!analysisResult.object.title) {
@@ -369,7 +371,10 @@ If there is no Bible translation was available, use the the most popular English
               // Stream the translations
               const { fullStream } = streamObject({
                 model: google('gemini-2.0-flash'),
-                system: preSystemPrompt,
+                messages: [
+                  { role: 'system', content: preSystemPrompt },
+                  { role: 'user', content: blockTranslationPrompt }
+                ],
                 prompt: blockTranslationPrompt,
                 output: 'no-schema',
                 onError: ({ error }) => {
@@ -631,9 +636,11 @@ Return in this format:
       try {
         const { object: analysisAndTranslation } = await generateObject({
           model: google('gemini-2.0-flash'),
-          system: preSystemPrompt,
-          prompt: combinedPrompt,
-          schema: JourneyAnalysisSchema as any
+          messages: [
+            { role: 'system', content: preSystemPrompt },
+            { role: 'user', content: combinedPrompt }
+          ],
+          schema: JourneyAnalysisSchema
         })
 
         if (!analysisAndTranslation.title)
@@ -788,7 +795,10 @@ If there is no Bible translation was available, use the the most popular English
                 // Stream the translations
                 const { fullStream } = streamObject({
                   model: google('gemini-2.0-flash'),
-                  system: preSystemPrompt,
+                  messages: [
+                    { role: 'system', content: preSystemPrompt },
+                    { role: 'user', content: cardAnalysisPrompt }
+                  ],
                   prompt: cardAnalysisPrompt,
                   output: 'no-schema',
                   onError: ({ error }) => {

@@ -257,7 +257,7 @@
     "xliff": "^6.2.1",
     "yup": "^1.0.0",
     "zen-observable-ts": "1.2.5",
-    "zod": "^3.25.76"
+    "zod": "^4.1.8"
   },
   "devDependencies": {
     "@babel/core": "^7.22.15",
