@@ -148,6 +148,9 @@ export function HeroVideo({
 
   const { subtitleUpdate } = useSubtitleUpdate()
 
+  const effectiveSubtitleLanguageId =
+    subtitleLanguageId ?? variant?.language.id ?? null
+
   const handlePreviewClick = useCallback(
     (e: React.MouseEvent<HTMLVideoElement>) => {
       e.stopPropagation()
@@ -165,12 +168,23 @@ export function HeroVideo({
 
     void subtitleUpdate({
       player,
-      subtitleLanguageId,
+      subtitleLanguageId: effectiveSubtitleLanguageId,
       subtitleOn: mute || subtitleOn
     })
-  }, [playerRef, subtitleLanguageId, subtitleOn, variant, mute])
+  }, [
+    playerRef,
+    effectiveSubtitleLanguageId,
+    subtitleOn,
+    variant,
+    mute,
+    subtitleUpdate
+  ])
 
   const shouldShowOverlay = playerReady && (mute || subtitleOn)
+  console.log('shouldShowOverlay', shouldShowOverlay)
+  console.log('playerReady', playerReady)
+  console.log('mute', mute)
+  console.log('subtitleOn', subtitleOn)
 
   return (
     <div
@@ -216,7 +230,7 @@ export function HeroVideo({
         )}
         <HeroSubtitleOverlay
           player={playerRef.current}
-          subtitleLanguageId={subtitleLanguageId}
+          subtitleLanguageId={effectiveSubtitleLanguageId}
           visible={shouldShowOverlay}
         />
         {playerRef.current != null && playerReady && (
