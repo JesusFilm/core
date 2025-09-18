@@ -77,7 +77,7 @@ builder.mutationFields((t) => ({
             schema: z.object({
               language: z.string(),
               isSameLanguage: z.boolean()
-            }),
+            }) as any,
             prompt: languageDetectionPrompt
           })
           return detectedLanguage.isSameLanguage

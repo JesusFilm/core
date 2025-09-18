@@ -188,7 +188,7 @@ Return in this format:
           model: google('gemini-2.0-flash'),
           system: preSystemPrompt,
           prompt: combinedPrompt,
-          schema: JourneyAnalysisSchema
+          schema: JourneyAnalysisSchema as any
         })
 
         if (!analysisResult.object.title) {
@@ -633,7 +633,7 @@ Return in this format:
           model: google('gemini-2.0-flash'),
           system: preSystemPrompt,
           prompt: combinedPrompt,
-          schema: JourneyAnalysisSchema
+          schema: JourneyAnalysisSchema as any
         })
 
         if (!analysisAndTranslation.title)
