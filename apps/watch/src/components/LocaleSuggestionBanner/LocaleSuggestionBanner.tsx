@@ -20,6 +20,9 @@ export function LocaleSuggestionBanner(): ReactElement | null {
     [router.defaultLocale, router.locale]
   )
 
+  console.log('preferredLocale', preferredLocale)
+  console.log('currentLocale', currentLocale)
+
   if (preferredLocale == null || preferredLocale === currentLocale) return null
 
   const localeDetails = LANGUAGE_MAPPINGS[preferredLocale]
@@ -50,7 +53,7 @@ export function LocaleSuggestionBanner(): ReactElement | null {
           textAlign="center"
         >
           <Typography variant="body2" component="span">
-            {t('localeSuggestion.message', {
+            {t('We noticed your browser prefers {{localeName}}. Would you like to view the site in this language?',{
               localeName: localeDetails.nativeName
             })}
           </Typography>
@@ -60,7 +63,7 @@ export function LocaleSuggestionBanner(): ReactElement | null {
             onClick={handleSwitchLocale}
             sx={{ alignSelf: { xs: 'center', sm: 'auto' } }}
           >
-            {t('localeSuggestion.action', {
+            {t('Switch to {{localeName}}', {
               localeName: localeDetails.nativeName
             })}
           </Button>

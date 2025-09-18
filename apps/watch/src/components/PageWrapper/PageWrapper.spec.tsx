@@ -5,7 +5,9 @@ import { render, screen } from '@testing-library/react'
 import { PageWrapper } from '.'
 
 jest.mock('../LocaleSuggestionBanner', () => ({
-  LocaleSuggestionBanner: () => null
+  __esModule: true,
+  LocaleSuggestionBanner: () => null,
+  default: () => null
 }))
 
 describe('PageWrapper', () => {
