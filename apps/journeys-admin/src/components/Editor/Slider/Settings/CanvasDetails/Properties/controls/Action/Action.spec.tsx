@@ -72,8 +72,18 @@ describe('Action', () => {
 
     const { getByRole, getByText } = render(
       <MockedProvider>
-        <JourneyProvider value={{ journey: { template: true } as unknown as Journey, variant: 'admin' }}>
-          <EditorProvider initialState={{ selectedBlock: buttonBlockWithLinkAction, selectedStep }}>
+        <JourneyProvider
+          value={{
+            journey: { template: true } as unknown as Journey,
+            variant: 'admin'
+          }}
+        >
+          <EditorProvider
+            initialState={{
+              selectedBlock: buttonBlockWithLinkAction,
+              selectedStep
+            }}
+          >
             <Action />
           </EditorProvider>
         </JourneyProvider>
@@ -82,7 +92,9 @@ describe('Action', () => {
 
     await waitFor(() => {
       expect(getByText('Customize')).toBeInTheDocument()
-      expect(getByRole('checkbox', { name: 'Toggle customizable' })).toBeInTheDocument()
+      expect(
+        getByRole('checkbox', { name: 'Toggle customizable' })
+      ).toBeInTheDocument()
     })
   })
 

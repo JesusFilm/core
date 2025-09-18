@@ -50,9 +50,9 @@ export function Action(): ReactElement {
 
   const filteredLabels = isSubmitButton
     ? labels.filter(
-      (action) =>
-        action.value !== 'LinkAction' && action.value !== 'EmailAction'
-    )
+        (action) =>
+          action.value !== 'LinkAction' && action.value !== 'EmailAction'
+      )
     : labels
 
   useEffect(() => {
@@ -111,7 +111,7 @@ export function Action(): ReactElement {
         {isLink && <LinkAction />}
         {isEmail && <EmailAction />}
         {action === 'NavigateToBlockAction' && <NavigateToBlockAction />}
-        {((isLink || isEmail) && journey?.template) && <CustomizationToggle />}
+        {(isLink || isEmail) && journey?.template && <CustomizationToggle />}
       </Stack>
     </>
   )
