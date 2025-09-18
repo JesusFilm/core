@@ -296,7 +296,9 @@ describe('ActionButton', () => {
 
     render(
       <MockedProvider>
-        <JourneyProvider value={{ journey: nonTemplateJourney, variant: 'default' }}>
+        <JourneyProvider
+          value={{ journey: nonTemplateJourney, variant: 'default' }}
+        >
           <ReactFlowProvider>
             <ActionButton stepId="step.id" block={block} />
           </ReactFlowProvider>

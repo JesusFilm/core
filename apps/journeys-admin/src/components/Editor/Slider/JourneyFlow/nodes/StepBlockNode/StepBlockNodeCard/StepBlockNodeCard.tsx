@@ -50,15 +50,15 @@ export function StepBlockNodeCard({
   const conditionalStyles =
     showAnalytics === true
       ? {
-        opacity: 0.8,
-        bgcolor: 'transparent',
-        boxShadow: 'none'
-      }
+          opacity: 0.8,
+          bgcolor: 'transparent',
+          boxShadow: 'none'
+        }
       : {
-        opacity: 1,
-        bgcolor: 'background.paper',
-        '&:hover': { boxShadow: selected ? 6 : 3 }
-      }
+          opacity: 1,
+          bgcolor: 'background.paper',
+          '&:hover': { boxShadow: selected ? 6 : 3 }
+        }
 
   return (
     <Card
@@ -175,7 +175,8 @@ export function StepBlockNodeCard({
               overflow: 'hidden'
             }}
           >
-            {(resolvedSubtitle != null && resolvedSubtitle !== '') || resolvedTitle != null ? (
+            {(resolvedSubtitle != null && resolvedSubtitle !== '') ||
+            resolvedTitle != null ? (
               resolvedSubtitle
             ) : (
               <Skeleton
