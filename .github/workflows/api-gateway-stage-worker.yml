@@ -37,7 +37,7 @@ jobs:
 
       - name: Build and push Docker image to Amazon ECR
         id: build-image-ecs
-        uses: useblacksmith/build-push-action@v1
+        uses: docker/build-push-action@v6
         with:
           context: .
           file: apis/api-gateway/Dockerfile

@@ -71,17 +71,19 @@ jobs:
         uses: pnpm/action-setup@v4
         with:
           run_install: false
-      - uses: useblacksmith/setup-node@v5
+      - uses: actions/setup-node@v5
         with:
           node-version: 22
           cache: 'pnpm'
       - name: Install dependencies
         run: pnpm install --frozen-lockfile --silent
-      - name: Mount playwright cache
-        uses: useblacksmith/stickydisk@v1
+      - name: Cache Playwright browsers
+        uses: actions/cache@v4
         with:
-          key: ${{ github.repository }}-playwright-cache
           path: ~/.cache/ms-playwright
+          key: ${{ runner.os }}-node-22-playwright-${{ hashFiles('pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-node-22-playwright-
       - uses: nrwl/nx-set-shas@v4
       - name: vercel deployment
         env:
@@ -164,18 +166,20 @@ jobs:
         uses: pnpm/action-setup@v4
         with:
           run_install: false
-      - uses: useblacksmith/setup-node@v5
+      - uses: actions/setup-node@v5
         with:
           node-version: ${{ matrix.node-version }}
           cache: 'pnpm'
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile --silent
-      - name: Mount playwright cache
-        uses: useblacksmith/stickydisk@v1
+      - name: Cache Playwright browsers
+        uses: actions/cache@v4
         with:
-          key: ${{ github.repository }}-playwright-cache-${{ matrix.test-suite }}
           path: ~/.cache/ms-playwright
+          key: ${{ runner.os }}-node-${{ matrix.node-version }}-playwright-${{ hashFiles('pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-node-${{ matrix.node-version }}-playwright-
       - name: Install Playwright Browsers
         run: pnpm exec playwright install --with-deps
       - name: Set deployment URL for single test run
