@@ -265,6 +265,8 @@ jobs:
           key: ${{ runner.os }}-node-${{ matrix.node-version }}-playwright-${{ hashFiles('pnpm-lock.yaml') }}
           restore-keys: |
             ${{ runner.os }}-node-${{ matrix.node-version }}-playwright-
+      - name: Install Playwright Browsers
+        run: pnpm exec playwright install --with-deps
       - name: Run Playwright tests
         run: pnpm exec nx run ${{ matrix.app }}-e2e:e2e
         env:
