@@ -16,7 +16,7 @@ import {
   BlockFields_VideoBlock as VideoBlock
 } from '../../../../../../../../../__generated__/BlockFields'
 import { useActionCommand } from '../../../../../../utils/useActionCommand'
-import { useJourney } from '@core/journeys/ui/JourneyProvider'
+import { useFlags } from '@core/shared/ui/FlagsProvider'
 
 import { CustomizationToggle } from './CustomizationToggle'
 import { EmailAction } from './EmailAction'
@@ -30,7 +30,7 @@ export function Action(): ReactElement {
   } = useEditor()
   const { t } = useTranslation('apps-journeys-admin')
   const { addAction } = useActionCommand()
-  const { journey } = useJourney()
+  const { journeyCustomization } = useFlags()
 
   // Add addtional types here to use this component for that block
   const selectedBlock = stateSelectedBlock as
@@ -50,9 +50,9 @@ export function Action(): ReactElement {
 
   const filteredLabels = isSubmitButton
     ? labels.filter(
-        (action) =>
-          action.value !== 'LinkAction' && action.value !== 'EmailAction'
-      )
+      (action) =>
+        action.value !== 'LinkAction' && action.value !== 'EmailAction'
+    )
     : labels
 
   useEffect(() => {
@@ -111,7 +111,7 @@ export function Action(): ReactElement {
         {isLink && <LinkAction />}
         {isEmail && <EmailAction />}
         {action === 'NavigateToBlockAction' && <NavigateToBlockAction />}
-        {(isLink || isEmail) && journey?.template && <CustomizationToggle />}
+        {(isLink || isEmail) && journeyCustomization && <CustomizationToggle />}
       </Stack>
     </>
   )
