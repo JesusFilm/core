@@ -205,14 +205,14 @@ describe('StepFooter', () => {
       expect(screen.getAllByTestId('StepFooterButtonList')).toHaveLength(2)
     })
 
-    it('should show ai chat button', () => {
+    it('should show ai chat button on journey', () => {
       render(
         <MockedProvider>
           <SnackbarProvider>
             <JourneyProvider
               value={{
                 journey: { ...journey, showAssistant: true },
-                variant: 'admin'
+                variant: 'default'
               }}
             >
               <StepFooter />
@@ -223,7 +223,7 @@ describe('StepFooter', () => {
       expect(screen.getByTestId('AiChatButton')).toBeInTheDocument()
     })
 
-    it('should not show ai chat button', () => {
+    it('should not show ai chat button on journey if chat buttons exist', () => {
       render(
         <MockedProvider>
           <SnackbarProvider>
@@ -241,7 +241,7 @@ describe('StepFooter', () => {
                     }
                   ]
                 },
-                variant: 'admin'
+                variant: 'default'
               }}
             >
               <StepFooter />
