@@ -23,6 +23,7 @@ import { DiscussionQuestions } from './DiscussionQuestions'
 import { NewVideoContentHeader } from './NewVideoContentHeader'
 import { VideoCarousel } from './VideoCarousel'
 import { VideoContentHero } from './VideoContentHero'
+import { selectNextUpVideo } from './selectNextUpVideo'
 
 export function NewVideoContentPage(): ReactElement {
   const { t } = useTranslation('apps-watch')
@@ -46,10 +47,22 @@ export function NewVideoContentPage(): ReactElement {
   const [isFullscreen, setIsFullscreen] = useState(false)
 
   const variantSlug = container?.variant?.slug ?? variant?.slug
+  const containerSlug = container?.slug ?? videoSlug
   const watchUrl = getWatchUrl(container?.slug, label, variant?.slug)
   const { children, loading } = useVideoChildren(
     variantSlug,
     variant?.language.bcp47 ?? 'en'
+  )
+
+  const nextUpVideo = useMemo(
+    () =>
+      selectNextUpVideo({
+        currentVideoId: id,
+        children,
+        containerSlug,
+        containerLabel: container?.label ?? label ?? null
+      }),
+    [children, container?.label, containerSlug, id, label]
   )
 
   const makeDefaultQuestion = (value: string): StudyQuestions => ({
@@ -157,6 +170,7 @@ export function NewVideoContentPage(): ReactElement {
           <VideoContentHero
             isFullscreen={isFullscreen}
             setIsFullscreen={setIsFullscreen}
+            nextUpVideo={nextUpVideo}
           />
         }
         headerThemeMode={ThemeMode.dark}
@@ -170,7 +184,7 @@ export function NewVideoContentPage(): ReactElement {
             (children.length === children.length || children.length > 0) && (
               <VideoCarousel
                 videos={children}
-                containerSlug={container?.slug ?? videoSlug}
+                containerSlug={containerSlug}
                 activeVideoId={id}
                 loading={loading}
               />

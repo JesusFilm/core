@@ -1,7 +1,12 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { render } from '@testing-library/react'
+import React from 'react'
+import { render, screen, waitFor } from '@testing-library/react'
 import fscreen from 'fscreen'
 
+import {
+  PlayerProvider,
+  PlayerState
+} from '../../../libs/playerContext/PlayerContext'
 import { VideoProvider } from '../../../libs/videoContext'
 import { WatchProvider } from '../../../libs/watchContext'
 import { videos } from '../../Videos/__generated__/testData'
@@ -9,6 +14,27 @@ import { videos } from '../../Videos/__generated__/testData'
 import { VideoContentHero } from './VideoContentHero'
 
 jest.mock('fscreen')
+
+const mockPush = jest.fn()
+const mockPrefetch = jest.fn()
+
+jest.mock('next/router', () => ({
+  useRouter: jest.fn(() => ({
+    push: mockPush,
+    prefetch: mockPrefetch
+  }))
+}))
+
+jest.mock('@next/third-parties/google', () => ({
+  sendGTMEvent: jest.fn()
+}))
+
+jest.mock('./HeroVideo', () => ({
+  HeroVideo: jest.fn(() => {
+    const React = require('react') as typeof import('react')
+    return React.createElement('div', { 'data-testid': 'HeroVideoMock' }, 'HeroVideo')
+  })
+}))
 
 jest.mock('next-i18next', () => ({
   useTranslation: jest.fn().mockReturnValue({
@@ -26,6 +52,8 @@ describe('VideoContentHero', () => {
   beforeEach(() => {
     jest.clearAllMocks()
     window.scrollTo = jest.fn()
+    mockPush.mockResolvedValue(true)
+    mockPrefetch.mockResolvedValue(undefined)
   })
 
   afterEach(() => {
@@ -159,5 +187,44 @@ describe('VideoContentHero', () => {
 
       expect(setIsFullscreen).toHaveBeenCalledWith(false)
     })
+  })
+})
+
+describe('up next panel', () => {
+  it('becomes visible when nearing the end of the video', async () => {
+    render(
+      <MockedProvider>
+        <VideoProvider value={{ content: videos[0] }}>
+          <PlayerProvider
+            initialState={{
+              play: true,
+              durationSeconds: 120,
+              progress: 115
+            }}
+          >
+            <WatchProvider
+              initialState={{
+                audioLanguageId: '529',
+                subtitleLanguageId: '529',
+                subtitleOn: false
+              }}
+            >
+              <VideoContentHero
+                nextUpVideo={{
+                  id: 'next-video',
+                  title: 'Next Video',
+                  href: '/watch/next-video.html',
+                  durationSeconds: 90
+                }}
+              />
+            </WatchProvider>
+          </PlayerProvider>
+        </VideoProvider>
+      </MockedProvider>
+    )
+
+    await waitFor(() =>
+      expect(screen.getByTestId('UpNextPanel')).toHaveClass('translate-x-0')
+    )
   })
 })

@@ -17,9 +17,13 @@ import { VideoControls } from '../../../VideoContentPage/VideoHero/VideoPlayer/V
 
 interface HeroVideoProps {
   isFullscreen: boolean
+  sidePanelOpen?: boolean
 }
 
-export function HeroVideo({ isFullscreen }: HeroVideoProps): ReactElement {
+export function HeroVideo({
+  isFullscreen,
+  sidePanelOpen = false
+}: HeroVideoProps): ReactElement {
   const { variant, ...video } = useVideo()
   const {
     state: { mute }
@@ -124,14 +128,17 @@ export function HeroVideo({ isFullscreen }: HeroVideoProps): ReactElement {
 
   return (
     <div
-      className={`fixed top-0 left-0 right-0 mx-auto z-0 vjs-hide-loading-spinners 
+      className={`fixed top-0 left-0 right-0 mx-auto z-0 vjs-hide-loading-spinners
         [body[style*='padding-right']_&]:right-[15px]
         ${
           isFullscreen
             ? 'h-full max-w-full'
             : 'h-[90%] md:h-[80%] max-w-[1920px]'
-        }`}
+        } ${sidePanelOpen ? 'md:right-[360px]' : ''}`}
       data-testid="ContentHeroVideoContainer"
+      style={{
+        transition: 'right 500ms ease-out'
+      }}
     >
       {variant?.hls && (
         <video
