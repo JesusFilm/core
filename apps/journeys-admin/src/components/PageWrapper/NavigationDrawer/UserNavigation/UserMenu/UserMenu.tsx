@@ -102,8 +102,8 @@ export function UserMenu({
           icon={<Logout2Icon fontSize="small" />}
           onClick={async () => {
             handleProfileClose()
-            await client.clearStore()
             await user.signOut()
+            await client.clearStore()
             await enqueueSnackbar(t('Logout successful'), {
               variant: 'success',
               preventDuplicate: true

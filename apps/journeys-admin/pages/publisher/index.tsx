@@ -28,16 +28,16 @@ function PublisherIndexPage(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const user = useUser()
   const router = useRouter()
-  const { query, activeTeam, refetch } = useTeam()
+  const { activeTeam, getLastActiveTeamIdAndTeams } = useTeam()
 
   const { data } = useUserRoleQuery()
 
   // Ensure team is refetched if user is not loaded before provider
   useEffect(() => {
     if (activeTeam == null) {
-      void refetch()
+      void getLastActiveTeamIdAndTeams()
     }
-  }, [user.id, query, activeTeam, refetch])
+  }, [user.id, activeTeam, getLastActiveTeamIdAndTeams])
 
   useEffect(() => {
     if (

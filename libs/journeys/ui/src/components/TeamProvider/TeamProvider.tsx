@@ -1,4 +1,11 @@
-import { OperationVariables, QueryResult, gql, useQuery } from '@apollo/client'
+import {
+  OperationVariables,
+  QueryResult,
+  gql,
+  useLazyQuery,
+  LazyQueryResultTuple,
+  LazyQueryExecFunction
+} from '@apollo/client'
 import { sendGTMEvent } from '@next/third-parties/google'
 import {
   ReactElement,
@@ -12,13 +19,19 @@ import {
   GetLastActiveTeamIdAndTeams,
   GetLastActiveTeamIdAndTeams_teams as Team
 } from './__generated__/GetLastActiveTeamIdAndTeams'
+import { useUser } from 'next-firebase-auth'
 
 interface Context {
-  query: QueryResult<GetLastActiveTeamIdAndTeams, OperationVariables>
+  // query: LazyQueryResultTuple<GetLastActiveTeamIdAndTeams, OperationVariables>
   /** activeTeam is null if loaded and set intentionally */
   activeTeam: Team | null | undefined
   setActiveTeam: (team: Team | null) => void
-  refetch: () => Promise<void>
+  getLastActiveTeamIdAndTeams: LazyQueryExecFunction<
+    GetLastActiveTeamIdAndTeams,
+    OperationVariables
+  >
+  teams: Team[]
+  teamsLoading: boolean
 }
 
 const TeamContext = createContext<Context>({} as unknown as Context)
@@ -66,6 +79,7 @@ export function TeamProvider({ children }: TeamProviderProps): ReactElement {
   const [activeTeamId, setActiveTeamId] = useState<string | null | undefined>(
     undefined
   )
+  // const user = useUser()
 
   function updateActiveTeam(data: GetLastActiveTeamIdAndTeams): void {
     if (activeTeam != null || data.teams == null) return
@@ -79,16 +93,22 @@ export function TeamProvider({ children }: TeamProviderProps): ReactElement {
     setActiveTeam(lastActiveTeam ?? null)
   }
 
-  const query = useQuery<GetLastActiveTeamIdAndTeams>(
-    GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS,
-    {
-      onCompleted: (data) => {
-        updateActiveTeam(data)
+  const [getLastActiveTeamIdAndTeams, { data, loading }] =
+    useLazyQuery<GetLastActiveTeamIdAndTeams>(
+      GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS,
+      {
+        onCompleted: (data) => {
+          console.log('data in onCompleted', data)
+          updateActiveTeam(data)
+        },
+        fetchPolicy: 'network-only'
+        //skip: userId == null
+        //skip: user.id == null
       }
-    }
-  )
+    )
 
   function setActiveTeam(team: Team | null): void {
+    console.log('team in setActiveTeam', team)
     if (team == null) {
       setActiveTeamId(null)
     } else {
@@ -98,18 +118,31 @@ export function TeamProvider({ children }: TeamProviderProps): ReactElement {
 
   const activeTeam =
     activeTeamId != null
-      ? (query.data?.teams.find((team) => team.id === activeTeamId) ?? null)
+      ? (data?.teams.find((team) => team.id === activeTeamId) ?? null)
       : activeTeamId
-
+  console.log('activeTeam in provider', activeTeam)
   // query.refetch() does not rerun onCompleted
   // https://github.com/apollographql/apollo-client/issues/11151
-  async function refetch(): Promise<void> {
-    const { data } = await query.refetch()
-    updateActiveTeam(data)
-  }
+  // async function refetch(): Promise<void> {
+  //   const { data } = await query.refetch()
+
+  //   console.log('data in refetch', data)
+  //   console.log('query in refetch', query.data)
+  //   updateActiveTeam(data)
+  // }
+
+  console.log('query gets called in team provider', data?.getJourneyProfile?.id)
 
   return (
-    <TeamContext.Provider value={{ query, activeTeam, setActiveTeam, refetch }}>
+    <TeamContext.Provider
+      value={{
+        activeTeam,
+        setActiveTeam,
+        getLastActiveTeamIdAndTeams,
+        teams: data?.teams ?? [],
+        teamsLoading: loading
+      }}
+    >
       {children}
     </TeamContext.Provider>
   )

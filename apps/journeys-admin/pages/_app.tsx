@@ -44,6 +44,8 @@ function JourneysAdminApp({
       ? JSON.parse(pageProps.userSerialized)
       : null
 
+  console.log('user in app', user)
+
   const apolloClient = useApollo({
     initialState: pageProps.initialApolloState,
     token: user?._token

@@ -22,7 +22,7 @@ interface TeamSelectProps {
 }
 
 export function TeamSelect({ onboarding }: TeamSelectProps): ReactElement {
-  const { query, activeTeam, setActiveTeam } = useTeam()
+  const { teams, activeTeam, setActiveTeam, teamsLoading } = useTeam()
   const { t } = useTranslation('apps-journeys-admin')
   const anchorRef = useRef(null)
   const currentRef = anchorRef.current
@@ -32,9 +32,7 @@ export function TeamSelect({ onboarding }: TeamSelectProps): ReactElement {
     useMutation<UpdateLastActiveTeamId>(UPDATE_LAST_ACTIVE_TEAM_ID)
 
   function handleChange(event: SelectChangeEvent): void {
-    const team = query?.data?.teams.find(
-      (team) => team.id === event.target.value
-    )
+    const team = teams.find((team) => team.id === event.target.value)
     setActiveTeam(team ?? null)
     void updateLastActiveTeamId({
       variables: {
@@ -62,7 +60,7 @@ export function TeamSelect({ onboarding }: TeamSelectProps): ReactElement {
         <FormControl variant="standard" sx={{ minWidth: 100 }}>
           <Select
             defaultValue={activeTeam?.id}
-            disabled={query.loading}
+            disabled={teamsLoading}
             displayEmpty
             value={activeTeam?.id ?? ''}
             disableUnderline
@@ -97,10 +95,7 @@ export function TeamSelect({ onboarding }: TeamSelectProps): ReactElement {
             }}
             IconComponent={ChevronDownIcon}
           >
-            {(query?.data?.teams != null
-              ? sortBy(query.data?.teams, 'title')
-              : []
-            ).map((team) => (
+            {(teams != null ? sortBy(teams, 'title') : []).map((team) => (
               <MenuItem
                 key={team.id}
                 value={team.id}

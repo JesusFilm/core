@@ -33,14 +33,15 @@ function TemplateIndexPage(): ReactElement {
   const user = useUser()
   const router = useRouter()
   const { data } = useQuery<GetMe>(GET_ME)
-  const { query } = useTeam()
+  const { getLastActiveTeamIdAndTeams } = useTeam()
   if (data?.me?.id != null && !data?.me?.emailVerified) {
     void router.push('/users/verify?redirect=/templates')
   }
 
-  useEffect(() => {
-    void query.refetch()
-  }, [user.id, query])
+  // useEffect(() => {
+  //   console.log('templates index page useEffect')
+  //   void getLastActiveTeamIdAndTeams()
+  // }, [user.id, getLastActiveTeamIdAndTeams])
 
   const userSignedIn = user?.id != null
 

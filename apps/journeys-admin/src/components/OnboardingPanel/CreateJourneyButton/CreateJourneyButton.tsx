@@ -11,10 +11,7 @@ import { SidePanelContainer } from '../../PageWrapper/SidePanelContainer'
 
 export function CreateJourneyButton(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
-  const {
-    query: { loading: loadingTeams },
-    activeTeam
-  } = useTeam()
+  const { teamsLoading, activeTeam } = useTeam()
   const router = useRouter()
   const { createJourney, loading: loadingJourneyCreateMutation } =
     useJourneyCreateMutation()
@@ -26,13 +23,13 @@ export function CreateJourneyButton(): ReactElement {
       })
     }
   }
-  return activeTeam != null || loadingTeams ? (
+  return activeTeam != null || teamsLoading ? (
     <SidePanelContainer>
       <ContainedIconButton
         label={t('Create Custom Journey')}
         thumbnailIcon={<FilePlus1Icon />}
         onClick={handleCreateJourneyClick}
-        loading={loadingJourneyCreateMutation || loadingTeams}
+        loading={loadingJourneyCreateMutation || teamsLoading}
       />
     </SidePanelContainer>
   ) : (
