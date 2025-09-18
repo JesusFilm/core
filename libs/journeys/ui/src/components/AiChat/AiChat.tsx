@@ -26,18 +26,18 @@ import {
   PromptInputSubmit,
   PromptInputTextarea
 } from '../PromptInput'
+import type { PromptInputMessage } from '../PromptInput/PromptInput'
 import { Response } from '../Response'
 import { Suggestion, Suggestions } from '../Suggestion'
 
 import { extractBlockContext } from './utils/contextExtraction'
-import type { PromptInputMessage } from '../PromptInput/PromptInput'
 
 interface AiChatProps {
   open: boolean
 }
 
 export function AiChat({ open }: AiChatProps) {
-  const { t } = useTranslation('apps-journeys')
+  const { t } = useTranslation('libs-journeys-ui')
   const auth = getAuth(firebaseClient)
   const user = auth.currentUser
   const { journey } = useJourney()

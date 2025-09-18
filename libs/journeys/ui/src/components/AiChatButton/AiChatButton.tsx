@@ -4,6 +4,7 @@ import { useTranslation } from 'next-i18next'
 import { ReactElement, useEffect, useRef, useState } from 'react'
 
 import { useBlocks } from '../../libs/block'
+import { useJourney } from '../../libs/JourneyProvider'
 import { AiChat } from '../AiChat'
 import {
   Drawer,
@@ -14,10 +15,9 @@ import {
   DrawerTrigger
 } from '../Drawer'
 import { Button } from '../SimpleButton'
-import { useJourney } from '../../libs/JourneyProvider'
 
 export function AiChatButton(): ReactElement {
-  const { t } = useTranslation('apps-journeys')
+  const { t } = useTranslation('libs-journeys-ui')
   const { variant } = useJourney()
   const [open, setOpen] = useState<boolean>(false)
   const { blockHistory } = useBlocks()
