@@ -91,7 +91,12 @@ export function useActionCommand(): {
               )
               break
             case 'PhoneAction':
-              void actionPhoneUpdate(block, action.phone, action.countryCode)
+              void actionPhoneUpdate(
+                block,
+                action.phone,
+                action.countryCode,
+                action.contactAction
+              )
               break
             case 'NavigateToBlockAction':
               void actionNavigateToBlockUpdate(block, action.blockId)

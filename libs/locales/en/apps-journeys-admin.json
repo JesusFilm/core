@@ -335,6 +335,8 @@
   "Phone number must be a valid format": "Phone number must be a valid format",
   "This will open the phone dialer with the provided phone number.": "This will open the phone dialer with the provided phone number.",
   "Phone number": "Phone number",
+  "Call": "Call",
+  "SMS": "SMS",
   "Selected Card": "Selected Card",
   "URL/Website": "URL/Website",
   "Arrow Right": "Arrow Right",

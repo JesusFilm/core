@@ -11,6 +11,7 @@ import {
   BlockActionPhoneUpdateVariables
 } from '../../../__generated__/BlockActionPhoneUpdate'
 import { BlockFields } from '../../../__generated__/BlockFields'
+import { ContactActionType } from '../../../__generated__/globalTypes'
 
 export const BLOCK_ACTION_PHONE_UPDATE = gql`
   mutation BlockActionPhoneUpdate($id: ID!, $input: PhoneActionInput!) {
@@ -19,6 +20,7 @@ export const BLOCK_ACTION_PHONE_UPDATE = gql`
       gtmEventName
       phone
       countryCode
+      contactAction
     }
   }
 `
@@ -33,6 +35,7 @@ export function useBlockActionPhoneUpdateMutation(
     block: Pick<BlockFields, 'id' | '__typename'>,
     phone: string,
     countryCode: string,
+    contactAction: ContactActionType,
     options?: MutationFunctionOptions<
       BlockActionPhoneUpdate,
       BlockActionPhoneUpdateVariables
@@ -49,6 +52,7 @@ export function useBlockActionPhoneUpdateMutation(
     block: Pick<BlockFields, 'id' | '__typename'>,
     phone: string,
     countryCode: string,
+    contactAction: ContactActionType,
     options?: MutationFunctionOptions<
       BlockActionPhoneUpdate,
       BlockActionPhoneUpdateVariables
@@ -58,7 +62,7 @@ export function useBlockActionPhoneUpdateMutation(
       ...options,
       variables: {
         id: block.id,
-        input: { phone, countryCode }
+        input: { phone, countryCode, contactAction }
       },
       optimisticResponse: {
         blockUpdatePhoneAction: {
@@ -66,7 +70,8 @@ export function useBlockActionPhoneUpdateMutation(
           parentBlockId: block.id,
           gtmEventName: '',
           phone,
-          countryCode
+          countryCode,
+          contactAction
         }
       },
       update(cache, { data }) {

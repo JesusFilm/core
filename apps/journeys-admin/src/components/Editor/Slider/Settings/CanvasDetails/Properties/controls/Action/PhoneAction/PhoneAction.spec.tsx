@@ -228,4 +228,47 @@ describe('PhoneAction', () => {
       )
     )
   })
+
+  it('should update contact action', async () => {
+    const contactActionUpdateMock = {
+      ...blockActionPhoneUpdateMock,
+      request: {
+        ...blockActionPhoneUpdateMock.request,
+        variables: {
+          id: 'button2.id',
+          input: {
+            phone: '+1234567890',
+            countryCode: 'US',
+            contactAction: ContactActionType.text
+          }
+        }
+      },
+      result: {
+        data: {
+          blockUpdatePhoneAction: {
+            __typename: 'PhoneAction',
+            parentBlockId: 'button2.id',
+            gtmEventName: null,
+            phone: '+1234567890',
+            countryCode: 'US',
+            contactAction: ContactActionType.text
+          }
+        }
+      }
+    }
+
+    const result = jest.fn().mockReturnValue(contactActionUpdateMock.result)
+    render(
+      <MockedProvider mocks={[{ ...contactActionUpdateMock, result }]}>
+        <EditorProvider initialState={{ selectedBlock }}>
+          <PhoneAction />
+        </EditorProvider>
+      </MockedProvider>
+    )
+
+    const smsButton = screen.getByRole('button', { name: 'SMS' })
+    fireEvent.click(smsButton)
+
+    await waitFor(() => expect(result).toHaveBeenCalled())
+  })
 })

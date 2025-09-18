@@ -8,6 +8,7 @@ import { BlockFields_ButtonBlock as ButtonBlock } from '../../../__generated__/B
 import { blockActionPhoneUpdateMock } from './useBlockActionPhoneUpdateMutation.mock'
 
 import { useBlockActionPhoneUpdateMutation } from '.'
+import { ContactActionType } from '../../../__generated__/globalTypes'
 
 describe('useBlockActionPhoneUpdateMutation', () => {
   const block1: ButtonBlock = {
@@ -42,7 +43,12 @@ describe('useBlockActionPhoneUpdateMutation', () => {
     })
 
     await act(async () => {
-      await result.current[0](block1, '+19876543210', 'US')
+      await result.current[0](
+        block1,
+        '+19876543210',
+        'US',
+        ContactActionType.call
+      )
 
       expect(mockResult).toHaveBeenCalled()
     })
@@ -65,7 +71,12 @@ describe('useBlockActionPhoneUpdateMutation', () => {
     })
 
     await act(async () => {
-      await result.current[0](block1, '+19876543210', 'US')
+      await result.current[0](
+        block1,
+        '+19876543210',
+        'US',
+        ContactActionType.call
+      )
 
       await waitFor(() =>
         expect(cache.extract()['ButtonBlock:button2.id']).toEqual({
@@ -75,7 +86,8 @@ describe('useBlockActionPhoneUpdateMutation', () => {
             gtmEventName: null,
             parentBlockId: 'button2.id',
             phone: '+19876543210',
-            countryCode: 'US'
+            countryCode: 'US',
+            contactAction: ContactActionType.call
           }
         })
       )

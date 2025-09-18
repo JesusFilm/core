@@ -2,6 +2,8 @@ import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, useState } from 'react'
 import { object, string } from 'yup'
+import ToggleButton from '@mui/material/ToggleButton'
+import ToggleButtonGroup from '@mui/material/ToggleButtonGroup'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
@@ -104,6 +106,30 @@ export function PhoneAction(): ReactElement {
     setPhoneNumber('')
   }
 
+  function handleContactActionChange(contactAction: ContactActionType): void {
+    if (selectedBlock == null) return
+
+    const { id, action, __typename: blockTypename } = selectedBlock
+
+    addAction({
+      blockId: id,
+      blockTypename,
+      action: {
+        __typename: 'PhoneAction',
+        parentBlockId: id,
+        gtmEventName: '',
+        phone: phoneAction?.phone ?? '',
+        countryCode: phoneAction?.countryCode ?? '',
+        contactAction
+      },
+      undoAction: action,
+      editorFocus: {
+        selectedStep,
+        selectedBlock
+      }
+    })
+  }
+
   return (
     <>
       <Typography
@@ -130,6 +156,49 @@ export function PhoneAction(): ReactElement {
           onSubmit={handleSubmit}
           startIcon={selectedCountry?.callingCode}
         />
+        <ToggleButtonGroup
+          value={phoneAction?.contactAction ?? ContactActionType.call}
+          exclusive
+          onChange={(_, value) => {
+            if (value != null) {
+              handleContactActionChange(value)
+            }
+          }}
+          fullWidth
+        >
+          <ToggleButton
+            value={ContactActionType.call}
+            sx={{
+              backgroundColor: 'background.paper',
+              '&.Mui-selected': {
+                backgroundColor: 'background.default',
+                color: 'primary.main'
+              },
+              '&.MuiToggleButtonGroup-firstButton': {
+                borderTopLeftRadius: 8,
+                borderBottomLeftRadius: 8
+              }
+            }}
+          >
+            {t('Call')}
+          </ToggleButton>
+          <ToggleButton
+            value={ContactActionType.text}
+            sx={{
+              backgroundColor: 'background.paper',
+              '&.Mui-selected': {
+                backgroundColor: 'background.default',
+                color: 'primary.main'
+              },
+              '&.MuiToggleButtonGroup-lastButton': {
+                borderTopRightRadius: 8,
+                borderBottomRightRadius: 8
+              }
+            }}
+          >
+            {t('SMS')}
+          </ToggleButton>
+        </ToggleButtonGroup>
       </Stack>
     </>
   )

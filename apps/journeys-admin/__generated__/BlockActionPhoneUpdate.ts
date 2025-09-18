@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { PhoneActionInput } from "./globalTypes";
+import { PhoneActionInput, ContactActionType } from "./globalTypes";
 
 // ====================================================
 // GraphQL mutation operation: BlockActionPhoneUpdate
@@ -15,6 +15,7 @@ export interface BlockActionPhoneUpdate_blockUpdatePhoneAction {
   gtmEventName: string | null;
   phone: string;
   countryCode: string;
+  contactAction: ContactActionType;
 }
 
 export interface BlockActionPhoneUpdate {

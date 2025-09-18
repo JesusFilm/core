@@ -4,6 +4,7 @@ import {
   BlockActionPhoneUpdate,
   BlockActionPhoneUpdateVariables
 } from '../../../__generated__/BlockActionPhoneUpdate'
+import { ContactActionType } from '../../../__generated__/globalTypes'
 
 import { BLOCK_ACTION_PHONE_UPDATE } from './useBlockActionPhoneUpdateMutation'
 
@@ -17,7 +18,8 @@ export const blockActionPhoneUpdateMock: MockedResponse<
       id: 'button2.id',
       input: {
         phone: '+19876543210',
-        countryCode: 'US'
+        countryCode: 'US',
+        contactAction: ContactActionType.call
       }
     }
   },
@@ -28,7 +30,8 @@ export const blockActionPhoneUpdateMock: MockedResponse<
         parentBlockId: 'button2.id',
         gtmEventName: null,
         phone: '+19876543210',
-        countryCode: 'US'
+        countryCode: 'US',
+        contactAction: ContactActionType.call
       }
     }
   }
