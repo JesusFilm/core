@@ -68,10 +68,15 @@ export function AiChatButton(): ReactElement {
           <DrawerClose>
             <Button
               size="icon"
-              className="absolute top-3 right-4 size-[24px] rounded-full bg-secondary-light"
+              className="absolute top-0 right-1 size-[48px] bg-transparent rounded-full shadow-none"
               aria-label="Close AI chat"
             >
-              <CloseIcon sx={{ fontSize: 18 }} />
+              <div className="bg-secondary rounded-full size-[24px] relative flex items-center justify-center">
+                <CloseIcon
+                  sx={{ fontSize: '16px' }}
+                  className="text-secondary-foreground"
+                />
+              </div>
             </Button>
           </DrawerClose>
           <div className="flex flex-col">
