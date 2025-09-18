@@ -6,14 +6,15 @@ import { ReactElement } from 'react'
 
 import { useJourney } from '../../libs/JourneyProvider'
 import { getJourneyRTL } from '../../libs/rtl'
+import { AiChatButton } from '../AiChatButton'
 import {
   getFooterMobileHeight,
   getTitle,
+  hasAiChatButton,
   hasChatWidget,
   hasCombinedFooter,
   hasHostAvatar,
-  hasHostDetails,
-  hasAiChatButton
+  hasHostDetails
 } from '../Card/utils/getFooterElements'
 import { InformationButton } from '../StepHeader/InformationButton'
 
@@ -21,7 +22,6 @@ import { ChatButtons } from './ChatButtons'
 import { FooterButtonList } from './FooterButtonList'
 import { HostAvatars } from './HostAvatars'
 import { HostTitleLocation } from './HostTitleLocation'
-import { AiChatButton } from '../AiChatButton'
 
 interface StepFooterProps {
   onFooterClick?: () => void
