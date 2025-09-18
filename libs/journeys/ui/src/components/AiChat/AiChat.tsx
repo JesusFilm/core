@@ -26,7 +26,7 @@ import {
   PromptInputSubmit,
   PromptInputTextarea
 } from '../PromptInput'
-import type { PromptInputMessage } from '../PromptInput/PromptInput'
+import type { PromptInputMessage } from '../PromptInput'
 import { Response } from '../Response'
 import { Suggestion, Suggestions } from '../Suggestion'
 

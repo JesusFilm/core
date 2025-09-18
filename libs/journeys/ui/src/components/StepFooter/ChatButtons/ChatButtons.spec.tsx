@@ -107,7 +107,8 @@ describe('ChatButtons', () => {
     journeyTheme: null,
     journeyCustomizationDescription: null,
     journeyCustomizationFields: [],
-    fromTemplateId: null
+    fromTemplateId: null,
+    showAssistant: null
   }
 
   const result = jest.fn(() => ({
@@ -154,21 +155,20 @@ describe('ChatButtons', () => {
     Object.defineProperty(window, 'location', originalLocation)
   })
 
-  // bring this back after PR 7704
-  // it('renders chat buttons', () => {
-  //   const { getAllByRole, getByTestId } = render(
-  //     <MockedProvider>
-  //       <JourneyProvider value={{ journey: { ...journey, chatButtons } }}>
-  //         <ChatButtons />
-  //       </JourneyProvider>
-  //     </MockedProvider>
-  //   )
+  it('renders chat buttons', () => {
+    const { getAllByRole, getByTestId } = render(
+      <MockedProvider>
+        <JourneyProvider value={{ journey: { ...journey, chatButtons } }}>
+          <ChatButtons />
+        </JourneyProvider>
+      </MockedProvider>
+    )
 
-  //   const buttons = getAllByRole('button')
-  //   expect(buttons).toHaveLength(chatButtons.length)
-  //   expect(getByTestId('FacebookIcon')).toBeInTheDocument()
-  //   expect(getByTestId('TelegramIcon')).toBeInTheDocument()
-  // })
+    const buttons = getAllByRole('button')
+    expect(buttons).toHaveLength(chatButtons.length)
+    expect(getByTestId('FacebookIcon')).toBeInTheDocument()
+    expect(getByTestId('TelegramIcon')).toBeInTheDocument()
+  })
 
   it('handles button click and sends a mutation', async () => {
     window.open = jest.fn()
