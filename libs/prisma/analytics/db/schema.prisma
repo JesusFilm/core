@@ -1,7 +1,7 @@
 generator client {
   provider      = "prisma-client-js"
   output        = env("PRISMA_LOCATION_ANALYTICS")
-  binaryTargets = ["native", "linux-musl-openssl-3.0.x", "rhel-openssl-3.0.x"]
+  binaryTargets = ["native", "linux-musl-openssl-3.0.x"]
 }
 
 generator pothos {
