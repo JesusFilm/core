@@ -80,7 +80,8 @@ const defaultJourney: Journey = {
   journeyTheme: null,
   journeyCustomizationDescription: null,
   journeyCustomizationFields: [],
-  fromTemplateId: null
+  fromTemplateId: null,
+  showAssistant: null
 }
 
 const step1: TreeBlock<StepBlock> = {
