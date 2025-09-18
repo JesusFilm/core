@@ -14,6 +14,7 @@ import { useVideo } from '../../../../libs/videoContext'
 import { useWatch } from '../../../../libs/watchContext'
 import { useSubtitleUpdate } from '../../../../libs/watchContext/useSubtitleUpdate'
 import { VideoControls } from '../../../VideoContentPage/VideoHero/VideoPlayer/VideoControls'
+import { HeroSubtitleOverlay } from './HeroSubtitleOverlay'
 import type { CarouselMuxSlide } from '../../../../types/inserts'
 import clsx from 'clsx'
 
@@ -169,6 +170,8 @@ export function HeroVideo({
     })
   }, [playerRef, subtitleLanguageId, subtitleOn, variant, mute])
 
+  const shouldShowOverlay = playerReady && (mute || subtitleOn)
+
   return (
     <div
       className={clsx(
@@ -211,6 +214,11 @@ export function HeroVideo({
             }}
           />
         )}
+        <HeroSubtitleOverlay
+          player={playerRef.current}
+          subtitleLanguageId={subtitleLanguageId}
+          visible={shouldShowOverlay}
+        />
         {playerRef.current != null && playerReady && (
           <>
             <VideoControls
