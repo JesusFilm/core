@@ -58,7 +58,7 @@ const GET_ADMIN_VIDEO_VARIANTS = graphql(`
 
 export default function AddAudioLanguageDialog(): ReactElement {
   const router = useRouter()
-  const { videoId } = useParams() as { videoId: string }
+  const { videoId } = useParams<{ videoId: string }>()
   const { uploadState, startUpload, clearUploadState } = useUploadVideoVariant()
 
   const formikRef = useRef<FormikProps<FormikValues>>(null)

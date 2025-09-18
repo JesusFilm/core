@@ -9,13 +9,13 @@ import {
   ButtonSize,
   ButtonVariant
 } from '../../../../../../../../../../__generated__/globalTypes'
+import { StepFields as StepBlock } from '../../../../../../../../../../__generated__/StepFields'
 import { BLOCK_ACTION_LINK_UPDATE } from '../../../../../../../../../libs/useBlockActionLinkUpdateMutation'
 import { blockActionLinkUpdateMock } from '../../../../../../../../../libs/useBlockActionLinkUpdateMutation/useBlockActionLinkUpdateMutation.mock'
 import { blockActionNavigateToBlockUpdateMock } from '../../../../../../../../../libs/useBlockActionNavigateToBlockUpdateMutation/useBlockActionNavigateToBlockUpdateMutation.mock'
 import { CommandUndoItem } from '../../../../../../../Toolbar/Items/CommandUndoItem'
 
 import { LinkAction } from '.'
-import { StepFields as StepBlock } from '../../../../../../../../../../__generated__/StepFields'
 
 jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,

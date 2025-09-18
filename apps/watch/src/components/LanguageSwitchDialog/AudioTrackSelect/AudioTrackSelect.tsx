@@ -7,10 +7,10 @@ import { useTranslation } from 'next-i18next'
 import { ReactElement, useMemo } from 'react'
 import { useInstantSearch } from 'react-instantsearch'
 
+import { LANGUAGE_MAPPINGS } from '../../../libs/localeMapping'
 import { type Language, useLanguages } from '../../../libs/useLanguages'
 import { useLanguageActions } from '../../../libs/watchContext'
 import { filterOptions } from '../utils/filterOptions'
-import { LANGUAGE_MAPPINGS } from '../../../libs/localeMapping'
 
 function useSafeInstantSearch() {
   try {
@@ -85,7 +85,7 @@ export function AudioTrackSelect({
       (mapping) => mapping.languageId === language.id
     )?.locale
     if (languageLocale != null) {
-      i18n.changeLanguage(languageLocale)
+      void i18n.changeLanguage(languageLocale)
     }
 
     const languageEnglishName = language.englishName?.value

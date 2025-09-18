@@ -44,7 +44,7 @@ type AddMethod = 'new' | 'existing' | 'existingById'
 
 export default function AddChildren(): ReactElement {
   const router = useRouter()
-  const { videoId } = useParams() as { videoId: string }
+  const { videoId } = useParams<{ videoId: string }>()
   const { enqueueSnackbar } = useSnackbar()
   const [addMethod, setAddMethod] = useState<AddMethod>('new')
 
