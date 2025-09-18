@@ -44,8 +44,7 @@ When starting the development server, follow this **mandatory waiting procedure*
 ```bash
 ✓ Starting...
 ✓ Ready in Xs        # Server compiled successfully
-- Local: http://localhost:4200
-```
+Local: http://localhost:4300
 
 ❌ **ERROR INDICATORS** (Must fix before continuing):
 ```bash
