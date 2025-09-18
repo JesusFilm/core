@@ -1,6 +1,6 @@
 import { InMemoryCache } from '@apollo/client'
 import { MockedProvider } from '@apollo/client/testing'
-import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { fireEvent, getByLabelText, render, screen, waitFor } from '@testing-library/react'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
@@ -57,6 +57,33 @@ describe('Action', () => {
     await waitFor(() =>
       expect(getByText('Paste URL here...')).toBeInTheDocument()
     )
+  })
+
+  it('shows customization toggle when URL/Website is selected and journey is a template', async () => {
+    const buttonBlockWithLinkAction = {
+      ...selectedBlock,
+      action: {
+        __typename: 'LinkAction',
+        url: 'http://example.com',
+        customizable: false,
+        parentStepId: selectedStep?.id
+      }
+    } as TreeBlock<ButtonBlock>
+
+    const { getByRole, getByText } = render(
+      <MockedProvider>
+        <JourneyProvider value={{ journey: { template: true } as unknown as Journey, variant: 'admin' }}>
+          <EditorProvider initialState={{ selectedBlock: buttonBlockWithLinkAction, selectedStep }}>
+            <Action />
+          </EditorProvider>
+        </JourneyProvider>
+      </MockedProvider>
+    )
+
+    await waitFor(() => {
+      expect(getByText('Customize')).toBeInTheDocument()
+      expect(getByRole('checkbox', { name: 'Toggle customizable' })).toBeInTheDocument()
+    })
   })
 
   it('should filter out LinkAction and EmailAction options for submit buttons', async () => {
