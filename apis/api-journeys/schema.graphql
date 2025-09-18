@@ -55,7 +55,13 @@ interface Action {
   gtmEventName: String
 }
 
+enum ContactActionType {
+  call
+  text
+}
+
 type NavigateToBlockAction implements Action
+  @key(fields: "parentBlockId")
   @shareable
 {
   parentBlockId: ID!
@@ -65,6 +71,7 @@ type NavigateToBlockAction implements Action
 }
 
 type LinkAction implements Action
+  @key(fields: "parentBlockId")
   @shareable
 {
   parentBlockId: ID!
@@ -77,6 +84,7 @@ type LinkAction implements Action
 }
 
 type EmailAction implements Action
+  @key(fields: "parentBlockId")
   @shareable
 {
   parentBlockId: ID!
@@ -88,6 +96,7 @@ type EmailAction implements Action
 }
 
 type PhoneAction implements Action
+  @key(fields: "parentBlockId")
   @shareable
 {
   parentBlockId: ID!
@@ -95,6 +104,7 @@ type PhoneAction implements Action
   gtmEventName: String
   phone: String!
   countryCode: String!
+  contactAction: ContactActionType!
 }
 
 interface Block {
@@ -163,6 +173,7 @@ type Journey
   socialNodeX: Int
   socialNodeY: Int
   fromTemplateId: String
+  showAssistant: Boolean
   journeyCustomizationDescription: String
   journeyCustomizationFields: [JourneyCustomizationField!]!
   journeyTheme: JourneyTheme
@@ -3255,4 +3266,4 @@ type _Service {
   sdl: String
 }
 
-union _Entity = Journey | JourneyProfile | JourneyVisitor | Language | ShortLink | Tag | Team | User | UserInvite | UserJourney | UserRole | UserTeam | Video | VideoBlock | Visitor
+union _Entity = EmailAction | Journey | JourneyProfile | JourneyVisitor | Language | LinkAction | NavigateToBlockAction | PhoneAction | ShortLink | Tag | Team | User | UserInvite | UserJourney | UserRole | UserTeam | Video | VideoBlock | Visitor
