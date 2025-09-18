@@ -40,6 +40,11 @@ export enum ButtonVariant {
   text = "text",
 }
 
+export enum ContactActionType {
+  call = "call",
+  text = "text",
+}
+
 export enum EventType {
   ButtonClickEvent = "ButtonClickEvent",
   ChatOpenEvent = "ChatOpenEvent",
@@ -603,6 +608,7 @@ export interface PhoneActionInput {
   gtmEventName?: string | null;
   phone: string;
   countryCode: string;
+  contactAction?: ContactActionType | null;
 }
 
 export interface QrCodeCreateInput {

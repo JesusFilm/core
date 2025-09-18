@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { ButtonVariant, ButtonColor, ButtonSize, ButtonAlignment } from "./globalTypes";
+import { ButtonVariant, ButtonColor, ButtonSize, ContactActionType, ButtonAlignment } from "./globalTypes";
 
 // ====================================================
 // GraphQL fragment: ButtonFields
@@ -40,6 +40,7 @@ export interface ButtonFields_action_PhoneAction {
   gtmEventName: string | null;
   phone: string;
   countryCode: string;
+  contactAction: ContactActionType;
 }
 
 export type ButtonFields_action = ButtonFields_action_NavigateToBlockAction | ButtonFields_action_LinkAction | ButtonFields_action_EmailAction | ButtonFields_action_PhoneAction;

@@ -3,6 +3,8 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
+import { ContactActionType } from "./../../../../__generated__/globalTypes";
+
 // ====================================================
 // GraphQL fragment: SignUpFields
 // ====================================================
@@ -38,6 +40,7 @@ export interface SignUpFields_action_PhoneAction {
   gtmEventName: string | null;
   phone: string;
   countryCode: string;
+  contactAction: ContactActionType;
 }
 
 export type SignUpFields_action = SignUpFields_action_NavigateToBlockAction | SignUpFields_action_LinkAction | SignUpFields_action_EmailAction | SignUpFields_action_PhoneAction;

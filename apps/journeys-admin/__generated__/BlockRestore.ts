@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { ButtonVariant, ButtonColor, ButtonSize, ButtonAlignment, ThemeMode, ThemeName, IconName, IconSize, IconColor, TextResponseType, TypographyAlign, TypographyColor, TypographyVariant, VideoBlockSource, VideoBlockObjectFit } from "./globalTypes";
+import { ButtonVariant, ButtonColor, ButtonSize, ContactActionType, ButtonAlignment, ThemeMode, ThemeName, IconName, IconSize, IconColor, TextResponseType, TypographyAlign, TypographyColor, TypographyVariant, VideoBlockSource, VideoBlockObjectFit } from "./globalTypes";
 
 // ====================================================
 // GraphQL mutation operation: BlockRestore
@@ -47,6 +47,7 @@ export interface BlockRestore_blockRestore_ButtonBlock_action_PhoneAction {
   gtmEventName: string | null;
   phone: string;
   countryCode: string;
+  contactAction: ContactActionType;
 }
 
 export type BlockRestore_blockRestore_ButtonBlock_action = BlockRestore_blockRestore_ButtonBlock_action_NavigateToBlockAction | BlockRestore_blockRestore_ButtonBlock_action_LinkAction | BlockRestore_blockRestore_ButtonBlock_action_EmailAction | BlockRestore_blockRestore_ButtonBlock_action_PhoneAction;
@@ -172,6 +173,7 @@ export interface BlockRestore_blockRestore_RadioOptionBlock_action_PhoneAction {
   gtmEventName: string | null;
   phone: string;
   countryCode: string;
+  contactAction: ContactActionType;
 }
 
 export type BlockRestore_blockRestore_RadioOptionBlock_action = BlockRestore_blockRestore_RadioOptionBlock_action_NavigateToBlockAction | BlockRestore_blockRestore_RadioOptionBlock_action_LinkAction | BlockRestore_blockRestore_RadioOptionBlock_action_EmailAction | BlockRestore_blockRestore_RadioOptionBlock_action_PhoneAction;
@@ -230,6 +232,7 @@ export interface BlockRestore_blockRestore_SignUpBlock_action_PhoneAction {
   gtmEventName: string | null;
   phone: string;
   countryCode: string;
+  contactAction: ContactActionType;
 }
 
 export type BlockRestore_blockRestore_SignUpBlock_action = BlockRestore_blockRestore_SignUpBlock_action_NavigateToBlockAction | BlockRestore_blockRestore_SignUpBlock_action_LinkAction | BlockRestore_blockRestore_SignUpBlock_action_EmailAction | BlockRestore_blockRestore_SignUpBlock_action_PhoneAction;
@@ -404,6 +407,7 @@ export interface BlockRestore_blockRestore_VideoBlock_action_PhoneAction {
   gtmEventName: string | null;
   phone: string;
   countryCode: string;
+  contactAction: ContactActionType;
 }
 
 export type BlockRestore_blockRestore_VideoBlock_action = BlockRestore_blockRestore_VideoBlock_action_NavigateToBlockAction | BlockRestore_blockRestore_VideoBlock_action_LinkAction | BlockRestore_blockRestore_VideoBlock_action_EmailAction | BlockRestore_blockRestore_VideoBlock_action_PhoneAction;
@@ -514,6 +518,7 @@ export interface BlockRestore_blockRestore_VideoTriggerBlock_triggerAction_Phone
   gtmEventName: string | null;
   phone: string;
   countryCode: string;
+  contactAction: ContactActionType;
 }
 
 export type BlockRestore_blockRestore_VideoTriggerBlock_triggerAction = BlockRestore_blockRestore_VideoTriggerBlock_triggerAction_NavigateToBlockAction | BlockRestore_blockRestore_VideoTriggerBlock_triggerAction_LinkAction | BlockRestore_blockRestore_VideoTriggerBlock_triggerAction_EmailAction | BlockRestore_blockRestore_VideoTriggerBlock_triggerAction_PhoneAction;

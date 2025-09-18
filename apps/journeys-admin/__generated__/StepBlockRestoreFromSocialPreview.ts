@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { ButtonVariant, ButtonColor, ButtonSize, ButtonAlignment, ThemeMode, ThemeName, IconName, IconSize, IconColor, TextResponseType, TypographyAlign, TypographyColor, TypographyVariant, VideoBlockSource, VideoBlockObjectFit } from "./globalTypes";
+import { ButtonVariant, ButtonColor, ButtonSize, ContactActionType, ButtonAlignment, ThemeMode, ThemeName, IconName, IconSize, IconColor, TextResponseType, TypographyAlign, TypographyColor, TypographyVariant, VideoBlockSource, VideoBlockObjectFit } from "./globalTypes";
 
 // ====================================================
 // GraphQL mutation operation: StepBlockRestoreFromSocialPreview
@@ -47,6 +47,7 @@ export interface StepBlockRestoreFromSocialPreview_blockRestore_ButtonBlock_acti
   gtmEventName: string | null;
   phone: string;
   countryCode: string;
+  contactAction: ContactActionType;
 }
 
 export type StepBlockRestoreFromSocialPreview_blockRestore_ButtonBlock_action = StepBlockRestoreFromSocialPreview_blockRestore_ButtonBlock_action_NavigateToBlockAction | StepBlockRestoreFromSocialPreview_blockRestore_ButtonBlock_action_LinkAction | StepBlockRestoreFromSocialPreview_blockRestore_ButtonBlock_action_EmailAction | StepBlockRestoreFromSocialPreview_blockRestore_ButtonBlock_action_PhoneAction;
@@ -172,6 +173,7 @@ export interface StepBlockRestoreFromSocialPreview_blockRestore_RadioOptionBlock
   gtmEventName: string | null;
   phone: string;
   countryCode: string;
+  contactAction: ContactActionType;
 }
 
 export type StepBlockRestoreFromSocialPreview_blockRestore_RadioOptionBlock_action = StepBlockRestoreFromSocialPreview_blockRestore_RadioOptionBlock_action_NavigateToBlockAction | StepBlockRestoreFromSocialPreview_blockRestore_RadioOptionBlock_action_LinkAction | StepBlockRestoreFromSocialPreview_blockRestore_RadioOptionBlock_action_EmailAction | StepBlockRestoreFromSocialPreview_blockRestore_RadioOptionBlock_action_PhoneAction;
@@ -230,6 +232,7 @@ export interface StepBlockRestoreFromSocialPreview_blockRestore_SignUpBlock_acti
   gtmEventName: string | null;
   phone: string;
   countryCode: string;
+  contactAction: ContactActionType;
 }
 
 export type StepBlockRestoreFromSocialPreview_blockRestore_SignUpBlock_action = StepBlockRestoreFromSocialPreview_blockRestore_SignUpBlock_action_NavigateToBlockAction | StepBlockRestoreFromSocialPreview_blockRestore_SignUpBlock_action_LinkAction | StepBlockRestoreFromSocialPreview_blockRestore_SignUpBlock_action_EmailAction | StepBlockRestoreFromSocialPreview_blockRestore_SignUpBlock_action_PhoneAction;
@@ -404,6 +407,7 @@ export interface StepBlockRestoreFromSocialPreview_blockRestore_VideoBlock_actio
   gtmEventName: string | null;
   phone: string;
   countryCode: string;
+  contactAction: ContactActionType;
 }
 
 export type StepBlockRestoreFromSocialPreview_blockRestore_VideoBlock_action = StepBlockRestoreFromSocialPreview_blockRestore_VideoBlock_action_NavigateToBlockAction | StepBlockRestoreFromSocialPreview_blockRestore_VideoBlock_action_LinkAction | StepBlockRestoreFromSocialPreview_blockRestore_VideoBlock_action_EmailAction | StepBlockRestoreFromSocialPreview_blockRestore_VideoBlock_action_PhoneAction;
@@ -514,6 +518,7 @@ export interface StepBlockRestoreFromSocialPreview_blockRestore_VideoTriggerBloc
   gtmEventName: string | null;
   phone: string;
   countryCode: string;
+  contactAction: ContactActionType;
 }
 
 export type StepBlockRestoreFromSocialPreview_blockRestore_VideoTriggerBlock_triggerAction = StepBlockRestoreFromSocialPreview_blockRestore_VideoTriggerBlock_triggerAction_NavigateToBlockAction | StepBlockRestoreFromSocialPreview_blockRestore_VideoTriggerBlock_triggerAction_LinkAction | StepBlockRestoreFromSocialPreview_blockRestore_VideoTriggerBlock_triggerAction_EmailAction | StepBlockRestoreFromSocialPreview_blockRestore_VideoTriggerBlock_triggerAction_PhoneAction;

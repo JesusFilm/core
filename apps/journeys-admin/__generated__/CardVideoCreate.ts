@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { VideoBlockCreateInput, VideoBlockSource, VideoBlockObjectFit } from "./globalTypes";
+import { VideoBlockCreateInput, VideoBlockSource, VideoBlockObjectFit, ContactActionType } from "./globalTypes";
 
 // ====================================================
 // GraphQL mutation operation: CardVideoCreate
@@ -91,6 +91,7 @@ export interface CardVideoCreate_video_action_PhoneAction {
   gtmEventName: string | null;
   phone: string;
   countryCode: string;
+  contactAction: ContactActionType;
 }
 
 export type CardVideoCreate_video_action = CardVideoCreate_video_action_NavigateToBlockAction | CardVideoCreate_video_action_LinkAction | CardVideoCreate_video_action_EmailAction | CardVideoCreate_video_action_PhoneAction;

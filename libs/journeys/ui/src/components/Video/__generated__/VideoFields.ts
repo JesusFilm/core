@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { VideoBlockSource, VideoBlockObjectFit } from "./../../../../__generated__/globalTypes";
+import { VideoBlockSource, VideoBlockObjectFit, ContactActionType } from "./../../../../__generated__/globalTypes";
 
 // ====================================================
 // GraphQL fragment: VideoFields
@@ -91,6 +91,7 @@ export interface VideoFields_action_PhoneAction {
   gtmEventName: string | null;
   phone: string;
   countryCode: string;
+  contactAction: ContactActionType;
 }
 
 export type VideoFields_action = VideoFields_action_NavigateToBlockAction | VideoFields_action_LinkAction | VideoFields_action_EmailAction | VideoFields_action_PhoneAction;

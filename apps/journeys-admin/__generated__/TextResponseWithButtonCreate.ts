@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { TextResponseBlockCreateInput, ButtonBlockCreateInput, IconBlockCreateInput, ButtonBlockUpdateInput, TextResponseType, ButtonVariant, ButtonColor, ButtonSize, ButtonAlignment, IconName, IconSize, IconColor } from "./globalTypes";
+import { TextResponseBlockCreateInput, ButtonBlockCreateInput, IconBlockCreateInput, ButtonBlockUpdateInput, TextResponseType, ButtonVariant, ButtonColor, ButtonSize, ContactActionType, ButtonAlignment, IconName, IconSize, IconColor } from "./globalTypes";
 
 // ====================================================
 // GraphQL mutation operation: TextResponseWithButtonCreate
@@ -55,6 +55,7 @@ export interface TextResponseWithButtonCreate_button_action_PhoneAction {
   gtmEventName: string | null;
   phone: string;
   countryCode: string;
+  contactAction: ContactActionType;
 }
 
 export type TextResponseWithButtonCreate_button_action = TextResponseWithButtonCreate_button_action_NavigateToBlockAction | TextResponseWithButtonCreate_button_action_LinkAction | TextResponseWithButtonCreate_button_action_EmailAction | TextResponseWithButtonCreate_button_action_PhoneAction;
@@ -134,6 +135,7 @@ export interface TextResponseWithButtonCreate_buttonUpdate_action_PhoneAction {
   gtmEventName: string | null;
   phone: string;
   countryCode: string;
+  contactAction: ContactActionType;
 }
 
 export type TextResponseWithButtonCreate_buttonUpdate_action = TextResponseWithButtonCreate_buttonUpdate_action_NavigateToBlockAction | TextResponseWithButtonCreate_buttonUpdate_action_LinkAction | TextResponseWithButtonCreate_buttonUpdate_action_EmailAction | TextResponseWithButtonCreate_buttonUpdate_action_PhoneAction;

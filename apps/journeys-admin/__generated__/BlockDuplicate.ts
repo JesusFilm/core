@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { BlockDuplicateIdMap, ButtonVariant, ButtonColor, ButtonSize, ButtonAlignment, ThemeMode, ThemeName, IconName, IconSize, IconColor, TextResponseType, TypographyAlign, TypographyColor, TypographyVariant, VideoBlockSource, VideoBlockObjectFit } from "./globalTypes";
+import { BlockDuplicateIdMap, ButtonVariant, ButtonColor, ButtonSize, ContactActionType, ButtonAlignment, ThemeMode, ThemeName, IconName, IconSize, IconColor, TextResponseType, TypographyAlign, TypographyColor, TypographyVariant, VideoBlockSource, VideoBlockObjectFit } from "./globalTypes";
 
 // ====================================================
 // GraphQL mutation operation: BlockDuplicate
@@ -47,6 +47,7 @@ export interface BlockDuplicate_blockDuplicate_ButtonBlock_action_PhoneAction {
   gtmEventName: string | null;
   phone: string;
   countryCode: string;
+  contactAction: ContactActionType;
 }
 
 export type BlockDuplicate_blockDuplicate_ButtonBlock_action = BlockDuplicate_blockDuplicate_ButtonBlock_action_NavigateToBlockAction | BlockDuplicate_blockDuplicate_ButtonBlock_action_LinkAction | BlockDuplicate_blockDuplicate_ButtonBlock_action_EmailAction | BlockDuplicate_blockDuplicate_ButtonBlock_action_PhoneAction;
@@ -172,6 +173,7 @@ export interface BlockDuplicate_blockDuplicate_RadioOptionBlock_action_PhoneActi
   gtmEventName: string | null;
   phone: string;
   countryCode: string;
+  contactAction: ContactActionType;
 }
 
 export type BlockDuplicate_blockDuplicate_RadioOptionBlock_action = BlockDuplicate_blockDuplicate_RadioOptionBlock_action_NavigateToBlockAction | BlockDuplicate_blockDuplicate_RadioOptionBlock_action_LinkAction | BlockDuplicate_blockDuplicate_RadioOptionBlock_action_EmailAction | BlockDuplicate_blockDuplicate_RadioOptionBlock_action_PhoneAction;
@@ -230,6 +232,7 @@ export interface BlockDuplicate_blockDuplicate_SignUpBlock_action_PhoneAction {
   gtmEventName: string | null;
   phone: string;
   countryCode: string;
+  contactAction: ContactActionType;
 }
 
 export type BlockDuplicate_blockDuplicate_SignUpBlock_action = BlockDuplicate_blockDuplicate_SignUpBlock_action_NavigateToBlockAction | BlockDuplicate_blockDuplicate_SignUpBlock_action_LinkAction | BlockDuplicate_blockDuplicate_SignUpBlock_action_EmailAction | BlockDuplicate_blockDuplicate_SignUpBlock_action_PhoneAction;
@@ -394,6 +397,7 @@ export interface BlockDuplicate_blockDuplicate_VideoBlock_action_PhoneAction {
   gtmEventName: string | null;
   phone: string;
   countryCode: string;
+  contactAction: ContactActionType;
 }
 
 export type BlockDuplicate_blockDuplicate_VideoBlock_action = BlockDuplicate_blockDuplicate_VideoBlock_action_NavigateToBlockAction | BlockDuplicate_blockDuplicate_VideoBlock_action_LinkAction | BlockDuplicate_blockDuplicate_VideoBlock_action_EmailAction | BlockDuplicate_blockDuplicate_VideoBlock_action_PhoneAction;
@@ -504,6 +508,7 @@ export interface BlockDuplicate_blockDuplicate_VideoTriggerBlock_triggerAction_P
   gtmEventName: string | null;
   phone: string;
   countryCode: string;
+  contactAction: ContactActionType;
 }
 
 export type BlockDuplicate_blockDuplicate_VideoTriggerBlock_triggerAction = BlockDuplicate_blockDuplicate_VideoTriggerBlock_triggerAction_NavigateToBlockAction | BlockDuplicate_blockDuplicate_VideoTriggerBlock_triggerAction_LinkAction | BlockDuplicate_blockDuplicate_VideoTriggerBlock_triggerAction_EmailAction | BlockDuplicate_blockDuplicate_VideoTriggerBlock_triggerAction_PhoneAction;

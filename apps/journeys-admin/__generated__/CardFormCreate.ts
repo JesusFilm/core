@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { ImageBlockCreateInput, TypographyBlockCreateInput, TextResponseBlockCreateInput, ButtonBlockCreateInput, ButtonBlockUpdateInput, IconBlockCreateInput, CardBlockUpdateInput, TypographyAlign, TypographyColor, TypographyVariant, TextResponseType, ButtonVariant, ButtonColor, ButtonSize, ButtonAlignment, IconName, IconSize, IconColor, ThemeMode, ThemeName } from "./globalTypes";
+import { ImageBlockCreateInput, TypographyBlockCreateInput, TextResponseBlockCreateInput, ButtonBlockCreateInput, ButtonBlockUpdateInput, IconBlockCreateInput, CardBlockUpdateInput, TypographyAlign, TypographyColor, TypographyVariant, TextResponseType, ButtonVariant, ButtonColor, ButtonSize, ContactActionType, ButtonAlignment, IconName, IconSize, IconColor, ThemeMode, ThemeName } from "./globalTypes";
 
 // ====================================================
 // GraphQL mutation operation: CardFormCreate
@@ -114,6 +114,7 @@ export interface CardFormCreate_button_action_PhoneAction {
   gtmEventName: string | null;
   phone: string;
   countryCode: string;
+  contactAction: ContactActionType;
 }
 
 export type CardFormCreate_button_action = CardFormCreate_button_action_NavigateToBlockAction | CardFormCreate_button_action_LinkAction | CardFormCreate_button_action_EmailAction | CardFormCreate_button_action_PhoneAction;
@@ -193,6 +194,7 @@ export interface CardFormCreate_buttonUpdate_action_PhoneAction {
   gtmEventName: string | null;
   phone: string;
   countryCode: string;
+  contactAction: ContactActionType;
 }
 
 export type CardFormCreate_buttonUpdate_action = CardFormCreate_buttonUpdate_action_NavigateToBlockAction | CardFormCreate_buttonUpdate_action_LinkAction | CardFormCreate_buttonUpdate_action_EmailAction | CardFormCreate_buttonUpdate_action_PhoneAction;

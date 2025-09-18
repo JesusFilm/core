@@ -3,6 +3,8 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
+import { ContactActionType } from "./../../../../__generated__/globalTypes";
+
 // ====================================================
 // GraphQL fragment: VideoTriggerFields
 // ====================================================
@@ -38,6 +40,7 @@ export interface VideoTriggerFields_triggerAction_PhoneAction {
   gtmEventName: string | null;
   phone: string;
   countryCode: string;
+  contactAction: ContactActionType;
 }
 
 export type VideoTriggerFields_triggerAction = VideoTriggerFields_triggerAction_NavigateToBlockAction | VideoTriggerFields_triggerAction_LinkAction | VideoTriggerFields_triggerAction_EmailAction | VideoTriggerFields_triggerAction_PhoneAction;

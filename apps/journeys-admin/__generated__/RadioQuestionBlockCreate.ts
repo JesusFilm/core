@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { RadioQuestionBlockCreateInput, RadioOptionBlockCreateInput } from "./globalTypes";
+import { RadioQuestionBlockCreateInput, RadioOptionBlockCreateInput, ContactActionType } from "./globalTypes";
 
 // ====================================================
 // GraphQL mutation operation: RadioQuestionBlockCreate
@@ -48,6 +48,7 @@ export interface RadioQuestionBlockCreate_radioOption1_action_PhoneAction {
   gtmEventName: string | null;
   phone: string;
   countryCode: string;
+  contactAction: ContactActionType;
 }
 
 export type RadioQuestionBlockCreate_radioOption1_action = RadioQuestionBlockCreate_radioOption1_action_NavigateToBlockAction | RadioQuestionBlockCreate_radioOption1_action_LinkAction | RadioQuestionBlockCreate_radioOption1_action_EmailAction | RadioQuestionBlockCreate_radioOption1_action_PhoneAction;
@@ -98,6 +99,7 @@ export interface RadioQuestionBlockCreate_radioOption2_action_PhoneAction {
   gtmEventName: string | null;
   phone: string;
   countryCode: string;
+  contactAction: ContactActionType;
 }
 
 export type RadioQuestionBlockCreate_radioOption2_action = RadioQuestionBlockCreate_radioOption2_action_NavigateToBlockAction | RadioQuestionBlockCreate_radioOption2_action_LinkAction | RadioQuestionBlockCreate_radioOption2_action_EmailAction | RadioQuestionBlockCreate_radioOption2_action_PhoneAction;

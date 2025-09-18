@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { TypographyBlockCreateInput, ButtonBlockCreateInput, ButtonBlockUpdateInput, IconBlockCreateInput, VideoBlockCreateInput, TypographyAlign, TypographyColor, TypographyVariant, ButtonVariant, ButtonColor, ButtonSize, ButtonAlignment, IconName, IconSize, IconColor, VideoBlockSource, VideoBlockObjectFit } from "./globalTypes";
+import { TypographyBlockCreateInput, ButtonBlockCreateInput, ButtonBlockUpdateInput, IconBlockCreateInput, VideoBlockCreateInput, TypographyAlign, TypographyColor, TypographyVariant, ButtonVariant, ButtonColor, ButtonSize, ContactActionType, ButtonAlignment, IconName, IconSize, IconColor, VideoBlockSource, VideoBlockObjectFit } from "./globalTypes";
 
 // ====================================================
 // GraphQL mutation operation: CardIntroCreate
@@ -100,6 +100,7 @@ export interface CardIntroCreate_button_action_PhoneAction {
   gtmEventName: string | null;
   phone: string;
   countryCode: string;
+  contactAction: ContactActionType;
 }
 
 export type CardIntroCreate_button_action = CardIntroCreate_button_action_NavigateToBlockAction | CardIntroCreate_button_action_LinkAction | CardIntroCreate_button_action_EmailAction | CardIntroCreate_button_action_PhoneAction;
@@ -179,6 +180,7 @@ export interface CardIntroCreate_buttonBlockUpdate_action_PhoneAction {
   gtmEventName: string | null;
   phone: string;
   countryCode: string;
+  contactAction: ContactActionType;
 }
 
 export type CardIntroCreate_buttonBlockUpdate_action = CardIntroCreate_buttonBlockUpdate_action_NavigateToBlockAction | CardIntroCreate_buttonBlockUpdate_action_LinkAction | CardIntroCreate_buttonBlockUpdate_action_EmailAction | CardIntroCreate_buttonBlockUpdate_action_PhoneAction;
@@ -289,6 +291,7 @@ export interface CardIntroCreate_video_action_PhoneAction {
   gtmEventName: string | null;
   phone: string;
   countryCode: string;
+  contactAction: ContactActionType;
 }
 
 export type CardIntroCreate_video_action = CardIntroCreate_video_action_NavigateToBlockAction | CardIntroCreate_video_action_LinkAction | CardIntroCreate_video_action_EmailAction | CardIntroCreate_video_action_PhoneAction;

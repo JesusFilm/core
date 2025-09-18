@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { SignUpBlockCreateInput, IconBlockCreateInput, SignUpBlockUpdateInput, IconName, IconSize, IconColor } from "./globalTypes";
+import { SignUpBlockCreateInput, IconBlockCreateInput, SignUpBlockUpdateInput, ContactActionType, IconName, IconSize, IconColor } from "./globalTypes";
 
 // ====================================================
 // GraphQL mutation operation: SignUpBlockCreate
@@ -40,6 +40,7 @@ export interface SignUpBlockCreate_signUpBlockCreate_action_PhoneAction {
   gtmEventName: string | null;
   phone: string;
   countryCode: string;
+  contactAction: ContactActionType;
 }
 
 export type SignUpBlockCreate_signUpBlockCreate_action = SignUpBlockCreate_signUpBlockCreate_action_NavigateToBlockAction | SignUpBlockCreate_signUpBlockCreate_action_LinkAction | SignUpBlockCreate_signUpBlockCreate_action_EmailAction | SignUpBlockCreate_signUpBlockCreate_action_PhoneAction;
@@ -95,6 +96,7 @@ export interface SignUpBlockCreate_signUpBlockUpdate_action_PhoneAction {
   gtmEventName: string | null;
   phone: string;
   countryCode: string;
+  contactAction: ContactActionType;
 }
 
 export type SignUpBlockCreate_signUpBlockUpdate_action = SignUpBlockCreate_signUpBlockUpdate_action_NavigateToBlockAction | SignUpBlockCreate_signUpBlockUpdate_action_LinkAction | SignUpBlockCreate_signUpBlockUpdate_action_EmailAction | SignUpBlockCreate_signUpBlockUpdate_action_PhoneAction;

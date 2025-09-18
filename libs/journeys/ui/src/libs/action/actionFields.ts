@@ -20,6 +20,7 @@ export const ACTION_FIELDS = gql`
     ... on PhoneAction {
       phone
       countryCode
+      contactAction
     }
   }
 `

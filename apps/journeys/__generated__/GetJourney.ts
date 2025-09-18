@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { IdType, JourneysQueryOptions, JourneyStatus, ThemeName, ThemeMode, ButtonVariant, ButtonColor, ButtonSize, ButtonAlignment, IconName, IconSize, IconColor, TextResponseType, TypographyAlign, TypographyColor, TypographyVariant, VideoBlockSource, VideoBlockObjectFit, UserJourneyRole, MessagePlatform, JourneyMenuButtonIcon } from "./globalTypes";
+import { IdType, JourneysQueryOptions, JourneyStatus, ThemeName, ThemeMode, ButtonVariant, ButtonColor, ButtonSize, ContactActionType, ButtonAlignment, IconName, IconSize, IconColor, TextResponseType, TypographyAlign, TypographyColor, TypographyVariant, VideoBlockSource, VideoBlockObjectFit, UserJourneyRole, MessagePlatform, JourneyMenuButtonIcon } from "./globalTypes";
 
 // ====================================================
 // GraphQL query operation: GetJourney
@@ -61,6 +61,7 @@ export interface GetJourney_journey_blocks_ButtonBlock_action_PhoneAction {
   gtmEventName: string | null;
   phone: string;
   countryCode: string;
+  contactAction: ContactActionType;
 }
 
 export type GetJourney_journey_blocks_ButtonBlock_action = GetJourney_journey_blocks_ButtonBlock_action_NavigateToBlockAction | GetJourney_journey_blocks_ButtonBlock_action_LinkAction | GetJourney_journey_blocks_ButtonBlock_action_EmailAction | GetJourney_journey_blocks_ButtonBlock_action_PhoneAction;
@@ -186,6 +187,7 @@ export interface GetJourney_journey_blocks_RadioOptionBlock_action_PhoneAction {
   gtmEventName: string | null;
   phone: string;
   countryCode: string;
+  contactAction: ContactActionType;
 }
 
 export type GetJourney_journey_blocks_RadioOptionBlock_action = GetJourney_journey_blocks_RadioOptionBlock_action_NavigateToBlockAction | GetJourney_journey_blocks_RadioOptionBlock_action_LinkAction | GetJourney_journey_blocks_RadioOptionBlock_action_EmailAction | GetJourney_journey_blocks_RadioOptionBlock_action_PhoneAction;
@@ -244,6 +246,7 @@ export interface GetJourney_journey_blocks_SignUpBlock_action_PhoneAction {
   gtmEventName: string | null;
   phone: string;
   countryCode: string;
+  contactAction: ContactActionType;
 }
 
 export type GetJourney_journey_blocks_SignUpBlock_action = GetJourney_journey_blocks_SignUpBlock_action_NavigateToBlockAction | GetJourney_journey_blocks_SignUpBlock_action_LinkAction | GetJourney_journey_blocks_SignUpBlock_action_EmailAction | GetJourney_journey_blocks_SignUpBlock_action_PhoneAction;
@@ -408,6 +411,7 @@ export interface GetJourney_journey_blocks_VideoBlock_action_PhoneAction {
   gtmEventName: string | null;
   phone: string;
   countryCode: string;
+  contactAction: ContactActionType;
 }
 
 export type GetJourney_journey_blocks_VideoBlock_action = GetJourney_journey_blocks_VideoBlock_action_NavigateToBlockAction | GetJourney_journey_blocks_VideoBlock_action_LinkAction | GetJourney_journey_blocks_VideoBlock_action_EmailAction | GetJourney_journey_blocks_VideoBlock_action_PhoneAction;
@@ -518,6 +522,7 @@ export interface GetJourney_journey_blocks_VideoTriggerBlock_triggerAction_Phone
   gtmEventName: string | null;
   phone: string;
   countryCode: string;
+  contactAction: ContactActionType;
 }
 
 export type GetJourney_journey_blocks_VideoTriggerBlock_triggerAction = GetJourney_journey_blocks_VideoTriggerBlock_triggerAction_NavigateToBlockAction | GetJourney_journey_blocks_VideoTriggerBlock_triggerAction_LinkAction | GetJourney_journey_blocks_VideoTriggerBlock_triggerAction_EmailAction | GetJourney_journey_blocks_VideoTriggerBlock_triggerAction_PhoneAction;

@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { JourneyUpdateInput, ButtonVariant, ButtonColor, ButtonSize, ButtonAlignment, ThemeMode, ThemeName, IconName, IconSize, IconColor, TextResponseType, TypographyAlign, TypographyColor, TypographyVariant, VideoBlockSource, VideoBlockObjectFit } from "./globalTypes";
+import { JourneyUpdateInput, ButtonVariant, ButtonColor, ButtonSize, ContactActionType, ButtonAlignment, ThemeMode, ThemeName, IconName, IconSize, IconColor, TextResponseType, TypographyAlign, TypographyColor, TypographyVariant, VideoBlockSource, VideoBlockObjectFit } from "./globalTypes";
 
 // ====================================================
 // GraphQL mutation operation: MenuBlockRestore
@@ -47,6 +47,7 @@ export interface MenuBlockRestore_stepRestore_ButtonBlock_action_PhoneAction {
   gtmEventName: string | null;
   phone: string;
   countryCode: string;
+  contactAction: ContactActionType;
 }
 
 export type MenuBlockRestore_stepRestore_ButtonBlock_action = MenuBlockRestore_stepRestore_ButtonBlock_action_NavigateToBlockAction | MenuBlockRestore_stepRestore_ButtonBlock_action_LinkAction | MenuBlockRestore_stepRestore_ButtonBlock_action_EmailAction | MenuBlockRestore_stepRestore_ButtonBlock_action_PhoneAction;
@@ -172,6 +173,7 @@ export interface MenuBlockRestore_stepRestore_RadioOptionBlock_action_PhoneActio
   gtmEventName: string | null;
   phone: string;
   countryCode: string;
+  contactAction: ContactActionType;
 }
 
 export type MenuBlockRestore_stepRestore_RadioOptionBlock_action = MenuBlockRestore_stepRestore_RadioOptionBlock_action_NavigateToBlockAction | MenuBlockRestore_stepRestore_RadioOptionBlock_action_LinkAction | MenuBlockRestore_stepRestore_RadioOptionBlock_action_EmailAction | MenuBlockRestore_stepRestore_RadioOptionBlock_action_PhoneAction;
@@ -230,6 +232,7 @@ export interface MenuBlockRestore_stepRestore_SignUpBlock_action_PhoneAction {
   gtmEventName: string | null;
   phone: string;
   countryCode: string;
+  contactAction: ContactActionType;
 }
 
 export type MenuBlockRestore_stepRestore_SignUpBlock_action = MenuBlockRestore_stepRestore_SignUpBlock_action_NavigateToBlockAction | MenuBlockRestore_stepRestore_SignUpBlock_action_LinkAction | MenuBlockRestore_stepRestore_SignUpBlock_action_EmailAction | MenuBlockRestore_stepRestore_SignUpBlock_action_PhoneAction;
@@ -404,6 +407,7 @@ export interface MenuBlockRestore_stepRestore_VideoBlock_action_PhoneAction {
   gtmEventName: string | null;
   phone: string;
   countryCode: string;
+  contactAction: ContactActionType;
 }
 
 export type MenuBlockRestore_stepRestore_VideoBlock_action = MenuBlockRestore_stepRestore_VideoBlock_action_NavigateToBlockAction | MenuBlockRestore_stepRestore_VideoBlock_action_LinkAction | MenuBlockRestore_stepRestore_VideoBlock_action_EmailAction | MenuBlockRestore_stepRestore_VideoBlock_action_PhoneAction;
@@ -514,6 +518,7 @@ export interface MenuBlockRestore_stepRestore_VideoTriggerBlock_triggerAction_Ph
   gtmEventName: string | null;
   phone: string;
   countryCode: string;
+  contactAction: ContactActionType;
 }
 
 export type MenuBlockRestore_stepRestore_VideoTriggerBlock_triggerAction = MenuBlockRestore_stepRestore_VideoTriggerBlock_triggerAction_NavigateToBlockAction | MenuBlockRestore_stepRestore_VideoTriggerBlock_triggerAction_LinkAction | MenuBlockRestore_stepRestore_VideoTriggerBlock_triggerAction_EmailAction | MenuBlockRestore_stepRestore_VideoTriggerBlock_triggerAction_PhoneAction;

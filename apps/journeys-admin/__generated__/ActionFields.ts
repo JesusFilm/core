@@ -3,6 +3,8 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
+import { ContactActionType } from "./globalTypes";
+
 // ====================================================
 // GraphQL fragment: ActionFields
 // ====================================================
@@ -38,6 +40,7 @@ export interface ActionFields_PhoneAction {
   gtmEventName: string | null;
   phone: string;
   countryCode: string;
+  contactAction: ContactActionType;
 }
 
 export type ActionFields = ActionFields_NavigateToBlockAction | ActionFields_LinkAction | ActionFields_EmailAction | ActionFields_PhoneAction;

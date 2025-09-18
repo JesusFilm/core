@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { JourneyStatus, ThemeName, ThemeMode, ButtonVariant, ButtonColor, ButtonSize, ButtonAlignment, IconName, IconSize, IconColor, TextResponseType, TypographyAlign, TypographyColor, TypographyVariant, VideoBlockSource, VideoBlockObjectFit, UserJourneyRole, MessagePlatform, JourneyMenuButtonIcon } from "./globalTypes";
+import { JourneyStatus, ThemeName, ThemeMode, ButtonVariant, ButtonColor, ButtonSize, ContactActionType, ButtonAlignment, IconName, IconSize, IconColor, TextResponseType, TypographyAlign, TypographyColor, TypographyVariant, VideoBlockSource, VideoBlockObjectFit, UserJourneyRole, MessagePlatform, JourneyMenuButtonIcon } from "./globalTypes";
 
 // ====================================================
 // GraphQL query operation: GetAdminJourneyWithPlausibleToken
@@ -61,6 +61,7 @@ export interface GetAdminJourneyWithPlausibleToken_journey_blocks_ButtonBlock_ac
   gtmEventName: string | null;
   phone: string;
   countryCode: string;
+  contactAction: ContactActionType;
 }
 
 export type GetAdminJourneyWithPlausibleToken_journey_blocks_ButtonBlock_action = GetAdminJourneyWithPlausibleToken_journey_blocks_ButtonBlock_action_NavigateToBlockAction | GetAdminJourneyWithPlausibleToken_journey_blocks_ButtonBlock_action_LinkAction | GetAdminJourneyWithPlausibleToken_journey_blocks_ButtonBlock_action_EmailAction | GetAdminJourneyWithPlausibleToken_journey_blocks_ButtonBlock_action_PhoneAction;
@@ -186,6 +187,7 @@ export interface GetAdminJourneyWithPlausibleToken_journey_blocks_RadioOptionBlo
   gtmEventName: string | null;
   phone: string;
   countryCode: string;
+  contactAction: ContactActionType;
 }
 
 export type GetAdminJourneyWithPlausibleToken_journey_blocks_RadioOptionBlock_action = GetAdminJourneyWithPlausibleToken_journey_blocks_RadioOptionBlock_action_NavigateToBlockAction | GetAdminJourneyWithPlausibleToken_journey_blocks_RadioOptionBlock_action_LinkAction | GetAdminJourneyWithPlausibleToken_journey_blocks_RadioOptionBlock_action_EmailAction | GetAdminJourneyWithPlausibleToken_journey_blocks_RadioOptionBlock_action_PhoneAction;
@@ -244,6 +246,7 @@ export interface GetAdminJourneyWithPlausibleToken_journey_blocks_SignUpBlock_ac
   gtmEventName: string | null;
   phone: string;
   countryCode: string;
+  contactAction: ContactActionType;
 }
 
 export type GetAdminJourneyWithPlausibleToken_journey_blocks_SignUpBlock_action = GetAdminJourneyWithPlausibleToken_journey_blocks_SignUpBlock_action_NavigateToBlockAction | GetAdminJourneyWithPlausibleToken_journey_blocks_SignUpBlock_action_LinkAction | GetAdminJourneyWithPlausibleToken_journey_blocks_SignUpBlock_action_EmailAction | GetAdminJourneyWithPlausibleToken_journey_blocks_SignUpBlock_action_PhoneAction;
@@ -408,6 +411,7 @@ export interface GetAdminJourneyWithPlausibleToken_journey_blocks_VideoBlock_act
   gtmEventName: string | null;
   phone: string;
   countryCode: string;
+  contactAction: ContactActionType;
 }
 
 export type GetAdminJourneyWithPlausibleToken_journey_blocks_VideoBlock_action = GetAdminJourneyWithPlausibleToken_journey_blocks_VideoBlock_action_NavigateToBlockAction | GetAdminJourneyWithPlausibleToken_journey_blocks_VideoBlock_action_LinkAction | GetAdminJourneyWithPlausibleToken_journey_blocks_VideoBlock_action_EmailAction | GetAdminJourneyWithPlausibleToken_journey_blocks_VideoBlock_action_PhoneAction;
@@ -518,6 +522,7 @@ export interface GetAdminJourneyWithPlausibleToken_journey_blocks_VideoTriggerBl
   gtmEventName: string | null;
   phone: string;
   countryCode: string;
+  contactAction: ContactActionType;
 }
 
 export type GetAdminJourneyWithPlausibleToken_journey_blocks_VideoTriggerBlock_triggerAction = GetAdminJourneyWithPlausibleToken_journey_blocks_VideoTriggerBlock_triggerAction_NavigateToBlockAction | GetAdminJourneyWithPlausibleToken_journey_blocks_VideoTriggerBlock_triggerAction_LinkAction | GetAdminJourneyWithPlausibleToken_journey_blocks_VideoTriggerBlock_triggerAction_EmailAction | GetAdminJourneyWithPlausibleToken_journey_blocks_VideoTriggerBlock_triggerAction_PhoneAction;

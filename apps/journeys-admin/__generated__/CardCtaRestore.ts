@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { CardBlockUpdateInput, ButtonVariant, ButtonColor, ButtonSize, ButtonAlignment, ThemeMode, ThemeName, IconName, IconSize, IconColor, TextResponseType, TypographyAlign, TypographyColor, TypographyVariant, VideoBlockSource, VideoBlockObjectFit } from "./globalTypes";
+import { CardBlockUpdateInput, ButtonVariant, ButtonColor, ButtonSize, ContactActionType, ButtonAlignment, ThemeMode, ThemeName, IconName, IconSize, IconColor, TextResponseType, TypographyAlign, TypographyColor, TypographyVariant, VideoBlockSource, VideoBlockObjectFit } from "./globalTypes";
 
 // ====================================================
 // GraphQL mutation operation: CardCtaRestore
@@ -47,6 +47,7 @@ export interface CardCtaRestore_imageRestore_ButtonBlock_action_PhoneAction {
   gtmEventName: string | null;
   phone: string;
   countryCode: string;
+  contactAction: ContactActionType;
 }
 
 export type CardCtaRestore_imageRestore_ButtonBlock_action = CardCtaRestore_imageRestore_ButtonBlock_action_NavigateToBlockAction | CardCtaRestore_imageRestore_ButtonBlock_action_LinkAction | CardCtaRestore_imageRestore_ButtonBlock_action_EmailAction | CardCtaRestore_imageRestore_ButtonBlock_action_PhoneAction;
@@ -172,6 +173,7 @@ export interface CardCtaRestore_imageRestore_RadioOptionBlock_action_PhoneAction
   gtmEventName: string | null;
   phone: string;
   countryCode: string;
+  contactAction: ContactActionType;
 }
 
 export type CardCtaRestore_imageRestore_RadioOptionBlock_action = CardCtaRestore_imageRestore_RadioOptionBlock_action_NavigateToBlockAction | CardCtaRestore_imageRestore_RadioOptionBlock_action_LinkAction | CardCtaRestore_imageRestore_RadioOptionBlock_action_EmailAction | CardCtaRestore_imageRestore_RadioOptionBlock_action_PhoneAction;
@@ -230,6 +232,7 @@ export interface CardCtaRestore_imageRestore_SignUpBlock_action_PhoneAction {
   gtmEventName: string | null;
   phone: string;
   countryCode: string;
+  contactAction: ContactActionType;
 }
 
 export type CardCtaRestore_imageRestore_SignUpBlock_action = CardCtaRestore_imageRestore_SignUpBlock_action_NavigateToBlockAction | CardCtaRestore_imageRestore_SignUpBlock_action_LinkAction | CardCtaRestore_imageRestore_SignUpBlock_action_EmailAction | CardCtaRestore_imageRestore_SignUpBlock_action_PhoneAction;
@@ -394,6 +397,7 @@ export interface CardCtaRestore_imageRestore_VideoBlock_action_PhoneAction {
   gtmEventName: string | null;
   phone: string;
   countryCode: string;
+  contactAction: ContactActionType;
 }
 
 export type CardCtaRestore_imageRestore_VideoBlock_action = CardCtaRestore_imageRestore_VideoBlock_action_NavigateToBlockAction | CardCtaRestore_imageRestore_VideoBlock_action_LinkAction | CardCtaRestore_imageRestore_VideoBlock_action_EmailAction | CardCtaRestore_imageRestore_VideoBlock_action_PhoneAction;
@@ -504,6 +508,7 @@ export interface CardCtaRestore_imageRestore_VideoTriggerBlock_triggerAction_Pho
   gtmEventName: string | null;
   phone: string;
   countryCode: string;
+  contactAction: ContactActionType;
 }
 
 export type CardCtaRestore_imageRestore_VideoTriggerBlock_triggerAction = CardCtaRestore_imageRestore_VideoTriggerBlock_triggerAction_NavigateToBlockAction | CardCtaRestore_imageRestore_VideoTriggerBlock_triggerAction_LinkAction | CardCtaRestore_imageRestore_VideoTriggerBlock_triggerAction_EmailAction | CardCtaRestore_imageRestore_VideoTriggerBlock_triggerAction_PhoneAction;
@@ -561,6 +566,7 @@ export interface CardCtaRestore_subtitleRestore_ButtonBlock_action_PhoneAction {
   gtmEventName: string | null;
   phone: string;
   countryCode: string;
+  contactAction: ContactActionType;
 }
 
 export type CardCtaRestore_subtitleRestore_ButtonBlock_action = CardCtaRestore_subtitleRestore_ButtonBlock_action_NavigateToBlockAction | CardCtaRestore_subtitleRestore_ButtonBlock_action_LinkAction | CardCtaRestore_subtitleRestore_ButtonBlock_action_EmailAction | CardCtaRestore_subtitleRestore_ButtonBlock_action_PhoneAction;
@@ -686,6 +692,7 @@ export interface CardCtaRestore_subtitleRestore_RadioOptionBlock_action_PhoneAct
   gtmEventName: string | null;
   phone: string;
   countryCode: string;
+  contactAction: ContactActionType;
 }
 
 export type CardCtaRestore_subtitleRestore_RadioOptionBlock_action = CardCtaRestore_subtitleRestore_RadioOptionBlock_action_NavigateToBlockAction | CardCtaRestore_subtitleRestore_RadioOptionBlock_action_LinkAction | CardCtaRestore_subtitleRestore_RadioOptionBlock_action_EmailAction | CardCtaRestore_subtitleRestore_RadioOptionBlock_action_PhoneAction;
@@ -744,6 +751,7 @@ export interface CardCtaRestore_subtitleRestore_SignUpBlock_action_PhoneAction {
   gtmEventName: string | null;
   phone: string;
   countryCode: string;
+  contactAction: ContactActionType;
 }
 
 export type CardCtaRestore_subtitleRestore_SignUpBlock_action = CardCtaRestore_subtitleRestore_SignUpBlock_action_NavigateToBlockAction | CardCtaRestore_subtitleRestore_SignUpBlock_action_LinkAction | CardCtaRestore_subtitleRestore_SignUpBlock_action_EmailAction | CardCtaRestore_subtitleRestore_SignUpBlock_action_PhoneAction;
@@ -908,6 +916,7 @@ export interface CardCtaRestore_subtitleRestore_VideoBlock_action_PhoneAction {
   gtmEventName: string | null;
   phone: string;
   countryCode: string;
+  contactAction: ContactActionType;
 }
 
 export type CardCtaRestore_subtitleRestore_VideoBlock_action = CardCtaRestore_subtitleRestore_VideoBlock_action_NavigateToBlockAction | CardCtaRestore_subtitleRestore_VideoBlock_action_LinkAction | CardCtaRestore_subtitleRestore_VideoBlock_action_EmailAction | CardCtaRestore_subtitleRestore_VideoBlock_action_PhoneAction;
@@ -1018,6 +1027,7 @@ export interface CardCtaRestore_subtitleRestore_VideoTriggerBlock_triggerAction_
   gtmEventName: string | null;
   phone: string;
   countryCode: string;
+  contactAction: ContactActionType;
 }
 
 export type CardCtaRestore_subtitleRestore_VideoTriggerBlock_triggerAction = CardCtaRestore_subtitleRestore_VideoTriggerBlock_triggerAction_NavigateToBlockAction | CardCtaRestore_subtitleRestore_VideoTriggerBlock_triggerAction_LinkAction | CardCtaRestore_subtitleRestore_VideoTriggerBlock_triggerAction_EmailAction | CardCtaRestore_subtitleRestore_VideoTriggerBlock_triggerAction_PhoneAction;
@@ -1075,6 +1085,7 @@ export interface CardCtaRestore_titleRestore_ButtonBlock_action_PhoneAction {
   gtmEventName: string | null;
   phone: string;
   countryCode: string;
+  contactAction: ContactActionType;
 }
 
 export type CardCtaRestore_titleRestore_ButtonBlock_action = CardCtaRestore_titleRestore_ButtonBlock_action_NavigateToBlockAction | CardCtaRestore_titleRestore_ButtonBlock_action_LinkAction | CardCtaRestore_titleRestore_ButtonBlock_action_EmailAction | CardCtaRestore_titleRestore_ButtonBlock_action_PhoneAction;
@@ -1200,6 +1211,7 @@ export interface CardCtaRestore_titleRestore_RadioOptionBlock_action_PhoneAction
   gtmEventName: string | null;
   phone: string;
   countryCode: string;
+  contactAction: ContactActionType;
 }
 
 export type CardCtaRestore_titleRestore_RadioOptionBlock_action = CardCtaRestore_titleRestore_RadioOptionBlock_action_NavigateToBlockAction | CardCtaRestore_titleRestore_RadioOptionBlock_action_LinkAction | CardCtaRestore_titleRestore_RadioOptionBlock_action_EmailAction | CardCtaRestore_titleRestore_RadioOptionBlock_action_PhoneAction;
@@ -1258,6 +1270,7 @@ export interface CardCtaRestore_titleRestore_SignUpBlock_action_PhoneAction {
   gtmEventName: string | null;
   phone: string;
   countryCode: string;
+  contactAction: ContactActionType;
 }
 
 export type CardCtaRestore_titleRestore_SignUpBlock_action = CardCtaRestore_titleRestore_SignUpBlock_action_NavigateToBlockAction | CardCtaRestore_titleRestore_SignUpBlock_action_LinkAction | CardCtaRestore_titleRestore_SignUpBlock_action_EmailAction | CardCtaRestore_titleRestore_SignUpBlock_action_PhoneAction;
@@ -1422,6 +1435,7 @@ export interface CardCtaRestore_titleRestore_VideoBlock_action_PhoneAction {
   gtmEventName: string | null;
   phone: string;
   countryCode: string;
+  contactAction: ContactActionType;
 }
 
 export type CardCtaRestore_titleRestore_VideoBlock_action = CardCtaRestore_titleRestore_VideoBlock_action_NavigateToBlockAction | CardCtaRestore_titleRestore_VideoBlock_action_LinkAction | CardCtaRestore_titleRestore_VideoBlock_action_EmailAction | CardCtaRestore_titleRestore_VideoBlock_action_PhoneAction;
@@ -1532,6 +1546,7 @@ export interface CardCtaRestore_titleRestore_VideoTriggerBlock_triggerAction_Pho
   gtmEventName: string | null;
   phone: string;
   countryCode: string;
+  contactAction: ContactActionType;
 }
 
 export type CardCtaRestore_titleRestore_VideoTriggerBlock_triggerAction = CardCtaRestore_titleRestore_VideoTriggerBlock_triggerAction_NavigateToBlockAction | CardCtaRestore_titleRestore_VideoTriggerBlock_triggerAction_LinkAction | CardCtaRestore_titleRestore_VideoTriggerBlock_triggerAction_EmailAction | CardCtaRestore_titleRestore_VideoTriggerBlock_triggerAction_PhoneAction;
@@ -1589,6 +1604,7 @@ export interface CardCtaRestore_button1Restore_ButtonBlock_action_PhoneAction {
   gtmEventName: string | null;
   phone: string;
   countryCode: string;
+  contactAction: ContactActionType;
 }
 
 export type CardCtaRestore_button1Restore_ButtonBlock_action = CardCtaRestore_button1Restore_ButtonBlock_action_NavigateToBlockAction | CardCtaRestore_button1Restore_ButtonBlock_action_LinkAction | CardCtaRestore_button1Restore_ButtonBlock_action_EmailAction | CardCtaRestore_button1Restore_ButtonBlock_action_PhoneAction;
@@ -1714,6 +1730,7 @@ export interface CardCtaRestore_button1Restore_RadioOptionBlock_action_PhoneActi
   gtmEventName: string | null;
   phone: string;
   countryCode: string;
+  contactAction: ContactActionType;
 }
 
 export type CardCtaRestore_button1Restore_RadioOptionBlock_action = CardCtaRestore_button1Restore_RadioOptionBlock_action_NavigateToBlockAction | CardCtaRestore_button1Restore_RadioOptionBlock_action_LinkAction | CardCtaRestore_button1Restore_RadioOptionBlock_action_EmailAction | CardCtaRestore_button1Restore_RadioOptionBlock_action_PhoneAction;
@@ -1772,6 +1789,7 @@ export interface CardCtaRestore_button1Restore_SignUpBlock_action_PhoneAction {
   gtmEventName: string | null;
   phone: string;
   countryCode: string;
+  contactAction: ContactActionType;
 }
 
 export type CardCtaRestore_button1Restore_SignUpBlock_action = CardCtaRestore_button1Restore_SignUpBlock_action_NavigateToBlockAction | CardCtaRestore_button1Restore_SignUpBlock_action_LinkAction | CardCtaRestore_button1Restore_SignUpBlock_action_EmailAction | CardCtaRestore_button1Restore_SignUpBlock_action_PhoneAction;
@@ -1936,6 +1954,7 @@ export interface CardCtaRestore_button1Restore_VideoBlock_action_PhoneAction {
   gtmEventName: string | null;
   phone: string;
   countryCode: string;
+  contactAction: ContactActionType;
 }
 
 export type CardCtaRestore_button1Restore_VideoBlock_action = CardCtaRestore_button1Restore_VideoBlock_action_NavigateToBlockAction | CardCtaRestore_button1Restore_VideoBlock_action_LinkAction | CardCtaRestore_button1Restore_VideoBlock_action_EmailAction | CardCtaRestore_button1Restore_VideoBlock_action_PhoneAction;
@@ -2046,6 +2065,7 @@ export interface CardCtaRestore_button1Restore_VideoTriggerBlock_triggerAction_P
   gtmEventName: string | null;
   phone: string;
   countryCode: string;
+  contactAction: ContactActionType;
 }
 
 export type CardCtaRestore_button1Restore_VideoTriggerBlock_triggerAction = CardCtaRestore_button1Restore_VideoTriggerBlock_triggerAction_NavigateToBlockAction | CardCtaRestore_button1Restore_VideoTriggerBlock_triggerAction_LinkAction | CardCtaRestore_button1Restore_VideoTriggerBlock_triggerAction_EmailAction | CardCtaRestore_button1Restore_VideoTriggerBlock_triggerAction_PhoneAction;
@@ -2103,6 +2123,7 @@ export interface CardCtaRestore_startIcon1Restore_ButtonBlock_action_PhoneAction
   gtmEventName: string | null;
   phone: string;
   countryCode: string;
+  contactAction: ContactActionType;
 }
 
 export type CardCtaRestore_startIcon1Restore_ButtonBlock_action = CardCtaRestore_startIcon1Restore_ButtonBlock_action_NavigateToBlockAction | CardCtaRestore_startIcon1Restore_ButtonBlock_action_LinkAction | CardCtaRestore_startIcon1Restore_ButtonBlock_action_EmailAction | CardCtaRestore_startIcon1Restore_ButtonBlock_action_PhoneAction;
@@ -2228,6 +2249,7 @@ export interface CardCtaRestore_startIcon1Restore_RadioOptionBlock_action_PhoneA
   gtmEventName: string | null;
   phone: string;
   countryCode: string;
+  contactAction: ContactActionType;
 }
 
 export type CardCtaRestore_startIcon1Restore_RadioOptionBlock_action = CardCtaRestore_startIcon1Restore_RadioOptionBlock_action_NavigateToBlockAction | CardCtaRestore_startIcon1Restore_RadioOptionBlock_action_LinkAction | CardCtaRestore_startIcon1Restore_RadioOptionBlock_action_EmailAction | CardCtaRestore_startIcon1Restore_RadioOptionBlock_action_PhoneAction;
@@ -2286,6 +2308,7 @@ export interface CardCtaRestore_startIcon1Restore_SignUpBlock_action_PhoneAction
   gtmEventName: string | null;
   phone: string;
   countryCode: string;
+  contactAction: ContactActionType;
 }
 
 export type CardCtaRestore_startIcon1Restore_SignUpBlock_action = CardCtaRestore_startIcon1Restore_SignUpBlock_action_NavigateToBlockAction | CardCtaRestore_startIcon1Restore_SignUpBlock_action_LinkAction | CardCtaRestore_startIcon1Restore_SignUpBlock_action_EmailAction | CardCtaRestore_startIcon1Restore_SignUpBlock_action_PhoneAction;
@@ -2450,6 +2473,7 @@ export interface CardCtaRestore_startIcon1Restore_VideoBlock_action_PhoneAction 
   gtmEventName: string | null;
   phone: string;
   countryCode: string;
+  contactAction: ContactActionType;
 }
 
 export type CardCtaRestore_startIcon1Restore_VideoBlock_action = CardCtaRestore_startIcon1Restore_VideoBlock_action_NavigateToBlockAction | CardCtaRestore_startIcon1Restore_VideoBlock_action_LinkAction | CardCtaRestore_startIcon1Restore_VideoBlock_action_EmailAction | CardCtaRestore_startIcon1Restore_VideoBlock_action_PhoneAction;
@@ -2560,6 +2584,7 @@ export interface CardCtaRestore_startIcon1Restore_VideoTriggerBlock_triggerActio
   gtmEventName: string | null;
   phone: string;
   countryCode: string;
+  contactAction: ContactActionType;
 }
 
 export type CardCtaRestore_startIcon1Restore_VideoTriggerBlock_triggerAction = CardCtaRestore_startIcon1Restore_VideoTriggerBlock_triggerAction_NavigateToBlockAction | CardCtaRestore_startIcon1Restore_VideoTriggerBlock_triggerAction_LinkAction | CardCtaRestore_startIcon1Restore_VideoTriggerBlock_triggerAction_EmailAction | CardCtaRestore_startIcon1Restore_VideoTriggerBlock_triggerAction_PhoneAction;
@@ -2617,6 +2642,7 @@ export interface CardCtaRestore_endIcon1Restore_ButtonBlock_action_PhoneAction {
   gtmEventName: string | null;
   phone: string;
   countryCode: string;
+  contactAction: ContactActionType;
 }
 
 export type CardCtaRestore_endIcon1Restore_ButtonBlock_action = CardCtaRestore_endIcon1Restore_ButtonBlock_action_NavigateToBlockAction | CardCtaRestore_endIcon1Restore_ButtonBlock_action_LinkAction | CardCtaRestore_endIcon1Restore_ButtonBlock_action_EmailAction | CardCtaRestore_endIcon1Restore_ButtonBlock_action_PhoneAction;
@@ -2742,6 +2768,7 @@ export interface CardCtaRestore_endIcon1Restore_RadioOptionBlock_action_PhoneAct
   gtmEventName: string | null;
   phone: string;
   countryCode: string;
+  contactAction: ContactActionType;
 }
 
 export type CardCtaRestore_endIcon1Restore_RadioOptionBlock_action = CardCtaRestore_endIcon1Restore_RadioOptionBlock_action_NavigateToBlockAction | CardCtaRestore_endIcon1Restore_RadioOptionBlock_action_LinkAction | CardCtaRestore_endIcon1Restore_RadioOptionBlock_action_EmailAction | CardCtaRestore_endIcon1Restore_RadioOptionBlock_action_PhoneAction;
@@ -2800,6 +2827,7 @@ export interface CardCtaRestore_endIcon1Restore_SignUpBlock_action_PhoneAction {
   gtmEventName: string | null;
   phone: string;
   countryCode: string;
+  contactAction: ContactActionType;
 }
 
 export type CardCtaRestore_endIcon1Restore_SignUpBlock_action = CardCtaRestore_endIcon1Restore_SignUpBlock_action_NavigateToBlockAction | CardCtaRestore_endIcon1Restore_SignUpBlock_action_LinkAction | CardCtaRestore_endIcon1Restore_SignUpBlock_action_EmailAction | CardCtaRestore_endIcon1Restore_SignUpBlock_action_PhoneAction;
@@ -2964,6 +2992,7 @@ export interface CardCtaRestore_endIcon1Restore_VideoBlock_action_PhoneAction {
   gtmEventName: string | null;
   phone: string;
   countryCode: string;
+  contactAction: ContactActionType;
 }
 
 export type CardCtaRestore_endIcon1Restore_VideoBlock_action = CardCtaRestore_endIcon1Restore_VideoBlock_action_NavigateToBlockAction | CardCtaRestore_endIcon1Restore_VideoBlock_action_LinkAction | CardCtaRestore_endIcon1Restore_VideoBlock_action_EmailAction | CardCtaRestore_endIcon1Restore_VideoBlock_action_PhoneAction;
@@ -3074,6 +3103,7 @@ export interface CardCtaRestore_endIcon1Restore_VideoTriggerBlock_triggerAction_
   gtmEventName: string | null;
   phone: string;
   countryCode: string;
+  contactAction: ContactActionType;
 }
 
 export type CardCtaRestore_endIcon1Restore_VideoTriggerBlock_triggerAction = CardCtaRestore_endIcon1Restore_VideoTriggerBlock_triggerAction_NavigateToBlockAction | CardCtaRestore_endIcon1Restore_VideoTriggerBlock_triggerAction_LinkAction | CardCtaRestore_endIcon1Restore_VideoTriggerBlock_triggerAction_EmailAction | CardCtaRestore_endIcon1Restore_VideoTriggerBlock_triggerAction_PhoneAction;
@@ -3131,6 +3161,7 @@ export interface CardCtaRestore_button2Restore_ButtonBlock_action_PhoneAction {
   gtmEventName: string | null;
   phone: string;
   countryCode: string;
+  contactAction: ContactActionType;
 }
 
 export type CardCtaRestore_button2Restore_ButtonBlock_action = CardCtaRestore_button2Restore_ButtonBlock_action_NavigateToBlockAction | CardCtaRestore_button2Restore_ButtonBlock_action_LinkAction | CardCtaRestore_button2Restore_ButtonBlock_action_EmailAction | CardCtaRestore_button2Restore_ButtonBlock_action_PhoneAction;
@@ -3256,6 +3287,7 @@ export interface CardCtaRestore_button2Restore_RadioOptionBlock_action_PhoneActi
   gtmEventName: string | null;
   phone: string;
   countryCode: string;
+  contactAction: ContactActionType;
 }
 
 export type CardCtaRestore_button2Restore_RadioOptionBlock_action = CardCtaRestore_button2Restore_RadioOptionBlock_action_NavigateToBlockAction | CardCtaRestore_button2Restore_RadioOptionBlock_action_LinkAction | CardCtaRestore_button2Restore_RadioOptionBlock_action_EmailAction | CardCtaRestore_button2Restore_RadioOptionBlock_action_PhoneAction;
@@ -3314,6 +3346,7 @@ export interface CardCtaRestore_button2Restore_SignUpBlock_action_PhoneAction {
   gtmEventName: string | null;
   phone: string;
   countryCode: string;
+  contactAction: ContactActionType;
 }
 
 export type CardCtaRestore_button2Restore_SignUpBlock_action = CardCtaRestore_button2Restore_SignUpBlock_action_NavigateToBlockAction | CardCtaRestore_button2Restore_SignUpBlock_action_LinkAction | CardCtaRestore_button2Restore_SignUpBlock_action_EmailAction | CardCtaRestore_button2Restore_SignUpBlock_action_PhoneAction;
@@ -3478,6 +3511,7 @@ export interface CardCtaRestore_button2Restore_VideoBlock_action_PhoneAction {
   gtmEventName: string | null;
   phone: string;
   countryCode: string;
+  contactAction: ContactActionType;
 }
 
 export type CardCtaRestore_button2Restore_VideoBlock_action = CardCtaRestore_button2Restore_VideoBlock_action_NavigateToBlockAction | CardCtaRestore_button2Restore_VideoBlock_action_LinkAction | CardCtaRestore_button2Restore_VideoBlock_action_EmailAction | CardCtaRestore_button2Restore_VideoBlock_action_PhoneAction;
@@ -3588,6 +3622,7 @@ export interface CardCtaRestore_button2Restore_VideoTriggerBlock_triggerAction_P
   gtmEventName: string | null;
   phone: string;
   countryCode: string;
+  contactAction: ContactActionType;
 }
 
 export type CardCtaRestore_button2Restore_VideoTriggerBlock_triggerAction = CardCtaRestore_button2Restore_VideoTriggerBlock_triggerAction_NavigateToBlockAction | CardCtaRestore_button2Restore_VideoTriggerBlock_triggerAction_LinkAction | CardCtaRestore_button2Restore_VideoTriggerBlock_triggerAction_EmailAction | CardCtaRestore_button2Restore_VideoTriggerBlock_triggerAction_PhoneAction;
@@ -3645,6 +3680,7 @@ export interface CardCtaRestore_startIcon2Restore_ButtonBlock_action_PhoneAction
   gtmEventName: string | null;
   phone: string;
   countryCode: string;
+  contactAction: ContactActionType;
 }
 
 export type CardCtaRestore_startIcon2Restore_ButtonBlock_action = CardCtaRestore_startIcon2Restore_ButtonBlock_action_NavigateToBlockAction | CardCtaRestore_startIcon2Restore_ButtonBlock_action_LinkAction | CardCtaRestore_startIcon2Restore_ButtonBlock_action_EmailAction | CardCtaRestore_startIcon2Restore_ButtonBlock_action_PhoneAction;
@@ -3770,6 +3806,7 @@ export interface CardCtaRestore_startIcon2Restore_RadioOptionBlock_action_PhoneA
   gtmEventName: string | null;
   phone: string;
   countryCode: string;
+  contactAction: ContactActionType;
 }
 
 export type CardCtaRestore_startIcon2Restore_RadioOptionBlock_action = CardCtaRestore_startIcon2Restore_RadioOptionBlock_action_NavigateToBlockAction | CardCtaRestore_startIcon2Restore_RadioOptionBlock_action_LinkAction | CardCtaRestore_startIcon2Restore_RadioOptionBlock_action_EmailAction | CardCtaRestore_startIcon2Restore_RadioOptionBlock_action_PhoneAction;
@@ -3828,6 +3865,7 @@ export interface CardCtaRestore_startIcon2Restore_SignUpBlock_action_PhoneAction
   gtmEventName: string | null;
   phone: string;
   countryCode: string;
+  contactAction: ContactActionType;
 }
 
 export type CardCtaRestore_startIcon2Restore_SignUpBlock_action = CardCtaRestore_startIcon2Restore_SignUpBlock_action_NavigateToBlockAction | CardCtaRestore_startIcon2Restore_SignUpBlock_action_LinkAction | CardCtaRestore_startIcon2Restore_SignUpBlock_action_EmailAction | CardCtaRestore_startIcon2Restore_SignUpBlock_action_PhoneAction;
@@ -3992,6 +4030,7 @@ export interface CardCtaRestore_startIcon2Restore_VideoBlock_action_PhoneAction 
   gtmEventName: string | null;
   phone: string;
   countryCode: string;
+  contactAction: ContactActionType;
 }
 
 export type CardCtaRestore_startIcon2Restore_VideoBlock_action = CardCtaRestore_startIcon2Restore_VideoBlock_action_NavigateToBlockAction | CardCtaRestore_startIcon2Restore_VideoBlock_action_LinkAction | CardCtaRestore_startIcon2Restore_VideoBlock_action_EmailAction | CardCtaRestore_startIcon2Restore_VideoBlock_action_PhoneAction;
@@ -4102,6 +4141,7 @@ export interface CardCtaRestore_startIcon2Restore_VideoTriggerBlock_triggerActio
   gtmEventName: string | null;
   phone: string;
   countryCode: string;
+  contactAction: ContactActionType;
 }
 
 export type CardCtaRestore_startIcon2Restore_VideoTriggerBlock_triggerAction = CardCtaRestore_startIcon2Restore_VideoTriggerBlock_triggerAction_NavigateToBlockAction | CardCtaRestore_startIcon2Restore_VideoTriggerBlock_triggerAction_LinkAction | CardCtaRestore_startIcon2Restore_VideoTriggerBlock_triggerAction_EmailAction | CardCtaRestore_startIcon2Restore_VideoTriggerBlock_triggerAction_PhoneAction;
@@ -4159,6 +4199,7 @@ export interface CardCtaRestore_endIcon2Restore_ButtonBlock_action_PhoneAction {
   gtmEventName: string | null;
   phone: string;
   countryCode: string;
+  contactAction: ContactActionType;
 }
 
 export type CardCtaRestore_endIcon2Restore_ButtonBlock_action = CardCtaRestore_endIcon2Restore_ButtonBlock_action_NavigateToBlockAction | CardCtaRestore_endIcon2Restore_ButtonBlock_action_LinkAction | CardCtaRestore_endIcon2Restore_ButtonBlock_action_EmailAction | CardCtaRestore_endIcon2Restore_ButtonBlock_action_PhoneAction;
@@ -4284,6 +4325,7 @@ export interface CardCtaRestore_endIcon2Restore_RadioOptionBlock_action_PhoneAct
   gtmEventName: string | null;
   phone: string;
   countryCode: string;
+  contactAction: ContactActionType;
 }
 
 export type CardCtaRestore_endIcon2Restore_RadioOptionBlock_action = CardCtaRestore_endIcon2Restore_RadioOptionBlock_action_NavigateToBlockAction | CardCtaRestore_endIcon2Restore_RadioOptionBlock_action_LinkAction | CardCtaRestore_endIcon2Restore_RadioOptionBlock_action_EmailAction | CardCtaRestore_endIcon2Restore_RadioOptionBlock_action_PhoneAction;
@@ -4342,6 +4384,7 @@ export interface CardCtaRestore_endIcon2Restore_SignUpBlock_action_PhoneAction {
   gtmEventName: string | null;
   phone: string;
   countryCode: string;
+  contactAction: ContactActionType;
 }
 
 export type CardCtaRestore_endIcon2Restore_SignUpBlock_action = CardCtaRestore_endIcon2Restore_SignUpBlock_action_NavigateToBlockAction | CardCtaRestore_endIcon2Restore_SignUpBlock_action_LinkAction | CardCtaRestore_endIcon2Restore_SignUpBlock_action_EmailAction | CardCtaRestore_endIcon2Restore_SignUpBlock_action_PhoneAction;
@@ -4506,6 +4549,7 @@ export interface CardCtaRestore_endIcon2Restore_VideoBlock_action_PhoneAction {
   gtmEventName: string | null;
   phone: string;
   countryCode: string;
+  contactAction: ContactActionType;
 }
 
 export type CardCtaRestore_endIcon2Restore_VideoBlock_action = CardCtaRestore_endIcon2Restore_VideoBlock_action_NavigateToBlockAction | CardCtaRestore_endIcon2Restore_VideoBlock_action_LinkAction | CardCtaRestore_endIcon2Restore_VideoBlock_action_EmailAction | CardCtaRestore_endIcon2Restore_VideoBlock_action_PhoneAction;
@@ -4616,6 +4660,7 @@ export interface CardCtaRestore_endIcon2Restore_VideoTriggerBlock_triggerAction_
   gtmEventName: string | null;
   phone: string;
   countryCode: string;
+  contactAction: ContactActionType;
 }
 
 export type CardCtaRestore_endIcon2Restore_VideoTriggerBlock_triggerAction = CardCtaRestore_endIcon2Restore_VideoTriggerBlock_triggerAction_NavigateToBlockAction | CardCtaRestore_endIcon2Restore_VideoTriggerBlock_triggerAction_LinkAction | CardCtaRestore_endIcon2Restore_VideoTriggerBlock_triggerAction_EmailAction | CardCtaRestore_endIcon2Restore_VideoTriggerBlock_triggerAction_PhoneAction;
@@ -4673,6 +4718,7 @@ export interface CardCtaRestore_button3Restore_ButtonBlock_action_PhoneAction {
   gtmEventName: string | null;
   phone: string;
   countryCode: string;
+  contactAction: ContactActionType;
 }
 
 export type CardCtaRestore_button3Restore_ButtonBlock_action = CardCtaRestore_button3Restore_ButtonBlock_action_NavigateToBlockAction | CardCtaRestore_button3Restore_ButtonBlock_action_LinkAction | CardCtaRestore_button3Restore_ButtonBlock_action_EmailAction | CardCtaRestore_button3Restore_ButtonBlock_action_PhoneAction;
@@ -4798,6 +4844,7 @@ export interface CardCtaRestore_button3Restore_RadioOptionBlock_action_PhoneActi
   gtmEventName: string | null;
   phone: string;
   countryCode: string;
+  contactAction: ContactActionType;
 }
 
 export type CardCtaRestore_button3Restore_RadioOptionBlock_action = CardCtaRestore_button3Restore_RadioOptionBlock_action_NavigateToBlockAction | CardCtaRestore_button3Restore_RadioOptionBlock_action_LinkAction | CardCtaRestore_button3Restore_RadioOptionBlock_action_EmailAction | CardCtaRestore_button3Restore_RadioOptionBlock_action_PhoneAction;
@@ -4856,6 +4903,7 @@ export interface CardCtaRestore_button3Restore_SignUpBlock_action_PhoneAction {
   gtmEventName: string | null;
   phone: string;
   countryCode: string;
+  contactAction: ContactActionType;
 }
 
 export type CardCtaRestore_button3Restore_SignUpBlock_action = CardCtaRestore_button3Restore_SignUpBlock_action_NavigateToBlockAction | CardCtaRestore_button3Restore_SignUpBlock_action_LinkAction | CardCtaRestore_button3Restore_SignUpBlock_action_EmailAction | CardCtaRestore_button3Restore_SignUpBlock_action_PhoneAction;
@@ -5020,6 +5068,7 @@ export interface CardCtaRestore_button3Restore_VideoBlock_action_PhoneAction {
   gtmEventName: string | null;
   phone: string;
   countryCode: string;
+  contactAction: ContactActionType;
 }
 
 export type CardCtaRestore_button3Restore_VideoBlock_action = CardCtaRestore_button3Restore_VideoBlock_action_NavigateToBlockAction | CardCtaRestore_button3Restore_VideoBlock_action_LinkAction | CardCtaRestore_button3Restore_VideoBlock_action_EmailAction | CardCtaRestore_button3Restore_VideoBlock_action_PhoneAction;
@@ -5130,6 +5179,7 @@ export interface CardCtaRestore_button3Restore_VideoTriggerBlock_triggerAction_P
   gtmEventName: string | null;
   phone: string;
   countryCode: string;
+  contactAction: ContactActionType;
 }
 
 export type CardCtaRestore_button3Restore_VideoTriggerBlock_triggerAction = CardCtaRestore_button3Restore_VideoTriggerBlock_triggerAction_NavigateToBlockAction | CardCtaRestore_button3Restore_VideoTriggerBlock_triggerAction_LinkAction | CardCtaRestore_button3Restore_VideoTriggerBlock_triggerAction_EmailAction | CardCtaRestore_button3Restore_VideoTriggerBlock_triggerAction_PhoneAction;
@@ -5187,6 +5237,7 @@ export interface CardCtaRestore_startIcon3Restore_ButtonBlock_action_PhoneAction
   gtmEventName: string | null;
   phone: string;
   countryCode: string;
+  contactAction: ContactActionType;
 }
 
 export type CardCtaRestore_startIcon3Restore_ButtonBlock_action = CardCtaRestore_startIcon3Restore_ButtonBlock_action_NavigateToBlockAction | CardCtaRestore_startIcon3Restore_ButtonBlock_action_LinkAction | CardCtaRestore_startIcon3Restore_ButtonBlock_action_EmailAction | CardCtaRestore_startIcon3Restore_ButtonBlock_action_PhoneAction;
@@ -5312,6 +5363,7 @@ export interface CardCtaRestore_startIcon3Restore_RadioOptionBlock_action_PhoneA
   gtmEventName: string | null;
   phone: string;
   countryCode: string;
+  contactAction: ContactActionType;
 }
 
 export type CardCtaRestore_startIcon3Restore_RadioOptionBlock_action = CardCtaRestore_startIcon3Restore_RadioOptionBlock_action_NavigateToBlockAction | CardCtaRestore_startIcon3Restore_RadioOptionBlock_action_LinkAction | CardCtaRestore_startIcon3Restore_RadioOptionBlock_action_EmailAction | CardCtaRestore_startIcon3Restore_RadioOptionBlock_action_PhoneAction;
@@ -5370,6 +5422,7 @@ export interface CardCtaRestore_startIcon3Restore_SignUpBlock_action_PhoneAction
   gtmEventName: string | null;
   phone: string;
   countryCode: string;
+  contactAction: ContactActionType;
 }
 
 export type CardCtaRestore_startIcon3Restore_SignUpBlock_action = CardCtaRestore_startIcon3Restore_SignUpBlock_action_NavigateToBlockAction | CardCtaRestore_startIcon3Restore_SignUpBlock_action_LinkAction | CardCtaRestore_startIcon3Restore_SignUpBlock_action_EmailAction | CardCtaRestore_startIcon3Restore_SignUpBlock_action_PhoneAction;
@@ -5534,6 +5587,7 @@ export interface CardCtaRestore_startIcon3Restore_VideoBlock_action_PhoneAction 
   gtmEventName: string | null;
   phone: string;
   countryCode: string;
+  contactAction: ContactActionType;
 }
 
 export type CardCtaRestore_startIcon3Restore_VideoBlock_action = CardCtaRestore_startIcon3Restore_VideoBlock_action_NavigateToBlockAction | CardCtaRestore_startIcon3Restore_VideoBlock_action_LinkAction | CardCtaRestore_startIcon3Restore_VideoBlock_action_EmailAction | CardCtaRestore_startIcon3Restore_VideoBlock_action_PhoneAction;
@@ -5644,6 +5698,7 @@ export interface CardCtaRestore_startIcon3Restore_VideoTriggerBlock_triggerActio
   gtmEventName: string | null;
   phone: string;
   countryCode: string;
+  contactAction: ContactActionType;
 }
 
 export type CardCtaRestore_startIcon3Restore_VideoTriggerBlock_triggerAction = CardCtaRestore_startIcon3Restore_VideoTriggerBlock_triggerAction_NavigateToBlockAction | CardCtaRestore_startIcon3Restore_VideoTriggerBlock_triggerAction_LinkAction | CardCtaRestore_startIcon3Restore_VideoTriggerBlock_triggerAction_EmailAction | CardCtaRestore_startIcon3Restore_VideoTriggerBlock_triggerAction_PhoneAction;
@@ -5701,6 +5756,7 @@ export interface CardCtaRestore_endIcon3Restore_ButtonBlock_action_PhoneAction {
   gtmEventName: string | null;
   phone: string;
   countryCode: string;
+  contactAction: ContactActionType;
 }
 
 export type CardCtaRestore_endIcon3Restore_ButtonBlock_action = CardCtaRestore_endIcon3Restore_ButtonBlock_action_NavigateToBlockAction | CardCtaRestore_endIcon3Restore_ButtonBlock_action_LinkAction | CardCtaRestore_endIcon3Restore_ButtonBlock_action_EmailAction | CardCtaRestore_endIcon3Restore_ButtonBlock_action_PhoneAction;
@@ -5826,6 +5882,7 @@ export interface CardCtaRestore_endIcon3Restore_RadioOptionBlock_action_PhoneAct
   gtmEventName: string | null;
   phone: string;
   countryCode: string;
+  contactAction: ContactActionType;
 }
 
 export type CardCtaRestore_endIcon3Restore_RadioOptionBlock_action = CardCtaRestore_endIcon3Restore_RadioOptionBlock_action_NavigateToBlockAction | CardCtaRestore_endIcon3Restore_RadioOptionBlock_action_LinkAction | CardCtaRestore_endIcon3Restore_RadioOptionBlock_action_EmailAction | CardCtaRestore_endIcon3Restore_RadioOptionBlock_action_PhoneAction;
@@ -5884,6 +5941,7 @@ export interface CardCtaRestore_endIcon3Restore_SignUpBlock_action_PhoneAction {
   gtmEventName: string | null;
   phone: string;
   countryCode: string;
+  contactAction: ContactActionType;
 }
 
 export type CardCtaRestore_endIcon3Restore_SignUpBlock_action = CardCtaRestore_endIcon3Restore_SignUpBlock_action_NavigateToBlockAction | CardCtaRestore_endIcon3Restore_SignUpBlock_action_LinkAction | CardCtaRestore_endIcon3Restore_SignUpBlock_action_EmailAction | CardCtaRestore_endIcon3Restore_SignUpBlock_action_PhoneAction;
@@ -6048,6 +6106,7 @@ export interface CardCtaRestore_endIcon3Restore_VideoBlock_action_PhoneAction {
   gtmEventName: string | null;
   phone: string;
   countryCode: string;
+  contactAction: ContactActionType;
 }
 
 export type CardCtaRestore_endIcon3Restore_VideoBlock_action = CardCtaRestore_endIcon3Restore_VideoBlock_action_NavigateToBlockAction | CardCtaRestore_endIcon3Restore_VideoBlock_action_LinkAction | CardCtaRestore_endIcon3Restore_VideoBlock_action_EmailAction | CardCtaRestore_endIcon3Restore_VideoBlock_action_PhoneAction;
@@ -6158,6 +6217,7 @@ export interface CardCtaRestore_endIcon3Restore_VideoTriggerBlock_triggerAction_
   gtmEventName: string | null;
   phone: string;
   countryCode: string;
+  contactAction: ContactActionType;
 }
 
 export type CardCtaRestore_endIcon3Restore_VideoTriggerBlock_triggerAction = CardCtaRestore_endIcon3Restore_VideoTriggerBlock_triggerAction_NavigateToBlockAction | CardCtaRestore_endIcon3Restore_VideoTriggerBlock_triggerAction_LinkAction | CardCtaRestore_endIcon3Restore_VideoTriggerBlock_triggerAction_EmailAction | CardCtaRestore_endIcon3Restore_VideoTriggerBlock_triggerAction_PhoneAction;
