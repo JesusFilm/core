@@ -1,5 +1,6 @@
 import { NextRouter } from 'next/dist/client/router'
 
+import { ContactActionType } from '../../../__generated__/globalTypes'
 import { nextActiveBlock } from '../block'
 
 import { handleAction } from '.'
@@ -68,7 +69,8 @@ describe('action', () => {
         parentBlockId: 'parent-id',
         gtmEventName: null,
         phone: '+1234567890',
-        countryCode: 'US'
+        countryCode: 'US',
+        contactAction: ContactActionType.call
       })
       expect(window.location.href).toBe('tel:+1234567890')
     })

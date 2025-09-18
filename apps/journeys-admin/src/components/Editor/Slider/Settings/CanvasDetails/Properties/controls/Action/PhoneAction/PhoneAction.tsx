@@ -7,6 +7,7 @@ import type { TreeBlock } from '@core/journeys/ui/block'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 
 import { BlockFields_ButtonBlock as ButtonBlock } from '../../../../../../../../../../__generated__/BlockFields'
+import { ContactActionType } from '../../../../../../../../../../__generated__/globalTypes'
 import { TextFieldForm } from '../../../../../../../../TextFieldForm'
 import { useActionCommand } from '../../../../../../../utils/useActionCommand'
 import { CountryCodeAutoComplete } from './CountryCodeAutoComplete'
@@ -87,7 +88,8 @@ export function PhoneAction(): ReactElement {
         parentBlockId: id,
         gtmEventName: '',
         phone: fullPhoneNumber,
-        countryCode: selectedCountry.countryCode
+        countryCode: selectedCountry.countryCode,
+        contactAction: ContactActionType.call
       },
       undoAction: action,
       editorFocus: {

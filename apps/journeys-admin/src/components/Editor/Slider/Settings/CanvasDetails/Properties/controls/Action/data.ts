@@ -5,6 +5,7 @@ import {
   ButtonColor,
   ButtonSize,
   ButtonVariant,
+  ContactActionType,
   TypographyVariant
 } from '../../../../../../../../../__generated__/globalTypes'
 
@@ -230,7 +231,8 @@ export const steps: Array<TreeBlock<StepBlock>> = [
               __typename: 'PhoneAction',
               gtmEventName: 'gtmEventName',
               phone: '+1234567890',
-              countryCode: 'US'
+              countryCode: 'US',
+              contactAction: ContactActionType.call
             },
             children: [],
             settings: null

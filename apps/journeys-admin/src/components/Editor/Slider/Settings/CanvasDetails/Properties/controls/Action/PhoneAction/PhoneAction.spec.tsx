@@ -7,7 +7,8 @@ import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import {
   ButtonColor,
   ButtonSize,
-  ButtonVariant
+  ButtonVariant,
+  ContactActionType
 } from '../../../../../../../../../../__generated__/globalTypes'
 import { blockActionNavigateToBlockUpdateMock } from '../../../../../../../../../libs/useBlockActionNavigateToBlockUpdateMutation/useBlockActionNavigateToBlockUpdateMutation.mock'
 import { CommandUndoItem } from '../../../../../../../Toolbar/Items/CommandUndoItem'
@@ -38,7 +39,8 @@ describe('PhoneAction', () => {
       __typename: 'PhoneAction',
       gtmEventName: 'gtmEventName',
       phone: '+1234567890',
-      countryCode: 'US'
+      countryCode: 'US',
+      contactAction: ContactActionType.call
     },
     children: [],
     settings: null
