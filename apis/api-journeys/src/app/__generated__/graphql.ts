@@ -453,6 +453,7 @@ export class TextResponseBlockUpdateInput {
     placeholder?: Nullable<string>;
     required?: Nullable<boolean>;
     hint?: Nullable<string>;
+    hideLabel?: Nullable<boolean>;
     minRows?: Nullable<number>;
     routeId?: Nullable<string>;
     type?: Nullable<TextResponseType>;
@@ -986,6 +987,7 @@ export class Journey {
     socialNodeX?: Nullable<number>;
     socialNodeY?: Nullable<number>;
     fromTemplateId?: Nullable<string>;
+    showAssistant?: Nullable<boolean>;
     journeyCustomizationDescription?: Nullable<string>;
     journeyCustomizationFields: JourneyCustomizationField[];
     journeyTheme?: Nullable<JourneyTheme>;
@@ -1418,6 +1420,7 @@ export class TextResponseBlock implements Block {
     placeholder?: Nullable<string>;
     required?: Nullable<boolean>;
     hint?: Nullable<string>;
+    hideLabel?: Nullable<boolean>;
     minRows?: Nullable<number>;
     type?: Nullable<TextResponseType>;
     routeId?: Nullable<string>;
