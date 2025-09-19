@@ -2146,6 +2146,7 @@ export type MutationPlaylistDeleteArgs = {
 
 
 export type MutationPlaylistItemAddArgs = {
+  id?: InputMaybe<Scalars['ID']['input']>;
   playlistId: Scalars['ID']['input'];
   videoVariantId: Scalars['ID']['input'];
 };
@@ -3160,7 +3161,7 @@ export type PlaylistItem = {
   __typename?: 'PlaylistItem';
   createdAt: Scalars['DateTime']['output'];
   id: Scalars['ID']['output'];
-  order: Scalars['Int']['output'];
+  order?: Maybe<Scalars['Int']['output']>;
   playlist: Playlist;
   updatedAt: Scalars['DateTime']['output'];
   videoVariant: VideoVariant;
@@ -5474,6 +5475,7 @@ export type VideoVariantDownloadUpdateInput = {
 };
 
 export type VideoVariantFilter = {
+  languageId?: InputMaybe<Scalars['ID']['input']>;
   onlyPublished?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
