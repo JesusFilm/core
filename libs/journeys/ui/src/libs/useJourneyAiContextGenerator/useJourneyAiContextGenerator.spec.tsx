@@ -54,8 +54,9 @@ describe('useJourneyAiContextGenerator', () => {
       json: () => Promise.resolve(mockContextResponse)
     })
 
-    // Mock console.error to suppress expected error logs during tests
-    consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {})
+    consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {
+      // Suppress console.error during tests
+    })
   })
 
   afterEach(() => {
