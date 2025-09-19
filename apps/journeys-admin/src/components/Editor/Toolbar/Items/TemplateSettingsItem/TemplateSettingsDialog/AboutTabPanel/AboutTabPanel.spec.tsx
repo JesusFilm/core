@@ -104,7 +104,7 @@ describe('AboutTabPanel', () => {
     expect(getByTestId('strategy-iframe')).toBeInTheDocument()
   })
 
-  it('should render Customize Template text area only if journeyCustomization flag is enabled', () => {
+  it('should render Customize Template text area', () => {
     const { getByTestId } = render(
       <MockedProvider>
         <FormikProvider

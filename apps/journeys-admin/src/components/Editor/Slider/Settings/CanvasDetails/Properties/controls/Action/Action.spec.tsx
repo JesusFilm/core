@@ -60,7 +60,7 @@ describe('Action', () => {
     )
   })
 
-  it('shows customization toggle when URL/Website is selected and journeyCustomization flag is enabled', async () => {
+  it('shows customization toggle when URL/Website is selected and journeyCustomization', async () => {
     const buttonBlockWithLinkAction = {
       ...selectedBlock,
       action: {
@@ -74,14 +74,21 @@ describe('Action', () => {
     const { getByRole, getByText } = render(
       <MockedProvider>
         <FlagsProvider flags={{ journeyCustomization: true }}>
-          <EditorProvider
-            initialState={{
-              selectedBlock: buttonBlockWithLinkAction,
-              selectedStep
+          <JourneyProvider
+            value={{
+              journey: { template: true } as unknown as Journey,
+              variant: 'admin'
             }}
           >
-            <Action />
-          </EditorProvider>
+            <EditorProvider
+              initialState={{
+                selectedBlock: buttonBlockWithLinkAction,
+                selectedStep
+              }}
+            >
+              <Action />
+            </EditorProvider>
+          </JourneyProvider>
         </FlagsProvider>
       </MockedProvider>
     )

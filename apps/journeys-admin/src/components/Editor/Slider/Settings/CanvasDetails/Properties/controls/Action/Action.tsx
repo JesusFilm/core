@@ -8,6 +8,7 @@ import { ReactElement, useEffect, useState } from 'react'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
+import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import ChevronDownIcon from '@core/shared/ui/icons/ChevronDown'
 
 import {
@@ -31,6 +32,7 @@ export function Action(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { addAction } = useActionCommand()
   const { journeyCustomization } = useFlags()
+  const { journey } = useJourney()
 
   // Add addtional types here to use this component for that block
   const selectedBlock = stateSelectedBlock as
@@ -111,7 +113,7 @@ export function Action(): ReactElement {
         {isLink && <LinkAction />}
         {isEmail && <EmailAction />}
         {action === 'NavigateToBlockAction' && <NavigateToBlockAction />}
-        {(isLink || isEmail) && journeyCustomization && <CustomizationToggle />}
+        {(isLink || isEmail) && journeyCustomization && journey?.template && <CustomizationToggle />}
       </Stack>
     </>
   )
