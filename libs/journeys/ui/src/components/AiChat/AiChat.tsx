@@ -204,7 +204,7 @@ export function AiChat({ open }: AiChatProps) {
         </ConversationContent>
         <ConversationScrollButton />
       </Conversation>
-      <div className="border-t border-border">
+      <div className="border-t border-muted">
         <Suggestions className="px-4 py-2">
           {suggestionsLoading && (
             <div className="flex items-center gap-2 px-4 py-2 text-muted-foreground">
@@ -227,10 +227,10 @@ export function AiChat({ open }: AiChatProps) {
       <div className="px-4 pb-4">
         <PromptInput
           onSubmit={handleSubmit}
-          className="w-full bg-background-paper border-none rounded-xl bg-[#EFEFEF] p-0 flex flex-row"
+          className="w-full bg-background-paper border-none rounded-xl bg-[#EFEFEF] p-0 flex flex-row shadow-none"
         >
           <PromptInputTextarea
-            className="text-foreground"
+            className="bg-input placeholder:text-secondary-light"
             placeholder={t('Ask me anything')}
             onChange={(e) => setInput(e.target.value)}
             value={input}
