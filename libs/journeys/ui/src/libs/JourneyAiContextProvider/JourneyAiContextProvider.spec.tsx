@@ -1,4 +1,4 @@
-import { render, renderHook , screen } from '@testing-library/react'
+import { render, renderHook, screen } from '@testing-library/react'
 import { ReactElement, ReactNode } from 'react'
 
 import { BlockContext } from '../useJourneyAiContextGenerator'
