@@ -870,6 +870,7 @@ export type Journey = {
   seoDescription?: Maybe<Scalars['String']['output']>;
   /** title for seo and sharing */
   seoTitle?: Maybe<Scalars['String']['output']>;
+  showAssistant?: Maybe<Scalars['Boolean']['output']>;
   showChatButtons?: Maybe<Scalars['Boolean']['output']>;
   showDislikeButton?: Maybe<Scalars['Boolean']['output']>;
   showDisplayTitle?: Maybe<Scalars['Boolean']['output']>;
@@ -4408,6 +4409,7 @@ export type TeamUpdateInput = {
 
 export type TextResponseBlock = Block & {
   __typename?: 'TextResponseBlock';
+  hideLabel?: Maybe<Scalars['Boolean']['output']>;
   hint?: Maybe<Scalars['String']['output']>;
   id: Scalars['ID']['output'];
   integrationId?: Maybe<Scalars['String']['output']>;
@@ -4430,6 +4432,7 @@ export type TextResponseBlockCreateInput = {
 };
 
 export type TextResponseBlockUpdateInput = {
+  hideLabel?: InputMaybe<Scalars['Boolean']['input']>;
   hint?: InputMaybe<Scalars['String']['input']>;
   integrationId?: InputMaybe<Scalars['String']['input']>;
   label?: InputMaybe<Scalars['String']['input']>;

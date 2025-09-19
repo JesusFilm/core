@@ -139,6 +139,8 @@ export interface MenuBlockCreate_button1_action_LinkAction {
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export interface MenuBlockCreate_button1_action_EmailAction {
@@ -146,6 +148,8 @@ export interface MenuBlockCreate_button1_action_EmailAction {
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export type MenuBlockCreate_button1_action = MenuBlockCreate_button1_action_PhoneAction | MenuBlockCreate_button1_action_NavigateToBlockAction | MenuBlockCreate_button1_action_LinkAction | MenuBlockCreate_button1_action_EmailAction;
@@ -192,6 +196,8 @@ export interface MenuBlockCreate_button2_action_LinkAction {
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export interface MenuBlockCreate_button2_action_EmailAction {
@@ -199,6 +205,8 @@ export interface MenuBlockCreate_button2_action_EmailAction {
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export type MenuBlockCreate_button2_action = MenuBlockCreate_button2_action_PhoneAction | MenuBlockCreate_button2_action_NavigateToBlockAction | MenuBlockCreate_button2_action_LinkAction | MenuBlockCreate_button2_action_EmailAction;
@@ -245,6 +253,8 @@ export interface MenuBlockCreate_button3_action_LinkAction {
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export interface MenuBlockCreate_button3_action_EmailAction {
@@ -252,6 +262,8 @@ export interface MenuBlockCreate_button3_action_EmailAction {
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export type MenuBlockCreate_button3_action = MenuBlockCreate_button3_action_PhoneAction | MenuBlockCreate_button3_action_NavigateToBlockAction | MenuBlockCreate_button3_action_LinkAction | MenuBlockCreate_button3_action_EmailAction;
