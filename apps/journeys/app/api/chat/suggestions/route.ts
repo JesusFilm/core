@@ -12,10 +12,7 @@ export async function POST(req: NextRequest) {
   })
 
   try {
-    const {
-      contextText,
-      language
-    } = await req.json()
+    const { contextText, language } = await req.json()
 
     if (!contextText || typeof contextText !== 'string') {
       return NextResponse.json(

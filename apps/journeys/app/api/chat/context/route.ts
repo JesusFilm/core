@@ -32,7 +32,7 @@ async function fetchBlockContext(
           'block.context_length': contextText.length,
           'ai.model': 'gemini-2.5-flash',
           'operation.type': 'ai-context-generation',
-          'operation.category': 'block-processing',
+          'operation.category': 'block-processing'
         })
 
         const prompt = await getPrompt('context-prompt', {
@@ -196,7 +196,7 @@ const handler = async (req: NextRequest) => {
           0
         ),
         'operation.type': 'parallel-context-processing',
-        'operation.category': 'orchestration',
+        'operation.category': 'orchestration'
       })
 
       const startTime = Date.now()

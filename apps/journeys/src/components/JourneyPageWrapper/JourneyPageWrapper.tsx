@@ -1,14 +1,14 @@
 import PlausibleProvider from 'next-plausible'
 import { ReactElement, ReactNode } from 'react'
 
+import { useBlocks } from '@core/journeys/ui/block'
+import { JourneyAiContextProvider } from '@core/journeys/ui/JourneyAiContextProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+import { useJourneyAiContextGenerator } from '@core/journeys/ui/useJourneyAiContextGenerator'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 import { ThemeMode, ThemeName } from '@core/shared/ui/themes'
-import { JourneyAiContextProvider } from '@core/journeys/ui/JourneyAiContextProvider'
-import { useJourneyAiContextGenerator } from '@core/journeys/ui/useJourneyAiContextGenerator'
 
 import { GetJourney_journey as Journey } from '../../../__generated__/GetJourney'
-import { useBlocks } from '@core/journeys/ui/block'
 
 interface JourneyPageWrapperProps {
   journey: Journey
