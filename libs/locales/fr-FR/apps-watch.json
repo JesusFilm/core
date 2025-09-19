@@ -93,5 +93,9 @@
   "Behind The Scenes": "Dans les coulisses",
   "Trailer": "Bande-annonce",
   "Available in {{count}} languages._one": "Disponible dans la langue {{count}} .",
-  "Available in {{count}} languages._other": "Disponible en {{count}} langues."
+  "Available in {{count}} languages._other": "Disponible en {{count}} langues.",
+  "localeSuggestion": {
+    "message": "We noticed your browser prefers {{localeName}}. Would you like to view the site in this language?",
+    "action": "Switch to {{localeName}}"
+  }
 }

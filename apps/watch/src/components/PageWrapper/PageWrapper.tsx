@@ -1,6 +1,7 @@
 import Box from '@mui/material/Box'
 import Container from '@mui/material/Container'
 import Stack from '@mui/material/Stack'
+import dynamic from 'next/dynamic'
 import { ReactElement, ReactNode } from 'react'
 import Div100vh from 'react-div-100vh'
 
@@ -10,6 +11,13 @@ import { ThemeMode, ThemeName } from '@core/shared/ui/themes'
 
 import { Footer } from '../Footer'
 import { Header } from '../Header'
+
+const LocaleSuggestionBanner = dynamic<Record<string, never>>(
+  async () => ({
+    default: (await import('../LocaleSuggestionBanner')).LocaleSuggestionBanner
+  }),
+  { ssr: false, loading: () => null }
+)
 
 interface PageWrapperProps {
   hero?: ReactNode
@@ -36,6 +44,7 @@ export function PageWrapper({
 }: PageWrapperProps): ReactElement {
   return (
     <Div100vh>
+      <LocaleSuggestionBanner />
       {hideHeader !== true && (
         <Header
           themeMode={headerThemeMode}

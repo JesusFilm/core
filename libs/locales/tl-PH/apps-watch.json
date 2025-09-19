@@ -93,5 +93,9 @@
   "Behind The Scenes": "Sa Likod ng mga Eksena",
   "Trailer": "Trailer",
   "Available in {{count}} languages._one": "Available sa {{count}} wika.",
-  "Available in {{count}} languages._other": "Available sa {{count}} mga wika."
+  "Available in {{count}} languages._other": "Available sa {{count}} mga wika.",
+  "localeSuggestion": {
+    "message": "We noticed your browser prefers {{localeName}}. Would you like to view the site in this language?",
+    "action": "Switch to {{localeName}}"
+  }
 }
