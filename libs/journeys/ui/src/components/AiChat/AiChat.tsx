@@ -227,20 +227,21 @@ export function AiChat({ open }: AiChatProps) {
       <div className="px-4 pb-4">
         <PromptInput
           onSubmit={handleSubmit}
-          className="w-full bg-background-paper border-none rounded-xl bg-[#EFEFEF] p-0 flex flex-row shadow-none"
+          className="w-full bg-background-paper border-none rounded-xl bg-input p-[2px] flex flex-row shadow-none"
         >
           <PromptInputTextarea
-            className="bg-input placeholder:text-secondary-light"
+            className="bg-input placeholder:text-secondary-light text-[16px]"
             placeholder={t('Ask me anything')}
             onChange={(e) => setInput(e.target.value)}
             value={input}
           />
-          <div className="flex flex-row justify-end self-end">
+          <div className="flex flex-row justify-end self-end p-[4px]">
             <PromptInputSubmit
+              className="rounded-md disabled:bg-secondary-light"
               disabled={!input}
               status={status}
-              className="bg-transparent hover:bg-transparent border-none shadow-none text-[#6D6D6D]"
-              children={<SendHorizonalIcon className="size-5" />}
+              style={{ minHeight: '20px' }}
+              children={<SendHorizonalIcon className="size-[20px]" />}
             />
           </div>
         </PromptInput>
