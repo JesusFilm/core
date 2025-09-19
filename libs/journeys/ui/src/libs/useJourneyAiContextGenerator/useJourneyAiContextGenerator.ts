@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useState } from 'react'
 
 import { extractBlockContext } from '../../components/AiChat/utils/contextExtraction'
 import { TreeBlock } from '../block'
@@ -98,48 +98,35 @@ export function useJourneyAiContextGenerator(treeBlocks: TreeBlock[]): {
   const [aiContextData, setAiContextData] = useState<BlockContext[]>([])
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const previousTreeBlocksRef = useRef<TreeBlock[]>([])
 
   useEffect(() => {
-    // Only process if the treeBlocks have actually changed
-    const hasChanged =
-      previousTreeBlocksRef.current.length !== treeBlocks.length ||
-      previousTreeBlocksRef.current.some(
-        (block, index) =>
-          !treeBlocks[index] || block.id !== treeBlocks[index].id
-      )
-
-    if (hasChanged) {
-      previousTreeBlocksRef.current = treeBlocks
-
-      // Inline the processing logic
-      if (!treeBlocks || treeBlocks.length === 0) {
-        setAiContextData([])
-        return
-      }
-
-      setIsLoading(true)
-      setError(null)
-
-      const processContext = async () => {
-        try {
-          const blockContexts = extractBlockContexts(treeBlocks)
-          const contextResponse = await fetchContextResponse(
-            blockContexts,
-            setError
-          )
-          const fullContext = createFullContext(blockContexts, contextResponse)
-          setAiContextData(fullContext)
-        } catch (err) {
-          setError(getErrorMessage(err))
-          console.error('Error processing AI context:', err)
-        } finally {
-          setIsLoading(false)
-        }
-      }
-
-      void processContext()
+    // Load context when treeBlocks is available and not empty
+    if (!treeBlocks || treeBlocks.length === 0) {
+      setAiContextData([])
+      return
     }
+
+    setIsLoading(true)
+    setError(null)
+
+    const processContext = async () => {
+      try {
+        const blockContexts = extractBlockContexts(treeBlocks)
+        const contextResponse = await fetchContextResponse(
+          blockContexts,
+          setError
+        )
+        const fullContext = createFullContext(blockContexts, contextResponse)
+        setAiContextData(fullContext)
+      } catch (err) {
+        setError(getErrorMessage(err))
+        console.error('Error processing AI context:', err)
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+    void processContext()
   }, [treeBlocks])
 
   return {
