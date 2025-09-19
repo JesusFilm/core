@@ -12,7 +12,7 @@ export function getTextResponseValues(
   textResponseStrings: TextResponseStrings,
   journeyCustomizationFields: JourneyCustomizationField[],
   variant: JourneyProviderContext['variant'],
-  journeyIsTemplate: boolean = false
+  journeyIsTemplate: boolean | null | undefined
 ): TextResponseStrings {
   if (variant === 'admin' && journeyIsTemplate) {
     return textResponseStrings

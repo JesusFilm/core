@@ -90,7 +90,7 @@ export const TextResponse = ({
         { label, placeholder, hint },
         journey?.journeyCustomizationFields ?? [],
         variant ?? 'default',
-        journey?.template ?? false
+        journey?.template
       ),
     [label, placeholder, hint, journey?.journeyCustomizationFields, variant]
   )

@@ -41,7 +41,7 @@ describe('getTextResponseValues', () => {
     }
   ]
 
-  it('returns input strings unchanged for admin variant and journeyIsTemplate', () => {
+  it('returns input strings unchanged for admin variant and journey is a template', () => {
     const input: TextResponseStrings = {
       label: '{{ name }}',
       placeholder: '{{ title }}',

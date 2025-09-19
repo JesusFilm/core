@@ -108,7 +108,7 @@ describe('Edit Placeholder field', () => {
     expect(field).toHaveValue('Your placeholder here')
   })
 
-  it('should resolve customizable placeholder value', () => {
+  it('should resolve customizable placeholder value for journeys that are not templates', () => {
     const blockWithCustomizablePlaceholder = {
       ...block,
       placeholder: '{{ placeholder }}'

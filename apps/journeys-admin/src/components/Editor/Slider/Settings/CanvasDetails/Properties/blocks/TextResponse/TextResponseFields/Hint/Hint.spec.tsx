@@ -213,7 +213,7 @@ describe('Edit Hint field', () => {
     await waitFor(() => expect(mockHintUpdate1.result).not.toHaveBeenCalled())
   })
 
-  it('should resolve customizable hint value', () => {
+  it('should resolve customizable hint value for journeys that are not templates', () => {
     const blockWithCustomizableHint = {
       ...block,
       hint: '{{ hint }}'

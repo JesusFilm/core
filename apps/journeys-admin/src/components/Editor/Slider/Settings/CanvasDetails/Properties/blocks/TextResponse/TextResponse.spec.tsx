@@ -91,7 +91,7 @@ describe('TextResponse', () => {
     ).toBeInTheDocument()
   })
 
-  it('should show resolved customizable label value in accordion title', () => {
+  it('should show resolved customizable label value in accordion title when journey is not a template', () => {
     const customizableBlock = {
       ...completeBlock,
       label: '{{ label }}'
@@ -124,7 +124,7 @@ describe('TextResponse', () => {
     expect(getByText('Your customized label')).toBeInTheDocument()
   })
 
-  it('should show unresolved customizable label value in accordion title', () => {
+  it('should show unresolved customizable label value in accordion title, when journey is a template', () => {
     const customizableBlock = {
       ...completeBlock,
       label: '{{ label }}'

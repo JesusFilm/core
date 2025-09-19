@@ -250,7 +250,7 @@ describe('Edit Label field', () => {
     })
   })
 
-  it('should resolve customizable label value', () => {
+  it('should resolve customizable label value if journey is not a template', () => {
     const blockWithCustomizableLabel = {
       ...block,
       label: '{{ label }}'
