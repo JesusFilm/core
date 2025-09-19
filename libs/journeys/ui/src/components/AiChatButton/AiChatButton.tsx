@@ -79,7 +79,7 @@ export function AiChatButton(): ReactElement {
               </div>
             </Button>
           </DrawerClose>
-          <div className="flex flex-col gap-0">
+          <div className="flex flex-col">
             <DrawerDescription className="text-muted-foreground text-[12px]">
               {t('AI may make mistakes.')}
             </DrawerDescription>
