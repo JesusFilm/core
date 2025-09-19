@@ -48,73 +48,71 @@ describe('JourneyAiContextProvider', () => {
     }
   ]
 
-  describe('JourneyAiContextProvider', () => {
-    it('should render children when provided', () => {
-      render(
-        <JourneyAiContextProvider>
-          <TestWrapper>
-            <div>Child content</div>
-          </TestWrapper>
-        </JourneyAiContextProvider>
-      )
+  it('should render children when provided', () => {
+    render(
+      <JourneyAiContextProvider>
+        <TestWrapper>
+          <div>Child content</div>
+        </TestWrapper>
+      </JourneyAiContextProvider>
+    )
 
-      expect(screen.getByTestId('wrapper')).toBeInTheDocument()
-      expect(screen.getByText('Child content')).toBeInTheDocument()
-    })
+    expect(screen.getByTestId('wrapper')).toBeInTheDocument()
+    expect(screen.getByText('Child content')).toBeInTheDocument()
+  })
 
-    it('should provide default values when no props are provided', () => {
-      render(
-        <JourneyAiContextProvider>
-          <TestConsumer />
-        </JourneyAiContextProvider>
-      )
+  it('should provide default values when no props are provided', () => {
+    render(
+      <JourneyAiContextProvider>
+        <TestConsumer />
+      </JourneyAiContextProvider>
+    )
 
-      expect(screen.getByTestId('data')).toHaveTextContent('[]')
-      expect(screen.getByTestId('loading')).toHaveTextContent('false')
-      expect(screen.getByTestId('error')).toHaveTextContent('null')
-    })
+    expect(screen.getByTestId('data')).toHaveTextContent('[]')
+    expect(screen.getByTestId('loading')).toHaveTextContent('false')
+    expect(screen.getByTestId('error')).toHaveTextContent('null')
+  })
 
-    it('should provide custom context data when props are provided', () => {
-      render(
-        <JourneyAiContextProvider
-          data={mockBlockContext}
-          isLoading={true}
-          error="Test error"
-        >
-          <TestConsumer />
-        </JourneyAiContextProvider>
-      )
+  it('should provide custom context data when props are provided', () => {
+    render(
+      <JourneyAiContextProvider
+        data={mockBlockContext}
+        isLoading={true}
+        error="Test error"
+      >
+        <TestConsumer />
+      </JourneyAiContextProvider>
+    )
 
-      expect(screen.getByTestId('data')).toHaveTextContent(
-        JSON.stringify(mockBlockContext)
-      )
-      expect(screen.getByTestId('loading')).toHaveTextContent('true')
-      expect(screen.getByTestId('error')).toHaveTextContent('Test error')
-    })
+    expect(screen.getByTestId('data')).toHaveTextContent(
+      JSON.stringify(mockBlockContext)
+    )
+    expect(screen.getByTestId('loading')).toHaveTextContent('true')
+    expect(screen.getByTestId('error')).toHaveTextContent('Test error')
+  })
 
-    it('should handle empty array data', () => {
-      render(
-        <JourneyAiContextProvider data={[]}>
-          <TestConsumer />
-        </JourneyAiContextProvider>
-      )
+  it('should handle empty array data', () => {
+    render(
+      <JourneyAiContextProvider data={[]}>
+        <TestConsumer />
+      </JourneyAiContextProvider>
+    )
 
-      expect(screen.getByTestId('data')).toHaveTextContent('[]')
-      expect(screen.getByTestId('loading')).toHaveTextContent('false')
-      expect(screen.getByTestId('error')).toHaveTextContent('null')
-    })
+    expect(screen.getByTestId('data')).toHaveTextContent('[]')
+    expect(screen.getByTestId('loading')).toHaveTextContent('false')
+    expect(screen.getByTestId('error')).toHaveTextContent('null')
+  })
 
-    it('should handle undefined data prop', () => {
-      render(
-        <JourneyAiContextProvider data={undefined}>
-          <TestConsumer />
-        </JourneyAiContextProvider>
-      )
+  it('should handle undefined data prop', () => {
+    render(
+      <JourneyAiContextProvider data={undefined}>
+        <TestConsumer />
+      </JourneyAiContextProvider>
+    )
 
-      expect(screen.getByTestId('data')).toHaveTextContent('[]')
-      expect(screen.getByTestId('loading')).toHaveTextContent('false')
-      expect(screen.getByTestId('error')).toHaveTextContent('null')
-    })
+    expect(screen.getByTestId('data')).toHaveTextContent('[]')
+    expect(screen.getByTestId('loading')).toHaveTextContent('false')
+    expect(screen.getByTestId('error')).toHaveTextContent('null')
   })
 
   describe('useJourneyAiContext', () => {
