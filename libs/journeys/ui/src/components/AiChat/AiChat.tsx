@@ -13,8 +13,8 @@ import { v4 as uuidv4 } from 'uuid'
 
 import { useBlocks } from '../../libs/block'
 import { firebaseClient } from '../../libs/firebaseClient'
-import { useJourney } from '../../libs/JourneyProvider'
 import { useJourneyAiContext } from '../../libs/JourneyAiContextProvider'
+import { useJourney } from '../../libs/JourneyProvider'
 import { Action, Actions } from '../Actions'
 import {
   Conversation,
