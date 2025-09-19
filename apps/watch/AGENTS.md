@@ -235,25 +235,20 @@ describe('MyComponent', () => {
 - Use alphabetical order for imports and exports
 - Follow a server-first architecture: use `'use client'` components only when necessary.
 
-### Server-First Architecture
+### Rendering Strategy (Next.js Pages Router)
 
-- **Minimize Client Components**: Only use `"use client"` when absolutely necessary
-- **Prefer Server Components**: Static content rendering on server for better performance
-- **Link-Based Navigation**: Use Next.js `<Link>` instead of `onClick` handlers where possible
-- **SEO Optimization**: Server-side rendering improves content discoverability
-- **Progressive Enhancement**: Ensure core functionality works without JavaScript
-  - Server-side render all critical content and navigation
-  - Use semantic HTML forms with proper action/method attributes
-  - Implement graceful fallbacks for interactive features
+- Prefer SSR (`getServerSideProps`) or SSG (`getStaticProps`) for content and SEO where appropriate.
+- Use `<Link>` for navigation instead of custom click handlers.
+- Progressive enhancement: ensure core flows work without client JS where feasible; render critical content on the server.
+- Use semantic HTML forms with proper `action`/`method` and graceful fallbacks for interactive features.
 
 ### Optimization Strategies
 
 - **Static Content**: Render content cards, headers, and layout on server
-- **Client Boundaries**: Minimal, only for true interactivity (forms, state, browser APIs)
+- **Client Interactivity**: Keep browser-only logic minimal and isolated (forms with complex client state, media controls, browser APIs).
 - **Navigation**: Link-based routing for content discovery
 - **Image Optimization**: Next.js Image component with proper loading strategies
 - **Bundle Optimization**: Tree-shaking and code splitting
-
 ### React Component Naming Rule
 
 **Format:** `%UiType%%ComponentFunction%`
