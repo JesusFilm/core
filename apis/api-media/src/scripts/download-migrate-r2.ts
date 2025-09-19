@@ -3,8 +3,11 @@ import path from 'path'
 import { PutObjectCommand, S3Client } from '@aws-sdk/client-s3'
 import { Logger } from 'pino'
 
-import { prisma } from '../lib/prisma'
+import { PrismaClient } from '.prisma/api-media-client'
+
 import { logger } from '../logger'
+
+const prisma = new PrismaClient()
 
 function getR2Client(): S3Client {
   if (process.env.CLOUDFLARE_R2_ENDPOINT == null)

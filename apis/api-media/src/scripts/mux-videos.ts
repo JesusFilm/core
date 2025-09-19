@@ -1,12 +1,15 @@
 import Mux from '@mux/mux-node'
 
+import { PrismaClient } from '.prisma/api-media-client'
+
 import {
   createDownloadsFromMuxAsset,
   downloadsReadyToStore
 } from '../lib/downloads'
-import { prisma } from '../lib/prisma'
 import { logger as baseLogger } from '../logger'
 import { getVideo } from '../schema/mux/video/service'
+
+const prisma = new PrismaClient()
 
 // Create a child logger for the script
 const logger = baseLogger.child({ script: 'mux-videos' })

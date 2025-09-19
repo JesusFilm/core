@@ -8,7 +8,7 @@ describe('defaultRenderOption', () => {
       defaultRenderOption({
         index: 0,
         style: { backgroundColor: 'red' },
-        data: [
+        rows: [
           [
             {
               key: 'Aja-Gbe',
@@ -29,7 +29,7 @@ describe('defaultRenderOption', () => {
             0
           ]
         ]
-      })
+      } as any)
     )
     expect(
       screen.getByRole('option', { name: 'Aja-Gbe Aja-Gbe-LocalName' })

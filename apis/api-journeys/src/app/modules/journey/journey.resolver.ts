@@ -17,6 +17,13 @@ import omit from 'lodash/omit'
 import slugify from 'slugify'
 import { v4 as uuidv4 } from 'uuid'
 
+import { CaslAbility, CaslAccessible } from '@core/nest/common/CaslAuthModule'
+import { CurrentUserId } from '@core/nest/decorators/CurrentUserId'
+import { FromPostgresql } from '@core/nest/decorators/FromPostgresql'
+import {
+  PowerBiEmbed,
+  getPowerBiEmbed
+} from '@core/nest/powerBi/getPowerBiEmbed'
 import {
   Block,
   Action as BlockAction,
@@ -30,14 +37,7 @@ import {
   Team,
   UserJourney,
   UserJourneyRole
-} from '.prisma/api-journeys-client'
-import { CaslAbility, CaslAccessible } from '@core/nest/common/CaslAuthModule'
-import { CurrentUserId } from '@core/nest/decorators/CurrentUserId'
-import { FromPostgresql } from '@core/nest/decorators/FromPostgresql'
-import {
-  PowerBiEmbed,
-  getPowerBiEmbed
-} from '@core/nest/powerBi/getPowerBiEmbed'
+} from '@core/prisma/journeys/client'
 
 import {
   IdType,
@@ -265,6 +265,8 @@ export class JourneyResolver {
     }
     if (where?.languageIds != null)
       filter.languageId = { in: where?.languageIds }
+    if (where?.fromTemplateId != null)
+      filter.fromTemplateId = where.fromTemplateId
 
     if (OR.length > 0) filter.OR = OR
 
@@ -695,6 +697,11 @@ export class JourneyResolver {
             await this.prismaService.action.create({
               data: {
                 ...block.action,
+                customizable: block?.action?.customizable ?? false,
+                parentStepId:
+                  block.action.parentStepId != null
+                    ? (duplicateStepIds.get(block.action.parentStepId) ?? null)
+                    : null,
                 parentBlockId: block.id
               }
             })

@@ -110,7 +110,12 @@ export const defaultJourney: Journey = {
   logoImageBlock: null,
   menuButtonIcon: null,
   menuStepBlock: null,
-  journeyTheme: null
+  socialNodeX: null,
+  socialNodeY: null,
+  journeyTheme: null,
+  journeyCustomizationDescription: null,
+  journeyCustomizationFields: [],
+  fromTemplateId: null
 }
 
 export const publishedJourney: Journey = {
@@ -910,7 +915,7 @@ export const nodes: Node[] = [
     type: 'SocialPreview',
     data: {},
     position: { x: -365, y: -46 },
-    draggable: false
+    draggable: true
   },
   {
     id: 'hidden',

@@ -3,7 +3,7 @@ import { Injectable } from '@nestjs/common'
 import { graphql } from 'gql.tada'
 import { GraphQLError } from 'graphql'
 
-import { QrCode } from '.prisma/api-journeys-client'
+import { QrCode } from '@core/prisma/journeys/client'
 
 import {
   MutationShortLinkCreateInput,

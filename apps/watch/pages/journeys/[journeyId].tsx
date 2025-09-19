@@ -32,7 +32,6 @@ import i18nConfig from '../../next-i18next.config'
 import { PageWrapper } from '../../src/components/PageWrapper'
 import { createApolloClient } from '../../src/libs/apolloClient'
 import { getFlags } from '../../src/libs/getFlags'
-import { LanguageProvider } from '../../src/libs/languageContext/LanguageContext'
 
 export default function JourneyDetailsPage(): ReactElement {
   const router = useRouter()
@@ -50,22 +49,20 @@ export default function JourneyDetailsPage(): ReactElement {
         <Container maxWidth="xxl">
           <Stack gap={10}>
             <SnackbarProvider>
-              <LanguageProvider>
-                <JourneyProvider
-                  value={{
-                    journey: data?.journey,
-                    variant: 'admin'
-                  }}
+              <JourneyProvider
+                value={{
+                  journey: data?.journey,
+                  variant: 'admin'
+                }}
+              >
+                <ThemeProvider
+                  themeName={ThemeName.journeysAdmin}
+                  themeMode={ThemeMode.light}
+                  nested
                 >
-                  <ThemeProvider
-                    themeName={ThemeName.journeysAdmin}
-                    themeMode={ThemeMode.light}
-                    nested
-                  >
-                    <TemplateView hideOverflow />
-                  </ThemeProvider>
-                </JourneyProvider>
-              </LanguageProvider>
+                  <TemplateView hideOverflow />
+                </ThemeProvider>
+              </JourneyProvider>
             </SnackbarProvider>
           </Stack>
         </Container>

@@ -4,7 +4,7 @@ import { useMutation } from '@apollo/client'
 import Button from '@mui/material/Button'
 import Stack from '@mui/material/Stack'
 import { Form, Formik } from 'formik'
-import { useRouter } from 'next/navigation'
+import { useParams, useRouter } from 'next/navigation'
 import { useSnackbar } from 'notistack'
 import { object, string } from 'yup'
 
@@ -22,16 +22,9 @@ const CREATE_VIDEO_EDITION = graphql(`
   }
 `)
 
-interface AddEditionPageProps {
-  params: {
-    videoId: string
-  }
-}
-
-export default function AddEditionPage({
-  params: { videoId }
-}: AddEditionPageProps) {
+export default function AddEditionPage() {
   const router = useRouter()
+  const { videoId } = useParams<{ videoId: string }>()
   const { enqueueSnackbar } = useSnackbar()
   const [createEdition] = useMutation(CREATE_VIDEO_EDITION)
 

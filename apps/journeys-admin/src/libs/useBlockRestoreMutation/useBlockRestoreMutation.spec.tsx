@@ -1,6 +1,6 @@
 import { InMemoryCache } from '@apollo/client'
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
-import { act, renderHook, waitFor } from '@testing-library/react'
+import { act, renderHook } from '@testing-library/react'
 
 import {
   ActiveSlide,
@@ -72,15 +72,13 @@ describe('useBlockRestoreMutation', () => {
     })
 
     await act(async () => {
-      await waitFor(async () => {
-        await result.current[0]({
-          variables: {
-            id: stepBlock.id
-          }
-        })
-        expect(useBlockRestoreMutationMock.result).toHaveBeenCalled()
+      await result.current[0]({
+        variables: {
+          id: stepBlock.id
+        }
       })
     })
+    expect(useBlockRestoreMutationMock.result).toHaveBeenCalled()
 
     const extractedCache = cache.extract()
     expect(extractedCache['Journey:journey-id']?.blocks).toEqual([

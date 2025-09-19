@@ -1,9 +1,8 @@
 import compact from 'lodash/compact'
 
-import { Platform } from '.prisma/api-media-client'
+import { Platform, prisma } from '@core/prisma/media/client'
 
 import { updateVideoVariantInAlgolia } from '../../lib/algolia/algoliaVideoVariantUpdate'
-import { prisma } from '../../lib/prisma'
 import {
   videoCacheReset,
   videoVariantCacheReset
@@ -470,7 +469,8 @@ export const VideoVariant = builder.prismaObject('VideoVariant', {
     version: t.withAuth({ isPublisher: true }).exposeInt('version', {
       nullable: false,
       description: 'version control for master video file'
-    })
+    }),
+    video: t.relation('video')
   })
 })
 
@@ -481,7 +481,7 @@ builder.queryFields((t) => ({
     args: {
       id: t.arg.id({ required: true })
     },
-    resolve: async (query, _parent, { id }, context) => {
+    resolve: async (query, _parent, { id }) => {
       const videoVariant = await prisma.videoVariant.findUnique({
         ...query,
         where: { id }
@@ -502,7 +502,8 @@ builder.queryFields((t) => ({
         ...query,
 
         where: {
-          published: input?.onlyPublished === false ? undefined : true
+          published: input?.onlyPublished === false ? undefined : true,
+          languageId: input?.languageId ?? undefined
         }
       })
   })

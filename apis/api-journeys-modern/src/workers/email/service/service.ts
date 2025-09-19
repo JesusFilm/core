@@ -4,8 +4,9 @@ import { Job } from 'bullmq'
 
 import {
   UserJourneyRole,
-  UserTeamRole
-} from '.prisma/api-journeys-modern-client'
+  UserTeamRole,
+  prisma
+} from '@core/prisma/journeys/client'
 import { graphql } from '@core/shared/gql'
 import { sendEmail } from '@core/yoga/email'
 
@@ -16,7 +17,6 @@ import { TeamInviteEmail } from '../../../emails/templates/TeamInvite'
 import { TeamInviteNoAccountEmail } from '../../../emails/templates/TeamInvite/TeamInviteNoAccount'
 import { TeamInviteAcceptedEmail } from '../../../emails/templates/TeamInviteAccepted'
 import { TeamRemovedEmail } from '../../../emails/templates/TeamRemoved'
-import { prisma } from '../../../lib/prisma'
 
 import {
   ApiJourneysJob,

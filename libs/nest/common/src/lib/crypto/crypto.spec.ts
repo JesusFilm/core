@@ -1,4 +1,4 @@
-import { Integration } from '.prisma/api-journeys-client'
+import { Integration } from '@core/prisma/journeys/client'
 
 import { decryptSymmetric, encryptSymmetric } from './crypto'
 

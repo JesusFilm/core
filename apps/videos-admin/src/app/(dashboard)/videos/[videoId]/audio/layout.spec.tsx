@@ -51,6 +51,20 @@ jest.mock('notistack', () => ({
   SnackbarProvider: ({ children }: { children: React.ReactNode }) => children
 }))
 
+// Helper function to render component with different pathnames
+const renderWithPathname = (pathname: string): void => {
+  mockPathname = pathname
+  mockUsePathname.mockReturnValue(pathname)
+
+  render(
+    <MockedProvider>
+      <ClientLayout>
+        <div>Child content</div>
+      </ClientLayout>
+    </MockedProvider>
+  )
+}
+
 describe('ClientLayout', () => {
   const mockVideoVariants = [
     {
@@ -145,7 +159,7 @@ describe('ClientLayout', () => {
   it('should render variants', () => {
     render(
       <MockedProvider>
-        <ClientLayout params={{ videoId: 'video123' }}>
+        <ClientLayout>
           <div>Child content</div>
         </ClientLayout>
       </MockedProvider>
@@ -157,7 +171,7 @@ describe('ClientLayout', () => {
   it('should render Audio Languages header', () => {
     render(
       <MockedProvider>
-        <ClientLayout params={{ videoId: 'video123' }}>
+        <ClientLayout>
           <div>Child content</div>
         </ClientLayout>
       </MockedProvider>
@@ -169,7 +183,7 @@ describe('ClientLayout', () => {
   it('should render Publish All button', () => {
     render(
       <MockedProvider>
-        <ClientLayout params={{ videoId: 'video123' }}>
+        <ClientLayout>
           <div>Child content</div>
         </ClientLayout>
       </MockedProvider>
@@ -181,7 +195,7 @@ describe('ClientLayout', () => {
   it('should render Add Audio Language button', () => {
     render(
       <MockedProvider>
-        <ClientLayout params={{ videoId: 'video123' }}>
+        <ClientLayout>
           <div>Child content</div>
         </ClientLayout>
       </MockedProvider>
@@ -193,7 +207,7 @@ describe('ClientLayout', () => {
   it('should open variant modal when variant is clicked', async () => {
     render(
       <MockedProvider>
-        <ClientLayout params={{ videoId: 'video123' }}>
+        <ClientLayout>
           <div>Child content</div>
         </ClientLayout>
       </MockedProvider>
@@ -205,11 +219,24 @@ describe('ClientLayout', () => {
     })
   })
 
+  it('should have correct id for the Section element so correct virtualization dimensions can be calculated', async () => {
+    render(
+      <MockedProvider>
+        <ClientLayout>
+          <div>Child content</div>
+        </ClientLayout>
+      </MockedProvider>
+    )
+
+    const section = document.getElementById('Audio Languages-section')
+    expect(section).not.toBeNull()
+  })
+
   it('should open delete confirmation dialog when delete button is clicked', async () => {
     render(
       <MockedProvider>
         <SnackbarProvider>
-          <ClientLayout params={{ videoId: 'video123' }}>
+          <ClientLayout>
             <div>Child content</div>
           </ClientLayout>
         </SnackbarProvider>
@@ -228,7 +255,7 @@ describe('ClientLayout', () => {
   it('should navigate to add audio language page when clicking add audio language button', async () => {
     render(
       <MockedProvider>
-        <ClientLayout params={{ videoId: 'video123' }}>
+        <ClientLayout>
           <div>Child content</div>
         </ClientLayout>
       </MockedProvider>
@@ -243,7 +270,7 @@ describe('ClientLayout', () => {
   it('should navigate to publish all dialog route when Publish All button is clicked', async () => {
     render(
       <MockedProvider>
-        <ClientLayout params={{ videoId: 'video123' }}>
+        <ClientLayout>
           <div>Child content</div>
         </ClientLayout>
       </MockedProvider>
@@ -308,7 +335,7 @@ describe('ClientLayout', () => {
 
     render(
       <MockedProvider>
-        <ClientLayout params={{ videoId: 'video123' }}>
+        <ClientLayout>
           <div>Child content</div>
         </ClientLayout>
       </MockedProvider>
@@ -329,7 +356,7 @@ describe('ClientLayout', () => {
   it('should render children', async () => {
     render(
       <MockedProvider>
-        <ClientLayout params={{ videoId: 'video123' }}>
+        <ClientLayout>
           <div data-testid="child-content">Child content</div>
         </ClientLayout>
       </MockedProvider>
@@ -342,7 +369,7 @@ describe('ClientLayout', () => {
     render(
       <MockedProvider>
         <SnackbarProvider>
-          <ClientLayout params={{ videoId: 'video123' }}>
+          <ClientLayout>
             <div>Child content</div>
           </ClientLayout>
         </SnackbarProvider>
@@ -374,7 +401,7 @@ describe('ClientLayout', () => {
     render(
       <MockedProvider>
         <SnackbarProvider>
-          <ClientLayout params={{ videoId: 'video123' }}>
+          <ClientLayout>
             <div>Child content</div>
           </ClientLayout>
         </SnackbarProvider>
@@ -398,7 +425,7 @@ describe('ClientLayout', () => {
 
     const { rerender } = render(
       <MockedProvider>
-        <ClientLayout params={{ videoId: 'video123' }}>
+        <ClientLayout>
           <div>Child content</div>
         </ClientLayout>
       </MockedProvider>
@@ -410,7 +437,7 @@ describe('ClientLayout', () => {
 
     rerender(
       <MockedProvider>
-        <ClientLayout params={{ videoId: 'video123' }}>
+        <ClientLayout>
           <div>Child content</div>
         </ClientLayout>
       </MockedProvider>
@@ -425,7 +452,7 @@ describe('ClientLayout', () => {
 
     rerender(
       <MockedProvider>
-        <ClientLayout params={{ videoId: 'video123' }}>
+        <ClientLayout>
           <div>Child content</div>
         </ClientLayout>
       </MockedProvider>
@@ -441,7 +468,7 @@ describe('ClientLayout', () => {
 
     const { rerender } = render(
       <MockedProvider>
-        <ClientLayout params={{ videoId: 'video123' }}>
+        <ClientLayout>
           <div>Child content</div>
         </ClientLayout>
       </MockedProvider>
@@ -453,7 +480,7 @@ describe('ClientLayout', () => {
 
     rerender(
       <MockedProvider>
-        <ClientLayout params={{ videoId: 'video123' }}>
+        <ClientLayout>
           <div>Child content</div>
         </ClientLayout>
       </MockedProvider>
@@ -468,7 +495,7 @@ describe('ClientLayout', () => {
 
     rerender(
       <MockedProvider>
-        <ClientLayout params={{ videoId: 'video123' }}>
+        <ClientLayout>
           <div>Child content</div>
         </ClientLayout>
       </MockedProvider>
@@ -484,7 +511,7 @@ describe('ClientLayout', () => {
 
     const { rerender } = render(
       <MockedProvider>
-        <ClientLayout params={{ videoId: 'video123' }}>
+        <ClientLayout>
           <div>Child content</div>
         </ClientLayout>
       </MockedProvider>
@@ -496,7 +523,7 @@ describe('ClientLayout', () => {
 
     rerender(
       <MockedProvider>
-        <ClientLayout params={{ videoId: 'video123' }}>
+        <ClientLayout>
           <div>Child content</div>
         </ClientLayout>
       </MockedProvider>
@@ -511,7 +538,7 @@ describe('ClientLayout', () => {
 
     rerender(
       <MockedProvider>
-        <ClientLayout params={{ videoId: 'video123' }}>
+        <ClientLayout>
           <div>Child content</div>
         </ClientLayout>
       </MockedProvider>
@@ -527,7 +554,7 @@ describe('ClientLayout', () => {
 
     const { rerender } = render(
       <MockedProvider>
-        <ClientLayout params={{ videoId: 'video123' }}>
+        <ClientLayout>
           <div>Child content</div>
         </ClientLayout>
       </MockedProvider>
@@ -540,7 +567,7 @@ describe('ClientLayout', () => {
 
     rerender(
       <MockedProvider>
-        <ClientLayout params={{ videoId: 'video123' }}>
+        <ClientLayout>
           <div>Child content</div>
         </ClientLayout>
       </MockedProvider>
@@ -555,7 +582,7 @@ describe('ClientLayout', () => {
 
     rerender(
       <MockedProvider>
-        <ClientLayout params={{ videoId: 'video123' }}>
+        <ClientLayout>
           <div>Child content</div>
         </ClientLayout>
       </MockedProvider>

@@ -38,7 +38,7 @@ describe('AddJourneyButton', () => {
     alt: 'two hot air balloons in the sky',
     headlineTypographyContent: 'The Journey Is On',
     bodyTypographyContent: '"Go, and lead the people on their way..."',
-    captionTypographyContent: 'Deutoronomy 10:11',
+    captionTypographyContent: 'Deuteronomy 10:11',
     teamId: 'teamId'
   }
 

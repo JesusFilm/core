@@ -2,6 +2,7 @@ import { Job, Queue, Worker } from 'bullmq'
 import { Logger } from 'pino'
 
 import { connection } from './lib/connection'
+import { runIfLeader } from './lib/leader'
 import { logger } from './lib/logger'
 
 const ONE_HOUR = 3600
@@ -51,30 +52,41 @@ function run({
 }
 
 async function main(): Promise<void> {
-  run(
-    await import(
-      /* webpackChunkName: "email" */
-      './email'
+  async function importAndRunAllWorkers(): Promise<void> {
+    run(
+      await import(
+        /* webpackChunkName: 'email' */
+        './email'
+      )
     )
-  )
-  run(
-    await import(
-      /* webpackChunkName: "emailEvents" */
-      './emailEvents'
+    run(
+      await import(
+        /* webpackChunkName: 'emailEvents' */
+        './emailEvents'
+      )
     )
-  )
-  run(
-    await import(
-      /* webpackChunkName: "revalidate" */
-      './revalidate'
+    run(
+      await import(
+        /* webpackChunkName: 'revalidate' */
+        './revalidate'
+      )
     )
-  )
-  run(
-    await import(
-      /* webpackChunkName: "shortlinkUpdater" */
-      './shortlinkUpdater'
+    run(
+      await import(
+        /* webpackChunkName: 'shortlinkUpdater' */
+        './shortlinkUpdater'
+      )
     )
-  )
+  }
+
+  if (process.env.NODE_ENV !== 'production') {
+    await importAndRunAllWorkers()
+    return
+  }
+
+  await runIfLeader(async () => {
+    await importAndRunAllWorkers()
+  })
 }
 
 // avoid running on test environment

@@ -71,6 +71,7 @@ type Journey @key(fields: "id") @shareable {
   socialNodeX: Int
   socialNodeY: Int
   fromTemplateId: String
+  showAssistant: Boolean
 }
 
 enum IdType {
@@ -94,6 +95,7 @@ input JourneysFilter {
   languageIds: [ID!]
   limit: Int
   orderByRecent: Boolean
+  fromTemplateId: ID
 }
 
 input JourneysQueryOptions {

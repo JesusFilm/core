@@ -2,14 +2,14 @@ import { UseGuards } from '@nestjs/common'
 import { Args, Parent, Query, ResolveField, Resolver } from '@nestjs/graphql'
 import { GraphQLError } from 'graphql'
 
+import { CaslAccessible } from '@core/nest/common/CaslAuthModule'
+import { FromPostgresql } from '@core/nest/decorators/FromPostgresql'
 import {
   Event,
   JourneyVisitor,
   Prisma,
   Visitor
-} from '.prisma/api-journeys-client'
-import { CaslAccessible } from '@core/nest/common/CaslAuthModule'
-import { FromPostgresql } from '@core/nest/decorators/FromPostgresql'
+} from '@core/prisma/journeys/client'
 
 import {
   JourneyVisitorFilter,

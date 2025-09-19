@@ -1,19 +1,3 @@
-import baseConfig from '../../eslint.config.mjs'
+import apiConfig from '../../libs/shared/eslint/api.mjs'
 
-export default [
-  ...baseConfig,
-  {
-    ignores: [
-      'apis/api-analytics/webpack.config.js',
-      'apis/api-analytics/eslint.config.js'
-    ]
-  },
-  {
-    files: ['**/*.ts', '**/*.tsx'],
-    languageOptions: {
-      parserOptions: {
-        project: ['apis/api-analytics/tsconfig.*?.json']
-      }
-    }
-  }
-]
+export default apiConfig

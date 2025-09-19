@@ -5,6 +5,8 @@ EXPOSE 4008
 ARG SERVICE_VERSION=0.0.1
 ENV OTEL_RESOURCE_ATTRIBUTES="service.version=$SERVICE_VERSION"
 ENV PRISMA_LOCATION_ANALYTICS=/app/node_modules/.prisma/api-analytics-client
+ENV PNPM_HOME="/usr/local/share/pnpm"
+ENV PATH="$PNPM_HOME:$PATH"
 
 RUN apk upgrade --update-cache --available && \
     apk add g++ make python3 py3-pip curl-dev && \
@@ -12,15 +14,12 @@ RUN apk upgrade --update-cache --available && \
 
 WORKDIR /app
 COPY ./dist/apps/api-analytics .
-COPY ./package-lock.json .
+COPY ./libs/prisma/analytics/db ./prisma
 
-# dependencies that nestjs needs
-RUN npm install --production
-
-WORKDIR /prisma
-COPY ./apis/api-analytics/db .
-RUN npx prisma@6 generate --generator client
-
-WORKDIR /app
+RUN corepack enable && corepack prepare pnpm --activate
+RUN pnpm install --prod --silent
+RUN pnpm add @prisma/client@6.5.0
+RUN pnpm add -D prisma@6.5.0
+RUN pnpm exec prisma generate --generator client --schema ./prisma/schema.prisma
 
 CMD node ./main.js

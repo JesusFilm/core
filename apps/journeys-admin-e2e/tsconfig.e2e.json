@@ -4,7 +4,7 @@
     "sourceMap": false,
     "outDir": "../../dist/out-tsc",
     "allowJs": true,
-    "types": ["playwright", "node"],
+    "types": ["node", "@playwright/test"],
     "resolveJsonModule": true
   },
   "include": ["src/**/*.ts", "src/**/*.js", "playwright.config.ts"]

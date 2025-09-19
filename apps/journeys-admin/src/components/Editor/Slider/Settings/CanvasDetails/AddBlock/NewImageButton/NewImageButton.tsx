@@ -50,9 +50,9 @@ export function NewImageButton(): ReactElement {
     const imageBlock: ImageBlock = {
       id: uuid(),
       parentBlockId: card.id,
-      parentOrder: card.children.length ?? 0,
+      parentOrder: card.children?.length ?? 0,
       src: null,
-      alt: 'Default Image Icon',
+      alt: t('Default Image Icon'),
       width: 0,
       height: 0,
       blurhash: '',

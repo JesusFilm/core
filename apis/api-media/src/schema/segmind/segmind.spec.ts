@@ -19,7 +19,16 @@ jest.mock('../cloudflare/image/service', () => ({
 }))
 
 describe('segmind', () => {
-  const client = getClient()
+  const authClient = getClient({
+    headers: {
+      authorization: 'token'
+    },
+    context: {
+      currentUser: {
+        id: 'userId'
+      }
+    }
+  })
 
   describe('createImageBySegmindPrompt', () => {
     const CREATE_IMAGE_BY_SEGMIND_PROMPT_MUTATION = graphql(`
@@ -49,7 +58,7 @@ describe('segmind', () => {
         aspectRatio: null,
         videoId: null
       })
-      const result = await client({
+      const result = await authClient({
         document: CREATE_IMAGE_BY_SEGMIND_PROMPT_MUTATION,
         variables: {
           prompt: 'test prompt',

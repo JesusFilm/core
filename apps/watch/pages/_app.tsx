@@ -1,6 +1,6 @@
 import { ApolloProvider, type NormalizedCacheObject } from '@apollo/client'
 import type { EmotionCache } from '@emotion/cache'
-import { AppCacheProvider } from '@mui/material-nextjs/v14-pagesRouter'
+import { AppCacheProvider } from '@mui/material-nextjs/v15-pagesRouter'
 import { GoogleTagManager } from '@next/third-parties/google'
 import type { AppProps as NextJsAppProps } from 'next/app'
 import { Noto_Serif } from 'next/font/google'
@@ -12,6 +12,7 @@ import { DefaultSeo } from 'next-seo'
 import { type ReactElement, useEffect } from 'react'
 
 import { InstantSearchProvider } from '@core/journeys/ui/algolia/InstantSearchProvider'
+import { createEmotionCache } from '@core/shared/ui/createEmotionCache'
 import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 import { ThemeMode, ThemeName } from '@core/shared/ui/themes'
@@ -69,7 +70,7 @@ type WatchAppProps = NextJsAppProps<{
 function WatchApp({
   Component,
   pageProps,
-  emotionCache
+  emotionCache = createEmotionCache({})
 }: WatchAppProps): ReactElement {
   useEffect(() => {
     // Remove the server-side injected CSS.

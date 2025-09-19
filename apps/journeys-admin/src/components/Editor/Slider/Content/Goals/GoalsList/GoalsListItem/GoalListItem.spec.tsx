@@ -1,3 +1,5 @@
+import Table from '@mui/material/Table'
+import TableBody from '@mui/material/TableBody'
 import { fireEvent, render, screen } from '@testing-library/react'
 
 import { GoalType } from '@core/journeys/ui/Button/utils/getLinkActionGoal'
@@ -26,7 +28,13 @@ describe('GoalListItem', () => {
       goalType: GoalType.Chat
     }
 
-    render(<GoalsListItem goal={goal} />)
+    render(
+      <Table>
+        <TableBody>
+          <GoalsListItem goal={goal} />
+        </TableBody>
+      </Table>
+    )
 
     expect(screen.getByText('Start a Conversation')).toBeInTheDocument()
     expect(screen.getAllByTestId('MessageChat1Icon')).toHaveLength(2)
@@ -41,7 +49,13 @@ describe('GoalListItem', () => {
       goalType: GoalType.Bible
     }
 
-    render(<GoalsListItem goal={goal} />)
+    render(
+      <Table>
+        <TableBody>
+          <GoalsListItem goal={goal} />
+        </TableBody>
+      </Table>
+    )
 
     expect(screen.getByText('Link to Bible')).toBeInTheDocument()
     expect(screen.getAllByTestId('BibleIcon')).toHaveLength(2)
@@ -56,7 +70,13 @@ describe('GoalListItem', () => {
       goalType: GoalType.Website
     }
 
-    render(<GoalsListItem goal={goal} />)
+    render(
+      <Table>
+        <TableBody>
+          <GoalsListItem goal={goal} />
+        </TableBody>
+      </Table>
+    )
 
     expect(screen.getByText('Visit a Website')).toBeInTheDocument()
     expect(screen.getAllByTestId('LinkAngledIcon')).toHaveLength(2)
@@ -80,7 +100,11 @@ describe('GoalListItem', () => {
     render(
       <EditorProvider initialState={state}>
         <TestEditorState />
-        <GoalsListItem goal={goal} />
+        <Table>
+          <TableBody>
+            <GoalsListItem goal={goal} />
+          </TableBody>
+        </Table>
       </EditorProvider>
     )
 

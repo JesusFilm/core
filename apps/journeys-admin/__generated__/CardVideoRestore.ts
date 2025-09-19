@@ -64,6 +64,12 @@ export interface CardVideoRestore_video_VideoBlock_mediaVideo_YouTube {
 
 export type CardVideoRestore_video_VideoBlock_mediaVideo = CardVideoRestore_video_VideoBlock_mediaVideo_Video | CardVideoRestore_video_VideoBlock_mediaVideo_MuxVideo | CardVideoRestore_video_VideoBlock_mediaVideo_YouTube;
 
+export interface CardVideoRestore_video_VideoBlock_action_PhoneAction {
+  __typename: "PhoneAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+}
+
 export interface CardVideoRestore_video_VideoBlock_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
   parentBlockId: string;
@@ -76,6 +82,8 @@ export interface CardVideoRestore_video_VideoBlock_action_LinkAction {
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export interface CardVideoRestore_video_VideoBlock_action_EmailAction {
@@ -83,9 +91,11 @@ export interface CardVideoRestore_video_VideoBlock_action_EmailAction {
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
-export type CardVideoRestore_video_VideoBlock_action = CardVideoRestore_video_VideoBlock_action_NavigateToBlockAction | CardVideoRestore_video_VideoBlock_action_LinkAction | CardVideoRestore_video_VideoBlock_action_EmailAction;
+export type CardVideoRestore_video_VideoBlock_action = CardVideoRestore_video_VideoBlock_action_PhoneAction | CardVideoRestore_video_VideoBlock_action_NavigateToBlockAction | CardVideoRestore_video_VideoBlock_action_LinkAction | CardVideoRestore_video_VideoBlock_action_EmailAction;
 
 export interface CardVideoRestore_video_VideoBlock {
   __typename: "VideoBlock";

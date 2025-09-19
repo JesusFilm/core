@@ -33,7 +33,7 @@ type TypographyBlockSettings @shareable {
   color: String @shareable
 }
 
-type TypographyBlock implements Block @key(fields: "id") @shareable {
+type TypographyBlock implements Block @shareable {
   id: ID! @shareable
   journeyId: ID! @shareable
   parentBlockId: ID @shareable

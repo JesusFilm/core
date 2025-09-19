@@ -1,0 +1,1 @@
+export { EmailActionInput } from './emailActionInput'

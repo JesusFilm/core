@@ -6,10 +6,10 @@ const prisma = new PrismaClient()
 export async function shortLinkDomain(): Promise<void> {
   const id = '898626fa-6204-4b53-ae9d-12093831c61d'
 
-  if (process.env.JOURNEYS_SHORTLINK_DOMAIN == null) {
+  if (process.env['JOURNEYS_SHORTLINK_DOMAIN'] == null) {
     throw new Error('Domain not set')
   }
-  const hostname = process.env.JOURNEYS_SHORTLINK_DOMAIN
+  const hostname = process.env['JOURNEYS_SHORTLINK_DOMAIN']
 
   await prisma.shortLinkDomain.upsert({
     where: { id },

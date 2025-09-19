@@ -3,8 +3,8 @@ import { Test, TestingModule } from '@nestjs/testing'
 import axios, { AxiosError, AxiosResponse } from 'axios'
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
 
-import { Integration, Prisma, Team } from '.prisma/api-journeys-client'
 import { CaslAuthModule } from '@core/nest/common/CaslAuthModule'
+import { Integration, Prisma, Team } from '@core/prisma/journeys/client'
 
 import { IntegrationGrowthSpacesCreateInput } from '../../../../__generated__/graphql'
 import {
@@ -189,6 +189,9 @@ describe('IntegrationGrowthSpaceResolver', () => {
     })
 
     it('should throw error if encryption fails', async () => {
+      process.env.INTEGRATION_ACCESS_KEY_ENCRYPTION_SECRET =
+        undefined as unknown as string
+      prismaService.integration.create.mockResolvedValue(integrationWithTeam)
       await expect(
         resolver.integrationGrowthSpacesCreate(input, ability)
       ).rejects.toThrow('no crypto key')
@@ -248,6 +251,8 @@ describe('IntegrationGrowthSpaceResolver', () => {
       prismaService.integration.findUnique.mockResolvedValue(
         integrationWithTeam
       )
+      process.env.INTEGRATION_ACCESS_KEY_ENCRYPTION_SECRET =
+        undefined as unknown as string
 
       await expect(
         resolver.integrationGrowthSpacesUpdate(

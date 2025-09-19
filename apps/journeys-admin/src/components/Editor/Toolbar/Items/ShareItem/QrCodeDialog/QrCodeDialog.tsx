@@ -5,7 +5,6 @@ import { useTranslation } from 'next-i18next'
 import { useSnackbar } from 'notistack'
 import { ReactElement, useEffect, useState } from 'react'
 
-import { useTeam } from '@core/journeys/ui/TeamProvider'
 import { Dialog } from '@core/shared/ui/Dialog'
 
 import { GetJourneyForSharing_journey as JourneyFromLazyQuery } from '../../../../../../../__generated__/GetJourneyForSharing'

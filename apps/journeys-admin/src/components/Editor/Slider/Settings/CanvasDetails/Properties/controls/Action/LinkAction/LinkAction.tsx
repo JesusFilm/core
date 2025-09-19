@@ -48,7 +48,7 @@ export function LinkAction(): ReactElement {
   })
 
   function handleSubmit(src: string): void {
-    if (selectedBlock == null) return
+    if (selectedBlock == null || selectedStep == null) return
 
     // checks if url has a protocol
     const url = /^\w+:\/\//.test(src) ? src : `https://${src}`
@@ -60,7 +60,9 @@ export function LinkAction(): ReactElement {
         __typename: 'LinkAction',
         parentBlockId: id,
         gtmEventName: '',
-        url
+        url,
+        customizable: linkAction?.customizable ?? false,
+        parentStepId: selectedStep.id
       },
       undoAction: action,
       editorFocus: {

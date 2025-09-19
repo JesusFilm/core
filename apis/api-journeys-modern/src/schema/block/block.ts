@@ -2,9 +2,6 @@ import { builder } from '../builder'
 
 export const Block = builder.prismaInterface('Block', {
   name: 'Block',
-  directives: {
-    key: { fields: 'id' }
-  },
   fields: (t) => ({
     id: t.exposeID('id', { nullable: false }),
     journeyId: t.exposeID('journeyId', {

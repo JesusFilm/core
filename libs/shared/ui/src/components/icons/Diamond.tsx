@@ -2,8 +2,8 @@ import { createSvgIcon } from '@mui/material/utils'
 
 export default createSvgIcon(
   <path
-    fill-rule="evenodd"
-    clip-rule="evenodd"
+    fillRule="evenodd"
+    clipRule="evenodd"
     d="M11.2929 1.69328C11.6834 1.30276 12.3166 1.30276 12.7071 1.69328L22.3071 11.2933C22.6977 11.6838 22.6977 12.317 22.3071 12.7075L12.7071 22.3075C12.3166 22.698 11.6834 22.698 11.2929 22.3075L1.69292 12.7075C1.30239 12.317 1.30239 11.6838 1.69292 11.2933L11.2929 1.69328ZM3.81424 12.0004L12 20.1862L20.1858 12.0004L12 3.8146L3.81424 12.0004Z"
   />,
   'Diamond'

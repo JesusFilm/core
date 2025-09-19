@@ -17,7 +17,11 @@ const config: Config = {
   collectCoverage: true,
   coverageReporters: ['cobertura'],
   preset: '../../jest.preset.js',
-  setupFilesAfterEnv: ['<rootDir>/test/prismaMock.ts']
+  setupFilesAfterEnv: [
+    '<rootDir>/test/crowdinMock.ts',
+    '<rootDir>/test/bullmqMock.ts',
+    '<rootDir>/test/prismaMock.ts'
+  ]
 }
 
 export default config

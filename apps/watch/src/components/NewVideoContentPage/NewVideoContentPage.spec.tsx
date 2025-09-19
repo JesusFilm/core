@@ -1,21 +1,14 @@
-import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing'
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 
-import {
-  GetLanguagesSlug,
-  GetLanguagesSlugVariables
-} from '../../../__generated__/GetLanguagesSlug'
 import { VideoProvider } from '../../libs/videoContext'
 import { WatchProvider } from '../../libs/watchContext'
-import { TestWatchState } from '../../libs/watchContext/TestWatchState'
-import { GET_LANGUAGES_SLUG } from '../AudioLanguageDialog/AudioLanguageDialog'
 import { videos } from '../Videos/__generated__/testData'
 
 import { NewVideoContentPage } from './NewVideoContentPage'
 
 const initialWatchState = {
-  siteLanguage: 'en',
   audioLanguage: '529',
   subtitleLanguage: '529',
   subtitleOn: true,
@@ -165,66 +158,5 @@ describe('NewContentPage', () => {
       'https://join.bsfinternational.org/?utm_source=jesusfilm-watch',
       '_blank'
     )
-  })
-
-  it('should show subtitle state in TestWatchState', async () => {
-    const getLanguagesSlugMock: MockedResponse<
-      GetLanguagesSlug,
-      GetLanguagesSlugVariables
-    > = {
-      request: {
-        query: GET_LANGUAGES_SLUG,
-        variables: { id: '1_jf-0-0' }
-      },
-      result: {
-        data: {
-          video: {
-            __typename: 'Video' as const,
-            variantLanguagesWithSlug: [
-              {
-                __typename: 'LanguageWithSlug' as const,
-                slug: 'english',
-                language: {
-                  __typename: 'Language' as const,
-                  id: '529',
-                  slug: 'english',
-                  name: [
-                    {
-                      __typename: 'LanguageName' as const,
-                      value: 'English',
-                      primary: true
-                    }
-                  ]
-                }
-              }
-            ]
-          }
-        }
-      }
-    }
-
-    const result = jest.fn().mockReturnValue({ ...getLanguagesSlugMock.result })
-
-    render(
-      <MockedProvider mocks={[{ ...getLanguagesSlugMock, result }]}>
-        <VideoProvider value={{ content: videos[0] }}>
-          <WatchProvider initialState={initialWatchState}>
-            <NewVideoContentPage />
-            <TestWatchState />
-          </WatchProvider>
-        </VideoProvider>
-      </MockedProvider>
-    )
-    expect(
-      screen.getByText('videoAudioLanguages: 0 audio languages')
-    ).toBeInTheDocument()
-
-    await waitFor(() => {
-      expect(result).toHaveBeenCalled()
-    })
-
-    expect(
-      screen.getByText('videoAudioLanguages: 1 audio languages')
-    ).toBeInTheDocument()
   })
 })

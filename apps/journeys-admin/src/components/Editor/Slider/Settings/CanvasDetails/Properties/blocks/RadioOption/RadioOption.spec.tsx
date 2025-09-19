@@ -1,5 +1,5 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { getByTestId, render, waitFor } from '@testing-library/react'
+import { render, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
@@ -127,7 +127,7 @@ describe('RadioOption Attribute', () => {
 
     await waitFor(() => {
       const imageAccordion = getByRole('button', {
-        name: 'Image Source No image'
+        name: 'Image Source No Image'
       })
       expect(imageAccordion).toBeDisabled()
     })
@@ -174,7 +174,7 @@ describe('RadioOption Attribute', () => {
 
     await waitFor(() => {
       const imageAccordion = getByRole('button', {
-        name: 'Image Source No image'
+        name: 'Image Source No Image'
       })
       expect(imageAccordion).not.toBeDisabled()
     })

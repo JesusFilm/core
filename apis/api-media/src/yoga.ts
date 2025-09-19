@@ -13,10 +13,10 @@ import { initContextCache } from '@pothos/core'
 import { createYoga, useReadinessCheck } from 'graphql-yoga'
 import get from 'lodash/get'
 
+import { prisma } from '@core/prisma/media/client'
 import { getUserFromPayload } from '@core/yoga/firebaseClient'
 import { getInteropContext } from '@core/yoga/interop'
 
-import { prisma } from './lib/prisma'
 import { logger } from './logger'
 import { schema } from './schema'
 import { Context } from './schema/builder'
@@ -31,7 +31,11 @@ export const yoga = createYoga<
   logging: logger,
   context: async ({ request, params }) => {
     const payload = get(params, 'extensions.jwt.payload')
-    const user = getUserFromPayload(payload, logger)
+    const user =
+      process.env.NODE_ENV !== 'test' ||
+      request.headers.get('authorization') != null
+        ? getUserFromPayload(payload, logger)
+        : null
     const clientName = request.headers.get('x-graphql-client-name') ?? undefined
 
     if (user != null)

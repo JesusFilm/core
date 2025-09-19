@@ -1,0 +1,78 @@
+{
+  "name": "prisma-users",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/prisma/users/src",
+  "projectType": "library",
+  "tags": ["type:prisma", "scope:users"],
+  "targets": {
+    "fetch-secrets": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "DOPPLER_TOKEN=$DOPPLER_API_USERS_TOKEN doppler secrets download --no-file --format=env-no-quotes --project api-users > libs/prisma/users/.env"
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "cache": true,
+        "cacheLocation": ".cache/prisma-users/eslint",
+        "cacheStrategy": "content"
+      }
+    },
+    "prisma-generate": {
+      "executor": "nx:run-commands",
+      "options": {
+        "parallel": false,
+        "commands": [
+          "pnpm exec prisma generate --schema libs/prisma/users/db/schema.prisma"
+        ]
+      }
+    },
+    "prisma-migrate": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          "tools/scripts/env-validator.sh --DOPPLER_CONFIG=dev --PG_DATABASE_URL_USERS=postgresql://postgres:postgres@db:5432/users?schema=public \"bash -c 'pnpm exec prisma migrate dev --schema libs/prisma/users/db/schema.prisma --name `date +\\\"%Y%m%d%H%M%S\\\"`'\""
+        ]
+      },
+      "configurations": {
+        "production": {
+          "commands": [
+            "tools/scripts/env-validator.sh --DOPPLER_CONFIG=dev --PG_DATABASE_URL_USERS=postgresql://postgres:postgres@db:5432/users?schema=public \"pnpm exec prisma migrate deploy --schema libs/prisma/users/db/schema.prisma\""
+          ]
+        }
+      }
+    },
+    "prisma-reset": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          "tools/scripts/env-validator.sh --DOPPLER_CONFIG=dev --PG_DATABASE_URL_USERS=postgresql://postgres:postgres@db:5432/users?schema=public \"pnpm exec prisma migrate reset --schema libs/prisma/users/db/schema.prisma --force\""
+        ]
+      }
+    },
+    "prisma-studio": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          "pnpm exec prisma studio --schema libs/prisma/users/db/schema.prisma"
+        ]
+      }
+    },
+    "prisma-validate": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          "pnpm exec prisma validate --schema libs/prisma/users/db/schema.prisma"
+        ]
+      }
+    },
+    "type-check": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": ["pnpm exec tsc -b libs/prisma/users/tsconfig.json"]
+      }
+    }
+  }
+}

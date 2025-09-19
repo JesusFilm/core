@@ -24,7 +24,7 @@ export function OnboardingLandingDrawer({
       sx={{
         pt: {
           xs: templateId == null ? 4 : 4,
-          md: newAccountQuery === true ? 10 : 26
+          md: 10
         },
         width: { xs: '100%' }
       }}
@@ -72,8 +72,7 @@ export function OnboardingLandingDrawer({
         {newAccountQuery !== true && (
           <Box
             sx={{
-              pt: 25,
-              mb: 20,
+              pt: 8,
               width: '100%',
               display: { xs: 'none', md: 'flex' }
             }}

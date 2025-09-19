@@ -3,10 +3,13 @@ import compact from 'lodash/compact'
 import isEmpty from 'lodash/isEmpty'
 import orderBy from 'lodash/orderBy'
 
-import { Prisma, Platform as PrismaPlatform } from '.prisma/api-media-client'
+import {
+  Prisma,
+  Platform as PrismaPlatform,
+  prisma
+} from '@core/prisma/media/client'
 
 import { updateVideoInAlgolia } from '../../lib/algolia/algoliaVideoUpdate'
-import { prisma } from '../../lib/prisma'
 import { videoCacheReset } from '../../lib/videoCacheReset'
 import { builder } from '../builder'
 import { ImageAspectRatio } from '../cloudflare/image/enums'
@@ -221,7 +224,8 @@ const Video = builder.prismaObject('Video', {
         input: t.arg({ type: VideoVariantFilter, required: false })
       },
       where: ({ input }) => ({
-        published: input?.onlyPublished === false ? undefined : true
+        published: input?.onlyPublished === false ? undefined : true,
+        languageId: input?.languageId ?? undefined
       })
     }),
     slug: t.string({
@@ -249,7 +253,8 @@ const Video = builder.prismaObject('Video', {
             slug: true
           },
           where: {
-            published: input?.onlyPublished === false ? undefined : true
+            published: input?.onlyPublished === false ? undefined : true,
+            languageId: input?.languageId ?? undefined
           }
         }
       }),
@@ -268,7 +273,8 @@ const Video = builder.prismaObject('Video', {
       select: ({ input }) => ({
         variants: {
           where: {
-            published: input?.onlyPublished === false ? undefined : true
+            published: input?.onlyPublished === false ? undefined : true,
+            languageId: input?.languageId ?? undefined
           }
         }
       }),
@@ -305,6 +311,7 @@ const Video = builder.prismaObject('Video', {
       })
     }),
     variant: t.prismaField({
+      deprecationReason: 'Use variants instead',
       type: VideoVariant,
       args: {
         languageId: t.arg.id({ required: false }),

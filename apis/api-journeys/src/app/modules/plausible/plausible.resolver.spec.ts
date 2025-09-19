@@ -2,14 +2,14 @@ import { Test, TestingModule } from '@nestjs/testing'
 import { GraphQLResolveInfo, Kind } from 'graphql'
 import { DeepMockProxy } from 'jest-mock-extended'
 
+import { CaslAuthModule } from '@core/nest/common/CaslAuthModule'
 import {
   Journey,
   JourneyStatus,
   ThemeMode,
   ThemeName,
   UserTeamRole
-} from '.prisma/api-journeys-client'
-import { CaslAuthModule } from '@core/nest/common/CaslAuthModule'
+} from '@core/prisma/journeys/client'
 
 import {
   IdType,
@@ -75,7 +75,8 @@ describe('PlausibleResolver', () => {
     socialNodeX: null,
     socialNodeY: null,
     fromTemplateId: null,
-    journeyCustomizationDescription: null
+    journeyCustomizationDescription: null,
+    showAssistant: null
   }
 
   const journeyWithUserTeam = {

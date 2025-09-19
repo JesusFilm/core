@@ -1,101 +1,82 @@
-import { useLazyQuery } from '@apollo/client'
 import ClosedCaptionOffOutlinedIcon from '@mui/icons-material/ClosedCaptionOffOutlined'
+import Autocomplete from '@mui/material/Autocomplete'
+import Box from '@mui/material/Box'
+import TextField from '@mui/material/TextField'
+import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next'
-import { ReactElement, memo, useEffect, useMemo } from 'react'
+import { ChangeEvent, ReactElement, useMemo } from 'react'
 
-import {
-  LanguageAutocomplete,
-  LanguageOption
-} from '@core/shared/ui/LanguageAutocomplete'
-
-import { GetSubtitles } from '../../../../__generated__/GetSubtitles'
 import { SUBTITLE_LANGUAGE_IDS } from '../../../libs/localeMapping'
-import { useLanguageActions, useWatch } from '../../../libs/watchContext'
-import { GET_SUBTITLES } from '../../SubtitleDialog/SubtitleDialog'
-import { renderInput } from '../utils/renderInput'
-import { renderOption } from '../utils/renderOption'
+import { Language, useLanguages } from '../../../libs/useLanguages'
+import { useLanguageActions } from '../../../libs/watchContext'
+import { filterOptions } from '../utils/filterOptions'
 
-export const SubtitlesSelect = memo(function SubtitlesSelect(): ReactElement {
+interface SubtitlesSelectProps {
+  videoSubtitleLanguageIds?: string[]
+  subtitleLanguageId?: string
+  subtitleOn?: boolean
+}
+
+export function SubtitlesSelect({
+  videoSubtitleLanguageIds,
+  subtitleLanguageId,
+  subtitleOn
+}: SubtitlesSelectProps): ReactElement {
   const { t } = useTranslation()
-  const {
-    state: {
-      allLanguages,
-      subtitleLanguage,
-      subtitleOn,
-      autoSubtitle,
-      videoId,
-      videoSubtitleLanguages,
-      videoVariantSlug,
-      loading
-    },
-    dispatch
-  } = useWatch()
   const { updateSubtitleLanguage, updateSubtitlesOn } = useLanguageActions()
+  const { languages, isLoading } = useLanguages()
 
-  const [getSubtitleLanguages, { loading: subtitlesLoading }] =
-    useLazyQuery<GetSubtitles>(GET_SUBTITLES, {
-      onCompleted: (data) => {
-        if (data?.video?.variant?.subtitle) {
-          // This action doesn't have side effects, so we can use dispatch directly
-          dispatch({
-            type: 'SetVideoSubtitleLanguages',
-            videoSubtitleLanguages: data.video.variant.subtitle
-          })
-        }
-      }
-    })
+  const selectedOption = useMemo(
+    () =>
+      languages.find((language) => language.id === subtitleLanguageId) ?? null,
+    [languages, subtitleLanguageId]
+  )
+  const options = useMemo(() => {
+    if (videoSubtitleLanguageIds == null) return languages
+    return [
+      ...languages.filter((language) =>
+        videoSubtitleLanguageIds.includes(language.id)
+      ),
+      ...languages.filter(
+        (language) =>
+          !videoSubtitleLanguageIds.includes(language.id) &&
+          SUBTITLE_LANGUAGE_IDS.includes(language.id)
+      )
+    ]
+  }, [languages, videoSubtitleLanguageIds])
+  const helperText = useMemo(() => {
+    if (isLoading) return t('Loading...')
 
-  useEffect(() => {
-    if (videoId != null && videoSubtitleLanguages == null) {
-      void getSubtitleLanguages({
-        variables: {
-          id: videoVariantSlug
-        }
+    if (videoSubtitleLanguageIds == null)
+      return t('Available in {{count}} languages.', { count: languages.length })
+
+    const available = videoSubtitleLanguageIds.length
+    if (
+      selectedOption != null &&
+      videoSubtitleLanguageIds.find((id) => id === selectedOption.id) == null
+    ) {
+      return [
+        t('Subtitles are not available in {{language}}.', {
+          language: selectedOption.displayName
+        }),
+        t('Available in {{count}} languages.', {
+          count: available
+        })
+      ].join(' ')
+    } else {
+      return t('Available in {{count}} languages.', {
+        count: available
       })
     }
-  }, [videoId, videoSubtitleLanguages, getSubtitleLanguages])
+  }, [isLoading, t, videoSubtitleLanguageIds, selectedOption])
 
-  const preferredSubtitleOn = autoSubtitle ?? subtitleOn
+  function handleSubtitleLanguageChange(_, language: Language | null): void {
+    if (language == null) return
 
-  // Compute current subtitle display object directly from context
-  const currentSubtitle = useMemo(
-    () =>
-      subtitleLanguage && allLanguages
-        ? (() => {
-            const selectedLanguage = allLanguages.find(
-              (lang) => lang.id === subtitleLanguage
-            )
-            return selectedLanguage
-              ? {
-                  id: selectedLanguage.id,
-                  localName: selectedLanguage.name.find(
-                    ({ primary }) => primary
-                  )?.value,
-                  nativeName: selectedLanguage.name.find(
-                    ({ primary }) => !primary
-                  )?.value,
-                  slug: selectedLanguage.slug
-                }
-              : undefined
-          })()
-        : undefined,
-    [subtitleLanguage, allLanguages]
-  )
-
-  const allLanguageSubtitles = useMemo(
-    () =>
-      allLanguages
-        ?.filter((language) => SUBTITLE_LANGUAGE_IDS.includes(language.id))
-        .map((language) => ({
-          id: language.id,
-          name: language.name,
-          slug: language.slug
-        })),
-    [allLanguages]
-  )
-
-  function handleChange(language: LanguageOption): void {
-    updateSubtitleLanguage(language.id)
+    updateSubtitleLanguage(language)
+  }
+  function handleSubtitlesOnChange(event: ChangeEvent<HTMLInputElement>): void {
+    updateSubtitlesOn(event.target.checked)
   }
 
   return (
@@ -107,25 +88,70 @@ export const SubtitlesSelect = memo(function SubtitlesSelect(): ReactElement {
         >
           {t('Subtitles')}
         </label>
+        {selectedOption?.nativeName &&
+          selectedOption?.nativeName.value !== selectedOption?.displayName && (
+            <span
+              className="text-sm text-gray-400"
+              data-testid="SubtitlesSelectNativeName"
+            >
+              {selectedOption?.nativeName.value}
+            </span>
+          )}
       </div>
       <div className="relative mt-1 flex items-start gap-2">
         <div className="pt-4">
           <ClosedCaptionOffOutlinedIcon fontSize="small" />
         </div>
         <div className="relative w-full">
-          <LanguageAutocomplete
-            value={{
-              id: currentSubtitle?.id ?? '',
-              nativeName: currentSubtitle?.nativeName,
-              localName: currentSubtitle?.localName,
-              slug: currentSubtitle?.slug
+          <Autocomplete
+            disableClearable
+            // this is a workaround to keep the autocomplete controlled
+            value={selectedOption as unknown as Language | undefined}
+            options={options}
+            groupBy={
+              videoSubtitleLanguageIds == null
+                ? undefined
+                : (option) =>
+                    videoSubtitleLanguageIds.includes(option.id)
+                      ? t('Available Languages')
+                      : t('Other Languages')
+            }
+            filterOptions={filterOptions}
+            onChange={handleSubtitleLanguageChange}
+            loading={isLoading}
+            getOptionKey={(option) => option.id}
+            getOptionLabel={(option) => option.displayName}
+            renderOption={({ key, ...optionProps }, option) => {
+              return (
+                <Box
+                  key={key}
+                  component="li"
+                  {...optionProps}
+                  sx={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 1,
+                    justifyContent: 'space-between !important'
+                  }}
+                >
+                  <Typography variant="body1">{option.displayName}</Typography>
+                  {option.nativeName && (
+                    <Typography variant="body2" color="text.secondary">
+                      {option.nativeName.value}
+                    </Typography>
+                  )}
+                </Box>
+              )
             }}
-            onChange={handleChange}
-            languages={allLanguageSubtitles}
-            loading={loading || subtitlesLoading}
-            disabled={loading || subtitlesLoading}
-            renderInput={renderInput(t('2000 translations'))}
-            renderOption={renderOption}
+            renderInput={(params) => (
+              <TextField
+                {...params}
+                hiddenLabel
+                id="subtitles-select"
+                variant="filled"
+                helperText={helperText}
+              />
+            )}
           />
         </div>
       </div>
@@ -133,20 +159,9 @@ export const SubtitlesSelect = memo(function SubtitlesSelect(): ReactElement {
         <input
           id="no-subtitles"
           type="checkbox"
-          checked={preferredSubtitleOn}
-          onChange={() => {
-            // if autoSubtitle is not null, then do not update the user's preferences, instead update the autoSubtitle state
-            if (autoSubtitle != null) {
-              dispatch({
-                type: 'UpdateAutoSubtitlesOn',
-                autoSubtitle: !autoSubtitle
-              })
-              return
-            }
-            updateSubtitlesOn(!preferredSubtitleOn)
-          }}
-          disabled={loading || subtitlesLoading}
-          className="accent-[#CB333B] h-4 w-4 rounded border-gray-300 focus:ring-0 disabled:opacity-50 disabled:cursor-not-allowed"
+          checked={subtitleOn}
+          onChange={handleSubtitlesOnChange}
+          className="accent-[#CB333B] h-4 w-4 rounded border-gray-300 focus:ring-0"
         />
         <label htmlFor="no-subtitles" className="text-sm text-gray-500">
           {t('Show subtitles')}
@@ -154,4 +169,4 @@ export const SubtitlesSelect = memo(function SubtitlesSelect(): ReactElement {
       </div>
     </div>
   )
-})
+}

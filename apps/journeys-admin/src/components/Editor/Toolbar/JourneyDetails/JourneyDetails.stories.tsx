@@ -106,10 +106,8 @@ export const Ellipsis = {
     }
   },
   decorators: [
-    (Story: StoryFn<typeof JourneyDetails>) => (
-      <Box width={400}>
-        <Story />
-      </Box>
+    (Story: StoryFn<typeof JourneyDetails>, context) => (
+      <Box width={400}>{Story(context.args, context)}</Box>
     )
   ]
 }

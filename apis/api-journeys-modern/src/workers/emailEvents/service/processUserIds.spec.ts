@@ -4,7 +4,7 @@ import {
   ThemeName,
   UserJourneyRole,
   UserTeamRole
-} from '.prisma/api-journeys-modern-client'
+} from '@core/prisma/journeys/client'
 
 import { JourneyWithTeamAndUserJourney } from './prisma.types'
 import { processUserIds } from './processUserIds'
@@ -119,7 +119,8 @@ describe('processUserIds', () => {
     socialNodeX: null,
     socialNodeY: null,
     fromTemplateId: null,
-    journeyCustomizationDescription: null
+    journeyCustomizationDescription: null,
+    showAssistant: null
   }
 
   it('should return an array of user IDs when visitor interaction email is true', () => {

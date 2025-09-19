@@ -1,4 +1,4 @@
-type TextResponseBlock implements Block @key(fields: "id") @shareable {
+type TextResponseBlock implements Block @shareable {
   id: ID! @shareable
   journeyId: ID! @shareable
   parentBlockId: ID @shareable
@@ -7,6 +7,7 @@ type TextResponseBlock implements Block @key(fields: "id") @shareable {
   placeholder: String @shareable
   required: Boolean @shareable
   hint: String @shareable
+  hideLabel: Boolean @shareable
   minRows: Int @shareable
   type: TextResponseType @shareable
   routeId: String @shareable
@@ -33,6 +34,7 @@ input TextResponseBlockUpdateInput {
   placeholder: String
   required: Boolean
   hint: String
+  hideLabel: Boolean
   minRows: Int
   routeId: String
   type: TextResponseType

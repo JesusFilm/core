@@ -2,9 +2,9 @@ import {
   JourneyStatus,
   UserJourneyRole,
   UserTeamRole
-} from '.prisma/api-journeys-client'
+} from '@core/prisma/journeys/client'
 
-import { Action, Subject, subject } from '../../lib/auth/ability'
+import { Action } from '../../lib/auth/ability'
 
 import { Journey, journeyAcl } from './journey.acl'
 
@@ -241,6 +241,15 @@ describe('journeyAcl', () => {
 
     it('denies when user has no userTeam or userJourneys', () => {
       expect(can(Action.Update, journeyEmpty, user)).toBe(false)
+    })
+
+    describe('publisher', () => {
+      it('allows when publisher for template', () => {
+        const publisherUser = { ...user, roles: ['publisher'] }
+        expect(
+          can(Action.Update, journeyUnpublishedTemplate, publisherUser)
+        ).toBe(true)
+      })
     })
   })
 

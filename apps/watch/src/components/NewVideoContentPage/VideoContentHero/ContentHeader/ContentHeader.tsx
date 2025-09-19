@@ -5,7 +5,13 @@ import { ReactElement } from 'react'
 import { usePlayer } from '../../../../libs/playerContext/PlayerContext'
 import { AudioLanguageButton } from '../../../VideoContentPage/AudioLanguageButton'
 
-export function ContentHeader(): ReactElement {
+interface ContentHeaderProps {
+  languageSlug?: string
+}
+
+export function ContentHeader({
+  languageSlug
+}: ContentHeaderProps): ReactElement {
   const {
     state: { play, active, loading }
   } = usePlayer()
@@ -20,7 +26,10 @@ export function ContentHeader(): ReactElement {
           visible ? 'opacity-100' : 'opacity-0'
         } ${visible ? 'delay-0' : 'delay-[2000ms]'}`}
     >
-      <NextLink href="/watch">
+      <NextLink
+        href={`/watch${languageSlug != null && languageSlug !== 'english' ? `/${languageSlug}.html` : ''}`}
+        locale={false}
+      >
         <Image
           src="/watch/assets/jesusfilm-sign.svg"
           alt="JesusFilm Project"

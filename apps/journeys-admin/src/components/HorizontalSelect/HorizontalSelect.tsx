@@ -60,15 +60,22 @@ export function HorizontalSelect({
         (child) =>
           isValidElement(child) && (
             <Box
-              key={child.props.id ?? child.props.draggableId}
+              key={
+                (child.props as { id?: string; draggableId?: string }).id ??
+                (child.props as { id?: string; draggableId?: string })
+                  .draggableId
+              }
               // ref={id === child.props.draggableId ? selectedRef : undefined}
               sx={{
                 borderRadius: 2,
                 transition: '0.1s outline ease-out',
                 position: 'relative',
                 outline: (theme) =>
-                  id === (child.props.id ?? child.props.draggableId) &&
-                  isDragging !== true
+                  id ===
+                    ((child.props as { id?: string; draggableId?: string })
+                      .id ??
+                      (child.props as { id?: string; draggableId?: string })
+                        .draggableId) && isDragging !== true
                     ? `2px solid ${theme.palette.primary.main} `
                     : '2px solid transparent',
                 border: '3px solid transparent',
@@ -76,7 +83,9 @@ export function HorizontalSelect({
               }}
               onClick={() => {
                 onChange?.(
-                  (child.props.id ?? child.props.draggableId) as string
+                  ((child.props as { id?: string; draggableId?: string }).id ??
+                    (child.props as { id?: string; draggableId?: string })
+                      .draggableId) as string
                 )
               }}
             >

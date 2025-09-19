@@ -14,3 +14,4 @@ schema.graphql
 .terraform/
 playwright-report/
 !apis/api-languages/src/__generated__/languageSlugs.ts
+pnpm-lock.yaml

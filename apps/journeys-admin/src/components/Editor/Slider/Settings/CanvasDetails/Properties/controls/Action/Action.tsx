@@ -17,10 +17,11 @@ import {
 } from '../../../../../../../../../__generated__/BlockFields'
 import { useActionCommand } from '../../../../../../utils/useActionCommand'
 
+import { CustomizationToggle } from './CustomizationToggle'
 import { EmailAction } from './EmailAction'
 import { LinkAction } from './LinkAction'
 import { NavigateToBlockAction } from './NavigateToBlockAction'
-import { ActionValue, actions } from './utils/actions'
+import { ActionValue, actions, getAction } from './utils/actions'
 
 export function Action(): ReactElement {
   const {
@@ -36,7 +37,7 @@ export function Action(): ReactElement {
     | TreeBlock<VideoBlock>
     | undefined
   const [action, setAction] = useState<ActionValue>(
-    selectedBlock?.action?.__typename ?? 'None'
+    getAction(t, selectedBlock?.action?.__typename).value
   )
 
   const isSubmitButton =
@@ -53,7 +54,7 @@ export function Action(): ReactElement {
     : labels
 
   useEffect(() => {
-    setAction(selectedBlock?.action?.__typename ?? 'None')
+    setAction(getAction(t, selectedBlock?.action?.__typename).value)
   }, [selectedBlock?.action?.__typename])
 
   function removeAction(): void {
@@ -76,6 +77,9 @@ export function Action(): ReactElement {
     if (event.target.value === 'None') removeAction()
     setAction(event.target.value as ActionValue)
   }
+
+  const isLink = !isSubmitButton && action === 'LinkAction'
+  const isEmail = !isSubmitButton && action === 'EmailAction'
 
   return (
     <>
@@ -102,9 +106,10 @@ export function Action(): ReactElement {
             })}
           </Select>
         </FormControl>
-        {!isSubmitButton && action === 'LinkAction' && <LinkAction />}
-        {!isSubmitButton && action === 'EmailAction' && <EmailAction />}
+        {isLink && <LinkAction />}
+        {isEmail && <EmailAction />}
         {action === 'NavigateToBlockAction' && <NavigateToBlockAction />}
+        {(isLink || isEmail) && <CustomizationToggle />}
       </Stack>
     </>
   )

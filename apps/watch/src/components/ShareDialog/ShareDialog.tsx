@@ -47,13 +47,11 @@ export function ShareDialog({
         ? last(snippet)?.value
         : ''
 
-  const shareLink =
-    router?.query != null
-      ? `${
-          process.env.NEXT_PUBLIC_WATCH_URL ??
-          'https://watch-jesusfilm.vercel.app'
-        }/${Object.values(router?.query).join('/')}`.trim()
-      : ''
+  const sharePath = router?.asPath.split('?')[0].replace('/watch', '')
+  const shareLink = `${
+    process.env.NEXT_PUBLIC_WATCH_URL ??
+    'https://watch-jesusfilm.vercel.app/watch'
+  }${sharePath}`
 
   const handleShareLinkClick = async (): Promise<void> => {
     await navigator.clipboard.writeText(shareLink)

@@ -40,7 +40,7 @@ export function StepBlockNodeMenu({
 
   return (
     <>
-      <Zoom in={appear}>
+      <Zoom in={appear && !open}>
         <Fab
           variant="extended"
           className={className}
@@ -56,7 +56,9 @@ export function StepBlockNodeMenu({
           onMouseEnter={(e) => {
             if (isIOSTouchScreen()) handleClick(e)
           }}
-          onClick={handleClick}
+          onClick={(e) => {
+            handleClick(e)
+          }}
           sx={{
             position: 'absolute',
             top: -14,

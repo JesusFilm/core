@@ -86,6 +86,44 @@ export const journeySimpleImageSchema = z.object({
 })
 export type JourneySimpleImage = z.infer<typeof journeySimpleImageSchema>
 
+// --- Video Schema ---
+export const journeySimpleVideoSchema = z.object({
+  url: z.string().describe('The YouTube video URL.'),
+  startAt: z
+    .number()
+    .int()
+    .nonnegative()
+    .optional()
+    .describe('Start time in seconds. If not provided, defaults to 0.'),
+  endAt: z
+    .number()
+    .int()
+    .positive()
+    .optional()
+    .describe(
+      'End time in seconds. If not provided, defaults to the video duration.'
+    )
+})
+export type JourneySimpleVideo = z.infer<typeof journeySimpleVideoSchema>
+
+// --- Video Update Schema (with stricter validation) ---
+export const journeySimpleVideoSchemaUpdate =
+  journeySimpleVideoSchema.superRefine((data, ctx) => {
+    if (
+      data.startAt !== undefined &&
+      data.endAt !== undefined &&
+      data.endAt <= data.startAt
+    ) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: 'endAt must be greater than startAt if both are provided.'
+      })
+    }
+  })
+export type JourneySimpleVideoUpdate = z.infer<
+  typeof journeySimpleVideoSchemaUpdate
+>
+
 // --- Card Schemas ---
 export const journeySimpleCardSchema = z.object({
   id: z
@@ -111,6 +149,11 @@ export const journeySimpleCardSchema = z.object({
   backgroundImage: journeySimpleImageSchema
     .optional()
     .describe('Background image object for the card.'),
+  video: journeySimpleVideoSchema
+    .optional()
+    .describe(
+      'Video segment for this card, if present. If present, only "id", "video", and (optionally) "defaultNextCard" should be set on this card. All other content fields (heading, text, button, poll, image, backgroundImage, etc.) must be omitted.'
+    ),
   defaultNextCard: z
     .string()
     .optional()
@@ -122,18 +165,47 @@ export const journeySimpleCardSchema = z.object({
 export const journeySimpleCardSchemaUpdate = journeySimpleCardSchema
   .extend({
     button: journeySimpleButtonSchemaUpdate.optional(),
-    poll: z.array(journeySimplePollOptionSchemaUpdate).optional()
+    poll: z.array(journeySimplePollOptionSchemaUpdate).optional(),
+    video: journeySimpleVideoSchemaUpdate.optional()
   })
   .superRefine((data, ctx) => {
-    const hasButton = !!data.button
-    const hasPoll = Array.isArray(data.poll) && data.poll.length > 0
-    const hasDefaultNextCard = !!data.defaultNextCard
-    if (!hasButton && !hasPoll && !hasDefaultNextCard) {
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        message:
-          'At least one of button, poll, or defaultNextCard must be present to provide navigation.'
-      })
+    if (data.video !== undefined) {
+      // Enforce only id, video, and defaultNextCard are present
+      const forbiddenFields = [
+        'heading',
+        'text',
+        'button',
+        'poll',
+        'image',
+        'backgroundImage'
+      ]
+      for (const field of forbiddenFields) {
+        if ((data as Record<string, unknown>)[field] !== undefined) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: `If video is present, ${field} must not be set.`
+          })
+        }
+      }
+      // Enforce defaultNextCard is required for video cards
+      if (data.defaultNextCard === undefined) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: 'If video is present, defaultNextCard is required.'
+        })
+      }
+    } else {
+      // For non-video cards, require at least one navigation option
+      const hasButton = !!data.button
+      const hasPoll = Array.isArray(data.poll) && data.poll.length > 0
+      const hasDefaultNextCard = !!data.defaultNextCard
+      if (!hasButton && !hasPoll && !hasDefaultNextCard) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message:
+            'At least one of button, poll, or defaultNextCard must be present to provide navigation.'
+        })
+      }
     }
   })
 

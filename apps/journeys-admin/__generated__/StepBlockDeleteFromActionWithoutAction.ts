@@ -32,7 +32,7 @@ export interface StepBlockDeleteFromActionWithoutAction_blockDeleteAction_ImageB
 }
 
 export interface StepBlockDeleteFromActionWithoutAction_blockDeleteAction_RadioOptionBlock_action {
-  __typename: "NavigateToBlockAction" | "LinkAction" | "EmailAction";
+  __typename: "EmailAction" | "LinkAction" | "NavigateToBlockAction" | "PhoneAction";
   parentBlockId: string;
 }
 
@@ -43,7 +43,7 @@ export interface StepBlockDeleteFromActionWithoutAction_blockDeleteAction_RadioO
 }
 
 export interface StepBlockDeleteFromActionWithoutAction_blockDeleteAction_ButtonBlock_action {
-  __typename: "NavigateToBlockAction" | "LinkAction" | "EmailAction";
+  __typename: "EmailAction" | "LinkAction" | "NavigateToBlockAction" | "PhoneAction";
   parentBlockId: string;
 }
 
@@ -54,7 +54,7 @@ export interface StepBlockDeleteFromActionWithoutAction_blockDeleteAction_Button
 }
 
 export interface StepBlockDeleteFromActionWithoutAction_blockDeleteAction_SignUpBlock_action {
-  __typename: "NavigateToBlockAction" | "LinkAction" | "EmailAction";
+  __typename: "EmailAction" | "LinkAction" | "NavigateToBlockAction" | "PhoneAction";
   parentBlockId: string;
 }
 
@@ -65,7 +65,7 @@ export interface StepBlockDeleteFromActionWithoutAction_blockDeleteAction_SignUp
 }
 
 export interface StepBlockDeleteFromActionWithoutAction_blockDeleteAction_VideoBlock_action {
-  __typename: "NavigateToBlockAction" | "LinkAction" | "EmailAction";
+  __typename: "EmailAction" | "LinkAction" | "NavigateToBlockAction" | "PhoneAction";
   parentBlockId: string;
 }
 

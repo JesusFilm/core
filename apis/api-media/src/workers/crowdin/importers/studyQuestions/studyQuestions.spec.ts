@@ -1,6 +1,6 @@
 import type { Logger } from 'pino'
 
-import { VideoStudyQuestion } from '.prisma/api-media-client'
+import { VideoStudyQuestion } from '@core/prisma/media/client'
 
 import { prismaMock } from '../../../../../test/prismaMock'
 import { processFile } from '../../importer'
@@ -58,7 +58,6 @@ describe('importStudyQuestions', () => {
       },
       where: {
         crowdInId: { not: null },
-        videoId: { not: null },
         languageId: { equals: '529' }
       }
     })
