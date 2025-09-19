@@ -68,7 +68,7 @@ export function AiChatButton(): ReactElement {
           <DrawerClose>
             <Button
               size="icon"
-              className="absolute top-0 right-1 size-[48px] bg-transparent rounded-full shadow-none"
+              className="absolute top-0 right-1 size-[48px] bg-transparent rounded-full shadow-none hover:bg-transparent"
               aria-label="Close AI chat"
             >
               <div className="bg-secondary rounded-full size-[24px] relative flex items-center justify-center">
