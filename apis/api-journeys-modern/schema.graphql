@@ -305,6 +305,7 @@ enum DeviceType {
 }
 
 type EmailAction implements Action
+  @key(fields: "parentBlockId")
   @shareable
 {
   parentBlockId: ID!
@@ -978,6 +979,7 @@ type Language
 }
 
 type LinkAction implements Action
+  @key(fields: "parentBlockId")
   @shareable
 {
   parentBlockId: ID!
@@ -1075,6 +1077,7 @@ type MuxVideo
 }
 
 type NavigateToBlockAction implements Action
+  @key(fields: "parentBlockId")
   @shareable
 {
   parentBlockId: ID!
@@ -1100,6 +1103,7 @@ type OperatingSystem
 }
 
 type PhoneAction implements Action
+  @key(fields: "parentBlockId")
   @shareable
 {
   parentBlockId: ID!
