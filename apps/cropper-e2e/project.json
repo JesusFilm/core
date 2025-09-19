@@ -1,0 +1,53 @@
+{
+  "name": "cropper-e2e",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "projectType": "application",
+  "sourceRoot": "apps/cropper-e2e/src",
+  "tags": [],
+  "implicitDependencies": ["cropper"],
+  "targets": {
+    "e2e": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": ["playwright test"],
+        "cwd": "apps/cropper-e2e"
+      }
+    },
+    "update-snapshots": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": ["playwright test --update-snapshots"],
+        "cwd": "apps/cropper-e2e"
+      }
+    },
+    "debug": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": ["PWDEBUG=1 playwright test --project=chromium --timeout=0"],
+        "cwd": "apps/cropper-e2e"
+      }
+    },
+    "show-report": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": ["playwright show-report"],
+        "cwd": "apps/cropper-e2e"
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "cache": true,
+        "cacheLocation": ".cache/cropper-e2e/eslint",
+        "cacheStrategy": "content"
+      }
+    },
+    "type-check": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "pnpm exec tsc -p apps/cropper-e2e/tsconfig.json --noEmit"
+      }
+    }
+  }
+}

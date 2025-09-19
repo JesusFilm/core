@@ -23,7 +23,7 @@ export default defineConfig({
   /* Global timeout for tests */
   timeout: 60000,
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
-  reporter: 'html',
+  reporter: [['html', { open: 'never' }]],
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
     /* Use URL that has been set part of app-deploy.yml */
