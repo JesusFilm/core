@@ -1457,77 +1457,6 @@ export enum MessagePlatform {
   WhatsApp = 'whatsApp'
 }
 
-export type MultiselectBlock = Block & {
-  __typename?: 'MultiselectBlock';
-  action?: Maybe<Action>;
-  id: Scalars['ID']['output'];
-  journeyId: Scalars['ID']['output'];
-  label: Scalars['String']['output'];
-  max?: Maybe<Scalars['Int']['output']>;
-  min?: Maybe<Scalars['Int']['output']>;
-  parentBlockId?: Maybe<Scalars['ID']['output']>;
-  parentOrder?: Maybe<Scalars['Int']['output']>;
-  submitLabel: Scalars['String']['output'];
-};
-
-export type MultiselectBlockCreateInput = {
-  id?: InputMaybe<Scalars['ID']['input']>;
-  journeyId: Scalars['ID']['input'];
-  label: Scalars['String']['input'];
-  parentBlockId: Scalars['ID']['input'];
-  submitLabel: Scalars['String']['input'];
-};
-
-export type MultiselectBlockUpdateInput = {
-  label?: InputMaybe<Scalars['String']['input']>;
-  max?: InputMaybe<Scalars['Int']['input']>;
-  min?: InputMaybe<Scalars['Int']['input']>;
-  parentBlockId?: InputMaybe<Scalars['ID']['input']>;
-  submitLabel?: InputMaybe<Scalars['String']['input']>;
-};
-
-export type MultiselectOptionBlock = Block & {
-  __typename?: 'MultiselectOptionBlock';
-  id: Scalars['ID']['output'];
-  journeyId: Scalars['ID']['output'];
-  label: Scalars['String']['output'];
-  parentBlockId?: Maybe<Scalars['ID']['output']>;
-  parentOrder?: Maybe<Scalars['Int']['output']>;
-};
-
-export type MultiselectOptionBlockCreateInput = {
-  id?: InputMaybe<Scalars['ID']['input']>;
-  journeyId: Scalars['ID']['input'];
-  label: Scalars['String']['input'];
-  parentBlockId: Scalars['ID']['input'];
-};
-
-export type MultiselectOptionBlockUpdateInput = {
-  label?: InputMaybe<Scalars['String']['input']>;
-  parentBlockId?: InputMaybe<Scalars['ID']['input']>;
-};
-
-export type MultiselectSubmissionEvent = Event & {
-  __typename?: 'MultiselectSubmissionEvent';
-  /** time event was created */
-  createdAt: Scalars['DateTime']['output'];
-  id: Scalars['ID']['output'];
-  /** ID of the journey that the multiselect block belongs to */
-  journeyId: Scalars['ID']['output'];
-  /** stepName of the parent stepBlock */
-  label?: Maybe<Scalars['String']['output']>;
-  /** labels of the selected options */
-  value?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
-};
-
-export type MultiselectSubmissionEventCreateInput = {
-  blockId: Scalars['ID']['input'];
-  id?: InputMaybe<Scalars['ID']['input']>;
-  label?: InputMaybe<Scalars['String']['input']>;
-  stepId?: InputMaybe<Scalars['ID']['input']>;
-  values: Array<Scalars['String']['input']>;
-};
-
 export type Mutation = {
   __typename?: 'Mutation';
   audioPreviewCreate: AudioPreview;
@@ -1627,11 +1556,6 @@ export type Mutation = {
   journeysRestore?: Maybe<Array<Maybe<Journey>>>;
   /** Sets journeys statuses to trashed */
   journeysTrash?: Maybe<Array<Maybe<Journey>>>;
-  multiselectBlockCreate: MultiselectBlock;
-  multiselectBlockUpdate: MultiselectBlock;
-  multiselectOptionBlockCreate: MultiselectOptionBlock;
-  multiselectOptionBlockUpdate: MultiselectOptionBlock;
-  multiselectSubmissionEventCreate: MultiselectSubmissionEvent;
   playlistCreate?: Maybe<MutationPlaylistCreateResult>;
   playlistDelete?: Maybe<MutationPlaylistDeleteResult>;
   playlistItemAdd?: Maybe<MutationPlaylistItemAddResult>;
@@ -2208,35 +2132,6 @@ export type MutationJourneysRestoreArgs = {
 
 export type MutationJourneysTrashArgs = {
   ids: Array<Scalars['ID']['input']>;
-};
-
-
-export type MutationMultiselectBlockCreateArgs = {
-  input: MultiselectBlockCreateInput;
-};
-
-
-export type MutationMultiselectBlockUpdateArgs = {
-  id: Scalars['ID']['input'];
-  input: MultiselectBlockUpdateInput;
-  journeyId?: InputMaybe<Scalars['ID']['input']>;
-};
-
-
-export type MutationMultiselectOptionBlockCreateArgs = {
-  input: MultiselectOptionBlockCreateInput;
-};
-
-
-export type MutationMultiselectOptionBlockUpdateArgs = {
-  id: Scalars['ID']['input'];
-  input: MultiselectOptionBlockUpdateInput;
-  journeyId?: InputMaybe<Scalars['ID']['input']>;
-};
-
-
-export type MutationMultiselectSubmissionEventCreateArgs = {
-  input: MultiselectSubmissionEventCreateInput;
 };
 
 
