@@ -163,6 +163,7 @@ type Journey
   socialNodeX: Int
   socialNodeY: Int
   fromTemplateId: String
+  showAssistant: Boolean
   journeyCustomizationDescription: String
   journeyCustomizationFields: [JourneyCustomizationField!]!
   journeyTheme: JourneyTheme
