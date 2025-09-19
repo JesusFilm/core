@@ -1,3 +1,5 @@
+import { prisma } from '@core/prisma/journeys/client'
+
 import { builder } from '../../builder'
 import { ActionInterface } from '../action'
 
@@ -14,4 +16,14 @@ export const EmailActionRef = builder.prismaObject('Action', {
     customizable: t.exposeBoolean('customizable', { nullable: true }),
     parentStepId: t.exposeString('parentStepId', { nullable: true })
   })
+})
+
+// Register as a federated entity
+builder.asEntity(EmailActionRef, {
+  key: builder.selection<{ parentBlockId: string }>('parentBlockId'),
+  resolveReference: async (ref) => {
+    return prisma.action.findUnique({
+      where: { parentBlockId: ref.parentBlockId }
+    })
+  }
 })

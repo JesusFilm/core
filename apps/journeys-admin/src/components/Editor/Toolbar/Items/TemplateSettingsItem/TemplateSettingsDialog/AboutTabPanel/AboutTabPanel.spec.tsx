@@ -5,6 +5,7 @@ import { FormikContextType, FormikProvider } from 'formik'
 import { TemplateSettingsFormValues } from '../useTemplateSettingsForm'
 
 import { AboutTabPanel } from './AboutTabPanel'
+import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 
 jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
@@ -117,7 +118,9 @@ describe('AboutTabPanel', () => {
             } as unknown as FormikContextType<TemplateSettingsFormValues>
           }
         >
-          <AboutTabPanel />
+          <FlagsProvider flags={{ journeyCustomization: true }}>
+            <AboutTabPanel />
+          </FlagsProvider>
         </FormikProvider>
       </MockedProvider>
     )
