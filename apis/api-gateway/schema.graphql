@@ -261,7 +261,7 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   customDomainUpdate(id: ID!, input: CustomDomainUpdateInput!) : CustomDomain! @join__field(graph: API_JOURNEYS) 
   customDomainDelete(id: ID!) : CustomDomain! @join__field(graph: API_JOURNEYS) 
   customDomainCheck(id: ID!) : CustomDomainCheck! @join__field(graph: API_JOURNEYS) 
-  buttonClickEventCreate(input: ButtonClickEventCreateInput!) : ButtonClickEvent! @join__field(graph: API_JOURNEYS) 
+  buttonClickEventCreate(input: ButtonClickEventCreateInput!) : ButtonClickEvent! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
   chatOpenEventCreate(input: ChatOpenEventCreateInput!) : ChatOpenEvent! @join__field(graph: API_JOURNEYS) 
   """
   Creates a JourneyViewEvent, returns null if attempting to create another
@@ -3828,7 +3828,7 @@ input CustomDomainUpdateInput @join__type(graph: API_JOURNEYS)  @join__type(grap
   routeAllTeamJourneys: Boolean
 }
 
-input ButtonClickEventCreateInput @join__type(graph: API_JOURNEYS)  {
+input ButtonClickEventCreateInput @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
   """
   ID should be unique Event UUID (Provided for optimistic mutation result matching)
   """
