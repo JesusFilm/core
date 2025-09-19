@@ -97,323 +97,6 @@ type PhoneAction implements Action
   countryCode: String!
 }
 
-input NavigateToBlockActionInput {
-  gtmEventName: String
-  blockId: String!
-}
-
-input LinkActionInput {
-  gtmEventName: String
-  url: String!
-  target: String
-  customizable: Boolean
-  parentStepId: String
-}
-
-input EmailActionInput {
-  gtmEventName: String
-  email: String!
-  customizable: Boolean
-  parentStepId: String
-}
-
-input BlockUpdateActionInput {
-  gtmEventName: String
-  email: String
-  url: String
-  target: String
-  blockId: String
-  phone: String
-  countryCode: String
-}
-
-input PhoneActionInput {
-  gtmEventName: String
-  phone: String!
-  countryCode: String!
-}
-
-type Mutation {
-  blockDeleteAction(
-    id: ID!
-
-    """drop this parameter after merging teams"""
-    journeyId: ID
-  ): Block!
-  blockUpdateNavigateToBlockAction(
-    id: ID!
-    input: NavigateToBlockActionInput!
-
-    """drop this parameter after merging teams"""
-    journeyId: ID
-  ): NavigateToBlockAction!
-  blockUpdateLinkAction(
-    id: ID!
-    input: LinkActionInput!
-
-    """drop this parameter after merging teams"""
-    journeyId: ID
-  ): LinkAction!
-  blockUpdateEmailAction(
-    id: ID!
-    input: EmailActionInput!
-
-    """drop this parameter after merging teams"""
-    journeyId: ID
-  ): EmailAction!
-  blockUpdatePhoneAction(
-    id: ID!
-    input: PhoneActionInput!
-
-    """drop this parameter after merging teams"""
-    journeyId: ID
-  ): PhoneAction!
-  blockUpdateAction(id: ID!, input: BlockUpdateActionInput): Action!
-
-  """blockDelete returns the updated sibling blocks on successful delete"""
-  blockDelete(
-    id: ID!
-
-    """drop this parameter after merging teams"""
-    journeyId: ID
-
-    """drop this parameter after merging teams"""
-    parentBlockId: ID
-  ): [Block!]!
-
-  """
-  blockDuplicate returns the updated block, it's children and sibling blocks on successful duplicate
-  """
-  blockDuplicate(
-    id: ID!
-
-    """
-    parentOrder defines the position to add the duplicated block. Negative values defines the position from the end of the array. Positions greater than the length of the array or null parentOrder will add duplicate at end of the array.
-    """
-    parentOrder: Int
-
-    """
-    idMap is used to set custom ids for the duplicated block and it's descendants.
-    """
-    idMap: [BlockDuplicateIdMap!]
-
-    """drop this parameter after merging teams"""
-    journeyId: ID
-
-    """
-    x is used to position a step block block horizontally in the journey flow diagram on
-    the editor.
-    """
-    x: Int
-
-    """
-    y is used to position a step block block vertically in the journey flow diagram on
-    the editor.
-    """
-    y: Int
-  ): [Block!]!
-  blockOrderUpdate(
-    id: ID!
-    parentOrder: Int!
-
-    """drop this parameter after merging teams"""
-    journeyId: ID
-  ): [Block!]!
-
-  """blockRestore is used for redo/undo"""
-  blockRestore(id: ID!): [Block!]!
-  buttonBlockCreate(input: ButtonBlockCreateInput!): ButtonBlock!
-  buttonBlockUpdate(
-    id: ID!
-    input: ButtonBlockUpdateInput!
-
-    """drop this parameter after merging teams"""
-    journeyId: ID
-  ): ButtonBlock
-  cardBlockCreate(input: CardBlockCreateInput!): CardBlock!
-  cardBlockUpdate(
-    id: ID!
-    input: CardBlockUpdateInput!
-
-    """drop this parameter after merging teams"""
-    journeyId: ID
-  ): CardBlock!
-  iconBlockCreate(input: IconBlockCreateInput!): IconBlock!
-  iconBlockUpdate(
-    id: ID!
-    input: IconBlockUpdateInput!
-
-    """drop this parameter after merging teams"""
-    journeyId: ID
-  ): IconBlock!
-  imageBlockCreate(input: ImageBlockCreateInput!): ImageBlock!
-  imageBlockUpdate(
-    id: ID!
-    input: ImageBlockUpdateInput!
-
-    """drop this parameter after merging teams"""
-    journeyId: ID
-  ): ImageBlock!
-  radioOptionBlockCreate(input: RadioOptionBlockCreateInput!): RadioOptionBlock!
-  radioOptionBlockUpdate(
-    id: ID!
-    input: RadioOptionBlockUpdateInput!
-
-    """drop this parameter after merging teams"""
-    journeyId: ID
-  ): RadioOptionBlock!
-  radioQuestionBlockCreate(input: RadioQuestionBlockCreateInput!): RadioQuestionBlock!
-  radioQuestionBlockUpdate(id: ID!, parentBlockId: ID!, gridView: Boolean): RadioQuestionBlock!
-  signUpBlockCreate(input: SignUpBlockCreateInput!): SignUpBlock!
-  signUpBlockUpdate(
-    id: ID!
-    input: SignUpBlockUpdateInput!
-
-    """drop this parameter after merging teams"""
-    journeyId: ID
-  ): SignUpBlock
-  spacerBlockCreate(input: SpacerBlockCreateInput!): SpacerBlock!
-  spacerBlockUpdate(id: ID!, input: SpacerBlockUpdateInput!): SpacerBlock!
-  stepBlockCreate(input: StepBlockCreateInput!): StepBlock!
-  stepBlockUpdate(
-    id: ID!
-    input: StepBlockUpdateInput!
-
-    """drop this parameter after merging teams"""
-    journeyId: ID
-  ): StepBlock!
-  stepBlockPositionUpdate(input: [StepBlockPositionUpdateInput!]!): [StepBlock!]!
-  textResponseBlockCreate(input: TextResponseBlockCreateInput!): TextResponseBlock!
-  textResponseBlockUpdate(
-    id: ID!
-    input: TextResponseBlockUpdateInput!
-
-    """drop this parameter after merging teams"""
-    journeyId: ID
-  ): TextResponseBlock
-  typographyBlockCreate(input: TypographyBlockCreateInput!): TypographyBlock!
-  typographyBlockUpdate(
-    id: ID!
-    input: TypographyBlockUpdateInput!
-
-    """drop this parameter after merging teams"""
-    journeyId: ID
-  ): TypographyBlock!
-  videoBlockCreate(input: VideoBlockCreateInput!): VideoBlock!
-  videoBlockUpdate(
-    id: ID!
-    input: VideoBlockUpdateInput!
-
-    """drop this parameter after merging teams"""
-    journeyId: ID
-  ): VideoBlock!
-  chatButtonCreate(journeyId: ID!, input: ChatButtonCreateInput): ChatButton!
-  chatButtonUpdate(id: ID!, journeyId: ID!, input: ChatButtonUpdateInput!): ChatButton!
-  chatButtonRemove(id: ID!): ChatButton!
-  customDomainCreate(input: CustomDomainCreateInput!): CustomDomain!
-  customDomainUpdate(id: ID!, input: CustomDomainUpdateInput!): CustomDomain!
-  customDomainDelete(id: ID!): CustomDomain!
-  customDomainCheck(id: ID!): CustomDomainCheck!
-  buttonClickEventCreate(input: ButtonClickEventCreateInput!): ButtonClickEvent!
-  chatOpenEventCreate(input: ChatOpenEventCreateInput!): ChatOpenEvent!
-
-  """
-  Creates a JourneyViewEvent, returns null if attempting to create another
-  JourneyViewEvent with the same userId, journeyId, and within the same 24hr
-  period of the previous JourneyViewEvent
-  """
-  journeyViewEventCreate(input: JourneyViewEventCreateInput!): JourneyViewEvent
-  radioQuestionSubmissionEventCreate(input: RadioQuestionSubmissionEventCreateInput!): RadioQuestionSubmissionEvent!
-  signUpSubmissionEventCreate(input: SignUpSubmissionEventCreateInput!): SignUpSubmissionEvent!
-  stepViewEventCreate(input: StepViewEventCreateInput!): StepViewEvent!
-  stepNextEventCreate(input: StepNextEventCreateInput!): StepNextEvent!
-  stepPreviousEventCreate(input: StepPreviousEventCreateInput!): StepPreviousEvent!
-  textResponseSubmissionEventCreate(input: TextResponseSubmissionEventCreateInput!): TextResponseSubmissionEvent!
-  videoStartEventCreate(input: VideoStartEventCreateInput!): VideoStartEvent!
-  videoPlayEventCreate(input: VideoPlayEventCreateInput!): VideoPlayEvent!
-  videoPauseEventCreate(input: VideoPauseEventCreateInput!): VideoPauseEvent!
-  videoCompleteEventCreate(input: VideoCompleteEventCreateInput!): VideoCompleteEvent!
-  videoExpandEventCreate(input: VideoExpandEventCreateInput!): VideoExpandEvent!
-  videoCollapseEventCreate(input: VideoCollapseEventCreateInput!): VideoCollapseEvent!
-  videoProgressEventCreate(input: VideoProgressEventCreateInput!): VideoProgressEvent!
-  hostCreate(teamId: ID!, input: HostCreateInput!): Host!
-  hostUpdate(id: ID!, teamId: ID!, input: HostUpdateInput): Host!
-  hostDelete(id: ID!, teamId: ID!): Host!
-  integrationGrowthSpacesCreate(input: IntegrationGrowthSpacesCreateInput!): IntegrationGrowthSpaces!
-  integrationGrowthSpacesUpdate(id: ID!, input: IntegrationGrowthSpacesUpdateInput!): IntegrationGrowthSpaces!
-  integrationDelete(id: ID!): Integration!
-  journeyCreate(input: JourneyCreateInput!, teamId: ID!): Journey!
-  journeyDuplicate(id: ID!, teamId: ID!): Journey!
-  journeyUpdate(id: ID!, input: JourneyUpdateInput!): Journey!
-
-  """Sets journey status to published"""
-  journeyPublish(id: ID!): Journey
-
-  """Sets journey status to featured"""
-  journeyFeature(id: ID!, feature: Boolean!): Journey
-
-  """Sets journeys statuses to archived"""
-  journeysArchive(ids: [ID!]!): [Journey]
-
-  """Sets journeys statuses to deleted"""
-  journeysDelete(ids: [ID!]!): [Journey]
-
-  """Sets journeys statuses to trashed"""
-  journeysTrash(ids: [ID!]!): [Journey]
-
-  """Sets journeys statuses to last active status"""
-  journeysRestore(ids: [ID!]!): [Journey]
-
-  """Updates template"""
-  journeyTemplate(id: ID!, input: JourneyTemplateInput!): Journey!
-  journeyCollectionCreate(input: JourneyCollectionCreateInput!): JourneyCollection!
-  journeyCollectionUpdate(id: ID!, input: JourneyCollectionUpdateInput!): JourneyCollection!
-  journeyCollectionDelete(id: ID!): JourneyCollection!
-  journeyCustomizationFieldPublisherUpdate(journeyId: ID!, string: String!): [JourneyCustomizationField!]!
-  journeyCustomizationFieldUserUpdate(journeyId: ID!, input: [JourneyCustomizationFieldInput!]!): [JourneyCustomizationField!]!
-  journeyNotificationUpdate(input: JourneyNotificationUpdateInput!): JourneyNotification!
-  journeyProfileCreate: JourneyProfile!
-  journeyProfileUpdate(input: JourneyProfileUpdateInput!): JourneyProfile!
-  journeyThemeCreate(input: JourneyThemeCreateInput!): JourneyTheme!
-  journeyThemeUpdate(id: ID!, input: JourneyThemeUpdateInput!): JourneyTheme!
-  journeyThemeDelete(id: ID!): JourneyTheme!
-  updateJourneysEmailPreference(input: JourneysEmailPreferenceUpdateInput!): JourneysEmailPreference
-  qrCodeCreate(input: QrCodeCreateInput!): QrCode!
-  qrCodeUpdate(id: ID!, input: QrCodeUpdateInput!): QrCode!
-  qrCodeDelete(id: ID!): QrCode!
-  teamCreate(input: TeamCreateInput): Team!
-  teamUpdate(id: ID!, input: TeamUpdateInput): Team!
-  userInviteCreate(journeyId: ID!, input: UserInviteCreateInput): UserInvite
-  userInviteRemove(id: ID!, journeyId: ID!): UserInvite!
-  userInviteAcceptAll: [UserInvite!]!
-  userJourneyApprove(id: ID!): UserJourney!
-  userJourneyPromote(id: ID!): UserJourney!
-  userJourneyRemove(id: ID!): UserJourney!
-
-  """Removes all userJourneys associated with a journeyId"""
-  userJourneyRemoveAll(id: ID!): [UserJourney!]!
-  userJourneyRequest(
-    journeyId: ID!
-
-    """drop this parameter after merging teams"""
-    idType: IdType
-  ): UserJourney!
-  userJourneyOpen(id: ID!): UserJourney
-  userTeamUpdate(id: ID!, input: UserTeamUpdateInput): UserTeam!
-  userTeamDelete(id: ID!): UserTeam!
-  userTeamInviteCreate(teamId: ID!, input: UserTeamInviteCreateInput): UserTeamInvite
-  userTeamInviteRemove(id: ID!): UserTeamInvite!
-  userTeamInviteAcceptAll: [UserTeamInvite!]!
-
-  """Update a visitor"""
-  visitorUpdate(id: ID!, input: VisitorUpdateInput!): Visitor!
-
-  """
-  Allow current user to update specific allowable fields of their visitor record
-  """
-  visitorUpdateForCurrentUser(input: VisitorUpdateInput!): Visitor!
-}
-
 interface Block {
   id: ID!
   journeyId: ID!
@@ -605,6 +288,243 @@ extend type Query {
 
   """Get a single visitor"""
   visitor(id: ID!): Visitor!
+}
+
+type Mutation {
+  """blockDelete returns the updated sibling blocks on successful delete"""
+  blockDelete(
+    id: ID!
+
+    """drop this parameter after merging teams"""
+    journeyId: ID
+
+    """drop this parameter after merging teams"""
+    parentBlockId: ID
+  ): [Block!]!
+
+  """
+  blockDuplicate returns the updated block, it's children and sibling blocks on successful duplicate
+  """
+  blockDuplicate(
+    id: ID!
+
+    """
+    parentOrder defines the position to add the duplicated block. Negative values defines the position from the end of the array. Positions greater than the length of the array or null parentOrder will add duplicate at end of the array.
+    """
+    parentOrder: Int
+
+    """
+    idMap is used to set custom ids for the duplicated block and it's descendants.
+    """
+    idMap: [BlockDuplicateIdMap!]
+
+    """drop this parameter after merging teams"""
+    journeyId: ID
+
+    """
+    x is used to position a step block block horizontally in the journey flow diagram on
+    the editor.
+    """
+    x: Int
+
+    """
+    y is used to position a step block block vertically in the journey flow diagram on
+    the editor.
+    """
+    y: Int
+  ): [Block!]!
+  blockOrderUpdate(
+    id: ID!
+    parentOrder: Int!
+
+    """drop this parameter after merging teams"""
+    journeyId: ID
+  ): [Block!]!
+
+  """blockRestore is used for redo/undo"""
+  blockRestore(id: ID!): [Block!]!
+  buttonBlockCreate(input: ButtonBlockCreateInput!): ButtonBlock!
+  buttonBlockUpdate(
+    id: ID!
+    input: ButtonBlockUpdateInput!
+
+    """drop this parameter after merging teams"""
+    journeyId: ID
+  ): ButtonBlock
+  cardBlockCreate(input: CardBlockCreateInput!): CardBlock!
+  cardBlockUpdate(
+    id: ID!
+    input: CardBlockUpdateInput!
+
+    """drop this parameter after merging teams"""
+    journeyId: ID
+  ): CardBlock!
+  iconBlockCreate(input: IconBlockCreateInput!): IconBlock!
+  iconBlockUpdate(
+    id: ID!
+    input: IconBlockUpdateInput!
+
+    """drop this parameter after merging teams"""
+    journeyId: ID
+  ): IconBlock!
+  imageBlockCreate(input: ImageBlockCreateInput!): ImageBlock!
+  imageBlockUpdate(
+    id: ID!
+    input: ImageBlockUpdateInput!
+
+    """drop this parameter after merging teams"""
+    journeyId: ID
+  ): ImageBlock!
+  radioOptionBlockCreate(input: RadioOptionBlockCreateInput!): RadioOptionBlock!
+  radioOptionBlockUpdate(
+    id: ID!
+    input: RadioOptionBlockUpdateInput!
+
+    """drop this parameter after merging teams"""
+    journeyId: ID
+  ): RadioOptionBlock!
+  radioQuestionBlockCreate(input: RadioQuestionBlockCreateInput!): RadioQuestionBlock!
+  radioQuestionBlockUpdate(id: ID!, parentBlockId: ID!, gridView: Boolean): RadioQuestionBlock!
+  signUpBlockCreate(input: SignUpBlockCreateInput!): SignUpBlock!
+  signUpBlockUpdate(
+    id: ID!
+    input: SignUpBlockUpdateInput!
+
+    """drop this parameter after merging teams"""
+    journeyId: ID
+  ): SignUpBlock
+  spacerBlockCreate(input: SpacerBlockCreateInput!): SpacerBlock!
+  spacerBlockUpdate(id: ID!, input: SpacerBlockUpdateInput!): SpacerBlock!
+  stepBlockCreate(input: StepBlockCreateInput!): StepBlock!
+  stepBlockUpdate(
+    id: ID!
+    input: StepBlockUpdateInput!
+
+    """drop this parameter after merging teams"""
+    journeyId: ID
+  ): StepBlock!
+  stepBlockPositionUpdate(input: [StepBlockPositionUpdateInput!]!): [StepBlock!]!
+  textResponseBlockCreate(input: TextResponseBlockCreateInput!): TextResponseBlock!
+  textResponseBlockUpdate(
+    id: ID!
+    input: TextResponseBlockUpdateInput!
+
+    """drop this parameter after merging teams"""
+    journeyId: ID
+  ): TextResponseBlock
+  typographyBlockCreate(input: TypographyBlockCreateInput!): TypographyBlock!
+  typographyBlockUpdate(
+    id: ID!
+    input: TypographyBlockUpdateInput!
+
+    """drop this parameter after merging teams"""
+    journeyId: ID
+  ): TypographyBlock!
+  chatButtonCreate(journeyId: ID!, input: ChatButtonCreateInput): ChatButton!
+  chatButtonUpdate(id: ID!, journeyId: ID!, input: ChatButtonUpdateInput!): ChatButton!
+  chatButtonRemove(id: ID!): ChatButton!
+  customDomainCreate(input: CustomDomainCreateInput!): CustomDomain!
+  customDomainUpdate(id: ID!, input: CustomDomainUpdateInput!): CustomDomain!
+  customDomainDelete(id: ID!): CustomDomain!
+  customDomainCheck(id: ID!): CustomDomainCheck!
+  buttonClickEventCreate(input: ButtonClickEventCreateInput!): ButtonClickEvent!
+  chatOpenEventCreate(input: ChatOpenEventCreateInput!): ChatOpenEvent!
+
+  """
+  Creates a JourneyViewEvent, returns null if attempting to create another
+  JourneyViewEvent with the same userId, journeyId, and within the same 24hr
+  period of the previous JourneyViewEvent
+  """
+  journeyViewEventCreate(input: JourneyViewEventCreateInput!): JourneyViewEvent
+  radioQuestionSubmissionEventCreate(input: RadioQuestionSubmissionEventCreateInput!): RadioQuestionSubmissionEvent!
+  signUpSubmissionEventCreate(input: SignUpSubmissionEventCreateInput!): SignUpSubmissionEvent!
+  stepViewEventCreate(input: StepViewEventCreateInput!): StepViewEvent!
+  stepNextEventCreate(input: StepNextEventCreateInput!): StepNextEvent!
+  stepPreviousEventCreate(input: StepPreviousEventCreateInput!): StepPreviousEvent!
+  textResponseSubmissionEventCreate(input: TextResponseSubmissionEventCreateInput!): TextResponseSubmissionEvent!
+  videoStartEventCreate(input: VideoStartEventCreateInput!): VideoStartEvent!
+  videoPlayEventCreate(input: VideoPlayEventCreateInput!): VideoPlayEvent!
+  videoPauseEventCreate(input: VideoPauseEventCreateInput!): VideoPauseEvent!
+  videoCompleteEventCreate(input: VideoCompleteEventCreateInput!): VideoCompleteEvent!
+  videoExpandEventCreate(input: VideoExpandEventCreateInput!): VideoExpandEvent!
+  videoCollapseEventCreate(input: VideoCollapseEventCreateInput!): VideoCollapseEvent!
+  videoProgressEventCreate(input: VideoProgressEventCreateInput!): VideoProgressEvent!
+  hostCreate(teamId: ID!, input: HostCreateInput!): Host!
+  hostUpdate(id: ID!, teamId: ID!, input: HostUpdateInput): Host!
+  hostDelete(id: ID!, teamId: ID!): Host!
+  integrationGrowthSpacesCreate(input: IntegrationGrowthSpacesCreateInput!): IntegrationGrowthSpaces!
+  integrationGrowthSpacesUpdate(id: ID!, input: IntegrationGrowthSpacesUpdateInput!): IntegrationGrowthSpaces!
+  integrationDelete(id: ID!): Integration!
+  journeyCreate(input: JourneyCreateInput!, teamId: ID!): Journey!
+  journeyDuplicate(id: ID!, teamId: ID!): Journey!
+  journeyUpdate(id: ID!, input: JourneyUpdateInput!): Journey!
+
+  """Sets journey status to published"""
+  journeyPublish(id: ID!): Journey
+
+  """Sets journey status to featured"""
+  journeyFeature(id: ID!, feature: Boolean!): Journey
+
+  """Sets journeys statuses to archived"""
+  journeysArchive(ids: [ID!]!): [Journey]
+
+  """Sets journeys statuses to deleted"""
+  journeysDelete(ids: [ID!]!): [Journey]
+
+  """Sets journeys statuses to trashed"""
+  journeysTrash(ids: [ID!]!): [Journey]
+
+  """Sets journeys statuses to last active status"""
+  journeysRestore(ids: [ID!]!): [Journey]
+
+  """Updates template"""
+  journeyTemplate(id: ID!, input: JourneyTemplateInput!): Journey!
+  journeyCollectionCreate(input: JourneyCollectionCreateInput!): JourneyCollection!
+  journeyCollectionUpdate(id: ID!, input: JourneyCollectionUpdateInput!): JourneyCollection!
+  journeyCollectionDelete(id: ID!): JourneyCollection!
+  journeyCustomizationFieldPublisherUpdate(journeyId: ID!, string: String!): [JourneyCustomizationField!]!
+  journeyCustomizationFieldUserUpdate(journeyId: ID!, input: [JourneyCustomizationFieldInput!]!): [JourneyCustomizationField!]!
+  journeyNotificationUpdate(input: JourneyNotificationUpdateInput!): JourneyNotification!
+  journeyProfileCreate: JourneyProfile!
+  journeyProfileUpdate(input: JourneyProfileUpdateInput!): JourneyProfile!
+  journeyThemeCreate(input: JourneyThemeCreateInput!): JourneyTheme!
+  journeyThemeUpdate(id: ID!, input: JourneyThemeUpdateInput!): JourneyTheme!
+  journeyThemeDelete(id: ID!): JourneyTheme!
+  updateJourneysEmailPreference(input: JourneysEmailPreferenceUpdateInput!): JourneysEmailPreference
+  qrCodeCreate(input: QrCodeCreateInput!): QrCode!
+  qrCodeUpdate(id: ID!, input: QrCodeUpdateInput!): QrCode!
+  qrCodeDelete(id: ID!): QrCode!
+  teamCreate(input: TeamCreateInput): Team!
+  teamUpdate(id: ID!, input: TeamUpdateInput): Team!
+  userInviteCreate(journeyId: ID!, input: UserInviteCreateInput): UserInvite
+  userInviteRemove(id: ID!, journeyId: ID!): UserInvite!
+  userInviteAcceptAll: [UserInvite!]!
+  userJourneyApprove(id: ID!): UserJourney!
+  userJourneyPromote(id: ID!): UserJourney!
+  userJourneyRemove(id: ID!): UserJourney!
+
+  """Removes all userJourneys associated with a journeyId"""
+  userJourneyRemoveAll(id: ID!): [UserJourney!]!
+  userJourneyRequest(
+    journeyId: ID!
+
+    """drop this parameter after merging teams"""
+    idType: IdType
+  ): UserJourney!
+  userJourneyOpen(id: ID!): UserJourney
+  userTeamUpdate(id: ID!, input: UserTeamUpdateInput): UserTeam!
+  userTeamDelete(id: ID!): UserTeam!
+  userTeamInviteCreate(teamId: ID!, input: UserTeamInviteCreateInput): UserTeamInvite
+  userTeamInviteRemove(id: ID!): UserTeamInvite!
+  userTeamInviteAcceptAll: [UserTeamInvite!]!
+
+  """Update a visitor"""
+  visitorUpdate(id: ID!, input: VisitorUpdateInput!): Visitor!
+
+  """
+  Allow current user to update specific allowable fields of their visitor record
+  """
+  visitorUpdateForCurrentUser(input: VisitorUpdateInput!): Visitor!
 }
 
 enum ButtonVariant {
@@ -1122,6 +1042,7 @@ type TextResponseBlock implements Block
   placeholder: String @shareable
   required: Boolean @shareable
   hint: String @shareable
+  hideLabel: Boolean @shareable
   minRows: Int @shareable
   type: TextResponseType @shareable
   routeId: String @shareable
@@ -1148,6 +1069,7 @@ input TextResponseBlockUpdateInput {
   placeholder: String
   required: Boolean
   hint: String
+  hideLabel: Boolean
   minRows: Int
   routeId: String
   type: TextResponseType
@@ -1352,100 +1274,6 @@ type VideoBlock implements Block
 
   """how the video should display within the VideoBlock"""
   objectFit: VideoBlockObjectFit @shareable
-}
-
-input VideoBlockCreateInput {
-  id: ID
-  journeyId: ID!
-  parentBlockId: ID!
-
-  """startAt dictates at which point of time the video should start playing"""
-  startAt: Int
-
-  """endAt dictates at which point of time the video should end"""
-  endAt: Int
-  duration: Int
-  description: String
-  muted: Boolean
-  autoplay: Boolean
-
-  """
-  internal source videos: videoId and videoVariantLanguageId both need to be set
-  to select a video.
-  For other sources only videoId needs to be set.
-  """
-  videoId: ID
-
-  """
-  internal source videos: videoId and videoVariantLanguageId both need to be set
-  to select a video.
-  For other sources only videoId needs to be set.
-  """
-  videoVariantLanguageId: ID
-
-  """
-  internal source: videoId and videoVariantLanguageId required
-  youTube source: videoId required
-  """
-  source: VideoBlockSource
-
-  """
-  posterBlockId is present if a child block should be used as a poster.
-  This child block should not be rendered normally, instead it should be used
-  as the video poster. PosterBlock should be of type ImageBlock.
-  """
-  posterBlockId: ID
-  fullsize: Boolean
-
-  """
-  True if the coverBlockId in a parent block should be set to this block's id.
-  """
-  isCover: Boolean
-
-  """how the video should display within the VideoBlock"""
-  objectFit: VideoBlockObjectFit
-}
-
-input VideoBlockUpdateInput {
-  """startAt dictates at which point of time the video should start playing"""
-  startAt: Int
-
-  """endAt dictates at which point of time the video should end"""
-  endAt: Int
-  muted: Boolean
-  autoplay: Boolean
-  duration: Int
-
-  """
-  internal source videos: videoId and videoVariantLanguageId both need to be set
-  to select a video.
-  For other sources only videoId needs to be set.
-  """
-  videoId: ID
-
-  """
-  internal source videos: videoId and videoVariantLanguageId both need to be set
-  to select a video.
-  For other sources only videoId needs to be set.
-  """
-  videoVariantLanguageId: ID
-
-  """
-  internal source: videoId and videoVariantLanguageId required
-  youTube source: videoId required
-  """
-  source: VideoBlockSource
-
-  """
-  posterBlockId is present if a child block should be used as a poster.
-  This child block should not be rendered normally, instead it should be used
-  as the video poster. PosterBlock should be of type ImageBlock.
-  """
-  posterBlockId: ID
-  fullsize: Boolean
-
-  """how the video should display within the VideoBlock"""
-  objectFit: VideoBlockObjectFit
 }
 
 """
@@ -2375,6 +2203,7 @@ input JourneysFilter {
   languageIds: [ID!]
   limit: Int
   orderByRecent: Boolean
+  fromTemplateId: ID
 }
 
 input JourneysQueryOptions {

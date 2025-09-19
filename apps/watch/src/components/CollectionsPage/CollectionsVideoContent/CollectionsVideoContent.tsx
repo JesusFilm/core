@@ -72,7 +72,7 @@ export const CollectionsVideoContent = ({
   startAt
 }: VideoSectionProps): ReactElement => {
   return (
-    <div id={contentId} className="py-16 relative scroll-snap-start-always">
+    <div id={contentId} className="scroll-snap-start-always relative py-16">
       {showDivider && <hr className="section-divider" />}
       <CollectionVideoPlayer
         contentId={contentId}
@@ -81,7 +81,7 @@ export const CollectionsVideoContent = ({
         setMutePage={setMutePage}
         startAt={startAt}
       />
-      <div className="xl:flex w-full z-1 relative">
+      <div className="relative z-1 w-full xl:flex">
         <CollectionVideoContentDescription
           subtitle={subtitle}
           title={title}

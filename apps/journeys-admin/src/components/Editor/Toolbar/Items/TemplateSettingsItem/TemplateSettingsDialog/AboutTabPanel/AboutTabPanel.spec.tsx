@@ -5,6 +5,7 @@ import { FormikContextType, FormikProvider } from 'formik'
 import { TemplateSettingsFormValues } from '../useTemplateSettingsForm'
 
 import { AboutTabPanel } from './AboutTabPanel'
+import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 
 jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
@@ -101,5 +102,29 @@ describe('AboutTabPanel', () => {
 
     expect(queryByText('Strategy')).not.toBeInTheDocument()
     expect(getByTestId('strategy-iframe')).toBeInTheDocument()
+  })
+
+  it('should render Customize Template text area', () => {
+    const { getByTestId } = render(
+      <MockedProvider>
+        <FormikProvider
+          value={
+            {
+              values: {
+                creatorDescription: '',
+                strategySlug:
+                  'https://www.canva.com/design/DAF9QMJYu1Y/XmioFIQOATVa-lXCEYucmg/view'
+              }
+            } as unknown as FormikContextType<TemplateSettingsFormValues>
+          }
+        >
+          <FlagsProvider flags={{ journeyCustomization: true }}>
+            <AboutTabPanel />
+          </FlagsProvider>
+        </FormikProvider>
+      </MockedProvider>
+    )
+
+    expect(getByTestId('CustomizeTemplateSection')).toBeInTheDocument()
   })
 })

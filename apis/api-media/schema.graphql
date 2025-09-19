@@ -97,6 +97,11 @@ A date string, such as 2007-12-03, compliant with the `full-date` format outline
 """
 scalar Date
 
+"""
+A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the `date-time` format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar.
+"""
+scalar DateTime
+
 enum DefaultPlatform {
   ios
   android
@@ -199,6 +204,12 @@ type Mutation {
   createMuxVideoUploadByUrl(url: String!, userGenerated: Boolean, downloadable: Boolean = false, maxResolution: MaxResolutionTier = fhd): MuxVideo!
   enableMuxDownload(id: ID!, resolution: String): MuxVideo
   deleteMuxVideo(id: ID!, userGenerated: Boolean): Boolean!
+  playlistCreate(input: PlaylistCreateInput!): MutationPlaylistCreateResult
+  playlistUpdate(id: ID!, input: PlaylistUpdateInput!): MutationPlaylistUpdateResult
+  playlistDelete(id: ID!): MutationPlaylistDeleteResult
+  playlistItemAdd(id: ID, playlistId: ID!, videoVariantId: ID!): MutationPlaylistItemAddResult
+  playlistItemRemove(playlistId: ID!, itemId: ID!): MutationPlaylistItemRemoveResult
+  playlistItemsReorder(playlistId: ID!, itemIds: [ID!]!): MutationPlaylistItemsReorderResult
 
   """
   Create a new short link domain that can be used for short links (this domain must have a CNAME record pointing to the short link service)
@@ -277,6 +288,42 @@ input MutationBibleCitationUpdateInput {
   verseStart: Int
   verseEnd: Int
   order: Int
+}
+
+union MutationPlaylistCreateResult = ZodError | MutationPlaylistCreateSuccess
+
+type MutationPlaylistCreateSuccess {
+  data: Playlist!
+}
+
+union MutationPlaylistDeleteResult = NotFoundError | MutationPlaylistDeleteSuccess
+
+type MutationPlaylistDeleteSuccess {
+  data: Playlist!
+}
+
+union MutationPlaylistItemAddResult = NotFoundError | MutationPlaylistItemAddSuccess
+
+type MutationPlaylistItemAddSuccess {
+  data: PlaylistItem!
+}
+
+union MutationPlaylistItemRemoveResult = NotFoundError | MutationPlaylistItemRemoveSuccess
+
+type MutationPlaylistItemRemoveSuccess {
+  data: [PlaylistItem!]!
+}
+
+union MutationPlaylistItemsReorderResult = NotFoundError | MutationPlaylistItemsReorderSuccess
+
+type MutationPlaylistItemsReorderSuccess {
+  data: [PlaylistItem!]!
+}
+
+union MutationPlaylistUpdateResult = ZodError | NotFoundError | MutationPlaylistUpdateSuccess
+
+type MutationPlaylistUpdateSuccess {
+  data: Playlist!
 }
 
 input MutationShortLinkCreateInput {
@@ -463,6 +510,45 @@ enum Platform {
   watch
 }
 
+type Playlist {
+  id: ID!
+  name: String!
+  note: String
+  noteUpdatedAt: DateTime
+  noteSharedAt: DateTime
+  sharedAt: DateTime
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  slug: String!
+  owner: User!
+  items: [PlaylistItem!]!
+}
+
+input PlaylistCreateInput {
+  id: ID
+  name: String!
+  note: String
+  noteSharedAt: DateTime
+  sharedAt: DateTime
+  slug: String
+}
+
+type PlaylistItem {
+  id: ID!
+  order: Int
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  videoVariant: VideoVariant!
+  playlist: Playlist!
+}
+
+input PlaylistUpdateInput {
+  name: String
+  note: String
+  noteSharedAt: DateTime
+  sharedAt: DateTime
+}
+
 type Query {
   getTranscodeAssetProgress(jobId: String!): Int
   getMyCloudflareImages(offset: Int, limit: Int): [CloudflareImage!]!
@@ -476,6 +562,8 @@ type Query {
   getMyMuxVideos(offset: Int, limit: Int): [MuxVideo!]!
   getMyMuxVideo(id: ID!, userGenerated: Boolean): MuxVideo!
   getMuxVideo(id: ID!, userGenerated: Boolean): MuxVideo
+  playlists: [Playlist!]
+  playlist(id: ID!, idType: IdType! = databaseId): QueryPlaylistResult
 
   """List of short link domains that can be used for short links"""
   shortLinkDomains(
@@ -526,6 +614,12 @@ type Query {
   taxonomies(category: String, languageCodes: [String!]): [Taxonomy!]!
   arclightApiKeys: [ArclightApiKey!]!
   arclightApiKeyByKey(key: String!): ArclightApiKey
+}
+
+union QueryPlaylistResult = NotFoundError | QueryPlaylistSuccess
+
+type QueryPlaylistSuccess {
+  data: Playlist!
 }
 
 union QueryShortLinkByPathResult = NotFoundError | QueryShortLinkByPathSuccess
@@ -1084,6 +1178,7 @@ type VideoVariant {
 
   """version control for master video file"""
   version: Int!
+  video: Video
 }
 
 input VideoVariantCreateInput {
@@ -1162,6 +1257,7 @@ input VideoVariantDownloadUpdateInput {
 
 input VideoVariantFilter {
   onlyPublished: Boolean = true
+  languageId: ID
 }
 
 input VideoVariantUpdateInput {

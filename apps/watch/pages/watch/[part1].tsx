@@ -23,6 +23,7 @@ import {
 import { getCookie } from '../../src/libs/cookieHandler'
 import { getFlags } from '../../src/libs/getFlags'
 import { LANGUAGE_MAPPINGS } from '../../src/libs/localeMapping'
+import { transformData } from '../../src/libs/useLanguages/util/transformData'
 import {
   WatchProvider,
   WatchState
@@ -48,7 +49,7 @@ function HomeLanguagePage({
   const indexName = process.env.NEXT_PUBLIC_ALGOLIA_INDEX ?? ''
 
   const initialWatchState: WatchState = {
-    audioLanguageId: getCookie('AUDIO_LANGUAGE') ?? languageId,
+    audioLanguageId: languageId,
     subtitleLanguageId: getCookie('SUBTITLE_LANGUAGE') ?? languageId,
     subtitleOn: getCookie('SUBTITLES_ON') === 'true'
   }
@@ -81,24 +82,27 @@ function HomeLanguagePage({
 }
 
 export const getStaticProps: GetStaticProps<HomeLanguagePageProps> = async ({
-  params
+  params,
+  locale
 }) => {
-  const key = Object.keys(LANGUAGE_MAPPINGS).find((key) => {
-    return LANGUAGE_MAPPINGS[key].languageSlugs.includes(
-      params!.part1 as string
-    )
+  const languages = await fetch(
+    `${process.env.NODE_ENV === 'development' ? 'http://localhost:4300' : 'https://www.jesusfilm.org'}/api/languages`
+  )
+  const languagesData = await languages.json()
+  const transformedLanguages = transformData(languagesData, locale ?? 'en')
+  const language = transformedLanguages.find((language) => {
+    return language.slug === params?.part1?.toString().replace('.html', '')
   })
-  if (key == null) {
+  if (language == null) {
     return {
       notFound: true,
       revalidate: 60
     }
   }
-  const mapping = LANGUAGE_MAPPINGS[key]
   const serverState = await getServerState(
     <HomeLanguagePage
-      languageEnglishName={mapping.englishName}
-      languageId={mapping.languageId}
+      languageEnglishName={language.englishName?.value ?? ''}
+      languageId={language.id}
     />,
     {
       renderToString
@@ -112,11 +116,11 @@ export const getStaticProps: GetStaticProps<HomeLanguagePageProps> = async ({
     props: {
       flags: await getFlags(),
       serverState,
-      languageEnglishName: mapping.englishName,
-      languageId: mapping.languageId,
+      languageEnglishName: language.englishName?.value ?? '',
+      languageId: language.id,
       initialApolloState: apolloClient.cache.extract(),
       ...(await serverSideTranslations(
-        mapping.locale,
+        locale ?? 'en',
         ['apps-watch'],
         i18nConfig
       ))
@@ -135,7 +139,7 @@ export const getStaticPaths: GetStaticPaths = async () => {
 
   return {
     paths,
-    fallback: false
+    fallback: 'blocking'
   }
 }
 

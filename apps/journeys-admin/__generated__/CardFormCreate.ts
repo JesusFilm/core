@@ -101,6 +101,8 @@ export interface CardFormCreate_button_action_LinkAction {
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export interface CardFormCreate_button_action_EmailAction {
@@ -108,6 +110,8 @@ export interface CardFormCreate_button_action_EmailAction {
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export type CardFormCreate_button_action = CardFormCreate_button_action_PhoneAction | CardFormCreate_button_action_NavigateToBlockAction | CardFormCreate_button_action_LinkAction | CardFormCreate_button_action_EmailAction;
@@ -174,6 +178,8 @@ export interface CardFormCreate_buttonUpdate_action_LinkAction {
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export interface CardFormCreate_buttonUpdate_action_EmailAction {
@@ -181,6 +187,8 @@ export interface CardFormCreate_buttonUpdate_action_EmailAction {
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export type CardFormCreate_buttonUpdate_action = CardFormCreate_buttonUpdate_action_PhoneAction | CardFormCreate_buttonUpdate_action_NavigateToBlockAction | CardFormCreate_buttonUpdate_action_LinkAction | CardFormCreate_buttonUpdate_action_EmailAction;
