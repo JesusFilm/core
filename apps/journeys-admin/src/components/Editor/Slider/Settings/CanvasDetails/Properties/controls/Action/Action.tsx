@@ -8,6 +8,7 @@ import { ReactElement, useEffect, useState } from 'react'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
+import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import ChevronDownIcon from '@core/shared/ui/icons/ChevronDown'
 
 import {
@@ -16,6 +17,7 @@ import {
   BlockFields_VideoBlock as VideoBlock
 } from '../../../../../../../../../__generated__/BlockFields'
 import { useActionCommand } from '../../../../../../utils/useActionCommand'
+import { useFlags } from '@core/shared/ui/FlagsProvider'
 
 import { CustomizationToggle } from './CustomizationToggle'
 import { EmailAction } from './EmailAction'
@@ -30,6 +32,8 @@ export function Action(): ReactElement {
   } = useEditor()
   const { t } = useTranslation('apps-journeys-admin')
   const { addAction } = useActionCommand()
+  const { journeyCustomization } = useFlags()
+  const { journey } = useJourney()
 
   // Add addtional types here to use this component for that block
   const selectedBlock = stateSelectedBlock as
@@ -114,7 +118,9 @@ export function Action(): ReactElement {
         {isEmail && <EmailAction />}
         {isPhone && <PhoneAction />}
         {action === 'NavigateToBlockAction' && <NavigateToBlockAction />}
-        {(isLink || isEmail) && <CustomizationToggle />}
+        {(isLink || isEmail) && journeyCustomization && journey?.template && (
+          <CustomizationToggle />
+        )}
       </Stack>
     </>
   )

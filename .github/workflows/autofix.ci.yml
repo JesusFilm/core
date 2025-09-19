@@ -27,17 +27,19 @@ jobs:
         uses: pnpm/action-setup@v4
         with:
           run_install: false
-      - uses: useblacksmith/setup-node@v5
+      - uses: actions/setup-node@v5
         with:
           node-version: ${{ matrix.node-version }}
           cache: 'pnpm'
       - name: Install dependencies
         run: pnpm install --frozen-lockfile --silent
-      - name: Mount lint cache
-        uses: useblacksmith/stickydisk@v1
+      - name: Cache lint artifacts
+        uses: actions/cache@v4
         with:
-          key: ${{ github.repository }}-lint
           path: ./.cache
+          key: ${{ runner.os }}-node-${{ matrix.node-version }}-lint-${{ hashFiles('pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-node-${{ matrix.node-version }}-lint-
       - name: generate prisma imports
         uses: mansagroup/nrwl-nx-action@v3
         with:
