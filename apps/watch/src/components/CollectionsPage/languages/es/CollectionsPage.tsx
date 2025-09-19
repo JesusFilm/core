@@ -134,7 +134,7 @@ Porque la celebración más grande en la historia de la humanidad va mucho más 
                       'Incluso en tiempos de caos e incertidumbre, podemos confiar en la soberanía de Dios porque:'
                     }
                   </p>
-                  <ul className="list-disc pl-6 mt-2 space-y-2">
+                  <ul className="mt-2 list-disc space-y-2 pl-6">
                     <li>
                       {
                         'Dios permanece en control incluso cuando las circunstancias parecen fuera de control'
@@ -164,7 +164,7 @@ Porque la celebración más grande en la historia de la humanidad va mucho más 
               answer: (
                 <>
                   <p>{'La Pascua es central para la fe cristiana porque:'}</p>
-                  <ul className="list-disc pl-6 mt-2 space-y-2">
+                  <ul className="mt-2 list-disc space-y-2 pl-6">
                     <li>
                       {
                         'Marca la resurrección de Jesús, demostrando Su victoria sobre la muerte'
@@ -194,7 +194,7 @@ Porque la celebración más grande en la historia de la humanidad va mucho más 
                   <p>
                     {'La Biblia nos dice que ocurrieron varios eventos clave:'}
                   </p>
-                  <ul className="list-disc pl-6 mt-2 space-y-2">
+                  <ul className="mt-2 list-disc space-y-2 pl-6">
                     <li>
                       {
                         'El cuerpo de Jesús fue colocado en una tumba y custodiado por soldados romanos'
@@ -325,7 +325,7 @@ Porque la celebración más grande en la historia de la humanidad va mucho más 
                       'El perdón de Jesús es una demostración de la gracia y misericordia de Dios. El ladrón en la cruz reconoció la inocencia y divinidad de Jesús, pidiendo humildemente ser recordado en Su reino. La respuesta de Jesús muestra:'
                     }
                   </p>
-                  <ul className="list-disc pl-6 mt-2 space-y-2">
+                  <ul className="mt-2 list-disc space-y-2 pl-6">
                     <li>{'La salvación se basa en la fe, no en las obras'}</li>
                     <li>
                       {
@@ -357,7 +357,7 @@ Porque la celebración más grande en la historia de la humanidad va mucho más 
                       'Jesús aceptó voluntariamente la muerte porque era parte del plan de Dios para la redención. Su sacrificio era necesario para cumplir la profecía y traer salvación. Razones clave incluyen:'
                     }
                   </p>
-                  <ul className="list-disc pl-6 mt-2 space-y-2">
+                  <ul className="mt-2 list-disc space-y-2 pl-6">
                     <li>
                       {
                         'Su muerte cumplió las profecías del Antiguo Testamento (Isaías 53)'
@@ -393,7 +393,7 @@ Porque la celebración más grande en la historia de la humanidad va mucho más 
                       'Estar en el paraíso con Jesús significa vida eterna en la presencia de Dios. Al ladrón en la cruz se le aseguró su lugar con Jesús en el cielo debido a su fe. Aspectos importantes de esta promesa incluyen:'
                     }
                   </p>
-                  <ul className="list-disc pl-6 mt-2 space-y-2">
+                  <ul className="mt-2 list-disc space-y-2 pl-6">
                     <li>
                       {
                         'Significa presencia inmediata con Cristo después de la muerte'
@@ -507,7 +507,7 @@ Porque la celebración más grande en la historia de la humanidad va mucho más 
                       'La muerte de Jesús fue necesaria para cumplir el plan de redención de Dios. Debido al pecado, la humanidad estaba separada de Dios, pero el sacrificio de Jesús proporcionó el camino para la reconciliación. He aquí por qué Su muerte era esencial:'
                     }
                   </p>
-                  <ul className="list-disc pl-6 mt-2 space-y-2">
+                  <ul className="mt-2 list-disc space-y-2 pl-6">
                     <li>
                       {'El pecado crea una barrera entre nosotros y Dios'}
                     </li>
@@ -535,7 +535,7 @@ Porque la celebración más grande en la historia de la humanidad va mucho más 
                       'El amor y la justicia de Dios van de la mano. Aunque Él desea perdonar, también mantiene la justicia. El sacrificio de Jesús fue la máxima expresión de ambos:'
                     }
                   </p>
-                  <ul className="list-disc pl-6 mt-2 space-y-2">
+                  <ul className="mt-2 list-disc space-y-2 pl-6">
                     <li>
                       {'El perdón requiere un costo, y Jesús pagó ese costo'}
                     </li>
@@ -569,7 +569,7 @@ Porque la celebración más grande en la historia de la humanidad va mucho más 
                       'La muerte y resurrección de Jesús abrieron el camino para que seamos reconciliados con Dios. A través de Él, podemos:'
                     }
                   </p>
-                  <ul className="list-disc pl-6 mt-2 space-y-2">
+                  <ul className="mt-2 list-disc space-y-2 pl-6">
                     <li>{'Experimentar perdón y libertad del pecado'}</li>
                     <li>{'Tener acceso directo a Dios a través de Cristo'}</li>
                     <li>{'Recibir el don de la vida eterna'}</li>
@@ -640,7 +640,7 @@ Porque la celebración más grande en la historia de la humanidad va mucho más 
                       "'Nacer de nuevo' significa experimentar un renacimiento espiritual. Jesús le explicó a Nicodemo que este renacimiento no es físico sino espiritual—nacer del agua y del Espíritu."
                     }
                   </p>
-                  <ul className="list-disc pl-6 mt-2 space-y-2">
+                  <ul className="mt-2 list-disc space-y-2 pl-6">
                     <li>{'Es una obra del Espíritu Santo'}</li>
                     <li>{'Implica creer en Jesús como Salvador'}</li>
                     <li>{'Trae nueva vida y una nueva relación con Dios'}</li>
@@ -659,7 +659,7 @@ Porque la celebración más grande en la historia de la humanidad va mucho más 
                       'Jesús quería que Nicodemo entendiera que el conocimiento religioso y las buenas obras no son suficientes. Para entrar en el reino de Dios, se necesita una transformación interior completa.'
                     }
                   </p>
-                  <ul className="list-disc pl-6 mt-2 space-y-2">
+                  <ul className="mt-2 list-disc space-y-2 pl-6">
                     <li>
                       {'Muestra nuestra necesidad de renovación espiritual'}
                     </li>
@@ -679,7 +679,7 @@ Porque la celebración más grande en la historia de la humanidad va mucho más 
                       'Jesús explicó que nacer de nuevo viene a través de creer en Él. Es un paso personal de fe que resulta en una nueva vida en Dios.'
                     }
                   </p>
-                  <ul className="list-disc pl-6 mt-2 space-y-2">
+                  <ul className="mt-2 list-disc space-y-2 pl-6">
                     <li>{'Creer en Jesucristo como el Hijo de Dios'}</li>
                     <li>{'Aceptar Su sacrificio por tus pecados'}</li>
                     <li>
@@ -749,7 +749,7 @@ Porque la celebración más grande en la historia de la humanidad va mucho más 
                       'Hay fuertes evidencias históricas y bíblicas de la muerte y resurrección de Jesús:'
                     }
                   </p>
-                  <ul className="list-disc pl-6 mt-2 space-y-2">
+                  <ul className="mt-2 list-disc space-y-2 pl-6">
                     <li>
                       {
                         'Los soldados romanos confirmaron Su muerte antes de enterrarlo'
@@ -778,7 +778,7 @@ Porque la celebración más grande en la historia de la humanidad va mucho más 
                   <p>
                     {'La resurrección es central para la fe cristiana porque:'}
                   </p>
-                  <ul className="list-disc pl-6 mt-2 space-y-2">
+                  <ul className="mt-2 list-disc space-y-2 pl-6">
                     <li>
                       {
                         'Demuestra la victoria de Jesús sobre el pecado y la muerte'
@@ -804,7 +804,7 @@ Porque la celebración más grande en la historia de la humanidad va mucho más 
                       'La resurrección de Jesús exige una respuesta personal. Podemos:'
                     }
                   </p>
-                  <ul className="list-disc pl-6 mt-2 space-y-2">
+                  <ul className="mt-2 list-disc space-y-2 pl-6">
                     <li>{'Creer en Él como nuestro Salvador y Señor'}</li>
                     <li>
                       {'Arrepentirnos del pecado y seguir Sus enseñanzas'}
@@ -997,7 +997,7 @@ Porque la celebración más grande en la historia de la humanidad va mucho más 
                       'La Biblia enseña que todo comenzó con Dios, el Creador del universo. Él habló y todo existió con propósito y diseño. La humanidad fue creada a Su imagen para vivir en armonía con Él, entre sí y con la creación.'
                     }
                   </p>
-                  <ul className="list-disc pl-6 mt-2 space-y-2">
+                  <ul className="mt-2 list-disc space-y-2 pl-6">
                     <li>{'Dios creó el mundo con amor y orden'}</li>
                     <li>
                       {
@@ -1024,7 +1024,7 @@ Porque la celebración más grande en la historia de la humanidad va mucho más 
                       'El sufrimiento existe porque el pecado entró en el mundo cuando la humanidad eligió rebelarse contra Dios. Esta desobediencia rompió la perfección original, introduciendo muerte, dolor y separación de Dios.'
                     }
                   </p>
-                  <ul className="list-disc pl-6 mt-2 space-y-2">
+                  <ul className="mt-2 list-disc space-y-2 pl-6">
                     <li>
                       {'El pecado trajo sufrimiento, quebrantamiento y muerte'}
                     </li>
@@ -1049,7 +1049,7 @@ Porque la celebración más grande en la historia de la humanidad va mucho más 
                       '¡Sí! Dios envió a Jesús como el rescatador. Jesús vivió una vida perfecta, murió en la cruz para pagar por el pecado y resucitó de entre los muertos para vencer a la muerte misma. A través de Él, podemos ser restaurados a Dios y experimentar una nueva vida.'
                     }
                   </p>
-                  <ul className="list-disc pl-6 mt-2 space-y-2">
+                  <ul className="mt-2 list-disc space-y-2 pl-6">
                     <li>{'El sacrificio de Jesús hace posible el perdón'}</li>
                     <li>
                       {'Su resurrección demuestra Su poder sobre la muerte'}
@@ -1074,7 +1074,7 @@ Porque la celebración más grande en la historia de la humanidad va mucho más 
                       'Según la Biblia, Dios ha prometido un futuro donde restaurará todas las cosas. Aquellos que confían en Jesús vivirán para siempre con Él en un mundo perfecto y renovado. El pecado, el sufrimiento y la muerte ya no existirán.'
                     }
                   </p>
-                  <ul className="list-disc pl-6 mt-2 space-y-2">
+                  <ul className="mt-2 list-disc space-y-2 pl-6">
                     <li>{'Dios creará un nuevo cielo y una nueva tierra'}</li>
                     <li>{'No habrá más dolor, sufrimiento o muerte'}</li>
                     <li>{'Jesús volverá para juzgar a vivos y muertos'}</li>
@@ -1145,7 +1145,7 @@ Porque la celebración más grande en la historia de la humanidad va mucho más 
                       'La historia de María Magdalena es una de transformación y redención. Como muchos de nosotros, llevaba un pasado lleno de luchas, pero Jesús la liberó y le dio un nuevo propósito. Su historia nos enseña:'
                     }
                   </p>
-                  <ul className="list-disc pl-6 mt-2 space-y-2">
+                  <ul className="mt-2 list-disc space-y-2 pl-6">
                     <li>
                       {'Jesús ofrece redención sin importar nuestro pasado'}
                     </li>
@@ -1168,7 +1168,7 @@ Porque la celebración más grande en la historia de la humanidad va mucho más 
                       'Los líderes religiosos se oponían a Jesús porque Sus enseñanzas desafiaban su autoridad y tradiciones. Las razones clave incluyen:'
                     }
                   </p>
-                  <ul className="list-disc pl-6 mt-2 space-y-2">
+                  <ul className="mt-2 list-disc space-y-2 pl-6">
                     <li>
                       {
                         'Él daba la bienvenida a pecadores y marginados, alterando las normas sociales'
@@ -1204,7 +1204,7 @@ Porque la celebración más grande en la historia de la humanidad va mucho más 
                       'La primera aparición de Jesús a María Magdalena fue profundamente significativa. Mostró:'
                     }
                   </p>
-                  <ul className="list-disc pl-6 mt-2 space-y-2">
+                  <ul className="mt-2 list-disc space-y-2 pl-6">
                     <li>
                       {'Su cuidado por aquellos que el mundo pasaba por alto'}
                     </li>

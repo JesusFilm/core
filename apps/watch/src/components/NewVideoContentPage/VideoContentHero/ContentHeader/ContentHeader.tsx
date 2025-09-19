@@ -19,12 +19,9 @@ export function ContentHeader({
   return (
     <div
       data-testid="ContentHeader"
-      className={`absolute top-0 left-0 right-0 w-full h-[100px] lg:h-[200px] 
-        max-w-[1920px] mx-auto z-[99] px-4 sm:px-6 md:px-8 lg:px-10 
-        xl:px-12 flex flex-row items-center justify-between 
-        transition-opacity duration-[225ms] ${
-          visible ? 'opacity-100' : 'opacity-0'
-        } ${visible ? 'delay-0' : 'delay-[2000ms]'}`}
+      className={`absolute top-0 right-0 left-0 z-[99] mx-auto flex h-[100px] w-full max-w-[1920px] flex-row items-center justify-between px-4 transition-opacity duration-[225ms] sm:px-6 md:px-8 lg:h-[200px] lg:px-10 xl:px-12 ${
+        visible ? 'opacity-100' : 'opacity-0'
+      } ${visible ? 'delay-0' : 'delay-[2000ms]'}`}
     >
       <NextLink
         href={`/watch${languageSlug != null && languageSlug !== 'english' ? `/${languageSlug}.html` : ''}`}
