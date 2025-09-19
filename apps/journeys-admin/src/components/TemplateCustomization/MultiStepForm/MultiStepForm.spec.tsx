@@ -126,7 +126,7 @@ describe('MultiStepForm', () => {
     fireEvent.click(screen.getByTestId('social-next'))
   })
 
-  it('should render edit manually button', () => {
+  it('should hide edit manually button when on the first screen (Language Screen)', () => {
     const journey = {
       id: 'test-journey-id'
     } as unknown as Journey
@@ -136,10 +136,28 @@ describe('MultiStepForm', () => {
         <MultiStepForm />
       </JourneyProvider>
     )
-    expect(screen.getByRole('link', { name: 'Edit Manually' })).toHaveAttribute(
-      'href',
-      '/journeys/test-journey-id'
+    
+    const editButton = screen.getByText('Edit Manually')
+    expect(editButton).toHaveStyle('visibility: hidden')
+  })
+
+  it('should show edit manually button when on any screen after the first screen', () => {
+    const journey = {
+      id: 'test-journey-id'
+    } as unknown as Journey
+
+    render(
+      <JourneyProvider value={{ journey: journey }}>
+        <MultiStepForm />
+      </JourneyProvider>
     )
+    
+    const editButton = screen.getByText('Edit Manually')
+    expect(editButton).toHaveStyle('visibility: hidden')
+    
+    fireEvent.click(screen.getByTestId('language-next'))
+    expect(editButton).toHaveStyle('visibility: visible')
+    expect(editButton).toHaveAttribute('href', '/journeys/test-journey-id')
   })
 
   it('should disable edit manually button if journey is not found', () => {
@@ -152,7 +170,7 @@ describe('MultiStepForm', () => {
         <MultiStepForm />
       </JourneyProvider>
     )
-    expect(screen.getByRole('link', { name: 'Edit Manually' })).toHaveAttribute(
+    expect(screen.getByText('Edit Manually')).toHaveAttribute(
       'aria-disabled',
       'true'
     )
