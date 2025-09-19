@@ -187,10 +187,6 @@ describe('useJourneyAiContextGenerator', () => {
       json: () => Promise.resolve(newResponse)
     })
 
-    await act(async () => {
-      await result.current.refetch()
-    })
-
     await waitFor(() => {
       expect(result.current.aiContextData).toEqual([
         {
