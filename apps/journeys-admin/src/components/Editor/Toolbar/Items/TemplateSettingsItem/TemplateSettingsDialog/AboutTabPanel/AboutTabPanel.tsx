@@ -7,13 +7,18 @@ import { ReactElement } from 'react'
 
 import { StrategySection } from '@core/journeys/ui/StrategySection'
 import LinkAngled from '@core/shared/ui/icons/LinkAngled'
+import { useFlags } from '@core/shared/ui/FlagsProvider'
 
 import { ImageEdit } from '../../../../../Slider/Settings/Drawer/ImageEdit/ImageEdit'
 import { useTemplateSettingsForm } from '../useTemplateSettingsForm'
 
+import { CustomizeTemplate } from './CustomizeTemplate'
+
 export function AboutTabPanel(): ReactElement {
   const { values, handleChange, errors } = useTemplateSettingsForm()
   const { t } = useTranslation('apps-journeys-admin')
+  const { journeyCustomization } = useFlags()
+
   return (
     <>
       <Stack direction="row" spacing={5}>
@@ -40,8 +45,14 @@ export function AboutTabPanel(): ReactElement {
           sx={{ flex: 1 }}
         />
       </Stack>
-      <Divider />
+      {journeyCustomization && (
+        <>
+          <Divider />
+          <CustomizeTemplate />
+        </>
+      )}
       <TextField
+        data-testid="StrategySlugEdit"
         id="strategySlug"
         name="strategySlug"
         value={values.strategySlug}
