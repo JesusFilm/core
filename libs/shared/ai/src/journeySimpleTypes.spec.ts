@@ -162,36 +162,40 @@ describe('journeySimpleButtonSchemaUpdate (strict)', () => {
 // journeySimpleVideoSchema tests
 
 describe('journeySimpleVideoSchema (base, permissive)', () => {
-  it('validates with only url', () => {
+  it('validates with only src and source', () => {
     expect(
       journeySimpleVideoSchema.safeParse({
-        url: 'https://youtube.com/watch?v=dQw4w9WgXcQ'
+        src: 'https://youtube.com/watch?v=dQw4w9WgXcQ',
+        source: 'youTube'
       }).success
     ).toBe(true)
   })
 
-  it('validates with url and startAt', () => {
+  it('validates with src, source and startAt', () => {
     expect(
       journeySimpleVideoSchema.safeParse({
-        url: 'https://youtube.com/watch?v=dQw4w9WgXcQ',
+        src: 'https://youtube.com/watch?v=dQw4w9WgXcQ',
+        source: 'youTube',
         startAt: 30
       }).success
     ).toBe(true)
   })
 
-  it('validates with url and endAt', () => {
+  it('validates with src, source and endAt', () => {
     expect(
       journeySimpleVideoSchema.safeParse({
-        url: 'https://youtube.com/watch?v=dQw4w9WgXcQ',
+        src: 'https://youtube.com/watch?v=dQw4w9WgXcQ',
+        source: 'youTube',
         endAt: 120
       }).success
     ).toBe(true)
   })
 
-  it('validates with url, startAt, and endAt', () => {
+  it('validates with src, source, startAt, and endAt', () => {
     expect(
       journeySimpleVideoSchema.safeParse({
-        url: 'https://youtube.com/watch?v=dQw4w9WgXcQ',
+        src: 'https://youtube.com/watch?v=dQw4w9WgXcQ',
+        source: 'youTube',
         startAt: 30,
         endAt: 120
       }).success
@@ -201,7 +205,8 @@ describe('journeySimpleVideoSchema (base, permissive)', () => {
   it('validates with endAt <= startAt (permissive)', () => {
     expect(
       journeySimpleVideoSchema.safeParse({
-        url: 'https://youtube.com/watch?v=dQw4w9WgXcQ',
+        src: 'https://youtube.com/watch?v=dQw4w9WgXcQ',
+        source: 'youTube',
         startAt: 120,
         endAt: 30
       }).success
@@ -211,7 +216,8 @@ describe('journeySimpleVideoSchema (base, permissive)', () => {
   it('validates with startAt = 0', () => {
     expect(
       journeySimpleVideoSchema.safeParse({
-        url: 'https://youtube.com/watch?v=dQw4w9WgXcQ',
+        src: 'https://youtube.com/watch?v=dQw4w9WgXcQ',
+        source: 'youTube',
         startAt: 0
       }).success
     ).toBe(true)
@@ -220,7 +226,8 @@ describe('journeySimpleVideoSchema (base, permissive)', () => {
   it('fails with negative startAt', () => {
     expect(
       journeySimpleVideoSchema.safeParse({
-        url: 'https://youtube.com/watch?v=dQw4w9WgXcQ',
+        src: 'https://youtube.com/watch?v=dQw4w9WgXcQ',
+        source: 'youTube',
         startAt: -10
       }).success
     ).toBe(false)
@@ -229,35 +236,117 @@ describe('journeySimpleVideoSchema (base, permissive)', () => {
   it('fails with zero endAt', () => {
     expect(
       journeySimpleVideoSchema.safeParse({
-        url: 'https://youtube.com/watch?v=dQw4w9WgXcQ',
+        src: 'https://youtube.com/watch?v=dQw4w9WgXcQ',
+        source: 'youTube',
         endAt: 0
       }).success
     ).toBe(false)
   })
-})
 
-describe('journeySimpleVideoSchemaUpdate (strict)', () => {
-  it('validates with only url', () => {
+  it('validates with summary field', () => {
     expect(
-      journeySimpleVideoSchemaUpdate.safeParse({
-        url: 'https://youtube.com/watch?v=dQw4w9WgXcQ'
+      journeySimpleVideoSchema.safeParse({
+        src: 'https://youtube.com/watch?v=dQw4w9WgXcQ',
+        source: 'youTube',
+        summary: 'This video covers the basics of TypeScript'
       }).success
     ).toBe(true)
   })
 
-  it('validates with url and startAt', () => {
+  it('validates with questions field', () => {
+    expect(
+      journeySimpleVideoSchema.safeParse({
+        src: 'https://youtube.com/watch?v=dQw4w9WgXcQ',
+        source: 'youTube',
+        questions: ['What did you learn?', 'How will you apply this?']
+      }).success
+    ).toBe(true)
+  })
+
+  it('validates with both summary and questions', () => {
+    expect(
+      journeySimpleVideoSchema.safeParse({
+        src: 'https://youtube.com/watch?v=dQw4w9WgXcQ',
+        source: 'youTube',
+        summary: 'This video covers the basics of TypeScript',
+        questions: ['What did you learn?', 'How will you apply this?']
+      }).success
+    ).toBe(true)
+  })
+
+  it('validates with internal source', () => {
+    expect(
+      journeySimpleVideoSchema.safeParse({
+        src: 'video-123',
+        source: 'internal'
+      }).success
+    ).toBe(true)
+  })
+
+  it('validates with subtitleId field', () => {
+    expect(
+      journeySimpleVideoSchema.safeParse({
+        src: 'video-123',
+        source: 'internal',
+        subtitleId: 'custom-subtitle-456'
+      }).success
+    ).toBe(true)
+  })
+
+  it('fails with subtitleId for YouTube videos', () => {
+    const result = journeySimpleVideoSchema.safeParse({
+      src: 'https://youtube.com/watch?v=dQw4w9WgXcQ',
+      source: 'youTube',
+      subtitleId: 'youtube-subtitle-789'
+    })
+    expect(result.success).toBe(false)
+    if (!result.success) {
+      expect(result.error.issues[0].message).toMatch(
+        /subtitleId should not be provided for YouTube videos/
+      )
+    }
+  })
+
+  it('validates with all fields including subtitleId', () => {
+    expect(
+      journeySimpleVideoSchema.safeParse({
+        src: 'video-123',
+        source: 'internal',
+        subtitleId: 'custom-subtitle-456',
+        summary: 'This video covers important topics',
+        questions: ['What did you learn?'],
+        startAt: 30,
+        endAt: 120
+      }).success
+    ).toBe(true)
+  })
+})
+
+describe('journeySimpleVideoSchemaUpdate (strict)', () => {
+  it('validates with only src and source', () => {
     expect(
       journeySimpleVideoSchemaUpdate.safeParse({
-        url: 'https://youtube.com/watch?v=dQw4w9WgXcQ',
+        src: 'https://youtube.com/watch?v=dQw4w9WgXcQ',
+        source: 'youTube'
+      }).success
+    ).toBe(true)
+  })
+
+  it('validates with src, source and startAt', () => {
+    expect(
+      journeySimpleVideoSchemaUpdate.safeParse({
+        src: 'https://youtube.com/watch?v=dQw4w9WgXcQ',
+        source: 'youTube',
         startAt: 30
       }).success
     ).toBe(true)
   })
 
-  it('validates with url and endAt', () => {
+  it('validates with src, source and endAt', () => {
     expect(
       journeySimpleVideoSchemaUpdate.safeParse({
-        url: 'https://youtube.com/watch?v=dQw4w9WgXcQ',
+        src: 'https://youtube.com/watch?v=dQw4w9WgXcQ',
+        source: 'youTube',
         endAt: 120
       }).success
     ).toBe(true)
@@ -266,7 +355,8 @@ describe('journeySimpleVideoSchemaUpdate (strict)', () => {
   it('validates with valid time range (endAt > startAt)', () => {
     expect(
       journeySimpleVideoSchemaUpdate.safeParse({
-        url: 'https://youtube.com/watch?v=dQw4w9WgXcQ',
+        src: 'https://youtube.com/watch?v=dQw4w9WgXcQ',
+        source: 'youTube',
         startAt: 30,
         endAt: 120
       }).success
@@ -275,7 +365,8 @@ describe('journeySimpleVideoSchemaUpdate (strict)', () => {
 
   it('fails with endAt <= startAt (strict)', () => {
     const result = journeySimpleVideoSchemaUpdate.safeParse({
-      url: 'https://youtube.com/watch?v=dQw4w9WgXcQ',
+      src: 'https://youtube.com/watch?v=dQw4w9WgXcQ',
+      source: 'youTube',
       startAt: 120,
       endAt: 30
     })
@@ -289,7 +380,8 @@ describe('journeySimpleVideoSchemaUpdate (strict)', () => {
 
   it('fails with endAt = startAt (strict)', () => {
     const result = journeySimpleVideoSchemaUpdate.safeParse({
-      url: 'https://youtube.com/watch?v=dQw4w9WgXcQ',
+      src: 'https://youtube.com/watch?v=dQw4w9WgXcQ',
+      source: 'youTube',
       startAt: 60,
       endAt: 60
     })
@@ -299,6 +391,28 @@ describe('journeySimpleVideoSchemaUpdate (strict)', () => {
         /endAt must be greater than startAt/
       )
     }
+  })
+
+  it('validates with subtitleId field', () => {
+    expect(
+      journeySimpleVideoSchemaUpdate.safeParse({
+        src: 'video-123',
+        source: 'internal',
+        subtitleId: 'custom-subtitle-456'
+      }).success
+    ).toBe(true)
+  })
+
+  it('validates with subtitleId and valid time range', () => {
+    expect(
+      journeySimpleVideoSchemaUpdate.safeParse({
+        src: 'video-123',
+        source: 'internal',
+        subtitleId: 'custom-subtitle-456',
+        startAt: 30,
+        endAt: 120
+      }).success
+    ).toBe(true)
   })
 })
 
@@ -336,7 +450,10 @@ describe('journeySimpleCardSchema (base, permissive)', () => {
     expect(
       journeySimpleCardSchema.safeParse({
         ...base,
-        video: { url: 'https://youtube.com/watch?v=dQw4w9WgXcQ' },
+        video: {
+          src: 'https://youtube.com/watch?v=dQw4w9WgXcQ',
+          source: 'youTube'
+        },
         defaultNextCard: 'card-2'
       }).success
     ).toBe(true)
@@ -346,7 +463,10 @@ describe('journeySimpleCardSchema (base, permissive)', () => {
     expect(
       journeySimpleCardSchema.safeParse({
         ...base,
-        video: { url: 'https://youtube.com/watch?v=dQw4w9WgXcQ' },
+        video: {
+          src: 'https://youtube.com/watch?v=dQw4w9WgXcQ',
+          source: 'youTube'
+        },
         heading: 'Test',
         text: 'Content',
         defaultNextCard: 'card-2'
@@ -358,7 +478,10 @@ describe('journeySimpleCardSchema (base, permissive)', () => {
     expect(
       journeySimpleCardSchema.safeParse({
         ...base,
-        video: { url: 'https://youtube.com/watch?v=dQw4w9WgXcQ' }
+        video: {
+          src: 'https://youtube.com/watch?v=dQw4w9WgXcQ',
+          source: 'youTube'
+        }
       }).success
     ).toBe(true)
   })
@@ -403,7 +526,10 @@ describe('journeySimpleCardSchemaUpdate (strict)', () => {
     expect(
       journeySimpleCardSchemaUpdate.safeParse({
         ...base,
-        video: { url: 'https://youtube.com/watch?v=dQw4w9WgXcQ' },
+        video: {
+          src: 'https://youtube.com/watch?v=dQw4w9WgXcQ',
+          source: 'youTube'
+        },
         defaultNextCard: 'card-2'
       }).success
     ).toBe(true)
@@ -412,7 +538,10 @@ describe('journeySimpleCardSchemaUpdate (strict)', () => {
   it('fails with video and other content fields (strict)', () => {
     const result = journeySimpleCardSchemaUpdate.safeParse({
       ...base,
-      video: { url: 'https://youtube.com/watch?v=dQw4w9WgXcQ' },
+      video: {
+        src: 'https://youtube.com/watch?v=dQw4w9WgXcQ',
+        source: 'youTube'
+      },
       heading: 'Test',
       defaultNextCard: 'card-2'
     })
@@ -427,7 +556,10 @@ describe('journeySimpleCardSchemaUpdate (strict)', () => {
   it('fails with video and button (strict)', () => {
     const result = journeySimpleCardSchemaUpdate.safeParse({
       ...base,
-      video: { url: 'https://youtube.com/watch?v=dQw4w9WgXcQ' },
+      video: {
+        src: 'https://youtube.com/watch?v=dQw4w9WgXcQ',
+        source: 'youTube'
+      },
       button: { text: 'B', nextCard: 'card-2' },
       defaultNextCard: 'card-2'
     })
@@ -442,7 +574,10 @@ describe('journeySimpleCardSchemaUpdate (strict)', () => {
   it('fails with video and poll (strict)', () => {
     const result = journeySimpleCardSchemaUpdate.safeParse({
       ...base,
-      video: { url: 'https://youtube.com/watch?v=dQw4w9WgXcQ' },
+      video: {
+        src: 'https://youtube.com/watch?v=dQw4w9WgXcQ',
+        source: 'youTube'
+      },
       poll: [{ text: 'A', nextCard: 'card-2' }],
       defaultNextCard: 'card-2'
     })
@@ -457,7 +592,10 @@ describe('journeySimpleCardSchemaUpdate (strict)', () => {
   it('fails with video and image (strict)', () => {
     const result = journeySimpleCardSchemaUpdate.safeParse({
       ...base,
-      video: { url: 'https://youtube.com/watch?v=dQw4w9WgXcQ' },
+      video: {
+        src: 'https://youtube.com/watch?v=dQw4w9WgXcQ',
+        source: 'youTube'
+      },
       image: {
         src: 'test.jpg',
         alt: 'Test',
@@ -478,7 +616,10 @@ describe('journeySimpleCardSchemaUpdate (strict)', () => {
   it('fails with video but no defaultNextCard (strict)', () => {
     const result = journeySimpleCardSchemaUpdate.safeParse({
       ...base,
-      video: { url: 'https://youtube.com/watch?v=dQw4w9WgXcQ' }
+      video: {
+        src: 'https://youtube.com/watch?v=dQw4w9WgXcQ',
+        source: 'youTube'
+      }
     })
     expect(result.success).toBe(false)
     if (!result.success) {
@@ -526,7 +667,8 @@ describe('journeySimpleCardSchemaUpdate (strict)', () => {
     const result = journeySimpleCardSchemaUpdate.safeParse({
       ...base,
       video: {
-        url: 'https://youtube.com/watch?v=dQw4w9WgXcQ',
+        src: 'https://youtube.com/watch?v=dQw4w9WgXcQ',
+        source: 'youTube',
         startAt: 120,
         endAt: 30
       },
