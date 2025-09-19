@@ -10,6 +10,8 @@ export const gatewayConfig = defineConfig({
     endpoint: process.env.HIVE_CDN_ENDPOINT ?? '',
     key: process.env.HIVE_CDN_KEY ?? ''
   },
+  // Poll Hive CDN for supergraph updates without restart
+  pollingInterval: 10_000,
   openTelemetry: {
     exporters: [
       createOtlpGrpcExporter({

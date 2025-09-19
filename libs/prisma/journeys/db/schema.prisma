@@ -419,6 +419,7 @@ model Journey {
   showLogo                        Boolean?                    @default(false)
   showMenu                        Boolean?                    @default(false)
   showDisplayTitle                Boolean?                    @default(true)
+  showAssistant                   Boolean?
   logoImageBlockId                String?                     @unique
   logoImageBlock                  Block?                      @relation("LogoImageBlock", fields: [logoImageBlockId], references: [id], onDelete: SetNull)
   menuStepBlockId                 String?                     @unique
@@ -522,6 +523,7 @@ model Block {
   nextBlockId                String?
   locked                     Boolean?
   hint                       String?
+  hideLabel                  Boolean?             @default(false)
   minRows                    Int?
   content                    String?
   align                      String?
