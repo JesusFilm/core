@@ -19,7 +19,14 @@ try {
   emailQueue = null
 }
 
+// Test helper to inject a mock queue
+// eslint-disable-next-line @typescript-eslint/naming-convention
+export function __setEmailQueueForTests(mockQueue: any): void {
+  emailQueue = mockQueue
+}
+
 const TWO_MINUTES = 2 * 60 * 1000
+export const ONE_DAY = 24 * 60 * 60 // in seconds
 
 export async function validateBlockEvent(
   userId: string,
@@ -180,7 +187,7 @@ export async function sendEventsEmail(
       jobId,
       delay: TWO_MINUTES,
       removeOnComplete: true,
-      removeOnFail: { age: 24 * 60 * 60, count: 50 }
+      removeOnFail: { age: ONE_DAY, count: 50 }
     }
   )
 }

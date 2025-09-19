@@ -507,16 +507,6 @@ export class CustomDomainUpdateInput {
     routeAllTeamJourneys?: Nullable<boolean>;
 }
 
-export class ButtonClickEventCreateInput {
-    id?: Nullable<string>;
-    blockId: string;
-    stepId?: Nullable<string>;
-    label?: Nullable<string>;
-    value?: Nullable<string>;
-    action?: Nullable<ButtonAction>;
-    actionValue?: Nullable<string>;
-}
-
 export class ChatOpenEventCreateInput {
     id?: Nullable<string>;
     blockId: string;
@@ -1138,8 +1128,6 @@ export abstract class IMutation {
     abstract customDomainDelete(id: string): CustomDomain | Promise<CustomDomain>;
 
     abstract customDomainCheck(id: string): CustomDomainCheck | Promise<CustomDomainCheck>;
-
-    abstract buttonClickEventCreate(input: ButtonClickEventCreateInput): ButtonClickEvent | Promise<ButtonClickEvent>;
 
     abstract chatOpenEventCreate(input: ChatOpenEventCreateInput): ChatOpenEvent | Promise<ChatOpenEvent>;
 

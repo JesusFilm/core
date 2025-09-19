@@ -11,7 +11,6 @@ import { IntegrationGrowthSpacesService } from '../integration/growthSpaces/grow
 import { VisitorService } from '../visitor/visitor.service'
 
 import {
-  ButtonClickEventResolver,
   ChatOpenEventResolver
 } from './button/button.resolver'
 import { EventResolver } from './event.resolver'
@@ -43,7 +42,6 @@ import {
   ],
   providers: [
     BlockService,
-    ButtonClickEventResolver,
     ChatOpenEventResolver,
     EventService,
     EventResolver,

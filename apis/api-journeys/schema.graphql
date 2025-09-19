@@ -163,6 +163,7 @@ type Journey
   socialNodeX: Int
   socialNodeY: Int
   fromTemplateId: String
+  showAssistant: Boolean
   journeyCustomizationDescription: String
   journeyCustomizationFields: [JourneyCustomizationField!]!
   journeyTheme: JourneyTheme
@@ -427,7 +428,6 @@ type Mutation {
   customDomainUpdate(id: ID!, input: CustomDomainUpdateInput!): CustomDomain!
   customDomainDelete(id: ID!): CustomDomain!
   customDomainCheck(id: ID!): CustomDomainCheck!
-  buttonClickEventCreate(input: ButtonClickEventCreateInput!): ButtonClickEvent!
   chatOpenEventCreate(input: ChatOpenEventCreateInput!): ChatOpenEvent!
 
   """
@@ -1381,33 +1381,6 @@ enum ButtonAction {
   LinkAction
   EmailAction
   PhoneAction
-}
-
-input ButtonClickEventCreateInput {
-  """
-  ID should be unique Event UUID (Provided for optimistic mutation result matching)
-  """
-  id: ID
-  blockId: ID!
-
-  """id of the parent stepBlock"""
-  stepId: ID
-
-  """stepName of the parent stepBlock"""
-  label: String
-
-  """label of the button"""
-  value: String
-
-  """Action type of the button when it was clicked"""
-  action: ButtonAction
-
-  """
-  The label for each corresponding action, mapping below:
-  NavigateToBlockAction - StepName (generated in client) of the StepBlock
-  LinkAction - url of the link
-  """
-  actionValue: String
 }
 
 type ButtonClickEvent implements Event
