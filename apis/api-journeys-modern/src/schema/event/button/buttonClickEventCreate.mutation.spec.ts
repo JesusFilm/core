@@ -119,14 +119,14 @@ describe('buttonClickEventCreate', () => {
         data: expect.objectContaining({
           id: input.id,
           typename: 'ButtonClickEvent',
-          journeyId: 'journeyId',
           blockId: input.blockId,
           stepId: input.stepId,
           label: input.label,
           value: input.value,
           action: input.action,
           actionValue: input.actionValue,
-          visitorId: 'visitorId'
+          visitor: { connect: { id: 'visitorId' } },
+          journey: { connect: { id: 'journeyId' } }
         })
       })
     )

@@ -1,5 +1,3 @@
-import { v4 as uuidv4 } from 'uuid'
-
 import { Prisma, prisma } from '@core/prisma/journeys/client'
 
 import { builder } from '../../builder'
@@ -34,16 +32,12 @@ builder.mutationField('buttonClickEventCreate', (t) =>
 
       const event = await prisma.event.create({
         data: {
-          id: input.id || uuidv4(),
+          ...input,
+          id: input.id || undefined,
           typename: 'ButtonClickEvent',
-          journeyId,
-          blockId: input.blockId,
-          stepId: input.stepId,
-          label: input.label,
-          value: input.value,
-          action: input.action,
-          actionValue: input.actionValue,
-          visitorId: visitor.id
+          visitor: { connect: { id: visitor.id } },
+          journey: { connect: { id: journeyId } },
+          stepId: input.stepId ?? undefined,
         }
       })
 
