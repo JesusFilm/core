@@ -34,7 +34,7 @@ export function TextResponse({
         id={`${id}-text-field-options`}
         icon={<TextInput1Icon />}
         name={t('Response Field')}
-        value={useGetValueFromJourneyCustomizationString(label) ?? label}
+        value={useGetValueFromJourneyCustomizationString(label)}
       >
         <TextResponseFields />
       </Accordion>

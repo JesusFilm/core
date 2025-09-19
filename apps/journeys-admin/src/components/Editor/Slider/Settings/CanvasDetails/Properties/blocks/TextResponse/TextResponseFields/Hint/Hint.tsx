@@ -116,7 +116,7 @@ export function Hint(): ReactElement {
         label={t('Hint')}
         fullWidth
         inputProps={{ maxLength: 250 }}
-        value={useGetValueFromJourneyCustomizationString(value) ?? value}
+        value={useGetValueFromJourneyCustomizationString(value)}
         onFocus={resetCommandInput}
         onChange={(e) => {
           setValue(e.target.value)

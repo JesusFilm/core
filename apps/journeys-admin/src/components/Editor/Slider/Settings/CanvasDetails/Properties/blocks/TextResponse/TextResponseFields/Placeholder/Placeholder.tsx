@@ -131,7 +131,7 @@ export function Placeholder(): ReactElement {
             maxLength: 250
           }
         }}
-        value={useGetValueFromJourneyCustomizationString(value) ?? value}
+        value={useGetValueFromJourneyCustomizationString(value)}
         onFocus={resetCommandInput}
         onChange={(e) => {
           setValue(e.target.value)
