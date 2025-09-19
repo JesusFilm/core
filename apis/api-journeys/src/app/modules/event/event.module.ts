@@ -17,7 +17,6 @@ import {
 import { EventResolver } from './event.resolver'
 import { EventService } from './event.service'
 import { JourneyViewEventResolver } from './journey/journey.resolver'
-import { MultiselectSubmissionEventResolver } from './multiselect/multiselect.resolver'
 import { RadioQuestionSubmissionEventResolver } from './radioQuestion/radioQuestion.resolver'
 import { SignUpSubmissionEventResolver } from './signUp/signUp.resolver'
 import {
