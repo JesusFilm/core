@@ -12,9 +12,9 @@ export function InteractionStarter({ handleClick }: InteractionStarterProps) {
   const { t } = useTranslation('apps-journeys')
 
   return (
-    <div className="flex flex-col items-center justify-center p-4 space-y-6">
-      <div className="max-w-xs">
-        <h2 className="text-2xl font-bold text-black text-center leading-tight">
+    <div className="flex flex-col items-center justify-center pt-0 pb-4 px-4 space-y-6">
+      <div className="max-w-xs px-6">
+        <h2 className="text-2xl font-bold text-black text-center leading-tight text-foreground">
           {t('How would you like to go deeper?')}
         </h2>
       </div>
