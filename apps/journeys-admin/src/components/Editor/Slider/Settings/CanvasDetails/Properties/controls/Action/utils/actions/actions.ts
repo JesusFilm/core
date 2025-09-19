@@ -5,6 +5,7 @@ export type ActionValue =
   | 'NavigateToBlockAction'
   | 'LinkAction'
   | 'EmailAction'
+  | 'PhoneAction'
 
 export function actions(t: TFunction): Array<{
   value: ActionValue
@@ -26,6 +27,10 @@ export function actions(t: TFunction): Array<{
     {
       value: 'EmailAction',
       label: t('Email')
+    },
+    {
+      value: 'PhoneAction',
+      label: t('Phone')
     }
   ]
 }

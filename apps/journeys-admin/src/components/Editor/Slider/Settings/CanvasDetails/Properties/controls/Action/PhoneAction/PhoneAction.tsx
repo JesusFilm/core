@@ -1,0 +1,205 @@
+import Typography from '@mui/material/Typography'
+import { useTranslation } from 'next-i18next'
+import { ReactElement, useState } from 'react'
+import { object, string } from 'yup'
+import ToggleButton from '@mui/material/ToggleButton'
+import ToggleButtonGroup from '@mui/material/ToggleButtonGroup'
+
+import type { TreeBlock } from '@core/journeys/ui/block'
+import { useEditor } from '@core/journeys/ui/EditorProvider'
+
+import { BlockFields_ButtonBlock as ButtonBlock } from '../../../../../../../../../../__generated__/BlockFields'
+import { ContactActionType } from '../../../../../../../../../../__generated__/globalTypes'
+import { TextFieldForm } from '../../../../../../../../TextFieldForm'
+import { useActionCommand } from '../../../../../../../utils/useActionCommand'
+import { CountryCodeAutoComplete } from './CountryCodeAutoComplete'
+import Stack from '@mui/material/Stack'
+import { countries, Country } from './CountryCodeAutoComplete/countriesList'
+
+export function PhoneAction(): ReactElement {
+  const { t } = useTranslation('apps-journeys-admin')
+  const {
+    state: { selectedBlock: stateSelectedBlock, selectedStep }
+  } = useEditor()
+  const selectedBlock = stateSelectedBlock as TreeBlock<ButtonBlock> | undefined
+
+  const { addAction } = useActionCommand()
+
+  const phoneAction =
+    selectedBlock?.action?.__typename === 'PhoneAction'
+      ? selectedBlock.action
+      : undefined
+
+  const initialCountry = countries.find(
+    (country) => country.countryCode === phoneAction?.countryCode
+  )
+
+  const fallbackCountry =
+    countries.find((country) => country.countryCode === 'US') ?? countries[0]
+
+  const [selectedCountry, setSelectedCountry] = useState<Country>(
+    initialCountry ?? fallbackCountry
+  )
+
+  const phonoDigits = removeCountryCodePrefix(
+    phoneAction?.phone ?? '',
+    selectedCountry.callingCode
+  )
+
+  const [phoneNumber, setPhoneNumber] = useState<string>(phonoDigits)
+
+  function removeCountryCodePrefix(
+    fullPhoneNumber: string,
+    countryCode: string
+  ): string {
+    const cleanCountryCode = countryCode.replace('-', '')
+    return fullPhoneNumber.substring(cleanCountryCode.length)
+  }
+
+  const phoneActionSchema = object({
+    [`phone-${selectedCountry.countryCode}`]: string()
+      .required(t('Phone number is required'))
+      .test(
+        'phone-format',
+        t('Phone number must be a valid format'),
+        function (value) {
+          // Validate that the complete phone number matches backend format: /^\+[1-9]\d{1,14}$/
+          const countryCodeDigits = selectedCountry.callingCode.replace(
+            /[-+]/g,
+            ''
+          )
+          const fullPhoneNumber = `+${countryCodeDigits}${value}`
+          const isValid = /^\+[1-9]\d{1,14}$/.test(fullPhoneNumber)
+          return isValid
+        }
+      )
+  })
+
+  function handleSubmit(phone: string): void {
+    if (selectedBlock == null || phone.trim() === '') return
+
+    const countryCodeDigits = selectedCountry.callingCode.replace('-', '')
+    const fullPhoneNumber = `${countryCodeDigits}${phone}`
+    const { id, action, __typename: blockTypename } = selectedBlock
+
+    addAction({
+      blockId: id,
+      blockTypename,
+      action: {
+        __typename: 'PhoneAction',
+        parentBlockId: id,
+        gtmEventName: '',
+        phone: fullPhoneNumber,
+        countryCode: selectedCountry.countryCode,
+        contactAction: ContactActionType.call
+      },
+      undoAction: action,
+      editorFocus: {
+        selectedStep,
+        selectedBlock
+      }
+    })
+  }
+
+  function handleChange(country: Country): void {
+    setSelectedCountry(country)
+    setPhoneNumber('')
+  }
+
+  function handleContactActionChange(contactAction: ContactActionType): void {
+    if (selectedBlock == null) return
+
+    const { id, action, __typename: blockTypename } = selectedBlock
+
+    addAction({
+      blockId: id,
+      blockTypename,
+      action: {
+        __typename: 'PhoneAction',
+        parentBlockId: id,
+        gtmEventName: '',
+        phone: phoneAction?.phone ?? '',
+        countryCode: phoneAction?.countryCode ?? '',
+        contactAction
+      },
+      undoAction: action,
+      editorFocus: {
+        selectedStep,
+        selectedBlock
+      }
+    })
+  }
+
+  return (
+    <>
+      <Typography
+        variant="caption"
+        color="secondary.main"
+        sx={{ mt: 1, mb: 3 }}
+      >
+        {t('This will open the phone dialer with the provided phone number.')}
+      </Typography>
+      <Stack data-testid="PhoneAction" direction="column" spacing={2}>
+        <CountryCodeAutoComplete
+          countries={countries.sort((a, b) => {
+            return a.label.localeCompare(b.label)
+          })}
+          selectedCountry={selectedCountry}
+          handleChange={handleChange}
+        />
+        <TextFieldForm
+          id={`phone-${selectedCountry.countryCode}`}
+          label={t('Phone number')}
+          type="tel"
+          initialValue={phoneNumber}
+          validationSchema={phoneActionSchema}
+          onSubmit={handleSubmit}
+          startIcon={selectedCountry?.callingCode}
+        />
+        <ToggleButtonGroup
+          value={phoneAction?.contactAction ?? ContactActionType.call}
+          exclusive
+          onChange={(_, value) => {
+            if (value != null) {
+              handleContactActionChange(value)
+            }
+          }}
+          fullWidth
+        >
+          <ToggleButton
+            value={ContactActionType.call}
+            sx={{
+              backgroundColor: 'background.paper',
+              '&.Mui-selected': {
+                backgroundColor: 'background.default',
+                color: 'primary.main'
+              },
+              '&.MuiToggleButtonGroup-firstButton': {
+                borderTopLeftRadius: 8,
+                borderBottomLeftRadius: 8
+              }
+            }}
+          >
+            {t('Call')}
+          </ToggleButton>
+          <ToggleButton
+            value={ContactActionType.text}
+            sx={{
+              backgroundColor: 'background.paper',
+              '&.Mui-selected': {
+                backgroundColor: 'background.default',
+                color: 'primary.main'
+              },
+              '&.MuiToggleButtonGroup-lastButton': {
+                borderTopRightRadius: 8,
+                borderBottomRightRadius: 8
+              }
+            }}
+          >
+            {t('SMS')}
+          </ToggleButton>
+        </ToggleButtonGroup>
+      </Stack>
+    </>
+  )
+}

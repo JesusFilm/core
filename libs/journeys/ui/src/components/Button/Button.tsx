@@ -271,7 +271,7 @@ export function Button({
       if (!isEmptyForm() && Object.keys(errors).length > 0) return
     }
 
-    if (messagePlatform == null) {
+    if (messagePlatform == null && action?.__typename !== 'PhoneAction') {
       void createClickEvent()
     } else {
       void createChatEvent()

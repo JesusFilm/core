@@ -4,14 +4,21 @@ interface Action {
   gtmEventName: String
 }
 
-type NavigateToBlockAction implements Action @shareable {
+enum ContactActionType {
+  call
+  text
+}
+
+type NavigateToBlockAction implements Action
+  @key(fields: "parentBlockId")
+  @shareable {
   parentBlockId: ID!
   parentBlock: Block!
   gtmEventName: String
   blockId: String!
 }
 
-type LinkAction implements Action @shareable {
+type LinkAction implements Action @key(fields: "parentBlockId") @shareable {
   parentBlockId: ID!
   parentBlock: Block!
   gtmEventName: String
@@ -21,7 +28,7 @@ type LinkAction implements Action @shareable {
   parentStepId: String
 }
 
-type EmailAction implements Action @shareable {
+type EmailAction implements Action @key(fields: "parentBlockId") @shareable {
   parentBlockId: ID!
   parentBlock: Block!
   gtmEventName: String
@@ -30,10 +37,11 @@ type EmailAction implements Action @shareable {
   parentStepId: String
 }
 
-type PhoneAction implements Action @shareable {
+type PhoneAction implements Action @key(fields: "parentBlockId") @shareable {
   parentBlockId: ID!
   parentBlock: Block!
   gtmEventName: String
   phone: String!
   countryCode: String!
+  contactAction: ContactActionType!
 }
