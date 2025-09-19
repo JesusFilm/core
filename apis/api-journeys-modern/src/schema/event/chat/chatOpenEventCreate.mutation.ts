@@ -37,7 +37,7 @@ builder.mutationField('chatOpenEventCreate', (t) =>
           typename: 'ChatOpenEvent',
           visitor: { connect: { id: visitor.id } },
           journey: { connect: { id: journeyId } },
-          stepId: input.stepId ?? undefined,
+          stepId: input.stepId ?? undefined
         }
       })
 

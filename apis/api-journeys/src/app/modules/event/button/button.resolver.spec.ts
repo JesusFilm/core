@@ -1,15 +1,13 @@
 import { Test, TestingModule } from '@nestjs/testing'
 
-import {  
+import {
   ChatOpenEventCreateInput,
   MessagePlatform
 } from '../../../__generated__/graphql'
 import { PrismaService } from '../../../lib/prisma.service'
 import { EventService } from '../event.service'
 
-import {
-  ChatOpenEventResolver
-} from './button.resolver'
+import { ChatOpenEventResolver } from './button.resolver'
 
 describe('ChatOpenEventResolver', () => {
   let resolver: ChatOpenEventResolver, prismaService: PrismaService
