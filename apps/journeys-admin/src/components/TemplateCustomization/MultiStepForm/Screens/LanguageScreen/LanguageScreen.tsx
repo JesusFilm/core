@@ -48,9 +48,9 @@ export function LanguageScreen({
 
   const { languages, languagesJourneyMap } = useTemplateJourneyLanguages({
     variables: {
-      where: { fromTemplateId: journey?.fromTemplateId, template: true }
+      where: { fromTemplateId: journey?.id, template: true }
     },
-    skip: journey?.fromTemplateId == null
+    skip: journey?.id == null
   })
 
   const validationSchema = object({
