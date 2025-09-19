@@ -1,31 +1,31 @@
 import { gql, useMutation } from '@apollo/client'
-import { sendGTMEvent } from '@next/third-parties/google'
-import { useTranslation } from 'next-i18next'
-import { ReactElement, useEffect, useMemo, useState } from 'react'
-import { v4 as uuidv4 } from 'uuid'
-
-import type { TreeBlock } from '../../libs/block'
-import { isActiveBlockOrDescendant, useBlocks } from '../../libs/block'
-import { getStepHeading } from '../../libs/getStepHeading'
-import { useJourney } from '../../libs/JourneyProvider'
-import { useRouter } from 'next/router'
-import { handleAction } from '../../libs/action'
-import { getNextStepSlug } from '../../libs/getNextStepSlug'
-// eslint-disable-next-line import/no-cycle
-import { BlockRenderer, WrappersProps } from '../BlockRenderer'
-import { MultiselectOption } from '../MultiselectOption/MultiselectOption'
-import { MULTISELECT_QUESTION_FIELDS } from './multiselectQuestionFields'
 import Box, { BoxProps } from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import ButtonGroup from '@mui/material/ButtonGroup'
 import { SimplePaletteColorOptions, styled } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
+import { sendGTMEvent } from '@next/third-parties/google'
+import { useRouter } from 'next/router'
+import { useTranslation } from 'next-i18next'
+import { ReactElement, useEffect, useMemo, useState } from 'react'
+import { v4 as uuidv4 } from 'uuid'
 
 import AddSquare4Icon from '@core/shared/ui/icons/AddSquare4'
 import { adminTheme } from '@core/shared/ui/themes/journeysAdmin/theme'
 
-import { getPollOptionBorderStyles } from './utils/getPollOptionBorderStyles'
+import { handleAction } from '../../libs/action'
+import type { TreeBlock } from '../../libs/block'
+import { isActiveBlockOrDescendant, useBlocks } from '../../libs/block'
+import { getNextStepSlug } from '../../libs/getNextStepSlug'
+import { getStepHeading } from '../../libs/getStepHeading'
+import { useJourney } from '../../libs/JourneyProvider'
+// eslint-disable-next-line import/no-cycle
+import { BlockRenderer, WrappersProps } from '../BlockRenderer'
+import { MultiselectOption } from '../MultiselectOption/MultiselectOption'
+
 import { ListVariant } from './ListVariant'
+import { MULTISELECT_QUESTION_FIELDS } from './multiselectQuestionFields'
+import { getPollOptionBorderStyles } from './utils/getPollOptionBorderStyles'
 
 export const MULTISELECT_SUBMISSION_EVENT_CREATE = gql`
   mutation MultiselectSubmissionEventCreate(
@@ -157,13 +157,13 @@ export function MultiselectQuestion({
     const disabled = atMax && !isSelected
     return wrappers != null ? (
       <BlockRenderer
-        block={option as any}
+        block={option}
         wrappers={wrappers}
         key={option.id}
       />
     ) : (
       <MultiselectOption
-        {...(option as any)}
+        {...(option)}
         key={option.id}
         selected={isSelected}
         disabled={disabled}

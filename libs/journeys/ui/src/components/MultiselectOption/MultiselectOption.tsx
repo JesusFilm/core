@@ -1,10 +1,12 @@
+import Button, { ButtonProps } from '@mui/material/Button'
+import { styled } from '@mui/material/styles'
 import { MouseEvent, ReactElement } from 'react'
+
 import type { TreeBlock } from '../../libs/block'
 import { useJourney } from '../../libs/JourneyProvider'
-import Button, { ButtonProps } from '@mui/material/Button'
-import { RadioOptionFields as MultiselectOptionFields } from './__generated__/RadioOptionFields'
-import { styled } from '@mui/material/styles'
 import { getPollOptionBorderStyles } from '../RadioQuestion/utils/getPollOptionBorderStyles'
+
+import { RadioOptionFields as MultiselectOptionFields } from './__generated__/RadioOptionFields'
 
 export const StyledListMultiSelectOption = styled(Button)<ButtonProps>(({
   theme
