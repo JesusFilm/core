@@ -8,9 +8,9 @@ import Button from '@mui/material/Button'
 import Divider from '@mui/material/Divider'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
+import { useParams, useRouter, useSelectedLayoutSegment } from 'next/navigation'
 import { useSnackbar } from 'notistack'
 import { ReactNode, useCallback, useState } from 'react'
-import { useParams, useRouter, useSelectedLayoutSegment } from 'next/navigation'
 
 import { graphql } from '@core/shared/gql'
 
