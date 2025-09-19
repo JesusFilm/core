@@ -9,8 +9,8 @@ import { BlockDuplicateIdMap, ButtonVariant, ButtonColor, ButtonSize, ButtonAlig
 // GraphQL mutation operation: BlockDuplicate
 // ====================================================
 
-export interface BlockDuplicate_blockDuplicate_MultiselectBlock {
-  __typename: "MultiselectBlock" | "MultiselectOptionBlock" | "GridContainerBlock" | "GridItemBlock";
+export interface BlockDuplicate_blockDuplicate_GridContainerBlock {
+  __typename: "GridContainerBlock" | "GridItemBlock";
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
@@ -137,6 +137,60 @@ export interface BlockDuplicate_blockDuplicate_ImageBlock {
   scale: number | null;
   focalTop: number | null;
   focalLeft: number | null;
+}
+
+export interface BlockDuplicate_blockDuplicate_MultiselectOptionBlock {
+  __typename: "MultiselectOptionBlock";
+  id: string;
+  parentBlockId: string | null;
+  parentOrder: number | null;
+  label: string;
+}
+
+export interface BlockDuplicate_blockDuplicate_MultiselectBlock_action_LinkAction {
+  __typename: "LinkAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+  url: string;
+  target: string | null;
+  customizable: boolean | null;
+  parentStepId: string | null;
+}
+
+export interface BlockDuplicate_blockDuplicate_MultiselectBlock_action_NavigateToBlockAction {
+  __typename: "NavigateToBlockAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+  blockId: string;
+}
+
+export interface BlockDuplicate_blockDuplicate_MultiselectBlock_action_EmailAction {
+  __typename: "EmailAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+  email: string;
+}
+
+export interface BlockDuplicate_blockDuplicate_MultiselectBlock_action_PhoneAction {
+  __typename: "PhoneAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+  phone: string;
+  countryCode: string;
+}
+
+export type BlockDuplicate_blockDuplicate_MultiselectBlock_action = BlockDuplicate_blockDuplicate_MultiselectBlock_action_LinkAction | BlockDuplicate_blockDuplicate_MultiselectBlock_action_NavigateToBlockAction | BlockDuplicate_blockDuplicate_MultiselectBlock_action_EmailAction | BlockDuplicate_blockDuplicate_MultiselectBlock_action_PhoneAction;
+
+export interface BlockDuplicate_blockDuplicate_MultiselectBlock {
+  __typename: "MultiselectBlock";
+  id: string;
+  parentBlockId: string | null;
+  parentOrder: number | null;
+  label: string;
+  submitLabel: string;
+  min: number | null;
+  max: number | null;
+  action: BlockDuplicate_blockDuplicate_MultiselectBlock_action | null;
 }
 
 export interface BlockDuplicate_blockDuplicate_RadioOptionBlock_action_PhoneAction {
@@ -511,7 +565,7 @@ export interface BlockDuplicate_blockDuplicate_VideoTriggerBlock {
   triggerAction: BlockDuplicate_blockDuplicate_VideoTriggerBlock_triggerAction;
 }
 
-export type BlockDuplicate_blockDuplicate = BlockDuplicate_blockDuplicate_MultiselectBlock | BlockDuplicate_blockDuplicate_ButtonBlock | BlockDuplicate_blockDuplicate_CardBlock | BlockDuplicate_blockDuplicate_IconBlock | BlockDuplicate_blockDuplicate_ImageBlock | BlockDuplicate_blockDuplicate_RadioOptionBlock | BlockDuplicate_blockDuplicate_RadioQuestionBlock | BlockDuplicate_blockDuplicate_SignUpBlock | BlockDuplicate_blockDuplicate_SpacerBlock | BlockDuplicate_blockDuplicate_StepBlock | BlockDuplicate_blockDuplicate_TextResponseBlock | BlockDuplicate_blockDuplicate_TypographyBlock | BlockDuplicate_blockDuplicate_VideoBlock | BlockDuplicate_blockDuplicate_VideoTriggerBlock;
+export type BlockDuplicate_blockDuplicate = BlockDuplicate_blockDuplicate_GridContainerBlock | BlockDuplicate_blockDuplicate_ButtonBlock | BlockDuplicate_blockDuplicate_CardBlock | BlockDuplicate_blockDuplicate_IconBlock | BlockDuplicate_blockDuplicate_ImageBlock | BlockDuplicate_blockDuplicate_MultiselectOptionBlock | BlockDuplicate_blockDuplicate_MultiselectBlock | BlockDuplicate_blockDuplicate_RadioOptionBlock | BlockDuplicate_blockDuplicate_RadioQuestionBlock | BlockDuplicate_blockDuplicate_SignUpBlock | BlockDuplicate_blockDuplicate_SpacerBlock | BlockDuplicate_blockDuplicate_StepBlock | BlockDuplicate_blockDuplicate_TextResponseBlock | BlockDuplicate_blockDuplicate_TypographyBlock | BlockDuplicate_blockDuplicate_VideoBlock | BlockDuplicate_blockDuplicate_VideoTriggerBlock;
 
 export interface BlockDuplicate {
   /**

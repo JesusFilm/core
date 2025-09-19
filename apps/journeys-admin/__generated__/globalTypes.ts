@@ -599,6 +599,14 @@ export interface MeInput {
   redirect?: string | null;
 }
 
+export interface MultiselectSubmissionEventCreateInput {
+  id?: string | null;
+  blockId: string;
+  stepId?: string | null;
+  label?: string | null;
+  values: string[];
+}
+
 export interface QrCodeCreateInput {
   teamId: string;
   journeyId: string;
