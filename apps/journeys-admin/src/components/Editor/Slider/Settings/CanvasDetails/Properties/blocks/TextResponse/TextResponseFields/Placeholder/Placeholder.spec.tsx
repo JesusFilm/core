@@ -129,8 +129,12 @@ describe('Edit Placeholder field', () => {
 
     render(
       <MockedProvider>
-        <JourneyProvider value={{ journey: journeyWithCustomizableFields, variant: 'admin' }}>
-          <EditorProvider initialState={{ selectedBlock: blockWithCustomizablePlaceholder }}>
+        <JourneyProvider
+          value={{ journey: journeyWithCustomizableFields, variant: 'admin' }}
+        >
+          <EditorProvider
+            initialState={{ selectedBlock: blockWithCustomizablePlaceholder }}
+          >
             <Placeholder />
           </EditorProvider>
         </JourneyProvider>
@@ -163,8 +167,12 @@ describe('Edit Placeholder field', () => {
 
     render(
       <MockedProvider>
-        <JourneyProvider value={{ journey: journeyWithCustomizableFields, variant: 'admin' }}>
-          <EditorProvider initialState={{ selectedBlock: blockWithCustomizablePlaceholder }}>
+        <JourneyProvider
+          value={{ journey: journeyWithCustomizableFields, variant: 'admin' }}
+        >
+          <EditorProvider
+            initialState={{ selectedBlock: blockWithCustomizablePlaceholder }}
+          >
             <Placeholder />
           </EditorProvider>
         </JourneyProvider>

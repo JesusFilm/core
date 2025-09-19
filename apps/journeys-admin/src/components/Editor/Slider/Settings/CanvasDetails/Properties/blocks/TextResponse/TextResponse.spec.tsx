@@ -113,15 +113,15 @@ describe('TextResponse', () => {
     const { getByText } = render(
       <MockedProvider>
         <ThemeProvider>
-          <JourneyProvider value={{ journey: customizableJourney, variant: 'admin' }}>
+          <JourneyProvider
+            value={{ journey: customizableJourney, variant: 'admin' }}
+          >
             <TextResponse {...customizableBlock} />
           </JourneyProvider>
         </ThemeProvider>
       </MockedProvider>
     )
-    expect(
-      getByText('Your customized label')
-    ).toBeInTheDocument()
+    expect(getByText('Your customized label')).toBeInTheDocument()
   })
 
   it('should show unresolved customizable label value in accordion title', () => {
@@ -147,14 +147,14 @@ describe('TextResponse', () => {
     const { getByText } = render(
       <MockedProvider>
         <ThemeProvider>
-          <JourneyProvider value={{ journey: customizableJourney, variant: 'admin' }}>
+          <JourneyProvider
+            value={{ journey: customizableJourney, variant: 'admin' }}
+          >
             <TextResponse {...customizableBlock} />
           </JourneyProvider>
         </ThemeProvider>
       </MockedProvider>
     )
-    expect(
-      getByText('{{ label }}')
-    ).toBeInTheDocument()
+    expect(getByText('{{ label }}')).toBeInTheDocument()
   })
 })

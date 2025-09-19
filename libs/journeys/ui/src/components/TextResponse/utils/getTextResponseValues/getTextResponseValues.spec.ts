@@ -48,7 +48,12 @@ describe('getTextResponseValues', () => {
       hint: '{{ some: value }}'
     }
     const journeyIsTemplate = true
-    const result = getTextResponseValues(input, fields, 'admin', journeyIsTemplate)
+    const result = getTextResponseValues(
+      input,
+      fields,
+      'admin',
+      journeyIsTemplate
+    )
     expect(result).toEqual(input)
   })
 

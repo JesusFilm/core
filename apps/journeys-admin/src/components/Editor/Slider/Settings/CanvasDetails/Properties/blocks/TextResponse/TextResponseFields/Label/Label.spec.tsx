@@ -271,8 +271,12 @@ describe('Edit Label field', () => {
 
     render(
       <MockedProvider>
-        <JourneyProvider value={{ journey: journeyWithCustomizableFields, variant: 'admin' }}>
-          <EditorProvider initialState={{ selectedBlock: blockWithCustomizableLabel }}>
+        <JourneyProvider
+          value={{ journey: journeyWithCustomizableFields, variant: 'admin' }}
+        >
+          <EditorProvider
+            initialState={{ selectedBlock: blockWithCustomizableLabel }}
+          >
             <Label />
           </EditorProvider>
         </JourneyProvider>
@@ -305,8 +309,12 @@ describe('Edit Label field', () => {
 
     render(
       <MockedProvider mocks={[mockLabelUpdate1]} addTypename={false}>
-        <JourneyProvider value={{ journey: journeyWithCustomizableFields, variant: 'admin' }}>
-          <EditorProvider initialState={{ selectedBlock: blockWithCustomizableLabel }}>
+        <JourneyProvider
+          value={{ journey: journeyWithCustomizableFields, variant: 'admin' }}
+        >
+          <EditorProvider
+            initialState={{ selectedBlock: blockWithCustomizableLabel }}
+          >
             <Label />
           </EditorProvider>
         </JourneyProvider>
