@@ -672,10 +672,10 @@ describe('shortLink', () => {
               message: JSON.stringify(
                 [
                   {
-                    validation: 'url',
-                    code: 'invalid_string',
-                    message: 'Invalid url',
-                    path: ['input', 'to']
+                    code: 'invalid_format',
+                    format: 'url',
+                    path: ['input', 'to'],
+                    message: 'Invalid URL'
                   }
                 ],
                 null,
@@ -683,7 +683,7 @@ describe('shortLink', () => {
               ),
               fieldErrors: [
                 {
-                  message: 'Invalid url',
+                  message: 'Invalid URL',
                   path: ['input', 'to']
                 }
               ]
@@ -762,9 +762,9 @@ describe('shortLink', () => {
                 [
                   {
                     code: 'custom',
+                    path: ['input', 'to'],
                     message:
-                      'to URL appears on blocklist (https://github.com/blocklistproject/Lists)',
-                    path: ['input', 'to']
+                      'to URL appears on blocklist (https://github.com/blocklistproject/Lists)'
                   }
                 ],
                 null,
@@ -912,10 +912,10 @@ describe('shortLink', () => {
               message: JSON.stringify(
                 [
                   {
-                    validation: 'url',
-                    code: 'invalid_string',
-                    message: 'Invalid url',
-                    path: ['input', 'to']
+                    code: 'invalid_format',
+                    format: 'url',
+                    path: ['input', 'to'],
+                    message: 'Invalid URL'
                   }
                 ],
                 null,
@@ -923,7 +923,7 @@ describe('shortLink', () => {
               ),
               fieldErrors: [
                 {
-                  message: 'Invalid url',
+                  message: 'Invalid URL',
                   path: ['input', 'to']
                 }
               ]
@@ -952,9 +952,9 @@ describe('shortLink', () => {
                 [
                   {
                     code: 'custom',
+                    path: ['input', 'to'],
                     message:
-                      'to URL appears on blocklist (https://github.com/blocklistproject/Lists)',
-                    path: ['input', 'to']
+                      'to URL appears on blocklist (https://github.com/blocklistproject/Lists)'
                   }
                 ],
                 null,

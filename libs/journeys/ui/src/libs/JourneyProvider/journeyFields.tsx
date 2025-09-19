@@ -92,6 +92,7 @@ export const JOURNEY_FIELDS = gql`
     showShareButton
     showLikeButton
     showDislikeButton
+    showAssistant
     displayTitle
     logoImageBlock {
       ...ImageFields

@@ -6,12 +6,17 @@ const config: Config = {
     'swiper/react': '<rootDir>/../__mocks__/swiper/react',
     'swiper/modules': '<rootDir>/../__mocks__/swiper/modules',
     'swiper/css': '<rootDir>/../__mocks__/swiper/css',
-    'swiper/css/*': '<rootDir>/../__mocks__/swiper/css'
+    'swiper/css/*': '<rootDir>/../__mocks__/swiper/css',
+    'use-stick-to-bottom': '<rootDir>/../__mocks__/use-stick-to-bottom',
+    streamdown: '<rootDir>/../__mocks__/streamdown'
   },
   transform: {
     '^(?!.*\\.(js|jsx|ts|tsx|css|json)$)': '@nx/react/plugins/jest',
     '^.+\\.[tj]sx?$': ['babel-jest', { presets: ['@nx/next/babel'] }]
   },
+  transformIgnorePatterns: [
+    'node_modules/(?!(use-stick-to-bottom|streamdown|react-markdown)/)'
+  ],
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx'],
   coverageDirectory: '../../coverage/apps/journeys-admin',
   setupFiles: ['./jest.polyfills.js'],

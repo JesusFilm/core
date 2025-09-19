@@ -4,6 +4,7 @@ import { SnackbarProvider } from 'notistack'
 
 import {
   JourneyStatus,
+  MessagePlatform,
   ThemeMode,
   ThemeName
 } from '../../../__generated__/globalTypes'
@@ -78,7 +79,8 @@ describe('StepFooter', () => {
     journeyTheme: null,
     journeyCustomizationDescription: null,
     journeyCustomizationFields: [],
-    fromTemplateId: null
+    fromTemplateId: null,
+    showAssistant: null
   }
 
   it('should render custom styles', () => {
@@ -201,6 +203,54 @@ describe('StepFooter', () => {
       )
 
       expect(screen.getAllByTestId('StepFooterButtonList')).toHaveLength(2)
+    })
+
+    it('should show ai chat button on journey', () => {
+      render(
+        <MockedProvider>
+          <SnackbarProvider>
+            <JourneyProvider
+              value={{
+                journey: { ...journey, showAssistant: true },
+                variant: 'default'
+              }}
+            >
+              <StepFooter />
+            </JourneyProvider>
+          </SnackbarProvider>
+        </MockedProvider>
+      )
+      expect(screen.getByTestId('AiChatButton')).toBeInTheDocument()
+    })
+
+    it('should not show ai chat button on journey if chat buttons exist', () => {
+      render(
+        <MockedProvider>
+          <SnackbarProvider>
+            <JourneyProvider
+              value={{
+                journey: {
+                  ...journey,
+                  showAssistant: true,
+                  chatButtons: [
+                    {
+                      __typename: 'ChatButton',
+                      id: 'chatButtonId',
+                      link: 'https://www.google.com',
+                      platform: MessagePlatform.whatsApp
+                    }
+                  ]
+                },
+                variant: 'default'
+              }}
+            >
+              <StepFooter />
+            </JourneyProvider>
+          </SnackbarProvider>
+        </MockedProvider>
+      )
+
+      expect(screen.queryByTestId('AiChatButton')).not.toBeInTheDocument()
     })
   })
 

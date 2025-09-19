@@ -7,6 +7,7 @@ import { ReactElement, useEffect } from 'react'
 import { HotkeysProvider } from 'react-hotkeys-hook'
 import { v4 as uuidv4 } from 'uuid'
 
+import { AiChatButton } from '@core/journeys/ui/AiChatButton'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { blockHistoryVar, useBlocks } from '@core/journeys/ui/block'
 import { getStepTheme } from '@core/journeys/ui/getStepTheme'

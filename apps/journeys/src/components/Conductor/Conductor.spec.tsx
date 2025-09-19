@@ -159,7 +159,8 @@ describe('Conductor', () => {
     journeyTheme: null,
     journeyCustomizationDescription: null,
     journeyCustomizationFields: [],
-    fromTemplateId: null
+    fromTemplateId: null,
+    showAssistant: null
   }
 
   it('should create a journeyViewEvent', async () => {

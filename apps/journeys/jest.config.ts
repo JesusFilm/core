@@ -6,23 +6,25 @@ const config: Config = {
     'swiper/react': '<rootDir>/../__mocks__/swiper/react',
     'swiper/modules': '<rootDir>/../__mocks__/swiper/modules',
     'swiper/css': '<rootDir>/../__mocks__/swiper/css',
-    'swiper/css/*': '<rootDir>/../__mocks__/swiper/css'
+    'swiper/css/*': '<rootDir>/../__mocks__/swiper/css',
+    'use-stick-to-bottom': '<rootDir>/../__mocks__/use-stick-to-bottom',
+    streamdown: '<rootDir>/../__mocks__/streamdown'
   },
   transform: {
     '^(?!.*\\.(js|jsx|ts|tsx|css|json)$)': '@nx/react/plugins/jest',
-    '^.+\\.[t]sx?$': [
-      'babel-jest',
-      {
-        presets: ['@nx/next/babel']
-      }
-    ]
+    '^.+\\.[tj]sx?$': ['babel-jest', { presets: ['@nx/next/babel'] }],
+    '^.+\\.mjs$': ['babel-jest', { presets: ['@nx/next/babel'] }]
   },
-  moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx'],
+  transformIgnorePatterns: [
+    'node_modules/(?!(@ai-sdk|ai|use-stick-to-bottom|streamdown)/)'
+  ],
+  moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'mjs'],
   coverageDirectory: '../../coverage/apps/journeys',
   setupFilesAfterEnv: ['<rootDir>setupTests.ts'],
   collectCoverage: true,
   coverageReporters: ['cobertura'],
-  preset: '../../jest.preset.js'
+  preset: '../../jest.preset.js',
+  testEnvironment: 'jest-fixed-jsdom'
 }
 
 export default config

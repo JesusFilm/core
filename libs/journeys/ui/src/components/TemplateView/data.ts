@@ -115,7 +115,8 @@ export const defaultJourney: Journey = {
   journeyTheme: null,
   journeyCustomizationDescription: null,
   journeyCustomizationFields: [],
-  fromTemplateId: null
+  fromTemplateId: null,
+  showAssistant: null
 }
 
 export const publishedJourney: Journey = {
