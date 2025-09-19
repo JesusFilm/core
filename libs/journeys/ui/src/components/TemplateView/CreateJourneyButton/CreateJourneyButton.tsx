@@ -176,19 +176,12 @@ export function CreateJourneyButton({
       process.env.NEXT_PUBLIC_JOURNEYS_ADMIN_URL ?? window.location.origin
     const url = `${domain}/templates/${journey?.id ?? ''}`
 
-    void router.push(
-      {
-        pathname: `${domain}/users/sign-in`,
-        query: {
-          redirect: url.includes('createNew') ? url : `${url}?createNew=true`,
-          login: login ?? false
-        }
-      },
-      undefined,
-      {
-        shallow: true
-      }
-    )
+    const redirectUrl = url.includes('createNew')
+      ? url
+      : `${url}?createNew=true`
+    const signInUrl = `${domain}/users/sign-in?redirect=${encodeURIComponent(redirectUrl)}&login=${login ?? false}`
+
+    window.location.assign(signInUrl)
   }
 
   function handleCloseTeamDialog() {
@@ -210,10 +203,6 @@ export function CreateJourneyButton({
   }
 
   useEffect(() => {
-    if (!signedIn) {
-      // Prefetch the dashboard page
-      void router.prefetch('/users/sign-in')
-    }
     if (
       router.query.createNew === 'true' &&
       signedIn &&

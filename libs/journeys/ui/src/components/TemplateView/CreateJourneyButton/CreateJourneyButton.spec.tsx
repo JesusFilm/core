@@ -263,6 +263,18 @@ function defineWindowWithPath(path: string): void {
   })
 }
 
+function mockWindowLocationAssign(origin: string) {
+  const mockAssign = jest.fn()
+  Object.defineProperty(window, 'location', {
+    value: {
+      assign: mockAssign,
+      origin
+    },
+    writable: true
+  })
+  return mockAssign
+}
+
 describe('CreateJourneyButton', () => {
   const prefetch = jest.fn()
   const push = jest.fn().mockResolvedValue('')
@@ -448,54 +460,40 @@ describe('CreateJourneyButton', () => {
       jest.resetAllMocks()
     })
 
-    it('should pre-render sign in page', async () => {
-      render(createJourneyButton)
-
-      await waitFor(() => {
-        expect(prefetch).toHaveBeenCalledWith('/users/sign-in')
-      })
-    })
-
     it('should open account check dialog and redirect to sign in page when login is clicked', async () => {
+      const mockAssign = mockWindowLocationAssign('http://localhost:4200')
+
       const { getByRole } = render(createJourneyButton)
 
       fireEvent.click(getByRole('button', { name: 'Use This Template' }))
       fireEvent.click(getByRole('button', { name: 'Login with my account' }))
 
       await waitFor(() => {
-        expect(push).toHaveBeenCalledWith(
-          {
-            pathname: 'http://localhost:4200/users/sign-in',
-            query: {
-              redirect:
-                'http://localhost:4200/templates/journeyId?createNew=true',
-              login: true
-            }
-          },
-          undefined,
-          { shallow: true }
+        expect(mockAssign).toHaveBeenCalledWith(
+          'http://localhost:4200/users/sign-in?redirect=' +
+            encodeURIComponent(
+              'http://localhost:4200/templates/journeyId?createNew=true'
+            ) +
+            '&login=true'
         )
       })
     })
 
     it('should open account check dialog and redirect to sign in page when create account is clicked', async () => {
+      const mockAssign = mockWindowLocationAssign('http://localhost:4200')
+
       const { getByRole } = render(createJourneyButton)
 
       fireEvent.click(getByRole('button', { name: 'Use This Template' }))
       fireEvent.click(getByRole('button', { name: 'Create a new account' }))
 
       await waitFor(() => {
-        expect(push).toHaveBeenCalledWith(
-          {
-            pathname: 'http://localhost:4200/users/sign-in',
-            query: {
-              redirect:
-                'http://localhost:4200/templates/journeyId?createNew=true',
-              login: false
-            }
-          },
-          undefined,
-          { shallow: true }
+        expect(mockAssign).toHaveBeenCalledWith(
+          'http://localhost:4200/users/sign-in?redirect=' +
+            encodeURIComponent(
+              'http://localhost:4200/templates/journeyId?createNew=true'
+            ) +
+            '&login=false'
         )
       })
     })
@@ -522,45 +520,39 @@ describe('CreateJourneyButton', () => {
     })
 
     it('should open account check dialog and still redirect to sign in page when login is clicked', async () => {
+      const mockAssign = mockWindowLocationAssign('http://localhost:4200')
+
       const { getByRole } = render(createJourneyButton)
 
       fireEvent.click(getByRole('button', { name: 'Use This Template' }))
       fireEvent.click(getByRole('button', { name: 'Login with my account' }))
 
       await waitFor(() => {
-        expect(push).toHaveBeenCalledWith(
-          {
-            pathname: 'http://localhost:4200/users/sign-in',
-            query: {
-              redirect:
-                'http://localhost:4200/templates/journeyId?createNew=true',
-              login: true
-            }
-          },
-          undefined,
-          { shallow: true }
+        expect(mockAssign).toHaveBeenCalledWith(
+          'http://localhost:4200/users/sign-in?redirect=' +
+            encodeURIComponent(
+              'http://localhost:4200/templates/journeyId?createNew=true'
+            ) +
+            '&login=true'
         )
       })
     })
 
     it('should open account check dialog and still redirect to sign in page when create account is clicked', async () => {
+      const mockAssign = mockWindowLocationAssign('http://localhost:4200')
+
       const { getByRole } = render(createJourneyButton)
 
       fireEvent.click(getByRole('button', { name: 'Use This Template' }))
       fireEvent.click(getByRole('button', { name: 'Create a new account' }))
 
       await waitFor(() => {
-        expect(push).toHaveBeenCalledWith(
-          {
-            pathname: 'http://localhost:4200/users/sign-in',
-            query: {
-              redirect:
-                'http://localhost:4200/templates/journeyId?createNew=true',
-              login: false
-            }
-          },
-          undefined,
-          { shallow: true }
+        expect(mockAssign).toHaveBeenCalledWith(
+          'http://localhost:4200/users/sign-in?redirect=' +
+            encodeURIComponent(
+              'http://localhost:4200/templates/journeyId?createNew=true'
+            ) +
+            '&login=false'
         )
       })
     })
@@ -587,45 +579,39 @@ describe('CreateJourneyButton', () => {
     })
 
     it('should open account check dialog and still redirect to sign in page when login is clicked', async () => {
+      const mockAssign = mockWindowLocationAssign('http://localhost:4300')
+
       const { getByRole } = render(createJourneyButton)
 
       fireEvent.click(getByRole('button', { name: 'Use This Template' }))
       fireEvent.click(getByRole('button', { name: 'Login with my account' }))
 
       await waitFor(() => {
-        expect(push).toHaveBeenCalledWith(
-          {
-            pathname: 'http://localhost:4200/users/sign-in',
-            query: {
-              redirect:
-                'http://localhost:4200/templates/journeyId?createNew=true',
-              login: true
-            }
-          },
-          undefined,
-          { shallow: true }
+        expect(mockAssign).toHaveBeenCalledWith(
+          'http://localhost:4200/users/sign-in?redirect=' +
+            encodeURIComponent(
+              'http://localhost:4200/templates/journeyId?createNew=true'
+            ) +
+            '&login=true'
         )
       })
     })
 
     it('should open account check dialog and still redirect to sign in page when create account is clicked', async () => {
+      const mockAssign = mockWindowLocationAssign('http://localhost:4300')
+
       const { getByRole } = render(createJourneyButton)
 
       fireEvent.click(getByRole('button', { name: 'Use This Template' }))
       fireEvent.click(getByRole('button', { name: 'Create a new account' }))
 
       await waitFor(() => {
-        expect(push).toHaveBeenCalledWith(
-          {
-            pathname: 'http://localhost:4200/users/sign-in',
-            query: {
-              redirect:
-                'http://localhost:4200/templates/journeyId?createNew=true',
-              login: false
-            }
-          },
-          undefined,
-          { shallow: true }
+        expect(mockAssign).toHaveBeenCalledWith(
+          'http://localhost:4200/users/sign-in?redirect=' +
+            encodeURIComponent(
+              'http://localhost:4200/templates/journeyId?createNew=true'
+            ) +
+            '&login=false'
         )
       })
     })
