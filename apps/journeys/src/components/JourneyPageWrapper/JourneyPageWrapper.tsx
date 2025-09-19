@@ -1,7 +1,10 @@
 import PlausibleProvider from 'next-plausible'
 import { ReactElement, ReactNode } from 'react'
 
+import { useBlocks } from '@core/journeys/ui/block'
+import { JourneyAiContextProvider } from '@core/journeys/ui/JourneyAiContextProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+import { useJourneyAiContextGenerator } from '@core/journeys/ui/useJourneyAiContextGenerator'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 import { ThemeMode, ThemeName } from '@core/shared/ui/themes'
 
@@ -37,6 +40,10 @@ export function JourneyPageWrapper({
     labelFont: journey.journeyTheme?.labelFont ?? ''
   }
 
+  const { treeBlocks } = useBlocks()
+  const { aiContextData, isLoading, error } =
+    useJourneyAiContextGenerator(treeBlocks)
+
   return (
     <PlausibleProvider
       enabled
@@ -56,7 +63,13 @@ export function JourneyPageWrapper({
           locale={locale}
           fontFamilies={fontFamilies}
         >
-          {children}
+          <JourneyAiContextProvider
+            data={aiContextData}
+            isLoading={isLoading}
+            error={error}
+          >
+            {children}
+          </JourneyAiContextProvider>
         </ThemeProvider>
       </JourneyProvider>
     </PlausibleProvider>
