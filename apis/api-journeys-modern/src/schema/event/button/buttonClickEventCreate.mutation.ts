@@ -1,6 +1,6 @@
 import { v4 as uuidv4 } from 'uuid'
 
-import { prisma } from '@core/prisma/journeys/client'
+import { Prisma, prisma } from '@core/prisma/journeys/client'
 
 import { builder } from '../../builder'
 import { validateBlockEvent } from '../utils'
@@ -26,7 +26,7 @@ builder.mutationField('buttonClickEventCreate', (t) =>
         throw new Error('User not authenticated')
       }
 
-      const { visitor, journeyId, journeyVisitor } = await validateBlockEvent(
+      const { visitor, journeyId } = await validateBlockEvent(
         userId,
         input.blockId,
         input.stepId
@@ -49,19 +49,27 @@ builder.mutationField('buttonClickEventCreate', (t) =>
 
       const updates: Array<Promise<unknown>> = []
       if (input.action === 'LinkAction') {
+        const visitorData: Prisma.VisitorUpdateInput = {
+          ...(input.actionValue !== undefined
+            ? { lastLinkAction: input.actionValue }
+            : {})
+        }
+        const journeyVisitorData: Prisma.JourneyVisitorUpdateInput = {
+          ...(input.actionValue !== undefined
+            ? { lastLinkAction: input.actionValue }
+            : {}),
+          activityCount: { increment: 1 }
+        }
         updates.push(
           prisma.visitor.update({
             where: { id: visitor.id },
-            data: { lastLinkAction: input.actionValue ?? undefined }
+            data: visitorData
           }),
           prisma.journeyVisitor.update({
             where: {
               journeyId_visitorId: { journeyId, visitorId: visitor.id }
             },
-            data: {
-              lastLinkAction: input.actionValue ?? undefined,
-              activityCount: (journeyVisitor.activityCount ?? 0) + 1
-            }
+            data: journeyVisitorData
           })
         )
       }
@@ -71,9 +79,7 @@ builder.mutationField('buttonClickEventCreate', (t) =>
             where: {
               journeyId_visitorId: { journeyId, visitorId: visitor.id }
             },
-            data: {
-              activityCount: (journeyVisitor.activityCount ?? 0) + 1
-            }
+            data: { activityCount: { increment: 1 } }
           })
         )
       }
