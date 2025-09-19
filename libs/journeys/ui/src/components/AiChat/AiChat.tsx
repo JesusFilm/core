@@ -30,6 +30,7 @@ import type { PromptInputMessage } from '../PromptInput'
 import { Response } from '../Response'
 import { Suggestion, Suggestions } from '../Suggestion'
 
+import { InteractionStarter, type InteractionType } from './InteractionStarter'
 import { extractBlockContext } from './utils/contextExtraction'
 
 interface AiChatProps {
@@ -57,19 +58,7 @@ export function AiChat({ open }: AiChatProps) {
   const { messages, sendMessage, status, regenerate, id } = useChat({
     transport: new DefaultChatTransport({
       api: '/api/chat'
-    }),
-    messages: [
-      {
-        id: '1',
-        role: 'assistant',
-        parts: [
-          {
-            type: 'text',
-            text: 'Hi, how can I help you?'
-          }
-        ]
-      }
-    ]
+    })
   })
 
   const activeBlock = blockHistory.at(-1)
@@ -135,7 +124,7 @@ export function AiChat({ open }: AiChatProps) {
     }
   }
 
-  function handleSuggestionClick(suggestion: string) {
+  function handleSuggestionClick(suggestion: string, type?: InteractionType) {
     void sendMessage(
       { text: suggestion },
       {
@@ -145,7 +134,8 @@ export function AiChat({ open }: AiChatProps) {
           sessionId: sessionId.current,
           traceId: traceId.current,
           journeyId: journey?.id,
-          userId: user?.uid
+          userId: user?.uid,
+          interactionType: type
         }
       }
     )
@@ -155,6 +145,9 @@ export function AiChat({ open }: AiChatProps) {
     <div className="flex flex-col h-full min-h-0">
       <Conversation className="h-full">
         <ConversationContent>
+          {messages.length === 0 && (
+            <InteractionStarter handleClick={handleSuggestionClick} />
+          )}
           {messages.map((message) => (
             <div key={message.id}>
               {message.parts.map((part, i) => {
@@ -225,7 +218,7 @@ export function AiChat({ open }: AiChatProps) {
           {suggestions?.map((suggestion) => (
             <Suggestion
               key={suggestion}
-              onClick={handleSuggestionClick}
+              onClick={(suggestion) => handleSuggestionClick(suggestion)}
               suggestion={suggestion}
             />
           ))}
