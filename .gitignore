@@ -79,7 +79,7 @@ terraform.tfstate.backup
 /libs/locales/**/*_old.json
 
 .nx/cache
-.nx/workspace-data
+.nx/
 
 # react-email
 .react-email
