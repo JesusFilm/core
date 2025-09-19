@@ -20,9 +20,10 @@ describe('chatOpenEventCreate', () => {
   `)
 
   beforeEach(() => {
-    prismaMock.block.findUnique.mockResolvedValue({
+    prismaMock.block.findFirst.mockResolvedValue({
       id: 'blockId',
-      journeyId: 'journeyId'
+      journeyId: 'journeyId',
+      deletedAt: null
     } as any)
     ;(prismaMock.block.findFirst as unknown as jest.Mock).mockImplementation(
       (args: any) => {
@@ -46,9 +47,10 @@ describe('chatOpenEventCreate', () => {
       }
     )
     prismaMock.visitor.findFirst.mockResolvedValue({ id: 'visitorId' } as any)
-    prismaMock.journeyVisitor.findUnique.mockResolvedValue({
+    prismaMock.journeyVisitor.upsert.mockResolvedValue({
       journeyId: 'journeyId',
-      visitorId: 'visitorId'
+      visitorId: 'visitorId',
+      activityCount: 0
     } as any)
   })
 

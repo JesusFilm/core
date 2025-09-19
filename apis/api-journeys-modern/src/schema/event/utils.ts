@@ -38,8 +38,8 @@ export async function validateBlockEvent(
   journeyId: string
   block: Block
 }> {
-  const block = await prisma.block.findUnique({
-    where: { id: blockId }
+  const block = await prisma.block.findFirst({
+    where: { id: blockId, deletedAt: null }
   })
 
   if (block == null) {
@@ -60,25 +60,20 @@ export async function validateBlockEvent(
     })
   }
 
-  // Get or create journey visitor
-  let journeyVisitor = await prisma.journeyVisitor.findUnique({
+  // Get or create journey visitor atomically to avoid race conditions
+  const journeyVisitor = await prisma.journeyVisitor.upsert({
     where: {
       journeyId_visitorId: {
         journeyId,
         visitorId: visitor.id
       }
-    }
+    },
+    create: {
+      journeyId,
+      visitorId: visitor.id
+    },
+    update: {}
   })
-
-  if (journeyVisitor == null) {
-    // Create journey visitor if it doesn't exist
-    journeyVisitor = await prisma.journeyVisitor.create({
-      data: {
-        journeyId,
-        visitorId: visitor.id
-      }
-    })
-  }
 
   // Validate step if provided
   if (stepId != null) {
@@ -143,8 +138,8 @@ export async function getByUserIdAndJourneyId(
 
 // Helper function to get visitor and journey IDs
 export async function getEventContext(blockId: string, journeyId?: string) {
-  const context = await prisma.block.findUnique({
-    where: { id: blockId },
+  const context = await prisma.block.findFirst({
+    where: { id: blockId, deletedAt: null },
     select: {
       journey: {
         select: { id: true }

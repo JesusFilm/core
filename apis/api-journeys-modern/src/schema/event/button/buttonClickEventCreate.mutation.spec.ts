@@ -7,7 +7,7 @@ jest.mock('../utils', () => {
   return {
     ...actual,
     getEventContext: jest.fn().mockResolvedValue({
-      journey: { id: 'journeyId' }
+      journeyId: 'journeyId'
     })
   }
 })
@@ -63,9 +63,10 @@ describe('buttonClickEventCreate', () => {
     )
 
     prismaMock.visitor.findFirst.mockResolvedValue({ id: 'visitorId' } as any)
-    prismaMock.journeyVisitor.findUnique.mockResolvedValue({
+    prismaMock.journeyVisitor.upsert.mockResolvedValue({
       journeyId: 'journeyId',
-      visitorId: 'visitorId'
+      visitorId: 'visitorId',
+      activityCount: 0
     } as any)
   })
 
