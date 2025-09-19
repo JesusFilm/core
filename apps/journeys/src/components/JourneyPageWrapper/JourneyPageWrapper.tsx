@@ -63,7 +63,11 @@ export function JourneyPageWrapper({
           locale={locale}
           fontFamilies={fontFamilies}
         >
-          <JourneyAiContextProvider value={aiContextData}>
+          <JourneyAiContextProvider
+            data={aiContextData}
+            isLoading={isLoading}
+            error={error}
+          >
             {children}
           </JourneyAiContextProvider>
         </ThemeProvider>

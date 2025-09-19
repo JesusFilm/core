@@ -40,13 +40,15 @@ export function AiChat({ open }: AiChatProps) {
   const auth = getAuth(firebaseClient)
   const user = auth.currentUser
   const { journey } = useJourney()
-  const aiContextData = useJourneyAiContext()
+  const {
+    data: aiContextData,
+    isLoading: contextLoading,
+    error: contextError
+  } = useJourneyAiContext()
   const traceId = useRef<string | null>(null)
   const sessionId = useRef<string | null>(null)
   const [input, setInput] = useState('')
   const [suggestions, setSuggestions] = useState<string[]>()
-  const [suggestionsLoading, setSuggestionsLoading] = useState(false)
-  const [suggestionsError, setSuggestionsError] = useState<string | null>(null)
   const { blockHistory } = useBlocks()
   const [contextText, setContextText] = useState<string>('')
   const [contextLanguage, setContextLanguage] = useState<string>('')
@@ -75,40 +77,29 @@ export function AiChat({ open }: AiChatProps) {
 
   const activeBlock = blockHistory.at(-1)
 
-  async function setContexts() {
-    setSuggestionsLoading(true)
-    setSuggestionsError(null)
-
-    try {
-      // Find context data for the active block from the provider
-      const activeBlockContext = aiContextData.find(
-        (context) => context.blockId === activeBlock?.id
-      )
-      if (
-        !activeBlockContext?.contextText ||
-        activeBlockContext.contextText === ''
-      ) {
-        setSuggestions([])
-        return
-      }
-
-      setSuggestions(activeBlockContext.suggestions)
-      setContextText(activeBlockContext.contextText)
-      setContextLanguage(activeBlockContext.language || 'english')
-    } catch (error) {
-      console.error('Error fetching suggestions:', error)
-      setSuggestionsError(t('Failed to load suggestions'))
+  function setContexts() {
+    // Find context data for the active block from the provider
+    const activeBlockContext = aiContextData.find(
+      (context) => context.blockId === activeBlock?.id
+    )
+    if (
+      !activeBlockContext?.contextText ||
+      activeBlockContext.contextText === ''
+    ) {
       setSuggestions([])
-    } finally {
-      setSuggestionsLoading(false)
+      return
     }
+
+    setSuggestions(activeBlockContext.suggestions)
+    setContextText(activeBlockContext.contextText)
+    setContextLanguage(activeBlockContext.language || 'english')
   }
 
   useEffect(() => {
     if (!open) return
-    
-    void setContexts()
-  }, [open])
+
+    setContexts()
+  }, [open, aiContextData, activeBlock])
 
   function handleSubmit(
     message: PromptInputMessage,
@@ -213,22 +204,28 @@ export function AiChat({ open }: AiChatProps) {
       </Conversation>
       <div className="border-t border-border">
         <Suggestions className="px-4 py-2">
-          {suggestionsLoading && (
+          {contextLoading && (
             <div className="flex items-center gap-2 px-4 py-2 text-muted-foreground">
               <Loader className="size-4 animate-spin" />
-              <span>{t('Loading suggestions, please hold...')}</span>
+              <span>{t('Loading suggestions, please wait...')}</span>
             </div>
           )}
-          {suggestionsError && (
-            <div className="px-4 py-2 text-destructive">{suggestionsError}</div>
+          {contextError && (
+            <div className="flex flex-col gap-2 px-4 py-2">
+              <div className="text-destructive text-sm">
+                {t('Failed to load suggestions')}
+              </div>
+            </div>
           )}
-          {suggestions?.map((suggestion) => (
-            <Suggestion
-              key={suggestion}
-              onClick={handleSuggestionClick}
-              suggestion={suggestion}
-            />
-          ))}
+          {!contextLoading &&
+            !contextError &&
+            suggestions?.map((suggestion) => (
+              <Suggestion
+                key={suggestion}
+                onClick={handleSuggestionClick}
+                suggestion={suggestion}
+              />
+            ))}
         </Suggestions>
       </div>
       <div className="px-4 pb-4">
