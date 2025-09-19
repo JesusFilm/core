@@ -1,0 +1,25 @@
+# Core Development Guidelines
+
+Auto-generated from all feature plans. Last updated: 2025-09-19
+
+## Active Technologies
+- TypeScript 5.x (strict mode) + Next.js 14 (App Router), React 18, Tailwind CSS v4, shadcn/ui, ffmpeg.wasm, MediaPipe Tasks Vision (vladmitkovsky/wat-167-video-cropping-tool)
+
+## Project Structure
+```
+backend/
+frontend/
+tests/
+```
+
+## Commands
+npm test && npm run lint
+
+## Code Style
+TypeScript: Follow standard conventions
+
+## Recent Changes
+- vladmitkovsky/wat-167-video-cropping-tool: Added TypeScript 5.x (strict mode) + Next.js 14 (App Router), React 18, Tailwind CSS v4, shadcn/ui, ffmpeg.wasm, MediaPipe Tasks Vision
+
+<!-- MANUAL ADDITIONS START -->
+<!-- MANUAL ADDITIONS END -->

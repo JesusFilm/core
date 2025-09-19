@@ -1,0 +1,392 @@
+openapi: 3.0.3
+info:
+  title: Video API for Vertical Crop Tool
+  description: API contracts for video discovery and metadata access
+  version: 1.0.0
+  contact:
+    name: Video Platform Team
+
+servers:
+  - url: https://api.video-platform.com/v1
+    description: Production server
+  - url: http://localhost:3001/v1
+    description: Local development server
+
+paths:
+  /videos/search:
+    get:
+      summary: Search videos by slug with debounced query
+      description: Find videos matching a slug pattern, used for autocomplete and video picker
+      operationId: searchVideos
+      parameters:
+        - name: q
+          in: query
+          required: true
+          schema:
+            type: string
+            minLength: 1
+            maxLength: 100
+            pattern: '^[a-zA-Z0-9_-]+$'
+          description: Slug search query (supports partial matches)
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 20
+            default: 10
+          description: Maximum number of results to return
+      responses:
+        '200':
+          description: Successful search results
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  videos:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/VideoSummary'
+                    maxItems: 20
+                  total:
+                    type: integer
+                    minimum: 0
+                  query:
+                    type: string
+              required:
+                - videos
+                - total
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+  /videos/{slug}:
+    get:
+      summary: Get detailed video metadata
+      description: Retrieve complete video information including playable URLs and thumbnails
+      operationId: getVideo
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          schema:
+            type: string
+            pattern: '^[a-zA-Z0-9_-]{3,100}$'
+          description: Video slug identifier
+      responses:
+        '200':
+          description: Video details retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Video'
+        '404':
+          description: Video not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+  /videos/{slug}/export:
+    post:
+      summary: Initiate server-side video export (optional)
+      description: Start asynchronous export job for faster encoding with server resources
+      operationId: exportVideo
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          schema:
+            type: string
+            pattern: '^[a-zA-Z0-9_-]{3,100}$'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                cropPath:
+                  $ref: '#/components/schemas/CropPath'
+                preset:
+                  $ref: '#/components/schemas/ExportPreset'
+                callbackUrl:
+                  type: string
+                  format: uri
+                  description: Webhook URL for job completion notification
+              required:
+                - cropPath
+                - preset
+      responses:
+        '202':
+          description: Export job accepted
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  jobId:
+                    type: string
+                    format: uuid
+                  status:
+                    type: string
+                    enum: [queued, processing]
+                  estimatedDuration:
+                    type: integer
+                    minimum: 30
+                    maximum: 3600
+                    description: Estimated completion time in seconds
+                required:
+                  - jobId
+                  - status
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          description: Video not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: Too many concurrent export jobs
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /export-jobs/{jobId}:
+    get:
+      summary: Check export job status
+      description: Poll for export job completion and get download URL
+      operationId: getExportStatus
+      parameters:
+        - name: jobId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Job status retrieved
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  jobId:
+                    type: string
+                    format: uuid
+                  status:
+                    type: string
+                    enum: [queued, processing, completed, failed]
+                  progress:
+                    type: number
+                    minimum: 0
+                    maximum: 100
+                  downloadUrl:
+                    type: string
+                    format: uri
+                  error:
+                    type: string
+                    description: Error message if status is 'failed'
+                  createdAt:
+                    type: string
+                    format: date-time
+                  completedAt:
+                    type: string
+                    format: date-time
+                required:
+                  - jobId
+                  - status
+        '404':
+          description: Job not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+components:
+  schemas:
+    VideoSummary:
+      type: object
+      properties:
+        slug:
+          type: string
+          pattern: '^[a-zA-Z0-9_-]{3,100}$'
+        title:
+          type: string
+          maxLength: 200
+        duration:
+          type: number
+          minimum: 0.1
+          maximum: 3600
+        thumbnailUrl:
+          type: string
+          format: uri
+      required:
+        - slug
+        - duration
+
+    Video:
+      type: object
+      properties:
+        slug:
+          type: string
+          pattern: '^[a-zA-Z0-9_-]{3,100}$'
+        title:
+          type: string
+          maxLength: 200
+        duration:
+          type: number
+          minimum: 0.1
+          maximum: 3600
+        width:
+          type: integer
+          minimum: 320
+          maximum: 7680
+        height:
+          type: integer
+          minimum: 240
+          maximum: 4320
+        thumbnailUrl:
+          type: string
+          format: uri
+        thumbnailUrls:
+          type: array
+          items:
+            type: string
+            format: uri
+          maxItems: 20
+        playableUrl:
+          type: string
+          format: uri
+          description: HLS or MP4 stream URL
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+      required:
+        - slug
+        - duration
+        - width
+        - height
+        - playableUrl
+
+    CropKeyframe:
+      type: object
+      properties:
+        time:
+          type: number
+          minimum: 0
+          maximum: 3600
+        x:
+          type: number
+          minimum: 0
+          maximum: 1
+        y:
+          type: number
+          minimum: 0
+          maximum: 1
+        width:
+          type: number
+          minimum: 0.1
+          maximum: 1
+        height:
+          type: number
+          minimum: 0.1
+          maximum: 1
+      required:
+        - time
+        - x
+        - y
+        - width
+        - height
+
+    CropPath:
+      type: object
+      properties:
+        keyframes:
+          type: array
+          items:
+            $ref: '#/components/schemas/CropKeyframe'
+          minItems: 1
+          maxItems: 100
+        smoothing:
+          type: object
+          properties:
+            alpha:
+              type: number
+              minimum: 0.1
+              maximum: 0.9
+              default: 0.3
+            minConfidence:
+              type: number
+              minimum: 0.3
+              maximum: 0.9
+              default: 0.5
+        mode:
+          type: string
+          enum: [manual, auto, auto-with-offset]
+          default: manual
+      required:
+        - keyframes
+
+    ExportPreset:
+      type: object
+      properties:
+        width:
+          type: integer
+          enum: [720, 1080]
+        height:
+          type: integer
+          enum: [1280, 1920]
+        fps:
+          type: integer
+          enum: [24, 30, 60]
+          default: 30
+        format:
+          type: string
+          enum: [webm, mp4]
+          default: webm
+        codec:
+          type: string
+          enum: [vp9, h264]
+          default: vp9
+      required:
+        - width
+        - height
+
+    Error:
+      type: object
+      properties:
+        error:
+          type: string
+        message:
+          type: string
+        code:
+          type: string
+      required:
+        - error
+        - message
+
+  responses:
+    BadRequest:
+      description: Invalid request parameters
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+
+    InternalError:
+      description: Internal server error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
