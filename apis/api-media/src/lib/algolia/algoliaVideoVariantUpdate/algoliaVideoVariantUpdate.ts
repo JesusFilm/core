@@ -5,14 +5,13 @@ import { prisma } from '@core/prisma/media/client'
 import { getAlgoliaClient } from '../algoliaClient'
 import { getLanguages } from '../languages'
 
-type Translation = {
-  languageId: string
-  value: string
-}
-
-function sortByEnglishFirst(a: Translation): number {
-  if (a.languageId === '529') return -1
-  return 0
+function sortByEnglishFirst(
+  a: { languageId?: string },
+  b: { languageId?: string }
+): number {
+  const aIsEn = a?.languageId === '529'
+  const bIsEn = b?.languageId === '529'
+  return aIsEn === bIsEn ? 0 : aIsEn ? -1 : 1
 }
 
 export async function updateVideoVariantInAlgolia(
@@ -54,26 +53,6 @@ export async function updateVideoVariantInAlgolia(
       return
     }
 
-    if (!videoVariant.published) {
-      logger?.warn(
-        `video variant ${videoVariantId} is not published, skipping update`
-      )
-      return
-    }
-
-    if (videoVariant.video?.restrictViewPlatforms.includes('watch')) {
-      logger?.warn(
-        `video variant ${videoVariantId} is restricted from view on watch, skipping update and removing from algolia`
-      )
-
-      await client.deleteObject({
-        indexName: videoVariantsIndex,
-        objectID: videoVariantId
-      })
-
-      return
-    }
-
     const cfImage = videoVariant.video?.images.find(
       ({ aspectRatio }) => aspectRatio === 'banner'
     )
@@ -83,8 +62,13 @@ export async function updateVideoVariantInAlgolia(
         process.env.CLOUDFLARE_IMAGE_ACCOUNT ?? 'testAccount'
       }/${cfImage.id}/f=jpg,w=1280,h=600,q=95`
 
-    const sortedTitles =
-      videoVariant.video?.title.sort(sortByEnglishFirst) ?? []
+    const sortedTitles = [...(videoVariant.video?.title ?? [])].sort(
+      sortByEnglishFirst
+    )
+
+    const sortedDescription = [...(videoVariant.video?.description ?? [])].sort(
+      sortByEnglishFirst
+    )
 
     const transformedVideo = {
       objectID: videoVariant.id,
@@ -94,9 +78,7 @@ export async function updateVideoVariantInAlgolia(
         value: title?.value ?? '',
         languageId: title?.languageId ?? ''
       })),
-      description: videoVariant.video?.description
-        ?.sort(sortByEnglishFirst)
-        .map((description) => description?.value),
+      description: sortedDescription.map((d) => d?.value),
       duration: videoVariant.duration,
       languageId: videoVariant.languageId,
       languageEnglishName: languages[videoVariant.languageId]?.english,
@@ -110,7 +92,10 @@ export async function updateVideoVariantInAlgolia(
       imageAlt:
         videoVariant.video?.imageAlt.find((alt) => alt.languageId === '529')
           ?.value ?? '',
-      childrenCount: videoVariant.video?.childIds.length,
+      childrenCount: videoVariant.video?.childIds.length ?? 0,
+      videoPublished: videoVariant.video?.published ?? false,
+      published: videoVariant.published ?? true,
+      restrictViewPlatforms: videoVariant.video?.restrictViewPlatforms ?? [],
       manualRanking: videoVariant.languageId === '529' ? 0 : 1
     }
 
