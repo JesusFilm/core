@@ -249,6 +249,7 @@ describe('MyComponent', () => {
 - **Navigation**: Link-based routing for content discovery
 - **Image Optimization**: Next.js Image component with proper loading strategies
 - **Bundle Optimization**: Tree-shaking and code splitting
+
 ### React Component Naming Rule
 
 **Format:** `%UiType%%ComponentFunction%`
