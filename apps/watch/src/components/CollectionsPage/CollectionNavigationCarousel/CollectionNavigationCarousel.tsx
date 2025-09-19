@@ -45,7 +45,7 @@ export function CollectionNavigationCarousel({
         {contentItems.map((item, index) => (
           <SwiperSlide
             key={item.contentId}
-            className={`max-w-[200px] pl-2 ${index === 0 ? 'padded-l' : ''} ${index === contentItems.length - 1 ? 'md:pr-6, pr-4' : ''}`}
+            className={`max-w-[200px] pl-2 ${index === 0 ? 'padded-l' : ''} ${index === contentItems.length - 1 ? 'pr-4 md:pr-6' : ''}`}
             data-testid={`CarouselSlide-${item.contentId.split('/')[0]}`}
           >
             <div
