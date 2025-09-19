@@ -33,7 +33,7 @@ import { Suggestion, Suggestions } from '../Suggestion'
 
 import { InteractionStarter, type InteractionType } from './InteractionStarter'
 import { extractBlockContext } from './utils/contextExtraction'
-        
+
 interface AiChatProps {
   open: boolean
 }
@@ -217,7 +217,7 @@ export function AiChat({ open }: AiChatProps) {
             suggestions?.map((suggestion) => (
               <Suggestion
                 key={suggestion}
-                onClick={handleSuggestionClick(suggestion)}
+                onClick={() => handleSuggestionClick(suggestion)}
                 suggestion={suggestion}
               />
             ))}

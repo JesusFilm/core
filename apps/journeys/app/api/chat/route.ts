@@ -33,6 +33,7 @@ function getPromptType(interactionType?: InteractionType): string {
 interface ChatRequest {
   messages: UIMessage[]
   contextText?: string
+  language?: string
   sessionId?: string
   journeyId?: string
   userId?: string
@@ -40,7 +41,6 @@ interface ChatRequest {
 }
 
 const handler = async (req: NextRequest) => {
-
   const {
     messages,
     contextText,
@@ -91,7 +91,8 @@ const handler = async (req: NextRequest) => {
   })
 
   const systemPrompt = await getPrompt(getPromptType(interactionType), {
-    contextText, language
+    contextText,
+    language
   })
 
   const result = streamText({
