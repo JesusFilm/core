@@ -36,3 +36,15 @@ export async function checkEmailVerification(): Promise<void> {
     headers
   })
 }
+
+export async function refreshToken(): Promise<void> {
+  const headers: Record<string, string> = {}
+
+  // Intentionally a simple GET to let edge middleware refresh tokens/cookies
+  await fetch('/api/refresh-token', {
+    method: 'GET',
+    headers,
+    // Avoid caching; ensure request hits the edge/middleware
+    cache: 'no-store'
+  })
+}
