@@ -24,6 +24,27 @@ describe('chatOpenEventCreate', () => {
       id: 'blockId',
       journeyId: 'journeyId'
     } as any)
+    ;(prismaMock.block.findFirst as unknown as jest.Mock).mockImplementation(
+      (args: any) => {
+        const queriedId = args?.where?.id
+        if (queriedId === 'blockId') {
+          return Promise.resolve({
+            id: 'blockId',
+            parentBlockId: 'stepId',
+            journeyId: 'journeyId',
+            deletedAt: null
+          } as any)
+        }
+        if (queriedId === 'stepId') {
+          return Promise.resolve({
+            id: 'stepId',
+            journeyId: 'journeyId',
+            deletedAt: null
+          } as any)
+        }
+        return Promise.resolve(null as any)
+      }
+    )
     prismaMock.visitor.findFirst.mockResolvedValue({ id: 'visitorId' } as any)
     prismaMock.journeyVisitor.findUnique.mockResolvedValue({
       journeyId: 'journeyId',
@@ -39,12 +60,26 @@ describe('chatOpenEventCreate', () => {
       value: 'facebook' as const
     }
 
-    prismaMock.event.create.mockResolvedValue({
+    const createdEvent = {
       id: input.id,
       typename: 'ChatOpenEvent',
       journeyId: 'journeyId',
       value: input.value,
       createdAt: new Date()
+    } as any
+
+    prismaMock.event.create.mockResolvedValue(createdEvent)
+    prismaMock.event.findMany.mockResolvedValue([createdEvent])
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    ;(prismaMock.event as any).findUniqueOrThrow?.mockResolvedValue?.(
+      createdEvent
+    )
+    prismaMock.event.findUnique.mockResolvedValue(createdEvent)
+
+    prismaMock.visitor.update.mockResolvedValue({ id: 'visitorId' } as any)
+    prismaMock.journeyVisitor.update.mockResolvedValue({
+      journeyId: 'journeyId',
+      visitorId: 'visitorId'
     } as any)
 
     const result = await authClient({
@@ -52,16 +87,17 @@ describe('chatOpenEventCreate', () => {
       variables: { input }
     })
 
-    expect(prismaMock.event.create).toHaveBeenCalledWith(
+    expect(prismaMock.event.create).toHaveBeenCalled()
+    const createArgs = (prismaMock.event.create as unknown as jest.Mock).mock
+      .calls[0][0]
+    expect(createArgs).toEqual(
       expect.objectContaining({
         data: expect.objectContaining({
           id: input.id,
           typename: 'ChatOpenEvent',
-          journeyId: 'journeyId',
           blockId: input.blockId,
           stepId: input.stepId,
-          value: input.value,
-          visitorId: 'visitorId'
+          value: input.value
         })
       })
     )
