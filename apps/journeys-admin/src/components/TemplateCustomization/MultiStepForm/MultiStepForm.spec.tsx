@@ -136,7 +136,7 @@ describe('MultiStepForm', () => {
         <MultiStepForm />
       </JourneyProvider>
     )
-    
+
     const editButton = screen.getByText('Edit Manually')
     expect(editButton).toHaveStyle('visibility: hidden')
   })
@@ -151,10 +151,10 @@ describe('MultiStepForm', () => {
         <MultiStepForm />
       </JourneyProvider>
     )
-    
+
     const editButton = screen.getByText('Edit Manually')
     expect(editButton).toHaveStyle('visibility: hidden')
-    
+
     fireEvent.click(screen.getByTestId('language-next'))
     expect(editButton).toHaveStyle('visibility: visible')
     expect(editButton).toHaveAttribute('href', '/journeys/test-journey-id')
