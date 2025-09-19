@@ -5,7 +5,7 @@ import { EmailLogo } from '../EmailLogo'
 
 export function Header(): ReactElement {
   return (
-    <Section className="bg-[#FFFFFF] h-[72px] w-full">
+    <Section className="h-[72px] w-full bg-[#FFFFFF]">
       <Container>
         <Row className="align-middle">
           <Column align="center">

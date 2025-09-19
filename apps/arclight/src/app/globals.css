@@ -23,7 +23,7 @@
 @layer utilities {
   /* Custom styles for video.js container classes */
   .video-js-container {
-    @apply w-full h-full flex items-center justify-center relative overflow-hidden;
+    @apply relative flex h-full w-full items-center justify-center overflow-hidden;
   }
 
   .vjs-hd {
