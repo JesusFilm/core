@@ -200,7 +200,16 @@ const handler = async (req: NextRequest) => {
       })
 
       const startTime = Date.now()
-      const promises = blockContexts.map((bc) =>
+
+      // Filter out block contexts with empty contextText
+      const validBlockContexts = blockContexts.filter(
+        (bc) => bc.contextText.trim() !== ''
+      )
+      const emptyContextBlocks = blockContexts.filter(
+        (bc) => bc.contextText.trim() === ''
+      )
+
+      const promises = validBlockContexts.map((bc) =>
         fetchBlockContext(bc.blockId, bc.contextText)
       )
       const settledResults = await Promise.allSettled(promises)
@@ -208,16 +217,31 @@ const handler = async (req: NextRequest) => {
 
       span.setAttributes({
         'processing.duration_ms': processingTime,
-        'processing.parallel_operations': blockContexts.length
+        'processing.parallel_operations': validBlockContexts.length,
+        'processing.skipped_empty_contexts': emptyContextBlocks.length
       })
 
       // Process results with graceful fallback handling
-      const results = settledResults.map((result, index) => {
-        const { blockId, contextText } = blockContexts[index]
+      const processedResults = settledResults.map((result, index) => {
+        const { blockId, contextText } = validBlockContexts[index]
 
         return result.status === 'fulfilled'
           ? processSuccessfulResult(result.value, blockId, contextText)
           : processFailedResult(result.reason, blockId, contextText)
+      })
+
+      // Combine results in the original order
+      const results = blockContexts.map((bc) => {
+        if (bc.contextText.trim() === '') {
+          // Return fallback for empty context blocks
+          return createFallbackBlockContext(bc.blockId, bc.contextText)
+        } else {
+          // Find the corresponding processed result
+          const validIndex = validBlockContexts.findIndex(
+            (validBc) => validBc.blockId === bc.blockId
+          )
+          return processedResults[validIndex]
+        }
       })
 
       const successCount = results.filter(
