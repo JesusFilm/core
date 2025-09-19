@@ -725,6 +725,7 @@ export interface GetJourney_journey {
   showShareButton: boolean | null;
   showLikeButton: boolean | null;
   showDislikeButton: boolean | null;
+  showAssistant: boolean | null;
   /**
    * public title for viewers
    */
