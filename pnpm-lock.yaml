@@ -100,10 +100,10 @@ importers:
         version: 3.17.1(graphql-yoga@5.15.1(graphql@16.10.0))(graphql@16.10.0)
       '@hono/swagger-ui':
         specifier: ^0.5.0
-        version: 0.5.2(hono@4.7.6)
+        version: 0.5.2(hono@4.9.7)
       '@hono/zod-openapi':
         specifier: ^0.19.0
-        version: 0.19.10(hono@4.7.6)(zod@3.25.76)
+        version: 0.19.10(hono@4.9.7)(zod@3.25.76)
       '@mailchimp/mailchimp_marketing':
         specifier: ^3.0.80
         version: 3.0.80
@@ -388,7 +388,7 @@ importers:
         version: 5.15.1(graphql@16.10.0)
       hono:
         specifier: ^4.7.1
-        version: 4.7.6
+        version: 4.9.7
       i18next:
         specifier: ^23.16.8
         version: 23.16.8
@@ -14373,8 +14373,8 @@ packages:
     resolution: {integrity: sha512-eSmmWE5bZTK2Nou4g0AI3zZ9rswp7GRKoKXS1BLUkvPviOqs4YTN1djQIqrXy9k5gEtdLPy86JjRwsNM9tnDcA==}
     engines: {node: '>=0.10.0'}
 
-  hono@4.7.6:
-    resolution: {integrity: sha512-564rVzELU+9BRqqx5k8sT2NFwGD3I3Vifdb6P7CmM6FiarOSY+fDC+6B+k9wcCb86ReoayteZP2ki0cRLN1jbw==}
+  hono@4.9.7:
+    resolution: {integrity: sha512-t4Te6ERzIaC48W3x4hJmBwgNlLhmiEdEE5ViYb02ffw4ignHNHa5IBtPjmbKstmtKa8X6C35iWwK4HaqvrzG9w==}
     engines: {node: '>=16.9.0'}
 
   hosted-git-info@2.8.9:
@@ -28482,21 +28482,21 @@ snapshots:
       '@tanstack/vue-virtual': 3.10.9(vue@3.5.13(typescript@5.9.2))
       vue: 3.5.13(typescript@5.9.2)
 
-  '@hono/swagger-ui@0.5.2(hono@4.7.6)':
+  '@hono/swagger-ui@0.5.2(hono@4.9.7)':
     dependencies:
-      hono: 4.7.6
+      hono: 4.9.7
 
-  '@hono/zod-openapi@0.19.10(hono@4.7.6)(zod@3.25.76)':
+  '@hono/zod-openapi@0.19.10(hono@4.9.7)(zod@3.25.76)':
     dependencies:
       '@asteasolutions/zod-to-openapi': 7.3.0(zod@3.25.76)
-      '@hono/zod-validator': 0.7.2(hono@4.7.6)(zod@3.25.76)
-      hono: 4.7.6
+      '@hono/zod-validator': 0.7.2(hono@4.9.7)(zod@3.25.76)
+      hono: 4.9.7
       openapi3-ts: 4.5.0
       zod: 3.25.76
 
-  '@hono/zod-validator@0.7.2(hono@4.7.6)(zod@3.25.76)':
+  '@hono/zod-validator@0.7.2(hono@4.9.7)(zod@3.25.76)':
     dependencies:
-      hono: 4.7.6
+      hono: 4.9.7
       zod: 3.25.76
 
   '@humanfs/core@0.19.1': {}
@@ -40506,7 +40506,7 @@ snapshots:
     dependencies:
       parse-passwd: 1.0.0
 
-  hono@4.7.6: {}
+  hono@4.9.7: {}
 
   hosted-git-info@2.8.9: {}
 
