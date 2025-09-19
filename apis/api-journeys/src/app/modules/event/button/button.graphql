@@ -5,36 +5,6 @@ enum ButtonAction {
   PhoneAction
 }
 
-input ButtonClickEventCreateInput {
-  """
-  ID should be unique Event UUID (Provided for optimistic mutation result matching)
-  """
-  id: ID
-  blockId: ID!
-  """
-  id of the parent stepBlock
-  """
-  stepId: ID
-  """
-  stepName of the parent stepBlock
-  """
-  label: String
-  """
-  label of the button
-  """
-  value: String
-  """
-  Action type of the button when it was clicked
-  """
-  action: ButtonAction
-  """
-  The label for each corresponding action, mapping below:
-  NavigateToBlockAction - StepName (generated in client) of the StepBlock
-  LinkAction - url of the link
-  """
-  actionValue: String
-}
-
 type ButtonClickEvent implements Event @shareable {
   id: ID!
   """
@@ -143,6 +113,5 @@ type ChatOpenEvent implements Event @shareable {
 }
 
 extend type Mutation {
-  buttonClickEventCreate(input: ButtonClickEventCreateInput!): ButtonClickEvent!
   chatOpenEventCreate(input: ChatOpenEventCreateInput!): ChatOpenEvent!
 }
