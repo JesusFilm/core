@@ -146,11 +146,13 @@ export function useVideo(): VideoControls {
 
           player.on('timeupdate', () => {
             const time = player.currentTime()
-            setCurrentTime(time)
+            if (time != null) {
+              setCurrentTime(time)
 
-            if (Math.abs(time - lastLoggedTime) >= 0.25) {
-              lastLoggedTime = time
-              console.log(`🎬 Playback time update: ${time.toFixed(2)}s`)
+              if (Math.abs(time - lastLoggedTime) >= 0.25) {
+                lastLoggedTime = time
+                console.log(`🎬 Playback time update: ${time.toFixed(2)}s`)
+              }
             }
           })
 

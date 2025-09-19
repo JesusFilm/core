@@ -1,6 +1,6 @@
 'use client'
 
-import { useCallback, useMemo } from 'react'
+import { useCallback, useMemo, useRef } from 'react'
 import type { PointerEvent as ReactPointerEvent } from 'react'
 import type { CropBox, CropKeyframe, CropWindow, DetectionResult, Video } from '../types'
 import { formatTime } from '../lib/video-utils'
@@ -16,6 +16,9 @@ interface CropWorkspaceProps {
   isPlaying: boolean
   onTogglePlay: () => void
   onCreateKeyframe: () => void
+  onToggleAutoTracking?: () => void
+  onRunDetection?: (videoElement: HTMLVideoElement) => void
+  autoTrackingEnabled?: boolean
   crop: CropBox | null
   activeKeyframe: CropKeyframe | null
   onUpdateActiveKeyframe: (patch: Partial<CropWindow>) => void
@@ -32,20 +35,47 @@ export function CropWorkspace({
   isPlaying,
   onTogglePlay,
   onCreateKeyframe,
+  onToggleAutoTracking,
+  onRunDetection,
+  autoTrackingEnabled = false,
   crop,
   activeKeyframe,
   onUpdateActiveKeyframe,
   detections,
   detectionStatus
 }: CropWorkspaceProps) {
+  const videoRef = useRef<HTMLVideoElement | null>(null)
+
   console.log('🎬 CropWorkspace render:', {
     videoSlug: video?.slug,
     currentTime,
     duration,
     isPlaying,
     activeKeyframeId: activeKeyframe?.id,
-    detectionStatus
+    detectionStatus,
+    autoTrackingEnabled
   })
+
+  // Custom bind function that also stores the element reference
+  const customBindVideo = useCallback((element: HTMLVideoElement | null) => {
+    videoRef.current = element
+    bindVideo(element)
+  }, [bindVideo])
+
+  const handleAutoTrackingToggle = useCallback(() => {
+    const newEnabled = !autoTrackingEnabled
+    console.log('🔍 Auto tracking toggle:', newEnabled)
+
+    // First update the state
+    onToggleAutoTracking?.()
+
+    // If enabling auto tracking and we have a video element, run detection
+    if (newEnabled && onRunDetection && videoRef.current && video) {
+      console.log('🔍 Auto tracking enabled, running detection')
+      onRunDetection(videoRef.current)
+    }
+  }, [autoTrackingEnabled, onToggleAutoTracking, onRunDetection, video])
+
   const detectionOverlay = useMemo(() => {
     if (!detections.length) {
       return []
@@ -100,9 +130,9 @@ export function CropWorkspace({
         console.log('🎬 Video element dimensions:', element.offsetWidth, 'x', element.offsetHeight)
       }
 
-      bindVideo(element)
+      customBindVideo(element)
     },
-    [bindVideo]
+    [customBindVideo]
   )
 
   return (
@@ -234,6 +264,18 @@ export function CropWorkspace({
         <Button variant="outline" size="sm" onClick={onCreateKeyframe} disabled={!video}>
           Add Keyframe
         </Button>
+        {onToggleAutoTracking && (
+          <label className="flex items-center gap-2 text-sm text-slate-300 cursor-pointer">
+            <input
+              type="checkbox"
+              checked={autoTrackingEnabled}
+              onChange={handleAutoTrackingToggle}
+              disabled={!video}
+              className="rounded border-slate-600 bg-slate-800 text-cyan-400 focus:ring-cyan-400 focus:ring-2"
+            />
+            Auto tracking
+          </label>
+        )}
       </div>
 
       <Slider

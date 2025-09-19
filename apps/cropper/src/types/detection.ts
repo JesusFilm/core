@@ -13,7 +13,7 @@ export interface DetectionResult {
   box: DetectionBox
   confidence: number
   label: DetectionLabel
-  source: 'mediapipe'
+  source: 'mediapipe' | 'mock'
 }
 
 export interface DetectionStreamChunk {
@@ -31,7 +31,14 @@ export interface DetectionStreamError {
   error: string
 }
 
+export interface DetectionDebugMessage {
+  type: 'debug'
+  mediapipeInitialized?: boolean
+  mediapipeFailed?: boolean
+}
+
 export type DetectionWorkerMessage =
   | DetectionStreamChunk
   | DetectionStreamComplete
   | DetectionStreamError
+  | DetectionDebugMessage

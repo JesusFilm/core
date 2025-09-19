@@ -130,7 +130,7 @@ export function VideoPicker({ activeVideo, onSelect }: VideoPickerProps) {
         inputValue: inputValue.trim(),
         videoCount: mockVideoData.videos?.length || 0,
         usingMockData: !data?.videos?.length,
-        videos: mockVideoData.videos?.map(video => ({
+        videos: mockVideoData.videos?.map((video: VideoData) => ({
           slug: video.slug,
           title: video.title?.[0]?.value || 'Untitled',
           label: video.label
@@ -204,14 +204,14 @@ export function VideoPicker({ activeVideo, onSelect }: VideoPickerProps) {
           onClick={handleSearch}
           disabled={!inputValue.trim() || loading}
           variant="primary"
-          size="default"
+          size="md"
         >
           {loading ? 'Searching...' : 'Search'}
         </Button>
       </div>
 
       <ul className="grid grid-cols-1 gap-3">
-        {mockVideoData.videos?.map((video) => {
+        {mockVideoData.videos?.map((video: VideoData) => {
           const isActive = video.slug === activeSlug
           const posterUrl = video.images?.[0]?.mobileCinematicHigh || '/placeholder-video.png'
           const title = video.title?.[0]?.value || 'Untitled Video'

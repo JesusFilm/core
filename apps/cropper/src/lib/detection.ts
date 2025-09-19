@@ -6,17 +6,36 @@ export interface DetectionCallbacks {
   onError?: (error: string) => void
 }
 
+export interface DetectionOptions {
+  videoUrl?: string
+  videoElement?: HTMLVideoElement
+  frameRate?: number
+  // New option to use existing video element instead of creating one
+  useExistingElement?: boolean
+}
+
 export class DetectionWorkerController {
   private worker?: Worker
   private results: DetectionResult[] = []
+  private videoElement?: HTMLVideoElement
+  private canvas?: OffscreenCanvas
+  private ctx?: OffscreenCanvasRenderingContext2D
 
-  start(duration: number, callbacks: DetectionCallbacks) {
+  start(duration: number, callbacks: DetectionCallbacks, options: DetectionOptions = {}) {
     if (typeof window === 'undefined') {
       return
     }
 
+    console.log('🔍 DetectionWorkerController: Starting detection', { duration, options })
     this.stop()
     this.results = []
+
+    // Setup video element for frame extraction
+    this.setupVideoElement(options)
+    console.log('🔍 DetectionWorkerController: Video element setup complete', {
+      hasVideoElement: !!this.videoElement,
+      hasCanvas: !!this.canvas
+    })
 
     this.worker = new Worker(new URL('../workers/detection.worker.ts', import.meta.url), {
       type: 'module'
@@ -40,18 +59,180 @@ export class DetectionWorkerController {
       if (message.type === 'error') {
         callbacks.onError?.(message.error)
       }
+
+      // Forward debug messages to any listeners
+      if (message.type === 'debug') {
+        console.log('🔍 DetectionWorkerController: Received debug message', message)
+        // Dispatch custom event for debug widget
+        window.dispatchEvent(new CustomEvent('detection-debug', { detail: message }))
+      }
     }
 
     this.worker.onerror = (event) => {
       callbacks.onError?.(event.message)
     }
 
-    this.worker.postMessage({
-      type: 'start',
-      payload: {
-        duration
-      }
+    // Start detection with video processing
+    this.startVideoProcessing(duration, options, callbacks)
+  }
+
+  private setupVideoElement(options: DetectionOptions) {
+    console.log('🔍 setupVideoElement called with options:', options)
+
+    if (options.videoElement) {
+      console.log('🔍 Using provided video element directly')
+      this.videoElement = options.videoElement
+
+      // For existing elements, we might not have dimensions yet
+      // Set up a basic canvas that will be resized when video loads
+      this.canvas = new OffscreenCanvas(1920, 1080)
+      this.ctx = this.canvas.getContext('2d') || undefined
+      console.log('🔍 Canvas setup for existing element, has context:', !!this.ctx)
+    } else if (options.videoUrl) {
+      console.log('🔍 Creating video element for URL:', options.videoUrl)
+      this.videoElement = document.createElement('video')
+      this.videoElement.src = options.videoUrl
+      this.videoElement.crossOrigin = 'anonymous'
+      this.videoElement.preload = 'metadata'
+      this.videoElement.style.display = 'none'
+      document.body.appendChild(this.videoElement)
+      console.log('🔍 Video element created and added to DOM')
+
+      // Setup canvas for frame extraction
+      this.canvas = new OffscreenCanvas(1920, 1080) // Will be resized when video loads
+      this.ctx = this.canvas.getContext('2d') || undefined
+      console.log('🔍 Canvas setup for new element, has context:', !!this.ctx)
+    } else {
+      console.log('🔍 No video element or URL provided')
+    }
+  }
+
+  private async startVideoProcessing(duration: number, options: DetectionOptions, callbacks: DetectionCallbacks) {
+    console.log('🔍 startVideoProcessing called', {
+      hasWorker: !!this.worker,
+      hasVideoElement: !!this.videoElement,
+      videoReadyState: this.videoElement?.readyState
     })
+
+    if (!this.worker || !this.videoElement) {
+      console.log('🔍 Falling back to mock processing - no video element or worker')
+      // Fallback to mock processing if no video available
+      this.worker?.postMessage({
+        type: 'start',
+        payload: {
+          duration,
+          frameRate: options.frameRate || 8
+        }
+      })
+      return
+    }
+
+    try {
+      // Wait for video metadata to load
+      if (this.videoElement.readyState < 1) {
+        await new Promise<void>((resolve, reject) => {
+          const onLoadedMetadata = () => {
+            this.videoElement?.removeEventListener('loadedmetadata', onLoadedMetadata)
+            this.videoElement?.removeEventListener('error', onError)
+            resolve()
+          }
+          const onError = (error: Event) => {
+            this.videoElement?.removeEventListener('loadedmetadata', onLoadedMetadata)
+            this.videoElement?.removeEventListener('error', onError)
+            reject(error)
+          }
+          this.videoElement?.addEventListener('loadedmetadata', onLoadedMetadata)
+          this.videoElement?.addEventListener('error', onError)
+        })
+      }
+
+      // Update canvas size to match video
+      if (this.canvas && this.ctx && this.videoElement.videoWidth && this.videoElement.videoHeight) {
+        this.canvas.width = this.videoElement.videoWidth
+        this.canvas.height = this.videoElement.videoHeight
+      }
+
+      // Start the worker
+      this.worker.postMessage({
+        type: 'start',
+        payload: {
+          duration,
+          frameRate: options.frameRate || 8
+        }
+      })
+
+      // Start frame extraction
+      this.startFrameExtraction(duration, options.frameRate || 8, callbacks)
+
+    } catch (error) {
+      callbacks.onError?.(`Video processing setup failed: ${error}`)
+    }
+  }
+
+  private startFrameExtraction(duration: number, frameRate: number, callbacks: DetectionCallbacks) {
+    if (!this.videoElement || !this.canvas || !this.ctx || !this.worker) {
+      return
+    }
+
+    const interval = 1000 / frameRate
+    const totalFrames = Math.ceil(duration * frameRate)
+    let frameIndex = 0
+
+    const extractFrame = () => {
+      if (frameIndex >= totalFrames || !this.videoElement || !this.worker) {
+        // Send completion signal
+        this.worker?.postMessage({ type: 'terminate' })
+        return
+      }
+
+      const timestamp = (frameIndex / frameRate)
+
+      try {
+        // Seek to the timestamp
+        this.videoElement.currentTime = timestamp
+
+        // Wait for seek to complete and extract frame
+        const onSeeked = () => {
+          this.videoElement?.removeEventListener('seeked', onSeeked)
+
+          try {
+            // Draw video frame to canvas
+            if (this.ctx && this.videoElement && this.canvas) {
+              this.ctx.drawImage(this.videoElement, 0, 0)
+
+              // Get image data
+              const imageData = this.ctx.getImageData(0, 0, this.canvas.width, this.canvas.height)
+
+              if (imageData && this.worker) {
+                // Send frame to worker for processing
+                this.worker.postMessage({
+                  type: 'processFrame',
+                  payload: {
+                    frameData: imageData,
+                    timestamp
+                  }
+                })
+              }
+            }
+          } catch (error) {
+            callbacks.onError?.(`Frame extraction failed: ${error}`)
+          }
+
+          frameIndex++
+          setTimeout(extractFrame, interval)
+        }
+
+        this.videoElement.addEventListener('seeked', onSeeked)
+
+      } catch (error) {
+        callbacks.onError?.(`Frame extraction setup failed: ${error}`)
+        frameIndex++
+        setTimeout(extractFrame, interval)
+      }
+    }
+
+    // Start extraction
+    extractFrame()
   }
 
   stop() {
@@ -60,6 +241,14 @@ export class DetectionWorkerController {
       this.worker.terminate()
       this.worker = undefined
     }
+
+    // Clean up video element if we created it
+    if (this.videoElement && !document.body.contains(this.videoElement)) {
+      document.body.removeChild(this.videoElement)
+    }
+    this.videoElement = undefined
+    this.canvas = undefined
+    this.ctx = undefined
     this.results = []
   }
 
@@ -70,9 +259,10 @@ export class DetectionWorkerController {
 
 export function runDetection(
   duration: number,
-  callbacks: DetectionCallbacks
+  callbacks: DetectionCallbacks,
+  options: DetectionOptions = {}
 ): () => void {
   const controller = new DetectionWorkerController()
-  controller.start(duration, callbacks)
+  controller.start(duration, callbacks, options)
   return () => controller.dispose()
 }

@@ -9,7 +9,7 @@ import { ExportDialog } from '../components/export-dialog'
 import { useVideo } from '../hooks/use-video'
 import { useCropper } from '../hooks/use-cropper'
 import { useExport } from '../hooks/use-export'
-import { Button } from '../components/ui/button'
+import { DebugWidget } from '../components/debug-widget'
 import type { CropWindow } from '../types'
 import type { VideoData } from '../types/video'
 
@@ -25,14 +25,22 @@ export default function Page() {
     activeKeyframe,
     detectionStatus,
     detections,
+    autoTrackingEnabled,
     setVideo,
     setTime,
     addKeyframeAt,
     updateKeyframe,
     removeKeyframe,
     selectKeyframe,
-    requestDetection
+    requestDetection,
+    toggleAutoTracking
   } = useCropper()
+
+  // Create a wrapper function for detection that will be called from CropWorkspace
+  const handleRunDetection = useCallback((videoElement: HTMLVideoElement) => {
+    console.log('🔍 handleRunDetection called with video element')
+    requestDetection(videoElement)
+  }, [requestDetection])
 
   const {
     video: loadedVideo,
@@ -162,10 +170,6 @@ export default function Page() {
     [removeKeyframe]
   )
 
-  const handleDetection = useCallback(() => {
-    requestDetection()
-  }, [requestDetection])
-
   const handleExportStart = useCallback(() => {
     if (!video || !path) {
       return
@@ -189,21 +193,6 @@ export default function Page() {
       <div className="grid gap-8 lg:grid-cols-[320px_1fr]">
         <aside className="space-y-6">
           <VideoPicker activeVideo={null} onSelect={handleVideoSelect} />
-
-          <div className="space-y-3 rounded-2xl border border-slate-800 bg-slate-900/60 p-4">
-            <h3 className="text-sm font-semibold text-white">AI Assistance</h3>
-            <p className="text-xs text-slate-400">
-              Run the detection worker to auto-suggest keyframes that keep subjects centered inside the 9:16 frame.
-            </p>
-            <Button
-              variant="primary"
-              size="sm"
-              onClick={handleDetection}
-              disabled={disableWorkspace || detectionStatus === 'running'}
-            >
-              {detectionStatus === 'running' ? 'Detecting…' : 'Run auto tracking'}
-            </Button>
-          </div>
         </aside>
 
         <section className="space-y-6">
@@ -216,6 +205,9 @@ export default function Page() {
             isPlaying={isPlaying}
             onTogglePlay={togglePlayback}
             onCreateKeyframe={handleAddKeyframe}
+            onToggleAutoTracking={toggleAutoTracking}
+            onRunDetection={handleRunDetection}
+            autoTrackingEnabled={autoTrackingEnabled}
             crop={currentCrop}
             activeKeyframe={activeKeyframe}
             onUpdateActiveKeyframe={handleKeyframeChange}
@@ -265,6 +257,13 @@ export default function Page() {
           </div>
         </section>
       </div>
+
+      <DebugWidget
+        detectionStatus={detectionStatus}
+        detections={detections}
+        autoTrackingEnabled={autoTrackingEnabled}
+        isVisible={process.env.NODE_ENV === 'development'}
+      />
     </main>
   )
 }

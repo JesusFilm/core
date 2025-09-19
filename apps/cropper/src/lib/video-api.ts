@@ -1,6 +1,6 @@
 'use client'
 
-import type { CropPath, ExportPreset, Video, VideoDetailsResponse, VideoSearchResponse, VideoSummary } from '../types'
+import type { CropPath, ExportPreset, Video, VideoDetailsResponse, VideoSearchResponse, VideoSummary, SearchResult } from '../types'
 
 const SEARCH_ENDPOINT = '/api/videos/search'
 const VIDEO_ENDPOINT = '/api/videos'
@@ -20,7 +20,7 @@ async function handleResponse<T>(response: Response): Promise<T> {
   return response.json() as Promise<T>
 }
 
-export async function searchVideos(query: string): Promise<VideoSummary[]> {
+export async function searchVideos(query: string): Promise<SearchResult[]> {
   const queryString = query ? `?q=${encodeURIComponent(query)}` : ''
 
   const response = await fetch(`${SEARCH_ENDPOINT}${queryString}`, {
@@ -32,7 +32,7 @@ export async function searchVideos(query: string): Promise<VideoSummary[]> {
   })
 
   const body = await handleResponse<VideoSearchResponse>(response)
-  return body.items
+  return body.items || []
 }
 
 export async function getVideo(slug: string): Promise<Video> {
@@ -45,6 +45,9 @@ export async function getVideo(slug: string): Promise<Video> {
   })
 
   const body = await handleResponse<VideoDetailsResponse>(response)
+  if (!body.video) {
+    throw new Error('Video not found')
+  }
   return body.video
 }
 

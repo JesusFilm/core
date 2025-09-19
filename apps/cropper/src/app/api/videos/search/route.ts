@@ -26,6 +26,7 @@ export async function GET(request: Request) {
     }))
 
   const body: VideoSearchResponse = {
+    success: true,
     items: filtered,
     query,
     took: Math.round(performance.now() - started)

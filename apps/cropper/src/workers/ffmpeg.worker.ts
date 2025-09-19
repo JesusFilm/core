@@ -1,7 +1,5 @@
 /// <reference lib="webworker" />
 
-declare const self: DedicatedWorkerGlobalScope
-
 type StartMessage = {
   type: 'start'
   payload: {

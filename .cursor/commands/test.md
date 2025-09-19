@@ -1,0 +1,1 @@
+Test and confirm it's resolving with playwright mcp directly (not e2e). Navigate to the dev server using the browser and open the related pages and screens clicking buttons the same way user would do and confirming UI is reacting in a way it should. Check console.log or errors.

@@ -29,6 +29,7 @@ interface CropperState {
   currentTime: number
   detections: DetectionResult[]
   detectionStatus: 'idle' | 'running' | 'complete'
+  autoTrackingEnabled: boolean
 }
 
 type CropperAction =
@@ -43,6 +44,7 @@ type CropperAction =
   | { type: 'SET_DETECTIONS'; detections: DetectionResult[] }
   | { type: 'MERGE_DETECTIONS' }
   | { type: 'SET_DETECTION_STATUS'; status: CropperState['detectionStatus'] }
+  | { type: 'TOGGLE_AUTO_TRACKING' }
 
 const INITIAL_STATE: CropperState = {
   video: null,
@@ -50,7 +52,8 @@ const INITIAL_STATE: CropperState = {
   activeKeyframeId: null,
   currentTime: 0,
   detections: [],
-  detectionStatus: 'idle'
+  detectionStatus: 'idle',
+  autoTrackingEnabled: false
 }
 
 function reducer(state: CropperState, action: CropperAction): CropperState {
@@ -67,7 +70,8 @@ function reducer(state: CropperState, action: CropperAction): CropperState {
         activeKeyframeId: path.keyframes[0]?.id ?? null,
         currentTime: 0,
         detections: [],
-        detectionStatus: 'idle'
+        detectionStatus: 'idle',
+        autoTrackingEnabled: false
       }
     }
 
@@ -178,6 +182,14 @@ function reducer(state: CropperState, action: CropperAction): CropperState {
       }
     }
 
+    case 'TOGGLE_AUTO_TRACKING': {
+      const newAutoTrackingEnabled = !state.autoTrackingEnabled
+      return {
+        ...state,
+        autoTrackingEnabled: newAutoTrackingEnabled
+      }
+    }
+
     default:
       return state
   }
@@ -192,13 +204,15 @@ export interface UseCropperResult {
   activeKeyframe: CropKeyframe | null
   detectionStatus: CropperState['detectionStatus']
   detections: DetectionResult[]
+  autoTrackingEnabled: boolean
   setVideo: (video: Video | null) => void
   setTime: (time: number) => void
   addKeyframeAt: (time: number, window?: Partial<CropWindow>) => void
   updateKeyframe: (keyframeId: string, patch: Partial<CropWindow> & { time?: number }) => void
   removeKeyframe: (keyframeId: string) => void
   selectKeyframe: (keyframeId: string | null) => void
-  requestDetection: () => void
+  requestDetection: (videoElement?: HTMLVideoElement) => void
+  toggleAutoTracking: () => void
 }
 
 export function useCropper(): UseCropperResult {
@@ -253,30 +267,55 @@ export function useCropper(): UseCropperResult {
     dispatch({ type: 'SET_ACTIVE_KEYFRAME', keyframeId })
   }, [])
 
-  const requestDetection = useCallback(() => {
+  const requestDetection = useCallback((videoElement?: HTMLVideoElement) => {
+    console.log('🔍 requestDetection called, video:', !!state.video, 'videoElement:', !!videoElement)
     if (!state.video) {
+      console.log('🔍 No video, skipping detection')
       return
     }
 
+    console.log('🔍 Starting detection for video:', state.video.slug)
     dispatch({ type: 'SET_DETECTION_STATUS', status: 'running' })
     dispatch({ type: 'SET_DETECTIONS', detections: [] })
 
     disposeDetectionRef.current?.()
 
+    const detectionOptions: any = {
+      frameRate: 8
+    }
+
+    // If we have a video element, use it directly instead of creating a new one
+    if (videoElement) {
+      detectionOptions.videoElement = videoElement
+      detectionOptions.useExistingElement = true
+    } else {
+      // Fallback to URL-based detection (which may not work with HLS)
+      detectionOptions.videoUrl = state.video.src
+    }
+
     disposeDetectionRef.current = runDetection(state.video.duration, {
       onChunk: (result) => {
+        console.log('🔍 Detection chunk received:', result)
         dispatch({ type: 'PUSH_DETECTION', detection: result })
       },
       onComplete: (results) => {
+        console.log('🔍 Detection complete, results:', results.length)
         dispatch({ type: 'SET_DETECTION_STATUS', status: 'complete' })
         dispatch({ type: 'SET_DETECTIONS', detections: results })
         dispatch({ type: 'MERGE_DETECTIONS' })
       },
-      onError: () => {
+      onError: (error) => {
+        console.log('🔍 Detection error:', error)
         dispatch({ type: 'SET_DETECTION_STATUS', status: 'idle' })
       }
-    })
+    }, detectionOptions)
   }, [state.video])
+
+  const toggleAutoTracking = useCallback(() => {
+    dispatch({ type: 'TOGGLE_AUTO_TRACKING' })
+  }, [])
+
+  // Note: Auto-detection is now handled by CropWorkspace when checkbox is toggled
 
   useEffect(() => {
     return () => {
@@ -316,12 +355,14 @@ export function useCropper(): UseCropperResult {
     activeKeyframe,
     detectionStatus: state.detectionStatus,
     detections: state.detections,
+    autoTrackingEnabled: state.autoTrackingEnabled,
     setVideo,
     setTime,
     addKeyframeAt,
     updateKeyframe,
     removeKeyframe,
     selectKeyframe,
-    requestDetection
+    requestDetection,
+    toggleAutoTracking
   }
 }
