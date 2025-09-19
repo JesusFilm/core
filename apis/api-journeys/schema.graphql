@@ -163,6 +163,7 @@ type Journey
   socialNodeX: Int
   socialNodeY: Int
   fromTemplateId: String
+  showAssistant: Boolean
   journeyCustomizationDescription: String
   journeyCustomizationFields: [JourneyCustomizationField!]!
   journeyTheme: JourneyTheme
@@ -848,6 +849,30 @@ input ImageBlockUpdateInput {
   scale: Int
   focalTop: Int
   focalLeft: Int
+}
+
+type MultiselectBlock implements Block
+  @shareable
+{
+  id: ID!
+  journeyId: ID!
+  parentBlockId: ID!
+  parentOrder: Int!
+  label: String!
+  submitLabel: String!
+  max: Int
+  min: Int
+  action: Action
+}
+
+type MultiselectOptionBlock implements Block
+  @shareable
+{
+  id: ID!
+  journeyId: ID!
+  parentBlockId: ID!
+  parentOrder: Int!
+  label: String!
 }
 
 type RadioOptionBlock implements Block
