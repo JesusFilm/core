@@ -6,6 +6,8 @@ import DebounceLink from 'apollo-link-debounce'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+import { JourneyFields as Journey } from '@core/journeys/ui/JourneyProvider/__generated__/JourneyFields'
 
 import { BlockFields_TextResponseBlock as TextResponseBlock } from '../../../../../../../../../../../__generated__/BlockFields'
 import { CommandRedoItem } from '../../../../../../../../Toolbar/Items/CommandRedoItem'
@@ -104,6 +106,73 @@ describe('Edit Placeholder field', () => {
 
     const field = screen.getByRole('textbox', { name: 'Placeholder' })
     expect(field).toHaveValue('Your placeholder here')
+  })
+
+  it('should resolve customizable placeholder value', () => {
+    const blockWithCustomizablePlaceholder = {
+      ...block,
+      placeholder: '{{ placeholder }}'
+    }
+
+    const journeyWithCustomizableFields = {
+      journeyCustomizationFields: [
+        {
+          __typename: 'JourneyCustomizationField',
+          id: '1',
+          journeyId: 'journeyId',
+          key: 'placeholder',
+          value: 'Your customized placeholder',
+          defaultValue: 'Default placeholder'
+        }
+      ]
+    } as unknown as Journey
+
+    render(
+      <MockedProvider>
+        <JourneyProvider value={{ journey: journeyWithCustomizableFields, variant: 'admin' }}>
+          <EditorProvider initialState={{ selectedBlock: blockWithCustomizablePlaceholder }}>
+            <Placeholder />
+          </EditorProvider>
+        </JourneyProvider>
+      </MockedProvider>
+    )
+
+    const field = screen.getByRole('textbox', { name: 'Placeholder' })
+    expect(field).toHaveValue('Your customized placeholder')
+  })
+
+  it('should not resolve customizable placeholder value for template journeys', () => {
+    const blockWithCustomizablePlaceholder = {
+      ...block,
+      placeholder: '{{ placeholder }}'
+    }
+
+    const journeyWithCustomizableFields = {
+      template: true,
+      journeyCustomizationFields: [
+        {
+          __typename: 'JourneyCustomizationField',
+          id: '1',
+          journeyId: 'journeyId',
+          key: 'placeholder',
+          value: 'Your customized placeholder',
+          defaultValue: 'Default placeholder'
+        }
+      ]
+    } as unknown as Journey
+
+    render(
+      <MockedProvider>
+        <JourneyProvider value={{ journey: journeyWithCustomizableFields, variant: 'admin' }}>
+          <EditorProvider initialState={{ selectedBlock: blockWithCustomizablePlaceholder }}>
+            <Placeholder />
+          </EditorProvider>
+        </JourneyProvider>
+      </MockedProvider>
+    )
+
+    const field = screen.getByRole('textbox', { name: 'Placeholder' })
+    expect(field).toHaveValue('{{ placeholder }}')
   })
 
   it('should not be able to type beyond max character limit', () => {

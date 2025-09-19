@@ -8,6 +8,7 @@ import { v4 as uuidv4 } from 'uuid'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { useCommand } from '@core/journeys/ui/CommandProvider'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
+import { useGetValueFromJourneyCustomizationString } from '@core/journeys/ui/useGetValueFromJourneyCustomizationString'
 
 import { BlockFields_TextResponseBlock as TextResponseBlock } from '../../../../../../../../../../../__generated__/BlockFields'
 import {
@@ -130,7 +131,7 @@ export function Placeholder(): ReactElement {
             maxLength: 250
           }
         }}
-        value={value}
+        value={useGetValueFromJourneyCustomizationString(value) ?? value}
         onFocus={resetCommandInput}
         onChange={(e) => {
           setValue(e.target.value)

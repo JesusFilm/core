@@ -3,6 +3,8 @@ import { render } from '@testing-library/react'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+import { JourneyFields as Journey } from '@core/journeys/ui/JourneyProvider/__generated__/JourneyFields'
 
 import { BlockFields_TextResponseBlock as TextResponseBlock } from '../../../../../../../../../__generated__/BlockFields'
 import {
@@ -86,6 +88,73 @@ describe('TextResponse', () => {
     )
     expect(
       getByText('selectedAttributeId: textResponseBlock.id-text-field-options')
+    ).toBeInTheDocument()
+  })
+
+  it('should show resolved customizable label value in accordion title', () => {
+    const customizableBlock = {
+      ...completeBlock,
+      label: '{{ label }}'
+    }
+
+    const customizableJourney = {
+      journeyCustomizationFields: [
+        {
+          __typename: 'JourneyCustomizationField',
+          id: '1',
+          journeyId: 'journeyId',
+          key: 'label',
+          value: 'Your customized label',
+          defaultValue: 'Default label'
+        }
+      ]
+    } as unknown as Journey
+
+    const { getByText } = render(
+      <MockedProvider>
+        <ThemeProvider>
+          <JourneyProvider value={{ journey: customizableJourney, variant: 'admin' }}>
+            <TextResponse {...customizableBlock} />
+          </JourneyProvider>
+        </ThemeProvider>
+      </MockedProvider>
+    )
+    expect(
+      getByText('Your customized label')
+    ).toBeInTheDocument()
+  })
+
+  it('should show unresolved customizable label value in accordion title', () => {
+    const customizableBlock = {
+      ...completeBlock,
+      label: '{{ label }}'
+    }
+
+    const customizableJourney = {
+      template: true,
+      journeyCustomizationFields: [
+        {
+          __typename: 'JourneyCustomizationField',
+          id: '1',
+          journeyId: 'journeyId',
+          key: 'label',
+          value: 'Your customized label',
+          defaultValue: 'Default label'
+        }
+      ]
+    } as unknown as Journey
+
+    const { getByText } = render(
+      <MockedProvider>
+        <ThemeProvider>
+          <JourneyProvider value={{ journey: customizableJourney, variant: 'admin' }}>
+            <TextResponse {...customizableBlock} />
+          </JourneyProvider>
+        </ThemeProvider>
+      </MockedProvider>
+    )
+    expect(
+      getByText('{{ label }}')
     ).toBeInTheDocument()
   })
 })

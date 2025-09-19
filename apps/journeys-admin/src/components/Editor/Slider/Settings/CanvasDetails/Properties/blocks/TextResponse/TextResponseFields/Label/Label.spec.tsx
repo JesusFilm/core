@@ -6,6 +6,8 @@ import DebounceLink from 'apollo-link-debounce'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+import { JourneyFields as Journey } from '@core/journeys/ui/JourneyProvider/__generated__/JourneyFields'
 
 import { BlockFields_TextResponseBlock as TextResponseBlock } from '../../../../../../../../../../../__generated__/BlockFields'
 import { CommandRedoItem } from '../../../../../../../../Toolbar/Items/CommandRedoItem'
@@ -246,5 +248,72 @@ describe('Edit Label field', () => {
     await waitFor(() => {
       expect(mockLabelUpdateWhitespace.result).not.toHaveBeenCalled()
     })
+  })
+
+  it('should resolve customizable label value', () => {
+    const blockWithCustomizableLabel = {
+      ...block,
+      label: '{{ label }}'
+    }
+
+    const journeyWithCustomizableFields = {
+      journeyCustomizationFields: [
+        {
+          __typename: 'JourneyCustomizationField',
+          id: '1',
+          journeyId: 'journeyId',
+          key: 'label',
+          value: 'Your customized label',
+          defaultValue: 'Default label'
+        }
+      ]
+    } as unknown as Journey
+
+    render(
+      <MockedProvider>
+        <JourneyProvider value={{ journey: journeyWithCustomizableFields, variant: 'admin' }}>
+          <EditorProvider initialState={{ selectedBlock: blockWithCustomizableLabel }}>
+            <Label />
+          </EditorProvider>
+        </JourneyProvider>
+      </MockedProvider>
+    )
+
+    const field = screen.getByRole('textbox', { name: 'Label' })
+    expect(field).toHaveValue('Your customized label')
+  })
+
+  it('should not resolve customizable label value for template journeys', () => {
+    const blockWithCustomizableLabel = {
+      ...block,
+      label: '{{ label }}'
+    }
+
+    const journeyWithCustomizableFields = {
+      template: true,
+      journeyCustomizationFields: [
+        {
+          __typename: 'JourneyCustomizationField',
+          id: '1',
+          journeyId: 'journeyId',
+          key: 'label',
+          value: 'Your customized label',
+          defaultValue: 'Default label'
+        }
+      ]
+    } as unknown as Journey
+
+    render(
+      <MockedProvider mocks={[mockLabelUpdate1]} addTypename={false}>
+        <JourneyProvider value={{ journey: journeyWithCustomizableFields, variant: 'admin' }}>
+          <EditorProvider initialState={{ selectedBlock: blockWithCustomizableLabel }}>
+            <Label />
+          </EditorProvider>
+        </JourneyProvider>
+      </MockedProvider>
+    )
+
+    const field = screen.getByRole('textbox', { name: 'Label' })
+    expect(field).toHaveValue('{{ label }}')
   })
 })

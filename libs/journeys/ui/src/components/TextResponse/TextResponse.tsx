@@ -89,7 +89,8 @@ export const TextResponse = ({
       getTextResponseValues(
         { label, placeholder, hint },
         journey?.journeyCustomizationFields ?? [],
-        variant ?? 'default'
+        variant ?? 'default',
+        journey?.template ?? false
       ),
     [label, placeholder, hint, journey?.journeyCustomizationFields, variant]
   )
