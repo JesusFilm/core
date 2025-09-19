@@ -27,7 +27,7 @@ Always verify current working directory is /core before file operations. Current
 2. Reuse a healthy Watch instance when possible. If you must stop a stray process, run `pkill -f "nx run watch:serve"`.
 3. Existing running server is loging dev logs to: `tee dev-server.log`. At the end of each task review dev-server.log for new errors or warnings. Resolve any new errors automatically. Don't try to resolve issues that existed before your code changes.
 4. If no dev server with loging is running, launch your session with logging so issues are traceable: `pnpm dlx nx run watch:serve 2>&1 | tee dev-server.log &`.
-4. Keep the dev server you created running.
+5. Keep the dev server you created running.
 
 ### Development Server Compilation Procedures
 
@@ -36,12 +36,14 @@ Always verify current working directory is /core before file operations. Current
 When starting the development server, follow this **mandatory waiting procedure**:
 
 #### 1. Start Server and Wait
+
 #### 2. Watch for Compilation Status
 
 **DO NOT PROCEED** until you see one of these outcomes:
 
 ✅ **SUCCESS INDICATORS**:
-```bash
+
+````bash
 ✓ Starting...
 ✓ Ready in Xs        # Server compiled successfully
 Local: http://localhost:4300
@@ -50,15 +52,18 @@ Local: http://localhost:4300
 ```bash
 ⨯ ./src/components/ComponentName.tsx
 Error: [Compilation error details]
-```
+````
 
 #### 3. Verify Server Status
+
 **Only after seeing "Ready in Xs":**
+
 - ✅ **Continue** with development tasks
 - ✅ **Navigate** to browser for testing
 - ✅ **Run** additional commands
 
 **If errors appear:**
+
 - ❌ **STOP** all other activities
 - ❌ **Fix** compilation errors first
 - ❌ **Wait** for successful recompilation before proceeding
@@ -123,10 +128,10 @@ echo "✅ Page renders cleanly after $max_retries attempts"
 1. Since it's a monorepo, shadcn components live in the root of the repo in /core/libs/ui/. When adding new shadcn components add it to the root.
 
 ### UI Component Hierarchy (order of preference)
+
 1. **Shadcn/ui components** - Primary choice for all UI needs
 2. **Custom Tailwind components** - If shadcn/ui doesn't exist, build with Tailwind CSS
 3. **Semantic HTML + Tailwind** - For basic elements when neither above applies
-
 
 ## Core Nx targets (run with `pnpm dlx nx run <target>`)
 
@@ -153,6 +158,7 @@ Run these before opening a PR. If a command fails due to pre-existing issues, en
 ## Testing expectations
 
 ### Component Testing Checklist
+
 1. **Rendering**: Component renders without crashing
 2. **Props**: All props work correctly with various inputs
 3. **Interactions**: User interactions (clicks, keyboard, form inputs)
@@ -161,6 +167,7 @@ Run these before opening a PR. If a command fails due to pre-existing issues, en
 6. **CSS classes**: Correct Tailwind classes applied
 
 ### Example Test Patterns
+
 ```typescript
 describe('MyComponent', () => {
   it('should render with correct text', () => {
@@ -256,6 +263,7 @@ describe('MyComponent', () => {
   - Omit `ComponentFunction` for basic primitives like `Button`, `Input`, `Icon`, etc.
 
 #### Examples
+
 - `ModalLogin`
 - `FooterLinks`
 - `PageHome`
@@ -264,7 +272,7 @@ describe('MyComponent', () => {
 
 - **Pages**: Prefix with 'Page'
   - PageHome
-  - PageVideo  
+  - PageVideo
   - PageCollection
   - PageSearch
   - PageSettings
@@ -276,7 +284,7 @@ describe('MyComponent', () => {
 
 - **Sections**: Prefix with 'Section'
   - SectionHeader
-  - SectionFooter 
+  - SectionFooter
   - SectionHero
   - SectionFeatures
 
@@ -286,6 +294,7 @@ describe('MyComponent', () => {
   - LayoutSidebar
 
 #### Notes
+
 - Use **PascalCase** for all component names.
 - Avoid redundancy (`ModalModal`, `ButtonButton`).
 - Keep `ComponentFunction` focused—no vague naming like `ModalStuff` or `FooterThings`.
@@ -296,7 +305,6 @@ describe('MyComponent', () => {
 - Include className prop for extensibility: `className?: string`
 - Use ReactNode for children and content slots: `children?: ReactNode`
 - Name interfaces with component name prefix: `ComponentNameProps`
-
 
 ## Architecture & refactoring agreements
 
@@ -326,10 +334,10 @@ For all new features that doens't already have execution plan, we create detaile
   - **Obstacles**
   - **Resolutions**
   - **Test coverage**
-  - **User flows (in human-readable format)** for new features or fixes  
-   - Example: *Click on search → focus search field → open search modal*
+  - **User flows (in human-readable format)** for new features or fixes
+  - Example: _Click on search → focus search field → open search modal_
   - **Follow-up ideas**
-- Name the log file after the **branch name**, replacing slashes (`/`) with dashes (`-`).  
+- Name the log file after the **branch name**, replacing slashes (`/`) with dashes (`-`).
   - Example:  
     Branch → `feature/abc-123-new-feature-name`  
     Log → `/prds/watch/feature-abc-123-new-feature-name.md`
@@ -346,23 +354,25 @@ For all new features that doens't already have execution plan, we create detaile
 - Target content for a **Senior Developer** audience: focus on non-obvious pitfalls, advanced techniques, and architectural decisions.
 
 #### Guidelines
+
 - Be concise but precise—write in a way that another experienced engineer could apply immediately.
 - Include context if the learning depends on specific tools, frameworks, or configurations.
 - If applicable, add code snippets or command references to illustrate the solution.
 
 #### Example Entry
-- **Issue:** `pnpm nx run watch:serve` produced no output due to Nx daemon caching.  
-- **Learning:** Disable Nx daemon when debugging silent task failures:  
+
+- **Issue:** `pnpm nx run watch:serve` produced no output due to Nx daemon caching.
+- **Learning:** Disable Nx daemon when debugging silent task failures:
   ```bash
   NX_DAEMON=false pnpm nx run watch:serve
-
+  ```
 
 ### Agent Development Best Practices
 
 **Before Starting**:
 
 - [ ] Read the relevant PRD in /core/prds/watch/ completely
-   - [ ] If no PRD exists do initial research and planning from Technical Lead and SR. Developer outlining implementation strategy.
+  - [ ] If no PRD exists do initial research and planning from Technical Lead and SR. Developer outlining implementation strategy.
 - [ ] Understand current project constraints
 - [ ] Run existing tests to verify working state
 - [ ] Check development server starts successfully
