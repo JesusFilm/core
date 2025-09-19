@@ -104,7 +104,7 @@ export function ExistingVideoByIdSelector({
           disabled={isSubmitting}
           sx={{ flex: 1 }}
         >
-          <Typography>Cancel</Typography>
+          <Typography color="inherit">Cancel</Typography>
         </Button>
         <Button
           variant="contained"
@@ -117,7 +117,7 @@ export function ExistingVideoByIdSelector({
           ) : isSubmitting ? (
             <CircularProgress size={24} color="inherit" />
           ) : (
-            <Typography>Save</Typography>
+            <Typography color="inherit">Save</Typography>
           )}
         </Button>
       </Stack>
