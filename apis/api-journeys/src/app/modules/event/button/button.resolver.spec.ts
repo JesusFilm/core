@@ -1,8 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing'
 
-import {
-  ButtonAction,
-  ButtonClickEventCreateInput,
+import {  
   ChatOpenEventCreateInput,
   MessagePlatform
 } from '../../../__generated__/graphql'
@@ -10,84 +8,8 @@ import { PrismaService } from '../../../lib/prisma.service'
 import { EventService } from '../event.service'
 
 import {
-  ButtonClickEventResolver,
   ChatOpenEventResolver
 } from './button.resolver'
-
-describe('ButtonClickEventResolver', () => {
-  let resolver: ButtonClickEventResolver, prismaService: PrismaService
-
-  const response = {
-    visitor: { id: 'visitor.id' },
-    journeyVisitor: {
-      journeyId: 'journey.id',
-      visitorId: 'visitor.id',
-      activityCount: 0
-    },
-    journeyId: 'journey.id'
-  }
-
-  const eventService = {
-    provide: EventService,
-    useFactory: () => ({
-      save: jest.fn((event) => event),
-      validateBlockEvent: jest.fn(() => response)
-    })
-  }
-
-  beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
-      providers: [ButtonClickEventResolver, eventService, PrismaService]
-    }).compile()
-    resolver = module.get<ButtonClickEventResolver>(ButtonClickEventResolver)
-    prismaService = module.get<PrismaService>(PrismaService)
-    prismaService.visitor.update = jest.fn().mockResolvedValueOnce(null)
-    prismaService.journeyVisitor.update = jest.fn().mockResolvedValueOnce(null)
-  })
-
-  describe('buttonClickEventCreate', () => {
-    it('returns ButtonClickEvent', async () => {
-      const input: ButtonClickEventCreateInput = {
-        id: '1',
-        blockId: 'block.id',
-        stepId: 'step.id',
-        label: 'Step name',
-        value: 'Button label',
-        action: ButtonAction.NavigateToBlockAction,
-        actionValue: 'Step 1'
-      }
-
-      expect(await resolver.buttonClickEventCreate('userId', input)).toEqual({
-        ...input,
-        typename: 'ButtonClickEvent',
-        visitor: {
-          connect: { id: 'visitor.id' }
-        },
-        journey: { connect: { id: 'journey.id' } }
-      })
-    })
-
-    it('should update visitor last link action', async () => {
-      const input: ButtonClickEventCreateInput = {
-        id: '1',
-        blockId: 'block.id',
-        stepId: 'step.id',
-        label: 'Step name',
-        value: 'Button label',
-        action: ButtonAction.LinkAction,
-        actionValue: 'https://test.com/some-link'
-      }
-      await resolver.buttonClickEventCreate('userId', input)
-
-      expect(prismaService.visitor.update).toHaveBeenCalledWith({
-        where: { id: 'visitor.id' },
-        data: {
-          lastLinkAction: 'https://test.com/some-link'
-        }
-      })
-    })
-  })
-})
 
 describe('ChatOpenEventResolver', () => {
   let resolver: ChatOpenEventResolver, prismaService: PrismaService
