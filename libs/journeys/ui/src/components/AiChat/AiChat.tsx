@@ -230,7 +230,7 @@ export function AiChat({ open }: AiChatProps) {
           className="w-full bg-background-paper border-none rounded-xl bg-input p-[2px] flex flex-row shadow-none"
         >
           <PromptInputTextarea
-            className="bg-input placeholder:text-secondary-light text-[16px]"
+            className="bg-input text-foreground placeholder:text-secondary-light text-[16px]"
             placeholder={t('Ask me anything')}
             onChange={(e) => setInput(e.target.value)}
             value={input}
