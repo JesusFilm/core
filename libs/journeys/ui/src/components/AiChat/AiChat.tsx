@@ -217,6 +217,7 @@ export function AiChat({ open }: AiChatProps) {
           )}
           {suggestions?.map((suggestion) => (
             <Suggestion
+              className="dark:bg-suggestion-bg dark:text-suggestion-text dark:border-suggestion-border"
               key={suggestion}
               onClick={(suggestion) => handleSuggestionClick(suggestion)}
               suggestion={suggestion}
