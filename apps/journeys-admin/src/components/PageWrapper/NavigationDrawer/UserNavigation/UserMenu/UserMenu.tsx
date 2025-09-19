@@ -102,6 +102,7 @@ export function UserMenu({
           icon={<Logout2Icon fontSize="small" />}
           onClick={async () => {
             await user.signOut()
+            client.clearStore()
             if (!router.pathname.startsWith('/templates')) {
               const redirectUrl = `/users/sign-in?redirect=${encodeURIComponent(window.location.href)}`
               window.location.assign(redirectUrl)
