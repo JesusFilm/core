@@ -124,16 +124,6 @@ type ButtonClickEvent implements Event
   actionValue: String
 }
 
-input ButtonClickEventCreateInput {
-  id: ID
-  blockId: ID!
-  stepId: ID
-  label: String
-  value: String
-  action: ButtonAction
-  actionValue: String
-}
-
 enum ButtonColor {
   primary
   secondary
@@ -1093,6 +1083,24 @@ input MultiselectOptionBlockUpdateInput {
   label: String
 }
 
+type MultiselectSubmissionEvent implements Event
+  @shareable
+{
+  id: ID!
+  journeyId: ID!
+  createdAt: DateTime!
+  label: String
+  value: String
+}
+
+input MultiselectSubmissionEventCreateInput {
+  id: ID
+  blockId: ID!
+  stepId: ID
+  label: String
+  values: [String!]!
+}
+
 type Mutation {
   multiselectBlockCreate(input: MultiselectBlockCreateInput!): MultiselectBlock!
   multiselectBlockUpdate(
@@ -1124,7 +1132,7 @@ type Mutation {
   blockUpdateLinkAction(id: ID!, input: LinkActionInput!, journeyId: ID): LinkAction! @override(from: "api-journeys")
   blockUpdateNavigateToBlockAction(id: ID!, input: NavigateToBlockActionInput!, journeyId: ID): NavigateToBlockAction! @override(from: "api-journeys")
   blockUpdatePhoneAction(id: ID!, input: PhoneActionInput!, journeyId: ID): PhoneAction! @override(from: "api-journeys")
-  buttonClickEventCreate(input: ButtonClickEventCreateInput!): ButtonClickEvent! @override(from: "api-journeys")
+  multiselectSubmissionEventCreate(input: MultiselectSubmissionEventCreateInput!): MultiselectSubmissionEvent! @override(from: "api-journeys")
   journeySimpleUpdate(id: ID!, journey: Json!): Json
   journeyAiTranslateCreate(input: JourneyAiTranslateInput!): Journey!
   createJourneyEventsExportLog(input: JourneyEventsExportLogInput!): JourneyEventsExportLog!
