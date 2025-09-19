@@ -81,7 +81,7 @@ export async function validateBlock(
 ): Promise<boolean> {
   const block =
     id != null
-      ? await prisma.block.findUnique({
+      ? await prisma.block.findFirst({
           where: { id, deletedAt: null }
         })
       : null
