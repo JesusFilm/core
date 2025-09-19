@@ -156,55 +156,6 @@ describe('useJourneyAiContextGenerator', () => {
     expect(result.current.error).toBe(null)
   })
 
-  it('should provide refetch functionality', async () => {
-    const { result } = renderHook(() =>
-      useJourneyAiContextGenerator(mockTreeBlocks)
-    )
-
-    await waitFor(() => {
-      expect(result.current.isLoading).toBe(false)
-    })
-
-    // Change the mock response
-    const newResponse = {
-      blockContexts: [
-        {
-          blockId: 'block1',
-          contextText: 'Context for block1',
-          language: 'french',
-          suggestions: []
-        },
-        {
-          blockId: 'block2',
-          contextText: 'Context for block2',
-          language: 'german',
-          suggestions: []
-        }
-      ]
-    }
-    ;(fetch as jest.Mock).mockResolvedValue({
-      ok: true,
-      json: () => Promise.resolve(newResponse)
-    })
-
-    await waitFor(() => {
-      expect(result.current.aiContextData).toEqual([
-        {
-          blockId: 'block1',
-          contextText: 'Context for block1',
-          language: 'french',
-          suggestions: []
-        },
-        {
-          blockId: 'block2',
-          contextText: 'Context for block2',
-          language: 'german',
-          suggestions: []
-        }
-      ])
-    })
-  })
-
   it('should handle empty treeBlocks array', async () => {
     const { result } = renderHook(() => useJourneyAiContextGenerator([]))
 

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 
 import { extractBlockContext } from '../../components/AiChat/utils/contextExtraction'
 import { TreeBlock } from '../block'
@@ -99,6 +99,10 @@ export function useJourneyAiContextGenerator(treeBlocks: TreeBlock[]): {
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
+  // Memoize treeBlocks to prevent infinite loops when the array reference changes
+  // We use JSON.stringify to create a stable dependency based on content, not reference
+  const treeBlocksKey = useMemo(() => JSON.stringify(treeBlocks), [treeBlocks])
+
   useEffect(() => {
     // Load context when treeBlocks is available and not empty
     if (!treeBlocks || treeBlocks.length === 0) {
@@ -127,7 +131,7 @@ export function useJourneyAiContextGenerator(treeBlocks: TreeBlock[]): {
     }
 
     void processContext()
-  }, [treeBlocks])
+  }, [treeBlocksKey])
 
   return {
     aiContextData,
