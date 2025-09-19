@@ -64,7 +64,7 @@ export function AiChatButton(): ReactElement {
         </Button>
       </DrawerTrigger>
       <DrawerContent className="flex flex-col h-[85dvh] data-[vaul-drawer-direction=bottom]:max-h-[85dvh] data-[vaul-drawer-direction=bottom]:rounded-t-3xl">
-        <DrawerHeader>
+        <DrawerHeader className="pb-0">
           <DrawerClose>
             <Button
               size="icon"
@@ -79,9 +79,11 @@ export function AiChatButton(): ReactElement {
               </div>
             </Button>
           </DrawerClose>
-          <div className="flex flex-col">
-            <DrawerDescription>{t('AI may make mistakes.')}</DrawerDescription>
-            <DrawerDescription>
+          <div className="flex flex-col gap-0">
+            <DrawerDescription className="text-muted-foreground text-[12px]">
+              {t('AI may make mistakes.')}
+            </DrawerDescription>
+            <DrawerDescription className="text-muted-foreground text-[12px] mt-[-8px]">
               {t('Please double-check important info.')}
             </DrawerDescription>
           </div>
