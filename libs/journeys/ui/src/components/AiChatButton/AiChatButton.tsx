@@ -63,20 +63,27 @@ export function AiChatButton(): ReactElement {
           <AutoAwesomeIcon />
         </Button>
       </DrawerTrigger>
-      <DrawerContent className="flex flex-col h-[85dvh] data-[vaul-drawer-direction=bottom]:max-h-[85dvh] data-[vaul-drawer-direction=bottom]:rounded-t-4xl">
-        <DrawerHeader>
+      <DrawerContent className="flex flex-col h-[85dvh] data-[vaul-drawer-direction=bottom]:max-h-[85dvh] data-[vaul-drawer-direction=bottom]:rounded-t-3xl [&>div:first-child]:h-[4px] [&>div:first-child]:w-[60px] [&>div:first-child]:mt-3">
+        <DrawerHeader className="pb-0">
           <DrawerClose>
             <Button
               size="icon"
-              className="absolute top-3 right-4 size-[24px] rounded-full bg-secondary-light"
+              className="absolute top-0 right-1 size-[48px] bg-transparent rounded-full shadow-none hover:bg-transparent"
               aria-label="Close AI chat"
             >
-              <CloseIcon sx={{ fontSize: 18 }} />
+              <div className="bg-secondary rounded-full size-[24px] relative flex items-center justify-center">
+                <CloseIcon
+                  sx={{ fontSize: '16px' }}
+                  className="text-secondary-foreground"
+                />
+              </div>
             </Button>
           </DrawerClose>
           <div className="flex flex-col">
-            <DrawerDescription>{t('AI may make mistakes.')}</DrawerDescription>
-            <DrawerDescription>
+            <DrawerDescription className="text-muted-foreground text-[12px]">
+              {t('AI may make mistakes.')}
+            </DrawerDescription>
+            <DrawerDescription className="text-muted-foreground text-[12px] mt-[-8px]">
               {t('Please double-check important info.')}
             </DrawerDescription>
           </div>
