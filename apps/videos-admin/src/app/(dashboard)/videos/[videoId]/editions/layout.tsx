@@ -34,7 +34,7 @@ const GET_EDITIONS = graphql(`
 
 export default function EditionsPage({ children }: EditionsPageProps) {
   const router = useRouter()
-  const { videoId } = useParams() as { videoId: string }
+  const { videoId } = useParams<{ videoId: string }>()
   const pathname = usePathname()
   const [reloadOnPathChange, setReloadOnPathChange] = useState(false)
   const { data, refetch } = useQuery(GET_EDITIONS, {

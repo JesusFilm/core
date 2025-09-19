@@ -733,6 +733,7 @@ export interface TextResponseBlockUpdateInput {
   placeholder?: string | null;
   required?: boolean | null;
   hint?: string | null;
+  hideLabel?: boolean | null;
   minRows?: number | null;
   routeId?: string | null;
   type?: TextResponseType | null;

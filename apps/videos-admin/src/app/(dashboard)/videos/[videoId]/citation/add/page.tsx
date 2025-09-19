@@ -10,7 +10,7 @@ import { CitationForm } from '../_CitationForm/CitationForm'
 
 export default function AddBibleCitation(): ReactElement {
   const router = useRouter()
-  const { videoId } = useParams() as { videoId: string }
+  const { videoId } = useParams<{ videoId: string }>()
   return (
     <Dialog
       open={true}
