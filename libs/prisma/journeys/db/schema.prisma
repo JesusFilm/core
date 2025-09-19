@@ -523,6 +523,7 @@ model Block {
   nextBlockId                String?
   locked                     Boolean?
   hint                       String?
+  hideLabel                  Boolean?             @default(false)
   minRows                    Int?
   content                    String?
   align                      String?

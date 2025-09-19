@@ -1543,6 +1543,7 @@ type TextResponseBlock implements Block
   placeholder: String
   required: Boolean
   hint: String
+  hideLabel: Boolean
   minRows: Int
   type: TextResponseType
   routeId: String
@@ -1562,6 +1563,7 @@ input TextResponseBlockUpdateInput {
   placeholder: String
   required: Boolean
   hint: String
+  hideLabel: Boolean
   minRows: Int
   routeId: String
   type: TextResponseType
