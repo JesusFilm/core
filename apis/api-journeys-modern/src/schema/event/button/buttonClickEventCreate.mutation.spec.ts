@@ -2,6 +2,16 @@ import { getClient } from '../../../../test/client'
 import { prismaMock } from '../../../../test/prismaMock'
 import { graphql } from '../../../lib/graphql/subgraphGraphql'
 
+jest.mock('../utils', () => {
+  const actual = jest.requireActual('../utils')
+  return {
+    ...actual,
+    getEventContext: jest.fn().mockResolvedValue({
+      journey: { id: 'journeyId' }
+    })
+  }
+})
+
 describe('buttonClickEventCreate', () => {
   const mockUser = { id: 'userId' }
   const authClient = getClient({
@@ -23,10 +33,35 @@ describe('buttonClickEventCreate', () => {
   `)
 
   beforeEach(() => {
+    // Top-level block lookup from validateBlockEvent
     prismaMock.block.findUnique.mockResolvedValue({
       id: 'blockId',
       journeyId: 'journeyId'
     } as any)
+
+    // validateBlock uses findFirst; branch on id for child and step
+    ;(prismaMock.block.findFirst as unknown as jest.Mock).mockImplementation(
+      (args: any) => {
+        const queriedId = args?.where?.id
+        if (queriedId === 'blockId') {
+          return Promise.resolve({
+            id: 'blockId',
+            parentBlockId: 'stepId',
+            journeyId: 'journeyId',
+            deletedAt: null
+          } as any)
+        }
+        if (queriedId === 'stepId') {
+          return Promise.resolve({
+            id: 'stepId',
+            journeyId: 'journeyId',
+            deletedAt: null
+          } as any)
+        }
+        return Promise.resolve(null as any)
+      }
+    )
+
     prismaMock.visitor.findFirst.mockResolvedValue({ id: 'visitorId' } as any)
     prismaMock.journeyVisitor.findUnique.mockResolvedValue({
       journeyId: 'journeyId',
