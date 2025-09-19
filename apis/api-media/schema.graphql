@@ -182,8 +182,6 @@ enum MediaRole {
 }
 
 type Mutation {
-  """Transcode an asset. Returns the bullmq job ID."""
-  transcodeAsset(input: TranscodeVideoInput!): String
   createCloudflareUploadByFile(input: ImageInput): CloudflareImage!
   createCloudflareUploadByUrl(url: String!, input: ImageInput): CloudflareImage!
   createCloudflareImageFromPrompt(prompt: String!, input: ImageInput): CloudflareImage!
@@ -550,7 +548,6 @@ input PlaylistUpdateInput {
 }
 
 type Query {
-  getTranscodeAssetProgress(jobId: String!): Int
   getMyCloudflareImages(offset: Int, limit: Int): [CloudflareImage!]!
   getMyCloudflareImage(id: ID!): CloudflareImage!
   listUnsplashCollectionPhotos(collectionId: String!, page: Int, perPage: Int, orientation: UnsplashPhotoOrientation): [UnsplashPhoto!]!
@@ -788,14 +785,6 @@ type TaxonomyName {
   label: String!
   language: Language!
   taxonomy: Taxonomy!
-}
-
-input TranscodeVideoInput {
-  r2AssetId: String!
-  resolution: String!
-  videoBitrate: String
-  outputFilename: String!
-  outputPath: String!
 }
 
 enum UnsplashColor {
