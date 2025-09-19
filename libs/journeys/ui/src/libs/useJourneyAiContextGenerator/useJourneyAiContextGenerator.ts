@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 import { extractBlockContext } from '../../components/AiChat/utils/contextExtraction'
 import { TreeBlock } from '../block'
@@ -94,37 +94,11 @@ export function useJourneyAiContextGenerator(treeBlocks: TreeBlock[]): {
   aiContextData: BlockContext[]
   isLoading: boolean
   error: string | null
-  refetch: () => Promise<void>
 } {
   const [aiContextData, setAiContextData] = useState<BlockContext[]>([])
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const previousTreeBlocksRef = useRef<TreeBlock[]>([])
-
-  const refetch = useCallback(async () => {
-    if (!treeBlocks || treeBlocks.length === 0) {
-      setAiContextData([])
-      return
-    }
-
-    setIsLoading(true)
-    setError(null)
-
-    try {
-      const blockContexts = extractBlockContexts(treeBlocks)
-      const contextResponse = await fetchContextResponse(
-        blockContexts,
-        setError
-      )
-      const fullContext = createFullContext(blockContexts, contextResponse)
-      setAiContextData(fullContext)
-    } catch (err) {
-      setError(getErrorMessage(err))
-      console.error('Error processing AI context:', err)
-    } finally {
-      setIsLoading(false)
-    }
-  }, [treeBlocks])
 
   useEffect(() => {
     // Only process if the treeBlocks have actually changed
@@ -171,7 +145,6 @@ export function useJourneyAiContextGenerator(treeBlocks: TreeBlock[]): {
   return {
     aiContextData,
     isLoading,
-    error,
-    refetch
+    error
   }
 }
