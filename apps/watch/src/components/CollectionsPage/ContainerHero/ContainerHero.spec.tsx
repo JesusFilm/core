@@ -62,7 +62,7 @@ jest.mock('./ContainerHeroMuteButton', () => ({
   ContainerHeroMuteButton: ({ isMuted, onClick }) => (
     <button
       onClick={onClick}
-      className="p-3 rounded-full bg-black/50 text-white ml-4 -mb-3 mr-1 transition-colors hover:bg-black/70"
+      className="mr-1 -mb-3 ml-4 rounded-full bg-black/50 p-3 text-white transition-colors hover:bg-black/70"
       aria-label={isMuted ? 'Unmute' : 'Mute'}
     >
       {isMuted ? (

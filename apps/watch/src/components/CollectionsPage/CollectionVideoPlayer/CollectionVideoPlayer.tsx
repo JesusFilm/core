@@ -403,15 +403,15 @@ export function CollectionVideoPlayer({
   }, [videoData, contentId, player, isPlayerReady])
 
   return (
-    <div className="relative mb-4 padded cursor-pointer" ref={containerRef}>
-      <div className="beveled block relative aspect-video rounded-lg overflow-hidden bg-black shadow-2xl shadow-stone-950/70">
+    <div className="padded relative mb-4 cursor-pointer" ref={containerRef}>
+      <div className="beveled relative block aspect-video overflow-hidden rounded-lg bg-black shadow-2xl shadow-stone-950/70">
         {/* Video container */}
         <div
-          className="absolute inset-0 w-full h-full"
+          className="absolute inset-0 h-full w-full"
           onClick={handlePlayPause}
         >
           <video
-            className="video-js vjs-fluid vjs-default-skin absolute inset-0 w-full h-full object-cover"
+            className="video-js vjs-fluid vjs-default-skin absolute inset-0 h-full w-full object-cover"
             ref={videoRef}
             playsInline
           />
@@ -449,7 +449,7 @@ export function CollectionVideoPlayer({
 
         {/* Custom controls overlay */}
         <div
-          className="absolute bottom-0 left-0 right-0 z-30 py-1 px-4"
+          className="absolute right-0 bottom-0 left-0 z-30 px-4 py-1"
           style={{
             transition: 'opacity 0.3s ease'
           }}
@@ -534,13 +534,13 @@ export function CollectionVideoPlayer({
 
         {/* Loading and error states */}
         {videoLoading && (
-          <div className="absolute inset-0 flex items-center justify-center bg-black/20 z-20">
-            <p className="text-white font-medium">{'Loading video...'}</p>
+          <div className="absolute inset-0 z-20 flex items-center justify-center bg-black/20">
+            <p className="font-medium text-white">{'Loading video...'}</p>
           </div>
         )}
         {videoError && (
-          <div className="absolute inset-0 flex items-center justify-center bg-black/20 z-20">
-            <p className="text-red-500 font-medium">
+          <div className="absolute inset-0 z-20 flex items-center justify-center bg-black/20">
+            <p className="font-medium text-red-500">
               {'Error loading video: ' + videoError.message}
             </p>
           </div>

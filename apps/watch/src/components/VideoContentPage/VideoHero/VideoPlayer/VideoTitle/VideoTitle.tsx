@@ -34,22 +34,10 @@ export function VideoTitle({
 
   return (
     <div
-      className={`
-        pb-4 
-        gap-4 
-        w-full z-[2] flex flex-col 
-        transition-opacity duration-[225ms]
-        ${visible ? 'opacity-100' : 'opacity-0'}
-        ${visible ? 'delay-0' : 'delay-[2000ms]'}
-      `}
+      className={`z-[2] flex w-full flex-col gap-4 pb-4 transition-opacity duration-[225ms] ${visible ? 'opacity-100' : 'opacity-0'} ${visible ? 'delay-0' : 'delay-[2000ms]'} `}
       style={{ transitionTimingFunction: 'ease-out' }}
     >
-      <h2
-        className="
-          font-bold text-white opacity-90 mix-blend-screen 
-          flex-grow mb-1 text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-sans
-        "
-      >
+      <h2 className="mb-1 flex-grow font-sans text-3xl font-bold text-white opacity-90 mix-blend-screen md:text-4xl lg:text-5xl xl:text-6xl">
         {videoTitle}
       </h2>
       <div
@@ -60,11 +48,7 @@ export function VideoTitle({
         <button
           id="play-button-lg"
           onClick={(e) => onClick?.(e)}
-          className="z-2 flex min-w-[220px] items-center justify-center gap-2  
-        bg-[#CB333B] p-4 text-2xl font-medium leading-loose 
-        tracking-wide text-white shadow-md transition-colors
-        hover:bg-[#A4343A] font-sans  rounded-[8px] cursor-pointer
-        "
+          className="z-2 flex min-w-[220px] cursor-pointer items-center justify-center gap-2 rounded-[8px] bg-[#CB333B] p-4 font-sans text-2xl leading-loose font-medium tracking-wide text-white shadow-md transition-colors hover:bg-[#A4343A]"
           style={{ display: showButton ? 'flex' : 'none' }}
         >
           {variant === 'play' && <PlayArrowRounded fontSize="large" />}

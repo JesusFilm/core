@@ -27,7 +27,7 @@ export function BibleCitations({
   freeResource
 }: BibleCitationsProps): ReactElement {
   return (
-    <div className="flex flex-row gap-2 z-10" data-testid="BibleCitations">
+    <div className="z-10 flex flex-row gap-2" data-testid="BibleCitations">
       <Swiper
         modules={[Mousewheel, FreeMode, A11y]}
         grabCursor

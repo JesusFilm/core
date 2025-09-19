@@ -134,7 +134,7 @@
   }
 
   .section-divider {
-    @apply z-1 absolute top-0 left-0 right-0 border-t-2 border-t-black/70 border-b-1 border-b-white/5 inset-shadow-sm;
+    @apply absolute top-0 right-0 left-0 z-1 border-t-2 border-b-1 border-t-black/70 border-b-white/5 inset-shadow-sm;
   }
 
   .overlay-texture {

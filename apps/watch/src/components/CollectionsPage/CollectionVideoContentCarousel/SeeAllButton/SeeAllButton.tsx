@@ -21,7 +21,7 @@ export const SeeAllButton = ({ text }: SeeAllButtonProps): ReactElement => {
       <button
         aria-label="See all videos"
         tabIndex={0}
-        className="mt-3 inline-flex items-center gap-2 px-4 py-2 text-xs text-black font-bold uppercase tracking-wider rounded-full bg-white hover:bg-red-500 hover:text-white transition-colors duration-200 cursor-pointer"
+        className="mt-3 inline-flex cursor-pointer items-center gap-2 rounded-full bg-white px-4 py-2 text-xs font-bold tracking-wider text-black uppercase transition-colors duration-200 hover:bg-red-500 hover:text-white"
       >
         <Play3
           name="Play3"

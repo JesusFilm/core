@@ -54,7 +54,7 @@ export function VideoCarousel({
   }
 
   return (
-    <div data-testid="VideoCarousel" className="my-7 relative">
+    <div data-testid="VideoCarousel" className="relative my-7">
       <Swiper
         data-testid="VideoCarouselSwiper"
         modules={[Mousewheel, FreeMode, A11y, Navigation]}

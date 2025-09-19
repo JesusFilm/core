@@ -59,19 +59,19 @@ export const CollectionVideoContentCarousel = ({
   return (
     <div
       id={id}
-      className="relative bg-linear-to-tr from-violet-950/10 via-indigo-500/10 to-cyan-300/50 py-16 scroll-snap-start-always"
+      className="scroll-snap-start-always relative bg-linear-to-tr from-violet-950/10 via-indigo-500/10 to-cyan-300/50 py-16"
     >
       <hr className="section-divider" />
 
-      <div className="absolute inset-0 overlay-texture-image bg-repeat mix-blend-multiply"></div>
-      <div className="padded z-2 relative">
+      <div className="overlay-texture-image absolute inset-0 bg-repeat mix-blend-multiply"></div>
+      <div className="padded relative z-2">
         <div className="flex items-center justify-between">
           <div className="flex items-start gap-4">
             <div className="flex flex-col gap-1">
-              <h4 className="text-sm xl:text-base 2xl:text-lg font-semibold tracking-wider uppercase text-red-100/70 xl:mb-1 mb-0">
+              <h4 className="mb-0 text-sm font-semibold tracking-wider text-red-100/70 uppercase xl:mb-1 xl:text-base 2xl:text-lg">
                 {subtitle}
               </h4>
-              <h3 className="text-2xl xl:text-3xl 2xl:text-4xl font-bold mb-0 text-balance">
+              <h3 className="mb-0 text-2xl font-bold text-balance xl:text-3xl 2xl:text-4xl">
                 {title}
               </h3>
             </div>
@@ -81,7 +81,7 @@ export const CollectionVideoContentCarousel = ({
       </div>
 
       <div className="padded space-y-6 pt-6 pb-10">
-        <p className="text-lg xl:text-xl mt-2 leading-relaxed text-stone-200/80">
+        <p className="mt-2 text-lg leading-relaxed text-stone-200/80 xl:text-xl">
           <span style={{ fontWeight: 'bold', color: 'white' }}>
             {firstFourWords}
           </span>
@@ -118,11 +118,11 @@ export const CollectionVideoContentCarousel = ({
           {slides.map((slide, index) => (
             <SwiperSlide
               key={slide.contentId}
-              className={`max-w-[200px] ${index === 0 ? 'pl-6 2xl:pl-20 xl:pl-12' : ''} ${index === slides.length - 1 ? 'pr-6' : ''} cursor-pointer`}
+              className={`max-w-[200px] ${index === 0 ? 'pl-6 xl:pl-12 2xl:pl-20' : ''} ${index === slides.length - 1 ? 'pr-6' : ''} cursor-pointer`}
             >
               <div
                 onClick={() => handleSlideClick(slide.contentId, slide.title)}
-                className={`group relative beveled h-[240px] flex flex-col justify-end w-full rounded-lg overflow-hidden m-1 ${selectedContentId === slide.contentId ? 'outline-4 outline-white' : ''} `}
+                className={`group beveled relative m-1 flex h-[240px] w-full flex-col justify-end overflow-hidden rounded-lg ${selectedContentId === slide.contentId ? 'outline-4 outline-white' : ''} `}
                 style={{ backgroundColor: slide.backgroundColor }}
                 data-testid="CollectionVideoContentCarouselSlides"
               >
@@ -131,9 +131,9 @@ export const CollectionVideoContentCarousel = ({
                   height={240}
                   src={slide.imageUrl}
                   alt={slide.title}
-                  className="absolute top-0 w-full h-[150px] object-cover overflow-hidden [mask-image:linear-gradient(to_bottom,rgba(0,0,0,1)_50%,transparent_100%)] [mask-size:cover]"
+                  className="absolute top-0 h-[150px] w-full overflow-hidden [mask-image:linear-gradient(to_bottom,rgba(0,0,0,1)_50%,transparent_100%)] [mask-size:cover] object-cover"
                 />
-                <div className="hidden group-hover:flex absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-24 h-24 rounded-full bg-stone-900/60 items-center justify-center hover:bg-red-500">
+                <div className="absolute top-1/2 left-1/2 hidden h-24 w-24 -translate-x-1/2 -translate-y-1/2 transform items-center justify-center rounded-full bg-stone-900/60 group-hover:flex hover:bg-red-500">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     className="h-20 w-20"
@@ -144,10 +144,10 @@ export const CollectionVideoContentCarousel = ({
                   </svg>
                 </div>
                 <div className="p-4">
-                  <span className="text-xs font-medium tracking-wider uppercase text-white/60">
+                  <span className="text-xs font-medium tracking-wider text-white/60 uppercase">
                     {slide.type || shortVideoText}
                   </span>
-                  <h3 className="text-base font-bold text-white/90 leading-tight line-clamp-3">
+                  <h3 className="line-clamp-3 text-base leading-tight font-bold text-white/90">
                     {slide.title}
                   </h3>
                 </div>

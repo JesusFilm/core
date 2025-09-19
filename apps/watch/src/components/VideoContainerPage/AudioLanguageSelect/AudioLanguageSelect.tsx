@@ -43,54 +43,21 @@ export function AudioLanguageSelect(): ReactElement {
       <SelectTrigger
         onMouseEnter={() => setOpen(false)}
         data-testid="AudioLanguageSelectTrigger"
-        className={`
-          border-none
-          bg-transparent
-          p-0
-          h-auto
-          shadow-none
-          hover:bg-transparent
-          focus:outline-none
-          focus:ring-0
-          focus:ring-offset-0
-          focus:border-0
-          cursor-pointer
-          [&>svg]:hidden
-          focus-visible:outline-none
-          focus-visible:ring-0
-          focus-visible:ring-offset-0
-          focus-visible:border-0
-        `}
+        className={`h-auto cursor-pointer border-none bg-transparent p-0 shadow-none hover:bg-transparent focus:border-0 focus:ring-0 focus:ring-offset-0 focus:outline-none focus-visible:border-0 focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:outline-none [&>svg]:hidden`}
       >
         <div className="flex items-center gap-1">
           <LanguageOutlined fontSize="small" className="text-white" />
           <SelectValue>
             <span
-              className={`
-                text-base
-                font-semibold
-                text-white
-                truncate
-                overflow-hidden
-                whitespace-nowrap
-                font-sans
-                leading-tight
-              `}
+              className={`truncate overflow-hidden font-sans text-base leading-tight font-semibold whitespace-nowrap text-white`}
             >
               {language?.displayName}
             </span>
           </SelectValue>
-          <div className="hidden lg:flex items-center gap-1">
+          <div className="hidden items-center gap-1 lg:flex">
             <AddOutlined fontSize="small" className="text-white" />
             <span
-              className={`
-                text-base
-                font-semibold
-                text-white
-                whitespace-nowrap
-                font-sans
-                leading-tight
-              `}
+              className={`font-sans text-base leading-tight font-semibold whitespace-nowrap text-white`}
             >
               {t('{{ languageCount }} Languages', {
                 languageCount: videoAudioLanguageIds?.length ?? 0
