@@ -33,20 +33,19 @@ const GET_VIDEO_CHILDREN_FOR_PUBLISH = graphql(`
   }
 `)
 
-const UPDATE_VIDEO = graphql(`
-  mutation UpdateVideo($input: VideoUpdateInput!) {
-    videoUpdate(input: $input) {
-      id
-      published
+const PUBLISH_CHILDREN = graphql(`
+  mutation VideoPublishChildren($id: ID!) {
+    videoPublishChildren(id: $id) {
+      publishedChildrenCount
     }
   }
 `)
 
-const UPDATE_VIDEO_VARIANT = graphql(`
-  mutation UpdateVideoVariant($input: VideoVariantUpdateInput!) {
-    videoVariantUpdate(input: $input) {
-      id
-      published
+const PUBLISH_CHILDREN_AND_LANGUAGES = graphql(`
+  mutation VideoPublishChildrenAndLanguages($id: ID!) {
+    videoPublishChildrenAndLanguages(id: $id) {
+      publishedChildrenCount
+      publishedVariantsCount
     }
   }
 `)
@@ -62,8 +61,10 @@ export default function PublishAllChildrenDialog({
     variables: { id: videoId }
   })
 
-  const [updateVideo] = useMutation(UPDATE_VIDEO)
-  const [updateVariant] = useMutation(UPDATE_VIDEO_VARIANT)
+  const [publishChildren] = useMutation(PUBLISH_CHILDREN)
+  const [publishChildrenAndLanguages] = useMutation(
+    PUBLISH_CHILDREN_AND_LANGUAGES
+  )
 
   const { unpublishedChildren, allUnpublishedVariants } = useMemo(() => {
     const children = data?.adminVideo?.children ?? []
@@ -93,32 +94,26 @@ export default function PublishAllChildrenDialog({
       return
     }
     setIsSubmitting(true)
-    const results = await Promise.all([
-      // Also publish the parent video
-      updateVideo({ variables: { input: { id: videoId, published: true } } }),
-      // Publish all children
-      ...unpublishedChildren.map((child) =>
-        updateVideo({
-          variables: { input: { id: child.id, published: true } }
-        })
-      )
-    ])
-
-    const hasErrors = results.some((r) => r.errors != null)
-    if (hasErrors) {
+    try {
+      const { data, errors } = await publishChildren({
+        variables: { id: videoId }
+      })
+      if (errors != null && errors.length > 0) {
+        throw new Error('Failed to publish children')
+      }
+      const count =
+        data?.videoPublishChildren.publishedChildrenCount ??
+        unpublishedChildren.length
+      enqueueSnackbar(`Successfully published ${count} children`, {
+        variant: 'success'
+      })
+      router.refresh()
+      handleClose()
+    } catch {
       enqueueSnackbar('Failed to publish children', { variant: 'error' })
       setIsSubmitting(false)
-      return
     }
-
-    enqueueSnackbar(
-      `Successfully published ${unpublishedChildren.length} children`,
-      { variant: 'success' }
-    )
-    setIsSubmitting(false)
-    router.refresh()
-    handleClose()
-  }, [enqueueSnackbar, handleClose, router, unpublishedChildren, updateVideo])
+  }, [enqueueSnackbar, handleClose, publishChildren, router, unpublishedChildren.length, videoId])
 
   const handlePublishChildrenAndLanguages = useCallback(async () => {
     if (unpublishedChildren.length === 0) {
@@ -126,54 +121,39 @@ export default function PublishAllChildrenDialog({
       return
     }
     setIsSubmitting(true)
-
-    const childrenResults = await Promise.all([
-      // Also publish the parent video
-      updateVideo({ variables: { input: { id: videoId, published: true } } }),
-      // Publish all children
-      ...unpublishedChildren.map((child) =>
-        updateVideo({
-          variables: { input: { id: child.id, published: true } }
-        })
+    try {
+      const { data, errors } = await publishChildrenAndLanguages({
+        variables: { id: videoId }
+      })
+      if (errors != null && errors.length > 0) {
+        throw new Error('Failed to publish children and languages')
+      }
+      const publishedChildrenCount =
+        data?.videoPublishChildrenAndLanguages.publishedChildrenCount ??
+        unpublishedChildren.length
+      const publishedVariantsCount =
+        data?.videoPublishChildrenAndLanguages.publishedVariantsCount ??
+        allUnpublishedVariants.length
+      enqueueSnackbar(
+        `Successfully published ${publishedChildrenCount} children and ${publishedVariantsCount} languages`,
+        { variant: 'success' }
       )
-    ])
-    const childrenHasErrors = childrenResults.some((r) => r.errors != null)
-
-    let variantsHasErrors = false
-    if (allUnpublishedVariants.length > 0) {
-      const variantResults = await Promise.all(
-        allUnpublishedVariants.map((variant) =>
-          updateVariant({
-            variables: { input: { id: variant.id, published: true } }
-          })
-        )
-      )
-      variantsHasErrors = variantResults.some((r) => r.errors != null)
-    }
-
-    if (childrenHasErrors || variantsHasErrors) {
+      router.refresh()
+      handleClose()
+    } catch {
       enqueueSnackbar('Failed to publish children and languages', {
         variant: 'error'
       })
       setIsSubmitting(false)
-      return
     }
-
-    enqueueSnackbar(
-      `Successfully published ${unpublishedChildren.length} children and ${allUnpublishedVariants.length} languages`,
-      { variant: 'success' }
-    )
-    setIsSubmitting(false)
-    router.refresh()
-    handleClose()
   }, [
-    allUnpublishedVariants,
+    allUnpublishedVariants.length,
     enqueueSnackbar,
     handleClose,
+    publishChildrenAndLanguages,
     router,
-    unpublishedChildren,
-    updateVariant,
-    updateVideo
+    unpublishedChildren.length,
+    videoId
   ])
 
   return (

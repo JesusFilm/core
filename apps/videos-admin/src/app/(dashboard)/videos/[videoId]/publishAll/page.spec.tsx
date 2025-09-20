@@ -6,8 +6,8 @@ import PublishAllChildrenDialog from './page'
 const mockPush = jest.fn()
 const mockRefresh = jest.fn()
 const mockEnqueueSnackbar = jest.fn()
-const mockUpdateVideo = jest.fn()
-const mockUpdateVariant = jest.fn()
+const mockPublishChildren = jest.fn()
+const mockPublishChildrenAndLanguages = jest.fn()
 
 jest.mock('next/navigation', () => ({
   useRouter: () => ({
@@ -62,9 +62,9 @@ describe('PublishAllChildrenDialog (route)', () => {
       }
     })
 
-    // Mutations (first call for updateVideo, second for updateVariant)
-    ;(useMutation as jest.Mock).mockReturnValueOnce([mockUpdateVideo, {}])
-    ;(useMutation as jest.Mock).mockReturnValue([mockUpdateVariant, {}])
+    // Mutations: first for publishChildren, second for publishChildrenAndLanguages
+    ;(useMutation as jest.Mock).mockReturnValueOnce([mockPublishChildren, {}])
+    ;(useMutation as jest.Mock).mockReturnValue([mockPublishChildrenAndLanguages, {}])
   })
 
   it('renders dialog with actions', () => {
@@ -89,16 +89,8 @@ describe('PublishAllChildrenDialog (route)', () => {
     fireEvent.click(screen.getByText('Publish Children Only'))
 
     await waitFor(() => {
-      // Parent
-      expect(mockUpdateVideo).toHaveBeenCalledWith({
-        variables: { input: { id: 'video123', published: true } }
-      })
-      // Children
-      expect(mockUpdateVideo).toHaveBeenCalledWith({
-        variables: { input: { id: 'child1', published: true } }
-      })
-      expect(mockUpdateVideo).toHaveBeenCalledWith({
-        variables: { input: { id: 'child2', published: true } }
+      expect(mockPublishChildren).toHaveBeenCalledWith({
+        variables: { id: 'video123' }
       })
       expect(mockEnqueueSnackbar).toHaveBeenCalledWith(
         'Successfully published 2 children',
@@ -120,25 +112,8 @@ describe('PublishAllChildrenDialog (route)', () => {
     fireEvent.click(screen.getByText('Publish Children + Languages'))
 
     await waitFor(() => {
-      // Parent and children
-      expect(mockUpdateVideo).toHaveBeenCalledWith({
-        variables: { input: { id: 'video123', published: true } }
-      })
-      expect(mockUpdateVideo).toHaveBeenCalledWith({
-        variables: { input: { id: 'child1', published: true } }
-      })
-      expect(mockUpdateVideo).toHaveBeenCalledWith({
-        variables: { input: { id: 'child2', published: true } }
-      })
-      // Unpublished variants: v1, v3, v4
-      expect(mockUpdateVariant).toHaveBeenCalledWith({
-        variables: { input: { id: 'v1', published: true } }
-      })
-      expect(mockUpdateVariant).toHaveBeenCalledWith({
-        variables: { input: { id: 'v3', published: true } }
-      })
-      expect(mockUpdateVariant).toHaveBeenCalledWith({
-        variables: { input: { id: 'v4', published: true } }
+      expect(mockPublishChildrenAndLanguages).toHaveBeenCalledWith({
+        variables: { id: 'video123' }
       })
       expect(mockEnqueueSnackbar).toHaveBeenCalledWith(
         'Successfully published 2 children and 3 languages',

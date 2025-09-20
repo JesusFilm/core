@@ -1644,6 +1644,8 @@ export type Mutation = {
   videoPauseEventCreate: VideoPauseEvent;
   videoPlayEventCreate: VideoPlayEvent;
   videoProgressEventCreate: VideoProgressEvent;
+  videoPublishChildren: VideoPublishChildrenResult;
+  videoPublishChildrenAndLanguages: VideoPublishChildrenAndLanguagesResult;
   videoSnippetCreate: VideoSnippet;
   videoSnippetDelete: VideoSnippet;
   videoSnippetUpdate: VideoSnippet;
@@ -2146,6 +2148,7 @@ export type MutationPlaylistDeleteArgs = {
 
 
 export type MutationPlaylistItemAddArgs = {
+  id?: InputMaybe<Scalars['ID']['input']>;
   playlistId: Scalars['ID']['input'];
   videoVariantId: Scalars['ID']['input'];
 };
@@ -2549,6 +2552,16 @@ export type MutationVideoPlayEventCreateArgs = {
 
 export type MutationVideoProgressEventCreateArgs = {
   input: VideoProgressEventCreateInput;
+};
+
+
+export type MutationVideoPublishChildrenArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type MutationVideoPublishChildrenAndLanguagesArgs = {
+  id: Scalars['ID']['input'];
 };
 
 
@@ -3160,7 +3173,7 @@ export type PlaylistItem = {
   __typename?: 'PlaylistItem';
   createdAt: Scalars['DateTime']['output'];
   id: Scalars['ID']['output'];
-  order: Scalars['Int']['output'];
+  order?: Maybe<Scalars['Int']['output']>;
   playlist: Playlist;
   updatedAt: Scalars['DateTime']['output'];
   videoVariant: VideoVariant;
@@ -5190,6 +5203,22 @@ export type VideoProgressEventCreateInput = {
   value?: InputMaybe<VideoBlockSource>;
 };
 
+export type VideoPublishChildrenAndLanguagesResult = {
+  __typename?: 'VideoPublishChildrenAndLanguagesResult';
+  parentId?: Maybe<Scalars['ID']['output']>;
+  publishedChildIds?: Maybe<Array<Scalars['ID']['output']>>;
+  publishedChildrenCount?: Maybe<Scalars['Int']['output']>;
+  publishedVariantIds?: Maybe<Array<Scalars['ID']['output']>>;
+  publishedVariantsCount?: Maybe<Scalars['Int']['output']>;
+};
+
+export type VideoPublishChildrenResult = {
+  __typename?: 'VideoPublishChildrenResult';
+  parentId?: Maybe<Scalars['ID']['output']>;
+  publishedChildIds?: Maybe<Array<Scalars['ID']['output']>>;
+  publishedChildrenCount?: Maybe<Scalars['Int']['output']>;
+};
+
 export enum VideoRedirectType {
   Dh = 'dh',
   Dl = 'dl',
@@ -5476,6 +5505,7 @@ export type VideoVariantDownloadUpdateInput = {
 };
 
 export type VideoVariantFilter = {
+  languageId?: InputMaybe<Scalars['ID']['input']>;
   onlyPublished?: InputMaybe<Scalars['Boolean']['input']>;
 };
 

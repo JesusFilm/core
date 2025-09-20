@@ -42,15 +42,18 @@ const GET_VIDEO_CHILDREN = graphql(`
 `)
 
 interface DeleteChildProps {
-  params: {
+  params: Promise<{
     videoId: string
     childId: string
-  }
+  }>
 }
 
+import { use } from 'react'
 export default function DeleteChild({
-  params: { videoId, childId }
+  params
 }: DeleteChildProps) {
+  const { videoId, childId } =
+    (params as any)?.then != null ? use(params as any) : (params as any)
   const router = useRouter()
   const { data } = useSuspenseQuery(GET_VIDEO_CHILDREN, {
     variables: { id: videoId }

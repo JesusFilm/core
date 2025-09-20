@@ -14,9 +14,9 @@ import ListItem from '@mui/material/ListItem'
 import ListItemText from '@mui/material/ListItemText'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
-import { useParams, usePathname, useRouter } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
 import { useSnackbar } from 'notistack'
-import { useCallback, useEffect, useState } from 'react'
+import { use, useCallback, useEffect, useState } from 'react'
 
 import { graphql } from '@core/shared/gql'
 
@@ -53,16 +53,20 @@ const UPDATE_VIDEO_VARIANT = graphql(`
   }
 `)
 
-export default function ClientLayout({
-  children
-}: {
+interface AudioLayoutProps {
   children: React.ReactNode
-}) {
+  params: Promise<{ videoId: string }>
+}
+
+export default function ClientLayout({
+  children,
+  params
+}: AudioLayoutProps) {
   const router = useRouter()
   const pathname = usePathname()
   const { enqueueSnackbar } = useSnackbar()
   const [reloadOnPathChange, setReloadOnPathChange] = useState(false)
-  const { videoId } = useParams<{ videoId: string }>()
+  const { videoId } = use(params)
 
   const { data, loading, refetch } = useQuery(GET_ADMIN_VIDEO_VARIANTS, {
     variables: { id: videoId, languageId: DEFAULT_VIDEO_LANGUAGE_ID }

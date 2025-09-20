@@ -8,9 +8,9 @@ import Button from '@mui/material/Button'
 import Divider from '@mui/material/Divider'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
-import { useParams, useRouter, useSelectedLayoutSegment } from 'next/navigation'
+import { useRouter, useSelectedLayoutSegment } from 'next/navigation'
 import { useSnackbar } from 'notistack'
-import { ReactNode, useCallback, useState } from 'react'
+import { use, ReactNode, useCallback, useState } from 'react'
 
 import { graphql } from '@core/shared/gql'
 
@@ -71,16 +71,18 @@ const GET_VIDEO_CHILDREN_FOR_PUBLISH = graphql(`
 
 interface VideoViewLayoutProps {
   children: ReactNode
-  studyQuestions: ReactNode
+  studyQuestions: ReactNode,
+  params: Promise<{ videoId: string }>
 }
 
 export default function VideoViewLayout({
   children,
-  studyQuestions
+  studyQuestions,
+  params
 }: VideoViewLayoutProps): ReactNode {
   const router = useRouter()
   const { enqueueSnackbar } = useSnackbar()
-  const { videoId } = useParams<{ videoId: string }>()
+  const { videoId } = use(params)
   // keep metadata visible when modal is open
   const availableTabs = ['metadata', 'audio', 'children', 'editions']
   const segment = useSelectedLayoutSegment() ?? 'metadata'
