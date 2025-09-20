@@ -36,7 +36,7 @@ let mockPathname = '/videos/video123/audio'
 const mockUsePathname = jest.fn(() => mockPathname)
 
 jest.mock('next/navigation', () => ({
-  useParams: () => ({ videoId: 'video123' }),
+  useParams: () => ({ then: (cb: any) => cb({ videoId: 'video123' }) }),
   useRouter: () => ({
     push: mockPush
   }),

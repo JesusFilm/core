@@ -47,7 +47,7 @@ jest.mock('next/navigation', () => ({
   useRouter: () => ({
     push: jest.fn()
   }),
-  useParams: () => ({ videoId: 'video-123' })
+  useParams: () => ({ then: (cb: any) => cb({ videoId: 'video-123' }) })
 }))
 
 // Mock notistack

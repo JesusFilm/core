@@ -32,10 +32,10 @@ describe('DownloadPage with downloadId', () => {
   it('redirects to the variant page', () => {
     render(
       <DownloadPage
-        params={{
+        params={Promise.resolve({
           videoId: mockVideoId,
           variantId: mockVariantId
-        }}
+        })}
       />
     )
 
@@ -49,10 +49,10 @@ describe('DownloadPage with downloadId', () => {
   it('renders an empty fragment', () => {
     const { container } = render(
       <DownloadPage
-        params={{
+        params={Promise.resolve({
           videoId: mockVideoId,
           variantId: mockVariantId
-        }}
+        })}
       />
     )
 

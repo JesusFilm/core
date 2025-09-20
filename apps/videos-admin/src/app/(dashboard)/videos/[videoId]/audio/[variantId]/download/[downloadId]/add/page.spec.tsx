@@ -409,11 +409,11 @@ describe('AddVideoVariantDownloadDialog', () => {
 
     render(
       <AddVideoVariantDownloadDialog
-        params={{
+        params={Promise.resolve({
           videoId: mockVideoId,
           variantId: mockVariantId,
           downloadId: mockLanguageId
-        }}
+        })}
       />
     )
 
@@ -432,11 +432,11 @@ describe('AddVideoVariantDownloadDialog', () => {
   it('navigates back when dialog is closed', () => {
     render(
       <AddVideoVariantDownloadDialog
-        params={{
+        params={Promise.resolve({
           videoId: mockVideoId,
           variantId: mockVariantId,
           downloadId: mockLanguageId
-        }}
+        })}
       />
     )
 
@@ -478,11 +478,11 @@ describe('AddVideoVariantDownloadDialog', () => {
     // First render with high quality (should have "Add" button)
     const { rerender } = render(
       <AddVideoVariantDownloadDialog
-        params={{
+        params={Promise.resolve({
           videoId: mockVideoId,
           variantId: mockVariantId,
           downloadId: mockLanguageId
-        }}
+        })}
       />
     )
 
@@ -499,11 +499,11 @@ describe('AddVideoVariantDownloadDialog', () => {
     // Re-render to reflect the new quality value
     rerender(
       <AddVideoVariantDownloadDialog
-        params={{
+        params={Promise.resolve({
           videoId: mockVideoId,
           variantId: mockVariantId,
           downloadId: mockLanguageId
-        }}
+        })}
       />
     )
 
@@ -519,11 +519,11 @@ describe('AddVideoVariantDownloadDialog', () => {
     // Re-render to reflect the new quality value
     rerender(
       <AddVideoVariantDownloadDialog
-        params={{
+        params={Promise.resolve({
           videoId: mockVideoId,
           variantId: mockVariantId,
           downloadId: mockLanguageId
-        }}
+        })}
       />
     )
 

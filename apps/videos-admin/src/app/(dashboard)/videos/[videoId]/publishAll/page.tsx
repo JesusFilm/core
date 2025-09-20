@@ -6,15 +6,13 @@ import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { useRouter } from 'next/navigation'
 import { useSnackbar } from 'notistack'
-import { ReactElement, useCallback, useMemo, useState } from 'react'
+import { ReactElement, use, useCallback, useMemo, useState } from 'react'
 
 import { graphql } from '@core/shared/gql'
 import { Dialog } from '@core/shared/ui/Dialog'
 
 interface PublishAllChildrenDialogProps {
-  params: {
-    videoId: string
-  }
+  params: Promise<{ videoId: string }> | { videoId: string }
 }
 
 const GET_VIDEO_CHILDREN_FOR_PUBLISH = graphql(`
@@ -51,8 +49,9 @@ const PUBLISH_CHILDREN_AND_LANGUAGES = graphql(`
 `)
 
 export default function PublishAllChildrenDialog({
-  params: { videoId }
+  params
 }: PublishAllChildrenDialogProps): ReactElement {
+  const { videoId } = (params as any)?.then != null ? use(params as any) : (params as any)
   const router = useRouter()
   const { enqueueSnackbar } = useSnackbar()
   const [isSubmitting, setIsSubmitting] = useState(false)
