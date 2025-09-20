@@ -1,6 +1,6 @@
 import Container from '@mui/material/Container'
 import MuiTypography, { TypographyTypeMap } from '@mui/material/Typography'
-import { Meta, StoryObj } from '@storybook/react'
+import { Meta, StoryObj } from '@storybook/nextjs'
 import { ComponentProps } from 'react'
 
 import { simpleComponentConfig } from '../../../storybook'

@@ -89,7 +89,7 @@ describe('playlistItem', () => {
         prismaMock.videoVariant.findUnique.mockResolvedValueOnce({
           id: 'videoVariantId'
         } as any)
-        prismaMock.$transaction.mockImplementation(async (callback) =>
+        prismaMock.$transaction.mockImplementation(async (callback: any) =>
           callback(prismaMock)
         )
         prismaMock.playlistItem.create.mockResolvedValueOnce(mockPlaylistItem)
@@ -146,7 +146,7 @@ describe('playlistItem', () => {
         prismaMock.videoVariant.findUnique.mockResolvedValueOnce({
           id: 'videoVariantId'
         } as any)
-        prismaMock.$transaction.mockImplementation(async (callback) =>
+        prismaMock.$transaction.mockImplementation(async (callback: any) =>
           callback(prismaMock)
         )
         prismaMock.playlistItem.findFirst.mockResolvedValueOnce(existingItem)
@@ -287,7 +287,7 @@ describe('playlistItem', () => {
         prismaMock.playlistItem.findUnique.mockResolvedValueOnce(
           mockPlaylistItem
         )
-        prismaMock.$transaction.mockImplementation(async (callback) =>
+        prismaMock.$transaction.mockImplementation(async (callback: any) =>
           callback(prismaMock)
         )
         prismaMock.playlistItem.delete.mockResolvedValueOnce(mockPlaylistItem)
@@ -462,7 +462,7 @@ describe('playlistItem', () => {
 
         prismaMock.playlist.findUnique.mockResolvedValueOnce(mockPlaylist)
         prismaMock.playlistItem.findMany.mockResolvedValueOnce(reorderedItems)
-        prismaMock.$transaction.mockImplementation(async (callback) =>
+        prismaMock.$transaction.mockImplementation(async (callback: any) =>
           callback(prismaMock)
         )
         prismaMock.playlistItem.update.mockResolvedValue({} as any)

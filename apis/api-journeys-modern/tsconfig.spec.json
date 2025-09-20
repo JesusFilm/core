@@ -12,5 +12,5 @@
       "@nx/react/typings/image.d.ts"
     ]
   },
-  "include": ["**/*.spec.ts", "**/*.d.ts", "jest.config.ts"]
+  "include": ["**/*.spec.ts", "**/*.spec.tsx", "**/*.d.ts", "jest.config.ts"]
 }
