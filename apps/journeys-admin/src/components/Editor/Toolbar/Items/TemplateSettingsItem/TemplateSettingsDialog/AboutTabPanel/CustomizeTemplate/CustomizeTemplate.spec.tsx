@@ -210,11 +210,9 @@ describe('CustomizeTemplate', () => {
       </MockedProvider>
     )
 
-    const textbox = screen.getByRole('textbox')
-    if (isTextEditableElement(textbox)) {
-      textbox.setSelectionRange(1, 1)
-      fireEvent.keyDown(textbox, { key: 'Tab' })
-    }
+    const textbox = screen.getByRole<HTMLTextAreaElement>('textbox')
+    textbox.setSelectionRange(1, 1)
+    fireEvent.keyDown(textbox, { key: 'Tab' })
 
     const emSpace = '\u2003'
     expect(setFieldValue).toHaveBeenCalledWith(
