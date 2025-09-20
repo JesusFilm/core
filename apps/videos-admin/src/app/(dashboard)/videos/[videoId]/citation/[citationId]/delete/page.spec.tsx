@@ -94,7 +94,7 @@ describe('CitationDeletePage', () => {
   it('renders the delete confirmation dialog', () => {
     render(
       <CitationDeletePage
-        params={{ videoId: mockVideoId, citationId: mockCitationId }}
+        params={Promise.resolve({ videoId: mockVideoId, citationId: mockCitationId })}
       />
     )
 
@@ -111,7 +111,7 @@ describe('CitationDeletePage', () => {
   it('navigates back when cancel button is clicked', () => {
     render(
       <CitationDeletePage
-        params={{ videoId: mockVideoId, citationId: mockCitationId }}
+        params={Promise.resolve({ videoId: mockVideoId, citationId: mockCitationId })}
       />
     )
 
@@ -127,7 +127,7 @@ describe('CitationDeletePage', () => {
   it('calls delete mutation when delete button is clicked', () => {
     render(
       <CitationDeletePage
-        params={{ videoId: mockVideoId, citationId: mockCitationId }}
+        params={Promise.resolve({ videoId: mockVideoId, citationId: mockCitationId })}
       />
     )
 
@@ -148,7 +148,7 @@ describe('CitationDeletePage', () => {
 
     render(
       <CitationDeletePage
-        params={{ videoId: mockVideoId, citationId: mockCitationId }}
+        params={Promise.resolve({ videoId: mockVideoId, citationId: mockCitationId })}
       />
     )
 

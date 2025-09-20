@@ -4,9 +4,9 @@ import { useMutation, useQuery } from '@apollo/client'
 import { DragEndEvent } from '@dnd-kit/core'
 import Button from '@mui/material/Button'
 import Stack from '@mui/material/Stack'
-import { useParams, usePathname, useRouter } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
 import { useSnackbar } from 'notistack'
-import { ReactElement, useEffect, useState } from 'react'
+import { ReactElement, use, useEffect, useState } from 'react'
 
 import { graphql } from '@core/shared/gql'
 
@@ -37,11 +37,15 @@ const GET_STUDY_QUESTIONS = graphql(`
   }
 `)
 
-export default function StudyQuestionsList(): ReactElement {
+interface StudyQuestionsListProps {
+  params: Promise<{ videoId: string }>
+}
+
+export default function StudyQuestionsList({ params }: StudyQuestionsListProps): ReactElement {
   const router = useRouter()
   const pathname = usePathname()
   const [reloadOnPathChange, setReloadOnPathChange] = useState(false)
-  const { videoId } = useParams<{ videoId: string }>()
+  const { videoId } = use(params)
 
   const { enqueueSnackbar } = useSnackbar()
 

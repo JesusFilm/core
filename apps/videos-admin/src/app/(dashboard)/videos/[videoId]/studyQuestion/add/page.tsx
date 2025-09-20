@@ -5,9 +5,9 @@ import Button from '@mui/material/Button'
 import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
 import { Form, Formik } from 'formik'
-import { useParams, useRouter } from 'next/navigation'
+import { useRouter } from 'next/navigation'
 import { useSnackbar } from 'notistack'
-import { ReactElement } from 'react'
+import { ReactElement, use } from 'react'
 import { object, string } from 'yup'
 
 import { graphql } from '@core/shared/gql'
@@ -34,9 +34,13 @@ const CREATE_STUDY_QUESTION = graphql(`
   }
 `)
 
-export default function StudyQuestionsAddPage(): ReactElement {
+interface StudyQuestionsAddPageProps {
+  params: Promise<{ videoId: string }>
+}
+
+export default function StudyQuestionsAddPage({ params }: StudyQuestionsAddPageProps): ReactElement {
   const router = useRouter()
-  const { videoId } = useParams<{ videoId: string }>()
+  const { videoId } = use(params)
   const { enqueueSnackbar } = useSnackbar()
   const { data } = useSuspenseQuery(GET_STUDY_QUESTIONS, {
     variables: { videoId }
