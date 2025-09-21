@@ -5,22 +5,22 @@ import {
   GetJourneysFromTemplateIdVariables
 } from '../../../__generated__/GetJourneysFromTemplateId'
 
-import { GET_JOURNEYS_FROM_TEMPLATE_ID } from './useTemplateJourneyLanguages'
+import { GET_CHILD_JOURNEYS_FROM_TEMPLATE_ID } from './useGetChildTemplateJourneyLanguages'
 
-export const mockVariables: GetJourneysFromTemplateIdVariables = {
+export const mockChildVariables: GetJourneysFromTemplateIdVariables = {
   where: {
     template: true,
-    ids: ['template-123']
+    fromTemplateId: 'journeyId'
   }
 }
 
-export const mockJourneys: MockedResponse<
+export const mockChildJourneys: MockedResponse<
   GetJourneysFromTemplateId,
   GetJourneysFromTemplateIdVariables
 > = {
   request: {
-    query: GET_JOURNEYS_FROM_TEMPLATE_ID,
-    variables: mockVariables
+    query: GET_CHILD_JOURNEYS_FROM_TEMPLATE_ID,
+    variables: mockChildVariables
   },
   result: {
     data: {
@@ -28,7 +28,7 @@ export const mockJourneys: MockedResponse<
         {
           __typename: 'Journey' as const,
           id: 'journey-1',
-          fromTemplateId: 'template-123',
+          fromTemplateId: 'journeyId',
           language: {
             __typename: 'Language' as const,
             id: 'language-1',
@@ -45,7 +45,7 @@ export const mockJourneys: MockedResponse<
         {
           __typename: 'Journey' as const,
           id: 'journey-2',
-          fromTemplateId: 'template-123',
+          fromTemplateId: 'journeyId',
           language: {
             __typename: 'Language' as const,
             id: 'language-2',
@@ -55,23 +55,6 @@ export const mockJourneys: MockedResponse<
                 __typename: 'LanguageName' as const,
                 primary: true,
                 value: 'Spanish'
-              }
-            ]
-          }
-        },
-        {
-          __typename: 'Journey' as const,
-          id: 'journey-3',
-          fromTemplateId: 'template-123',
-          language: {
-            __typename: 'Language' as const,
-            id: 'language-3',
-            slug: 'fr',
-            name: [
-              {
-                __typename: 'LanguageName' as const,
-                primary: true,
-                value: 'French'
               }
             ]
           }

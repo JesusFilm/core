@@ -1,26 +1,30 @@
-import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing'
 import { act, renderHook, waitFor } from '@testing-library/react'
 
-import { GET_JOURNEYS_FROM_TEMPLATE_ID } from './useTemplateJourneyLanguages'
+import { GET_CHILD_JOURNEYS_FROM_TEMPLATE_ID } from './useGetChildTemplateJourneyLanguages'
 
-import { useTemplateJourneyLanguages } from '.'
+import { useGetChildTemplateJourneyLanguages } from '.'
 
-import { mockJourneys, mockVariables } from './useTemplateJourneyLanguages.mock'
+import {
+  mockChildJourneys,
+  mockChildVariables
+} from './useGetChildTemplateJourneyLanguages.mock'
 
-describe('useTemplateJourneyLanguages', () => {
-  it('should fetch and return journeys with languages', async () => {
-    const result = jest.fn().mockReturnValue(mockJourneys.result)
+describe('useGetChildTemplateJourneyLanguages', () => {
+  it('should fetch and return child journeys with languages', async () => {
+    const result = jest.fn().mockReturnValue(mockChildJourneys.result)
 
     const { result: hookResult } = renderHook(
-      () => useTemplateJourneyLanguages({ variables: mockVariables }),
+      () =>
+        useGetChildTemplateJourneyLanguages({ variables: mockChildVariables }),
       {
         wrapper: ({ children }) => (
           <MockedProvider
             mocks={[
               {
                 request: {
-                  query: GET_JOURNEYS_FROM_TEMPLATE_ID,
-                  variables: mockVariables
+                  query: GET_CHILD_JOURNEYS_FROM_TEMPLATE_ID,
+                  variables: mockChildVariables
                 },
                 result
               }
@@ -36,11 +40,10 @@ describe('useTemplateJourneyLanguages', () => {
       async () => await waitFor(() => expect(result).toHaveBeenCalled())
     )
 
-    expect(hookResult.current.languages).toHaveLength(3)
+    expect(hookResult.current.languages).toHaveLength(2)
     expect(hookResult.current.languagesJourneyMap).toEqual({
       'language-1': 'journey-1',
-      'language-2': 'journey-2',
-      'language-3': 'journey-3'
+      'language-2': 'journey-2'
     })
     expect(hookResult.current.languages[0]).toEqual({
       __typename: 'Language',
@@ -63,18 +66,6 @@ describe('useTemplateJourneyLanguages', () => {
           __typename: 'LanguageName',
           primary: true,
           value: 'Spanish'
-        }
-      ]
-    })
-    expect(hookResult.current.languages[2]).toEqual({
-      __typename: 'Language',
-      id: 'language-3',
-      slug: 'fr',
-      name: [
-        {
-          __typename: 'LanguageName',
-          primary: true,
-          value: 'French'
         }
       ]
     })

@@ -16,8 +16,8 @@ import { useJourneyDuplicateMutation } from '@core/journeys/ui/useJourneyDuplica
 import ArrowRightIcon from '@core/shared/ui/icons/ArrowRight'
 
 import { JourneyCustomizeTeamSelect } from './JourneyCustomizeTeamSelect'
-import { LanguageScreenCardPreview } from './LanguageScreenCardPreview'
-import { useTemplateJourneyLanguages } from '../../../../../libs/useTemplateJourneyLanguages'
+import { useGetChildTemplateJourneyLanguages } from '../../../../../libs/useGetChildTemplateJourneyLanguages'
+import { useGetParentTemplateJourneyLanguages } from '../../../../../libs/useGetParentTemplateJourneyLanguages'
 import { LanguageAutocomplete } from '@core/shared/ui/LanguageAutocomplete'
 import { CustomizationScreen } from '../../../utils/getCustomizeFlowConfig'
 import { SocialImage } from '@core/journeys/ui/TemplateView/TemplateViewHeader/SocialImage'
@@ -46,12 +46,56 @@ export function LanguageScreen({
   const isSignedIn = user?.email != null && user?.id != null
   const { query } = useTeam()
 
-  const { languages, languagesJourneyMap } = useTemplateJourneyLanguages({
+  const isParentTemplate = journey?.fromTemplateId == null
+
+  const {
+    languages: childJourneyLanguages,
+    languagesJourneyMap: childJourneyLanguagesJourneyMap
+  } = useGetChildTemplateJourneyLanguages({
     variables: {
-      where: { fromTemplateId: journey?.id, template: true }
+      where: {
+        fromTemplateId: isParentTemplate
+          ? journey?.id
+          : journey?.fromTemplateId,
+        template: true
+      }
     },
     skip: journey?.id == null
   })
+
+  const {
+    languages: parentJourneyLanguages,
+    languagesJourneyMap: parentJourneyLanguagesJourneyMap
+  } = useGetParentTemplateJourneyLanguages({
+    variables: {
+      // type cast as query will be skipped if variable is null
+      where: { ids: [journey?.fromTemplateId as string], template: true }
+    },
+    skip: isParentTemplate
+  })
+
+  const languages = isParentTemplate
+    ? [
+        ...parentJourneyLanguages,
+        ...childJourneyLanguages,
+        {
+          id: journey?.language?.id ?? '',
+          name: journey?.language?.name ?? [],
+          slug: null
+        }
+      ]
+    : [...parentJourneyLanguages, ...childJourneyLanguages]
+
+  const languagesJourneyMap = isParentTemplate
+    ? {
+        ...parentJourneyLanguagesJourneyMap,
+        ...childJourneyLanguagesJourneyMap,
+        [journey?.language?.id as string]: journey?.id
+      }
+    : {
+        ...parentJourneyLanguagesJourneyMap,
+        ...childJourneyLanguagesJourneyMap
+      }
 
   const validationSchema = object({
     teamSelect: string().required()
@@ -161,9 +205,9 @@ export function LanguageScreen({
                 <LanguageAutocomplete
                   value={values.languageSelect}
                   languages={languages.map((language) => ({
-                    id: language.id,
-                    name: language.name,
-                    slug: language.slug
+                    id: language?.id ?? '',
+                    name: language?.name,
+                    slug: language?.slug
                   }))}
                   onChange={(value) => setFieldValue('languageSelect', value)}
                 />
