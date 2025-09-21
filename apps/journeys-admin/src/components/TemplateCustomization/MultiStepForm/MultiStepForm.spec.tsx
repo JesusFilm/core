@@ -126,7 +126,7 @@ describe('MultiStepForm', () => {
     fireEvent.click(screen.getByTestId('social-next'))
   })
 
-  it('should hide edit manually button when on the first screen (Language Screen)', () => {
+  it('should hide edit manually button when on the language screen', () => {
     const journey = {
       id: 'test-journey-id'
     } as unknown as Journey
