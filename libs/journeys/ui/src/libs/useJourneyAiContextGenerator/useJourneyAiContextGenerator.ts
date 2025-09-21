@@ -3,11 +3,9 @@ import { useEffect, useMemo, useState } from 'react'
 import { TreeBlock } from '../block'
 
 import { BlockContext } from './types'
-import {
-  createFullContext,
-  extractBlockContexts,
-  fetchContextResponse
-} from './utils'
+import { createFullContext } from './utils/createFullContext'
+import { extractBlockContexts } from './utils/extractBlockContexts'
+import { fetchContextResponse } from './utils/fetchContextResponse'
 
 /**
  * Generates and manages AI context data from journey blocks.
