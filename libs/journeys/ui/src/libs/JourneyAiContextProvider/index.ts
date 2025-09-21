@@ -1,5 +1,4 @@
 export {
   JourneyAiContextProvider,
-  useJourneyAiContext,
-  useJourneyAiContextData
+  useJourneyAiContext
 } from './JourneyAiContextProvider'

@@ -30,16 +30,6 @@ export function useJourneyAiContext(): JourneyAiContextValue {
   return context
 }
 
-/**
- * Consumes only the AI context data from the nearest JourneyAiContextProvider.
- * Use this hook when you only need the context data and not the loading/error states.
- * @returns The current Journey context data array
- */
-export function useJourneyAiContextData(): BlockContext[] {
-  const { data } = useJourneyAiContext()
-  return data
-}
-
 interface JourneyAiContextProviderProps {
   children: ReactNode
   data?: BlockContext[]

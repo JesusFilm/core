@@ -5,8 +5,7 @@ import { BlockContext } from '../useJourneyAiContextGenerator'
 
 import {
   JourneyAiContextProvider,
-  useJourneyAiContext,
-  useJourneyAiContextData
+  useJourneyAiContext
 } from './JourneyAiContextProvider'
 
 // Test component that uses the full context
@@ -19,12 +18,6 @@ function TestConsumer(): ReactElement {
       <div data-testid="error">{context.error || 'null'}</div>
     </div>
   )
-}
-
-// Test component that uses only the data
-function TestDataConsumer(): ReactElement {
-  const data = useJourneyAiContextData()
-  return <div data-testid="data-only">{JSON.stringify(data)}</div>
 }
 
 // Test component that renders children
@@ -156,39 +149,6 @@ describe('JourneyAiContextProvider', () => {
       // Test the hook directly without a provider
       expect(() => {
         renderHook(() => useJourneyAiContext())
-      }).toThrow(
-        'useJourneyAiContext must be used within a JourneyAiContextProvider. ' +
-          'If you need to generate Journey context, use useJourneyAiContextGenerator instead.'
-      )
-
-      consoleSpy.mockRestore()
-    })
-  })
-
-  describe('useJourneyAiContextData', () => {
-    it('should return only the data when used within provider', () => {
-      render(
-        <JourneyAiContextProvider
-          data={mockBlockContext}
-          isLoading={true}
-          error="Test error"
-        >
-          <TestDataConsumer />
-        </JourneyAiContextProvider>
-      )
-
-      expect(screen.getByTestId('data-only')).toHaveTextContent(
-        JSON.stringify(mockBlockContext)
-      )
-    })
-
-    it('should throw error when used outside of provider', () => {
-      // Suppress console.error for this test since we expect an error
-      const consoleSpy = jest.spyOn(console, 'error').mockImplementation()
-
-      // Test the hook directly without a provider
-      expect(() => {
-        renderHook(() => useJourneyAiContextData())
       }).toThrow(
         'useJourneyAiContext must be used within a JourneyAiContextProvider. ' +
           'If you need to generate Journey context, use useJourneyAiContextGenerator instead.'
