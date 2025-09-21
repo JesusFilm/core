@@ -4,10 +4,3 @@ export interface BlockContext {
   language?: string
   suggestions: string[]
 }
-
-export interface JourneyAiContextGeneratorReturn {
-  aiContextData: BlockContext[]
-  isLoading: boolean
-  error: string | null
-  refetch: () => Promise<void>
-}
