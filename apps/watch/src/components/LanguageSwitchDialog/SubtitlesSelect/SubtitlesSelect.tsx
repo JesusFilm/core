@@ -84,7 +84,7 @@ export function SubtitlesSelect({
       <div className="flex items-center justify-between">
         <label
           htmlFor="subtitles-select"
-          className="block text-xl font-medium text-gray-700 ml-7"
+          className="ml-7 block text-xl font-medium text-gray-700"
         >
           {t('Subtitles')}
         </label>
@@ -155,13 +155,13 @@ export function SubtitlesSelect({
           />
         </div>
       </div>
-      <div className="flex ml-8 my-4 items-center gap-2">
+      <div className="my-4 ml-8 flex items-center gap-2">
         <input
           id="no-subtitles"
           type="checkbox"
           checked={subtitleOn}
           onChange={handleSubtitlesOnChange}
-          className="accent-[#CB333B] h-4 w-4 rounded border-gray-300 focus:ring-0"
+          className="h-4 w-4 rounded border-gray-300 accent-[#CB333B] focus:ring-0"
         />
         <label htmlFor="no-subtitles" className="text-sm text-gray-500">
           {t('Show subtitles')}
