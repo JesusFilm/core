@@ -1,11 +1,12 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { fireEvent, render, waitFor } from '@testing-library/react'
+import { fireEvent, render, waitFor, screen } from '@testing-library/react'
 
 import { JourneyProvider } from '../../../libs/JourneyProvider'
 
 import { journey } from './data'
 import { TemplateFooter } from './TemplateFooter'
 import { NextRouter, useRouter } from 'next/router'
+import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 
 jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
@@ -62,12 +63,14 @@ describe('TemplateFooter', () => {
     expect(getByRole('button', { name: 'Use This Template' })).toBeDisabled()
   })
 
-  it('should push signed in user to customization flow page when the template customization button is clicked', async () => {
+  it('should push signed in user to customization flow page when clicking template customization button while feature flag is enabled', async () => {
     const { getByRole } = await render(
       <MockedProvider>
-        <JourneyProvider value={{ journey }}>
-          <TemplateFooter signedIn/>
-        </JourneyProvider>
+        <FlagsProvider flags={{ journeyCustomization: true }}>
+          <JourneyProvider value={{ journey }}>
+            <TemplateFooter signedIn />
+          </JourneyProvider>
+        </FlagsProvider>
       </MockedProvider>
     )
 
@@ -79,6 +82,24 @@ describe('TemplateFooter', () => {
         undefined,
         { shallow: true }
       )
+    })
+  })
+
+  it('should open legacy copy to team dialog when clicking template customization button while feature flag is disabled', async () => {
+    const { getByRole } = await render(
+      <MockedProvider>
+        <FlagsProvider flags={{ journeyCustomization: false }}>
+          <JourneyProvider value={{ journey }}>
+            <TemplateFooter signedIn />
+          </JourneyProvider>
+        </FlagsProvider>
+      </MockedProvider>
+    )
+
+    fireEvent.click(getByRole('button', { name: 'Use This Template' }))
+
+    await waitFor(() => {
+      expect(screen.getByTestId('CopyToTeamDialog')).toBeInTheDocument()
     })
   })
 })
