@@ -152,7 +152,11 @@ export function TemplateViewHeader({
               marginTop: 'auto'
             }}
           >
-            { journeyCustomization ? <UseThisTemplateButton signedIn={authUser?.id != null} /> : <CreateJourneyButton signedIn={authUser?.id != null} />}
+            {journeyCustomization ? (
+              <UseThisTemplateButton signedIn={authUser?.id != null} />
+            ) : (
+              <CreateJourneyButton signedIn={authUser?.id != null} />
+            )}
             <PreviewTemplateButton slug={journey?.slug} />
             {journey != null && isPublisher === true && (
               <TemplateEditButton journeyId={journey.id} />
@@ -161,7 +165,11 @@ export function TemplateViewHeader({
         </Stack>
       </Stack>
       <Box sx={{ display: { xs: 'flex', sm: 'none' }, pt: 6 }} gap={2}>
-        { journeyCustomization ? <UseThisTemplateButton signedIn={authUser?.id != null} /> : <CreateJourneyButton signedIn={authUser?.id != null} />}
+        {journeyCustomization ? (
+          <UseThisTemplateButton signedIn={authUser?.id != null} />
+        ) : (
+          <CreateJourneyButton signedIn={authUser?.id != null} />
+        )}
         <PreviewTemplateButton slug={journey?.slug} />
         {journey != null && isPublisher === true && (
           <TemplateEditButton journeyId={journey.id} />

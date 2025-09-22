@@ -42,7 +42,11 @@ export function TemplateFooter({
       >
         {t('Use this template to make it your journey')}
       </Typography>
-      { journeyCustomization ? <UseThisTemplateButton signedIn={signedIn} /> : <CreateJourneyButton signedIn={signedIn} />}
+      {journeyCustomization ? (
+        <UseThisTemplateButton signedIn={signedIn} />
+      ) : (
+        <CreateJourneyButton signedIn={signedIn} />
+      )}
     </Stack>
   )
 }

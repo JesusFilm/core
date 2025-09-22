@@ -326,7 +326,6 @@ describe('TemplateViewHeader', () => {
     )
   })
 
-
   it('should push signed in user to customization flow page when clicking template customization button while feature flag is enabled.', async () => {
     const { getAllByRole } = render(
       <MockedProvider>
