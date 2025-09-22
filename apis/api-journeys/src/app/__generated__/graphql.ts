@@ -453,6 +453,7 @@ export class TextResponseBlockUpdateInput {
     placeholder?: Nullable<string>;
     required?: Nullable<boolean>;
     hint?: Nullable<string>;
+    hideLabel?: Nullable<boolean>;
     minRows?: Nullable<number>;
     routeId?: Nullable<string>;
     type?: Nullable<TextResponseType>;
@@ -1419,6 +1420,7 @@ export class TextResponseBlock implements Block {
     placeholder?: Nullable<string>;
     required?: Nullable<boolean>;
     hint?: Nullable<string>;
+    hideLabel?: Nullable<boolean>;
     minRows?: Nullable<number>;
     type?: Nullable<TextResponseType>;
     routeId?: Nullable<string>;

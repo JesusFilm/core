@@ -111,6 +111,7 @@ export function MultiStepForm(): ReactElement {
               alignSelf: 'flex-end',
               mr: '4px',
               fontWeight: 'bold',
+              visibility: activeScreen === 'language' ? 'hidden' : 'visible',
               '& .MuiButton-endIcon': {
                 marginLeft: '0px'
               }
