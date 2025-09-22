@@ -11,8 +11,9 @@ import { useTranslation } from 'next-i18next'
 import { Fragment, useEffect, useRef, useState } from 'react'
 import { v4 as uuidv4 } from 'uuid'
 
-import { TreeBlock, useBlocks } from '../../libs/block'
+import { useBlocks } from '../../libs/block'
 import { firebaseClient } from '../../libs/firebaseClient'
+import { useJourneyAiContext } from '../../libs/JourneyAiContextProvider'
 import { useJourney } from '../../libs/JourneyProvider'
 import { Action, Actions } from '../Actions'
 import {
@@ -42,14 +43,18 @@ export function AiChat({ open }: AiChatProps) {
   const auth = getAuth(firebaseClient)
   const user = auth.currentUser
   const { journey } = useJourney()
+  const {
+    data: aiContextData,
+    isLoading: contextLoading,
+    error: contextError
+  } = useJourneyAiContext()
   const traceId = useRef<string | null>(null)
   const sessionId = useRef<string | null>(null)
   const [input, setInput] = useState('')
   const [suggestions, setSuggestions] = useState<string[]>()
-  const [suggestionsLoading, setSuggestionsLoading] = useState(false)
-  const [suggestionsError, setSuggestionsError] = useState<string | null>(null)
   const { blockHistory } = useBlocks()
   const [contextText, setContextText] = useState<string>('')
+  const [contextLanguage, setContextLanguage] = useState<string>('')
 
   useEffect(() => {
     sessionId.current = uuidv4()
@@ -63,43 +68,29 @@ export function AiChat({ open }: AiChatProps) {
 
   const activeBlock = blockHistory.at(-1)
 
-  async function fetchSuggestions() {
-    setSuggestionsLoading(true)
-    setSuggestionsError(null)
-
-    try {
-      const contextText = extractBlockContext(activeBlock as TreeBlock)
-      if (contextText === '') {
-        setSuggestions([])
-        return
-      }
-
-      const response = await fetch('/api/chat/suggestions', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ contextText })
-      })
-
-      if (!response.ok) throw new Error('Failed to fetch suggestions')
-
-      const suggestions: string[] = await response.json()
-
-      setSuggestions(suggestions)
-      setContextText(contextText)
-    } catch (error) {
-      console.error('Error fetching suggestions:', error)
-      setSuggestionsError(t('Failed to load suggestions'))
+  function setContexts() {
+    // Find context data for the active block from the provider
+    const activeBlockContext = aiContextData.find(
+      (context) => context.blockId === activeBlock?.id
+    )
+    if (
+      !activeBlockContext?.contextText ||
+      activeBlockContext.contextText === ''
+    ) {
       setSuggestions([])
-    } finally {
-      setSuggestionsLoading(false)
+      return
     }
+
+    setSuggestions(activeBlockContext.suggestions)
+    setContextText(activeBlockContext.contextText)
+    setContextLanguage(activeBlockContext.language || 'english')
   }
 
   useEffect(() => {
     if (!open) return
 
-    void fetchSuggestions()
-  }, [open])
+    setContexts()
+  }, [open, aiContextData, activeBlock])
 
   function handleSubmit(
     message: PromptInputMessage,
@@ -112,6 +103,7 @@ export function AiChat({ open }: AiChatProps) {
         {
           body: {
             contextText,
+            language: contextLanguage,
             chatId: id,
             sessionId: sessionId.current,
             traceId: traceId.current,
@@ -130,6 +122,7 @@ export function AiChat({ open }: AiChatProps) {
       {
         body: {
           contextText,
+          language: contextLanguage,
           chatId: id,
           sessionId: sessionId.current,
           traceId: traceId.current,
@@ -206,23 +199,29 @@ export function AiChat({ open }: AiChatProps) {
       </Conversation>
       <div className="border-muted border-t">
         <Suggestions className="px-4 py-2">
-          {suggestionsLoading && (
+          {contextLoading && (
             <div className="text-muted-foreground flex items-center gap-2 px-4 py-2">
               <Loader className="size-4 animate-spin" />
-              <span>{t('Loading suggestions, please hold...')}</span>
+              <span>{t('Loading suggestions, please wait...')}</span>
             </div>
           )}
-          {suggestionsError && (
-            <div className="text-destructive px-4 py-2">{suggestionsError}</div>
+          {contextError && (
+            <div className="flex flex-col gap-2 px-4 py-2">
+              <div className="text-destructive text-sm">
+                {t('Failed to load suggestions')}
+              </div>
+            </div>
           )}
-          {suggestions?.map((suggestion) => (
-            <Suggestion
-              className="dark:bg-suggestion-bg dark:text-suggestion-text dark:border-suggestion-border"
-              key={suggestion}
-              onClick={(suggestion) => handleSuggestionClick(suggestion)}
-              suggestion={suggestion}
-            />
-          ))}
+          {!contextLoading &&
+            !contextError &&
+            suggestions?.map((suggestion) => (
+              <Suggestion
+                className="dark:bg-suggestion-bg dark:text-suggestion-text dark:border-suggestion-border"
+                key={suggestion}
+                onClick={() => handleSuggestionClick(suggestion)}
+                suggestion={suggestion}
+              />
+            ))}
         </Suggestions>
       </div>
       <div className="px-4 pb-4">

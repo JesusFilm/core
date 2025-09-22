@@ -12,7 +12,7 @@ export async function POST(req: NextRequest) {
   })
 
   try {
-    const { contextText } = await req.json()
+    const { contextText, language } = await req.json()
 
     if (!contextText || typeof contextText !== 'string') {
       return NextResponse.json(
@@ -22,7 +22,8 @@ export async function POST(req: NextRequest) {
     }
 
     const prompt = await getPrompt('Suggestions-Prompt', {
-      contextText: contextText
+      contextText: contextText,
+      language: language || 'english'
     })
 
     const { text } = await generateText({
