@@ -294,6 +294,7 @@ export interface MenuBlockRestore_stepRestore_TextResponseBlock {
   type: TextResponseType | null;
   routeId: string | null;
   integrationId: string | null;
+  hideLabel: boolean | null;
 }
 
 export interface MenuBlockRestore_stepRestore_TypographyBlock_settings {

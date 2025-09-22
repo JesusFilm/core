@@ -294,6 +294,7 @@ export interface StepBlockRestoreFromSocialPreview_blockRestore_TextResponseBloc
   type: TextResponseType | null;
   routeId: string | null;
   integrationId: string | null;
+  hideLabel: boolean | null;
 }
 
 export interface StepBlockRestoreFromSocialPreview_blockRestore_TypographyBlock_settings {

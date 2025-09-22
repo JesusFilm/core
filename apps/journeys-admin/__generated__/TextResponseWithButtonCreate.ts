@@ -22,6 +22,7 @@ export interface TextResponseWithButtonCreate_textResponse {
   type: TextResponseType | null;
   routeId: string | null;
   integrationId: string | null;
+  hideLabel: boolean | null;
 }
 
 export interface TextResponseWithButtonCreate_button_action_PhoneAction {
