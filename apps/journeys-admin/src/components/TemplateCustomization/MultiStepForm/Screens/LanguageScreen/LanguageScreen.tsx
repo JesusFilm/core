@@ -205,7 +205,7 @@ export function LanguageScreen({
                 <LanguageAutocomplete
                   value={values.languageSelect}
                   languages={languages.map((language) => ({
-                    id: language?.id ?? '',
+                    id: language?.id,
                     name: language?.name,
                     slug: language?.slug
                   }))}
