@@ -74,7 +74,7 @@ jobs:
         uses: pnpm/action-setup@v4
         with:
           run_install: false
-      - uses: useblacksmith/setup-node@v5
+      - uses: actions/setup-node@v5
         with:
           node-version: ${{ matrix.node-version }}
           cache: 'pnpm'
@@ -156,7 +156,7 @@ jobs:
       - name: Build and push Docker image to Amazon ECR
         if: contains(steps.affected-apps.outputs.apps, inputs.name)
         id: build-image-ecs
-        uses: useblacksmith/build-push-action@v1
+        uses: docker/build-push-action@v6
         with:
           context: .
           file: apps/${{ inputs.name }}/Dockerfile
