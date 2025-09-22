@@ -1,5 +1,6 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
@@ -102,9 +103,65 @@ describe('TitleEdit', () => {
     await waitFor(() => expect(result).toHaveBeenCalled())
   })
 
+  it('should update seo title with a 50-character long string when user attempts to type beyond the character limit', async () => {
+    const user = userEvent.setup()
+    const longTitle = 'This is a very long title that exceeds the 50-character limit and should be truncated properly by component'
+    const expectedTruncatedTitle = longTitle.substring(0, 50)
+    
+    const result = jest.fn(() => ({
+      data: {
+        journeyUpdate: {
+          __typename: 'Journey',
+          id: 'journey.id',
+          seoTitle: expectedTruncatedTitle
+        }
+      }
+    }))
+
+    const { getByRole } = render(
+      <MockedProvider
+        mocks={[
+          {
+            request: {
+              query: JOURNEY_SEO_TITLE_UPDATE,
+              variables: {
+                id: 'journey.id',
+                input: {
+                  seoTitle: expectedTruncatedTitle
+                }
+              }
+            },
+            result
+          }
+        ]}
+      >
+        <JourneyProvider
+          value={{
+            journey: {
+              id: 'journey.id',
+              slug: 'some-slug'
+            } as unknown as Journey,
+            variant: 'admin'
+          }}
+        >
+          <TitleEdit />
+        </JourneyProvider>
+      </MockedProvider>
+    )
+
+    const textField = getByRole('textbox') as HTMLInputElement
+    await user.clear(textField)
+    await user.type(textField, longTitle)
+    expect(textField.value).toBe(expectedTruncatedTitle)
+    expect(textField.value.length).toBe(50)
+    
+    await user.tab()
+    await waitFor(() => expect(result).toHaveBeenCalled())
+  })
+
   it('should show error text when character limit exeeded', async () => {
     const longTitle =
-      'This is a long title that needs to be over the character count of 65 to test validationThis is a long title that needs to be over the character count of 65 to test validation'
+      'This is a long title that needs to be over the character count of 50 to test validationThis is a long title that needs to be over the character count of 50 to test validation'
 
     const { getByRole, getByText } = render(
       <MockedProvider>
