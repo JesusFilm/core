@@ -43,8 +43,8 @@ export function AboutTabPanel(): ReactElement {
           sx={{ flex: 1 }}
         />
       </Stack>
-          <Divider />
-          <CustomizeTemplate />
+      <Divider />
+      <CustomizeTemplate />
       <TextField
         data-testid="StrategySlugEdit"
         id="strategySlug"
