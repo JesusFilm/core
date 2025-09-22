@@ -231,15 +231,15 @@ export function HeroSubtitleOverlay({
   return (
     <>
       <div
-        className="pointer-events-none absolute inset-x-0 bottom-[20px] flex justify-center px-6"
+        className="pointer-events-none absolute z-2 inset-x-0 bottom-[26px] flex justify-center px-6 font-mono"
         aria-live="polite"
       >
         <div className="flex max-w-4xl flex-col gap-3 text-center text-white">
           {segments[currentSegmentIndex] != null && (
             <span
               key={segments[currentSegmentIndex].id}
-              className="hero-subtitle-line mx-auto px-6 py-4 text-2xl font-semibold leading-tight tracking-wide md:text-3xl"
-              style={{ textShadow: '0px 4px 18px rgba(0, 0, 0, 0.7)' }}
+              className="hero-subtitle-line mx-auto px-6 py-4 text-2xl font-semibold leading-tight  tracking-wider md:text-xl text-shadow-lg"
+
             >
               {segments[currentSegmentIndex].text}
             </span>
