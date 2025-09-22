@@ -74,7 +74,7 @@ export const CREATE_EVENTS_EXPORT_LOG = gql`
     }
   }
 `
-            
+
 export const GET_JOURNEY_CONTACTS = gql`
   query GetJourneyContacts(
     $journeyId: ID!
@@ -110,7 +110,7 @@ export const GET_JOURNEY_CONTACTS = gql`
   }
 `
 
- export interface JourneyEvent
+export interface JourneyEvent
   extends Omit<
     JourneyEventNode,
     '__typename' | 'journey' | 'visitor' | 'progress'
@@ -320,7 +320,9 @@ export function useJourneyContactsExport(): {
         const edges = data?.journeyEventsConnection.edges ?? []
         events.push(...edges)
 
-        setProgress(Math.floor((events.length / Math.max(events.length, 1)) * 100))
+        setProgress(
+          Math.floor((events.length / Math.max(events.length, 1)) * 100)
+        )
 
         cursor = data?.journeyEventsConnection.pageInfo.endCursor
         hasNextPage = data?.journeyEventsConnection.pageInfo.hasNextPage
@@ -328,13 +330,13 @@ export function useJourneyContactsExport(): {
 
       // Extract unique contacts from events
       const contactMap = new Map<string, JourneyContact>()
-      
+
       events.forEach((edge) => {
         const node = edge.node
         const visitorId = node.visitorId
-        
+
         if (!visitorId) return // Skip events without visitorId
-        
+
         if (!contactMap.has(visitorId)) {
           contactMap.set(visitorId, {
             visitorId,

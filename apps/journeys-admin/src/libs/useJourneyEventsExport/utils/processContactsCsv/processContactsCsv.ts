@@ -20,6 +20,10 @@ function hasValidContactData(contact: JourneyContact, contactDataFields: string[
 }
 
 export function getContactsCsvOptions(t: TFunction, contactDataFields: string[]) {
+export function getContactsCsvOptions(
+  t: TFunction,
+  contactDataFields: string[]
+) {
   const allColumns = [
     { key: 'visitorName', header: t('Name') },
     { key: 'visitorEmail', header: t('Email') },
@@ -27,13 +31,13 @@ export function getContactsCsvOptions(t: TFunction, contactDataFields: string[])
   ]
 
   // Filter columns based on selected contact data fields
-  const filteredColumns = allColumns.filter(column => {
+  const filteredColumns = allColumns.filter((column) => {
     const fieldMap: Record<string, string> = {
-      'name': 'visitorName',
-      'email': 'visitorEmail', 
-      'phone': 'visitorPhone'
+      name: 'visitorName',
+      email: 'visitorEmail',
+      phone: 'visitorPhone'
     }
-    return contactDataFields.some(field => fieldMap[field] === column.key)
+    return contactDataFields.some((field) => fieldMap[field] === column.key)
   })
 
   return {
