@@ -101,6 +101,38 @@ export function AiChat({ open }: AiChatProps) {
     setContexts()
   }, [open, aiContextData, activeBlock, contextLoading])
 
+  // Debug log to detect when the issue occurs: loading complete but no suggestions showing
+  useEffect(() => {
+    if (!open || contextLoading || contextError) return
+
+    const activeBlockContext = aiContextData.find(
+      (context) => context.blockId === activeBlock?.id
+    )
+
+    const hasAvailableSuggestions =
+      (activeBlockContext?.suggestions?.length ?? 0) > 0
+    const hasDisplayedSuggestions = (suggestions?.length ?? 0) > 0
+
+    if (hasAvailableSuggestions && !hasDisplayedSuggestions) {
+      console.warn('🐛 AiChat Issue Detected:', {
+        message: 'Loading complete but suggestions not showing',
+        activeBlockId: activeBlock?.id,
+        availableSuggestions: activeBlockContext?.suggestions,
+        displayedSuggestions: suggestions,
+        contextLoading,
+        contextError,
+        timestamp: new Date().toISOString()
+      })
+    }
+  }, [
+    open,
+    contextLoading,
+    contextError,
+    suggestions,
+    aiContextData,
+    activeBlock
+  ])
+
   function handleSubmit(
     message: PromptInputMessage,
     e: React.FormEvent<HTMLFormElement>
