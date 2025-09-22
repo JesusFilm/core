@@ -18,7 +18,7 @@ describe('getTextResponseLabel', () => {
     integrationId: null,
     required: null,
     children: [],
-    hideLabel: true
+    hideLabel: false
   }
 
   it('returns label of the text response block', () => {

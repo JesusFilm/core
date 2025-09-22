@@ -40,7 +40,7 @@ const block: TreeBlock<TextResponseBlock> = {
   type: null,
   routeId: null,
   children: [],
-  hideLabel: true
+  hideLabel: false
 }
 
 const Template: StoryObj<ComponentProps<typeof TextResponse>> = {

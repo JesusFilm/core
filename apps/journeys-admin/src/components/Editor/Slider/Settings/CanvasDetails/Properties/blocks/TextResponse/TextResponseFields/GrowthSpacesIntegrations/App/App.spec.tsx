@@ -63,7 +63,7 @@ describe('App', () => {
     type: TextResponseType.freeForm,
     required: null,
     children: [],
-    hideLabel: true
+    hideLabel: false
   }
 
   const integrationUpdateMock: MockedResponse<

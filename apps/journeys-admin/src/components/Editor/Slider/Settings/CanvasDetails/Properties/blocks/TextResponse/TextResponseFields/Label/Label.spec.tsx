@@ -35,7 +35,7 @@ describe('Edit Label field', () => {
     routeId: null,
     required: null,
     children: [],
-    hideLabel: true
+    hideLabel: false
   }
 
   const mockLabelUpdate1 = {
@@ -255,14 +255,14 @@ describe('Edit Label field', () => {
         query: TEXT_RESPONSE_HIDE_LABEL_UPDATE,
         variables: {
           id: block.id,
-          hideLabel: false
+          hideLabel: true
         }
       },
       result: jest.fn(() => ({
         data: {
           textResponseBlockUpdate: {
             id: block.id,
-            hideLabel: false
+            hideLabel: true
           }
         }
       }))
@@ -276,7 +276,7 @@ describe('Edit Label field', () => {
       </MockedProvider>
     )
 
-    const toggleButton = screen.getByRole('button', { name: 'Show label' })
+    const toggleButton = screen.getByRole('button', { name: 'Hide label' })
     fireEvent.click(toggleButton)
     await waitFor(() => expect(mockHideLabelUpdate.result).toHaveBeenCalled())
   })

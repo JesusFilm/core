@@ -29,7 +29,7 @@ describe('useTextResponseWithButtonRestore', () => {
       placeholder: null,
       required: null,
       __typename: 'TextResponseBlock' as const,
-      hideLabel: true
+      hideLabel: false
     } satisfies TextResponseBlock,
     buttonBlock: {
       id: 'button.id',

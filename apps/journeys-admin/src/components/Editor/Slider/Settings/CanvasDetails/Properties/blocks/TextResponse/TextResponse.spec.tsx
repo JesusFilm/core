@@ -30,7 +30,7 @@ describe('TextResponse', () => {
     routeId: null,
     required: null,
     children: [],
-    hideLabel: true
+    hideLabel: false
   }
 
   const completeBlock: TreeBlock<TextResponseBlock> = {
@@ -58,7 +58,7 @@ describe('TextResponse', () => {
         children: []
       }
     ],
-    hideLabel: true
+    hideLabel: false
   }
 
   it('should show default attributes', () => {

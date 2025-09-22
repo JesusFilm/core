@@ -35,7 +35,7 @@ describe('Edit Hint field', () => {
     routeId: null,
     required: null,
     children: [],
-    hideLabel: true
+    hideLabel: false
   }
 
   const initialState = {

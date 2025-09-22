@@ -62,7 +62,7 @@ export const textResponseBlockCreateMock: MockedResponse<TextResponseBlockCreate
           integrationId: null,
           placeholder: null,
           required: null,
-          hideLabel: true
+          hideLabel: false
         }
       }
     }))

@@ -166,7 +166,7 @@ export const textResponseBlock: TreeBlock<TextResponseBlock> = {
   routeId: null,
   integrationId: null,
   required: null,
-  hideLabel: true
+  hideLabel: false
 }
 
 export const imageBlock: TreeBlock<ImageFields> = {

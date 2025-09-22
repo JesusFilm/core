@@ -27,7 +27,7 @@ describe('Type', () => {
     type: TextResponseType.freeForm,
     required: null,
     children: [],
-    hideLabel: true
+    hideLabel: false
   }
 
   const mockEmailUpdate: MockedResponse<TextResponseTypeUpdate> = {

@@ -74,7 +74,7 @@ export const textResponseWithButtonCreateMock: MockedResponse<
         placeholder: null,
         required: null,
         __typename: 'TextResponseBlock',
-        hideLabel: true
+        hideLabel: false
       },
       button: {
         id: 'button.id',

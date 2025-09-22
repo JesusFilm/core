@@ -725,7 +725,7 @@ export const imageBlocks: TreeBlock[] = [
             routeId: null,
             required: null,
             children: [],
-            hideLabel: true
+            hideLabel: false
           },
           {
             id: 'image0.id',

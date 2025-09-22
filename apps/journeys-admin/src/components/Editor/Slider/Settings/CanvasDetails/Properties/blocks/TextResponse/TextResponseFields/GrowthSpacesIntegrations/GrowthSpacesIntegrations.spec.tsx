@@ -54,7 +54,7 @@ describe('GrowthSpacesIntegrations', () => {
     type: TextResponseType.email,
     required: null,
     children: [],
-    hideLabel: true
+    hideLabel: false
   }
 
   describe('Email', () => {

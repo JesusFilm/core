@@ -36,7 +36,7 @@ export const textResponseBlock: TreeBlock<TextResponseBlock> = {
   placeholder: null,
   required: null,
   children: [],
-  hideLabel: true
+  hideLabel: false
 }
 
 export const submitButtonBlock: TreeBlock<ButtonBlock> = {

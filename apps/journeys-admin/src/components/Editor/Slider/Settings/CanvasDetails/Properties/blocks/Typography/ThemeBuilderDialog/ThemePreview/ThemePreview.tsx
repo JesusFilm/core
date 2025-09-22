@@ -62,7 +62,7 @@ export function ThemePreview({
     type: null,
     routeId: null,
     children: [],
-    hideLabel: true
+    hideLabel: false
   }
 
   return (
