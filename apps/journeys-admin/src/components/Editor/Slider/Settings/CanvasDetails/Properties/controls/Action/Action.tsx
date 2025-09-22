@@ -36,9 +36,9 @@ export function Action(): ReactElement {
 
   // Add addtional types here to use this component for that block
   const selectedBlock = stateSelectedBlock as
-    | TreeBlock<ButtonBlock>
-    | TreeBlock<SignUpBlock>
-    | TreeBlock<VideoBlock>
+    | (TreeBlock<ButtonBlock> & { action: ButtonBlock['action'] })
+    | (TreeBlock<SignUpBlock> & { action: SignUpBlock['action'] })
+    | (TreeBlock<VideoBlock> & { action: VideoBlock['action'] })
     | undefined
   const [action, setAction] = useState<ActionValue>(
     getAction(t, selectedBlock?.action?.__typename).value
