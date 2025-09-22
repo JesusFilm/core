@@ -158,7 +158,7 @@ describe('DescriptionEdit', () => {
     await userEvent.type(textField, longDescription)
     expect(textField.value).toBe(expectedTruncatedDescription)
     expect(textField.value.length).toBe(180)
-    
+
     await userEvent.tab()
     await waitFor(() => expect(result).toHaveBeenCalled())
   })

@@ -154,7 +154,7 @@ describe('TitleEdit', () => {
     await userEvent.type(textField, longTitle)
     expect(textField.value).toBe(expectedTruncatedTitle)
     expect(textField.value.length).toBe(50)
-    
+
     await userEvent.tab()
     await waitFor(() => expect(result).toHaveBeenCalled())
   })
