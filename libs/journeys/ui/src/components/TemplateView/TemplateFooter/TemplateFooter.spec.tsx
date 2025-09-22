@@ -66,7 +66,7 @@ describe('TemplateFooter', () => {
     const { getByRole } = await render(
       <MockedProvider>
         <JourneyProvider value={{ journey }}>
-          <TemplateFooter signedIn/>
+          <TemplateFooter signedIn />
         </JourneyProvider>
       </MockedProvider>
     )
