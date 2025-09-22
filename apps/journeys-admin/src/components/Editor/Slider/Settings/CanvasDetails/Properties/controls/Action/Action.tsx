@@ -17,7 +17,6 @@ import {
   BlockFields_VideoBlock as VideoBlock
 } from '../../../../../../../../../__generated__/BlockFields'
 import { useActionCommand } from '../../../../../../utils/useActionCommand'
-import { useFlags } from '@core/shared/ui/FlagsProvider'
 
 import { CustomizationToggle } from './CustomizationToggle'
 import { EmailAction } from './EmailAction'
@@ -31,7 +30,6 @@ export function Action(): ReactElement {
   } = useEditor()
   const { t } = useTranslation('apps-journeys-admin')
   const { addAction } = useActionCommand()
-  const { journeyCustomization } = useFlags()
   const { journey } = useJourney()
 
   // Add addtional types here to use this component for that block
@@ -113,9 +111,7 @@ export function Action(): ReactElement {
         {isLink && <LinkAction />}
         {isEmail && <EmailAction />}
         {action === 'NavigateToBlockAction' && <NavigateToBlockAction />}
-        {(isLink || isEmail) && journeyCustomization && journey?.template && (
-          <CustomizationToggle />
-        )}
+        {(isLink || isEmail) && journey?.template && <CustomizationToggle />}
       </Stack>
     </>
   )

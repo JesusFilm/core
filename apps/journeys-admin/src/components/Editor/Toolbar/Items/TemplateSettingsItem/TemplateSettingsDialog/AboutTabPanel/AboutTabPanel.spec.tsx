@@ -2,10 +2,11 @@ import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { FormikContextType, FormikProvider } from 'formik'
 
+import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
+
 import { TemplateSettingsFormValues } from '../useTemplateSettingsForm'
 
 import { AboutTabPanel } from './AboutTabPanel'
-import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 
 jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
