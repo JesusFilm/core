@@ -18,9 +18,34 @@ describe('extractBlockContexts', () => {
 
   it('should extract block contexts from tree blocks', () => {
     const treeBlocks = [
-      { id: 'block-1', type: 'text' },
-      { id: 'block-2', type: 'image' }
-    ] as any[]
+      { 
+        __typename: 'TypographyBlock' as const,
+        id: 'block-1', 
+        parentBlockId: null,
+        parentOrder: 0,
+        content: 'Sample text content',
+        variant: null,
+        color: null,
+        align: null,
+        settings: null,
+        children: []
+      },
+      { 
+        __typename: 'ImageBlock' as const,
+        id: 'block-2', 
+        parentBlockId: null,
+        parentOrder: 1,
+        alt: 'Sample image',
+        blurhash: 'sample-blurhash',
+        height: 100,
+        width: 100,
+        src: 'https://example.com/image.jpg',
+        scale: null,
+        focalTop: null,
+        focalLeft: null,
+        children: []
+      }
+    ]
 
     mockExtractBlockContext
       .mockReturnValueOnce('Extracted context 1')
