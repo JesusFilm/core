@@ -3,17 +3,15 @@
 import { useMutation } from '@apollo/client'
 import { useRouter } from 'next/navigation'
 import { enqueueSnackbar } from 'notistack'
-import { ReactElement, useState } from 'react'
+import { ReactElement, use, useState } from 'react'
 
 import { graphql } from '@core/shared/gql'
 import { Dialog } from '@core/shared/ui/Dialog'
 
 interface ConfirmDeleteDialogProps {
-  params: {
-    videoId: string
-    variantId: string
-    downloadId: string
-  }
+  params:
+    | Promise<{ videoId: string; variantId: string; downloadId: string }>
+    | { videoId: string; variantId: string; downloadId: string }
 }
 
 const VIDEO_VARIANT_DOWNLOAD_DELETE = graphql(`
@@ -25,8 +23,10 @@ const VIDEO_VARIANT_DOWNLOAD_DELETE = graphql(`
 `)
 
 export default function ConfirmDeleteDialog({
-  params: { videoId, variantId, downloadId }
+  params
 }: ConfirmDeleteDialogProps): ReactElement {
+  const { videoId, variantId, downloadId } =
+    (params as any)?.then != null ? use(params as any) : (params as any)
   const router = useRouter()
   const [isLoading, setIsLoading] = useState(false)
   const [deleteVideoVariantDownload] = useMutation(

@@ -13,7 +13,7 @@ import Typography from '@mui/material/Typography'
 import { Form, Formik, FormikValues } from 'formik'
 import { useRouter } from 'next/navigation'
 import { enqueueSnackbar } from 'notistack'
-import { ReactElement, useEffect, useState } from 'react'
+import { ReactElement, use, useEffect, useState } from 'react'
 import { object, string } from 'yup'
 
 import { graphql } from '@core/shared/gql'
@@ -28,11 +28,12 @@ import {
 import { getExtension } from '../../../../add/_utils/getExtension'
 
 interface AddVideoVariantDownloadDialogProps {
-  params: {
-    videoId: string
-    variantId: string
-    downloadId: string
-  }
+  params:
+     Promise<{
+        videoId: string
+        variantId: string
+        downloadId: string
+      }>
 }
 
 const GET_ADMIN_VIDEO_VARIANT = graphql(`
@@ -94,8 +95,9 @@ const GET_TRANSCODE_ASSET_PROGRESS = graphql(`
 `)
 
 export default function AddVideoVariantDownloadDialog({
-  params: { videoId, variantId, downloadId: languageId }
+  params
 }: AddVideoVariantDownloadDialogProps): ReactElement {
+  const { videoId, variantId, downloadId: languageId } = use(params)
   const router = useRouter()
   const [createVideoVariantDownload] = useMutation(
     VIDEO_VARIANT_DOWNLOAD_CREATE

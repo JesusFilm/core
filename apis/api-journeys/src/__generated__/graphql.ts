@@ -1644,6 +1644,8 @@ export type Mutation = {
   videoPauseEventCreate: VideoPauseEvent;
   videoPlayEventCreate: VideoPlayEvent;
   videoProgressEventCreate: VideoProgressEvent;
+  videoPublishChildren: VideoPublishChildrenResult;
+  videoPublishChildrenAndLanguages: VideoPublishChildrenAndLanguagesResult;
   videoSnippetCreate: VideoSnippet;
   videoSnippetDelete: VideoSnippet;
   videoSnippetUpdate: VideoSnippet;
@@ -2550,6 +2552,16 @@ export type MutationVideoPlayEventCreateArgs = {
 
 export type MutationVideoProgressEventCreateArgs = {
   input: VideoProgressEventCreateInput;
+};
+
+
+export type MutationVideoPublishChildrenArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type MutationVideoPublishChildrenAndLanguagesArgs = {
+  id: Scalars['ID']['input'];
 };
 
 
@@ -5189,6 +5201,22 @@ export type VideoProgressEventCreateInput = {
   stepId?: InputMaybe<Scalars['ID']['input']>;
   /** source of the video */
   value?: InputMaybe<VideoBlockSource>;
+};
+
+export type VideoPublishChildrenAndLanguagesResult = {
+  __typename?: 'VideoPublishChildrenAndLanguagesResult';
+  parentId?: Maybe<Scalars['ID']['output']>;
+  publishedChildIds?: Maybe<Array<Scalars['ID']['output']>>;
+  publishedChildrenCount?: Maybe<Scalars['Int']['output']>;
+  publishedVariantIds?: Maybe<Array<Scalars['ID']['output']>>;
+  publishedVariantsCount?: Maybe<Scalars['Int']['output']>;
+};
+
+export type VideoPublishChildrenResult = {
+  __typename?: 'VideoPublishChildrenResult';
+  parentId?: Maybe<Scalars['ID']['output']>;
+  publishedChildIds?: Maybe<Array<Scalars['ID']['output']>>;
+  publishedChildrenCount?: Maybe<Scalars['Int']['output']>;
 };
 
 export enum VideoRedirectType {
