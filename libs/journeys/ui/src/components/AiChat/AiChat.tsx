@@ -51,7 +51,7 @@ export function AiChat({ open }: AiChatProps) {
   const traceId = useRef<string | null>(null)
   const sessionId = useRef<string | null>(null)
   const [input, setInput] = useState('')
-  const [suggestions, setSuggestions] = useState<string[]>()
+  const [suggestions, setSuggestions] = useState<string[]>([])
   const { blockHistory } = useBlocks()
   const [contextText, setContextText] = useState<string>('')
   const [contextLanguage, setContextLanguage] = useState<string>('')
@@ -73,6 +73,7 @@ export function AiChat({ open }: AiChatProps) {
     const activeBlockContext = aiContextData.find(
       (context) => context.blockId === activeBlock?.id
     )
+
     if (
       !activeBlockContext?.contextText ||
       activeBlockContext.contextText === ''
@@ -89,8 +90,16 @@ export function AiChat({ open }: AiChatProps) {
   useEffect(() => {
     if (!open) return
 
+    // Race condition fix: Clear suggestions when loading starts to prevent stale data,
+    // and ensure suggestions update when loading completes by including contextLoading
+    // in dependencies. Without this, loading indicator can disappear before suggestions render.
+    if (contextLoading) {
+      setSuggestions([])
+      return
+    }
+
     setContexts()
-  }, [open, aiContextData, activeBlock])
+  }, [open, aiContextData, activeBlock, contextLoading])
 
   function handleSubmit(
     message: PromptInputMessage,
