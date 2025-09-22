@@ -53,6 +53,18 @@ nx run-many --target=prisma-migrate
 nx run-many --target=prisma-seed
 ```
 
+
+Here are all the above commands, and the reset, in one script:
+```shell
+#!/bin/sh
+nx run-many --target=prisma-reset
+nx run-many --target=prisma-generate --parallel=1
+nx run-many --target=data-import
+nx run-many --target=prisma-migrate
+nx run-many --target=prisma-seed
+
+```
+
 ## Common Issues
 
 ### prisma-generate failing
