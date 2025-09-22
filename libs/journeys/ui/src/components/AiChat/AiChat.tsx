@@ -135,7 +135,7 @@ export function AiChat({ open }: AiChatProps) {
   }
 
   return (
-    <div className="flex flex-col h-full min-h-0">
+    <div className="flex h-full min-h-0 flex-col">
       <Conversation className="h-full">
         <ConversationContent>
           {messages.length === 0 && (
@@ -197,10 +197,10 @@ export function AiChat({ open }: AiChatProps) {
         </ConversationContent>
         <ConversationScrollButton />
       </Conversation>
-      <div className="border-t border-muted">
+      <div className="border-muted border-t">
         <Suggestions className="px-4 py-2">
           {contextLoading && (
-            <div className="flex items-center gap-2 px-4 py-2 text-muted-foreground">
+            <div className="text-muted-foreground flex items-center gap-2 px-4 py-2">
               <Loader className="size-4 animate-spin" />
               <span>{t('Loading suggestions, please wait...')}</span>
             </div>
@@ -227,7 +227,7 @@ export function AiChat({ open }: AiChatProps) {
       <div className="px-4 pb-4">
         <PromptInput
           onSubmit={handleSubmit}
-          className="w-full bg-background-paper border-none rounded-xl bg-input p-[2px] flex flex-row shadow-none"
+          className="bg-background-paper bg-input flex w-full flex-row rounded-xl border-none p-[2px] shadow-none"
         >
           <PromptInputTextarea
             className="bg-input text-foreground placeholder:text-secondary-light text-[16px]"
@@ -237,7 +237,7 @@ export function AiChat({ open }: AiChatProps) {
           />
           <div className="flex flex-row justify-end self-end p-[4px]">
             <PromptInputSubmit
-              className="rounded-md disabled:bg-secondary-light"
+              className="disabled:bg-secondary-light rounded-md"
               disabled={!input}
               status={status}
               style={{ minHeight: '20px' }}

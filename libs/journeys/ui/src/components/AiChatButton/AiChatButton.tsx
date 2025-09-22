@@ -58,20 +58,20 @@ export function AiChatButton(): ReactElement {
           aria-label={open ? 'Close AI chat' : 'Open AI chat'}
           tabIndex={0}
           data-testid="AiChatButton"
-          className="bg-background text-foreground rounded-full size-11 hover:bg-background/80"
+          className="bg-background text-foreground hover:bg-background/80 size-11 rounded-full"
         >
           <AutoAwesomeIcon />
         </Button>
       </DrawerTrigger>
-      <DrawerContent className="flex flex-col h-[85dvh] data-[vaul-drawer-direction=bottom]:max-h-[85dvh] data-[vaul-drawer-direction=bottom]:rounded-t-3xl [&>div:first-child]:h-[4px] [&>div:first-child]:w-[60px] [&>div:first-child]:mt-3">
+      <DrawerContent className="flex h-[85dvh] flex-col data-[vaul-drawer-direction=bottom]:max-h-[85dvh] data-[vaul-drawer-direction=bottom]:rounded-t-3xl [&>div:first-child]:mt-3 [&>div:first-child]:h-[4px] [&>div:first-child]:w-[60px]">
         <DrawerHeader className="pb-0">
           <DrawerClose>
             <Button
               size="icon"
-              className="absolute top-0 right-1 size-[48px] bg-transparent rounded-full shadow-none hover:bg-transparent"
+              className="absolute top-0 right-1 size-[48px] rounded-full bg-transparent shadow-none hover:bg-transparent"
               aria-label="Close AI chat"
             >
-              <div className="bg-secondary rounded-full size-[24px] relative flex items-center justify-center">
+              <div className="bg-secondary relative flex size-[24px] items-center justify-center rounded-full">
                 <CloseIcon
                   sx={{ fontSize: '16px' }}
                   className="text-secondary-foreground"
@@ -83,7 +83,7 @@ export function AiChatButton(): ReactElement {
             <DrawerDescription className="text-muted-foreground text-[12px]">
               {t('AI may make mistakes.')}
             </DrawerDescription>
-            <DrawerDescription className="text-muted-foreground text-[12px] mt-[-8px]">
+            <DrawerDescription className="text-muted-foreground mt-[-8px] text-[12px]">
               {t('Please double-check important info.')}
             </DrawerDescription>
           </div>

@@ -1,11 +1,11 @@
+import { extractBlockContext } from '../../../../components/AiChat/utils/contextExtraction'
+
 import { extractBlockContexts } from './extractBlockContexts'
 
 // Mock the extractBlockContext function
 jest.mock('../../../../components/AiChat/utils/contextExtraction', () => ({
   extractBlockContext: jest.fn()
 }))
-
-import { extractBlockContext } from '../../../../components/AiChat/utils/contextExtraction'
 
 const mockExtractBlockContext = extractBlockContext as jest.MockedFunction<
   typeof extractBlockContext
@@ -18,9 +18,9 @@ describe('extractBlockContexts', () => {
 
   it('should extract block contexts from tree blocks', () => {
     const treeBlocks = [
-      { 
+      {
         __typename: 'TypographyBlock' as const,
-        id: 'block-1', 
+        id: 'block-1',
         parentBlockId: null,
         parentOrder: 0,
         content: 'Sample text content',
@@ -30,9 +30,9 @@ describe('extractBlockContexts', () => {
         settings: null,
         children: []
       },
-      { 
+      {
         __typename: 'ImageBlock' as const,
-        id: 'block-2', 
+        id: 'block-2',
         parentBlockId: null,
         parentOrder: 1,
         alt: 'Sample image',
