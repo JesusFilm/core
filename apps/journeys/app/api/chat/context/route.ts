@@ -57,6 +57,16 @@ async function fetchBlockContext(
         // Remove markdown code block formatting if present
         const result = text.replace(/^```json\s*/, '').replace(/\s*```$/, '')
 
+        // Log markdown stripping for debugging
+        if (text !== result) {
+          console.log(`🔧 Stripped markdown for block ${blockId}:`, {
+            blockId,
+            originalLength: text.length,
+            strippedLength: result.length,
+            hadMarkdown: true
+          })
+        }
+
         const duration = Date.now() - startTime
 
         span.setAttributes({
@@ -122,6 +132,12 @@ function createFallbackBlockContext(
   language: string
   suggestions: string[]
 } {
+  console.warn(`⚠️ Creating fallback context for block ${blockId}:`, {
+    blockId,
+    contextTextLength: contextText.length,
+    reason: 'AI processing failed or JSON parse failed'
+  })
+
   return {
     blockId,
     contextText,
@@ -145,9 +161,23 @@ function processSuccessfulResult(
   suggestions: string[]
 } {
   try {
-    return JSON.parse(result)
+    const parsed = JSON.parse(result)
+    console.log(`✅ Successfully parsed result for block ${blockId}:`, {
+      blockId,
+      hasLanguage: !!parsed.language,
+      suggestionsCount: parsed.suggestions?.length ?? 0,
+      suggestions: parsed.suggestions
+    })
+    return parsed
   } catch (parseError) {
-    console.error(`Failed to parse result for block ${blockId}:`, parseError)
+    console.error(`❌ Failed to parse result for block ${blockId}:`, {
+      blockId,
+      parseError: parseError instanceof Error ? parseError.message : parseError,
+      resultLength: result.length,
+      resultPreview: result.substring(0, 200),
+      resultSuffix:
+        result.length > 200 ? result.substring(result.length - 50) : ''
+    })
     return createFallbackBlockContext(blockId, contextText)
   }
 }
