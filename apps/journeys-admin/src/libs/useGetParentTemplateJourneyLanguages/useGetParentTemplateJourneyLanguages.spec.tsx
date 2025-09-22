@@ -39,7 +39,7 @@ describe('useGetParentTemplateJourneyLanguages', () => {
     )
 
     await act(
-      async () => await waitFor(() => expect(result).toHaveBeenCalled())
+       () =>  waitFor(() => expect(result).toHaveBeenCalled())
     )
 
     expect(hookResult.current.languages).toHaveLength(1)
