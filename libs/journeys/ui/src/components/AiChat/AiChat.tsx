@@ -51,7 +51,7 @@ export function AiChat({ open }: AiChatProps) {
   const traceId = useRef<string | null>(null)
   const sessionId = useRef<string | null>(null)
   const [input, setInput] = useState('')
-  const [suggestions, setSuggestions] = useState<string[]>([])
+  const [suggestions, setSuggestions] = useState<string[]>()
   const { blockHistory } = useBlocks()
   const [contextText, setContextText] = useState<string>('')
   const [contextLanguage, setContextLanguage] = useState<string>('')
@@ -73,7 +73,6 @@ export function AiChat({ open }: AiChatProps) {
     const activeBlockContext = aiContextData.find(
       (context) => context.blockId === activeBlock?.id
     )
-
     if (
       !activeBlockContext?.contextText ||
       activeBlockContext.contextText === ''
