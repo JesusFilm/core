@@ -5,6 +5,7 @@ import { Block } from '@core/prisma/journeys/client'
 export function canBlockHaveAction(block: Block): boolean {
   return includes(
     [
+      'MultiselectOptionBlock',
       'SignUpBlock',
       'RadioOptionBlock',
       'ButtonBlock',
