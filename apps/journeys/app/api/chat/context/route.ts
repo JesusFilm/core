@@ -80,7 +80,12 @@ async function fetchBlockContext(
             blockId,
             result,
             duration,
-            success: true
+            success: true,
+            debug: {
+              aiResponseLength: text.length,
+              processedResultLength: result.length,
+              hadMarkdownStripping: text !== result
+            }
           }
         })
 
@@ -168,16 +173,42 @@ function processSuccessfulResult(
       suggestionsCount: parsed.suggestions?.length ?? 0,
       suggestions: parsed.suggestions
     })
+
+    // Add debug info to Langfuse trace for successful parsing
+    updateActiveObservation({
+      metadata: {
+        parseSuccess: true,
+        suggestionsGenerated: parsed.suggestions?.length ?? 0,
+        hasLanguage: !!parsed.language
+      }
+    })
+
     return parsed
   } catch (parseError) {
-    console.error(`❌ Failed to parse result for block ${blockId}:`, {
+    const errorMessage =
+      parseError instanceof Error ? parseError.message : 'Unknown error'
+    const debugInfo = {
       blockId,
-      parseError: parseError instanceof Error ? parseError.message : parseError,
+      parseError: errorMessage,
       resultLength: result.length,
       resultPreview: result.substring(0, 200),
       resultSuffix:
         result.length > 200 ? result.substring(result.length - 50) : ''
+    }
+
+    console.error(`❌ Failed to parse result for block ${blockId}:`, debugInfo)
+
+    // Add debug info to Langfuse trace for failed parsing
+    updateActiveObservation({
+      metadata: {
+        parseSuccess: false,
+        parseError: errorMessage,
+        resultLength: result.length,
+        resultPreview: result.substring(0, 200),
+        fallbackUsed: true
+      }
     })
+
     return createFallbackBlockContext(blockId, contextText)
   }
 }
@@ -294,6 +325,22 @@ const handler = async (req: NextRequest) => {
             successCount,
             fallbackCount,
             processingTimeMs: processingTime
+          },
+          debug: {
+            blocksWithSuggestions: results
+              .filter((r) => r.suggestions.length > 0)
+              .map((r) => r.blockId),
+            blocksWithoutSuggestions: results
+              .filter((r) => r.suggestions.length === 0)
+              .map((r) => r.blockId),
+            blocksWithContext: results
+              .filter((r) => r.contextText.trim() !== '')
+              .map((r) => r.blockId),
+            unexpectedEmptySuggestions: results
+              .filter(
+                (r) => r.contextText.trim() !== '' && r.suggestions.length === 0
+              )
+              .map((r) => r.blockId)
           }
         }
       })
