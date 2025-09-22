@@ -25,6 +25,11 @@ import { LinkAction } from './LinkAction'
 import { NavigateToBlockAction } from './NavigateToBlockAction'
 import { ActionValue, actions, getAction } from './utils/actions'
 
+// Type guard to check if a block has an action property
+function hasAction(block: TreeBlock | undefined): block is TreeBlock<ButtonBlock> | TreeBlock<SignUpBlock> | TreeBlock<VideoBlock> {
+  return block != null && 'action' in block
+}
+
 export function Action(): ReactElement {
   const {
     state: { selectedBlock: stateSelectedBlock, selectedStep }
@@ -36,12 +41,12 @@ export function Action(): ReactElement {
 
   // Add addtional types here to use this component for that block
   const selectedBlock = stateSelectedBlock as
-    | (TreeBlock<ButtonBlock> & { action: ButtonBlock['action'] })
-    | (TreeBlock<SignUpBlock> & { action: SignUpBlock['action'] })
-    | (TreeBlock<VideoBlock> & { action: VideoBlock['action'] })
+    | TreeBlock<ButtonBlock>
+    | TreeBlock<SignUpBlock>
+    | TreeBlock<VideoBlock>
     | undefined
   const [action, setAction] = useState<ActionValue>(
-    getAction(t, selectedBlock?.action?.__typename).value
+    getAction(t, hasAction(selectedBlock) ? selectedBlock.action?.__typename : undefined).value
   )
 
   const isSubmitButton =
@@ -58,11 +63,11 @@ export function Action(): ReactElement {
     : labels
 
   useEffect(() => {
-    setAction(getAction(t, selectedBlock?.action?.__typename).value)
+    setAction(getAction(t, hasAction(selectedBlock) ? selectedBlock.action?.__typename : undefined).value)
   }, [selectedBlock?.action?.__typename])
 
   function removeAction(): void {
-    if (selectedBlock == null) return
+    if (!hasAction(selectedBlock)) return
 
     const { id, action, __typename: blockTypename } = selectedBlock
     addAction({
