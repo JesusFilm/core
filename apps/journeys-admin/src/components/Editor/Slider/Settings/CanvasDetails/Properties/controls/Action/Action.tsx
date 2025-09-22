@@ -17,7 +17,6 @@ import {
   BlockFields_VideoBlock as VideoBlock
 } from '../../../../../../../../../__generated__/BlockFields'
 import { useActionCommand } from '../../../../../../utils/useActionCommand'
-import { useFlags } from '@core/shared/ui/FlagsProvider'
 
 import { CustomizationToggle } from './CustomizationToggle'
 import { EmailAction } from './EmailAction'
