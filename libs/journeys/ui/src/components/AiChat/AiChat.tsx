@@ -101,11 +101,10 @@ export function AiChat({ open }: AiChatProps) {
     setContexts()
   }, [open, aiContextData, activeBlock, contextLoading])
 
-  // Debug log to detect when the issue occurs: loading complete but no suggestions showing
+  // Enhanced debug logging to catch suggestion display issues
   useEffect(() => {
-    if (!open || contextLoading || contextError) return
+    if (!open) return
 
-    // Add small delay to ensure all state updates have completed
     const timeoutId = setTimeout(() => {
       const activeBlockContext = aiContextData.find(
         (context) => context.blockId === activeBlock?.id
@@ -115,18 +114,44 @@ export function AiChat({ open }: AiChatProps) {
         (activeBlockContext?.suggestions?.length ?? 0) > 0
       const hasDisplayedSuggestions = (suggestions?.length ?? 0) > 0
 
-      if (hasAvailableSuggestions && !hasDisplayedSuggestions) {
-        console.warn('🐛 AiChat Issue Detected:', {
-          message: 'Loading complete but suggestions not showing',
+      // Always log the current state when not loading
+      if (!contextLoading) {
+        console.log('🔍 AiChat State Check:', {
           activeBlockId: activeBlock?.id,
-          availableSuggestions: activeBlockContext?.suggestions,
-          displayedSuggestions: suggestions,
           contextLoading,
           contextError,
+          aiContextDataLength: aiContextData.length,
+          foundActiveBlockContext: !!activeBlockContext,
+          availableSuggestions: activeBlockContext?.suggestions?.length ?? 0,
+          displayedSuggestions: suggestions?.length ?? 0,
+          hasContextText: !!activeBlockContext?.contextText,
           timestamp: new Date().toISOString()
         })
+
+        // Log the specific issue we're looking for
+        if (hasAvailableSuggestions && !hasDisplayedSuggestions) {
+          console.warn('🐛 AiChat Issue Detected:', {
+            message: 'Loading complete but suggestions not showing',
+            activeBlockId: activeBlock?.id,
+            availableSuggestions: activeBlockContext?.suggestions,
+            displayedSuggestions: suggestions,
+            contextLoading,
+            contextError,
+            timestamp: new Date().toISOString()
+          })
+        }
+
+        // Also check for the case where loading finished but no context found
+        if (!activeBlockContext && activeBlock?.id) {
+          console.warn('🔍 AiChat: No context found for active block:', {
+            activeBlockId: activeBlock.id,
+            aiContextDataLength: aiContextData.length,
+            allBlockIds: aiContextData.map((ctx) => ctx.blockId),
+            timestamp: new Date().toISOString()
+          })
+        }
       }
-    }, 100) // 100ms delay to allow state updates to complete
+    }, 200) // Increased delay to 200ms
 
     return () => clearTimeout(timeoutId)
   }, [
