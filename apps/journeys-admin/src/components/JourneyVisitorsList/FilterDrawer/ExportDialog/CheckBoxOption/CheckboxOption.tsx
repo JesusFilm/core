@@ -5,7 +5,7 @@ import { ReactElement } from 'react'
 interface CheckboxOptionProps {
   checked: boolean
   onChange: (checked: boolean) => void
-  label: string
+  label: string | ReactElement
   onClick?: (e: React.MouseEvent) => void
   indeterminate?: boolean
 }
