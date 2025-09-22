@@ -1,11 +1,9 @@
 'use client'
 
 import { useMutation, useQuery, useSuspenseQuery } from '@apollo/client'
-import Box from '@mui/material/Box'
 import FormControl from '@mui/material/FormControl'
 import FormHelperText from '@mui/material/FormHelperText'
 import InputLabel from '@mui/material/InputLabel'
-import LinearProgress from '@mui/material/LinearProgress'
 import MenuItem from '@mui/material/MenuItem'
 import Select from '@mui/material/Select'
 import Stack from '@mui/material/Stack'
@@ -13,7 +11,7 @@ import Typography from '@mui/material/Typography'
 import { Form, Formik, FormikValues } from 'formik'
 import { useRouter } from 'next/navigation'
 import { enqueueSnackbar } from 'notistack'
-import { ReactElement, useEffect, useState } from 'react'
+import { ReactElement, useState } from 'react'
 import { object, string } from 'yup'
 
 import { graphql } from '@core/shared/gql'
@@ -81,18 +79,6 @@ const ENABLE_MUX_DOWNLOAD = graphql(`
   }
 `)
 
-const TRANSCODE_ASSET = graphql(`
-  mutation TranscodeAsset($input: TranscodeVideoInput!) {
-    transcodeAsset(input: $input)
-  }
-`)
-
-const GET_TRANSCODE_ASSET_PROGRESS = graphql(`
-  query GetTranscodeAssetProgress($jobId: String!) {
-    getTranscodeAssetProgress(jobId: $jobId)
-  }
-`)
-
 export default function AddVideoVariantDownloadDialog({
   params: { videoId, variantId, downloadId: languageId }
 }: AddVideoVariantDownloadDialogProps): ReactElement {
@@ -100,7 +86,6 @@ export default function AddVideoVariantDownloadDialog({
   const [createVideoVariantDownload] = useMutation(
     VIDEO_VARIANT_DOWNLOAD_CREATE
   )
-  const [transcodeAsset] = useMutation(TRANSCODE_ASSET)
   const [uploadedFile, setUploadedFile] = useState<File | null>(null)
   const [createR2Asset] = useCreateR2AssetMutation()
   const [videoDimensions, setVideoDimensions] = useState<{
@@ -108,24 +93,11 @@ export default function AddVideoVariantDownloadDialog({
     height: number
   } | null>(null)
   const [isLoading, setIsLoading] = useState(false)
-  const [isTranscoding, setIsTranscoding] = useState(false)
-  const [transcodeJobId, setTranscodeJobId] = useState<string | null>(null)
-  const [transcodeProgress, setTranscodeProgress] = useState<number | null>(
-    null
-  )
   const [enableMuxDownload] = useMutation(ENABLE_MUX_DOWNLOAD)
 
   const { data } = useSuspenseQuery(GET_ADMIN_VIDEO_VARIANT, {
     variables: { id: variantId }
   })
-
-  const { data: transcodeData, refetch } = useQuery(
-    GET_TRANSCODE_ASSET_PROGRESS,
-    {
-      variables: { jobId: transcodeJobId ?? '' },
-      skip: transcodeJobId == null
-    }
-  )
 
   const returnUrl = `/videos/${videoId}/audio/${variantId}`
   const handleUpload = async (file: File): Promise<void> => {
@@ -150,46 +122,6 @@ export default function AddVideoVariantDownloadDialog({
     return
   }
 
-  const startTranscoding = async (
-    resolution: string,
-    bitrate: string,
-    quality: string,
-    assetId: string
-  ): Promise<void> => {
-    if (data.videoVariant.asset?.id == null) {
-      return
-    }
-
-    try {
-      setIsTranscoding(true)
-
-      // Generate a filename for the transcoded version
-      const timestamp = Date.now()
-      const outputFilename = `${quality}-${languageId}-${timestamp}.mp4`
-
-      const { data: transcodeData } = await transcodeAsset({
-        variables: {
-          input: {
-            r2AssetId: assetId,
-            resolution,
-            videoBitrate: bitrate,
-            outputFilename,
-            outputPath: `${videoId}/variants/${languageId}/downloads`
-          }
-        }
-      })
-
-      if (transcodeData?.transcodeAsset) {
-        setTranscodeJobId(transcodeData.transcodeAsset)
-      }
-    } catch (_error) {
-      enqueueSnackbar('Failed to start transcoding', {
-        variant: 'error'
-      })
-      setIsTranscoding(false)
-    }
-  }
-
   const initialValues: FormikValues = {
     quality: 'auto',
     file: null
@@ -206,20 +138,6 @@ export default function AddVideoVariantDownloadDialog({
         'unique-quality',
         'A download with this quality already exists',
         (value) => {
-          // For generate options, validate the base quality they'll create
-          if (value.startsWith('generate-')) {
-            const baseQuality = value.replace('generate-', '')
-            if (baseQuality === 'low-from-high') {
-              return !existingQualities.includes('low')
-            }
-            if (baseQuality === 'sd-from-high') {
-              return !existingQualities.includes('sd')
-            }
-            return !existingQualities.includes(
-              baseQuality as 'high' | 'low' | 'sd'
-            )
-          }
-
           // For auto option, which creates both high and low
           if (value === 'auto') {
             // Only disallow if both high and low already exist
@@ -235,7 +153,7 @@ export default function AddVideoVariantDownloadDialog({
       ),
     // Accept any value for file for generate options
     file: string().when('quality', {
-      is: (val: string) => !val.startsWith('generate-') && val !== 'auto',
+      is: (val: string) => val !== 'auto',
       then: (schema) => schema.required('File is required'),
       otherwise: (schema) => schema.nullable().optional()
     })
@@ -243,37 +161,6 @@ export default function AddVideoVariantDownloadDialog({
 
   const handleSubmit = async (values: FormikValues): Promise<void> => {
     setIsLoading(true)
-
-    // Handle generate qualities
-    if (values.quality.startsWith('generate-')) {
-      const quality = values.quality.replace('generate-', '')
-      const assetId =
-        values.quality === 'generate-low-from-high' ||
-        values.quality === 'generate-sd-from-high'
-          ? data.videoVariant.downloads.find(
-              (download) => download.quality === 'high'
-            )?.asset?.id
-          : data.videoVariant.asset?.id
-
-      if (assetId == null) {
-        enqueueSnackbar('Asset not available for transcoding', {
-          variant: 'error'
-        })
-        setIsLoading(false)
-        return
-      }
-
-      if (quality === 'high') {
-        await startTranscoding('720p', '2500', 'high', assetId)
-      } else if (quality === 'low' || quality === 'low-from-high') {
-        await startTranscoding('270p', '500', 'low', assetId)
-      } else if (quality === 'sd' || quality === 'sd-from-high') {
-        await startTranscoding('360p', '1000', 'sd', assetId)
-      }
-
-      setIsLoading(false)
-      return
-    }
 
     // Handle auto generation from Mux
     if (values.quality === 'auto') {
@@ -415,41 +302,8 @@ export default function AddVideoVariantDownloadDialog({
     }
   }
 
-  useEffect(() => {
-    if (!transcodeJobId) return
-
-    const interval = setInterval(async () => {
-      try {
-        await refetch()
-
-        if (transcodeData?.getTranscodeAssetProgress != null) {
-          setTranscodeProgress(transcodeData.getTranscodeAssetProgress)
-
-          // If progress is 100%, stop polling
-          if (transcodeData.getTranscodeAssetProgress === 100) {
-            setIsTranscoding(false)
-            enqueueSnackbar('Download created successfully', {
-              variant: 'success'
-            })
-
-            clearInterval(interval)
-            router.push(returnUrl, { scroll: false })
-          }
-        }
-      } catch (_error) {
-        enqueueSnackbar('Failed to transcode', {
-          variant: 'error'
-        })
-        setIsTranscoding(false)
-        clearInterval(interval)
-      }
-    }, 2000)
-
-    return () => clearInterval(interval)
-  }, [transcodeJobId, transcodeProgress])
-
   const isGenerateOption = (quality: string): boolean => {
-    return quality.startsWith('generate-') || quality === 'auto'
+    return quality === 'auto'
   }
 
   const getButtonText = (quality: string): string => {
@@ -535,63 +389,6 @@ export default function AddVideoVariantDownloadDialog({
                   <MenuItem value="high">Upload high 720p (2500kbps)</MenuItem>
                   <MenuItem value="sd">Upload SD 360p (1000kbps)</MenuItem>
                   <MenuItem value="low">Upload low 270p (500kbps)</MenuItem>
-                  {/* <MenuItem
-                    value="generate-high"
-                    disabled={!data.videoVariant.asset?.id}
-                  >
-                    Generate high
-                    {!data.videoVariant.asset?.id
-                      ? ' (master unavailable)'
-                      : ''}
-                  </MenuItem>
-                  <MenuItem
-                    value="generate-sd"
-                    disabled={!data.videoVariant.asset?.id}
-                  >
-                    Generate SD
-                    {!data.videoVariant.asset?.id
-                      ? ' (master unavailable)'
-                      : ''}
-                  </MenuItem>
-                  <MenuItem
-                    value="generate-low"
-                    disabled={!data.videoVariant.asset?.id}
-                  >
-                    Generate low
-                    {!data.videoVariant.asset?.id
-                      ? ' (master unavailable)'
-                      : ''}
-                  </MenuItem>
-                  <MenuItem
-                    value="generate-sd-from-high"
-                    disabled={
-                      !data.videoVariant.downloads.some(
-                        (download) => download.quality === 'high'
-                      )
-                    }
-                  >
-                    Generate SD from high
-                    {!data.videoVariant.downloads.some(
-                      (download) => download.quality === 'high'
-                    )
-                      ? ' (no high quality download available)'
-                      : ''}
-                  </MenuItem>
-                  <MenuItem
-                    value="generate-low-from-high"
-                    disabled={
-                      !data.videoVariant.downloads.some(
-                        (download) => download.quality === 'high'
-                      )
-                    }
-                  >
-                    Generate low from high
-                    {!data.videoVariant.downloads.some(
-                      (download) => download.quality === 'high'
-                    )
-                      ? ' (no high quality download available)'
-                      : ''}
-                  </MenuItem> */}
                 </Select>
                 <FormHelperText sx={{ minHeight: 20 }}>
                   {errors.quality != null &&
@@ -619,52 +416,13 @@ export default function AddVideoVariantDownloadDialog({
                 </>
               ) : (
                 <>
-                  {values.quality === 'auto' ? (
+                  {values.quality === 'auto' && (
                     <Typography variant="body2" color="text.secondary">
                       This will generate high (720p), SD (360p) and low (270p)
                       quality downloads from Mux.
                     </Typography>
-                  ) : (
-                    data.videoVariant.asset?.id && (
-                      <Typography variant="body2" color="text.secondary">
-                        This will generate a{' '}
-                        {values.quality === 'generate-high'
-                          ? 'high quality (720p, 2500kbps)'
-                          : 'low quality (270p, 500kbps)'}{' '}
-                        download from the existing asset.
-                      </Typography>
-                    )
                   )}
                 </>
-              )}
-
-              {isTranscoding && (
-                <Box sx={{ width: '100%', mt: 2 }}>
-                  <Typography
-                    variant="body2"
-                    color="text.secondary"
-                    gutterBottom
-                  >
-                    Transcoding{' '}
-                    {values.quality === 'generate-high'
-                      ? 'to 720p (2500kbps)'
-                      : 'to 270p (500kbps)'}
-                    ...
-                  </Typography>
-                  <LinearProgress
-                    variant="determinate"
-                    value={transcodeProgress ?? 0}
-                    sx={{ height: 10, borderRadius: 1 }}
-                  />
-                  <Typography
-                    variant="body2"
-                    color="text.secondary"
-                    align="right"
-                    sx={{ mt: 0.5 }}
-                  >
-                    {transcodeProgress}%
-                  </Typography>
-                </Box>
               )}
             </Stack>
           </Form>

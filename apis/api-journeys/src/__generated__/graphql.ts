@@ -1599,8 +1599,6 @@ export type Mutation = {
   textResponseBlockCreate: TextResponseBlock;
   textResponseBlockUpdate?: Maybe<TextResponseBlock>;
   textResponseSubmissionEventCreate: TextResponseSubmissionEvent;
-  /** Transcode an asset. Returns the bullmq job ID. */
-  transcodeAsset?: Maybe<Scalars['String']['output']>;
   triggerUnsplashDownload: Scalars['Boolean']['output'];
   typographyBlockCreate: TypographyBlock;
   typographyBlockUpdate: TypographyBlock;
@@ -2146,6 +2144,7 @@ export type MutationPlaylistDeleteArgs = {
 
 
 export type MutationPlaylistItemAddArgs = {
+  id?: InputMaybe<Scalars['ID']['input']>;
   playlistId: Scalars['ID']['input'];
   videoVariantId: Scalars['ID']['input'];
 };
@@ -2334,11 +2333,6 @@ export type MutationTextResponseBlockUpdateArgs = {
 
 export type MutationTextResponseSubmissionEventCreateArgs = {
   input: TextResponseSubmissionEventCreateInput;
-};
-
-
-export type MutationTranscodeAssetArgs = {
-  input: TranscodeVideoInput;
 };
 
 
@@ -3160,7 +3154,7 @@ export type PlaylistItem = {
   __typename?: 'PlaylistItem';
   createdAt: Scalars['DateTime']['output'];
   id: Scalars['ID']['output'];
-  order: Scalars['Int']['output'];
+  order?: Maybe<Scalars['Int']['output']>;
   playlist: Playlist;
   updatedAt: Scalars['DateTime']['output'];
   videoVariant: VideoVariant;
@@ -3252,7 +3246,6 @@ export type Query = {
   getMyCloudflareImages: Array<CloudflareImage>;
   getMyMuxVideo: MuxVideo;
   getMyMuxVideos: Array<MuxVideo>;
-  getTranscodeAssetProgress?: Maybe<Scalars['Int']['output']>;
   getUserRole?: Maybe<UserRole>;
   hosts: Array<Host>;
   integrations: Array<Integration>;
@@ -3453,11 +3446,6 @@ export type QueryGetMyMuxVideoArgs = {
 export type QueryGetMyMuxVideosArgs = {
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
-};
-
-
-export type QueryGetTranscodeAssetProgressArgs = {
-  jobId: Scalars['String']['input'];
 };
 
 
@@ -4304,6 +4292,7 @@ export type TeamUpdateInput = {
 
 export type TextResponseBlock = Block & {
   __typename?: 'TextResponseBlock';
+  hideLabel?: Maybe<Scalars['Boolean']['output']>;
   hint?: Maybe<Scalars['String']['output']>;
   id: Scalars['ID']['output'];
   integrationId?: Maybe<Scalars['String']['output']>;
@@ -4326,6 +4315,7 @@ export type TextResponseBlockCreateInput = {
 };
 
 export type TextResponseBlockUpdateInput = {
+  hideLabel?: InputMaybe<Scalars['Boolean']['input']>;
   hint?: InputMaybe<Scalars['String']['input']>;
   integrationId?: InputMaybe<Scalars['String']['input']>;
   label?: InputMaybe<Scalars['String']['input']>;
@@ -4379,14 +4369,6 @@ export enum ThemeMode {
 export enum ThemeName {
   Base = 'base'
 }
-
-export type TranscodeVideoInput = {
-  outputFilename: Scalars['String']['input'];
-  outputPath: Scalars['String']['input'];
-  r2AssetId: Scalars['String']['input'];
-  resolution: Scalars['String']['input'];
-  videoBitrate?: InputMaybe<Scalars['String']['input']>;
-};
 
 export type Translation = {
   __typename?: 'Translation';
@@ -5474,6 +5456,7 @@ export type VideoVariantDownloadUpdateInput = {
 };
 
 export type VideoVariantFilter = {
+  languageId?: InputMaybe<Scalars['ID']['input']>;
   onlyPublished?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
