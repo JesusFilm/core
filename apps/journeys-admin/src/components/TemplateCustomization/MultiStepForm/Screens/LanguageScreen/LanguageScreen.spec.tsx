@@ -11,10 +11,15 @@ import {
 
 import { JOURNEY_DUPLICATE } from '@core/journeys/ui/useJourneyDuplicateMutation'
 import {
-  mockJourneys,
-  mockVariables as mockGetJourneysFromTemplateIdVariables
-} from '../../../../../libs/useTemplateJourneyLanguages/useTemplateJourneyLanguages.mock'
-import { GET_JOURNEYS_FROM_TEMPLATE_ID } from '../../../../../libs/useTemplateJourneyLanguages'
+  mockChildJourneys,
+  mockChildVariables
+} from '../../../../../libs/useGetChildTemplateJourneyLanguages/useGetChildTemplateJourneyLanguages.mock'
+import {
+  mockParentJourneys,
+  mockParentVariables
+} from '../../../../../libs/useGetParentTemplateJourneyLanguages/useGetParentTemplateJourneyLanguages.mock'
+import { GET_CHILD_JOURNEYS_FROM_TEMPLATE_ID } from '../../../../../libs/useGetChildTemplateJourneyLanguages'
+import { GET_PARENT_JOURNEYS_FROM_TEMPLATE_ID } from '../../../../../libs/useGetParentTemplateJourneyLanguages'
 
 import { LanguageScreen } from './LanguageScreen'
 import { NextRouter, useRouter } from 'next/router'
@@ -24,9 +29,13 @@ import {
   JourneyDuplicateVariables
 } from '../../../../../../__generated__/JourneyDuplicate'
 import {
-  GetJourneysFromTemplateId,
-  GetJourneysFromTemplateIdVariables
-} from '../../../../../../__generated__/GetJourneysFromTemplateId'
+  GetChildJourneysFromTemplateId,
+  GetChildJourneysFromTemplateIdVariables
+} from '../../../../../../__generated__/GetChildJourneysFromTemplateId'
+import {
+  GetParentJourneysFromTemplateId,
+  GetParentJourneysFromTemplateIdVariables
+} from '../../../../../../__generated__/GetParentJourneysFromTemplateId'
 
 jest.mock('next-firebase-auth', () => ({
   __esModule: true,
@@ -64,19 +73,25 @@ const mockGetLastActiveTeamIdAndTeams: MockedResponse<GetLastActiveTeamIdAndTeam
     }
   }
 
-const mockGetJourneysFromTemplateId: MockedResponse<
-  GetJourneysFromTemplateId,
-  GetJourneysFromTemplateIdVariables
+const mockGetChildJourneysFromTemplateId: MockedResponse<
+  GetChildJourneysFromTemplateId,
+  GetChildJourneysFromTemplateIdVariables
 > = {
-  ...mockJourneys,
+  ...mockChildJourneys,
   request: {
-    query: GET_JOURNEYS_FROM_TEMPLATE_ID,
-    variables: {
-      where: {
-        template: true,
-        fromTemplateId: 'template-123'
-      }
-    }
+    query: GET_CHILD_JOURNEYS_FROM_TEMPLATE_ID,
+    variables: mockChildVariables
+  }
+}
+
+const mockGetParentJourneysFromTemplateId: MockedResponse<
+  GetParentJourneysFromTemplateId,
+  GetParentJourneysFromTemplateIdVariables
+> = {
+  ...mockParentJourneys,
+  request: {
+    query: GET_PARENT_JOURNEYS_FROM_TEMPLATE_ID,
+    variables: mockParentVariables
   }
 }
 
@@ -119,6 +134,8 @@ describe('LanguageScreen', () => {
       <MockedProvider
         mocks={[
           mockGetLastActiveTeamIdAndTeams,
+          mockGetChildJourneysFromTemplateId,
+          mockGetParentJourneysFromTemplateId,
           { ...mockJourneyDuplicate, result: mockJourneyDuplicateMockResult }
         ]}
       >
@@ -164,9 +181,39 @@ describe('LanguageScreen', () => {
       .fn()
       .mockReturnValue({ ...mockJourneyDuplicate.result })
 
-    const mockGetJourneysFromTemplateIdMockResult = jest
+    // Create specific mocks for this test case
+    const mockChildJourneysForTest = {
+      ...mockGetChildJourneysFromTemplateId,
+      request: {
+        query: GET_CHILD_JOURNEYS_FROM_TEMPLATE_ID,
+        variables: {
+          where: {
+            template: true,
+            fromTemplateId: 'template-123' // This journey has fromTemplateId
+          }
+        }
+      }
+    }
+
+    const mockParentJourneysForTest = {
+      ...mockGetParentJourneysFromTemplateId,
+      request: {
+        query: GET_PARENT_JOURNEYS_FROM_TEMPLATE_ID,
+        variables: {
+          where: {
+            template: true,
+            ids: ['template-123']
+          }
+        }
+      }
+    }
+
+    const mockGetChildJourneysFromTemplateIdMockResult = jest
       .fn()
-      .mockReturnValue({ ...mockGetJourneysFromTemplateId.result })
+      .mockReturnValue({ ...mockChildJourneysForTest.result })
+    const mockGetParentJourneysFromTemplateIdMockResult = jest
+      .fn()
+      .mockReturnValue({ ...mockParentJourneysForTest.result })
 
     render(
       <MockedProvider
@@ -176,15 +223,19 @@ describe('LanguageScreen', () => {
             request: {
               ...mockJourneyDuplicate.request,
               variables: {
-                id: 'journey-3',
+                id: 'journey-2', // This should match the Spanish language journey ID
                 teamId: 'teamId1'
               }
             },
             result: mockJourneyDuplicateMockResult
           },
           {
-            ...mockGetJourneysFromTemplateId,
-            result: mockGetJourneysFromTemplateIdMockResult
+            ...mockChildJourneysForTest,
+            result: mockGetChildJourneysFromTemplateIdMockResult
+          },
+          {
+            ...mockParentJourneysForTest,
+            result: mockGetParentJourneysFromTemplateIdMockResult
           }
         ]}
       >
@@ -204,7 +255,10 @@ describe('LanguageScreen', () => {
     )
 
     await waitFor(() =>
-      expect(mockGetJourneysFromTemplateIdMockResult).toHaveBeenCalled()
+      expect(mockGetChildJourneysFromTemplateIdMockResult).toHaveBeenCalled()
+    )
+    await waitFor(() =>
+      expect(mockGetParentJourneysFromTemplateIdMockResult).toHaveBeenCalled()
     )
     await waitFor(() =>
       expect(screen.getByRole('combobox', { name: 'Team' })).toHaveTextContent(
@@ -217,7 +271,7 @@ describe('LanguageScreen', () => {
       key: 'ArrowDown'
     })
     await waitFor(() =>
-      fireEvent.click(screen.getByRole('option', { name: 'French' }))
+      fireEvent.click(screen.getByRole('option', { name: 'Spanish' }))
     )
 
     fireEvent.click(screen.getByTestId('LanguageScreenSubmitButton'))
@@ -244,6 +298,8 @@ describe('LanguageScreen', () => {
       <MockedProvider
         mocks={[
           mockGetLastActiveTeamIdAndTeams,
+          mockGetChildJourneysFromTemplateId,
+          mockGetParentJourneysFromTemplateId,
           { ...mockJourneyDuplicate, result: mockJourneyDuplicateMockResult }
         ]}
       >
@@ -298,7 +354,13 @@ describe('LanguageScreen', () => {
     }
 
     render(
-      <MockedProvider mocks={[mockGetLastActiveTeamIdAndTeams]}>
+      <MockedProvider
+        mocks={[
+          mockGetLastActiveTeamIdAndTeams,
+          mockGetChildJourneysFromTemplateId,
+          mockGetParentJourneysFromTemplateId
+        ]}
+      >
         <SnackbarProvider>
           <JourneyProvider
             value={{ journey: journeyWithImage, variant: 'admin' }}
@@ -323,7 +385,13 @@ describe('LanguageScreen', () => {
 
   it('renders all required components correctly', async () => {
     render(
-      <MockedProvider mocks={[mockGetLastActiveTeamIdAndTeams]}>
+      <MockedProvider
+        mocks={[
+          mockGetLastActiveTeamIdAndTeams,
+          mockGetChildJourneysFromTemplateId,
+          mockGetParentJourneysFromTemplateId
+        ]}
+      >
         <SnackbarProvider>
           <JourneyProvider value={{ journey, variant: 'admin' }}>
             <TeamProvider>
@@ -366,7 +434,13 @@ describe('LanguageScreen', () => {
     }
 
     render(
-      <MockedProvider mocks={[mockGetLastActiveTeamIdAndTeams]}>
+      <MockedProvider
+        mocks={[
+          mockGetLastActiveTeamIdAndTeams,
+          mockGetChildJourneysFromTemplateId,
+          mockGetParentJourneysFromTemplateId
+        ]}
+      >
         <SnackbarProvider>
           <JourneyProvider
             value={{ journey: journeyWithoutImage, variant: 'admin' }}
