@@ -114,6 +114,9 @@ export function useVideo(): VideoControls {
           })
 
           player.ready(() => {
+            // Double-check autoplay is disabled
+            player.autoplay(false)
+
             const resolvedSrc = source.src || FALLBACK_DEBUG_HLS_SRC
 
             if (!resolvedSrc) {
@@ -123,8 +126,6 @@ export function useVideo(): VideoControls {
 
             const isMP4 = resolvedSrc.includes('.mp4') || resolvedSrc.includes('video/mp4')
             const sourceType = isMP4 ? 'video/mp4' : 'application/x-mpegURL'
-
-            console.log(`🎬 Initializing source: ${resolvedSrc} (type: ${sourceType})`)
 
             player.src({
               src: resolvedSrc,
@@ -136,6 +137,13 @@ export function useVideo(): VideoControls {
             }
 
             player.load()
+
+            // Ensure video stays paused after loading
+            setTimeout(() => {
+              if (!player.paused()) {
+                player.pause()
+              }
+            }, 100)
 
             if (source.duration) {
               setDuration(source.duration)
@@ -151,7 +159,6 @@ export function useVideo(): VideoControls {
 
               if (Math.abs(time - lastLoggedTime) >= 0.25) {
                 lastLoggedTime = time
-                console.log(`🎬 Playback time update: ${time.toFixed(2)}s`)
               }
             }
           })
@@ -159,22 +166,18 @@ export function useVideo(): VideoControls {
           player.on('loadedmetadata', () => {
             const detectedDuration = player.duration() || source.duration || 0
             setDuration(detectedDuration)
-            console.log(`🎬 Metadata loaded. Duration: ${detectedDuration.toFixed(2)}s`)
           })
 
           player.on('play', () => {
             setIsPlaying(true)
-            console.log('🎬 Player state: playing')
           })
 
           player.on('pause', () => {
             setIsPlaying(false)
-            console.log('🎬 Player state: paused')
           })
 
           player.on('ended', () => {
             setIsPlaying(false)
-            console.log('🎬 Player state: ended')
           })
 
           playerElementRef.current = element
@@ -235,8 +238,6 @@ export function useVideo(): VideoControls {
       if (isMP4) {
         sourceType = 'video/mp4'
       }
-
-      console.log(`🎬 Updating video source: ${nextVideo.src} (type: ${sourceType})`)
 
       playerRef.current.src({
         src: nextVideo.src,

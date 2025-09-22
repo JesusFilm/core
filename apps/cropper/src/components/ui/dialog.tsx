@@ -13,7 +13,7 @@ export function DialogOverlay({ className, ...props }: DialogPrimitive.DialogOve
   return (
     <DialogPrimitive.Overlay
       className={clsx(
-        'fixed inset-0 z-40 bg-slate-950/80 backdrop-blur-sm data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out data-[state=open]:fade-in',
+        'fixed inset-0 z-40 bg-slate-950/70 backdrop-blur-sm data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out data-[state=open]:fade-in',
         className
       )}
       {...props}
@@ -27,7 +27,7 @@ export function DialogContent({ className, ...props }: DialogPrimitive.DialogCon
       <DialogOverlay />
       <DialogPrimitive.Content
         className={clsx(
-          'fixed left-1/2 top-1/2 z-50 w-full max-w-lg -translate-x-1/2 -translate-y-1/2 rounded-xl border border-slate-700 bg-slate-900/95 p-6 shadow-xl focus:outline-none',
+          'fixed left-1/2 top-1/2 z-50 w-full max-w-lg -translate-x-1/2 -translate-y-1/2 rounded-2xl border border-white/10 bg-slate-950/80 p-6 shadow-xl focus:outline-none backdrop-blur',
           className
         )}
         {...props}

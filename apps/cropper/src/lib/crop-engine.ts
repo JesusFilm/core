@@ -153,3 +153,138 @@ export function cropBoxAtTime(
   const resolved = interpolator(sortKeyframes(path.keyframes), time)
   return toCropBox(resolved, video, path.aspectRatio, path.padding)
 }
+
+// Scene change adaptation logic
+export function adaptCropPathToSceneChange(
+  path: CropPath,
+  sceneChange: import('../types').SceneChangeResult,
+  allSceneChanges: import('../types').SceneChangeResult[]
+): CropPath {
+  const { level, changePercentage, time, motionVectors } = sceneChange
+
+  // Different adaptation strategies based on scene change level
+  switch (level) {
+    case 'stable':
+      // Low activity - continue normal tracking
+      return path
+
+    case 'moderate':
+      // Moderate activity - adjust tracking sensitivity
+      if (changePercentage > 25) {
+        // Create a new keyframe to handle the change
+        const newKeyframe = createCropKeyframe(time, {
+          focusX: 0.5, // Reset to center
+          focusY: 0.5,
+          scale: 1.2 // Slightly wider crop for moderate changes
+        })
+
+        return setKeyframes(path, [...path.keyframes, newKeyframe])
+      }
+      return path
+
+    case 'significant':
+      // Significant changes - pause auto-tracking temporarily
+      // Add a keyframe with wider crop area
+      const significantKeyframe = createCropKeyframe(time, {
+        focusX: 0.5,
+        focusY: 0.5,
+        scale: 1.5 // Much wider crop for significant changes
+      })
+
+      return setKeyframes(path, [...path.keyframes, significantKeyframe])
+
+    case 'transition':
+      // Scene transition - reset crop window and create new keyframe
+      // Find the previous scene change to determine transition type
+      const previousSceneChange = allSceneChanges
+        .filter(sc => sc.time < time)
+        .sort((a, b) => b.time - a.time)[0]
+
+      let transitionKeyframe: CropKeyframe
+
+      if (motionVectors?.isCameraMovement) {
+        // Camera movement - keep current crop area but adjust focus
+        transitionKeyframe = createCropKeyframe(time, {
+          focusX: 0.5,
+          focusY: 0.5,
+          scale: 1.3 // Moderate crop for camera movement
+        })
+      } else {
+        // Subject movement or scene cut - reset to default
+        transitionKeyframe = createCropKeyframe(time, {
+          focusX: 0.5,
+          focusY: 0.5,
+          scale: 1.0 // Default crop scale
+        })
+      }
+
+      // For hard transitions, we might want to remove old keyframes
+      // that are no longer relevant
+      const recentKeyframes = path.keyframes.filter(
+        keyframe => keyframe.time >= time - 2 // Keep keyframes from last 2 seconds
+      )
+
+      return setKeyframes(path, [...recentKeyframes, transitionKeyframe])
+
+    default:
+      return path
+  }
+}
+
+// Helper function to determine if scene change requires immediate attention
+export function shouldAdaptToSceneChange(sceneChange: import('../types').SceneChangeResult): boolean {
+  const { level, changePercentage } = sceneChange
+
+  switch (level) {
+    case 'stable':
+      return false // No adaptation needed
+    case 'moderate':
+      return changePercentage > 20 // Only adapt for moderate changes above threshold
+    case 'significant':
+    case 'transition':
+      return true // Always adapt for significant changes and transitions
+    default:
+      return false
+  }
+}
+
+// Helper function to get recommended crop settings for scene change
+export function getRecommendedCropForSceneChange(
+  sceneChange: import('../types').SceneChangeResult,
+  currentCrop?: CropWindow
+): Partial<CropWindow> {
+  const { level, motionVectors } = sceneChange
+
+  const baseSettings = {
+    focusX: 0.5,
+    focusY: 0.5,
+    scale: 1.0
+  }
+
+  switch (level) {
+    case 'moderate':
+      return {
+        ...baseSettings,
+        scale: currentCrop?.scale ? Math.min(currentCrop.scale * 1.1, 1.3) : 1.1
+      }
+
+    case 'significant':
+      return {
+        ...baseSettings,
+        scale: currentCrop?.scale ? Math.min(currentCrop.scale * 1.2, 1.5) : 1.3
+      }
+
+    case 'transition':
+      if (motionVectors?.isCameraMovement) {
+        return {
+          ...baseSettings,
+          scale: 1.2 // Moderate adjustment for camera movement
+        }
+      } else {
+        return baseSettings // Reset to center for scene changes
+      }
+
+    default:
+      return baseSettings
+  }
+}

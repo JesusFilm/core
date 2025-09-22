@@ -39,7 +39,7 @@ export function ExportDialog({
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogTrigger asChild>
-        <Button variant="primary" size="sm" disabled={disabled}>
+        <Button variant="primary" size="sm" disabled={disabled} className="rounded-full">
           Export video
         </Button>
       </DialogTrigger>
@@ -80,20 +80,17 @@ export function ExportDialog({
           </fieldset>
 
           <div className="space-y-2">
-            <div className="h-2 w-full overflow-hidden rounded-full bg-slate-800">
-              <div
-                className="h-full rounded-full bg-accent transition-all"
-                style={{ width: `${progress}%` }}
-              />
+            <div className="h-2 w-full overflow-hidden rounded-full bg-stone-700/60">
+              <div className="h-full rounded-full bg-accent transition-all" style={{ width: `${progress}%` }} />
             </div>
-            <div className="flex items-center justify-between text-xs text-slate-400">
+            <div className="flex items-center justify-between text-xs text-stone-400">
               <span>Status: {status}</span>
               <span>{progress.toFixed(0)}%</span>
             </div>
           </div>
 
           {downloadUrl ? (
-            <div className="rounded-lg border border-slate-800 bg-slate-900/60 p-3 text-xs text-slate-300">
+            <div className="rounded-lg bg-white/5 p-3 text-xs text-stone-300">
               ✓ Export complete! File saved to your Downloads folder.
               <br />
               <span className="text-accent">{downloadUrl}</span>
@@ -103,10 +100,10 @@ export function ExportDialog({
           {error ? <p className="text-xs text-danger">{error}</p> : null}
 
           <div className="flex justify-end gap-2">
-            <Button variant="ghost" size="sm" onClick={onReset} disabled={isProcessing}>
+            <Button variant="ghost" size="sm" onClick={onReset} disabled={isProcessing} className="rounded-full">
               Reset
             </Button>
-            <Button variant="primary" size="sm" onClick={onStart} disabled={disabled || isProcessing}>
+            <Button variant="primary" size="sm" onClick={onStart} disabled={disabled || isProcessing} className="rounded-full">
               {isProcessing ? 'Exporting…' : isComplete ? 'Re-export' : 'Start export'}
             </Button>
           </div>

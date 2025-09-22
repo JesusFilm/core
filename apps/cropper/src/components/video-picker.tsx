@@ -1,6 +1,7 @@
 'use client'
 
 import Image from 'next/image'
+import { ChevronRight } from 'lucide-react'
 import { useCallback, useEffect, useMemo, useState, KeyboardEvent } from 'react'
 import { useQuery } from '@apollo/client'
 import type { VideoSummary, VideoData } from '../types/video'
@@ -48,16 +49,6 @@ export function VideoPicker({ activeVideo, onSelect }: VideoPickerProps) {
   const handleSearch = useCallback(() => {
     const trimmedInput = inputValue.trim()
     if (trimmedInput && trimmedInput !== submittedSearchTerm) {
-      console.log('🔍 [VideoPicker] Search submitted:', {
-        searchTerm: trimmedInput,
-        timestamp: new Date().toISOString(),
-        variables: {
-          where: { title: trimmedInput },
-          offset: 0,
-          limit: 20,
-          languageId: '529'
-        }
-      })
       setSubmittedSearchTerm(trimmedInput)
     }
   }, [inputValue, submittedSearchTerm])
@@ -72,11 +63,6 @@ export function VideoPicker({ activeVideo, onSelect }: VideoPickerProps) {
 
   // Log when loading state changes
   useEffect(() => {
-    console.log('⏳ [VideoPicker] Loading state:', loading, {
-      submittedSearchTerm: submittedSearchTerm.trim(),
-      inputValue: inputValue.trim(),
-      timestamp: new Date().toISOString()
-    })
   }, [loading, submittedSearchTerm, inputValue])
 
   // Transform mock videos to match GraphQL structure for fallback
@@ -125,18 +111,6 @@ export function VideoPicker({ activeVideo, onSelect }: VideoPickerProps) {
   // Log when data is received
   useEffect(() => {
     if (mockVideoData) {
-      console.log('✅ [VideoPicker] Data available:', {
-        submittedSearchTerm: submittedSearchTerm.trim(),
-        inputValue: inputValue.trim(),
-        videoCount: mockVideoData.videos?.length || 0,
-        usingMockData: !data?.videos?.length,
-        videos: mockVideoData.videos?.map((video: VideoData) => ({
-          slug: video.slug,
-          title: video.title?.[0]?.value || 'Untitled',
-          label: video.label
-        })),
-        timestamp: new Date().toISOString()
-      })
     }
   }, [mockVideoData, submittedSearchTerm, inputValue, data])
 
@@ -187,8 +161,8 @@ export function VideoPicker({ activeVideo, onSelect }: VideoPickerProps) {
   return (
     <section className="space-y-4">
       <header className="space-y-1">
-        <h2 className="text-base font-semibold text-white">Video Library</h2>
-        <p className="text-xs text-slate-400">{subtitle}</p>
+        <h2 className="section-title">Video Library</h2>
+        <p className="section-subtitle">{subtitle}</p>
       </header>
 
       <div className="flex gap-2">
@@ -198,13 +172,14 @@ export function VideoPicker({ activeVideo, onSelect }: VideoPickerProps) {
           onKeyPress={handleKeyPress}
           placeholder="Search videos by title..."
           aria-label="Search videos"
-          className="flex-1"
+          className="flex-1 h-11 rounded-full pl-4 shadow-md"
         />
         <Button
           onClick={handleSearch}
           disabled={!inputValue.trim() || loading}
           variant="primary"
           size="md"
+          className="rounded-full px-5"
         >
           {loading ? 'Searching...' : 'Search'}
         </Button>
@@ -220,7 +195,7 @@ export function VideoPicker({ activeVideo, onSelect }: VideoPickerProps) {
           return (
             <li
               key={video.slug}
-              className="flex items-center gap-3 rounded-xl border border-slate-800 bg-slate-900/60 p-3 shadow-sm"
+              className="flex items-center gap-3 rounded-2xl p-3 transition ring-1 ring-white/10 hover:bg-white/5"
             >
               <div className="relative h-16 w-28 overflow-hidden rounded-lg bg-slate-800">
                 <Image
@@ -234,18 +209,18 @@ export function VideoPicker({ activeVideo, onSelect }: VideoPickerProps) {
                   {formatTime(duration)}
                 </span>
               </div>
-              <div className="flex-1 space-y-1">
-                <p className="text-sm font-medium text-white">{title}</p>
-                <p className="text-xs text-slate-400">slug: {video.slug}</p>
-                <p className="text-xs text-slate-500">{video.label}</p>
+              <div className="min-w-0 flex-1 space-y-1">
+                <p className="clamp-2 leading-tight text-sm font-medium text-white">{title}</p>
+                <p className="text-xs text-stone-400">slug: {video.slug}</p>
+                <p className="text-xs text-stone-500">{video.label}</p>
               </div>
               <Button
                 variant={isActive ? 'ghost' : 'primary'}
                 size="sm"
                 onClick={() => handleSelect(video)}
-                disabled={loading}
+                className="rounded-full shrink-0"
               >
-                {isActive ? 'Selected' : 'Load'}
+                {isActive ? 'Selected' : (<><span>Load</span><ChevronRight className="ml-1 h-4 w-4" /></>)}
               </Button>
             </li>
           )

@@ -3,7 +3,7 @@
 declare const self: DedicatedWorkerGlobalScope
 
 // Import MediaPipe Tasks Vision
-import { ObjectDetector, FilesetResolver } from '@mediapipe/tasks-vision'
+import { FaceDetector, ObjectDetector, FilesetResolver } from '@mediapipe/tasks-vision'
 
 type StartDetectionMessage = {
   type: 'start'
@@ -38,8 +38,8 @@ type DetectionChunk = {
       height: number
     }
     confidence: number
-    label: 'person'
-    source: 'mediapipe' | 'mock'
+    label: 'face' | 'person' | 'silhouette' | 'center'
+    source: 'mediapipe'
   }
 }
 
@@ -53,16 +53,11 @@ type DetectionError = {
   error: string
 }
 
-type DebugMessage = {
-  type: 'debug'
-  mediapipeInitialized?: boolean
-  mediapipeFailed?: boolean
-}
-
-type OutgoingMessage = DetectionChunk | DetectionComplete | DetectionError | DebugMessage
+type OutgoingMessage = DetectionChunk | DetectionComplete | DetectionError
 
 let timer: number | undefined
-let detector: ObjectDetector | null = null
+let faceDetector: FaceDetector | null = null
+let objectDetector: ObjectDetector | null = null
 const detections: DetectionChunk['result'][] = []
 
 const cleanup = () => {
@@ -70,9 +65,13 @@ const cleanup = () => {
     clearInterval(timer)
     timer = undefined
   }
-  if (detector) {
-    detector.close()
-    detector = null
+  if (faceDetector) {
+    faceDetector.close()
+    faceDetector = null
+  }
+  if (objectDetector) {
+    objectDetector.close()
+    objectDetector = null
   }
   detections.length = 0
 }
@@ -85,10 +84,31 @@ const sendError = (error: string) => {
   sendMessage({ type: 'error', error })
 }
 
-const initializeDetector = async (): Promise<ObjectDetector | null> => {
+const initializeFaceDetector = async (): Promise<FaceDetector | null> => {
   try {
-    console.log('Initializing MediaPipe ObjectDetector...')
+    const vision = await FilesetResolver.forVisionTasks(
+      'https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.0/wasm'
+    )
 
+    const faceDetector = await FaceDetector.createFromOptions(vision, {
+      baseOptions: {
+        modelAssetPath: 'https://storage.googleapis.com/mediapipe-models/face_detector/blaze_face_short_range/float16/1/blaze_face_short_range.tflite',
+        delegate: 'CPU'
+      },
+      minDetectionConfidence: 0.3,
+      minSuppressionThreshold: 0.3,
+      maxResults: 5
+    })
+
+    return faceDetector
+  } catch (error) {
+    console.error('Failed to initialize MediaPipe FaceDetector:', error)
+    return null
+  }
+}
+
+const initializeObjectDetector = async (): Promise<ObjectDetector | null> => {
+  try {
     const vision = await FilesetResolver.forVisionTasks(
       'https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.0/wasm'
     )
@@ -104,11 +124,9 @@ const initializeDetector = async (): Promise<ObjectDetector | null> => {
       maxResults: 3
     })
 
-    console.log('MediaPipe ObjectDetector initialized successfully')
     return objectDetector
   } catch (error) {
     console.error('Failed to initialize MediaPipe ObjectDetector:', error)
-    // Return null to indicate fallback to mock detection
     return null
   }
 }
@@ -117,18 +135,19 @@ const handleStart = async (message: StartDetectionMessage) => {
   cleanup()
 
   try {
-    // Initialize MediaPipe ObjectDetector
-    detector = await initializeDetector()
+    // Initialize both detectors
+    faceDetector = await initializeFaceDetector()
+    objectDetector = await initializeObjectDetector()
 
-    if (!detector) {
-      console.warn('MediaPipe initialization failed, falling back to mock detection')
-      sendMessage({ type: 'debug', mediapipeFailed: true })
-      // Fallback to mock detection if MediaPipe fails
-      fallbackToMockDetection(message.payload.duration)
+    if (!faceDetector && !objectDetector) {
+      sendError('MediaPipe initialization failed - no detectors available')
       return
     }
 
-    sendMessage({ type: 'debug', mediapipeInitialized: true })
+    const initializedDetectors = []
+    if (faceDetector) initializedDetectors.push('FaceDetector')
+    if (objectDetector) initializedDetectors.push('ObjectDetector')
+
 
     // Set up completion timer based on expected duration
     // The main thread will send processFrame messages for real detection
@@ -144,55 +163,104 @@ const handleStart = async (message: StartDetectionMessage) => {
   } catch (error) {
     console.error('Failed to start detection:', error)
     sendError(`Failed to start detection: ${error}`)
-    sendMessage({ type: 'debug', mediapipeFailed: true })
-    // Fallback to mock detection on error
-    fallbackToMockDetection(message.payload.duration)
   }
 }
 
-const fallbackToMockDetection = (duration: number) => {
-  console.log('Using mock detection as fallback')
 
-  const step = 0.5
-  const totalFrames = Math.max(4, Math.ceil(duration / step))
-  let index = 0
+// Helper function to calculate distance between centers of two boxes
+const getBoxDistance = (box1: { x: number, y: number, width: number, height: number },
+                       box2: { x: number, y: number, width: number, height: number }) => {
+  const center1X = box1.x + box1.width / 2
+  const center1Y = box1.y + box1.height / 2
+  const center2X = box2.x + box2.width / 2
+  const center2Y = box2.y + box2.height / 2
 
-  timer = self.setInterval(() => {
-    const time = Number((index * step).toFixed(2))
+  return Math.sqrt(Math.pow(center2X - center1X, 2) + Math.pow(center2Y - center1Y, 2))
+}
 
-    // Generate mock detection result
-    const oscillation = Math.sin(index / Math.max(totalFrames / 4, 1))
-    const result: DetectionChunk['result'] = {
-      id: `det-mock-${Date.now()}-${index}`,
-      time,
-      box: {
-        x: Math.max(0.05, Math.min(0.65, 0.3 + oscillation * 0.2)),
-        y: Math.max(0.05, Math.min(0.6, 0.25 + Math.cos(oscillation) * 0.1)),
-        width: 0.28,
-        height: 0.55
-      },
-      confidence: 0.86,
-      label: 'person',
-      source: 'mock'
+// Helper function to check if two boxes overlap or are very close
+const boxesAreClose = (box1: { x: number, y: number, width: number, height: number },
+                      box2: { x: number, y: number, width: number, height: number },
+                      threshold = 0.1) => {
+  // Check if boxes overlap
+  const overlapX = Math.max(0, Math.min(box1.x + box1.width, box2.x + box2.width) - Math.max(box1.x, box2.x))
+  const overlapY = Math.max(0, Math.min(box1.y + box1.height, box2.y + box2.height) - Math.max(box1.y, box2.y))
+  const overlap = overlapX * overlapY > 0
+
+  // Or check if centers are very close (within threshold)
+  const distance = getBoxDistance(box1, box2)
+
+  return overlap || distance < threshold
+}
+
+// Helper function to merge multiple detection boxes into one
+const mergeDetectionBoxes = (detections: Array<{
+  box: { x: number, y: number, width: number, height: number },
+  confidence: number
+}>) => {
+  if (detections.length === 0) return null
+  if (detections.length === 1) return detections[0]
+
+  // Find the bounding box that encompasses all detections
+  let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity
+  let maxConfidence = 0
+
+  for (const detection of detections) {
+    minX = Math.min(minX, detection.box.x)
+    minY = Math.min(minY, detection.box.y)
+    maxX = Math.max(maxX, detection.box.x + detection.box.width)
+    maxY = Math.max(maxY, detection.box.y + detection.box.height)
+    maxConfidence = Math.max(maxConfidence, detection.confidence)
+  }
+
+  return {
+    box: {
+      x: minX,
+      y: minY,
+      width: maxX - minX,
+      height: maxY - minY
+    },
+    confidence: maxConfidence
+  }
+}
+
+// Helper function to group nearby detections
+const groupNearbyDetections = (rawDetections: Array<{
+  box: { x: number, y: number, width: number, height: number },
+  confidence: number
+}>, distanceThreshold = 0.1) => {
+  const groups: Array<Array<typeof rawDetections[0]>> = []
+  const processed = new Set<number>()
+
+  for (let i = 0; i < rawDetections.length; i++) {
+    if (processed.has(i)) continue
+
+    const group = [rawDetections[i]]
+    processed.add(i)
+
+    // Find all detections close to this one
+    for (let j = i + 1; j < rawDetections.length; j++) {
+      if (processed.has(j)) continue
+
+      if (boxesAreClose(rawDetections[i].box, rawDetections[j].box, distanceThreshold)) {
+        group.push(rawDetections[j])
+        processed.add(j)
+      }
     }
 
-    detections.push(result)
-    const chunk: DetectionChunk = { type: 'chunk', result }
-    sendMessage(chunk)
+    groups.push(group)
+  }
 
-    index += 1
-
-    if (index >= totalFrames) {
-      cleanup()
-      const complete: DetectionComplete = { type: 'complete', results: detections.slice() }
-      sendMessage(complete)
-    }
-  }, 180)
+  // Merge each group into a single detection
+  return groups.map(group => mergeDetectionBoxes(group)).filter(Boolean) as Array<{
+    box: { x: number, y: number, width: number, height: number },
+    confidence: number
+  }>
 }
 
 const handleProcessFrame = async (message: ProcessFrameMessage) => {
-  if (!detector) {
-    console.warn('Detector not initialized, skipping frame processing')
+  if (!faceDetector && !objectDetector) {
+    console.warn('No detectors initialized, skipping frame processing')
     return
   }
 
@@ -214,39 +282,147 @@ const handleProcessFrame = async (message: ProcessFrameMessage) => {
       imageData = frameData
     }
 
-    // Run detection on the frame
-    const detectionResult = detector.detect(imageData)
+    let bestDetection: {
+      box: { x: number, y: number, width: number, height: number },
+      confidence: number,
+      label: 'face' | 'person' | 'silhouette' | 'center'
+    } | null = null
 
-    // Process detection results
-    if (detectionResult.detections && detectionResult.detections.length > 0) {
-      for (const detection of detectionResult.detections) {
-        if (detection.categories[0]?.categoryName === 'person') {
-          const boundingBox = detection.boundingBox
-          const confidence = detection.categories[0].score
+    // Priority 1: Try face detection
+    if (faceDetector) {
+      try {
+        const faceResult = faceDetector.detect(imageData)
+        if (faceResult.detections && faceResult.detections.length > 0) {
+          // Find the best face detection
+          let bestFaceConfidence = 0
+          let bestFaceBox: any = null
 
-          // Only include detections above confidence threshold
-          if (confidence >= 0.3 && boundingBox) {
-            const result: DetectionChunk['result'] = {
-              id: `det-${Date.now()}-${Math.random()}`,
-              time: timestamp,
-              box: {
-                x: Math.max(0, Math.min(1, boundingBox.originX / imageData.width)),
-                y: Math.max(0, Math.min(1, boundingBox.originY / imageData.height)),
-                width: Math.max(0, Math.min(1, boundingBox.width / imageData.width)),
-                height: Math.max(0, Math.min(1, boundingBox.height / imageData.height))
-              },
-              confidence,
-              label: 'person',
-              source: 'mediapipe'
+          for (const detection of faceResult.detections) {
+            const confidence = detection.categories[0]?.score || 0
+            if (confidence > bestFaceConfidence && confidence >= 0.3) {
+              bestFaceConfidence = confidence
+              bestFaceBox = detection.boundingBox
             }
+          }
 
-            detections.push(result)
-            const chunk: DetectionChunk = { type: 'chunk', result }
-            sendMessage(chunk)
+          if (bestFaceBox) {
+            bestDetection = {
+              box: {
+                x: Math.max(0, Math.min(1, bestFaceBox.originX / imageData.width)),
+                y: Math.max(0, Math.min(1, bestFaceBox.originY / imageData.height)),
+                width: Math.max(0, Math.min(1, bestFaceBox.width / imageData.width)),
+                height: Math.max(0, Math.min(1, bestFaceBox.height / imageData.height))
+              },
+              confidence: bestFaceConfidence,
+              label: 'face'
+            }
           }
         }
+      } catch (error) {
+        console.warn('Face detection failed:', error)
       }
     }
+
+    // Priority 2: If no face found, try person detection
+    if (!bestDetection && objectDetector) {
+      try {
+        const objectResult = objectDetector.detect(imageData)
+        if (objectResult.detections && objectResult.detections.length > 0) {
+          // Find the best person detection
+          let bestPersonConfidence = 0
+          let bestPersonBox: any = null
+
+          for (const detection of objectResult.detections) {
+            if (detection.categories[0]?.categoryName === 'person') {
+              const confidence = detection.categories[0]?.score || 0
+              if (confidence > bestPersonConfidence && confidence >= 0.3) {
+                bestPersonConfidence = confidence
+                bestPersonBox = detection.boundingBox
+              }
+            }
+          }
+
+          if (bestPersonBox) {
+            bestDetection = {
+              box: {
+                x: Math.max(0, Math.min(1, bestPersonBox.originX / imageData.width)),
+                y: Math.max(0, Math.min(1, bestPersonBox.originY / imageData.height)),
+                width: Math.max(0, Math.min(1, bestPersonBox.width / imageData.width)),
+                height: Math.max(0, Math.min(1, bestPersonBox.height / imageData.height))
+              },
+              confidence: bestPersonConfidence,
+              label: 'person'
+            }
+          }
+        }
+      } catch (error) {
+        console.warn('Object detection failed:', error)
+      }
+    }
+
+    // Priority 3: If no person found, try silhouette detection (interpret as any detected object)
+    if (!bestDetection && objectDetector) {
+      try {
+        const objectResult = objectDetector.detect(imageData)
+        if (objectResult.detections && objectResult.detections.length > 0) {
+          // Find the best object detection (any object as silhouette)
+          let bestObjectConfidence = 0
+          let bestObjectBox: any = null
+
+          for (const detection of objectResult.detections) {
+            const confidence = detection.categories[0]?.score || 0
+            if (confidence > bestObjectConfidence && confidence >= 0.2) { // Lower threshold for silhouettes
+              bestObjectConfidence = confidence
+              bestObjectBox = detection.boundingBox
+            }
+          }
+
+          if (bestObjectBox) {
+            bestDetection = {
+              box: {
+                x: Math.max(0, Math.min(1, bestObjectBox.originX / imageData.width)),
+                y: Math.max(0, Math.min(1, bestObjectBox.originY / imageData.height)),
+                width: Math.max(0, Math.min(1, bestObjectBox.width / imageData.width)),
+                height: Math.max(0, Math.min(1, bestObjectBox.height / imageData.height))
+              },
+              confidence: bestObjectConfidence * 0.8, // Reduce confidence for silhouette detection
+              label: 'silhouette'
+            }
+          }
+        }
+      } catch (error) {
+        console.warn('Silhouette detection failed:', error)
+      }
+    }
+
+    // Priority 4: If nothing detected, focus on center
+    if (!bestDetection) {
+      bestDetection = {
+        box: {
+          x: 0.4, // Center of frame horizontally
+          y: 0.4, // Center of frame vertically
+          width: 0.2,
+          height: 0.2
+        },
+        confidence: 0.1, // Very low confidence for center focus
+        label: 'center'
+      }
+    }
+
+    // Send the best detection
+    const result: DetectionChunk['result'] = {
+      id: `det-${Date.now()}-${Math.random()}`,
+      time: timestamp,
+      box: bestDetection.box,
+      confidence: bestDetection.confidence,
+      label: bestDetection.label,
+      source: 'mediapipe'
+    }
+
+    detections.push(result)
+    const chunk: DetectionChunk = { type: 'chunk', result }
+    sendMessage(chunk)
+
   } catch (error) {
     console.error('Frame processing failed:', error)
     // Don't send error to main thread for individual frame failures

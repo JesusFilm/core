@@ -43,9 +43,9 @@ describe('crop engine', () => {
       {
         id: 'det-1',
         time: 5,
-        box: { x: 0.3, y: 0.2, width: 0.25, height: 0.5 },
+        box: { x: 0.3, y: 0.2, width: 0.15, height: 0.18 },
         confidence: 0.9,
-        label: 'person',
+        label: 'face',
         source: 'mediapipe'
       }
     ]

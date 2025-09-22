@@ -15,7 +15,7 @@ interface KeyframeEditorProps {
 export function KeyframeEditor({ keyframe, onChange, onDelete, disabled = false }: KeyframeEditorProps) {
   if (!keyframe) {
     return (
-      <section className="rounded-2xl border border-slate-800 bg-slate-900/60 p-4 text-sm text-slate-400">
+      <section className="panel p-4 text-sm text-slate-400">
         Select a keyframe on the timeline to edit focus and zoom parameters.
       </section>
     )
@@ -24,10 +24,10 @@ export function KeyframeEditor({ keyframe, onChange, onDelete, disabled = false 
   const { window, time } = keyframe
 
   return (
-    <section className="space-y-4 rounded-2xl border border-slate-800 bg-slate-900/60 p-4">
+    <section className="panel space-y-4 p-4">
       <header className="space-y-1">
-        <h3 className="text-sm font-semibold text-white">Keyframe Editor</h3>
-        <p className="text-xs text-slate-400">Fine-tune focus position and zoom for the active frame.</p>
+        <h3 className="section-title">Keyframe Editor</h3>
+        <p className="section-subtitle">Fine-tune focus position and zoom for the active frame.</p>
       </header>
 
       <div className="space-y-3">

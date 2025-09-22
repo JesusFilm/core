@@ -36,9 +36,8 @@ export function Timeline({
     <div className="space-y-2">
       <div className="flex items-center justify-between text-xs text-slate-400">
         <span>Timeline</span>
-        <span>{formatTime(currentTime)}</span>
       </div>
-      <div className="relative h-16 rounded-xl border border-slate-800 bg-slate-900/60">
+      <div className="relative h-16 rounded-2xl bg-transparent">
         <div
           className="absolute inset-0 cursor-pointer"
           onClick={handleScrub}

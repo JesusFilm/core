@@ -5,13 +5,13 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        canvas: '#0f172a',
-        accent: '#38bdf8',
-        danger: '#f87171',
-        success: '#34d399'
+        canvas: '#0c0a09',
+        accent: '#ffffff',
+        danger: '#ef4444',
+        success: '#22c55e'
       },
       boxShadow: {
-        floating: '0 20px 45px -20px rgba(14, 165, 233, 0.45)'
+        floating: '0 20px 45px -20px rgba(255, 255, 255, 0.35)'
       }
     }
   },

@@ -20,22 +20,20 @@ export class DetectionWorkerController {
   private videoElement?: HTMLVideoElement
   private canvas?: OffscreenCanvas
   private ctx?: OffscreenCanvasRenderingContext2D
+  private isExtractionPaused: boolean = false
+  private extractionTimeoutId?: number
 
   start(duration: number, callbacks: DetectionCallbacks, options: DetectionOptions = {}) {
     if (typeof window === 'undefined') {
       return
     }
 
-    console.log('🔍 DetectionWorkerController: Starting detection', { duration, options })
     this.stop()
     this.results = []
+    this.isExtractionPaused = false
 
     // Setup video element for frame extraction
     this.setupVideoElement(options)
-    console.log('🔍 DetectionWorkerController: Video element setup complete', {
-      hasVideoElement: !!this.videoElement,
-      hasCanvas: !!this.canvas
-    })
 
     this.worker = new Worker(new URL('../workers/detection.worker.ts', import.meta.url), {
       type: 'module'
@@ -60,12 +58,6 @@ export class DetectionWorkerController {
         callbacks.onError?.(message.error)
       }
 
-      // Forward debug messages to any listeners
-      if (message.type === 'debug') {
-        console.log('🔍 DetectionWorkerController: Received debug message', message)
-        // Dispatch custom event for debug widget
-        window.dispatchEvent(new CustomEvent('detection-debug', { detail: message }))
-      }
     }
 
     this.worker.onerror = (event) => {
@@ -77,51 +69,35 @@ export class DetectionWorkerController {
   }
 
   private setupVideoElement(options: DetectionOptions) {
-    console.log('🔍 setupVideoElement called with options:', options)
-
     if (options.videoElement) {
-      console.log('🔍 Using provided video element directly')
       this.videoElement = options.videoElement
 
       // For existing elements, we might not have dimensions yet
       // Set up a basic canvas that will be resized when video loads
       this.canvas = new OffscreenCanvas(1920, 1080)
       this.ctx = this.canvas.getContext('2d') || undefined
-      console.log('🔍 Canvas setup for existing element, has context:', !!this.ctx)
     } else if (options.videoUrl) {
-      console.log('🔍 Creating video element for URL:', options.videoUrl)
       this.videoElement = document.createElement('video')
       this.videoElement.src = options.videoUrl
       this.videoElement.crossOrigin = 'anonymous'
       this.videoElement.preload = 'metadata'
       this.videoElement.style.display = 'none'
       document.body.appendChild(this.videoElement)
-      console.log('🔍 Video element created and added to DOM')
 
       // Setup canvas for frame extraction
       this.canvas = new OffscreenCanvas(1920, 1080) // Will be resized when video loads
       this.ctx = this.canvas.getContext('2d') || undefined
-      console.log('🔍 Canvas setup for new element, has context:', !!this.ctx)
-    } else {
-      console.log('🔍 No video element or URL provided')
     }
   }
 
   private async startVideoProcessing(duration: number, options: DetectionOptions, callbacks: DetectionCallbacks) {
-    console.log('🔍 startVideoProcessing called', {
-      hasWorker: !!this.worker,
-      hasVideoElement: !!this.videoElement,
-      videoReadyState: this.videoElement?.readyState
-    })
-
     if (!this.worker || !this.videoElement) {
-      console.log('🔍 Falling back to mock processing - no video element or worker')
       // Fallback to mock processing if no video available
       this.worker?.postMessage({
         type: 'start',
         payload: {
           duration,
-          frameRate: options.frameRate || 8
+          frameRate: options.frameRate || 2
         }
       })
       return
@@ -157,16 +133,28 @@ export class DetectionWorkerController {
         type: 'start',
         payload: {
           duration,
-          frameRate: options.frameRate || 8
+          frameRate: options.frameRate || 2
         }
       })
 
-      // Start frame extraction
-      this.startFrameExtraction(duration, options.frameRate || 8, callbacks)
+    // Start frame extraction
+    this.startFrameExtraction(duration, options.frameRate || 8, callbacks)
 
     } catch (error) {
       callbacks.onError?.(`Video processing setup failed: ${error}`)
     }
+  }
+
+  pauseExtraction() {
+    this.isExtractionPaused = true
+    if (this.extractionTimeoutId) {
+      clearTimeout(this.extractionTimeoutId)
+      this.extractionTimeoutId = undefined
+    }
+  }
+
+  resumeExtraction() {
+    this.isExtractionPaused = false
   }
 
   private startFrameExtraction(duration: number, frameRate: number, callbacks: DetectionCallbacks) {
@@ -182,6 +170,12 @@ export class DetectionWorkerController {
       if (frameIndex >= totalFrames || !this.videoElement || !this.worker) {
         // Send completion signal
         this.worker?.postMessage({ type: 'terminate' })
+        return
+      }
+
+      // If extraction is paused, wait and try again
+      if (this.isExtractionPaused) {
+        this.extractionTimeoutId = window.setTimeout(extractFrame, interval)
         return
       }
 
@@ -219,7 +213,7 @@ export class DetectionWorkerController {
           }
 
           frameIndex++
-          setTimeout(extractFrame, interval)
+          this.extractionTimeoutId = window.setTimeout(extractFrame, interval)
         }
 
         this.videoElement.addEventListener('seeked', onSeeked)
@@ -227,7 +221,7 @@ export class DetectionWorkerController {
       } catch (error) {
         callbacks.onError?.(`Frame extraction setup failed: ${error}`)
         frameIndex++
-        setTimeout(extractFrame, interval)
+        this.extractionTimeoutId = window.setTimeout(extractFrame, interval)
       }
     }
 
@@ -242,6 +236,12 @@ export class DetectionWorkerController {
       this.worker = undefined
     }
 
+    // Clear any pending extraction timeout
+    if (this.extractionTimeoutId) {
+      clearTimeout(this.extractionTimeoutId)
+      this.extractionTimeoutId = undefined
+    }
+
     // Clean up video element if we created it
     if (this.videoElement && !document.body.contains(this.videoElement)) {
       document.body.removeChild(this.videoElement)
@@ -250,6 +250,7 @@ export class DetectionWorkerController {
     this.canvas = undefined
     this.ctx = undefined
     this.results = []
+    this.isExtractionPaused = false
   }
 
   dispose() {

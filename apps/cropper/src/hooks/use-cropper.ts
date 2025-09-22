@@ -7,7 +7,9 @@ import type {
   CropPath,
   CropWindow,
   DetectionResult,
-  Video
+  Video,
+  SceneChangeResult,
+  SceneChangeConfig
 } from '../types'
 import {
   createCropKeyframe,
@@ -16,10 +18,12 @@ import {
   deleteKeyframe,
   mergeDetectionsIntoPath,
   replaceKeyframe,
-  setKeyframes
+  setKeyframes,
+  adaptCropPathToSceneChange
 } from '../lib/crop-engine'
 import { interpolateKeyframes } from '../lib/interpolation'
-import { runDetection } from '../lib/detection'
+import { runDetection, DetectionWorkerController } from '../lib/detection'
+import { runSceneDetection, SceneDetectionWorkerController } from '../lib/scene-detection'
 import { clampTime } from '../lib/video-utils'
 
 interface CropperState {
@@ -29,7 +33,11 @@ interface CropperState {
   currentTime: number
   detections: DetectionResult[]
   detectionStatus: 'idle' | 'running' | 'complete'
+  sceneChanges: SceneChangeResult[]
+  sceneDetectionStatus: 'idle' | 'running' | 'complete'
   autoTrackingEnabled: boolean
+  sceneChangeDetectionEnabled: boolean
+  lastSceneChangeLevel: 'stable' | 'moderate' | 'significant' | 'transition' | null
 }
 
 type CropperAction =
@@ -45,6 +53,11 @@ type CropperAction =
   | { type: 'MERGE_DETECTIONS' }
   | { type: 'SET_DETECTION_STATUS'; status: CropperState['detectionStatus'] }
   | { type: 'TOGGLE_AUTO_TRACKING' }
+  | { type: 'PUSH_SCENE_CHANGE'; sceneChange: SceneChangeResult }
+  | { type: 'SET_SCENE_CHANGES'; sceneChanges: SceneChangeResult[] }
+  | { type: 'SET_SCENE_DETECTION_STATUS'; status: CropperState['sceneDetectionStatus'] }
+  | { type: 'TOGGLE_SCENE_CHANGE_DETECTION' }
+  | { type: 'ADAPT_TO_SCENE_CHANGE'; sceneChange: SceneChangeResult }
 
 const INITIAL_STATE: CropperState = {
   video: null,
@@ -53,7 +66,11 @@ const INITIAL_STATE: CropperState = {
   currentTime: 0,
   detections: [],
   detectionStatus: 'idle',
-  autoTrackingEnabled: false
+  sceneChanges: [],
+  sceneDetectionStatus: 'idle',
+  autoTrackingEnabled: true,
+  sceneChangeDetectionEnabled: true,
+  lastSceneChangeLevel: null
 }
 
 function reducer(state: CropperState, action: CropperAction): CropperState {
@@ -71,7 +88,11 @@ function reducer(state: CropperState, action: CropperAction): CropperState {
         currentTime: 0,
         detections: [],
         detectionStatus: 'idle',
-        autoTrackingEnabled: false
+        sceneChanges: [],
+        sceneDetectionStatus: 'idle',
+        autoTrackingEnabled: true,
+        sceneChangeDetectionEnabled: true,
+        lastSceneChangeLevel: null
       }
     }
 
@@ -190,6 +211,56 @@ function reducer(state: CropperState, action: CropperAction): CropperState {
       }
     }
 
+    case 'PUSH_SCENE_CHANGE': {
+      const sceneChanges = [...state.sceneChanges, action.sceneChange].sort(
+        (a, b) => a.time - b.time
+      )
+
+      return {
+        ...state,
+        sceneChanges,
+        lastSceneChangeLevel: action.sceneChange.level
+      }
+    }
+
+    case 'SET_SCENE_CHANGES': {
+      const sceneChanges = [...action.sceneChanges].sort((a, b) => a.time - b.time)
+
+      return {
+        ...state,
+        sceneChanges
+      }
+    }
+
+    case 'SET_SCENE_DETECTION_STATUS': {
+      return {
+        ...state,
+        sceneDetectionStatus: action.status
+      }
+    }
+
+    case 'TOGGLE_SCENE_CHANGE_DETECTION': {
+      const newSceneChangeDetectionEnabled = !state.sceneChangeDetectionEnabled
+      return {
+        ...state,
+        sceneChangeDetectionEnabled: newSceneChangeDetectionEnabled
+      }
+    }
+
+    case 'ADAPT_TO_SCENE_CHANGE': {
+      if (!state.path) {
+        return state
+      }
+
+      const adaptedPath = adaptCropPathToSceneChange(state.path, action.sceneChange, state.sceneChanges)
+
+      return {
+        ...state,
+        path: adaptedPath,
+        lastSceneChangeLevel: action.sceneChange.level
+      }
+    }
+
     default:
       return state
   }
@@ -204,7 +275,11 @@ export interface UseCropperResult {
   activeKeyframe: CropKeyframe | null
   detectionStatus: CropperState['detectionStatus']
   detections: DetectionResult[]
+  sceneChanges: SceneChangeResult[]
+  sceneDetectionStatus: CropperState['sceneDetectionStatus']
   autoTrackingEnabled: boolean
+  sceneChangeDetectionEnabled: boolean
+  lastSceneChangeLevel: CropperState['lastSceneChangeLevel']
   setVideo: (video: Video | null) => void
   setTime: (time: number) => void
   addKeyframeAt: (time: number, window?: Partial<CropWindow>) => void
@@ -212,12 +287,21 @@ export interface UseCropperResult {
   removeKeyframe: (keyframeId: string) => void
   selectKeyframe: (keyframeId: string | null) => void
   requestDetection: (videoElement?: HTMLVideoElement) => void
+  requestSceneDetection: (videoElement?: HTMLVideoElement, config?: Partial<SceneChangeConfig>) => void
+  pauseDetection: () => void
+  resumeDetection: () => void
+  pauseSceneDetection: () => void
+  resumeSceneDetection: () => void
   toggleAutoTracking: () => void
+  toggleSceneChangeDetection: () => void
 }
 
 export function useCropper(): UseCropperResult {
   const [state, dispatch] = useReducer(reducer, INITIAL_STATE)
   const disposeDetectionRef = useRef<(() => void) | null>(null)
+  const detectionControllerRef = useRef<DetectionWorkerController | null>(null)
+  const disposeSceneDetectionRef = useRef<(() => void) | null>(null)
+  const sceneDetectionControllerRef = useRef<SceneDetectionWorkerController | null>(null)
 
   const setVideo = useCallback((video: Video | null) => {
     dispatch({ type: 'SET_VIDEO', video })
@@ -268,20 +352,17 @@ export function useCropper(): UseCropperResult {
   }, [])
 
   const requestDetection = useCallback((videoElement?: HTMLVideoElement) => {
-    console.log('🔍 requestDetection called, video:', !!state.video, 'videoElement:', !!videoElement)
     if (!state.video) {
-      console.log('🔍 No video, skipping detection')
       return
     }
 
-    console.log('🔍 Starting detection for video:', state.video.slug)
     dispatch({ type: 'SET_DETECTION_STATUS', status: 'running' })
     dispatch({ type: 'SET_DETECTIONS', detections: [] })
 
     disposeDetectionRef.current?.()
 
     const detectionOptions: any = {
-      frameRate: 8
+      frameRate: 2
     }
 
     // If we have a video element, use it directly instead of creating a new one
@@ -293,27 +374,125 @@ export function useCropper(): UseCropperResult {
       detectionOptions.videoUrl = state.video.src
     }
 
-    disposeDetectionRef.current = runDetection(state.video.duration, {
+    // Create controller and store reference
+    const controller = new DetectionWorkerController()
+    detectionControllerRef.current = controller
+
+    const dispose = () => {
+      controller.dispose()
+      detectionControllerRef.current = null
+    }
+
+    controller.start(state.video.duration, {
       onChunk: (result) => {
-        console.log('🔍 Detection chunk received:', result)
         dispatch({ type: 'PUSH_DETECTION', detection: result })
       },
       onComplete: (results) => {
-        console.log('🔍 Detection complete, results:', results.length)
         dispatch({ type: 'SET_DETECTION_STATUS', status: 'complete' })
         dispatch({ type: 'SET_DETECTIONS', detections: results })
         dispatch({ type: 'MERGE_DETECTIONS' })
       },
       onError: (error) => {
-        console.log('🔍 Detection error:', error)
         dispatch({ type: 'SET_DETECTION_STATUS', status: 'idle' })
       }
     }, detectionOptions)
+
+    disposeDetectionRef.current = dispose
   }, [state.video])
 
   const toggleAutoTracking = useCallback(() => {
     dispatch({ type: 'TOGGLE_AUTO_TRACKING' })
   }, [])
+
+  const toggleSceneChangeDetection = useCallback(() => {
+    dispatch({ type: 'TOGGLE_SCENE_CHANGE_DETECTION' })
+  }, [])
+
+  const pauseDetection = useCallback(() => {
+    if (detectionControllerRef.current) {
+      detectionControllerRef.current.pauseExtraction()
+    }
+  }, [])
+
+  const resumeDetection = useCallback(() => {
+    if (detectionControllerRef.current) {
+      detectionControllerRef.current.resumeExtraction()
+    }
+  }, [])
+
+  const pauseSceneDetection = useCallback(() => {
+    if (sceneDetectionControllerRef.current) {
+      sceneDetectionControllerRef.current.pauseExtraction()
+    }
+  }, [])
+
+  const resumeSceneDetection = useCallback(() => {
+    if (sceneDetectionControllerRef.current) {
+      sceneDetectionControllerRef.current.resumeExtraction()
+    }
+  }, [])
+
+  const requestSceneDetection = useCallback((videoElement?: HTMLVideoElement, config?: Partial<SceneChangeConfig>) => {
+    console.log(`🎬 [DEBUG] requestSceneDetection called for video: ${state.video?.slug}`)
+    if (!state.video) {
+      console.log(`🎬 [DEBUG] No video available, skipping scene detection`)
+      return
+    }
+
+    console.log(`🎬 [DEBUG] Starting scene detection with video element: ${!!videoElement}`)
+    dispatch({ type: 'SET_SCENE_DETECTION_STATUS', status: 'running' })
+    dispatch({ type: 'SET_SCENE_CHANGES', sceneChanges: [] })
+
+    disposeSceneDetectionRef.current?.()
+
+    const sceneDetectionOptions = {
+      config
+    }
+
+    // If we have a video element, use it directly instead of creating a new one
+    if (videoElement) {
+      sceneDetectionOptions.config = {
+        ...config,
+        performance: {
+          ...config?.performance,
+          useWebGL: true // Enable WebGL for better performance with video element
+        }
+      }
+    }
+
+    // Create scene detection controller
+    const sceneController = new SceneDetectionWorkerController()
+    sceneDetectionControllerRef.current = sceneController
+
+    const dispose = () => {
+      sceneController.dispose()
+      sceneDetectionControllerRef.current = null
+    }
+
+    console.log(`🎬 [DEBUG] Starting scene detection controller with video element: ${!!videoElement}`)
+    sceneController.start(state.video.duration, {
+      onChunk: (sceneChange) => {
+        console.log(`🎬 [3/5] Hook dispatching edge-based scene change: ${sceneChange.level} (${sceneChange.changePercentage.toFixed(3)}% edge change)`)
+        dispatch({ type: 'PUSH_SCENE_CHANGE', sceneChange })
+
+        // Adapt crop path to scene change
+        if (state.sceneChangeDetectionEnabled) {
+          dispatch({ type: 'ADAPT_TO_SCENE_CHANGE', sceneChange })
+        }
+      },
+      onComplete: (sceneChanges) => {
+        console.log(`🎬 [DEBUG] Scene detection completed with ${sceneChanges.length} changes`)
+        dispatch({ type: 'SET_SCENE_DETECTION_STATUS', status: 'complete' })
+        dispatch({ type: 'SET_SCENE_CHANGES', sceneChanges })
+      },
+      onError: (error) => {
+        console.error(`🎬 [DEBUG] Scene detection error:`, error)
+        dispatch({ type: 'SET_SCENE_DETECTION_STATUS', status: 'idle' })
+      }
+    }, sceneDetectionOptions, videoElement)
+
+    disposeSceneDetectionRef.current = dispose
+  }, [state.video, state.sceneChangeDetectionEnabled])
 
   // Note: Auto-detection is now handled by CropWorkspace when checkbox is toggled
 
@@ -321,6 +500,8 @@ export function useCropper(): UseCropperResult {
     return () => {
       disposeDetectionRef.current?.()
       disposeDetectionRef.current = null
+      disposeSceneDetectionRef.current?.()
+      disposeSceneDetectionRef.current = null
     }
   }, [])
 
@@ -355,7 +536,11 @@ export function useCropper(): UseCropperResult {
     activeKeyframe,
     detectionStatus: state.detectionStatus,
     detections: state.detections,
+    sceneChanges: state.sceneChanges,
+    sceneDetectionStatus: state.sceneDetectionStatus,
     autoTrackingEnabled: state.autoTrackingEnabled,
+    sceneChangeDetectionEnabled: state.sceneChangeDetectionEnabled,
+    lastSceneChangeLevel: state.lastSceneChangeLevel,
     setVideo,
     setTime,
     addKeyframeAt,
@@ -363,6 +548,12 @@ export function useCropper(): UseCropperResult {
     removeKeyframe,
     selectKeyframe,
     requestDetection,
-    toggleAutoTracking
+    requestSceneDetection,
+    pauseDetection,
+    resumeDetection,
+    pauseSceneDetection,
+    resumeSceneDetection,
+    toggleAutoTracking,
+    toggleSceneChangeDetection
   }
 }

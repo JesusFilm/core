@@ -52,7 +52,7 @@ export const detectionResultSchema = z.object({
     height: z.number().min(0).max(1)
   }),
   confidence: z.number().min(0).max(1),
-  label: z.enum(['person', 'face', 'object']),
+  label: z.enum(['person', 'face', 'silhouette', 'center', 'object']),
   source: z.literal('mediapipe')
 })
 

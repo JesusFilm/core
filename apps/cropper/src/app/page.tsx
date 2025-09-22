@@ -1,6 +1,6 @@
 'use client'
 
-import { useCallback, useEffect } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { VideoPicker } from '../components/video-picker'
 import { CropWorkspace } from '../components/crop-workspace'
 import { Timeline } from '../components/timeline'
@@ -9,7 +9,6 @@ import { ExportDialog } from '../components/export-dialog'
 import { useVideo } from '../hooks/use-video'
 import { useCropper } from '../hooks/use-cropper'
 import { useExport } from '../hooks/use-export'
-import { DebugWidget } from '../components/debug-widget'
 import type { CropWindow } from '../types'
 import type { VideoData } from '../types/video'
 
@@ -26,6 +25,10 @@ export default function Page() {
     detectionStatus,
     detections,
     autoTrackingEnabled,
+    sceneChanges,
+    sceneDetectionStatus,
+    sceneChangeDetectionEnabled,
+    lastSceneChangeLevel,
     setVideo,
     setTime,
     addKeyframeAt,
@@ -33,14 +36,28 @@ export default function Page() {
     removeKeyframe,
     selectKeyframe,
     requestDetection,
-    toggleAutoTracking
+    pauseDetection,
+    resumeDetection,
+    toggleAutoTracking,
+    requestSceneDetection,
+    pauseSceneDetection,
+    resumeSceneDetection,
+    toggleSceneChangeDetection
   } = useCropper()
+
+  // Auto-tracking parameters state (more responsive defaults)
+  const [focusChangeThreshold, setFocusChangeThreshold] = useState(0.005)
+  const [detectionTimeWindow, setDetectionTimeWindow] = useState(0.3)
 
   // Create a wrapper function for detection that will be called from CropWorkspace
   const handleRunDetection = useCallback((videoElement: HTMLVideoElement) => {
-    console.log('🔍 handleRunDetection called with video element')
     requestDetection(videoElement)
   }, [requestDetection])
+
+  // Scene detection handler
+  const handleRunSceneDetection = useCallback((videoElement: HTMLVideoElement) => {
+    requestSceneDetection(videoElement)
+  }, [requestSceneDetection])
 
   const {
     video: loadedVideo,
@@ -102,9 +119,7 @@ export default function Page() {
 
   const handleVideoSelect = useCallback(
     (nextVideo: VideoData) => {
-      console.log('🎬 Video selected:', nextVideo)
-      console.log('🎬 Video HLS URL:', nextVideo.variant?.hls)
-
+      console.log(`🎬 [DEBUG] Video selected: ${nextVideo.slug}, scene detection enabled by default: ${sceneChangeDetectionEnabled}`)
       // Convert VideoData to the format expected by cropper hooks
       const hlsSrc = nextVideo.variant?.hls ?? null
       const downloadSrc = nextVideo.variant?.downloads?.[0]?.url ?? null
@@ -131,12 +146,12 @@ export default function Page() {
         })
       }
 
-      console.log('🎬 Converted cropper video:', cropperVideo)
+      console.log(`🎬 [DEBUG] Setting video in cropper: ${cropperVideo.slug}, duration: ${cropperVideo.duration}s`)
       setVideo(cropperVideo)
       load(cropperVideo)
       reset()
     },
-    [load, reset, setVideo]
+    [load, reset, setVideo, sceneChangeDetectionEnabled]
   )
 
   const handleTimeChange = useCallback(
@@ -163,6 +178,7 @@ export default function Page() {
     [activeKeyframe, updateKeyframe]
   )
 
+
   const handleDeleteKeyframe = useCallback(
     (keyframeId: string) => {
       removeKeyframe(keyframeId)
@@ -181,17 +197,17 @@ export default function Page() {
   const disableWorkspace = !video
 
   return (
-    <main className="mx-auto max-w-7xl space-y-8 px-4 py-10">
+    <main className="mx-auto max-w-[1320px] space-y-10 px-6 py-10">
       <div className="flex flex-col gap-2">
-        <h1 className="text-2xl font-semibold text-white">Vertical Crop Studio</h1>
-        <p className="text-sm text-slate-400">
+        <h1 className="text-3xl font-semibold tracking-tight text-white">Vertical Crop Studio</h1>
+        <p className="text-sm text-stone-400 max-w-3xl">
           Transform horizontal source footage into vertical storytelling assets with keyframing, detection assistance, and
           simulated export workflows.
         </p>
       </div>
 
-      <div className="grid gap-8 lg:grid-cols-[320px_1fr]">
-        <aside className="space-y-6">
+      <div className="grid gap-8 lg:grid-cols-[360px_1fr]">
+        <aside className="panel sticky top-6 h-[calc(100vh-8rem)] overflow-auto p-4">
           <VideoPicker activeVideo={null} onSelect={handleVideoSelect} />
         </aside>
 
@@ -207,12 +223,25 @@ export default function Page() {
             onCreateKeyframe={handleAddKeyframe}
             onToggleAutoTracking={toggleAutoTracking}
             onRunDetection={handleRunDetection}
+            onPauseDetection={pauseDetection}
+            onResumeDetection={resumeDetection}
             autoTrackingEnabled={autoTrackingEnabled}
+            onToggleSceneChangeDetection={toggleSceneChangeDetection}
+            onRunSceneDetection={handleRunSceneDetection}
+            onPauseSceneDetection={pauseSceneDetection}
+            onResumeSceneDetection={resumeSceneDetection}
+            sceneChangeDetectionEnabled={sceneChangeDetectionEnabled}
+            sceneChanges={sceneChanges}
+            lastSceneChangeLevel={lastSceneChangeLevel}
             crop={currentCrop}
             activeKeyframe={activeKeyframe}
             onUpdateActiveKeyframe={handleKeyframeChange}
             detections={detections}
             detectionStatus={detectionStatus}
+            focusChangeThreshold={focusChangeThreshold}
+            detectionTimeWindow={detectionTimeWindow}
+            onFocusChangeThresholdChange={setFocusChangeThreshold}
+            onDetectionTimeWindowChange={setDetectionTimeWindow}
           />
 
           <Timeline
@@ -232,10 +261,10 @@ export default function Page() {
               disabled={disableWorkspace}
             />
 
-            <div className="flex flex-col justify-between gap-4 rounded-2xl border border-slate-800 bg-slate-900/60 p-4">
+            <div className="panel flex flex-col justify-between gap-4 p-4">
               <div className="space-y-2">
-                <h3 className="text-sm font-semibold text-white">Export</h3>
-                <p className="text-xs text-slate-400">
+                <h3 className="section-title">Export</h3>
+                <p className="section-subtitle">
                   Choose a preset and queue a simulated ffmpeg export to validate output dimensions and encoding settings.
                 </p>
               </div>
@@ -258,12 +287,6 @@ export default function Page() {
         </section>
       </div>
 
-      <DebugWidget
-        detectionStatus={detectionStatus}
-        detections={detections}
-        autoTrackingEnabled={autoTrackingEnabled}
-        isVisible={process.env.NODE_ENV === 'development'}
-      />
     </main>
   )
 }

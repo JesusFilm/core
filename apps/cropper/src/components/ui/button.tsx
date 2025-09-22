@@ -12,12 +12,12 @@ export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElemen
 }
 
 const baseStyles =
-  'inline-flex items-center justify-center gap-2 rounded-md font-medium transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950 focus-visible:ring-accent disabled:opacity-50 disabled:cursor-not-allowed'
+  'inline-flex items-center justify-center gap-2 rounded-md font-medium transition cursor-pointer select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-stone-950 focus-visible:ring-accent disabled:opacity-50 disabled:cursor-not-allowed'
 
 const variantStyles: Record<ButtonVariant, string> = {
-  primary: 'bg-accent text-slate-950 hover:bg-sky-400 shadow-floating',
-  ghost: 'bg-slate-800/60 text-slate-100 hover:bg-slate-700/60 border border-slate-700',
-  outline: 'border border-slate-600 text-slate-100 hover:bg-slate-800/60'
+  primary: 'bg-accent text-stone-950 hover:bg-amber-400 shadow-sm',
+  ghost: 'bg-transparent text-stone-100 hover:bg-white/10',
+  outline: 'border border-white/10 bg-white/5 text-stone-100 hover:bg-white/10'
 }
 
 const sizeStyles: Record<ButtonSize, string> = {
