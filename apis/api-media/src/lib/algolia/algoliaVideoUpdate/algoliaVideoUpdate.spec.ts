@@ -117,6 +117,7 @@ describe('algoliaVideoUpdate', () => {
         { id: 'banner-image-id', aspectRatio: 'banner' },
         { id: 'hd-image-id', aspectRatio: 'hd' }
       ],
+      availableLanguages: ['529', '3934'],
       variants: [
         {
           published: true,
@@ -145,6 +146,7 @@ describe('algoliaVideoUpdate', () => {
           lengthInMilliseconds: 120000,
           published: true,
           restrictViewPlatforms: [],
+          hasAvailableLanguages: true,
           titles: [
             { value: 'Test Video Title', languageId: '529', bcp47: 'en' },
             {
@@ -221,6 +223,7 @@ describe('algoliaVideoUpdate', () => {
       bibleCitation: [],
       keywords: [],
       images: [],
+      availableLanguages: [],
       variants: [
         {
           published: false,
@@ -246,6 +249,7 @@ describe('algoliaVideoUpdate', () => {
           lengthInMilliseconds: 0,
           published: true,
           restrictViewPlatforms: [],
+          hasAvailableLanguages: false,
           titles: [
             { value: 'Test Collection', languageId: '529', bcp47: 'en' }
           ],
@@ -285,6 +289,7 @@ describe('algoliaVideoUpdate', () => {
       keywords: [],
       images: [],
       published: true,
+      availableLanguages: [],
       variants: [
         {
           published: true,
@@ -302,6 +307,7 @@ describe('algoliaVideoUpdate', () => {
       indexName: 'test-videos',
       objects: [
         expect.objectContaining({
+          hasAvailableLanguages: false,
           restrictViewPlatforms: ['arclight'],
           published: true
         })

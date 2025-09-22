@@ -70,6 +70,7 @@ export async function updateVideoInAlgolia(
             }
           }
         },
+        availableLanguages: true,
         restrictDownloadPlatforms: true,
         restrictViewPlatforms: true,
         variants: {
@@ -192,6 +193,7 @@ export async function updateVideoInAlgolia(
       keywords: video.keywords.map((keyword) => keyword.value),
       isDownloadable,
       restrictViewPlatforms: video.restrictViewPlatforms,
+      hasAvailableLanguages: video.availableLanguages.length > 0,
       downloadSizes: isDownloadable
         ? {
             approximateSmallDownloadSizeInBytes:
