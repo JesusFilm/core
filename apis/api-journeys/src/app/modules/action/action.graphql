@@ -30,65 +30,10 @@ type EmailAction implements Action @shareable {
   parentStepId: String
 }
 
-input NavigateToBlockActionInput {
+type PhoneAction implements Action @shareable {
+  parentBlockId: ID!
+  parentBlock: Block!
   gtmEventName: String
-  blockId: String!
-}
-
-input LinkActionInput {
-  gtmEventName: String
-  url: String!
-  target: String
-  customizable: Boolean
-  parentStepId: String
-}
-
-input EmailActionInput {
-  gtmEventName: String
-  email: String!
-  customizable: Boolean
-  parentStepId: String
-}
-
-input BlockUpdateActionInput {
-  gtmEventName: String
-  email: String
-  url: String
-  target: String
-  blockId: String
-}
-
-extend type Mutation {
-  blockDeleteAction(
-    id: ID!
-    """
-    drop this parameter after merging teams
-    """
-    journeyId: ID
-  ): Block!
-  blockUpdateNavigateToBlockAction(
-    id: ID!
-    input: NavigateToBlockActionInput!
-    """
-    drop this parameter after merging teams
-    """
-    journeyId: ID
-  ): NavigateToBlockAction!
-  blockUpdateLinkAction(
-    id: ID!
-    input: LinkActionInput!
-    """
-    drop this parameter after merging teams
-    """
-    journeyId: ID
-  ): LinkAction!
-  blockUpdateEmailAction(
-    id: ID!
-    input: EmailActionInput!
-    """
-    drop this parameter after merging teams
-    """
-    journeyId: ID
-  ): EmailAction!
-  blockUpdateAction(id: ID!, input: BlockUpdateActionInput): Action!
+  phone: String!
+  countryCode: String!
 }

@@ -39,34 +39,23 @@ jobs:
         with:
           fetch-depth: 0
       - uses: nrwl/nx-set-shas@v4
-      - uses: useblacksmith/setup-node@v5
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          run_install: false
+      - uses: actions/setup-node@v5
         with:
           node-version: ${{ matrix.node-version }}
-
-      - name: Get Node Version
-        id: node-version
-        run: echo "version=$(node -v)" >> $GITHUB_OUTPUT
-
-      - name: Mount NPM Cache
-        uses: useblacksmith/stickydisk@v1
-        with:
-          key: ${{ github.repository }}-${{ steps.node-version.outputs.version }}-npm-cache
-          path: ~/.npm
-      - name: Mount node_modules
-        uses: useblacksmith/stickydisk@v1
-        with:
-          key: ${{ github.repository }}-${{ steps.node-version.outputs.version }}-node-modules
-          path: ./node_modules
-
-      - name: NPM Install
-        run: npm install --silent
+          cache: 'pnpm'
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile --silent
 
       - name: nx Install
-        run: npm install -g nx --silent
+        run: pnpm add -g nx --silent
 
       - name: Get affected apps
         run: |
-          echo "apps=$(npx ts-node tools/scripts/affected-apps.ts --projects apis/*)" >> $GITHUB_OUTPUT
+          echo "apps=$(pnpm exec ts-node tools/scripts/affected-apps.ts --projects apis/*)" >> $GITHUB_OUTPUT
           cat $GITHUB_OUTPUT
         id: affected-apps
 
@@ -105,7 +94,7 @@ jobs:
       - name: Build and push Docker image to Amazon ECR
         if: contains(steps.affected-apps.outputs.apps, inputs.name)
         id: build-image-ecs
-        uses: useblacksmith/build-push-action@v1
+        uses: docker/build-push-action@v6
         with:
           context: .
           file: apis/${{ inputs.name }}/Dockerfile

@@ -29,7 +29,7 @@
     "serve": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "nx _serve api-journeys-modern | npx pino-pretty --config .pino-prettyrc.js"
+        "command": "nx _serve api-journeys-modern | pnpm exec pino-pretty --config .pino-prettyrc.js"
       }
     },
     "_serve": {
@@ -58,13 +58,13 @@
     "generate-graphql": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "GENERATE_SCHEMA=true npx ts-node -P apis/api-journeys-modern/tsconfig.app.json -r tsconfig-paths/register apis/api-journeys-modern/src/schema/index.ts"
+        "command": "GENERATE_SCHEMA=true pnpm exec ts-node -P apis/api-journeys-modern/tsconfig.app.json -r tsconfig-paths/register apis/api-journeys-modern/src/schema/index.ts"
       }
     },
     "subgraph-check": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "npx hive schema:check apis/api-journeys-modern/schema.graphql --registry.accessToken $HIVE_TOKEN --github --service api-journeys-modern"
+        "command": "pnpm exec hive schema:check apis/api-journeys-modern/schema.graphql --registry.accessToken $HIVE_TOKEN --github --service api-journeys-modern"
       }
     },
     "fetch-secrets": {
@@ -76,7 +76,7 @@
     "type-check": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "npx tsc -b apis/api-journeys-modern/tsconfig.json"
+        "command": "pnpm exec tsc -b apis/api-journeys-modern/tsconfig.json"
       }
     },
     "codecov": {
@@ -98,7 +98,7 @@
     "update-shortlinks": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "npx ts-node -P apis/api-journeys-modern/tsconfig.app.json apis/api-journeys-modern/src/workers/cli.ts shortlink-updater"
+        "command": "pnpm exec ts-node -P apis/api-journeys-modern/tsconfig.app.json apis/api-journeys-modern/src/workers/cli.ts shortlink-updater"
       }
     },
     "playwright-cleanup": {

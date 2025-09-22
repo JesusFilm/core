@@ -12,7 +12,7 @@ import 'videojs-mux'
 import { usePlayer } from '../../../../libs/playerContext/PlayerContext'
 import { useVideo } from '../../../../libs/videoContext'
 import { useWatch } from '../../../../libs/watchContext'
-import { subtitleUpdate } from '../../../../libs/watchContext/subtitleUpdate'
+import { useSubtitleUpdate } from '../../../../libs/watchContext/useSubtitleUpdate'
 import { VideoControls } from '../../../VideoContentPage/VideoHero/VideoPlayer/VideoControls'
 
 interface HeroVideoProps {
@@ -25,12 +25,7 @@ export function HeroVideo({ isFullscreen }: HeroVideoProps): ReactElement {
     state: { mute }
   } = usePlayer()
   const {
-    state: {
-      subtitleLanguage,
-      subtitleOn,
-      autoSubtitle,
-      videoSubtitleLanguages
-    }
+    state: { subtitleLanguageId, subtitleOn }
   } = useWatch()
   const [playerReady, setPlayerReady] = useState(false)
 
@@ -114,34 +109,24 @@ export function HeroVideo({ isFullscreen }: HeroVideoProps): ReactElement {
     }
   }, [variant?.hls, title, variant?.id])
 
+  const { subtitleUpdate } = useSubtitleUpdate()
+
   useEffect(() => {
     const player = playerRef.current
     if (player == null) return
 
-    subtitleUpdate({
+    void subtitleUpdate({
       player,
-      videoSubtitleLanguages,
-      subtitleLanguage,
-      subtitleOn,
-      autoSubtitle
+      subtitleLanguageId,
+      subtitleOn: mute || subtitleOn
     })
-  }, [
-    playerRef,
-    videoSubtitleLanguages,
-    subtitleLanguage,
-    subtitleOn,
-    autoSubtitle
-  ])
+  }, [playerRef, subtitleLanguageId, subtitleOn, variant, mute])
 
   return (
     <div
-      className={`fixed top-0 left-0 right-0 mx-auto z-0 vjs-hide-loading-spinners 
-        [body[style*='padding-right']_&]:right-[15px]
-        ${
-          isFullscreen
-            ? 'h-full max-w-full'
-            : 'h-[90%] md:h-[80%] max-w-[1920px]'
-        }`}
+      className={`vjs-hide-loading-spinners fixed top-0 right-0 left-0 z-0 mx-auto [body[style*='padding-right']_&]:right-[15px] ${
+        isFullscreen ? 'h-full max-w-full' : 'h-[90%] max-w-[1920px] md:h-[80%]'
+      }`}
       data-testid="ContentHeroVideoContainer"
     >
       {variant?.hls && (

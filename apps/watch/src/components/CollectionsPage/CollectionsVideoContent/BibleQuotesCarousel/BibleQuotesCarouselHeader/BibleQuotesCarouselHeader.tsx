@@ -1,5 +1,4 @@
 import { sendGTMEvent } from '@next/third-parties/google'
-import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 import { v4 as uuidv4 } from 'uuid'
 
@@ -20,8 +19,6 @@ export function BibleQuotesCarouselHeader({
   shareDataTitle,
   contentId
 }: BibleQuotesCarouselHeaderProps): ReactElement {
-  const { t } = useTranslation('apps-watch')
-
   const handleShare = async (): Promise<void> => {
     const shareUrl = new URL(window.location.href)
     shareUrl.searchParams.append('utm_source', 'share')
@@ -53,7 +50,7 @@ export function BibleQuotesCarouselHeader({
     <div className="padded">
       <div className="flex items-center justify-between pb-8">
         <div className="flex items-start gap-4">
-          <h3 className="text-sm xl:text-base 2xl:text-lg font-semibold tracking-wider uppercase text-red-100/70">
+          <h3 className="text-sm font-semibold tracking-wider text-red-100/70 uppercase xl:text-base 2xl:text-lg">
             {bibleQuotesTitle}
           </h3>
         </div>
@@ -66,7 +63,7 @@ export function BibleQuotesCarouselHeader({
               void handleShare()
             }
           }}
-          className="inline-flex items-center gap-2 px-4 py-2 text-xs text-black font-bold uppercase tracking-wider rounded-full bg-white hover:bg-red-500 hover:text-white transition-colors duration-200 cursor-pointer"
+          className="inline-flex cursor-pointer items-center gap-2 rounded-full bg-white px-4 py-2 text-xs font-bold tracking-wider text-black uppercase transition-colors duration-200 hover:bg-red-500 hover:text-white"
         >
           <Icon
             name="LinkExternal"

@@ -87,6 +87,7 @@ enum ButtonAction {
   NavigateToBlockAction
   LinkAction
   EmailAction
+  PhoneAction
 }
 
 enum VideoBlockSource {
@@ -418,6 +419,7 @@ model Journey {
   showLogo                        Boolean?                    @default(false)
   showMenu                        Boolean?                    @default(false)
   showDisplayTitle                Boolean?                    @default(true)
+  showAssistant                   Boolean?
   logoImageBlockId                String?                     @unique
   logoImageBlock                  Block?                      @relation("LogoImageBlock", fields: [logoImageBlockId], references: [id], onDelete: SetNull)
   menuStepBlockId                 String?                     @unique
@@ -521,6 +523,7 @@ model Block {
   nextBlockId                String?
   locked                     Boolean?
   hint                       String?
+  hideLabel                  Boolean?             @default(false)
   minRows                    Int?
   content                    String?
   align                      String?
@@ -584,6 +587,8 @@ model Action {
   url           String?
   target        String?
   email         String?
+  phone         String?
+  countryCode   String?
   customizable  Boolean?
   parentStepId  String?
   updatedAt     DateTime @default(now()) @updatedAt

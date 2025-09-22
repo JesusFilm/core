@@ -243,29 +243,35 @@ export const getServerSideProps = withUserTokenSSR({
     }
   }
 
-  const email = query?.email ?? null
-  const token = query?.token ?? null
+  const rawEmail = typeof query?.email === 'string' ? query.email : null
+  const email = rawEmail != null ? rawEmail.replace(/\s/g, '+') : null
+  const token = typeof query?.token === 'string' ? query.token : null
 
   if (email != null && token != null) {
-    const { data } = await apolloClient.mutate({
-      mutation: VALIDATE_EMAIL,
-      variables: { email, token }
-    })
-    if (data.error != null) {
+    try {
+      await apolloClient.mutate({
+        mutation: VALIDATE_EMAIL,
+        variables: { email, token }
+      })
+      const redirectParam =
+        typeof query.redirect === 'string' && query.redirect.length > 0
+          ? `/?redirect=${query.redirect}`
+          : '/'
+      return {
+        redirect: {
+          permanent: false,
+          destination: redirectParam
+        }
+      }
+    } catch (_err) {
       return {
         props: {
           email,
           token,
-          initialError: data.error,
+          initialError: null,
           ...translations,
           initialApolloState: apolloClient.cache.extract()
         }
-      }
-    }
-    return {
-      redirect: {
-        permanent: false,
-        destination: `/?redirect=${(query.redirect as string) ?? null}`
       }
     }
   }

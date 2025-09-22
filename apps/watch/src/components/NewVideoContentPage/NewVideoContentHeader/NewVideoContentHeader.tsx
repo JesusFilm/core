@@ -28,29 +28,33 @@ export function NewVideoContentHeader({
 
   return (
     <div
-      className="flex pt-7 z-2 px-4 sm:px-6 md:px-8 lg:px-10 xl:px-12 max-w-[1920px] w-full mx-auto relative"
+      className="relative z-2 mx-auto flex w-full max-w-[1920px] px-4 pt-7 sm:px-6 md:px-8 lg:px-10 xl:px-12"
       data-testid="NewVideoContentHeader"
     >
       {container != null && (
         <div className="w-full">
           <div
-            className="flex flex-row justify-between items-center"
+            className="flex flex-row items-center justify-between"
             data-testid="VideoHeading"
           >
             <div className="flex flex-row items-center space-x-4">
-              <NextLink
-                href={`/watch/${container.variant?.slug as string}`}
-                passHref
-                legacyBehavior
-              >
-                <a className="uppercase text-sm tracking-wider text-primary no-underline">
+              {container.variant?.slug != null ? (
+                <NextLink
+                  href={`/watch/${container.variant.slug}`}
+                  locale={false}
+                  className="text-primary text-sm tracking-wider uppercase no-underline"
+                >
                   {last(container.title)?.value}
-                </a>
-              </NextLink>
-              <p className="uppercase text-sm tracking-wider text-[#bbbcbc]  hidden xl:block font-bold">
+                </NextLink>
+              ) : (
+                <span className="text-primary text-sm tracking-wider uppercase no-underline">
+                  {last(container.title)?.value}
+                </span>
+              )}
+              <p className="hidden text-sm font-bold tracking-wider text-[#bbbcbc] uppercase xl:block">
                 •
               </p>
-              <p className="uppercase text-sm tracking-wider text-[#bbbcbc]  hidden xl:block">
+              <p className="hidden text-sm tracking-wider text-[#bbbcbc] uppercase xl:block">
                 {loading === true ? (
                   <Skeleton width={100} height={20} />
                 ) : (
@@ -58,25 +62,35 @@ export function NewVideoContentHeader({
                     {t('Clip ')}
                     {activeVideoIndex}
                     {t(' of ')}
-                    {container.childrenCount}
+                    {videos.length != 0
+                      ? videos.length
+                      : container.childrenCount}
                   </>
                 )}
               </p>
             </div>
-            <NextLink
-              href={`/watch/${container.variant?.slug as string}`}
-              passHref
-              legacyBehavior
-            >
-              <button className="border border-[#bbbcbc] rounded-md px-2 py-1 text-sm text-[#bbbcbc] hidden xl:block cursor-pointer font-bold">
+            {container.variant?.slug != null ? (
+              <NextLink
+                href={`/watch/${container.variant.slug}`}
+                locale={false}
+                passHref
+              >
+                <button className="hidden cursor-pointer rounded-md border border-[#bbbcbc] px-2 py-1 text-sm font-bold text-[#bbbcbc] xl:block">
+                  {container.label === VideoLabel.featureFilm
+                    ? 'Watch Full Film'
+                    : 'See All'}
+                </button>
+              </NextLink>
+            ) : (
+              <button className="hidden cursor-pointer rounded-md border border-[#bbbcbc] px-2 py-1 text-sm font-bold text-[#bbbcbc] xl:block">
                 {container.label === VideoLabel.featureFilm
                   ? 'Watch Full Film'
                   : 'See All'}
               </button>
-            </NextLink>
+            )}
             <p
               data-testid="container-progress-short"
-              className="uppercase text-xs tracking-wider text-[#bbbcbc] block xl:hidden"
+              className="block text-xs tracking-wider text-[#bbbcbc] uppercase xl:hidden"
             >
               {loading === true ? (
                 <Skeleton width={100} height={20} />

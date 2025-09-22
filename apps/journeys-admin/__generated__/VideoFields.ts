@@ -60,6 +60,12 @@ export interface VideoFields_mediaVideo_YouTube {
 
 export type VideoFields_mediaVideo = VideoFields_mediaVideo_Video | VideoFields_mediaVideo_MuxVideo | VideoFields_mediaVideo_YouTube;
 
+export interface VideoFields_action_PhoneAction {
+  __typename: "PhoneAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+}
+
 export interface VideoFields_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
   parentBlockId: string;
@@ -72,6 +78,8 @@ export interface VideoFields_action_LinkAction {
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export interface VideoFields_action_EmailAction {
@@ -79,9 +87,11 @@ export interface VideoFields_action_EmailAction {
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
-export type VideoFields_action = VideoFields_action_NavigateToBlockAction | VideoFields_action_LinkAction | VideoFields_action_EmailAction;
+export type VideoFields_action = VideoFields_action_PhoneAction | VideoFields_action_NavigateToBlockAction | VideoFields_action_LinkAction | VideoFields_action_EmailAction;
 
 export interface VideoFields {
   __typename: "VideoBlock";

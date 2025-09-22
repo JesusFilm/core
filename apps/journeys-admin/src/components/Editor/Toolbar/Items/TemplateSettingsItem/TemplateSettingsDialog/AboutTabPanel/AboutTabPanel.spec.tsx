@@ -2,6 +2,8 @@ import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { FormikContextType, FormikProvider } from 'formik'
 
+import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
+
 import { TemplateSettingsFormValues } from '../useTemplateSettingsForm'
 
 import { AboutTabPanel } from './AboutTabPanel'
@@ -101,5 +103,29 @@ describe('AboutTabPanel', () => {
 
     expect(queryByText('Strategy')).not.toBeInTheDocument()
     expect(getByTestId('strategy-iframe')).toBeInTheDocument()
+  })
+
+  it('should render Customize Template text area', () => {
+    const { getByTestId } = render(
+      <MockedProvider>
+        <FormikProvider
+          value={
+            {
+              values: {
+                creatorDescription: '',
+                strategySlug:
+                  'https://www.canva.com/design/DAF9QMJYu1Y/XmioFIQOATVa-lXCEYucmg/view'
+              }
+            } as unknown as FormikContextType<TemplateSettingsFormValues>
+          }
+        >
+          <FlagsProvider flags={{ journeyCustomization: true }}>
+            <AboutTabPanel />
+          </FlagsProvider>
+        </FormikProvider>
+      </MockedProvider>
+    )
+
+    expect(getByTestId('CustomizeTemplateSection')).toBeInTheDocument()
   })
 })

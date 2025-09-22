@@ -7,6 +7,7 @@ import {
   screen,
   waitFor
 } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import fscreen from 'fscreen'
 import videojs from 'video.js'
 
@@ -15,8 +16,10 @@ import { defaultVideoJsOptions } from '@core/shared/ui/defaultVideoJsOptions'
 import { VideoContentFields } from '../../../../../../__generated__/VideoContentFields'
 import { PlayerProvider } from '../../../../../libs/playerContext/PlayerContext'
 import { TestPlayerState } from '../../../../../libs/playerContext/TestPlayerState'
+import { useLanguages } from '../../../../../libs/useLanguages'
 import { VideoProvider } from '../../../../../libs/videoContext'
 import { WatchProvider } from '../../../../../libs/watchContext'
+import { TestWatchState } from '../../../../../libs/watchContext/TestWatchState'
 import { videos } from '../../../../Videos/__generated__/testData'
 
 import { VideoControls } from './VideoControls'
@@ -30,43 +33,18 @@ jest.mock('fscreen', () => ({
   }
 }))
 
-jest.mock('../../../../../libs/cookieHandler', () => ({
-  setCookie: jest.fn(),
-  getCookie: jest.fn()
+jest.mock('../../../../..//libs/useLanguages', () => ({
+  useLanguages: jest.fn()
 }))
-
-const mockDispatch = jest.fn()
-jest.mock('../../../../../libs/watchContext', () => ({
-  ...jest.requireActual('../../../../../libs/watchContext'),
-  useWatch: jest.fn(() => ({
-    state: {
-      siteLanguage: 'en',
-      audioLanguage: '529',
-      subtitleLanguage: '529',
-      subtitleOn: false
-    },
-    dispatch: mockDispatch
-  }))
-}))
-
-const mockSetCookie = jest.mocked(
-  require('../../../../../libs/cookieHandler').setCookie
-)
-const mockGetCookie = jest.mocked(
-  require('../../../../../libs/cookieHandler').getCookie
-)
+const useLanguagesMock = useLanguages as jest.MockedFunction<
+  typeof useLanguages
+>
 
 describe('VideoControls', () => {
   let player
 
   beforeEach(() => {
     jest.clearAllMocks()
-    mockSetCookie.mockClear()
-    mockGetCookie.mockClear()
-    mockDispatch.mockClear()
-
-    // Set default return value for getCookie
-    mockGetCookie.mockReturnValue('en')
 
     const video = document.createElement('video')
     document.body.appendChild(video)
@@ -94,6 +72,10 @@ describe('VideoControls', () => {
     act(() => {
       player.duration(250)
     })
+    useLanguagesMock.mockReturnValue({
+      languages: [],
+      isLoading: false
+    })
   })
 
   afterEach(() => {
@@ -109,10 +91,8 @@ describe('VideoControls', () => {
       <MockedProvider>
         <WatchProvider
           initialState={{
-            siteLanguage: 'en',
-            audioLanguage: 'en',
-            subtitleLanguage: 'en',
-            subtitleOn: false
+            audioLanguageId: '529',
+            subtitleLanguageId: '529'
           }}
         >
           <PlayerProvider>
@@ -125,7 +105,7 @@ describe('VideoControls', () => {
       </MockedProvider>
     )
     expect(screen.getByText('player.play: false')).toBeInTheDocument()
-    fireEvent.click(screen.getByTestId('PlayArrowRoundedIcon'))
+    await userEvent.click(screen.getByTestId('PlayArrowRoundedIcon'))
     await waitFor(() => {
       expect(screen.getByText('player.play: true')).toBeInTheDocument()
     })
@@ -140,9 +120,8 @@ describe('VideoControls', () => {
       <MockedProvider>
         <WatchProvider
           initialState={{
-            siteLanguage: 'en',
-            audioLanguage: 'en',
-            subtitleLanguage: 'en',
+            audioLanguageId: '529',
+            subtitleLanguageId: '529',
             subtitleOn: false
           }}
         >
@@ -155,7 +134,7 @@ describe('VideoControls', () => {
         </WatchProvider>
       </MockedProvider>
     )
-    fireEvent.click(screen.getByTestId('PauseRoundedIcon'))
+    await userEvent.click(screen.getByTestId('PauseRoundedIcon'))
     expect(screen.getByText('player.play: false')).toBeInTheDocument()
   })
 
@@ -168,9 +147,8 @@ describe('VideoControls', () => {
       <MockedProvider>
         <WatchProvider
           initialState={{
-            siteLanguage: 'en',
-            audioLanguage: 'en',
-            subtitleLanguage: 'en',
+            audioLanguageId: '529',
+            subtitleLanguageId: '529',
             subtitleOn: false
           }}
         >
@@ -186,7 +164,7 @@ describe('VideoControls', () => {
     await waitFor(() => {
       expect(screen.getByText('player.mute: true')).toBeInTheDocument()
     })
-    fireEvent.click(screen.getAllByTestId('VolumeOffOutlinedIcon')[0])
+    await userEvent.click(screen.getAllByTestId('VolumeOffOutlinedIcon')[0])
     await waitFor(() => {
       expect(screen.getByText('player.mute: false')).toBeInTheDocument()
     })
@@ -197,9 +175,8 @@ describe('VideoControls', () => {
       <MockedProvider>
         <WatchProvider
           initialState={{
-            siteLanguage: 'en',
-            audioLanguage: 'en',
-            subtitleLanguage: 'en',
+            audioLanguageId: '529',
+            subtitleLanguageId: '529',
             subtitleOn: false
           }}
         >
@@ -211,7 +188,7 @@ describe('VideoControls', () => {
         </WatchProvider>
       </MockedProvider>
     )
-    fireEvent.click(getByTestId('LanguageOutlinedIcon'))
+    await userEvent.click(getByTestId('LanguageOutlinedIcon'))
     await waitFor(() =>
       expect(screen.getByLabelText('Language Settings')).toBeInTheDocument()
     )
@@ -227,9 +204,8 @@ describe('VideoControls', () => {
       <MockedProvider>
         <WatchProvider
           initialState={{
-            siteLanguage: 'en',
-            audioLanguage: 'en',
-            subtitleLanguage: 'en',
+            audioLanguageId: '529',
+            subtitleLanguageId: '529',
             subtitleOn: false
           }}
         >
@@ -242,7 +218,7 @@ describe('VideoControls', () => {
         </WatchProvider>
       </MockedProvider>
     )
-    fireEvent.click(getByTestId('FullscreenOutlinedIcon'))
+    await userEvent.click(getByTestId('FullscreenOutlinedIcon'))
     await waitFor(() => {
       expect(screen.getByText('player.fullscreen: true')).toBeInTheDocument()
     })
@@ -254,9 +230,8 @@ describe('VideoControls', () => {
       <MockedProvider>
         <WatchProvider
           initialState={{
-            siteLanguage: 'en',
-            audioLanguage: 'en',
-            subtitleLanguage: 'en',
+            audioLanguageId: '529',
+            subtitleLanguageId: '529',
             subtitleOn: false
           }}
         >
@@ -269,7 +244,7 @@ describe('VideoControls', () => {
         </WatchProvider>
       </MockedProvider>
     )
-    fireEvent.click(getByTestId('FullscreenOutlinedIcon'))
+    await userEvent.click(getByTestId('FullscreenOutlinedIcon'))
     expect(fscreen.requestFullscreen).toHaveBeenCalled()
     await waitFor(() =>
       expect(getByTestId('FullscreenExitOutlinedIcon')).toBeInTheDocument()
@@ -277,7 +252,7 @@ describe('VideoControls', () => {
     await waitFor(() => {
       expect(screen.getByText('player.fullscreen: true')).toBeInTheDocument()
     })
-    fireEvent.click(getByTestId('FullscreenExitOutlinedIcon'))
+    await userEvent.click(getByTestId('FullscreenExitOutlinedIcon'))
     expect(fscreen.exitFullscreen).toHaveBeenCalled()
     await waitFor(() =>
       expect(getByTestId('FullscreenOutlinedIcon')).toBeInTheDocument()
@@ -287,31 +262,24 @@ describe('VideoControls', () => {
     })
   })
 
-  it('sets cookie, dispatches action, and opens dialog when subtitle button is clicked', async () => {
+  it('updates subtitle on and opens dialog when subtitle button is clicked', async () => {
     const { getByTestId } = render(
-      <MockedProvider>
+      <MockedProvider mocks={[]}>
         <VideoProvider value={{ content: videos[0] }}>
-          <VideoControls player={player} />
+          <WatchProvider initialState={{ subtitleOn: false }}>
+            <VideoControls player={player} />
+            <TestWatchState />
+          </WatchProvider>
         </VideoProvider>
       </MockedProvider>
     )
 
     // Click the subtitle button (SubtitlesOutlined icon) - using same pattern as other tests
-    fireEvent.click(getByTestId('SubtitlesOutlinedIcon'))
+    await userEvent.click(getByTestId('SubtitlesOutlinedIcon'))
 
-    // Verify cookie was set
-    expect(mockSetCookie).toHaveBeenCalledWith('SUBTITLES_ON', 'true')
+    expect(screen.getByText('subtitleOn: true')).toBeInTheDocument()
 
-    // Verify dispatch was called with correct action
-    expect(mockDispatch).toHaveBeenCalledWith({
-      type: 'UpdateSubtitlesOn',
-      enabled: true
-    })
-
-    // Verify dialog opens
-    await waitFor(() =>
-      expect(screen.getByLabelText('Language Settings')).toBeInTheDocument()
-    )
+    await waitFor(() => expect(screen.getByRole('dialog')).toBeInTheDocument())
   })
 
   it('updates progress on timeupdate event handler', async () => {
@@ -320,9 +288,8 @@ describe('VideoControls', () => {
       <MockedProvider>
         <WatchProvider
           initialState={{
-            siteLanguage: 'en',
-            audioLanguage: 'en',
-            subtitleLanguage: 'en',
+            audioLanguageId: '529',
+            subtitleLanguageId: '529',
             subtitleOn: false
           }}
         >
@@ -355,9 +322,8 @@ describe('VideoControls', () => {
       <MockedProvider>
         <WatchProvider
           initialState={{
-            siteLanguage: 'en',
-            audioLanguage: 'en',
-            subtitleLanguage: 'en',
+            audioLanguageId: '529',
+            subtitleLanguageId: '529',
             subtitleOn: false
           }}
         >
@@ -387,9 +353,8 @@ describe('VideoControls', () => {
       <MockedProvider>
         <WatchProvider
           initialState={{
-            siteLanguage: 'en',
-            audioLanguage: 'en',
-            subtitleLanguage: 'en',
+            audioLanguageId: '529',
+            subtitleLanguageId: '529',
             subtitleOn: false
           }}
         >
@@ -422,9 +387,8 @@ describe('VideoControls', () => {
       <MockedProvider>
         <WatchProvider
           initialState={{
-            siteLanguage: 'en',
-            audioLanguage: 'en',
-            subtitleLanguage: 'en',
+            audioLanguageId: '529',
+            subtitleLanguageId: '529',
             subtitleOn: false
           }}
         >
@@ -486,9 +450,8 @@ describe('VideoControls', () => {
       <MockedProvider>
         <WatchProvider
           initialState={{
-            siteLanguage: 'en',
-            audioLanguage: 'en',
-            subtitleLanguage: 'en',
+            audioLanguageId: '529',
+            subtitleLanguageId: '529',
             subtitleOn: false
           }}
         >
@@ -520,9 +483,8 @@ describe('VideoControls', () => {
       <MockedProvider>
         <WatchProvider
           initialState={{
-            siteLanguage: 'en',
-            audioLanguage: 'en',
-            subtitleLanguage: 'en',
+            audioLanguageId: '529',
+            subtitleLanguageId: '529',
             subtitleOn: false
           }}
         >
@@ -552,9 +514,8 @@ describe('VideoControls', () => {
       <MockedProvider>
         <WatchProvider
           initialState={{
-            siteLanguage: 'en',
-            audioLanguage: 'en',
-            subtitleLanguage: 'en',
+            audioLanguageId: '529',
+            subtitleLanguageId: '529',
             subtitleOn: false
           }}
         >
@@ -590,9 +551,8 @@ describe('VideoControls', () => {
       <MockedProvider>
         <WatchProvider
           initialState={{
-            siteLanguage: 'en',
-            audioLanguage: 'en',
-            subtitleLanguage: 'en',
+            audioLanguageId: '529',
+            subtitleLanguageId: '529',
             subtitleOn: false
           }}
         >
