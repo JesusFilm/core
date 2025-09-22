@@ -32,7 +32,7 @@ const block: TreeBlock<TextResponseFields> = {
   type: null,
   routeId: null,
   children: [],
-  hideLabel: true
+  hideLabel: false
 }
 
 interface TextResponseMockProps {
@@ -83,7 +83,7 @@ describe('TextResponse', () => {
       type: null,
       routeId: null,
       children: [],
-      hideLabel: true
+      hideLabel: false
     }
 
     render(
@@ -114,7 +114,7 @@ describe('TextResponse', () => {
       routeId: null,
       required: null,
       children: [],
-      hideLabel: true
+      hideLabel: false
     }
 
     render(
@@ -264,5 +264,27 @@ describe('TextResponse', () => {
     )
 
     expect(screen.getByText('This field is required')).toBeInTheDocument()
+  })
+
+  it('should not show label if hideLabel is true', () => {
+    const hideLabelBlock: TreeBlock<TextResponseFields> = {
+      ...block,
+      hideLabel: true
+    }
+
+    render(
+      <JourneyProvider>
+        <SnackbarProvider>
+          <TextResponse {...hideLabelBlock} />
+        </SnackbarProvider>
+      </JourneyProvider>
+    )
+    
+    // The label should not be visible when hideLabel is true
+    expect(screen.queryByText('Your answer here')).not.toBeInTheDocument()
+    expect(screen.queryByText('Label')).not.toBeInTheDocument()
+    
+    // The textbox should still be present
+    expect(screen.getByRole('textbox')).toBeInTheDocument()
   })
 })

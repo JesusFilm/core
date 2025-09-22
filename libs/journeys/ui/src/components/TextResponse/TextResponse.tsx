@@ -55,7 +55,8 @@ export const TextResponse = ({
   hint,
   minRows,
   type,
-  required
+  required,
+  hideLabel
 }: TextResponseProps): ReactElement => {
   const { t } = useTranslation('libs-journeys-ui')
   const [value, setValue] = useState('')
@@ -104,18 +105,20 @@ export const TextResponse = ({
         flexDirection="column"
         spacing={1}
       >
-        <Typography
-          id={`textResponse-label-${blockId}`}
-          variant="subtitle2"
-          sx={{
-            fontSize: 14,
-            fontWeight: 500,
-            fontFamily: theme.typography.button.fontFamily
-          }}
-        >
-          {label.trim() === '' ? t('Label') : label}
-          {(required ?? false) ? '*' : ''}
-        </Typography>
+        {hideLabel !== true && (
+          <Typography
+            id={`textResponse-label-${blockId}`}
+            variant="subtitle2"
+            sx={{
+              fontSize: 14,
+              fontWeight: 500,
+              fontFamily: theme.typography.button.fontFamily
+            }}
+          >
+            {label.trim() === '' ? t('Label') : label}
+            {(required ?? false) ? '*' : ''}
+          </Typography>
+        )}
         <TextField
           id={`textResponse-field`}
           name={blockId}
