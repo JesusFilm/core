@@ -84,25 +84,19 @@ describe('ContactDataForm', () => {
 
     // Verify the callback excludes the unchecked field
     const lastCall =
-      mockSetContactData.mock.calls[
-        mockSetContactData.mock.calls.length - 1
-      ][0]
+      mockSetContactData.mock.calls[mockSetContactData.mock.calls.length - 1][0]
     expect(lastCall).toEqual(['email', 'phone'])
 
     // Uncheck Email
     fireEvent.click(screen.getByLabelText('Email'))
     const secondLastCall =
-      mockSetContactData.mock.calls[
-        mockSetContactData.mock.calls.length - 1
-      ][0]
+      mockSetContactData.mock.calls[mockSetContactData.mock.calls.length - 1][0]
     expect(secondLastCall).toEqual(['phone'])
 
     // Uncheck Phone
     fireEvent.click(screen.getByLabelText('Phone'))
     const thirdLastCall =
-      mockSetContactData.mock.calls[
-        mockSetContactData.mock.calls.length - 1
-      ][0]
+      mockSetContactData.mock.calls[mockSetContactData.mock.calls.length - 1][0]
     expect(thirdLastCall).toEqual([])
   })
 })

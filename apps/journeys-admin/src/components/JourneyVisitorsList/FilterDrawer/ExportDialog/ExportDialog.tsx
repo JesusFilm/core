@@ -11,7 +11,10 @@ import { ReactElement, useEffect, useState } from 'react'
 
 import { Dialog } from '@core/shared/ui/Dialog'
 
-import { useJourneyContactsExport, useJourneyEventsExport } from '../../../../libs/useJourneyEventsExport'
+import {
+  useJourneyContactsExport,
+  useJourneyEventsExport
+} from '../../../../libs/useJourneyEventsExport'
 
 import { ContactDataForm } from './ContactDataForm'
 import { DateRangePicker } from './DateRangePicker'
@@ -45,8 +48,10 @@ export function ExportDialog({
 }: ExportDialogProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { enqueueSnackbar } = useSnackbar()
-  const { exportJourneyEvents, downloading: eventsDownloading } = useJourneyEventsExport()
-  const { exportJourneyContacts, downloading: contactsDownloading } = useJourneyContactsExport()
+  const { exportJourneyEvents, downloading: eventsDownloading } =
+    useJourneyEventsExport()
+  const { exportJourneyContacts, downloading: contactsDownloading } =
+    useJourneyContactsExport()
   const { data: journeyData } = useQuery(GET_JOURNEY_CREATED_AT, {
     variables: { id: journeyId }
   })
@@ -81,7 +86,11 @@ export function ExportDialog({
           ...(startDate && { periodRangeStart: startDate.toISOString() }),
           ...(endDate && { periodRangeEnd: endDate.toISOString() })
         }
-        await exportJourneyContacts({ journeyId, filter, contactDataFields: contactData })
+        await exportJourneyContacts({
+          journeyId,
+          filter,
+          contactDataFields: contactData
+        })
       }
       onClose()
     } catch (error) {
@@ -106,7 +115,10 @@ export function ExportDialog({
           color="secondary"
           onClick={handleExport}
           loading={eventsDownloading || contactsDownloading}
-          disabled={exportBy === 'Visitor Actions' && selectedEvents.length === 0 || exportBy === 'Contact Data' &&  contactData.length === 0}
+          disabled={
+            (exportBy === 'Visitor Actions' && selectedEvents.length === 0) ||
+            (exportBy === 'Contact Data' && contactData.length === 0)
+          }
           sx={{
             mb: { xs: 0, sm: 3 },
             mr: { xs: 0, sm: 3 }
@@ -122,14 +134,19 @@ export function ExportDialog({
         onStartDateChange={setStartDate}
         onEndDateChange={setEndDate}
       />
-      <Box sx={{ 
-        pt: 4,
-        display: 'flex', 
-        flexDirection: { xs: 'column', sm: 'row' },
-        alignItems: { xs: 'stretch', sm: 'center' },
-        gap: 2 
-      }}>
-        <Typography variant="subtitle2" sx={{ whiteSpace: 'nowrap', minWidth: 'fit-content' }}>
+      <Box
+        sx={{
+          pt: 4,
+          display: 'flex',
+          flexDirection: { xs: 'column', sm: 'row' },
+          alignItems: { xs: 'stretch', sm: 'center' },
+          gap: 2
+        }}
+      >
+        <Typography
+          variant="subtitle2"
+          sx={{ whiteSpace: 'nowrap', minWidth: 'fit-content' }}
+        >
           {t('Export By:')}
         </Typography>
         <FormControl fullWidth>
@@ -143,7 +160,7 @@ export function ExportDialog({
               }
               return selected
             }}
-            >
+          >
             <MenuItem value="" disabled hidden>
               {t('Select Data')}
             </MenuItem>
@@ -152,23 +169,22 @@ export function ExportDialog({
           </Select>
         </FormControl>
       </Box>
-        {exportBy === 'Visitor Actions' && (
-          <Box sx={{ pt: 4 }}>
-            <Typography variant="subtitle2" gutterBottom>
-              {t('Select visitor actions')}
-            </Typography>
-            <FilterForm setSelectedEvents={setSelectedEvents} />
-          </Box>
-        )}
-        {exportBy === 'Contact Data' && (
-          <Box sx={{ pt: 4 }}>
-            <Typography variant="subtitle2" gutterBottom>
-              {t('Select contact data')}
-            </Typography>
-            <ContactDataForm setContactData={setContactData} />
-          
-      </Box>
-        )}
+      {exportBy === 'Visitor Actions' && (
+        <Box sx={{ pt: 4 }}>
+          <Typography variant="subtitle2" gutterBottom>
+            {t('Select visitor actions')}
+          </Typography>
+          <FilterForm setSelectedEvents={setSelectedEvents} />
+        </Box>
+      )}
+      {exportBy === 'Contact Data' && (
+        <Box sx={{ pt: 4 }}>
+          <Typography variant="subtitle2" gutterBottom>
+            {t('Select contact data')}
+          </Typography>
+          <ContactDataForm setContactData={setContactData} />
+        </Box>
+      )}
     </Dialog>
   )
 }

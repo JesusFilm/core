@@ -43,14 +43,15 @@ export function ContactDataForm({
   }
 
   useEffect(() => {
-    const allSelected = contactDataState.name && contactDataState.email && contactDataState.phone
+    const allSelected =
+      contactDataState.name && contactDataState.email && contactDataState.phone
     setSelectAll(allSelected)
 
     const selectedFields: string[] = []
     if (contactDataState.name) selectedFields.push('name')
     if (contactDataState.email) selectedFields.push('email')
     if (contactDataState.phone) selectedFields.push('phone')
-    
+
     setContactData(selectedFields)
   }, [contactDataState, setContactData])
 
