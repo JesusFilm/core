@@ -104,9 +104,10 @@ describe('TitleEdit', () => {
   })
 
   it('should update seo title with a 50-character long string when user attempts to type beyond the character limit', async () => {
-    const longTitle = 'This is a very long title that exceeds the 50-character limit and should be truncated properly by component'
+    const longTitle =
+      'This is a very long title that exceeds the 50-character limit and should be truncated properly by component'
     const expectedTruncatedTitle = longTitle.substring(0, 50)
-    
+
     const result = jest.fn(() => ({
       data: {
         journeyUpdate: {

@@ -108,9 +108,10 @@ describe('DescriptionEdit', () => {
   })
 
   it('should update seo description with a 180-character long string when user attempts to type beyond the character limit', async () => {
-    const longDescription = 'This is a very long description that exceeds the 180-character limit and should be truncated properly by the component. It contains more text than allowed to test the maxLength behavior in the browser environment and ensure proper truncation happens as expected by users when they type.'
+    const longDescription =
+      'This is a very long description that exceeds the 180-character limit and should be truncated properly by the component. It contains more text than allowed to test the maxLength behavior in the browser environment and ensure proper truncation happens as expected by users when they type.'
     const expectedTruncatedDescription = longDescription.substring(0, 180)
-    
+
     const result = jest.fn(() => ({
       data: {
         journeyUpdate: {
