@@ -105,25 +105,30 @@ export function AiChat({ open }: AiChatProps) {
   useEffect(() => {
     if (!open || contextLoading || contextError) return
 
-    const activeBlockContext = aiContextData.find(
-      (context) => context.blockId === activeBlock?.id
-    )
+    // Add small delay to ensure all state updates have completed
+    const timeoutId = setTimeout(() => {
+      const activeBlockContext = aiContextData.find(
+        (context) => context.blockId === activeBlock?.id
+      )
 
-    const hasAvailableSuggestions =
-      (activeBlockContext?.suggestions?.length ?? 0) > 0
-    const hasDisplayedSuggestions = (suggestions?.length ?? 0) > 0
+      const hasAvailableSuggestions =
+        (activeBlockContext?.suggestions?.length ?? 0) > 0
+      const hasDisplayedSuggestions = (suggestions?.length ?? 0) > 0
 
-    if (hasAvailableSuggestions && !hasDisplayedSuggestions) {
-      console.warn('🐛 AiChat Issue Detected:', {
-        message: 'Loading complete but suggestions not showing',
-        activeBlockId: activeBlock?.id,
-        availableSuggestions: activeBlockContext?.suggestions,
-        displayedSuggestions: suggestions,
-        contextLoading,
-        contextError,
-        timestamp: new Date().toISOString()
-      })
-    }
+      if (hasAvailableSuggestions && !hasDisplayedSuggestions) {
+        console.warn('🐛 AiChat Issue Detected:', {
+          message: 'Loading complete but suggestions not showing',
+          activeBlockId: activeBlock?.id,
+          availableSuggestions: activeBlockContext?.suggestions,
+          displayedSuggestions: suggestions,
+          contextLoading,
+          contextError,
+          timestamp: new Date().toISOString()
+        })
+      }
+    }, 100) // 100ms delay to allow state updates to complete
+
+    return () => clearTimeout(timeoutId)
   }, [
     open,
     contextLoading,
