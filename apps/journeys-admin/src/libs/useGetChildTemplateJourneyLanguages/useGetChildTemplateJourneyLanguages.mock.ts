@@ -1,13 +1,13 @@
 import { MockedResponse } from '@apollo/client/testing'
 
 import {
-  GetJourneysFromTemplateId,
-  GetJourneysFromTemplateIdVariables
-} from '../../../__generated__/GetJourneysFromTemplateId'
+  GetChildJourneysFromTemplateId,
+  GetChildJourneysFromTemplateIdVariables
+} from '../../../__generated__/GetChildJourneysFromTemplateId'
 
 import { GET_CHILD_JOURNEYS_FROM_TEMPLATE_ID } from './useGetChildTemplateJourneyLanguages'
 
-export const mockChildVariables: GetJourneysFromTemplateIdVariables = {
+export const mockChildVariables: GetChildJourneysFromTemplateIdVariables = {
   where: {
     template: true,
     fromTemplateId: 'journeyId'
@@ -15,8 +15,8 @@ export const mockChildVariables: GetJourneysFromTemplateIdVariables = {
 }
 
 export const mockChildJourneys: MockedResponse<
-  GetJourneysFromTemplateId,
-  GetJourneysFromTemplateIdVariables
+  GetChildJourneysFromTemplateId,
+  GetChildJourneysFromTemplateIdVariables
 > = {
   request: {
     query: GET_CHILD_JOURNEYS_FROM_TEMPLATE_ID,

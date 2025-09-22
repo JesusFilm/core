@@ -1,9 +1,9 @@
 import { gql, QueryHookOptions, QueryResult, useQuery } from '@apollo/client'
 import {
-  GetJourneysFromTemplateIdVariables,
-  GetJourneysFromTemplateId,
-  GetJourneysFromTemplateId_journeys_language as Language
-} from '../../../__generated__/GetJourneysFromTemplateId'
+  GetParentJourneysFromTemplateIdVariables,
+  GetParentJourneysFromTemplateId,
+  GetParentJourneysFromTemplateId_journeys_language as Language
+} from '../../../__generated__/GetParentJourneysFromTemplateId'
 import { useMemo } from 'react'
 
 export const GET_PARENT_JOURNEYS_FROM_TEMPLATE_ID = gql`
@@ -25,19 +25,19 @@ export const GET_PARENT_JOURNEYS_FROM_TEMPLATE_ID = gql`
 
 export function useGetParentTemplateJourneyLanguages(
   options?: QueryHookOptions<
-    GetJourneysFromTemplateId,
-    GetJourneysFromTemplateIdVariables
+    GetParentJourneysFromTemplateId,
+    GetParentJourneysFromTemplateIdVariables
   >
 ): QueryResult<
-  GetJourneysFromTemplateId,
-  GetJourneysFromTemplateIdVariables
+  GetParentJourneysFromTemplateId,
+  GetParentJourneysFromTemplateIdVariables
 > & {
   languages: Language[]
   languagesJourneyMap: Record<string, string> | undefined
 } {
   const query = useQuery<
-    GetJourneysFromTemplateId,
-    GetJourneysFromTemplateIdVariables
+    GetParentJourneysFromTemplateId,
+    GetParentJourneysFromTemplateIdVariables
   >(GET_PARENT_JOURNEYS_FROM_TEMPLATE_ID, options)
 
   const languages = useMemo(() => {

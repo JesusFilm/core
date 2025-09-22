@@ -29,9 +29,13 @@ import {
   JourneyDuplicateVariables
 } from '../../../../../../__generated__/JourneyDuplicate'
 import {
-  GetJourneysFromTemplateId,
-  GetJourneysFromTemplateIdVariables
-} from '../../../../../../__generated__/GetJourneysFromTemplateId'
+  GetChildJourneysFromTemplateId,
+  GetChildJourneysFromTemplateIdVariables
+} from '../../../../../../__generated__/GetChildJourneysFromTemplateId'
+import {
+  GetParentJourneysFromTemplateId,
+  GetParentJourneysFromTemplateIdVariables
+} from '../../../../../../__generated__/GetParentJourneysFromTemplateId'
 
 jest.mock('next-firebase-auth', () => ({
   __esModule: true,
@@ -70,8 +74,8 @@ const mockGetLastActiveTeamIdAndTeams: MockedResponse<GetLastActiveTeamIdAndTeam
   }
 
 const mockGetChildJourneysFromTemplateId: MockedResponse<
-  GetJourneysFromTemplateId,
-  GetJourneysFromTemplateIdVariables
+  GetChildJourneysFromTemplateId,
+  GetChildJourneysFromTemplateIdVariables
 > = {
   ...mockChildJourneys,
   request: {
@@ -81,8 +85,8 @@ const mockGetChildJourneysFromTemplateId: MockedResponse<
 }
 
 const mockGetParentJourneysFromTemplateId: MockedResponse<
-  GetJourneysFromTemplateId,
-  GetJourneysFromTemplateIdVariables
+  GetParentJourneysFromTemplateId,
+  GetParentJourneysFromTemplateIdVariables
 > = {
   ...mockParentJourneys,
   request: {
