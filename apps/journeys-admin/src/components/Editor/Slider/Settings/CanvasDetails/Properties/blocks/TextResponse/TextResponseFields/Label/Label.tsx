@@ -1,5 +1,5 @@
 import { gql, useMutation } from '@apollo/client'
-import Box from '@mui/material/Box'
+import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, useEffect, useState } from 'react'
@@ -8,12 +8,19 @@ import { v4 as uuidv4 } from 'uuid'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { useCommand } from '@core/journeys/ui/CommandProvider'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
+import EyeOpen from '@core/shared/ui/icons/EyeOpen'
+import EyeClosed from '@core/shared/ui/icons/EyeClosed'
 
 import { BlockFields_TextResponseBlock as TextResponseBlock } from '../../../../../../../../../../../__generated__/BlockFields'
 import {
   TextResponseLabelUpdate,
   TextResponseLabelUpdateVariables
 } from '../../../../../../../../../../../__generated__/TextResponseLabelUpdate'
+import {
+  TextResponseHideLabelUpdate,
+  TextResponseHideLabelUpdateVariables
+} from '../../../../../../../../../../../__generated__/TextResponseHideLabelUpdate'
+import IconButton from '@mui/material/IconButton'
 
 /**
  * GraphQL mutation for updating the label text in a TextResponse block.
@@ -23,6 +30,15 @@ export const TEXT_RESPONSE_LABEL_UPDATE = gql`
     textResponseBlockUpdate(id: $id, input: { label: $label }) {
       id
       label
+    }
+  }
+`
+
+export const TEXT_RESPONSE_HIDE_LABEL_UPDATE = gql`
+  mutation TextResponseHideLabelUpdate($id: ID!, $hideLabel: Boolean!) {
+    textResponseBlockUpdate(id: $id, input: { hideLabel: $hideLabel }) {
+      id
+      hideLabel
     }
   }
 `
@@ -39,6 +55,10 @@ export function Label(): ReactElement {
     TextResponseLabelUpdate,
     TextResponseLabelUpdateVariables
   >(TEXT_RESPONSE_LABEL_UPDATE)
+  const [textResponseHideLabelUpdate] = useMutation<
+    TextResponseHideLabelUpdate,
+    TextResponseHideLabelUpdateVariables
+  >(TEXT_RESPONSE_HIDE_LABEL_UPDATE)
   const { state, dispatch } = useEditor()
   const {
     add,
@@ -50,6 +70,7 @@ export function Label(): ReactElement {
     | undefined
   const [value, setValue] = useState(selectedBlock?.label ?? '')
   const [commandInput, setCommandInput] = useState({ id: uuidv4(), value })
+  const hideLabel = selectedBlock?.hideLabel ?? false
 
   useEffect(() => {
     if (undo == null || undo.id === commandInput.id) return
@@ -117,8 +138,63 @@ export function Label(): ReactElement {
     })
   }
 
+  function hideLabelToggle(): void {
+    if (selectedBlock == null) return
+
+    const newHideLabel = !hideLabel
+    const commandId = uuidv4()
+
+    add({
+      id: commandId,
+      parameters: {
+        execute: {
+          hideLabel: newHideLabel,
+          context: {},
+          runDispatch: false
+        },
+        undo: {
+          hideLabel: hideLabel,
+          context: { debounceTimeout: 1 },
+          runDispatch: true
+        },
+        redo: {
+          hideLabel: newHideLabel,
+          context: { debounceTimeout: 1 },
+          runDispatch: true
+        }
+      },
+      execute({ hideLabel, context, runDispatch }) {
+        if (runDispatch)
+          dispatch({
+            type: 'SetEditorFocusAction',
+            selectedBlock,
+            selectedStep: state.selectedStep,
+            selectedAttributeId: state.selectedAttributeId
+          })
+
+        void textResponseHideLabelUpdate({
+          variables: {
+            id: selectedBlock.id,
+            hideLabel
+          },
+          optimisticResponse: {
+            textResponseBlockUpdate: {
+              id: selectedBlock.id,
+              hideLabel,
+              __typename: 'TextResponseBlock'
+            }
+          },
+          context: {
+            debounceKey: `TextResponseBlock:${selectedBlock.id}`,
+            ...context
+          }
+        })
+      }
+    })
+  }
+
   return (
-    <Box sx={{ p: 4, pt: 0 }} data-testid="Label">
+    <Stack direction="row" sx={{ p: 4, pt: 0 }} data-testid="Label">
       <TextField
         id="label"
         name="label"
@@ -138,6 +214,14 @@ export function Label(): ReactElement {
           handleSubmit(e.target.value)
         }}
       />
-    </Box>
+      <IconButton
+        onClick={hideLabelToggle}
+        aria-label={hideLabel ? t('Show label') : t('Hide label')}
+        tabIndex={0}
+        sx={{ pl: 4 }}
+      >
+        {hideLabel ? <EyeClosed /> : <EyeOpen />}
+      </IconButton>
+    </Stack>
   )
 }

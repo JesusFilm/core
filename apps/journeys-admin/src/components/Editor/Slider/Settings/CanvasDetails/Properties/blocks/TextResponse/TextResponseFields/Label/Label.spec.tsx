@@ -11,7 +11,7 @@ import { BlockFields_TextResponseBlock as TextResponseBlock } from '../../../../
 import { CommandRedoItem } from '../../../../../../../../Toolbar/Items/CommandRedoItem'
 import { CommandUndoItem } from '../../../../../../../../Toolbar/Items/CommandUndoItem'
 
-import { TEXT_RESPONSE_LABEL_UPDATE } from './Label'
+import { TEXT_RESPONSE_LABEL_UPDATE, TEXT_RESPONSE_HIDE_LABEL_UPDATE } from './Label'
 
 import { Label } from '.'
 
@@ -247,5 +247,37 @@ describe('Edit Label field', () => {
     await waitFor(() => {
       expect(mockLabelUpdateWhitespace.result).not.toHaveBeenCalled()
     })
+  })
+
+  it('should toggle the hide label', async () => {
+    const mockHideLabelUpdate = {
+      request: {
+        query: TEXT_RESPONSE_HIDE_LABEL_UPDATE,
+        variables: {
+          id: block.id,
+          hideLabel: false
+        }
+      },
+      result: jest.fn(() => ({
+        data: {
+          textResponseBlockUpdate: {
+            id: block.id,
+            hideLabel: false
+          }
+        }
+      }))
+    }
+
+    render(
+      <MockedProvider mocks={[mockHideLabelUpdate]} addTypename={false}>
+        <EditorProvider initialState={{ selectedBlock: block }}>
+          <Label />
+        </EditorProvider>
+      </MockedProvider>
+    )
+
+    const toggleButton = screen.getByRole('button', { name: 'Show label' })
+    fireEvent.click(toggleButton)
+    await waitFor(() => expect(mockHideLabelUpdate.result).toHaveBeenCalled())
   })
 })
