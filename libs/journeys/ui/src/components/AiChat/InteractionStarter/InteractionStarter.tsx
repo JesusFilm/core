@@ -1,6 +1,5 @@
+import { BookOpen, Lightbulb } from 'lucide-react'
 import { useTranslation } from 'next-i18next'
-import { Lightbulb, BookOpen } from 'lucide-react'
-
 
 import { Button } from '../../SimpleButton'
 
@@ -25,14 +24,14 @@ export function InteractionStarter({ handleClick }: InteractionStarterProps) {
           onClick={() => handleClick(t('Explain this content'), 'explain')}
           className="flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-6 py-3 font-medium text-gray-500 transition-colors duration-200 hover:bg-gray-50"
         >
-          <BookOpen className="w-5 h-5 text-[var(--color-secondary-light)]" />
+          <BookOpen className="h-5 w-5 text-[var(--color-secondary-light)]" />
           {t('Explain')}
         </Button>
         <Button
           onClick={() => handleClick(t('Help me reflect on this'), 'reflect')}
           className="flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-6 py-3 font-medium text-gray-500 transition-colors duration-200 hover:bg-gray-50"
         >
-          <Lightbulb className="w-5 h-5 text-[var(--color-secondary-light)]" />
+          <Lightbulb className="h-5 w-5 text-[var(--color-secondary-light)]" />
           {t('Reflect')}
         </Button>
       </div>
