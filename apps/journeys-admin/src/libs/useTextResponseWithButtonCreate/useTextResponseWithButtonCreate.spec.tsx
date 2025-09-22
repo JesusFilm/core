@@ -30,7 +30,8 @@ describe('useTextResponseWithButtonCreate', () => {
       integrationId: null,
       placeholder: null,
       required: null,
-      __typename: 'TextResponseBlock' as const
+      __typename: 'TextResponseBlock' as const,
+      hideLabel: true
     } satisfies TextResponseBlock,
     buttonBlock: {
       id: 'button.id',

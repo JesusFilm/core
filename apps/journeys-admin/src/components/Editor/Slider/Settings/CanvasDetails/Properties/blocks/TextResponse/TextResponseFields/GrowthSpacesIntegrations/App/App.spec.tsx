@@ -62,7 +62,8 @@ describe('App', () => {
     routeId: null,
     type: TextResponseType.freeForm,
     required: null,
-    children: []
+    children: [],
+    hideLabel: true
   }
 
   const integrationUpdateMock: MockedResponse<

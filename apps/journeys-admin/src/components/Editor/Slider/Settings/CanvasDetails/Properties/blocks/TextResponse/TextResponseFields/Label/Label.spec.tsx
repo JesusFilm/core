@@ -34,7 +34,8 @@ describe('Edit Label field', () => {
     type: null,
     routeId: null,
     required: null,
-    children: []
+    children: [],
+    hideLabel: true
   }
 
   const mockLabelUpdate1 = {

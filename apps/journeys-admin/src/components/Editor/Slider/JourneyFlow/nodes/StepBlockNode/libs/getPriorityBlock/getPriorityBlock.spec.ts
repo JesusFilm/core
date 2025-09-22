@@ -95,7 +95,8 @@ const textResponse: TreeBlock<TextResponseBlock> = {
   type: null,
   routeId: null,
   required: null,
-  children: []
+  children: [],
+  hideLabel: true
 }
 
 const typography: TreeBlock<TypographyBlock> = {

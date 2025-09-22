@@ -34,7 +34,8 @@ describe('Edit Placeholder field', () => {
     type: null,
     routeId: null,
     required: null,
-    children: []
+    children: [],
+    hideLabel: true
   }
 
   const mockPlaceholderUpdate1 = {

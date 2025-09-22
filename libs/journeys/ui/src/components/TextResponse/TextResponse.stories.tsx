@@ -62,7 +62,8 @@ const textResponseProps: ComponentProps<typeof TextResponse> = {
   required: null,
   type: null,
   routeId: null,
-  children: []
+  children: [],
+  hideLabel: true
 }
 
 const submitEventMock: MockedResponse = {

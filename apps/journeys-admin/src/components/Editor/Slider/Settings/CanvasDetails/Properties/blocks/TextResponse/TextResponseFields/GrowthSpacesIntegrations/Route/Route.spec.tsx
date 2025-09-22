@@ -62,7 +62,8 @@ describe('Route', () => {
     routeId: null,
     type: TextResponseType.freeForm,
     required: null,
-    children: []
+    children: [],
+    hideLabel: true
   }
 
   const routeUpdateMock: MockedResponse<

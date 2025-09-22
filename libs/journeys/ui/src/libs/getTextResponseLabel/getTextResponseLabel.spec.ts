@@ -17,7 +17,8 @@ describe('getTextResponseLabel', () => {
     routeId: null,
     integrationId: null,
     required: null,
-    children: []
+    children: [],
+    hideLabel: true
   }
 
   it('returns label of the text response block', () => {

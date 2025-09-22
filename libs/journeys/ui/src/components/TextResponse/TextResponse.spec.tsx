@@ -31,7 +31,8 @@ const block: TreeBlock<TextResponseFields> = {
   integrationId: null,
   type: null,
   routeId: null,
-  children: []
+  children: [],
+  hideLabel: true
 }
 
 interface TextResponseMockProps {
@@ -81,7 +82,8 @@ describe('TextResponse', () => {
       integrationId: null,
       type: null,
       routeId: null,
-      children: []
+      children: [],
+      hideLabel: true
     }
 
     render(
@@ -111,7 +113,8 @@ describe('TextResponse', () => {
       type: null,
       routeId: null,
       required: null,
-      children: []
+      children: [],
+      hideLabel: true
     }
 
     render(

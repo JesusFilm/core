@@ -61,7 +61,8 @@ export const textResponseBlockCreateMock: MockedResponse<TextResponseBlockCreate
           routeId: null,
           integrationId: null,
           placeholder: null,
-          required: null
+          required: null,
+          hideLabel: true
         }
       }
     }))

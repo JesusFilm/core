@@ -39,7 +39,8 @@ const block: TreeBlock<TextResponseBlock> = {
   integrationId: null,
   type: null,
   routeId: null,
-  children: []
+  children: [],
+  hideLabel: true
 }
 
 const Template: StoryObj<ComponentProps<typeof TextResponse>> = {

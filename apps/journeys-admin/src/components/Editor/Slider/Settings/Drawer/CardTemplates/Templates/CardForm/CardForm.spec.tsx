@@ -230,7 +230,8 @@ describe('CardForm', () => {
           type: null,
           routeId: null,
           required: null,
-          __typename: 'TextResponseBlock'
+          __typename: 'TextResponseBlock',
+          hideLabel: true
         },
         button: {
           id: 'buttonId',

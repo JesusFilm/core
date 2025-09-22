@@ -88,7 +88,8 @@ export function NewTextResponseButton(): ReactElement {
       routeId: null,
       integrationId: null,
       required: null,
-      __typename: 'TextResponseBlock'
+      __typename: 'TextResponseBlock',
+      hideLabel: true
     }
 
     if (!hasSubmitButton) {

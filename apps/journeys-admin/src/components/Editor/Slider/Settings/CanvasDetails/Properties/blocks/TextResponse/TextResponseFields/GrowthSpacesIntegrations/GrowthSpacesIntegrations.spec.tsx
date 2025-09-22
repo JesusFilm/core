@@ -53,7 +53,8 @@ describe('GrowthSpacesIntegrations', () => {
     routeId: null,
     type: TextResponseType.email,
     required: null,
-    children: []
+    children: [],
+    hideLabel: true
   }
 
   describe('Email', () => {

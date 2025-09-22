@@ -304,7 +304,8 @@ export function CardForm(): ReactElement {
       routeId: null,
       integrationId: null,
       required: null,
-      __typename: 'TextResponseBlock'
+      __typename: 'TextResponseBlock',
+      hideLabel: true
     } satisfies TextResponseBlock
 
     const buttonBlock = {

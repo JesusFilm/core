@@ -165,7 +165,8 @@ export const textResponseBlock: TreeBlock<TextResponseBlock> = {
   type: TextResponseType.freeForm,
   routeId: null,
   integrationId: null,
-  required: null
+  required: null,
+  hideLabel: true
 }
 
 export const imageBlock: TreeBlock<ImageFields> = {
