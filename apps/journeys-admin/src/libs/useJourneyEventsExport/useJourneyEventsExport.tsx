@@ -15,10 +15,13 @@ import { processCsv } from './utils/processCsv'
 import { transformEvents } from './utils/transformEvents'
 
 function hasValidEventContactData(event: JourneyEvent): boolean {
-  const hasName = event.visitorName != null && String(event.visitorName).trim() !== ''
-  const hasEmail = event.visitorEmail != null && String(event.visitorEmail).trim() !== ''
-  const hasPhone = event.visitorPhone != null && String(event.visitorPhone).trim() !== ''
-  
+  const hasName =
+    event.visitorName != null && String(event.visitorName).trim() !== ''
+  const hasEmail =
+    event.visitorEmail != null && String(event.visitorEmail).trim() !== ''
+  const hasPhone =
+    event.visitorPhone != null && String(event.visitorPhone).trim() !== ''
+
   return hasName || hasEmail || hasPhone
 }
 
@@ -235,10 +238,10 @@ export function useJourneyEventsExport(): {
       } while (hasNextPage)
 
       const eventData = transformEvents(events)
-      
+
       // Filter out events that don't have meaningful contact data
       const validEventData = eventData.filter(hasValidEventContactData)
-      
+
       if (validEventData.length === 0) {
         throw new Error(t('No events found with contact data'))
       }

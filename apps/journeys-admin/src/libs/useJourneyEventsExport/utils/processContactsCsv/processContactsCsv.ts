@@ -5,21 +5,23 @@ import { TFunction } from 'i18next'
 import { JourneyContact } from '../../useJourneyEventsExport'
 
 // Import the shared validation function
-function hasValidContactData(contact: JourneyContact, contactDataFields: string[]): boolean {
+function hasValidContactData(
+  contact: JourneyContact,
+  contactDataFields: string[]
+): boolean {
   const fieldMap: Record<string, keyof JourneyContact> = {
-    'name': 'visitorName',
-    'email': 'visitorEmail', 
-    'phone': 'visitorPhone'
+    name: 'visitorName',
+    email: 'visitorEmail',
+    phone: 'visitorPhone'
   }
 
-  return contactDataFields.some(field => {
+  return contactDataFields.some((field) => {
     const contactField = fieldMap[field]
     const value = contact[contactField]
     return value != null && String(value).trim() !== ''
   })
 }
 
-export function getContactsCsvOptions(t: TFunction, contactDataFields: string[]) {
 export function getContactsCsvOptions(
   t: TFunction,
   contactDataFields: string[]
@@ -53,7 +55,7 @@ export function processContactsCsv(
   contactDataFields: string[]
 ): void {
   // Filter out contacts that don't have meaningful data for the selected fields
-  const validContacts = contacts.filter(contact => 
+  const validContacts = contacts.filter((contact) =>
     hasValidContactData(contact, contactDataFields)
   )
 
@@ -61,7 +63,10 @@ export function processContactsCsv(
     throw new Error(t('No contacts found with data for the selected fields'))
   }
 
-  const csv = stringify(validContacts, getContactsCsvOptions(t, contactDataFields))
+  const csv = stringify(
+    validContacts,
+    getContactsCsvOptions(t, contactDataFields)
+  )
   const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' })
   const url = window.URL.createObjectURL(blob)
   const today = format(new Date(), 'yyyy-MM-dd')

@@ -9,6 +9,7 @@ import Radio from '@mui/material/Radio'
 import RadioGroup from '@mui/material/RadioGroup'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
+import Link from 'next/link'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, useState } from 'react'
 
@@ -131,6 +132,11 @@ export function FilterDrawer({
             checked={sortSetting === 'duration'}
           />
         </RadioGroup>
+        <Link
+          href={`https://support.nextstep.is/article/1428-response-fields-and-data-analysis`}
+        >
+          {t('Data Analytics Test')}
+        </Link>
       </Box>
 
       {journeyId != null && (
