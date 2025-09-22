@@ -108,7 +108,7 @@ export const VisitorInteraction = ({
               <Row className="px-[28px]">
                 <Column>
                   <Button
-                    className="bg-[#E43343] rounded-sm text-white text-[16px] font-semibold no-underline text-center px-5 py-5"
+                    className="rounded-sm bg-[#E43343] px-5 py-5 text-center text-[16px] font-semibold text-white no-underline"
                     style={{
                       font: '16px "Open Sans", sans-serif'
                     }}
@@ -119,7 +119,7 @@ export const VisitorInteraction = ({
                 </Column>
               </Row>
             </Section>
-            <Container className="bg-[#FFFFFF] mt-[20px]">
+            <Container className="mt-[20px] bg-[#FFFFFF]">
               <Section align="center">
                 <Row className="px-[28px]">
                   <Column>
@@ -139,14 +139,14 @@ export const VisitorInteraction = ({
               {filteredEvents.map((event) => (
                 <Section key={event?.id} align="center" className="px-[28px]">
                   <Column className="w-2/4">
-                    <Text className="font-sans text-[16px] leading-[24px] mb-[0px]">
+                    <Text className="mb-[0px] font-sans text-[16px] leading-[24px]">
                       {event.typename === 'ChatOpenEvent'
                         ? 'Chat Started'
                         : event.label}
                     </Text>
                   </Column>
                   <Column className="w-2/4">
-                    <Text className="font-sans text-[16px] leading-[24px]  mb-[0px]">
+                    <Text className="mb-[0px] font-sans text-[16px] leading-[24px]">
                       {'\u00B7\u00A0\u00A0'} {event.value}
                     </Text>
                   </Column>
@@ -192,7 +192,7 @@ const withHTML = ({ children }: WrapperProps): ReactElement => {
 
 const withBody = ({ children }: WrapperProps): ReactElement => {
   return (
-    <Body className="my-[0px] mx-[0px] font-sans h-full w-full">
+    <Body className="mx-[0px] my-[0px] h-full w-full font-sans">
       {children}
     </Body>
   )
