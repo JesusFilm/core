@@ -277,6 +277,7 @@ mediaComponentLanguage.openapi(route, async (c) => {
       select: {
         id: true,
         bcp47: true,
+        iso3: true,
         name: {
           where: {
             languageId: { equals: '529' }
@@ -393,18 +394,18 @@ mediaComponentLanguage.openapi(route, async (c) => {
 
       for (const subtitle of editionSubtitles) {
         const languageInfo = languageMap.get(subtitle.languageId)
-        if (!languageInfo || !languageInfo.name[0] || !languageInfo.bcp47)
+        if (!languageInfo || !languageInfo.name[0])
           continue
         subtitleUrls.vtt.push({
           languageId: Number(subtitle.languageId),
           languageName: languageInfo.name[0].value,
-          languageTag: languageInfo.bcp47,
+          languageTag: languageInfo.bcp47 ?? languageInfo.iso3 ?? 'en',
           url: subtitle.vttSrc ?? ''
         })
         subtitleUrls.srt.push({
           languageId: Number(subtitle.languageId),
           languageName: languageInfo.name[0].value,
-          languageTag: languageInfo.bcp47,
+          languageTag: languageInfo.bcp47 ?? languageInfo.iso3 ?? 'en',
           url: subtitle.srtSrc ?? ''
         })
       }
