@@ -57,16 +57,6 @@ async function fetchBlockContext(
         // Remove markdown code block formatting if present
         const result = text.replace(/^```json\s*/, '').replace(/\s*```$/, '')
 
-        // Log markdown stripping for debugging
-        if (text !== result) {
-          console.log(`🔧 Stripped markdown for block ${blockId}:`, {
-            blockId,
-            originalLength: text.length,
-            strippedLength: result.length,
-            hadMarkdown: true
-          })
-        }
-
         const duration = Date.now() - startTime
 
         span.setAttributes({
@@ -80,12 +70,7 @@ async function fetchBlockContext(
             blockId,
             result,
             duration,
-            success: true,
-            debug: {
-              aiResponseLength: text.length,
-              processedResultLength: result.length,
-              hadMarkdownStripping: text !== result
-            }
+            success: true
           }
         })
 
@@ -137,12 +122,6 @@ function createFallbackBlockContext(
   language: string
   suggestions: string[]
 } {
-  console.warn(`⚠️ Creating fallback context for block ${blockId}:`, {
-    blockId,
-    contextTextLength: contextText.length,
-    reason: 'AI processing failed or JSON parse failed'
-  })
-
   return {
     blockId,
     contextText,
@@ -166,50 +145,26 @@ function processSuccessfulResult(
   suggestions: string[]
 } {
   try {
-    const parsed = JSON.parse(result)
-    console.log(`✅ Successfully parsed result for block ${blockId}:`, {
-      blockId,
-      hasLanguage: !!parsed.language,
-      suggestionsCount: parsed.suggestions?.length ?? 0,
-      suggestions: parsed.suggestions
-    })
-
-    // Add debug info to Langfuse trace for successful parsing
-    updateActiveObservation({
-      metadata: {
-        parseSuccess: true,
-        suggestionsGenerated: parsed.suggestions?.length ?? 0,
-        hasLanguage: !!parsed.language
-      }
-    })
-
-    return parsed
+    return JSON.parse(result)
   } catch (parseError) {
-    const errorMessage =
-      parseError instanceof Error ? parseError.message : 'Unknown error'
-    const debugInfo = {
-      blockId,
-      parseError: errorMessage,
-      resultLength: result.length,
-      resultPreview: result.substring(0, 200),
-      resultSuffix:
-        result.length > 200 ? result.substring(result.length - 50) : ''
+    // Try to repair common JSON issues before giving up
+    let repairedResult = result
+
+    // Fix unquoted blockId (the exact issue we found)
+    repairedResult = repairedResult.replace(
+      /"blockId":\s*([a-f0-9-]+),/g,
+      '"blockId": "$1",'
+    )
+
+    try {
+      return JSON.parse(repairedResult)
+    } catch {
+      console.error(
+        `Failed to parse result for block ${blockId}:`,
+        parseError instanceof Error ? parseError.message : 'Unknown error'
+      )
+      return createFallbackBlockContext(blockId, contextText)
     }
-
-    console.error(`❌ Failed to parse result for block ${blockId}:`, debugInfo)
-
-    // Add debug info to Langfuse trace for failed parsing
-    updateActiveObservation({
-      metadata: {
-        parseSuccess: false,
-        parseError: errorMessage,
-        resultLength: result.length,
-        resultPreview: result.substring(0, 200),
-        fallbackUsed: true
-      }
-    })
-
-    return createFallbackBlockContext(blockId, contextText)
   }
 }
 
@@ -325,22 +280,6 @@ const handler = async (req: NextRequest) => {
             successCount,
             fallbackCount,
             processingTimeMs: processingTime
-          },
-          debug: {
-            blocksWithSuggestions: results
-              .filter((r) => r.suggestions.length > 0)
-              .map((r) => r.blockId),
-            blocksWithoutSuggestions: results
-              .filter((r) => r.suggestions.length === 0)
-              .map((r) => r.blockId),
-            blocksWithContext: results
-              .filter((r) => r.contextText.trim() !== '')
-              .map((r) => r.blockId),
-            unexpectedEmptySuggestions: results
-              .filter(
-                (r) => r.contextText.trim() !== '' && r.suggestions.length === 0
-              )
-              .map((r) => r.blockId)
           }
         }
       })
