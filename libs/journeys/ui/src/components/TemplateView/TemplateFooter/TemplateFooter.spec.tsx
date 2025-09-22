@@ -64,7 +64,7 @@ describe('TemplateFooter', () => {
   })
 
   it('should push signed in user to customization flow page when clicking template customization button while feature flag is enabled.', async () => {
-    const { getByRole } = await render(
+    const { getByRole } = render(
       <MockedProvider>
         <FlagsProvider flags={{ journeyCustomization: true }}>
           <JourneyProvider value={{ journey }}>
@@ -86,7 +86,7 @@ describe('TemplateFooter', () => {
   })
 
   it('should open legacy copy to team dialog when clicking template customization button while feature flag is disabled.', async () => {
-    const { getByRole } = await render(
+    const { getByRole } = render(
       <MockedProvider>
         <FlagsProvider flags={{ journeyCustomization: false }}>
           <JourneyProvider value={{ journey }}>
