@@ -120,7 +120,7 @@ async function searchVideoVariantsAlgolia(
         'studyQuestions'
       ],
       ruleContexts: ['arclight_resources_page'],
-      filters: 'published:true AND NOT restrictViewPlatforms:arclight'
+      filters: 'published:true AND NOT restrictViewPlatforms:arclight AND hasAvailableLanguages:true'
     }
   })) as AlgoliaSearchResponse<AlgoliaVideoHit>
 
