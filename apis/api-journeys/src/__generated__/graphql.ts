@@ -2146,6 +2146,7 @@ export type MutationPlaylistDeleteArgs = {
 
 
 export type MutationPlaylistItemAddArgs = {
+  id?: InputMaybe<Scalars['ID']['input']>;
   playlistId: Scalars['ID']['input'];
   videoVariantId: Scalars['ID']['input'];
 };
@@ -3160,7 +3161,7 @@ export type PlaylistItem = {
   __typename?: 'PlaylistItem';
   createdAt: Scalars['DateTime']['output'];
   id: Scalars['ID']['output'];
-  order: Scalars['Int']['output'];
+  order?: Maybe<Scalars['Int']['output']>;
   playlist: Playlist;
   updatedAt: Scalars['DateTime']['output'];
   videoVariant: VideoVariant;
@@ -4304,6 +4305,7 @@ export type TeamUpdateInput = {
 
 export type TextResponseBlock = Block & {
   __typename?: 'TextResponseBlock';
+  hideLabel?: Maybe<Scalars['Boolean']['output']>;
   hint?: Maybe<Scalars['String']['output']>;
   id: Scalars['ID']['output'];
   integrationId?: Maybe<Scalars['String']['output']>;
@@ -4326,6 +4328,7 @@ export type TextResponseBlockCreateInput = {
 };
 
 export type TextResponseBlockUpdateInput = {
+  hideLabel?: InputMaybe<Scalars['Boolean']['input']>;
   hint?: InputMaybe<Scalars['String']['input']>;
   integrationId?: InputMaybe<Scalars['String']['input']>;
   label?: InputMaybe<Scalars['String']['input']>;
@@ -5474,6 +5477,7 @@ export type VideoVariantDownloadUpdateInput = {
 };
 
 export type VideoVariantFilter = {
+  languageId?: InputMaybe<Scalars['ID']['input']>;
   onlyPublished?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
