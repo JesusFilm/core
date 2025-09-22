@@ -1,3 +1,4 @@
+import clsx from 'clsx'
 import last from 'lodash/last'
 import { ReactElement, useCallback, useEffect, useRef, useState } from 'react'
 import videojs from 'video.js'
@@ -13,10 +14,9 @@ import { usePlayer } from '../../../../libs/playerContext/PlayerContext'
 import { useVideo } from '../../../../libs/videoContext'
 import { useWatch } from '../../../../libs/watchContext'
 import { useSubtitleUpdate } from '../../../../libs/watchContext/useSubtitleUpdate'
+import type { CarouselMuxSlide } from '../../../../types/inserts'
 import { VideoControls } from '../../../VideoContentPage/VideoHero/VideoPlayer/VideoControls'
 import { HeroSubtitleOverlay } from './HeroSubtitleOverlay'
-import type { CarouselMuxSlide } from '../../../../types/inserts'
-import clsx from 'clsx'
 
 interface HeroVideoProps {
   isPreview?: boolean
@@ -95,7 +95,7 @@ export function HeroVideo({
       autoplay: true,
       controls: false,
       loop: !isPreview && !currentMuxInsert, // Don't loop Mux inserts
-      muted: mute,
+      muted: false, // Start unmuted, mute state will be set by useEffect
       fluid: false,
       fill: true,
       responsive: false,
@@ -126,7 +126,14 @@ export function HeroVideo({
       }
       setPlayerReady(false)
     }
-  }, [currentMuxInsert?.id, variant?.hls, title, variant?.id, currentMuxInsert, isPreview, mute])
+  }, [currentMuxInsert?.id, variant?.hls, title, variant?.id, currentMuxInsert, isPreview])
+
+  // Handle mute state changes dynamically without recreating the player
+  useEffect(() => {
+    if (playerRef.current && playerReady) {
+      playerRef.current.muted(mute)
+    }
+  }, [mute, playerReady])
 
   // Duration timer for Mux inserts
   useEffect(() => {
@@ -180,11 +187,7 @@ export function HeroVideo({
     subtitleUpdate
   ])
 
-  const shouldShowOverlay = playerReady && (mute || subtitleOn)
-  console.log('shouldShowOverlay', shouldShowOverlay)
-  console.log('playerReady', playerReady)
-  console.log('mute', mute)
-  console.log('subtitleOn', subtitleOn)
+  const shouldShowOverlay = playerReady && (mute || (subtitleOn ?? false))
 
   return (
     <div
