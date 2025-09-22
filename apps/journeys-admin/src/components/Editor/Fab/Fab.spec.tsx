@@ -100,7 +100,9 @@ describe('Fab', () => {
         </EditorProvider>
       )
 
-      expect(screen.getByRole('button', { name: 'Add Block' })).not.toBeDisabled()
+      expect(
+        screen.getByRole('button', { name: 'Add Block' })
+      ).not.toBeDisabled()
     })
 
     it('should handle add', () => {
