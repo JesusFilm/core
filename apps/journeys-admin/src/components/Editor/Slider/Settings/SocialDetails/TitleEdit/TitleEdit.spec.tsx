@@ -104,7 +104,6 @@ describe('TitleEdit', () => {
   })
 
   it('should update seo title with a 50-character long string when user attempts to type beyond the character limit', async () => {
-    const user = userEvent.setup()
     const longTitle = 'This is a very long title that exceeds the 50-character limit and should be truncated properly by component'
     const expectedTruncatedTitle = longTitle.substring(0, 50)
     
@@ -150,12 +149,12 @@ describe('TitleEdit', () => {
     )
 
     const textField = getByRole('textbox') as HTMLInputElement
-    await user.clear(textField)
-    await user.type(textField, longTitle)
+    await userEvent.clear(textField)
+    await userEvent.type(textField, longTitle)
     expect(textField.value).toBe(expectedTruncatedTitle)
     expect(textField.value.length).toBe(50)
     
-    await user.tab()
+    await userEvent.tab()
     await waitFor(() => expect(result).toHaveBeenCalled())
   })
 
