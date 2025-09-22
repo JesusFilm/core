@@ -56,7 +56,7 @@ interface ChildrenLayoutProps {
 
 export default function ChildrenLayout({ children }: ChildrenLayoutProps) {
   const router = useRouter()
-  const { videoId } = useParams() as { videoId: string }
+  const { videoId } = useParams<{ videoId: string }>()
   const { enqueueSnackbar } = useSnackbar()
   const pathname = usePathname()
   const [reloadOnPathChange, setReloadOnPathChange] = useState(false)

@@ -1050,6 +1050,7 @@ type TextResponseBlock implements Block @join__type(graph: API_JOURNEYS)  @join_
   placeholder: String
   required: Boolean
   hint: String
+  hideLabel: Boolean
   minRows: Int
   type: TextResponseType
   routeId: String
@@ -3703,6 +3704,7 @@ input TextResponseBlockUpdateInput @join__type(graph: API_JOURNEYS)  @join__type
   placeholder: String
   required: Boolean
   hint: String
+  hideLabel: Boolean
   minRows: Int
   routeId: String
   type: TextResponseType

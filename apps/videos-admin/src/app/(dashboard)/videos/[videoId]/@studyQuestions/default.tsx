@@ -41,7 +41,7 @@ export default function StudyQuestionsList(): ReactElement {
   const router = useRouter()
   const pathname = usePathname()
   const [reloadOnPathChange, setReloadOnPathChange] = useState(false)
-  const { videoId } = useParams() as { videoId: string }
+  const { videoId } = useParams<{ videoId: string }>()
 
   const { enqueueSnackbar } = useSnackbar()
 
