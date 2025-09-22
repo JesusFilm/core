@@ -147,24 +147,8 @@ function processSuccessfulResult(
   try {
     return JSON.parse(result)
   } catch (parseError) {
-    // Try to repair common JSON issues before giving up
-    let repairedResult = result
-
-    // Fix unquoted blockId (the exact issue we found)
-    repairedResult = repairedResult.replace(
-      /"blockId":\s*([a-f0-9-]+),/g,
-      '"blockId": "$1",'
-    )
-
-    try {
-      return JSON.parse(repairedResult)
-    } catch {
-      console.error(
-        `Failed to parse result for block ${blockId}:`,
-        parseError instanceof Error ? parseError.message : 'Unknown error'
-      )
-      return createFallbackBlockContext(blockId, contextText)
-    }
+    console.error(`Failed to parse result for block ${blockId}:`, parseError)
+    return createFallbackBlockContext(blockId, contextText)
   }
 }
 
