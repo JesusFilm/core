@@ -127,10 +127,8 @@ async function migrateMastersToR2(): Promise<void> {
   const badUrls = await loadBadUrls()
 
   const where = {
-    // id: { not: { startsWith: '1\\_' } },
     assetId: null,
     masterUrl: { not: null },
-    masterHeight: 1080,
     AND: [
       { masterUrl: { notIn: Array.from(badUrls) } },
       { masterUrl: { not: '' } }
