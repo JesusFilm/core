@@ -45,12 +45,8 @@ export function AboutTabPanel(): ReactElement {
           sx={{ flex: 1 }}
         />
       </Stack>
-      {journeyCustomization && (
-        <>
           <Divider />
           <CustomizeTemplate />
-        </>
-      )}
       <TextField
         data-testid="StrategySlugEdit"
         id="strategySlug"
