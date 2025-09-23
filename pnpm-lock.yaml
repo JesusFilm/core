@@ -383,9 +383,6 @@ importers:
       firebaseui:
         specifier: ^6.1.0
         version: 6.1.0(firebase@9.16.0(encoding@0.1.13))
-      fluent-ffmpeg:
-        specifier: ^2.1.3
-        version: 2.1.3
       form-data:
         specifier: ^4.0.0
         version: 4.0.4
@@ -10781,9 +10778,6 @@ packages:
   async-sema@3.1.1:
     resolution: {integrity: sha512-tLRNUXati5MFePdAk8dw7Qt7DpxPB60ofAgn8WRhW6a2rcimZnYBP9oxHiv0OHy+Wz7kPMG+t4LGdt31+4EmGg==}
 
-  async@0.2.10:
-    resolution: {integrity: sha512-eAkdoKxU6/LkKDBzLpT+t6Ff5EtfSF4wx1WfJiPEEV7WNLnDaRXk0oVysiEPm262roaachGexwUv94WhSgN5TQ==}
-
   async@2.6.4:
     resolution: {integrity: sha512-mzo5dfJYwAn29PeiJ0zvwTo04zj8HDJj0Mn8TD7sno7q12prdbnasKJHhkm2c1LgrhlJ0teaea8860oxi51mGA==}
 
@@ -13758,11 +13752,6 @@ packages:
 
   flatted@3.3.3:
     resolution: {integrity: sha512-GX+ysw4PBCz0PzosHDepZGANEuFCMLrnRTiEy9McGjmkCQYwRq4A/X786G/fjM/+OjsWSU1ZrY5qyARZmO/uwg==}
-
-  fluent-ffmpeg@2.1.3:
-    resolution: {integrity: sha512-Be3narBNt2s6bsaqP6Jzq91heDgOEaDCJAXcE3qcma/EJBSy5FB4cvO31XBInuAuKBx8Kptf8dkhjK0IOru39Q==}
-    engines: {node: '>=18'}
-    deprecated: Package no longer supported. Contact Support at https://www.npmjs.com/support for more info.
 
   follow-redirects@1.15.6:
     resolution: {integrity: sha512-wWN62YITEaOpSK584EZXJafH1AGpO8RVgElfkuXbTOrPX4fIfOyEpW/CsiNd8JdYrAoOvafRTOEnvsO++qCqFA==}
@@ -35225,8 +35214,6 @@ snapshots:
 
   async-sema@3.1.1: {}
 
-  async@0.2.10: {}
-
   async@2.6.4:
     dependencies:
       lodash: 4.17.21
@@ -38983,11 +38970,6 @@ snapshots:
   flat@5.0.2: {}
 
   flatted@3.3.3: {}
-
-  fluent-ffmpeg@2.1.3:
-    dependencies:
-      async: 0.2.10
-      which: 1.3.1
 
   follow-redirects@1.15.6(debug@4.4.3):
     optionalDependencies:
