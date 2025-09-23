@@ -24,6 +24,8 @@ import { ThemeMode, ThemeName } from '@core/shared/ui/themes'
 import { VideoLabel } from '../../../__generated__/globalTypes'
 import { VideoContentFields } from '../../../__generated__/VideoContentFields'
 import { useAlgoliaRouter } from '../../libs/algolia/useAlgoliaRouter'
+import type { VideoCarouselSlide, CarouselMuxSlide } from '../../types/inserts'
+import { isMuxSlide, isVideoSlide } from '../../types/inserts'
 
 
 import { PlayerProvider , usePlayer } from '../../libs/playerContext'
