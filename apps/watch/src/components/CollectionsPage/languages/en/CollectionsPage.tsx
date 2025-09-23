@@ -2,17 +2,17 @@
 import { ReactElement, useState } from 'react'
 
 import { PageWrapper } from '../../../PageWrapper'
+import { SectionVideoCarousel } from '../../../SectionVideoCarousel'
 import { CollectionIntroText } from '../../CollectionIntroText'
 import {
   CollectionNavigationCarousel,
   ContentItem
 } from '../../CollectionNavigationCarousel'
+import { collectionShowcaseSources } from '../../collectionShowcaseConfig'
 import { CollectionsPageContent } from '../../CollectionsPageContent'
 import { CollectionsVideoContent } from '../../CollectionsVideoContent'
 import { CollectionVideoContentCarousel } from '../../CollectionVideoContentCarousel'
-import { SectionVideoCollectionCarousel } from '../../../SectionVideoCollectionCarousel'
 import { ContainerHero } from '../../ContainerHero'
-import { collectionShowcaseSources } from '../../collectionShowcaseConfig'
 
 export function CollectionsPage(): ReactElement {
   const [mutePage, setMutePage] = useState(true)
@@ -236,7 +236,7 @@ Because the greatest celebration in human history is about far more than traditi
             buttonText: 'Join Our Bible study'
           }}
         />
-        <SectionVideoCollectionCarousel
+        <SectionVideoCarousel
           id="other-collections"
           sources={collectionShowcaseSources}
           primaryCollectionId="LUMOCollection"

@@ -1,4 +1,4 @@
-import { render, fireEvent, screen } from '@testing-library/react'
+import { fireEvent, render, screen } from '@testing-library/react'
 
 import { usePlayer } from '../../../../libs/playerContext'
 import { videos } from '../../../Videos/__generated__/testData'

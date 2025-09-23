@@ -2,17 +2,17 @@
 import { ReactElement, useState } from 'react'
 
 import { PageWrapper } from '../../../PageWrapper'
+import { SectionVideoCarousel } from '../../../SectionVideoCarousel'
 import { CollectionIntroText } from '../../CollectionIntroText'
 import {
   CollectionNavigationCarousel,
   ContentItem
 } from '../../CollectionNavigationCarousel'
+import { collectionShowcaseSources } from '../../collectionShowcaseConfig'
 import { CollectionsPageContent } from '../../CollectionsPageContent'
 import { CollectionsVideoContent } from '../../CollectionsVideoContent'
 import { CollectionVideoContentCarousel } from '../../CollectionVideoContentCarousel'
-import { SectionVideoCollectionCarousel } from '../../../SectionVideoCollectionCarousel'
 import { ContainerHero } from '../../ContainerHero'
-import { collectionShowcaseSources } from '../../collectionShowcaseConfig'
 
 export function CollectionsPage(): ReactElement {
   const [mutePage, setMutePage] = useState(true)
@@ -251,7 +251,7 @@ Porque la celebración más grande en la historia de la humanidad va mucho más 
             buttonText: 'Únete a nuestro estudio bíblico'
           }}
         />
-        <SectionVideoCollectionCarousel
+        <SectionVideoCarousel
           id="other-collections"
           sources={collectionShowcaseSources}
           primaryCollectionId="LUMOCollection"

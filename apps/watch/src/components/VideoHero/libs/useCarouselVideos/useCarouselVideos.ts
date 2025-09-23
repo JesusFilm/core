@@ -1,24 +1,26 @@
-import { useQuery, useLazyQuery } from '@apollo/client'
-import { useEffect, useMemo, useState, useCallback } from 'react'
+import { useLazyQuery, useQuery } from '@apollo/client'
+import { useCallback, useEffect, useMemo, useState } from 'react'
+
 import { getLanguageIdFromLocale } from '../../../../libs/getLanguageIdFromLocale'
+
 import {
   GET_COLLECTION_COUNTS,
   GET_ONE_CHILD_BY_INDEX,
   GET_SHORT_FILMS
 } from './queries'
 import {
-  getPlaylistConfig,
-  getDeterministicOffset,
-  getRandomFromMultipleCollections,
-  addToSessionPlayedIds,
   addToPersistentPlayedIds,
-  isVideoAlreadyPlayed,
-  isPoolExhausted,
-  markPoolVideoPlayed,
+  addToSessionPlayedIds,
+  clearCurrentVideoSession,
+  getDeterministicOffset,
+  getPlaylistConfig,
   getPoolKey,
-  saveCurrentVideoSession,
+  getRandomFromMultipleCollections,
+  isPoolExhausted,
+  isVideoAlreadyPlayed,
   loadCurrentVideoSession,
-  clearCurrentVideoSession
+  markPoolVideoPlayed,
+  saveCurrentVideoSession
 } from './utils'
 import { mergeMuxInserts } from './insertMux'
 import type { VideoCarouselSlide } from '../../../../types/inserts'

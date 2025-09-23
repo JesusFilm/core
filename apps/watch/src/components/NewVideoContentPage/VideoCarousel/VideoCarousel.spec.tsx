@@ -1,5 +1,5 @@
-import { render, screen, fireEvent } from '@testing-library/react'
 import { useTheme } from '@mui/material/styles'
+import { fireEvent, render, screen } from '@testing-library/react'
 
 import { videos } from '../../Videos/__generated__/testData'
 

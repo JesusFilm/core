@@ -4,7 +4,7 @@ import { render, screen, waitFor } from '@testing-library/react'
 import { VideoLabel } from '../../../__generated__/globalTypes'
 
 import { GET_COLLECTION_SHOWCASE_CONTENT } from './queries'
-import { SectionVideoCollectionCarousel } from './SectionVideoCollectionCarousel'
+import { SectionVideoCarousel } from './SectionVideoCarousel'
 
 jest.mock('next-i18next', () => ({
   useTranslation: () => ({
@@ -243,11 +243,11 @@ const emptyMocks: MockedResponse[] = [
   }
 ]
 
-describe('SectionVideoCollectionCarousel', () => {
+describe('SectionVideoCarousel', () => {
   it('renders slides from collection children and videos', async () => {
     render(
       <MockedProvider mocks={baseMocks} addTypename>
-        <SectionVideoCollectionCarousel
+        <SectionVideoCarousel
           sources={[
             { type: 'video', id: 'video-1' },
             { type: 'collection', id: 'collection-1', limitChildren: 3 }
@@ -258,19 +258,19 @@ describe('SectionVideoCollectionCarousel', () => {
 
     await waitFor(() =>
       expect(
-        screen.getByTestId('SectionVideoCollectionCarouselSlide-child-1')
+        screen.getByTestId('SectionVideoCarouselSlide-child-1')
       ).toBeInTheDocument()
     )
     expect(
-      screen.getByTestId('SectionVideoCollectionCarouselSlide-grandchild-1')
+      screen.getByTestId('SectionVideoCarouselSlide-grandchild-1')
     ).toBeInTheDocument()
     expect(
-      screen.getByTestId('SectionVideoCollectionCarouselSlide-video-1')
+      screen.getByTestId('SectionVideoCarouselSlide-video-1')
     ).toBeInTheDocument()
-    expect(screen.getByTestId('SectionVideoCollectionCarouselCTA')).toHaveTextContent(
+    expect(screen.getByTestId('SectionVideoCarouselCTA')).toHaveTextContent(
       'Watch'
     )
-    expect(screen.getByTestId('SectionVideoCollectionCarouselDescription')).toHaveTextContent(
+    expect(screen.getByTestId('SectionVideoCarouselDescription')).toHaveTextContent(
       'Our mission is to reach everyone. Secondary sentence.'
     )
   })
@@ -278,7 +278,7 @@ describe('SectionVideoCollectionCarousel', () => {
   it('respects override props for copy and CTA', async () => {
     render(
       <MockedProvider mocks={collectionOnlyMocks} addTypename>
-        <SectionVideoCollectionCarousel
+        <SectionVideoCarousel
           sources={[
             { type: 'collection', id: 'collection-1' }
           ]}
@@ -292,18 +292,18 @@ describe('SectionVideoCollectionCarousel', () => {
     )
 
     await waitFor(() =>
-      expect(screen.getByTestId('SectionVideoCollectionCarousel')).toBeInTheDocument()
+      expect(screen.getByTestId('SectionVideoCarousel')).toBeInTheDocument()
     )
     expect(
-      screen.getByTestId('SectionVideoCollectionCarouselSubtitle')
+      screen.getByTestId('SectionVideoCarouselSubtitle')
     ).toHaveTextContent('Override Subtitle')
-    expect(screen.getByTestId('SectionVideoCollectionCarouselTitle')).toHaveTextContent(
+    expect(screen.getByTestId('SectionVideoCarouselTitle')).toHaveTextContent(
       'Override Title'
     )
-    const mission = screen.getByTestId('SectionVideoCollectionCarouselDescription')
+    const mission = screen.getByTestId('SectionVideoCarouselDescription')
     expect(mission).toHaveTextContent('Bold Lead')
     expect(mission).toHaveTextContent('remaining copy')
-    const cta = screen.getByTestId('SectionVideoCollectionCarouselCTA')
+    const cta = screen.getByTestId('SectionVideoCarouselCTA')
     expect(cta).toHaveTextContent('Explore')
     expect((cta.closest('a') as HTMLAnchorElement).getAttribute('href')).toBe(
       '/custom-url'
@@ -313,7 +313,7 @@ describe('SectionVideoCollectionCarousel', () => {
   it('returns null when no slides are available', async () => {
     render(
       <MockedProvider mocks={emptyMocks} addTypename>
-        <SectionVideoCollectionCarousel
+        <SectionVideoCarousel
           sources={[{ type: 'collection', id: 'collection-1' }]}
         />
       </MockedProvider>
@@ -321,7 +321,7 @@ describe('SectionVideoCollectionCarousel', () => {
 
     await waitFor(() => {
       expect(
-        screen.queryByTestId('SectionVideoCollectionCarousel')
+        screen.queryByTestId('SectionVideoCarousel')
       ).not.toBeInTheDocument()
     })
   })

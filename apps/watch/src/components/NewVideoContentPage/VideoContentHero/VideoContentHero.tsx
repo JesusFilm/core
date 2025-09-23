@@ -1,12 +1,12 @@
+import clsx from 'clsx'
 import { ReactElement, useState } from 'react'
 
-import { useVideo } from '../../../libs/videoContext'
 import { usePlayer } from '../../../libs/playerContext'
 import type { CarouselMuxSlide } from '../../../types/inserts'
+import { useVideo } from '../../../libs/videoContext'
 
 import { ContentHeader } from './ContentHeader'
 import { HeroVideo } from './HeroVideo'
-import clsx from 'clsx'
 
 export function VideoContentHero({
   isPreview = false,
