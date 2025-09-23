@@ -1,18 +1,40 @@
-import Grid from '@mui/material/GridLegacy'
 import { useTranslation } from 'next-i18next'
-import { ReactElement } from 'react'
+import { ReactElement, useMemo } from 'react'
 
 import { Icon } from '@core/shared/ui/icons/Icon'
 
 import { cn } from '../../libs/cn'
 import {
   SectionVideoCollectionCarouselSource,
+  SectionVideoCollectionCarouselSlide,
   useSectionVideoCollectionCarouselContent
 } from '../SectionVideoCarousel/useSectionVideoCollectionCarouselContent'
+import { VideoGrid } from '../VideoGrid/VideoGrid'
 
-import { VideoGridItem } from './VideoGridItem'
+import type { VideoChildFields } from '../../../__generated__/VideoChildFields'
 
 export type { SectionVideoCollectionCarouselSource as SectionVideoGridSource } from '../SectionVideoCarousel/useSectionVideoCollectionCarouselContent'
+
+// Transform SectionVideoCollectionCarouselSlide to VideoChildFields-compatible format
+function transformSlidesToVideoChildFields(
+  slides: SectionVideoCollectionCarouselSlide[],
+  analyticsTag?: string
+): VideoChildFields[] {
+  return slides.map((slide) => ({
+    __typename: 'Video' as const,
+    id: slide.id,
+    label: slide.label,
+    title: [{ __typename: 'VideoTitle' as const, value: slide.title }],
+    images: [{ __typename: 'CloudflareImage' as const, mobileCinematicHigh: slide.imageUrl }],
+    imageAlt: [{ __typename: 'VideoImageAlt' as const, value: slide.alt }],
+    snippet: slide.snippet ? [{ __typename: 'VideoSnippet' as const, value: slide.snippet }] : [],
+    slug: slide.parentId || slide.id,
+    variant: null, // Slides don't have variant data
+    childrenCount: 0, // Not applicable for slides
+    // Add analytics tag as a custom property for tracking
+    ...(analyticsTag && { analyticsTag })
+  }))
+}
 
 export interface SectionVideoGridProps {
   id?: string
@@ -26,6 +48,7 @@ export interface SectionVideoGridProps {
   watchButtonIcon?: 'Play3' | 'ArrowRight'
   analyticsTag?: string
   backgroundClassName?: string
+  orientation?: 'horizontal' | 'vertical'
   languageId?: string
 }
 
@@ -41,6 +64,7 @@ export function SectionVideoGrid({
   watchButtonIcon = 'Play3',
   analyticsTag,
   backgroundClassName,
+  orientation = 'horizontal',
   languageId
 }: SectionVideoGridProps): ReactElement | null {
   const { t } = useTranslation('apps-watch')
@@ -64,6 +88,12 @@ export function SectionVideoGrid({
     defaultCtaLabel: t('Watch'),
     languageId
   })
+
+  // Transform slides to VideoChildFields format for VideoGrid
+  const videos = useMemo(
+    () => transformSlidesToVideoChildFields(slides, analyticsTag),
+    [slides, analyticsTag]
+  )
 
   if (!loading && slides.length === 0) return null
 
@@ -118,27 +148,13 @@ export function SectionVideoGrid({
       </div>
 
       <div className="padded relative">
-        <Grid
-          container
-          spacing={4}
-          rowSpacing={8}
+        <VideoGrid
+          videos={videos}
+          loading={loading}
+          orientation={orientation}
+          analyticsTag={analyticsTag}
           data-testid="SectionVideoGridContainer"
-        >
-          {loading
-            ? Array.from({ length: 4 }).map((_, index) => (
-                <Grid item key={`skeleton-${index}`} xs={12} md={4} xl={3}>
-                  <div className="h-[330px] w-full rounded-lg bg-white/10 animate-pulse" />
-                </Grid>
-              ))
-            : slides.map((slide, index) => (
-                <Grid item key={slide.id} xs={12} md={4} xl={3}>
-                  <VideoGridItem
-                    slide={slide}
-                    analyticsTag={analyticsTag}
-                  />
-                </Grid>
-              ))}
-        </Grid>
+        />
       </div>
 
       <div className="padded space-y-6">

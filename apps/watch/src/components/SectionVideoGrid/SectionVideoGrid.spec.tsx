@@ -258,14 +258,14 @@ describe('SectionVideoGrid', () => {
 
     await waitFor(() =>
       expect(
-        screen.getByTestId('SectionVideoGridSlide-child-1')
+        screen.getByTestId('VideoCard-child-1')
       ).toBeInTheDocument()
     )
     expect(
-      screen.getByTestId('SectionVideoGridSlide-grandchild-1')
+      screen.getByTestId('VideoCard-grandchild-1')
     ).toBeInTheDocument()
     expect(
-      screen.getByTestId('SectionVideoGridSlide-video-1')
+      screen.getByTestId('VideoCard-video-1')
     ).toBeInTheDocument()
     expect(screen.getByTestId('SectionVideoGridCTA')).toHaveTextContent(
       'Watch'
@@ -342,7 +342,7 @@ describe('SectionVideoGrid', () => {
     // Wait for loading to complete
     await waitFor(() =>
       expect(
-        screen.getByTestId('SectionVideoGridSlide-child-1')
+        screen.getByTestId('VideoCard-child-1')
       ).toBeInTheDocument()
     )
   })

@@ -9,30 +9,32 @@ export interface VideoGridProps {
   videos?: VideoChildFields[]
   showLoadMore?: boolean
   containerSlug?: string
-  variant?: ComponentProps<typeof VideoCard>['variant']
+  orientation?: 'horizontal' | 'vertical'
   loading?: boolean
   showMore?: () => void
   hasNextPage?: boolean
   hasNoResults?: boolean
   onCardClick?: (videoId?: string) => (event: MouseEvent) => void
+  analyticsTag?: string
 }
 
 export function VideoGrid({
   videos = [],
   showLoadMore = false,
   containerSlug,
-  variant = 'expanded',
+  orientation = 'horizontal',
   loading = false,
   showMore,
   hasNextPage = true,
   hasNoResults = false,
-  onCardClick
+  onCardClick,
+  analyticsTag
 }: VideoGridProps): ReactElement {
   const { t } = useTranslation('apps-watch')
 
   return (
     <div
-      className={`grid grid-cols-1 md:grid-cols-3 xl:grid-cols-4 gap-4 ${variant === 'expanded' ? 'xl:gap-8' : ''}`}
+      className={`grid gap-4 ${orientation === 'vertical' ? 'grid-cols-2 md:grid-cols-4 xl:grid-cols-5' : 'grid-cols-1 md:grid-cols-3 xl:grid-cols-4'}`}
       data-testid="VideoGrid"
     >
       {(videos?.length ?? 0) > 0 &&
@@ -40,25 +42,26 @@ export function VideoGrid({
           <div key={index} className="w-full">
             <VideoCard
               video={video}
+              orientation={orientation}
               containerSlug={containerSlug}
-              variant={variant}
               onClick={onCardClick}
+              analyticsTag={analyticsTag}
             />
           </div>
         ))}
       {loading && videos?.length === 0 && (
         <>
           <div className="w-full">
-            <VideoCard variant={variant} />
+            <VideoCard orientation={orientation} analyticsTag={analyticsTag} />
           </div>
           <div className="w-full">
-            <VideoCard variant={variant} />
+            <VideoCard orientation={orientation} analyticsTag={analyticsTag} />
           </div>
           <div className="w-full hidden md:block">
-            <VideoCard variant={variant} />
+            <VideoCard orientation={orientation} analyticsTag={analyticsTag} />
           </div>
           <div className="w-full hidden xl:block">
-            <VideoCard variant={variant} />
+            <VideoCard orientation={orientation} analyticsTag={analyticsTag} />
           </div>
         </>
       )}

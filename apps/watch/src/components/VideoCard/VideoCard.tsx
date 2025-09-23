@@ -1,5 +1,5 @@
-import { Play, Plus } from 'lucide-react'
 import last from 'lodash/last'
+import { Play, Plus } from 'lucide-react'
 import Image from 'next/image'
 import NextLink from 'next/link'
 import { useTranslation } from 'next-i18next'
@@ -7,19 +7,21 @@ import type { MouseEvent, ReactElement } from 'react'
 
 import { secondsToTimeFormat } from '@core/shared/ui/timeFormat'
 
+import { getLabelDetails } from '../../libs/utils/getLabelDetails/getLabelDetails'
+
 import { VideoLabel } from '../../../__generated__/globalTypes'
 import type { VideoChildFields } from '../../../__generated__/VideoChildFields'
 import type { CarouselVideo } from '../VideoHero/libs/useCarouselVideos'
-import { getLabelDetails } from '../../libs/utils/getLabelDetails/getLabelDetails'
 
 interface VideoCardProps {
   video?: VideoChildFields | CarouselVideo
-  variant?: 'contained' | 'expanded'
+  orientation?: 'horizontal' | 'vertical'
   containerSlug?: string
   index?: number
   active?: boolean
   imageClassName?: string
   onClick?: (videoId?: string) => (event: MouseEvent) => void
+  analyticsTag?: string
 }
 
 export function getSlug(
@@ -41,12 +43,13 @@ export function getSlug(
 
 export function VideoCard({
   video,
+  orientation = 'horizontal',
   containerSlug,
-  variant = 'expanded',
   index,
   active,
   imageClassName,
-  onClick: handleClick
+  onClick: handleClick,
+  analyticsTag
 }: VideoCardProps): ReactElement {
   const { t } = useTranslation('apps-watch')
 
@@ -67,12 +70,13 @@ export function VideoCard({
       className={`block no-underline text-inherit ${video != null ? 'pointer-events-auto' : 'pointer-events-none'}`}
       aria-label="VideoCard"
       data-testid={video != null ? `VideoCard-${video.id}` : 'VideoCard'}
+      data-analytics-tag={analyticsTag}
       onClick={handleClick?.(video?.id)}
     >
       <div className="flex flex-col gap-6">
         <button
           disabled={video == null}
-          className={`relative w-full overflow-hidden rounded-lg aspect-video hover:scale-102 focus-visible:scale-102 transition-transform duration-300 ${imageClassName || ''}`}
+          className={`relative overflow-hidden rounded-lg ${orientation === 'vertical' ? 'aspect-[2/3]' : 'aspect-video'} hover:scale-102 focus-visible:scale-102 transition-transform duration-300 beveled ${imageClassName || ''}`}
         >
           <div
             className="absolute inset-0 rounded-lg overflow-hidden bg-black/50 transition-transform duration-300"
@@ -97,30 +101,21 @@ export function VideoCard({
               </div>
             )}
           </div>
-          {variant === 'contained' && (
-            <div
-              className="absolute inset-0 rounded-lg gradient-contained transition-opacity duration-300 opacity-15 hover:opacity-50 shadow-[inset_0px_0px_0px_1px_rgba(255,255,255,0.12)]"
-            />
-          )}
-          {variant === 'expanded' && (
-            <div
-              className="absolute inset-0 rounded-lg gradient-expanded transition-opacity duration-300 opacity-15 hover:opacity-50"
-            />
-          )}
           <div
-            className={`absolute inset-0 flex flex-col justify-end ${variant === 'contained' ? 'p-4' : 'p-1'}`}
+            className="absolute inset-0 rounded-lg gradient-contained transition-opacity duration-300 opacity-15 hover:opacity-50 shadow-[inset_0px_0px_0px_1px_rgba(255,255,255,0.12)]"
+          />
+          <div
+            className="absolute inset-0 flex flex-col justify-end p-4"
           >
-            {variant === 'contained' && (
-              <h3
-                className="text-xl font-bold text-white leading-tight text-left text-shadow-strong"
-              >
-                {video != null ? (
-                  last(video?.title)?.value
-                ) : (
-                  <div className="w-3/5 h-5 bg-gray-400 animate-pulse" data-testid="VideoTitleSkeleton" />
-                )}
-              </h3>
-            )}
+            <h3
+              className="text-xl font-bold text-white leading-tight text-left text-shadow-strong"
+            >
+              {video != null ? (
+                last(video?.title)?.value
+              ) : (
+                <div className="w-3/5 h-5 bg-gray-400 animate-pulse" data-testid="VideoTitleSkeleton" />
+              )}
+            </h3>
             <div
               className="flex flex-row justify-between items-end min-w-0 gap-2"
             >
@@ -131,12 +126,11 @@ export function VideoCard({
                   'text-gray-600'
                 }`}
               >
-                {variant === 'contained' &&
-                  (video != null ? (
-                    label
-                  ) : (
-                    <div className="w-12 h-4 bg-gray-400 animate-pulse" data-testid="VideoLabelSkeleton" />
-                  ))}
+                {video != null ? (
+                  label
+                ) : (
+                  <div className="w-12 h-4 bg-gray-400 animate-pulse" data-testid="VideoLabelSkeleton" />
+                )}
               </p>
 
               <div
@@ -178,33 +172,6 @@ export function VideoCard({
             </div>
           </div>
         </button>
-        {variant === 'expanded' && (
-          <div>
-            {index != null && (
-              <p className="text-xs uppercase tracking-wider opacity-50">
-                {video != null ? (
-                  `${label} ${
-                    video.label === VideoLabel.episode ||
-                    video.label === VideoLabel.segment
-                      ? index + 1
-                      : ''
-                  }`.trim()
-                ) : (
-                  <div className="w-1/5 h-4 bg-gray-400 animate-pulse" data-testid="VideoLabelIndexSkeleton" />
-                )}
-              </p>
-            )}
-            <h3
-              className="text-text-primary text-xl font-bold leading-tight"
-            >
-              {video?.title != null ? (
-                last(video?.title)?.value
-              ) : (
-                <div className="w-3/5 h-5 bg-gray-400 animate-pulse" data-testid="VideoTitleSkeleton" />
-              )}
-            </h3>
-          </div>
-        )}
       </div>
     </a>
   )

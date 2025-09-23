@@ -571,6 +571,16 @@ function WatchHomePageContent({
               descriptionOverride="Explore our collection of videos and resources that bring the Bible to life through engaging stories and teachings."
               languageId={languageId}
             />
+            <SectionVideoGrid
+              id="home-collection-showcase-grid-vertical"
+              sources={collectionShowcaseSources}
+              primaryCollectionId="LUMOCollection"
+              subtitleOverride="Video Bible Collection"
+              titleOverride="Discover the full story (Vertical Cards)"
+              descriptionOverride="Explore our collection of videos and resources that bring the Bible to life through engaging stories and teachings."
+              orientation="vertical"
+              languageId={languageId}
+            />
       </ContentPageBlurFilter>
     </div>
   )
