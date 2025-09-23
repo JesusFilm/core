@@ -202,7 +202,7 @@ export function Label(): ReactElement {
   }
 
   return (
-    <Stack direction="row" sx={{ p: 4, pt: 0 }} data-testid="Label">
+    <Stack direction="row" alignItems='baseline' sx={{ p: 4, pt: 0 }} data-testid="Label">
       <TextField
         id="label"
         name="label"
@@ -221,6 +221,7 @@ export function Label(): ReactElement {
           setValue(e.target.value)
           handleSubmit(e.target.value)
         }}
+        helperText={t('Labels are required for analytics, but you can choose to show or hide them for users.')}
       />
       <IconButton
         onClick={hideLabelToggle}
