@@ -214,9 +214,3 @@ module "eks" {
   subnet_ids_2c      = ["subnet-02f4c2a33ace122c5", "subnet-0aa10af01283bbcdb"]
 }
 
-module "media-transcoder" {
-  source                  = "../../../apis/media-transcoder/infrastructure"
-  env                     = "prod"
-  doppler_token           = data.aws_ssm_parameter.doppler_media_transcoder_prod_token.value
-  task_execution_role_arn = data.aws_iam_role.ecs_task_execution_role.arn
-}
