@@ -2,8 +2,10 @@ import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, useState } from 'react'
 import { object, string } from 'yup'
-import ToggleButton from '@mui/material/ToggleButton'
-import ToggleButtonGroup from '@mui/material/ToggleButtonGroup'
+import FormControl from '@mui/material/FormControl'
+import FormControlLabel from '@mui/material/FormControlLabel'
+import Radio from '@mui/material/Radio'
+import RadioGroup from '@mui/material/RadioGroup'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
@@ -156,49 +158,32 @@ export function PhoneAction(): ReactElement {
           onSubmit={handleSubmit}
           startIcon={selectedCountry?.callingCode}
         />
-        <ToggleButtonGroup
-          value={phoneAction?.contactAction ?? ContactActionType.call}
-          exclusive
-          onChange={(_, value) => {
-            if (value != null) {
-              handleContactActionChange(value)
-            }
-          }}
-          fullWidth
-        >
-          <ToggleButton
-            value={ContactActionType.call}
-            sx={{
-              backgroundColor: 'background.paper',
-              '&.Mui-selected': {
-                backgroundColor: 'background.default',
-                color: 'primary.main'
-              },
-              '&.MuiToggleButtonGroup-firstButton': {
-                borderTopLeftRadius: 8,
-                borderBottomLeftRadius: 8
+        <FormControl fullWidth>
+          <RadioGroup
+            aria-label={t('Contact action')}
+            name="phone-contact-action"
+            value={phoneAction?.contactAction ?? ContactActionType.call}
+            onChange={(event) => {
+              const value = (event.target as HTMLInputElement).value as keyof typeof ContactActionType
+              if (value != null) {
+                // Convert string back to enum value
+                const enumValue = ContactActionType[value]
+                if (enumValue != null) handleContactActionChange(enumValue)
               }
             }}
           >
-            {t('Call')}
-          </ToggleButton>
-          <ToggleButton
-            value={ContactActionType.text}
-            sx={{
-              backgroundColor: 'background.paper',
-              '&.Mui-selected': {
-                backgroundColor: 'background.default',
-                color: 'primary.main'
-              },
-              '&.MuiToggleButtonGroup-lastButton': {
-                borderTopRightRadius: 8,
-                borderBottomRightRadius: 8
-              }
-            }}
-          >
-            {t('SMS')}
-          </ToggleButton>
-        </ToggleButtonGroup>
+            <FormControlLabel
+              value={ContactActionType.call}
+              control={<Radio />}
+              label={t('Call')}
+            />
+            <FormControlLabel
+              value={ContactActionType.text}
+              control={<Radio />}
+              label={t('SMS')}
+            />
+          </RadioGroup>
+        </FormControl>
       </Stack>
     </>
   )

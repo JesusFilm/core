@@ -266,8 +266,8 @@ describe('PhoneAction', () => {
       </MockedProvider>
     )
 
-    const smsButton = screen.getByRole('button', { name: 'SMS' })
-    fireEvent.click(smsButton)
+    const smsRadio = screen.getByRole('radio', { name: 'SMS' })
+    fireEvent.click(smsRadio)
 
     await waitFor(() => expect(result).toHaveBeenCalled())
   })
