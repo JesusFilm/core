@@ -122,7 +122,7 @@ export const getServerSideProps: GetStaticProps = withUserTokenSSR()(async ({
   resolvedUrl,
   params
 }) => {
-  const { redirect, apolloClient, translations } = await initAndAuthApp({
+  const { redirect, apolloClient, translations, flags } = await initAndAuthApp({
     user,
     locale,
     resolvedUrl
@@ -179,6 +179,7 @@ export const getServerSideProps: GetStaticProps = withUserTokenSSR()(async ({
   return {
     props: {
       ...translations,
+      flags,
       initialApolloState: apolloClient.cache.extract()
     }
   }
