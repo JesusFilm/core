@@ -51,8 +51,6 @@ const SectionVideoGrid = dynamic(
   () => import('../SectionVideoGrid').then(mod => ({ default: mod.SectionVideoGrid })),
   { ssr: false }
 )
-import type { VideoCarouselSlide, CarouselMuxSlide } from '../../types/inserts'
-import { isMuxSlide, isVideoSlide } from '../../types/inserts'
 
 interface WatchHomePageProps {
   languageId?: string | undefined
