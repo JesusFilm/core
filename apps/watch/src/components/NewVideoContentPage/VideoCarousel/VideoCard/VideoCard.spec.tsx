@@ -49,14 +49,14 @@ describe('VideoCard', () => {
   })
 
   it('renders video card with image and title', () => {
-    render(<VideoCard video={mockVideo} active={false} />)
+    render(<VideoCard video={mockVideoData} active={false} />)
 
     expect(screen.getByTestId('video-image')).toBeInTheDocument()
-    expect(screen.getByText(mockVideo.title[0].value)).toBeInTheDocument()
+    expect(screen.getByText(mockVideoData.title[0].value)).toBeInTheDocument()
   })
 
   it('shows active border when active is true', () => {
-    render(<VideoCard video={mockVideo} active={true} />)
+    render(<VideoCard video={mockVideoData} active={true} />)
 
     const activeLayer = screen.getByTestId('ActiveLayer')
     expect(activeLayer).toHaveClass('shadow-[inset_0_0_0_4px_#fff]')

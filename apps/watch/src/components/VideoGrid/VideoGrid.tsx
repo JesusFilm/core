@@ -1,9 +1,4 @@
-import AddRounded from '@mui/icons-material/AddRounded'
-import Box from '@mui/material/Box'
-import Button from '@mui/material/Button'
-import Grid from '@mui/material/GridLegacy'
-import Paper from '@mui/material/Paper'
-import Typography from '@mui/material/Typography'
+import { Plus } from 'lucide-react'
 import { useTranslation } from 'next-i18next'
 import type { ComponentProps, MouseEvent, ReactElement } from 'react'
 
@@ -36,97 +31,67 @@ export function VideoGrid({
   const { t } = useTranslation('apps-watch')
 
   return (
-    <Grid
-      container
-      spacing={4}
-      rowSpacing={variant === 'expanded' ? 8 : 4}
+    <div
+      className={`grid grid-cols-1 md:grid-cols-3 xl:grid-cols-4 gap-4 ${variant === 'expanded' ? 'xl:gap-8' : ''}`}
       data-testid="VideoGrid"
     >
       {(videos?.length ?? 0) > 0 &&
         videos?.map((video, index) => (
-          <Grid item key={index} xs={12} md={4} xl={3}>
+          <div key={index} className="w-full">
             <VideoCard
               video={video}
               containerSlug={containerSlug}
               variant={variant}
               onClick={onCardClick}
             />
-          </Grid>
+          </div>
         ))}
       {loading && videos?.length === 0 && (
         <>
-          <Grid item xs={12} md={4} xl={3}>
+          <div className="w-full">
             <VideoCard variant={variant} />
-          </Grid>
-          <Grid item xs={12} md={4} xl={3}>
+          </div>
+          <div className="w-full">
             <VideoCard variant={variant} />
-          </Grid>
-          <Grid
-            item
-            xs={12}
-            md={4}
-            xl={3}
-            sx={{ display: { xs: 'none', md: 'block' } }}
-          >
+          </div>
+          <div className="w-full hidden md:block">
             <VideoCard variant={variant} />
-          </Grid>
-          <Grid
-            item
-            xs={12}
-            md={4}
-            xl={3}
-            sx={{ display: { xs: 'none', xl: 'block' } }}
-          >
+          </div>
+          <div className="w-full hidden xl:block">
             <VideoCard variant={variant} />
-          </Grid>
+          </div>
         </>
       )}
       {!loading && hasNoResults && (
-        <Grid item xs={12} justifyContent="center" alignItems="center">
-          <Paper
-            elevation={0}
-            variant="outlined"
-            sx={{
-              borderRadius: 4,
-              width: '100%',
-              padding: 8
-            }}
-          >
-            <Typography
-              variant="h6"
-              sx={{
-                color: 'primary.main'
-              }}
-            >
+        <div className="w-full flex justify-center items-center col-span-full">
+          <div className="w-full rounded-lg border border-gray-200 bg-white p-8 text-center">
+            <h6 className="text-xl font-semibold text-primary mb-2">
               {t('Sorry, no results')}
-            </Typography>
-            <Typography variant="body1" sx={{ mt: 2 }}>
+            </h6>
+            <p className="text-base mt-2">
               {t('Try removing or changing something from your request')}
-            </Typography>
-          </Paper>
-        </Grid>
+            </p>
+          </div>
+        </div>
       )}
       {showLoadMore && !hasNoResults && (
-        <Grid item xs={12}>
-          <Box sx={{ display: 'flex', justifyContent: 'center', py: 6 }}>
-            <Button
-              variant="outlined"
+        <div className="w-full col-span-full">
+          <div className="flex justify-center py-6">
+            <button
+              className={`btn-outlined flex items-center gap-2 ${!hasNextPage ? 'opacity-50 cursor-not-allowed' : ''}`}
               onClick={showMore}
-              loading={loading}
-              startIcon={<AddRounded />}
               disabled={!hasNextPage}
-              loadingPosition="start"
-              size="medium"
             >
+              <Plus className="w-4 h-4" />
               {loading
                 ? 'Loading...'
                 : hasNextPage
                   ? 'Load More'
                   : 'No More Videos'}
-            </Button>
-          </Box>
-        </Grid>
+            </button>
+          </div>
+        </div>
       )}
-    </Grid>
+    </div>
   )
 }

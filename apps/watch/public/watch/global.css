@@ -224,4 +224,25 @@
   .overlay-texture-image {
     background-image: url('../../src/components/HeroOverlay/assets/overlay.svg');
   }
+
+  /* VideoCard specific utilities */
+  .text-shadow-strong {
+    text-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25), 0px 2px 3px rgba(0, 0, 0, 0.45);
+  }
+
+  .gradient-contained {
+    background: linear-gradient(180deg, rgba(0, 0, 0, 0) 40%, rgba(0, 0, 0, 0.8) 100%);
+  }
+
+  .gradient-expanded {
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0) 40%, rgba(255, 255, 255, 0.6) 100%);
+  }
+
+  .btn-outlined {
+    @apply border border-gray-300 bg-white text-gray-700 px-4 py-2 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 transition-colors;
+  }
+
+  .btn-primary {
+    @apply bg-primary text-white px-4 py-2 rounded-md hover:bg-primary-light focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 transition-colors;
+  }
 }

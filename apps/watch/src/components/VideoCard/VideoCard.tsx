@@ -1,11 +1,4 @@
-import PlayArrow from '@mui/icons-material/PlayArrowRounded'
-import Box from '@mui/material/Box'
-import ButtonBase from '@mui/material/ButtonBase'
-import Link from '@mui/material/Link'
-import Skeleton from '@mui/material/Skeleton'
-import Stack from '@mui/material/Stack'
-import { type SxProps, styled } from '@mui/material/styles'
-import Typography from '@mui/material/Typography'
+import { Play, Plus } from 'lucide-react'
 import last from 'lodash/last'
 import Image from 'next/image'
 import NextLink from 'next/link'
@@ -25,25 +18,9 @@ interface VideoCardProps {
   containerSlug?: string
   index?: number
   active?: boolean
-  imageSx?: SxProps
+  imageClassName?: string
   onClick?: (videoId?: string) => (event: MouseEvent) => void
 }
-
-const ImageButton = styled(ButtonBase)(() => ({
-  borderRadius: 8,
-  width: '100%',
-  position: 'relative'
-}))
-
-const Layer = styled(Box)({
-  position: 'absolute',
-  left: 0,
-  right: 0,
-  top: 0,
-  bottom: 0,
-  borderRadius: 8,
-  overflow: 'hidden'
-})
 
 export function getSlug(
   containerSlug: string | undefined,
@@ -68,7 +45,7 @@ export function VideoCard({
   variant = 'expanded',
   index,
   active,
-  imageSx,
+  imageClassName,
   onClick: handleClick
 }: VideoCardProps): ReactElement {
   const { t } = useTranslation('apps-watch')
@@ -85,44 +62,20 @@ export function VideoCard({
   const imageAlt = last(video?.imageAlt)?.value ?? ''
 
   return (
-    <Link
-      component={NextLink}
+    <a
       href={href}
-      display="block"
-      underline="none"
-      color="inherit"
-      sx={{ pointerEvents: video != null ? 'auto' : 'none' }}
+      className={`block no-underline text-inherit ${video != null ? 'pointer-events-auto' : 'pointer-events-none'}`}
       aria-label="VideoCard"
       data-testid={video != null ? `VideoCard-${video.id}` : 'VideoCard'}
       onClick={handleClick?.(video?.id)}
-      locale={false}
     >
-      <Stack spacing={3}>
-        <ImageButton
+      <div className="flex flex-col gap-6">
+        <button
           disabled={video == null}
-          sx={{
-            overflow: 'hidden',
-            aspectRatio: '16 / 9',
-            '&:hover, &.Mui-focusVisible': {
-              '& .MuiImageBackground-root': {
-                transform: 'scale(1.02)'
-              },
-              '& .MuiImageBackdrop-contained-root': {
-                opacity: 0.15
-              },
-              '& .MuiImageBackdrop-expanded-root': {
-                opacity: 0.5
-              }
-            },
-            ...imageSx
-          }}
+          className={`relative w-full overflow-hidden rounded-lg aspect-video hover:scale-102 focus-visible:scale-102 transition-transform duration-300 ${imageClassName || ''}`}
         >
-          <Layer
-            className="MuiImageBackground-root"
-            sx={{
-              background: 'rgba(0,0,0,0.5)',
-              transition: (theme) => theme.transitions.create('transform')
-            }}
+          <div
+            className="absolute inset-0 rounded-lg overflow-hidden bg-black/50 transition-transform duration-300"
           >
             {imageSrc ? (
               <Image
@@ -136,152 +89,99 @@ export function VideoCard({
                 }}
               />
             ) : (
-              <Box
-                component="span"
-                sx={{
-                  aspectRatio: '16 / 9'
-                }}
-              >
-                <Skeleton
-                  sx={{ width: '100%', height: '100%' }}
-                  variant="rectangular"
-                  animation={false}
+              <div className="aspect-video">
+                <div
+                  className="w-full h-full bg-gray-300 animate-pulse"
                   data-testid="VideoImageSkeleton"
                 />
-              </Box>
+              </div>
             )}
-          </Layer>
+          </div>
           {variant === 'contained' && (
-            <Layer
-              sx={{
-                background:
-                  'linear-gradient(180deg, rgba(0, 0, 0, 0) 40%, rgba(0, 0, 0, 0.8) 100%)',
-                transition: (theme) => theme.transitions.create('opacity'),
-                boxShadow: 'inset 0px 0px 0px 1px rgba(255, 255, 255, 0.12)'
-              }}
-              className="MuiImageBackdrop-contained-root"
+            <div
+              className="absolute inset-0 rounded-lg gradient-contained transition-opacity duration-300 opacity-15 hover:opacity-50 shadow-[inset_0px_0px_0px_1px_rgba(255,255,255,0.12)]"
             />
           )}
           {variant === 'expanded' && (
-            <Layer
-              sx={{
-                background:
-                  'linear-gradient(180deg, rgba(255, 255, 255, 0) 40%, rgba(255, 255, 255, 0.6) 100%)',
-                transition: (theme) => theme.transitions.create('opacity'),
-                opacity: 0.15
-              }}
-              className="MuiImageBackdrop-expanded-root"
+            <div
+              className="absolute inset-0 rounded-lg gradient-expanded transition-opacity duration-300 opacity-15 hover:opacity-50"
             />
           )}
-          <Layer
-            sx={{
-              display: 'flex',
-              flexDirection: 'column',
-              justifyContent: 'flex-end',
-              p: variant === 'contained' ? 4 : 1
-            }}
+          <div
+            className={`absolute inset-0 flex flex-col justify-end ${variant === 'contained' ? 'p-4' : 'p-1'}`}
           >
             {variant === 'contained' && (
-              <Typography
-                variant="h6"
-                component="h3"
-                color="primary.contrastText"
-                fontWeight="bold"
-                fontSize={21}
-                lineHeight={27 / 21}
-                sx={{
-                  textAlign: 'left',
-                  textShadow:
-                    '0px 4px 4px rgba(0, 0, 0, 0.25), 0px 2px 3px rgba(0, 0, 0, 0.45)'
-                }}
+              <h3
+                className="text-xl font-bold text-white leading-tight text-left text-shadow-strong"
               >
                 {video != null ? (
                   last(video?.title)?.value
                 ) : (
-                  <Skeleton width="60%" data-testid="VideoTitleSkeleton" />
+                  <div className="w-3/5 h-5 bg-gray-400 animate-pulse" data-testid="VideoTitleSkeleton" />
                 )}
-              </Typography>
+              </h3>
             )}
-            <Stack
-              direction="row"
-              justifyContent="space-between"
-              alignItems="flex-end"
-              sx={{ minWidth: 0 }}
-              spacing={2}
+            <div
+              className="flex flex-row justify-between items-end min-w-0 gap-2"
             >
-              <Typography
-                variant="overline2"
-                color={color}
-                sx={{
-                  textOverflow: 'ellipsis',
-                  whiteSpace: 'nowrap',
-                  overflow: 'hidden',
-                  lineHeight: '29px'
-                }}
+              <p
+                className={`text-xs uppercase tracking-wider truncate leading-8 ${
+                  color === 'primary.main' ? 'text-primary' :
+                  color === 'secondary.main' ? 'text-secondary' :
+                  'text-gray-600'
+                }`}
               >
                 {variant === 'contained' &&
                   (video != null ? (
                     label
                   ) : (
-                    <Skeleton width={50} data-testid="VideoLabelSkeleton" />
+                    <div className="w-12 h-4 bg-gray-400 animate-pulse" data-testid="VideoLabelSkeleton" />
                   ))}
-              </Typography>
+              </p>
 
-              <Stack
-                direction="row"
-                alignItems="center"
-                spacing={1}
-                sx={{
-                  p: 2,
-                  borderRadius: 2,
-                  height: 29,
-                  color: 'primary.contrastText',
-                  backgroundColor:
-                    active === true ? 'primary.main' : 'rgba(0, 0, 0, 0.5)',
-                  flexShrink: 0
-                }}
+              <div
+                className={`flex flex-row items-center gap-1 p-2 rounded h-7 text-white flex-shrink-0 ${
+                  active === true ? 'bg-primary' : 'bg-black/50'
+                }`}
               >
                 {active === true ? (
                   <>
-                    <PlayArrow sx={{ fontSize: '1rem' }} />
-                    <Typography variant="h6">{t('Playing now')}</Typography>
+                    <Play className="w-4 h-4" />
+                    <span className="text-sm font-semibold">{t('Playing now')}</span>
                   </>
                 ) : (
                   <>
                     {video == null && (
                       <>
-                        <PlayArrow sx={{ fontSize: '1rem' }} />
-                        <Skeleton
-                          width={20}
-                          data-testid="VideoVariantDurationSkeleton"
-                        />
+                        <Play className="w-4 h-4" />
+                        <div className="w-5 h-4 bg-gray-400 animate-pulse" data-testid="VideoVariantDurationSkeleton" />
                       </>
                     )}
                     {video?.childrenCount === 0 && (
                       <>
-                        <PlayArrow sx={{ fontSize: '1rem' }} />
-                        <Typography variant="h6">
+                        <Play className="w-4 h-4" />
+                        <span className="text-sm font-semibold">
                           {secondsToTimeFormat(video?.variant?.duration ?? 0, {
                             trimZeroes: true
                           })}
-                        </Typography>
+                        </span>
                       </>
                     )}
                     {(video?.childrenCount ?? 0) > 0 && (
-                      <Typography variant="h6">
+                      <span className="text-sm font-semibold">
                         {childCountLabel.toLowerCase()}
-                      </Typography>
+                      </span>
                     )}
                   </>
                 )}
-              </Stack>
-            </Stack>
-          </Layer>
-        </ImageButton>
+              </div>
+            </div>
+          </div>
+        </button>
         {variant === 'expanded' && (
-          <>
+          <div>
             {index != null && (
-              <Typography variant="overline2" sx={{ opacity: 0.5 }}>
+              <p className="text-xs uppercase tracking-wider opacity-50">
                 {video != null ? (
                   `${label} ${
                     video.label === VideoLabel.episode ||
@@ -290,27 +190,22 @@ export function VideoCard({
                       : ''
                   }`.trim()
                 ) : (
-                  <Skeleton width="20%" data-testid="VideoLabelIndexSkeleton" />
+                  <div className="w-1/5 h-4 bg-gray-400 animate-pulse" data-testid="VideoLabelIndexSkeleton" />
                 )}
-              </Typography>
+              </p>
             )}
-            <Typography
-              color="textPrimary"
-              variant="h6"
-              component="h3"
-              fontWeight="bold"
-              fontSize={21}
-              lineHeight={27 / 21}
+            <h3
+              className="text-text-primary text-xl font-bold leading-tight"
             >
               {video?.title != null ? (
                 last(video?.title)?.value
               ) : (
-                <Skeleton width="60%" data-testid="VideoTitleSkeleton" />
+                <div className="w-3/5 h-5 bg-gray-400 animate-pulse" data-testid="VideoTitleSkeleton" />
               )}
-            </Typography>
-          </>
+            </h3>
+          </div>
         )}
-      </Stack>
-    </Link>
+      </div>
+    </a>
   )
 }
