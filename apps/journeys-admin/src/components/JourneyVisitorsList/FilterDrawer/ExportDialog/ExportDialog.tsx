@@ -152,6 +152,7 @@ export function ExportDialog({
             value={exportBy}
             onChange={(e) => setExportBy(e.target.value)}
             displayEmpty
+            inputProps={{ 'aria-label': t('Export By:') }}
             renderValue={(selected) => {
               if (!selected) {
                 return t('Select Data')
