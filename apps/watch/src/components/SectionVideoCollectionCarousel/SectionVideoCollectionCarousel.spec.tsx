@@ -1,10 +1,10 @@
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { render, screen, waitFor } from '@testing-library/react'
 
-import { VideoLabel } from '../../../../__generated__/globalTypes'
+import { VideoLabel } from '../../../__generated__/globalTypes'
 
 import { GET_COLLECTION_SHOWCASE_CONTENT } from './queries'
-import { CollectionShowcaseSection } from './CollectionShowcaseSection'
+import { SectionVideoCollectionCarousel } from './SectionVideoCollectionCarousel'
 
 jest.mock('next-i18next', () => ({
   useTranslation: () => ({
@@ -243,11 +243,11 @@ const emptyMocks: MockedResponse[] = [
   }
 ]
 
-describe('CollectionShowcaseSection', () => {
+describe('SectionVideoCollectionCarousel', () => {
   it('renders slides from collection children and videos', async () => {
     render(
       <MockedProvider mocks={baseMocks} addTypename>
-        <CollectionShowcaseSection
+        <SectionVideoCollectionCarousel
           sources={[
             { type: 'video', id: 'video-1' },
             { type: 'collection', id: 'collection-1', limitChildren: 3 }
@@ -258,19 +258,19 @@ describe('CollectionShowcaseSection', () => {
 
     await waitFor(() =>
       expect(
-        screen.getByTestId('CollectionShowcaseSlide-child-1')
+        screen.getByTestId('SectionVideoCollectionCarouselSlide-child-1')
       ).toBeInTheDocument()
     )
     expect(
-      screen.getByTestId('CollectionShowcaseSlide-grandchild-1')
+      screen.getByTestId('SectionVideoCollectionCarouselSlide-grandchild-1')
     ).toBeInTheDocument()
     expect(
-      screen.getByTestId('CollectionShowcaseSlide-video-1')
+      screen.getByTestId('SectionVideoCollectionCarouselSlide-video-1')
     ).toBeInTheDocument()
-    expect(screen.getByTestId('CollectionShowcaseCTA')).toHaveTextContent(
+    expect(screen.getByTestId('SectionVideoCollectionCarouselCTA')).toHaveTextContent(
       'Watch'
     )
-    expect(screen.getByTestId('CollectionShowcaseMission')).toHaveTextContent(
+    expect(screen.getByTestId('SectionVideoCollectionCarouselDescription')).toHaveTextContent(
       'Our mission is to reach everyone. Secondary sentence.'
     )
   })
@@ -278,7 +278,7 @@ describe('CollectionShowcaseSection', () => {
   it('respects override props for copy and CTA', async () => {
     render(
       <MockedProvider mocks={collectionOnlyMocks} addTypename>
-        <CollectionShowcaseSection
+        <SectionVideoCollectionCarousel
           sources={[
             { type: 'collection', id: 'collection-1' }
           ]}
@@ -292,18 +292,18 @@ describe('CollectionShowcaseSection', () => {
     )
 
     await waitFor(() =>
-      expect(screen.getByTestId('CollectionShowcaseSection')).toBeInTheDocument()
+      expect(screen.getByTestId('SectionVideoCollectionCarousel')).toBeInTheDocument()
     )
     expect(
-      screen.getByTestId('CollectionShowcaseSubtitle')
+      screen.getByTestId('SectionVideoCollectionCarouselSubtitle')
     ).toHaveTextContent('Override Subtitle')
-    expect(screen.getByTestId('CollectionShowcaseTitle')).toHaveTextContent(
+    expect(screen.getByTestId('SectionVideoCollectionCarouselTitle')).toHaveTextContent(
       'Override Title'
     )
-    const mission = screen.getByTestId('CollectionShowcaseMission')
+    const mission = screen.getByTestId('SectionVideoCollectionCarouselDescription')
     expect(mission).toHaveTextContent('Bold Lead')
     expect(mission).toHaveTextContent('remaining copy')
-    const cta = screen.getByTestId('CollectionShowcaseCTA')
+    const cta = screen.getByTestId('SectionVideoCollectionCarouselCTA')
     expect(cta).toHaveTextContent('Explore')
     expect((cta.closest('a') as HTMLAnchorElement).getAttribute('href')).toBe(
       '/custom-url'
@@ -313,7 +313,7 @@ describe('CollectionShowcaseSection', () => {
   it('returns null when no slides are available', async () => {
     render(
       <MockedProvider mocks={emptyMocks} addTypename>
-        <CollectionShowcaseSection
+        <SectionVideoCollectionCarousel
           sources={[{ type: 'collection', id: 'collection-1' }]}
         />
       </MockedProvider>
@@ -321,7 +321,7 @@ describe('CollectionShowcaseSection', () => {
 
     await waitFor(() => {
       expect(
-        screen.queryByTestId('CollectionShowcaseSection')
+        screen.queryByTestId('SectionVideoCollectionCarousel')
       ).not.toBeInTheDocument()
     })
   })
