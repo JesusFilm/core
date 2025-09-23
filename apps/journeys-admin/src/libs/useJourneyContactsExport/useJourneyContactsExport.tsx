@@ -116,10 +116,8 @@ export function useJourneyContactsExport(): {
         const edges = data?.journeyEventsConnection.edges ?? []
         console.log('Retrieved edges:', edges.length)
         events.push(...edges)
-
-        setProgress(
-          Math.floor((events.length / Math.max(events.length, 1)) * 100)
-        )
+        
+        setProgress((p) => Math.min(p + 10, 90))
 
         cursor = data?.journeyEventsConnection.pageInfo.endCursor
         hasNextPage = data?.journeyEventsConnection.pageInfo.hasNextPage
