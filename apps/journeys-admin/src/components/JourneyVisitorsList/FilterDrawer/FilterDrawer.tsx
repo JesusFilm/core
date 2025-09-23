@@ -154,9 +154,9 @@ export function FilterDrawer({
               target="_blank"
               rel="noopener noreferrer"
               endIcon={<LinkExternal sx={{ width: '1rem', height: '1rem' }} />}
-              sx={{ 
+              sx={{
                 width: '100%',
-                color: 'text.secondary',
+                color: 'text.secondary'
               }}
               aria-label={`${t('Data Analytics Test')} - ${t('Opens in new tab')}`}
             >
