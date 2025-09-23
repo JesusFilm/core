@@ -66,6 +66,9 @@ export function AiChat({ open }: AiChatProps) {
     })
   })
 
+  // Track when any AI action is in progress
+  const isAiActionInProgress = status === 'submitted' || status === 'streaming'
+
   const activeBlock = blockHistory.at(-1)
 
   function setContexts() {
@@ -97,6 +100,9 @@ export function AiChat({ open }: AiChatProps) {
     e: React.FormEvent<HTMLFormElement>
   ) {
     e.preventDefault()
+    // Prevent new requests when AI action is in progress
+    if (isAiActionInProgress) return
+
     if (message.text?.trim()) {
       void sendMessage(
         { text: message.text },
@@ -117,6 +123,9 @@ export function AiChat({ open }: AiChatProps) {
   }
 
   function handleSuggestionClick(suggestion: string, type?: InteractionType) {
+    // Prevent new requests when AI action is in progress
+    if (isAiActionInProgress) return
+
     void sendMessage(
       { text: suggestion },
       {
@@ -139,7 +148,10 @@ export function AiChat({ open }: AiChatProps) {
       <Conversation className="h-full">
         <ConversationContent>
           {messages.length === 0 && (
-            <InteractionStarter handleClick={handleSuggestionClick} />
+            <InteractionStarter
+              handleClick={handleSuggestionClick}
+              disabled={isAiActionInProgress}
+            />
           )}
           {messages.map((message) => (
             <div key={message.id}>
@@ -220,6 +232,7 @@ export function AiChat({ open }: AiChatProps) {
                 key={suggestion}
                 onClick={() => handleSuggestionClick(suggestion)}
                 suggestion={suggestion}
+                disabled={isAiActionInProgress}
               />
             ))}
         </Suggestions>
@@ -234,11 +247,12 @@ export function AiChat({ open }: AiChatProps) {
             placeholder={t('Ask me anything')}
             onChange={(e) => setInput(e.target.value)}
             value={input}
+            disabled={isAiActionInProgress}
           />
           <div className="flex flex-row justify-end self-end p-[4px]">
             <PromptInputSubmit
               className="disabled:bg-secondary-light rounded-md"
-              disabled={!input}
+              disabled={!input || isAiActionInProgress}
               status={status}
               style={{ minHeight: '20px' }}
               children={<SendHorizonalIcon className="size-[20px]" />}

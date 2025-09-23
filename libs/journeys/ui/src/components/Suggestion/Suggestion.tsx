@@ -24,6 +24,7 @@ export const Suggestions = ({
 export type SuggestionProps = Omit<ComponentProps<typeof Button>, 'onClick'> & {
   suggestion: string
   onClick?: (suggestion: string) => void
+  disabled?: boolean
 }
 
 export const Suggestion = ({
@@ -33,26 +34,35 @@ export const Suggestion = ({
   variant = 'outline',
   size = 'sm',
   children,
+  disabled = false,
   ...props
 }: SuggestionProps) => {
   const handleClick = () => {
-    onClick?.(suggestion)
+    if (!disabled) {
+      onClick?.(suggestion)
+    }
   }
 
   return (
     <Button
       className={cn(
-        'cursor-pointer rounded-full px-4',
+        'rounded-full px-4',
+        disabled ? 'cursor-not-allowed opacity-50' : 'cursor-pointer',
         'bg-suggestion-bg text-suggestion-text border-suggestion-border',
-        'hover:bg-suggestion-hover-bg hover:text-suggestion-hover-text',
+        disabled
+          ? ''
+          : 'hover:bg-suggestion-hover-bg hover:text-suggestion-hover-text',
         'dark:bg-dark-suggestion-bg dark:text-dark-suggestion-text dark:border-dark-suggestion-border',
-        'dark:hover:bg-dark-suggestion-hover-bg dark:hover:text-dark-suggestion-hover-text',
+        disabled
+          ? ''
+          : 'dark:hover:bg-dark-suggestion-hover-bg dark:hover:text-dark-suggestion-hover-text',
         className
       )}
       onClick={handleClick}
       size={size}
       type="button"
       variant={variant}
+      disabled={disabled}
       {...props}
     >
       {children || suggestion}
