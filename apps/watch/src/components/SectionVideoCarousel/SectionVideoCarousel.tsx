@@ -4,11 +4,15 @@ import { A11y, FreeMode, Mousewheel } from 'swiper/modules'
 import { Swiper, SwiperSlide } from 'swiper/react'
 
 import { Icon } from '@core/shared/ui/icons/Icon'
+import type { VideoChildFields } from '../../../__generated__/VideoChildFields'
+
+import { VideoCard } from '../VideoCard'
 
 import { cn } from '../../libs/cn'
 
 import {
   SectionVideoCollectionCarouselSource,
+  SectionVideoCollectionCarouselSlide,
   useSectionVideoCollectionCarouselContent
 } from './useSectionVideoCollectionCarouselContent'
 
@@ -66,6 +70,33 @@ export function SectionVideoCarousel({
   })
 
   if (!loading && slides.length === 0) return null
+
+  // Transform SectionVideoCollectionCarouselSlide to VideoChildFields format for VideoCard
+  const transformSlideToVideoChildFields = (slide: SectionVideoCollectionCarouselSlide): VideoChildFields => {
+    // Extract slug from href - href format is typically /watch/{containerSlug}.html/{variantSlug}.html
+    const hrefParts = slide.href.split('/')
+    const variantSlug = hrefParts[hrefParts.length - 1]?.replace('.html', '') || ''
+    const containerSlug = hrefParts[hrefParts.length - 2]?.replace('.html', '') || ''
+
+    return {
+      __typename: 'Video',
+      id: slide.id,
+      label: slide.label || 'video', // fallback to 'video' if label is undefined
+      title: [{ __typename: 'VideoTitle', value: slide.title }],
+      images: [{ __typename: 'CloudflareImage', mobileCinematicHigh: slide.imageUrl }],
+      imageAlt: [{ __typename: 'VideoImageAlt', value: slide.alt }],
+      snippet: slide.snippet ? [{ __typename: 'VideoSnippet', value: slide.snippet }] : [],
+      slug: containerSlug,
+      variant: {
+        __typename: 'VideoVariant',
+        id: `${slide.id}-variant`,
+        duration: 0, // We don't have duration from the slide, default to 0
+        hls: null,
+        slug: variantSlug
+      },
+      childrenCount: 0 // Default to 0, we don't have this info from the slide
+    }
+  }
 
   return (
     <section
@@ -139,41 +170,23 @@ export function SectionVideoCarousel({
                   <div className="h-[330px] w-[220px] rounded-lg bg-white/10 animate-pulse" />
                 </SwiperSlide>
               ))
-            : slides.map((slide, index) => (
-                <SwiperSlide
-                  key={slide.id}
-                  className={`max-w-[200px] py-1 ${index === 0 ? 'padded-l' : ''}`}
-                  
-                  data-testid={`SectionVideoCarouselSlide-${slide.id}`}
-                >
-                  <a
-                    href={slide.href}
-                    className="block relative group shadow-xl shadow-stone-950/70 beveled"
-                    aria-label={t('Watch {{title}}', { title: slide.title })}
-                    data-analytics-tag={analyticsTag}
+            : slides.map((slide, index) => {
+                const video = transformSlideToVideoChildFields(slide)
+                return (
+                  <SwiperSlide
+                    key={slide.id}
+                    className={`max-w-[200px] py-1 ${index === 0 ? 'padded-l' : ''}`}
+                    data-testid={`SectionVideoCarouselSlide-${slide.id}`}
                   >
-                    <img
-                      src={slide.imageUrl}
-                      alt={slide.alt}
-                      className="w-full aspect-[2/3] object-cover rounded-lg"
+                    <VideoCard
+                      video={video}
+                      orientation="vertical"
+                      containerSlug={slide.parentId}
+                      analyticsTag={analyticsTag}
                     />
-                    <div className="absolute top-0 left-0 w-full h-full outline-4 outline-transparent hover:outline-white rounded-lg">
-                      <div className="absolute z-1 bottom-4 flex items-center justify-center w-full h-full opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-                        <div className="w-16 h-16 rounded-full bg-stone-900/60 flex items-center justify-center hover:bg-red-500">
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            className="h-12 w-12"
-                            viewBox="0 0 24 24"
-                            fill="currentColor"
-                          >
-                            <path d="M8 5v14l11-7z" />
-                          </svg>
-                        </div>
-                      </div>
-                    </div>
-                  </a>
-                </SwiperSlide>
-              ))}
+                  </SwiperSlide>
+                )
+              })}
         </Swiper>
       </div>
 
