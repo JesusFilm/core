@@ -1,12 +1,8 @@
-
 import { format } from 'date-fns'
 
 import { JourneyContact } from '../../useJourneyEventsExport'
 
-import {
-  getContactsCsvOptions,
-  processContactsCsv
-} from './processContactsCsv'
+import { getContactsCsvOptions, processContactsCsv } from './processContactsCsv'
 
 // Mock dependencies
 jest.mock('csv-stringify/sync', () => ({
