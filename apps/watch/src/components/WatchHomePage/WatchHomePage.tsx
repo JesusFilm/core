@@ -410,8 +410,6 @@ function WatchHomePageBody({
     }
   }, [currentSlide])
 
-  const indexName = process.env.NEXT_PUBLIC_ALGOLIA_INDEX ?? ''
-
   const handleMuxInsertComplete = useCallback(() => {
     if (!autoProgressEnabled || isProgressing || currentSlideIndex === -1) {
       return
