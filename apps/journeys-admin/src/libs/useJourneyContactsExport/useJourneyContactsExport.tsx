@@ -87,8 +87,6 @@ export function useJourneyContactsExport(): {
       )
     }
 
-    console.log('Contacts export filter:', filterArg)
-
     try {
       setDownloading(true)
       setProgress(0)
@@ -109,14 +107,13 @@ export function useJourneyContactsExport(): {
         }
 
         if (data?.journeyEventsConnection == null) {
-          console.error('No journeyEventsConnection in response:', data)
+          console.error('No journeyEventsConnection in response')
           throw new Error(t('No journey events connection found in response'))
         }
 
         const edges = data?.journeyEventsConnection.edges ?? []
-        console.log('Retrieved edges:', edges.length)
         events.push(...edges)
-        
+
         setProgress((p) => Math.min(p + 10, 90))
 
         cursor = data?.journeyEventsConnection.pageInfo.endCursor
@@ -151,7 +148,6 @@ export function useJourneyContactsExport(): {
       })
 
       const contacts = Array.from(contactMap.values())
-      console.log('Extracted unique contacts:', contacts.length)
 
       setProgress(100)
 
