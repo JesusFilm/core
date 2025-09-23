@@ -65,7 +65,7 @@ export const getServerSideProps = withUserTokenSSR()(async ({
   })
 
   const journeyId = params?.journeyId
-  if (journeyId == null) {
+  if (journeyId == null || !flags.journeyCustomization) {
     return {
       redirect: {
         destination: '/templates',
