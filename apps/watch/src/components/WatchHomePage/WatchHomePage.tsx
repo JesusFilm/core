@@ -27,6 +27,14 @@ import { VideoContentFields } from '../../../__generated__/VideoContentFields'
 import { HomeHero } from './HomeHero'
 import { SeeAllVideos } from './SeeAllVideos'
 import { ContentPageBlurFilter } from '../NewVideoContentPage/ContentPageBlurFilter'
+import dynamic from 'next/dynamic'
+import { collectionShowcaseSources } from '../CollectionsPage/collectionShowcaseConfig'
+
+// Dynamically import SectionVideoCollectionCarousel to make it client-side only
+const SectionVideoCollectionCarousel = dynamic(
+  () => import('../SectionVideoCollectionCarousel').then(mod => ({ default: mod.SectionVideoCollectionCarousel })),
+  { ssr: false }
+)
 import NextLink from 'next/link'
 import Image from 'next/image'
 import { PlayerProvider } from '../../libs/playerContext'
@@ -329,6 +337,15 @@ function WatchHomePageContent({
             </Box>
           </ThemeProvider>
         </div>
+        <SectionVideoCollectionCarousel
+              id="home-collection-showcase"
+              sources={collectionShowcaseSources}
+              primaryCollectionId="LUMOCollection"
+              subtitleOverride="Video Bible Collection"
+              titleOverride="Discover the full story"
+              descriptionOverride="Explore our collection of videos and resources that bring the Bible to life through engaging stories and teachings."
+              languageId={languageId}
+            />
       </ContentPageBlurFilter>
     </div>
   )

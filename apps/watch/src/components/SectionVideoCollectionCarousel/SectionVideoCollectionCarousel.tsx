@@ -7,18 +7,18 @@ import { Icon } from '@core/shared/ui/icons/Icon'
 
 import { useTranslation } from 'next-i18next'
 
-import { cn } from '../../../libs/cn'
+import { cn } from '../../libs/cn'
 
 import {
-  CollectionShowcaseSource,
-  useCollectionShowcaseContent
-} from './useCollectionShowcaseContent'
+  SectionVideoCollectionCarouselSource,
+  useSectionVideoCollectionCarouselContent
+} from './useSectionVideoCollectionCarouselContent'
 
-export type { CollectionShowcaseSource } from './useCollectionShowcaseContent'
+export type { SectionVideoCollectionCarouselSource } from './useSectionVideoCollectionCarouselContent'
 
-export interface CollectionShowcaseSectionProps {
+export interface SectionVideoCollectionCarouselProps {
   id?: string
-  sources: CollectionShowcaseSource[]
+  sources: SectionVideoCollectionCarouselSource[]
   primaryCollectionId?: string
   subtitleOverride?: string
   titleOverride?: string
@@ -28,10 +28,11 @@ export interface CollectionShowcaseSectionProps {
   watchButtonIcon?: 'Play3' | 'ArrowRight'
   analyticsTag?: string
   backgroundClassName?: string
+  languageId?: string
 }
 
-export function CollectionShowcaseSection({
-  id = 'collection-showcase',
+export function SectionVideoCollectionCarousel({
+  id = 'section-video-collection-carousel',
   sources,
   primaryCollectionId,
   subtitleOverride,
@@ -41,8 +42,9 @@ export function CollectionShowcaseSection({
   ctaHrefOverride,
   watchButtonIcon = 'Play3',
   analyticsTag,
-  backgroundClassName
-}: CollectionShowcaseSectionProps): ReactElement | null {
+  backgroundClassName,
+  languageId
+}: SectionVideoCollectionCarouselProps): ReactElement | null {
   const { t } = useTranslation('apps-watch')
 
   const {
@@ -50,10 +52,10 @@ export function CollectionShowcaseSection({
     slides,
     subtitle,
     title,
-    mission,
+    description,
     ctaHref,
     ctaLabel
-  } = useCollectionShowcaseContent({
+  } = useSectionVideoCollectionCarouselContent({
     sources,
     primaryCollectionId,
     subtitleOverride,
@@ -61,7 +63,8 @@ export function CollectionShowcaseSection({
     descriptionOverride,
     ctaLabelOverride,
     ctaHrefOverride,
-    defaultCtaLabel: t('Watch')
+    defaultCtaLabel: t('Watch'),
+    languageId
   })
 
   if (!loading && slides.length === 0) return null
@@ -73,7 +76,7 @@ export function CollectionShowcaseSection({
         'relative bg-linear-to-tr from-blue-950/10 via-purple-950/10 to-[#91214A]/90 py-16 scroll-snap-start-always',
         backgroundClassName
       )}
-      data-testid="CollectionShowcaseSection"
+      data-testid="SectionVideoCollectionCarousel"
     >
       <div className="absolute inset-0 bg-[url(/watch/assets/overlay.svg)] bg-repeat mix-blend-multiply" />
       <div className="padded relative z-2 pb-6">
@@ -82,7 +85,7 @@ export function CollectionShowcaseSection({
             {subtitle != null && subtitle !== '' && (
               <h4
                 className="text-sm xl:text-base 2xl:text-lg font-semibold tracking-wider uppercase text-red-100/70"
-                data-testid="CollectionShowcaseSubtitle"
+                data-testid="SectionVideoCollectionCarouselSubtitle"
               >
                 {subtitle}
               </h4>
@@ -90,7 +93,7 @@ export function CollectionShowcaseSection({
             {title != null && title !== '' && (
               <h2
                 className="text-2xl xl:text-3xl 2xl:text-4xl font-bold"
-                data-testid="CollectionShowcaseTitle"
+                data-testid="SectionVideoCollectionCarouselTitle"
               >
                 {title}
               </h2>
@@ -100,7 +103,7 @@ export function CollectionShowcaseSection({
             <button
               aria-label={ctaLabel}
               className="inline-flex items-center gap-2 px-4 py-2 text-xs text-black font-bold uppercase tracking-wider rounded-full bg-white hover:bg-red-500 hover:text-white transition-colors duration-200 cursor-pointer"
-              data-testid="CollectionShowcaseCTA"
+              data-testid="SectionVideoCollectionCarouselCTA"
             >
               <Icon
                 name={watchButtonIcon}
@@ -108,7 +111,7 @@ export function CollectionShowcaseSection({
                   width: 16,
                   height: 16
                 }}
-                data-testid="CollectionShowcaseCTAIcon"
+                data-testid="SectionVideoCollectionCarouselCTAIcon"
               />
               <span>{ctaLabel}</span>
             </button>
@@ -122,31 +125,29 @@ export function CollectionShowcaseSection({
           mousewheel={{ forceToAxis: true }}
           observeParents
           slidesPerView="auto"
-          spaceBetween={0}
+          spaceBetween={20}
+        slidesOffsetAfter={40}
           pagination={{ clickable: true }}
           className="w-full"
-          data-testid="CollectionShowcaseSwiper"
+          data-testid="SectionVideoCollectionCarouselSwiper"
         >
           {loading
             ? Array.from({ length: 4 }).map((_, index) => (
                 <SwiperSlide
                   key={`skeleton-${index}`}
-                  className={cn(
-                    '!w-[296px] pl-6 py-8',
-                    index === 0 ? '2xl:pl-20 xl:pl-12' : ''
-                  )}
+                  className={`max-w-[200px] ${index === 0 ? 'padded-l' : ''}`}
+                  
+
                 >
-                  <div className="h-[444px] w-[296px] rounded-lg bg-white/10 animate-pulse" />
+                  <div className="h-[330px] w-[220px] rounded-lg bg-white/10 animate-pulse" />
                 </SwiperSlide>
               ))
             : slides.map((slide, index) => (
                 <SwiperSlide
                   key={slide.id}
-                  className={cn(
-                    '!w-[296px] pl-6 py-8',
-                    index === 0 ? '2xl:pl-20 xl:pl-12' : ''
-                  )}
-                  data-testid={`CollectionShowcaseSlide-${slide.id}`}
+                  className={`max-w-[200px] py-1 ${index === 0 ? 'padded-l' : ''}`}
+                  
+                  data-testid={`SectionVideoCollectionCarouselSlide-${slide.id}`}
                 >
                   <a
                     href={slide.href}
@@ -159,12 +160,12 @@ export function CollectionShowcaseSection({
                       alt={slide.alt}
                       className="w-full aspect-[2/3] object-cover rounded-lg"
                     />
-                    <div className="absolute top-0 left-0 w-full h-full outline-0 hover:outline-4 hover:outline-white rounded-lg">
-                      <div className="absolute z-1 bottom-6 flex items-center justify-center w-full h-full opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-                        <div className="w-24 h-24 rounded-full bg-stone-900/60 flex items-center justify-center hover:bg-red-500">
+                    <div className="absolute top-0 left-0 w-full h-full outline-4 outline-transparent hover:outline-white rounded-lg">
+                      <div className="absolute z-1 bottom-4 flex items-center justify-center w-full h-full opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                        <div className="w-16 h-16 rounded-full bg-stone-900/60 flex items-center justify-center hover:bg-red-500">
                           <svg
                             xmlns="http://www.w3.org/2000/svg"
-                            className="h-20 w-20"
+                            className="h-12 w-12"
                             viewBox="0 0 24 24"
                             fill="currentColor"
                           >
@@ -180,14 +181,9 @@ export function CollectionShowcaseSection({
       </div>
 
       <div className="padded space-y-6">
-        {(mission.highlight != null || mission.body != null) && (
-          <p className="text-lg xl:text-xl mt-4 leading-relaxed text-stone-200/80" data-testid="CollectionShowcaseMission">
-            {mission.highlight != null && mission.highlight !== '' && (
-              <>
-                <span className="text-white font-bold">{mission.highlight}</span>{' '}
-              </>
-            )}
-            {mission.body != null && mission.body !== '' && <span>{mission.body}</span>}
+        {description != null && description !== '' && (
+          <p className="text-lg xl:text-xl mt-8 leading-relaxed text-stone-200/80" data-testid="SectionVideoCollectionCarouselDescription">
+            {description}
           </p>
         )}
       </div>

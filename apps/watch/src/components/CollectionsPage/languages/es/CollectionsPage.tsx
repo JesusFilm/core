@@ -10,7 +10,7 @@ import {
 import { CollectionsPageContent } from '../../CollectionsPageContent'
 import { CollectionsVideoContent } from '../../CollectionsVideoContent'
 import { CollectionVideoContentCarousel } from '../../CollectionVideoContentCarousel'
-import { CollectionShowcaseSection } from '../../CollectionShowcaseSection'
+import { SectionVideoCollectionCarousel } from '../../../SectionVideoCollectionCarousel'
 import { ContainerHero } from '../../ContainerHero'
 import { collectionShowcaseSources } from '../../collectionShowcaseConfig'
 
@@ -251,7 +251,7 @@ Porque la celebración más grande en la historia de la humanidad va mucho más 
             buttonText: 'Únete a nuestro estudio bíblico'
           }}
         />
-        <CollectionShowcaseSection
+        <SectionVideoCollectionCarousel
           id="other-collections"
           sources={collectionShowcaseSources}
           primaryCollectionId="LUMOCollection"

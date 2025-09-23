@@ -40,7 +40,7 @@ export const GET_COLLECTION_SHOWCASE_CONTENT = gql`
   query GetCollectionShowcaseContent(
     $collectionIds: [ID!]
     $videoIds: [ID!]
-    $languageId: ID
+    $languageId: ID!
   ) {
     collections: videos(
       where: {

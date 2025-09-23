@@ -10,7 +10,7 @@ import {
 import { CollectionsPageContent } from '../../CollectionsPageContent'
 import { CollectionsVideoContent } from '../../CollectionsVideoContent'
 import { CollectionVideoContentCarousel } from '../../CollectionVideoContentCarousel'
-import { CollectionShowcaseSection } from '../../CollectionShowcaseSection'
+import { SectionVideoCollectionCarousel } from '../../../SectionVideoCollectionCarousel'
 import { ContainerHero } from '../../ContainerHero'
 import { collectionShowcaseSources } from '../../collectionShowcaseConfig'
 
@@ -236,7 +236,7 @@ Because the greatest celebration in human history is about far more than traditi
             buttonText: 'Join Our Bible study'
           }}
         />
-        <CollectionShowcaseSection
+        <SectionVideoCollectionCarousel
           id="other-collections"
           sources={collectionShowcaseSources}
           primaryCollectionId="LUMOCollection"

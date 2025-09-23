@@ -3,23 +3,23 @@ import { useEffect, useMemo } from 'react'
 import { useQuery } from '@apollo/client'
 import { useRouter } from 'next/router'
 
-import { VideoLabel } from '../../../../__generated__/globalTypes'
-import { getLanguageIdFromLocale } from '../../../libs/getLanguageIdFromLocale'
-import { getWatchUrl } from '../../../libs/utils/getWatchUrl'
+import { VideoLabel } from '../../../__generated__/globalTypes'
+import { getLanguageIdFromLocale } from '../../libs/getLanguageIdFromLocale'
+import { getWatchUrl } from '../../libs/utils/getWatchUrl'
 
 import { GET_COLLECTION_SHOWCASE_CONTENT } from './queries'
 
 export type ShowcaseSourceType = 'collection' | 'video'
 export type ShowcaseIdType = 'databaseId' | 'slug'
 
-export interface CollectionShowcaseSource {
+export interface SectionVideoCollectionCarouselSource {
   id: string
   type: ShowcaseSourceType
   idType?: ShowcaseIdType
   limitChildren?: number
 }
 
-export interface CollectionShowcaseSlide {
+export interface SectionVideoCollectionCarouselSlide {
   id: string
   title: string
   href: string
@@ -30,17 +30,12 @@ export interface CollectionShowcaseSlide {
   parentId?: string
 }
 
-export interface MissionCopyParts {
-  highlight?: string
-  body?: string
-}
-
-export interface CollectionShowcaseContentResult {
+export interface SectionVideoCollectionCarouselContentResult {
   loading: boolean
-  slides: CollectionShowcaseSlide[]
+  slides: SectionVideoCollectionCarouselSlide[]
   subtitle?: string
   title?: string
-  mission: MissionCopyParts
+  description?: string
   ctaLabel: string
   ctaHref: string
   primaryCollection?: ShowcaseVideoNode
@@ -129,7 +124,7 @@ function getContainerSlug(node: MaybeCollection | VideoNode): string | undefined
   return parentWithSlug?.slug ?? undefined
 }
 
-function buildSlide(node: VideoNode, parentId?: string): CollectionShowcaseSlide | null {
+function buildSlide(node: VideoNode, parentId?: string): SectionVideoCollectionCarouselSlide | null {
   const variantSlug = node.variant?.slug
   if (variantSlug == null || variantSlug === '') return null
 
@@ -152,9 +147,9 @@ function buildSlide(node: VideoNode, parentId?: string): CollectionShowcaseSlide
 function flattenCollection(
   collection: CollectionNode,
   options?: FlattenOptions
-): (CollectionShowcaseSlide | null)[] {
+): (SectionVideoCollectionCarouselSlide | null)[] {
   const children = collection.children ?? []
-  const slides: (CollectionShowcaseSlide | null)[] = []
+  const slides: (SectionVideoCollectionCarouselSlide | null)[] = []
   const limit = options?.limit ?? children.length
 
   for (const child of children) {
@@ -182,34 +177,9 @@ function flattenCollection(
   return slides
 }
 
-function deriveMissionParts(description?: string): MissionCopyParts {
-  if (description == null || description.trim() === '') {
-    return {}
-  }
 
-  const trimmed = description.trim()
-  const strongMatch = trimmed.match(/<strong>(.*?)<\/strong>/i)
-  if (strongMatch != null) {
-    const highlight = strongMatch[1].trim()
-    const body = trimmed.replace(strongMatch[0], '').trim()
-    return { highlight, body }
-  }
-
-  const periodIndex = trimmed.indexOf('.')
-  if (periodIndex >= 0) {
-    const highlight = trimmed.slice(0, periodIndex + 1).trim()
-    const body = trimmed.slice(periodIndex + 1).trim()
-    return {
-      highlight,
-      body
-    }
-  }
-
-  return { highlight: trimmed }
-}
-
-export interface UseCollectionShowcaseContentOptions {
-  sources: CollectionShowcaseSource[]
+export interface UseSectionVideoCollectionCarouselContentOptions {
+  sources: SectionVideoCollectionCarouselSource[]
   primaryCollectionId?: string
   subtitleOverride?: string
   titleOverride?: string
@@ -217,9 +187,10 @@ export interface UseCollectionShowcaseContentOptions {
   ctaLabelOverride?: string
   ctaHrefOverride?: string
   defaultCtaLabel: string
+  languageId?: string
 }
 
-export function useCollectionShowcaseContent({
+export function useSectionVideoCollectionCarouselContent({
   sources,
   primaryCollectionId,
   subtitleOverride,
@@ -227,16 +198,17 @@ export function useCollectionShowcaseContent({
   descriptionOverride,
   ctaLabelOverride,
   ctaHrefOverride,
-  defaultCtaLabel
-}: UseCollectionShowcaseContentOptions): CollectionShowcaseContentResult {
+  defaultCtaLabel,
+  languageId: providedLanguageId
+}: UseSectionVideoCollectionCarouselContentOptions): SectionVideoCollectionCarouselContentResult {
   const { locale } = useRouter()
-  const languageId = getLanguageIdFromLocale(locale)
+  const languageId = providedLanguageId ?? getLanguageIdFromLocale(locale)
 
   useEffect(() => {
     const slugSources = sources.filter((source) => source.idType === 'slug')
     if (slugSources.length > 0) {
       console.warn(
-        'CollectionShowcaseSection currently expects databaseId values; slug idType is not fully supported yet.',
+        'SectionVideoCollectionCarousel currently expects databaseId values; slug idType is not fully supported yet.',
         slugSources
       )
     }
@@ -251,20 +223,22 @@ export function useCollectionShowcaseContent({
     [sources]
   )
 
+  const queryVariables = {
+    collectionIds:
+      collectionSources.length > 0
+        ? collectionSources.map((source) => source.id)
+        : undefined,
+    videoIds:
+      videoSources.length > 0
+        ? videoSources.map((source) => source.id)
+        : undefined,
+    languageId
+  }
+
   const { data, loading } = useQuery<CollectionShowcaseQueryData, CollectionShowcaseQueryVars>(
     GET_COLLECTION_SHOWCASE_CONTENT,
     {
-      variables: {
-        collectionIds:
-          collectionSources.length > 0
-            ? collectionSources.map((source) => source.id)
-            : undefined,
-        videoIds:
-          videoSources.length > 0
-            ? videoSources.map((source) => source.id)
-            : undefined,
-        languageId
-      },
+      variables: queryVariables,
       skip: collectionSources.length === 0 && videoSources.length === 0
     }
   )
@@ -272,7 +246,7 @@ export function useCollectionShowcaseContent({
   const slides = useMemo(() => {
     if (data == null) return []
 
-    const slideAccumulator: CollectionShowcaseSlide[] = []
+    const slideAccumulator: SectionVideoCollectionCarouselSlide[] = []
     const seen = new Set<string>()
 
     const collectionsById = new Map(
@@ -326,8 +300,7 @@ export function useCollectionShowcaseContent({
   const subtitle = subtitleOverride ?? primaryCollection?.snippet?.[0]?.value
   const title = titleOverride ?? primaryCollection?.title?.[0]?.value
 
-  const missionSource = descriptionOverride ?? primaryCollection?.description?.[0]?.value
-  const mission = deriveMissionParts(missionSource)
+  const description = descriptionOverride ?? primaryCollection?.description?.[0]?.value
 
   const ctaHref = ctaHrefOverride
     ?? (primaryCollection?.variant?.slug != null
@@ -345,7 +318,7 @@ export function useCollectionShowcaseContent({
     slides,
     subtitle,
     title,
-    mission,
+    description,
     ctaLabel,
     ctaHref,
     primaryCollection
