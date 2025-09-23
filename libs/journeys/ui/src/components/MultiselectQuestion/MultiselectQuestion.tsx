@@ -23,9 +23,8 @@ import { useJourney } from '../../libs/JourneyProvider'
 import { BlockRenderer, WrappersProps } from '../BlockRenderer'
 import { MultiselectOption } from '../MultiselectOption/MultiselectOption'
 
-import { ListVariant } from './ListVariant'
-import { MULTISELECT_QUESTION_FIELDS } from './multiselectQuestionFields'
 import { getPollOptionBorderStyles } from './utils/getPollOptionBorderStyles'
+import { StyledListMultiSelectOption } from '../MultiselectOption'
 
 export const MULTISELECT_SUBMISSION_EVENT_CREATE = gql`
   mutation MultiselectSubmissionEventCreate(
@@ -69,6 +68,9 @@ interface MultiselectQuestionProps extends TreeBlock<any> {
   wrappers?: WrappersProps
   addOption?: () => void
 }
+
+const adminPrimaryColor = adminTheme.palette
+  .primary as SimplePaletteColorOptions
 
 export function MultiselectQuestion({
   id: blockId,
@@ -156,14 +158,10 @@ export function MultiselectQuestion({
     const atMax = typeof max === 'number' && selectedIds.length >= max
     const disabled = atMax && !isSelected
     return wrappers != null ? (
-      <BlockRenderer
-        block={option}
-        wrappers={wrappers}
-        key={option.id}
-      />
+      <BlockRenderer block={option} wrappers={wrappers} key={option.id} />
     ) : (
       <MultiselectOption
-        {...(option)}
+        {...option}
         key={option.id}
         selected={isSelected}
         disabled={disabled}
@@ -174,7 +172,34 @@ export function MultiselectQuestion({
 
   return (
     <>
-      <ListVariant blockId={blockId} options={options} addOption={addOption} />
+      <StyledListMultiselectQuestion
+        data-testid={`JourneysRadioQuestionList-${blockId}`}
+      >
+        <ButtonGroup orientation="vertical" variant="contained" fullWidth>
+          {options}
+          {addOption && (
+            <Box>
+              <StyledListMultiSelectOption
+                data-testid={`${blockId}-add-option`}
+                variant="contained"
+                fullWidth
+                disableRipple
+                startIcon={
+                  <AddSquare4Icon sx={{ color: `${adminPrimaryColor.main}` }} />
+                }
+                onClick={addOption}
+                sx={(theme) => ({
+                  borderBottomLeftRadius: 8,
+                  borderBottomRightRadius: 8,
+                  ...getPollOptionBorderStyles(theme, { important: true })
+                })}
+              >
+                <Typography variant="body1">{t('Add Option')}</Typography>
+              </StyledListMultiSelectOption>
+            </Box>
+          )}
+        </ButtonGroup>
+      </StyledListMultiselectQuestion>
       <Box sx={{ mt: 2 }}>
         <Button
           variant="contained"

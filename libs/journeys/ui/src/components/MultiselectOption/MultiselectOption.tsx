@@ -6,7 +6,7 @@ import type { TreeBlock } from '../../libs/block'
 import { useJourney } from '../../libs/JourneyProvider'
 import { getPollOptionBorderStyles } from '../RadioQuestion/utils/getPollOptionBorderStyles'
 
-import { RadioOptionFields as MultiselectOptionFields } from './__generated__/RadioOptionFields'
+import { MultiselectOptionFields } from './__generated__/MultiselectOptionFields'
 
 export const StyledListMultiSelectOption = styled(Button)<ButtonProps>(({
   theme
@@ -35,7 +35,7 @@ export const StyledListMultiSelectOption = styled(Button)<ButtonProps>(({
       }
     ),
     wordBreak: 'break-word',
-    color: 'text.primary',
+    color: theme.palette.text.primary,
     ...borderStyles,
 
     // Default state
@@ -97,19 +97,15 @@ export interface MultiselectOptionProps
   disabled?: boolean
   onClick?: (selectedId: string, selectedLabel: string) => void
   editableLabel?: ReactElement
-  gridView?: boolean | null
 }
 
 export function MultiselectOption({
   label,
-  action,
   id,
   disabled = false,
   selected = false,
   onClick,
-  editableLabel,
-  pollOptionImageBlockId,
-  children
+  editableLabel
 }: MultiselectOptionProps): ReactElement {
   const { journey } = useJourney()
 

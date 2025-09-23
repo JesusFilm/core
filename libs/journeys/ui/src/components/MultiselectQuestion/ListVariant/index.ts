@@ -1,1 +1,0 @@
-export { ListVariant } from './ListVariant'

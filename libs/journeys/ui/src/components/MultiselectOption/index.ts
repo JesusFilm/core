@@ -1,1 +1,4 @@
-export { MultiselectOption } from './MultiselectOption'
+export {
+  MultiselectOption,
+  StyledListMultiSelectOption
+} from './MultiselectOption'
