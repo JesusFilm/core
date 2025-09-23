@@ -171,28 +171,19 @@ export function FilterForm({
           label={t('All')}
         />
         <Divider sx={{ my: 1 }} />
-        <Box
-          sx={{
-            '& .MuiCheckbox-root': {
-              color: 'text.disabled'
-            }
-          }}
-        >
-          <CheckboxOption
-            checked={true}
-            onChange={() => undefined}
-            label={
-              <Box>
-                <Typography variant="body2">{t('Contact Data')}</Typography>
-                <Typography variant="caption" sx={{ color: 'text.secondary' }}>
-                  {t(
-                    'All contact data {name, email, phone} is exported by default'
-                  )}
-                </Typography>
-              </Box>
-            }
-          />
-        </Box>
+        <CheckboxOption
+          checked
+          onChange={() => undefined}
+          disabled
+          label={
+            <Box>
+              <Typography variant="body2">{t('Contact Data')}</Typography>
+              <Typography variant="caption" sx={{ color: 'text.secondary' }}>
+                {t('All contact data {name, email, phone} is exported by default')}
+              </Typography>
+            </Box>
+          }
+        />
         {/* Regular events */}
         {REGULAR_EVENT_KEYS.map((event) => (
           <CheckboxOption
