@@ -20,7 +20,7 @@ interface ContactDataFormProps {
  * Form component that allows users to select which contact data fields to export.
  * Contains switches for name, email, and phone fields.
  *
- * @param setSelectedEvents - Callback function to update the selected events array in the parent component
+ * @param setContactData - Callback function to update the selected contact data array in the parent component
  * @returns A form with switches for selecting contact data fields
  */
 export function ContactDataForm({
