@@ -57,6 +57,7 @@ interface VideoControlProps {
   onVisibleChanged?: (active: boolean) => void
   isPreview?: boolean
   onMuteToggle?: (isMuted: boolean) => void
+  customDuration?: number
 }
 
 function evtToDataLayer(
@@ -85,7 +86,8 @@ export function VideoControls({
   player,
   onVisibleChanged,
   isPreview = false,
-  onMuteToggle
+  onMuteToggle,
+  customDuration
 }: VideoControlProps): ReactElement {
   const [initialLoadComplete, setInitialLoadComplete] = useState(false)
   const {
@@ -131,9 +133,19 @@ export function VideoControls({
     onVisibleChanged?.(!play || active || loading)
   }, [play, active, loading, onVisibleChanged])
 
-  // Set duration from variant data instead of trying to detect from HLS stream
+  // Set duration from custom duration, variant data, or try to detect from HLS stream
   useEffect(() => {
-    if (variant?.duration != null && variant.duration > 0) {
+    if (customDuration != null && customDuration > 0) {
+      const roundedDuration = Math.round(customDuration)
+      dispatchPlayer({
+        type: 'SetDurationSeconds',
+        durationSeconds: roundedDuration
+      })
+      dispatchPlayer({
+        type: 'SetDuration',
+        duration: secondsToTimeFormat(roundedDuration, { trimZeroes: true })
+      })
+    } else if (variant?.duration != null && variant.duration > 0) {
       const roundedDuration = Math.round(variant.duration)
       dispatchPlayer({
         type: 'SetDurationSeconds',
@@ -205,7 +217,7 @@ export function VideoControls({
         })
       }
     }
-  }, [player, variant?.duration])
+  }, [player, variant?.duration, customDuration])
 
   useEffect(() => {
     if ((progress / durationSeconds) * 100 > progressPercentNotYetEmitted[0]) {
@@ -250,9 +262,9 @@ export function VideoControls({
           variant?.language?.name.find(({ primary }) => !primary)?.value ??
             variant?.language?.name[0]?.value,
           Math.round(player?.currentTime() ?? 0),
-          Math.round(
-            ((player?.currentTime() ?? 0) / (player?.duration() ?? 1)) * 100
-          )
+          durationSeconds > 0 ? Math.round(
+            ((player?.currentTime() ?? 0) / durationSeconds) * 100
+          ) : 0
         )
       } else {
         eventToDataLayer(
@@ -263,9 +275,9 @@ export function VideoControls({
           variant?.language?.name.find(({ primary }) => !primary)?.value ??
             variant?.language?.name[0]?.value,
           Math.round(player?.currentTime() ?? 0),
-          Math.round(
-            ((player?.currentTime() ?? 0) / (player?.duration() ?? 1)) * 100
-          )
+          durationSeconds > 0 ? Math.round(
+            ((player?.currentTime() ?? 0) / durationSeconds) * 100
+          ) : 0
         )
       }
       dispatchPlayer({
@@ -283,9 +295,9 @@ export function VideoControls({
           variant?.language?.name.find(({ primary }) => !primary)?.value ??
             variant?.language?.name[0]?.value,
           Math.round(player?.currentTime() ?? 0),
-          Math.round(
-            ((player?.currentTime() ?? 0) / (player?.duration() ?? 1)) * 100
-          )
+          durationSeconds > 0 ? Math.round(
+            ((player?.currentTime() ?? 0) / durationSeconds) * 100
+          ) : 0
         )
       }
       dispatchPlayer({
@@ -302,9 +314,9 @@ export function VideoControls({
       })
       dispatchPlayer({
         type: 'SetProgress',
-        progress: Math.round(
-          ((player?.currentTime() ?? 0) / (player?.duration() ?? 1)) * 100
-        )
+        progress: durationSeconds > 0 ? Math.round(
+          ((player?.currentTime() ?? 0) / durationSeconds) * 100
+        ) : 0
       })
     })
     player?.on('volumechange', () => {
@@ -349,18 +361,18 @@ export function VideoControls({
       })
     })
     player?.on('ended', () => {
-      eventToDataLayer(
-        'video_ended',
-        id,
-        variant?.language.id,
-        title[0].value,
-        variant?.language?.name.find(({ primary }) => !primary)?.value ??
-          variant?.language?.name[0]?.value,
-        Math.round(player?.currentTime() ?? 0),
-        Math.round(
-          ((player?.currentTime() ?? 0) / (player?.duration() ?? 1)) * 100
+        eventToDataLayer(
+          'video_ended',
+          id,
+          variant?.language.id,
+          title[0].value,
+          variant?.language?.name.find(({ primary }) => !primary)?.value ??
+            variant?.language?.name[0]?.value,
+          Math.round(player?.currentTime() ?? 0),
+          durationSeconds > 0 ? Math.round(
+            ((player?.currentTime() ?? 0) / durationSeconds) * 100
+          ) : 0
         )
-      )
     })
     player?.on('canplay', () =>
       dispatchPlayer({
@@ -384,9 +396,9 @@ export function VideoControls({
           variant?.language?.name.find(({ primary }) => !primary)?.value ??
             variant?.language?.name[0]?.value,
           Math.round(player?.currentTime() ?? 0),
-          Math.round(
-            ((player?.currentTime() ?? 0) / (player?.duration() ?? 1)) * 100
-          )
+          durationSeconds > 0 ? Math.round(
+            ((player?.currentTime() ?? 0) / durationSeconds) * 100
+          ) : 0
         )
       } else {
         eventToDataLayer(
@@ -397,9 +409,9 @@ export function VideoControls({
           variant?.language?.name.find(({ primary }) => !primary)?.value ??
             variant?.language?.name[0]?.value,
           Math.round(player?.currentTime() ?? 0),
-          Math.round(
-            ((player?.currentTime() ?? 0) / (player?.duration() ?? 1)) * 100
-          )
+          durationSeconds > 0 ? Math.round(
+            ((player?.currentTime() ?? 0) / durationSeconds) * 100
+          ) : 0
         )
       }
       dispatchPlayer({

@@ -1,4 +1,4 @@
-import { render, waitFor } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
 
 import { useAlgoliaVideos } from '@core/journeys/ui/algolia/useAlgoliaVideos'
 
@@ -7,6 +7,22 @@ import { videos } from '../Videos/__generated__/testData'
 
 import { VideoCarousel } from './VideoCarousel'
 
+class MockIntersectionObserver {
+  callback: IntersectionObserverCallback
+
+  constructor(callback: IntersectionObserverCallback) {
+    this.callback = callback
+  }
+
+  observe(): void {
+    this.callback([], this as unknown as IntersectionObserver)
+  }
+
+  disconnect(): void {}
+
+  unobserve(): void {}
+}
+
 jest.mock('@core/journeys/ui/algolia/useAlgoliaVideos')
 
 const mockedUseAlgoliaVideos = useAlgoliaVideos as jest.MockedFunction<
@@ -14,6 +30,40 @@ const mockedUseAlgoliaVideos = useAlgoliaVideos as jest.MockedFunction<
 >
 
 describe('VideosCarousel', () => {
+  beforeAll(() => {
+    Object.defineProperty(window, 'IntersectionObserver', {
+      writable: true,
+      configurable: true,
+      value: MockIntersectionObserver
+    })
+
+    Object.defineProperty(window, 'matchMedia', {
+      writable: true,
+      configurable: true,
+      value: jest.fn().mockImplementation(() => ({
+        matches: false,
+        media: '(prefers-reduced-motion: no-preference)',
+        addEventListener: jest.fn(),
+        removeEventListener: jest.fn(),
+        addListener: jest.fn(),
+        removeListener: jest.fn(),
+        dispatchEvent: jest.fn()
+      }))
+    })
+
+    Object.defineProperty(window.HTMLMediaElement.prototype, 'play', {
+      writable: true,
+      configurable: true,
+      value: jest.fn().mockResolvedValue(undefined)
+    })
+
+    Object.defineProperty(window.HTMLMediaElement.prototype, 'pause', {
+      writable: true,
+      configurable: true,
+      value: jest.fn()
+    })
+  })
+
   const transformedVideos = [
     {
       __typename: 'Video',
@@ -55,11 +105,37 @@ describe('VideosCarousel', () => {
   })
 
   it('should display video items', async () => {
-    const { getByRole, getByText } = render(
+    const { getByRole } = render(
       <VideoCarousel activeVideoId={videos[0].id} videos={videos} />
     )
 
-    await waitFor(() => expect(getByText('Playing now')).toBeInTheDocument())
     expect(getByRole('heading', { name: 'JESUS' })).toBeInTheDocument()
+  })
+
+  it('renders MUX insert slides when provided', () => {
+    const muxSlides = [
+      {
+        source: 'mux' as const,
+        id: 'welcome-start',
+        overlay: {
+          label: 'Today’s Pick',
+          title: 'Morning Nature Background',
+          collection: 'Daily Inspirations',
+          description: 'A calm intro before your playlist.'
+        },
+        playbackId: 'abc123',
+        playbackIndex: 0,
+        urls: {
+          hls: 'https://stream.mux.com/abc123.m3u8',
+          poster: 'https://image.mux.com/abc123/thumbnail.jpg?time=1',
+          mp4: {}
+        }
+      }
+    ]
+
+    render(<VideoCarousel slides={muxSlides} />)
+
+    expect(screen.getByTestId('VideoCard-welcome-start')).toBeInTheDocument()
+    expect(screen.getByText('Morning Nature Background')).toBeInTheDocument()
   })
 })

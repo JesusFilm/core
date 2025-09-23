@@ -1,3 +1,4 @@
+import clsx from 'clsx'
 import last from 'lodash/last'
 import { ReactElement, useCallback, useEffect, useRef, useState } from 'react'
 import videojs from 'video.js'
@@ -13,19 +14,24 @@ import { usePlayer } from '../../../../libs/playerContext/PlayerContext'
 import { useVideo } from '../../../../libs/videoContext'
 import { useWatch } from '../../../../libs/watchContext'
 import { useSubtitleUpdate } from '../../../../libs/watchContext/useSubtitleUpdate'
+import type { CarouselMuxSlide } from '../../../../types/inserts'
 import { VideoControls } from '../../../VideoContentPage/VideoHero/VideoPlayer/VideoControls'
-import clsx from 'clsx'
+import { HeroSubtitleOverlay } from './HeroSubtitleOverlay'
 
 interface HeroVideoProps {
   isPreview?: boolean
   collapsed?: boolean
   onMuteToggle?: (isMuted: boolean) => void
+  currentMuxInsert?: CarouselMuxSlide | null
+  onMuxInsertComplete?: () => void
 }
 
 export function HeroVideo({
   isPreview = false,
   collapsed = true,
-  onMuteToggle
+  onMuteToggle,
+  currentMuxInsert,
+  onMuxInsertComplete
 }: HeroVideoProps): ReactElement {
   const { variant, ...video } = useVideo()
   const {
@@ -37,7 +43,8 @@ export function HeroVideo({
   } = useWatch()
   const [playerReady, setPlayerReady] = useState(false)
 
-  const title = last(video.title)?.value ?? ''
+  // Use Mux insert title if available, otherwise use regular video title
+  const title = currentMuxInsert ? currentMuxInsert.overlay.title : (last(video.title)?.value ?? '')
 
   const videoRef = useRef<HTMLVideoElement>(null)
   const playerRef = useRef<
@@ -61,7 +68,11 @@ export function HeroVideo({
   }, [pauseVideoOnScrollAway])
 
   useEffect(() => {
-    if (!videoRef.current || !variant?.hls) return
+    // Determine the video source and ID based on current content
+    const videoSource = currentMuxInsert ? currentMuxInsert.urls.hls : variant?.hls
+    const videoId = currentMuxInsert ? currentMuxInsert.id : variant?.id
+
+    if (!videoRef.current || !videoSource) return
 
     // Dispose of existing player before creating new one
     if (playerRef.current) {
@@ -75,7 +86,7 @@ export function HeroVideo({
       env_key: process.env.NEXT_PUBLIC_MUX_DEFAULT_REPORTING_KEY || '',
       player_name: 'watch',
       video_title: title,
-      video_id: variant?.id ?? ''
+      video_id: videoId ?? ''
     }
 
     // Initialize player
@@ -83,8 +94,8 @@ export function HeroVideo({
       ...defaultVideoJsOptions,
       autoplay: true,
       controls: false,
-      loop: !isPreview,
-      muted: mute,
+      loop: !isPreview && !currentMuxInsert, // Don't loop Mux inserts
+      muted: false, // Start unmuted, mute state will be set by useEffect
       fluid: false,
       fill: true,
       responsive: false,
@@ -100,7 +111,7 @@ export function HeroVideo({
     playerRef.current = player
 
     player.src({
-      src: variant.hls,
+      src: videoSource,
       type: 'application/x-mpegURL'
     })
 
@@ -115,9 +126,34 @@ export function HeroVideo({
       }
       setPlayerReady(false)
     }
-  }, [variant?.hls, title, variant?.id])
+  }, [currentMuxInsert?.id, variant?.hls, title, variant?.id, currentMuxInsert, isPreview])
+
+  // Handle mute state changes dynamically without recreating the player
+  useEffect(() => {
+    if (playerRef.current && playerReady) {
+      playerRef.current.muted(mute)
+    }
+  }, [mute, playerReady])
+
+  // Duration timer for Mux inserts
+  useEffect(() => {
+    if (!currentMuxInsert?.duration || !playerRef.current || !playerReady) {
+      return
+    }
+
+    const timer = setTimeout(() => {
+      onMuxInsertComplete?.()
+    }, currentMuxInsert.duration * 1000) // Convert seconds to milliseconds
+
+    return () => {
+      clearTimeout(timer)
+    }
+  }, [currentMuxInsert?.duration, currentMuxInsert?.id, playerReady, onMuxInsertComplete])
 
   const { subtitleUpdate } = useSubtitleUpdate()
+
+  const effectiveSubtitleLanguageId =
+    subtitleLanguageId ?? variant?.language.id ?? null
 
   const handlePreviewClick = useCallback(
     (e: React.MouseEvent<HTMLVideoElement>) => {
@@ -136,10 +172,19 @@ export function HeroVideo({
 
     void subtitleUpdate({
       player,
-      subtitleLanguageId,
+      subtitleLanguageId: effectiveSubtitleLanguageId,
       subtitleOn: mute || subtitleOn
     })
-  }, [playerRef, subtitleLanguageId, subtitleOn, variant, mute])
+  }, [
+    playerRef,
+    effectiveSubtitleLanguageId,
+    subtitleOn,
+    variant,
+    mute,
+    subtitleUpdate
+  ])
+
+  const shouldShowOverlay = playerReady && (mute || (subtitleOn ?? false))
 
   return (
     <div
@@ -153,9 +198,9 @@ export function HeroVideo({
       data-testid="ContentHeroVideoContainer"
     >
       <>
-        {variant?.hls && (
+        {(currentMuxInsert?.urls.hls || variant?.hls) && (
           <video
-            key={variant.hls}
+            key={currentMuxInsert ? currentMuxInsert.id : variant?.hls}
             data-testid="ContentHeroVideo"
             ref={videoRef}
             className={clsx(
@@ -183,12 +228,18 @@ export function HeroVideo({
             }}
           />
         )}
+        <HeroSubtitleOverlay
+          player={playerRef.current}
+          subtitleLanguageId={effectiveSubtitleLanguageId}
+          visible={shouldShowOverlay}
+        />
         {playerRef.current != null && playerReady && (
           <>
             <VideoControls
               player={playerRef.current}
               isPreview={isPreview}
               onMuteToggle={onMuteToggle}
+              customDuration={currentMuxInsert?.duration}
             />
           </>
         )}

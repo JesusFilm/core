@@ -16,10 +16,11 @@ import { secondsToTimeFormat } from '@core/shared/ui/timeFormat'
 
 import { VideoLabel } from '../../../__generated__/globalTypes'
 import type { VideoChildFields } from '../../../__generated__/VideoChildFields'
+import type { CarouselVideo } from '../VideoHero/libs/useCarouselVideos'
 import { getLabelDetails } from '../../libs/utils/getLabelDetails/getLabelDetails'
 
 interface VideoCardProps {
-  video?: VideoChildFields
+  video?: VideoChildFields | CarouselVideo
   variant?: 'contained' | 'expanded'
   containerSlug?: string
   index?: number

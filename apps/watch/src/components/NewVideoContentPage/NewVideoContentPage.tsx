@@ -2,7 +2,7 @@ import { sendGTMEvent } from '@next/third-parties/google'
 import last from 'lodash/last'
 import { useTranslation } from 'next-i18next'
 import { NextSeo } from 'next-seo'
-import { ReactElement, useMemo, useState } from 'react'
+import { ReactElement, useMemo, useState, useCallback, useEffect } from 'react'
 import { v4 as uuidv4 } from 'uuid'
 
 import Bible from '@core/shared/ui/icons/Bible'
@@ -13,6 +13,8 @@ import { VideoContentFields_studyQuestions as StudyQuestions } from '../../../__
 import { useVideoChildren } from '../../libs/useVideoChildren'
 import { getWatchUrl } from '../../libs/utils/getWatchUrl'
 import { useVideo } from '../../libs/videoContext'
+import { mergeMuxInserts } from '../VideoHero/libs/useCarouselVideos/insertMux'
+import type { VideoCarouselSlide, CarouselMuxSlide } from '../../types/inserts'
 import { PageWrapper } from '../PageWrapper'
 import { ShareDialog } from '../ShareDialog'
 
@@ -45,12 +47,22 @@ export function NewVideoContentPage(): ReactElement {
   const [showShare, setShowShare] = useState(false)
   const [isFullscreen, setIsFullscreen] = useState(false)
 
+  // State for managing current playing content (video or Mux insert)
+  const [currentPlayingId, setCurrentPlayingId] = useState<string>(id) // Default to main video
+  const [currentSlideIndex, setCurrentSlideIndex] = useState<number>(0)
+
   const variantSlug = container?.variant?.slug ?? variant?.slug
   const watchUrl = getWatchUrl(container?.slug, label, variant?.slug)
   const { children, loading } = useVideoChildren(
     variantSlug,
     variant?.language.bcp47 ?? 'en'
   )
+
+  // Merge Mux inserts with video children to create carousel slides
+  const carouselSlides = useMemo<VideoCarouselSlide[]>(() => {
+    if (loading || children.length === 0) return []
+    return mergeMuxInserts(children)
+  }, [children, loading])
 
   const makeDefaultQuestion = (value: string): StudyQuestions => ({
     __typename: 'VideoStudyQuestion',
@@ -103,6 +115,40 @@ export function NewVideoContentPage(): ReactElement {
     ]
   }, [studyQuestions, t])
 
+  // Handle video/insert selection from carousel
+  const handleVideoSelect = useCallback((videoId: string) => {
+    setCurrentPlayingId(videoId)
+    const slideIndex = carouselSlides.findIndex(slide => slide.id === videoId)
+    if (slideIndex >= 0) {
+      setCurrentSlideIndex(slideIndex)
+    }
+  }, [carouselSlides])
+
+  // Handle slide change for duration tracking
+  const handleSlideChange = useCallback((activeIndex: number) => {
+    setCurrentSlideIndex(activeIndex)
+    if (carouselSlides[activeIndex]) {
+      setCurrentPlayingId(carouselSlides[activeIndex].id)
+    }
+  }, [carouselSlides])
+
+  // Handle Mux insert completion - automatically progress to next item
+  const handleMuxInsertComplete = useCallback(() => {
+    const nextIndex = currentSlideIndex + 1
+    if (nextIndex < carouselSlides.length) {
+      setCurrentSlideIndex(nextIndex)
+      setCurrentPlayingId(carouselSlides[nextIndex].id)
+    } else {
+      setCurrentSlideIndex(0)
+      setCurrentPlayingId(carouselSlides[0]?.id || id)
+    }
+  }, [currentSlideIndex, carouselSlides, id])
+
+  // Get current playing content
+  const currentSlide = carouselSlides[currentSlideIndex]
+  const currentMuxInsert = currentSlide?.source === 'mux' ? currentSlide : null
+
+
   const handleFreeResourceClick = () => {
     sendGTMEvent({
       event: 'join_study_button_click',
@@ -153,7 +199,7 @@ export function NewVideoContentPage(): ReactElement {
         }}
       />
       <PageWrapper
-        hero={<VideoContentHero />}
+        hero={<VideoContentHero currentMuxInsert={currentMuxInsert} onMuxInsertComplete={handleMuxInsertComplete} />}
         headerThemeMode={ThemeMode.dark}
         hideHeader
         hideFooter
@@ -162,12 +208,14 @@ export function NewVideoContentPage(): ReactElement {
         <ContentPageBlurFilter>
           <NewVideoContentHeader loading={loading} videos={children} />
           {((container?.childrenCount ?? 0) > 0 || childrenCount > 0) &&
-            (children.length === children.length || children.length > 0) && (
+            (carouselSlides.length > 0 || loading) && (
               <VideoCarousel
-                videos={children}
+                slides={carouselSlides}
                 containerSlug={container?.slug ?? videoSlug}
-                activeVideoId={id}
+                activeVideoId={currentPlayingId}
                 loading={loading}
+                onVideoSelect={handleVideoSelect}
+                onSlideChange={handleSlideChange}
               />
             )}
           <div

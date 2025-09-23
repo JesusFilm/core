@@ -1,29 +1,38 @@
 import Box from '@mui/material/Box'
 import { useTheme } from '@mui/material/styles'
-import { ComponentProps, ReactElement, useRef } from 'react'
+import { ComponentProps, ReactElement, useMemo, useRef } from 'react'
 import { A11y, Navigation } from 'swiper/modules'
 import { Swiper, SwiperSlide } from 'swiper/react'
 import { SwiperOptions } from 'swiper/types'
 
 import { VideoChildFields } from '../../../__generated__/VideoChildFields'
-import { VideoCard } from '../VideoCard'
+import { VideoCard } from '../NewVideoContentPage/VideoCarousel/VideoCard'
+import {
+  type VideoCarouselSlide,
+  isMuxSlide,
+  isVideoSlide,
+  transformMuxSlide,
+  transformVideoChild
+} from '../../types/inserts'
 
 import { NavButton } from './NavButton'
 
 interface VideoCarouselProps {
   activeVideoId?: string
   videos?: VideoChildFields[]
+  slides?: VideoCarouselSlide[]
   loading?: boolean
   containerSlug?: string
-  variant?: ComponentProps<typeof VideoCard>['variant']
+  onVideoSelect?: (videoId: string) => void
 }
 
 export function VideoCarousel({
   activeVideoId,
   loading,
   videos,
+  slides,
   containerSlug,
-  variant = 'expanded'
+  onVideoSelect
 }: VideoCarouselProps): ReactElement {
   const { breakpoints } = useTheme()
   const nextRef = useRef<HTMLDivElement>(null)
@@ -54,6 +63,17 @@ export function VideoCarousel({
       slidesPerView: 7.4
     }
   }
+
+  const computedSlides = useMemo<VideoCarouselSlide[]>(() => {
+    if (slides != null) return slides
+    return (
+      videos?.map((video) => ({
+        source: 'video' as const,
+        id: video.id,
+        video
+      })) ?? []
+    )
+  }, [slides, videos])
 
   return (
     <Box sx={{ position: 'relative' }} data-testid="VideoCarousel">
@@ -108,13 +128,19 @@ export function VideoCarousel({
             prevEl: prevRef.current
           }}
         >
-          {videos?.map((video) => (
-            <SwiperSlide key={video.id}>
+          {computedSlides.map((slide) => (
+            <SwiperSlide
+              key={
+                isMuxSlide(slide)
+                  ? `mux-${slide.id}-${slide.playbackIndex}`
+                  : `video-${slide.id}`
+              }
+            >
               <VideoCard
-                video={video}
+                data={isMuxSlide(slide) ? transformMuxSlide(slide) : transformVideoChild(slide.video as VideoChildFields)}
+                active={activeVideoId === slide.id}
                 containerSlug={containerSlug}
-                variant={variant}
-                active={activeVideoId === video.id}
+                onVideoSelect={onVideoSelect}
               />
             </SwiperSlide>
           ))}

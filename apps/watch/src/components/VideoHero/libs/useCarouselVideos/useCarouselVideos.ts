@@ -20,6 +20,8 @@ import {
   loadCurrentVideoSession,
   clearCurrentVideoSession
 } from './utils'
+import { mergeMuxInserts } from './insertMux'
+import type { VideoCarouselSlide } from '../../../../types/inserts'
 
 export interface CarouselVideo {
   id: string
@@ -52,6 +54,7 @@ export interface QueuedVideo extends CarouselVideo {
 
 export interface UseCarouselVideosReturn {
   loading: boolean
+  slides: VideoCarouselSlide[]
   videos: CarouselVideo[] // All videos in natural sequence order
   currentIndex: number
   error: Error | null
@@ -224,10 +227,7 @@ export function useCarouselVideos(locale?: string): UseCarouselVideosReturn {
 
   // Helper to recursively find a playable video within a collection tree
   const findVideoInCollection = useCallback(
-    async (
-      collectionId: string,
-      depth = 0
-    ): Promise<CarouselVideo | null> => {
+    async (collectionId: string, depth = 0): Promise<CarouselVideo | null> => {
       if (depth > 3) return null
 
       try {
@@ -434,7 +434,10 @@ export function useCarouselVideos(locale?: string): UseCarouselVideosReturn {
         if (isFirst) {
           addToSessionPlayedIds(videoWithPool.id)
           addToPersistentPlayedIds(videoWithPool.id)
-          markPoolVideoPlayed(videoWithPool.poolId || 'unknown', videoWithPool.id)
+          markPoolVideoPlayed(
+            videoWithPool.poolId || 'unknown',
+            videoWithPool.id
+          )
         }
       }
     } catch (err) {
@@ -453,7 +456,6 @@ export function useCarouselVideos(locale?: string): UseCarouselVideosReturn {
     loadVideoFromPool,
     loadingQueue.size
   ])
-
 
   // Save current video session whenever current video changes
   useEffect(() => {
@@ -548,9 +550,31 @@ export function useCarouselVideos(locale?: string): UseCarouselVideosReturn {
     }
   }, [currentIndex, videos])
 
+  const slides = useMemo(() => mergeMuxInserts(videos), [videos])
+
   const jumpToVideo = useCallback(
     (videoId: string): boolean => {
-      // Find video in the videos array
+      // Get the current slides dynamically
+      const currentSlides = mergeMuxInserts(videos)
+
+      // Find slide in the slides array
+      const slideIndex = currentSlides.findIndex(
+        (slide) => slide.id === videoId
+      )
+      if (slideIndex === -1) {
+        return false
+      }
+
+      const targetSlide = currentSlides[slideIndex]
+
+      // For mux slides, we don't need to update the video index since they don't correspond to videos
+      if (targetSlide.source === 'mux') {
+        // Handle mux insert selection
+        // Note: Mux inserts are not tracked the same way as videos
+        return true
+      }
+
+      // For video slides, find the corresponding video index
       const videoIndex = videos.findIndex((video) => video.id === videoId)
       if (videoIndex === -1) {
         return false
@@ -581,6 +605,7 @@ export function useCarouselVideos(locale?: string): UseCarouselVideosReturn {
 
   return {
     loading,
+    slides,
     videos,
     currentIndex,
     error,

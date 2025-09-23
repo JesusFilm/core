@@ -2,15 +2,20 @@ import { ReactElement, useState } from 'react'
 
 import { useVideo } from '../../../libs/videoContext'
 import { usePlayer } from '../../../libs/playerContext'
+import type { CarouselMuxSlide } from '../../../types/inserts'
 
 import { ContentHeader } from './ContentHeader'
 import { HeroVideo } from './HeroVideo'
 import clsx from 'clsx'
 
 export function VideoContentHero({
-  isPreview = false
+  isPreview = false,
+  currentMuxInsert,
+  onMuxInsertComplete
 }: {
   isPreview?: boolean
+  currentMuxInsert?: CarouselMuxSlide | null
+  onMuxInsertComplete?: () => void
 }): ReactElement {
   const { variant } = useVideo()
   const {
@@ -43,7 +48,9 @@ export function VideoContentHero({
         isPreview={isPreview}
         collapsed={collapsed}
         onMuteToggle={handleMuteToggle}
-        key={variant?.hls}
+        currentMuxInsert={currentMuxInsert}
+        onMuxInsertComplete={onMuxInsertComplete}
+        key={currentMuxInsert ? currentMuxInsert.id : variant?.hls}
       />
       <div
         data-testid="ContainerHeroTitleContainer"

@@ -9,12 +9,13 @@ import Play3 from '@core/shared/ui/icons/Play3'
 import { LazyImage } from './LazyImage'
 
 import { VideoChildFields } from '../../../../../__generated__/VideoChildFields'
+import { UnifiedCardData } from '../../../../types/inserts'
 import { getLabelDetails } from '../../../../libs/utils/getLabelDetails/getLabelDetails'
 import { getWatchUrl } from '../../../../libs/utils/getWatchUrl'
 import { usePlayer } from '../../../../libs/playerContext'
 
 interface VideoCardProps {
-  video: VideoChildFields
+  data: UnifiedCardData
   containerSlug?: string
   active: boolean
   transparent?: boolean
@@ -22,7 +23,7 @@ interface VideoCardProps {
 }
 
 interface CardContentProps {
-  video: VideoChildFields
+  data: UnifiedCardData
   active: boolean
   isHovered: boolean
   onMouseEnter: () => void
@@ -33,7 +34,7 @@ interface CardContentProps {
 }
 
 function CardContent({
-  video,
+  data,
   active,
   isHovered,
   onMouseEnter,
@@ -43,8 +44,8 @@ function CardContent({
   interactive = false
 }: CardContentProps): ReactElement {
   // Compute safe image src and alt with proper guards
-  const imageSrc = video.images?.[0]?.mobileCinematicHigh
-  const imageAlt = video.imageAlt?.[0]?.value ?? ''
+  const imageSrc = data.images?.[0]?.mobileCinematicHigh
+  const imageAlt = data.imageAlt?.[0]?.value ?? ''
 
   const ContainerElement = interactive ? 'button' : 'div'
   const ContentElement = interactive ? 'div' : 'div'
@@ -52,10 +53,10 @@ function CardContent({
   return (
     <div className="flex flex-col gap-6">
       <ContainerElement
-        data-testid={`VideoCardButton-${video.slug}`}
+        data-testid={`VideoCardButton-${data.slug}`}
         {...(interactive && {
-          name: last(video.title)?.value,
-          disabled: video == null
+          name: typeof data.title === 'string' ? data.title : last(data.title)?.value,
+          disabled: data == null
         })}
         className="beveled rounded-lg w-full relative text-left border-none bg-transparent p-0 cursor-pointer disabled:cursor-default"
       >
@@ -64,9 +65,9 @@ function CardContent({
           {...(interactive && {
             tabIndex: 0,
             role: 'button',
-            'aria-label': `Navigate to ${video.slug}`
+            'aria-label': `Navigate to ${data.slug}`
           })}
-          data-testid={`CarouselItem-${video.slug}`}
+          data-testid={`CarouselItem-${data.slug}`}
           onMouseEnter={onMouseEnter}
           onMouseLeave={onMouseLeave}
         >
@@ -132,9 +133,9 @@ function CardContent({
                 WebkitLineClamp: 3,
                 WebkitBoxOrient: 'vertical'
               }}
-              data-testid={`CarouselItemTitle-${video.slug}`}
+              data-testid={`CarouselItemTitle-${data.slug}`}
             >
-              {last(video.title)?.value}
+              {typeof data.title === 'string' ? data.title : last(data.title)?.value}
             </h3>
           </div>
         </ContentElement>
@@ -144,28 +145,28 @@ function CardContent({
 }
 
 export function VideoCard({
-  video,
+  data,
   containerSlug,
   active,
   transparent = false,
   onVideoSelect
 }: VideoCardProps): ReactElement {
   const { t } = useTranslation('apps-watch')
-  const { label } = getLabelDetails(t, video.label)
-  const href = getWatchUrl(containerSlug, video.label, video.variant?.slug)
+  const { label } = getLabelDetails(t, data.label)
+  const href = getWatchUrl(containerSlug, data.label, data.variant?.slug)
   const [isHovered, setIsHovered] = useState(false)
   const { state: playerState } = usePlayer()
 
   const handleVideoSelect = (e: React.MouseEvent) => {
     if (onVideoSelect) {
       e.preventDefault()
-      onVideoSelect(video.id)
+      onVideoSelect(data.id)
     }
   }
 
   const cardContent = (
     <CardContent
-      video={video}
+      data={data}
       active={active}
       isHovered={isHovered}
       onMouseEnter={() => setIsHovered(true)}
@@ -178,8 +179,8 @@ export function VideoCard({
 
   const commonProps = {
     className: `block beveled no-underline text-inherit ${transparent ? 'opacity-70' : ''}`,
-    'aria-label': last(video.title)?.value ?? `Video ${video.slug}`,
-    'data-testid': `VideoCard-${video.id}`
+    'aria-label': (typeof data.title === 'string' ? data.title : last(data.title)?.value) ?? `Video ${data.slug}`,
+    'data-testid': `VideoCard-${data.id}`
   }
 
   // Home page: render with click handler
