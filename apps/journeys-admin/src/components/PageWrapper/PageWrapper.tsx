@@ -83,7 +83,7 @@ export function PageWrapper({
           <Box
             sx={{
               minWidth: navbar.width,
-              backgroundColor: background ?? 'background.default'
+              backgroundColor: backgroundColor ?? 'background.default'
             }}
           >
             {showNavBar && (
