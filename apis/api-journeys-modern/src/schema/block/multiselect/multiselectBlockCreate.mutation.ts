@@ -63,9 +63,6 @@ builder.mutationField('multiselectBlockCreate', (t) =>
                 tx
               )
             ).length
-          },
-          include: {
-            action: true
           }
         })
         await setJourneyUpdatedAt(tx, block)

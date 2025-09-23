@@ -856,10 +856,10 @@ type MultiselectBlock implements Block
 {
   id: ID!
   journeyId: ID!
-  parentBlockId: ID!
-  parentOrder: Int!
+  parentBlockId: ID
+  parentOrder: Int
   label: String!
-  submitLabel: String!
+  submitLabel: String
   max: Int
   min: Int
   action: Action
@@ -870,8 +870,8 @@ type MultiselectOptionBlock implements Block
 {
   id: ID!
   journeyId: ID!
-  parentBlockId: ID!
-  parentOrder: Int!
+  parentBlockId: ID
+  parentOrder: Int
   label: String!
 }
 

@@ -187,7 +187,7 @@ export interface CardPollRestore_imageRestore_MultiselectBlock {
   parentBlockId: string | null;
   parentOrder: number | null;
   label: string;
-  submitLabel: string;
+  submitLabel: string | null;
   min: number | null;
   max: number | null;
   action: CardPollRestore_imageRestore_MultiselectBlock_action | null;
@@ -745,7 +745,7 @@ export interface CardPollRestore_subtitleRestore_MultiselectBlock {
   parentBlockId: string | null;
   parentOrder: number | null;
   label: string;
-  submitLabel: string;
+  submitLabel: string | null;
   min: number | null;
   max: number | null;
   action: CardPollRestore_subtitleRestore_MultiselectBlock_action | null;
@@ -1303,7 +1303,7 @@ export interface CardPollRestore_titleRestore_MultiselectBlock {
   parentBlockId: string | null;
   parentOrder: number | null;
   label: string;
-  submitLabel: string;
+  submitLabel: string | null;
   min: number | null;
   max: number | null;
   action: CardPollRestore_titleRestore_MultiselectBlock_action | null;
@@ -1861,7 +1861,7 @@ export interface CardPollRestore_radioQuestionRestore_MultiselectBlock {
   parentBlockId: string | null;
   parentOrder: number | null;
   label: string;
-  submitLabel: string;
+  submitLabel: string | null;
   min: number | null;
   max: number | null;
   action: CardPollRestore_radioQuestionRestore_MultiselectBlock_action | null;
@@ -2419,7 +2419,7 @@ export interface CardPollRestore_radioOption1Restore_MultiselectBlock {
   parentBlockId: string | null;
   parentOrder: number | null;
   label: string;
-  submitLabel: string;
+  submitLabel: string | null;
   min: number | null;
   max: number | null;
   action: CardPollRestore_radioOption1Restore_MultiselectBlock_action | null;
@@ -2977,7 +2977,7 @@ export interface CardPollRestore_radioOption2Restore_MultiselectBlock {
   parentBlockId: string | null;
   parentOrder: number | null;
   label: string;
-  submitLabel: string;
+  submitLabel: string | null;
   min: number | null;
   max: number | null;
   action: CardPollRestore_radioOption2Restore_MultiselectBlock_action | null;
@@ -3535,7 +3535,7 @@ export interface CardPollRestore_radioOption3Restore_MultiselectBlock {
   parentBlockId: string | null;
   parentOrder: number | null;
   label: string;
-  submitLabel: string;
+  submitLabel: string | null;
   min: number | null;
   max: number | null;
   action: CardPollRestore_radioOption3Restore_MultiselectBlock_action | null;
@@ -4093,7 +4093,7 @@ export interface CardPollRestore_radioOption4Restore_MultiselectBlock {
   parentBlockId: string | null;
   parentOrder: number | null;
   label: string;
-  submitLabel: string;
+  submitLabel: string | null;
   min: number | null;
   max: number | null;
   action: CardPollRestore_radioOption4Restore_MultiselectBlock_action | null;
@@ -4651,7 +4651,7 @@ export interface CardPollRestore_bodyRestore_MultiselectBlock {
   parentBlockId: string | null;
   parentOrder: number | null;
   label: string;
-  submitLabel: string;
+  submitLabel: string | null;
   min: number | null;
   max: number | null;
   action: CardPollRestore_bodyRestore_MultiselectBlock_action | null;

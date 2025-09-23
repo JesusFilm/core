@@ -1041,7 +1041,7 @@ type MultiselectBlock implements Block
   label: String!
   min: Int
   max: Int
-  submitLabel: String!
+  submitLabel: String
   action: Action
 }
 

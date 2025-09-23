@@ -187,7 +187,7 @@ export interface StepBlockRestoreFromAction_blockRestore_MultiselectBlock {
   parentBlockId: string | null;
   parentOrder: number | null;
   label: string;
-  submitLabel: string;
+  submitLabel: string | null;
   min: number | null;
   max: number | null;
   action: StepBlockRestoreFromAction_blockRestore_MultiselectBlock_action | null;

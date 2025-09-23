@@ -1361,10 +1361,10 @@ export class MultiselectBlock implements Block {
     __typename?: 'MultiselectBlock';
     id: string;
     journeyId: string;
-    parentBlockId: string;
-    parentOrder: number;
+    parentBlockId?: Nullable<string>;
+    parentOrder?: Nullable<number>;
     label: string;
-    submitLabel: string;
+    submitLabel?: Nullable<string>;
     max?: Nullable<number>;
     min?: Nullable<number>;
     action?: Nullable<Action>;
@@ -1374,8 +1374,8 @@ export class MultiselectOptionBlock implements Block {
     __typename?: 'MultiselectOptionBlock';
     id: string;
     journeyId: string;
-    parentBlockId: string;
-    parentOrder: number;
+    parentBlockId?: Nullable<string>;
+    parentOrder?: Nullable<number>;
     label: string;
 }
 

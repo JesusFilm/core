@@ -187,7 +187,7 @@ export interface TextResponseWithButtonRestore_textResponse_MultiselectBlock {
   parentBlockId: string | null;
   parentOrder: number | null;
   label: string;
-  submitLabel: string;
+  submitLabel: string | null;
   min: number | null;
   max: number | null;
   action: TextResponseWithButtonRestore_textResponse_MultiselectBlock_action | null;
@@ -745,7 +745,7 @@ export interface TextResponseWithButtonRestore_button_MultiselectBlock {
   parentBlockId: string | null;
   parentOrder: number | null;
   label: string;
-  submitLabel: string;
+  submitLabel: string | null;
   min: number | null;
   max: number | null;
   action: TextResponseWithButtonRestore_button_MultiselectBlock_action | null;
@@ -1303,7 +1303,7 @@ export interface TextResponseWithButtonRestore_startIcon_MultiselectBlock {
   parentBlockId: string | null;
   parentOrder: number | null;
   label: string;
-  submitLabel: string;
+  submitLabel: string | null;
   min: number | null;
   max: number | null;
   action: TextResponseWithButtonRestore_startIcon_MultiselectBlock_action | null;
@@ -1861,7 +1861,7 @@ export interface TextResponseWithButtonRestore_endIcon_MultiselectBlock {
   parentBlockId: string | null;
   parentOrder: number | null;
   label: string;
-  submitLabel: string;
+  submitLabel: string | null;
   min: number | null;
   max: number | null;
   action: TextResponseWithButtonRestore_endIcon_MultiselectBlock_action | null;

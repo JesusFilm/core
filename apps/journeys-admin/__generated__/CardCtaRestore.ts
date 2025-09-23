@@ -187,7 +187,7 @@ export interface CardCtaRestore_imageRestore_MultiselectBlock {
   parentBlockId: string | null;
   parentOrder: number | null;
   label: string;
-  submitLabel: string;
+  submitLabel: string | null;
   min: number | null;
   max: number | null;
   action: CardCtaRestore_imageRestore_MultiselectBlock_action | null;
@@ -745,7 +745,7 @@ export interface CardCtaRestore_subtitleRestore_MultiselectBlock {
   parentBlockId: string | null;
   parentOrder: number | null;
   label: string;
-  submitLabel: string;
+  submitLabel: string | null;
   min: number | null;
   max: number | null;
   action: CardCtaRestore_subtitleRestore_MultiselectBlock_action | null;
@@ -1303,7 +1303,7 @@ export interface CardCtaRestore_titleRestore_MultiselectBlock {
   parentBlockId: string | null;
   parentOrder: number | null;
   label: string;
-  submitLabel: string;
+  submitLabel: string | null;
   min: number | null;
   max: number | null;
   action: CardCtaRestore_titleRestore_MultiselectBlock_action | null;
@@ -1861,7 +1861,7 @@ export interface CardCtaRestore_button1Restore_MultiselectBlock {
   parentBlockId: string | null;
   parentOrder: number | null;
   label: string;
-  submitLabel: string;
+  submitLabel: string | null;
   min: number | null;
   max: number | null;
   action: CardCtaRestore_button1Restore_MultiselectBlock_action | null;
@@ -2419,7 +2419,7 @@ export interface CardCtaRestore_startIcon1Restore_MultiselectBlock {
   parentBlockId: string | null;
   parentOrder: number | null;
   label: string;
-  submitLabel: string;
+  submitLabel: string | null;
   min: number | null;
   max: number | null;
   action: CardCtaRestore_startIcon1Restore_MultiselectBlock_action | null;
@@ -2977,7 +2977,7 @@ export interface CardCtaRestore_endIcon1Restore_MultiselectBlock {
   parentBlockId: string | null;
   parentOrder: number | null;
   label: string;
-  submitLabel: string;
+  submitLabel: string | null;
   min: number | null;
   max: number | null;
   action: CardCtaRestore_endIcon1Restore_MultiselectBlock_action | null;
@@ -3535,7 +3535,7 @@ export interface CardCtaRestore_button2Restore_MultiselectBlock {
   parentBlockId: string | null;
   parentOrder: number | null;
   label: string;
-  submitLabel: string;
+  submitLabel: string | null;
   min: number | null;
   max: number | null;
   action: CardCtaRestore_button2Restore_MultiselectBlock_action | null;
@@ -4093,7 +4093,7 @@ export interface CardCtaRestore_startIcon2Restore_MultiselectBlock {
   parentBlockId: string | null;
   parentOrder: number | null;
   label: string;
-  submitLabel: string;
+  submitLabel: string | null;
   min: number | null;
   max: number | null;
   action: CardCtaRestore_startIcon2Restore_MultiselectBlock_action | null;
@@ -4651,7 +4651,7 @@ export interface CardCtaRestore_endIcon2Restore_MultiselectBlock {
   parentBlockId: string | null;
   parentOrder: number | null;
   label: string;
-  submitLabel: string;
+  submitLabel: string | null;
   min: number | null;
   max: number | null;
   action: CardCtaRestore_endIcon2Restore_MultiselectBlock_action | null;
@@ -5209,7 +5209,7 @@ export interface CardCtaRestore_button3Restore_MultiselectBlock {
   parentBlockId: string | null;
   parentOrder: number | null;
   label: string;
-  submitLabel: string;
+  submitLabel: string | null;
   min: number | null;
   max: number | null;
   action: CardCtaRestore_button3Restore_MultiselectBlock_action | null;
@@ -5767,7 +5767,7 @@ export interface CardCtaRestore_startIcon3Restore_MultiselectBlock {
   parentBlockId: string | null;
   parentOrder: number | null;
   label: string;
-  submitLabel: string;
+  submitLabel: string | null;
   min: number | null;
   max: number | null;
   action: CardCtaRestore_startIcon3Restore_MultiselectBlock_action | null;
@@ -6325,7 +6325,7 @@ export interface CardCtaRestore_endIcon3Restore_MultiselectBlock {
   parentBlockId: string | null;
   parentOrder: number | null;
   label: string;
-  submitLabel: string;
+  submitLabel: string | null;
   min: number | null;
   max: number | null;
   action: CardCtaRestore_endIcon3Restore_MultiselectBlock_action | null;

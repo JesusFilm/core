@@ -187,7 +187,7 @@ export interface CardIntroRestore_subtitle_MultiselectBlock {
   parentBlockId: string | null;
   parentOrder: number | null;
   label: string;
-  submitLabel: string;
+  submitLabel: string | null;
   min: number | null;
   max: number | null;
   action: CardIntroRestore_subtitle_MultiselectBlock_action | null;
@@ -745,7 +745,7 @@ export interface CardIntroRestore_title_MultiselectBlock {
   parentBlockId: string | null;
   parentOrder: number | null;
   label: string;
-  submitLabel: string;
+  submitLabel: string | null;
   min: number | null;
   max: number | null;
   action: CardIntroRestore_title_MultiselectBlock_action | null;
@@ -1303,7 +1303,7 @@ export interface CardIntroRestore_body_MultiselectBlock {
   parentBlockId: string | null;
   parentOrder: number | null;
   label: string;
-  submitLabel: string;
+  submitLabel: string | null;
   min: number | null;
   max: number | null;
   action: CardIntroRestore_body_MultiselectBlock_action | null;
@@ -1861,7 +1861,7 @@ export interface CardIntroRestore_button_MultiselectBlock {
   parentBlockId: string | null;
   parentOrder: number | null;
   label: string;
-  submitLabel: string;
+  submitLabel: string | null;
   min: number | null;
   max: number | null;
   action: CardIntroRestore_button_MultiselectBlock_action | null;
@@ -2419,7 +2419,7 @@ export interface CardIntroRestore_startIcon_MultiselectBlock {
   parentBlockId: string | null;
   parentOrder: number | null;
   label: string;
-  submitLabel: string;
+  submitLabel: string | null;
   min: number | null;
   max: number | null;
   action: CardIntroRestore_startIcon_MultiselectBlock_action | null;
@@ -2977,7 +2977,7 @@ export interface CardIntroRestore_endIcon_MultiselectBlock {
   parentBlockId: string | null;
   parentOrder: number | null;
   label: string;
-  submitLabel: string;
+  submitLabel: string | null;
   min: number | null;
   max: number | null;
   action: CardIntroRestore_endIcon_MultiselectBlock_action | null;
@@ -3535,7 +3535,7 @@ export interface CardIntroRestore_video_MultiselectBlock {
   parentBlockId: string | null;
   parentOrder: number | null;
   label: string;
-  submitLabel: string;
+  submitLabel: string | null;
   min: number | null;
   max: number | null;
   action: CardIntroRestore_video_MultiselectBlock_action | null;

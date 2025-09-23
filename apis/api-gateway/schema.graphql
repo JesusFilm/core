@@ -982,10 +982,10 @@ type ImageBlock implements Block @join__type(graph: API_JOURNEYS)  @join__type(g
 type MultiselectBlock implements Block @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  @join__implements(graph: API_JOURNEYS, interface: "Block")  @join__implements(graph: API_JOURNEYS_MODERN, interface: "Block")  {
   id: ID!
   journeyId: ID!
-  parentBlockId: ID @join__field(graph: API_JOURNEYS, type: "ID!")  @join__field(graph: API_JOURNEYS_MODERN, type: "ID") 
-  parentOrder: Int @join__field(graph: API_JOURNEYS, type: "Int!")  @join__field(graph: API_JOURNEYS_MODERN, type: "Int") 
+  parentBlockId: ID
+  parentOrder: Int
   label: String!
-  submitLabel: String!
+  submitLabel: String
   max: Int
   min: Int
   action: Action
@@ -994,8 +994,8 @@ type MultiselectBlock implements Block @join__type(graph: API_JOURNEYS)  @join__
 type MultiselectOptionBlock implements Block @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  @join__implements(graph: API_JOURNEYS, interface: "Block")  @join__implements(graph: API_JOURNEYS_MODERN, interface: "Block")  {
   id: ID!
   journeyId: ID!
-  parentBlockId: ID @join__field(graph: API_JOURNEYS, type: "ID!")  @join__field(graph: API_JOURNEYS_MODERN, type: "ID") 
-  parentOrder: Int @join__field(graph: API_JOURNEYS, type: "Int!")  @join__field(graph: API_JOURNEYS_MODERN, type: "Int") 
+  parentBlockId: ID
+  parentOrder: Int
   label: String!
 }
 
