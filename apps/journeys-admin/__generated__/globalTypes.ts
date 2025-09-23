@@ -599,6 +599,21 @@ export interface MeInput {
   redirect?: string | null;
 }
 
+export interface MultiselectBlockCreateInput {
+  id?: string | null;
+  journeyId: string;
+  parentBlockId: string;
+  label: string;
+  submitLabel: string;
+}
+
+export interface MultiselectOptionBlockCreateInput {
+  id?: string | null;
+  journeyId: string;
+  parentBlockId: string;
+  label: string;
+}
+
 export interface MultiselectSubmissionEventCreateInput {
   id?: string | null;
   blockId: string;

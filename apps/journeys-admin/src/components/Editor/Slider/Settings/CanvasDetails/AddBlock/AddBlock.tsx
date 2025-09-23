@@ -18,6 +18,7 @@ import { NewSpacerButton } from './NewSpacerButton'
 import { NewTextResponseButton } from './NewTextResponseButton'
 import { NewTypographyButton } from './NewTypographyButton'
 import { NewVideoButton } from './NewVideoButton'
+import { NewMultiselectButton } from './NewMultiselectButton'
 
 export function AddBlock(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
@@ -54,6 +55,9 @@ export function AddBlock(): ReactElement {
         </Grid>
         <Grid item xs={6} md={12}>
           <NewRadioQuestionButton />
+        </Grid>
+        <Grid item xs={6} md={12}>
+          <NewMultiselectButton />
         </Grid>
         <Grid item xs={6} md={12}>
           <NewTextResponseButton />
