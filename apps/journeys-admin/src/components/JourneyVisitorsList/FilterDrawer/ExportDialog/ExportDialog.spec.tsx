@@ -204,6 +204,11 @@ describe('ExportDialog', () => {
       </MockedProvider>
     )
 
+    // Select "Visitor Actions" to show the FilterForm
+    const selectElement = screen.getByRole('combobox')
+    fireEvent.mouseDown(selectElement)
+    fireEvent.click(screen.getByText('Visitor Actions'))
+
     expect(screen.getByLabelText('All')).toBeChecked()
     expect(screen.getByLabelText('Journey Start')).toBeChecked()
     expect(screen.getByRole('button', { name: 'Export (CSV)' })).toBeEnabled()
@@ -235,6 +240,12 @@ describe('ExportDialog', () => {
     await waitFor(async () => {
       expect(mockJourneyCreatedAtResult).toHaveBeenCalled()
     })
+    
+    // Select "Visitor Actions" to show the FilterForm
+    const selectElement = screen.getByRole('combobox')
+    fireEvent.mouseDown(selectElement)
+    fireEvent.click(screen.getByText('Visitor Actions'))
+    
     const exportButton = screen.getByRole('button', { name: 'Export (CSV)' })
     await act(async () => {
       fireEvent.click(exportButton)
@@ -254,6 +265,11 @@ describe('ExportDialog', () => {
         </SnackbarProvider>
       </MockedProvider>
     )
+
+    // Select "Visitor Actions" to show the FilterForm
+    const selectElement = screen.getByRole('combobox')
+    fireEvent.mouseDown(selectElement)
+    fireEvent.click(screen.getByText('Visitor Actions'))
 
     const allCheckbox = screen.getByLabelText('All')
     const exportButton = screen.getByRole('button', { name: 'Export (CSV)' })
@@ -294,6 +310,11 @@ describe('ExportDialog', () => {
     await waitFor(async () => {
       expect(mockJourneyCreatedAtResult).toHaveBeenCalled()
     })
+
+    // Select "Visitor Actions" to show the FilterForm
+    const selectElement = screen.getByRole('combobox')
+    fireEvent.mouseDown(selectElement)
+    fireEvent.click(screen.getByText('Visitor Actions'))
 
     const exportButton = screen.getByRole('button', { name: 'Export (CSV)' })
 
