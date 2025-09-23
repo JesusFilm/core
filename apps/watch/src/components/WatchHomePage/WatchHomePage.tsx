@@ -36,6 +36,8 @@ import { VideoContentHero } from '../NewVideoContentPage/VideoContentHero/VideoC
 import { PageWrapper } from '../PageWrapper'
 import { AlgoliaVideoGrid } from '../VideoGrid/AlgoliaVideoGrid'
 
+import { Header } from '../Header'
+import { SearchComponent } from '../SearchComponent'
 import { HomeHero } from './HomeHero'
 import { SeeAllVideos } from './SeeAllVideos'
 
