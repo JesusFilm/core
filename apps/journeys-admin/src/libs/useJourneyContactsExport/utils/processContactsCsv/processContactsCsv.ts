@@ -2,7 +2,7 @@ import { stringify } from 'csv-stringify/sync'
 import { format } from 'date-fns'
 import { TFunction } from 'i18next'
 
-import { JourneyContact } from '../../useJourneyEventsExport'
+import { JourneyContact } from '../../useJourneyContactsExport'
 
 // Import the shared validation function
 function hasValidContactData(
@@ -15,11 +15,16 @@ function hasValidContactData(
     phone: 'visitorPhone'
   }
 
-  return contactDataFields.some((field) => {
+  const isValid = contactDataFields.some((field) => {
     const contactField = fieldMap[field]
     const value = contact[contactField]
-    return value != null && String(value).trim() !== ''
+    const hasValue = value != null && String(value).trim() !== ''
+    console.log(`Field ${field} (${contactField}):`, { value, hasValue })
+    return hasValue
   })
+
+  console.log('Contact validation result:', { contact, contactDataFields, isValid })
+  return isValid
 }
 
 export function getContactsCsvOptions(
@@ -54,12 +59,21 @@ export function processContactsCsv(
   t: TFunction,
   contactDataFields: string[]
 ): void {
+  console.log('Processing contacts CSV:', {
+    totalContacts: contacts.length,
+    contactDataFields,
+    journeySlug
+  })
+
   // Filter out contacts that don't have meaningful data for the selected fields
   const validContacts = contacts.filter((contact) =>
     hasValidContactData(contact, contactDataFields)
   )
 
+  console.log('Valid contacts after filtering:', validContacts.length)
+
   if (validContacts.length === 0) {
+    console.error('No valid contacts found. Sample contact:', contacts[0])
     throw new Error(t('No contacts found with data for the selected fields'))
   }
 

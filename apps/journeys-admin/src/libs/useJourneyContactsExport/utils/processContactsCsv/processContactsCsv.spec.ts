@@ -1,6 +1,6 @@
 import { format } from 'date-fns'
 
-import { JourneyContact } from '../../useJourneyEventsExport'
+import { JourneyContact } from '../../useJourneyContactsExport'
 
 import { getContactsCsvOptions, processContactsCsv } from './processContactsCsv'
 
@@ -53,24 +53,21 @@ describe('processContactsCsv', () => {
       visitorName: 'John Doe',
       visitorEmail: 'john@example.com',
       visitorPhone: '+1234567890',
-      journeyId: 'journey1',
-      journeySlug: 'test-journey'
+
     },
     {
       visitorId: 'visitor2',
       visitorName: 'Jane Smith',
       visitorEmail: 'jane@example.com',
       visitorPhone: null,
-      journeyId: 'journey1',
-      journeySlug: 'test-journey'
+
     },
     {
       visitorId: 'visitor3',
       visitorName: null,
       visitorEmail: 'bob@example.com',
       visitorPhone: '+9876543210',
-      journeyId: 'journey1',
-      journeySlug: 'test-journey'
+
     }
   ]
 
@@ -160,9 +157,7 @@ describe('processContactsCsv', () => {
           visitorId: 'visitor1',
           visitorName: null,
           visitorEmail: null,
-          visitorPhone: null,
-          journeyId: 'journey1',
-          journeySlug: 'test-journey'
+          visitorPhone: null
         }
       ]
       const contactDataFields = ['name', 'email', 'phone']
@@ -179,9 +174,7 @@ describe('processContactsCsv', () => {
           visitorId: 'visitor1',
           visitorName: 'John Doe',
           visitorEmail: null,
-          visitorPhone: null,
-          journeyId: 'journey1',
-          journeySlug: 'test-journey'
+                visitorPhone: null  
         }
       ]
       const contactDataFields = ['name']

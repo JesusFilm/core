@@ -11,10 +11,8 @@ import { ReactElement, useEffect, useState } from 'react'
 
 import { Dialog } from '@core/shared/ui/Dialog'
 
-import {
-  useJourneyContactsExport,
-  useJourneyEventsExport
-} from '../../../../libs/useJourneyEventsExport'
+import { useJourneyContactsExport } from '../../../../libs/useJourneyContactsExport'
+import { useJourneyEventsExport } from '../../../../libs/useJourneyEventsExport'
 
 import { ContactDataForm } from './ContactDataForm'
 import { DateRangePicker } from './DateRangePicker'
@@ -172,7 +170,7 @@ export function ExportDialog({
       {exportBy === 'Visitor Actions' && (
         <Box sx={{ pt: 4 }}>
           <Typography variant="subtitle2" gutterBottom>
-            {t('Select visitor actions')}
+            {t('Select visitor actions:')}
           </Typography>
           <FilterForm setSelectedEvents={setSelectedEvents} />
         </Box>
@@ -180,7 +178,7 @@ export function ExportDialog({
       {exportBy === 'Contact Data' && (
         <Box sx={{ pt: 4 }}>
           <Typography variant="subtitle2" gutterBottom>
-            {t('Select contact data')}
+            {t('Select contact data:')}
           </Typography>
           <ContactDataForm setContactData={setContactData} />
         </Box>
