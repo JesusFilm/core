@@ -1,4 +1,4 @@
-import { google } from '@ai-sdk/google'
+import { createOpenAICompatible } from '@ai-sdk/openai-compatible'
 import {
   observe,
   updateActiveObservation,
@@ -30,7 +30,7 @@ async function fetchBlockContext(
         span.setAttributes({
           'block.id': blockId,
           'block.context_length': contextText.length,
-          'ai.model': 'gemini-2.5-flash',
+          'ai.model': 'openai/gpt/4o',
           'operation.type': 'ai-context-generation',
           'operation.category': 'block-processing'
         })
@@ -49,8 +49,14 @@ async function fetchBlockContext(
           }
         })
 
+        const apologist = createOpenAICompatible({
+          name: 'apologist',
+          apiKey: process.env.APOLOGIST_API_KEY,
+          baseURL: `${process.env.APOLOGIST_API_URL}`
+        })
+
         const { text } = await generateText({
-          model: google('gemini-2.5-flash'),
+          model: apologist('openai/gpt/4o'),
           prompt: prompt
         })
 
