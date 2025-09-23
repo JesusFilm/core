@@ -279,11 +279,11 @@ describe('TextResponse', () => {
         </SnackbarProvider>
       </JourneyProvider>
     )
-    
+
     // The label should not be visible when hideLabel is true
     expect(screen.queryByText('Your answer here')).not.toBeInTheDocument()
     expect(screen.queryByText('Label')).not.toBeInTheDocument()
-    
+
     // The textbox should still be present
     expect(screen.getByRole('textbox')).toBeInTheDocument()
   })
