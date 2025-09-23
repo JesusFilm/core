@@ -30,7 +30,9 @@ const nextConfig = {
         hostname: `customer-${
           process.env.NEXT_PUBLIC_CLOUDFLARE_STREAM_CUSTOMER_CODE ?? ''
         }.cloudflarestream.com`
-      }
+      },
+      // Mux video service
+      { protocol: 'https', hostname: 'image.mux.com' }
     ],
     minimumCacheTTL: 31536000
   },

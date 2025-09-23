@@ -398,16 +398,9 @@ function WatchHomePageContent({
     const nextIndex = currentSlideIndex + 1
     const nextSlide = displaySlides[nextIndex]
 
-    console.log('[DURATION] Mux insert completed - progressing to next slide')
-
     if (!nextSlide) {
-      console.log('[DURATION] No next slide available after mux insert')
       return
     }
-
-    console.log(
-      `[DURATION] Moving to slide ${nextIndex}/${displaySlides.length}: ${nextSlide.source}:${nextSlide.id}`
-    )
 
     setIsProgressing(true)
     setCurrentSlideId(nextSlide.id)
@@ -415,9 +408,6 @@ function WatchHomePageContent({
     if (!isMuxSlide(nextSlide)) {
       const jumped = jumpToVideo(nextSlide.id)
       if (!jumped) {
-        console.warn(
-          `[DURATION] Failed to sync to video ${nextSlide.id}, falling back to next video`
-        )
         moveToNext()
       }
     }
@@ -435,22 +425,6 @@ function WatchHomePageContent({
     displaySlides
   ])
 
-  useEffect(() => {
-    if (displaySlides.length === 0 || currentSlideIndex === -1) return
-
-    const slideType = currentSlide?.source ?? 'unknown'
-    const slideId = currentSlide?.id ?? 'none'
-
-    console.log(
-      `[DURATION] Current slide ${currentSlideIndex + 1}/${displaySlides.length}: ${slideType}:${slideId}`
-    )
-
-    if (currentMuxInsert) {
-      console.log(
-        `[DURATION] Active Mux insert: ${currentMuxInsert.id} (${currentMuxInsert.duration}s)`
-      )
-    }
-  }, [currentMuxInsert, currentSlide, currentSlideIndex, displaySlides.length])
 
   return (
     <div>

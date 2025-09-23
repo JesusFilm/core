@@ -4,6 +4,7 @@ import { usePlayer } from '../../../../libs/playerContext'
 import { videos } from '../../../Videos/__generated__/testData'
 
 import { VideoCard } from './VideoCard'
+import { UnifiedCardData } from '../../../../types/inserts'
 
 jest.mock('next/image', () => {
   return function MockImage(props: any) {
@@ -29,9 +30,18 @@ jest.mock('next-i18next', () => ({
 
 const mockUsePlayer = usePlayer as jest.MockedFunction<typeof usePlayer>
 
-describe('VideoCard', () => {
-  const mockVideo = videos[0]
+// Create mock data using UnifiedCardData format
+const mockVideoData: UnifiedCardData = {
+  id: 'video-id',
+  title: [{ value: 'Test Video' }],
+  images: [{ mobileCinematicHigh: 'test-image.jpg' }],
+  imageAlt: [{ value: 'Test video alt' }],
+  label: 'chapter',
+  slug: 'test-video',
+  variant: { slug: 'test-video' }
+}
 
+describe('VideoCard', () => {
   beforeEach(() => {
     mockUsePlayer.mockReturnValue({
       state: { progress: 0 }
@@ -57,7 +67,7 @@ describe('VideoCard', () => {
       state: { progress: 25 }
     } as any)
 
-    render(<VideoCard video={mockVideo} active={true} />)
+    render(<VideoCard data={mockVideoData} active={true} />)
 
     const progressOverlay = screen.getByTestId('ProgressOverlay')
     expect(progressOverlay).toBeInTheDocument()
@@ -69,29 +79,29 @@ describe('VideoCard', () => {
 
     render(
       <VideoCard
-        video={mockVideo}
+        data={mockVideoData}
         active={false}
         onVideoSelect={mockOnVideoSelect}
       />
     )
 
-    const card = screen.getByTestId(`VideoCard-${mockVideo.id}`)
+    const card = screen.getByTestId(`VideoCard-${mockVideoData.id}`)
     fireEvent.click(card)
 
-    expect(mockOnVideoSelect).toHaveBeenCalledWith(mockVideo.id)
+    expect(mockOnVideoSelect).toHaveBeenCalledWith(mockVideoData.id)
   })
 
   it('renders as link when no onVideoSelect provided', () => {
-    render(<VideoCard video={mockVideo} active={false} />)
+    render(<VideoCard data={mockVideoData} active={false} />)
 
     const link = screen.getByRole('link')
     expect(link).toHaveAttribute('href', '/watch/test-video')
   })
 
   it('shows play button on hover when not active', () => {
-    render(<VideoCard video={mockVideo} active={false} />)
+    render(<VideoCard data={mockVideoData} active={false} />)
 
-    const cardContent = screen.getByTestId(`CarouselItem-${mockVideo.slug}`)
+    const cardContent = screen.getByTestId(`CarouselItem-${mockVideoData.slug}`)
     fireEvent.mouseEnter(cardContent)
 
     const playButton = screen.getByTestId('ActiveLayer')

@@ -141,14 +141,11 @@ export function HeroVideo({
       return
     }
 
-    console.log(`[DURATION] Starting ${currentMuxInsert.duration}s timer for ${currentMuxInsert.id}`)
     const timer = setTimeout(() => {
-      console.log(`[DURATION] Timer expired after ${currentMuxInsert.duration}s - triggering progression`)
       onMuxInsertComplete?.()
     }, currentMuxInsert.duration * 1000) // Convert seconds to milliseconds
 
     return () => {
-      console.log('[DURATION] Clearing timer')
       clearTimeout(timer)
     }
   }, [currentMuxInsert?.duration, currentMuxInsert?.id, playerReady, onMuxInsertComplete])
@@ -242,6 +239,7 @@ export function HeroVideo({
               player={playerRef.current}
               isPreview={isPreview}
               onMuteToggle={onMuteToggle}
+              customDuration={currentMuxInsert?.duration}
             />
           </>
         )}

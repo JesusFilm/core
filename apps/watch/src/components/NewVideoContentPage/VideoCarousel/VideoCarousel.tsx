@@ -8,11 +8,12 @@ import { Swiper as SwiperType } from 'swiper/types'
 import { VideoChildFields } from '../../../../__generated__/VideoChildFields'
 import { Skeleton } from '../../Skeleton'
 import { NavButton } from '../../VideoCarousel/NavButton/NavButton'
-import { MuxVideoCard } from '../../VideoCard'
 import {
   type VideoCarouselSlide,
   isMuxSlide,
-  isVideoSlide
+  isVideoSlide,
+  transformMuxSlide,
+  transformVideoChild
 } from '../../../types/inserts'
 
 import { VideoCard } from './VideoCard'
@@ -207,25 +208,13 @@ export function VideoCarousel({
                   className={`max-w-[200px] ${index === 0 ? 'padded-l' : ''}`}
                   data-testid={`CarouselSlide-${slide.id}`}
                 >
-                  {isMuxSlide(slide) ? (
-                    <MuxVideoCard
-                      insert={slide}
-                      variant="contained"
-                      active={activeVideoId === slide.id}
-                      onClick={(videoId) => (event) => {
-                        event.preventDefault()
-                        handleVideoSelect(videoId || slide.id)
-                      }}
-                    />
-                  ) : (
-                    <VideoCard
-                      containerSlug={containerSlug}
-                      video={slide.video as VideoChildFields}
-                      active={activeVideoId === slide.id}
-                      transparent={isAfterCurrentVideo}
-                      onVideoSelect={handleVideoSelect}
-                    />
-                  )}
+                  <VideoCard
+                    containerSlug={containerSlug}
+                    data={isMuxSlide(slide) ? transformMuxSlide(slide) : transformVideoChild(slide.video as VideoChildFields)}
+                    active={activeVideoId === slide.id}
+                    transparent={isAfterCurrentVideo}
+                    onVideoSelect={handleVideoSelect}
+                  />
                 </SwiperSlide>
               )
             })}

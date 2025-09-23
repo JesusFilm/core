@@ -105,11 +105,10 @@ describe('VideosCarousel', () => {
   })
 
   it('should display video items', async () => {
-    const { getByRole, getByText } = render(
+    const { getByRole } = render(
       <VideoCarousel activeVideoId={videos[0].id} videos={videos} />
     )
 
-    await waitFor(() => expect(getByText('Playing now')).toBeInTheDocument())
     expect(getByRole('heading', { name: 'JESUS' })).toBeInTheDocument()
   })
 
@@ -136,7 +135,7 @@ describe('VideosCarousel', () => {
 
     render(<VideoCarousel slides={muxSlides} />)
 
-    expect(screen.getByTestId('MuxVideoCard')).toBeInTheDocument()
+    expect(screen.getByTestId('VideoCard-welcome-start')).toBeInTheDocument()
     expect(screen.getByText('Morning Nature Background')).toBeInTheDocument()
   })
 })

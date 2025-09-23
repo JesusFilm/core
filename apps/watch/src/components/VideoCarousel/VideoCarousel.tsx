@@ -6,11 +6,13 @@ import { Swiper, SwiperSlide } from 'swiper/react'
 import { SwiperOptions } from 'swiper/types'
 
 import { VideoChildFields } from '../../../__generated__/VideoChildFields'
-import { VideoCard, MuxVideoCard } from '../VideoCard'
+import { VideoCard } from '../NewVideoContentPage/VideoCarousel/VideoCard'
 import {
   type VideoCarouselSlide,
   isMuxSlide,
-  isVideoSlide
+  isVideoSlide,
+  transformMuxSlide,
+  transformVideoChild
 } from '../../types/inserts'
 
 import { NavButton } from './NavButton'
@@ -21,7 +23,6 @@ interface VideoCarouselProps {
   slides?: VideoCarouselSlide[]
   loading?: boolean
   containerSlug?: string
-  variant?: ComponentProps<typeof VideoCard>['variant']
   onVideoSelect?: (videoId: string) => void
 }
 
@@ -31,7 +32,6 @@ export function VideoCarousel({
   videos,
   slides,
   containerSlug,
-  variant = 'expanded',
   onVideoSelect
 }: VideoCarouselProps): ReactElement {
   const { breakpoints } = useTheme()
@@ -136,32 +136,12 @@ export function VideoCarousel({
                   : `video-${slide.id}`
               }
             >
-              {isMuxSlide(slide) ? (
-                <MuxVideoCard
-                  insert={slide}
-                  variant={variant}
-                  active={activeVideoId === slide.id}
-                  onClick={(videoId) => (event) => {
-                    event.preventDefault()
-                    onVideoSelect?.(videoId || slide.id)
-                  }}
-                />
-              ) : (
-                <VideoCard
-                  video={slide.video as VideoChildFields}
-                  containerSlug={containerSlug}
-                  variant={variant}
-                  active={
-                    activeVideoId != null &&
-                    isVideoSlide(slide) &&
-                    (slide.video as VideoChildFields).id === activeVideoId
-                  }
-                  onClick={(videoId) => (event) => {
-                    event.preventDefault()
-                    onVideoSelect?.(videoId || slide.id)
-                  }}
-                />
-              )}
+              <VideoCard
+                data={isMuxSlide(slide) ? transformMuxSlide(slide) : transformVideoChild(slide.video as VideoChildFields)}
+                active={activeVideoId === slide.id}
+                containerSlug={containerSlug}
+                onVideoSelect={onVideoSelect}
+              />
             </SwiperSlide>
           ))}
         </Swiper>

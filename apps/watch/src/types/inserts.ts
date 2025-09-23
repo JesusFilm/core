@@ -77,3 +77,49 @@ export function isVideoSlide(
 ): slide is CarouselVideoSlide {
   return slide.source === 'video'
 }
+
+// Unified interface for both video cards and mux inserts
+export interface UnifiedCardData {
+  id: string
+  title: string | string[]
+  images: Array<{ mobileCinematicHigh: string }>
+  imageAlt: Array<{ value: string }>
+  label: string
+  slug?: string
+  variant?: { slug: string }
+  // Mux-specific additions
+  isMuxInsert?: boolean
+  posterUrl?: string
+  collection?: string
+  customDuration?: number
+}
+
+// Transformation functions to convert different data types to unified format
+export function transformMuxSlide(slide: CarouselMuxSlide): UnifiedCardData {
+  return {
+    id: slide.id,
+    title: slide.overlay.title,
+    images: [{ mobileCinematicHigh: slide.posterOverride ?? slide.urls.poster }],
+    imageAlt: [{ value: slide.overlay.description }],
+    label: slide.overlay.label,
+    slug: slide.id, // Use ID as slug for mux inserts
+    variant: { slug: slide.id },
+    isMuxInsert: true,
+    posterUrl: slide.posterOverride ?? slide.urls.poster,
+    collection: slide.overlay.collection,
+    customDuration: slide.duration
+  }
+}
+
+export function transformVideoChild(video: VideoChildFields): UnifiedCardData {
+  return {
+    id: video.id,
+    title: video.title,
+    images: video.images,
+    imageAlt: video.imageAlt,
+    label: video.label,
+    slug: video.slug,
+    variant: video.variant,
+    isMuxInsert: false
+  }
+}

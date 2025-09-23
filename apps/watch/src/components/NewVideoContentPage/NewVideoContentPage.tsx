@@ -134,15 +134,11 @@ export function NewVideoContentPage(): ReactElement {
 
   // Handle Mux insert completion - automatically progress to next item
   const handleMuxInsertComplete = useCallback(() => {
-    console.log('[DURATION] Mux insert completed - progressing to next slide')
-
     const nextIndex = currentSlideIndex + 1
     if (nextIndex < carouselSlides.length) {
-      console.log(`[DURATION] Moving to slide ${nextIndex}/${carouselSlides.length}`)
       setCurrentSlideIndex(nextIndex)
       setCurrentPlayingId(carouselSlides[nextIndex].id)
     } else {
-      console.log('[DURATION] At end, looping back to start')
       setCurrentSlideIndex(0)
       setCurrentPlayingId(carouselSlides[0]?.id || id)
     }
@@ -152,17 +148,6 @@ export function NewVideoContentPage(): ReactElement {
   const currentSlide = carouselSlides[currentSlideIndex]
   const currentMuxInsert = currentSlide?.source === 'mux' ? currentSlide : null
 
-  // Debug current content
-  useEffect(() => {
-    if (carouselSlides.length > 0) {
-      const currentSlideInfo = currentSlide ? `${currentSlide.source}:${currentSlide.id}` : 'none'
-      console.log(`[DURATION] Current slide ${currentSlideIndex}/${carouselSlides.length}: ${currentSlideInfo}`)
-
-      if (currentMuxInsert) {
-        console.log(`[DURATION] Active Mux insert: ${currentMuxInsert.id} (${currentMuxInsert.duration}s)`)
-      }
-    }
-  }, [currentSlideIndex, currentSlide, currentMuxInsert, carouselSlides.length])
 
   const handleFreeResourceClick = () => {
     sendGTMEvent({
