@@ -66,7 +66,6 @@ export function AiChat({ open }: AiChatProps) {
     })
   })
 
-  // Track when any AI action is in progress
   const isAiActionInProgress = status === 'submitted' || status === 'streaming'
 
   const activeBlock = blockHistory.at(-1)
@@ -100,7 +99,6 @@ export function AiChat({ open }: AiChatProps) {
     e: React.FormEvent<HTMLFormElement>
   ) {
     e.preventDefault()
-    // Prevent new requests when AI action is in progress
     if (isAiActionInProgress) return
 
     if (message.text?.trim()) {
@@ -123,7 +121,6 @@ export function AiChat({ open }: AiChatProps) {
   }
 
   function handleSuggestionClick(suggestion: string, type?: InteractionType) {
-    // Prevent new requests when AI action is in progress
     if (isAiActionInProgress) return
 
     void sendMessage(
