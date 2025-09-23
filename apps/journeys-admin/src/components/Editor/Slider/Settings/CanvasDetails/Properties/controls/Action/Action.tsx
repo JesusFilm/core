@@ -9,7 +9,6 @@ import { ReactElement, useEffect, useState } from 'react'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
-import { useFlags } from '@core/shared/ui/FlagsProvider'
 import ChevronDownIcon from '@core/shared/ui/icons/ChevronDown'
 
 import {
@@ -18,6 +17,7 @@ import {
   BlockFields_VideoBlock as VideoBlock
 } from '../../../../../../../../../__generated__/BlockFields'
 import { useActionCommand } from '../../../../../../utils/useActionCommand'
+import { useFlags } from '@core/shared/ui/FlagsProvider'
 
 import { CustomizationToggle } from './CustomizationToggle'
 import { EmailAction } from './EmailAction'
