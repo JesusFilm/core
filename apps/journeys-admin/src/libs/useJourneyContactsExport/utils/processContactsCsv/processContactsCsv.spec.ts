@@ -52,22 +52,19 @@ describe('processContactsCsv', () => {
       visitorId: 'visitor1',
       visitorName: 'John Doe',
       visitorEmail: 'john@example.com',
-      visitorPhone: '+1234567890',
-
+      visitorPhone: '+1234567890'
     },
     {
       visitorId: 'visitor2',
       visitorName: 'Jane Smith',
       visitorEmail: 'jane@example.com',
-      visitorPhone: null,
-
+      visitorPhone: null
     },
     {
       visitorId: 'visitor3',
       visitorName: null,
       visitorEmail: 'bob@example.com',
-      visitorPhone: '+9876543210',
-
+      visitorPhone: '+9876543210'
     }
   ]
 
@@ -174,7 +171,7 @@ describe('processContactsCsv', () => {
           visitorId: 'visitor1',
           visitorName: 'John Doe',
           visitorEmail: null,
-                visitorPhone: null  
+          visitorPhone: null
         }
       ]
       const contactDataFields = ['name']

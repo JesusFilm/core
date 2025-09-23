@@ -1,3 +1,1 @@
-export {
-  useJourneyEventsExport
-} from './useJourneyEventsExport'
+export { useJourneyEventsExport } from './useJourneyEventsExport'

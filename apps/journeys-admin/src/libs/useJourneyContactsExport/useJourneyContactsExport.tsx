@@ -103,7 +103,9 @@ export function useJourneyContactsExport(): {
 
         if (error) {
           console.error('GraphQL error:', error)
-          throw new Error(t('GraphQL error: {{error}}', { error: error.message }))
+          throw new Error(
+            t('GraphQL error: {{error}}', { error: error.message })
+          )
         }
 
         if (data?.journeyEventsConnection == null) {
@@ -122,11 +124,11 @@ export function useJourneyContactsExport(): {
 
       // Extract unique contacts from events
       const contactMap = new Map<string, JourneyContact>()
-      
+
       events.forEach((edge) => {
         const node = edge.node
         const visitorId = node.visitorId
-        
+
         // Only add if we don't have this visitor yet, or if this event has more complete data
         if (!contactMap.has(visitorId)) {
           contactMap.set(visitorId, {

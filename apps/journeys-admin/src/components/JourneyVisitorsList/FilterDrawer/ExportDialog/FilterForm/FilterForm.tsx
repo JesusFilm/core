@@ -179,7 +179,9 @@ export function FilterForm({
             <Box>
               <Typography variant="body2">{t('Contact Data')}</Typography>
               <Typography variant="caption" sx={{ color: 'text.secondary' }}>
-                {t('All contact data {name, email, phone} is exported by default')}
+                {t(
+                  'All contact data {name, email, phone} is exported by default'
+                )}
               </Typography>
             </Box>
           }
