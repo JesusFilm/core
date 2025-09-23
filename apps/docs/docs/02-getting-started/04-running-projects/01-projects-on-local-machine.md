@@ -40,16 +40,15 @@ nx run journeys:serve
 
 3. In your local browser navigate to [http://localhost:4100](http://localhost:4100)
 
-
 Here is a list of the webservers:
 
-| App | Shell command | URL |
-| --- | --- | --- |
-| Gateway and Microservices | `nf start` |  |
-| Journeys | `nx run journeys:serve:development --inspect-brk` | [http://localhost:4100](http://localhost:4100) |
-| Journeys Admin | `nx run journeys:serve:development` | [http://localhost:4200](http://localhost:4200) |
-| Watch | `nx run watch:serve:development --inspect-brk` |[http://localhost:4300](http://localhost:4300) | 
-| Docs | `nx run docs:serve` | [http://localhost:3000](http://localhost:3000) |
+| App                       | Shell command                                     | URL                                            |
+| ------------------------- | ------------------------------------------------- | ---------------------------------------------- |
+| Gateway and Microservices | `nf start`                                        |                                                |
+| Journeys                  | `nx run journeys:serve:development --inspect-brk` | [http://localhost:4100](http://localhost:4100) |
+| Journeys Admin            | `nx run journeys:serve:development`               | [http://localhost:4200](http://localhost:4200) |
+| Watch                     | `nx run watch:serve:development --inspect-brk`    | [http://localhost:4300](http://localhost:4300) |
+| Docs                      | `nx run docs:serve`                               | [http://localhost:3000](http://localhost:3000) |
 
 In the above commands, the `--inspect-brk` parameters are optional; you need to use this parameter if you want to be able to use the debugger in your browser (Google Chrome).
 (There are further steps to be done to set up debugging in your browser; they can be found in [the Wiki](https://docs.google.com/document/d/1PVgOARHEgtT6eYM7_DgfyJtdROSaRwvds9ZIm7Oakj8/edit?tab=t.0) under [How to setup debugging in React](https://docs.google.com/document/d/1YHxyeKl4ibiXTQHiFkioNTCExWqtBS2UbV_12_SioOE/edit?tab=t.0#heading=h.28eawu8dqvab).)
