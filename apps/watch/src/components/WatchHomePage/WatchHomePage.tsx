@@ -2,6 +2,9 @@ import Box from '@mui/material/Box'
 import Container from '@mui/material/Container'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
+import dynamic from 'next/dynamic'
+import Image from 'next/image'
+import NextLink from 'next/link'
 import { useTranslation } from 'next-i18next'
 import {
   type ReactElement,
@@ -18,32 +21,34 @@ import { SearchBar } from '@core/journeys/ui/SearchBar'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 import { ThemeMode, ThemeName } from '@core/shared/ui/themes'
 
-import { useAlgoliaRouter } from '../../libs/algolia/useAlgoliaRouter'
-import { PageWrapper } from '../PageWrapper'
-import { AlgoliaVideoGrid } from '../VideoGrid/AlgoliaVideoGrid'
 import { VideoLabel } from '../../../__generated__/globalTypes'
 import { VideoContentFields } from '../../../__generated__/VideoContentFields'
+import { useAlgoliaRouter } from '../../libs/algolia/useAlgoliaRouter'
+
+
+import { PlayerProvider , usePlayer } from '../../libs/playerContext'
+import { VideoProvider } from '../../libs/videoContext'
+import { WatchProvider } from '../../libs/watchContext'
+import { collectionShowcaseSources } from '../CollectionsPage/collectionShowcaseConfig'
+import { ContentPageBlurFilter } from '../NewVideoContentPage/ContentPageBlurFilter'
+import { useCarouselVideos } from '../VideoHero/libs/useCarouselVideos'
+import { VideoCarousel } from '../NewVideoContentPage/VideoCarousel/VideoCarousel'
+import { VideoContentHero } from '../NewVideoContentPage/VideoContentHero/VideoContentHero'
+import { PageWrapper } from '../PageWrapper'
+import { AlgoliaVideoGrid } from '../VideoGrid/AlgoliaVideoGrid'
 
 import { HomeHero } from './HomeHero'
 import { SeeAllVideos } from './SeeAllVideos'
-import { ContentPageBlurFilter } from '../NewVideoContentPage/ContentPageBlurFilter'
-import dynamic from 'next/dynamic'
-import { collectionShowcaseSources } from '../CollectionsPage/collectionShowcaseConfig'
 
-// Dynamically import SectionVideoCollectionCarousel to make it client-side only
-const SectionVideoCollectionCarousel = dynamic(
-  () => import('../SectionVideoCollectionCarousel').then(mod => ({ default: mod.SectionVideoCollectionCarousel })),
+// Dynamically import SectionVideoCarousel to make it client-side only
+const SectionVideoCarousel = dynamic(
+  () => import('../SectionVideoCarousel').then(mod => ({ default: mod.SectionVideoCarousel })),
   { ssr: false }
 )
-import NextLink from 'next/link'
-import Image from 'next/image'
-import { PlayerProvider } from '../../libs/playerContext'
-import { VideoProvider } from '../../libs/videoContext'
-import { WatchProvider } from '../../libs/watchContext'
-import { useCarouselVideos } from '../VideoHero/libs/useCarouselVideos'
-import { VideoContentHero } from '../NewVideoContentPage/VideoContentHero/VideoContentHero'
-import { VideoCarousel } from '../NewVideoContentPage/VideoCarousel/VideoCarousel'
-import { usePlayer } from '../../libs/playerContext'
+const SectionVideoGrid = dynamic(
+  () => import('../SectionVideoGrid').then(mod => ({ default: mod.SectionVideoGrid })),
+  { ssr: false }
+)
 
 interface WatchHomePageProps {
   languageId?: string | undefined
@@ -337,12 +342,21 @@ function WatchHomePageContent({
             </Box>
           </ThemeProvider>
         </div>
-        <SectionVideoCollectionCarousel
+            <SectionVideoCarousel
               id="home-collection-showcase"
               sources={collectionShowcaseSources}
               primaryCollectionId="LUMOCollection"
               subtitleOverride="Video Bible Collection"
               titleOverride="Discover the full story"
+              descriptionOverride="Explore our collection of videos and resources that bring the Bible to life through engaging stories and teachings."
+              languageId={languageId}
+            />
+            <SectionVideoGrid
+              id="home-collection-showcase-grid"
+              sources={collectionShowcaseSources}
+              primaryCollectionId="LUMOCollection"
+              subtitleOverride="Video Bible Collection"
+              titleOverride="Discover the full story (Grid View)"
               descriptionOverride="Explore our collection of videos and resources that bring the Bible to life through engaging stories and teachings."
               languageId={languageId}
             />

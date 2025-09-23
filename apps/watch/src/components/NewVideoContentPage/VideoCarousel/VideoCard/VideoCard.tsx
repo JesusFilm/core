@@ -6,12 +6,12 @@ import { ReactElement, useState } from 'react'
 
 import Play3 from '@core/shared/ui/icons/Play3'
 
-import { LazyImage } from './LazyImage'
-
 import { VideoChildFields } from '../../../../../__generated__/VideoChildFields'
+import { usePlayer } from '../../../../libs/playerContext'
 import { getLabelDetails } from '../../../../libs/utils/getLabelDetails/getLabelDetails'
 import { getWatchUrl } from '../../../../libs/utils/getWatchUrl'
-import { usePlayer } from '../../../../libs/playerContext'
+
+import { LazyImage } from './LazyImage'
 
 interface VideoCardProps {
   video: VideoChildFields

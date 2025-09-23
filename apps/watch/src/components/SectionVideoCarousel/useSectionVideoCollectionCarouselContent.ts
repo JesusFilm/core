@@ -1,7 +1,7 @@
-import { useEffect, useMemo } from 'react'
 
 import { useQuery } from '@apollo/client'
 import { useRouter } from 'next/router'
+import { useEffect, useMemo } from 'react'
 
 import { VideoLabel } from '../../../__generated__/globalTypes'
 import { getLanguageIdFromLocale } from '../../libs/getLanguageIdFromLocale'
@@ -176,7 +176,6 @@ function flattenCollection(
 
   return slides
 }
-
 
 export interface UseSectionVideoCollectionCarouselContentOptions {
   sources: SectionVideoCollectionCarouselSource[]
