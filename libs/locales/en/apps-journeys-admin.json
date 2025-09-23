@@ -678,6 +678,7 @@
   "Hide Inactive": "Hide Inactive",
   "Date": "Date",
   "Duration": "Duration",
+  "Data Analytics Test": "Data Analytics Test",
   "Export Data": "Export Data",
   "Showing {{ shownVisitors }} visitors out of {{ visitorsCount }}": "Showing {{ shownVisitors }} visitors out of {{ visitorsCount }}",
   "0 min": "0 min",
@@ -868,11 +869,13 @@
   "Polls": "Polls",
   "{{ name }}'s Team": "{{ name }}'s Team",
   "Failed to retrieve data for export.": "Failed to retrieve data for export.",
+  "No events found with contact data": "No events found with contact data",
   "Failed to retrieve contacts for export.": "Failed to retrieve contacts for export.",
   "Date & Time": "Date & Time",
   "Visitor ID": "Visitor ID",
   "Journey ID": "Journey ID",
   "Slug": "Slug",
   "Event Type": "Event Type",
-  "Value": "Value"
+  "Value": "Value",
+  "No contacts found with data for the selected fields": "No contacts found with data for the selected fields"
 }
