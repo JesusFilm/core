@@ -273,10 +273,7 @@
   "Route": "Route",
   "Hint": "Hint",
   "Your label here": "Your label here",
-<<<<<<< Updated upstream
-=======
   "Labels are required for analytics, but you can choose to show or hide them for users.": "Labels are required for analytics, but you can choose to show or hide them for users.",
->>>>>>> Stashed changes
   "Show label": "Show label",
   "Hide label": "Hide label",
   "One Row": "One Row",
