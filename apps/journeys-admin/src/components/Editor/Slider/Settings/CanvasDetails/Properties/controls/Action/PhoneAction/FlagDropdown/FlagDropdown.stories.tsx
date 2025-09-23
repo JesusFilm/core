@@ -2,14 +2,14 @@ import { Meta, StoryObj } from '@storybook/react'
 
 import { journeysAdminConfig } from '@core/shared/ui/storybook'
 
-import { CountryCodeAutoComplete } from './CountryCodeAutoComplete'
+import { FlagDropdown } from './FlagDropdown'
 import { Country } from './countriesList'
 
-const CountryCodeAutoCompleteStory: Meta<typeof CountryCodeAutoComplete> = {
+const FlagDropdownStory: Meta<typeof FlagDropdown> = {
   ...journeysAdminConfig,
-  component: CountryCodeAutoComplete,
+  component: FlagDropdown,
   title:
-    'Journeys-Admin/Editor/Slider/Settings/CanvasDetails/Properties/controls/Action/PhoneAction/CountryCodeAutoComplete'
+    'Journeys-Admin/Editor/Slider/Settings/CanvasDetails/Properties/controls/Action/PhoneAction/FlagDropdown'
 }
 
 const mockCountries: Country[] = [
@@ -40,11 +40,20 @@ const mockCountries: Country[] = [
   }
 ]
 
-export const Default: StoryObj<typeof CountryCodeAutoComplete> = {
+export const Default: StoryObj<typeof FlagDropdown> = {
   args: {
     countries: mockCountries,
-    selectedCountry: mockCountries[0]
+    selectedCountry: mockCountries[0],
+    onChange: () => {}
   }
 }
 
-export default CountryCodeAutoCompleteStory
+export const WithDifferentCountry: StoryObj<typeof FlagDropdown> = {
+  args: {
+    countries: mockCountries,
+    selectedCountry: mockCountries[2], // United Kingdom
+    onChange: () => {}
+  }
+}
+
+export default FlagDropdownStory

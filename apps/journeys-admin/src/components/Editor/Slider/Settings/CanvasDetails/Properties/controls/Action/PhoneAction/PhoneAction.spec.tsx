@@ -160,19 +160,12 @@ describe('PhoneAction', () => {
         </EditorProvider>
       </MockedProvider>
     )
-    fireEvent.focus(screen.getByRole('combobox', { name: 'Country' }))
-    fireEvent.keyDown(screen.getByRole('combobox', { name: 'Country' }), {
-      key: 'ArrowDown'
+    fireEvent.click(screen.getByRole('button', { name: 'Select country' }))
+    await waitFor(() => {
+      expect(screen.getByText('Afghanistan (AF) +93')).toBeInTheDocument()
+      expect(screen.getByText('Albania (AL) +355')).toBeInTheDocument()
+      expect(screen.getByText('Algeria (DZ) +213')).toBeInTheDocument()
     })
-    expect(screen.queryAllByRole('option')[0]).toHaveTextContent(
-      'Afghanistan (AF) +93'
-    )
-    expect(screen.queryAllByRole('option')[1]).toHaveTextContent(
-      'Albania (AL) +355'
-    )
-    expect(screen.queryAllByRole('option')[2]).toHaveTextContent(
-      'Algeria (DZ) +213'
-    )
   })
 
   it('should select country via option click', async () => {
@@ -183,20 +176,14 @@ describe('PhoneAction', () => {
         </EditorProvider>
       </MockedProvider>
     )
-    fireEvent.focus(screen.getByRole('combobox', { name: 'Country' }))
-    fireEvent.keyDown(screen.getByRole('combobox', { name: 'Country' }), {
-      key: 'ArrowDown'
+    fireEvent.click(screen.getByRole('button', { name: 'Select country' }))
+    await waitFor(() => {
+      expect(screen.getByText('Canada (CA) +1')).toBeInTheDocument()
     })
-    fireEvent.click(
-      screen.getByRole('option', {
-        name: 'Canada flag Canada (CA) +1'
-      })
-    )
-    await waitFor(() =>
-      expect(screen.getByRole('combobox', { name: 'Country' })).toHaveValue(
-        'Canada'
-      )
-    )
+    fireEvent.click(screen.getByText('Canada (CA) +1'))
+    await waitFor(() => {
+      expect(screen.getByRole('img', { name: 'Canada flag' })).toBeInTheDocument()
+    })
   })
 
   it('should reset phone number when country changes', async () => {
@@ -212,15 +199,11 @@ describe('PhoneAction', () => {
     fireEvent.change(phoneInput, { target: { value: '1234567890' } })
     expect(phoneInput).toHaveValue('1234567890')
 
-    fireEvent.focus(screen.getByRole('combobox', { name: 'Country' }))
-    fireEvent.keyDown(screen.getByRole('combobox', { name: 'Country' }), {
-      key: 'ArrowDown'
+    fireEvent.click(screen.getByRole('button', { name: 'Select country' }))
+    await waitFor(() => {
+      expect(screen.getByText('Canada (CA) +1')).toBeInTheDocument()
     })
-    fireEvent.click(
-      screen.getByRole('option', {
-        name: 'Canada flag Canada (CA) +1'
-      })
-    )
+    fireEvent.click(screen.getByText('Canada (CA) +1'))
 
     await waitFor(() =>
       expect(screen.getByRole('textbox', { name: 'Phone number' })).toHaveValue(

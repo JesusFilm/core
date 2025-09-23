@@ -1,6 +1,6 @@
 import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next'
-import { ReactElement, useRef, useState } from 'react'
+import { ReactElement, useState } from 'react'
 import { object, string } from 'yup'
 import FormControl from '@mui/material/FormControl'
 import FormControlLabel from '@mui/material/FormControlLabel'
@@ -14,16 +14,13 @@ import { BlockFields_ButtonBlock as ButtonBlock } from '../../../../../../../../
 import { ContactActionType } from '../../../../../../../../../../__generated__/globalTypes'
 import { TextFieldForm } from '../../../../../../../../TextFieldForm'
 import { useActionCommand } from '../../../../../../../utils/useActionCommand'
-import { CountryCodeAutoComplete } from './CountryCodeAutoComplete'
 import Stack from '@mui/material/Stack'
-import { countries, Country } from './CountryCodeAutoComplete/countriesList'
+import { countries, Country } from './FlagDropdown/countriesList'
 import Box from '@mui/material/Box'
-import { FlagDropdown } from './CountryCodeAutoComplete/FlagDropdown'
+import { FlagDropdown } from './FlagDropdown'
 
 export function PhoneAction(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
-  const autocompleteInputRef = useRef<HTMLInputElement | null>(null)
-  const [isCountryDropdownOpen, setIsCountryDropdownOpen] = useState(false)
   const {
     state: { selectedBlock: stateSelectedBlock, selectedStep }
   } = useEditor()
@@ -113,6 +110,7 @@ export function PhoneAction(): ReactElement {
   }
 
   function handleContactActionChange(contactAction: ContactActionType): void {
+    // TODO: dont change unless phone is valid, or API will fail
     if (selectedBlock == null) return
 
     const { id, action, __typename: blockTypename } = selectedBlock
@@ -146,13 +144,6 @@ export function PhoneAction(): ReactElement {
         {t('This will open the phone dialer with the provided phone number.')}
       </Typography>
       <Stack data-testid="PhoneAction" direction="column" spacing={2}>
-        {/* <CountryCodeAutoComplete
-          countries={countries.sort((a, b) => {
-            return a.label.localeCompare(b.label)
-          })}
-          selectedCountry={selectedCountry}
-          handleChange={handleChange}
-        /> */}
         <TextFieldForm
           id={`phone-${selectedCountry.countryCode}`}
           label={t('Phone number')}
@@ -181,7 +172,6 @@ export function PhoneAction(): ReactElement {
             onChange={(event) => {
               const value = (event.target as HTMLInputElement).value as keyof typeof ContactActionType
               if (value != null) {
-                // Convert string back to enum value
                 const enumValue = ContactActionType[value]
                 if (enumValue != null) handleContactActionChange(enumValue)
               }
