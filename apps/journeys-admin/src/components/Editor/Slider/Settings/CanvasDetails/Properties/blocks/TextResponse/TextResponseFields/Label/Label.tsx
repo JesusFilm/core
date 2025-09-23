@@ -87,7 +87,7 @@ export function Label(): ReactElement {
   }
 
   function handleSubmit(value: string): void {
-    if (selectedBlock == null) return
+    if (selectedBlock == null || selectedBlock.__typename !== 'TextResponseBlock') return
 
     add({
       id: commandInput.id,
@@ -139,7 +139,7 @@ export function Label(): ReactElement {
   }
 
   function hideLabelToggle(): void {
-    if (selectedBlock == null) return
+    if (selectedBlock == null || selectedBlock.__typename !== 'TextResponseBlock') return
 
     const newHideLabel = !hideLabel
     const commandId = uuidv4()
