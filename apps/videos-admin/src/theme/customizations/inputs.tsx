@@ -82,6 +82,14 @@ export const inputsCustomizations: Components<Theme> = {
                 },
                 '&:active': {
                   backgroundColor: grey[400]
+                },
+                // Improve disabled contrast in dark mode for contained primary buttons
+                '&.Mui-disabled': {
+                  color: grey[600],
+                  backgroundColor: grey[200],
+                  borderColor: grey[200],
+                  backgroundImage: 'none',
+                  boxShadow: 'none'
                 }
               })
             }
