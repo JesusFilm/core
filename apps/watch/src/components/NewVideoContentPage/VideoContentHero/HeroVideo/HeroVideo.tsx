@@ -223,7 +223,7 @@ export function HeroVideo({
             className="absolute inset-0 z-1 pointer-events-none opacity-70"
             style={{
               backdropFilter: 'brightness(.4) saturate(.6) sepia(.4)',
-              backgroundImage: 'url(/watch/assets/overlay.svg)',
+              backgroundImage: 'url(/assets/overlay.svg)',
               backgroundSize: '1600px auto'
             }}
           />

@@ -1,12 +1,14 @@
 'use client'
+
 import { Content, Header, Item, Root, Trigger } from '@radix-ui/react-accordion'
 import { ChevronDownIcon } from 'lucide-react'
 
-import { cn } from '../../libs/cn'
+import { cn } from '../../libs/cn/cn';
 
 function Accordion({ ...props }: React.ComponentProps<typeof Root>) {
   return <Root data-slot="accordion" {...props} />
 }
+
 function AccordionItem({
   className,
   ...props
@@ -19,6 +21,7 @@ function AccordionItem({
     />
   )
 }
+
 function AccordionTrigger({
   className,
   children,
@@ -40,6 +43,7 @@ function AccordionTrigger({
     </Header>
   )
 }
+
 function AccordionContent({
   className,
   children,
@@ -55,4 +59,5 @@ function AccordionContent({
     </Content>
   )
 }
+
 export { Accordion, AccordionItem, AccordionTrigger, AccordionContent }

@@ -11,6 +11,7 @@ import { Formik } from 'formik'
 import dynamic from 'next/dynamic'
 import { useTranslation } from 'next-i18next'
 import {
+  type FocusEvent,
   type ReactElement,
   useCallback,
   useEffect,
@@ -79,12 +80,16 @@ interface SearchBarProps {
   showDropdown?: boolean
   showLanguageButton?: boolean
   props?: TextFieldProps
+  onFocus?: (event: FocusEvent<HTMLInputElement | HTMLTextAreaElement>) => void
+  onBlur?: (event: FocusEvent<HTMLInputElement | HTMLTextAreaElement>) => void
 }
 
 export function SearchBar({
   showDropdown = false,
   showLanguageButton = false,
-  props
+  props,
+  onFocus,
+  onBlur
 }: SearchBarProps): ReactElement {
   const { t } = useTranslation('apps-watch')
   const theme = useTheme()
@@ -173,7 +178,7 @@ export function SearchBar({
             onSubmit={handleSubmit}
             enableReinitialize
           >
-            {({ values, handleChange, handleBlur }) => (
+            {({ values, handleChange, handleBlur: formikHandleBlur }) => (
               <>
                 <StyledTextField
                   data-testid="SearchBarInput"
@@ -184,8 +189,14 @@ export function SearchBar({
                   fullWidth
                   autoComplete="off"
                   onChange={handleChange}
-                  onBlur={handleBlur}
-                  onFocus={openSuggestionsDropdown}
+                  onBlur={(event) => {
+                    formikHandleBlur(event)
+                    onBlur?.(event)
+                  }}
+                  onFocus={(event) => {
+                    openSuggestionsDropdown()
+                    onFocus?.(event)
+                  }}
                   onClick={openSuggestionsDropdown}
                   onKeyDown={(e) => {
                     if (e.key === 'Enter') setOpen(false)

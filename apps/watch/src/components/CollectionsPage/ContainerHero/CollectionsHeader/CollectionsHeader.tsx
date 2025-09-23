@@ -29,7 +29,7 @@ export function CollectionsHeader({
       >
         <NextLink href="https://www.jesusfilm.org/watch" locale={false}>
           <Image
-            src="/watch/assets/jesusfilm-sign.svg"
+            src="/assets/jesusfilm-sign.svg"
             alt="JesusFilm Project"
             width={70}
             height={70}

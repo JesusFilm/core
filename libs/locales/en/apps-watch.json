@@ -93,5 +93,27 @@
   "Series": "Series",
   "Short Film": "Short Film",
   "Behind The Scenes": "Behind The Scenes",
-  "Trailer": "Trailer"
+  "Trailer": "Trailer",
+  "Popular Searches": "Popular Searches",
+  "Popular Categories": "Popular Categories",
+  "Filter by language": "Filter by language",
+  "Search languages": "Search languages",
+  "No languages found": "No languages found",
+  "No languages available": "No languages available",
+  "popularSearches": [
+    "Jesus Film",
+    "Bible Stories",
+    "Hope",
+    "Forgiveness",
+    "Discipleship",
+    "Easter"
+  ],
+  "popularCategories": [
+    "Miracles of Jesus",
+    "Parables",
+    "Life of Jesus",
+    "Testimonies",
+    "Youth",
+    "Christmas"
+  ]
 }

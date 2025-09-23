@@ -1,5 +1,4 @@
 import Box from '@mui/material/Box'
-import Container from '@mui/material/Container'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import dynamic from 'next/dynamic'
@@ -16,8 +15,6 @@ import {
 } from 'react'
 import { Index } from 'react-instantsearch'
 
-import { SearchBarProvider } from '@core/journeys/ui/algolia/SearchBarProvider'
-import { SearchBar } from '@core/journeys/ui/SearchBar'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 import { ThemeMode, ThemeName } from '@core/shared/ui/themes'
 
@@ -56,12 +53,24 @@ interface WatchHomePageProps {
   languageId?: string | undefined
 }
 
+function WatchHomePageContent({ languageId }: WatchHomePageProps): ReactElement {
+  const indexName = process.env.NEXT_PUBLIC_ALGOLIA_INDEX ?? ''
+
+  return (
+    <Index indexName={indexName}>
+      <WatchHomePageBody languageId={languageId} />
+    </Index>
+  )
+}
+
 // Inner component that uses player context
-function WatchHomePageContent({
+function WatchHomePageBody({
   languageId
 }: WatchHomePageProps): ReactElement {
   const { t } = useTranslation('apps-watch')
   useAlgoliaRouter()
+  
+  const indexName = process.env.NEXT_PUBLIC_ALGOLIA_INDEX ?? ''
 
   const [activeVideoId, setActiveVideoId] = useState<string | undefined>()
   const {
@@ -441,6 +450,16 @@ function WatchHomePageContent({
 
   return (
     <div>
+      <Header
+        themeMode={ThemeMode.dark}
+        hideTopAppBar
+        hideBottomAppBar
+        hideSpacer
+        showLanguageSwitcher
+      />
+      <Index indexName={indexName}>
+        <SearchComponent languageId={languageId} floating={true} />
+      </Index>
       <VideoProvider value={{ content: activeVideo }}>
         <VideoContentHero
           isPreview={true}
@@ -491,14 +510,6 @@ function WatchHomePageContent({
             themeMode={ThemeMode.dark}
             nested
           >
-            <Index indexName={indexName}>
-              <Box sx={{ pb: 10 }}>
-                <SearchBarProvider>
-                  <SearchBar showDropdown showLanguageButton />
-                </SearchBarProvider>
-              </Box>
-              <AlgoliaVideoGrid variant="contained" languageId={languageId} />
-            </Index>
             <SeeAllVideos />
             <Box
               sx={{
