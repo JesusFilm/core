@@ -16,7 +16,7 @@ import type {
   BlockFields_MultiselectOptionBlock as MultiselectOptionBlock
 } from '../../../../../../../../__generated__/BlockFields'
 import type { MultiselectBlockCreate } from '../../../../../../../../__generated__/MultiselectBlockCreate'
-import type { MultiselectOptionBlockCreate } from '../../../../../../../../__generated__/MultiselectOptionBlockCreate'
+// Note: multiselect option creation is part of the same mutation operation type
 import { blockCreateUpdate } from '../../../../../utils/blockCreateUpdate'
 import { useBlockCreateCommand } from '../../../../../utils/useBlockCreateCommand'
 import { Button } from '../Button'
@@ -56,9 +56,8 @@ export const MULTISELECT_BLOCK_CREATE = gql`
 
 export function NewMultiselectButton(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
-  const [multiselectBlockCreate, { loading }] = useMutation<
-    MultiselectBlockCreate & MultiselectOptionBlockCreate
-  >(MULTISELECT_BLOCK_CREATE)
+  const [multiselectBlockCreate, { loading }] =
+    useMutation<MultiselectBlockCreate>(MULTISELECT_BLOCK_CREATE)
   const { journey } = useJourney()
   const {
     state: { selectedStep }

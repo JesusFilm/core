@@ -1,4 +1,4 @@
 export {
   MultiselectOption,
-  StyledListMultiSelectOption
+  StyledListMultiselectOption as StyledListMultiSelectOption
 } from './MultiselectOption'

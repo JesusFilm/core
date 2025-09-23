@@ -173,7 +173,7 @@ export function MultiselectQuestion({
   return (
     <>
       <StyledListMultiselectQuestion
-        data-testid={`JourneysRadioQuestionList-${blockId}`}
+        data-testid={`JourneysMultiselectQuestionList-${blockId}`}
       >
         <ButtonGroup orientation="vertical" variant="contained" fullWidth>
           {options}

@@ -4,11 +4,11 @@ import { MouseEvent, ReactElement } from 'react'
 
 import type { TreeBlock } from '../../libs/block'
 import { useJourney } from '../../libs/JourneyProvider'
-import { getPollOptionBorderStyles } from '../RadioQuestion/utils/getPollOptionBorderStyles'
+import { getPollOptionBorderStyles } from '../MultiselectQuestion/utils/getPollOptionBorderStyles'
 
 import { MultiselectOptionFields } from './__generated__/MultiselectOptionFields'
 
-export const StyledListMultiSelectOption = styled(Button)<ButtonProps>(({
+export const StyledListMultiselectOption = styled(Button)<ButtonProps>(({
   theme
 }) => {
   const borderStyles = getPollOptionBorderStyles(theme, { important: true })
@@ -115,7 +115,7 @@ export function MultiselectOption({
   }
 
   return (
-    <StyledListMultiSelectOption
+    <StyledListMultiselectOption
       variant="contained"
       disabled={disabled}
       onClick={handleClick}
@@ -135,9 +135,9 @@ export function MultiselectOption({
             }
           : undefined
       }
-      data-testid="JourneysRadioOptionList"
+      data-testid="JourneysMultiselectOptionList"
     >
       {editableLabel ?? label}
-    </StyledListMultiSelectOption>
+    </StyledListMultiselectOption>
   )
 }
