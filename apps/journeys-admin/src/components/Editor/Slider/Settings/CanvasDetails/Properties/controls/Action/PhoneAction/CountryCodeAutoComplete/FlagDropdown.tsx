@@ -83,16 +83,23 @@ export function FlagDropdown({
         open={isOpen}
         onClose={handleClose}
         anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
-        transformOrigin={{ vertical: 'top', horizontal: 'left' }}
         sx={{
-          mt: 2
+          mt: 2,
+          p: 0,
+          transform: 'translateX(-10px)'
         }}
         slotProps={{
           paper: {
             style: {
               maxHeight: 670,
-              width: 600,
+              width: 298,
+              padding: 0,
             },
+            sx: {
+              '& .MuiList-root': {
+                padding: 0
+              }
+            }
           },
         }}
       >
@@ -112,7 +119,12 @@ export function FlagDropdown({
                 </InputAdornment>
               ),
             }}
-            sx={{ mb: 0 }}
+            sx={{ 
+              mb: 0,
+              '& .MuiOutlinedInput-root': {
+                borderRadius: 0
+              }
+            }}
             onClick={(e) => e.stopPropagation()}
             onKeyDown={(e) => e.stopPropagation()}
           />
@@ -128,6 +140,13 @@ export function FlagDropdown({
             </ListItemIcon>
             <ListItemText
               primary={`${country.label} (${country.countryCode}) ${country.callingCode}`}
+              sx={{
+                '& .MuiListItemText-primary': {
+                  whiteSpace: 'normal',
+                  wordWrap: 'break-word',
+                  overflowWrap: 'break-word'
+                }
+              }}
             />
           </MenuItem>
         ))}
