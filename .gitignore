@@ -80,6 +80,7 @@ terraform.tfstate.backup
 
 .nx/cache
 .nx/workspace-data
+.nx/
 
 # react-email
 .react-email
