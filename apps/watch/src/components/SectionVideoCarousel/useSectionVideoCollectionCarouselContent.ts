@@ -3,6 +3,7 @@ import { useQuery } from '@apollo/client'
 import { useRouter } from 'next/router'
 import { useEffect, useMemo } from 'react'
 
+import type { VideoChildFields } from '../../../__generated__/VideoChildFields'
 import { VideoLabel } from '../../../__generated__/globalTypes'
 import { getLanguageIdFromLocale } from '../../libs/getLanguageIdFromLocale'
 import { getWatchUrl } from '../../libs/utils/getWatchUrl'
@@ -28,6 +29,9 @@ export interface SectionVideoCollectionCarouselSlide {
   label?: VideoLabel
   snippet?: string
   parentId?: string
+  containerSlug?: string
+  variantSlug: string
+  video: VideoChildFields
 }
 
 export interface SectionVideoCollectionCarouselContentResult {
@@ -124,23 +128,111 @@ function getContainerSlug(node: MaybeCollection | VideoNode): string | undefined
   return parentWithSlug?.slug ?? undefined
 }
 
+function buildVideoSnapshot(
+  node: VideoNode,
+  imageUrl: string,
+  altText: string,
+  slideTitle: string,
+  variantSlug: string
+): VideoChildFields {
+  const mapTextFields = (
+    fields: (ShowcaseTextField | null)[] | null | undefined,
+    typename: 'VideoTitle' | 'VideoSnippet' | 'VideoImageAlt'
+  ): { __typename: typeof typename; value: string }[] => {
+    const mapped = (fields ?? [])
+      .filter((field): field is ShowcaseTextField => field?.value != null && field.value !== '')
+      .map((field) => ({
+        __typename: typename,
+        value: field.value
+      }))
+
+    if (mapped.length > 0) return mapped
+
+    if (typename === 'VideoTitle') {
+      return [
+        {
+          __typename: 'VideoTitle',
+          value: slideTitle
+        }
+      ]
+    }
+
+    if (typename === 'VideoImageAlt' && altText !== '') {
+      return [
+        {
+          __typename: 'VideoImageAlt',
+          value: altText
+        }
+      ]
+    }
+
+    return []
+  }
+
+  const candidateImages = [...(node.posterImages ?? []), ...(node.bannerImages ?? [])]
+    .filter((image): image is ShowcaseImage => image?.mobileCinematicHigh != null)
+    .map((image) => ({
+      __typename: image.__typename ?? 'CloudflareImage',
+      mobileCinematicHigh: image.mobileCinematicHigh
+    }))
+
+  const images =
+    candidateImages.length > 0
+      ? candidateImages
+      : [
+          {
+            __typename: 'CloudflareImage' as const,
+            mobileCinematicHigh: imageUrl
+          }
+        ]
+
+  return {
+    __typename: 'Video',
+    id: node.id,
+    label: node.label,
+    title: mapTextFields(node.title, 'VideoTitle'),
+    images,
+    imageAlt: mapTextFields(node.imageAlt, 'VideoImageAlt'),
+    snippet: mapTextFields(node.snippet, 'VideoSnippet'),
+    slug: node.slug,
+    variant:
+      node.variant != null
+        ? {
+            __typename: 'VideoVariant',
+            id: node.variant.id,
+            duration: node.variant.duration,
+            hls: node.variant.hls ?? null,
+            slug: variantSlug
+          }
+        : null,
+    childrenCount: node.childrenCount
+  }
+}
+
 function buildSlide(node: VideoNode, parentId?: string): SectionVideoCollectionCarouselSlide | null {
   const variantSlug = node.variant?.slug
   if (variantSlug == null || variantSlug === '') return null
 
-  const href = getWatchUrl(getContainerSlug(node), node.label, variantSlug)
+  const containerSlug = getContainerSlug(node)
+  const href = getWatchUrl(containerSlug, node.label, variantSlug)
   const imageUrl = selectImageUrl(node)
   if (imageUrl == null) return null
 
+  const title = node.title?.[0]?.value ?? ''
+  const alt = selectAltText(node) ?? title
+
   return {
     id: node.id,
-    title: node.title?.[0]?.value ?? '',
+    title,
     href,
     imageUrl,
-    alt: selectAltText(node) ?? node.title?.[0]?.value ?? '',
+    alt,
     label: node.label,
     snippet: node.snippet?.[0]?.value ?? undefined,
-    parentId
+    parentId,
+    containerSlug,
+    variantSlug,
+    video: buildVideoSnapshot(node, imageUrl, alt, title, variantSlug)
   }
 }
 

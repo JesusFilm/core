@@ -5,6 +5,25 @@ import { VideoLabel } from '../../../__generated__/globalTypes'
 
 import { GET_COLLECTION_SHOWCASE_CONTENT } from './queries'
 import { SectionVideoCarousel } from './SectionVideoCarousel'
+import type { SectionVideoCollectionCarouselSlide } from './useSectionVideoCollectionCarouselContent'
+import * as carouselContentHook from './useSectionVideoCollectionCarouselContent'
+
+const originalUseCarouselContent =
+  carouselContentHook.useSectionVideoCollectionCarouselContent
+
+const mockVideoCard = jest.fn()
+
+jest.mock('../VideoCard', () => ({
+  VideoCard: (props: any) => {
+    mockVideoCard(props)
+    const videoId = props.video?.id ?? 'skeleton'
+    return <div data-testid={`VideoCard-${videoId}`} />
+  }
+}))
+
+jest.mock('@core/shared/ui/icons/Icon', () => ({
+  Icon: () => <div data-testid="MockIcon" />
+}))
 
 jest.mock('next-i18next', () => ({
   useTranslation: () => ({
@@ -20,6 +39,24 @@ jest.mock('next-i18next', () => ({
 jest.mock('next/router', () => ({
   useRouter: () => ({ locale: 'en' })
 }))
+
+let capturedSlides: SectionVideoCollectionCarouselSlide[] = []
+
+beforeEach(() => {
+  mockVideoCard.mockClear()
+  capturedSlides = []
+  jest
+    .spyOn(carouselContentHook, 'useSectionVideoCollectionCarouselContent')
+    .mockImplementation((options) => {
+      const result = originalUseCarouselContent(options)
+      capturedSlides = result.slides
+      return result
+    })
+})
+
+afterEach(() => {
+  jest.restoreAllMocks()
+})
 
 const collectionMock = {
   __typename: 'Video',
@@ -261,6 +298,70 @@ describe('SectionVideoCarousel', () => {
         screen.getByTestId('SectionVideoCarouselSlide-child-1')
       ).toBeInTheDocument()
     )
+    await waitFor(() => expect(mockVideoCard).toHaveBeenCalled())
+
+    const childSlide = capturedSlides.find((slide) => slide.id === 'child-1')
+    expect(childSlide).toMatchObject({
+      containerSlug: 'collection-slug',
+      variantSlug: 'child-one/en'
+    })
+    expect(childSlide?.video).toMatchObject({
+      slug: 'child-one',
+      variant: expect.objectContaining({ slug: 'child-one/en' }),
+      images: expect.arrayContaining([
+        expect.objectContaining({
+          mobileCinematicHigh: 'https://example.com/child-one.jpg'
+        })
+      ]),
+      imageAlt: expect.arrayContaining([
+        expect.objectContaining({ value: 'Child One Alt' })
+      ])
+    })
+
+    const grandchildSlide = capturedSlides.find(
+      (slide) => slide.id === 'grandchild-1'
+    )
+    expect(grandchildSlide).toMatchObject({
+      containerSlug: 'child-collection-slug',
+      variantSlug: 'grandchild-one/en'
+    })
+    expect(grandchildSlide?.video).toMatchObject({
+      slug: 'grandchild-one',
+      variant: expect.objectContaining({ slug: 'grandchild-one/en' })
+    })
+
+    const directVideoSlide = capturedSlides.find(
+      (slide) => slide.id === 'video-1'
+    )
+    expect(directVideoSlide).toMatchObject({
+      containerSlug: undefined,
+      variantSlug: 'single-video/en'
+    })
+    expect(directVideoSlide?.video).toMatchObject({
+      slug: 'single-video',
+      variant: expect.objectContaining({ slug: 'single-video/en' })
+    })
+
+    const childCardProps = mockVideoCard.mock.calls.find(
+      ([props]) => props.video?.id === 'child-1'
+    )?.[0]
+    expect(childCardProps?.containerSlug).toBe('collection-slug')
+    expect(childCardProps?.video).toBe(childSlide?.video)
+
+    const grandchildCardProps = mockVideoCard.mock.calls.find(
+      ([props]) => props.video?.id === 'grandchild-1'
+    )?.[0]
+    expect(grandchildCardProps?.containerSlug).toBe(
+      'child-collection-slug'
+    )
+    expect(grandchildCardProps?.video).toBe(grandchildSlide?.video)
+
+    const videoCardProps = mockVideoCard.mock.calls.find(
+      ([props]) => props.video?.id === 'video-1'
+    )?.[0]
+    expect(videoCardProps?.containerSlug).toBeUndefined()
+    expect(videoCardProps?.video).toBe(directVideoSlide?.video)
+
     expect(
       screen.getByTestId('SectionVideoCarouselSlide-grandchild-1')
     ).toBeInTheDocument()

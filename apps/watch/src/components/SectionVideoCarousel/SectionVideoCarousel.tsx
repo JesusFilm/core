@@ -4,8 +4,6 @@ import { A11y, FreeMode, Mousewheel } from 'swiper/modules'
 import { Swiper, SwiperSlide } from 'swiper/react'
 
 import { Icon } from '@core/shared/ui/icons/Icon'
-import type { VideoChildFields } from '../../../__generated__/VideoChildFields'
-
 import { VideoCard } from '../VideoCard'
 
 import { cn } from '../../libs/cn'
@@ -70,33 +68,6 @@ export function SectionVideoCarousel({
   })
 
   if (!loading && slides.length === 0) return null
-
-  // Transform SectionVideoCollectionCarouselSlide to VideoChildFields format for VideoCard
-  const transformSlideToVideoChildFields = (slide: SectionVideoCollectionCarouselSlide): VideoChildFields => {
-    // Extract slug from href - href format is typically /watch/{containerSlug}.html/{variantSlug}.html
-    const hrefParts = slide.href.split('/')
-    const variantSlug = hrefParts[hrefParts.length - 1]?.replace('.html', '') || ''
-    const containerSlug = hrefParts[hrefParts.length - 2]?.replace('.html', '') || ''
-
-    return {
-      __typename: 'Video',
-      id: slide.id,
-      label: slide.label || 'video', // fallback to 'video' if label is undefined
-      title: [{ __typename: 'VideoTitle', value: slide.title }],
-      images: [{ __typename: 'CloudflareImage', mobileCinematicHigh: slide.imageUrl }],
-      imageAlt: [{ __typename: 'VideoImageAlt', value: slide.alt }],
-      snippet: slide.snippet ? [{ __typename: 'VideoSnippet', value: slide.snippet }] : [],
-      slug: containerSlug,
-      variant: {
-        __typename: 'VideoVariant',
-        id: `${slide.id}-variant`,
-        duration: 0, // We don't have duration from the slide, default to 0
-        hls: null,
-        slug: variantSlug
-      },
-      childrenCount: 0 // Default to 0, we don't have this info from the slide
-    }
-  }
 
   return (
     <section
@@ -170,23 +141,20 @@ export function SectionVideoCarousel({
                   <div className="h-[330px] w-[220px] rounded-lg bg-white/10 animate-pulse" />
                 </SwiperSlide>
               ))
-            : slides.map((slide, index) => {
-                const video = transformSlideToVideoChildFields(slide)
-                return (
-                  <SwiperSlide
-                    key={slide.id}
-                    className={`max-w-[200px] py-1 ${index === 0 ? 'padded-l' : ''}`}
-                    data-testid={`SectionVideoCarouselSlide-${slide.id}`}
-                  >
-                    <VideoCard
-                      video={video}
-                      orientation="vertical"
-                      containerSlug={slide.parentId}
-                      analyticsTag={analyticsTag}
-                    />
-                  </SwiperSlide>
-                )
-              })}
+            : slides.map((slide, index) => (
+                <SwiperSlide
+                  key={slide.id}
+                  className={`max-w-[200px] py-1 ${index === 0 ? 'padded-l' : ''}`}
+                  data-testid={`SectionVideoCarouselSlide-${slide.id}`}
+                >
+                  <VideoCard
+                    video={slide.video}
+                    orientation="vertical"
+                    containerSlug={slide.containerSlug}
+                    analyticsTag={analyticsTag}
+                  />
+                </SwiperSlide>
+              ))}
         </Swiper>
       </div>
 
