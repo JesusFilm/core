@@ -5,7 +5,8 @@ import {
   CopyIcon,
   Loader,
   RefreshCcwIcon,
-  SendHorizonalIcon
+  SendHorizonalIcon,
+  SquareIcon
 } from 'lucide-react'
 import { useTranslation } from 'next-i18next'
 import { Fragment, useEffect, useRef, useState } from 'react'
@@ -60,7 +61,7 @@ export function AiChat({ open }: AiChatProps) {
     sessionId.current = uuidv4()
   }, [])
 
-  const { messages, sendMessage, status, regenerate, id } = useChat({
+  const { messages, sendMessage, status, regenerate, id, stop } = useChat({
     transport: new DefaultChatTransport({
       api: '/api/chat'
     })
@@ -138,6 +139,11 @@ export function AiChat({ open }: AiChatProps) {
         }
       }
     )
+  }
+
+  function handleStop() {
+    stop()
+    setInput('')
   }
 
   return (
@@ -249,10 +255,19 @@ export function AiChat({ open }: AiChatProps) {
           <div className="flex flex-row justify-end self-end p-[4px]">
             <PromptInputSubmit
               className="disabled:bg-secondary-light rounded-md"
-              disabled={!input || isAiActionInProgress}
+              disabled={!input && !isAiActionInProgress}
               status={status}
               style={{ minHeight: '20px' }}
-              children={<SendHorizonalIcon className="size-[20px]" />}
+              onClick={isAiActionInProgress ? handleStop : undefined}
+              // Use 'button' type during AI actions to prevent form submission, 'submit' for normal send
+              type={isAiActionInProgress ? 'button' : 'submit'}
+              children={
+                isAiActionInProgress ? (
+                  <SquareIcon className="size-[20px]" />
+                ) : (
+                  <SendHorizonalIcon className="size-[20px]" />
+                )
+              }
             />
           </div>
         </PromptInput>
