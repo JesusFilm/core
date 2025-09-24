@@ -287,7 +287,7 @@ export function CopyToTeamDialog({
               {!isOriginalTemplate && isTemplatesAdmin && (
                 <Typography variant="caption" color="red">
                   {t(
-                    'This is not the original journey template, it is a translation of the original template. If you want to translate this journey - please use the original template.'
+                    'This is not the original journey template, it is a translation or copy of the original template. If you want to translate this journey - please use the original template.'
                   )}
                 </Typography>
               )}
