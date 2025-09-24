@@ -55,6 +55,11 @@ interface Action {
   gtmEventName: String
 }
 
+enum ContactActionType {
+  call
+  text
+}
+
 type NavigateToBlockAction implements Action
   @shareable
 {
@@ -95,6 +100,7 @@ type PhoneAction implements Action
   gtmEventName: String
   phone: String!
   countryCode: String!
+  contactAction: ContactActionType!
 }
 
 interface Block {
@@ -163,6 +169,7 @@ type Journey
   socialNodeX: Int
   socialNodeY: Int
   fromTemplateId: String
+  showAssistant: Boolean
   journeyCustomizationDescription: String
   journeyCustomizationFields: [JourneyCustomizationField!]!
   journeyTheme: JourneyTheme
