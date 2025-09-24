@@ -262,11 +262,29 @@ describe('SectionVideoGrid', () => {
       ).toBeInTheDocument()
     )
     expect(
+      screen.getByTestId('VideoCard-child-1')
+    ).toHaveAttribute(
+      'href',
+      '/watch/collection-slug.html/child-one/en.html'
+    )
+    expect(
       screen.getByTestId('VideoCard-grandchild-1')
     ).toBeInTheDocument()
     expect(
+      screen.getByTestId('VideoCard-grandchild-1')
+    ).toHaveAttribute(
+      'href',
+      '/watch/child-collection-slug.html/grandchild-one/en.html'
+    )
+    expect(
       screen.getByTestId('VideoCard-video-1')
     ).toBeInTheDocument()
+    expect(
+      screen.getByTestId('VideoCard-video-1')
+    ).toHaveAttribute(
+      'href',
+      '/watch/single-video.html/en.html'
+    )
     expect(screen.getByTestId('SectionVideoGridCTA')).toHaveTextContent(
       'Watch'
     )

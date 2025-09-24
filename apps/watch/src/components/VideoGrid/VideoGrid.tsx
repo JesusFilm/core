@@ -9,6 +9,7 @@ export interface VideoGridProps {
   videos?: VideoChildFields[]
   showLoadMore?: boolean
   containerSlug?: string
+  containerSlugByVideoId?: Record<string, string | undefined>
   orientation?: 'horizontal' | 'vertical'
   loading?: boolean
   showMore?: () => void
@@ -22,6 +23,7 @@ export function VideoGrid({
   videos = [],
   showLoadMore = false,
   containerSlug,
+  containerSlugByVideoId,
   orientation = 'horizontal',
   loading = false,
   showMore,
@@ -43,7 +45,11 @@ export function VideoGrid({
             <VideoCard
               video={video}
               orientation={orientation}
-              containerSlug={containerSlug}
+              containerSlug={
+                (video?.id != null
+                  ? containerSlugByVideoId?.[video.id]
+                  : undefined) ?? containerSlug
+              }
               onClick={onCardClick}
               analyticsTag={analyticsTag}
             />

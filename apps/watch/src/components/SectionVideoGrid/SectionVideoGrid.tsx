@@ -12,28 +12,109 @@ import {
 import { VideoGrid } from '../VideoGrid/VideoGrid'
 
 import type { VideoChildFields } from '../../../__generated__/VideoChildFields'
+import { VideoLabel } from '../../../__generated__/globalTypes'
 
 export type { SectionVideoCollectionCarouselSource as SectionVideoGridSource } from '../SectionVideoCarousel/useSectionVideoCollectionCarouselContent'
 
+interface TransformSlidesResult {
+  videos: VideoChildFields[]
+  containerSlugByVideoId: Record<string, string | undefined>
+}
+
+function removeHtmlExtension(segment: string | undefined): string | undefined {
+  if (segment == null) return undefined
+  return segment.replace(/\.html$/i, '')
+}
+
+function parseWatchHref(
+  href: string
+): {
+  containerSlug?: string
+  videoSlug?: string
+  variantSlug?: string
+} {
+  const [rawPath] = href.split('?')
+  if (rawPath == null) return {}
+
+  const normalized = rawPath.replace(/^\//, '')
+  if (!normalized.startsWith('watch')) return {}
+
+  const remainder = normalized.slice('watch'.length)
+  const trimmed = remainder.replace(/^\//, '')
+  const segments = trimmed.split('/').filter((segment) => segment.length > 0)
+  if (segments.length === 0) return {}
+
+  let containerSlug: string | undefined
+  let variantSegments = segments
+
+  if (segments.length > 2) {
+    containerSlug = removeHtmlExtension(segments[0])
+    variantSegments = segments.slice(1)
+  }
+
+  const cleanedVariantSegments = variantSegments
+    .map((segment) => removeHtmlExtension(segment))
+    .filter((segment): segment is string => segment != null && segment !== '')
+
+  if (cleanedVariantSegments.length === 0) {
+    return { containerSlug }
+  }
+
+  const videoSlug = cleanedVariantSegments[0]
+  const languageSegment = cleanedVariantSegments[1]
+  const variantSlug =
+    languageSegment != null
+      ? `${videoSlug}/${languageSegment}`
+      : videoSlug
+
+  return { containerSlug, videoSlug, variantSlug }
+}
+
 // Transform SectionVideoCollectionCarouselSlide to VideoChildFields-compatible format
 function transformSlidesToVideoChildFields(
-  slides: SectionVideoCollectionCarouselSlide[],
-  analyticsTag?: string
-): VideoChildFields[] {
-  return slides.map((slide) => ({
-    __typename: 'Video' as const,
-    id: slide.id,
-    label: slide.label,
-    title: [{ __typename: 'VideoTitle' as const, value: slide.title }],
-    images: [{ __typename: 'CloudflareImage' as const, mobileCinematicHigh: slide.imageUrl }],
-    imageAlt: [{ __typename: 'VideoImageAlt' as const, value: slide.alt }],
-    snippet: slide.snippet ? [{ __typename: 'VideoSnippet' as const, value: slide.snippet }] : [],
-    slug: slide.parentId || slide.id,
-    variant: null, // Slides don't have variant data
-    childrenCount: 0, // Not applicable for slides
-    // Add analytics tag as a custom property for tracking
-    ...(analyticsTag && { analyticsTag })
-  }))
+  slides: SectionVideoCollectionCarouselSlide[]
+): TransformSlidesResult {
+  return slides.reduce<TransformSlidesResult>(
+    (acc, slide) => {
+      const { containerSlug, videoSlug, variantSlug } = parseWatchHref(slide.href)
+
+      if (containerSlug != null) {
+        acc.containerSlugByVideoId[slide.id] = containerSlug
+      }
+
+      acc.videos.push({
+        __typename: 'Video' as const,
+        id: slide.id,
+        label: slide.label ?? VideoLabel.shortFilm,
+        title: [{ __typename: 'VideoTitle' as const, value: slide.title }],
+        images: [
+          {
+            __typename: 'CloudflareImage' as const,
+            mobileCinematicHigh: slide.imageUrl
+          }
+        ],
+        imageAlt: [{ __typename: 'VideoImageAlt' as const, value: slide.alt }],
+        snippet: slide.snippet
+          ? [{ __typename: 'VideoSnippet' as const, value: slide.snippet }]
+          : [],
+        slug: videoSlug ?? slide.id,
+        variant:
+          variantSlug != null
+            ? {
+                __typename: 'VideoVariant' as const,
+                id: `${slide.id}-variant`,
+                duration: 0,
+                hls: null,
+                slug: variantSlug
+              }
+            : null,
+        childrenCount: 0
+      })
+
+      return acc
+    },
+    { videos: [], containerSlugByVideoId: {} }
+  )
 }
 
 export interface SectionVideoGridProps {
@@ -90,9 +171,9 @@ export function SectionVideoGrid({
   })
 
   // Transform slides to VideoChildFields format for VideoGrid
-  const videos = useMemo(
-    () => transformSlidesToVideoChildFields(slides, analyticsTag),
-    [slides, analyticsTag]
+  const { videos, containerSlugByVideoId } = useMemo(
+    () => transformSlidesToVideoChildFields(slides),
+    [slides]
   )
 
   if (!loading && slides.length === 0) return null
@@ -153,6 +234,7 @@ export function SectionVideoGrid({
           loading={loading}
           orientation={orientation}
           analyticsTag={analyticsTag}
+          containerSlugByVideoId={containerSlugByVideoId}
           data-testid="SectionVideoGridContainer"
         />
       </div>
