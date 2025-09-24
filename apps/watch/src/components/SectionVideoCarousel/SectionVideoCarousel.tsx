@@ -72,29 +72,46 @@ export function SectionVideoCarousel({
   if (!loading && slides.length === 0) return null
 
   // Transform SectionVideoCollectionCarouselSlide to VideoChildFields format for VideoCard
-  const transformSlideToVideoChildFields = (slide: SectionVideoCollectionCarouselSlide): VideoChildFields => {
-    // Extract slug from href - href format is typically /watch/{containerSlug}.html/{variantSlug}.html
-    const hrefParts = slide.href.split('/')
-    const variantSlug = hrefParts[hrefParts.length - 1]?.replace('.html', '') || ''
-    const containerSlug = hrefParts[hrefParts.length - 2]?.replace('.html', '') || ''
+  const transformSlideToVideoChildFields = (
+    slide: SectionVideoCollectionCarouselSlide
+  ): { video: VideoChildFields; containerSlug?: string } => {
+    const normalizedHref = slide.href.replace(/^[\/]+/, '')
+    const hrefWithoutPrefix = normalizedHref.startsWith('watch/')
+      ? normalizedHref.slice('watch/'.length)
+      : normalizedHref
+    const segments = hrefWithoutPrefix
+      .split('/')
+      .filter((segment) => segment !== '')
+      .map((segment) => segment.replace(/\.html?$/i, ''))
+
+    const containerSlug = segments.length > 2 ? segments[0] : undefined
+    const variantSlugSegments = (containerSlug != null ? segments.slice(1) : segments).filter(
+      (segment) => segment !== ''
+    )
+    const resolvedContainerSlug = containerSlug ?? ''
+    const resolvedVariantSlug =
+      variantSlugSegments.length > 0 ? variantSlugSegments.join('/') : ''
 
     return {
-      __typename: 'Video',
-      id: slide.id,
-      label: slide.label || 'video', // fallback to 'video' if label is undefined
-      title: [{ __typename: 'VideoTitle', value: slide.title }],
-      images: [{ __typename: 'CloudflareImage', mobileCinematicHigh: slide.imageUrl }],
-      imageAlt: [{ __typename: 'VideoImageAlt', value: slide.alt }],
-      snippet: slide.snippet ? [{ __typename: 'VideoSnippet', value: slide.snippet }] : [],
-      slug: containerSlug,
-      variant: {
-        __typename: 'VideoVariant',
-        id: `${slide.id}-variant`,
-        duration: 0, // We don't have duration from the slide, default to 0
-        hls: null,
-        slug: variantSlug
+      video: {
+        __typename: 'Video',
+        id: slide.id,
+        label: slide.label || 'video', // fallback to 'video' if label is undefined
+        title: [{ __typename: 'VideoTitle', value: slide.title }],
+        images: [{ __typename: 'CloudflareImage', mobileCinematicHigh: slide.imageUrl }],
+        imageAlt: [{ __typename: 'VideoImageAlt', value: slide.alt }],
+        snippet: slide.snippet ? [{ __typename: 'VideoSnippet', value: slide.snippet }] : [],
+        slug: resolvedContainerSlug,
+        variant: {
+          __typename: 'VideoVariant',
+          id: `${slide.id}-variant`,
+          duration: 0, // We don't have duration from the slide, default to 0
+          hls: null,
+          slug: resolvedVariantSlug
+        },
+        childrenCount: 0 // Default to 0, we don't have this info from the slide
       },
-      childrenCount: 0 // Default to 0, we don't have this info from the slide
+      containerSlug: containerSlug ?? undefined
     }
   }
 
@@ -171,7 +188,7 @@ export function SectionVideoCarousel({
                 </SwiperSlide>
               ))
             : slides.map((slide, index) => {
-                const video = transformSlideToVideoChildFields(slide)
+                const { video, containerSlug } = transformSlideToVideoChildFields(slide)
                 return (
                   <SwiperSlide
                     key={slide.id}
@@ -181,7 +198,7 @@ export function SectionVideoCarousel({
                     <VideoCard
                       video={video}
                       orientation="vertical"
-                      containerSlug={slide.parentId}
+                      containerSlug={containerSlug}
                       analyticsTag={analyticsTag}
                     />
                   </SwiperSlide>

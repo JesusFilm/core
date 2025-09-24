@@ -267,6 +267,27 @@ describe('SectionVideoCarousel', () => {
     expect(
       screen.getByTestId('SectionVideoCarouselSlide-video-1')
     ).toBeInTheDocument()
+
+    const featureFilmCard = screen.getByTestId(
+      'VideoCard-child-1'
+    ) as HTMLAnchorElement
+    expect(featureFilmCard.getAttribute('href')).toBe(
+      '/watch/collection-slug.html/child-one/en.html'
+    )
+
+    const episodeCard = screen.getByTestId(
+      'VideoCard-grandchild-1'
+    ) as HTMLAnchorElement
+    expect(episodeCard.getAttribute('href')).toBe(
+      '/watch/child-collection-slug.html/grandchild-one/en.html'
+    )
+
+    const singleVideoCard = screen.getByTestId(
+      'VideoCard-video-1'
+    ) as HTMLAnchorElement
+    expect(singleVideoCard.getAttribute('href')).toBe(
+      '/watch/single-video.html/en.html'
+    )
     expect(screen.getByTestId('SectionVideoCarouselCTA')).toHaveTextContent(
       'Watch'
     )
