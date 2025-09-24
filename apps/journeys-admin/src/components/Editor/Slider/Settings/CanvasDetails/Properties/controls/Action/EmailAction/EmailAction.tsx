@@ -2,7 +2,7 @@ import Box from '@mui/material/Box'
 import InputAdornment from '@mui/material/InputAdornment'
 import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next'
-import { ReactElement } from 'react'
+import { ReactElement, RefObject } from 'react'
 import { object, string } from 'yup'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
@@ -12,8 +12,9 @@ import Mail2Icon from '@core/shared/ui/icons/Mail2'
 import { BlockFields_ButtonBlock as ButtonBlock } from '../../../../../../../../../../__generated__/BlockFields'
 import { TextFieldForm } from '../../../../../../../../TextFieldForm'
 import { useActionCommand } from '../../../../../../../utils/useActionCommand'
+import { TextFieldFormRef } from '../../../../../../../../TextFieldForm/TextFieldForm'
 
-export function EmailAction(): ReactElement {
+export function EmailAction({ ref }: { ref?: RefObject<TextFieldFormRef | null> }): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const {
     state: { selectedBlock: stateSelectedBlock, selectedStep }
@@ -35,7 +36,11 @@ export function EmailAction(): ReactElement {
 
   function handleSubmit(email: string): void {
     if (selectedBlock == null || selectedStep == null) return
-
+    if (!emailActionSchema.isValid(email)) {
+      ref?.current?.focus()
+      return
+    }
+    
     const { id, action, __typename: blockTypename } = selectedBlock
     addAction({
       blockId: id,
@@ -68,6 +73,7 @@ export function EmailAction(): ReactElement {
       <Box data-testid="EmailAction">
         <TextFieldForm
           id="email"
+          ref={ref}
           label={t('Paste Email here...')}
           initialValue={emailAction?.email}
           validationSchema={emailActionSchema}
