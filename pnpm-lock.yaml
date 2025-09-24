@@ -1081,8 +1081,8 @@ importers:
         specifier: ^8.26.0
         version: 8.44.0(eslint@9.24.0(jiti@2.5.1))(typescript@5.9.2)
       undici:
-        specifier: 5.28.4
-        version: 5.28.4
+        specifier: 5.29.0
+        version: 5.29.0
       url-loader:
         specifier: ^4.1.1
         version: 4.1.1(file-loader@6.2.0(webpack@5.99.9(@swc/core@1.5.29(@swc/helpers@0.5.17))(esbuild@0.19.12)))(webpack@5.99.9(@swc/core@1.5.29(@swc/helpers@0.5.17))(esbuild@0.19.12))
