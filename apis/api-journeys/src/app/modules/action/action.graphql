@@ -10,7 +10,6 @@ enum ContactActionType {
 }
 
 type NavigateToBlockAction implements Action
-  @key(fields: "parentBlockId")
   @shareable {
   parentBlockId: ID!
   parentBlock: Block!
@@ -18,7 +17,7 @@ type NavigateToBlockAction implements Action
   blockId: String!
 }
 
-type LinkAction implements Action @key(fields: "parentBlockId") @shareable {
+type LinkAction implements Action @shareable {
   parentBlockId: ID!
   parentBlock: Block!
   gtmEventName: String
@@ -28,7 +27,7 @@ type LinkAction implements Action @key(fields: "parentBlockId") @shareable {
   parentStepId: String
 }
 
-type EmailAction implements Action @key(fields: "parentBlockId") @shareable {
+type EmailAction implements Action @shareable {
   parentBlockId: ID!
   parentBlock: Block!
   gtmEventName: String
@@ -37,7 +36,7 @@ type EmailAction implements Action @key(fields: "parentBlockId") @shareable {
   parentStepId: String
 }
 
-type PhoneAction implements Action @key(fields: "parentBlockId") @shareable {
+type PhoneAction implements Action @shareable {
   parentBlockId: ID!
   parentBlock: Block!
   gtmEventName: String
