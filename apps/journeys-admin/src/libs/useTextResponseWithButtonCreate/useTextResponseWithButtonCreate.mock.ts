@@ -24,7 +24,7 @@ export const textResponseWithButtonCreateMock: MockedResponse<
         id: 'textResponse.id',
         journeyId: 'journey.id',
         parentBlockId: 'card.id',
-        label: 'Label'
+        label: 'Field Name'
       },
       buttonInput: {
         id: 'button.id',
@@ -65,7 +65,7 @@ export const textResponseWithButtonCreateMock: MockedResponse<
         id: 'textResponse.id',
         parentBlockId: 'card.id',
         parentOrder: 0,
-        label: 'Label',
+        label: 'Field Name',
         hint: null,
         minRows: null,
         type: null,

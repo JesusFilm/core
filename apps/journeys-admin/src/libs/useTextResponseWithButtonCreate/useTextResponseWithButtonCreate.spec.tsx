@@ -22,7 +22,7 @@ describe('useTextResponseWithButtonCreate', () => {
       id: 'textResponse.id',
       parentBlockId: 'card.id',
       parentOrder: 0,
-      label: 'Label',
+      label: 'Field Name',
       hint: null,
       minRows: null,
       type: null,

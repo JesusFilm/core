@@ -246,7 +246,7 @@ export function Label(): ReactElement {
         }}
       >
         {t(
-          'Labels are required for analytics, but you can choose to show or hide them for users.'
+          'This label can be hidden from users, but it will always be included in analytics.​'
         )}
       </Typography>
     </Stack>

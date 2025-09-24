@@ -12,10 +12,10 @@ import { Type } from './Type'
 export function TextResponseFields(): ReactElement {
   return (
     <Stack data-testid="TextResponseFields">
-      <Required />
       <Label />
       <Placeholder />
       <Hint />
+      <Required />
       <Type />
       <MinRows />
       <GrowthSpacesIntegrations />
