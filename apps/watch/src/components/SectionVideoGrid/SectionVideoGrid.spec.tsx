@@ -3,8 +3,36 @@ import { render, screen, waitFor } from '@testing-library/react'
 
 import { VideoLabel } from '../../../__generated__/globalTypes'
 import { GET_COLLECTION_SHOWCASE_CONTENT } from '../SectionVideoCarousel/queries'
+import type { SectionVideoCollectionCarouselSlide } from '../SectionVideoCarousel/useSectionVideoCollectionCarouselContent'
+import * as carouselContentHook from '../SectionVideoCarousel/useSectionVideoCollectionCarouselContent'
 
 import { SectionVideoGrid } from './SectionVideoGrid'
+
+const originalUseCarouselContent =
+  carouselContentHook.useSectionVideoCollectionCarouselContent
+
+const mockVideoGrid = jest.fn()
+
+jest.mock('../VideoGrid/VideoGrid', () => ({
+  VideoGrid: (props: any) => {
+    mockVideoGrid(props)
+    const videos = props.videos ?? []
+    return (
+      <div data-testid="VideoGridMock">
+        {props.loading && videos.length === 0 ? (
+          <div className="animate-pulse" data-testid="VideoGridSkeleton" />
+        ) : null}
+        {videos.map((video: any) => (
+          <div key={video.id} data-testid={`VideoCard-${video.id}`} />
+        ))}
+      </div>
+    )
+  }
+}))
+
+jest.mock('@core/shared/ui/icons/Icon', () => ({
+  Icon: () => <div data-testid="MockIcon" />
+}))
 
 jest.mock('next-i18next', () => ({
   useTranslation: () => ({
@@ -20,6 +48,24 @@ jest.mock('next-i18next', () => ({
 jest.mock('next/router', () => ({
   useRouter: () => ({ locale: 'en' })
 }))
+
+let capturedSlides: SectionVideoCollectionCarouselSlide[] = []
+
+beforeEach(() => {
+  mockVideoGrid.mockClear()
+  capturedSlides = []
+  jest
+    .spyOn(carouselContentHook, 'useSectionVideoCollectionCarouselContent')
+    .mockImplementation((options) => {
+      const result = originalUseCarouselContent(options)
+      capturedSlides = result.slides
+      return result
+    })
+})
+
+afterEach(() => {
+  jest.restoreAllMocks()
+})
 
 const collectionMock = {
   __typename: 'Video',
@@ -261,6 +307,66 @@ describe('SectionVideoGrid', () => {
         screen.getByTestId('VideoCard-child-1')
       ).toBeInTheDocument()
     )
+    await waitFor(() => expect(mockVideoGrid).toHaveBeenCalled())
+
+    expect(capturedSlides).toHaveLength(3)
+
+    const childSlide = capturedSlides.find((slide) => slide.id === 'child-1')
+    expect(childSlide).toMatchObject({
+      containerSlug: 'collection-slug',
+      variantSlug: 'child-one/en'
+    })
+    expect(childSlide?.video).toMatchObject({
+      slug: 'child-one',
+      variant: expect.objectContaining({ slug: 'child-one/en' })
+    })
+
+    const grandchildSlide = capturedSlides.find(
+      (slide) => slide.id === 'grandchild-1'
+    )
+    expect(grandchildSlide).toMatchObject({
+      containerSlug: 'child-collection-slug',
+      variantSlug: 'grandchild-one/en'
+    })
+    expect(grandchildSlide?.video).toMatchObject({
+      slug: 'grandchild-one',
+      variant: expect.objectContaining({ slug: 'grandchild-one/en' })
+    })
+
+    const directVideoSlide = capturedSlides.find(
+      (slide) => slide.id === 'video-1'
+    )
+    expect(directVideoSlide).toMatchObject({
+      containerSlug: undefined,
+      variantSlug: 'single-video/en'
+    })
+    expect(directVideoSlide?.video).toMatchObject({
+      slug: 'single-video',
+      variant: expect.objectContaining({ slug: 'single-video/en' })
+    })
+
+    const latestGridProps =
+      mockVideoGrid.mock.calls[mockVideoGrid.mock.calls.length - 1]?.[0]
+    expect(latestGridProps?.videos).toEqual(
+      capturedSlides.map((slide) => slide.video)
+    )
+    expect(latestGridProps?.videos).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          id: 'child-1',
+          variant: expect.objectContaining({ slug: 'child-one/en' })
+        }),
+        expect.objectContaining({
+          id: 'grandchild-1',
+          variant: expect.objectContaining({ slug: 'grandchild-one/en' })
+        }),
+        expect.objectContaining({
+          id: 'video-1',
+          variant: expect.objectContaining({ slug: 'single-video/en' })
+        })
+      ])
+    )
+
     expect(
       screen.getByTestId('VideoCard-grandchild-1')
     ).toBeInTheDocument()
