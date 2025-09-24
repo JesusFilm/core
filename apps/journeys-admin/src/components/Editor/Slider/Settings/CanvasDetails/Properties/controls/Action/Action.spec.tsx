@@ -5,7 +5,6 @@ import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
-import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 
 import { BlockFields_ButtonBlock as ButtonBlock } from '../../../../../../../../../__generated__/BlockFields'
 import { GetJourney_journey as Journey } from '../../../../../../../../../__generated__/GetJourney'
@@ -60,7 +59,7 @@ describe('Action', () => {
     )
   })
 
-  it('shows customization toggle when URL/Website is selected and journeyCustomization', async () => {
+  it('shows customization toggle when URL/Website is selected', async () => {
     const buttonBlockWithLinkAction = {
       ...selectedBlock,
       action: {
@@ -73,28 +72,26 @@ describe('Action', () => {
 
     const { getByRole, getByText } = render(
       <MockedProvider>
-        <FlagsProvider flags={{ journeyCustomization: true }}>
-          <JourneyProvider
-            value={{
-              journey: { template: true } as unknown as Journey,
-              variant: 'admin'
+        <JourneyProvider
+          value={{
+            journey: { template: true } as unknown as Journey,
+            variant: 'admin'
+          }}
+        >
+          <EditorProvider
+            initialState={{
+              selectedBlock: buttonBlockWithLinkAction,
+              selectedStep
             }}
           >
-            <EditorProvider
-              initialState={{
-                selectedBlock: buttonBlockWithLinkAction,
-                selectedStep
-              }}
-            >
-              <Action />
-            </EditorProvider>
-          </JourneyProvider>
-        </FlagsProvider>
+            <Action />
+          </EditorProvider>
+        </JourneyProvider>
       </MockedProvider>
     )
 
     await waitFor(() => {
-      expect(getByText('Customize')).toBeInTheDocument()
+      expect(getByText('Needs Customization')).toBeInTheDocument()
       expect(
         getByRole('checkbox', { name: 'Toggle customizable' })
       ).toBeInTheDocument()

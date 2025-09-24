@@ -42,7 +42,7 @@ describe('CustomizationToggle', () => {
       </EditorProvider>
     )
 
-    expect(screen.getByText('Customize')).toBeInTheDocument()
+    expect(screen.getByText('Needs Customization')).toBeInTheDocument()
     const toggle = screen.getByRole('checkbox', { name: 'Toggle customizable' })
     expect(toggle).toBeChecked()
   })
@@ -73,7 +73,7 @@ describe('CustomizationToggle', () => {
       </EditorProvider>
     )
 
-    expect(screen.getByText('Customize')).toBeInTheDocument()
+    expect(screen.getByText('Needs Customization')).toBeInTheDocument()
     const toggle = screen.getByRole('checkbox', { name: 'Toggle customizable' })
     expect(toggle).not.toBeChecked()
   })
