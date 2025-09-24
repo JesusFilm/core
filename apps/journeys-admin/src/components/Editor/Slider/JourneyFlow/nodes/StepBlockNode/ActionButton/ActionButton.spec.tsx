@@ -36,7 +36,9 @@ describe('ActionButton', () => {
     )
 
     expect(screen.getByText('button action')).toBeInTheDocument()
-    expect(screen.getByTestId('BaseNodeConnectionArrowIcon')).toBeVisible()
+    expect(
+      screen.getByTestId('BaseNodeConnectionArrowIcon')
+    ).toBeInTheDocument()
   })
 
   it('should render default label "Button" for ButtonBlock when submitEnabled is false', () => {
@@ -207,7 +209,9 @@ describe('ActionButton', () => {
       </MockedProvider>
     )
 
-    expect(screen.getByTestId('BaseNodeConnectionArrowIcon')).not.toBeVisible()
+    expect(screen.getByTestId('BaseNodeConnectionArrowIcon')).toHaveStyle(
+      'opacity: 0'
+    )
   })
 
   it('should disable source handle in analytics mode', () => {

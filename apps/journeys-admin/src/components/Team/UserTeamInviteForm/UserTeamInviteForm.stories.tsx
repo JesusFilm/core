@@ -1,7 +1,7 @@
 import { MockedProvider } from '@apollo/client/testing'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
-import { Meta, StoryObj } from '@storybook/react'
+import { Meta, StoryObj } from '@storybook/nextjs'
 
 import UsersProfiles2Icon from '@core/shared/ui/icons/UsersProfiles2'
 import { journeysAdminConfig } from '@core/shared/ui/storybook'

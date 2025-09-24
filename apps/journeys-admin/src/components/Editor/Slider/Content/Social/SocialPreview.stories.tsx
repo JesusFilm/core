@@ -1,5 +1,5 @@
 import Box from '@mui/material/Box'
-import { Meta, StoryObj } from '@storybook/react'
+import { Meta, StoryObj } from '@storybook/nextjs'
 import { ComponentProps } from 'react'
 
 import { ActiveSlide, EditorProvider } from '@core/journeys/ui/EditorProvider'

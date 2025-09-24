@@ -1,4 +1,4 @@
-import { Meta, StoryObj } from '@storybook/react'
+import { Meta, StoryObj } from '@storybook/nextjs'
 import { ReactElement } from 'react'
 
 import { TeamProvider } from '@core/journeys/ui/TeamProvider'
