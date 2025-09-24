@@ -90,19 +90,22 @@ describe('Action', () => {
   it('shows customization toggle when URL/Website is selected', async () => {
     const { getByRole, getByText } = render(
       <MockedProvider
-        mocks={[{
-          request: {
-            ...blockActionLinkUpdateMock.request,
-            variables: {
-              id: "button1.id",
-              input: {
-                "url": "https://example.com",
-                customizable: false,
-                "parentStepId": "step1.id"
+        mocks={[
+          {
+            request: {
+              ...blockActionLinkUpdateMock.request,
+              variables: {
+                id: 'button1.id',
+                input: {
+                  url: 'https://example.com',
+                  customizable: false,
+                  parentStepId: 'step1.id'
+                }
               }
-            }
-          }, result: blockActionLinkUpdateMock.result
-        }]}
+            },
+            result: blockActionLinkUpdateMock.result
+          }
+        ]}
       >
         <JourneyProvider
           value={{
@@ -123,7 +126,9 @@ describe('Action', () => {
     )
 
     fireEvent.mouseDown(getByRole('combobox'))
-    await waitFor(() => expect(getByRole('option', { name: 'URL/Website' })).toBeInTheDocument())
+    await waitFor(() =>
+      expect(getByRole('option', { name: 'URL/Website' })).toBeInTheDocument()
+    )
     fireEvent.click(getByRole('option', { name: 'URL/Website' }))
 
     await waitFor(() => {
@@ -137,19 +142,22 @@ describe('Action', () => {
   it('shows customization toggle when Email is selected', async () => {
     const { getByRole, getByText } = render(
       <MockedProvider
-        mocks={[{
-          request: {
-            ...blockActionEmailUpdateMock.request,
-            variables: {
-              id: "button1.id",
-              input: {
-                "email": "test@example.com",
-                customizable: false,
-                parentStepId: "step1.id"
+        mocks={[
+          {
+            request: {
+              ...blockActionEmailUpdateMock.request,
+              variables: {
+                id: 'button1.id',
+                input: {
+                  email: 'test@example.com',
+                  customizable: false,
+                  parentStepId: 'step1.id'
+                }
               }
-            }
-          }, result: blockActionEmailUpdateMock.result
-        }]}
+            },
+            result: blockActionEmailUpdateMock.result
+          }
+        ]}
       >
         <JourneyProvider
           value={{
@@ -170,7 +178,9 @@ describe('Action', () => {
     )
 
     fireEvent.mouseDown(getByRole('combobox'))
-    await waitFor(() => expect(getByRole('option', { name: 'Email' })).toBeInTheDocument())
+    await waitFor(() =>
+      expect(getByRole('option', { name: 'Email' })).toBeInTheDocument()
+    )
     fireEvent.click(getByRole('option', { name: 'Email' }))
 
     await waitFor(() => {
@@ -184,33 +194,36 @@ describe('Action', () => {
   it('shows focus text input on select change to email or url', async () => {
     const { getByRole } = render(
       <MockedProvider
-        mocks={[{
-          request: {
-            ...blockActionEmailUpdateMock.request,
-            variables: {
-              id: "button1.id",
-              input: {
-                "email": "test@example.com",
-                customizable: false,
-                parentStepId: "step1.id"
+        mocks={[
+          {
+            request: {
+              ...blockActionEmailUpdateMock.request,
+              variables: {
+                id: 'button1.id',
+                input: {
+                  email: 'test@example.com',
+                  customizable: false,
+                  parentStepId: 'step1.id'
+                }
               }
-            }
+            },
+            result: blockActionEmailUpdateMock.result
           },
-          result: blockActionEmailUpdateMock.result
-        },
-        {
-          request: {
-            ...blockActionLinkUpdateMock.request,
-            variables: {
-              id: "button1.id",
-              input: {
-                "url": "https://example.com",
-                customizable: false,
-                "parentStepId": "step1.id"
+          {
+            request: {
+              ...blockActionLinkUpdateMock.request,
+              variables: {
+                id: 'button1.id',
+                input: {
+                  url: 'https://example.com',
+                  customizable: false,
+                  parentStepId: 'step1.id'
+                }
               }
-            }
-          }, result: blockActionLinkUpdateMock.result
-        }]}
+            },
+            result: blockActionLinkUpdateMock.result
+          }
+        ]}
       >
         <JourneyProvider
           value={{
@@ -232,17 +245,26 @@ describe('Action', () => {
 
     // starts at email as default so we have to assert URL first
     fireEvent.mouseDown(getByRole('combobox'))
-    await waitFor(() => expect(getByRole('option', { name: 'URL/Website' })).toBeInTheDocument())
+    await waitFor(() =>
+      expect(getByRole('option', { name: 'URL/Website' })).toBeInTheDocument()
+    )
     userEvent.click(getByRole('option', { name: 'URL/Website' }))
-    await waitFor(() => expect(getByRole('textbox', { name: 'Paste URL here...' })).toHaveFocus())
+    await waitFor(() =>
+      expect(getByRole('textbox', { name: 'Paste URL here...' })).toHaveFocus()
+    )
 
     // then switch to email
     fireEvent.mouseDown(getByRole('combobox'))
-    await waitFor(() => expect(getByRole('option', { name: 'Email' })).toBeInTheDocument())
+    await waitFor(() =>
+      expect(getByRole('option', { name: 'Email' })).toBeInTheDocument()
+    )
     userEvent.click(getByRole('option', { name: 'Email' }))
-    await waitFor(() => expect(getByRole('textbox', { name: 'Paste Email here...' })).toHaveFocus())
+    await waitFor(() =>
+      expect(
+        getByRole('textbox', { name: 'Paste Email here...' })
+      ).toHaveFocus()
+    )
   })
-
 
   it('should filter out LinkAction and EmailAction options for submit buttons', async () => {
     const submitButtonBlock = {

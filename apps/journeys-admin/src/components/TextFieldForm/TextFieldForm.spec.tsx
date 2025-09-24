@@ -183,13 +183,13 @@ describe('TextFieldForm', () => {
         ref={ref}
       />
     )
-  
+
     const textField = getByRole('textbox')
-    
+
     act(() => {
       ref.current?.focus()
     })
-  
+
     expect(textField).toHaveFocus()
   })
 })
