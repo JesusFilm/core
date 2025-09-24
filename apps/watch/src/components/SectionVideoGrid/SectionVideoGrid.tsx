@@ -11,30 +11,7 @@ import {
 } from '../SectionVideoCarousel/useSectionVideoCollectionCarouselContent'
 import { VideoGrid } from '../VideoGrid/VideoGrid'
 
-import type { VideoChildFields } from '../../../__generated__/VideoChildFields'
-
 export type { SectionVideoCollectionCarouselSource as SectionVideoGridSource } from '../SectionVideoCarousel/useSectionVideoCollectionCarouselContent'
-
-// Transform SectionVideoCollectionCarouselSlide to VideoChildFields-compatible format
-function transformSlidesToVideoChildFields(
-  slides: SectionVideoCollectionCarouselSlide[],
-  analyticsTag?: string
-): VideoChildFields[] {
-  return slides.map((slide) => ({
-    __typename: 'Video' as const,
-    id: slide.id,
-    label: slide.label,
-    title: [{ __typename: 'VideoTitle' as const, value: slide.title }],
-    images: [{ __typename: 'CloudflareImage' as const, mobileCinematicHigh: slide.imageUrl }],
-    imageAlt: [{ __typename: 'VideoImageAlt' as const, value: slide.alt }],
-    snippet: slide.snippet ? [{ __typename: 'VideoSnippet' as const, value: slide.snippet }] : [],
-    slug: slide.parentId || slide.id,
-    variant: null, // Slides don't have variant data
-    childrenCount: 0, // Not applicable for slides
-    // Add analytics tag as a custom property for tracking
-    ...(analyticsTag && { analyticsTag })
-  }))
-}
 
 export interface SectionVideoGridProps {
   id?: string
@@ -89,11 +66,7 @@ export function SectionVideoGrid({
     languageId
   })
 
-  // Transform slides to VideoChildFields format for VideoGrid
-  const videos = useMemo(
-    () => transformSlidesToVideoChildFields(slides, analyticsTag),
-    [slides, analyticsTag]
-  )
+  const videos = useMemo(() => slides.map((slide) => slide.video), [slides])
 
   if (!loading && slides.length === 0) return null
 
