@@ -1364,7 +1364,6 @@ export class MultiselectBlock implements Block {
     parentBlockId?: Nullable<string>;
     parentOrder?: Nullable<number>;
     label: string;
-    submitLabel?: Nullable<string>;
     max?: Nullable<number>;
     min?: Nullable<number>;
     action?: Nullable<Action>;

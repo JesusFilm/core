@@ -4,7 +4,6 @@ type MultiselectBlock implements Block @shareable {
   parentBlockId: ID
   parentOrder: Int
   label: String!
-  submitLabel: String
   max: Int
   min: Int
   action: Action

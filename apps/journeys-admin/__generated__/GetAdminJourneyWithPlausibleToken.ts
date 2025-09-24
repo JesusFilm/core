@@ -201,7 +201,6 @@ export interface GetAdminJourneyWithPlausibleToken_journey_blocks_MultiselectBlo
   parentBlockId: string | null;
   parentOrder: number | null;
   label: string;
-  submitLabel: string | null;
   min: number | null;
   max: number | null;
   action: GetAdminJourneyWithPlausibleToken_journey_blocks_MultiselectBlock_action | null;

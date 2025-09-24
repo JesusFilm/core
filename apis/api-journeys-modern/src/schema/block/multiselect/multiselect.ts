@@ -13,10 +13,6 @@ export const MultiselectBlock = builder.prismaObject('Block', {
     }),
     min: t.exposeInt('min', { nullable: true }),
     max: t.exposeInt('max', { nullable: true }),
-    submitLabel: t.string({
-      nullable: true,
-      resolve: ({ submitLabel }) => submitLabel ?? ''
-    }),
     action: t.relation('action', {
       nullable: true
     })

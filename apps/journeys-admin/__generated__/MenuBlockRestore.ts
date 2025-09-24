@@ -187,7 +187,6 @@ export interface MenuBlockRestore_stepRestore_MultiselectBlock {
   parentBlockId: string | null;
   parentOrder: number | null;
   label: string;
-  submitLabel: string | null;
   min: number | null;
   max: number | null;
   action: MenuBlockRestore_stepRestore_MultiselectBlock_action | null;

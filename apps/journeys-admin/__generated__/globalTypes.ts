@@ -604,7 +604,6 @@ export interface MultiselectBlockCreateInput {
   journeyId: string;
   parentBlockId: string;
   label: string;
-  submitLabel: string;
 }
 
 export interface MultiselectOptionBlockCreateInput {

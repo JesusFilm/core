@@ -985,7 +985,6 @@ type MultiselectBlock implements Block @join__type(graph: API_JOURNEYS)  @join__
   parentBlockId: ID
   parentOrder: Int
   label: String!
-  submitLabel: String
   max: Int
   min: Int
   action: Action
@@ -4562,13 +4561,11 @@ input MultiselectBlockCreateInput @join__type(graph: API_JOURNEYS_MODERN)  {
   journeyId: ID!
   parentBlockId: ID!
   label: String!
-  submitLabel: String!
 }
 
 input MultiselectBlockUpdateInput @join__type(graph: API_JOURNEYS_MODERN)  {
   parentBlockId: ID
   label: String
-  submitLabel: String
   min: Int
   max: Int
 }

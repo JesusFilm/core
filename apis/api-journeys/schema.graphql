@@ -859,7 +859,6 @@ type MultiselectBlock implements Block
   parentBlockId: ID
   parentOrder: Int
   label: String!
-  submitLabel: String
   max: Int
   min: Int
   action: Action

@@ -76,7 +76,6 @@ export function NewMultiselectButton(): ReactElement {
       parentBlockId: card.id,
       parentOrder: card.children.length ?? 0,
       label: t('Your label here'),
-      submitLabel: t('Submit'),
       min: null,
       max: null,
       action: null,
@@ -108,8 +107,7 @@ export function NewMultiselectButton(): ReactElement {
               id: multiselectBlock.id,
               journeyId: journey.id,
               parentBlockId: multiselectBlock.parentBlockId,
-              label: multiselectBlock.label,
-              submitLabel: multiselectBlock.submitLabel
+              label: multiselectBlock.label
             },
             multiselectOptionBlockCreateInput1: {
               id: option1.id,

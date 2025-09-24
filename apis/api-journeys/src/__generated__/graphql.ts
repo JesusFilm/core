@@ -1467,7 +1467,6 @@ export type MultiselectBlock = Block & {
   min?: Maybe<Scalars['Int']['output']>;
   parentBlockId?: Maybe<Scalars['ID']['output']>;
   parentOrder?: Maybe<Scalars['Int']['output']>;
-  submitLabel?: Maybe<Scalars['String']['output']>;
 };
 
 export type MultiselectBlockCreateInput = {
@@ -1475,7 +1474,6 @@ export type MultiselectBlockCreateInput = {
   journeyId: Scalars['ID']['input'];
   label: Scalars['String']['input'];
   parentBlockId: Scalars['ID']['input'];
-  submitLabel: Scalars['String']['input'];
 };
 
 export type MultiselectBlockUpdateInput = {
@@ -1483,7 +1481,6 @@ export type MultiselectBlockUpdateInput = {
   max?: InputMaybe<Scalars['Int']['input']>;
   min?: InputMaybe<Scalars['Int']['input']>;
   parentBlockId?: InputMaybe<Scalars['ID']['input']>;
-  submitLabel?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type MultiselectOptionBlock = Block & {

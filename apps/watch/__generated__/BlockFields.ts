@@ -187,7 +187,6 @@ export interface BlockFields_MultiselectBlock {
   parentBlockId: string | null;
   parentOrder: number | null;
   label: string;
-  submitLabel: string | null;
   min: number | null;
   max: number | null;
   action: BlockFields_MultiselectBlock_action | null;

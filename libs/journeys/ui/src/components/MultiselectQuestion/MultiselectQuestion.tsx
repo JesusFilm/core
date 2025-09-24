@@ -6,6 +6,7 @@ import { SimplePaletteColorOptions, styled } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 import { sendGTMEvent } from '@next/third-parties/google'
 import { useRouter } from 'next/router'
+import { useFormikContext } from 'formik'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, useEffect, useMemo, useState } from 'react'
 import { v4 as uuidv4 } from 'uuid'
@@ -93,6 +94,7 @@ export function MultiselectQuestion({
   const { blockHistory, treeBlocks } = useBlocks()
   const { t } = useTranslation('libs-journeys-ui')
   const activeBlock = blockHistory[blockHistory.length - 1]
+  const formik = useFormikContext<{ [key: string]: string[] }>()
 
   useEffect(() => {
     if (!isActiveBlockOrDescendant(blockId)) setSelectedIds([])
@@ -106,10 +108,16 @@ export function MultiselectQuestion({
   function toggleSelect(optionId: string): void {
     setSelectedIds((prev) => {
       const isSelected = prev.includes(optionId)
-      if (isSelected) return prev.filter((id) => id !== optionId)
-      const limit = typeof max === 'number' ? max : undefined
-      if (limit != null && prev.length >= limit) return prev
-      return [...prev, optionId]
+      const next = isSelected
+        ? prev.filter((id) => id !== optionId)
+        : (() => {
+            const limit = typeof max === 'number' ? max : undefined
+            if (limit != null && prev.length >= limit) return prev
+            return [...prev, optionId]
+          })()
+      // sync with Card Formik so submit button acts like TextResponse
+      formik?.setFieldValue(blockId, next)
+      return next
     })
   }
 
@@ -123,32 +131,11 @@ export function MultiselectQuestion({
   }, [children, selectedIds])
 
   async function handleSubmit(): Promise<void> {
-    if (
-      (variant !== 'default' && variant !== 'embed') ||
-      selectedIds.length === 0
-    )
+    // delegate to Card form submit to match TextResponse flow
+    if (typeof (formik as any)?.submitForm === 'function') {
+      await (formik as any).submitForm()
       return
-    const id = uuid()
-    await multiselectSubmissionEventCreate({
-      variables: {
-        input: {
-          id,
-          blockId,
-          stepId: activeBlock?.id,
-          label: heading,
-          values: selectedLabels
-        }
-      }
-    })
-    sendGTMEvent({
-      event: 'multiselect_submission',
-      eventId: id,
-      blockId,
-      stepName: heading
-    })
-    // trigger action after submit
-    const nextStepSlug = getNextStepSlug(journey, action)
-    handleAction(router, action, nextStepSlug)
+    }
   }
 
   const options = children?.map((option: any) => {

@@ -201,7 +201,6 @@ export interface GetPublisherTemplate_publisherTemplate_blocks_MultiselectBlock 
   parentBlockId: string | null;
   parentOrder: number | null;
   label: string;
-  submitLabel: string | null;
   min: number | null;
   max: number | null;
   action: GetPublisherTemplate_publisherTemplate_blocks_MultiselectBlock_action | null;

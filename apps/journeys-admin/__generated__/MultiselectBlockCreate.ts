@@ -49,7 +49,6 @@ export interface MultiselectBlockCreate_multiselectBlockCreate {
   parentBlockId: string | null;
   parentOrder: number | null;
   label: string;
-  submitLabel: string | null;
   min: number | null;
   max: number | null;
   action: MultiselectBlockCreate_multiselectBlockCreate_action | null;

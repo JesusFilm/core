@@ -47,7 +47,6 @@ export interface MultiselectQuestionFields {
   parentBlockId: string | null;
   parentOrder: number | null;
   label: string;
-  submitLabel: string | null;
   min: number | null;
   max: number | null;
   action: MultiselectQuestionFields_action | null;

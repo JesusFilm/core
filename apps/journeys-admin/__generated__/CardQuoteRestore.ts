@@ -187,7 +187,6 @@ export interface CardQuoteRestore_image_MultiselectBlock {
   parentBlockId: string | null;
   parentOrder: number | null;
   label: string;
-  submitLabel: string | null;
   min: number | null;
   max: number | null;
   action: CardQuoteRestore_image_MultiselectBlock_action | null;
@@ -745,7 +744,6 @@ export interface CardQuoteRestore_subtitle_MultiselectBlock {
   parentBlockId: string | null;
   parentOrder: number | null;
   label: string;
-  submitLabel: string | null;
   min: number | null;
   max: number | null;
   action: CardQuoteRestore_subtitle_MultiselectBlock_action | null;
@@ -1303,7 +1301,6 @@ export interface CardQuoteRestore_title_MultiselectBlock {
   parentBlockId: string | null;
   parentOrder: number | null;
   label: string;
-  submitLabel: string | null;
   min: number | null;
   max: number | null;
   action: CardQuoteRestore_title_MultiselectBlock_action | null;
@@ -1861,7 +1858,6 @@ export interface CardQuoteRestore_body_MultiselectBlock {
   parentBlockId: string | null;
   parentOrder: number | null;
   label: string;
-  submitLabel: string | null;
   min: number | null;
   max: number | null;
   action: CardQuoteRestore_body_MultiselectBlock_action | null;

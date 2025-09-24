@@ -187,7 +187,6 @@ export interface StepDuplicate_blockDuplicate_MultiselectBlock {
   parentBlockId: string | null;
   parentOrder: number | null;
   label: string;
-  submitLabel: string | null;
   min: number | null;
   max: number | null;
   action: StepDuplicate_blockDuplicate_MultiselectBlock_action | null;

@@ -187,7 +187,6 @@ export interface CardFormRestore_image_MultiselectBlock {
   parentBlockId: string | null;
   parentOrder: number | null;
   label: string;
-  submitLabel: string | null;
   min: number | null;
   max: number | null;
   action: CardFormRestore_image_MultiselectBlock_action | null;
@@ -745,7 +744,6 @@ export interface CardFormRestore_subtitle_MultiselectBlock {
   parentBlockId: string | null;
   parentOrder: number | null;
   label: string;
-  submitLabel: string | null;
   min: number | null;
   max: number | null;
   action: CardFormRestore_subtitle_MultiselectBlock_action | null;
@@ -1303,7 +1301,6 @@ export interface CardFormRestore_title_MultiselectBlock {
   parentBlockId: string | null;
   parentOrder: number | null;
   label: string;
-  submitLabel: string | null;
   min: number | null;
   max: number | null;
   action: CardFormRestore_title_MultiselectBlock_action | null;
@@ -1861,7 +1858,6 @@ export interface CardFormRestore_textResponse_MultiselectBlock {
   parentBlockId: string | null;
   parentOrder: number | null;
   label: string;
-  submitLabel: string | null;
   min: number | null;
   max: number | null;
   action: CardFormRestore_textResponse_MultiselectBlock_action | null;
@@ -2419,7 +2415,6 @@ export interface CardFormRestore_button_MultiselectBlock {
   parentBlockId: string | null;
   parentOrder: number | null;
   label: string;
-  submitLabel: string | null;
   min: number | null;
   max: number | null;
   action: CardFormRestore_button_MultiselectBlock_action | null;
@@ -2977,7 +2972,6 @@ export interface CardFormRestore_startIcon_MultiselectBlock {
   parentBlockId: string | null;
   parentOrder: number | null;
   label: string;
-  submitLabel: string | null;
   min: number | null;
   max: number | null;
   action: CardFormRestore_startIcon_MultiselectBlock_action | null;
@@ -3535,7 +3529,6 @@ export interface CardFormRestore_endIcon_MultiselectBlock {
   parentBlockId: string | null;
   parentOrder: number | null;
   label: string;
-  submitLabel: string | null;
   min: number | null;
   max: number | null;
   action: CardFormRestore_endIcon_MultiselectBlock_action | null;
@@ -4093,7 +4086,6 @@ export interface CardFormRestore_body_MultiselectBlock {
   parentBlockId: string | null;
   parentOrder: number | null;
   label: string;
-  submitLabel: string | null;
   min: number | null;
   max: number | null;
   action: CardFormRestore_body_MultiselectBlock_action | null;

@@ -201,7 +201,6 @@ export interface GetJourney_journey_blocks_MultiselectBlock {
   parentBlockId: string | null;
   parentOrder: number | null;
   label: string;
-  submitLabel: string | null;
   min: number | null;
   max: number | null;
   action: GetJourney_journey_blocks_MultiselectBlock_action | null;

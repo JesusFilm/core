@@ -6,7 +6,6 @@ export const MULTISELECT_QUESTION_FIELDS = gql`
     parentBlockId
     parentOrder
     label
-    submitLabel
     min
     max
     action {
