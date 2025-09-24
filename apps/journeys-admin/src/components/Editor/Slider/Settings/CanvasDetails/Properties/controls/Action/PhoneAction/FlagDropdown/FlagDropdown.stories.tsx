@@ -4,7 +4,7 @@ import { journeysAdminConfig } from '@core/shared/ui/storybook'
 
 import { Country } from './countriesList'
 import { FlagDropdown } from './FlagDropdown'
-import { noop } from 'lodash'
+import noop from 'lodash/noop'
 
 const FlagDropdownStory: Meta<typeof FlagDropdown> = {
   ...journeysAdminConfig,
