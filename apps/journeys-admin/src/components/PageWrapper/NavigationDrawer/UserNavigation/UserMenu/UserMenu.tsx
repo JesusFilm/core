@@ -101,14 +101,12 @@ export function UserMenu({
           label={t('Logout')}
           icon={<Logout2Icon fontSize="small" />}
           onClick={async () => {
-            handleProfileClose()
-            await client.clearStore()
             await user.signOut()
-            await enqueueSnackbar(t('Logout successful'), {
-              variant: 'success',
-              preventDuplicate: true
-            })
-            setActiveTeam(null)
+            await client.clearStore()
+            if (!router.pathname.startsWith('/templates')) {
+              const redirectUrl = `/users/sign-in?redirect=${encodeURIComponent(window.location.href)}`
+              window.location.assign(redirectUrl)
+            }
           }}
           testId="LogOut"
         />
