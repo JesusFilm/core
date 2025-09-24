@@ -17,6 +17,11 @@ export enum ThemeName {
     base = "base"
 }
 
+export enum ContactActionType {
+    call = "call",
+    text = "text"
+}
+
 export enum ButtonVariant {
     text = "text",
     contained = "contained",
@@ -936,6 +941,7 @@ export class PhoneAction implements Action {
     gtmEventName?: Nullable<string>;
     phone: string;
     countryCode: string;
+    contactAction: ContactActionType;
 }
 
 export class Journey {
