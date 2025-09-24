@@ -93,17 +93,27 @@ export function FlagDropdown({
             style: {
               maxHeight: 670,
               width: 298,
-              padding: 0,
+              padding: 0
             },
             sx: {
               '& .MuiList-root': {
                 padding: 0
               }
             }
-          },
+          }
         }}
       >
-        <Box sx={{ p: 1, borderBottom: 1, borderColor: 'divider', position: 'sticky', top: 0, backgroundColor: 'background.paper', zIndex: 1 }}>
+        <Box
+          sx={{
+            p: 1,
+            borderBottom: 1,
+            borderColor: 'divider',
+            position: 'sticky',
+            top: 0,
+            backgroundColor: 'background.paper',
+            zIndex: 1
+          }}
+        >
           <TextField
             size="small"
             placeholder={t('Search countries...')}
@@ -117,9 +127,9 @@ export function FlagDropdown({
                 <InputAdornment position="start">
                   <SearchIcon fontSize="small" />
                 </InputAdornment>
-              ),
+              )
             }}
-            sx={{ 
+            sx={{
               mb: 0,
               '& .MuiOutlinedInput-root': {
                 borderRadius: 0
@@ -136,7 +146,10 @@ export function FlagDropdown({
             selected={country.countryCode === selectedCountry.countryCode}
           >
             <ListItemIcon>
-              <CountryFlag code={country.countryCode} countryName={country.label} />
+              <CountryFlag
+                code={country.countryCode}
+                countryName={country.label}
+              />
             </ListItemIcon>
             <ListItemText
               primary={`${country.label} (${country.countryCode}) ${country.callingCode}`}
@@ -154,4 +167,3 @@ export function FlagDropdown({
     </>
   )
 }
-

@@ -182,7 +182,9 @@ describe('PhoneAction', () => {
     })
     fireEvent.click(screen.getByText('Canada (CA) +1'))
     await waitFor(() => {
-      expect(screen.getByRole('img', { name: 'Canada flag' })).toBeInTheDocument()
+      expect(
+        screen.getByRole('img', { name: 'Canada flag' })
+      ).toBeInTheDocument()
     })
   })
 
@@ -270,7 +272,9 @@ describe('PhoneAction', () => {
 
     render(
       <MockedProvider>
-        <EditorProvider initialState={{ selectedBlock: selectedBlockWithoutPhone }}>
+        <EditorProvider
+          initialState={{ selectedBlock: selectedBlockWithoutPhone }}
+        >
           <PhoneAction />
         </EditorProvider>
       </MockedProvider>
@@ -280,7 +284,7 @@ describe('PhoneAction', () => {
     await waitFor(() => {
       const callRadio = screen.getByRole('radio', { name: 'Call' })
       const smsRadio = screen.getByRole('radio', { name: 'SMS' })
-      
+
       expect(callRadio).toBeDisabled()
       expect(smsRadio).toBeDisabled()
     })
@@ -317,7 +321,9 @@ describe('PhoneAction', () => {
 
     render(
       <MockedProvider>
-        <EditorProvider initialState={{ selectedBlock: selectedBlockWithoutPhone }}>
+        <EditorProvider
+          initialState={{ selectedBlock: selectedBlockWithoutPhone }}
+        >
           <PhoneAction />
         </EditorProvider>
       </MockedProvider>
@@ -353,7 +359,9 @@ describe('PhoneAction', () => {
     const result = jest.fn().mockReturnValue(blockActionPhoneUpdateMock.result)
     render(
       <MockedProvider mocks={[{ ...blockActionPhoneUpdateMock, result }]}>
-        <EditorProvider initialState={{ selectedBlock: selectedBlockWithoutPhone }}>
+        <EditorProvider
+          initialState={{ selectedBlock: selectedBlockWithoutPhone }}
+        >
           <PhoneAction />
         </EditorProvider>
       </MockedProvider>

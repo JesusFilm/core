@@ -48,8 +48,12 @@ describe('FlagDropdown', () => {
       />
     )
 
-    expect(screen.getByRole('button', { name: 'Select country' })).toBeInTheDocument()
-    expect(screen.getByRole('img', { name: 'United States flag' })).toBeInTheDocument()
+    expect(
+      screen.getByRole('button', { name: 'Select country' })
+    ).toBeInTheDocument()
+    expect(
+      screen.getByRole('img', { name: 'United States flag' })
+    ).toBeInTheDocument()
   })
 
   it('displays all country options when opened', async () => {
@@ -121,7 +125,9 @@ describe('FlagDropdown', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Select country' }))
 
     await waitFor(() => {
-      expect(screen.getByPlaceholderText('Search countries...')).toBeInTheDocument()
+      expect(
+        screen.getByPlaceholderText('Search countries...')
+      ).toBeInTheDocument()
     })
 
     fireEvent.change(screen.getByPlaceholderText('Search countries...'), {
@@ -173,7 +179,9 @@ describe('FlagDropdown', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Select country' }))
 
     await waitFor(() => {
-      expect(screen.getByPlaceholderText('Search countries...')).toBeInTheDocument()
+      expect(
+        screen.getByPlaceholderText('Search countries...')
+      ).toBeInTheDocument()
     })
 
     fireEvent.change(screen.getByPlaceholderText('Search countries...'), {
@@ -181,7 +189,9 @@ describe('FlagDropdown', () => {
     })
 
     await waitFor(() => {
-      expect(screen.queryByText('United States (US) +1')).not.toBeInTheDocument()
+      expect(
+        screen.queryByText('United States (US) +1')
+      ).not.toBeInTheDocument()
       expect(screen.queryByText('Canada (CA) +1')).not.toBeInTheDocument()
     })
   })
@@ -198,6 +208,8 @@ describe('FlagDropdown', () => {
     const button = screen.getByRole('button', { name: 'Select country' })
     fireEvent.keyDown(button, { key: 'Enter' })
 
-    expect(screen.getByPlaceholderText('Search countries...')).toBeInTheDocument()
+    expect(
+      screen.getByPlaceholderText('Search countries...')
+    ).toBeInTheDocument()
   })
 })

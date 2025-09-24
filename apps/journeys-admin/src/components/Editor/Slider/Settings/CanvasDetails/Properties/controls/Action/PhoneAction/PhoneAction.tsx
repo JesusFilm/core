@@ -28,12 +28,13 @@ export function PhoneAction(): ReactElement {
   } = useEditor()
   const selectedBlock = stateSelectedBlock as TreeBlock<ButtonBlock> | undefined
   const { addAction } = useActionCommand()
-  
+
   const phoneAction =
     selectedBlock?.action?.__typename === 'PhoneAction'
       ? selectedBlock.action
       : undefined
-  const disableRadioAction = !phoneAction?.phone || phoneAction.phone.trim() === ''
+  const disableRadioAction =
+    !phoneAction?.phone || phoneAction.phone.trim() === ''
 
   const initialCountry = countries.find(
     (country) => country.countryCode === phoneAction?.countryCode
@@ -171,24 +172,31 @@ export function PhoneAction(): ReactElement {
             name="phone-contact-action"
             value={phoneAction?.contactAction ?? ContactActionType.call}
             onChange={(event) => {
-              const value = (event.target as HTMLInputElement).value as keyof typeof ContactActionType
+              const value = (event.target as HTMLInputElement)
+                .value as keyof typeof ContactActionType
               if (value != null) {
                 const enumValue = ContactActionType[value]
                 if (enumValue != null) handleContactActionChange(enumValue)
               }
             }}
           >
-             <Tooltip title={disableRadioAction ? t('Phone number is required') : ''} placement="right">
+            <Tooltip
+              title={disableRadioAction ? t('Phone number is required') : ''}
+              placement="right"
+            >
               <span>
                 <FormControlLabel
                   value={ContactActionType.call}
                   control={<Radio />}
                   label={t('Call')}
                   disabled={disableRadioAction}
-                  />
-                </span>
-              </Tooltip>
-             <Tooltip title={disableRadioAction ? t('Phone number is required') : ''} placement="right">
+                />
+              </span>
+            </Tooltip>
+            <Tooltip
+              title={disableRadioAction ? t('Phone number is required') : ''}
+              placement="right"
+            >
               <span>
                 <FormControlLabel
                   value={ContactActionType.text}
