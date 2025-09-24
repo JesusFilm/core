@@ -1,5 +1,3 @@
-import { prisma } from '@core/prisma/journeys/client'
-
 import { builder } from '../../builder'
 import { ActionInterface } from '../action'
 
@@ -25,14 +23,4 @@ export const PhoneActionRef = builder.prismaObject('Action', {
       resolve: (action: any) => action.contactAction ?? 'call'
     })
   })
-})
-
-// Register as a federated entity
-builder.asEntity(PhoneActionRef, {
-  key: builder.selection<{ parentBlockId: string }>('parentBlockId'),
-  resolveReference: async (ref) => {
-    return prisma.action.findUnique({
-      where: { parentBlockId: ref.parentBlockId }
-    })
-  }
 })
