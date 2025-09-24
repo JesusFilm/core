@@ -62,7 +62,7 @@ interface FormValues {
  * - Provides language selection when translation is enabled
  * - Handles form validation using Formik and Yup
  * - Manages team selection and updates the last active team
- * - Supports customizable dialog title and submit button label.
+ * - Supports customizable dialog title and submit button label
  * - Shows loading states during submission
  *
  * @param {Object} props - The component props
