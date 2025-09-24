@@ -9,12 +9,19 @@ import type { TreeBlock } from '@core/journeys/ui/block'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 import LinkIcon from '@core/shared/ui/icons/Link'
 
-import { BlockFields_ButtonBlock as ButtonBlock } from '../../../../../../../../../../__generated__/BlockFields'
+import {
+  BlockFields_ButtonBlock as ButtonBlock,
+  BlockFields_ButtonBlock_action_LinkAction as ButtonBlockLinkAction
+} from '../../../../../../../../../../__generated__/BlockFields'
 import { TextFieldForm } from '../../../../../../../../TextFieldForm'
 import { useActionCommand } from '../../../../../../../utils/useActionCommand'
 import { TextFieldFormRef } from '../../../../../../../../TextFieldForm/TextFieldForm'
 
-export function LinkAction({ ref }: { ref?: RefObject<TextFieldFormRef | null> }): ReactElement {
+interface LinkActionProps {
+  ref?: RefObject<TextFieldFormRef | null>
+}
+
+export function LinkAction({ ref }: LinkActionProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const {
     state: { selectedBlock: stateSelectedBlock, selectedStep }
@@ -50,11 +57,6 @@ export function LinkAction({ ref }: { ref?: RefObject<TextFieldFormRef | null> }
 
   function handleSubmit(src: string): void {
     if (selectedBlock == null || selectedStep == null) return
-    if (!checkURL(src)) {
-      ref?.current?.focus()
-      return
-    }
-
     // checks if url has a protocol
     const url = /^\w+:\/\//.test(src) ? src : `https://${src}`
     const { id, action, __typename: blockTypename } = selectedBlock
@@ -66,7 +68,9 @@ export function LinkAction({ ref }: { ref?: RefObject<TextFieldFormRef | null> }
         parentBlockId: id,
         gtmEventName: '',
         url,
-        customizable: linkAction?.customizable ?? false,
+        customizable:
+          (selectedBlock?.action as ButtonBlockLinkAction)?.customizable ??
+          false,
         parentStepId: selectedStep.id
       },
       undoAction: action,

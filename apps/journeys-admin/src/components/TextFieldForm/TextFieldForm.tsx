@@ -1,6 +1,13 @@
 import TextField, { TextFieldProps } from '@mui/material/TextField'
 import { Form, Formik } from 'formik'
-import { ClipboardEvent, ComponentProps, ReactElement, ReactNode, useImperativeHandle, useRef } from 'react'
+import {
+  ClipboardEvent,
+  ComponentProps,
+  ReactElement,
+  ReactNode,
+  useImperativeHandle,
+  useRef
+} from 'react'
 
 type FieldProps = Pick<
   TextFieldProps,
@@ -51,7 +58,7 @@ export function TextFieldForm({
   useImperativeHandle(ref, () => ({
     focus: () => textFieldRef.current?.focus()
   }))
-  
+
   const isRequired =
     validationSchema != null
       ? Boolean(
@@ -74,7 +81,14 @@ export function TextFieldForm({
       }}
       enableReinitialize
     >
-      {({ values, errors, handleChange, handleBlur, setFieldValue }) => (
+      {({
+        values,
+        errors,
+        handleChange,
+        handleBlur,
+        setFieldValue,
+        handleSubmit
+      }) => (
         <Form>
           <TextField
             {...muiFieldProps}
@@ -94,7 +108,7 @@ export function TextFieldForm({
             onBlur={async (e) => {
               handleBlur(e)
               if (errors[id] == null) {
-                onSubmit(e.target.value)
+                handleSubmit()
               } else if (isRequired) {
                 await setFieldValue(id, initialValue)
               }

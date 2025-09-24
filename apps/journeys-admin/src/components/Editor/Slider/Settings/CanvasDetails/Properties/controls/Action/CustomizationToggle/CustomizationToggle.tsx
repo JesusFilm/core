@@ -86,6 +86,7 @@ export function CustomizationToggle(): ReactElement {
       }}
     >
       <Switch
+        disabled={actionBlock == null}
         checked={customizable}
         onChange={handleChange}
         inputProps={{ 'aria-label': t('Toggle customizable') }}

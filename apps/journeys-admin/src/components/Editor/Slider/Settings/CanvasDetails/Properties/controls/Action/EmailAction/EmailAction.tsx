@@ -9,12 +9,19 @@ import type { TreeBlock } from '@core/journeys/ui/block'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 import Mail2Icon from '@core/shared/ui/icons/Mail2'
 
-import { BlockFields_ButtonBlock as ButtonBlock } from '../../../../../../../../../../__generated__/BlockFields'
+import {
+  BlockFields_ButtonBlock as ButtonBlock,
+  BlockFields_ButtonBlock_action_EmailAction as ButtonBlockEmailAction
+} from '../../../../../../../../../../__generated__/BlockFields'
 import { TextFieldForm } from '../../../../../../../../TextFieldForm'
 import { useActionCommand } from '../../../../../../../utils/useActionCommand'
 import { TextFieldFormRef } from '../../../../../../../../TextFieldForm/TextFieldForm'
 
-export function EmailAction({ ref }: { ref?: RefObject<TextFieldFormRef | null> }): ReactElement {
+interface EmailActionProps {
+  ref?: RefObject<TextFieldFormRef | null>
+}
+
+export function EmailAction({ ref }: EmailActionProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const {
     state: { selectedBlock: stateSelectedBlock, selectedStep }
@@ -36,11 +43,6 @@ export function EmailAction({ ref }: { ref?: RefObject<TextFieldFormRef | null> 
 
   function handleSubmit(email: string): void {
     if (selectedBlock == null || selectedStep == null) return
-    if (!emailActionSchema.isValid(email)) {
-      ref?.current?.focus()
-      return
-    }
-    
     const { id, action, __typename: blockTypename } = selectedBlock
     addAction({
       blockId: id,
@@ -50,7 +52,9 @@ export function EmailAction({ ref }: { ref?: RefObject<TextFieldFormRef | null> 
         parentBlockId: id,
         gtmEventName: '',
         email,
-        customizable: emailAction?.customizable ?? false,
+        customizable:
+          (selectedBlock?.action as ButtonBlockEmailAction)?.customizable ??
+          false,
         parentStepId: selectedStep.id
       },
       undoAction: action,
