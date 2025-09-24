@@ -1,25 +1,18 @@
-import { gql, useMutation } from '@apollo/client'
+import { gql } from '@apollo/client'
 import Box, { BoxProps } from '@mui/material/Box'
-import Button from '@mui/material/Button'
 import ButtonGroup from '@mui/material/ButtonGroup'
 import { SimplePaletteColorOptions, styled } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
-import { sendGTMEvent } from '@next/third-parties/google'
-import { useRouter } from 'next/router'
 import { useFormikContext } from 'formik'
 import { useTranslation } from 'next-i18next'
-import { ReactElement, useEffect, useMemo, useState } from 'react'
-import { v4 as uuidv4 } from 'uuid'
+import { ReactElement, useEffect, useState } from 'react'
 
 import AddSquare4Icon from '@core/shared/ui/icons/AddSquare4'
 import { adminTheme } from '@core/shared/ui/themes/journeysAdmin/theme'
 
-import { handleAction } from '../../libs/action'
 import type { TreeBlock } from '../../libs/block'
 import { isActiveBlockOrDescendant, useBlocks } from '../../libs/block'
-import { getNextStepSlug } from '../../libs/getNextStepSlug'
 import { getStepHeading } from '../../libs/getStepHeading'
-import { useJourney } from '../../libs/JourneyProvider'
 // eslint-disable-next-line import/no-cycle
 import { BlockRenderer, WrappersProps } from '../BlockRenderer'
 import { MultiselectOption } from '../MultiselectOption/MultiselectOption'
@@ -77,33 +70,19 @@ export function MultiselectQuestion({
   id: blockId,
   children,
   label,
-  submitLabel,
   min,
   max,
-  action,
-  uuid = uuidv4,
   wrappers,
   addOption
 }: MultiselectQuestionProps): ReactElement {
-  const [multiselectSubmissionEventCreate] = useMutation<any, any>(
-    MULTISELECT_SUBMISSION_EVENT_CREATE
-  )
-  const { variant, journey } = useJourney()
-  const router = useRouter()
   const [selectedIds, setSelectedIds] = useState<string[]>([])
-  const { blockHistory, treeBlocks } = useBlocks()
+  const { blockHistory } = useBlocks()
   const { t } = useTranslation('libs-journeys-ui')
-  const activeBlock = blockHistory[blockHistory.length - 1]
   const formik = useFormikContext<{ [key: string]: string[] }>()
 
   useEffect(() => {
     if (!isActiveBlockOrDescendant(blockId)) setSelectedIds([])
   }, [blockId, blockHistory])
-
-  const heading =
-    activeBlock != null
-      ? getStepHeading(activeBlock.id, activeBlock.children, treeBlocks, t)
-      : 'None'
 
   function toggleSelect(optionId: string): void {
     setSelectedIds((prev) => {
@@ -119,23 +98,6 @@ export function MultiselectQuestion({
       formik?.setFieldValue(blockId, next)
       return next
     })
-  }
-
-  const selectedLabels = useMemo(() => {
-    return (
-      children
-        ?.filter((c: any) => c.__typename === 'MultiselectOptionBlock')
-        .filter((c: any) => selectedIds.includes(c.id))
-        .map((c: any) => c.label) ?? []
-    )
-  }, [children, selectedIds])
-
-  async function handleSubmit(): Promise<void> {
-    // delegate to Card form submit to match TextResponse flow
-    if (typeof (formik as any)?.submitForm === 'function') {
-      await (formik as any).submitForm()
-      return
-    }
   }
 
   const options = children?.map((option: any) => {
@@ -186,20 +148,6 @@ export function MultiselectQuestion({
           )}
         </ButtonGroup>
       </StyledListMultiselectQuestion>
-      <Box sx={{ mt: 2 }}>
-        <Button
-          variant="contained"
-          color="primary"
-          fullWidth
-          disabled={
-            selectedIds.length === 0 ||
-            (typeof min === 'number' && selectedIds.length < min)
-          }
-          onClick={handleSubmit}
-        >
-          {submitLabel ?? t('Submit')}
-        </Button>
-      </Box>
     </>
   )
 }
