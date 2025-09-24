@@ -1,4 +1,4 @@
-import { type SectionVideoCollectionCarouselSource } from '../SectionVideoCollectionCarousel'
+import { type SectionVideoCollectionCarouselSource } from '../SectionVideoCarousel'
 
 export const collectionShowcaseSources: SectionVideoCollectionCarouselSource[] = [
   { type: 'video', id: '1_jf-0-0' },
