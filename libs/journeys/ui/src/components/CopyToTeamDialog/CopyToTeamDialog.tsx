@@ -93,7 +93,7 @@ export function CopyToTeamDialog({
     useMutation<UpdateLastActiveTeamId>(UPDATE_LAST_ACTIVE_TEAM_ID)
 
   const { pathname } = useRouter()
-  const isTemplatesAdmin = pathname.includes('/publisher')
+  const isTemplatesAdmin = pathname?.includes('/publisher') ?? false
   const isOriginalTemplate =
     journey?.template && journey?.fromTemplateId == null
 
