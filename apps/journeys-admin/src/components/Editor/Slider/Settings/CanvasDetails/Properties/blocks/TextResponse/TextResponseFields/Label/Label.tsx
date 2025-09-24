@@ -203,11 +203,7 @@ export function Label(): ReactElement {
   }
 
   return (
-    <Stack
-      direction="column"
-      sx={{ p: 4, pt: 0 }}
-      data-testid="Label"
-    >
+    <Stack direction="column" sx={{ p: 4, pt: 0 }} data-testid="Label">
       <Stack direction="row">
         <TextField
           id="label"
