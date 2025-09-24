@@ -142,7 +142,7 @@ export function AiChat({ open }: AiChatProps) {
   }
 
   function handleStop() {
-    stop()
+    void stop()
     setInput('')
   }
 
