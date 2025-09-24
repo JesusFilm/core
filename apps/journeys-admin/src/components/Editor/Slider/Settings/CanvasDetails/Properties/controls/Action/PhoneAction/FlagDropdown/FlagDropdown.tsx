@@ -117,17 +117,20 @@ export function FlagDropdown({
           <TextField
             size="small"
             placeholder={t('Search countries...')}
+            aria-label={t('Search countries')}
             value={searchValue}
             onChange={(e) => setSearchValue(e.target.value)}
             fullWidth
             variant="outlined"
             autoFocus
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">
-                  <SearchIcon fontSize="small" />
-                </InputAdornment>
-              )
+            slotProps={{
+              input: {
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <SearchIcon fontSize="small" />
+                  </InputAdornment>
+                )
+              }
             }}
             sx={{
               mb: 0,
