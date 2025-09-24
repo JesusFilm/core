@@ -47,6 +47,31 @@ describe('CustomizationToggle', () => {
     expect(toggle).toBeChecked()
   })
 
+  it('renders toggle even when action is null', () => {
+    const selectedBlock = {
+      id: 'button-1',
+      __typename: 'ButtonBlock',
+      action: null
+    } as unknown as TreeBlock<ButtonBlock>
+    const selectedStep = {
+      id: 'step-1',
+      __typename: 'StepBlock',
+      parentBlockId: 'journeyId',
+      parentOrder: 0,
+      locked: false,
+      slug: 'slug'
+    } as unknown as TreeBlock<StepBlock>
+
+    render(
+      <EditorProvider initialState={{ selectedBlock, selectedStep }}>
+        <CustomizationToggle />
+      </EditorProvider>
+    )
+    expect(screen.getByText('Needs Customization')).toBeInTheDocument()
+    const toggle = screen.getByRole('checkbox', { name: 'Toggle customizable' })
+    expect(toggle).not.toBeChecked()
+  })
+
   it('renders toggle for EmailAction and reflects unchecked state', () => {
     const selectedBlock = {
       id: 'button-2',
