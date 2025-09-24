@@ -108,12 +108,9 @@ const journey: Journey = {
   logoImageBlock: null,
   menuButtonIcon: null,
   menuStepBlock: null,
-  journeyTheme: null,
-  journeyCustomizationDescription: null,
-  journeyCustomizationFields: [],
-  fromTemplateId: null,
   socialNodeX: null,
-  socialNodeY: null
+  socialNodeY: null,
+  journeyTheme: null
 }
 
 const card: TreeBlock<CardBlock> = {

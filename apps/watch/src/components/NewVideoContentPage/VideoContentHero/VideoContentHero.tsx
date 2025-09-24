@@ -1,59 +1,63 @@
-import fscreen from 'fscreen'
-import { ReactElement, useEffect } from 'react'
+import clsx from 'clsx'
+import { ReactElement, useState } from 'react'
 
+import { usePlayer } from '../../../libs/playerContext'
+import type { CarouselMuxSlide } from '../../../types/inserts'
 import { useVideo } from '../../../libs/videoContext'
 
 import { ContentHeader } from './ContentHeader'
 import { HeroVideo } from './HeroVideo'
 
 export function VideoContentHero({
-  isFullscreen = false,
-  setIsFullscreen
+  isPreview = false,
+  currentMuxInsert,
+  onMuxInsertComplete
 }: {
-  isFullscreen?: boolean
-  setIsFullscreen?: (isFullscreen: boolean) => void
+  isPreview?: boolean
+  currentMuxInsert?: CarouselMuxSlide | null
+  onMuxInsertComplete?: () => void
 }): ReactElement {
   const { variant } = useVideo()
-  /**
-   * Effect to handle fullscreen changes.
-   * Adds and removes event listeners for fullscreen state changes.
-   */
-  useEffect(() => {
-    /**
-     * Handler for fullscreen change events.
-     * Updates component state and scrolls to top when entering fullscreen.
-     */
-    function fullscreenchange(): void {
-      const isFullscreen = fscreen.fullscreenElement != null
-      setIsFullscreen?.(isFullscreen)
-      if (isFullscreen) {
-        window.scrollTo({ top: 0, behavior: 'smooth' })
-      }
-    }
-
-    fscreen.addEventListener('fullscreenchange', fullscreenchange)
-
-    return () =>
-      fscreen.removeEventListener('fullscreenchange', fullscreenchange)
-  }, [setIsFullscreen])
+  const {
+    state: { mute }
+  } = usePlayer()
+  const [collapsed, setCollapsed] = useState(true)
 
   const languageSlug = variant?.slug?.split('/')[1]
 
+  const handleMuteToggle = (isMuted: boolean): void => {
+    setCollapsed(isMuted)
+  }
+
   return (
     <div
-      className={`${
-        isFullscreen ? 'h-[100svh]' : 'h-[90svh] md:h-[80svh]'
-      } relative z-[1] flex w-full items-end bg-[#131111] transition-all duration-300 ease-out`}
+      className={clsx(
+        'w-full flex items-end relative bg-[#131111] z-[1] transition-all duration-300 ease-out',
+        {
+          'preview-video': isPreview && collapsed,
+          'h-[90svh] md:h-[80svh]': !isPreview || !collapsed
+        }
+      )}
       data-testid="ContentHero"
     >
-      <ContentHeader languageSlug={languageSlug?.replace('.html', '')} />
-      <HeroVideo isFullscreen={isFullscreen} key={variant?.hls} />
+      <ContentHeader
+        languageSlug={languageSlug?.replace('.html', '')}
+        isPersistent={isPreview}
+      />
+      <HeroVideo
+        isPreview={isPreview}
+        collapsed={collapsed}
+        onMuteToggle={handleMuteToggle}
+        currentMuxInsert={currentMuxInsert}
+        onMuxInsertComplete={onMuxInsertComplete}
+        key={currentMuxInsert ? currentMuxInsert.id : variant?.hls}
+      />
       <div
         data-testid="ContainerHeroTitleContainer"
-        className="relative mx-auto flex w-full max-w-[1920px] flex-col pb-4 sm:flex-row"
+        className="w-full relative z-2 flex flex-col sm:flex-row max-w-[1920px] mx-auto pb-4"
       >
         <div
-          className="pointer-events-none absolute top-0 right-0 left-0 block h-full w-full md:hidden"
+          className="absolute top-0 left-0 right-0 h-full w-full pointer-events-none block md:hidden"
           style={{
             backdropFilter: 'brightness(.6) blur(40px)',
             maskImage:

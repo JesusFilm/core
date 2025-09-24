@@ -7,8 +7,8 @@ interface BodyTextProps {
 
 export function BodyText({ children }: BodyTextProps): ReactElement {
   return (
-    <Container className="mx-auto max-w-[600px] bg-[#EFEFEF] px-[60px]">
-      <Text className="font-sans text-[16px] leading-[24px] font-normal text-[#444451]">
+    <Container className="bg-[#EFEFEF] mx-auto px-[60px] max-w-[600px]">
+      <Text className="text-[#444451] text-[16px] leading-[24px] font-normal font-sans">
         {children}
       </Text>
     </Container>

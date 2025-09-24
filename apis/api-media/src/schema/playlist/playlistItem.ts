@@ -6,7 +6,7 @@ import { NotFoundError } from '../error/NotFoundError'
 export const PlaylistItem = builder.prismaObject('PlaylistItem', {
   fields: (t) => ({
     id: t.exposeID('id', { nullable: false }),
-    order: t.expose('order', { type: 'Int', nullable: true }),
+    order: t.expose('order', { type: 'Int', nullable: false }),
     createdAt: t.expose('createdAt', { type: 'DateTime', nullable: false }),
     updatedAt: t.expose('updatedAt', { type: 'DateTime', nullable: false }),
     videoVariant: t.relation('videoVariant', { nullable: false }),
@@ -22,14 +22,13 @@ builder.mutationField('playlistItemAdd', (t) =>
       types: [NotFoundError]
     },
     args: {
-      id: t.arg.id({ required: false }),
       playlistId: t.arg.id({ required: true }),
       videoVariantId: t.arg.id({ required: true })
     },
     resolve: async (
       query,
       _parent,
-      { id, playlistId, videoVariantId },
+      { playlistId, videoVariantId },
       context
     ) => {
       // Check if playlist exists and user owns it
@@ -62,12 +61,11 @@ builder.mutationField('playlistItemAdd', (t) =>
           select: { order: true }
         })
 
-        const nextOrder = lastItem?.order != null ? lastItem.order + 1 : 0
+        const nextOrder = lastItem?.order ? lastItem.order + 1 : 0
 
         return transaction.playlistItem.create({
           ...query,
           data: {
-            id: id ?? undefined,
             playlistId,
             videoVariantId,
             order: nextOrder
@@ -129,7 +127,7 @@ builder.mutationField('playlistItemRemove', (t) =>
           remainingItems.map((item, index) =>
             transaction.playlistItem.update({
               where: { id: item.id },
-              data: { order: index }
+              data: { order: index + 1 }
             })
           )
         )
@@ -187,21 +185,16 @@ builder.mutationField('playlistItemsReorder', (t) =>
       }
 
       // Update order for each item using transaction
-      await prisma.$transaction(async (transaction) => {
-        await transaction.playlistItem.updateMany({
-          where: { playlistId, id: { in: itemIds } },
-          data: { order: null }
-        })
-
-        await Promise.all(
+      await prisma.$transaction(async (transaction) =>
+        Promise.all(
           itemIds.map((itemId, index) =>
             transaction.playlistItem.update({
               where: { id: itemId },
-              data: { order: index }
+              data: { order: index + 1 }
             })
           )
         )
-      })
+      )
 
       // Return the updated items
       return prisma.playlistItem.findMany({

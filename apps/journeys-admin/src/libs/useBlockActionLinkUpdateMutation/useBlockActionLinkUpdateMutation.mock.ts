@@ -16,9 +16,7 @@ export const blockActionLinkUpdateMock: MockedResponse<
     variables: {
       id: 'button2.id',
       input: {
-        url: 'https://github.com',
-        customizable: false,
-        parentStepId: 'step.id'
+        url: 'https://github.com'
       }
     }
   },
@@ -28,9 +26,7 @@ export const blockActionLinkUpdateMock: MockedResponse<
         __typename: 'LinkAction',
         parentBlockId: 'button2.id',
         gtmEventName: null,
-        url: 'https://github.com',
-        customizable: false,
-        parentStepId: 'step.id'
+        url: 'https://github.com'
       }
     }
   }

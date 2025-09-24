@@ -2,16 +2,17 @@
 import { ReactElement, useState } from 'react'
 
 import { PageWrapper } from '../../../PageWrapper'
+import { SectionVideoCarousel } from '../../../SectionVideoCarousel'
 import { CollectionIntroText } from '../../CollectionIntroText'
 import {
   CollectionNavigationCarousel,
   ContentItem
 } from '../../CollectionNavigationCarousel'
+import { collectionShowcaseSources } from '../../collectionShowcaseConfig'
 import { CollectionsPageContent } from '../../CollectionsPageContent'
 import { CollectionsVideoContent } from '../../CollectionsVideoContent'
 import { CollectionVideoContentCarousel } from '../../CollectionVideoContentCarousel'
 import { ContainerHero } from '../../ContainerHero'
-import { OtherCollectionsCarousel } from '../../OtherCollectionsCarousel'
 
 export function CollectionsPage(): ReactElement {
   const [mutePage, setMutePage] = useState(true)
@@ -129,7 +130,7 @@ Porque a maior celebração na história da humanidade vai muito além das tradi
                     "Mesmo em tempos de caos e incerteza, podemos confiar na
                     soberania de Deus porque:"
                   </p>
-                  <ul className="mt-2 list-disc space-y-2 pl-6">
+                  <ul className="list-disc pl-6 mt-2 space-y-2">
                     <li>
                       'Deus permanece no controle mesmo quando as circunstâncias
                       parecem fora de controle'
@@ -155,7 +156,7 @@ Porque a maior celebração na história da humanidade vai muito além das tradi
               answer: (
                 <>
                   <p>'A Páscoa é central para a fé cristã porque:'</p>
-                  <ul className="mt-2 list-disc space-y-2 pl-6">
+                  <ul className="list-disc pl-6 mt-2 space-y-2">
                     <li>
                       'Marca a ressurreição de Jesus, provando Sua vitória sobre
                       a morte'
@@ -179,7 +180,7 @@ Porque a maior celebração na história da humanidade vai muito além das tradi
               answer: (
                 <>
                   <p>'A Bíblia nos conta vários eventos importantes:'</p>
-                  <ul className="mt-2 list-disc space-y-2 pl-6">
+                  <ul className="list-disc pl-6 mt-2 space-y-2">
                     <li>
                       'O corpo de Jesus foi colocado em um túmulo e guardado por
                       soldados romanos'
@@ -229,51 +230,14 @@ Porque a maior celebração na história da humanidade vai muito além das tradi
             buttonText: 'Participe do Nosso Estudo Bíblico'
           }}
         />
-        <OtherCollectionsCarousel
+        <SectionVideoCarousel
           id="other-collections"
-          collectionSubtitle="Coleção de Vídeos Bíblicos"
-          collectionTitle="A história da Páscoa é parte fundamental de um quadro maior"
-          watchButtonText="Assistir"
-          missionHighlight="Nossa missão"
-          missionDescription="é apresentar pessoas à Bíblia através de filmes e vídeos que trazem os Evangelhos à vida fielmente. Ao contar visualmente a história de Jesus e do amor de Deus pela humanidade, tornamos as Escrituras mais acessíveis, envolventes e fáceis de entender."
-          movieUrls={[
-            {
-              imageUrl: 'https://cdn-std.droplr.net/files/acc_760170/cfER11',
-              altText: 'Cartaz do Filme JESUS',
-              externalUrl:
-                'https://www.jesusfilm.org/watch/jesus.html/portuguese-brazil.html'
-            },
-            {
-              imageUrl: 'https://cdn-std.droplr.net/files/acc_760170/9wGrB0',
-              altText: 'Cartaz do Filme JESUS',
-              externalUrl:
-                'https://www.jesusfilm.org/watch/jesus.html/portuguese-brazil.html'
-            },
-            {
-              imageUrl: 'https://cdn-std.droplr.net/files/acc_760170/zeoyJz',
-              altText: 'Cartaz do Filme Gênesis',
-              externalUrl:
-                'https://www.jesusfilm.org/watch/lumo-the-gospel-of-matthew.html/lumo-matthew-1-1-2-23/portuguese-brazil.html'
-            },
-            {
-              imageUrl: 'https://cdn-std.droplr.net/files/acc_760170/Ol9PXg',
-              altText: 'Cartaz do Filme Gênesis',
-              externalUrl:
-                'https://www.jesusfilm.org/watch/lumo-the-gospel-of-mark.html/lumo-mark-1-1-45/portuguese-brazil.html'
-            },
-            {
-              imageUrl: 'https://cdn-std.droplr.net/files/acc_760170/cft9yz',
-              altText: 'Cartaz do Filme Gênesis',
-              externalUrl:
-                'https://www.jesusfilm.org/watch/lumo-the-gospel-of-luke.html/lumo-luke-1-1-56/portuguese-brazil.html'
-            },
-            {
-              imageUrl: 'https://cdn-std.droplr.net/files/acc_760170/TxsUi3',
-              altText: 'Cartaz do Filme Gênesis',
-              externalUrl:
-                'https://www.jesusfilm.org/watch/lumo-the-gospel-of-john.html/lumo-john-1-1-34/portuguese-brazil.html'
-            }
-          ]}
+          sources={collectionShowcaseSources}
+          primaryCollectionId="LUMOCollection"
+          subtitleOverride="Coleção de Vídeos Bíblicos"
+          titleOverride="A história da Páscoa é parte fundamental de um quadro maior"
+          descriptionOverride="<strong>Nossa missão</strong> é apresentar pessoas à Bíblia através de filmes e vídeos que trazem os Evangelhos à vida fielmente. Ao contar visualmente a história de Jesus e do amor de Deus pela humanidade, tornamos as Escrituras mais acessíveis, envolventes e fáceis de entender."
+          ctaLabelOverride="Assistir"
         />
         <CollectionsVideoContent
           contentId="my-last-day/portuguese-brazil"
@@ -303,7 +267,7 @@ Porque a maior celebração na história da humanidade vai muito além das tradi
                       'O perdão de Jesus é uma demonstração da graça e misericórdia de Deus. O ladrão na cruz reconheceu a inocência e divindade de Jesus, humildemente pedindo para ser lembrado em Seu reino. A resposta de Jesus mostra:'
                     }
                   </p>
-                  <ul className="mt-2 list-disc space-y-2 pl-6">
+                  <ul className="list-disc pl-6 mt-2 space-y-2">
                     <li>{'A salvação é baseada na fé, não nas obras'}</li>
                     <li>
                       {
@@ -335,7 +299,7 @@ Porque a maior celebração na história da humanidade vai muito além das tradi
                       'Jesus aceitou voluntariamente a morte porque era parte do plano de Deus para a redenção. Seu sacrifício era necessário para cumprir a profecia e trazer salvação. As principais razões incluem:'
                     }
                   </p>
-                  <ul className="mt-2 list-disc space-y-2 pl-6">
+                  <ul className="list-disc pl-6 mt-2 space-y-2">
                     <li>
                       {
                         'Sua morte cumpriu as profecias do Antigo Testamento (Isaías 53)'
@@ -369,7 +333,7 @@ Porque a maior celebração na história da humanidade vai muito além das tradi
                       'Estar no paraíso com Jesus significa vida eterna na presença de Deus. O ladrão na cruz teve a garantia de seu lugar com Jesus no céu por causa de sua fé. Aspectos importantes dessa promessa incluem:'
                     }
                   </p>
-                  <ul className="mt-2 list-disc space-y-2 pl-6">
+                  <ul className="list-disc pl-6 mt-2 space-y-2">
                     <li>
                       {'Significa presença imediata com Cristo após a morte'}
                     </li>
@@ -560,7 +524,7 @@ Porque a maior celebração na história da humanidade vai muito além das tradi
                       'A morte de Jesus foi necessária para cumprir o plano de redenção de Deus. Por causa do pecado, a humanidade estava separada de Deus, mas o sacrifício de Jesus proporcionou o caminho para a reconciliação. Aqui está por que Sua morte era essencial:'
                     }
                   </p>
-                  <ul className="mt-2 list-disc space-y-2 pl-6">
+                  <ul className="list-disc pl-6 mt-2 space-y-2">
                     <li>{'O pecado cria uma barreira entre nós e Deus'}</li>
                     <li>
                       {'A justiça de Deus requer um pagamento pelo pecado'}
@@ -586,7 +550,7 @@ Porque a maior celebração na história da humanidade vai muito além das tradi
                       'O amor e a justiça de Deus andam de mãos dadas. Embora Ele deseje perdoar, Ele também mantém a justiça. O sacrifício de Jesus foi a expressão máxima de ambos:'
                     }
                   </p>
-                  <ul className="mt-2 list-disc space-y-2 pl-6">
+                  <ul className="list-disc pl-6 mt-2 space-y-2">
                     <li>
                       {'O perdão requer um custo, e Jesus pagou esse custo'}
                     </li>
@@ -620,7 +584,7 @@ Porque a maior celebração na história da humanidade vai muito além das tradi
                       'A morte e ressurreição de Jesus abriram o caminho para sermos reconciliados com Deus. Através Dele, podemos:'
                     }
                   </p>
-                  <ul className="mt-2 list-disc space-y-2 pl-6">
+                  <ul className="list-disc pl-6 mt-2 space-y-2">
                     <li>{'Experimentar perdão e liberdade do pecado'}</li>
                     <li>{'Ter acesso direto a Deus através de Cristo'}</li>
                     <li>{'Receber o dom da vida eterna'}</li>
@@ -692,7 +656,7 @@ Porque a maior celebração na história da humanidade vai muito além das tradi
                       'Existem fortes evidências históricas e bíblicas da morte e ressurreição de Jesus:'
                     }
                   </p>
-                  <ul className="mt-2 list-disc space-y-2 pl-6">
+                  <ul className="list-disc pl-6 mt-2 space-y-2">
                     <li>
                       {
                         'Soldados romanos confirmaram Sua morte antes do sepultamento'
@@ -719,7 +683,7 @@ Porque a maior celebração na história da humanidade vai muito além das tradi
               answer: (
                 <>
                   <p>{'A ressurreição é central para a fé cristã porque:'}</p>
-                  <ul className="mt-2 list-disc space-y-2 pl-6">
+                  <ul className="list-disc pl-6 mt-2 space-y-2">
                     <li>
                       {'Prova a vitória de Jesus sobre o pecado e a morte'}
                     </li>
@@ -741,7 +705,7 @@ Porque a maior celebração na história da humanidade vai muito além das tradi
                       'A ressurreição de Jesus exige uma resposta pessoal. Podemos:'
                     }
                   </p>
-                  <ul className="mt-2 list-disc space-y-2 pl-6">
+                  <ul className="list-disc pl-6 mt-2 space-y-2">
                     <li>{'Crer nEle como nosso Salvador e Senhor'}</li>
                     <li>
                       {'Arrepender-nos do pecado e seguir Seus ensinamentos'}

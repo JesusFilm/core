@@ -100,9 +100,7 @@ export function Custom500(): ReactElement {
         gtmEventName: null,
         parentBlockId: '500-button-id',
         url: '/',
-        __typename: 'LinkAction',
-        customizable: null,
-        parentStepId: null
+        __typename: 'LinkAction'
       },
       settings: null
     },

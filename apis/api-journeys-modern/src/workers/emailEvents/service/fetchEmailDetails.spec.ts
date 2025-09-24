@@ -129,8 +129,7 @@ describe('fetchEmailDetails', () => {
     socialNodeX: null,
     socialNodeY: null,
     fromTemplateId: null,
-    journeyCustomizationDescription: null,
-    showAssistant: null
+    journeyCustomizationDescription: null
   }
 
   const event: Event = {

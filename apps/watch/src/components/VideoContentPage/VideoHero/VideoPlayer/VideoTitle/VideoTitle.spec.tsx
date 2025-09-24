@@ -4,6 +4,8 @@ import {
   PlayerProvider,
   playerInitialState
 } from '../../../../../libs/playerContext'
+import { VideoProvider } from '../../../../../libs/videoContext'
+import { videos } from '../../../../Videos/__generated__/testData'
 
 import { VideoTitle } from './VideoTitle'
 
@@ -14,25 +16,29 @@ jest.mock('next-i18next', () => ({
 }))
 
 const initialState = playerInitialState
+const mockVideo = videos[0] // Use first video from test data
+
+const renderWithProviders = (
+  ui: React.ReactElement,
+  playerState = initialState
+) => {
+  return render(
+    <VideoProvider value={{ content: mockVideo }}>
+      <PlayerProvider initialState={playerState}>{ui}</PlayerProvider>
+    </VideoProvider>
+  )
+}
 
 describe('VideoTitle', () => {
   it('should render the video title', () => {
-    render(
-      <PlayerProvider initialState={initialState}>
-        <VideoTitle videoTitle="Test Video" showButton />
-      </PlayerProvider>
-    )
+    renderWithProviders(<VideoTitle videoTitle="Test Video" showButton />)
     expect(
       screen.getByRole('heading', { name: 'Test Video' })
     ).toBeInTheDocument()
   })
 
   it('should be visible when not playing', () => {
-    render(
-      <PlayerProvider initialState={initialState}>
-        <VideoTitle videoTitle="Test Video" showButton />
-      </PlayerProvider>
-    )
+    renderWithProviders(<VideoTitle videoTitle="Test Video" showButton />)
     const container = screen.getByRole('heading', {
       name: 'Test Video'
     }).parentElement
@@ -46,10 +52,9 @@ describe('VideoTitle', () => {
       play: false,
       active: true
     }
-    render(
-      <PlayerProvider initialState={state}>
-        <VideoTitle videoTitle="Test Video" showButton />
-      </PlayerProvider>
+    renderWithProviders(
+      <VideoTitle videoTitle="Test Video" showButton />,
+      state
     )
     const container = screen.getByRole('heading', {
       name: 'Test Video'
@@ -59,30 +64,22 @@ describe('VideoTitle', () => {
   })
 
   it('should render play button', () => {
-    render(
-      <PlayerProvider initialState={initialState}>
-        <VideoTitle videoTitle="Test Video" showButton />
-      </PlayerProvider>
-    )
+    renderWithProviders(<VideoTitle videoTitle="Test Video" showButton />)
     expect(screen.getByRole('button', { name: 'Play' })).toBeInTheDocument()
   })
 
   it('should not render play button when showButton is false', () => {
-    const { container } = render(
-      <PlayerProvider initialState={initialState}>
-        <VideoTitle videoTitle="Test Video" showButton={false} />
-      </PlayerProvider>
+    const { container } = renderWithProviders(
+      <VideoTitle videoTitle="Test Video" showButton={false} />
     )
     const button = container.querySelector('#play-button-lg')
-    expect(button).not.toBeVisible()
+    expect(button).toBeNull()
   })
 
   it('should call onClick when play button is clicked', () => {
     const onClick = jest.fn()
-    render(
-      <PlayerProvider initialState={initialState}>
-        <VideoTitle videoTitle="Test Video" showButton onClick={onClick} />
-      </PlayerProvider>
+    renderWithProviders(
+      <VideoTitle videoTitle="Test Video" showButton onClick={onClick} />
     )
     fireEvent.click(screen.getByRole('button', { name: 'Play' }))
     expect(onClick).toHaveBeenCalled()
@@ -93,10 +90,9 @@ describe('VideoTitle', () => {
       ...initialState,
       mute: true
     }
-    render(
-      <PlayerProvider initialState={state}>
-        <VideoTitle videoTitle="Test Video" showButton variant="unmute" />
-      </PlayerProvider>
+    renderWithProviders(
+      <VideoTitle videoTitle="Test Video" showButton variant="unmute" />,
+      state
     )
     expect(
       screen.getByRole('button', { name: 'Play with sound' })
@@ -109,15 +105,14 @@ describe('VideoTitle', () => {
       ...initialState,
       mute: true
     }
-    render(
-      <PlayerProvider initialState={state}>
-        <VideoTitle
-          videoTitle="Test Video"
-          showButton
-          variant="unmute"
-          onClick={onClick}
-        />
-      </PlayerProvider>
+    renderWithProviders(
+      <VideoTitle
+        videoTitle="Test Video"
+        showButton
+        variant="unmute"
+        onClick={onClick}
+      />,
+      state
     )
     fireEvent.click(screen.getByRole('button', { name: 'Play with sound' }))
     expect(onClick).toHaveBeenCalled()

@@ -1,0 +1,36 @@
+{
+  "version": "1.0.0",
+  "inserts": [
+    {
+      "id": "welcome-start",
+      "enabled": true,
+      "source": "mux",
+      "playbackIds": [
+        "D4p01ELXmdsDM00J3O00d00fArV9q1DTFVFFCaxyax2B2nc",
+        "D4p01ELXmdsDM00J3O00d00fArV9q1DTFVFFCaxyax2B2nc"
+      ],
+      "duration": 3,
+      "overlay": {
+        "label": "Daily Inspirations",
+        "title": "Today's Bible Moments. For You.",
+        "collection": "Daily Inspirations",
+        "description": "A hand-picked playlist of inspiring videos, designed to encourage and uplift."
+      },
+      "trigger": { "type": "sequence-start" }
+    },
+    {
+      "id": "second-insert",
+      "enabled": true,
+      "source": "mux",
+      "playbackIds": ["D4p01ELXmdsDM00J3O00d00fArV9q1DTFVFFCaxyax2B2nc"],
+      "duration": 5,
+      "overlay": {
+        "label": "Staff Pick",
+        "title": "Second Mux Insert",
+        "collection": "Highlights",
+        "description": "Second insert to test duration progression."
+      },
+      "trigger": { "type": "sequence-start" }
+    }
+  ]
+}

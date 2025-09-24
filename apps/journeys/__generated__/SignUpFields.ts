@@ -25,8 +25,6 @@ export interface SignUpFields_action_LinkAction {
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
-  customizable: boolean | null;
-  parentStepId: string | null;
 }
 
 export interface SignUpFields_action_EmailAction {
@@ -34,8 +32,6 @@ export interface SignUpFields_action_EmailAction {
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
-  customizable: boolean | null;
-  parentStepId: string | null;
 }
 
 export type SignUpFields_action = SignUpFields_action_PhoneAction | SignUpFields_action_NavigateToBlockAction | SignUpFields_action_LinkAction | SignUpFields_action_EmailAction;

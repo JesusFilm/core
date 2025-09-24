@@ -27,8 +27,6 @@ export interface RadioOptionBlockCreate_radioOptionBlockCreate_action_LinkAction
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
-  customizable: boolean | null;
-  parentStepId: string | null;
 }
 
 export interface RadioOptionBlockCreate_radioOptionBlockCreate_action_EmailAction {
@@ -36,8 +34,6 @@ export interface RadioOptionBlockCreate_radioOptionBlockCreate_action_EmailActio
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
-  customizable: boolean | null;
-  parentStepId: string | null;
 }
 
 export type RadioOptionBlockCreate_radioOptionBlockCreate_action = RadioOptionBlockCreate_radioOptionBlockCreate_action_PhoneAction | RadioOptionBlockCreate_radioOptionBlockCreate_action_NavigateToBlockAction | RadioOptionBlockCreate_radioOptionBlockCreate_action_LinkAction | RadioOptionBlockCreate_radioOptionBlockCreate_action_EmailAction;

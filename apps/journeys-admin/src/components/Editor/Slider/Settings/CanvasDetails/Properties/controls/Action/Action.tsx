@@ -8,7 +8,6 @@ import { ReactElement, useEffect, useState } from 'react'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
-import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import ChevronDownIcon from '@core/shared/ui/icons/ChevronDown'
 
 import {
@@ -18,7 +17,6 @@ import {
 } from '../../../../../../../../../__generated__/BlockFields'
 import { useActionCommand } from '../../../../../../utils/useActionCommand'
 
-import { CustomizationToggle } from './CustomizationToggle'
 import { EmailAction } from './EmailAction'
 import { LinkAction } from './LinkAction'
 import { NavigateToBlockAction } from './NavigateToBlockAction'
@@ -30,7 +28,6 @@ export function Action(): ReactElement {
   } = useEditor()
   const { t } = useTranslation('apps-journeys-admin')
   const { addAction } = useActionCommand()
-  const { journey } = useJourney()
 
   // Add addtional types here to use this component for that block
   const selectedBlock = stateSelectedBlock as
@@ -80,9 +77,6 @@ export function Action(): ReactElement {
     setAction(event.target.value as ActionValue)
   }
 
-  const isLink = !isSubmitButton && action === 'LinkAction'
-  const isEmail = !isSubmitButton && action === 'EmailAction'
-
   return (
     <>
       <Stack sx={{ p: 4, pt: 0 }} data-testid="Action">
@@ -108,10 +102,9 @@ export function Action(): ReactElement {
             })}
           </Select>
         </FormControl>
-        {isLink && <LinkAction />}
-        {isEmail && <EmailAction />}
+        {!isSubmitButton && action === 'LinkAction' && <LinkAction />}
+        {!isSubmitButton && action === 'EmailAction' && <EmailAction />}
         {action === 'NavigateToBlockAction' && <NavigateToBlockAction />}
-        {(isLink || isEmail) && journey?.template && <CustomizationToggle />}
       </Stack>
     </>
   )

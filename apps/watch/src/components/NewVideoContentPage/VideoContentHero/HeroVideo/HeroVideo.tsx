@@ -1,3 +1,4 @@
+import clsx from 'clsx'
 import last from 'lodash/last'
 import { ReactElement, useCallback, useEffect, useRef, useState } from 'react'
 import videojs from 'video.js'
@@ -13,23 +14,37 @@ import { usePlayer } from '../../../../libs/playerContext/PlayerContext'
 import { useVideo } from '../../../../libs/videoContext'
 import { useWatch } from '../../../../libs/watchContext'
 import { useSubtitleUpdate } from '../../../../libs/watchContext/useSubtitleUpdate'
+import type { CarouselMuxSlide } from '../../../../types/inserts'
 import { VideoControls } from '../../../VideoContentPage/VideoHero/VideoPlayer/VideoControls'
+import { HeroSubtitleOverlay } from './HeroSubtitleOverlay'
 
 interface HeroVideoProps {
-  isFullscreen: boolean
+  isPreview?: boolean
+  collapsed?: boolean
+  onMuteToggle?: (isMuted: boolean) => void
+  currentMuxInsert?: CarouselMuxSlide | null
+  onMuxInsertComplete?: () => void
 }
 
-export function HeroVideo({ isFullscreen }: HeroVideoProps): ReactElement {
+export function HeroVideo({
+  isPreview = false,
+  collapsed = true,
+  onMuteToggle,
+  currentMuxInsert,
+  onMuxInsertComplete
+}: HeroVideoProps): ReactElement {
   const { variant, ...video } = useVideo()
   const {
-    state: { mute }
+    state: { mute },
+    dispatch: dispatchPlayer
   } = usePlayer()
   const {
     state: { subtitleLanguageId, subtitleOn }
   } = useWatch()
   const [playerReady, setPlayerReady] = useState(false)
 
-  const title = last(video.title)?.value ?? ''
+  // Use Mux insert title if available, otherwise use regular video title
+  const title = currentMuxInsert ? currentMuxInsert.overlay.title : (last(video.title)?.value ?? '')
 
   const videoRef = useRef<HTMLVideoElement>(null)
   const playerRef = useRef<
@@ -48,12 +63,16 @@ export function HeroVideo({ isFullscreen }: HeroVideoProps): ReactElement {
   }, [])
 
   useEffect(() => {
-    window.addEventListener('scroll', pauseVideoOnScrollAway)
+    window.addEventListener('scroll', pauseVideoOnScrollAway, { passive: true })
     return () => window.removeEventListener('scroll', pauseVideoOnScrollAway)
   }, [pauseVideoOnScrollAway])
 
   useEffect(() => {
-    if (!videoRef.current || !variant?.hls) return
+    // Determine the video source and ID based on current content
+    const videoSource = currentMuxInsert ? currentMuxInsert.urls.hls : variant?.hls
+    const videoId = currentMuxInsert ? currentMuxInsert.id : variant?.id
+
+    if (!videoRef.current || !videoSource) return
 
     // Dispose of existing player before creating new one
     if (playerRef.current) {
@@ -67,7 +86,7 @@ export function HeroVideo({ isFullscreen }: HeroVideoProps): ReactElement {
       env_key: process.env.NEXT_PUBLIC_MUX_DEFAULT_REPORTING_KEY || '',
       player_name: 'watch',
       video_title: title,
-      video_id: variant?.id ?? ''
+      video_id: videoId ?? ''
     }
 
     // Initialize player
@@ -75,8 +94,8 @@ export function HeroVideo({ isFullscreen }: HeroVideoProps): ReactElement {
       ...defaultVideoJsOptions,
       autoplay: true,
       controls: false,
-      loop: true,
-      muted: mute,
+      loop: !isPreview && !currentMuxInsert, // Don't loop Mux inserts
+      muted: false, // Start unmuted, mute state will be set by useEffect
       fluid: false,
       fill: true,
       responsive: false,
@@ -92,7 +111,7 @@ export function HeroVideo({ isFullscreen }: HeroVideoProps): ReactElement {
     playerRef.current = player
 
     player.src({
-      src: variant.hls,
+      src: videoSource,
       type: 'application/x-mpegURL'
     })
 
@@ -107,9 +126,45 @@ export function HeroVideo({ isFullscreen }: HeroVideoProps): ReactElement {
       }
       setPlayerReady(false)
     }
-  }, [variant?.hls, title, variant?.id])
+  }, [currentMuxInsert?.id, variant?.hls, title, variant?.id, currentMuxInsert, isPreview])
+
+  // Handle mute state changes dynamically without recreating the player
+  useEffect(() => {
+    if (playerRef.current && playerReady) {
+      playerRef.current.muted(mute)
+    }
+  }, [mute, playerReady])
+
+  // Duration timer for Mux inserts
+  useEffect(() => {
+    if (!currentMuxInsert?.duration || !playerRef.current || !playerReady) {
+      return
+    }
+
+    const timer = setTimeout(() => {
+      onMuxInsertComplete?.()
+    }, currentMuxInsert.duration * 1000) // Convert seconds to milliseconds
+
+    return () => {
+      clearTimeout(timer)
+    }
+  }, [currentMuxInsert?.duration, currentMuxInsert?.id, playerReady, onMuxInsertComplete])
 
   const { subtitleUpdate } = useSubtitleUpdate()
+
+  const effectiveSubtitleLanguageId =
+    subtitleLanguageId ?? variant?.language.id ?? null
+
+  const handlePreviewClick = useCallback(
+    (e: React.MouseEvent<HTMLVideoElement>) => {
+      e.stopPropagation()
+      const newMuteState = !mute
+      playerRef.current?.muted(newMuteState)
+      dispatchPlayer({ type: 'SetMute', mute: newMuteState })
+      onMuteToggle?.(newMuteState)
+    },
+    [mute, dispatchPlayer, onMuteToggle]
+  )
 
   useEffect(() => {
     const player = playerRef.current
@@ -117,37 +172,78 @@ export function HeroVideo({ isFullscreen }: HeroVideoProps): ReactElement {
 
     void subtitleUpdate({
       player,
-      subtitleLanguageId,
+      subtitleLanguageId: effectiveSubtitleLanguageId,
       subtitleOn: mute || subtitleOn
     })
-  }, [playerRef, subtitleLanguageId, subtitleOn, variant, mute])
+  }, [
+    playerRef,
+    effectiveSubtitleLanguageId,
+    subtitleOn,
+    variant,
+    mute,
+    subtitleUpdate
+  ])
+
+  const shouldShowOverlay = playerReady && (mute || (subtitleOn ?? false))
 
   return (
     <div
-      className={`vjs-hide-loading-spinners fixed top-0 right-0 left-0 z-0 mx-auto [body[style*='padding-right']_&]:right-[15px] ${
-        isFullscreen ? 'h-full max-w-full' : 'h-[90%] max-w-[1920px] md:h-[80%]'
-      }`}
+      className={clsx(
+        "fixed top-0 left-0 right-0 mx-auto z-0 vjs-hide-loading-spinners [body[style*='padding-right']_&]:right-[15px]",
+        {
+          'preview-video': isPreview && collapsed,
+          'h-[90%] md:h-[80%] max-w-[1920px]': !isPreview || !collapsed
+        }
+      )}
       data-testid="ContentHeroVideoContainer"
     >
-      {variant?.hls && (
-        <video
-          key={variant.hls}
-          data-testid="ContentHeroVideo"
-          ref={videoRef}
-          className="vjs [&_.vjs-tech]:object-contain [&_.vjs-tech]:md:object-cover"
-          style={{
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            width: '100%',
-            height: '100%'
-          }}
-          playsInline
+      <>
+        {(currentMuxInsert?.urls.hls || variant?.hls) && (
+          <video
+            key={currentMuxInsert ? currentMuxInsert.id : variant?.hls}
+            data-testid="ContentHeroVideo"
+            ref={videoRef}
+            className={clsx(
+              'vjs [&_.vjs-tech]:object-contain [&_.vjs-tech]:md:object-cover',
+              { 'cursor-pointer': isPreview }
+            )}
+            style={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              width: '100%',
+              height: '100%'
+            }}
+            playsInline
+            onClick={isPreview ? handlePreviewClick : undefined}
+          />
+        )}
+        {collapsed && (
+          <div
+            className="absolute inset-0 z-1 pointer-events-none opacity-70"
+            style={{
+              backdropFilter: 'brightness(.4) saturate(.6) sepia(.4)',
+              backgroundImage: 'url(/assets/overlay.svg)',
+              backgroundSize: '1600px auto'
+            }}
+          />
+        )}
+        <HeroSubtitleOverlay
+          player={playerRef.current}
+          subtitleLanguageId={effectiveSubtitleLanguageId}
+          visible={shouldShowOverlay}
         />
-      )}
-      {playerRef.current != null && playerReady && (
-        <VideoControls player={playerRef.current} />
-      )}
+        {playerRef.current != null && playerReady && (
+          <>
+            <VideoControls
+              player={playerRef.current}
+              isPreview={isPreview}
+              onMuteToggle={onMuteToggle}
+              customDuration={currentMuxInsert?.duration}
+            />
+          </>
+        )}
+      </>
     </div>
   )
 }

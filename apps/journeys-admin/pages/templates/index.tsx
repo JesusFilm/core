@@ -121,7 +121,6 @@ export const getStaticProps: GetStaticProps = async ({ locale }) => {
             '5541', // Serbian
             '6788', // Farsi, Western
             '3804', // Korean
-            '1927', // Malay
             '1370' // Nepali
           ]
         }
