@@ -6,7 +6,7 @@ const config: Config = {
     'swiper/react': '<rootDir>/../__mocks__/swiper/react',
     'swiper/modules': '<rootDir>/../__mocks__/swiper/modules',
     'swiper/css': '<rootDir>/../__mocks__/swiper/css',
-    'swiper/css/*': '<rootDir>/../__mocks__/swiper/css',
+    '^swiper/css/.*$': '<rootDir>/../__mocks__/swiper/css',
     '^@watch/(.*)$': '<rootDir>/src/$1'
   },
   transform: {
