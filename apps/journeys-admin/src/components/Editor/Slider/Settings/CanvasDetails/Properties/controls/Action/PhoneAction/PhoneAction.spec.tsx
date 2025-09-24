@@ -254,4 +254,115 @@ describe('PhoneAction', () => {
 
     await waitFor(() => expect(result).toHaveBeenCalled())
   })
+
+  it('should disable radio buttons when no phone number is set', async () => {
+    const selectedBlockWithoutPhone: TreeBlock = {
+      ...selectedBlock,
+      action: {
+        parentBlockId: 'button2.id',
+        __typename: 'PhoneAction',
+        gtmEventName: 'gtmEventName',
+        phone: '',
+        countryCode: 'US',
+        contactAction: ContactActionType.call
+      }
+    }
+
+    render(
+      <MockedProvider>
+        <EditorProvider initialState={{ selectedBlock: selectedBlockWithoutPhone }}>
+          <PhoneAction />
+        </EditorProvider>
+      </MockedProvider>
+    )
+
+    // Wait for the component to render and check the disabled state
+    await waitFor(() => {
+      const callRadio = screen.getByRole('radio', { name: 'Call' })
+      const smsRadio = screen.getByRole('radio', { name: 'SMS' })
+      
+      expect(callRadio).toBeDisabled()
+      expect(smsRadio).toBeDisabled()
+    })
+  })
+
+  it('should enable radio buttons when phone number is set', async () => {
+    render(
+      <MockedProvider>
+        <EditorProvider initialState={{ selectedBlock }}>
+          <PhoneAction />
+        </EditorProvider>
+      </MockedProvider>
+    )
+
+    const callRadio = screen.getByRole('radio', { name: 'Call' })
+    const smsRadio = screen.getByRole('radio', { name: 'SMS' })
+
+    expect(callRadio).not.toBeDisabled()
+    expect(smsRadio).not.toBeDisabled()
+  })
+
+  it('should show tooltip when radio buttons are disabled', async () => {
+    const selectedBlockWithoutPhone: TreeBlock = {
+      ...selectedBlock,
+      action: {
+        parentBlockId: 'button2.id',
+        __typename: 'PhoneAction',
+        gtmEventName: 'gtmEventName',
+        phone: '',
+        countryCode: 'US',
+        contactAction: ContactActionType.call
+      }
+    }
+
+    render(
+      <MockedProvider>
+        <EditorProvider initialState={{ selectedBlock: selectedBlockWithoutPhone }}>
+          <PhoneAction />
+        </EditorProvider>
+      </MockedProvider>
+    )
+
+    // Wait for the component to render and radio buttons to be disabled
+    await waitFor(() => {
+      const callRadio = screen.getByRole('radio', { name: 'Call' })
+      expect(callRadio).toBeDisabled()
+    })
+
+    const callRadio = screen.getByRole('radio', { name: 'Call' })
+    fireEvent.mouseOver(callRadio)
+
+    await waitFor(() => {
+      expect(screen.getByText('Phone number is required')).toBeInTheDocument()
+    })
+  })
+
+  it('should not call handleContactActionChange when radio is disabled', async () => {
+    const selectedBlockWithoutPhone: TreeBlock = {
+      ...selectedBlock,
+      action: {
+        parentBlockId: 'button2.id',
+        __typename: 'PhoneAction',
+        gtmEventName: 'gtmEventName',
+        phone: '',
+        countryCode: 'US',
+        contactAction: ContactActionType.call
+      }
+    }
+
+    const result = jest.fn().mockReturnValue(blockActionPhoneUpdateMock.result)
+    render(
+      <MockedProvider mocks={[{ ...blockActionPhoneUpdateMock, result }]}>
+        <EditorProvider initialState={{ selectedBlock: selectedBlockWithoutPhone }}>
+          <PhoneAction />
+        </EditorProvider>
+      </MockedProvider>
+    )
+
+    const smsRadio = screen.getByRole('radio', { name: 'SMS' })
+    fireEvent.click(smsRadio)
+
+    // Should not call the mutation when disabled
+    expect(result).not.toHaveBeenCalled()
+  })
 })

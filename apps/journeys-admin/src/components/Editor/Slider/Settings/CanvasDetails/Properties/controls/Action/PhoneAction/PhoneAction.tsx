@@ -18,6 +18,7 @@ import Stack from '@mui/material/Stack'
 import { countries, Country } from './FlagDropdown/countriesList'
 import Box from '@mui/material/Box'
 import { FlagDropdown } from './FlagDropdown'
+import Tooltip from '@mui/material/Tooltip'
 
 export function PhoneAction(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
@@ -25,13 +26,13 @@ export function PhoneAction(): ReactElement {
     state: { selectedBlock: stateSelectedBlock, selectedStep }
   } = useEditor()
   const selectedBlock = stateSelectedBlock as TreeBlock<ButtonBlock> | undefined
-
   const { addAction } = useActionCommand()
-
+  
   const phoneAction =
     selectedBlock?.action?.__typename === 'PhoneAction'
       ? selectedBlock.action
       : undefined
+  const disableRadioAction = !phoneAction?.phone || phoneAction.phone.trim() === ''
 
   const initialCountry = countries.find(
     (country) => country.countryCode === phoneAction?.countryCode
@@ -110,8 +111,7 @@ export function PhoneAction(): ReactElement {
   }
 
   function handleContactActionChange(contactAction: ContactActionType): void {
-    // TODO: dont change unless phone is valid, or API will fail
-    if (selectedBlock == null) return
+    if (selectedBlock == null || disableRadioAction) return
 
     const { id, action, __typename: blockTypename } = selectedBlock
 
@@ -122,7 +122,7 @@ export function PhoneAction(): ReactElement {
         __typename: 'PhoneAction',
         parentBlockId: id,
         gtmEventName: '',
-        phone: phoneAction?.phone ?? '',
+        phone: phoneAction.phone,
         countryCode: phoneAction?.countryCode ?? '',
         contactAction
       },
@@ -177,16 +177,26 @@ export function PhoneAction(): ReactElement {
               }
             }}
           >
-            <FormControlLabel
-              value={ContactActionType.call}
-              control={<Radio />}
-              label={t('Call')}
-            />
-            <FormControlLabel
-              value={ContactActionType.text}
-              control={<Radio />}
-              label={t('SMS')}
-            />
+             <Tooltip title={disableRadioAction ? t('Phone number is required') : ''} placement="right">
+              <span>
+                <FormControlLabel
+                  value={ContactActionType.call}
+                  control={<Radio />}
+                  label={t('Call')}
+                  disabled={disableRadioAction}
+                  />
+                </span>
+              </Tooltip>
+             <Tooltip title={disableRadioAction ? t('Phone number is required') : ''} placement="right">
+              <span>
+                <FormControlLabel
+                  value={ContactActionType.text}
+                  control={<Radio />}
+                  label={t('SMS')}
+                  disabled={disableRadioAction}
+                />
+              </span>
+            </Tooltip>
           </RadioGroup>
         </FormControl>
       </Stack>
