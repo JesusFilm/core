@@ -4,6 +4,7 @@ import { journeysAdminConfig } from '@core/shared/ui/storybook'
 
 import { Country } from './countriesList'
 import { FlagDropdown } from './FlagDropdown'
+import { noop } from 'lodash'
 
 const FlagDropdownStory: Meta<typeof FlagDropdown> = {
   ...journeysAdminConfig,
@@ -44,7 +45,7 @@ export const Default: StoryObj<typeof FlagDropdown> = {
   args: {
     countries: mockCountries,
     selectedCountry: mockCountries[0],
-    onChange: () => {}
+    onChange: noop
   }
 }
 
@@ -52,7 +53,7 @@ export const WithDifferentCountry: StoryObj<typeof FlagDropdown> = {
   args: {
     countries: mockCountries,
     selectedCountry: mockCountries[2], // United Kingdom
-    onChange: () => {}
+    onChange: noop
   }
 }
 
