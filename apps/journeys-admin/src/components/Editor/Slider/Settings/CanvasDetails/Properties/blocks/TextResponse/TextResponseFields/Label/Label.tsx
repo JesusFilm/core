@@ -1,6 +1,7 @@
 import { gql, useMutation } from '@apollo/client'
 import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
+import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, useEffect, useState } from 'react'
 import { v4 as uuidv4 } from 'uuid'
@@ -203,41 +204,51 @@ export function Label(): ReactElement {
 
   return (
     <Stack
-      direction="row"
-      alignItems="baseline"
+      direction="column"
       sx={{ p: 4, pt: 0 }}
       data-testid="Label"
     >
-      <TextField
-        id="label"
-        name="label"
-        variant="filled"
-        label={t('Label')}
-        placeholder={t('Your label here')}
-        fullWidth
-        slotProps={{
-          htmlInput: {
-            maxLength: 250
-          }
+      <Stack direction="row">
+        <TextField
+          id="label"
+          name="label"
+          variant="filled"
+          label={t('Label')}
+          placeholder={t('Your label here')}
+          fullWidth
+          slotProps={{
+            htmlInput: {
+              maxLength: 250
+            }
+          }}
+          value={value}
+          onFocus={resetCommandInput}
+          onChange={(e) => {
+            setValue(e.target.value)
+            handleSubmit(e.target.value)
+          }}
+        />
+        <IconButton
+          onClick={hideLabelToggle}
+          aria-label={hideLabel ? t('Show label') : t('Hide label')}
+          tabIndex={0}
+          sx={{ pl: 4 }}
+        >
+          {hideLabel ? <EyeClosed /> : <EyeOpen />}
+        </IconButton>
+      </Stack>
+      <Typography
+        variant="caption"
+        sx={{
+          color: 'text.secondary',
+          mt: 1,
+          ml: 2
         }}
-        value={value}
-        onFocus={resetCommandInput}
-        onChange={(e) => {
-          setValue(e.target.value)
-          handleSubmit(e.target.value)
-        }}
-        helperText={t(
+      >
+        {t(
           'Labels are required for analytics, but you can choose to show or hide them for users.'
         )}
-      />
-      <IconButton
-        onClick={hideLabelToggle}
-        aria-label={hideLabel ? t('Show label') : t('Hide label')}
-        tabIndex={0}
-        sx={{ pl: 4 }}
-      >
-        {hideLabel ? <EyeClosed /> : <EyeOpen />}
-      </IconButton>
+      </Typography>
     </Stack>
   )
 }
