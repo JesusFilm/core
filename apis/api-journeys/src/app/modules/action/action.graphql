@@ -9,8 +9,7 @@ enum ContactActionType {
   text
 }
 
-type NavigateToBlockAction implements Action
-  @shareable {
+type NavigateToBlockAction implements Action @shareable {
   parentBlockId: ID!
   parentBlock: Block!
   gtmEventName: String
