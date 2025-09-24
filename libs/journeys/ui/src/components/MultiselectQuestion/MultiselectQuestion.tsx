@@ -95,7 +95,6 @@ export function MultiselectQuestion({
   const activeBlock = blockHistory[blockHistory.length - 1]
 
   useEffect(() => {
-    // test via e2e: radio selection is cleared when going back to card that is no longer rendered
     if (!isActiveBlockOrDescendant(blockId)) setSelectedIds([])
   }, [blockId, blockHistory])
 

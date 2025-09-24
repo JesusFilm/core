@@ -32,6 +32,8 @@ export interface WrappersProps {
   ButtonWrapper?: WrapperFn<ButtonBlock>
   CardWrapper?: WrapperFn<CardBlock>
   ImageWrapper?: WrapperFn<ImageBlock>
+  MultiselectOptionWrapper?: WrapperFn<MultiselectOptionBlock>
+  MultiselectQuestionWrapper?: WrapperFn<MultiselectBlock>
   RadioOptionWrapper?: WrapperFn<RadioOptionBlock>
   RadioQuestionWrapper?: WrapperFn<RadioQuestionBlock>
   SignUpWrapper?: WrapperFn<SignUpBlock>
@@ -167,9 +169,9 @@ export function BlockRenderer({
   const CardWrapper = wrappers?.CardWrapper ?? DefaultWrapper
   const ImageWrapper = wrappers?.ImageWrapper ?? DefaultWrapper
   const MultiselectOptionWrapper =
-    wrappers?.RadioOptionWrapper ?? DefaultWrapper
+    wrappers?.MultiselectOptionWrapper ?? DefaultWrapper
   const MultiselectQuestionWrapper =
-    wrappers?.RadioQuestionWrapper ?? DefaultWrapper
+    wrappers?.MultiselectQuestionWrapper ?? DefaultWrapper
   const RadioOptionWrapper = wrappers?.RadioOptionWrapper ?? DefaultWrapper
   const RadioQuestionWrapper = wrappers?.RadioQuestionWrapper ?? DefaultWrapper
   const SignUpWrapper = wrappers?.SignUpWrapper ?? DefaultWrapper
