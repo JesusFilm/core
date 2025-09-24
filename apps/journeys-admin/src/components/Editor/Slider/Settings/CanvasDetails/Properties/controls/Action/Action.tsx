@@ -32,7 +32,6 @@ export function Action(): ReactElement {
   } = useEditor()
   const { t } = useTranslation('apps-journeys-admin')
   const { addAction } = useActionCommand()
-  const { journeyCustomization } = useFlags()
   const { journey } = useJourney()
 
   // Add addtional types here to use this component for that block
@@ -118,9 +117,7 @@ export function Action(): ReactElement {
         {isEmail && <EmailAction />}
         {isPhone && <PhoneAction />}
         {action === 'NavigateToBlockAction' && <NavigateToBlockAction />}
-        {(isLink || isEmail) && journeyCustomization && journey?.template && (
-          <CustomizationToggle />
-        )}
+        {(isLink || isEmail) && journey?.template && <CustomizationToggle />}
       </Stack>
     </>
   )

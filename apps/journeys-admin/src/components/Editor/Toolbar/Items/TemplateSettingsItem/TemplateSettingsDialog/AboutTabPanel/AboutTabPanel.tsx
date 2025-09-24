@@ -6,7 +6,6 @@ import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 
 import { StrategySection } from '@core/journeys/ui/StrategySection'
-import { useFlags } from '@core/shared/ui/FlagsProvider'
 import LinkAngled from '@core/shared/ui/icons/LinkAngled'
 
 import { ImageEdit } from '../../../../../Slider/Settings/Drawer/ImageEdit/ImageEdit'
@@ -17,7 +16,6 @@ import { CustomizeTemplate } from './CustomizeTemplate'
 export function AboutTabPanel(): ReactElement {
   const { values, handleChange, errors } = useTemplateSettingsForm()
   const { t } = useTranslation('apps-journeys-admin')
-  const { journeyCustomization } = useFlags()
 
   return (
     <>
@@ -45,12 +43,8 @@ export function AboutTabPanel(): ReactElement {
           sx={{ flex: 1 }}
         />
       </Stack>
-      {journeyCustomization && (
-        <>
-          <Divider />
-          <CustomizeTemplate />
-        </>
-      )}
+      <Divider />
+      <CustomizeTemplate />
       <TextField
         data-testid="StrategySlugEdit"
         id="strategySlug"
