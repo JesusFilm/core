@@ -76,27 +76,21 @@ export function CustomizationToggle(): ReactElement {
   }
 
   return (
-    <>
-      {actionBlock != null &&
-        (actionBlock.action?.__typename === 'LinkAction' ||
-          actionBlock.action?.__typename === 'EmailAction') && (
-          <Stack
-            direction="row"
-            alignItems="center"
-            justifyContent="space-between"
-            width="100%"
-            sx={{
-              mt: 2
-            }}
-          >
-            <Typography variant="body1">{t('Customize')}</Typography>
-            <Switch
-              checked={customizable}
-              onChange={handleChange}
-              inputProps={{ 'aria-label': t('Toggle customizable') }}
-            />
-          </Stack>
-        )}
-    </>
+    <Stack
+      direction="row"
+      alignItems="center"
+      width="100%"
+      gap={1}
+      sx={{
+        mt: 2
+      }}
+    >
+      <Switch
+        checked={customizable}
+        onChange={handleChange}
+        inputProps={{ 'aria-label': t('Toggle customizable') }}
+      />
+      <Typography variant="body1">{t('Needs Customization')}</Typography>
+    </Stack>
   )
 }
