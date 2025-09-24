@@ -376,6 +376,32 @@ export function useWatchHeroCarousel({
       const nextSlide = slides.find((slide) => slide.id === slideId)
       if (!nextSlide) return
 
+      // Debug logging for featured video carousel card clicks
+      if (isVideoSlide(nextSlide)) {
+        const video = nextSlide.video
+        const title = video.title?.[0]?.value || video.id
+        const slug = (video as any).slug || video.id
+        const videoUrl = `/watch/${slug}.html`
+        const playbackUrl = video.variant?.hls
+
+        console.log('Featured video carousel card clicked:', {
+          videoId: video.id,
+          title,
+          slug,
+          url: videoUrl,
+          playbackUrl,
+          source: 'featured-carousel'
+        })
+      } else if (isMuxSlide(nextSlide)) {
+        const playbackUrl = nextSlide.urls.hls
+        console.log('Featured video carousel card clicked (Mux insert):', {
+          slideId: nextSlide.id,
+          title: nextSlide.overlay.title,
+          playbackUrl,
+          source: 'featured-carousel-mux'
+        })
+      }
+
       setActiveSlideId(slideId)
       setIsProgressing(false)
 

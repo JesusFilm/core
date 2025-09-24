@@ -244,7 +244,7 @@ export function useCarouselVideos(locale?: string): UseCarouselVideosReturn {
 
         const children = data?.video?.children || []
         const videoChildren = filterOutBlacklistedVideos(
-          children.filter((c: any) => c.variant),
+          children.filter((c: any) => c.variant && c.variant.hls),
           blacklistedVideoIds
         )
         if (videoChildren.length > 0) {
@@ -298,7 +298,7 @@ export function useCarouselVideos(locale?: string): UseCarouselVideosReturn {
       if (pool[0] === 'shortFilms') {
         // Handle short films
         const shortFilms = filterOutBlacklistedVideos(
-          shortFilmsData?.videos || [],
+          (shortFilmsData?.videos || []).filter((v: any) => v.variant && v.variant.hls),
           blacklistedVideoIds
         )
         if (shortFilms.length > 0) {
