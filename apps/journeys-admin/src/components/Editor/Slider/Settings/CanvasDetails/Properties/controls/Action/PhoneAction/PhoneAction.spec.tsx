@@ -11,10 +11,10 @@ import {
   ContactActionType
 } from '../../../../../../../../../../__generated__/globalTypes'
 import { blockActionNavigateToBlockUpdateMock } from '../../../../../../../../../libs/useBlockActionNavigateToBlockUpdateMutation/useBlockActionNavigateToBlockUpdateMutation.mock'
+import { blockActionPhoneUpdateMock } from '../../../../../../../../../libs/useBlockActionPhoneUpdateMutation/useBlockActionPhoneUpdateMutation.mock'
 import { CommandUndoItem } from '../../../../../../../Toolbar/Items/CommandUndoItem'
 
 import { PhoneAction } from '.'
-import { blockActionPhoneUpdateMock } from '../../../../../../../../../libs/useBlockActionPhoneUpdateMutation/useBlockActionPhoneUpdateMutation.mock'
 
 jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,

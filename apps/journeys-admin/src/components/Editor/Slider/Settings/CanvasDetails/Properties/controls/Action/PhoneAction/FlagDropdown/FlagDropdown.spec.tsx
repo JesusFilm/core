@@ -1,7 +1,7 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 
-import { FlagDropdown } from './FlagDropdown'
 import { Country } from './countriesList'
+import { FlagDropdown } from './FlagDropdown'
 
 describe('FlagDropdown', () => {
   const mockCountries: Country[] = [

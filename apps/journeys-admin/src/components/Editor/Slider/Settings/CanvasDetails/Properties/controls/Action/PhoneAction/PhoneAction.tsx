@@ -1,11 +1,14 @@
-import Typography from '@mui/material/Typography'
-import { useTranslation } from 'next-i18next'
-import { ReactElement, useState } from 'react'
-import { object, string } from 'yup'
+import Box from '@mui/material/Box'
 import FormControl from '@mui/material/FormControl'
 import FormControlLabel from '@mui/material/FormControlLabel'
 import Radio from '@mui/material/Radio'
 import RadioGroup from '@mui/material/RadioGroup'
+import Stack from '@mui/material/Stack'
+import Tooltip from '@mui/material/Tooltip'
+import Typography from '@mui/material/Typography'
+import { useTranslation } from 'next-i18next'
+import { ReactElement, useState } from 'react'
+import { object, string } from 'yup'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
@@ -14,11 +17,9 @@ import { BlockFields_ButtonBlock as ButtonBlock } from '../../../../../../../../
 import { ContactActionType } from '../../../../../../../../../../__generated__/globalTypes'
 import { TextFieldForm } from '../../../../../../../../TextFieldForm'
 import { useActionCommand } from '../../../../../../../utils/useActionCommand'
-import Stack from '@mui/material/Stack'
-import { countries, Country } from './FlagDropdown/countriesList'
-import Box from '@mui/material/Box'
+
 import { FlagDropdown } from './FlagDropdown'
-import Tooltip from '@mui/material/Tooltip'
+import { Country, countries } from './FlagDropdown/countriesList'
 
 export function PhoneAction(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')

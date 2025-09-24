@@ -1,18 +1,18 @@
-import IconButton from '@mui/material/IconButton'
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown'
-import Menu from '@mui/material/Menu'
-import MenuItem from '@mui/material/MenuItem'
+import SearchIcon from '@mui/icons-material/Search'
+import Box from '@mui/material/Box'
+import IconButton from '@mui/material/IconButton'
+import InputAdornment from '@mui/material/InputAdornment'
 import ListItemIcon from '@mui/material/ListItemIcon'
 import ListItemText from '@mui/material/ListItemText'
-import Box from '@mui/material/Box'
+import Menu from '@mui/material/Menu'
+import MenuItem from '@mui/material/MenuItem'
+import TextField from '@mui/material/TextField'
 import { useTranslation } from 'next-i18next'
 import { MouseEvent, ReactElement, useMemo, useState } from 'react'
-import TextField from '@mui/material/TextField'
-import InputAdornment from '@mui/material/InputAdornment'
-import SearchIcon from '@mui/icons-material/Search'
 
-import { CountryFlag } from './CountryFlag'
 import { Country } from './countriesList'
+import { CountryFlag } from './CountryFlag'
 
 interface FlagDropdownProps {
   countries: Country[]
@@ -154,5 +154,4 @@ export function FlagDropdown({
     </>
   )
 }
-
 

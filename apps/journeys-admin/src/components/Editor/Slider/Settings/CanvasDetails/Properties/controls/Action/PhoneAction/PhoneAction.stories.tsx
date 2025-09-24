@@ -1,4 +1,5 @@
 import { Meta, StoryObj } from '@storybook/react'
+import { screen, userEvent } from '@storybook/test'
 
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { simpleComponentConfig } from '@core/shared/ui/storybook'
@@ -6,7 +7,6 @@ import { simpleComponentConfig } from '@core/shared/ui/storybook'
 import { steps } from '../data'
 
 import { PhoneAction } from '.'
-import { userEvent, screen } from '@storybook/test'
 
 const PhoneActionStory: Meta<typeof PhoneAction> = {
   ...simpleComponentConfig,

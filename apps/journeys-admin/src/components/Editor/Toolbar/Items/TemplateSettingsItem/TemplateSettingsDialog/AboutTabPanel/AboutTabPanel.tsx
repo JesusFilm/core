@@ -6,8 +6,8 @@ import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 
 import { StrategySection } from '@core/journeys/ui/StrategySection'
-import LinkAngled from '@core/shared/ui/icons/LinkAngled'
 import { useFlags } from '@core/shared/ui/FlagsProvider'
+import LinkAngled from '@core/shared/ui/icons/LinkAngled'
 
 import { ImageEdit } from '../../../../../Slider/Settings/Drawer/ImageEdit/ImageEdit'
 import { useTemplateSettingsForm } from '../useTemplateSettingsForm'

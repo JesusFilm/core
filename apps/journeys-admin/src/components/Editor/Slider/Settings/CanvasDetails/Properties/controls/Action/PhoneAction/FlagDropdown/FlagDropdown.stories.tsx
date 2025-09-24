@@ -2,8 +2,8 @@ import { Meta, StoryObj } from '@storybook/react'
 
 import { journeysAdminConfig } from '@core/shared/ui/storybook'
 
-import { FlagDropdown } from './FlagDropdown'
 import { Country } from './countriesList'
+import { FlagDropdown } from './FlagDropdown'
 
 const FlagDropdownStory: Meta<typeof FlagDropdown> = {
   ...journeysAdminConfig,

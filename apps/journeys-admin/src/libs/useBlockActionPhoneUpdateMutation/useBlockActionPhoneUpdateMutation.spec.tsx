@@ -4,11 +4,11 @@ import { renderHook, waitFor } from '@testing-library/react'
 import { act } from 'react'
 
 import { BlockFields_ButtonBlock as ButtonBlock } from '../../../__generated__/BlockFields'
+import { ContactActionType } from '../../../__generated__/globalTypes'
 
 import { blockActionPhoneUpdateMock } from './useBlockActionPhoneUpdateMutation.mock'
 
 import { useBlockActionPhoneUpdateMutation } from '.'
-import { ContactActionType } from '../../../__generated__/globalTypes'
 
 describe('useBlockActionPhoneUpdateMutation', () => {
   const block1: ButtonBlock = {
