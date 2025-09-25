@@ -323,9 +323,7 @@ export function TextScreen({
           >
             {t('Next Step')}
           </Typography>
-          <ArrowRightIcon
-            sx={{ fontSize: { xs: '24px', sm: '16px' } }}
-          />
+          <ArrowRightIcon sx={{ fontSize: { xs: '24px', sm: '16px' } }} />
         </Stack>
       </Button>
     </Stack>

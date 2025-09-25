@@ -245,9 +245,7 @@ export function LinksScreen({
                 >
                   {t('Next Step')}
                 </Typography>
-                <ArrowRightIcon
-                  sx={{ fontSize: { xs: '24px', sm: '16px' } }}
-                />
+                <ArrowRightIcon sx={{ fontSize: { xs: '24px', sm: '16px' } }} />
               </Stack>
             </Button>
           </FormikProvider>

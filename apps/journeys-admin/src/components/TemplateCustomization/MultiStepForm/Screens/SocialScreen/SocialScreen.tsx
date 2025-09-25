@@ -92,9 +92,7 @@ export function SocialScreen({
           >
             {t('Done')}
           </Typography>
-          <ArrowRightIcon
-            sx={{ fontSize: { xs: '24px', sm: '16px' } }}
-          />
+          <ArrowRightIcon sx={{ fontSize: { xs: '24px', sm: '16px' } }} />
         </Stack>
       </Button>
     </Stack>
