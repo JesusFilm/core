@@ -12,9 +12,10 @@ import { SearchComponent } from '../SearchComponent'
 
 import { AboutProjectSection } from './AboutProjectSection'
 import { CollectionsRail } from './CollectionsRail'
+import { SectionNewsletterSignup } from './SectionNewsletterSignup'
 import { SeeAllVideos } from './SeeAllVideos'
-import { WatchHero } from './WatchHero'
 import { useWatchHeroCarousel } from './useWatchHeroCarousel'
+import { WatchHero } from './WatchHero'
 
 interface WatchHomePageProps {
   languageId?: string | undefined
@@ -75,6 +76,7 @@ function WatchHomePageBody({ languageId }: WatchHomePageProps): ReactElement {
             nested
           >
             <SeeAllVideos />
+            <SectionNewsletterSignup />
             <AboutProjectSection />
           </ThemeProvider>
         </div>
