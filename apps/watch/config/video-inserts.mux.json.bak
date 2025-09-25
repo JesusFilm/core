@@ -109,38 +109,18 @@
       ]
     },
     {
-      "id": "join-us",
+      "id": "second-insert",
       "enabled": true,
       "source": "mux",
-      "playbackIds": ["VN4b95KOO3JtLg3x019dH2mzMHPL4le65vRmXFONyzZ8"],
+      "playbackIds": ["01zJCYhNKvZ6XJwjDEX92mTpSxgt6H9yZ2ABvYGjUfVU"],
+      "duration": 15,
       "overlay": {
-        "label": "Join Us",
-        "title": "Bilions are searching",
+        "label": "Staff Pick",
+        "title": "Second Mux Insert",
         "collection": "Highlights",
-        "description": "The harvest is here. Join us as we share the gospel with the world using digital media.",
-        "action": {
-          "label": "Join Us",
-          "url": "https://your.nextstep.is/joinus"
-        }
+        "description": "Second insert to test duration progression."
       },
-      "trigger": { "type": "after-count", "count": 1 }
-    },
-    {
-      "id": "telling-the-story-of-jesus",
-      "enabled": true,
-      "source": "mux",
-      "playbackIds": ["W00xXnOS4kU8VVMgx4M6AdzZE63OnKk300HdEDeUYZqlQ"],
-      "overlay": {
-        "label": "Let's go together",
-        "title": "Telling the Story of Jesus, Together",
-        "collection": "Highlights",
-        "description": "So they can hear and see the love of Jesus in their own language right where they are.",
-        "action": {
-          "label": "Share in Our Mission",
-          "url": "https://www.jesusfilm.org/partners/"
-        }
-      },
-      "trigger": { "type": "after-count", "count": 3 }
+      "trigger": { "type": "sequence-start" }
     }
   ]
 }
