@@ -1,9 +1,5 @@
-import Box from '@mui/material/Box'
-import Stack from '@mui/material/Stack'
-import Typography from '@mui/material/Typography'
-import { ReactElement } from 'react'
-
 import { Badge } from '@ui/components/badge'
+import { ReactElement } from 'react'
 
 export interface QuickListProps {
   title: string
@@ -20,15 +16,11 @@ export function QuickList({
 }: QuickListProps): ReactElement | null {
   if (isLoading) {
     return (
-      <Box>
-        <Typography
-          variant="overline"
-          color="text.secondary"
-          sx={{ display: 'block', mb: 3 }}
-        >
+      <div>
+        <div className="block mb-3 text-xs uppercase tracking-wider text-gray-600">
           {title}
-        </Typography>
-        <Stack direction="row" spacing={3} flexWrap="wrap" useFlexGap>
+        </div>
+        <div className="flex flex-wrap gap-3">
           {Array.from({ length: 6 }).map((_, index) => (
             <Badge
               key={index}
@@ -38,23 +30,19 @@ export function QuickList({
               Loading...
             </Badge>
           ))}
-        </Stack>
-      </Box>
+        </div>
+      </div>
     )
   }
 
   if (!Array.isArray(items) || items.length === 0) return null
 
   return (
-    <Box>
-      <Typography
-        variant="overline"
-        color="text.secondary"
-        sx={{ display: 'block', mb: 3 }}
-      >
+    <div>
+      <div className="block mb-3 text-xs uppercase tracking-wider text-gray-600">
         {title}
-      </Typography>
-      <Stack direction="row" spacing={3} flexWrap="wrap" useFlexGap>
+      </div>
+      <div className="flex flex-wrap gap-3">
         {items.map((item) => (
           <Badge
             key={item}
@@ -66,7 +54,7 @@ export function QuickList({
             {item}
           </Badge>
         ))}
-      </Stack>
-    </Box>
+      </div>
+    </div>
   )
 }

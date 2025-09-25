@@ -1,16 +1,16 @@
-import Box from '@mui/material/Box'
-import Container from '@mui/material/Container'
-import Stack from '@mui/material/Stack'
-import Typography from '@mui/material/Typography'
+import {
+  Dialog,
+  DialogContent,
+  DialogOverlay,
+  DialogPortal
+} from '@ui/components/dialog'
 import { useTranslation } from 'next-i18next'
 import { FocusEvent, ReactElement } from 'react'
 
-import { Dialog, DialogContent, DialogOverlay, DialogPortal } from '@ui/components/dialog'
-
 import { CategoryGrid } from './CategoryGrid'
+import { LanguageSelector } from './LanguageSelector'
 import { QuickList } from './QuickList'
 import { SearchResultsLayout } from './SearchResultsLayout'
-import { LanguageSelector } from './LanguageSelector'
 
 export interface SearchOverlayProps {
   open: boolean
@@ -60,44 +60,27 @@ export function SearchOverlay({
           "
           data-testid="SearchOverlay"
         >
-          <Container
-            maxWidth="xxl"
-            sx={{
-              px: { xs: 4, md: 12 },
-              pt: { xs: 8, md: 12 },
-              pb: { xs: 10, md: 16 }
-            }}
-          >
+          <div className="max-w-screen-2xl px-4 md:px-12 pt-8 md:pt-12 pb-10 md:pb-16">
             {!hasQuery ? (
-              <Stack spacing={{ xs: 6, md: 8 }}>
-                <Box
-                  sx={{
-                    display: 'flex',
-                    flexDirection: { xs: 'column', md: 'row' },
-                    gap: { xs: 4, md: 6 }
-                  }}
-                >
-                  <Box sx={{ flex: 1 }}>
+              <div className="flex flex-col gap-6 md:gap-8">
+                <div className="flex flex-col md:flex-row gap-4 md:gap-6">
+                  <div className="flex-1">
                     <QuickList
                       title={trendingTitle}
                       items={trendingSearches}
                       onSelect={onSelectQuickValue}
                       isLoading={isTrendingLoading}
                     />
-                  </Box>
-                  <Box sx={{ flex: 1 }}>
-                    <Typography
-                      variant="overline"
-                      color="text.secondary"
-                      sx={{ display: 'block', mb: 3, fontWeight: 600 }}
-                    >
+                  </div>
+                  <div className="flex-1">
+                    <div className="block mb-3 font-semibold text-xs uppercase tracking-wider text-gray-600">
                       {t('Search Filters')}
-                    </Typography>
+                    </div>
                     <LanguageSelector />
-                  </Box>
-                </Box>
+                  </div>
+                </div>
                 <CategoryGrid onCategorySelect={onSelectQuickValue} />
-              </Stack>
+              </div>
             ) : (
               <SearchResultsLayout
                 searchQuery={searchQuery}
@@ -105,7 +88,7 @@ export function SearchOverlay({
                 languageId={languageId}
               />
             )}
-          </Container>
+          </div>
         </DialogContent>
       </DialogPortal>
     </Dialog>

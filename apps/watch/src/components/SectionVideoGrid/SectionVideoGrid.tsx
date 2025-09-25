@@ -46,25 +46,18 @@ export function SectionVideoGrid({
 }: SectionVideoGridProps): ReactElement | null {
   const { t } = useTranslation('apps-watch')
 
-  const {
-    loading,
-    slides,
-    subtitle,
-    title,
-    description,
-    ctaHref,
-    ctaLabel
-  } = useSectionVideoCollectionCarouselContent({
-    sources,
-    primaryCollectionId,
-    subtitleOverride,
-    titleOverride,
-    descriptionOverride,
-    ctaLabelOverride,
-    ctaHrefOverride,
-    defaultCtaLabel: t('Watch'),
-    languageId
-  })
+  const { loading, slides, subtitle, title, description, ctaHref, ctaLabel } =
+    useSectionVideoCollectionCarouselContent({
+      sources,
+      primaryCollectionId,
+      subtitleOverride,
+      titleOverride,
+      descriptionOverride,
+      ctaLabelOverride,
+      ctaHrefOverride,
+      defaultCtaLabel: t('Watch'),
+      languageId
+    })
 
   const videos = useMemo(() => slides.map((slide) => slide.video), [slides])
 
@@ -132,7 +125,10 @@ export function SectionVideoGrid({
 
       <div className="padded space-y-6">
         {description != null && description !== '' && (
-          <p className="text-lg xl:text-xl mt-8 leading-relaxed text-stone-200/80" data-testid="SectionVideoGridDescription">
+          <p
+            className="text-lg xl:text-xl mt-8 leading-relaxed text-stone-200/80"
+            data-testid="SectionVideoGridDescription"
+          >
             {description}
           </p>
         )}

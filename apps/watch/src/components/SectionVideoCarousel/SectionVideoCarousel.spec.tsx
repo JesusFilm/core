@@ -129,7 +129,9 @@ const collectionMock = {
       slug: 'child-collection-slug',
       title: [{ __typename: 'VideoTitle', value: 'Child Collection' }],
       snippet: [{ __typename: 'VideoSnippet', value: 'Nested Snippet' }],
-      imageAlt: [{ __typename: 'VideoImageAlt', value: 'Child Collection Alt' }],
+      imageAlt: [
+        { __typename: 'VideoImageAlt', value: 'Child Collection Alt' }
+      ],
       posterImages: [],
       bannerImages: [
         {
@@ -160,7 +162,9 @@ const collectionMock = {
           label: VideoLabel.episode,
           slug: 'grandchild-one',
           title: [{ __typename: 'VideoTitle', value: 'Grandchild One' }],
-          snippet: [{ __typename: 'VideoSnippet', value: 'Grandchild Snippet' }],
+          snippet: [
+            { __typename: 'VideoSnippet', value: 'Grandchild Snippet' }
+          ],
           imageAlt: [{ __typename: 'VideoImageAlt', value: 'Grandchild Alt' }],
           posterImages: [
             {
@@ -351,9 +355,7 @@ describe('SectionVideoCarousel', () => {
     const grandchildCardProps = mockVideoCard.mock.calls.find(
       ([props]) => props.video?.id === 'grandchild-1'
     )?.[0]
-    expect(grandchildCardProps?.containerSlug).toBe(
-      'child-collection-slug'
-    )
+    expect(grandchildCardProps?.containerSlug).toBe('child-collection-slug')
     expect(grandchildCardProps?.video).toBe(grandchildSlide?.video)
 
     const videoCardProps = mockVideoCard.mock.calls.find(
@@ -371,18 +373,16 @@ describe('SectionVideoCarousel', () => {
     expect(screen.getByTestId('SectionVideoCarouselCTA')).toHaveTextContent(
       'Watch'
     )
-    expect(screen.getByTestId('SectionVideoCarouselDescription')).toHaveTextContent(
-      'Our mission is to reach everyone. Secondary sentence.'
-    )
+    expect(
+      screen.getByTestId('SectionVideoCarouselDescription')
+    ).toHaveTextContent('Our mission is to reach everyone. Secondary sentence.')
   })
 
   it('respects override props for copy and CTA', async () => {
     render(
       <MockedProvider mocks={collectionOnlyMocks} addTypename>
         <SectionVideoCarousel
-          sources={[
-            { type: 'collection', id: 'collection-1' }
-          ]}
+          sources={[{ type: 'collection', id: 'collection-1' }]}
           subtitleOverride="Override Subtitle"
           titleOverride="Override Title"
           descriptionOverride="<strong>Bold Lead</strong> remaining copy"

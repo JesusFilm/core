@@ -1,4 +1,3 @@
-
 import { useQuery } from '@apollo/client'
 import { useRouter } from 'next/router'
 import { useEffect, useMemo } from 'react'
@@ -50,7 +49,11 @@ interface FlattenOptions {
 }
 
 interface ShowcaseTextField {
-  __typename?: 'VideoTitle' | 'VideoSnippet' | 'VideoDescription' | 'VideoImageAlt'
+  __typename?:
+    | 'VideoTitle'
+    | 'VideoSnippet'
+    | 'VideoDescription'
+    | 'VideoImageAlt'
   value: string
 }
 
@@ -107,10 +110,14 @@ interface CollectionShowcaseQueryVars {
 }
 
 function selectImageUrl(node: MaybeCollection | VideoNode): string | undefined {
-  const poster = node.posterImages?.find((image) => image?.mobileCinematicHigh != null)
+  const poster = node.posterImages?.find(
+    (image) => image?.mobileCinematicHigh != null
+  )
   if (poster?.mobileCinematicHigh != null) return poster.mobileCinematicHigh
 
-  const banner = node.bannerImages?.find((image) => image?.mobileCinematicHigh != null)
+  const banner = node.bannerImages?.find(
+    (image) => image?.mobileCinematicHigh != null
+  )
   if (banner?.mobileCinematicHigh != null) return banner.mobileCinematicHigh
 
   return undefined
@@ -123,7 +130,9 @@ function selectAltText(node: MaybeCollection | VideoNode): string | undefined {
   return title
 }
 
-function getContainerSlug(node: MaybeCollection | VideoNode): string | undefined {
+function getContainerSlug(
+  node: MaybeCollection | VideoNode
+): string | undefined {
   const parentWithSlug = node.parents?.find((parent) => parent?.slug != null)
   return parentWithSlug?.slug ?? undefined
 }
@@ -140,7 +149,10 @@ function buildVideoSnapshot(
     typename: 'VideoTitle' | 'VideoSnippet' | 'VideoImageAlt'
   ): { __typename: typeof typename; value: string }[] => {
     const mapped = (fields ?? [])
-      .filter((field): field is ShowcaseTextField => field?.value != null && field.value !== '')
+      .filter(
+        (field): field is ShowcaseTextField =>
+          field?.value != null && field.value !== ''
+      )
       .map((field) => ({
         __typename: typename,
         value: field.value
@@ -169,8 +181,13 @@ function buildVideoSnapshot(
     return []
   }
 
-  const candidateImages = [...(node.posterImages ?? []), ...(node.bannerImages ?? [])]
-    .filter((image): image is ShowcaseImage => image?.mobileCinematicHigh != null)
+  const candidateImages = [
+    ...(node.posterImages ?? []),
+    ...(node.bannerImages ?? [])
+  ]
+    .filter(
+      (image): image is ShowcaseImage => image?.mobileCinematicHigh != null
+    )
     .map((image) => ({
       __typename: image.__typename ?? 'CloudflareImage',
       mobileCinematicHigh: image.mobileCinematicHigh
@@ -209,7 +226,10 @@ function buildVideoSnapshot(
   }
 }
 
-function buildSlide(node: VideoNode, parentId?: string): SectionVideoCollectionCarouselSlide | null {
+function buildSlide(
+  node: VideoNode,
+  parentId?: string
+): SectionVideoCollectionCarouselSlide | null {
   const variantSlug = node.variant?.slug
   if (variantSlug == null || variantSlug === '') return null
 
@@ -326,13 +346,13 @@ export function useSectionVideoCollectionCarouselContent({
     languageId
   }
 
-  const { data, loading } = useQuery<CollectionShowcaseQueryData, CollectionShowcaseQueryVars>(
-    GET_COLLECTION_SHOWCASE_CONTENT,
-    {
-      variables: queryVariables,
-      skip: collectionSources.length === 0 && videoSources.length === 0
-    }
-  )
+  const { data, loading } = useQuery<
+    CollectionShowcaseQueryData,
+    CollectionShowcaseQueryVars
+  >(GET_COLLECTION_SHOWCASE_CONTENT, {
+    variables: queryVariables,
+    skip: collectionSources.length === 0 && videoSources.length === 0
+  })
 
   const slides = useMemo(() => {
     if (data == null) return []
@@ -377,13 +397,18 @@ export function useSectionVideoCollectionCarouselContent({
   }, [data, sources])
 
   const primaryCollection = useMemo(() => {
-    if (data?.collections == null || data.collections.length === 0) return undefined
+    if (data?.collections == null || data.collections.length === 0)
+      return undefined
     if (primaryCollectionId != null) {
-      return data.collections.find((collection) => collection.id === primaryCollectionId)
+      return data.collections.find(
+        (collection) => collection.id === primaryCollectionId
+      )
     }
     const firstSource = collectionSources[0]
     if (firstSource != null) {
-      return data.collections.find((collection) => collection.id === firstSource.id)
+      return data.collections.find(
+        (collection) => collection.id === firstSource.id
+      )
     }
     return data.collections[0]
   }, [collectionSources, data, primaryCollectionId])
@@ -391,10 +416,12 @@ export function useSectionVideoCollectionCarouselContent({
   const subtitle = subtitleOverride ?? primaryCollection?.snippet?.[0]?.value
   const title = titleOverride ?? primaryCollection?.title?.[0]?.value
 
-  const description = descriptionOverride ?? primaryCollection?.description?.[0]?.value
+  const description =
+    descriptionOverride ?? primaryCollection?.description?.[0]?.value
 
-  const ctaHref = ctaHrefOverride
-    ?? (primaryCollection?.variant?.slug != null
+  const ctaHref =
+    ctaHrefOverride ??
+    (primaryCollection?.variant?.slug != null
       ? getWatchUrl(
           primaryCollection.slug,
           primaryCollection.label,

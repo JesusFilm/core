@@ -52,9 +52,7 @@ const DEFAULT_LANGUAGE: VideoContentFields_variant_language = {
   bcp47: 'en'
 }
 
-function toVideoTitles(
-  video: CarouselVideoLike
-): VideoContentFields_title[] {
+function toVideoTitles(video: CarouselVideoLike): VideoContentFields_title[] {
   const fallback = (video as CarouselVideo).slug ?? video.id
   const titles = (video as any).title
 
@@ -132,12 +130,14 @@ function toDescriptions(
 function mapVideoLabel(label: string | undefined): VideoLabel {
   if (!label) return VideoLabel.shortFilm
   const values = Object.values(VideoLabel)
-  return (values.includes(label as VideoLabel)
+  return values.includes(label as VideoLabel)
     ? (label as VideoLabel)
-    : VideoLabel.shortFilm)
+    : VideoLabel.shortFilm
 }
 
-function toVariant(video: CarouselVideoLike): VideoContentFields_variant | null {
+function toVariant(
+  video: CarouselVideoLike
+): VideoContentFields_variant | null {
   const variant = (video as any).variant
 
   if (!variant) return null
@@ -165,13 +165,14 @@ function toVariant(video: CarouselVideoLike): VideoContentFields_variant | null 
     language: {
       __typename: 'Language',
       id: language?.id ?? DEFAULT_LANGUAGE.id,
-      name: Array.isArray(language?.name) && language.name.length > 0
-        ? language.name.map((name: any) => ({
-            __typename: 'LanguageName',
-            value: name?.value ?? DEFAULT_LANGUAGE.name[0].value,
-            primary: name?.primary ?? true
-          }))
-        : DEFAULT_LANGUAGE.name,
+      name:
+        Array.isArray(language?.name) && language.name.length > 0
+          ? language.name.map((name: any) => ({
+              __typename: 'LanguageName',
+              value: name?.value ?? DEFAULT_LANGUAGE.name[0].value,
+              primary: name?.primary ?? true
+            }))
+          : DEFAULT_LANGUAGE.name,
       bcp47: language?.bcp47 ?? DEFAULT_LANGUAGE.bcp47
     },
     slug,
@@ -474,12 +475,7 @@ export function useWatchHeroCarousel({
 
     moveToSlide(activeSlideIndex + 1, 2000)
     setLastProgress(0)
-  }, [
-    activeSlideIndex,
-    autoProgressEnabled,
-    isProgressing,
-    moveToSlide
-  ])
+  }, [activeSlideIndex, autoProgressEnabled, isProgressing, moveToSlide])
 
   useEffect(() => {
     if (playerState.progress >= 95 && lastProgress < 95 && !isProgressing) {
@@ -487,12 +483,7 @@ export function useWatchHeroCarousel({
     }
 
     setLastProgress(playerState.progress)
-  }, [
-    playerState.progress,
-    lastProgress,
-    advanceOnProgress,
-    isProgressing
-  ])
+  }, [playerState.progress, lastProgress, advanceOnProgress, isProgressing])
 
   const currentMuxInsert = useMemo(() => {
     if (activeSlide && isMuxSlide(activeSlide)) {

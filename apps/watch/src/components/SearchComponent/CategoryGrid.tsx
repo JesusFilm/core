@@ -1,8 +1,3 @@
-import Box from '@mui/material/Box'
-import ButtonBase from '@mui/material/ButtonBase'
-import Grid from '@mui/material/GridLegacy'
-import Typography from '@mui/material/Typography'
-import { styled } from '@mui/material/styles'
 import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 
@@ -24,31 +19,9 @@ export interface CategoryGridProps {
   onCategorySelect: (searchTerm: string) => void
 }
 
-const CategoryTile = styled(ButtonBase)(({ theme }) => ({
-  borderRadius: 8,
-  aspectRatio: '16 / 9',
-  width: '100%',
-  padding: theme.spacing(3),
-  display: 'flex',
-  flexDirection: 'column',
-  alignItems: 'center',
-  justifyContent: 'center',
-  gap: theme.spacing(2),
-  position: 'relative',
-  overflow: 'hidden',
-  '&:hover': {
-    transform: 'scale(1.02)',
-    transition: theme.transitions.create('transform', {
-      duration: theme.transitions.duration.short
-    })
-  },
-  '&:focus-visible': {
-    outline: `2px solid ${theme.palette.primary.main}`,
-    outlineOffset: 2
-  }
-}))
-
-export function CategoryGrid({ onCategorySelect }: CategoryGridProps): ReactElement {
+export function CategoryGrid({
+  onCategorySelect
+}: CategoryGridProps): ReactElement {
   const { t } = useTranslation('apps-watch')
 
   const categories: CategoryItem[] = [
@@ -91,50 +64,42 @@ export function CategoryGrid({ onCategorySelect }: CategoryGridProps): ReactElem
   ]
 
   return (
-    <Box>
-      <Typography
-        variant="overline"
-        color="text.secondary"
-        sx={{ display: 'block', mb: 3, fontWeight: 600 }}
-      >
+    <div>
+      <div className="block mb-3 font-semibold text-xs uppercase tracking-wider text-gray-600">
         {t('Browse Categories')}
-      </Typography>
-      <Grid container spacing={4} rowSpacing={4}>
+      </div>
+      <div className="grid grid-cols-1 md:grid-cols-3 xl:grid-cols-4 gap-4">
         {categories.map((category, index) => {
           const IconComponent = category.icon
 
           return (
-            <Grid item xs={12} md={4} xl={3} key={index}>
-              <CategoryTile
+            <div key={index}>
+              <button
                 onClick={() => onCategorySelect(category.searchTerm)}
-                sx={{
+                className="w-full aspect-video p-6 rounded-lg flex flex-col items-center justify-center gap-4 relative overflow-hidden text-white text-shadow-sm hover:scale-105 transition-transform duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                style={{
                   background: category.gradient,
-                  color: 'white',
                   textShadow: '0 1px 2px rgba(0,0,0,0.3)'
                 }}
               >
                 <IconComponent
-                  sx={{
-                    fontSize: 48,
-                    filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.3))'
-                  }}
+                  className="w-12 h-12 drop-shadow-lg"
+                  style={{ filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.3))' }}
                 />
-                <Typography
-                  variant="h6"
-                  fontWeight={600}
-                  textAlign="center"
-                  sx={{
+                <div
+                  className="text-lg font-semibold text-center leading-tight"
+                  style={{
                     textShadow: '0 1px 3px rgba(0,0,0,0.4)',
                     lineHeight: 1.2
                   }}
                 >
                   {category.title}
-                </Typography>
-              </CategoryTile>
-            </Grid>
+                </div>
+              </button>
+            </div>
           )
         })}
-      </Grid>
-    </Box>
+      </div>
+    </div>
   )
 }

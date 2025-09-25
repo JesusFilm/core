@@ -1,18 +1,17 @@
-import { Formik } from 'formik'
-import { useTranslation } from 'next-i18next'
-import { type FocusEvent, type ReactElement, useState } from 'react'
-
 import Search1Icon from '@core/shared/ui/icons/Search1'
 import X1Icon from '@core/shared/ui/icons/X1'
 import { SubmitListener } from '@core/shared/ui/SubmitListener'
-import { Input } from '@ui/components/input'
 import { Button } from '@ui/components/button'
+import { Formik } from 'formik'
+import { Input } from '@ui/components/input'
+import { useTranslation } from 'next-i18next'
+import { type FocusEvent, type ReactElement, useState } from 'react'
 
 interface SimpleSearchBarProps {
   loading?: boolean
   value?: string
   onSearch?: (query: string) => void
-  props?: { inputRef?: React.RefObject<HTMLInputElement> }
+  props?: { inputRef?: React.RefObject<HTMLInputElement | null> }
   onFocus?: (event: FocusEvent<HTMLInputElement | HTMLTextAreaElement>) => void
   onBlur?: (event: FocusEvent<HTMLInputElement | HTMLTextAreaElement>) => void
 }
@@ -35,7 +34,7 @@ export function SimpleSearchBar({
   }
 
   return (
-    <div className="rounded-[35px] p-1" data-testid="SearchBar">
+    <div data-testid="SearchBar">
       <Formik
         initialValues={{
           title: value
@@ -62,10 +61,10 @@ export function SimpleSearchBar({
                 value={values.title}
                 name="title"
                 type="text"
-                placeholder={t('Search by topic, occasion, or audience ...')}
+                placeholder={t('Search videos by keyword...')}
                 autoComplete="off"
                 className={`
-                  w-full pl-12 pr-12 py-6 text-lg rounded-[35px] border-none
+                  w-full pl-12 pr-12 py-6 text-lg rounded-[35px] border-none outline-1 outline-white/20 shadow-xl shadow-stone-800/10 
                   bg-white/10 backdrop-blur-[10px] transition-all duration-200
                   text-white placeholder:text-white/70 cursor-text hover:cursor-text focus:cursor-text
                   focus:bg-white/80 focus:text-black focus:placeholder:text-black/60

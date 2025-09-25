@@ -138,7 +138,9 @@ const collectionMock = {
       slug: 'child-collection-slug',
       title: [{ __typename: 'VideoTitle', value: 'Child Collection' }],
       snippet: [{ __typename: 'VideoSnippet', value: 'Nested Snippet' }],
-      imageAlt: [{ __typename: 'VideoImageAlt', value: 'Child Collection Alt' }],
+      imageAlt: [
+        { __typename: 'VideoImageAlt', value: 'Child Collection Alt' }
+      ],
       posterImages: [],
       bannerImages: [
         {
@@ -169,7 +171,9 @@ const collectionMock = {
           label: VideoLabel.episode,
           slug: 'grandchild-one',
           title: [{ __typename: 'VideoTitle', value: 'Grandchild One' }],
-          snippet: [{ __typename: 'VideoSnippet', value: 'Grandchild Snippet' }],
+          snippet: [
+            { __typename: 'VideoSnippet', value: 'Grandchild Snippet' }
+          ],
           imageAlt: [{ __typename: 'VideoImageAlt', value: 'Grandchild Alt' }],
           posterImages: [
             {
@@ -303,9 +307,7 @@ describe('SectionVideoGrid', () => {
     )
 
     await waitFor(() =>
-      expect(
-        screen.getByTestId('VideoCard-child-1')
-      ).toBeInTheDocument()
+      expect(screen.getByTestId('VideoCard-child-1')).toBeInTheDocument()
     )
     await waitFor(() => expect(mockVideoGrid).toHaveBeenCalled())
 
@@ -367,15 +369,9 @@ describe('SectionVideoGrid', () => {
       ])
     )
 
-    expect(
-      screen.getByTestId('VideoCard-grandchild-1')
-    ).toBeInTheDocument()
-    expect(
-      screen.getByTestId('VideoCard-video-1')
-    ).toBeInTheDocument()
-    expect(screen.getByTestId('SectionVideoGridCTA')).toHaveTextContent(
-      'Watch'
-    )
+    expect(screen.getByTestId('VideoCard-grandchild-1')).toBeInTheDocument()
+    expect(screen.getByTestId('VideoCard-video-1')).toBeInTheDocument()
+    expect(screen.getByTestId('SectionVideoGridCTA')).toHaveTextContent('Watch')
     expect(screen.getByTestId('SectionVideoGridDescription')).toHaveTextContent(
       'Our mission is to reach everyone. Secondary sentence.'
     )
@@ -385,9 +381,7 @@ describe('SectionVideoGrid', () => {
     render(
       <MockedProvider mocks={collectionOnlyMocks} addTypename>
         <SectionVideoGrid
-          sources={[
-            { type: 'collection', id: 'collection-1' }
-          ]}
+          sources={[{ type: 'collection', id: 'collection-1' }]}
           subtitleOverride="Override Subtitle"
           titleOverride="Override Title"
           descriptionOverride="<strong>Bold Lead</strong> remaining copy"
@@ -400,9 +394,9 @@ describe('SectionVideoGrid', () => {
     await waitFor(() =>
       expect(screen.getByTestId('SectionVideoGrid')).toBeInTheDocument()
     )
-    expect(
-      screen.getByTestId('SectionVideoGridSubtitle')
-    ).toHaveTextContent('Override Subtitle')
+    expect(screen.getByTestId('SectionVideoGridSubtitle')).toHaveTextContent(
+      'Override Subtitle'
+    )
     expect(screen.getByTestId('SectionVideoGridTitle')).toHaveTextContent(
       'Override Title'
     )
@@ -426,9 +420,7 @@ describe('SectionVideoGrid', () => {
     )
 
     await waitFor(() => {
-      expect(
-        screen.queryByTestId('SectionVideoGrid')
-      ).not.toBeInTheDocument()
+      expect(screen.queryByTestId('SectionVideoGrid')).not.toBeInTheDocument()
     })
   })
 
@@ -447,9 +439,7 @@ describe('SectionVideoGrid', () => {
 
     // Wait for loading to complete
     await waitFor(() =>
-      expect(
-        screen.getByTestId('VideoCard-child-1')
-      ).toBeInTheDocument()
+      expect(screen.getByTestId('VideoCard-child-1')).toBeInTheDocument()
     )
   })
 })

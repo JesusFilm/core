@@ -1,11 +1,13 @@
 # VideoCarousel Best Practices
 
 ## Overview
+
 This document outlines best practices for maintaining the VideoCarousel component to ensure optimal performance and user experience.
 
 ## ✅ Current Implementation (DO NOT CHANGE)
 
 ### Virtual Slides Architecture
+
 The carousel uses **Virtual Slides** for optimal performance:
 
 ```jsx
@@ -28,6 +30,7 @@ import { Virtual } from 'swiper/modules'
 ```
 
 **Why Virtual Slides:**
+
 - Only renders visible slides + buffer (performance)
 - Handles infinite scroll without memory issues
 - Automatically manages dynamic slide addition
@@ -36,6 +39,7 @@ import { Virtual } from 'swiper/modules'
 ## 🚫 Common Anti-Patterns to AVOID
 
 ### 1. Manual Scroll Position Management
+
 ```jsx
 // ❌ NEVER DO THIS - Leads to complex, brittle code
 const [preventAutoScroll, setPreventAutoScroll] = useState(false)
@@ -49,6 +53,7 @@ useEffect(() => {
 **Why it's bad:** Race conditions, memory leaks, fragile Swiper internals manipulation.
 
 ### 2. Direct Swiper Manipulation
+
 ```jsx
 // ❌ AVOID - Bypasses React's reconciliation
 swiperRef.current.setTranslate(savedPosition)
@@ -58,6 +63,7 @@ swiper.slideTo(index, 0)
 **Why it's bad:** Breaks React's declarative paradigm, creates state inconsistencies.
 
 ### 3. Missing virtualIndex
+
 ```jsx
 // ❌ WRONG - Breaks virtual slides
 <SwiperSlide key={video.id}>
@@ -67,6 +73,7 @@ swiper.slideTo(index, 0)
 ```
 
 ### 4. Console Logs in Production
+
 ```jsx
 // ❌ NEVER - Remove all debug logs
 console.log('🚫 PREVENTING AUTO-SCROLL:', ...)
@@ -75,21 +82,25 @@ console.log('🚫 PREVENTING AUTO-SCROLL:', ...)
 ## 🔧 Maintenance Guidelines
 
 ### Adding New Features
+
 1. **Always test with 100+ slides** to verify virtual slides performance
-2. **Use React state** for all dynamic updates, not direct Swiper manipulation  
+2. **Use React state** for all dynamic updates, not direct Swiper manipulation
 3. **Test dynamic slide addition** to ensure no scroll jumping occurs
 
 ### Performance Monitoring
+
 - Monitor slide rendering count (should stay ~7-10 regardless of total slides)
 - Check memory usage doesn't grow with slide count
 - Verify smooth scrolling on mobile devices
 
 ### Required Modules
+
 ```jsx
 modules={[Virtual, Mousewheel, FreeMode, A11y, Navigation]}
 ```
 
 **Don't add unless necessary:**
+
 - `Manipulation` - Not needed with virtual slides
 - `Autoplay` - Conflicts with user control
 - `Pagination` - Not used in this design
@@ -97,6 +108,7 @@ modules={[Virtual, Mousewheel, FreeMode, A11y, Navigation]}
 ## 📊 Configuration Standards
 
 ### Breakpoints (Don't Change)
+
 ```jsx
 {
   xs: { slidesPerView: 2.4, slidesPerGroup: 2 },
@@ -107,6 +119,7 @@ modules={[Virtual, Mousewheel, FreeMode, A11y, Navigation]}
 ```
 
 ### Essential Props
+
 ```jsx
 virtual={true}                    // Performance
 observer={true}                   // Auto-update on DOM changes
@@ -119,6 +132,7 @@ mousewheel={{ forceToAxis: true }} // Horizontal scroll only
 ## 🧪 Testing Checklist
 
 Before any changes:
+
 - [ ] Test with 1000+ video slides
 - [ ] Verify smooth scrolling on mobile
 - [ ] Check memory usage stays constant
@@ -129,14 +143,16 @@ Before any changes:
 ## 🚨 Emergency Fixes Only
 
 If you must make changes:
+
 1. **Keep Virtual Slides** - Never remove this architecture
-2. **Test thoroughly** - With realistic data volumes  
+2. **Test thoroughly** - With realistic data volumes
 3. **Measure performance** - Before and after changes
 4. **Document rationale** - In code comments for complex changes
 
 ## 📈 Performance Metrics
 
 **Target Performance:**
+
 - First slide render: <100ms
 - Scroll smoothness: 60fps
 - Memory usage: Constant regardless of slide count
@@ -144,5 +160,5 @@ If you must make changes:
 
 ---
 
-*Last updated: 2025-09-13*  
-*Maintained by: Development Team*
+_Last updated: 2025-09-13_  
+_Maintained by: Development Team_

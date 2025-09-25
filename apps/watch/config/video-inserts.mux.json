@@ -5,25 +5,115 @@
       "id": "welcome-start",
       "enabled": true,
       "source": "mux",
-      "playbackIds": [
-        "D4p01ELXmdsDM00J3O00d00fArV9q1DTFVFFCaxyax2B2nc",
-        "D4p01ELXmdsDM00J3O00d00fArV9q1DTFVFFCaxyax2B2nc"
-      ],
-      "duration": 3,
+      "playbackIds": ["34eG2PxlcRu3L4wU5XlKVna2vN3BAI02Tjrq28dazn3Y"],
+      "duration": 9,
       "overlay": {
         "label": "Daily Inspirations",
         "title": "Today's Bible Moments. For You.",
         "collection": "Daily Inspirations",
         "description": "A hand-picked playlist of inspiring videos, designed to encourage and uplift."
       },
-      "trigger": { "type": "sequence-start" }
+      "trigger": { "type": "sequence-start" },
+      "logo": true,
+      "conditionalOverlays": [
+        {
+          "conditions": [
+            {
+              "type": "time-range",
+              "range": { "start": 5, "end": 9 }
+            }
+          ],
+          "overlay": {
+            "label": "Morning Inspiration",
+            "title": "Good Morning! Today's Bible Moments Await.",
+            "collection": "Morning Moments",
+            "description": "Begin your day with encouraging Bible moments designed to inspire and uplift your spirit."
+          },
+          "priority": 10
+        },
+        {
+          "conditions": [
+            {
+              "type": "time-range",
+              "range": { "start": 9, "end": 12 }
+            }
+          ],
+          "overlay": {
+            "label": "Morning Inspiration",
+            "title": "Good Morning! A New Day of Inspiration.",
+            "collection": "Morning Moments",
+            "description": "A thoughtful collection of Bible moments to accompany your morning routine."
+          },
+          "priority": 10
+        },
+        {
+          "conditions": [
+            {
+              "type": "time-range",
+              "range": { "start": 12, "end": 17 }
+            }
+          ],
+          "overlay": {
+            "label": "Afternoon Inspiration",
+            "title": "Good Afternoon! Bible Moments for Your Day.",
+            "collection": "Afternoon Moments",
+            "description": "Encouraging Bible content perfect for your afternoon break or continued inspiration."
+          },
+          "priority": 10
+        },
+        {
+          "conditions": [
+            {
+              "type": "time-range",
+              "range": { "start": 17, "end": 21 }
+            }
+          ],
+          "overlay": {
+            "label": "Evening Inspiration",
+            "title": "Good Evening! Wind Down with Bible Moments.",
+            "collection": "Evening Moments",
+            "description": "Peaceful Bible moments to help you reflect and find comfort as your day comes to a close."
+          },
+          "priority": 10
+        },
+        {
+          "conditions": [
+            {
+              "type": "time-range",
+              "range": { "start": 21, "end": 0 }
+            }
+          ],
+          "overlay": {
+            "label": "Evening Inspiration",
+            "title": "Good Evening! Bible Moments Before Bed.",
+            "collection": "Evening Moments",
+            "description": "Peaceful Bible moments to help you reflect as evening turns to night."
+          },
+          "priority": 10
+        },
+        {
+          "conditions": [
+            {
+              "type": "time-range",
+              "range": { "start": 0, "end": 5 }
+            }
+          ],
+          "overlay": {
+            "label": "Late Night Inspiration",
+            "title": "Hello, Night Owl! Bible Moments for You.",
+            "collection": "Late Night Moments",
+            "description": "Special Bible moments for those quiet hours when the world is asleep."
+          },
+          "priority": 10
+        }
+      ]
     },
     {
       "id": "second-insert",
       "enabled": true,
       "source": "mux",
-      "playbackIds": ["D4p01ELXmdsDM00J3O00d00fArV9q1DTFVFFCaxyax2B2nc"],
-      "duration": 5,
+      "playbackIds": ["01zJCYhNKvZ6XJwjDEX92mTpSxgt6H9yZ2ABvYGjUfVU"],
+      "duration": 15,
       "overlay": {
         "label": "Staff Pick",
         "title": "Second Mux Insert",

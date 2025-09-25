@@ -6,11 +6,7 @@ import {
   CommandItem,
   CommandList
 } from '@ui/components/command'
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger
-} from '@ui/components/popover'
+import { Popover, PopoverContent, PopoverTrigger } from '@ui/components/popover'
 import { Check, ChevronsUpDown, Globe } from 'lucide-react'
 import { useTranslation } from 'next-i18next'
 import { useMemo, useState } from 'react'
@@ -130,9 +126,7 @@ export function LanguageSelector(): JSX.Element {
                     className="flex items-center justify-between cursor-pointer"
                   >
                     <div className="flex flex-col items-start flex-1">
-                      <span className="font-medium">
-                        {option.englishName}
-                      </span>
+                      <span className="font-medium">{option.englishName}</span>
                       {option.nativeName !== option.englishName && (
                         <span className="text-xs text-muted-foreground">
                           {option.nativeName}
@@ -141,8 +135,8 @@ export function LanguageSelector(): JSX.Element {
                     </div>
                     <Check
                       className={cn(
-                        "ml-2 h-4 w-4",
-                        option.isRefined ? "opacity-100" : "opacity-0"
+                        'ml-2 h-4 w-4',
+                        option.isRefined ? 'opacity-100' : 'opacity-0'
                       )}
                     />
                   </CommandItem>

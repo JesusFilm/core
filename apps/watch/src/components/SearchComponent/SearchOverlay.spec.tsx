@@ -12,8 +12,15 @@ jest.mock('./LanguageSelector', () => ({
 }))
 
 jest.mock('./CategoryGrid', () => ({
-  CategoryGrid: ({ onCategorySelect }: { onCategorySelect: (value: string) => void }) => (
-    <div data-testid="CategoryGrid" onClick={() => onCategorySelect('category')} />
+  CategoryGrid: ({
+    onCategorySelect
+  }: {
+    onCategorySelect: (value: string) => void
+  }) => (
+    <div
+      data-testid="CategoryGrid"
+      onClick={() => onCategorySelect('category')}
+    />
   )
 }))
 

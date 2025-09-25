@@ -24,14 +24,14 @@ const CACHE_DURATION = 30 * 60 * 1000 // 30 minutes in milliseconds
 
 function getCachedTrendingSearches(): string[] | null {
   if (typeof window === 'undefined') return null
-  
+
   try {
     const cached = localStorage.getItem(CACHE_KEY)
     if (!cached) return null
-    
+
     const parsedCache: CachedTrendingSearches = JSON.parse(cached)
     const now = Date.now()
-    
+
     // Check if cache is still valid
     if (now < parsedCache.expiry) {
       return parsedCache.data
@@ -49,7 +49,7 @@ function getCachedTrendingSearches(): string[] | null {
 
 function setCachedTrendingSearches(data: string[]): void {
   if (typeof window === 'undefined') return
-  
+
   try {
     const cacheData: CachedTrendingSearches = {
       data,
@@ -62,7 +62,9 @@ function setCachedTrendingSearches(data: string[]): void {
   }
 }
 
-export function useTrendingSearches(maxResults: number = 8): UseTrendingSearchesResult {
+export function useTrendingSearches(
+  maxResults: number = 8
+): UseTrendingSearchesResult {
   const [trendingSearches, setTrendingSearches] = useState<string[]>([])
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -80,7 +82,7 @@ export function useTrendingSearches(maxResults: number = 8): UseTrendingSearches
       setError(null)
 
       const indexName = process.env.NEXT_PUBLIC_ALGOLIA_INDEX ?? ''
-      
+
       // Try to get popular search terms by analyzing top content
       // We'll search for empty query and look at popular facet values
       const response = await searchClient.searchSingleIndex({
@@ -96,7 +98,7 @@ export function useTrendingSearches(maxResults: number = 8): UseTrendingSearches
 
       // Extract trending terms from titles and descriptions of popular content
       const popularTerms = new Set<string>()
-      
+
       // Add terms from top hits' titles
       response.hits?.forEach((hit: any) => {
         const titles = hit.title || []
@@ -113,8 +115,48 @@ export function useTrendingSearches(maxResults: number = 8): UseTrendingSearches
 
       // Convert to array and filter for relevant terms
       const relevantTerms = Array.from(popularTerms)
-        .filter(term => 
-          !['the', 'and', 'for', 'are', 'but', 'not', 'you', 'all', 'can', 'had', 'her', 'was', 'one', 'our', 'out', 'day', 'get', 'has', 'him', 'his', 'how', 'man', 'new', 'now', 'old', 'see', 'two', 'way', 'who', 'boy', 'did', 'its', 'let', 'put', 'say', 'she', 'too', 'use'].includes(term)
+        .filter(
+          (term) =>
+            ![
+              'the',
+              'and',
+              'for',
+              'are',
+              'but',
+              'not',
+              'you',
+              'all',
+              'can',
+              'had',
+              'her',
+              'was',
+              'one',
+              'our',
+              'out',
+              'day',
+              'get',
+              'has',
+              'him',
+              'his',
+              'how',
+              'man',
+              'new',
+              'now',
+              'old',
+              'see',
+              'two',
+              'way',
+              'who',
+              'boy',
+              'did',
+              'its',
+              'let',
+              'put',
+              'say',
+              'she',
+              'too',
+              'use'
+            ].includes(term)
         )
         .slice(0, maxResults)
 
@@ -133,21 +175,26 @@ export function useTrendingSearches(maxResults: number = 8): UseTrendingSearches
       ]
 
       const finalTerms = [...relevantTerms]
-      curatedTerms.forEach(term => {
-        if (finalTerms.length < maxResults && !finalTerms.includes(term.toLowerCase())) {
+      curatedTerms.forEach((term) => {
+        if (
+          finalTerms.length < maxResults &&
+          !finalTerms.includes(term.toLowerCase())
+        ) {
           finalTerms.push(term)
         }
       })
 
       const results = finalTerms.slice(0, maxResults)
       setTrendingSearches(results)
-      
+
       // Cache the results
       setCachedTrendingSearches(results)
     } catch (err) {
       console.error('Error fetching trending searches:', err)
-      setError(err instanceof Error ? err.message : 'Failed to fetch trending searches')
-      
+      setError(
+        err instanceof Error ? err.message : 'Failed to fetch trending searches'
+      )
+
       // Fallback to static popular searches
       const fallbackSearches = [
         'Jesus',
@@ -161,7 +208,7 @@ export function useTrendingSearches(maxResults: number = 8): UseTrendingSearches
       ]
       const fallbackResults = fallbackSearches.slice(0, maxResults)
       setTrendingSearches(fallbackResults)
-      
+
       // Cache fallback results too
       setCachedTrendingSearches(fallbackResults)
     } finally {

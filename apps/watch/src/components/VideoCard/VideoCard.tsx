@@ -78,9 +78,7 @@ export function VideoCard({
           disabled={video == null}
           className={`relative overflow-hidden rounded-lg ${orientation === 'vertical' ? 'aspect-[2/3]' : 'aspect-video'} hover:scale-102 focus-visible:scale-102 transition-transform duration-300 beveled ${imageClassName || ''}`}
         >
-          <div
-            className="absolute inset-0 rounded-lg overflow-hidden bg-black/50 transition-transform duration-300"
-          >
+          <div className="absolute inset-0 rounded-lg overflow-hidden bg-black/50 transition-transform duration-300">
             {imageSrc ? (
               <Image
                 src={imageSrc}
@@ -101,37 +99,37 @@ export function VideoCard({
               </div>
             )}
           </div>
-          <div
-            className="absolute inset-0 rounded-lg gradient-contained transition-opacity duration-300 opacity-15 hover:opacity-50 shadow-[inset_0px_0px_0px_1px_rgba(255,255,255,0.12)]"
-          />
-          <div
-            className="absolute inset-0 flex flex-col justify-end p-4"
-          >
-            <h3
-              className="text-xl font-bold text-white leading-tight text-left text-shadow-strong"
-            >
+          <div className="absolute inset-0 rounded-lg gradient-contained transition-opacity duration-300 opacity-15 hover:opacity-50 shadow-[inset_0px_0px_0px_1px_rgba(255,255,255,0.12)]" />
+          <div className="absolute inset-0 flex flex-col justify-end p-4">
+            <h3 className="text-xl font-bold text-white leading-tight text-left text-shadow-strong">
               {video != null ? (
                 last(video?.title)?.value
               ) : (
-                <div className="w-3/5 h-5 bg-gray-400 animate-pulse" data-testid="VideoTitleSkeleton" />
+                <div
+                  className="w-3/5 h-5 bg-gray-400 animate-pulse"
+                  data-testid="VideoTitleSkeleton"
+                />
               )}
             </h3>
-            <div
-              className="flex flex-row justify-between items-end min-w-0 gap-2"
-            >
-              <p
+            <div className="flex flex-row justify-between items-end min-w-0 gap-2">
+              <div
                 className={`text-xs uppercase tracking-wider truncate leading-8 ${
-                  color === 'primary.main' ? 'text-primary' :
-                  color === 'secondary.main' ? 'text-secondary' :
-                  'text-gray-600'
+                  color === 'primary.main'
+                    ? 'text-primary'
+                    : color === 'secondary.main'
+                      ? 'text-secondary'
+                      : 'text-gray-600'
                 }`}
               >
                 {video != null ? (
                   label
                 ) : (
-                  <div className="w-12 h-4 bg-gray-400 animate-pulse" data-testid="VideoLabelSkeleton" />
+                  <div
+                    className="w-12 h-4 bg-gray-400 animate-pulse"
+                    data-testid="VideoLabelSkeleton"
+                  />
                 )}
-              </p>
+              </div>
 
               <div
                 className={`flex flex-row items-center gap-1 p-2 rounded h-7 text-white flex-shrink-0 ${
@@ -141,14 +139,19 @@ export function VideoCard({
                 {active === true ? (
                   <>
                     <Play className="w-4 h-4" />
-                    <span className="text-sm font-semibold">{t('Playing now')}</span>
+                    <span className="text-sm font-semibold">
+                      {t('Playing now')}
+                    </span>
                   </>
                 ) : (
                   <>
                     {video == null && (
                       <>
                         <Play className="w-4 h-4" />
-                        <div className="w-5 h-4 bg-gray-400 animate-pulse" data-testid="VideoVariantDurationSkeleton" />
+                        <div
+                          className="w-5 h-4 bg-gray-400 animate-pulse"
+                          data-testid="VideoVariantDurationSkeleton"
+                        />
                       </>
                     )}
                     {video?.childrenCount === 0 && (

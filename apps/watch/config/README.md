@@ -7,12 +7,14 @@ This directory contains configuration for Mux video inserts that integrate with 
 Mux inserts are special video content that can be injected into the video playback experience. They work differently from regular video cards:
 
 ### Main Video Player (HeroVideo)
+
 - Plays **both** regular videos AND Mux insert videos
 - When a Mux insert is triggered, it plays the actual Mux video content in the main player
 - Duration functionality controls how long the Mux insert plays in the main video player
 - After duration expires, automatically moves to the next item
 
 ### Carousel Cards
+
 - **Regular video cards**: Show static image + text (normal behavior)
 - **Mux insert cards**: Show static image + text with the card title (e.g., "Today's Bible Moments. For You.")
 - **Visual indicator**: White border outline indicates "this insert is currently playing"
@@ -21,6 +23,7 @@ Mux inserts are special video content that can be injected into the video playba
 - After duration expires, focus moves to the next card
 
 ### Duration Flow
+
 1. Mux insert starts playing in main video player
 2. Mux insert card shows **white border outline** in carousel
 3. After specified duration (e.g., 5 seconds), the insert stops
@@ -28,6 +31,7 @@ Mux inserts are special video content that can be injected into the video playba
 5. Next video starts playing in the main player
 
 ### Key Concepts
+
 - **Main player** = screen that shows content
 - **Carousel** = remote control/playlist that controls what's on screen
 - **White border outline** = visual indicator of what's currently playing
@@ -37,6 +41,7 @@ Mux inserts are special video content that can be injected into the video playba
 ## Configuration Files
 
 ### `video-inserts.mux.json`
+
 Contains the configuration for Mux video inserts with the following structure:
 
 ```json
@@ -47,9 +52,7 @@ Contains the configuration for Mux video inserts with the following structure:
       "id": "welcome-start",
       "enabled": true,
       "source": "mux",
-      "playbackIds": [
-        "D4p01ELXmdsDM00J3O00d00fArV9q1DTFVFFCaxyax2B2nc"
-      ],
+      "playbackIds": ["D4p01ELXmdsDM00J3O00d00fArV9q1DTFVFFCaxyax2B2nc"],
       "duration": 5,
       "overlay": {
         "label": "Daily Inspirations",

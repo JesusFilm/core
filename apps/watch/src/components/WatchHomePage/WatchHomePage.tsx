@@ -20,7 +20,9 @@ interface WatchHomePageProps {
   languageId?: string | undefined
 }
 
-function WatchHomePageContent({ languageId }: WatchHomePageProps): ReactElement {
+function WatchHomePageContent({
+  languageId
+}: WatchHomePageProps): ReactElement {
   const indexName = process.env.NEXT_PUBLIC_ALGOLIA_INDEX ?? ''
 
   return (
@@ -54,7 +56,7 @@ function WatchHomePageBody({ languageId }: WatchHomePageProps): ReactElement {
         showLanguageSwitcher
       />
       <Index indexName={indexName}>
-        <SearchComponent languageId={languageId} floating />
+        <SearchComponent languageId={languageId} />
       </Index>
       <WatchHero
         slides={slides}
@@ -84,7 +86,9 @@ function WatchHomePageBody({ languageId }: WatchHomePageProps): ReactElement {
   )
 }
 
-export function WatchHomePage({ languageId }: WatchHomePageProps): ReactElement {
+export function WatchHomePage({
+  languageId
+}: WatchHomePageProps): ReactElement {
   return (
     <PlayerProvider>
       <WatchProvider>

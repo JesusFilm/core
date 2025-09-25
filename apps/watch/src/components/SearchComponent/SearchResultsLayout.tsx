@@ -1,12 +1,10 @@
-import Box from '@mui/material/Box'
-import Stack from '@mui/material/Stack'
-import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, useMemo } from 'react'
 
+
 import { AlgoliaVideoGrid } from '../VideoGrid/AlgoliaVideoGrid'
-import { QuickList } from './QuickList'
 import { LanguageSelector } from './LanguageSelector'
+import { QuickList } from './QuickList'
 
 export interface SearchResultsLayoutProps {
   searchQuery: string
@@ -38,7 +36,8 @@ export function generateRelatedSearches(query: string): string[] {
     wisdom: ['teaching', 'knowledge', 'understanding', 'guidance', 'insight']
   }
 
-  const directMatches = relatedTerms[baseQuery as keyof typeof relatedTerms] || []
+  const directMatches =
+    relatedTerms[baseQuery as keyof typeof relatedTerms] || []
   relatedSuggestions.push(...directMatches.slice(0, 3))
 
   Object.entries(relatedTerms).forEach(([key, values]) => {
@@ -76,35 +75,29 @@ export function SearchResultsLayout({
   )
 
   return (
-    <Stack spacing={{ xs: 4, md: 6 }}>
-      <Box
-        sx={{
-          display: 'flex',
-          flexDirection: { xs: 'column', md: 'row' },
-          gap: { xs: 4, md: 6 }
-        }}
-      >
-        <Box sx={{ flex: 1 }}>
+    <div className="flex flex-col gap-4 md:gap-6">
+      <div className="flex flex-col md:flex-row gap-4 md:gap-6">
+        <div className="flex-1">
           <QuickList
             title={t('Related Searches')}
             items={relatedSearches}
             onSelect={onSelectQuickValue}
             isLoading={false}
           />
-        </Box>
-        <Box sx={{ width: { xs: '100%', md: '320px' }, flexShrink: 0 }}>
-          <Typography
-            variant="overline"
-            color="text.secondary"
-            sx={{ display: 'block', mb: 3, fontWeight: 600 }}
-          >
+        </div>
+        <div className="w-full md:w-80 flex-shrink-0">
+          <div className="block mb-3 font-semibold text-xs uppercase tracking-wider text-gray-600">
             {t('Search Filters')}
-          </Typography>
+          </div>
           <LanguageSelector />
-        </Box>
-      </Box>
+        </div>
+      </div>
 
-      <AlgoliaVideoGrid variant="contained" languageId={languageId} showLoadMore />
-    </Stack>
+      <AlgoliaVideoGrid
+        variant="contained"
+        languageId={languageId}
+        showLoadMore
+      />
+    </div>
   )
 }

@@ -8,6 +8,7 @@ import { ReactElement } from 'react'
 import { usePlayer } from '../../../../../libs/playerContext'
 import { getWatchUrl } from '../../../../../libs/utils/getWatchUrl'
 import { useVideo } from '../../../../../libs/videoContext'
+import type { InsertAction } from '../../../../../types/inserts'
 
 interface VideoTitleProps {
   videoTitle: string
@@ -21,6 +22,8 @@ interface VideoTitleProps {
   containerSlug?: string
   onMuteToggle?: () => void
   collectionTitle?: string
+  action?: InsertAction
+  isMuxInsert?: boolean
 }
 
 export function VideoTitle({
@@ -33,7 +36,9 @@ export function VideoTitle({
   videoDescription,
   containerSlug,
   onMuteToggle,
-  collectionTitle
+  collectionTitle,
+  action,
+  isMuxInsert = false
 }: VideoTitleProps): ReactElement {
   const { t } = useTranslation('apps-watch')
   const { label, variant: videoVariant } = useVideo()
@@ -103,7 +108,23 @@ export function VideoTitle({
           {variant === 'unmute' && t('Play with sound')}
         </button>
       )}
-      {isPreview && (
+      {isPreview && action && (
+        <NextLink
+          href={action.url}
+          scroll={false}
+          locale={false}
+          id="mux-action-button"
+          className="inline-flex z-1 items-center justify-center gap-2 px-6 py-3
+            bg-[#CB333B] text-lg font-medium text-stone-100
+            rounded-full shadow-md transition-colors duration-200
+            hover:bg-[#A4343A] font-sans cursor-pointer self-start no-underline
+            animate-fade-in-up animation-delay-500"
+        >
+          <PlayArrowRounded fontSize="medium" />
+          {action.label}
+        </NextLink>
+      )}
+      {isPreview && !isMuxInsert && (
         <NextLink
           href={watchNowHref}
           scroll={false}

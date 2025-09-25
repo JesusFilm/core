@@ -47,25 +47,18 @@ export function SectionVideoCarousel({
 }: SectionVideoCarouselProps): ReactElement | null {
   const { t } = useTranslation('apps-watch')
 
-  const {
-    loading,
-    slides,
-    subtitle,
-    title,
-    description,
-    ctaHref,
-    ctaLabel
-  } = useSectionVideoCollectionCarouselContent({
-    sources,
-    primaryCollectionId,
-    subtitleOverride,
-    titleOverride,
-    descriptionOverride,
-    ctaLabelOverride,
-    ctaHrefOverride,
-    defaultCtaLabel: t('Watch'),
-    languageId
-  })
+  const { loading, slides, subtitle, title, description, ctaHref, ctaLabel } =
+    useSectionVideoCollectionCarouselContent({
+      sources,
+      primaryCollectionId,
+      subtitleOverride,
+      titleOverride,
+      descriptionOverride,
+      ctaLabelOverride,
+      ctaHrefOverride,
+      defaultCtaLabel: t('Watch'),
+      languageId
+    })
 
   if (!loading && slides.length === 0) return null
 
@@ -126,7 +119,7 @@ export function SectionVideoCarousel({
           observeParents
           slidesPerView="auto"
           spaceBetween={20}
-        slidesOffsetAfter={40}
+          slidesOffsetAfter={40}
           pagination={{ clickable: true }}
           className="w-full"
           data-testid="SectionVideoCarouselSwiper"
@@ -136,7 +129,6 @@ export function SectionVideoCarousel({
                 <SwiperSlide
                   key={`skeleton-${index}`}
                   className={`max-w-[200px] ${index === 0 ? 'padded-l' : ''}`}
-
                 >
                   <div className="h-[330px] w-[220px] rounded-lg bg-white/10 animate-pulse" />
                 </SwiperSlide>
@@ -160,7 +152,10 @@ export function SectionVideoCarousel({
 
       <div className="padded space-y-6">
         {description != null && description !== '' && (
-          <p className="text-lg xl:text-xl mt-8 leading-relaxed text-stone-200/80" data-testid="SectionVideoCarouselDescription">
+          <p
+            className="text-lg xl:text-xl mt-8 leading-relaxed text-stone-200/80"
+            data-testid="SectionVideoCarouselDescription"
+          >
             {description}
           </p>
         )}
