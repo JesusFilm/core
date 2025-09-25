@@ -22,7 +22,7 @@ export function SectionLanguageMap(): ReactElement {
   return (
     <section
       aria-labelledby="watch-language-map-heading"
-      className="flex w-full flex-col gap-8 py-16 text-white"
+      className="flex w-full flex-col gap-8 pt-16 text-white"
     >
       <div className="flex flex-col gap-6 sm:flex-row sm:items-start sm:justify-between">
         <div className="max-w-3xl space-y-4 padded">

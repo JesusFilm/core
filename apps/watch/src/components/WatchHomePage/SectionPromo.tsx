@@ -72,7 +72,7 @@ export function SectionPromo(): ReactElement {
   ]
 
   return (
-    <section className="mt-8 lg:mt-12 relative overflow-hidden bg-gradient-to-br from-red-950/60 via-purple-950/20 to-orange-600/10 py-16">
+    <section className="relative overflow-hidden bg-gradient-to-br from-red-950/60 via-purple-950/20 to-orange-600/10 py-18">
       <div className="">
         <div className="responsive-container isolate  shadow-[0_45px_80px_-40px_rgba(15,23,42,0.8)] ">
           <div
