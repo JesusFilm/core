@@ -4,7 +4,6 @@ import { z } from 'zod'
 
 import {
   Block,
-  MessagePlatform,
   Prisma,
   prisma
 } from '@core/prisma/journeys/client'
@@ -24,8 +23,7 @@ const emailSchema = z.object({
 const linkActionInputSchema = z.object({
   gtmEventName: z.string().nullish(),
   url: z.string(),
-  target: z.string().nullish(),
-  chatPlatform: z.undefined() // Explicitly exclude chatPlatform
+  target: z.string().nullish()
 })
 
 const emailActionInputSchema = z.object({
@@ -46,9 +44,8 @@ const phoneActionInputSchema = z.object({
 
 const chatActionInputSchema = z.object({
   gtmEventName: z.string().nullish(),
-  url: z.string(),
-  target: z.string().nullish(),
-  chatPlatform: z.nativeEnum(MessagePlatform)
+  chatUrl: z.string(),
+  target: z.string().nullish()
 })
 
 const ACTION_UPDATE_RESET: Prisma.ActionUpdateInput = {
@@ -56,7 +53,7 @@ const ACTION_UPDATE_RESET: Prisma.ActionUpdateInput = {
   target: null,
   email: null,
   phone: null,
-  chatPlatform: null,
+  chatUrl: null,
   journey: { disconnect: true },
   block: { disconnect: true }
 }

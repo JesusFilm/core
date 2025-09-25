@@ -1,5 +1,4 @@
 import { builder } from '../../builder'
-import { MessagePlatform } from '../../enums'
 
 export const BlockUpdateActionInput = builder.inputType(
   'BlockUpdateActionInput',
@@ -12,10 +11,7 @@ export const BlockUpdateActionInput = builder.inputType(
       countryCode: t.string({ required: false }),
       target: t.string({ required: false }),
       blockId: t.string({ required: false }),
-      chatPlatform: t.field({
-        type: MessagePlatform,
-        required: false
-      })
+      chatUrl: t.string({ required: false })
     })
   }
 )

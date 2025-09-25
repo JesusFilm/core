@@ -48,9 +48,8 @@ type ChatAction implements Action @shareable {
   parentBlockId: ID!
   parentBlock: Block!
   gtmEventName: String
-  url: String!
+  chatUrl: String!
   target: String
   customizable: Boolean
   parentStepId: String
-  chatPlatform: MessagePlatform
 }

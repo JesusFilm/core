@@ -949,11 +949,10 @@ export class ChatAction implements Action {
     parentBlockId: string;
     parentBlock: Block;
     gtmEventName?: Nullable<string>;
-    url: string;
+    chatUrl: string;
     target?: Nullable<string>;
     customizable?: Nullable<boolean>;
     parentStepId?: Nullable<string>;
-    chatPlatform?: Nullable<MessagePlatform>;
 }
 
 export class Journey {

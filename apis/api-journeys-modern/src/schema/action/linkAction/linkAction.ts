@@ -5,7 +5,7 @@ export const LinkActionRef = builder.prismaObject('Action', {
   variant: 'LinkAction',
   shareable: true,
   interfaces: [ActionInterface],
-  isTypeOf: (action: any) => action.url != null && action.email == null,
+  isTypeOf: (action: any) => action.url != null && action.email == null && action.chatUrl == null,
   fields: (t) => ({
     url: t.string({
       nullable: false,

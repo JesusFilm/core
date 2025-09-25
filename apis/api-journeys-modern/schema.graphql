@@ -27,7 +27,7 @@ input BlockUpdateActionInput {
   countryCode: String
   target: String
   blockId: String
-  chatPlatform: MessagePlatform
+  chatUrl: String
 }
 
 input BlocksFilter {
@@ -215,20 +215,18 @@ type ChatAction implements Action
   parentBlockId: ID!
   gtmEventName: String
   parentBlock: Block!
-  url: String!
+  chatUrl: String!
   target: String
   customizable: Boolean
   parentStepId: String
-  chatPlatform: MessagePlatform
 }
 
 input ChatActionInput {
   gtmEventName: String
-  url: String!
+  chatUrl: String!
   target: String
   customizable: Boolean
   parentStepId: String
-  chatPlatform: MessagePlatform
 }
 
 type ChatButton

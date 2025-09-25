@@ -12,10 +12,9 @@ describe('blockUpdateChatAction mutation', () => {
     mutation BlockUpdateChatAction($id: ID!, $input: ChatActionInput!) {
       blockUpdateChatAction(id: $id, input: $input) {
         __typename
-        url
+        chatUrl
         target
         gtmEventName
-        chatPlatform
       }
     }
   `)
@@ -47,9 +46,8 @@ describe('blockUpdateChatAction mutation', () => {
       prismaMock.action.upsert.mockResolvedValueOnce({
         parentBlockId: '1',
         gtmEventName: null,
-        url: 'https://wa.me/1234567890',
-        target: null,
-        chatPlatform: 'whatsApp'
+        chatUrl: 'https://wa.me/1234567890',
+        target: null
       } as any)
 
       const result = await authClient({
@@ -58,9 +56,8 @@ describe('blockUpdateChatAction mutation', () => {
           id: actionableBlock.id,
           input: {
             gtmEventName: null,
-            url: 'https://wa.me/1234567890',
-            target: null,
-            chatPlatform: 'whatsApp'
+            chatUrl: 'https://wa.me/1234567890',
+            target: null
           }
         }
       })
@@ -69,20 +66,19 @@ describe('blockUpdateChatAction mutation', () => {
         where: { parentBlockId: '1' },
         create: {
           gtmEventName: null,
-          url: 'https://wa.me/1234567890',
+          chatUrl: 'https://wa.me/1234567890',
           target: null,
-          chatPlatform: 'whatsApp',
           parentBlock: { connect: { id: '1' } }
         },
         update: {
+          url: null,
           email: null,
           phone: null,
           journey: { disconnect: true },
           block: { disconnect: true },
           gtmEventName: null,
-          url: 'https://wa.me/1234567890',
+          chatUrl: 'https://wa.me/1234567890',
           target: null,
-          chatPlatform: 'whatsApp'
         }
       })
 
@@ -90,10 +86,9 @@ describe('blockUpdateChatAction mutation', () => {
         data: {
           blockUpdateChatAction: {
             __typename: 'ChatAction',
-            url: 'https://wa.me/1234567890',
+            chatUrl: 'https://wa.me/1234567890',
             target: null,
             gtmEventName: null,
-            chatPlatform: 'whatsApp'
           }
         }
       })
@@ -105,9 +100,8 @@ describe('blockUpdateChatAction mutation', () => {
       prismaMock.action.upsert.mockResolvedValueOnce({
         parentBlockId: '1',
         gtmEventName: null,
-        url: 'https://t.me/username',
+        chatUrl: 'https://t.me/username',
         target: null,
-        chatPlatform: 'telegram'
       } as any)
 
       const result = await authClient({
@@ -116,9 +110,8 @@ describe('blockUpdateChatAction mutation', () => {
           id: actionableBlock.id,
           input: {
             gtmEventName: null,
-            url: 'https://t.me/username',
+            chatUrl: 'https://t.me/username',
             target: null,
-            chatPlatform: 'telegram'
           }
         }
       })
@@ -127,20 +120,19 @@ describe('blockUpdateChatAction mutation', () => {
         where: { parentBlockId: '1' },
         create: {
           gtmEventName: null,
-          url: 'https://t.me/username',
+          chatUrl: 'https://t.me/username',
           target: null,
-          chatPlatform: 'telegram',
           parentBlock: { connect: { id: '1' } }
         },
         update: {
+          url: null,
           email: null,
           phone: null,
           journey: { disconnect: true },
           block: { disconnect: true },
           gtmEventName: null,
-          url: 'https://t.me/username',
+          chatUrl: 'https://t.me/username',
           target: null,
-          chatPlatform: 'telegram'
         }
       })
 
@@ -148,10 +140,9 @@ describe('blockUpdateChatAction mutation', () => {
         data: {
           blockUpdateChatAction: {
             __typename: 'ChatAction',
-            url: 'https://t.me/username',
+            chatUrl: 'https://t.me/username',
             target: null,
             gtmEventName: null,
-            chatPlatform: 'telegram'
           }
         }
       })
@@ -168,9 +159,8 @@ describe('blockUpdateChatAction mutation', () => {
           id: 'missing',
           input: {
             gtmEventName: null,
-            url: 'https://wa.me/1234567890',
+            chatUrl: 'https://wa.me/1234567890',
             target: null,
-            chatPlatform: 'whatsApp'
           }
         }
       })
@@ -194,9 +184,8 @@ describe('blockUpdateChatAction mutation', () => {
           id: noAccessBlock.id,
           input: {
             gtmEventName: null,
-            url: 'https://wa.me/1234567890',
+            chatUrl: 'https://wa.me/1234567890',
             target: null,
-            chatPlatform: 'whatsApp'
           }
         }
       })
@@ -221,9 +210,8 @@ describe('blockUpdateChatAction mutation', () => {
           id: wrongBlock.id,
           input: {
             gtmEventName: null,
-            url: 'https://wa.me/1234567890',
+            chatUrl: 'https://wa.me/1234567890',
             target: null,
-            chatPlatform: 'whatsApp'
           }
         }
       })

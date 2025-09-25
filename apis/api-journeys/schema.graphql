@@ -109,11 +109,10 @@ type ChatAction implements Action
   parentBlockId: ID!
   parentBlock: Block!
   gtmEventName: String
-  url: String!
+  chatUrl: String!
   target: String
   customizable: Boolean
   parentStepId: String
-  chatPlatform: MessagePlatform!
 }
 
 interface Block {

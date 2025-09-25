@@ -31,8 +31,7 @@ describe('blockUpdateAction mutation', () => {
           blockId
         }
         ... on ChatAction {
-          url
-          chatPlatform
+          chatUrl
           gtmEventName
           target
         }
@@ -188,7 +187,7 @@ describe('blockUpdateAction mutation', () => {
           url: 'https://example.com',
           email: null,
           phone: null,
-          chatPlatform: null,
+          chatUrl: null,
           journey: { disconnect: true },
           block: { disconnect: true }
         })
@@ -258,9 +257,8 @@ describe('blockUpdateAction mutation', () => {
       prismaMock.action.upsert.mockResolvedValueOnce({
         parentBlockId: '1',
         gtmEventName: null,
-        url: 'https://wa.me/1234567890',
+        chatUrl: 'https://wa.me/1234567890',
         target: null,
-        chatPlatform: 'whatsApp',
         parentBlock: { id: '1', action: {} }
       } as any)
 
@@ -268,9 +266,8 @@ describe('blockUpdateAction mutation', () => {
         id: actionableBlock.id,
         input: {
           gtmEventName: null,
-          url: 'https://wa.me/1234567890',
-          target: null,
-          chatPlatform: 'whatsApp'
+          chatUrl: 'https://wa.me/1234567890',
+          target: null
         }
       }
 
@@ -280,16 +277,14 @@ describe('blockUpdateAction mutation', () => {
         where: { parentBlockId: '1' },
         create: {
           gtmEventName: null,
-          url: 'https://wa.me/1234567890',
+          chatUrl: 'https://wa.me/1234567890',
           target: null,
-          chatPlatform: 'whatsApp',
           parentBlock: { connect: { id: '1' } }
         },
         update: expect.objectContaining({
           gtmEventName: null,
-          url: 'https://wa.me/1234567890',
+          chatUrl: 'https://wa.me/1234567890',
           target: null,
-          chatPlatform: 'whatsApp',
           email: null,
           phone: null,
           journey: { disconnect: true },
@@ -302,9 +297,8 @@ describe('blockUpdateAction mutation', () => {
           blockUpdateAction: {
             __typename: 'ChatAction',
             gtmEventName: null,
-            url: 'https://wa.me/1234567890',
-            target: null,
-            chatPlatform: 'whatsApp'
+            chatUrl: 'https://wa.me/1234567890',
+            target: null
           }
         }
       })
