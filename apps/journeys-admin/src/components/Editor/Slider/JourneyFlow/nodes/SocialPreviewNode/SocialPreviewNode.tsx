@@ -198,17 +198,17 @@ export function SocialPreviewNode(): ReactElement {
                   }}
                 />
               ) : (
+                <Box width={118.5} height={90} sx={{ position: 'relative' }}>
                 <Image
                   src={journey.primaryImageBlock.src}
                   alt={journey.primaryImageBlock.alt ?? ''}
-                  width={118.5}
-                  height={90}
+                  fill
                   style={{
                     borderRadius: 5,
-                    maxWidth: '100%',
                     objectFit: 'cover'
                   }}
                 />
+                </Box>
               )}
             </CardMedia>
             <Stack

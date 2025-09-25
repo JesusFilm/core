@@ -112,17 +112,21 @@ export function Message(): ReactElement {
                         borderRadius="6px"
                       />
                     ) : (
-                      <Image
-                        src={journey.primaryImageBlock.src}
-                        alt={journey.primaryImageBlock.alt ?? ''}
-                        width="78"
-                        height="78"
-                        style={{
-                          borderRadius: '5px',
-                          maxWidth: '100%',
-                          objectFit: 'cover'
-                        }}
-                      />
+                      <Box
+                        width={78}
+                        height={78}
+                        sx={{ position: 'relative' }}
+                      >
+                        <Image
+                          src={journey.primaryImageBlock.src}
+                          alt={journey.primaryImageBlock.alt ?? ''}
+                          fill
+                          style={{
+                            borderRadius: '5px',
+                            objectFit: 'cover'
+                          }}
+                        />
+                      </Box>
                     )}
                   </Tooltip>
                   <Stack

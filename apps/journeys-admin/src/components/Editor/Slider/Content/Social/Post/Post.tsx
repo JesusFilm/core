@@ -95,18 +95,18 @@ export function Post(): ReactElement {
                     bgcolor="background.default"
                   />
                 ) : (
+                  <Box width={208} height={158} sx={{ position: 'relative' }}>   
                   <Image
                     src={journey.primaryImageBlock.src}
                     alt={journey.primaryImageBlock.alt ?? ''}
-                    width={208}
-                    height={158}
+                    fill
                     draggable="false"
                     style={{
                       borderRadius: '5px',
-                      maxWidth: '100%',
-                      objectFit: 'cover'
-                    }}
-                  />
+                        objectFit: 'cover'
+                      }}
+                    />
+                  </Box>
                 )}
               </CardMedia>
             </Tooltip>
