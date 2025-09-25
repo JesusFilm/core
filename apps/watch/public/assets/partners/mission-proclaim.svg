@@ -1,0 +1,7 @@
+<svg width="240" height="120" viewBox="0 0 240 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="240" height="120" rx="20" fill="#FEF3C7" />
+  <path d="M60 86L96 34L124 62L152 34L188 86H164L124 50L84 86H60Z" fill="#EA580C" />
+  <text x="120" y="108" text-anchor="middle" font-family="'Montserrat', 'Arial', sans-serif" font-size="22" font-weight="600" fill="#9A3412">
+    Mission Proclaim
+  </text>
+</svg>

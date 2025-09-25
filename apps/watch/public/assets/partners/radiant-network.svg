@@ -1,0 +1,9 @@
+<svg width="240" height="120" viewBox="0 0 240 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="240" height="120" rx="20" fill="#111827" />
+  <circle cx="120" cy="52" r="30" stroke="#F59E0B" stroke-width="10" />
+  <circle cx="120" cy="52" r="8" fill="#FCD34D" />
+  <path d="M64 96H176" stroke="#FCD34D" stroke-width="10" stroke-linecap="round" stroke-dasharray="24 16" />
+  <text x="120" y="112" text-anchor="middle" font-family="'Montserrat', 'Arial', sans-serif" font-size="22" font-weight="600" fill="#FCD34D">
+    Radiant Network
+  </text>
+</svg>
