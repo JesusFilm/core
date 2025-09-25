@@ -21,6 +21,8 @@ import { UPDATE_LAST_ACTIVE_TEAM_ID } from '../../libs/useUpdateLastActiveTeamId
 import { UpdateLastActiveTeamId } from '../../libs/useUpdateLastActiveTeamIdMutation/__generated__/UpdateLastActiveTeamId'
 import { useTeam } from '../TeamProvider'
 import { TranslationDialogWrapper } from '../TranslationDialogWrapper'
+import { useJourney } from '../../libs/JourneyProvider'
+import { useRouter } from 'next/router'
 
 interface CopyToTeamDialogProps {
   title: string
@@ -85,9 +87,15 @@ export function CopyToTeamDialog({
 }: CopyToTeamDialogProps): ReactElement {
   const { t } = useTranslation('libs-journeys-ui')
   const { query, setActiveTeam } = useTeam()
+  const { journey } = useJourney()
   const teams = query?.data?.teams ?? []
   const [updateLastActiveTeamId, { client }] =
     useMutation<UpdateLastActiveTeamId>(UPDATE_LAST_ACTIVE_TEAM_ID)
+
+  const { pathname } = useRouter()
+  const isTemplatesAdmin = pathname?.includes('/publisher') ?? false
+  const isOriginalTemplate =
+    journey?.template && journey?.fromTemplateId == null
 
   const { data: languagesData, loading: languagesLoading } = useLanguagesQuery({
     languageId: '529',
@@ -262,6 +270,7 @@ export function CopyToTeamDialog({
                 <FormControlLabel
                   control={
                     <Switch
+                      disabled={!isOriginalTemplate && isTemplatesAdmin}
                       checked={values.showTranslation}
                       onChange={(e) =>
                         setFieldValue('showTranslation', e.target.checked)
@@ -275,6 +284,13 @@ export function CopyToTeamDialog({
                   }
                 />
               </Stack>
+              {!isOriginalTemplate && isTemplatesAdmin && (
+                <Typography variant="caption" color="red">
+                  {t(
+                    'This is not the original journey template, it is a translation or copy of the original template. If you want to translate this journey - please use the original template.'
+                  )}
+                </Typography>
+              )}
               {values.showTranslation && (
                 <LanguageAutocomplete
                   languages={languagesData?.languages}
