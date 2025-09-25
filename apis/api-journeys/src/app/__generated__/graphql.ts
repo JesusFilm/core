@@ -953,7 +953,7 @@ export class ChatAction implements Action {
     target?: Nullable<string>;
     customizable?: Nullable<boolean>;
     parentStepId?: Nullable<string>;
-    chatPlatform: MessagePlatform;
+    chatPlatform?: Nullable<MessagePlatform>;
 }
 
 export class Journey {

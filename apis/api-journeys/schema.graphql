@@ -1401,6 +1401,7 @@ enum ButtonAction {
   LinkAction
   EmailAction
   PhoneAction
+  ChatAction
 }
 
 input ButtonClickEventCreateInput {

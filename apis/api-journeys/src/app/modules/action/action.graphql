@@ -52,5 +52,5 @@ type ChatAction implements Action @shareable {
   target: String
   customizable: Boolean
   parentStepId: String
-  chatPlatform: MessagePlatform!
+  chatPlatform: MessagePlatform
 }
