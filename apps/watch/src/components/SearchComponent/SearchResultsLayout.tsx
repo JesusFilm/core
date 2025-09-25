@@ -3,6 +3,10 @@ import { ReactElement, useMemo } from 'react'
 
 
 import { AlgoliaVideoGrid } from '../VideoGrid/AlgoliaVideoGrid'
+<<<<<<< HEAD
+=======
+
+>>>>>>> 211ca2436 (chore: update pnpm lockfile and refactor component imports)
 import { LanguageSelector } from './LanguageSelector'
 import { QuickList } from './QuickList'
 

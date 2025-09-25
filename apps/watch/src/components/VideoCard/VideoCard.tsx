@@ -7,10 +7,9 @@ import type { MouseEvent, ReactElement } from 'react'
 
 import { secondsToTimeFormat } from '@core/shared/ui/timeFormat'
 
-import { getLabelDetails } from '../../libs/utils/getLabelDetails/getLabelDetails'
-
 import { VideoLabel } from '../../../__generated__/globalTypes'
 import type { VideoChildFields } from '../../../__generated__/VideoChildFields'
+import { getLabelDetails } from '../../libs/utils/getLabelDetails/getLabelDetails'
 import type { CarouselVideo } from '../VideoHero/libs/useCarouselVideos'
 
 interface VideoCardProps {

@@ -1,15 +1,14 @@
 import muxConfig from '../../../../../config/video-inserts.mux.json'
-
 import { buildPlaybackUrls } from '../../../../lib/mux/buildPlaybackUrls'
 import { pickPlaybackId } from '../../../../lib/mux/pickPlaybackId'
 import { parseInsertMuxConfig } from '../../../../lib/validation/insertMux.schema'
 import {
   type CarouselMuxSlide,
-  type CarouselVideoSlide,
   type CarouselVideoLike,
-  type VideoCarouselSlide,
+  type CarouselVideoSlide,
   type InsertConfig,
-  type MuxInsertConfig
+  type MuxInsertConfig,
+  type VideoCarouselSlide
 } from '../../../../types/inserts'
 
 const STORAGE_KEY = 'mux-insert-selections'

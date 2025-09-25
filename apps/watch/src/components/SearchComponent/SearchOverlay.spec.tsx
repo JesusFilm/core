@@ -1,6 +1,8 @@
 import { render, screen } from '@testing-library/react'
 import { createRef } from 'react'
 
+import { SearchOverlay } from './SearchOverlay'
+
 jest.mock('next-i18next', () => ({
   useTranslation: () => ({
     t: (key: string) => key
@@ -27,8 +29,6 @@ jest.mock('./CategoryGrid', () => ({
 jest.mock('./SearchResultsLayout', () => ({
   SearchResultsLayout: () => <div data-testid="SearchResultsLayout" />
 }))
-
-import { SearchOverlay } from './SearchOverlay'
 
 describe('SearchOverlay', () => {
   it('renders fallback trending content when trending data fails', () => {

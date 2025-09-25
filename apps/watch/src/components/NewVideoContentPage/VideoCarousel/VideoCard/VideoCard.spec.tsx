@@ -1,10 +1,10 @@
 import { fireEvent, render, screen } from '@testing-library/react'
 
 import { usePlayer } from '../../../../libs/playerContext'
+import { UnifiedCardData } from '../../../../types/inserts'
 import { videos } from '../../../Videos/__generated__/testData'
 
 import { VideoCard } from './VideoCard'
-import { UnifiedCardData } from '../../../../types/inserts'
 
 jest.mock('next/image', () => {
   return function MockImage(props: any) {

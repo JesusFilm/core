@@ -79,10 +79,10 @@ function WatchHomePageBody({ languageId }: WatchHomePageProps): ReactElement {
           >
             <SeeAllVideos />
             <AboutProjectSection />
-            <SectionLanguageMap />
           </ThemeProvider>
         </div>
         <CollectionsRail languageId={languageId} />
+        <SectionLanguageMap />
       </WatchHero>
     </div>
   )

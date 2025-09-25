@@ -5,8 +5,8 @@ import { Icon } from '@core/shared/ui/icons/Icon'
 
 import { cn } from '../../libs/cn'
 import {
-  SectionVideoCollectionCarouselSource,
   SectionVideoCollectionCarouselSlide,
+  SectionVideoCollectionCarouselSource,
   useSectionVideoCollectionCarouselContent
 } from '../SectionVideoCarousel/useSectionVideoCollectionCarouselContent'
 import { VideoGrid } from '../VideoGrid/VideoGrid'

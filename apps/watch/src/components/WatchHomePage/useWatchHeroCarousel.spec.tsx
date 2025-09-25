@@ -2,6 +2,7 @@ import { act, renderHook } from '@testing-library/react'
 
 import { VideoLabel } from '../../../__generated__/globalTypes'
 import type { PlayerState } from '../../libs/playerContext'
+import { usePlayer } from '../../libs/playerContext'
 import type {
   CarouselMuxSlide,
   VideoCarouselSlide
@@ -12,7 +13,6 @@ import {
 } from '../VideoHero/libs/useCarouselVideos'
 
 import { useWatchHeroCarousel } from './useWatchHeroCarousel'
-import { usePlayer } from '../../libs/playerContext'
 
 jest.mock('../VideoHero/libs/useCarouselVideos', () => ({
   useCarouselVideos: jest.fn()

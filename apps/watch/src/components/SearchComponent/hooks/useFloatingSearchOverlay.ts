@@ -88,7 +88,10 @@ export function useFloatingSearchOverlay(): UseFloatingSearchOverlayResult {
       !isTrendingLoading &&
       !trendingError
     ) {
-      fetchTrendingSearches()
+      // Wrap the async call to ensure any errors are handled gracefully
+      fetchTrendingSearches().catch((error) => {
+        console.warn('Failed to fetch trending searches in useEffect:', error)
+      })
     }
   }, [
     isSearchActive,

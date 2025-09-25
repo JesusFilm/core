@@ -1,9 +1,17 @@
+<<<<<<< HEAD
 import {
   Dialog,
   DialogContent,
   DialogOverlay,
   DialogPortal
 } from '@ui/components/dialog'
+=======
+import Box from '@mui/material/Box'
+import Container from '@mui/material/Container'
+import Stack from '@mui/material/Stack'
+import Typography from '@mui/material/Typography'
+import { Dialog, DialogContent, DialogOverlay, DialogPortal } from '@ui/components/dialog'
+>>>>>>> 211ca2436 (chore: update pnpm lockfile and refactor component imports)
 import { useTranslation } from 'next-i18next'
 import { FocusEvent, ReactElement } from 'react'
 

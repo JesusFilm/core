@@ -5,8 +5,6 @@ import { Swiper, SwiperSlide } from 'swiper/react'
 import { SwiperOptions , Swiper as SwiperType } from 'swiper/types'
 
 import { VideoChildFields } from '../../../../__generated__/VideoChildFields'
-import { Skeleton } from '../../Skeleton'
-import { NavButton } from '../../VideoCarousel/NavButton/NavButton'
 import {
   type VideoCarouselSlide,
   isMuxSlide,
@@ -14,6 +12,8 @@ import {
   transformMuxSlide,
   transformVideoChild
 } from '../../../types/inserts'
+import { Skeleton } from '../../Skeleton'
+import { NavButton } from '../../VideoCarousel/NavButton/NavButton'
 
 import { VideoCard } from './VideoCard'
 

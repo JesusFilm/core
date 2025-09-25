@@ -4,13 +4,13 @@ import { A11y, FreeMode, Mousewheel } from 'swiper/modules'
 import { Swiper, SwiperSlide } from 'swiper/react'
 
 import { Icon } from '@core/shared/ui/icons/Icon'
-import { VideoCard } from '../VideoCard'
 
 import { cn } from '../../libs/cn'
+import { VideoCard } from '../VideoCard'
 
 import {
-  SectionVideoCollectionCarouselSource,
   SectionVideoCollectionCarouselSlide,
+  SectionVideoCollectionCarouselSource,
   useSectionVideoCollectionCarouselContent
 } from './useSectionVideoCollectionCarouselContent'
 

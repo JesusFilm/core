@@ -41,7 +41,6 @@ const apercuPro = localFont({
   ]
 })
 
-
 type WatchAppProps = NextJsAppProps<{
   flags?: { [key: string]: boolean }
 }> & {
