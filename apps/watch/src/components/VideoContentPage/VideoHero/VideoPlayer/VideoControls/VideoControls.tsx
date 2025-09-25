@@ -392,7 +392,6 @@ export function VideoControls({
       loading: false
     }), [dispatchPlayer])
 
-
   useEffect(() => {
     dispatchPlayer({
       type: 'SetVolume',

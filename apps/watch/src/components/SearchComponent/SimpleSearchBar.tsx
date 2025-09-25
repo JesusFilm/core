@@ -1,3 +1,5 @@
+import { Button } from '@ui/components/button'
+import { Input } from '@ui/components/input'
 import { Formik } from 'formik'
 import { useTranslation } from 'next-i18next'
 import { type FocusEvent, type ReactElement, useState } from 'react'
@@ -5,8 +7,6 @@ import { type FocusEvent, type ReactElement, useState } from 'react'
 import Search1Icon from '@core/shared/ui/icons/Search1'
 import X1Icon from '@core/shared/ui/icons/X1'
 import { SubmitListener } from '@core/shared/ui/SubmitListener'
-import { Input } from '@ui/components/input'
-import { Button } from '@ui/components/button'
 
 interface SimpleSearchBarProps {
   loading?: boolean

@@ -2,7 +2,7 @@ import { sendGTMEvent } from '@next/third-parties/google'
 import last from 'lodash/last'
 import { useTranslation } from 'next-i18next'
 import { NextSeo } from 'next-seo'
-import { ReactElement, useMemo, useState, useCallback, useEffect } from 'react'
+import { ReactElement, useCallback, useEffect, useMemo, useState } from 'react'
 import { v4 as uuidv4 } from 'uuid'
 
 import Bible from '@core/shared/ui/icons/Bible'
@@ -13,10 +13,10 @@ import { VideoContentFields_studyQuestions as StudyQuestions } from '../../../__
 import { useVideoChildren } from '../../libs/useVideoChildren'
 import { getWatchUrl } from '../../libs/utils/getWatchUrl'
 import { useVideo } from '../../libs/videoContext'
-import { mergeMuxInserts } from '../VideoHero/libs/useCarouselVideos/insertMux'
-import type { VideoCarouselSlide, CarouselMuxSlide } from '../../types/inserts'
+import type { CarouselMuxSlide, VideoCarouselSlide } from '../../types/inserts'
 import { PageWrapper } from '../PageWrapper'
 import { ShareDialog } from '../ShareDialog'
+import { mergeMuxInserts } from '../VideoHero/libs/useCarouselVideos/insertMux'
 
 import { BibleCitations } from './BibleCitations'
 import { ContentMetadata } from './ContentMetadata'
@@ -147,7 +147,6 @@ export function NewVideoContentPage(): ReactElement {
   // Get current playing content
   const currentSlide = carouselSlides[currentSlideIndex]
   const currentMuxInsert = currentSlide?.source === 'mux' ? currentSlide : null
-
 
   const handleFreeResourceClick = () => {
     sendGTMEvent({

@@ -3,9 +3,9 @@ import { ReactElement } from 'react'
 
 import { SearchBarProvider } from '@core/journeys/ui/algolia/SearchBarProvider'
 
-import { SimpleSearchBar } from './SimpleSearchBar'
-import { SearchOverlay } from './SearchOverlay'
 import { useFloatingSearchOverlay } from './hooks/useFloatingSearchOverlay'
+import { SearchOverlay } from './SearchOverlay'
+import { SimpleSearchBar } from './SimpleSearchBar'
 
 interface SearchComponentProps {
   languageId?: string

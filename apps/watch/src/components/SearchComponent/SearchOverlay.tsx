@@ -2,15 +2,14 @@ import Box from '@mui/material/Box'
 import Container from '@mui/material/Container'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
+import { Dialog, DialogContent, DialogOverlay, DialogPortal } from '@ui/components/dialog'
 import { useTranslation } from 'next-i18next'
 import { FocusEvent, ReactElement } from 'react'
 
-import { Dialog, DialogContent, DialogOverlay, DialogPortal } from '@ui/components/dialog'
-
 import { CategoryGrid } from './CategoryGrid'
+import { LanguageSelector } from './LanguageSelector'
 import { QuickList } from './QuickList'
 import { SearchResultsLayout } from './SearchResultsLayout'
-import { LanguageSelector } from './LanguageSelector'
 
 export interface SearchOverlayProps {
   open: boolean

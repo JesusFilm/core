@@ -14,13 +14,12 @@ import { ShareButton } from '../ShareButton'
 import { ShareDialog } from '../ShareDialog'
 import { getSlug } from '../VideoCard'
 import { VideoCarousel } from '../VideoCarousel'
+import { mergeMuxInserts } from '../VideoHero/libs/useCarouselVideos/insertMux'
 
 import { DownloadButton } from './DownloadButton'
 import { VideoContent } from './VideoContent/VideoContent'
 import { VideoHeading } from './VideoHeading'
 import { VideoHero } from './VideoHero'
-
-import { mergeMuxInserts } from '../VideoHero/libs/useCarouselVideos/insertMux'
 
 import 'video.js/dist/video-js.css'
 

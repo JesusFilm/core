@@ -2,7 +2,9 @@ import { useLazyQuery, useQuery } from '@apollo/client'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 
 import { getLanguageIdFromLocale } from '../../../../libs/getLanguageIdFromLocale'
+import type { VideoCarouselSlide } from '../../../../types/inserts'
 
+import { mergeMuxInserts } from './insertMux'
 import {
   GET_COLLECTION_COUNTS,
   GET_ONE_CHILD_BY_INDEX,
@@ -12,6 +14,7 @@ import {
   addToPersistentPlayedIds,
   addToSessionPlayedIds,
   clearCurrentVideoSession,
+  filterOutBlacklistedVideos,
   getDeterministicOffset,
   getPlaylistConfig,
   getPoolKey,
@@ -20,11 +23,8 @@ import {
   isVideoAlreadyPlayed,
   loadCurrentVideoSession,
   markPoolVideoPlayed,
-  saveCurrentVideoSession,
-  filterOutBlacklistedVideos
+  saveCurrentVideoSession
 } from './utils'
-import { mergeMuxInserts } from './insertMux'
-import type { VideoCarouselSlide } from '../../../../types/inserts'
 
 export interface CarouselVideo {
   id: string

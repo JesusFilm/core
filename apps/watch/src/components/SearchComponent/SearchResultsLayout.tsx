@@ -5,8 +5,9 @@ import { useTranslation } from 'next-i18next'
 import { ReactElement, useMemo } from 'react'
 
 import { AlgoliaVideoGrid } from '../VideoGrid/AlgoliaVideoGrid'
-import { QuickList } from './QuickList'
+
 import { LanguageSelector } from './LanguageSelector'
+import { QuickList } from './QuickList'
 
 export interface SearchResultsLayoutProps {
   searchQuery: string

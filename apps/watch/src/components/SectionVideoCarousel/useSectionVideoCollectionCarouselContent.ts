@@ -3,8 +3,8 @@ import { useQuery } from '@apollo/client'
 import { useRouter } from 'next/router'
 import { useEffect, useMemo } from 'react'
 
-import type { VideoChildFields } from '../../../__generated__/VideoChildFields'
 import { VideoLabel } from '../../../__generated__/globalTypes'
+import type { VideoChildFields } from '../../../__generated__/VideoChildFields'
 import { getLanguageIdFromLocale } from '../../libs/getLanguageIdFromLocale'
 import { getWatchUrl } from '../../libs/utils/getWatchUrl'
 

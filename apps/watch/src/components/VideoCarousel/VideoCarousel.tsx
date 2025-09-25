@@ -6,7 +6,6 @@ import { Swiper, SwiperSlide } from 'swiper/react'
 import { SwiperOptions } from 'swiper/types'
 
 import { VideoChildFields } from '../../../__generated__/VideoChildFields'
-import { VideoCard } from '../NewVideoContentPage/VideoCarousel/VideoCard'
 import {
   type VideoCarouselSlide,
   isMuxSlide,
@@ -14,6 +13,7 @@ import {
   transformMuxSlide,
   transformVideoChild
 } from '../../types/inserts'
+import { VideoCard } from '../NewVideoContentPage/VideoCarousel/VideoCard'
 
 import { NavButton } from './NavButton'
 

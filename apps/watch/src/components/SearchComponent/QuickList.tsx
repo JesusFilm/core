@@ -1,9 +1,8 @@
 import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
-import { ReactElement } from 'react'
-
 import { Badge } from '@ui/components/badge'
+import { ReactElement } from 'react'
 
 export interface QuickListProps {
   title: string

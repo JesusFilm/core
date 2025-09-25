@@ -7,10 +7,10 @@ import { ReactElement, useState } from 'react'
 import Play3 from '@core/shared/ui/icons/Play3'
 
 import { VideoChildFields } from '../../../../../__generated__/VideoChildFields'
-import { UnifiedCardData } from '../../../../types/inserts'
 import { usePlayer } from '../../../../libs/playerContext'
 import { getLabelDetails } from '../../../../libs/utils/getLabelDetails/getLabelDetails'
 import { getWatchUrl } from '../../../../libs/utils/getWatchUrl'
+import { UnifiedCardData } from '../../../../types/inserts'
 
 import { LazyImage } from './LazyImage'
 

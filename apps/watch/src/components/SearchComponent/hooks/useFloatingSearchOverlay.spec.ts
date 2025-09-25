@@ -1,6 +1,8 @@
 import { act, renderHook, waitFor } from '@testing-library/react'
 import type { FocusEvent } from 'react'
 
+import { useFloatingSearchOverlay } from './useFloatingSearchOverlay'
+
 let mockUseTrendingSearches: jest.Mock
 let mockUseSearchBox: jest.Mock
 
@@ -22,8 +24,6 @@ jest.mock('next-i18next', () => ({
     }
   })
 }))
-
-import { useFloatingSearchOverlay } from './useFloatingSearchOverlay'
 
 describe('useFloatingSearchOverlay', () => {
   beforeEach(() => {

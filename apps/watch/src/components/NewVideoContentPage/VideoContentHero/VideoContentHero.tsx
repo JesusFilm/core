@@ -2,8 +2,8 @@ import clsx from 'clsx'
 import { ReactElement, useState } from 'react'
 
 import { usePlayer } from '../../../libs/playerContext'
-import type { CarouselMuxSlide } from '../../../types/inserts'
 import { useVideo } from '../../../libs/videoContext'
+import type { CarouselMuxSlide } from '../../../types/inserts'
 
 import { ContentHeader } from './ContentHeader'
 import { HeroVideo } from './HeroVideo'

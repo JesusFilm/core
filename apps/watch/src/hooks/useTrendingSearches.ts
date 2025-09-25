@@ -75,12 +75,32 @@ export function useTrendingSearches(maxResults: number = 8): UseTrendingSearches
       return
     }
 
+    // Check if we're online before making network requests
+    if (typeof navigator !== 'undefined' && !navigator.onLine) {
+      console.warn('Offline: Using fallback trending searches')
+      setError('Offline mode')
+      const fallbackSearches = [
+        'Jesus',
+        'Bible',
+        'Gospel',
+        'Faith',
+        'Prayer',
+        'Hope',
+        'Love',
+        'Christian'
+      ]
+      const fallbackResults = fallbackSearches.slice(0, maxResults)
+      setTrendingSearches(fallbackResults)
+      setCachedTrendingSearches(fallbackResults)
+      return
+    }
+
     try {
       setIsLoading(true)
       setError(null)
 
       const indexName = process.env.NEXT_PUBLIC_ALGOLIA_INDEX ?? ''
-      
+
       // Try to get popular search terms by analyzing top content
       // We'll search for empty query and look at popular facet values
       const response = await searchClient.searchSingleIndex({
@@ -96,7 +116,7 @@ export function useTrendingSearches(maxResults: number = 8): UseTrendingSearches
 
       // Extract trending terms from titles and descriptions of popular content
       const popularTerms = new Set<string>()
-      
+
       // Add terms from top hits' titles
       response.hits?.forEach((hit: any) => {
         const titles = hit.title || []
@@ -113,7 +133,7 @@ export function useTrendingSearches(maxResults: number = 8): UseTrendingSearches
 
       // Convert to array and filter for relevant terms
       const relevantTerms = Array.from(popularTerms)
-        .filter(term => 
+        .filter(term =>
           !['the', 'and', 'for', 'are', 'but', 'not', 'you', 'all', 'can', 'had', 'her', 'was', 'one', 'our', 'out', 'day', 'get', 'has', 'him', 'his', 'how', 'man', 'new', 'now', 'old', 'see', 'two', 'way', 'who', 'boy', 'did', 'its', 'let', 'put', 'say', 'she', 'too', 'use'].includes(term)
         )
         .slice(0, maxResults)
@@ -141,13 +161,13 @@ export function useTrendingSearches(maxResults: number = 8): UseTrendingSearches
 
       const results = finalTerms.slice(0, maxResults)
       setTrendingSearches(results)
-      
+
       // Cache the results
       setCachedTrendingSearches(results)
     } catch (err) {
-      console.error('Error fetching trending searches:', err)
+      console.warn('Network error fetching trending searches, using fallback:', err)
       setError(err instanceof Error ? err.message : 'Failed to fetch trending searches')
-      
+
       // Fallback to static popular searches
       const fallbackSearches = [
         'Jesus',
@@ -161,7 +181,7 @@ export function useTrendingSearches(maxResults: number = 8): UseTrendingSearches
       ]
       const fallbackResults = fallbackSearches.slice(0, maxResults)
       setTrendingSearches(fallbackResults)
-      
+
       // Cache fallback results too
       setCachedTrendingSearches(fallbackResults)
     } finally {
