@@ -26,6 +26,38 @@
 - Share a typed helper for reusing the slide-to-video snapshot logic in other sections.
 - Consider centralizing Jest icon mocks to reduce repetition.
 
+# Download Dialog Subtitle Downloads
+
+## Goals
+- [x] Enable Watch download dialog to offer subtitle files alongside video downloads.
+- [x] Provide clear user guidance for pairing downloaded videos with subtitle tracks.
+
+## Implementation Strategy
+- [x] Load subtitle metadata on demand with the existing `GET_SUBTITLES` query when the subtitle tab becomes active.
+- [x] Refactor `DownloadDialog` with a tabbed layout separating video and subtitle assets.
+- [x] Surface subtitle download actions with language labels and sanitized default file names.
+- [x] Add in-dialog instructions describing how to load subtitle files during playback.
+- [x] Update translations and unit tests covering the new subtitle workflow.
+
+## Risks & Mitigations
+- Subtitle inventory may be large; guard rendering with graceful empty states and virtualization not required for current counts.
+- Terms-of-use acceptance should remain intact for video downloads; subtitle actions can stay independent to avoid blocking access when not mandated.
+
+## Obstacles
+- Integrating Apollo's lazy query introduced provider requirements in existing unit tests.
+
+## Resolutions
+- Wrapped the dialog in `MockedProvider` and supplied `GET_SUBTITLES` mocks to satisfy subtitle-loading tests without network access.
+
+## Validation Steps
+- [x] Video downloads continue to function across qualities after accepting the terms.
+- [x] Subtitle tab lists available languages and downloads the expected file URLs.
+- [x] Instructions render within the modal with accessible text for screen readers.
+
+## Follow-up Ideas
+- Investigate bundling selected subtitles with a pre-packaged player experience for offline audiences.
+- Explore remembering the last-downloaded subtitle language for quicker repeat access.
+
 # Search Component Overlay Refactor
 
 ## Goals

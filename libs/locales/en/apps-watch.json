@@ -115,5 +115,19 @@
     "Testimonies",
     "Youth",
     "Christmas"
-  ]
+  ],
+  "Download Options": "Download options",
+  "VideoFilesTab": "Video files",
+  "SubtitlesWithCount": "Subtitles ({{count}})",
+  "No Subtitles Available": "No subtitles available for download.",
+  "Loading Subtitles": "Loading subtitle files...",
+  "SubtitleDownloadsUnavailable": "Subtitle files are being prepared. Please try again soon.",
+  "SubtitleInstructionsHeading": "How to use subtitle downloads",
+  "SubtitleInstructionDownload": "Download your preferred subtitle language.",
+  "SubtitleInstructionSameFolder": "Keep the video and subtitle files in the same folder so your player can find them.",
+  "SubtitleInstructionLoadInPlayer": "Open the video in a player such as VLC, QuickTime, or Windows Media Player and open the Subtitles or Captions menu.",
+  "SubtitleInstructionManual": "Choose the option to add or browse for a subtitle file, then select the file you downloaded.",
+  "SubtitleInstructionsTip": "If subtitles do not appear immediately, toggle the captions menu to enable the new track.",
+  "UnknownSubtitleLanguage": "Unknown language",
+  "SubtitleFileDescription": "{{extension}} subtitle file"
 }

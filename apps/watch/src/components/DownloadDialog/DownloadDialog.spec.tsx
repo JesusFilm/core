@@ -1,3 +1,4 @@
+import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import useDownloader from 'react-use-downloader'
 
@@ -6,6 +7,7 @@ import {
   VideoContentFields
 } from '../../../__generated__/VideoContentFields'
 import { VideoProvider } from '../../libs/videoContext'
+import { GET_SUBTITLES } from '../../libs/watchContext/useSubtitleUpdate/useSubtitleUpdate'
 import { videos } from '../Videos/__generated__/testData'
 
 import { DownloadDialog } from './DownloadDialog'
@@ -36,23 +38,31 @@ describe('DownloadDialog', () => {
     })
   })
 
-  it('closes the modal and cancels download on cancel icon click', () => {
-    const { getByTestId } = render(
-      <VideoProvider value={{ content: video }}>
-        <DownloadDialog open onClose={onClose} />
-      </VideoProvider>
+  function renderDialog({
+    content = video,
+    mocks = []
+  }: {
+    content?: VideoContentFields
+    mocks?: MockedResponse[]
+  } = {}) {
+    return render(
+      <MockedProvider mocks={mocks}>
+        <VideoProvider value={{ content }}>
+          <DownloadDialog open onClose={onClose} />
+        </VideoProvider>
+      </MockedProvider>
     )
+  }
+
+  it('closes the modal and cancels download on cancel icon click', () => {
+    const { getByTestId } = renderDialog()
     fireEvent.click(getByTestId('dialog-close-button'))
     expect(onClose).toHaveBeenCalled()
     expect(onCancel).toHaveBeenCalled()
   })
 
   it('downloads low quality videos', async () => {
-    const { getByRole } = render(
-      <VideoProvider value={{ content: video }}>
-        <DownloadDialog open onClose={onClose} />
-      </VideoProvider>
-    )
+    const { getByRole } = renderDialog()
 
     const downloadButton = getByRole('button', { name: 'Download' })
 
@@ -73,11 +83,7 @@ describe('DownloadDialog', () => {
   })
 
   it('downloads high quality videos', async () => {
-    const { getByRole } = render(
-      <VideoProvider value={{ content: video }}>
-        <DownloadDialog open onClose={onClose} />
-      </VideoProvider>
-    )
+    const { getByRole } = renderDialog()
 
     const downloadButton = getByRole('button', { name: 'Download' })
 
@@ -108,22 +114,14 @@ describe('DownloadDialog', () => {
         downloads: []
       } as unknown as Variant
     }
-    render(
-      <VideoProvider value={{ content: noDownloadsVideo }}>
-        <DownloadDialog open onClose={onClose} />
-      </VideoProvider>
-    )
+    renderDialog({ content: noDownloadsVideo })
     await waitFor(() =>
       expect(screen.getByText('No Downloads Available')).toBeInTheDocument()
     )
   })
 
   it('changes checkbox when submit or close', async () => {
-    const { getByText, getByLabelText, queryByText } = render(
-      <VideoProvider value={{ content: video }}>
-        <DownloadDialog open onClose={onClose} />
-      </VideoProvider>
-    )
+    const { getByText, getByLabelText, queryByText } = renderDialog()
     fireEvent.click(getByText('Terms of Use'))
     fireEvent.click(getByText('Accept'))
     await waitFor(() => expect(queryByText('Accept')).not.toBeInTheDocument())
@@ -148,11 +146,7 @@ describe('DownloadDialog', () => {
       }
     } as VideoContentFields
 
-    render(
-      <VideoProvider value={{ content: muxVideo }}>
-        <DownloadDialog open onClose={onClose} />
-      </VideoProvider>
-    )
+    renderDialog({ content: muxVideo })
 
     const termsCheckbox = screen.getByRole('checkbox')
     fireEvent.click(termsCheckbox)
@@ -177,11 +171,7 @@ describe('DownloadDialog', () => {
       }
     } as VideoContentFields
 
-    render(
-      <VideoProvider value={{ content: regularVideo }}>
-        <DownloadDialog open onClose={onClose} />
-      </VideoProvider>
-    )
+    renderDialog({ content: regularVideo })
 
     const termsCheckbox = screen.getByRole('checkbox')
     fireEvent.click(termsCheckbox)
@@ -193,11 +183,7 @@ describe('DownloadDialog', () => {
   })
 
   it('should display download quality options in correct order (highest, high, low)', () => {
-    render(
-      <VideoProvider value={{ content: video }}>
-        <DownloadDialog open onClose={onClose} />
-      </VideoProvider>
-    )
+    renderDialog()
 
     const qualitySelect = screen.getByRole('combobox')
     fireEvent.mouseDown(qualitySelect)
@@ -208,5 +194,83 @@ describe('DownloadDialog', () => {
     // Should be ordered: Highest, High, Low
     expect(optionTexts[0]).toContain('High (2.2 GB)')
     expect(optionTexts[1]).toContain('Low (197.55 MB)')
+  })
+
+  it('renders subtitle downloads and instructions', async () => {
+    const subtitleVideo = {
+      ...video,
+      variant: {
+        ...video.variant,
+        slug: 'subtitle-video',
+        subtitleCount: 2
+      }
+    } as VideoContentFields
+
+    const mocks: MockedResponse[] = [
+      {
+        request: {
+          query: GET_SUBTITLES,
+          variables: { id: 'subtitle-video' }
+        },
+        result: {
+          data: {
+            video: {
+              __typename: 'Video',
+              variant: {
+                __typename: 'VideoVariant',
+                subtitle: [
+                  {
+                    __typename: 'VideoSubtitle',
+                    value: 'https://example.com/subtitles/english.vtt',
+                    language: {
+                      __typename: 'Language',
+                      id: '529',
+                      bcp47: 'en',
+                      name: [
+                        {
+                          __typename: 'LanguageName',
+                          value: 'English'
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    __typename: 'VideoSubtitle',
+                    value: 'https://example.com/subtitles/spanish.vtt',
+                    language: {
+                      __typename: 'Language',
+                      id: '224',
+                      bcp47: 'es',
+                      name: [
+                        {
+                          __typename: 'LanguageName',
+                          value: 'Spanish'
+                        }
+                      ]
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    ]
+
+    renderDialog({ content: subtitleVideo, mocks })
+
+    fireEvent.click(screen.getByRole('tab', { name: 'Subtitles (2)' }))
+
+    await waitFor(() =>
+      expect(screen.getByText('English')).toBeInTheDocument()
+    )
+    expect(screen.getByText('Spanish')).toBeInTheDocument()
+    expect(screen.getAllByRole('link', { name: 'Download' })).toHaveLength(2)
+    expect(
+      screen.getByText('How to use subtitle downloads')
+    ).toBeInTheDocument()
+    expect(
+      screen.getByText('Download your preferred subtitle language.')
+    ).toBeInTheDocument()
   })
 })
