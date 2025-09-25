@@ -102,7 +102,7 @@ export function Post(): ReactElement {
                       fill
                       draggable="false"
                       sizes="208px"
-                    style={{
+                      style={{
                         borderRadius: '5px',
                         objectFit: 'cover'
                       }}

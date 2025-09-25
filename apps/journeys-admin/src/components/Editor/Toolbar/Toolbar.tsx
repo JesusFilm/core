@@ -257,7 +257,7 @@ export function Toolbar({ user }: ToolbarProps): ReactElement {
                     alt={journey.primaryImageBlock.alt}
                     fill
                     sizes="50px"
-                  style={{
+                    style={{
                       borderRadius: '4px',
                       objectFit: 'cover'
                     }}
