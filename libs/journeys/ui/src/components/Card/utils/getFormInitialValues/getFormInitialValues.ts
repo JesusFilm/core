@@ -1,6 +1,7 @@
 import { FormikValues } from 'formik'
 
 import { TreeBlock } from '../../../../libs/block'
+import { getMultiselectBlocks } from '../getMultiselectBlocks'
 import { getTextResponseBlocks } from '../getTextResponseBlocks'
 /**
  * Calculates initial form values for all TextResponse blocks in a card
@@ -15,6 +16,14 @@ export function getFormInitialValues(children: TreeBlock[]): FormikValues {
   textResponseBlocks.forEach((block) => {
     initialValues[block.id] = ''
   })
+
+  const multiselectBlocks = getMultiselectBlocks(children)
+
+  multiselectBlocks.forEach((block) => {
+    initialValues[block.id] = []
+  })
+
+  console.log('initialValues', initialValues)
 
   return initialValues
 }
