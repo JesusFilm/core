@@ -15,7 +15,8 @@ import { useVideo } from '../../../../libs/videoContext'
 import { useWatch } from '../../../../libs/watchContext'
 import { useSubtitleUpdate } from '../../../../libs/watchContext/useSubtitleUpdate'
 import type { CarouselMuxSlide } from '../../../../types/inserts'
-import { VideoControls, MuxInsertLogoOverlay } from '../../../VideoContentPage/VideoHero/VideoPlayer/VideoControls'
+import { MuxInsertLogoOverlay, VideoControls } from '../../../VideoContentPage/VideoHero/VideoPlayer/VideoControls'
+
 import { HeroSubtitleOverlay } from './HeroSubtitleOverlay'
 
 interface HeroVideoProps {

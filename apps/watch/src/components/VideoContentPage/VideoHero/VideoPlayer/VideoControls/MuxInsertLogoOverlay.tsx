@@ -1,7 +1,6 @@
+import muxConfig from 'apps/watch/config/video-inserts.mux.json'
 import Image from 'next/image'
 import { useEffect, useState } from 'react'
-
-import muxConfig from 'apps/watch/config/video-inserts.mux.json'
 
 interface MuxInsertLogoOverlayProps {
   variantId?: string

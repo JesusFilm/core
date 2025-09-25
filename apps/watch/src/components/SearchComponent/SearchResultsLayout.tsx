@@ -1,7 +1,6 @@
 import { useTranslation } from 'next-i18next'
 import { ReactElement, useMemo } from 'react'
 
-
 import { AlgoliaVideoGrid } from '../VideoGrid/AlgoliaVideoGrid'
 
 import { LanguageSelector } from './LanguageSelector'

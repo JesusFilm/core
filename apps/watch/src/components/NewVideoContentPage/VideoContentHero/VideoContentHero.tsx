@@ -1,5 +1,5 @@
 import clsx from 'clsx'
-import { ReactElement, useState, useCallback } from 'react'
+import { ReactElement, useCallback, useState } from 'react'
 
 import { usePlayer } from '../../../libs/playerContext'
 import { useVideo } from '../../../libs/videoContext'
@@ -24,7 +24,6 @@ export function VideoContentHero({
   const [collapsed, setCollapsed] = useState(true)
 
   const languageSlug = variant?.slug?.split('/')[1]
-
 
   const handleMuteToggle = useCallback((isMuted: boolean): void => {
     setCollapsed(isMuted)

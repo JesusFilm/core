@@ -12,8 +12,7 @@ import { useVideo } from '../../../../libs/videoContext'
 import { useWatch } from '../../../../libs/watchContext'
 import { useSubtitleUpdate } from '../../../../libs/watchContext/useSubtitleUpdate'
 
-import { VideoControls } from './VideoControls'
-import { MuxInsertLogoOverlay } from './VideoControls'
+import { MuxInsertLogoOverlay , VideoControls } from './VideoControls'
 
 interface VideoPlayerProps {
   setControlsVisible: (visible: boolean) => void
