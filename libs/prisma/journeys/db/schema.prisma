@@ -88,6 +88,7 @@ enum ButtonAction {
   LinkAction
   EmailAction
   PhoneAction
+  ChatAction
 }
 
 enum VideoBlockSource {
@@ -592,6 +593,7 @@ model Action {
   contactAction String?  @default("call")
   customizable  Boolean?
   parentStepId  String?
+  chatUrl       String?
   updatedAt     DateTime @default(now()) @updatedAt
   parentBlock   Block    @relation(fields: [parentBlockId], references: [id], onDelete: Cascade)
   journey       Journey? @relation(fields: [journeyId], references: [id])

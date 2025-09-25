@@ -83,8 +83,8 @@ export interface CardFormCreate_textResponse {
   integrationId: string | null;
 }
 
-export interface CardFormCreate_button_action_PhoneAction {
-  __typename: "PhoneAction";
+export interface CardFormCreate_button_action_ChatAction {
+  __typename: "ChatAction" | "PhoneAction";
   parentBlockId: string;
   gtmEventName: string | null;
 }
@@ -114,7 +114,7 @@ export interface CardFormCreate_button_action_EmailAction {
   parentStepId: string | null;
 }
 
-export type CardFormCreate_button_action = CardFormCreate_button_action_PhoneAction | CardFormCreate_button_action_NavigateToBlockAction | CardFormCreate_button_action_LinkAction | CardFormCreate_button_action_EmailAction;
+export type CardFormCreate_button_action = CardFormCreate_button_action_ChatAction | CardFormCreate_button_action_NavigateToBlockAction | CardFormCreate_button_action_LinkAction | CardFormCreate_button_action_EmailAction;
 
 export interface CardFormCreate_button_settings {
   __typename: "ButtonBlockSettings";
@@ -160,8 +160,8 @@ export interface CardFormCreate_endIcon {
   iconColor: IconColor | null;
 }
 
-export interface CardFormCreate_buttonUpdate_action_PhoneAction {
-  __typename: "PhoneAction";
+export interface CardFormCreate_buttonUpdate_action_ChatAction {
+  __typename: "ChatAction" | "PhoneAction";
   parentBlockId: string;
   gtmEventName: string | null;
 }
@@ -191,7 +191,7 @@ export interface CardFormCreate_buttonUpdate_action_EmailAction {
   parentStepId: string | null;
 }
 
-export type CardFormCreate_buttonUpdate_action = CardFormCreate_buttonUpdate_action_PhoneAction | CardFormCreate_buttonUpdate_action_NavigateToBlockAction | CardFormCreate_buttonUpdate_action_LinkAction | CardFormCreate_buttonUpdate_action_EmailAction;
+export type CardFormCreate_buttonUpdate_action = CardFormCreate_buttonUpdate_action_ChatAction | CardFormCreate_buttonUpdate_action_NavigateToBlockAction | CardFormCreate_buttonUpdate_action_LinkAction | CardFormCreate_buttonUpdate_action_EmailAction;
 
 export interface CardFormCreate_buttonUpdate_settings {
   __typename: "ButtonBlockSettings";

@@ -7,8 +7,8 @@
 // GraphQL fragment: ActionFields
 // ====================================================
 
-export interface ActionFields_PhoneAction {
-  __typename: "PhoneAction";
+export interface ActionFields_ChatAction {
+  __typename: "ChatAction" | "PhoneAction";
   parentBlockId: string;
   gtmEventName: string | null;
 }
@@ -38,4 +38,4 @@ export interface ActionFields_EmailAction {
   parentStepId: string | null;
 }
 
-export type ActionFields = ActionFields_PhoneAction | ActionFields_NavigateToBlockAction | ActionFields_LinkAction | ActionFields_EmailAction;
+export type ActionFields = ActionFields_ChatAction | ActionFields_NavigateToBlockAction | ActionFields_LinkAction | ActionFields_EmailAction;

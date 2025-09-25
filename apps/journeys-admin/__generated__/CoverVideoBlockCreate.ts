@@ -60,8 +60,8 @@ export interface CoverVideoBlockCreate_videoBlockCreate_mediaVideo_YouTube {
 
 export type CoverVideoBlockCreate_videoBlockCreate_mediaVideo = CoverVideoBlockCreate_videoBlockCreate_mediaVideo_Video | CoverVideoBlockCreate_videoBlockCreate_mediaVideo_MuxVideo | CoverVideoBlockCreate_videoBlockCreate_mediaVideo_YouTube;
 
-export interface CoverVideoBlockCreate_videoBlockCreate_action_PhoneAction {
-  __typename: "PhoneAction";
+export interface CoverVideoBlockCreate_videoBlockCreate_action_ChatAction {
+  __typename: "ChatAction" | "PhoneAction";
   parentBlockId: string;
   gtmEventName: string | null;
 }
@@ -91,7 +91,7 @@ export interface CoverVideoBlockCreate_videoBlockCreate_action_EmailAction {
   parentStepId: string | null;
 }
 
-export type CoverVideoBlockCreate_videoBlockCreate_action = CoverVideoBlockCreate_videoBlockCreate_action_PhoneAction | CoverVideoBlockCreate_videoBlockCreate_action_NavigateToBlockAction | CoverVideoBlockCreate_videoBlockCreate_action_LinkAction | CoverVideoBlockCreate_videoBlockCreate_action_EmailAction;
+export type CoverVideoBlockCreate_videoBlockCreate_action = CoverVideoBlockCreate_videoBlockCreate_action_ChatAction | CoverVideoBlockCreate_videoBlockCreate_action_NavigateToBlockAction | CoverVideoBlockCreate_videoBlockCreate_action_LinkAction | CoverVideoBlockCreate_videoBlockCreate_action_EmailAction;
 
 export interface CoverVideoBlockCreate_videoBlockCreate {
   __typename: "VideoBlock";

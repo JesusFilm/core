@@ -64,8 +64,8 @@ export interface CardVideoDelete_video_VideoBlock_mediaVideo_YouTube {
 
 export type CardVideoDelete_video_VideoBlock_mediaVideo = CardVideoDelete_video_VideoBlock_mediaVideo_Video | CardVideoDelete_video_VideoBlock_mediaVideo_MuxVideo | CardVideoDelete_video_VideoBlock_mediaVideo_YouTube;
 
-export interface CardVideoDelete_video_VideoBlock_action_PhoneAction {
-  __typename: "PhoneAction";
+export interface CardVideoDelete_video_VideoBlock_action_ChatAction {
+  __typename: "ChatAction" | "PhoneAction";
   parentBlockId: string;
   gtmEventName: string | null;
 }
@@ -95,7 +95,7 @@ export interface CardVideoDelete_video_VideoBlock_action_EmailAction {
   parentStepId: string | null;
 }
 
-export type CardVideoDelete_video_VideoBlock_action = CardVideoDelete_video_VideoBlock_action_PhoneAction | CardVideoDelete_video_VideoBlock_action_NavigateToBlockAction | CardVideoDelete_video_VideoBlock_action_LinkAction | CardVideoDelete_video_VideoBlock_action_EmailAction;
+export type CardVideoDelete_video_VideoBlock_action = CardVideoDelete_video_VideoBlock_action_ChatAction | CardVideoDelete_video_VideoBlock_action_NavigateToBlockAction | CardVideoDelete_video_VideoBlock_action_LinkAction | CardVideoDelete_video_VideoBlock_action_EmailAction;
 
 export interface CardVideoDelete_video_VideoBlock {
   __typename: "VideoBlock";

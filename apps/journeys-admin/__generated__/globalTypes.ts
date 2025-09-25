@@ -8,6 +8,7 @@
 //==============================================================
 
 export enum ButtonAction {
+  ChatAction = "ChatAction",
   EmailAction = "EmailAction",
   LinkAction = "LinkAction",
   NavigateToBlockAction = "NavigateToBlockAction",
@@ -297,6 +298,7 @@ export interface BlockUpdateActionInput {
   countryCode?: string | null;
   target?: string | null;
   blockId?: string | null;
+  chatUrl?: string | null;
 }
 
 export interface ButtonBlockCreateInput {

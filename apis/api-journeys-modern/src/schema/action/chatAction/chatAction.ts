@@ -1,16 +1,15 @@
 import { builder } from '../../builder'
 import { ActionInterface } from '../action'
 
-export const LinkActionRef = builder.prismaObject('Action', {
-  variant: 'LinkAction',
+export const ChatActionRef = builder.prismaObject('Action', {
+  variant: 'ChatAction',
   shareable: true,
   interfaces: [ActionInterface],
-  isTypeOf: (action: any) =>
-    action.url != null && action.email == null && action.chatUrl == null,
+  isTypeOf: (action: any) => action.chatUrl != null,
   fields: (t) => ({
-    url: t.string({
+    chatUrl: t.string({
       nullable: false,
-      resolve: (action) => action.url || ''
+      resolve: (action) => action.chatUrl || ''
     }),
     target: t.exposeString('target', { nullable: true }),
     customizable: t.exposeBoolean('customizable', { nullable: true }),

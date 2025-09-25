@@ -30,6 +30,11 @@ describe('blockUpdateAction mutation', () => {
           gtmEventName
           blockId
         }
+        ... on ChatAction {
+          chatUrl
+          gtmEventName
+          target
+        }
       }
     }
   `)
@@ -161,15 +166,13 @@ describe('blockUpdateAction mutation', () => {
 
       prismaMock.action.upsert.mockResolvedValueOnce({
         parentBlockId: '1',
-        gtmEventName: null,
         url: 'https://example.com',
-        target: null,
         parentBlock: { id: '1', action: {} }
       } as any)
 
       const variables = {
         id: actionableBlock.id,
-        input: { gtmEventName: null, url: 'https://example.com', target: null }
+        input: { url: 'https://example.com' }
       }
 
       const result = await authClient({ document: MUTATION, variables })
@@ -177,17 +180,14 @@ describe('blockUpdateAction mutation', () => {
       expect(prismaMock.action.upsert).toHaveBeenCalledWith({
         where: { parentBlockId: '1' },
         create: {
-          gtmEventName: null,
-          parentBlock: { connect: { id: '1' } },
           url: 'https://example.com',
-          target: null
+          parentBlock: { connect: { id: '1' } }
         },
         update: expect.objectContaining({
-          gtmEventName: null,
           url: 'https://example.com',
-          target: null,
           email: null,
           phone: null,
+          chatUrl: null,
           journey: { disconnect: true },
           block: { disconnect: true }
         })
@@ -198,8 +198,8 @@ describe('blockUpdateAction mutation', () => {
           blockUpdateAction: {
             __typename: 'LinkAction',
             gtmEventName: null,
-            url: 'https://example.com',
-            target: null
+            target: null,
+            url: 'https://example.com'
           }
         }
       })
@@ -246,6 +246,59 @@ describe('blockUpdateAction mutation', () => {
             __typename: 'EmailAction',
             gtmEventName: null,
             email: 'example@example.com'
+          }
+        }
+      })
+    })
+
+    it('updates a chat action', async () => {
+      prismaMock.block.findUnique.mockResolvedValueOnce(actionableBlock)
+
+      prismaMock.action.upsert.mockResolvedValueOnce({
+        parentBlockId: '1',
+        gtmEventName: null,
+        chatUrl: 'https://wa.me/1234567890',
+        target: null,
+        parentBlock: { id: '1', action: {} }
+      } as any)
+
+      const variables = {
+        id: actionableBlock.id,
+        input: {
+          gtmEventName: null,
+          chatUrl: 'https://wa.me/1234567890',
+          target: null
+        }
+      }
+
+      const result = await authClient({ document: MUTATION, variables })
+
+      expect(prismaMock.action.upsert).toHaveBeenCalledWith({
+        where: { parentBlockId: '1' },
+        create: {
+          gtmEventName: null,
+          chatUrl: 'https://wa.me/1234567890',
+          target: null,
+          parentBlock: { connect: { id: '1' } }
+        },
+        update: expect.objectContaining({
+          gtmEventName: null,
+          chatUrl: 'https://wa.me/1234567890',
+          target: null,
+          email: null,
+          phone: null,
+          journey: { disconnect: true },
+          block: { disconnect: true }
+        })
+      })
+
+      expect(result).toEqual({
+        data: {
+          blockUpdateAction: {
+            __typename: 'ChatAction',
+            gtmEventName: null,
+            chatUrl: 'https://wa.me/1234567890',
+            target: null
           }
         }
       })

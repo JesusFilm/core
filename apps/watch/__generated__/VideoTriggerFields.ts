@@ -7,8 +7,8 @@
 // GraphQL fragment: VideoTriggerFields
 // ====================================================
 
-export interface VideoTriggerFields_triggerAction_PhoneAction {
-  __typename: "PhoneAction";
+export interface VideoTriggerFields_triggerAction_ChatAction {
+  __typename: "ChatAction" | "PhoneAction";
   parentBlockId: string;
   gtmEventName: string | null;
 }
@@ -38,7 +38,7 @@ export interface VideoTriggerFields_triggerAction_EmailAction {
   parentStepId: string | null;
 }
 
-export type VideoTriggerFields_triggerAction = VideoTriggerFields_triggerAction_PhoneAction | VideoTriggerFields_triggerAction_NavigateToBlockAction | VideoTriggerFields_triggerAction_LinkAction | VideoTriggerFields_triggerAction_EmailAction;
+export type VideoTriggerFields_triggerAction = VideoTriggerFields_triggerAction_ChatAction | VideoTriggerFields_triggerAction_NavigateToBlockAction | VideoTriggerFields_triggerAction_LinkAction | VideoTriggerFields_triggerAction_EmailAction;
 
 export interface VideoTriggerFields {
   __typename: "VideoTriggerBlock";
