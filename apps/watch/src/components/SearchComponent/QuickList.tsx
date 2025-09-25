@@ -17,7 +17,7 @@ export function QuickList({
   if (isLoading) {
     return (
       <div>
-        <div className="block mb-3 text-xs uppercase tracking-wider text-gray-600">
+        <div className="block mb-3 font-semibold text-sm uppercase tracking-wider text-stone-600">
           {title}
         </div>
         <div className="flex flex-wrap gap-3">
@@ -25,7 +25,7 @@ export function QuickList({
             <Badge
               key={index}
               variant="outline"
-              className="opacity-50 cursor-not-allowed px-3 py-1 rounded-full font-medium"
+              className="opacity-50 cursor-not-allowed px-4 py-2 rounded-full font-medium"
             >
               Loading...
             </Badge>
@@ -39,7 +39,7 @@ export function QuickList({
 
   return (
     <div>
-      <div className="block mb-3 text-xs uppercase tracking-wider text-gray-600">
+      <div className="block mb-3 font-semibold text-sm uppercase tracking-wider text-stone-600">
         {title}
       </div>
       <div className="flex flex-wrap gap-3">
@@ -47,7 +47,7 @@ export function QuickList({
           <Badge
             key={item}
             variant="outline"
-            className="cursor-pointer hover:bg-accent hover:text-accent-foreground transition-colors px-3 py-1 rounded-full font-medium"
+            className="cursor-pointer hover:bg-accent hover:text-accent-foreground transition-colors px-4 py-2 rounded-full font-medium"
             onClick={() => onSelect(item)}
             onMouseDown={(event) => event.preventDefault()}
           >

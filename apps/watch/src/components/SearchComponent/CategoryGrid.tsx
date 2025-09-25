@@ -65,7 +65,7 @@ export function CategoryGrid({
 
   return (
     <div>
-      <div className="block mb-3 font-semibold text-xs uppercase tracking-wider text-gray-600">
+      <div className="block mb-3 font-semibold text-sm uppercase tracking-wider text-stone-600">
         {t('Browse Categories')}
       </div>
       <div className="grid grid-cols-1 md:grid-cols-3 xl:grid-cols-4 gap-4">
@@ -76,18 +76,25 @@ export function CategoryGrid({
             <div key={index}>
               <button
                 onClick={() => onCategorySelect(category.searchTerm)}
-                className="w-full aspect-video p-6 rounded-lg flex flex-col items-center justify-center gap-4 relative overflow-hidden text-white text-shadow-sm hover:scale-105 transition-transform duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                className="w-full aspect-video p-6 rounded-lg relative overflow-hidden text-white text-shadow-sm hover:scale-105 transition-transform duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
                 style={{
                   background: category.gradient,
                   textShadow: '0 1px 2px rgba(0,0,0,0.3)'
                 }}
               >
-                <IconComponent
-                  className="w-12 h-12 drop-shadow-lg"
-                  style={{ filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.3))' }}
-                />
+                <div className="absolute inset-0 flex items-start justify-end">
+                  <IconComponent
+                    className="w-12 h-12 drop-shadow-lg opacity-20 mix-blend-overlay"
+                    style={{
+
+                      transform: 'scale(5)',
+                      transformOrigin: 'top right'
+                    }}
+                  />
+                </div>
+                <div className="absolute inset-0 bg-[url(/assets/overlay.svg)] bg-repeat mix-blend-multiply opacity-70"></div>
                 <div
-                  className="text-lg font-semibold text-center leading-tight"
+                  className="absolute bottom-3 left-3 text-3xl font-extrabold leading-tight"
                   style={{
                     textShadow: '0 1px 3px rgba(0,0,0,0.4)',
                     lineHeight: 1.2

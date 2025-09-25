@@ -86,7 +86,7 @@ export function SearchResultsLayout({
           />
         </div>
         <div className="w-full md:w-80 flex-shrink-0">
-          <div className="block mb-3 font-semibold text-xs uppercase tracking-wider text-gray-600">
+          <div className="block mb-3 font-semibold text-sm uppercase tracking-wider text-stone-600">
             {t('Search Filters')}
           </div>
           <LanguageSelector />

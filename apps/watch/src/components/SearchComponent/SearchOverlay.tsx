@@ -47,7 +47,7 @@ export function SearchOverlay({
   return (
     <Dialog open={open} onOpenChange={(isOpen) => !isOpen && onClose()}>
       <DialogPortal>
-        <DialogOverlay className="blured-bg" />
+        <DialogOverlay className="blured-bg bg-stone-900/5" />
         <DialogContent
           ref={containerRef}
           onBlur={onBlur}
@@ -56,7 +56,7 @@ export function SearchOverlay({
           className="
             fixed inset-x-0 bottom-0 top-[100px] lg:top-[159px] max-w-none
             overflow-y-auto overscroll-contain p-0 border-0
-            translate-x-0 translate-y-0 left-0
+            translate-x-0 translate-y-0 left-0 bg-stone-900/5
           "
           data-testid="SearchOverlay"
         >
@@ -73,7 +73,7 @@ export function SearchOverlay({
                     />
                   </div>
                   <div className="flex-1">
-                    <div className="block mb-3 font-semibold text-xs uppercase tracking-wider text-gray-600">
+                    <div className="block mb-3 font-semibold text-sm uppercase tracking-wider text-stone-600">
                       {t('Search Filters')}
                     </div>
                     <LanguageSelector />

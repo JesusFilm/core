@@ -78,8 +78,8 @@ function WatchHomePageBody({ languageId }: WatchHomePageProps): ReactElement {
             themeMode={ThemeMode.dark}
             nested
           >
-            <SeeAllVideos />
-            <AboutProjectSection />
+            {/* <SeeAllVideos /> */}
+            {/* <AboutProjectSection /> */}
           </ThemeProvider>
         </div>
         <CollectionsRail languageId={languageId} />
