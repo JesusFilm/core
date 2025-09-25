@@ -2,7 +2,7 @@ import { GraphQLError } from 'graphql'
 import omit from 'lodash/omit'
 import { z } from 'zod'
 
-import { Block, Prisma, prisma } from '@core/prisma/journeys/client'
+import { Block, MessagePlatform, Prisma, prisma } from '@core/prisma/journeys/client'
 
 import { Action, ability, subject } from '../../lib/auth/ability'
 import { builder } from '../builder'
@@ -36,6 +36,13 @@ const phoneActionInputSchema = z.object({
   gtmEventName: z.string().nullish(),
   phone: z.string().regex(/^\+[1-9]\d{1,14}$/),
   countryCode: z.string()
+})
+
+const chatActionInputSchema = z.object({
+  gtmEventName: z.string().nullish(),
+  url: z.string(),
+  target: z.string().nullish(),
+  chatPlatform: z.nativeEnum(MessagePlatform).nullish()
 })
 
 const ACTION_UPDATE_RESET: Prisma.ActionUpdateInput = {
@@ -79,12 +86,15 @@ builder.mutationField('blockUpdateAction', (t) =>
         navigateToBlockActionInputSchema.safeParse(input)
       const { success: isPhone, data: phoneInput } =
         phoneActionInputSchema.safeParse(input)
+      const { success: isChat, data: chatInput } =
+        chatActionInputSchema.safeParse(input)
 
       const numberOfValidInputs = [
         isLink,
         isEmail,
         isNavigateToBlock,
-        isPhone
+        isPhone,
+        isChat
       ].filter(Boolean).length
 
       if (numberOfValidInputs > 1)
@@ -199,6 +209,20 @@ builder.mutationField('blockUpdateAction', (t) =>
           update: {
             ...ACTION_UPDATE_RESET,
             ...phoneInput
+          }
+        })
+      }
+
+      if (isChat) {
+        return await prisma.action.upsert({
+          where: { parentBlockId: id },
+          create: {
+            ...chatInput,
+            parentBlock: { connect: { id: block.id } }
+          },
+          update: {
+            ...ACTION_UPDATE_RESET,
+            ...chatInput
           }
         })
       }

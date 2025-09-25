@@ -103,6 +103,19 @@ type PhoneAction implements Action
   contactAction: ContactActionType!
 }
 
+type ChatAction implements Action
+  @shareable
+{
+  parentBlockId: ID!
+  parentBlock: Block!
+  gtmEventName: String
+  url: String!
+  target: String
+  customizable: Boolean
+  parentStepId: String
+  chatPlatform: MessagePlatform!
+}
+
 interface Block {
   id: ID!
   journeyId: ID!

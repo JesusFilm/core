@@ -88,6 +88,7 @@ enum ButtonAction {
   LinkAction
   EmailAction
   PhoneAction
+  ChatAction
 }
 
 enum VideoBlockSource {
@@ -580,7 +581,7 @@ model Block {
 }
 
 model Action {
-  parentBlockId String   @id
+  parentBlockId String           @id
   gtmEventName  String?
   blockId       String?
   journeyId     String?
@@ -589,13 +590,14 @@ model Action {
   email         String?
   phone         String?
   countryCode   String?
-  contactAction String?  @default("call")
+  contactAction String?          @default("call")
   customizable  Boolean?
   parentStepId  String?
-  updatedAt     DateTime @default(now()) @updatedAt
-  parentBlock   Block    @relation(fields: [parentBlockId], references: [id], onDelete: Cascade)
-  journey       Journey? @relation(fields: [journeyId], references: [id])
-  block         Block?   @relation("Block", fields: [blockId], references: [id])
+  chatPlatform  MessagePlatform?
+  updatedAt     DateTime         @default(now()) @updatedAt
+  parentBlock   Block            @relation(fields: [parentBlockId], references: [id], onDelete: Cascade)
+  journey       Journey?         @relation(fields: [journeyId], references: [id])
+  block         Block?           @relation("Block", fields: [blockId], references: [id])
 
   @@index(parentBlockId)
 }

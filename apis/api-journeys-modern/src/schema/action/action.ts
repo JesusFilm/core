@@ -24,6 +24,7 @@ export const ActionInterface = builder.prismaInterface('Action', {
     if (action.blockId != null) return 'NavigateToBlockAction'
     if (action.email != null) return 'EmailAction'
     if (action.phone != null) return 'PhoneAction'
+    if (action.chatPlatform != null) return 'ChatAction'
     return 'LinkAction'
   }
 })
