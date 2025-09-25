@@ -16,6 +16,7 @@ import { useWatch } from '../../../../libs/watchContext'
 import { useSubtitleUpdate } from '../../../../libs/watchContext/useSubtitleUpdate'
 import type { CarouselMuxSlide } from '../../../../types/inserts'
 import { VideoControls } from '../../../VideoContentPage/VideoHero/VideoPlayer/VideoControls'
+import { MuxInsertLogoOverlay } from '../../../VideoContentPage/VideoHero/VideoPlayer/VideoControls'
 import { HeroSubtitleOverlay } from './HeroSubtitleOverlay'
 
 interface HeroVideoProps {
@@ -240,9 +241,13 @@ export function HeroVideo({
               isPreview={isPreview}
               onMuteToggle={onMuteToggle}
               customDuration={currentMuxInsert?.duration}
+              action={currentMuxInsert?.overlay.action}
+              isMuxInsert={currentMuxInsert != null}
+              muxOverlay={currentMuxInsert?.overlay}
             />
           </>
         )}
+        <MuxInsertLogoOverlay variantId={currentMuxInsert ? `${currentMuxInsert.id}-variant` : variant?.id} />
       </>
     </div>
   )

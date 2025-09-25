@@ -26,9 +26,17 @@ Mux inserts are special video content that can be injected into the video playba
 
 1. Mux insert starts playing in main video player
 2. Mux insert card shows **white border outline** in carousel
-3. After specified duration (e.g., 5 seconds), the insert stops
-4. White border moves to the next card in the carousel
-5. Next video starts playing in the main player
+3. Custom action button appears (if configured) during playback
+4. After specified duration (e.g., 5 seconds), the insert stops
+5. White border moves to the next card in the carousel
+6. Next video starts playing in the main player
+
+### Action Button Behavior
+
+- **When shown**: Appears during mux insert playback when `action` is configured
+- **When hidden**: No button shows when no `action` is defined
+- **Appearance**: Red CTA button with custom label and URL link
+- **Fallback**: Regular videos show "Watch Now" button; mux inserts without actions show no button
 
 ### Key Concepts
 
@@ -37,6 +45,8 @@ Mux inserts are special video content that can be injected into the video playba
 - **White border outline** = visual indicator of what's currently playing
 - **Duration** affects both: video playback duration AND how long the white border stays on the card
 - **Automatic progression** to next item after duration expires
+- **Action buttons**: Custom CTA buttons that can be shown during mux insert playback
+- **Button visibility**: Buttons are hidden when no action is configured
 
 ## Configuration Files
 
@@ -58,7 +68,11 @@ Contains the configuration for Mux video inserts with the following structure:
         "label": "Daily Inspirations",
         "title": "Today's Bible Moments. For You.",
         "collection": "Daily Inspirations",
-        "description": "A hand-picked playlist of inspiring videos, designed to encourage and uplift."
+        "description": "A hand-picked playlist of inspiring videos, designed to encourage and uplift.",
+        "action": {
+          "label": "What now?",
+          "url": "/journeys"
+        }
       },
       "trigger": { "type": "sequence-start" }
     }
@@ -78,6 +92,9 @@ Contains the configuration for Mux video inserts with the following structure:
   - **`title`**: Main headline
   - **`collection`**: Secondary line
   - **`description`**: Longer description text
+  - **`action`** (optional): Custom action button configuration
+    - **`label`**: Button text (e.g., "What now?", "Learn More")
+    - **`url`**: Link destination URL
 - **`trigger`**: When the insert should appear
   - `"sequence-start"`: At the beginning of the playlist
   - `{"type": "after-count", "count": 3}`: After 3 videos have played
@@ -90,5 +107,7 @@ The system integrates Mux inserts at multiple levels:
 2. **Data Flow**: Inserts are merged into the carousel data alongside regular videos
 3. **Main Player**: HeroVideo component handles both regular videos and Mux inserts
 4. **Carousel**: Cards show visual indicators and control what plays in the main player
-5. **Duration Control**: Timer management ensures inserts play for specified duration
-6. **Auto-progression**: System automatically moves to next item after duration expires
+5. **Action Buttons**: Custom CTA buttons rendered during insert playback based on configuration
+6. **Duration Control**: Timer management ensures inserts play for specified duration
+7. **Auto-progression**: System automatically moves to next item after duration expires
+8. **Button Visibility**: Conditional rendering based on action configuration

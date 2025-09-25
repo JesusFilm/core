@@ -8,10 +8,10 @@
       "playbackIds": ["34eG2PxlcRu3L4wU5XlKVna2vN3BAI02Tjrq28dazn3Y"],
       "duration": 9,
       "overlay": {
-        "label": "Daily Inspirations",
-        "title": "Today's Bible Moments. For You.",
+        "label": "Faith & Scripture",
+        "title": "Today’s Video Picks",
         "collection": "Daily Inspirations",
-        "description": "A hand-picked playlist of inspiring videos, designed to encourage and uplift."
+        "description": "Faith-centered video content from our library to inspire, challenge, and spark reflection."
       },
       "trigger": { "type": "sequence-start" },
       "logo": true,

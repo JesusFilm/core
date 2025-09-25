@@ -1,5 +1,5 @@
 import clsx from 'clsx'
-import { ReactElement, useState } from 'react'
+import { ReactElement, useState, useCallback } from 'react'
 
 import { usePlayer } from '../../../libs/playerContext'
 import type { CarouselMuxSlide } from '../../../types/inserts'
@@ -25,9 +25,10 @@ export function VideoContentHero({
 
   const languageSlug = variant?.slug?.split('/')[1]
 
-  const handleMuteToggle = (isMuted: boolean): void => {
+
+  const handleMuteToggle = useCallback((isMuted: boolean): void => {
     setCollapsed(isMuted)
-  }
+  }, [collapsed])
 
   return (
     <div

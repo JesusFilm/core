@@ -6,6 +6,12 @@ export interface InsertOverlay {
   title: string
   collection: string
   description: string
+  action?: InsertAction
+}
+
+export interface InsertAction {
+  label: string
+  url: string
 }
 
 export type InsertTrigger =

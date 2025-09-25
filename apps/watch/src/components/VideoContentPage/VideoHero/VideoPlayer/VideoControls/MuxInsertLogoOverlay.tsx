@@ -97,7 +97,7 @@ export function MuxInsertLogoOverlay({
 
   return (
     <div
-      className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
+      className="z-10 absolute top-1/2 left-1/2 pointer-events-none -translate-x-1/2 -translate-y-1/2"
       style={{
         transform: 'scale(1.25)',
         transformOrigin: 'center'
@@ -105,7 +105,7 @@ export function MuxInsertLogoOverlay({
     >
       {/* Jesus Film Sign - appears after 2 seconds */}
       <div
-        className={`absolute top-1/2 left-1/2 z-10 pointer-events-none transition-all duration-500 ease-in-out ${
+        className={`absolute top-1/2 left-1/2 transition-all duration-500 ease-in-out ${
           signVisible ? 'opacity-100' : 'opacity-0'
         }`}
         style={{

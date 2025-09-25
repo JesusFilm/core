@@ -31,6 +31,7 @@ import { secondsToTimeFormat } from '@core/shared/ui/timeFormat'
 import { usePlayer } from '../../../../../libs/playerContext'
 import { useVideo } from '../../../../../libs/videoContext'
 import { useLanguageActions } from '../../../../../libs/watchContext'
+import type { InsertAction, InsertOverlay } from '../../../../../types/inserts'
 import { HeroOverlay } from '../../../../HeroOverlay/HeroOverlay'
 import { AudioLanguageButton } from '../../../AudioLanguageButton'
 import { VideoTitle } from '../VideoTitle'
@@ -58,6 +59,9 @@ interface VideoControlProps {
   isPreview?: boolean
   onMuteToggle?: (isMuted: boolean) => void
   customDuration?: number
+  action?: InsertAction
+  isMuxInsert?: boolean
+  muxOverlay?: InsertOverlay
 }
 
 function evtToDataLayer(
@@ -87,7 +91,10 @@ export function VideoControls({
   onVisibleChanged,
   isPreview = false,
   onMuteToggle,
-  customDuration
+  customDuration,
+  action,
+  isMuxInsert = false,
+  muxOverlay
 }: VideoControlProps): ReactElement {
   const [initialLoadComplete, setInitialLoadComplete] = useState(false)
   const {
@@ -124,8 +131,8 @@ export function VideoControls({
   const visible = !play || active || loading
 
   const videoTitle = last(title)?.value ?? ''
-  const videoLabel = label?.replace(/_/g, ' ')
-  const videoDescription = last(description)?.value
+  const videoLabel = isMuxInsert && muxOverlay ? muxOverlay.label : label?.replace(/_/g, ' ')
+  const videoDescription = isMuxInsert && muxOverlay ? muxOverlay.description : last(description)?.value
   const containerSlug = container?.slug ?? slug
   const collectionTitle = last(container?.title)?.value
 
@@ -604,6 +611,8 @@ export function VideoControls({
             videoDescription={videoDescription}
             containerSlug={containerSlug}
             collectionTitle={collectionTitle}
+            action={action}
+            isMuxInsert={isMuxInsert}
             onMuteToggle={() => {
               handleMute()
             }}
@@ -654,6 +663,8 @@ export function VideoControls({
               videoDescription={videoDescription}
               containerSlug={containerSlug}
               collectionTitle={collectionTitle}
+              action={action}
+              isMuxInsert={isMuxInsert}
               onMuteToggle={() => {
                 handleMute()
               }}

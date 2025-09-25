@@ -69,7 +69,12 @@ export function VideoTitle({
       style={{ transitionTimingFunction: 'ease-out' }}
     >
       {videoLabel && (
-        <div className="text-sm uppercase tracking-widest text-[#CB333B] font-sans font-bold mb-0 animate-fade-in-up animation-delay-100">
+        <div
+          className={`
+            uppercase tracking-widest text-[#FF9E00] font-sans font-bold mb-0 animate-fade-in-up animation-delay-100
+            ${isMuxInsert ? 'text-lg' : 'text-md'}
+          `}
+        >
           {videoLabel}
         </div>
       )}
@@ -88,7 +93,13 @@ export function VideoTitle({
         </div>
       )}
       {videoDescription && isPreview && (
-        <p className=" text-stone-300 text-md leading-relaxed font-sans max-w-3xl mb-2 animate-fade-in-up animation-delay-400 line-clamp-3 text-shadow-xs">
+        <p
+          className={`
+            text-stone-300
+            ${isMuxInsert ? 'text-3xl leading-snug' : 'text-md leading-relaxed'}
+            font-sans max-w-3xl mb-2 animate-fade-in-up animation-delay-400 line-clamp-3 text-shadow-xs
+          `}
+        >
           {videoDescription}
         </p>
       )}
