@@ -1,6 +1,7 @@
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
+import { NextRouter, useRouter } from 'next/router'
 
 import { JourneyProvider } from '../../libs/JourneyProvider'
 import { GetJourney_journey as Journey } from '../../libs/useJourneyQuery/__generated__/GetJourney'
@@ -13,13 +14,27 @@ import {
 
 import { CopyToTeamDialog } from './CopyToTeamDialog'
 
+// Mock next/router
+jest.mock('next/router', () => ({
+  useRouter: jest.fn()
+}))
+
 describe('CopyToTeamDialog', () => {
   const handleCloseMenuMock = jest.fn()
   const handleSubmitActionMock = jest.fn()
+  const mockUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
+
+  beforeEach(() => {
+    // Default router mock
+    mockUseRouter.mockReturnValue({
+      pathname: '/admin'
+    } as NextRouter)
+  })
 
   afterEach(() => {
     handleCloseMenuMock.mockClear()
     handleSubmitActionMock.mockClear()
+    jest.clearAllMocks()
   })
 
   it('should set initial team selection if only 1 team', async () => {
@@ -633,5 +648,66 @@ describe('CopyToTeamDialog', () => {
 
     // Dialog should close normally when translation is not enabled
     expect(handleCloseMenuMock).toHaveBeenCalled()
+  })
+
+  it('should not allow translation of non-original templates to prevent degradation', async () => {
+    // Mock router to return templates admin path
+    mockUseRouter.mockReturnValue({
+      pathname: '/publisher'
+    } as any)
+
+    const result = jest.fn(() => ({
+      data: {
+        teams: [{ id: 'teamId', title: 'Team Name', __typename: 'Team' }],
+        getJourneyProfile: {
+          __typename: 'JourneyProfile',
+          lastActiveTeamId: 'teamId'
+        }
+      }
+    }))
+
+    const { getByText, getByRole } = render(
+      <MockedProvider
+        mocks={[
+          {
+            request: {
+              query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS
+            },
+            result
+          }
+        ]}
+      >
+        <SnackbarProvider>
+          <JourneyProvider
+            value={{
+              journey: {
+                id: 'journeyId',
+                template: true,
+                fromTemplateId: 'originalTemplateId' // Not original template
+              } as unknown as Journey,
+              variant: 'admin'
+            }}
+          >
+            <TeamProvider>
+              <CopyToTeamDialog
+                open
+                title="Copy To Journey"
+                onClose={handleCloseMenuMock}
+                submitAction={handleSubmitActionMock}
+              />
+            </TeamProvider>
+          </JourneyProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    await waitFor(() => expect(result).toHaveBeenCalled())
+
+    expect(
+      getByText(/This is not the original journey template/)
+    ).toBeInTheDocument()
+
+    const translationSwitch = getByRole('checkbox', { name: 'Translation' })
+    expect(translationSwitch).toBeDisabled()
   })
 })

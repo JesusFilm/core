@@ -58,6 +58,7 @@ export const GET_ADMIN_JOURNEYS = gql`
         height
         blurhash
       }
+      fromTemplateId
     }
   }
 `
