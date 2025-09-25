@@ -5,8 +5,7 @@ import {
   CopyIcon,
   Loader,
   RefreshCcwIcon,
-  SendHorizonalIcon,
-  SquareIcon
+  SendHorizonalIcon
 } from 'lucide-react'
 import { useTranslation } from 'next-i18next'
 import { Fragment, useEffect, useRef, useState } from 'react'
@@ -254,7 +253,11 @@ export function AiChat({ open }: AiChatProps) {
           />
           <div className="flex flex-row justify-end self-end p-[4px]">
             <PromptInputSubmit
-              className="disabled:bg-secondary-light rounded-md"
+              className={`disabled:bg-secondary-light rounded-md ${
+                isAiActionInProgress
+                  ? 'bg-muted hover:bg-muted cursor-pointer'
+                  : ''
+              }`}
               disabled={!input && !isAiActionInProgress}
               status={status}
               style={{ minHeight: '20px' }}
@@ -263,7 +266,12 @@ export function AiChat({ open }: AiChatProps) {
               type={isAiActionInProgress ? 'button' : 'submit'}
               children={
                 isAiActionInProgress ? (
-                  <SquareIcon className="size-[20px]" />
+                  <div
+                    className="size-[16px] rounded-sm"
+                    style={{
+                      backgroundColor: 'var(--color-secondary-foreground)'
+                    }}
+                  />
                 ) : (
                   <SendHorizonalIcon className="size-[20px]" />
                 )
