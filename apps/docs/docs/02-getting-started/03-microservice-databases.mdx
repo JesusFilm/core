@@ -53,16 +53,25 @@ nx run-many --target=prisma-migrate
 nx run-many --target=prisma-seed
 ```
 
-Here are all the above commands, and the reset, in one script:
+### Update databases
+When you need to bring your development databases up to date, use the following script.
+You might need to do this after doing a "git pull" that has fetched some database changes.
+You may also need to do this when switching branches.
 
 ```shell
 #!/bin/sh
-nx run-many --target=prisma-reset
-nx run-many --target=prisma-generate --parallel=1
-nx run-many --target=data-import
-nx run-many --target=prisma-migrate
-nx run-many --target=prisma-seed
+nx run-many -t prisma-generate && nx run-many -t prisma-migrate && nx run-many -t prisma-seed
+```
 
+### Hard database reset
+When you need to do a hard database reset, i.e. fully recreate all the development databases, you can use the following script. It takes about 15 minutes to run.
+```shell
+#!/bin/sh
+nx run-many -t prisma-reset
+nx run-many -t prisma-generate --parallel=1
+nx run-many -t data-import
+nx run-many -t prisma-migrate
+nx run-many -t prisma-seed
 ```
 
 ## Common Issues
