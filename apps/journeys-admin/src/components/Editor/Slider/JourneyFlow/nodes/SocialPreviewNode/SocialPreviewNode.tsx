@@ -199,15 +199,15 @@ export function SocialPreviewNode(): ReactElement {
                 />
               ) : (
                 <Box width={118.5} height={90} sx={{ position: 'relative' }}>
-                <Image
-                  src={journey.primaryImageBlock.src}
-                  alt={journey.primaryImageBlock.alt ?? ''}
-                  fill
-                  style={{
-                    borderRadius: 5,
-                    objectFit: 'cover'
-                  }}
-                />
+                  <Image
+                    src={journey.primaryImageBlock.src}
+                    alt={journey.primaryImageBlock.alt ?? ''}
+                    fill
+                    style={{
+                      borderRadius: 5,
+                      objectFit: 'cover'
+                    }}
+                  />
                 </Box>
               )}
             </CardMedia>

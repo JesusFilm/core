@@ -95,14 +95,14 @@ export function Post(): ReactElement {
                     bgcolor="background.default"
                   />
                 ) : (
-                  <Box width={208} height={158} sx={{ position: 'relative' }}>   
-                  <Image
-                    src={journey.primaryImageBlock.src}
-                    alt={journey.primaryImageBlock.alt ?? ''}
-                    fill
-                    draggable="false"
-                    style={{
-                      borderRadius: '5px',
+                  <Box width={208} height={158} sx={{ position: 'relative' }}>
+                    <Image
+                      src={journey.primaryImageBlock.src}
+                      alt={journey.primaryImageBlock.alt ?? ''}
+                      fill
+                      draggable="false"
+                      style={{
+                        borderRadius: '5px',
                         objectFit: 'cover'
                       }}
                     />

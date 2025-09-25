@@ -251,18 +251,14 @@ export function Toolbar({ user }: ToolbarProps): ReactElement {
               {journey?.primaryImageBlock?.src == null ? (
                 <GridEmptyIcon color="secondary" />
               ) : (
-                <Box
-                width={50}
-                height={50}
-                sx={{ position: 'relative' }}
-              >
-                <Image
-                  src={journey.primaryImageBlock.src}
-                  alt={journey.primaryImageBlock.alt}
-                  fill
-                  style={{
-                    borderRadius: '4px',
-                    objectFit: 'cover'
+                <Box width={50} height={50} sx={{ position: 'relative' }}>
+                  <Image
+                    src={journey.primaryImageBlock.src}
+                    alt={journey.primaryImageBlock.alt}
+                    fill
+                    style={{
+                      borderRadius: '4px',
+                      objectFit: 'cover'
                     }}
                   />
                 </Box>

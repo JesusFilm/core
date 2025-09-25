@@ -112,11 +112,7 @@ export function Message(): ReactElement {
                         borderRadius="6px"
                       />
                     ) : (
-                      <Box
-                        width={78}
-                        height={78}
-                        sx={{ position: 'relative' }}
-                      >
+                      <Box width={78} height={78} sx={{ position: 'relative' }}>
                         <Image
                           src={journey.primaryImageBlock.src}
                           alt={journey.primaryImageBlock.alt ?? ''}
