@@ -33,7 +33,9 @@ export function DiscussionQuestions({
     if (values.length > 0) return values
 
     return [
-      t('If you could ask the creator of this video a question, what would it be?')
+      t(
+        'If you could ask the creator of this video a question, what would it be?'
+      )
     ]
   }, [questions, t])
 
@@ -50,7 +52,7 @@ export function DiscussionQuestions({
             <div
               role="tablist"
               aria-label={t('Discussion Questions')}
-              className="inline-flex rounded-full bg-white/10 p-1 text-xs font-bold uppercase tracking-wider"
+              className="inline-flex rounded-full bg-white/10 p-1 text-xs font-bold tracking-wider uppercase"
             >
               <button
                 type="button"

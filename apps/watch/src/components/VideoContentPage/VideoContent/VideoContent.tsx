@@ -59,7 +59,9 @@ export function VideoContent(): ReactElement {
     }
 
     return [
-      t('If you could ask the creator of this video a question, what would it be?')
+      t(
+        'If you could ask the creator of this video a question, what would it be?'
+      )
     ]
   }, [description, filteredStudyQuestions, t])
 
@@ -142,9 +144,7 @@ export function VideoContent(): ReactElement {
         <Tab
           data-testid="sharing-ideas"
           label={
-            <Typography variant="overline1">
-              {t('Sharing Ideas')}
-            </Typography>
+            <Typography variant="overline1">{t('Sharing Ideas')}</Typography>
           }
           {...tabA11yProps('sharing-ideas', sharingTabIndex)}
         />
@@ -203,11 +203,7 @@ export function VideoContent(): ReactElement {
           </Stack>
         </TabPanel>
       )}
-      <TabPanel
-        name="sharing-ideas"
-        value={tabValue}
-        index={sharingTabIndex}
-      >
+      <TabPanel name="sharing-ideas" value={tabValue} index={sharingTabIndex}>
         <SharingIdeasWall ideas={sharingIdeas} />
       </TabPanel>
     </Box>

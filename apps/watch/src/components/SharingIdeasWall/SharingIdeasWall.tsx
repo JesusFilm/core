@@ -34,15 +34,18 @@ export function SharingIdeasWall({
       data-testid="SharingIdeasWall"
     >
       {ideas.map((idea, index) => (
-        <div key={`${index}-${idea.slice(0, 12)}`} className="mb-4 break-inside-avoid">
+        <div
+          key={`${index}-${idea.slice(0, 12)}`}
+          className="mb-4 break-inside-avoid"
+        >
           <div
             className={cn(
-              'flex min-h-[8rem] flex-col rounded-3xl bg-gradient-to-br p-6 text-white shadow-lg shadow-black/20 ring-1 ring-white/10 transition-all duration-300 hover:translate-y-[-2px] hover:shadow-2xl',
+              'flex min-h-[8rem] flex-col rounded-3xl bg-gradient-to-br p-6 text-white shadow-lg ring-1 shadow-black/20 ring-white/10 transition-all duration-300 hover:translate-y-[-2px] hover:shadow-2xl',
               getGradientClass(index)
             )}
             data-testid="SharingIdeasWallCard"
           >
-            <span className="text-xs font-semibold uppercase tracking-[0.3em] text-white/70">
+            <span className="text-xs font-semibold tracking-[0.3em] text-white/70 uppercase">
               #{index + 1}
             </span>
             <p className="mt-3 text-sm leading-6 text-white/95 sm:text-base">

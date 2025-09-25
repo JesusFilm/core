@@ -42,15 +42,17 @@ describe('DiscussionQuestions', () => {
     expect(
       screen.getByRole('tab', { name: 'Related questions' })
     ).toHaveAttribute('aria-selected', 'true')
-    expect(
-      screen.getByRole('tab', { name: 'Sharing Ideas' })
-    ).toHaveAttribute('aria-selected', 'false')
+    expect(screen.getByRole('tab', { name: 'Sharing Ideas' })).toHaveAttribute(
+      'aria-selected',
+      'false'
+    )
 
     fireEvent.click(screen.getByRole('tab', { name: 'Sharing Ideas' }))
 
-    expect(
-      screen.getByRole('tab', { name: 'Sharing Ideas' })
-    ).toHaveAttribute('aria-selected', 'true')
+    expect(screen.getByRole('tab', { name: 'Sharing Ideas' })).toHaveAttribute(
+      'aria-selected',
+      'true'
+    )
     expect(screen.getByTestId('SharingIdeasWall')).toBeInTheDocument()
   })
 })
