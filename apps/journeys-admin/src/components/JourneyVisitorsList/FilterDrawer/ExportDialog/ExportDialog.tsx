@@ -10,6 +10,7 @@ import { useSnackbar } from 'notistack'
 import { ReactElement, useEffect, useState } from 'react'
 
 import { Dialog } from '@core/shared/ui/Dialog'
+import ChevronDown from '@core/shared/ui/icons/ChevronDown'
 
 import { useJourneyContactsExport } from '../../../../libs/useJourneyContactsExport'
 import { useJourneyEventsExport } from '../../../../libs/useJourneyEventsExport'
@@ -114,6 +115,7 @@ export function ExportDialog({
           onClick={handleExport}
           loading={eventsDownloading || contactsDownloading}
           disabled={
+            (exportBy === '') ||
             (exportBy === 'Visitor Actions' && selectedEvents.length === 0) ||
             (exportBy === 'Contact Data' && contactData.length === 0)
           }
@@ -135,6 +137,7 @@ export function ExportDialog({
       <Box
         sx={{
           pt: 4,
+          pr: 2,
           display: 'flex',
           flexDirection: { xs: 'column', sm: 'row' },
           alignItems: { xs: 'stretch', sm: 'center' },
@@ -153,6 +156,7 @@ export function ExportDialog({
             onChange={(e) => setExportBy(e.target.value)}
             displayEmpty
             inputProps={{ 'aria-label': t('Export By:') }}
+            IconComponent={ChevronDown}
             renderValue={(selected) => {
               if (!selected) {
                 return t('Select Data')
