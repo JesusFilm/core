@@ -101,7 +101,8 @@ export function Post(): ReactElement {
                       alt={journey.primaryImageBlock.alt ?? ''}
                       fill
                       draggable="false"
-                      style={{
+                      sizes="208px"
+                    style={{
                         borderRadius: '5px',
                         objectFit: 'cover'
                       }}

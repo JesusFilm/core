@@ -117,6 +117,7 @@ export function Message(): ReactElement {
                           src={journey.primaryImageBlock.src}
                           alt={journey.primaryImageBlock.alt ?? ''}
                           fill
+                          sizes="78px"
                           style={{
                             borderRadius: '5px',
                             objectFit: 'cover'

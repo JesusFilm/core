@@ -203,7 +203,8 @@ export function SocialPreviewNode(): ReactElement {
                     src={journey.primaryImageBlock.src}
                     alt={journey.primaryImageBlock.alt ?? ''}
                     fill
-                    style={{
+                    sizes="118.5px"
+                  style={{
                       borderRadius: 5,
                       objectFit: 'cover'
                     }}
