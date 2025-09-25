@@ -2,11 +2,6 @@ import { ReactElement } from 'react'
 
 import { SearchBarProvider } from '@core/journeys/ui/algolia/SearchBarProvider'
 
-<<<<<<< HEAD
-import { SearchOverlay } from './SearchOverlay'
-import { SimpleSearchBar } from './SimpleSearchBar'
-=======
->>>>>>> 211ca2436 (chore: update pnpm lockfile and refactor component imports)
 import { useFloatingSearchOverlay } from './hooks/useFloatingSearchOverlay'
 import { SearchOverlay } from './SearchOverlay'
 import { SimpleSearchBar } from './SimpleSearchBar'

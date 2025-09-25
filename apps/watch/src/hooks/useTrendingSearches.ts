@@ -135,7 +135,6 @@ export function useTrendingSearches(
 
       // Convert to array and filter for relevant terms
       const relevantTerms = Array.from(popularTerms)
-<<<<<<< HEAD
         .filter(
           (term) =>
             ![
@@ -178,10 +177,6 @@ export function useTrendingSearches(
               'too',
               'use'
             ].includes(term)
-=======
-        .filter(term =>
-          !['the', 'and', 'for', 'are', 'but', 'not', 'you', 'all', 'can', 'had', 'her', 'was', 'one', 'our', 'out', 'day', 'get', 'has', 'him', 'his', 'how', 'man', 'new', 'now', 'old', 'see', 'two', 'way', 'who', 'boy', 'did', 'its', 'let', 'put', 'say', 'she', 'too', 'use'].includes(term)
->>>>>>> 211ca2436 (chore: update pnpm lockfile and refactor component imports)
         )
         .slice(0, maxResults)
 
@@ -215,15 +210,10 @@ export function useTrendingSearches(
       // Cache the results
       setCachedTrendingSearches(results)
     } catch (err) {
-<<<<<<< HEAD
       console.error('Error fetching trending searches:', err)
       setError(
         err instanceof Error ? err.message : 'Failed to fetch trending searches'
       )
-=======
-      console.warn('Network error fetching trending searches, using fallback:', err)
-      setError(err instanceof Error ? err.message : 'Failed to fetch trending searches')
->>>>>>> 211ca2436 (chore: update pnpm lockfile and refactor component imports)
 
       // Fallback to static popular searches
       const fallbackSearches = [

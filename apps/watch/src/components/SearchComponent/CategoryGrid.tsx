@@ -1,11 +1,3 @@
-<<<<<<< HEAD
-=======
-import Box from '@mui/material/Box'
-import ButtonBase from '@mui/material/ButtonBase'
-import Grid from '@mui/material/GridLegacy'
-import { styled } from '@mui/material/styles'
-import Typography from '@mui/material/Typography'
->>>>>>> 211ca2436 (chore: update pnpm lockfile and refactor component imports)
 import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 

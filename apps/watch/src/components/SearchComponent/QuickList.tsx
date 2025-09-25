@@ -1,9 +1,3 @@
-<<<<<<< HEAD
-=======
-import Box from '@mui/material/Box'
-import Stack from '@mui/material/Stack'
-import Typography from '@mui/material/Typography'
->>>>>>> 211ca2436 (chore: update pnpm lockfile and refactor component imports)
 import { Badge } from '@ui/components/badge'
 import { ReactElement } from 'react'
 
