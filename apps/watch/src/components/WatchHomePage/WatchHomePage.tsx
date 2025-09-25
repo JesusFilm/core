@@ -13,6 +13,7 @@ import { SearchComponent } from '../SearchComponent'
 import { AboutProjectSection } from './AboutProjectSection'
 import { CollectionsRail } from './CollectionsRail'
 import { SeeAllVideos } from './SeeAllVideos'
+import { SectionPartners } from './SectionPartners'
 import { WatchHero } from './WatchHero'
 import { useWatchHeroCarousel } from './useWatchHeroCarousel'
 
@@ -76,6 +77,7 @@ function WatchHomePageBody({ languageId }: WatchHomePageProps): ReactElement {
           >
             <SeeAllVideos />
             <AboutProjectSection />
+            <SectionPartners />
           </ThemeProvider>
         </div>
         <CollectionsRail languageId={languageId} />

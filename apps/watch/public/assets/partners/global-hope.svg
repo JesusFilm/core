@@ -1,0 +1,11 @@
+<svg width="240" height="120" viewBox="0 0 240 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="240" height="120" rx="20" fill="#F1F5F9" />
+  <circle cx="72" cy="60" r="36" fill="#0EA5E9" />
+  <path d="M72 28C89.6731 28 104 42.3269 104 60C104 77.6731 89.6731 92 72 92" stroke="white" stroke-width="10" stroke-linecap="round" />
+  <text x="140" y="68" font-family="'Montserrat', 'Arial', sans-serif" font-size="22" font-weight="600" fill="#0F172A">
+    Global
+  </text>
+  <text x="140" y="94" font-family="'Montserrat', 'Arial', sans-serif" font-size="22" font-weight="600" fill="#0F172A">
+    Hope
+  </text>
+</svg>

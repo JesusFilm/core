@@ -26,6 +26,45 @@
 - Share a typed helper for reusing the slide-to-video snapshot logic in other sections.
 - Consider centralizing Jest icon mocks to reduce repetition.
 
+# Watch Home Partners Section
+
+## Goals
+- [x] Introduce an "Our Partners" surface on the Watch home page that highlights partner logos.
+- [x] Provide a clear call-to-action that invites visitors to become partners.
+
+## Implementation Strategy
+- [x] Audit the existing WatchHomePage composition to choose an insertion point for the new section.
+- [x] Build a `SectionPartners` component that renders a Swiper-based carousel of partner logos, supporting copy, and a CTA button.
+- [x] Add any required partner logo assets and ensure they are optimized for dark backgrounds.
+- [x] Localize the section heading, description, and CTA across available `apps-watch` locales.
+- [x] Render the new section within the themed portion of `WatchHomePage` alongside existing sections.
+
+## Risks & Mitigations
+- **Carousel accessibility** – Ensure Swiper navigation uses `aria-label`s and alt text on logos so screen readers describe each partner.
+- **Asset legibility on dark themes** – Design SVG logos with sufficient contrast when displayed on dark surfaces.
+- **Layout regression** – Validate that the new section respects responsive breakpoints to avoid overflow on small screens.
+
+## Validation Steps
+- Confirm the carousel renders the expected number of partner logos and can be navigated with pointer and keyboard.
+- Verify the CTA button text and link communicate the partner invitation clearly.
+- Check the copy renders correctly in at least the default (English) locale and falls back gracefully elsewhere.
+
+## Obstacles
+- Updating every locale JSON manually would have been error-prone and time consuming.
+
+## Resolutions
+- Authored a small Python script to insert the new translation keys consistently across all locale files in the desired order.
+
+## Test Coverage
+- `pnpm test watch -- SectionPartners`
+
+## User Flows
+- Scroll through the Our Partners carousel → inspect partner logos → activate "Become a Partner" CTA to start an email to the partnerships team.
+
+## Follow-up Ideas
+- Evaluate adding CMS-driven partner configuration so the list can be updated without code changes.
+- Consider auto-scrolling the carousel when design requirements call for it.
+
 # Search Component Overlay Refactor
 
 ## Goals

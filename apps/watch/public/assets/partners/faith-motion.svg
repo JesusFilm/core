@@ -1,0 +1,7 @@
+<svg width="240" height="120" viewBox="0 0 240 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="240" height="120" rx="20" fill="#1E293B" />
+  <path d="M70 88C92 80 104 60 104 40C104 36 102 30 100 26L124 48L148 26C146 30 144 36 144 40C144 60 156 80 178 88L148 94L124 72 L100 94 L70 88Z" fill="#22D3EE" />
+  <text x="120" y="108" text-anchor="middle" font-family="'Montserrat', 'Arial', sans-serif" font-size="22" font-weight="600" fill="#E2E8F0">
+    Faith Motion
+  </text>
+</svg>
