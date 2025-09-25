@@ -182,7 +182,7 @@ export function adaptCropPathToSceneChange(
       }
       return path
 
-    case 'significant':
+    case 'significant': {
       // Significant changes - pause auto-tracking temporarily
       // Add a keyframe with wider crop area
       const significantKeyframe = createCropKeyframe(time, {
@@ -192,12 +192,13 @@ export function adaptCropPathToSceneChange(
       })
 
       return setKeyframes(path, [...path.keyframes, significantKeyframe])
+    }
 
-    case 'transition':
+    case 'transition': {
       // Scene transition - reset crop window and create new keyframe
       // Find the previous scene change to determine transition type
       const previousSceneChange = allSceneChanges
-        .filter(sc => sc.time < time)
+        .filter((sc) => sc.time < time)
         .sort((a, b) => b.time - a.time)[0]
 
       let transitionKeyframe: CropKeyframe
@@ -218,13 +219,43 @@ export function adaptCropPathToSceneChange(
         })
       }
 
-      // For hard transitions, we might want to remove old keyframes
-      // that are no longer relevant
-      const recentKeyframes = path.keyframes.filter(
-        keyframe => keyframe.time >= time - 2 // Keep keyframes from last 2 seconds
+      const cleanupWindowSeconds = 0.75
+      const cleanupStart = Math.max(
+        0,
+        previousSceneChange ? Math.max(previousSceneChange.time, time - cleanupWindowSeconds) : time - cleanupWindowSeconds
+      )
+      const cleanupEnd = time + cleanupWindowSeconds
+
+      const lastKeyframeBeforeTransition = path.keyframes
+        .filter((keyframe) => keyframe.time < time)
+        .sort((a, b) => b.time - a.time)[0]
+
+      const preservedKeyframes = path.keyframes.filter((keyframe) => {
+        if (keyframe.id === lastKeyframeBeforeTransition?.id) {
+          return true
+        }
+
+        if (keyframe.locked) {
+          return true
+        }
+
+        if (keyframe.time < cleanupStart) {
+          return true
+        }
+
+        if (keyframe.time > cleanupEnd) {
+          return true
+        }
+
+        return false
+      })
+
+      const dedupedKeyframes = preservedKeyframes.filter(
+        (keyframe) => Math.abs(keyframe.time - time) > 1e-3
       )
 
-      return setKeyframes(path, [...recentKeyframes, transitionKeyframe])
+      return setKeyframes(path, [...dedupedKeyframes, transitionKeyframe])
+    }
 
     default:
       return path
