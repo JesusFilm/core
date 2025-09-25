@@ -560,7 +560,6 @@ type PhoneAction implements Action @join__type(graph: API_JOURNEYS)  @join__type
   gtmEventName: String
   phone: String!
   countryCode: String!
-  contactAction: ContactActionType!
 }
 
 type Journey @join__type(graph: API_JOURNEYS, key: "id")  @join__type(graph: API_JOURNEYS_MODERN, key: "id")  {
@@ -623,11 +622,11 @@ type Journey @join__type(graph: API_JOURNEYS, key: "id")  @join__type(graph: API
   socialNodeX: Int
   socialNodeY: Int
   fromTemplateId: String
-  showAssistant: Boolean
   journeyCustomizationDescription: String @join__field(graph: API_JOURNEYS) 
   journeyCustomizationFields: [JourneyCustomizationField!]! @join__field(graph: API_JOURNEYS) 
   journeyTheme: JourneyTheme
   userJourneys: [UserJourney!]
+  showAssistant: Boolean @join__field(graph: API_JOURNEYS_MODERN) 
 }
 
 type Query @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  @join__type(graph: API_LANGUAGES)  @join__type(graph: API_MEDIA)  @join__type(graph: API_USERS)  {
@@ -3050,11 +3049,6 @@ enum ThemeName @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS
   base @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN) 
 }
 
-enum ContactActionType @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
-  call @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN) 
-  text @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN) 
-}
-
 enum JourneyStatus @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
   archived @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN) 
   deleted @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN) 
@@ -4533,7 +4527,6 @@ input PhoneActionInput @join__type(graph: API_JOURNEYS_MODERN)  {
   gtmEventName: String
   phone: String!
   countryCode: String!
-  contactAction: ContactActionType = call
 }
 
 input VideoBlockCreateInput @join__type(graph: API_JOURNEYS_MODERN)  {
