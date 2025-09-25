@@ -48,6 +48,19 @@ describe('NewVideoContentHeader', () => {
     ...(videos.find(({ id }) => id === '1_jf6119-0-0') as VideoContentFields)
   }
 
+  it('should use parent when container is not provided', () => {
+    render(
+      <VideoProvider value={{ content: lumoVideo }}>
+        <NewVideoContentHeader videos={videos} />
+      </VideoProvider>
+    )
+
+    expect(screen.getByRole('link', { name: 'JESUS' })).toHaveAttribute(
+      'href',
+      '/watch/jesus/english'
+    )
+  })
+
   it('should display link and button to feature film page', () => {
     render(
       <VideoProvider value={{ content: videoWithContainer, container }}>
