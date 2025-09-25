@@ -589,7 +589,6 @@ model Action {
   email         String?
   phone         String?
   countryCode   String?
-  contactAction String?  @default("call")
   customizable  Boolean?
   parentStepId  String?
   updatedAt     DateTime @default(now()) @updatedAt
