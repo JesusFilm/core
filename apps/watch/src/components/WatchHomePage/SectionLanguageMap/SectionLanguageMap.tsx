@@ -55,7 +55,7 @@ export function SectionLanguageMap(): ReactElement {
           'before:pointer-events-none before:absolute before:inset-0 before:bg-[radial-gradient(circle_at_top,_rgba(37,99,235,0.35),_transparent_60%)] before:content-[""]'
         )}
       >
-        <div className="w-full h-[500px]">
+        <div className="w-full h-[700px]">
           {hasData ? (
             <LanguageMap
               points={points}

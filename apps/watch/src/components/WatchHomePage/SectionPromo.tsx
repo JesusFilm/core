@@ -1,11 +1,16 @@
 import { useTranslation } from 'next-i18next'
 import { type ReactElement } from 'react'
 
+import GlobeIcon from '@core/shared/ui/icons/Globe'
+import UsersProfiles2Icon from '@core/shared/ui/icons/UsersProfiles2'
+import VideoOnIcon from '@core/shared/ui/icons/VideoOn'
+
 export function SectionPromo(): ReactElement {
   const { t } = useTranslation('apps-watch')
 
   const points = [
     {
+      icon: GlobeIcon,
       title: t('PromoPointMostTranslatedTitle', {
         defaultValue: 'The most translated film library in the world'
       }),
@@ -15,6 +20,7 @@ export function SectionPromo(): ReactElement {
       })
     },
     {
+      icon: VideoOnIcon,
       title: t('PromoPointAIVideoTitle', {
         defaultValue: 'Pairing trusted voices with new visual stories'
       }),
@@ -24,6 +30,7 @@ export function SectionPromo(): ReactElement {
       })
     },
     {
+      icon: UsersProfiles2Icon,
       title: t('PromoPointCreativeTeamTitle', {
         defaultValue: 'More than movies—a team on mission'
       }),
@@ -45,40 +52,40 @@ export function SectionPromo(): ReactElement {
       })
     },
     {
-      title: t('PromoHighlightCroppingTitle', {
-        defaultValue: 'Video Cropping Tool'
+      title: t('PromoHighlightMediaLibraryTitle', {
+        defaultValue: 'Evangelistic Media Library'
       }),
-      description: t('PromoHighlightCroppingDescription', {
+      description: t('PromoHighlightMediaLibraryDescription', {
         defaultValue:
-          'Transform any landscape film into vertical, social-friendly clips in seconds with intelligent reframing built for ministry storytellers.'
+          'We have an extensive Christian media library with thousands of videos, films, and resources available in multiple languages for ministry and evangelism worldwide.'
       })
     },
     {
-      title: t('PromoHighlightHostingTitle', {
-        defaultValue: 'Christian Video Hosting'
+      title: t('PromoHighlightToolsetTitle', {
+        defaultValue: 'Digital Tools for Ministries'
       }),
-      description: t('PromoHighlightHostingDescription', {
+      description: t('PromoHighlightToolsetDescription', {
         defaultValue:
-          'Think of it as the Vimeo for missions—sharing our experience delivering videos across a resilient global network so ministries can host and distribute their stories with confidence.'
+          'Comprehensive digital tools designed specifically for ministry needs, including video management, content distribution, audience engagement, and analytics to help ministries reach more people effectively.'
       })
     }
   ]
 
   return (
-    <section className="mt-16 lg:mt-24">
-      <div className="responsive-container">
-        <div className="relative isolate overflow-hidden rounded-[2.5rem] border border-white/10 bg-gradient-to-br from-slate-950/80 via-slate-900/70 to-slate-900/80 px-6 py-16 shadow-[0_45px_80px_-40px_rgba(15,23,42,0.8)] sm:px-10 sm:py-20 lg:px-16">
+    <section className="mt-8 lg:mt-12 relative overflow-hidden bg-gradient-to-br from-red-950/60 via-purple-950/20 to-orange-600/10 py-16">
+      <div className="">
+        <div className="responsive-container isolate  shadow-[0_45px_80px_-40px_rgba(15,23,42,0.8)] ">
           <div
             aria-hidden
-            className="pointer-events-none absolute -left-24 top-[-10%] h-56 w-56 rounded-full bg-sky-500/40 blur-3xl"
+            className="pointer-events-none absolute -left-24 top-[-10%] h-56 w-56 rounded-full bg-red-600/30 blur-3xl"
           />
           <div
             aria-hidden
-            className="pointer-events-none absolute bottom-[-20%] right-[-10%] h-80 w-80 rounded-full bg-emerald-400/30 blur-[120px]"
+            className="pointer-events-none absolute bottom-[-20%] right-[-10%] h-80 w-80 rounded-full bg-amber-600/25 blur-[120px]"
           />
           <div className="relative flex flex-col gap-14">
             <div className="max-w-3xl space-y-4">
-              <p className="text-xs font-semibold uppercase tracking-[0.3em] text-sky-100/70">
+              <p className="text-xs font-semibold uppercase tracking-[0.3em] text-red-100/70">
                 {t('PromoEyebrow', { defaultValue: 'Future-ready for global missions' })}
               </p>
               <h2 className="text-3xl font-semibold tracking-tight text-white sm:text-4xl lg:text-5xl">
@@ -99,8 +106,8 @@ export function SectionPromo(): ReactElement {
                   key={`${point.title}-${index}`}
                   className="group relative overflow-hidden rounded-2xl border border-white/10 bg-white/5 p-6 backdrop-blur-sm transition-transform duration-300 hover:-translate-y-1 hover:bg-white/10"
                 >
-                  <div className="mb-4 inline-flex h-12 w-12 items-center justify-center rounded-full bg-white/10 text-sm font-semibold text-white/70">
-                    {String(index + 1).padStart(2, '0')}
+                  <div className="mb-6">
+                    <point.icon style={{ fontSize: '80px', width: '80px', height: '80px', opacity: 0.2, mixBlendMode: 'overlay' }} />
                   </div>
                   <h3 className="text-xl font-semibold text-white">{point.title}</h3>
                   <p className="mt-3 text-sm leading-relaxed text-white/70">{point.description}</p>
@@ -123,7 +130,7 @@ export function SectionPromo(): ReactElement {
                 {highlights.map((highlight, index) => (
                   <div
                     key={`${highlight.title}-${index}`}
-                    className="group relative overflow-hidden rounded-2xl border border-white/10 bg-slate-950/60 p-6 transition-transform duration-300 hover:-translate-y-1 hover:border-white/20 hover:bg-slate-900/60"
+                    className="group relative overflow-hidden rounded-2xl border border-white/10 bg-stone-950/20 p-6 transition-transform duration-300 hover:-translate-y-1 hover:border-white/20 hover:bg-stone-900/60"
                   >
                     <h3 className="text-lg font-semibold text-white">{highlight.title}</h3>
                     <p className="mt-3 text-sm leading-relaxed text-white/70">{highlight.description}</p>
