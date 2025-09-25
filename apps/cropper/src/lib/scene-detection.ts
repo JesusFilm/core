@@ -1,10 +1,4 @@
-import type {
-  SceneChangeResult,
-  SceneChangeConfig,
-  SceneChangeWorkerMessage,
-  SceneChangeCallbacks,
-  SceneChangeOptions
-} from '../types/detection'
+import type { SceneChangeResult, SceneChangeConfig, SceneChangeWorkerMessage } from '../types/detection'
 
 export interface SceneChangeCallbacks {
   onChunk?: (result: SceneChangeResult) => void
@@ -22,9 +16,9 @@ export class SceneDetectionWorkerController {
   private videoElement?: HTMLVideoElement
   private canvas?: OffscreenCanvas
   private ctx?: OffscreenCanvasRenderingContext2D
-  private isExtractionPaused: boolean = false
+  private isExtractionPaused = false
   private extractionTimeoutId?: number
-  private lastProcessedTime: number = 0
+  private lastProcessedTime = 0
 
   start(duration: number, callbacks: SceneChangeCallbacks, options: SceneChangeOptions = {}, videoElement?: HTMLVideoElement) {
     if (typeof window === 'undefined') {
@@ -77,7 +71,7 @@ export class SceneDetectionWorkerController {
     }
 
     // Start detection with video processing
-    this.startVideoProcessing(duration, options, callbacks)
+    this.startVideoProcessing(duration, options)
 
     // Start frame extraction if we have a video element
     if (videoElement) {
@@ -189,16 +183,8 @@ export class SceneDetectionWorkerController {
     extractFrame()
   }
 
-  private async startVideoProcessing(duration: number, options: SceneChangeOptions, callbacks: SceneChangeCallbacks) {
+  private async startVideoProcessing(duration: number, options: SceneChangeOptions) {
     if (!this.worker) {
-      // Fallback to mock processing if no worker available
-      this.worker?.postMessage({
-        type: 'startSceneDetection',
-        payload: {
-          duration,
-          config: options.config
-        }
-      })
       return
     }
 
@@ -222,7 +208,12 @@ export class SceneDetectionWorkerController {
   }
 
   resumeExtraction() {
+    const wasPaused = this.isExtractionPaused
     this.isExtractionPaused = false
+
+    if ((wasPaused || !this.extractionTimeoutId) && this.videoElement && this.worker) {
+      this.startFrameExtraction()
+    }
   }
 
   stop() {

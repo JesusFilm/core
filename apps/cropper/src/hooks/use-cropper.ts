@@ -184,7 +184,7 @@ function reducer(state: CropperState, action: CropperAction): CropperState {
     }
 
     case 'MERGE_DETECTIONS': {
-      if (!state.path || state.detections.length === 0) {
+      if (!state.autoTrackingEnabled || !state.path || state.detections.length === 0) {
         return state
       }
 
@@ -302,6 +302,16 @@ export function useCropper(): UseCropperResult {
   const detectionControllerRef = useRef<DetectionWorkerController | null>(null)
   const disposeSceneDetectionRef = useRef<(() => void) | null>(null)
   const sceneDetectionControllerRef = useRef<SceneDetectionWorkerController | null>(null)
+  const autoTrackingEnabledRef = useRef(state.autoTrackingEnabled)
+  const sceneChangeDetectionEnabledRef = useRef(state.sceneChangeDetectionEnabled)
+
+  useEffect(() => {
+    autoTrackingEnabledRef.current = state.autoTrackingEnabled
+  }, [state.autoTrackingEnabled])
+
+  useEffect(() => {
+    sceneChangeDetectionEnabledRef.current = state.sceneChangeDetectionEnabled
+  }, [state.sceneChangeDetectionEnabled])
 
   const setVideo = useCallback((video: Video | null) => {
     dispatch({ type: 'SET_VIDEO', video })
@@ -390,7 +400,9 @@ export function useCropper(): UseCropperResult {
       onComplete: (results) => {
         dispatch({ type: 'SET_DETECTION_STATUS', status: 'complete' })
         dispatch({ type: 'SET_DETECTIONS', detections: results })
-        dispatch({ type: 'MERGE_DETECTIONS' })
+        if (autoTrackingEnabledRef.current) {
+          dispatch({ type: 'MERGE_DETECTIONS' })
+        }
       },
       onError: (error) => {
         dispatch({ type: 'SET_DETECTION_STATUS', status: 'idle' })
@@ -453,10 +465,14 @@ export function useCropper(): UseCropperResult {
     if (videoElement) {
       sceneDetectionOptions.config = {
         ...config,
-        performance: {
-          ...config?.performance,
-          useWebGL: true // Enable WebGL for better performance with video element
-        }
+        ...(config?.performance
+          ? {
+              performance: {
+                ...config.performance,
+                useWebGL: true // Enable WebGL for better performance with video element
+              }
+            }
+          : {})
       }
     }
 
@@ -471,21 +487,21 @@ export function useCropper(): UseCropperResult {
 
     console.log(`🎬 [DEBUG] Starting scene detection controller with video element: ${!!videoElement}`)
     sceneController.start(state.video.duration, {
-      onChunk: (sceneChange) => {
+      onChunk: (sceneChange: SceneChangeResult) => {
         console.log(`🎬 [3/5] Hook dispatching edge-based scene change: ${sceneChange.level} (${sceneChange.changePercentage.toFixed(3)}% edge change)`)
         dispatch({ type: 'PUSH_SCENE_CHANGE', sceneChange })
 
         // Adapt crop path to scene change
-        if (state.sceneChangeDetectionEnabled) {
+        if (sceneChangeDetectionEnabledRef.current) {
           dispatch({ type: 'ADAPT_TO_SCENE_CHANGE', sceneChange })
         }
       },
-      onComplete: (sceneChanges) => {
+      onComplete: (sceneChanges: SceneChangeResult[]) => {
         console.log(`🎬 [DEBUG] Scene detection completed with ${sceneChanges.length} changes`)
         dispatch({ type: 'SET_SCENE_DETECTION_STATUS', status: 'complete' })
         dispatch({ type: 'SET_SCENE_CHANGES', sceneChanges })
       },
-      onError: (error) => {
+      onError: (error: string) => {
         console.error(`🎬 [DEBUG] Scene detection error:`, error)
         dispatch({ type: 'SET_SCENE_DETECTION_STATUS', status: 'idle' })
       }
