@@ -2,7 +2,12 @@ import { GraphQLError } from 'graphql'
 import omit from 'lodash/omit'
 import { z } from 'zod'
 
-import { Block, MessagePlatform, Prisma, prisma } from '@core/prisma/journeys/client'
+import {
+  Block,
+  MessagePlatform,
+  Prisma,
+  prisma
+} from '@core/prisma/journeys/client'
 
 import { Action, ability, subject } from '../../lib/auth/ability'
 import { builder } from '../builder'
@@ -80,24 +85,24 @@ builder.mutationField('blockUpdateAction', (t) =>
       const { id, input } = args
       const user = context.user
 
-            const { success: isLink, data: linkInput } =
-              linkActionInputSchema.safeParse(input)
-            const { success: isEmail, data: emailInput } =
-              emailActionInputSchema.safeParse(input)
-            const { success: isNavigateToBlock, data: navigateToBlockInput } =
-              navigateToBlockActionInputSchema.safeParse(input)
-            const { success: isPhone, data: phoneInput } =
-              phoneActionInputSchema.safeParse(input)
-            const { success: isChat, data: chatInput } =
-              chatActionInputSchema.safeParse(input)
+      const { success: isLink, data: linkInput } =
+        linkActionInputSchema.safeParse(input)
+      const { success: isEmail, data: emailInput } =
+        emailActionInputSchema.safeParse(input)
+      const { success: isNavigateToBlock, data: navigateToBlockInput } =
+        navigateToBlockActionInputSchema.safeParse(input)
+      const { success: isPhone, data: phoneInput } =
+        phoneActionInputSchema.safeParse(input)
+      const { success: isChat, data: chatInput } =
+        chatActionInputSchema.safeParse(input)
 
-            const numberOfValidInputs = [
-              isLink,
-              isEmail,
-              isNavigateToBlock,
-              isPhone,
-              isChat
-            ].filter(Boolean).length
+      const numberOfValidInputs = [
+        isLink,
+        isEmail,
+        isNavigateToBlock,
+        isPhone,
+        isChat
+      ].filter(Boolean).length
 
       if (numberOfValidInputs > 1)
         throw new GraphQLError('invalid combination of inputs provided', {

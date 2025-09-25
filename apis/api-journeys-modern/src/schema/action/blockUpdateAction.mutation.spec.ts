@@ -266,7 +266,7 @@ describe('blockUpdateAction mutation', () => {
 
       const variables = {
         id: actionableBlock.id,
-        input: { 
+        input: {
           gtmEventName: null,
           url: 'https://wa.me/1234567890',
           target: null,
