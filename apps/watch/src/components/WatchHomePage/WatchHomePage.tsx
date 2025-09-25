@@ -13,6 +13,7 @@ import { SearchComponent } from '../SearchComponent'
 import { AboutProjectSection } from './AboutProjectSection'
 import { CollectionsRail } from './CollectionsRail'
 import { SectionLanguageMap } from './SectionLanguageMap'
+import { SectionNewsletterSignup } from './SectionNewsletterSignup'
 import { SectionPromo } from './SectionPromo'
 import { SeeAllVideos } from './SeeAllVideos'
 import { useWatchHeroCarousel } from './useWatchHeroCarousel'
@@ -78,8 +79,9 @@ function WatchHomePageBody({ languageId }: WatchHomePageProps): ReactElement {
             themeMode={ThemeMode.dark}
             nested
           >
-            {/* <SeeAllVideos /> */}
-            {/* <AboutProjectSection /> */}
+            <SeeAllVideos />
+            <SectionNewsletterSignup />
+            <AboutProjectSection />
           </ThemeProvider>
         </div>
         <CollectionsRail languageId={languageId} />

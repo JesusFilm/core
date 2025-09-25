@@ -122,6 +122,43 @@
   "Search languages": "Search languages",
   "No languages found": "No languages found",
   "No languages available": "No languages available",
+  "newsletterSection": {
+    "kicker": "Stay connected",
+    "title": "Subscribe to our newsletter",
+    "description": "Every month we add new gospel videos to our library, new translations, releases, and tools. Subscribe to our email to be notified about new tools and new media available for you.",
+    "formLabel": "Subscribe to Watch newsletter",
+    "nameLabel": "Name",
+    "namePlaceholder": "Your name",
+    "nameHelper": "We'll use this to personalize your subscription.",
+    "emailLabel": "Email address",
+    "emailPlaceholder": "name@example.com",
+    "emailHelper": "We'll send updates and resources to this address.",
+    "emailPreview": "We will send updates to {{email}}.",
+    "audienceLabel": "I am",
+    "interestsLabel": "Topics I am interested in",
+    "languagesLabel": "Preferred Languages",
+    "cta": "Sign Up",
+    "successMessage": "Thanks for subscribing! We will keep you updated.",
+    "audience": {
+      "missionary": "A missionary",
+      "organization": "Part of a mission organization",
+      "private": "An individual believer"
+    },
+    "interests": {
+      "newVideos": "Gospel video updates",
+      "newTranslations": "New translations available",
+      "newReleases": "Latest releases",
+      "newTools": "New tools and resources"
+    },
+    "languages": {
+      "english": "English",
+      "spanish": "Spanish",
+      "french": "French",
+      "portuguese": "Portuguese",
+      "chinese": "Chinese",
+      "other": "Other"
+    }
+  },
   "popularSearches": [
     "Jesus Film",
     "Bible Stories",
