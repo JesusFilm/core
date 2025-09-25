@@ -5,7 +5,8 @@ import fetch from 'node-fetch'
 import { prisma } from '@core/prisma/journeys/client'
 import {
   JourneySimpleImage,
-  JourneySimpleUpdate
+  JourneySimpleUpdate,
+  JourneySimpleVideo
 } from '@core/shared/ai/journeySimpleTypes'
 
 import { generateBlurhashAndMetadataFromUrl } from '../../../utils/generateBlurhashAndMetadataFromUrl'
@@ -142,6 +143,39 @@ async function getYouTubeVideoDuration(videoId: string): Promise<number> {
   return parseISO8601Duration(isoDuration)
 }
 
+function getVideoId(video: JourneySimpleVideo): string {
+  if (video.source === 'youTube') {
+    const videoId = extractYouTubeVideoId(video.src)
+    if (videoId == null) {
+      throw new Error('Invalid YouTube video URL')
+    }
+    return videoId
+  }
+
+  if (video.source === 'internal') {
+    return video.src
+  }
+
+  throw new Error(`Unsupported video source: ${video.source as string}`)
+}
+
+async function getVideoEndAt(
+  video: JourneySimpleVideo,
+  videoId: string
+): Promise<number | undefined> {
+  if (video.source === 'youTube' && video.endAt == null) {
+    // youtube source and endAt not specified -> use full duration as end
+    return await getYouTubeVideoDuration(videoId)
+  }
+  return video.endAt
+}
+
+function getVideoVariantLanguageId(video: JourneySimpleVideo): string | null {
+  if (video.source === 'youTube') return null
+  if (video.subtitleId != null) return video.subtitleId
+  return '529'
+}
+
 export async function updateSimpleJourney(
   journeyId: string,
   simple: JourneySimpleUpdate
@@ -225,15 +259,35 @@ export async function updateSimpleJourney(
       let parentOrder = 0
 
       if (card.video != null) {
+        if (!card.video.source || !card.video.src) {
+          throw new Error('Video source and src is required')
+        }
+
+        // Validate subtitleId for internal videos
+        if (
+          card.video.source === 'internal' &&
+          card.video.subtitleId !== undefined &&
+          card.video.subtitleId !== null
+        ) {
+          if (
+            typeof card.video.subtitleId !== 'string' ||
+            card.video.subtitleId.trim() === ''
+          ) {
+            throw new Error(
+              'subtitleId must be a non-empty string when provided for internal videos'
+            )
+          }
+        }
+
+        const videoId = getVideoId(card.video)
+        const videoEndAt = await getVideoEndAt(card.video, videoId)
+        const videoVariantLanguageId = getVideoVariantLanguageId(card.video)
+
         const nextStepBlock =
           card.defaultNextCard != null
             ? stepBlocks.find((s) => s.simpleCardId === card.defaultNextCard)
             : undefined
-        const videoId = extractYouTubeVideoId(card.video.url)
-        if (videoId == null) {
-          throw new Error('Invalid YouTube video URL')
-        }
-        const videoDuration = await getYouTubeVideoDuration(videoId)
+
         await tx.block.create({
           data: {
             journeyId,
@@ -241,10 +295,11 @@ export async function updateSimpleJourney(
             parentBlockId: cardBlockId,
             parentOrder: parentOrder++,
             videoId,
-            source: 'youTube',
+            videoVariantLanguageId,
+            source: card.video.source,
             autoplay: true,
             startAt: card.video.startAt ?? 0,
-            endAt: card.video.endAt ?? videoDuration,
+            endAt: videoEndAt,
             action:
               nextStepBlock != null
                 ? {
