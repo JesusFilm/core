@@ -79,12 +79,12 @@ function WatchHomePageBody({ languageId }: WatchHomePageProps): ReactElement {
             themeMode={ThemeMode.dark}
             nested
           >
-            <SeeAllVideos />
-            <SectionNewsletterSignup />
-            <AboutProjectSection />
+            {/* <SeeAllVideos /> */}
+            {/* <AboutProjectSection /> */}
           </ThemeProvider>
         </div>
         <CollectionsRail languageId={languageId} />
+        <SectionNewsletterSignup />
         <SectionLanguageMap />
         <SectionPromo />
       </WatchHero>
