@@ -7,8 +7,8 @@
 // GraphQL fragment: RadioOptionFields
 // ====================================================
 
-export interface RadioOptionFields_action_PhoneAction {
-  __typename: "PhoneAction";
+export interface RadioOptionFields_action_ChatAction {
+  __typename: "ChatAction" | "PhoneAction";
   parentBlockId: string;
   gtmEventName: string | null;
 }
@@ -38,7 +38,7 @@ export interface RadioOptionFields_action_EmailAction {
   parentStepId: string | null;
 }
 
-export type RadioOptionFields_action = RadioOptionFields_action_PhoneAction | RadioOptionFields_action_NavigateToBlockAction | RadioOptionFields_action_LinkAction | RadioOptionFields_action_EmailAction;
+export type RadioOptionFields_action = RadioOptionFields_action_ChatAction | RadioOptionFields_action_NavigateToBlockAction | RadioOptionFields_action_LinkAction | RadioOptionFields_action_EmailAction;
 
 export interface RadioOptionFields {
   __typename: "RadioOptionBlock";

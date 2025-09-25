@@ -2,11 +2,7 @@ import { GraphQLError } from 'graphql'
 import omit from 'lodash/omit'
 import { z } from 'zod'
 
-import {
-  Block,
-  Prisma,
-  prisma
-} from '@core/prisma/journeys/client'
+import { Block, Prisma, prisma } from '@core/prisma/journeys/client'
 
 import { Action, ability, subject } from '../../lib/auth/ability'
 import { builder } from '../builder'

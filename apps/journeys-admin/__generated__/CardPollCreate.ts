@@ -76,8 +76,8 @@ export interface CardPollCreate_radioQuestion {
   gridView: boolean | null;
 }
 
-export interface CardPollCreate_radioOption1_action_PhoneAction {
-  __typename: "PhoneAction";
+export interface CardPollCreate_radioOption1_action_ChatAction {
+  __typename: "ChatAction" | "PhoneAction";
   parentBlockId: string;
   gtmEventName: string | null;
 }
@@ -107,7 +107,7 @@ export interface CardPollCreate_radioOption1_action_EmailAction {
   parentStepId: string | null;
 }
 
-export type CardPollCreate_radioOption1_action = CardPollCreate_radioOption1_action_PhoneAction | CardPollCreate_radioOption1_action_NavigateToBlockAction | CardPollCreate_radioOption1_action_LinkAction | CardPollCreate_radioOption1_action_EmailAction;
+export type CardPollCreate_radioOption1_action = CardPollCreate_radioOption1_action_ChatAction | CardPollCreate_radioOption1_action_NavigateToBlockAction | CardPollCreate_radioOption1_action_LinkAction | CardPollCreate_radioOption1_action_EmailAction;
 
 export interface CardPollCreate_radioOption1 {
   __typename: "RadioOptionBlock";
@@ -124,8 +124,8 @@ export interface CardPollCreate_radioOption1 {
   pollOptionImageBlockId: string | null;
 }
 
-export interface CardPollCreate_radioOption2_action_PhoneAction {
-  __typename: "PhoneAction";
+export interface CardPollCreate_radioOption2_action_ChatAction {
+  __typename: "ChatAction" | "PhoneAction";
   parentBlockId: string;
   gtmEventName: string | null;
 }
@@ -155,7 +155,7 @@ export interface CardPollCreate_radioOption2_action_EmailAction {
   parentStepId: string | null;
 }
 
-export type CardPollCreate_radioOption2_action = CardPollCreate_radioOption2_action_PhoneAction | CardPollCreate_radioOption2_action_NavigateToBlockAction | CardPollCreate_radioOption2_action_LinkAction | CardPollCreate_radioOption2_action_EmailAction;
+export type CardPollCreate_radioOption2_action = CardPollCreate_radioOption2_action_ChatAction | CardPollCreate_radioOption2_action_NavigateToBlockAction | CardPollCreate_radioOption2_action_LinkAction | CardPollCreate_radioOption2_action_EmailAction;
 
 export interface CardPollCreate_radioOption2 {
   __typename: "RadioOptionBlock";
@@ -172,8 +172,8 @@ export interface CardPollCreate_radioOption2 {
   pollOptionImageBlockId: string | null;
 }
 
-export interface CardPollCreate_radioOption3_action_PhoneAction {
-  __typename: "PhoneAction";
+export interface CardPollCreate_radioOption3_action_ChatAction {
+  __typename: "ChatAction" | "PhoneAction";
   parentBlockId: string;
   gtmEventName: string | null;
 }
@@ -203,7 +203,7 @@ export interface CardPollCreate_radioOption3_action_EmailAction {
   parentStepId: string | null;
 }
 
-export type CardPollCreate_radioOption3_action = CardPollCreate_radioOption3_action_PhoneAction | CardPollCreate_radioOption3_action_NavigateToBlockAction | CardPollCreate_radioOption3_action_LinkAction | CardPollCreate_radioOption3_action_EmailAction;
+export type CardPollCreate_radioOption3_action = CardPollCreate_radioOption3_action_ChatAction | CardPollCreate_radioOption3_action_NavigateToBlockAction | CardPollCreate_radioOption3_action_LinkAction | CardPollCreate_radioOption3_action_EmailAction;
 
 export interface CardPollCreate_radioOption3 {
   __typename: "RadioOptionBlock";
@@ -220,8 +220,8 @@ export interface CardPollCreate_radioOption3 {
   pollOptionImageBlockId: string | null;
 }
 
-export interface CardPollCreate_radioOption4_action_PhoneAction {
-  __typename: "PhoneAction";
+export interface CardPollCreate_radioOption4_action_ChatAction {
+  __typename: "ChatAction" | "PhoneAction";
   parentBlockId: string;
   gtmEventName: string | null;
 }
@@ -251,7 +251,7 @@ export interface CardPollCreate_radioOption4_action_EmailAction {
   parentStepId: string | null;
 }
 
-export type CardPollCreate_radioOption4_action = CardPollCreate_radioOption4_action_PhoneAction | CardPollCreate_radioOption4_action_NavigateToBlockAction | CardPollCreate_radioOption4_action_LinkAction | CardPollCreate_radioOption4_action_EmailAction;
+export type CardPollCreate_radioOption4_action = CardPollCreate_radioOption4_action_ChatAction | CardPollCreate_radioOption4_action_NavigateToBlockAction | CardPollCreate_radioOption4_action_LinkAction | CardPollCreate_radioOption4_action_EmailAction;
 
 export interface CardPollCreate_radioOption4 {
   __typename: "RadioOptionBlock";

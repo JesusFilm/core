@@ -78,7 +78,7 @@ describe('blockUpdateChatAction mutation', () => {
           block: { disconnect: true },
           gtmEventName: null,
           chatUrl: 'https://wa.me/1234567890',
-          target: null,
+          target: null
         }
       })
 
@@ -88,7 +88,7 @@ describe('blockUpdateChatAction mutation', () => {
             __typename: 'ChatAction',
             chatUrl: 'https://wa.me/1234567890',
             target: null,
-            gtmEventName: null,
+            gtmEventName: null
           }
         }
       })
@@ -101,7 +101,7 @@ describe('blockUpdateChatAction mutation', () => {
         parentBlockId: '1',
         gtmEventName: null,
         chatUrl: 'https://t.me/username',
-        target: null,
+        target: null
       } as any)
 
       const result = await authClient({
@@ -111,7 +111,7 @@ describe('blockUpdateChatAction mutation', () => {
           input: {
             gtmEventName: null,
             chatUrl: 'https://t.me/username',
-            target: null,
+            target: null
           }
         }
       })
@@ -132,7 +132,7 @@ describe('blockUpdateChatAction mutation', () => {
           block: { disconnect: true },
           gtmEventName: null,
           chatUrl: 'https://t.me/username',
-          target: null,
+          target: null
         }
       })
 
@@ -142,7 +142,7 @@ describe('blockUpdateChatAction mutation', () => {
             __typename: 'ChatAction',
             chatUrl: 'https://t.me/username',
             target: null,
-            gtmEventName: null,
+            gtmEventName: null
           }
         }
       })
@@ -160,7 +160,7 @@ describe('blockUpdateChatAction mutation', () => {
           input: {
             gtmEventName: null,
             chatUrl: 'https://wa.me/1234567890',
-            target: null,
+            target: null
           }
         }
       })
@@ -185,7 +185,7 @@ describe('blockUpdateChatAction mutation', () => {
           input: {
             gtmEventName: null,
             chatUrl: 'https://wa.me/1234567890',
-            target: null,
+            target: null
           }
         }
       })
@@ -211,7 +211,7 @@ describe('blockUpdateChatAction mutation', () => {
           input: {
             gtmEventName: null,
             chatUrl: 'https://wa.me/1234567890',
-            target: null,
+            target: null
           }
         }
       })

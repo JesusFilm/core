@@ -9,8 +9,8 @@ import { RadioOptionBlockCreateInput, ButtonVariant, ButtonColor, ButtonSize, Bu
 // GraphQL mutation operation: RadioOptionBlockCreate
 // ====================================================
 
-export interface RadioOptionBlockCreate_radioOptionBlockCreate_action_PhoneAction {
-  __typename: "PhoneAction";
+export interface RadioOptionBlockCreate_radioOptionBlockCreate_action_ChatAction {
+  __typename: "ChatAction" | "PhoneAction";
   parentBlockId: string;
   gtmEventName: string | null;
 }
@@ -40,7 +40,7 @@ export interface RadioOptionBlockCreate_radioOptionBlockCreate_action_EmailActio
   parentStepId: string | null;
 }
 
-export type RadioOptionBlockCreate_radioOptionBlockCreate_action = RadioOptionBlockCreate_radioOptionBlockCreate_action_PhoneAction | RadioOptionBlockCreate_radioOptionBlockCreate_action_NavigateToBlockAction | RadioOptionBlockCreate_radioOptionBlockCreate_action_LinkAction | RadioOptionBlockCreate_radioOptionBlockCreate_action_EmailAction;
+export type RadioOptionBlockCreate_radioOptionBlockCreate_action = RadioOptionBlockCreate_radioOptionBlockCreate_action_ChatAction | RadioOptionBlockCreate_radioOptionBlockCreate_action_NavigateToBlockAction | RadioOptionBlockCreate_radioOptionBlockCreate_action_LinkAction | RadioOptionBlockCreate_radioOptionBlockCreate_action_EmailAction;
 
 export interface RadioOptionBlockCreate_radioOptionBlockCreate {
   __typename: "RadioOptionBlock";
