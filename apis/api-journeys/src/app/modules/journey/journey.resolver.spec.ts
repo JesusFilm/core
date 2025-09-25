@@ -1132,7 +1132,8 @@ describe('JourneyResolver', () => {
         parentBlockId: 'stepId',
         blockId: 'nextStepId',
         customizable: null,
-        parentStepId: null
+        parentStepId: null,
+        chatPlatform: null
       }
     }
     const duplicatedButton = {

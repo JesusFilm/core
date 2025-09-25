@@ -19,7 +19,8 @@ const emailSchema = z.object({
 const linkActionInputSchema = z.object({
   gtmEventName: z.string().nullish(),
   url: z.string(),
-  target: z.string().nullish()
+  target: z.string().nullish(),
+  chatPlatform: z.undefined() // Explicitly exclude chatPlatform
 })
 
 const emailActionInputSchema = z.object({
@@ -42,7 +43,7 @@ const chatActionInputSchema = z.object({
   gtmEventName: z.string().nullish(),
   url: z.string(),
   target: z.string().nullish(),
-  chatPlatform: z.nativeEnum(MessagePlatform).nullish()
+  chatPlatform: z.nativeEnum(MessagePlatform)
 })
 
 const ACTION_UPDATE_RESET: Prisma.ActionUpdateInput = {
@@ -50,6 +51,7 @@ const ACTION_UPDATE_RESET: Prisma.ActionUpdateInput = {
   target: null,
   email: null,
   phone: null,
+  chatPlatform: null,
   journey: { disconnect: true },
   block: { disconnect: true }
 }
@@ -78,24 +80,24 @@ builder.mutationField('blockUpdateAction', (t) =>
       const { id, input } = args
       const user = context.user
 
-      const { success: isLink, data: linkInput } =
-        linkActionInputSchema.safeParse(input)
-      const { success: isEmail, data: emailInput } =
-        emailActionInputSchema.safeParse(input)
-      const { success: isNavigateToBlock, data: navigateToBlockInput } =
-        navigateToBlockActionInputSchema.safeParse(input)
-      const { success: isPhone, data: phoneInput } =
-        phoneActionInputSchema.safeParse(input)
-      const { success: isChat, data: chatInput } =
-        chatActionInputSchema.safeParse(input)
+            const { success: isLink, data: linkInput } =
+              linkActionInputSchema.safeParse(input)
+            const { success: isEmail, data: emailInput } =
+              emailActionInputSchema.safeParse(input)
+            const { success: isNavigateToBlock, data: navigateToBlockInput } =
+              navigateToBlockActionInputSchema.safeParse(input)
+            const { success: isPhone, data: phoneInput } =
+              phoneActionInputSchema.safeParse(input)
+            const { success: isChat, data: chatInput } =
+              chatActionInputSchema.safeParse(input)
 
-      const numberOfValidInputs = [
-        isLink,
-        isEmail,
-        isNavigateToBlock,
-        isPhone,
-        isChat
-      ].filter(Boolean).length
+            const numberOfValidInputs = [
+              isLink,
+              isEmail,
+              isNavigateToBlock,
+              isPhone,
+              isChat
+            ].filter(Boolean).length
 
       if (numberOfValidInputs > 1)
         throw new GraphQLError('invalid combination of inputs provided', {

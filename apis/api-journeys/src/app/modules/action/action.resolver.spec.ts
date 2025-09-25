@@ -33,7 +33,8 @@ describe('ActionResolver', () => {
     countryCode: null,
     contactAction: null,
     customizable: null,
-    parentStepId: null
+    parentStepId: null,
+    chatPlatform: null
   }
   const linkAction: Action = {
     parentBlockId: 'parentBlockId',
@@ -48,7 +49,8 @@ describe('ActionResolver', () => {
     countryCode: null,
     contactAction: null,
     customizable: null,
-    parentStepId: null
+    parentStepId: null,
+    chatPlatform: null
   }
   const navigateToBlockAction: Action = {
     parentBlockId: 'parentBlockId',
@@ -63,7 +65,8 @@ describe('ActionResolver', () => {
     countryCode: null,
     contactAction: null,
     customizable: null,
-    parentStepId: null
+    parentStepId: null,
+    chatPlatform: null
   }
   const phoneAction: Action = {
     parentBlockId: 'parentBlockId',
@@ -78,7 +81,8 @@ describe('ActionResolver', () => {
     countryCode: 'US',
     contactAction: null,
     customizable: null,
-    parentStepId: null
+    parentStepId: null,
+    chatPlatform: null
   }
 
   beforeEach(async () => {

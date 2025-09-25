@@ -27,6 +27,7 @@ input BlockUpdateActionInput {
   countryCode: String
   target: String
   blockId: String
+  chatPlatform: MessagePlatform
 }
 
 input BlocksFilter {
