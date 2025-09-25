@@ -100,6 +100,45 @@
   "Search languages": "Search languages",
   "No languages found": "No languages found",
   "No languages available": "No languages available",
+  "feltNeeds": {
+    "sectionLabel": "Felt needs",
+    "sectionTitle": "Find a video for someone you care about",
+    "sectionDescription": "Choose a topic to see videos that speak to a specific felt need, or search for something else that fits your friend.",
+    "sliderLabel": "Popular felt needs",
+    "searchLabel": "Search for a felt need",
+    "searchPlaceholder": "Type a need or topic (e.g. anxiety, grief, hope)",
+    "shareHeading": "How to share",
+    "genericShareTip": "Let them know you found this video about {{topic}} and invite them to watch it, then follow up afterward to talk about it.",
+    "idleShareTip": "Select a felt need or type your own to get ideas for how to share the video.",
+    "previousLabel": "Scroll felt needs backward",
+    "nextLabel": "Scroll felt needs forward",
+    "options": {
+      "anxiety": {
+        "label": "Anxiety",
+        "shareTip": "Send a caring message acknowledging their anxiety and include this video so they can pause, breathe, and reflect on God's peace."
+      },
+      "loneliness": {
+        "label": "Loneliness",
+        "shareTip": "Share the link with a note that they are not alone and offer to watch together, even virtually."
+      },
+      "grief": {
+        "label": "Grief",
+        "shareTip": "Let them know you are present in their grief and suggest watching when they're ready, then ask how you can keep supporting them."
+      },
+      "purpose": {
+        "label": "Purpose",
+        "shareTip": "Invite them to watch and talk about what purpose could look like in this season of life."
+      },
+      "forgiveness": {
+        "label": "Forgiveness",
+        "shareTip": "Share the video along with a story of how forgiveness has impacted you, and ask if you can pray with them."
+      },
+      "hope": {
+        "label": "Hope",
+        "shareTip": "Tell them this gave you hope and you'd love to hear what stands out to them after watching."
+      }
+    }
+  },
   "popularSearches": [
     "Jesus Film",
     "Bible Stories",

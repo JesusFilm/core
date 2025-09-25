@@ -56,3 +56,30 @@
 - Consider moving category metadata to CMS-driven config if design requires frequent updates.
 - Evaluate migrating remaining MUI layout primitives to Tailwind equivalents in a future iteration.
 
+# Felt Needs Discovery Section
+
+## Goals
+- [x] Create a felt needs discovery section on the Watch home page with preset chips, search, and Algolia-powered results.
+- [x] Surface contextual share guidance that adapts to the selected chip or typed felt need.
+- [x] Cover the new behaviour with unit tests and document the interaction flow.
+
+## Obstacles
+- InstantSearch state is shared across the page, so the new section had to avoid interfering with the floating search overlay.
+- Needed reusable styling primitives for pill chips and slider controls without introducing new UI dependencies.
+
+## Resolutions
+- Added the section to the outer InstantSearch index and kept the floating overlay wrapped in its own `<Index>` to isolate state.
+- Reused shadcn button variants and Tailwind utilities to style the chip carousel with smooth scroll helpers.
+
+## Test Coverage
+- `pnpm test watch -- SectionFeltNeeds`
+
+## User Flows
+- Open Watch home → felt needs section renders with default “Anxiety” results.
+- Tap a felt need chip → Algolia refines, chip highlights, share tip updates.
+- Type a custom felt need → grid updates instantly and generic share guidance references the typed topic.
+
+## Follow-up Ideas
+- Source felt need options and share guidance from CMS content so they can be curated without deployments.
+- Expand share tips with action-specific CTAs (watch together, send follow-up text) and localized query suggestions.
+

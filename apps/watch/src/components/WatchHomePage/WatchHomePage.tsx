@@ -12,6 +12,7 @@ import { SearchComponent } from '../SearchComponent'
 
 import { AboutProjectSection } from './AboutProjectSection'
 import { CollectionsRail } from './CollectionsRail'
+import { SectionFeltNeeds } from './SectionFeltNeeds'
 import { SeeAllVideos } from './SeeAllVideos'
 import { WatchHero } from './WatchHero'
 import { useWatchHeroCarousel } from './useWatchHeroCarousel'
@@ -75,6 +76,7 @@ function WatchHomePageBody({ languageId }: WatchHomePageProps): ReactElement {
             nested
           >
             <SeeAllVideos />
+            <SectionFeltNeeds languageId={languageId} />
             <AboutProjectSection />
           </ThemeProvider>
         </div>
