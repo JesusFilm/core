@@ -54,6 +54,7 @@ nx run-many --target=prisma-seed
 ```
 
 ### Update databases
+
 When you need to bring your development databases up to date, use the following script.
 You might need to do this after doing a "git pull" that has fetched some database changes.
 You may also need to do this when switching branches.
@@ -64,7 +65,9 @@ nx run-many -t prisma-generate && nx run-many -t prisma-migrate && nx run-many -
 ```
 
 ### Hard database reset
+
 When you need to do a hard database reset, i.e. fully recreate all the development databases, you can use the following script. It takes about 15 minutes to run.
+
 ```shell
 #!/bin/sh
 nx run-many -t prisma-reset
