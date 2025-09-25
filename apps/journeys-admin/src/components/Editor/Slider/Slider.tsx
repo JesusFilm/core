@@ -154,7 +154,6 @@ export function Slider(): ReactElement {
       style={{
         height: `calc(100svh - ${EDIT_TOOLBAR_HEIGHT}px)`
       }}
-      className={showAnalytics === true ? 'swiper-no-swiping' : ''}
     >
       {/* back (mobile top) button */}
       <Box

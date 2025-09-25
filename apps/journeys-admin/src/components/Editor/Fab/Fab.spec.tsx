@@ -73,38 +73,6 @@ describe('Fab', () => {
       expect(screen.getByRole('button', { name: 'Add Block' })).toBeDisabled()
     })
 
-    it('should be disabled when Analytics Overlay is on', () => {
-      const analyticsOverlayState = {
-        ...state,
-        showAnalytics: true
-      }
-
-      render(
-        <EditorProvider initialState={analyticsOverlayState}>
-          <Fab variant="canvas" />
-        </EditorProvider>
-      )
-
-      expect(screen.getByRole('button', { name: 'Add Block' })).toBeDisabled()
-    })
-
-    it('should be enabled when Analytics Overlay is off', () => {
-      const analyticsOverlayState = {
-        ...state,
-        showAnalytics: false
-      }
-
-      render(
-        <EditorProvider initialState={analyticsOverlayState}>
-          <Fab variant="canvas" />
-        </EditorProvider>
-      )
-
-      expect(
-        screen.getByRole('button', { name: 'Add Block' })
-      ).not.toBeDisabled()
-    })
-
     it('should handle add', () => {
       render(
         <EditorProvider initialState={state}>

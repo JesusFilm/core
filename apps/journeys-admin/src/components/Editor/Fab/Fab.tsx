@@ -27,8 +27,7 @@ export function Fab({ variant }: FabProps): ReactElement {
       selectedStep,
       steps,
       activeSlide,
-      activeContent,
-      showAnalytics
+      activeContent
     },
     dispatch
   } = useEditor()
@@ -69,7 +68,7 @@ export function Fab({ variant }: FabProps): ReactElement {
       block.__typename === 'VideoBlock' && cardBlock.coverBlockId !== block.id
   )
 
-  const disabled = steps == null || videoBlock != null || showAnalytics === true
+  const disabled = steps == null || videoBlock != null
 
   const fabIn =
     variant === 'mobile'

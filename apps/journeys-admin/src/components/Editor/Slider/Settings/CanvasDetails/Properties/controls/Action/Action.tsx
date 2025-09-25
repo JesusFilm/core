@@ -9,6 +9,7 @@ import { ReactElement, useEffect, useState } from 'react'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
+import { useFlags } from '@core/shared/ui/FlagsProvider'
 import ChevronDownIcon from '@core/shared/ui/icons/ChevronDown'
 
 import {
@@ -23,6 +24,16 @@ import { EmailAction } from './EmailAction'
 import { LinkAction } from './LinkAction'
 import { NavigateToBlockAction } from './NavigateToBlockAction'
 import { ActionValue, actions, getAction } from './utils/actions'
+
+// Type guard to check if a block has an action property
+function hasAction(
+  block: TreeBlock | undefined
+): block is
+  | TreeBlock<ButtonBlock>
+  | TreeBlock<SignUpBlock>
+  | TreeBlock<VideoBlock> {
+  return block != null && 'action' in block
+}
 
 export function Action(): ReactElement {
   const {
@@ -39,7 +50,10 @@ export function Action(): ReactElement {
     | TreeBlock<VideoBlock>
     | undefined
   const [action, setAction] = useState<ActionValue>(
-    getAction(t, selectedBlock?.action?.__typename).value
+    getAction(
+      t,
+      hasAction(selectedBlock) ? selectedBlock.action?.__typename : undefined
+    ).value
   )
 
   const isSubmitButton =
@@ -56,11 +70,16 @@ export function Action(): ReactElement {
     : labels
 
   useEffect(() => {
-    setAction(getAction(t, selectedBlock?.action?.__typename).value)
+    setAction(
+      getAction(
+        t,
+        hasAction(selectedBlock) ? selectedBlock.action?.__typename : undefined
+      ).value
+    )
   }, [selectedBlock?.action?.__typename])
 
   function removeAction(): void {
-    if (selectedBlock == null) return
+    if (!hasAction(selectedBlock)) return
 
     const { id, action, __typename: blockTypename } = selectedBlock
     addAction({

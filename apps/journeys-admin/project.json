@@ -20,7 +20,7 @@
         "production": {
           "commands": [
             "cp -r libs/locales apps/journeys-admin/public",
-            "CI=true nx _build journeys-admin --prod",
+            "NODE_OPTIONS='--max-old-space-size=4096' CI=true nx _build journeys-admin --prod",
             "cp apps/journeys-admin/next-logger.config.js dist/apps/journeys-admin/next-logger.config.js"
           ]
         }

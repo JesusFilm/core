@@ -34,17 +34,6 @@ Microservices typically make use of a variety of database stores. The following 
 nx run-many --target=prisma-generate --parallel=1
 ```
 
-Once that has completed, run:
-
-```shell
-nx run-many --target=data-import
-```
-
-(Note: When running data-import, it is recommended that you run it from the main branch.
-This typically takes about 12 minutes.)
-
-Once that has completed, run:
-
 ```shell
 nx run-many --target=prisma-migrate
 ```
@@ -53,17 +42,13 @@ nx run-many --target=prisma-migrate
 nx run-many --target=prisma-seed
 ```
 
-Here are all the above commands, and the reset, in one script:
+Once that has completed, run:
 
 ```shell
-#!/bin/sh
-nx run-many --target=prisma-reset
-nx run-many --target=prisma-generate --parallel=1
 nx run-many --target=data-import
-nx run-many --target=prisma-migrate
-nx run-many --target=prisma-seed
-
 ```
+
+(Note: When running data-import, it is recommended that you run it from the main branch.)
 
 ## Common Issues
 

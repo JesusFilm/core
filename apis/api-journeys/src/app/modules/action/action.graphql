@@ -4,11 +4,6 @@ interface Action {
   gtmEventName: String
 }
 
-enum ContactActionType {
-  call
-  text
-}
-
 type NavigateToBlockAction implements Action @shareable {
   parentBlockId: ID!
   parentBlock: Block!
@@ -41,5 +36,4 @@ type PhoneAction implements Action @shareable {
   gtmEventName: String
   phone: String!
   countryCode: String!
-  contactAction: ContactActionType!
 }

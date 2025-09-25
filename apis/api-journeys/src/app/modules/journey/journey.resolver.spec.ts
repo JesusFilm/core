@@ -1127,7 +1127,6 @@ describe('JourneyResolver', () => {
         email: null,
         phone: null,
         countryCode: null,
-        contactAction: null,
         updatedAt: new Date(),
         parentBlockId: 'stepId',
         blockId: 'nextStepId',
