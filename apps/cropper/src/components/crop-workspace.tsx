@@ -96,6 +96,7 @@ export function CropWorkspace({
   const [isSettingsExpanded, setIsSettingsExpanded] = useState(false)
   const [showSceneIndicator, setShowSceneIndicator] = useState(false)
   const videoRef = useRef<HTMLVideoElement | null>(null)
+  const videoInitializedRef = useRef(false)
 
   // Custom bind function that also stores the element reference
   const customBindVideo = useCallback((element: HTMLVideoElement | null) => {
@@ -176,8 +177,16 @@ export function CropWorkspace({
   const detectionHistoryRef = useRef<Array<{ time: number; x: number; y: number }>>([])
   const lastSceneChangeRef = useRef(lastSceneChangeLevel)
 
+  // Store active keyframe window in ref to avoid triggering re-renders
+  const activeKeyframeWindowRef = useRef(activeKeyframe?.window)
+
+  // Update ref when activeKeyframe changes, but don't trigger the effect
   useEffect(() => {
-    if (!autoTrackingEnabled || !crop || !detectionOverlay.length || !activeKeyframe) {
+    activeKeyframeWindowRef.current = activeKeyframe?.window
+  }, [activeKeyframe?.window])
+
+  useEffect(() => {
+    if (!autoTrackingEnabled || !crop || !detectionOverlay.length || !activeKeyframeWindowRef.current) {
       return
     }
 
@@ -309,7 +318,6 @@ export function CropWorkspace({
     autoTrackingEnabled,
     crop,
     detectionOverlay,
-    activeKeyframe,
     onUpdateActiveKeyframe,
     focusChangeThreshold
   ])
@@ -330,6 +338,29 @@ export function CropWorkspace({
   const handleSceneIndicatorHide = useCallback(() => {
     setShowSceneIndicator(false)
   }, [])
+
+  // Initialize video element attributes once per element to avoid render loops
+  useEffect(() => {
+    const element = videoRef.current
+    if (!element || videoInitializedRef.current) return
+
+    // Set attributes once per element lifetime
+    element.autoplay = false
+    element.playsInline = true
+    element.preload = 'metadata'
+
+    // Mark as initialized to prevent re-setup
+    videoInitializedRef.current = true
+
+    console.log('🎬 Video element initialized once')
+  }, []) // Empty deps - run once per component lifetime
+
+  // Reset initialization flag when video changes
+  useEffect(() => {
+    if (!video) {
+      videoInitializedRef.current = false
+    }
+  }, [video])
 
 
   const cropOverlay = useMemo(() => {
@@ -369,41 +400,22 @@ export function CropWorkspace({
 
   const handleVideoElementRef = useCallback(
     (element: HTMLVideoElement | null) => {
-      if (element) {
-        // Prevent any autoplay by explicitly setting it to false
-        element.autoplay = false
-        element.setAttribute('autoplay', 'false')
+      try {
+        // Reset initialization flag when element changes
+        if (videoRef.current !== element) {
+          videoInitializedRef.current = false
+        }
 
-        // Monitor for autoplay attribute changes
-        const observer = new MutationObserver((mutations) => {
-          mutations.forEach((mutation) => {
-            if (mutation.type === 'attributes' && mutation.attributeName === 'autoplay') {
-              // Immediately revert any autoplay changes
-              if (element.autoplay) {
-                element.autoplay = false
-                element.setAttribute('autoplay', 'false')
-              }
-            }
-          })
-        })
-
-        observer.observe(element, {
-          attributes: true,
-          attributeOldValue: true,
-          attributeFilter: ['autoplay']
-        })
-
-        // Clean up observer when element is removed
-        const cleanup = () => observer.disconnect()
-        element.addEventListener('DOMNodeRemoved', cleanup)
-
-        // Useful diagnostics while the video loading sequence settles
-        const inDom = typeof document !== 'undefined' && document.body.contains(element)
-      } else {
-        console.log(`🎬 [DEBUG] Video element unmounted`)
+        customBindVideo(element)
+      } catch (error) {
+        console.error('Error in handleVideoElementRef:', error)
+        // Still try to bind video even if there's an error
+        try {
+          customBindVideo(element)
+        } catch (bindError) {
+          console.error('Error in customBindVideo fallback:', bindError)
+        }
       }
-
-      customBindVideo(element)
     },
     [customBindVideo]
   )

@@ -68,8 +68,8 @@ const INITIAL_STATE: CropperState = {
   detectionStatus: 'idle',
   sceneChanges: [],
   sceneDetectionStatus: 'idle',
-  autoTrackingEnabled: true,
-  sceneChangeDetectionEnabled: true,
+  autoTrackingEnabled: false, // Disabled by default to prevent freezing
+  sceneChangeDetectionEnabled: false, // Disabled by default to prevent freezing
   lastSceneChangeLevel: null
 }
 
@@ -90,8 +90,8 @@ function reducer(state: CropperState, action: CropperAction): CropperState {
         detectionStatus: 'idle',
         sceneChanges: [],
         sceneDetectionStatus: 'idle',
-        autoTrackingEnabled: true,
-        sceneChangeDetectionEnabled: true,
+        autoTrackingEnabled: false, // Keep disabled to prevent freezing
+        sceneChangeDetectionEnabled: false, // Keep disabled to prevent freezing
         lastSceneChangeLevel: null
       }
     }
@@ -304,6 +304,14 @@ export function useCropper(): UseCropperResult {
   const sceneDetectionControllerRef = useRef<SceneDetectionWorkerController | null>(null)
 
   const setVideo = useCallback((video: Video | null) => {
+    // Clean up existing workers before setting new video
+    disposeDetectionRef.current?.()
+    disposeDetectionRef.current = null
+    disposeSceneDetectionRef.current?.()
+    disposeSceneDetectionRef.current = null
+    detectionControllerRef.current = null
+    sceneDetectionControllerRef.current = null
+
     dispatch({ type: 'SET_VIDEO', video })
   }, [])
 
