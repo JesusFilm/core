@@ -75,15 +75,27 @@ export function SocialScreen({
         variant="contained"
         color="secondary"
         onClick={handleNext}
-        endIcon={<ArrowRightIcon />}
         data-testid="DoneButton"
         sx={{
           width: BUTTON_NEXT_STEP_WIDTH,
           height: BUTTON_NEXT_STEP_HEIGHT,
+          alignSelf: 'center',
           borderRadius: '8px'
         }}
       >
-        {t('Done')}
+        <Stack direction="row" alignItems="center" gap={1}>
+          <Typography
+            sx={{
+              fontWeight: 'bold',
+              display: { xs: 'none', sm: 'block' }
+            }}
+          >
+            {t('Done')}
+          </Typography>
+          <ArrowRightIcon
+            sx={{ fontSize: { xs: '24px', sm: '16px' } }}
+          />
+        </Stack>
       </Button>
     </Stack>
   )
