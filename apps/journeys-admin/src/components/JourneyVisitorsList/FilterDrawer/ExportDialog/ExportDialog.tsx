@@ -115,7 +115,7 @@ export function ExportDialog({
           onClick={handleExport}
           loading={eventsDownloading || contactsDownloading}
           disabled={
-            (exportBy === '') ||
+            exportBy === '' ||
             (exportBy === 'Visitor Actions' && selectedEvents.length === 0) ||
             (exportBy === 'Contact Data' && contactData.length === 0)
           }
