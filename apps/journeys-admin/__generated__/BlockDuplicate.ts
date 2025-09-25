@@ -284,6 +284,7 @@ export interface BlockDuplicate_blockDuplicate_TextResponseBlock {
   type: TextResponseType | null;
   routeId: string | null;
   integrationId: string | null;
+  hideLabel: boolean | null;
 }
 
 export interface BlockDuplicate_blockDuplicate_TypographyBlock_settings {
