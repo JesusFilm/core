@@ -1,4 +1,4 @@
-import { fireEvent, render } from '@testing-library/react'
+import { fireEvent, render, screen, within } from '@testing-library/react'
 
 import { VideoContentFields } from '../../../../__generated__/VideoContentFields'
 import { VideoProvider } from '../../../libs/videoContext'
@@ -9,20 +9,24 @@ import { VideoContent } from './VideoContent'
 const video: VideoContentFields = videos[0]
 
 describe('VideoContent', () => {
-  it('should switch tabs', () => {
-    const { getByRole, getByText } = render(
+  it('should show sharing ideas wall when tab selected', () => {
+    render(
       <VideoProvider value={{ content: video }}>
         <VideoContent />
       </VideoProvider>
     )
-    fireEvent.click(
-      getByRole('tab', { name: 'Discussion Discussion Questions' })
-    )
-    expect(getByText(video.studyQuestions[0].value)).toBeInTheDocument()
+    fireEvent.click(screen.getByRole('tab', { name: 'Sharing Ideas' }))
+
+    const ideasWall = screen.getByTestId('SharingIdeasWall')
+
+    expect(ideasWall).toBeInTheDocument()
+    expect(
+      within(ideasWall).getByText(video.studyQuestions[0].value)
+    ).toBeInTheDocument()
   })
 
   it('should hide the discussion questions tab if no questions', () => {
-    const { queryByRole } = render(
+    const { queryByRole, getByRole } = render(
       <VideoProvider value={{ content: { ...video, studyQuestions: [] } }}>
         <VideoContent />
       </VideoProvider>
@@ -32,6 +36,7 @@ describe('VideoContent', () => {
         name: 'Discussion Questions'
       })
     ).not.toBeInTheDocument()
+    expect(getByRole('tab', { name: 'Sharing Ideas' })).toBeInTheDocument()
   })
 
   it('should only show non-primary questions when they exist', () => {
@@ -58,7 +63,7 @@ describe('VideoContent', () => {
       }
     ]
 
-    const { getByRole, getByText, queryByText } = render(
+    const { getByRole } = render(
       <VideoProvider value={{ content: { ...video, studyQuestions } }}>
         <VideoContent />
       </VideoProvider>
@@ -68,12 +73,24 @@ describe('VideoContent', () => {
       getByRole('tab', { name: 'Discussion Discussion Questions' })
     )
 
+    const discussionPanel = screen.getByRole('tabpanel', {
+      name: 'Discussion Discussion Questions'
+    })
+
     // Should show non-primary questions
-    expect(getByText('Non-Primary Question 1')).toBeInTheDocument()
-    expect(getByText('Non-Primary Question 2')).toBeInTheDocument()
+    expect(
+      within(discussionPanel).getByText('Non-Primary Question 1')
+    ).toBeInTheDocument()
+    expect(
+      within(discussionPanel).getByText('Non-Primary Question 2')
+    ).toBeInTheDocument()
 
     // Should not show primary questions
-    expect(queryByText('Primary Question 1')).not.toBeInTheDocument()
-    expect(queryByText('Primary Question 2')).not.toBeInTheDocument()
+    expect(
+      within(discussionPanel).queryByText('Primary Question 1')
+    ).not.toBeInTheDocument()
+    expect(
+      within(discussionPanel).queryByText('Primary Question 2')
+    ).not.toBeInTheDocument()
   })
 })

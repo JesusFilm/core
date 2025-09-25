@@ -16,6 +16,7 @@ import {
 import { TabPanel, tabA11yProps } from '@core/shared/ui/TabPanel'
 
 import { useVideo } from '../../../libs/videoContext'
+import { SharingIdeasWall } from '../../SharingIdeasWall'
 import { TextFormatter } from '../../TextFormatter'
 
 export function VideoContent(): ReactElement {
@@ -40,6 +41,30 @@ export function VideoContent(): ReactElement {
 
     return []
   }, [studyQuestions])
+
+  const sharingIdeas = useMemo(() => {
+    if (filteredStudyQuestions.length > 0) {
+      return filteredStudyQuestions.map((question) => question.value)
+    }
+
+    const descriptionText = last(description)?.value?.trim()
+
+    if (descriptionText != null && descriptionText.length > 0) {
+      const sentences = descriptionText
+        .split(/(?<=[.!?])\s+/)
+        .filter((sentence) => sentence.length > 0)
+        .slice(0, 3)
+
+      if (sentences.length > 0) return sentences
+    }
+
+    return [
+      t('If you could ask the creator of this video a question, what would it be?')
+    ]
+  }, [description, filteredStudyQuestions, t])
+
+  const hasDiscussionQuestions = filteredStudyQuestions.length !== 0
+  const sharingTabIndex = hasDiscussionQuestions ? 2 : 1
 
   const handleTabChange = (
     _event: SyntheticEvent<Element, Event>,
@@ -92,7 +117,7 @@ export function VideoContent(): ReactElement {
           }
           {...tabA11yProps('description', 0)}
         />
-        {filteredStudyQuestions.length !== 0 && (
+        {hasDiscussionQuestions && (
           <Tab
             data-testid="discussion"
             label={
@@ -114,6 +139,15 @@ export function VideoContent(): ReactElement {
             {...tabA11yProps('discussion-questions', 1)}
           />
         )}
+        <Tab
+          data-testid="sharing-ideas"
+          label={
+            <Typography variant="overline1">
+              {t('Sharing Ideas')}
+            </Typography>
+          }
+          {...tabA11yProps('sharing-ideas', sharingTabIndex)}
+        />
       </Tabs>
       <TabPanel name="description" value={tabValue} index={0}>
         <TextFormatter
@@ -128,7 +162,7 @@ export function VideoContent(): ReactElement {
           {last(description)?.value}
         </TextFormatter>
       </TabPanel>
-      {filteredStudyQuestions.length !== 0 && (
+      {hasDiscussionQuestions && (
         <TabPanel name="discussion-questions" value={tabValue} index={1}>
           <Stack
             direction="column"
@@ -169,6 +203,13 @@ export function VideoContent(): ReactElement {
           </Stack>
         </TabPanel>
       )}
+      <TabPanel
+        name="sharing-ideas"
+        value={tabValue}
+        index={sharingTabIndex}
+      >
+        <SharingIdeasWall ideas={sharingIdeas} />
+      </TabPanel>
     </Box>
   )
 }
