@@ -1,3 +1,4 @@
+import InputAdornment from '@mui/material/InputAdornment'
 import TextField, { TextFieldProps } from '@mui/material/TextField'
 import { Form, Formik } from 'formik'
 import { ClipboardEvent, ComponentProps, ReactElement, ReactNode } from 'react'
@@ -75,8 +76,16 @@ export function TextFieldForm({
             error={Boolean(errors[id])}
             helperText={errors[id] != null ? errors[id] : helperText}
             InputProps={{
-              startAdornment: startIcon,
-              endAdornment: endIcon
+              startAdornment: startIcon ? (
+                <InputAdornment data-testid="startAdornment" position="start">
+                  {startIcon}
+                </InputAdornment>
+              ) : undefined,
+              endAdornment: endIcon ? (
+                <InputAdornment data-testid="endAdornment" position="end">
+                  {endIcon}
+                </InputAdornment>
+              ) : undefined
             }}
             onPaste={onPaste}
             onBlur={async (e) => {
