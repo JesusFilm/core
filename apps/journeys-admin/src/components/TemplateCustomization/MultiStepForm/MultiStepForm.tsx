@@ -15,7 +15,7 @@ import {
   SocialScreen
 } from './Screens'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
-import ChevronRight from '@core/shared/ui/icons/ChevronRight'
+import Edit3 from '@core/shared/ui/icons/Edit3'
 import {
   getCustomizeFlowConfig,
   CustomizationScreen
@@ -106,14 +106,15 @@ export function MultiStepForm(): ReactElement {
           <Button
             variant="text"
             color="primary"
-            endIcon={<ChevronRight />}
+            startIcon={<Edit3 />}
             sx={{
               alignSelf: 'flex-end',
               mr: '4px',
               fontWeight: 'bold',
               visibility: activeScreen === 'language' ? 'hidden' : 'visible',
-              '& .MuiButton-endIcon': {
-                marginLeft: '0px'
+              '& .MuiButton-startIcon': {
+                marginRight: 0.3,
+                marginTop: 1
               }
             }}
             disabled={journey?.id == null}
