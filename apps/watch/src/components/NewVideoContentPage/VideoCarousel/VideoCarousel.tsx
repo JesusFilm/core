@@ -122,17 +122,24 @@ export function VideoCarousel({
 
   // Check every 15 seconds and scroll to end if not already there (only in inline playback mode)
   useEffect(() => {
-    if (mode !== 'inlinePlayback') return
+    // if (mode !== 'inlinePlayback') return
     const interval = setInterval(() => {
       if (swiperRef.current && computedSlides.length > 0) {
-        const lastSlideIndex = computedSlides.length - 1
+        // Find the current video index
+        const currentVideoIndex = computedSlides.findIndex((s) =>
+          isVideoSlide(s) ? s.video.id === activeVideoId : false
+        )
 
-        swiperRef.current.slideTo(lastSlideIndex, 1800)
+        // Only scroll to end if current playing card is not one of the first 5 cards
+        if (currentVideoIndex >= 5) {
+          const lastSlideIndex = computedSlides.length - 1
+          swiperRef.current.slideTo(lastSlideIndex, 1800)
+        }
       }
     }, 15000)
 
     return () => clearInterval(interval)
-  }, [computedSlides.length])
+  }, [computedSlides.length, activeVideoId, mode])
 
   // Handle keyboard navigation
   const handleKeyDown = (event: React.KeyboardEvent) => {
