@@ -12,9 +12,10 @@ import { SearchComponent } from '../SearchComponent'
 
 import { AboutProjectSection } from './AboutProjectSection'
 import { CollectionsRail } from './CollectionsRail'
+import { SectionLanguageMap } from './SectionLanguageMap'
 import { SeeAllVideos } from './SeeAllVideos'
-import { WatchHero } from './WatchHero'
 import { useWatchHeroCarousel } from './useWatchHeroCarousel'
+import { WatchHero } from './WatchHero'
 
 interface WatchHomePageProps {
   languageId?: string | undefined
@@ -78,6 +79,7 @@ function WatchHomePageBody({ languageId }: WatchHomePageProps): ReactElement {
           >
             <SeeAllVideos />
             <AboutProjectSection />
+            <SectionLanguageMap />
           </ThemeProvider>
         </div>
         <CollectionsRail languageId={languageId} />
