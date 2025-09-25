@@ -56,3 +56,31 @@
 - Consider moving category metadata to CMS-driven config if design requires frequent updates.
 - Evaluate migrating remaining MUI layout primitives to Tailwind equivalents in a future iteration.
 
+# Watch Home Creative Showcase Section
+
+## Goals
+- [x] Add a three-column creative showcase section that meets the embedded reference, style toggle, and language selector requirements.
+- [x] Cover the interactive video switching logic with focused component tests.
+
+## Implementation Strategy
+- [x] Model reusable video style and language configuration objects with sensible defaults.
+- [x] Build `SectionCreativeShowcase` with responsive layout, accessible controls, and deterministic data-testid hooks.
+- [x] Wire the section into `WatchHomePage` and author Jest specs for style and language changes.
+
+## Obstacles
+- External sample video hosts commonly used for demos responded with 403 errors through the development proxy.
+
+## Resolutions
+- Switched to Google’s `gtv-videos-bucket` sample assets which provide stable CORS-compatible MP4 files.
+
+## Test Coverage
+- `pnpm dlx jest --config apps/watch/jest.config.ts --runTestsByPath apps/watch/src/components/WatchHomePage/SectionCreativeShowcase.spec.tsx`
+
+## User Flows
+- Load the Watch homepage → scroll to the creative showcase section → tap **Cinematic** → preview swaps to the cinematic cut.
+- Open the language selector → choose **Spanish** → preview updates to the Spanish animated variant.
+
+## Follow-up Ideas
+- Replace hard-coded sample assets with curated ministry-approved clips sourced from the CMS.
+- Connect the section to existing localization metadata so the dropdown reflects available dubbing tracks dynamically.
+
