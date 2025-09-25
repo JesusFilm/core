@@ -33,18 +33,21 @@ export const yoga = createYoga<
     const payload = get(params, 'extensions.jwt.payload')
     const user = getUserFromPayload(payload, logger)
 
-    if (user != null)
+    if (user != null) {
+      const currentRoles =
+        (
+          await prisma.userRole.findUnique({
+            where: { userId: user?.id }
+          })
+        )?.roles ?? []
+
       return {
         ...initContextCache(),
         type: 'authenticated',
-        user,
-        currentRoles:
-          (
-            await prisma.userRole.findUnique({
-              where: { userId: user.id }
-            })
-          )?.roles ?? []
+        user: { ...user, roles: currentRoles },
+        currentRoles
       }
+    }
     const interopToken = request.headers.get('interop-token')
     const ipAddress = request.headers.get('x-forwarded-for')
     const interopContext = getInteropContext({ interopToken, ipAddress })

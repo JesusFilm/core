@@ -551,6 +551,225 @@ describe('videoVariant', () => {
         }
       ])
     })
+
+    it('should query videoVariants with languageId filter', async () => {
+      prismaMock.videoVariant.findMany.mockResolvedValueOnce([
+        {
+          id: 'videoVariantId',
+          videoId: 'videoId',
+          hls: null,
+          dash: null,
+          share: null,
+          duration: 768,
+          lengthInMilliseconds: null,
+          languageId: 'languageId1',
+          masterUrl: null,
+          masterWidth: null,
+          masterHeight: null,
+          edition: 'base',
+          slug: 'videoSlug',
+          downloadable: true,
+          published: true,
+          version: 1,
+          assetId: null,
+          muxVideoId: null,
+          brightcoveId: null,
+          videoEdition: {
+            id: 'videoEditionId',
+            videoId: 'videoId',
+            name: 'videoEditionName',
+            videoSubtitles: [],
+            _count: {
+              videoSubtitles: 0
+            }
+          },
+          muxVideo: null,
+          video: {
+            id: 'videoId',
+            published: true,
+            slug: 'video-slug',
+            label: 'shortFilm',
+            primaryLanguageId: 'languageId1',
+            noIndex: false,
+            childIds: [],
+            locked: false,
+            availableLanguages: ['languageId1'],
+            originId: null,
+            restrictDownloadPlatforms: [],
+            restrictViewPlatforms: [],
+            publishedAt: null
+          },
+          downloads: []
+        }
+      ] as VideoVariantAndIncludes[])
+
+      const data = await client({
+        document: VIDEO_VARIANTS_QUERY,
+        variables: {
+          input: {
+            languageId: 'languageId1'
+          }
+        }
+      })
+
+      expect(prismaMock.videoVariant.findMany).toHaveBeenCalledWith({
+        where: {
+          published: true,
+          languageId: 'languageId1'
+        },
+        include: {
+          downloads: true,
+          video: true,
+          videoEdition: {
+            include: {
+              _count: {
+                select: {
+                  videoSubtitles: true
+                }
+              },
+              videoSubtitles: {
+                where: {}
+              }
+            }
+          },
+          muxVideo: true
+        }
+      })
+
+      expect(data).toHaveProperty('data.videoVariants', [
+        {
+          id: 'videoVariantId',
+          videoId: 'videoId',
+          hls: null,
+          downloadable: true,
+          downloads: [],
+          videoEdition: {
+            id: 'videoEditionId',
+            name: 'videoEditionName'
+          },
+          duration: 768,
+          language: { id: 'languageId1' },
+          subtitle: [],
+          subtitleCount: 0,
+          slug: 'videoSlug',
+          published: true,
+          muxVideo: null,
+          video: {
+            id: 'videoId'
+          }
+        }
+      ])
+    })
+
+    it('should query videoVariants with both onlyPublished and languageId filters', async () => {
+      prismaMock.videoVariant.findMany.mockResolvedValueOnce([
+        {
+          id: 'videoVariantId',
+          videoId: 'videoId',
+          hls: null,
+          dash: null,
+          share: null,
+          duration: 768,
+          lengthInMilliseconds: null,
+          languageId: 'languageId1',
+          masterUrl: null,
+          masterWidth: null,
+          masterHeight: null,
+          edition: 'base',
+          slug: 'videoSlug',
+          downloadable: true,
+          published: false,
+          version: 1,
+          assetId: null,
+          muxVideoId: null,
+          brightcoveId: null,
+          videoEdition: {
+            id: 'videoEditionId',
+            videoId: 'videoId',
+            name: 'videoEditionName',
+            videoSubtitles: [],
+            _count: {
+              videoSubtitles: 0
+            }
+          },
+          muxVideo: null,
+          video: {
+            id: 'videoId',
+            published: true,
+            slug: 'video-slug',
+            label: 'shortFilm',
+            primaryLanguageId: 'languageId1',
+            noIndex: false,
+            childIds: [],
+            locked: false,
+            availableLanguages: ['languageId1'],
+            originId: null,
+            restrictDownloadPlatforms: [],
+            restrictViewPlatforms: [],
+            publishedAt: null
+          },
+          downloads: []
+        }
+      ] as VideoVariantAndIncludes[])
+
+      const data = await client({
+        document: VIDEO_VARIANTS_QUERY,
+        variables: {
+          input: {
+            onlyPublished: false,
+            languageId: 'languageId1'
+          }
+        }
+      })
+
+      expect(prismaMock.videoVariant.findMany).toHaveBeenCalledWith({
+        where: {
+          published: undefined,
+          languageId: 'languageId1'
+        },
+        include: {
+          downloads: true,
+          video: true,
+          videoEdition: {
+            include: {
+              _count: {
+                select: {
+                  videoSubtitles: true
+                }
+              },
+              videoSubtitles: {
+                where: {}
+              }
+            }
+          },
+          muxVideo: true
+        }
+      })
+
+      expect(data).toHaveProperty('data.videoVariants', [
+        {
+          id: 'videoVariantId',
+          videoId: 'videoId',
+          hls: null,
+          downloadable: true,
+          downloads: [],
+          videoEdition: {
+            id: 'videoEditionId',
+            name: 'videoEditionName'
+          },
+          duration: 768,
+          language: { id: 'languageId1' },
+          subtitle: [],
+          subtitleCount: 0,
+          slug: 'videoSlug',
+          published: false,
+          muxVideo: null,
+          video: {
+            id: 'videoId'
+          }
+        }
+      ])
+    })
   })
 
   describe('mutations', () => {

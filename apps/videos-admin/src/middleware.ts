@@ -82,5 +82,10 @@ export default async function middleware(
 }
 
 export const config = {
-  matcher: ['/api/login', '/api/logout', '/((?!_next|favicon.ico|api|.*\\.).*)']
+  matcher: [
+    '/api/login',
+    '/api/logout',
+    '/api/refresh-token',
+    '/((?!_next|favicon.ico|api|.*\\.).*)'
+  ]
 }

@@ -108,7 +108,8 @@ describe('JourneyResolver', () => {
     socialNodeX: null,
     socialNodeY: null,
     fromTemplateId: null,
-    journeyCustomizationDescription: null
+    journeyCustomizationDescription: null,
+    showAssistant: null
   }
   const journeyWithUserTeam = {
     ...journey,
@@ -1126,6 +1127,7 @@ describe('JourneyResolver', () => {
         email: null,
         phone: null,
         countryCode: null,
+        contactAction: null,
         updatedAt: new Date(),
         parentBlockId: 'stepId',
         blockId: 'nextStepId',

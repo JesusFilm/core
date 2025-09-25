@@ -1,11 +1,12 @@
 import { fireEvent, render, screen } from '@testing-library/react'
 import React from 'react'
 
-import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { TreeBlock } from '@core/journeys/ui/block'
+import { EditorProvider } from '@core/journeys/ui/EditorProvider'
+
 import {
-  BlockFields_StepBlock as StepBlock,
-  BlockFields_ButtonBlock as ButtonBlock
+  BlockFields_ButtonBlock as ButtonBlock,
+  BlockFields_StepBlock as StepBlock
 } from '../../../../../../../../../../__generated__/BlockFields'
 
 import { CustomizationToggle } from './CustomizationToggle'
