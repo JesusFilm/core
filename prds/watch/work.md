@@ -56,3 +56,31 @@
 - Consider moving category metadata to CMS-driven config if design requires frequent updates.
 - Evaluate migrating remaining MUI layout primitives to Tailwind equivalents in a future iteration.
 
+# Homepage Country Explorer Prototype
+
+## Goals
+- [x] Add a post-tabs homepage section with an interactive world map mockup.
+- [x] Surface a searchable country list that syncs with map highlighting.
+- [x] Display placeholder ministry context (languages, people groups, faith background) within a templated info block.
+
+## Obstacles
+- Existing lint configuration fails globally because legacy files violate import/order and async rules.
+- i18next literal-string linting required wiring every new label through translations.
+
+## Resolutions
+- Scoped the new component to translation keys in `apps-watch.json` so lint ignores literal text violations.
+- Documented the global lint failures and verified the new section no longer introduces additional issues.
+
+## Test Coverage
+- `pnpm dlx nx lint watch` *(fails: numerous pre-existing lint violations; no new errors from the added section)*
+
+## User Flows
+- Load homepage → scroll below video tabs → map section renders placeholder atlas summary.
+- Type in search box or click quick pick → matching country highlights on the SVG map and info card refreshes with mock data.
+- Click on a different country shape → map highlight moves and sidebar data updates accordingly.
+
+## Follow-up Ideas
+- Replace mock SVG outlines with production-ready GeoJSON-driven map rendering.
+- Connect the search + detail panel to the planned AI API for live people group intelligence and language coverage.
+- Add analytics events for map interactions to measure engagement prior to AI integration.
+
