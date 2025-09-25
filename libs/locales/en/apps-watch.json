@@ -105,32 +105,36 @@
     "title": "Subscribe to our newsletter",
     "description": "Every month we add new gospel videos to our library, new translations, releases, and tools. Subscribe to our email to be notified about new tools and new media available for you.",
     "formLabel": "Subscribe to Watch newsletter",
+    "nameLabel": "Name",
+    "namePlaceholder": "Your name",
+    "nameHelper": "We'll use this to personalize your subscription.",
     "emailLabel": "Email address",
     "emailPlaceholder": "name@example.com",
-    "emailHelper": "Enter the email where you would like to receive Watch updates.",
+    "emailHelper": "We'll send updates and resources to this address.",
     "emailPreview": "We will send updates to {{email}}.",
     "audienceLabel": "I am",
     "interestsLabel": "Topics I am interested in",
-    "languagesLabel": "Languages I want updates in",
-    "cta": "Subscribe",
+    "languagesLabel": "Preferred Languages",
+    "cta": "Sign Up",
     "successMessage": "Thanks for subscribing! We will keep you updated.",
     "audience": {
-      "missionary": "Missionary",
-      "organization": "Mission organization",
-      "private": "Private person"
+      "missionary": "A missionary",
+      "organization": "Part of a mission organization",
+      "private": "An individual believer"
     },
     "interests": {
-      "newVideos": "New gospel videos",
-      "newTranslations": "New translations",
-      "newReleases": "New releases",
-      "newTools": "New tools"
+      "newVideos": "Gospel video updates",
+      "newTranslations": "New translations available",
+      "newReleases": "Latest releases",
+      "newTools": "New tools and resources"
     },
     "languages": {
       "english": "English",
       "spanish": "Spanish",
       "french": "French",
       "portuguese": "Portuguese",
-      "chinese": "Chinese"
+      "chinese": "Chinese",
+      "other": "Other"
     }
   },
   "popularSearches": [
