@@ -7,7 +7,7 @@ jest.mock('../utils', () => {
   return {
     ...actual,
     getEventContext: jest.fn().mockResolvedValue({
-      journeyId: 'journeyId'
+      journey: { id: 'journeyId' }
     })
   }
 })

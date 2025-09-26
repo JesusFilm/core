@@ -38,8 +38,8 @@ export async function validateBlockEvent(
   journeyId: string
   block: Block
 }> {
-  const block = await prisma.block.findFirst({
-    where: { id: blockId, deletedAt: null }
+  const block = await prisma.block.findUnique({
+    where: { id: blockId }
   })
 
   if (block == null) {
@@ -138,8 +138,8 @@ export async function getByUserIdAndJourneyId(
 
 // Helper function to get visitor and journey IDs
 export async function getEventContext(blockId: string, journeyId?: string) {
-  const context = await prisma.block.findFirst({
-    where: { id: blockId, deletedAt: null },
+  const context = await prisma.block.findUnique({
+    where: { id: blockId },
     select: {
       journey: {
         select: { id: true }

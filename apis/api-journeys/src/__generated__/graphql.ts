@@ -384,6 +384,11 @@ export type CloudflareR2CreateInput = {
   videoId: Scalars['String']['input'];
 };
 
+export enum ContactActionType {
+  Call = 'call',
+  Text = 'text'
+}
+
 export type Continent = {
   __typename?: 'Continent';
   countries: Array<Country>;
@@ -1589,8 +1594,6 @@ export type Mutation = {
   textResponseBlockCreate: TextResponseBlock;
   textResponseBlockUpdate?: Maybe<TextResponseBlock>;
   textResponseSubmissionEventCreate: TextResponseSubmissionEvent;
-  /** Transcode an asset. Returns the bullmq job ID. */
-  transcodeAsset?: Maybe<Scalars['String']['output']>;
   triggerUnsplashDownload: Scalars['Boolean']['output'];
   typographyBlockCreate: TypographyBlock;
   typographyBlockUpdate: TypographyBlock;
@@ -2328,11 +2331,6 @@ export type MutationTextResponseSubmissionEventCreateArgs = {
 };
 
 
-export type MutationTranscodeAssetArgs = {
-  input: TranscodeVideoInput;
-};
-
-
 export type MutationTriggerUnsplashDownloadArgs = {
   url: Scalars['String']['input'];
 };
@@ -2934,6 +2932,7 @@ export type PageInfo = {
 
 export type PhoneAction = Action & {
   __typename?: 'PhoneAction';
+  contactAction: ContactActionType;
   countryCode: Scalars['String']['output'];
   gtmEventName?: Maybe<Scalars['String']['output']>;
   parentBlock: Block;
@@ -2942,6 +2941,7 @@ export type PhoneAction = Action & {
 };
 
 export type PhoneActionInput = {
+  contactAction?: InputMaybe<ContactActionType>;
   countryCode: Scalars['String']['input'];
   gtmEventName?: InputMaybe<Scalars['String']['input']>;
   phone: Scalars['String']['input'];
@@ -3243,7 +3243,6 @@ export type Query = {
   getMyCloudflareImages: Array<CloudflareImage>;
   getMyMuxVideo: MuxVideo;
   getMyMuxVideos: Array<MuxVideo>;
-  getTranscodeAssetProgress?: Maybe<Scalars['Int']['output']>;
   getUserRole?: Maybe<UserRole>;
   hosts: Array<Host>;
   integrations: Array<Integration>;
@@ -3444,11 +3443,6 @@ export type QueryGetMyMuxVideoArgs = {
 export type QueryGetMyMuxVideosArgs = {
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
-};
-
-
-export type QueryGetTranscodeAssetProgressArgs = {
-  jobId: Scalars['String']['input'];
 };
 
 
@@ -4372,14 +4366,6 @@ export enum ThemeMode {
 export enum ThemeName {
   Base = 'base'
 }
-
-export type TranscodeVideoInput = {
-  outputFilename: Scalars['String']['input'];
-  outputPath: Scalars['String']['input'];
-  r2AssetId: Scalars['String']['input'];
-  resolution: Scalars['String']['input'];
-  videoBitrate?: InputMaybe<Scalars['String']['input']>;
-};
 
 export type Translation = {
   __typename?: 'Translation';

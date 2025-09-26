@@ -253,6 +253,11 @@ input ChatOpenEventCreateInput {
   value: MessagePlatform
 }
 
+enum ContactActionType {
+  call
+  text
+}
+
 type CustomDomain
   @shareable
 {
@@ -1114,12 +1119,14 @@ type PhoneAction implements Action
   parentBlock: Block!
   phone: String!
   countryCode: String!
+  contactAction: ContactActionType!
 }
 
 input PhoneActionInput {
   gtmEventName: String
   phone: String!
   countryCode: String!
+  contactAction: ContactActionType = call
 }
 
 input PlausibleStatsAggregateFilter {
