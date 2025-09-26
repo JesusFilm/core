@@ -101,7 +101,7 @@ export function MultiStepForm(): ReactElement {
         py: 10
       }}
     >
-      <Stack gap={{ xs: 3, sm: 4 }} data-testid="MultiStepForm">
+      <Stack gap={{ xs: 6, sm: 6 }} data-testid="MultiStepForm">
         <NextLink href={link} passHref legacyBehavior>
           <Button
             variant="text"
@@ -122,10 +122,12 @@ export function MultiStepForm(): ReactElement {
           </Button>
         </NextLink>
         {(hasEditableText || hasCustomizableLinks) && (
-          <ProgressStepper
-            activeStepNumber={screens.indexOf(activeScreen)}
-            totalSteps={totalSteps}
-          />
+          <Box sx={{ mt: { xs: 3, sm: 6 } }}>
+            <ProgressStepper
+              activeStepNumber={screens.indexOf(activeScreen)}
+              totalSteps={totalSteps}
+            />
+          </Box>
         )}
 
         <Box
