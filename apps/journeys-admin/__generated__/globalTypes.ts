@@ -603,7 +603,12 @@ export interface MultiselectBlockCreateInput {
   id?: string | null;
   journeyId: string;
   parentBlockId: string;
-  label: string;
+}
+
+export interface MultiselectBlockUpdateInput {
+  parentBlockId?: string | null;
+  min?: number | null;
+  max?: number | null;
 }
 
 export interface MultiselectOptionBlockCreateInput {
@@ -611,6 +616,11 @@ export interface MultiselectOptionBlockCreateInput {
   journeyId: string;
   parentBlockId: string;
   label: string;
+}
+
+export interface MultiselectOptionBlockUpdateInput {
+  parentBlockId?: string | null;
+  label?: string | null;
 }
 
 export interface MultiselectSubmissionEventCreateInput {

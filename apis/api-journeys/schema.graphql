@@ -858,10 +858,8 @@ type MultiselectBlock implements Block
   journeyId: ID!
   parentBlockId: ID
   parentOrder: Int
-  label: String!
   max: Int
   min: Int
-  action: Action
 }
 
 type MultiselectOptionBlock implements Block

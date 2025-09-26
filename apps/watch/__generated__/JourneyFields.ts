@@ -161,49 +161,13 @@ export interface JourneyFields_blocks_MultiselectOptionBlock {
   label: string;
 }
 
-export interface JourneyFields_blocks_MultiselectBlock_action_LinkAction {
-  __typename: "LinkAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-  url: string;
-  target: string | null;
-  customizable: boolean | null;
-  parentStepId: string | null;
-}
-
-export interface JourneyFields_blocks_MultiselectBlock_action_NavigateToBlockAction {
-  __typename: "NavigateToBlockAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-  blockId: string;
-}
-
-export interface JourneyFields_blocks_MultiselectBlock_action_EmailAction {
-  __typename: "EmailAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-  email: string;
-}
-
-export interface JourneyFields_blocks_MultiselectBlock_action_PhoneAction {
-  __typename: "PhoneAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-  phone: string;
-  countryCode: string;
-}
-
-export type JourneyFields_blocks_MultiselectBlock_action = JourneyFields_blocks_MultiselectBlock_action_LinkAction | JourneyFields_blocks_MultiselectBlock_action_NavigateToBlockAction | JourneyFields_blocks_MultiselectBlock_action_EmailAction | JourneyFields_blocks_MultiselectBlock_action_PhoneAction;
-
 export interface JourneyFields_blocks_MultiselectBlock {
   __typename: "MultiselectBlock";
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
-  label: string;
   min: number | null;
   max: number | null;
-  action: JourneyFields_blocks_MultiselectBlock_action | null;
 }
 
 export interface JourneyFields_blocks_RadioOptionBlock_action_PhoneAction {

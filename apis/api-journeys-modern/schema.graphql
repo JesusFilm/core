@@ -1038,22 +1038,18 @@ type MultiselectBlock implements Block
   journeyId: ID!
   parentBlockId: ID
   parentOrder: Int
-  label: String!
   min: Int
   max: Int
-  action: Action
 }
 
 input MultiselectBlockCreateInput {
   id: ID
   journeyId: ID!
   parentBlockId: ID!
-  label: String!
 }
 
 input MultiselectBlockUpdateInput {
   parentBlockId: ID
-  label: String
   min: Int
   max: Int
 }

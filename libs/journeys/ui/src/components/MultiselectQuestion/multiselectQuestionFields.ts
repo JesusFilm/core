@@ -5,29 +5,7 @@ export const MULTISELECT_QUESTION_FIELDS = gql`
     id
     parentBlockId
     parentOrder
-    label
     min
     max
-    action {
-      __typename
-      parentBlockId
-      gtmEventName
-      ... on LinkAction {
-        url
-        target
-        customizable
-        parentStepId
-      }
-      ... on NavigateToBlockAction {
-        blockId
-      }
-      ... on EmailAction {
-        email
-      }
-      ... on PhoneAction {
-        phone
-        countryCode
-      }
-    }
   }
 `

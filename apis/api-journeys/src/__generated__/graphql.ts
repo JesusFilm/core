@@ -1459,10 +1459,8 @@ export enum MessagePlatform {
 
 export type MultiselectBlock = Block & {
   __typename?: 'MultiselectBlock';
-  action?: Maybe<Action>;
   id: Scalars['ID']['output'];
   journeyId: Scalars['ID']['output'];
-  label: Scalars['String']['output'];
   max?: Maybe<Scalars['Int']['output']>;
   min?: Maybe<Scalars['Int']['output']>;
   parentBlockId?: Maybe<Scalars['ID']['output']>;
@@ -1472,12 +1470,10 @@ export type MultiselectBlock = Block & {
 export type MultiselectBlockCreateInput = {
   id?: InputMaybe<Scalars['ID']['input']>;
   journeyId: Scalars['ID']['input'];
-  label: Scalars['String']['input'];
   parentBlockId: Scalars['ID']['input'];
 };
 
 export type MultiselectBlockUpdateInput = {
-  label?: InputMaybe<Scalars['String']['input']>;
   max?: InputMaybe<Scalars['Int']['input']>;
   min?: InputMaybe<Scalars['Int']['input']>;
   parentBlockId?: InputMaybe<Scalars['ID']['input']>;

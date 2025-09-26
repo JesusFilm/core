@@ -161,49 +161,13 @@ export interface GetAdminJourney_journey_blocks_MultiselectOptionBlock {
   label: string;
 }
 
-export interface GetAdminJourney_journey_blocks_MultiselectBlock_action_LinkAction {
-  __typename: "LinkAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-  url: string;
-  target: string | null;
-  customizable: boolean | null;
-  parentStepId: string | null;
-}
-
-export interface GetAdminJourney_journey_blocks_MultiselectBlock_action_NavigateToBlockAction {
-  __typename: "NavigateToBlockAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-  blockId: string;
-}
-
-export interface GetAdminJourney_journey_blocks_MultiselectBlock_action_EmailAction {
-  __typename: "EmailAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-  email: string;
-}
-
-export interface GetAdminJourney_journey_blocks_MultiselectBlock_action_PhoneAction {
-  __typename: "PhoneAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-  phone: string;
-  countryCode: string;
-}
-
-export type GetAdminJourney_journey_blocks_MultiselectBlock_action = GetAdminJourney_journey_blocks_MultiselectBlock_action_LinkAction | GetAdminJourney_journey_blocks_MultiselectBlock_action_NavigateToBlockAction | GetAdminJourney_journey_blocks_MultiselectBlock_action_EmailAction | GetAdminJourney_journey_blocks_MultiselectBlock_action_PhoneAction;
-
 export interface GetAdminJourney_journey_blocks_MultiselectBlock {
   __typename: "MultiselectBlock";
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
-  label: string;
   min: number | null;
   max: number | null;
-  action: GetAdminJourney_journey_blocks_MultiselectBlock_action | null;
 }
 
 export interface GetAdminJourney_journey_blocks_RadioOptionBlock_action_PhoneAction {

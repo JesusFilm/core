@@ -147,49 +147,13 @@ export interface StepBlockRestoreFromAction_blockRestore_MultiselectOptionBlock 
   label: string;
 }
 
-export interface StepBlockRestoreFromAction_blockRestore_MultiselectBlock_action_LinkAction {
-  __typename: "LinkAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-  url: string;
-  target: string | null;
-  customizable: boolean | null;
-  parentStepId: string | null;
-}
-
-export interface StepBlockRestoreFromAction_blockRestore_MultiselectBlock_action_NavigateToBlockAction {
-  __typename: "NavigateToBlockAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-  blockId: string;
-}
-
-export interface StepBlockRestoreFromAction_blockRestore_MultiselectBlock_action_EmailAction {
-  __typename: "EmailAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-  email: string;
-}
-
-export interface StepBlockRestoreFromAction_blockRestore_MultiselectBlock_action_PhoneAction {
-  __typename: "PhoneAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-  phone: string;
-  countryCode: string;
-}
-
-export type StepBlockRestoreFromAction_blockRestore_MultiselectBlock_action = StepBlockRestoreFromAction_blockRestore_MultiselectBlock_action_LinkAction | StepBlockRestoreFromAction_blockRestore_MultiselectBlock_action_NavigateToBlockAction | StepBlockRestoreFromAction_blockRestore_MultiselectBlock_action_EmailAction | StepBlockRestoreFromAction_blockRestore_MultiselectBlock_action_PhoneAction;
-
 export interface StepBlockRestoreFromAction_blockRestore_MultiselectBlock {
   __typename: "MultiselectBlock";
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
-  label: string;
   min: number | null;
   max: number | null;
-  action: StepBlockRestoreFromAction_blockRestore_MultiselectBlock_action | null;
 }
 
 export interface StepBlockRestoreFromAction_blockRestore_RadioOptionBlock_action_PhoneAction {

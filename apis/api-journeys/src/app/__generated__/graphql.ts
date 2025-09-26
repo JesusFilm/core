@@ -1363,10 +1363,8 @@ export class MultiselectBlock implements Block {
     journeyId: string;
     parentBlockId?: Nullable<string>;
     parentOrder?: Nullable<number>;
-    label: string;
     max?: Nullable<number>;
     min?: Nullable<number>;
-    action?: Nullable<Action>;
 }
 
 export class MultiselectOptionBlock implements Block {

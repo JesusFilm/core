@@ -147,49 +147,13 @@ export interface CardIntroRestore_subtitle_MultiselectOptionBlock {
   label: string;
 }
 
-export interface CardIntroRestore_subtitle_MultiselectBlock_action_LinkAction {
-  __typename: "LinkAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-  url: string;
-  target: string | null;
-  customizable: boolean | null;
-  parentStepId: string | null;
-}
-
-export interface CardIntroRestore_subtitle_MultiselectBlock_action_NavigateToBlockAction {
-  __typename: "NavigateToBlockAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-  blockId: string;
-}
-
-export interface CardIntroRestore_subtitle_MultiselectBlock_action_EmailAction {
-  __typename: "EmailAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-  email: string;
-}
-
-export interface CardIntroRestore_subtitle_MultiselectBlock_action_PhoneAction {
-  __typename: "PhoneAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-  phone: string;
-  countryCode: string;
-}
-
-export type CardIntroRestore_subtitle_MultiselectBlock_action = CardIntroRestore_subtitle_MultiselectBlock_action_LinkAction | CardIntroRestore_subtitle_MultiselectBlock_action_NavigateToBlockAction | CardIntroRestore_subtitle_MultiselectBlock_action_EmailAction | CardIntroRestore_subtitle_MultiselectBlock_action_PhoneAction;
-
 export interface CardIntroRestore_subtitle_MultiselectBlock {
   __typename: "MultiselectBlock";
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
-  label: string;
   min: number | null;
   max: number | null;
-  action: CardIntroRestore_subtitle_MultiselectBlock_action | null;
 }
 
 export interface CardIntroRestore_subtitle_RadioOptionBlock_action_PhoneAction {
@@ -704,49 +668,13 @@ export interface CardIntroRestore_title_MultiselectOptionBlock {
   label: string;
 }
 
-export interface CardIntroRestore_title_MultiselectBlock_action_LinkAction {
-  __typename: "LinkAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-  url: string;
-  target: string | null;
-  customizable: boolean | null;
-  parentStepId: string | null;
-}
-
-export interface CardIntroRestore_title_MultiselectBlock_action_NavigateToBlockAction {
-  __typename: "NavigateToBlockAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-  blockId: string;
-}
-
-export interface CardIntroRestore_title_MultiselectBlock_action_EmailAction {
-  __typename: "EmailAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-  email: string;
-}
-
-export interface CardIntroRestore_title_MultiselectBlock_action_PhoneAction {
-  __typename: "PhoneAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-  phone: string;
-  countryCode: string;
-}
-
-export type CardIntroRestore_title_MultiselectBlock_action = CardIntroRestore_title_MultiselectBlock_action_LinkAction | CardIntroRestore_title_MultiselectBlock_action_NavigateToBlockAction | CardIntroRestore_title_MultiselectBlock_action_EmailAction | CardIntroRestore_title_MultiselectBlock_action_PhoneAction;
-
 export interface CardIntroRestore_title_MultiselectBlock {
   __typename: "MultiselectBlock";
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
-  label: string;
   min: number | null;
   max: number | null;
-  action: CardIntroRestore_title_MultiselectBlock_action | null;
 }
 
 export interface CardIntroRestore_title_RadioOptionBlock_action_PhoneAction {
@@ -1261,49 +1189,13 @@ export interface CardIntroRestore_body_MultiselectOptionBlock {
   label: string;
 }
 
-export interface CardIntroRestore_body_MultiselectBlock_action_LinkAction {
-  __typename: "LinkAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-  url: string;
-  target: string | null;
-  customizable: boolean | null;
-  parentStepId: string | null;
-}
-
-export interface CardIntroRestore_body_MultiselectBlock_action_NavigateToBlockAction {
-  __typename: "NavigateToBlockAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-  blockId: string;
-}
-
-export interface CardIntroRestore_body_MultiselectBlock_action_EmailAction {
-  __typename: "EmailAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-  email: string;
-}
-
-export interface CardIntroRestore_body_MultiselectBlock_action_PhoneAction {
-  __typename: "PhoneAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-  phone: string;
-  countryCode: string;
-}
-
-export type CardIntroRestore_body_MultiselectBlock_action = CardIntroRestore_body_MultiselectBlock_action_LinkAction | CardIntroRestore_body_MultiselectBlock_action_NavigateToBlockAction | CardIntroRestore_body_MultiselectBlock_action_EmailAction | CardIntroRestore_body_MultiselectBlock_action_PhoneAction;
-
 export interface CardIntroRestore_body_MultiselectBlock {
   __typename: "MultiselectBlock";
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
-  label: string;
   min: number | null;
   max: number | null;
-  action: CardIntroRestore_body_MultiselectBlock_action | null;
 }
 
 export interface CardIntroRestore_body_RadioOptionBlock_action_PhoneAction {
@@ -1818,49 +1710,13 @@ export interface CardIntroRestore_button_MultiselectOptionBlock {
   label: string;
 }
 
-export interface CardIntroRestore_button_MultiselectBlock_action_LinkAction {
-  __typename: "LinkAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-  url: string;
-  target: string | null;
-  customizable: boolean | null;
-  parentStepId: string | null;
-}
-
-export interface CardIntroRestore_button_MultiselectBlock_action_NavigateToBlockAction {
-  __typename: "NavigateToBlockAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-  blockId: string;
-}
-
-export interface CardIntroRestore_button_MultiselectBlock_action_EmailAction {
-  __typename: "EmailAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-  email: string;
-}
-
-export interface CardIntroRestore_button_MultiselectBlock_action_PhoneAction {
-  __typename: "PhoneAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-  phone: string;
-  countryCode: string;
-}
-
-export type CardIntroRestore_button_MultiselectBlock_action = CardIntroRestore_button_MultiselectBlock_action_LinkAction | CardIntroRestore_button_MultiselectBlock_action_NavigateToBlockAction | CardIntroRestore_button_MultiselectBlock_action_EmailAction | CardIntroRestore_button_MultiselectBlock_action_PhoneAction;
-
 export interface CardIntroRestore_button_MultiselectBlock {
   __typename: "MultiselectBlock";
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
-  label: string;
   min: number | null;
   max: number | null;
-  action: CardIntroRestore_button_MultiselectBlock_action | null;
 }
 
 export interface CardIntroRestore_button_RadioOptionBlock_action_PhoneAction {
@@ -2375,49 +2231,13 @@ export interface CardIntroRestore_startIcon_MultiselectOptionBlock {
   label: string;
 }
 
-export interface CardIntroRestore_startIcon_MultiselectBlock_action_LinkAction {
-  __typename: "LinkAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-  url: string;
-  target: string | null;
-  customizable: boolean | null;
-  parentStepId: string | null;
-}
-
-export interface CardIntroRestore_startIcon_MultiselectBlock_action_NavigateToBlockAction {
-  __typename: "NavigateToBlockAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-  blockId: string;
-}
-
-export interface CardIntroRestore_startIcon_MultiselectBlock_action_EmailAction {
-  __typename: "EmailAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-  email: string;
-}
-
-export interface CardIntroRestore_startIcon_MultiselectBlock_action_PhoneAction {
-  __typename: "PhoneAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-  phone: string;
-  countryCode: string;
-}
-
-export type CardIntroRestore_startIcon_MultiselectBlock_action = CardIntroRestore_startIcon_MultiselectBlock_action_LinkAction | CardIntroRestore_startIcon_MultiselectBlock_action_NavigateToBlockAction | CardIntroRestore_startIcon_MultiselectBlock_action_EmailAction | CardIntroRestore_startIcon_MultiselectBlock_action_PhoneAction;
-
 export interface CardIntroRestore_startIcon_MultiselectBlock {
   __typename: "MultiselectBlock";
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
-  label: string;
   min: number | null;
   max: number | null;
-  action: CardIntroRestore_startIcon_MultiselectBlock_action | null;
 }
 
 export interface CardIntroRestore_startIcon_RadioOptionBlock_action_PhoneAction {
@@ -2932,49 +2752,13 @@ export interface CardIntroRestore_endIcon_MultiselectOptionBlock {
   label: string;
 }
 
-export interface CardIntroRestore_endIcon_MultiselectBlock_action_LinkAction {
-  __typename: "LinkAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-  url: string;
-  target: string | null;
-  customizable: boolean | null;
-  parentStepId: string | null;
-}
-
-export interface CardIntroRestore_endIcon_MultiselectBlock_action_NavigateToBlockAction {
-  __typename: "NavigateToBlockAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-  blockId: string;
-}
-
-export interface CardIntroRestore_endIcon_MultiselectBlock_action_EmailAction {
-  __typename: "EmailAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-  email: string;
-}
-
-export interface CardIntroRestore_endIcon_MultiselectBlock_action_PhoneAction {
-  __typename: "PhoneAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-  phone: string;
-  countryCode: string;
-}
-
-export type CardIntroRestore_endIcon_MultiselectBlock_action = CardIntroRestore_endIcon_MultiselectBlock_action_LinkAction | CardIntroRestore_endIcon_MultiselectBlock_action_NavigateToBlockAction | CardIntroRestore_endIcon_MultiselectBlock_action_EmailAction | CardIntroRestore_endIcon_MultiselectBlock_action_PhoneAction;
-
 export interface CardIntroRestore_endIcon_MultiselectBlock {
   __typename: "MultiselectBlock";
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
-  label: string;
   min: number | null;
   max: number | null;
-  action: CardIntroRestore_endIcon_MultiselectBlock_action | null;
 }
 
 export interface CardIntroRestore_endIcon_RadioOptionBlock_action_PhoneAction {
@@ -3489,49 +3273,13 @@ export interface CardIntroRestore_video_MultiselectOptionBlock {
   label: string;
 }
 
-export interface CardIntroRestore_video_MultiselectBlock_action_LinkAction {
-  __typename: "LinkAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-  url: string;
-  target: string | null;
-  customizable: boolean | null;
-  parentStepId: string | null;
-}
-
-export interface CardIntroRestore_video_MultiselectBlock_action_NavigateToBlockAction {
-  __typename: "NavigateToBlockAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-  blockId: string;
-}
-
-export interface CardIntroRestore_video_MultiselectBlock_action_EmailAction {
-  __typename: "EmailAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-  email: string;
-}
-
-export interface CardIntroRestore_video_MultiselectBlock_action_PhoneAction {
-  __typename: "PhoneAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-  phone: string;
-  countryCode: string;
-}
-
-export type CardIntroRestore_video_MultiselectBlock_action = CardIntroRestore_video_MultiselectBlock_action_LinkAction | CardIntroRestore_video_MultiselectBlock_action_NavigateToBlockAction | CardIntroRestore_video_MultiselectBlock_action_EmailAction | CardIntroRestore_video_MultiselectBlock_action_PhoneAction;
-
 export interface CardIntroRestore_video_MultiselectBlock {
   __typename: "MultiselectBlock";
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
-  label: string;
   min: number | null;
   max: number | null;
-  action: CardIntroRestore_video_MultiselectBlock_action | null;
 }
 
 export interface CardIntroRestore_video_RadioOptionBlock_action_PhoneAction {
