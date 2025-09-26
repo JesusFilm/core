@@ -34,6 +34,7 @@ variable "service_config" {
       health_check_timeout             = optional(number, 4)
       health_check_healthy_threshold   = optional(number, 2)
       health_check_unhealthy_threshold = optional(number, 4)
+      deregistration_delay             = optional(number, 30)
     })
 
     auto_scaling = object({
@@ -82,6 +83,15 @@ variable "service_config" {
       var.service_config.alb_target_group.health_check_unhealthy_threshold <= 10)
     )
     error_message = "health_check_unhealthy_threshold must be between 2 and 10 to comply with ALB constraints."
+  }
+
+  validation {
+    condition = (
+      var.service_config.alb_target_group.deregistration_delay == null ||
+      (var.service_config.alb_target_group.deregistration_delay >= 0 &&
+      var.service_config.alb_target_group.deregistration_delay <= 3600)
+    )
+    error_message = "deregistration_delay must be between 0 and 3600 seconds to comply with ALB constraints."
   }
 }
 
