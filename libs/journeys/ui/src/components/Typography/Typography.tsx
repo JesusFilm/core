@@ -50,6 +50,7 @@ export function Typography({
           gutterBottom
           whiteSpace="pre-line"
           data-testid="JourneysTypography"
+          sx={{ wordBreak: 'break-word' }}
         >
           {displayContent}
         </MuiTypography>
@@ -61,6 +62,7 @@ export function Typography({
           gutterBottom
           whiteSpace="pre-line"
           data-testid="JourneysTypography"
+          sx={{ wordBreak: 'break-word' }}
         >
           {displayContent}
         </MuiTypography>
