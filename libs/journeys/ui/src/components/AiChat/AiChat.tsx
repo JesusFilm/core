@@ -60,11 +60,13 @@ export function AiChat({ open }: AiChatProps) {
     sessionId.current = uuidv4()
   }, [])
 
-  const { messages, sendMessage, status, regenerate, id } = useChat({
+  const { messages, sendMessage, status, regenerate, id, stop } = useChat({
     transport: new DefaultChatTransport({
       api: '/api/chat'
     })
   })
+
+  const isAiActionInProgress = status === 'submitted' || status === 'streaming'
 
   const activeBlock = blockHistory.at(-1)
 
@@ -97,6 +99,8 @@ export function AiChat({ open }: AiChatProps) {
     e: React.FormEvent<HTMLFormElement>
   ) {
     e.preventDefault()
+    if (isAiActionInProgress) return
+
     if (message.text?.trim()) {
       void sendMessage(
         { text: message.text },
@@ -117,6 +121,8 @@ export function AiChat({ open }: AiChatProps) {
   }
 
   function handleSuggestionClick(suggestion: string, type?: InteractionType) {
+    if (isAiActionInProgress) return
+
     void sendMessage(
       { text: suggestion },
       {
@@ -134,12 +140,20 @@ export function AiChat({ open }: AiChatProps) {
     )
   }
 
+  function handleStop() {
+    void stop()
+    setInput('')
+  }
+
   return (
     <div className="flex h-full min-h-0 flex-col">
       <Conversation className="h-full">
         <ConversationContent>
           {messages.length === 0 && (
-            <InteractionStarter handleClick={handleSuggestionClick} />
+            <InteractionStarter
+              handleClick={handleSuggestionClick}
+              disabled={isAiActionInProgress}
+            />
           )}
           {messages.map((message) => (
             <div key={message.id}>
@@ -220,6 +234,7 @@ export function AiChat({ open }: AiChatProps) {
                 key={suggestion}
                 onClick={() => handleSuggestionClick(suggestion)}
                 suggestion={suggestion}
+                disabled={isAiActionInProgress}
               />
             ))}
         </Suggestions>
@@ -234,14 +249,33 @@ export function AiChat({ open }: AiChatProps) {
             placeholder={t('Ask me anything')}
             onChange={(e) => setInput(e.target.value)}
             value={input}
+            disabled={isAiActionInProgress}
           />
           <div className="flex flex-row justify-end self-end p-[4px]">
             <PromptInputSubmit
-              className="disabled:bg-secondary-light rounded-md"
-              disabled={!input}
+              className={`disabled:bg-secondary-light rounded-md ${
+                isAiActionInProgress
+                  ? 'bg-muted hover:bg-muted cursor-pointer'
+                  : ''
+              }`}
+              disabled={!input && !isAiActionInProgress}
               status={status}
               style={{ minHeight: '20px' }}
-              children={<SendHorizonalIcon className="size-[20px]" />}
+              onClick={isAiActionInProgress ? handleStop : undefined}
+              // Use 'button' type during AI actions to prevent form submission, 'submit' for normal send
+              type={isAiActionInProgress ? 'button' : 'submit'}
+              children={
+                isAiActionInProgress ? (
+                  <div
+                    className="size-[16px] rounded-sm"
+                    style={{
+                      backgroundColor: 'var(--color-secondary-foreground)'
+                    }}
+                  />
+                ) : (
+                  <SendHorizonalIcon className="size-[20px]" />
+                )
+              }
             />
           </div>
         </PromptInput>
