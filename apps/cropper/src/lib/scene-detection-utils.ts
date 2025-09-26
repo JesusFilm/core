@@ -8,10 +8,11 @@ import type {
   SceneChangeMetadata
 } from '../types/scene-tracking'
 import { DEFAULT_SCENE_DETECTION_CONFIG } from '../types/scene-tracking'
+import { getFrameRate } from '../config/frame-rate-config'
 
 // Default configuration for scene detection
 export const DEFAULT_SCENE_CONFIG: SceneChangeConfig = {
-  frameRate: 2,
+  frameRate: getFrameRate('SCENE_DETECTION'),
   threshold: {
     stable: 1,       // 0-1%
     moderate: 3,     // 1-3%

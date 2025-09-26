@@ -44,6 +44,7 @@ export const cropPathSchema = z.object({
 
 export const detectionResultSchema = z.object({
   id: z.string().min(1),
+  trackId: z.string().min(1),
   time: z.number().min(0),
   box: z.object({
     x: z.number().min(0).max(1),

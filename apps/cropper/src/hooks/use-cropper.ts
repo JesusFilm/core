@@ -25,6 +25,7 @@ import { interpolateKeyframes } from '../lib/interpolation'
 import { runDetection, DetectionWorkerController } from '../lib/detection'
 import { runSceneDetection, SceneDetectionWorkerController } from '../lib/scene-detection'
 import { clampTime } from '../lib/video-utils'
+import { getFrameRate } from '../config/frame-rate-config'
 
 interface CropperState {
   video: Video | null
@@ -33,6 +34,7 @@ interface CropperState {
   currentTime: number
   detections: DetectionResult[]
   detectionStatus: 'idle' | 'running' | 'complete'
+  detectionProgress: { current: number; total: number; percentage: number } | null
   sceneChanges: SceneChangeResult[]
   sceneDetectionStatus: 'idle' | 'running' | 'complete'
   autoTrackingEnabled: boolean
@@ -52,6 +54,7 @@ type CropperAction =
   | { type: 'SET_DETECTIONS'; detections: DetectionResult[] }
   | { type: 'MERGE_DETECTIONS' }
   | { type: 'SET_DETECTION_STATUS'; status: CropperState['detectionStatus'] }
+  | { type: 'SET_DETECTION_PROGRESS'; progress: { current: number; total: number; percentage: number } | null }
   | { type: 'TOGGLE_AUTO_TRACKING' }
   | { type: 'PUSH_SCENE_CHANGE'; sceneChange: SceneChangeResult }
   | { type: 'SET_SCENE_CHANGES'; sceneChanges: SceneChangeResult[] }
@@ -66,6 +69,7 @@ const INITIAL_STATE: CropperState = {
   currentTime: 0,
   detections: [],
   detectionStatus: 'idle',
+  detectionProgress: null,
   sceneChanges: [],
   sceneDetectionStatus: 'idle',
   autoTrackingEnabled: false, // Disabled by default to prevent freezing
@@ -88,6 +92,7 @@ function reducer(state: CropperState, action: CropperAction): CropperState {
         currentTime: 0,
         detections: [],
         detectionStatus: 'idle',
+        detectionProgress: null,
         sceneChanges: [],
         sceneDetectionStatus: 'idle',
         autoTrackingEnabled: false, // Keep disabled to prevent freezing
@@ -199,7 +204,15 @@ function reducer(state: CropperState, action: CropperAction): CropperState {
     case 'SET_DETECTION_STATUS': {
       return {
         ...state,
-        detectionStatus: action.status
+        detectionStatus: action.status,
+        detectionProgress: action.status === 'idle' ? null : state.detectionProgress
+      }
+    }
+
+    case 'SET_DETECTION_PROGRESS': {
+      return {
+        ...state,
+        detectionProgress: action.progress
       }
     }
 
@@ -274,6 +287,7 @@ export interface UseCropperResult {
   currentTime: number
   activeKeyframe: CropKeyframe | null
   detectionStatus: CropperState['detectionStatus']
+  detectionProgress: CropperState['detectionProgress']
   detections: DetectionResult[]
   sceneChanges: SceneChangeResult[]
   sceneDetectionStatus: CropperState['sceneDetectionStatus']
@@ -370,7 +384,7 @@ export function useCropper(): UseCropperResult {
     disposeDetectionRef.current?.()
 
     const detectionOptions: any = {
-      frameRate: 2
+      frameRate: getFrameRate('FACE_DETECTION')
     }
 
     // If we have a video element, use it directly instead of creating a new one
@@ -397,11 +411,16 @@ export function useCropper(): UseCropperResult {
       },
       onComplete: (results) => {
         dispatch({ type: 'SET_DETECTION_STATUS', status: 'complete' })
+        dispatch({ type: 'SET_DETECTION_PROGRESS', progress: null })
         dispatch({ type: 'SET_DETECTIONS', detections: results })
         dispatch({ type: 'MERGE_DETECTIONS' })
       },
       onError: (error) => {
         dispatch({ type: 'SET_DETECTION_STATUS', status: 'idle' })
+        dispatch({ type: 'SET_DETECTION_PROGRESS', progress: null })
+      },
+      onProgress: (progress) => {
+        dispatch({ type: 'SET_DETECTION_PROGRESS', progress })
       }
     }, detectionOptions)
 
@@ -441,13 +460,11 @@ export function useCropper(): UseCropperResult {
   }, [])
 
   const requestSceneDetection = useCallback((videoElement?: HTMLVideoElement, config?: Partial<SceneChangeConfig>) => {
-    console.log(`🎬 [DEBUG] requestSceneDetection called for video: ${state.video?.slug}`)
     if (!state.video) {
       console.log(`🎬 [DEBUG] No video available, skipping scene detection`)
       return
     }
 
-    console.log(`🎬 [DEBUG] Starting scene detection with video element: ${!!videoElement}`)
     dispatch({ type: 'SET_SCENE_DETECTION_STATUS', status: 'running' })
     dispatch({ type: 'SET_SCENE_CHANGES', sceneChanges: [] })
 
@@ -462,8 +479,10 @@ export function useCropper(): UseCropperResult {
       sceneDetectionOptions.config = {
         ...config,
         performance: {
-          ...config?.performance,
-          useWebGL: true // Enable WebGL for better performance with video element
+          downsampleTo: config?.performance?.downsampleTo || { width: 320, height: 180 },
+          useWebGL: true, // Enable WebGL for better performance with video element
+          maxFrameBuffer: config?.performance?.maxFrameBuffer || 5,
+          ...config?.performance
         }
       }
     }
@@ -477,10 +496,8 @@ export function useCropper(): UseCropperResult {
       sceneDetectionControllerRef.current = null
     }
 
-    console.log(`🎬 [DEBUG] Starting scene detection controller with video element: ${!!videoElement}`)
     sceneController.start(state.video.duration, {
       onChunk: (sceneChange) => {
-        console.log(`🎬 [3/5] Hook dispatching edge-based scene change: ${sceneChange.level} (${sceneChange.changePercentage.toFixed(3)}% edge change)`)
         dispatch({ type: 'PUSH_SCENE_CHANGE', sceneChange })
 
         // Adapt crop path to scene change
@@ -489,12 +506,10 @@ export function useCropper(): UseCropperResult {
         }
       },
       onComplete: (sceneChanges) => {
-        console.log(`🎬 [DEBUG] Scene detection completed with ${sceneChanges.length} changes`)
         dispatch({ type: 'SET_SCENE_DETECTION_STATUS', status: 'complete' })
         dispatch({ type: 'SET_SCENE_CHANGES', sceneChanges })
       },
       onError: (error) => {
-        console.error(`🎬 [DEBUG] Scene detection error:`, error)
         dispatch({ type: 'SET_SCENE_DETECTION_STATUS', status: 'idle' })
       }
     }, sceneDetectionOptions, videoElement)
@@ -543,6 +558,7 @@ export function useCropper(): UseCropperResult {
     currentTime: state.currentTime,
     activeKeyframe,
     detectionStatus: state.detectionStatus,
+    detectionProgress: state.detectionProgress,
     detections: state.detections,
     sceneChanges: state.sceneChanges,
     sceneDetectionStatus: state.sceneDetectionStatus,

@@ -9,6 +9,7 @@ export interface DetectionBox {
 
 export interface DetectionResult {
   id: string
+  trackId: string // Unique identifier for the tracked object across frames
   time: number
   box: DetectionBox
   confidence: number

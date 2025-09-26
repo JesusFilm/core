@@ -1,11 +1,12 @@
 'use client'
 
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { VideoPicker } from '../components/video-picker'
 import { CropWorkspace } from '../components/crop-workspace'
 import { Timeline } from '../components/timeline'
 import { KeyframeEditor } from '../components/keyframe-editor'
 import { ExportDialog } from '../components/export-dialog'
+import { DetectionLogEntry } from '../components/detection-log-entry'
 import { useVideo } from '../hooks/use-video'
 import { useCropper } from '../hooks/use-cropper'
 import { useExport } from '../hooks/use-export'
@@ -23,6 +24,7 @@ export default function Page() {
     currentTime,
     activeKeyframe,
     detectionStatus,
+    detectionProgress,
     detections,
     autoTrackingEnabled,
     sceneChanges,
@@ -45,12 +47,15 @@ export default function Page() {
     toggleSceneChangeDetection
   } = useCropper()
 
+  // Video element ref for thumbnail generation
+  const videoElementRef = useRef<HTMLVideoElement | null>(null)
+
   // Auto-tracking parameters state (more responsive defaults)
-  const [focusChangeThreshold, setFocusChangeThreshold] = useState(0.005)
+  const [focusChangeThreshold, setFocusChangeThreshold] = useState(0.001)
   const [detectionTimeWindow, setDetectionTimeWindow] = useState(0.3)
 
   // Create a wrapper function for detection that will be called from CropWorkspace
-  const handleRunDetection = useCallback((videoElement: HTMLVideoElement) => {
+  const handleRunDetection = useCallback((videoElement?: HTMLVideoElement) => {
     requestDetection(videoElement)
   }, [requestDetection])
 
@@ -69,6 +74,12 @@ export default function Page() {
     seek,
     togglePlayback
   } = useVideo()
+
+  // Custom bind function that stores video element reference
+  const bindVideo = useCallback((element: HTMLVideoElement | null) => {
+    videoElementRef.current = element
+    bind(element)
+  }, [bind])
 
   const {
     presets,
@@ -214,7 +225,7 @@ export default function Page() {
         <section className="space-y-6">
           <CropWorkspace
             video={video ?? loadedVideo}
-            bindVideo={bind}
+            bindVideo={bindVideo}
             currentTime={currentTime}
             duration={duration}
             onTimeChange={handleTimeChange}
@@ -238,11 +249,48 @@ export default function Page() {
             onUpdateActiveKeyframe={handleKeyframeChange}
             detections={detections}
             detectionStatus={detectionStatus}
+            detectionProgress={detectionProgress}
             focusChangeThreshold={focusChangeThreshold}
             detectionTimeWindow={detectionTimeWindow}
             onFocusChangeThresholdChange={setFocusChangeThreshold}
             onDetectionTimeWindowChange={setDetectionTimeWindow}
           />
+
+          {/* Detection Log */}
+          <div className="panel p-4">
+            <h3 className="text-lg font-semibold text-white mb-3">Detection Log</h3>
+            <div className="space-y-3 max-h-96 overflow-y-auto">
+              {sceneChanges.filter((sceneChange) => sceneChange.level === 'significant' || sceneChange.level === 'transition').length === 0 && detections.length === 0 ? (
+                <p className="text-sm text-stone-400">No detections yet</p>
+              ) : (
+                <>
+                  {/* Scene Changes - only significant and transition levels */}
+                  {sceneChanges
+                    .filter((sceneChange) => sceneChange.level === 'significant' || sceneChange.level === 'transition')
+                    .map((sceneChange) => (
+                      <DetectionLogEntry
+                        key={sceneChange.id}
+                        timestamp={sceneChange.time}
+                        label="new scene detected"
+                        value={`(threshold: ${sceneChange.changePercentage.toFixed(1)}%)`}
+                        videoElement={videoElementRef.current}
+                      />
+                    ))}
+
+                  {/* Face/Person Detections */}
+                  {detections.map((detection) => (
+                    <DetectionLogEntry
+                      key={detection.id}
+                      timestamp={detection.time}
+                      label={`${detection.label} detected`}
+                      value={`(confidence: ${(detection.confidence * 100).toFixed(1)}%)`}
+                      videoElement={videoElementRef.current}
+                    />
+                  ))}
+                </>
+              )}
+            </div>
+          </div>
 
           <Timeline
             keyframes={keyframes}

@@ -2,12 +2,13 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { ChevronDown } from 'lucide-react'
-import { Pause as PauseIcon, Plus } from 'lucide-react'
+import { Pause as PauseIcon, Plus, Zap } from 'lucide-react'
 import type { PointerEvent as ReactPointerEvent } from 'react'
 import type {
   CropBox,
   CropKeyframe,
   CropWindow,
+  SceneChangeResult,
   DetectionResult,
   Video
 } from '../types'
@@ -39,7 +40,7 @@ interface CropWorkspaceProps {
   onTogglePlay: () => void
   onCreateKeyframe: () => void
   onToggleAutoTracking?: () => void
-  onRunDetection?: (videoElement: HTMLVideoElement) => void
+  onRunDetection?: (videoElement?: HTMLVideoElement) => void
   onPauseDetection?: () => void
   onResumeDetection?: () => void
   autoTrackingEnabled?: boolean
@@ -48,13 +49,14 @@ interface CropWorkspaceProps {
   onPauseSceneDetection?: () => void
   onResumeSceneDetection?: () => void
   sceneChangeDetectionEnabled?: boolean
-  sceneChanges?: Array<{ time: number; level: string }>
+  sceneChanges?: SceneChangeResult[]
   lastSceneChangeLevel?: 'stable' | 'moderate' | 'significant' | 'transition' | null
   crop: CropBox | null
   activeKeyframe: CropKeyframe | null
   onUpdateActiveKeyframe: (patch: Partial<CropWindow>) => void
   detections: DetectionResult[]
   detectionStatus: 'idle' | 'running' | 'complete'
+  detectionProgress: { current: number; total: number; percentage: number } | null
   // New adjustable parameters
   focusChangeThreshold?: number
   detectionTimeWindow?: number
@@ -88,6 +90,7 @@ export function CropWorkspace({
   onUpdateActiveKeyframe,
   detections,
   detectionStatus,
+  detectionProgress,
   focusChangeThreshold = 0.005,
   detectionTimeWindow = 0.3,
   onFocusChangeThresholdChange,
@@ -147,18 +150,7 @@ export function CropWorkspace({
     }
   }, [sceneChangeDetectionEnabled, onToggleSceneChangeDetection, onRunSceneDetection, video])
 
-  // Pause/resume detection based on playback state when auto tracking is enabled
-  useEffect(() => {
-    if (!autoTrackingEnabled) {
-      return
-    }
-
-    if (isPlaying) {
-      onResumeDetection?.()
-    } else {
-      onPauseDetection?.()
-    }
-  }, [isPlaying, autoTrackingEnabled, onPauseDetection, onResumeDetection])
+  // Detection now runs continuously in the background, independent of playback state
 
   const detectionOverlay = useMemo(() => {
     if (!detections.length) {
@@ -284,10 +276,16 @@ export function CropWorkspace({
       // Much more aggressive: only prevent repositioning if it's been less than 50ms AND focus hasn't changed
       if (timeSinceLastReposition > 50 || hasFocusChanged) {
         // Update the active keyframe to center on the predicted detection position
+        // onUpdateActiveKeyframe({
+        //   focusX: targetFocusX,
+        //   focusY: targetFocusY
+        // })
+
         onUpdateActiveKeyframe({
-          focusX: targetFocusX,
-          focusY: targetFocusY
+          focusX: detectionCenterX,
+          focusY: detectionCenterY
         })
+        
 
         // Track the reposition to prevent loops
         lastRepositionRef.current = {
@@ -526,25 +524,73 @@ export function CropWorkspace({
                 height: `${detection.box.height * 100}%`,
                 opacity: opacity
               }}
-            />
+            >
+              {/* Track ID Label */}
+              <div
+                className="absolute -top-6 left-0 bg-success/90 text-slate-950 px-1 py-0.5 text-xs font-semibold rounded whitespace-nowrap"
+                style={{
+                  fontSize: '10px',
+                  lineHeight: '1',
+                  opacity: opacity
+                }}
+              >
+                {detection.trackId}
+              </div>
+            </div>
           )
         })}
       </div>
 
-      <Slider
-        className="mt-4"
-        min={0}
-        max={Math.max(duration, 0.1)}
-        step={0.1}
-        value={currentTime}
-        onChange={(event) => onTimeChange(Number(event.target.value))}
-        disabled={!video}
-      />
+      <div className="relative mt-4">
+        <Slider
+          className="mt-0"
+          min={0}
+          max={Math.max(duration, 0.1)}
+          step={0.1}
+          value={currentTime}
+          onChange={(event) => onTimeChange(Number(event.target.value))}
+          disabled={!video}
+        />
+
+        {/* Scene change markers overlay - show significant (yellow) and transition (red) scene changes only */}
+        <div className="absolute inset-0 pointer-events-none">
+          {sceneChanges
+            .filter((sceneChange) => sceneChange.level === 'significant' || sceneChange.level === 'transition')
+            .map((sceneChange) => {
+              const position = duration > 0 ? (sceneChange.time / duration) * 100 : 0
+              const markerColor = sceneChange.level === 'significant' ? 'bg-yellow-500' : 'bg-red-500'
+
+              return (
+                <div
+                  key={sceneChange.id}
+                  className={`absolute top-1/2 w-px h-1 ${markerColor} -translate-y-1/2`}
+                  style={{ left: `${position}%` }}
+                  title={`Scene change at ${formatTime(sceneChange.time)} (${sceneChange.level})`}
+                />
+              )
+            })}
+        </div>
+      </div>
 
       <div className="toolbar flex items-center justify-between px-0">
         <div className="flex items-center gap-2 px-0">
-          <Button variant="default" size="sm" onClick={onTogglePlay} disabled={!video} className="rounded-full -ml-3">
+          <Button variant="primary" size="sm" onClick={onTogglePlay} disabled={!video} className="rounded-full -ml-3">
             {isPlaying ? <PauseIcon className="h-8 w-8" /> : <PlayTriangle className="h-8 w-8" />}
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => videoRef.current && onRunDetection?.(videoRef.current)}
+            disabled={!video || detectionStatus === 'running' || isPlaying || (videoRef.current ? !videoRef.current.paused : false)}
+            className="rounded-full relative"
+            title={isPlaying || (videoRef.current && !videoRef.current.paused) ? "Pause video to run face detection" : "Process video for faces"}
+          >
+            <Zap className="h-4 w-4" />
+            {detectionProgress && (
+              <span className="absolute -top-1 -right-1 text-xs font-medium text-cyan-400">
+                {Math.round(detectionProgress.percentage)}%
+              </span>
+            )}
           </Button>
         {onToggleAutoTracking && (
           <label className="flex items-center gap-2 text-sm text-stone-300 cursor-pointer">

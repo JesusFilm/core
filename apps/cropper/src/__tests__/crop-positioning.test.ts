@@ -17,6 +17,7 @@ import type { DetectionResult, CropBox, SceneTimeline, SceneSegment } from '../t
 function createMockDetection(overrides: Partial<DetectionResult> = {}): DetectionResult {
   return {
     id: 'det-1',
+    trackId: 'track-1',
     time: 5.5,
     box: { x: 0.3, y: 0.2, width: 0.15, height: 0.18 },
     confidence: 0.85,

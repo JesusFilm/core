@@ -15,6 +15,59 @@ export function aspectRatio(video: Video): number {
   return video.width / video.height
 }
 
+export function captureVideoThumbnail(videoElement: HTMLVideoElement, time: number, width: number = 80, height: number = 45): Promise<string | null> {
+  return new Promise((resolve) => {
+    if (!videoElement) {
+      resolve(null)
+      return
+    }
+
+    const canvas = document.createElement('canvas')
+    const ctx = canvas.getContext('2d')
+
+    if (!ctx) {
+      resolve(null)
+      return
+    }
+
+    canvas.width = width
+    canvas.height = height
+
+    // Store original time
+    const originalTime = videoElement.currentTime
+
+    // Seek to the desired time
+    videoElement.currentTime = time
+
+    const onSeeked = () => {
+      videoElement.removeEventListener('seeked', onSeeked)
+
+      try {
+        // Draw the frame to canvas
+        ctx.drawImage(videoElement, 0, 0, width, height)
+
+        // Convert to data URL
+        const dataUrl = canvas.toDataURL('image/jpeg', 0.8)
+        resolve(dataUrl)
+      } catch (error) {
+        console.error('Failed to capture video thumbnail:', error)
+        resolve(null)
+      } finally {
+        // Restore original time
+        videoElement.currentTime = originalTime
+      }
+    }
+
+    videoElement.addEventListener('seeked', onSeeked)
+
+    // Timeout fallback (in case seeked doesn't fire)
+    setTimeout(() => {
+      videoElement.removeEventListener('seeked', onSeeked)
+      resolve(null)
+    }, 2000)
+  })
+}
+
 export function clampTime(time: number, duration: number): number {
   if (!Number.isFinite(time)) {
     return 0

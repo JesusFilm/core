@@ -68,9 +68,11 @@ describe('CropWorkspace Boundary Detection', () => {
     const detectionOutsideLeft: DetectionResult[] = [
       {
         id: 'detection-1',
+        trackId: 'track-1',
         time: 10,
         label: 'face',
         confidence: 0.9,
+        source: 'mediapipe',
         box: {
           x: 0.1, // Outside left boundary (crop starts at 0.2)
           y: 0.5,
@@ -102,9 +104,11 @@ describe('CropWorkspace Boundary Detection', () => {
     const detectionOutsideRight: DetectionResult[] = [
       {
         id: 'detection-1',
+        trackId: 'track-1',
         time: 10,
         label: 'person',
         confidence: 0.85,
+        source: 'mediapipe',
         box: {
           x: 0.75, // Outside right boundary (crop ends at 0.8)
           y: 0.5,
@@ -135,9 +139,11 @@ describe('CropWorkspace Boundary Detection', () => {
     const detectionOutsideTop: DetectionResult[] = [
       {
         id: 'detection-1',
+        trackId: 'track-1',
         time: 10,
         label: 'face',
         confidence: 0.95,
+        source: 'mediapipe',
         box: {
           x: 0.5,
           y: 0.1, // Outside top boundary (crop starts at 0.2)
@@ -168,9 +174,11 @@ describe('CropWorkspace Boundary Detection', () => {
     const detectionOutsideBottom: DetectionResult[] = [
       {
         id: 'detection-1',
+        trackId: 'track-1',
         time: 10,
         label: 'person',
         confidence: 0.88,
+        source: 'mediapipe',
         box: {
           x: 0.5,
           y: 0.75, // Outside bottom boundary (crop ends at 0.8)
@@ -201,9 +209,11 @@ describe('CropWorkspace Boundary Detection', () => {
     const detectionInsideCrop: DetectionResult[] = [
       {
         id: 'detection-1',
+        trackId: 'track-1',
         time: 10,
         label: 'face',
         confidence: 0.92,
+        source: 'mediapipe',
         box: {
           x: 0.4, // Within crop boundaries (0.2 to 0.8)
           y: 0.4, // Within crop boundaries (0.2 to 0.8)
@@ -232,9 +242,11 @@ describe('CropWorkspace Boundary Detection', () => {
     const mixedDetections: DetectionResult[] = [
       {
         id: 'detection-1',
+        trackId: 'track-1',
         time: 10,
         label: 'person',
         confidence: 0.9,
+        source: 'mediapipe',
         box: {
           x: 0.3,
           y: 0.3,
@@ -244,9 +256,11 @@ describe('CropWorkspace Boundary Detection', () => {
       },
       {
         id: 'detection-2',
+        trackId: 'track-2',
         time: 10,
         label: 'face',
         confidence: 0.85,
+        source: 'mediapipe',
         box: {
           x: 0.1, // Outside left boundary - should be prioritized
           y: 0.5,

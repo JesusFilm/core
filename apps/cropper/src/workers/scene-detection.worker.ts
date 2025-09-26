@@ -2,7 +2,6 @@
 
 declare const self: DedicatedWorkerGlobalScope
 
-console.log('🎬 [DEBUG] Scene detection worker loaded and ready')
 
 import type {
   SceneChangeResult,
@@ -322,7 +321,6 @@ const sendMessage = (message: SceneChangeWorkerMessage) => {
 
 // Process a single frame for scene change detection
 const processFrameForSceneChange = (frameData: ImageData | ImageBitmap, timestamp: number): SceneChangeResult | null => {
-  console.log(`🎬 [DEBUG] Scene detection algorithm started for frame at ${timestamp.toFixed(2)}s`)
   const startTime = performance.now()
 
   try {
@@ -370,8 +368,7 @@ const processFrameForSceneChange = (frameData: ImageData | ImageBitmap, timestam
     }
 
     frameBuffer.push(bufferedFrame)
-    console.log(`🎬 [DEBUG] Frame added to buffer (${frameBuffer.length}/${config.performance.maxFrameBuffer})`)
-
+    
     // Limit buffer size
     if (frameBuffer.length > config.performance.maxFrameBuffer) {
       frameBuffer.shift()
@@ -379,15 +376,13 @@ const processFrameForSceneChange = (frameData: ImageData | ImageBitmap, timestam
 
     // Need at least 2 frames for comparison
     if (frameBuffer.length < 2) {
-      console.log(`🎬 [DEBUG] Not enough frames in buffer (${frameBuffer.length}), waiting for more...`)
       return null
     }
 
     // Apply temporal smoothing using edge difference
     let changePercentage = 0
     const smoothingFrames = Math.min(config.noiseReduction.temporalSmoothing, frameBuffer.length - 1)
-    console.log(`🎬 [DEBUG] Starting edge comparison between ${smoothingFrames} frame pairs`)
-
+    
     for (let i = 1; i <= smoothingFrames; i++) {
       const currentFrame = frameBuffer[frameBuffer.length - i]
       const previousFrame = frameBuffer[frameBuffer.length - i - 1]

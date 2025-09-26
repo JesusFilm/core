@@ -4,6 +4,7 @@ declare const self: DedicatedWorkerGlobalScope
 
 // Import MediaPipe Tasks Vision
 import { FaceDetector, ObjectDetector, FilesetResolver } from '@mediapipe/tasks-vision'
+import { TrackManager } from '../lib/face-tracking'
 
 type StartDetectionMessage = {
   type: 'start'
@@ -58,6 +59,7 @@ type OutgoingMessage = DetectionChunk | DetectionComplete | DetectionError
 let timer: number | undefined
 let faceDetector: FaceDetector | null = null
 let objectDetector: ObjectDetector | null = null
+let trackManager: TrackManager | null = null
 const detections: DetectionChunk['result'][] = []
 
 const cleanup = () => {
@@ -72,6 +74,10 @@ const cleanup = () => {
   if (objectDetector) {
     objectDetector.close()
     objectDetector = null
+  }
+  if (trackManager) {
+    trackManager.reset()
+    trackManager = null
   }
   detections.length = 0
 }
@@ -95,8 +101,10 @@ const initializeFaceDetector = async (): Promise<FaceDetector | null> => {
         modelAssetPath: 'https://storage.googleapis.com/mediapipe-models/face_detector/blaze_face_short_range/float16/1/blaze_face_short_range.tflite',
         delegate: 'CPU'
       },
-      minDetectionConfidence: 0.3,
-      minSuppressionThreshold: 0.3,
+      // Sets the minimum confidence score required for a face detection to be considered valid
+      minDetectionConfidence: 0.5,
+      // Controls how aggressively the detector suppresses overlapping detections
+      minSuppressionThreshold: 0.5,
       maxResults: 5
     })
 
@@ -148,6 +156,8 @@ const handleStart = async (message: StartDetectionMessage) => {
     if (faceDetector) initializedDetectors.push('FaceDetector')
     if (objectDetector) initializedDetectors.push('ObjectDetector')
 
+    // Initialize tracking manager
+    trackManager = new TrackManager()
 
     // Set up completion timer based on expected duration
     // The main thread will send processFrame messages for real detection
@@ -264,6 +274,11 @@ const handleProcessFrame = async (message: ProcessFrameMessage) => {
     return
   }
 
+  if (!trackManager) {
+    console.warn('Track manager not initialized, skipping frame processing')
+    return
+  }
+
   try {
     const { frameData, timestamp } = message.payload
 
@@ -282,39 +297,30 @@ const handleProcessFrame = async (message: ProcessFrameMessage) => {
       imageData = frameData
     }
 
-    let bestDetection: {
+    const rawDetections: Array<{
       box: { x: number, y: number, width: number, height: number },
       confidence: number,
       label: 'face' | 'person' | 'silhouette' | 'center'
-    } | null = null
+    }> = []
 
     // Priority 1: Try face detection
     if (faceDetector) {
       try {
         const faceResult = faceDetector.detect(imageData)
         if (faceResult.detections && faceResult.detections.length > 0) {
-          // Find the best face detection
-          let bestFaceConfidence = 0
-          let bestFaceBox: any = null
-
           for (const detection of faceResult.detections) {
             const confidence = detection.categories[0]?.score || 0
-            if (confidence > bestFaceConfidence && confidence >= 0.3) {
-              bestFaceConfidence = confidence
-              bestFaceBox = detection.boundingBox
-            }
-          }
-
-          if (bestFaceBox) {
-            bestDetection = {
-              box: {
-                x: Math.max(0, Math.min(1, bestFaceBox.originX / imageData.width)),
-                y: Math.max(0, Math.min(1, bestFaceBox.originY / imageData.height)),
-                width: Math.max(0, Math.min(1, bestFaceBox.width / imageData.width)),
-                height: Math.max(0, Math.min(1, bestFaceBox.height / imageData.height))
-              },
-              confidence: bestFaceConfidence,
-              label: 'face'
+            if (confidence >= 0.3) {
+              rawDetections.push({
+                box: {
+                  x: Math.max(0, Math.min(1, detection.boundingBox.originX / imageData.width)),
+                  y: Math.max(0, Math.min(1, detection.boundingBox.originY / imageData.height)),
+                  width: Math.max(0, Math.min(1, detection.boundingBox.width / imageData.width)),
+                  height: Math.max(0, Math.min(1, detection.boundingBox.height / imageData.height))
+                },
+                confidence,
+                label: 'face'
+              })
             }
           }
         }
@@ -323,35 +329,26 @@ const handleProcessFrame = async (message: ProcessFrameMessage) => {
       }
     }
 
-    // Priority 2: If no face found, try person detection
-    if (!bestDetection && objectDetector) {
+    // Priority 2: Try person detection (only if no faces were found)
+    if (rawDetections.length === 0 && objectDetector) {
       try {
         const objectResult = objectDetector.detect(imageData)
         if (objectResult.detections && objectResult.detections.length > 0) {
-          // Find the best person detection
-          let bestPersonConfidence = 0
-          let bestPersonBox: any = null
-
           for (const detection of objectResult.detections) {
             if (detection.categories[0]?.categoryName === 'person') {
               const confidence = detection.categories[0]?.score || 0
-              if (confidence > bestPersonConfidence && confidence >= 0.3) {
-                bestPersonConfidence = confidence
-                bestPersonBox = detection.boundingBox
+              if (confidence >= 0.3) {
+                rawDetections.push({
+                  box: {
+                    x: Math.max(0, Math.min(1, detection.boundingBox.originX / imageData.width)),
+                    y: Math.max(0, Math.min(1, detection.boundingBox.originY / imageData.height)),
+                    width: Math.max(0, Math.min(1, detection.boundingBox.width / imageData.width)),
+                    height: Math.max(0, Math.min(1, detection.boundingBox.height / imageData.height))
+                  },
+                  confidence,
+                  label: 'person'
+                })
               }
-            }
-          }
-
-          if (bestPersonBox) {
-            bestDetection = {
-              box: {
-                x: Math.max(0, Math.min(1, bestPersonBox.originX / imageData.width)),
-                y: Math.max(0, Math.min(1, bestPersonBox.originY / imageData.height)),
-                width: Math.max(0, Math.min(1, bestPersonBox.width / imageData.width)),
-                height: Math.max(0, Math.min(1, bestPersonBox.height / imageData.height))
-              },
-              confidence: bestPersonConfidence,
-              label: 'person'
             }
           }
         }
@@ -360,33 +357,24 @@ const handleProcessFrame = async (message: ProcessFrameMessage) => {
       }
     }
 
-    // Priority 3: If no person found, try silhouette detection (interpret as any detected object)
-    if (!bestDetection && objectDetector) {
+    // Priority 3: If no faces or persons found, try silhouette detection
+    if (rawDetections.length === 0 && objectDetector) {
       try {
         const objectResult = objectDetector.detect(imageData)
         if (objectResult.detections && objectResult.detections.length > 0) {
-          // Find the best object detection (any object as silhouette)
-          let bestObjectConfidence = 0
-          let bestObjectBox: any = null
-
           for (const detection of objectResult.detections) {
             const confidence = detection.categories[0]?.score || 0
-            if (confidence > bestObjectConfidence && confidence >= 0.2) { // Lower threshold for silhouettes
-              bestObjectConfidence = confidence
-              bestObjectBox = detection.boundingBox
-            }
-          }
-
-          if (bestObjectBox) {
-            bestDetection = {
-              box: {
-                x: Math.max(0, Math.min(1, bestObjectBox.originX / imageData.width)),
-                y: Math.max(0, Math.min(1, bestObjectBox.originY / imageData.height)),
-                width: Math.max(0, Math.min(1, bestObjectBox.width / imageData.width)),
-                height: Math.max(0, Math.min(1, bestObjectBox.height / imageData.height))
-              },
-              confidence: bestObjectConfidence * 0.8, // Reduce confidence for silhouette detection
-              label: 'silhouette'
+            if (confidence >= 0.2) { // Lower threshold for silhouettes
+              rawDetections.push({
+                box: {
+                  x: Math.max(0, Math.min(1, detection.boundingBox.originX / imageData.width)),
+                  y: Math.max(0, Math.min(1, detection.boundingBox.originY / imageData.height)),
+                  width: Math.max(0, Math.min(1, detection.boundingBox.width / imageData.width)),
+                  height: Math.max(0, Math.min(1, detection.boundingBox.height / imageData.height))
+                },
+                confidence: confidence * 0.8, // Reduce confidence for silhouette detection
+                label: 'silhouette'
+              })
             }
           }
         }
@@ -396,8 +384,8 @@ const handleProcessFrame = async (message: ProcessFrameMessage) => {
     }
 
     // Priority 4: If nothing detected, focus on center
-    if (!bestDetection) {
-      bestDetection = {
+    if (rawDetections.length === 0) {
+      rawDetections.push({
         box: {
           x: 0.4, // Center of frame horizontally
           y: 0.4, // Center of frame vertically
@@ -406,22 +394,29 @@ const handleProcessFrame = async (message: ProcessFrameMessage) => {
         },
         confidence: 0.1, // Very low confidence for center focus
         label: 'center'
-      }
+      })
     }
 
-    // Send the best detection
-    const result: DetectionChunk['result'] = {
+    // Convert raw detections to DetectionResult format
+    const detectionResults: DetectionResult[] = rawDetections.map(detection => ({
       id: `det-${Date.now()}-${Math.random()}`,
       time: timestamp,
-      box: bestDetection.box,
-      confidence: bestDetection.confidence,
-      label: bestDetection.label,
-      source: 'mediapipe'
-    }
+      box: detection.box,
+      confidence: detection.confidence,
+      label: detection.label,
+      source: 'mediapipe' as const,
+      trackId: '' // Will be set by track manager
+    }))
 
-    detections.push(result)
-    const chunk: DetectionChunk = { type: 'chunk', result }
-    sendMessage(chunk)
+    // Process through track manager to get correlated results with track IDs
+    const correlatedDetections = trackManager.processDetections(detectionResults, timestamp)
+
+    // Send each correlated detection
+    for (const result of correlatedDetections) {
+      detections.push(result)
+      const chunk: DetectionChunk = { type: 'chunk', result }
+      sendMessage(chunk)
+    }
 
   } catch (error) {
     console.error('Frame processing failed:', error)

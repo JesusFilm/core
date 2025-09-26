@@ -4,6 +4,7 @@ export interface DetectionCallbacks {
   onChunk?: (result: DetectionResult) => void
   onComplete?: (results: DetectionResult[]) => void
   onError?: (error: string) => void
+  onProgress?: (progress: { current: number; total: number; percentage: number }) => void
 }
 
 export interface DetectionOptions {
@@ -185,44 +186,59 @@ export class DetectionWorkerController {
         // Seek to the timestamp
         this.videoElement.currentTime = timestamp
 
-        // Wait for seek to complete and extract frame
-        const onSeeked = () => {
-          this.videoElement?.removeEventListener('seeked', onSeeked)
-
-          try {
-            // Draw video frame to canvas
-            if (this.ctx && this.videoElement && this.canvas) {
-              this.ctx.drawImage(this.videoElement, 0, 0)
-
-              // Get image data
-              const imageData = this.ctx.getImageData(0, 0, this.canvas.width, this.canvas.height)
-
-              if (imageData && this.worker) {
-                // Send frame to worker for processing
-                this.worker.postMessage({
-                  type: 'processFrame',
-                  payload: {
-                    frameData: imageData,
-                    timestamp
-                  }
-                })
-              }
-            }
-          } catch (error) {
-            callbacks.onError?.(`Frame extraction failed: ${error}`)
-          }
-
-          frameIndex++
-          this.extractionTimeoutId = window.setTimeout(extractFrame, interval)
-        }
-
-        this.videoElement.addEventListener('seeked', onSeeked)
 
       } catch (error) {
         callbacks.onError?.(`Frame extraction setup failed: ${error}`)
         frameIndex++
         this.extractionTimeoutId = window.setTimeout(extractFrame, interval)
       }
+
+      // Add timeout for seek operation in case it never completes
+      const seekTimeout = window.setTimeout(() => {
+        console.warn(`Seek timeout for frame ${frameIndex} at timestamp ${timestamp}`)
+        frameIndex++
+        this.extractionTimeoutId = window.setTimeout(extractFrame, interval)
+      }, 5000) // 5 second timeout
+
+      const onSeeked = () => {
+        clearTimeout(seekTimeout)
+        this.videoElement?.removeEventListener('seeked', onSeeked)
+
+        try {
+          // Draw video frame to canvas
+          if (this.ctx && this.videoElement && this.canvas) {
+            this.ctx.drawImage(this.videoElement, 0, 0)
+
+            // Get image data
+            const imageData = this.ctx.getImageData(0, 0, this.canvas.width, this.canvas.height)
+
+            if (imageData && this.worker) {
+              // Send frame to worker for processing
+              this.worker.postMessage({
+                type: 'processFrame',
+                payload: {
+                  frameData: imageData,
+                  timestamp
+                }
+              })
+
+              // Report progress after successfully sending frame to worker
+              callbacks.onProgress?.({
+                current: frameIndex + 1, // +1 because we're about to increment
+                total: totalFrames,
+                percentage: ((frameIndex + 1) / totalFrames) * 100
+              })
+            }
+          }
+        } catch (error) {
+          callbacks.onError?.(`Frame extraction failed: ${error}`)
+        }
+
+        frameIndex++
+        this.extractionTimeoutId = window.setTimeout(extractFrame, interval)
+      }
+
+      this.videoElement.addEventListener('seeked', onSeeked)
     }
 
     // Start extraction

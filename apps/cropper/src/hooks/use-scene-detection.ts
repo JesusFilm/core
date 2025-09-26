@@ -15,6 +15,7 @@ import {
   shouldSplitScene,
   isValidScene
 } from '../lib/scene-detection-utils'
+import { getFrameRateInterval } from '../config/frame-rate-config'
 
 export const useSceneDetection = (
   callbacks?: SceneDetectionCallbacks
@@ -176,7 +177,7 @@ export const useSceneDetection = (
     const currentTime = video.currentTime * 1000 // Convert to milliseconds
 
     // Skip if we processed this time recently (throttle)
-    if (currentTime - lastProcessedTimeRef.current < (1000 / configRef.current.temporalWindow)) {
+    if (currentTime - lastProcessedTimeRef.current < getFrameRateInterval('SCENE_ANALYSIS')) {
       animationFrameRef.current = requestAnimationFrame(detectionLoop)
       return
     }
