@@ -63,9 +63,10 @@ describe('buttonClickEventCreate', () => {
     )
 
     prismaMock.visitor.findFirst.mockResolvedValue({ id: 'visitorId' } as any)
-    prismaMock.journeyVisitor.findUnique.mockResolvedValue({
+    prismaMock.journeyVisitor.upsert.mockResolvedValue({
       journeyId: 'journeyId',
-      visitorId: 'visitorId'
+      visitorId: 'visitorId',
+      activityCount: 0
     } as any)
   })
 

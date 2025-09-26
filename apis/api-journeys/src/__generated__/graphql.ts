@@ -216,22 +216,12 @@ export type ButtonClickEvent = Event & {
 };
 
 export type ButtonClickEventCreateInput = {
-  /** Action type of the button when it was clicked */
   action?: InputMaybe<ButtonAction>;
-  /**
-   * The label for each corresponding action, mapping below:
-   * NavigateToBlockAction - StepName (generated in client) of the StepBlock
-   * LinkAction - url of the link
-   */
   actionValue?: InputMaybe<Scalars['String']['input']>;
   blockId: Scalars['ID']['input'];
-  /** ID should be unique Event UUID (Provided for optimistic mutation result matching) */
   id?: InputMaybe<Scalars['ID']['input']>;
-  /** stepName of the parent stepBlock */
   label?: InputMaybe<Scalars['String']['input']>;
-  /** id of the parent stepBlock */
   stepId?: InputMaybe<Scalars['ID']['input']>;
-  /** label of the button */
   value?: InputMaybe<Scalars['String']['input']>;
 };
 

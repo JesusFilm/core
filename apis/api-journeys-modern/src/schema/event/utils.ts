@@ -7,6 +7,27 @@ import {
   prisma
 } from '@core/prisma/journeys/client'
 
+// Queue for visitor interaction emails
+let emailQueue: any
+try {
+  // Avoid requiring Redis in tests
+  if (process.env.NODE_ENV !== 'test') {
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    emailQueue = require('../../workers/emailEvents/queue').queue
+  }
+} catch {
+  emailQueue = null
+}
+
+// Test helper to inject a mock queue
+// eslint-disable-next-line @typescript-eslint/naming-convention
+export function __setEmailQueueForTests(mockQueue: any): void {
+  emailQueue = mockQueue
+}
+
+const TWO_MINUTES = 2 * 60 * 1000
+export const ONE_DAY = 24 * 60 * 60 // in seconds
+
 export async function validateBlockEvent(
   userId: string,
   blockId: string,
@@ -39,25 +60,20 @@ export async function validateBlockEvent(
     })
   }
 
-  // Get or create journey visitor
-  let journeyVisitor = await prisma.journeyVisitor.findUnique({
+  // Get or create journey visitor atomically to avoid race conditions
+  const journeyVisitor = await prisma.journeyVisitor.upsert({
     where: {
       journeyId_visitorId: {
         journeyId,
         visitorId: visitor.id
       }
-    }
+    },
+    create: {
+      journeyId,
+      visitorId: visitor.id
+    },
+    update: {}
   })
-
-  if (journeyVisitor == null) {
-    // Create journey visitor if it doesn't exist
-    journeyVisitor = await prisma.journeyVisitor.create({
-      data: {
-        journeyId,
-        visitorId: visitor.id
-      }
-    })
-  }
 
   // Validate step if provided
   if (stepId != null) {
@@ -147,4 +163,39 @@ export async function getOrCreateVisitor(context: any): Promise<string> {
   // For now, return a placeholder visitor ID
   // In a real implementation, this would handle visitor creation/lookup
   return 'visitor-placeholder-id'
+}
+
+export async function sendEventsEmail(
+  journeyId: string,
+  visitorId: string
+): Promise<void> {
+  if (process.env.NODE_ENV === 'test' || emailQueue == null) return
+  const jobId = `visitor-event-${journeyId}-${visitorId}`
+  const existingJob = await emailQueue.getJob(jobId)
+  if (existingJob != null) {
+    await emailQueue.remove(jobId)
+  }
+  await emailQueue.add(
+    'visitor-event',
+    { journeyId, visitorId },
+    {
+      jobId,
+      delay: TWO_MINUTES,
+      removeOnComplete: true,
+      removeOnFail: { age: ONE_DAY, count: 50 }
+    }
+  )
+}
+
+export async function resetEventsEmailDelay(
+  journeyId: string,
+  visitorId: string,
+  delaySeconds?: number
+): Promise<void> {
+  if (process.env.NODE_ENV === 'test' || emailQueue == null) return
+  const jobId = `visitor-event-${journeyId}-${visitorId}`
+  const existingJob = await emailQueue.getJob(jobId)
+  if (existingJob == null) return
+  const delayMs = Math.max((delaySeconds ?? 0) * 1000, TWO_MINUTES)
+  await existingJob.changeDelay(delayMs)
 }
