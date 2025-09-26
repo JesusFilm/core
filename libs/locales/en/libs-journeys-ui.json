@@ -1,4 +1,11 @@
 {
+  "Retry": "Retry",
+  "Copy": "Copy",
+  "Loading suggestions, please wait...": "Loading suggestions, please wait...",
+  "Failed to load suggestions": "Failed to load suggestions",
+  "Ask me anything": "Ask me anything",
+  "AI may make mistakes.": "AI may make mistakes.",
+  "Please double-check important info.": "Please double-check important info.",
   "Submit": "Submit",
   "Button": "Button",
   "This field is required": "This field is required",

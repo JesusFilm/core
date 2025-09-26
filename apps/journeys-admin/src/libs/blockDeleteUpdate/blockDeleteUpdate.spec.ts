@@ -130,7 +130,8 @@ const journey: Journey = {
   journeyCustomizationFields: [],
   fromTemplateId: null,
   socialNodeX: null,
-  socialNodeY: null
+  socialNodeY: null,
+  showAssistant: null
 }
 
 const response = [{ ...image, parentOrder: 0 }]

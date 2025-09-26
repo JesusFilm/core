@@ -6,5 +6,6 @@ export {
   getTitle,
   hasCombinedFooter,
   getFooterMobileSpacing,
-  getFooterMobileHeight
+  getFooterMobileHeight,
+  hasAiChatButton
 } from './getFooterElements'

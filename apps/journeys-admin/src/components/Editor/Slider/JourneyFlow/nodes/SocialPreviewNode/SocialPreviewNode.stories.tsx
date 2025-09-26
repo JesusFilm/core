@@ -149,7 +149,8 @@ const defaultJourney: Journey = {
   journeyCustomizationFields: [],
   fromTemplateId: null,
   socialNodeX: null,
-  socialNodeY: null
+  socialNodeY: null,
+  showAssistant: null
 }
 
 const blankSeoJourney: Journey = {

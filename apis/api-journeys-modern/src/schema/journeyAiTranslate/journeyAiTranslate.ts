@@ -371,10 +371,8 @@ If there is no Bible translation was available, use the the most popular English
               // Stream the translations
               const { fullStream } = streamObject({
                 model: google('gemini-2.0-flash'),
-                messages: [
-                  { role: 'system', content: preSystemPrompt },
-                  { role: 'user', content: blockTranslationPrompt }
-                ],
+                system: preSystemPrompt,
+                prompt: blockTranslationPrompt,
                 output: 'no-schema',
                 onError: ({ error }) => {
                   console.warn(
@@ -794,10 +792,8 @@ If there is no Bible translation was available, use the the most popular English
                 // Stream the translations
                 const { fullStream } = streamObject({
                   model: google('gemini-2.0-flash'),
-                  messages: [
-                    { role: 'system', content: preSystemPrompt },
-                    { role: 'user', content: cardAnalysisPrompt }
-                  ],
+                  system: preSystemPrompt,
+                  prompt: cardAnalysisPrompt,
                   output: 'no-schema',
                   onError: ({ error }) => {
                     console.warn(

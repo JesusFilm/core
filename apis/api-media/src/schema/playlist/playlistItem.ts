@@ -190,7 +190,7 @@ builder.mutationField('playlistItemsReorder', (t) =>
       await prisma.$transaction(async (transaction) => {
         await transaction.playlistItem.updateMany({
           where: { playlistId, id: { in: itemIds } },
-          data: { order: null }
+          data: { order: undefined }
         })
 
         await Promise.all(

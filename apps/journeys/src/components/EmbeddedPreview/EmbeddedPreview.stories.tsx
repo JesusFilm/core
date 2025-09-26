@@ -101,6 +101,7 @@ const journey: Journey = {
   journeyCustomizationDescription: null,
   journeyCustomizationFields: [],
   fromTemplateId: null,
+  showAssistant: null,
   socialNodeX: null,
   socialNodeY: null
 }
