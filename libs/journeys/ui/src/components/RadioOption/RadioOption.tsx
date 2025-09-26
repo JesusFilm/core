@@ -9,6 +9,7 @@ import { useJourney } from '../../libs/JourneyProvider'
 import { RadioOptionFields } from './__generated__/RadioOptionFields'
 import { GridVariant } from './GridVariant/GridVariant'
 import { ListVariant } from './ListVariant/ListVariant'
+import { useGetValueFromJourneyCustomizationString } from '../../libs/useGetValueFromJourneyCustomizationString'
 
 export interface RadioOptionProps extends TreeBlock<RadioOptionFields> {
   selected?: boolean
@@ -33,16 +34,18 @@ export function RadioOption({
   const { journey } = useJourney()
   const router = useRouter()
 
+  const resolvedLabel = useGetValueFromJourneyCustomizationString(label)
+
   const handleClick = (e: MouseEvent): void => {
     e.stopPropagation()
-    onClick?.(id, label)
+    onClick?.(id, resolvedLabel)
     const nextStepSlug = getNextStepSlug(journey, action)
     handleAction(router, action, nextStepSlug)
   }
 
   return gridView === true ? (
     <GridVariant
-      label={label}
+      label={resolvedLabel}
       disabled={disabled}
       selected={selected}
       handleClick={handleClick}
@@ -52,7 +55,7 @@ export function RadioOption({
     />
   ) : (
     <ListVariant
-      label={label}
+      label={resolvedLabel}
       disabled={disabled}
       selected={selected}
       handleClick={handleClick}
