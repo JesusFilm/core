@@ -1,28 +1,14 @@
-import { gql, useMutation } from '@apollo/client'
 import dynamic from 'next/dynamic'
 import { ReactElement, useState } from 'react'
 
-import { IMAGE_FIELDS } from '@core/journeys/ui/Image/imageFields'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 
 import { ImageBlockUpdateInput } from '../../../../../../../__generated__/globalTypes'
-import {
-  JourneyImageBlockAssociationUpdate,
-  JourneyImageBlockAssociationUpdateVariables
-} from '../../../../../../../__generated__/JourneyImageBlockAssociationUpdate'
-import {
-  JourneyImageBlockCreate,
-  JourneyImageBlockCreateVariables
-} from '../../../../../../../__generated__/JourneyImageBlockCreate'
-import {
-  JourneyImageBlockDelete,
-  JourneyImageBlockDeleteVariables
-} from '../../../../../../../__generated__/JourneyImageBlockDelete'
-import {
-  JourneyImageBlockUpdate,
-  JourneyImageBlockUpdateVariables
-} from '../../../../../../../__generated__/JourneyImageBlockUpdate'
 import { blockDeleteUpdate } from '../../../../../../libs/blockDeleteUpdate/blockDeleteUpdate'
+import { useJourneyImageBlockAssociationUpdateMutation } from '../../../../../../libs/useJourneyImageBlockAssociationUpdateMutation'
+import { useJourneyImageBlockCreateMutation } from '../../../../../../libs/useJourneyImageBlockCreateMutation'
+import { useJourneyImageBlockDeleteMutation } from '../../../../../../libs/useJourneyImageBlockDeleteMutation'
+import { useJourneyImageBlockUpdateMutation } from '../../../../../../libs/useJourneyImageBlockUpdateMutation'
 
 import { Large } from './Large'
 import { Small } from './Small'
@@ -35,54 +21,6 @@ const ImageLibrary = dynamic(
   { ssr: false }
 )
 
-export const JOURNEY_IMAGE_BLOCK_DELETE = gql`
-  mutation JourneyImageBlockDelete($id: ID!, $journeyId: ID!) {
-    blockDelete(id: $id, journeyId: $journeyId) {
-      id
-      parentOrder
-    }
-  }
-`
-
-export const JOURNEY_IMAGE_BLOCK_CREATE = gql`
-  ${IMAGE_FIELDS}
-  mutation JourneyImageBlockCreate($input: ImageBlockCreateInput!) {
-    imageBlockCreate(input: $input) {
-      ...ImageFields
-    }
-  }
-`
-
-export const JOURNEY_IMAGE_BLOCK_UPDATE = gql`
-  ${IMAGE_FIELDS}
-  mutation JourneyImageBlockUpdate(
-    $id: ID!
-    $journeyId: ID!
-    $input: ImageBlockUpdateInput!
-  ) {
-    imageBlockUpdate(id: $id, journeyId: $journeyId, input: $input) {
-      ...ImageFields
-    }
-  }
-`
-
-export const JOURNEY_IMAGE_BLOCK_ASSOCIATION_UPDATE = gql`
-  mutation JourneyImageBlockAssociationUpdate(
-    $id: ID!
-    $input: JourneyUpdateInput!
-  ) {
-    journeyUpdate(id: $id, input: $input) {
-      id
-      primaryImageBlock {
-        id
-      }
-      creatorImageBlock {
-        id
-      }
-    }
-  }
-`
-
 interface ImageEditProps {
   size?: 'small' | 'large'
   target?: 'primary' | 'creator'
@@ -94,26 +32,17 @@ export function ImageEdit({
   target = 'primary',
   variant = 'drawer'
 }: ImageEditProps): ReactElement {
-  const [journeyImageBlockDelete] = useMutation<
-    JourneyImageBlockDelete,
-    JourneyImageBlockDeleteVariables
-  >(JOURNEY_IMAGE_BLOCK_DELETE)
+  const [journeyImageBlockDelete] = useJourneyImageBlockDeleteMutation()
   const [
     journeyImageBlockCreate,
     { loading: createLoading, error: createError }
-  ] = useMutation<JourneyImageBlockCreate, JourneyImageBlockCreateVariables>(
-    JOURNEY_IMAGE_BLOCK_CREATE
-  )
+  ] = useJourneyImageBlockCreateMutation()
   const [
     journeyImageBlockUpdate,
     { loading: updateLoading, error: updateError }
-  ] = useMutation<JourneyImageBlockUpdate, JourneyImageBlockUpdateVariables>(
-    JOURNEY_IMAGE_BLOCK_UPDATE
-  )
-  const [journeyImageBlockAssociationUpdate] = useMutation<
-    JourneyImageBlockAssociationUpdate,
-    JourneyImageBlockAssociationUpdateVariables
-  >(JOURNEY_IMAGE_BLOCK_ASSOCIATION_UPDATE)
+  ] = useJourneyImageBlockUpdateMutation()
+  const [journeyImageBlockAssociationUpdate] =
+    useJourneyImageBlockAssociationUpdateMutation()
   const { journey } = useJourney()
   const [open, setOpen] = useState<boolean | undefined>()
   const targetImageBlock =

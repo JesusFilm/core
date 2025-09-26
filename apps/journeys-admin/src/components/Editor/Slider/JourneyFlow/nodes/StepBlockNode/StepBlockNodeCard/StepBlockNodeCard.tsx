@@ -8,6 +8,7 @@ import { ReactElement } from 'react'
 
 import { TreeBlock } from '@core/journeys/ui/block'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
+import { useGetValueFromJourneyCustomizationString } from '@core/journeys/ui/useGetValueFromJourneyCustomizationString'
 
 import {
   BlockFields_CardBlock as CardBlock,
@@ -40,6 +41,9 @@ export function StepBlockNodeCard({
     hasMultipleActions,
     priorityImage
   } = getCardMetadata(card)
+
+  const resolvedTitle = useGetValueFromJourneyCustomizationString(title)
+  const resolvedSubtitle = useGetValueFromJourneyCustomizationString(subtitle)
 
   const nodeBgImage = priorityImage ?? bgImage
 
@@ -146,8 +150,8 @@ export function StepBlockNodeCard({
               wordBreak: 'break-word'
             }}
           >
-            {title != null && title !== '' ? (
-              title
+            {resolvedTitle != null && resolvedTitle !== '' ? (
+              resolvedTitle
             ) : (
               <Skeleton
                 data-testid="StepBlockNodeCardTitleSkeleton"
@@ -171,8 +175,9 @@ export function StepBlockNodeCard({
               overflow: 'hidden'
             }}
           >
-            {(subtitle != null && subtitle !== '') || title != null ? (
-              subtitle
+            {(resolvedSubtitle != null && resolvedSubtitle !== '') ||
+            resolvedTitle != null ? (
+              resolvedSubtitle
             ) : (
               <Skeleton
                 data-testid="StepBlockNodeCardSubtitleSkeleton"

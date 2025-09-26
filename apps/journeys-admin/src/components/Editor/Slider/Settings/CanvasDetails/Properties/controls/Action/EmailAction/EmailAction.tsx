@@ -2,18 +2,26 @@ import Box from '@mui/material/Box'
 import InputAdornment from '@mui/material/InputAdornment'
 import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next'
-import { ReactElement } from 'react'
+import { ReactElement, RefObject } from 'react'
 import { object, string } from 'yup'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 import Mail2Icon from '@core/shared/ui/icons/Mail2'
 
-import { BlockFields_ButtonBlock as ButtonBlock } from '../../../../../../../../../../__generated__/BlockFields'
+import {
+  BlockFields_ButtonBlock as ButtonBlock,
+  BlockFields_ButtonBlock_action_EmailAction as ButtonBlockEmailAction
+} from '../../../../../../../../../../__generated__/BlockFields'
 import { TextFieldForm } from '../../../../../../../../TextFieldForm'
 import { useActionCommand } from '../../../../../../../utils/useActionCommand'
+import { TextFieldFormRef } from '../../../../../../../../TextFieldForm/TextFieldForm'
 
-export function EmailAction(): ReactElement {
+interface EmailActionProps {
+  ref?: RefObject<TextFieldFormRef | null>
+}
+
+export function EmailAction({ ref }: EmailActionProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const {
     state: { selectedBlock: stateSelectedBlock, selectedStep }
@@ -35,7 +43,6 @@ export function EmailAction(): ReactElement {
 
   function handleSubmit(email: string): void {
     if (selectedBlock == null || selectedStep == null) return
-
     const { id, action, __typename: blockTypename } = selectedBlock
     addAction({
       blockId: id,
@@ -45,7 +52,9 @@ export function EmailAction(): ReactElement {
         parentBlockId: id,
         gtmEventName: '',
         email,
-        customizable: emailAction?.customizable ?? false,
+        customizable:
+          (selectedBlock?.action as ButtonBlockEmailAction)?.customizable ??
+          false,
         parentStepId: selectedStep.id
       },
       undoAction: action,
@@ -68,6 +77,7 @@ export function EmailAction(): ReactElement {
       <Box data-testid="EmailAction">
         <TextFieldForm
           id="email"
+          ref={ref}
           label={t('Paste Email here...')}
           initialValue={emailAction?.email}
           validationSchema={emailActionSchema}

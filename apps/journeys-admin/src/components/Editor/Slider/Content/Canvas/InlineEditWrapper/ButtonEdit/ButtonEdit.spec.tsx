@@ -6,9 +6,11 @@ import DebounceLink from 'apollo-link-debounce'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
 import { ButtonFields } from '../../../../../../../../__generated__/ButtonFields'
 import { ButtonVariant } from '../../../../../../../../__generated__/globalTypes'
+import { GetJourney_journey as Journey } from '../../../../../../../../__generated__/GetJourney'
 import { CommandRedoItem } from '../../../../../Toolbar/Items/CommandRedoItem'
 import { CommandUndoItem } from '../../../../../Toolbar/Items/CommandUndoItem'
 
@@ -78,6 +80,37 @@ describe('ButtonEdit', () => {
       }
     }))
   }
+
+  const mockJourneyWithCustomization: Journey = {
+    id: 'journeyId',
+    template: false,
+    journeyCustomizationFields: [
+      {
+        id: 'field1',
+        key: 'name',
+        value: 'John Doe',
+        defaultValue: 'Guest'
+      },
+      {
+        id: 'field2',
+        key: 'company',
+        value: null,
+        defaultValue: 'Acme Corp'
+      },
+      {
+        id: 'field3',
+        key: 'email',
+        value: 'john@example.com',
+        defaultValue: 'guest@example.com'
+      }
+    ]
+  } as unknown as Journey
+
+  const mockTemplateJourney: Journey = {
+    id: 'templateId',
+    template: true,
+    journeyCustomizationFields: []
+  } as unknown as Journey
 
   beforeEach(() => jest.clearAllMocks())
 
@@ -185,5 +218,80 @@ describe('ButtonEdit', () => {
     })
 
     await waitFor(() => expect(mockLabelUpdate2.result).not.toHaveBeenCalled())
+  })
+
+  it('should resolve customization strings in non-template journeys', () => {
+    const propsWithCustomization = {
+      ...props,
+      label: 'Hello {{ name }}, welcome to {{ company }}!'
+    }
+
+    render(
+      <MockedProvider>
+        <JourneyProvider
+          value={{
+            journey: mockJourneyWithCustomization,
+            variant: 'admin'
+          }}
+        >
+          <EditorProvider>
+            <ButtonEdit {...propsWithCustomization} />
+          </EditorProvider>
+        </JourneyProvider>
+      </MockedProvider>
+    )
+
+    const input = screen.getByRole('textbox')
+    expect(input).toHaveValue('Hello John Doe, welcome to Acme Corp!')
+  })
+
+  it('should use defaultValue when value is null', () => {
+    const propsWithCustomization = {
+      ...props,
+      label: 'Company: {{ company }}'
+    }
+
+    render(
+      <MockedProvider>
+        <JourneyProvider
+          value={{
+            journey: mockJourneyWithCustomization,
+            variant: 'admin'
+          }}
+        >
+          <EditorProvider>
+            <ButtonEdit {...propsWithCustomization} />
+          </EditorProvider>
+        </JourneyProvider>
+      </MockedProvider>
+    )
+
+    const input = screen.getByRole('textbox')
+    expect(input).toHaveValue('Company: Acme Corp')
+  })
+
+  it('should not resolve customization strings in template journeys', () => {
+    const propsWithCustomization = {
+      ...props,
+      label: 'Hello {{ name }}, welcome!'
+    }
+
+    render(
+      <MockedProvider>
+        <JourneyProvider
+          value={{
+            journey: mockTemplateJourney,
+            variant: 'admin'
+          }}
+        >
+          <EditorProvider>
+            <ButtonEdit {...propsWithCustomization} />
+          </EditorProvider>
+        </JourneyProvider>
+      </MockedProvider>
+    )
+
+    const input = screen.getByRole('textbox')
+    expect(input).toHaveValue('Hello {{ name }}, welcome!')
   })
 })

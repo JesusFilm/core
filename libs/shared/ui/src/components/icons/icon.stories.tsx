@@ -78,6 +78,7 @@ const iconNames: IconName[] = [
   'Drag',
   'DuplicateCard',
   'Edit2',
+  'Edit3',
   'Ellipsis',
   'Email',
   'Embed',

@@ -1,0 +1,1 @@
+export { useGetValueFromJourneyCustomizationString } from './useGetValueFromJourneyCustomizationString'

@@ -52,7 +52,7 @@ importers:
         version: 1.41.4
       '@crowdin/ota-client':
         specifier: ^2.0.0
-        version: 2.0.1
+        version: 2.0.2
       '@datadog/browser-rum':
         specifier: ^6.14.0
         version: 6.14.0
@@ -2683,8 +2683,8 @@ packages:
     resolution: {integrity: sha512-5/Vt5rSdbEd5oBEUAQ2vzpj9iyDKmEprdVdhTDdtRCmHGZ5m7KxXv7rvyV5WFzOb97I6rvGVZVpSmxHS6YTqDA==}
     engines: {node: '>=12.9.0'}
 
-  '@crowdin/ota-client@2.0.1':
-    resolution: {integrity: sha512-iIg3jjWQFUROWgOpghmDXbyAGhYCz4bXbLaYuTGIc2fvlON6OY4+osTT9c/bL6gLct4zw8mF25+AWXf9m+X+Zg==}
+  '@crowdin/ota-client@2.0.2':
+    resolution: {integrity: sha512-IlnNzTiHql3L+qKf4yOGTGJXrqiGdYec1Ht4woHXG2nBEmDvkiqwCJanV5EGwXwn+gIU4c4ClSLnMmfF+BWSqw==}
     engines: {node: '>=18.0.0'}
 
   '@cspotcode/source-map-support@0.8.1':
@@ -24529,7 +24529,7 @@ snapshots:
     transitivePeerDependencies:
       - debug
 
-  '@crowdin/ota-client@2.0.1': {}
+  '@crowdin/ota-client@2.0.2': {}
 
   '@cspotcode/source-map-support@0.8.1':
     dependencies:
