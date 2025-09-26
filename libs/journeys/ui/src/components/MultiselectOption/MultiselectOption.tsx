@@ -16,12 +16,12 @@ export const StyledListMultiselectOption = styled(Button)<ButtonProps>(({
   return {
     fontFamily: theme.typography.button.fontFamily,
     fontSize: theme.typography.body1.fontSize,
-    fontWeight: 400,
+    fontWeight: 500,
     lineHeight: theme.typography.body2.lineHeight,
     textAlign: 'start',
     justifyContent: 'flex-start',
     borderRadius: '12px',
-    padding: '14px 10px 14px 14px',
+    padding: '14px 12px 14px 14px',
     transition: theme.transitions.create(
       [
         'background-color',
@@ -35,45 +35,33 @@ export const StyledListMultiselectOption = styled(Button)<ButtonProps>(({
       }
     ),
     wordBreak: 'break-word',
-    color: theme.palette.text.primary,
+    color: theme.palette.mode === 'dark' ? '#EFEFEF' : '#444451',
     ...borderStyles,
 
     // Default state
-    opacity: theme.palette.mode === 'dark' ? 1 : 0.7,
-    backgroundColor:
-      theme.palette.mode === 'dark'
-        ? 'rgba(255, 255, 255, 0.6)'
-        : 'rgba(0, 0, 0, 0.6)',
+    opacity: 1,
+    backgroundColor: theme.palette.mode === 'dark' ? '#26262E' : '#EFEFEF',
 
     // Hover state
     '&:hover': {
       ...borderStyles['&:hover'],
-      backgroundColor:
-        theme.palette.mode === 'dark'
-          ? 'rgba(255, 255, 255, 0.8)'
-          : 'rgba(0, 0, 0, 0.8)',
+      backgroundColor: theme.palette.mode === 'dark' ? '#26262E' : '#DCDDE5',
       transform: 'translateY(-2px)',
       boxShadow:
         theme.palette.mode === 'dark'
           ? '0 4px 12px rgba(0, 0, 0, 0.4)'
-          : '0 4px 12px rgba(0, 0, 0, 0.15)'
+          : '0 4px 12px rgba(0, 0, 0, 0.12)'
     },
 
     // Selected state
     '&:active': {
       ...borderStyles['&:active'],
-      backgroundColor:
-        theme.palette.mode === 'dark'
-          ? 'rgba(255, 255, 255, 0.9)'
-          : 'rgba(0, 0, 0, 0.9)',
-      color:
-        theme.palette.mode === 'dark'
-          ? 'rgba(0, 0, 0, 0.9)'
-          : 'rgba(255, 255, 255, 0.95)',
+      backgroundColor: theme.palette.mode === 'dark' ? '#26262E' : '#444451',
+      color: '#EFEFEF',
       boxShadow:
         theme.palette.mode === 'dark'
           ? '0 4px 16px rgba(0, 0, 0, 0.4)'
-          : '0 4px 16px rgba(0, 0, 0, 0.2)'
+          : '0 4px 16px rgba(0, 0, 0, 0.18)'
     },
 
     // Disabled state
@@ -81,12 +69,12 @@ export const StyledListMultiselectOption = styled(Button)<ButtonProps>(({
       ...borderStyles['&.disabled'],
       backgroundColor:
         theme.palette.mode === 'dark'
-          ? 'rgba(255, 255, 255, 0.4)'
-          : 'rgba(0, 0, 0, 0.4)',
+          ? 'rgba(38, 38, 46, 0.5)'
+          : 'rgba(239, 239, 239, 0.6)',
       color:
         theme.palette.mode === 'dark'
-          ? 'rgba(0, 0, 0, 0.5)'
-          : 'rgba(255, 255, 255, 0.7)'
+          ? 'rgba(239, 239, 239, 0.6)'
+          : 'rgba(68, 68, 81, 0.6)'
     }
   }
 })

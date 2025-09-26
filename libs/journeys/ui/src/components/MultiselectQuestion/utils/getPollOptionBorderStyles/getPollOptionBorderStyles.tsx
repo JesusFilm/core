@@ -3,29 +3,26 @@ import { Theme } from '@mui/material/styles'
 export const getPollOptionBorderStyles = (
   theme: Theme,
   options?: { important?: boolean }
-) => ({
-  borderColor:
-    theme.palette.mode === 'dark'
-      ? `rgba(150, 150, 150, 0.2)${options?.important ? ' !important' : ''}`
-      : `rgba(225, 225, 225, 0.3)${options?.important ? ' !important' : ''}`,
-  borderWidth: `1px${options?.important ? ' !important' : ''}`,
-  borderStyle: `solid${options?.important ? ' !important' : ''}`,
-  '&:hover': {
-    borderColor:
-      theme.palette.mode === 'dark'
-        ? `rgba(150, 150, 150, 0.5)${options?.important ? ' !important' : ''}`
-        : `rgba(255, 255, 255, 0.5)${options?.important ? ' !important' : ''}`
-  },
-  '&:active': {
-    borderColor:
-      theme.palette.mode === 'dark'
-        ? `rgba(150, 150, 150, 0.7)${options?.important ? '!important' : ''}`
-        : `rgba(255, 255, 255, 0.7)${options?.important ? '!important' : ''}`
-  },
-  '&.disabled': {
-    borderColor:
-      theme.palette.mode === 'dark'
-        ? `rgba(150, 150, 150, 0.15)${options?.important ? '!important' : ''}`
-        : `rgba(255, 255, 255, 0.15)${options?.important ? '!important' : ''}`
+) => {
+  // Figma tokens
+  const figmaBorderLight = '#DCDDE5' // Shades/200
+  const figmaBorderDark = '#6D6D7D' // Editor/Secondary/Light
+
+  const borderColor =
+    theme.palette.mode === 'dark' ? figmaBorderDark : figmaBorderLight
+
+  return {
+    borderColor: `${borderColor}${options?.important ? ' !important' : ''}`,
+    borderWidth: `1px${options?.important ? ' !important' : ''}`,
+    borderStyle: `solid${options?.important ? ' !important' : ''}`,
+    '&:hover': {
+      borderColor: `${borderColor}${options?.important ? ' !important' : ''}`
+    },
+    '&:active': {
+      borderColor: `${borderColor}${options?.important ? '!important' : ''}`
+    },
+    '&.disabled': {
+      borderColor: `${borderColor}${options?.important ? '!important' : ''}`
+    }
   }
-})
+}
