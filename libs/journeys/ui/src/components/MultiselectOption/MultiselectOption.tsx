@@ -1,12 +1,15 @@
 import Button, { ButtonProps } from '@mui/material/Button'
 import { styled } from '@mui/material/styles'
 import { MouseEvent, ReactElement } from 'react'
+import { useTheme } from '@mui/material/styles'
 
 import type { TreeBlock } from '../../libs/block'
 import { useJourney } from '../../libs/JourneyProvider'
 import { getPollOptionBorderStyles } from '../MultiselectQuestion/utils/getPollOptionBorderStyles'
 
 import { MultiselectOptionFields } from './__generated__/MultiselectOptionFields'
+import CheckSquareContainedIcon from '@core/shared/ui/icons/CheckSquareContained'
+import SquareIcon from '@core/shared/ui/icons/Square'
 
 export const StyledListMultiselectOption = styled(Button)<ButtonProps>(({
   theme
@@ -20,16 +23,10 @@ export const StyledListMultiselectOption = styled(Button)<ButtonProps>(({
     lineHeight: theme.typography.body2.lineHeight,
     textAlign: 'start',
     justifyContent: 'flex-start',
-    borderRadius: '12px',
+    borderRadius: 0,
     padding: '14px 12px 14px 14px',
     transition: theme.transitions.create(
-      [
-        'background-color',
-        'border-color',
-        'transform',
-        'box-shadow',
-        'opacity'
-      ],
+      ['background-color', 'border-color', 'opacity', 'color'],
       {
         duration: theme.transitions.duration.short
       }
@@ -40,28 +37,23 @@ export const StyledListMultiselectOption = styled(Button)<ButtonProps>(({
 
     // Default state
     opacity: 1,
-    backgroundColor: theme.palette.mode === 'dark' ? '#26262E' : '#EFEFEF',
+    backgroundColor: theme.palette.mode === 'dark' ? '#FFFFFF99' : '#00000099',
 
     // Hover state
     '&:hover': {
       ...borderStyles['&:hover'],
-      backgroundColor: theme.palette.mode === 'dark' ? '#26262E' : '#DCDDE5',
-      transform: 'translateY(-2px)',
-      boxShadow:
-        theme.palette.mode === 'dark'
-          ? '0 4px 12px rgba(0, 0, 0, 0.4)'
-          : '0 4px 12px rgba(0, 0, 0, 0.12)'
+      // Dark mode hover visually matches default per spec
+      backgroundColor: theme.palette.mode === 'dark' ? '#FFFFFFCC' : '#000000CC'
     },
 
-    // Selected state
-    '&:active': {
-      ...borderStyles['&:active'],
-      backgroundColor: theme.palette.mode === 'dark' ? '#26262E' : '#444451',
-      color: '#EFEFEF',
-      boxShadow:
-        theme.palette.mode === 'dark'
-          ? '0 4px 16px rgba(0, 0, 0, 0.4)'
-          : '0 4px 16px rgba(0, 0, 0, 0.18)'
+    // Selected state (persistent)
+    '&.selected': {
+      backgroundColor:
+        theme.palette.mode === 'dark' ? '#FFFFFFE5' : '#000000E5',
+      color: theme.palette.mode === 'dark' ? '#1D1D1D' : '#FFFFFF'
+    },
+    '&.selected:hover': {
+      // backgroundColor: theme.palette.mode === 'dark' ? '#0C0C0F' : '#FFFFFF'
     },
 
     // Disabled state
@@ -96,6 +88,7 @@ export function MultiselectOption({
   editableLabel
 }: MultiselectOptionProps): ReactElement {
   const { journey } = useJourney()
+  const theme = useTheme()
 
   const handleClick = (e: MouseEvent): void => {
     e.stopPropagation()
@@ -110,6 +103,23 @@ export function MultiselectOption({
       fullWidth
       disableRipple
       className={selected ? 'selected' : ''}
+      startIcon={
+        selected ? (
+          <CheckSquareContainedIcon
+            sx={{
+              color: theme.palette.mode === 'dark' ? '#1D1D1D' : '#FFFFFF',
+              fontSize: 22
+            }}
+          />
+        ) : (
+          <SquareIcon
+            sx={{
+              color: theme.palette.mode === 'dark' ? '#6D6D7D' : '#AAACBB',
+              fontSize: 22
+            }}
+          />
+        )
+      }
       sx={
         editableLabel != null
           ? {

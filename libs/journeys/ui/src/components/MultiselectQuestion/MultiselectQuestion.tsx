@@ -34,31 +34,32 @@ const StyledListMultiselectQuestion = styled(Box)<BoxProps>(({ theme }) => ({
   marginBottom: theme.spacing(4),
   '& .MuiButtonGroup-root': {
     boxShadow: 'none',
-    gap: theme.spacing(2),
+    gap: 0,
     '& .MuiButtonGroup-grouped': {
       border: 'none',
       borderBottom: 'none',
       borderRight: 'none',
-      borderRadius: '12px',
+      borderRadius: 0,
       margin: '0 !important',
-      backgroundColor: theme.palette.mode === 'dark' ? '#26262E' : '#EFEFEF',
-      '&:hover': {
-        backgroundColor: theme.palette.mode === 'dark' ? '#26262E' : '#DCDDE5'
-      },
       '&:active': {
         backgroundColor: theme.palette.mode === 'dark' ? '#26262E' : '#444451'
       },
       '&:not(:last-of-type)': {
         borderBottom: 'none'
       },
-      '& .MuiButtonGroup-firstButton': {
-        ...getPollOptionBorderStyles(theme)
+      '&.MuiButtonGroup-firstButton': {
+        ...getPollOptionBorderStyles(theme),
+        borderTopLeftRadius: 12,
+        borderTopRightRadius: 12
       },
-      '& .MuiButtonGroup-middleButton': {
-        ...getPollOptionBorderStyles(theme)
+      '&.MuiButtonGroup-middleButton': {
+        ...getPollOptionBorderStyles(theme),
+        borderRadius: 0
       },
-      '& .MuiButtonGroup-lastButton': {
-        ...getPollOptionBorderStyles(theme)
+      '&.MuiButtonGroup-lastButton': {
+        ...getPollOptionBorderStyles(theme),
+        borderBottomLeftRadius: 12,
+        borderBottomRightRadius: 12
       }
     }
   }
