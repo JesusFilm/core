@@ -25,9 +25,11 @@ export function InteractionStarter({
       </div>
       <div className="flex gap-4">
         <Button
-          onClick={() =>
-            !disabled && handleClick(t('Explain this content'), 'explain')
-          }
+          onClick={() => {
+            if (!disabled) {
+              handleClick(t('Explain this content'), 'explain')
+            }
+          }}
           disabled={disabled}
           className={`flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-6 py-3 font-medium text-gray-500 transition-colors duration-200 ${
             disabled ? 'cursor-not-allowed opacity-50' : 'hover:bg-gray-50'
@@ -37,9 +39,11 @@ export function InteractionStarter({
           {t('Explain')}
         </Button>
         <Button
-          onClick={() =>
-            !disabled && handleClick(t('Help me reflect on this'), 'reflect')
-          }
+          onClick={() => {
+            if (!disabled) {
+              handleClick(t('Help me reflect on this'), 'reflect')
+            }
+          }}
           disabled={disabled}
           className={`flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-6 py-3 font-medium text-gray-500 transition-colors duration-200 ${
             disabled ? 'cursor-not-allowed opacity-50' : 'hover:bg-gray-50'
