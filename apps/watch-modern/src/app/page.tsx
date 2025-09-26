@@ -15,7 +15,7 @@ export default async function RootIndexPage(): Promise<ReactElement> {
 
   return (
     <main className="container mx-auto flex-1 py-8">
-      <div className="mb-6 rounded-lg border bg-card p-6 shadow-sm">
+      <div className="bg-card mb-6 rounded-lg border p-6 shadow-sm">
         <div className="mb-4">
           <h2 className="text-2xl font-bold">
             {t.rich('title', {

@@ -63,7 +63,12 @@ export const CREATE_JOURNEY = gql`
       id
     }
     cardBlockCreate(
-      input: { id: $cardId, parentBlockId: $stepId, journeyId: $journeyId }
+      input: {
+        id: $cardId
+        parentBlockId: $stepId
+        journeyId: $journeyId
+        themeMode: dark
+      }
     ) {
       id
     }
@@ -141,9 +146,7 @@ export function useJourneyCreateMutation(): {
             imageId,
             alt: t('two hot air balloons in the sky'),
             headlineTypographyContent: t('The Journey Is On'),
-            bodyTypographyContent: t(
-              '"Go, and lead the people on their way..."'
-            ),
+            bodyTypographyContent: t('"Go, and lead the people on their way..."'),
             captionTypographyContent: t('Deuteronomy 10:11'),
             teamId: activeTeam?.id
           },

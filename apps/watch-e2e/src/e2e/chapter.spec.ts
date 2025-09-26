@@ -28,7 +28,7 @@ test('Chapter', async ({ page }) => {
 
   // check it's navigated to the correct URL
   await expect(page).toHaveURL(
-    '/watch/jesus-calms-the-storm.html/english.html?r=0',
+    '/watch/jesus-calms-the-storm.html/english.html',
     {
       timeout: 60000
     }

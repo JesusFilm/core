@@ -4,9 +4,14 @@ import { Edge, MarkerType, Node } from 'reactflow'
 
 import { TreeBlock } from '@core/journeys/ui/block'
 import { filterActionBlocks } from '@core/journeys/ui/filterActionBlocks'
+import { JourneyFields } from '@core/journeys/ui/JourneyProvider/__generated__/JourneyFields'
 import { adminLight } from '@core/shared/ui/themes/journeysAdmin/theme'
 
 import { BlockFields_StepBlock as StepBlock } from '../../../../../../../__generated__/BlockFields'
+import {
+  DEFAULT_SOCIAL_NODE_X,
+  DEFAULT_SOCIAL_NODE_Y
+} from '../../nodes/SocialPreviewNode/libs/positions'
 import {
   ACTION_BUTTON_HEIGHT,
   LINK_NODE_HEIGHT_GAP,
@@ -27,14 +32,6 @@ export const defaultEdgeProps = {
     width: 10,
     color: MARKER_END_DEFAULT_COLOR
   }
-}
-
-export const socialNode = {
-  id: 'SocialPreview',
-  type: 'SocialPreview',
-  data: {},
-  position: { x: -240, y: -46 },
-  draggable: false
 }
 
 export const hiddenEdge = {
@@ -63,11 +60,22 @@ type TreeStepBlock = TreeBlock<StepBlock>
 
 export function transformSteps(
   steps: TreeStepBlock[],
-  positions: PositionMap
+  positions: PositionMap,
+  journey: JourneyFields | undefined
 ): {
   nodes: Node[]
   edges: Edge[]
 } {
+  const socialNode = {
+    id: 'SocialPreview',
+    type: 'SocialPreview',
+    data: {},
+    position: {
+      x: journey?.socialNodeX ?? DEFAULT_SOCIAL_NODE_X,
+      y: journey?.socialNodeY ?? DEFAULT_SOCIAL_NODE_Y
+    },
+    draggable: true
+  }
   const nodes: Node[] = [socialNode, hiddenNode]
   const edges: Edge[] = [hiddenEdge]
 

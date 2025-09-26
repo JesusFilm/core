@@ -79,7 +79,7 @@ export default function Part2Page({
 }: Part2PageProps): ReactElement {
   const audioLanguageId = content.variant?.language.id ?? '529'
   const initialWatchState: WatchState = {
-    audioLanguageId: getCookie('AUDIO_LANGUAGE') ?? audioLanguageId,
+    audioLanguageId,
     subtitleLanguageId: getCookie('SUBTITLE_LANGUAGE') ?? audioLanguageId,
     subtitleOn: getCookie('SUBTITLES_ON') === 'true',
     videoSubtitleLanguageIds,

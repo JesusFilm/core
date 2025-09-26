@@ -36,7 +36,7 @@ export const INCLUDE_JOURNEY_ACL: Prisma.BlockInclude<DefaultArgs> = {
 
 export function journeyAcl(
   action: Action,
-  journey: Journey,
+  journey: Partial<Journey>,
   user: User
 ): boolean {
   // Allow reading published templates
@@ -55,6 +55,9 @@ export function journeyAcl(
       return true
     }
 
+    // Publishers can update any template
+    if (action === Action.Update && journey.template === true) return true
+
     // Publishers can manage templates
     if (action === Action.Manage && journey.template === true) {
       return true
@@ -62,7 +65,7 @@ export function journeyAcl(
 
     // Publishers can convert journey to template if they're owner/editor
     if (action === Action.Manage && 'template' in journey) {
-      const userJourney = journey?.userJourneys.find(
+      const userJourney = journey?.userJourneys?.find(
         (userJourney) => userJourney.userId === user.id
       )
       if (
@@ -107,8 +110,8 @@ export function journeyAcl(
 }
 
 // team managers and journeys owners can manage the journey
-function manage(journey: Journey, user: User): boolean {
-  const userJourney = journey?.userJourneys.find(
+function manage(journey: Partial<Journey>, user: User): boolean {
+  const userJourney = journey?.userJourneys?.find(
     (userJourney) => userJourney.userId === user.id
   )
 
@@ -124,7 +127,7 @@ function manage(journey: Journey, user: User): boolean {
 }
 
 // team managers and team members can create a journey
-function create(journey: Journey, user: User): boolean {
+function create(journey: Partial<Journey>, user: User): boolean {
   const userTeam = journey?.team?.userTeams.find(
     (userTeam) => userTeam.userId === user.id
   )
@@ -136,8 +139,8 @@ function create(journey: Journey, user: User): boolean {
 }
 
 // team managers/members and journeys owners/editors can read the journey
-function read(journey: Journey, user: User): boolean {
-  const userJourney = journey?.userJourneys.find(
+function read(journey: Partial<Journey>, user: User): boolean {
+  const userJourney = journey?.userJourneys?.find(
     (userJourney) => userJourney.userId === user.id
   )
 
@@ -149,8 +152,8 @@ function read(journey: Journey, user: User): boolean {
 }
 
 // team managers/members and journeys owners/editors can update the journey
-function update(journey: Journey, user: User): boolean {
-  const userJourney = journey?.userJourneys.find(
+function update(journey: Partial<Journey>, user: User): boolean {
+  const userJourney = journey?.userJourneys?.find(
     (userJourney) => userJourney.userId === user.id
   )
   const userTeam = journey?.team?.userTeams.find(
