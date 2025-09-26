@@ -59,13 +59,13 @@ const journey: Journey = {
   logoImageBlock: null,
   menuButtonIcon: null,
   menuStepBlock: null,
-  socialNodeX: null,
-  socialNodeY: null,
   journeyTheme: null,
   journeyCustomizationDescription: null,
   journeyCustomizationFields: [],
   fromTemplateId: null,
-  showAssistant: null
+  showAssistant: null,
+  socialNodeX: null,
+  socialNodeY: null
 }
 
 describe('getJourneyRTL', () => {
