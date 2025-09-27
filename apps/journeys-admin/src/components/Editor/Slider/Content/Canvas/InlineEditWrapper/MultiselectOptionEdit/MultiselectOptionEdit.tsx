@@ -6,7 +6,8 @@ import { v4 as uuidv4 } from 'uuid'
 import { MultiselectOption } from '@core/journeys/ui/MultiselectOption/MultiselectOption'
 import { useCommand } from '@core/journeys/ui/CommandProvider'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
-
+import { MultiselectOptionBlockUpdate } from '../../../../../../../../__generated__/MultiselectOptionBlockUpdate'
+import { MultiselectOptionBlockUpdateVariables } from '../../../../../../../../__generated__/MultiselectOptionBlockUpdate'
 import { MultiselectOptionFields } from '../../../../../../../../__generated__/MultiselectOptionFields'
 import { InlineEditInput } from '../InlineEditInput'
 
@@ -23,11 +24,15 @@ export const MULTISELECT_OPTION_BLOCK_UPDATE = gql`
 `
 
 export function MultiselectOptionEdit(
-  props: MultiselectOptionFields
+  id,
+  label,
+  ...props: MultiselectOptionFields
 ): ReactElement {
-  const { id, label, ...rest } = props as any
   const { t } = useTranslation('apps-journeys-admin')
-  const [updateOption] = useMutation(MULTISELECT_OPTION_BLOCK_UPDATE)
+  const [updateOption] = useMutation<
+    MultiselectOptionBlockUpdate,
+    MultiselectOptionBlockUpdateVariables
+  >(MULTISELECT_OPTION_BLOCK_UPDATE)
 
   const [value, setValue] = useState(label)
   const [commandInput, setCommandInput] = useState({ id: uuidv4(), value })

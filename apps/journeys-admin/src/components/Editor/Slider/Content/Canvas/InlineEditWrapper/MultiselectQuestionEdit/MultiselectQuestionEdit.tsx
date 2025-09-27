@@ -9,6 +9,8 @@ import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { MultiselectQuestion } from '@core/journeys/ui/MultiselectQuestion'
 
+import { MultiselectOptionBlockCreate } from '../../../../../../../../__generated__/MultiselectOptionBlockCreate'
+import { MultiselectOptionBlockCreateVariables } from '../../../../../../../../__generated__/MultiselectOptionBlockCreate'
 import { BlockFields_MultiselectOptionBlock as MultiselectOptionBlock } from '../../../../../../../../__generated__/BlockFields'
 import { MultiselectQuestionFields } from '../../../../../../../../__generated__/MultiselectQuestionFields'
 import { useBlockCreateCommand } from '../../../../../utils/useBlockCreateCommand'
@@ -36,9 +38,10 @@ export function MultiselectQuestionEdit({
   wrappers,
   ...props
 }: MultiselectQuestionEditProps): ReactElement {
-  const [multiselectOptionBlockCreate] = useMutation(
-    MULTISELECT_OPTION_BLOCK_CREATE
-  )
+  const [multiselectOptionBlockCreate] = useMutation<
+    MultiselectOptionBlockCreate,
+    MultiselectOptionBlockCreateVariables
+  >(MULTISELECT_OPTION_BLOCK_CREATE)
   const { journey } = useJourney()
   const { addBlock } = useBlockCreateCommand()
   const {

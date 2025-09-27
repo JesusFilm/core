@@ -45,7 +45,8 @@ export function InlineEditWrapper({
 
   const showEditable =
     selectedBlock?.id === block.id ||
-    (block.__typename === 'RadioQuestionBlock' &&
+    ((block.__typename === 'RadioQuestionBlock' ||
+      block.__typename === 'MultiselectQuestionBlock') &&
       selectedBlock?.parentBlockId === block.id)
 
   let component = children
