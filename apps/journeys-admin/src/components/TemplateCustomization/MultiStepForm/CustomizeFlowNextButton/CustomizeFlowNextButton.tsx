@@ -1,4 +1,4 @@
-import LoadingButton from '@mui/lab/LoadingButton'
+import Button from '@mui/material/Button'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { SxProps, Theme } from '@mui/material/styles'
@@ -18,24 +18,22 @@ interface CustomizeFlowNextButtonProps {
   type?: 'button' | 'submit'
   form?: string
   ariaLabel?: string
-  testId?: string
   onClick?: () => void
   sx?: SxProps<Theme>
 }
 
 export const CustomizeFlowNextButton = ({
-  label = '',
+  label = 'Next',
   loading = false,
   disabled = false,
   type = 'button',
   form,
   ariaLabel,
-  testId,
   onClick,
   sx = {}
 }: CustomizeFlowNextButtonProps): ReactElement => {
   return (
-    <LoadingButton
+    <Button
       variant="contained"
       color="secondary"
       type={type}
@@ -44,13 +42,13 @@ export const CustomizeFlowNextButton = ({
       loading={loading}
       disabled={disabled}
       aria-label={ariaLabel}
-      data-testid={testId}
+      data-testid="CustomizeFlowNextButton"
       sx={{
         width: BUTTON_NEXT_STEP_WIDTH,
         height: BUTTON_NEXT_STEP_HEIGHT,
         alignSelf: 'center',
         mt: { xs: 6, sm: 4 },
-        borderRadius: '8px',
+        borderRadius: 2,
         ...sx
       }}
     >
@@ -63,8 +61,8 @@ export const CustomizeFlowNextButton = ({
         >
           {label}
         </Typography>
-        <ArrowRightIcon sx={{ fontSize: { xs: '24px', sm: '16px' } }} />
+        <ArrowRightIcon sx={{ fontSize: { xs: 24, sm: 16 } }} />
       </Stack>
-    </LoadingButton>
+    </Button>
   )
 }

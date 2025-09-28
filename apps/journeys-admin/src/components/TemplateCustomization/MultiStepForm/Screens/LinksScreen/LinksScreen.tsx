@@ -213,7 +213,7 @@ export function LinksScreen({
           <FormikProvider value={formik}>
             <LinksForm links={links} />
             <CustomizeFlowNextButton
-              label={t('Next Step')}
+              label={t('Next')}
               type="submit"
               form="linksForm"
               loading={
@@ -223,7 +223,6 @@ export function LinksScreen({
                 emailLoading
               }
               ariaLabel={t('Replace the links')}
-              testId="LinksScreenSubmitButton"
             />
           </FormikProvider>
         )}

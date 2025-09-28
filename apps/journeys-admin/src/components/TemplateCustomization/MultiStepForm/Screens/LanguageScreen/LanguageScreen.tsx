@@ -222,11 +222,10 @@ export function LanguageScreen({
                 </Typography>
                 {isSignedIn && <JourneyCustomizeTeamSelect />}
                 <CustomizeFlowNextButton
-                  label={t('Next Step')}
+                  label={t('Next')}
                   onClick={() => handleSubmit()}
                   disabled={loading}
-                  testId="LanguageScreenSubmitButton"
-                  ariaLabel={t('Next Step')}
+                  ariaLabel={t('Next')}
                 />
               </Stack>
             </FormControl>

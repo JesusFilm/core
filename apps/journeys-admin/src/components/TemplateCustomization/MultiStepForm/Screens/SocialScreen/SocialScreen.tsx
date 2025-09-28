@@ -69,7 +69,6 @@ export function SocialScreen({
       <CustomizeFlowNextButton
         label={t('Done')}
         onClick={handleNext}
-        testId="DoneButton"
         ariaLabel={t('Done')}
       />
     </Stack>

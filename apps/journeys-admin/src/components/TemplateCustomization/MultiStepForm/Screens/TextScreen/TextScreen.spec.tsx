@@ -137,8 +137,7 @@ describe('TextScreen', () => {
     fireEvent.focus(lastEditable)
     lastEditable.textContent = 'Roe'
     fireEvent.blur(lastEditable)
-
-    fireEvent.click(screen.getByTestId('TextScreenSubmitButton'))
+    fireEvent.click(screen.getByTestId('CustomizeFlowNextButton'))
 
     // handleNext should be called after mutation resolves
     // We won't await network; just assert it eventually gets called by Mutation
@@ -161,7 +160,7 @@ describe('TextScreen', () => {
         </JourneyProvider>
       </MockedProvider>
     )
-    fireEvent.click(screen.getByTestId('TextScreenSubmitButton'))
+    fireEvent.click(screen.getByTestId('CustomizeFlowNextButton'))
     expect(handleNext).toHaveBeenCalled()
   })
 })

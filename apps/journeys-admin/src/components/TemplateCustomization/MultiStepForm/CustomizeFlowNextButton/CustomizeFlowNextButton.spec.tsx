@@ -4,109 +4,106 @@ import { CustomizeFlowNextButton } from './CustomizeFlowNextButton'
 
 describe('CustomizeFlowNextButton', () => {
   const defaultProps = {
-    label: 'Next Step',
-    testId: 'customize-flow-next-button'
+    label: 'New Next Button'
   }
 
   beforeEach(() => {
     jest.clearAllMocks()
   })
 
-  describe('Basic Rendering', () => {
-    it('should render the button with default props', () => {
-      render(<CustomizeFlowNextButton {...defaultProps} />)
+  it('should render the button with default props', () => {
+    render(<CustomizeFlowNextButton {...defaultProps} />)
 
-      const button = screen.getByTestId('customize-flow-next-button')
-      expect(button).toBeInTheDocument()
-      expect(button).toHaveAttribute('type', 'button')
-      expect(button).not.toBeDisabled()
-      expect(screen.getByText('Next Step')).toBeInTheDocument()
-    })
+    const button = screen.getByTestId('CustomizeFlowNextButton')
+    expect(button).toBeInTheDocument()
+    expect(button).toHaveAttribute('type', 'button')
+    expect(button).not.toBeDisabled()
+    expect(screen.getByText('New Next Button')).toBeInTheDocument()
+  })
 
-    it('should render without label when not provided', () => {
-      render(<CustomizeFlowNextButton testId="test-button" />)
+  it('should render default "next step" label without any props', () => {
+    render(<CustomizeFlowNextButton />)
 
-      const button = screen.getByTestId('test-button')
-      expect(button).toBeInTheDocument()
-      expect(screen.queryByText('Next Step')).not.toBeInTheDocument()
-    })
+    const button = screen.getByTestId('CustomizeFlowNextButton')
+    expect(button).toBeInTheDocument()
+    expect(screen.queryByText('Next')).toBeInTheDocument()
+  })
 
-    it('should render button end adornment', () => {
-      render(<CustomizeFlowNextButton {...defaultProps} />)
+  it('should render button end adornment', () => {
+    render(<CustomizeFlowNextButton {...defaultProps} />)
 
-      const button = screen.getByTestId('customize-flow-next-button')
-      expect(button.querySelector('svg')).toBeInTheDocument()
-    })
+    const button = screen.getByTestId('CustomizeFlowNextButton')
+    expect(button.querySelector('svg')).toBeInTheDocument()
+  })
 
-    it('should render as disabled when disabled prop is true', () => {
-      render(<CustomizeFlowNextButton {...defaultProps} disabled />)
+  it('should render as disabled when disabled prop is true', () => {
+    render(<CustomizeFlowNextButton {...defaultProps} disabled />)
 
-      const button = screen.getByTestId('customize-flow-next-button')
-      expect(button).toBeDisabled()
-    })
+    const button = screen.getByTestId('CustomizeFlowNextButton')
+    expect(button).toBeDisabled()
+  })
 
-    it('should render with submit type when type is submit', () => {
-      render(<CustomizeFlowNextButton {...defaultProps} type="submit" />)
+  it('should render with submit type when type is submit', () => {
+    render(<CustomizeFlowNextButton {...defaultProps} type="submit" />)
 
-      const button = screen.getByTestId('customize-flow-next-button')
-      expect(button).toHaveAttribute('type', 'submit')
-    })
+    const button = screen.getByTestId('CustomizeFlowNextButton')
+    expect(button).toHaveAttribute('type', 'submit')
+  })
 
-    it('should render with form attribute when form prop is provided', () => {
-      render(<CustomizeFlowNextButton {...defaultProps} form="test-form" />)
+  it('should render with form attribute when form prop is provided', () => {
+    render(<CustomizeFlowNextButton {...defaultProps} form="test-form" />)
 
-      const button = screen.getByTestId('customize-flow-next-button')
-      expect(button).toHaveAttribute('form', 'test-form')
-    })
+    const button = screen.getByTestId('CustomizeFlowNextButton')
+    expect(button).toHaveAttribute('form', 'test-form')
+  })
 
-    it('should handle empty string label', () => {
-      render(<CustomizeFlowNextButton label="" testId="test-button" />)
+  it('should handle empty string label', () => {
+    render(<CustomizeFlowNextButton label="" />)
 
-      const button = screen.getByTestId('test-button')
-      expect(button).toBeInTheDocument()
+    const button = screen.getByTestId('CustomizeFlowNextButton')
+    expect(button).toBeInTheDocument()
 
-      const typography = button.querySelector('.MuiTypography-root')
-      expect(typography).toBeInTheDocument()
-      expect(typography).toHaveTextContent('')
-    })
+    const typography = button.querySelector('.MuiTypography-root')
+    expect(typography).toBeInTheDocument()
+    expect(typography).toHaveTextContent('')
+  })
 
-    it('should call onClick handler when clicked', () => {
-      const handleClick = jest.fn()
-      render(<CustomizeFlowNextButton {...defaultProps} onClick={handleClick} />)
+  it('should call onClick handler when clicked', () => {
+    const handleClick = jest.fn()
+    render(<CustomizeFlowNextButton {...defaultProps} onClick={handleClick} />)
 
-      const button = screen.getByTestId('customize-flow-next-button')
-      fireEvent.click(button)
-      expect(handleClick).toHaveBeenCalledTimes(1)
-    })
+    const button = screen.getByTestId('CustomizeFlowNextButton')
+    fireEvent.click(button)
+    expect(handleClick).toHaveBeenCalledTimes(1)
+  })
 
-    it('should not call onClick when disabled', () => {
-      const handleClick = jest.fn()
-      render(
-        <CustomizeFlowNextButton
-          {...defaultProps}
-          onClick={handleClick}
-          disabled
-        />
-      )
+  it('should not call onClick when disabled', () => {
+    const handleClick = jest.fn()
+    render(
+      <CustomizeFlowNextButton
+        {...defaultProps}
+        onClick={handleClick}
+        disabled
+      />
+    )
 
-      const button = screen.getByTestId('customize-flow-next-button')
-      fireEvent.click(button)
-      expect(handleClick).not.toHaveBeenCalled()
-    })
+    const button = screen.getByTestId('CustomizeFlowNextButton')
+    fireEvent.click(button)
+    expect(handleClick).not.toHaveBeenCalled()
+  })
 
-    it('should not call onClick when loading', () => {
-      const handleClick = jest.fn()
-      render(
-        <CustomizeFlowNextButton
-          {...defaultProps}
-          onClick={handleClick}
-          loading
-        />
-      )
+  it('should not call onClick when loading', () => {
+    const handleClick = jest.fn()
+    render(
+      <CustomizeFlowNextButton
+        {...defaultProps}
+        onClick={handleClick}
+        loading
+      />
+    )
 
-      const button = screen.getByTestId('customize-flow-next-button')
-      fireEvent.click(button)
-      expect(handleClick).not.toHaveBeenCalled()
-    })
+    const button = screen.getByTestId('CustomizeFlowNextButton')
+    fireEvent.click(button)
+    expect(handleClick).not.toHaveBeenCalled()
   })
 })

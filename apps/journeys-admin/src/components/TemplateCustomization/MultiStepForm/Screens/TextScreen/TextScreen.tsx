@@ -296,11 +296,10 @@ export function TextScreen({
         />
       </Box>
       <CustomizeFlowNextButton
-        label={t('Next Step')}
+        label={t('Next')}
         onClick={handleSubmit}
         loading={isSubmitting}
         ariaLabel={t('Save and continue')}
-        testId="TextScreenSubmitButton"
       />
     </Stack>
   )

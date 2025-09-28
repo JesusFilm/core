@@ -50,28 +50,28 @@ jest.mock('next/router', () => ({
 const mockUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
 
 const mockGetLastActiveTeamIdAndTeams: MockedResponse<GetLastActiveTeamIdAndTeams> =
-  {
-    request: { query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS },
-    result: {
-      data: {
-        getJourneyProfile: {
-          id: 'profile-id',
-          lastActiveTeamId: 'teamId1',
-          __typename: 'JourneyProfile'
-        },
-        teams: [
-          {
-            __typename: 'Team',
-            id: 'teamId1',
-            title: 'Team One',
-            publicTitle: 'Team 1',
-            userTeams: [],
-            customDomains: []
-          }
-        ]
-      }
+{
+  request: { query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS },
+  result: {
+    data: {
+      getJourneyProfile: {
+        id: 'profile-id',
+        lastActiveTeamId: 'teamId1',
+        __typename: 'JourneyProfile'
+      },
+      teams: [
+        {
+          __typename: 'Team',
+          id: 'teamId1',
+          title: 'Team One',
+          publicTitle: 'Team 1',
+          userTeams: [],
+          customDomains: []
+        }
+      ]
     }
   }
+}
 
 const mockGetChildJourneysFromTemplateId: MockedResponse<
   GetChildJourneysFromTemplateId,
@@ -157,7 +157,7 @@ describe('LanguageScreen', () => {
         'Team One'
       )
     )
-    fireEvent.click(screen.getByTestId('LanguageScreenSubmitButton'))
+    fireEvent.click(screen.getByTestId('CustomizeFlowNextButton'))
     await waitFor(() =>
       expect(mockJourneyDuplicateMockResult).toHaveBeenCalled()
     )
@@ -274,7 +274,7 @@ describe('LanguageScreen', () => {
       fireEvent.click(screen.getByRole('option', { name: 'Spanish' }))
     )
 
-    fireEvent.click(screen.getByTestId('LanguageScreenSubmitButton'))
+    fireEvent.click(screen.getByTestId('CustomizeFlowNextButton'))
     await waitFor(() =>
       expect(mockJourneyDuplicateMockResult).toHaveBeenCalled()
     )
@@ -320,7 +320,7 @@ describe('LanguageScreen', () => {
         'Team One'
       )
     )
-    fireEvent.click(screen.getByTestId('LanguageScreenSubmitButton'))
+    fireEvent.click(screen.getByTestId('CustomizeFlowNextButton'))
     await waitFor(() =>
       expect(mockJourneyDuplicateMockResult).toHaveBeenCalled()
     )
@@ -421,10 +421,8 @@ describe('LanguageScreen', () => {
       expect(screen.getByRole('combobox', { name: 'Team' })).toBeInTheDocument()
     })
 
-    expect(screen.getByTestId('LanguageScreenSubmitButton')).toBeInTheDocument()
-    expect(screen.getByTestId('LanguageScreenSubmitButton')).toHaveTextContent(
-      'Next Step'
-    )
+    expect(screen.getByTestId('CustomizeFlowNextButton')).toBeInTheDocument()
+    expect(screen.getByTestId('CustomizeFlowNextButton')).toHaveTextContent('Next')
   })
 
   it('renders skeleton when no journey image is provided', () => {

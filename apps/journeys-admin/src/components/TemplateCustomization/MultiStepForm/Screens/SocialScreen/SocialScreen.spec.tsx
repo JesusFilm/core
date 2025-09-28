@@ -48,7 +48,7 @@ describe('SocialScreen', () => {
     expect(screen.getByTestId('SocialScreenSocialImage')).toBeInTheDocument()
     expect(screen.getByTestId('TitleEdit')).toBeInTheDocument()
     expect(screen.getByTestId('DescriptionEdit')).toBeInTheDocument()
-    expect(screen.getByTestId('DoneButton')).toBeInTheDocument()
+    expect(screen.getByTestId('CustomizeFlowNextButton')).toBeInTheDocument()
   })
 
   it('should update SEO title and make correct network call', async () => {
@@ -193,7 +193,7 @@ describe('SocialScreen', () => {
     await waitFor(() => expect(titleResult).toHaveBeenCalled())
     await waitFor(() => expect(descriptionResult).toHaveBeenCalled())
 
-    const doneButton = screen.getByTestId('DoneButton')
+    const doneButton = screen.getByTestId('CustomizeFlowNextButton')
     fireEvent.click(doneButton)
 
     expect(handleNext).toHaveBeenCalledTimes(1)
@@ -202,7 +202,7 @@ describe('SocialScreen', () => {
   it('should call handleNext when Done button is clicked without any changes', () => {
     renderSocialScreen()
 
-    const doneButton = screen.getByTestId('DoneButton')
+    const doneButton = screen.getByTestId('CustomizeFlowNextButton')
     fireEvent.click(doneButton)
 
     expect(handleNext).toHaveBeenCalledTimes(1)
