@@ -53,15 +53,10 @@ export const CustomizeFlowNextButton = ({
       }}
     >
       <Stack direction="row" alignItems="center" gap={1}>
-        <Typography
-          sx={{
-            fontWeight: 'bold',
-            display: { xs: 'none', sm: 'block' }
-          }}
-        >
+        <Typography variant="body1" sx={{ fontWeight: 'bold' }} >
           {label}
         </Typography>
-        <ArrowRightIcon sx={{ fontSize: { xs: 24, sm: 16 } }} />
+        <ArrowRightIcon sx={{ fontSize: 24 }} />
       </Stack>
     </Button>
   )
