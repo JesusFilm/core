@@ -50,28 +50,28 @@ jest.mock('next/router', () => ({
 const mockUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
 
 const mockGetLastActiveTeamIdAndTeams: MockedResponse<GetLastActiveTeamIdAndTeams> =
-{
-  request: { query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS },
-  result: {
-    data: {
-      getJourneyProfile: {
-        id: 'profile-id',
-        lastActiveTeamId: 'teamId1',
-        __typename: 'JourneyProfile'
-      },
-      teams: [
-        {
-          __typename: 'Team',
-          id: 'teamId1',
-          title: 'Team One',
-          publicTitle: 'Team 1',
-          userTeams: [],
-          customDomains: []
-        }
-      ]
+  {
+    request: { query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS },
+    result: {
+      data: {
+        getJourneyProfile: {
+          id: 'profile-id',
+          lastActiveTeamId: 'teamId1',
+          __typename: 'JourneyProfile'
+        },
+        teams: [
+          {
+            __typename: 'Team',
+            id: 'teamId1',
+            title: 'Team One',
+            publicTitle: 'Team 1',
+            userTeams: [],
+            customDomains: []
+          }
+        ]
+      }
     }
   }
-}
 
 const mockGetChildJourneysFromTemplateId: MockedResponse<
   GetChildJourneysFromTemplateId,
@@ -422,7 +422,9 @@ describe('LanguageScreen', () => {
     })
 
     expect(screen.getByTestId('CustomizeFlowNextButton')).toBeInTheDocument()
-    expect(screen.getByTestId('CustomizeFlowNextButton')).toHaveTextContent('Next')
+    expect(screen.getByTestId('CustomizeFlowNextButton')).toHaveTextContent(
+      'Next'
+    )
   })
 
   it('renders skeleton when no journey image is provided', () => {
