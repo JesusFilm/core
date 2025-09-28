@@ -1,7 +1,14 @@
 import InputAdornment from '@mui/material/InputAdornment'
 import TextField, { TextFieldProps } from '@mui/material/TextField'
 import { Form, Formik } from 'formik'
-import { ClipboardEvent, ComponentProps, ReactElement, ReactNode } from 'react'
+import {
+  ClipboardEvent,
+  ComponentProps,
+  ReactElement,
+  ReactNode,
+  useImperativeHandle,
+  useRef
+} from 'react'
 
 type FieldProps = Pick<
   TextFieldProps,
@@ -25,6 +32,11 @@ interface TextFieldFormProps extends FieldProps {
   onPaste?: (e: ClipboardEvent) => void
   startIcon?: ReactNode
   endIcon?: ReactNode
+  ref?: React.RefObject<TextFieldFormRef | null>
+}
+
+export interface TextFieldFormRef {
+  focus: () => void
 }
 
 interface ValidationSchema {
@@ -40,8 +52,14 @@ export function TextFieldForm({
   startIcon,
   endIcon,
   helperText,
+  ref,
   ...muiFieldProps
 }: TextFieldFormProps): ReactElement {
+  const textFieldRef = useRef<HTMLInputElement>(null)
+  useImperativeHandle(ref, () => ({
+    focus: () => textFieldRef.current?.focus()
+  }))
+
   const isRequired =
     validationSchema != null
       ? Boolean(
@@ -64,12 +82,20 @@ export function TextFieldForm({
       }}
       enableReinitialize
     >
-      {({ values, errors, handleChange, handleBlur, setFieldValue }) => (
+      {({
+        values,
+        errors,
+        handleChange,
+        handleBlur,
+        setFieldValue,
+        handleSubmit
+      }) => (
         <Form>
           <TextField
             {...muiFieldProps}
             id={id}
             name={id}
+            inputRef={textFieldRef}
             variant="filled"
             fullWidth
             value={values[id]}
@@ -91,7 +117,7 @@ export function TextFieldForm({
             onBlur={async (e) => {
               handleBlur(e)
               if (errors[id] == null) {
-                onSubmit(e.target.value)
+                handleSubmit()
               } else if (isRequired) {
                 await setFieldValue(id, initialValue)
               }
