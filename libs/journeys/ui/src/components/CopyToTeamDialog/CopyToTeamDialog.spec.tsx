@@ -650,7 +650,7 @@ describe('CopyToTeamDialog', () => {
     expect(handleCloseMenuMock).toHaveBeenCalled()
   })
 
-  it('should not allow translation of non-original templates to prevent degradation', async () => {
+  it('should not allow copy or translation of non-original templates in publisher', async () => {
     // Mock router to return templates admin path
     mockUseRouter.mockReturnValue({
       pathname: '/publisher'
@@ -694,6 +694,7 @@ describe('CopyToTeamDialog', () => {
                 title="Copy To Journey"
                 onClose={handleCloseMenuMock}
                 submitAction={handleSubmitActionMock}
+                submitLabel="Copy"
               />
             </TeamProvider>
           </JourneyProvider>
@@ -709,5 +710,6 @@ describe('CopyToTeamDialog', () => {
 
     const translationSwitch = getByRole('checkbox', { name: 'Translation' })
     expect(translationSwitch).toBeDisabled()
+    expect(getByRole('button', { name: 'Copy' })).toBeDisabled()
   })
 })
