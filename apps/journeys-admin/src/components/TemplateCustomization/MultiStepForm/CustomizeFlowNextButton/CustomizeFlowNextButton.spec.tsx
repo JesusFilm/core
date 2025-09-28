@@ -72,7 +72,9 @@ describe('CustomizeFlowNextButton', () => {
 
     it('should call onClick handler when clicked', () => {
       const handleClick = jest.fn()
-      render(<CustomizeFlowNextButton {...defaultProps} onClick={handleClick} />)
+      render(
+        <CustomizeFlowNextButton {...defaultProps} onClick={handleClick} />
+      )
 
       const button = screen.getByTestId('customize-flow-next-button')
       fireEvent.click(button)
