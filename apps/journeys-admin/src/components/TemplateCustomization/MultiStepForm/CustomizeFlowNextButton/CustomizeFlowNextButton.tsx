@@ -1,4 +1,4 @@
-import Button from '@mui/material/Button'
+import LoadingButton from '@mui/lab/LoadingButton'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { SxProps, Theme } from '@mui/material/styles'
@@ -35,7 +35,7 @@ export const CustomizeFlowNextButton = ({
   sx = {}
 }: CustomizeFlowNextButtonProps): ReactElement => {
   return (
-    <Button
+    <LoadingButton
       variant="contained"
       color="secondary"
       type={type}
@@ -65,6 +65,6 @@ export const CustomizeFlowNextButton = ({
         </Typography>
         <ArrowRightIcon sx={{ fontSize: { xs: '24px', sm: '16px' } }} />
       </Stack>
-    </Button>
+    </LoadingButton>
   )
 }

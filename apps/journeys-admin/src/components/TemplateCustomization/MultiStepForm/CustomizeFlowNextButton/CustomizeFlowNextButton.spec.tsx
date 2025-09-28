@@ -1,4 +1,4 @@
-import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { fireEvent, render, screen } from '@testing-library/react'
 
 import { CustomizeFlowNextButton } from './CustomizeFlowNextButton'
 
@@ -76,7 +76,7 @@ describe('CustomizeFlowNextButton', () => {
 
       const button = screen.getByTestId('customize-flow-next-button')
       fireEvent.click(button)
-      waitFor(() => { expect(handleClick).toHaveBeenCalledTimes(1) })
+      expect(handleClick).toHaveBeenCalledTimes(1)
     })
 
     it('should not call onClick when disabled', () => {
@@ -91,7 +91,7 @@ describe('CustomizeFlowNextButton', () => {
 
       const button = screen.getByTestId('customize-flow-next-button')
       fireEvent.click(button)
-      waitFor(() => { expect(handleClick).not.toHaveBeenCalled() })
+      expect(handleClick).not.toHaveBeenCalled()
     })
 
     it('should not call onClick when loading', () => {
@@ -106,7 +106,7 @@ describe('CustomizeFlowNextButton', () => {
 
       const button = screen.getByTestId('customize-flow-next-button')
       fireEvent.click(button)
-      waitFor(() => { expect(handleClick).not.toHaveBeenCalled() })
+      expect(handleClick).not.toHaveBeenCalled()
     })
   })
 })
