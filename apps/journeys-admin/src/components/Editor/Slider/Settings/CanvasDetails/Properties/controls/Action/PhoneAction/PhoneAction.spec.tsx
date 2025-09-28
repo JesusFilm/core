@@ -54,8 +54,8 @@ describe('PhoneAction', () => {
         </EditorProvider>
       </MockedProvider>
     )
-    expect(screen.getByTestId('startAdornment')).toHaveTextContent('+1')
-    expect(screen.getByRole('textbox', { name: 'Phone number' })).toHaveValue(
+    expect(screen.getByRole('textbox', { name: 'Country' })).toHaveValue('+1')
+    expect(screen.getByRole('textbox', { name: 'Phone Number' })).toHaveValue(
       '234567890'
     )
   })
@@ -69,10 +69,10 @@ describe('PhoneAction', () => {
         </EditorProvider>
       </MockedProvider>
     )
-    fireEvent.change(screen.getByRole('textbox', { name: 'Phone number' }), {
+    fireEvent.change(screen.getByRole('textbox', { name: 'Phone Number' }), {
       target: { value: '9876543210' }
     })
-    fireEvent.blur(screen.getByRole('textbox', { name: 'Phone number' }))
+    fireEvent.blur(screen.getByRole('textbox', { name: 'Phone Number' }))
     await waitFor(() => expect(result).toHaveBeenCalled())
   })
 
@@ -84,10 +84,10 @@ describe('PhoneAction', () => {
         </EditorProvider>
       </MockedProvider>
     )
-    fireEvent.change(screen.getByRole('textbox', { name: 'Phone number' }), {
+    fireEvent.change(screen.getByRole('textbox', { name: 'Phone Number' }), {
       target: { value: '' }
     })
-    fireEvent.blur(screen.getByRole('textbox', { name: 'Phone number' }))
+    fireEvent.blur(screen.getByRole('textbox', { name: 'Phone Number' }))
     await waitFor(() =>
       expect(screen.getByText('Phone number is required')).toBeInTheDocument()
     )
@@ -102,13 +102,13 @@ describe('PhoneAction', () => {
       </MockedProvider>
     )
 
-    fireEvent.change(screen.getByRole('textbox', { name: 'Phone number' }), {
+    fireEvent.change(screen.getByRole('textbox', { name: 'Phone Number' }), {
       target: { value: 'not-a-phone-number' }
     })
-    fireEvent.blur(screen.getByRole('textbox', { name: 'Phone number' }))
+    fireEvent.blur(screen.getByRole('textbox', { name: 'Phone Number' }))
     await waitFor(() =>
       expect(
-        screen.getByText('Phone number must be a valid format')
+        screen.getByText('Phone number must be under 15 digits.')
       ).toBeInTheDocument()
     )
   })
@@ -142,53 +142,17 @@ describe('PhoneAction', () => {
         </EditorProvider>
       </MockedProvider>
     )
-    fireEvent.change(screen.getByRole('textbox', { name: 'Phone number' }), {
+    fireEvent.change(screen.getByRole('textbox', { name: 'Phone Number' }), {
       target: { value: '9876543210' }
     })
-    fireEvent.blur(screen.getByRole('textbox', { name: 'Phone number' }))
+    fireEvent.blur(screen.getByRole('textbox', { name: 'Phone Number' }))
     const undo = screen.getByRole('button', { name: 'Undo' })
     await waitFor(() => expect(undo).not.toBeDisabled())
     fireEvent.click(undo)
     await waitFor(() => expect(result).toHaveBeenCalled())
   })
 
-  it('should show countries in alphabetical order', async () => {
-    render(
-      <MockedProvider>
-        <EditorProvider>
-          <PhoneAction />
-        </EditorProvider>
-      </MockedProvider>
-    )
-    fireEvent.click(screen.getByRole('button', { name: 'Select country' }))
-    await waitFor(() => {
-      expect(screen.getByText('Afghanistan (AF) +93')).toBeInTheDocument()
-      expect(screen.getByText('Albania (AL) +355')).toBeInTheDocument()
-      expect(screen.getByText('Algeria (DZ) +213')).toBeInTheDocument()
-    })
-  })
-
-  it('should select country via option click', async () => {
-    render(
-      <MockedProvider>
-        <EditorProvider>
-          <PhoneAction />
-        </EditorProvider>
-      </MockedProvider>
-    )
-    fireEvent.click(screen.getByRole('button', { name: 'Select country' }))
-    await waitFor(() => {
-      expect(screen.getByText('Canada (CA) +1')).toBeInTheDocument()
-    })
-    fireEvent.click(screen.getByText('Canada (CA) +1'))
-    await waitFor(() => {
-      expect(
-        screen.getByRole('img', { name: 'Canada flag' })
-      ).toBeInTheDocument()
-    })
-  })
-
-  it('should reset phone number when country changes', async () => {
+  it('should validate country code field', async () => {
     render(
       <MockedProvider>
         <EditorProvider>
@@ -197,20 +161,60 @@ describe('PhoneAction', () => {
       </MockedProvider>
     )
 
-    const phoneInput = screen.getByRole('textbox', { name: 'Phone number' })
-    fireEvent.change(phoneInput, { target: { value: '1234567890' } })
-    expect(phoneInput).toHaveValue('1234567890')
-
-    fireEvent.click(screen.getByRole('button', { name: 'Select country' }))
-    await waitFor(() => {
-      expect(screen.getByText('Canada (CA) +1')).toBeInTheDocument()
-    })
-    fireEvent.click(screen.getByText('Canada (CA) +1'))
-
+    const countryInput = screen.getByRole('textbox', { name: 'Country' })
+    fireEvent.change(countryInput, { target: { value: 'invalid-code' } })
+    fireEvent.keyDown(countryInput, { key: 'Enter', code: 'Enter' })
     await waitFor(() =>
-      expect(screen.getByRole('textbox', { name: 'Phone number' })).toHaveValue(
-        ''
-      )
+      expect(screen.getByText('Invalid code.')).toBeInTheDocument()
+    )
+  })
+
+  it('should auto-add plus to country code', async () => {
+    render(
+      <MockedProvider>
+        <EditorProvider>
+          <PhoneAction />
+        </EditorProvider>
+      </MockedProvider>
+    )
+
+    const countryInput = screen.getByRole('textbox', { name: 'Country' })
+    fireEvent.change(countryInput, { target: { value: '44' } })
+    fireEvent.blur(countryInput)
+    await waitFor(() => {
+      expect(screen.getByDisplayValue('+44')).toBeInTheDocument()
+    })
+  })
+
+  it('should not add plus to empty country code', async () => {
+    render(
+      <MockedProvider>
+        <EditorProvider>
+          <PhoneAction />
+        </EditorProvider>
+      </MockedProvider>
+    )
+
+    const countryInput = screen.getByRole('textbox', { name: 'Country' })
+    fireEvent.change(countryInput, { target: { value: '' } })
+    // The empty string should stay empty
+    expect(countryInput).toHaveValue('')
+  })
+
+  it('should validate phone number length', async () => {
+    render(
+      <MockedProvider>
+        <EditorProvider>
+          <PhoneAction />
+        </EditorProvider>
+      </MockedProvider>
+    )
+
+    const phoneInput = screen.getByRole('textbox', { name: 'Phone Number' })
+    fireEvent.change(phoneInput, { target: { value: '12345678901234567890' } })
+    fireEvent.blur(phoneInput)
+    await waitFor(() =>
+      expect(screen.getByText('Phone number must be under 15 digits.')).toBeInTheDocument()
     )
   })
 

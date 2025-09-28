@@ -18,8 +18,7 @@ import { ContactActionType } from '../../../../../../../../../../__generated__/g
 import { TextFieldForm } from '../../../../../../../../TextFieldForm'
 import { useActionCommand } from '../../../../../../../utils/useActionCommand'
 
-import { FlagDropdown } from './FlagDropdown'
-import { Country, countries } from './FlagDropdown/countriesList'
+import { countries } from './countriesList'
 
 export function PhoneAction(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
@@ -36,16 +35,17 @@ export function PhoneAction(): ReactElement {
   const disableRadioAction =
     !phoneAction?.phone || phoneAction.phone.trim() === ''
 
-  const initialCountry = countries.find(
-    (country) => country.countryCode === phoneAction?.countryCode
+  const [callingCode, setCallingCode] = useState<string>(
+    phoneAction?.countryCode 
+      ? countries.find(country => country.countryCode === phoneAction.countryCode)?.callingCode ?? ''
+      : ''
   )
 
-  const fallbackCountry =
-    countries.find((country) => country.countryCode === 'US') ?? countries[0]
-
-  const [selectedCountry, setSelectedCountry] = useState<Country>(
-    initialCountry ?? fallbackCountry
-  )
+  const selectedCountry = countries.find(
+    (country) => country.callingCode === callingCode && country.countryCode === phoneAction?.countryCode
+  ) ?? countries.find(
+    (country) => country.callingCode === callingCode
+  ) ?? countries.find((country) => country.countryCode === 'US') ?? countries[0]
 
   const phonoDigits = removeCountryCodePrefix(
     phoneAction?.phone ?? '',
@@ -63,20 +63,46 @@ export function PhoneAction(): ReactElement {
   }
 
   const phoneActionSchema = object({
-    [`phone-${selectedCountry.countryCode}`]: string()
+    phone: string()
       .required(t('Phone number is required'))
       .test(
-        'phone-format',
-        t('Phone number must be a valid format'),
+        'phone-length',
+        t('Phone number must be under 15 digits.'),
         function (value) {
-          // Validate that the complete phone number matches backend format: /^\+[1-9]\d{1,14}$/
           const countryCodeDigits = selectedCountry.callingCode.replace(
             /[-+]/g,
             ''
           )
           const fullPhoneNumber = `+${countryCodeDigits}${value}`
-          const isValid = /^\+[1-9]\d{1,14}$/.test(fullPhoneNumber)
+          const totalLength = fullPhoneNumber.length - 1 // Subtract 1 for the + sign
+          return totalLength >= 3 && totalLength <= 15
+        }
+      )
+      .test(
+        'phone-format',
+        t('Phone number must use valid digits.'),
+        function (value) {
+          const countryCodeDigits = selectedCountry.callingCode.replace(
+            /[-+]/g,
+            ''
+          )
+          const fullPhoneNumber = `+${countryCodeDigits}${value}`
+          const isValid = /^\+[1-9]\d{2,14}$/.test(fullPhoneNumber)
           return isValid
+        }
+      )
+  })
+
+  const callingCodeSchema = object({
+    callingCode: string()
+      .required(t('Required'))
+      .test(
+        'valid-calling-code',
+        t('Invalid code.'),
+        function (value) {
+          // Normalize the value by adding + if missing
+          const normalizedValue = value.startsWith('+') ? value : `+${value}`
+          return countries.some((country) => country.callingCode === normalizedValue)
         }
       )
   })
@@ -107,9 +133,13 @@ export function PhoneAction(): ReactElement {
     })
   }
 
-  function handleChange(country: Country): void {
-    setSelectedCountry(country)
-    setPhoneNumber('')
+  function handleCallingCodeChange(newCallingCode: string): void {
+    const normalizedCallingCode = newCallingCode === '' 
+      ? '' 
+      : newCallingCode.startsWith('+') 
+        ? newCallingCode 
+        : `+${newCallingCode}`
+    setCallingCode(normalizedCallingCode)
   }
 
   function handleContactActionChange(contactAction: ContactActionType): void {
@@ -146,26 +176,28 @@ export function PhoneAction(): ReactElement {
         {t('This will open the phone dialer with the provided phone number.')}
       </Typography>
       <Stack data-testid="PhoneAction" direction="column" spacing={2}>
-        <TextFieldForm
-          id={`phone-${selectedCountry.countryCode}`}
-          label={t('Phone number')}
-          type="tel"
-          initialValue={phoneNumber}
-          validationSchema={phoneActionSchema}
-          onSubmit={handleSubmit}
-          startIcon={
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-              <FlagDropdown
-                countries={countries}
-                selectedCountry={selectedCountry}
-                onChange={handleChange}
-              />
-              <Box component="span" aria-hidden>
-                ({selectedCountry.callingCode})
-              </Box>
-            </Box>
-          }
-        />
+        <Box sx={{ display: 'flex', gap: 2 }}>
+          <TextFieldForm
+            id="callingCode"
+            label={t('Country')}
+            type="text"
+            initialValue={callingCode}
+            validationSchema={callingCodeSchema}
+            onSubmit={handleCallingCodeChange}
+            placeholder="+123"
+            sx={{ maxWidth: 70 }}
+          />
+          <TextFieldForm
+            id="phone"
+            label={t('Phone Number')}
+            type="tel"
+            initialValue={phoneNumber}
+            placeholder="0000000000"  
+            validationSchema={phoneActionSchema}
+            onSubmit={handleSubmit}
+            sx={{ flex: 1 }}
+          />
+        </Box>
         <FormControl fullWidth>
           <RadioGroup
             aria-label={t('Contact action')}
@@ -212,3 +244,4 @@ export function PhoneAction(): ReactElement {
     </>
   )
 }
+
