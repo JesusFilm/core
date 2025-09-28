@@ -7,6 +7,7 @@ import { BlockFields_StepBlock as StepBlock } from '../../../../../../../__gener
 import { defaultEdgeProps, hiddenEdge, hiddenNode } from './transformSteps'
 
 import { transformSteps } from '.'
+import { ContactActionType } from '../../../../../../../__generated__/globalTypes'
 
 describe('transformSteps', () => {
   const socialNode = {
@@ -429,6 +430,272 @@ describe('transformSteps', () => {
         source: 'step1.id',
         sourceHandle: 'button2.id',
         target: 'LinkNode-button2.id'
+      },
+      {
+        ...defaultEdgeProps,
+        id: 'SocialPreview->step1.id',
+        source: 'SocialPreview',
+        target: 'step1.id',
+        type: 'Start'
+      }
+    ])
+  })
+
+  it('should handle phone actions', () => {
+    const steps: Array<TreeBlock<StepBlock>> = [
+      {
+        __typename: 'StepBlock' as const,
+        id: 'step1.id',
+        parentBlockId: null,
+        parentOrder: 0,
+        locked: false,
+        nextBlockId: 'step1.id',
+        slug: null,
+        children: [
+          {
+            __typename: 'CardBlock',
+            id: 'card1.id',
+            parentBlockId: 'step1.id',
+            parentOrder: 0,
+            backgroundColor: null,
+            coverBlockId: null,
+            themeName: null,
+            themeMode: null,
+            fullscreen: false,
+            backdropBlur: null,
+            children: [
+              {
+                __typename: 'ButtonBlock',
+                id: 'button1.id',
+                parentBlockId: 'card1.id',
+                parentOrder: 0,
+                label: 'phone button',
+                buttonVariant: null,
+                buttonColor: null,
+                size: null,
+                startIconId: null,
+                endIconId: null,
+                submitEnabled: null,
+                action: {
+                  __typename: 'PhoneAction',
+                  parentBlockId: 'button1.id',
+                  gtmEventName: null,
+                  phone: '+1234567890',
+                  countryCode: '+1',
+                  contactAction: ContactActionType.call
+                },
+                children: [],
+                settings: null
+              }
+            ]
+          }
+        ]
+      }
+    ]
+
+    const positions = {
+      'step1.id': { x: 0, y: 0 }
+    }
+    const { nodes, edges } = transformSteps(steps, positions, defaultJourney)
+
+    expect(nodes).toEqual([
+      socialNode,
+      hiddenNode,
+      {
+        data: {},
+        draggable: false,
+        id: 'PhoneNode-button1.id',
+        parentNode: 'step1.id',
+        position: { x: 300, y: 103 },
+        type: 'Phone'
+      },
+      {
+        data: {},
+        id: 'step1.id',
+        position: { x: 0, y: 0 },
+        type: 'StepBlock'
+      }
+    ])
+
+    expect(edges).toEqual([
+      hiddenEdge,
+      {
+        ...defaultEdgeProps,
+        id: 'button1.id->PhoneNode-button1.id',
+        source: 'step1.id',
+        sourceHandle: 'button1.id',
+        target: 'PhoneNode-button1.id'
+      },
+      {
+        ...defaultEdgeProps,
+        id: 'SocialPreview->step1.id',
+        source: 'SocialPreview',
+        target: 'step1.id',
+        type: 'Start'
+      }
+    ])
+  })
+
+  it('should handle mixed action types (link, email, and phone)', () => {
+    const steps: Array<TreeBlock<StepBlock>> = [
+      {
+        __typename: 'StepBlock' as const,
+        id: 'step1.id',
+        parentBlockId: null,
+        parentOrder: 0,
+        locked: false,
+        nextBlockId: 'step1.id',
+        slug: null,
+        children: [
+          {
+            __typename: 'CardBlock',
+            id: 'card1.id',
+            parentBlockId: 'step1.id',
+            parentOrder: 0,
+            backgroundColor: null,
+            coverBlockId: null,
+            themeName: null,
+            themeMode: null,
+            fullscreen: false,
+            backdropBlur: null,
+            children: [
+              {
+                __typename: 'ButtonBlock',
+                id: 'button1.id',
+                parentBlockId: 'card1.id',
+                parentOrder: 0,
+                label: 'link button',
+                buttonVariant: null,
+                buttonColor: null,
+                size: null,
+                startIconId: null,
+                endIconId: null,
+                submitEnabled: null,
+                action: {
+                  __typename: 'LinkAction',
+                  parentBlockId: 'button1.id',
+                  gtmEventName: null,
+                  url: 'https://example.com',
+                  customizable: false,
+                  parentStepId: null
+                },
+                children: [],
+                settings: null
+              },
+              {
+                __typename: 'ButtonBlock',
+                id: 'button2.id',
+                parentBlockId: 'card1.id',
+                parentOrder: 1,
+                label: 'email button',
+                buttonVariant: null,
+                buttonColor: null,
+                size: null,
+                startIconId: null,
+                endIconId: null,
+                submitEnabled: null,
+                action: {
+                  __typename: 'EmailAction',
+                  parentBlockId: 'button2.id',
+                  gtmEventName: null,
+                  email: 'example@email.com',
+                  customizable: false,
+                  parentStepId: null
+                },
+                children: [],
+                settings: null
+              },
+              {
+                __typename: 'ButtonBlock',
+                id: 'button3.id',
+                parentBlockId: 'card1.id',
+                parentOrder: 2,
+                label: 'phone button',
+                buttonVariant: null,
+                buttonColor: null,
+                size: null,
+                startIconId: null,
+                endIconId: null,
+                submitEnabled: null,
+                action: {
+                  __typename: 'PhoneAction',
+                  parentBlockId: 'button3.id',
+                  gtmEventName: null,
+                  phone: '+1234567890',
+                  countryCode: '+1',
+                  contactAction: ContactActionType.call
+                },
+                children: [],
+                settings: null
+              }
+            ]
+          }
+        ]
+      }
+    ]
+
+    const positions = {
+      'step1.id': { x: 0, y: 0 }
+    }
+    const { nodes, edges } = transformSteps(steps, positions, defaultJourney)
+
+    expect(nodes).toEqual([
+      socialNode,
+      hiddenNode,
+      {
+        data: {},
+        draggable: false,
+        id: 'LinkNode-button1.id',
+        parentNode: 'step1.id',
+        position: { x: 300, y: 103 },
+        type: 'Link'
+      },
+      {
+        data: {},
+        draggable: false,
+        id: 'LinkNode-button2.id',
+        parentNode: 'step1.id',
+        position: { x: 300, y: 175 },
+        type: 'Link'
+      },
+      {
+        data: {},
+        draggable: false,
+        id: 'PhoneNode-button3.id',
+        parentNode: 'step1.id',
+        position: { x: 300, y: 247 },
+        type: 'Phone'
+      },
+      {
+        data: {},
+        id: 'step1.id',
+        position: { x: 0, y: 0 },
+        type: 'StepBlock'
+      }
+    ])
+
+    expect(edges).toEqual([
+      hiddenEdge,
+      {
+        ...defaultEdgeProps,
+        id: 'button1.id->LinkNode-button1.id',
+        source: 'step1.id',
+        sourceHandle: 'button1.id',
+        target: 'LinkNode-button1.id'
+      },
+      {
+        ...defaultEdgeProps,
+        id: 'button2.id->LinkNode-button2.id',
+        source: 'step1.id',
+        sourceHandle: 'button2.id',
+        target: 'LinkNode-button2.id'
+      },
+      {
+        ...defaultEdgeProps,
+        id: 'button3.id->PhoneNode-button3.id',
+        source: 'step1.id',
+        sourceHandle: 'button3.id',
+        target: 'PhoneNode-button3.id'
       },
       {
         ...defaultEdgeProps,

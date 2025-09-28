@@ -6,6 +6,7 @@ import BibleIcon from '@core/shared/ui/icons/Bible'
 import EmailIcon from '@core/shared/ui/icons/Email'
 import LinkAngledIcon from '@core/shared/ui/icons/LinkAngled'
 import MessageChat1Icon from '@core/shared/ui/icons/MessageChat1'
+import PhoneIcon from '@core/shared/ui/icons/Phone'
 
 import { GoalType } from '../../components/Button/utils/getLinkActionGoal'
 
@@ -39,6 +40,11 @@ export function getGoalDetails(
       return {
         label: t('Send an Email'),
         icon: <EmailIcon sx={iconStyle} />
+      }
+    case GoalType.Phone:
+      return {
+        label: t('Text or Call'),
+        icon: <PhoneIcon sx={iconStyle} />
       }
     case GoalType.Website:
     default:

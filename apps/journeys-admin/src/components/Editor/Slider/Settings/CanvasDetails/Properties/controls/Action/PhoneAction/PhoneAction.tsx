@@ -155,7 +155,7 @@ export function PhoneAction(): ReactElement {
         parentBlockId: id,
         gtmEventName: '',
         phone: phoneAction.phone,
-        countryCode: phoneAction?.countryCode ?? '',
+        countryCode: phoneAction?.countryCode ?? 'US',
         contactAction
       },
       undoAction: action,
