@@ -1,21 +1,16 @@
 import { gql, useMutation } from '@apollo/client'
 import Box from '@mui/material/Box'
-import Button from '@mui/material/Button'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, useCallback, useEffect, useState } from 'react'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
-import ArrowRightIcon from '@core/shared/ui/icons/ArrowRight'
 
 import { GetJourney_journey_journeyCustomizationFields as JourneyCustomizationField } from '../../../../../../__generated__/GetJourney'
 import { JourneyCustomizationFieldUpdate } from '../../../../../../__generated__/JourneyCustomizationFieldUpdate'
 import { CustomizationScreen } from '../../../utils/getCustomizeFlowConfig'
-import {
-  BUTTON_NEXT_STEP_WIDTH,
-  BUTTON_NEXT_STEP_HEIGHT
-} from '../../../utils/sharedStyles'
+import { CustomizeFlowNextButton } from '../../CustomizeFlowNextButton'
 
 export const JOURNEY_CUSTOMIZATION_FIELD_UPDATE = gql`
   mutation JourneyCustomizationFieldUpdate(
@@ -300,32 +295,13 @@ export function TextScreen({
           }}
         />
       </Box>
-      <Button
-        variant="contained"
-        color="secondary"
+      <CustomizeFlowNextButton
+        label={t('Next Step')}
         onClick={handleSubmit}
         loading={isSubmitting}
-        aria-label={t('Save and continue')}
-        sx={{
-          width: BUTTON_NEXT_STEP_WIDTH,
-          height: BUTTON_NEXT_STEP_HEIGHT,
-          alignSelf: 'center',
-          mt: { xs: 6, sm: 4 },
-          borderRadius: '8px'
-        }}
-      >
-        <Stack direction="row" alignItems="center" gap={1}>
-          <Typography
-            sx={{
-              fontWeight: 'bold',
-              display: { xs: 'none', sm: 'block' }
-            }}
-          >
-            {t('Next Step')}
-          </Typography>
-          <ArrowRightIcon sx={{ fontSize: { xs: '24px', sm: '16px' } }} />
-        </Stack>
-      </Button>
+        ariaLabel={t('Save and continue')}
+        testId="TextScreenSubmitButton"
+      />
     </Stack>
   )
 }

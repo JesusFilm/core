@@ -1,4 +1,3 @@
-import Button from '@mui/material/Button'
 import FormControl from '@mui/material/FormControl'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
@@ -13,7 +12,6 @@ import { object, string } from 'yup'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { useTeam } from '@core/journeys/ui/TeamProvider'
 import { useJourneyDuplicateMutation } from '@core/journeys/ui/useJourneyDuplicateMutation'
-import ArrowRightIcon from '@core/shared/ui/icons/ArrowRight'
 
 import { JourneyCustomizeTeamSelect } from './JourneyCustomizeTeamSelect'
 import { useGetChildTemplateJourneyLanguages } from '../../../../../libs/useGetChildTemplateJourneyLanguages'
@@ -21,10 +19,7 @@ import { useGetParentTemplateJourneyLanguages } from '../../../../../libs/useGet
 import { LanguageAutocomplete } from '@core/shared/ui/LanguageAutocomplete'
 import { CustomizationScreen } from '../../../utils/getCustomizeFlowConfig'
 import { SocialImage } from '@core/journeys/ui/TemplateView/TemplateViewHeader/SocialImage'
-import {
-  BUTTON_NEXT_STEP_WIDTH,
-  BUTTON_NEXT_STEP_HEIGHT
-} from '../../../utils/sharedStyles'
+import { CustomizeFlowNextButton } from '../../CustomizeFlowNextButton'
 
 interface LanguageScreenProps {
   handleNext: () => void
@@ -226,34 +221,13 @@ export function LanguageScreen({
                   {t('Select a team')}
                 </Typography>
                 {isSignedIn && <JourneyCustomizeTeamSelect />}
-                <Button
-                  variant="contained"
-                  color="secondary"
-                  disabled={loading}
+                <CustomizeFlowNextButton
+                  label={t('Next Step')}
                   onClick={() => handleSubmit()}
-                  data-testid="LanguageScreenSubmitButton"
-                  sx={{
-                    width: BUTTON_NEXT_STEP_WIDTH,
-                    height: BUTTON_NEXT_STEP_HEIGHT,
-                    alignSelf: 'center',
-                    mt: { xs: 6, sm: 4 },
-                    borderRadius: '8px'
-                  }}
-                >
-                  <Stack direction="row" alignItems="center" gap={1}>
-                    <Typography
-                      sx={{
-                        fontWeight: 'bold',
-                        display: { xs: 'none', sm: 'block' }
-                      }}
-                    >
-                      {t('Next Step')}
-                    </Typography>
-                    <ArrowRightIcon
-                      sx={{ fontSize: { xs: '24px', sm: '16px' } }}
-                    />
-                  </Stack>
-                </Button>
+                  disabled={loading}
+                  testId="LanguageScreenSubmitButton"
+                  ariaLabel={t('Next Step')}
+                />
               </Stack>
             </FormControl>
           </Form>

@@ -119,7 +119,7 @@ describe('LinksScreen', () => {
     const chatInput = within(chatGroup).getByRole('textbox') as HTMLInputElement
     fireEvent.change(chatInput, { target: { value: 'wa.me/999' } })
 
-    fireEvent.click(screen.getByRole('button', { name: 'Replace the links' }))
+    fireEvent.click(screen.getByTestId('LinksScreenSubmitButton'))
     await waitFor(() =>
       expect(screen.getByText('Enter a valid URL')).toBeInTheDocument()
     )
@@ -140,7 +140,7 @@ describe('LinksScreen', () => {
       )
     })
 
-    fireEvent.click(screen.getByRole('button', { name: 'Replace the links' }))
+    fireEvent.click(screen.getByTestId('LinksScreenSubmitButton'))
     await waitFor(() => expect(handleNext).toHaveBeenCalled())
   })
 
@@ -342,7 +342,7 @@ describe('LinksScreen', () => {
     const chatInput = within(chatGroup).getByRole('textbox') as HTMLInputElement
     fireEvent.change(chatInput, { target: { value: 'https://wa.me/999' } })
 
-    fireEvent.click(screen.getByRole('button', { name: 'Replace the links' }))
+    fireEvent.click(screen.getByTestId('LinksScreenSubmitButton'))
 
     await waitFor(() => {
       expect(linkUpdateMock.result).toHaveBeenCalled()
