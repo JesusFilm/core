@@ -32,7 +32,6 @@ describe('multiselectBlockUpdate', () => {
         parentOrder
         min
         max
-        submitLabel
       }
     }
   `)
@@ -45,8 +44,6 @@ describe('multiselectBlockUpdate', () => {
   const id = 'blockId'
   const input = {
     parentBlockId: 'parentId',
-    label: 'Updated label',
-    submitLabel: 'Updated submit',
     min: 0,
     max: 5
   }
@@ -60,8 +57,7 @@ describe('multiselectBlockUpdate', () => {
       journeyId: 'journeyId',
       parentBlockId: input.parentBlockId,
       min: input.min,
-      max: input.max,
-      submitLabel: input.submitLabel
+      max: input.max
     } as any)
   })
 
@@ -81,8 +77,7 @@ describe('multiselectBlockUpdate', () => {
           journeyId: 'journeyId',
           parentBlockId: 'parentId',
           min: input.min,
-          max: input.max,
-          submitLabel: input.submitLabel
+          max: input.max
         })
       },
       journey: { update: jest.fn().mockResolvedValue({ id: 'journeyId' }) }
@@ -233,8 +228,7 @@ describe('multiselectBlockUpdate', () => {
           parentBlockId: 'parentId',
           // existing max from DB should be preserved; we simulate it remains 5
           min: 0,
-          max: 5,
-          submitLabel: 'Submit'
+          max: 5
         }))
       },
       journey: { update: jest.fn().mockResolvedValue({ id: 'journeyId' }) }
@@ -278,8 +272,7 @@ describe('multiselectBlockUpdate', () => {
           journeyId: 'journeyId',
           parentBlockId: 'parentId',
           min: null,
-          max: null,
-          submitLabel: 'Submit'
+          max: null
         })
       },
       journey: { update: jest.fn().mockResolvedValue({ id: 'journeyId' }) }
