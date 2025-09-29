@@ -42,7 +42,7 @@ export function PhoneNode({ id }: NodeProps): ReactElement {
 
   const actionDetail = getActionDetail(matchedActionBlock)
   const { label, icon } = getGoalDetails(
-    matchedActionBlock?.action?.__typename === 'PhoneAction' && matchedActionBlock?.action?.contactAction === ContactActionType.text 
+    matchedActionBlock?.action?.__typename === 'PhoneAction' && matchedActionBlock?.action?.contactAction === 'text' 
       ? 'Text' 
       : 'Call'
     ,t
