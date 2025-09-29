@@ -40,9 +40,6 @@ const StyledListMultiselectQuestion = styled(Box)<BoxProps>(({ theme }) => ({
       borderRight: 'none',
       borderRadius: 0,
       margin: '0 !important',
-      // '&:active': {
-      //   backgroundColor: theme.palette.mode === 'dark' ? '#26262E' : '#444451'
-      // },
       '&:not(:last-of-type)': {
         borderBottom: 'none'
       },

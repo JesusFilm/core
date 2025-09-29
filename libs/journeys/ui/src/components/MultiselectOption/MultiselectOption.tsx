@@ -32,28 +32,36 @@ export const StyledListMultiselectOption = styled(Button)<ButtonProps>(({
       }
     ),
     wordBreak: 'break-word',
-    color: theme.palette.mode === 'dark' ? '#EFEFEF' : '#444451',
+    color:
+      theme.palette.mode === 'dark'
+        ? 'rgba(29, 29, 29, 1)'
+        : 'rgba(255, 255, 255, 1)',
     ...borderStyles,
 
     // Default state
     opacity: 1,
-    backgroundColor: theme.palette.mode === 'dark' ? '#FFFFFF99' : '#00000099',
+    backgroundColor:
+      theme.palette.mode === 'dark'
+        ? 'rgba(255,255,255,0.6)'
+        : 'rgba(0, 0, 0, 0.6)',
 
     // Hover state
     '&:hover': {
       ...borderStyles['&:hover'],
       // Dark mode hover visually matches default per spec
-      backgroundColor: theme.palette.mode === 'dark' ? '#FFFFFFCC' : '#000000CC'
+      backgroundColor:
+        theme.palette.mode === 'dark'
+          ? 'rgba(255,255,255,0.8)'
+          : 'rgba(0, 0, 0, 0.8)'
     },
 
     // Selected state (persistent)
     '&.selected': {
       backgroundColor:
-        theme.palette.mode === 'dark' ? '#FFFFFFE5' : '#000000E5',
-      color: theme.palette.mode === 'dark' ? '#1D1D1D' : '#FFFFFF'
-    },
-    '&.selected:hover': {
-      // backgroundColor: theme.palette.mode === 'dark' ? '#0C0C0F' : '#FFFFFF'
+        theme.palette.mode === 'dark'
+          ? 'rgba(255,255,255,0.9)'
+          : 'rgba(0, 0, 0, 0.9)'
+      // color: theme.palette.mode === 'dark' ? '#1D1D1D' : '#FFFFFF'
     },
 
     // Disabled state
@@ -61,12 +69,12 @@ export const StyledListMultiselectOption = styled(Button)<ButtonProps>(({
       ...borderStyles['&.disabled'],
       backgroundColor:
         theme.palette.mode === 'dark'
-          ? 'rgba(38, 38, 46, 0.5)'
-          : 'rgba(239, 239, 239, 0.6)',
+          ? 'rgba(255, 255, 255, 0.4)'
+          : 'rgba(239, 239, 239, 0.4)',
       color:
         theme.palette.mode === 'dark'
-          ? 'rgba(239, 239, 239, 0.6)'
-          : 'rgba(68, 68, 81, 0.6)'
+          ? 'rgba(0, 0, 0, 0.5)'
+          : 'rgba(255, 255, 255, 0.7)'
     }
   }
 })
@@ -114,7 +122,7 @@ export function MultiselectOption({
         ) : (
           <SquareIcon
             sx={{
-              color: theme.palette.mode === 'dark' ? '#6D6D7D' : '#AAACBB',
+              // color: theme.palette.mode === 'dark' ? '#6D6D7D' : '#AAACBB',
               fontSize: 22
             }}
           />
