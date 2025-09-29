@@ -12,24 +12,25 @@ import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { JourneyFields as Journey } from '@core/journeys/ui/JourneyProvider/__generated__/JourneyFields'
 import { defaultJourney } from '@core/journeys/ui/TemplateView/data'
 
-import { LinksScreen } from './LinksScreen'
-import { BLOCK_ACTION_LINK_UPDATE } from '../../../../../libs/useBlockActionLinkUpdateMutation'
-import { BLOCK_ACTION_EMAIL_UPDATE } from '../../../../../libs/useBlockActionEmailUpdateMutation'
-import { JOURNEY_CHAT_BUTTON_UPDATE } from '../../../../Editor/Slider/Settings/CanvasDetails/JourneyAppearance/Chat/ChatOption/Details/Details'
-import {
-  BlockActionLinkUpdate,
-  BlockActionLinkUpdateVariables
-} from '../../../../../../__generated__/BlockActionLinkUpdate'
 import {
   BlockActionEmailUpdate,
   BlockActionEmailUpdateVariables
 } from '../../../../../../__generated__/BlockActionEmailUpdate'
 import {
+  BlockActionLinkUpdate,
+  BlockActionLinkUpdateVariables
+} from '../../../../../../__generated__/BlockActionLinkUpdate'
+import { MessagePlatform } from '../../../../../../__generated__/globalTypes'
+import {
   JourneyChatButtonUpdate,
   JourneyChatButtonUpdateVariables
 } from '../../../../../../__generated__/JourneyChatButtonUpdate'
-import { MessagePlatform } from '../../../../../../__generated__/globalTypes'
+import { BLOCK_ACTION_EMAIL_UPDATE } from '../../../../../libs/useBlockActionEmailUpdateMutation'
+import { BLOCK_ACTION_LINK_UPDATE } from '../../../../../libs/useBlockActionLinkUpdateMutation'
+import { JOURNEY_CHAT_BUTTON_UPDATE } from '../../../../Editor/Slider/Settings/CanvasDetails/JourneyAppearance/Chat/ChatOption/Details/Details'
 import { JourneyLink } from '../../../utils/getJourneyLinks'
+
+import { LinksScreen } from './LinksScreen'
 
 describe('LinksScreen', () => {
   const journey = {
@@ -116,7 +117,7 @@ describe('LinksScreen', () => {
     })
 
     const chatGroup = screen.getByLabelText('Edit Chat: whatsApp')
-    const chatInput = within(chatGroup).getByRole('textbox') as HTMLInputElement
+    const chatInput = within(chatGroup).getByRole('textbox')
     fireEvent.change(chatInput, { target: { value: 'wa.me/999' } })
 
     fireEvent.click(screen.getByRole('button', { name: 'Replace the links' }))
@@ -327,19 +328,19 @@ describe('LinksScreen', () => {
 
     // Change URL field
     const urlGroup = screen.getByLabelText('Edit Primary')
-    const urlInput = within(urlGroup).getByRole('textbox') as HTMLInputElement
+    const urlInput = within(urlGroup).getByRole('textbox')
     fireEvent.change(urlInput, { target: { value: 'https://changed.com' } })
 
     // Change Email field
     const emailGroup = screen.getByLabelText('Edit Email Link')
     const emailInput = within(emailGroup).getByRole(
       'textbox'
-    ) as HTMLInputElement
+    )
     fireEvent.change(emailInput, { target: { value: 'changed@example.com' } })
 
     // Change Chat field
     const chatGroup = screen.getByLabelText('Edit Chat: whatsApp')
-    const chatInput = within(chatGroup).getByRole('textbox') as HTMLInputElement
+    const chatInput = within(chatGroup).getByRole('textbox')
     fireEvent.change(chatInput, { target: { value: 'https://wa.me/999' } })
 
     fireEvent.click(screen.getByRole('button', { name: 'Replace the links' }))

@@ -5,10 +5,10 @@ import { TreeBlock } from '@core/journeys/ui/block'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 
 import { BlockFields_StepBlock as StepBlock } from '../../../../../../../__generated__/BlockFields'
+import { ContactActionType } from '../../../../../../../__generated__/globalTypes'
 import { mockReactFlow } from '../../../../../../../test/mockReactFlow'
 
 import { PhoneNode } from '.'
-import { ContactActionType } from '../../../../../../../__generated__/globalTypes'
 
 describe('PhoneNode', () => {
   beforeEach(() => {

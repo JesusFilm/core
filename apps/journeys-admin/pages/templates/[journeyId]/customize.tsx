@@ -16,8 +16,8 @@ import {
   GetJourneyVariables
 } from '../../../__generated__/GetJourney'
 import { IdType } from '../../../__generated__/globalTypes'
-import { MultiStepForm } from '../../../src/components/TemplateCustomization/MultiStepForm'
 import { PageWrapper } from '../../../src/components/PageWrapper'
+import { MultiStepForm } from '../../../src/components/TemplateCustomization/MultiStepForm'
 import { initAndAuthApp } from '../../../src/libs/initAndAuthApp'
 
 function CustomizePage() {

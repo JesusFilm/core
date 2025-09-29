@@ -10,11 +10,10 @@ import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { filterActionBlocks } from '@core/journeys/ui/filterActionBlocks'
 import { getGoalDetails } from '@core/journeys/ui/getGoalDetails'
 
-import { BaseNode, HandleVariant } from '../BaseNode'
-import { LINK_NODE_HEIGHT, LINK_NODE_WIDTH } from '../StepBlockNode/libs/sizes'
-
-import { LinkNodeAnalytics } from '../LinkNode/LinkNodeAnalytics'
 import { ContactActionType } from '../../../../../../../__generated__/globalTypes'
+import { BaseNode, HandleVariant } from '../BaseNode'
+import { LinkNodeAnalytics } from '../LinkNode/LinkNodeAnalytics'
+import { LINK_NODE_HEIGHT, LINK_NODE_WIDTH } from '../StepBlockNode/libs/sizes'
 
 export function PhoneNode({ id }: NodeProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')

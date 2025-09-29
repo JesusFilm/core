@@ -113,7 +113,6 @@ describe('PhoneAction', () => {
     )
   })
 
-
   it('should validate country code field', async () => {
     render(
       <MockedProvider>

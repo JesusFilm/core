@@ -73,7 +73,6 @@ export function PhoneAction(): ReactElement {
     [phoneAction?.phone]
   )
 
-
   // Validation schemas
   const phoneActionSchema = useMemo(() => object({
     phone: string()

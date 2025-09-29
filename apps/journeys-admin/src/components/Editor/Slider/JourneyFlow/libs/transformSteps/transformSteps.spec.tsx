@@ -3,11 +3,11 @@ import { defaultJourney } from '@core/journeys/ui/TemplateView/data'
 import { GetJourney_journey as Journey } from '@core/journeys/ui/useJourneyQuery/__generated__/GetJourney'
 
 import { BlockFields_StepBlock as StepBlock } from '../../../../../../../__generated__/BlockFields'
+import { ContactActionType } from '../../../../../../../__generated__/globalTypes'
 
 import { defaultEdgeProps, hiddenEdge, hiddenNode } from './transformSteps'
 
 import { transformSteps } from '.'
-import { ContactActionType } from '../../../../../../../__generated__/globalTypes'
 
 describe('transformSteps', () => {
   const socialNode = {

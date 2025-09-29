@@ -13,8 +13,8 @@ import { GetJourney_journey_journeyCustomizationFields as JourneyCustomizationFi
 import { JourneyCustomizationFieldUpdate } from '../../../../../../__generated__/JourneyCustomizationFieldUpdate'
 import { CustomizationScreen } from '../../../utils/getCustomizeFlowConfig'
 import {
-  BUTTON_NEXT_STEP_WIDTH,
-  BUTTON_NEXT_STEP_HEIGHT
+  BUTTON_NEXT_STEP_HEIGHT,
+  BUTTON_NEXT_STEP_WIDTH
 } from '../../../utils/sharedStyles'
 
 export const JOURNEY_CUSTOMIZATION_FIELD_UPDATE = gql`
