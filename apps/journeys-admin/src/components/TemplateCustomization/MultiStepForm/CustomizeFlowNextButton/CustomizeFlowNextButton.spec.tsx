@@ -21,14 +21,6 @@ describe('CustomizeFlowNextButton', () => {
     expect(screen.getByText('New Next Button')).toBeInTheDocument()
   })
 
-  it('should render default "next step" label without any props', () => {
-    render(<CustomizeFlowNextButton />)
-
-    const button = screen.getByTestId('CustomizeFlowNextButton')
-    expect(button).toBeInTheDocument()
-    expect(screen.queryByText('Next')).toBeInTheDocument()
-  })
-
   it('should render button end adornment', () => {
     render(<CustomizeFlowNextButton {...defaultProps} />)
 

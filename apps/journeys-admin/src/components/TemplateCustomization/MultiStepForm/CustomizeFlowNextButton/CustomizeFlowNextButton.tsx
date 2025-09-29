@@ -12,7 +12,7 @@ import {
 } from '../../utils/sharedStyles'
 
 interface CustomizeFlowNextButtonProps {
-  label?: string
+  label: string
   loading?: boolean
   disabled?: boolean
   type?: 'button' | 'submit'
@@ -23,7 +23,7 @@ interface CustomizeFlowNextButtonProps {
 }
 
 export const CustomizeFlowNextButton = ({
-  label = 'Next',
+  label,
   loading = false,
   disabled = false,
   type = 'button',
