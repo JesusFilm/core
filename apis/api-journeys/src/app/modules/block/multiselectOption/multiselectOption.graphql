@@ -1,7 +1,7 @@
 type MultiselectOptionBlock implements Block @shareable {
   id: ID!
   journeyId: ID!
-  parentBlockId: ID!
-  parentOrder: Int!
+  parentBlockId: ID
+  parentOrder: Int
   label: String!
 }

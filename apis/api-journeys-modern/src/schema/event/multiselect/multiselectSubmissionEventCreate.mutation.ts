@@ -1,3 +1,5 @@
+import { v4 as uuidv4 } from 'uuid'
+
 import { prisma } from '@core/prisma/journeys/client'
 
 import { builder } from '../../builder'
@@ -35,14 +37,14 @@ builder.mutationField('multiselectSubmissionEventCreate', (t) =>
 
       const event = await prisma.event.create({
         data: {
-          id: input.id ?? undefined,
+          id: input.id || uuidv4(),
           typename: 'MultiselectSubmissionEvent',
-          journey: { connect: { id: journeyId } },
-          visitor: { connect: { id: visitor.id } },
+          journeyId,
           blockId: input.blockId,
-          stepId: input.stepId ?? undefined,
+          stepId: input.stepId || undefined,
           label: input.label || undefined,
           value: input.values.join(', '),
+          visitorId: visitor.id
         }
       })
 
