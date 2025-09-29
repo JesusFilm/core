@@ -394,6 +394,11 @@ export type CloudflareR2CreateInput = {
   videoId: Scalars['String']['input'];
 };
 
+export enum ContactActionType {
+  Call = 'call',
+  Text = 'text'
+}
+
 export type Continent = {
   __typename?: 'Continent';
   countries: Array<Country>;
@@ -3031,6 +3036,7 @@ export type PageInfo = {
 
 export type PhoneAction = Action & {
   __typename?: 'PhoneAction';
+  contactAction: ContactActionType;
   countryCode: Scalars['String']['output'];
   gtmEventName?: Maybe<Scalars['String']['output']>;
   parentBlock: Block;
@@ -3039,6 +3045,7 @@ export type PhoneAction = Action & {
 };
 
 export type PhoneActionInput = {
+  contactAction?: InputMaybe<ContactActionType>;
   countryCode: Scalars['String']['input'];
   gtmEventName?: InputMaybe<Scalars['String']['input']>;
   phone: Scalars['String']['input'];
