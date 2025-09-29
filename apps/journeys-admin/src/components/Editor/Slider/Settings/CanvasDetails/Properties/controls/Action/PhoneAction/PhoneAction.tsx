@@ -233,7 +233,7 @@ export function PhoneAction(): ReactElement {
                 <FormControlLabel
                   value={ContactActionType.text}
                   control={<Radio />}
-                  label={t('SMS')}
+                  label={t('Text (SMS)')}
                   disabled={disableRadioAction}
                 />
               </span>

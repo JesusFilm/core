@@ -4,7 +4,7 @@ import BibleIcon from '@core/shared/ui/icons/Bible'
 import EmailIcon from '@core/shared/ui/icons/Email'
 import LinkAngledIcon from '@core/shared/ui/icons/LinkAngled'
 import MessageChat1Icon from '@core/shared/ui/icons/MessageChat1'
-// import PhoneIcon from '@core/shared/ui/icons/Phone'
+import PhoneIcon from '@core/shared/ui/icons/Phone'
 
 import { GoalType } from '../../components/Button/utils/getLinkActionGoal'
 
@@ -46,10 +46,18 @@ describe('getGoalDetails', () => {
   })
 
   it('should return phone details', () => {
-    const details = getGoalDetails(GoalType.Phone, t)
-    expect(details.label).toBe('Text or Call')
+    const details = getGoalDetails('Call', t)
+    expect(details.label).toBe('Call')
     expect(details.icon).toEqual(
-      <LinkAngledIcon sx={{ color: 'secondary.light' }} />
+      <PhoneIcon sx={{ color: 'secondary.light' }} />
+    )
+  })
+
+  it('should return phone details', () => {
+    const details = getGoalDetails('Text', t)
+    expect(details.label).toBe('Text (SMS)')
+    expect(details.icon).toEqual(
+      <PhoneIcon sx={{ color: 'secondary.light' }} />
     )
   })
 

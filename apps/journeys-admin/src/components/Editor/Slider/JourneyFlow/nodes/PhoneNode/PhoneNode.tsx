@@ -14,7 +14,7 @@ import { BaseNode, HandleVariant } from '../BaseNode'
 import { LINK_NODE_HEIGHT, LINK_NODE_WIDTH } from '../StepBlockNode/libs/sizes'
 
 import { LinkNodeAnalytics } from '../LinkNode/LinkNodeAnalytics'
-import { GoalType } from '@core/journeys/ui/Button/utils/getLinkActionGoal'
+import { ContactActionType } from '../../../../../../../__generated__/globalTypes'
 
 export function PhoneNode({ id }: NodeProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
@@ -41,7 +41,12 @@ export function PhoneNode({ id }: NodeProps): ReactElement {
   }
 
   const actionDetail = getActionDetail(matchedActionBlock)
-  const { label, icon } = getGoalDetails(GoalType.Phone, t)
+  const { label, icon } = getGoalDetails(
+    matchedActionBlock?.action?.__typename === 'PhoneAction' && matchedActionBlock?.action?.contactAction === ContactActionType.text 
+      ? 'Text' 
+      : 'Call'
+    ,t
+  )
 
   return (
     <BaseNode id={id} targetHandle={HandleVariant.Disabled}>

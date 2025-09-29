@@ -16,7 +16,7 @@ interface GoalDetails {
 }
 
 export function getGoalDetails(
-  goalType: GoalType,
+  goalType: GoalType | 'Text' | 'Call',
   t: TFunction,
   customIconStyle?: SxProps<Theme>
 ): GoalDetails {
@@ -41,9 +41,14 @@ export function getGoalDetails(
         label: t('Send an Email'),
         icon: <EmailIcon sx={iconStyle} />
       }
-    case GoalType.Phone:
+    case 'Text':
       return {
-        label: t('Text or Call'),
+        label: t('Text (SMS)'),
+        icon: <PhoneIcon sx={iconStyle} />
+      }
+    case 'Call':
+      return {
+        label: t('Call'),
         icon: <PhoneIcon sx={iconStyle} />
       }
     case GoalType.Website:

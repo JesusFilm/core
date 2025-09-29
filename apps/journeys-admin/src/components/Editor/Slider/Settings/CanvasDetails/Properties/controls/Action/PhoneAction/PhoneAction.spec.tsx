@@ -255,7 +255,7 @@ describe('PhoneAction', () => {
       </MockedProvider>
     )
 
-    const smsRadio = screen.getByRole('radio', { name: 'SMS' })
+    const smsRadio = screen.getByRole('radio', { name: 'Text (SMS)' })
     fireEvent.click(smsRadio)
 
     await waitFor(() => expect(result).toHaveBeenCalled())
@@ -287,7 +287,7 @@ describe('PhoneAction', () => {
     // Wait for the component to render and check the disabled state
     await waitFor(() => {
       const callRadio = screen.getByRole('radio', { name: 'Call' })
-      const smsRadio = screen.getByRole('radio', { name: 'SMS' })
+      const smsRadio = screen.getByRole('radio', { name: 'Text (SMS)' })
 
       expect(callRadio).toBeDisabled()
       expect(smsRadio).toBeDisabled()
@@ -304,7 +304,7 @@ describe('PhoneAction', () => {
     )
 
     const callRadio = screen.getByRole('radio', { name: 'Call' })
-    const smsRadio = screen.getByRole('radio', { name: 'SMS' })
+    const smsRadio = screen.getByRole('radio', { name: 'Text (SMS)' })
 
     expect(callRadio).not.toBeDisabled()
     expect(smsRadio).not.toBeDisabled()
@@ -371,7 +371,7 @@ describe('PhoneAction', () => {
       </MockedProvider>
     )
 
-    const smsRadio = screen.getByRole('radio', { name: 'SMS' })
+    const smsRadio = screen.getByRole('radio', { name: 'Text (SMS)' })
     fireEvent.click(smsRadio)
 
     // Should not call the mutation when disabled
