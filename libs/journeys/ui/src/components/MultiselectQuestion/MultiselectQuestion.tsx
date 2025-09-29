@@ -12,7 +12,6 @@ import { adminTheme } from '@core/shared/ui/themes/journeysAdmin/theme'
 
 import type { TreeBlock } from '../../libs/block'
 import { isActiveBlockOrDescendant, useBlocks } from '../../libs/block'
-import { getStepHeading } from '../../libs/getStepHeading'
 // eslint-disable-next-line import/no-cycle
 import { BlockRenderer, WrappersProps } from '../BlockRenderer'
 import { MultiselectOption } from '../MultiselectOption/MultiselectOption'
@@ -41,16 +40,16 @@ const StyledListMultiselectQuestion = styled(Box)<BoxProps>(({ theme }) => ({
       borderRight: 'none',
       borderRadius: 0,
       margin: '0 !important',
-      '&:active': {
-        backgroundColor: theme.palette.mode === 'dark' ? '#26262E' : '#444451'
-      },
+      // '&:active': {
+      //   backgroundColor: theme.palette.mode === 'dark' ? '#26262E' : '#444451'
+      // },
       '&:not(:last-of-type)': {
         borderBottom: 'none'
       },
       '&.MuiButtonGroup-firstButton': {
         ...getPollOptionBorderStyles(theme),
-        borderTopLeftRadius: 12,
-        borderTopRightRadius: 12
+        borderTopLeftRadius: 16,
+        borderTopRightRadius: 16
       },
       '&.MuiButtonGroup-middleButton': {
         ...getPollOptionBorderStyles(theme),
@@ -58,8 +57,8 @@ const StyledListMultiselectQuestion = styled(Box)<BoxProps>(({ theme }) => ({
       },
       '&.MuiButtonGroup-lastButton': {
         ...getPollOptionBorderStyles(theme),
-        borderBottomLeftRadius: 12,
-        borderBottomRightRadius: 12
+        borderBottomLeftRadius: 16,
+        borderBottomRightRadius: 16
       }
     }
   }
@@ -134,25 +133,23 @@ export function MultiselectQuestion({
         <ButtonGroup orientation="vertical" variant="contained" fullWidth>
           {options}
           {addOption && (
-            <Box>
-              <StyledListMultiSelectOption
-                data-testid={`${blockId}-add-option`}
-                variant="contained"
-                fullWidth
-                disableRipple
-                startIcon={
-                  <AddSquare4Icon sx={{ color: `${adminPrimaryColor.main}` }} />
-                }
-                onClick={addOption}
-                sx={(theme) => ({
-                  borderBottomLeftRadius: 8,
-                  borderBottomRightRadius: 8,
-                  ...getPollOptionBorderStyles(theme, { important: true })
-                })}
-              >
-                <Typography variant="body1">{t('Add Option')}</Typography>
-              </StyledListMultiSelectOption>
-            </Box>
+            <StyledListMultiSelectOption
+              data-testid={`${blockId}-add-option`}
+              variant="contained"
+              fullWidth
+              disableRipple
+              startIcon={
+                <AddSquare4Icon sx={{ color: `${adminPrimaryColor.main}` }} />
+              }
+              onClick={addOption}
+              sx={(theme) => ({
+                borderBottomLeftRadius: 12,
+                borderBottomRightRadius: 12,
+                ...getPollOptionBorderStyles(theme, { important: true })
+              })}
+            >
+              <Typography variant="body1">{t('Add Option')}</Typography>
+            </StyledListMultiSelectOption>
           )}
         </ButtonGroup>
       </StyledListMultiselectQuestion>

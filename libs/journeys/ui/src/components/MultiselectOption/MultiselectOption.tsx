@@ -24,7 +24,7 @@ export const StyledListMultiselectOption = styled(Button)<ButtonProps>(({
     textAlign: 'start',
     justifyContent: 'flex-start',
     borderRadius: 0,
-    padding: '14px 12px 14px 14px',
+    padding: '14px 20px',
     transition: theme.transitions.create(
       ['background-color', 'border-color', 'opacity', 'color'],
       {
