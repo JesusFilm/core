@@ -9,9 +9,11 @@ import Radio from '@mui/material/Radio'
 import RadioGroup from '@mui/material/RadioGroup'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
+import Link from 'next/link'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, useState } from 'react'
 
+import LinkExternal from '@core/shared/ui/icons/LinkExternal'
 import X2Icon from '@core/shared/ui/icons/X2'
 
 import { ClearAllButton } from './ClearAllButton'
@@ -144,6 +146,21 @@ export function FilterDrawer({
               disabled={disableExportButton}
             >
               {t('Export Data')}
+            </Button>
+            <Button
+              size="small"
+              component={Link}
+              href="https://support.nextstep.is/article/1428-response-fields-and-data-analysis"
+              target="_blank"
+              rel="noopener noreferrer"
+              endIcon={<LinkExternal sx={{ width: '1rem', height: '1rem' }} />}
+              sx={{
+                width: '100%',
+                color: 'text.secondary'
+              }}
+              aria-label={`${t('Data Analytics Test')} - ${t('Opens in new tab')}`}
+            >
+              {t('Data analysis help')}
             </Button>
           </Box>
           <ExportDialog
