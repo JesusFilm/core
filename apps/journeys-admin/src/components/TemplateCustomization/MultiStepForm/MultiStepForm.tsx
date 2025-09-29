@@ -15,7 +15,7 @@ import {
   SocialScreen
 } from './Screens'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
-import ChevronRight from '@core/shared/ui/icons/ChevronRight'
+import Edit3 from '@core/shared/ui/icons/Edit3'
 import {
   getCustomizeFlowConfig,
   CustomizationScreen
@@ -101,19 +101,20 @@ export function MultiStepForm(): ReactElement {
         py: 10
       }}
     >
-      <Stack gap={{ xs: 3, sm: 4 }} data-testid="MultiStepForm">
+      <Stack gap={{ xs: 6, sm: 6 }} data-testid="MultiStepForm">
         <NextLink href={link} passHref legacyBehavior>
           <Button
             variant="text"
             color="primary"
-            endIcon={<ChevronRight />}
+            startIcon={<Edit3 />}
             sx={{
               alignSelf: 'flex-end',
               mr: '4px',
               fontWeight: 'bold',
               visibility: activeScreen === 'language' ? 'hidden' : 'visible',
-              '& .MuiButton-endIcon': {
-                marginLeft: '0px'
+              '& .MuiButton-startIcon': {
+                marginRight: 0.3,
+                marginTop: 1
               }
             }}
             disabled={journey?.id == null}
@@ -122,10 +123,12 @@ export function MultiStepForm(): ReactElement {
           </Button>
         </NextLink>
         {(hasEditableText || hasCustomizableLinks) && (
-          <ProgressStepper
-            activeStepNumber={screens.indexOf(activeScreen)}
-            totalSteps={totalSteps}
-          />
+          <Box sx={{ mt: { xs: 3, sm: 6 } }}>
+            <ProgressStepper
+              activeStepNumber={screens.indexOf(activeScreen)}
+              totalSteps={totalSteps}
+            />
+          </Box>
         )}
 
         <Box
@@ -138,20 +141,6 @@ export function MultiStepForm(): ReactElement {
         >
           {renderScreen(activeScreen, handleNext, handleScreenNavigation)}
         </Box>
-
-        {/* TODO: delete back button. This is only here for the dev's to use */}
-        {/* <Button
-          variant="contained"
-          color="primary"
-          onClick={() => {
-            if (activeScreen > 0) {
-              setActiveScreen(activeScreen - 1)
-            }
-          }}
-          sx={{ width: '300px', alignSelf: 'center' }}
-        >
-          {`back (this will be deleted)`}
-        </Button> */}
       </Stack>
     </Container>
   )
