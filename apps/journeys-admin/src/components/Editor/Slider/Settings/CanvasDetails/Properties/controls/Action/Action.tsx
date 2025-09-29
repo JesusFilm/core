@@ -4,7 +4,7 @@ import MenuItem from '@mui/material/MenuItem'
 import Select, { SelectChangeEvent } from '@mui/material/Select'
 import Stack from '@mui/material/Stack'
 import { useTranslation } from 'next-i18next'
-import { ReactElement, useEffect, useState } from 'react'
+import { ReactElement, useEffect, useRef, useState } from 'react'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
@@ -17,13 +17,13 @@ import {
   BlockFields_VideoBlock as VideoBlock
 } from '../../../../../../../../../__generated__/BlockFields'
 import { useActionCommand } from '../../../../../../utils/useActionCommand'
-import { useFlags } from '@core/shared/ui/FlagsProvider'
 
 import { CustomizationToggle } from './CustomizationToggle'
 import { EmailAction } from './EmailAction'
 import { LinkAction } from './LinkAction'
 import { NavigateToBlockAction } from './NavigateToBlockAction'
 import { ActionValue, actions, getAction } from './utils/actions'
+import { TextFieldFormRef } from '../../../../../../../TextFieldForm/TextFieldForm'
 
 export function Action(): ReactElement {
   const {
@@ -31,8 +31,9 @@ export function Action(): ReactElement {
   } = useEditor()
   const { t } = useTranslation('apps-journeys-admin')
   const { addAction } = useActionCommand()
-  const { journeyCustomization } = useFlags()
   const { journey } = useJourney()
+  const linkActionRef = useRef<TextFieldFormRef | null>(null)
+  const emailActionRef = useRef<TextFieldFormRef | null>(null)
 
   // Add addtional types here to use this component for that block
   const selectedBlock = stateSelectedBlock as
@@ -60,6 +61,11 @@ export function Action(): ReactElement {
   useEffect(() => {
     setAction(getAction(t, selectedBlock?.action?.__typename).value)
   }, [selectedBlock?.action?.__typename])
+
+  useEffect(() => {
+    if (action === 'LinkAction') linkActionRef.current?.focus()
+    if (action === 'EmailAction') emailActionRef.current?.focus()
+  }, [action])
 
   function removeAction(): void {
     if (selectedBlock == null) return
@@ -110,12 +116,10 @@ export function Action(): ReactElement {
             })}
           </Select>
         </FormControl>
-        {isLink && <LinkAction />}
-        {isEmail && <EmailAction />}
+        {isLink && <LinkAction ref={linkActionRef} />}
+        {isEmail && <EmailAction ref={emailActionRef} />}
         {action === 'NavigateToBlockAction' && <NavigateToBlockAction />}
-        {(isLink || isEmail) && journeyCustomization && journey?.template && (
-          <CustomizationToggle />
-        )}
+        {(isLink || isEmail) && journey?.template && <CustomizationToggle />}
       </Stack>
     </>
   )

@@ -17,6 +17,11 @@ export enum ThemeName {
     base = "base"
 }
 
+export enum ContactActionType {
+    call = "call",
+    text = "text"
+}
+
 export enum ButtonVariant {
     text = "text",
     contained = "contained",
@@ -936,6 +941,7 @@ export class PhoneAction implements Action {
     gtmEventName?: Nullable<string>;
     phone: string;
     countryCode: string;
+    contactAction: ContactActionType;
 }
 
 export class Journey {
@@ -1361,21 +1367,18 @@ export class MultiselectBlock implements Block {
     __typename?: 'MultiselectBlock';
     id: string;
     journeyId: string;
-    parentBlockId: string;
-    parentOrder: number;
-    label: string;
-    submitLabel: string;
+    parentBlockId?: Nullable<string>;
+    parentOrder?: Nullable<number>;
     max?: Nullable<number>;
     min?: Nullable<number>;
-    action?: Nullable<Action>;
 }
 
 export class MultiselectOptionBlock implements Block {
     __typename?: 'MultiselectOptionBlock';
     id: string;
     journeyId: string;
-    parentBlockId: string;
-    parentOrder: number;
+    parentBlockId?: Nullable<string>;
+    parentOrder?: Nullable<number>;
     label: string;
 }
 

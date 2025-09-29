@@ -40,6 +40,7 @@ import {
 import { findMessagePlatform } from './utils/findMessagePlatform'
 import { getActionLabel } from './utils/getActionLabel'
 import { getLinkActionGoal } from './utils/getLinkActionGoal'
+import { useGetValueFromJourneyCustomizationString } from '../../libs/useGetValueFromJourneyCustomizationString'
 
 export const BUTTON_CLICK_EVENT_CREATE = gql`
   mutation ButtonClickEventCreate($input: ButtonClickEventCreateInput!) {
@@ -113,6 +114,9 @@ export function Button({
 
   const plausible = usePlausible<JourneyPlausibleEvents>()
   const { variant, journey } = useJourney()
+
+  const resolvedLabel = useGetValueFromJourneyCustomizationString(label)
+
   const { treeBlocks, blockHistory } = useBlocks()
   const { t } = useTranslation('libs-journeys-ui')
   const formik = useFormikContext()
@@ -163,7 +167,7 @@ export function Button({
         blockId,
         stepId: activeBlock?.id,
         label: heading,
-        value: label,
+        value: resolvedLabel,
         action: action?.__typename as ButtonAction | undefined,
         actionValue
       }
@@ -242,7 +246,7 @@ export function Button({
       sendGTMEvent({
         ...eventProperties,
         event: 'outbound_action_click',
-        buttonLabel: label,
+        buttonLabel: resolvedLabel,
         outboundActionType: getLinkActionGoal(action.url),
         outboundActionValue: action.url
       })
@@ -343,8 +347,8 @@ export function Button({
         >
           {editableLabel != null
             ? editableLabel
-            : label !== ''
-              ? label
+            : resolvedLabel !== ''
+              ? resolvedLabel
               : fallbackLabel}
         </Typography>
       </MuiButton>
