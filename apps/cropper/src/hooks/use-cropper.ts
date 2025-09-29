@@ -11,6 +11,19 @@ import type {
   SceneChangeResult,
   SceneChangeConfig
 } from '../types'
+import type {
+  VirtualCameraParameters,
+  VirtualCameraPathWithOverrides,
+  PathQAMetrics,
+  AnalysisResult
+} from '@core/shared/video-processing'
+import {
+  DEFAULT_VIRTUAL_CAMERA_PARAMS,
+  DEFAULT_PIPELINE_CONFIG,
+  analyzePathQA,
+  runAnalysisPass,
+  runRenderPass
+} from '@core/shared/video-processing'
 import {
   createCropKeyframe,
   createInitialPath,
@@ -29,21 +42,36 @@ import { getFrameRate } from '../config/frame-rate-config'
 
 interface CropperState {
   video: Video | null
+  htmlVideoElement: HTMLVideoElement | null
   path: CropPath | null
   activeKeyframeId: string | null
   currentTime: number
   detections: DetectionResult[]
   detectionStatus: 'idle' | 'running' | 'complete'
   detectionProgress: { current: number; total: number; percentage: number } | null
+  detectorBackend: string | null
+  detectorCapabilities: any | null
   sceneChanges: SceneChangeResult[]
   sceneDetectionStatus: 'idle' | 'running' | 'complete'
   autoTrackingEnabled: boolean
   sceneChangeDetectionEnabled: boolean
   lastSceneChangeLevel: 'stable' | 'moderate' | 'significant' | 'transition' | null
+  // Auto-crop pipeline state
+  virtualCameraParams: VirtualCameraParameters
+  virtualCameraPath: VirtualCameraPathWithOverrides | null
+  analysisResult: AnalysisResult | null
+  qaMetrics: PathQAMetrics | null
+  isAnalysisRunning: boolean
+  isRenderRunning: boolean
+  isQAAnalyzing: boolean
+  analysisProgress: { stage: string; stageProgress: number; overallProgress: number; eta?: number } | null
+  analysisError: string | null
+  debugOverlayEnabled: boolean
 }
 
 type CropperAction =
   | { type: 'SET_VIDEO'; video: Video | null }
+  | { type: 'SET_HTML_VIDEO_ELEMENT'; element: HTMLVideoElement | null }
   | { type: 'SET_TIME'; time: number }
   | { type: 'SET_ACTIVE_KEYFRAME'; keyframeId: string | null }
   | { type: 'ADD_KEYFRAME'; keyframe: CropKeyframe }
@@ -55,26 +83,52 @@ type CropperAction =
   | { type: 'MERGE_DETECTIONS' }
   | { type: 'SET_DETECTION_STATUS'; status: CropperState['detectionStatus'] }
   | { type: 'SET_DETECTION_PROGRESS'; progress: { current: number; total: number; percentage: number } | null }
+  | { type: 'SET_DETECTOR_BACKEND'; backend: string; capabilities: any }
   | { type: 'TOGGLE_AUTO_TRACKING' }
   | { type: 'PUSH_SCENE_CHANGE'; sceneChange: SceneChangeResult }
   | { type: 'SET_SCENE_CHANGES'; sceneChanges: SceneChangeResult[] }
   | { type: 'SET_SCENE_DETECTION_STATUS'; status: CropperState['sceneDetectionStatus'] }
   | { type: 'TOGGLE_SCENE_CHANGE_DETECTION' }
   | { type: 'ADAPT_TO_SCENE_CHANGE'; sceneChange: SceneChangeResult }
+  // Auto-crop actions
+  | { type: 'SET_VIRTUAL_CAMERA_PARAMS'; params: VirtualCameraParameters }
+  | { type: 'SET_VIRTUAL_CAMERA_PATH'; path: VirtualCameraPathWithOverrides | null }
+  | { type: 'SET_ANALYSIS_RESULT'; result: AnalysisResult | null }
+  | { type: 'SET_QA_METRICS'; metrics: PathQAMetrics | null }
+  | { type: 'SET_ANALYSIS_RUNNING'; running: boolean }
+  | { type: 'SET_RENDER_RUNNING'; running: boolean }
+  | { type: 'SET_QA_ANALYZING'; analyzing: boolean }
+  | { type: 'SET_ANALYSIS_PROGRESS'; progress: { stage: string; stageProgress: number; overallProgress: number; eta?: number } | null }
+  | { type: 'SET_ANALYSIS_ERROR'; error: string | null }
+  | { type: 'TOGGLE_DEBUG_OVERLAY' }
 
 const INITIAL_STATE: CropperState = {
   video: null,
+  htmlVideoElement: null,
   path: null,
   activeKeyframeId: null,
   currentTime: 0,
   detections: [],
   detectionStatus: 'idle',
   detectionProgress: null,
+  detectorBackend: null,
+  detectorCapabilities: null,
   sceneChanges: [],
   sceneDetectionStatus: 'idle',
   autoTrackingEnabled: false, // Disabled by default to prevent freezing
   sceneChangeDetectionEnabled: false, // Disabled by default to prevent freezing
-  lastSceneChangeLevel: null
+  lastSceneChangeLevel: null,
+  // Auto-crop initial state
+  virtualCameraParams: DEFAULT_VIRTUAL_CAMERA_PARAMS,
+  virtualCameraPath: null,
+  analysisResult: null,
+  qaMetrics: null,
+  isAnalysisRunning: false,
+  isRenderRunning: false,
+  isQAAnalyzing: false,
+  analysisProgress: null,
+  analysisError: null,
+  debugOverlayEnabled: false
 }
 
 function reducer(state: CropperState, action: CropperAction): CropperState {
@@ -86,18 +140,17 @@ function reducer(state: CropperState, action: CropperAction): CropperState {
 
       const path = createInitialPath(action.video)
       return {
+        ...INITIAL_STATE,
         video: action.video,
         path,
-        activeKeyframeId: path.keyframes[0]?.id ?? null,
-        currentTime: 0,
-        detections: [],
-        detectionStatus: 'idle',
-        detectionProgress: null,
-        sceneChanges: [],
-        sceneDetectionStatus: 'idle',
-        autoTrackingEnabled: false, // Keep disabled to prevent freezing
-        sceneChangeDetectionEnabled: false, // Keep disabled to prevent freezing
-        lastSceneChangeLevel: null
+        activeKeyframeId: path.keyframes[0]?.id ?? null
+      }
+    }
+
+    case 'SET_HTML_VIDEO_ELEMENT': {
+      return {
+        ...state,
+        htmlVideoElement: action.element
       }
     }
 
@@ -216,6 +269,14 @@ function reducer(state: CropperState, action: CropperAction): CropperState {
       }
     }
 
+    case 'SET_DETECTOR_BACKEND': {
+      return {
+        ...state,
+        detectorBackend: action.backend,
+        detectorCapabilities: action.capabilities
+      }
+    }
+
     case 'TOGGLE_AUTO_TRACKING': {
       const newAutoTrackingEnabled = !state.autoTrackingEnabled
       return {
@@ -274,6 +335,77 @@ function reducer(state: CropperState, action: CropperAction): CropperState {
       }
     }
 
+    // Auto-crop reducer cases
+    case 'SET_VIRTUAL_CAMERA_PARAMS': {
+      return {
+        ...state,
+        virtualCameraParams: action.params
+      }
+    }
+
+    case 'SET_VIRTUAL_CAMERA_PATH': {
+      return {
+        ...state,
+        virtualCameraPath: action.path
+      }
+    }
+
+    case 'SET_ANALYSIS_RESULT': {
+      return {
+        ...state,
+        analysisResult: action.result
+      }
+    }
+
+    case 'SET_QA_METRICS': {
+      return {
+        ...state,
+        qaMetrics: action.metrics
+      }
+    }
+
+    case 'SET_ANALYSIS_RUNNING': {
+      return {
+        ...state,
+        isAnalysisRunning: action.running
+      }
+    }
+
+    case 'SET_RENDER_RUNNING': {
+      return {
+        ...state,
+        isRenderRunning: action.running
+      }
+    }
+
+    case 'SET_QA_ANALYZING': {
+      return {
+        ...state,
+        isQAAnalyzing: action.analyzing
+      }
+    }
+
+    case 'SET_ANALYSIS_PROGRESS': {
+      return {
+        ...state,
+        analysisProgress: action.progress
+      }
+    }
+
+    case 'SET_ANALYSIS_ERROR': {
+      return {
+        ...state,
+        analysisError: action.error
+      }
+    }
+
+    case 'TOGGLE_DEBUG_OVERLAY': {
+      return {
+        ...state,
+        debugOverlayEnabled: !state.debugOverlayEnabled
+      }
+    }
+
     default:
       return state
   }
@@ -281,6 +413,7 @@ function reducer(state: CropperState, action: CropperAction): CropperState {
 
 export interface UseCropperResult {
   video: Video | null
+  htmlVideoElement: HTMLVideoElement | null
   path: CropPath | null
   keyframes: CropKeyframe[]
   currentCrop: CropBox | null
@@ -288,13 +421,27 @@ export interface UseCropperResult {
   activeKeyframe: CropKeyframe | null
   detectionStatus: CropperState['detectionStatus']
   detectionProgress: CropperState['detectionProgress']
+  detectorBackend: string | null
+  detectorCapabilities: any | null
   detections: DetectionResult[]
   sceneChanges: SceneChangeResult[]
   sceneDetectionStatus: CropperState['sceneDetectionStatus']
   autoTrackingEnabled: boolean
   sceneChangeDetectionEnabled: boolean
   lastSceneChangeLevel: CropperState['lastSceneChangeLevel']
+  // Auto-crop fields
+  virtualCameraParams: VirtualCameraParameters
+  virtualCameraPath: VirtualCameraPathWithOverrides | null
+  analysisResult: AnalysisResult | null
+  qaMetrics: PathQAMetrics | null
+  isAnalysisRunning: boolean
+  isRenderRunning: boolean
+  isQAAnalyzing: boolean
+  analysisProgress: { stage: string; stageProgress: number; overallProgress: number; eta?: number } | null
+  analysisError: string | null
+  debugOverlayEnabled: boolean
   setVideo: (video: Video | null) => void
+  setHtmlVideoElement: (element: HTMLVideoElement | null) => void
   setTime: (time: number) => void
   addKeyframeAt: (time: number, window?: Partial<CropWindow>) => void
   updateKeyframe: (keyframeId: string, patch: Partial<CropWindow> & { time?: number }) => void
@@ -308,6 +455,13 @@ export interface UseCropperResult {
   resumeSceneDetection: () => void
   toggleAutoTracking: () => void
   toggleSceneChangeDetection: () => void
+  // Auto-crop functions
+  setVirtualCameraParams: (params: VirtualCameraParameters) => void
+  setVirtualCameraPath: (path: VirtualCameraPathWithOverrides | null) => void
+  runAnalysisPass: () => Promise<void>
+  runRenderPass: () => Promise<void>
+  runQAAnalysis: () => Promise<void>
+  toggleDebugOverlay: () => void
 }
 
 export function useCropper(): UseCropperResult {
@@ -414,6 +568,9 @@ export function useCropper(): UseCropperResult {
         dispatch({ type: 'SET_DETECTION_PROGRESS', progress: null })
         dispatch({ type: 'SET_DETECTIONS', detections: results })
         dispatch({ type: 'MERGE_DETECTIONS' })
+      },
+      onDetectorInfo: (backend, capabilities) => {
+        dispatch({ type: 'SET_DETECTOR_BACKEND', backend, capabilities })
       },
       onError: (error) => {
         dispatch({ type: 'SET_DETECTION_STATUS', status: 'idle' })
@@ -552,6 +709,7 @@ export function useCropper(): UseCropperResult {
 
   return {
     video: state.video,
+    htmlVideoElement: state.htmlVideoElement,
     path: state.path,
     keyframes,
     currentCrop,
@@ -559,6 +717,8 @@ export function useCropper(): UseCropperResult {
     activeKeyframe,
     detectionStatus: state.detectionStatus,
     detectionProgress: state.detectionProgress,
+    detectorBackend: state.detectorBackend,
+    detectorCapabilities: state.detectorCapabilities,
     detections: state.detections,
     sceneChanges: state.sceneChanges,
     sceneDetectionStatus: state.sceneDetectionStatus,
@@ -566,6 +726,9 @@ export function useCropper(): UseCropperResult {
     sceneChangeDetectionEnabled: state.sceneChangeDetectionEnabled,
     lastSceneChangeLevel: state.lastSceneChangeLevel,
     setVideo,
+    setHtmlVideoElement: useCallback((element: HTMLVideoElement | null) => {
+      dispatch({ type: 'SET_HTML_VIDEO_ELEMENT', element })
+    }, []),
     setTime,
     addKeyframeAt,
     updateKeyframe,
@@ -578,6 +741,127 @@ export function useCropper(): UseCropperResult {
     pauseSceneDetection,
     resumeSceneDetection,
     toggleAutoTracking,
-    toggleSceneChangeDetection
+    toggleSceneChangeDetection,
+    // Auto-crop functions
+    virtualCameraParams: state.virtualCameraParams,
+    virtualCameraPath: state.virtualCameraPath,
+    analysisResult: state.analysisResult,
+    qaMetrics: state.qaMetrics,
+    isAnalysisRunning: state.isAnalysisRunning,
+    isRenderRunning: state.isRenderRunning,
+    isQAAnalyzing: state.isQAAnalyzing,
+    analysisProgress: state.analysisProgress,
+    analysisError: state.analysisError,
+    debugOverlayEnabled: state.debugOverlayEnabled,
+    setVirtualCameraParams: useCallback((params: VirtualCameraParameters) => {
+      dispatch({ type: 'SET_VIRTUAL_CAMERA_PARAMS', params })
+    }, []),
+    setVirtualCameraPath: useCallback((path: VirtualCameraPathWithOverrides | null) => {
+      dispatch({ type: 'SET_VIRTUAL_CAMERA_PATH', path })
+    }, []),
+    runAnalysisPass: useCallback(async () => {
+      if (!state.htmlVideoElement) return
+
+      // Ensure video is loaded and ready
+      if (state.htmlVideoElement.readyState < 3) { // HAVE_FUTURE_DATA or better
+        console.log('🎬 [ANALYSIS] Video not ready, waiting...')
+        await new Promise((resolve) => {
+          const onCanPlay = () => {
+            state.htmlVideoElement?.removeEventListener('canplay', onCanPlay)
+            resolve(void 0)
+          }
+          state.htmlVideoElement?.addEventListener('canplay', onCanPlay)
+
+          // Timeout after 10 seconds
+          setTimeout(() => {
+            state.htmlVideoElement?.removeEventListener('canplay', onCanPlay)
+            resolve(void 0)
+          }, 10000)
+        })
+      }
+
+      dispatch({ type: 'SET_ANALYSIS_RUNNING', running: true })
+      dispatch({ type: 'SET_ANALYSIS_PROGRESS', progress: null })
+      dispatch({ type: 'SET_ANALYSIS_ERROR', error: null })
+      try {
+        const pipelineConfig = {
+          ...DEFAULT_PIPELINE_CONFIG,
+          shotDetection: {
+            ...DEFAULT_PIPELINE_CONFIG.shotDetection,
+            step: 15 // Sample every 15 frames for faster processing
+          },
+          faceTracking: {
+            ...DEFAULT_PIPELINE_CONFIG.faceTracking,
+            detectorCadence: 15 // Run face detection every 15 frames for faster processing
+          },
+          cameraPath: state.virtualCameraParams
+        }
+
+        // Add timeout to prevent hanging
+        const analysisPromise = runAnalysisPass(
+          state.htmlVideoElement,
+          pipelineConfig,
+          (progress) => {
+            console.log(`🎬 [ANALYSIS PROGRESS] ${progress.stage}: ${progress.stageProgress.toFixed(1)}% (overall: ${progress.overallProgress.toFixed(1)}%)`)
+            dispatch({ type: 'SET_ANALYSIS_PROGRESS', progress })
+          }
+        )
+
+        const timeoutPromise = new Promise<never>((_, reject) => {
+          setTimeout(() => reject(new Error('Analysis timeout after 5 minutes')), 5 * 60 * 1000)
+        })
+
+        const result = await Promise.race([analysisPromise, timeoutPromise])
+        dispatch({ type: 'SET_ANALYSIS_RESULT', result })
+        dispatch({ type: 'SET_VIRTUAL_CAMERA_PATH', path: result.cameraPath })
+      } catch (error) {
+        console.error('🎬 [ANALYSIS ERROR]', error)
+        const errorMessage = error instanceof Error ? error.message : 'Analysis failed'
+        dispatch({ type: 'SET_ANALYSIS_ERROR', error: errorMessage })
+      } finally {
+        dispatch({ type: 'SET_ANALYSIS_RUNNING', running: false })
+        dispatch({ type: 'SET_ANALYSIS_PROGRESS', progress: null })
+      }
+    }, [state.htmlVideoElement, state.virtualCameraParams]),
+    runRenderPass: useCallback(async () => {
+      if (!state.virtualCameraPath || !state.analysisResult || !state.htmlVideoElement) return
+
+      dispatch({ type: 'SET_RENDER_RUNNING', running: true })
+      try {
+        const renderInput = {
+          sourceVideo: state.htmlVideoElement.src || state.video?.src || '',
+          cropPath: state.virtualCameraPath,
+          config: {
+            ...DEFAULT_PIPELINE_CONFIG.rendering,
+            outputTarget: { width: 1080, height: 1920, fps: 30 },
+            backgroundFill: 'blur' as const
+          },
+          metadata: state.analysisResult.metadata
+        }
+
+        await runRenderPass(renderInput)
+      } finally {
+        dispatch({ type: 'SET_RENDER_RUNNING', running: false })
+      }
+    }, [state.virtualCameraPath, state.analysisResult, state.htmlVideoElement]),
+    runQAAnalysis: useCallback(async () => {
+      if (!state.virtualCameraPath) return
+
+      dispatch({ type: 'SET_QA_ANALYZING', analyzing: true })
+      try {
+        const metrics = analyzePathQA(
+          state.virtualCameraPath,
+          [], // face detections - would come from analysis result
+          [], // shot boundaries - would come from analysis result
+          { maxPanVelocityThreshold: 0.12, maxJitterThreshold: 0.05, minFaceAreaRatio: 0.3, maxCutoffsThreshold: 0 }
+        )
+        dispatch({ type: 'SET_QA_METRICS', metrics })
+      } finally {
+        dispatch({ type: 'SET_QA_ANALYZING', analyzing: false })
+      }
+    }, [state.virtualCameraPath]),
+    toggleDebugOverlay: useCallback(() => {
+      dispatch({ type: 'TOGGLE_DEBUG_OVERLAY' })
+    }, [])
   }
 }

@@ -1,3 +1,5 @@
+'use client'
+
 import { ReactElement, ReactNode, createContext, useContext } from 'react'
 
 const FlagsContext = createContext<{ [key: string]: boolean } | undefined>(

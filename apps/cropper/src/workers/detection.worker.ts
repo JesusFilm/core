@@ -2,8 +2,9 @@
 
 declare const self: DedicatedWorkerGlobalScope
 
-// Import MediaPipe Tasks Vision
-import { FaceDetector, ObjectDetector, FilesetResolver } from '@mediapipe/tasks-vision'
+// Import MediaPipe Tasks Vision and FaceDetectorManager
+import { ObjectDetector, FilesetResolver } from '@mediapipe/tasks-vision'
+import { FaceDetectorManager } from '../../../../libs/shared/video-processing/src/lib/analysis/detector'
 import { TrackManager } from '../lib/face-tracking'
 
 type StartDetectionMessage = {
@@ -25,7 +26,9 @@ type ProcessFrameMessage = {
 
 type TerminateMessage = { type: 'terminate' }
 
-type IncomingMessage = StartDetectionMessage | ProcessFrameMessage | TerminateMessage
+type GetDetectorInfoMessage = { type: 'getDetectorInfo' }
+
+type IncomingMessage = StartDetectionMessage | ProcessFrameMessage | TerminateMessage | GetDetectorInfoMessage
 
 type DetectionChunk = {
   type: 'chunk'
@@ -54,10 +57,16 @@ type DetectionError = {
   error: string
 }
 
-type OutgoingMessage = DetectionChunk | DetectionComplete | DetectionError
+type DetectorInfo = {
+  type: 'detectorInfo'
+  backend: string
+  capabilities: any
+}
+
+type OutgoingMessage = DetectionChunk | DetectionComplete | DetectionError | DetectorInfo
 
 let timer: number | undefined
-let faceDetector: FaceDetector | null = null
+let faceDetectorManager: FaceDetectorManager | null = null
 let objectDetector: ObjectDetector | null = null
 let trackManager: TrackManager | null = null
 const detections: DetectionChunk['result'][] = []
@@ -67,9 +76,9 @@ const cleanup = () => {
     clearInterval(timer)
     timer = undefined
   }
-  if (faceDetector) {
-    faceDetector.close()
-    faceDetector = null
+  if (faceDetectorManager) {
+    faceDetectorManager.close()
+    faceDetectorManager = null
   }
   if (objectDetector) {
     objectDetector.close()
@@ -90,27 +99,21 @@ const sendError = (error: string) => {
   sendMessage({ type: 'error', error })
 }
 
-const initializeFaceDetector = async (): Promise<FaceDetector | null> => {
+const initializeFaceDetector = async (): Promise<{ manager: FaceDetectorManager, backend: string } | null> => {
   try {
-    const vision = await FilesetResolver.forVisionTasks(
-      'https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.0/wasm'
-    )
+    const manager = new FaceDetectorManager()
 
-    const faceDetector = await FaceDetector.createFromOptions(vision, {
-      baseOptions: {
-        modelAssetPath: 'https://storage.googleapis.com/mediapipe-models/face_detector/blaze_face_short_range/float16/1/blaze_face_short_range.tflite',
-        delegate: 'CPU'
-      },
-      // Sets the minimum confidence score required for a face detection to be considered valid
+    // Initialize with GPU preference, will fallback to WASM SIMD/threads, then WASM, then CPU
+    const backend = await manager.initialize({
+      prefer: 'webgl', // Prefer WebGL GPU acceleration
       minDetectionConfidence: 0.5,
-      // Controls how aggressively the detector suppresses overlapping detections
-      minSuppressionThreshold: 0.5,
-      maxResults: 5
+      minSuppressionThreshold: 0.5
     })
 
-    return faceDetector
+    console.log(`Face detector initialized with backend: ${backend}`)
+    return { manager, backend }
   } catch (error) {
-    console.error('Failed to initialize MediaPipe FaceDetector:', error)
+    console.error('Failed to initialize FaceDetectorManager:', error)
     return null
   }
 }
@@ -139,21 +142,26 @@ const initializeObjectDetector = async (): Promise<ObjectDetector | null> => {
   }
 }
 
+let currentDetectorBackend: string = 'unknown'
+
 const handleStart = async (message: StartDetectionMessage) => {
   cleanup()
 
   try {
     // Initialize both detectors
-    faceDetector = await initializeFaceDetector()
+    const faceDetectorResult = await initializeFaceDetector()
+    faceDetectorManager = faceDetectorResult?.manager || null
+    currentDetectorBackend = faceDetectorResult?.backend || 'unknown'
+
     objectDetector = await initializeObjectDetector()
 
-    if (!faceDetector && !objectDetector) {
+    if (!faceDetectorManager && !objectDetector) {
       sendError('MediaPipe initialization failed - no detectors available')
       return
     }
 
     const initializedDetectors = []
-    if (faceDetector) initializedDetectors.push('FaceDetector')
+    if (faceDetectorManager) initializedDetectors.push(`FaceDetector (${currentDetectorBackend})`)
     if (objectDetector) initializedDetectors.push('ObjectDetector')
 
     // Initialize tracking manager
@@ -268,8 +276,23 @@ const groupNearbyDetections = (rawDetections: Array<{
   }>
 }
 
+const handleGetDetectorInfo = async () => {
+  try {
+    const capabilities = await FaceDetectorManager.getCapabilities()
+    const info: DetectorInfo = {
+      type: 'detectorInfo',
+      backend: currentDetectorBackend,
+      capabilities
+    }
+    sendMessage(info)
+  } catch (error) {
+    console.error('Failed to get detector info:', error)
+    sendError(`Failed to get detector info: ${error}`)
+  }
+}
+
 const handleProcessFrame = async (message: ProcessFrameMessage) => {
-  if (!faceDetector && !objectDetector) {
+  if (!faceDetectorManager && !objectDetector) {
     console.warn('No detectors initialized, skipping frame processing')
     return
   }
@@ -304,9 +327,9 @@ const handleProcessFrame = async (message: ProcessFrameMessage) => {
     }> = []
 
     // Priority 1: Try face detection
-    if (faceDetector) {
+    if (faceDetectorManager) {
       try {
-        const faceResult = faceDetector.detect(imageData)
+        const faceResult = faceDetectorManager.detect(imageData)
         if (faceResult.detections && faceResult.detections.length > 0) {
           for (const detection of faceResult.detections) {
             const confidence = detection.categories[0]?.score || 0
@@ -435,6 +458,11 @@ self.onmessage = (event: MessageEvent<IncomingMessage>) => {
 
   if (data.type === 'processFrame') {
     handleProcessFrame(data)
+    return
+  }
+
+  if (data.type === 'getDetectorInfo') {
+    handleGetDetectorInfo()
     return
   }
 

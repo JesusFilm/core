@@ -40,6 +40,8 @@
         "libs/shared/ui/src/components/*",
         "libs/shared/ui/src/libs/*"
       ],
+      "@core/shared/video-processing": ["libs/shared/video-processing/src"],
+      "@core/shared/video-processing/*": ["libs/shared/video-processing/src/*"],
       "@core/yoga/*": ["libs/yoga/src/*"]
     }
   },

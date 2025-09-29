@@ -5,6 +5,7 @@ export interface DetectionCallbacks {
   onComplete?: (results: DetectionResult[]) => void
   onError?: (error: string) => void
   onProgress?: (progress: { current: number; total: number; percentage: number }) => void
+  onDetectorInfo?: (backend: string, capabilities: any) => void
 }
 
 export interface DetectionOptions {
@@ -23,6 +24,32 @@ export class DetectionWorkerController {
   private ctx?: OffscreenCanvasRenderingContext2D
   private isExtractionPaused: boolean = false
   private extractionTimeoutId?: number
+
+  async getDetectorInfo(): Promise<{ backend: string; capabilities: any } | null> {
+    return new Promise((resolve) => {
+      if (!this.worker) {
+        resolve(null)
+        return
+      }
+
+      const timeout = setTimeout(() => resolve(null), 5000) // 5s timeout
+
+      const originalOnMessage = this.worker.onmessage
+      this.worker.onmessage = (event: MessageEvent<DetectionWorkerMessage>) => {
+        const message = event.data
+        if (message.type === 'detectorInfo') {
+          clearTimeout(timeout)
+          this.worker!.onmessage = originalOnMessage
+          resolve({ backend: message.backend, capabilities: message.capabilities })
+        } else {
+          // Call original handler for other messages
+          originalOnMessage?.call(this.worker, event)
+        }
+      }
+
+      this.worker.postMessage({ type: 'getDetectorInfo' })
+    })
+  }
 
   start(duration: number, callbacks: DetectionCallbacks, options: DetectionOptions = {}) {
     if (typeof window === 'undefined') {
@@ -52,6 +79,11 @@ export class DetectionWorkerController {
       if (message.type === 'complete') {
         this.results = message.results
         callbacks.onComplete?.(message.results)
+        return
+      }
+
+      if (message.type === 'detectorInfo') {
+        callbacks.onDetectorInfo?.(message.backend, message.capabilities)
         return
       }
 

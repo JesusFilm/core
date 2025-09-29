@@ -18,6 +18,7 @@ const FALLBACK_DEBUG_HLS_SRC = process.env.NEXT_PUBLIC_DEBUG_HLS_SRC ?? ''
 export default function Page() {
   const {
     video,
+    htmlVideoElement,
     path,
     keyframes,
     currentCrop,
@@ -32,6 +33,7 @@ export default function Page() {
     sceneChangeDetectionEnabled,
     lastSceneChangeLevel,
     setVideo,
+    setHtmlVideoElement,
     setTime,
     addKeyframeAt,
     updateKeyframe,
@@ -44,7 +46,22 @@ export default function Page() {
     requestSceneDetection,
     pauseSceneDetection,
     resumeSceneDetection,
-    toggleSceneChangeDetection
+    toggleSceneChangeDetection,
+    // Auto-crop fields
+    virtualCameraParams,
+    virtualCameraPath,
+    qaMetrics,
+    isAnalysisRunning,
+    isRenderRunning,
+    isQAAnalyzing,
+    analysisProgress,
+    analysisError,
+    debugOverlayEnabled,
+    setVirtualCameraParams,
+    runAnalysisPass,
+    runRenderPass,
+    runQAAnalysis,
+    toggleDebugOverlay
   } = useCropper()
 
   // Video element ref for thumbnail generation
@@ -79,7 +96,8 @@ export default function Page() {
   const bindVideo = useCallback((element: HTMLVideoElement | null) => {
     videoElementRef.current = element
     bind(element)
-  }, [bind])
+    setHtmlVideoElement(element)
+  }, [bind, setHtmlVideoElement])
 
   const {
     presets,
@@ -254,6 +272,21 @@ export default function Page() {
             detectionTimeWindow={detectionTimeWindow}
             onFocusChangeThresholdChange={setFocusChangeThreshold}
             onDetectionTimeWindowChange={setDetectionTimeWindow}
+            // Auto-crop props
+            virtualCameraParams={virtualCameraParams}
+            onVirtualCameraParamsChange={setVirtualCameraParams}
+            virtualCameraPath={virtualCameraPath || undefined}
+            qaMetrics={qaMetrics || undefined}
+            onRunQAAnalysis={runQAAnalysis}
+            isQAAnalyzing={isQAAnalyzing}
+            debugOverlayEnabled={debugOverlayEnabled}
+            onToggleDebugOverlay={toggleDebugOverlay}
+            onRunAnalysisPass={runAnalysisPass}
+            onRunRenderPass={runRenderPass}
+            isAnalysisRunning={isAnalysisRunning}
+            isRenderRunning={isRenderRunning}
+            analysisProgress={analysisProgress}
+            analysisError={analysisError}
           />
 
           {/* Detection Log */}

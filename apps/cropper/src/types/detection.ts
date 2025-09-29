@@ -32,6 +32,12 @@ export interface DetectionStreamError {
   error: string
 }
 
+export interface DetectorInfoMessage {
+  type: 'detectorInfo'
+  backend: string
+  capabilities: any
+}
+
 
 // Scene Change Detection Types
 export type SceneChangeLevel = 'stable' | 'moderate' | 'significant' | 'transition'
@@ -98,3 +104,4 @@ export type DetectionWorkerMessage =
   | DetectionStreamChunk
   | DetectionStreamComplete
   | DetectionStreamError
+  | DetectorInfoMessage

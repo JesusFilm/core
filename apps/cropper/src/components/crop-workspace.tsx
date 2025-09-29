@@ -1,7 +1,7 @@
 'use client'
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { ChevronDown } from 'lucide-react'
+import { ChevronDown, Settings, Eye, TrendingUp } from 'lucide-react'
 import { Pause as PauseIcon, Plus, Zap } from 'lucide-react'
 import type { PointerEvent as ReactPointerEvent } from 'react'
 import type {
@@ -16,6 +16,16 @@ import { formatTime } from '../lib/video-utils'
 import { Button } from './ui/button'
 import { Slider } from './ui/slider'
 import { SceneChangeIndicator } from './scene-change-indicator'
+import { VirtualCameraParameterControls } from './virtual-camera-parameter-controls'
+import { PathOverrideControls } from './path-override-controls'
+import { DebugOverlay } from './debug-overlay'
+import { QAMetricsPanel } from './qa-metrics-panel'
+import type {
+  VirtualCameraParameters,
+  VirtualCameraPathWithOverrides,
+  PathQAMetrics,
+  VirtualCameraKeyframe
+} from '@core/shared/video-processing'
 
 // Custom Play Triangle SVG Component
 const PlayTriangle = ({ className }: { className?: string }) => (
@@ -62,6 +72,22 @@ interface CropWorkspaceProps {
   detectionTimeWindow?: number
   onFocusChangeThresholdChange?: (value: number) => void
   onDetectionTimeWindowChange?: (value: number) => void
+  // Auto-crop pipeline props
+  virtualCameraParams?: VirtualCameraParameters
+  onVirtualCameraParamsChange?: (params: VirtualCameraParameters) => void
+  virtualCameraPath?: VirtualCameraPathWithOverrides
+  onVirtualCameraPathChange?: (path: VirtualCameraPathWithOverrides) => void
+  qaMetrics?: PathQAMetrics
+  onRunQAAnalysis?: () => void
+  isQAAnalyzing?: boolean
+  debugOverlayEnabled?: boolean
+  onToggleDebugOverlay?: () => void
+  onRunAnalysisPass?: () => void
+  onRunRenderPass?: () => void
+  isAnalysisRunning?: boolean
+  isRenderRunning?: boolean
+  analysisProgress?: { stage: string; stageProgress: number; overallProgress: number; eta?: number } | null
+  analysisError?: string | null
 }
 
 export function CropWorkspace({
@@ -94,10 +120,28 @@ export function CropWorkspace({
   focusChangeThreshold = 0.005,
   detectionTimeWindow = 0.3,
   onFocusChangeThresholdChange,
-  onDetectionTimeWindowChange
+  onDetectionTimeWindowChange,
+  // Auto-crop pipeline props
+  virtualCameraParams,
+  onVirtualCameraParamsChange,
+  virtualCameraPath,
+  onVirtualCameraPathChange,
+  qaMetrics,
+  onRunQAAnalysis,
+  isQAAnalyzing = false,
+  debugOverlayEnabled = false,
+  onToggleDebugOverlay,
+  onRunAnalysisPass,
+  onRunRenderPass,
+  isAnalysisRunning = false,
+  isRenderRunning = false,
+  analysisProgress,
+  analysisError
 }: CropWorkspaceProps) {
   const [isSettingsExpanded, setIsSettingsExpanded] = useState(false)
   const [showSceneIndicator, setShowSceneIndicator] = useState(false)
+  const [showAutoCropControls, setShowAutoCropControls] = useState(false)
+  const [qaPanelCollapsed, setQaPanelCollapsed] = useState(true)
   const videoRef = useRef<HTMLVideoElement | null>(null)
   const videoInitializedRef = useRef(false)
 
@@ -720,6 +764,190 @@ export function CropWorkspace({
       )}
 
       {/* Preprocessing Dialog rendered via trigger above */}
+
+      {/* Auto-Crop Pipeline Controls */}
+      {true && (
+        <div className="mt-6 rounded-lg overflow-hidden">
+          <button
+            className="w-full p-4 flex items-center justify-between hover:bg-stone-800/50 transition-colors cursor-pointer bg-stone-900/30"
+            onClick={() => setShowAutoCropControls(!showAutoCropControls)}
+          >
+            <h3 className="text-sm font-medium text-stone-300 flex items-center gap-2">
+              <Settings className="h-4 w-4" />
+              Auto-Crop Controls
+              {virtualCameraPath && (
+                <span className="text-xs text-muted-foreground">
+                  ({virtualCameraPath.overrides.length} overrides)
+                </span>
+              )}
+            </h3>
+            <div className={`transform transition-transform duration-200 ${showAutoCropControls ? 'rotate-180' : 'rotate-0'}`}>
+              <ChevronDown className="h-4 w-4 text-stone-400" />
+            </div>
+          </button>
+
+          {showAutoCropControls && (
+            <div className="p-4 space-y-4 bg-stone-900/20">
+              {/* Virtual Camera Parameters */}
+              <VirtualCameraParameterControls
+                parameters={virtualCameraParams || {
+                  faceHeightTarget: 0.35,
+                  deadZoneWidth: 0.12,
+                  deadZoneHeight: 0.10,
+                  verticalCenterBias: 0.04,
+                  smoothing: {
+                    centerBeta: 0.15,
+                    zoomBeta: 0.25
+                  },
+                  stabilization: {
+                    maxPanVelocity: 0.12,
+                    maxAcceleration: 0.05
+                  },
+                  lookAheadFrames: 12,
+                  maxUpscale: 1.25
+                }}
+                onParametersChange={onVirtualCameraParamsChange || (() => {})}
+                disabled={!video}
+              />
+
+              {/* Path Overrides */}
+              {true && (
+                <PathOverrideControls
+                  path={virtualCameraPath || {
+                    id: 'debug-path',
+                    videoId: video?.slug || 'debug-video',
+                    keyframes: [],
+                    metadata: {
+                      duration: duration,
+                      sourceDimensions: { width: 1920, height: 1080 },
+                      targetDimensions: { width: 1080, height: 1920 },
+                      createdAt: new Date(),
+                      parameters: virtualCameraParams || {
+                        faceHeightTarget: 0.35,
+                        deadZoneWidth: 0.12,
+                        deadZoneHeight: 0.10,
+                        verticalCenterBias: 0.04,
+                        smoothing: {
+                          centerBeta: 0.15,
+                          zoomBeta: 0.25
+                        },
+                        stabilization: {
+                          maxPanVelocity: 0.12,
+                          maxAcceleration: 0.05
+                        },
+                        lookAheadFrames: 12,
+                        maxUpscale: 1.25
+                      }
+                    },
+                    overrides: [],
+                    version: 1,
+                    hasManualEdits: false
+                  }}
+                  onOverridesChange={(overrides) =>
+                    onVirtualCameraPathChange && virtualCameraPath ? ({
+                      ...virtualCameraPath,
+                      overrides,
+                      hasManualEdits: true,
+                      version: virtualCameraPath.version + 1
+                    }) : undefined
+                  }
+                  currentTime={currentTime}
+                  disabled={!video}
+                />
+              )}
+
+              {/* Debug Overlay Toggle */}
+              {onToggleDebugOverlay && (
+                <div className="flex items-center justify-between p-3 bg-stone-800/30 rounded-md">
+                  <div className="flex items-center gap-2">
+                    <Eye className="h-4 w-4 text-stone-400" />
+                    <span className="text-sm text-stone-300">Debug Overlay</span>
+                  </div>
+                  <label className="flex items-center gap-2 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={debugOverlayEnabled}
+                      onChange={onToggleDebugOverlay}
+                      disabled={!video}
+                      className="rounded border-slate-600 bg-slate-800 text-cyan-400 focus:ring-cyan-400 focus:ring-2"
+                    />
+                  </label>
+                </div>
+              )}
+
+              {/* Auto-Crop Pipeline Actions */}
+              {true && (
+                <div className="space-y-3">
+                  <h4 className="text-sm font-medium text-stone-300">Pipeline Actions</h4>
+
+                  <div className="grid grid-cols-1 gap-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={onRunAnalysisPass}
+                      disabled={!video || isAnalysisRunning}
+                      className={`w-full justify-start relative ${analysisError ? 'border-red-500 text-red-400 hover:bg-red-500/10' : ''}`}
+                      title={analysisError || undefined}
+                    >
+                      <Zap className="h-3 w-3 mr-2" />
+                      {analysisError ? 'Analysis Failed' : isAnalysisRunning ? 'Analyzing...' : 'Run Analysis'}
+                      {analysisProgress && !analysisError && (
+                        <span className="absolute -top-1 -right-1 text-xs font-medium text-cyan-400">
+                          {Math.round(analysisProgress.overallProgress)}%
+                        </span>
+                      )}
+                    </Button>
+
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={onRunRenderPass}
+                      disabled={!video || !virtualCameraPath || isRenderRunning}
+                      className="w-full justify-start"
+                    >
+                      <Zap className="h-3 w-3 mr-2" />
+                      {isRenderRunning ? 'Rendering...' : 'Render Video'}
+                    </Button>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* QA Metrics Panel */}
+      {(qaMetrics || onRunQAAnalysis) && (
+        <div className="mt-6">
+          <QAMetricsPanel
+            path={virtualCameraPath}
+            metrics={qaMetrics}
+            isAnalyzing={isQAAnalyzing}
+            onRunAnalysis={onRunQAAnalysis}
+            collapsed={qaPanelCollapsed}
+            onToggleCollapsed={() => setQaPanelCollapsed(!qaPanelCollapsed)}
+          />
+        </div>
+      )}
+
+      {/* Debug Overlay */}
+      {videoRef.current && (
+        <DebugOverlay
+          videoElement={videoRef.current}
+          detectionResults={detections}
+          sceneChanges={sceneChanges}
+          currentKeyframe={
+            virtualCameraPath?.keyframes.find(k =>
+              Math.abs(k.t - currentTime) < 0.1 // Find keyframe closest to current time
+            )
+          }
+          cameraParams={virtualCameraParams ? {
+            deadZoneWidth: virtualCameraParams.deadZoneWidth,
+            deadZoneHeight: virtualCameraParams.deadZoneHeight
+          } : undefined}
+          enabled={debugOverlayEnabled}
+        />
+      )}
     </section>
   )
 }
