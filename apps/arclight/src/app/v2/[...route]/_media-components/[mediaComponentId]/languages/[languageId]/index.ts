@@ -394,8 +394,7 @@ mediaComponentLanguage.openapi(route, async (c) => {
 
       for (const subtitle of editionSubtitles) {
         const languageInfo = languageMap.get(subtitle.languageId)
-        if (!languageInfo || !languageInfo.name[0])
-          continue
+        if (!languageInfo || !languageInfo.name[0]) continue
         subtitleUrls.vtt.push({
           languageId: Number(subtitle.languageId),
           languageName: languageInfo.name[0].value,
