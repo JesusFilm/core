@@ -29,7 +29,6 @@ describe('multiselectBlockCreate', () => {
         parentOrder
         min
         max
-        submitLabel
       }
     }
   `)
@@ -41,9 +40,7 @@ describe('multiselectBlockCreate', () => {
 
   const input = {
     journeyId: 'journeyId',
-    parentBlockId: 'parentId',
-    label: 'Question label',
-    submitLabel: 'Submit'
+    parentBlockId: 'parentId'
   }
 
   beforeEach(() => {
@@ -57,8 +54,7 @@ describe('multiselectBlockCreate', () => {
       journeyId: 'journeyId',
       parentBlockId: 'parentId',
       min: null,
-      max: null,
-      submitLabel: input.submitLabel
+      max: null
     } as any)
   })
 
@@ -76,7 +72,6 @@ describe('multiselectBlockCreate', () => {
           parentBlockId: 'parentId',
           min: null,
           max: null,
-          submitLabel: input.submitLabel,
           journey: { id: 'journeyId' }
         }),
         findFirst: jest.fn().mockResolvedValue(null),
@@ -114,7 +109,6 @@ describe('multiselectBlockCreate', () => {
           id: 'blockId',
           journeyId: 'journeyId',
           parentBlockId: 'parentId',
-          submitLabel: input.submitLabel,
           min: null,
           max: null
         })
@@ -155,7 +149,6 @@ describe('multiselectBlockCreate', () => {
           parentBlockId: 'parentId',
           min: null,
           max: null,
-          submitLabel: 'Submit',
           journey: { id: 'journeyId' }
         })),
         findFirst: jest.fn().mockResolvedValue(null),
@@ -173,9 +166,7 @@ describe('multiselectBlockCreate', () => {
 
     const minimalInput = {
       journeyId: 'journeyId',
-      parentBlockId: 'parentId',
-      label: 'Question label',
-      submitLabel: 'Submit'
+      parentBlockId: 'parentId'
       // min/max omitted on purpose
     }
 
