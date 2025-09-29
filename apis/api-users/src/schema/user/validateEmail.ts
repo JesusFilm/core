@@ -16,7 +16,10 @@ export async function validateEmail(
   })
 
   // Special handling for @example.com emails with EXAMPLE_EMAIL_TOKEN
-  if (user?.email?.endsWith('@example.com') && token === process.env.EXAMPLE_EMAIL_TOKEN) {
+  if (
+    user?.email?.endsWith('@example.com') &&
+    token === process.env.EXAMPLE_EMAIL_TOKEN
+  ) {
     await prisma.user.update({
       where: { userId },
       data: { emailVerified: true }
