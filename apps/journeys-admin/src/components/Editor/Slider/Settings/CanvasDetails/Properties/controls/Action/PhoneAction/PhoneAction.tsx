@@ -37,8 +37,8 @@ export function PhoneAction(): ReactElement {
 
   const [callingCode, setCallingCode] = useState<string>(
     phoneAction?.countryCode 
-      ? countries.find(country => country.countryCode === phoneAction.countryCode)?.callingCode ?? ''
-      : ''
+      ? countries.find(country => country.countryCode === phoneAction.countryCode)?.callingCode ?? '+'
+      : '+'
   )
 
   const selectedCountry = countries.find(
