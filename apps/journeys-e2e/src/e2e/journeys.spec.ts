@@ -4,7 +4,7 @@ import { expect, test } from '@playwright/test'
 Test a journey by following the journey's selection buttons
 */
 test('journeys', async ({ page }) => {
-  await page.goto('/')
+  await page.goto('/', { timeout: 60000, waitUntil: 'load' })
   // fact or fiction page - click on on fact or fiction
   await page.click('a[href="/fact-or-fiction"]')
   // test that user actually navigated to the choosen journey

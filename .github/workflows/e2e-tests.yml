@@ -113,6 +113,20 @@ jobs:
 
           # Update the .vercel-url file with the consistent URL
           echo "https://$CONSISTENT_ALIAS" > apps/${{ matrix.app }}/.vercel-url
+      - name: Wait for deployment to be ready
+        run: |
+          DEPLOYMENT_URL=$(cat apps/${{ matrix.app }}/.vercel-url)
+          echo "Waiting for deployment to be ready at: $DEPLOYMENT_URL"
+          for i in {1..30}; do
+            if curl -sSf "$DEPLOYMENT_URL" > /dev/null; then
+              echo "Deployment is ready."
+              exit 0
+            fi
+            echo "Waiting for deployment to be ready... (attempt $i/30)"
+            sleep 10
+          done
+          echo "Deployment not ready after 5 minutes."
+          exit 1
       - name: Generate deployment URL
         id: deployment-url
         env:

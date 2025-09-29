@@ -22,6 +22,8 @@ export default defineConfig({
   workers: process.env.CI ? 8 : 1,
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
   reporter: 'html',
+  /* Global timeout for all tests */
+  timeout: 60000, // 60 seconds timeout for all tests
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
     /* Use URL that has been set part of app-deploy.yml */
@@ -29,6 +31,9 @@ export default defineConfig({
       process.env.JOURNEYS_DAILY_E2E ??
       process.env.DEPLOYMENT_URL ??
       'http://localhost:4100',
+
+    /* Navigation timeout for slow deployments */
+    navigationTimeout: 60000, // 60 seconds for navigation
 
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     trace: 'on-first-retry',
