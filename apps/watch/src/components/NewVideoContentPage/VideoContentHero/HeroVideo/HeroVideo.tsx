@@ -1,6 +1,12 @@
 import clsx from 'clsx'
 import last from 'lodash/last'
-import { ReactElement, useCallback, useEffect, useRef, useState } from 'react'
+import {
+  ReactElement,
+  useCallback,
+  useEffect,
+  useRef,
+  useState
+} from 'react'
 import videojs from 'video.js'
 import Player from 'video.js/dist/types/player'
 import 'video.js/dist/video-js.css'
@@ -36,7 +42,7 @@ export function HeroVideo({
 }: HeroVideoProps): ReactElement {
   const { variant, ...video } = useVideo()
   const {
-    state: { mute },
+    state: { mute, progress },
     dispatch: dispatchPlayer
   } = usePlayer()
   const {
@@ -51,6 +57,86 @@ export function HeroVideo({
   const playerRef = useRef<
     (Player & { textTracks?: () => TextTrackList }) | null
   >(null)
+  const fadeIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null)
+  const fadeTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const muxInsertFadeTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(
+    null
+  )
+  const originalVolumeRef = useRef<number | null>(null)
+  const shouldRestoreVolumeRef = useRef(false)
+  const [isFadingOut, setIsFadingOut] = useState(false)
+
+  const clearFadeTimers = useCallback(() => {
+    if (fadeIntervalRef.current != null) {
+      clearInterval(fadeIntervalRef.current)
+      fadeIntervalRef.current = null
+    }
+    if (fadeTimeoutRef.current != null) {
+      clearTimeout(fadeTimeoutRef.current)
+      fadeTimeoutRef.current = null
+    }
+    if (muxInsertFadeTimeoutRef.current != null) {
+      clearTimeout(muxInsertFadeTimeoutRef.current)
+      muxInsertFadeTimeoutRef.current = null
+    }
+  }, [])
+
+  useEffect(() => {
+    return () => {
+      clearFadeTimers()
+    }
+  }, [clearFadeTimers])
+
+  const startFadeOut = useCallback(() => {
+    const player = playerRef.current
+    if (player == null || isFadingOut) return
+
+    setIsFadingOut(true)
+    clearFadeTimers()
+
+    if (!player.muted()) {
+      const startingVolume = player.volume()
+      if (startingVolume > 0) {
+        originalVolumeRef.current = startingVolume
+        shouldRestoreVolumeRef.current = true
+        const fadeDurationMs = 800
+        const steps = 8
+        const stepInterval = fadeDurationMs / steps
+        let currentStep = 0
+
+        fadeIntervalRef.current = setInterval(() => {
+          currentStep += 1
+          const activePlayer = playerRef.current
+          if (activePlayer == null || activePlayer !== player) {
+            if (fadeIntervalRef.current != null) {
+              clearInterval(fadeIntervalRef.current)
+              fadeIntervalRef.current = null
+            }
+            return
+          }
+
+          const progressRatio = Math.min(currentStep / steps, 1)
+          const nextVolume = Math.max(
+            0,
+            startingVolume * (1 - progressRatio)
+          )
+          activePlayer.volume(nextVolume)
+
+          if (currentStep >= steps && fadeIntervalRef.current != null) {
+            clearInterval(fadeIntervalRef.current)
+            fadeIntervalRef.current = null
+          }
+        }, stepInterval)
+      }
+    } else {
+      shouldRestoreVolumeRef.current = false
+      originalVolumeRef.current = null
+    }
+
+    fadeTimeoutRef.current = setTimeout(() => {
+      clearFadeTimers()
+    }, 1500)
+  }, [clearFadeTimers, isFadingOut])
 
   const pauseVideoOnScrollAway = useCallback((): void => {
     const scrollY = window.scrollY
@@ -80,6 +166,9 @@ export function HeroVideo({
       playerRef.current.dispose()
       playerRef.current = null
       setPlayerReady(false)
+      setIsFadingOut(false)
+      shouldRestoreVolumeRef.current = false
+      originalVolumeRef.current = null
     }
 
     // Create Mux metadata for video analytics
@@ -118,6 +207,14 @@ export function HeroVideo({
 
     player.ready(() => {
       setPlayerReady(true)
+      if (
+        shouldRestoreVolumeRef.current &&
+        originalVolumeRef.current != null &&
+        !player.muted()
+      ) {
+        player.volume(originalVolumeRef.current)
+      }
+      shouldRestoreVolumeRef.current = false
     })
 
     return () => {
@@ -149,7 +246,91 @@ export function HeroVideo({
     return () => {
       clearTimeout(timer)
     }
-  }, [currentMuxInsert?.duration, currentMuxInsert?.id, playerReady, onMuxInsertComplete])
+  }, [
+    currentMuxInsert?.duration,
+    currentMuxInsert?.id,
+    playerReady,
+    onMuxInsertComplete
+  ])
+
+  useEffect(() => {
+    if (!playerReady || playerRef.current == null) return
+
+    const player = playerRef.current
+
+    const handlePlaying = () => {
+      clearFadeTimers()
+      setIsFadingOut(false)
+      if (
+        shouldRestoreVolumeRef.current &&
+        originalVolumeRef.current != null &&
+        !player.muted()
+      ) {
+        player.volume(originalVolumeRef.current)
+      }
+      shouldRestoreVolumeRef.current = false
+    }
+
+    player.on('playing', handlePlaying)
+
+    return () => {
+      player.off('playing', handlePlaying)
+    }
+  }, [playerReady, clearFadeTimers])
+
+  useEffect(() => {
+    if (!playerReady || playerRef.current == null) return
+
+    const player = playerRef.current
+
+    const triggerFadeWhenEnding = () => {
+      const duration = player.duration()
+      const currentTime = player.currentTime()
+      if (
+        Number.isFinite(duration) &&
+        duration > 0 &&
+        Number.isFinite(currentTime) &&
+        duration - currentTime <= 1.5
+      ) {
+        startFadeOut()
+      }
+    }
+
+    player.on('timeupdate', triggerFadeWhenEnding)
+    player.on('ended', startFadeOut)
+
+    return () => {
+      player.off('timeupdate', triggerFadeWhenEnding)
+      player.off('ended', startFadeOut)
+    }
+  }, [playerReady, startFadeOut])
+
+  useEffect(() => {
+    if (progress >= 95 && playerRef.current != null) {
+      startFadeOut()
+    }
+  }, [progress, startFadeOut])
+
+  useEffect(() => {
+    if (!playerReady || playerRef.current == null) return
+    if (!currentMuxInsert?.duration) return
+
+    if (currentMuxInsert.duration <= 1.2) return
+
+    const msUntilFade = currentMuxInsert.duration * 1000 - 1200
+    if (msUntilFade <= 0) return
+
+    muxInsertFadeTimeoutRef.current = setTimeout(() => {
+      startFadeOut()
+    }, msUntilFade)
+
+    return () => {
+      if (muxInsertFadeTimeoutRef.current != null) {
+        clearTimeout(muxInsertFadeTimeoutRef.current)
+        muxInsertFadeTimeoutRef.current = null
+      }
+    }
+  }, [currentMuxInsert?.duration, playerReady, startFadeOut])
 
   const { subtitleUpdate } = useSubtitleUpdate()
 
@@ -219,6 +400,12 @@ export function HeroVideo({
             onClick={isPreview ? handlePreviewClick : undefined}
           />
         )}
+        <div
+          className={clsx(
+            'absolute inset-0 z-[2] pointer-events-none bg-black transition-opacity duration-700 ease-out',
+            isFadingOut ? 'opacity-80' : 'opacity-0'
+          )}
+        />
         {collapsed && (
           <div
             className="absolute inset-0 z-1 pointer-events-none opacity-70"
