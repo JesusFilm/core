@@ -492,7 +492,7 @@ describe('playlistItem', () => {
             playlistId: 'playlistId',
             id: { in: ['item1', 'item2', 'item3'] }
           },
-          data: { order: null }
+          data: { order: undefined }
         })
         expect(prismaMock.playlistItem.update).toHaveBeenCalledWith({
           where: { id: 'item1' },

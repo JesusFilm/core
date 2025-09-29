@@ -80,7 +80,8 @@ const journey: Journey = {
   journeyCustomizationFields: [],
   fromTemplateId: null,
   socialNodeX: null,
-  socialNodeY: null
+  socialNodeY: null,
+  showAssistant: null
 }
 
 const block: TreeBlock<CardBlock> = {
