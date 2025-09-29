@@ -36,3 +36,32 @@ export const blockActionPhoneUpdateMock: MockedResponse<
     }
   }
 }
+
+export const blockActionPhoneUpdateMockCA: MockedResponse<
+  BlockActionPhoneUpdate,
+  BlockActionPhoneUpdateVariables
+> = {
+  request: {
+    query: BLOCK_ACTION_PHONE_UPDATE,
+    variables: {
+      id: 'button2.id',
+      input: {
+        phone: '+19876543210',
+        countryCode: 'CA',
+        contactAction: ContactActionType.call
+      }
+    }
+  },
+  result: {
+    data: {
+      blockUpdatePhoneAction: {
+        __typename: 'PhoneAction',
+        parentBlockId: 'button2.id',
+        gtmEventName: null,
+        phone: '+19876543210',
+        countryCode: 'CA',
+        contactAction: ContactActionType.call
+      }
+    }
+  }
+}

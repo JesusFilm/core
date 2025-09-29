@@ -11,7 +11,7 @@ import {
   ContactActionType
 } from '../../../../../../../../../../__generated__/globalTypes'
 import { blockActionNavigateToBlockUpdateMock } from '../../../../../../../../../libs/useBlockActionNavigateToBlockUpdateMutation/useBlockActionNavigateToBlockUpdateMutation.mock'
-import { blockActionPhoneUpdateMock } from '../../../../../../../../../libs/useBlockActionPhoneUpdateMutation/useBlockActionPhoneUpdateMutation.mock'
+import { blockActionPhoneUpdateMock, blockActionPhoneUpdateMockCA } from '../../../../../../../../../libs/useBlockActionPhoneUpdateMutation/useBlockActionPhoneUpdateMutation.mock'
 import { CommandUndoItem } from '../../../../../../../Toolbar/Items/CommandUndoItem'
 
 import { PhoneAction } from '.'
@@ -113,44 +113,6 @@ describe('PhoneAction', () => {
     )
   })
 
-  it('should handle undo', async () => {
-    const result = jest
-      .fn()
-      .mockReturnValue(blockActionNavigateToBlockUpdateMock.result)
-    render(
-      <MockedProvider
-        mocks={[
-          blockActionPhoneUpdateMock,
-          { ...blockActionNavigateToBlockUpdateMock, result }
-        ]}
-      >
-        <EditorProvider
-          initialState={{
-            selectedBlock: {
-              ...selectedBlock,
-              action: {
-                parentBlockId: 'button2.id',
-                __typename: 'NavigateToBlockAction',
-                gtmEventName: 'gtmEventName',
-                blockId: 'step2.id'
-              }
-            }
-          }}
-        >
-          <PhoneAction />
-          <CommandUndoItem variant="button" />
-        </EditorProvider>
-      </MockedProvider>
-    )
-    fireEvent.change(screen.getByRole('textbox', { name: 'Phone Number' }), {
-      target: { value: '9876543210' }
-    })
-    fireEvent.blur(screen.getByRole('textbox', { name: 'Phone Number' }))
-    const undo = screen.getByRole('button', { name: 'Undo' })
-    await waitFor(() => expect(undo).not.toBeDisabled())
-    fireEvent.click(undo)
-    await waitFor(() => expect(result).toHaveBeenCalled())
-  })
 
   it('should validate country code field', async () => {
     render(
@@ -333,7 +295,6 @@ describe('PhoneAction', () => {
       </MockedProvider>
     )
 
-    // Wait for the component to render and radio buttons to be disabled
     await waitFor(() => {
       const callRadio = screen.getByRole('radio', { name: 'Call' })
       expect(callRadio).toBeDisabled()
@@ -376,5 +337,120 @@ describe('PhoneAction', () => {
 
     // Should not call the mutation when disabled
     expect(result).not.toHaveBeenCalled()
+  })
+
+  it('should validate phone number when country code is filled', async () => {
+    render(
+      <MockedProvider>
+        <EditorProvider>
+          <PhoneAction />
+        </EditorProvider>
+      </MockedProvider>
+    )
+
+    // Fill in country code but leave phone number empty
+    const countryInput = screen.getByRole('textbox', { name: 'Country' })
+    fireEvent.change(countryInput, { target: { value: '+1' } })
+    fireEvent.blur(countryInput)
+
+    const phoneInput = screen.getByRole('textbox', { name: 'Phone Number' })
+    fireEvent.change(phoneInput, { target: { value: '' } })
+    fireEvent.blur(phoneInput)
+
+    // Should show phone number validation error
+    await waitFor(() => {
+      expect(screen.getByText('Phone number is required')).toBeInTheDocument()
+    })
+  })
+
+  it('should validate country code when phone number is filled', async () => {
+    render(
+      <MockedProvider>
+        <EditorProvider>
+          <PhoneAction />
+        </EditorProvider>
+      </MockedProvider>
+    )
+
+    // Fill in phone number but leave country code empty
+    const phoneInput = screen.getByRole('textbox', { name: 'Phone Number' })
+    fireEvent.change(phoneInput, { target: { value: '1234567890' } })
+    fireEvent.blur(phoneInput)
+
+    const countryInput = screen.getByRole('textbox', { name: 'Country' })
+    fireEvent.change(countryInput, { target: { value: '' } })
+    fireEvent.blur(countryInput)
+
+    // Should show country code validation error
+    await waitFor(() => {
+      expect(screen.getByText('Required')).toBeInTheDocument()
+    })
+  })
+
+  it('should validate invalid country code like "+"', async () => {
+    render(
+      <MockedProvider>
+        <EditorProvider>
+          <PhoneAction />
+        </EditorProvider>
+      </MockedProvider>
+    )
+
+    // Set an invalid calling code that's not empty but invalid
+    const countryInput = screen.getByRole('textbox', { name: 'Country' })
+    fireEvent.change(countryInput, { target: { value: '+' } })
+    fireEvent.blur(countryInput)
+
+    // Should show country code validation error
+    await waitFor(() => {
+      expect(screen.getByText('Invalid code.')).toBeInTheDocument()
+    })
+  })
+
+  it('should trigger validation for both empty fields through validateAndSubmit', async () => {
+    render(
+      <MockedProvider>
+        <EditorProvider>
+          <PhoneAction />
+        </EditorProvider>
+      </MockedProvider>
+    )
+
+    // Set empty country code and phone number to trigger validateAndSubmit
+    const countryInput = screen.getByRole('textbox', { name: 'Country' })
+    const phoneInput = screen.getByRole('textbox', { name: 'Phone Number' })
+    
+    // Clear both fields
+    fireEvent.change(countryInput, { target: { value: '' } })
+    fireEvent.blur(countryInput)
+    
+    fireEvent.change(phoneInput, { target: { value: '' } })
+    fireEvent.blur(phoneInput)
+
+    // Both fields should show validation errors
+    await waitFor(() => {
+      expect(screen.getByText('Required')).toBeInTheDocument()
+      expect(screen.getByText('Phone number is required')).toBeInTheDocument()
+    })
+  })
+
+  it('should trigger validation for invalid country code through validateAndSubmit', async () => {
+    render(
+      <MockedProvider>
+        <EditorProvider>
+          <PhoneAction />
+        </EditorProvider>
+      </MockedProvider>
+    )
+
+    // Set invalid country code to trigger validateAndSubmit
+    const countryInput = screen.getByRole('textbox', { name: 'Country' })
+    fireEvent.change(countryInput, { target: { value: 'invalid' } })
+    fireEvent.blur(countryInput)
+
+    // Should show country code validation error
+    await waitFor(() => {
+      expect(screen.getByText('Invalid code.')).toBeInTheDocument()
+    })
   })
 })

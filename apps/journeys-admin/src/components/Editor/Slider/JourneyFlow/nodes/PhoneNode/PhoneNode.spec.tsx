@@ -79,7 +79,7 @@ describe('PhoneNode', () => {
       </ReactFlowProvider>
     )
 
-    expect(screen.getByText('Text or Call')).toBeInTheDocument()
+    expect(screen.getByText('Call')).toBeInTheDocument()
     expect(screen.getByText('+1234567890')).toBeInTheDocument()
   })
 

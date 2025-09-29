@@ -196,7 +196,7 @@ export function transformSteps(
 
     actionBlocks.reduce((actionCount, block, blockIndex) => {
       const actionType = block.action?.__typename
-      const isPositioned = isPositionedAction(actionType)
+      const isPositioned = actionType ? isPositionedAction(actionType) : false
 
       const priorAction = actionCount > 0
       const actionIndex = isPositioned ? actionCount : 0
