@@ -97,6 +97,10 @@ export function CopyToTeamDialog({
   const isOriginalTemplate =
     journey?.template && journey?.fromTemplateId == null
 
+  // this is to prevent publishers from copying and translating non-original templates - which will break Languages screen of journey customization flow
+  const disablePublisherCopyAndTranslate =
+    !isOriginalTemplate && isTemplatesAdmin
+
   const { data: languagesData, loading: languagesLoading } = useLanguagesQuery({
     languageId: '529',
     where: {
@@ -212,6 +216,7 @@ export function CopyToTeamDialog({
             onTranslate={handleFormSubmit}
             title={title}
             loading={loading || isSubmitting}
+            disabled={disablePublisherCopyAndTranslate}
             isTranslation={values.showTranslation || isTranslating}
             submitLabel={submitLabel}
             divider={false}
@@ -270,7 +275,7 @@ export function CopyToTeamDialog({
                 <FormControlLabel
                   control={
                     <Switch
-                      disabled={!isOriginalTemplate && isTemplatesAdmin}
+                      disabled={disablePublisherCopyAndTranslate}
                       checked={values.showTranslation}
                       onChange={(e) =>
                         setFieldValue('showTranslation', e.target.checked)
@@ -284,10 +289,10 @@ export function CopyToTeamDialog({
                   }
                 />
               </Stack>
-              {!isOriginalTemplate && isTemplatesAdmin && (
+              {disablePublisherCopyAndTranslate && (
                 <Typography variant="caption" color="red">
                   {t(
-                    'This is not the original journey template, it is a translation or copy of the original template. If you want to translate this journey - please use the original template.'
+                    'This is not the original journey template, it is a translation or copy of the original template. If you want to translate or copy this journey - please use the original template.'
                   )}
                 </Typography>
               )}
