@@ -16,7 +16,6 @@ import { isActiveBlockOrDescendant, useBlocks } from '../../libs/block'
 import { BlockRenderer, WrappersProps } from '../BlockRenderer'
 import { MultiselectOption } from '../MultiselectOption/MultiselectOption'
 
-import { getPollOptionBorderStyles } from './utils/getPollOptionBorderStyles'
 import { StyledListMultiSelectOption } from '../MultiselectOption'
 
 export const MULTISELECT_SUBMISSION_EVENT_CREATE = gql`
@@ -44,16 +43,25 @@ const StyledListMultiselectQuestion = styled(Box)<BoxProps>(({ theme }) => ({
         borderBottom: 'none'
       },
       '&.MuiButtonGroup-firstButton': {
-        ...getPollOptionBorderStyles(theme),
+        borderColor:
+          theme.palette.mode === 'dark'
+            ? 'rgba(150, 150, 150, 0.2)'
+            : 'rgba(225, 225, 225, 0.3)',
         borderTopLeftRadius: 16,
         borderTopRightRadius: 16
       },
       '&.MuiButtonGroup-middleButton': {
-        ...getPollOptionBorderStyles(theme),
+        borderColor:
+          theme.palette.mode === 'dark'
+            ? 'rgba(150, 150, 150, 0.2)'
+            : 'rgba(225, 225, 225, 0.3)',
         borderRadius: 0
       },
       '&.MuiButtonGroup-lastButton': {
-        ...getPollOptionBorderStyles(theme),
+        borderColor:
+          theme.palette.mode === 'dark'
+            ? 'rgba(150, 150, 150, 0.2)'
+            : 'rgba(225, 225, 225, 0.3)',
         borderBottomLeftRadius: 16,
         borderBottomRightRadius: 16
       }
@@ -142,7 +150,12 @@ export function MultiselectQuestion({
               sx={(theme) => ({
                 borderBottomLeftRadius: 12,
                 borderBottomRightRadius: 12,
-                ...getPollOptionBorderStyles(theme, { important: true })
+                borderColor:
+                  theme.palette.mode === 'dark'
+                    ? 'rgba(150, 150, 150, 0.2) !important'
+                    : 'rgba(225, 225, 225, 0.3) !important',
+                borderWidth: '1px !important',
+                borderStyle: 'solid !important'
               })}
             >
               <Typography variant="body1">{t('Add Option')}</Typography>

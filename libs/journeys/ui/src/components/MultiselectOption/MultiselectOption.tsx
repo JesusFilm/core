@@ -5,7 +5,6 @@ import { useTheme } from '@mui/material/styles'
 
 import type { TreeBlock } from '../../libs/block'
 import { useJourney } from '../../libs/JourneyProvider'
-import { getPollOptionBorderStyles } from '../MultiselectQuestion/utils/getPollOptionBorderStyles'
 
 import { MultiselectOptionFields } from './__generated__/MultiselectOptionFields'
 import CheckSquareContainedIcon from '@core/shared/ui/icons/CheckSquareContained'
@@ -14,8 +13,6 @@ import SquareIcon from '@core/shared/ui/icons/Square'
 export const StyledListMultiselectOption = styled(Button)<ButtonProps>(({
   theme
 }) => {
-  const borderStyles = getPollOptionBorderStyles(theme, { important: true })
-
   return {
     fontFamily: theme.typography.button.fontFamily,
     fontSize: theme.typography.body1.fontSize,
@@ -23,7 +20,8 @@ export const StyledListMultiselectOption = styled(Button)<ButtonProps>(({
     lineHeight: theme.typography.body2.lineHeight,
     textAlign: 'start',
     justifyContent: 'flex-start',
-    borderRadius: 0,
+    borderWidth: `1px !important`,
+    borderStyle: `solid !important`,
     padding: '14px 20px',
     transition: theme.transitions.create(
       ['background-color', 'border-color', 'opacity', 'color'],
@@ -36,7 +34,6 @@ export const StyledListMultiselectOption = styled(Button)<ButtonProps>(({
       theme.palette.mode === 'dark'
         ? 'rgba(29, 29, 29, 1)'
         : 'rgba(255, 255, 255, 1)',
-    ...borderStyles,
 
     // Default state
     opacity: 1,
@@ -47,12 +44,14 @@ export const StyledListMultiselectOption = styled(Button)<ButtonProps>(({
 
     // Hover state
     '&:hover': {
-      ...borderStyles['&:hover'],
-      // Dark mode hover visually matches default per spec
       backgroundColor:
         theme.palette.mode === 'dark'
           ? 'rgba(255,255,255,0.8)'
-          : 'rgba(0, 0, 0, 0.8)'
+          : 'rgba(0, 0, 0, 0.8)',
+      borderColor: (theme) =>
+        theme.palette.mode === 'dark'
+          ? 'rgba(150, 150, 150, 0.5) !important'
+          : 'rgba(255, 255, 255, 0.5) !important'
     },
 
     // Selected state (persistent)
@@ -60,13 +59,15 @@ export const StyledListMultiselectOption = styled(Button)<ButtonProps>(({
       backgroundColor:
         theme.palette.mode === 'dark'
           ? 'rgba(255,255,255,0.9)'
-          : 'rgba(0, 0, 0, 0.9)'
-      // color: theme.palette.mode === 'dark' ? '#1D1D1D' : '#FFFFFF'
+          : 'rgba(0, 0, 0, 0.9)',
+      borderColor: (theme) =>
+        theme.palette.mode === 'dark'
+          ? 'rgba(150, 150, 150, 0.7) !important'
+          : 'rgba(255, 255, 255, 0.7) !important'
     },
 
     // Disabled state
     '&.Mui-disabled': {
-      ...borderStyles['&.disabled'],
       backgroundColor:
         theme.palette.mode === 'dark'
           ? 'rgba(255, 255, 255, 0.4)'
@@ -74,7 +75,11 @@ export const StyledListMultiselectOption = styled(Button)<ButtonProps>(({
       color:
         theme.palette.mode === 'dark'
           ? 'rgba(0, 0, 0, 0.5)'
-          : 'rgba(255, 255, 255, 0.7)'
+          : 'rgba(255, 255, 255, 0.7)',
+      borderColor: (theme) =>
+        theme.palette.mode === 'dark'
+          ? 'rgba(150, 150, 150, 0.15) !important'
+          : 'rgba(255, 255, 255, 0.15) !important'
     }
   }
 })
