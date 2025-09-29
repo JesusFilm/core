@@ -21,7 +21,9 @@ describe.skip('multiselectSubmissionEventCreate', () => {
   })
 
   const MULTISELECT_SUBMISSION_EVENT_CREATE = graphql(`
-    mutation MultiselectSubmissionEventCreate($input: MultiselectSubmissionEventCreateInput!) {
+    mutation MultiselectSubmissionEventCreate(
+      $input: MultiselectSubmissionEventCreateInput!
+    ) {
       multiselectSubmissionEventCreate(input: $input) {
         id
         journeyId
@@ -42,7 +44,9 @@ describe.skip('multiselectSubmissionEventCreate', () => {
 
   beforeEach(() => {
     jest.clearAllMocks()
-    prismaMock.$transaction.mockImplementation(async (cb: any) => await cb(prismaMock as any))
+    prismaMock.$transaction.mockImplementation(
+      async (cb: any) => await cb(prismaMock as any)
+    )
     // validateBlockEvent dependencies
     prismaMock.block.findUnique.mockResolvedValue({
       id: 'blockId',
@@ -100,7 +104,10 @@ describe.skip('multiselectSubmissionEventCreate', () => {
     expect(prismaMock.journeyVisitor.update).toHaveBeenCalledWith(
       expect.objectContaining({
         where: {
-          journeyId_visitorId: { journeyId: 'journeyId', visitorId: 'visitorId' }
+          journeyId_visitorId: {
+            journeyId: 'journeyId',
+            visitorId: 'visitorId'
+          }
         },
         data: { activityCount: 1 }
       })
@@ -119,4 +126,3 @@ describe.skip('multiselectSubmissionEventCreate', () => {
     )
   })
 })
-
