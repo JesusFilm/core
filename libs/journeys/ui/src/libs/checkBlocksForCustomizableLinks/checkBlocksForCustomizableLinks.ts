@@ -25,10 +25,12 @@ export function checkBlocksForCustomizableLinks(blocks: Block[]): boolean {
     )
       continue
 
-    if (block.__typename === 'VideoTriggerBlock')
-      return checkActionBlock(block.triggerAction)
+    if (block.__typename === 'VideoTriggerBlock') {
+      if (checkActionBlock(block.triggerAction)) return true
+      continue
+    }
 
-    return checkActionBlock(block.action)
+    if (checkActionBlock(block.action)) return true
   }
   return false
 }
