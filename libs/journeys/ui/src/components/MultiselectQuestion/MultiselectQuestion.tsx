@@ -5,7 +5,7 @@ import { SimplePaletteColorOptions, styled } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 import { useFormikContext } from 'formik'
 import { useTranslation } from 'next-i18next'
-import { ReactElement, useEffect, useState } from 'react'
+import { ReactElement, useEffect, useMemo, useState } from 'react'
 
 import AddSquare4Icon from '@core/shared/ui/icons/AddSquare4'
 import { adminTheme } from '@core/shared/ui/themes/journeysAdmin/theme'
@@ -86,6 +86,16 @@ export function MultiselectQuestion({
   const { t } = useTranslation('libs-journeys-ui')
   const formik = useFormikContext<{ [key: string]: string[] }>()
 
+  const idToLabel = useMemo(() => {
+    const map = new Map<string, string>()
+    children?.forEach((option: any) => {
+      if (option.__typename === 'MultiselectOptionBlock') {
+        map.set(option.id, option.label as string)
+      }
+    })
+    return map
+  }, [children])
+
   useEffect(() => {
     if (!isActiveBlockOrDescendant(blockId)) setSelectedIds([])
   }, [blockId, blockHistory])
@@ -100,8 +110,9 @@ export function MultiselectQuestion({
             if (limit != null && prev.length >= limit) return prev
             return [...prev, optionId]
           })()
-      // sync with Card Formik so submit button acts like TextResponse
-      formik?.setFieldValue(blockId, next)
+      // sync with Card Formik using labels (not ids) so submissions send labels
+      const nextLabels = next.map((id) => idToLabel.get(id) ?? id)
+      formik?.setFieldValue(blockId, nextLabels)
       return next
     })
   }
