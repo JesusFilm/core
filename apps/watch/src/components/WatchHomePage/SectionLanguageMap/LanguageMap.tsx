@@ -9,12 +9,13 @@ import maplibregl, {
   type MapboxGeoJSONFeature,
   Popup
 } from 'maplibre-gl'
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
 import type { LanguageMapPoint } from '../../../libs/useLanguageMap'
 
 const STYLE_URL = 'https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json'
 const SOURCE_ID = 'languages'
+const MAX_COUNTRY_SELECTION_DISTANCE_KM = 750
 
 type LanguageFeatureCollection = FeatureCollection<
   Point,
@@ -32,6 +33,13 @@ type LanguageFeatureCollection = FeatureCollection<
 interface LanguageMapProps {
   points: LanguageMapPoint[]
   unsupportedMessage?: string
+  onCountrySelect?: (country: { id: string; name?: string } | null) => void
+}
+
+interface CountrySummary {
+  id: string
+  name?: string
+  center: { lng: number; lat: number }
 }
 
 function createFeatureCollection(points: LanguageMapPoint[]): LanguageFeatureCollection {
@@ -97,89 +105,29 @@ function renderPopupContent({
   return container
 }
 
-function getCountryBounds(countryId: string, allPoints: LanguageMapPoint[]): [[number, number], [number, number]] | null {
-  const countryPoints = allPoints.filter(point => point.countryId === countryId)
-  if (countryPoints.length === 0) return null
-
-  let minLng = Infinity
-  let maxLng = -Infinity
-  let minLat = Infinity
-  let maxLat = -Infinity
-
-  for (const point of countryPoints) {
-    minLng = Math.min(minLng, point.longitude)
-    maxLng = Math.max(maxLng, point.longitude)
-    minLat = Math.min(minLat, point.latitude)
-    maxLat = Math.max(maxLat, point.latitude)
-  }
-
-  // Add some padding to the bounds
-  const lngPadding = (maxLng - minLng) * 0.1
-  const latPadding = (maxLat - minLat) * 0.1
-
-  return [
-    [minLng - lngPadding, minLat - latPadding],
-    [maxLng + lngPadding, maxLat + latPadding]
-  ]
+function toRadians(value: number): number {
+  return (value * Math.PI) / 180
 }
 
-function renderCountryPopupContent({
-  countryName,
-  languages
-}: {
-  countryName: string
-  languages: Array<{
-    languageName: string
-    englishName?: string
-    nativeName?: string
-  }>
-}): HTMLElement {
-  const container = document.createElement('div')
-  container.className = 'min-w-[200px] max-w-[300px] rounded-xl bg-slate-950/95 p-4 text-slate-100 shadow-lg'
+function getDistanceInKm(
+  pointA: { lng: number; lat: number },
+  pointB: { lng: number; lat: number }
+): number {
+  const earthRadiusKm = 6371
 
-  const countryTitle = document.createElement('h3')
-  countryTitle.className = 'text-base font-semibold leading-tight mb-2'
-  countryTitle.textContent = countryName
+  const lat1 = toRadians(pointA.lat)
+  const lat2 = toRadians(pointB.lat)
+  const deltaLat = toRadians(pointB.lat - pointA.lat)
+  const deltaLng = toRadians(pointB.lng - pointA.lng)
 
-  const languageCount = document.createElement('p')
-  languageCount.className = 'text-sm text-slate-200/80 mb-3'
-  languageCount.textContent = `${languages.length} language${languages.length !== 1 ? 's' : ''} available`
+  const a =
+    Math.sin(deltaLat / 2) * Math.sin(deltaLat / 2) +
+    Math.cos(lat1) * Math.cos(lat2) *
+      Math.sin(deltaLng / 2) * Math.sin(deltaLng / 2)
 
-  const languageList = document.createElement('div')
-  languageList.className = 'max-h-40 overflow-y-auto'
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))
 
-  languages.slice(0, 10).forEach(language => {
-    const languageItem = document.createElement('div')
-    languageItem.className = 'text-sm mb-2 last:mb-0'
-
-    const languageName = document.createElement('span')
-    languageName.className = 'font-medium text-slate-100'
-    languageName.textContent = language.languageName
-
-    languageItem.appendChild(languageName)
-
-    if (language.nativeName && language.nativeName !== language.languageName) {
-      const nativeText = document.createElement('span')
-      nativeText.className = 'text-slate-200/70 ml-2'
-      nativeText.textContent = `(${language.nativeName})`
-      languageItem.appendChild(nativeText)
-    }
-
-    languageList.appendChild(languageItem)
-  })
-
-  if (languages.length > 10) {
-    const moreText = document.createElement('p')
-    moreText.className = 'text-xs text-slate-200/60 mt-2'
-    moreText.textContent = `... and ${languages.length - 10} more`
-    languageList.appendChild(moreText)
-  }
-
-  container.appendChild(countryTitle)
-  container.appendChild(languageCount)
-  container.appendChild(languageList)
-
-  return container
+  return earthRadiusKm * c
 }
 
 function isClusterFeature(
@@ -209,7 +157,8 @@ function isLanguageFeature(
 
 export function LanguageMap({
   points,
-  unsupportedMessage
+  unsupportedMessage,
+  onCountrySelect
 }: LanguageMapProps): JSX.Element {
   const containerRef = useRef<HTMLDivElement | null>(null)
   const mapRef = useRef<MapInstance | null>(null)
@@ -218,28 +167,93 @@ export function LanguageMap({
   const [isUnsupported, setIsUnsupported] = useState(false)
 
   const featureCollection = useMemo(() => createFeatureCollection(points), [points])
+  const countrySummaries = useMemo<CountrySummary[]>(() => {
+    const summaryMap = new Map<string, { lng: number; lat: number; count: number; name?: string }>()
+
+    for (const point of points) {
+      const existing = summaryMap.get(point.countryId)
+      if (existing == null) {
+        summaryMap.set(point.countryId, {
+          lng: point.longitude,
+          lat: point.latitude,
+          count: 1,
+          name: point.countryName
+        })
+        continue
+      }
+
+      existing.lng += point.longitude
+      existing.lat += point.latitude
+      existing.count += 1
+
+      if (existing.name == null && point.countryName != null) {
+        existing.name = point.countryName
+      }
+    }
+
+    return Array.from(summaryMap.entries()).map(([id, summary]) => ({
+      id,
+      name: summary.name,
+      center: {
+        lng: summary.lng / summary.count,
+        lat: summary.lat / summary.count
+      }
+    }))
+  }, [points])
+
+  const countrySummariesRef = useRef<CountrySummary[]>(countrySummaries)
+  const onCountrySelectRef = useRef<
+    ((country: { id: string; name?: string } | null) => void) | undefined
+  >(onCountrySelect)
 
   useEffect(() => {
-    console.log('🗺️ LanguageMap useEffect running')
-    console.log('🗺️ Container ref:', containerRef.current)
-    console.log('🗺️ Map ref:', mapRef.current)
+    countrySummariesRef.current = countrySummaries
+  }, [countrySummaries])
 
+  useEffect(() => {
+    onCountrySelectRef.current = onCountrySelect
+  }, [onCountrySelect])
+
+  const selectCountryFromLngLat = useCallback(
+    (lngLat: { lng: number; lat: number }) => {
+      if (countrySummariesRef.current.length === 0) {
+        onCountrySelectRef.current?.(null)
+        return
+      }
+
+      let closest: CountrySummary | null = null
+      let closestDistance = MAX_COUNTRY_SELECTION_DISTANCE_KM
+
+      for (const country of countrySummariesRef.current) {
+        const distance = getDistanceInKm(country.center, lngLat)
+        if (distance < closestDistance) {
+          closest = country
+          closestDistance = distance
+        }
+      }
+
+      if (closest != null) {
+        onCountrySelectRef.current?.({ id: closest.id, name: closest.name })
+      } else {
+        onCountrySelectRef.current?.(null)
+      }
+    },
+    []
+  )
+
+  useEffect(() => {
     // Check for WebGL support
     const canvas = document.createElement('canvas')
     const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl')
-    console.log('🗺️ WebGL check result:', !!gl)
     if (!gl) {
-      console.log('🗺️ WebGL not supported, setting unsupported')
       setIsUnsupported(true)
       return
     }
 
     if (containerRef.current == null || mapRef.current != null) {
-      console.log('🗺️ Container or map ref check failed, returning')
       return
     }
 
-    console.log('🗺️ Creating new map instance')
     const map = new maplibregl.Map({
       container: containerRef.current,
       style: STYLE_URL,
@@ -248,7 +262,6 @@ export function LanguageMap({
       minZoom: 1.1,
       attributionControl: true
     })
-    console.log('🗺️ Map instance created:', map)
 
     map.addControl(new maplibregl.NavigationControl({ visualizePitch: true }), 'top-right')
     map.addControl(new maplibregl.ScaleControl({ unit: 'metric' }), 'bottom-left')
@@ -258,9 +271,6 @@ export function LanguageMap({
     map.scrollZoom.disable()
 
     map.on('load', () => {
-      console.log('🗺️ Map loaded, setting up layers and interactions')
-      console.log('🗺️ Map layers before setup:', map.getStyle().layers?.map(l => l.id))
-
       map.addSource(SOURCE_ID, {
         type: 'geojson',
         data: featureCollection,
@@ -338,86 +348,63 @@ export function LanguageMap({
       })
 
       map.on('click', 'language-clusters', async (event: MapMouseEvent) => {
-        console.log('🗺️ Circle clicked - Cluster')
-
         const features = map.queryRenderedFeatures(event.point, {
           layers: ['language-clusters']
         })
 
         const clusterFeature = features[0]
-        console.log('🗺️ Cluster feature:', clusterFeature)
         if (!isClusterFeature(clusterFeature)) {
-          console.log('🗺️ Not a cluster feature, returning')
           return
         }
 
         const source = map.getSource(SOURCE_ID)
-        console.log('🗺️ Source:', { source, type: source?.type })
         if (source == null || source.type !== 'geojson') {
-          console.log('🗺️ Source invalid, returning')
           return
         }
 
-        // Simple zoom to cluster center
-        console.log('🗺️ Zooming to cluster center')
         map.easeTo({
           center: clusterFeature.geometry.coordinates,
           zoom: Math.min(map.getZoom() + 3, map.getMaxZoom()),
           duration: 1000
         })
 
-        // Show a simple popup with cluster info
-        console.log('🗺️ Creating cluster popup')
         if (clusterPopupRef.current == null) {
-          console.log('🗺️ Creating new cluster popup instance')
           clusterPopupRef.current = new maplibregl.Popup({ closeButton: false, closeOnMove: false })
         }
 
         const pointCount = clusterFeature.properties?.point_count || 0
         const clusterId = clusterFeature.properties?.cluster_id || 0
-        const htmlContent = `<div style="color: black; padding: 8px;"><strong>Language Cluster</strong><br/>${pointCount} languages<br/>ID: ${clusterId}</div>`
-
-        console.log('🗺️ Setting cluster popup content:', htmlContent)
-        console.log('🗺️ Cluster popup coordinates:', clusterFeature.geometry.coordinates)
 
         try {
           clusterPopupRef.current
             .setLngLat(clusterFeature.geometry.coordinates)
-            .setHTML(`<div style="background: white; border: 1px solid black; padding: 10px; border-radius: 4px; font-family: Arial, sans-serif;"><strong>Language Cluster</strong><br/>${pointCount} languages<br/>ID: ${clusterId}</div>`)
+            .setHTML(
+              `<div style="background: white; border: 1px solid black; padding: 10px; border-radius: 4px; font-family: Arial, sans-serif;"><strong>Language Cluster</strong><br/>${pointCount} languages<br/>ID: ${clusterId}</div>`
+            )
             .addTo(map)
-          console.log('🗺️ Cluster popup added to map successfully')
         } catch (error) {
           console.error('🗺️ Error adding cluster popup to map:', error)
         }
+
+        selectCountryFromLngLat(event.lngLat)
       })
 
       map.on('click', 'language-point', (event: MapMouseEvent) => {
-        console.log('🗺️ Circle clicked - Individual')
-
         const feature = event.features?.[0]
         if (!isLanguageFeature(feature)) return
 
         const { properties, geometry } = feature
         const coordinates = geometry.coordinates
-        const languageName = properties.languageName as string
-        const englishName = properties.englishName as string
 
-        // Simple zoom to the point
-        console.log('🗺️ Zooming to individual point')
         map.easeTo({
           center: coordinates,
           zoom: Math.min(map.getZoom() + 3, map.getMaxZoom()),
           duration: 1000
         })
 
-        // Show a simple popup with language info
-        console.log('🗺️ Creating individual point popup')
         if (popupRef.current == null) {
-          console.log('🗺️ Creating new popup instance for individual point')
           popupRef.current = new maplibregl.Popup({ closeButton: false, closeOnMove: false })
         }
-
-        console.log('🗺️ Individual popup coordinates:', coordinates)
 
         popupRef.current
           .setLngLat(coordinates)
@@ -430,6 +417,8 @@ export function LanguageMap({
             })
           )
           .addTo(map)
+
+        selectCountryFromLngLat(event.lngLat)
       })
 
       map.on('mouseenter', 'language-clusters', () => {
@@ -451,12 +440,20 @@ export function LanguageMap({
 
     mapRef.current = map
 
+    const handleGeneralClick = (event: MapMouseEvent): void => {
+      selectCountryFromLngLat(event.lngLat)
+    }
+
+    map.on('click', handleGeneralClick)
+
     return () => {
+      map.off('click', handleGeneralClick)
       map.remove()
       popupRef.current?.remove()
+      clusterPopupRef.current?.remove()
       mapRef.current = null
     }
-  }, [])
+  }, [featureCollection, selectCountryFromLngLat])
 
   useEffect(() => {
     const map = mapRef.current
@@ -479,7 +476,6 @@ export function LanguageMap({
   }, [featureCollection])
 
   if (isUnsupported) {
-    console.log('🗺️ Rendering unsupported message')
     return (
       <div className="flex h-full w-full items-center justify-center bg-slate-900/60 text-center text-sm text-slate-200/80">
         {unsupportedMessage ?? 'Map rendering is not supported in this browser.'}
@@ -487,7 +483,5 @@ export function LanguageMap({
     )
   }
 
-  console.log('🗺️ Rendering map container, isUnsupported:', isUnsupported)
   return <div ref={containerRef} className="h-full w-full" role="presentation" aria-hidden />
 }
-
