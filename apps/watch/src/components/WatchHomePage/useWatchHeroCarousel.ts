@@ -37,6 +37,7 @@ interface UseWatchHeroCarouselResult {
   currentMuxInsert: CarouselMuxSlide | null
   handleVideoSelect: (slideId: string) => void
   handleMuxInsertComplete: () => void
+  handleSkipActiveVideo: () => void
 }
 
 const DEFAULT_LANGUAGE: VideoContentFields_variant_language = {
@@ -477,6 +478,21 @@ export function useWatchHeroCarousel({
     setLastProgress(0)
   }, [activeSlideIndex, autoProgressEnabled, isProgressing, moveToSlide])
 
+  const handleSkipActiveVideo = useCallback(() => {
+    if (activeSlideIndex === -1) return
+
+    const nextIndex = activeSlideIndex + 1
+
+    if (nextIndex < slides.length) {
+      moveToSlide(nextIndex, 500)
+      setLastProgress(0)
+      return
+    }
+
+    moveToNext()
+    setLastProgress(0)
+  }, [activeSlideIndex, slides.length, moveToSlide, moveToNext])
+
   useEffect(() => {
     if (playerState.progress >= 95 && lastProgress < 95 && !isProgressing) {
       advanceOnProgress()
@@ -510,6 +526,7 @@ export function useWatchHeroCarousel({
     activeVideo,
     currentMuxInsert,
     handleVideoSelect,
-    handleMuxInsertComplete
+    handleMuxInsertComplete,
+    handleSkipActiveVideo
   }
 }

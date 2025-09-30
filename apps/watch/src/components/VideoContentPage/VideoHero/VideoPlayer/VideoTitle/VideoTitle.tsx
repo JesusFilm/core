@@ -1,4 +1,5 @@
 import PlayArrowRounded from '@mui/icons-material/PlayArrowRounded'
+import SkipNextRounded from '@mui/icons-material/SkipNextRounded'
 import VolumeOff from '@mui/icons-material/VolumeOff'
 import VolumeUpOutlined from '@mui/icons-material/VolumeUpOutlined'
 import NextLink from 'next/link'
@@ -24,6 +25,7 @@ interface VideoTitleProps {
   collectionTitle?: string
   action?: InsertAction
   isMuxInsert?: boolean
+  onSkip?: () => void
 }
 
 export function VideoTitle({
@@ -38,7 +40,8 @@ export function VideoTitle({
   onMuteToggle,
   collectionTitle,
   action,
-  isMuxInsert = false
+  isMuxInsert = false,
+  onSkip
 }: VideoTitleProps): ReactElement {
   const { t } = useTranslation('apps-watch')
   const { label, variant: videoVariant } = useVideo()
@@ -151,17 +154,33 @@ export function VideoTitle({
           Watch Now
         </NextLink>
       )}
-      {isPreview && onMuteToggle && (
-        <button
-          onClick={(e) => {
-            e.stopPropagation()
-            onMuteToggle()
-          }}
-          className="absolute z-0 cursor-pointer bottom-7 right-0 scale-125 text-stone-50 p-2 rounded-full hover:bg-white/20 transition-colors duration-200 mute-preview-toggle"
-          aria-label={mute || volume === 0 ? t('Unmute') : t('Mute')}
-        >
-          {mute || volume === 0 ? <VolumeOff /> : <VolumeUpOutlined />}
-        </button>
+      {isPreview && (onMuteToggle != null || onSkip != null) && (
+        <div className="absolute z-0 bottom-7 right-0 flex items-center gap-2 scale-150">
+          {onSkip != null && (
+            <button
+              onClick={(e) => {
+                e.stopPropagation()
+                onSkip()
+              }}
+              className="z-50 cursor-pointer text-stone-50/50 p-2 rounded-full hover:text-stone-50 transition-colors duration-200"
+              aria-label={t('Skip video')}
+            >
+              <SkipNextRounded fontSize="medium" />
+            </button>
+          )}
+          {onMuteToggle != null && (
+            <button
+              onClick={(e) => {
+                e.stopPropagation()
+                onMuteToggle()
+              }}
+              className="cursor-pointer text-stone-50/50 p-2 rounded-full hover:text-stone-50 transition-colors duration-200 mute-preview-toggle"
+              aria-label={mute || volume === 0 ? t('Unmute') : t('Mute')}
+            >
+              {mute || volume === 0 ? <VolumeOff /> : <VolumeUpOutlined />}
+            </button>
+          )}
+        </div>
       )}
     </div>
   )

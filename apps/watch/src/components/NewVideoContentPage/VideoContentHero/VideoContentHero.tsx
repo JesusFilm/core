@@ -11,11 +11,13 @@ import { HeroVideo } from './HeroVideo'
 export function VideoContentHero({
   isPreview = false,
   currentMuxInsert,
-  onMuxInsertComplete
+  onMuxInsertComplete,
+  onSkipActiveVideo
 }: {
   isPreview?: boolean
   currentMuxInsert?: CarouselMuxSlide | null
   onMuxInsertComplete?: () => void
+  onSkipActiveVideo?: () => void
 }): ReactElement {
   const { variant } = useVideo()
   const {
@@ -50,6 +52,7 @@ export function VideoContentHero({
         onMuteToggle={handleMuteToggle}
         currentMuxInsert={currentMuxInsert}
         onMuxInsertComplete={onMuxInsertComplete}
+        onSkip={onSkipActiveVideo}
         key={currentMuxInsert ? currentMuxInsert.id : variant?.hls}
       />
       <div

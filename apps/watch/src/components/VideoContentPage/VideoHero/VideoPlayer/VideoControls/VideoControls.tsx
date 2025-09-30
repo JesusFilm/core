@@ -62,6 +62,7 @@ interface VideoControlProps {
   action?: InsertAction
   isMuxInsert?: boolean
   muxOverlay?: InsertOverlay
+  onSkip?: () => void
 }
 
 function evtToDataLayer(
@@ -94,7 +95,8 @@ export function VideoControls({
   customDuration,
   action,
   isMuxInsert = false,
-  muxOverlay
+  muxOverlay,
+  onSkip
 }: VideoControlProps): ReactElement {
   const [initialLoadComplete, setInitialLoadComplete] = useState(false)
   const {
@@ -612,6 +614,7 @@ export function VideoControls({
             collectionTitle={collectionTitle}
             action={action}
             isMuxInsert={isMuxInsert}
+            onSkip={onSkip}
             onMuteToggle={() => {
               handleMute()
             }}
@@ -664,6 +667,7 @@ export function VideoControls({
               collectionTitle={collectionTitle}
               action={action}
               isMuxInsert={isMuxInsert}
+              onSkip={onSkip}
               onMuteToggle={() => {
                 handleMute()
               }}

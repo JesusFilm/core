@@ -117,4 +117,19 @@ describe('VideoTitle', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Play with sound' }))
     expect(onClick).toHaveBeenCalled()
   })
+
+  it('renders skip button when preview with handler', () => {
+    const onSkip = jest.fn()
+    renderWithProviders(
+      <VideoTitle
+        videoTitle="Test Video"
+        showButton
+        isPreview
+        onSkip={onSkip}
+      />
+    )
+
+    fireEvent.click(screen.getByRole('button', { name: 'Skip video' }))
+    expect(onSkip).toHaveBeenCalled()
+  })
 })
