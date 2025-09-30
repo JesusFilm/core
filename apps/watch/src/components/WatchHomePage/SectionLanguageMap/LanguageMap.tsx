@@ -4,8 +4,8 @@ import 'maplibre-gl/dist/maplibre-gl.css'
 
 import type { FeatureCollection, Polygon } from 'geojson'
 import maplibregl, {
-  Map as MapInstance,
   type LngLatBoundsLike,
+  Map as MapInstance,
   type MapLayerMouseEvent,
   type MapMouseEvent,
   type MapboxGeoJSONFeature
@@ -32,6 +32,19 @@ const COUNTRY_COLORS = [
   '#FBBF24'
 ]
 
+function toFlagEmoji(countryId: string): string {
+  if (countryId.length !== 2) {
+    return '🏳️'
+  }
+
+  const codePoints = [...countryId.toUpperCase()].map((char) => 0x1f1e6 + char.charCodeAt(0) - 65)
+  if (codePoints.some((value) => value < 0x1f1e6 || value > 0x1f1ff)) {
+    return '🏳️'
+  }
+
+  return String.fromCodePoint(...codePoints)
+}
+
 interface LanguageMapProps {
   points: LanguageMapPoint[]
   unsupportedMessage?: string
@@ -39,9 +52,11 @@ interface LanguageMapProps {
 
 interface CountryLanguage {
   id: string
+  code: string
   languageName: string
   englishName?: string
   nativeName?: string
+  isPrimary: boolean
 }
 
 interface CountryAggregation {
@@ -57,6 +72,8 @@ interface CountryFeatureProperties {
   countryId: string
   countryName: string
   languageCount: number
+  primaryLanguageCode?: string
+  labelText: string
   fillColor: string
 }
 
@@ -75,6 +92,7 @@ function aggregateCountries(points: LanguageMapPoint[]): CountryAggregation[] {
       minLat: number
       maxLat: number
       languages: Map<string, CountryLanguage>
+      primaryLanguageId: string | null
     }
   >()
 
@@ -94,12 +112,15 @@ function aggregateCountries(points: LanguageMapPoint[]): CountryAggregation[] {
             point.languageId,
             {
               id: point.languageId,
+              code: point.languageId,
               languageName: point.languageName,
               englishName: point.englishName,
-              nativeName: point.nativeName
+              nativeName: point.nativeName,
+              isPrimary: point.isPrimaryCountryLanguage
             }
           ]
-        ])
+        ]),
+        primaryLanguageId: point.isPrimaryCountryLanguage ? point.languageId : null
       })
       continue
     }
@@ -112,13 +133,22 @@ function aggregateCountries(points: LanguageMapPoint[]): CountryAggregation[] {
     existing.minLat = Math.min(existing.minLat, point.latitude)
     existing.maxLat = Math.max(existing.maxLat, point.latitude)
 
-    if (!existing.languages.has(point.languageId)) {
+    const existingLanguage = existing.languages.get(point.languageId)
+    if (existingLanguage == null) {
       existing.languages.set(point.languageId, {
         id: point.languageId,
+        code: point.languageId,
         languageName: point.languageName,
         englishName: point.englishName,
-        nativeName: point.nativeName
+        nativeName: point.nativeName,
+        isPrimary: point.isPrimaryCountryLanguage
       })
+    } else if (point.isPrimaryCountryLanguage && !existingLanguage.isPrimary) {
+      existing.languages.set(point.languageId, { ...existingLanguage, isPrimary: true })
+    }
+
+    if (point.isPrimaryCountryLanguage) {
+      existing.primaryLanguageId = point.languageId
     }
   }
 
@@ -150,6 +180,17 @@ function aggregateCountries(points: LanguageMapPoint[]): CountryAggregation[] {
       a.languageName.localeCompare(b.languageName)
     )
 
+    const primaryLanguage =
+      languages.find((language) => language.isPrimary) ??
+      (country.primaryLanguageId != null
+        ? languages.find((language) => language.id === country.primaryLanguageId)
+        : undefined) ??
+      languages[0]
+
+    const flagEmoji = toFlagEmoji(country.countryId)
+    const labelText =
+      primaryLanguage != null ? `${flagEmoji} ${primaryLanguage.code.toUpperCase()}` : flagEmoji
+
     const feature: GeoJSONCountryFeature = {
       type: 'Feature',
       id: country.countryId,
@@ -159,6 +200,8 @@ function aggregateCountries(points: LanguageMapPoint[]): CountryAggregation[] {
         countryId: country.countryId,
         countryName: country.countryName,
         languageCount: languages.length,
+        primaryLanguageCode: primaryLanguage?.code,
+        labelText,
         fillColor: COUNTRY_COLORS[index % COUNTRY_COLORS.length]
       }
     }
@@ -294,13 +337,13 @@ export function LanguageMap({ points, unsupportedMessage }: LanguageMapProps): J
           type: 'symbol',
           source: SOURCE_ID,
           layout: {
-            'text-field': ['to-string', ['get', 'languageCount']],
+            'text-field': ['get', 'labelText'],
             'text-font': ['Open Sans Bold', 'Arial Unicode MS Bold'],
-            'text-size': 12
+            'text-size': 13
           },
           paint: {
-            'text-color': '#0f172a',
-            'text-halo-color': '#f8fafc',
+            'text-color': '#f8fafc',
+            'text-halo-color': '#020617',
             'text-halo-width': 1.5
           }
         })
@@ -374,7 +417,7 @@ export function LanguageMap({ points, unsupportedMessage }: LanguageMapProps): J
     }
 
     if (!map.isStyleLoaded()) {
-      map.once('load', updateSource)
+      void map.once('load', updateSource)
       return () => {
         map.off('load', updateSource)
       }
@@ -413,7 +456,7 @@ export function LanguageMap({ points, unsupportedMessage }: LanguageMapProps): J
     }
 
     if (!map.isStyleLoaded()) {
-      map.once('load', applySelection)
+      void map.once('load', applySelection)
       return () => {
         map.off('load', applySelection)
       }
