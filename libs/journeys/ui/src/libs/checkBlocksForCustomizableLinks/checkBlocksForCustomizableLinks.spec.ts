@@ -4,7 +4,7 @@ import {
   JourneyFields_blocks_RadioOptionBlock as RadioOptionBlock,
   JourneyFields_blocks_VideoBlock as VideoBlock,
   JourneyFields_blocks_VideoTriggerBlock as VideoTriggerBlock
-} from '../../JourneyProvider/__generated__/JourneyFields'
+} from '../JourneyProvider/__generated__/JourneyFields'
 
 import { checkBlocksForCustomizableLinks } from './checkBlocksForCustomizableLinks'
 
@@ -209,52 +209,29 @@ describe('checkBlocksForCustomizableLinks', () => {
     expect(result).toBe(true)
   })
 
-  describe('checkActionBlock function', () => {
-    it('should return false for null action', () => {
-      const buttonBlock = {
-        __typename: 'ButtonBlock',
-        id: '1',
-        parentBlockId: null,
-        parentOrder: 0,
-        label: 'Test Button',
-        buttonVariant: null,
-        buttonColor: null,
-        size: null,
-        startIconId: null,
-        endIconId: null,
-        submitEnabled: null,
-        action: null,
-        settings: null
-      } as ButtonBlock
+  it('should return false for actions that are not links or emails', () => {
+    const buttonBlock = {
+      __typename: 'ButtonBlock',
+      id: '1',
+      parentBlockId: null,
+      parentOrder: 0,
+      label: 'Test Button',
+      buttonVariant: null,
+      buttonColor: null,
+      size: null,
+      startIconId: null,
+      endIconId: null,
+      submitEnabled: null,
+      action: {
+        __typename: 'NavigateToBlockAction',
+        parentBlockId: '1',
+        gtmEventName: null,
+        blockId: 'block-1'
+      },
+      settings: null
+    } as ButtonBlock
 
-      const result = checkBlocksForCustomizableLinks([buttonBlock])
-      expect(result).toBe(false)
-    })
-
-    it('should return false for actions that are not links or emails', () => {
-      const buttonBlock = {
-        __typename: 'ButtonBlock',
-        id: '1',
-        parentBlockId: null,
-        parentOrder: 0,
-        label: 'Test Button',
-        buttonVariant: null,
-        buttonColor: null,
-        size: null,
-        startIconId: null,
-        endIconId: null,
-        submitEnabled: null,
-        action: {
-          __typename: 'NavigateToBlockAction',
-          parentBlockId: '1',
-          gtmEventName: null,
-          blockId: 'block-1'
-        },
-        settings: null
-      } as ButtonBlock
-
-      const result = checkBlocksForCustomizableLinks([buttonBlock])
-      expect(result).toBe(false)
-    })
+    const result = checkBlocksForCustomizableLinks([buttonBlock])
+    expect(result).toBe(false)
   })
 })

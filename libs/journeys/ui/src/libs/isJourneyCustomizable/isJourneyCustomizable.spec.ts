@@ -1,4 +1,4 @@
-import { JourneyFields as Journey } from '../../JourneyProvider/__generated__/JourneyFields'
+import { JourneyFields as Journey } from '../JourneyProvider/__generated__/JourneyFields'
 
 import { isJourneyCustomizable } from './isJourneyCustomizable'
 

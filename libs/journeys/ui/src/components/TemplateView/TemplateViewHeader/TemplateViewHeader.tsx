@@ -17,7 +17,7 @@ import { TemplateCreatorDetails } from './TemplateCreatorDetails/TemplateCreator
 import { TemplateEditButton } from './TemplateEditButton/TemplateEditButton'
 import { UseThisTemplateButton } from '../UseThisTemplateButton'
 import { CreateJourneyButton } from '../CreateJourneyButton'
-import { isJourneyCustomizable } from '../../../libs/templateCustomization'
+import { isJourneyCustomizable } from '../../../libs/isJourneyCustomizable'
 
 interface TemplateViewHeaderProps {
   isPublisher: boolean | undefined
@@ -175,8 +175,15 @@ export function TemplateViewHeader({
         </Stack>
       </Stack>
       <Box sx={{ display: { xs: 'flex', sm: 'none' }, pt: 6 }} gap={2}>
-        {journeyCustomization ? (
+        {journeyCustomization &&
+        journey != null &&
+        isJourneyCustomizable(journey) ? (
           <UseThisTemplateButton signedIn={authUser?.id != null} />
+        ) : journey == null ? (
+          <Skeleton
+            sx={{ minWidth: 180, height: '38px', borderRadius: 3 }}
+            data-testid="UseThisTemplateButtonSkeleton"
+          />
         ) : (
           <CreateJourneyButton signedIn={authUser?.id != null} />
         )}

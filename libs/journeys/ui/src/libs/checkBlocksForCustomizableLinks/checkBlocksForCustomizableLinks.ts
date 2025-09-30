@@ -4,7 +4,7 @@ import {
   JourneyFields_blocks_RadioOptionBlock as RadioOptionBlock,
   JourneyFields_blocks_VideoBlock as VideoBlock,
   JourneyFields_blocks_VideoTriggerBlock as VideoTriggerBlock
-} from '../../JourneyProvider/__generated__/JourneyFields'
+} from '../JourneyProvider/__generated__/JourneyFields'
 
 type Action =
   | ButtonBlock['action']

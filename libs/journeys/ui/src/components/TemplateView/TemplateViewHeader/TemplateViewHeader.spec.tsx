@@ -13,9 +13,9 @@ import { journey } from '../TemplateFooter/data'
 import { TemplateViewHeader } from './TemplateViewHeader'
 import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 import { NextRouter, useRouter } from 'next/router'
-import { isJourneyCustomizable } from '../../../libs/templateCustomization'
+import { isJourneyCustomizable } from '../../../libs/isJourneyCustomizable'
 
-jest.mock('../../../libs/templateCustomization', () => ({
+jest.mock('../../../libs/isJourneyCustomizable', () => ({
   isJourneyCustomizable: jest.fn()
 }))
 
@@ -403,8 +403,8 @@ describe('TemplateViewHeader', () => {
 
     await waitFor(() => {
       expect(
-        screen.getByTestId('UseThisTemplateButtonSkeleton')
-      ).toBeInTheDocument()
+        screen.getAllByTestId('UseThisTemplateButtonSkeleton')
+      ).toHaveLength(2)
     })
   })
 })

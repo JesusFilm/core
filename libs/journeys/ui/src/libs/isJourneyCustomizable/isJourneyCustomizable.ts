@@ -1,5 +1,5 @@
-import { JourneyFields as Journey } from '../../JourneyProvider/__generated__/JourneyFields'
 import { checkBlocksForCustomizableLinks } from '../checkBlocksForCustomizableLinks'
+import { JourneyFields as Journey } from '../JourneyProvider/__generated__/JourneyFields'
 
 export function isJourneyCustomizable(journey?: Journey): boolean {
   const blocks = journey?.blocks ?? []
