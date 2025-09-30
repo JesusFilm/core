@@ -127,6 +127,10 @@ export function MultiselectQuestion({
       setLocalMin('')
       return
     }
+    if (typeof localMax === 'number' && parsed > localMax) {
+      setLocalMin(localMax)
+      return
+    }
     setLocalMin(parsed)
   }
 
@@ -136,15 +140,42 @@ export function MultiselectQuestion({
       setLocalMax('')
       return
     }
+    if (typeof localMin === 'number' && parsed < localMin) {
+      setLocalMax(localMin)
+      return
+    }
     setLocalMax(parsed)
   }
 
   const handleBlurCommit = useCallback(() => {
-    const nextMin = localMin === '' ? null : (localMin as number)
-    const nextMax = localMax === '' ? null : (localMax as number)
-    if (nextMin === min && nextMax === max && localLabel === (label ?? ''))
+    const nextMinRaw = localMin === '' ? null : (localMin as number)
+    const nextMaxRaw = localMax === '' ? null : (localMax as number)
+
+    const bothNumbers =
+      nextMinRaw !== null &&
+      nextMinRaw !== undefined &&
+      nextMaxRaw !== null &&
+      nextMaxRaw !== undefined
+
+    const normalizedMin = bothNumbers
+      ? Math.min(nextMinRaw as number, nextMaxRaw as number)
+      : nextMinRaw
+    const normalizedMax = bothNumbers
+      ? Math.max(nextMinRaw as number, nextMaxRaw as number)
+      : nextMaxRaw
+
+    if (
+      normalizedMin === min &&
+      normalizedMax === max &&
+      localLabel === (label ?? '')
+    )
       return
-    commitUpdate({ min: nextMin, max: nextMax, label: localLabel })
+
+    // keep local state in a consistent, non-overlapping configuration
+    setLocalMin(normalizedMin ?? '')
+    setLocalMax(normalizedMax ?? '')
+
+    commitUpdate({ min: normalizedMin, max: normalizedMax, label: localLabel })
   }, [commitUpdate, localMin, localMax, min, max, localLabel, label])
 
   const handleRangeChange = useCallback(
@@ -224,21 +255,30 @@ export function MultiselectQuestion({
           <TextField
             type="number"
             value={localMin}
-            min={0}
-            max={(localMax ?? optionCount > 0) ? optionCount : 0}
             onChange={(e) => handleMinChange(e.target.value)}
             onBlur={handleBlurCommit}
-            inputProps={{ min: 0, 'aria-label': t('Min selections') }}
+            inputProps={{
+              min: 0,
+              max:
+                typeof localMax === 'number'
+                  ? localMax
+                  : optionCount > 0
+                    ? optionCount
+                    : 0,
+              'aria-label': t('Min selections')
+            }}
           />
           <Box />
           <TextField
             type="number"
             value={localMax}
-            min={localMin ?? 0}
-            max={optionCount > 0 ? optionCount : 0}
             onChange={(e) => handleMaxChange(e.target.value)}
             onBlur={handleBlurCommit}
-            inputProps={{ min: 0, 'aria-label': t('Max selections') }}
+            inputProps={{
+              min: typeof localMin === 'number' ? localMin : 0,
+              max: optionCount > 0 ? optionCount : 0,
+              'aria-label': t('Max selections')
+            }}
           />
         </Box>
       </Box>
