@@ -7,11 +7,12 @@ import Stack from '@mui/material/Stack'
 import Tooltip from '@mui/material/Tooltip'
 import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next'
-import { ReactElement, useCallback, useMemo, useRef, useState } from 'react'
+import { ReactElement, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { object, string } from 'yup'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
+import { ActionBlock, isActionBlock } from '@core/journeys/ui/isActionBlock'
 
 import { BlockFields_ButtonBlock as ButtonBlock } from '../../../../../../../../../../__generated__/BlockFields'
 import { ContactActionType } from '../../../../../../../../../../__generated__/globalTypes'
@@ -26,7 +27,9 @@ export function PhoneAction(): ReactElement {
   const {
     state: { selectedBlock: stateSelectedBlock, selectedStep }
   } = useEditor()
-  const selectedBlock = stateSelectedBlock as TreeBlock<ButtonBlock> | undefined
+  const selectedBlock = stateSelectedBlock && isActionBlock(stateSelectedBlock) 
+    ? stateSelectedBlock as ActionBlock 
+    : undefined
   const { addAction } = useActionCommand()
 
   // Extract phone action from selected block
@@ -90,6 +93,31 @@ export function PhoneAction(): ReactElement {
     () => !phoneAction?.phone || phoneAction.phone.trim() === '',
     [phoneAction?.phone]
   )
+
+  // Sync callingCode when phoneAction changes
+  useEffect(() => {
+    if (!phoneAction?.countryCode) {
+      setCallingCode('+')
+      return
+    }
+    const country = countries.find(c => c.countryCode === phoneAction.countryCode)
+    setCallingCode(country?.callingCode ?? '+')
+  }, [phoneAction?.countryCode])
+
+  // Sync phoneNumber when phoneAction changes
+  useEffect(() => {
+    if (!phoneAction?.phone) {
+      setPhoneNumber('')
+      return
+    }
+    const country = countries.find(c => c.countryCode === phoneAction.countryCode)
+    const digits = country?.callingCode?.replace(/[^\d]/g, '') ?? ''
+    const prefix = digits === '' ? '' : `+${digits}`
+    const localNumber = phoneAction.phone.startsWith(prefix)
+      ? phoneAction.phone.slice(prefix.length)
+      : phoneAction.phone.replace(/^\+/, '')
+    setPhoneNumber(localNumber)
+  }, [phoneAction?.phone, phoneAction?.countryCode])
 
   // Validation schemas
   const phoneActionSchema = useMemo(

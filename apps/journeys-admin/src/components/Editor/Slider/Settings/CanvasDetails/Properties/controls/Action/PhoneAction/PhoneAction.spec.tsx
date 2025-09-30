@@ -92,7 +92,7 @@ describe('PhoneAction', () => {
     })
     fireEvent.blur(screen.getByRole('textbox', { name: 'Phone Number' }))
     await waitFor(() =>
-      expect(screen.getByText('Phone number is required')).toBeInTheDocument()
+      expect(screen.getByText('Phone number is required.')).toBeInTheDocument()
     )
   })
 
@@ -363,7 +363,7 @@ describe('PhoneAction', () => {
 
     // Should show phone number validation error
     await waitFor(() => {
-      expect(screen.getByText('Phone number is required')).toBeInTheDocument()
+      expect(screen.getByText('Phone number is required.')).toBeInTheDocument()
     })
   })
 
@@ -434,7 +434,7 @@ describe('PhoneAction', () => {
     // Both fields should show validation errors
     await waitFor(() => {
       expect(screen.getByText('Required')).toBeInTheDocument()
-      expect(screen.getByText('Phone number is required')).toBeInTheDocument()
+      expect(screen.getByText('Phone number is required.')).toBeInTheDocument()
     })
   })
 
