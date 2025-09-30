@@ -11,11 +11,6 @@ import { useJourneyAiTranslateSubscription } from '../../../libs/useJourneyAiTra
 import { useJourneyDuplicateMutation } from '../../../libs/useJourneyDuplicateMutation'
 import { AccountCheckDialog } from '../AccountCheckDialog'
 
-// Global flag to ensure only one DynamicCopyToTeamDialog is open at a time
-// Starts as true (dialog can be opened), becomes false once any dialog is opened.
-// This is because there can be multiple instances of the CreateJourneyButton on the same page; we don't want each of them to open the dialog.
-let canOpenTeamDialog = true
-
 interface CreateJourneyButtonProps {
   signedIn?: boolean
 }
@@ -73,7 +68,6 @@ export function CreateJourneyButton({
       setLoading(false)
       setTranslationVariables(undefined)
       setOpenTeamDialog(false)
-      canOpenTeamDialog = true
 
       // Navigate to the translated journey
       if (pendingNavigationId) {
@@ -98,7 +92,6 @@ export function CreateJourneyButton({
       setLoading(false)
       setTranslationVariables(undefined)
       setOpenTeamDialog(false)
-      canOpenTeamDialog = true
       setPendingNavigationId(null)
     }
   })
@@ -132,7 +125,6 @@ export function CreateJourneyButton({
             preventDuplicate: true
           })
           setOpenTeamDialog(false)
-          canOpenTeamDialog = true
 
           sendGTMEvent({
             event: 'template_use',
@@ -165,22 +157,17 @@ export function CreateJourneyButton({
           preventDuplicate: true
         })
         setOpenTeamDialog(false)
-        canOpenTeamDialog = true
       }
     },
     [journey, journeyDuplicate, router, t, enqueueSnackbar]
   )
 
   const handleCheckSignIn = (): void => {
-    if (!signedIn) {
+    if (signedIn && setOpenTeamDialog !== undefined) {
+      setOpenTeamDialog(true)
+    } else {
       setOpenAccountDialog(true)
-      return
     }
-
-    if (!canOpenTeamDialog) return // Dialog is already open from another instance, so do nothing
-
-    canOpenTeamDialog = false // Prevent other instances from opening dialog
-    setOpenTeamDialog(true)
   }
 
   const handleSignIn = (login: boolean): void => {
@@ -208,18 +195,18 @@ export function CreateJourneyButton({
     // Prevent closing during translation
     if (loading || translationVariables != null) return
 
-    if (setOpenTeamDialog !== undefined) setOpenTeamDialog(false)
-    canOpenTeamDialog = true
-    const { createNew, ...queryWithoutCreateNew } = router.query
-
-    void router.replace(
-      {
-        pathname: router.pathname,
-        query: queryWithoutCreateNew
-      },
-      undefined,
-      { shallow: true }
-    )
+    if (setOpenTeamDialog !== undefined) {
+      setOpenTeamDialog(false)
+      const { createNew, ...queryWithoutCreateNew } = router.query
+      void router.replace(
+        {
+          pathname: router.pathname,
+          query: queryWithoutCreateNew
+        },
+        undefined,
+        { shallow: true }
+      )
+    }
   }
 
   useEffect(() => {
@@ -227,13 +214,12 @@ export function CreateJourneyButton({
       // Prefetch the dashboard page
       void router.prefetch('/users/sign-in')
     }
-    if (router.query.createNew === 'true' && signedIn && canOpenTeamDialog) {
-      canOpenTeamDialog = false // Prevent other instances from opening dialog
-      if (setOpenTeamDialog !== undefined) setOpenTeamDialog(true)
-    }
-    // Cleanup: release the lock if this component unmounts mid‑flow
-    return () => {
-      canOpenTeamDialog = true
+    if (
+      router.query.createNew === 'true' &&
+      signedIn &&
+      setOpenTeamDialog !== undefined
+    ) {
+      setOpenTeamDialog(true)
     }
   }, [signedIn, router, setOpenTeamDialog])
 
