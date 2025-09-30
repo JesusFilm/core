@@ -82,7 +82,7 @@ export function VideoCard({
         >
           {sequenceLabel != null && (
             <span
-              className="absolute top-3 left-3 text-5xl font-black text-white drop-shadow-[0_4px_10px_rgba(0,0,0,0.7)]"
+              className="absolute top-2 left-2 z-10 text-[48px] font-bold leading-none text-stone-100/90 text-shadow-lg"
               aria-hidden="true"
               data-testid="VideoCardSequenceNumber"
             >

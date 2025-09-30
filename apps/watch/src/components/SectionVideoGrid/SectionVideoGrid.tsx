@@ -27,6 +27,7 @@ export interface SectionVideoGridProps {
   backgroundClassName?: string
   orientation?: 'horizontal' | 'vertical'
   languageId?: string
+  showSequenceNumbers?: boolean
 }
 
 export function SectionVideoGrid({
@@ -42,7 +43,8 @@ export function SectionVideoGrid({
   analyticsTag,
   backgroundClassName,
   orientation = 'horizontal',
-  languageId
+  languageId,
+  showSequenceNumbers = false
 }: SectionVideoGridProps): ReactElement | null {
   const { t } = useTranslation('apps-watch')
 
@@ -119,6 +121,7 @@ export function SectionVideoGrid({
           loading={loading}
           orientation={orientation}
           analyticsTag={analyticsTag}
+          showSequenceNumbers={showSequenceNumbers}
           data-testid="SectionVideoGridContainer"
         />
       </div>
