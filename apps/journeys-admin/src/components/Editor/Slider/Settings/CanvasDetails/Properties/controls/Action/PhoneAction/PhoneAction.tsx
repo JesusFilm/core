@@ -7,7 +7,14 @@ import Stack from '@mui/material/Stack'
 import Tooltip from '@mui/material/Tooltip'
 import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next'
-import { ReactElement, useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import {
+  ReactElement,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState
+} from 'react'
 import { object, string } from 'yup'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
@@ -27,9 +34,10 @@ export function PhoneAction(): ReactElement {
   const {
     state: { selectedBlock: stateSelectedBlock, selectedStep }
   } = useEditor()
-  const selectedBlock = stateSelectedBlock && isActionBlock(stateSelectedBlock) 
-    ? stateSelectedBlock as ActionBlock 
-    : undefined
+  const selectedBlock =
+    stateSelectedBlock && isActionBlock(stateSelectedBlock)
+      ? (stateSelectedBlock as ActionBlock)
+      : undefined
   const { addAction } = useActionCommand()
 
   // Extract phone action from selected block
@@ -100,7 +108,9 @@ export function PhoneAction(): ReactElement {
       setCallingCode('+')
       return
     }
-    const country = countries.find(c => c.countryCode === phoneAction.countryCode)
+    const country = countries.find(
+      (c) => c.countryCode === phoneAction.countryCode
+    )
     setCallingCode(country?.callingCode ?? '+')
   }, [phoneAction?.countryCode])
 
@@ -110,7 +120,9 @@ export function PhoneAction(): ReactElement {
       setPhoneNumber('')
       return
     }
-    const country = countries.find(c => c.countryCode === phoneAction.countryCode)
+    const country = countries.find(
+      (c) => c.countryCode === phoneAction.countryCode
+    )
     const digits = country?.callingCode?.replace(/[^\d]/g, '') ?? ''
     const prefix = digits === '' ? '' : `+${digits}`
     const localNumber = phoneAction.phone.startsWith(prefix)
