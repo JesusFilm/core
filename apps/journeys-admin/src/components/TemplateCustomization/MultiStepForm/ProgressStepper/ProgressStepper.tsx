@@ -27,15 +27,15 @@ export function ProgressStepper({
     return (
       <Box
         sx={{
-          height: 24,
-          width: 24,
+          height: 16,
+          width: 16,
           borderRadius: '50%',
           backgroundColor: isCompleted
-            ? 'primary.main'
+            ? 'secondary.light'
             : isCurrentStep
-              ? '#C52D3A35'
-              : 'white',
-          border: '2px solid',
+              ? 'white'
+              : 'divider',
+          ...(isCurrentStep && { border: '5px solid' }),
           borderColor: isCompleted
             ? 'primary.main'
             : isCurrentStep
@@ -46,7 +46,7 @@ export function ProgressStepper({
           justifyContent: 'center'
         }}
       >
-        {isCompleted && <Check sx={{ fontSize: 24, color: 'white' }} />}
+        {isCompleted && <Check sx={{ fontSize: 16, color: 'white' }} />}
       </Box>
     )
   }
@@ -57,16 +57,16 @@ export function ProgressStepper({
         sx={{
           '&.Mui-active': {
             '& .MuiStepConnector-line': {
-              borderColor: 'primary.main'
+              borderColor: 'secondary.light'
             }
           },
           '&.Mui-completed': {
             '& .MuiStepConnector-line': {
-              borderColor: 'primary.main'
+              borderColor: 'secondary.light'
             }
           },
           '& .MuiStepConnector-line': {
-            borderColor: 'grey.300',
+            borderColor: 'divider',
             borderRadius: '1px',
             borderTopWidth: 2,
             minHeight: '2px'
@@ -80,7 +80,7 @@ export function ProgressStepper({
     <Box
       sx={{
         width: '100%',
-        maxWidth: '70%',
+        maxWidth: { xs: '45%', sm: '30%' },
         margin: '0 auto'
       }}
       data-testid="progress-stepper"
@@ -90,7 +90,7 @@ export function ProgressStepper({
         connector={<ProgressStepperConnector />}
         sx={{
           '& .MuiStep-root': {
-            padding: '0 6px'
+            padding: '0 3px'
           },
           '& .MuiStepLabel-root': {
             padding: 0

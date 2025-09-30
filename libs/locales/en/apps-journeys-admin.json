@@ -669,7 +669,7 @@
   "Complete": "Complete",
   "Progress": "Progress",
   "Not found": "Not found",
-  "All contact data {name, email, phone} is exported by default": "All contact data {name, email, phone} is exported by default",
+  "All contact data (name, email, phone) is exported by default": "All contact data (name, email, phone) is exported by default",
   "Video Interactions": "Video Interactions",
   "Filter By": "Filter By",
   "Chat Started": "Chat Started",

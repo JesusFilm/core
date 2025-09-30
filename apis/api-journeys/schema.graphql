@@ -857,6 +857,27 @@ input ImageBlockUpdateInput {
   focalLeft: Int
 }
 
+type MultiselectBlock implements Block
+  @shareable
+{
+  id: ID!
+  journeyId: ID!
+  parentBlockId: ID
+  parentOrder: Int
+  max: Int
+  min: Int
+}
+
+type MultiselectOptionBlock implements Block
+  @shareable
+{
+  id: ID!
+  journeyId: ID!
+  parentBlockId: ID
+  parentOrder: Int
+  label: String!
+}
+
 type RadioOptionBlock implements Block
   @shareable
 {

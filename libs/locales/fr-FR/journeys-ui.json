@@ -1,3 +1,8 @@
 {
-  "None": "Aucun"
+  "Failed to duplicate journey to team, please refresh the page and try again": "La duplication du trajet vers l'équipe a échoué, rafraîchis la page et réessaie.",
+  "Let's get started!": "C'est parti !",
+  "A few quick edits and your template will be ready to share.": "Quelques modifications rapides et ton modèle sera prêt à être partagé.",
+  "Select a language": "Sélectionne une langue",
+  "Select a team": "Choisis une équipe",
+  "Next Step": "Prochaine étape"
 }
