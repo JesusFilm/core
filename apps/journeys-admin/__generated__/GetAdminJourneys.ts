@@ -81,6 +81,7 @@ export interface GetAdminJourneys_journeys {
   template: boolean | null;
   userJourneys: GetAdminJourneys_journeys_userJourneys[] | null;
   primaryImageBlock: GetAdminJourneys_journeys_primaryImageBlock | null;
+  fromTemplateId: string | null;
 }
 
 export interface GetAdminJourneys {
