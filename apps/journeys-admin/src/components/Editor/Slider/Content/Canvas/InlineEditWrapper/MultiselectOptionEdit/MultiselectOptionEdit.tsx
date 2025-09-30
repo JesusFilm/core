@@ -23,11 +23,11 @@ export const MULTISELECT_OPTION_BLOCK_UPDATE = gql`
   }
 `
 
-export function MultiselectOptionEdit(
+export function MultiselectOptionEdit({
   id,
   label,
-  ...props: MultiselectOptionFields
-): ReactElement {
+  ...rest
+}: MultiselectOptionFields): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const [updateOption] = useMutation<
     MultiselectOptionBlockUpdate,
