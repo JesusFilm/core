@@ -133,7 +133,7 @@ export function TextFieldForm({
                   handleSubmit()
                 } else if (values[id] === '' && initialValue) {
                   // Revert to initial value if field is empty and has an initial value
-                  setFieldValue(id, initialValue)
+                  void setFieldValue(id, initialValue)
                 }
               }}
               onChange={(e) => {

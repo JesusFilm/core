@@ -247,7 +247,7 @@ describe('Action', () => {
     await waitFor(() =>
       expect(getByRole('option', { name: 'URL/Website' })).toBeInTheDocument()
     )
-    userEvent.click(getByRole('option', { name: 'URL/Website' }))
+    await userEvent.click(getByRole('option', { name: 'URL/Website' }))
     
     // Wait for the component to re-render and then focus the input
     await waitFor(() =>
@@ -259,7 +259,7 @@ describe('Action', () => {
     await waitFor(() =>
       expect(getByRole('option', { name: 'Email' })).toBeInTheDocument()
     )
-    userEvent.click(getByRole('option', { name: 'Email' }))
+    await userEvent.click(getByRole('option', { name: 'Email' }))
     
     // Wait for the component to re-render and then focus the input
     await waitFor(() =>
