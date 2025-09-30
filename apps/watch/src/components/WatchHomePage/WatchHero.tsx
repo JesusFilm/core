@@ -18,6 +18,7 @@ interface WatchHeroProps {
   loading: boolean
   onSelectSlide: (slideId: string) => void
   onMuxInsertComplete: () => void
+  onSkipActiveVideo?: () => void
   children?: ReactNode
 }
 
@@ -29,6 +30,7 @@ export function WatchHero({
   loading,
   onSelectSlide,
   onMuxInsertComplete,
+  onSkipActiveVideo,
   children
 }: WatchHeroProps): ReactElement {
   return (
@@ -39,6 +41,7 @@ export function WatchHero({
             isPreview
             currentMuxInsert={currentMuxInsert}
             onMuxInsertComplete={onMuxInsertComplete}
+            onSkipActiveVideo={onSkipActiveVideo}
           />
         </VideoProvider>
       )}

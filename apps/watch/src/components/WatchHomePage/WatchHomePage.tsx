@@ -46,7 +46,8 @@ function WatchHomePageBody({ languageId }: WatchHomePageProps): ReactElement {
     activeVideo,
     currentMuxInsert,
     handleVideoSelect,
-    handleMuxInsertComplete
+    handleMuxInsertComplete,
+    handleSkipActiveVideo
   } = useWatchHeroCarousel({ locale: '529' })
 
   return (
@@ -69,6 +70,7 @@ function WatchHomePageBody({ languageId }: WatchHomePageProps): ReactElement {
         loading={loading}
         onSelectSlide={handleVideoSelect}
         onMuxInsertComplete={handleMuxInsertComplete}
+        onSkipActiveVideo={handleSkipActiveVideo}
       >
         <div
           data-testid="WatchHomePage"

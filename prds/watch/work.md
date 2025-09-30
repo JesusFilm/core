@@ -65,3 +65,40 @@
 
 - Consider moving category metadata to CMS-driven config if design requires frequent updates.
 - Evaluate migrating remaining MUI layout primitives to Tailwind equivalents in a future iteration.
+
+# Featured Hero Skip Control
+
+## Goals
+
+- [x] Add a skip control beside the preview mute toggle so users can quickly advance featured videos.
+- [x] Wire the skip control into the carousel state so the next slide loads consistently.
+
+## Implementation Strategy
+
+- [x] Expose a `handleSkipActiveVideo` helper from `useWatchHeroCarousel` that reuses existing slide advancement logic.
+- [x] Thread the handler through `WatchHero` → `VideoContentHero` → `HeroVideo` → `VideoControls` → `VideoTitle`.
+- [x] Render a Skip button in the preview control cluster with translated aria label and icon-only styling.
+- [x] Localize the new "Skip video" copy across existing locale bundles and extend unit coverage for the new handler.
+
+## Obstacles
+
+- Ensuring the skip handler cooperated with the debounced progress reset logic without regressing autoplay sequencing.
+
+## Resolutions
+
+- Reused the existing `moveToSlide` utility so skip events share the same scheduling + pooling behaviour as autoplay.
+
+## Test Coverage
+
+- `pnpm dlx nx test watch --testFile=apps/watch/src/components/VideoContentPage/VideoHero/VideoPlayer/VideoTitle/VideoTitle.spec.tsx`
+- `pnpm dlx nx test watch --testFile=apps/watch/src/components/WatchHomePage/useWatchHeroCarousel.spec.tsx`
+
+## User Flows
+
+- Watch homepage loads → hero renders preview → user taps Skip → carousel advances immediately to the next slide.
+- User taps Skip on final slide → carousel queues additional content via `moveToNext` fallback.
+
+## Follow-up Ideas
+
+- Consider showing a brief tooltip on first visit explaining the Skip control for accessibility.
+- Evaluate whether skip interactions should emit analytics distinct from autoplay completions.
