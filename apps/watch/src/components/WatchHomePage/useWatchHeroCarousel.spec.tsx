@@ -190,6 +190,44 @@ describe('useWatchHeroCarousel', () => {
     expect(jumpToVideoMock).toHaveBeenCalledWith(videoTwo.id)
   })
 
+  it('skips to the next slide when skip handler is invoked', () => {
+    const { result } = renderHook(() => useWatchHeroCarousel())
+
+    act(() => {
+      result.current.handleSkipActiveVideo()
+    })
+    act(() => {
+      jest.runOnlyPendingTimers()
+    })
+
+    expect(result.current.activeVideoId).toBe(muxSlideTwo.id)
+
+    act(() => {
+      result.current.handleSkipActiveVideo()
+    })
+    act(() => {
+      jest.runOnlyPendingTimers()
+    })
+
+    expect(result.current.activeVideoId).toBe(videoOne.id)
+  })
+
+  it('requests additional videos when skipping beyond available slides', () => {
+    const { result } = renderHook(() => useWatchHeroCarousel())
+
+    act(() => {
+      result.current.handleVideoSelect(videoTwo.id)
+    })
+
+    moveToNextMock.mockClear()
+
+    act(() => {
+      result.current.handleSkipActiveVideo()
+    })
+
+    expect(moveToNextMock).toHaveBeenCalled()
+  })
+
   it('automatically advances when playback nears completion', () => {
     const { result, rerender } = renderHook(() => useWatchHeroCarousel())
 

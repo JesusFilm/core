@@ -25,6 +25,7 @@ interface HeroVideoProps {
   onMuteToggle?: (isMuted: boolean) => void
   currentMuxInsert?: CarouselMuxSlide | null
   onMuxInsertComplete?: () => void
+  onSkip?: () => void
 }
 
 export function HeroVideo({
@@ -32,7 +33,8 @@ export function HeroVideo({
   collapsed = true,
   onMuteToggle,
   currentMuxInsert,
-  onMuxInsertComplete
+  onMuxInsertComplete,
+  onSkip
 }: HeroVideoProps): ReactElement {
   const { variant, ...video } = useVideo()
   const {
@@ -244,6 +246,7 @@ export function HeroVideo({
               action={currentMuxInsert?.overlay.action}
               isMuxInsert={currentMuxInsert != null}
               muxOverlay={currentMuxInsert?.overlay}
+              onSkip={onSkip}
             />
           </>
         )}
