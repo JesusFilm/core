@@ -42,6 +42,7 @@ export interface SectionVideoCollectionCarouselContentResult {
   ctaLabel: string
   ctaHref: string
   primaryCollection?: ShowcaseVideoNode
+  backgroundImageUrl?: string
 }
 
 interface FlattenOptions {
@@ -121,6 +122,19 @@ function selectImageUrl(node: MaybeCollection | VideoNode): string | undefined {
   if (banner?.mobileCinematicHigh != null) return banner.mobileCinematicHigh
 
   return undefined
+}
+
+function selectCollectionBackgroundImageUrl(
+  collection?: MaybeCollection
+): string | undefined {
+  if (collection == null) return undefined
+
+  const banner = collection.bannerImages?.find(
+    (image) => image?.mobileCinematicHigh != null
+  )
+  if (banner?.mobileCinematicHigh != null) return banner.mobileCinematicHigh
+
+  return selectImageUrl(collection)
 }
 
 function selectAltText(node: MaybeCollection | VideoNode): string | undefined {
@@ -439,6 +453,7 @@ export function useSectionVideoCollectionCarouselContent({
     description,
     ctaLabel,
     ctaHref,
-    primaryCollection
+    primaryCollection,
+    backgroundImageUrl: selectCollectionBackgroundImageUrl(primaryCollection)
   }
 }

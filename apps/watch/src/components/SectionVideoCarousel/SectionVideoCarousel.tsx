@@ -47,7 +47,16 @@ export function SectionVideoCarousel({
 }: SectionVideoCarouselProps): ReactElement | null {
   const { t } = useTranslation('apps-watch')
 
-  const { loading, slides, subtitle, title, description, ctaHref, ctaLabel } =
+  const {
+    loading,
+    slides,
+    subtitle,
+    title,
+    description,
+    ctaHref,
+    ctaLabel,
+    backgroundImageUrl
+  } =
     useSectionVideoCollectionCarouselContent({
       sources,
       primaryCollectionId,
@@ -65,13 +74,19 @@ export function SectionVideoCarousel({
   return (
     <section
       id={id}
-      className={cn(
-        'relative bg-linear-to-tr from-blue-950/10 via-purple-950/10 to-[#91214A]/90 py-16 scroll-snap-start-always',
-        backgroundClassName
-      )}
+      className={cn('relative overflow-hidden py-16 scroll-snap-start-always', backgroundClassName)}
       data-testid="SectionVideoCarousel"
     >
-      <div className="absolute inset-0 bg-[url(/watch/assets/overlay.svg)] bg-repeat mix-blend-multiply" />
+      {backgroundImageUrl != null ? (
+        <div
+          aria-hidden
+          className="absolute inset-0 -z-30 bg-cover bg-center"
+          style={{ backgroundImage: `url(${backgroundImageUrl})` }}
+          data-testid="SectionVideoCarouselBackground"
+        />
+      ) : null}
+      <div className="absolute inset-0 -z-20 bg-linear-to-tr from-blue-950/40 via-purple-950/30 to-[#91214A]/80" />
+      <div className="absolute inset-0 -z-10 bg-[url(/watch/assets/overlay.svg)] bg-repeat mix-blend-multiply" />
       <div className="padded relative z-2 pb-6">
         <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
           <div className="flex flex-col gap-1">

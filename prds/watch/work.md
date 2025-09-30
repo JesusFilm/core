@@ -65,3 +65,38 @@
 
 - Consider moving category metadata to CMS-driven config if design requires frequent updates.
 - Evaluate migrating remaining MUI layout primitives to Tailwind equivalents in a future iteration.
+
+# Collection Section Background Enhancements
+
+## Goals
+
+- [x] Surface collection cover imagery within section backgrounds for carousel/grid sections.
+
+## Obstacles
+
+- Needed to preserve the existing gradient/pattern overlay layering while introducing cover imagery.
+
+## Resolutions
+
+- Layered the background image beneath recreated gradient and pattern overlays to maintain readability.
+
+## Implementation Strategy
+
+- [x] Audit `useSectionVideoCollectionCarouselContent` to identify available collection imagery.
+- [x] Expose a `backgroundImageUrl` from the hook that prefers banner art with poster fallback.
+- [x] Render the background image beneath gradient + texture overlays in SectionVideoGrid and SectionVideoCarousel.
+- [x] Extend unit tests to assert that background URLs render when data is available.
+
+## Test Coverage
+
+- `pnpm exec jest apps/watch/src/components/SectionVideoGrid/SectionVideoGrid.spec.tsx --config=apps/watch/jest.config.ts`
+- `pnpm exec jest apps/watch/src/components/SectionVideoCarousel/SectionVideoCarousel.spec.tsx --config=apps/watch/jest.config.ts`
+
+## User Flows
+
+- Load a SectionVideoGrid fed by a collection – the collection's cover art appears behind the grid with existing overlays intact.
+- Load a SectionVideoCarousel fed by the same data – the carousel inherits the same background treatment.
+
+## Follow-up Ideas
+
+- Consider supporting responsive art direction (mobile vs desktop) if API exposes additional image sizes.
