@@ -44,7 +44,10 @@ const ACTION_CONFIG = {
 
 // Helper function to check if an action type is a positioned action
 function isPositionedAction(actionType?: string): boolean {
-  return ACTION_CONFIG[actionType as keyof typeof ACTION_CONFIG]?.isPositionedAction ?? false
+  return (
+    ACTION_CONFIG[actionType as keyof typeof ACTION_CONFIG]
+      ?.isPositionedAction ?? false
+  )
 }
 
 // Helper function to get action configuration
@@ -156,10 +159,10 @@ export function transformSteps(
     // Handle positioned actions using configuration
     const actionType = block.action.__typename
     const config = getActionConfig(actionType)
-    
+
     if (config?.isPositionedAction) {
       const nodeId = `${config.nodeIdPrefix}-${block.id}`
-      
+
       // Create edge
       edges.push({
         id: `${block.id}->${nodeId}`,

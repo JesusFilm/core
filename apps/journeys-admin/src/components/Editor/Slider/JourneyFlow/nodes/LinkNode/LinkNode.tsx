@@ -28,9 +28,7 @@ export function LinkNode({ id }: NodeProps): ReactElement {
     ?.flatMap((step) => filterActionBlocks(step))
     .find(({ id }) => id === strippedNodeId)
 
-  function getActionDetail(
-    matchedActionBlock?: ActionBlock
-  ): string {
+  function getActionDetail(matchedActionBlock?: ActionBlock): string {
     switch (matchedActionBlock?.action?.__typename) {
       case 'LinkAction':
         return matchedActionBlock.action.url

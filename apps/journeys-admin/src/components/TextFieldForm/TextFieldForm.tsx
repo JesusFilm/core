@@ -58,7 +58,7 @@ export function TextFieldForm({
 }: TextFieldFormProps): ReactElement {
   const textFieldRef = useRef<HTMLInputElement>(null)
   const formikRef = useRef<any>(null)
-  
+
   useImperativeHandle(ref, () => ({
     focus: () => textFieldRef.current?.focus(),
     validate: () => {
@@ -101,7 +101,7 @@ export function TextFieldForm({
       }) => {
         // Store formik instance in ref for external access
         formikRef.current = { handleSubmit, ...formikProps }
-        
+
         return (
           <Form>
             <TextField

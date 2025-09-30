@@ -11,7 +11,10 @@ import {
   ContactActionType
 } from '../../../../../../../../../../__generated__/globalTypes'
 import { blockActionNavigateToBlockUpdateMock } from '../../../../../../../../../libs/useBlockActionNavigateToBlockUpdateMutation/useBlockActionNavigateToBlockUpdateMutation.mock'
-import { blockActionPhoneUpdateMock, blockActionPhoneUpdateMockCA } from '../../../../../../../../../libs/useBlockActionPhoneUpdateMutation/useBlockActionPhoneUpdateMutation.mock'
+import {
+  blockActionPhoneUpdateMock,
+  blockActionPhoneUpdateMockCA
+} from '../../../../../../../../../libs/useBlockActionPhoneUpdateMutation/useBlockActionPhoneUpdateMutation.mock'
 import { CommandUndoItem } from '../../../../../../../Toolbar/Items/CommandUndoItem'
 
 import { PhoneAction } from '.'
@@ -175,7 +178,9 @@ describe('PhoneAction', () => {
     fireEvent.change(phoneInput, { target: { value: '12345678901234567890' } })
     fireEvent.blur(phoneInput)
     await waitFor(() =>
-      expect(screen.getByText('Phone number must be under 15 digits.')).toBeInTheDocument()
+      expect(
+        screen.getByText('Phone number must be under 15 digits.')
+      ).toBeInTheDocument()
     )
   })
 
@@ -418,11 +423,11 @@ describe('PhoneAction', () => {
     // Set empty country code and phone number to trigger validateAndSubmit
     const countryInput = screen.getByRole('textbox', { name: 'Country' })
     const phoneInput = screen.getByRole('textbox', { name: 'Phone Number' })
-    
+
     // Clear both fields
     fireEvent.change(countryInput, { target: { value: '' } })
     fireEvent.blur(countryInput)
-    
+
     fireEvent.change(phoneInput, { target: { value: '' } })
     fireEvent.blur(phoneInput)
 

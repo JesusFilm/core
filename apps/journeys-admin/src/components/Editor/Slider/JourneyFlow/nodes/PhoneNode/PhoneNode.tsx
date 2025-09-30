@@ -27,9 +27,7 @@ export function PhoneNode({ id }: NodeProps): ReactElement {
     ?.flatMap((step) => filterActionBlocks(step))
     .find(({ id }) => id === strippedNodeId)
 
-  function getActionDetail(
-    matchedActionBlock?: ActionBlock
-  ): string {
+  function getActionDetail(matchedActionBlock?: ActionBlock): string {
     switch (matchedActionBlock?.action?.__typename) {
       case 'PhoneAction':
         return matchedActionBlock.action.phone
@@ -44,10 +42,11 @@ export function PhoneNode({ id }: NodeProps): ReactElement {
 
   const actionDetail = getActionDetail(matchedActionBlock)
   const { label, icon } = getGoalDetails(
-    matchedActionBlock?.action?.__typename === 'PhoneAction' && matchedActionBlock?.action?.contactAction === 'text' 
-      ? 'Text' 
-      : 'Call'
-    ,t
+    matchedActionBlock?.action?.__typename === 'PhoneAction' &&
+      matchedActionBlock?.action?.contactAction === 'text'
+      ? 'Text'
+      : 'Call',
+    t
   )
 
   return (
