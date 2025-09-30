@@ -43,6 +43,7 @@ export function CollectionsRail({ languageId }: CollectionsRailProps): ReactElem
         titleOverride="Discover the full story (Grid View)"
         descriptionOverride="Explore our collection of videos and resources that bring the Bible to life through engaging stories and teachings."
         languageId={languageId}
+        showSequenceNumbers={true}
       />
       <SectionVideoGrid
         id="home-collection-showcase-grid-vertical"
