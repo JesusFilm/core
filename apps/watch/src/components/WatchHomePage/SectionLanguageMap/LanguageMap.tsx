@@ -7,7 +7,8 @@ import maplibregl, {
   Map as MapInstance,
   type MapMouseEvent,
   type MapboxGeoJSONFeature,
-  Popup
+  Popup,
+  type GeoJSONSource
 } from 'maplibre-gl'
 import { useEffect, useMemo, useRef, useState } from 'react'
 
@@ -32,6 +33,12 @@ type LanguageFeatureCollection = FeatureCollection<
 interface LanguageMapProps {
   points: LanguageMapPoint[]
   unsupportedMessage?: string
+}
+
+type PopupLanguage = {
+  languageName: string
+  englishName?: string
+  nativeName?: string
 }
 
 function createFeatureCollection(points: LanguageMapPoint[]): LanguageFeatureCollection {
@@ -207,6 +214,53 @@ function isLanguageFeature(
   )
 }
 
+function getPopupLanguages(points: LanguageMapPoint[]): PopupLanguage[] {
+  const uniqueLanguages = new Map<string, PopupLanguage>()
+
+  for (const point of points) {
+    if (uniqueLanguages.has(point.languageId)) continue
+    uniqueLanguages.set(point.languageId, {
+      languageName: point.languageName,
+      englishName: point.englishName,
+      nativeName: point.nativeName
+    })
+  }
+
+  return Array.from(uniqueLanguages.values()).sort((languageA, languageB) =>
+    languageA.languageName.localeCompare(languageB.languageName)
+  )
+}
+
+async function getAllClusterLeaves(
+  source: GeoJSONSource,
+  clusterId: number
+): Promise<MapboxGeoJSONFeature[]> {
+  const leaves: MapboxGeoJSONFeature[] = []
+  const pageSize = 100
+  let offset = 0
+
+  while (true) {
+    // eslint-disable-next-line no-await-in-loop
+    const batch = await new Promise<MapboxGeoJSONFeature[]>((resolve, reject) => {
+      source.getClusterLeaves(clusterId, pageSize, offset, (error, features) => {
+        if (error != null) {
+          reject(error)
+          return
+        }
+
+        resolve(features as MapboxGeoJSONFeature[])
+      })
+    })
+
+    leaves.push(...batch)
+
+    if (batch.length < pageSize) break
+    offset += pageSize
+  }
+
+  return leaves
+}
+
 export function LanguageMap({
   points,
   unsupportedMessage
@@ -216,8 +270,15 @@ export function LanguageMap({
   const popupRef = useRef<Popup | null>(null)
   const clusterPopupRef = useRef<Popup | null>(null)
   const [isUnsupported, setIsUnsupported] = useState(false)
+  const allPointsRef = useRef(points)
+  const clusterClickCountRef = useRef(0)
+  const lastClusterIdRef = useRef<number | null>(null)
 
   const featureCollection = useMemo(() => createFeatureCollection(points), [points])
+
+  useEffect(() => {
+    allPointsRef.current = points
+  }, [points])
 
   useEffect(() => {
     console.log('🗺️ LanguageMap useEffect running')
@@ -358,36 +419,159 @@ export function LanguageMap({
           return
         }
 
-        // Simple zoom to cluster center
-        console.log('🗺️ Zooming to cluster center')
-        map.easeTo({
-          center: clusterFeature.geometry.coordinates,
-          zoom: Math.min(map.getZoom() + 3, map.getMaxZoom()),
-          duration: 1000
-        })
-
-        // Show a simple popup with cluster info
-        console.log('🗺️ Creating cluster popup')
-        if (clusterPopupRef.current == null) {
-          console.log('🗺️ Creating new cluster popup instance')
-          clusterPopupRef.current = new maplibregl.Popup({ closeButton: false, closeOnMove: false })
+        const clusterId = clusterFeature.properties.cluster_id
+        if (lastClusterIdRef.current !== clusterId) {
+          clusterClickCountRef.current = 0
         }
 
-        const pointCount = clusterFeature.properties?.point_count || 0
-        const clusterId = clusterFeature.properties?.cluster_id || 0
-        const htmlContent = `<div style="color: black; padding: 8px;"><strong>Language Cluster</strong><br/>${pointCount} languages<br/>ID: ${clusterId}</div>`
+        clusterClickCountRef.current += 1
+        lastClusterIdRef.current = clusterId
 
-        console.log('🗺️ Setting cluster popup content:', htmlContent)
-        console.log('🗺️ Cluster popup coordinates:', clusterFeature.geometry.coordinates)
+        if (clusterClickCountRef.current < 3) {
+          // Simple zoom to cluster center
+          console.log('🗺️ Zooming to cluster center')
+          map.easeTo({
+            center: clusterFeature.geometry.coordinates,
+            zoom: Math.min(map.getZoom() + 3, map.getMaxZoom()),
+            duration: 1000
+          })
+
+          // Show a simple popup with cluster info
+          console.log('🗺️ Creating cluster popup')
+          if (clusterPopupRef.current == null) {
+            console.log('🗺️ Creating new cluster popup instance')
+            clusterPopupRef.current = new maplibregl.Popup({ closeButton: false, closeOnMove: false })
+          }
+
+          const pointCount = clusterFeature.properties?.point_count || 0
+          const htmlContent = `<div style="color: black; padding: 8px;"><strong>Language Cluster</strong><br/>${pointCount} languages</div>`
+
+          console.log('🗺️ Setting cluster popup content:', htmlContent)
+          console.log('🗺️ Cluster popup coordinates:', clusterFeature.geometry.coordinates)
+
+          try {
+            clusterPopupRef.current
+              .setLngLat(clusterFeature.geometry.coordinates)
+              .setHTML(`<div style="background: white; border: 1px solid black; padding: 10px; border-radius: 4px; font-family: Arial, sans-serif;"><strong>Language Cluster</strong><br/>${pointCount} languages</div>`)
+              .addTo(map)
+            console.log('🗺️ Cluster popup added to map successfully')
+          } catch (error) {
+            console.error('🗺️ Error adding cluster popup to map:', error)
+          }
+
+          return
+        }
+
+        clusterClickCountRef.current = 0
 
         try {
+          const clusterSource = source as GeoJSONSource
+          const leaves = await getAllClusterLeaves(clusterSource, clusterId)
+
+          const languagesByCountry = new Map<
+            string,
+            {
+              countryName?: string
+              languages: PopupLanguage[]
+            }
+          >()
+
+          for (const leaf of leaves) {
+            if (!isLanguageFeature(leaf)) continue
+            const countryId = leaf.properties.countryId as string | undefined
+            if (countryId == null) continue
+
+            if (!languagesByCountry.has(countryId)) {
+              languagesByCountry.set(countryId, {
+                countryName: leaf.properties.countryName as string | undefined,
+                languages: []
+              })
+            }
+
+            const country = languagesByCountry.get(countryId)
+            country?.languages.push({
+              languageName: leaf.properties.languageName as string,
+              englishName: leaf.properties.englishName as string | undefined,
+              nativeName: leaf.properties.nativeName as string | undefined
+            })
+          }
+
+          let selectedCountryId: string | undefined
+          let selectedCountry: { countryName?: string; languages: PopupLanguage[] } | undefined
+
+          for (const [countryId, country] of languagesByCountry.entries()) {
+            if (
+              selectedCountry == null ||
+              country.languages.length > selectedCountry.languages.length
+            ) {
+              selectedCountryId = countryId
+              selectedCountry = country
+            }
+          }
+
+          if (selectedCountryId == null) {
+            const firstLeaf = leaves.find(isLanguageFeature)
+            selectedCountryId = firstLeaf?.properties.countryId as string | undefined
+            if (selectedCountryId != null && selectedCountry == null) {
+              selectedCountry = {
+                countryName: firstLeaf?.properties.countryName as string | undefined,
+                languages: []
+              }
+            }
+          }
+
+          const allPoints = allPointsRef.current
+          const countryPoints =
+            selectedCountryId != null
+              ? allPoints.filter(point => point.countryId === selectedCountryId)
+              : []
+
+          const popupLanguages =
+            countryPoints.length > 0
+              ? getPopupLanguages(countryPoints)
+              : selectedCountry?.languages ?? []
+
+          const countryName =
+            selectedCountry?.countryName ?? countryPoints[0]?.countryName ?? 'Languages'
+
+          const bounds =
+            selectedCountryId != null ? getCountryBounds(selectedCountryId, allPoints) : null
+
+          const popupCoordinates = (() => {
+            if (bounds != null) {
+              const [[minLng, minLat], [maxLng, maxLat]] = bounds
+              return [(minLng + maxLng) / 2, (minLat + maxLat) / 2] as [number, number]
+            }
+            return clusterFeature.geometry.coordinates as [number, number]
+          })()
+
+          if (bounds != null) {
+            map.fitBounds(bounds, { padding: 40, duration: 1200 })
+          } else {
+            map.easeTo({
+              center: popupCoordinates,
+              zoom: Math.min(map.getZoom() + 3, map.getMaxZoom()),
+              duration: 1000
+            })
+          }
+
+          popupRef.current?.remove()
+
+          if (clusterPopupRef.current == null) {
+            clusterPopupRef.current = new maplibregl.Popup({ closeButton: true, closeOnMove: false })
+          }
+
           clusterPopupRef.current
-            .setLngLat(clusterFeature.geometry.coordinates)
-            .setHTML(`<div style="background: white; border: 1px solid black; padding: 10px; border-radius: 4px; font-family: Arial, sans-serif;"><strong>Language Cluster</strong><br/>${pointCount} languages<br/>ID: ${clusterId}</div>`)
+            .setLngLat(popupCoordinates)
+            .setDOMContent(
+              renderCountryPopupContent({
+                countryName,
+                languages: popupLanguages
+              })
+            )
             .addTo(map)
-          console.log('🗺️ Cluster popup added to map successfully')
         } catch (error) {
-          console.error('🗺️ Error adding cluster popup to map:', error)
+          console.error('🗺️ Failed to load cluster leaves:', error)
         }
       })
 
@@ -396,6 +580,9 @@ export function LanguageMap({
 
         const feature = event.features?.[0]
         if (!isLanguageFeature(feature)) return
+
+        clusterClickCountRef.current = 0
+        lastClusterIdRef.current = null
 
         const { properties, geometry } = feature
         const coordinates = geometry.coordinates
