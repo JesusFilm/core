@@ -12,8 +12,6 @@ import { getLabelDetails } from '../../../../libs/utils/getLabelDetails/getLabel
 import { getWatchUrl } from '../../../../libs/utils/getWatchUrl'
 import { UnifiedCardData } from '../../../../types/inserts'
 
-import { LazyImage } from './LazyImage'
-
 interface VideoCardProps {
   data: UnifiedCardData
   containerSlug?: string
@@ -48,31 +46,45 @@ function CardContent({
   const imageAlt = data.imageAlt?.[0]?.value ?? ''
 
   const ContainerElement = interactive ? 'button' : 'div'
-  const ContentElement = interactive ? 'div' : 'div'
 
   return (
     <div className="flex flex-col gap-6">
       <ContainerElement
         data-testid={`VideoCardButton-${data.slug}`}
         {...(interactive && {
+          type: 'button' as const,
           name: typeof data.title === 'string' ? data.title : last(data.title)?.value,
           disabled: data == null
         })}
-        className="beveled rounded-lg w-full relative text-left border-none bg-transparent p-0 cursor-pointer disabled:cursor-default"
+        className="beveled w-full max-w-[520px] border-none bg-transparent p-0 text-left outline-none focus-visible:ring-2 focus-visible:ring-white/70 disabled:cursor-default"
+        onFocus={() => onMouseEnter()}
+        onBlur={() => onMouseLeave()}
       >
-        <ContentElement
-          className="relative max-w-[200px] h-60 flex flex-col justify-end w-full rounded-xl cursor-pointer bg-black"
+        <div
+          className="group relative flex w-full items-stretch gap-4 overflow-hidden rounded-2xl border border-white/10 bg-white/5 p-3 text-left transition-transform duration-200 ease-out hover:-translate-y-0.5"
           {...(interactive && {
-            tabIndex: 0,
             role: 'button',
+            tabIndex: -1,
             'aria-label': `Navigate to ${data.slug}`
           })}
           data-testid={`CarouselItem-${data.slug}`}
-          onMouseEnter={onMouseEnter}
-          onMouseLeave={onMouseLeave}
+          onMouseEnter={() => onMouseEnter()}
+          onMouseLeave={() => onMouseLeave()}
         >
-          {/* Image Layer with Lazy Loading - Only render when imageSrc is available */}
-          <div className="absolute left-0 right-0 top-0 bottom-0 rounded-lg overflow-hidden">
+          {active && playerProgress >= 5 && (
+            <div
+              className="pointer-events-none absolute bottom-0 left-0 h-1.5 rounded-b-2xl bg-red-500/80 transition-[width] duration-1200 ease-linear"
+              style={{ width: `${playerProgress}%` }}
+              data-testid="ProgressOverlay"
+            />
+          )}
+          <div
+            className={`pointer-events-none absolute inset-0 rounded-2xl ring-2 ring-white/80 transition-opacity duration-200 ${
+              active || isHovered ? 'opacity-100' : 'opacity-0'
+            }`}
+            data-testid="ActiveLayer"
+          />
+          <div className="relative aspect-video w-40 flex-shrink-0 overflow-hidden rounded-xl bg-black sm:w-48 md:w-60">
             {imageSrc && (
               <Image
                 fill
@@ -82,63 +94,35 @@ function CardContent({
                 style={{
                   width: '100%',
                   objectFit: 'cover',
-                  maskSize: 'cover',
                   pointerEvents: 'none'
                 }}
               />
             )}
-          </div>
-
-          {/* Active/Hover Border Layer */}
-          <div
-            className={`absolute left-0 right-0 top-0 bottom-0 rounded-lg overflow-visible transition-all duration-100 ease-in-out pointer-events-none ${
-              active || isHovered ? 'shadow-[inset_0_0_0_4px_#fff]' : ''
-            }`}
-            data-testid="ActiveLayer"
-          />
-
-          {/* Progress Bar Overlay */}
-          {active && playerProgress >= 5 && (
             <div
-              className="absolute left-0 top-0 bottom-0 bg-stone-100/30 rounded-l-lg pointer-events-none mix-blend-hard-light transition-[width] duration-1200 ease-linear"
-              style={{ width: `${playerProgress}%` }}
-              data-testid="ProgressOverlay"
-            />
-          )}
-
-          {/* Play Button with Fade */}
-          <div
-            className={`absolute top-1/2 right-1/2 transform translate-x-1/2 -translate-y-1/2 w-20 h-20 flex items-center justify-center text-white bg-red-500 bg-opacity-50 rounded-full transition-all duration-300 cursor-pointer z-2 ${
-              !active && isHovered ? 'opacity-100' : 'opacity-0'
-            }`}
-            style={{
-              pointerEvents: 'none'
-            }}
-          >
-            <Play3 className="text-6xl" />
+              className={`pointer-events-none absolute inset-0 flex items-center justify-center transition-opacity duration-300 ${
+                !active && isHovered ? 'opacity-100' : 'opacity-0'
+              }`}
+            >
+              <div className="rounded-full bg-black/60 p-3">
+                <Play3 className="h-7 w-7 text-white" />
+              </div>
+            </div>
           </div>
-
-          {/* Content */}
-          <div className="p-4 font-sans z-1">
+          <div className="flex min-w-0 flex-1 flex-col justify-center gap-2 pr-2 text-left sm:pr-3">
             <span
-              className="text-stone-100/80 text-xs font-bold tracking-widest uppercase"
+              className="text-xs font-semibold uppercase tracking-wide text-white/70"
               data-testid="CarouselItemCategory"
             >
               {label}
             </span>
             <h3
-              className="font-bold text-base text-stone-50 leading-tight overflow-hidden text-shadow-xs"
-              style={{
-                display: '-webkit-box',
-                WebkitLineClamp: 3,
-                WebkitBoxOrient: 'vertical'
-              }}
+              className="line-clamp-2 text-base font-semibold leading-snug text-white"
               data-testid={`CarouselItemTitle-${data.slug}`}
             >
               {typeof data.title === 'string' ? data.title : last(data.title)?.value}
             </h3>
           </div>
-        </ContentElement>
+        </div>
       </ContainerElement>
     </div>
   )
