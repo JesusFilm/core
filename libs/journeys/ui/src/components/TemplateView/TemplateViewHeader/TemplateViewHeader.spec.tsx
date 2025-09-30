@@ -388,7 +388,7 @@ describe('TemplateViewHeader', () => {
   it('should show use this template loading skeleton if journey is undefined', async () => {
     mockIsJourneyCustomizable.mockReturnValue(false)
 
-    const { getAllByRole } = render(
+    render(
       <MockedProvider>
         <FlagsProvider flags={{ journeyCustomization: false }}>
           <JourneyProvider value={{ journey: undefined }}>
