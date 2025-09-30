@@ -192,6 +192,22 @@ export function VideoTitle({
           {action?.label || t('Watch Now')}
         </NextLink>
       )}
+      {isPreview && !isMuxInsert && (
+        <NextLink
+          href={watchNowHref}
+          scroll={false}
+          locale={false}
+          id="watch-now-button"
+          className="inline-flex z-1 items-center justify-center gap-2 px-6 py-3
+            bg-[#CB333B] text-lg font-medium text-stone-100
+            rounded-full shadow-md transition-colors duration-200
+            hover:bg-[#A4343A] font-sans cursor-pointer self-start no-underline
+            animate-fade-in-up animation-delay-500"
+        >
+          <PlayArrowRounded fontSize="medium" />
+          Watch Now
+        </NextLink>
+      )}
       {isPreview && (onMuteToggle != null || onSkip != null) && (
         <div className="absolute z-0 bottom-7 right-0 flex items-center gap-2 scale-150">
           {onSkip != null && (
