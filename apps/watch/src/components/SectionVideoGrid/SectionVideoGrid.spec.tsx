@@ -375,6 +375,11 @@ describe('SectionVideoGrid', () => {
     expect(screen.getByTestId('SectionVideoGridDescription')).toHaveTextContent(
       'Our mission is to reach everyone. Secondary sentence.'
     )
+
+    const background = screen.getByTestId('SectionVideoGridBackground')
+    expect(background).toHaveStyle({
+      backgroundImage: 'url(https://example.com/collection-poster.jpg)'
+    })
   })
 
   it('respects override props for copy and CTA', async () => {
