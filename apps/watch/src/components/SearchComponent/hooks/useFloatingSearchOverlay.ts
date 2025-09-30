@@ -46,6 +46,20 @@ export function useFloatingSearchOverlay(): UseFloatingSearchOverlayResult {
   const searchInputRef = useRef<HTMLInputElement | null>(null)
   const loadingTimeoutRef = useRef<NodeJS.Timeout | null>(null)
 
+  const pauseActiveVideos = useCallback((): void => {
+    if (typeof document === 'undefined') return
+
+    document
+      .querySelectorAll('video')
+      .forEach((videoElement) => {
+        try {
+          videoElement.pause()
+        } catch (error) {
+          console.warn('Failed to pause video when opening search overlay', error)
+        }
+      })
+  }, [])
+
   const {
     trendingSearches,
     isLoading: isTrendingLoading,
@@ -100,6 +114,12 @@ export function useFloatingSearchOverlay(): UseFloatingSearchOverlayResult {
     trendingError,
     fetchTrendingSearches
   ])
+
+  useEffect(() => {
+    if (!isSearchActive) return
+
+    pauseActiveVideos()
+  }, [isSearchActive, pauseActiveVideos])
 
   useEffect(() => {
     return () => {
