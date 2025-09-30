@@ -233,7 +233,7 @@ export function PhoneAction(): ReactElement {
             gtmEventName: '',
             phone: fullPhoneNumber,
             countryCode: selectedCountryForAction.countryCode,
-            contactAction: ContactActionType.call
+            contactAction: phoneAction?.contactAction ?? ContactActionType.call
           },
           undoAction: selectedBlock.action,
           editorFocus: {
