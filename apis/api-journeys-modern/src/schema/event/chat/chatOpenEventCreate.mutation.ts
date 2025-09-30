@@ -1,3 +1,5 @@
+import { GraphQLError } from 'graphql'
+
 import { prisma } from '@core/prisma/journeys/client'
 
 import { builder } from '../../builder'
@@ -21,10 +23,12 @@ builder.mutationField('chatOpenEventCreate', (t) =>
       const userId = context.user?.id
 
       if (!userId) {
-        throw new Error('User not authenticated')
+        throw new GraphQLError('User not authenticated', {
+          extensions: { code: 'UNAUTHENTICATED' }
+        })
       }
 
-      const { visitor, journeyId, journeyVisitor } = await validateBlockEvent(
+      const { visitor, journeyId } = await validateBlockEvent(
         userId,
         input.blockId,
         input.stepId
@@ -60,7 +64,7 @@ builder.mutationField('chatOpenEventCreate', (t) =>
           data: {
             lastChatStartedAt: now,
             lastChatPlatform: input.value ?? undefined,
-            activityCount: (journeyVisitor.activityCount ?? 0) + 1
+            activityCount: { increment: 1 }
           }
         })
       ])

@@ -20,6 +20,12 @@ describe('chatOpenEventCreate', () => {
   `)
 
   beforeEach(() => {
+    // Top-level block lookup from validateBlockEvent
+    prismaMock.block.findUnique.mockResolvedValue({
+      id: 'blockId',
+      journeyId: 'journeyId'
+    } as any)
+
     prismaMock.block.findFirst.mockResolvedValue({
       id: 'blockId',
       journeyId: 'journeyId',
@@ -100,6 +106,21 @@ describe('chatOpenEventCreate', () => {
           blockId: input.blockId,
           stepId: input.stepId,
           value: input.value
+        })
+      })
+    )
+
+    // Verify atomic increment is used for activityCount
+    expect(prismaMock.journeyVisitor.update).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: {
+          journeyId_visitorId: {
+            journeyId: 'journeyId',
+            visitorId: 'visitorId'
+          }
+        },
+        data: expect.objectContaining({
+          activityCount: { increment: 1 }
         })
       })
     )

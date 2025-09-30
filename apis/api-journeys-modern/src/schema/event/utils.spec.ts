@@ -17,6 +17,7 @@ describe('event utils email queue helpers', () => {
   })
 
   afterEach(() => {
+    __setEmailQueueForTests(undefined as any)
     process.env.NODE_ENV = originalEnv
   })
 
