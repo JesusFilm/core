@@ -1,7 +1,9 @@
 import Box from '@mui/material/Box'
+import Button from '@mui/material/Button'
 import Skeleton from '@mui/material/Skeleton'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
+
 import { intlFormat, parseISO } from 'date-fns'
 import { User } from 'next-firebase-auth'
 import { ReactElement } from 'react'
@@ -15,6 +17,7 @@ import { TemplateCreatorDetails } from './TemplateCreatorDetails/TemplateCreator
 import { TemplateEditButton } from './TemplateEditButton/TemplateEditButton'
 import { UseThisTemplateButton } from '../UseThisTemplateButton'
 import { CreateJourneyButton } from '../CreateJourneyButton'
+import { isJourneyCustomizable } from '../../../libs/templateCustomization'
 
 interface TemplateViewHeaderProps {
   isPublisher: boolean | undefined
@@ -152,8 +155,15 @@ export function TemplateViewHeader({
               marginTop: 'auto'
             }}
           >
-            {journeyCustomization ? (
+            {journeyCustomization &&
+            journey != null &&
+            isJourneyCustomizable(journey) ? (
               <UseThisTemplateButton signedIn={authUser?.id != null} />
+            ) : journey == null ? (
+              <Skeleton
+                sx={{ minWidth: 180, height: '38px', borderRadius: 3 }}
+                data-testid="UseThisTemplateButtonSkeleton"
+              />
             ) : (
               <CreateJourneyButton signedIn={authUser?.id != null} />
             )}

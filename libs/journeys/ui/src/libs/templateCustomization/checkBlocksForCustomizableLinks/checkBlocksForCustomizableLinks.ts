@@ -1,10 +1,10 @@
 import {
-  GetJourney_journey_blocks as Block,
-  GetJourney_journey_blocks_ButtonBlock as ButtonBlock,
-  GetJourney_journey_blocks_RadioOptionBlock as RadioOptionBlock,
-  GetJourney_journey_blocks_VideoBlock as VideoBlock,
-  GetJourney_journey_blocks_VideoTriggerBlock as VideoTriggerBlock
-} from '../../../../../__generated__/GetJourney'
+  JourneyFields_blocks as Block,
+  JourneyFields_blocks_ButtonBlock as ButtonBlock,
+  JourneyFields_blocks_RadioOptionBlock as RadioOptionBlock,
+  JourneyFields_blocks_VideoBlock as VideoBlock,
+  JourneyFields_blocks_VideoTriggerBlock as VideoTriggerBlock
+} from '../../JourneyProvider/__generated__/JourneyFields'
 
 type Action =
   | ButtonBlock['action']
@@ -13,6 +13,7 @@ type Action =
   | VideoTriggerBlock['triggerAction']
   | null
   | undefined
+  
 export function checkBlocksForCustomizableLinks(blocks: Block[]): boolean {
   if (blocks.length === 0) return false
   for (const block of blocks) {
