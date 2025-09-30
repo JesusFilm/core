@@ -13,7 +13,7 @@ type Action =
   | VideoTriggerBlock['triggerAction']
   | null
   | undefined
-  
+
 export function checkBlocksForCustomizableLinks(blocks: Block[]): boolean {
   if (blocks.length === 0) return false
   for (const block of blocks) {
