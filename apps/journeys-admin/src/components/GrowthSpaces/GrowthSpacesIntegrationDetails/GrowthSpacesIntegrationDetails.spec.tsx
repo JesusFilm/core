@@ -94,6 +94,12 @@ describe('GrowthSpacesIntegrationDetails', () => {
         ).toBeInTheDocument()
       )
 
+      // Wait for the component state to be updated after form changes
+      await waitFor(() => {
+        expect(screen.getByDisplayValue('new.access.id')).toBeInTheDocument()
+        expect(screen.getByDisplayValue('new.access.secret')).toBeInTheDocument()
+      })
+      
       fireEvent.click(screen.getByRole('button', { name: 'Save' }))
       await waitFor(() => expect(result).toHaveBeenCalled())
       expect(
