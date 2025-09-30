@@ -1,6 +1,7 @@
 import { InMemoryCache } from '@apollo/client'
 import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
@@ -9,13 +10,11 @@ import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { BlockFields_ButtonBlock as ButtonBlock } from '../../../../../../../../../__generated__/BlockFields'
 import { GetJourney_journey as Journey } from '../../../../../../../../../__generated__/GetJourney'
 import { BLOCK_ACTION_DELETE } from '../../../../../../../../libs/useBlockActionDeleteMutation/useBlockActionDeleteMutation'
+import { blockActionEmailUpdateMock } from '../../../../../../../../libs/useBlockActionEmailUpdateMutation/useBlockActionEmailUpdateMutation.mock'
+import { blockActionLinkUpdateMock } from '../../../../../../../../libs/useBlockActionLinkUpdateMutation/useBlockActionLinkUpdateMutation.mock'
 
 import { Action } from './Action'
 import { steps } from './data'
-
-import { blockActionEmailUpdateMock } from '../../../../../../../../libs/useBlockActionEmailUpdateMutation/useBlockActionEmailUpdateMutation.mock'
-import { blockActionLinkUpdateMock } from '../../../../../../../../libs/useBlockActionLinkUpdateMutation/useBlockActionLinkUpdateMutation.mock'
-import userEvent from '@testing-library/user-event'
 
 jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
@@ -248,7 +247,9 @@ describe('Action', () => {
     await waitFor(() =>
       expect(getByRole('option', { name: 'URL/Website' })).toBeInTheDocument()
     )
-    userEvent.click(getByRole('option', { name: 'URL/Website' }))
+    await userEvent.click(getByRole('option', { name: 'URL/Website' }))
+
+    // Wait for the component to re-render and then focus the input
     await waitFor(() =>
       expect(getByRole('textbox', { name: 'Paste URL here...' })).toHaveFocus()
     )
@@ -258,7 +259,9 @@ describe('Action', () => {
     await waitFor(() =>
       expect(getByRole('option', { name: 'Email' })).toBeInTheDocument()
     )
-    userEvent.click(getByRole('option', { name: 'Email' }))
+    await userEvent.click(getByRole('option', { name: 'Email' }))
+
+    // Wait for the component to re-render and then focus the input
     await waitFor(() =>
       expect(
         getByRole('textbox', { name: 'Paste Email here...' })

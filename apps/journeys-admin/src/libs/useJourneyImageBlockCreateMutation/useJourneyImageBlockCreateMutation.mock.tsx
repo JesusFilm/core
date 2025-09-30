@@ -1,6 +1,7 @@
 import { MockedResponse } from '@apollo/client/testing'
 
 import { JourneyImageBlockCreate } from '../../../__generated__/JourneyImageBlockCreate'
+
 import { JOURNEY_IMAGE_BLOCK_CREATE } from './useJourneyImageBlockCreateMutation'
 
 export const journeyImageBlockCreateMock: MockedResponse<JourneyImageBlockCreate> =

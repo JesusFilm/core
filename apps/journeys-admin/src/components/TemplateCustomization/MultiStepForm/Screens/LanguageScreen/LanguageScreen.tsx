@@ -12,19 +12,20 @@ import { object, string } from 'yup'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { useTeam } from '@core/journeys/ui/TeamProvider'
+import { SocialImage } from '@core/journeys/ui/TemplateView/TemplateViewHeader/SocialImage'
 import { useJourneyDuplicateMutation } from '@core/journeys/ui/useJourneyDuplicateMutation'
 import ArrowRightIcon from '@core/shared/ui/icons/ArrowRight'
+import { LanguageAutocomplete } from '@core/shared/ui/LanguageAutocomplete'
 
-import { JourneyCustomizeTeamSelect } from './JourneyCustomizeTeamSelect'
 import { useGetChildTemplateJourneyLanguages } from '../../../../../libs/useGetChildTemplateJourneyLanguages'
 import { useGetParentTemplateJourneyLanguages } from '../../../../../libs/useGetParentTemplateJourneyLanguages'
-import { LanguageAutocomplete } from '@core/shared/ui/LanguageAutocomplete'
 import { CustomizationScreen } from '../../../utils/getCustomizeFlowConfig'
-import { SocialImage } from '@core/journeys/ui/TemplateView/TemplateViewHeader/SocialImage'
 import {
-  BUTTON_NEXT_STEP_WIDTH,
-  BUTTON_NEXT_STEP_HEIGHT
+  BUTTON_NEXT_STEP_HEIGHT,
+  BUTTON_NEXT_STEP_WIDTH
 } from '../../../utils/sharedStyles'
+
+import { JourneyCustomizeTeamSelect } from './JourneyCustomizeTeamSelect'
 
 interface LanguageScreenProps {
   handleNext: () => void

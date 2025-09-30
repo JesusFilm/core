@@ -173,6 +173,7 @@ const iconNames: IconName[] = [
   'Play1',
   'Play2',
   'Play3',
+  'Phone',
   'Plus1',
   'Plus2',
   'Plus3',

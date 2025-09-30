@@ -1,25 +1,27 @@
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Container from '@mui/material/Container'
-import NextLink from 'next/link'
 import Stack from '@mui/material/Stack'
+import NextLink from 'next/link'
 import { useTranslation } from 'next-i18next'
-import { ReactElement, useState, useMemo } from 'react'
+import { ReactElement, useMemo, useState } from 'react'
+
+import { useJourney } from '@core/journeys/ui/JourneyProvider'
+import Edit3 from '@core/shared/ui/icons/Edit3'
+
+import {
+  CustomizationScreen,
+  getCustomizeFlowConfig
+} from '../utils/getCustomizeFlowConfig'
 
 import { ProgressStepper } from './ProgressStepper'
 import {
   DoneScreen,
   LanguageScreen,
   LinksScreen,
-  TextScreen,
-  SocialScreen
+  SocialScreen,
+  TextScreen
 } from './Screens'
-import { useJourney } from '@core/journeys/ui/JourneyProvider'
-import Edit3 from '@core/shared/ui/icons/Edit3'
-import {
-  getCustomizeFlowConfig,
-  CustomizationScreen
-} from '../utils/getCustomizeFlowConfig'
 
 export const MULTI_STEP_FORM_MIN_HEIGHT = 900
 

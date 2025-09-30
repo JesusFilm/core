@@ -5,14 +5,16 @@ import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 
 import ArrowRightIcon from '@core/shared/ui/icons/ArrowRight'
-import { TitleEdit } from '../../../../Editor/Slider/Settings/SocialDetails/TitleEdit'
+
 import { DescriptionEdit } from '../../../../Editor/Slider/Settings/SocialDetails/DescriptionEdit'
+import { TitleEdit } from '../../../../Editor/Slider/Settings/SocialDetails/TitleEdit'
 import { CustomizationScreen } from '../../../utils/getCustomizeFlowConfig'
-import { SocialScreenSocialImage } from './SocialScreenSocialImage'
 import {
-  BUTTON_NEXT_STEP_WIDTH,
-  BUTTON_NEXT_STEP_HEIGHT
+  BUTTON_NEXT_STEP_HEIGHT,
+  BUTTON_NEXT_STEP_WIDTH
 } from '../../../utils/sharedStyles'
+
+import { SocialScreenSocialImage } from './SocialScreenSocialImage'
 
 interface SocialScreenProps {
   handleNext: () => void

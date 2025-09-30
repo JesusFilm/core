@@ -1,9 +1,9 @@
 import { render, screen } from '@testing-library/react'
 import React from 'react'
 
+import { TreeBlock } from '@core/journeys/ui/block'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { defaultJourney } from '@core/journeys/ui/TemplateView/data'
-import { TreeBlock } from '@core/journeys/ui/block'
 
 import { CardsPreview } from './CardsPreview'
 
