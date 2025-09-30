@@ -43,12 +43,12 @@ const ACTION_CONFIG = {
 } as const
 
 // Helper function to check if an action type is a positioned action
-function isPositionedAction(actionType: string): boolean {
+function isPositionedAction(actionType?: string): boolean {
   return ACTION_CONFIG[actionType as keyof typeof ACTION_CONFIG]?.isPositionedAction ?? false
 }
 
 // Helper function to get action configuration
-function getActionConfig(actionType: string) {
+function getActionConfig(actionType?: string) {
   return ACTION_CONFIG[actionType as keyof typeof ACTION_CONFIG]
 }
 

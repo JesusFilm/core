@@ -9,6 +9,7 @@ import { NodeProps } from 'reactflow'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { filterActionBlocks } from '@core/journeys/ui/filterActionBlocks'
 import { getGoalDetails } from '@core/journeys/ui/getGoalDetails'
+import { ActionBlock } from '@core/journeys/ui/isActionBlock'
 
 import { ContactActionType } from '../../../../../../../__generated__/globalTypes'
 import { BaseNode, HandleVariant } from '../BaseNode'
@@ -26,7 +27,9 @@ export function PhoneNode({ id }: NodeProps): ReactElement {
     ?.flatMap((step) => filterActionBlocks(step))
     .find(({ id }) => id === strippedNodeId)
 
-  function getActionDetail(matchedActionBlock): string {
+  function getActionDetail(
+    matchedActionBlock?: ActionBlock
+  ): string {
     switch (matchedActionBlock?.action?.__typename) {
       case 'PhoneAction':
         return matchedActionBlock.action.phone

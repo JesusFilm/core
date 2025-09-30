@@ -53,9 +53,12 @@ export function PhoneAction(): ReactElement {
 
   const [phoneNumber, setPhoneNumber] = useState<string>(() => {
     if (!phoneAction?.phone) return ''
-    const country = countries.find(c => c.countryCode === phoneAction.countryCode)
-    const countryCallingCode = country?.callingCode ?? '+'
-    return phoneAction.phone.replace(countryCallingCode, '')
+    const country = countries.find((c) => c.countryCode === phoneAction.countryCode)
+    const digits = country?.callingCode?.replace(/[^\d]/g, '') ?? ''
+    const prefix = digits === '' ? '' : `+${digits}`
+    return phoneAction.phone.startsWith(prefix)
+      ? phoneAction.phone.slice(prefix.length)
+      : phoneAction.phone.replace(/^\+/, '')
   })
 
   const callingCodeRef = useRef<TextFieldFormRef>(null)
@@ -128,8 +131,9 @@ export function PhoneAction(): ReactElement {
     // Submit action if both fields are valid
     if (hasValidCallingCode && hasValidPhoneNumber) {
       const selectedCountryForAction = findCountryByCallingCode(normalizedCallingCode, phoneAction?.countryCode)
-      const countryCodeDigits = selectedCountryForAction.callingCode.replace('-', '')
-      const fullPhoneNumber = `${countryCodeDigits}${phoneNumberValue}`
+      const countryCodeDigits = selectedCountryForAction.callingCode.replace(/[^\d]/g, '')
+      const sanitizedLocal = phoneNumberValue.replace(/[^\d]/g, '')
+      const fullPhoneNumber = `+${countryCodeDigits}${sanitizedLocal}`
 
       addAction({
         blockId: selectedBlock.id,

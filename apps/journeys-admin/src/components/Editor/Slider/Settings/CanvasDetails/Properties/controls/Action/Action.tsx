@@ -9,7 +9,6 @@ import { ReactElement, useEffect, useRef, useState } from 'react'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
-import { useFlags } from '@core/shared/ui/FlagsProvider'
 import ChevronDownIcon from '@core/shared/ui/icons/ChevronDown'
 
 import {
@@ -121,8 +120,8 @@ export function Action(): ReactElement {
             })}
           </Select>
         </FormControl>
-        {isLink && <LinkAction />}
-        {isEmail && <EmailAction />}
+        {isLink && <LinkAction ref={linkActionRef} />}
+        {isEmail && <EmailAction ref={emailActionRef} />}
         {isPhone && <PhoneAction />}
         {action === 'NavigateToBlockAction' && <NavigateToBlockAction />}
         {(isLink || isEmail) && journey?.template && <CustomizationToggle />}

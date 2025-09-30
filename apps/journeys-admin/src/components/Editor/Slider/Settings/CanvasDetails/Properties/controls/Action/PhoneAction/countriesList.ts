@@ -5,7 +5,6 @@ export interface Country {
   suggested?: boolean
 }
 // From https://bitbucket.org/atlassian/atlaskit-mk-2/raw/4ad0e56649c3e6c973e226b7efaeb28cb240ccb0/packages/core/select/src/data/countries.js
-// Updated to remove area codes from American countries
 export const countries: Country[] = [
   {
     countryCode: 'AD',
@@ -21,6 +20,16 @@ export const countries: Country[] = [
     countryCode: 'AF',
     label: 'Afghanistan',
     callingCode: '+93'
+  },
+  {
+    countryCode: 'AG',
+    label: 'Antigua and Barbuda',
+    callingCode: '+1-268'
+  },
+  {
+    countryCode: 'AI',
+    label: 'Anguilla',
+    callingCode: '+1-264'
   },
   {
     countryCode: 'AL',
@@ -46,6 +55,11 @@ export const countries: Country[] = [
     countryCode: 'AR',
     label: 'Argentina',
     callingCode: '+54'
+  },
+  {
+    countryCode: 'AS',
+    label: 'American Samoa',
+    callingCode: '+1-684'
   },
   {
     countryCode: 'AT',
@@ -77,6 +91,11 @@ export const countries: Country[] = [
     countryCode: 'BA',
     label: 'Bosnia and Herzegovina',
     callingCode: '+387'
+  },
+  {
+    countryCode: 'BB',
+    label: 'Barbados',
+    callingCode: '+1-246'
   },
   {
     countryCode: 'BD',
@@ -119,6 +138,11 @@ export const countries: Country[] = [
     callingCode: '+590'
   },
   {
+    countryCode: 'BM',
+    label: 'Bermuda',
+    callingCode: '+1-441'
+  },
+  {
     countryCode: 'BN',
     label: 'Brunei Darussalam',
     callingCode: '+673'
@@ -132,6 +156,11 @@ export const countries: Country[] = [
     countryCode: 'BR',
     label: 'Brazil',
     callingCode: '+55'
+  },
+  {
+    countryCode: 'BS',
+    label: 'Bahamas',
+    callingCode: '+1-242'
   },
   {
     countryCode: 'BT',
@@ -271,6 +300,16 @@ export const countries: Country[] = [
     callingCode: '+45'
   },
   {
+    countryCode: 'DM',
+    label: 'Dominica',
+    callingCode: '+1-767'
+  },
+  {
+    countryCode: 'DO',
+    label: 'Dominican Republic',
+    callingCode: '+1-809'
+  },
+  {
     countryCode: 'DZ',
     label: 'Algeria',
     callingCode: '+213'
@@ -352,6 +391,11 @@ export const countries: Country[] = [
     callingCode: '+44'
   },
   {
+    countryCode: 'GD',
+    label: 'Grenada',
+    callingCode: '+1-473'
+  },
+  {
     countryCode: 'GE',
     label: 'Georgia',
     callingCode: '+995'
@@ -415,6 +459,11 @@ export const countries: Country[] = [
     countryCode: 'GT',
     label: 'Guatemala',
     callingCode: '+502'
+  },
+  {
+    countryCode: 'GU',
+    label: 'Guam',
+    callingCode: '+1-671'
   },
   {
     countryCode: 'GW',
@@ -512,6 +561,11 @@ export const countries: Country[] = [
     callingCode: '+44'
   },
   {
+    countryCode: 'JM',
+    label: 'Jamaica',
+    callingCode: '+1-876'
+  },
+  {
     countryCode: 'JO',
     label: 'Jordan',
     callingCode: '+962'
@@ -548,6 +602,11 @@ export const countries: Country[] = [
     callingCode: '+269'
   },
   {
+    countryCode: 'KN',
+    label: 'Saint Kitts and Nevis',
+    callingCode: '+1-869'
+  },
+  {
     countryCode: 'KP',
     label: "Korea, Democratic People's Republic of",
     callingCode: '+850'
@@ -563,6 +622,11 @@ export const countries: Country[] = [
     callingCode: '+965'
   },
   {
+    countryCode: 'KY',
+    label: 'Cayman Islands',
+    callingCode: '+1-345'
+  },
+  {
     countryCode: 'KZ',
     label: 'Kazakhstan',
     callingCode: '+7'
@@ -576,6 +640,11 @@ export const countries: Country[] = [
     countryCode: 'LB',
     label: 'Lebanon',
     callingCode: '+961'
+  },
+  {
+    countryCode: 'LC',
+    label: 'Saint Lucia',
+    callingCode: '+1-758'
   },
   {
     countryCode: 'LI',
@@ -678,6 +747,11 @@ export const countries: Country[] = [
     callingCode: '+853'
   },
   {
+    countryCode: 'MP',
+    label: 'Northern Mariana Islands',
+    callingCode: '+1-670'
+  },
+  {
     countryCode: 'MQ',
     label: 'Martinique',
     callingCode: '+596'
@@ -686,6 +760,11 @@ export const countries: Country[] = [
     countryCode: 'MR',
     label: 'Mauritania',
     callingCode: '+222'
+  },
+  {
+    countryCode: 'MS',
+    label: 'Montserrat',
+    callingCode: '+1-664'
   },
   {
     countryCode: 'MT',
@@ -978,6 +1057,11 @@ export const countries: Country[] = [
     callingCode: '+503'
   },
   {
+    countryCode: 'SX',
+    label: 'Sint Maarten (Dutch part)',
+    callingCode: '+1-721'
+  },
+  {
     countryCode: 'SY',
     label: 'Syrian Arab Republic',
     callingCode: '+963'
@@ -986,6 +1070,11 @@ export const countries: Country[] = [
     countryCode: 'SZ',
     label: 'Swaziland',
     callingCode: '+268'
+  },
+  {
+    countryCode: 'TC',
+    label: 'Turks and Caicos Islands',
+    callingCode: '+1-649'
   },
   {
     countryCode: 'TD',
@@ -1043,6 +1132,11 @@ export const countries: Country[] = [
     callingCode: '+90'
   },
   {
+    countryCode: 'TT',
+    label: 'Trinidad and Tobago',
+    callingCode: '+1-868'
+  },
+  {
     countryCode: 'TV',
     label: 'Tuvalu',
     callingCode: '+688'
@@ -1087,6 +1181,26 @@ export const countries: Country[] = [
     countryCode: 'VA',
     label: 'Holy See (Vatican City State)',
     callingCode: '+379'
+  },
+  {
+    countryCode: 'VC',
+    label: 'Saint Vincent and the Grenadines',
+    callingCode: '+1-784'
+  },
+  {
+    countryCode: 'VE',
+    label: 'Venezuela',
+    callingCode: '+58'
+  },
+  {
+    countryCode: 'VG',
+    label: 'British Virgin Islands',
+    callingCode: '+1-284'
+  },
+  {
+    countryCode: 'VI',
+    label: 'US Virgin Islands',
+    callingCode: '+1-340'
   },
   {
     countryCode: 'VN',

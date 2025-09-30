@@ -250,9 +250,9 @@ describe('Action', () => {
     userEvent.click(getByRole('option', { name: 'URL/Website' }))
     
     // Wait for the component to re-render and then focus the input
-    const urlInput = await waitFor(() => getByRole('textbox', { name: 'Paste URL here...' }))
-    urlInput.focus()
-    expect(urlInput).toHaveFocus()
+    await waitFor(() =>
+      expect(getByRole('textbox', { name: 'Paste URL here...' })).toHaveFocus()
+    )
 
     // then switch to email
     fireEvent.mouseDown(getByRole('combobox'))
@@ -262,9 +262,9 @@ describe('Action', () => {
     userEvent.click(getByRole('option', { name: 'Email' }))
     
     // Wait for the component to re-render and then focus the input
-    const emailInput = await waitFor(() => getByRole('textbox', { name: 'Paste Email here...' }))
-    emailInput.focus()
-    expect(emailInput).toHaveFocus()
+    await waitFor(() =>
+      expect(getByRole('textbox', { name: 'Paste Email here...' })).toHaveFocus()
+    )
   })
 
   it('should filter out LinkAction and EmailAction options for submit buttons', async () => {
