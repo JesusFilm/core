@@ -47,7 +47,6 @@ export function VideoContentPage(): ReactElement {
   const [openDownload, setOpenDownload] = useState(false)
 
   const ogSlug = getSlug(container?.slug, label, variant?.slug)
-  const realChildren = children.filter((video) => video.variant !== null)
 
   return (
     <>
@@ -109,17 +108,17 @@ export function VideoContentPage(): ReactElement {
               <VideoHeading
                 loading={loading}
                 hasPlayed={hasPlayed}
-                videos={realChildren}
+                videos={children}
                 onShareClick={() => setOpenShare(true)}
                 onDownloadClick={() => setOpenDownload(true)}
               />
               {((container?.childrenCount ?? 0) > 0 || childrenCount > 0) &&
-                (realChildren.length === children.length ||
-                  realChildren.length > 0) && (
+                (children.length === children.length ||
+                  children.length > 0) && (
                   <Box pb={4}>
                     <VideoCarousel
                       loading={loading}
-                      videos={realChildren}
+                      videos={children}
                       containerSlug={container?.slug ?? slug}
                       activeVideoId={id}
                     />

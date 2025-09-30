@@ -1,5 +1,5 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { act, renderHook, waitFor } from '@testing-library/react'
+import { renderHook, waitFor } from '@testing-library/react'
 import Player from 'video.js/dist/types/player'
 
 import { VideoProvider } from '../../videoContext'
@@ -71,13 +71,10 @@ describe('useSubtitleUpdate', () => {
       expect(typeof result.current.subtitlesLoading).toBe('boolean')
     })
 
-    act(() => {
-      void result.current.subtitleUpdate({
-        player: mockPlayer,
-        subtitleLanguage: '529',
-        subtitleOn: true,
-        autoSubtitle: null
-      })
+    await result.current.subtitleUpdate({
+      player: mockPlayer,
+      subtitleLanguageId: '529',
+      subtitleOn: true
     })
 
     expect(result.current.subtitleUpdate).toBeDefined()
@@ -98,15 +95,10 @@ describe('useSubtitleUpdate', () => {
       )
     })
 
-    await waitFor(() => {
-      act(() => {
-        void result.current.subtitleUpdate({
-          player: mockPlayer,
-          subtitleLanguage: '529',
-          subtitleOn: false,
-          autoSubtitle: null
-        })
-      })
+    await result.current.subtitleUpdate({
+      player: mockPlayer,
+      subtitleLanguageId: '529',
+      subtitleOn: false
     })
 
     const tracks = mockPlayer.textTracks?.()
@@ -131,15 +123,10 @@ describe('useSubtitleUpdate', () => {
       )
     })
 
-    await waitFor(() => {
-      act(() => {
-        void result.current.subtitleUpdate({
-          player: mockPlayer,
-          subtitleLanguage: null,
-          subtitleOn: true,
-          autoSubtitle: null
-        })
-      })
+    await result.current.subtitleUpdate({
+      player: mockPlayer,
+      subtitleLanguageId: null,
+      subtitleOn: true
     })
 
     // Should disable all tracks
@@ -154,16 +141,10 @@ describe('useSubtitleUpdate', () => {
     }
   })
 
-  it('should use autoSubtitle when available', async () => {
-    const getSubtitlesMockResults = jest
-      .fn()
-      .mockReturnValue({ ...getSubtitlesMock.result })
-
+  it('should disable all subtitle tracks when subtitle language is not found', async () => {
     const { result } = renderHook(() => useSubtitleUpdate(), {
       wrapper: ({ children }) => (
-        <MockedProvider
-          mocks={[{ ...getSubtitlesMock, result: getSubtitlesMockResults }]}
-        >
+        <MockedProvider mocks={[getSubtitlesMock]} addTypename={false}>
           <VideoProvider value={{ content: mockVideoContent }}>
             {children}
           </VideoProvider>
@@ -171,19 +152,24 @@ describe('useSubtitleUpdate', () => {
       )
     })
 
-    act(() => {
-      void result.current.subtitleUpdate({
-        player: mockPlayer,
-        subtitleLanguage: '529',
-        subtitleOn: false, // User preference is off
-        autoSubtitle: true // But autoSubtitle is enabled
-      })
+    await result.current.subtitleUpdate({
+      player: mockPlayer,
+      subtitleLanguageId: 'non-existent-id',
+      subtitleOn: true
     })
 
-    expect(result.current.subtitleUpdate).toBeDefined()
-    expect(result.current.subtitlesLoading).toBeDefined()
-    await waitFor(() => {
-      expect(getSubtitlesMockResults).toHaveBeenCalled()
-    })
+    // Should disable all tracks when subtitle language is not found
+    const tracks = mockPlayer.textTracks?.()
+    if (tracks) {
+      for (let i = 0; i < tracks.length; i++) {
+        const track = tracks[i]
+        if (track.kind === 'subtitles') {
+          expect(track.mode).toBe('disabled')
+        }
+      }
+    }
+
+    // Should not call addRemoteTextTrack when subtitle language is not found
+    expect(mockPlayer.addRemoteTextTrack).not.toHaveBeenCalled()
   })
 })

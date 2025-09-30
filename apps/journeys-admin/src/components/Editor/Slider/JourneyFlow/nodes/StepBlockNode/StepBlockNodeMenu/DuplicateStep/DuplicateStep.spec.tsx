@@ -332,4 +332,43 @@ describe('DuplicateStep', () => {
     expect(screen.getByText('Card Duplicated')).toBeInTheDocument()
     expect(handleClick).toHaveBeenCalled()
   })
+
+  it('should clear hovered step on duplication', async () => {
+    const initialState = {
+      steps: [{ ...selectedStep, parentOrder: 0 }],
+      selectedStep: { ...selectedStep, parentOrder: 0 },
+      hoveredStep: selectedStep
+    }
+
+    render(
+      <MockedProvider mocks={[mockStepDuplicate]}>
+        <EditorProvider initialState={initialState}>
+          <SnackbarProvider>
+            <JourneyProvider value={{ journey }}>
+              <DuplicateStep
+                step={selectedStep}
+                xPos={0}
+                yPos={0}
+                handleClick={noop}
+              />
+              <TestEditorState />
+            </JourneyProvider>
+          </SnackbarProvider>
+        </EditorProvider>
+      </MockedProvider>
+    )
+
+    expect(screen.getByText('hoveredStep: stepId')).toBeInTheDocument()
+
+    const duplicateButton = screen.getByRole('menuitem', {
+      name: 'Duplicate Card'
+    })
+    await waitFor(async () => await userEvent.click(duplicateButton))
+
+    await waitFor(() => {
+      expect(screen.getByText('Card Duplicated')).toBeInTheDocument()
+      expect(screen.queryByText('hoveredStep: stepId')).not.toBeInTheDocument()
+      expect(screen.getByText('hoveredStep:')).toBeInTheDocument()
+    })
+  })
 })

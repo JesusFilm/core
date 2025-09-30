@@ -50,7 +50,7 @@ export function SignUp({
         name={t('Button Icon')}
         value={
           icons.find(({ value }) => value === submitIcon?.iconName)?.label ??
-          'None'
+          t('None')
         }
       >
         <Icon id={submitIcon?.id} />

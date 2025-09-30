@@ -5,10 +5,8 @@ import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
 import { SnackbarProvider } from 'notistack'
 import type { ReactElement } from 'react'
 
-import {
-  GetVariantLanguagesIdAndSlug,
-  GetVariantLanguagesIdAndSlugVariables
-} from '../../../__generated__/GetVariantLanguagesIdAndSlug'
+import { graphql } from '@core/shared/gql'
+
 import type {
   GetVideoContent,
   GetVideoContentVariables
@@ -19,16 +17,13 @@ import { createApolloClient } from '../../../src/libs/apolloClient'
 import { getCookie } from '../../../src/libs/cookieHandler'
 import { getFlags } from '../../../src/libs/getFlags'
 import { getLanguageIdFromLocale } from '../../../src/libs/getLanguageIdFromLocale'
-import { LanguageProvider } from '../../../src/libs/languageContext/LanguageContext'
 import { PlayerProvider } from '../../../src/libs/playerContext/PlayerContext'
 import { slugMap } from '../../../src/libs/slugMap'
-import { GET_VARIANT_LANGUAGES_ID_AND_SLUG } from '../../../src/libs/useVariantLanguagesIdAndSlugQuery'
 import { VIDEO_CONTENT_FIELDS } from '../../../src/libs/videoContentFields'
 import { VideoProvider } from '../../../src/libs/videoContext'
 import {
-  AudioLanguageData,
-  WatchInitialState,
-  WatchProvider
+  WatchProvider,
+  WatchState
 } from '../../../src/libs/watchContext/WatchContext'
 
 export const GET_VIDEO_CONTENT = gql`
@@ -40,10 +35,25 @@ export const GET_VIDEO_CONTENT = gql`
   }
 `
 
+const GET_VIDEO_LANGUAGES = graphql(`
+  query GetVideoLanguages($id: ID!, $languageId: ID) {
+    video(id: $id, idType: databaseId) {
+      audioLanguages: variantLanguages {
+        id
+      }
+      variant(languageId: $languageId) {
+        subtitleLanguages: subtitle {
+          languageId
+        }
+      }
+    }
+  }
+`)
+
 interface Part2PageProps {
   content: VideoContentFields
   videoSubtitleLanguageIds: string[]
-  videoAudioLanguagesIdsAndSlugs: AudioLanguageData[]
+  videoAudioLanguageIds: string[]
 }
 
 const DynamicVideoContainerPage = dynamic(
@@ -65,32 +75,29 @@ const DynamicNewContentPage = dynamic(
 export default function Part2Page({
   content,
   videoSubtitleLanguageIds,
-  videoAudioLanguagesIdsAndSlugs
+  videoAudioLanguageIds
 }: Part2PageProps): ReactElement {
-  const initialWatchState: WatchInitialState = {
-    audioLanguage: getCookie('AUDIO_LANGUAGE') ?? '529',
-    subtitleLanguage: getCookie('SUBTITLE_LANGUAGE') ?? '529',
-    subtitleOn: (getCookie('SUBTITLES_ON') ?? 'false') === 'true',
-    videoId: content.id,
-    videoVariantSlug: content.variant?.slug,
+  const audioLanguageId = content.variant?.language.id ?? '529'
+  const initialWatchState: WatchState = {
+    audioLanguageId,
+    subtitleLanguageId: getCookie('SUBTITLE_LANGUAGE') ?? audioLanguageId,
+    subtitleOn: getCookie('SUBTITLES_ON') === 'true',
     videoSubtitleLanguageIds,
-    videoAudioLanguagesIdsAndSlugs
+    videoAudioLanguageIds
   }
 
   return (
     <SnackbarProvider>
       <WatchProvider initialState={initialWatchState}>
-        <LanguageProvider>
-          <VideoProvider value={{ content }}>
-            <PlayerProvider>
-              {content.variant?.hls != null ? (
-                <DynamicNewContentPage />
-              ) : (
-                <DynamicVideoContainerPage />
-              )}
-            </PlayerProvider>
-          </VideoProvider>
-        </LanguageProvider>
+        <VideoProvider value={{ content }}>
+          <PlayerProvider>
+            {content.variant?.hls != null ? (
+              <DynamicNewContentPage />
+            ) : (
+              <DynamicVideoContainerPage />
+            )}
+          </PlayerProvider>
+        </VideoProvider>
       </WatchProvider>
     </SnackbarProvider>
   )
@@ -127,6 +134,7 @@ export const getStaticProps: GetStaticProps<Part2PageProps> = async (
     }
 
   const client = createApolloClient()
+  const languageIdFromLocale = getLanguageIdFromLocale(context.locale)
   try {
     const { data: contentData } = await client.query<
       GetVideoContent,
@@ -135,7 +143,7 @@ export const getStaticProps: GetStaticProps<Part2PageProps> = async (
       query: GET_VIDEO_CONTENT,
       variables: {
         id: `${contentId}/${languageId}`,
-        languageId: getLanguageIdFromLocale(context.locale)
+        languageId: languageIdFromLocale
       }
     })
     if (contentData.content == null) {
@@ -145,28 +153,21 @@ export const getStaticProps: GetStaticProps<Part2PageProps> = async (
       }
     }
 
-    let videoAudioLanguagesData: AudioLanguageData[] = []
-    let videoSubtitleLanguageIds: string[] = []
+    let audioIds: string[] = []
+    let subtitleIds: string[] = []
     if (contentData.content.variant?.slug != null) {
-      const { data } = await client.query<
-        GetVariantLanguagesIdAndSlug,
-        GetVariantLanguagesIdAndSlugVariables
-      >({
-        query: GET_VARIANT_LANGUAGES_ID_AND_SLUG,
+      const { data } = await client.query({
+        query: GET_VIDEO_LANGUAGES,
         variables: {
-          id: contentData.content.id
+          id: contentData.content.id,
+          languageId: languageIdFromLocale
         }
       })
-      videoAudioLanguagesData =
-        data?.video?.variantLanguages?.map(
-          ({ id, slug }): AudioLanguageData => ({
-            id,
-            slug
-          })
-        ) || []
-      videoSubtitleLanguageIds = data?.video?.subtitles?.map(
-        ({ languageId }) => languageId
-      )
+      audioIds = data?.video?.audioLanguages?.map(({ id }) => id) ?? []
+      subtitleIds =
+        data?.video?.variant?.subtitleLanguages?.map(
+          ({ languageId }) => languageId
+        ) ?? []
     }
 
     return {
@@ -174,8 +175,8 @@ export const getStaticProps: GetStaticProps<Part2PageProps> = async (
       props: {
         flags: await getFlags(),
         content: contentData.content,
-        videoSubtitleLanguageIds: videoSubtitleLanguageIds,
-        videoAudioLanguagesIdsAndSlugs: videoAudioLanguagesData,
+        videoSubtitleLanguageIds: subtitleIds,
+        videoAudioLanguageIds: audioIds,
         ...(await serverSideTranslations(
           context.locale ?? 'en',
           ['apps-watch'],

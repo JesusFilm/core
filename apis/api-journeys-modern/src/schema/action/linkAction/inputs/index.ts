@@ -1,1 +1,1 @@
-import './linkActionInput'
+export { LinkActionInput } from './linkActionInput'

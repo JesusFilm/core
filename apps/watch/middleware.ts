@@ -1,6 +1,4 @@
-import { Redis } from '@upstash/redis'
 import { NextRequest, NextResponse } from 'next/server'
-import { z } from 'zod'
 
 import {
   DEFAULT_LOCALE,
@@ -8,28 +6,10 @@ import {
   SUPPORTED_LOCALES
 } from './src/libs/localeMapping'
 
-// Zod schema for validating Redis cached data (new object format)
-const VariantLanguagesObjectSchema = z.record(z.string(), z.string())
-
 interface LanguagePriority {
   code: string
   priority: number
 }
-
-let _redis: Redis | undefined
-function redisClient(): Redis {
-  if (_redis == null || process.env.NODE_ENV === 'test') {
-    _redis = new Redis({
-      url:
-        process.env.REDIRECT_STORAGE_KV_REST_API_URL ??
-        'http://serverless-redis-http:80',
-      token: process.env.REDIRECT_STORAGE_KV_REST_API_TOKEN ?? 'example_token'
-    })
-  }
-  return _redis
-}
-
-const CACHE_TTL = 86400 // 1 day in seconds
 
 function parseAcceptLanguageHeader(header: string): LanguagePriority[] {
   return header.split(',').map((item) => {
@@ -107,110 +87,30 @@ function getBrowserLanguage(req: NextRequest): string {
   return getPreferredLanguage(sortedLanguages) ?? DEFAULT_LOCALE
 }
 
-function getLocale(req: NextRequest): string {
+interface GetLocaleOptions {
+  ignoreLocaleFromPath?: boolean
+}
+
+function getLocale(
+  req: NextRequest,
+  options?: GetLocaleOptions
+): string | undefined {
   // Priority 1: Cookie
-  // const cookieLocale = req.cookies.get('NEXT_LOCALE')?.value?.split('---')[1]
-  // if (cookieLocale != null) return cookieLocale
+  const cookieLocale = req.cookies.get('NEXT_LOCALE')?.value?.split('---')[1]
+  if (cookieLocale != null) return cookieLocale
 
   // Priority 2: URL Path
   const pathLocale = getLocaleFromPath(req.nextUrl.pathname)
-  if (pathLocale != null) return pathLocale
+  if (pathLocale != null && !options?.ignoreLocaleFromPath) return pathLocale
 
   // Priority 3: Browser Language
   const browserLocale = getBrowserLanguage(req)
-  if (browserLocale !== DEFAULT_LOCALE) return browserLocale
+  if (browserLocale != null && browserLocale !== DEFAULT_LOCALE)
+    return browserLocale
 
   // Priority 4: Geolocation (only check if no other locale found)
   const geoLocale = getLocaleFromGeoHeaders(req)
-  return geoLocale ?? DEFAULT_LOCALE
-}
-
-export const AUDIO_LANGUAGE_REDIRECT_CACHE_SCHEMA_VERSION = `2025-08-25`
-
-async function audioLanguageRedirect(
-  req: NextRequest
-): Promise<NextResponse | undefined> {
-  // Check if r=0 query parameter is present to skip audio language redirect
-  if (req.nextUrl.searchParams.get('r') === '0') return
-
-  const pathname = req.nextUrl.pathname
-  const pathParts = pathname.split('/').filter(Boolean)
-
-  if (pathParts.length === 3 || pathParts.length === 4) {
-    const [videoSlug, audioLanguage] = pathParts
-      .slice(-2)
-      .map((part) => part.split('.').at(0))
-
-    // Check if user has an AUDIO_LANGUAGE cookie
-    const audioLanguageId = req.cookies
-      .get('AUDIO_LANGUAGE')
-      ?.value?.split('---')[1]
-
-    if (audioLanguageId) {
-      const redis = redisClient()
-      // User's preferred language doesn't match the current path
-      // Check if we have cached variant languages for this video
-      const cacheKey = `variantLanguages:${AUDIO_LANGUAGE_REDIRECT_CACHE_SCHEMA_VERSION}:${videoSlug}`
-
-      // If not cached, fetch from API
-
-      let exists = false
-      try {
-        exists = (await redis.exists(cacheKey)) > 0
-      } catch (error) {
-        console.error('Redis exists check error:', error)
-      }
-
-      if (!exists) {
-        try {
-          const response = await fetch(
-            `${req.nextUrl.origin}/api/variantLanguages?slug=${videoSlug}/${audioLanguage}`
-          )
-          if (response.ok) {
-            const data = await response.json()
-            const {
-              success,
-              data: variantLanguages,
-              error
-            } = VariantLanguagesObjectSchema.safeParse(
-              data.data?.variantLanguages
-            )
-
-            if (!success) {
-              console.error(
-                'API variantLanguages data validation error:',
-                error
-              )
-              return
-            }
-
-            // Cache the result
-            try {
-              await redis.hset(cacheKey, variantLanguages)
-              await redis.expire(cacheKey, CACHE_TTL)
-            } catch (error) {
-              console.error('Redis cache hset or expire error:', error)
-            }
-          }
-        } catch (error) {
-          console.error('API variantLanguages fetch error:', error)
-        }
-      }
-
-      let slug: string | null | undefined
-
-      try {
-        slug = await redis.hget(cacheKey, audioLanguageId)
-      } catch (error) {
-        console.error('Redis cache hget error:', error)
-      }
-
-      if (slug != null && audioLanguage != slug) {
-        const newPath = `/${pathParts.slice(0, -1).join('/')}/${slug}.html`
-        return NextResponse.redirect(new URL(newPath, req.url))
-      }
-    }
-  }
+  if (geoLocale != null && geoLocale !== DEFAULT_LOCALE) return geoLocale
 }
 
 export const config = {
@@ -218,16 +118,13 @@ export const config = {
 }
 
 export async function middleware(req: NextRequest): Promise<NextResponse> {
-  const locale = getLocale(req)
+  const locale = getLocale(req) ?? DEFAULT_LOCALE
   const rewriteUrl = req.nextUrl.clone()
   const pathname = req.nextUrl.pathname
 
   if (pathname === '/watch' && locale !== DEFAULT_LOCALE) {
     rewriteUrl.pathname = `/watch/${LANGUAGE_MAPPINGS[locale].languageSlugs[0]}`
     return NextResponse.redirect(rewriteUrl, 302)
-  } else if (pathname.startsWith('/watch/')) {
-    const redirect = await audioLanguageRedirect(req)
-    if (redirect) return redirect
   }
   if (locale !== DEFAULT_LOCALE) {
     rewriteUrl.pathname = `/${locale}${pathname}`

@@ -20,7 +20,6 @@
     "**/*.js",
     "**/*.jsx",
     "next-env.d.ts",
-    "../../libs/journeys/ui/src/ImageBlockProvider/ImageBlockProvider.tsx",
     "eslint.config.mjs"
   ],
   "exclude": ["node_modules", "jest.config.ts"]

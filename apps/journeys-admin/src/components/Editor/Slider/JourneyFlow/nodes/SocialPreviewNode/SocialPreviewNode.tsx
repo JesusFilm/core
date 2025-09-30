@@ -16,6 +16,7 @@ import {
   useEditor
 } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
+import { isIOSTouchScreen } from '@core/shared/ui/deviceUtils'
 
 import { Tooltip } from '../../../../../Tooltip'
 import { getReactflowTooltipOffset } from '../../../../../Tooltip/utils/getReactflowTooltipOffset'
@@ -122,6 +123,12 @@ export function SocialPreviewNode(): ReactElement {
                 opacity: 0.7,
                 boxShadow: 'none'
               })
+            }}
+            // hover events and psuedo elements preventing onclicks from running on iOS devices see:
+            // https://stackoverflow.com/questions/17710893/why-when-do-i-have-to-tap-twice-to-trigger-click-on-ios#:~:text=The%20simplest%20solution%20is%20not,triggered%20on%20the%20first%20tap.
+            // see fig 6-4, https://developer.apple.com/library/archive/documentation/AppleApplications/Reference/SafariWebContent/HandlingEvents/HandlingEvents.html#//apple_ref/doc/uid/TP40006511-SW7
+            onMouseEnter={() => {
+              if (isIOSTouchScreen()) handleClick()
             }}
             onClick={() => handleClick()}
           >

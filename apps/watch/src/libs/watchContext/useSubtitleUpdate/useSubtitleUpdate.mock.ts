@@ -1,9 +1,7 @@
 import { MockedResponse } from '@apollo/client/testing'
 
-import {
-  GetSubtitles,
-  GetSubtitlesVariables
-} from '../../../../__generated__/GetSubtitles'
+import { ResultOf, VariablesOf } from '@core/shared/gql'
+
 import { VideoLabel } from '../../../../__generated__/globalTypes'
 
 import { GET_SUBTITLES } from './useSubtitleUpdate'
@@ -42,39 +40,31 @@ export const mockVideoContent = {
   childrenCount: 0
 }
 
+type GetSubtitles = ResultOf<typeof GET_SUBTITLES>
+
 export const mockSubtitleData: GetSubtitles = {
   video: {
-    __typename: 'Video' as const,
     variant: {
-      __typename: 'VideoVariant' as const,
       subtitle: [
         {
-          __typename: 'VideoSubtitle' as const,
           language: {
-            __typename: 'Language' as const,
             id: '529',
             bcp47: 'en',
             name: [
               {
-                __typename: 'LanguageName' as const,
-                value: 'English',
-                primary: true
+                value: 'English'
               }
             ]
           },
           value: 'https://example.com/subtitles/english.vtt'
         },
         {
-          __typename: 'VideoSubtitle' as const,
           language: {
-            __typename: 'Language' as const,
             id: '22658',
             bcp47: 'es',
             name: [
               {
-                __typename: 'LanguageName' as const,
-                value: 'Spanish',
-                primary: true
+                value: 'Spanish'
               }
             ]
           },
@@ -84,6 +74,8 @@ export const mockSubtitleData: GetSubtitles = {
     }
   }
 }
+
+type GetSubtitlesVariables = VariablesOf<typeof GET_SUBTITLES>
 
 export const getSubtitlesMock: MockedResponse<
   GetSubtitles,

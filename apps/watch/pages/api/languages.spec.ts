@@ -285,6 +285,33 @@ describe('Languages API', () => {
       expect(res.status).toHaveBeenCalledWith(200)
       expect(res.json).toHaveBeenCalledWith(expectedLanguages)
     })
+
+    it('should filter out languages that have no name and native name', async () => {
+      const req = createMockRequest('GET')
+      const res = createMockResponse()
+
+      mockRedisGet.mockResolvedValue(null)
+
+      const mockData = {
+        languages: [
+          {
+            id: '529',
+            slug: 'en',
+            nativeName: [],
+            name: []
+          }
+        ]
+      }
+
+      mockQuery.mockResolvedValue({ data: mockData })
+
+      await handler(req, res)
+
+      const expectedLanguages = []
+
+      expect(res.status).toHaveBeenCalledWith(200)
+      expect(res.json).toHaveBeenCalledWith(expectedLanguages)
+    })
   })
 
   describe('Cache Storage', () => {
