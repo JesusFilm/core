@@ -43,10 +43,16 @@ export function SelectableWrapper({
   // please check RadioOptionBlock events are being propogated properly i.e - can be re-ordered
   const handleSelectBlock = (e: MouseEvent<HTMLElement>): void => {
     // Allow RadioQuestion select event to be overridden by RadioOption select/edit events (no e.stopPropogation)
-    if (block.__typename === 'RadioQuestionBlock') {
+    if (
+      block.__typename === 'RadioQuestionBlock' ||
+      block.__typename === 'MultiselectQuestionBlock'
+    ) {
       // Directly edit RadioQuestionBlock
       updateEditor(block)
-    } else if (block.__typename === 'RadioOptionBlock') {
+    } else if (
+      block.__typename === 'RadioOptionBlock' ||
+      block.__typename === 'MultiselectOptionBlock'
+    ) {
       // this stopPropagation prevents links from being opened in the editor when clicked radioOptions are selected
       e.stopPropagation()
       const parentSelected = selectedBlock?.id === block.parentBlockId
@@ -93,7 +99,7 @@ export function SelectableWrapper({
 
   let borderRadius = '4px'
   switch (block.__typename) {
-    case 'RadioOptionBlock':
+    case 'RadioOptionBlock' | 'MultiselectOptionBlock':
       borderRadius = '8px'
       break
     case 'ImageBlock':
@@ -120,7 +126,8 @@ export function SelectableWrapper({
         ref={selectableRef}
         data-testid={`SelectableWrapper-${block.id}`}
         className={
-          block.__typename === 'RadioOptionBlock'
+          block.__typename === 'RadioOptionBlock' ||
+          block.__typename === 'MultiselectOptionBlock'
             ? 'MuiButtonGroup-root MuiButtonGroup-grouped MuiButtonGroup-groupedVertical'
             : ''
         }

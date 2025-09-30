@@ -218,19 +218,24 @@ export function MultiselectQuestion({
             aria-label={t('Selections range')}
           />
         </Box>
-        <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 4 }}>
+        <Box
+          sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 4 }}
+        >
           <TextField
-            label={t('Min selections')}
             type="number"
             value={localMin}
+            min={0}
+            max={(localMax ?? optionCount > 0) ? optionCount : 0}
             onChange={(e) => handleMinChange(e.target.value)}
             onBlur={handleBlurCommit}
             inputProps={{ min: 0, 'aria-label': t('Min selections') }}
           />
+          <Box />
           <TextField
-            label={t('Max selections')}
             type="number"
             value={localMax}
+            min={localMin ?? 0}
+            max={optionCount > 0 ? optionCount : 0}
             onChange={(e) => handleMaxChange(e.target.value)}
             onBlur={handleBlurCommit}
             inputProps={{ min: 0, 'aria-label': t('Max selections') }}

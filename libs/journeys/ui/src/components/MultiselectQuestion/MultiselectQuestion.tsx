@@ -42,26 +42,20 @@ const StyledListMultiselectQuestion = styled(Box)<BoxProps>(({ theme }) => ({
       '&:not(:last-of-type)': {
         borderBottom: 'none'
       },
-      '&.MuiButtonGroup-firstButton': {
+      '&.MuiButtonGroup-grouped': {
         borderColor:
           theme.palette.mode === 'dark'
             ? 'rgba(150, 150, 150, 0.2)'
-            : 'rgba(225, 225, 225, 0.3)',
+            : 'rgba(225, 225, 225, 0.3)'
+      },
+      '&.MuiButtonGroup-firstButton': {
         borderTopLeftRadius: 16,
         borderTopRightRadius: 16
       },
       '&.MuiButtonGroup-middleButton': {
-        borderColor:
-          theme.palette.mode === 'dark'
-            ? 'rgba(150, 150, 150, 0.2)'
-            : 'rgba(225, 225, 225, 0.3)',
         borderRadius: 0
       },
       '&.MuiButtonGroup-lastButton': {
-        borderColor:
-          theme.palette.mode === 'dark'
-            ? 'rgba(150, 150, 150, 0.2)'
-            : 'rgba(225, 225, 225, 0.3)',
         borderBottomLeftRadius: 16,
         borderBottomRightRadius: 16
       }
@@ -148,12 +142,6 @@ export function MultiselectQuestion({
               }
               onClick={addOption}
               sx={(theme) => ({
-                borderBottomLeftRadius: 12,
-                borderBottomRightRadius: 12,
-                borderColor:
-                  theme.palette.mode === 'dark'
-                    ? 'rgba(150, 150, 150, 0.2) !important'
-                    : 'rgba(225, 225, 225, 0.3) !important',
                 borderWidth: '1px !important',
                 borderStyle: 'solid !important'
               })}
