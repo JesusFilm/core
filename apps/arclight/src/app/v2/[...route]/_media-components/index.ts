@@ -1,117 +1,16 @@
 import { OpenAPIHono, createRoute, z } from '@hono/zod-openapi'
-import { HTTPException } from 'hono/http-exception'
 import { timeout } from 'hono/timeout'
 
-import { ResultOf, graphql } from '@core/shared/gql'
+import { VideoLabel, prisma as mediaPrisma } from '@core/prisma/media/client'
 
-import { getApolloClient } from '../../../../lib/apolloClient'
 import { generateCacheKey, getWithStaleCache } from '../../../../lib/cache'
-import { getDownloadSize } from '../../../../lib/downloadHelpers'
-import { getLanguageIdsFromTags } from '../../../../lib/getLanguageIdsFromTags'
+import { getLanguageDetailsFromTags } from '../../../../lib/getLanguageIdsFromTags'
+import { getImageUrl } from '../../../../lib/imageHelper'
 
 import { mediaComponent } from './[mediaComponentId]'
 
 export const dynamic = 'force-dynamic'
 export const revalidate = 0
-
-const GET_VIDEOS_WITH_FALLBACK = graphql(`
-  query GetVideosWithFallback(
-    $limit: Int
-    $offset: Int
-    $ids: [ID!]
-    $languageIds: [ID!]
-    $metadataLanguageId: ID
-    $fallbackLanguageId: ID
-    $labels: [VideoLabel!]
-  ) {
-    videosCount(
-      where: {
-        ids: $ids
-        availableVariantLanguageIds: $languageIds
-        labels: $labels
-      }
-    )
-    videos(
-      limit: $limit
-      offset: $offset
-      where: {
-        ids: $ids
-        availableVariantLanguageIds: $languageIds
-        labels: $labels
-      }
-    ) {
-      id
-      label
-      images {
-        thumbnail
-        videoStill
-        mobileCinematicHigh
-        mobileCinematicLow
-        mobileCinematicVeryLow
-      }
-      primaryLanguageId
-      title(languageId: $metadataLanguageId) {
-        value
-        language {
-          bcp47
-        }
-      }
-      fallbackTitle: title(languageId: $fallbackLanguageId) {
-        value
-      }
-      description(languageId: $metadataLanguageId) {
-        value
-        language {
-          bcp47
-        }
-      }
-      fallbackDescription: description(languageId: $fallbackLanguageId) {
-        value
-      }
-      snippet(languageId: $metadataLanguageId) {
-        value
-        language {
-          bcp47
-        }
-      }
-      fallbackSnippet: snippet(languageId: $fallbackLanguageId) {
-        value
-      }
-      studyQuestions(languageId: $metadataLanguageId) {
-        value
-        language {
-          bcp47
-        }
-      }
-      fallbackStudyQuestions: studyQuestions(languageId: $fallbackLanguageId) {
-        value
-      }
-      bibleCitations {
-        osisId
-        chapterStart
-        verseStart
-        chapterEnd
-        verseEnd
-      }
-      childrenCount
-      availableLanguages
-      variant {
-        hls
-        lengthInMilliseconds
-        language {
-          bcp47
-        }
-        downloadable
-        downloads {
-          height
-          width
-          quality
-          size
-        }
-      }
-    }
-  }
-`)
 
 const QuerySchema = z.object({
   page: z.coerce.number().optional(),
@@ -233,17 +132,11 @@ mediaComponents.openapi(route, async (c) => {
     c.req.query('ids')?.split(',').filter(Boolean).length === 0
       ? undefined
       : c.req.query('ids')?.split(',').filter(Boolean)
-  const metadataLanguageTags =
-    c.req.query('metadataLanguageTags')?.split(',').filter(Boolean) ?? []
+  const metadataLanguageTags = c.req
+    .query('metadataLanguageTags')
+    ?.split(',')
+    .filter(Boolean) ?? ['en']
   const apiSessionId = c.req.query('apiSessionId') ?? '6622f10d2260a8.05128925'
-  const apiKey = c.req.query('apiKey')
-
-  const languageResult = await getLanguageIdsFromTags(metadataLanguageTags)
-  if (languageResult instanceof HTTPException) {
-    throw languageResult
-  }
-
-  const { metadataLanguageId, fallbackLanguageId } = languageResult
 
   const cacheKey = generateCacheKey([
     'media-components',
@@ -257,134 +150,322 @@ mediaComponents.openapi(route, async (c) => {
   ])
 
   const response = await getWithStaleCache(cacheKey, async () => {
-    try {
-      const { data } = await getApolloClient().query<
-        ResultOf<typeof GET_VIDEOS_WITH_FALLBACK>
-      >({
-        query: GET_VIDEOS_WITH_FALLBACK,
-        variables: {
-          metadataLanguageId,
-          fallbackLanguageId,
-          languageIds,
-          limit,
-          offset,
-          labels: subTypes,
-          ...(ids != null ? { ids } : {})
-        }
-      })
-      const videos = data.videos
-      const total = data.videosCount
+    const metadataLanguages =
+      await getLanguageDetailsFromTags(metadataLanguageTags)
+    const metadataLanguageIds = metadataLanguages.map((lang) => lang.id)
 
-      const queryObject = {
-        ...c.req.query(),
-        page: page.toString(),
-        limit: limit.toString()
+    let videos
+    let totalCount = 0
+    try {
+      const result = await mediaPrisma.$transaction(async (tx) => {
+        const videosResult = await tx.video.findMany({
+          select: {
+            id: true,
+            label: true,
+            primaryLanguageId: true,
+            images: true,
+            title: {
+              select: {
+                value: true,
+                languageId: true
+              },
+              where: {
+                languageId: { in: metadataLanguageIds }
+              }
+            },
+            description: {
+              select: {
+                value: true,
+                languageId: true
+              },
+              where: {
+                languageId: { in: metadataLanguageIds }
+              }
+            },
+            snippet: {
+              select: {
+                value: true,
+                languageId: true
+              },
+              where: {
+                languageId: { in: metadataLanguageIds }
+              }
+            },
+            studyQuestions: {
+              select: {
+                value: true,
+                languageId: true
+              },
+              where: {
+                languageId: { in: metadataLanguageIds }
+              }
+            },
+            bibleCitation: {
+              select: {
+                osisId: true,
+                chapterStart: true,
+                verseStart: true,
+                chapterEnd: true,
+                verseEnd: true
+              }
+            },
+            children: true,
+            availableLanguages: true,
+            variants: {
+              select: {
+                hls: true,
+                lengthInMilliseconds: true,
+                languageId: true,
+                downloadable: true,
+                downloads: {
+                  select: {
+                    quality: true,
+                    size: true
+                  }
+                }
+              },
+              take: 1
+            }
+          },
+          skip: offset,
+          take: limit,
+          where: {
+            ...(ids ? { id: { in: ids } } : {}),
+            ...(languageIds
+              ? { availableLanguages: { hasSome: languageIds } }
+              : {}),
+            ...(subTypes ? { label: { in: subTypes as VideoLabel[] } } : {}),
+            ...(metadataLanguageTags.length > 0
+              ? {
+                  OR: [
+                    {
+                      title: {
+                        some: {
+                          languageId: { in: metadataLanguageIds }
+                        }
+                      }
+                    },
+                    {
+                      description: {
+                        some: {
+                          languageId: { in: metadataLanguageIds }
+                        }
+                      }
+                    },
+                    {
+                      studyQuestions: {
+                        some: {
+                          languageId: { in: metadataLanguageIds }
+                        }
+                      }
+                    }
+                  ]
+                }
+              : {})
+          }
+        })
+
+        const totalCountResult = await tx.video.count({
+          where: {
+            ...(ids ? { id: { in: ids } } : {}),
+            ...(languageIds
+              ? { availableLanguages: { hasSome: languageIds } }
+              : {}),
+            ...(subTypes ? { label: { in: subTypes as VideoLabel[] } } : {}),
+            ...(metadataLanguageTags.length > 0
+              ? {
+                  OR: [
+                    {
+                      title: {
+                        some: {
+                          languageId: { in: metadataLanguageIds }
+                        }
+                      }
+                    },
+                    {
+                      description: {
+                        some: {
+                          languageId: { in: metadataLanguageIds }
+                        }
+                      }
+                    },
+                    {
+                      studyQuestions: {
+                        some: {
+                          languageId: { in: metadataLanguageIds }
+                        }
+                      }
+                    }
+                  ]
+                }
+              : {})
+          }
+        })
+
+        return { videos: videosResult, totalCount: totalCountResult }
+      })
+
+      videos = result.videos
+      totalCount = result.totalCount
+    } catch (error) {
+      if (error instanceof Error && error.message.includes('not found')) {
+        return {
+          data: {
+            page,
+            limit,
+            pages: 1,
+            total: 0,
+            apiSessionId: apiSessionId,
+            _links: {
+              self: {
+                href: `http://api.arclight.org/v2/media-components?${new URLSearchParams(c.req.query()).toString()}`
+              },
+              first: {
+                href: `http://api.arclight.org/v2/media-components?${new URLSearchParams({ ...c.req.query(), page: '1' }).toString()}`
+              },
+              last: {
+                href: `http://api.arclight.org/v2/media-components?${new URLSearchParams({ ...c.req.query(), page: '1' }).toString()}`
+              }
+            },
+            _embedded: { mediaComponents: [] }
+          },
+          statusCode: 200
+        }
+      }
+      throw error
+    }
+
+    const queryObject = {
+      ...c.req.query(),
+      page: page.toString(),
+      limit: limit.toString()
+    }
+
+    const lastPage =
+      Math.ceil(totalCount / limit) === 0 ? 1 : Math.ceil(totalCount / limit)
+
+    const mediaComponents = videos.map((video) => {
+      const hdImage = video.images.find((img) => img.aspectRatio === 'hd')
+      const bannerImage = video.images.find(
+        (img) => img.aspectRatio === 'banner'
+      )
+
+      const variant = video.variants[0]
+      const isDownloadable =
+        video.label === 'collection' || video.label === 'series'
+          ? false
+          : (variant?.downloadable ?? false)
+
+      const getPreferredContent = (
+        contentArray: Array<{ value: string; languageId: string }>
+      ) => {
+        if (!contentArray || contentArray.length === 0) return ''
+
+        const firstRequestedLanguage = metadataLanguages[0]
+        if (firstRequestedLanguage) {
+          const firstLanguageContent = contentArray.find(
+            (item) => item.languageId === firstRequestedLanguage.id
+          )
+          if (firstLanguageContent) {
+            return firstLanguageContent.value
+          }
+        }
+        const availableContent = contentArray.find((item) =>
+          metadataLanguages.some((lang) => lang.id === item.languageId)
+        )
+        return availableContent?.value ?? ''
       }
 
-      const filteredVideos = videos.filter(
-        (video) =>
-          video.title[0]?.value != null ||
-          video.fallbackTitle[0]?.value != null ||
-          video.snippet[0]?.value != null ||
-          video.description[0]?.value != null
-      )
-      const lastPage =
-        Math.ceil(total / limit) === 0 ? 1 : Math.ceil(total / limit)
-
-      const mediaComponents = filteredVideos.map((video) => {
-        const isDownloadable =
-          video.label === 'collection' || video.label === 'series'
-            ? false
-            : (video.variant?.downloadable ?? false)
-        return {
-          mediaComponentId: video.id,
-          componentType: video.variant?.hls != null ? 'content' : 'container',
-          subType: video.label,
-          contentType: video.variant?.hls != null ? 'video' : 'none',
-          imageUrls: {
-            thumbnail:
-              video.images.find((image) => image.thumbnail != null)
-                ?.thumbnail ?? '',
-            videoStill:
-              video.images.find((image) => image.videoStill != null)
-                ?.videoStill ?? '',
-            mobileCinematicHigh:
-              video.images.find((image) => image.mobileCinematicHigh != null)
-                ?.mobileCinematicHigh ?? '',
-            mobileCinematicLow:
-              video.images.find((image) => image.mobileCinematicLow != null)
-                ?.mobileCinematicLow ?? '',
-            mobileCinematicVeryLow:
-              video.images.find((image) => image.mobileCinematicVeryLow != null)
-                ?.mobileCinematicVeryLow ?? ''
-          },
-          lengthInMilliseconds: video.variant?.lengthInMilliseconds ?? 0,
-          containsCount: video.childrenCount,
-          isDownloadable,
-          downloadSizes: {
-            approximateSmallDownloadSizeInBytes: isDownloadable
-              ? getDownloadSize(video.variant?.downloads, 'low', apiKey)
-              : 0,
-            approximateLargeDownloadSizeInBytes: isDownloadable
-              ? getDownloadSize(video.variant?.downloads, 'high', apiKey)
-              : 0
-          },
-          bibleCitations: video.bibleCitations.map((citation) => ({
-            osisBibleBook: citation.osisId,
-            chapterStart:
-              citation.chapterStart === -1 ? null : citation.chapterStart,
-            verseStart: citation.verseStart === -1 ? null : citation.verseStart,
-            chapterEnd: citation.chapterEnd === -1 ? null : citation.chapterEnd,
-            verseEnd: citation.verseEnd === -1 ? null : citation.verseEnd
-          })),
-          primaryLanguageId: Number(video.primaryLanguageId),
-          title: video.title[0]?.value ?? video.fallbackTitle[0]?.value ?? '',
-          shortDescription:
-            video.snippet[0]?.value ?? video.fallbackSnippet[0]?.value ?? '',
-          longDescription:
-            video.description[0]?.value ??
-            video.fallbackDescription[0]?.value ??
-            '',
-          studyQuestions:
-            video.studyQuestions.length > 0
-              ? video.studyQuestions.map((question) => question.value)
-              : video.fallbackStudyQuestions.map((question) => question.value),
-          metadataLanguageTag: video.title[0]?.language.bcp47 ?? 'en',
-          ...(expand.includes('languageIds')
-            ? {
-                languageIds: video.availableLanguages.map((languageId) =>
-                  typeof languageId === 'string'
-                    ? Number(languageId)
-                    : languageId
-                )
-              }
-            : {})
-        }
-      })
-
-      const queryString = new URLSearchParams(queryObject).toString()
-      const firstQueryString = new URLSearchParams({
-        ...queryObject,
-        page: '1'
-      }).toString()
-      const lastQueryString = new URLSearchParams({
-        ...queryObject,
-        page: lastPage.toString()
-      }).toString()
-      const nextQueryString = new URLSearchParams({
-        ...queryObject,
-        page: (page + 1).toString()
-      }).toString()
-      const previousQueryString = new URLSearchParams({
-        ...queryObject,
-        page: (page - 1).toString()
-      }).toString()
-
       return {
+        mediaComponentId: video.id,
+        componentType: variant?.hls != null ? 'content' : 'container',
+        subType: video.label,
+        contentType: variant?.hls != null ? 'video' : 'none',
+        imageUrls: {
+          thumbnail: getImageUrl(hdImage?.id, 'thumbnail'),
+          videoStill: getImageUrl(hdImage?.id, 'videoStill'),
+          mobileCinematicHigh: getImageUrl(
+            bannerImage?.id,
+            'mobileCinematicHigh'
+          ),
+          mobileCinematicLow: getImageUrl(
+            bannerImage?.id,
+            'mobileCinematicLow'
+          ),
+          mobileCinematicVeryLow: getImageUrl(
+            bannerImage?.id,
+            'mobileCinematicVeryLow'
+          )
+        },
+        lengthInMilliseconds: variant?.lengthInMilliseconds ?? 0,
+        containsCount: video.children.length,
+        isDownloadable,
+        downloadSizes: {
+          approximateSmallDownloadSizeInBytes: isDownloadable
+            ? (variant?.downloads.find((d) => d.quality === 'low')?.size ?? 0)
+            : 0,
+          approximateLargeDownloadSizeInBytes: isDownloadable
+            ? (variant?.downloads.find((d) => d.quality === 'high')?.size ?? 0)
+            : 0
+        },
+        bibleCitations: video.bibleCitation.map((citation) => ({
+          osisBibleBook: citation.osisId,
+          chapterStart:
+            citation.chapterStart === -1 ? null : citation.chapterStart,
+          verseStart: citation.verseStart === -1 ? null : citation.verseStart,
+          chapterEnd: citation.chapterEnd === -1 ? null : citation.chapterEnd,
+          verseEnd: citation.verseEnd === -1 ? null : citation.verseEnd
+        })),
+        primaryLanguageId: Number(video.primaryLanguageId),
+        title: getPreferredContent(video.title),
+        shortDescription: getPreferredContent(video.snippet),
+        longDescription: getPreferredContent(video.description),
+        studyQuestions:
+          video.studyQuestions.length > 0
+            ? video.studyQuestions
+                .filter((item) =>
+                  metadataLanguages.some((lang) => lang.id === item.languageId)
+                )
+                .map((item) => item.value)
+            : [],
+        metadataLanguageTag:
+          metadataLanguages.find(
+            (lang) => lang.id === video.title[0]?.languageId
+          )?.bcp47 ?? 'en',
+        ...(expand.includes('languageIds')
+          ? {
+              languageIds: video.availableLanguages.map((languageId) =>
+                typeof languageId === 'string' ? Number(languageId) : languageId
+              )
+            }
+          : {})
+      }
+    })
+
+    const queryString = new URLSearchParams(queryObject).toString()
+    const firstQueryString = new URLSearchParams({
+      ...queryObject,
+      page: '1'
+    }).toString()
+    const lastQueryString = new URLSearchParams({
+      ...queryObject,
+      page: lastPage.toString()
+    }).toString()
+    const nextQueryString = new URLSearchParams({
+      ...queryObject,
+      page: (page + 1).toString()
+    }).toString()
+    const previousQueryString = new URLSearchParams({
+      ...queryObject,
+      page: (page - 1).toString()
+    }).toString()
+
+    return {
+      data: {
         page,
         limit,
         pages: lastPage,
-        total,
+        total: totalCount,
         apiSessionId: apiSessionId,
         _links: {
           self: {
@@ -410,13 +491,10 @@ mediaComponents.openapi(route, async (c) => {
         _embedded: {
           mediaComponents
         }
-      }
-    } catch (err) {
-      throw new HTTPException(500, {
-        message: `Failed to get videos with fallback: ${err instanceof Error ? err.message : String(err)}`
-      })
+      },
+      statusCode: 200
     }
   })
 
-  return c.json(response)
+  return c.json(response.data)
 })
