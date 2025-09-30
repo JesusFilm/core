@@ -31,6 +31,34 @@
 - Share a typed helper for reusing the slide-to-video snapshot logic in other sections.
 - Consider centralizing Jest icon mocks to reduce repetition.
 
+# Video Grid Sequence Overlay
+
+## Goals
+
+- [x] Add a numbered overlay mode to `VideoGrid` for curated collection layouts.
+- [x] Render bold sequence markers on each `VideoCard` thumbnail.
+- [x] Cover the new mode with unit tests.
+
+## Obstacles
+
+- Existing `VideoCard` markup had no obvious hook for overlays without disturbing current layout.
+
+## Resolutions
+
+- Reused the `index` prop and injected an absolutely positioned badge for the sequence label.
+
+## Test Coverage
+
+- `pnpm test watch -- VideoGrid`
+
+## User Flows
+
+- Enable numbered mode on a grid -> cards render 1..n badges over thumbnails.
+
+## Follow-up Ideas
+
+- Consider exposing badge styling tokens so editorial can tweak typography per layout.
+
 # Search Component Overlay Refactor
 
 ## Goals

@@ -21,6 +21,7 @@ interface VideoCardProps {
   imageClassName?: string
   onClick?: (videoId?: string) => (event: MouseEvent) => void
   analyticsTag?: string
+  showSequenceNumber?: boolean
 }
 
 export function getSlug(
@@ -48,7 +49,8 @@ export function VideoCard({
   active,
   imageClassName,
   onClick: handleClick,
-  analyticsTag
+  analyticsTag,
+  showSequenceNumber = false
 }: VideoCardProps): ReactElement {
   const { t } = useTranslation('apps-watch')
 
@@ -62,6 +64,7 @@ export function VideoCard({
   // Compute safe image src and alt with proper guards
   const imageSrc = last(video?.images)?.mobileCinematicHigh
   const imageAlt = last(video?.imageAlt)?.value ?? ''
+  const sequenceLabel = showSequenceNumber && index != null ? index + 1 : null
 
   return (
     <a
@@ -77,6 +80,15 @@ export function VideoCard({
           disabled={video == null}
           className={`relative overflow-hidden rounded-lg ${orientation === 'vertical' ? 'aspect-[2/3]' : 'aspect-video'} hover:scale-102 focus-visible:scale-102 transition-transform duration-300 beveled ${imageClassName || ''}`}
         >
+          {sequenceLabel != null && (
+            <span
+              className="absolute top-3 left-3 text-5xl font-black text-white drop-shadow-[0_4px_10px_rgba(0,0,0,0.7)]"
+              aria-hidden="true"
+              data-testid="VideoCardSequenceNumber"
+            >
+              {sequenceLabel}
+            </span>
+          )}
           <div className="absolute inset-0 rounded-lg overflow-hidden bg-black/50 transition-transform duration-300">
             {imageSrc ? (
               <Image
