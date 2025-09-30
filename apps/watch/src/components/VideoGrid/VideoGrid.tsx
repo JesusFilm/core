@@ -16,6 +16,7 @@ export interface VideoGridProps {
   hasNoResults?: boolean
   onCardClick?: (videoId?: string) => (event: MouseEvent) => void
   analyticsTag?: string
+  showSequenceNumbers?: boolean
 }
 
 export function VideoGrid({
@@ -28,7 +29,8 @@ export function VideoGrid({
   hasNextPage = true,
   hasNoResults = false,
   onCardClick,
-  analyticsTag
+  analyticsTag,
+  showSequenceNumbers = false
 }: VideoGridProps): ReactElement {
   const { t } = useTranslation('apps-watch')
 
@@ -44,8 +46,10 @@ export function VideoGrid({
               video={video}
               orientation={orientation}
               containerSlug={containerSlug}
+              index={index}
               onClick={onCardClick}
               analyticsTag={analyticsTag}
+              showSequenceNumber={showSequenceNumbers}
             />
           </div>
         ))}
