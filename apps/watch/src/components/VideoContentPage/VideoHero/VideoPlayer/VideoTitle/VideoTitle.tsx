@@ -155,14 +155,14 @@ export function VideoTitle({
         </NextLink>
       )}
       {isPreview && (onMuteToggle != null || onSkip != null) && (
-        <div className="absolute z-0 bottom-7 right-0 flex items-center gap-2 scale-125">
+        <div className="absolute z-0 bottom-7 right-0 flex items-center gap-2 scale-150">
           {onSkip != null && (
             <button
               onClick={(e) => {
                 e.stopPropagation()
                 onSkip()
               }}
-              className="cursor-pointer text-stone-50 p-2 rounded-full hover:bg-white/20 transition-colors duration-200"
+              className="z-50 cursor-pointer text-stone-50/50 p-2 rounded-full hover:text-stone-50 transition-colors duration-200"
               aria-label={t('Skip video')}
             >
               <SkipNextRounded fontSize="medium" />
@@ -174,7 +174,7 @@ export function VideoTitle({
                 e.stopPropagation()
                 onMuteToggle()
               }}
-              className="cursor-pointer text-stone-50 p-2 rounded-full hover:bg-white/20 transition-colors duration-200 mute-preview-toggle"
+              className="cursor-pointer text-stone-50/50 p-2 rounded-full hover:text-stone-50 transition-colors duration-200 mute-preview-toggle"
               aria-label={mute || volume === 0 ? t('Unmute') : t('Mute')}
             >
               {mute || volume === 0 ? <VolumeOff /> : <VolumeUpOutlined />}
