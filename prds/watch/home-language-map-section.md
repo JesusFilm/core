@@ -20,6 +20,7 @@ Render a language coverage map on the Watch homepage that visualizes the global 
 - [x] Add a client-only map component that renders clustered language markers using MapLibre GL with accessibility-friendly controls and popovers.
 - [x] Integrate the new section into `WatchHomePage` beneath the existing hero content and ensure fallbacks render while data loads.
 - [x] Update English translations for the new section headings and descriptions.
+- [x] Limit cluster zoom interactions to two consecutive clicks and present a country-specific language list on the third interaction.
 - [ ] Validate the implementation with linting, type-checking, and any relevant component tests.
 
 ## Technical Analysis
