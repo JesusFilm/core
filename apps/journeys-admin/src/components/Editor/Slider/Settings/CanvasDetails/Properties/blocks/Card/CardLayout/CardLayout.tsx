@@ -95,8 +95,6 @@ export function CardLayout({
     ? 'false'
     : cardBlock?.fullscreen.toString()
 
-  const { t } = useTranslation('apps-journeys-admin')
-
   return (
     <>
       <Box>

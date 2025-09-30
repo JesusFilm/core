@@ -66,8 +66,6 @@ export function Variant(): ReactElement {
     })
   }
 
-  const { t } = useTranslation('apps-journeys-admin')
-
   const options = [
     {
       value: t(ButtonVariant.contained),
