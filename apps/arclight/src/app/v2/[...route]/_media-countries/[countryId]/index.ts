@@ -270,8 +270,8 @@ mediaCountry.openapi(route, async (c) => {
           },
           primaryCountryId:
             countryLanguage.language.countryLanguages.find((cl) => cl.primary)
-              ?.country.id ??
-            countryLanguage.language.countryLanguages[0]?.country.id ??
+              ?.country?.id ??
+            countryLanguage.language.countryLanguages[0]?.country?.id ??
             'US',
           name: countryLanguage.language.name.find(({ primary }) => !primary)
             ?.value,
