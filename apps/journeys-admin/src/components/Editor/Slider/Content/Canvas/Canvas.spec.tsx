@@ -319,4 +319,102 @@ describe('Canvas', () => {
     )
     expect(screen.getByTestId('CanvasFooter')).toBeInTheDocument()
   })
+
+  it('renders a multiselect question with options', async () => {
+    const stepWithMultiselect: TreeBlock<StepBlock> = {
+      id: 'stepMulti.id',
+      __typename: 'StepBlock',
+      parentBlockId: null,
+      parentOrder: 0,
+      locked: false,
+      nextBlockId: null,
+      slug: null,
+      children: [
+        {
+          id: 'cardMulti.id',
+          __typename: 'CardBlock',
+          parentBlockId: 'stepMulti.id',
+          coverBlockId: null,
+          parentOrder: 0,
+          backgroundColor: null,
+          themeMode: null,
+          themeName: null,
+          fullscreen: false,
+          backdropBlur: null,
+          children: [
+            {
+              id: 'multiselectQuestion1.id',
+              __typename: 'MultiselectBlock',
+              parentBlockId: 'cardMulti.id',
+              parentOrder: 0,
+              gridView: false,
+              label: 'Pick your favorites',
+              min: null,
+              max: 2,
+              children: [
+                {
+                  id: 'multiselectOption1.id',
+                  __typename: 'MultiselectOptionBlock',
+                  parentBlockId: 'multiselectQuestion1.id',
+                  parentOrder: 0,
+                  label: 'Option 1',
+                  children: []
+                },
+                {
+                  id: 'multiselectOption2.id',
+                  __typename: 'MultiselectOptionBlock',
+                  parentBlockId: 'multiselectQuestion1.id',
+                  parentOrder: 1,
+                  label: 'Option 2',
+                  children: []
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+
+    const { baseElement } = render(
+      <MockedProvider>
+        <SnackbarProvider>
+          <ThemeProvider>
+            <JourneyProvider
+              value={{
+                journey: {
+                  id: 'journeyId',
+                  themeMode: ThemeMode.dark,
+                  themeName: ThemeName.base,
+                  language: {
+                    __typename: 'Language',
+                    id: '529',
+                    bcp47: 'en',
+                    iso3: 'eng'
+                  }
+                } as unknown as Journey,
+                variant: 'admin'
+              }}
+            >
+              <EditorProvider
+                initialState={{
+                  steps: [stepWithMultiselect],
+                  selectedStep: stepWithMultiselect
+                }}
+              >
+                <Canvas />
+              </EditorProvider>
+            </JourneyProvider>
+          </ThemeProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    const iframe = baseElement.getElementsByTagName('iframe')[0]
+    await waitFor(() => {
+      const el = iframe?.contentDocument?.querySelector(
+        '[data-testid="JourneysMultiselectQuestionList-multiselectQuestion1.id"]'
+      )
+      expect(el).toBeTruthy()
+    })
+  })
 })

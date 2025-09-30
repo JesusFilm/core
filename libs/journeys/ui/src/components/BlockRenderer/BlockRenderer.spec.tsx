@@ -428,6 +428,123 @@ describe('BlockRenderer', () => {
     expect(getByTestId('radio-question-wrapper')).toContainElement(buttonGroup)
   })
 
+  it('should render MultiselectOption', async () => {
+    const block: TreeBlock = {
+      __typename: 'MultiselectOptionBlock',
+      id: 'multiOption',
+      parentBlockId: null,
+      parentOrder: 0,
+      label: 'multi option',
+      children: []
+    }
+    const { getByText } = render(
+      <MockedProvider mocks={[]} addTypename={false}>
+        <BlockRenderer block={block} />
+      </MockedProvider>
+    )
+    await waitFor(() => expect(getByText('multi option')).toBeInTheDocument())
+  })
+
+  it('should render MultiselectOption with general wrapper and specific wrapper', async () => {
+    const block: TreeBlock = {
+      __typename: 'MultiselectOptionBlock',
+      id: 'multiOption',
+      parentBlockId: null,
+      parentOrder: 0,
+      label: 'multi option',
+      children: []
+    }
+    const { getByTestId, getByText } = render(
+      <MockedProvider mocks={[]} addTypename={false}>
+        <BlockRenderer
+          block={block}
+          wrappers={{
+            Wrapper: ({ children }) => (
+              <div data-testid="general-wrapper">{children}</div>
+            ),
+            MultiselectOptionWrapper: ({ children }) => (
+              <div data-testid="multiselect-option-wrapper">{children}</div>
+            )
+          }}
+        />
+      </MockedProvider>
+    )
+    expect(
+      getByTestId('general-wrapper').children[0].getAttribute('data-testid')
+    ).toBe('multiselect-option-wrapper')
+    await waitFor(() => expect(getByText('multi option')).toBeInTheDocument())
+    expect(getByTestId('multiselect-option-wrapper')).toContainElement(
+      getByText('multi option')
+    )
+  })
+
+  it('should render MultiselectQuestion', async () => {
+    const option = {
+      __typename: 'MultiselectOptionBlock',
+      id: 'option1',
+      parentBlockId: 'multi',
+      parentOrder: 0,
+      label: 'multi option 1',
+      children: []
+    }
+    const block: TreeBlock = {
+      __typename: 'MultiselectBlock',
+      id: 'multi',
+      parentBlockId: null,
+      parentOrder: 0,
+      min: 0,
+      max: 2,
+      children: [option, { ...option, id: 'option2', label: 'multi option 2' }]
+    }
+    const { getByText } = render(
+      <MockedProvider mocks={[]} addTypename={false}>
+        <SnackbarProvider>
+          <BlockRenderer block={block} />
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+    await waitFor(() => expect(getByText('multi option 1')).toBeInTheDocument())
+    expect(getByText('multi option 2')).toBeInTheDocument()
+  })
+
+  it('should render MultiselectQuestion with general wrapper and specific wrapper', () => {
+    const block: TreeBlock = {
+      __typename: 'MultiselectBlock',
+      id: 'multi',
+      parentBlockId: null,
+      parentOrder: 0,
+      min: 0,
+      max: 2,
+      children: []
+    }
+    const { getByTestId, getByRole } = render(
+      <MockedProvider mocks={[]} addTypename={false}>
+        <BlockRenderer
+          block={{ ...block }}
+          wrappers={{
+            Wrapper: ({ children }) => (
+              <div data-testid="general-wrapper">{children}</div>
+            ),
+            MultiselectQuestionWrapper: ({ children }) => (
+              <div data-testid="multiselect-question-wrapper">{children}</div>
+            )
+          }}
+        />
+      </MockedProvider>
+    )
+    expect(
+      getByTestId('general-wrapper').children[0].getAttribute('data-testid')
+    ).toBe('multiselect-question-wrapper')
+
+    const buttonGroup = getByRole('group')
+    expect(buttonGroup).toHaveClass(
+      'MuiButtonGroup-contained MuiButtonGroup-vertical'
+    )
+    expect(getByTestId('multiselect-question-wrapper')).toContainElement(
+      buttonGroup
+    )
+  })
+
   it('should render SignUp', async () => {
     const block: TreeBlock = {
       __typename: 'SignUpBlock',

@@ -63,4 +63,37 @@ describe('getFormInitialValues', () => {
 
     expect(result).toEqual({})
   })
+
+  it('should include multiselect blocks with empty arrays', () => {
+    const mockBlocks = asTreeBlocks([
+      {
+        id: 'card1',
+        __typename: 'CardBlock',
+        children: []
+      },
+      {
+        id: 'multi1',
+        __typename: 'MultiselectBlock',
+        children: [
+          {
+            id: 'option1',
+            __typename: 'MultiselectOptionBlock',
+            children: []
+          }
+        ]
+      },
+      {
+        id: 'multi2',
+        __typename: 'MultiselectBlock',
+        children: []
+      }
+    ])
+
+    const result = getFormInitialValues(mockBlocks)
+
+    expect(result).toEqual({
+      multi1: [],
+      multi2: []
+    })
+  })
 })

@@ -1,1 +1,4 @@
-export { MultiselectOptionEdit } from './MultiselectOptionEdit'
+export {
+  MultiselectOptionEdit,
+  MULTISELECT_OPTION_BLOCK_UPDATE
+} from './MultiselectOptionEdit'
