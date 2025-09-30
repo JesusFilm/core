@@ -11,7 +11,7 @@ Render a language coverage map on the Watch homepage that visualizes the global 
 ## Resolutions
 - Cached the language map payload in Redis (24h TTL) via a dedicated Next.js API route to keep the response fast and reusable.
 - Guarded the MapLibre integration behind a client-only dynamic import with WebGL capability checks to prevent SSR/runtime crashes.
-- Enabled built-in clustering and custom popups to keep the interface performant even with thousands of language points.
+- Aggregated language data per country to colorize country polygons, surface language counts directly on the map, and drive a dedicated detail panel instead of relying on clustered point popups.
 
 ## Implementation Steps
 - [x] Build a cached `/api/language-map` endpoint that queries the languages API for language-country coordinates and normalizes them for the client.
@@ -21,6 +21,7 @@ Render a language coverage map on the Watch homepage that visualizes the global 
 - [x] Integrate the new section into `WatchHomePage` beneath the existing hero content and ensure fallbacks render while data loads.
 - [x] Update English translations for the new section headings and descriptions.
 - [x] Limit cluster zoom interactions to two consecutive clicks and present a country-specific language list on the third interaction.
+- [x] Replace clustered language pins with country-level fills, overlay language counts, and open a fixed detail panel with language lists when a country is selected.
 - [ ] Validate the implementation with linting, type-checking, and any relevant component tests.
 
 ## Technical Analysis
@@ -37,8 +38,8 @@ Render a language coverage map on the Watch homepage that visualizes the global 
 
 ## User Flows
 1. Visitor loads the Watch homepage and sees the new "Explore languages worldwide" section below the hero content.
-2. After a brief loading state, clustered pins animate onto the world map; zooming or clicking reveals individual language points.
-3. Clicking a single language marker opens a tooltip listing the language name and associated country.
+2. After a brief loading state, countries with language coverage glow in distinct colors with numeric badges indicating how many languages are available.
+3. Clicking a country opens a side panel that summarizes the nation and lists every language represented within our catalog.
 
 ## Follow-up Ideas
 - Consider adding filters (continent, language family) to highlight subsets of languages.
