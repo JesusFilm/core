@@ -53,6 +53,10 @@ export function HeroVideo({
   const playerRef = useRef<
     (Player & { textTracks?: () => TextTrackList }) | null
   >(null)
+  const fadeAnimationFrameRef = useRef<number | null>(null)
+  const fadeActiveRef = useRef(false)
+  const volumeToRestoreRef = useRef<number | null>(null)
+  const [isFadingOut, setIsFadingOut] = useState(false)
 
   const pauseVideoOnScrollAway = useCallback((): void => {
     const scrollY = window.scrollY
@@ -70,6 +74,79 @@ export function HeroVideo({
     return () => window.removeEventListener('scroll', pauseVideoOnScrollAway)
   }, [pauseVideoOnScrollAway])
 
+  const resetFade = useCallback(() => {
+    if (fadeAnimationFrameRef.current != null) {
+      cancelAnimationFrame(fadeAnimationFrameRef.current)
+      fadeAnimationFrameRef.current = null
+    }
+
+    fadeActiveRef.current = false
+    setIsFadingOut(false)
+
+    const player = playerRef.current
+    if (
+      player != null &&
+      volumeToRestoreRef.current != null &&
+      player.muted() === false
+    ) {
+      player.volume(volumeToRestoreRef.current)
+    }
+
+    volumeToRestoreRef.current = null
+  }, [])
+
+  const startFadeOut = useCallback(() => {
+    if (isPreview) return
+
+    const player = playerRef.current
+
+    if (player == null || fadeActiveRef.current || isFadingOut) {
+      return
+    }
+
+    const muted = player.muted()
+
+    fadeActiveRef.current = true
+    setIsFadingOut(true)
+
+    if (!muted) {
+      volumeToRestoreRef.current = player.volume()
+    } else {
+      volumeToRestoreRef.current = null
+    }
+
+    const startTime = performance.now()
+    const duration = 800
+    const startVolume = muted ? 0 : player.volume()
+
+    const step = (timestamp: number): void => {
+      const currentPlayer = playerRef.current
+      if (!fadeActiveRef.current || currentPlayer == null) {
+        return
+      }
+
+      const elapsed = timestamp - startTime
+      const progress = Math.min(elapsed / duration, 1)
+      const nextVolume = Math.max(startVolume * (1 - progress), 0)
+
+      if (!currentPlayer.muted()) {
+        currentPlayer.volume(nextVolume)
+      }
+
+      if (progress < 1) {
+        fadeAnimationFrameRef.current = requestAnimationFrame(step)
+      } else {
+        fadeAnimationFrameRef.current = null
+        fadeActiveRef.current = false
+        if (!currentPlayer.muted()) {
+          currentPlayer.volume(0)
+        }
+      }
+    }
+
+    fadeAnimationFrameRef.current = requestAnimationFrame(step)
+  }, [isPreview, isFadingOut])
+
   useEffect(() => {
     // Determine the video source and ID based on current content
     const videoSource = currentMuxInsert ? currentMuxInsert.urls.hls : variant?.hls
@@ -79,6 +156,7 @@ export function HeroVideo({
 
     // Dispose of existing player before creating new one
     if (playerRef.current) {
+      resetFade()
       playerRef.current.dispose()
       playerRef.current = null
       setPlayerReady(false)
@@ -124,12 +202,21 @@ export function HeroVideo({
 
     return () => {
       if (playerRef.current) {
+        resetFade()
         playerRef.current.dispose()
         playerRef.current = null
       }
       setPlayerReady(false)
     }
-  }, [currentMuxInsert?.id, variant?.hls, title, variant?.id, currentMuxInsert, isPreview])
+  }, [
+    currentMuxInsert?.id,
+    variant?.hls,
+    title,
+    variant?.id,
+    currentMuxInsert,
+    isPreview,
+    resetFade
+  ])
 
   // Handle mute state changes dynamically without recreating the player
   useEffect(() => {
@@ -187,6 +274,58 @@ export function HeroVideo({
     subtitleUpdate
   ])
 
+  useEffect(() => {
+    const player = playerRef.current
+    if (!player || !playerReady) return
+
+    const handleTimeUpdate = (): void => {
+      if (isPreview || player.paused()) return
+
+      const playerWithRemaining = player as Player & {
+        remainingTime?: () => number
+      }
+
+      const hasRemainingTime =
+        typeof playerWithRemaining.remainingTime === 'function'
+
+      const remaining = hasRemainingTime
+        ? playerWithRemaining.remainingTime?.()
+        : Math.max(
+            (typeof player.duration === 'function' ? player.duration() : 0) -
+              (typeof player.currentTime === 'function'
+                ? player.currentTime()
+                : 0),
+            0
+          )
+
+      if (remaining != null && remaining <= 1.2) {
+        startFadeOut()
+      }
+    }
+
+    const handleReset = (): void => {
+      resetFade()
+    }
+
+    player.on('timeupdate', handleTimeUpdate)
+    player.on('playing', handleReset)
+    player.on('loadstart', handleReset)
+    player.on('seeking', handleReset)
+
+    return () => {
+      player.off('timeupdate', handleTimeUpdate)
+      player.off('playing', handleReset)
+      player.off('loadstart', handleReset)
+      player.off('seeking', handleReset)
+    }
+  }, [playerReady, startFadeOut, resetFade, isPreview])
+
+  useEffect(() => {
+    return () => {
+      resetFade()
+    }
+  }, [resetFade])
+
   const shouldShowOverlay = playerReady && (mute || (subtitleOn ?? false))
 
   return (
@@ -221,6 +360,13 @@ export function HeroVideo({
             onClick={isPreview ? handlePreviewClick : undefined}
           />
         )}
+        <div
+          data-testid="HeroVideoFadeOverlay"
+          className={clsx(
+            'absolute inset-0 z-1 pointer-events-none transition-opacity duration-500 bg-black',
+            isFadingOut ? 'opacity-60' : 'opacity-0'
+          )}
+        />
         {collapsed && (
           <div
             className="absolute inset-0 z-1 pointer-events-none opacity-70"
