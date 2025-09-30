@@ -57,7 +57,7 @@ export async function importMuxVideos(mux: Mux): Promise<void> {
       where: {
         AND: [
           { videoId: { not: { startsWith: '1_' } } },
-          { videoId: { not: { startsWith: 'MAG' } } },
+          { videoId: { not: { startsWith: 'MAG' } } }
         ],
         muxVideoId: null,
         masterUrl: { not: null }
