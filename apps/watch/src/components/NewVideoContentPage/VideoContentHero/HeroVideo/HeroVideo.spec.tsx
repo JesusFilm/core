@@ -197,6 +197,8 @@ describe('HeroVideo', () => {
       expect(mockPlayer.on).toHaveBeenCalledWith('playing', expect.any(Function))
     })
 
+    expect(mockPlayer.on).toHaveBeenCalledWith('ended', expect.any(Function))
+
     mockPlayer.setRemainingTime(0.5)
 
     act(() => {
@@ -215,6 +217,38 @@ describe('HeroVideo', () => {
       expect(getByTestId('HeroVideoFadeOverlay')).toHaveClass('opacity-0')
     })
     expect(mockPlayer.getCurrentVolume()).toBeCloseTo(0.75)
+  })
+
+  it('fades preview clips as they near completion', async () => {
+    const { getByTestId } = render(
+      <VideoProvider value={{ content: videos[0] }}>
+        <WatchProvider initialState={{ subtitleLanguageId: '529', subtitleOn: false }}>
+          <PlayerProvider initialState={{ mute: false }}>
+            <HeroVideo isPreview />
+          </PlayerProvider>
+        </WatchProvider>
+      </VideoProvider>
+    )
+
+    await waitFor(() => {
+      expect(mockPlayer.on).toHaveBeenCalledWith('timeupdate', expect.any(Function))
+    })
+
+    mockPlayer.setRemainingTime(1)
+
+    act(() => {
+      mockPlayer.trigger('timeupdate')
+    })
+
+    expect(requestAnimationFrameMock).toHaveBeenCalled()
+
+    act(() => {
+      frameCallback?.(800)
+    })
+
+    await waitFor(() => {
+      expect(getByTestId('HeroVideoFadeOverlay')).toHaveClass('opacity-60')
+    })
   })
 })
 

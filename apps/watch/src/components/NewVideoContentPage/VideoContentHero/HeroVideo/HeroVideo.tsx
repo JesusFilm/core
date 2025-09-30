@@ -96,8 +96,6 @@ export function HeroVideo({
   }, [])
 
   const startFadeOut = useCallback(() => {
-    if (isPreview) return
-
     const player = playerRef.current
 
     if (player == null || fadeActiveRef.current || isFadingOut) {
@@ -145,7 +143,7 @@ export function HeroVideo({
     }
 
     fadeAnimationFrameRef.current = requestAnimationFrame(step)
-  }, [isPreview, isFadingOut])
+  }, [isFadingOut])
 
   useEffect(() => {
     // Determine the video source and ID based on current content
@@ -279,7 +277,7 @@ export function HeroVideo({
     if (!player || !playerReady) return
 
     const handleTimeUpdate = (): void => {
-      if (isPreview || player.paused()) return
+      if (player.paused()) return
 
       const playerWithRemaining = player as Player & {
         remainingTime?: () => number
@@ -311,14 +309,16 @@ export function HeroVideo({
     player.on('playing', handleReset)
     player.on('loadstart', handleReset)
     player.on('seeking', handleReset)
+    player.on('ended', handleReset)
 
     return () => {
       player.off('timeupdate', handleTimeUpdate)
       player.off('playing', handleReset)
       player.off('loadstart', handleReset)
       player.off('seeking', handleReset)
+      player.off('ended', handleReset)
     }
-  }, [playerReady, startFadeOut, resetFade, isPreview])
+  }, [playerReady, startFadeOut, resetFade])
 
   useEffect(() => {
     return () => {
