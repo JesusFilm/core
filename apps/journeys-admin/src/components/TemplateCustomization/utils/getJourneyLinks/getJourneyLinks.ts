@@ -35,7 +35,7 @@ export function getJourneyLinks(
 
   const links: JourneyLink[] = []
 
-  // TODO: uncomment this when chat buttons are added to duplicate api\
+  // TODO: uncomment this when chat buttons are added to duplicate api
   // Collect chat buttons as top-level links (no step association)
   // const chatButtons = journey.chatButtons ?? []
   // chatButtons.forEach((chatButton) => {
