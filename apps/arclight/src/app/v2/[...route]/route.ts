@@ -27,7 +27,10 @@ app.use('*', etag())
 
 app.use('*', async (c, next) => {
   await next()
-  c.header('Content-Type', 'application/json; charset=utf-8')
+  const ct = c.res.headers.get('Content-Type')
+  if (!ct || ct.includes('application/json')) {
+    c.header('Content-Type', 'application/json; charset=utf-8')
+  }
 })
 
 app.onError((err, c) => {
