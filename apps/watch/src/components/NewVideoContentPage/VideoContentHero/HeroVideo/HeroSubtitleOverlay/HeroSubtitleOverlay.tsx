@@ -1,4 +1,4 @@
-import { ReactElement, useEffect, useMemo, useState } from 'react'
+import { ReactElement, useEffect, useState } from 'react'
 import type Player from 'video.js/dist/types/player'
 
 interface HeroSubtitleOverlayProps {
@@ -83,16 +83,33 @@ export function HeroSubtitleOverlay({
 
   const shouldRender = visible && segments.length > 0
 
-  const updateFromActiveTrack = useMemo(() => {
-    return () => {
+  useEffect(() => {
+    if (!visible || player == null) {
+      setSegments([])
+      setCurrentSegmentIndex(0)
+      return
+    }
+
+    const textTracks = player.textTracks?.()
+    if (textTracks == null) {
+      setSegments([])
+      setCurrentSegmentIndex(0)
+      return
+    }
+
+    const cleanupListeners: Array<() => void> = []
+
+    let lastUpdateTime = 0
+
+    const updateSegmentsFromTrack = () => {
       if (!visible || player == null) {
         setSegments([])
         setCurrentSegmentIndex(0)
         return
       }
 
-      const textTracks = player.textTracks?.()
-      if (textTracks == null) {
+      const currentTextTracks = player.textTracks?.()
+      if (currentTextTracks == null) {
         setSegments([])
         setCurrentSegmentIndex(0)
         return
@@ -100,8 +117,8 @@ export function HeroSubtitleOverlay({
 
       let activeTrack: TextTrack | null = null
 
-      for (let idx = 0; idx < textTracks.length; idx++) {
-        const track = textTracks[idx]
+      for (let idx = 0; idx < currentTextTracks.length; idx++) {
+        const track = currentTextTracks[idx]
         if (track.kind === 'subtitles' && track.mode === 'showing') {
           activeTrack = track
           break
@@ -121,8 +138,13 @@ export function HeroSubtitleOverlay({
         return
       }
 
+      // Throttle updates to prevent excessive re-renders
+      const now = Date.now()
+      if (now - lastUpdateTime < 100) return // Minimum 100ms between updates
+      lastUpdateTime = now
+
       const nextSegments: SubtitleSegment[] = []
-      const timestamp = Date.now()
+      const timestamp = now
       for (let cueIndex = 0; cueIndex < activeCues.length; cueIndex++) {
         const cue = activeCues[cueIndex]
         nextSegments.push(...extractSegmentsFromCue(cue, cueIndex, timestamp))
@@ -131,26 +153,9 @@ export function HeroSubtitleOverlay({
       setSegments(nextSegments)
       setCurrentSegmentIndex(0)
     }
-  }, [player, visible])
-
-  useEffect(() => {
-    if (!visible || player == null) {
-      setSegments([])
-      setCurrentSegmentIndex(0)
-      return
-    }
-
-    const textTracks = player.textTracks?.()
-    if (textTracks == null) {
-      setSegments([])
-      setCurrentSegmentIndex(0)
-      return
-    }
-
-    const cleanupListeners: Array<() => void> = []
 
     const handleCueChange = () => {
-      updateFromActiveTrack()
+      updateSegmentsFromTrack()
     }
 
     const handleAddTrack = (event: Event) => {
@@ -160,7 +165,7 @@ export function HeroSubtitleOverlay({
         cleanupListeners.push(() => {
           track.removeEventListener('cuechange', handleCueChange)
         })
-        updateFromActiveTrack()
+        updateSegmentsFromTrack()
       }
     }
 
@@ -180,7 +185,7 @@ export function HeroSubtitleOverlay({
     })
 
     const handleTextTrackChange = () => {
-      updateFromActiveTrack()
+      updateSegmentsFromTrack()
     }
 
     player.on?.('texttrackchange', handleTextTrackChange)
@@ -188,14 +193,14 @@ export function HeroSubtitleOverlay({
       player.off?.('texttrackchange', handleTextTrackChange)
     })
 
-    updateFromActiveTrack()
+    updateSegmentsFromTrack()
 
     return () => {
       cleanupListeners.forEach((cleanup) => cleanup())
       setSegments([])
       setCurrentSegmentIndex(0)
     }
-  }, [player, subtitleLanguageId, updateFromActiveTrack, visible])
+  }, [player, subtitleLanguageId, visible])
 
   useEffect(() => {
     if (!visible) return
@@ -264,8 +269,18 @@ export function HeroSubtitleOverlay({
           will-change: transform, opacity;
         }
 
-        .hero-hide-native-subtitles .vjs-text-track-display {
+        .hero-hide-native-subtitles .vjs-text-track-display,
+        .hero-hide-native-subtitles ::cue {
           display: none !important;
+          visibility: hidden !important;
+          opacity: 0 !important;
+        }
+
+        /* Additional aggressive hiding for any subtitle elements */
+        .hero-hide-native-subtitles video::cue {
+          display: none !important;
+          visibility: hidden !important;
+          opacity: 0 !important;
         }
       `}</style>
     </>

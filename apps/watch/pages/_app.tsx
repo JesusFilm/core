@@ -26,6 +26,9 @@ import 'swiper/css/navigation'
 import '../styles/globals.css'
 import './fonts/fonts.css'
 
+// Polyfills
+import '../src/libs/polyfills/requestVideoFrameCallback'
+
 const notoSerif = Noto_Serif({
   weight: ['500', '700'],
   subsets: ['latin']
