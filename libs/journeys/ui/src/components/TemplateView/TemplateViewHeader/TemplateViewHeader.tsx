@@ -9,15 +9,12 @@ import { User } from 'next-firebase-auth'
 import { ReactElement } from 'react'
 
 import { useJourney } from '../../../libs/JourneyProvider'
-import { useFlags } from '@core/shared/ui/FlagsProvider'
 
 import { PreviewTemplateButton } from './PreviewTemplateButton'
 import { SocialImage } from './SocialImage'
 import { TemplateCreatorDetails } from './TemplateCreatorDetails/TemplateCreatorDetails'
 import { TemplateEditButton } from './TemplateEditButton/TemplateEditButton'
-import { UseThisTemplateButton } from '../UseThisTemplateButton'
-import { CreateJourneyButton } from '../CreateJourneyButton'
-import { isJourneyCustomizable } from '../../../libs/isJourneyCustomizable'
+import { TemplateActionButton } from './TemplateActionButton'
 
 interface TemplateViewHeaderProps {
   isPublisher: boolean | undefined
@@ -30,7 +27,6 @@ export function TemplateViewHeader({
 }: TemplateViewHeaderProps): ReactElement {
   const { journey } = useJourney()
   const hasCreatorDescription = journey?.creatorDescription != null
-  const { journeyCustomization } = useFlags()
 
   return (
     <Stack data-testid="JourneysAdminTemplateViewHeader">
@@ -155,18 +151,7 @@ export function TemplateViewHeader({
               marginTop: 'auto'
             }}
           >
-            {journeyCustomization &&
-            journey != null &&
-            isJourneyCustomizable(journey) ? (
-              <UseThisTemplateButton signedIn={authUser?.id != null} />
-            ) : journey == null ? (
-              <Skeleton
-                sx={{ minWidth: 180, height: '38px', borderRadius: 3 }}
-                data-testid="UseThisTemplateButtonSkeleton"
-              />
-            ) : (
-              <CreateJourneyButton signedIn={authUser?.id != null} />
-            )}
+            <TemplateActionButton signedIn={authUser?.id != null} />
             <PreviewTemplateButton slug={journey?.slug} />
             {journey != null && isPublisher === true && (
               <TemplateEditButton journeyId={journey.id} />
@@ -175,18 +160,7 @@ export function TemplateViewHeader({
         </Stack>
       </Stack>
       <Box sx={{ display: { xs: 'flex', sm: 'none' }, pt: 6 }} gap={2}>
-        {journeyCustomization &&
-        journey != null &&
-        isJourneyCustomizable(journey) ? (
-          <UseThisTemplateButton signedIn={authUser?.id != null} />
-        ) : journey == null ? (
-          <Skeleton
-            sx={{ minWidth: 180, height: '38px', borderRadius: 3 }}
-            data-testid="UseThisTemplateButtonSkeleton"
-          />
-        ) : (
-          <CreateJourneyButton signedIn={authUser?.id != null} />
-        )}
+        <TemplateActionButton signedIn={authUser?.id != null} />
         <PreviewTemplateButton slug={journey?.slug} />
         {journey != null && isPublisher === true && (
           <TemplateEditButton journeyId={journey.id} />

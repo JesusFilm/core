@@ -2,13 +2,7 @@ import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
-import { UseThisTemplateButton } from '../UseThisTemplateButton'
-
-import { useFlags } from '@core/shared/ui/FlagsProvider'
-import { CreateJourneyButton } from '../CreateJourneyButton'
-import { useJourney } from '../../../libs/JourneyProvider'
-import { isJourneyCustomizable } from '../../../libs/isJourneyCustomizable'
-import Skeleton from '@mui/material/Skeleton'
+import { TemplateActionButton } from '../TemplateViewHeader/TemplateActionButton'
 
 interface TemplateFooterProps {
   signedIn?: boolean
@@ -18,8 +12,6 @@ export function TemplateFooter({
   signedIn
 }: TemplateFooterProps): ReactElement {
   const { t } = useTranslation('libs-journeys-ui')
-  const { journey } = useJourney()
-  const { journeyCustomization } = useFlags()
 
   return (
     <Stack
@@ -46,18 +38,7 @@ export function TemplateFooter({
       >
         {t('Use this template to make it your journey')}
       </Typography>
-      {journeyCustomization &&
-      journey != null &&
-      isJourneyCustomizable(journey) ? (
-        <UseThisTemplateButton signedIn={signedIn} />
-      ) : journey == null ? (
-        <Skeleton
-          sx={{ minWidth: 180, height: '38px', borderRadius: 3 }}
-          data-testid="UseThisTemplateButtonSkeleton"
-        />
-      ) : (
-        <CreateJourneyButton signedIn={signedIn} />
-      )}
+      <TemplateActionButton signedIn={signedIn} />
     </Stack>
   )
 }
