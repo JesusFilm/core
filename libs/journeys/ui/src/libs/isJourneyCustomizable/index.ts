@@ -1,0 +1,1 @@
+export { isJourneyCustomizable } from './isJourneyCustomizable'
