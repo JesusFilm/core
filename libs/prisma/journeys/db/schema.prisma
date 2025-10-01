@@ -88,6 +88,7 @@ enum ButtonAction {
   LinkAction
   EmailAction
   PhoneAction
+  ChatAction
 }
 
 enum VideoBlockSource {
@@ -598,6 +599,7 @@ model Action {
   parentBlock   Block    @relation(fields: [parentBlockId], references: [id], onDelete: Cascade)
   journey       Journey? @relation(fields: [journeyId], references: [id])
   block         Block?   @relation("Block", fields: [blockId], references: [id])
+  chatAction    String?
 
   @@index(parentBlockId)
 }
