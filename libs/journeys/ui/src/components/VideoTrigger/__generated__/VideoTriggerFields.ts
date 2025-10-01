@@ -38,7 +38,16 @@ export interface VideoTriggerFields_triggerAction_EmailAction {
   parentStepId: string | null;
 }
 
-export type VideoTriggerFields_triggerAction = VideoTriggerFields_triggerAction_PhoneAction | VideoTriggerFields_triggerAction_NavigateToBlockAction | VideoTriggerFields_triggerAction_LinkAction | VideoTriggerFields_triggerAction_EmailAction;
+export interface VideoTriggerFields_triggerAction_ChatAction {
+  __typename: "ChatAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+  chatUrl: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
+}
+
+export type VideoTriggerFields_triggerAction = VideoTriggerFields_triggerAction_PhoneAction | VideoTriggerFields_triggerAction_NavigateToBlockAction | VideoTriggerFields_triggerAction_LinkAction | VideoTriggerFields_triggerAction_EmailAction | VideoTriggerFields_triggerAction_ChatAction;
 
 export interface VideoTriggerFields {
   __typename: "VideoTriggerBlock";

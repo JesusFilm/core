@@ -91,7 +91,16 @@ export interface VideoFields_action_EmailAction {
   parentStepId: string | null;
 }
 
-export type VideoFields_action = VideoFields_action_PhoneAction | VideoFields_action_NavigateToBlockAction | VideoFields_action_LinkAction | VideoFields_action_EmailAction;
+export interface VideoFields_action_ChatAction {
+  __typename: "ChatAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+  chatUrl: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
+}
+
+export type VideoFields_action = VideoFields_action_PhoneAction | VideoFields_action_NavigateToBlockAction | VideoFields_action_LinkAction | VideoFields_action_EmailAction | VideoFields_action_ChatAction;
 
 export interface VideoFields {
   __typename: "VideoBlock";

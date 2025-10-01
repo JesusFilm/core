@@ -95,7 +95,16 @@ export interface CardVideoDelete_video_VideoBlock_action_EmailAction {
   parentStepId: string | null;
 }
 
-export type CardVideoDelete_video_VideoBlock_action = CardVideoDelete_video_VideoBlock_action_PhoneAction | CardVideoDelete_video_VideoBlock_action_NavigateToBlockAction | CardVideoDelete_video_VideoBlock_action_LinkAction | CardVideoDelete_video_VideoBlock_action_EmailAction;
+export interface CardVideoDelete_video_VideoBlock_action_ChatAction {
+  __typename: "ChatAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+  chatUrl: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
+}
+
+export type CardVideoDelete_video_VideoBlock_action = CardVideoDelete_video_VideoBlock_action_PhoneAction | CardVideoDelete_video_VideoBlock_action_NavigateToBlockAction | CardVideoDelete_video_VideoBlock_action_LinkAction | CardVideoDelete_video_VideoBlock_action_EmailAction | CardVideoDelete_video_VideoBlock_action_ChatAction;
 
 export interface CardVideoDelete_video_VideoBlock {
   __typename: "VideoBlock";

@@ -40,7 +40,16 @@ export interface ButtonFields_action_EmailAction {
   parentStepId: string | null;
 }
 
-export type ButtonFields_action = ButtonFields_action_PhoneAction | ButtonFields_action_NavigateToBlockAction | ButtonFields_action_LinkAction | ButtonFields_action_EmailAction;
+export interface ButtonFields_action_ChatAction {
+  __typename: "ChatAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+  chatUrl: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
+}
+
+export type ButtonFields_action = ButtonFields_action_PhoneAction | ButtonFields_action_NavigateToBlockAction | ButtonFields_action_LinkAction | ButtonFields_action_EmailAction | ButtonFields_action_ChatAction;
 
 export interface ButtonFields_settings {
   __typename: "ButtonBlockSettings";

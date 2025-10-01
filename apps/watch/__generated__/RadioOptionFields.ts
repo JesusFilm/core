@@ -38,7 +38,16 @@ export interface RadioOptionFields_action_EmailAction {
   parentStepId: string | null;
 }
 
-export type RadioOptionFields_action = RadioOptionFields_action_PhoneAction | RadioOptionFields_action_NavigateToBlockAction | RadioOptionFields_action_LinkAction | RadioOptionFields_action_EmailAction;
+export interface RadioOptionFields_action_ChatAction {
+  __typename: "ChatAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+  chatUrl: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
+}
+
+export type RadioOptionFields_action = RadioOptionFields_action_PhoneAction | RadioOptionFields_action_NavigateToBlockAction | RadioOptionFields_action_LinkAction | RadioOptionFields_action_EmailAction | RadioOptionFields_action_ChatAction;
 
 export interface RadioOptionFields {
   __typename: "RadioOptionBlock";
