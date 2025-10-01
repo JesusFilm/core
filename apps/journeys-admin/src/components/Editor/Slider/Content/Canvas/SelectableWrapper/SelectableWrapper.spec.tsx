@@ -282,7 +282,7 @@ describe('SelectableWrapper', () => {
   })
 
   it('should select multiselect question on multiselect option click', async () => {
-    const { getByTestId, getByRole } = render(
+    const { getByTestId } = render(
       <MockedProvider>
         <SnackbarProvider>
           <EditorProvider

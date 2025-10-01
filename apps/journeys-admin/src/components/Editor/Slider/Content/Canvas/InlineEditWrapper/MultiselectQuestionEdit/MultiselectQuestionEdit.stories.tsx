@@ -57,7 +57,7 @@ const description: TreeBlock<TypographyFields> = {
 
 const block: TreeBlock<MultiselectQuestionFields> = {
   id: 'multiselectQuestionBlockId1',
-  __typename: 'MultiselectQuestionBlock',
+  __typename: 'MultiselectBlock',
   parentBlockId: 'card0.id',
   parentOrder: 2,
   gridView: false,
@@ -66,7 +66,7 @@ const block: TreeBlock<MultiselectQuestionFields> = {
       __typename: 'MultiselectOptionBlock',
       id: 'MultiselectOption1',
       label: 'Option 1',
-      parentBlockId: 'MultiselectQuestion',
+      parentBlockId: 'multiselectQuestionBlockId1',
       parentOrder: 0,
       children: []
     },
@@ -74,7 +74,7 @@ const block: TreeBlock<MultiselectQuestionFields> = {
       __typename: 'MultiselectOptionBlock',
       id: 'MultiselectOption2',
       label: 'Option 2',
-      parentBlockId: 'MultiselectQuestion',
+      parentBlockId: 'multiselectQuestionBlockId1',
       parentOrder: 1,
       children: []
     }

@@ -25,7 +25,11 @@ describe('MultiselectOption Properties', () => {
     const { getByText } = render(
       <MockedProvider>
         <SnackbarProvider>
-          <MultiselectOption {...block} />
+          <ThemeProvider>
+            <EditorProvider>
+              <MultiselectOption {...block} />
+            </EditorProvider>
+          </ThemeProvider>
         </SnackbarProvider>
       </MockedProvider>
     )

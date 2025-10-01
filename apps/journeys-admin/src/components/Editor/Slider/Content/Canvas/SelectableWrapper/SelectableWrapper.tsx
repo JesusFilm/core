@@ -99,7 +99,8 @@ export function SelectableWrapper({
 
   let borderRadius = '4px'
   switch (block.__typename) {
-    case 'RadioOptionBlock' | 'MultiselectOptionBlock':
+    case 'RadioOptionBlock':
+    case 'MultiselectOptionBlock':
       borderRadius = '8px'
       break
     case 'ImageBlock':

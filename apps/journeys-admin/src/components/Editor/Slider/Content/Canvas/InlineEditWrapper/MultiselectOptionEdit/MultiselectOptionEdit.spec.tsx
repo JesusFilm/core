@@ -117,7 +117,16 @@ describe('MultiselectOptionEdit', () => {
 
   it('should redo the change to label that was undone', async () => {
     const redoUpdateMock = {
-      ...mockOptionUpdate1
+      ...mockOptionUpdate1,
+      result: jest.fn(() => ({
+        data: {
+          multiselectOptionBlockUpdate: {
+            __typename: 'MultiselectOptionBlock',
+            id: 'option.id',
+            label: 'new label'
+          }
+        }
+      }))
     }
 
     const link = ApolloLink.from([
@@ -143,7 +152,7 @@ describe('MultiselectOptionEdit', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
     await waitFor(() => expect(mockOptionUpdate2.result).toHaveBeenCalled())
     fireEvent.click(screen.getByRole('button', { name: 'Redo' }))
-    await waitFor(() => expect(redoUpdateMock.result).toHaveBeenCalled())
+    await waitFor(() => expect(redoUpdateMock.result).toHaveBeenCalledTimes(1))
   })
 
   it('should not save if label hasnt changed', async () => {

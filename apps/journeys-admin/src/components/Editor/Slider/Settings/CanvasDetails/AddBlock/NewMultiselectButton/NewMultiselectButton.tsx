@@ -243,10 +243,8 @@ export function NewMultiselectButton(): ReactElement {
       id: uuidv4(),
       parentBlockId: card.id,
       parentOrder: card.children.length ?? 0,
-      label: t('Your label here'),
       min: null,
       max: null,
-      action: null,
       __typename: 'MultiselectBlock'
     }
 
@@ -305,8 +303,7 @@ export function NewMultiselectButton(): ReactElement {
               multiselectInput: {
                 id: multiselectBlock.id,
                 journeyId: journey.id,
-                parentBlockId: multiselectBlock.parentBlockId,
-                label: multiselectBlock.label
+                parentBlockId: multiselectBlock.parentBlockId
               },
               optionInput1: {
                 id: option1.id,
@@ -401,12 +398,30 @@ export function NewMultiselectButton(): ReactElement {
               endIconId: blocks.buttonBlock.endIconId as string
             },
             optimisticResponse: {
-              multiselect: [],
-              option1: [],
-              option2: [],
-              button: [],
-              startIcon: [],
-              endIcon: []
+              multiselect: {
+                id: blocks.multiselectBlock.id,
+                parentOrder: blocks.multiselectBlock.parentOrder
+              },
+              option1: {
+                id: blocks.option1.id,
+                parentOrder: blocks.option1.parentOrder
+              },
+              option2: {
+                id: blocks.option2.id,
+                parentOrder: blocks.option2.parentOrder
+              },
+              button: {
+                id: blocks.buttonBlock.id,
+                parentOrder: blocks.buttonBlock.parentOrder
+              },
+              startIcon: {
+                id: blocks.buttonBlock.startIconId as string,
+                parentOrder: 0
+              },
+              endIcon: {
+                id: blocks.buttonBlock.endIconId as string,
+                parentOrder: 1
+              }
             }
           })
         },
@@ -426,32 +441,28 @@ export function NewMultiselectButton(): ReactElement {
               endIconId: blocks.buttonBlock.endIconId as string
             },
             optimisticResponse: {
-              multiselect: [blocks.multiselectBlock],
-              option1: [blocks.option1],
-              option2: [blocks.option2],
-              button: [blocks.buttonBlock],
-              startIcon: [
-                {
-                  id: blocks.buttonBlock.startIconId as string,
-                  parentBlockId: blocks.buttonBlock.id,
-                  parentOrder: null,
-                  iconName: null,
-                  iconSize: null,
-                  iconColor: null,
-                  __typename: 'IconBlock'
-                }
-              ],
-              endIcon: [
-                {
-                  id: blocks.buttonBlock.endIconId as string,
-                  parentBlockId: blocks.buttonBlock.id,
-                  parentOrder: null,
-                  iconName: null,
-                  iconSize: null,
-                  iconColor: null,
-                  __typename: 'IconBlock'
-                }
-              ]
+              multiselect: blocks.multiselectBlock,
+              option1: blocks.option1,
+              option2: blocks.option2,
+              button: blocks.buttonBlock,
+              startIcon: {
+                id: blocks.buttonBlock.startIconId as string,
+                parentBlockId: blocks.buttonBlock.id,
+                parentOrder: null,
+                iconName: null,
+                iconSize: null,
+                iconColor: null,
+                __typename: 'IconBlock'
+              },
+              endIcon: {
+                id: blocks.buttonBlock.endIconId as string,
+                parentBlockId: blocks.buttonBlock.id,
+                parentOrder: null,
+                iconName: null,
+                iconSize: null,
+                iconColor: null,
+                __typename: 'IconBlock'
+              }
             }
           })
         }
@@ -465,8 +476,7 @@ export function NewMultiselectButton(): ReactElement {
               input: {
                 id: multiselectBlock.id,
                 journeyId: journey.id,
-                parentBlockId: multiselectBlock.parentBlockId,
-                label: multiselectBlock.label
+                parentBlockId: multiselectBlock.parentBlockId
               },
               multiselectOptionBlockCreateInput1: {
                 id: option1.id,

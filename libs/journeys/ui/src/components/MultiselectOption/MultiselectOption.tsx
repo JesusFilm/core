@@ -48,7 +48,7 @@ export const StyledListMultiselectOption = styled(Button)<ButtonProps>(({
         theme.palette.mode === 'dark'
           ? 'rgba(255,255,255,0.8)'
           : 'rgba(0, 0, 0, 0.8)',
-      borderColor: (theme) =>
+      borderColor:
         theme.palette.mode === 'dark'
           ? 'rgba(150, 150, 150, 0.5) !important'
           : 'rgba(255, 255, 255, 0.5) !important'
@@ -60,7 +60,7 @@ export const StyledListMultiselectOption = styled(Button)<ButtonProps>(({
         theme.palette.mode === 'dark'
           ? 'rgba(255,255,255,0.9)'
           : 'rgba(0, 0, 0, 0.9)',
-      borderColor: (theme) =>
+      borderColor:
         theme.palette.mode === 'dark'
           ? 'rgba(150, 150, 150, 0.7) !important'
           : 'rgba(255, 255, 255, 0.7) !important'
@@ -76,7 +76,7 @@ export const StyledListMultiselectOption = styled(Button)<ButtonProps>(({
         theme.palette.mode === 'dark'
           ? 'rgba(0, 0, 0, 0.5)'
           : 'rgba(255, 255, 255, 0.7)',
-      borderColor: (theme) =>
+      borderColor:
         theme.palette.mode === 'dark'
           ? 'rgba(150, 150, 150, 0.15) !important'
           : 'rgba(255, 255, 255, 0.15) !important'
@@ -100,7 +100,6 @@ export function MultiselectOption({
   onClick,
   editableLabel
 }: MultiselectOptionProps): ReactElement {
-  const { journey } = useJourney()
   const theme = useTheme()
 
   const handleClick = (e: MouseEvent): void => {
@@ -127,7 +126,6 @@ export function MultiselectOption({
         ) : (
           <SquareIcon
             sx={{
-              // color: theme.palette.mode === 'dark' ? '#6D6D7D' : '#AAACBB',
               fontSize: 22
             }}
           />

@@ -33,9 +33,9 @@ const option1: TreeBlock<MultiselectOptionFields> = {
 }
 
 const block: TreeBlock<MultiselectQuestionFields> = {
-  __typename: 'MultiselectQuestionBlock',
+  __typename: 'MultiselectBlock',
   id: 'MultiselectQuestion1',
-  parentBlockId: 'MultiselectQuestion1',
+  parentBlockId: 'card0.id',
   parentOrder: 0,
   gridView: false,
   children: [

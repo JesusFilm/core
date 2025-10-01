@@ -108,7 +108,9 @@ export function MultiselectQuestionEdit({
     <MultiselectQuestion
       {...props}
       id={id}
-      addOption={props.children.length < 12 ? handleCreateOption : undefined}
+      addOption={
+        (props.children?.length ?? 0) < 12 ? handleCreateOption : undefined
+      }
       wrappers={wrappers}
     />
   )

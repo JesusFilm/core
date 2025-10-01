@@ -34,7 +34,8 @@ const Template: StoryObj<
     block: TreeBlock<MultiselectOptionBlock>
   }
 > = {
-  render: (block) => {
+  render: (args) => {
+    const { block } = args
     return (
       <EditorProvider initialState={{ selectedBlock: { ...block } }}>
         <Drawer title="Multiselect Option Properties" onClose={onClose}>

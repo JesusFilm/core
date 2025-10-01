@@ -348,46 +348,46 @@ const steps: Array<TreeBlock<StepBlock>> = [
                 children: []
               }
             ]
-          },
+          }
+        ]
+      },
+      {
+        id: 'multiselectCard.id',
+        __typename: 'CardBlock',
+        parentBlockId: 'step2.id',
+        coverBlockId: null,
+        parentOrder: 1,
+        backgroundColor: null,
+        themeMode: null,
+        themeName: null,
+        fullscreen: false,
+        backdropBlur: null,
+        children: [
           {
-            id: 'multiselectCard.id',
-            __typename: 'CardBlock',
-            parentBlockId: 'step2.id',
-            coverBlockId: null,
-            parentOrder: 1,
-            backgroundColor: null,
-            themeMode: null,
-            themeName: null,
-            fullscreen: false,
-            backdropBlur: null,
+            id: 'multiselectQuestion1.id',
+            __typename: 'MultiselectBlock',
+            parentBlockId: 'multiselectCard.id',
+            parentOrder: 0,
+            gridView: false,
+            label: 'Pick your favorites',
+            min: null,
+            max: 2,
             children: [
               {
-                id: 'multiselectQuestion1.id',
-                __typename: 'MultiselectBlock',
-                parentBlockId: 'multiselectCard.id',
+                id: 'multiselectOption1.id',
+                __typename: 'MultiselectOptionBlock',
+                parentBlockId: 'multiselectQuestion1.id',
                 parentOrder: 0,
-                gridView: false,
-                label: 'Pick your favorites',
-                min: null,
-                max: 2,
-                children: [
-                  {
-                    id: 'multiselectOption1.id',
-                    __typename: 'MultiselectOptionBlock',
-                    parentBlockId: 'multiselectQuestion1.id',
-                    parentOrder: 0,
-                    label: 'Option 1',
-                    children: []
-                  },
-                  {
-                    id: 'multiselectOption2.id',
-                    __typename: 'MultiselectOptionBlock',
-                    parentBlockId: 'multiselectQuestion1.id',
-                    parentOrder: 1,
-                    label: 'Option 2',
-                    children: []
-                  }
-                ]
+                label: 'Option 1',
+                children: []
+              },
+              {
+                id: 'multiselectOption2.id',
+                __typename: 'MultiselectOptionBlock',
+                parentBlockId: 'multiselectQuestion1.id',
+                parentOrder: 1,
+                label: 'Option 2',
+                children: []
               }
             ]
           }
