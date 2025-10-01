@@ -3,6 +3,8 @@ import { prisma } from '@core/prisma/media/client'
 import { builder } from '../builder'
 import { NotFoundError } from '../error/NotFoundError'
 
+import { PlaylistItemVideoInput } from './inputs/playlistItemVideo'
+
 export const PlaylistItem = builder.prismaObject('PlaylistItem', {
   fields: (t) => ({
     id: t.exposeID('id', { nullable: false }),
@@ -14,22 +16,19 @@ export const PlaylistItem = builder.prismaObject('PlaylistItem', {
   })
 })
 
-// Mutation: Add a video to a playlist
+// Mutation: Add videos to a playlist using video variant id
 builder.mutationField('playlistItemAdd', (t) =>
   t.withAuth({ isAuthenticated: true }).prismaField({
-    type: 'PlaylistItem',
-    errors: {
-      types: [NotFoundError]
-    },
+    type: ['PlaylistItem'],
+    errors: { types: [NotFoundError] },
     args: {
-      id: t.arg.id({ required: false }),
       playlistId: t.arg.id({ required: true }),
-      videoVariantId: t.arg.id({ required: true })
+      videoVariantIds: t.arg.idList({ required: true })
     },
     resolve: async (
       query,
       _parent,
-      { id, playlistId, videoVariantId },
+      { playlistId, videoVariantIds },
       context
     ) => {
       // Check if playlist exists and user owns it
@@ -43,14 +42,18 @@ builder.mutationField('playlistItemAdd', (t) =>
         ])
       }
 
-      // Check if video variant exists
-      const existingVideoVariant = await prisma.videoVariant.findUnique({
-        where: { id: videoVariantId }
+      // Find all video variants using videoVariantIds
+      const videoVariants = await prisma.videoVariant.findMany({
+        where: { id: { in: videoVariantIds } }
       })
 
-      if (!existingVideoVariant) {
-        throw new NotFoundError('Video variant not found', [
-          { path: ['videoVariantId'], value: videoVariantId }
+      // Check if all video variants exist
+      const missingVariants = videoVariantIds.filter(
+        (id) => !videoVariants.some(({ id: variantId }) => variantId === id)
+      )
+      if (missingVariants.length > 0) {
+        throw new NotFoundError('Some video variants not found', [
+          { path: ['videoVariantIds'], value: missingVariants.join(', ') }
         ])
       }
 
@@ -62,17 +65,104 @@ builder.mutationField('playlistItemAdd', (t) =>
           select: { order: true }
         })
 
-        const nextOrder = lastItem?.order != null ? lastItem.order + 1 : 0
+        const startOrder = lastItem?.order != null ? lastItem.order + 1 : 0
 
-        return transaction.playlistItem.create({
-          ...query,
-          data: {
-            id: id ?? undefined,
-            playlistId,
-            videoVariantId,
-            order: nextOrder
-          }
+        // Create playlist items in the order of the videoVariantIds array
+        const playlistItems = await Promise.all(
+          videoVariants.map(({ id: videoVariantId }, index) =>
+            transaction.playlistItem.create({
+              ...query,
+              data: {
+                playlistId,
+                videoVariantId,
+                order: startOrder + index
+              }
+            })
+          )
+        )
+
+        return playlistItems
+      })
+    }
+  })
+)
+
+// Mutation: Add videos to a playlist using video id and language id
+builder.mutationField('playlistItemAddWithVideoAndLanguageIds', (t) =>
+  t.withAuth({ isAuthenticated: true }).prismaField({
+    type: ['PlaylistItem'],
+    errors: {
+      types: [NotFoundError]
+    },
+    args: {
+      playlistId: t.arg.id({ required: true }),
+      videos: t.arg({ type: [PlaylistItemVideoInput], required: true })
+    },
+    resolve: async (query, _parent, { playlistId, videos }, context) => {
+      // Check if playlist exists and user owns it
+      const existingPlaylist = await prisma.playlist.findUnique({
+        where: { id: playlistId, ownerId: context.user.id }
+      })
+
+      if (!existingPlaylist) {
+        throw new NotFoundError('Playlist not found', [
+          { path: ['playlistId'], value: playlistId }
+        ])
+      }
+
+      // Find all video variants using videoId/languageId pairs
+      const videoVariants = await prisma.videoVariant.findMany({
+        where: {
+          OR: videos.map(({ videoId, languageId }) => ({
+            videoId,
+            languageId
+          }))
+        },
+        select: { id: true, videoId: true, languageId: true }
+      })
+
+      // Check if all video variants exist
+      const missingVariants = videos.filter(
+        ({ languageId, videoId }) =>
+          !videoVariants.some(
+            ({ languageId: variantLanguageId, videoId: variantVideoId }) =>
+              variantLanguageId === languageId && variantVideoId === videoId
+          )
+      )
+      if (missingVariants.length > 0) {
+        const missingPairs = missingVariants.map(
+          ({ videoId, languageId }) => `${languageId}/${videoId}`
+        )
+        throw new NotFoundError('Some video variants not found', [
+          { path: ['videos'], value: missingPairs.join(', ') }
+        ])
+      }
+
+      return await prisma.$transaction(async (transaction) => {
+        // Get the next order number
+        const lastItem = await transaction.playlistItem.findFirst({
+          where: { playlistId },
+          orderBy: { order: 'desc' },
+          select: { order: true }
         })
+
+        const startOrder = lastItem?.order != null ? lastItem.order + 1 : 0
+
+        // Create playlist items in the order of the videos array
+        const playlistItems = await Promise.all(
+          videoVariants.map(({ id: videoVariantId }, index) =>
+            transaction.playlistItem.create({
+              ...query,
+              data: {
+                playlistId,
+                videoVariantId,
+                order: startOrder + index
+              }
+            })
+          )
+        )
+
+        return playlistItems
       })
     }
   })
@@ -206,6 +296,7 @@ builder.mutationField('playlistItemsReorder', (t) =>
       // Return the updated items
       return prisma.playlistItem.findMany({
         ...query,
+        where: { playlistId },
         orderBy: { order: 'asc' }
       })
     }
