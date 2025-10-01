@@ -100,8 +100,8 @@ describe('playlistItem', () => {
 
         prismaMock.playlist.findUnique.mockResolvedValueOnce(mockPlaylist)
         prismaMock.videoVariant.findMany.mockResolvedValueOnce([
-          { id: 'videoVariantId1' },
-          { id: 'videoVariantId2' }
+          { id: 'videoVariantId2' },
+          { id: 'videoVariantId1' }
         ] as any)
         prismaMock.$transaction.mockImplementation(async (callback) =>
           callback(prismaMock)
@@ -122,7 +122,8 @@ describe('playlistItem', () => {
           where: { id: 'playlistId', ownerId: 'testUserId' }
         })
         expect(prismaMock.videoVariant.findMany).toHaveBeenCalledWith({
-          where: { id: { in: videoVariantIds } }
+          where: { id: { in: videoVariantIds } },
+          select: { id: true }
         })
         expect(prismaMock.playlistItem.findFirst).toHaveBeenCalledWith({
           where: { playlistId: 'playlistId' },
@@ -448,14 +449,14 @@ describe('playlistItem', () => {
         const existingItem = { ...mockPlaylistItem, order: 0 }
         const videoVariants = [
           {
-            id: 'videoVariantId1',
-            videoId: 'videoId1',
-            languageId: 'languageId1'
-          },
-          {
             id: 'videoVariantId2',
             videoId: 'videoId2',
             languageId: 'languageId2'
+          },
+          {
+            id: 'videoVariantId1',
+            videoId: 'videoId1',
+            languageId: 'languageId1'
           }
         ] as unknown as VideoVariant[]
         const newItems = [

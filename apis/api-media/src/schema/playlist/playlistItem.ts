@@ -44,7 +44,8 @@ builder.mutationField('playlistItemAdd', (t) =>
 
       // Find all video variants using videoVariantIds
       const videoVariants = await prisma.videoVariant.findMany({
-        where: { id: { in: videoVariantIds } }
+        where: { id: { in: videoVariantIds } },
+        select: { id: true }
       })
 
       // Check if all video variants exist
@@ -69,7 +70,7 @@ builder.mutationField('playlistItemAdd', (t) =>
 
         // Create playlist items in the order of the videoVariantIds array
         const playlistItems = await Promise.all(
-          videoVariants.map(({ id: videoVariantId }, index) =>
+          videoVariantIds.map((videoVariantId, index) =>
             transaction.playlistItem.create({
               ...query,
               data: {
@@ -150,16 +151,20 @@ builder.mutationField('playlistItemAddWithVideoAndLanguageIds', (t) =>
 
         // Create playlist items in the order of the videos array
         const playlistItems = await Promise.all(
-          videoVariants.map(({ id: videoVariantId }, index) =>
-            transaction.playlistItem.create({
+          videos.map(({ videoId, languageId }, index) => {
+            const videoVariant = videoVariants.find(
+              ({ videoId: variantVideoId, languageId: variantLanguageId }) =>
+                variantVideoId === videoId && variantLanguageId === languageId
+            )
+            return transaction.playlistItem.create({
               ...query,
               data: {
                 playlistId,
-                videoVariantId,
+                videoVariantId: videoVariant!.id,
                 order: startOrder + index
               }
             })
-          )
+          })
         )
 
         return playlistItems
