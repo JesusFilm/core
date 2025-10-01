@@ -1,5 +1,5 @@
 import { fireEvent, render } from '@testing-library/react'
-import { ReactElement } from 'react'
+import { ReactElement, RefObject } from 'react'
 
 import { useOnClickOutside } from '.'
 
@@ -10,8 +10,12 @@ describe('useClickOutside', () => {
 
   const Content = (): ReactElement => {
     const inputRef = useOnClickOutside<HTMLParagraphElement>(onClickOutside)
+    // forcing type cast until next 15
     return (
-      <h2 className="Mui-focused" ref={inputRef}>
+      <h2
+        className="Mui-focused"
+        ref={inputRef as RefObject<HTMLParagraphElement>}
+      >
         Content
       </h2>
     )

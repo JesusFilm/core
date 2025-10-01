@@ -169,6 +169,8 @@ describe('Logo', () => {
         mocks={[
           createCloudflareUploadByUrlMock,
           listUnsplashCollectionPhotosMock,
+          // Unsplash may be queried multiple times parallelly
+          listUnsplashCollectionPhotosMock,
           createLogoMock
         ]}
       >
@@ -211,6 +213,7 @@ describe('Logo', () => {
       <MockedProvider
         mocks={[
           createCloudflareUploadByUrlMock,
+          listUnsplashCollectionPhotosMock,
           listUnsplashCollectionPhotosMock,
           createLogoMock,
           undoMock,
@@ -270,6 +273,7 @@ describe('Logo', () => {
         mocks={[
           createCloudflareUploadByUrlMock,
           listUnsplashCollectionPhotosMock,
+          listUnsplashCollectionPhotosMock,
           updateMock
         ]}
       >
@@ -326,6 +330,7 @@ describe('Logo', () => {
         mocks={[
           createCloudflareUploadByUrlMock,
           listUnsplashCollectionPhotosMock,
+          listUnsplashCollectionPhotosMock,
           updateMock,
           undoMock
         ]}
@@ -375,6 +380,7 @@ describe('Logo', () => {
       <MockedProvider
         mocks={[
           createCloudflareUploadByUrlMock,
+          listUnsplashCollectionPhotosMock,
           listUnsplashCollectionPhotosMock,
           deleteMock
         ]}
@@ -510,6 +516,7 @@ describe('Logo', () => {
       <MockedProvider
         mocks={[
           createCloudflareUploadByUrlMock,
+          listUnsplashCollectionPhotosMock,
           listUnsplashCollectionPhotosMock,
           updateMock,
           undoMock

@@ -2,6 +2,7 @@ enum ButtonAction {
   NavigateToBlockAction
   LinkAction
   EmailAction
+  PhoneAction
 }
 
 input ButtonClickEventCreateInput {

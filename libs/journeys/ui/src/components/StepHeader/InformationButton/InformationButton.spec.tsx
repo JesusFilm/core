@@ -84,7 +84,12 @@ describe('InformationButton', () => {
     logoImageBlock: null,
     menuButtonIcon: null,
     menuStepBlock: null,
-    journeyTheme: null
+    journeyTheme: null,
+    journeyCustomizationDescription: null,
+    journeyCustomizationFields: [],
+    fromTemplateId: null,
+    socialNodeX: null,
+    socialNodeY: null
   }
 
   it('should have report contact button', () => {

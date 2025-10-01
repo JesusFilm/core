@@ -1,1 +1,1 @@
-import './blockUpdateActionInput'
+export { BlockUpdateActionInput } from './blockUpdateActionInput'

@@ -72,7 +72,7 @@ export function LocalDetails({
   onSelect
 }: Pick<VideoDetailsProps, 'open' | 'id' | 'onSelect'>): ReactElement {
   const videoRef = useRef<HTMLVideoElement>(null)
-  const playerRef = useRef<Player>()
+  const playerRef = useRef<Player | null>(null)
   const [playing, setPlaying] = useState(false)
   const [openLanguage, setOpenLanguage] = useState(false)
   const [selectedLanguage, setSelectedLanguage] =
@@ -83,10 +83,10 @@ export function LocalDetails({
   } = useEditor()
 
   const videoBlock = selectedBlock as VideoBlock
-  const languageId =
-    videoBlock?.videoId === id
-      ? (videoBlock?.videoVariantLanguageId ?? DEFAULT_LANGUAGE_ID)
-      : DEFAULT_LANGUAGE_ID
+  const isPreselected = videoBlock?.videoId === id
+  const languageId = isPreselected
+    ? (videoBlock?.videoVariantLanguageId ?? DEFAULT_LANGUAGE_ID)
+    : DEFAULT_LANGUAGE_ID
 
   const [loadVideo, { data, loading }] = useLazyQuery<GetVideo>(GET_VIDEO, {
     variables: { id, languageId }
@@ -254,7 +254,7 @@ export function LocalDetails({
           onClick={handleSelect}
           size="small"
           sx={{ backgroundColor: 'secondary.dark' }}
-          disabled={loading}
+          disabled={loading && !isPreselected}
         >
           {t('Select')}
         </Button>

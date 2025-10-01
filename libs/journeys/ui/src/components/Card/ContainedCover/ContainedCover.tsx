@@ -81,7 +81,7 @@ export function ContainedCover({
   const [contentHeight, setContentHeight] = useState(0)
   const { journey } = useJourney()
   const { rtl } = getJourneyRTL(journey)
-  const contentRef = useRef() as RefObject<HTMLDivElement>
+  const contentRef = useRef<HTMLDivElement | null>(null)
 
   const posterImage =
     videoBlock?.mediaVideo?.__typename === 'Video'

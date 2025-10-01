@@ -14,6 +14,8 @@ export type Scalars = {
   Boolean: { input: boolean; output: boolean; }
   Int: { input: number; output: number; }
   Float: { input: number; output: number; }
+  /** The `BigInt` scalar type represents non-fractional signed whole numeric values. */
+  BigInt: { input: any; output: any; }
   /** A date string, such as 2007-12-03, compliant with the `full-date` format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar. */
   Date: { input: any; output: any; }
   /** A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the `date-time` format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar. */
@@ -105,8 +107,10 @@ export type BlockDuplicateIdMap = {
 
 export type BlockUpdateActionInput = {
   blockId?: InputMaybe<Scalars['String']['input']>;
+  countryCode?: InputMaybe<Scalars['String']['input']>;
   email?: InputMaybe<Scalars['String']['input']>;
   gtmEventName?: InputMaybe<Scalars['String']['input']>;
+  phone?: InputMaybe<Scalars['String']['input']>;
   target?: InputMaybe<Scalars['String']['input']>;
   url?: InputMaybe<Scalars['String']['input']>;
 };
@@ -125,7 +129,8 @@ export type Browser = {
 export enum ButtonAction {
   EmailAction = 'EmailAction',
   LinkAction = 'LinkAction',
-  NavigateToBlockAction = 'NavigateToBlockAction'
+  NavigateToBlockAction = 'NavigateToBlockAction',
+  PhoneAction = 'PhoneAction'
 }
 
 export enum ButtonAlignment {
@@ -200,10 +205,10 @@ export type ButtonClickEvent = Event & {
    */
   actionValue?: Maybe<Scalars['String']['output']>;
   /** time event was created */
-  createdAt?: Maybe<Scalars['DateTime']['output']>;
-  id?: Maybe<Scalars['ID']['output']>;
+  createdAt: Scalars['DateTime']['output'];
+  id: Scalars['ID']['output'];
   /** ID of the journey that the buttonBlock belongs to */
-  journeyId?: Maybe<Scalars['ID']['output']>;
+  journeyId: Scalars['ID']['output'];
   /** stepName of the parent stepBlock */
   label?: Maybe<Scalars['String']['output']>;
   /** label of the button */
@@ -284,9 +289,7 @@ export type CardBlock = Block & {
 };
 
 export type CardBlockCreateInput = {
-  /** backdropBlur should be a number representing blur amount in pixels e.g 20. */
   backdropBlur?: InputMaybe<Scalars['Int']['input']>;
-  /** backgroundColor should be a HEX color value e.g #FFFFFF for white. */
   backgroundColor?: InputMaybe<Scalars['String']['input']>;
   fullscreen?: InputMaybe<Scalars['Boolean']['input']>;
   id?: InputMaybe<Scalars['ID']['input']>;
@@ -326,10 +329,10 @@ export type ChatButtonUpdateInput = {
 export type ChatOpenEvent = Event & {
   __typename?: 'ChatOpenEvent';
   /** time event was created */
-  createdAt?: Maybe<Scalars['DateTime']['output']>;
-  id?: Maybe<Scalars['ID']['output']>;
+  createdAt: Scalars['DateTime']['output'];
+  id: Scalars['ID']['output'];
   /** ID of the journey that the buttonBlock belongs to */
-  journeyId?: Maybe<Scalars['ID']['output']>;
+  journeyId: Scalars['ID']['output'];
   /** null for ChatOpenEvent */
   label?: Maybe<Scalars['String']['output']>;
   /** messagePlatform of the link used for chat (based on the messagePlatform in the value field) */
@@ -365,7 +368,7 @@ export type CloudflareImage = {
 
 export type CloudflareR2 = {
   __typename?: 'CloudflareR2';
-  contentLength: Scalars['Int']['output'];
+  contentLength: Scalars['BigInt']['output'];
   contentType: Scalars['String']['output'];
   createdAt: Scalars['Date']['output'];
   fileName: Scalars['String']['output'];
@@ -379,7 +382,7 @@ export type CloudflareR2 = {
 
 export type CloudflareR2CreateInput = {
   /** the size of the file that is being uploaded */
-  contentLength: Scalars['Int']['input'];
+  contentLength: Scalars['BigInt']['input'];
   /** the type of file that is being uploaded. e.g. image or video/mp4 */
   contentType: Scalars['String']['input'];
   /** the name of the file that is being uploaded */
@@ -390,6 +393,11 @@ export type CloudflareR2CreateInput = {
   /** the id of the Video object this file relates to in the database */
   videoId: Scalars['String']['input'];
 };
+
+export enum ContactActionType {
+  Call = 'call',
+  Text = 'text'
+}
 
 export type Continent = {
   __typename?: 'Continent';
@@ -556,9 +564,9 @@ export type Error = BaseError & {
 };
 
 export type Event = {
-  createdAt?: Maybe<Scalars['DateTime']['output']>;
-  id?: Maybe<Scalars['ID']['output']>;
-  journeyId?: Maybe<Scalars['ID']['output']>;
+  createdAt: Scalars['DateTime']['output'];
+  id: Scalars['ID']['output'];
+  journeyId: Scalars['ID']['output'];
   label?: Maybe<Scalars['String']['output']>;
   value?: Maybe<Scalars['String']['output']>;
 };
@@ -616,24 +624,6 @@ export type GridContainerBlock = Block & {
   parentOrder?: Maybe<Scalars['Int']['output']>;
 };
 
-export type GridContainerBlockCreateInput = {
-  alignItems?: InputMaybe<GridAlignItems>;
-  direction?: InputMaybe<GridDirection>;
-  gap?: InputMaybe<Scalars['Int']['input']>;
-  id?: InputMaybe<Scalars['ID']['input']>;
-  journeyId: Scalars['ID']['input'];
-  justifyContent?: InputMaybe<GridJustifyContent>;
-  parentBlockId: Scalars['ID']['input'];
-};
-
-export type GridContainerBlockUpdateInput = {
-  alignItems?: InputMaybe<GridAlignItems>;
-  direction?: InputMaybe<GridDirection>;
-  gap?: InputMaybe<Scalars['Int']['input']>;
-  justifyContent?: InputMaybe<GridJustifyContent>;
-  parentBlockId?: InputMaybe<Scalars['ID']['input']>;
-};
-
 export enum GridDirection {
   Column = 'column',
   ColumnReverse = 'columnReverse',
@@ -650,22 +640,6 @@ export type GridItemBlock = Block & {
   parentOrder?: Maybe<Scalars['Int']['output']>;
   sm: Scalars['Int']['output'];
   xl: Scalars['Int']['output'];
-};
-
-export type GridItemBlockCreateInput = {
-  id?: InputMaybe<Scalars['ID']['input']>;
-  journeyId: Scalars['ID']['input'];
-  lg?: InputMaybe<Scalars['Int']['input']>;
-  parentBlockId: Scalars['ID']['input'];
-  sm?: InputMaybe<Scalars['Int']['input']>;
-  xl?: InputMaybe<Scalars['Int']['input']>;
-};
-
-export type GridItemBlockUpdateInput = {
-  lg?: InputMaybe<Scalars['Int']['input']>;
-  parentBlockId?: InputMaybe<Scalars['ID']['input']>;
-  sm?: InputMaybe<Scalars['Int']['input']>;
-  xl?: InputMaybe<Scalars['Int']['input']>;
 };
 
 export enum GridJustifyContent {
@@ -901,6 +875,7 @@ export type Journey = {
   seoDescription?: Maybe<Scalars['String']['output']>;
   /** title for seo and sharing */
   seoTitle?: Maybe<Scalars['String']['output']>;
+  showAssistant?: Maybe<Scalars['Boolean']['output']>;
   showChatButtons?: Maybe<Scalars['Boolean']['output']>;
   showDislikeButton?: Maybe<Scalars['Boolean']['output']>;
   showDisplayTitle?: Maybe<Scalars['Boolean']['output']>;
@@ -1013,11 +988,11 @@ export type JourneyEvent = Event & Node & {
   action?: Maybe<ButtonAction>;
   actionValue?: Maybe<Scalars['String']['output']>;
   blockId?: Maybe<Scalars['String']['output']>;
-  createdAt?: Maybe<Scalars['DateTime']['output']>;
+  createdAt: Scalars['DateTime']['output'];
   email?: Maybe<Scalars['String']['output']>;
   /** Base event fields from Event interface */
   id: Scalars['ID']['output'];
-  journeyId?: Maybe<Scalars['ID']['output']>;
+  journeyId: Scalars['ID']['output'];
   /** Related fields queried from relevant ids in the events table */
   journeySlug?: Maybe<Scalars['String']['output']>;
   label?: Maybe<Scalars['String']['output']>;
@@ -1189,10 +1164,10 @@ export type JourneyUpdateInput = {
 export type JourneyViewEvent = Event & {
   __typename?: 'JourneyViewEvent';
   /** time event was created */
-  createdAt?: Maybe<Scalars['DateTime']['output']>;
-  id?: Maybe<Scalars['ID']['output']>;
+  createdAt: Scalars['DateTime']['output'];
+  id: Scalars['ID']['output'];
   /** ID of the journey being viewed */
-  journeyId?: Maybe<Scalars['ID']['output']>;
+  journeyId: Scalars['ID']['output'];
   /** title of the journey being viewed */
   label?: Maybe<Scalars['String']['output']>;
   /** language of the journey being viewed (based on the ID in the value field) */
@@ -1327,6 +1302,7 @@ export type JourneysEmailPreferenceUpdateInput = {
 
 export type JourneysFilter = {
   featured?: InputMaybe<Scalars['Boolean']['input']>;
+  fromTemplateId?: InputMaybe<Scalars['ID']['input']>;
   ids?: InputMaybe<Array<Scalars['ID']['input']>>;
   languageIds?: InputMaybe<Array<Scalars['ID']['input']>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
@@ -1486,6 +1462,66 @@ export enum MessagePlatform {
   WhatsApp = 'whatsApp'
 }
 
+export type MultiselectBlock = Block & {
+  __typename?: 'MultiselectBlock';
+  id: Scalars['ID']['output'];
+  journeyId: Scalars['ID']['output'];
+  max?: Maybe<Scalars['Int']['output']>;
+  min?: Maybe<Scalars['Int']['output']>;
+  parentBlockId?: Maybe<Scalars['ID']['output']>;
+  parentOrder?: Maybe<Scalars['Int']['output']>;
+};
+
+export type MultiselectBlockCreateInput = {
+  id?: InputMaybe<Scalars['ID']['input']>;
+  journeyId: Scalars['ID']['input'];
+  parentBlockId: Scalars['ID']['input'];
+};
+
+export type MultiselectBlockUpdateInput = {
+  max?: InputMaybe<Scalars['Int']['input']>;
+  min?: InputMaybe<Scalars['Int']['input']>;
+  parentBlockId?: InputMaybe<Scalars['ID']['input']>;
+};
+
+export type MultiselectOptionBlock = Block & {
+  __typename?: 'MultiselectOptionBlock';
+  id: Scalars['ID']['output'];
+  journeyId: Scalars['ID']['output'];
+  label: Scalars['String']['output'];
+  parentBlockId?: Maybe<Scalars['ID']['output']>;
+  parentOrder?: Maybe<Scalars['Int']['output']>;
+};
+
+export type MultiselectOptionBlockCreateInput = {
+  id?: InputMaybe<Scalars['ID']['input']>;
+  journeyId: Scalars['ID']['input'];
+  label: Scalars['String']['input'];
+  parentBlockId: Scalars['ID']['input'];
+};
+
+export type MultiselectOptionBlockUpdateInput = {
+  label?: InputMaybe<Scalars['String']['input']>;
+  parentBlockId?: InputMaybe<Scalars['ID']['input']>;
+};
+
+export type MultiselectSubmissionEvent = Event & {
+  __typename?: 'MultiselectSubmissionEvent';
+  createdAt: Scalars['DateTime']['output'];
+  id: Scalars['ID']['output'];
+  journeyId: Scalars['ID']['output'];
+  label?: Maybe<Scalars['String']['output']>;
+  value?: Maybe<Scalars['String']['output']>;
+};
+
+export type MultiselectSubmissionEventCreateInput = {
+  blockId: Scalars['ID']['input'];
+  id?: InputMaybe<Scalars['ID']['input']>;
+  label?: InputMaybe<Scalars['String']['input']>;
+  stepId?: InputMaybe<Scalars['ID']['input']>;
+  values: Array<Scalars['String']['input']>;
+};
+
 export type Mutation = {
   __typename?: 'Mutation';
   audioPreviewCreate: AudioPreview;
@@ -1506,6 +1542,7 @@ export type Mutation = {
   blockUpdateEmailAction: EmailAction;
   blockUpdateLinkAction: LinkAction;
   blockUpdateNavigateToBlockAction: NavigateToBlockAction;
+  blockUpdatePhoneAction: PhoneAction;
   buttonBlockCreate: ButtonBlock;
   buttonBlockUpdate?: Maybe<ButtonBlock>;
   buttonClickEventCreate: ButtonClickEvent;
@@ -1526,6 +1563,7 @@ export type Mutation = {
   createImageBySegmindPrompt: CloudflareImage;
   createJourneyEventsExportLog: JourneyEventsExportLog;
   createKeyword: Keyword;
+  createMuxVideoAndQueueUpload: MuxVideo;
   createMuxVideoUploadByFile: MuxVideo;
   createMuxVideoUploadByUrl: MuxVideo;
   createVerificationRequest?: Maybe<Scalars['Boolean']['output']>;
@@ -1583,6 +1621,17 @@ export type Mutation = {
   journeysRestore?: Maybe<Array<Maybe<Journey>>>;
   /** Sets journeys statuses to trashed */
   journeysTrash?: Maybe<Array<Maybe<Journey>>>;
+  multiselectBlockCreate: MultiselectBlock;
+  multiselectBlockUpdate: MultiselectBlock;
+  multiselectOptionBlockCreate: MultiselectOptionBlock;
+  multiselectOptionBlockUpdate: MultiselectOptionBlock;
+  multiselectSubmissionEventCreate: MultiselectSubmissionEvent;
+  playlistCreate?: Maybe<MutationPlaylistCreateResult>;
+  playlistDelete?: Maybe<MutationPlaylistDeleteResult>;
+  playlistItemAdd?: Maybe<MutationPlaylistItemAddResult>;
+  playlistItemRemove?: Maybe<MutationPlaylistItemRemoveResult>;
+  playlistItemsReorder?: Maybe<MutationPlaylistItemsReorderResult>;
+  playlistUpdate?: Maybe<MutationPlaylistUpdateResult>;
   qrCodeCreate: QrCode;
   qrCodeDelete: QrCode;
   qrCodeUpdate: QrCode;
@@ -1620,8 +1669,6 @@ export type Mutation = {
   textResponseBlockCreate: TextResponseBlock;
   textResponseBlockUpdate?: Maybe<TextResponseBlock>;
   textResponseSubmissionEventCreate: TextResponseSubmissionEvent;
-  /** Transcode an asset. Returns the bullmq job ID. */
-  transcodeAsset?: Maybe<Scalars['String']['output']>;
   triggerUnsplashDownload: Scalars['Boolean']['output'];
   typographyBlockCreate: TypographyBlock;
   typographyBlockUpdate: TypographyBlock;
@@ -1759,7 +1806,7 @@ export type MutationBlockRestoreArgs = {
 
 export type MutationBlockUpdateActionArgs = {
   id: Scalars['ID']['input'];
-  input?: InputMaybe<BlockUpdateActionInput>;
+  input: BlockUpdateActionInput;
 };
 
 
@@ -1780,6 +1827,13 @@ export type MutationBlockUpdateLinkActionArgs = {
 export type MutationBlockUpdateNavigateToBlockActionArgs = {
   id: Scalars['ID']['input'];
   input: NavigateToBlockActionInput;
+  journeyId?: InputMaybe<Scalars['ID']['input']>;
+};
+
+
+export type MutationBlockUpdatePhoneActionArgs = {
+  id: Scalars['ID']['input'];
+  input: PhoneActionInput;
   journeyId?: InputMaybe<Scalars['ID']['input']>;
 };
 
@@ -1882,6 +1936,22 @@ export type MutationCreateJourneyEventsExportLogArgs = {
 export type MutationCreateKeywordArgs = {
   languageId: Scalars['String']['input'];
   value: Scalars['String']['input'];
+};
+
+
+export type MutationCreateMuxVideoAndQueueUploadArgs = {
+  downloadable?: InputMaybe<Scalars['Boolean']['input']>;
+  duration: Scalars['Int']['input'];
+  durationMs: Scalars['Int']['input'];
+  edition: Scalars['String']['input'];
+  height: Scalars['Int']['input'];
+  languageId: Scalars['ID']['input'];
+  maxResolution?: InputMaybe<MaxResolutionTier>;
+  originalFilename: Scalars['String']['input'];
+  r2PublicUrl: Scalars['String']['input'];
+  version: Scalars['Int']['input'];
+  videoId: Scalars['ID']['input'];
+  width: Scalars['Int']['input'];
 };
 
 
@@ -2133,6 +2203,70 @@ export type MutationJourneysTrashArgs = {
 };
 
 
+export type MutationMultiselectBlockCreateArgs = {
+  input: MultiselectBlockCreateInput;
+};
+
+
+export type MutationMultiselectBlockUpdateArgs = {
+  id: Scalars['ID']['input'];
+  input: MultiselectBlockUpdateInput;
+  journeyId?: InputMaybe<Scalars['ID']['input']>;
+};
+
+
+export type MutationMultiselectOptionBlockCreateArgs = {
+  input: MultiselectOptionBlockCreateInput;
+};
+
+
+export type MutationMultiselectOptionBlockUpdateArgs = {
+  id: Scalars['ID']['input'];
+  input: MultiselectOptionBlockUpdateInput;
+  journeyId?: InputMaybe<Scalars['ID']['input']>;
+};
+
+
+export type MutationMultiselectSubmissionEventCreateArgs = {
+  input: MultiselectSubmissionEventCreateInput;
+};
+
+
+export type MutationPlaylistCreateArgs = {
+  input: PlaylistCreateInput;
+};
+
+
+export type MutationPlaylistDeleteArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type MutationPlaylistItemAddArgs = {
+  id?: InputMaybe<Scalars['ID']['input']>;
+  playlistId: Scalars['ID']['input'];
+  videoVariantId: Scalars['ID']['input'];
+};
+
+
+export type MutationPlaylistItemRemoveArgs = {
+  itemId: Scalars['ID']['input'];
+  playlistId: Scalars['ID']['input'];
+};
+
+
+export type MutationPlaylistItemsReorderArgs = {
+  itemIds: Array<Scalars['ID']['input']>;
+  playlistId: Scalars['ID']['input'];
+};
+
+
+export type MutationPlaylistUpdateArgs = {
+  id: Scalars['ID']['input'];
+  input: PlaylistUpdateInput;
+};
+
+
 export type MutationQrCodeCreateArgs = {
   input: QrCodeCreateInput;
 };
@@ -2298,11 +2432,6 @@ export type MutationTextResponseBlockUpdateArgs = {
 
 export type MutationTextResponseSubmissionEventCreateArgs = {
   input: TextResponseSubmissionEventCreateInput;
-};
-
-
-export type MutationTranscodeAssetArgs = {
-  input: TranscodeVideoInput;
 };
 
 
@@ -2675,6 +2804,48 @@ export type MutationJourneyLanguageAiDetectInput = {
   textLanguageName: Scalars['String']['input'];
 };
 
+export type MutationPlaylistCreateResult = MutationPlaylistCreateSuccess | ZodError;
+
+export type MutationPlaylistCreateSuccess = {
+  __typename?: 'MutationPlaylistCreateSuccess';
+  data: Playlist;
+};
+
+export type MutationPlaylistDeleteResult = MutationPlaylistDeleteSuccess | NotFoundError;
+
+export type MutationPlaylistDeleteSuccess = {
+  __typename?: 'MutationPlaylistDeleteSuccess';
+  data: Playlist;
+};
+
+export type MutationPlaylistItemAddResult = MutationPlaylistItemAddSuccess | NotFoundError;
+
+export type MutationPlaylistItemAddSuccess = {
+  __typename?: 'MutationPlaylistItemAddSuccess';
+  data: PlaylistItem;
+};
+
+export type MutationPlaylistItemRemoveResult = MutationPlaylistItemRemoveSuccess | NotFoundError;
+
+export type MutationPlaylistItemRemoveSuccess = {
+  __typename?: 'MutationPlaylistItemRemoveSuccess';
+  data: Array<PlaylistItem>;
+};
+
+export type MutationPlaylistItemsReorderResult = MutationPlaylistItemsReorderSuccess | NotFoundError;
+
+export type MutationPlaylistItemsReorderSuccess = {
+  __typename?: 'MutationPlaylistItemsReorderSuccess';
+  data: Array<PlaylistItem>;
+};
+
+export type MutationPlaylistUpdateResult = MutationPlaylistUpdateSuccess | NotFoundError | ZodError;
+
+export type MutationPlaylistUpdateSuccess = {
+  __typename?: 'MutationPlaylistUpdateSuccess';
+  data: Playlist;
+};
+
 export type MutationShortLinkCreateInput = {
   /** bitrate of the video variant download */
   bitrate?: InputMaybe<Scalars['Int']['input']>;
@@ -2863,6 +3034,23 @@ export type PageInfo = {
   startCursor?: Maybe<Scalars['String']['output']>;
 };
 
+export type PhoneAction = Action & {
+  __typename?: 'PhoneAction';
+  contactAction: ContactActionType;
+  countryCode: Scalars['String']['output'];
+  gtmEventName?: Maybe<Scalars['String']['output']>;
+  parentBlock: Block;
+  parentBlockId: Scalars['ID']['output'];
+  phone: Scalars['String']['output'];
+};
+
+export type PhoneActionInput = {
+  contactAction?: InputMaybe<ContactActionType>;
+  countryCode: Scalars['String']['input'];
+  gtmEventName?: InputMaybe<Scalars['String']['input']>;
+  phone: Scalars['String']['input'];
+};
+
 export enum Platform {
   Arclight = 'arclight',
   Journeys = 'journeys',
@@ -3039,6 +3227,47 @@ export type PlausibleStatsTimeseriesFilter = {
   period?: InputMaybe<Scalars['String']['input']>;
 };
 
+export type Playlist = {
+  __typename?: 'Playlist';
+  createdAt: Scalars['DateTime']['output'];
+  id: Scalars['ID']['output'];
+  items: Array<PlaylistItem>;
+  name: Scalars['String']['output'];
+  note?: Maybe<Scalars['String']['output']>;
+  noteSharedAt?: Maybe<Scalars['DateTime']['output']>;
+  noteUpdatedAt?: Maybe<Scalars['DateTime']['output']>;
+  owner: User;
+  sharedAt?: Maybe<Scalars['DateTime']['output']>;
+  slug: Scalars['String']['output'];
+  updatedAt: Scalars['DateTime']['output'];
+};
+
+export type PlaylistCreateInput = {
+  id?: InputMaybe<Scalars['ID']['input']>;
+  name: Scalars['String']['input'];
+  note?: InputMaybe<Scalars['String']['input']>;
+  noteSharedAt?: InputMaybe<Scalars['DateTime']['input']>;
+  sharedAt?: InputMaybe<Scalars['DateTime']['input']>;
+  slug?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type PlaylistItem = {
+  __typename?: 'PlaylistItem';
+  createdAt: Scalars['DateTime']['output'];
+  id: Scalars['ID']['output'];
+  order?: Maybe<Scalars['Int']['output']>;
+  playlist: Playlist;
+  updatedAt: Scalars['DateTime']['output'];
+  videoVariant: VideoVariant;
+};
+
+export type PlaylistUpdateInput = {
+  name?: InputMaybe<Scalars['String']['input']>;
+  note?: InputMaybe<Scalars['String']['input']>;
+  noteSharedAt?: InputMaybe<Scalars['DateTime']['input']>;
+  sharedAt?: InputMaybe<Scalars['DateTime']['input']>;
+};
+
 export type PowerBiEmbed = {
   __typename?: 'PowerBiEmbed';
   /** The embed token */
@@ -3118,7 +3347,6 @@ export type Query = {
   getMyCloudflareImages: Array<CloudflareImage>;
   getMyMuxVideo: MuxVideo;
   getMyMuxVideos: Array<MuxVideo>;
-  getTranscodeAssetProgress?: Maybe<Scalars['Int']['output']>;
   getUserRole?: Maybe<UserRole>;
   hosts: Array<Host>;
   integrations: Array<Integration>;
@@ -3170,6 +3398,8 @@ export type Query = {
   me?: Maybe<User>;
   node?: Maybe<Node>;
   nodes: Array<Maybe<Node>>;
+  playlist?: Maybe<QueryPlaylistResult>;
+  playlists?: Maybe<Array<Playlist>>;
   qrCode: QrCode;
   qrCodes: Array<QrCode>;
   searchUnsplashPhotos: UnsplashQueryResponse;
@@ -3320,11 +3550,6 @@ export type QueryGetMyMuxVideosArgs = {
 };
 
 
-export type QueryGetTranscodeAssetProgressArgs = {
-  jobId: Scalars['String']['input'];
-};
-
-
 export type QueryHostsArgs = {
   teamId: Scalars['ID']['input'];
 };
@@ -3470,6 +3695,12 @@ export type QueryNodesArgs = {
 };
 
 
+export type QueryPlaylistArgs = {
+  id: Scalars['ID']['input'];
+  idType?: IdType;
+};
+
+
 export type QueryQrCodeArgs = {
   id: Scalars['ID']['input'];
 };
@@ -3612,6 +3843,13 @@ export type QueryVisitorsConnectionArgs = {
   teamId?: InputMaybe<Scalars['String']['input']>;
 };
 
+export type QueryPlaylistResult = NotFoundError | QueryPlaylistSuccess;
+
+export type QueryPlaylistSuccess = {
+  __typename?: 'QueryPlaylistSuccess';
+  data: Playlist;
+};
+
 export type QueryShortLinkByPathResult = NotFoundError | QueryShortLinkByPathSuccess;
 
 export type QueryShortLinkByPathSuccess = {
@@ -3685,6 +3923,7 @@ export type RadioOptionBlockCreateInput = {
 export type RadioOptionBlockUpdateInput = {
   label?: InputMaybe<Scalars['String']['input']>;
   parentBlockId?: InputMaybe<Scalars['ID']['input']>;
+  pollOptionImageBlockId?: InputMaybe<Scalars['ID']['input']>;
 };
 
 export type RadioQuestionBlock = Block & {
@@ -3702,17 +3941,13 @@ export type RadioQuestionBlockCreateInput = {
   parentBlockId: Scalars['ID']['input'];
 };
 
-export type RadioQuestionBlockUpdateInput = {
-  parentBlockId?: InputMaybe<Scalars['ID']['input']>;
-};
-
 export type RadioQuestionSubmissionEvent = Event & {
   __typename?: 'RadioQuestionSubmissionEvent';
   /** time event was created */
-  createdAt?: Maybe<Scalars['DateTime']['output']>;
-  id?: Maybe<Scalars['ID']['output']>;
+  createdAt: Scalars['DateTime']['output'];
+  id: Scalars['ID']['output'];
   /** ID of the journey that the radioQuestionBlock belongs to */
-  journeyId?: Maybe<Scalars['ID']['output']>;
+  journeyId: Scalars['ID']['output'];
   /** stepName of the parent stepBlock */
   label?: Maybe<Scalars['String']['output']>;
   /** label of the selected radioOptionBlock */
@@ -3845,12 +4080,12 @@ export type SignUpBlockUpdateInput = {
 export type SignUpSubmissionEvent = Event & {
   __typename?: 'SignUpSubmissionEvent';
   /** time event was created */
-  createdAt?: Maybe<Scalars['DateTime']['output']>;
+  createdAt: Scalars['DateTime']['output'];
   /** email from the signUpBlock form */
   email?: Maybe<Scalars['String']['output']>;
-  id?: Maybe<Scalars['ID']['output']>;
+  id: Scalars['ID']['output'];
   /** ID of the journey that the block belongs to */
-  journeyId?: Maybe<Scalars['ID']['output']>;
+  journeyId: Scalars['ID']['output'];
   /** null for signUpSubmissionEvent */
   label?: Maybe<Scalars['String']['output']>;
   /** name from the signUpBlock form */
@@ -4007,10 +4242,10 @@ export type StepBlockUpdateInput = {
 export type StepNextEvent = Event & {
   __typename?: 'StepNextEvent';
   /** time event was created */
-  createdAt?: Maybe<Scalars['DateTime']['output']>;
-  id?: Maybe<Scalars['ID']['output']>;
+  createdAt: Scalars['DateTime']['output'];
+  id: Scalars['ID']['output'];
   /** ID of the journey that the stepBlock belongs to */
-  journeyId?: Maybe<Scalars['ID']['output']>;
+  journeyId: Scalars['ID']['output'];
   /** stepName of the stepBlock */
   label?: Maybe<Scalars['String']['output']>;
   /** stepName of the next stepBlock */
@@ -4033,10 +4268,10 @@ export type StepNextEventCreateInput = {
 export type StepPreviousEvent = Event & {
   __typename?: 'StepPreviousEvent';
   /** time event was created */
-  createdAt?: Maybe<Scalars['DateTime']['output']>;
-  id?: Maybe<Scalars['ID']['output']>;
+  createdAt: Scalars['DateTime']['output'];
+  id: Scalars['ID']['output'];
   /** ID of the journey that the stepBlock belongs to */
-  journeyId?: Maybe<Scalars['ID']['output']>;
+  journeyId: Scalars['ID']['output'];
   /** stepName of the current stepBlock */
   label?: Maybe<Scalars['String']['output']>;
   /** stepName of the previous stepBlock */
@@ -4059,10 +4294,10 @@ export type StepPreviousEventCreateInput = {
 export type StepViewEvent = Event & {
   __typename?: 'StepViewEvent';
   /** time event was created */
-  createdAt?: Maybe<Scalars['DateTime']['output']>;
-  id?: Maybe<Scalars['ID']['output']>;
+  createdAt: Scalars['DateTime']['output'];
+  id: Scalars['ID']['output'];
   /** ID of the journey that the stepBlock belongs to */
-  journeyId?: Maybe<Scalars['ID']['output']>;
+  journeyId: Scalars['ID']['output'];
   /** null for stepViewEvent */
   label?: Maybe<Scalars['String']['output']>;
   /** stepName of the stepBlock */
@@ -4158,6 +4393,7 @@ export type TeamUpdateInput = {
 
 export type TextResponseBlock = Block & {
   __typename?: 'TextResponseBlock';
+  hideLabel?: Maybe<Scalars['Boolean']['output']>;
   hint?: Maybe<Scalars['String']['output']>;
   id: Scalars['ID']['output'];
   integrationId?: Maybe<Scalars['String']['output']>;
@@ -4180,6 +4416,7 @@ export type TextResponseBlockCreateInput = {
 };
 
 export type TextResponseBlockUpdateInput = {
+  hideLabel?: InputMaybe<Scalars['Boolean']['input']>;
   hint?: InputMaybe<Scalars['String']['input']>;
   integrationId?: InputMaybe<Scalars['String']['input']>;
   label?: InputMaybe<Scalars['String']['input']>;
@@ -4196,10 +4433,10 @@ export type TextResponseSubmissionEvent = Event & {
   /** the id of the block this event originates from */
   blockId?: Maybe<Scalars['String']['output']>;
   /** time event was created */
-  createdAt?: Maybe<Scalars['DateTime']['output']>;
-  id?: Maybe<Scalars['ID']['output']>;
+  createdAt: Scalars['DateTime']['output'];
+  id: Scalars['ID']['output'];
   /** ID of the journey that the buttonBlock belongs to */
-  journeyId?: Maybe<Scalars['ID']['output']>;
+  journeyId: Scalars['ID']['output'];
   /** stepName of the parent stepBlock */
   label?: Maybe<Scalars['String']['output']>;
   /** response from the TextResponseBlock form */
@@ -4233,14 +4470,6 @@ export enum ThemeMode {
 export enum ThemeName {
   Base = 'base'
 }
-
-export type TranscodeVideoInput = {
-  outputFilename: Scalars['String']['input'];
-  outputPath: Scalars['String']['input'];
-  r2AssetId: Scalars['String']['input'];
-  resolution: Scalars['String']['input'];
-  videoBitrate?: InputMaybe<Scalars['String']['input']>;
-};
 
 export type Translation = {
   __typename?: 'Translation';
@@ -4560,6 +4789,7 @@ export type Video = {
   studyQuestions: Array<VideoStudyQuestion>;
   subtitles: Array<VideoSubtitle>;
   title: Array<VideoTitle>;
+  /** @deprecated Use variants instead */
   variant?: Maybe<VideoVariant>;
   variantLanguages: Array<Language>;
   variantLanguagesCount: Scalars['Int']['output'];
@@ -4681,7 +4911,7 @@ export type VideoBlock = Block & {
    * internal source: videoId, videoVariantLanguageId, and video present
    * youTube source: videoId, title, description, and duration present
    */
-  source?: Maybe<VideoBlockSource>;
+  source: VideoBlockSource;
   /** startAt dictates at which point of time the video should start playing */
   startAt?: Maybe<Scalars['Int']['output']>;
   /**
@@ -4714,39 +4944,21 @@ export type VideoBlockCreateInput = {
   autoplay?: InputMaybe<Scalars['Boolean']['input']>;
   description?: InputMaybe<Scalars['String']['input']>;
   duration?: InputMaybe<Scalars['Int']['input']>;
-  /** endAt dictates at which point of time the video should end */
   endAt?: InputMaybe<Scalars['Int']['input']>;
   fullsize?: InputMaybe<Scalars['Boolean']['input']>;
   id?: InputMaybe<Scalars['ID']['input']>;
+  image?: InputMaybe<Scalars['String']['input']>;
+  /** True if the coverBlockId in a parent block should be set to this block's id. */
+  isCover?: InputMaybe<Scalars['Boolean']['input']>;
   journeyId: Scalars['ID']['input'];
   muted?: InputMaybe<Scalars['Boolean']['input']>;
-  /** how the video should display within the VideoBlock */
   objectFit?: InputMaybe<VideoBlockObjectFit>;
   parentBlockId: Scalars['ID']['input'];
-  /**
-   * posterBlockId is present if a child block should be used as a poster.
-   * This child block should not be rendered normally, instead it should be used
-   * as the video poster. PosterBlock should be of type ImageBlock.
-   */
   posterBlockId?: InputMaybe<Scalars['ID']['input']>;
-  /**
-   * internal source: videoId and videoVariantLanguageId required
-   * youTube source: videoId required
-   */
   source?: InputMaybe<VideoBlockSource>;
-  /** startAt dictates at which point of time the video should start playing */
   startAt?: InputMaybe<Scalars['Int']['input']>;
-  /**
-   * internal source videos: videoId and videoVariantLanguageId both need to be set
-   * to select a video.
-   * For other sources only videoId needs to be set.
-   */
+  title?: InputMaybe<Scalars['String']['input']>;
   videoId?: InputMaybe<Scalars['ID']['input']>;
-  /**
-   * internal source videos: videoId and videoVariantLanguageId both need to be set
-   * to select a video.
-   * For other sources only videoId needs to be set.
-   */
   videoVariantLanguageId?: InputMaybe<Scalars['ID']['input']>;
 };
 
@@ -4784,42 +4996,33 @@ export enum VideoBlockSource {
 
 export type VideoBlockUpdateInput = {
   autoplay?: InputMaybe<Scalars['Boolean']['input']>;
+  description?: InputMaybe<Scalars['String']['input']>;
   duration?: InputMaybe<Scalars['Int']['input']>;
-  /** endAt dictates at which point of time the video should end */
   endAt?: InputMaybe<Scalars['Int']['input']>;
   fullsize?: InputMaybe<Scalars['Boolean']['input']>;
+  image?: InputMaybe<Scalars['String']['input']>;
   muted?: InputMaybe<Scalars['Boolean']['input']>;
-  /** how the video should display within the VideoBlock */
   objectFit?: InputMaybe<VideoBlockObjectFit>;
-  /**
-   * posterBlockId is present if a child block should be used as a poster.
-   * This child block should not be rendered normally, instead it should be used
-   * as the video poster. PosterBlock should be of type ImageBlock.
-   */
+  parentBlockId?: InputMaybe<Scalars['ID']['input']>;
   posterBlockId?: InputMaybe<Scalars['ID']['input']>;
-  /** startAt dictates at which point of time the video should start playing */
+  /**
+   * internal source: videoId and videoVariantLanguageId required
+   *   youTube source: videoId required
+   */
+  source?: InputMaybe<VideoBlockSource>;
   startAt?: InputMaybe<Scalars['Int']['input']>;
-  /**
-   * internal source videos: videoId and videoVariantLanguageId both need to be set
-   * to select a video.
-   * For other sources only videoId needs to be set.
-   */
+  title?: InputMaybe<Scalars['String']['input']>;
   videoId?: InputMaybe<Scalars['ID']['input']>;
-  /**
-   * internal source videos: videoId and videoVariantLanguageId both need to be set
-   * to select a video.
-   * For other sources only videoId needs to be set.
-   */
   videoVariantLanguageId?: InputMaybe<Scalars['ID']['input']>;
 };
 
 export type VideoCollapseEvent = Event & {
   __typename?: 'VideoCollapseEvent';
   /** time event was created */
-  createdAt?: Maybe<Scalars['DateTime']['output']>;
-  id?: Maybe<Scalars['ID']['output']>;
+  createdAt: Scalars['DateTime']['output'];
+  id: Scalars['ID']['output'];
   /** ID of the journey that the videoBlock belongs to */
-  journeyId?: Maybe<Scalars['ID']['output']>;
+  journeyId: Scalars['ID']['output'];
   /** title of the video */
   label?: Maybe<Scalars['String']['output']>;
   /** duration of the video played when the VideoCollapseEvent is triggered */
@@ -4847,10 +5050,10 @@ export type VideoCollapseEventCreateInput = {
 export type VideoCompleteEvent = Event & {
   __typename?: 'VideoCompleteEvent';
   /** time event was created */
-  createdAt?: Maybe<Scalars['DateTime']['output']>;
-  id?: Maybe<Scalars['ID']['output']>;
+  createdAt: Scalars['DateTime']['output'];
+  id: Scalars['ID']['output'];
   /** ID of the journey that the videoBlock belongs to */
-  journeyId?: Maybe<Scalars['ID']['output']>;
+  journeyId: Scalars['ID']['output'];
   /** title of the video */
   label?: Maybe<Scalars['String']['output']>;
   /** duration of the video played when the VideoCompleteEvent is triggered */
@@ -4917,10 +5120,10 @@ export type VideoEditionUpdateInput = {
 export type VideoExpandEvent = Event & {
   __typename?: 'VideoExpandEvent';
   /** time event was created */
-  createdAt?: Maybe<Scalars['DateTime']['output']>;
-  id?: Maybe<Scalars['ID']['output']>;
+  createdAt: Scalars['DateTime']['output'];
+  id: Scalars['ID']['output'];
   /** ID of the journey that the videoBlock belongs to */
-  journeyId?: Maybe<Scalars['ID']['output']>;
+  journeyId: Scalars['ID']['output'];
   /** title of the video */
   label?: Maybe<Scalars['String']['output']>;
   /** duration of the video played when the VideoExpandEvent is triggered */
@@ -4974,10 +5177,10 @@ export type VideoOrigin = {
 export type VideoPauseEvent = Event & {
   __typename?: 'VideoPauseEvent';
   /** time event was created */
-  createdAt?: Maybe<Scalars['DateTime']['output']>;
-  id?: Maybe<Scalars['ID']['output']>;
+  createdAt: Scalars['DateTime']['output'];
+  id: Scalars['ID']['output'];
   /** ID of the journey that the videoBlock belongs to */
-  journeyId?: Maybe<Scalars['ID']['output']>;
+  journeyId: Scalars['ID']['output'];
   /** title of the video */
   label?: Maybe<Scalars['String']['output']>;
   /** duration of the video played when the VideoPauseEvent is triggered */
@@ -5005,10 +5208,10 @@ export type VideoPauseEventCreateInput = {
 export type VideoPlayEvent = Event & {
   __typename?: 'VideoPlayEvent';
   /** time event was created */
-  createdAt?: Maybe<Scalars['DateTime']['output']>;
-  id?: Maybe<Scalars['ID']['output']>;
+  createdAt: Scalars['DateTime']['output'];
+  id: Scalars['ID']['output'];
   /** ID of the journey that the videoBlock belongs to */
-  journeyId?: Maybe<Scalars['ID']['output']>;
+  journeyId: Scalars['ID']['output'];
   /** title of the video */
   label?: Maybe<Scalars['String']['output']>;
   /** duration of the video played when the VideoPlayEvent is triggered */
@@ -5036,16 +5239,16 @@ export type VideoPlayEventCreateInput = {
 export type VideoProgressEvent = Event & {
   __typename?: 'VideoProgressEvent';
   /** time event was created */
-  createdAt?: Maybe<Scalars['DateTime']['output']>;
-  id?: Maybe<Scalars['ID']['output']>;
+  createdAt: Scalars['DateTime']['output'];
+  id: Scalars['ID']['output'];
   /** ID of the journey that the videoBlock belongs to */
-  journeyId?: Maybe<Scalars['ID']['output']>;
+  journeyId: Scalars['ID']['output'];
   /** title of the video */
   label?: Maybe<Scalars['String']['output']>;
   /** duration of the video played when the VideoProgressEvent is triggered */
   position?: Maybe<Scalars['Float']['output']>;
   /** progress is a integer indicating the precentage completion from the startAt to the endAt times of the videoBlock */
-  progress?: Maybe<Scalars['Int']['output']>;
+  progress: Scalars['Int']['output'];
   /** source of the video (based on the source in the value field) */
   source?: Maybe<VideoBlockSource>;
   /** source of the video */
@@ -5086,10 +5289,10 @@ export type VideoSnippet = {
 export type VideoStartEvent = Event & {
   __typename?: 'VideoStartEvent';
   /** time event was created */
-  createdAt?: Maybe<Scalars['DateTime']['output']>;
-  id?: Maybe<Scalars['ID']['output']>;
+  createdAt: Scalars['DateTime']['output'];
+  id: Scalars['ID']['output'];
   /** ID of the journey that the videoBlock belongs to */
-  journeyId?: Maybe<Scalars['ID']['output']>;
+  journeyId: Scalars['ID']['output'];
   /** title of the video */
   label?: Maybe<Scalars['String']['output']>;
   /** duration of the video played when the VideoStartEvent is triggered */
@@ -5269,6 +5472,7 @@ export type VideoVariant = {
   subtitleCount: Scalars['Int']['output'];
   /** version control for master video file */
   version: Scalars['Int']['output'];
+  video?: Maybe<Video>;
   videoEdition: VideoEdition;
   videoId?: Maybe<Scalars['ID']['output']>;
 };
@@ -5353,6 +5557,7 @@ export type VideoVariantDownloadUpdateInput = {
 };
 
 export type VideoVariantFilter = {
+  languageId?: InputMaybe<Scalars['ID']['input']>;
   onlyPublished?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
@@ -5592,13 +5797,6 @@ export enum Link__Purpose {
   Security = 'SECURITY'
 }
 
-export type GetMuxVideoQueryVariables = Exact<{
-  id: Scalars['ID']['input'];
-}>;
-
-
-export type GetMuxVideoQuery = { __typename?: 'Query', getMuxVideo?: { __typename?: 'MuxVideo', id: string, name?: string | null, playbackId?: string | null, duration?: number | null } | null };
-
 export type GetLanguagesQueryVariables = Exact<{
   languageId: Scalars['ID']['input'];
 }>;
@@ -5642,7 +5840,6 @@ export type ShortLinkDeleteMutationVariables = Exact<{
 export type ShortLinkDeleteMutation = { __typename?: 'Mutation', shortLinkDelete: { __typename?: 'MutationShortLinkDeleteSuccess', data: { __typename?: 'ShortLink', id: string } } | { __typename?: 'NotFoundError', message?: string | null } };
 
 
-export const GetMuxVideoDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetMuxVideo"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"getMuxVideo"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"playbackId"}},{"kind":"Field","name":{"kind":"Name","value":"duration"}}]}}]}}]} as unknown as DocumentNode<GetMuxVideoQuery, GetMuxVideoQueryVariables>;
 export const GetLanguagesDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetLanguages"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"languageId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"language"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"languageId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"bcp47"}},{"kind":"Field","name":{"kind":"Name","value":"id"}}]}}]}}]} as unknown as DocumentNode<GetLanguagesQuery, GetLanguagesQueryVariables>;
 export const SiteCreateDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"SiteCreate"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"SiteCreateInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"siteCreate"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Error"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"message"}},{"kind":"Field","name":{"kind":"Name","value":"__typename"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"MutationSiteCreateSuccess"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"data"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"domain"}},{"kind":"Field","name":{"kind":"Name","value":"__typename"}},{"kind":"Field","name":{"kind":"Name","value":"memberships"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"role"}},{"kind":"Field","name":{"kind":"Name","value":"__typename"}}]}},{"kind":"Field","name":{"kind":"Name","value":"goals"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"eventName"}},{"kind":"Field","name":{"kind":"Name","value":"__typename"}}]}},{"kind":"Field","name":{"kind":"Name","value":"sharedLinks"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"slug"}},{"kind":"Field","name":{"kind":"Name","value":"__typename"}}]}}]}}]}}]}}]}}]} as unknown as DocumentNode<SiteCreateMutation, SiteCreateMutationVariables>;
 export const GetShortLinkDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetShortLink"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"shortLink"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"NotFoundError"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"message"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"QueryShortLinkSuccess"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"data"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"pathname"}},{"kind":"Field","name":{"kind":"Name","value":"to"}},{"kind":"Field","name":{"kind":"Name","value":"domain"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"hostname"}}]}}]}}]}}]}}]}}]} as unknown as DocumentNode<GetShortLinkQuery, GetShortLinkQueryVariables>;

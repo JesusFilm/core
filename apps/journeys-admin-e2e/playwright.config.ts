@@ -12,9 +12,10 @@ require('dotenv').config()
  */
 export default defineConfig({
   timeout: 3 * 60 * 1000,
-  testDir: './src/e2e',
+  testDir: './src',
   /* Run tests in files in parallel */
   fullyParallel: false,
+  globalSetup: './src/global-setup.ts',
   /* Fail the build on CI if you accidentally left test.only in the source code. */
   forbidOnly: !!process.env.CI,
   /* Retry on CI only */
@@ -30,7 +31,7 @@ export default defineConfig({
     baseURL:
       process.env.JOURNEYS_ADMIN_DAILY_E2E ??
       process.env.DEPLOYMENT_URL ??
-      'http://localhost:4100',
+      'http://localhost:4200',
     actionTimeout: 20000,
     navigationTimeout: 60000,
     screenshot: 'only-on-failure',

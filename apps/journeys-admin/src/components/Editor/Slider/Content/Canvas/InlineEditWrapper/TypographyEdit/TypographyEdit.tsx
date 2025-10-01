@@ -14,6 +14,8 @@ import {
 } from '../../../../../../../../__generated__/TypographyBlockUpdateContent'
 import { TypographyFields } from '../../../../../../../../__generated__/TypographyFields'
 import { InlineEditInput } from '../InlineEditInput'
+import { resolveJourneyCustomizationString } from '@core/journeys/ui/resolveJourneyCustomizationString'
+import { useJourney } from '@core/journeys/ui/JourneyProvider'
 
 export const TYPOGRAPHY_BLOCK_UPDATE_CONTENT = gql`
   mutation TypographyBlockUpdateContent($id: ID!, $content: String!) {
@@ -33,8 +35,17 @@ export function TypographyEdit({
     TypographyBlockUpdateContent,
     TypographyBlockUpdateContentVariables
   >(TYPOGRAPHY_BLOCK_UPDATE_CONTENT)
+  const { journey } = useJourney()
 
-  const [value, setValue] = useState(content)
+  const resolvedContent = !journey?.template
+    ? (resolveJourneyCustomizationString(
+        content,
+        journey?.journeyCustomizationFields ?? []
+      ) ?? content)
+    : content
+
+  const [value, setValue] = useState(resolvedContent)
+
   const [commandInput, setCommandInput] = useState({ id: uuidv4(), value })
   const [selection, setSelection] = useState({ start: 0, end: value.length })
   const {
@@ -53,9 +64,9 @@ export function TypographyEdit({
   }, [undo?.id])
 
   useEffect(() => {
-    if (value !== content) setValue(content)
+    if (value !== resolvedContent) setValue(resolvedContent)
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [content])
+  }, [resolvedContent])
 
   function resetCommandInput(): void {
     setCommandInput({ id: uuidv4(), value })

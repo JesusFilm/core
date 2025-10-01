@@ -193,7 +193,7 @@ export function Properties({ block, step }: PropertiesProps): ReactElement {
       }}
       border={1}
       borderColor="divider"
-      data-testId="SettingsDrawer"
+      data-testid="SettingsDrawer"
     >
       <DrawerTitle title={title} onClose={onClose} />
       <Stack

@@ -10,27 +10,15 @@ export function TestWatchState(): ReactElement {
   const { state } = useWatch()
   return (
     <>
-      <div>siteLanguage: {state.siteLanguage}</div>
-      <div>audioLanguage: {state.audioLanguage}</div>
-      <div>subtitleLanguage: {state.subtitleLanguage}</div>
-      <div>subtitleOn: {state.subtitleOn.toString()}</div>
-      <div>loading: {state.loading?.toString()}</div>
-      <div>videoId: {state.videoId || 'none'}</div>
-      <div>videoVariantSlug: {state.videoVariantSlug || 'none'}</div>
-      <div>allLanguages: {state.allLanguages?.length || 0} languages</div>
+      <div>audioLanguageId: {state.audioLanguageId}</div>
+      <div>subtitleLanguageId: {state.subtitleLanguageId}</div>
+      <div>subtitleOn: {state.subtitleOn?.toString()}</div>
       <div>
-        videoAudioLanguages: {state.videoAudioLanguages?.length || 0} audio
-        languages
+        videoAudioLanguageIds: {state.videoAudioLanguageIds?.length || 0}
       </div>
       <div>
-        videoSubtitleLanguages: {state.videoSubtitleLanguages?.length || 0}{' '}
-        subtitle languages
+        videoSubtitleLanguageIds: {state.videoSubtitleLanguageIds?.length || 0}
       </div>
-      <div>
-        currentAudioLanguage:{' '}
-        {state.currentAudioLanguage?.language?.id || 'none'}
-      </div>
-      <div>autoSubtitle: {state.autoSubtitle?.toString()}</div>
     </>
   )
 }

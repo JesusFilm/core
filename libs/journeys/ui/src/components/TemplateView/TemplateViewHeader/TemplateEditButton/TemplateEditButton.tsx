@@ -15,15 +15,13 @@ export function TemplateEditButton({
   const { t } = useTranslation('libs-journeys-ui')
 
   return (
-    <NextLink
+    <Button
+      LinkComponent={NextLink}
       href={`/publisher/${journeyId}`}
-      passHref
-      legacyBehavior
-      prefetch={false}
+      startIcon={<Edit2Icon />}
+      data-testid="TemplateEditButton"
     >
-      <Button startIcon={<Edit2Icon />} data-testid="TemplateEditButton">
-        {t('Edit')}
-      </Button>
-    </NextLink>
+      {t('Edit')}
+    </Button>
   )
 }

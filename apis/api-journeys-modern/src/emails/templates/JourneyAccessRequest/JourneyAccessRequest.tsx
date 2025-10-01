@@ -67,7 +67,7 @@ export const JourneyAccessRequestEmail = ({
               <Row>
                 <th>
                   <Text
-                    className="font-semibold text-[20px] leading-[28px] mt-[0px] mb-[20px] text-center"
+                    className="mt-[0px] mb-[20px] text-center text-[20px] leading-[28px] font-semibold"
                     style={{
                       font: '20px "Open Sans", sans-serif'
                     }}
@@ -121,7 +121,7 @@ const withHTML = ({ children }: WrapperProps): ReactElement => {
 
 const withBody = ({ children }: WrapperProps): ReactElement => {
   return (
-    <Body className="my-[0px] mx-[0px] font-sans h-full w-full">
+    <Body className="mx-[0px] my-[0px] h-full w-full font-sans">
       {children}
     </Body>
   )

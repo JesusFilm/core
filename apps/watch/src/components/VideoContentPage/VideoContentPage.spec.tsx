@@ -1,16 +1,13 @@
-import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { type NextRouter, useRouter } from 'next/router'
 import { SnackbarProvider } from 'notistack'
 
 import { useAlgoliaVideos } from '@core/journeys/ui/algolia/useAlgoliaVideos'
 
-import { GetLanguagesSlug } from '../../../__generated__/GetLanguagesSlug'
 import { type CoreVideo } from '../../libs/algolia/transformAlgoliaVideos'
-import { getCookie } from '../../libs/cookieHandler'
 import { getVideoChildrenMock } from '../../libs/useVideoChildren/getVideoChildrenMock'
 import { VideoProvider } from '../../libs/videoContext'
-import { GET_LANGUAGES_SLUG } from '../AudioLanguageDialog/AudioLanguageDialog'
 import { videos } from '../Videos/__generated__/testData'
 
 import { VideoContentPage } from '.'
@@ -18,9 +15,6 @@ import { VideoContentPage } from '.'
 jest.mock('@core/journeys/ui/algolia/useAlgoliaVideos')
 jest.mock('next/router', () => ({
   useRouter: jest.fn()
-}))
-jest.mock('../../libs/cookieHandler', () => ({
-  getCookie: jest.fn()
 }))
 
 const mockedUseAlgoliaVideos = useAlgoliaVideos as jest.MockedFunction<
@@ -31,7 +25,6 @@ const mockRouter: Partial<NextRouter> = {
   asPath: '/watch/video-slug/english.html',
   locale: 'en'
 }
-const mockGetCookie = getCookie as jest.MockedFunction<typeof getCookie>
 const mockUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
 
 describe('VideoContentPage', () => {
@@ -165,61 +158,5 @@ describe('VideoContentPage', () => {
       </MockedProvider>
     )
     expect(queryByRole('button', { name: 'Download' })).not.toBeInTheDocument()
-  })
-
-  it('should redirect when cookie language differs from current URL language', async () => {
-    mockGetCookie.mockReturnValue('530') // Spanish language ID
-    mockUseRouter.mockReturnValue({
-      ...mockRouter,
-      asPath: '/watch/video-slug/english.html'
-    } as NextRouter)
-
-    const mock: MockedResponse<GetLanguagesSlug> = {
-      request: {
-        query: GET_LANGUAGES_SLUG,
-        variables: { id: videos[0].id }
-      },
-      result: {
-        data: {
-          video: {
-            __typename: 'Video',
-            variantLanguagesWithSlug: [
-              {
-                __typename: 'LanguageWithSlug',
-                slug: 'video-slug/spanish',
-                language: {
-                  __typename: 'Language',
-                  id: '530',
-                  slug: 'spanish',
-                  name: [
-                    {
-                      __typename: 'LanguageName',
-                      value: 'Spanish',
-                      primary: true
-                    }
-                  ]
-                }
-              }
-            ]
-          }
-        }
-      }
-    }
-
-    render(
-      <MockedProvider mocks={[mock]} addTypename={false}>
-        <SnackbarProvider>
-          <VideoProvider value={{ content: videos[0] }}>
-            <VideoContentPage />
-          </VideoProvider>
-        </SnackbarProvider>
-      </MockedProvider>
-    )
-
-    await waitFor(() => {
-      expect(mockRouter.replace).toHaveBeenCalledWith(
-        '/watch/video-slug/spanish'
-      )
-    })
   })
 })

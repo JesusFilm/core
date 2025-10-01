@@ -59,7 +59,7 @@ describe('ContainerHero', () => {
     expect(openDialog).toHaveBeenCalled()
   })
 
-  it('should render with AudioLanguage switch', () => {
+  it('should render with Audio Language Select', () => {
     const openDialog = jest.fn()
 
     render(
@@ -68,6 +68,6 @@ describe('ContainerHero', () => {
       </VideoProvider>
     )
 
-    expect(screen.getByTestId('AudioLanguageButton')).toBeInTheDocument()
+    expect(screen.getByTestId('AudioLanguageSelectTrigger')).toBeInTheDocument()
   })
 })

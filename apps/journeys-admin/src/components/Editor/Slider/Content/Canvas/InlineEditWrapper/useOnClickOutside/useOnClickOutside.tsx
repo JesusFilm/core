@@ -3,8 +3,8 @@ import { RefObject, useEffect, useRef } from 'react'
 // When clicking outside the card in canvas
 export function useOnClickOutside<T extends HTMLElement = HTMLElement>(
   callback: () => void | Promise<void>
-): RefObject<T> {
-  const elementRef = useRef<T>(null)
+): RefObject<T | null> {
+  const elementRef = useRef<T | null>(null)
 
   useEffect(() => {
     const handleClick = (event: MouseEvent): void => {

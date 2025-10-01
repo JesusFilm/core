@@ -280,7 +280,7 @@ describe('video', () => {
           createdAt: new Date(),
           updatedAt: new Date(),
           contentType: 'application/octet-stream',
-          contentLength: 0,
+          contentLength: BigInt(0),
           originalFilename: null
         }
       ],
@@ -1005,6 +1005,289 @@ describe('video', () => {
       })
       expect(data).toHaveProperty('data.videos', result)
     })
+
+    it('should query video.variants with video variant filter', async () => {
+      prismaMock.video.findMany.mockResolvedValueOnce(videos)
+
+      const data = await client({
+        document: graphql(`
+          query VideoWithVariants($input: VideoVariantFilter!) {
+            videos {
+              id
+              variants(input: $input) {
+                id
+              }
+            }
+          }
+        `),
+        variables: {
+          input: {
+            languageId: '987',
+            onlyPublished: false
+          }
+        }
+      })
+      expect(prismaMock.video.findMany).toHaveBeenCalledWith(
+        expect.objectContaining({
+          include: {
+            variants: {
+              where: {
+                published: undefined,
+                languageId: '987'
+              }
+            }
+          }
+        })
+      )
+      expect(data).toHaveProperty('data.videos', [
+        {
+          id: 'videoId',
+          variants: [
+            {
+              id: 'variantId2'
+            },
+            {
+              id: 'variantId1'
+            }
+          ]
+        }
+      ])
+    })
+
+    it('should query video.variants with languageId in filter', async () => {
+      prismaMock.video.findMany.mockResolvedValueOnce(videos)
+
+      const data = await client({
+        document: graphql(`
+          query VideoWithVariants($input: VideoVariantFilter!) {
+            videos {
+              id
+              variants(input: $input) {
+                id
+              }
+            }
+          }
+        `),
+        variables: {
+          input: {
+            languageId: '987'
+          }
+        }
+      })
+      expect(prismaMock.video.findMany).toHaveBeenCalledWith(
+        expect.objectContaining({
+          include: {
+            variants: {
+              where: {
+                published: true,
+                languageId: '987'
+              }
+            }
+          }
+        })
+      )
+      expect(data).toHaveProperty('data.videos', [
+        {
+          id: 'videoId',
+          variants: [
+            {
+              id: 'variantId2'
+            },
+            {
+              id: 'variantId1'
+            }
+          ]
+        }
+      ])
+    })
+
+    it('should query video.variantLanguagesCount with video variant filter', async () => {
+      prismaMock.video.findMany.mockResolvedValueOnce(videos)
+
+      const data = await client({
+        document: graphql(`
+          query VideoWithVariantLanguagesCount($input: VideoVariantFilter!) {
+            videos {
+              id
+              variantLanguagesCount(input: $input)
+            }
+          }
+        `),
+        variables: {
+          input: {
+            languageId: '987',
+            onlyPublished: false
+          }
+        }
+      })
+      expect(prismaMock.video.findMany).toHaveBeenCalledWith(
+        expect.objectContaining({
+          include: {
+            _count: {
+              select: {
+                variants: {
+                  where: {
+                    published: undefined,
+                    languageId: '987'
+                  }
+                }
+              }
+            }
+          }
+        })
+      )
+      expect(data).toHaveProperty('data.videos', [
+        {
+          id: 'videoId',
+          variantLanguagesCount: 2
+        }
+      ])
+    })
+
+    it('should query video.variantLanguagesCount with languageId in filter', async () => {
+      prismaMock.video.findMany.mockResolvedValueOnce(videos)
+
+      const data = await client({
+        document: graphql(`
+          query VideoWithVariantLanguagesCount($input: VideoVariantFilter!) {
+            videos {
+              id
+              variantLanguagesCount(input: $input)
+            }
+          }
+        `),
+        variables: {
+          input: {
+            languageId: '987'
+          }
+        }
+      })
+      expect(prismaMock.video.findMany).toHaveBeenCalledWith(
+        expect.objectContaining({
+          include: {
+            _count: {
+              select: {
+                variants: {
+                  where: {
+                    published: true,
+                    languageId: '987'
+                  }
+                }
+              }
+            }
+          }
+        })
+      )
+      expect(data).toHaveProperty('data.videos', [
+        {
+          id: 'videoId',
+          variantLanguagesCount: 2
+        }
+      ])
+    })
+
+    it('should query video.variantLanguagesWithSlug with video variant filter', async () => {
+      prismaMock.video.findMany.mockResolvedValueOnce(videos)
+
+      const data = await client({
+        document: graphql(`
+          query VideoWithVariantLanguagesWithSlug($input: VideoVariantFilter!) {
+            videos {
+              id
+              variantLanguagesWithSlug(input: $input) {
+                slug
+              }
+            }
+          }
+        `),
+        variables: {
+          input: {
+            languageId: '987',
+            onlyPublished: false
+          }
+        }
+      })
+      expect(prismaMock.video.findMany).toHaveBeenCalledWith(
+        expect.objectContaining({
+          include: {
+            variants: {
+              select: {
+                languageId: true,
+                slug: true
+              },
+              where: {
+                published: undefined,
+                languageId: '987'
+              }
+            }
+          }
+        })
+      )
+      expect(data).toHaveProperty('data.videos', [
+        {
+          id: 'videoId',
+          variantLanguagesWithSlug: [
+            {
+              slug: 'slug2'
+            },
+            {
+              slug: 'slug1'
+            }
+          ]
+        }
+      ])
+    })
+
+    it('should query video.variantLanguagesWithSlug with languageId in filter', async () => {
+      prismaMock.video.findMany.mockResolvedValueOnce(videos)
+
+      const data = await client({
+        document: graphql(`
+          query VideoWithVariantLanguagesWithSlug($input: VideoVariantFilter!) {
+            videos {
+              id
+              variantLanguagesWithSlug(input: $input) {
+                slug
+              }
+            }
+          }
+        `),
+        variables: {
+          input: {
+            languageId: '987'
+          }
+        }
+      })
+      expect(prismaMock.video.findMany).toHaveBeenCalledWith(
+        expect.objectContaining({
+          include: {
+            variants: {
+              select: {
+                languageId: true,
+                slug: true
+              },
+              where: {
+                published: true,
+                languageId: '987'
+              }
+            }
+          }
+        })
+      )
+      expect(data).toHaveProperty('data.videos', [
+        {
+          id: 'videoId',
+          variantLanguagesWithSlug: [
+            {
+              slug: 'slug2'
+            },
+            {
+              slug: 'slug1'
+            }
+          ]
+        }
+      ])
+    })
   })
 
   describe('video', () => {
@@ -1504,7 +1787,7 @@ describe('video', () => {
         roles: ['publisher']
       })
 
-      const data = await client({
+      const data = await authClient({
         document: ADMIN_VIDEOS_QUERY,
         variables: {
           languageId: '987'
@@ -1759,7 +2042,7 @@ describe('video', () => {
         userId: 'userId',
         roles: ['publisher']
       })
-      const data = await client({
+      const data = await authClient({
         document: ADMIN_VIDEO_QUERY,
         variables: {
           id: 'slug',

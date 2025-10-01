@@ -1,0 +1,1 @@
+export { JourneyProfileUpdateInput } from './journeyProfileUpdateInput'

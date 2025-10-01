@@ -1,5 +1,5 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { render, waitFor } from '@testing-library/react'
+import { fireEvent, render, waitFor, screen } from '@testing-library/react'
 import { User } from 'next-firebase-auth'
 import { SnackbarProvider } from 'notistack'
 
@@ -11,8 +11,30 @@ import {
 import { journey } from '../TemplateFooter/data'
 
 import { TemplateViewHeader } from './TemplateViewHeader'
+import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
+import { NextRouter, useRouter } from 'next/router'
+
+jest.mock('next/router', () => ({
+  __esModule: true,
+  useRouter: jest.fn()
+}))
+
+const mockUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
 
 describe('TemplateViewHeader', () => {
+  const push = jest.fn().mockResolvedValue('')
+  const prefetch = jest.fn()
+
+  beforeEach(() => {
+    mockUseRouter.mockReturnValue({
+      prefetch,
+      push,
+      query: { createNew: false }
+    } as unknown as NextRouter)
+
+    jest.clearAllMocks()
+  })
+
   it('should render the social image', () => {
     const primaryImageBlock: PrimaryImageBlock = {
       id: 'image1.id',
@@ -302,5 +324,51 @@ describe('TemplateViewHeader', () => {
     await waitFor(() =>
       expect(getAllByTestId('TemplateViewTitleSkeleton')[0]).toBeInTheDocument()
     )
+  })
+
+  it('should push signed in user to customization flow page when clicking template customization button while feature flag is enabled.', async () => {
+    const { getAllByRole } = render(
+      <MockedProvider>
+        <FlagsProvider flags={{ journeyCustomization: true }}>
+          <JourneyProvider value={{ journey }}>
+            <TemplateViewHeader
+              isPublisher
+              authUser={{ id: '123' } as unknown as User}
+            />
+          </JourneyProvider>
+        </FlagsProvider>
+      </MockedProvider>
+    )
+
+    fireEvent.click(getAllByRole('button', { name: 'Use This Template' })[0])
+
+    await waitFor(() => {
+      expect(push).toHaveBeenCalledWith(
+        '/templates/journeyId/customize',
+        undefined,
+        { shallow: true }
+      )
+    })
+  })
+
+  it('should open legacy copy to team dialog when clicking template customization button while feature flag is disabled.', async () => {
+    const { getAllByRole } = render(
+      <MockedProvider>
+        <FlagsProvider flags={{ journeyCustomization: false }}>
+          <JourneyProvider value={{ journey }}>
+            <TemplateViewHeader
+              isPublisher
+              authUser={{ id: '123' } as unknown as User}
+            />
+          </JourneyProvider>
+        </FlagsProvider>
+      </MockedProvider>
+    )
+
+    fireEvent.click(getAllByRole('button', { name: 'Use This Template' })[0])
+
+    await waitFor(() => {
+      expect(screen.getByTestId('CopyToTeamDialog')).toBeInTheDocument()
+    })
   })
 })

@@ -67,7 +67,9 @@ export const Filled: StoryObj<typeof SignUp> = {
         __typename: 'LinkAction',
         parentBlockId: 'signup.id',
         gtmEventName: 'signup',
-        url: 'https://www.google.com'
+        url: 'https://www.google.com',
+        customizable: false,
+        parentStepId: null
       },
       submitIconId: 'icon',
       children: [

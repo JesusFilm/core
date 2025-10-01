@@ -10,7 +10,7 @@ import 'videojs-mux'
 
 import { useVideo } from '../../../../libs/videoContext'
 import { useWatch } from '../../../../libs/watchContext'
-import { subtitleUpdate } from '../../../../libs/watchContext/subtitleUpdate'
+import { useSubtitleUpdate } from '../../../../libs/watchContext/useSubtitleUpdate'
 
 import { VideoControls } from './VideoControls'
 
@@ -23,12 +23,7 @@ export function VideoPlayer({
 }: VideoPlayerProps): ReactElement {
   const { variant, title } = useVideo()
   const {
-    state: {
-      subtitleLanguage,
-      subtitleOn,
-      autoSubtitle,
-      videoSubtitleLanguages
-    }
+    state: { subtitleLanguageId, subtitleOn }
   } = useWatch()
   const videoRef = useRef<HTMLVideoElement>(null)
   const [player, setPlayer] = useState<
@@ -75,23 +70,13 @@ export function VideoPlayer({
     })
   }, [player, variant?.hls])
 
+  const { subtitleUpdate } = useSubtitleUpdate()
+
   useEffect(() => {
     if (player == null) return
 
-    subtitleUpdate({
-      player,
-      videoSubtitleLanguages,
-      subtitleLanguage,
-      subtitleOn,
-      autoSubtitle
-    })
-  }, [
-    player,
-    videoSubtitleLanguages,
-    subtitleLanguage,
-    subtitleOn,
-    autoSubtitle
-  ])
+    void subtitleUpdate({ player, subtitleLanguageId, subtitleOn })
+  }, [player, subtitleLanguageId, subtitleOn])
 
   return (
     <>

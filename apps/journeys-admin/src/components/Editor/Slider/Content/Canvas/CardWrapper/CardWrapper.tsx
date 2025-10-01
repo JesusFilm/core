@@ -65,7 +65,7 @@ export function CardWrapper({ block, children }: WrapperProps): ReactElement {
         >
           <Card
             {...{ ...block, children: blocks }}
-            wrappers={children.props.wrappers}
+            wrappers={(children.props as any).wrappers}
           />
           {blocks.length === 0 && !lgUp && (
             <Stack

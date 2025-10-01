@@ -1,6 +1,5 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { renderHook, waitFor } from '@testing-library/react'
-import { act } from 'react'
+import { act, renderHook, waitFor } from '@testing-library/react'
 
 import { useCountryQuery } from './useCountryQuery'
 import { getCountryMock } from './useCountryQuery.mock'
