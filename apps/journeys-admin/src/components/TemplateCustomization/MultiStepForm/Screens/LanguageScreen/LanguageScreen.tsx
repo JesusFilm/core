@@ -165,12 +165,17 @@ export function LanguageScreen({
         >
           {t("Let's get started!")}
         </Typography>
-        <Typography variant="h6" color="text.secondary" align="center">
+        <Typography 
+          variant="subtitle2" 
+          color="text.secondary" 
+          align="center"
+          display={{ xs: 'none', sm: 'block' }}
+        >
           {t('A few quick edits and your template will be ready to share.')}
         </Typography>
       </Stack>
       <SocialImage />
-      <Typography variant="h6" gutterBottom sx={{ mb: { xs: 0, sm: 2 } }}>
+      <Typography variant="subtitle2" gutterBottom sx={{ mb: { xs: 0, sm: 2 } }}>
         {journey?.title ?? ''}
       </Typography>
       <Formik

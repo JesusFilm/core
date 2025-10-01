@@ -204,7 +204,6 @@ export function TextScreen({
     >
       <Stack alignItems="center" sx={{ pb: 4 }}>
         <Typography
-          component="h1"
           variant="h4"
           display={{ xs: 'none', sm: 'block' }}
           gutterBottom
@@ -215,7 +214,6 @@ export function TextScreen({
           {t('Text')}
         </Typography>
         <Typography
-          component="h1"
           variant="h6"
           display={{ xs: 'block', sm: 'none' }}
           gutterBottom
@@ -226,7 +224,7 @@ export function TextScreen({
           {t('Text')}
         </Typography>
         <Typography
-          variant="h6"
+          variant="subtitle2"
           display={{ xs: 'none', sm: 'block' }}
           color="text.secondary"
           align="center"

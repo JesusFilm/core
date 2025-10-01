@@ -27,11 +27,22 @@ export function SocialScreen({
         px: { xs: 5, sm: 20 }
       }}
     >
-      <Typography variant="h4" component="h1" gutterBottom>
+      <Typography
+        variant="h4"
+        gutterBottom 
+        display={{ xs: 'none', sm: 'block' }}
+      >
         {t('Almost There!')}
       </Typography>
       <Typography
         variant="h6"
+        gutterBottom 
+        display={{ xs: 'block', sm: 'none' }}
+      >
+        {t('Almost There!')}
+      </Typography>
+      <Typography
+        variant="subtitle2"
         color="text.secondary"
         align="center"
         sx={{

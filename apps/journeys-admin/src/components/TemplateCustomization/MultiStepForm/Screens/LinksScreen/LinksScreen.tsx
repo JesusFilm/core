@@ -165,7 +165,7 @@ export function LinksScreen({
           {t('Links')}
         </Typography>
         <Typography
-          variant="h6"
+          variant="subtitle2"
           display={{ xs: 'none', sm: 'block' }}
           color="text.secondary"
           align="center"
