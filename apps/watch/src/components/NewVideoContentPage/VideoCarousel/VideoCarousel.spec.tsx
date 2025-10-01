@@ -1,7 +1,7 @@
-import { useTheme } from '@mui/material/styles'
 import { fireEvent, render, screen } from '@testing-library/react'
 
 import { videos } from '../../Videos/__generated__/testData'
+import { useVideoCarousel } from '../../../libs/videoCarouselContext'
 
 import { VideoCarousel } from './VideoCarousel'
 
@@ -42,7 +42,13 @@ jest.mock('@mui/material/styles', () => ({
   useTheme: jest.fn()
 }))
 
+jest.mock('../../../libs/videoCarouselContext', () => ({
+  VideoCarouselProvider: ({ children }: { children: React.ReactNode }) => <div data-testid="VideoCarouselProvider">{children}</div>,
+  useVideoCarousel: jest.fn()
+}))
+
 const mockUseTheme = useTheme as jest.MockedFunction<typeof useTheme>
+const mockUseVideoCarousel = useVideoCarousel as jest.MockedFunction<typeof useVideoCarousel>
 
 describe('VideoCarousel', () => {
   beforeEach(() => {
@@ -59,44 +65,99 @@ describe('VideoCarousel', () => {
         }
       }
     } as any)
+    mockUseVideoCarousel.mockReturnValue({
+      activeVideoId: videos[0]?.id ?? null,
+      activeVideo: videos[0] ?? null,
+      currentMuxInsert: null,
+      slides: videos.map(video => ({
+        source: 'video' as const,
+        id: video.id,
+        video
+      })),
+      loading: false,
+      isProgressing: false,
+      setActiveVideo: jest.fn(),
+      handleMuxInsertComplete: jest.fn(),
+      handleSkipActiveVideo: jest.fn(),
+      loadSlides: jest.fn()
+    })
   })
 
   it('renders the carousel container', () => {
-    render(<VideoCarousel videos={videos} />)
+    render(<VideoCarousel />)
     expect(screen.getByTestId('VideoCarousel')).toBeInTheDocument()
   })
 
   it('renders VideoCards for each video', () => {
-    render(<VideoCarousel videos={videos.slice(0, 3)} />)
+    const testVideos = videos.slice(0, 3)
+    mockUseVideoCarousel.mockReturnValueOnce({
+      activeVideoId: testVideos[0]?.id ?? null,
+      slides: testVideos.map(video => ({
+        source: 'video' as const,
+        id: video.id,
+        video
+      })),
+      loading: false,
+      setActiveVideo: jest.fn()
+    })
+    render(<VideoCarousel />)
     expect(screen.getAllByTestId(/^swiper-slide-/)).toHaveLength(3)
   })
 
   it('handles empty videos array', () => {
-    render(<VideoCarousel videos={[]} />)
+    mockUseVideoCarousel.mockReturnValueOnce({
+      activeVideoId: null,
+      slides: [],
+      loading: false,
+      setActiveVideo: jest.fn()
+    })
+    render(<VideoCarousel />)
     expect(screen.getByTestId('VideoCarouselSwiper')).toBeInTheDocument()
   })
 
   it('shows loading skeletons when loading is true', () => {
-    render(<VideoCarousel videos={[]} loading={true} />)
+    mockUseVideoCarousel.mockReturnValueOnce({
+      activeVideoId: null,
+      slides: [],
+      loading: true,
+      setActiveVideo: jest.fn()
+    })
+    render(<VideoCarousel />)
     expect(screen.getAllByTestId(/^swiper-slide-/).length).toBeGreaterThan(0)
   })
 
-  it('calls onVideoSelect when video is selected', () => {
-    const mockOnVideoSelect = jest.fn()
-    render(
-      <VideoCarousel
-        videos={videos.slice(0, 2)}
-        onVideoSelect={mockOnVideoSelect}
-        onSlideChange={jest.fn()}
-      />
-    )
+  it('calls setActiveVideo when video is selected', () => {
+    const mockSetActiveVideo = jest.fn()
+    const testVideos = videos.slice(0, 2)
+    mockUseVideoCarousel.mockReturnValueOnce({
+      activeVideoId: testVideos[0]?.id ?? null,
+      slides: testVideos.map(video => ({
+        source: 'video' as const,
+        id: video.id,
+        video
+      })),
+      loading: false,
+      setActiveVideo: mockSetActiveVideo
+    })
+    render(<VideoCarousel onVideoSelect={mockSetActiveVideo} onSlideChange={jest.fn()} />)
 
     // This test would require more complex mocking of the VideoCard click handler
-    expect(mockOnVideoSelect).not.toHaveBeenCalled()
+    expect(mockSetActiveVideo).not.toHaveBeenCalled()
   })
 
   it('handles keyboard navigation', () => {
-    render(<VideoCarousel videos={videos.slice(0, 3)} />)
+    const testVideos = videos.slice(0, 3)
+    mockUseVideoCarousel.mockReturnValueOnce({
+      activeVideoId: testVideos[0]?.id ?? null,
+      slides: testVideos.map(video => ({
+        source: 'video' as const,
+        id: video.id,
+        video
+      })),
+      loading: false,
+      setActiveVideo: jest.fn()
+    })
+    render(<VideoCarousel />)
 
     const carousel = screen.getByTestId('VideoCarousel')
     fireEvent.keyDown(carousel, { key: 'ArrowRight' })
@@ -109,14 +170,20 @@ describe('VideoCarousel', () => {
   it('auto-scrolls to last slide every 15 seconds in inlinePlayback mode', async () => {
     jest.useFakeTimers()
 
-    // Pass onVideoSelect and onSlideChange to trigger inlinePlayback mode
-    render(
-      <VideoCarousel
-        videos={videos.slice(0, 3)}
-        onVideoSelect={jest.fn()}
-        onSlideChange={jest.fn()}
-      />
-    )
+    const testVideos = videos.slice(0, 3)
+    mockUseVideoCarousel.mockReturnValueOnce({
+      activeVideoId: testVideos[0]?.id ?? null,
+      slides: testVideos.map(video => ({
+        source: 'video' as const,
+        id: video.id,
+        video
+      })),
+      loading: false,
+      setActiveVideo: jest.fn()
+    })
+
+    // Pass onSlideChange to trigger inlinePlayback mode
+    render(<VideoCarousel onSlideChange={jest.fn()} />)
 
     // Fast forward 15 seconds
     jest.advanceTimersByTime(15000)

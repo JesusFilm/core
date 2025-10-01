@@ -1,3 +1,4 @@
+import FastForwardRounded from '@mui/icons-material/FastForwardRounded'
 import PlayArrowRounded from '@mui/icons-material/PlayArrowRounded'
 import SkipNextRounded from '@mui/icons-material/SkipNextRounded'
 import VolumeOff from '@mui/icons-material/VolumeOff'
@@ -26,6 +27,7 @@ interface VideoTitleProps {
   action?: InsertAction
   isMuxInsert?: boolean
   onSkip?: () => void
+  onFastForward?: () => void
 }
 
 export function VideoTitle({
@@ -41,7 +43,8 @@ export function VideoTitle({
   collectionTitle,
   action,
   isMuxInsert = false,
-  onSkip
+  onSkip,
+  onFastForward
 }: VideoTitleProps): ReactElement {
   const { t } = useTranslation('apps-watch')
   const { label, variant: videoVariant } = useVideo()
@@ -154,8 +157,20 @@ export function VideoTitle({
           Watch Now
         </NextLink>
       )}
-      {isPreview && (onMuteToggle != null || onSkip != null) && (
+      {isPreview && (onMuteToggle != null || onSkip != null || onFastForward != null) && (
         <div className="absolute z-0 bottom-7 right-0 flex items-center gap-2 scale-150">
+          {onFastForward != null && (
+            <button
+              onClick={(e) => {
+                e.stopPropagation()
+                onFastForward()
+              }}
+              className="z-50 cursor-pointer text-stone-50/50 p-2 rounded-full hover:text-stone-50 transition-colors duration-200"
+              aria-label={t('Fast forward to 50%')}
+            >
+              <FastForwardRounded fontSize="medium" />
+            </button>
+          )}
           {onSkip != null && (
             <button
               onClick={(e) => {
@@ -163,7 +178,7 @@ export function VideoTitle({
                 onSkip()
               }}
               className="z-50 cursor-pointer text-stone-50/50 p-2 rounded-full hover:text-stone-50 transition-colors duration-200"
-              aria-label={t('Skip video')}
+              aria-label={t('Skip to 90%')}
             >
               <SkipNextRounded fontSize="medium" />
             </button>

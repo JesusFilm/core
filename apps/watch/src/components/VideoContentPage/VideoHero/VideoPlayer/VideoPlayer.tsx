@@ -26,12 +26,27 @@ export function VideoPlayer({
     state: { subtitleLanguageId, subtitleOn }
   } = useWatch()
   const videoRef = useRef<HTMLVideoElement>(null)
+  const playerRef = useRef<Player & { textTracks?: () => TextTrackList }>()
   const [player, setPlayer] = useState<
     Player & { textTracks?: () => TextTrackList }
   >()
+  const [playerReady, setPlayerReady] = useState(false)
+
+  useEffect(() => {
+    // Reset player ready state when player initialization starts
+    setPlayerReady(false)
+  }, [variant, videoRef, title])
 
   useEffect(() => {
     if (videoRef.current != null) {
+      // Dispose of existing player before creating a new one
+      if (playerRef.current != null) {
+        playerRef.current.dispose()
+        playerRef.current = undefined
+        setPlayer(undefined)
+        setPlayerReady(false)
+      }
+
       // Create Mux metadata for video analytics
       const muxMetadata: MuxMetadata = {
         env_key: process.env.NEXT_PUBLIC_MUX_DEFAULT_REPORTING_KEY || '',
@@ -40,27 +55,42 @@ export function VideoPlayer({
         video_id: variant?.id ?? ''
       }
 
-      setPlayer(
-        videojs(videoRef.current, {
-          ...defaultVideoJsOptions,
-          autoplay: true,
-          controls: false,
-          controlBar: false,
-          bigPlayButton: false,
-          userActions: {
-            hotkeys: true,
-            doubleClick: true
-          },
-          plugins: {
-            mux: {
-              debug: false,
-              data: muxMetadata
-            }
+      const newPlayer = videojs(videoRef.current, {
+        ...defaultVideoJsOptions,
+        autoplay: true,
+        controls: false,
+        controlBar: false,
+        bigPlayButton: false,
+        userActions: {
+          hotkeys: true,
+          doubleClick: true
+        },
+        plugins: {
+          mux: {
+            debug: false,
+            data: muxMetadata
           }
-        })
-      )
+        }
+      })
+
+      newPlayer.ready(() => {
+        setPlayerReady(true)
+      })
+
+      playerRef.current = newPlayer
+      setPlayer(newPlayer)
     }
-  }, [variant, videoRef, title])
+
+    // Cleanup function to dispose player when component unmounts or dependencies change
+    return () => {
+      if (playerRef.current != null) {
+        playerRef.current.dispose()
+        playerRef.current = undefined
+        setPlayer(undefined)
+        setPlayerReady(false)
+      }
+    }
+  }, [variant?.id, variant?.hls, last(title)?.value])
 
   useEffect(() => {
     player?.src({
@@ -72,10 +102,10 @@ export function VideoPlayer({
   const { subtitleUpdate } = useSubtitleUpdate()
 
   useEffect(() => {
-    if (player == null) return
+    if (player == null || !playerReady || playerRef.current !== player) return
 
     void subtitleUpdate({ player, subtitleLanguageId, subtitleOn })
-  }, [player, subtitleLanguageId, subtitleOn])
+  }, [player, playerReady, subtitleLanguageId, subtitleOn, subtitleUpdate])
 
   return (
     <>
