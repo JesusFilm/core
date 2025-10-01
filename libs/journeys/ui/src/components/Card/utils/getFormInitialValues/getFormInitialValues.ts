@@ -23,7 +23,5 @@ export function getFormInitialValues(children: TreeBlock[]): FormikValues {
     initialValues[block.id] = []
   })
 
-  console.log('initialValues', initialValues)
-
   return initialValues
 }
