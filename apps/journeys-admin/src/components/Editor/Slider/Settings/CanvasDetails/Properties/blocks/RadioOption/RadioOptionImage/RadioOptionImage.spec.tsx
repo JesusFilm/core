@@ -294,7 +294,9 @@ describe('RadioOptionImage', () => {
           </JourneyProvider>
         </MockedProvider>
       )
-      fireEvent.click(screen.getByRole('button', { name: 'Select Image' }))
+      fireEvent.click(
+        screen.getByRole('button', { name: 'Select image source' })
+      )
       await waitFor(() =>
         fireEvent.click(screen.getByRole('tab', { name: 'Custom' }))
       )
@@ -352,7 +354,9 @@ describe('RadioOptionImage', () => {
           </JourneyProvider>
         </MockedProvider>
       )
-      fireEvent.click(screen.getByRole('button', { name: 'Select Image' }))
+      fireEvent.click(
+        screen.getByRole('button', { name: 'Select image source' })
+      )
       await waitFor(() =>
         fireEvent.click(screen.getByRole('tab', { name: 'Custom' }))
       )
@@ -416,7 +420,9 @@ describe('RadioOptionImage', () => {
           </JourneyProvider>
         </MockedProvider>
       )
-      fireEvent.click(screen.getByRole('button', { name: 'Select Image' }))
+      fireEvent.click(
+        screen.getByRole('button', { name: 'Select image source' })
+      )
       await waitFor(() =>
         fireEvent.click(screen.getByRole('tab', { name: 'Custom' }))
       )
@@ -532,9 +538,7 @@ describe('RadioOptionImage', () => {
         </MockedProvider>
       )
       fireEvent.click(
-        screen.getByRole('button', {
-          name: 'prior-alt Selected Image 1920 x 1080 pixels'
-        })
+        screen.getByRole('button', { name: 'Select image source' })
       )
       await waitFor(() =>
         fireEvent.click(screen.getByRole('tab', { name: 'Custom' }))
@@ -633,9 +637,7 @@ describe('RadioOptionImage', () => {
         </MockedProvider>
       )
       fireEvent.click(
-        screen.getByRole('button', {
-          name: 'prior-alt Selected Image 1920 x 1080 pixels'
-        })
+        screen.getByRole('button', { name: 'Select image source' })
       )
       await waitFor(() =>
         fireEvent.click(screen.getByRole('tab', { name: 'Custom' }))
@@ -743,9 +745,7 @@ describe('RadioOptionImage', () => {
         </MockedProvider>
       )
       fireEvent.click(
-        screen.getByRole('button', {
-          name: 'prior-alt Selected Image 1920 x 1080 pixels'
-        })
+        screen.getByRole('button', { name: 'Select image source' })
       )
       await waitFor(() =>
         fireEvent.click(screen.getByRole('tab', { name: 'Custom' }))
@@ -794,9 +794,7 @@ describe('RadioOptionImage', () => {
         </MockedProvider>
       )
       fireEvent.click(
-        screen.getByRole('button', {
-          name: 'prior-alt Selected Image 1920 x 1080 pixels'
-        })
+        screen.getByRole('button', { name: 'Select image source' })
       )
       await waitFor(() =>
         expect(screen.getByTestId('imageBlockHeaderDelete')).toBeInTheDocument()
@@ -844,9 +842,7 @@ describe('RadioOptionImage', () => {
         </MockedProvider>
       )
       fireEvent.click(
-        screen.getByRole('button', {
-          name: 'prior-alt Selected Image 1920 x 1080 pixels'
-        })
+        screen.getByRole('button', { name: 'Select image source' })
       )
       await waitFor(() =>
         expect(screen.getByTestId('imageBlockHeaderDelete')).toBeInTheDocument()
@@ -902,9 +898,7 @@ describe('RadioOptionImage', () => {
         </MockedProvider>
       )
       fireEvent.click(
-        screen.getByRole('button', {
-          name: 'prior-alt Selected Image 1920 x 1080 pixels'
-        })
+        screen.getByRole('button', { name: 'Select image source' })
       )
       await waitFor(() =>
         expect(screen.getByTestId('imageBlockHeaderDelete')).toBeInTheDocument()

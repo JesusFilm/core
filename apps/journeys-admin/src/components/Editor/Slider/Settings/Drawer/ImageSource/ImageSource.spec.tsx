@@ -61,7 +61,9 @@ describe('ImageSource', () => {
           </SnackbarProvider>
         </MockedProvider>
       )
-      fireEvent.click(screen.getByRole('button', { name: 'Select Image' }))
+      fireEvent.click(
+        screen.getByRole('button', { name: 'Select image source' })
+      )
       await waitFor(() => {
         expect(push).toHaveBeenCalledWith(
           {
@@ -97,7 +99,9 @@ describe('ImageSource', () => {
           </SnackbarProvider>
         </MockedProvider>
       )
-      fireEvent.click(screen.getByRole('button', { name: 'Select Image' }))
+      fireEvent.click(
+        screen.getByRole('button', { name: 'Select image source' })
+      )
       await waitFor(() =>
         fireEvent.click(screen.getByRole('tab', { name: 'Custom' }))
       )
@@ -123,7 +127,7 @@ describe('ImageSource', () => {
         </SnackbarProvider>
       </MockedProvider>
     )
-    fireEvent.click(screen.getByRole('button', { name: 'Select Image' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Select image source' }))
     await waitFor(() =>
       fireEvent.click(screen.getByRole('tab', { name: 'Custom' }))
     )
@@ -150,7 +154,7 @@ describe('ImageSource', () => {
         </SnackbarProvider>
       </MockedProvider>
     )
-    fireEvent.click(screen.getByRole('button', { name: 'Select Image' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Select image source' }))
     await waitFor(() =>
       fireEvent.click(screen.getByRole('tab', { name: 'Custom' }))
     )
