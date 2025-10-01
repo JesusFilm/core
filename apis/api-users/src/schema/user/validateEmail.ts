@@ -16,18 +16,39 @@ export async function validateEmail(
   })
 
   // Special handling for @example.com emails with EXAMPLE_EMAIL_TOKEN
+  // This bypass is only enabled in non-production environments when explicitly enabled
+  // Environment gate: requires NODE_ENV !== 'production' AND ENABLE_EXAMPLE_EMAIL_BYPASS === 'true'
   if (
-    user?.email?.endsWith('@example.com') &&
-    token === process.env.EXAMPLE_EMAIL_TOKEN
+    process.env.NODE_ENV !== 'production' &&
+    process.env.ENABLE_EXAMPLE_EMAIL_BYPASS === 'true' &&
+    user?.email &&
+    token
   ) {
-    await prisma.user.update({
-      where: { userId },
-      data: { emailVerified: true }
-    })
-    await getAuth(firebaseClient).updateUser(userId, {
-      emailVerified: true
-    })
-    return true
+    // Normalize inputs: trim and lowercase for consistent comparison
+    const normalizedEmail = user.email.trim().toLowerCase()
+    const normalizedToken = token.trim().toLowerCase()
+    const expectedToken = process.env.EXAMPLE_EMAIL_TOKEN?.trim().toLowerCase()
+    
+    if (normalizedEmail.endsWith('@example.com') && normalizedToken === expectedToken) {
+      try {
+        // Update Firebase first - this is the source of truth for authentication
+        await getAuth(firebaseClient).updateUser(userId, {
+          emailVerified: true
+        })
+        
+        // Only update Prisma if Firebase update succeeds
+        await prisma.user.update({
+          where: { userId },
+          data: { emailVerified: true }
+        })
+        
+        return true
+      } catch (error) {
+        // If Firebase update fails, don't update Prisma
+        console.error('Failed to update Firebase user email verification:', error)
+        return false
+      }
+    }
   }
 
   // Regular job-based validation for other users
