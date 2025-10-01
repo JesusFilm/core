@@ -86,30 +86,6 @@ export function VideoCarousel({
           breakpoints={swiperBreakpoints}
           onClick={() => false}
         >
-          <SwiperSlide>
-            <VideoCard variant={variant} />
-          </SwiperSlide>
-          <SwiperSlide>
-            <VideoCard variant={variant} />
-          </SwiperSlide>
-          <SwiperSlide>
-            <VideoCard variant={variant} />
-          </SwiperSlide>
-          <SwiperSlide>
-            <VideoCard variant={variant} />
-          </SwiperSlide>
-          <SwiperSlide>
-            <VideoCard variant={variant} />
-          </SwiperSlide>
-          <SwiperSlide>
-            <VideoCard variant={variant} />
-          </SwiperSlide>
-          <SwiperSlide>
-            <VideoCard variant={variant} />
-          </SwiperSlide>
-          <SwiperSlide>
-            <VideoCard variant={variant} />
-          </SwiperSlide>
         </Swiper>
       )}
       {loading !== true && (

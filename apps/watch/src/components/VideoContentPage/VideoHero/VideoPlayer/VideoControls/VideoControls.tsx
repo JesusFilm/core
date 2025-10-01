@@ -62,7 +62,6 @@ interface VideoControlProps {
   action?: InsertAction
   isMuxInsert?: boolean
   muxOverlay?: InsertOverlay
-  onSkip?: () => void
 }
 
 function evtToDataLayer(
@@ -95,8 +94,7 @@ export function VideoControls({
   customDuration,
   action,
   isMuxInsert = false,
-  muxOverlay,
-  onSkip
+  muxOverlay
 }: VideoControlProps): ReactElement {
   const [initialLoadComplete, setInitialLoadComplete] = useState(false)
   const {
@@ -531,6 +529,24 @@ export function VideoControls({
     }
   }
 
+  function handleFastForward(): void {
+    const fiftyPercent = Math.floor(durationSeconds * 0.7)
+    dispatchPlayer({
+      type: 'SetProgress',
+      progress: fiftyPercent
+    })
+    player?.currentTime(fiftyPercent)
+  }
+
+  function handleSkip(): void {
+    const ninetyPercent = Math.floor(durationSeconds * 0.9)
+    dispatchPlayer({
+      type: 'SetProgress',
+      progress: ninetyPercent
+    })
+    player?.currentTime(ninetyPercent)
+  }
+
   function handleMute(): void {
     const newMuteState = !mute
     player?.muted(newMuteState)
@@ -614,7 +630,8 @@ export function VideoControls({
             collectionTitle={collectionTitle}
             action={action}
             isMuxInsert={isMuxInsert}
-            onSkip={onSkip}
+            onSkip={handleSkip}
+            onFastForward={handleFastForward}
             onMuteToggle={() => {
               handleMute()
             }}
@@ -667,7 +684,8 @@ export function VideoControls({
               collectionTitle={collectionTitle}
               action={action}
               isMuxInsert={isMuxInsert}
-              onSkip={onSkip}
+              onSkip={handleSkip}
+              onFastForward={handleFastForward}
               onMuteToggle={() => {
                 handleMute()
               }}

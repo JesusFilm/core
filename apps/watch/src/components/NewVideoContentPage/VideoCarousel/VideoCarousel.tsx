@@ -4,7 +4,6 @@ import { A11y, FreeMode, Mousewheel, Navigation, Virtual } from 'swiper/modules'
 import { Swiper, SwiperSlide } from 'swiper/react'
 import { SwiperOptions , Swiper as SwiperType } from 'swiper/types'
 
-import { VideoChildFields } from '../../../../__generated__/VideoChildFields'
 import {
   type VideoCarouselSlide,
   isMuxSlide,
@@ -12,17 +11,15 @@ import {
   transformMuxSlide,
   transformVideoChild
 } from '../../../types/inserts'
+import { useVideoCarousel } from '../../../libs/videoCarouselContext'
 import { Skeleton } from '../../Skeleton'
 import { NavButton } from '../../VideoCarousel/NavButton/NavButton'
 
 import { VideoCard } from './VideoCard'
 
 interface VideoCarouselProps {
-  videos?: VideoChildFields[]
-  slides?: VideoCarouselSlide[]
   containerSlug?: string
   activeVideoId?: string
-  loading?: boolean
   onVideoSelect?: (videoId: string) => void
   onSlideChange?: (activeIndex: number) => void
 }
@@ -30,28 +27,24 @@ interface VideoCarouselProps {
 const SKELETON_COUNT = 11
 
 export function VideoCarousel({
-  videos,
-  slides,
   containerSlug,
   activeVideoId,
-  loading = false,
   onVideoSelect,
   onSlideChange
 }: VideoCarouselProps): ReactElement {
+  // Always use context since VideoCarouselProvider is now required
+  const { activeVideoId: contextActiveVideoId, slides, loading, setActiveVideo } = useVideoCarousel()
+
+  // Use context values, with prop fallbacks for compatibility
+  const finalActiveVideoId = contextActiveVideoId ?? activeVideoId
+  const finalLoading = loading
+
   const mode =
     onVideoSelect && onSlideChange ? 'inlinePlayback' : 'externalPlayback'
   const { breakpoints } = useTheme()
 
-  const computedSlides = useMemo<VideoCarouselSlide[]>(() => {
-    if (slides != null) return slides
-    return (
-      videos?.map((video) => ({
-        source: 'video' as const,
-        id: video.id,
-        video
-      })) ?? []
-    )
-  }, [slides, videos])
+  // Use slides directly from context
+  const computedSlides = slides
   const nextRef = useRef<HTMLDivElement>(null)
   const prevRef = useRef<HTMLDivElement>(null)
   const swiperRef = useRef<SwiperType | null>(null)
@@ -106,7 +99,7 @@ export function VideoCarousel({
     if (index >= 0 && swiperRef.current) {
       swiperRef.current.slideTo(index)
     }
-    onVideoSelect?.(videoId)
+    setActiveVideo?.(videoId)
   }
 
   // Always be at the end when videos change (only in inline playback mode)
@@ -190,12 +183,12 @@ export function VideoCarousel({
         }}
         breakpoints={swiperBreakpoints}
       >
-        {loading
+        {finalLoading
           ? skeletons
           : computedSlides.map((slide, index) => {
               // Find the current video index
               const currentVideoIndex = computedSlides.findIndex((s) =>
-                isVideoSlide(s) ? s.video.id === activeVideoId : false
+                isVideoSlide(s) ? s.video.id === finalActiveVideoId : false
               )
               // Make slides after the current video transparent (only in inline playback mode)
               const isAfterCurrentVideo =
@@ -217,7 +210,7 @@ export function VideoCarousel({
                   <VideoCard
                     containerSlug={containerSlug}
                     data={isMuxSlide(slide) ? transformMuxSlide(slide) : transformVideoChild(slide.video as VideoChildFields)}
-                    active={activeVideoId === slide.id}
+                    active={finalActiveVideoId === slide.id}
                     transparent={isAfterCurrentVideo}
                     onVideoSelect={handleVideoSelect}
                   />

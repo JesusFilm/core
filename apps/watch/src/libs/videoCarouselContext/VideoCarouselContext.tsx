@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import React, { createContext, type ReactNode, useCallback, useContext, useEffect, useMemo, useReducer, useRef, useState } from 'react'
 
 import { VideoLabel } from '../../../__generated__/globalTypes'
 import {
@@ -22,22 +22,128 @@ import {
 } from '../../types/inserts'
 import {
   type CarouselVideo,
-  useCarouselVideos
-} from '../VideoHero/libs/useCarouselVideos'
+  useCarouselVideos,
+  mergeMuxInserts
+} from '../../components/VideoHero/libs/useCarouselVideos'
+import { useVideoChildren } from '../../libs/useVideoChildren'
 
-interface UseWatchHeroCarouselOptions {
-  locale?: string
-}
-
-interface UseWatchHeroCarouselResult {
-  loading: boolean
-  slides: VideoCarouselSlide[]
-  activeVideoId?: string
+// State interface
+export interface VideoCarouselState {
+  activeVideoId: string | null
   activeVideo: VideoContentFields | null
   currentMuxInsert: CarouselMuxSlide | null
-  handleVideoSelect: (slideId: string) => void
+  slides: VideoCarouselSlide[]
+  loading: boolean
+  isProgressing: boolean
+}
+
+// Action types
+export type VideoCarouselAction =
+  | { type: 'SET_ACTIVE_VIDEO'; payload: { videoId: string; video: VideoContentFields | null } }
+  | { type: 'SET_MUX_INSERT'; payload: CarouselMuxSlide | null }
+  | { type: 'SET_SLIDES'; payload: VideoCarouselSlide[] }
+  | { type: 'SET_LOADING'; payload: boolean }
+  | { type: 'SET_IS_PROGRESSING'; payload: boolean }
+  | { type: 'HANDLE_MUX_INSERT_COMPLETE' }
+  | { type: 'HANDLE_SKIP_ACTIVE_VIDEO' }
+  | { type: 'LOAD_SLIDES'; payload: { slides: VideoCarouselSlide[]; loading: boolean } }
+
+// Actions interface for consumers
+export interface VideoCarouselActions {
+  setActiveVideo: (videoId: string) => void
   handleMuxInsertComplete: () => void
   handleSkipActiveVideo: () => void
+  loadSlides: (locale?: string) => void
+}
+
+// Context value interface
+export interface VideoCarouselContextValue extends VideoCarouselState, VideoCarouselActions {}
+
+// Initial state
+const initialState: VideoCarouselState = {
+  activeVideoId: null,
+  activeVideo: null,
+  currentMuxInsert: null,
+  slides: [],
+  loading: true,
+  isProgressing: false
+}
+
+// Reducer
+function videoCarouselReducer(
+  state: VideoCarouselState,
+  action: VideoCarouselAction
+): VideoCarouselState {
+  switch (action.type) {
+    case 'SET_ACTIVE_VIDEO':
+      return {
+        ...state,
+        activeVideoId: action.payload.videoId,
+        activeVideo: action.payload.video,
+        isProgressing: false
+      }
+
+    case 'SET_MUX_INSERT':
+      return {
+        ...state,
+        currentMuxInsert: action.payload
+      }
+
+    case 'SET_SLIDES':
+      return {
+        ...state,
+        slides: action.payload
+      }
+
+    case 'SET_LOADING':
+      return {
+        ...state,
+        loading: action.payload
+      }
+
+    case 'SET_IS_PROGRESSING':
+      return {
+        ...state,
+        isProgressing: action.payload
+      }
+
+    case 'HANDLE_MUX_INSERT_COMPLETE':
+      // Logic to handle mux insert completion will be implemented
+      // when we extract the progression logic from the hook
+      return state
+
+    case 'HANDLE_SKIP_ACTIVE_VIDEO':
+      // Logic to skip active video will be implemented
+      // when we extract the progression logic from the hook
+      return state
+
+    case 'LOAD_SLIDES':
+      return {
+        ...state,
+        slides: action.payload.slides,
+        loading: action.payload.loading
+      }
+
+    default:
+      return state
+  }
+}
+
+// Context
+const VideoCarouselContext = createContext<VideoCarouselContextValue | undefined>(undefined)
+
+// Provider props
+interface VideoCarouselProviderProps {
+  children: ReactNode
+  locale?: string
+  // Optional props for inner pages - collection-based data fetching
+  containerSlug?: string              // slug for fetching video collection
+  languageId?: string                 // language for video collection
+  // Legacy props for backward compatibility (home page)
+  videos?: VideoCarouselSlide[]        // pre-loaded videos instead of useCarouselVideos
+  autoProgress?: boolean              // default true, can be false for inner pages
+  enableMuxInserts?: boolean          // default true, can be false
+  initialActiveVideoId?: string       // initial active video for inner pages
 }
 
 const DEFAULT_LANGUAGE: VideoContentFields_variant_language = {
@@ -260,22 +366,50 @@ function createVideoContentFromMux(
   }
 }
 
-export function useWatchHeroCarousel({
-  locale
-}: UseWatchHeroCarouselOptions = {}): UseWatchHeroCarouselResult {
+// Provider component
+export function VideoCarouselProvider({
+  children,
+  locale,
+  containerSlug,
+  languageId,
+  videos: providedVideos,
+  autoProgress = true,
+  enableMuxInserts = true,
+  initialActiveVideoId
+}: VideoCarouselProviderProps): ReactNode {
+  // Determine data source: provided videos, collection-based, or carousel hook
+  const carouselData = providedVideos ?
+    { slides: providedVideos, loading: false, moveToNext: () => {}, jumpToVideo: () => false } :
+    containerSlug && languageId ?
+      (() => {
+        // Collection-based data fetching
+        const { children, loading } = useVideoChildren(containerSlug, languageId)
+        const slides = useMemo<VideoCarouselSlide[]>(() => {
+          if (loading || children.length === 0) return []
+          return mergeMuxInserts(children)
+        }, [children, loading])
+        return {
+          slides,
+          loading,
+          moveToNext: () => {},
+          jumpToVideo: () => false
+        }
+      })() :
+      useCarouselVideos(locale)
+
   const {
     slides: rawSlides,
     loading,
     moveToNext,
     jumpToVideo
-  } = useCarouselVideos(locale)
+  } = carouselData
   const { state: playerState } = usePlayer()
 
   const [slides, setSlides] = useState<VideoCarouselSlide[]>(rawSlides)
-  const [activeSlideId, setActiveSlideId] = useState<string | null>(null)
+  const [activeSlideId, setActiveSlideId] = useState<string | null>(initialActiveVideoId ?? null)
   const [lastProgress, setLastProgress] = useState(0)
   const [isProgressing, setIsProgressing] = useState(false)
-  const autoProgressEnabled = true
+  const autoProgressEnabled = autoProgress
   const resetRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   useEffect(() => {
@@ -338,19 +472,31 @@ export function useWatchHeroCarousel({
     }
 
     if (activeSlideId == null) {
-      setActiveSlideId(slides[0]?.id ?? null)
+      // Use initialActiveVideoId if provided and exists in slides
+      if (initialActiveVideoId && slides.some((slide) => slide.id === initialActiveVideoId)) {
+        setActiveSlideId(initialActiveVideoId)
+      } else {
+        setActiveSlideId(slides[0]?.id ?? null)
+      }
       return
     }
 
     if (!slides.some((slide) => slide.id === activeSlideId)) {
       setActiveSlideId(slides[0]?.id ?? null)
     }
-  }, [slides, activeSlideId])
+  }, [slides, activeSlideId, initialActiveVideoId])
 
   const activeSlide = useMemo(() => {
     if (activeSlideId == null) return slides[0] ?? null
     return slides.find((slide) => slide.id === activeSlideId) ?? null
   }, [activeSlideId, slides])
+
+  const currentMuxInsert = useMemo(() => {
+    if (enableMuxInserts && activeSlide && isMuxSlide(activeSlide)) {
+      return activeSlide
+    }
+    return null
+  }, [enableMuxInserts, activeSlide])
 
   const activeVideoId = activeSlide?.id
 
@@ -373,7 +519,7 @@ export function useWatchHeroCarousel({
     }
   }, [activeVideoId, scheduleReset])
 
-  const handleVideoSelect = useCallback(
+  const setActiveVideo = useCallback(
     (slideId: string) => {
       const nextSlide = slides.find((slide) => slide.id === slideId)
       if (!nextSlide) return
@@ -440,7 +586,7 @@ export function useWatchHeroCarousel({
   )
 
   const handleMuxInsertComplete = useCallback(() => {
-    if (!autoProgressEnabled || isProgressing || activeSlideIndex === -1) {
+    if (!enableMuxInserts || !autoProgressEnabled || isProgressing || activeSlideIndex === -1) {
       return
     }
 
@@ -460,6 +606,7 @@ export function useWatchHeroCarousel({
 
     scheduleReset(500)
   }, [
+    enableMuxInserts,
     activeSlideIndex,
     autoProgressEnabled,
     isProgressing,
@@ -494,19 +641,20 @@ export function useWatchHeroCarousel({
   }, [activeSlideIndex, slides.length, moveToSlide, moveToNext])
 
   useEffect(() => {
-    if (playerState.progress >= 95 && lastProgress < 95 && !isProgressing) {
+    // Skip auto-advance for Mux inserts, which use timer-based completion
+    if (currentMuxInsert != null) return
+
+    // Calculate seconds remaining based on current progress and duration
+    const currentTimeSeconds = (playerState.progress / 100) * playerState.durationSeconds
+    const secondsRemaining = playerState.durationSeconds - currentTimeSeconds
+
+    // Advance when 10 seconds or less remaining (consistent with HeroVideo fade threshold)
+    if (secondsRemaining <= 5 && !isProgressing) {
       advanceOnProgress()
     }
 
     setLastProgress(playerState.progress)
-  }, [playerState.progress, lastProgress, advanceOnProgress, isProgressing])
-
-  const currentMuxInsert = useMemo(() => {
-    if (activeSlide && isMuxSlide(activeSlide)) {
-      return activeSlide
-    }
-    return null
-  }, [activeSlide])
+  }, [playerState.progress, playerState.durationSeconds, advanceOnProgress, isProgressing, currentMuxInsert])
 
   const activeVideo: VideoContentFields | null = useMemo(() => {
     if (!activeSlide) return null
@@ -519,14 +667,35 @@ export function useWatchHeroCarousel({
     return null
   }, [activeSlide])
 
-  return {
-    loading,
-    slides,
-    activeVideoId,
+  const state: VideoCarouselState = {
+    activeVideoId: activeVideoId ?? null,
     activeVideo,
     currentMuxInsert,
-    handleVideoSelect,
-    handleMuxInsertComplete,
-    handleSkipActiveVideo
+    slides,
+    loading,
+    isProgressing
   }
+
+  const value: VideoCarouselContextValue = {
+    ...state,
+    setActiveVideo,
+    handleMuxInsertComplete,
+    handleSkipActiveVideo,
+    loadSlides: () => {} // Not used anymore, kept for interface compatibility
+  }
+
+  return (
+    <VideoCarouselContext.Provider value={value}>
+      {children}
+    </VideoCarouselContext.Provider>
+  )
+}
+
+// Hook to use the context
+export function useVideoCarousel(): VideoCarouselContextValue {
+  const context = useContext(VideoCarouselContext)
+  if (context === undefined) {
+    throw new Error('useVideoCarousel must be used within a VideoCarouselProvider')
+  }
+  return context
 }

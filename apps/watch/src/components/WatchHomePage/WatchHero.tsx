@@ -1,38 +1,17 @@
 import { type ReactElement, type ReactNode } from 'react'
 
-import { VideoContentFields } from '../../../__generated__/VideoContentFields'
 import { VideoProvider } from '../../libs/videoContext'
-import {
-  type CarouselMuxSlide,
-  type VideoCarouselSlide
-} from '../../types/inserts'
-import { ContentPageBlurFilter } from '../NewVideoContentPage/ContentPageBlurFilter'
-import { VideoCarousel } from '../NewVideoContentPage/VideoCarousel/VideoCarousel'
+import { useVideoCarousel } from '../../libs/videoCarouselContext'
 import { VideoContentHero } from '../NewVideoContentPage/VideoContentHero/VideoContentHero'
+import { VideoCarouselSection } from '../FeaturedVideo/VideoCarouselSection'
 
 interface WatchHeroProps {
-  slides: VideoCarouselSlide[]
-  activeVideoId?: string
-  activeVideo: VideoContentFields | null
-  currentMuxInsert: CarouselMuxSlide | null
-  loading: boolean
-  onSelectSlide: (slideId: string) => void
-  onMuxInsertComplete: () => void
-  onSkipActiveVideo?: () => void
   children?: ReactNode
 }
 
-export function WatchHero({
-  slides,
-  activeVideoId,
-  activeVideo,
-  currentMuxInsert,
-  loading,
-  onSelectSlide,
-  onMuxInsertComplete,
-  onSkipActiveVideo,
-  children
-}: WatchHeroProps): ReactElement {
+export function WatchHero({ children }: WatchHeroProps): ReactElement {
+  const { activeVideo, currentMuxInsert, handleMuxInsertComplete, handleSkipActiveVideo } = useVideoCarousel()
+
   return (
     <>
       {activeVideo != null && (
@@ -40,22 +19,14 @@ export function WatchHero({
           <VideoContentHero
             isPreview
             currentMuxInsert={currentMuxInsert}
-            onMuxInsertComplete={onMuxInsertComplete}
-            onSkipActiveVideo={onSkipActiveVideo}
+            onMuxInsertComplete={handleMuxInsertComplete}
+            onSkipActiveVideo={handleSkipActiveVideo}
           />
         </VideoProvider>
       )}
-      <ContentPageBlurFilter>
-        <div className="pt-4">
-          <VideoCarousel
-            slides={slides}
-            activeVideoId={activeVideoId}
-            loading={loading}
-            onVideoSelect={onSelectSlide}
-          />
-        </div>
+      <VideoCarouselSection>
         {children}
-      </ContentPageBlurFilter>
+      </VideoCarouselSection>
     </>
   )
 }

@@ -1,6 +1,6 @@
 import clsx from 'clsx'
 import last from 'lodash/last'
-import { ReactElement, useCallback, useEffect, useRef, useState } from 'react'
+import { ReactElement, useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react'
 import videojs from 'video.js'
 import Player from 'video.js/dist/types/player'
 import 'video.js/dist/video-js.css'
@@ -11,10 +11,10 @@ import { MuxMetadata } from '@core/shared/ui/muxMetadataType'
 import 'videojs-mux'
 
 import { usePlayer } from '../../../../libs/playerContext/PlayerContext'
+import { useVideoCarousel } from '../../../../libs/videoCarouselContext'
 import { useVideo } from '../../../../libs/videoContext'
 import { useWatch } from '../../../../libs/watchContext'
 import { useSubtitleUpdate } from '../../../../libs/watchContext/useSubtitleUpdate'
-import type { CarouselMuxSlide } from '../../../../types/inserts'
 import { MuxInsertLogoOverlay, VideoControls } from '../../../VideoContentPage/VideoHero/VideoPlayer/VideoControls'
 
 import { HeroSubtitleOverlay } from './HeroSubtitleOverlay'
@@ -23,18 +23,12 @@ interface HeroVideoProps {
   isPreview?: boolean
   collapsed?: boolean
   onMuteToggle?: (isMuted: boolean) => void
-  currentMuxInsert?: CarouselMuxSlide | null
-  onMuxInsertComplete?: () => void
-  onSkip?: () => void
 }
 
 export function HeroVideo({
   isPreview = false,
   collapsed = true,
-  onMuteToggle,
-  currentMuxInsert,
-  onMuxInsertComplete,
-  onSkip
+  onMuteToggle
 }: HeroVideoProps): ReactElement {
   const { variant, ...video } = useVideo()
   const {
@@ -44,6 +38,7 @@ export function HeroVideo({
   const {
     state: { subtitleLanguageId, subtitleOn }
   } = useWatch()
+  const { currentMuxInsert, handleMuxInsertComplete, handleSkipActiveVideo } = useVideoCarousel()
   const [playerReady, setPlayerReady] = useState(false)
 
   // Use Mux insert title if available, otherwise use regular video title
@@ -71,7 +66,27 @@ export function HeroVideo({
 
   useEffect(() => {
     window.addEventListener('scroll', pauseVideoOnScrollAway, { passive: true })
-    return () => window.removeEventListener('scroll', pauseVideoOnScrollAway)
+
+    // Temporary: Add keyboard shortcut to seek near end for testing
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Use Cmd/Ctrl + Alt + Shift + Z (very specific combination to avoid conflicts)
+      if ((e.metaKey || e.ctrlKey) && e.altKey && e.shiftKey && e.key === 'Z' && playerRef.current) {
+        e.preventDefault() // Prevent any default behavior
+        const duration = playerRef.current.duration()
+        if (duration && !isNaN(duration)) {
+          const seekTime = Math.max(duration - 2, 0) // Seek to 2 seconds before end
+          console.log('SEEKING TO NEAR END: seeking to', seekTime, 'out of', duration)
+          playerRef.current.currentTime(seekTime)
+        }
+      }
+    }
+
+    window.addEventListener('keydown', handleKeyDown)
+
+    return () => {
+      window.removeEventListener('scroll', pauseVideoOnScrollAway)
+      window.removeEventListener('keydown', handleKeyDown)
+    }
   }, [pauseVideoOnScrollAway])
 
   const resetFade = useCallback(() => {
@@ -114,7 +129,7 @@ export function HeroVideo({
     }
 
     const startTime = performance.now()
-    const duration = 800
+    const duration = 2000
     const startVolume = muted ? 0 : player.volume()
 
     const step = (timestamp: number): void => {
@@ -145,7 +160,7 @@ export function HeroVideo({
     fadeAnimationFrameRef.current = requestAnimationFrame(step)
   }, [isFadingOut])
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     // Determine the video source and ID based on current content
     const videoSource = currentMuxInsert ? currentMuxInsert.urls.hls : variant?.hls
     const videoId = currentMuxInsert ? currentMuxInsert.id : variant?.id
@@ -155,8 +170,17 @@ export function HeroVideo({
     // Dispose of existing player before creating new one
     if (playerRef.current) {
       resetFade()
-      playerRef.current.dispose()
-      playerRef.current = null
+      // Use setTimeout to defer disposal to next tick, avoiding React's current cleanup cycle
+      setTimeout(() => {
+        try {
+          if (playerRef.current) {
+            playerRef.current.dispose()
+            playerRef.current = null
+          }
+        } catch (error) {
+          console.warn('Video.js dispose warning during cleanup:', error)
+        }
+      }, 0)
       setPlayerReady(false)
     }
 
@@ -168,43 +192,48 @@ export function HeroVideo({
       video_id: videoId ?? ''
     }
 
-    // Initialize player
-    const player = videojs(videoRef.current, {
-      ...defaultVideoJsOptions,
-      autoplay: true,
-      controls: false,
-      loop: !isPreview && !currentMuxInsert, // Don't loop Mux inserts
-      muted: false, // Start unmuted, mute state will be set by useEffect
-      fluid: false,
-      fill: true,
-      responsive: false,
-      aspectRatio: undefined,
-      plugins: {
-        mux: {
-          debug: false,
-          data: muxMetadata
-        }
+    // Initialize player with deferred setup to avoid React conflicts
+    setTimeout(() => {
+      if (!videoRef.current || playerRef.current) return // Guard against race conditions
+
+      try {
+        const player = videojs(videoRef.current, {
+          ...defaultVideoJsOptions,
+          autoplay: true,
+          controls: false,
+          loop: !isPreview && !currentMuxInsert && false, // Don't loop Mux inserts - temporarily disabled for testing
+          muted: false, // Start unmuted, mute state will be set by useEffect
+          fluid: false,
+          fill: true,
+          responsive: false,
+          aspectRatio: undefined,
+          plugins: {
+            mux: {
+              debug: false,
+              data: muxMetadata
+            }
+          }
+        })
+
+        playerRef.current = player
+
+        player.src({
+          src: videoSource,
+          type: 'application/x-mpegURL'
+        })
+
+        player.ready(() => {
+          console.log('PLAYER READY - loop setting:', player.loop(), 'duration:', player.duration(), 'currentTime:', player.currentTime())
+          setPlayerReady(true)
+        })
+      } catch (error) {
+        console.warn('Video.js initialization error:', error)
       }
-    })
-
-    playerRef.current = player
-
-    player.src({
-      src: videoSource,
-      type: 'application/x-mpegURL'
-    })
-
-    player.ready(() => {
-      setPlayerReady(true)
-    })
+    }, 0)
 
     return () => {
-      if (playerRef.current) {
-        resetFade()
-        playerRef.current.dispose()
-        playerRef.current = null
-      }
       setPlayerReady(false)
+      // Don't dispose here - let the setTimeout handle it to avoid React conflicts
     }
   }, [
     currentMuxInsert?.id,
@@ -230,13 +259,13 @@ export function HeroVideo({
     }
 
     const timer = setTimeout(() => {
-      onMuxInsertComplete?.()
+      handleMuxInsertComplete()
     }, currentMuxInsert.duration * 1000) // Convert seconds to milliseconds
 
     return () => {
       clearTimeout(timer)
     }
-  }, [currentMuxInsert?.duration, currentMuxInsert?.id, playerReady, onMuxInsertComplete])
+  }, [currentMuxInsert?.duration, currentMuxInsert?.id, playerReady, handleMuxInsertComplete])
 
   const { subtitleUpdate } = useSubtitleUpdate()
 
@@ -256,7 +285,7 @@ export function HeroVideo({
 
   useEffect(() => {
     const player = playerRef.current
-    if (player == null) return
+    if (player == null || !playerReady) return
 
     void subtitleUpdate({
       player,
@@ -265,11 +294,11 @@ export function HeroVideo({
     })
   }, [
     playerRef,
+    playerReady,
     effectiveSubtitleLanguageId,
     subtitleOn,
     variant,
-    mute,
-    subtitleUpdate
+    mute
   ])
 
   useEffect(() => {
@@ -286,17 +315,14 @@ export function HeroVideo({
       const hasRemainingTime =
         typeof playerWithRemaining.remainingTime === 'function'
 
-      const remaining = hasRemainingTime
-        ? playerWithRemaining.remainingTime?.()
-        : Math.max(
-            (typeof player.duration === 'function' ? player.duration() : 0) -
-              (typeof player.currentTime === 'function'
-                ? player.currentTime()
-                : 0),
-            0
-          )
+      const duration = typeof player.duration === 'function' ? player.duration() : 0
+      const currentTime = typeof player.currentTime === 'function' ? player.currentTime() : 0
+      const remainingTimeMethod = hasRemainingTime ? playerWithRemaining.remainingTime?.() : null
+      const manualRemaining = Math.max(duration - currentTime, 0)
 
-      if (remaining != null && remaining <= 1.2) {
+      const remaining = hasRemainingTime ? remainingTimeMethod : manualRemaining
+
+      if (remaining != null && remaining <= 7) {
         startFadeOut()
       }
     }
@@ -309,7 +335,13 @@ export function HeroVideo({
     player.on('playing', handleReset)
     player.on('loadstart', handleReset)
     player.on('seeking', handleReset)
-    player.on('ended', handleReset)
+    player.on('ended', () => {
+      const duration = typeof player.duration === 'function' ? player.duration() : 0
+      const currentTime = typeof player.currentTime === 'function' ? player.currentTime() : 0
+      const remaining = Math.max(duration - currentTime, 0)
+      console.log('VIDEO ENDED EVENT FIRED - remaining:', remaining, 'duration:', duration, 'currentTime:', currentTime)
+      handleReset()
+    })
 
     return () => {
       player.off('timeupdate', handleTimeUpdate)
@@ -363,8 +395,8 @@ export function HeroVideo({
         <div
           data-testid="HeroVideoFadeOverlay"
           className={clsx(
-            'absolute inset-0 z-1 pointer-events-none transition-opacity duration-500 bg-black',
-            isFadingOut ? 'opacity-60' : 'opacity-0'
+            'absolute inset-0 z-1 pointer-events-none transition-opacity duration-2000 bg-black',
+            isFadingOut ? 'opacity-100' : 'opacity-0'
           )}
         />
         {collapsed && (
@@ -392,7 +424,7 @@ export function HeroVideo({
               action={currentMuxInsert?.overlay.action}
               isMuxInsert={currentMuxInsert != null}
               muxOverlay={currentMuxInsert?.overlay}
-              onSkip={onSkip}
+              onSkip={handleSkipActiveVideo}
             />
           </>
         )}

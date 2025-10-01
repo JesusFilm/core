@@ -6,6 +6,7 @@ import { ThemeMode, ThemeName } from '@core/shared/ui/themes'
 
 import { useAlgoliaRouter } from '../../libs/algolia/useAlgoliaRouter'
 import { PlayerProvider } from '../../libs/playerContext'
+import { VideoCarouselProvider } from '../../libs/videoCarouselContext'
 import { WatchProvider } from '../../libs/watchContext'
 import { Header } from '../Header'
 import { SearchComponent } from '../SearchComponent'
@@ -16,7 +17,6 @@ import { SectionLanguageMap } from './SectionLanguageMap'
 import { SectionNewsletterSignup } from './SectionNewsletterSignup'
 import { SectionPromo } from './SectionPromo'
 import { SeeAllVideos } from './SeeAllVideos'
-import { useWatchHeroCarousel } from './useWatchHeroCarousel'
 import { WatchHero } from './WatchHero'
 
 interface WatchHomePageProps {
@@ -39,16 +39,6 @@ function WatchHomePageBody({ languageId }: WatchHomePageProps): ReactElement {
   useAlgoliaRouter()
 
   const indexName = process.env.NEXT_PUBLIC_ALGOLIA_INDEX ?? ''
-  const {
-    slides,
-    loading,
-    activeVideoId,
-    activeVideo,
-    currentMuxInsert,
-    handleVideoSelect,
-    handleMuxInsertComplete,
-    handleSkipActiveVideo
-  } = useWatchHeroCarousel({ locale: '529' })
 
   return (
     <div>
@@ -62,16 +52,7 @@ function WatchHomePageBody({ languageId }: WatchHomePageProps): ReactElement {
       <Index indexName={indexName}>
         <SearchComponent languageId={languageId} />
       </Index>
-      <WatchHero
-        slides={slides}
-        activeVideoId={activeVideoId}
-        activeVideo={activeVideo}
-        currentMuxInsert={currentMuxInsert}
-        loading={loading}
-        onSelectSlide={handleVideoSelect}
-        onMuxInsertComplete={handleMuxInsertComplete}
-        onSkipActiveVideo={handleSkipActiveVideo}
-      >
+      <WatchHero>
         <div
           data-testid="WatchHomePage"
           className="flex flex-col py-20 z-10 responsive-container"
@@ -100,7 +81,9 @@ export function WatchHomePage({
   return (
     <PlayerProvider>
       <WatchProvider>
-        <WatchHomePageContent languageId={languageId} />
+        <VideoCarouselProvider locale={languageId}>
+          <WatchHomePageContent languageId={languageId} />
+        </VideoCarouselProvider>
       </WatchProvider>
     </PlayerProvider>
   )
