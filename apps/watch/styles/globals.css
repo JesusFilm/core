@@ -217,6 +217,15 @@
     display: none !important;
   }
 
+  /* Aggressive native subtitle hiding */
+  .hero-hide-native-subtitles .vjs-text-track-display,
+  .hero-hide-native-subtitles ::cue,
+  .hero-hide-native-subtitles video::cue {
+    display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+  }
+
   .responsive-container {
     max-width: 1920px;
     width: 100%;
