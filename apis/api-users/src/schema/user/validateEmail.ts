@@ -16,11 +16,10 @@ export async function validateEmail(
   })
 
   // Special handling for @example.com emails with EXAMPLE_EMAIL_TOKEN
-  // This bypass is only enabled in non-production environments when explicitly enabled
-  // Environment gate: requires NODE_ENV !== 'production' AND ENABLE_EXAMPLE_EMAIL_BYPASS === 'true'
+  // This bypass is only enabled in non-production environments
+  // Environment gate: requires NODE_ENV !== 'production'
   if (
     process.env.NODE_ENV !== 'production' &&
-    process.env.ENABLE_EXAMPLE_EMAIL_BYPASS === 'true' &&
     user?.email &&
     token
   ) {

@@ -150,7 +150,6 @@ jobs:
           PLAYWRIGHT_PASSWORD5: ${{ secrets.PLAYWRIGHT_PASSWORD5 }}
           PLAYWRIGHT_USER: ${{ secrets.PLAYWRIGHT_USER }}
           PLAYWRIGHT_TEAM_NAME: ${{ secrets.PLAYWRIGHT_TEAM_NAME }}
-          ENABLE_EXAMPLE_EMAIL_BYPASS: 'true'
           EXAMPLE_EMAIL_TOKEN: ${{ secrets.EXAMPLE_EMAIL_TOKEN }}
       - uses: actions/upload-artifact@v4
         if: always()
@@ -214,7 +213,6 @@ jobs:
           PLAYWRIGHT_PASSWORD5: ${{ secrets.PLAYWRIGHT_PASSWORD5 }}
           PLAYWRIGHT_USER: ${{ secrets.PLAYWRIGHT_USER }}
           PLAYWRIGHT_TEAM_NAME: ${{ secrets.PLAYWRIGHT_TEAM_NAME }}
-          ENABLE_EXAMPLE_EMAIL_BYPASS: 'true'
           EXAMPLE_EMAIL_TOKEN: ${{ secrets.EXAMPLE_EMAIL_TOKEN }}
       - uses: actions/upload-artifact@v4
         if: always()
