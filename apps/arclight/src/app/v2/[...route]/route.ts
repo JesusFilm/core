@@ -16,15 +16,16 @@ import { taxonomies } from './_taxonomies'
 
 const app = new OpenAPIHono().basePath('/v2')
 
-// Apply compression for responses larger than 1KB
-app.use(
-  '*',
-  compress({
-    threshold: 1024 // Only compress responses > 1KB
-  })
-)
+app.use('*', compress({
+  threshold: 1024
+}))
 
-app.use(etag())
+app.use('*', etag())
+
+app.use('*', async (c, next) => {
+  await next()
+  c.header('Content-Type', 'application/json; charset=utf-8')
+})
 
 app.onError((err, c) => {
   if (err instanceof HTTPException) {
