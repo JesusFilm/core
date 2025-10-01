@@ -1,7 +1,6 @@
 import { InMemoryCache } from '@apollo/client'
 import { MockedProvider } from '@apollo/client/testing'
-import { renderHook, waitFor } from '@testing-library/react'
-import { act } from 'react'
+import { act, renderHook, waitFor } from '@testing-library/react'
 
 import { BlockFields_ButtonBlock as ButtonBlock } from '../../../__generated__/BlockFields'
 
@@ -42,7 +41,12 @@ describe('useBlockActionEmailUpdateMutation', () => {
     })
 
     await act(async () => {
-      await result.current[0](block1, 'edmondwashere@gmail.com')
+      await result.current[0](
+        block1,
+        'edmondwashere@gmail.com',
+        false,
+        'step.id'
+      )
 
       expect(mockResult).toHaveBeenCalled()
     })
@@ -65,7 +69,12 @@ describe('useBlockActionEmailUpdateMutation', () => {
     })
 
     await act(async () => {
-      await result.current[0](block1, 'edmondwashere@gmail.com')
+      await result.current[0](
+        block1,
+        'edmondwashere@gmail.com',
+        false,
+        'step.id'
+      )
 
       await waitFor(() =>
         expect(cache.extract()['ButtonBlock:button2.id']).toEqual({
@@ -74,7 +83,9 @@ describe('useBlockActionEmailUpdateMutation', () => {
             __typename: 'EmailAction',
             gtmEventName: null,
             parentBlockId: 'button2.id',
-            email: 'edmondwashere@gmail.com'
+            email: 'edmondwashere@gmail.com',
+            customizable: false,
+            parentStepId: 'step.id'
           }
         })
       )

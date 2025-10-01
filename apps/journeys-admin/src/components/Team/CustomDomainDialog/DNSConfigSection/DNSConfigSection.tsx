@@ -170,7 +170,7 @@ export function DNSConfigSection({
             <>
               {/* show in desktop */}
               <TableContainer sx={{ display: { xs: 'none', sm: 'block' } }}>
-                <Table>
+                <Table component="table">
                   <TableRow>
                     <StyledTableCell align="left">
                       {customDomain.apexName === customDomain.name
@@ -228,7 +228,7 @@ export function DNSConfigSection({
               </TableContainer>
               {/* show in mobile */}
               <TableContainer sx={{ display: { xs: 'block', sm: 'none' } }}>
-                <Table>
+                <Table component="table">
                   <TableRow>
                     <StyledTableCell align="left">
                       {customDomain.apexName === customDomain.name
@@ -292,8 +292,8 @@ export function DNSConfigSection({
           )}
           {!data.customDomainCheck.verified &&
             data.customDomainCheck.verification != null &&
-            data.customDomainCheck.verification.map((domainError) => (
-              <>
+            data.customDomainCheck.verification.map((domainError, idx) => (
+              <div key={`${domainError.domain}-${idx}`}>
                 <TableContainer sx={{ display: { xs: 'none', sm: 'block' } }}>
                   <Table
                     sx={{
@@ -385,7 +385,7 @@ export function DNSConfigSection({
                     )}
                   </Typography>
                 )}
-              </>
+              </div>
             ))}
         </>
       )}

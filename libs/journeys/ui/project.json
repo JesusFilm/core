@@ -18,7 +18,7 @@
     "type-check": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "npx tsc -b libs/journeys/ui/tsconfig.json"
+        "command": "pnpm exec tsc -b libs/journeys/ui/tsconfig.json"
       }
     },
     "test": {
@@ -61,7 +61,7 @@
       "options": {
         "commands": [
           {
-            "command": "npx i18next --config libs/journeys/ui/i18next-parser.config.js"
+            "command": "pnpm exec i18next --config libs/journeys/ui/i18next-parser.config.js"
           }
         ]
       }

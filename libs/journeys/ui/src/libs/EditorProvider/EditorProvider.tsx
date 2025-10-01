@@ -85,6 +85,10 @@ export interface EditorState {
    */
   selectedStep?: TreeBlock<StepBlock>
   /**
+   * hoveredStep indicates which step is currently hovered over by the JourneyFlow.
+   */
+  hoveredStep?: TreeBlock<StepBlock>
+  /**
    * selectedStepId indicates which step is currently displayed by the Canvas
    * and the JourneyFlow. However, this can be used to selected the step before
    * it is added to the steps array i.e in creation mutations. This is important as running a dispatch
@@ -146,6 +150,10 @@ interface SetAnalyticsAction {
   type: 'SetAnalyticsAction'
   analytics?: JourneyAnalytics
 }
+interface SetHoveredStepAction {
+  type: 'SetHoveredStepAction'
+  hoveredStep?: TreeBlock<StepBlock>
+}
 
 /**
  * SetEditorFocusAction is a special action that allows setting multiple state
@@ -178,6 +186,7 @@ export type EditorAction =
   | SetStepsAction
   | SetShowAnalyticsAction
   | SetAnalyticsAction
+  | SetHoveredStepAction
   | SetEditorFocusAction
   | SetSelectedStepByIdAction
 
@@ -292,6 +301,11 @@ export const reducer = (
       return {
         ...state,
         analytics: action.analytics
+      }
+    case 'SetHoveredStepAction':
+      return {
+        ...state,
+        hoveredStep: action.hoveredStep
       }
     case 'SetEditorFocusAction': {
       let stateCopy = { ...state }

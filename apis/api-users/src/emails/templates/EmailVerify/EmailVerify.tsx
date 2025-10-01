@@ -62,7 +62,7 @@ export const EmailVerifyEmail = ({
             <Section align="center" className="px-[28px]">
               <Row>
                 <th>
-                  <Text className="font-semibold text-[16px] leading-[28px] mt-0 mb-[24px] text-center">
+                  <Text className="mt-0 mb-[24px] text-center text-[16px] leading-[28px] font-semibold">
                     Verify your email address to start making interactive
                     Journeys!
                   </Text>
@@ -77,15 +77,15 @@ export const EmailVerifyEmail = ({
                 </Column>
               </Row>
               <Row>
-                <Text className="text-[14px] font-[400] leading-[24px] mt-[24px] mb-[0px] text-center">
+                <Text className="mt-[24px] mb-[0px] text-center text-[14px] leading-[24px] font-[400]">
                   If the link above does not work, enter the following code at
                   the link below:
                 </Text>
-                <Text className="text-[14px] font-[400] leading-[24px] my-0 text-center">
+                <Text className="my-0 text-center text-[14px] leading-[24px] font-[400]">
                   {token}
                 </Text>
                 <Link href={inviteLink} style={{ textDecoration: 'none' }}>
-                  <Text className="text-center mt-[24px] text-[#C52D3A] font-[400] text-[12px] leading-[16px]">
+                  <Text className="mt-[24px] text-center text-[12px] leading-[16px] font-[400] text-[#C52D3A]">
                     {inviteLink}
                   </Text>
                 </Link>
@@ -127,7 +127,7 @@ const withHTML = ({ children }: WrapperProps): ReactElement => {
 
 const withBody = ({ children }: WrapperProps): ReactElement => {
   return (
-    <Body className="my-[0px] mx-[0px] font-sans h-full w-full">
+    <Body className="mx-[0px] my-[0px] h-full w-full font-sans">
       {children}
     </Body>
   )

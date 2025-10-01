@@ -32,6 +32,19 @@ const mockProcessCsv = processCsv as jest.MockedFunction<typeof processCsv>
 const mockGetJourneyEventsCountQuery = getMockGetJourneyEventsCountQuery()
 
 describe('useJourneyEventsExport', () => {
+  let consoleErrorSpy: jest.SpyInstance
+  let consoleWarnSpy: jest.SpyInstance
+
+  beforeAll(() => {
+    consoleErrorSpy = jest.spyOn(console, 'error').mockReturnValue()
+    consoleWarnSpy = jest.spyOn(console, 'warn').mockReturnValue()
+  })
+
+  afterAll(() => {
+    consoleErrorSpy.mockRestore()
+    consoleWarnSpy.mockRestore()
+  })
+
   beforeEach(() => {
     jest.clearAllMocks()
   })
@@ -46,6 +59,8 @@ describe('useJourneyEventsExport', () => {
       wrapper: ({ children }) => (
         <MockedProvider
           mocks={[
+            mockGetJourneyEventsCountQuery,
+            mockGetJourneyEventsCountQuery,
             mockGetJourneyEventsCountQuery,
             { ...mockGetJourneyEventsQuery, result: queryResult },
             { ...mockCreateEventsExportLogMutation, result: mutationResult }
@@ -216,6 +231,8 @@ describe('useJourneyEventsExport', () => {
       wrapper: ({ children }) => (
         <MockedProvider
           mocks={[
+            mockJourneyEventsCountQueryAll,
+            mockJourneyEventsCountQueryAll,
             mockJourneyEventsCountQueryAll,
             mockGetJourneyEventsQueryPage1,
             mockGetJourneyEventsQueryPage2,

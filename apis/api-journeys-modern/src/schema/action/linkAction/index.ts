@@ -1,2 +1,2 @@
 import './linkAction'
-import './inputs'
+import './blockUpdateLinkAction.mutation'

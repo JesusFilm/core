@@ -80,10 +80,10 @@ test('NS Admin Monitoring: Check user can login and see the dashboard', async ({
     console.log(`METRIC total_duration ${totalDuration}`)
   } catch (error) {
     // Enhanced error logging for monitoring
-    console.error('=== Monitoring Alert ===')
-    console.error(`Error occurred at ${new Date().toISOString()}`)
-    console.error('Step timings before failure:', stepTiming)
-    console.error('Error details:', error)
+    console.log('=== Monitoring Alert ===')
+    console.log(`Error occurred at ${new Date().toISOString()}`)
+    console.log('Step timings before failure:', stepTiming)
+    console.log('Error details:', error)
 
     // Checkly will automatically capture failure screenshots
     throw error
@@ -100,7 +100,7 @@ test('NS Admin Monitoring: Check user can login and see the dashboard', async ({
         await context.close()
       }
     } catch (cleanupError) {
-      console.error('Error during cleanup:', cleanupError)
+      console.log('Error during cleanup:', cleanupError)
     }
   }
 })

@@ -9,20 +9,20 @@ export function CollectionsPageContent({
 }: CollectionsPageContentProps): ReactElement {
   return (
     <div
-      className="bg-stone-900 text-white font-sans"
+      className="bg-stone-900 font-sans text-white"
       data-testid="CollectionPage"
     >
       <div
-        className="max-w-[1920px] mx-auto sticky h-[100vh] top-0"
+        className="sticky top-0 mx-auto h-[100vh] max-w-[1920px]"
         data-testid="CollectionPageBlurFilter"
         style={{
           backgroundColor: 'rgba(0, 0, 0, 0.1)',
           backdropFilter: 'brightness(.6) blur(40px)'
         }}
       ></div>
-      <div className="w-full mt-[-100vh]" data-testid="CollectionPageContainer">
+      <div className="mt-[-100vh] w-full" data-testid="CollectionPageContainer">
         <div
-          className="max-w-[1920px] mx-auto pb-40"
+          className="mx-auto max-w-[1920px] pb-40"
           data-testid="CollectionPageContent"
         >
           {children}

@@ -1,5 +1,5 @@
 import Box from '@mui/material/Box'
-import type { ReactElement } from 'react'
+import { type ReactElement, useRef } from 'react'
 import { CSSTransition, TransitionGroup } from 'react-transition-group'
 
 import { ActiveContent, useEditor } from '@core/journeys/ui/EditorProvider'
@@ -13,6 +13,7 @@ export function Content(): ReactElement {
     state: { activeContent }
   } = useEditor()
   let content: ReactElement
+  const nodeRef = useRef(null)
   switch (activeContent) {
     case ActiveContent.Social:
       content = <SocialPreview />
@@ -49,11 +50,13 @@ export function Content(): ReactElement {
       }}
     >
       <CSSTransition
+        nodeRef={nodeRef}
         key={activeContent}
         timeout={600}
         classNames="journey-edit-content-component"
       >
         <Box
+          ref={nodeRef}
           data-testid="Content"
           sx={{
             position: 'absolute',

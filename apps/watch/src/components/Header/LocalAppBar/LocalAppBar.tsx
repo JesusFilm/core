@@ -34,7 +34,9 @@ export function LocalAppBar({
   showLanguageSwitcher = false,
   ...props
 }: LocalAppBarProps): ReactElement {
-  const [openLanguagesDialog, setOpenLanguagesDialog] = useState(false)
+  const [openLanguagesDialog, setOpenLanguagesDialog] = useState<
+    boolean | null
+  >(null)
 
   return (
     <AppBar
@@ -63,28 +65,29 @@ export function LocalAppBar({
           alignItems="center"
           flexGrow={1}
         >
-          <NextLink passHref legacyBehavior href="https://www.jesusfilm.org/">
-            <Box
-              data-testid="WatchLogo"
-              sx={{
-                width: { xs: 126, lg: 186 },
-                mt: { xs: 1.2, lg: 3.5 },
-                mb: { xs: -1.2, lg: -3.5 },
-                zIndex: (theme) => ({ xs: theme.zIndex.drawer + 1, lg: 0 })
+          <Box
+            component={NextLink}
+            href="https://www.jesusfilm.org/"
+            data-testid="WatchLogo"
+            sx={{
+              width: { xs: 126, lg: 186 },
+              mt: { xs: 1.2, lg: 3.5 },
+              mb: { xs: -1.2, lg: -3.5 },
+              zIndex: (theme) => ({ xs: theme.zIndex.drawer + 1, lg: 0 })
+            }}
+            locale={false}
+          >
+            <Image
+              src={logo}
+              alt="Watch Logo"
+              style={{
+                cursor: 'pointer',
+                maxWidth: '100%',
+                height: 'auto',
+                width: 'auto'
               }}
-            >
-              <Image
-                src={logo}
-                alt="Watch Logo"
-                style={{
-                  cursor: 'pointer',
-                  maxWidth: '100%',
-                  height: 'auto',
-                  width: 'auto'
-                }}
-              />
-            </Box>
-          </NextLink>
+            />
+          </Box>
           <Box data-testid="MenuBox">
             {showLanguageSwitcher && (
               <>
@@ -102,10 +105,12 @@ export function LocalAppBar({
                     sx={{ fontSize: 39, color: 'text.secondary' }}
                   />
                 </IconButton>
-                <DynamicLanguageSwitchDialog
-                  open={openLanguagesDialog}
-                  handleClose={() => setOpenLanguagesDialog(false)}
-                />
+                {openLanguagesDialog != null && (
+                  <DynamicLanguageSwitchDialog
+                    open={openLanguagesDialog}
+                    handleClose={() => setOpenLanguagesDialog(false)}
+                  />
+                )}
               </>
             )}
 
