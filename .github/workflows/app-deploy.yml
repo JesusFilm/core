@@ -28,7 +28,7 @@ jobs:
       - uses: actions/setup-node@v5
         with:
           node-version: ${{ matrix.node-version }}
-          cache: "pnpm"
+          cache: 'pnpm'
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile --silent
@@ -36,7 +36,7 @@ jobs:
       - id: set-matrix
         name: set matrix app to affected array
         run: |
-          matrix=$(pnpm -s exec ts-node tools/scripts/deploy-apps.ts --projects "apps/*" --exclude "apps/arclight")
+          matrix=$(pnpm -s exec ts-node tools/scripts/deploy-apps.ts --projects "apps/*:!apps/arclight")
           echo "matrix=${matrix}" >> "$GITHUB_OUTPUT"
           cat "$GITHUB_OUTPUT"
   deploy-preview:
@@ -53,8 +53,8 @@ jobs:
       fail-fast: false
       matrix:
         app: ${{fromJson(needs.affected.outputs.matrix)}}
-        github-ref-name: ["${{ github.ref_name }}"]
-        github-event-name: ["${{ github.event_name }}"]
+        github-ref-name: ['${{ github.ref_name }}']
+        github-event-name: ['${{ github.event_name }}']
         node-version: [22]
         exclude:
           # handled by production job below
@@ -95,7 +95,7 @@ jobs:
       - uses: actions/setup-node@v5
         with:
           node-version: ${{ matrix.node-version }}
-          cache: "pnpm"
+          cache: 'pnpm'
       - name: Install dependencies
         run: pnpm install --frozen-lockfile --silent
       - uses: nrwl/nx-set-shas@v4
@@ -254,7 +254,7 @@ jobs:
       - uses: actions/setup-node@v5
         with:
           node-version: ${{ matrix.node-version }}
-          cache: "pnpm"
+          cache: 'pnpm'
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile --silent
@@ -304,7 +304,7 @@ jobs:
       fail-fast: false
       matrix:
         app: ${{fromJson(needs.affected.outputs.matrix)}}
-        github-ref-name: ["${{ github.ref_name }}"]
+        github-ref-name: ['${{ github.ref_name }}']
         node-version: [22]
         exclude:
           # handled by ecs-frontend-deploy-prod
@@ -339,7 +339,7 @@ jobs:
       - uses: actions/setup-node@v5
         with:
           node-version: ${{ matrix.node-version }}
-          cache: "pnpm"
+          cache: 'pnpm'
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile --silent
