@@ -45,11 +45,11 @@ export function CollectionNavigationCarousel({
         {contentItems.map((item, index) => (
           <SwiperSlide
             key={item.contentId}
-            className={`max-w-[200px] pl-2 ${index === 0 ? 'padded-l' : ''} ${index === contentItems.length - 1 ? 'pr-4 md:pr-6,' : ''}`}
+            className={`max-w-[200px] pl-2 ${index === 0 ? 'padded-l' : ''} ${index === contentItems.length - 1 ? 'pr-4 md:pr-6' : ''}`}
             data-testid={`CarouselSlide-${item.contentId.split('/')[0]}`}
           >
             <div
-              className={`relative beveled h-[240px] flex flex-col justify-end w-full rounded-lg overflow-hidden cursor-pointer`}
+              className={`beveled relative flex h-[240px] w-full cursor-pointer flex-col justify-end overflow-hidden rounded-lg`}
               style={{
                 backgroundColor: item.bgColor
               }}
@@ -67,26 +67,26 @@ export function CollectionNavigationCarousel({
                   fill
                   src={item.image}
                   alt={item.title}
-                  className="absolute top-0 w-full h-[150px] object-cover overflow-hidden [mask-image:linear-gradient(to_bottom,rgba(0,0,0,1)_50%,transparent_100%)] [mask-size:cover]"
+                  className="absolute top-0 h-[150px] w-full overflow-hidden [mask-image:linear-gradient(to_bottom,rgba(0,0,0,1)_50%,transparent_100%)] [mask-size:cover] object-cover"
                   data-testid="CarouselItemImage"
                 />
               ) : (
                 <img
                   src={item.image}
                   alt={item.title}
-                  className="absolute top-0 w-full h-[150px] object-cover overflow-hidden [mask-image:linear-gradient(to_bottom,rgba(0,0,0,1)_50%,transparent_100%)] [mask-size:cover]"
+                  className="absolute top-0 h-[150px] w-full overflow-hidden [mask-image:linear-gradient(to_bottom,rgba(0,0,0,1)_50%,transparent_100%)] [mask-size:cover] object-cover"
                   data-testid="CarouselItemImg"
                 />
               )}
               <div className="p-4">
                 <span
-                  className="text-xs font-medium tracking-wider uppercase text-amber-100/60"
+                  className="text-xs font-medium tracking-wider text-amber-100/60 uppercase"
                   data-testid="CarouselItemCategory"
                 >
                   {item.category}
                 </span>
                 <h3
-                  className="text-base font-bold text-white/90 leading-tight line-clamp-3"
+                  className="line-clamp-3 text-base leading-tight font-bold text-white/90"
                   data-testid={`CarouselItemTitle-${item.contentId.split('/')[0]}`}
                 >
                   {item.title}

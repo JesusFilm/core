@@ -68,7 +68,7 @@ describe('getNextStepSlug', () => {
       parentBlockId: 'parentBlockId',
       gtmEventName: null,
       url: 'url',
-      customizable: null,
+      customizable: false,
       parentStepId: null
     }
     const result = getNextStepSlug(defaultJourney, action)

@@ -473,6 +473,12 @@ export interface JourneyCollectionUpdateInput {
   journeyIds?: string[] | null;
 }
 
+export interface JourneyCustomizationFieldInput {
+  id: string;
+  key: string;
+  value?: string | null;
+}
+
 export interface JourneyEventsExportLogInput {
   journeyId: string;
   eventsFilter: EventType[];
@@ -733,6 +739,7 @@ export interface TextResponseBlockUpdateInput {
   placeholder?: string | null;
   required?: boolean | null;
   hint?: string | null;
+  hideLabel?: boolean | null;
   minRows?: number | null;
   routeId?: string | null;
   type?: TextResponseType | null;

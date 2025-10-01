@@ -2,6 +2,8 @@ import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { FormikContextType, FormikProvider } from 'formik'
 
+import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
+
 import { TemplateSettingsFormValues } from '../useTemplateSettingsForm'
 
 import { AboutTabPanel } from './AboutTabPanel'
@@ -117,7 +119,9 @@ describe('AboutTabPanel', () => {
             } as unknown as FormikContextType<TemplateSettingsFormValues>
           }
         >
-          <AboutTabPanel />
+          <FlagsProvider flags={{ journeyCustomization: true }}>
+            <AboutTabPanel />
+          </FlagsProvider>
         </FormikProvider>
       </MockedProvider>
     )

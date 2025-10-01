@@ -55,6 +55,11 @@ interface Action {
   gtmEventName: String
 }
 
+enum ContactActionType {
+  call
+  text
+}
+
 type NavigateToBlockAction implements Action
   @shareable
 {
@@ -95,6 +100,7 @@ type PhoneAction implements Action
   gtmEventName: String
   phone: String!
   countryCode: String!
+  contactAction: ContactActionType!
 }
 
 interface Block {
@@ -163,6 +169,7 @@ type Journey
   socialNodeX: Int
   socialNodeY: Int
   fromTemplateId: String
+  showAssistant: Boolean
   journeyCustomizationDescription: String
   journeyCustomizationFields: [JourneyCustomizationField!]!
   journeyTheme: JourneyTheme
@@ -850,6 +857,27 @@ input ImageBlockUpdateInput {
   focalLeft: Int
 }
 
+type MultiselectBlock implements Block
+  @shareable
+{
+  id: ID!
+  journeyId: ID!
+  parentBlockId: ID
+  parentOrder: Int
+  max: Int
+  min: Int
+}
+
+type MultiselectOptionBlock implements Block
+  @shareable
+{
+  id: ID!
+  journeyId: ID!
+  parentBlockId: ID
+  parentOrder: Int
+  label: String!
+}
+
 type RadioOptionBlock implements Block
   @shareable
 {
@@ -1042,6 +1070,7 @@ type TextResponseBlock implements Block
   placeholder: String @shareable
   required: Boolean @shareable
   hint: String @shareable
+  hideLabel: Boolean @shareable
   minRows: Int @shareable
   type: TextResponseType @shareable
   routeId: String @shareable
@@ -1068,6 +1097,7 @@ input TextResponseBlockUpdateInput {
   placeholder: String
   required: Boolean
   hint: String
+  hideLabel: Boolean
   minRows: Int
   routeId: String
   type: TextResponseType

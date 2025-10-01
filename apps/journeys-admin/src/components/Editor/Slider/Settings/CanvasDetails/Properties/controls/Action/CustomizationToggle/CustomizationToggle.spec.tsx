@@ -1,11 +1,12 @@
 import { fireEvent, render, screen } from '@testing-library/react'
 import React from 'react'
 
-import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { TreeBlock } from '@core/journeys/ui/block'
+import { EditorProvider } from '@core/journeys/ui/EditorProvider'
+
 import {
-  BlockFields_StepBlock as StepBlock,
-  BlockFields_ButtonBlock as ButtonBlock
+  BlockFields_ButtonBlock as ButtonBlock,
+  BlockFields_StepBlock as StepBlock
 } from '../../../../../../../../../../__generated__/BlockFields'
 
 import { CustomizationToggle } from './CustomizationToggle'
@@ -41,9 +42,34 @@ describe('CustomizationToggle', () => {
       </EditorProvider>
     )
 
-    expect(screen.getByText('Customize')).toBeInTheDocument()
+    expect(screen.getByText('Needs Customization')).toBeInTheDocument()
     const toggle = screen.getByRole('checkbox', { name: 'Toggle customizable' })
     expect(toggle).toBeChecked()
+  })
+
+  it('renders toggle even when action is null', () => {
+    const selectedBlock = {
+      id: 'button-1',
+      __typename: 'ButtonBlock',
+      action: null
+    } as unknown as TreeBlock<ButtonBlock>
+    const selectedStep = {
+      id: 'step-1',
+      __typename: 'StepBlock',
+      parentBlockId: 'journeyId',
+      parentOrder: 0,
+      locked: false,
+      slug: 'slug'
+    } as unknown as TreeBlock<StepBlock>
+
+    render(
+      <EditorProvider initialState={{ selectedBlock, selectedStep }}>
+        <CustomizationToggle />
+      </EditorProvider>
+    )
+    expect(screen.getByText('Needs Customization')).toBeInTheDocument()
+    const toggle = screen.getByRole('checkbox', { name: 'Toggle customizable' })
+    expect(toggle).not.toBeChecked()
   })
 
   it('renders toggle for EmailAction and reflects unchecked state', () => {
@@ -72,7 +98,7 @@ describe('CustomizationToggle', () => {
       </EditorProvider>
     )
 
-    expect(screen.getByText('Customize')).toBeInTheDocument()
+    expect(screen.getByText('Needs Customization')).toBeInTheDocument()
     const toggle = screen.getByRole('checkbox', { name: 'Toggle customizable' })
     expect(toggle).not.toBeChecked()
   })

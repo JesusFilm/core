@@ -17,6 +17,11 @@ export enum ThemeName {
     base = "base"
 }
 
+export enum ContactActionType {
+    call = "call",
+    text = "text"
+}
+
 export enum ButtonVariant {
     text = "text",
     contained = "contained",
@@ -453,6 +458,7 @@ export class TextResponseBlockUpdateInput {
     placeholder?: Nullable<string>;
     required?: Nullable<boolean>;
     hint?: Nullable<string>;
+    hideLabel?: Nullable<boolean>;
     minRows?: Nullable<number>;
     routeId?: Nullable<string>;
     type?: Nullable<TextResponseType>;
@@ -935,6 +941,7 @@ export class PhoneAction implements Action {
     gtmEventName?: Nullable<string>;
     phone: string;
     countryCode: string;
+    contactAction: ContactActionType;
 }
 
 export class Journey {
@@ -986,6 +993,7 @@ export class Journey {
     socialNodeX?: Nullable<number>;
     socialNodeY?: Nullable<number>;
     fromTemplateId?: Nullable<string>;
+    showAssistant?: Nullable<boolean>;
     journeyCustomizationDescription?: Nullable<string>;
     journeyCustomizationFields: JourneyCustomizationField[];
     journeyTheme?: Nullable<JourneyTheme>;
@@ -1355,6 +1363,25 @@ export class ImageBlock implements Block {
     focalLeft?: Nullable<number>;
 }
 
+export class MultiselectBlock implements Block {
+    __typename?: 'MultiselectBlock';
+    id: string;
+    journeyId: string;
+    parentBlockId?: Nullable<string>;
+    parentOrder?: Nullable<number>;
+    max?: Nullable<number>;
+    min?: Nullable<number>;
+}
+
+export class MultiselectOptionBlock implements Block {
+    __typename?: 'MultiselectOptionBlock';
+    id: string;
+    journeyId: string;
+    parentBlockId?: Nullable<string>;
+    parentOrder?: Nullable<number>;
+    label: string;
+}
+
 export class RadioOptionBlock implements Block {
     __typename?: 'RadioOptionBlock';
     id: string;
@@ -1418,6 +1445,7 @@ export class TextResponseBlock implements Block {
     placeholder?: Nullable<string>;
     required?: Nullable<boolean>;
     hint?: Nullable<string>;
+    hideLabel?: Nullable<boolean>;
     minRows?: Nullable<number>;
     type?: Nullable<TextResponseType>;
     routeId?: Nullable<string>;
