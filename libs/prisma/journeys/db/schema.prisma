@@ -599,7 +599,7 @@ model Action {
   parentBlock   Block    @relation(fields: [parentBlockId], references: [id], onDelete: Cascade)
   journey       Journey? @relation(fields: [journeyId], references: [id])
   block         Block?   @relation("Block", fields: [blockId], references: [id])
-  chatAction    String?
+  chatUrl       String?
 
   @@index(parentBlockId)
 }
