@@ -9,6 +9,29 @@ import {
 import { checkBlocksForCustomizableLinks } from './checkBlocksForCustomizableLinks'
 
 describe('checkBlocksForCustomizableLinks', () => {
+  const nonCustomizableButtonBlock: ButtonBlock = {
+    __typename: 'ButtonBlock',
+    id: '1',
+    parentBlockId: null,
+    parentOrder: 0,
+    label: 'Non-customizable Button',
+    buttonVariant: null,
+    buttonColor: null,
+    size: null,
+    startIconId: null,
+    endIconId: null,
+    submitEnabled: null,
+    action: {
+      __typename: 'LinkAction',
+      parentBlockId: '1',
+      gtmEventName: null,
+      url: 'https://example.com',
+      customizable: false,
+      parentStepId: null
+    },
+    settings: null
+  }
+
   it('should return false for empty blocks array', () => {
     const result = checkBlocksForCustomizableLinks([])
     expect(result).toBe(false)
@@ -27,29 +50,6 @@ describe('checkBlocksForCustomizableLinks', () => {
   })
 
   it('should return true for ButtonBlock with customizable LinkAction', () => {
-    const nonCustomizableButtonBlock = {
-      __typename: 'ButtonBlock',
-      id: '1',
-      parentBlockId: null,
-      parentOrder: 0,
-      label: 'Non-customizable Button',
-      buttonVariant: null,
-      buttonColor: null,
-      size: null,
-      startIconId: null,
-      endIconId: null,
-      submitEnabled: null,
-      action: {
-        __typename: 'LinkAction',
-        parentBlockId: '1',
-        gtmEventName: null,
-        url: 'https://example.com',
-        customizable: false,
-        parentStepId: null
-      },
-      settings: null
-    } as ButtonBlock
-
     const buttonBlock = {
       __typename: 'ButtonBlock',
       id: '2',
@@ -81,29 +81,6 @@ describe('checkBlocksForCustomizableLinks', () => {
   })
 
   it('should return true for ButtonBlock with customizable EmailAction', () => {
-    const nonCustomizableButtonBlock = {
-      __typename: 'ButtonBlock',
-      id: '1',
-      parentBlockId: null,
-      parentOrder: 0,
-      label: 'Non-customizable Button',
-      buttonVariant: null,
-      buttonColor: null,
-      size: null,
-      startIconId: null,
-      endIconId: null,
-      submitEnabled: null,
-      action: {
-        __typename: 'LinkAction',
-        parentBlockId: '1',
-        gtmEventName: null,
-        url: 'https://example.com',
-        customizable: false,
-        parentStepId: null
-      },
-      settings: null
-    } as ButtonBlock
-
     const buttonBlock = {
       __typename: 'ButtonBlock',
       id: '2',
@@ -184,29 +161,6 @@ describe('checkBlocksForCustomizableLinks', () => {
   })
 
   it('should return true for RadioOptionBlock with customizable LinkAction', () => {
-    const nonCustomizableButtonBlock = {
-      __typename: 'ButtonBlock',
-      id: '1',
-      parentBlockId: null,
-      parentOrder: 0,
-      label: 'Non-customizable Button',
-      buttonVariant: null,
-      buttonColor: null,
-      size: null,
-      startIconId: null,
-      endIconId: null,
-      submitEnabled: null,
-      action: {
-        __typename: 'LinkAction',
-        parentBlockId: '1',
-        gtmEventName: null,
-        url: 'https://example.com',
-        customizable: false,
-        parentStepId: null
-      },
-      settings: null
-    } as ButtonBlock
-
     const radioOptionBlock = {
       __typename: 'RadioOptionBlock',
       id: '2',
@@ -232,29 +186,6 @@ describe('checkBlocksForCustomizableLinks', () => {
   })
 
   it('should return true for VideoBlock with customizable LinkAction', () => {
-    const nonCustomizableButtonBlock = {
-      __typename: 'ButtonBlock',
-      id: '1',
-      parentBlockId: null,
-      parentOrder: 0,
-      label: 'Non-customizable Button',
-      buttonVariant: null,
-      buttonColor: null,
-      size: null,
-      startIconId: null,
-      endIconId: null,
-      submitEnabled: null,
-      action: {
-        __typename: 'LinkAction',
-        parentBlockId: '1',
-        gtmEventName: null,
-        url: 'https://example.com',
-        customizable: false,
-        parentStepId: null
-      },
-      settings: null
-    } as ButtonBlock
-
     const videoBlock = {
       __typename: 'VideoBlock',
       id: '2',
@@ -293,29 +224,6 @@ describe('checkBlocksForCustomizableLinks', () => {
   })
 
   it('should return true for VideoTriggerBlock with customizable triggerAction', () => {
-    const nonCustomizableButtonBlock = {
-      __typename: 'ButtonBlock',
-      id: '1',
-      parentBlockId: null,
-      parentOrder: 0,
-      label: 'Non-customizable Button',
-      buttonVariant: null,
-      buttonColor: null,
-      size: null,
-      startIconId: null,
-      endIconId: null,
-      submitEnabled: null,
-      action: {
-        __typename: 'LinkAction',
-        parentBlockId: '1',
-        gtmEventName: null,
-        url: 'https://example.com',
-        customizable: false,
-        parentStepId: null
-      },
-      settings: null
-    } as ButtonBlock
-
     const videoTriggerBlock = {
       __typename: 'VideoTriggerBlock',
       id: '2',
