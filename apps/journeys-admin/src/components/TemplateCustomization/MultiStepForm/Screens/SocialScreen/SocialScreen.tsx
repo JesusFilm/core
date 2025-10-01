@@ -29,14 +29,14 @@ export function SocialScreen({
     >
       <Typography
         variant="h4"
-        gutterBottom 
+        gutterBottom
         display={{ xs: 'none', sm: 'block' }}
       >
         {t('Almost There!')}
       </Typography>
       <Typography
         variant="h6"
-        gutterBottom 
+        gutterBottom
         display={{ xs: 'block', sm: 'none' }}
       >
         {t('Almost There!')}

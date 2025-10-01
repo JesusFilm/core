@@ -165,9 +165,9 @@ export function LanguageScreen({
         >
           {t("Let's get started!")}
         </Typography>
-        <Typography 
-          variant="subtitle2" 
-          color="text.secondary" 
+        <Typography
+          variant="subtitle2"
+          color="text.secondary"
           align="center"
           display={{ xs: 'none', sm: 'block' }}
         >
@@ -175,7 +175,11 @@ export function LanguageScreen({
         </Typography>
       </Stack>
       <SocialImage />
-      <Typography variant="subtitle2" gutterBottom sx={{ mb: { xs: 0, sm: 2 } }}>
+      <Typography
+        variant="subtitle2"
+        gutterBottom
+        sx={{ mb: { xs: 0, sm: 2 } }}
+      >
         {journey?.title ?? ''}
       </Typography>
       <Formik
