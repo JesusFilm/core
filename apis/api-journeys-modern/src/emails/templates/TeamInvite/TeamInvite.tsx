@@ -25,7 +25,7 @@ interface TeamInviteEmailProps {
   teamName: string
   inviteLink: string
   recipient: Omit<User, 'id' | 'emailVerified'>
-  sender: Omit<User, 'id' | 'emailVerified'>
+  sender: Omit<User, 'emailVerified'>
   story?: boolean
 }
 
@@ -109,6 +109,7 @@ TeamInviteEmail.PreviewProps = {
   teamName: 'JFP Sol Team',
   inviteLink: 'https://admin.nextstep.is/',
   sender: {
+    id: 'sender-id',
     firstName: 'Joe',
     lastName: 'Ron-Imo',
     email: 'joejoesbizzareadventures@example.com',

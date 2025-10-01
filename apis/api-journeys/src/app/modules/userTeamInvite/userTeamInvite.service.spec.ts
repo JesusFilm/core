@@ -8,6 +8,14 @@ import { TeamWithUserTeam } from '../../lib/prisma.types'
 import { UserTeamInviteModule } from './userTeamInvite.module'
 import { UserTeamInviteService } from './userTeamInvite.service'
 
+type SenderUser = {
+  id: string
+  firstName: string
+  lastName: string
+  email: string
+  imageUrl?: string
+}
+
 describe('UserTeamService', () => {
   let service: UserTeamInviteService
 
@@ -34,7 +42,8 @@ describe('UserTeamService', () => {
         title: 'Team Title'
       } as unknown as Team
       const email = 'tav@example.com'
-      const sender = {
+      const sender: SenderUser = {
+        id: 'senderId123',
         firstName: 'Joe',
         lastName: 'Ro-Nimo',
         email: 'joe@example.com',
@@ -75,8 +84,8 @@ describe('UserTeamService', () => {
           }
         ]
       } as unknown as TeamWithUserTeam
-      const sender = {
-        id: 'userId',
+      const sender: SenderUser = {
+        id: 'senderId',
         email: 'joRoNimo@example.com',
         firstName: 'Joe',
         lastName: 'Ro-Nimo',

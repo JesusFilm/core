@@ -11,6 +11,8 @@ import {
   TeamWithUserTeam
 } from '../../lib/prisma.types'
 
+type SenderUser = Omit<User, 'emailVerified'>
+
 @Injectable()
 export class UserTeamInviteService {
   constructor(
@@ -21,7 +23,7 @@ export class UserTeamInviteService {
   async sendTeamInviteEmail(
     team: Team,
     email: string,
-    sender: Omit<User, 'id' | 'emailVerified'>
+    sender: SenderUser
   ): Promise<void> {
     await this.emailQueue.add(
       'team-invite',
@@ -41,7 +43,7 @@ export class UserTeamInviteService {
 
   async sendTeamInviteAcceptedEmail(
     team: TeamWithUserTeam,
-    sender: Omit<User, 'id' | 'emailVerified'>
+    sender: SenderUser
   ): Promise<void> {
     await this.emailQueue.add(
       'team-invite-accepted',
