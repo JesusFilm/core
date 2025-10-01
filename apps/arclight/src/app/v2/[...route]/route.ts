@@ -16,9 +16,12 @@ import { taxonomies } from './_taxonomies'
 
 const app = new OpenAPIHono().basePath('/v2')
 
-app.use('*', compress({
-  threshold: 1024
-}))
+app.use(
+  '*',
+  compress({
+    threshold: 1024
+  })
+)
 
 app.use('*', etag())
 
