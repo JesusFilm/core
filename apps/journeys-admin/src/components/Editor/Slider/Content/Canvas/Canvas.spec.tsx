@@ -347,8 +347,6 @@ describe('Canvas', () => {
               __typename: 'MultiselectBlock',
               parentBlockId: 'cardMulti.id',
               parentOrder: 0,
-              gridView: false,
-              label: 'Pick your favorites',
               min: null,
               max: 2,
               children: [

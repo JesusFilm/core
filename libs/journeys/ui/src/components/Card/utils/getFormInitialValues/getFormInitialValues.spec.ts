@@ -2,10 +2,15 @@ import { TreeBlock } from '../../../../libs/block'
 
 import { getFormInitialValues } from './getFormInitialValues'
 
-type MockBlock = Partial<TreeBlock> & {
+type MockBlock = {
   id: string
   __typename: string
+  parentBlockId?: string | null
+  parentOrder?: number | null
   children: MockBlock[]
+  // Add other optional fields that might be needed
+  min?: number | null
+  max?: number | null
 }
 
 // Helper to cast the simplified mock blocks to TreeBlock

@@ -323,7 +323,8 @@ describe('InlineEditWrapper', () => {
       parentBlockId: 'card.id',
       parentOrder: 0,
       id: 'multiselectQuestion.id',
-      gridView: false as unknown as never,
+      min: null,
+      max: null,
       children: [option]
     }
 

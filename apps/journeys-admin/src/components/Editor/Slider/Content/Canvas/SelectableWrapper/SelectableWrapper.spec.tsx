@@ -154,7 +154,8 @@ describe('SelectableWrapper', () => {
     id: 'MultiselectQuestion1',
     parentBlockId: 'parent.id',
     parentOrder: 0,
-    gridView: false as unknown as never,
+    min: null,
+    max: null,
     children: [
       multiselectOption1,
       {

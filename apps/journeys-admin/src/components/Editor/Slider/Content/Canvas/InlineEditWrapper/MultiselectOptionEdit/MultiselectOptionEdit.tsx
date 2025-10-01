@@ -10,6 +10,7 @@ import { MultiselectOptionBlockUpdate } from '../../../../../../../../__generate
 import { MultiselectOptionBlockUpdateVariables } from '../../../../../../../../__generated__/MultiselectOptionBlockUpdate'
 import { MultiselectOptionFields } from '../../../../../../../../__generated__/MultiselectOptionFields'
 import { InlineEditInput } from '../InlineEditInput'
+import { TreeBlock } from '@core/journeys/ui/block/TreeBlock'
 
 export const MULTISELECT_OPTION_BLOCK_UPDATE = gql`
   mutation MultiselectOptionBlockUpdate(
@@ -27,7 +28,7 @@ export function MultiselectOptionEdit({
   id,
   label,
   ...rest
-}: MultiselectOptionFields): ReactElement {
+}: TreeBlock<MultiselectOptionFields>): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const [updateOption] = useMutation<
     MultiselectOptionBlockUpdate,

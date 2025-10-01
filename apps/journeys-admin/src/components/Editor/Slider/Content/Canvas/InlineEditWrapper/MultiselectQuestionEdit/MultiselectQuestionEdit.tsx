@@ -56,7 +56,7 @@ export function MultiselectQuestionEdit({
       id: uuidv4(),
       label: '',
       parentBlockId: id,
-      parentOrder: selectedBlock?.children?.length ?? 0,
+      parentOrder: props.children?.length ?? 0,
       __typename: 'MultiselectOptionBlock'
     }
 

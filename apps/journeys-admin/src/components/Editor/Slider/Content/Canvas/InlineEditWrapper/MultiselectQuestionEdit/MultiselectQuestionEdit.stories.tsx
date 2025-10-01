@@ -60,7 +60,8 @@ const block: TreeBlock<MultiselectQuestionFields> = {
   __typename: 'MultiselectBlock',
   parentBlockId: 'card0.id',
   parentOrder: 2,
-  gridView: false,
+  min: null,
+  max: null,
   children: [
     {
       __typename: 'MultiselectOptionBlock',
@@ -110,7 +111,7 @@ const steps: Array<TreeBlock<StepBlock>> = [
             width: 1920,
             height: 1080,
             alt: 'image from unsplash',
-            parentBlockId: 'card6.id',
+            parentBlockId: 'card0.id',
             parentOrder: 0,
             children: [],
             blurhash: 'LFALX]%g4Tf+?^jEMxo#00Mx%gjZ',

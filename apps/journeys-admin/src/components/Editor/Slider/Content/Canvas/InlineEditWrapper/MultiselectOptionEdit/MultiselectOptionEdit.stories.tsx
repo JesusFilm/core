@@ -37,7 +37,8 @@ const block: TreeBlock<MultiselectQuestionFields> = {
   id: 'MultiselectQuestion1',
   parentBlockId: 'card0.id',
   parentOrder: 0,
-  gridView: false,
+  min: null,
+  max: null,
   children: [
     option1,
     {

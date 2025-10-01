@@ -31,11 +31,12 @@ describe('MultiselectQuestionEdit', () => {
     children?: Array<TreeBlock<MultiselectOptionFields>>
   ): ComponentProps<typeof MultiselectQuestionEdit> => {
     return {
-      __typename: 'MultiselectQuestionBlock',
+      __typename: 'MultiselectBlock',
       parentBlockId: 'card.id',
       parentOrder: 0,
       id: 'multiselectQuestion.id',
-      gridView: false,
+      min: null,
+      max: null,
       children: children ?? []
     }
   }

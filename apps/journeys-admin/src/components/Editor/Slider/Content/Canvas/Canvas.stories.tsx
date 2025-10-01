@@ -368,8 +368,6 @@ const steps: Array<TreeBlock<StepBlock>> = [
             __typename: 'MultiselectBlock',
             parentBlockId: 'multiselectCard.id',
             parentOrder: 0,
-            gridView: false,
-            label: 'Pick your favorites',
             min: null,
             max: 2,
             children: [

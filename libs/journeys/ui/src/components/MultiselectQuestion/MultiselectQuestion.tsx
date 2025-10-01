@@ -16,7 +16,7 @@ import { isActiveBlockOrDescendant, useBlocks } from '../../libs/block'
 import { BlockRenderer, WrappersProps } from '../BlockRenderer'
 import { MultiselectOption } from '../MultiselectOption/MultiselectOption'
 
-import { StyledListMultiSelectOption } from '../MultiselectOption'
+import { StyledListMultiselectOption } from '../MultiselectOption'
 
 export const MULTISELECT_SUBMISSION_EVENT_CREATE = gql`
   mutation MultiselectSubmissionEventCreate(
@@ -97,7 +97,10 @@ export function MultiselectQuestion({
   }, [children])
 
   useEffect(() => {
-    if (!isActiveBlockOrDescendant(blockId)) setSelectedIds([])
+    if (!isActiveBlockOrDescendant(blockId)) {
+      setSelectedIds([])
+      formik?.setFieldValue(blockId, [])
+    }
   }, [blockId, blockHistory])
 
   function toggleSelect(optionId: string): void {
@@ -143,7 +146,7 @@ export function MultiselectQuestion({
         <ButtonGroup orientation="vertical" variant="contained" fullWidth>
           {options}
           {addOption && (
-            <StyledListMultiSelectOption
+            <StyledListMultiselectOption
               data-testid={`${blockId}-add-option`}
               variant="contained"
               fullWidth
@@ -158,7 +161,7 @@ export function MultiselectQuestion({
               })}
             >
               <Typography variant="body1">{t('Add Option')}</Typography>
-            </StyledListMultiSelectOption>
+            </StyledListMultiselectOption>
           )}
         </ButtonGroup>
       </StyledListMultiselectQuestion>

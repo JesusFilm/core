@@ -400,27 +400,33 @@ export function NewMultiselectButton(): ReactElement {
             optimisticResponse: {
               multiselect: {
                 id: blocks.multiselectBlock.id,
-                parentOrder: blocks.multiselectBlock.parentOrder
+                parentOrder: blocks.multiselectBlock.parentOrder,
+                __typename: 'MultiselectBlock'
               },
               option1: {
                 id: blocks.option1.id,
-                parentOrder: blocks.option1.parentOrder
+                parentOrder: blocks.option1.parentOrder,
+                __typename: 'MultiselectOptionBlock'
               },
               option2: {
                 id: blocks.option2.id,
-                parentOrder: blocks.option2.parentOrder
+                parentOrder: blocks.option2.parentOrder,
+                __typename: 'MultiselectOptionBlock'
               },
               button: {
                 id: blocks.buttonBlock.id,
-                parentOrder: blocks.buttonBlock.parentOrder
+                parentOrder: blocks.buttonBlock.parentOrder,
+                __typename: 'ButtonBlock'
               },
               startIcon: {
                 id: blocks.buttonBlock.startIconId as string,
-                parentOrder: 0
+                parentOrder: 0,
+                __typename: 'IconBlock'
               },
               endIcon: {
                 id: blocks.buttonBlock.endIconId as string,
-                parentOrder: 1
+                parentOrder: 1,
+                __typename: 'IconBlock'
               }
             }
           })

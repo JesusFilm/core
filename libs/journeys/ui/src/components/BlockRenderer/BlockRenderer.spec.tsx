@@ -8,6 +8,10 @@ import { TreeBlock, blockHistoryVar, treeBlocksVar } from '../../libs/block'
 import { RadioOptionFields } from '../RadioOption/__generated__/RadioOptionFields'
 import { RadioQuestionFields } from '../RadioQuestion/__generated__/RadioQuestionFields'
 import { STEP_VIEW_EVENT_CREATE } from '../Step/Step'
+import {
+  BlockFields_MultiselectBlock as MultiselectBlock,
+  BlockFields_MultiselectOptionBlock as MultiselectOptionBlock
+} from '../../libs/block/__generated__/BlockFields'
 
 import { BlockRenderer } from './BlockRenderer'
 
@@ -479,7 +483,7 @@ describe('BlockRenderer', () => {
   })
 
   it('should render MultiselectQuestion', async () => {
-    const option = {
+    const option: TreeBlock<MultiselectOptionBlock> = {
       __typename: 'MultiselectOptionBlock',
       id: 'option1',
       parentBlockId: 'multi',
@@ -487,7 +491,7 @@ describe('BlockRenderer', () => {
       label: 'multi option 1',
       children: []
     }
-    const block: TreeBlock = {
+    const block: TreeBlock<MultiselectBlock> = {
       __typename: 'MultiselectBlock',
       id: 'multi',
       parentBlockId: null,

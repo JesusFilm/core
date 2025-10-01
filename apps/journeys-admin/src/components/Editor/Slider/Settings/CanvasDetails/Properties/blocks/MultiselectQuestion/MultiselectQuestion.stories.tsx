@@ -53,7 +53,7 @@ const Template: StoryObj<
     block: TreeBlock<MultiselectBlock>
   }
 > = {
-  render: (block) => {
+  render: ({ block }) => {
     return (
       <MockedProvider>
         <EditorProvider initialState={{ selectedBlock: { ...block } }}>
