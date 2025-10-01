@@ -205,7 +205,8 @@ type Mutation {
   playlistCreate(input: PlaylistCreateInput!): MutationPlaylistCreateResult
   playlistUpdate(id: ID!, input: PlaylistUpdateInput!): MutationPlaylistUpdateResult
   playlistDelete(id: ID!): MutationPlaylistDeleteResult
-  playlistItemAdd(id: ID, playlistId: ID!, videoVariantId: ID!): MutationPlaylistItemAddResult
+  playlistItemAdd(playlistId: ID!, videoVariantIds: [ID!]!): MutationPlaylistItemAddResult
+  playlistItemAddWithVideoAndLanguageIds(playlistId: ID!, videos: [PlaylistItemVideoInput!]!): MutationPlaylistItemAddWithVideoAndLanguageIdsResult
   playlistItemRemove(playlistId: ID!, itemId: ID!): MutationPlaylistItemRemoveResult
   playlistItemsReorder(playlistId: ID!, itemIds: [ID!]!): MutationPlaylistItemsReorderResult
 
@@ -303,7 +304,13 @@ type MutationPlaylistDeleteSuccess {
 union MutationPlaylistItemAddResult = NotFoundError | MutationPlaylistItemAddSuccess
 
 type MutationPlaylistItemAddSuccess {
-  data: PlaylistItem!
+  data: [PlaylistItem!]!
+}
+
+union MutationPlaylistItemAddWithVideoAndLanguageIdsResult = NotFoundError | MutationPlaylistItemAddWithVideoAndLanguageIdsSuccess
+
+type MutationPlaylistItemAddWithVideoAndLanguageIdsSuccess {
+  data: [PlaylistItem!]!
 }
 
 union MutationPlaylistItemRemoveResult = NotFoundError | MutationPlaylistItemRemoveSuccess
@@ -538,6 +545,17 @@ type PlaylistItem {
   updatedAt: DateTime!
   videoVariant: VideoVariant!
   playlist: Playlist!
+}
+
+"""
+The video variant to add to the playlist. This is used instead of the videoVariantId as clients typically know the video id and language id of the video variant but not the videoVariantId.
+"""
+input PlaylistItemVideoInput {
+  """The video id of the video variant"""
+  videoId: String!
+
+  """The language id of the video variant"""
+  languageId: String!
 }
 
 input PlaylistUpdateInput {
