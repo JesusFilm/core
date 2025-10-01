@@ -58,7 +58,7 @@ builder.mutationField('playlistItemAdd', (t) =>
         ])
       }
 
-      return await prisma.$transaction(async (transaction) => {
+      const playlistItems = await prisma.$transaction(async (transaction) => {
         // Get the next order number
         const lastItem = await transaction.playlistItem.findFirst({
           where: { playlistId },
@@ -68,21 +68,20 @@ builder.mutationField('playlistItemAdd', (t) =>
 
         const startOrder = lastItem?.order != null ? lastItem.order + 1 : 0
 
-        // Create playlist items in the order of the videoVariantIds array
-        const playlistItems = await Promise.all(
-          videoVariantIds.map((videoVariantId, index) =>
-            transaction.playlistItem.create({
-              ...query,
-              data: {
-                playlistId,
-                videoVariantId,
-                order: startOrder + index
-              }
-            })
-          )
-        )
+        return await transaction.playlistItem.createManyAndReturn({
+          select: { id: true },
+          data: videoVariantIds.map((videoVariantId, index) => ({
+            playlistId,
+            videoVariantId,
+            order: startOrder + index
+          }))
+        })
+      })
 
-        return playlistItems
+      return prisma.playlistItem.findMany({
+        ...query,
+        where: { id: { in: playlistItems.map((item) => item.id) } },
+        orderBy: { order: 'asc' }
       })
     }
   })
@@ -112,23 +111,24 @@ builder.mutationField('playlistItemAddWithVideoAndLanguageIds', (t) =>
       }
 
       // Find all video variants using videoId/languageId pairs
-      const videoVariants = await prisma.videoVariant.findMany({
-        where: {
-          OR: videos.map(({ videoId, languageId }) => ({
-            videoId,
-            languageId
-          }))
-        },
-        select: { id: true, videoId: true, languageId: true }
-      })
+      const videoVariants = new Map(
+        (
+          await prisma.videoVariant.findMany({
+            where: {
+              OR: videos.map(({ videoId, languageId }) => ({
+                videoId,
+                languageId
+              }))
+            },
+            select: { id: true, videoId: true, languageId: true }
+          })
+        ).map(({ id, videoId, languageId }) => [`${videoId}:${languageId}`, id])
+      )
 
       // Check if all video variants exist
       const missingVariants = videos.filter(
         ({ languageId, videoId }) =>
-          !videoVariants.some(
-            ({ languageId: variantLanguageId, videoId: variantVideoId }) =>
-              variantLanguageId === languageId && variantVideoId === videoId
-          )
+          !videoVariants.has(`${videoId}:${languageId}`)
       )
       if (missingVariants.length > 0) {
         const missingPairs = missingVariants.map(
@@ -139,7 +139,7 @@ builder.mutationField('playlistItemAddWithVideoAndLanguageIds', (t) =>
         ])
       }
 
-      return await prisma.$transaction(async (transaction) => {
+      const playlistItems = await prisma.$transaction(async (transaction) => {
         // Get the next order number
         const lastItem = await transaction.playlistItem.findFirst({
           where: { playlistId },
@@ -149,25 +149,20 @@ builder.mutationField('playlistItemAddWithVideoAndLanguageIds', (t) =>
 
         const startOrder = lastItem?.order != null ? lastItem.order + 1 : 0
 
-        // Create playlist items in the order of the videos array
-        const playlistItems = await Promise.all(
-          videos.map(({ videoId, languageId }, index) => {
-            const videoVariant = videoVariants.find(
-              ({ videoId: variantVideoId, languageId: variantLanguageId }) =>
-                variantVideoId === videoId && variantLanguageId === languageId
-            )
-            return transaction.playlistItem.create({
-              ...query,
-              data: {
-                playlistId,
-                videoVariantId: videoVariant!.id,
-                order: startOrder + index
-              }
-            })
-          })
-        )
+        return await transaction.playlistItem.createManyAndReturn({
+          select: { id: true },
+          data: videos.map(({ videoId, languageId }, index) => ({
+            playlistId,
+            videoVariantId: videoVariants.get(`${videoId}:${languageId}`)!,
+            order: startOrder + index
+          }))
+        })
+      })
 
-        return playlistItems
+      return prisma.playlistItem.findMany({
+        ...query,
+        where: { id: { in: playlistItems.map((item) => item.id) } },
+        orderBy: { order: 'asc' }
       })
     }
   })
