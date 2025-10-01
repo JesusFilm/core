@@ -198,7 +198,9 @@ export function TemplateCardPreview({
             >
               {t('Use this template to see more!')}
             </Typography>
-            <CreateJourneyButton signedIn={authUser?.id != null} />
+            <CreateJourneyButton
+              signedIn={authUser?.id != null}
+              skipOpenTeamDialog={true} />
           </Stack>
           <Box
             sx={{

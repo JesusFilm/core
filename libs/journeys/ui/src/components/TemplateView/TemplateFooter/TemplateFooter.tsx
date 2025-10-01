@@ -39,7 +39,9 @@ export function TemplateFooter({
       >
         {t('Use this template to make it your journey')}
       </Typography>
-      <CreateJourneyButton signedIn={signedIn} />
+      <CreateJourneyButton
+        signedIn={signedIn}
+        skipOpenTeamDialog={true} />
     </Stack>
   )
 }

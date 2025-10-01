@@ -13,6 +13,11 @@ import { AccountCheckDialog } from '../AccountCheckDialog'
 
 interface CreateJourneyButtonProps {
   signedIn?: boolean
+  /* If true, the team dialog will not be opened when the button is clicked.
+   * This can be used to prevent multiple team dialogs from being opened
+   * such as can happen if there are multiple buttons on the page.
+   */
+  skipOpenTeamDialog?: boolean
 }
 
 interface JourneyLanguage {
@@ -30,7 +35,8 @@ const DynamicCopyToTeamDialog = dynamic(
 )
 
 export function CreateJourneyButton({
-  signedIn = false
+  signedIn = false,
+  skipOpenTeamDialog = false
 }: CreateJourneyButtonProps): ReactElement {
   const { t } = useTranslation('libs-journeys-ui')
   const { enqueueSnackbar } = useSnackbar()
@@ -217,6 +223,7 @@ export function CreateJourneyButton({
     if (
       router.query.createNew === 'true' &&
       signedIn &&
+      !skipOpenTeamDialog &&
       setOpenTeamDialog !== undefined
     ) {
       setOpenTeamDialog(true)
