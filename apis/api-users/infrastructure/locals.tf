@@ -3,6 +3,7 @@ locals {
   environment_variables = [
     "AWS_ACCESS_KEY_ID",
     "AWS_SECRET_ACCESS_KEY",
+    "ENABLE_EXAMPLE_EMAIL_BYPASS",
     "EXAMPLE_EMAIL_TOKEN",
     "GATEWAY_HMAC_SECRET",
     "GOOGLE_APPLICATION_JSON",
