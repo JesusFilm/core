@@ -39,8 +39,7 @@ const multiselectBlockCreateMock: MockedResponse = {
       input: {
         id: 'multiselect.id',
         journeyId: 'journey.id',
-        parentBlockId: 'card.id',
-        label: 'Your label here'
+        parentBlockId: 'card.id'
       },
       multiselectOptionBlockCreateInput1: {
         id: 'option1.id',
@@ -93,8 +92,7 @@ const multiselectWithButtonCreateMock: MockedResponse = {
       multiselectInput: {
         id: 'multiselect.id',
         journeyId: 'journey.id',
-        parentBlockId: 'card.id',
-        label: 'Your label here'
+        parentBlockId: 'card.id'
       },
       optionInput1: {
         id: 'option1.id',
@@ -220,30 +218,32 @@ const multiselectWithButtonDeleteMock: MockedResponse = {
   },
   result: jest.fn(() => ({
     data: {
-      multiselect: [
-        { id: 'multiselect.id', parentOrder: 0, __typename: 'MultiselectBlock' }
-      ],
-      option1: [
-        {
-          id: 'option1.id',
-          parentOrder: 0,
-          __typename: 'MultiselectOptionBlock'
-        }
-      ],
-      option2: [
-        {
-          id: 'option2.id',
-          parentOrder: 1,
-          __typename: 'MultiselectOptionBlock'
-        }
-      ],
-      button: [{ id: 'button.id', parentOrder: 3, __typename: 'ButtonBlock' }],
-      startIcon: [
-        { id: 'startIcon.id', parentOrder: null, __typename: 'IconBlock' }
-      ],
-      endIcon: [
-        { id: 'endIcon.id', parentOrder: null, __typename: 'IconBlock' }
-      ]
+      multiselect: {
+        id: 'multiselect.id',
+        parentOrder: 0,
+        __typename: 'MultiselectBlock'
+      },
+      option1: {
+        id: 'option1.id',
+        parentOrder: 0,
+        __typename: 'MultiselectOptionBlock'
+      },
+      option2: {
+        id: 'option2.id',
+        parentOrder: 1,
+        __typename: 'MultiselectOptionBlock'
+      },
+      button: { id: 'button.id', parentOrder: 3, __typename: 'ButtonBlock' },
+      startIcon: {
+        id: 'startIcon.id',
+        parentOrder: null,
+        __typename: 'IconBlock'
+      },
+      endIcon: {
+        id: 'endIcon.id',
+        parentOrder: null,
+        __typename: 'IconBlock'
+      }
     }
   }))
 }
@@ -262,54 +262,42 @@ const multiselectWithButtonRestoreMock: MockedResponse = {
   },
   result: jest.fn(() => ({
     data: {
-      multiselect: [
-        {
-          id: 'multiselect.id',
-          parentOrder: 0,
-          parentBlockId: 'card.id',
-          __typename: 'MultiselectBlock'
-        }
-      ],
-      option1: [
-        {
-          id: 'option1.id',
-          parentOrder: 0,
-          parentBlockId: 'multiselect.id',
-          __typename: 'MultiselectOptionBlock'
-        }
-      ],
-      option2: [
-        {
-          id: 'option2.id',
-          parentOrder: 1,
-          parentBlockId: 'multiselect.id',
-          __typename: 'MultiselectOptionBlock'
-        }
-      ],
-      button: [
-        {
-          id: 'button.id',
-          parentOrder: 3,
-          parentBlockId: 'card.id',
-          __typename: 'ButtonBlock'
-        }
-      ],
-      startIcon: [
-        {
-          id: 'startIcon.id',
-          parentOrder: null,
-          parentBlockId: 'button.id',
-          __typename: 'IconBlock'
-        }
-      ],
-      endIcon: [
-        {
-          id: 'endIcon.id',
-          parentOrder: null,
-          parentBlockId: 'button.id',
-          __typename: 'IconBlock'
-        }
-      ]
+      multiselect: {
+        id: 'multiselect.id',
+        parentOrder: 0,
+        parentBlockId: 'card.id',
+        __typename: 'MultiselectBlock'
+      },
+      option1: {
+        id: 'option1.id',
+        parentOrder: 0,
+        parentBlockId: 'multiselect.id',
+        __typename: 'MultiselectOptionBlock'
+      },
+      option2: {
+        id: 'option2.id',
+        parentOrder: 1,
+        parentBlockId: 'multiselect.id',
+        __typename: 'MultiselectOptionBlock'
+      },
+      button: {
+        id: 'button.id',
+        parentOrder: 3,
+        parentBlockId: 'card.id',
+        __typename: 'ButtonBlock'
+      },
+      startIcon: {
+        id: 'startIcon.id',
+        parentOrder: null,
+        parentBlockId: 'button.id',
+        __typename: 'IconBlock'
+      },
+      endIcon: {
+        id: 'endIcon.id',
+        parentOrder: null,
+        parentBlockId: 'button.id',
+        __typename: 'IconBlock'
+      }
     }
   }))
 }
