@@ -4534,8 +4534,8 @@ input ButtonClickEventCreateInput @join__type(graph: API_JOURNEYS_MODERN)  {
   action: ButtonAction
   """
   The label for each corresponding action, mapping below: 
-            NavigateToBlockAction - StepName (generated in client) of the StepBlock 
-            LinkAction - url of the link
+  NavigateToBlockAction - StepName (generated in client) of the StepBlock 
+  LinkAction - url of the link
   """
   actionValue: String
 }

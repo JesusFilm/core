@@ -28,8 +28,8 @@ export const ButtonClickEventCreateInput = builder.inputType(
       actionValue: t.string({
         required: false,
         description: `The label for each corresponding action, mapping below: 
-          NavigateToBlockAction - StepName (generated in client) of the StepBlock 
-          LinkAction - url of the link`
+NavigateToBlockAction - StepName (generated in client) of the StepBlock 
+LinkAction - url of the link`
       })
     })
   }
