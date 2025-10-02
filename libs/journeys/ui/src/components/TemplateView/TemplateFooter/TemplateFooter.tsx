@@ -40,7 +40,10 @@ export function TemplateFooter({
       >
         {t('Use this template to make it your journey')}
       </Typography>
-      <TemplateActionButton signedIn={signedIn} displayOpenTeamDialog={displayOpenTeamDialog} />
+      <TemplateActionButton
+        signedIn={signedIn}
+        displayOpenTeamDialog={displayOpenTeamDialog}
+      />
     </Stack>
   )
 }

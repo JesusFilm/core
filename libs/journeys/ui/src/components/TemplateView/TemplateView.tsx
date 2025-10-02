@@ -103,9 +103,16 @@ export function TemplateView({
         }}
       >
         <Stack sx={{ gap: { xs: 3, sm: 7, md: 0 } }}>
-          <TemplateViewHeader isPublisher={isPublisher} authUser={authUser} displayOpenTeamDialog={true} />
+          <TemplateViewHeader
+            isPublisher={isPublisher}
+            authUser={authUser}
+            displayOpenTeamDialog={true}
+          />
           <TemplateTags tags={journey?.tags} />
-          <TemplatePreviewTabs authUser={authUser} displayOpenTeamDialog={false} />
+          <TemplatePreviewTabs
+            authUser={authUser}
+            displayOpenTeamDialog={false}
+          />
           <Typography
             variant="body2"
             sx={{ display: { xs: 'block', sm: 'none' } }}
@@ -150,7 +157,10 @@ export function TemplateView({
               }}
             />
           )}
-          <TemplateFooter signedIn={authUser?.id != null} displayOpenTeamDialog={false} />
+          <TemplateFooter
+            signedIn={authUser?.id != null}
+            displayOpenTeamDialog={false}
+          />
         </Stack>
       </Container>
     </Paper>
