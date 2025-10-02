@@ -68,62 +68,55 @@ describe('LinksScreen', () => {
     ]
   } as unknown as Journey
 
-  const mockLinks: JourneyLink[] = [
-    {
-      id: 'chat-1',
-      linkType: 'chatButtons',
-      url: 'https://wa.me/123',
-      label: 'Chat: whatsApp'
-    }
-  ]
+  // TODO: uncomment this when chat buttons are added to duplicate api
+  // it('renders placeholder and chat link form from journey', async () => {
+  //   await act(async () => {
+  //     render(
+  //       <MockedProvider>
+  //         <JourneyProvider value={{ journey, variant: 'admin' }}>
+  //           <LinksScreen
+  //             handleNext={jest.fn()}
+  //             handleScreenNavigation={jest.fn()}
+  //           />
+  //         </JourneyProvider>
+  //       </MockedProvider>
+  //     )
+  //   })
 
-  it('renders placeholder and chat link form from journey', async () => {
-    await act(async () => {
-      render(
-        <MockedProvider>
-          <JourneyProvider value={{ journey, variant: 'admin' }}>
-            <LinksScreen
-              handleNext={jest.fn()}
-              handleScreenNavigation={jest.fn()}
-            />
-          </JourneyProvider>
-        </MockedProvider>
-      )
-    })
+  //   expect(
+  //     screen.getAllByText(
+  //       'This invite contains buttons linking to external sites. Check them and update the links below.'
+  //     )[0]
+  //   ).toBeInTheDocument()
+  //   expect(screen.getByTestId('CardsPreviewPlaceholder')).toBeInTheDocument()
+  //   expect(screen.getByText('Chat: whatsApp')).toBeInTheDocument()
+  // })
 
-    expect(
-      screen.getAllByText(
-        'This invite contains buttons linking to external sites. Check them and update the links below.'
-      )[0]
-    ).toBeInTheDocument()
-    expect(screen.getByTestId('CardsPreviewPlaceholder')).toBeInTheDocument()
-    expect(screen.getByText('Chat: whatsApp')).toBeInTheDocument()
-  })
+  // TODO: uncomment this when chat buttons are added to duplicate api
+  // it('shows validation error for invalid chat URL on submit', async () => {
+  //   const handleNext = jest.fn()
+  //   await act(async () => {
+  //     render(
+  //       <MockedProvider>
+  //         <JourneyProvider value={{ journey, variant: 'admin' }}>
+  //           <LinksScreen
+  //             handleNext={handleNext}
+  //             handleScreenNavigation={jest.fn()}
+  //           />
+  //         </JourneyProvider>
+  //       </MockedProvider>
+  //     )
+  //   })
 
-  it('shows validation error for invalid chat URL on submit', async () => {
-    const handleNext = jest.fn()
-    await act(async () => {
-      render(
-        <MockedProvider>
-          <JourneyProvider value={{ journey, variant: 'admin' }}>
-            <LinksScreen
-              handleNext={handleNext}
-              handleScreenNavigation={jest.fn()}
-            />
-          </JourneyProvider>
-        </MockedProvider>
-      )
-    })
+  //   const chatGroup = screen.getByLabelText('Edit Chat: whatsApp')
+  //   const chatInput = within(chatGroup).getByRole('textbox') as HTMLInputElement
+  //   fireEvent.change(chatInput, { target: { value: 'wa.me/999' } })
 
-    const chatGroup = screen.getByLabelText('Edit Chat: whatsApp')
-    const chatInput = within(chatGroup).getByRole('textbox') as HTMLInputElement
-    fireEvent.change(chatInput, { target: { value: 'wa.me/999' } })
-
-    fireEvent.click(screen.getByRole('button', { name: 'Replace the links' }))
-    await waitFor(() =>
-      expect(screen.getByText('Enter a valid URL')).toBeInTheDocument()
-    )
-  })
+  //   fireEvent.click(screen.getByRole('button', { name: 'Replace the links' }))
+  //   await waitFor(() =>
+  //     expect(screen.getByText('Enter a valid URL')).toBeInTheDocument()
+  //   )
+  // })
 
   it('calls handleNext on submit (unchanged values)', async () => {
     const handleNext = jest.fn()
@@ -144,7 +137,7 @@ describe('LinksScreen', () => {
     await waitFor(() => expect(handleNext).toHaveBeenCalled())
   })
 
-  it('calls correct mutations for changed url, email and chat values', async () => {
+  it('calls correct mutations for changed url, email', async () => {
     const handleNext = jest.fn()
 
     const journeyWithLinks = {
@@ -197,31 +190,6 @@ describe('LinksScreen', () => {
         }
       ]
     } as unknown as Journey
-
-    const mockLinksWithMultipleTypes: JourneyLink[] = [
-      {
-        id: 'btn-url',
-        linkType: 'url',
-        url: 'https://example.com',
-        label: 'Primary',
-        parentStepId: 'step-1',
-        customizable: true
-      },
-      {
-        id: 'btn-email',
-        linkType: 'email',
-        url: 'user@example.com',
-        label: 'Email Link',
-        parentStepId: 'step-1',
-        customizable: true
-      },
-      {
-        id: 'chat-1',
-        linkType: 'chatButtons',
-        url: 'https://wa.me/123',
-        label: 'Chat: whatsApp'
-      }
-    ]
 
     const linkUpdateMock: MockedResponse<
       BlockActionLinkUpdate,
@@ -281,38 +249,37 @@ describe('LinksScreen', () => {
       }))
     }
 
-    const chatUpdateMock: MockedResponse<
-      JourneyChatButtonUpdate,
-      JourneyChatButtonUpdateVariables
-    > = {
-      request: {
-        query: JOURNEY_CHAT_BUTTON_UPDATE,
-        variables: {
-          chatButtonUpdateId: 'chat-1',
-          journeyId: 'journey-id',
-          input: {
-            link: 'https://wa.me/999',
-            platform: MessagePlatform.whatsApp
-          }
-        }
-      },
-      result: jest.fn(() => ({
-        data: {
-          chatButtonUpdate: {
-            __typename: 'ChatButton',
-            id: 'chat-1',
-            link: 'https://wa.me/999',
-            platform: MessagePlatform.whatsApp
-          }
-        }
-      }))
-    }
+    // TODO: uncomment this when chat buttons are added to duplicate api
+    // const chatUpdateMock: MockedResponse<
+    //   JourneyChatButtonUpdate,
+    //   JourneyChatButtonUpdateVariables
+    // > = {
+    //   request: {
+    //     query: JOURNEY_CHAT_BUTTON_UPDATE,
+    //     variables: {
+    //       chatButtonUpdateId: 'chat-1',
+    //       journeyId: 'journey-id',
+    //       input: {
+    //         link: 'https://wa.me/999',
+    //         platform: MessagePlatform.whatsApp
+    //       }
+    //     }
+    //   },
+    //   result: jest.fn(() => ({
+    //     data: {
+    //       chatButtonUpdate: {
+    //         __typename: 'ChatButton',
+    //         id: 'chat-1',
+    //         link: 'https://wa.me/999',
+    //         platform: MessagePlatform.whatsApp
+    //       }
+    //     }
+    //   }))
+    // }
 
     await act(async () => {
       render(
-        <MockedProvider
-          mocks={[linkUpdateMock, emailUpdateMock, chatUpdateMock]}
-        >
+        <MockedProvider mocks={[linkUpdateMock, emailUpdateMock]}>
           <JourneyProvider
             value={{ journey: journeyWithLinks, variant: 'admin' }}
           >
@@ -337,17 +304,19 @@ describe('LinksScreen', () => {
     ) as HTMLInputElement
     fireEvent.change(emailInput, { target: { value: 'changed@example.com' } })
 
+    // TODO: uncomment this when chat buttons are added to duplicate api
     // Change Chat field
-    const chatGroup = screen.getByLabelText('Edit Chat: whatsApp')
-    const chatInput = within(chatGroup).getByRole('textbox') as HTMLInputElement
-    fireEvent.change(chatInput, { target: { value: 'https://wa.me/999' } })
+    // const chatGroup = screen.getByLabelText('Edit Chat: whatsApp')
+    // const chatInput = within(chatGroup).getByRole('textbox') as HTMLInputElement
+    // fireEvent.change(chatInput, { target: { value: 'https://wa.me/999' } })
 
     fireEvent.click(screen.getByRole('button', { name: 'Replace the links' }))
 
     await waitFor(() => {
       expect(linkUpdateMock.result).toHaveBeenCalled()
       expect(emailUpdateMock.result).toHaveBeenCalled()
-      expect(chatUpdateMock.result).toHaveBeenCalled()
+      // TODO: uncomment this when chat buttons are added to duplicate api
+      // expect(chatUpdateMock.result).toHaveBeenCalled()
       expect(handleNext).toHaveBeenCalled()
     })
   })

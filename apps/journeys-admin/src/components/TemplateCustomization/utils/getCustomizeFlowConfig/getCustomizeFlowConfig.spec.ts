@@ -1,7 +1,6 @@
 import { TFunction } from 'i18next'
 
 import { GetJourney_journey as Journey } from '../../../../../__generated__/GetJourney'
-import { MessagePlatform } from '../../../../../__generated__/globalTypes'
 
 import { getCustomizeFlowConfig } from './getCustomizeFlowConfig'
 
@@ -53,14 +52,19 @@ describe('getCustomizeFlowConfig', () => {
     const journey = {
       journeyCustomizationDescription: null,
       journeyCustomizationFields: [],
-      chatButtons: [
+      blocks: [
         {
-          id: 'chat-1',
-          platform: MessagePlatform.whatsApp,
-          link: 'https://wa.me/123'
+          __typename: 'ButtonBlock',
+          id: '1',
+          label: 'Test Button',
+          action: {
+            __typename: 'LinkAction',
+            url: 'https://example.com',
+            customizable: true,
+            parentStepId: null
+          }
         }
-      ],
-      blocks: []
+      ]
     } as unknown as Journey
 
     const result = getCustomizeFlowConfig(journey, t)
@@ -71,10 +75,12 @@ describe('getCustomizeFlowConfig', () => {
     expect(result.hasCustomizableLinks).toBe(true)
     expect(result.links).toHaveLength(1)
     expect(result.links[0]).toEqual({
-      id: 'chat-1',
-      linkType: 'chatButtons',
-      url: 'https://wa.me/123',
-      label: 'Chat: whatsApp'
+      customizable: true,
+      id: '1',
+      label: 'Test Button',
+      linkType: 'url',
+      parentStepId: null,
+      url: 'https://example.com'
     })
   })
 
@@ -89,14 +95,19 @@ describe('getCustomizeFlowConfig', () => {
           __typename: 'JourneyCustomizationField'
         }
       ],
-      chatButtons: [
+      blocks: [
         {
-          id: 'chat-1',
-          platform: MessagePlatform.whatsApp,
-          link: 'https://wa.me/123'
+          __typename: 'ButtonBlock',
+          id: '1',
+          label: 'Test Button',
+          action: {
+            __typename: 'EmailAction',
+            email: 'test@example.com',
+            customizable: true,
+            parentStepId: null
+          }
         }
-      ],
-      blocks: []
+      ]
     } as unknown as Journey
 
     const result = getCustomizeFlowConfig(journey, t)

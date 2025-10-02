@@ -38,11 +38,18 @@ const phoneActionInputSchema = z.object({
   countryCode: z.string()
 })
 
+const chatActionInputSchema = z.object({
+  gtmEventName: z.string().nullish(),
+  chatUrl: z.string(),
+  target: z.string().nullish()
+})
+
 const ACTION_UPDATE_RESET: Prisma.ActionUpdateInput = {
   url: null,
   target: null,
   email: null,
   phone: null,
+  chatUrl: null,
   journey: { disconnect: true },
   block: { disconnect: true }
 }
@@ -79,12 +86,15 @@ builder.mutationField('blockUpdateAction', (t) =>
         navigateToBlockActionInputSchema.safeParse(input)
       const { success: isPhone, data: phoneInput } =
         phoneActionInputSchema.safeParse(input)
+      const { success: isChat, data: chatInput } =
+        chatActionInputSchema.safeParse(input)
 
       const numberOfValidInputs = [
         isLink,
         isEmail,
         isNavigateToBlock,
-        isPhone
+        isPhone,
+        isChat
       ].filter(Boolean).length
 
       if (numberOfValidInputs > 1)
@@ -199,6 +209,20 @@ builder.mutationField('blockUpdateAction', (t) =>
           update: {
             ...ACTION_UPDATE_RESET,
             ...phoneInput
+          }
+        })
+      }
+
+      if (isChat) {
+        return await prisma.action.upsert({
+          where: { parentBlockId: id },
+          create: {
+            ...chatInput,
+            parentBlock: { connect: { id: block.id } }
+          },
+          update: {
+            ...ACTION_UPDATE_RESET,
+            ...chatInput
           }
         })
       }

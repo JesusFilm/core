@@ -103,6 +103,18 @@ type PhoneAction implements Action
   contactAction: ContactActionType!
 }
 
+type ChatAction implements Action
+  @shareable
+{
+  parentBlockId: ID!
+  parentBlock: Block!
+  gtmEventName: String
+  chatUrl: String!
+  target: String
+  customizable: Boolean
+  parentStepId: String
+}
+
 interface Block {
   id: ID!
   journeyId: ID!
@@ -1409,6 +1421,7 @@ enum ButtonAction {
   LinkAction
   EmailAction
   PhoneAction
+  ChatAction
 }
 
 input ButtonClickEventCreateInput {
