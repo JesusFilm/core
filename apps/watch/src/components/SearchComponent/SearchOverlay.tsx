@@ -58,6 +58,7 @@ export function SearchOverlay({
             overflow-y-auto overscroll-contain p-0 border-0
             translate-x-0 translate-y-0 left-0 bg-stone-900/5
             [&>button]:scale-175 [&>button]:right-12 [&>button]:cursor-pointer
+            [&>button]:scale-175 [&>button]:right-12 [&>button]:cursor-pointer
           "
           data-testid="SearchOverlay"
         >
@@ -73,7 +74,7 @@ export function SearchOverlay({
                       isLoading={isTrendingLoading}
                     />
                   </div>
-                  <div className="w-full md:w-90 flex-shrink-0">
+                  <div className="w-full md:w-80 flex-shrink-0">
                     <div className="block mb-3 font-semibold text-sm uppercase tracking-wider text-stone-600">
                       {t('Search Filters')}
                     </div>
