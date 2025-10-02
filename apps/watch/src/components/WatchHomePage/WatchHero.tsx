@@ -46,7 +46,7 @@ export function WatchHero({
         </VideoProvider>
       )}
       <ContentPageBlurFilter>
-        <div className="pt-4">
+        <div className="py-5 ">
           <VideoCarousel
             slides={slides}
             activeVideoId={activeVideoId}

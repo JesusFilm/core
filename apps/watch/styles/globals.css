@@ -133,7 +133,7 @@
   }
 
   .preview-video {
-    height: clamp(500px, 50svh, 900px);
+    height: clamp(500px, calc(100svh - 300px), 900px);
     max-width: 100%;
   }
 

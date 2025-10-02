@@ -74,7 +74,7 @@ function WatchHomePageBody({ languageId }: WatchHomePageProps): ReactElement {
       >
         <div
           data-testid="WatchHomePage"
-          className="flex flex-col py-20 z-10 responsive-container"
+          className="flex flex-col z-10 responsive-container"
         >
           <ThemeProvider
             themeName={ThemeName.website}
