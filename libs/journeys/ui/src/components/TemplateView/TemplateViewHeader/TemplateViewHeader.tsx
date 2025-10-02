@@ -153,7 +153,10 @@ export function TemplateViewHeader({
               marginTop: 'auto'
             }}
           >
-            <TemplateActionButton signedIn={authUser?.id != null} displayOpenTeamDialog={displayOpenTeamDialog} />
+            <TemplateActionButton
+              signedIn={authUser?.id != null}
+              displayOpenTeamDialog={displayOpenTeamDialog}
+            />
             <PreviewTemplateButton slug={journey?.slug} />
             {journey != null && isPublisher === true && (
               <TemplateEditButton journeyId={journey.id} />
@@ -162,7 +165,10 @@ export function TemplateViewHeader({
         </Stack>
       </Stack>
       <Box sx={{ display: { xs: 'flex', sm: 'none' }, pt: 6 }} gap={2}>
-        <TemplateActionButton signedIn={authUser?.id != null} displayOpenTeamDialog={false} />
+        <TemplateActionButton
+          signedIn={authUser?.id != null}
+          displayOpenTeamDialog={false}
+        />
         <PreviewTemplateButton slug={journey?.slug} />
         {journey != null && isPublisher === true && (
           <TemplateEditButton journeyId={journey.id} />

@@ -98,7 +98,11 @@ export function TemplatePreviewTabs({
         />
       </Tabs>
       <TabPanel name="cards-preview-tab" value={tabValue} index={0}>
-        <TemplateCardPreview steps={steps} authUser={authUser} displayOpenTeamDialog={displayOpenTeamDialog} />
+        <TemplateCardPreview
+          steps={steps}
+          authUser={authUser}
+          displayOpenTeamDialog={displayOpenTeamDialog}
+        />
       </TabPanel>
       <TabPanel name="videos-preview-tab" value={tabValue} index={1}>
         <TemplateVideoPreview videoBlocks={videos} />

@@ -30,5 +30,10 @@ export function TemplateActionButton({
     )
   }
 
-  return <CreateJourneyButton signedIn={signedIn} displayOpenTeamDialog={displayOpenTeamDialog} />
+  return (
+    <CreateJourneyButton
+      signedIn={signedIn}
+      displayOpenTeamDialog={displayOpenTeamDialog}
+    />
+  )
 }
