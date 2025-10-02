@@ -18,6 +18,7 @@ import {
 } from '../../../../../../../../../__generated__/BlockFields'
 import { useActionCommand } from '../../../../../../utils/useActionCommand'
 
+import { ChatAction } from './ChatAction'
 import { CustomizationToggle } from './CustomizationToggle'
 import { EmailAction } from './EmailAction'
 import { LinkAction } from './LinkAction'
@@ -34,6 +35,7 @@ export function Action(): ReactElement {
   const { journey } = useJourney()
   const linkActionRef = useRef<TextFieldFormRef | null>(null)
   const emailActionRef = useRef<TextFieldFormRef | null>(null)
+  const chatActionRef = useRef<TextFieldFormRef | null>(null)
 
   // Add addtional types here to use this component for that block
   const selectedBlock = stateSelectedBlock as
@@ -65,6 +67,7 @@ export function Action(): ReactElement {
   useEffect(() => {
     if (action === 'LinkAction') linkActionRef.current?.focus()
     if (action === 'EmailAction') emailActionRef.current?.focus()
+    if (action === 'ChatAction') chatActionRef.current?.focus()
   }, [action])
 
   function removeAction(): void {
@@ -90,6 +93,7 @@ export function Action(): ReactElement {
 
   const isLink = !isSubmitButton && action === 'LinkAction'
   const isEmail = !isSubmitButton && action === 'EmailAction'
+  const isChat = !isSubmitButton && action === 'ChatAction'
 
   return (
     <>
@@ -118,8 +122,11 @@ export function Action(): ReactElement {
         </FormControl>
         {isLink && <LinkAction ref={linkActionRef} />}
         {isEmail && <EmailAction ref={emailActionRef} />}
+        {isChat && <ChatAction ref={chatActionRef} />}
         {action === 'NavigateToBlockAction' && <NavigateToBlockAction />}
-        {(isLink || isEmail) && journey?.template && <CustomizationToggle />}
+        {(isLink || isEmail || isChat) && journey?.template && (
+          <CustomizationToggle />
+        )}
       </Stack>
     </>
   )

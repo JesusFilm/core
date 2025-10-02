@@ -10,6 +10,7 @@ import {
   BlockFields_SignUpBlock_action,
   BlockFields_VideoBlock_action
 } from '../../../../../__generated__/BlockFields'
+import { useBlockActionChatUpdateMutation } from '../../../../libs/useBlockActionChatUpdateMutation'
 import { useBlockActionDeleteMutation } from '../../../../libs/useBlockActionDeleteMutation'
 import { useBlockActionEmailUpdateMutation } from '../../../../libs/useBlockActionEmailUpdateMutation'
 import { useBlockActionLinkUpdateMutation } from '../../../../libs/useBlockActionLinkUpdateMutation'
@@ -40,6 +41,7 @@ export function useActionCommand(): {
   const [actionEmailUpdate] = useBlockActionEmailUpdateMutation()
   const [actionNavigateToBlockUpdate] =
     useBlockActionNavigateToBlockUpdateMutation()
+  const [actionChatUpdate] = useBlockActionChatUpdateMutation()
 
   return {
     addAction({
@@ -84,6 +86,14 @@ export function useActionCommand(): {
               void actionEmailUpdate(
                 block,
                 action.email,
+                action.customizable,
+                action.parentStepId
+              )
+              break
+            case 'ChatAction':
+              void actionChatUpdate(
+                block,
+                action.chatUrl,
                 action.customizable,
                 action.parentStepId
               )
