@@ -312,6 +312,7 @@ describe('MyComponent', () => {
 - Do not add new packages unless absolutely critical to deliver the feature. Prefer refactoring or reusing existing utilities.
 - Reuse the workspace Playwright installation; never install Playwright globally or commit browser binaries.
 - When lint/type-check errors stem from unrelated legacy code, ensure no new issues originate from your changes and call out the existing failures in documentation.
+- Use `pnpm dlx nx run watch:serve` when starting the dev server to guarantee a clean Nx CLI environment; this avoids stale global Nx installs and ensures commands run with the repo-locked version.
 
 ## Planning & Knowledge sharing
 
