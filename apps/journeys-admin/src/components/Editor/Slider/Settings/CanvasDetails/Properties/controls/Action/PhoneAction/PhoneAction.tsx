@@ -138,17 +138,11 @@ export function PhoneAction(): ReactElement {
         phone: string()
           .required(t('Phone number is required'))
           .test(
-            'phone-length',
-            t('Phone number must be under 15 digits.'),
+            'phone-no-leading-zero',
+            t('Phone number cannot start with 0.'),
             function (value) {
-              if (!value || !selectedCountry) return false
-              const countryCodeDigits = selectedCountry.callingCode.replace(
-                /[-+]/g,
-                ''
-              )
-              const fullPhoneNumber = `+${countryCodeDigits}${value}`
-              const totalLength = fullPhoneNumber.length - 1
-              return totalLength >= 3 && totalLength <= 15
+              if (!value) return true
+              return !value.startsWith('0')
             }
           )
           .test(
@@ -162,6 +156,20 @@ export function PhoneAction(): ReactElement {
               )
               const fullPhoneNumber = `+${countryCodeDigits}${value}`
               return /^\+[1-9]\d{2,14}$/.test(fullPhoneNumber)
+            }
+          )
+          .test(
+            'phone-length',
+            t('Phone number must be under 15 digits.'),
+            function (value) {
+              if (!value || !selectedCountry) return false
+              const countryCodeDigits = selectedCountry.callingCode.replace(
+                /[-+]/g,
+                ''
+              )
+              const fullPhoneNumber = `+${countryCodeDigits}${value}`
+              const totalLength = fullPhoneNumber.length - 1
+              return totalLength >= 3 && totalLength <= 15
             }
           )
       }),

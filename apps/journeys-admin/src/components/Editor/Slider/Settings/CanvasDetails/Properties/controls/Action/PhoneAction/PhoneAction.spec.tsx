@@ -184,6 +184,25 @@ describe('PhoneAction', () => {
     )
   })
 
+  it('should validate phone number cannot start with 0', async () => {
+    render(
+      <MockedProvider>
+        <EditorProvider>
+          <PhoneAction />
+        </EditorProvider>
+      </MockedProvider>
+    )
+
+    const phoneInput = screen.getByRole('textbox', { name: 'Phone Number' })
+    fireEvent.change(phoneInput, { target: { value: '0123456789' } })
+    fireEvent.blur(phoneInput)
+    await waitFor(() =>
+      expect(
+        screen.getByText('Phone number cannot start with 0.')
+      ).toBeInTheDocument()
+    )
+  })
+
   it('should update contact action', async () => {
     const contactActionUpdateMock = {
       ...blockActionPhoneUpdateMock,
