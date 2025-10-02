@@ -35,19 +35,27 @@ export function Action(): ReactElement {
   const linkActionRef = useRef<TextFieldFormRef | null>(null)
   const emailActionRef = useRef<TextFieldFormRef | null>(null)
 
-  // Add addtional types here to use this component for that block
-  const selectedBlock = stateSelectedBlock as
-    | TreeBlock<ButtonBlock>
-    | TreeBlock<SignUpBlock>
-    | TreeBlock<VideoBlock>
-    | undefined
+  // Compute current action typename via safe narrowing on __typename
+  const selectedActionTypename: string | undefined = (() => {
+    if (stateSelectedBlock?.__typename === 'ButtonBlock') {
+      return (stateSelectedBlock as TreeBlock<ButtonBlock>).action?.__typename
+    }
+    if (stateSelectedBlock?.__typename === 'SignUpBlock') {
+      return (stateSelectedBlock as TreeBlock<SignUpBlock>).action?.__typename
+    }
+    if (stateSelectedBlock?.__typename === 'VideoBlock') {
+      return (stateSelectedBlock as TreeBlock<VideoBlock>).action?.__typename
+    }
+    return undefined
+  })()
+
   const [action, setAction] = useState<ActionValue>(
-    getAction(t, selectedBlock?.action?.__typename).value
+    getAction(t, selectedActionTypename).value
   )
 
   const isSubmitButton =
-    selectedBlock?.__typename === 'ButtonBlock' &&
-    selectedBlock.submitEnabled === true
+    stateSelectedBlock?.__typename === 'ButtonBlock' &&
+    (stateSelectedBlock as TreeBlock<ButtonBlock>).submitEnabled === true
 
   const labels = actions(t)
 
@@ -59,8 +67,8 @@ export function Action(): ReactElement {
     : labels
 
   useEffect(() => {
-    setAction(getAction(t, selectedBlock?.action?.__typename).value)
-  }, [selectedBlock?.action?.__typename])
+    setAction(getAction(t, selectedActionTypename).value)
+  }, [selectedActionTypename])
 
   useEffect(() => {
     if (action === 'LinkAction') linkActionRef.current?.focus()
@@ -68,17 +76,29 @@ export function Action(): ReactElement {
   }, [action])
 
   function removeAction(): void {
-    if (selectedBlock == null) return
+    if (stateSelectedBlock == null) return
 
-    const { id, action, __typename: blockTypename } = selectedBlock
+    const { id, __typename: blockTypename } = stateSelectedBlock
+    const undoAction = (() => {
+      if (stateSelectedBlock?.__typename === 'ButtonBlock') {
+        return (stateSelectedBlock as TreeBlock<ButtonBlock>).action
+      }
+      if (stateSelectedBlock?.__typename === 'SignUpBlock') {
+        return (stateSelectedBlock as TreeBlock<SignUpBlock>).action
+      }
+      if (stateSelectedBlock?.__typename === 'VideoBlock') {
+        return (stateSelectedBlock as TreeBlock<VideoBlock>).action
+      }
+      return null
+    })()
     addAction({
       blockId: id,
       blockTypename,
       action: null,
-      undoAction: action,
+      undoAction,
       editorFocus: {
         selectedStep,
-        selectedBlock
+        selectedBlock: stateSelectedBlock
       }
     })
   }

@@ -128,13 +128,18 @@ export function Button({
       ? getStepHeading(activeBlock.id, activeBlock.children, treeBlocks, t)
       : 'None'
 
-  const startIcon = children.find((block) => block.id === startIconId) as
-    | TreeBlock<IconFields>
-    | undefined
+  const isIconBlock = (block: any): block is TreeBlock<IconFields> =>
+    block?.__typename === 'IconBlock'
 
-  const endIcon = children.find((block) => block.id === endIconId) as
-    | TreeBlock<IconFields>
-    | undefined
+  const startIcon = children.find(
+    (block): block is TreeBlock<IconFields> =>
+      isIconBlock(block) && block.id === startIconId
+  )
+
+  const endIcon = children.find(
+    (block): block is TreeBlock<IconFields> =>
+      isIconBlock(block) && block.id === endIconId
+  )
 
   const messagePlatform = useMemo(() => findMessagePlatform(action), [action])
   const actionValue = useMemo(
@@ -162,13 +167,20 @@ export function Button({
   function createClickEvent(): void {
     if (variant === 'default' || variant === 'embed') {
       const id = uuidv4()
+      const resolvedActionType =
+        action?.__typename === 'LinkAction' ||
+        action?.__typename === 'EmailAction' ||
+        action?.__typename === 'NavigateToBlockAction'
+          ? (action.__typename as ButtonAction)
+          : undefined
+
       const input: ButtonClickEventCreateInput = {
         id,
         blockId,
         stepId: activeBlock?.id,
         label: heading,
         value: resolvedLabel,
-        action: action?.__typename as ButtonAction | undefined,
+        action: resolvedActionType,
         actionValue
       }
       void buttonClickEventCreate({
