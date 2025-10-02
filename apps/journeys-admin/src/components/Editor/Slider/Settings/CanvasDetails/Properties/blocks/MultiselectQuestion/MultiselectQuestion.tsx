@@ -83,14 +83,20 @@ export function MultiselectQuestion({
             selectedStep,
             selectedAttributeId: `${id}-multiselect-settings`
           })
+          // Build input with only the fields explicitly provided.
+          // This avoids unintentionally resetting unrelated fields to null.
+          const input: {
+            label?: string | null
+            min?: number | null
+            max?: number | null
+          } = {}
+          if ('label' in variables) input.label = variables.label ?? null
+          if ('min' in variables) input.min = variables.min ?? null
+          if ('max' in variables) input.max = variables.max ?? null
           void updateBlock({
             variables: {
               id,
-              input: {
-                label: variables.label ?? null,
-                min: variables.min ?? null,
-                max: variables.max ?? null
-              }
+              input
             },
             optimisticResponse: {
               multiselectBlockUpdate: {
