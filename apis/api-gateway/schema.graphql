@@ -261,7 +261,6 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   customDomainUpdate(id: ID!, input: CustomDomainUpdateInput!) : CustomDomain! @join__field(graph: API_JOURNEYS) 
   customDomainDelete(id: ID!) : CustomDomain! @join__field(graph: API_JOURNEYS) 
   customDomainCheck(id: ID!) : CustomDomainCheck! @join__field(graph: API_JOURNEYS) 
-  buttonClickEventCreate(input: ButtonClickEventCreateInput!) : ButtonClickEvent! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
   chatOpenEventCreate(input: ChatOpenEventCreateInput!) : ChatOpenEvent! @join__field(graph: API_JOURNEYS) 
   """
   Creates a JourneyViewEvent, returns null if attempting to create another
@@ -400,6 +399,7 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   blockUpdateLinkAction(id: ID!, input: LinkActionInput!, journeyId: ID) : LinkAction! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
   blockUpdateNavigateToBlockAction(id: ID!, input: NavigateToBlockActionInput!, journeyId: ID) : NavigateToBlockAction! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
   blockUpdatePhoneAction(id: ID!, input: PhoneActionInput!, journeyId: ID) : PhoneAction! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
+  buttonClickEventCreate(input: ButtonClickEventCreateInput!) : ButtonClickEvent! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
   multiselectSubmissionEventCreate(input: MultiselectSubmissionEventCreateInput!) : MultiselectSubmissionEvent! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
   journeySimpleUpdate(id: ID!, journey: Json!) : Json @join__field(graph: API_JOURNEYS_MODERN) 
   journeyAiTranslateCreate(input: JourneyAiTranslateInput!) : Journey! @join__field(graph: API_JOURNEYS_MODERN) 
@@ -3813,36 +3813,6 @@ input CustomDomainUpdateInput @join__type(graph: API_JOURNEYS)  @join__type(grap
   routeAllTeamJourneys: Boolean
 }
 
-input ButtonClickEventCreateInput @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
-  """
-  ID should be unique Event UUID (Provided for optimistic mutation result matching)
-  """
-  id: ID
-  blockId: ID!
-  """
-  id of the parent stepBlock
-  """
-  stepId: ID
-  """
-  stepName of the parent stepBlock
-  """
-  label: String
-  """
-  label of the button
-  """
-  value: String
-  """
-  Action type of the button when it was clicked
-  """
-  action: ButtonAction
-  """
-  The label for each corresponding action, mapping below:
-  NavigateToBlockAction - StepName (generated in client) of the StepBlock
-  LinkAction - url of the link
-  """
-  actionValue: String
-}
-
 input ChatOpenEventCreateInput @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
   """
   ID should be unique Event UUID (Provided for optimistic mutation result matching)
@@ -4538,6 +4508,36 @@ input BlockUpdateActionInput @join__type(graph: API_JOURNEYS_MODERN)  {
   countryCode: String
   target: String
   blockId: String
+}
+
+input ButtonClickEventCreateInput @join__type(graph: API_JOURNEYS_MODERN)  {
+  """
+  ID should be unique Event UUID (Provided for optimistic mutation result matching)
+  """
+  id: ID
+  blockId: ID!
+  """
+  id of the parent stepBlock
+  """
+  stepId: ID
+  """
+  stepName of the parent stepBlock
+  """
+  label: String
+  """
+  label of the button
+  """
+  value: String
+  """
+  Action type of the button when it was clicked
+  """
+  action: ButtonAction
+  """
+  The label for each corresponding action, mapping below: 
+  NavigateToBlockAction - StepName (generated in client) of the StepBlock 
+  LinkAction - url of the link
+  """
+  actionValue: String
 }
 
 input EmailActionInput @join__type(graph: API_JOURNEYS_MODERN)  {
