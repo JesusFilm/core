@@ -38,7 +38,7 @@ export function HeroVideo({
 }: HeroVideoProps): ReactElement {
   const { variant, ...video } = useVideo()
   const {
-    state: { mute },
+    state: { mute, play },
     dispatch: dispatchPlayer
   } = usePlayer()
   const {
@@ -199,6 +199,17 @@ export function HeroVideo({
       playerRef.current.muted(mute)
     }
   }, [mute, playerReady])
+
+  // Handle play/pause state changes dynamically without recreating the player
+  useEffect(() => {
+    if (playerRef.current && playerReady) {
+      if (play) {
+        void playerRef.current.play()
+      } else {
+        playerRef.current.pause()
+      }
+    }
+  }, [play, playerReady])
 
   // Duration timer for Mux inserts
   useEffect(() => {

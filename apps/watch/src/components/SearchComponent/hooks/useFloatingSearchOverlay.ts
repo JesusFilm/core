@@ -9,6 +9,7 @@ import {
 } from 'react'
 import { useSearchBox } from 'react-instantsearch'
 
+import { usePlayer } from '../../../libs/playerContext'
 import { useTrendingSearches } from '../../../hooks/useTrendingSearches'
 
 export interface UseFloatingSearchOverlayResult {
@@ -38,6 +39,7 @@ const SEARCH_IDLE_TIMEOUT = 1000
 export function useFloatingSearchOverlay(): UseFloatingSearchOverlayResult {
   const { refine } = useSearchBox()
   const { t } = useTranslation('apps-watch')
+  const { dispatch: dispatchPlayer } = usePlayer()
   const [isSearchActive, setIsSearchActive] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
   const [searchValue, setSearchValue] = useState('')
@@ -109,14 +111,16 @@ export function useFloatingSearchOverlay(): UseFloatingSearchOverlayResult {
 
   const handleSearchFocus = useCallback(() => {
     setIsSearchActive(true)
-  }, [])
+    dispatchPlayer({ type: 'SetPlay', play: false })
+  }, [dispatchPlayer])
 
   const handleCloseSearch = useCallback(() => {
     setIsSearchActive(false)
     setSearchValue('')
     setSearchQuery('')
     refine('')
-  }, [refine])
+    dispatchPlayer({ type: 'SetPlay', play: true })
+  }, [refine, dispatchPlayer])
 
   useEffect(() => {
     if (!isSearchActive) return
