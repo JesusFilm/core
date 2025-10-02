@@ -60,12 +60,11 @@ const multiselectBlockCreateMock: MockedResponse = {
       multiselectBlockCreate: {
         __typename: 'MultiselectBlock',
         id: 'multiselect.id',
+        journeyId: 'journey.id',
         parentBlockId: 'card.id',
         parentOrder: 0,
-        label: 'Your label here',
         min: null,
-        max: null,
-        action: null
+        max: null
       },
       multiselectOption1: {
         __typename: 'MultiselectOptionBlock',
