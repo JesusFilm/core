@@ -22,10 +22,12 @@ import { TemplateVideoPreview } from './TemplateVideoPreview'
 
 interface TemplatePreviewTabsProps {
   authUser?: User
+  displayOpenTeamDialog?: boolean
 }
 
 export function TemplatePreviewTabs({
-  authUser
+  authUser,
+  displayOpenTeamDialog = true
 }: TemplatePreviewTabsProps): ReactElement {
   const [tabValue, setTabValue] = useState(0)
   const { t } = useTranslation('libs-journeys-ui')
@@ -96,7 +98,7 @@ export function TemplatePreviewTabs({
         />
       </Tabs>
       <TabPanel name="cards-preview-tab" value={tabValue} index={0}>
-        <TemplateCardPreview steps={steps} authUser={authUser} />
+        <TemplateCardPreview steps={steps} authUser={authUser} displayOpenTeamDialog={displayOpenTeamDialog} />
       </TabPanel>
       <TabPanel name="videos-preview-tab" value={tabValue} index={1}>
         <TemplateVideoPreview videoBlocks={videos} />
