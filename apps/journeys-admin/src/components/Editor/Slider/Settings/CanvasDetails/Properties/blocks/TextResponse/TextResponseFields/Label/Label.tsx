@@ -205,7 +205,7 @@ export function Label(): ReactElement {
 
   return (
     <Stack direction="column" sx={{ p: 4, pt: 0 }} data-testid="Label">
-      <Stack direction="row">
+      <Stack direction="row" alignItems={'center'}>
         <TextField
           id="label"
           name="label"
@@ -229,7 +229,11 @@ export function Label(): ReactElement {
           onClick={hideLabelToggle}
           aria-label={hideLabel ? t('Show label') : t('Hide label')}
           tabIndex={0}
-          sx={{ pl: 4 }}
+          sx={{
+            ml: 4,
+            height: '40px',
+            width: '40px'
+          }}
         >
           {hideLabel ? <EyeClosed /> : <EyeOpen />}
         </IconButton>
@@ -243,7 +247,7 @@ export function Label(): ReactElement {
         }}
       >
         {t(
-          'This label can be hidden from users, but it will always be included in analytics.​'
+          'This label can be hidden from users, but it will still appear in analytics and show as helper text if the field is required.'
         )}
       </Typography>
     </Stack>

@@ -287,4 +287,42 @@ describe('TextResponse', () => {
     // The textbox should still be present
     expect(screen.getByRole('textbox')).toBeInTheDocument()
   })
+
+  it('should show hint text', () => {
+    const blockWithHint: TreeBlock<TextResponseFields> = {
+      ...block,
+      hint: 'Please provide your thoughts on this topic'
+    }
+
+    render(
+      <JourneyProvider>
+        <SnackbarProvider>
+          <TextResponse {...blockWithHint} />
+        </SnackbarProvider>
+      </JourneyProvider>
+    )
+
+    expect(
+      screen.getByText('Please provide your thoughts on this topic')
+    ).toBeInTheDocument()
+  })
+
+  it('should show required text in hint', () => {
+    const requiredBlockWithHiddenLabel: TreeBlock<TextResponseFields> = {
+      ...block,
+      required: true,
+      hideLabel: true,
+      label: ''
+    }
+
+    render(
+      <JourneyProvider>
+        <SnackbarProvider>
+          <TextResponse {...requiredBlockWithHiddenLabel} />
+        </SnackbarProvider>
+      </JourneyProvider>
+    )
+
+    expect(screen.getByText('This field is required.')).toBeInTheDocument()
+  })
 })

@@ -120,6 +120,16 @@ export const TextResponse = ({
     }
   }
 
+  const helperText = (() => {
+    if (resolvedHint != null && resolvedHint.trim() !== '') {
+      return resolvedHint
+    }
+    if (required && (hideLabel || resolvedLabel.trim() === '')) {
+      return t('This field is required.')
+    }
+    return ''
+  })()
+
   return (
     <Box sx={{ mb: 4 }} data-testid="JourneysTextResponse">
       <Stack
@@ -146,7 +156,7 @@ export const TextResponse = ({
           name={blockId}
           placeholder={trimmedPlaceholder}
           value={currentValue}
-          helperText={resolvedHint != null ? resolvedHint : ''}
+          helperText={helperText}
           multiline
           disabled={isSubmitting}
           minRows={minRows ?? 1}
