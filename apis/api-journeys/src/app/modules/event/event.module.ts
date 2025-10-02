@@ -10,10 +10,7 @@ import { BlockService } from '../block/block.service'
 import { IntegrationGrowthSpacesService } from '../integration/growthSpaces/growthSpaces.service'
 import { VisitorService } from '../visitor/visitor.service'
 
-import {
-  ButtonClickEventResolver,
-  ChatOpenEventResolver
-} from './button/button.resolver'
+import { ChatOpenEventResolver } from './button/button.resolver'
 import { EventResolver } from './event.resolver'
 import { EventService } from './event.service'
 import { JourneyViewEventResolver } from './journey/journey.resolver'
@@ -43,7 +40,6 @@ import {
   ],
   providers: [
     BlockService,
-    ButtonClickEventResolver,
     ChatOpenEventResolver,
     EventService,
     EventResolver,

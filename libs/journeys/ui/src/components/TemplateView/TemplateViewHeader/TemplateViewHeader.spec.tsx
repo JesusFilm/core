@@ -340,14 +340,12 @@ describe('TemplateViewHeader', () => {
 
     const { getAllByRole } = render(
       <MockedProvider>
-        <FlagsProvider flags={{ journeyCustomization: true }}>
-          <JourneyProvider value={{ journey }}>
-            <TemplateViewHeader
-              isPublisher
-              authUser={{ id: '123' } as unknown as User}
-            />
-          </JourneyProvider>
-        </FlagsProvider>
+        <JourneyProvider value={{ journey }}>
+          <TemplateViewHeader
+            isPublisher
+            authUser={{ id: '123' } as unknown as User}
+          />
+        </JourneyProvider>
       </MockedProvider>
     )
 
@@ -367,14 +365,12 @@ describe('TemplateViewHeader', () => {
 
     const { getAllByRole } = render(
       <MockedProvider>
-        <FlagsProvider flags={{ journeyCustomization: false }}>
-          <JourneyProvider value={{ journey }}>
-            <TemplateViewHeader
-              isPublisher
-              authUser={{ id: '123' } as unknown as User}
-            />
-          </JourneyProvider>
-        </FlagsProvider>
+        <JourneyProvider value={{ journey }}>
+          <TemplateViewHeader
+            isPublisher
+            authUser={{ id: '123' } as unknown as User}
+          />
+        </JourneyProvider>
       </MockedProvider>
     )
 
@@ -390,14 +386,12 @@ describe('TemplateViewHeader', () => {
 
     render(
       <MockedProvider>
-        <FlagsProvider flags={{ journeyCustomization: false }}>
-          <JourneyProvider value={{ journey: undefined }}>
-            <TemplateViewHeader
-              isPublisher
-              authUser={{ id: '123' } as unknown as User}
-            />
-          </JourneyProvider>
-        </FlagsProvider>
+        <JourneyProvider value={{ journey: undefined }}>
+          <TemplateViewHeader
+            isPublisher
+            authUser={{ id: '123' } as unknown as User}
+          />
+        </JourneyProvider>
       </MockedProvider>
     )
 

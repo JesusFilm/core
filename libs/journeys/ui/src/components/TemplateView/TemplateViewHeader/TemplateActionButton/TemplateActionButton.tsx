@@ -2,7 +2,6 @@ import Skeleton from '@mui/material/Skeleton'
 import { ReactElement } from 'react'
 
 import { useJourney } from '../../../../libs/JourneyProvider'
-import { useFlags } from '@core/shared/ui/FlagsProvider'
 import { UseThisTemplateButton } from '../../UseThisTemplateButton'
 import { CreateJourneyButton } from '../../CreateJourneyButton'
 import { isJourneyCustomizable } from '../../../../libs/isJourneyCustomizable'
@@ -15,13 +14,8 @@ export function TemplateActionButton({
   signedIn
 }: TemplateActionButtonProps): ReactElement {
   const { journey } = useJourney()
-  const { journeyCustomization } = useFlags()
 
-  if (
-    journeyCustomization &&
-    journey != null &&
-    isJourneyCustomizable(journey)
-  ) {
+  if (journey != null && isJourneyCustomizable(journey)) {
     return <UseThisTemplateButton signedIn={signedIn} />
   }
 

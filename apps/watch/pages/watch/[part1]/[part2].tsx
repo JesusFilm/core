@@ -91,7 +91,7 @@ export default function Part2Page({
       <WatchProvider initialState={initialWatchState}>
         <VideoProvider value={{ content }}>
           <PlayerProvider>
-            {content.variant?.hls != null ? (
+            {content.variant?.hls != null && content.variant?.hls != '' ? (
               <DynamicNewContentPage />
             ) : (
               <DynamicVideoContainerPage />

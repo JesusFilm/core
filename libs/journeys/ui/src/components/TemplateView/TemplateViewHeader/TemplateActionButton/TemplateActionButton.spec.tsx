@@ -4,7 +4,6 @@ import { render, screen } from '@testing-library/react'
 import { JourneyProvider } from '../../../../libs/JourneyProvider'
 import { journey } from '../../TemplateFooter/data'
 import { TemplateActionButton } from './TemplateActionButton'
-import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 import { isJourneyCustomizable } from '../../../../libs/isJourneyCustomizable'
 
 jest.mock('../../../../libs/isJourneyCustomizable', () => ({
@@ -23,16 +22,14 @@ describe('TemplateActionButton', () => {
     jest.clearAllMocks()
   })
 
-  it('should render UseThisTemplateButton when journey customization is enabled, journey is customizable, and user is signed in', () => {
+  it('should render UseThisTemplateButton when journey is customizable and user is signed in', () => {
     mockIsJourneyCustomizable.mockReturnValue(true)
 
     render(
       <MockedProvider>
-        <FlagsProvider flags={{ journeyCustomization: true }}>
-          <JourneyProvider value={{ journey }}>
-            <TemplateActionButton signedIn={signedIn} />
-          </JourneyProvider>
-        </FlagsProvider>
+        <JourneyProvider value={{ journey }}>
+          <TemplateActionButton signedIn={signedIn} />
+        </JourneyProvider>
       </MockedProvider>
     )
 
@@ -43,16 +40,14 @@ describe('TemplateActionButton', () => {
     expect(screen.queryByTestId('CreateJourneyButton')).not.toBeInTheDocument()
   })
 
-  it('should render UseThisTemplateButton when journey customization is enabled, journey is customizable, and user is signed out', () => {
+  it('should render UseThisTemplateButton when journey is customizable and user is signed out', () => {
     mockIsJourneyCustomizable.mockReturnValue(true)
 
     render(
       <MockedProvider>
-        <FlagsProvider flags={{ journeyCustomization: true }}>
-          <JourneyProvider value={{ journey }}>
-            <TemplateActionButton signedIn={signedOut} />
-          </JourneyProvider>
-        </FlagsProvider>
+        <JourneyProvider value={{ journey }}>
+          <TemplateActionButton signedIn={signedOut} />
+        </JourneyProvider>
       </MockedProvider>
     )
 
@@ -63,60 +58,14 @@ describe('TemplateActionButton', () => {
     expect(screen.queryByTestId('CreateJourneyButton')).not.toBeInTheDocument()
   })
 
-  it('should render CreateJourneyButton when journey customization is disabled and user is signed in', () => {
-    mockIsJourneyCustomizable.mockReturnValue(true)
-
-    render(
-      <MockedProvider>
-        <FlagsProvider flags={{ journeyCustomization: false }}>
-          <JourneyProvider value={{ journey }}>
-            <TemplateActionButton signedIn={signedIn} />
-          </JourneyProvider>
-        </FlagsProvider>
-      </MockedProvider>
-    )
-
-    expect(screen.getByTestId('CreateJourneyButton')).toBeInTheDocument()
-    expect(
-      screen.queryByTestId('UseThisTemplateButton')
-    ).not.toBeInTheDocument()
-    expect(
-      screen.queryByTestId('UseThisTemplateButtonSkeleton')
-    ).not.toBeInTheDocument()
-  })
-
-  it('should render CreateJourneyButton when journey customization is disabled and user is signed out', () => {
-    mockIsJourneyCustomizable.mockReturnValue(true)
-
-    render(
-      <MockedProvider>
-        <FlagsProvider flags={{ journeyCustomization: false }}>
-          <JourneyProvider value={{ journey }}>
-            <TemplateActionButton signedIn={signedOut} />
-          </JourneyProvider>
-        </FlagsProvider>
-      </MockedProvider>
-    )
-
-    expect(screen.getByTestId('CreateJourneyButton')).toBeInTheDocument()
-    expect(
-      screen.queryByTestId('UseThisTemplateButton')
-    ).not.toBeInTheDocument()
-    expect(
-      screen.queryByTestId('UseThisTemplateButtonSkeleton')
-    ).not.toBeInTheDocument()
-  })
-
-  it('should render CreateJourneyButton when journey is not customizable and journey customization is enabled', () => {
+  it('should render CreateJourneyButton when journey is not customizable and user is signed in', () => {
     mockIsJourneyCustomizable.mockReturnValue(false)
 
     render(
       <MockedProvider>
-        <FlagsProvider flags={{ journeyCustomization: true }}>
-          <JourneyProvider value={{ journey }}>
-            <TemplateActionButton signedIn={signedIn} />
-          </JourneyProvider>
-        </FlagsProvider>
+        <JourneyProvider value={{ journey }}>
+          <TemplateActionButton signedIn={signedIn} />
+        </JourneyProvider>
       </MockedProvider>
     )
 
@@ -129,16 +78,34 @@ describe('TemplateActionButton', () => {
     ).not.toBeInTheDocument()
   })
 
-  it('should render CreateJourneyButton when journey is not customizable and journey customization is disabled', () => {
+  it('should render CreateJourneyButton when journey is not customizable and user is signed out', () => {
     mockIsJourneyCustomizable.mockReturnValue(false)
 
     render(
       <MockedProvider>
-        <FlagsProvider flags={{ journeyCustomization: false }}>
-          <JourneyProvider value={{ journey }}>
-            <TemplateActionButton signedIn={signedIn} />
-          </JourneyProvider>
-        </FlagsProvider>
+        <JourneyProvider value={{ journey }}>
+          <TemplateActionButton signedIn={signedOut} />
+        </JourneyProvider>
+      </MockedProvider>
+    )
+
+    expect(screen.getByTestId('CreateJourneyButton')).toBeInTheDocument()
+    expect(
+      screen.queryByTestId('UseThisTemplateButton')
+    ).not.toBeInTheDocument()
+    expect(
+      screen.queryByTestId('UseThisTemplateButtonSkeleton')
+    ).not.toBeInTheDocument()
+  })
+
+  it('should render CreateJourneyButton when journey is not customizable', () => {
+    mockIsJourneyCustomizable.mockReturnValue(false)
+
+    render(
+      <MockedProvider>
+        <JourneyProvider value={{ journey }}>
+          <TemplateActionButton signedIn={signedIn} />
+        </JourneyProvider>
       </MockedProvider>
     )
 
@@ -154,11 +121,9 @@ describe('TemplateActionButton', () => {
   it('should render skeleton loader when journey is undefined', () => {
     render(
       <MockedProvider>
-        <FlagsProvider flags={{ journeyCustomization: true }}>
-          <JourneyProvider value={{ journey: undefined }}>
-            <TemplateActionButton signedIn={signedIn} />
-          </JourneyProvider>
-        </FlagsProvider>
+        <JourneyProvider value={{ journey: undefined }}>
+          <TemplateActionButton signedIn={signedIn} />
+        </JourneyProvider>
       </MockedProvider>
     )
 

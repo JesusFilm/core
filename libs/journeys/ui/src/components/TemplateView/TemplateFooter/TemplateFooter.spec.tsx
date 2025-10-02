@@ -7,7 +7,6 @@ import { isJourneyCustomizable } from '../../../libs/isJourneyCustomizable'
 import { journey } from './data'
 import { TemplateFooter } from './TemplateFooter'
 import { NextRouter, useRouter } from 'next/router'
-import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 
 jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
@@ -77,11 +76,9 @@ describe('TemplateFooter', () => {
 
     const { getByRole } = render(
       <MockedProvider>
-        <FlagsProvider flags={{ journeyCustomization: true }}>
-          <JourneyProvider value={{ journey }}>
-            <TemplateFooter signedIn />
-          </JourneyProvider>
-        </FlagsProvider>
+        <JourneyProvider value={{ journey }}>
+          <TemplateFooter signedIn />
+        </JourneyProvider>
       </MockedProvider>
     )
 
@@ -101,11 +98,9 @@ describe('TemplateFooter', () => {
 
     const { getByRole } = render(
       <MockedProvider>
-        <FlagsProvider flags={{ journeyCustomization: false }}>
-          <JourneyProvider value={{ journey }}>
-            <TemplateFooter signedIn />
-          </JourneyProvider>
-        </FlagsProvider>
+        <JourneyProvider value={{ journey }}>
+          <TemplateFooter signedIn />
+        </JourneyProvider>
       </MockedProvider>
     )
 
