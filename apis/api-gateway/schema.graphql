@@ -4511,12 +4511,32 @@ input BlockUpdateActionInput @join__type(graph: API_JOURNEYS_MODERN)  {
 }
 
 input ButtonClickEventCreateInput @join__type(graph: API_JOURNEYS_MODERN)  {
+  """
+  ID should be unique Event UUID (Provided for optimistic mutation result matching)
+  """
   id: ID
   blockId: ID!
+  """
+  id of the parent stepBlock
+  """
   stepId: ID
+  """
+  stepName of the parent stepBlock
+  """
   label: String
+  """
+  label of the button
+  """
   value: String
+  """
+  Action type of the button when it was clicked
+  """
   action: ButtonAction
+  """
+  The label for each corresponding action, mapping below: 
+  NavigateToBlockAction - StepName (generated in client) of the StepBlock 
+  LinkAction - url of the link
+  """
   actionValue: String
 }
 
