@@ -69,7 +69,7 @@ export interface CardCtaCreate_title {
 }
 
 export interface CardCtaCreate_button1_action_PhoneAction {
-  __typename: "PhoneAction";
+  __typename: "PhoneAction" | "ChatAction";
   parentBlockId: string;
   gtmEventName: string | null;
 }
@@ -146,7 +146,7 @@ export interface CardCtaCreate_endIcon1 {
 }
 
 export interface CardCtaCreate_button1Update_action_PhoneAction {
-  __typename: "PhoneAction";
+  __typename: "PhoneAction" | "ChatAction";
   parentBlockId: string;
   gtmEventName: string | null;
 }
@@ -203,7 +203,7 @@ export interface CardCtaCreate_button1Update {
 }
 
 export interface CardCtaCreate_button2_action_PhoneAction {
-  __typename: "PhoneAction";
+  __typename: "PhoneAction" | "ChatAction";
   parentBlockId: string;
   gtmEventName: string | null;
 }
@@ -280,7 +280,7 @@ export interface CardCtaCreate_endIcon2 {
 }
 
 export interface CardCtaCreate_button2Update_action_PhoneAction {
-  __typename: "PhoneAction";
+  __typename: "PhoneAction" | "ChatAction";
   parentBlockId: string;
   gtmEventName: string | null;
 }
@@ -337,7 +337,7 @@ export interface CardCtaCreate_button2Update {
 }
 
 export interface CardCtaCreate_button3_action_PhoneAction {
-  __typename: "PhoneAction";
+  __typename: "PhoneAction" | "ChatAction";
   parentBlockId: string;
   gtmEventName: string | null;
 }
@@ -414,7 +414,7 @@ export interface CardCtaCreate_endIcon3 {
 }
 
 export interface CardCtaCreate_button3Update_action_PhoneAction {
-  __typename: "PhoneAction";
+  __typename: "PhoneAction" | "ChatAction";
   parentBlockId: string;
   gtmEventName: string | null;
 }

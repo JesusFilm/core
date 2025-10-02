@@ -31,7 +31,7 @@ export interface GetJourney_journey_blocks_MultiselectBlock {
 }
 
 export interface GetJourney_journey_blocks_ButtonBlock_action_PhoneAction {
-  __typename: "PhoneAction";
+  __typename: "PhoneAction" | "ChatAction";
   parentBlockId: string;
   gtmEventName: string | null;
 }
@@ -154,7 +154,7 @@ export interface GetJourney_journey_blocks_ImageBlock {
 }
 
 export interface GetJourney_journey_blocks_RadioOptionBlock_action_PhoneAction {
-  __typename: "PhoneAction";
+  __typename: "PhoneAction" | "ChatAction";
   parentBlockId: string;
   gtmEventName: string | null;
 }
@@ -210,7 +210,7 @@ export interface GetJourney_journey_blocks_RadioQuestionBlock {
 }
 
 export interface GetJourney_journey_blocks_SignUpBlock_action_PhoneAction {
-  __typename: "PhoneAction";
+  __typename: "PhoneAction" | "ChatAction";
   parentBlockId: string;
   gtmEventName: string | null;
 }
@@ -372,7 +372,7 @@ export interface GetJourney_journey_blocks_VideoBlock_mediaVideo_YouTube {
 export type GetJourney_journey_blocks_VideoBlock_mediaVideo = GetJourney_journey_blocks_VideoBlock_mediaVideo_Video | GetJourney_journey_blocks_VideoBlock_mediaVideo_MuxVideo | GetJourney_journey_blocks_VideoBlock_mediaVideo_YouTube;
 
 export interface GetJourney_journey_blocks_VideoBlock_action_PhoneAction {
-  __typename: "PhoneAction";
+  __typename: "PhoneAction" | "ChatAction";
   parentBlockId: string;
   gtmEventName: string | null;
 }
@@ -480,7 +480,7 @@ export interface GetJourney_journey_blocks_VideoBlock {
 }
 
 export interface GetJourney_journey_blocks_VideoTriggerBlock_triggerAction_PhoneAction {
-  __typename: "PhoneAction";
+  __typename: "PhoneAction" | "ChatAction";
   parentBlockId: string;
   gtmEventName: string | null;
 }

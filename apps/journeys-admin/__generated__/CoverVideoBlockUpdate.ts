@@ -61,7 +61,7 @@ export interface CoverVideoBlockUpdate_videoBlockUpdate_mediaVideo_YouTube {
 export type CoverVideoBlockUpdate_videoBlockUpdate_mediaVideo = CoverVideoBlockUpdate_videoBlockUpdate_mediaVideo_Video | CoverVideoBlockUpdate_videoBlockUpdate_mediaVideo_MuxVideo | CoverVideoBlockUpdate_videoBlockUpdate_mediaVideo_YouTube;
 
 export interface CoverVideoBlockUpdate_videoBlockUpdate_action_PhoneAction {
-  __typename: "PhoneAction";
+  __typename: "PhoneAction" | "ChatAction";
   parentBlockId: string;
   gtmEventName: string | null;
 }

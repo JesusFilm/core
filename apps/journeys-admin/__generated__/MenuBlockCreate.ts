@@ -122,7 +122,7 @@ export interface MenuBlockCreate_subHeading {
 }
 
 export interface MenuBlockCreate_button1_action_PhoneAction {
-  __typename: "PhoneAction";
+  __typename: "PhoneAction" | "ChatAction";
   parentBlockId: string;
   gtmEventName: string | null;
 }
@@ -179,7 +179,7 @@ export interface MenuBlockCreate_button1 {
 }
 
 export interface MenuBlockCreate_button2_action_PhoneAction {
-  __typename: "PhoneAction";
+  __typename: "PhoneAction" | "ChatAction";
   parentBlockId: string;
   gtmEventName: string | null;
 }
@@ -236,7 +236,7 @@ export interface MenuBlockCreate_button2 {
 }
 
 export interface MenuBlockCreate_button3_action_PhoneAction {
-  __typename: "PhoneAction";
+  __typename: "PhoneAction" | "ChatAction";
   parentBlockId: string;
   gtmEventName: string | null;
 }

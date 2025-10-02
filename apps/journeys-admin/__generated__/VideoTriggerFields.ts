@@ -8,7 +8,7 @@
 // ====================================================
 
 export interface VideoTriggerFields_triggerAction_PhoneAction {
-  __typename: "PhoneAction";
+  __typename: "PhoneAction" | "ChatAction";
   parentBlockId: string;
   gtmEventName: string | null;
 }

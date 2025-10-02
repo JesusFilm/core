@@ -17,7 +17,7 @@ export interface BlockFields_MultiselectBlock {
 }
 
 export interface BlockFields_ButtonBlock_action_PhoneAction {
-  __typename: "PhoneAction";
+  __typename: "PhoneAction" | "ChatAction";
   parentBlockId: string;
   gtmEventName: string | null;
 }
@@ -140,7 +140,7 @@ export interface BlockFields_ImageBlock {
 }
 
 export interface BlockFields_RadioOptionBlock_action_PhoneAction {
-  __typename: "PhoneAction";
+  __typename: "PhoneAction" | "ChatAction";
   parentBlockId: string;
   gtmEventName: string | null;
 }
@@ -196,7 +196,7 @@ export interface BlockFields_RadioQuestionBlock {
 }
 
 export interface BlockFields_SignUpBlock_action_PhoneAction {
-  __typename: "PhoneAction";
+  __typename: "PhoneAction" | "ChatAction";
   parentBlockId: string;
   gtmEventName: string | null;
 }
@@ -358,7 +358,7 @@ export interface BlockFields_VideoBlock_mediaVideo_YouTube {
 export type BlockFields_VideoBlock_mediaVideo = BlockFields_VideoBlock_mediaVideo_Video | BlockFields_VideoBlock_mediaVideo_MuxVideo | BlockFields_VideoBlock_mediaVideo_YouTube;
 
 export interface BlockFields_VideoBlock_action_PhoneAction {
-  __typename: "PhoneAction";
+  __typename: "PhoneAction" | "ChatAction";
   parentBlockId: string;
   gtmEventName: string | null;
 }
@@ -466,7 +466,7 @@ export interface BlockFields_VideoBlock {
 }
 
 export interface BlockFields_VideoTriggerBlock_triggerAction_PhoneAction {
-  __typename: "PhoneAction";
+  __typename: "PhoneAction" | "ChatAction";
   parentBlockId: string;
   gtmEventName: string | null;
 }

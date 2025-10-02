@@ -70,7 +70,7 @@ export interface CardIntroCreate_body {
 }
 
 export interface CardIntroCreate_button_action_PhoneAction {
-  __typename: "PhoneAction";
+  __typename: "PhoneAction" | "ChatAction";
   parentBlockId: string;
   gtmEventName: string | null;
 }
@@ -147,7 +147,7 @@ export interface CardIntroCreate_endIcon {
 }
 
 export interface CardIntroCreate_buttonBlockUpdate_action_PhoneAction {
-  __typename: "PhoneAction";
+  __typename: "PhoneAction" | "ChatAction";
   parentBlockId: string;
   gtmEventName: string | null;
 }
@@ -255,7 +255,7 @@ export interface CardIntroCreate_video_mediaVideo_YouTube {
 export type CardIntroCreate_video_mediaVideo = CardIntroCreate_video_mediaVideo_Video | CardIntroCreate_video_mediaVideo_MuxVideo | CardIntroCreate_video_mediaVideo_YouTube;
 
 export interface CardIntroCreate_video_action_PhoneAction {
-  __typename: "PhoneAction";
+  __typename: "PhoneAction" | "ChatAction";
   parentBlockId: string;
   gtmEventName: string | null;
 }

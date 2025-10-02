@@ -77,7 +77,7 @@ export interface CardPollCreate_radioQuestion {
 }
 
 export interface CardPollCreate_radioOption1_action_PhoneAction {
-  __typename: "PhoneAction";
+  __typename: "PhoneAction" | "ChatAction";
   parentBlockId: string;
   gtmEventName: string | null;
 }
@@ -125,7 +125,7 @@ export interface CardPollCreate_radioOption1 {
 }
 
 export interface CardPollCreate_radioOption2_action_PhoneAction {
-  __typename: "PhoneAction";
+  __typename: "PhoneAction" | "ChatAction";
   parentBlockId: string;
   gtmEventName: string | null;
 }
@@ -173,7 +173,7 @@ export interface CardPollCreate_radioOption2 {
 }
 
 export interface CardPollCreate_radioOption3_action_PhoneAction {
-  __typename: "PhoneAction";
+  __typename: "PhoneAction" | "ChatAction";
   parentBlockId: string;
   gtmEventName: string | null;
 }
@@ -221,7 +221,7 @@ export interface CardPollCreate_radioOption3 {
 }
 
 export interface CardPollCreate_radioOption4_action_PhoneAction {
-  __typename: "PhoneAction";
+  __typename: "PhoneAction" | "ChatAction";
   parentBlockId: string;
   gtmEventName: string | null;
 }

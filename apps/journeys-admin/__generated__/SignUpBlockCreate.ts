@@ -10,7 +10,7 @@ import { SignUpBlockCreateInput, IconBlockCreateInput, SignUpBlockUpdateInput, I
 // ====================================================
 
 export interface SignUpBlockCreate_signUpBlockCreate_action_PhoneAction {
-  __typename: "PhoneAction";
+  __typename: "PhoneAction" | "ChatAction";
   parentBlockId: string;
   gtmEventName: string | null;
 }
@@ -63,7 +63,7 @@ export interface SignUpBlockCreate_submitIcon {
 }
 
 export interface SignUpBlockCreate_signUpBlockUpdate_action_PhoneAction {
-  __typename: "PhoneAction";
+  __typename: "PhoneAction" | "ChatAction";
   parentBlockId: string;
   gtmEventName: string | null;
 }

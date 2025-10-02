@@ -10,7 +10,7 @@ import { ButtonVariant, ButtonColor, ButtonSize, ButtonAlignment } from "./../..
 // ====================================================
 
 export interface ButtonFields_action_PhoneAction {
-  __typename: "PhoneAction";
+  __typename: "PhoneAction" | "ChatAction";
   parentBlockId: string;
   gtmEventName: string | null;
 }

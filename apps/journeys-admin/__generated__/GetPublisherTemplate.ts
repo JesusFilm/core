@@ -31,7 +31,7 @@ export interface GetPublisherTemplate_publisherTemplate_blocks_MultiselectBlock 
 }
 
 export interface GetPublisherTemplate_publisherTemplate_blocks_ButtonBlock_action_PhoneAction {
-  __typename: "PhoneAction";
+  __typename: "PhoneAction" | "ChatAction";
   parentBlockId: string;
   gtmEventName: string | null;
 }
@@ -154,7 +154,7 @@ export interface GetPublisherTemplate_publisherTemplate_blocks_ImageBlock {
 }
 
 export interface GetPublisherTemplate_publisherTemplate_blocks_RadioOptionBlock_action_PhoneAction {
-  __typename: "PhoneAction";
+  __typename: "PhoneAction" | "ChatAction";
   parentBlockId: string;
   gtmEventName: string | null;
 }
@@ -210,7 +210,7 @@ export interface GetPublisherTemplate_publisherTemplate_blocks_RadioQuestionBloc
 }
 
 export interface GetPublisherTemplate_publisherTemplate_blocks_SignUpBlock_action_PhoneAction {
-  __typename: "PhoneAction";
+  __typename: "PhoneAction" | "ChatAction";
   parentBlockId: string;
   gtmEventName: string | null;
 }
@@ -372,7 +372,7 @@ export interface GetPublisherTemplate_publisherTemplate_blocks_VideoBlock_mediaV
 export type GetPublisherTemplate_publisherTemplate_blocks_VideoBlock_mediaVideo = GetPublisherTemplate_publisherTemplate_blocks_VideoBlock_mediaVideo_Video | GetPublisherTemplate_publisherTemplate_blocks_VideoBlock_mediaVideo_MuxVideo | GetPublisherTemplate_publisherTemplate_blocks_VideoBlock_mediaVideo_YouTube;
 
 export interface GetPublisherTemplate_publisherTemplate_blocks_VideoBlock_action_PhoneAction {
-  __typename: "PhoneAction";
+  __typename: "PhoneAction" | "ChatAction";
   parentBlockId: string;
   gtmEventName: string | null;
 }
@@ -480,7 +480,7 @@ export interface GetPublisherTemplate_publisherTemplate_blocks_VideoBlock {
 }
 
 export interface GetPublisherTemplate_publisherTemplate_blocks_VideoTriggerBlock_triggerAction_PhoneAction {
-  __typename: "PhoneAction";
+  __typename: "PhoneAction" | "ChatAction";
   parentBlockId: string;
   gtmEventName: string | null;
 }

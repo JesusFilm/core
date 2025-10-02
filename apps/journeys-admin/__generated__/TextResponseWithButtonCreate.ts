@@ -25,7 +25,7 @@ export interface TextResponseWithButtonCreate_textResponse {
 }
 
 export interface TextResponseWithButtonCreate_button_action_PhoneAction {
-  __typename: "PhoneAction";
+  __typename: "PhoneAction" | "ChatAction";
   parentBlockId: string;
   gtmEventName: string | null;
 }
@@ -102,7 +102,7 @@ export interface TextResponseWithButtonCreate_endIcon {
 }
 
 export interface TextResponseWithButtonCreate_buttonUpdate_action_PhoneAction {
-  __typename: "PhoneAction";
+  __typename: "PhoneAction" | "ChatAction";
   parentBlockId: string;
   gtmEventName: string | null;
 }

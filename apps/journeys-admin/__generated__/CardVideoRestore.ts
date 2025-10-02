@@ -65,7 +65,7 @@ export interface CardVideoRestore_video_VideoBlock_mediaVideo_YouTube {
 export type CardVideoRestore_video_VideoBlock_mediaVideo = CardVideoRestore_video_VideoBlock_mediaVideo_Video | CardVideoRestore_video_VideoBlock_mediaVideo_MuxVideo | CardVideoRestore_video_VideoBlock_mediaVideo_YouTube;
 
 export interface CardVideoRestore_video_VideoBlock_action_PhoneAction {
-  __typename: "PhoneAction";
+  __typename: "PhoneAction" | "ChatAction";
   parentBlockId: string;
   gtmEventName: string | null;
 }

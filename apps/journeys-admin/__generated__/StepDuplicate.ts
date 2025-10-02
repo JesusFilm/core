@@ -17,7 +17,7 @@ export interface StepDuplicate_blockDuplicate_MultiselectBlock {
 }
 
 export interface StepDuplicate_blockDuplicate_ButtonBlock_action_PhoneAction {
-  __typename: "PhoneAction";
+  __typename: "PhoneAction" | "ChatAction";
   parentBlockId: string;
   gtmEventName: string | null;
 }
@@ -140,7 +140,7 @@ export interface StepDuplicate_blockDuplicate_ImageBlock {
 }
 
 export interface StepDuplicate_blockDuplicate_RadioOptionBlock_action_PhoneAction {
-  __typename: "PhoneAction";
+  __typename: "PhoneAction" | "ChatAction";
   parentBlockId: string;
   gtmEventName: string | null;
 }
@@ -196,7 +196,7 @@ export interface StepDuplicate_blockDuplicate_RadioQuestionBlock {
 }
 
 export interface StepDuplicate_blockDuplicate_SignUpBlock_action_PhoneAction {
-  __typename: "PhoneAction";
+  __typename: "PhoneAction" | "ChatAction";
   parentBlockId: string;
   gtmEventName: string | null;
 }
@@ -368,7 +368,7 @@ export interface StepDuplicate_blockDuplicate_VideoBlock_mediaVideo_YouTube {
 export type StepDuplicate_blockDuplicate_VideoBlock_mediaVideo = StepDuplicate_blockDuplicate_VideoBlock_mediaVideo_Video | StepDuplicate_blockDuplicate_VideoBlock_mediaVideo_MuxVideo | StepDuplicate_blockDuplicate_VideoBlock_mediaVideo_YouTube;
 
 export interface StepDuplicate_blockDuplicate_VideoBlock_action_PhoneAction {
-  __typename: "PhoneAction";
+  __typename: "PhoneAction" | "ChatAction";
   parentBlockId: string;
   gtmEventName: string | null;
 }
@@ -476,7 +476,7 @@ export interface StepDuplicate_blockDuplicate_VideoBlock {
 }
 
 export interface StepDuplicate_blockDuplicate_VideoTriggerBlock_triggerAction_PhoneAction {
-  __typename: "PhoneAction";
+  __typename: "PhoneAction" | "ChatAction";
   parentBlockId: string;
   gtmEventName: string | null;
 }

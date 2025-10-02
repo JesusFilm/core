@@ -61,7 +61,7 @@ export interface CardVideoCreate_video_mediaVideo_YouTube {
 export type CardVideoCreate_video_mediaVideo = CardVideoCreate_video_mediaVideo_Video | CardVideoCreate_video_mediaVideo_MuxVideo | CardVideoCreate_video_mediaVideo_YouTube;
 
 export interface CardVideoCreate_video_action_PhoneAction {
-  __typename: "PhoneAction";
+  __typename: "PhoneAction" | "ChatAction";
   parentBlockId: string;
   gtmEventName: string | null;
 }

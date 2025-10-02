@@ -65,7 +65,7 @@ export interface CardVideoDelete_video_VideoBlock_mediaVideo_YouTube {
 export type CardVideoDelete_video_VideoBlock_mediaVideo = CardVideoDelete_video_VideoBlock_mediaVideo_Video | CardVideoDelete_video_VideoBlock_mediaVideo_MuxVideo | CardVideoDelete_video_VideoBlock_mediaVideo_YouTube;
 
 export interface CardVideoDelete_video_VideoBlock_action_PhoneAction {
-  __typename: "PhoneAction";
+  __typename: "PhoneAction" | "ChatAction";
   parentBlockId: string;
   gtmEventName: string | null;
 }

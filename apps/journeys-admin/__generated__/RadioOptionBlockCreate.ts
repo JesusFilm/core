@@ -10,7 +10,7 @@ import { RadioOptionBlockCreateInput, ButtonVariant, ButtonColor, ButtonSize, Bu
 // ====================================================
 
 export interface RadioOptionBlockCreate_radioOptionBlockCreate_action_PhoneAction {
-  __typename: "PhoneAction";
+  __typename: "PhoneAction" | "ChatAction";
   parentBlockId: string;
   gtmEventName: string | null;
 }

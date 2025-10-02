@@ -10,7 +10,7 @@ import { ButtonBlockCreateInput, IconBlockCreateInput, ButtonBlockUpdateInput, B
 // ====================================================
 
 export interface ButtonBlockCreate_buttonBlockCreate_action_PhoneAction {
-  __typename: "PhoneAction";
+  __typename: "PhoneAction" | "ChatAction";
   parentBlockId: string;
   gtmEventName: string | null;
 }
@@ -87,7 +87,7 @@ export interface ButtonBlockCreate_endIcon {
 }
 
 export interface ButtonBlockCreate_buttonBlockUpdate_action_PhoneAction {
-  __typename: "PhoneAction";
+  __typename: "PhoneAction" | "ChatAction";
   parentBlockId: string;
   gtmEventName: string | null;
 }

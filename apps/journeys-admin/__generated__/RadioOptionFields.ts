@@ -8,7 +8,7 @@
 // ====================================================
 
 export interface RadioOptionFields_action_PhoneAction {
-  __typename: "PhoneAction";
+  __typename: "PhoneAction" | "ChatAction";
   parentBlockId: string;
   gtmEventName: string | null;
 }

@@ -84,7 +84,7 @@ export interface CardFormCreate_textResponse {
 }
 
 export interface CardFormCreate_button_action_PhoneAction {
-  __typename: "PhoneAction";
+  __typename: "PhoneAction" | "ChatAction";
   parentBlockId: string;
   gtmEventName: string | null;
 }
@@ -161,7 +161,7 @@ export interface CardFormCreate_endIcon {
 }
 
 export interface CardFormCreate_buttonUpdate_action_PhoneAction {
-  __typename: "PhoneAction";
+  __typename: "PhoneAction" | "ChatAction";
   parentBlockId: string;
   gtmEventName: string | null;
 }

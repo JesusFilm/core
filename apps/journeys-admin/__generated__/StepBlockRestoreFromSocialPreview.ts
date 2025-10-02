@@ -17,7 +17,7 @@ export interface StepBlockRestoreFromSocialPreview_blockRestore_MultiselectBlock
 }
 
 export interface StepBlockRestoreFromSocialPreview_blockRestore_ButtonBlock_action_PhoneAction {
-  __typename: "PhoneAction";
+  __typename: "PhoneAction" | "ChatAction";
   parentBlockId: string;
   gtmEventName: string | null;
 }
@@ -140,7 +140,7 @@ export interface StepBlockRestoreFromSocialPreview_blockRestore_ImageBlock {
 }
 
 export interface StepBlockRestoreFromSocialPreview_blockRestore_RadioOptionBlock_action_PhoneAction {
-  __typename: "PhoneAction";
+  __typename: "PhoneAction" | "ChatAction";
   parentBlockId: string;
   gtmEventName: string | null;
 }
@@ -196,7 +196,7 @@ export interface StepBlockRestoreFromSocialPreview_blockRestore_RadioQuestionBlo
 }
 
 export interface StepBlockRestoreFromSocialPreview_blockRestore_SignUpBlock_action_PhoneAction {
-  __typename: "PhoneAction";
+  __typename: "PhoneAction" | "ChatAction";
   parentBlockId: string;
   gtmEventName: string | null;
 }
@@ -368,7 +368,7 @@ export interface StepBlockRestoreFromSocialPreview_blockRestore_VideoBlock_media
 export type StepBlockRestoreFromSocialPreview_blockRestore_VideoBlock_mediaVideo = StepBlockRestoreFromSocialPreview_blockRestore_VideoBlock_mediaVideo_Video | StepBlockRestoreFromSocialPreview_blockRestore_VideoBlock_mediaVideo_MuxVideo | StepBlockRestoreFromSocialPreview_blockRestore_VideoBlock_mediaVideo_YouTube;
 
 export interface StepBlockRestoreFromSocialPreview_blockRestore_VideoBlock_action_PhoneAction {
-  __typename: "PhoneAction";
+  __typename: "PhoneAction" | "ChatAction";
   parentBlockId: string;
   gtmEventName: string | null;
 }
@@ -476,7 +476,7 @@ export interface StepBlockRestoreFromSocialPreview_blockRestore_VideoBlock {
 }
 
 export interface StepBlockRestoreFromSocialPreview_blockRestore_VideoTriggerBlock_triggerAction_PhoneAction {
-  __typename: "PhoneAction";
+  __typename: "PhoneAction" | "ChatAction";
   parentBlockId: string;
   gtmEventName: string | null;
 }

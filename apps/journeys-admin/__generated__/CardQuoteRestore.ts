@@ -17,7 +17,7 @@ export interface CardQuoteRestore_image_MultiselectBlock {
 }
 
 export interface CardQuoteRestore_image_ButtonBlock_action_PhoneAction {
-  __typename: "PhoneAction";
+  __typename: "PhoneAction" | "ChatAction";
   parentBlockId: string;
   gtmEventName: string | null;
 }
@@ -140,7 +140,7 @@ export interface CardQuoteRestore_image_ImageBlock {
 }
 
 export interface CardQuoteRestore_image_RadioOptionBlock_action_PhoneAction {
-  __typename: "PhoneAction";
+  __typename: "PhoneAction" | "ChatAction";
   parentBlockId: string;
   gtmEventName: string | null;
 }
@@ -196,7 +196,7 @@ export interface CardQuoteRestore_image_RadioQuestionBlock {
 }
 
 export interface CardQuoteRestore_image_SignUpBlock_action_PhoneAction {
-  __typename: "PhoneAction";
+  __typename: "PhoneAction" | "ChatAction";
   parentBlockId: string;
   gtmEventName: string | null;
 }
@@ -358,7 +358,7 @@ export interface CardQuoteRestore_image_VideoBlock_mediaVideo_YouTube {
 export type CardQuoteRestore_image_VideoBlock_mediaVideo = CardQuoteRestore_image_VideoBlock_mediaVideo_Video | CardQuoteRestore_image_VideoBlock_mediaVideo_MuxVideo | CardQuoteRestore_image_VideoBlock_mediaVideo_YouTube;
 
 export interface CardQuoteRestore_image_VideoBlock_action_PhoneAction {
-  __typename: "PhoneAction";
+  __typename: "PhoneAction" | "ChatAction";
   parentBlockId: string;
   gtmEventName: string | null;
 }
@@ -466,7 +466,7 @@ export interface CardQuoteRestore_image_VideoBlock {
 }
 
 export interface CardQuoteRestore_image_VideoTriggerBlock_triggerAction_PhoneAction {
-  __typename: "PhoneAction";
+  __typename: "PhoneAction" | "ChatAction";
   parentBlockId: string;
   gtmEventName: string | null;
 }
@@ -521,7 +521,7 @@ export interface CardQuoteRestore_subtitle_MultiselectBlock {
 }
 
 export interface CardQuoteRestore_subtitle_ButtonBlock_action_PhoneAction {
-  __typename: "PhoneAction";
+  __typename: "PhoneAction" | "ChatAction";
   parentBlockId: string;
   gtmEventName: string | null;
 }
@@ -644,7 +644,7 @@ export interface CardQuoteRestore_subtitle_ImageBlock {
 }
 
 export interface CardQuoteRestore_subtitle_RadioOptionBlock_action_PhoneAction {
-  __typename: "PhoneAction";
+  __typename: "PhoneAction" | "ChatAction";
   parentBlockId: string;
   gtmEventName: string | null;
 }
@@ -700,7 +700,7 @@ export interface CardQuoteRestore_subtitle_RadioQuestionBlock {
 }
 
 export interface CardQuoteRestore_subtitle_SignUpBlock_action_PhoneAction {
-  __typename: "PhoneAction";
+  __typename: "PhoneAction" | "ChatAction";
   parentBlockId: string;
   gtmEventName: string | null;
 }
@@ -862,7 +862,7 @@ export interface CardQuoteRestore_subtitle_VideoBlock_mediaVideo_YouTube {
 export type CardQuoteRestore_subtitle_VideoBlock_mediaVideo = CardQuoteRestore_subtitle_VideoBlock_mediaVideo_Video | CardQuoteRestore_subtitle_VideoBlock_mediaVideo_MuxVideo | CardQuoteRestore_subtitle_VideoBlock_mediaVideo_YouTube;
 
 export interface CardQuoteRestore_subtitle_VideoBlock_action_PhoneAction {
-  __typename: "PhoneAction";
+  __typename: "PhoneAction" | "ChatAction";
   parentBlockId: string;
   gtmEventName: string | null;
 }
@@ -970,7 +970,7 @@ export interface CardQuoteRestore_subtitle_VideoBlock {
 }
 
 export interface CardQuoteRestore_subtitle_VideoTriggerBlock_triggerAction_PhoneAction {
-  __typename: "PhoneAction";
+  __typename: "PhoneAction" | "ChatAction";
   parentBlockId: string;
   gtmEventName: string | null;
 }
@@ -1025,7 +1025,7 @@ export interface CardQuoteRestore_title_MultiselectBlock {
 }
 
 export interface CardQuoteRestore_title_ButtonBlock_action_PhoneAction {
-  __typename: "PhoneAction";
+  __typename: "PhoneAction" | "ChatAction";
   parentBlockId: string;
   gtmEventName: string | null;
 }
@@ -1148,7 +1148,7 @@ export interface CardQuoteRestore_title_ImageBlock {
 }
 
 export interface CardQuoteRestore_title_RadioOptionBlock_action_PhoneAction {
-  __typename: "PhoneAction";
+  __typename: "PhoneAction" | "ChatAction";
   parentBlockId: string;
   gtmEventName: string | null;
 }
@@ -1204,7 +1204,7 @@ export interface CardQuoteRestore_title_RadioQuestionBlock {
 }
 
 export interface CardQuoteRestore_title_SignUpBlock_action_PhoneAction {
-  __typename: "PhoneAction";
+  __typename: "PhoneAction" | "ChatAction";
   parentBlockId: string;
   gtmEventName: string | null;
 }
@@ -1366,7 +1366,7 @@ export interface CardQuoteRestore_title_VideoBlock_mediaVideo_YouTube {
 export type CardQuoteRestore_title_VideoBlock_mediaVideo = CardQuoteRestore_title_VideoBlock_mediaVideo_Video | CardQuoteRestore_title_VideoBlock_mediaVideo_MuxVideo | CardQuoteRestore_title_VideoBlock_mediaVideo_YouTube;
 
 export interface CardQuoteRestore_title_VideoBlock_action_PhoneAction {
-  __typename: "PhoneAction";
+  __typename: "PhoneAction" | "ChatAction";
   parentBlockId: string;
   gtmEventName: string | null;
 }
@@ -1474,7 +1474,7 @@ export interface CardQuoteRestore_title_VideoBlock {
 }
 
 export interface CardQuoteRestore_title_VideoTriggerBlock_triggerAction_PhoneAction {
-  __typename: "PhoneAction";
+  __typename: "PhoneAction" | "ChatAction";
   parentBlockId: string;
   gtmEventName: string | null;
 }
@@ -1529,7 +1529,7 @@ export interface CardQuoteRestore_body_MultiselectBlock {
 }
 
 export interface CardQuoteRestore_body_ButtonBlock_action_PhoneAction {
-  __typename: "PhoneAction";
+  __typename: "PhoneAction" | "ChatAction";
   parentBlockId: string;
   gtmEventName: string | null;
 }
@@ -1652,7 +1652,7 @@ export interface CardQuoteRestore_body_ImageBlock {
 }
 
 export interface CardQuoteRestore_body_RadioOptionBlock_action_PhoneAction {
-  __typename: "PhoneAction";
+  __typename: "PhoneAction" | "ChatAction";
   parentBlockId: string;
   gtmEventName: string | null;
 }
@@ -1708,7 +1708,7 @@ export interface CardQuoteRestore_body_RadioQuestionBlock {
 }
 
 export interface CardQuoteRestore_body_SignUpBlock_action_PhoneAction {
-  __typename: "PhoneAction";
+  __typename: "PhoneAction" | "ChatAction";
   parentBlockId: string;
   gtmEventName: string | null;
 }
@@ -1870,7 +1870,7 @@ export interface CardQuoteRestore_body_VideoBlock_mediaVideo_YouTube {
 export type CardQuoteRestore_body_VideoBlock_mediaVideo = CardQuoteRestore_body_VideoBlock_mediaVideo_Video | CardQuoteRestore_body_VideoBlock_mediaVideo_MuxVideo | CardQuoteRestore_body_VideoBlock_mediaVideo_YouTube;
 
 export interface CardQuoteRestore_body_VideoBlock_action_PhoneAction {
-  __typename: "PhoneAction";
+  __typename: "PhoneAction" | "ChatAction";
   parentBlockId: string;
   gtmEventName: string | null;
 }
@@ -1978,7 +1978,7 @@ export interface CardQuoteRestore_body_VideoBlock {
 }
 
 export interface CardQuoteRestore_body_VideoTriggerBlock_triggerAction_PhoneAction {
-  __typename: "PhoneAction";
+  __typename: "PhoneAction" | "ChatAction";
   parentBlockId: string;
   gtmEventName: string | null;
 }

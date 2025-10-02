@@ -61,7 +61,7 @@ export interface VideoFields_mediaVideo_YouTube {
 export type VideoFields_mediaVideo = VideoFields_mediaVideo_Video | VideoFields_mediaVideo_MuxVideo | VideoFields_mediaVideo_YouTube;
 
 export interface VideoFields_action_PhoneAction {
-  __typename: "PhoneAction";
+  __typename: "PhoneAction" | "ChatAction";
   parentBlockId: string;
   gtmEventName: string | null;
 }

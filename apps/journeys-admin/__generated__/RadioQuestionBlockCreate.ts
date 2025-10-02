@@ -18,7 +18,7 @@ export interface RadioQuestionBlockCreate_radioQuestionBlockCreate {
 }
 
 export interface RadioQuestionBlockCreate_radioOption1_action_PhoneAction {
-  __typename: "PhoneAction";
+  __typename: "PhoneAction" | "ChatAction";
   parentBlockId: string;
   gtmEventName: string | null;
 }
@@ -66,7 +66,7 @@ export interface RadioQuestionBlockCreate_radioOption1 {
 }
 
 export interface RadioQuestionBlockCreate_radioOption2_action_PhoneAction {
-  __typename: "PhoneAction";
+  __typename: "PhoneAction" | "ChatAction";
   parentBlockId: string;
   gtmEventName: string | null;
 }

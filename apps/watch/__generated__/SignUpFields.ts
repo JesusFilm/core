@@ -8,7 +8,7 @@
 // ====================================================
 
 export interface SignUpFields_action_PhoneAction {
-  __typename: "PhoneAction";
+  __typename: "PhoneAction" | "ChatAction";
   parentBlockId: string;
   gtmEventName: string | null;
 }

@@ -17,7 +17,7 @@ export interface StepBlockRestoreFromAction_blockRestore_MultiselectBlock {
 }
 
 export interface StepBlockRestoreFromAction_blockRestore_ButtonBlock_action_PhoneAction {
-  __typename: "PhoneAction";
+  __typename: "PhoneAction" | "ChatAction";
   parentBlockId: string;
   gtmEventName: string | null;
 }
@@ -140,7 +140,7 @@ export interface StepBlockRestoreFromAction_blockRestore_ImageBlock {
 }
 
 export interface StepBlockRestoreFromAction_blockRestore_RadioOptionBlock_action_PhoneAction {
-  __typename: "PhoneAction";
+  __typename: "PhoneAction" | "ChatAction";
   parentBlockId: string;
   gtmEventName: string | null;
 }
@@ -196,7 +196,7 @@ export interface StepBlockRestoreFromAction_blockRestore_RadioQuestionBlock {
 }
 
 export interface StepBlockRestoreFromAction_blockRestore_SignUpBlock_action_PhoneAction {
-  __typename: "PhoneAction";
+  __typename: "PhoneAction" | "ChatAction";
   parentBlockId: string;
   gtmEventName: string | null;
 }
@@ -368,7 +368,7 @@ export interface StepBlockRestoreFromAction_blockRestore_VideoBlock_mediaVideo_Y
 export type StepBlockRestoreFromAction_blockRestore_VideoBlock_mediaVideo = StepBlockRestoreFromAction_blockRestore_VideoBlock_mediaVideo_Video | StepBlockRestoreFromAction_blockRestore_VideoBlock_mediaVideo_MuxVideo | StepBlockRestoreFromAction_blockRestore_VideoBlock_mediaVideo_YouTube;
 
 export interface StepBlockRestoreFromAction_blockRestore_VideoBlock_action_PhoneAction {
-  __typename: "PhoneAction";
+  __typename: "PhoneAction" | "ChatAction";
   parentBlockId: string;
   gtmEventName: string | null;
 }
@@ -476,7 +476,7 @@ export interface StepBlockRestoreFromAction_blockRestore_VideoBlock {
 }
 
 export interface StepBlockRestoreFromAction_blockRestore_VideoTriggerBlock_triggerAction_PhoneAction {
-  __typename: "PhoneAction";
+  __typename: "PhoneAction" | "ChatAction";
   parentBlockId: string;
   gtmEventName: string | null;
 }
@@ -529,7 +529,7 @@ export interface StepBlockRestoreFromAction_blockUpdateAction_parentBlock {
 }
 
 export interface StepBlockRestoreFromAction_blockUpdateAction {
-  __typename: "EmailAction" | "LinkAction" | "NavigateToBlockAction" | "PhoneAction";
+  __typename: "EmailAction" | "LinkAction" | "NavigateToBlockAction" | "PhoneAction" | "ChatAction";
   parentBlockId: string;
   parentBlock: StepBlockRestoreFromAction_blockUpdateAction_parentBlock;
   gtmEventName: string | null;
