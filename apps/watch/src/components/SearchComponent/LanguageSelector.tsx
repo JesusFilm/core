@@ -6,10 +6,9 @@ import {
   CommandItem,
   CommandList
 } from '@ui/components/command'
-import { Popover, PopoverContent, PopoverTrigger } from '@ui/components/popover'
 import { Check, ChevronsUpDown, Globe } from 'lucide-react'
 import { useTranslation } from 'next-i18next'
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { useRefinementList } from 'react-instantsearch'
 
 import { languageRefinementProps } from '@core/journeys/ui/algolia/SearchBarProvider'
@@ -31,6 +30,7 @@ export function LanguageSelector(): JSX.Element {
   const { items, refine } = useRefinementList(languageRefinementProps)
   const { languages, isLoading: languagesLoading } = useLanguages()
   const [open, setOpen] = useState(false)
+  const containerRef = useRef<HTMLDivElement>(null)
 
   // Combine Algolia refinement data with full language information
   const languageOptions = useMemo(() => {
@@ -66,6 +66,23 @@ export function LanguageSelector(): JSX.Element {
     setOpen(false)
   }
 
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
+        setOpen(false)
+      }
+    }
+
+    if (open) {
+      document.addEventListener('mousedown', handleClickOutside)
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside)
+    }
+  }, [open])
+
   const getDisplayValue = () => {
     if (selectedLanguages.length === 0) {
       return t('Search languages...')
@@ -96,23 +113,23 @@ export function LanguageSelector(): JSX.Element {
   }
 
   return (
-    <div className="relative">
-      <Popover open={open} onOpenChange={setOpen}>
-        <PopoverTrigger asChild>
-          <Button
-            variant="outline"
-            role="combobox"
-            aria-expanded={open}
-            className="w-full justify-between cursor-pointer"
-          >
-            <div className="flex items-center">
-              <Globe className="mr-2 h-4 w-4 text-muted-foreground" />
-              <span className="truncate">{getDisplayValue()}</span>
-            </div>
-            <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-          </Button>
-        </PopoverTrigger>
-        <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0">
+    <div className="relative" ref={containerRef}>
+      <Button
+        variant="outline"
+        role="combobox"
+        aria-expanded={open}
+        onClick={() => setOpen(!open)}
+        className="w-full justify-between cursor-pointer"
+      >
+        <div className="flex items-center">
+          <Globe className="mr-2 h-4 w-4 text-muted-foreground" />
+          <span className="truncate">{getDisplayValue()}</span>
+        </div>
+        <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+      </Button>
+
+      {open && (
+        <div className="absolute top-full left-0 right-0 z-[200] mt-1 bg-popover border border-border rounded-md shadow-md max-h-[300px] overflow-hidden">
           <Command>
             <CommandInput placeholder={t('Search languages...')} />
             <CommandList>
@@ -144,8 +161,8 @@ export function LanguageSelector(): JSX.Element {
               </CommandGroup>
             </CommandList>
           </Command>
-        </PopoverContent>
-      </Popover>
+        </div>
+      )}
     </div>
   )
 }
