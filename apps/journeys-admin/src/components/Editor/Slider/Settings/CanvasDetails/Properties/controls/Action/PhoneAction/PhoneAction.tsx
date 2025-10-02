@@ -350,7 +350,7 @@ export function PhoneAction(): ReactElement {
             placeholder="0000000000"
             validationSchema={phoneActionSchema}
             onSubmit={handlePhoneNumberChange}
-            sx={{ flex: 1 }}
+            sx={{ flex: 1, width: '100%' }}
           />
         </Box>
         <FormControl fullWidth>
