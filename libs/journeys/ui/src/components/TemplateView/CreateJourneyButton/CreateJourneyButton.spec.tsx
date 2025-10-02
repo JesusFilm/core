@@ -302,6 +302,62 @@ describe('CreateJourneyButton', () => {
     )
   })
 
+  it('should not open team dialog if url query set to createNew and displayOpenTeamDialog is false', async () => {
+    mockUseRouter.mockReturnValue({
+      query: { createNew: 'true' }
+    } as unknown as NextRouter)
+
+    const { queryByTestId } = render(
+      <MockedProvider
+        mocks={[
+          {
+            request: {
+              query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS
+            },
+            result: teamResult
+          },
+          getLanguagesMock
+        ]}
+      >
+        <SnackbarProvider>
+          <CreateJourneyButton signedIn displayOpenTeamDialog={false} />
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    await waitFor(() =>
+      expect(queryByTestId('CopyToTeamDialog')).not.toBeInTheDocument()
+    )
+  })
+
+  it('should open team dialog if url query set to createNew and displayOpenTeamDialog is true', async () => {
+    mockUseRouter.mockReturnValue({
+      query: { createNew: 'true' }
+    } as unknown as NextRouter)
+
+    const { queryByTestId } = render(
+      <MockedProvider
+        mocks={[
+          {
+            request: {
+              query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS
+            },
+            result: teamResult
+          },
+          getLanguagesMock
+        ]}
+      >
+        <SnackbarProvider>
+          <CreateJourneyButton signedIn displayOpenTeamDialog={true} />
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    await waitFor(() =>
+      expect(queryByTestId('CopyToTeamDialog')).toBeInTheDocument()
+    )
+  })
+
   it('should open team dialog on button click if signed in', async () => {
     mockUseRouter.mockReturnValue({
       query: { createNew: false }
