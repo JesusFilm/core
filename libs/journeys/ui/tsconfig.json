@@ -8,8 +8,7 @@
     "resolveJsonModule": true,
     "strict": true,
     "noFallthroughCasesInSwitch": true,
-    "incremental": true,
-    "tsBuildInfoFile": "../../../.cache/journeys-ui/tsc/.tsbuildinfo"
+    "incremental": true
   },
   "files": [],
   "include": [],
