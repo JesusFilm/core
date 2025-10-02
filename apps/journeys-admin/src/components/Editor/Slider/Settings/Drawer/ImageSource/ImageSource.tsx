@@ -2,7 +2,7 @@ import Card from '@mui/material/Card'
 import CardActionArea from '@mui/material/CardActionArea'
 import dynamic from 'next/dynamic'
 import { useRouter } from 'next/router'
-import { ReactElement, useState, type KeyboardEvent } from 'react'
+import { ReactElement, useState } from 'react'
 
 import { setBeaconPageViewed } from '@core/journeys/ui/beaconHooks'
 
@@ -53,13 +53,6 @@ export function ImageSource({
     })
   }
 
-  function handleKeyDown(event: KeyboardEvent<HTMLDivElement>): void {
-    if (event.key === 'Enter' || event.key === ' ') {
-      event.preventDefault()
-      handleClick()
-    }
-  }
-
   return (
     <>
       <Card
@@ -71,13 +64,8 @@ export function ImageSource({
         data-testid="ImageSource"
       >
         <CardActionArea
-          component="div"
-          role="button"
-          tabIndex={0}
-          aria-label="Select image source"
           data-testid="card click area"
           onClick={handleClick}
-          onKeyDown={handleKeyDown}
           sx={{
             height: '100%',
             flexDirection: 'row',

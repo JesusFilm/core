@@ -148,7 +148,11 @@ describe('ImageOptions', () => {
         </CommandProvider>
       </MockedProvider>
     )
-    fireEvent.click(screen.getByRole('button', { name: 'Select image source' }))
+    fireEvent.click(
+      screen.getByRole('button', {
+        name: 'prior-alt Selected Image 1920 x 1080 pixels'
+      })
+    )
     await waitFor(() =>
       fireEvent.click(screen.getByRole('tab', { name: 'Custom' }))
     )
@@ -229,7 +233,11 @@ describe('ImageOptions', () => {
         </CommandProvider>
       </MockedProvider>
     )
-    fireEvent.click(screen.getByRole('button', { name: 'Select image source' }))
+    fireEvent.click(
+      screen.getByRole('button', {
+        name: 'public Selected Image 1920 x 1080 pixels'
+      })
+    )
     await waitFor(() =>
       fireEvent.click(screen.getByTestId('imageBlockHeaderDelete'))
     )
