@@ -16,7 +16,7 @@ interface CreateJourneyButtonProps {
   /* If true, the team dialog will be opened when the button is clicked.
    * If you have multiple instances of this button on a page,
    * set this to false for all but the first button
-   * so that you don't get multiple team dialogs being displayed.
+   * so that you don't get multiple team dialogs displayed after logging in.
    */
   displayOpenTeamDialog?: boolean
 }
