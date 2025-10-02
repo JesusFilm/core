@@ -60,20 +60,25 @@ export async function validateBlockEvent(
     })
   }
 
-  // Get or create journey visitor atomically to avoid race conditions
-  const journeyVisitor = await prisma.journeyVisitor.upsert({
+  // Get or create journey visitor
+  let journeyVisitor = await prisma.journeyVisitor.findUnique({
     where: {
       journeyId_visitorId: {
         journeyId,
         visitorId: visitor.id
       }
-    },
-    create: {
-      journeyId,
-      visitorId: visitor.id
-    },
-    update: {}
+    }
   })
+
+  if (journeyVisitor == null) {
+    // Create journey visitor if it doesn't exist
+    journeyVisitor = await prisma.journeyVisitor.create({
+      data: {
+        journeyId,
+        visitorId: visitor.id
+      }
+    })
+  }
 
   // Validate step if provided
   if (stepId != null) {
