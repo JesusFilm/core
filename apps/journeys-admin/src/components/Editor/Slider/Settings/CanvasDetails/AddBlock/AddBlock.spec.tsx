@@ -79,6 +79,9 @@ describe('AddBlock', () => {
       getByTestId('JourneysAdminButtonNewRadioQuestionButton')
     ).toBeInTheDocument()
     expect(
+      getByTestId('JourneysAdminButtonNewRadioQuestionButton')
+    ).toBeInTheDocument()
+    expect(
       getByTestId('JourneysAdminButtonNewMultiselectButton')
     ).toBeInTheDocument()
     expect(getByTestId('JourneysAdminButtonNewButton')).toBeInTheDocument()

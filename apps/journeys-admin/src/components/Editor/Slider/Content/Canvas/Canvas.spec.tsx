@@ -331,42 +331,28 @@ describe('Canvas', () => {
       slug: null,
       children: [
         {
-          id: 'cardMulti.id',
-          __typename: 'CardBlock',
-          parentBlockId: 'stepMulti.id',
-          coverBlockId: null,
+          id: 'multiselectQuestion1.id',
+          __typename: 'MultiselectBlock',
+          parentBlockId: 'cardMulti.id',
           parentOrder: 0,
-          backgroundColor: null,
-          themeMode: null,
-          themeName: null,
-          fullscreen: false,
-          backdropBlur: null,
+          min: null,
+          max: 2,
           children: [
             {
-              id: 'multiselectQuestion1.id',
-              __typename: 'MultiselectBlock',
-              parentBlockId: 'cardMulti.id',
+              id: 'multiselectOption1.id',
+              __typename: 'MultiselectOptionBlock',
+              parentBlockId: 'multiselectQuestion1.id',
               parentOrder: 0,
-              min: null,
-              max: 2,
-              children: [
-                {
-                  id: 'multiselectOption1.id',
-                  __typename: 'MultiselectOptionBlock',
-                  parentBlockId: 'multiselectQuestion1.id',
-                  parentOrder: 0,
-                  label: 'Option 1',
-                  children: []
-                },
-                {
-                  id: 'multiselectOption2.id',
-                  __typename: 'MultiselectOptionBlock',
-                  parentBlockId: 'multiselectQuestion1.id',
-                  parentOrder: 1,
-                  label: 'Option 2',
-                  children: []
-                }
-              ]
+              label: 'Option 1',
+              children: []
+            },
+            {
+              id: 'multiselectOption2.id',
+              __typename: 'MultiselectOptionBlock',
+              parentBlockId: 'multiselectQuestion1.id',
+              parentOrder: 1,
+              label: 'Option 2',
+              children: []
             }
           ]
         }

@@ -350,7 +350,18 @@ const steps: Array<TreeBlock<StepBlock>> = [
             ]
           }
         ]
-      },
+      }
+    ]
+  },
+  {
+    id: 'step3.id',
+    __typename: 'StepBlock',
+    parentBlockId: null,
+    parentOrder: 2,
+    locked: false,
+    nextBlockId: 'step4.id',
+    slug: null,
+    children: [
       {
         id: 'multiselectCard.id',
         __typename: 'CardBlock',
