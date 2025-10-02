@@ -57,12 +57,13 @@ export const getServerSideProps = withUserTokenSSR()(async ({
   resolvedUrl,
   params
 }) => {
-  const { apolloClient, flags, translations } = await initAndAuthApp({
+  const { redirect, apolloClient, flags, translations } = await initAndAuthApp({
     user,
     locale,
-    resolvedUrl,
-    makeAccountOnAnonymous: true
+    resolvedUrl
   })
+
+  if (redirect != null) return { redirect }
 
   const journeyId = params?.journeyId
   if (journeyId == null) {
@@ -105,5 +106,5 @@ export const getServerSideProps = withUserTokenSSR()(async ({
 
 export default withUser({
   // TODO: remove this after anon user is implemented
-  whenUnauthedBeforeInit: AuthAction.REDIRECT_TO_LOGIN
+  whenUnauthedAfterInit: AuthAction.REDIRECT_TO_LOGIN
 })(CustomizePage)
