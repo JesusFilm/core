@@ -216,22 +216,12 @@ export type ButtonClickEvent = Event & {
 };
 
 export type ButtonClickEventCreateInput = {
-  /** Action type of the button when it was clicked */
   action?: InputMaybe<ButtonAction>;
-  /**
-   * The label for each corresponding action, mapping below:
-   * NavigateToBlockAction - StepName (generated in client) of the StepBlock
-   * LinkAction - url of the link
-   */
   actionValue?: InputMaybe<Scalars['String']['input']>;
   blockId: Scalars['ID']['input'];
-  /** ID should be unique Event UUID (Provided for optimistic mutation result matching) */
   id?: InputMaybe<Scalars['ID']['input']>;
-  /** stepName of the parent stepBlock */
   label?: InputMaybe<Scalars['String']['input']>;
-  /** id of the parent stepBlock */
   stepId?: InputMaybe<Scalars['ID']['input']>;
-  /** label of the button */
   value?: InputMaybe<Scalars['String']['input']>;
 };
 
@@ -1629,6 +1619,7 @@ export type Mutation = {
   playlistCreate?: Maybe<MutationPlaylistCreateResult>;
   playlistDelete?: Maybe<MutationPlaylistDeleteResult>;
   playlistItemAdd?: Maybe<MutationPlaylistItemAddResult>;
+  playlistItemAddWithVideoAndLanguageIds?: Maybe<MutationPlaylistItemAddWithVideoAndLanguageIdsResult>;
   playlistItemRemove?: Maybe<MutationPlaylistItemRemoveResult>;
   playlistItemsReorder?: Maybe<MutationPlaylistItemsReorderResult>;
   playlistUpdate?: Maybe<MutationPlaylistUpdateResult>;
@@ -2243,9 +2234,14 @@ export type MutationPlaylistDeleteArgs = {
 
 
 export type MutationPlaylistItemAddArgs = {
-  id?: InputMaybe<Scalars['ID']['input']>;
   playlistId: Scalars['ID']['input'];
-  videoVariantId: Scalars['ID']['input'];
+  videoVariantIds: Array<Scalars['ID']['input']>;
+};
+
+
+export type MutationPlaylistItemAddWithVideoAndLanguageIdsArgs = {
+  playlistId: Scalars['ID']['input'];
+  videos: Array<PlaylistItemVideoInput>;
 };
 
 
@@ -2822,7 +2818,14 @@ export type MutationPlaylistItemAddResult = MutationPlaylistItemAddSuccess | Not
 
 export type MutationPlaylistItemAddSuccess = {
   __typename?: 'MutationPlaylistItemAddSuccess';
-  data: PlaylistItem;
+  data: Array<PlaylistItem>;
+};
+
+export type MutationPlaylistItemAddWithVideoAndLanguageIdsResult = MutationPlaylistItemAddWithVideoAndLanguageIdsSuccess | NotFoundError;
+
+export type MutationPlaylistItemAddWithVideoAndLanguageIdsSuccess = {
+  __typename?: 'MutationPlaylistItemAddWithVideoAndLanguageIdsSuccess';
+  data: Array<PlaylistItem>;
 };
 
 export type MutationPlaylistItemRemoveResult = MutationPlaylistItemRemoveSuccess | NotFoundError;
@@ -3259,6 +3262,14 @@ export type PlaylistItem = {
   playlist: Playlist;
   updatedAt: Scalars['DateTime']['output'];
   videoVariant: VideoVariant;
+};
+
+/** The video variant to add to the playlist. This is used instead of the videoVariantId as clients typically know the video id and language id of the video variant but not the videoVariantId. */
+export type PlaylistItemVideoInput = {
+  /** The language id of the video variant */
+  languageId: Scalars['String']['input'];
+  /** The video id of the video variant */
+  videoId: Scalars['String']['input'];
 };
 
 export type PlaylistUpdateInput = {
