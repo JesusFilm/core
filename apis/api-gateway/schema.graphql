@@ -456,7 +456,8 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   playlistCreate(input: PlaylistCreateInput!) : MutationPlaylistCreateResult @join__field(graph: API_MEDIA) 
   playlistUpdate(id: ID!, input: PlaylistUpdateInput!) : MutationPlaylistUpdateResult @join__field(graph: API_MEDIA) 
   playlistDelete(id: ID!) : MutationPlaylistDeleteResult @join__field(graph: API_MEDIA) 
-  playlistItemAdd(id: ID, playlistId: ID!, videoVariantId: ID!) : MutationPlaylistItemAddResult @join__field(graph: API_MEDIA) 
+  playlistItemAdd(playlistId: ID!, videoVariantIds: [ID!]!) : MutationPlaylistItemAddResult @join__field(graph: API_MEDIA) 
+  playlistItemAddWithVideoAndLanguageIds(playlistId: ID!, videos: [PlaylistItemVideoInput!]!) : MutationPlaylistItemAddWithVideoAndLanguageIdsResult @join__field(graph: API_MEDIA) 
   playlistItemRemove(playlistId: ID!, itemId: ID!) : MutationPlaylistItemRemoveResult @join__field(graph: API_MEDIA) 
   playlistItemsReorder(playlistId: ID!, itemIds: [ID!]!) : MutationPlaylistItemsReorderResult @join__field(graph: API_MEDIA) 
   """
@@ -2593,7 +2594,11 @@ type MutationPlaylistDeleteSuccess @join__type(graph: API_MEDIA)  {
 }
 
 type MutationPlaylistItemAddSuccess @join__type(graph: API_MEDIA)  {
-  data: PlaylistItem!
+  data: [PlaylistItem!]!
+}
+
+type MutationPlaylistItemAddWithVideoAndLanguageIdsSuccess @join__type(graph: API_MEDIA)  {
+  data: [PlaylistItem!]!
 }
 
 type MutationPlaylistItemRemoveSuccess @join__type(graph: API_MEDIA)  {
@@ -3069,6 +3074,11 @@ union MutationPlaylistCreateResult @join__type(graph: API_MEDIA)  @join__unionMe
 union MutationPlaylistDeleteResult @join__type(graph: API_MEDIA)  @join__unionMember(graph: API_MEDIA, member: "NotFoundError")  @join__unionMember(graph: API_MEDIA, member: "MutationPlaylistDeleteSuccess")  = NotFoundError | MutationPlaylistDeleteSuccess
 
 union MutationPlaylistItemAddResult @join__type(graph: API_MEDIA)  @join__unionMember(graph: API_MEDIA, member: "NotFoundError")  @join__unionMember(graph: API_MEDIA, member: "MutationPlaylistItemAddSuccess")  = NotFoundError | MutationPlaylistItemAddSuccess
+
+union MutationPlaylistItemAddWithVideoAndLanguageIdsResult @join__type(graph: API_MEDIA)  @join__unionMember(graph: API_MEDIA, member: "NotFoundError")  @join__unionMember(
+  graph: API_MEDIA
+  member: "MutationPlaylistItemAddWithVideoAndLanguageIdsSuccess"
+) = NotFoundError | MutationPlaylistItemAddWithVideoAndLanguageIdsSuccess
 
 union MutationPlaylistItemRemoveResult @join__type(graph: API_MEDIA)  @join__unionMember(graph: API_MEDIA, member: "NotFoundError")  @join__unionMember(graph: API_MEDIA, member: "MutationPlaylistItemRemoveSuccess")  = NotFoundError | MutationPlaylistItemRemoveSuccess
 
@@ -4847,6 +4857,20 @@ input PlaylistCreateInput @join__type(graph: API_MEDIA)  {
   noteSharedAt: DateTime
   sharedAt: DateTime
   slug: String
+}
+
+"""
+The video variant to add to the playlist. This is used instead of the videoVariantId as clients typically know the video id and language id of the video variant but not the videoVariantId.
+"""
+input PlaylistItemVideoInput @join__type(graph: API_MEDIA)  {
+  """
+  The video id of the video variant
+  """
+  videoId: String!
+  """
+  The language id of the video variant
+  """
+  languageId: String!
 }
 
 input PlaylistUpdateInput @join__type(graph: API_MEDIA)  {

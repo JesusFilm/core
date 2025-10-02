@@ -292,7 +292,7 @@ export function CopyToTeamDialog({
               {disablePublisherCopyAndTranslate && (
                 <Typography variant="caption" color="red">
                   {t(
-                    'This is not the original journey template, it is a translation or copy of the original template. If you want to translate or copy this journey - please use the original template.'
+                    `This template isn't the original — it's a copy or an AI translated copy. For most accurate translations, please translate from the original template`
                   )}
                 </Typography>
               )}
