@@ -1351,6 +1351,25 @@ export class ImageBlock implements Block {
     focalLeft?: Nullable<number>;
 }
 
+export class MultiselectBlock implements Block {
+    __typename?: 'MultiselectBlock';
+    id: string;
+    journeyId: string;
+    parentBlockId?: Nullable<string>;
+    parentOrder?: Nullable<number>;
+    max?: Nullable<number>;
+    min?: Nullable<number>;
+}
+
+export class MultiselectOptionBlock implements Block {
+    __typename?: 'MultiselectOptionBlock';
+    id: string;
+    journeyId: string;
+    parentBlockId?: Nullable<string>;
+    parentOrder?: Nullable<number>;
+    label: string;
+}
+
 export class RadioOptionBlock implements Block {
     __typename?: 'RadioOptionBlock';
     id: string;
