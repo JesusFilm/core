@@ -57,7 +57,7 @@ export function HeroVideo({
   const pauseVideoOnScrollAway = useCallback((): void => {
     const scrollY = window.scrollY
     if (playerRef.current) {
-      if (scrollY > 100) {
+      if (scrollY > 600) {
         playerRef.current.pause()
       } else if (scrollY === 0) {
         void playerRef.current.play()
@@ -253,12 +253,13 @@ export function HeroVideo({
   const shouldShowOverlay = playerReady && (mute || (subtitleOn ?? false))
 
   return (
+    <>
     <div
       className={clsx(
         "fixed top-0 left-0 right-0 mx-auto z-0 vjs-hide-loading-spinners [body[style*='padding-right']_&]:right-[15px]",
         {
-          'preview-video': isPreview && collapsed,
-          'h-[90%] md:h-[80%] max-w-[1920px]': !isPreview || !collapsed
+          'aspect-[239/100]': isPreview && collapsed,
+          'aspect-[185/100]  max-w-[1920px]': !isPreview || !collapsed
         }
       )}
       data-testid="ContentHeroVideoContainer"
@@ -299,7 +300,11 @@ export function HeroVideo({
           subtitleLanguageId={effectiveSubtitleLanguageId}
           visible={shouldShowOverlay}
         />
-        {playerRef.current != null && playerReady && (
+        
+        <MuxInsertLogoOverlay variantId={currentMuxInsert ? `${currentMuxInsert.id}-variant` : variant?.id} />
+      </>
+    </div>
+    {playerRef.current != null && playerReady && (
           <>
             <VideoControls
               player={playerRef.current}
@@ -313,8 +318,6 @@ export function HeroVideo({
             />
           </>
         )}
-        <MuxInsertLogoOverlay variantId={currentMuxInsert ? `${currentMuxInsert.id}-variant` : variant?.id} />
-      </>
-    </div>
+    </>
   )
 }

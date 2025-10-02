@@ -36,8 +36,8 @@ export function VideoContentHero({
       className={clsx(
         'w-full flex items-end relative bg-[#131111] z-[1] transition-all duration-300 ease-out',
         {
-          'preview-video': isPreview && collapsed,
-          'h-[90svh] md:h-[80svh]': !isPreview || !collapsed
+          'aspect-[239/100]': isPreview && collapsed,
+          'aspect-[185/100] max-h-max': !isPreview || !collapsed
         }
       )}
       data-testid="ContentHero"

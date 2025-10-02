@@ -5,6 +5,7 @@ import VolumeUpOutlined from '@mui/icons-material/VolumeUpOutlined'
 import NextLink from 'next/link'
 import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
+import clsx from 'clsx'
 
 import { usePlayer } from '../../../../../libs/playerContext'
 import { getWatchUrl } from '../../../../../libs/utils/getWatchUrl'
@@ -57,60 +58,110 @@ export function VideoTitle({
         ? true
         : false
 
+        // console.log('mute', mute)
+        // console.log('volume', volume)
+
   const watchNowHref = getWatchUrl(containerSlug, label, videoVariant?.slug)
 
   return (
     <div
       className={`
         pb-8
-        gap-1
-        w-full flex flex-col relative
+        gap-4
+        w-full flex relative
         transition-opacity duration-[225ms]
         ${visible ? 'opacity-100' : 'opacity-0'}
         ${visible ? 'delay-0' : 'delay-[2000ms]'}
+        ${mute || volume === 0 ? 'flex-col' : 'flex-row items-center'}
       `}
       style={{ transitionTimingFunction: 'ease-out' }}
     >
-      {videoLabel && (
-        <div
-          className={`
-            uppercase tracking-widest text-[#FF9E00] font-sans font-bold mb-0 animate-fade-in-up animation-delay-100
-            ${isMuxInsert ? 'text-lg' : 'text-md'}
-          `}
+
+      {isPreview && !isMuxInsert && !(mute || volume === 0) && (
+        <NextLink
+          href={action?.url || watchNowHref}
+          scroll={false}
+          locale={false}
+          id={action ? "mux-action-button" : "watch-now-button"}
+          className={clsx(
+            "inline-flex z-1 items-center justify-center gap-2 px-5 py-3 flex-shrink-0",
+            "bg-[#CB333B] text-lg font-medium text-stone-100",
+            "rounded-full shadow-md transition-colors duration-200",
+            "hover:bg-[#A4343A] font-sans cursor-pointer no-underline",
+            "animate-fade-in-up animation-delay-500",
+
+          )}
         >
-          {videoLabel}
+          <PlayArrowRounded fontSize="medium" className="-ml-1" />
+          {action?.label || t('Watch')}
+        </NextLink>
+      )}
+
+      {/* Unmuted version */}
+      {!(mute || volume === 0) && (
+        <div className="flex flex-col flex-1">
+          {videoLabel && (
+            <div
+              className={`
+                uppercase tracking-widest text-[#FF9E00] font-sans font-bold animate-fade-in-up animation-delay-100
+                ${isMuxInsert ? 'text-lg' : 'text-sm'}
+              `}
+            >
+              {videoLabel}
+            </div>
+          )}
+          <h2
+            className="font-bold text-stone-50 text-shadow-xs mb-0 font-sans animate-fade-in-up animation-delay-200 text-xl md:text-xl lg:text-2xl xl:text-2xl"
+          >
+            {videoTitle.replace(/^\d+\.\s*/, '')}
+          </h2>
+          {collectionTitle && isPreview && (
+            <div className="inverted-effect text-black font-sans font-medium opacity-80 mt-2 animate-fade-in-up animation-delay-300 text-shadow-xs text-sm">
+              {collectionTitle}
+            </div>
+          )}
         </div>
       )}
-      <h2
-        className="
-          font-bold text-stone-50 text-shadow-xs
-          flex-grow mb-0 text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-sans
-          animate-fade-in-up animation-delay-200
-         "
-      >
-        {videoTitle.replace(/^\d+\.\s*/, '')}
-      </h2>
-      {collectionTitle && isPreview && (
-        <div className="inverted-effect text-black text-xl md:text-2xl font-sans font-medium opacity-80 mt-2 animate-fade-in-up animation-delay-300 text-shadow-xs">
-          {collectionTitle}
+
+      {/* Muted version */}
+      {(mute || volume === 0) && (
+        <div className="flex flex-col gap-1">
+          {videoLabel && (
+            <div
+              className={`
+                uppercase tracking-widest text-[#FF9E00] font-sans font-bold mb-0 animate-fade-in-up animation-delay-100
+                ${isMuxInsert ? 'text-lg' : 'text-md'}
+              `}
+            >
+              {videoLabel}
+            </div>
+          )}
+          <h2 className="font-bold text-stone-50 text-shadow-xs mb-0 font-sans animate-fade-in-up animation-delay-200 text-3xl md:text-4xl lg:text-5xl xl:text-6xl">
+            {videoTitle.replace(/^\d+\.\s*/, '')}
+          </h2>
+          {collectionTitle && isPreview && (
+            <div className="inverted-effect text-black font-sans font-medium opacity-80 mt-2 animate-fade-in-up animation-delay-300 text-shadow-xs text-xl md:text-2xl">
+              {collectionTitle}
+            </div>
+          )}
+          {videoDescription && isPreview && (
+            <p
+              className={`
+                text-stone-300
+                ${isMuxInsert ? 'text-3xl leading-snug' : 'text-md leading-relaxed'}
+                font-sans max-w-3xl mb-2 animate-fade-in-up animation-delay-400 line-clamp-3 text-shadow-xs
+              `}
+            >
+              {videoDescription}
+            </p>
+          )}
         </div>
-      )}
-      {videoDescription && isPreview && (
-        <p
-          className={`
-            text-stone-300
-            ${isMuxInsert ? 'text-3xl leading-snug' : 'text-md leading-relaxed'}
-            font-sans max-w-3xl mb-2 animate-fade-in-up animation-delay-400 line-clamp-3 text-shadow-xs
-          `}
-        >
-          {videoDescription}
-        </p>
       )}
       {showButton && show && !isPreview && (
         <button
           id="play-button-lg"
           onClick={(e) => onClick?.(e)}
-          className="inline-flex items-center justify-center gap-2 px-6 py-3
+          className="inline-flex items-center justify-center gap-2 px-5 py-3
             bg-[#CB333B] text-lg font-medium text-stone-100
             rounded-full shadow-md transition-colors duration-200
             hover:bg-[#A4343A] font-sans cursor-pointer self-start
@@ -122,36 +173,23 @@ export function VideoTitle({
           {variant === 'unmute' && t('Play with sound')}
         </button>
       )}
-      {isPreview && action && (
+      {isPreview && !isMuxInsert && (mute || volume === 0) && (
         <NextLink
-          href={action.url}
+          href={action?.url || watchNowHref}
           scroll={false}
           locale={false}
-          id="mux-action-button"
-          className="inline-flex z-1 items-center justify-center gap-2 px-6 py-3
-            bg-[#CB333B] text-lg font-medium text-stone-100
-            rounded-full shadow-md transition-colors duration-200
-            hover:bg-[#A4343A] font-sans cursor-pointer self-start no-underline
-            animate-fade-in-up animation-delay-500"
+          id={action ? "mux-action-button" : "watch-now-button"}
+          className={clsx(
+            "inline-flex z-1 items-center justify-center gap-2 px-5 py-3",
+            "bg-[#CB333B] text-lg font-medium text-stone-100",
+            "rounded-full shadow-md transition-colors duration-200",
+            "hover:bg-[#A4343A] font-sans cursor-pointer self-start no-underline",
+            "animate-fade-in-up animation-delay-500",
+
+          )}
         >
-          <PlayArrowRounded fontSize="medium" />
-          {action.label}
-        </NextLink>
-      )}
-      {isPreview && !isMuxInsert && (
-        <NextLink
-          href={watchNowHref}
-          scroll={false}
-          locale={false}
-          id="watch-now-button"
-          className="inline-flex z-1 items-center justify-center gap-2 px-6 py-3
-            bg-[#CB333B] text-lg font-medium text-stone-100
-            rounded-full shadow-md transition-colors duration-200
-            hover:bg-[#A4343A] font-sans cursor-pointer self-start no-underline
-            animate-fade-in-up animation-delay-500"
-        >
-          <PlayArrowRounded fontSize="medium" />
-          Watch Now
+          <PlayArrowRounded fontSize="medium" className="-ml-1" />
+          {action?.label || t('Watch Now')}
         </NextLink>
       )}
       {isPreview && (onMuteToggle != null || onSkip != null) && (
