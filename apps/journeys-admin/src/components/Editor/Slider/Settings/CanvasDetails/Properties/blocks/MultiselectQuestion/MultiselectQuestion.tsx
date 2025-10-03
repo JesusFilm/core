@@ -12,10 +12,8 @@ import { TreeBlock } from '@core/journeys/ui/block'
 import { useCommand } from '@core/journeys/ui/CommandProvider'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { MULTISELECT_QUESTION_FIELDS } from '@core/journeys/ui/MultiselectQuestion/multiselectQuestionFields'
-import LineNumbers from '@core/shared/ui/icons/LineNumbers'
 
 import { BlockFields_MultiselectBlock as MultiselectBlock } from '../../../../../../../../../__generated__/BlockFields'
-import { Accordion } from '../../Accordion'
 
 export const MULTISELECT_BLOCK_UPDATE = gql`
   ${MULTISELECT_QUESTION_FIELDS}
