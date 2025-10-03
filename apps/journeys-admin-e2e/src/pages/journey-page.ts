@@ -1265,7 +1265,8 @@ export class JourneyPage {
   }
   async clickCloseIconForQrCodeDialog() {
     await this.page
-      .locator('div.MuiDialog-paper button[data-testid="dialog-close-button"]')
+      .getByRole('dialog', { name: 'QR Code' })
+      .getByTestId('dialog-close-button')
       .click()
   }
   async validateUrlFieldInShareDialog(expectedValue: string) {
