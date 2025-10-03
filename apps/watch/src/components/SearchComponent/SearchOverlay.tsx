@@ -74,7 +74,7 @@ export function SearchOverlay({
                       isLoading={isTrendingLoading}
                     />
                   </div>
-                  <div className="w-full md:w-80 flex-shrink-0">
+                  <div className="w-full md:w-90 flex-shrink-0">
                     <div className="block mb-3 font-semibold text-sm uppercase tracking-wider text-stone-600">
                       {t('Search Filters')}
                     </div>
