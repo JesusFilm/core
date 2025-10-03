@@ -65,8 +65,7 @@ export const getServerSideProps = withUserTokenSSR()(async ({
   })
 
   const journeyId = params?.journeyId
-  // TODO: remove journeyCustomization check once flag is disabled
-  if (journeyId == null || !flags.journeyCustomization) {
+  if (journeyId == null) {
     return {
       redirect: {
         destination: '/templates',

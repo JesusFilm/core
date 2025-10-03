@@ -129,9 +129,7 @@ describe('DoneScreen', () => {
       </MockedProvider>
     )
 
-    expect(screen.getAllByRole('heading', { level: 1 })[0]).toHaveTextContent(
-      "It's Ready!"
-    )
+    expect(screen.getAllByText("It's Ready!")).toHaveLength(2)
   })
 
   it('renders journey preview card with title and description', () => {

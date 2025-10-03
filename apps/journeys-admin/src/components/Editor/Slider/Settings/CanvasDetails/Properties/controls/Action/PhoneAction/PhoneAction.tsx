@@ -17,11 +17,9 @@ import {
 } from 'react'
 import { object, string } from 'yup'
 
-import type { TreeBlock } from '@core/journeys/ui/block'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { ActionBlock, isActionBlock } from '@core/journeys/ui/isActionBlock'
 
-import { BlockFields_ButtonBlock as ButtonBlock } from '../../../../../../../../../../__generated__/BlockFields'
 import { ContactActionType } from '../../../../../../../../../../__generated__/globalTypes'
 import { TextFieldForm } from '../../../../../../../../TextFieldForm'
 import type { TextFieldFormRef } from '../../../../../../../../TextFieldForm'

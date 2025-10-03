@@ -90,14 +90,19 @@ describe('MultiStepForm', () => {
           __typename: 'JourneyCustomizationField'
         }
       ],
-      chatButtons: [
+      blocks: [
         {
-          id: 'chat-1',
-          platform: MessagePlatform.whatsApp,
-          link: 'https://wa.me/123'
+          __typename: 'ButtonBlock',
+          id: '1',
+          label: 'Test Button',
+          action: {
+            __typename: 'LinkAction',
+            url: 'https://wa.me/123',
+            customizable: true,
+            parentStepId: null
+          }
         }
-      ],
-      blocks: []
+      ]
     } as unknown as Journey
 
     render(
@@ -277,14 +282,19 @@ describe('MultiStepForm', () => {
       ...journey,
       journeyCustomizationDescription: null,
       journeyCustomizationFields: [],
-      chatButtons: [
+      blocks: [
         {
-          id: 'chat-1',
-          platform: MessagePlatform.whatsApp,
-          link: 'https://wa.me/123'
+          __typename: 'ButtonBlock',
+          id: '1',
+          label: 'Test Button',
+          action: {
+            __typename: 'EmailAction',
+            email: 'test@example.com',
+            customizable: true,
+            parentStepId: null
+          }
         }
-      ],
-      blocks: []
+      ]
     } as unknown as Journey
 
     render(
