@@ -10,7 +10,7 @@
   "Journey will be copied to selected team.": "จะทำการคัดลอก Journey ไปยังทีมที่เลือก",
   "Select Team": "เลือกทีม",
   "Translation": "การแปล",
-  "This is not the original journey template, it is a translation or copy of the original template. If you want to translate this journey - please use the original template.": "นี่ไม่ใช่เทมเพลตการเดินทางต้นฉบับ แต่เป็นการแปลหรือคัดลอกของเทมเพลตต้นฉบับ หากคุณต้องการแปลการเดินทางนี้ - กรุณาใช้เทมเพลตต้นฉบับ",
+  "This template isn't the original — it's a copy or an AI translated copy. For most accurate translations, please translate from the original template": "แม่แบบนี้ไม่ใช่ต้นฉบับ — เป็นสำเนาหรือสำเนาที่แปลโดย AI หากต้องการแปลให้ถูกต้องที่สุด กรุณาแปลจากแม่แบบต้นฉบับ",
   "Sorry, no results": "ขอโทษ ไม่พบผลลัพธ์",
   "Try removing or changing something from your request": "ลองลบหรือเปลี่ยนบางอย่างจากคำขอของคุณ",
   "Required": "จำเป็น",
