@@ -20,16 +20,16 @@ const COUNTRY_FILL_LAYER_ID = 'language-country-fill'
 const COUNTRY_BORDER_LAYER_ID = 'language-country-border'
 const COUNTRY_COUNT_LAYER_ID = 'language-country-count'
 const COUNTRY_COLORS = [
-  '#0EA5E9',
-  '#22C55E',
-  '#FACC15',
-  '#F97316',
-  '#A855F7',
-  '#EC4899',
-  '#38BDF8',
-  '#FB7185',
-  '#34D399',
-  '#FBBF24'
+  '#A8A29E', // Stone 500
+  '#78716C', // Stone 600
+  '#57534E', // Stone 700
+  '#44403C', // Stone 800
+  '#292524', // Stone 900
+  '#D6D3D1', // Stone 300
+  '#E7E5E4', // Stone 200
+  '#F5F5F4', // Stone 100
+  '#FAFAF9', // Stone 50
+  '#CFCBC9' // Stone 400
 ]
 
 function toFlagEmoji(countryId: string): string {
@@ -80,6 +80,7 @@ interface CountryLanguage {
   englishName?: string
   nativeName?: string
   isPrimary: boolean
+  speakers: number
 }
 
 interface CountryAggregation {
@@ -292,7 +293,8 @@ function aggregateCountries(
         languageName: point.languageName,
         englishName: point.englishName,
         nativeName: point.nativeName,
-        isPrimary: point.isPrimaryCountryLanguage
+        isPrimary: point.isPrimaryCountryLanguage,
+        speakers: point.speakers
       })
     } else if (point.isPrimaryCountryLanguage && !existingLanguage.isPrimary) {
       record.languages.set(point.languageId, { ...existingLanguage, isPrimary: true })
@@ -301,7 +303,7 @@ function aggregateCountries(
 
   return Array.from(map.values()).map((country, index) => {
     const languages = Array.from(country.languages.values()).sort((a, b) =>
-      a.languageName.localeCompare(b.languageName)
+      b.speakers - a.speakers
     )
 
     const languageCount = languages.length
@@ -496,59 +498,70 @@ export function LanguageMap({ points, unsupportedMessage }: LanguageMapProps): J
           type: 'fill',
           source: SOURCE_ID,
           paint: {
-            'fill-color': ['get', 'fillColor'],
+            // 'fill-color': ['get', 'fillColor'],
+            //#EF3340
+            'fill-color': [
+              'case',
+              ['boolean', ['feature-state', 'selected'], false],
+              'green',
+              ['boolean', ['feature-state', 'active'], false],
+              '#EF3340',
+              ['boolean', ['feature-state', 'hovered'], false],
+              '#EF3340', // hovered
+              '#643335' // default
+            ],
             'fill-opacity': [
               'case',
               ['boolean', ['feature-state', 'selected'], false],
-              0.85,
+              0.5,
               ['boolean', ['feature-state', 'active'], false],
-              0.72,
+              0.2,
               ['boolean', ['feature-state', 'hovered'], false],
-              0.58,
-              0.38
+              0.3,
+              0.0
             ]
           }
         })
       }
 
-      if (!map.getLayer(COUNTRY_BORDER_LAYER_ID)) {
-        map.addLayer({
-          id: COUNTRY_BORDER_LAYER_ID,
-          type: 'line',
-          source: SOURCE_ID,
-          paint: {
-            'line-color': '#e2e8f0',
-            'line-width': [
-              'case',
-              ['boolean', ['feature-state', 'selected'], false],
-              2.5,
-              ['boolean', ['feature-state', 'active'], false],
-              2,
-              1.2
-            ],
-            'line-opacity': 0.8
-          }
-        })
-      }
+      // if (!map.getLayer(COUNTRY_BORDER_LAYER_ID)) {
+      //   map.addLayer({
+      //     id: COUNTRY_BORDER_LAYER_ID,
+      //     type: 'line',
+      //     source: SOURCE_ID,
+      //     paint: {
+      //       'line-color': '#000',
+      //       'line-width': [
+      //         'case',
+      //         ['boolean', ['feature-state', 'selected'], false],
+      //         0,
+      //         ['boolean', ['feature-state', 'active'], false],
+      //         0,
+      //         0
+      //       ],
+      //       'line-opacity': 0.8
+      //     }
+      //   })
+      // }
 
-      if (!map.getLayer(COUNTRY_COUNT_LAYER_ID)) {
-        map.addLayer({
-          id: COUNTRY_COUNT_LAYER_ID,
-          type: 'symbol',
-          source: SOURCE_ID,
-          layout: {
-            'text-field': ['get', 'labelText'],
-            'text-font': ['Open Sans Bold', 'Arial Unicode MS Bold'],
-            'text-size': 14,
-            'text-allow-overlap': true
-          },
-          paint: {
-            'text-color': '#f8fafc',
-            'text-halo-color': '#020617',
-            'text-halo-width': 1.5
-          }
-        })
-      }
+      // if (!map.getLayer(COUNTRY_COUNT_LAYER_ID)) {
+      //   map.addLayer({
+      //     id: COUNTRY_COUNT_LAYER_ID,
+      //     type: 'symbol',
+      //     source: SOURCE_ID,
+      //     layout: {
+      //       'text-field': ['get', 'labelText'],
+      //       'text-font': ['Open Sans Bold', 'Arial Unicode MS Bold'],
+      //       'text-size': 14,
+      //       'text-allow-overlap': true
+      //     },
+      //     paint: {
+      //       'text-color': '#f8fafc',
+      //       'text-halo-color': '#020617',
+      //       'text-halo-width': 1.5
+      //     }
+      //   })
+      // }
     })
 
     const setHoverState = (nextId: string | null): void => {
@@ -641,7 +654,7 @@ export function LanguageMap({ points, unsupportedMessage }: LanguageMapProps): J
         const activeCountry = countries.find((country) => country.countryId === activeCountryId)
         if (activeCountry != null) {
           map.fitBounds(activeCountry.bounds, {
-            padding: { top: 40, bottom: 40, left: 40, right: selectedCountryId != null ? 360 : 40 },
+            padding: { top: 40, bottom: 40, left: 40, right: activeCountryId != null ? 360 : 40 },
             duration: 500
           })
         }
@@ -658,7 +671,7 @@ export function LanguageMap({ points, unsupportedMessage }: LanguageMapProps): J
     }
 
     applyActiveState()
-  }, [activeCountryId, countries, selectedCountryId])
+  }, [activeCountryId, countries])
 
   useEffect(() => {
     const map = mapRef.current
@@ -713,9 +726,9 @@ export function LanguageMap({ points, unsupportedMessage }: LanguageMapProps): J
     applySelection()
   }, [countries, selectedCountryId])
 
-  const selectedCountry = useMemo(
-    () => countries.find((country) => country.countryId === selectedCountryId) ?? null,
-    [countries, selectedCountryId]
+  const activeCountry = useMemo(
+    () => countries.find((country) => country.countryId === activeCountryId) ?? null,
+    [countries, activeCountryId]
   )
 
   useEffect(() => {
@@ -735,15 +748,15 @@ export function LanguageMap({ points, unsupportedMessage }: LanguageMapProps): J
   }, [countries, selectedCountryId])
 
   const handleCloseDetails = (): void => {
-    setSelectedCountryId(null)
+    setActiveCountryId(null)
     clickTrackerRef.current = { countryId: null, count: 0 }
   }
 
-  const selectedCountryFlag =
-    selectedCountry?.iso2Code != null
-      ? toFlagEmoji(selectedCountry.iso2Code)
-      : selectedCountry != null && selectedCountry.countryId.length === 2
-        ? toFlagEmoji(selectedCountry.countryId)
+  const activeCountryFlag =
+    activeCountry?.iso2Code != null
+      ? toFlagEmoji(activeCountry.iso2Code)
+      : activeCountry != null && activeCountry.countryId.length === 2
+        ? toFlagEmoji(activeCountry.countryId)
         : null
 
   if (isUnsupported) {
@@ -758,28 +771,28 @@ export function LanguageMap({ points, unsupportedMessage }: LanguageMapProps): J
     <div className="relative h-full w-full">
       <div ref={containerRef} className="h-full w-full" role="presentation" aria-hidden />
 
-      {selectedCountry != null ? (
-        <aside className="pointer-events-auto absolute right-6 top-1/2 h-[90%] w-[300px] max-w-full -translate-y-1/2 overflow-hidden rounded-3xl border border-slate-700/40 bg-slate-950/95 p-5 text-slate-100 shadow-2xl backdrop-blur">
+      {activeCountry != null ? (
+        <aside className="pointer-events-auto absolute right-16 top-1/2 h-[90%] w-[400px] max-w-full -translate-y-1/2 overflow-hidden rounded-3xl border border-stone-700/40 bg-stone-950/60 p-5 text-stone-100 shadow-2xl backdrop-blur-lg">
           <div className="flex items-start justify-between gap-3">
             <div>
-              <p className="text-xs uppercase tracking-[0.18em] text-slate-300/70">Country</p>
+              <p className="text-xs uppercase tracking-[0.18em] text-stone-300/70">Country</p>
               <h3 className="text-lg font-semibold leading-tight">
-                {selectedCountryFlag != null ? (
+                {activeCountryFlag != null ? (
                   <span className="mr-2 inline-block align-middle text-xl" aria-hidden>
-                    {selectedCountryFlag}
+                    {activeCountryFlag}
                   </span>
                 ) : null}
-                <span className="align-middle">{selectedCountry.countryName}</span>
+                <span className="align-middle">{activeCountry.countryName}</span>
               </h3>
-              <p className="mt-1 text-sm text-slate-300/80">
-                {selectedCountry.languages.length} language
-                {selectedCountry.languages.length === 1 ? '' : 's'} spoken here
+              <p className="mt-1 text-sm text-stone-300/80">
+                {activeCountry.languages.length} language
+                {activeCountry.languages.length === 1 ? '' : 's'} spoken here
               </p>
             </div>
             <button
               type="button"
               onClick={handleCloseDetails}
-              className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-slate-700/60 bg-slate-900/60 text-slate-300 transition hover:border-slate-500 hover:text-slate-100"
+              className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-stone-700/60 bg-stone-900/60 text-stone-300 transition hover:border-stone-500 hover:text-stone-100"
               aria-label="Close country details"
             >
               ×
@@ -787,15 +800,18 @@ export function LanguageMap({ points, unsupportedMessage }: LanguageMapProps): J
           </div>
 
           <div className="mt-5 h-[calc(100%-4.5rem)] overflow-y-auto pr-1">
-            <ul className="space-y-3 text-sm text-slate-200/90">
-              {selectedCountry.languages.map((language) => (
-                <li key={language.id} className="rounded-xl border border-slate-800/60 bg-slate-900/60 p-3">
-                  <p className="font-medium text-slate-100">{language.languageName}</p>
+            <ul className="space-y-3 text-sm text-stone-200/90">
+              {activeCountry.languages.map((language) => (
+                <li key={language.id} className="rounded-xl border border-stone-800/60 bg-stone-900/60 p-3">
+                  <div className="flex items-center justify-between">
+                    <p className="font-medium text-stone-100">{language.languageName}</p>
+                    <span className="text-xs text-stone-300/70">{language.speakers.toLocaleString()} speakers</span>
+                  </div>
                   {language.nativeName && language.nativeName !== language.languageName ? (
-                    <p className="text-xs text-slate-300/80">{language.nativeName}</p>
+                    <p className="text-xs text-stone-300/80">{language.nativeName}</p>
                   ) : null}
                   {language.englishName && language.englishName !== language.languageName ? (
-                    <p className="text-xs text-slate-400/70">{language.englishName}</p>
+                    <p className="text-xs text-stone-400/70">{language.englishName}</p>
                   ) : null}
                 </li>
               ))}
