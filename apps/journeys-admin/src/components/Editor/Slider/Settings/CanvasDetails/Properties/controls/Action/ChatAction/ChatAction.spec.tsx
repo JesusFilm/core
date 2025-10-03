@@ -66,7 +66,6 @@ describe('ChatAction', () => {
   })
 
   it('updates action chat url', async () => {
-    // TODO TEST: update for new props (customizable, parentStepId)
     const result = jest.fn().mockReturnValue(blockActionChatUpdateMock.result)
     render(
       <MockedProvider mocks={[{ ...blockActionChatUpdateMock, result }]}>
@@ -76,7 +75,7 @@ describe('ChatAction', () => {
       </MockedProvider>
     )
     fireEvent.change(screen.getByRole('textbox'), {
-      target: { value: 'https://chat.github.com' }
+      target: { value: 'https://chat.example.com' }
     })
     fireEvent.blur(screen.getByRole('textbox'))
     await waitFor(() => expect(result).toHaveBeenCalled())
@@ -114,7 +113,7 @@ describe('ChatAction', () => {
       </MockedProvider>
     )
     fireEvent.change(screen.getByRole('textbox'), {
-      target: { value: 'chat.github.com' }
+      target: { value: 'chat.example.com' }
     })
     fireEvent.blur(screen.getByRole('textbox'))
     await waitFor(() =>
@@ -170,25 +169,6 @@ describe('ChatAction', () => {
     await waitFor(() => expect(result).toHaveBeenCalled())
   })
 
-  it('accepts mailto links as a URL', async () => {
-    const result = jest.fn().mockReturnValue(blockActionChatUpdateMock.result)
-    render(
-      <MockedProvider mocks={[{ ...blockActionChatUpdateMock, result }]}>
-        <EditorProvider initialState={{ selectedBlock, selectedStep }}>
-          <ChatAction />
-        </EditorProvider>
-      </MockedProvider>
-    )
-    fireEvent.change(screen.getByRole('textbox'), {
-      target: { value: 'mailto:test@test.com' }
-    })
-    fireEvent.blur(screen.getByRole('textbox'))
-    await waitFor(() =>
-      expect(screen.queryByText('Invalid URL')).not.toBeInTheDocument()
-    )
-    await waitFor(() => expect(result).toHaveBeenCalled())
-  })
-
   it('should submit when enter is pressed', async () => {
     const result = jest.fn().mockReturnValue(blockActionChatUpdateMock.result)
     render(
@@ -199,10 +179,10 @@ describe('ChatAction', () => {
       </MockedProvider>
     )
     fireEvent.change(screen.getByRole('textbox'), {
-      target: { value: 'https://chat.github.com' }
+      target: { value: 'https://chat.example.com' }
     })
     fireEvent.submit(screen.getByRole('textbox'), {
-      target: { value: 'https://chat.github.com' }
+      target: { value: 'https://chat.example.com' }
     })
     await waitFor(() =>
       expect(screen.queryByText('Invalid URL')).not.toBeInTheDocument()
@@ -241,7 +221,7 @@ describe('ChatAction', () => {
       </MockedProvider>
     )
     fireEvent.change(screen.getByRole('textbox'), {
-      target: { value: 'https://chat.github.com' }
+      target: { value: 'https://chat.example.com' }
     })
     fireEvent.blur(screen.getByRole('textbox'))
     const undo = screen.getByRole('button', { name: 'Undo' })

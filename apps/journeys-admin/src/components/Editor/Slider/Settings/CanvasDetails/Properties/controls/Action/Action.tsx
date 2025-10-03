@@ -56,7 +56,9 @@ export function Action(): ReactElement {
   const filteredLabels = isSubmitButton
     ? labels.filter(
         (action) =>
-          action.value !== 'LinkAction' && action.value !== 'EmailAction'
+          action.value !== 'LinkAction' &&
+          action.value !== 'EmailAction' &&
+          action.value !== 'ChatAction'
       )
     : labels
 

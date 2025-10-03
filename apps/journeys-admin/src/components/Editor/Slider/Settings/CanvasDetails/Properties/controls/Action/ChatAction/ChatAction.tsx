@@ -30,8 +30,8 @@ export function ChatAction({ ref }: ChatActionProps): ReactElement {
   const selectedBlock = stateSelectedBlock as TreeBlock<ButtonBlock> | undefined
 
   const chatAction =
-    selectedBlock?.action?.__typename === 'ChatAction'
-      ? selectedBlock.action
+    (selectedBlock as ButtonBlock)?.action?.__typename === 'ChatAction'
+      ? ((selectedBlock as ButtonBlock).action as ButtonBlockChatAction)
       : undefined
 
   // check for valid URL
@@ -58,7 +58,11 @@ export function ChatAction({ ref }: ChatActionProps): ReactElement {
     if (selectedBlock == null || selectedStep == null) return
     // checks if url has a protocol
     const url = /^\w+:\/\//.test(chatUrl) ? chatUrl : `https://${chatUrl}`
-    const { id, action, __typename: blockTypename } = selectedBlock
+    const {
+      id,
+      action,
+      __typename: blockTypename
+    } = selectedBlock as ButtonBlock
     addAction({
       blockId: id,
       blockTypename,
@@ -68,8 +72,8 @@ export function ChatAction({ ref }: ChatActionProps): ReactElement {
         gtmEventName: '',
         chatUrl: url,
         customizable:
-          (selectedBlock?.action as ButtonBlockChatAction)?.customizable ??
-          false,
+          ((selectedBlock as ButtonBlock)?.action as ButtonBlockChatAction)
+            ?.customizable ?? false,
         parentStepId: selectedStep.id
       },
       undoAction: action,
