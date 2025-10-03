@@ -38,9 +38,7 @@ export function TemplateFooter({
       >
         {t('Use this template to make it your journey')}
       </Typography>
-      <TemplateActionButton
-        signedIn={signedIn}
-      />
+      <TemplateActionButton signedIn={signedIn} />
     </Stack>
   )
 }
