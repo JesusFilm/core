@@ -1,5 +1,4 @@
 import { useMutation } from '@apollo/client'
-import Button from '@mui/material/Button'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { Formik, FormikHelpers, FormikProvider } from 'formik'
@@ -11,7 +10,6 @@ import { TreeBlock } from '@core/journeys/ui/block'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { JourneyFields_chatButtons as JourneyChatButton } from '@core/journeys/ui/JourneyProvider/__generated__/JourneyFields'
 import { transformer } from '@core/journeys/ui/transformer'
-import ArrowRightIcon from '@core/shared/ui/icons/ArrowRight'
 
 import {
   BlockFields,
@@ -26,10 +24,7 @@ import { getJourneyLinks } from '../../../utils/getJourneyLinks'
 import { CardsPreview } from './CardsPreview'
 import { LinksForm } from './LinksForm'
 import { CustomizationScreen } from '../../../utils/getCustomizeFlowConfig'
-import {
-  BUTTON_NEXT_STEP_WIDTH,
-  BUTTON_NEXT_STEP_HEIGHT
-} from '../../../utils/sharedStyles'
+import { CustomizeFlowNextButton } from '../../CustomizeFlowNextButton'
 
 interface LinksScreenProps {
   handleNext: () => void
@@ -170,7 +165,7 @@ export function LinksScreen({
           {t('Links')}
         </Typography>
         <Typography
-          variant="h6"
+          variant="subtitle2"
           display={{ xs: 'none', sm: 'block' }}
           color="text.secondary"
           align="center"
@@ -217,9 +212,8 @@ export function LinksScreen({
         {(formik) => (
           <FormikProvider value={formik}>
             <LinksForm links={links} />
-            <Button
-              variant="contained"
-              color="secondary"
+            <CustomizeFlowNextButton
+              label={t('Next')}
               type="submit"
               form="linksForm"
               loading={
@@ -228,26 +222,8 @@ export function LinksScreen({
                 linkLoading ||
                 emailLoading
               }
-              aria-label={t('Replace the links')}
-              sx={{
-                width: BUTTON_NEXT_STEP_WIDTH,
-                height: BUTTON_NEXT_STEP_HEIGHT,
-                alignSelf: 'center',
-                borderRadius: '8px'
-              }}
-            >
-              <Stack direction="row" alignItems="center" gap={1}>
-                <Typography
-                  sx={{
-                    fontWeight: 'bold',
-                    display: { xs: 'none', sm: 'block' }
-                  }}
-                >
-                  {t('Next Step')}
-                </Typography>
-                <ArrowRightIcon />
-              </Stack>
-            </Button>
+              ariaLabel={t('Replace the links')}
+            />
           </FormikProvider>
         )}
       </Formik>

@@ -7,9 +7,6 @@ import { journey } from '@core/journeys/ui/JourneyProvider/JourneyProvider.mock'
 import { JOURNEY_SEO_TITLE_UPDATE } from '../../../../Editor/Slider/Settings/SocialDetails/TitleEdit/TitleEdit'
 import { JOURNEY_SEO_DESCRIPTION_UPDATE } from '../../../../Editor/Slider/Settings/SocialDetails/DescriptionEdit/DescriptionEdit'
 
-import type { JourneySeoTitleUpdate } from '../../../../../../__generated__/JourneySeoTitleUpdate'
-import type { JourneySeoDescriptionUpdate } from '../../../../../../__generated__/JourneySeoDescriptionUpdate'
-
 import { SocialScreen } from './SocialScreen'
 
 describe('SocialScreen', () => {
@@ -51,7 +48,7 @@ describe('SocialScreen', () => {
     expect(screen.getByTestId('SocialScreenSocialImage')).toBeInTheDocument()
     expect(screen.getByTestId('TitleEdit')).toBeInTheDocument()
     expect(screen.getByTestId('DescriptionEdit')).toBeInTheDocument()
-    expect(screen.getByTestId('DoneButton')).toBeInTheDocument()
+    expect(screen.getByTestId('CustomizeFlowNextButton')).toBeInTheDocument()
   })
 
   it('should update SEO title and make correct network call', async () => {
@@ -196,7 +193,7 @@ describe('SocialScreen', () => {
     await waitFor(() => expect(titleResult).toHaveBeenCalled())
     await waitFor(() => expect(descriptionResult).toHaveBeenCalled())
 
-    const doneButton = screen.getByRole('button', { name: 'Done' })
+    const doneButton = screen.getByTestId('CustomizeFlowNextButton')
     fireEvent.click(doneButton)
 
     expect(handleNext).toHaveBeenCalledTimes(1)
@@ -205,7 +202,7 @@ describe('SocialScreen', () => {
   it('should call handleNext when Done button is clicked without any changes', () => {
     renderSocialScreen()
 
-    const doneButton = screen.getByRole('button', { name: 'Done' })
+    const doneButton = screen.getByTestId('CustomizeFlowNextButton')
     fireEvent.click(doneButton)
 
     expect(handleNext).toHaveBeenCalledTimes(1)

@@ -157,7 +157,7 @@ describe('LanguageScreen', () => {
         'Team One'
       )
     )
-    fireEvent.click(screen.getByTestId('LanguageScreenSubmitButton'))
+    fireEvent.click(screen.getByTestId('CustomizeFlowNextButton'))
     await waitFor(() =>
       expect(mockJourneyDuplicateMockResult).toHaveBeenCalled()
     )
@@ -274,7 +274,7 @@ describe('LanguageScreen', () => {
       fireEvent.click(screen.getByRole('option', { name: 'Spanish' }))
     )
 
-    fireEvent.click(screen.getByTestId('LanguageScreenSubmitButton'))
+    fireEvent.click(screen.getByTestId('CustomizeFlowNextButton'))
     await waitFor(() =>
       expect(mockJourneyDuplicateMockResult).toHaveBeenCalled()
     )
@@ -320,7 +320,7 @@ describe('LanguageScreen', () => {
         'Team One'
       )
     )
-    fireEvent.click(screen.getByTestId('LanguageScreenSubmitButton'))
+    fireEvent.click(screen.getByTestId('CustomizeFlowNextButton'))
     await waitFor(() =>
       expect(mockJourneyDuplicateMockResult).toHaveBeenCalled()
     )
@@ -421,9 +421,9 @@ describe('LanguageScreen', () => {
       expect(screen.getByRole('combobox', { name: 'Team' })).toBeInTheDocument()
     })
 
-    expect(screen.getByTestId('LanguageScreenSubmitButton')).toBeInTheDocument()
-    expect(screen.getByTestId('LanguageScreenSubmitButton')).toHaveTextContent(
-      'Next Step'
+    expect(screen.getByTestId('CustomizeFlowNextButton')).toBeInTheDocument()
+    expect(screen.getByTestId('CustomizeFlowNextButton')).toHaveTextContent(
+      'Next'
     )
   })
 

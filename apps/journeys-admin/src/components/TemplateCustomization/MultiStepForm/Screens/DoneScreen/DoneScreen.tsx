@@ -2,7 +2,6 @@ import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
-import dynamic from 'next/dynamic'
 import NextImage from 'next/image'
 import { useRouter } from 'next/router'
 import { useTranslation } from 'next-i18next'
@@ -31,9 +30,8 @@ export function DoneScreen({
   }
 
   return (
-    <Stack alignItems="center" sx={{ pb: 4, px: 4 }}>
+    <Stack alignItems="center" sx={{ pb: 4, px: { xs: 4, sm: 18 } }}>
       <Typography
-        component="h1"
         variant="h4"
         gutterBottom
         display={{ xs: 'none', sm: 'block' }}
@@ -42,7 +40,6 @@ export function DoneScreen({
         {t("It's Ready!")}
       </Typography>
       <Typography
-        component="h1"
         variant="h6"
         display={{ xs: 'block', sm: 'none' }}
         gutterBottom
@@ -53,7 +50,7 @@ export function DoneScreen({
       <Typography
         color="text.secondary"
         align="center"
-        variant="h6"
+        variant="subtitle2"
         display={{ xs: 'none', sm: 'block' }}
         sx={{
           maxWidth: { xs: '100%', sm: '90%' }
