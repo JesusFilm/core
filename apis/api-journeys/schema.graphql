@@ -434,7 +434,6 @@ type Mutation {
   customDomainUpdate(id: ID!, input: CustomDomainUpdateInput!): CustomDomain!
   customDomainDelete(id: ID!): CustomDomain!
   customDomainCheck(id: ID!): CustomDomainCheck!
-  chatOpenEventCreate(input: ChatOpenEventCreateInput!): ChatOpenEvent!
 
   """
   Creates a JourneyViewEvent, returns null if attempting to create another
@@ -1473,20 +1472,6 @@ enum MessagePlatform {
   checkBroken
   checkContained
   settings
-}
-
-input ChatOpenEventCreateInput {
-  """
-  ID should be unique Event UUID (Provided for optimistic mutation result matching)
-  """
-  id: ID
-  blockId: ID!
-
-  """id of the parent stepBlock"""
-  stepId: ID
-
-  """messagePlatform of the link used for chat"""
-  value: MessagePlatform
 }
 
 type ChatOpenEvent implements Event
