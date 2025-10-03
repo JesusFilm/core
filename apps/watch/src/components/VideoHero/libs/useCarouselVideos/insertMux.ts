@@ -19,6 +19,28 @@ interface MergeOptions {
   seed?: string
 }
 
+interface PrepareSlideOptions {
+  prefixTitleWithDate?: string
+}
+
+const dateFormatter = new Intl.DateTimeFormat('en-US', {
+  month: 'short',
+  day: 'numeric'
+})
+
+function buildDatePrefix(): string {
+  return dateFormatter.format(new Date())
+}
+
+function prefixTitle(title: string, prefix: string): string {
+  const normalizedPrefix = `${prefix}:`
+  if (title.startsWith(`${normalizedPrefix} `) || title.startsWith(normalizedPrefix)) {
+    return title
+  }
+
+  return `${normalizedPrefix} ${title}`
+}
+
 export function mergeMuxInserts(
   videos: CarouselVideoLike[],
   options: MergeOptions = {}
@@ -38,8 +60,14 @@ export function mergeMuxInserts(
     (insert) => insert.trigger.type === 'sequence-start'
   )
 
+  const firstSequenceStartId = sequenceStart[0]?.id
+  const firstSequenceStartDate = firstSequenceStartId != null ? buildDatePrefix() : undefined
+
   sequenceStart.forEach((insert) => {
-    const slide = prepareSlide(insert, seed, preparedSlides)
+    const shouldPrefix = insert.id === firstSequenceStartId && firstSequenceStartDate != null
+    const slide = prepareSlide(insert, seed, preparedSlides, {
+      prefixTitleWithDate: shouldPrefix ? firstSequenceStartDate : undefined
+    })
     slides.push(slide)
     inserted.add(insert.id)
   })
@@ -76,7 +104,8 @@ function convertVideoToSlide(video: CarouselVideoLike): CarouselVideoSlide {
 function prepareSlide(
   insert: InsertConfig,
   seed: string | undefined,
-  cache: Map<string, CarouselMuxSlide>
+  cache: Map<string, CarouselMuxSlide>,
+  options: PrepareSlideOptions = {}
 ): CarouselMuxSlide {
   const cached = cache.get(insert.id)
   if (cached != null) return cached
@@ -84,10 +113,18 @@ function prepareSlide(
   const playbackId = selectPlaybackId(insert, seed)
   const urls = buildPlaybackUrls(playbackId.playbackId)
 
+  const overlay =
+    options.prefixTitleWithDate != null
+      ? {
+          ...insert.overlay,
+          title: prefixTitle(insert.overlay.title, options.prefixTitleWithDate)
+        }
+      : insert.overlay
+
   const slide: CarouselMuxSlide = {
     source: 'mux',
     id: insert.id,
-    overlay: insert.overlay,
+    overlay,
     playbackId: playbackId.playbackId,
     playbackIndex: playbackId.index,
     urls,
