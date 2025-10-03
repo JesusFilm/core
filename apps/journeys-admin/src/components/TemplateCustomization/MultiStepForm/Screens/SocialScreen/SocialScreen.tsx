@@ -1,18 +1,13 @@
-import Button from '@mui/material/Button'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 
-import ArrowRightIcon from '@core/shared/ui/icons/ArrowRight'
 import { TitleEdit } from '../../../../Editor/Slider/Settings/SocialDetails/TitleEdit'
 import { DescriptionEdit } from '../../../../Editor/Slider/Settings/SocialDetails/DescriptionEdit'
 import { CustomizationScreen } from '../../../utils/getCustomizeFlowConfig'
 import { SocialScreenSocialImage } from './SocialScreenSocialImage'
-import {
-  BUTTON_NEXT_STEP_WIDTH,
-  BUTTON_NEXT_STEP_HEIGHT
-} from '../../../utils/sharedStyles'
+import { CustomizeFlowNextButton } from '../../CustomizeFlowNextButton'
 
 interface SocialScreenProps {
   handleNext: () => void
@@ -32,11 +27,22 @@ export function SocialScreen({
         px: { xs: 5, sm: 20 }
       }}
     >
-      <Typography variant="h4" component="h1" gutterBottom>
+      <Typography
+        variant="h4"
+        gutterBottom
+        display={{ xs: 'none', sm: 'block' }}
+      >
         {t('Almost There!')}
       </Typography>
       <Typography
         variant="h6"
+        gutterBottom
+        display={{ xs: 'block', sm: 'none' }}
+      >
+        {t('Almost There!')}
+      </Typography>
+      <Typography
+        variant="subtitle2"
         color="text.secondary"
         align="center"
         sx={{
@@ -71,20 +77,11 @@ export function SocialScreen({
         <TitleEdit />
         <DescriptionEdit />
       </Stack>
-      <Button
-        variant="contained"
-        color="secondary"
+      <CustomizeFlowNextButton
+        label={t('Done')}
         onClick={handleNext}
-        endIcon={<ArrowRightIcon />}
-        data-testid="DoneButton"
-        sx={{
-          width: BUTTON_NEXT_STEP_WIDTH,
-          height: BUTTON_NEXT_STEP_HEIGHT,
-          borderRadius: '8px'
-        }}
-      >
-        {t('Done')}
-      </Button>
+        ariaLabel={t('Done')}
+      />
     </Stack>
   )
 }
