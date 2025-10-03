@@ -1553,6 +1553,15 @@ export class ChatOpenEvent implements Event {
     messagePlatform?: Nullable<MessagePlatform>;
 }
 
+export class MultiselectSubmissionEvent implements Event {
+    __typename?: 'MultiselectSubmissionEvent';
+    id: string;
+    journeyId: string;
+    createdAt: DateTime;
+    label?: Nullable<string>;
+    value?: Nullable<string>;
+}
+
 export class JourneyViewEvent implements Event {
     __typename?: 'JourneyViewEvent';
     id: string;

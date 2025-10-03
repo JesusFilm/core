@@ -922,6 +922,7 @@ type JourneyVisitor
   lastTextResponse: String
   lastRadioQuestion: String
   lastRadioOptionSubmission: String
+  lastMultiselectSubmission: String
   countryCode: String
   messagePlatform: MessagePlatform
   notes: String
