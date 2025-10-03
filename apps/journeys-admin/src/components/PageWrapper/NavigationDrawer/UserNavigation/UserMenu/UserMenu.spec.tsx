@@ -5,12 +5,6 @@ import { NextRouter, useRouter } from 'next/router'
 import { User } from 'next-firebase-auth'
 import { SnackbarProvider } from 'notistack'
 
-import {
-  GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS,
-  TeamProvider
-} from '@core/journeys/ui/TeamProvider'
-import { GetLastActiveTeamIdAndTeams } from '@core/journeys/ui/TeamProvider/__generated__/GetLastActiveTeamIdAndTeams'
-
 import { UserMenu } from '.'
 
 jest.mock('next/router', () => ({
@@ -32,6 +26,18 @@ const mockUseApolloClient = useApolloClient as jest.MockedFunction<
 describe('UserMenu', () => {
   const handleProfileClose = jest.fn()
   const signOut = jest.fn()
+
+  const mockWindowLocationAssign = (href: string) => {
+    const mockAssign = jest.fn()
+    Object.defineProperty(window, 'location', {
+      value: {
+        assign: mockAssign,
+        href
+      },
+      writable: true
+    })
+    return mockAssign
+  }
 
   beforeEach(() => {
     jest.clearAllMocks()
@@ -117,75 +123,109 @@ describe('UserMenu', () => {
     )
   })
 
-  it('should call signOut on logout click', async () => {
+  it('should call signOut and clearStore on logout click', async () => {
     const clearStore = jest.fn()
     mockUseApolloClient.mockReturnValue({
       clearStore
     } as unknown as ApolloClient<object>)
-    const getTeams: MockedResponse<GetLastActiveTeamIdAndTeams> = {
-      request: {
-        query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS
-      },
-      result: jest.fn(() => ({
-        data: {
-          teams: [
-            {
-              id: 'teamId',
-              title: 'Team Title',
-              publicTitle: null,
-              __typename: 'Team',
-              userTeams: [],
-              customDomains: []
-            }
-          ],
-          getJourneyProfile: {
-            __typename: 'JourneyProfile',
-            id: 'journeyProfileId',
-            lastActiveTeamId: 'teamId'
-          }
-        }
-      }))
-    }
-    const { getByRole, getByText } = render(
-      <MockedProvider mocks={[getTeams]}>
+
+    const mockAssign = mockWindowLocationAssign(
+      'http://localhost:4200/journeys'
+    )
+
+    mockUseRouter.mockReturnValue({
+      pathname: '/journeys'
+    } as unknown as NextRouter)
+
+    const { getByRole } = render(
+      <MockedProvider>
         <SnackbarProvider>
-          <TeamProvider>
-            <UserMenu
-              apiUser={{
-                __typename: 'User',
-                id: 'userId',
-                firstName: 'Amin',
-                lastName: 'One',
-                imageUrl: 'https://bit.ly/3Gth4Yf',
+          <UserMenu
+            apiUser={{
+              __typename: 'User',
+              id: 'userId',
+              firstName: 'Amin',
+              lastName: 'One',
+              imageUrl: 'https://bit.ly/3Gth4Yf',
+              email: 'amin@email.com',
+              emailVerified: true,
+              superAdmin: false
+            }}
+            profileOpen
+            profileAnchorEl={null}
+            handleProfileClose={handleProfileClose}
+            user={
+              {
+                displayName: 'Amin One',
+                photoURL: 'https://bit.ly/3Gth4Yf',
                 email: 'amin@email.com',
-                emailVerified: true,
-                superAdmin: false
-              }}
-              profileOpen
-              profileAnchorEl={null}
-              handleProfileClose={handleProfileClose}
-              user={
-                {
-                  displayName: 'Amin One',
-                  photoURL: 'https://bit.ly/3Gth4Yf',
-                  email: 'amin@email.com',
-                  signOut
-                } as unknown as User
-              }
-            />
-          </TeamProvider>
+                signOut
+              } as unknown as User
+            }
+          />
         </SnackbarProvider>
       </MockedProvider>
     )
 
-    expect(getByRole('img', { name: 'Amin One' })).toBeInTheDocument()
     fireEvent.click(getByRole('menuitem', { name: 'Logout' }))
+
     await waitFor(() => expect(signOut).toHaveBeenCalled())
-    await waitFor(() =>
-      expect(getByText('Logout successful')).toBeInTheDocument()
-    )
-    expect(getTeams.result).toHaveBeenCalled()
     expect(clearStore).toHaveBeenCalled()
+    expect(mockAssign).toHaveBeenCalledWith(
+      '/users/sign-in?redirect=' +
+        encodeURIComponent('http://localhost:4200/journeys')
+    )
+  })
+
+  it('should not redirect when logging out from templates page', async () => {
+    const clearStore = jest.fn()
+    mockUseApolloClient.mockReturnValue({
+      clearStore
+    } as unknown as ApolloClient<object>)
+
+    const mockAssign = mockWindowLocationAssign(
+      'http://localhost:4200/templates/123'
+    )
+
+    mockUseRouter.mockReturnValue({
+      pathname: '/templates/123'
+    } as unknown as NextRouter)
+
+    const { getByRole } = render(
+      <MockedProvider>
+        <SnackbarProvider>
+          <UserMenu
+            apiUser={{
+              __typename: 'User',
+              id: 'userId',
+              firstName: 'Amin',
+              lastName: 'One',
+              imageUrl: 'https://bit.ly/3Gth4Yf',
+              email: 'amin@email.com',
+              emailVerified: true,
+              superAdmin: false
+            }}
+            profileOpen
+            profileAnchorEl={null}
+            handleProfileClose={handleProfileClose}
+            user={
+              {
+                displayName: 'Amin One',
+                photoURL: 'https://bit.ly/3Gth4Yf',
+                email: 'amin@email.com',
+                signOut
+              } as unknown as User
+            }
+          />
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    fireEvent.click(getByRole('menuitem', { name: 'Logout' }))
+
+    await waitFor(() => expect(signOut).toHaveBeenCalled())
+    expect(clearStore).toHaveBeenCalled()
+    expect(mockAssign).not.toHaveBeenCalled()
   })
 
   it('should open language selector', async () => {
