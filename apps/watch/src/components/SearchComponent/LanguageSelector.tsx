@@ -25,12 +25,14 @@ interface LanguageOption {
   count?: number
 }
 
+// Single-select language filter component
 export function LanguageSelector(): JSX.Element {
   const { t } = useTranslation('apps-watch')
   const { items, refine } = useRefinementList(languageRefinementProps)
   const { languages, isLoading: languagesLoading } = useLanguages()
   const [open, setOpen] = useState(false)
   const containerRef = useRef<HTMLDivElement>(null)
+  const searchInputRef = useRef<HTMLInputElement>(null)
 
   // Combine Algolia refinement data with full language information
   const languageOptions = useMemo(() => {
@@ -62,7 +64,16 @@ export function LanguageSelector(): JSX.Element {
   )
 
   const handleLanguageSelect = (currentValue: string) => {
-    refine(currentValue)
+    // Clear all existing selections first (single-select behavior)
+    selectedLanguages.forEach((lang) => {
+      if (lang.value !== currentValue) {
+        refine(lang.value)
+      }
+    })
+    // Then select the new language if it's not already selected
+    if (!selectedLanguages.some(lang => lang.value === currentValue)) {
+      refine(currentValue)
+    }
     setOpen(false)
   }
 
@@ -83,25 +94,29 @@ export function LanguageSelector(): JSX.Element {
     }
   }, [open])
 
+  // Focus search input when dropdown opens
+  useEffect(() => {
+    if (open && searchInputRef.current) {
+      searchInputRef.current.focus()
+    }
+  }, [open])
+
   const getDisplayValue = () => {
     if (selectedLanguages.length === 0) {
       return t('Search languages...')
     }
-    if (selectedLanguages.length === 1) {
-      return selectedLanguages[0].englishName
-    }
-    return `${selectedLanguages.length} ${t('languages selected')}`
+    return selectedLanguages[0].englishName
   }
 
   if (languagesLoading) {
     return (
       <div className="relative">
-        <Button
-          variant="outline"
-          role="combobox"
-          disabled
-          className="w-full justify-between opacity-50"
-        >
+      <Button
+        variant="outline"
+        role="combobox"
+        disabled
+        className="w-full justify-between opacity-50 h-12 px-4"
+      >
           <div className="flex items-center">
             <Globe className="mr-2 h-4 w-4 text-muted-foreground" />
             <span>{t('Loading languages...')}</span>
@@ -119,20 +134,20 @@ export function LanguageSelector(): JSX.Element {
         role="combobox"
         aria-expanded={open}
         onClick={() => setOpen(!open)}
-        className="w-full justify-between cursor-pointer"
+        className="w-full justify-between cursor-pointer h-12"
       >
         <div className="flex items-center">
-          <Globe className="mr-2 h-4 w-4 text-muted-foreground" />
-          <span className="truncate">{getDisplayValue()}</span>
+          <Globe className="mr-2 h-5 w-5 text-muted-foreground" />
+          <span className="truncate text-base font-medium">{getDisplayValue()}</span>
         </div>
-        <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+        <ChevronsUpDown className="ml-2 h-5 w-5 shrink-0 opacity-50" />
       </Button>
 
       {open && (
-        <div className="absolute top-full left-0 right-0 z-[200] mt-1 bg-popover border border-border rounded-md shadow-md max-h-[300px] overflow-hidden">
+        <div className="absolute top-full left-0 right-0 z-[200] mt-1 bg-popover border border-border rounded-md shadow-md">
           <Command>
-            <CommandInput placeholder={t('Search languages...')} />
-            <CommandList>
+            <CommandInput ref={searchInputRef} placeholder={t('Search languages...')} />
+            <CommandList className="max-h-[60svh]">
               <CommandEmpty>{t('No languages found.')}</CommandEmpty>
               <CommandGroup>
                 {languageOptions.map((option) => (
@@ -140,19 +155,19 @@ export function LanguageSelector(): JSX.Element {
                     key={option.value}
                     value={`${option.englishName} ${option.nativeName}`}
                     onSelect={() => handleLanguageSelect(option.value)}
-                    className="flex items-center justify-between cursor-pointer"
+                    className="flex items-center justify-between cursor-pointer px-4 py-2 hover:bg-white/5"
                   >
                     <div className="flex flex-col items-start flex-1">
-                      <span className="font-medium">{option.englishName}</span>
+                      <span className="font-medium text-base">{option.englishName}</span>
                       {option.nativeName !== option.englishName && (
-                        <span className="text-xs text-muted-foreground">
+                        <span className="text-sm text-muted-foreground">
                           {option.nativeName}
                         </span>
                       )}
                     </div>
                     <Check
                       className={cn(
-                        'ml-2 h-4 w-4',
+                        'ml-2 h-5 w-5',
                         option.isRefined ? 'opacity-100' : 'opacity-0'
                       )}
                     />
