@@ -27,17 +27,12 @@ export const MULTISELECT_BLOCK_UPDATE = gql`
   }
 `
 
-type MultiselectBlockWithOptionalLabel = MultiselectBlock & {
-  label?: string | null
-}
-
 export function MultiselectQuestion({
   id,
-  label,
   min,
   max,
   children
-}: TreeBlock<MultiselectBlockWithOptionalLabel>): ReactElement {
+}: TreeBlock<MultiselectBlock>): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const {
     state: { selectedBlock, selectedStep },
@@ -55,24 +50,18 @@ export function MultiselectQuestion({
   const [localMax, setLocalMax] = useState<number | ''>(
     max ?? (optionCount > 0 ? optionCount : 0)
   )
-  const [localLabel, setLocalLabel] = useState<string>(label ?? '')
 
   useEffect(() => {
     setLocalMin(min ?? 0)
     setLocalMax(max ?? (optionCount > 0 ? optionCount : 0))
-    setLocalLabel(label ?? '')
-  }, [min, max, label, optionCount])
+  }, [min, max, optionCount])
 
   const commitUpdate = useCallback(
-    (next: {
-      label?: string | null
-      min?: number | null
-      max?: number | null
-    }) => {
+    (next: { min?: number | null; max?: number | null }) => {
       add({
         parameters: {
           execute: next,
-          undo: { label, min, max }
+          undo: { min, max }
         },
         execute(variables) {
           dispatch({
@@ -84,11 +73,9 @@ export function MultiselectQuestion({
           // Build input with only the fields explicitly provided.
           // This avoids unintentionally resetting unrelated fields to null.
           const input: {
-            label?: string | null
             min?: number | null
             max?: number | null
           } = {}
-          if ('label' in variables) input.label = variables.label ?? null
           if ('min' in variables) input.min = variables.min ?? null
           if ('max' in variables) input.max = variables.max ?? null
           void updateBlock({
@@ -119,11 +106,12 @@ export function MultiselectQuestion({
       setLocalMin('')
       return
     }
-    if (typeof localMax === 'number' && parsed > localMax) {
-      setLocalMin(localMax)
-      return
+    let nextMin = parsed as number
+    if (typeof localMax === 'number' && nextMin > localMax) {
+      nextMin = localMax
     }
-    setLocalMin(parsed)
+    setLocalMin(nextMin)
+    commitUpdate({ min: nextMin })
   }
 
   function handleMaxChange(value: string): void {
@@ -132,11 +120,12 @@ export function MultiselectQuestion({
       setLocalMax('')
       return
     }
-    if (typeof localMin === 'number' && parsed < localMin) {
-      setLocalMax(localMin)
-      return
+    let nextMax = parsed as number
+    if (typeof localMin === 'number' && nextMax < localMin) {
+      nextMax = localMin
     }
-    setLocalMax(parsed)
+    setLocalMax(nextMax)
+    commitUpdate({ max: nextMax })
   }
 
   const handleBlurCommit = useCallback(() => {
@@ -156,19 +145,14 @@ export function MultiselectQuestion({
       ? Math.max(nextMinRaw as number, nextMaxRaw as number)
       : nextMaxRaw
 
-    if (
-      normalizedMin === min &&
-      normalizedMax === max &&
-      localLabel === (label ?? '')
-    )
-      return
+    if (normalizedMin === min && normalizedMax === max) return
 
     // keep local state in a consistent, non-overlapping configuration
     setLocalMin(normalizedMin ?? '')
     setLocalMax(normalizedMax ?? '')
 
-    commitUpdate({ min: normalizedMin, max: normalizedMax, label: localLabel })
-  }, [commitUpdate, localMin, localMax, min, max, localLabel, label])
+    commitUpdate({ min: normalizedMin, max: normalizedMax })
+  }, [commitUpdate, localMin, localMax, min, max])
 
   const handleRangeChange = useCallback(
     (_event: Event, newValue: number | number[]): void => {
@@ -249,15 +233,20 @@ export function MultiselectQuestion({
             value={localMin}
             onChange={(e) => handleMinChange(e.target.value)}
             onBlur={handleBlurCommit}
-            inputProps={{
-              min: 0,
-              max:
-                typeof localMax === 'number'
-                  ? localMax
-                  : optionCount > 0
-                    ? optionCount
-                    : 0,
-              'aria-label': t('Min selections')
+            slotProps={{
+              input: {
+                inputProps: {
+                  '-moz-appearance': 'textfield',
+                  min: 0,
+                  max:
+                    typeof localMax === 'number'
+                      ? localMax
+                      : optionCount > 0
+                        ? optionCount
+                        : 0,
+                  'aria-label': t('Min selections')
+                }
+              }
             }}
           />
           <Box />
@@ -266,10 +255,15 @@ export function MultiselectQuestion({
             value={localMax}
             onChange={(e) => handleMaxChange(e.target.value)}
             onBlur={handleBlurCommit}
-            inputProps={{
-              min: typeof localMin === 'number' ? localMin : 0,
-              max: optionCount > 0 ? optionCount : 0,
-              'aria-label': t('Max selections')
+            slotProps={{
+              input: {
+                inputProps: {
+                  '-moz-appearance': 'textfield',
+                  min: typeof localMin === 'number' ? localMin : 0,
+                  max: optionCount > 0 ? optionCount : 0,
+                  'aria-label': t('Max selections')
+                }
+              }
             }}
           />
         </Box>

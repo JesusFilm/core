@@ -50,7 +50,7 @@ const mockUpdate: MockedResponse = {
     query: MULTISELECT_BLOCK_UPDATE,
     variables: {
       id: selectedBlock.id,
-      input: { label: '', min: 1, max: 2 }
+      input: { min: 1, max: 2 }
     }
   },
   result: jest.fn(() => ({
@@ -60,10 +60,8 @@ const mockUpdate: MockedResponse = {
         id: selectedBlock.id,
         parentBlockId: selectedBlock.parentBlockId,
         parentOrder: selectedBlock.parentOrder,
-        label: '',
         min: 1,
-        max: 2,
-        action: null
+        max: 2
       }
     }
   }))
