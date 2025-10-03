@@ -1950,6 +1950,7 @@ type JourneyVisitor @join__type(graph: API_JOURNEYS, key: "visitorId journeyId")
   populated by RadioQuestionSubmission mutation
   """
   lastRadioOptionSubmission: String
+  lastMultiselectSubmission: String @join__field(graph: API_JOURNEYS) 
   events: [Event!]!
   visitor: Visitor!
 }
@@ -4305,6 +4306,7 @@ input JourneyVisitorFilter @join__type(graph: API_JOURNEYS)  @join__type(graph: 
   journeyId: String!
   hasChatStarted: Boolean
   hasPollAnswers: Boolean
+  hasMultiselectSubmission: Boolean
   hasTextResponse: Boolean
   hasIcon: Boolean
   hideInactive: Boolean

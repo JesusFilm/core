@@ -933,6 +933,7 @@ input JourneyVisitorFilter {
   journeyId: String!
   hasChatStarted: Boolean
   hasPollAnswers: Boolean
+  hasMultiselectSubmission: Boolean
   hasTextResponse: Boolean
   hasIcon: Boolean
   hideInactive: Boolean

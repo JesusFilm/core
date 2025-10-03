@@ -779,6 +779,7 @@ export class JourneyVisitorFilter {
     journeyId: string;
     hasChatStarted?: Nullable<boolean>;
     hasPollAnswers?: Nullable<boolean>;
+    hasMultiselectSubmission?: Nullable<boolean>;
     hasTextResponse?: Nullable<boolean>;
     hasIcon?: Nullable<boolean>;
     hideInactive?: Nullable<boolean>;
@@ -1857,6 +1858,7 @@ export class JourneyVisitor {
     lastTextResponse?: Nullable<string>;
     lastRadioQuestion?: Nullable<string>;
     lastRadioOptionSubmission?: Nullable<string>;
+    lastMultiselectSubmission?: Nullable<string>;
     events: Event[];
     visitor: Visitor;
 }
