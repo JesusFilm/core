@@ -18,6 +18,8 @@ const GET_LANGUAGE_MAP = graphql(`
         value
       }
       countryLanguages {
+        primary
+        speakers
         country {
           id
           latitude
@@ -34,7 +36,7 @@ const GET_LANGUAGE_MAP = graphql(`
 type ApiResponse = LanguageMapPoint[] | { error: string }
 
 const CACHE_TTL = 86400 // 1 day in seconds
-const LANGUAGE_MAP_CACHE_SCHEMA_VERSION = `2025-02-10`
+const LANGUAGE_MAP_CACHE_SCHEMA_VERSION = `2025-02-18`
 const LANGUAGE_MAP_CACHE_KEY = `language-map:${LANGUAGE_MAP_CACHE_SCHEMA_VERSION}`
 
 let redisInstance: Redis | undefined
@@ -58,7 +60,9 @@ function buildLanguagePoint({
   countryId,
   countryName,
   latitude,
-  longitude
+  longitude,
+  isPrimaryCountryLanguage,
+  speakers
 }: {
   languageId: string
   slug: string | null
@@ -68,6 +72,8 @@ function buildLanguagePoint({
   countryName?: string | null
   latitude?: number | null
   longitude?: number | null
+  isPrimaryCountryLanguage: boolean
+  speakers: number
 }): LanguageMapPoint | null {
   if (latitude == null || longitude == null) return null
 
@@ -85,7 +91,9 @@ function buildLanguagePoint({
     countryId,
     countryName: countryName ?? undefined,
     latitude,
-    longitude
+    longitude,
+    isPrimaryCountryLanguage,
+    speakers
   }
 }
 
@@ -125,7 +133,7 @@ export default async function handler(
     const points = data.languages
       .flatMap((language) => {
         return language.countryLanguages
-          .map(({ country }) =>
+          .map(({ country, primary, speakers }) =>
             buildLanguagePoint({
               languageId: language.id,
               slug: language.slug,
@@ -134,7 +142,9 @@ export default async function handler(
               countryId: country.id,
               countryName: country.name[0]?.value,
               latitude: country.latitude,
-              longitude: country.longitude
+              longitude: country.longitude,
+              isPrimaryCountryLanguage: primary,
+              speakers
             })
           )
           .filter((point): point is LanguageMapPoint => point != null)

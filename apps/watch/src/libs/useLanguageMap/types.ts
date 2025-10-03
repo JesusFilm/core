@@ -9,4 +9,5 @@ export interface LanguageMapPoint {
   countryName?: string
   latitude: number
   longitude: number
+  isPrimaryCountryLanguage: boolean
 }
