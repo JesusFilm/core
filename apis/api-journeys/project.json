@@ -122,6 +122,12 @@
       "options": {
         "commands": ["pnpm exec ts-node apis/api-journeys/db/seed.ts"]
       }
+    },
+    "cleanup-null-url-linkactions": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "pnpm exec ts-node apis/api-journeys/src/workers/migrations/link-actions/cleanup-null-url-linkactions.ts"
+      }
     }
   }
 }
