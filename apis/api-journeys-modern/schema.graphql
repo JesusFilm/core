@@ -264,9 +264,16 @@ type ChatOpenEvent implements Event
 }
 
 input ChatOpenEventCreateInput {
+  """
+  ID should be unique Event UUID (Provided for optimistic mutation result matching)
+  """
   id: ID
   blockId: ID!
+
+  """id of the parent stepBlock"""
   stepId: ID
+
+  """messagePlatform of the link used for chat"""
   value: MessagePlatform
 }
 
