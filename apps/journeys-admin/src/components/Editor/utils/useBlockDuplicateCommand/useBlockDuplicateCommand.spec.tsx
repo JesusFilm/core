@@ -1,5 +1,5 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { renderHook } from '@testing-library/react'
+import { act, renderHook, waitFor } from '@testing-library/react'
 
 import { TreeBlock } from '@core/journeys/ui/block'
 import { BlockFields_CardBlock as CardBlock } from '@core/journeys/ui/block/__generated__/BlockFields'
@@ -41,12 +41,14 @@ describe('useBlockDuplicateCommand', () => {
       )
     })
 
-    result.current.addBlockDuplicate({
-      block: {
-        id: 'videoBlockId'
-      } as unknown as TreeBlock,
-      execute
+    await act(async () => {
+      result.current.addBlockDuplicate({
+        block: {
+          id: 'videoBlockId'
+        } as unknown as TreeBlock,
+        execute
+      })
     })
-    expect(execute).toHaveBeenCalled()
+    await waitFor(() => expect(execute).toHaveBeenCalled())
   })
 })

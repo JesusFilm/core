@@ -27,15 +27,15 @@ export function MultipleSummaryReport(): ReactElement {
           <Typography variant="subtitle1" sx={{ pt: 1 }}>
             {t('Reports')}
           </Typography>
-          <NextLink href="/reports" passHref legacyBehavior prefetch={false}>
-            <Button
-              size="small"
-              variant="text"
-              endIcon={<ChevronRightIcon sx={{ fontSize: 1 }} />}
-            >
-              {t('See all')}
-            </Button>
-          </NextLink>
+          <Button
+            LinkComponent={NextLink}
+            href="/reports"
+            size="small"
+            variant="text"
+            endIcon={<ChevronRightIcon sx={{ fontSize: 1 }} />}
+          >
+            {t('See all')}
+          </Button>
         </Stack>
         <Box sx={{ height: '160px', pb: 8 }}>
           <MemoizedDynamicReport

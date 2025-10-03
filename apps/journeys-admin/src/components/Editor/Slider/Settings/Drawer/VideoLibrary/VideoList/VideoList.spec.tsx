@@ -11,6 +11,34 @@ jest.mock('@mui/material/useMediaQuery', () => ({
   default: jest.fn()
 }))
 
+jest.mock('../VideoDetails', () => ({
+  __esModule: true,
+  VideoDetails: ({
+    onSelect,
+    open
+  }: {
+    onSelect: (val: any) => void
+    open: boolean
+  }) =>
+    open ? (
+      <button
+        type="button"
+        onClick={() =>
+          onSelect({
+            videoId: 'videoId',
+            videoVariantLanguageId: '529',
+            duration: 0,
+            startAt: 0,
+            endAt: 0,
+            source: 'internal'
+          })
+        }
+      >
+        Select
+      </button>
+    ) : null
+}))
+
 describe('VideoList', () => {
   beforeEach(() => (useMediaQuery as jest.Mock).mockImplementation(() => true))
 

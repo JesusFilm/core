@@ -1,1 +1,1 @@
-import './navigateToBlockActionInput'
+export { NavigateToBlockActionInput } from './navigateToBlockActionInput'

@@ -7,6 +7,24 @@
     "title": "Kostenlose Gospel Video <underline>Streaming</underline> Bibliothek.",
     "description": "Beobachte, lerne und teile das Evangelium in über 2000 Sprachen"
   },
+  "ModernTestPage": {
+    "pageTitle": "Moderner Test",
+    "title": "Moderne Testseite",
+    "description": "Dies ist eine Testseite für die moderne Uhrenanwendung. Sie demonstriert die neue Routing- und Proxy-Funktionalität.",
+    "feature1": {
+      "title": "Moderne Architektur",
+      "description": "Entwickelt mit Next.js App Router und modernen React Patterns für optimale Leistung und Entwicklererfahrung."
+    },
+    "feature2": {
+      "title": "Intelligentes Routing",
+      "description": "Fortschrittliches Proxy-Routing, das den Datenverkehr auf intelligente Weise zu den entsprechenden Backend-Diensten leitet."
+    },
+    "feature3": {
+      "title": "Responsive Design",
+      "description": "Vollständig responsives Design, das nahtlos auf allen Geräten und Bildschirmgrößen funktioniert."
+    },
+    "footer": "Diese Seite wird von der modernen Watch-Anwendung durch intelligentes Proxy-Routing bedient."
+  },
   "DatadogErrorBoundary": {
     "somethingWentWrong": "Etwas ist schief gelaufen",
     "anErrorOccurred": "Beim Laden dieser Seite ist ein Fehler aufgetreten. Bitte versuche, die Seite zu aktualisieren.",

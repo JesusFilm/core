@@ -12,22 +12,44 @@ describe('useUserTeamsAndInvitesLazyQuery', () => {
       data: {
         userTeams: [
           {
+            __typename: 'UserTeam',
+            id: 'ut1',
+            role: UserTeamRole.manager,
             user: {
-              email: 'userTeam1@example.com'
+              __typename: 'User',
+              email: 'userTeam1@example.com',
+              firstName: 'User',
+              lastName: 'One',
+              id: 'user1',
+              imageUrl: 'imageUrl1'
             }
           },
           {
+            __typename: 'UserTeam',
+            id: 'ut2',
+            role: UserTeamRole.member,
             user: {
-              email: 'userTeam2@example.com'
+              __typename: 'User',
+              email: 'userTeam2@example.com',
+              firstName: 'User',
+              lastName: 'Two',
+              id: 'user2',
+              imageUrl: 'imageUrl2'
             }
           }
         ],
         userTeamInvites: [
           {
-            email: 'userTeamInvite1@example.com'
+            __typename: 'UserTeamInvite',
+            email: 'userTeamInvite1@example.com',
+            id: 'inv1',
+            teamId: 'teamId'
           },
           {
-            email: 'userTeamInvite2@example.com'
+            __typename: 'UserTeamInvite',
+            email: 'userTeamInvite2@example.com',
+            id: 'inv2',
+            teamId: 'teamId'
           }
         ]
       }
@@ -59,18 +81,18 @@ describe('useUserTeamsAndInvitesLazyQuery', () => {
       }
     )
 
-    await hookResult.current.query[0]({
-      variables: {
-        teamId: 'teamId',
-        where: {
-          role: [UserTeamRole.manager, UserTeamRole.member]
+    await act(async () => {
+      await hookResult.current.query[0]({
+        variables: {
+          teamId: 'teamId',
+          where: {
+            role: [UserTeamRole.manager, UserTeamRole.member]
+          }
         }
-      }
+      })
     })
 
-    await act(
-      async () => await waitFor(() => expect(result).toHaveBeenCalled())
-    )
+    await waitFor(() => expect(result).toHaveBeenCalled())
 
     expect(hookResult.current.emails).toEqual([
       'userteam1@example.com',

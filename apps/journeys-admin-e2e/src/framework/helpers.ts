@@ -70,10 +70,10 @@ export async function getTeamName(): Promise<string> {
 }
 
 export async function getBaseUrl(): Promise<string> {
-  const baseUrl = process.env.DEPLOYMENT_URL?.toString()
-  if (baseUrl == null || baseUrl === '') {
-    throw new Error('baseUrl was not provided via environment variable')
-  }
+  const baseUrl =
+    process.env.DEPLOYMENT_URL?.toString() ??
+    process.env.JOURNEYS_ADMIN_DAILY_E2E?.toString() ??
+    'http://localhost:4200'
   return baseUrl
 }
 export async function getOTP(): Promise<string> {

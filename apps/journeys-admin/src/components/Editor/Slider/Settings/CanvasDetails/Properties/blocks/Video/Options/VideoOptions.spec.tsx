@@ -121,6 +121,7 @@ describe('VideoOptions', () => {
           variantLanguages: [
             {
               __typename: 'Language',
+              slug: 'english',
               id: '529',
               name: [
                 {

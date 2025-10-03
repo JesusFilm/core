@@ -46,7 +46,7 @@ describe('JourneyCardInfo', () => {
       </MockedProvider>
     )
     expect(getAllByTestId('avatar')).toHaveLength(1)
-    expect(getAllByRole('button')).toHaveLength(1)
+    expect(getAllByRole('button', { name: 'Responses' })).toHaveLength(1)
   })
 
   it('should should show many users requesting access', () => {

@@ -80,16 +80,15 @@ function JourneysPage({ journeys }: JourneysPageProps): ReactElement {
                           />
                         </Fade>
                       </Box>
-                      <NextLink href={`/${slug}`} passHref legacyBehavior>
-                        <Box
-                          component="a"
-                          sx={{
-                            display: 'block',
-                            width: '100%',
-                            height: 600
-                          }}
-                        />
-                      </NextLink>
+                      <Box
+                        component={NextLink}
+                        href={`/${slug}`}
+                        sx={{
+                          display: 'block',
+                          width: '100%',
+                          height: 600
+                        }}
+                      />
                     </Box>
                   </Grid>
                 ))}
@@ -101,36 +100,28 @@ function JourneysPage({ journeys }: JourneysPageProps): ReactElement {
               justifyContent="center"
               alignItems="center"
             >
-              <NextLink
+              <Link
+                component={NextLink}
                 href="https://www.cru.org/us/en/about/terms-of-use.html"
-                passHref
-                legacyBehavior
+                underline="none"
+                variant="body2"
+                sx={{ p: 0 }}
+                target="_blank"
+                rel="noopener"
               >
-                <Link
-                  underline="none"
-                  variant="body2"
-                  sx={{ p: 0 }}
-                  target="_blank"
-                  rel="noopener"
-                >
-                  {t('Terms & Conditions')}
-                </Link>
-              </NextLink>
-              <NextLink
+                {t('Terms & Conditions')}
+              </Link>
+              <Link
+                component={NextLink}
                 href="https://www.cru.org/us/en/about/privacy.html"
-                passHref
-                legacyBehavior
+                underline="none"
+                variant="body2"
+                sx={{ p: 0 }}
+                target="_blank"
+                rel="noopener"
               >
-                <Link
-                  underline="none"
-                  variant="body2"
-                  sx={{ p: 0 }}
-                  target="_blank"
-                  rel="noopener"
-                >
-                  {t('Privacy Policy')}
-                </Link>
-              </NextLink>
+                {t('Privacy Policy')}
+              </Link>
               <Typography variant="body2" suppressHydrationWarning>
                 {t('NextSteps © {{year}}', { year: new Date().getFullYear() })}
               </Typography>

@@ -104,7 +104,7 @@ const defaultNode = {
                 parentOrder: 2,
                 align: null,
                 color: null,
-                content: 'Deutoronomy 10:11',
+                content: 'Deuteronomy 10:11',
                 variant: 'caption',
                 children: [],
                 settings: {
@@ -350,7 +350,7 @@ const typographyNode = {
             parentOrder: 2,
             align: null,
             color: null,
-            content: 'Deutoronomy 10:11',
+            content: 'Deuteronomy 10:11',
             variant: 'caption',
             children: [],
             settings: {
@@ -431,7 +431,7 @@ const typographyNode = {
                 parentOrder: 2,
                 align: null,
                 color: null,
-                content: 'Deutoronomy 10:11',
+                content: 'Deuteronomy 10:11',
                 variant: 'caption',
                 children: [],
                 settings: {

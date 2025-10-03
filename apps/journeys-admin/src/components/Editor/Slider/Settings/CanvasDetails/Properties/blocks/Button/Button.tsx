@@ -116,7 +116,7 @@ export function Button({
         name={t('Leading Icon')}
         value={
           icons.find(({ value }) => value === startIcon?.iconName)?.label ??
-          'None'
+          t('None')
         }
       >
         <Icon id={startIcon?.id} />
@@ -128,7 +128,7 @@ export function Button({
         name={t('Trailing Icon')}
         value={
           icons.find(({ value }) => value === endIcon?.iconName)?.label ??
-          'None'
+          t('None')
         }
       >
         <Icon id={endIcon?.id} />

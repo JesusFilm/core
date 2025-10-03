@@ -70,7 +70,9 @@ describe('SelectableWrapper', () => {
       __typename: 'LinkAction',
       parentBlockId: 'button.id',
       gtmEventName: 'gtmEventName',
-      url: 'https://www.google.com'
+      url: 'https://www.google.com',
+      customizable: false,
+      parentStepId: null
     },
     children: [],
     settings: null
