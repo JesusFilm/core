@@ -10,7 +10,12 @@ describe('mergeMuxInserts', () => {
     jest.resetModules()
   })
 
+  afterEach(() => {
+    jest.useRealTimers()
+  })
+
   it('adds sequence-start inserts before the first video', async () => {
+    jest.useFakeTimers().setSystemTime(new Date('2024-10-15T12:00:00Z'))
     jest.doMock('../../../../../config/video-inserts.mux.json', () => ({
       __esModule: true,
       default: {
@@ -37,6 +42,7 @@ describe('mergeMuxInserts', () => {
 
     expect(slides[0].source).toBe('mux')
     expect(slides[1].source).toBe('video')
+    expect((slides[0] as any).overlay.title).toBe('Oct 15: Morning Nature Background')
   })
 
   it('inserts after the configured count', async () => {
