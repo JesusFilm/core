@@ -294,6 +294,7 @@ export interface BlockRestore_blockRestore_TextResponseBlock {
   type: TextResponseType | null;
   routeId: string | null;
   integrationId: string | null;
+  hideLabel: boolean | null;
 }
 
 export interface BlockRestore_blockRestore_TypographyBlock_settings {
