@@ -6,12 +6,10 @@ import { TemplateActionButton } from '../TemplateViewHeader/TemplateActionButton
 
 interface TemplateFooterProps {
   signedIn?: boolean
-  displayOpenTeamDialog?: boolean
 }
 
 export function TemplateFooter({
-  signedIn,
-  displayOpenTeamDialog = true
+  signedIn
 }: TemplateFooterProps): ReactElement {
   const { t } = useTranslation('libs-journeys-ui')
 
@@ -42,7 +40,6 @@ export function TemplateFooter({
       </Typography>
       <TemplateActionButton
         signedIn={signedIn}
-        displayOpenTeamDialog={displayOpenTeamDialog}
       />
     </Stack>
   )

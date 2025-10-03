@@ -274,12 +274,12 @@ describe('CreateJourneyButton', () => {
     journeyDuplicateMock.result.mockClear()
   })
 
-  it('should open team dialog if url query set to createNew', async () => {
+  it('should not open team dialog if url query set to createNew and openTeamDialogOnSignIn is not set', async () => {
     mockUseRouter.mockReturnValue({
       query: { createNew: 'true' }
     } as unknown as NextRouter)
 
-    render(
+    const { queryByTestId } = render(
       <MockedProvider
         mocks={[
           {
@@ -298,39 +298,11 @@ describe('CreateJourneyButton', () => {
     )
 
     await waitFor(() =>
-      expect(screen.getByTestId('CopyToTeamDialog')).toBeInTheDocument()
-    )
-  })
-
-  it('should not open team dialog if url query set to createNew and displayOpenTeamDialog is false', async () => {
-    mockUseRouter.mockReturnValue({
-      query: { createNew: 'true' }
-    } as unknown as NextRouter)
-
-    const { queryByTestId } = render(
-      <MockedProvider
-        mocks={[
-          {
-            request: {
-              query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS
-            },
-            result: teamResult
-          },
-          getLanguagesMock
-        ]}
-      >
-        <SnackbarProvider>
-          <CreateJourneyButton signedIn displayOpenTeamDialog={false} />
-        </SnackbarProvider>
-      </MockedProvider>
-    )
-
-    await waitFor(() =>
       expect(queryByTestId('CopyToTeamDialog')).not.toBeInTheDocument()
     )
   })
 
-  it('should open team dialog if url query set to createNew and displayOpenTeamDialog is true', async () => {
+  it('should open team dialog if url query set to createNew and openTeamDialogOnSignIn is true', async () => {
     mockUseRouter.mockReturnValue({
       query: { createNew: 'true' }
     } as unknown as NextRouter)
@@ -348,7 +320,7 @@ describe('CreateJourneyButton', () => {
         ]}
       >
         <SnackbarProvider>
-          <CreateJourneyButton signedIn displayOpenTeamDialog={true} />
+          <CreateJourneyButton signedIn openTeamDialogOnSignIn={true} />
         </SnackbarProvider>
       </MockedProvider>
     )

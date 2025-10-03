@@ -106,12 +106,10 @@ export function TemplateView({
           <TemplateViewHeader
             isPublisher={isPublisher}
             authUser={authUser}
-            displayOpenTeamDialog={true}
           />
           <TemplateTags tags={journey?.tags} />
           <TemplatePreviewTabs
             authUser={authUser}
-            displayOpenTeamDialog={false}
           />
           <Typography
             variant="body2"
@@ -159,7 +157,6 @@ export function TemplateView({
           )}
           <TemplateFooter
             signedIn={authUser?.id != null}
-            displayOpenTeamDialog={false}
           />
         </Stack>
       </Container>

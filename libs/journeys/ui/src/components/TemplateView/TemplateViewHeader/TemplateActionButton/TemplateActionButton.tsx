@@ -8,12 +8,12 @@ import { isJourneyCustomizable } from '../../../../libs/isJourneyCustomizable'
 
 interface TemplateActionButtonProps {
   signedIn?: boolean
-  displayOpenTeamDialog?: boolean
+  openTeamDialogOnSignIn?: boolean
 }
 
 export function TemplateActionButton({
   signedIn,
-  displayOpenTeamDialog = true
+  openTeamDialogOnSignIn
 }: TemplateActionButtonProps): ReactElement {
   const { journey } = useJourney()
 
@@ -33,7 +33,7 @@ export function TemplateActionButton({
   return (
     <CreateJourneyButton
       signedIn={signedIn}
-      displayOpenTeamDialog={displayOpenTeamDialog}
+      openTeamDialogOnSignIn={openTeamDialogOnSignIn}
     />
   )
 }
