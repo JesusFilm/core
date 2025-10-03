@@ -153,7 +153,7 @@ export function TemplateViewHeader({
           >
             <TemplateActionButton
               signedIn={authUser?.id != null}
-              openTeamDialogOnSignIn={true}
+              openTeamDialogOnSignIn
             />
             <PreviewTemplateButton slug={journey?.slug} />
             {journey != null && isPublisher === true && (

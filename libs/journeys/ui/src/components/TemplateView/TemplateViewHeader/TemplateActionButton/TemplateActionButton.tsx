@@ -13,7 +13,7 @@ interface TemplateActionButtonProps {
 
 export function TemplateActionButton({
   signedIn,
-  openTeamDialogOnSignIn
+  openTeamDialogOnSignIn = false
 }: TemplateActionButtonProps): ReactElement {
   const { journey } = useJourney()
 

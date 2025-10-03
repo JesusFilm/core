@@ -14,7 +14,7 @@ import { AccountCheckDialog } from '../AccountCheckDialog'
 interface CreateJourneyButtonProps {
   signedIn?: boolean
   /* Automatically open the team dialog when the user signs in with createNew=true in the URL.
-   * Only one button per page should have this set to true to avoid opening multiple instances of the dialog.
+   * Only one CreateJourneyButton per page should have this set to true to avoid opening multiple instances of the dialog.
    */
   openTeamDialogOnSignIn?: boolean
 }
