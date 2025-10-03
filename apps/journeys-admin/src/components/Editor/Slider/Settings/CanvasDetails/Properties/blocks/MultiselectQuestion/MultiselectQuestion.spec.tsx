@@ -45,7 +45,51 @@ const selectedBlock: TreeBlock<MultiselectBlock> = {
   ]
 }
 
-const mockUpdate: MockedResponse = {
+const mockUpdateMin: MockedResponse = {
+  request: {
+    query: MULTISELECT_BLOCK_UPDATE,
+    variables: {
+      id: selectedBlock.id,
+      input: { min: 1 }
+    }
+  },
+  result: () => ({
+    data: {
+      multiselectBlockUpdate: {
+        __typename: 'MultiselectBlock',
+        id: selectedBlock.id,
+        parentBlockId: selectedBlock.parentBlockId,
+        parentOrder: selectedBlock.parentOrder,
+        min: 1,
+        max: 2
+      }
+    }
+  })
+}
+
+const mockUpdateMax: MockedResponse = {
+  request: {
+    query: MULTISELECT_BLOCK_UPDATE,
+    variables: {
+      id: selectedBlock.id,
+      input: { max: 2 }
+    }
+  },
+  result: () => ({
+    data: {
+      multiselectBlockUpdate: {
+        __typename: 'MultiselectBlock',
+        id: selectedBlock.id,
+        parentBlockId: selectedBlock.parentBlockId,
+        parentOrder: selectedBlock.parentOrder,
+        min: 1,
+        max: 2
+      }
+    }
+  })
+}
+
+const mockUpdateBoth: MockedResponse = {
   request: {
     query: MULTISELECT_BLOCK_UPDATE,
     variables: {
@@ -92,7 +136,7 @@ describe('MultiselectQuestion Properties', () => {
 
   it('changes label and range and commits on blur', async () => {
     render(
-      <MockedProvider mocks={[mockUpdate]}>
+      <MockedProvider mocks={[mockUpdateMin, mockUpdateMax, mockUpdateBoth]}>
         <SnackbarProvider>
           <EditorProvider initialState={{ selectedBlock }}>
             <CommandUndoItem variant="button" />
@@ -115,6 +159,6 @@ describe('MultiselectQuestion Properties', () => {
 
     fireEvent.blur(maxInput)
 
-    await waitFor(() => expect(mockUpdate.result).toHaveBeenCalled())
+    await waitFor(() => expect(mockUpdateBoth.result).toHaveBeenCalled())
   })
 })
