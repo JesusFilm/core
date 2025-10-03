@@ -488,7 +488,9 @@ describe('CreateJourneyButton', () => {
       render(createJourneyButton)
 
       fireEvent.click(screen.getByRole('button', { name: 'Use This Template' }))
-      fireEvent.click(screen.getByRole('button', { name: 'Login with my account' }))
+      fireEvent.click(
+        screen.getByRole('button', { name: 'Login with my account' })
+      )
 
       await waitFor(() => {
         expect(push).toHaveBeenCalledWith(
@@ -510,7 +512,9 @@ describe('CreateJourneyButton', () => {
       render(createJourneyButton)
 
       fireEvent.click(screen.getByRole('button', { name: 'Use This Template' }))
-      fireEvent.click(screen.getByRole('button', { name: 'Create a new account' }))
+      fireEvent.click(
+        screen.getByRole('button', { name: 'Create a new account' })
+      )
 
       await waitFor(() => {
         expect(push).toHaveBeenCalledWith(
@@ -553,7 +557,9 @@ describe('CreateJourneyButton', () => {
       render(createJourneyButton)
 
       fireEvent.click(screen.getByRole('button', { name: 'Use This Template' }))
-      fireEvent.click(screen.getByRole('button', { name: 'Login with my account' }))
+      fireEvent.click(
+        screen.getByRole('button', { name: 'Login with my account' })
+      )
 
       await waitFor(() => {
         expect(push).toHaveBeenCalledWith(
@@ -575,7 +581,9 @@ describe('CreateJourneyButton', () => {
       render(createJourneyButton)
 
       fireEvent.click(screen.getByRole('button', { name: 'Use This Template' }))
-      fireEvent.click(screen.getByRole('button', { name: 'Create a new account' }))
+      fireEvent.click(
+        screen.getByRole('button', { name: 'Create a new account' })
+      )
 
       await waitFor(() => {
         expect(push).toHaveBeenCalledWith(
@@ -618,7 +626,9 @@ describe('CreateJourneyButton', () => {
       render(createJourneyButton)
 
       fireEvent.click(screen.getByRole('button', { name: 'Use This Template' }))
-      fireEvent.click(screen.getByRole('button', { name: 'Login with my account' }))
+      fireEvent.click(
+        screen.getByRole('button', { name: 'Login with my account' })
+      )
 
       await waitFor(() => {
         expect(push).toHaveBeenCalledWith(
@@ -640,7 +650,9 @@ describe('CreateJourneyButton', () => {
       render(createJourneyButton)
 
       fireEvent.click(screen.getByRole('button', { name: 'Use This Template' }))
-      fireEvent.click(screen.getByRole('button', { name: 'Create a new account' }))
+      fireEvent.click(
+        screen.getByRole('button', { name: 'Create a new account' })
+      )
 
       await waitFor(() => {
         expect(push).toHaveBeenCalledWith(
