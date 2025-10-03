@@ -1509,10 +1509,14 @@ export type MultiselectOptionBlockUpdateInput = {
 
 export type MultiselectSubmissionEvent = Event & {
   __typename?: 'MultiselectSubmissionEvent';
+  /** time event was created */
   createdAt: Scalars['DateTime']['output'];
   id: Scalars['ID']['output'];
+  /** ID of the journey that the multiselect block belongs to */
   journeyId: Scalars['ID']['output'];
+  /** stepName of the parent stepBlock */
   label?: Maybe<Scalars['String']['output']>;
+  /** comma separated selected option labels */
   value?: Maybe<Scalars['String']['output']>;
 };
 
