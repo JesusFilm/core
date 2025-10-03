@@ -28,6 +28,9 @@ export const JourneyVisitorRef = builder.prismaObject('JourneyVisitor', {
     lastRadioOptionSubmission: t.exposeString('lastRadioOptionSubmission', {
       nullable: true
     }),
+    lastMultiselectSubmission: t.exposeString('lastMultiselectSubmission', {
+      nullable: true
+    }),
     countryCode: t.field({
       type: 'String',
       nullable: true,

@@ -40,21 +40,27 @@ export function SelectableWrapper({
   }
 
   // TODO: Test dispatch via E2E
-  // please check RadioOptionBlock events are being propogated properly i.e - can be re-ordered
+  // please check RadioOptionBlock or MultiselectOptionBlock events are being propogated properly i.e - can be re-ordered
   const handleSelectBlock = (e: MouseEvent<HTMLElement>): void => {
-    // Allow RadioQuestion select event to be overridden by RadioOption select/edit events (no e.stopPropogation)
-    if (block.__typename === 'RadioQuestionBlock') {
-      // Directly edit RadioQuestionBlock
+    // Allow container questions to be selected; options should select themselves for inline editing
+    if (
+      block.__typename === 'RadioQuestionBlock' ||
+      block.__typename === 'MultiselectBlock'
+    ) {
+      // Directly edit RadioQuestionBlock or MultiselectBlock
       updateEditor(block)
-    } else if (block.__typename === 'RadioOptionBlock') {
-      // this stopPropagation prevents links from being opened in the editor when clicked radioOptions are selected
+    } else if (
+      block.__typename === 'RadioOptionBlock' ||
+      block.__typename === 'MultiselectOptionBlock'
+    ) {
+      // this stopPropagation prevents links from being opened in the editor when clicked radioOptions are selected or multiselectOptions are selected
       e.stopPropagation()
       const parentSelected = selectedBlock?.id === block.parentBlockId
       const siblingSelected =
         selectedBlock?.parentBlockId === block.parentBlockId
 
       if (selectedBlock?.id === block.id) {
-        // Must override RadioQuestionBlock selected during event capture
+        // Must override RadioQuestionBlock or MultiselectBlock selected during event capture
         dispatch({ type: 'SetSelectedBlockAction', selectedBlock: block })
       } else if (parentSelected || siblingSelected) {
         updateEditor(block)
@@ -94,6 +100,7 @@ export function SelectableWrapper({
   let borderRadius = '4px'
   switch (block.__typename) {
     case 'RadioOptionBlock':
+    case 'MultiselectOptionBlock':
       borderRadius = '8px'
       break
     case 'ImageBlock':
@@ -120,7 +127,8 @@ export function SelectableWrapper({
         ref={selectableRef}
         data-testid={`SelectableWrapper-${block.id}`}
         className={
-          block.__typename === 'RadioOptionBlock'
+          block.__typename === 'RadioOptionBlock' ||
+          block.__typename === 'MultiselectOptionBlock'
             ? 'MuiButtonGroup-root MuiButtonGroup-grouped MuiButtonGroup-groupedVertical'
             : ''
         }

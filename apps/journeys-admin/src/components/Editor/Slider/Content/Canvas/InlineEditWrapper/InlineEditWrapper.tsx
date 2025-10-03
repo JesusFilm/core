@@ -17,6 +17,10 @@ import { RadioOptionEdit } from './RadioOptionEdit'
 import { RadioQuestionEdit } from './RadioQuestionEdit'
 import { SignUpEdit } from './SignUpEdit'
 import { TypographyEdit } from './TypographyEdit'
+import { MultiselectOptionFields } from '../../../../../../../__generated__/MultiselectOptionFields'
+import { MultiselectQuestionFields } from '../../../../../../../__generated__/MultiselectQuestionFields'
+import { MultiselectQuestionEdit } from './MultiselectQuestionEdit'
+import { MultiselectOptionEdit } from './MultiselectOptionEdit'
 
 interface InlineEditWrapperProps
   extends WrapperProps<
@@ -26,6 +30,8 @@ interface InlineEditWrapperProps
     | RadioOptionFields
     | TextResponseFields
     | SignUpFields
+    | MultiselectQuestionFields
+    | MultiselectOptionFields
   > {}
 
 export function InlineEditWrapper({
@@ -39,7 +45,8 @@ export function InlineEditWrapper({
 
   const showEditable =
     selectedBlock?.id === block.id ||
-    (block.__typename === 'RadioQuestionBlock' &&
+    ((block.__typename === 'RadioQuestionBlock' ||
+      block.__typename === 'MultiselectBlock') &&
       selectedBlock?.parentBlockId === block.id)
 
   let component = children
@@ -69,6 +76,18 @@ export function InlineEditWrapper({
       break
     case 'SignUpBlock':
       if (showEditable) component = <SignUpEdit {...block} />
+      break
+    case 'MultiselectBlock':
+      if (showEditable)
+        component = (
+          <MultiselectQuestionEdit
+            {...block}
+            wrappers={(children.props as any).wrappers}
+          />
+        )
+      break
+    case 'MultiselectOptionBlock':
+      if (showEditable) component = <MultiselectOptionEdit {...block} />
       break
   }
 

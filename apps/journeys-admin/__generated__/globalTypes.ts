@@ -558,6 +558,7 @@ export interface JourneyVisitorFilter {
   journeyId: string;
   hasChatStarted?: boolean | null;
   hasPollAnswers?: boolean | null;
+  hasMultiselectSubmission?: boolean | null;
   hasTextResponse?: boolean | null;
   hasIcon?: boolean | null;
   hideInactive?: boolean | null;
@@ -603,6 +604,38 @@ export interface LinkActionInput {
 
 export interface MeInput {
   redirect?: string | null;
+}
+
+export interface MultiselectBlockCreateInput {
+  id?: string | null;
+  journeyId: string;
+  parentBlockId: string;
+}
+
+export interface MultiselectBlockUpdateInput {
+  parentBlockId?: string | null;
+  min?: number | null;
+  max?: number | null;
+}
+
+export interface MultiselectOptionBlockCreateInput {
+  id?: string | null;
+  journeyId: string;
+  parentBlockId: string;
+  label: string;
+}
+
+export interface MultiselectOptionBlockUpdateInput {
+  parentBlockId?: string | null;
+  label?: string | null;
+}
+
+export interface MultiselectSubmissionEventCreateInput {
+  id?: string | null;
+  blockId: string;
+  stepId?: string | null;
+  label?: string | null;
+  values: string[];
 }
 
 export interface QrCodeCreateInput {
