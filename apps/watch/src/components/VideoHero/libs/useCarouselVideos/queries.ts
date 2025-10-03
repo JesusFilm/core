@@ -16,8 +16,8 @@ export const GET_COLLECTION_COUNTS = gql`
   }
 `
 
-export const GET_ONE_CHILD_BY_INDEX = gql`
-  query GetOneChildByIndex($parentId: ID!, $languageId: ID!) {
+export const GET_CAROUSEL_VIDEO_CHILDREN = gql`
+  query GetCarouselVideoChildren($parentId: ID!, $languageId: ID!) {
     video(id: $parentId, idType: databaseId) {
       id
       slug

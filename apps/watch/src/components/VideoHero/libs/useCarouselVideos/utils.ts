@@ -195,15 +195,14 @@ export const addToPersistentPlayedIds = (videoId: string): void => {
 }
 
 export const isVideoAlreadyPlayed = (videoId: string): boolean => {
-  const sessionPlayed = getSessionPlayedIds()
   const persistentPlayed = getPersistentPlayedIds()
-
-  return sessionPlayed.includes(videoId) || persistentPlayed.includes(videoId)
+  return persistentPlayed.includes(videoId)
 }
 
 export const isPoolExhausted = (
   poolId: string,
-  childrenCount: number
+  childrenCount: number,
+  availableCount?: number
 ): boolean => {
   if (typeof window === 'undefined') return false
 
@@ -215,7 +214,11 @@ export const isPoolExhausted = (
     const poolPlayedVideos: string[] = JSON.parse(poolPlayedVideosJson)
     const uniqueVideosPlayed = new Set(poolPlayedVideos).size
 
-    return uniqueVideosPlayed >= childrenCount
+    // Use availableCount if provided (accounts for persistent storage filtering),
+    // otherwise fall back to childrenCount
+    const effectiveTotal = availableCount ?? childrenCount
+
+    return uniqueVideosPlayed >= effectiveTotal
   } catch (error) {
     return false
   }

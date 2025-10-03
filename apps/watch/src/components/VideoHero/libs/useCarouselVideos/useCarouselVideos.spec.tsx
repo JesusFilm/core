@@ -4,23 +4,17 @@ import type { ReactNode } from 'react'
 
 import { GET_COLLECTION_COUNTS, GET_SHORT_FILMS } from './queries'
 import { useCarouselVideos } from './useCarouselVideos'
+import {
+  getPlaylistConfig,
+  getDeterministicOffset,
+  getRandomFromMultipleCollections,
+  isVideoAlreadyPlayed,
+  isPoolExhausted,
+  filterOutBlacklistedVideos
+} from './utils'
 
 // Mock utils
-jest.mock('./utils', () => ({
-  getPlaylistConfig: jest.fn(),
-  getDeterministicOffset: jest.fn(),
-  getRandomFromMultipleCollections: jest.fn(),
-  addToSessionPlayedIds: jest.fn(),
-  addToPersistentPlayedIds: jest.fn(),
-  isVideoAlreadyPlayed: jest.fn(),
-  isPoolExhausted: jest.fn(),
-  markPoolVideoPlayed: jest.fn(),
-  getPoolKey: jest.fn(),
-  saveCurrentVideoSession: jest.fn(),
-  loadCurrentVideoSession: jest.fn(),
-  clearCurrentVideoSession: jest.fn(),
-  filterOutBlacklistedVideos: jest.fn()
-}))
+jest.mock('./utils')
 
 jest.mock('./insertMux', () => ({
   mergeMuxInserts: jest.fn((videos: any[]) =>
@@ -124,15 +118,15 @@ describe('useCarouselVideos', () => {
       sessionStorage.clear()
     }
 
-    mockGetPlaylistConfig.mockReturnValue(createDefaultConfig())
-    mockGetDeterministicOffset.mockReturnValue(0)
-    mockGetRandomFromMultipleCollections.mockReturnValue({
+    ;(getPlaylistConfig as jest.MockedFunction<typeof getPlaylistConfig>).mockReturnValue(createDefaultConfig())
+    ;(getDeterministicOffset as jest.MockedFunction<typeof getDeterministicOffset>).mockReturnValue(0)
+    ;(getRandomFromMultipleCollections as jest.MockedFunction<typeof getRandomFromMultipleCollections>).mockReturnValue({
       collectionId: 'collection1',
       childIndex: 0
     })
-    mockIsVideoAlreadyPlayed.mockReturnValue(false)
-    mockIsPoolExhausted.mockReturnValue(false)
-    mockFilterOutBlacklistedVideos.mockImplementation((videos) => videos)
+    ;(isVideoAlreadyPlayed as jest.MockedFunction<typeof isVideoAlreadyPlayed>).mockReturnValue(false)
+    ;(isPoolExhausted as jest.MockedFunction<typeof isPoolExhausted>).mockReturnValue(false)
+    ;(filterOutBlacklistedVideos as jest.MockedFunction<typeof filterOutBlacklistedVideos>).mockImplementation((videos) => videos)
     apolloMocks = [...defaultMocks]
   })
 

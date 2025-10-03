@@ -315,6 +315,56 @@ export function VideoControls({
     })
   }, [player, id, variant, title, durationSeconds, dispatchPlayer])
 
+  // Separate handlers for player events that don't update global state
+  const handlePlayerEventPlay = useCallback(() => {
+    // Just analytics for player events, don't update global state
+    if ((player?.currentTime() ?? 0) < 0.02) {
+      eventToDataLayer(
+        'video_start',
+        id,
+        variant?.language.id,
+        title[0].value,
+        variant?.language?.name.find(({ primary }) => !primary)?.value ??
+          variant?.language?.name[0]?.value,
+        Math.round(player?.currentTime() ?? 0),
+        durationSeconds > 0 ? Math.round(
+          ((player?.currentTime() ?? 0) / durationSeconds) * 100
+        ) : 0
+      )
+    } else {
+      eventToDataLayer(
+        'video_play',
+        id,
+        variant?.language.id,
+        title[0].value,
+        variant?.language?.name.find(({ primary }) => !primary)?.value ??
+          variant?.language?.name[0]?.value,
+        Math.round(player?.currentTime() ?? 0),
+        durationSeconds > 0 ? Math.round(
+          ((player?.currentTime() ?? 0) / durationSeconds) * 100
+        ) : 0
+      )
+    }
+  }, [player, id, variant, title, durationSeconds])
+
+  const handlePlayerEventPause = useCallback(() => {
+    // Just analytics for player events, don't update global state
+    if ((player?.currentTime() ?? 0) > 0.02) {
+      eventToDataLayer(
+        'video_pause',
+        id,
+        variant?.language.id,
+        title[0].value,
+        variant?.language?.name.find(({ primary }) => !primary)?.value ??
+          variant?.language?.name[0]?.value,
+        Math.round(player?.currentTime() ?? 0),
+        durationSeconds > 0 ? Math.round(
+          ((player?.currentTime() ?? 0) / durationSeconds) * 100
+        ) : 0
+      )
+    }
+  }, [player, id, variant, title, durationSeconds])
+
   const handleTimeUpdate = useCallback(() => {
     dispatchPlayer({
       type: 'SetCurrentTime',
@@ -407,9 +457,9 @@ export function VideoControls({
       volume: (player?.volume() ?? 1) * 100
     })
 
-    // Attach handlers
-    player?.on('play', handlePlay)
-    player?.on('pause', handlePause)
+    // Attach handlers - use separate handlers for player events vs user interactions
+    player?.on('play', handlePlayerEventPlay)
+    player?.on('pause', handlePlayerEventPause)
     player?.on('timeupdate', handleTimeUpdate)
     player?.on('volumechange', handleVolumeChange)
     player?.on('fullscreenchange', handleFullscreenChange)
@@ -459,8 +509,8 @@ export function VideoControls({
 
     return () => {
       // Clean up player event handlers
-      player?.off('play', handlePlay)
-      player?.off('pause', handlePause)
+      player?.off('play', handlePlayerEventPlay)
+      player?.off('pause', handlePlayerEventPause)
       player?.off('timeupdate', handleTimeUpdate)
       player?.off('volumechange', handleVolumeChange)
       player?.off('fullscreenchange', handleFullscreenChange)
@@ -485,6 +535,8 @@ export function VideoControls({
     durationSeconds,
     handlePlay,
     handlePause,
+    handlePlayerEventPlay,
+    handlePlayerEventPause,
     handleTimeUpdate,
     handleVolumeChange,
     handleFullscreenChange,
