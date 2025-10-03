@@ -14,6 +14,7 @@ export class ActionResolver {
     if (get(obj, 'blockId') != null) return 'NavigateToBlockAction'
     if (get(obj, 'email') != null) return 'EmailAction'
     if (get(obj, 'phone') != null) return 'PhoneAction'
+    if (get(obj, 'chatUrl') != null) return 'ChatAction'
     return 'LinkAction'
   }
 

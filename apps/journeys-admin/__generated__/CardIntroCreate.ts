@@ -100,7 +100,16 @@ export interface CardIntroCreate_button_action_EmailAction {
   parentStepId: string | null;
 }
 
-export type CardIntroCreate_button_action = CardIntroCreate_button_action_PhoneAction | CardIntroCreate_button_action_NavigateToBlockAction | CardIntroCreate_button_action_LinkAction | CardIntroCreate_button_action_EmailAction;
+export interface CardIntroCreate_button_action_ChatAction {
+  __typename: "ChatAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+  chatUrl: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
+}
+
+export type CardIntroCreate_button_action = CardIntroCreate_button_action_PhoneAction | CardIntroCreate_button_action_NavigateToBlockAction | CardIntroCreate_button_action_LinkAction | CardIntroCreate_button_action_EmailAction | CardIntroCreate_button_action_ChatAction;
 
 export interface CardIntroCreate_button_settings {
   __typename: "ButtonBlockSettings";
@@ -177,7 +186,16 @@ export interface CardIntroCreate_buttonBlockUpdate_action_EmailAction {
   parentStepId: string | null;
 }
 
-export type CardIntroCreate_buttonBlockUpdate_action = CardIntroCreate_buttonBlockUpdate_action_PhoneAction | CardIntroCreate_buttonBlockUpdate_action_NavigateToBlockAction | CardIntroCreate_buttonBlockUpdate_action_LinkAction | CardIntroCreate_buttonBlockUpdate_action_EmailAction;
+export interface CardIntroCreate_buttonBlockUpdate_action_ChatAction {
+  __typename: "ChatAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+  chatUrl: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
+}
+
+export type CardIntroCreate_buttonBlockUpdate_action = CardIntroCreate_buttonBlockUpdate_action_PhoneAction | CardIntroCreate_buttonBlockUpdate_action_NavigateToBlockAction | CardIntroCreate_buttonBlockUpdate_action_LinkAction | CardIntroCreate_buttonBlockUpdate_action_EmailAction | CardIntroCreate_buttonBlockUpdate_action_ChatAction;
 
 export interface CardIntroCreate_buttonBlockUpdate_settings {
   __typename: "ButtonBlockSettings";
@@ -285,7 +303,16 @@ export interface CardIntroCreate_video_action_EmailAction {
   parentStepId: string | null;
 }
 
-export type CardIntroCreate_video_action = CardIntroCreate_video_action_PhoneAction | CardIntroCreate_video_action_NavigateToBlockAction | CardIntroCreate_video_action_LinkAction | CardIntroCreate_video_action_EmailAction;
+export interface CardIntroCreate_video_action_ChatAction {
+  __typename: "ChatAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+  chatUrl: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
+}
+
+export type CardIntroCreate_video_action = CardIntroCreate_video_action_PhoneAction | CardIntroCreate_video_action_NavigateToBlockAction | CardIntroCreate_video_action_LinkAction | CardIntroCreate_video_action_EmailAction | CardIntroCreate_video_action_ChatAction;
 
 export interface CardIntroCreate_video {
   __typename: "VideoBlock";

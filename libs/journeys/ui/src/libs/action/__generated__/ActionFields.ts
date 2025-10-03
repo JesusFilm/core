@@ -38,4 +38,13 @@ export interface ActionFields_EmailAction {
   parentStepId: string | null;
 }
 
-export type ActionFields = ActionFields_PhoneAction | ActionFields_NavigateToBlockAction | ActionFields_LinkAction | ActionFields_EmailAction;
+export interface ActionFields_ChatAction {
+  __typename: "ChatAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+  chatUrl: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
+}
+
+export type ActionFields = ActionFields_PhoneAction | ActionFields_NavigateToBlockAction | ActionFields_LinkAction | ActionFields_EmailAction | ActionFields_ChatAction;

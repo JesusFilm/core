@@ -275,10 +275,15 @@ export function Button({
       if (!isEmptyForm() && Object.keys(errors).length > 0) return
     }
 
-    if (messagePlatform == null) {
-      void createClickEvent()
-    } else {
+    const isLinkChatAction = messagePlatform != null
+    const isChatAction = action?.__typename === 'ChatAction'
+    const isPhoneAction = action?.__typename === 'PhoneAction'
+    const isChatEvent = isLinkChatAction || isChatAction || isPhoneAction
+
+    if (isChatEvent) {
       void createChatEvent()
+    } else {
+      void createClickEvent()
     }
 
     const nextStepSlug = getNextStepSlug(journey, action)

@@ -34,7 +34,7 @@ export interface StepBlockDeleteFromAction_blockUpdateAction_parentBlock {
 }
 
 export interface StepBlockDeleteFromAction_blockUpdateAction {
-  __typename: "EmailAction" | "LinkAction" | "NavigateToBlockAction" | "PhoneAction";
+  __typename: "EmailAction" | "LinkAction" | "NavigateToBlockAction" | "PhoneAction" | "ChatAction";
   parentBlockId: string;
   parentBlock: StepBlockDeleteFromAction_blockUpdateAction_parentBlock;
   gtmEventName: string | null;

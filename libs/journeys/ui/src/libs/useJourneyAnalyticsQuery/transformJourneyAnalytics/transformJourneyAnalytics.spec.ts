@@ -67,6 +67,12 @@ describe('transformJourneyAnalytics', () => {
           property:
             '{"stepId":"step1.id","event":"chatButtonClick","blockId":"step1.id","target":"link:https://m.me/test"}',
           visitors: 5
+        },
+        {
+          __typename: 'PlausibleStatsResponse',
+          property:
+            '{"stepId":"step1.id","event":"buttonClick","blockId":"button2.id","target":"chat:https://chat.example.com"}',
+          visitors: 3
         }
       ],
       journeyReferrer: [
@@ -162,6 +168,12 @@ describe('transformJourneyAnalytics', () => {
           property:
             '{"stepId":"step1.id","event":"chatButtonClick","blockId":"step1.id","target":""}',
           visitors: 5
+        },
+        {
+          __typename: 'PlausibleStatsResponse',
+          property:
+            '{"stepId":"step1.id","event":"buttonClick","blockId":"button2.id","target":""}',
+          visitors: 3
         }
       ],
       journeyAggregateVisitors: {
@@ -175,7 +187,7 @@ describe('transformJourneyAnalytics', () => {
 
     const result = {
       totalVisitors: 10,
-      chatsStarted: 5,
+      chatsStarted: 8,
       linksVisited: 10,
       referrers: {
         edges: [
@@ -273,12 +285,12 @@ describe('transformJourneyAnalytics', () => {
             eventMap: new Map([
               ['pageview', 5],
               ['navigateNextStep', 5],
-              ['buttonClick', 5],
+              ['buttonClick', 8],
               ['radioQuestionSubmit', 5],
               ['signupSubmit', 5],
               ['chatButtonClick', 5]
             ]),
-            total: 25
+            total: 28
           }
         ],
         [
@@ -292,6 +304,7 @@ describe('transformJourneyAnalytics', () => {
       blockMap: new Map([
         ['step1.id', 10],
         ['button1.id', 5],
+        ['button2.id', 3],
         ['radioOption1.id', 5],
         ['signUp1.id', 5]
       ]),
@@ -300,10 +313,47 @@ describe('transformJourneyAnalytics', () => {
         ['button1.id->step2.id', 5],
         ['radioOption1.id->link:https://google.com', 5],
         ['signUp1.id->link:https://bible.com', 5],
-        ['step1.id->link:https://m.me/test', 5]
+        ['step1.id->link:https://m.me/test', 5],
+        ['button2.id->chat:https://chat.example.com', 3]
       ])
     }
 
     expect(transformJourneyAnalytics('journeyId', data)).toEqual(result)
+  })
+
+  it('should count ChatAction targets as chats started', () => {
+    const data: GetJourneyAnalytics = {
+      journeySteps: [],
+      journeyStepsActions: [
+        {
+          __typename: 'PlausibleStatsResponse',
+          property:
+            '{"stepId":"step1.id","event":"buttonClick","blockId":"button1.id","target":"chat:https://chat.example.com"}',
+          visitors: 5
+        },
+        {
+          __typename: 'PlausibleStatsResponse',
+          property:
+            '{"stepId":"step1.id","event":"buttonClick","blockId":"button2.id","target":"link:https://example.com"}',
+          visitors: 3
+        }
+      ],
+      journeyReferrer: [],
+      journeyUtmCampaign: [],
+      journeyVisitorsPageExits: [],
+      journeyActionsSums: [],
+      journeyAggregateVisitors: {
+        __typename: 'PlausibleStatsAggregateResponse',
+        visitors: {
+          __typename: 'PlausibleStatsAggregateValue',
+          value: 8
+        }
+      }
+    }
+
+    const result = transformJourneyAnalytics('journeyId', data)
+
+    expect(result?.chatsStarted).toBe(5)
+    expect(result?.linksVisited).toBe(3)
   })
 })

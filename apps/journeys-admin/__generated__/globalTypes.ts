@@ -8,6 +8,7 @@
 //==============================================================
 
 export enum ButtonAction {
+  ChatAction = "ChatAction",
   EmailAction = "EmailAction",
   LinkAction = "LinkAction",
   NavigateToBlockAction = "NavigateToBlockAction",
@@ -296,6 +297,7 @@ export interface BlockUpdateActionInput {
   phone?: string | null;
   countryCode?: string | null;
   target?: string | null;
+  chatUrl?: string | null;
   blockId?: string | null;
 }
 
@@ -357,6 +359,14 @@ export interface CardBlockUpdateInput {
   fullscreen?: boolean | null;
   themeMode?: ThemeMode | null;
   themeName?: ThemeName | null;
+}
+
+export interface ChatActionInput {
+  gtmEventName?: string | null;
+  chatUrl: string;
+  target?: string | null;
+  customizable?: boolean | null;
+  parentStepId?: string | null;
 }
 
 export interface ChatButtonCreateInput {

@@ -107,7 +107,16 @@ export interface CardPollCreate_radioOption1_action_EmailAction {
   parentStepId: string | null;
 }
 
-export type CardPollCreate_radioOption1_action = CardPollCreate_radioOption1_action_PhoneAction | CardPollCreate_radioOption1_action_NavigateToBlockAction | CardPollCreate_radioOption1_action_LinkAction | CardPollCreate_radioOption1_action_EmailAction;
+export interface CardPollCreate_radioOption1_action_ChatAction {
+  __typename: "ChatAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+  chatUrl: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
+}
+
+export type CardPollCreate_radioOption1_action = CardPollCreate_radioOption1_action_PhoneAction | CardPollCreate_radioOption1_action_NavigateToBlockAction | CardPollCreate_radioOption1_action_LinkAction | CardPollCreate_radioOption1_action_EmailAction | CardPollCreate_radioOption1_action_ChatAction;
 
 export interface CardPollCreate_radioOption1 {
   __typename: "RadioOptionBlock";
@@ -155,7 +164,16 @@ export interface CardPollCreate_radioOption2_action_EmailAction {
   parentStepId: string | null;
 }
 
-export type CardPollCreate_radioOption2_action = CardPollCreate_radioOption2_action_PhoneAction | CardPollCreate_radioOption2_action_NavigateToBlockAction | CardPollCreate_radioOption2_action_LinkAction | CardPollCreate_radioOption2_action_EmailAction;
+export interface CardPollCreate_radioOption2_action_ChatAction {
+  __typename: "ChatAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+  chatUrl: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
+}
+
+export type CardPollCreate_radioOption2_action = CardPollCreate_radioOption2_action_PhoneAction | CardPollCreate_radioOption2_action_NavigateToBlockAction | CardPollCreate_radioOption2_action_LinkAction | CardPollCreate_radioOption2_action_EmailAction | CardPollCreate_radioOption2_action_ChatAction;
 
 export interface CardPollCreate_radioOption2 {
   __typename: "RadioOptionBlock";
@@ -203,7 +221,16 @@ export interface CardPollCreate_radioOption3_action_EmailAction {
   parentStepId: string | null;
 }
 
-export type CardPollCreate_radioOption3_action = CardPollCreate_radioOption3_action_PhoneAction | CardPollCreate_radioOption3_action_NavigateToBlockAction | CardPollCreate_radioOption3_action_LinkAction | CardPollCreate_radioOption3_action_EmailAction;
+export interface CardPollCreate_radioOption3_action_ChatAction {
+  __typename: "ChatAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+  chatUrl: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
+}
+
+export type CardPollCreate_radioOption3_action = CardPollCreate_radioOption3_action_PhoneAction | CardPollCreate_radioOption3_action_NavigateToBlockAction | CardPollCreate_radioOption3_action_LinkAction | CardPollCreate_radioOption3_action_EmailAction | CardPollCreate_radioOption3_action_ChatAction;
 
 export interface CardPollCreate_radioOption3 {
   __typename: "RadioOptionBlock";
@@ -251,7 +278,16 @@ export interface CardPollCreate_radioOption4_action_EmailAction {
   parentStepId: string | null;
 }
 
-export type CardPollCreate_radioOption4_action = CardPollCreate_radioOption4_action_PhoneAction | CardPollCreate_radioOption4_action_NavigateToBlockAction | CardPollCreate_radioOption4_action_LinkAction | CardPollCreate_radioOption4_action_EmailAction;
+export interface CardPollCreate_radioOption4_action_ChatAction {
+  __typename: "ChatAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+  chatUrl: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
+}
+
+export type CardPollCreate_radioOption4_action = CardPollCreate_radioOption4_action_PhoneAction | CardPollCreate_radioOption4_action_NavigateToBlockAction | CardPollCreate_radioOption4_action_LinkAction | CardPollCreate_radioOption4_action_EmailAction | CardPollCreate_radioOption4_action_ChatAction;
 
 export interface CardPollCreate_radioOption4 {
   __typename: "RadioOptionBlock";

@@ -148,6 +148,33 @@ export function transformSteps(
         draggable: false
       })
     }
+
+    if (block.action.__typename === 'ChatAction') {
+      edges.push({
+        id: `${block.id}->ChatNode-${block.id}`,
+        source: step.id,
+        sourceHandle: block.id,
+        target: `ChatNode-${block.id}`,
+        ...defaultEdgeProps
+      })
+
+      const position = {
+        x: LINK_NODE_WIDTH_GAP_LEFT,
+        y:
+          STEP_NODE_CARD_HEIGHT +
+          ACTION_BUTTON_HEIGHT * (blockIndex + 1) +
+          (priorAction ? LINK_NODE_HEIGHT_GAP * actionCount : 0)
+      }
+
+      nodes.push({
+        id: `ChatNode-${block.id}`,
+        type: 'Chat',
+        data: {},
+        position,
+        parentNode: step.id,
+        draggable: false
+      })
+    }
   }
 
   steps.forEach((step) => {
@@ -159,11 +186,13 @@ export function transformSteps(
         block.action?.__typename === 'LinkAction' ||
         block.action?.__typename === 'EmailAction'
 
+      const isChat = block.action?.__typename === 'ChatAction'
+
       const priorAction = actionCount > 0
-      const actionIndex = isLinkOrEmail ? actionCount : 0
+      const actionIndex = isLinkOrEmail || isChat ? actionCount : 0
 
       processActionBlock(block, step, priorAction, actionIndex, blockIndex)
-      return isLinkOrEmail ? actionCount + 1 : actionCount
+      return isLinkOrEmail || isChat ? actionCount + 1 : actionCount
     }, 0)
 
     nodes.push({

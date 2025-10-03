@@ -39,5 +39,16 @@ export function handleAction(
     case 'EmailAction':
       window.open(`mailto:${action.email}`, '_blank')
       break
+    case 'ChatAction':
+      if (
+        action.chatUrl.startsWith('http') &&
+        !journeysUrls.some((substring) => action.chatUrl.includes(substring))
+      ) {
+        window.open(action.chatUrl, '_blank')
+      } else if (action.chatUrl === '') {
+        break
+      } else {
+        void router.push(action.chatUrl)?.then(() => window.location.reload())
+      }
   }
 }

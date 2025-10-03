@@ -91,7 +91,16 @@ export interface VideoBlockCreate_videoBlockCreate_action_EmailAction {
   parentStepId: string | null;
 }
 
-export type VideoBlockCreate_videoBlockCreate_action = VideoBlockCreate_videoBlockCreate_action_PhoneAction | VideoBlockCreate_videoBlockCreate_action_NavigateToBlockAction | VideoBlockCreate_videoBlockCreate_action_LinkAction | VideoBlockCreate_videoBlockCreate_action_EmailAction;
+export interface VideoBlockCreate_videoBlockCreate_action_ChatAction {
+  __typename: "ChatAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+  chatUrl: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
+}
+
+export type VideoBlockCreate_videoBlockCreate_action = VideoBlockCreate_videoBlockCreate_action_PhoneAction | VideoBlockCreate_videoBlockCreate_action_NavigateToBlockAction | VideoBlockCreate_videoBlockCreate_action_LinkAction | VideoBlockCreate_videoBlockCreate_action_EmailAction | VideoBlockCreate_videoBlockCreate_action_ChatAction;
 
 export interface VideoBlockCreate_videoBlockCreate {
   __typename: "VideoBlock";

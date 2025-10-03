@@ -61,7 +61,16 @@ export interface GetPublisherTemplate_publisherTemplate_blocks_ButtonBlock_actio
   parentStepId: string | null;
 }
 
-export type GetPublisherTemplate_publisherTemplate_blocks_ButtonBlock_action = GetPublisherTemplate_publisherTemplate_blocks_ButtonBlock_action_PhoneAction | GetPublisherTemplate_publisherTemplate_blocks_ButtonBlock_action_NavigateToBlockAction | GetPublisherTemplate_publisherTemplate_blocks_ButtonBlock_action_LinkAction | GetPublisherTemplate_publisherTemplate_blocks_ButtonBlock_action_EmailAction;
+export interface GetPublisherTemplate_publisherTemplate_blocks_ButtonBlock_action_ChatAction {
+  __typename: "ChatAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+  chatUrl: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
+}
+
+export type GetPublisherTemplate_publisherTemplate_blocks_ButtonBlock_action = GetPublisherTemplate_publisherTemplate_blocks_ButtonBlock_action_PhoneAction | GetPublisherTemplate_publisherTemplate_blocks_ButtonBlock_action_NavigateToBlockAction | GetPublisherTemplate_publisherTemplate_blocks_ButtonBlock_action_LinkAction | GetPublisherTemplate_publisherTemplate_blocks_ButtonBlock_action_EmailAction | GetPublisherTemplate_publisherTemplate_blocks_ButtonBlock_action_ChatAction;
 
 export interface GetPublisherTemplate_publisherTemplate_blocks_ButtonBlock_settings {
   __typename: "ButtonBlockSettings";
@@ -184,7 +193,16 @@ export interface GetPublisherTemplate_publisherTemplate_blocks_RadioOptionBlock_
   parentStepId: string | null;
 }
 
-export type GetPublisherTemplate_publisherTemplate_blocks_RadioOptionBlock_action = GetPublisherTemplate_publisherTemplate_blocks_RadioOptionBlock_action_PhoneAction | GetPublisherTemplate_publisherTemplate_blocks_RadioOptionBlock_action_NavigateToBlockAction | GetPublisherTemplate_publisherTemplate_blocks_RadioOptionBlock_action_LinkAction | GetPublisherTemplate_publisherTemplate_blocks_RadioOptionBlock_action_EmailAction;
+export interface GetPublisherTemplate_publisherTemplate_blocks_RadioOptionBlock_action_ChatAction {
+  __typename: "ChatAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+  chatUrl: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
+}
+
+export type GetPublisherTemplate_publisherTemplate_blocks_RadioOptionBlock_action = GetPublisherTemplate_publisherTemplate_blocks_RadioOptionBlock_action_PhoneAction | GetPublisherTemplate_publisherTemplate_blocks_RadioOptionBlock_action_NavigateToBlockAction | GetPublisherTemplate_publisherTemplate_blocks_RadioOptionBlock_action_LinkAction | GetPublisherTemplate_publisherTemplate_blocks_RadioOptionBlock_action_EmailAction | GetPublisherTemplate_publisherTemplate_blocks_RadioOptionBlock_action_ChatAction;
 
 export interface GetPublisherTemplate_publisherTemplate_blocks_RadioOptionBlock {
   __typename: "RadioOptionBlock";
@@ -240,7 +258,16 @@ export interface GetPublisherTemplate_publisherTemplate_blocks_SignUpBlock_actio
   parentStepId: string | null;
 }
 
-export type GetPublisherTemplate_publisherTemplate_blocks_SignUpBlock_action = GetPublisherTemplate_publisherTemplate_blocks_SignUpBlock_action_PhoneAction | GetPublisherTemplate_publisherTemplate_blocks_SignUpBlock_action_NavigateToBlockAction | GetPublisherTemplate_publisherTemplate_blocks_SignUpBlock_action_LinkAction | GetPublisherTemplate_publisherTemplate_blocks_SignUpBlock_action_EmailAction;
+export interface GetPublisherTemplate_publisherTemplate_blocks_SignUpBlock_action_ChatAction {
+  __typename: "ChatAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+  chatUrl: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
+}
+
+export type GetPublisherTemplate_publisherTemplate_blocks_SignUpBlock_action = GetPublisherTemplate_publisherTemplate_blocks_SignUpBlock_action_PhoneAction | GetPublisherTemplate_publisherTemplate_blocks_SignUpBlock_action_NavigateToBlockAction | GetPublisherTemplate_publisherTemplate_blocks_SignUpBlock_action_LinkAction | GetPublisherTemplate_publisherTemplate_blocks_SignUpBlock_action_EmailAction | GetPublisherTemplate_publisherTemplate_blocks_SignUpBlock_action_ChatAction;
 
 export interface GetPublisherTemplate_publisherTemplate_blocks_SignUpBlock {
   __typename: "SignUpBlock";
@@ -402,7 +429,16 @@ export interface GetPublisherTemplate_publisherTemplate_blocks_VideoBlock_action
   parentStepId: string | null;
 }
 
-export type GetPublisherTemplate_publisherTemplate_blocks_VideoBlock_action = GetPublisherTemplate_publisherTemplate_blocks_VideoBlock_action_PhoneAction | GetPublisherTemplate_publisherTemplate_blocks_VideoBlock_action_NavigateToBlockAction | GetPublisherTemplate_publisherTemplate_blocks_VideoBlock_action_LinkAction | GetPublisherTemplate_publisherTemplate_blocks_VideoBlock_action_EmailAction;
+export interface GetPublisherTemplate_publisherTemplate_blocks_VideoBlock_action_ChatAction {
+  __typename: "ChatAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+  chatUrl: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
+}
+
+export type GetPublisherTemplate_publisherTemplate_blocks_VideoBlock_action = GetPublisherTemplate_publisherTemplate_blocks_VideoBlock_action_PhoneAction | GetPublisherTemplate_publisherTemplate_blocks_VideoBlock_action_NavigateToBlockAction | GetPublisherTemplate_publisherTemplate_blocks_VideoBlock_action_LinkAction | GetPublisherTemplate_publisherTemplate_blocks_VideoBlock_action_EmailAction | GetPublisherTemplate_publisherTemplate_blocks_VideoBlock_action_ChatAction;
 
 export interface GetPublisherTemplate_publisherTemplate_blocks_VideoBlock {
   __typename: "VideoBlock";
@@ -510,7 +546,16 @@ export interface GetPublisherTemplate_publisherTemplate_blocks_VideoTriggerBlock
   parentStepId: string | null;
 }
 
-export type GetPublisherTemplate_publisherTemplate_blocks_VideoTriggerBlock_triggerAction = GetPublisherTemplate_publisherTemplate_blocks_VideoTriggerBlock_triggerAction_PhoneAction | GetPublisherTemplate_publisherTemplate_blocks_VideoTriggerBlock_triggerAction_NavigateToBlockAction | GetPublisherTemplate_publisherTemplate_blocks_VideoTriggerBlock_triggerAction_LinkAction | GetPublisherTemplate_publisherTemplate_blocks_VideoTriggerBlock_triggerAction_EmailAction;
+export interface GetPublisherTemplate_publisherTemplate_blocks_VideoTriggerBlock_triggerAction_ChatAction {
+  __typename: "ChatAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+  chatUrl: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
+}
+
+export type GetPublisherTemplate_publisherTemplate_blocks_VideoTriggerBlock_triggerAction = GetPublisherTemplate_publisherTemplate_blocks_VideoTriggerBlock_triggerAction_PhoneAction | GetPublisherTemplate_publisherTemplate_blocks_VideoTriggerBlock_triggerAction_NavigateToBlockAction | GetPublisherTemplate_publisherTemplate_blocks_VideoTriggerBlock_triggerAction_LinkAction | GetPublisherTemplate_publisherTemplate_blocks_VideoTriggerBlock_triggerAction_EmailAction | GetPublisherTemplate_publisherTemplate_blocks_VideoTriggerBlock_triggerAction_ChatAction;
 
 export interface GetPublisherTemplate_publisherTemplate_blocks_VideoTriggerBlock {
   __typename: "VideoTriggerBlock";
