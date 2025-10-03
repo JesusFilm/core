@@ -2,9 +2,11 @@
 
 import { useTranslation } from 'next-i18next'
 import type { ReactElement } from 'react'
-import { useMemo } from 'react'
+import Link from 'next/link'
+import { useMemo, useState } from 'react'
 
 import { cn } from '../../../libs/cn'
+import { useCountryLanguages } from '../../../libs/useCountryLanguages'
 import { useLanguageMap } from '../../../libs/useLanguageMap'
 
 import { LanguageMap } from './LanguageMap'
@@ -12,12 +14,26 @@ import { LanguageMap } from './LanguageMap'
 export function SectionLanguageMap(): ReactElement {
   const { t } = useTranslation('apps-watch')
   const { points, isLoading, error } = useLanguageMap()
+  const [selectedCountry, setSelectedCountry] = useState<{
+    id: string
+    name?: string
+  } | null>(null)
+
+  const {
+    languages,
+    countryName: fetchedCountryName,
+    isLoading: isCountryLoading,
+    error: countryError
+  } = useCountryLanguages(selectedCountry?.id)
 
   const hasData = points.length > 0
   const uniqueLanguagesCount = useMemo(() => {
     const uniqueLanguageIds = new Set(points.map(point => point.languageId))
     return uniqueLanguageIds.size
   }, [points])
+
+  const displayCountryName = fetchedCountryName ?? selectedCountry?.name
+  const hasSelectedCountry = selectedCountry != null
 
   return (
     <section
@@ -60,6 +76,7 @@ export function SectionLanguageMap(): ReactElement {
             <LanguageMap
               points={points}
               unsupportedMessage={t('Interactive map is not supported on this device.')}
+              onCountrySelect={setSelectedCountry}
             />
           ) : (
             <div className="flex h-full w-full items-center justify-center px-6 text-center text-sm text-white/70">
@@ -69,6 +86,85 @@ export function SectionLanguageMap(): ReactElement {
             </div>
           )}
         </div>
+      </div>
+      <div className="w-full rounded-2xl bg-slate-900/60 p-6 shadow-2xl">
+        {hasSelectedCountry ? (
+          <div className="flex flex-col gap-6">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+              <div className="space-y-1">
+                <h3 className="text-2xl font-semibold tracking-tight">
+                  {displayCountryName != null
+                    ? t('Languages in {{country}}', { country: displayCountryName })
+                    : t('Languages in this country')}
+                </h3>
+                <p className="text-sm text-white/70 sm:text-base">
+                  {countryError != null
+                    ? t('We could not load languages for this country. Please try again later.')
+                    : isCountryLoading
+                    ? t('Loading languages…')
+                    : t('languages available count', { count: languages.length })}
+                </p>
+              </div>
+              <button
+                type="button"
+                className="inline-flex items-center justify-center rounded-full border border-white/20 px-4 py-2 text-sm font-medium text-white transition hover:bg-white/10"
+                onClick={() => setSelectedCountry(null)}
+              >
+                {t('Clear selection')}
+              </button>
+            </div>
+            {countryError != null ? (
+              <p className="text-sm text-rose-200">
+                {t('We could not load languages for this country. Please try again later.')}
+              </p>
+            ) : isCountryLoading ? (
+              <p className="text-sm text-white/70">
+                {t('Loading languages…')}
+              </p>
+            ) : languages.length > 0 ? (
+              <ul className="max-h-96 space-y-3 overflow-y-auto pr-1">
+                {languages.map((language) => {
+                  const showNativeName =
+                    language.nativeName != null &&
+                    language.nativeName !== '' &&
+                    language.nativeName !== language.languageName
+
+                  return (
+                    <li
+                      key={language.id}
+                      className="flex flex-col gap-3 rounded-xl border border-white/5 bg-slate-900/40 p-4 sm:flex-row sm:items-center sm:justify-between"
+                    >
+                      <div className="space-y-1">
+                        <p className="text-base font-semibold sm:text-lg">
+                          {language.languageName}
+                        </p>
+                        {showNativeName ? (
+                          <p className="text-sm text-white/60">
+                            {language.nativeName}
+                          </p>
+                        ) : null}
+                      </div>
+                      <Link
+                        href={`/watch/videos?languages=${language.id}`}
+                        className="inline-flex items-center justify-center rounded-full bg-white px-4 py-2 text-sm font-semibold text-slate-900 transition hover:bg-white/90"
+                      >
+                        {t('Browse videos in this language')}
+                      </Link>
+                    </li>
+                  )
+                })}
+              </ul>
+            ) : (
+              <p className="text-sm text-white/70">
+                {t('No languages available for this country yet.')}
+              </p>
+            )}
+          </div>
+        ) : (
+          <p className="text-sm text-white/70">
+            {t('Select a country on the map to see available languages.')}
+          </p>
+        )}
       </div>
     </section>
   )
