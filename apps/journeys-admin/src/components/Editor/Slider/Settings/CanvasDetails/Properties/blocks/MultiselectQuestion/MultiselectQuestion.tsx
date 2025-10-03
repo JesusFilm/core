@@ -102,27 +102,15 @@ export function MultiselectQuestion({
                 id,
                 parentBlockId: selectedBlock?.parentBlockId ?? null,
                 parentOrder: selectedBlock?.parentOrder ?? 0,
-                label: variables.label ?? label ?? '',
                 min: variables.min ?? min ?? null,
-                max: variables.max ?? max ?? null,
-                action: null
+                max: variables.max ?? max ?? null
               }
             }
           })
         }
       })
     },
-    [
-      add,
-      dispatch,
-      id,
-      label,
-      min,
-      max,
-      selectedBlock,
-      selectedStep,
-      updateBlock
-    ]
+    [add, dispatch, id, min, max, selectedBlock, selectedStep, updateBlock]
   )
 
   function handleMinChange(value: string): void {
