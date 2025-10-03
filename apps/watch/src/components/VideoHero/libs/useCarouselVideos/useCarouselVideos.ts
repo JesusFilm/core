@@ -12,7 +12,6 @@ import {
 } from './queries'
 import {
   addToPersistentPlayedIds,
-  addToSessionPlayedIds,
   clearCurrentVideoSession,
   filterOutBlacklistedVideos,
   getDeterministicOffset,
@@ -246,7 +245,7 @@ export function useCarouselVideos(locale?: string): UseCarouselVideosReturn {
         const videoChildren = filterOutBlacklistedVideos(
           children.filter((c: any) => c.variant && c.variant.hls),
           blacklistedVideoIds
-        )
+        ).filter((video: any) => !isVideoAlreadyPlayed(video.id))
         if (videoChildren.length > 0) {
           const offset = getDeterministicOffset(
             collectionId,
@@ -300,7 +299,7 @@ export function useCarouselVideos(locale?: string): UseCarouselVideosReturn {
         const shortFilms = filterOutBlacklistedVideos(
           (shortFilmsData?.videos || []).filter((v: any) => v.variant && v.variant.hls),
           blacklistedVideoIds
-        )
+        ).filter((video: any) => !isVideoAlreadyPlayed(video.id))
         if (shortFilms.length > 0) {
           const offset = getDeterministicOffset(
             'shortFilms',
@@ -447,7 +446,6 @@ export function useCarouselVideos(locale?: string): UseCarouselVideosReturn {
         })
 
         if (isFirst) {
-          addToSessionPlayedIds(videoWithPool.id)
           addToPersistentPlayedIds(videoWithPool.id)
           markPoolVideoPlayed(
             videoWithPool.poolId || 'unknown',
@@ -540,7 +538,6 @@ export function useCarouselVideos(locale?: string): UseCarouselVideosReturn {
         setPoolIndex(nextVideo.poolIndex || 0)
 
         // Track as played
-        addToSessionPlayedIds(nextVideo.id)
         addToPersistentPlayedIds(nextVideo.id)
         markPoolVideoPlayed(nextVideo.poolId || 'unknown', nextVideo.id)
       }
@@ -569,18 +566,15 @@ export function useCarouselVideos(locale?: string): UseCarouselVideosReturn {
 
   const jumpToVideo = useCallback(
     (videoId: string): boolean => {
-      // Get the current slides dynamically
-      const currentSlides = mergeMuxInserts(videos)
-
       // Find slide in the slides array
-      const slideIndex = currentSlides.findIndex(
+      const slideIndex = slides.findIndex(
         (slide) => slide.id === videoId
       )
       if (slideIndex === -1) {
         return false
       }
 
-      const targetSlide = currentSlides[slideIndex]
+      const targetSlide = slides[slideIndex]
 
       // For mux slides, we don't need to update the video index since they don't correspond to videos
       if (targetSlide.source === 'mux') {
@@ -607,13 +601,12 @@ export function useCarouselVideos(locale?: string): UseCarouselVideosReturn {
       setPoolIndex(targetVideo.poolIndex || 0)
 
       // Track as played
-      addToSessionPlayedIds(targetVideo.id)
       addToPersistentPlayedIds(targetVideo.id)
       markPoolVideoPlayed(targetVideo.poolId || 'unknown', targetVideo.id)
 
       return true
     },
-    [videos, currentIndex]
+    [slides, videos, currentIndex]
   )
 
   const loading = countsLoading
