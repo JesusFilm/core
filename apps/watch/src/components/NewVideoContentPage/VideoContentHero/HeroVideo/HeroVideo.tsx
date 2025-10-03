@@ -45,6 +45,7 @@ export function HeroVideo({
     state: { subtitleLanguageId, subtitleOn }
   } = useWatch()
   const [playerReady, setPlayerReady] = useState(false)
+  const [mediaError, setMediaError] = useState<Error | null>(null)
 
   // Use Mux insert title if available, otherwise use regular video title
   const title = currentMuxInsert ? currentMuxInsert.overlay.title : (last(video.title)?.value ?? '')
@@ -116,81 +117,190 @@ export function HeroVideo({
   }, [videoRef.current])
 
   useEffect(() => {
-    // Determine the video source and ID based on current content
-    const videoSource = currentMuxInsert ? currentMuxInsert.urls.hls : variant?.hls
-    const videoId = currentMuxInsert ? currentMuxInsert.id : variant?.id
+    const setupPlayer = async () => {
+      // Determine the video source and ID based on current content
+      const videoSource = currentMuxInsert ? currentMuxInsert.urls.hls : variant?.hls
+      const videoId = currentMuxInsert ? currentMuxInsert.id : variant?.id
 
-    if (!videoRef.current || !videoSource) return
 
-    // Dispose of existing player before creating new one
-    if (playerRef.current) {
-      playerRef.current.dispose()
-      playerRef.current = null
-      setPlayerReady(false)
-    }
-
-    // Create Mux metadata for video analytics
-    const muxMetadata: MuxMetadata = {
-      env_key: process.env.NEXT_PUBLIC_MUX_DEFAULT_REPORTING_KEY || '',
-      player_name: 'watch',
-      video_title: title,
-      video_id: videoId ?? ''
-    }
-
-    // Initialize player
-    const player = videojs(videoRef.current, {
-      ...defaultVideoJsOptions,
-      autoplay: true,
-      controls: false,
-      loop: !isPreview && !currentMuxInsert, // Don't loop Mux inserts
-      muted: false, // Start unmuted, mute state will be set by useEffect
-      fluid: false,
-      fill: true,
-      responsive: false,
-      aspectRatio: undefined,
-      plugins: {
-        mux: {
-          debug: false,
-          data: muxMetadata
-        }
+      if (!videoRef.current || !videoSource) {
+        return
       }
-    })
 
-    playerRef.current = player
+      // Dispose of existing player before creating new one
+      if (playerRef.current) {
+        // Properly pause and reset the current video before disposal to prevent abort errors
+        try {
+          const currentPlayer = playerRef.current
 
-    player.src({
-      src: videoSource,
-      type: 'application/x-mpegURL'
-    })
+          // Pause the video to stop any ongoing loading
+          if (!currentPlayer.paused()) {
+            currentPlayer.pause()
+          }
 
-    player.ready(() => {
-      // Immediately hide native subtitles to prevent flash before custom overlay renders
-      const textTracks = player.textTracks?.()
-      if (textTracks != null) {
-        for (let i = 0; i < textTracks.length; i++) {
-          const track = textTracks[i]
-          if (track.kind === 'subtitles') {
-            track.mode = 'disabled'
+          // Reset the source to stop any network requests
+          currentPlayer.src('')
+
+          // Small delay to allow abort events to fire
+          await new Promise(resolve => setTimeout(resolve, 50))
+
+          // Now dispose safely
+          currentPlayer.dispose()
+        } catch (error) {
+          // Fallback to basic disposal if proper cleanup fails
+          try {
+            playerRef.current.dispose()
+          } catch (fallbackError) {
+            // Continue if disposal fails
           }
         }
+
+        playerRef.current = null
+        setPlayerReady(false)
       }
 
-      // Also hide via CSS class as additional safeguard
-      const element = player.el() as HTMLElement | null
-      if (element != null) {
-        element.classList.add('hero-hide-native-subtitles')
+      // Create Mux metadata for video analytics
+      const muxMetadata: MuxMetadata = {
+        env_key: process.env.NEXT_PUBLIC_MUX_DEFAULT_REPORTING_KEY || '',
+        player_name: 'watch',
+        video_title: title,
+        video_id: videoId ?? ''
       }
 
-      setPlayerReady(true)
+      // Initialize player
+      const player = videojs(videoRef.current, {
+        ...defaultVideoJsOptions,
+        autoplay: true,
+        controls: false,
+        loop: !isPreview && !currentMuxInsert, // Don't loop Mux inserts
+        muted: true, // Don't start unmuted, browser will not autoplay unmuted videos!
+        fluid: false,
+        fill: true,
+        responsive: false,
+        aspectRatio: undefined,
+        plugins: {
+          mux: {
+            debug: false,
+            data: muxMetadata
+          }
+        }
+      })
+
+      playerRef.current = player
+
+      player.src({
+        src: videoSource,
+        type: 'application/x-mpegURL'
+      })
+
+      player.ready(() => {
+        // Immediately hide native subtitles to prevent flash before custom overlay renders
+        const textTracks = player.textTracks?.()
+        if (textTracks != null) {
+          for (let i = 0; i < textTracks.length; i++) {
+            const track = textTracks[i]
+            if (track.kind === 'subtitles') {
+              track.mode = 'disabled'
+            }
+          }
+        }
+
+        // Also hide via CSS class as additional safeguard
+        const element = player.el() as HTMLElement | null
+        if (element != null) {
+          element.classList.add('hero-hide-native-subtitles')
+        }
+
+        setPlayerReady(true)
+      })
+
+      // Clear any previous media errors when setting up new video
+      setMediaError(null)
+
+      // Add comprehensive error event listeners to catch media loading issues
+      player.on('error', (error) => {
+        const playerError = player.error()
+        if (playerError) {
+          // Create a more user-friendly error
+          const mediaError = new Error(`Video loading failed: ${playerError.message}`)
+          mediaError.name = 'MediaError'
+          ;(mediaError as any).code = playerError.code
+          ;(mediaError as any).videoId = videoId
+          setMediaError(mediaError)
+        }
+      })
+
+    player.on('abort', () => {
+      // Note: Abort events are normal when switching videos, so we don't set mediaError here
     })
 
-    return () => {
-      if (playerRef.current) {
-        playerRef.current.dispose()
-        playerRef.current = null
+    player.on('emptied', () => {
+      // Player emptied
+    })
+
+    player.on('loadstart', () => {
+      // Load started
+    })
+
+    player.on('progress', () => {
+      // Progress event
+    })
+
+    player.on('loadeddata', () => {
+      // Clear any previous errors once data loads successfully
+      setMediaError(null)
+    })
+
+    player.on('canplay', () => {
+      // Can play
+    })
+
+    player.on('canplaythrough', () => {
+      // Can play through
+    })
+
+    // Handle stalled loading (network issues)
+    player.on('stalled', () => {
+      // Player stalled - possible network issue
+    })
+
+    // Handle waiting for data
+    player.on('waiting', () => {
+      // Waiting for data
+    })
+
+    // Track play/pause events that might be causing state conflicts
+    player.on('play', () => {
+      // Player play event
+    })
+
+    player.on('pause', () => {
+      // Player pause event
+    })
+
+    player.on('playing', () => {
+      // Player playing event
+    })
+
+    player.on('ended', () => {
+      // Player ended event
+    })
+
+      return () => {
+        if (playerRef.current) {
+          try {
+            playerRef.current.dispose()
+          } catch (error) {
+            // Error during player disposal
+          }
+          playerRef.current = null
+        }
+        setPlayerReady(false)
       }
-      setPlayerReady(false)
     }
+
+    // Execute the async setup
+    setupPlayer()
   }, [currentMuxInsert?.id, variant?.hls, title, variant?.id, currentMuxInsert, isPreview])
 
   // Handle mute state changes dynamically without recreating the player
@@ -203,13 +313,22 @@ export function HeroVideo({
   // Handle play/pause state changes dynamically without recreating the player
   useEffect(() => {
     if (playerRef.current && playerReady) {
-      if (play) {
+      const isCurrentlyPlaying = !playerRef.current.paused()
+
+      // Only call play/pause if the player state doesn't match desired state
+      if (play && !isCurrentlyPlaying) {
         void playerRef.current.play()
-      } else {
+      } else if (!play && isCurrentlyPlaying) {
         playerRef.current.pause()
       }
     }
   }, [play, playerReady])
+
+  useEffect(() => {
+    if (playerRef.current && playerReady && !play) {
+        void playerRef.current.play()
+    }
+  }, [playerReady])
 
   // Duration timer for Mux inserts
   useEffect(() => {
@@ -295,6 +414,24 @@ export function HeroVideo({
             playsInline
             onClick={isPreview ? handlePreviewClick : undefined}
           />
+        )}
+
+        {/* Error display for media loading failures */}
+        {mediaError && (
+          <div
+            className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 text-white text-center p-4"
+            data-testid="ContentHeroVideoError"
+          >
+            <div>
+              <div className="text-lg font-semibold mb-2">Video Error</div>
+              <div className="text-sm opacity-90">{mediaError.message}</div>
+              {process.env.NODE_ENV === 'development' && (
+                <div className="text-xs opacity-75 mt-2">
+                  Code: {(mediaError as any).code} | Video ID: {(mediaError as any).videoId}
+                </div>
+              )}
+            </div>
+          </div>
         )}
         {collapsed && (
           <div

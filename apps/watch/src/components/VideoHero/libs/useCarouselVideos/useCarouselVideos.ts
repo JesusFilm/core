@@ -1,13 +1,13 @@
 import { useLazyQuery, useQuery } from '@apollo/client'
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
 import { getLanguageIdFromLocale } from '../../../../libs/getLanguageIdFromLocale'
 import type { VideoCarouselSlide } from '../../../../types/inserts'
 
 import { mergeMuxInserts } from './insertMux'
 import {
+  GET_CAROUSEL_VIDEO_CHILDREN,
   GET_COLLECTION_COUNTS,
-  GET_ONE_CHILD_BY_INDEX,
   GET_SHORT_FILMS
 } from './queries'
 import {
@@ -106,7 +106,9 @@ export function useCarouselVideos(locale?: string): UseCarouselVideosReturn {
   }, [videos.length])
 
   // Lazy queries for progressive video loading
-  const [fetchCollectionVideo] = useLazyQuery(GET_ONE_CHILD_BY_INDEX, {
+  const [fetchCollectionVideo] = useLazyQuery(GET_CAROUSEL_VIDEO_CHILDREN, {
+    fetchPolicy: 'cache-first',
+    nextFetchPolicy: 'cache-first',
     errorPolicy: 'all'
   })
 
@@ -337,9 +339,36 @@ export function useCarouselVideos(locale?: string): UseCarouselVideosReturn {
 
         const video = await findVideoInCollection(collectionId)
         if (!video) {
-          // mark attempt to avoid infinite retries
-          markPoolVideoPlayed(collectionId)
+          // Track consecutive failures for this collection to detect persistent depletion
+          const failureKey = `pool-${collectionId}-failures`
+          const currentFailures = parseInt(sessionStorage.getItem(failureKey) || '0', 10)
+          const newFailureCount = currentFailures + 1
+          sessionStorage.setItem(failureKey, newFailureCount.toString())
+
+          // If this collection has failed 3 times in a row, mark the entire pool as exhausted
+          if (newFailureCount >= 3) {
+            const childrenCount = countsData?.videos?.find(
+              (n: any) => n.id === collectionId
+            )?.childrenCount || 0
+            // Mark as exhausted by setting played videos equal to total count
+            const poolVideosKey = `pool-${collectionId}-videos`
+            const playedVideos = JSON.parse(sessionStorage.getItem(poolVideosKey) || '[]')
+            // Fill the played videos array to reach exhaustion threshold
+            for (let i = playedVideos.length; i < childrenCount; i++) {
+              playedVideos.push(`exhausted-${i}`)
+            }
+            sessionStorage.setItem(poolVideosKey, JSON.stringify(playedVideos))
+          } else {
+            // mark attempt to avoid infinite retries
+            markPoolVideoPlayed(collectionId)
+          }
+          return null
         }
+
+        // Reset failure counter on successful video retrieval
+        const failureKey = `pool-${collectionId}-failures`
+        sessionStorage.removeItem(failureKey)
+
         return video
       }
 
