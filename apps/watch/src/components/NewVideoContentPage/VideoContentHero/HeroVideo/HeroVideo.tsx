@@ -238,25 +238,97 @@ export function HeroVideo({
         type: 'application/x-mpegURL'
       })
 
-    player.ready(() => {
-      // Immediately hide native subtitles to prevent flash before custom overlay renders
-      const textTracks = player.textTracks?.()
-      if (textTracks != null) {
-        for (let i = 0; i < textTracks.length; i++) {
-          const track = textTracks[i]
-          if (track.kind === 'subtitles') {
-            track.mode = 'disabled'
+      player.ready(() => {
+        // Immediately hide native subtitles to prevent flash before custom overlay renders
+        const textTracks = player.textTracks?.()
+        if (textTracks != null) {
+          for (let i = 0; i < textTracks.length; i++) {
+            const track = textTracks[i]
+            if (track.kind === 'subtitles') {
+              track.mode = 'disabled'
+            }
           }
         }
-      }
 
-      // Also hide via CSS class as additional safeguard
-      const element = player.el() as HTMLElement | null
-      if (element != null) {
-        element.classList.add('hero-hide-native-subtitles')
-      }
+        // Also hide via CSS class as additional safeguard
+        const element = player.el() as HTMLElement | null
+        if (element != null) {
+          element.classList.add('hero-hide-native-subtitles')
+        }
 
-      setPlayerReady(true)
+        setPlayerReady(true)
+      })
+
+      // Clear any previous media errors when setting up new video
+      setMediaError(null)
+
+      // Add comprehensive error event listeners to catch media loading issues
+      player.on('error', (error) => {
+        const playerError = player.error()
+        if (playerError) {
+          // Create a more user-friendly error
+          const mediaError = new Error(`Video loading failed: ${playerError.message}`)
+          mediaError.name = 'MediaError'
+          ;(mediaError as any).code = playerError.code
+          ;(mediaError as any).videoId = videoId
+          setMediaError(mediaError)
+        }
+      })
+
+    player.on('abort', () => {
+      // Note: Abort events are normal when switching videos, so we don't set mediaError here
+    })
+
+    player.on('emptied', () => {
+      // Player emptied
+    })
+
+    player.on('loadstart', () => {
+      // Load started
+    })
+
+    player.on('progress', () => {
+      // Progress event
+    })
+
+    player.on('loadeddata', () => {
+      // Clear any previous errors once data loads successfully
+      setMediaError(null)
+    })
+
+    player.on('canplay', () => {
+      // Can play
+    })
+
+    player.on('canplaythrough', () => {
+      // Can play through
+    })
+
+    // Handle stalled loading (network issues)
+    player.on('stalled', () => {
+      // Player stalled - possible network issue
+    })
+
+    // Handle waiting for data
+    player.on('waiting', () => {
+      // Waiting for data
+    })
+
+    // Track play/pause events that might be causing state conflicts
+    player.on('play', () => {
+      // Player play event
+    })
+
+    player.on('pause', () => {
+      // Player pause event
+    })
+
+    player.on('playing', () => {
+      // Player playing event
+    })
+
+    player.on('ended', () => {
+      // Player ended event
     })
 
       return () => {
