@@ -35,7 +35,7 @@ describe('useFloatingSearchOverlay', () => {
       trendingSearches: [],
       isLoading: false,
       error: null,
-      fetchTrendingSearches: jest.fn()
+      fetchTrendingSearches: jest.fn().mockResolvedValue(undefined)
     })
   })
 
@@ -81,7 +81,7 @@ describe('useFloatingSearchOverlay', () => {
   })
 
   it('requests trending searches when the overlay opens', async () => {
-    const fetchTrendingSearches = jest.fn()
+    const fetchTrendingSearches = jest.fn().mockResolvedValue(undefined)
     mockUseTrendingSearches.mockReturnValue({
       trendingSearches: [],
       isLoading: false,
@@ -98,6 +98,25 @@ describe('useFloatingSearchOverlay', () => {
     await waitFor(() => {
       expect(fetchTrendingSearches).toHaveBeenCalled()
     })
+  })
+
+  it('pauses active videos when the overlay opens', async () => {
+    const video = document.createElement('video')
+    const pauseSpy = jest.spyOn(video, 'pause').mockImplementation(() => {})
+    document.body.appendChild(video)
+
+    const { result } = renderHook(() => useFloatingSearchOverlay())
+
+    act(() => {
+      result.current.handleSearchFocus()
+    })
+
+    await waitFor(() => {
+      expect(pauseSpy).toHaveBeenCalled()
+    })
+
+    pauseSpy.mockRestore()
+    document.body.removeChild(video)
   })
 
   it('uses translated fallback searches when trending fails', () => {
