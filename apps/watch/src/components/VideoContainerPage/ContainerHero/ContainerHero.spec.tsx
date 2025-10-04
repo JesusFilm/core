@@ -13,6 +13,7 @@ describe('ContainerHero', () => {
     title: [{ value: 'Collection video title' }],
     children: [1, 2, 3],
     childrenCount: 3,
+    parents: [],
     images: [
       {
         __typename: 'CloudflareImage',

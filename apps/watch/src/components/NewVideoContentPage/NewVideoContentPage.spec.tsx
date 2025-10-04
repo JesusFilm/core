@@ -2,6 +2,7 @@ import { MockedProvider } from '@apollo/client/testing'
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 
+import { VideoContentFields } from '../../../__generated__/VideoContentFields'
 import { VideoProvider } from '../../libs/videoContext'
 import { WatchProvider } from '../../libs/watchContext'
 import { videos } from '../Videos/__generated__/testData'
@@ -71,6 +72,28 @@ describe('NewContentPage', () => {
 
     await waitFor(() =>
       expect(screen.getByTestId('DownloadDialog')).toBeInTheDocument()
+    )
+  })
+
+  it('should render related carousel when parent is available', () => {
+    const segment = videos.find(
+      ({ id }) => id === '1_jf6119-0-0'
+    ) as VideoContentFields
+
+    render(
+      <MockedProvider>
+        <VideoProvider value={{ content: segment }}>
+          <WatchProvider initialState={initialWatchState}>
+            <NewVideoContentPage />
+          </WatchProvider>
+        </VideoProvider>
+      </MockedProvider>
+    )
+
+    expect(screen.getByTestId('VideoCarousel')).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: 'JESUS' })).toHaveAttribute(
+      'href',
+      '/watch/jesus/english'
     )
   })
 

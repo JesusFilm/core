@@ -32,6 +32,9 @@ type ApiResponse =
     }
 
 let _redis: Redis | undefined
+let redisUnavailable = false
+let redisErrorLogged = false
+
 function redisClient(): Redis {
   if (_redis == null || process.env.NODE_ENV === 'test') {
     _redis = new Redis({
@@ -40,12 +43,37 @@ function redisClient(): Redis {
         'http://serverless-redis-http:80',
       token: process.env.REDIRECT_STORAGE_KV_REST_API_TOKEN ?? 'example_token'
     })
+    redisUnavailable = false
   }
   return _redis
 }
 
 const CACHE_TTL = 86400 // 1 day in seconds
 export const LANGUAGES_CACHE_SCHEMA_VERSION = `2025-08-29`
+
+interface MemoryCacheEntry {
+  value: LanguageTuple[]
+  expiresAt: number
+}
+
+const inMemoryCache = new Map<string, MemoryCacheEntry>()
+
+function readFromMemoryCache(key: string): LanguageTuple[] | null {
+  const cached = inMemoryCache.get(key)
+  if (cached == null) return null
+  if (cached.expiresAt <= Date.now()) {
+    inMemoryCache.delete(key)
+    return null
+  }
+  return cached.value
+}
+
+function writeToMemoryCache(key: string, value: LanguageTuple[]): void {
+  inMemoryCache.set(key, {
+    value,
+    expiresAt: Date.now() + CACHE_TTL * 1000
+  })
+}
 
 export default async function handler(
   req: NextApiRequest,
@@ -57,16 +85,27 @@ export default async function handler(
     return
   }
 
-  const redis = redisClient()
+  const redis = redisUnavailable ? undefined : redisClient()
   // User's preferred language doesn't match the current path
   // Check if we have cached variant languages for this video
   const cacheKey = `languages:${LANGUAGES_CACHE_SCHEMA_VERSION}`
 
-  let cachedLanguages
-  try {
-    cachedLanguages = await redis.get(cacheKey)
-  } catch (error) {
-    console.error('Redis get error:', error)
+  let cachedLanguages: LanguageTuple[] | null = null
+
+  if (redis != null) {
+    try {
+      cachedLanguages = await redis.get(cacheKey)
+    } catch (error) {
+      redisUnavailable = true
+      if (!redisErrorLogged) {
+        redisErrorLogged = true
+        console.error('Redis get error:', error)
+      }
+    }
+  }
+
+  if (cachedLanguages == null) {
+    cachedLanguages = readFromMemoryCache(cacheKey)
   }
 
   if (cachedLanguages) {
@@ -97,10 +136,20 @@ export default async function handler(
           return [languageIdAndSlug, ...name] as LanguageTuple
         })
         .filter((language): language is LanguageTuple => language != null)
-      try {
-        await redis.setex(cacheKey, CACHE_TTL, languages)
-      } catch (error) {
-        console.error('Redis setex error:', error)
+      if (redisUnavailable === false && redis != null) {
+        try {
+          await redis.setex(cacheKey, CACHE_TTL, languages)
+        } catch (error) {
+          redisUnavailable = true
+          if (!redisErrorLogged) {
+            redisErrorLogged = true
+            console.error('Redis setex error:', error)
+          }
+        }
+      }
+
+      if (redisUnavailable) {
+        writeToMemoryCache(cacheKey, languages)
       }
 
       res.setHeader(
