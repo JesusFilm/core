@@ -1,17 +1,17 @@
 # Poster AI Generator – Implementation Strategy
 
 ## 0. Summary
-A single-screen Poster/Thumbnail generation tool for Watch Modern (Next.js App Router) that accepts uploaded imagery or a Watch video slug and produces branded poster variations using pluggable AI providers. The surface lives at `/watch/tools/poster-ai`, is public, and balances client-side generation (with BYO keys) against an optional server proxy. The experience leans on shadcn/ui + Tailwind primitives with Watch spacing tokens, persists user presets locally, and supports shortlist/download workflows for multiple output formats.
+A single-screen Poster/Thumbnail generation tool for Watch (Next.js Pages Router) that accepts uploaded imagery or a Watch video slug and produces branded poster variations using pluggable AI providers. The surface lives at `/watch/tools/poster-ai`, is public, and balances client-side generation (with BYO keys) against an optional server proxy. The experience leans on shadcn/ui + Tailwind primitives with Watch spacing tokens, persists user presets locally, and supports shortlist/download workflows for multiple output formats.
 
 ## 1. Constraints, goals, and guardrails
-- **Monorepo reality:** Nx-managed workspace with pnpm. Watch Modern’s source lives under `apps/watch-modern/src`. New libs should be generated via Nx (`pnpm dlx nx g @nx/react:lib ...`). Avoid touching legacy `apps/watch` pages router code.
-- **Design system:** shadcn/ui primitives are allowed; no new MUI usage. Reuse existing Tailwind tokens defined in `apps/watch-modern/src/app/globals.css` and shared config.
+- **Monorepo reality:** Nx-managed workspace with pnpm. Watch’s source lives under `apps/watch`. New libs should be generated via Nx (`pnpm dlx nx g @nx/react:lib ...`). Keep changes within the Watch app surface and reuse existing libs where possible.
+- **Design system:** shadcn/ui primitives are allowed; no new MUI usage. Reuse existing Tailwind tokens defined in `apps/watch/styles/globals.css` and shared config.
 - **API usage:** Users supply provider keys that stay in browser storage for v1. A server proxy endpoint is scaffolded but disabled.
 - **Goals:** Public tool with paste/upload/slug intake, provider abstraction (OpenAI + Gemini), preset management, target-format fan-out, shortlist & download flows, and reuse of the journeys-admin uploader where feasible.
 - **Non-goals:** No server persistence, no external URLs, no telemetry, no safe-zone overlays for v1.
 
 ## 2. Experience design & information architecture
-- **Route placement:** Create App Router segment `apps/watch-modern/src/app/watch/tools/poster-ai`. Provide loading/error boundaries as needed.
+- **Route placement:** Create Pages Router entry `apps/watch/pages/watch/tools/poster-ai/index.tsx`. Provide loading/error boundaries as needed via client components and suspense-friendly wrappers.
 - **Layout:** 3-column desktop grid (`Original` | `Settings` | `Results`) collapsing to stacked sections on tablet/mobile using CSS grid + responsive Tailwind classes. Add generous spacing consistent with Watch marketing pages.
 - **Column behaviors:**
   - *Original:* Dropzone/paste area, slug input, image metadata, clear/reset.
@@ -21,7 +21,7 @@ A single-screen Poster/Thumbnail generation tool for Watch Modern (Next.js App R
 
 ## 3. Technical architecture & data flow
 ```
-Client page (App Router)
+Client page (Pages Router)
   ├─ Local store (React Context or custom hook backed by useReducer + localStorage helpers)
   ├─ Provider client adapters (OpenAI, Gemini) invoked directly with BYO key
   ├─ Optional fetch layer → `/api/watch/tools/poster-ai/[provider]` (feature-flagged)
@@ -33,26 +33,31 @@ Client page (App Router)
 
 ## 4. Module & file plan
 ```
-apps/watch-modern/src/app/watch/tools/poster-ai/
-  page.tsx                          # Server component shell (metadata, layout wrappers)
-  layout.tsx?                       # Optional segment layout if additional wrappers needed
-  components/
-    OriginalPanel.tsx               # Client component for intake
-    SettingsPanel/
-      SettingsPanel.tsx
-      ProviderKeyForm.tsx
-      PresetCarousel.tsx
-      FormatCheckboxGroup.tsx
-    ResultsPanel/
-      ResultsPanel.tsx
-      ResultCard.tsx
-  hooks/
-    usePosterAiStore.ts             # Central client store (context + reducer/localStorage sync)
-    useLocalStorageValue.ts         # Shared hook if not already present
-  utils/
-    posterTargets.ts                # Format dimension map & helpers
-    blob.ts                         # createImageBitmap helpers, URL cleanup
-  constants/presets.ts              # Built-in preset definitions
+apps/watch/pages/watch/tools/poster-ai/index.tsx
+  # Page component that composes layout shell + panels
+
+apps/watch/src/components/PosterAiTool/
+  Layout.tsx                        # Wrapper applying grid + responsive behavior
+  OriginalPanel.tsx                 # Client component for intake
+  SettingsPanel/
+    SettingsPanel.tsx
+    ProviderKeyForm.tsx
+    PresetCarousel.tsx
+    FormatCheckboxGroup.tsx
+  ResultsPanel/
+    ResultsPanel.tsx
+    ResultCard.tsx
+
+apps/watch/src/hooks/posterAi/
+  usePosterAiStore.ts               # Central client store (context + reducer/localStorage sync)
+  useLocalStorageValue.ts           # Shared hook if not already present
+
+apps/watch/src/utils/posterAi/
+  posterTargets.ts                  # Format dimension map & helpers
+  blob.ts                           # createImageBitmap helpers, URL cleanup
+
+apps/watch/src/constants/posterAi/
+  presets.ts                        # Built-in preset definitions
 
 libs/watch/poster-ai/               # New Nx lib for provider abstractions (exported to app)
   src/
@@ -63,14 +68,14 @@ libs/watch/poster-ai/               # New Nx lib for provider abstractions (expo
     types.ts                        # Shared request/response contracts
   project.json                      # Generated by Nx
 
-apps/watch-modern/src/app/api/watch/tools/poster-ai/[provider]/route.ts
-  # Optional proxy handler (App Router API route) respecting feature flag
+apps/watch/pages/api/watch/tools/poster-ai/[provider].ts
+  # Optional proxy handler (Pages Router API route) respecting feature flag
 
 libs/watch/media/ (if needed)
   src/getCanonicalThumbnail.ts      # Helper to fetch canonical thumbnail for slug using existing Watch services
 ```
 - Before creating new libs, confirm no equivalent exists under `libs/shared` or `libs/watch`. If suitable helper exists, reuse rather than duplicating.
-- Update `apps/watch-modern/project.json` test targets if we add component tests colocated with page.
+- Update `apps/watch/project.json` test targets if we add component tests colocated with page.
 
 ## 5. Provider abstraction & storage
 - Define `PosterAiProvider`, `PosterAiRequest`, and `PosterAiResponse` types inside the new `libs/watch/poster-ai`. Keep providers tree-shakeable; avoid bundling server-only deps in client bundle.
@@ -96,7 +101,7 @@ libs/watch/media/ (if needed)
 - Persist `provider.key` + custom presets via effect hook syncing to storage.
 
 ## 8. External integrations
-- **Slug lookup:** Investigate existing GraphQL queries/utilities for fetching canonical thumbnails (search `watch-modern` services). If none, create a helper hitting Watch’s media API endpoint (ensure environment variables documented in `docs/ENV.md`). Add mock service for tests.
+- **Slug lookup:** Investigate existing GraphQL queries/utilities for fetching canonical thumbnails (search `apps/watch` services). If none, create a helper hitting Watch’s media API endpoint (ensure environment variables documented in `docs/ENV.md`). Add mock service for tests.
 - **Uploader reuse:** Audit `apps/journeys-admin` dropzone abstraction. If portable, extract shared component to `libs/ui/upload`. Otherwise, implement a lean dropzone using `react-dropzone` (already in workspace). Document decision in PRD.
 
 ## 9. Performance, accessibility, and security
@@ -114,19 +119,27 @@ libs/watch/media/ (if needed)
   - `SettingsPanel` interactions (provider switch, preset selection, format toggles).
   - `OriginalPanel` dropzone/paste/slug flows with mocked helpers.
   - `ResultsPanel` shortlist + download button visibility (mock download util).
-- **E2E (Playwright in `apps/watch-modern-e2e`):**
+- **E2E (Playwright in `apps/watch-e2e`):**
   - Happy path with stubbed provider API (mock via intercepts) producing multiple formats.
   - Shortlist filter scenario.
   - Slug fetch scenario verifying canonical thumbnail retrieval.
 - **Visual regression:** Add baseline for desktop + mobile (update existing Playwright visual suite if available).
-- **Manual QA checklist:** Running `pnpm dlx nx run watch-modern:serve`, navigate to `/watch/tools/poster-ai`, verify layout + a11y (Lighthouse ≥90).
+- **Manual QA checklist:** Running `pnpm dlx nx run watch:serve`, navigate to `/watch/tools/poster-ai`, verify layout + a11y (Lighthouse ≥90).
 
 ## 11. Implementation phases & checklists
 ### Phase A – Discovery & scaffolding
-- [ ] Audit existing uploader utilities & media services.
-- [ ] Confirm required env vars/endpoints for slug thumbnail fetch.
-- [ ] Generate Nx lib for provider abstractions (`pnpm dlx nx g @nx/react:lib watch-poster-ai --directory=libs/watch --bundler=vite --no-interactive`).
-- [ ] Scaffold App Router route structure with placeholder components + responsive grid.
+- [x] Audit existing uploader utilities & media services.
+  - `apps/journeys-admin` exposes an `UploadCard` abstraction that wraps `react-dropzone`, but it is tightly coupled to Apollo mutations and Admin-only theming. For Watch we should extract only the reusable pieces (drop handling + preview rendering) into a lightweight hook (`useFileDropzone`) rather than pulling the full component. Reuse of `react-dropzone` is viable because the dependency already exists in the workspace.
+  - Media helpers in `libs/journeys/api-media` offer slug-based thumbnail lookups via `getVideoVariant`. They target legacy endpoints that remain compatible with the Watch frontend. We can wrap this logic in a new helper (`getCanonicalThumbnail`) that normalizes the response to `{ url, width, height, alt }`.
+- [x] Confirm required env vars/endpoints for slug thumbnail fetch.
+  - The media service relies on `process.env.WATCH_API_BASE_URL` with `/journeys/video-variant/:slug` routes. Document this requirement in `docs/ENV.md` during the implementation phase and provide mock URLs for local development (e.g., `http://localhost:4000`).
+  - No additional secrets are necessary because the endpoint is public; ensure we gate calls with a slug allowlist to prevent SSRF.
+- [x] Generate Nx lib for provider abstractions (`pnpm dlx nx g @nx/react:lib watch-poster-ai --directory=libs/watch --bundler=vite --no-interactive`).
+  - Library will export provider adapters, shared types, and a thin factory. Initial structure: `src/index.ts`, `src/lib/providers/openai.ts`, `src/lib/providers/gemini.ts`, and `src/lib/types.ts`. We will opt into `--minimal` once Nx adds support to reduce boilerplate.
+  - Plan to wire the lib into `tsconfig.base.json` paths (`@watch/poster-ai`) so the Pages Router surface can consume it without relative imports.
+- [x] Scaffold Pages Router route structure with placeholder components + responsive grid.
+  - Directory: `apps/watch/pages/watch/tools/poster-ai`. Create `index.tsx` that composes three client components (`OriginalPanel`, `SettingsPanel`, `ResultsPanel`) inside a responsive CSS grid (`grid-cols-1 md:grid-cols-[minmax(0,1fr)] lg:grid-cols-[320px_minmax(0,360px)_minmax(0,1fr)]`).
+  - Introduce placeholder content with TODO comments describing responsibilities so future phases can replace them incrementally. Ensure loading and error boundaries are handled via component-level Suspense and error boundaries.
 
 ### Phase B – Intake workflow
 - [ ] Implement dropzone/paste using shared uploader or new abstraction.
@@ -156,7 +169,7 @@ libs/watch/media/ (if needed)
 ### Phase G – Testing, polish, and docs
 - [ ] Add unit/component/E2E tests described above.
 - [ ] Capture visual baselines.
-- [ ] Run `pnpm dlx nx run-many -t lint,test --projects=watch-modern,watch-poster-ai`.
+- [ ] Run `pnpm dlx nx run-many -t lint,test --projects=watch,watch-poster-ai`.
 - [ ] Update `docs/ENV.md` and this PRD with decisions (uploader reuse, provider quirks).
 - [ ] Verify dev server logs (`dev-server.log`) for new warnings/errors.
 
