@@ -93,5 +93,9 @@
   "Behind The Scenes": "Perde Arkası",
   "Trailer": "Fragman",
   "Available in {{count}} languages._one": "{{count}} dilinde mevcuttur.",
-  "Available in {{count}} languages._other": "{{count}} dillerinde mevcuttur."
+  "Available in {{count}} languages._other": "{{count}} dillerinde mevcuttur.",
+  "localeSuggestion": {
+    "message": "We noticed your browser prefers {{localeName}}. Would you like to view the site in this language?",
+    "action": "Switch to {{localeName}}"
+  }
 }
