@@ -52,50 +52,32 @@ apps/watch/src/libs/videoContext/videoContext.tsx
 - **Video Pages**: `NewVideoContentPage` → `VideoContentHero` background images
 - **Search Results**: Algolia-powered image display in search components
 
-## Watch App Architecture
 
-### Core Components
-- **WatchHomePage**: Main homepage with hero carousel and sections
-- **NewVideoContentPage**: Video content pages with hero player
-- **VideoContentHero**: Main video player component
-- **VideoCarousel**: Navigation carousels for video discovery
+## Current Image Usage Patterns in Watch App
+1. **Video Posters**: HD aspect ratio images for video thumbnails (VideoCard, VideoCarousel)
+2. **Hero Banners**: Banner aspect ratio images for promotional content (WatchHero)
+3. **Video Backgrounds**: Images used as backgrounds in video content pages
+4. **Search Results**: Images displayed in search overlays and results
+5. **Language Maps**: Images used in geographic language selection interfaces
 
-### Context Providers
-- **WatchProvider**: Language preferences (audio/subtitle languages)
-- **VideoProvider**: Video content data throughout component tree
-- **PlayerProvider**: Video playback state management
+## Current Image Format Usage
 
-### Key Hooks & Utilities
-- `useWatchHeroCarousel`: Hero carousel management with Mux inserts
-- `useVideoChildren`: Apollo GraphQL queries for video variants
-- `useAlgoliaRouter`: Search routing with InstantSearch
-- `getWatchUrl`: URL generation for videos and languages
+### Cloudflare Images Formats
+- **JPG**: Primary format for most variants (`mobileCinematicHigh`, `mobileCinematicLow`, `thumbnail`, `videoStill`)
+- **WebP**: Used for `mobileCinematicVeryLow` variant (50% quality, better compression)
 
-### Video Features
-- Multi-language audio/subtitle support
-- Mux video streaming integration
-- Download functionality with quality options
-- Bible citations and discussion questions
-- Search and discovery via Algolia
+### Image Transformations (Cloudflare)
+**Actively used transformation features:**
+- **Format conversion**: `f=jpg`, `f=webp`
+- **Dynamic resizing**: `w=1280,h=600`, `w=640,h=300`, `w=120,h=68`, `w=1920,h=1080`
+- **Quality optimization**: `q=95` (high), `q=50` (WebP low quality)
+- **Responsive variants**: Different sizes for mobile/desktop consumption
 
-## Technical Stack
-- **Frontend**: Next.js (Pages Router), React, TypeScript
-- **Styling**: Tailwind CSS, shadcn/ui components
-- **Data**: Apollo Client (GraphQL), SWR (REST APIs)
-- **Search**: Algolia InstantSearch
-- **Video**: Mux streaming, Cloudflare Images
-- **State**: React Context, React InstantSearch
-- **I18n**: next-i18next with locale JSON files
-
-## Current Image Usage Patterns
-1. **Video Posters**: HD aspect ratio images for video thumbnails
-2. **Hero Banners**: Banner aspect ratio images for promotional content
-3. **AI-Generated**: Text-to-image for dynamic content creation
-4. **External Sources**: URL-based image imports
-5. **Direct Uploads**: Client-side file uploads
+### External Service Formats
+- **YouTube Thumbnails**: JPG format (standard YouTube thumbnail delivery)
 
 ## Potential Extension Points
-- Support for additional aspect ratios beyond HD/banner
+- Add Support for additional aspect ratios beyond HD/banner
 - WebP/AVIF format optimization for existing images
 - Image variants for different device sizes and breakpoints
 - Progressive loading and lazy loading optimizations
