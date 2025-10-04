@@ -59,28 +59,28 @@ export function VideoCarousel({
   const swiperBreakpoints: SwiperOptions['breakpoints'] = useMemo(
     () => ({
       [breakpoints.values.xs]: {
+        slidesPerGroup: 1,
+        slidesPerView: 1.05
+      },
+      [breakpoints.values.sm]: {
+        slidesPerGroup: 1,
+        slidesPerView: 1.2
+      },
+      [breakpoints.values.md]: {
+        slidesPerGroup: 1,
+        slidesPerView: 1.5
+      },
+      [breakpoints.values.lg]: {
+        slidesPerGroup: 2,
+        slidesPerView: 2.1
+      },
+      [breakpoints.values.xl]: {
         slidesPerGroup: 2,
         slidesPerView: 2.4
       },
-      [breakpoints.values.sm]: {
-        slidesPerGroup: 3,
-        slidesPerView: 3.4
-      },
-      [breakpoints.values.md]: {
-        slidesPerGroup: 4,
-        slidesPerView: 4.4
-      },
-      [breakpoints.values.lg]: {
-        slidesPerGroup: 5,
-        slidesPerView: 5.4
-      },
-      [breakpoints.values.xl]: {
-        slidesPerGroup: 6,
-        slidesPerView: 6.4
-      },
       [breakpoints.values.xxl]: {
-        slidesPerGroup: 7,
-        slidesPerView: 7.4
+        slidesPerGroup: 3,
+        slidesPerView: 2.9
       }
     }),
     [breakpoints.values]
@@ -92,9 +92,9 @@ export function VideoCarousel({
         <SwiperSlide
           key={`skeleton-${i}`}
           virtualIndex={i}
-          className="max-w-[200px]"
+          className="max-w-[520px]"
         >
-          <Skeleton width={200} height={240} />
+          <Skeleton width={520} height={180} />
         </SwiperSlide>
       )),
     []
@@ -182,8 +182,8 @@ export function VideoCarousel({
         mousewheel={{ forceToAxis: true }}
         grabCursor
         slidesPerView="auto"
-        spaceBetween={20}
-        slidesOffsetAfter={40}
+        spaceBetween={28}
+        slidesOffsetAfter={64}
         navigation={{
           nextEl: nextRef.current,
           prevEl: prevRef.current
@@ -211,7 +211,7 @@ export function VideoCarousel({
                       : `video-${slide.id}`
                   }
                   virtualIndex={index}
-                  className={`max-w-[200px] ${index === 0 ? 'padded-l' : ''}`}
+                  className={`max-w-[520px] ${index === 0 ? 'padded-l' : ''}`}
                   data-testid={`CarouselSlide-${slide.id}`}
                 >
                   <VideoCard

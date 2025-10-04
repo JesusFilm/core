@@ -59,7 +59,7 @@ describe('VideoCard', () => {
     render(<VideoCard data={mockVideoData} active={true} />)
 
     const activeLayer = screen.getByTestId('ActiveLayer')
-    expect(activeLayer).toHaveClass('shadow-[inset_0_0_0_4px_#fff]')
+    expect(activeLayer).toHaveClass('opacity-100')
   })
 
   it('shows progress overlay when active and progress > 5', () => {
@@ -105,6 +105,6 @@ describe('VideoCard', () => {
     fireEvent.mouseEnter(cardContent)
 
     const playButton = screen.getByTestId('ActiveLayer')
-    expect(playButton).toHaveClass('shadow-[inset_0_0_0_4px_#fff]')
+    expect(playButton).toHaveClass('opacity-100')
   })
 })
