@@ -156,87 +156,8 @@ export function VideoTitle({
             </p>
           )}
         </div>
-
-      {isPreview && !isMuxInsert && !(mute || volume === 0) && (
-        <NextLink
-          href={action?.url || watchNowHref}
-          scroll={false}
-          locale={false}
-          id={action ? "mux-action-button" : "watch-now-button"}
-          className={clsx(
-            "inline-flex z-1 items-center justify-center gap-2 px-5 py-3 flex-shrink-0",
-            "bg-[#CB333B] text-lg font-medium text-stone-100",
-            "rounded-full shadow-md transition-colors duration-200",
-            "hover:bg-[#A4343A] font-sans cursor-pointer no-underline",
-            "animate-fade-in-up animation-delay-500",
-
-          )}
-        >
-          <PlayArrowRounded fontSize="medium" className="-ml-1" />
-          {action?.label || t('Watch')}
-        </NextLink>
       )}
 
-      {/* Unmuted version */}
-      {!(mute || volume === 0) && (
-        <div className="flex flex-col flex-1">
-          {videoLabel && (
-            <div
-              className={`
-                uppercase tracking-widest text-[#FF9E00] font-sans font-bold animate-fade-in-up animation-delay-100
-                ${isMuxInsert ? 'text-lg' : 'text-sm'}
-              `}
-            >
-              {videoLabel}
-            </div>
-          )}
-          <h2
-            className="font-bold text-stone-50 text-shadow-xs mb-0 font-sans animate-fade-in-up animation-delay-200 text-xl md:text-xl lg:text-2xl xl:text-2xl"
-          >
-            {videoTitle.replace(/^\d+\.\s*/, '')}
-          </h2>
-          {collectionTitle && isPreview && (
-            <div className="inverted-effect text-black font-sans font-medium opacity-80 mt-2 animate-fade-in-up animation-delay-300 text-shadow-xs text-sm">
-              {collectionTitle}
-            </div>
-          )}
-        </div>
-      )}
-
-      {/* Muted version */}
-      {(mute || volume === 0) && (
-        <div className="flex flex-col gap-1">
-          {videoLabel && (
-            <div
-              className={`
-                uppercase tracking-widest text-[#FF9E00] font-sans font-bold mb-0 animate-fade-in-up animation-delay-100
-                ${isMuxInsert ? 'text-lg' : 'text-md'}
-              `}
-            >
-              {videoLabel}
-            </div>
-          )}
-          <h2 className="font-bold text-stone-50 text-shadow-xs mb-0 font-sans animate-fade-in-up animation-delay-200 text-3xl md:text-4xl lg:text-5xl xl:text-6xl">
-            {videoTitle.replace(/^\d+\.\s*/, '')}
-          </h2>
-          {collectionTitle && isPreview && (
-            <div className="inverted-effect text-black font-sans font-medium opacity-80 mt-2 animate-fade-in-up animation-delay-300 text-shadow-xs text-xl md:text-2xl">
-              {collectionTitle}
-            </div>
-          )}
-          {videoDescription && isPreview && (
-            <p
-              className={`
-                text-stone-300
-                ${isMuxInsert ? 'text-3xl leading-snug' : 'text-md leading-relaxed'}
-                font-sans max-w-3xl mb-2 animate-fade-in-up animation-delay-400 line-clamp-3 text-shadow-xs
-              `}
-            >
-              {videoDescription}
-            </p>
-          )}
-        </div>
-      )}
       {showButton && show && !isPreview && (
         <button
           id="play-button-lg"
@@ -272,22 +193,7 @@ export function VideoTitle({
           {action?.label || t('Watch Now')}
         </NextLink>
       )}
-      {isPreview && !isMuxInsert && (
-        <NextLink
-          href={watchNowHref}
-          scroll={false}
-          locale={false}
-          id="watch-now-button"
-          className="inline-flex z-1 items-center justify-center gap-2 px-6 py-3
-            bg-[#CB333B] text-lg font-medium text-stone-100
-            rounded-full shadow-md transition-colors duration-200
-            hover:bg-[#A4343A] font-sans cursor-pointer self-start no-underline
-            animate-fade-in-up animation-delay-500"
-        >
-          <PlayArrowRounded fontSize="medium" className="-ml-1" />
-          {action?.label || t('Watch Now')}
-        </NextLink>
-      )}
+      
       {isPreview && (onMuteToggle != null || onSkip != null) && (
         <div className="absolute z-0 bottom-7 right-0 flex items-center gap-2 scale-150">
           {onSkip != null && (

@@ -422,7 +422,7 @@ export function HeroVideo({
     variant,
     mute,
     subtitleUpdate,
-    playerReady
+    playerReady,
     subtitleUpdate,
     playerReady
   ])
