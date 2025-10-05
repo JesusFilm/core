@@ -6,7 +6,10 @@ import { useState } from 'react'
 
 import { processContactsCsv } from './utils/processContactsCsv/processContactsCsv'
 
-const ACCEPTED_EVENT_TYPES = ['RadioQuestionSubmissionEvent', 'TextResponseSubmissionEvent']
+const ACCEPTED_EVENT_TYPES = [
+  'RadioQuestionSubmissionEvent',
+  'TextResponseSubmissionEvent'
+]
 
 export const GET_JOURNEY_CONTACTS = gql`
   query GetJourneyContacts(
@@ -114,9 +117,7 @@ export function useJourneyContactsExport(): {
 
       if (error) {
         console.error('GraphQL error:', error)
-        throw new Error(
-          t('GraphQL error: {{error}}', { error: error.message })
-        )
+        throw new Error(t('GraphQL error: {{error}}', { error: error.message }))
       }
 
       if (data?.journeyEventsConnection == null) {
@@ -136,7 +137,13 @@ export function useJourneyContactsExport(): {
   function processEdges(
     edges: JourneyEventEdge[],
     contactMap: Map<string, JourneyContact>,
-    responseFieldMap: Map<string, Map<string, { value: string; createdAt: string; blockId?: string; label: string }>>
+    responseFieldMap: Map<
+      string,
+      Map<
+        string,
+        { value: string; createdAt: string; blockId?: string; label: string }
+      >
+    >
   ): void {
     edges.forEach((edge) => {
       const node = edge.node
@@ -166,20 +173,30 @@ export function useJourneyContactsExport(): {
       }
 
       // Collect response field data
-      if (ACCEPTED_EVENT_TYPES.includes(node.typename) && node.label && node.value) {
+      if (
+        ACCEPTED_EVENT_TYPES.includes(node.typename) &&
+        node.label &&
+        node.value
+      ) {
         if (!responseFieldMap.has(visitorId)) {
           responseFieldMap.set(visitorId, new Map())
         }
-        
+
         const userResponses = responseFieldMap.get(visitorId)!
         // Use blockId + label as the key to handle multiple fields with same label
         const fieldKey = `${node.blockId || 'no-block'}-${node.label}`
         const existingResponse = userResponses.get(fieldKey)
-        
+
         // Keep the latest response for each field (by blockId + label)
-        if (!existingResponse || new Date(node.createdAt) > new Date(existingResponse.createdAt)) {
+        if (
+          !existingResponse ||
+          new Date(node.createdAt) > new Date(existingResponse.createdAt)
+        ) {
           userResponses.set(fieldKey, {
-            value: typeof node.value === 'string' ? node.value : JSON.stringify(node.value),
+            value:
+              typeof node.value === 'string'
+                ? node.value
+                : JSON.stringify(node.value),
             createdAt: node.createdAt,
             blockId: node.blockId ?? undefined,
             label: node.label
@@ -194,7 +211,6 @@ export function useJourneyContactsExport(): {
     filter,
     contactDataFields
   }: ExportJourneyContactsParams): Promise<void> {
-
     console.log('contactDataFields', contactDataFields)
 
     const filterArg = {
@@ -213,8 +229,14 @@ export function useJourneyContactsExport(): {
 
       // Extract unique contacts from events, separating contact data from response fields
       const contactMap = new Map<string, JourneyContact>()
-      const responseFieldMap = new Map<string, Map<string, { value: string; createdAt: string; blockId?: string; label: string }>>()
-      
+      const responseFieldMap = new Map<
+        string,
+        Map<
+          string,
+          { value: string; createdAt: string; blockId?: string; label: string }
+        >
+      >()
+
       // Process events incrementally instead of loading all into memory
       for await (const edges of fetchEventsPaginated(journeyId, filterArg)) {
         processEdges(edges, contactMap, responseFieldMap)

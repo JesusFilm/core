@@ -93,7 +93,12 @@ describe('ContactDataForm', () => {
     render(<ContactDataForm setContactData={mockSetContactData} />)
 
     // Initially all fields should be selected by default
-    expect(mockSetContactData).toHaveBeenCalledWith(['name', 'email', 'phone', 'responseFields'])
+    expect(mockSetContactData).toHaveBeenCalledWith([
+      'name',
+      'email',
+      'phone',
+      'responseFields'
+    ])
 
     // Uncheck Visitor Responses
     fireEvent.click(screen.getByLabelText('Visitor Responses'))

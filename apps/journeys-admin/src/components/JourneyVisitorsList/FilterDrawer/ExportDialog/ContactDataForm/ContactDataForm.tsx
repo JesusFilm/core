@@ -47,7 +47,10 @@ export function ContactDataForm({
 
   useEffect(() => {
     const allSelected =
-      contactDataState.name && contactDataState.email && contactDataState.phone && contactDataState.responseFields
+      contactDataState.name &&
+      contactDataState.email &&
+      contactDataState.phone &&
+      contactDataState.responseFields
     setSelectAll(allSelected)
 
     const selectedFields: string[] = []
@@ -92,7 +95,10 @@ export function ContactDataForm({
         <CheckboxOption
           checked={contactDataState.responseFields}
           onChange={(checked) =>
-            setContactDataState((prev) => ({ ...prev, responseFields: checked }))
+            setContactDataState((prev) => ({
+              ...prev,
+              responseFields: checked
+            }))
           }
           label={t('Visitor Responses')}
         />

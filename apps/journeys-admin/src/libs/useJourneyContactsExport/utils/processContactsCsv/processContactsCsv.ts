@@ -2,7 +2,10 @@ import { stringify } from 'csv-stringify/sync'
 import { format } from 'date-fns'
 import { TFunction } from 'i18next'
 
-import { FlattenedContact, JourneyContact } from '../../useJourneyContactsExport'
+import {
+  FlattenedContact,
+  JourneyContact
+} from '../../useJourneyContactsExport'
 
 const FIELD_MAP: Record<string, keyof JourneyContact> = {
   name: 'visitorName',
@@ -30,7 +33,8 @@ export function getContactsCsvOptions(
   // Add response field columns if responseFields is selected
   if (contactDataFields.includes('responseFields')) {
     responseFieldKeys.forEach((fieldKey) => {
-      const label = responseFieldLabels.get(fieldKey) || fieldKey.split('-', 2)[1]
+      const label =
+        responseFieldLabels.get(fieldKey) || fieldKey.split('-', 2)[1]
       filteredColumns.push({
         key: `responseFields.${fieldKey}`,
         header: label
@@ -50,16 +54,15 @@ export function processContactsCsv(
   t: TFunction,
   contactDataFields: string[]
 ): void {
-
   if (contacts.length === 0) {
-      console.error('No valid contacts found for export')
+    console.error('No valid contacts found for export')
     throw new Error(t('No contacts found with data for the selected fields'))
   }
 
   // Collect unique response field keys and labels directly from contacts
   const responseFieldKeys = new Set<string>()
   const responseFieldLabels = new Map<string, string>()
-  
+
   if (contactDataFields.includes('responseFields')) {
     contacts.forEach((contact) => {
       if (contact.responseFields && contact.responseFieldLabels) {
@@ -85,9 +88,13 @@ export function processContactsCsv(
     }
 
     // Add response fields as individual properties
-    if (contactDataFields.includes('responseFields') && contact.responseFields) {
+    if (
+      contactDataFields.includes('responseFields') &&
+      contact.responseFields
+    ) {
       arrayResponseFieldKeys.forEach((fieldKey) => {
-        flattened[`responseFields.${fieldKey}`] = contact.responseFields![fieldKey] || ''
+        flattened[`responseFields.${fieldKey}`] =
+          contact.responseFields![fieldKey] || ''
       })
     }
 
@@ -96,7 +103,12 @@ export function processContactsCsv(
 
   const csv = stringify(
     flattenedContacts,
-    getContactsCsvOptions(t, contactDataFields, arrayResponseFieldKeys, responseFieldLabels)
+    getContactsCsvOptions(
+      t,
+      contactDataFields,
+      arrayResponseFieldKeys,
+      responseFieldLabels
+    )
   )
   const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' })
   const url = window.URL.createObjectURL(blob)
