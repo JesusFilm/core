@@ -1,14 +1,8 @@
 import { format } from 'date-fns'
 
-import { JourneyContact } from '../../useJourneyContactsExport'
-
-import { getContactsCsvOptions, processContactsCsv } from './processContactsCsv'
+import { downloadCsv } from '.'
 
 // Mock dependencies
-jest.mock('csv-stringify/sync', () => ({
-  stringify: jest.fn(() => 'csv,content\nJohn,john@example.com\n')
-}))
-
 jest.mock('date-fns', () => ({
   format: jest.fn(() => '2023-01-01')
 }))
@@ -45,31 +39,8 @@ Object.defineProperty(window, 'URL', {
   writable: true
 })
 
-describe('processContactsCsv', () => {
-  const mockT = jest.fn((key: string) => key) as jest.MockedFunction<any>
-  const mockContacts: JourneyContact[] = [
-    {
-      visitorId: 'visitor1',
-      visitorName: 'John Doe',
-      visitorEmail: 'john@example.com',
-      visitorPhone: '+1234567890'
-    },
-    {
-      visitorId: 'visitor2',
-      visitorName: 'Jane Smith',
-      visitorEmail: 'jane@example.com',
-      visitorPhone: null
-    },
-    {
-      visitorId: 'visitor3',
-      visitorName: null,
-      visitorEmail: 'bob@example.com',
-      visitorPhone: '+9876543210'
-    }
-  ]
-
+describe('downloadCsv', () => {
   const mockLinkElement = {
-    target: '',
     href: '',
     setAttribute: mockSetAttribute,
     click: mockClick
@@ -78,132 +49,83 @@ describe('processContactsCsv', () => {
   beforeEach(() => {
     jest.clearAllMocks()
     mockCreateElement.mockReturnValue(mockLinkElement)
-    mockT.mockImplementation((key: string) => key)
   })
 
-  describe('getContactsCsvOptions', () => {
-    it('should return all columns when all contact data fields are selected', () => {
-      const contactDataFields = ['name', 'email', 'phone']
-      const result = getContactsCsvOptions(mockT, contactDataFields)
+  it('should create and download CSV file with default filename', () => {
+    const csvContent = 'Name,Email\nJohn Doe,john@example.com'
 
-      expect(result).toEqual({
-        header: true,
-        columns: [
-          { key: 'visitorName', header: 'Name' },
-          { key: 'visitorEmail', header: 'Email' },
-          { key: 'visitorPhone', header: 'Phone' }
-        ]
-      })
-    })
+    downloadCsv(csvContent)
 
-    it('should return only selected columns when partial contact data fields are selected', () => {
-      const contactDataFields = ['name', 'email']
-      const result = getContactsCsvOptions(mockT, contactDataFields)
-
-      expect(result).toEqual({
-        header: true,
-        columns: [
-          { key: 'visitorName', header: 'Name' },
-          { key: 'visitorEmail', header: 'Email' }
-        ]
-      })
-    })
-
-    it('should return single column when only one contact data field is selected', () => {
-      const contactDataFields = ['phone']
-      const result = getContactsCsvOptions(mockT, contactDataFields)
-
-      expect(result).toEqual({
-        header: true,
-        columns: [{ key: 'visitorPhone', header: 'Phone' }]
-      })
-    })
+    expect(mockCreateObjectURL).toHaveBeenCalledWith(expect.any(Blob))
+    expect(mockCreateElement).toHaveBeenCalledWith('a')
+    expect(mockSetAttribute).toHaveBeenCalledWith(
+      'download',
+      '[2023-01-01] data.csv'
+    )
+    expect(mockAppendChild).toHaveBeenCalledWith(mockLinkElement)
+    expect(mockClick).toHaveBeenCalled()
+    expect(mockRemoveChild).toHaveBeenCalledWith(mockLinkElement)
+    expect(mockRevokeObjectURL).toHaveBeenCalledWith('blob:url')
   })
 
-  describe('processContactsCsv', () => {
-    it('should process and download CSV with all contact data fields', () => {
-      const contactDataFields = ['name', 'email', 'phone']
-      const journeySlug = 'test-journey'
+  it('should create and download CSV file with custom filename', () => {
+    const csvContent = 'Name,Email\nJohn Doe,john@example.com'
+    const customFilename = 'custom-export'
 
-      processContactsCsv(mockContacts, journeySlug, mockT, contactDataFields)
+    downloadCsv(csvContent, customFilename)
 
-      expect(mockCreateElement).toHaveBeenCalledWith('a')
-      expect(mockSetAttribute).toHaveBeenCalledWith(
-        'download',
-        '[2023-01-01] test-journey_contacts.csv'
-      )
-      expect(mockAppendChild).toHaveBeenCalledWith(mockLinkElement)
-      expect(mockClick).toHaveBeenCalled()
-      expect(mockRemoveChild).toHaveBeenCalledWith(mockLinkElement)
-      expect(mockRevokeObjectURL).toHaveBeenCalledWith('blob:url')
-    })
+    expect(mockSetAttribute).toHaveBeenCalledWith(
+      'download',
+      '[2023-01-01] custom-export.csv'
+    )
+  })
 
-    it('should filter contacts based on selected fields', () => {
-      const contactDataFields = ['name', 'email']
-      const journeySlug = 'test-journey'
+  it('should create blob with correct content type', () => {
+    const csvContent = 'Name,Email\nJohn Doe,john@example.com'
 
-      processContactsCsv(mockContacts, journeySlug, mockT, contactDataFields)
+    downloadCsv(csvContent)
 
-      expect(mockCreateElement).toHaveBeenCalledWith('a')
-      expect(mockClick).toHaveBeenCalled()
-    })
+    expect(mockCreateObjectURL).toHaveBeenCalledWith(
+      expect.objectContaining({
+        type: 'text/csv;charset=utf-8;'
+      })
+    )
+  })
 
-    it('should throw error when no contacts have valid data for selected fields', () => {
-      const emptyContacts: JourneyContact[] = [
-        {
-          visitorId: 'visitor1',
-          visitorName: null,
-          visitorEmail: null,
-          visitorPhone: null
-        }
-      ]
-      const contactDataFields = ['name', 'email', 'phone']
-      const journeySlug = 'test-journey'
+  it('should set link href to blob URL', () => {
+    const csvContent = 'Name,Email\nJohn Doe,john@example.com'
 
-      expect(() => {
-        processContactsCsv(emptyContacts, journeySlug, mockT, contactDataFields)
-      }).toThrow('No contacts found with data for the selected fields')
-    })
+    downloadCsv(csvContent)
 
-    it('should handle contacts with partial data correctly', () => {
-      const partialContacts: JourneyContact[] = [
-        {
-          visitorId: 'visitor1',
-          visitorName: 'John Doe',
-          visitorEmail: null,
-          visitorPhone: null
-        }
-      ]
-      const contactDataFields = ['name']
-      const journeySlug = 'test-journey'
+    expect(mockLinkElement.href).toBe('blob:url')
+  })
 
-      processContactsCsv(partialContacts, journeySlug, mockT, contactDataFields)
+  it('should format current date correctly', () => {
+    const csvContent = 'Name,Email\nJohn Doe,john@example.com'
 
-      expect(mockCreateElement).toHaveBeenCalledWith('a')
-      expect(mockClick).toHaveBeenCalled()
-    })
+    downloadCsv(csvContent)
 
-    it('should create correct filename with current date', () => {
-      const contactDataFields = ['name']
-      const journeySlug = 'my-test-journey'
+    expect(format).toHaveBeenCalledWith(expect.any(Date), 'yyyy-MM-dd')
+  })
 
-      processContactsCsv(mockContacts, journeySlug, mockT, contactDataFields)
+  it('should handle empty CSV content', () => {
+    const csvContent = ''
 
-      expect(format).toHaveBeenCalledWith(expect.any(Date), 'yyyy-MM-dd')
-      expect(mockSetAttribute).toHaveBeenCalledWith(
-        'download',
-        '[2023-01-01] my-test-journey_contacts.csv'
-      )
-    })
+    downloadCsv(csvContent)
 
-    it('should set link attributes correctly', () => {
-      const contactDataFields = ['name']
-      const journeySlug = 'test-journey'
+    expect(mockCreateObjectURL).toHaveBeenCalledWith(expect.any(Blob))
+    expect(mockClick).toHaveBeenCalled()
+  })
 
-      processContactsCsv(mockContacts, journeySlug, mockT, contactDataFields)
+  it('should handle special characters in filename', () => {
+    const csvContent = 'Name,Email\nJohn Doe,john@example.com'
+    const filenameWithSpecialChars = 'test/file-name'
 
-      expect(mockLinkElement.target).toBe('_blank')
-      expect(mockLinkElement.href).toBe('blob:url')
-    })
+    downloadCsv(csvContent, filenameWithSpecialChars)
+
+    expect(mockSetAttribute).toHaveBeenCalledWith(
+      'download',
+      '[2023-01-01] test/file-name.csv'
+    )
   })
 })
