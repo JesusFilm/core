@@ -1,0 +1,60 @@
+@import 'tailwindcss';
+
+@theme {
+  --font-sans: 'Montserrat', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji',
+    'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+
+  --color-background: var(--color-stone-900);
+  --color-foreground: var(--color-stone-50);
+  --color-card: var(--color-stone-900);
+  --color-card-foreground: var(--color-stone-50);
+  --color-popover: var(--color-stone-900);
+  --color-popover-foreground: var(--color-stone-50);
+  --color-primary: #cb333b;
+  --color-primary-foreground: var(--color-red-50);
+  --color-secondary: var(--color-stone-700);
+  --color-secondary-foreground: var(--color-stone-50);
+  --color-muted: hsl(0 0% 100% / 0.08);
+  --color-muted-foreground: var(--color-stone-400);
+  --color-accent: #cb333b;
+  --color-accent-foreground: var(--color-stone-50);
+  --color-destructive: var(--color-red-600);
+  --color-destructive-foreground: var(--color-red-50);
+  --color-border: var(--color-stone-800);
+  --color-input: var(--color-stone-800);
+  --color-ring: var(--color-primary);
+
+  --radius-xs: 0.375rem;
+  --radius-sm: 0.5rem;
+  --radius-md: 0.75rem;
+  --radius-lg: 1rem;
+  --radius: var(--radius-md);
+}
+
+@layer base {
+  *,
+  ::before,
+  ::after {
+    border-color: var(--color-border);
+  }
+
+  html {
+    font-family: var(--font-sans);
+  }
+
+  body {
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+    font-family: var(--font-sans);
+    color-scheme: dark;
+  }
+}
+
+@layer components {
+  .inverted-effect {
+    position: relative;
+    filter: invert(1) brightness(1);
+    mix-blend-mode: exclusion;
+    isolation: isolate;
+  }
+}
