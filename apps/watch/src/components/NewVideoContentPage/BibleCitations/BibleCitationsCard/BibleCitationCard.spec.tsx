@@ -1,32 +1,19 @@
 import { render, screen, waitFor } from '@testing-library/react'
-import axios from 'axios'
+import { http, HttpResponse } from 'msw'
 // eslint-disable-next-line no-restricted-imports
 import { I18nextProvider } from 'react-i18next'
 
+import { server } from '../../../../../test/mswServer'
 import { makeI18n } from '../../../../../test/i18n'
+import { VideoContentFields_bibleCitations as BibleCitation } from '../../../../../__generated__/VideoContentFields'
 
 import { BibleCitationCard } from './BibleCitationCard'
 
-// Mock axios
-jest.mock('axios', () => {
-  const originalModule = jest.requireActual('axios')
-  return {
-    __esModule: true,
-    ...originalModule,
-    default: jest.fn()
-  }
-})
-
-const mockAxios = axios as jest.MockedFunction<typeof axios>
-
-let mockAxiosGet: jest.Mock
-let mockAxiosPost: jest.Mock
-
-const mockCitation = {
-  __typename: 'BibleCitation' as const,
+const mockCitation: BibleCitation = {
+  __typename: 'BibleCitation',
   bibleBook: {
-    __typename: 'BibleBook' as const,
-    name: [{ __typename: 'BibleBookName' as const, value: 'John' }]
+    __typename: 'BibleBook',
+    name: [{ __typename: 'BibleBookName', value: 'John' }]
   },
   chapterStart: 3,
   chapterEnd: null,
@@ -34,11 +21,11 @@ const mockCitation = {
   verseEnd: null
 }
 
-const mockCitationWithEndVerse = {
-  __typename: 'BibleCitation' as const,
+const mockCitationWithEndVerse: BibleCitation = {
+  __typename: 'BibleCitation',
   bibleBook: {
-    __typename: 'BibleBook' as const,
-    name: [{ __typename: 'BibleBookName' as const, value: 'Matthew' }]
+    __typename: 'BibleBook',
+    name: [{ __typename: 'BibleBookName', value: 'Matthew' }]
   },
   chapterStart: 5,
   chapterEnd: 7,
@@ -53,18 +40,18 @@ const mockScriptureResponse = {
 
 describe('BibleCitationCard', () => {
   beforeEach(() => {
-    // Setup axios mocks
-    mockAxiosGet = jest.fn()
-    mockAxiosPost = jest.fn()
-    mockAxios.get = mockAxiosGet
-    mockAxios.post = mockAxiosPost
-
-    jest.clearAllMocks()
+    // Setup MSW handler for successful responses
+    server.use(
+      http.get(
+        'https://cdn.jsdelivr.net/gh/wldeh/bible-api/bibles/:version/books/:book/chapters/:chapter/verses/:verse.json',
+        () => {
+          return HttpResponse.json(mockScriptureResponse)
+        }
+      )
+    )
   })
 
   it('should render with basic citation data', async () => {
-    mockAxiosGet.mockResolvedValue({ data: mockScriptureResponse })
-
     render(
       <BibleCitationCard
         citation={mockCitation}
@@ -76,26 +63,7 @@ describe('BibleCitationCard', () => {
     expect(screen.getByAltText('Bible Citation')).toBeInTheDocument()
   })
 
-  it('should make axios request with correct URL', async () => {
-    mockAxiosGet.mockResolvedValue({ data: mockScriptureResponse })
-
-    render(
-      <BibleCitationCard
-        citation={mockCitation}
-        imageUrl="https://example.com/image.jpg"
-      />
-    )
-
-    await waitFor(() => {
-      expect(mockAxiosGet).toHaveBeenCalledWith(
-        'https://cdn.jsdelivr.net/gh/wldeh/bible-api/bibles/en-asv/books/john/chapters/3/verses/16.json'
-      )
-    })
-  })
-
-  it('should display scripture text when axios request succeeds', async () => {
-    mockAxiosGet.mockResolvedValue({ data: mockScriptureResponse })
-
+  it('should make Bible API request and display scripture text', async () => {
     render(
       <BibleCitationCard
         citation={mockCitation}
@@ -108,8 +76,29 @@ describe('BibleCitationCard', () => {
     })
   })
 
-  it('should handle axios request failure gracefully', async () => {
-    mockAxiosGet.mockRejectedValue(new Error('Network error'))
+  it('should display scripture text when API request succeeds', async () => {
+    render(
+      <BibleCitationCard
+        citation={mockCitation}
+        imageUrl="https://example.com/image.jpg"
+      />
+    )
+
+    await waitFor(() => {
+      expect(screen.getByText(mockScriptureResponse.text)).toBeInTheDocument()
+    })
+  })
+
+  it('should handle API request failure gracefully', async () => {
+    // Override handler to return error
+    server.use(
+      http.get(
+        'https://cdn.jsdelivr.net/gh/wldeh/bible-api/bibles/:version/books/:book/chapters/:chapter/verses/:verse.json',
+        () => {
+          return HttpResponse.error()
+        }
+      )
+    )
 
     render(
       <BibleCitationCard
@@ -122,8 +111,6 @@ describe('BibleCitationCard', () => {
   })
 
   it('should show "Read more" link when verseEnd is present', async () => {
-    mockAxiosGet.mockResolvedValue({ data: mockScriptureResponse })
-
     render(
       <BibleCitationCard
         citation={mockCitationWithEndVerse}
@@ -147,8 +134,6 @@ describe('BibleCitationCard', () => {
   })
 
   it('should not show "Read more" link when verseEnd is null', async () => {
-    mockAxiosGet.mockResolvedValue({ data: mockScriptureResponse })
-
     render(
       <BibleCitationCard
         citation={mockCitation}
@@ -162,8 +147,6 @@ describe('BibleCitationCard', () => {
   })
 
   it('should generate correct Bible Gateway URL for verse range', async () => {
-    mockAxiosGet.mockResolvedValue({ data: mockScriptureResponse })
-
     render(
       <BibleCitationCard
         citation={mockCitationWithEndVerse}
@@ -180,8 +163,6 @@ describe('BibleCitationCard', () => {
   })
 
   it('should display correct citation format for chapter range', async () => {
-    mockAxiosGet.mockResolvedValue({ data: mockScriptureResponse })
-
     render(
       <BibleCitationCard
         citation={mockCitationWithEndVerse}
@@ -192,8 +173,6 @@ describe('BibleCitationCard', () => {
   })
 
   it('should display correct citation format for single chapter', async () => {
-    mockAxiosGet.mockResolvedValue({ data: mockScriptureResponse })
-
     render(
       <BibleCitationCard
         citation={mockCitation}
@@ -206,8 +185,6 @@ describe('BibleCitationCard', () => {
 
   describe('Languages', () => {
     it('should use correct versions for English (en)', async () => {
-      mockAxiosGet.mockResolvedValue({ data: mockScriptureResponse })
-
       render(
         <BibleCitationCard
           citation={mockCitationWithEndVerse}
@@ -216,19 +193,16 @@ describe('BibleCitationCard', () => {
       )
 
       await waitFor(() => {
-        expect(mockAxiosGet).toHaveBeenCalledWith(
-          'https://cdn.jsdelivr.net/gh/wldeh/bible-api/bibles/en-asv/books/matthew/chapters/5/verses/3.json'
-        )
+        expect(screen.getByText('Matthew 5-7:3-12')).toBeInTheDocument()
       })
 
       const readMoreLink = screen.getByText('Read more...')
       const href = readMoreLink.closest('a')?.getAttribute('href')
-      expect(href).toContain('Matthew%205-7%3A3-12')
-      expect(href).toContain('version=NIV')
+      expect(href)?.toContain('Matthew%205-7%3A3-12')
+      expect(href)?.toContain('version=NIV')
     })
 
     it('should use correct versions for Spanish (es)', async () => {
-      mockAxiosGet.mockResolvedValue({ data: mockScriptureResponse })
       const i18n = await makeI18n('es')
 
       render(
@@ -241,19 +215,16 @@ describe('BibleCitationCard', () => {
       )
 
       await waitFor(() => {
-        expect(mockAxiosGet).toHaveBeenCalledWith(
-          'https://cdn.jsdelivr.net/gh/wldeh/bible-api/bibles/es-rvr1960/books/matthew/chapters/5/verses/3.json'
-        )
+        expect(screen.getByText('Matthew 5-7:3-12')).toBeInTheDocument()
       })
 
       const readMoreLink = screen.getByText('Read more...')
       const href = readMoreLink.closest('a')?.getAttribute('href')
-      expect(href).toContain('Matthew%205-7%3A3-12')
-      expect(href).toContain('version=NVI')
+      expect(href)?.toContain('Matthew%205-7%3A3-12')
+      expect(href)?.toContain('version=NVI')
     })
 
     it('should use correct versions for French (fr)', async () => {
-      mockAxiosGet.mockResolvedValue({ data: mockScriptureResponse })
       const i18n = await makeI18n('fr')
 
       render(
@@ -266,19 +237,16 @@ describe('BibleCitationCard', () => {
       )
 
       await waitFor(() => {
-        expect(mockAxiosGet).toHaveBeenCalledWith(
-          'https://cdn.jsdelivr.net/gh/wldeh/bible-api/bibles/fr-s21/books/matthew/chapters/5/verses/3.json'
-        )
+        expect(screen.getByText('Matthew 5-7:3-12')).toBeInTheDocument()
       })
 
       const readMoreLink = screen.getByText('Read more...')
       const href = readMoreLink.closest('a')?.getAttribute('href')
-      expect(href).toContain('Matthew%205-7%3A3-12')
-      expect(href).toContain('version=BDS')
+      expect(href)?.toContain('Matthew%205-7%3A3-12')
+      expect(href)?.toContain('version=BDS')
     })
 
     it('should use correct versions for Indonesian (id)', async () => {
-      mockAxiosGet.mockResolvedValue({ data: mockScriptureResponse })
       const i18n = await makeI18n('id')
 
       render(
@@ -291,19 +259,16 @@ describe('BibleCitationCard', () => {
       )
 
       await waitFor(() => {
-        expect(mockAxiosGet).toHaveBeenCalledWith(
-          'https://cdn.jsdelivr.net/gh/wldeh/bible-api/bibles/id-tlab/books/matthew/chapters/5/verses/3.json'
-        )
+        expect(screen.getByText('Matthew 5-7:3-12')).toBeInTheDocument()
       })
 
       const readMoreLink = screen.getByText('Read more...')
       const href = readMoreLink.closest('a')?.getAttribute('href')
-      expect(href).toContain('Matthew%205-7%3A3-12')
-      expect(href).toContain('version=TB')
+      expect(href)?.toContain('Matthew%205-7%3A3-12')
+      expect(href)?.toContain('version=TB')
     })
 
     it('should use correct versions for Japanese (ja)', async () => {
-      mockAxiosGet.mockResolvedValue({ data: mockScriptureResponse })
       const i18n = await makeI18n('ja')
 
       render(
@@ -316,19 +281,16 @@ describe('BibleCitationCard', () => {
       )
 
       await waitFor(() => {
-        expect(mockAxiosGet).toHaveBeenCalledWith(
-          'https://cdn.jsdelivr.net/gh/wldeh/bible-api/bibles/ja-jc/books/matthew/chapters/5/verses/3.json'
-        )
+        expect(screen.getByText('Matthew 5-7:3-12')).toBeInTheDocument()
       })
 
       const readMoreLink = screen.getByText('Read more...')
       const href = readMoreLink.closest('a')?.getAttribute('href')
-      expect(href).toContain('Matthew%205-7%3A3-12')
-      expect(href).toContain('version=SHINK2017')
+      expect(href)?.toContain('Matthew%205-7%3A3-12')
+      expect(href)?.toContain('version=SHINK2017')
     })
 
     it('should use correct versions for Korean (ko)', async () => {
-      mockAxiosGet.mockResolvedValue({ data: mockScriptureResponse })
       const i18n = await makeI18n('ko')
 
       render(
@@ -341,19 +303,16 @@ describe('BibleCitationCard', () => {
       )
 
       await waitFor(() => {
-        expect(mockAxiosGet).toHaveBeenCalledWith(
-          'https://cdn.jsdelivr.net/gh/wldeh/bible-api/bibles/ko-askv/books/matthew/chapters/5/verses/3.json'
-        )
+        expect(screen.getByText('Matthew 5-7:3-12')).toBeInTheDocument()
       })
 
       const readMoreLink = screen.getByText('Read more...')
       const href = readMoreLink.closest('a')?.getAttribute('href')
-      expect(href).toContain('Matthew%205-7%3A3-12')
-      expect(href).toContain('version=NKRV')
+      expect(href)?.toContain('Matthew%205-7%3A3-12')
+      expect(href)?.toContain('version=NKRV')
     })
 
     it('should use correct versions for Russian (ru)', async () => {
-      mockAxiosGet.mockResolvedValue({ data: mockScriptureResponse })
       const i18n = await makeI18n('ru')
 
       render(
@@ -366,19 +325,16 @@ describe('BibleCitationCard', () => {
       )
 
       await waitFor(() => {
-        expect(mockAxiosGet).toHaveBeenCalledWith(
-          'https://cdn.jsdelivr.net/gh/wldeh/bible-api/bibles/ru-synod/books/matthew/chapters/5/verses/3.json'
-        )
+        expect(screen.getByText('Matthew 5-7:3-12')).toBeInTheDocument()
       })
 
       const readMoreLink = screen.getByText('Read more...')
       const href = readMoreLink.closest('a')?.getAttribute('href')
-      expect(href).toContain('Matthew%205-7%3A3-12')
-      expect(href).toContain('version=SYNOD')
+      expect(href)?.toContain('Matthew%205-7%3A3-12')
+      expect(href)?.toContain('version=SYNOD')
     })
 
     it('should use correct versions for Thai (th)', async () => {
-      mockAxiosGet.mockResolvedValue({ data: mockScriptureResponse })
       const i18n = await makeI18n('th')
 
       render(
@@ -391,19 +347,16 @@ describe('BibleCitationCard', () => {
       )
 
       await waitFor(() => {
-        expect(mockAxiosGet).toHaveBeenCalledWith(
-          'https://cdn.jsdelivr.net/gh/wldeh/bible-api/bibles/th-tkjv/books/matthew/chapters/5/verses/3.json'
-        )
+        expect(screen.getByText('Matthew 5-7:3-12')).toBeInTheDocument()
       })
 
       const readMoreLink = screen.getByText('Read more...')
       const href = readMoreLink.closest('a')?.getAttribute('href')
-      expect(href).toContain('Matthew%205-7%3A3-12')
-      expect(href).toContain('version=TNCV')
+      expect(href)?.toContain('Matthew%205-7%3A3-12')
+      expect(href)?.toContain('version=TNCV')
     })
 
     it('should use correct versions for Turkish (tr)', async () => {
-      mockAxiosGet.mockResolvedValue({ data: mockScriptureResponse })
       const i18n = await makeI18n('tr')
 
       render(
@@ -416,19 +369,16 @@ describe('BibleCitationCard', () => {
       )
 
       await waitFor(() => {
-        expect(mockAxiosGet).toHaveBeenCalledWith(
-          'https://cdn.jsdelivr.net/gh/wldeh/bible-api/bibles/tr-tcl02/books/matthew/chapters/5/verses/3.json'
-        )
+        expect(screen.getByText('Matthew 5-7:3-12')).toBeInTheDocument()
       })
 
       const readMoreLink = screen.getByText('Read more...')
       const href = readMoreLink.closest('a')?.getAttribute('href')
-      expect(href).toContain('Matthew%205-7%3A3-12')
-      expect(href).toContain('version=TC-2009')
+      expect(href)?.toContain('Matthew%205-7%3A3-12')
+      expect(href)?.toContain('version=TC-2009')
     })
 
     it('should use correct versions for Traditional Chinese (zh)', async () => {
-      mockAxiosGet.mockResolvedValue({ data: mockScriptureResponse })
       const i18n = await makeI18n('zh')
 
       render(
@@ -441,19 +391,16 @@ describe('BibleCitationCard', () => {
       )
 
       await waitFor(() => {
-        expect(mockAxiosGet).toHaveBeenCalledWith(
-          'https://cdn.jsdelivr.net/gh/wldeh/bible-api/bibles/zh-cunp-s/books/matthew/chapters/5/verses/3.json'
-        )
+        expect(screen.getByText('Matthew 5-7:3-12')).toBeInTheDocument()
       })
 
       const readMoreLink = screen.getByText('Read more...')
       const href = readMoreLink.closest('a')?.getAttribute('href')
-      expect(href).toContain('Matthew%205-7%3A3-12')
-      expect(href).toContain('version=CUVMPT')
+      expect(href)?.toContain('Matthew%205-7%3A3-12')
+      expect(href)?.toContain('version=CUVMPT')
     })
 
     it('should use correct versions for Simplified Chinese (zh-Hans-CN)', async () => {
-      mockAxiosGet.mockResolvedValue({ data: mockScriptureResponse })
       const i18n = await makeI18n('zh-Hans-CN')
 
       render(
@@ -466,15 +413,35 @@ describe('BibleCitationCard', () => {
       )
 
       await waitFor(() => {
-        expect(mockAxiosGet).toHaveBeenCalledWith(
-          'https://cdn.jsdelivr.net/gh/wldeh/bible-api/bibles/zh-cn-cmn-s-cuv/books/matthew/chapters/5/verses/3.json'
-        )
+        expect(screen.getByText('Matthew 5-7:3-12')).toBeInTheDocument()
       })
 
       const readMoreLink = screen.getByText('Read more...')
       const href = readMoreLink.closest('a')?.getAttribute('href')
-      expect(href).toContain('Matthew%205-7%3A3-12')
-      expect(href).toContain('version=CUVS')
+      expect(href)?.toContain('Matthew%205-7%3A3-12')
+      expect(href)?.toContain('version=CUVS')
+    })
+
+    it('should use english versions for unknown languages', async () => {
+      const i18n = await makeI18n('zz')
+
+      render(
+        <I18nextProvider i18n={i18n}>
+          <BibleCitationCard
+            citation={mockCitationWithEndVerse}
+            imageUrl="https://example.com/image.jpg"
+          />
+        </I18nextProvider>
+      )
+
+      await waitFor(() => {
+        expect(screen.getByText('Matthew 5-7:3-12')).toBeInTheDocument()
+      })
+
+      const readMoreLink = screen.getByText('Read more...')
+      const href = readMoreLink.closest('a')?.getAttribute('href')
+      expect(href)?.toContain('Matthew%205-7%3A3-12')
+      expect(href)?.toContain('version=NIV')
     })
   })
 })

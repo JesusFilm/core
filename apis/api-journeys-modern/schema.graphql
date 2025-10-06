@@ -125,12 +125,29 @@ type ButtonClickEvent implements Event
 }
 
 input ButtonClickEventCreateInput {
+  """
+  ID should be unique Event UUID (Provided for optimistic mutation result matching)
+  """
   id: ID
   blockId: ID!
+
+  """id of the parent stepBlock"""
   stepId: ID
+
+  """stepName of the parent stepBlock"""
   label: String
+
+  """label of the button"""
   value: String
+
+  """Action type of the button when it was clicked"""
   action: ButtonAction
+
+  """
+  The label for each corresponding action, mapping below: 
+  NavigateToBlockAction - StepName (generated in client) of the StepBlock 
+  LinkAction - url of the link
+  """
   actionValue: String
 }
 
@@ -1046,7 +1063,86 @@ enum MessagePlatform {
   settings
 }
 
+type MultiselectBlock implements Block
+  @shareable
+{
+  id: ID!
+  journeyId: ID!
+  parentBlockId: ID
+  parentOrder: Int
+  min: Int
+  max: Int
+}
+
+input MultiselectBlockCreateInput {
+  id: ID
+  journeyId: ID!
+  parentBlockId: ID!
+}
+
+input MultiselectBlockUpdateInput {
+  parentBlockId: ID
+  min: Int
+  max: Int
+}
+
+type MultiselectOptionBlock implements Block
+  @shareable
+{
+  id: ID!
+  journeyId: ID!
+  parentBlockId: ID
+  parentOrder: Int
+  label: String!
+}
+
+input MultiselectOptionBlockCreateInput {
+  id: ID
+  journeyId: ID!
+  parentBlockId: ID!
+  label: String!
+}
+
+input MultiselectOptionBlockUpdateInput {
+  parentBlockId: ID
+  label: String
+}
+
+type MultiselectSubmissionEvent implements Event
+  @shareable
+{
+  id: ID!
+  journeyId: ID!
+  createdAt: DateTime!
+  label: String
+  value: String
+}
+
+input MultiselectSubmissionEventCreateInput {
+  id: ID
+  blockId: ID!
+  stepId: ID
+  label: String
+  values: [String!]!
+}
+
 type Mutation {
+  multiselectBlockCreate(input: MultiselectBlockCreateInput!): MultiselectBlock!
+  multiselectBlockUpdate(
+    id: ID!
+    input: MultiselectBlockUpdateInput!
+
+    """drop this parameter after merging teams"""
+    journeyId: ID
+  ): MultiselectBlock!
+  multiselectOptionBlockCreate(input: MultiselectOptionBlockCreateInput!): MultiselectOptionBlock!
+  multiselectOptionBlockUpdate(
+    id: ID!
+    input: MultiselectOptionBlockUpdateInput!
+
+    """drop this parameter after merging teams"""
+    journeyId: ID
+  ): MultiselectOptionBlock!
   videoBlockCreate(input: VideoBlockCreateInput!): VideoBlock! @override(from: "api-journeys")
   videoBlockUpdate(
     id: ID!
@@ -1062,6 +1158,7 @@ type Mutation {
   blockUpdateNavigateToBlockAction(id: ID!, input: NavigateToBlockActionInput!, journeyId: ID): NavigateToBlockAction! @override(from: "api-journeys")
   blockUpdatePhoneAction(id: ID!, input: PhoneActionInput!, journeyId: ID): PhoneAction! @override(from: "api-journeys")
   buttonClickEventCreate(input: ButtonClickEventCreateInput!): ButtonClickEvent! @override(from: "api-journeys")
+  multiselectSubmissionEventCreate(input: MultiselectSubmissionEventCreateInput!): MultiselectSubmissionEvent! @override(from: "api-journeys")
   journeySimpleUpdate(id: ID!, journey: Json!): Json
   journeyAiTranslateCreate(input: JourneyAiTranslateInput!): Journey!
   createJourneyEventsExportLog(input: JourneyEventsExportLogInput!): JourneyEventsExportLog!
