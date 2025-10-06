@@ -10,97 +10,98 @@ import { NextRequest, NextResponse, after } from 'next/server'
 import { flush } from '../../../../instrumentation'
 import { getPrompt } from '../../../../src/lib/ai/langfuse/promptHelper'
 
-const traceName = "ai-context-generation"
+const traceName = 'ai-context-generation'
 
 export type BlockContextInput = {
   blockId: string
   contextText: string
 }
 
-// Wrap individual block context generation with Langfuse observation for granular tracing
-const fetchBlockContext = observe(
-  async (blockId: string, contextText: string): Promise<string> => {
-    const startTime = Date.now()
+// Factory function to create observed block context function with dynamic trace name
+const createFetchBlockContext = (blockId: string) =>
+  observe(
+    async (contextText: string): Promise<string> => {
+      const startTime = Date.now()
 
-    try {
-      // Set input metadata for this specific block operation
-      updateActiveObservation({
-        input: {
-          blockId,
-          contextLength: contextText.length
-        },
-        metadata: {
-          blockId,
-          model: 'openai/gpt/4o'
-        }
-      })
-
-      const prompt = await getPrompt('context-prompt', {
-        blockId,
-        contextText
-      })
-
-      const apologist = createOpenAICompatible({
-        name: 'apologist',
-        apiKey: process.env.APOLOGIST_API_KEY,
-        baseURL: `${process.env.APOLOGIST_API_URL}`
-      })
-
-      const { text, usage } = await generateText({
-        model: apologist('openai/gpt/4o'),
-        prompt: prompt,
-        experimental_telemetry: {
-          isEnabled: true,
-          metadata: {
+      try {
+        // Set input metadata for this specific block operation
+        updateActiveObservation({
+          input: {
             blockId,
             contextLength: contextText.length
+          },
+          metadata: {
+            blockId,
+            model: 'openai/gpt/4o'
           }
-        }
-      })
+        })
 
-      // Remove markdown code block formatting if present
-      const result = text.replace(/^```json\s*/, '').replace(/\s*```$/, '')
-      const duration = Date.now() - startTime
-
-      // Set output metadata with timing and usage
-      updateActiveObservation({
-        output: {
+        const prompt = await getPrompt('context-prompt', {
           blockId,
-          resultLength: result.length,
-          success: true
-        },
-        metadata: {
-          durationMs: duration,
-          ...(usage && { usage })
-        }
-      })
+          contextText
+        })
 
-      return result
-    } catch (error) {
-      const duration = Date.now() - startTime
+        const apologist = createOpenAICompatible({
+          name: 'apologist',
+          apiKey: process.env.APOLOGIST_API_KEY,
+          baseURL: `${process.env.APOLOGIST_API_URL}`
+        })
 
-      // Set error output
-      updateActiveObservation({
-        output: {
-          blockId,
-          error: error instanceof Error ? error.message : 'Unknown error',
-          success: false
-        },
-        metadata: {
-          durationMs: duration
-        }
-      })
+        const { text, usage } = await generateText({
+          model: apologist('openai/gpt/4o'),
+          prompt: prompt,
+          experimental_telemetry: {
+            isEnabled: true,
+            metadata: {
+              blockId,
+              contextLength: contextText.length
+            }
+          }
+        })
 
-      console.error(`Failed to generate context for block ${blockId}:`, error)
-      throw error
+        // Remove markdown code block formatting if present
+        const result = text.replace(/^```json\s*/, '').replace(/\s*```$/, '')
+        const duration = Date.now() - startTime
+
+        // Set output metadata with timing and usage
+        updateActiveObservation({
+          output: {
+            blockId,
+            resultLength: result.length,
+            success: true
+          },
+          metadata: {
+            durationMs: duration,
+            ...(usage && { usage })
+          }
+        })
+
+        return result
+      } catch (error) {
+        const duration = Date.now() - startTime
+
+        // Set error output
+        updateActiveObservation({
+          output: {
+            blockId,
+            error: error instanceof Error ? error.message : 'Unknown error',
+            success: false
+          },
+          metadata: {
+            durationMs: duration
+          }
+        })
+
+        console.error(`Failed to generate context for block ${blockId}:`, error)
+        throw error
+      }
+    },
+    {
+      name: `${traceName}-${blockId}`,
+      captureInput: false, // We manually set input via updateActiveObservation
+      captureOutput: false // We manually set output via updateActiveObservation
     }
-  },
-  {
-    name: 'generate-block-context',
-    captureInput: false, // We manually set input via updateActiveObservation
-    captureOutput: false // We manually set output via updateActiveObservation
-  }
-)
+  )
 
 /**
  * Creates a fallback block context when AI processing fails.
@@ -200,7 +201,7 @@ const handler = async (req: NextRequest) => {
 
     // Each fetchBlockContext call is wrapped in observe() and will appear as a child span
     const promises = validBlockContexts.map((bc) =>
-      fetchBlockContext(bc.blockId, bc.contextText)
+      createFetchBlockContext(bc.blockId)(bc.contextText)
     )
     const settledResults = await Promise.allSettled(promises)
     const processingTime = Date.now() - startTime
