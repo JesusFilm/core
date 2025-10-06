@@ -704,9 +704,7 @@ describe('CopyToTeamDialog', () => {
 
     await waitFor(() => expect(result).toHaveBeenCalled())
 
-    expect(
-      getByText(/This is not the original journey template/)
-    ).toBeInTheDocument()
+    expect(getByText(/This template isn't the original/)).toBeInTheDocument()
 
     const translationSwitch = getByRole('checkbox', { name: 'Translation' })
     expect(translationSwitch).toBeDisabled()
