@@ -218,12 +218,22 @@ export type ButtonClickEvent = Event & {
 };
 
 export type ButtonClickEventCreateInput = {
+  /** Action type of the button when it was clicked */
   action?: InputMaybe<ButtonAction>;
+  /**
+   * The label for each corresponding action, mapping below:
+   * NavigateToBlockAction - StepName (generated in client) of the StepBlock
+   * LinkAction - url of the link
+   */
   actionValue?: InputMaybe<Scalars['String']['input']>;
   blockId: Scalars['ID']['input'];
+  /** ID should be unique Event UUID (Provided for optimistic mutation result matching) */
   id?: InputMaybe<Scalars['ID']['input']>;
+  /** stepName of the parent stepBlock */
   label?: InputMaybe<Scalars['String']['input']>;
+  /** id of the parent stepBlock */
   stepId?: InputMaybe<Scalars['ID']['input']>;
+  /** label of the button */
   value?: InputMaybe<Scalars['String']['input']>;
 };
 
@@ -1273,6 +1283,13 @@ export type JourneyVisitorEdge = {
   cursor: Scalars['String']['output'];
   /** The item at the end of the edge. */
   node: JourneyVisitor;
+};
+
+export type JourneyVisitorExportSelect = {
+  createdAt?: InputMaybe<Scalars['Boolean']['input']>;
+  email?: InputMaybe<Scalars['Boolean']['input']>;
+  name?: InputMaybe<Scalars['Boolean']['input']>;
+  phone?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
 export type JourneyVisitorFilter = {
@@ -3405,6 +3422,8 @@ export type Query = {
   journeyTheme?: Maybe<JourneyTheme>;
   /** Get a JourneyVisitor count by JourneyVisitorFilter */
   journeyVisitorCount: Scalars['Int']['output'];
+  /** Returns a CSV formatted string with journey visitor export data including headers and visitor data with event information */
+  journeyVisitorExport?: Maybe<Scalars['String']['output']>;
   /** Get a list of Visitor Information by Journey */
   journeyVisitorsConnection: JourneyVisitorsConnection;
   journeys: Array<Journey>;
@@ -3649,6 +3668,13 @@ export type QueryJourneyThemeArgs = {
 
 export type QueryJourneyVisitorCountArgs = {
   filter: JourneyVisitorFilter;
+};
+
+
+export type QueryJourneyVisitorExportArgs = {
+  filter?: InputMaybe<JourneyEventsFilter>;
+  journeyId: Scalars['ID']['input'];
+  select?: InputMaybe<JourneyVisitorExportSelect>;
 };
 
 
