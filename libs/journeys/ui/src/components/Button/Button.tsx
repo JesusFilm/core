@@ -128,13 +128,15 @@ export function Button({
       ? getStepHeading(activeBlock.id, activeBlock.children, treeBlocks, t)
       : 'None'
 
-  const startIcon = children.find((block) => block.id === startIconId) as
-    | TreeBlock<IconFields>
-    | undefined
+  const isIconBlock = (block: TreeBlock<any>): block is TreeBlock<IconFields> =>
+    block.__typename === 'IconBlock'
 
-  const endIcon = children.find((block) => block.id === endIconId) as
-    | TreeBlock<IconFields>
-    | undefined
+  const startIcon = children.find(
+    (block) => block.id === startIconId && isIconBlock(block)
+  )
+  const endIcon = children.find(
+    (block) => block.id === endIconId && isIconBlock(block)
+  )
 
   const messagePlatform = useMemo(() => findMessagePlatform(action), [action])
   const actionValue = useMemo(
@@ -168,7 +170,13 @@ export function Button({
         stepId: activeBlock?.id,
         label: heading,
         value: resolvedLabel,
-        action: action?.__typename as ButtonAction | undefined,
+        action:
+          action?.__typename &&
+          Object.values(ButtonAction).includes(
+            action.__typename as ButtonAction
+          )
+            ? (action.__typename as ButtonAction)
+            : null,
         actionValue
       }
       void buttonClickEventCreate({
@@ -308,8 +316,16 @@ export function Button({
         variant={buttonVariant ?? ButtonVariant.contained}
         color={buttonColor ?? undefined}
         size={size ?? undefined}
-        startIcon={startIcon != null ? <Icon {...startIcon} /> : undefined}
-        endIcon={endIcon != null ? <Icon {...endIcon} /> : undefined}
+        startIcon={
+          startIcon != null && isIconBlock(startIcon) ? (
+            <Icon {...(startIcon as TreeBlock<IconFields>)} />
+          ) : undefined
+        }
+        endIcon={
+          endIcon != null && isIconBlock(endIcon) ? (
+            <Icon {...(endIcon as TreeBlock<IconFields>)} />
+          ) : undefined
+        }
         onClick={handleClick}
         sx={{
           outline: '2px solid',
