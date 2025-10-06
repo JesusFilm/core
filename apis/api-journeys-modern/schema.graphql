@@ -944,6 +944,7 @@ type JourneyVisitor
   lastTextResponse: String
   lastRadioQuestion: String
   lastRadioOptionSubmission: String
+  lastMultiselectSubmission: String
   countryCode: String
   messagePlatform: MessagePlatform
   notes: String
@@ -962,6 +963,7 @@ input JourneyVisitorFilter {
   journeyId: String!
   hasChatStarted: Boolean
   hasPollAnswers: Boolean
+  hasMultiselectSubmission: Boolean
   hasTextResponse: Boolean
   hasIcon: Boolean
   hideInactive: Boolean
