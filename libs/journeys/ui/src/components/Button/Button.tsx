@@ -318,12 +318,12 @@ export function Button({
         size={size ?? undefined}
         startIcon={
           startIcon != null && isIconBlock(startIcon) ? (
-            <Icon {...(startIcon)} />
+            <Icon {...startIcon} />
           ) : undefined
         }
         endIcon={
           endIcon != null && isIconBlock(endIcon) ? (
-            <Icon {...(endIcon)} />
+            <Icon {...endIcon} />
           ) : undefined
         }
         onClick={handleClick}
