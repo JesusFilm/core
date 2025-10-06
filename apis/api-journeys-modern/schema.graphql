@@ -930,6 +930,13 @@ type JourneyVisitor
   events: [Event!]!
 }
 
+input JourneyVisitorExportSelect {
+  name: Boolean
+  email: Boolean
+  phone: Boolean
+  createdAt: Boolean
+}
+
 input JourneyVisitorFilter {
   journeyId: String!
   hasChatStarted: Boolean
@@ -1321,6 +1328,11 @@ type Query {
   node(id: ID!): Node
   nodes(ids: [ID!]!): [Node]!
   journeySimpleGet(id: ID!): Json
+
+  """
+  Returns a CSV formatted string with journey visitor export data including headers and visitor data with event information
+  """
+  journeyVisitorExport(journeyId: ID!, filter: JourneyEventsFilter, select: JourneyVisitorExportSelect): String
 }
 
 type RadioOptionBlock implements Block
