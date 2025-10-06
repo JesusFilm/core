@@ -6,13 +6,9 @@ import {
   createDownloadsFromMuxAsset,
   downloadsReadyToStore
 } from '../lib/downloads'
-import { logger as baseLogger } from '../logger'
 import { getVideo } from '../schema/mux/video/service'
 
 const prisma = new PrismaClient()
-
-// Create a child logger for the script
-const logger = baseLogger.child({ script: 'mux-videos' })
 
 function getMuxClient(): Mux {
   if (process.env.MUX_ACCESS_TOKEN_ID == null)
@@ -27,18 +23,7 @@ function getMuxClient(): Mux {
   })
 }
 
-export async function createMuxAsset(
-  url: string,
-  mux: Mux,
-  height: number
-): Promise<string> {
-  let maxResolutionTier: '1080p' | '1440p' | '2160p' = '1080p'
-  if (height > 1080 && height <= 1440) {
-    maxResolutionTier = '1440p'
-  } else if (height > 1440) {
-    maxResolutionTier = '2160p'
-  }
-
+export async function createMuxAsset(url: string, mux: Mux): Promise<string> {
   const muxVideo = await mux.video.assets.create({
     inputs: [
       {
@@ -47,7 +32,7 @@ export async function createMuxAsset(
     ],
     video_quality: 'plus',
     playback_policy: ['public'],
-    max_resolution_tier: maxResolutionTier,
+    max_resolution_tier: '2160p',
     static_renditions: [
       { resolution: '270p' },
       { resolution: '360p' },
@@ -62,7 +47,7 @@ export async function createMuxAsset(
 }
 
 export async function importMuxVideos(mux: Mux): Promise<void> {
-  logger.info('mux videos import started')
+  console.log('mux videos import started')
 
   let totalImported = 0
   const take = 100
@@ -70,48 +55,37 @@ export async function importMuxVideos(mux: Mux): Promise<void> {
   while (hasMore) {
     const variants = await prisma.videoVariant.findMany({
       where: {
-        id: {
-          not: { contains: '-jf61' }
-        },
-        video: {
-          slug: { not: { startsWith: 'jesus/' } }
-        },
+        AND: [
+          { videoId: { not: { startsWith: '1_' } } },
+          { videoId: { not: { startsWith: 'MAG' } } }
+        ],
         muxVideoId: null,
-        masterHeight: { not: null },
-        masterUrl: { not: null },
-        OR: [
-          { masterHeight: { gt: 720 } },
-          { video: { originId: { not: '1' } } }
-        ]
+        masterUrl: { not: null }
       },
       take
     })
 
-    logger.info(`Found ${variants.length} variants to import`)
+    console.log(`Found ${variants.length} variants to import`)
 
     for (const variant of variants) {
-      logger.info(`Importing mux video for variant ${variant.id}`)
+      console.log(`Importing mux video for variant ${variant.id}`)
       await new Promise((resolve) => setTimeout(resolve, 2000)) // wait 2 sec to avoid rate limit
       let muxVideoId: string | null = null
       try {
-        muxVideoId = await createMuxAsset(
-          variant.masterUrl as string,
-          mux,
-          variant.masterHeight as number
-        )
+        muxVideoId = await createMuxAsset(variant.masterUrl as string, mux)
       } catch (error) {
         if (error instanceof Error) {
-          logger.error(
+          console.error(
             `Error creating mux asset for variant ${variant.id}: ${error.message}`
           )
         } else {
-          logger.error(`Error creating mux asset for variant ${variant.id}`)
+          console.error(`Error creating mux asset for variant ${variant.id}`)
         }
         continue
       }
 
       if (muxVideoId == null) {
-        logger.error(`Mux video id is null for variant ${variant.id}`)
+        console.error(`Mux video id is null for variant ${variant.id}`)
         continue
       }
 
@@ -141,11 +115,11 @@ export async function importMuxVideos(mux: Mux): Promise<void> {
         await mux.video.assets.delete(muxVideoId)
 
         if (error instanceof Error) {
-          logger.error(
+          console.error(
             `Error updating video variant ${variant.id}: ${error.message}`
           )
         } else {
-          logger.error(`Error updating video variant ${variant.id}`)
+          console.error(`Error updating video variant ${variant.id}`)
         }
       }
 
@@ -157,11 +131,11 @@ export async function importMuxVideos(mux: Mux): Promise<void> {
     }
   }
 
-  logger.info(`Imported ${totalImported} mux videos`)
+  console.log(`Imported ${totalImported} mux videos`)
 }
 
 export async function updateHls(mux: Mux): Promise<void> {
-  logger.info('mux videos update started')
+  console.log('mux videos update started')
 
   const take = 100
   let hasMore = true
@@ -185,10 +159,10 @@ export async function updateHls(mux: Mux): Promise<void> {
       take
     })
 
-    logger.info(`Found ${variants.length} variants to update`)
+    console.log(`Found ${variants.length} variants to update`)
 
     for (const variant of variants) {
-      logger.info(`Attempting to update hls for variant ${variant.id}`)
+      console.log(`Attempting to update hls for variant ${variant.id}`)
       await new Promise((resolve) => setTimeout(resolve, 2000)) // wait 2 sec to avoid rate limit
 
       let muxVideo: Mux.Video.Asset | null = null
@@ -197,7 +171,7 @@ export async function updateHls(mux: Mux): Promise<void> {
           variant.muxVideo?.assetId as string
         )
       } catch (error) {
-        logger.error(`Error retrieving mux upload for variant ${variant.id}`)
+        console.error(`Error retrieving mux upload for variant ${variant.id}`)
         continue
       }
       try {
@@ -209,6 +183,7 @@ export async function updateHls(mux: Mux): Promise<void> {
             },
             data: {
               hls: `https://stream.mux.com/${playbackId}.m3u8`,
+              brightcoveId: null,
               muxVideo: {
                 update: {
                   playbackId,
@@ -220,11 +195,11 @@ export async function updateHls(mux: Mux): Promise<void> {
         }
       } catch (error) {
         if (error instanceof Error) {
-          logger.error(
+          console.error(
             `Error updating video variant ${variant.id}: ${error.message}`
           )
         } else {
-          logger.error(`Error updating video variant ${variant.id}`)
+          console.error(`Error updating video variant ${variant.id}`)
         }
       }
     }
@@ -235,8 +210,8 @@ export async function updateHls(mux: Mux): Promise<void> {
   }
 }
 
-export async function processDownloads(mux: Mux): Promise<void> {
-  logger.info('mux downloads processing started')
+export async function processDownloads(): Promise<void> {
+  console.log('mux downloads processing started')
 
   const take = 100
   let hasMore = true
@@ -245,10 +220,6 @@ export async function processDownloads(mux: Mux): Promise<void> {
   while (hasMore) {
     const variants = await prisma.videoVariant.findMany({
       where: {
-        id: { not: { contains: '-jf61' } },
-        video: {
-          slug: { not: { startsWith: 'jesus/' } }
-        },
         muxVideoId: { not: null },
         muxVideo: {
           downloadable: true,
@@ -295,7 +266,7 @@ export async function processDownloads(mux: Mux): Promise<void> {
       take
     })
 
-    logger.info(
+    console.log(
       `Found ${variants.length} variants with downloadable Mux videos to process`
     )
 
@@ -304,7 +275,7 @@ export async function processDownloads(mux: Mux): Promise<void> {
         continue
       }
 
-      logger.info(`Processing downloads for variant ${variant.id}`)
+      console.log(`Processing downloads for variant ${variant.id}`)
       await new Promise((resolve) => setTimeout(resolve, 1500)) // wait 1.5 sec to avoid rate limit
 
       try {
@@ -324,46 +295,29 @@ export async function processDownloads(mux: Mux): Promise<void> {
               }
             })
 
-            logger.info(
-              {
-                variantId: variant.id,
-                deletedCount: downloadIds.length
-              },
-              'Deleted existing non-distro downloads'
+            console.log(
+              `Deleted existing non-distro downloads for variant ${variant.id}, count: ${downloadIds.length}`
             )
           }
 
           // Process downloads if static renditions are ready
           const createdCount = await createDownloadsFromMuxAsset({
             variantId: variant.id,
-            muxVideoAsset,
-            logger
+            muxVideoAsset
           })
 
-          logger.info(
-            {
-              variantId: variant.id,
-              muxVideoId: variant.muxVideo.id,
-              downloadsCount: createdCount
-            },
-            'Successfully created video downloads'
+          console.log(
+            `Successfully created ${createdCount} video downloads for variant ${variant.id}, muxVideoId: ${variant.muxVideo.id}`
           )
         } else {
-          logger.info(
-            {
-              variantId: variant.id,
-              assetId: variant.muxVideo.assetId,
-              status: muxVideoAsset.status,
-              hasPlaybackId: !!muxVideoAsset.playback_ids?.[0].id,
-              downloadsReady: downloadsReadyToStore(muxVideoAsset)
-            },
-            'Video not ready for download processing'
+          console.log(
+            `Video not ready for download processing - variant: ${variant.id}, assetId: ${variant.muxVideo.assetId}, status: ${muxVideoAsset.status}, hasPlaybackId: ${!!muxVideoAsset.playback_ids?.[0].id}, downloadsReady: ${downloadsReadyToStore(muxVideoAsset)}`
           )
         }
       } catch (error) {
-        logger.error(
-          { error, variantId: variant.id, assetId: variant.muxVideo.assetId },
-          'Failed to process downloads for variant'
+        console.error(
+          `Failed to process downloads for variant ${variant.id}, assetId: ${variant.muxVideo.assetId}`,
+          error
         )
       }
 
@@ -375,7 +329,7 @@ export async function processDownloads(mux: Mux): Promise<void> {
     }
   }
 
-  logger.info(`Processed downloads for ${totalProcessed} variants`)
+  console.log(`Processed downloads for ${totalProcessed} variants`)
 }
 
 /**
@@ -390,7 +344,7 @@ async function runMuxVideosScript(): Promise<void> {
     // Run all three processes in sequence
     await importMuxVideos(mux)
     await updateHls(mux)
-    await processDownloads(mux)
+    await processDownloads()
 
     console.log('Mux Videos processing completed successfully!')
   } catch (error) {

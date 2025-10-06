@@ -1629,6 +1629,7 @@ export type Mutation = {
   playlistCreate?: Maybe<MutationPlaylistCreateResult>;
   playlistDelete?: Maybe<MutationPlaylistDeleteResult>;
   playlistItemAdd?: Maybe<MutationPlaylistItemAddResult>;
+  playlistItemAddWithVideoAndLanguageIds?: Maybe<MutationPlaylistItemAddWithVideoAndLanguageIdsResult>;
   playlistItemRemove?: Maybe<MutationPlaylistItemRemoveResult>;
   playlistItemsReorder?: Maybe<MutationPlaylistItemsReorderResult>;
   playlistUpdate?: Maybe<MutationPlaylistUpdateResult>;
@@ -2243,9 +2244,14 @@ export type MutationPlaylistDeleteArgs = {
 
 
 export type MutationPlaylistItemAddArgs = {
-  id?: InputMaybe<Scalars['ID']['input']>;
   playlistId: Scalars['ID']['input'];
-  videoVariantId: Scalars['ID']['input'];
+  videoVariantIds: Array<Scalars['ID']['input']>;
+};
+
+
+export type MutationPlaylistItemAddWithVideoAndLanguageIdsArgs = {
+  playlistId: Scalars['ID']['input'];
+  videos: Array<PlaylistItemVideoInput>;
 };
 
 
@@ -2822,7 +2828,14 @@ export type MutationPlaylistItemAddResult = MutationPlaylistItemAddSuccess | Not
 
 export type MutationPlaylistItemAddSuccess = {
   __typename?: 'MutationPlaylistItemAddSuccess';
-  data: PlaylistItem;
+  data: Array<PlaylistItem>;
+};
+
+export type MutationPlaylistItemAddWithVideoAndLanguageIdsResult = MutationPlaylistItemAddWithVideoAndLanguageIdsSuccess | NotFoundError;
+
+export type MutationPlaylistItemAddWithVideoAndLanguageIdsSuccess = {
+  __typename?: 'MutationPlaylistItemAddWithVideoAndLanguageIdsSuccess';
+  data: Array<PlaylistItem>;
 };
 
 export type MutationPlaylistItemRemoveResult = MutationPlaylistItemRemoveSuccess | NotFoundError;
@@ -3259,6 +3272,14 @@ export type PlaylistItem = {
   playlist: Playlist;
   updatedAt: Scalars['DateTime']['output'];
   videoVariant: VideoVariant;
+};
+
+/** The video variant to add to the playlist. This is used instead of the videoVariantId as clients typically know the video id and language id of the video variant but not the videoVariantId. */
+export type PlaylistItemVideoInput = {
+  /** The language id of the video variant */
+  languageId: Scalars['String']['input'];
+  /** The video id of the video variant */
+  videoId: Scalars['String']['input'];
 };
 
 export type PlaylistUpdateInput = {

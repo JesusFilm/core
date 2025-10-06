@@ -13,6 +13,15 @@ import { journey } from '../TemplateFooter/data'
 import { TemplateViewHeader } from './TemplateViewHeader'
 import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 import { NextRouter, useRouter } from 'next/router'
+import { isJourneyCustomizable } from '../../../libs/isJourneyCustomizable'
+
+jest.mock('../../../libs/isJourneyCustomizable', () => ({
+  isJourneyCustomizable: jest.fn()
+}))
+
+const mockIsJourneyCustomizable = isJourneyCustomizable as jest.MockedFunction<
+  typeof isJourneyCustomizable
+>
 
 jest.mock('next/router', () => ({
   __esModule: true,
@@ -326,17 +335,17 @@ describe('TemplateViewHeader', () => {
     )
   })
 
-  it('should push signed in user to customization flow page when clicking template customization button while feature flag is enabled.', async () => {
+  it('should push signed in user to customization flow page if template is customizable', async () => {
+    mockIsJourneyCustomizable.mockReturnValue(true)
+
     const { getAllByRole } = render(
       <MockedProvider>
-        <FlagsProvider flags={{ journeyCustomization: true }}>
-          <JourneyProvider value={{ journey }}>
-            <TemplateViewHeader
-              isPublisher
-              authUser={{ id: '123' } as unknown as User}
-            />
-          </JourneyProvider>
-        </FlagsProvider>
+        <JourneyProvider value={{ journey }}>
+          <TemplateViewHeader
+            isPublisher
+            authUser={{ id: '123' } as unknown as User}
+          />
+        </JourneyProvider>
       </MockedProvider>
     )
 
@@ -351,17 +360,17 @@ describe('TemplateViewHeader', () => {
     })
   })
 
-  it('should open legacy copy to team dialog when clicking template customization button while feature flag is disabled.', async () => {
+  it('should open legacy copy to team dialog if journey is not customizable', async () => {
+    mockIsJourneyCustomizable.mockReturnValue(false)
+
     const { getAllByRole } = render(
       <MockedProvider>
-        <FlagsProvider flags={{ journeyCustomization: false }}>
-          <JourneyProvider value={{ journey }}>
-            <TemplateViewHeader
-              isPublisher
-              authUser={{ id: '123' } as unknown as User}
-            />
-          </JourneyProvider>
-        </FlagsProvider>
+        <JourneyProvider value={{ journey }}>
+          <TemplateViewHeader
+            isPublisher
+            authUser={{ id: '123' } as unknown as User}
+          />
+        </JourneyProvider>
       </MockedProvider>
     )
 
@@ -369,6 +378,27 @@ describe('TemplateViewHeader', () => {
 
     await waitFor(() => {
       expect(screen.getByTestId('CopyToTeamDialog')).toBeInTheDocument()
+    })
+  })
+
+  it('should show use this template loading skeleton if journey is undefined', async () => {
+    mockIsJourneyCustomizable.mockReturnValue(false)
+
+    render(
+      <MockedProvider>
+        <JourneyProvider value={{ journey: undefined }}>
+          <TemplateViewHeader
+            isPublisher
+            authUser={{ id: '123' } as unknown as User}
+          />
+        </JourneyProvider>
+      </MockedProvider>
+    )
+
+    await waitFor(() => {
+      expect(
+        screen.getAllByTestId('UseThisTemplateButtonSkeleton')
+      ).toHaveLength(2)
     })
   })
 })
