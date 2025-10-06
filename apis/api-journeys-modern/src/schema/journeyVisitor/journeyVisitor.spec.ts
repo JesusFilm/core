@@ -125,7 +125,7 @@ describe('journeyVisitorExport', () => {
     })
   })
 
-  it('should not filter by typenames when empty array is provided', async () => {
+  it('should not filter by typenames when empty array is provided but ignore headers', async () => {
     prismaMock.journey.findUnique.mockResolvedValueOnce({
       id: 'journey1',
       team: {
@@ -133,8 +133,30 @@ describe('journeyVisitorExport', () => {
       },
       userJourneys: []
     } as any)
-    prismaMock.event.findMany.mockResolvedValueOnce([])
-    prismaMock.journeyVisitor.findMany.mockResolvedValue([])
+    prismaMock.event.findMany.mockResolvedValueOnce([
+      {
+        blockId: 'block1',
+        label: 'Button Click'
+      } as any
+    ])
+    prismaMock.journeyVisitor.findMany.mockResolvedValue([
+      {
+        id: 'jv1',
+        createdAt: new Date('2024-01-01T00:00:00Z'),
+        visitor: {
+          id: 'visitor1',
+          name: 'John Doe',
+          email: 'john@example.com',
+          phone: '+1234567890'
+        },
+        events: [
+          {
+            blockId: 'block1',
+            value: 'Submit'
+          } as any
+        ]
+      } as any
+    ])
 
     const result = await authClient({
       document: JOURNEY_VISITOR_EXPORT_QUERY,
@@ -148,7 +170,7 @@ describe('journeyVisitorExport', () => {
 
     expect(result).toHaveProperty(
       'data.journeyVisitorExport',
-      'id,createdAt,name,email,phone\n'
+      'id,createdAt,name,email,phone\nvisitor1,2024-01-01T00:00:00.000Z,John Doe,john@example.com,+1234567890\n'
     )
 
     expect(prismaMock.event.findMany).toHaveBeenCalledWith({

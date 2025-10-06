@@ -263,7 +263,9 @@ builder.queryField('journeyVisitorExport', (t) => {
           select?.name !== false ? { key: 'name' } : null,
           select?.email !== false ? { key: 'email' } : null,
           select?.phone !== false ? { key: 'phone' } : null,
-          ...blockHeaders
+          ...(filter?.typenames == null || filter.typenames.length > 0
+            ? blockHeaders
+            : [])
         ].filter((value) => value != null)
 
         // Stream rows directly to CSV without collecting in memory
