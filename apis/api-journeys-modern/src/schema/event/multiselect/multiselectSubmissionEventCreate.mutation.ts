@@ -50,7 +50,10 @@ builder.mutationField('multiselectSubmissionEventCreate', (t) =>
 
       await prisma.journeyVisitor.update({
         where: { journeyId_visitorId: { journeyId, visitorId: visitor.id } },
-        data: { activityCount: journeyVisitor.activityCount + 1 }
+        data: {
+          activityCount: journeyVisitor.activityCount + 1,
+          lastMultiselectSubmission: input.label || null
+        }
       })
 
       return event

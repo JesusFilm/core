@@ -219,6 +219,7 @@ model JourneyVisitor {
   lastTextResponse          String?
   lastRadioQuestion         String?
   lastRadioOptionSubmission String?
+  lastMultiselectSubmission String?
   activityCount             Int              @default(0)
   updatedAt                 DateTime         @default(now()) @updatedAt
   journey                   Journey          @relation(fields: [journeyId], references: [id], onDelete: Cascade)
@@ -232,6 +233,7 @@ model JourneyVisitor {
   @@index(lastChatStartedAt)
   @@index(lastRadioQuestion)
   @@index(lastTextResponse)
+  @@index(lastMultiselectSubmission)
   @@index(activityCount(sort: Desc))
   @@index(duration(sort: Desc))
 }
