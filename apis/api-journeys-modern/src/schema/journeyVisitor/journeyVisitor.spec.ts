@@ -5,10 +5,15 @@ import { prismaMock } from '../../../test/prismaMock'
 
 const JOURNEY_VISITOR_EXPORT_QUERY = graphql(`
   query JourneyVisitorExport(
-    $journeyId: String!
+    $journeyId: ID!
     $filter: JourneyEventsFilter
+    $select: JourneyVisitorExportSelect
   ) {
-    journeyVisitorExport(journeyId: $journeyId, filter: $filter)
+    journeyVisitorExport(
+      journeyId: $journeyId
+      filter: $filter
+      select: $select
+    )
   }
 `)
 
@@ -41,7 +46,7 @@ describe('journeyVisitorExport', () => {
         label: 'Text Response'
       } as any
     ])
-    prismaMock.journeyVisitor.findMany.mockResolvedValue([
+    prismaMock.journeyVisitor.findMany.mockResolvedValueOnce([
       {
         id: 'jv1',
         createdAt: new Date('2024-01-01T00:00:00Z'),
@@ -379,5 +384,38 @@ describe('journeyVisitorExport', () => {
       'errors[0].message',
       'User is not allowed to manage journey'
     )
+  })
+
+  it('should handle select argument', async () => {
+    prismaMock.journey.findUnique.mockResolvedValueOnce({
+      id: 'journey1',
+      team: { userTeams: [{ userId: mockUser.id, role: 'manager' }] },
+      userJourneys: []
+    } as any)
+
+    prismaMock.event.findMany.mockResolvedValueOnce([])
+    prismaMock.journeyVisitor.findMany.mockResolvedValueOnce([
+      {
+        id: 'jv1',
+        createdAt: new Date('2024-01-01T00:00:00Z'),
+        visitor: {
+          id: 'visitor1',
+          name: 'John Doe',
+          email: 'john@example.com',
+          phone: '+1234567890'
+        },
+        events: []
+      } as any
+    ])
+
+    const result = await authClient({
+      document: JOURNEY_VISITOR_EXPORT_QUERY,
+      variables: {
+        journeyId: 'journey1',
+        select: { createdAt: false, name: false, email: false, phone: false }
+      }
+    })
+
+    expect(result).toHaveProperty('data.journeyVisitorExport', 'id\nvisitor1\n')
   })
 })
