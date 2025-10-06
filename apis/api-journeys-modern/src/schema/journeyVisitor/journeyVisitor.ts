@@ -128,6 +128,9 @@ async function* getJourneyVisitors(
       },
       take: batchSize,
       skip: offset,
+      orderBy: {
+        createdAt: 'desc'
+      },
       select: {
         id: true,
         createdAt: true,
