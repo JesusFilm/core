@@ -1,4 +1,4 @@
-import { stringify } from 'csv-stringify/sync'
+import { stringify } from 'csv-stringify'
 import { GraphQLError } from 'graphql'
 
 import { Prisma, prisma } from '@core/prisma/journeys/client'
@@ -7,6 +7,8 @@ import { Action, ability, subject } from '../../lib/auth/ability'
 import { builder } from '../builder'
 import { MessagePlatform } from '../enums'
 import { JourneyEventsFilter } from '../event/journey/inputs'
+
+import { JourneyVisitorExportSelect } from './inputs'
 
 export const JourneyVisitorRef = builder.prismaObject('JourneyVisitor', {
   shareable: true,
@@ -108,6 +110,77 @@ interface JourneyVisitorExportRow {
   [key: string]: string
 }
 
+async function* getJourneyVisitors(
+  journeyId: string,
+  eventWhere: Prisma.EventWhereInput,
+  batchSize: number = 1000
+): AsyncGenerator<JourneyVisitorExportRow> {
+  let offset = 0
+  let hasMore = true
+
+  while (hasMore) {
+    const journeyVisitors = await prisma.journeyVisitor.findMany({
+      where: {
+        journeyId,
+        events: {
+          some: eventWhere
+        }
+      },
+      take: batchSize,
+      skip: offset,
+      select: {
+        id: true,
+        createdAt: true,
+        visitor: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+            phone: true
+          }
+        },
+        events: {
+          where: eventWhere,
+          select: {
+            blockId: true,
+            value: true
+          }
+        }
+      }
+    })
+
+    if (journeyVisitors.length === 0) {
+      hasMore = false
+      break
+    }
+
+    for (const journeyVisitor of journeyVisitors) {
+      const row: JourneyVisitorExportRow = {
+        id: journeyVisitor.visitor.id,
+        createdAt: journeyVisitor.createdAt.toISOString(),
+        name: journeyVisitor.visitor.name || '',
+        email: journeyVisitor.visitor.email || '',
+        phone: journeyVisitor.visitor.phone || ''
+      }
+
+      journeyVisitor.events.forEach((event) => {
+        if (event.blockId) {
+          if (row[event.blockId]) {
+            row[event.blockId] += `;${event.value!}`
+          } else {
+            row[event.blockId] = event.value!
+          }
+        }
+      })
+
+      yield row
+    }
+
+    offset += batchSize
+    hasMore = journeyVisitors.length === batchSize
+  }
+}
+
 builder.queryField('journeyVisitorExport', (t) => {
   return t
     .withAuth({
@@ -118,10 +191,11 @@ builder.queryField('journeyVisitorExport', (t) => {
       description:
         'Returns a CSV formatted string with journey visitor export data including headers and visitor data with event information',
       args: {
-        journeyId: t.arg.string({ required: true }),
-        filter: t.arg({ type: JourneyEventsFilter, required: false })
+        journeyId: t.arg.id({ required: true }),
+        filter: t.arg({ type: JourneyEventsFilter, required: false }),
+        select: t.arg({ type: JourneyVisitorExportSelect, required: false })
       },
-      resolve: async (_, { journeyId, filter }, context) => {
+      resolve: async (_, { journeyId, filter, select }, context) => {
         // authorize user to manage journey
         const journey = await prisma.journey.findUnique({
           where: {
@@ -183,70 +257,36 @@ builder.queryField('journeyVisitorExport', (t) => {
           header: item.label!
         }))
 
-        // Get visitors with their filtered events included
-        const visitors = await prisma.journeyVisitor.findMany({
-          where: {
-            journeyId: journeyId
-          },
-          select: {
-            id: true,
-            createdAt: true,
-            visitor: {
-              select: {
-                id: true,
-                name: true,
-                email: true,
-                phone: true
-              }
-            },
-            events: {
-              where: eventWhere,
-              select: {
-                blockId: true,
-                value: true
-              }
-            }
-          }
-        })
-
-        // Build data rows as objects for csv-stringify
-        const rows: JourneyVisitorExportRow[] = []
-
-        visitors.forEach((journeyVisitor) => {
-          const row: JourneyVisitorExportRow = {
-            id: journeyVisitor.visitor.id,
-            createdAt: journeyVisitor.createdAt.toISOString(),
-            name: journeyVisitor.visitor.name || '',
-            email: journeyVisitor.visitor.email || '',
-            phone: journeyVisitor.visitor.phone || ''
-          }
-
-          journeyVisitor.events.forEach((event) => {
-            if (event.blockId) {
-              if (row[event.blockId]) {
-                row[event.blockId] += `;${event.value!}`
-              } else {
-                row[event.blockId] = event.value!
-              }
-            }
-          })
-
-          rows.push(row)
-        })
-
-        const csvColumns = [
+        const columns = [
           { key: 'id' },
-          { key: 'createdAt' },
-          { key: 'name' },
-          { key: 'email' },
-          { key: 'phone' },
+          select?.createdAt !== false ? { key: 'createdAt' } : null,
+          select?.name !== false ? { key: 'name' } : null,
+          select?.email !== false ? { key: 'email' } : null,
+          select?.phone !== false ? { key: 'phone' } : null,
           ...blockHeaders
-        ]
+        ].filter((value) => value != null)
 
-        const csvContent = stringify(rows, {
+        // Stream rows directly to CSV without collecting in memory
+        const stringifier = stringify({
           header: true,
-          columns: csvColumns
+          columns
         })
+
+        const onEndPromise = new Promise((resolve) => {
+          stringifier.on('end', resolve)
+        })
+
+        let csvContent: string = ''
+        stringifier.on('data', (chunk) => {
+          csvContent += chunk
+        })
+
+        for await (const row of getJourneyVisitors(journeyId, eventWhere)) {
+          stringifier.write(row)
+        }
+        stringifier.end()
+
+        await onEndPromise
 
         return csvContent
       }
