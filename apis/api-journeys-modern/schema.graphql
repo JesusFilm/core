@@ -1319,6 +1319,11 @@ type Query {
   node(id: ID!): Node
   nodes(ids: [ID!]!): [Node]!
   journeySimpleGet(id: ID!): Json
+
+  """
+  Returns a CSV formatted string with journey visitor export data including headers and visitor data with event information
+  """
+  journeyVisitorExport(journeyId: String!, filter: JourneyEventsFilter): String
 }
 
 type RadioOptionBlock implements Block
