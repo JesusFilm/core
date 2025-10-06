@@ -10,6 +10,7 @@ interface ContactDataState {
   name: boolean
   email: boolean
   phone: boolean
+  responseFields: boolean
 }
 
 interface ContactDataFormProps {
@@ -30,7 +31,8 @@ export function ContactDataForm({
   const [contactDataState, setContactDataState] = useState<ContactDataState>({
     name: true,
     email: true,
-    phone: true
+    phone: true,
+    responseFields: true
   })
   const [selectAll, setSelectAll] = useState(true)
 
@@ -38,19 +40,24 @@ export function ContactDataForm({
     setContactDataState({
       name: checked,
       email: checked,
-      phone: checked
+      phone: checked,
+      responseFields: checked
     })
   }
 
   useEffect(() => {
     const allSelected =
-      contactDataState.name && contactDataState.email && contactDataState.phone
+      contactDataState.name &&
+      contactDataState.email &&
+      contactDataState.phone &&
+      contactDataState.responseFields
     setSelectAll(allSelected)
 
     const selectedFields: string[] = []
     if (contactDataState.name) selectedFields.push('name')
     if (contactDataState.email) selectedFields.push('email')
     if (contactDataState.phone) selectedFields.push('phone')
+    if (contactDataState.responseFields) selectedFields.push('responseFields')
 
     setContactData(selectedFields)
   }, [contactDataState, setContactData])
@@ -84,6 +91,16 @@ export function ContactDataForm({
             setContactDataState((prev) => ({ ...prev, phone: checked }))
           }
           label={t('Phone')}
+        />
+        <CheckboxOption
+          checked={contactDataState.responseFields}
+          onChange={(checked) =>
+            setContactDataState((prev) => ({
+              ...prev,
+              responseFields: checked
+            }))
+          }
+          label={t('Visitor Responses')}
         />
       </FormGroup>
     </Stack>

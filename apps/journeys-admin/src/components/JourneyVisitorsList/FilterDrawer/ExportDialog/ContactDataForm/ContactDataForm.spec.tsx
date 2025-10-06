@@ -22,17 +22,27 @@ describe('ContactDataForm', () => {
     expect(screen.getByLabelText('Name')).toBeInTheDocument()
     expect(screen.getByLabelText('Email')).toBeInTheDocument()
     expect(screen.getByLabelText('Phone')).toBeInTheDocument()
+    expect(screen.getByLabelText('Visitor Responses')).toBeInTheDocument()
 
-    // Check initial state - all checkboxes should be checked
-    expect(screen.getByLabelText('All')).toBeChecked()
+    // Check initial state - all fields should be checked by default
+    expect(screen.getByLabelText('All')).toBeChecked() // All selected by default
     expect(screen.getByLabelText('Name')).toBeChecked()
     expect(screen.getByLabelText('Email')).toBeChecked()
     expect(screen.getByLabelText('Phone')).toBeChecked()
+    expect(screen.getByLabelText('Visitor Responses')).toBeChecked()
   })
 
   it('handles "Select All" checkbox correctly', () => {
     render(<ContactDataForm setContactData={mockSetContactData} />)
     const selectAllCheckbox = screen.getByLabelText('All')
+
+    // Check all (including Visitor Responses)
+    fireEvent.click(selectAllCheckbox)
+    expect(selectAllCheckbox).toBeChecked()
+    expect(screen.getByLabelText('Name')).toBeChecked()
+    expect(screen.getByLabelText('Email')).toBeChecked()
+    expect(screen.getByLabelText('Phone')).toBeChecked()
+    expect(screen.getByLabelText('Visitor Responses')).toBeChecked()
 
     // Uncheck all
     fireEvent.click(selectAllCheckbox)
@@ -47,6 +57,7 @@ describe('ContactDataForm', () => {
     expect(screen.getByLabelText('Name')).toBeChecked()
     expect(screen.getByLabelText('Email')).toBeChecked()
     expect(screen.getByLabelText('Phone')).toBeChecked()
+    expect(screen.getByLabelText('Visitor Responses')).toBeChecked()
   })
 
   it('handles individual checkbox selection correctly', () => {
@@ -70,19 +81,33 @@ describe('ContactDataForm', () => {
     // Check Email again
     fireEvent.click(screen.getByLabelText('Email'))
     expect(screen.getByLabelText('Email')).toBeChecked()
+    expect(screen.getByLabelText('All')).not.toBeChecked() // Still not all selected (responseFields unchecked)
+
+    // Check Visitor Responses
+    fireEvent.click(screen.getByLabelText('Visitor Responses'))
+    expect(screen.getByLabelText('Visitor Responses')).toBeChecked()
     expect(screen.getByLabelText('All')).toBeChecked() // Now all selected
   })
 
   it('calls setContactData with correct contact data fields', () => {
     render(<ContactDataForm setContactData={mockSetContactData} />)
 
-    // Initially all fields should be selected
-    expect(mockSetContactData).toHaveBeenCalledWith(['name', 'email', 'phone'])
+    // Initially all fields should be selected by default
+    expect(mockSetContactData).toHaveBeenCalledWith([
+      'name',
+      'email',
+      'phone',
+      'responseFields'
+    ])
+
+    // Uncheck Visitor Responses
+    fireEvent.click(screen.getByLabelText('Visitor Responses'))
+    const responseFieldsCall =
+      mockSetContactData.mock.calls[mockSetContactData.mock.calls.length - 1][0]
+    expect(responseFieldsCall).toEqual(['name', 'email', 'phone'])
 
     // Uncheck Name
     fireEvent.click(screen.getByLabelText('Name'))
-
-    // Verify the callback excludes the unchecked field
     const lastCall =
       mockSetContactData.mock.calls[mockSetContactData.mock.calls.length - 1][0]
     expect(lastCall).toEqual(['email', 'phone'])
